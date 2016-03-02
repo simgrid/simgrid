@@ -4,6 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstddef>
+#include <cstdint>
+#include <utility>
+
+#include <xbt/asserts.h>
+#include <xbt/sysdep.h>
+
+#include <libunwind.h>
+
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/LocationList.hpp"
@@ -47,7 +56,7 @@ static simgrid::dwarf::DwarfExpression const* find_expression(
 {
   for (simgrid::dwarf::LocationListEntry const& entry : locations)
     if (entry.valid_for_ip(ip))
-      return &entry.expression;
+      return &entry.expression();
   return nullptr;
 }
 
@@ -71,11 +80,11 @@ Location resolve(
           frame_pointer_address, address_space, process_index);
 }
 
-simgrid::dwarf::LocationList location_list(
+LocationList location_list(
   simgrid::mc::ObjectInformation& info,
   Dwarf_Attribute& attr)
 {
-  simgrid::dwarf::LocationList locations;
+  LocationList locations;
   std::ptrdiff_t offset = 0;
   while (1) {
 
@@ -87,26 +96,23 @@ simgrid::dwarf::LocationList location_list(
       &attr, offset, &base, &start, &end, &ops, &len);
 
     if (offset == 0)
-      return std::move(locations);
+      break;
     else if (offset == -1)
       xbt_die("Error while loading location list");
 
-    simgrid::dwarf::LocationListEntry entry;
-    entry.expression = simgrid::dwarf::DwarfExpression(ops, ops + len);
+    std::uint64_t base_address = (std::uint64_t) info.base_address();
 
-    void *base_address = info.base_address();
+    LocationListEntry::range_type range;
+    if (start == 0)
+      // If start == 0, this is not a location list:
+      range = { 0, UINT64_MAX };
+    else
+      range =  { base_address + start, base_address + end };
 
-    // If start == 0, this is not a location list:
-    if (start == 0) {
-      entry.lowpc  = nullptr;
-      entry.highpc = nullptr;
-    } else {
-      entry.lowpc  = (char *) base_address + start;
-      entry.highpc = (char *) base_address + end;
-    }
-
-    locations.push_back(std::move(entry));
+    locations.push_back({ DwarfExpression(ops, ops+len), range });
   }
+
+  return std::move(locations);
 }
 
 

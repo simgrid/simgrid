@@ -24,18 +24,13 @@ XBT_PUBLIC_DATA(FILE *) xbt_action_fp;
 XBT_PUBLIC(xbt_replay_reader_t) xbt_replay_reader_new(const char*filename);
 XBT_PUBLIC(const char **) xbt_replay_reader_get(xbt_replay_reader_t reader);
 XBT_PUBLIC(void) xbt_replay_reader_free(xbt_replay_reader_t *reader);
-XBT_PUBLIC(const char *) xbt_replay_reader_position(xbt_replay_reader_t reader);
 
+XBT_PUBLIC(void) xbt_replay_action_register(const char *action_name, action_fun function);
 XBT_PUBLIC(int) xbt_replay_action_runner(int argc, char *argv[]);
 
 XBT_PUBLIC(int) _xbt_replay_is_active(void);
-
 XBT_PUBLIC(int) _xbt_replay_action_init(void);
 XBT_PUBLIC(void) _xbt_replay_action_exit(void);
-
-XBT_PUBLIC(void) xbt_replay_action_register(const char *action_name,
-                                            action_fun function);
-XBT_PUBLIC(void) xbt_replay_action_unregister(const char *action_name);
 
 SG_END_DECL()
 

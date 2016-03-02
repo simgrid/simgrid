@@ -299,8 +299,6 @@ endif()
 
 CHECK_INCLUDE_FILES("stdlib.h;stdarg.h;string.h;float.h" STDC_HEADERS)
 CHECK_INCLUDE_FILE("valgrind/valgrind.h" HAVE_VALGRIND_VALGRIND_H)
-CHECK_INCLUDE_FILE("socket.h" HAVE_SOCKET_H)
-CHECK_INCLUDE_FILE("stat.h" HAVE_STAT_H)
 CHECK_INCLUDE_FILE("sys/stat.h" HAVE_SYS_STAT_H)
 CHECK_INCLUDE_FILE("sys/ptrace.h" HAVE_SYS_PTRACE_H)
 CHECK_INCLUDE_FILE("windows.h" HAVE_WINDOWS_H)
@@ -312,31 +310,21 @@ CHECK_INCLUDE_FILE("sys/time.h" HAVE_SYS_TIME_H)
 CHECK_INCLUDE_FILE("sys/param.h" HAVE_SYS_PARAM_H)
 CHECK_INCLUDE_FILE("sys/sysctl.h" HAVE_SYS_SYSCTL_H)
 CHECK_INCLUDE_FILE("time.h" HAVE_TIME_H)
-CHECK_INCLUDE_FILE("string.h" HAVE_STRING_H)
 CHECK_INCLUDE_FILE("ucontext.h" HAVE_UCONTEXT_H)
-CHECK_INCLUDE_FILE("stdio.h" HAVE_STDIO_H)
 CHECK_INCLUDE_FILE("linux/futex.h" HAVE_FUTEX_H)
 
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
 CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
-CHECK_FUNCTION_EXISTS(readv HAVE_READV)
 CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
-CHECK_FUNCTION_EXISTS(signal HAVE_SIGNAL)
 
-CHECK_SYMBOL_EXISTS(snprintf stdio.h HAVE_SNPRINTF)
-CHECK_SYMBOL_EXISTS(vsnprintf stdio.h HAVE_VSNPRINTF)
-CHECK_SYMBOL_EXISTS(asprintf stdio.h HAVE_ASPRINTF)
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 
 if(MINGW) 
-  # The detection of asprintf fails on MinGW, assumingly because it's
+  # The detection of vasprintf fails on MinGW, assumingly because it's
   # defined as an inline function in stdio.h instead of a regular
   # function. So force the result to be 1 despite of the test.
-  set(HAVE_SNPRINTF 1)
-  set(HAVE_VSNPRINTF 1)
-  set(HAVE_ASPRINTF 1)
   set(HAVE_VASPRINTF 1)
 endif()
 
@@ -608,10 +596,7 @@ if(WIN32)
   try_compile(HAVE_UCONTEXT
     ${CMAKE_BINARY_DIR}
     ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_AC_CHECK_MCSC.c
-    COMPILE_DEFINITIONS _XBT_WIN32
-    INCLUDE_DIRECTORIES
-      ${CMAKE_HOME_DIRECTORY}/src/include
-      ${CMAKE_HOME_DIRECTORY}/src/xbt
+    COMPILE_DEFINITIONS -D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt
   )
 else()
   # We always provide our own implementation of ucontext on Windows.
@@ -755,61 +740,14 @@ else()
     message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
   endif()
 endif()
+# If the test ran well, remove the test binary
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove test_stackgrowth)
 
 ###############
 ## System checks
 ##
 
-### check for a working snprintf
-if(HAVE_SNPRINTF AND HAVE_VSNPRINTF OR WIN32)
-  if(CMAKE_CROSSCOMPILING)
-    set(RUN_SNPRINTF_FUNC "cross")
-    #set(PREFER_PORTABLE_SNPRINTF 1)
-  else()
-    try_run(RUN_SNPRINTF_FUNC_VAR COMPILE_SNPRINTF_FUNC_VAR
-      ${CMAKE_BINARY_DIR}
-      ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_snprintf.c
-      )
-  endif()
-
-  if(CMAKE_CROSSCOMPILING)
-    set(RUN_VSNPRINTF_FUNC "cross")
-    set(PREFER_PORTABLE_VSNPRINTF 1)
-  else()
-    try_run(RUN_VSNPRINTF_FUNC_VAR COMPILE_VSNPRINTF_FUNC_VAR
-      ${CMAKE_BINARY_DIR}
-      ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_vsnprintf.c
-      )
-  endif()
-
-  set(PREFER_PORTABLE_SNPRINTF 0)
-  if(RUN_VSNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
-    set(PREFER_PORTABLE_SNPRINTF 1)
-  endif()
-  if(RUN_SNPRINTF_FUNC_VAR MATCHES "FAILED_TO_RUN")
-    set(PREFER_PORTABLE_SNPRINTF 1)
-  endif()
-endif()
-
-### check for asprintf function familly
-if(HAVE_ASPRINTF)
-  SET(simgrid_need_asprintf "")
-  SET(NEED_ASPRINTF 0)
-else()
-  SET(simgrid_need_asprintf "#define SIMGRID_NEED_ASPRINTF 1")
-  SET(NEED_ASPRINTF 1)
-endif()
-
-if(HAVE_VASPRINTF)
-  SET(simgrid_need_vasprintf "")
-  SET(NEED_VASPRINTF 0)
-else()
-  SET(simgrid_need_vasprintf "#define SIMGRID_NEED_VASPRINTF 1")
-  SET(NEED_VASPRINTF 1)
-endif()
-
 ### check for addr2line
-
 find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS	)
 if(ADDR2LINE)
   set(ADDR2LINE "${ADDR2LINE}/addr2line")
@@ -1045,7 +983,10 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Tests.cmake)
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/CTestConfig.cmake)
 
 ### Define subdirectories
-include(${CMAKE_HOME_DIRECTORY}/tools/cmake/MakeExe.cmake)
+foreach(cmakefile ${CMAKEFILES_TXT})
+  string(REPLACE "/CMakeLists.txt" "" repository ${cmakefile})
+  add_subdirectory("${CMAKE_HOME_DIRECTORY}/${repository}")
+endforeach()
 
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)

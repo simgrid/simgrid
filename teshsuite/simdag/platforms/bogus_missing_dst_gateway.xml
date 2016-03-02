@@ -13,8 +13,7 @@
 
     <link id="backbone" bandwidth="1.25GBps" latency="500us"/>
 
-    <ASroute src="us" gw_src="node-cluster_router.cluster.us" dst="fr" gw_dst="neud-grappe_router.grappe.fr"
-             symmetrical="YES">
+    <ASroute src="us" gw_src="node-cluster_router.cluster.us" dst="fr" gw_dst="neud-grappe_router.grappe.fr">
         <link_ctn id="backbone"/>
     </ASroute>
   </AS>

@@ -4,6 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <libunwind.h>
+
+#include <xbt/sysdep.h>
+
 #include "src/mc/Frame.hpp"
 
 namespace simgrid {
@@ -13,7 +17,7 @@ void* Frame::frame_base(unw_cursor_t& unw_cursor) const
 {
   simgrid::dwarf::Location location = simgrid::dwarf::resolve(
                              frame_base_location, object_info,
-                             &unw_cursor, NULL, NULL, -1);
+                             &unw_cursor, nullptr, nullptr, -1);
   if (location.in_memory())
     return location.address();
   else if (location.in_register()) {

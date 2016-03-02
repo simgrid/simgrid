@@ -1,16 +1,7 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(surf_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/surf_usage/surf_usage.cpp)
-add_executable(surf_usage2 ${CMAKE_HOME_DIRECTORY}/teshsuite/surf/surf_usage/surf_usage2.cpp)
-
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(surf_usage simgrid m )
-  target_link_libraries(surf_usage2 simgrid m )
-else()
-  target_link_libraries(surf_usage simgrid )
-  target_link_libraries(surf_usage2 simgrid )
-endif()
+add_executable       (surf_usage  surf_usage.cpp)
+target_link_libraries(surf_usage  simgrid)
+add_executable       (surf_usage2 surf_usage2.cpp)
+target_link_libraries(surf_usage2 simgrid )
 
 set(tesh_files
   ${tesh_files}

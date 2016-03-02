@@ -4,16 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include <sys/time.h>
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc, printf */
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /*
  * Usage:
@@ -26,12 +20,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
 static double time_precise(void) {
   struct timeval tv;
   int ret = gettimeofday(&tv, NULL);
-  if (ret < 0)
-    xbt_die("gettimeofday");
-
-  double now = (double) tv.tv_sec + tv.tv_usec * 0.001 * 0.001;
-
-  return now;
+  xbt_assert(ret >= 0, "gettimeofday");
+  return (double) tv.tv_sec + tv.tv_usec * 0.001 * 0.001;
 }
 
 static int computation_fun(int argc, char *argv[]) {
@@ -46,8 +36,6 @@ static int computation_fun(int argc, char *argv[]) {
 
     // XBT_INFO("%f", clock_end - clock_sta);
   }
-
-
   return 0;
 }
 
@@ -81,7 +69,6 @@ static int master_main(int argc, char *argv[])
     xbt_free(vm_name);
   }
 
-
   XBT_INFO("## Test (start)");
 
   for (i = 0; i < 10; i++) {
@@ -91,13 +78,11 @@ static int master_main(int argc, char *argv[])
     XBT_INFO("duration %f", clock_end - clock_sta);
   }
 
-
   for (i = 0; i < nvm; i++) {
     MSG_vm_destroy(vm[i]);
   }
 
   XBT_INFO("## Test (ended)");
-  
   return 0;
 }
 
@@ -127,7 +112,6 @@ int main(int argc, char *argv[])
 
   int res = MSG_main();
   XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
-
 
   return !(res == MSG_OK);
 }

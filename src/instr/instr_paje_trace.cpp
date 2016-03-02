@@ -45,7 +45,8 @@ void TRACE_paje_start(void)
   XBT_DEBUG("Filename %s is open for writing", filename);
 
   /* output generator version */
-  fprintf (tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n", SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
+  fprintf (tracing_file, "#This file was generated using SimGrid-%d.%d.%d\n",
+           SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH);
   fprintf (tracing_file, "#[");
   unsigned int cpt;
   char *str;
@@ -62,7 +63,6 @@ void TRACE_paje_start(void)
 
   /* output header */
   TRACE_header(TRACE_basic(),TRACE_display_sizes());
-
 }
 
 void TRACE_paje_end(void)
@@ -72,217 +72,152 @@ void TRACE_paje_end(void)
   XBT_DEBUG("Filename %s is closed", filename);
 }
 
-
 void print_pajeDefineContainerType(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
-  fprintf(tracing_file, "%d %s %s %s\n",
-      (int)event->event_type,
-      ((defineContainerType_t)event->data)->type->id,
-      ((defineContainerType_t)event->data)->type->father->id,
-      ((defineContainerType_t)event->data)->type->name);
+  fprintf(tracing_file, "%d %s %s %s\n", (int)event->event_type, ((defineContainerType_t)event->data)->type->id,
+      ((defineContainerType_t)event->data)->type->father->id, ((defineContainerType_t)event->data)->type->name);
 }
 
 void print_pajeDefineVariableType(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
-  fprintf(tracing_file, "%d %s %s %s \"%s\"\n",
-      (int)event->event_type,
-      ((defineVariableType_t)event->data)->type->id,
-      ((defineVariableType_t)event->data)->type->father->id,
-      ((defineVariableType_t)event->data)->type->name,
-      ((defineVariableType_t)event->data)->type->color);
+  fprintf(tracing_file, "%d %s %s %s \"%s\"\n", (int)event->event_type,
+      ((defineVariableType_t)event->data)->type->id, ((defineVariableType_t)event->data)->type->father->id,
+      ((defineVariableType_t)event->data)->type->name, ((defineVariableType_t)event->data)->type->color);
 }
 
 void print_pajeDefineStateType(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
-  fprintf(tracing_file, "%d %s %s %s\n",
-      (int)event->event_type,
-      ((defineStateType_t)event->data)->type->id,
-      ((defineStateType_t)event->data)->type->father->id,
-      ((defineStateType_t)event->data)->type->name);
+  fprintf(tracing_file, "%d %s %s %s\n", (int)event->event_type, ((defineStateType_t)event->data)->type->id,
+          ((defineStateType_t)event->data)->type->father->id, ((defineStateType_t)event->data)->type->name);
 }
 
 void print_pajeDefineEventType(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
-  fprintf(tracing_file, "%d %s %s %s\n",
-      (int)event->event_type,
-      ((defineEventType_t)event->data)->type->id,
-      ((defineEventType_t)event->data)->type->father->id,
-      ((defineEventType_t)event->data)->type->name);
+  fprintf(tracing_file, "%d %s %s %s\n", (int)event->event_type, ((defineEventType_t)event->data)->type->id,
+      ((defineEventType_t)event->data)->type->father->id, ((defineEventType_t)event->data)->type->name);
 }
 
 void print_pajeDefineLinkType(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
-  fprintf(tracing_file, "%d %s %s %s %s %s\n",
-      (int)event->event_type,
-      ((defineLinkType_t)event->data)->type->id,
-      ((defineLinkType_t)event->data)->type->father->id,
-      ((defineLinkType_t)event->data)->source->id,
-      ((defineLinkType_t)event->data)->dest->id,
-      ((defineLinkType_t)event->data)->type->name);
+  fprintf(tracing_file, "%d %s %s %s %s %s\n", (int)event->event_type, ((defineLinkType_t)event->data)->type->id,
+      ((defineLinkType_t)event->data)->type->father->id, ((defineLinkType_t)event->data)->source->id,
+      ((defineLinkType_t)event->data)->dest->id, ((defineLinkType_t)event->data)->type->name);
 }
 
 void print_pajeDefineEntityValue (paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d", __FUNCTION__, (int)event->event_type);
-  fprintf(tracing_file, "%d %s %s %s \"%s\"\n",
-      (int)event->event_type,
-      ((defineEntityValue_t)event->data)->value->id,
-      ((defineEntityValue_t)event->data)->value->father->id,
-      ((defineEntityValue_t)event->data)->value->name,
+  fprintf(tracing_file, "%d %s %s %s \"%s\"\n", (int)event->event_type, ((defineEntityValue_t)event->data)->value->id,
+      ((defineEntityValue_t)event->data)->value->father->id, ((defineEntityValue_t)event->data)->value->name,
       ((defineEntityValue_t)event->data)->value->color);
 }
 
 void print_pajeCreateContainer(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s \"%s\"\n",
-        (int)event->event_type,
-        ((createContainer_t)event->data)->container->id,
-        ((createContainer_t)event->data)->container->type->id,
-        ((createContainer_t)event->data)->container->father->id,
-        ((createContainer_t)event->data)->container->name);
+    fprintf(tracing_file, "%d 0 %s %s %s \"%s\"\n", (int)event->event_type,
+        ((createContainer_t)event->data)->container->id, ((createContainer_t)event->data)->container->type->id,
+        ((createContainer_t)event->data)->container->father->id, ((createContainer_t)event->data)->container->name);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s %s \"%s\"\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((createContainer_t)event->data)->container->id,
-        ((createContainer_t)event->data)->container->type->id,
-        ((createContainer_t)event->data)->container->father->id,
-        ((createContainer_t)event->data)->container->name);
+    fprintf(tracing_file, "%d %.*f %s %s %s \"%s\"\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((createContainer_t)event->data)->container->id, ((createContainer_t)event->data)->container->type->id,
+        ((createContainer_t)event->data)->container->father->id, ((createContainer_t)event->data)->container->name);
   }
 }
 
 void print_pajeDestroyContainer(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s\n",
-        (int)event->event_type,
-        ((destroyContainer_t)event->data)->container->type->id,
-        ((destroyContainer_t)event->data)->container->id);
+    fprintf(tracing_file, "%d 0 %s %s\n", (int)event->event_type,
+        ((destroyContainer_t)event->data)->container->type->id, ((destroyContainer_t)event->data)->container->id);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((destroyContainer_t)event->data)->container->type->id,
-        ((destroyContainer_t)event->data)->container->id);
+    fprintf(tracing_file, "%d %.*f %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((destroyContainer_t)event->data)->container->type->id, ((destroyContainer_t)event->data)->container->id);
   }
 }
 
 void print_pajeSetVariable(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %f\n",
-        (int)event->event_type,
-        ((setVariable_t)event->data)->type->id,
-        ((setVariable_t)event->data)->container->id,
-        ((setVariable_t)event->data)->value);
+    fprintf(tracing_file, "%d 0 %s %s %f\n", (int)event->event_type, ((setVariable_t)event->data)->type->id,
+        ((setVariable_t)event->data)->container->id, ((setVariable_t)event->data)->value);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s %f\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((setVariable_t)event->data)->type->id,
-        ((setVariable_t)event->data)->container->id,
+    fprintf(tracing_file, "%d %.*f %s %s %f\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((setVariable_t)event->data)->type->id, ((setVariable_t)event->data)->container->id,
         ((setVariable_t)event->data)->value);
   }
 }
 
 void print_pajeAddVariable(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %f\n",
-        (int)event->event_type,
-        ((addVariable_t)event->data)->type->id,
-        ((addVariable_t)event->data)->container->id,
-        ((addVariable_t)event->data)->value);
+    fprintf(tracing_file, "%d 0 %s %s %f\n", (int)event->event_type, ((addVariable_t)event->data)->type->id,
+        ((addVariable_t)event->data)->container->id, ((addVariable_t)event->data)->value);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s %f\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((addVariable_t)event->data)->type->id,
-        ((addVariable_t)event->data)->container->id,
+    fprintf(tracing_file, "%d %.*f %s %s %f\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((addVariable_t)event->data)->type->id, ((addVariable_t)event->data)->container->id,
         ((addVariable_t)event->data)->value);
   }
 }
 
 void print_pajeSubVariable(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %f\n",
-        (int)event->event_type,
-        ((subVariable_t)event->data)->type->id,
-        ((subVariable_t)event->data)->container->id,
-        ((subVariable_t)event->data)->value);
+    fprintf(tracing_file, "%d 0 %s %s %f\n", (int)event->event_type, ((subVariable_t)event->data)->type->id,
+        ((subVariable_t)event->data)->container->id, ((subVariable_t)event->data)->value);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s %f\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((subVariable_t)event->data)->type->id,
-        ((subVariable_t)event->data)->container->id,
+    fprintf(tracing_file, "%d %.*f %s %s %f\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((subVariable_t)event->data)->type->id, ((subVariable_t)event->data)->container->id,
         ((subVariable_t)event->data)->value);
   }
 }
 
 void print_pajeSetState(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s\n",
-        (int)event->event_type,
-        ((setState_t)event->data)->type->id,
-        ((setState_t)event->data)->container->id,
-        ((setState_t)event->data)->value->id);
+    fprintf(tracing_file, "%d 0 %s %s %s\n", (int)event->event_type, ((setState_t)event->data)->type->id,
+        ((setState_t)event->data)->container->id, ((setState_t)event->data)->value->id);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s %s\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((setState_t)event->data)->type->id,
-        ((setState_t)event->data)->container->id,
+    fprintf(tracing_file, "%d %.*f %s %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((setState_t)event->data)->type->id, ((setState_t)event->data)->container->id,
         ((setState_t)event->data)->value->id);
   }
 }
 
 void print_pajePushState(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (!TRACE_display_sizes()){
     if (event->timestamp == 0){
-      fprintf(tracing_file, "%d 0 %s %s %s\n",
-          (int)event->event_type,
-          ((pushState_t)event->data)->type->id,
-          ((pushState_t)event->data)->container->id,
-          ((pushState_t)event->data)->value->id);
+      fprintf(tracing_file, "%d 0 %s %s %s\n", (int)event->event_type, ((pushState_t)event->data)->type->id,
+          ((pushState_t)event->data)->container->id, ((pushState_t)event->data)->value->id);
     }else{
-      fprintf(tracing_file, "%d %.*f %s %s %s\n",
-          (int)event->event_type,
-          TRACE_precision(),
-          event->timestamp,
-          ((pushState_t)event->data)->type->id,
-          ((pushState_t)event->data)->container->id,
+      fprintf(tracing_file, "%d %.*f %s %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+          ((pushState_t)event->data)->type->id, ((pushState_t)event->data)->container->id,
           ((pushState_t)event->data)->value->id);
     }
   }else{
     if (event->timestamp == 0){
-      fprintf(tracing_file, "%d 0 %s %s %s ",
-          (int)event->event_type,
-          ((pushState_t)event->data)->type->id,
-          ((pushState_t)event->data)->container->id,
-          ((pushState_t)event->data)->value->id);
+      fprintf(tracing_file, "%d 0 %s %s %s ", (int)event->event_type, ((pushState_t)event->data)->type->id,
+          ((pushState_t)event->data)->container->id, ((pushState_t)event->data)->value->id);
       if(((pushState_t)event->data)->extra !=NULL){
         fprintf(tracing_file, "%d ", ((instr_extra_data)((pushState_t)event->data)->extra)->send_size);
       }else{
@@ -291,12 +226,8 @@ void print_pajePushState(paje_event_t event)
       fprintf(tracing_file, "\n");
 
     }else{
-      fprintf(tracing_file, "%d %.*f %s %s %s ",
-          (int)event->event_type,
-          TRACE_precision(),
-          event->timestamp,
-          ((pushState_t)event->data)->type->id,
-          ((pushState_t)event->data)->container->id,
+      fprintf(tracing_file, "%d %.*f %s %s %s ", (int)event->event_type, TRACE_precision(), event->timestamp,
+          ((pushState_t)event->data)->type->id, ((pushState_t)event->data)->container->id,
           ((pushState_t)event->data)->value->id);
       if(((pushState_t)event->data)->extra !=NULL){
         fprintf(tracing_file, "%d ", ((instr_extra_data)((pushState_t)event->data)->extra)->send_size);
@@ -304,7 +235,6 @@ void print_pajePushState(paje_event_t event)
         fprintf(tracing_file, "0 ");
       }
       fprintf(tracing_file, "\n");
-
     }
   }
    if(((pushState_t)event->data)->extra!=NULL){
@@ -318,37 +248,27 @@ void print_pajePushState(paje_event_t event)
 
 void print_pajePopState(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s\n",
-        (int)event->event_type,
-        ((popState_t)event->data)->type->id,
+    fprintf(tracing_file, "%d 0 %s %s\n", (int)event->event_type, ((popState_t)event->data)->type->id,
         ((popState_t)event->data)->container->id);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((popState_t)event->data)->type->id,
-        ((popState_t)event->data)->container->id);
+    fprintf(tracing_file, "%d %.*f %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((popState_t)event->data)->type->id, ((popState_t)event->data)->container->id);
   }
 }
 
 void print_pajeResetState(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s\n",
-        (int)event->event_type,
-        ((resetState_t)event->data)->type->id,
+    fprintf(tracing_file, "%d 0 %s %s\n", (int)event->event_type, ((resetState_t)event->data)->type->id,
         ((resetState_t)event->data)->container->id);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((resetState_t)event->data)->type->id,
-        ((resetState_t)event->data)->container->id);
+    fprintf(tracing_file, "%d %.*f %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((resetState_t)event->data)->type->id, ((resetState_t)event->data)->container->id);
   }
 }
 
@@ -356,90 +276,57 @@ void print_pajeStartLink(paje_event_t event)
 {
   if (!TRACE_display_sizes()){
     if (event->timestamp == 0){
-      fprintf(tracing_file, "%d 0 %s %s %s %s %s\n",
-          (int)event->event_type,
-          ((startLink_t)event->data)->type->id,
-          ((startLink_t)event->data)->container->id,
-          ((startLink_t)event->data)->value,
-          ((startLink_t)event->data)->sourceContainer->id,
-          ((startLink_t)event->data)->key);
+      fprintf(tracing_file, "%d 0 %s %s %s %s %s\n", (int)event->event_type, ((startLink_t)event->data)->type->id,
+          ((startLink_t)event->data)->container->id, ((startLink_t)event->data)->value,
+          ((startLink_t)event->data)->sourceContainer->id, ((startLink_t)event->data)->key);
     }else {
-      fprintf(tracing_file, "%d %.*f %s %s %s %s %s\n",
-          (int)event->event_type,
-          TRACE_precision(),
-          event->timestamp,
-          ((startLink_t)event->data)->type->id,
-          ((startLink_t)event->data)->container->id,
-          ((startLink_t)event->data)->value,
-          ((startLink_t)event->data)->sourceContainer->id,
+      fprintf(tracing_file, "%d %.*f %s %s %s %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+          ((startLink_t)event->data)->type->id, ((startLink_t)event->data)->container->id,
+          ((startLink_t)event->data)->value, ((startLink_t)event->data)->sourceContainer->id,
           ((startLink_t)event->data)->key);
     }
   }else{
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
     if (event->timestamp == 0){
-      fprintf(tracing_file, "%d 0 %s %s %s %s %s %d\n",
-          (int)event->event_type,
-          ((startLink_t)event->data)->type->id,
-          ((startLink_t)event->data)->container->id,
-          ((startLink_t)event->data)->value,
-          ((startLink_t)event->data)->sourceContainer->id,
-          ((startLink_t)event->data)->key,
+      fprintf(tracing_file, "%d 0 %s %s %s %s %s %d\n", (int)event->event_type, ((startLink_t)event->data)->type->id,
+          ((startLink_t)event->data)->container->id, ((startLink_t)event->data)->value,
+          ((startLink_t)event->data)->sourceContainer->id, ((startLink_t)event->data)->key,
           ((startLink_t)event->data)->size);
     }else {
-      fprintf(tracing_file, "%d %.*f %s %s %s %s %s %d\n",
-          (int)event->event_type,
-          TRACE_precision(),
-          event->timestamp,
-          ((startLink_t)event->data)->type->id,
-          ((startLink_t)event->data)->container->id,
-          ((startLink_t)event->data)->value,
-          ((startLink_t)event->data)->sourceContainer->id,
-          ((startLink_t)event->data)->key,
-          ((startLink_t)event->data)->size);
+      fprintf(tracing_file, "%d %.*f %s %s %s %s %s %d\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+          ((startLink_t)event->data)->type->id, ((startLink_t)event->data)->container->id,
+          ((startLink_t)event->data)->value, ((startLink_t)event->data)->sourceContainer->id,
+          ((startLink_t)event->data)->key, ((startLink_t)event->data)->size);
     }
   }
 }
 
 void print_pajeEndLink(paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s %s %s\n",
-        (int)event->event_type,
-        ((endLink_t)event->data)->type->id,
-        ((endLink_t)event->data)->container->id,
-        ((endLink_t)event->data)->value,
-        ((endLink_t)event->data)->destContainer->id,
-        ((endLink_t)event->data)->key);
+    fprintf(tracing_file, "%d 0 %s %s %s %s %s\n", (int)event->event_type, ((endLink_t)event->data)->type->id,
+        ((endLink_t)event->data)->container->id, ((endLink_t)event->data)->value,
+        ((endLink_t)event->data)->destContainer->id, ((endLink_t)event->data)->key);
   }else {
-    fprintf(tracing_file, "%d %.*f %s %s %s %s %s\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((endLink_t)event->data)->type->id,
-        ((endLink_t)event->data)->container->id,
-        ((endLink_t)event->data)->value,
-        ((endLink_t)event->data)->destContainer->id,
-        ((endLink_t)event->data)->key);
+    fprintf(tracing_file, "%d %.*f %s %s %s %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((endLink_t)event->data)->type->id, ((endLink_t)event->data)->container->id, ((endLink_t)event->data)->value,
+        ((endLink_t)event->data)->destContainer->id, ((endLink_t)event->data)->key);
   }
 }
 
 void print_pajeNewEvent (paje_event_t event)
 {
-  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(), event->timestamp);
+  XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
+            event->timestamp);
   if (event->timestamp == 0){
-    fprintf(tracing_file, "%d 0 %s %s %s\n",
-        (int)event->event_type,
-        ((newEvent_t)event->data)->type->id,
-        ((newEvent_t)event->data)->container->id,
-        ((newEvent_t)event->data)->value->id);
+    fprintf(tracing_file, "%d 0 %s %s %s\n", (int)event->event_type, ((newEvent_t)event->data)->type->id,
+        ((newEvent_t)event->data)->container->id, ((newEvent_t)event->data)->value->id);
   }else{
-    fprintf(tracing_file, "%d %.*f %s %s %s\n",
-        (int)event->event_type,
-        TRACE_precision(),
-        event->timestamp,
-        ((newEvent_t)event->data)->type->id,
-        ((newEvent_t)event->data)->container->id,
+    fprintf(tracing_file, "%d %.*f %s %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
+        ((newEvent_t)event->data)->type->id, ((newEvent_t)event->data)->container->id,
         ((newEvent_t)event->data)->value->id);
   }
 }

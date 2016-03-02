@@ -5,16 +5,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
-#include "xbt/dict.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 
 int main(int argc, char **argv)
 {
-  sg_host_t h1, h2;
-  const char *name1, *name2;
-  xbt_dict_t props;
   xbt_dict_cursor_t cursor = NULL;
   char *key, *data;
   char noexist[] = "NoProp";
@@ -28,14 +23,14 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /* init of platform elements */
-  h1 = sg_host_by_name("host1");
-  h2 = sg_host_by_name("host2");
-  name1 = sg_host_get_name(h1);
-  name2 = sg_host_get_name(h2);
+  sg_host_t h1 = sg_host_by_name("host1");
+  sg_host_t h2 = sg_host_by_name("host2");
+  const char *name1 = sg_host_get_name(h1);
+  const char *name2 = sg_host_get_name(h2);
 
   /* Get the property list of 'host1' */
   XBT_INFO("Property list for host %s", name1);
-  props = sg_host_get_properties(h1);
+  xbt_dict_t props = sg_host_get_properties(h1);
 
   /* Trying to set a new property */
   xbt_dict_set(props, "NewProp", strdup("newValue"), xbt_free_f);

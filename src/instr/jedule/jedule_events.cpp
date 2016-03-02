@@ -37,7 +37,6 @@ void jed_event_add_characteristic(jed_event_t event, char *characteristic) {
   xbt_dynar_push(event->characteristics_list, &characteristic);
 }
 
-
 void jed_event_add_info(jed_event_t event, char *key, char *value) {
   char *val_cp;
 
@@ -47,7 +46,6 @@ void jed_event_add_info(jed_event_t event, char *key, char *value) {
   val_cp = strdup(value);
   xbt_dict_set(event->info_hash, key, val_cp, NULL);
 }
-
 
 void create_jed_event(jed_event_t *event, char *name, double start_time,
     double end_time, const char *type) {
@@ -63,12 +61,9 @@ void create_jed_event(jed_event_t *event, char *name, double start_time,
   (*event)->resource_subsets = xbt_dynar_new(sizeof(jed_res_subset_t), xbt_free_ref);
   (*event)->characteristics_list = xbt_dynar_new(sizeof(char*), NULL);
   (*event)->info_hash = xbt_dict_new_homogeneous(NULL);
-
 }
 
-
 void jed_event_free(jed_event_t event) {
-
   free(event->name);
   free(event->type);
 
@@ -79,5 +74,4 @@ void jed_event_free(jed_event_t event) {
 
   free(event);
 }
-
 #endif

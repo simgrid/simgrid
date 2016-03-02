@@ -11,7 +11,6 @@
 
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_private.h"
-#include "src/mc/mc_mmalloc.h"
 #include "src/mc/mc_ignore.h"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_client.h"

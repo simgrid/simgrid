@@ -25,8 +25,8 @@ public:
       simgrid::s4u::Storage &storage = *kv.second;
 
       // Retrieve disk's information
-      sg_size_t free_size = storage.size_free();
-      sg_size_t used_size = storage.size_used();
+      sg_size_t free_size = storage.sizeFree();
+      sg_size_t used_size = storage.sizeUsed();
       sg_size_t size = storage.size();
 
       XBT_INFO("    %s (%s) Used: %llu; Free: %llu; Total: %llu.",
@@ -36,7 +36,7 @@ public:
 
   int main(int argc, char **argv) {
     boost::unordered_map <std::string, simgrid::s4u::Storage *> const& mounts =
-      simgrid::s4u::Host::current()->mounted_storages();
+      simgrid::s4u::Host::current()->mountedStorages();
 
     show_info(mounts);
 
@@ -69,7 +69,7 @@ public:
     file->move(newpath);
 
     // Test attaching some user data to the file
-    file->set_userdata(xbt_strdup("777"));
+    file->setUserdata(xbt_strdup("777"));
     XBT_INFO("User data attached to the file: %s", (char*)file->userdata());
 
     // Close the file
@@ -79,7 +79,7 @@ public:
     XBT_INFO("Get/set data for storage element: %s",storage.name());
     XBT_INFO("    Uninitialized storage data: '%s'", (char*)storage.userdata());
 
-    storage.set_userdata(xbt_strdup("Some user data"));
+    storage.setUserdata(xbt_strdup("Some user data"));
     XBT_INFO("    Set and get data: '%s'", (char*)storage.userdata());
 
     /*

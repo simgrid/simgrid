@@ -4,16 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
+#include "simgrid/msg.h"
 #include "mpi.h"
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-#include "smpi/smpi.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-    "Messages specific for this msg example");
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 static int smpi_replay(int argc, char *argv[]) {
   smpi_replay_run(&argc, &argv);
@@ -22,29 +16,19 @@ static int smpi_replay(int argc, char *argv[]) {
 
 int main(int argc, char *argv[]){
   msg_error_t res;
-  const char *platform_file;
-  const char *application_file;
-  const char *description_file;
 
   MSG_init(&argc, argv);
 
-  if (argc < 4) {
-    printf("Usage: %s description_file platform_file deployment_file\n", argv[0]);
-    printf("example: %s smpi_multiple_apps msg_platform.xml msg_deployment.xml\n", argv[0]);
-    exit(1);
-  }
-  description_file = argv[1];
-  platform_file = argv[2];
-  application_file = argv[3];
-
+  xbt_assert(argc > 3, "Usage: %s description_file platform_file deployment_file\n"
+             "\tExample: %s smpi_multiple_apps msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
   /*  Simulation setting */
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[2]);
 
   /*   Application deployment: read the description file in order to identify instances to launch */
-  FILE* fp = fopen(description_file, "r");
+  FILE* fp = fopen(argv[1], "r");
   if (fp == NULL)
-    xbt_die("Cannot open %s", description_file);
+    xbt_die("Cannot open %s", argv[1]);
   ssize_t read;
   char   *line = NULL;
   size_t n   = 0;
@@ -66,7 +50,7 @@ int main(int argc, char *argv[]){
     xbt_free(line_char);
   }
 
-  MSG_launch_application(application_file);
+  MSG_launch_application(argv[3]);
   SMPI_init();
 
   res = MSG_main();
@@ -74,9 +58,5 @@ int main(int argc, char *argv[]){
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
   SMPI_finalize();
-  if (res == MSG_OK)
-    return 0;
-  else
-    return 1;
-
+  return res != MSG_OK;
 }

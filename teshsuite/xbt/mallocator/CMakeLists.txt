@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(mallocator mallocator_test.c)
+add_executable       (mallocator mallocator_test.c)
 target_link_libraries(mallocator simgrid)
 
 set(tesh_files

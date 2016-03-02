@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(incomplete incomplete.c)
+add_executable       (incomplete incomplete.c)
 target_link_libraries(incomplete simgrid)
 
 set(tesh_files

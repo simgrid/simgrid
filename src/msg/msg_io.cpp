@@ -6,10 +6,8 @@
 
 #include "msg_private.h"
 #include "xbt/log.h"
-#include "msg_mailbox.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
-                                "Logging specific to MSG (io)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
 /** @addtogroup msg_file_management
  * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Files" --> \endhtmlonly
@@ -17,7 +15,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg,
  *
  *  \see #msg_file_t
  */
-
 
 /********************************* File **************************************/
 void __MSG_file_get_info(msg_file_t fd){
@@ -40,8 +37,7 @@ void __MSG_file_get_info(msg_file_t fd){
  *
  * \brief Set the user data of a #msg_file_t.
  *
- * This functions checks whether some data has already been associated to \a file
-   or not and attach \a data to \a file if it is possible.
+ * This functions attach \a data to \a file.
  */
 msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
 {
@@ -54,8 +50,7 @@ msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
  *
  * \brief Return the user data of a #msg_file_t.
  *
- * This functions checks whether \a file is a valid pointer or not and return
-   the user data associated to \a file if it is possible.
+ * This functions checks whether \a file is a valid pointer and return the user data associated to \a file if possible.
  */
 void *MSG_file_get_data(msg_file_t fd)
 {
@@ -68,7 +63,6 @@ void *MSG_file_get_data(msg_file_t fd)
  *
  * \param fd is a the file descriptor
  */
-
 void MSG_file_dump (msg_file_t fd){
   /* Update the cached information first */
   __MSG_file_get_info(fd);
@@ -116,7 +110,8 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
     double flops_amount[] = { 0, 0 };
     double bytes_amount[] = { 0, 0, (double)read_size, 0 };
 
-    msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, flops_amount, bytes_amount, NULL);
+    msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, flops_amount, bytes_amount,
+                      NULL);
     msg_error_t transfer = MSG_parallel_task_execute(task);
     MSG_task_destroy(task);
     free(m_host_list);
@@ -160,7 +155,8 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     double flops_amount[] = { 0, 0 };
     double bytes_amount[] = { 0, (double)size, 0, 0 };
 
-    msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, NULL);
+    msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount,
+                                               NULL);
     msg_error_t transfer = MSG_parallel_task_execute(task);
     MSG_task_destroy(task);
     free(m_host_list);
@@ -199,8 +195,7 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   priv->simdata->smx_file = simcall_file_open(fullpath, MSG_host_self());
   priv->desc_id = __MSG_host_get_file_descriptor_id(MSG_host_self());
 
-  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()),
-                             priv->desc_id);
+  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()), priv->desc_id);
 
   xbt_lib_set(file_lib, name, MSG_FILE_LEVEL, priv);
   msg_file_t fd = (msg_file_t) xbt_lib_get_elm_or_null(file_lib, name);
@@ -224,8 +219,7 @@ int MSG_file_close(msg_file_t fd)
     xbt_free(priv->data);
 
   int res = simcall_file_close(priv->simdata->smx_file, MSG_host_self());
-  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()),
-                             priv->desc_id);
+  name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()), priv->desc_id);
   __MSG_host_release_file_descriptor_id(MSG_host_self(), priv->desc_id);
   xbt_lib_unset(file_lib, name, MSG_FILE_LEVEL, 1);
   xbt_free(name);
@@ -243,8 +237,7 @@ msg_error_t MSG_file_unlink(msg_file_t fd)
   msg_file_priv_t file_priv = MSG_file_priv(fd);
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src =
-      (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,
-                                              file_priv->storageId);
+      (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   int res = simcall_file_unlink(file_priv->simdata->smx_file, attached_host);
@@ -269,14 +262,10 @@ sg_size_t MSG_file_get_size(msg_file_t fd){
  *
  * \param fd : file object that identifies the stream
  * \param offset : number of bytes to offset from origin
- * \param origin : Position used as reference for the offset. It is specified by
- * one of the following constants defined in \<stdio.h\> exclusively to be used as
- * arguments for this function (SEEK_SET = beginning of file, SEEK_CUR = current
- * position of the file pointer, SEEK_END = end of file)
- *
- * \return If successful, the function returns MSG_OK (=0). Otherwise, it returns
- * MSG_TASK_CANCELED (=8).
- *
+ * \param origin : Position used as reference for the offset. It is specified by one of the following constants defined
+ *                 in \<stdio.h\> exclusively to be used as arguments for this function (SEEK_SET = beginning of file,
+ *                 SEEK_CUR = current position of the file pointer, SEEK_END = end of file)
+ * \return If successful, the function returns MSG_OK (=0). Otherwise, it returns MSG_TASK_CANCELED (=8).
  */
 msg_error_t MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin)
 {
@@ -321,8 +310,7 @@ msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
  * \param file : the file to move
  * \param host : the remote host where the file has to be copied
  * \param fullpath : the complete path destination on the remote host
- * \return If successful, the function returns MSG_OK. Otherwise, it returns
- * MSG_TASK_CANCELED.
+ * \return If successful, the function returns MSG_OK. Otherwise, it returns MSG_TASK_CANCELED.
  */
 msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpath)
 {
@@ -343,7 +331,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   msg_host_t host_dest;
   size_t longest_prefix_length = 0;
 
-  xbt_dict_t storage_list = host->mounted_storages_as_dict();
+  xbt_dict_t storage_list = host->mountedStoragesAsDict();
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
     file_mount_name = (char *) xbt_malloc ((strlen(mount_name)+1));
     strncpy(file_mount_name,fullpath,strlen(mount_name)+1);
@@ -369,7 +357,8 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
     return MSG_TASK_CANCELED;
   }
 
-  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, storage_priv_src->hostname, host_name_dest);
+  XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, storage_priv_src->hostname,
+            host_name_dest);
   msg_host_t *m_host_list = NULL;
   m_host_list = (msg_host_t*) calloc(2, sizeof(msg_host_t));
 
@@ -378,7 +367,8 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   double flops_amount[] = { 0, 0 };
   double bytes_amount[] = { 0, (double)read_size, 0, 0 };
 
-  msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, NULL);
+  msg_task_t task =
+      MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, NULL);
   msg_error_t transfer = MSG_parallel_task_execute(task);
   MSG_task_destroy(task);
   free(m_host_list);
@@ -396,7 +386,6 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   simcall_file_write(smx_file, read_size, host_dest);
   simcall_file_close(smx_file, host_dest);
   return MSG_OK;
-
 }
 
 /**
@@ -405,8 +394,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
  * \param file : the file to move
  * \param host : the remote host where the file has to be moved
  * \param fullpath : the complete path destination on the remote host
- * \return If successful, the function returns MSG_OK. Otherwise, it returns
- * MSG_TASK_CANCELED.
+ * \return If successful, the function returns MSG_OK. Otherwise, it returns MSG_TASK_CANCELED.
  */
 msg_error_t MSG_file_rmove (msg_file_t file, msg_host_t host, const char* fullpath)
 {
@@ -423,12 +411,11 @@ void __MSG_file_destroy(msg_file_priv_t file) {
   xbt_free(file->simdata);
   xbt_free(file);
 }
-/********************************* Storage **************************************/
 
+/********************************* Storage **************************************/
 /** @addtogroup msg_storage_management
  * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Storages" --> \endhtmlonly
  * (#msg_storage_t) and the functions for managing it.
- *
  */
 
 msg_storage_t __MSG_storage_create(smx_storage_t storage)
@@ -447,7 +434,6 @@ msg_storage_t __MSG_storage_create(smx_storage_t storage)
 void __MSG_storage_destroy(msg_storage_priv_t storage) {
   free(storage);
 }
-
 
 /** \ingroup msg_storage_management
  *
@@ -513,7 +499,6 @@ const char *MSG_storage_get_property_value(msg_storage_t storage, const char *na
   return (char*) xbt_dict_get_or_null(MSG_storage_get_properties(storage), name);
 }
 
-
 /** \ingroup msg_storage_management
  * \brief Finds a msg_storage_t using its name.
  * \param name the name of a storage
@@ -526,10 +511,8 @@ msg_storage_t MSG_storage_get_by_name(const char *name)
 
 /** \ingroup msg_storage_management
  * \brief Returns a dynar containing all the storage elements declared at a given point of time
- *
  */
 xbt_dynar_t MSG_storages_as_dynar(void) {
-
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;
@@ -547,8 +530,7 @@ xbt_dynar_t MSG_storages_as_dynar(void) {
 /** \ingroup msg_storage_management
  *
  * \brief Set the user data of a #msg_storage_t.
- * This functions checks whether some data has already been associated to \a storage
-   or not and attach \a data to \a storage if it is possible.
+ * This functions attach \a data to \a storage if possible.
  */
 msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
 {
@@ -561,8 +543,7 @@ msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
  *
  * \brief Returns the user data of a #msg_storage_t.
  *
- * This functions checks whether \a storage is a valid pointer or not and returns
-   the user data associated to \a storage if it is possible.
+ * This functions checks whether \a storage is a valid pointer and returns its associate user data if possible.
  */
 void *MSG_storage_get_data(msg_storage_t storage)
 {

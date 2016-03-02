@@ -12,12 +12,12 @@ extern xbt_lib_t storage_lib;
 namespace simgrid {
 namespace s4u {
 
-boost::unordered_map <std::string, Storage *> *Storage::storages = new boost::unordered_map<std::string, Storage*> ();
+boost::unordered_map <std::string, Storage *> *Storage::storages_ = new boost::unordered_map<std::string, Storage*> ();
 Storage::Storage(std::string name, smx_storage_t inferior) {
-  p_name = name;
-  p_inferior = inferior;
+  name_ = name;
+  inferior_ = inferior;
 
-  storages->insert({name, this});
+  storages_->insert({name, this});
 }
 
 Storage::~Storage() {
@@ -25,12 +25,12 @@ Storage::~Storage() {
 }
 
 smx_storage_t Storage::inferior() {
-  return p_inferior;
+  return inferior_;
 }
 Storage &Storage::byName(const char*name) {
   s4u::Storage *res = NULL;
   try {
-    res = storages->at(name);
+    res = storages_->at(name);
   } catch (std::out_of_range& e) {
     smx_storage_t inferior = xbt_lib_get_elm_or_null(storage_lib,name);
     if (inferior == NULL)
@@ -42,17 +42,17 @@ Storage &Storage::byName(const char*name) {
 }
 
 const char*Storage::name() {
-  return p_name.c_str();
+  return name_.c_str();
 }
 
-sg_size_t Storage::size_free() {
-  return simcall_storage_get_free_size(p_inferior);
+sg_size_t Storage::sizeFree() {
+  return simcall_storage_get_free_size(inferior_);
 }
-sg_size_t Storage::size_used() {
-  return simcall_storage_get_used_size(p_inferior);
+sg_size_t Storage::sizeUsed() {
+  return simcall_storage_get_used_size(inferior_);
 }
 sg_size_t Storage::size() {
-  return SIMIX_storage_get_size(p_inferior);
+  return SIMIX_storage_get_size(inferior_);
 }
 
 } /* namespace s4u */

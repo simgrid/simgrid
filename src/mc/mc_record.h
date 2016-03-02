@@ -17,9 +17,9 @@
 #ifndef SIMGRID_MC_RECORD_H
 #define SIMGRID_MC_RECORD_H
 
-#include <stdbool.h>
-
-#include "simgrid_config.h"
+#include <xbt/base.h>
+#include <xbt/dynar.h>
+#include <xbt/fifo.h>
 
 SG_BEGIN_DECL()
 

@@ -25,13 +25,5 @@ XBT_PUBLIC_DATA(char*) xbt_binary_name;
 /** Contains all the parameters we got from the command line (including argv[0]) */
 XBT_PUBLIC_DATA(xbt_dynar_t) xbt_cmdline;
 
-/**
- *
- * Time management functions, returns the system time or sleeps a process.
- */
-XBT_PUBLIC(double) xbt_time(void);
-XBT_PUBLIC(void) xbt_sleep(double sec);
-
-
 SG_END_DECL()
 #endif                          /* __XBT_VIRTU_H__ */

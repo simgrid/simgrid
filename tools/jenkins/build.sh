@@ -7,6 +7,9 @@
 
 set -e
 
+# ensure that the locales are set, so that perl keeps its nerves
+export LC_ALL=C
+
 echo "XXXX Cleanup previous attempts. Remaining content of /tmp:"
 rm -rf /tmp/simgrid-java*
 rm -rf /tmp/jvm-* 
@@ -121,7 +124,6 @@ cmake -G"$GENERATOR"\
   -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF \
   -Denable_tracing=ON -Denable_java=ON -Denable_lua=OFF $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
-
 
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 

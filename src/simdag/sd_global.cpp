@@ -9,10 +9,7 @@
 #include "simgrid/host.h"
 #include "src/simdag/simdag_private.h"
 #include "src/surf/surf_interface.hpp"
-
-#include "xbt/dynar.h"
-#include "xbt/log.h"
-#include "xbt/sysdep.h"
+#include "simgrid/s4u/engine.hpp"
 
 #ifdef HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
@@ -50,8 +47,7 @@ void SD_init(int *argc, char **argv)
 
   surf_init(argc, argv);
 
-  xbt_cfg_setdefault_string(_sg_cfg_set, "host/model",
-                            "ptask_L07");
+  xbt_cfg_setdefault_string(_sg_cfg_set, "host/model", "ptask_L07");
 
 #ifdef HAVE_JEDULE
   jedule_sd_init();
@@ -95,7 +91,7 @@ void SD_config(const char *key, const char *value){
  */
 void SD_create_environment(const char *platform_file)
 {
-  parse_platform_file(platform_file);
+  simgrid::s4u::Engine::instance()->loadPlatform(platform_file);
 
   XBT_DEBUG("Workstation number: %zu, link number: %d", sg_host_count(), sg_link_count());
 #ifdef HAVE_JEDULE
@@ -268,7 +264,6 @@ double SD_get_clock(void) {
 void SD_exit(void)
 {
   TRACE_surf_resource_utilization_release();
-  TRACE_end();
 
 #ifdef HAVE_JEDULE
   jedule_sd_cleanup();
@@ -282,6 +277,4 @@ void SD_exit(void)
   xbt_dynar_free_container(&(sd_global->return_set));
   xbt_free(sd_global);
   sd_global = NULL;
-
-  surf_exit();
 }

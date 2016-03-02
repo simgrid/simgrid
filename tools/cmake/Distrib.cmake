@@ -168,9 +168,7 @@ set(source_to_pack
   ${XBT_SRC}
   ${EXTRA_DIST}
   ${CMAKE_SOURCE_FILES}
-  ${EXAMPLES_CMAKEFILES_TXT}
-  ${TESHSUITE_CMAKEFILES_TXT}
-  ${TOOLS_CMAKEFILES_TXT}
+  ${CMAKEFILES_TXT}
   ${DOC_FIGS}
   ${DOC_IMG}
   ${DOC_SOURCES}
@@ -332,7 +330,6 @@ add_custom_target(maintainer-clean
   COMMAND ${CMAKE_COMMAND} -E remove -f src/set_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/simgrid_units_main.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/swag_unit.c
-  COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_sha_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_str_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_strbuff_unit.c
   COMMAND ${CMAKE_COMMAND} -E remove -f src/xbt_synchro_unit.c

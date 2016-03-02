@@ -6,13 +6,10 @@
 
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
-#include <stdbool.h>
+#include "xbt/file.h"
 #include <string.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
-
-#undef CLEANUP
 
 #ifdef HAVE_CGRAPH_H
 #include <graphviz/cgraph.h>
@@ -29,7 +26,6 @@ typedef enum {
 } seq_par_t;
 
 xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool schedule);
-
 
 static void dot_task_p_free(void *task) {
   SD_task_destroy(*(SD_task_t *)task);
@@ -248,7 +244,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
   }
 
   if (result && !acyclic_graph_detail(result)) {
-    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", basename((char*)filename));
+    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", xbt_basename((char*)filename));
     xbt_dynar_free(&result);
     result = NULL;
   }

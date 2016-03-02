@@ -1,7 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(parallel_task parallel_task.c)
-target_link_libraries(parallel_task simgrid )
+add_executable       (parallel_task parallel_task.c)
+target_link_libraries(parallel_task simgrid)
 
 set(tesh_files
   ${tesh_files}

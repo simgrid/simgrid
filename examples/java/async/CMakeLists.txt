@@ -1,11 +1,9 @@
 set(example java_async)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/AsyncTest.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/FinalizeTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Forwarder.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Master.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Slave.java
-  )
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/AsyncTest.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/FinalizeTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Forwarder.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Master.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Slave.java)
 
 if(enable_java)
   add_custom_command(

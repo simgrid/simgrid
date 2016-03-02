@@ -60,32 +60,32 @@ public:
    * All actors on that host which were marked autorestart will be restarted automatically.
    * This call does nothing if the host is already on.
    */
-  void turn_on();
+  void turnOn();
   /** Turns that host off. All actors are forcefully stopped. */
-  void turn_off();
+  void turnOff();
   /** Returns if that host is currently up and running */
-  bool is_on();
-  bool is_off() { return !is_on(); }
+  bool isOn();
+  bool isOff() { return !isOn(); }
 
   double speed();
   int core_count();
   xbt_dict_t properties();
   xbt_swag_t processes();
-  double current_power_peak();
-  double power_peak_at(int pstate_index);
-  void set_pstate(int pstate_index);
-  int pstates_count() const;
+  double currentPowerPeak();
+  double powerPeakAt(int pstate_index);
+  int pstatesCount() const;
+  void setPstate(int pstate_index);
   int pstate();
-  void get_parameters(vm_params_t params);
-  void set_parameters(vm_params_t params);
-  xbt_dict_t mounted_storages_as_dict(); // HACK
-  xbt_dynar_t attached_storages();
+  void parameters(vm_params_t params);
+  void setParameters(vm_params_t params);
+  xbt_dict_t mountedStoragesAsDict(); // HACK
+  xbt_dynar_t attachedStorages();
 
   /** Get an associative list [mount point]->[Storage] off all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
-  boost::unordered_map<std::string, Storage*> const &mounted_storages();
+  boost::unordered_map<std::string, Storage*> const &mountedStorages();
 
 private:
   simgrid::xbt::string name_ = "noname";
@@ -110,9 +110,7 @@ public:
 }} // namespace simgrid::s4u
 
 extern int MSG_HOST_LEVEL;
-extern int SD_HOST_LEVEL;
 extern int SIMIX_HOST_LEVEL;
-extern int ROUTING_HOST_LEVEL;
 extern int USER_HOST_LEVEL;
 
 #endif /* SIMGRID_S4U_HOST_HPP */

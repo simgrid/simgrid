@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(parallel_log_crashtest parallel_log_crashtest.c)
+add_executable       (parallel_log_crashtest parallel_log_crashtest.c)
 target_link_libraries(parallel_log_crashtest simgrid)
 
 set(tesh_files

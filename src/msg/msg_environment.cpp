@@ -8,6 +8,9 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
+#include "simgrid/s4u/as.hpp"
+#include "simgrid/s4u/engine.hpp"
+
 #ifdef HAVE_LUA
 #include <lua.h>
 #include <lauxlib.h>
@@ -19,10 +22,8 @@
 /** \ingroup msg_simulation
  * \brief A platform constructor.
  *
- * Creates a new platform, including hosts, links and the
- * routing_table. 
- * \param file a filename of a xml description of a platform. This file 
- * follows this DTD :
+ * Creates a new platform, including hosts, links and the routing_table.
+ * \param file a filename of a xml description of a platform. This file follows this DTD :
  *
  *     \include simgrid.dtd
  *
@@ -47,24 +48,22 @@ void MSG_post_create_environment(void) {
     if(data[SIMIX_STORAGE_LEVEL])
       __MSG_storage_create(xbt_dict_cursor_get_elm(cursor));
   }
-
 }
 
 msg_as_t MSG_environment_get_routing_root() {
-  return surf_AS_get_routing_root();
+  return simgrid::s4u::Engine::instance()->rootAs();
 }
 
 const char *MSG_environment_as_get_name(msg_as_t as) {
-  return surf_AS_get_name(as);
+  return as->name();
 }
 
 msg_as_t MSG_environment_as_get_by_name(const char * name) {
-  return surf_AS_get_by_name(name);
+  return simgrid::s4u::Engine::instance()->asByNameOrNull(name);
 }
 
 xbt_dict_t MSG_environment_as_get_routing_sons(msg_as_t as) {
-  xbt_dict_t res = surf_AS_get_routing_sons(as);
-  return res;
+  return as->children();
 }
 
 const char *MSG_environment_as_get_property_value(msg_as_t as, const char *name)
@@ -76,5 +75,5 @@ const char *MSG_environment_as_get_property_value(msg_as_t as, const char *name)
 }
 
 xbt_dynar_t MSG_environment_as_get_hosts(msg_as_t as) {
-  return surf_AS_get_hosts(as);
+  return as->hosts();
 }

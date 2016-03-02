@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing_cluster.hpp"
-#include "surf_routing_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf");
 
@@ -25,49 +24,48 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",
             src->name(), src->id(), dst->name(), dst->id());
 
-  if (src->getRcType() != SURF_NETWORK_ELEMENT_ROUTER) {    // No specific link for router
+  if (! src->isRouter()) {    // No specific link for router
 
     if((src->id() == dst->id()) && has_loopback_  ){
       info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
-      xbt_dynar_push_as(route->link_list, void *, info.link_up);
+      route->link_list->push_back(info.link_up);
       if (lat)
-        *lat += static_cast<Link*>(info.link_up)->getLatency();
+        *lat += info.link_up->getLatency();
       return;
     }
 
 
     if (has_limiter_){          // limiter for sender
       info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
-      xbt_dynar_push_as(route->link_list, void *, info.link_up);
+      route->link_list->push_back((Link*)info.link_up);
     }
 
     info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
     if (info.link_up) {         // link up
-      xbt_dynar_push_as(route->link_list, void *, info.link_up);
+      route->link_list->push_back(info.link_up);
       if (lat)
-        *lat += static_cast<Link*>(info.link_up)->getLatency();
+        *lat += info.link_up->getLatency();
     }
 
   }
 
   if (backbone_) {
-    xbt_dynar_push_as(route->link_list, void *,
-      static_cast<simgrid::surf::Resource*>(backbone_));
+    route->link_list->push_back(backbone_);
     if (lat)
       *lat += backbone_->getLatency();
   }
 
-  if (dst->getRcType() != SURF_NETWORK_ELEMENT_ROUTER) {    // No specific link for router
+  if (! dst->isRouter()) {    // No specific link for router
     info = xbt_dynar_get_as(upDownLinks, dst->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
 
     if (info.link_down) {       // link down
-      xbt_dynar_push_as(route->link_list, void *, info.link_down);
+      route->link_list->push_back(info.link_down);
       if (lat)
-        *lat += static_cast<Link*>(info.link_down)->getLatency();
+        *lat += info.link_down->getLatency();
     }
     if (has_limiter_){          // limiter for receiver
         info = xbt_dynar_get_as(upDownLinks, dst->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
-        xbt_dynar_push_as(route->link_list, void *, info.link_up);
+        route->link_list->push_back(info.link_up);
     }
   }
 }
@@ -97,7 +95,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   for (isrc = 0; isrc < table_size; isrc++) {
     src = xbt_dynar_get_as(vertices_, isrc, NetCard*);
 
-    if (src->getRcType() != SURF_NETWORK_ELEMENT_ROUTER) {
+    if (! src->isRouter()) {
       previous = new_xbt_graph_node(graph, src->name(), nodes);
 
       info = xbt_dynar_get_as(upDownLinks, src->id(), s_surf_parsing_link_up_down_t);
@@ -143,7 +141,6 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   link.id = link_id;
   link.bandwidth = cluster->bw;
   link.latency = cluster->lat;
-  link.initiallyOn = 1;
   link.policy = cluster->sharing_policy;
   sg_platf_new_link(&link);
 

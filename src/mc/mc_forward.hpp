@@ -30,6 +30,8 @@ class Frame;
 }
 }
 
+struct s_mc_smx_process_info;
+
 // TODO, try to get rid of the global ModelChecker variable
 extern simgrid::mc::ModelChecker* mc_model_checker;
 

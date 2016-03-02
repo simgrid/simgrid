@@ -18,7 +18,7 @@
 #include "../../simix/smx_private.h"
 extern JavaVM *__java_vm;
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jmsg, bindings, "MSG for Java(TM)");
+XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg, "MSG for Java(TM)");
 
 namespace simgrid {
 namespace java {

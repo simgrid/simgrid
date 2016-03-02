@@ -5,9 +5,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/surf/network_ns3.hpp"
+
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_private.h"
-#include "src/surf/host_interface.hpp"
 #include "simgrid/sg_config.h"
+#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+
+#include "simgrid/s4u/as.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
@@ -33,17 +37,13 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
 {
   XBT_DEBUG("NS3_ADD_LINK '%s'",link->id);
 
-  if(!IPV4addr) IPV4addr = xbt_dynar_new(sizeof(char*),free);
+  if(!IPV4addr)
+    IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
   surf_network_model->createLink(link->id,
-                                     link->bandwidth,
-                                     link->bandwidth_trace,
-                                     link->latency,
-                                     link->latency_trace,
-                                     link->initiallyOn,
-                                     link->state_trace,
-                                     link->policy,
-                                     link->properties);
+      link->bandwidth, link->bandwidth_trace,
+      link->latency, link->latency_trace,
+      link->state_trace, link->policy, link->properties);
 }
 
 static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
@@ -57,9 +57,9 @@ static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
     );
 }
 
-static void parse_ns3_add_AS(simgrid::surf::As* as)
+static void parse_ns3_add_AS(simgrid::s4u::As* as)
 {
-  const char* as_id = as->name_;
+  const char* as_id = as->name();
   XBT_DEBUG("NS3_ADD_AS '%s'", as_id);
   xbt_lib_set(as_router_lib, as_id, NS3_ASR_LEVEL, ns3_add_AS(as_id) );
 }
@@ -259,14 +259,11 @@ NetworkNS3Model::~NetworkNS3Model() {
 }
 
 Link* NetworkNS3Model::createLink(const char *name,
-                                   double bw_initial,
-                                   tmgr_trace_t bw_trace,
-                                   double lat_initial,
-                                   tmgr_trace_t lat_trace,
-                                   int initiallyOn,
-                                   tmgr_trace_t state_trace,
-                                   e_surf_link_sharing_policy_t policy,
-                                   xbt_dict_t properties){
+    double bw_initial, tmgr_trace_t bw_trace,
+    double lat_initial, tmgr_trace_t lat_trace,
+    tmgr_trace_t state_trace,
+    e_surf_link_sharing_policy_t policy,
+    xbt_dict_t properties){
   if (bw_trace)
     XBT_INFO("The NS3 network model doesn't support bandwidth state traces");
   if (lat_trace)
@@ -276,13 +273,6 @@ Link* NetworkNS3Model::createLink(const char *name,
   Link* link = new NetworkNS3Link(this, name, properties, bw_initial, lat_initial);
   Link::onCreation(link);
   return link;
-}
-
-xbt_dynar_t NetworkNS3Model::getRoute(NetCard *src, NetCard *dst)
-{
-  xbt_dynar_t route = NULL;
-  routing_platf->getRouteAndLatency(src, dst, &route, NULL);
-  return route;
 }
 
 Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
@@ -350,18 +340,13 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
       double data_sent = ns3_get_socket_sent(data);
       double data_delta_sent = data_sent - action->m_lastSent;
 
-      xbt_dynar_t route = NULL;
+      std::vector<Link*> *route = new std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, &route, NULL);
-      unsigned int i;
-      for (i = 0; i < xbt_dynar_length (route); i++){
-        NetworkNS3Link* link = ((NetworkNS3Link*)xbt_dynar_get_ptr(route, i));
-        TRACE_surf_link_set_utilization (link->getName(),
-            action->getCategory(),
-          (data_delta_sent)/delta,
-          now-delta,
-          delta);
-      }
+      routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, route, NULL);
+      for (auto link : *route)
+        TRACE_surf_link_set_utilization (link->getName(), action->getCategory(), (data_delta_sent)/delta, now-delta, delta);
+      delete route;
+
       action->m_lastSent = data_sent;
     }
 

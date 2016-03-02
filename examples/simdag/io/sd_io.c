@@ -12,8 +12,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_io, "Logging specific to this SimDag example");
 int main(int argc, char **argv)
 {
   unsigned int ctr;
-  const sg_host_t *workstations;
-  int total_nworkstations;
   xbt_dict_t current_storage_list;
   char *mount_name;
   char *storage_name;
@@ -23,8 +21,8 @@ int main(int argc, char **argv)
   /* Set the workstation model to default, as storage is not supported by the ptask_L07 model yet. */
   SD_config("host/model", "default");
   SD_create_environment(argv[1]);
-  workstations = sg_host_list();
-  total_nworkstations = sg_host_count();
+  const sg_host_t *workstations = sg_host_list();
+  int total_nworkstations = sg_host_count();
 
   for (ctr=0; ctr<total_nworkstations;ctr++){
     current_storage_list = sg_host_get_mounted_storage_list(workstations[ctr]);

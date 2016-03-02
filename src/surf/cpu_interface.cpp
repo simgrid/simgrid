@@ -7,6 +7,7 @@
 #include <xbt/dynar.h>
 #include "cpu_interface.hpp"
 #include "plugins/energy.hpp"
+#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
@@ -128,23 +129,19 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  * Resource *
  ************/
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host,
-       xbt_dynar_t speedPeakList, int pstate,
-     int core, double speedPeak, double speedScale,
-     int initiallyOn)
- : Cpu(model, host, NULL/*constraint*/, speedPeakList, pstate, core, speedPeak, speedScale, initiallyOn)
+    xbt_dynar_t speedPeakList, int core, double speedPeak)
+ : Cpu(model, host, NULL/*constraint*/, speedPeakList, core, speedPeak)
 {
 }
 
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
-        xbt_dynar_t speedPeakList, int pstate,
-      int core, double speedPeak,
-        double speedScale, int initiallyOn)
- : Resource(model, host->name().c_str(), constraint, initiallyOn)
+    xbt_dynar_t speedPeakList, int core, double speedPeak)
+ : Resource(model, host->name().c_str(), constraint)
  , m_core(core)
  , m_host(host)
 {
   p_speed.peak = speedPeak;
-  p_speed.scale = speedScale;
+  p_speed.scale = 1;
   host->pimpl_cpu = this;
   xbt_assert(p_speed.scale > 0, "Available speed has to be >0");
 
@@ -155,8 +152,6 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
     double value = xbt_dynar_get_as(speedPeakList, i, double);
     xbt_dynar_push(p_speedPeakList, &value);
   }
-
-  m_pstate = pstate;
 
   /* Currently, we assume that a VM does not have a multicore CPU. */
   if (core > 1)

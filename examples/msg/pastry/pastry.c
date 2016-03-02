@@ -4,14 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include <math.h>
 #include "simgrid/msg.h"
-#include "xbt/log.h"
-#include "xbt/asserts.h"
 
- XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pastry,
-                             "Messages specific for this msg example");
+ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pastry, "Messages specific for this msg example");
 
 /***************************************
  * PASTRY                              *
@@ -40,7 +36,6 @@ static int max_simulation_time = 1000;
 
 extern long int smx_total_comms;
 
-
 typedef struct s_node {
   int id;                                 //128bits generated random(2^128 -1)
   int known_id;
@@ -60,9 +55,7 @@ typedef struct s_state {
   int routing_table[LEVELS_COUNT][LEVEL_SIZE];
 } s_state_t, *state_t;
 
-/**
- * Types of tasks exchanged between nodes.
- */
+/** Types of tasks exchanged between nodes. */
 typedef enum {
   TASK_JOIN,
   TASK_JOIN_REPLY,
@@ -95,7 +88,6 @@ static int closest_in_namespace_set(node_t node, int dest);
 static int routing_next(node_t node, int dest);
 static void create(node_t node);
 static int join(node_t node);
-
 
 /**
  * \brief Gets the mailbox name of a host given its chord id.

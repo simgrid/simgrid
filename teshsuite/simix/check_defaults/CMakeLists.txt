@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(check_defaults check_defaults.c)
+add_executable       (check_defaults check_defaults.c)
 target_link_libraries(check_defaults simgrid)
 
 set(tesh_files

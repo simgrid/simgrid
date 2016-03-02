@@ -48,12 +48,12 @@ PageStore::hash_type mc_hash_page(const void* data)
 // ***** snapshot_page_manager
 
 PageStore::PageStore(size_t size) :
-  memory_(NULL), capacity_(0), top_index_(0)
+  memory_(nullptr), capacity_(0), top_index_(0)
 {
   // Using mmap in order to be able to expand the region
   // by relocating it somewhere else in the virtual memory
   // space:
-  void* memory = ::mmap(NULL, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+  void* memory = ::mmap(nullptr, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
   if (memory == MAP_FAILED) {
     xbt_die("Could not mmap initial snapshot pages.");
   }
@@ -182,7 +182,7 @@ static void new_content(void* data, std::size_t size)
 
 static void* getpage()
 {
-  return mmap(NULL, getpagesize(), PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
+  return mmap(nullptr, getpagesize(), PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
 }
 
 XBT_TEST_SUITE("mc_page_store", "Page store");

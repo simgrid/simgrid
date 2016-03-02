@@ -8,10 +8,11 @@
 #include "simgrid/host.h"
 #include <xbt/Extendable.hpp>
 #include <simgrid/s4u/host.hpp>
+
+#include "src/surf/HostImpl.hpp"
 #include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
 #include "src/simix/smx_private.hpp"
-#include "src/surf/host_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
@@ -67,32 +68,15 @@ xbt_dynar_t sg_hosts_as_dynar(void)
   const char* name = nullptr;
   simgrid::s4u::Host* host = nullptr;
   xbt_dict_foreach(host_list, cursor, name, host)
-    if (host && host->pimpl_netcard && host->pimpl_netcard->getRcType() == SURF_NETWORK_ELEMENT_HOST)
+    if (host && host->pimpl_netcard && host->pimpl_netcard->isHost())
        xbt_dynar_push(res, &host);
   return res;
 }
 
 // ========= Layering madness ==============*
 
-#include "src/msg/msg_private.h" // MSG_host_priv_free. FIXME: killme by initializing that level in msg when used
-#include "src/simix/smx_host_private.h" // SIMIX_host_destroy. FIXME: killme by initializing that level in simix when used
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/surf_routing.hpp"
-
-void sg_host_init()
-{
-  MSG_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
-    __MSG_host_priv_free((msg_host_priv_t) p);
-  });
-
-  ROUTING_HOST_LEVEL = simgrid::s4u::Host::extension_create([](void *p) {
-    delete static_cast<simgrid::surf::NetCard*>(p);
-  });
-
-  SD_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
-  SIMIX_HOST_LEVEL = simgrid::s4u::Host::extension_create(SIMIX_host_destroy);
-  USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
-}
 
 // ========== User data Layer ==========
 void *sg_host_user(sg_host_t host) {
@@ -126,11 +110,11 @@ void sg_host_simix_destroy(sg_host_t host) {
 
 // ========= storage related functions ============
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
-  return host->extension<simgrid::surf::Host>()->getMountedStorageList();
+  return host->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
 }
 
 xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
-  return host->extension<simgrid::surf::Host>()->getAttachedStorageList();
+  return host->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
 }
 
 
@@ -157,7 +141,7 @@ int sg_host_core_count(sg_host_t host) {
  *  @return 1 if the host is active or 0 if it has crashed.
  */
 int sg_host_is_on(sg_host_t host) {
-  return host->is_on();
+  return host->isOn();
 }
 
 /** @brief Returns the number of power states for a host.
@@ -165,7 +149,7 @@ int sg_host_is_on(sg_host_t host) {
  *  See also @ref SURF_plugin_energy.
  */
 int sg_host_get_nb_pstates(sg_host_t host) {
-  return host->pstates_count();
+  return host->pstatesCount();
 }
 
 /** @brief Gets the pstate at which that host currently runs.
@@ -180,7 +164,7 @@ int sg_host_get_pstate(sg_host_t host) {
  *  See also @ref SURF_plugin_energy.
  */
 void sg_host_set_pstate(sg_host_t host,int pstate) {
-  host->set_pstate(pstate);
+  host->setPstate(pstate);
 }
 
 /** @brief Get the properties of an host */

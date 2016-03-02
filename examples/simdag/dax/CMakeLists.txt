@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(dax_test dax_test.c)
+add_executable       (dax_test dax_test.c)
 target_link_libraries(dax_test simgrid)
 
 set(tesh_files

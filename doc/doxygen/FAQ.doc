@@ -49,19 +49,16 @@ We also have a more graphical output. Have a look at section \ref options_tracin
 
 \subsection faq_C Argh! Do I really have to code in C?
 
-Currently bindings on top of MSG are supported for Java, Ruby and Lua. You can find a few
-documentation about them on the doc page. Note that bindings are released separately from the main dist
-and so have their own version numbers.
+We provide Java bindings of the MSG interface, which is the main
+SimGrid user API.
 
-Moreover If you use C++,
-you should be able to use the SimGrid library as a standard C library
-and everything should work fine (simply <i>link</i> against this
-library; recompiling SimGrid with a C++ compiler won't work and it
-wouldn't help if you could).
+Moreover If you use C++, you should be able to use the SimGrid library
+as a standard C library and everything should work fine (simply
+<i>link</i> against this library; recompiling SimGrid with a C++
+compiler won't work and it wouldn't help if you could).
 
-For now,
-we do not feel a real demand for any other language. But if you think there is one,
- please speak up!
+For now, we do not feel a real demand for any other language. But if
+you think there is one, please speak up!
 
 \section faq_howto Feature related questions
 

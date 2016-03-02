@@ -10,22 +10,18 @@
 
 #include <unordered_map>
 
-#include <simgrid/simix.hpp>
-
+#include "simgrid/simix.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_process_private.h"
 #include "src/simix/smx_private.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/host_interface.hpp"
-
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
 int MSG_HOST_LEVEL;
-int SD_HOST_LEVEL;
 int SIMIX_HOST_LEVEL;
-int ROUTING_HOST_LEVEL;
 int USER_HOST_LEVEL;
 
 namespace simgrid {
@@ -78,27 +74,27 @@ Host *Host::current(){
   return SIMIX_process_get_host(smx_proc);
 }
 
-void Host::turn_on() {
+void Host::turnOn() {
   simgrid::simix::kernel(std::bind(SIMIX_host_on, this));
 }
 
-void Host::turn_off() {
+void Host::turnOff() {
   simgrid::simix::kernel(std::bind(SIMIX_host_off, this, SIMIX_process_self()));
 }
 
-bool Host::is_on() {
+bool Host::isOn() {
   return this->pimpl_cpu->isOn();
 }
 
-int Host::pstates_count() const {
+int Host::pstatesCount() const {
   return this->pimpl_cpu->getNbPStates();
 }
 
-boost::unordered_map<std::string, Storage*> const& Host::mounted_storages() {
+boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
   if (mounts == NULL) {
     mounts = new boost::unordered_map<std::string, Storage*> ();
 
-    xbt_dict_t dict = this->mounted_storages_as_dict();
+    xbt_dict_t dict = this->mountedStoragesAsDict();
 
     xbt_dict_cursor_t cursor;
     char *mountname;
@@ -115,7 +111,7 @@ boost::unordered_map<std::string, Storage*> const& Host::mounted_storages() {
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
   return simgrid::simix::kernel([&] {
-    simgrid::surf::Host* surf_host = this->extension<simgrid::surf::Host>();
+    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
     return surf_host->getProperties();
   });
 }
@@ -129,7 +125,7 @@ xbt_swag_t Host::processes()
 }
 
 /** Get the peak power of a host */
-double Host::current_power_peak()
+double Host::currentPowerPeak()
 {
   return simgrid::simix::kernel([&] {
     return this->pimpl_cpu->getCurrentPowerPeak();
@@ -137,7 +133,7 @@ double Host::current_power_peak()
 }
 
 /** Get one power peak (in flops/s) of a host at a given pstate */
-double Host::power_peak_at(int pstate_index)
+double Host::powerPeakAt(int pstate_index)
 {
   return simgrid::simix::kernel([&] {
     return this->pimpl_cpu->getPowerPeakAt(pstate_index);
@@ -154,7 +150,7 @@ int Host::core_count() {
 }
 
 /** @brief Set the pstate at which the host should run */
-void Host::set_pstate(int pstate_index)
+void Host::setPstate(int pstate_index)
 {
   simgrid::simix::kernel(std::bind(
       &simgrid::surf::Cpu::setPState, pimpl_cpu, pstate_index
@@ -166,17 +162,17 @@ int Host::pstate()
   return pimpl_cpu->getPState();
 }
 
-void Host::get_parameters(vm_params_t params)
+void Host::parameters(vm_params_t params)
 {
   simgrid::simix::kernel([&]() {
-    this->extension<simgrid::surf::Host>()->getParams(params);
+    this->extension<simgrid::surf::HostImpl>()->getParams(params);
   });
 }
 
-void Host::set_parameters(vm_params_t params)
+void Host::setParameters(vm_params_t params)
 {
   simgrid::simix::kernel([&]() {
-    this->extension<simgrid::surf::Host>()->setParams(params);
+    this->extension<simgrid::surf::HostImpl>()->setParams(params);
   });
 }
 
@@ -185,10 +181,10 @@ void Host::set_parameters(vm_params_t params)
  * \brief Returns the list of storages mounted on an host.
  * \return a dict containing all storages mounted on the host
  */
-xbt_dict_t Host::mounted_storages_as_dict()
+xbt_dict_t Host::mountedStoragesAsDict()
 {
   return simgrid::simix::kernel([&] {
-    return this->extension<simgrid::surf::Host>()->getMountedStorageList();
+    return this->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
   });
 }
 
@@ -197,10 +193,10 @@ xbt_dict_t Host::mounted_storages_as_dict()
  * \brief Returns the list of storages attached to an host.
  * \return a dict containing all storages attached to the host
  */
-xbt_dynar_t Host::attached_storages()
+xbt_dynar_t Host::attachedStorages()
 {
   return simgrid::simix::kernel([&] {
-    return this->extension<simgrid::surf::Host>()->getAttachedStorageList();
+    return this->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
   });
 }
 

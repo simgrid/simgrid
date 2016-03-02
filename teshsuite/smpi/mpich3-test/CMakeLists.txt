@@ -3,12 +3,6 @@ set(bin_files
   ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
   PARENT_SCOPE)
 
-#set(stdo_std_smpi
-#  ${CMAKE_CURRENT_SOURCE_DIR}/topol/cartmap.std
-#  ${CMAKE_CURRENT_SOURCE_DIR}/topol/graphtest.std
-#  ${CMAKE_CURRENT_SOURCE_DIR}/topol/cartf.std
-#)
-
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 else()
     foreach(srcfile ${stdo_std_smpi})
@@ -46,7 +40,6 @@ else()
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
 endif()
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 

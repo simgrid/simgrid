@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(stack_overflow stack_overflow.c)
+add_executable       (stack_overflow stack_overflow.c)
 target_link_libraries(stack_overflow simgrid)
 
 set(tesh_files

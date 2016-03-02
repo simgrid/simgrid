@@ -11,11 +11,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_typed_tasks_test, "Logging specific to this SimD
 
 int main(int argc, char **argv)
 {
-  int i;
   unsigned int ctr;
-  const sg_host_t *hosts;
-  SD_task_t task, seq_comp1, e2e_comm, seq_comp2;
-  SD_task_t par_comp1, redist, par_comp2, par_comp3;
+  SD_task_t task;
   xbt_dynar_t changed_tasks;
 
   double computation_amount[4];
@@ -27,17 +24,16 @@ int main(int argc, char **argv)
   xbt_assert(argc > 1, "Usage: %s platform_file\n\nExample: %s two_clusters.xml", argv[0], argv[0]);
   SD_create_environment(argv[1]);
 
-  hosts = sg_host_list();
+  const sg_host_t *hosts = sg_host_list();
 
   /* creation of some typed tasks and their dependencies */
-  seq_comp1 = SD_task_create_comp_seq("Seq. comp. 1", NULL, 1e9);
-  e2e_comm = SD_task_create_comm_e2e("E2E comm.", NULL, 1e7);
-  seq_comp2 = SD_task_create_comp_seq("Seq. comp 2.", NULL, 1e9);
-  par_comp1 = SD_task_create_comp_par_amdahl("Par. Comp. 1", NULL, 1e9, 0.2);
-  redist = SD_task_create_comm_par_mxn_1d_block("MxN redist", NULL, 1.2e8);
-  par_comp2 = SD_task_create_comp_par_amdahl("Par. Comp. 2", NULL, 3e8, 0.5);
-
-  par_comp3 = SD_task_create("Par. Comp. 3", NULL, 1e9);
+  SD_task_t seq_comp1 = SD_task_create_comp_seq("Seq. comp. 1", NULL, 1e9);
+  SD_task_t e2e_comm = SD_task_create_comm_e2e("E2E comm.", NULL, 1e7);
+  SD_task_t seq_comp2 = SD_task_create_comp_seq("Seq. comp 2.", NULL, 1e9);
+  SD_task_t par_comp1 = SD_task_create_comp_par_amdahl("Par. Comp. 1", NULL, 1e9, 0.2);
+  SD_task_t redist = SD_task_create_comm_par_mxn_1d_block("MxN redist", NULL, 1.2e8);
+  SD_task_t par_comp2 = SD_task_create_comp_par_amdahl("Par. Comp. 2", NULL, 3e8, 0.5);
+  SD_task_t par_comp3 = SD_task_create("Par. Comp. 3", NULL, 1e9);
 
   SD_task_dependency_add(NULL, NULL, seq_comp1, e2e_comm);
   SD_task_dependency_add(NULL, NULL, e2e_comm, seq_comp2);
@@ -59,7 +55,7 @@ int main(int argc, char **argv)
   SD_task_schedulev(par_comp2, 3, hosts);
   SD_task_schedulev(par_comp1, 4, hosts);
 
-  for (i=0;i<4;i++){
+  for (int i=0;i<4;i++){
     host_list[i]=hosts[i+4];
     /* Apply Amdahl's law manually assuming a 20% serial part */
     computation_amount[i]=(0.2 + (1 - 0.2)/4) * SD_task_get_amount(par_comp3);

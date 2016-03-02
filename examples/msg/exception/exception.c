@@ -5,10 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
-#include "xbt.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test_exception,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test_exception, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
  * 
@@ -17,7 +15,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test_exception,
 
 /** Victim. This process gets a lot of remote exceptions  */
 static int victim(int argc, char *argv[]) {
-
   xbt_ex_t e;
   msg_error_t res = MSG_OK;
   
@@ -36,7 +33,6 @@ static int victim(int argc, char *argv[]) {
     xbt_ex_free(e);
   }
 
-
   XBT_INFO("Let's get suspended.");
   int gotit = 0;
   TRY {
@@ -51,7 +47,7 @@ static int victim(int argc, char *argv[]) {
   if(!gotit) {
     xbt_die("I was expecting an exception during my suspension!");
   }
-  
+
   XBT_INFO("Let's sleep for 10 seconds.");
   TRY {
     res = MSG_process_sleep(10);
@@ -71,7 +67,6 @@ static int victim(int argc, char *argv[]) {
   MSG_process_sleep(10);
 
   XBT_INFO("That's enough now. I quit.");
-  
   return 0;
 }
 
@@ -88,7 +83,6 @@ static int terrorist(int argc, char *argv[])
      xbt_die("What's going on??? I failed to sleep!");
   XBT_INFO("Send a first exception (host failure)");
   SIMIX_process_throw(victim_process, host_error, 0, "First Trick: Let's pretend that the host failed");
-
 
   XBT_INFO("Sweet, let's prepare a second trick!");
   XBT_INFO("Going to sleep for 2 seconds");
@@ -115,13 +109,11 @@ int main(int argc, char *argv[]) {
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-           "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-           argv[0], argv[0]);
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
   MSG_function_register("terrorist", terrorist);
   MSG_create_environment(argv[1]);
   MSG_launch_application(argv[2]);
-
 
   // Launch the simulation
   res = MSG_main();

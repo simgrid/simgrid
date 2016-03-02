@@ -115,7 +115,6 @@ void SIMIX_context_mod_exit(void)
 {
   delete simix_global->context_factory;
   simix_global->context_factory = nullptr;
-  xbt_dict_remove((xbt_dict_t) _sg_cfg_set,"contexts/factory");
 }
 
 void *SIMIX_context_stack_new(void)

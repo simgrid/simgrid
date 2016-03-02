@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdlib>
+
 #include <sys/mman.h>
 
 #include "mc/mc.h"
@@ -37,39 +39,64 @@ const char* to_cstr(RegionType region)
   }
 }
 
-void data_deleter::operator()(void* p) const
+Buffer::Buffer(std::size_t size, Type type) : size_(size), type_(type)
 {
   switch(type_) {
-  case Free:
-    free(p);
+  case Type::Malloc:
+    data_ = ::malloc(size_);
     break;
-  case Munmap:
-    munmap(p, size_);
+  case Type::Mmap:
+    data_ = ::mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
+    if (data_ == MAP_FAILED) {
+      data_ = nullptr;
+      size_ = 0;
+      type_ = Type::Malloc;
+      throw std::bad_alloc();
+    }
     break;
+  default:
+    abort();
   }
+}
+
+void Buffer::clear() noexcept
+{
+  switch(type_) {
+  case Type::Malloc:
+    std::free(data_);
+    break;
+  case Type::Mmap:
+    if (munmap(data_, size_) != 0)
+      abort();
+    break;
+  default:
+    abort();
+  }
+  data_ = nullptr;
+  size_ = 0;
+  type_ = Type::Malloc;
 }
 
 RegionSnapshot dense_region(
   RegionType region_type,
   void *start_addr, void* permanent_addr, size_t size)
 {
-  simgrid::mc::RegionSnapshot::flat_data_ptr data;
-  if (!_sg_mc_ksm)
-    data = simgrid::mc::RegionSnapshot::flat_data_ptr((char*) malloc(size));
-  else {
-    char* ptr = (char*) mmap(nullptr, size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
-    if (ptr == MAP_FAILED)
-      throw std::bad_alloc();
-    simgrid::mc::data_deleter deleter(
-      simgrid::mc::data_deleter::Munmap, size);
-    data = simgrid::mc::RegionSnapshot::flat_data_ptr(ptr, deleter);
-  }
+  // When KSM support is enables, we allocate memory using mmap:
+  // * we don't want to madvise bits of the heap;
+  // * mmap gives data aligned on page boundaries which is merge friendly.
+  simgrid::mc::Buffer data;
+  if (_sg_mc_ksm)
+    data = Buffer::mmap(size);
+  else
+    data = Buffer::malloc(size);
+
   mc_model_checker->process().read_bytes(data.get(), size,
     remote(permanent_addr),
     simgrid::mc::ProcessIndexDisabled);
+
   if (_sg_mc_ksm)
     // Mark the region as mergeable *after* we have written into it.
-    // There no point to let KSM do the hard work before that.
+    // Trying to merge them before is useless/counterproductive.
     madvise(data.get(), size, MADV_MERGEABLE);
 
   simgrid::mc::RegionSnapshot region(
@@ -77,7 +104,7 @@ RegionSnapshot dense_region(
   region.flat_data(std::move(data));
 
   XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
-            to_cstr(region_type), region.flat_data(), permanent_addr, size);
+            to_cstr(region_type), region.flat_data().get(), permanent_addr, size);
   return std::move(region);
 }
 
@@ -104,7 +131,7 @@ RegionSnapshot sparse_region(RegionType region_type,
   RegionSnapshot const* ref_region)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-  assert(process != NULL);
+  assert(process != nullptr);
 
   bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty
     && ref_region != nullptr

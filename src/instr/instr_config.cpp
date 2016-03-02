@@ -63,8 +63,6 @@ static int trace_precision;
 static int trace_configured = 0;
 static int trace_active = 0;
 
-
-
 static void TRACE_getopts(void)
 {
   trace_enabled = xbt_cfg_get_boolean(_sg_cfg_set, OPT_TRACING);
@@ -108,7 +106,6 @@ int TRACE_start()
   if (TRACE_is_enabled()) {
 
     XBT_DEBUG("Tracing starts");
-
     /* init the tracing module to generate the right output */
     /* open internal buffer */
     TRACE_init();
@@ -219,12 +216,8 @@ int TRACE_end()
 
 int TRACE_needs_platform (void)
 {
-  return TRACE_msg_process_is_enabled() ||
-         TRACE_msg_vm_is_enabled() ||
-         TRACE_categorized() ||
-         TRACE_uncategorized() ||
-         TRACE_platform () ||
-         (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
+  return TRACE_msg_process_is_enabled() || TRACE_msg_vm_is_enabled() || TRACE_categorized() ||
+         TRACE_uncategorized() || TRACE_platform () || (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
 }
 
 int TRACE_is_enabled(void)
@@ -249,8 +242,7 @@ int TRACE_is_configured(void)
 
 int TRACE_smpi_is_enabled(void)
 {
-  return (trace_smpi_enabled || TRACE_smpi_is_grouped())
-    && TRACE_is_enabled();
+  return (trace_smpi_enabled || TRACE_smpi_is_grouped()) && TRACE_is_enabled();
 }
 
 int TRACE_smpi_is_grouped(void)
@@ -365,133 +357,106 @@ void TRACE_global_init(int *argc, char **argv)
 
   is_initialised = 1;
   /* name of the tracefile */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FILENAME,
-                   "Trace file created by the instrumented SimGrid.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FILENAME, "Trace file created by the instrumented SimGrid.",
                    xbt_cfgelm_string, 1, 1, NULL);
   xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_FILENAME, "simgrid.trace");
 
   /* tracing */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING,
-                   "Enable Tracing.",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING, "Enable Tracing.", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING, "no");
 
   /* register platform in the trace */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_PLATFORM,
-                   "Register the platform in the trace as a hierarchy.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_PLATFORM, "Register the platform in the trace as a hierarchy.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_PLATFORM, "no");
 
   /* register platform in the trace */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_TOPOLOGY,
-                   "Register the platform topology in the trace as a graph.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_TOPOLOGY, "Register the platform topology in the trace as a graph.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_TOPOLOGY, "yes");
 
   /* smpi */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI,
-                   "Tracing of the SMPI interface.",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI, "Tracing of the SMPI interface.", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI, "no");
 
   /* smpi grouped */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_GROUP,
-                   "Group MPI processes by host.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI_GROUP, "no");
 
   /* smpi computing */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING,
-                   "Generate states for timing out of SMPI parts of the application",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+                   "Generate states for timing out of SMPI parts of the application", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING, "no");
 
 /* smpi sleeping */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_SLEEPING,
-                   "Generate states for timing out of SMPI parts of the application",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+                   "Generate states for timing out of SMPI parts of the application", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI_SLEEPING, "no");
-
 
   /* smpi internals */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_INTERNALS,
-                   "View internal messages sent by Collective communications in SMPI",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+                   "View internal messages sent by Collective communications in SMPI", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI_INTERNALS, "no");
 
   /* tracing categorized resource utilization traces */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_CATEGORIZED,
-                   "Tracing categorized resource utilization of hosts and links.",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+                   "Tracing categorized resource utilization of hosts and links.", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_CATEGORIZED, "no");
 
   /* tracing uncategorized resource utilization */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_UNCATEGORIZED,
-                   "Tracing uncategorized resource utilization of hosts and links.",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+                   "Tracing uncategorized resource utilization of hosts and links.", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_UNCATEGORIZED, "no");
 
   /* msg process */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_MSG_PROCESS,
-                   "Tracing of MSG process behavior.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_MSG_PROCESS, "Tracing of MSG process behavior.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_MSG_PROCESS, "no");
 
   /* msg process */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_MSG_VM,
-                   "Tracing of MSG process behavior.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_MSG_VM, "Tracing of MSG process behavior.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_MSG_VM, "no");
 
   /* disable tracing link */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_LINK,
-                   "Do not trace link bandwidth and latency.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_LINK, "Do not trace link bandwidth and latency.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_DISABLE_LINK, "no");
 
   /* disable tracing link */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_POWER,
-                   "Do not trace host power.",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_POWER, "Do not trace host power.", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_DISABLE_POWER, "no");
 
-
   /* tracing buffer */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_BUFFER,
-                   "Buffer trace events to put them in temporal order.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_BUFFER, "Buffer trace events to put them in temporal order.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_BUFFER, "yes");
 
   /* tracing one link only */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_ONELINK_ONLY,
-                   "Use only routes with one link to trace platform.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_ONELINK_ONLY, "Use only routes with one link to trace platform.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_ONELINK_ONLY, "no");
 
   /* disable destroy */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_DESTROY,
-                   "Disable platform containers destruction.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction.",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_DISABLE_DESTROY, "no");
 
   /* basic -- Avoid extended events (impoverished trace file) */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_BASIC,
-                   "Avoid extended events (impoverished trace file).",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
                    xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_BASIC, "no");
 
   /* display_sizes -- Extended events with message size information */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_DISPLAY_SIZES,
-                   "(smpi only for now) Extended events with message size information",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
+                   "(smpi only for now) Extended events with message size information", xbt_cfgelm_boolean, 1, 1, NULL);
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_DISPLAY_SIZES, "no");
 
   /* format -- Switch the ouput format of Tracing */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FORMAT,
-                   "(smpi only for now) Switch the output format of Tracing",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FORMAT, "(smpi only for now) Switch the output format of Tracing",
                    xbt_cfgelm_string, 1, 1, NULL);
   xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_FORMAT, "Paje");
-
 
   /* format -- Switch the ouput format of Tracing */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FORMAT_TI_ONEFILE,
@@ -500,8 +465,7 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_FORMAT_TI_ONEFILE, "no");
 
   /* comment */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_COMMENT,
-                   "Comment to be added on the top of the trace file.",
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
                    xbt_cfgelm_string, 1, 1, NULL);
   xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_COMMENT, "");
 
@@ -512,9 +476,8 @@ void TRACE_global_init(int *argc, char **argv)
   xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_COMMENT_FILE, "");
 
   /* trace timestamp precision */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_PRECISION,
-                   "Numerical precision used when timestamping events (hence this value is expressed in number of digits after decimal point)",
-                   xbt_cfgelm_int, 1, 1, NULL);
+  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_PRECISION, "Numerical precision used when timestamping events (hence "
+                   "this value is expressed in number of digits after decimal point)", xbt_cfgelm_int, 1, 1, NULL);
   xbt_cfg_setdefault_int(_sg_cfg_set, OPT_TRACING_PRECISION, 6);
 
   /* Viva graph configuration for uncategorized tracing */
@@ -547,120 +510,97 @@ static void print_line (const char *option, const char *desc, const char *longde
 
 void TRACE_help (int detailed)
 {
-  printf(
-      "Description of the tracing options accepted by this simulator:\n\n");
+  printf("Description of the tracing options accepted by this simulator:\n\n");
   print_line (OPT_TRACING, "Enable the tracing system",
       "  It activates the tracing system and register the simulation platform\n"
-      "  in the trace file. You have to enable this option to others take effect.",
-      detailed);
+      "  in the trace file. You have to enable this option to others take effect.", detailed);
   print_line (OPT_TRACING_CATEGORIZED, "Trace categorized resource utilization",
       "  It activates the categorized resource utilization tracing. It should\n"
-      "  be enabled if tracing categories are used by this simulator.",
-      detailed);
+      "  be enabled if tracing categories are used by this simulator.", detailed);
   print_line (OPT_TRACING_UNCATEGORIZED, "Trace uncategorized resource utilization",
       "  It activates the uncategorized resource utilization tracing. Use it if\n"
       "  this simulator do not use tracing categories and resource use have to be\n"
-      "  traced.",
-      detailed);
+      "  traced.", detailed);
   print_line (OPT_TRACING_FILENAME, "Filename to register traces",
       "  A file with this name will be created to register the simulation. The file\n"
       "  is in the Paje format and can be analyzed using Viva, Paje, and PajeNG visualization\n"
       "  tools. More information can be found in these webpages:\n"
       "     http://github.com/schnorr/viva/\n"
       "     http://github.com/schnorr/pajeng/\n"
-      "     http://paje.sourceforge.net/",
-      detailed);
+      "     http://paje.sourceforge.net/", detailed);
   print_line (OPT_TRACING_SMPI, "Trace the MPI Interface (SMPI)",
       "  This option only has effect if this simulator is SMPI-based. Traces the MPI\n"
       "  interface and generates a trace that can be analyzed using Gantt-like\n"
       "  visualizations. Every MPI function (implemented by SMPI) is transformed in a\n"
-      "  state, and point-to-point communications can be analyzed with arrows.",
-      detailed);
+      "  state, and point-to-point communications can be analyzed with arrows.", detailed);
   print_line (OPT_TRACING_SMPI_GROUP, "Group MPI processes by host (SMPI)",
       "  This option only has effect if this simulator is SMPI-based. The processes\n"
-      "  are grouped by the hosts where they were executed.",
-      detailed);
+      "  are grouped by the hosts where they were executed.", detailed);
   print_line (OPT_TRACING_SMPI_COMPUTING, "Generates a \" Computing \" State",
       "  This option aims at tracing computations in the application, outside SMPI\n"
-      "  to allow further study of simulated or real computation time",
-      detailed);
+      "  to allow further study of simulated or real computation time", detailed);
    print_line (OPT_TRACING_SMPI_SLEEPING, "Generates a \" Sleeping \" State",
       "  This option aims at tracing sleeps in the application, outside SMPI\n"
-      "  to allow further study of simulated or real sleep time",
-      detailed);
+      "  to allow further study of simulated or real sleep time", detailed);
   print_line (OPT_TRACING_SMPI_INTERNALS, "Generates tracing events corresponding",
-      "  to point-to-point messages sent by collective communications",
-      detailed);
+      "  to point-to-point messages sent by collective communications", detailed);
   print_line (OPT_TRACING_MSG_PROCESS, "Trace processes behavior (MSG)",
       "  This option only has effect if this simulator is MSG-based. It traces the\n"
       "  behavior of all categorized MSG processes, grouping them by hosts. This option\n"
-      "  can be used to track process location if this simulator has process migration.",
-      detailed);
+      "  can be used to track process location if this simulator has process migration.", detailed);
   print_line (OPT_TRACING_BUFFER, "Buffer events to put them in temporal order",
       "  This option put some events in a time-ordered buffer using the insertion\n"
       "  sort algorithm. The process of acquiring and releasing locks to access this\n"
       "  buffer and the cost of the sorting algorithm make this process slow. The\n"
       "  simulator performance can be severely impacted if this option is activated,\n"
-      "  but you are sure to get a trace file with events sorted.",
-      detailed);
+      "  but you are sure to get a trace file with events sorted.", detailed);
   print_line (OPT_TRACING_ONELINK_ONLY, "Consider only one link routes to trace platform",
       "  This option changes the way SimGrid register its platform on the trace file.\n"
       "  Normally, the tracing considers all routes (no matter their size) on the\n"
       "  platform file to re-create the resource topology. If this option is activated,\n"
       "  only the routes with one link are used to register the topology within an AS.\n"
-      "  Routes among AS continue to be traced as usual.",
-      detailed);
+      "  Routes among AS continue to be traced as usual.", detailed);
   print_line (OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction",
       "  Disable the destruction of containers at the end of simulation. This can be\n"
       "  used with simulators that have a different notion of time (different from\n"
-      "  the simulated time).",
-      detailed);
+      "  the simulated time).", detailed);
   print_line (OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).",
       "  Some visualization tools are not able to parse correctly the Paje file format.\n"
       "  Use this option if you are using one of these tools to visualize the simulation\n"
       "  trace. Keep in mind that the trace might be incomplete, without all the\n"
-      "  information that would be registered otherwise.",
-      detailed);
+      "  information that would be registered otherwise.", detailed);
   print_line (OPT_TRACING_DISPLAY_SIZES, "Only works for SMPI now. Add message size information",
       "  Message size (in bytes) is added to links, and to states. For collectives,\n"
       "  the displayed value is the more relevant to the collective (total sent by\n"
-      "  the process, usually)",
-      detailed);
+      "  the process, usually)", detailed);
   print_line (OPT_TRACING_FORMAT, "Only works for SMPI now. Switch output format",
       "  Default format is Paje. Time independent traces are also supported,\n"
-      "  to output traces that can later be used by the trace replay tool",
-      detailed);
+      "  to output traces that can later be used by the trace replay tool", detailed);
   print_line (OPT_TRACING_FORMAT_TI_ONEFILE, "Only works for SMPI now, and TI output format",
       "  By default, each process outputs to a separate file, inside a filename_files folder\n"
       "  By setting this option to yes, all processes will output to only one file\n"
-      "  This is meant to avoid opening thousands of files with large simulations",
-      detailed);
+      "  This is meant to avoid opening thousands of files with large simulations", detailed);
   print_line (OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.",
-      "  Use this to add a comment line to the top of the trace file.",
-      detailed);
+      "  Use this to add a comment line to the top of the trace file.", detailed);
   print_line (OPT_TRACING_COMMENT_FILE, "File contents added to trace file as comment.",
-      "  Use this to add the contents of a file to the top of the trace file as comment.",
-      detailed);
+      "  Use this to add the contents of a file to the top of the trace file as comment.", detailed);
   print_line (OPT_VIVA_UNCAT_CONF, "Generate a graph configuration for Viva",
       "  This option can be used in all types of simulators build with SimGrid\n"
       "  to generate a uncategorized resource utilization graph to be used as\n"
       "  configuration for the Viva visualization tool. This option\n"
       "  can be used with tracing/categorized:1 and tracing:1 options to\n"
       "  analyze an unmodified simulator before changing it to contain\n"
-      "  categories.",
-      detailed);
+      "  categories.", detailed);
   print_line (OPT_VIVA_CAT_CONF, "Generate an uncategorized graph configuration for Viva",
       "  This option can be used if this simulator uses tracing categories\n"
       "  in its code. The file specified by this option holds a graph configuration\n"
       "  file for the Viva visualization tool that can be used to analyze a categorized\n"
-      "  resource utilization.",
-      detailed);
+      "  resource utilization.", detailed);
   print_line (OPT_TRACING_TOPOLOGY, "Register the platform topology as a graph",
         "  This option (enabled by default) can be used to disable the tracing of\n"
         "  the platform topology in the trace file. Sometimes, such task is really\n"
         "  time consuming, since it must get the route from each host ot other hosts\n"
-        "  within the same Autonomous System (AS).",
-        detailed);
+        "  within the same Autonomous System (AS).", detailed);
 }
 
 static void output_types (const char *name, xbt_dynar_t types, FILE *file)

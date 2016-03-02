@@ -1,0 +1,42 @@
+$ ./concurrent_rw$EXEEXT ${srcdir:=.}/../../../examples/platforms/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:bob@bob) process 1 is writing!
+> [  0.000000] (2:bob@bob) process 2 is writing!
+> [  0.000000] (3:bob@bob) process 3 is writing!
+> [  0.000000] (4:bob@bob) process 4 is writing!
+> [  0.000000] (5:bob@bob) process 5 is writing!
+> [  0.500000] (1:bob@bob) process 1 goes to sleep for 1 seconds
+> [  0.500000] (2:bob@bob) process 2 goes to sleep for 2 seconds
+> [  0.500000] (3:bob@bob) process 3 goes to sleep for 3 seconds
+> [  0.500000] (4:bob@bob) process 4 goes to sleep for 4 seconds
+> [  0.500000] (5:bob@bob) process 5 goes to sleep for 5 seconds
+> [  1.500000] (1:bob@bob) process 1 is writing again!
+> [  1.600000] (1:bob@bob) process 1 goes to sleep for 5 seconds
+> [  2.500000] (2:bob@bob) process 2 is writing again!
+> [  2.600000] (2:bob@bob) process 2 goes to sleep for 4 seconds
+> [  3.500000] (3:bob@bob) process 3 is writing again!
+> [  3.600000] (3:bob@bob) process 3 goes to sleep for 3 seconds
+> [  4.500000] (4:bob@bob) process 4 is writing again!
+> [  4.600000] (4:bob@bob) process 4 goes to sleep for 2 seconds
+> [  5.500000] (5:bob@bob) process 5 is writing again!
+> [  5.600000] (5:bob@bob) process 5 goes to sleep for 1 seconds
+> [  6.600000] (4:bob@bob) process 4 is reading!
+> [  6.600000] (5:bob@bob) process 5 is reading!
+> [  6.600000] (1:bob@bob) process 1 is reading!
+> [  6.600000] (2:bob@bob) process 2 is reading!
+> [  6.600000] (3:bob@bob) process 3 is reading!
+> [  6.750000] (4:bob@bob) process 4 goes to sleep for 4 seconds
+> [  6.750000] (5:bob@bob) process 5 goes to sleep for 5 seconds
+> [  6.750000] (1:bob@bob) process 1 goes to sleep for 1 seconds
+> [  6.750000] (2:bob@bob) process 2 goes to sleep for 2 seconds
+> [  6.750000] (3:bob@bob) process 3 goes to sleep for 3 seconds
+> [  7.750000] (1:bob@bob) process 1 is reading again!
+> [  7.780000] (1:bob@bob) process 1 => Size of /home/doc/simgrid/examples/platforms/g5k.xml1: 6000000
+> [  8.750000] (2:bob@bob) process 2 is reading again!
+> [  8.780000] (2:bob@bob) process 2 => Size of /home/doc/simgrid/examples/platforms/g5k.xml2: 6000000
+> [  9.750000] (3:bob@bob) process 3 is reading again!
+> [  9.780000] (3:bob@bob) process 3 => Size of /home/doc/simgrid/examples/platforms/g5k.xml3: 6000000
+> [ 10.750000] (4:bob@bob) process 4 is reading again!
+> [ 10.780000] (4:bob@bob) process 4 => Size of /home/doc/simgrid/examples/platforms/g5k.xml4: 6000000
+> [ 11.750000] (5:bob@bob) process 5 is reading again!
+> [ 11.780000] (5:bob@bob) process 5 => Size of /home/doc/simgrid/examples/platforms/g5k.xml5: 6000000
+> [ 11.780000] (0:maestro@) Simulation time 11.78

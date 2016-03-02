@@ -4,27 +4,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/*!
- * Classical Block Matrix Multiplication example
- *
- */
+/* Classical Block Matrix Multiplication example */
 
 #include "Matrix_init.h"
 #include "Summa.h"
 #include "xbt/log.h"
 #include <stdio.h>
 
- XBT_LOG_NEW_DEFAULT_CATEGORY(MM_Summa,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(MM_Summa, "Messages specific for this msg example");
 
-double Summa(double *a, double *b, double *c,
-             size_t lda, size_t ldb, size_t ldc,
-             size_t m, size_t k_a, size_t k_b, size_t n,
-             size_t Block_size, size_t start, size_t end,
-             size_t row, size_t col, size_t size_row, size_t size_col,
-             double *a_local, double *b_local,
-             MPI_Datatype Block_a, MPI_Datatype Block_a_local,
-             MPI_Datatype Block_b,
+double Summa(double *a, double *b, double *c, size_t lda, size_t ldb, size_t ldc,
+             size_t m, size_t k_a, size_t k_b, size_t n, size_t Block_size, size_t start, size_t end,
+             size_t row, size_t col, size_t size_row, size_t size_col, double *a_local, double *b_local,
+             MPI_Datatype Block_a, MPI_Datatype Block_a_local, MPI_Datatype Block_b,
              MPI_Comm row_comm, MPI_Comm col_comm, int subs)
 {
   double *B_a     , *B_b     ; //matrix blocks
@@ -41,13 +33,9 @@ double Summa(double *a, double *b, double *c,
   size_t lda_local = lda;
   size_t ldb_local = ldb;
 
-
   double time, computation_time = 0, communication_time = 0;
   double start_time, end_time; //time mesure
   double start_time_intern, end_time_intern; //time mesure
-
-
-
 
   start_time = MPI_Wtime();
 
@@ -80,8 +68,7 @@ double Summa(double *a, double *b, double *c,
       pos_b = (iter % B_proc_col) * ldb * Block_size;
     }
 #endif
-    XBT_DEBUG( "pivot: %zu, iter: %zu, B_proc_col: %zu, "
-                "size_col:%zu, size_row: %zu\n",
+    XBT_DEBUG( "pivot: %zu, iter: %zu, B_proc_col: %zu, size_col:%zu, size_row: %zu\n",
                 pivot_row, iter, B_proc_row,size_col,size_row);
 /*    MPI_Barrier(row_comm);*/
 /*    MPI_Barrier(col_comm);*/
@@ -115,8 +102,7 @@ double Summa(double *a, double *b, double *c,
     if(size_col > 1){
       if( pivot_row == row ){
         B_b = b + pos_b;
-        XBT_DEBUG("sent B_b Block_size: %zu, pos:%zu \n",
-                    ldb, pos_b);
+        XBT_DEBUG("sent B_b Block_size: %zu, pos:%zu \n", ldb, pos_b);
       }else{
         B_b = b_local;
         XBT_DEBUG("recieve B_b %zu,%zu \n", Block_size,n);
@@ -157,10 +143,7 @@ double Summa(double *a, double *b, double *c,
 
   end_time = MPI_Wtime();
   time = end_time - start_time ;
-  printf("communication time: %e seconds, "
-         "computation time: %e seconds\n",
-         communication_time, computation_time);
-
+  printf("communication time: %e seconds, computation time: %e seconds\n", communication_time, computation_time);
 
   return time;
 }

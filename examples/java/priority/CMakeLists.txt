@@ -1,8 +1,6 @@
 set(example java_priority)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/Priority.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Test.java
-  )
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Priority.java 
+            ${CMAKE_CURRENT_SOURCE_DIR}/Test.java)
 
 if(enable_java)
   add_custom_command(

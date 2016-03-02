@@ -4,34 +4,30 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_comm_throttling, "Logging specific to this SimDag example");
 
 int main(int argc, char **argv)
 {
   unsigned int ctr;
-  const sg_host_t *hosts;
-  SD_task_t task, taskA, taskB, taskC, taskD, taskE;
+  SD_task_t task;
   xbt_dynar_t changed_tasks;
 
   SD_init(&argc, argv);
   xbt_assert(argc > 1, "Usage: %s platform_file\n\nExample: %s two_clusters.xml", argv[0], argv[0]);
 
-  /* creation of the environment */
   SD_create_environment(argv[1]);
 
-  hosts = sg_host_list();
+  const sg_host_t *hosts = sg_host_list();
 
   /* creation of some typed tasks and their dependencies */
   /* chain of five tasks, three compute tasks with two data transfers in between */
-  taskA = SD_task_create_comp_seq("Task A", NULL, 5e9);
-  taskB = SD_task_create_comm_e2e("Task B", NULL, 1e7);
-  taskC = SD_task_create_comp_seq("Task C", NULL, 5e9);
-  taskD = SD_task_create_comm_e2e("Task D", NULL, 1e7);
-  taskE = SD_task_create_comp_seq("Task E", NULL, 5e9);
+  SD_task_t taskA = SD_task_create_comp_seq("Task A", NULL, 5e9);
+  SD_task_t taskB = SD_task_create_comm_e2e("Task B", NULL, 1e7);
+  SD_task_t taskC = SD_task_create_comp_seq("Task C", NULL, 5e9);
+  SD_task_t taskD = SD_task_create_comm_e2e("Task D", NULL, 1e7);
+  SD_task_t taskE = SD_task_create_comp_seq("Task E", NULL, 5e9);
 
   SD_task_dependency_add(NULL, NULL, taskA, taskB);
   SD_task_dependency_add(NULL, NULL, taskB, taskC);

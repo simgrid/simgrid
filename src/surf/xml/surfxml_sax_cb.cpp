@@ -14,7 +14,9 @@
 #include "xbt/file.h"
 #include "xbt/dict.h"
 #include "src/surf/surf_private.h"
+#include "src/surf/network_interface.hpp"
 #include "simgrid/sg_config.h"
+#include "simgrid/link.h"
 
 #include "src/surf/xml/platf_private.hpp"
 
@@ -477,19 +479,11 @@ void ETag_surfxml_host(void)    {
   }
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
-  host.speed_scale = surf_parse_get_double( A_surfxml_host_availability);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
   host.speed_trace = tmgr_trace_new_from_file(A_surfxml_host_availability___file);
   host.state_trace = tmgr_trace_new_from_file(A_surfxml_host_state___file);
   host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
-
-  xbt_assert((A_surfxml_host_state == A_surfxml_host_state_ON) ||
-        (A_surfxml_host_state == A_surfxml_host_state_OFF), "Invalid state");
-  if (A_surfxml_host_state == A_surfxml_host_state_ON)
-    host.initiallyOn = 1;
-  if (A_surfxml_host_state == A_surfxml_host_state_OFF)
-    host.initiallyOn = 1;
-  host.coord = A_surfxml_host_coordinates;
+  host.coord       = A_surfxml_host_coordinates;
 
   sg_platf_new_host(&host);
   xbt_dynar_free(&host.speed_peak);
@@ -639,28 +633,13 @@ void ETag_surfxml_link(void){
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link,0,sizeof(link));
 
-  link.properties = current_property_set;
-
-  link.id                                            = A_surfxml_link_id;
-  link.bandwidth                                     = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
-  //printf("Link bandwidth [%g]\n", link.bandwidth);
-  link.bandwidth_trace                               = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
-  link.latency                                       = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id);
-  //printf("Link latency [%g]\n", link.latency);
-  link.latency_trace                                 = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
-
-  switch (A_surfxml_link_state) {
-  case A_surfxml_link_state_ON:
-    link.initiallyOn = 1;
-    break;
-  case A_surfxml_link_state_OFF:
-    link.initiallyOn = 0;
-    break;
-  default:
-    surf_parse_error("invalid state for link %s", link.id);
-    break;
-  }
-  link.state_trace = tmgr_trace_new_from_file(A_surfxml_link_state___file);
+  link.properties          = current_property_set;
+  link.id                  = A_surfxml_link_id;
+  link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
+  link.bandwidth_trace     = tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file);
+  link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id);
+  link.latency_trace       = tmgr_trace_new_from_file(A_surfxml_link_latency___file);
+  link.state_trace         = tmgr_trace_new_from_file(A_surfxml_link_state___file);
 
   switch (A_surfxml_link_sharing___policy) {
   case A_surfxml_link_sharing___policy_SHARED:
@@ -712,7 +691,6 @@ void ETag_surfxml_backbone(void){
   link.id = A_surfxml_backbone_id;
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id);
   link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id);
-  link.initiallyOn = 1;
   link.policy = SURF_LINK_SHARED;
 
   sg_platf_new_link(&link);
@@ -771,17 +749,17 @@ void ETag_surfxml_route(void){
   route.dst       = A_surfxml_route_dst;
   route.gw_src    = NULL;
   route.gw_dst    = NULL;
-  route.link_list = parsed_link_list;
+  route.link_list = new std::vector<Link*>();
+  route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
-  switch (A_surfxml_route_symmetrical) {
-  case AU_surfxml_route_symmetrical:
-  case A_surfxml_route_symmetrical_YES:
-    route.symmetrical = TRUE;
-    break;
-  case A_surfxml_route_symmetrical_NO:
-    route.symmetrical = FALSE;;
-    break;
+  unsigned int cpt;
+  char *link_name;
+  xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
+    simgrid::surf::Link *link = Link::byName(link_name);
+    route.link_list->push_back(link);
   }
+
+
 
   sg_platf_new_route(&route);
   parsed_link_list = NULL;
@@ -804,7 +782,14 @@ void ETag_surfxml_ASroute(void){
     surf_parse_error("gw_dst=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
                      A_surfxml_ASroute_gw___dst, ASroute.src, ASroute.dst);
 
-  ASroute.link_list = parsed_link_list;
+  ASroute.link_list =  new std::vector<Link*>();
+
+  unsigned int cpt;
+  char *link_name;
+  xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
+    simgrid::surf::Link *link = Link::byName(link_name);
+    ASroute.link_list->push_back(link);
+  }
 
   switch (A_surfxml_ASroute_symmetrical) {
   case AU_surfxml_ASroute_symmetrical:
@@ -828,11 +813,18 @@ void ETag_surfxml_bypassRoute(void){
   route.dst = A_surfxml_bypassRoute_dst;
   route.gw_src = NULL;
   route.gw_dst = NULL;
-  route.link_list = parsed_link_list;
   route.symmetrical = FALSE;
+  route.link_list =  new std::vector<Link*>();
+
+  unsigned int cpt;
+  char *link_name;
+  xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
+    simgrid::surf::Link *link = Link::byName(link_name);
+    route.link_list->push_back(link);
+  }
+  xbt_dynar_free(&parsed_link_list);
 
   sg_platf_new_bypassRoute(&route);
-  xbt_dynar_free(&parsed_link_list);
 }
 
 void ETag_surfxml_bypassASroute(void){
@@ -841,14 +833,20 @@ void ETag_surfxml_bypassASroute(void){
 
   ASroute.src         = A_surfxml_bypassASroute_src;
   ASroute.dst         = A_surfxml_bypassASroute_dst;
-  ASroute.link_list   = parsed_link_list;
+  ASroute.link_list   =  new std::vector<Link*>();
+  unsigned int cpt;
+  char *link_name;
+  xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
+    simgrid::surf::Link *link = Link::byName(link_name);
+    ASroute.link_list->push_back(link);
+  }
+  xbt_dynar_free(&parsed_link_list);
   ASroute.symmetrical = FALSE;
 
   ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src);
   ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
 
   sg_platf_new_bypassRoute(&ASroute);
-  xbt_dynar_free(&parsed_link_list);
 }
 
 void ETag_surfxml_trace(void){

@@ -8,8 +8,7 @@
 
 #include "xbt.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,
-                                "Logging specific to this test");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top, "Logging specific to this test");
 XBT_LOG_NEW_CATEGORY(top, "Useless test channel");
 
 static void dolog(const char *settings)
@@ -21,7 +20,6 @@ static void dolog(const char *settings)
   XBT_CDEBUG(top, "val=%d%s", 3, "!");
   XBT_CRITICAL("false alarm%s%s%s%s%s%s", "", "", "", "", "", "!");
 }
-
 
 int main(int argc, char **argv)
 {

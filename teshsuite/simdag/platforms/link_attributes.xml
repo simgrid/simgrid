@@ -1,0 +1,12 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+<AS  id="AS0"  routing="Full">
+  <host id="bob" speed="500Mf"/>
+
+  <link id="link1" bandwidth="125MBps" latency="50us"/>
+  <link id="link2" bandwidth="125MBps" latency="50us" sharing_policy="FATPIPE"/>
+  <link id="link3" bandwidth="80MBps" latency="100us" bandwidth_file="link.bw" latency_file="link.lat"/>
+  <link id="link4" bandwidth="80MBps" latency="100us" state_file="link.fail"/>
+</AS>
+</platform>

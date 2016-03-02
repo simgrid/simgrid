@@ -1,9 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(onoff onoff.c)
-
-### Add definitions for compile
-target_link_libraries(onoff simgrid )
+add_executable       (onoff onoff.c)
+target_link_libraries(onoff simgrid)
 
 set(tesh_files
   ${tesh_files}

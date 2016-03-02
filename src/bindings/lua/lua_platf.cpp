@@ -7,7 +7,8 @@
 /* SimGrid Lua bindings                                                     */
 
 #include "lua_private.h"
-#include "src/surf/xml/platf.hpp"
+#include "src/surf/xml/platf_private.hpp"
+#include "src/surf/network_interface.hpp"
 #include "surf/surf_routing.h"
 #include <string.h>
 #include <ctype.h>
@@ -19,7 +20,7 @@ extern "C" {
 #include <simgrid/host.h>
 #include "src/surf/surf_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_platf, bindings, "Lua bindings (platform module)");
+XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
 
 #define PLATF_MODULE_NAME "simgrid.platf"
 
@@ -95,8 +96,6 @@ int console_add_backbone(lua_State *L) {
   link.latency = surf_parse_get_time(lua_tostring(L, -1),"latency of backbone",link.id);
   lua_pop(L, 1);
 
-  link.initiallyOn = 1;
-
   lua_pushstring(L, "sharing_policy");
   type = lua_gettable(L, -2);
   const char* policy = lua_tostring(L, -1);
@@ -159,12 +158,11 @@ int console_add_host___link(lua_State *L) {
 int console_add_host(lua_State *L) {
   s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
-  int state, type;
+  int type;
 
   // we get values from the table passed as argument
   if (!lua_istable(L, -1)) {
-    XBT_ERROR
-        ("Bad Arguments to create host. Should be a table with named arguments");
+    XBT_ERROR("Bad Arguments to create host. Should be a table with named arguments");
     return -1;
   }
 
@@ -201,30 +199,11 @@ int console_add_host(lua_State *L) {
     host.core_amount = 1;
   lua_pop(L, 1);
 
-  //get power_scale
-  lua_pushstring(L, "availability");
-  lua_gettable(L, -2);
-  if(!lua_isnumber(L,-1)) host.speed_scale = 1;// Default value
-  else host.speed_scale = lua_tonumber(L, -1);
-  lua_pop(L, 1);
-
   //get power_trace
   lua_pushstring(L, "availability_file");
   lua_gettable(L, -2);
   host.speed_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
   lua_pop(L, 1);
-
-  //get state initial
-  lua_pushstring(L, "state");
-  lua_gettable(L, -2);
-  if(!lua_isnumber(L,-1)) state = 1;// Default value
-  else state = lua_tonumber(L, -1);
-  lua_pop(L, 1);
-
-  if (state)
-    host.initiallyOn = 1;
-  else
-    host.initiallyOn = 0;
 
   //get trace state
   lua_pushstring(L, "state_file");
@@ -301,15 +280,6 @@ int  console_add_link(lua_State *L) {
   lua_pushstring(L, "state_file");
   lua_gettable(L, -2);
   link.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
-  lua_pop(L, 1);
-
-  //get state_initial value
-  lua_pushstring(L, "state");
-  lua_gettable(L, -2);
-  if (!lua_isnumber(L,-1) || lua_tonumber(L, -1))
-    link.initiallyOn = 1;
-  else
-    link.initiallyOn = 0;
   lua_pop(L, 1);
 
   //get policy value
@@ -395,9 +365,22 @@ int console_add_route(lua_State *L) {
   if (type != LUA_TSTRING) {
     XBT_ERROR("Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
   }
-  route.link_list = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
-  if (xbt_dynar_is_empty(route.link_list))
-    xbt_dynar_push_as(route.link_list,char*,xbt_strdup(lua_tostring(L, -1)));
+  route.link_list = new std::vector<Link*>();
+  xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
+  if (xbt_dynar_is_empty(names)) {
+    /* unique name */
+    route.link_list->push_back(Link::byName(lua_tostring(L, -1)));
+  } else {
+    // Several names separated by , \t\r\n
+    unsigned int cpt;
+    char *name;
+    xbt_dynar_foreach(names, cpt, name) {
+      if (strlen(name)>0) {
+        Link *link = Link::byName(name);
+        route.link_list->push_back(link);
+      }
+    }
+  }
   lua_pop(L,1);
 
   /* We are relying on the XML bypassing mechanism since the corresponding sg_platf does not exist yet.
@@ -465,9 +448,22 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
-  ASroute.link_list = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
-  if (xbt_dynar_is_empty(ASroute.link_list))
-    xbt_dynar_push_as(ASroute.link_list,char*,xbt_strdup(lua_tostring(L, -1)));
+  ASroute.link_list = new std::vector<Link*>();
+  xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
+  if (xbt_dynar_is_empty(names)) {
+    /* unique name */
+    ASroute.link_list->push_back(Link::byName(lua_tostring(L, -1)));
+  } else {
+    // Several names separated by , \t\r\n
+    unsigned int cpt;
+    char *name;
+    xbt_dynar_foreach(names, cpt, name) {
+      if (strlen(name)>0) {
+        Link *link = Link::byName(name);
+        ASroute.link_list->push_back(link);
+      }
+    }
+  }
   lua_pop(L,1);
 
   lua_pushstring(L,"symmetrical");

@@ -12,15 +12,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_resource, instr, "tracing (un)-categorize
 static xbt_dict_t platform_variables;
 
 //used by all methods
-static void __TRACE_surf_check_variable_set_to_zero(double now,
-                                                    const char *variable,
-                                                    const char *resource)
+static void __TRACE_surf_check_variable_set_to_zero(double now, const char *variable, const char *resource)
 {
-  /*
-   * To trace resource utilization, we use pajeAddVariable and pajeSubVariable only.
-   * The Paje simulator needs a pajeSetVariable in the first place so it knows
-   * the initial value of all variables for subsequent adds/subs. If we don't do
-   * so, the first pajeAddVariable is added to a non-determined value within
+  /* To trace resource utilization, we use pajeAddVariable and pajeSubVariable only.
+   * The Paje simulator needs a pajeSetVariable in the first place so it knows the initial value of all variables for
+   * subsequent adds/subs. If we don't do so, the first pajeAddVariable is added to a non-determined value within
    * the Paje simulator, causing analysis problems.
    */
 
@@ -46,14 +42,8 @@ static void instr_event (double now, double delta, type_t variable, container_t 
   new_pajeSubVariable(now + delta, resource, variable, value);
 }
 
-/*
- * TRACE_surf_link_set_utilization: entry point from SimGrid
- */
-void TRACE_surf_link_set_utilization(const char *resource,
-                                     const char *category,
-                                     double value,
-                                     double now,
-                                     double delta)
+/* TRACE_surf_link_set_utilization: entry point from SimGrid */
+void TRACE_surf_link_set_utilization(const char *resource, const char *category, double value, double now, double delta)
 {
   //only trace link utilization if link is known by tracing mechanism
   if (!PJ_container_get_or_null(resource))
@@ -84,14 +74,8 @@ void TRACE_surf_link_set_utilization(const char *resource,
   return;
 }
 
-/*
- * TRACE_surf_host_set_utilization: entry point from SimGrid
- */
-void TRACE_surf_host_set_utilization(const char *resource,
-                                     const char *category,
-                                     double value,
-                                     double now,
-                                     double delta)
+/* TRACE_surf_host_set_utilization: entry point from SimGrid */
+void TRACE_surf_host_set_utilization(const char *resource, const char *category, double value, double now, double delta)
 {
   //only trace host utilization if host is known by tracing mechanism
   container_t container = PJ_container_get_or_null(resource);

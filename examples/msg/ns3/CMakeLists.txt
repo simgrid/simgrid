@@ -1,7 +1,6 @@
 if(HAVE_NS3)
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  add_executable(ns3 "ns3.c")
-  target_link_libraries(ns3 simgrid )
+  add_executable       (ns3 ns3.c)
+  target_link_libraries(ns3 simgrid)
 endif()
 
 set(tesh_files

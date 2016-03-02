@@ -38,8 +38,7 @@ void TRACE_TI_start(void)
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
   if (tracing_file == NULL) {
-    THROWF(system_error, 1, "Tracefile %s could not be opened for writing.",
-           filename);
+    THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename);
   }
 
   XBT_DEBUG("Filename %s is open for writing", filename);
@@ -49,7 +48,6 @@ void TRACE_TI_start(void)
 
   /* output comment file */
   dump_comment_file(TRACE_get_comment_file());
-
 }
 
 void TRACE_TI_end(void)
@@ -71,11 +69,9 @@ void print_TICreateContainer(paje_event_t event)
     prefix = xbt_os_time();
   }
 
-  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file")
-      || temp == NULL) {
+  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file") || temp == NULL) {
     char *folder_name = bprintf("%s_files", TRACE_get_filename());
-    char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix,
-                             ((createContainer_t) event->data)->container->name);
+    char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix, ((createContainer_t) event->data)->container->name);
 #ifdef WIN32
     _mkdir(folder_name);
 #else
@@ -83,42 +79,33 @@ void print_TICreateContainer(paje_event_t event)
 #endif
     temp = fopen(filename, "w");
     if (temp == NULL)
-      xbt_die("Tracefile %s could not be opened for writing: %s",
-              filename, strerror(errno));
+      xbt_die("Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
     fprintf(tracing_file, "%s\n", filename);
 
     xbt_free(folder_name);
     xbt_free(filename);
   }
 
-  xbt_dict_set(tracing_files,
-               ((createContainer_t) event->data)->container->name,
-               (void *) temp, NULL);
+  xbt_dict_set(tracing_files, ((createContainer_t) event->data)->container->name, (void *) temp, NULL);
 }
 
 void print_TIDestroyContainer(paje_event_t event)
 {
-  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file")||
-      xbt_dict_length(tracing_files) == 1) {
-    FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files,
-        ((destroyContainer_t) event->data)->container->name);
+  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file")|| xbt_dict_length(tracing_files) == 1) {
+    FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, ((destroyContainer_t) event->data)->container->name);
     fclose(f);
   }
   xbt_dict_remove(tracing_files, ((destroyContainer_t) event->data)->container->name);
 }
 
-
 void print_TIPushState(paje_event_t event)
 {
-
-
   int i;
 
   //char* function=NULL;
   if (((pushState_t) event->data)->extra == NULL)
     return;
-  instr_extra_data extra =
-      (instr_extra_data) (((pushState_t) event->data)->extra);
+  instr_extra_data extra = (instr_extra_data) (((pushState_t) event->data)->extra);
 
   char *process_id = NULL;
   //FIXME: dirty extract "rank-" from the name, as we want the bare process id here
@@ -130,7 +117,6 @@ void print_TIPushState(paje_event_t event)
   FILE* trace_file =  (FILE* )xbt_dict_get(tracing_files, ((pushState_t) event->data)->container->name);
 
   switch (extra->type) {
-
   case TRACING_INIT:
     fprintf(trace_file, "%s init\n", process_id);
     break;
@@ -138,20 +124,16 @@ void print_TIPushState(paje_event_t event)
     fprintf(trace_file, "%s finalize\n", process_id);
     break;
   case TRACING_SEND:
-    fprintf(trace_file, "%s send %d %d %s\n", process_id, extra->dst,
-            extra->send_size, extra->datatype1);
+    fprintf(trace_file, "%s send %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
     break;
   case TRACING_ISEND:
-    fprintf(trace_file, "%s isend %d %d %s\n", process_id, extra->dst,
-            extra->send_size, extra->datatype1);
+    fprintf(trace_file, "%s isend %d %d %s\n", process_id, extra->dst, extra->send_size, extra->datatype1);
     break;
   case TRACING_RECV:
-    fprintf(trace_file, "%s recv %d %d %s\n", process_id, extra->src,
-            extra->send_size, extra->datatype1);
+    fprintf(trace_file, "%s recv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
     break;
   case TRACING_IRECV:
-    fprintf(trace_file, "%s irecv %d %d %s\n", process_id, extra->src,
-            extra->send_size, extra->datatype1);
+    fprintf(trace_file, "%s irecv %d %d %s\n", process_id, extra->src, extra->send_size, extra->datatype1);
     break;
   case TRACING_TEST:
     fprintf(trace_file, "%s test\n", process_id);
@@ -172,19 +154,16 @@ void print_TIPushState(paje_event_t event)
     fprintf(trace_file, "\n");
     break;
   case TRACING_REDUCE:         // rank reduce comm_size comp_size (root) (datatype)
-    fprintf(trace_file, "%s reduce %d %f ", process_id, extra->send_size,
-            extra->comp_size);
+    fprintf(trace_file, "%s reduce %d %f ", process_id, extra->send_size, extra->comp_size);
     if (extra->root != 0 || (extra->datatype1 && strcmp(extra->datatype1, "")))
       fprintf(trace_file, "%d %s", extra->root, extra->datatype1);
     fprintf(trace_file, "\n");
     break;
   case TRACING_ALLREDUCE:      // rank allreduce comm_size comp_size (datatype)
-    fprintf(trace_file, "%s allreduce %d %f %s\n", process_id,
-            extra->send_size, extra->comp_size, extra->datatype1);
+    fprintf(trace_file, "%s allreduce %d %f %s\n", process_id, extra->send_size, extra->comp_size, extra->datatype1);
     break;
   case TRACING_ALLTOALL:       // rank alltoall send_size recv_size (sendtype) (recvtype)
-    fprintf(trace_file, "%s alltoall %d %d %s %s\n", process_id,
-            extra->send_size, extra->recv_size, extra->datatype1,
+    fprintf(trace_file, "%s alltoall %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->datatype1,
             extra->datatype2);
     break;
   case TRACING_ALLTOALLV:      // rank alltoallv send_size [sendcounts] recv_size [recvcounts] (sendtype) (recvtype)
@@ -197,9 +176,8 @@ void print_TIPushState(paje_event_t event)
     fprintf(trace_file, "%s %s \n", extra->datatype1, extra->datatype2);
     break;
   case TRACING_GATHER:         // rank gather send_size recv_size root (sendtype) (recvtype)
-    fprintf(trace_file, "%s gather %d %d %d %s %s\n", process_id,
-            extra->send_size, extra->recv_size, extra->root, extra->datatype1,
-            extra->datatype2);
+    fprintf(trace_file, "%s gather %d %d %d %s %s\n", process_id, extra->send_size, extra->recv_size, extra->root,
+            extra->datatype1, extra->datatype2);
     break;
   case TRACING_ALLGATHERV:     // rank allgatherv send_size [recvcounts] (sendtype) (recvtype)
     fprintf(trace_file, "%s allgatherv %d ", process_id, extra->send_size);
@@ -238,9 +216,7 @@ void print_TIPushState(paje_event_t event)
   case TRACING_SSEND:
   case TRACING_ISSEND:
   default:
-
-    XBT_WARN
-        ("Call from %s impossible to translate into replay command : Not implemented (yet)",
+    XBT_WARN ("Call from %s impossible to translate into replay command : Not implemented (yet)",
          ((pushState_t) event->data)->value->name);
     break;
   }

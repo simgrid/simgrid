@@ -19,18 +19,11 @@ int main(int argc, char **argv)
   XBT_LOG_CONNECT(graphicator);
   MSG_init(&argc, argv);
 
-  if (argc < 3){
-    XBT_INFO("Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
-    return 1;
-  }
-  char *platformFile = argv[1];
-  char *graphvizFile = argv[2];
+  xbt_assert(argc == 3, "Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
 
-  MSG_create_environment(platformFile);
+  MSG_create_environment(argv[1]);
+  int status = TRACE_platform_graph_export_graphviz (argv[2]);
 
-  int status = TRACE_platform_graph_export_graphviz (graphvizFile);
-  if (status == 0){
-    XBT_INFO ("%s expects --cfg=tracing:yes --cfg=tracing/platform:yes", argv[0]);
-  }
+  xbt_assert(status != 0, "%s expects --cfg=tracing:yes --cfg=tracing/platform:yes", argv[0]);
   return 0;
 }

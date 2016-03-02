@@ -20,16 +20,8 @@ SG_BEGIN_DECL()
 typedef size_t yy_size_t;
 #endif
 
-static inline char* sg_storage_name(sg_storage_t storage) {
-  return storage->key;
-}
-
 XBT_PUBLIC(sg_netcard_t) sg_netcard_by_name_or_null(const char *name);
 
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_file(const char *filename);
-XBT_PUBLIC(tmgr_trace_t) tmgr_trace_new_from_string(const char *id,
-                                                    const char *input,
-                                                    double periodicity);
 typedef enum {
   SURF_CLUSTER_FAT_TREE=2,
   SURF_CLUSTER_FLAT = 1,
@@ -52,17 +44,14 @@ typedef struct {
   xbt_dynar_t speed_peak;
   int pstate;
   int core_amount;
-  double speed_scale;
   tmgr_trace_t speed_trace;
-  int initiallyOn;
   tmgr_trace_t state_trace;
   const char* coord;
   xbt_dict_t properties;
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
 #define SG_PLATF_HOST_INITIALIZER { \
-    NULL, 0, 1, 1, 1., NULL, 1/*ON*/, NULL, \
-    NULL, NULL \
+    NULL, 0, 1, 1, NULL, NULL, NULL, NULL \
 }
 
 typedef struct {
@@ -86,15 +75,13 @@ typedef struct {
   tmgr_trace_t bandwidth_trace;
   double latency;
   tmgr_trace_t latency_trace;
-  int initiallyOn;
   tmgr_trace_t state_trace;
   e_surf_link_sharing_policy_t policy;
   xbt_dict_t properties;
 } s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
 
 #define SG_PLATF_LINK_INITIALIZER {\
-  NULL, 0., NULL, 0., NULL, 1/*ON*/, \
-  NULL, SURF_LINK_SHARED, NULL \
+  NULL, 0., NULL, 0., NULL, NULL, SURF_LINK_SHARED, NULL \
 }
 
 typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
@@ -118,7 +105,7 @@ typedef struct s_sg_platf_route_cbarg {
   const char *dst;
   sg_netcard_t gw_src;
   sg_netcard_t gw_dst;
-  xbt_dynar_t link_list;
+  std::vector<Link*> *link_list;
 } s_sg_platf_route_cbarg_t;
 
 #define SG_PLATF_ROUTE_INITIALIZER {1,NULL,NULL,NULL,NULL,NULL}
@@ -260,7 +247,7 @@ typedef struct probabilist_event_generator *probabilist_event_generator_t;
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(void);
 void routing_cluster_add_backbone(Link* bb);
-surf_As* routing_get_current();
+AS_t routing_get_current();
 /*** END of the parsing cruft ***/
 
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
@@ -288,6 +275,7 @@ XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage
 XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
 
 XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
+XBT_PRIVATE void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
 /* Prototypes of the functions offered by flex */
 XBT_PUBLIC(int) surf_parse_lex(void);
@@ -303,6 +291,24 @@ XBT_PUBLIC(int) surf_parse_get_debug(void);
 XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
 XBT_PUBLIC(int) surf_parse_lex_destroy(void);
 
+/* To include files (?) */
+XBT_PRIVATE void surfxml_bufferstack_push(int _new);
+XBT_PRIVATE void surfxml_bufferstack_pop(int _new);
+XBT_PUBLIC_DATA(int) surfxml_bufferstack_size;
+
+XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
+/********** Instr. **********/
+XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
+XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
+XBT_PRIVATE void sg_instr_new_host(sg_platf_host_cbarg_t host);
+XBT_PRIVATE void sg_instr_AS_end(void);
+
+typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
+typedef struct s_surf_parsing_link_up_down {
+  Link* link_up;
+  Link* link_down;
+} s_surf_parsing_link_up_down_t;
+
 
 SG_END_DECL()
 
@@ -311,7 +317,6 @@ namespace surf {
 
 extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_link_cbarg_t)> on_link;
 extern XBT_PRIVATE simgrid::xbt::signal<void(sg_platf_cluster_cbarg_t)> on_cluster;
-extern XBT_PRIVATE simgrid::xbt::signal<void(void)> on_postparse;
 
 }
 }

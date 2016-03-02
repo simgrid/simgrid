@@ -39,16 +39,16 @@ public:
   void wait(double timeout) override;
 
 private:
-  double p_rate=-1;
+  double rate_=-1;
 public:
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   void setRate(double rate);
 
 private:
-  void *p_dstBuff = NULL;
-  size_t p_dstBuffSize = 0;
-  void *p_srcBuff = NULL;
-  size_t p_srcBuffSize = sizeof(void*);
+  void *dstBuff_ = NULL;
+  size_t dstBuffSize_ = 0;
+  void *srcBuff_ = NULL;
+  size_t srcBuffSize_ = sizeof(void*);
 public:
   /** Specify the data to send */
   void setSrcData(void * buff);
@@ -66,15 +66,15 @@ public:
 
 
 private: /* FIXME: expose these elements in the API */
-  int p_detached = 0;
-    int (*p_matchFunction)(void *, void *, smx_synchro_t) = NULL;
-    void (*p_cleanFunction)(void *) = NULL;
-    void (*p_copyDataFunction)(smx_synchro_t, void*, size_t) = NULL;
+  int detached_ = 0;
+  int (*matchFunction_)(void *, void *, smx_synchro_t) = NULL;
+  void (*cleanFunction_)(void *) = NULL;
+  void (*copyDataFunction_)(smx_synchro_t, void*, size_t) = NULL;
 
 private:
-  Actor *p_sender = NULL;
-  Actor *p_receiver = NULL;
-  Mailbox *p_mailbox = NULL;
+  Actor *sender_ = NULL;
+  Actor *receiver_ = NULL;
+  Mailbox *mailbox_ = NULL;
 };
 
 }} // namespace simgrid::s4u

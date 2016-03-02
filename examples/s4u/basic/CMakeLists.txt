@@ -1,5 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-add_executable(s4u_basic s4u_basic.cpp)
+add_executable       (s4u_basic s4u_basic.cpp)
 target_link_libraries(s4u_basic simgrid)
 
 set(tesh_files

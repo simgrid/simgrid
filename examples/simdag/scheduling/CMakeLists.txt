@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(minmin_test minmin_test.c)
+add_executable       (minmin_test minmin_test.c)
 target_link_libraries(minmin_test simgrid)
 
 set(tesh_files

@@ -7,23 +7,24 @@
 #ifndef SIMGRID_MC_SNAPSHOT_H
 #define SIMGRID_MC_SNAPSHOT_H
 
-#include <sys/types.h> // off_t
-#include <stdint.h> // size_t
+#include <cstdint>
+#include <cstddef>
 
 #include <vector>
 #include <set>
+#include <string>
 #include <memory>
+
+#include <sys/types.h> // off_t
 
 #include <simgrid_config.h>
 #include "src/xbt/mmalloc/mmprivate.h"
 #include <xbt/asserts.h>
-#include <xbt/dynar.h>
 #include <xbt/base.h>
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/PageStore.hpp"
-#include "src/mc/mc_mmalloc.h"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_unw.h"
 #include "src/mc/RegionSnapshot.hpp"
@@ -54,7 +55,7 @@ void* mc_translate_address_region(uintptr_t addr, mc_mem_region_t region, int pr
   case simgrid::mc::StorageType::Flat:
     {
       uintptr_t offset = (uintptr_t) addr - (uintptr_t) region->start().address();
-      return (void *) ((uintptr_t) region->flat_data() + offset);
+      return (void *) ((uintptr_t) region->flat_data().get() + offset);
     }
 
   case simgrid::mc::StorageType::Chunked:
@@ -145,7 +146,7 @@ public:
   Snapshot(Process* process);
   ~Snapshot();
   const void* read_bytes(void* buffer, std::size_t size,
-    remote_ptr<void> address, int process_index = ProcessIndexAny,
+    RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const override;
 public: // To be private
   int num_state;
@@ -177,8 +178,22 @@ mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int pro
 
 static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 
-XBT_PRIVATE mc_snapshot_t MC_take_snapshot(int num_state);
-XBT_PRIVATE void MC_restore_snapshot(mc_snapshot_t);
+}
+
+#ifdef __cplusplus
+
+namespace simgrid {
+namespace mc {
+
+XBT_PRIVATE mc_snapshot_t take_snapshot(int num_state);
+XBT_PRIVATE void restore_snapshot(mc_snapshot_t);
+
+}
+}
+
+#endif
+
+extern "C" {
 
 XBT_PRIVATE void mc_restore_page_snapshot_region(
   simgrid::mc::Process* process,
@@ -228,7 +243,7 @@ const void* MC_region_read(
     xbt_die("Storage type not supported");
 
   case simgrid::mc::StorageType::Flat:
-    return (char*) region->flat_data() + offset;
+    return (char*) region->flat_data().get() + offset;
 
   case simgrid::mc::StorageType::Chunked:
     {

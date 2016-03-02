@@ -5,12 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* simple test to schedule a DAX file with the Min-Min algorithm.           */
-#include <stdlib.h>
-#include <stdio.h>
 #include <string.h>
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
-#include "xbt/ex.h"
 
 #ifdef HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"

@@ -8,8 +8,9 @@
 
 #include <xbt/base.h>
 
-#include "src/surf/host_interface.hpp"
 #include <map>
+
+#include "src/surf/HostImpl.hpp"
 
 #ifndef ENERGY_CALLBACK_HPP_
 #define ENERGY_CALLBACK_HPP_

@@ -11,13 +11,13 @@ namespace simgrid {
 namespace xbt {
 
 /** Describes a contiguous inclusive-exclusive [a,b) range of values */
-template<class T> class range {
+template<class T> class Range {
   T begin_;
   T end_;
 public:
-  range()               : begin_(), end_() {}
-  range(T begin, T end) : begin_(std::move(begin)), end_(std::move(end)) {}
-  range(T value) : begin_(value), end_(value + 1) {}
+  Range()               : begin_(), end_() {}
+  Range(T begin, T end) : begin_(std::move(begin)), end_(std::move(end)) {}
+  Range(T value) : begin_(value), end_(value + 1) {}
   T& begin()             { return begin_; }
   T& end()               { return end_; }
   const T& begin() const { return begin_; }

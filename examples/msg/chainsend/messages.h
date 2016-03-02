@@ -4,11 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef KADEPLOY_MESSAGES_H
-#define KADEPLOY_MESSAGES_H
+#ifndef MESSAGES_H
+#define MESSAGES_H
 
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"
 
 #define MESSAGE_BUILD_CHAIN_SIZE 40
 #define MESSAGE_SEND_DATA_HEADER_SIZE 1
@@ -36,4 +35,4 @@ msg_task_t task_message_chain_new(const char* prev, const char *next, const unsi
 msg_task_t task_message_data_new(const char *block, unsigned int len);
 void task_message_delete(void *);
 
-#endif /* KADEPLOY_MESSAGES_H */
+#endif /* MESSAGES_H */

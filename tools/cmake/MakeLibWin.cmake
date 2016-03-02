@@ -4,11 +4,11 @@ add_library(simgrid SHARED ${simgrid_sources})
 
 if(MSVC)
   set_target_properties(simgrid  PROPERTIES 
-       COMPILE_FLAGS "/D_XBT_DLL_EXPORT /DDLL_EXPORT" 
+       COMPILE_FLAGS "/DDLL_EXPORT" 
        VERSION ${libsimgrid_version} )
 else()
   set_target_properties(simgrid  PROPERTIES 
-       COMPILE_FLAGS "-D_XBT_DLL_EXPORT -DDLL_EXPORT" 
+       COMPILE_FLAGS "-DDLL_EXPORT" 
        LINK_FLAGS "-shared" 
        VERSION ${libsimgrid_version} 
        PREFIX "lib" SUFFIX ".dll" 

@@ -6,7 +6,6 @@
 
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
-#include "src/msg/msg_mailbox.h"
 
 #include "simgrid/s4u/mailbox.hpp"
 
@@ -19,13 +18,13 @@ using namespace simgrid;
 boost::unordered_map <std::string, s4u::Mailbox *> *s4u::Mailbox::mailboxes = new boost::unordered_map<std::string, s4u::Mailbox*> ();
 
 
-s4u::Mailbox::Mailbox(const char*name, smx_rdv_t inferior) {
-  p_inferior = inferior;
-  p_name = name;
+s4u::Mailbox::Mailbox(const char*name, smx_mailbox_t inferior) {
+  inferior_ = inferior;
+  name_ = name;
   mailboxes->insert({name, this});
 }
 const char *s4u::Mailbox::getName() {
-  return p_name.c_str();
+  return name_.c_str();
 }
 s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
   s4u::Mailbox *res;

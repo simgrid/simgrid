@@ -6,7 +6,7 @@
 
 #include <xbt/base.h>
 
-#include "host_interface.hpp"
+#include "src/surf/HostImpl.hpp"
 
 #ifndef VM_INTERFACE_HPP_
 #define VM_INTERFACE_HPP_
@@ -51,7 +51,7 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VM
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-class VirtualMachine : public Host {
+class VirtualMachine : public HostImpl {
 public:
   /**
    * @brief Constructor

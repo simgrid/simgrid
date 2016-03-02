@@ -332,7 +332,7 @@ MPI_Request smpi_mpi_recv_init(void *buf, int count, MPI_Datatype datatype,
 
 void smpi_mpi_start(MPI_Request request)
 {
-  smx_rdv_t mailbox;
+  smx_mailbox_t mailbox;
   
   xbt_assert(!request->action, "Cannot (re)start a non-finished communication");
   request->flags &= ~PREPARED;
@@ -877,7 +877,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   static int nsleeps = 1;
   if(smpi_iprobe_sleep > 0)  simcall_process_sleep(nsleeps*smpi_iprobe_sleep);
   // behave like a receive, but don't do it
-  smx_rdv_t mailbox;
+  smx_mailbox_t mailbox;
 
   print_request("New iprobe", request);
   // We have to test both mailboxes as we don't know if we will receive one one or another

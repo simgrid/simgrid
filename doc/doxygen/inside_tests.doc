@@ -41,17 +41,17 @@ ctest -R msg- -j5 --output-on-failure # You changed MSG and want to check that y
 
 \section inside_tests_rununit Running the unit tests
 
-All unit tests are packed into the testall binary, that lives in src/.
-These tests are run when you launch ctest, don't worry.
+All unit tests are packed into the testall binary, that lives at the
+source root. These tests are run when you launch ctest, don't worry.
 
 \verbatim
-make testall                        # Rebuild the test runner on need
-./src/testall                       # Launch all tests
-./src/testall --help                # revise how it goes if you forgot
-./src/testall --tests=-all          # run no test at all (yeah, that's useless)
-./src/testall --dump-only           # Display all existing test suite
-./src/testall --tests=-all,+dict    # Only launch the tests from the dict testsuite
-./src/testall --tests=-all,+foo:bar # run only the bar test from the foo suite.
+make testall                    # Rebuild the test runner on need
+./testall                       # Launch all tests
+./testall --help                # revise how it goes if you forgot
+./testall --tests=-all          # run no test at all (yeah, that's useless)
+./testall --dump-only           # Display all existing test suite
+./testall --tests=-all,+dict    # Only launch the tests from the dict testsuite
+./testall --tests=-all,+foo:bar # run only the bar test from the foo suite.
 \endverbatim
 
 

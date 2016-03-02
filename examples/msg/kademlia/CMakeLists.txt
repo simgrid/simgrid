@@ -1,8 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(kademlia "kademlia.c" "node.c" "routing_table.c" "task.c" "answer.c")
-### Add definitions for compile
-target_link_libraries(kademlia simgrid )
+add_executable       (kademlia kademlia.c node.c routing_table.c task.c answer.c)
+target_link_libraries(kademlia simgrid)
 
 set(tesh_files
   ${tesh_files}

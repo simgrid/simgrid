@@ -7,10 +7,11 @@
 #ifndef SIMGRID_MC_MMU_H
 #define SIMGRID_MC_MMU_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <cstdint>
+#include <cstddef>
 
 #include <xbt/asserts.h>
+#include <xbt/base.h> // xbt_pagesize...
 #include <xbt/misc.h>
 
 #include <simgrid_config.h>
@@ -41,7 +42,7 @@ static inline __attribute__ ((always_inline))
 size_t mc_page_number(const void* base, const void* address)
 {
   xbt_assert(address>=base, "The address is not in the range");
-  return ((uintptr_t) address - (uintptr_t) base) >> xbt_pagebits;
+  return ((std::uintptr_t) address - (std::uintptr_t) base) >> xbt_pagebits;
 }
 
 /** @brief Get the offset of an address within a memory page
@@ -52,7 +53,7 @@ size_t mc_page_number(const void* base, const void* address)
 static inline __attribute__ ((always_inline))
 size_t mc_page_offset(const void* address)
 {
-  return ((uintptr_t) address) & (xbt_pagesize-1);
+  return ((std::uintptr_t) address) & (xbt_pagesize-1);
 }
 
 /** @brief Get the virtual address of a virtual memory page
@@ -69,7 +70,8 @@ void* mc_page_from_number(const void* base, size_t page)
 static inline __attribute__ ((always_inline))
 bool mc_same_page(const void* a, const void* b)
 {
-  return ((uintptr_t) a >> xbt_pagebits) == ((uintptr_t) b >> xbt_pagebits);
+  return ((std::uintptr_t) a >> xbt_pagebits)
+    == ((std::uintptr_t) b >> xbt_pagebits);
 }
 
 SG_END_DECL()

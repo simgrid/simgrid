@@ -93,8 +93,11 @@ SimGrid only uses very standard tools:
       You need cmake version 2.8.8 or higher. You may want to use ccmake
       for a graphical interface over cmake.
   - LibBoost:
-    - osX: with <a href="http://www.finkproject.org/">fink</a>: `sudo fink install boost1.53.nopython`
+    - osX: with <a href="http://www.finkproject.org/">fink</a>: `fink install boost1.53.nopython`,
+      or with homebrew: `brew install boost`
     - debian: `apt-get install libboost-dev libboost-context-dev`
+  - Java (only needed if you want to use the Java bindings): Grab a
+    full JDK from http://www.oracle.com/technetwork/java/javase/downloads
 
 For platform specific details, please see  @ref install_cmake_mac and
 @ref install_cmake_windows.
@@ -265,6 +268,11 @@ warning that the "-pthread" argument is not used, if it appears.
 @verbatim
 CMAKE_OSX_SYSROOT:PATH=/Applications/XCode.app/Contents/Developer/Platforms/MacOSX.platform/Developer
 @endverbatim
+
+In the El Capitan version of Max OS X, Apple decided that users don't
+need no /usr/include directory anymore. If you are hit by this pure
+madness, just run the following command to restore that classical
+UNIX directory: `xcode-select -install`
 
 \subsubsection install_cmake_windows Building on Windows
 

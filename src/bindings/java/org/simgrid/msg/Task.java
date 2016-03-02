@@ -160,8 +160,8 @@ public class Task {
 	 */
 	public native void execute() throws HostFailureException,TaskCancelledException;
 
-	/** Bound a computation to a certain load */
-	public native void setBound(double load); 
+	/** Changes the maximum CPU utilization of a computation task. Unit is flops/s. */
+	public native void setBound(double bound); 
 
 	/** Cancels a task. */ 
 	public native void cancel();

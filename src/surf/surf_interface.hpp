@@ -54,6 +54,10 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(void)> surfExitCallbacks;
 
 int XBT_PRIVATE __surf_is_absolute_file_path(const char *file_path);
 
+static inline char* sg_storage_name(sg_storage_t storage) {
+  return storage->key;
+}
+
 /***********
  * Classes *
  ***********/

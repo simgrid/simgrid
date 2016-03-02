@@ -19,7 +19,6 @@
 #include "src/mc/mc_client.h"
 
 // We won't need those once the separation MCer/MCed is complete:
-#include "src/mc/mc_mmalloc.h"
 #include "src/mc/mc_ignore.h"
 #include "src/mc/mc_private.h" // MC_deadlock_check()
 #include "src/mc/mc_smx.h"
@@ -63,7 +62,7 @@ void MC_client_init(void)
   mc_client->active = 1;
 
   // Waiting for the model-checker:
-  if (ptrace(PTRACE_TRACEME, 0, NULL, NULL) == -1 || raise(SIGSTOP) != 0)
+  if (ptrace(PTRACE_TRACEME, 0, nullptr, NULL) == -1 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");
   MC_client_handle_messages();
 }

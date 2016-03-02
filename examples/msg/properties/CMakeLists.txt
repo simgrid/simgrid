@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(msg_prop msg_prop.c)
+add_executable       (msg_prop msg_prop.c)
 target_link_libraries(msg_prop simgrid)
 
 set(tesh_files

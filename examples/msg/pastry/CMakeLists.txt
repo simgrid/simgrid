@@ -1,7 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(pastry pastry.c)
-target_link_libraries(pastry simgrid )
+add_executable       (pastry pastry.c)
+target_link_libraries(pastry simgrid)
 
 set(tesh_files
   ${tesh_files}

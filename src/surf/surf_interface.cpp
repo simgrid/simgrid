@@ -4,28 +4,28 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/portable.h"
 #include "surf_private.h"
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
 #include "cpu_interface.hpp"
-#include "host_interface.hpp"
+#include "src/surf/HostImpl.hpp"
 #include "src/simix/smx_host_private.h"
 #include "surf_routing.hpp"
 #include "simgrid/sg_config.h"
 #include "mc/mc.h"
 #include "virtual_machine.hpp"
+#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf,
-                                "Logging specific to SURF (kernel)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (kernel)");
 
 /*********
  * Utils *
  *********/
 
 /* model_list_invoke contains only surf_host and surf_vm.
- * The callback functions of cpu_model and network_model will be called from
- * those of these host models. */
+ * The callback functions of cpu_model and network_model will be called from those of these host models. */
 xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
 xbt_dynar_t model_list_invoke = NULL;  /* to invoke callbacks */
 
@@ -49,84 +49,57 @@ s_surf_model_description_t surf_plugin_description[] = {
      {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
-/* Don't forget to update the option description in smx_config when you change
-   this */
+/* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
-  {"LV08",
-   "Realistic network analytic model (slow-start modeled by multiplying latency by 10.4, bandwidth by .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT). ",
+  {"LV08", "Realistic network analytic model (slow-start modeled by multiplying latency by 10.4, bandwidth by .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT). ",
    surf_network_model_init_LegrandVelho},
   {"Constant",
    "Simplistic network model where all communication take a constant time (one second). This model provides the lowest realism, but is (marginally) faster.",
    surf_network_model_init_Constant},
-  {"SMPI",
-   "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
+  {"SMPI", "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
    surf_network_model_init_SMPI},
-  {"IB",
-   "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
+  {"IB", "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
    surf_network_model_init_IB},
-  {"CM02",
-   "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
+  {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
    surf_network_model_init_CM02},
 #ifdef HAVE_NS3
-  {"NS3",
-   "Network pseudo-model using the NS3 tcp model instead of an analytic model",
-  surf_network_model_init_NS3},
+  {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", surf_network_model_init_NS3},
 #endif
-  {"Reno",
-   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+  {"Reno",  "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
    surf_network_model_init_Reno},
-  {"Reno2",
-   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+  {"Reno2", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
    surf_network_model_init_Reno2},
-  {"Vegas",
-   "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
+  {"Vegas", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
    surf_network_model_init_Vegas},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01",
-   "Simplistic CPU model (time=size/power).",
-   surf_cpu_model_init_Cas01},
+  {"Cas01", "Simplistic CPU model (time=size/power).", surf_cpu_model_init_Cas01},
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_host_model_description[] = {
-  {"default",
-   "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)",
-   surf_host_model_init_current_default},
-  {"compound",
-   "Host model that is automatically chosen if you change the network and CPU models",
-   surf_host_model_init_compound},
-  {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks",
-   surf_host_model_init_ptask_L07},
+  {"default",   "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)", surf_host_model_init_current_default},
+  {"compound",  "Host model that is automatically chosen if you change the network and CPU models", surf_host_model_init_compound},
+  {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks", surf_host_model_init_ptask_L07},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_vm_model_description[] = {
-  {"default",
-   "Default vm model.",
-   surf_vm_model_init_HL13},
+  {"default", "Default vm model.", surf_vm_model_init_HL13},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_optimization_mode_description[] = {
-  {"Lazy",
-   "Lazy action management (partial invalidation in lmm + heap in action remaining).",
-   NULL},
-  {"TI",
-   "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU model for now).",
-    NULL},
-  {"Full",
-   "Full update of remaining and variables. Slow but may be useful when debugging.",
-   NULL},
+  {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", NULL},
+  {"TI",   "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU model for now).", NULL},
+  {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", NULL},
   {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 s_surf_model_description_t surf_storage_model_description[] = {
-  {"default",
-   "Simplistic storage model.",
-   surf_storage_model_init_default},
+  {"default", "Simplistic storage model.", surf_storage_model_init_default},
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
@@ -235,10 +208,8 @@ int __surf_is_absolute_file_path(const char *file_path)
 /** Displays the long description of all registered models, and quit */
 void model_help(const char *category, s_surf_model_description_t * table)
 {
-  int i;
-  printf("Long description of the %s models accepted by this simulator:\n",
-         category);
-  for (i = 0; table[i].name; i++)
+  printf("Long description of the %s models accepted by this simulator:\n", category);
+  for (int i = 0; table[i].name; i++)
     printf("  %s: %s\n", table[i].name, table[i].description);
 }
 
@@ -262,12 +233,6 @@ int find_model_description(s_surf_model_description_t * table,
   }
   xbt_die("Model '%s' is invalid! Valid models are: %s.", name, name_list);
   return -1;
-}
-
-static XBT_INLINE void routing_asr_prop_free(void *p)
-{
-  //xbt_dict_t elm = (xbt_dict_t) p;
-  //xbt_dict_free(&elm); FIXME: leaking in some case? That's a sometimes double-free with AsCluster::~AsCluster
 }
 
 static XBT_INLINE void surf_storage_free(void *r)
@@ -301,25 +266,29 @@ void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
 
 void surf_init(int *argc, char **argv)
 {
+  if (host_list != nullptr) // Already initialized
+    return;
+
   XBT_DEBUG("Create all Libs");
   host_list = xbt_dict_new_homogeneous([](void*p) {
     simgrid::s4u::Host* host = static_cast<simgrid::s4u::Host*>(p);
     simgrid::s4u::Host::onDestruction(*host);
     delete host;
   });
+  USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
+
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
   file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(NULL);
 
-  sg_host_init();
 
   XBT_DEBUG("Add routing levels");
-  ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib,routing_asr_prop_free);
+  ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib, NULL);
 
   XBT_DEBUG("Add SURF levels");
-  simgrid::surf::Host::classInit();
+  simgrid::surf::HostImpl::classInit();
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);

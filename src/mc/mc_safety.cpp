@@ -4,7 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <assert.h>
+#include <cassert>
+
+#include <cstdio>
+
+#include <xbt/log.h>
+#include <xbt/dynar.h>
+#include <xbt/fifo.h>
+#include <xbt/sysdep.h>
 
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_request.h"
@@ -28,7 +35,7 @@ static int is_exploration_stack_state(mc_state_t current_state){
 
   xbt_fifo_item_t item;
   mc_state_t stack_state;
-  for(item = xbt_fifo_get_first_item(mc_stack); item != NULL; item = xbt_fifo_get_next_item(item)) {
+  for(item = xbt_fifo_get_first_item(mc_stack); item != nullptr; item = xbt_fifo_get_next_item(item)) {
     stack_state = (mc_state_t) xbt_fifo_get_item_content(item);
     if(snapshot_compare(stack_state, current_state) == 0){
       XBT_INFO("Non-progressive cycle : state %d -> state %d", stack_state->num, current_state->num);
@@ -57,14 +64,12 @@ static void MC_pre_modelcheck_safety()
   mc_model_checker->wait_for_requests();
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
-  smx_process_t process;
-  MC_EACH_SIMIX_PROCESS(process,
-    if (MC_process_is_enabled(process)) {
-      MC_state_interleave_process(initial_state, process);
+  for (auto& p : mc_model_checker->process().simix_processes())
+    if (MC_process_is_enabled(&p.copy)) {
+      MC_state_interleave_process(initial_state, &p.copy);
       if (mc_reduce_kind != e_mc_reduce_none)
         break;
     }
-  );
 
   xbt_fifo_unshift(mc_stack, initial_state);
 }
@@ -77,12 +82,12 @@ int MC_modelcheck_safety(void)
 {
   MC_modelcheck_safety_init();
 
-  char *req_str = NULL;
+  char *req_str = nullptr;
   int value;
-  smx_simcall_t req = NULL;
-  mc_state_t state = NULL, prev_state = NULL, next_state = NULL;
-  xbt_fifo_item_t item = NULL;
-  mc_visited_state_t visited_state = NULL;
+  smx_simcall_t req = nullptr;
+  mc_state_t state = nullptr, prev_state = NULL, next_state = NULL;
+  xbt_fifo_item_t item = nullptr;
+  mc_visited_state_t visited_state = nullptr;
 
   while (xbt_fifo_size(mc_stack) > 0) {
 
@@ -101,13 +106,13 @@ int MC_modelcheck_safety(void)
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
     if (xbt_fifo_size(mc_stack) <= _sg_mc_max_depth && !user_max_depth_reached
-        && (req = MC_state_get_request(state, &value)) && visited_state == NULL) {
+        && (req = MC_state_get_request(state, &value)) && visited_state == nullptr) {
 
       req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
       XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
 
-      if (dot_output != NULL) {
+      if (dot_output != nullptr) {
         req_str = MC_request_get_dot_output(req, value);
       }
 
@@ -129,31 +134,29 @@ int MC_modelcheck_safety(void)
           return SIMGRID_MC_EXIT_NON_TERMINATION;
       }
 
-      if ((visited_state = is_visited_state(next_state)) == NULL) {
+      if ((visited_state = is_visited_state(next_state)) == nullptr) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
-        smx_process_t process = NULL;
-        MC_EACH_SIMIX_PROCESS(process,
-          if (MC_process_is_enabled(process)) {
-            MC_state_interleave_process(next_state, process);
+        for (auto& p : mc_model_checker->process().simix_processes())
+          if (MC_process_is_enabled(&p.copy)) {
+            MC_state_interleave_process(next_state, &p.copy);
             if (mc_reduce_kind != e_mc_reduce_none)
               break;
           }
-        );
 
-        if (dot_output != NULL)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
+        if (dot_output != nullptr)
+          std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
 
       } else {
 
-        if (dot_output != NULL)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
+        if (dot_output != nullptr)
+          std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
 
       }
 
       xbt_fifo_unshift(mc_stack, next_state);
 
-      if (dot_output != NULL)
+      if (dot_output != nullptr)
         xbt_free(req_str);
 
       /* Let's loop again */
@@ -161,11 +164,11 @@ int MC_modelcheck_safety(void)
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
 
-      if ((xbt_fifo_size(mc_stack) > _sg_mc_max_depth) || user_max_depth_reached || visited_state != NULL) {
+      if ((xbt_fifo_size(mc_stack) > _sg_mc_max_depth) || user_max_depth_reached || visited_state != nullptr) {
 
-        if (user_max_depth_reached && visited_state == NULL)
+        if (user_max_depth_reached && visited_state == nullptr)
           XBT_DEBUG("User max depth reached !");
-        else if (visited_state == NULL)
+        else if (visited_state == nullptr)
           XBT_WARN("/!\\ Max depth reached ! /!\\ ");
         else
           XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
@@ -181,11 +184,11 @@ int MC_modelcheck_safety(void)
       XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
       MC_state_delete(state, !state->in_visited_states ? 1 : 0);
 
-      visited_state = NULL;
+      visited_state = nullptr;
 
       /* Check for deadlocks */
       if (MC_deadlock_check()) {
-        MC_show_deadlock(NULL);
+        MC_show_deadlock(nullptr);
         return SIMGRID_MC_EXIT_DEADLOCK;
       }
 
@@ -286,5 +289,5 @@ static void MC_modelcheck_safety_init(void)
 
   /* Save the initial state */
   initial_global_state = xbt_new0(s_mc_global_t, 1);
-  initial_global_state->snapshot = MC_take_snapshot(0);
+  initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
 }

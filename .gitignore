@@ -24,7 +24,6 @@ CTestResults.xml
 ### Maintainer mode
 src/simdag/dax_dtd.l
 src/surf/xml/simgrid_dtd.l
-src/xbt/graphxml.l
 ### Jedule
 examples/simdag/scheduling/simgrid.jed
 teshsuite/simdag/platforms/simgrid.jed
@@ -140,7 +139,6 @@ examples/msg/cloud/scale
 examples/msg/cloud/simple_vm
 examples/msg/cloud/two_tasks_vm
 examples/msg/energy/consumption/energy_consumption
-examples/msg/energy/e3/e3
 examples/msg/energy/onoff/onoff
 examples/msg/energy/pstate/pstate
 examples/msg/gpu/test_MSG_gpu_task_create
@@ -159,13 +157,10 @@ examples/msg/irc_isend/toto.txt
 examples/msg/kademlia/kademlia
 examples/msg/masterslave/masterslave_arg
 examples/msg/masterslave/masterslave_cluster
-examples/msg/masterslave/masterslave_console
 examples/msg/masterslave/masterslave_failure
-examples/msg/masterslave/masterslave_failure_platfgen
 examples/msg/masterslave/masterslave_forwarder
 examples/msg/masterslave/masterslave_kill
 examples/msg/masterslave/masterslave_mailbox
-examples/msg/masterslave/masterslave_platfgen
 examples/msg/masterslave/toto.txt
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
@@ -227,7 +222,6 @@ examples/simdag/ex_sd_test2
 examples/simdag/ex_sd_test_console
 examples/simdag/goal/goal_test
 examples/simdag/io/sd_io
-examples/simdag/metaxml/sd_meta
 examples/simdag/properties/sd_prop
 examples/simdag/scheduling/minmin_test
 examples/simdag/scheduling/Montage_25.jed
@@ -268,7 +262,7 @@ examples/smpi/smpi_traced.trace
 examples/smpi/toto.txt
 examples/smpi/ttest01
 src/replay/replay
-src/testall
+testall
 teshsuite/bug-17132/bug-17132
 teshsuite/datadesc_usage.out
 teshsuite/java/semaphore/java_semaphore_gc_compiled
@@ -276,11 +270,14 @@ teshsuite/java/sleep_host_off/java_sleep_host_off_compiled
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf_expression/dwarf-expression
 teshsuite/mc/replay/random_bug
+teshsuite/mc/with_mutex_handling
+teshsuite/mc/without_mutex_handling
 teshsuite/msg/get_sender/get_sender
 teshsuite/msg/host_on_off/host_on_off
 teshsuite/msg/host_on_off/host_on_off_recv
 teshsuite/msg/host_on_off/host_on_off_wait
 teshsuite/msg/host_on_off_processes/host_on_off_processes
+teshsuite/msg/listen_async/listen_async
 teshsuite/msg/pid/pid
 teshsuite/msg/process_join/process_join
 teshsuite/msg/process/process
@@ -1026,7 +1023,6 @@ teshsuite/surf/maxmin_bench/maxmin_bench
 teshsuite/surf/surf_usage/surf_usage
 teshsuite/surf/surf_usage/surf_usage2
 teshsuite/surf/trace_usage/trace_usage
-teshsuite/xbt/graphxml_usage/graphxml_usage
 teshsuite/xbt/heap_bench/heap_bench
 teshsuite/xbt/log_large/log_large_test
 teshsuite/xbt/log_large_test

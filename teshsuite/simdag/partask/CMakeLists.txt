@@ -1,8 +1,6 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(test_comp_only_seq test_comp_only_seq.c)
-add_executable(test_comp_only_par test_comp_only_par.c)
+add_executable       (test_comp_only_seq test_comp_only_seq.c)
 target_link_libraries(test_comp_only_seq simgrid)
+add_executable       (test_comp_only_par test_comp_only_par.c)
 target_link_libraries(test_comp_only_par simgrid)
 
 set(tesh_files

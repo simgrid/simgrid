@@ -1,9 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(pstate pstate.c)
-
-### Add definitions for compile
-target_link_libraries(pstate simgrid )
+add_executable       (pstate pstate.c)
+target_link_libraries(pstate simgrid)
 
 set(tesh_files
   ${tesh_files}

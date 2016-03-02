@@ -8,10 +8,10 @@
 #define SIMGRID_MC_HASH_HPP
 
 #include <cstdint>
-#include <vector>
 
-#include "xbt/misc.h"
-#include "src/mc/mc_snapshot.h"
+#include <xbt/base.h>
+
+#include "src/mc/mc_forward.hpp"
 
 namespace simgrid {
 namespace mc {

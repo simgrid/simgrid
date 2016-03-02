@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(goal_test goal_test.c)
+add_executable       (goal_test goal_test.c)
 target_link_libraries(goal_test simgrid)
 
 set(examples_src

@@ -29,14 +29,14 @@ public:
   void loadPlatform(const char *platf);
 
   /** Registers the main function of an actor that will be launched from the deployment file */
-  void register_function(const char*name, int (*code)(int,char**));
+  void registerFunction(const char*name, int (*code)(int,char**));
 
   /** Registers a function as the default main function of actors
    *
    * It will be used as fallback when the function requested from the deployment file was not registered.
    * It is used for trace-based simulations (see examples/msg/actions).
    */
-  void register_default(int (*code)(int,char**));
+  void registerDefault(int (*code)(int,char**));
 
   /** @brief Load a deployment file and launch the actors that it contains */
   void loadDeployment(const char *deploy);
@@ -47,7 +47,17 @@ public:
   /** @brief Retrieve the simulation time */
   static double getClock();
   
+  /** @brief Retrieve the engine singleton */
+  static s4u::Engine *instance();
+private:
+  static s4u::Engine *instance_;
+
+public:
+  /** @brief Retrieve the root AS, containing all others */
+  simgrid::s4u::As *rootAs();
+  /** @brief Retrieve the AS of the given name (or nullptr if not found) */
+  simgrid::s4u::As *asByNameOrNull(const char *name);
 };
-}} // namespace simgrid::sgo
+}} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ENGINE_HPP */
