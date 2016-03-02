@@ -176,7 +176,8 @@ type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t 
   char key[INSTR_DEFAULT_STR_SIZE];
   snprintf (key, INSTR_DEFAULT_STR_SIZE, "%s-%s-%s", name, source->id, dest->id);
   ret = newType (name, key, NULL, TYPE_LINK, father);
-  XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id, source->name, source->id, dest->name, dest->id);
+  XBT_DEBUG("LinkType %s(%s), child of %s(%s)  %s(%s)->%s(%s)", ret->name, ret->id, father->name, father->id,
+            source->name, source->id, dest->name, dest->id);
   new_pajeDefineLinkType(ret, source, dest);
   return ret;
 }

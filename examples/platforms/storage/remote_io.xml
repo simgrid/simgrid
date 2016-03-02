@@ -36,11 +36,11 @@
     <link id="link5" bandwidth="125MBps" latency="50us"/>
     <link id="link6" bandwidth="125MBps" latency="50us"/>
 
-    <route src="alice" dst="bob" symmetrical="YES"><link_ctn id="link1"/></route>
-    <route src="alice" dst="carl" symmetrical="YES"><link_ctn id="link2"/></route>
-    <route src="alice" dst="dave" symmetrical="YES"><link_ctn id="link3"/></route>
-    <route src="bob" dst="carl" symmetrical="YES"><link_ctn id="link4"/></route>
-    <route src="bob" dst="dave" symmetrical="YES"><link_ctn id="link5"/></route>
-    <route src="carl" dst="dave" symmetrical="YES"><link_ctn id="link6"/></route>
+    <route src="alice" dst="bob"><link_ctn id="link1"/></route>
+    <route src="alice" dst="carl"><link_ctn id="link2"/></route>
+    <route src="alice" dst="dave"><link_ctn id="link3"/></route>
+    <route src="bob" dst="carl"><link_ctn id="link4"/></route>
+    <route src="bob" dst="dave"><link_ctn id="link5"/></route>
+    <route src="carl" dst="dave"><link_ctn id="link6"/></route>
   </AS>
 </platform>

@@ -52,7 +52,7 @@ HostL07Model::HostL07Model() : HostModel() {
   routing_model_create(surf_network_model->createLink("__loopback__",
                                                     498000000, NULL,
                                                     0.000015, NULL,
-                                                    1/*ON*/, NULL,
+                                                    NULL,
                                                     SURF_LINK_FATPIPE, NULL));
 }
 
@@ -167,7 +167,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       while ((cnst = lmm_get_cnst_from_var(p_maxminSystem, action->getVariable(), i++))) {
         void *constraint_id = lmm_constraint_id(cnst);
 
-        if (static_cast<Host*>(constraint_id)->isOff()) {
+        if (static_cast<HostImpl*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", action);
           action->finish();
           action->setState(SURF_ACTION_FAILED);
@@ -186,14 +186,10 @@ Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t *host_list,
 }
 
 
-L07Action::L07Action(Model *model, int host_nb,
-    sg_host_t*host_list,
-    double *flops_amount,
-    double *bytes_amount,
-    double rate)
+L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
+    double *flops_amount, double *bytes_amount, double rate)
   : CpuAction(model, 1, 0)
 {
-  unsigned int cpt;
   int nb_link = 0;
   int nb_used_host = 0; /* Only the hosts with something to compute (>0 flops) are counted) */
   double latency = 0.0;
@@ -211,16 +207,14 @@ L07Action::L07Action(Model *model, int host_nb,
 
         if (bytes_amount[i * host_nb + j] > 0) {
           double lat=0.0;
-          xbt_dynar_t route=NULL;
+          std::vector<Link*> *route = new std::vector<Link*>();
 
-          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], &route, &lat);
+          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], route, &lat);
           latency = MAX(latency, lat);
 
-          void *_link;
-          xbt_dynar_foreach(route, cpt, _link) {
-            LinkL07 *link = static_cast<LinkL07*>(_link);
+          for (auto link : *route)
             xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, NULL);
-          }
+          delete route;
         }
       }
     }
@@ -254,19 +248,16 @@ L07Action::L07Action(Model *model, int host_nb,
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
 
-        xbt_dynar_t route=NULL;
         if (bytes_amount[i * host_nb + j] == 0.0)
           continue;
+        std::vector<Link*> *route = new std::vector<Link*>();
 
-        routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j],
-                                                    &route, NULL);
+        routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], route, NULL);
 
-        void *_link;
-        xbt_dynar_foreach(route, cpt, _link) {
-          LinkL07 *link = static_cast<LinkL07*>(_link);
-          lmm_expand_add(model->getMaxminSystem(), link->getConstraint(),
-                        this->getVariable(), bytes_amount[i * host_nb + j]);
-        }
+        for (auto link : *route)
+          lmm_expand_add(model->getMaxminSystem(), link->getConstraint(), this->getVariable(), bytes_amount[i * host_nb + j]);
+
+        delete route;
       }
     }
   }
@@ -296,13 +287,9 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
 }
 
 Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t powerPeakList,
-                          int pstate, double power_scale,
-                          tmgr_trace_t power_trace, int core,
-                          int initiallyOn,
-                          tmgr_trace_t state_trace)
+    tmgr_trace_t power_trace, int core, tmgr_trace_t state_trace)
 {
-  CpuL07 *cpu = new CpuL07(this, host, powerPeakList, pstate, power_scale, power_trace,
-                         core, initiallyOn, state_trace);
+  CpuL07 *cpu = new CpuL07(this, host, powerPeakList, power_trace, core, state_trace);
   return cpu;
 }
 
@@ -311,7 +298,6 @@ Link* NetworkL07Model::createLink(const char *name,
                                  tmgr_trace_t bw_trace,
                                  double lat_initial,
                                  tmgr_trace_t lat_trace,
-                                 int initiallyOn,
                                  tmgr_trace_t state_trace,
                                  e_surf_link_sharing_policy_t policy,
                                  xbt_dict_t properties)
@@ -320,10 +306,10 @@ Link* NetworkL07Model::createLink(const char *name,
            "Link '%s' declared several times in the platform file.", name);
 
   Link* link = new LinkL07(this, name, properties,
-                 bw_initial, bw_trace,
-           lat_initial, lat_trace,
-           initiallyOn, state_trace,
-           policy);
+      bw_initial, bw_trace,
+      lat_initial, lat_trace,
+      state_trace,
+      policy);
   Link::onCreation(link);
   return link;
 }
@@ -333,13 +319,12 @@ Link* NetworkL07Model::createLink(const char *name,
  ************/
 
 CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
-               xbt_dynar_t speedPeakList, int pstate,
-         double speedScale, tmgr_trace_t speedTrace,
-             int core, int initiallyOn, tmgr_trace_t state_trace)
- : Cpu(model, host, speedPeakList, pstate,
-     core, xbt_dynar_get_as(speedPeakList,pstate,double), speedScale, initiallyOn)
+    xbt_dynar_t speedPeakList,
+    tmgr_trace_t speedTrace,
+    int core, tmgr_trace_t state_trace)
+ : Cpu(model, host, speedPeakList, core, xbt_dynar_get_as(speedPeakList,0,double))
 {
-  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,pstate,double) * speedScale);
+  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,0,double));
 
   if (speedTrace)
     p_speed.event = future_evt_set->add_trace(speedTrace, 0.0, this);
@@ -355,7 +340,7 @@ CpuL07::~CpuL07()
 LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
              double bw_initial, tmgr_trace_t bw_trace,
              double lat_initial, tmgr_trace_t lat_trace,
-             int initiallyOn, tmgr_trace_t state_trace,
+             tmgr_trace_t state_trace,
              e_surf_link_sharing_policy_t policy)
  : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), state_trace)
 {
@@ -363,17 +348,12 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
   if (bw_trace)
     m_bandwidth.event = future_evt_set->add_trace(bw_trace, 0.0, this);
 
-  if (initiallyOn)
-    turnOn();
-  else
-    turnOff();
-
   m_latency.peak = lat_initial;
   if (lat_trace)
     m_latency.event = future_evt_set->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
-  lmm_constraint_shared(getConstraint());
+    lmm_constraint_shared(getConstraint());
 }
 
 Action *CpuL07::execution_start(double size)
@@ -506,14 +486,14 @@ void L07Action::updateBound()
   if (p_communicationAmount != NULL) {
     for (i = 0; i < hostNb; i++) {
       for (j = 0; j < hostNb; j++) {
-        xbt_dynar_t route=NULL;
 
         if (p_communicationAmount[i * hostNb + j] > 0) {
           double lat = 0.0;
-          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j],
-                                                                &route, &lat);
+          std::vector<Link*> *route = new std::vector<Link*>();
+          routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], route, &lat);
 
           lat_current = MAX(lat_current, lat * p_communicationAmount[i * hostNb + j]);
+          delete route;
         }
       }
     }

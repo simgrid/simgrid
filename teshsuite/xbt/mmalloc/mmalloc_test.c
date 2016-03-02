@@ -90,7 +90,6 @@ int main(int argc, char**argv)
       xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
   }
 
-
   XBT_INFO("Damnit, I cannot break mmalloc this time. That's SO disappointing.");
   return 0;
 }

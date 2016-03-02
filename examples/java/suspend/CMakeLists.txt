@@ -1,9 +1,7 @@
 set(example java_suspend)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/DreamMaster.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/LazyGuy.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Suspend.java
-  )
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Suspend.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/DreamMaster.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/LazyGuy.java)
 
 if(enable_java)
   add_custom_command(

@@ -1,7 +1,5 @@
 if(HAVE_MC)
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-  add_executable(dwarf-expression dwarf_expression.cpp)
+  add_executable       (dwarf-expression dwarf_expression.cpp)
   target_link_libraries(dwarf-expression simgrid)
 endif()
 

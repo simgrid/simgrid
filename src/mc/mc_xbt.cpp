@@ -4,16 +4,20 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/sysdep.h>
+#include <cstddef>
 
+#include "src/mc/RemotePtr.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_xbt.hpp"
+
+#include <xbt/dynar.h>
+#include <xbt/sysdep.h>
 
 namespace simgrid {
 namespace mc {
 
 void read_element(AddressSpace const& as,
-  void* local, remote_ptr<s_xbt_dynar_t> addr, size_t i, size_t len)
+  void* local, RemotePtr<s_xbt_dynar_t> addr, std::size_t i, std::size_t len)
 {
   s_xbt_dynar_t d;
   as.read_bytes(&d, sizeof(d), addr);
@@ -24,7 +28,7 @@ void read_element(AddressSpace const& as,
   as.read_bytes(local, len, remote(xbt_dynar_get_ptr(&d, i)));
 }
 
-std::size_t read_length(AddressSpace const& as, remote_ptr<s_xbt_dynar_t> addr)
+std::size_t read_length(AddressSpace const& as, RemotePtr<s_xbt_dynar_t> addr)
 {
   if (!addr)
     return 0;

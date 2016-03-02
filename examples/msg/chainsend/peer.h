@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef KADEPLOY_PEER_H
-#define KADEPLOY_PEER_H
+#ifndef PEER_H
+#define PEER_H
 
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"
+#include "xbt/dynar.h"
 
 #include "messages.h"
 #include "common.h"
@@ -39,4 +39,4 @@ void peer_print_stats(peer_t p, float elapsed_time);
 
 int peer(int argc, char *argv[]);
 
-#endif /* KADEPLOY_PEER_H */
+#endif /* PEER_H */

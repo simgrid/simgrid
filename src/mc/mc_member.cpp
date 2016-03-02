@@ -4,13 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/misc.h>
-
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/Type.hpp"
 #include "src/mc/mc_dwarf.hpp"
-
 
 namespace simgrid {
 namespace dwarf {
@@ -20,7 +16,7 @@ namespace dwarf {
  * @param object   Process address of the struct/class
  * @param type     Type of the struct/class
  * @param member   Member description
- * @param snapshot Snapshot (or NULL)
+ * @param snapshot Snapshot (or nullptr)
  * @return Process address of the given member of the 'object' struct/class
  */
 void *resolve_member(
@@ -32,8 +28,8 @@ void *resolve_member(
     return ((char *) base) + member->offset();
 
   ExpressionContext state;
-  state.frame_base = NULL;
-  state.cursor = NULL;
+  state.frame_base = nullptr;
+  state.cursor = nullptr;
   state.address_space = address_space;
   state.process_index = process_index;
 

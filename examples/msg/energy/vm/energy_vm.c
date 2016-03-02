@@ -4,18 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc */
 #include "simgrid/plugins/energy.h"
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(energy_vm, "Messages of this example");
-
 
 static int worker_func() {
   msg_task_t task1 = MSG_task_create("t1", 300E6, 0, NULL);
@@ -50,7 +43,8 @@ static int dvfs(int argc, char *argv[])
   MSG_process_create("p31", worker_func, NULL, vm_host3);
   MSG_process_create("p32", worker_func, NULL, vm_host3);
 
-  XBT_INFO("Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, so they run for 6 seconds)");
+  XBT_INFO("Wait 5 seconds. The tasks are still running (they run for 3 seconds, but 2 tasks are co-located, "
+           "so they run for 6 seconds)");
   MSG_process_sleep(5);
   XBT_INFO("Wait another 5 seconds. The tasks stop at some point in between");
   MSG_process_sleep(5);
@@ -67,13 +61,10 @@ int main(int argc, char *argv[])
   sg_energy_plugin_init();
   MSG_init(&argc, argv);
 
-  xbt_assert(argc > 1, "Usage: %s platform_file\n"
-       "\tExample: %s msg_platform.xml\n", 
-       argv[0], argv[0]);
+  xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
-  /*   Application deployment */
   MSG_process_create("dvfs",dvfs,NULL,MSG_host_by_name("MyHost1"));
 
   res = MSG_main();

@@ -6,8 +6,7 @@
 
 #include "broadcaster.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_broadcaster,
-                             "Messages specific for the broadcaster");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_broadcaster, "Messages specific for the broadcaster");
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount)
 {
@@ -38,8 +37,7 @@ int broadcaster_build_chain(broadcaster_t bc)
     next = *cur;
     bc->first = next;
 
-    /* This iterator iterates one step ahead: cur is current iterated element, 
-       but it's actually the next one in the chain */
+    /* This iterator iterates one step ahead: cur is current iterated element, but is actually next in the chain */
     do {
       /* following steps: prev=last, host=next, next=cur */
       cur = (char**)xbt_dynar_iterator_next(bc->it);
@@ -49,8 +47,8 @@ int broadcaster_build_chain(broadcaster_t bc)
         next = *cur;
       else
         next = NULL;
-      XBT_DEBUG("Building chain -- broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"", me, current_host, prev, next);
-    
+      XBT_DEBUG("Building chain--broadcaster:\"%s\" dest:\"%s\" prev:\"%s\" next:\"%s\"", me, current_host, prev, next);
+
       /* Send message to current peer */
       task = task_message_chain_new(prev, next, bc->piece_count);
       MSG_task_send(task, current_host);

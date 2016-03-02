@@ -16,17 +16,17 @@
 
   <ASroute src="griffon_cluster_cabinet1" dst="griffon_cluster_cabinet2" 
            gw_src="griffon-griffon_cluster_cabinet1_router.nancy.grid5000.fr"
-           gw_dst="griffon-griffon_cluster_cabinet2_router.nancy.grid5000.fr" symmetrical="YES">
+           gw_dst="griffon-griffon_cluster_cabinet2_router.nancy.grid5000.fr">
     <link_ctn id="backbone"/>
   </ASroute>
   <ASroute src="griffon_cluster_cabinet2" dst="griffon_cluster_cabinet3" 
            gw_src="griffon-griffon_cluster_cabinet2_router.nancy.grid5000.fr"
-           gw_dst="griffon-griffon_cluster_cabinet3_router.nancy.grid5000.fr" symmetrical="YES">
+           gw_dst="griffon-griffon_cluster_cabinet3_router.nancy.grid5000.fr">
     <link_ctn id="backbone"/>
   </ASroute>
   <ASroute src="griffon_cluster_cabinet1" dst="griffon_cluster_cabinet3" 
            gw_src="griffon-griffon_cluster_cabinet1_router.nancy.grid5000.fr"
-           gw_dst="griffon-griffon_cluster_cabinet3_router.nancy.grid5000.fr" symmetrical="YES">
+           gw_dst="griffon-griffon_cluster_cabinet3_router.nancy.grid5000.fr">
     <link_ctn id="backbone"/>
   </ASroute>
 </AS>

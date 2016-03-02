@@ -158,18 +158,6 @@ xbt_matrix_t xbt_matrix_double_new_id(int lines, int rows)
   return res;
 }
 
-/** \brief Creates a new matrix of double randomly filled */
-xbt_matrix_t xbt_matrix_double_new_rand(int lines, int rows)
-{
-  xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
-  int i, j;
-
-  for (i = 0; i < lines; i++)
-    for (j = 0; j < rows; j++)
-      xbt_matrix_get_as(res, i, j, double) = (double) rand();
-  return res;
-}
-
 /** \brief Creates a new matrix of double containing the sequence of numbers in order */
 xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
 {
@@ -180,29 +168,6 @@ xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
     *(double *) &res->data[i * res->elmsize] = i;
 
   return res;
-}
-
-/** \brief Checks whether the matrix contains the sequence of numbers */
-int xbt_matrix_double_is_seq(xbt_matrix_t mat)
-{
-  unsigned int i;
-
-  for (i = 0; i < mat->lines * mat->rows; i++) {
-    double val = xbt_matrix_get_as(mat, i, 0, double);
-    if (val != i)
-      return 0;
-  }
-
-  return 1;
-}
-
-/** \brief Creates a new matrix being the multiplication of two others */
-xbt_matrix_t xbt_matrix_double_new_mult(xbt_matrix_t A, xbt_matrix_t B)
-{
-  xbt_matrix_t result = xbt_matrix_double_new_zeros(A->lines, B->rows);
-
-  xbt_matrix_double_addmult(A, B, result);
-  return result;
 }
 
 /** \brief add to C the result of A*B */

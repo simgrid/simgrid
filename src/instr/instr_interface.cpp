@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid_config.h"
-
 #include "src/surf/network_interface.hpp"
 #include "src/instr/instr_private.h"
 #include "surf/surf.h"
@@ -45,18 +44,13 @@ static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
 /** \ingroup TRACE_category
  *  \brief Declare a new category with a random color.
  *
- *  This function should be used to define a user category. The
- *  category can be used to differentiate the tasks that are created
- *  during the simulation (for example, tasks from server1, server2,
- *  or request tasks, computation tasks, communication tasks). All
- *  resource utilization (host power and link bandwidth) will be
- *  classified according to the task category. Tasks that do not
- *  belong to a category are not traced. The color for the category
- *  that is being declared is random. This function has no effect
- *  if a category with the same name has been already declared.
+ *  This function should be used to define a user category. The category can be used to differentiate the tasks that
+ *  are created during the simulation (for example, tasks from server1, server2, or request tasks, computation tasks,
+ *  communication tasks). All resource utilization (host power and link bandwidth) will be classified according to the
+ *  task category. Tasks that do not belong to a category are not traced. The color for the category that is being
+ *  declared is random. This function has no effect if a category with the same name has been already declared.
  *
- * See \ref tracing for details on how to trace
- * the (categorized) resource utilization.
+ * See \ref tracing for details on how to trace the (categorized) resource utilization.
  *
  *  \param category The name of the new tracing category to be created.
  *
@@ -70,14 +64,11 @@ void TRACE_category(const char *category)
 /** \ingroup TRACE_category
  *  \brief Declare a new category with a color.
  *
- *  Same as #TRACE_category, but let user specify a color encoded as a
- *  RGB-like string with three floats from 0 to 1. So, to specify a
- *  red color, pass "1 0 0" as color parameter. A light-gray color
- *  can be specified using "0.7 0.7 0.7" as color. This function has
- *  no effect if a category with the same name has been already declared.
+ *  Same as #TRACE_category, but let user specify a color encoded as a RGB-like string with three floats from 0 to 1.
+ *  So, to specify a red color, pass "1 0 0" as color parameter. A light-gray color can be specified using "0.7 0.7 0.7"
+ *   as color. This function has no effect if a category with the same name has been already declared.
  *
- * See \ref tracing for details on how to trace
- * the (categorized) resource utilization.
+ * See \ref tracing for details on how to trace the (categorized) resource utilization.
  *
  *  \param category The name of the new tracing category to be created.
  *  \param color The color of the category (see \ref tracing to
@@ -118,15 +109,13 @@ void TRACE_category_with_color (const char *category, const char *color)
   instr_new_variable_type (category, final_color);
 }
 
-
 /** \ingroup TRACE_category
  *  \brief Get declared categories
  *
- * This function should be used to get categories that were already
- * declared with #TRACE_category or with #TRACE_category_with_color.
+ * This function should be used to get categories that were already declared with #TRACE_category or with
+ * #TRACE_category_with_color.
  *
- * See \ref tracing for details on how to trace
- * the (categorized) resource utilization.
+ * See \ref tracing for details on how to trace the (categorized) resource utilization.
  *
  * \return A dynar with the declared categories, must be freed with xbt_dynar_free.
  *
@@ -143,11 +132,8 @@ xbt_dynar_t TRACE_get_categories (void)
 /** \ingroup TRACE_mark
  * \brief Declare a new type for tracing mark.
  *
- * This function declares a new Paje event
- * type in the trace file that can be used by
- * simulators to declare application-level
- * marks. This function is independent of
- * which API is used in SimGrid.
+ * This function declares a new Paje event type in the trace file that can be used by simulators to declare
+ * application-level marks. This function is independent of which API is used in SimGrid.
  *
  * \param mark_type The name of the new type.
  *
@@ -177,14 +163,11 @@ void TRACE_declare_mark(const char *mark_type)
 /** \ingroup TRACE_mark
  * \brief Declare a new colored value for a previously declared mark type.
  *
- * This function declares a new colored value for a Paje event
- * type in the trace file that can be used by
- * simulators to declare application-level
- * marks. This function is independent of
- * which API is used in SimGrid. The color needs to be
+ * This function declares a new colored value for a Paje event type in the trace file that can be used by simulators to
+ * declare application-level marks. This function is independent of which API is used in SimGrid. The color needs to be
  * a string with three numbers separated by spaces in the range [0,1].
- * A light-gray color can be specified using "0.7 0.7 0.7" as color.
- * If a NULL color is provided, the color used will be white ("1 1 1").
+ * A light-gray color can be specified using "0.7 0.7 0.7" as color. If a NULL color is provided, the color used will
+ * be white ("1 1 1").
  *
  * \param mark_type The name of the new type.
  * \param mark_value The name of the new value for this type.
@@ -218,12 +201,9 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
 /** \ingroup TRACE_mark
  * \brief Declare a new value for a previously declared mark type.
  *
- * This function declares a new value for a Paje event
- * type in the trace file that can be used by
- * simulators to declare application-level
- * marks. This function is independent of
- * which API is used in SimGrid. Calling this function is the same
- * as calling \ref TRACE_declare_mark_value_with_color with a NULL color.
+ * This function declares a new value for a Paje event type in the trace file that can be used by simulators to declare
+ * application-level marks. This function is independent of which API is used in SimGrid. Calling this function is the
+ * same as calling \ref TRACE_declare_mark_value_with_color with a NULL color.
  *
  * \param mark_type The name of the new type.
  * \param mark_value The name of the new value for this type.
@@ -239,14 +219,10 @@ void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
  * \ingroup TRACE_mark
  * \brief Create a new instance of a tracing mark type.
  *
- * This function creates a mark in the trace file. The
- * first parameter had to be previously declared using
- * #TRACE_declare_mark, the second is the identifier
- * for this mark instance. We recommend that the
- * mark_value is a unique value for the whole simulation.
- * Nevertheless, this is not a strong requirement: the
- * trace will be valid even if there are multiple mark
- * identifiers for the same trace.
+ * This function creates a mark in the trace file. The first parameter had to be previously declared using
+ * #TRACE_declare_mark, the second is the identifier for this mark instance. We recommend that the mark_value is a
+ * unique value for the whole simulation. Nevertheless, this is not a strong requirement: the trace will be valid even
+ * if there are multiple mark identifiers for the same trace.
  *
  * \param mark_type The name of the type for which the new instance will belong.
  * \param mark_value The name of the new instance mark.
@@ -278,11 +254,9 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
 /** \ingroup TRACE_mark
  *  \brief Get declared marks
  *
- * This function should be used to get marks that were already
- * declared with #TRACE_declare_mark.
+ * This function should be used to get marks that were already declared with #TRACE_declare_mark.
  *
  * \return A dynar with the declared marks, must be freed with xbt_dynar_free.
- *
  */
 xbt_dynar_t TRACE_get_marks (void)
 {
@@ -291,14 +265,8 @@ xbt_dynar_t TRACE_get_marks (void)
   return instr_dict_to_dynar (declared_marks);
 }
 
-static void instr_user_variable(double time,
-                         const char *resource,
-                         const char *variable,
-                         const char *father_type,
-                         double value,
-                         InstrUserVariable what,
-                         const char *color,
-                         xbt_dict_t filter)
+static void instr_user_variable(double time, const char *resource, const char *variable, const char *father_type,
+                         double value, InstrUserVariable what, const char *color, xbt_dict_t filter)
 {
   /* safe switch */
   if (!TRACE_is_enabled()) return;
@@ -309,15 +277,13 @@ static void instr_user_variable(double time,
   //check if variable is already declared
   char *created = (char*)xbt_dict_get_or_null(filter, variable);
   if (what == INSTR_US_DECLARE){
-    if (created){
-      //already declared
+    if (created){//already declared
       return;
     }else{
       xbt_dict_set (filter, variable, xbt_strdup("1"), NULL);
     }
   }else{
-    if (!created){
-      //not declared, ignore
+    if (!created){//not declared, ignore
       return;
     }
   }
@@ -330,61 +296,53 @@ static void instr_user_variable(double time,
     instr_new_user_variable_type (father_type, variable, color);
     break;
   case INSTR_US_SET:
-  {
-    container_t container = PJ_container_get(resource);
-    type_t type = PJ_type_get (variable, container->type);
-    new_pajeSetVariable(time, container, type, value);
+    {
+      container_t container = PJ_container_get(resource);
+      type_t type = PJ_type_get (variable, container->type);
+      new_pajeSetVariable(time, container, type, value);
+    }
     break;
-  }
   case INSTR_US_ADD:
-  {
-    container_t container = PJ_container_get(resource);
-    type_t type = PJ_type_get (variable, container->type);
-    new_pajeAddVariable(time, container, type, value);
+    {
+      container_t container = PJ_container_get(resource);
+      type_t type = PJ_type_get (variable, container->type);
+      new_pajeAddVariable(time, container, type, value);
+    }
     break;
-  }
   case INSTR_US_SUB:
-  {
-    container_t container = PJ_container_get(resource);
-    type_t type = PJ_type_get (variable, container->type);
-    new_pajeSubVariable(time, container, type, value);
-    break;
-  }
+    {
+      container_t container = PJ_container_get(resource);
+      type_t type = PJ_type_get (variable, container->type);
+      new_pajeSubVariable(time, container, type, value);
+    }
+     break;
   default:
     //TODO: launch exception
     break;
   }
 }
 
-static void instr_user_srcdst_variable(double time,
-                              const char *src,
-                              const char *dst,
-                              const char *variable,
-                              const char *father_type,
-                              double value,
-                              InstrUserVariable what)
+static void instr_user_srcdst_variable(double time, const char *src, const char *dst, const char *variable,
+                              const char *father_type, double value, InstrUserVariable what)
 {
-  xbt_dynar_t route=NULL;
   sg_netcard_t src_elm = sg_netcard_by_name_or_null(src);
   if(!src_elm) xbt_die("Element '%s' not found!",src);
 
   sg_netcard_t dst_elm = sg_netcard_by_name_or_null(dst);
   if(!dst_elm) xbt_die("Element '%s' not found!",dst);
 
-  routing_platf->getRouteAndLatency (src_elm, dst_elm, &route,NULL);
-  unsigned int i;
-  surf_cpp_resource_t link;
-  xbt_dynar_foreach (route, i, link) {
-    char *link_name = (char*)surf_resource_name(link);
-    instr_user_variable (time, link_name, variable, father_type, value, what, NULL, user_link_variables);
-  }
+  std::vector<Link*> *route = new std::vector<Link*>();
+  routing_platf->getRouteAndLatency (src_elm, dst_elm, route,NULL);
+  for (auto link : *route)
+    instr_user_variable (time, link->getName(), variable, father_type, value, what, NULL, user_link_variables);
+  delete route;
 }
 
 /** \ingroup TRACE_API
  *  \brief Creates a file with the topology of the platform file used for the simulator.
  *
- *  The graph topology will have the following properties: all hosts, links and routers
- *  of the platform file are mapped to graph nodes; routes are mapped to edges.
+ *  The graph topology will have the following properties: all hosts, links and routers of the platform file are mapped
+ *  to graph nodes; routes are mapped to edges.
  *  The platform's AS are not represented in the output.
  *
  *  \param filename The name of the file that will hold the graph.
@@ -403,19 +361,16 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
 }
 
 /*
- * Derived functions that use instr_user_variable and TRACE_user_srcdst_variable.
- * They were previously defined as pre-processors directives, but were transformed
- * into functions so the user can track them using gdb.
+ * Derived functions that use instr_user_variable and TRACE_user_srcdst_variable. They were previously defined as
+ * pre-processors directives, but were transformed into functions so the user can track them using gdb.
  */
 
 /* for VM variables */
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new user variable associated to VMs.
  *
- *  Declare a user variable that will be associated to VMs.
- *  A user vm variable can be used to trace user variables
- *  such as the number of tasks in a VM, the number of
- *  clients in an application (for VMs), and so on. The color
+ *  Declare a user variable that will be associated to VMs. A user vm variable can be used to trace user variables
+ *  such as the number of tasks in a VM, the number of clients in an application (for VMs), and so on. The color
  *  associated to this new variable will be random.
  *
  *  \param variable The name of the new variable to be declared.
@@ -430,14 +385,12 @@ void TRACE_vm_variable_declare (const char *variable)
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new user variable associated to VMs with a color.
  *
- *  Same as #TRACE_vm_variable_declare, but associated a color
- *  to the newly created user host variable. The color needs to be
- *  a string with three numbers separated by spaces in the range [0,1].
+ *  Same as #TRACE_vm_variable_declare, but associated a color to the newly created user host variable. The color needs
+ *  to be a string with three numbers separated by spaces in the range [0,1].
  *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
  *
  *  \param variable The name of the new variable to be declared.
  *  \param color The color for the new variable.
- *
  */
 void TRACE_vm_variable_declare_with_color (const char *variable, const char *color)
 {
@@ -455,7 +408,6 @@ void TRACE_vm_variable_declare_with_color (const char *variable, const char *col
  */
 void TRACE_vm_variable_set (const char *vm, const char *variable, double value)
 {
-
   TRACE_vm_variable_set_with_time (MSG_get_clock(), vm, variable, value);
 }
 
@@ -490,12 +442,10 @@ void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
 /** \ingroup TRACE_user_variables
  *  \brief Set the value of a variable of a VM at a given timestamp.
  *
- *  Same as #TRACE_vm_variable_set, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_vm_variable_set, but let user specify  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param vm The name of the VM to be considered.
@@ -512,12 +462,10 @@ void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *v
 /** \ingroup TRACE_user_variables
  *  \brief Add a value to a variable of a VM at a given timestamp.
  *
- *  Same as #TRACE_vm_variable_add, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_vm_variable_add, but let user specify the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param vm The name of the VM to be considered.
@@ -534,12 +482,10 @@ void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *v
 /** \ingroup TRACE_user_variables
  *  \brief Subtract a value from a variable of a VM at a given timestamp.
  *
- *  Same as #TRACE_vm_variable_sub, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_vm_variable_sub, but let user specify the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param vm The name of the VM to be considered.
@@ -556,8 +502,8 @@ void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *v
 /** \ingroup TRACE_user_variables
  *  \brief Get declared user vm variables
  *
- * This function should be used to get VM variables that were already
- * declared with #TRACE_vm_variable_declare or with #TRACE_vm_variable_declare_with_color.
+ * This function should be used to get VM variables that were already declared with #TRACE_vm_variable_declare or with
+ * #TRACE_vm_variable_declare_with_color.
  *
  * \return A dynar with the declared host variables, must be freed with xbt_dynar_free.
  */
@@ -566,17 +512,13 @@ xbt_dynar_t TRACE_get_vm_variables (void)
   return instr_dict_to_dynar (user_vm_variables);
 }
 
-
-
 /* for host variables */
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new user variable associated to hosts.
  *
  *  Declare a user variable that will be associated to hosts.
- *  A user host variable can be used to trace user variables
- *  such as the number of tasks in a server, the number of
- *  clients in an application (for hosts), and so on. The color
- *  associated to this new variable will be random.
+ *  A user host variable can be used to trace user variables such as the number of tasks in a server, the number of
+ *  clients in an application (for hosts), and so on. The color associated to this new variable will be random.
  *
  *  \param variable The name of the new variable to be declared.
  *
@@ -590,14 +532,12 @@ void TRACE_host_variable_declare (const char *variable)
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new user variable associated to hosts with a color.
  *
- *  Same as #TRACE_host_variable_declare, but associated a color
- *  to the newly created user host variable. The color needs to be
- *  a string with three numbers separated by spaces in the range [0,1].
+ *  Same as #TRACE_host_variable_declare, but associated a color to the newly created user host variable. The color
+ *  needs to be a string with three numbers separated by spaces in the range [0,1].
  *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
  *
  *  \param variable The name of the new variable to be declared.
  *  \param color The color for the new variable.
- *
  */
 void TRACE_host_variable_declare_with_color (const char *variable, const char *color)
 {
@@ -649,12 +589,10 @@ void TRACE_host_variable_sub (const char *host, const char *variable, double val
 /** \ingroup TRACE_user_variables
  *  \brief Set the value of a variable of a host at a given timestamp.
  *
- *  Same as #TRACE_host_variable_set, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_host_variable_set, but let user specify  the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace  can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param host The name of the host to be considered.
@@ -671,12 +609,10 @@ void TRACE_host_variable_set_with_time (double time, const char *host, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Add a value to a variable of a host at a given timestamp.
  *
- *  Same as #TRACE_host_variable_add, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_host_variable_add, but let user specify the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param host The name of the host to be considered.
@@ -693,12 +629,10 @@ void TRACE_host_variable_add_with_time (double time, const char *host, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Subtract a value from a variable of a host at a given timestamp.
  *
- *  Same as #TRACE_host_variable_sub, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_host_variable_sub, but let user specify the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core  simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param host The name of the host to be considered.
@@ -715,8 +649,8 @@ void TRACE_host_variable_sub_with_time (double time, const char *host, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Get declared user host variables
  *
- * This function should be used to get host variables that were already
- * declared with #TRACE_host_variable_declare or with #TRACE_host_variable_declare_with_color.
+ * This function should be used to get host variables that were already declared with #TRACE_host_variable_declare or
+ * with #TRACE_host_variable_declare_with_color.
  *
  * \return A dynar with the declared host variables, must be freed with xbt_dynar_free.
  */
@@ -730,10 +664,8 @@ xbt_dynar_t TRACE_get_host_variables (void)
  *  \brief Declare a new user variable associated to links.
  *
  *  Declare a user variable that will be associated to links.
- *  A user link variable can be used, for example, to trace
- *  user variables such as the number of messages being
- *  transferred through network links. The color
- *  associated to this new variable will be random.
+ *  A user link variable can be used, for example, to trace user variables such as the number of messages being
+ *  transferred through network links. The color associated to this new variable will be random.
  *
  *  \param variable The name of the new variable to be declared.
  *
@@ -747,14 +679,12 @@ void TRACE_link_variable_declare (const char *variable)
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new user variable associated to links with a color.
  *
- *  Same as #TRACE_link_variable_declare, but associated a color
- *  to the newly created user link variable. The color needs to be
- *  a string with three numbers separated by spaces in the range [0,1].
+ *  Same as #TRACE_link_variable_declare, but associated a color to the newly created user link variable. The color
+ *  needs to be a string with three numbers separated by spaces in the range [0,1].
  *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
  *
  *  \param variable The name of the new variable to be declared.
  *  \param color The color for the new variable.
- *
  */
 void TRACE_link_variable_declare_with_color (const char *variable, const char *color)
 {
@@ -806,12 +736,10 @@ void TRACE_link_variable_sub (const char *link, const char *variable, double val
 /** \ingroup TRACE_user_variables
  *  \brief Set the value of a variable of a link at a given timestamp.
  *
- *  Same as #TRACE_link_variable_set, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_link_variable_set, but let user specify the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param link The name of the link to be considered.
@@ -828,12 +756,10 @@ void TRACE_link_variable_set_with_time (double time, const char *link, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Add a value to a variable of a link at a given timestamp.
  *
- *  Same as #TRACE_link_variable_add, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_link_variable_add, but let user specify the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param link The name of the link to be considered.
@@ -850,12 +776,10 @@ void TRACE_link_variable_add_with_time (double time, const char *link, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Subtract a value from a variable of a link at a given timestamp.
  *
- *  Same as #TRACE_link_variable_sub, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_link_variable_sub, but let user specify the time used to trace it. Users can specify a time that
+ *  is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param link The name of the link to be considered.
@@ -873,10 +797,9 @@ void TRACE_link_variable_sub_with_time (double time, const char *link, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Set the value of the variable present in the links connecting source and destination.
  *
- *  Same as #TRACE_link_variable_set, but instead of providing the
- *  name of link to be considered, provide the source and destination
- *  hosts. All links that are part of the route between source and
- *  destination will have the variable set to the provided value.
+ *  Same as #TRACE_link_variable_set, but instead of providing the name of link to be considered, provide the source
+ *  and destination hosts. All links that are part of the route between source and destination will have the variable
+ *  set to the provided value.
  *
  *  \param src The name of the source host for get route.
  *  \param dst The name of the destination host for get route.
@@ -893,11 +816,9 @@ void TRACE_link_srcdst_variable_set (const char *src, const char *dst, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Add a value to the variable present in the links connecting source and destination.
  *
- *  Same as #TRACE_link_variable_add, but instead of providing the
- *  name of link to be considered, provide the source and destination
- *  hosts. All links that are part of the route between source and
- *  destination will have the value passed as parameter added to
- *  the current value of the variable name to be considered.
+ *  Same as #TRACE_link_variable_add, but instead of providing the name of link to be considered, provide the source
+ *  and destination hosts. All links that are part of the route between source and destination will have the value
+ *  passed as parameter added to the current value of the variable name to be considered.
  *
  *  \param src The name of the source host for get route.
  *  \param dst The name of the destination host for get route.
@@ -914,11 +835,9 @@ void TRACE_link_srcdst_variable_add (const char *src, const char *dst, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Subtract a value from the variable present in the links connecting source and destination.
  *
- *  Same as #TRACE_link_variable_sub, but instead of providing the
- *  name of link to be considered, provide the source and destination
- *  hosts. All links that are part of the route between source and
- *  destination will have the value passed as parameter subtracted from
- *  the current value of the variable name to be considered.
+ *  Same as #TRACE_link_variable_sub, but instead of providing the name of link to be considered, provide the source
+ *  and destination hosts. All links that are part of the route between source and destination will have the value
+ *  passed as parameter subtracted from the current value of the variable name to be considered.
  *
  *  \param src The name of the source host for get route.
  *  \param dst The name of the destination host for get route.
@@ -935,12 +854,10 @@ void TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const cha
 /** \ingroup TRACE_user_variables
  *  \brief Set the value of the variable present in the links connecting source and destination at a given timestamp.
  *
- *  Same as #TRACE_link_srcdst_variable_set, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_link_srcdst_variable_set, but let user specify the time used to trace it. Users can specify a time
+ *  that is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param src The name of the source host for get route.
@@ -950,7 +867,8 @@ void TRACE_link_srcdst_variable_sub (const char *src, const char *dst, const cha
  *
  *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_add_with_time, TRACE_link_srcdst_variable_sub_with_time
  */
-void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, const char *dst, const char *variable,
+                                               double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SET);
 }
@@ -958,12 +876,10 @@ void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, con
 /** \ingroup TRACE_user_variables
  *  \brief Add a value to the variable present in the links connecting source and destination at a given timestamp.
  *
- *  Same as #TRACE_link_srcdst_variable_add, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_link_srcdst_variable_add, but let user specify the time used to trace it. Users can specify a time
+ *  that is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param src The name of the source host for get route.
@@ -973,20 +889,19 @@ void TRACE_link_srcdst_variable_set_with_time (double time, const char *src, con
  *
  *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set_with_time, TRACE_link_srcdst_variable_sub_with_time
  */
-void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, const char *dst, const char *variable,
+                                               double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_ADD);
 }
 
 /** \ingroup TRACE_user_variables
- *  \brief Subtract a value from the variable present in the links connecting source and destination at a given timestamp.
+ *  \brief Subtract a value from the variable present in the links connecting source and dest. at a given timestamp.
  *
- *  Same as #TRACE_link_srcdst_variable_sub, but let user specify
- *  the time used to trace it. Users can specify a time that
- *  is not the simulated clock time as defined by the core
- *  simulator. This allows a fine-grain control of time
- *  definition, but should be used with caution since the trace
- *  can be inconsistent if resource utilization traces are also traced.
+ *  Same as #TRACE_link_srcdst_variable_sub, but let user specify the time used to trace it. Users can specify a time
+ *  that is not the simulated clock time as defined by the core simulator. This allows a fine-grain control of time
+ *  definition, but should be used with caution since the trace can be inconsistent if resource utilization traces are
+ *  also traced.
  *
  *  \param time The timestamp to be used to tag this change of value.
  *  \param src The name of the source host for get route.
@@ -996,7 +911,8 @@ void TRACE_link_srcdst_variable_add_with_time (double time, const char *src, con
  *
  *  \see TRACE_link_variable_declare, TRACE_link_srcdst_variable_set_with_time, TRACE_link_srcdst_variable_add_with_time
  */
-void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable, double value)
+void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, const char *dst, const char *variable,
+                                               double value)
 {
   instr_user_srcdst_variable (time, src, dst, variable, "LINK", value, INSTR_US_SUB);
 }
@@ -1004,8 +920,8 @@ void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, con
 /** \ingroup TRACE_user_variables
  *  \brief Get declared user link variables
  *
- * This function should be used to get link variables that were already
- * declared with #TRACE_link_variable_declare or with #TRACE_link_variable_declare_with_color.
+ * This function should be used to get link variables that were already declared with #TRACE_link_variable_declare or
+ * with #TRACE_link_variable_declare_with_color.
  *
  * \return A dynar with the declared link variables, must be freed with xbt_dynar_free.
  */
@@ -1032,8 +948,7 @@ void TRACE_host_state_declare (const char *state)
 /** \ingroup TRACE_user_variables
  *  \brief Declare a new value for a user state associated to hosts.
  *
- *  Declare a value for a state. The color needs to be
- *  a string with three numbers separated by spaces in the range [0,1].
+ *  Declare a value for a state. The color needs to be a string with 3 numbers separated by spaces in the range [0,1].
  *  A light-gray color can be specified using "0.7 0.7 0.7" as color.
  *
  *  \param state The name of the new state to be declared.
@@ -1062,7 +977,7 @@ void TRACE_host_set_state (const char *host, const char *state, const char *valu
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  val_t val = PJ_value_get_or_new (value, NULL, type); /* if user didn't declare a value with a color, user a NULL color */
+  val_t val = PJ_value_get_or_new (value, NULL, type); /* if user didn't declare a value with a color, use NULL color */
   new_pajeSetState(MSG_get_clock(), container, type, val);
 }
 
@@ -1081,7 +996,7 @@ void TRACE_host_push_state (const char *host, const char *state, const char *val
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  val_t val = PJ_value_get_or_new (value, NULL, type); /* if user didn't declare a value with a color, user a NULL color */
+  val_t val = PJ_value_get_or_new (value, NULL, type); /* if user didn't declare a value with a color, use NULL color */
   new_pajePushState(MSG_get_clock(), container, type, val);
 }
 
@@ -1122,9 +1037,8 @@ void TRACE_host_reset_state (const char *host, const char *state)
 /** \ingroup TRACE_API
  *  \brief Get Paje container types that can be mapped to the nodes of a graph.
  *
- *  This function can be used to create a user made
- *  graph configuration file for Triva. Normally, it is
- *  used with the functions defined in \ref TRACE_user_variables.
+ *  This function can be used to create a user made  graph configuration file for Triva. Normally, it is used with the
+ *  functions defined in \ref TRACE_user_variables.
  *
  *  \return A dynar with the types, must be freed with xbt_dynar_free.
  */
@@ -1136,9 +1050,8 @@ xbt_dynar_t TRACE_get_node_types (void)
 /** \ingroup TRACE_API
  *  \brief Get Paje container types that can be mapped to the edges of a graph.
  *
- *  This function can be used to create a user made
- *  graph configuration file for Triva. Normally, it is
- *  used with the functions defined in \ref TRACE_user_variables.
+ *  This function can be used to create a user made graph configuration file for Triva. Normally, it is used with the
+ *  functions defined in \ref TRACE_user_variables.
  *
  *  \return A dynar with the types, must be freed with xbt_dynar_free.
  */

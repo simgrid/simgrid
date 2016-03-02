@@ -1,13 +1,5 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(log_usage ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage/log_usage.c)
-
-### Add definitions for compile
-if(NOT WIN32)
-  target_link_libraries(log_usage simgrid m )
-else()
-  target_link_libraries(log_usage simgrid )
-endif()
+add_executable       (log_usage log_usage.c)
+target_link_libraries(log_usage simgrid)
 
 set(tesh_files
   ${tesh_files}

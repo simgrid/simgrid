@@ -1,18 +1,15 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(sd_test sd_test.c)
-add_executable(sd_test2 sd_test2.c)
-add_executable(sd_fail sd_fail.c)
-add_executable(sd_avail sd_avail.c)
-add_executable(sd_typed_tasks_test sd_typed_tasks_test.c)
-add_executable(sd_comm_throttling sd_comm_throttling.c)
-
-target_link_libraries(sd_test simgrid)
-target_link_libraries(sd_test2 simgrid)
-target_link_libraries(sd_fail simgrid)
-target_link_libraries(sd_avail simgrid)
+add_executable       (sd_test             sd_test.c)
+target_link_libraries(sd_test             simgrid)
+add_executable       (sd_test2            sd_test2.c)
+target_link_libraries(sd_test2            simgrid)
+add_executable       (sd_fail             sd_fail.c)
+target_link_libraries(sd_fail             simgrid)
+add_executable       (sd_avail            sd_avail.c)
+target_link_libraries(sd_avail            simgrid)
+add_executable       (sd_typed_tasks_test sd_typed_tasks_test.c)
 target_link_libraries(sd_typed_tasks_test simgrid)
-target_link_libraries(sd_comm_throttling simgrid)
+add_executable       (sd_comm_throttling  sd_comm_throttling.c)
+target_link_libraries(sd_comm_throttling  simgrid)
 
 set(tesh_files
   ${tesh_files}

@@ -4,16 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef KADEPLOY_BROADCASTER_H
-#define KADEPLOY_BROADCASTER_H
+#ifndef BROADCASTER_H
+#define BROADCASTER_H
 
-#include "simgrid/msg.h"
-#include "xbt/sysdep.h"
-
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-
+#include "xbt/dynar.h"
 #include "messages.h"
 #include "iterator.h"
 #include "common.h"
@@ -46,4 +40,4 @@ int broadcaster_send_file(broadcaster_t bc);
 /* Tasks */
 int broadcaster(int argc, char *argv[]);
 
-#endif /* KADEPLOY_BROADCASTER_H */
+#endif /* BROADCASTER_H */

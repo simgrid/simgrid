@@ -72,7 +72,7 @@ cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON -Denable_traci
       -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
 
 ctest -D ExperimentalBuild -V
-ctest -D ExperimentalTest || true
+ctest -D ExperimentalTest -E liveness || true
 ctest -D ExperimentalCoverage || true
 
 if [ -f Testing/TAG ] ; then

@@ -1,8 +1,6 @@
 set(example java_energy)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/EnergyConsumer.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Energy.java
-  )
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Energy.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/EnergyConsumer.java)
 
 if(enable_java)
   add_custom_command(

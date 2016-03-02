@@ -28,22 +28,22 @@ XBT_PRIVATE void SIMIX_network_exit(void);
 XBT_PUBLIC(int) SIMIX_comm_is_latency_bounded(smx_synchro_t comm);
 #endif
 
-XBT_PRIVATE smx_rdv_t SIMIX_rdv_create(const char *name);
-XBT_PRIVATE void SIMIX_rdv_destroy(smx_rdv_t rdv);
-XBT_PRIVATE smx_rdv_t SIMIX_rdv_get_by_name(const char *name);
-XBT_PRIVATE void SIMIX_rdv_remove(smx_rdv_t rdv, smx_synchro_t comm);
-XBT_PRIVATE int SIMIX_rdv_comm_count_by_host(smx_rdv_t rdv, sg_host_t host);
-XBT_PRIVATE smx_synchro_t SIMIX_rdv_get_head(smx_rdv_t rdv);
-XBT_PRIVATE void SIMIX_rdv_set_receiver(smx_rdv_t rdv, smx_process_t proc);
-XBT_PRIVATE smx_process_t SIMIX_rdv_get_receiver(smx_rdv_t rdv);
-XBT_PRIVATE smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_rdv_t rdv,
+XBT_PRIVATE smx_mailbox_t SIMIX_rdv_create(const char *name);
+XBT_PRIVATE void SIMIX_rdv_destroy(smx_mailbox_t rdv);
+XBT_PRIVATE smx_mailbox_t SIMIX_rdv_get_by_name(const char *name);
+XBT_PRIVATE void SIMIX_rdv_remove(smx_mailbox_t rdv, smx_synchro_t comm);
+XBT_PRIVATE int SIMIX_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host);
+XBT_PRIVATE smx_synchro_t SIMIX_rdv_get_head(smx_mailbox_t rdv);
+XBT_PRIVATE void SIMIX_rdv_set_receiver(smx_mailbox_t rdv, smx_process_t proc);
+XBT_PRIVATE smx_process_t SIMIX_rdv_get_receiver(smx_mailbox_t rdv);
+XBT_PRIVATE smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t rdv,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *, smx_synchro_t),
                               void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                               void *data, double rate);
 XBT_PRIVATE void SIMIX_comm_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_comm_destroy_internal_actions(smx_synchro_t synchro);
-XBT_PRIVATE smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_rdv_t rdv, int type, int src,
+XBT_PRIVATE smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t rdv, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data);
 XBT_PRIVATE void SIMIX_post_comm(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_comm_cancel(smx_synchro_t synchro);

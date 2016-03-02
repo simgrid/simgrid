@@ -7,12 +7,8 @@
 #ifndef SIMGRID_MC_IGNORE_H
 #define SIMGRID_MC_IGNORE_H
 
+#include <xbt/base.h>           /* SG_BEGIN_DECL */
 #include <xbt/dynar.h>
-
-#include "mc/datatypes.h"
-#include "src/mc/Process.hpp"
-
-#include "xbt/misc.h"           /* SG_BEGIN_DECL */
 
 SG_BEGIN_DECL();
 

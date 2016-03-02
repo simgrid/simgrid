@@ -24,13 +24,17 @@ int main(int argc, char **argv)
 
   size = xbt_dict_length(host_list) + xbt_lib_length(as_router_lib);
 
-  printf("Workstation number: %zu, link number: %d, elmts number: %d\n", sg_host_count(), sg_link_count(), size);
+  printf("Host number: %zu, link number: %d, elmts number: %d\n", sg_host_count(), sg_link_count(), size);
 
-  xbt_dict_foreach(host_list, cursor, key, data)
-    printf("   - Seen: \"%s\" is type : %d\n", key, (int) sg_netcard_by_name_or_null(key)->getRcType());
+  xbt_dict_foreach(host_list, cursor, key, data) {
+    simgrid::surf::NetCard * nc = sg_netcard_by_name_or_null(key);
+    printf("   - Seen: \"%s\". Type: %s\n", key, nc->isRouter() ? "router" : (nc->isAS()?"AS":"host"));
+  }
 
-  xbt_lib_foreach(as_router_lib, cursor, key, data)
-    printf("   - Seen: \"%s\" is type : %d\n", key, (int) sg_netcard_by_name_or_null(key)->getRcType());
+  xbt_lib_foreach(as_router_lib, cursor, key, data) {
+    simgrid::surf::NetCard * nc = sg_netcard_by_name_or_null(key);
+    printf("   - Seen: \"%s\". Type: %s\n", key, nc->isRouter() ? "router" : (nc->isAS()?"AS":"host"));
+  }
 
   SD_exit();
   return 0;

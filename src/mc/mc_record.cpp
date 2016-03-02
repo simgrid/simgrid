@@ -8,8 +8,14 @@
 #include <cstdio>
 #include <cstdlib>
 
-#include <xbt.h>
-#include <simgrid/simix.h>
+#include <xbt/fifo.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
+
+#include "simgrid/simix.h"
+
+#include "src/simix/smx_private.h"
+#include "src/simix/smx_process_private.h"
 
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_record.h"

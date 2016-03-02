@@ -9,8 +9,6 @@
 
 #include <xbt/base.h>
 
-#include <simgrid_config.h>
-
 #include "src/simix/smx_private.h"
 
 SG_BEGIN_DECL()

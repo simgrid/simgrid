@@ -19,6 +19,7 @@
 #include <xbt/log.h>
 #include <xbt/automaton.h>
 #include <xbt/automaton.hpp>
+#include <xbt/system_error.hpp>
 
 #include "simgrid/sg_config.h"
 
@@ -48,10 +49,10 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
-ModelChecker::ModelChecker(pid_t pid, int socket) :
-  pid_(pid), socket_(socket),
+ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
   hostnames_(xbt_dict_new()),
   page_store_(500),
+  process_(std::move(process)),
   parent_snapshot_(nullptr)
 {
 
@@ -74,22 +75,16 @@ const char* ModelChecker::get_host_name(const char* hostname)
   return elt->key;
 }
 
-// HACK, for the unit test only
-void ModelChecker::init_process()
-{
-  // TODO, avoid direct dependency on sg_cfg
-  process_ = std::unique_ptr<Process>(new Process(pid_, socket_));
-  process_->privatized(sg_cfg_get_boolean("smpi/privatize_global_variables"));
-}
-
 void ModelChecker::start()
 {
+  const pid_t pid = process_->pid();
+
   // Block SIGCHLD (this will be handled with accept/signalfd):
   sigset_t set;
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
   if (sigprocmask(SIG_BLOCK, &set, nullptr) == -1)
-    throw std::system_error(errno, std::system_category());
+    throw simgrid::xbt::errno_error(errno);
 
   sigset_t full_set;
   sigfillset(&full_set);
@@ -97,13 +92,13 @@ void ModelChecker::start()
   // Prepare data for poll:
 
   struct pollfd* socket_pollfd = &fds_[SOCKET_FD_INDEX];
-  socket_pollfd->fd = socket_;
+  socket_pollfd->fd = process_->socket();;
   socket_pollfd->events = POLLIN;
   socket_pollfd->revents = 0;
 
   int signal_fd = signalfd(-1, &set, 0);
   if (signal_fd == -1)
-    throw std::system_error(errno, std::system_category());
+    throw simgrid::xbt::errno_error(errno);
 
   struct pollfd* signalfd_pollfd = &fds_[SIGNAL_FD_INDEX];
   signalfd_pollfd->fd = signal_fd;
@@ -114,11 +109,11 @@ void ModelChecker::start()
   int status;
 
   // The model-checked process SIGSTOP itself to signal it's ready:
-  pid_t res = waitpid(pid_, &status, __WALL);
+  pid_t res = waitpid(pid, &status, __WALL);
   if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
-  this->init_process();
+  process_->init();
 
   /* Initialize statistics */
   mc_stats = xbt_new0(s_mc_stats_t, 1);
@@ -132,8 +127,8 @@ void ModelChecker::start()
 
   setup_ignore();
 
-  ptrace(PTRACE_SETOPTIONS, pid_, nullptr, PTRACE_O_TRACEEXIT);
-  ptrace(PTRACE_CONT, pid_, 0, 0);
+  ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);
+  ptrace(PTRACE_CONT, pid, 0, 0);
 }
 
 static const std::pair<const char*, const char*> ignored_local_variables[] = {
@@ -184,7 +179,7 @@ void ModelChecker::resume(simgrid::mc::Process& process)
 {
   int res = process.send_message(MC_MESSAGE_CONTINUE);
   if (res)
-    throw std::system_error(res, std::system_category());
+    throw simgrid::xbt::errno_error(res);
   process.cache_flags = (mc_process_cache_flags_t) 0;
 }
 
@@ -195,7 +190,7 @@ void throw_socket_error(int fd)
   socklen_t errlen = sizeof(error);
   if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) == -1)
     error = errno;
-  throw std::system_error(error, std::system_category());
+  throw simgrid::xbt::errno_error(errno);
 }
 
 bool ModelChecker::handle_message(char* buffer, ssize_t size)
@@ -268,7 +263,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
         _mc_property_automaton = xbt_automaton_new();
 
       simgrid::mc::Process* process = &this->process();
-      simgrid::mc::remote_ptr<int> address
+      simgrid::mc::RemotePtr<int> address
         = simgrid::mc::remote((int*) message.data);
       simgrid::xbt::add_proposition(_mc_property_automaton,
         message.name,
@@ -283,7 +278,7 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
 
   case MC_MESSAGE_ASSERTION_FAILED:
     MC_report_assertion_error();
-    ::exit(SIMGRID_MC_EXIT_SAFETY);
+    this->exit(SIMGRID_MC_EXIT_SAFETY);
     break;
 
   default:
@@ -291,6 +286,15 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
 
   }
   return true;
+}
+
+/** Terminate the model-checker aplication */
+void ModelChecker::exit(int status)
+{
+  // TODO, terminate the model checker politely instead of exiting rudel
+  if (process().running())
+    kill(process().pid(), SIGKILL);
+  ::exit(status);
 }
 
 bool ModelChecker::handle_events()
@@ -304,7 +308,7 @@ bool ModelChecker::handle_events()
     case EINTR:
       continue;
     default:
-      throw std::system_error(errno, std::system_category());
+      throw simgrid::xbt::errno_error(errno);
     }
   }
 
@@ -312,7 +316,7 @@ bool ModelChecker::handle_events()
     if (socket_pollfd->revents & POLLIN) {
       ssize_t size = MC_receive_message(socket_pollfd->fd, buffer, sizeof(buffer), MSG_DONTWAIT);
       if (size == -1 && errno != EAGAIN)
-        throw std::system_error(errno, std::system_category());
+        throw simgrid::xbt::errno_error(errno);
       return handle_message(buffer, size);
     }
     if (socket_pollfd->revents & POLLERR) {
@@ -353,7 +357,7 @@ void ModelChecker::handle_signals()
       if (errno == EINTR)
         continue;
       else
-        throw std::system_error(errno, std::system_category());
+        throw simgrid::xbt::errno_error(errno);
     } else if (size != sizeof(info))
         return throw std::runtime_error(
           "Bad communication with model-checked application");
@@ -378,7 +382,7 @@ void ModelChecker::handle_waitpid()
           break;
       } else {
         XBT_ERROR("Could not wait for pid");
-        throw std::system_error(errno, std::system_category());
+        throw simgrid::xbt::errno_error(errno);
       }
     }
 
@@ -386,18 +390,18 @@ void ModelChecker::handle_waitpid()
 
       // From PTRACE_O_TRACEEXIT:
       if (status>>8 == (SIGTRAP | (PTRACE_EVENT_EXIT<<8))) {
-        if (ptrace(PTRACE_GETEVENTMSG, pid_, 0, &status) == -1)
+        if (ptrace(PTRACE_GETEVENTMSG, this->process().pid(), 0, &status) == -1)
           xbt_die("Could not get exit status");
         if (WIFSIGNALED(status)) {
           MC_report_crash(status);
-          ::exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
+          mc_model_checker->exit(SIMGRID_MC_EXIT_PROGRAM_CRASH);
         }
       }
 
       // We don't care about signals, just reinject them:
       if (WIFSTOPPED(status)) {
         XBT_DEBUG("Stopped with signal %i", (int) WSTOPSIG(status));
-        if (ptrace(PTRACE_CONT, pid_, 0, WSTOPSIG(status)) == -1)
+        if (ptrace(PTRACE_CONT, this->process().pid(), 0, WSTOPSIG(status)) == -1)
           xbt_die("Could not PTRACE_CONT");
       }
 

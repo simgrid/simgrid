@@ -5,10 +5,7 @@
 # University of Illinois/NCSA Open Source License
 # which accompanies this distribution, and is available at
 # http://opensource.ncsa.illinois.edu/license.html
-#-------------------------------------------------------------------------------
-##--------------------------------------------------------------------------------------------------#
 ##' Variable-width (dagonally cut) histogram
-##'
 ##'
 ##' When constructing a histogram, it is common to make all bars the same width.
 ##' One could also choose to make them all have the same area.
@@ -27,16 +24,10 @@
 ##' @return list with two elements, heights of length n and breaks of length n+1 indicating the heights and break points of the histogram bars.
 ##' @author Lorraine Denby, Colin Mallows
 ##' @references Lorraine Denby, Colin Mallows. Journal of Computational and Graphical Statistics. March 1, 2009, 18(1): 21-31. doi:10.1198/jcgs.2009.0002.
-dhist <- function(x, a=5*iqr(x),
-                nbins=nclass.Sturges(x), rx = range(x,na.rm = TRUE),
-                eps=.15, xlab = "x", plot = TRUE,lab.spikes = TRUE)
-{
-
+dhist <- function(x, a=5*iqr(x), nbins=nclass.Sturges(x),
+                  rx = range(x,na.rm = TRUE), eps=.15, xlab = "x", plot = TRUE,lab.spikes = TRUE){
   if(is.character(nbins))
-    nbins <- switch(casefold(nbins),
-                    sturges = nclass.Sturges(x),
-                    fd = nclass.FD(x),
-                    scott = nclass.scott(x),
+    nbins <- switch(casefold(nbins), sturges = nclass.Sturges(x), fd = nclass.FD(x), scott = nclass.scott(x),
                     stop("Nclass method not recognized"))
   else if(is.function(nbins))
     nbins <- nbins(x)
@@ -51,17 +42,14 @@ dhist <- function(x, a=5*iqr(x),
     yupper <- x + (a * (1:n))/n
                                         # upper and lower corners in the ecdf
     ylower <- yupper - a/n
-                                        #
-    cmtx <- cbind(cut(yupper, breaks = ybr), cut(yupper, breaks =
-                                ybr, left.include = TRUE), cut(ylower, breaks = ybr),
+
+    cmtx <- cbind(cut(yupper, breaks = ybr), cut(yupper, breaks = ybr, left.include = TRUE), cut(ylower, breaks = ybr),
                   cut(ylower, breaks = ybr, left.include = TRUE))
     cmtx[1, 3] <- cmtx[1, 4] <- 1
                                         # to replace NAs when default r is used
     cmtx[n, 1] <- cmtx[n, 2] <- nbins
-                                        #
                                         #checksum <- apply(cmtx, 1, sum) %% 4
-    checksum <- (cmtx[, 1] + cmtx[, 2] + cmtx[, 3] + cmtx[, 4]) %%
-    4
+    checksum <- (cmtx[, 1] + cmtx[, 2] + cmtx[, 3] + cmtx[, 4]) %% 4
                                         # will be 2 for obs. that straddle two bins
     straddlers <- (1:n)[checksum == 2]
                                         # to allow for zero counts
@@ -71,13 +59,12 @@ dhist <- function(x, a=5*iqr(x),
       counts <- table(c(1:nbins, cmtx[, 1]))
     }
     counts <- counts - 1
-                                        #
+
     if(length(straddlers) > 0) {
       for(i in straddlers) {
         binno <- cmtx[i, 1]
         theta <- ((yupper[i] - ybr[binno]) * n)/a
-        counts[binno - 1] <- counts[binno - 1] + (
-                                                  1 - theta)
+        counts[binno - 1] <- counts[binno - 1] + (1 - theta)
         counts[binno] <- counts[binno] + theta
       }
     }
@@ -91,8 +78,7 @@ dhist <- function(x, a=5*iqr(x),
       diff.xbr<-abs(diff(xbr))
       amt.spike<-diff.xbr[length(diff.xbr)]
       for (i in rev(2:length(diff.xbr))) {
-        if (diff.xbr[i-1] <= spike&diff.xbr[i] <= spike &
-            !is.na(diff.xbr[i])) {
+        if (diff.xbr[i-1] <= spike&diff.xbr[i] <= spike & !is.na(diff.xbr[i])) {
           amt.spike <- amt.spike+diff.xbr[i-1]
           counts.new[i-1] <- counts.new[i-1]+counts.new[i]
           xbr.new[i] <- NA
@@ -113,8 +99,8 @@ dhist <- function(x, a=5*iqr(x),
     heights <- counts/widths
   }
   bin.size <- length(x)/nbins
-  cut.pt <- unique(c(min(x) - abs(min(x))/1000,
-                     approx(seq(length(x)), x, (1:(nbins - 1)) * bin.size, rule = 2)$y, max(x)))
+  cut.pt <- unique(c(min(x) - abs(min(x))/1000, approx(seq(length(x)), x,
+                                                       (1:(nbins - 1)) * bin.size, rule = 2)$y, max(x)))
   aa <- hist(x, breaks = cut.pt, plot = FALSE, probability = TRUE)
   if(a == Inf) {
     heights <- aa$counts
@@ -132,8 +118,7 @@ dhist <- function(x, a=5*iqr(x),
   amt.txt<-0
   end.y<-(-10000)
   if(plot) {
-    barplot(heights, abs(diff(xbr)), space = 0, density = -1, xlab =
-            xlab, plot = TRUE, xaxt = "n",yaxt='n')
+    barplot(heights, abs(diff(xbr)), space = 0, density = -1, xlab = xlab, plot = TRUE, xaxt = "n",yaxt='n')
     at <- pretty(xbr)
     axis(1, at = at - xbr[1], labels = as.character(at))
     if (lab.spikes) {
@@ -153,20 +138,14 @@ dhist <- function(x, a=5*iqr(x),
                                         sum(counts)*100)),'%',sep='')
             par(xpd = TRUE)
             text(xbr[i+1]-xbr[1],ylim.height-par('cxy')[2]*(amt.txt-1),txt, adj=0)
-          }}
-      }
-      else print('no spikes or more than one spike')
+          }
+        }
+      } else print('no spikes or more than one spike')
     }
     invisible(list(heights = heights, xbr = xbr))
-  }
-  else {
-    return(list(heights = heights, xbr = xbr,counts=counts))
-  }
+  } else {return(list(heights = heights, xbr = xbr,counts=counts))}
 }
 #==================================================================================================#
-
-
-#--------------------------------------------------------------------------------------------------#
 ##' Calculate interquartile range
 ##'
 ##' Calculates the 25th and 75th quantiles given a vector x; used in function \link{dhist}.
@@ -178,8 +157,6 @@ iqr <- function(x){
   return(diff(quantile(x, c(0.25, 0.75), na.rm = TRUE)))
 }
 ##==================================================================================================#
-
-##--------------------------------------------------------------------------------------------------#
 ##' Creates empty ggplot object
 ##'
 ##' An empty base plot to which layers created by other functions
@@ -195,11 +172,6 @@ create.base.plot <- function() {
   return(base.plot)
 }
 #==================================================================================================#
-
-
-
-
-##--------------------------------------------------------------------------------------------------#
 ##' Add data to an existing plot or create a new one from \code{\link{create.base.plot}}
 ##'
 ##' Used to add raw data or summary statistics to the plot of a distribution.
@@ -228,25 +200,14 @@ plot.data <- function(trait.data, base.plot = NULL, ymax, color = 'black') {
     ymax <- ymax / 2
   }
   y.pts <- seq(0, ymax, length.out = 1 + n.pts)[-1]
-  plot.data <- data.frame(x = trait.data$Y,
-                          y = y.pts,
-                          se = trait.data$se,
+  plot.data <- data.frame(x = trait.data$Y, y = y.pts, se = trait.data$se,
                           control = !trait.data$trt == 1 & trait.data$ghs == 1)
-  new.plot <- base.plot +
-    geom_point(data = plot.data,
-               aes(x = x, y = y,
-               color = control)) +
-                 geom_segment(data = plot.data,
-                              aes(x = x - se, y = y, xend = x + se, yend = y,
-                                  color = control)) +
-                                    scale_color_manual(values = c('black', 'grey')) +
-                                      opts(legend_position = "none")
+  new.plot <- base.plot + geom_point(data = plot.data, aes(x = x, y = y, color = control)) +
+                 geom_segment(data = plot.data, aes(x = x - se, y = y, xend = x + se, yend = y, color = control)) +
+                     scale_color_manual(values = c('black', 'grey')) + opts(legend_position = "none")
   return(new.plot)
 }
 ##==================================================================================================#
-
-
-#--------------------------------------------------------------------------------------------------#
 ##' Add borders to .. content for \description{} (no empty lines) ..
 ##'
 ##' Has ggplot2 display only specified borders, e.g. ("L"-shaped) borders, rather than a rectangle or no border. Note that the order can be significant; for example, if you specify the L border option and then a theme, the theme settings will override the border option, so you need to specify the theme (if any) before the border option, as above.
@@ -267,47 +228,39 @@ plot.data <- function(trait.data, base.plot = NULL, ymax, color = 'black') {
 ##' ggplot(data=df, aes(x=x, y=y)) + geom_point() + theme_bw() +
 ##' opts(panel.border = theme_border(c("b","l")) )
 ##' }
-theme_border <- function(type = c("left", "right", "bottom", "top",
-                           "none"), colour = "black", size = 1, linetype = 1) {
+theme_border <- function(type = c("left", "right", "bottom", "top", "none"), colour = "black", size = 1, linetype = 1){
   type <- match.arg(type, several.ok=TRUE)
-  structure(
-            function(x = 0, y = 0, width = 1, height = 1, ...) {
-              xlist <- c()
-              ylist <- c()
-              idlist <- c()
-              if ("bottom" %in% type) { # bottom
-                xlist <- append(xlist, c(x, x+width))
-                ylist <- append(ylist, c(y, y))
-                idlist <- append(idlist, c(1,1))
-              }
-              if ("top" %in% type) { # top
-                xlist <- append(xlist, c(x, x+width))
-                ylist <- append(ylist, c(y+height, y+height))
-                idlist <- append(idlist, c(2,2))
-              }
-              if ("left" %in% type) { # left
-                xlist <- append(xlist, c(x, x))
-                ylist <- append(ylist, c(y, y+height))
-                idlist <- append(idlist, c(3,3))
-              }
-              if ("right" %in% type) { # right
-                xlist <- append(xlist, c(x+width, x+width))
-                ylist <- append(ylist, c(y, y+height))
-                idlist <- append(idlist, c(4,4))
-              }
-              polylineGrob(
-                           x=xlist, y=ylist, id=idlist, ..., default.units = "npc",
-                           gp=gpar(lwd=size, col=colour, lty=linetype),
-                           )
-            },
+  structure(function(x = 0, y = 0, width = 1, height = 1, ...) {
+      xlist <- c()
+      ylist <- c()
+      idlist <- c()
+      if ("bottom" %in% type) { # bottom
+          xlist <- append(xlist, c(x, x+width))
+          ylist <- append(ylist, c(y, y))
+          idlist <- append(idlist, c(1,1))
+      }
+      if ("top" %in% type) { # top
+          xlist <- append(xlist, c(x, x+width))
+          ylist <- append(ylist, c(y+height, y+height))
+          idlist <- append(idlist, c(2,2))
+      }
+      if ("left" %in% type) { # left
+          xlist <- append(xlist, c(x, x))
+          ylist <- append(ylist, c(y, y+height))
+          idlist <- append(idlist, c(3,3))
+      }
+      if ("right" %in% type) { # right
+          xlist <- append(xlist, c(x+width, x+width))
+          ylist <- append(ylist, c(y, y+height))
+          idlist <- append(idlist, c(4,4))
+      }
+      polylineGrob(x=xlist, y=ylist, id=idlist, ..., default.units = "npc",
+                   gp=gpar(lwd=size, col=colour, lty=linetype),
+                   )
+  },
             class = "theme",
             type = "box",
             call = match.call()
             )
 }
 #==================================================================================================#
-
-
-####################################################################################################
-### EOF. End of R script file.                         
-####################################################################################################

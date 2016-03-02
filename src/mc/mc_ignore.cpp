@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_private.h"
 #include "src/smpi/private.h"
 #include "src/mc/mc_snapshot.h"

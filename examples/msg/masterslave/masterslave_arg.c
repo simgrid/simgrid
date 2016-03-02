@@ -4,15 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/msg.h"        /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
+#include "simgrid/msg.h"
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 #define task_comp_size 50000000
 #define task_comm_size 1000000
@@ -25,7 +19,6 @@ static long my_random(long n)
   return n * (rand() / ((double)RAND_MAX + 1));
 }
 
-/** Emitter function  */
 static int master(int argc, char *argv[])
 {
   int i;
@@ -38,8 +31,7 @@ static int master(int argc, char *argv[])
     sprintf(mailbox, "slave-%ld", i % number_of_slaves);
     sprintf(sprintf_buffer, "Task_%d", i);
     task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
-    XBT_DEBUG("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name,
-          number_of_jobs, mailbox);
+    XBT_DEBUG("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_jobs, mailbox);
 
     MSG_task_send(task, mailbox);
   }
@@ -55,9 +47,8 @@ static int master(int argc, char *argv[])
 
   XBT_DEBUG("Goodbye now!");
   return 0;
-}                               /* end_of_master */
+}
 
-/** Receiver function  */
 static int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
@@ -80,9 +71,8 @@ static int slave(int argc, char *argv[])
     task = NULL;
   }
   return 0;
-}                               /* end_of_slave */                              /* end_of_test_all */
+}
 
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
@@ -90,8 +80,7 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 3, "Usage: %s platform_file number_of_jobs number_of_slaves\n"
-            "\tExample: %s msg_platform.xml 10 5\n", 
-            argv[0], argv[0]);
+             "\tExample: %s msg_platform.xml 10 5\n", argv[0], argv[0]);
 
   MSG_function_register("master", master);
   MSG_function_register("slave", slave);
@@ -106,17 +95,11 @@ int main(int argc, char *argv[])
 
   msg_host_t *host_table =  xbt_dynar_to_array(host_dynar);
 
-  MSG_process_create( "master", master,
-                      NULL,
-                      host_table[my_random(number_max)]
-                      );
+  MSG_process_create("master", master, NULL, host_table[my_random(number_max)]);
 
   for(i = 0 ; i<number_of_slaves; i++) {
     char* name_host = bprintf("slave-%ld",i);
-      MSG_process_create( name_host, slave,
-                          NULL,
-                          host_table[my_random(number_max)]
-                          );
+      MSG_process_create( name_host, slave, NULL, host_table[my_random(number_max)]);
       free(name_host);
   }
   xbt_free(host_table);

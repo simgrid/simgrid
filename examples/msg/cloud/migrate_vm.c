@@ -4,16 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc, printf */
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
-
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 static void vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
 {
@@ -67,8 +60,6 @@ static int master_main(int argc, char *argv[])
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
 
-
-
   vm0 = MSG_vm_create_core(pm0, "VM0");
   params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
   MSG_host_set_params(vm0, &params);
@@ -79,8 +70,6 @@ static int master_main(int argc, char *argv[])
 
   MSG_vm_destroy(vm0);
 
-
-
   vm0 = MSG_vm_create_core(pm0, "VM0");
   params.ramsize = 1L * 1000 * 1000 * 100; // 100Mbytes
   MSG_host_set_params(vm0, &params);
@@ -90,8 +79,6 @@ static int master_main(int argc, char *argv[])
   vm_migrate(vm0, pm1);
 
   MSG_vm_destroy(vm0);
-
-
 
   vm0 = MSG_vm_create_core(pm0, "VM0");
   vm1 = MSG_vm_create_core(pm0, "VM1");
@@ -110,8 +97,6 @@ static int master_main(int argc, char *argv[])
   MSG_vm_destroy(vm0);
   MSG_vm_destroy(vm1);
 
-
-
   vm0 = MSG_vm_create_core(pm0, "VM0");
   vm1 = MSG_vm_create_core(pm0, "VM1");
 
@@ -129,7 +114,6 @@ static int master_main(int argc, char *argv[])
   MSG_vm_destroy(vm0);
   MSG_vm_destroy(vm1);
 
-
   return 0;
 }
 
@@ -142,7 +126,6 @@ static void launch_master(msg_host_t host)
 
   MSG_process_create_with_arguments(pr_name, master_main, NULL, host, 1, argv);
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -158,7 +141,6 @@ int main(int argc, char *argv[])
 
   int res = MSG_main();
   XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
-
 
   return !(res == MSG_OK);
 }

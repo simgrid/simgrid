@@ -57,7 +57,7 @@ communications, there is several other examples in the archive:
  * msg/icomms/peer2.c: demonstrates the MSG_comm_waitall() function
  * msg/icomms/peer3.c: demonstrates the MSG_comm_waitany() function
 
-Tracing and vizualization features
+Tracing and visualization features
 ==================================
  * tracing/simple.c very simple program that creates, executes and
    destroy a task
@@ -89,12 +89,10 @@ files to see how to actually start a simulation in these settings.
 Other resource kinds
 --------------------
 This section contains some sparse examples of how to use the other
-kind of resources, such as disk or GPU. These resources are quite
+kind of resources, such as disk. These resources are quite
 experimental for now, but here we go anyway. 
 
  * io/file.c Example with the disk resource
- * gpu/test_MSG_gpu_task_create.c Example of use of the very
-   experimental (for now) GPU resource.
 
 Trace driven simulations
 ========================

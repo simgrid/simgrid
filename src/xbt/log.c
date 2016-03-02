@@ -11,7 +11,7 @@
 #include <stdio.h>              /* snprintf */
 #include <stdlib.h>             /* snprintf */
 
-#include "src/portable.h"           /* to get a working stdarg.h */
+#include "src/portable.h"
 
 #include "src/xbt_modinter.h"
 
@@ -562,7 +562,6 @@ static void xbt_log_connect_categories(void)
 
   /* xbt */
   XBT_LOG_CONNECT(xbt);
-  XBT_LOG_CONNECT(graphxml_parse);
   XBT_LOG_CONNECT(log);
   XBT_LOG_CONNECT(module);
   XBT_LOG_CONNECT(replay);
@@ -571,9 +570,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_dict);
   XBT_LOG_CONNECT(xbt_dict_cursor);
   XBT_LOG_CONNECT(xbt_dict_elm);
-#ifdef XBT_USE_DEPRECATED
-  XBT_LOG_CONNECT(xbt_dict_multi);
-#endif
   XBT_LOG_CONNECT(xbt_dyn);
   XBT_LOG_CONNECT(xbt_ex);
   XBT_LOG_CONNECT(xbt_fifo);
@@ -591,7 +587,6 @@ static void xbt_log_connect_categories(void)
 
   /* bindings */
 #ifdef HAVE_LUA
-  XBT_LOG_CONNECT(bindings);
   XBT_LOG_CONNECT(lua);
   XBT_LOG_CONNECT(lua_host);
   XBT_LOG_CONNECT(lua_platf);

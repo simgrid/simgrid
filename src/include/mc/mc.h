@@ -7,31 +7,27 @@
 #ifndef _MC_MC_H
 #define _MC_MC_H
 
-#include <ucontext.h>
+#include <simgrid_config.h>
+#include <xbt/base.h>
+#include <xbt/misc.h>
+#include <simgrid/simix.h>
+#include <simgrid/modelchecker.h> /* our public interface (and definition of HAVE_MC) */
 
-#include "xbt/base.h"
-#include "xbt/misc.h"
-#include "xbt/fifo.h"
-#include "xbt/dict.h"
-#include "xbt/function_types.h"
-#include "simgrid/simix.h"
-#include "simgrid/modelchecker.h" /* our public interface (and definition of HAVE_MC) */
-#include "xbt/automaton.h"
-#include "xbt/dynar.h"
+#ifdef _XBT_WIN32
+#  include <xbt/win32_ucontext.h>     /* context relative declarations */
+#else
+#  include <ucontext.h>           /* context relative declarations */
+#endif
 
 /* Maximum size of the application heap.
  *
- * The model-checker heap is placed at this offset from the
- * beginning of the application heap.
+ * The model-checker heap is placed at this offset from the beginning of the application heap.
  *
- * In the current implementation, if the application uses more
- * than this for the application heap the application heap will
- * smash the beginning of the model-checker heap and bad things
- * will happen.
+ * In the current implementation, if the application uses more than this for the application heap the application heap
+ * will smash the beginning of the model-checker heap and bad things will happen.
  *
- * For 64 bits systems, we have a lot of virtual memory available
- * so we wan use a much bigger value in order to avoid bad things
- * from happening.
+ * For 64 bits systems, we have a lot of virtual memory available so we wan use a much bigger value in order to avoid
+ * bad things from happening.
  * */
 
 #define STD_HEAP_SIZE   (sizeof(void*)<=4 ? (100*1024*1024) : (1ll*1024*1024*1024*1024))
@@ -39,7 +35,6 @@
 SG_BEGIN_DECL()
 
 /********************************** Configuration of MC **************************************/  
-
 extern XBT_PUBLIC(int) _sg_do_model_check;
 extern XBT_PRIVATE int _sg_do_model_check_record;
 extern XBT_PRIVATE int _sg_mc_checkpoint;
@@ -60,7 +55,6 @@ extern XBT_PRIVATE int _sg_mc_snapshot_fds;
 extern XBT_PRIVATE int _sg_mc_termination;
 
 /********************************* Global *************************************/
-
 XBT_PRIVATE void _mc_cfg_cb_reduce(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_checkpoint(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos);

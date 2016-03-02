@@ -1,5 +1,3 @@
-/* str.h - XBT string related functions.                                    */
-
 /* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -33,7 +31,6 @@ XBT_PUBLIC(ssize_t) xbt_getline(char **lineptr, size_t * n, FILE * stream);
 /* Our own implementation of dirname, that does not exist on windows */
 XBT_PUBLIC(char *) xbt_dirname(const char *path);
 XBT_PUBLIC(char *) xbt_basename(const char *path);
-
 
 /**@}*/
 

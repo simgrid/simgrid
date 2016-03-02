@@ -1,8 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(energy_consumption energy_consumption.c)
-
-### Add definitions for compile
+add_executable       (energy_consumption energy_consumption.c)
 target_link_libraries(energy_consumption simgrid)
 
 set(tesh_files

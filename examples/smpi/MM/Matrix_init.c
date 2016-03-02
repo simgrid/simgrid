@@ -8,38 +8,33 @@
 #include <math.h>
 #include <stdio.h>
 #include "xbt/log.h"
- XBT_LOG_NEW_DEFAULT_CATEGORY(MM_init,
-                             "Messages specific for this msg example");
+ XBT_LOG_NEW_DEFAULT_CATEGORY(MM_init, "Messages specific for this msg example");
 #define _unused(x) ((void)x)
 
-
-void matrices_initialisation( double ** p_a, double ** p_b, double ** p_c,
-                              size_t m, size_t k_a, size_t k_b, size_t n,
-                              size_t row, size_t col)
+void matrices_initialisation(double ** p_a, double ** p_b, double ** p_c, size_t m, size_t k_a, size_t k_b, size_t n,
+                             size_t row, size_t col)
 {
-
-  size_t x,y,z;
+  size_t x, y, z;
   size_t lda = k_a;
   size_t ldb = n;
   size_t ldc = n;
-  double *a, *b, *c;
   _unused(row);
 
-  a =  malloc(sizeof(double) * m * k_a);
+  double *a =  malloc(sizeof(double) * m * k_a);
 
   if ( a == 0 ){
     perror("Error allocation Matrix A");
     exit(-1);
   }
 
-  b = malloc(sizeof(double) * k_b * n);
+  double *b = malloc(sizeof(double) * k_b * n);
 
   if ( b == 0 ){
     perror("Error allocation Matrix B");
     exit(-1);
   }
 
-  c = malloc(sizeof(double) * m * n);
+  double *c = malloc(sizeof(double) * m * n);
   if ( c == 0 ){
     perror("Error allocation Matrix C");
     exit(-1);
@@ -75,27 +70,23 @@ void matrices_initialisation( double ** p_a, double ** p_b, double ** p_c,
   }
 }
 
-void matrices_allocation( double ** p_a, double ** p_b, double ** p_c,
-                          size_t m, size_t k_a, size_t k_b, size_t n)
+void matrices_allocation( double ** p_a, double ** p_b, double ** p_c, size_t m, size_t k_a, size_t k_b, size_t n)
 {
-
-  double * a, *b, *c;
-
-  a =  malloc(sizeof(double) * m * k_a);
+  double *a =  malloc(sizeof(double) * m * k_a);
 
   if ( a == 0 ){
     perror("Error allocation Matrix A");
     exit(-1);
   }
 
-  b = malloc(sizeof(double) * k_b * n);
+  double *b = malloc(sizeof(double) * k_b * n);
 
   if ( b == 0 ){
     perror("Error allocation Matrix B");
     exit(-1);
   }
 
-  c = malloc(sizeof(double) * m * n);
+  double *c = malloc(sizeof(double) * m * n);
   if ( c == 0 ){
     perror("Error allocation Matrix C");
     exit(-1);
@@ -104,25 +95,22 @@ void matrices_allocation( double ** p_a, double ** p_b, double ** p_c,
   *p_a=a;
   *p_b =b;
   *p_c=c;
-
 }
 
-void blocks_initialisation( double ** p_a_local, double ** p_b_local,
-                            size_t m, size_t B_k, size_t n)
+void blocks_initialisation( double ** p_a_local, double ** p_b_local, size_t m, size_t B_k, size_t n)
 {
   size_t x,y,z;
   size_t lda = B_k;
   size_t ldb = n;
-  double * a_local, *b_local;
 
-  a_local =  malloc(sizeof(double) * m * B_k);
+  double *a_local =  malloc(sizeof(double) * m * B_k);
 
   if ( a_local == 0 ){
     perror("Error allocation Matrix A");
     exit(-1);
   }
 
-  b_local = malloc(sizeof(double) * B_k * n);
+  double *b_local = malloc(sizeof(double) * B_k * n);
 
   if ( b_local == 0 ){
     perror("Error allocation Matrix B");
@@ -145,10 +133,8 @@ void blocks_initialisation( double ** p_a_local, double ** p_b_local,
   }
 }
 
-void check_result(double *c, double *a, double *b,
-                  size_t m, size_t n, size_t k_a, size_t k_b,
-                  size_t row, size_t col,
-                  size_t size_row, size_t size_col)
+void check_result(double *c, double *a, double *b, size_t m, size_t n, size_t k_a, size_t k_b,
+                  size_t row, size_t col, size_t size_row, size_t size_col)
 {
   size_t x,y;
   size_t ldc = n;
@@ -161,7 +147,6 @@ void check_result(double *c, double *a, double *b,
   _unused(size_row);
   /* these variable could be use to check the result in function of the
    * matrix initialization */
-
 
   /*Display for checking */
 #ifdef SIMPLE_MATRIX
@@ -179,11 +164,9 @@ void check_result(double *c, double *a, double *b,
 #endif
       {
 #ifdef SIMPLE_MATRIX
-        XBT_INFO( "%f\t%zu, y : %zu x : %zu \n",
-               c[x*ldc+y], size_row*k_a, y, x);
+        XBT_INFO( "%f\t%zu, y : %zu x : %zu \n", c[x*ldc+y], size_row*k_a, y, x);
 #else
-        XBT_INFO( "%f\t%zu, y : %zu x : %zu \n",
-               c[x*ldc+y], y*(size_col*m)*((size_col*m)-1)/2, y, x);
+        XBT_INFO( "%f\t%zu, y : %zu x : %zu \n", c[x*ldc+y], y*(size_col*m)*((size_col*m)-1)/2, y, x);
 #endif
         goto error_exit;
       }
@@ -192,10 +175,6 @@ void check_result(double *c, double *a, double *b,
   XBT_INFO("result check: ok\n");
   return;
 error_exit:
-  XBT_INFO("result check not ok\n"
-         "WARNING the test could be lead to some "
-         "errors ( precision with double )\n");
+  XBT_INFO("result check not ok\nWARNING the test could be lead to some errors ( precision with double )\n");
   return;
 }
-
-

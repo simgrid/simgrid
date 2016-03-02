@@ -7,17 +7,20 @@
 #ifndef SIMGRID_MC_XBT_HPP
 #define SIMGRID_MC_XBT_HPP
 
-#include <xbt/base.h>
+#include <cstddef>
 
+#include <xbt/dynar.h>
+
+#include "src/mc/RemotePtr.hpp"
 #include "src/mc/AddressSpace.hpp"
 
 namespace simgrid {
 namespace mc {
 
 XBT_PRIVATE void read_element(AddressSpace const& as,
-  void* local, remote_ptr<s_xbt_dynar_t> addr, size_t i, size_t len);
+  void* local, RemotePtr<s_xbt_dynar_t> addr, std::size_t i, std::size_t len);
 XBT_PRIVATE std::size_t read_length(
-  AddressSpace const& as, remote_ptr<s_xbt_dynar_t> addr);
+  AddressSpace const& as, RemotePtr<s_xbt_dynar_t> addr);
 
 }
 }

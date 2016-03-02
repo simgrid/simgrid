@@ -44,15 +44,11 @@ public:
 
   ~NetworkNS3Model();
   Link* createLink(const char *name,
-                                     double bw_initial,
-                                     tmgr_trace_t bw_trace,
-                                     double lat_initial,
-                                     tmgr_trace_t lat_trace,
-                                     int initiallyOn,
-                                     tmgr_trace_t state_trace,
-                                     e_surf_link_sharing_policy_t policy,
-                                     xbt_dict_t properties);
-  xbt_dynar_t getRoute(NetCard *src, NetCard *dst);
+      double bw_initial, tmgr_trace_t bw_trace,
+      double lat_initial, tmgr_trace_t lat_trace,
+      tmgr_trace_t state_trace,
+      e_surf_link_sharing_policy_t policy,
+      xbt_dict_t properties) override;
   Action *communicate(NetCard *src, NetCard *dst, double size, double rate);
   double next_occuring_event(double now) override;
   bool next_occuring_event_isIdempotent() {return false;}

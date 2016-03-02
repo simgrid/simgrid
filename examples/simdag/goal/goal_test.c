@@ -11,12 +11,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
 #include <stdio.h>
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
-#include "xbt/ex.h"
-#include <string.h>
 #include "xbt/xbt_os_time.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(goal, "The GOAL loader into SimDag");
@@ -24,7 +20,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(goal, "The GOAL loader into SimDag");
 typedef struct {
   int i, j, k;
 } s_bcast_task_t,*bcast_task_t;
-
 
 const sg_host_t* ws_list;
 int count = 0;
@@ -54,7 +49,6 @@ static void send_one(int from, int to) {
   SD_task_schedulel(task,2,ws_list[bt->i],ws_list[bt->j]);
   SD_task_watch(task,SD_DONE);
 }
-
 
 int main(int argc, char **argv) {
   xbt_os_timer_t timer = xbt_os_timer_new();

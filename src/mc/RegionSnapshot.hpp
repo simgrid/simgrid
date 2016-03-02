@@ -10,8 +10,12 @@
 #include <cstddef>
 #include <utility>
 
+#include <memory>
+#include <vector>
+
 #include <xbt/base.h>
 
+#include "src/mc/RemotePtr.hpp"
 #include "src/mc/PageStore.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"
@@ -33,22 +37,61 @@ enum class StorageType {
   Privatized = 3
 };
 
-class data_deleter {
-public:
-  enum Type {
-    Free,
-    Munmap
-  };
+class Buffer {
 private:
-  Type type_;
+  enum class Type {
+    Malloc,
+    Mmap
+  };
+  void* data_ = nullptr;
   std::size_t size_;
+  Type type_ = Type::Malloc;
+private:
+  Buffer(std::size_t size, Type type = Type::Malloc);
+  Buffer(void* data, std::size_t size, Type type = Type::Malloc) :
+    data_(data), size_(size), type_(type) {}
 public:
-  data_deleter() : type_(Free) {}
-  data_deleter(Type type, std::size_t size) : type_(type), size_(size) {}
-  void operator()(void* p) const;
-};
+  Buffer() {}
+  void clear() noexcept;
+  ~Buffer() noexcept { clear(); }
 
-typedef std::unique_ptr<char[], data_deleter> unique_data_ptr;
+  static Buffer malloc(std::size_t size)
+  {
+    return Buffer(size, Type::Malloc);
+  }
+  static Buffer mmap(std::size_t size)
+  {
+    return Buffer(size, Type::Mmap);
+  }
+
+  // No copy
+  Buffer(Buffer const& buffer) = delete;
+  Buffer& operator=(Buffer const& buffer) = delete;
+
+  // Move
+  Buffer(Buffer&& that) noexcept
+    : data_(that.data_), size_(that.size_), type_(that.type_)
+  {
+    that.data_ = nullptr;
+    that.size_ = 0;
+    that.type_ = Type::Malloc;
+  }
+  Buffer& operator=(Buffer&& that) noexcept
+  {
+    clear();
+    data_ = that.data_;
+    size_ = that.size_;
+    type_ = that.type_;
+    that.data_ = nullptr;
+    that.size_ = 0;
+    that.type_ = Type::Malloc;
+    return *this;
+  }
+
+  void* get()              { return data_; }
+  const void* get()  const { return data_; }
+  std::size_t size() const { return size_; }
+};
 
 /** A copy/snapshot of a given memory region
  *
@@ -73,8 +116,6 @@ public:
   static const RegionType UnknownRegion = RegionType::Unknown;
   static const RegionType HeapRegion = RegionType::Heap;
   static const RegionType DataRegion = RegionType::Data;
-public:
-  typedef unique_data_ptr flat_data_ptr;
 private:
   RegionType region_type_;
   StorageType storage_type_;
@@ -97,7 +138,7 @@ private:
    * */
   void *permanent_addr_;
 
-  flat_data_ptr flat_data_;
+  Buffer flat_data_;
   ChunkedData page_numbers_;
   std::vector<RegionSnapshot> privatized_regions_;
 public:
@@ -156,7 +197,7 @@ public:
     storage_type_ = StorageType::NoData;
     privatized_regions_.clear();
     page_numbers_.clear();
-    flat_data_.reset();
+    flat_data_.clear();
     object_info_ = nullptr;
     start_addr_ = nullptr;
     size_ = 0;
@@ -166,24 +207,25 @@ public:
   void clear_data()
   {
     storage_type_ = StorageType::NoData;
-    flat_data_.reset();
+    flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_.clear();
   }
   
-  void flat_data(flat_data_ptr data)
+  void flat_data(Buffer data)
   {
     storage_type_ = StorageType::Flat;
     flat_data_ = std::move(data);
     page_numbers_.clear();
     privatized_regions_.clear();
   }
-  const char* flat_data() const { return flat_data_.get(); }
+  const Buffer& flat_data() const { return flat_data_; }
+  Buffer& flat_data()             { return flat_data_; }
 
   void page_data(ChunkedData page_data)
   {
     storage_type_ = StorageType::Chunked;
-    flat_data_.reset();
+    flat_data_.clear();
     page_numbers_ = std::move(page_data);
     privatized_regions_.clear();
   }
@@ -192,7 +234,7 @@ public:
   void privatized_data(std::vector<RegionSnapshot> data)
   {
     storage_type_ = StorageType::Privatized;
-    flat_data_.reset();
+    flat_data_.clear();
     page_numbers_.clear();
     privatized_regions_ = std::move(data);
   }
@@ -210,14 +252,14 @@ public:
 
   // Other getters
 
-  remote_ptr<void> start() const { return remote(start_addr_); }
-  remote_ptr<void> end() const { return remote((char*)start_addr_ + size_); }
-  remote_ptr<void> permanent_address() const { return remote(permanent_addr_); }
+  RemotePtr<void> start() const { return remote(start_addr_); }
+  RemotePtr<void> end() const { return remote((char*)start_addr_ + size_); }
+  RemotePtr<void> permanent_address() const { return remote(permanent_addr_); }
   std::size_t size() const { return size_; }
   StorageType storage_type() const { return storage_type_; }
   RegionType region_type() const { return region_type_; }
 
-  bool contain(remote_ptr<void> p) const
+  bool contain(RemotePtr<void> p) const
   {
     return p >= start() && p < end();
   }

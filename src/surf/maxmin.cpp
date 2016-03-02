@@ -120,9 +120,7 @@ void lmm_system_free(lmm_system_t sys)
 
   
   while ((var = (lmm_variable_t) extract_variable(sys))) {
-    XBT_WARN
-        ("Variable %p (%d) still in  system when freing it: this may be a bug",
-         var, var->id_int);
+    XBT_WARN("Variable %d still in system when freing it: this may be a bug", var->id_int);
     lmm_var_free(sys, var);
   }
 

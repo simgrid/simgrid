@@ -1,18 +1,16 @@
 set(example java_kademlia)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/Answer.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Bucket.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Common.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Contact.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/FindNodeAnswerTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/FindNodeTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Kademlia.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/KademliaTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Node.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/PingAnswerTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/PingTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/RoutingTable.java
-  )
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Kademlia.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/Answer.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Bucket.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Common.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Contact.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/FindNodeAnswerTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/FindNodeTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/KademliaTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Node.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/PingAnswerTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/PingTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/RoutingTable.java)
 
 if(enable_java)
   add_custom_command(

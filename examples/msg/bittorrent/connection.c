@@ -38,5 +38,4 @@ void connection_free(void *data)
   xbt_free(co->bitfield);
   xbt_free(co->mailbox);
   xbt_free(co);
-
 }

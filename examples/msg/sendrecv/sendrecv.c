@@ -4,14 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-
-#include "simgrid/msg.h"            /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc */
-
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
+#include "simgrid/msg.h"
 
 /** @addtogroup MSG_examples
  *
@@ -20,20 +13,12 @@
  *    directory are instructive concerning the way to pass options to the simulators (as described in \ref options).
  */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
-
-int sender(int argc, char *argv[]);
-int receiver(int argc, char *argv[]);
-
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file);
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 double task_comm_size_lat = 1;
 double task_comm_size_bw = 10e8;
 
-/** Emitter function  */
-int sender(int argc, char *argv[])
+static int sender(int argc, char *argv[])
 {
   msg_host_t host = NULL;
   double time;
@@ -43,9 +28,6 @@ int sender(int argc, char *argv[])
   char sprintf_buffer_bw[64];
 
   XBT_INFO("sender");
-
-  /*host = xbt_new0(msg_host_t,1); */
-
   XBT_INFO("host = %s", argv[1]);
 
   host = MSG_host_by_name(argv[1]);
@@ -55,8 +37,7 @@ int sender(int argc, char *argv[])
   /* Latency */
   time = MSG_get_clock();
   sprintf(sprintf_buffer_la, "latency task");
-  task_la =
-      MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL);
+  task_la = MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL);
   task_la->data = xbt_new(double, 1);
   *(double *) task_la->data = time;
   XBT_INFO("task_la->data = %e", *((double *) task_la->data));
@@ -65,36 +46,31 @@ int sender(int argc, char *argv[])
   /* Bandwidth */
   time = MSG_get_clock();
   sprintf(sprintf_buffer_bw, "bandwidth task");
-  task_bw =
-      MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
+  task_bw = MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
   task_bw->data = xbt_new(double, 1);
   *(double *) task_bw->data = time;
   XBT_INFO("task_bw->data = %e", *((double *) task_bw->data));
   MSG_task_send(task_bw, argv[1]);
 
   return 0;
-}                               /* end_of_client */
+}
 
-/** Receiver function  */
-int receiver(int argc, char *argv[])
+static int receiver(int argc, char *argv[])
 {
-  double time, time1, sender_time;
   msg_task_t task_la = NULL;
   msg_task_t task_bw = NULL;
-  int a;
-  double communication_time = 0;
 
   XBT_INFO("receiver");
 
   /* Get Latency */
-  a = MSG_task_receive(&task_la,MSG_host_get_name(MSG_host_self()));
+  int a = MSG_task_receive(&task_la,MSG_host_get_name(MSG_host_self()));
 
   xbt_assert(a == MSG_OK, "Unexpected behavior");
 
-  time1 = MSG_get_clock();
-  sender_time = *((double *) (task_la->data));
-  time = sender_time;
-  communication_time = time1 - time;
+  double time1 = MSG_get_clock();
+  double sender_time = *((double *) (task_la->data));
+  double time = sender_time;
+  double communication_time = time1 - time;
   XBT_INFO("Task received : %s", task_la->name);
   xbt_free(task_la->data);
   MSG_task_destroy(task_la);
@@ -103,7 +79,6 @@ int receiver(int argc, char *argv[])
 
   /* Get Bandwidth */
   a = MSG_task_receive(&task_bw,MSG_host_get_name(MSG_host_self()));
-
   xbt_assert(a == MSG_OK, "Unexpected behavior");
 
   time1 = MSG_get_clock();
@@ -117,54 +92,26 @@ int receiver(int argc, char *argv[])
   XBT_INFO("--- bw %f ----", task_comm_size_bw / communication_time);
 
   return 0;
-}                               /* end_of_receiver */
+}
 
-
-/** Test function */
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file)
-{
-  msg_error_t res = MSG_OK;
-
-  XBT_INFO("test_all");
-
-  /*  Simulation setting */
-  MSG_create_environment(platform_file);
-
-  /*   Application deployment */
-  MSG_function_register("sender", sender);
-  MSG_function_register("receiver", receiver);
-
-  MSG_launch_application(application_file);
-
-  res = MSG_main();
-
-  return res;
-}                               /* end_of_test_all */
-
-
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
 
-#ifdef _MSC_VER
-  unsigned int prev_exponent_format =
-      _set_output_format(_TWO_DIGIT_EXPONENT);
-#endif
-
   MSG_init(&argc, argv);
 
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-       "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
-  res = test_all(argv[1], argv[2]);
+  MSG_create_environment(argv[1]);
+
+  MSG_function_register("sender", sender);
+  MSG_function_register("receiver", receiver);
+
+  MSG_launch_application(argv[2]);
+
+  res = MSG_main();
 
   XBT_INFO("Total simulation time: %e", MSG_get_clock());
-
-#ifdef _MSC_VER
-  _set_output_format(prev_exponent_format);
-#endif
-
-  return res != MSG_OK;
-}                               /* end_of_main */
+  return res!=MSG_OK;
+}

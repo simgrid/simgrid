@@ -12,7 +12,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_host, bindings, "Lua bindings (host module)");
+XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua bindings (host module)");
 
 #define HOST_MODULE_NAME "simgrid.host"
 #define HOST_FIELDNAME   "__simgrid_host"

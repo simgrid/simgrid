@@ -1,6 +1,4 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(availability_test availability_test.c)
+add_executable       (availability_test availability_test.c)
 target_link_libraries(availability_test simgrid)
 
 set(tesh_files

@@ -6,7 +6,6 @@
 #include <vector>
 #include <iostream>
 
-#include "src/surf/surf_routing_private.hpp"
 #include "src/surf/surf_routing_cluster_fat_tree.hpp"
 #include "xbt/lib.h"
 
@@ -67,7 +66,8 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
 
   std::map<int, FatTreeNode*>::const_iterator tempIter;
   
-if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_NETWORK_ELEMENT_ROUTER) return;
+  if (dst->isRouter() || src->isRouter())
+    return;
 
   /* Let's find the source and the destination in our internal structure */
   tempIter = this->computeNodes_.find(src->id());
@@ -93,7 +93,7 @@ if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_
   /* In case destination is the source, and there is a loopback, let's get
      through it instead of going up to a switch*/
   if(source->id == destination->id && this->has_loopback_) {
-    xbt_dynar_push_as(into->link_list, void*, source->loopback);
+    into->link_list->push_back(source->loopback);
     if(latency) {
       *latency += source->loopback->getLatency();
     }
@@ -112,14 +112,14 @@ if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_
     }
     k = this->upperLevelNodesNumber_[currentNode->level];
     d = d % k;
-    xbt_dynar_push_as(into->link_list, void*,currentNode->parents[d]->upLink);
+    into->link_list->push_back(currentNode->parents[d]->upLink);
 
     if(latency) {
       *latency += currentNode->parents[d]->upLink->getLatency();
     }
 
     if (this->has_limiter_) {
-      xbt_dynar_push_as(into->link_list, void*,currentNode->limiterLink);
+      into->link_list->push_back(currentNode->limiterLink);
     }
     currentNode = currentNode->parents[d]->upNode;
   }
@@ -133,13 +133,13 @@ if (dst->getRcType() == SURF_NETWORK_ELEMENT_ROUTER || src->getRcType() == SURF_
     for(unsigned int i = 0 ; i < currentNode->children.size() ; i++) {
       if(i % this->lowerLevelNodesNumber_[currentNode->level - 1] ==
          destination->label[currentNode->level - 1]) {
-        xbt_dynar_push_as(into->link_list, void*,currentNode->children[i]->downLink);
+        into->link_list->push_back(currentNode->children[i]->downLink);
         if(latency) {
           *latency += currentNode->children[i]->downLink->getLatency();
         }
         currentNode = currentNode->children[i]->downNode;
         if (this->has_limiter_) {
-          xbt_dynar_push_as(into->link_list, void*,currentNode->limiterLink);
+          into->link_list->push_back(currentNode->limiterLink);
         }
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id,
                   destination->level, destination->position, currentNode->id,
@@ -475,7 +475,6 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     memset(&linkTemplate, 0, sizeof(linkTemplate));
     linkTemplate.bandwidth = cluster->limiter_link;
     linkTemplate.latency = 0;
-    linkTemplate.initiallyOn = 1;
     linkTemplate.policy = SURF_LINK_SHARED;
     linkTemplate.id = bprintf("limiter_%d", id);
     sg_platf_new_link(&linkTemplate);
@@ -486,7 +485,6 @@ FatTreeNode::FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
     memset(&linkTemplate, 0, sizeof(linkTemplate));
     linkTemplate.bandwidth = cluster->loopback_bw;
     linkTemplate.latency = cluster->loopback_lat;
-    linkTemplate.initiallyOn = 1;
     linkTemplate.policy = SURF_LINK_FATPIPE;
     linkTemplate.id = bprintf("loopback_%d", id);
     sg_platf_new_link(&linkTemplate);
@@ -504,7 +502,6 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
   memset(&linkTemplate, 0, sizeof(linkTemplate));
   linkTemplate.bandwidth = cluster->bw;
   linkTemplate.latency = cluster->lat;
-  linkTemplate.initiallyOn = 1;
   linkTemplate.policy = cluster->sharing_policy; // sthg to do with that ?
   linkTemplate.id = bprintf("link_from_%d_to_%d_%d", downNode->id, upNode->id,
                             uniqueId);

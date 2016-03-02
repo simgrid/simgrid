@@ -4,9 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
 #include "simgrid/msg.h"
-#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_semaphore_example, "Messages specific for this msg example");
 

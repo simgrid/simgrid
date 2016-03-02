@@ -36,10 +36,8 @@ int main(int argc, char**argv)
 {
   xbt_mallocator_initialization_is_done(1);
   int i = 0;
-  xbt_mallocator_t mallocator = xbt_mallocator_new(65536,
-                                  element_mallocator_new_f,
-                                  element_mallocator_free_f,
-                                  element_mallocator_reset_f);
+  xbt_mallocator_t mallocator =
+    xbt_mallocator_new(65536, element_mallocator_new_f, element_mallocator_free_f, element_mallocator_reset_f);
   xbt_dynar_t elems = xbt_dynar_new(sizeof(element_t), NULL);
   element_t elem = NULL;
   base_mallocator = xbt_mallocator_get(mallocator);

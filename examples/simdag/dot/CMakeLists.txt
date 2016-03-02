@@ -1,15 +1,12 @@
 if(HAVE_GRAPHVIZ)
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-  add_executable(dot_test dot_test.c)
-  add_executable(ptg_test ptg_test.c)
-  add_executable(simulate_dot simulate_dot.c)
-  add_executable(dot_test2 dot_test2.c)
-
-  target_link_libraries(dot_test simgrid)
-  target_link_libraries(ptg_test simgrid)
+  add_executable       (dot_test     dot_test.c)
+  target_link_libraries(dot_test     simgrid)
+  add_executable       (ptg_test     ptg_test.c)
+  target_link_libraries(ptg_test     simgrid)
+  add_executable       (simulate_dot simulate_dot.c)
   target_link_libraries(simulate_dot simgrid)
-  target_link_libraries(dot_test2 simgrid)
+  add_executable       (dot_test2    dot_test2.c)
+  target_link_libraries(dot_test2    simgrid)
 endif()
 
 set(tesh_files

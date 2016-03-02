@@ -4,25 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/msg.h"        /* Yeah! If you want to use msg, you need to include simgrid/msg.h */
-#include "xbt/sysdep.h"         /* calloc, printf */
+#include "simgrid/msg.h"
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
-
-int master(int argc, char *argv[]);
-int slave(int argc, char *argv[]);
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file);
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
-/** Emitter function  */
-int master(int argc, char *argv[])
+static int master(int argc, char *argv[])
 {
   int slaves_count = 0;
   msg_host_t *slaves = NULL;
@@ -59,31 +47,26 @@ int master(int argc, char *argv[])
   XBT_INFO("Got %d task to process :", number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++) {
-    msg_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size,
-                                    xbt_new0(double, 1));
-    msg_error_t a;
+    msg_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size, xbt_new0(double, 1));
     *((double *) task->data) = MSG_get_clock();
 
-    a = MSG_task_send_with_timeout(task,MSG_host_get_name(slaves[i % slaves_count]),10.0);
+    msg_error_t a = MSG_task_send_with_timeout(task,MSG_host_get_name(slaves[i % slaves_count]),10.0);
 
     if (a == MSG_OK) {
       XBT_INFO("Send completed");
     } else if (a == MSG_HOST_FAILURE) {
-      XBT_INFO
-          ("Gloups. The cpu on which I'm running just turned off!. See you!");
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       free(task->data);
       MSG_task_destroy(task);
       free(slaves);
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
-      XBT_INFO
-          ("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
-              MSG_host_get_name(slaves[i % slaves_count]));
+      XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!",
+               MSG_host_get_name(slaves[i % slaves_count]));
       free(task->data);
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
-      XBT_INFO
-          ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
+      XBT_INFO ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
               MSG_host_get_name(slaves[i % slaves_count]));
       free(task->data);
       MSG_task_destroy(task);
@@ -93,27 +76,23 @@ int master(int argc, char *argv[])
     }
   }
 
-  XBT_INFO
-      ("All tasks have been dispatched. Let's tell everybody the computation is over.");
+  XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < slaves_count; i++) {
     msg_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
     int a = MSG_task_send_with_timeout(task,MSG_host_get_name(slaves[i]),1.0);
     if (a == MSG_OK)
       continue;
     if (a == MSG_HOST_FAILURE) {
-      XBT_INFO
-          ("Gloups. The cpu on which I'm running just turned off!. See you!");
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       MSG_task_destroy(task);
       free(slaves);
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
-      XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!",
-          MSG_host_get_name(slaves[i]));
+      XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!", MSG_host_get_name(slaves[i]));
       MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
-      XBT_INFO
-          ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
-              MSG_host_get_name(slaves[i % slaves_count]));
+      XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!",
+               MSG_host_get_name(slaves[i % slaves_count]));
       MSG_task_destroy(task);
     } else {
       XBT_INFO("Hey ?! What's up ? ");
@@ -124,10 +103,9 @@ int master(int argc, char *argv[])
   XBT_INFO("Goodbye now!");
   free(slaves);
   return 0;
-}                               /* end_of_master */
+}
 
-/** Receiver function  */
-int slave(int argc, char *argv[])
+static int slave(int argc, char *argv[])
 {
   while (1) {
     msg_task_t task = NULL;
@@ -153,8 +131,7 @@ int slave(int argc, char *argv[])
         free(task->data);
         MSG_task_destroy(task);
       } else if (a == MSG_HOST_FAILURE) {
-        XBT_INFO
-            ("Gloups. The cpu on which I'm running just turned off!. See you!");
+        XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
         free(task->data);
         MSG_task_destroy(task);
         return 0;
@@ -163,8 +140,7 @@ int slave(int argc, char *argv[])
         xbt_die("Unexpected behavior");
       }
     } else if (a == MSG_HOST_FAILURE) {
-      XBT_INFO
-          ("Gloups. The cpu on which I'm running just turned off!. See you!");
+      XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
@@ -175,40 +151,25 @@ int slave(int argc, char *argv[])
   }
   XBT_INFO("I'm done. See you!");
   return 0;
-}                               /* end_of_slave */
+}
 
-/** Test function */
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file)
-{
-  msg_error_t res = MSG_OK;
-
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-  {                             /*   Application deployment */
-    MSG_function_register("master", master);
-    MSG_function_register("slave", slave);
-    MSG_launch_application(application_file);
-  }
-  res = MSG_main();
-
-  XBT_INFO("Simulation time %g", MSG_get_clock());
-  return res;
-}                               /* end_of_test_all */
-
-
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-            "\tExample: %s msg_platform.xml msg_deployment.xml\n", 
-            argv[0], argv[0]);
-  
-  res = test_all(argv[1], argv[2]);
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+
+  MSG_create_environment(argv[1]);
+
+  MSG_function_register("master", master);
+  MSG_function_register("slave", slave);
+  MSG_launch_application(argv[2]);
+
+  res = MSG_main();
+
+  XBT_INFO("Simulation time %g", MSG_get_clock());
 
   return res != MSG_OK;
 }

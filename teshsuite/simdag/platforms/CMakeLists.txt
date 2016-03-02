@@ -1,21 +1,15 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(basic_parsing_test basic_parsing_test.c)
-add_executable(is_router_test is_router_test.cpp)
-add_executable(flatifier flatifier.cpp)
-add_executable(basic_link_test basic_link_test.c)
-target_link_libraries(basic_parsing_test simgrid)
-target_link_libraries(is_router_test simgrid)
-target_link_libraries(flatifier simgrid)
-target_link_libraries(basic_link_test simgrid)
-
-### Add definitions for compile
-if(NOT WIN32)
-  add_executable(evaluate_parse_time Evaluate_parse_time.c)
-  add_executable(evaluate_get_route_time Evaluate_get_route_time.c)
-  target_link_libraries(evaluate_get_route_time simgrid m)
-  target_link_libraries(evaluate_parse_time simgrid m)
-endif()
+add_executable       (basic_parsing_test      basic_parsing_test.c)
+target_link_libraries(basic_parsing_test      simgrid)
+add_executable       (is_router_test          is_router_test.cpp)
+target_link_libraries(is_router_test          simgrid)
+add_executable       (flatifier               flatifier.cpp)
+target_link_libraries(flatifier               simgrid)
+add_executable       (basic_link_test         basic_link_test.c)
+target_link_libraries(basic_link_test         simgrid)
+add_executable       (evaluate_parse_time     Evaluate_parse_time.c)
+target_link_libraries(evaluate_parse_time     simgrid)
+add_executable       (evaluate_get_route_time Evaluate_get_route_time.c)
+target_link_libraries(evaluate_get_route_time simgrid)
 
 set(tesh_files
   ${tesh_files}
@@ -33,40 +27,26 @@ set(tesh_files
 set(xml_files
   ${xml_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_Dijkstra_ns3.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_floyd_bis.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_floyd_ns3.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_floyd.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_multi_hop.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/host_attributes.xml
+  ${CMAKE_CURRENT_SOURCE_DIR}/link_attributes.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_file.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_multicore.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_fullduplex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_router_id.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_availability.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_properties.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_state_file.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_state_off.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_state_on.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_trace_file.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host_trace_inside.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_host.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_link_availability.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_link_fatpipe.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_link_shared.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/one_link_state_file.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/platform_include.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/properties.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/random.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/test_of_is_router.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/three_hosts_non_symmetric_route.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_one_name.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_router_id.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_symmetric.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_src_gateway.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_dst_gateway.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric-2.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_one_link_fullduplex.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_one_link_symmetrical.xml
   ${CMAKE_CURRENT_SOURCE_DIR}/two_hosts_one_link.xml
@@ -86,13 +66,10 @@ set(teshsuite_src
   PARENT_SCOPE)
 set(txt_files
   ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob0_availability_file.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob0_state_file.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob2_availability_file.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob2_state_file.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/bob.fail
+  ${CMAKE_CURRENT_SOURCE_DIR}/carol.fail
   ${CMAKE_CURRENT_SOURCE_DIR}/bob.trace
-  ${CMAKE_CURRENT_SOURCE_DIR}/link1.bw
-  ${CMAKE_CURRENT_SOURCE_DIR}/link1.fail
-  ${CMAKE_CURRENT_SOURCE_DIR}/link1.lat
+  ${CMAKE_CURRENT_SOURCE_DIR}/erin.avail
+  ${CMAKE_CURRENT_SOURCE_DIR}/link.bw
+  ${CMAKE_CURRENT_SOURCE_DIR}/link.fail
+  ${CMAKE_CURRENT_SOURCE_DIR}/link.lat
   PARENT_SCOPE)

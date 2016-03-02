@@ -195,8 +195,6 @@ typedef int AT_surfxml_config_id;
 #define AU_surfxml_config_id NULL
 typedef int AT_surfxml_gpu_name;
 #define AU_surfxml_gpu_name NULL
-typedef int AT_surfxml_host_availability;
-#define AU_surfxml_host_availability NULL
 typedef int AT_surfxml_host_availability___file;
 #define AU_surfxml_host_availability___file NULL
 typedef int AT_surfxml_host_coordinates;
@@ -209,7 +207,6 @@ typedef int AT_surfxml_host_pstate;
 #define AU_surfxml_host_pstate NULL
 typedef int AT_surfxml_host_speed;
 #define AU_surfxml_host_speed NULL
-typedef enum { AU_surfxml_host_state, A_surfxml_host_state_ON,A_surfxml_host_state_OFF } AT_surfxml_host_state;
 typedef int AT_surfxml_host_state___file;
 #define AU_surfxml_host_state___file NULL
 typedef int AT_surfxml_host___link_down;
@@ -231,7 +228,6 @@ typedef int AT_surfxml_link_latency;
 typedef int AT_surfxml_link_latency___file;
 #define AU_surfxml_link_latency___file NULL
 typedef enum { AU_surfxml_link_sharing___policy, A_surfxml_link_sharing___policy_SHARED,A_surfxml_link_sharing___policy_FATPIPE,A_surfxml_link_sharing___policy_FULLDUPLEX } AT_surfxml_link_sharing___policy;
-typedef enum { AU_surfxml_link_state, A_surfxml_link_state_ON,A_surfxml_link_state_OFF } AT_surfxml_link_state;
 typedef int AT_surfxml_link_state___file;
 #define AU_surfxml_link_state___file NULL
 typedef enum { AU_surfxml_link___ctn_direction, A_surfxml_link___ctn_direction_UP,A_surfxml_link___ctn_direction_DOWN,A_surfxml_link___ctn_direction_NONE } AT_surfxml_link___ctn_direction;
@@ -478,9 +474,6 @@ XBT_PUBLIC_DATA(short int) surfxml_config_id_isset;
 XBT_PUBLIC_DATA(AT_surfxml_gpu_name) AX_surfxml_gpu_name;
 #define A_surfxml_gpu_name (surfxml_bufferstack + AX_surfxml_gpu_name)
 XBT_PUBLIC_DATA(short int) surfxml_gpu_name_isset;
-XBT_PUBLIC_DATA(AT_surfxml_host_availability) AX_surfxml_host_availability;
-#define A_surfxml_host_availability (surfxml_bufferstack + AX_surfxml_host_availability)
-XBT_PUBLIC_DATA(short int) surfxml_host_availability_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_availability___file) AX_surfxml_host_availability___file;
 #define A_surfxml_host_availability___file (surfxml_bufferstack + AX_surfxml_host_availability___file)
 XBT_PUBLIC_DATA(short int) surfxml_host_availability___file_isset;
@@ -499,9 +492,6 @@ XBT_PUBLIC_DATA(short int) surfxml_host_pstate_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_speed) AX_surfxml_host_speed;
 #define A_surfxml_host_speed (surfxml_bufferstack + AX_surfxml_host_speed)
 XBT_PUBLIC_DATA(short int) surfxml_host_speed_isset;
-XBT_PUBLIC_DATA(AT_surfxml_host_state) AX_surfxml_host_state;
-#define A_surfxml_host_state AX_surfxml_host_state
-XBT_PUBLIC_DATA(short int) surfxml_host_state_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_state___file) AX_surfxml_host_state___file;
 #define A_surfxml_host_state___file (surfxml_bufferstack + AX_surfxml_host_state___file)
 XBT_PUBLIC_DATA(short int) surfxml_host_state___file_isset;
@@ -535,9 +525,6 @@ XBT_PUBLIC_DATA(short int) surfxml_link_latency___file_isset;
 XBT_PUBLIC_DATA(AT_surfxml_link_sharing___policy) AX_surfxml_link_sharing___policy;
 #define A_surfxml_link_sharing___policy AX_surfxml_link_sharing___policy
 XBT_PUBLIC_DATA(short int) surfxml_link_sharing___policy_isset;
-XBT_PUBLIC_DATA(AT_surfxml_link_state) AX_surfxml_link_state;
-#define A_surfxml_link_state AX_surfxml_link_state
-XBT_PUBLIC_DATA(short int) surfxml_link_state_isset;
 XBT_PUBLIC_DATA(AT_surfxml_link_state___file) AX_surfxml_link_state___file;
 #define A_surfxml_link_state___file (surfxml_bufferstack + AX_surfxml_link_state___file)
 XBT_PUBLIC_DATA(short int) surfxml_link_state___file_isset;

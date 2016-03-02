@@ -1,11 +1,9 @@
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(test_intra_all2all test_intra_all2all.c)
-add_executable(test_intra_independent_comm test_intra_independent_comm.c)
-add_executable(test_intra_scatter test_intra_scatter.c)
-target_link_libraries(test_intra_all2all simgrid)
+add_executable       (test_intra_all2all          test_intra_all2all.c)
+target_link_libraries(test_intra_all2all          simgrid)
+add_executable       (test_intra_independent_comm test_intra_independent_comm.c)
 target_link_libraries(test_intra_independent_comm simgrid)
-target_link_libraries(test_intra_scatter simgrid)
+add_executable       (test_intra_scatter          test_intra_scatter.c)
+target_link_libraries(test_intra_scatter          simgrid)
 
 set(tesh_files
   ${tesh_files}

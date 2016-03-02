@@ -12,18 +12,15 @@
 #endif
 
 #include "src/surf/surf_interface.hpp"
+#include "src/surf/storage_interface.hpp"
+#include "src/surf/xml/platf.hpp"
 #include "smx_private.h"
 #include "smx_private.hpp"
-#include "xbt/heap.h"
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
-
-#include "src/surf/callbacks.h"
 
 #ifdef HAVE_MC
 #include "src/mc/mc_private.h"
@@ -217,10 +214,8 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), NULL);
     simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), NULL);
-    simix_global->process_list =
-        xbt_swag_new(xbt_swag_offset(proc, process_hookup));
-    simix_global->process_to_destroy =
-        xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
+    simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));
+    simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
 
     simix_global->maestro_process = NULL;
     simix_global->registered_functions = xbt_dict_new_homogeneous(NULL);
@@ -258,14 +253,21 @@ void SIMIX_global_init(int *argc, char **argv)
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
       SIMIX_host_create(&host);
     });
-    surf_on_storage_created(SIMIX_storage_create_);
+    SIMIX_HOST_LEVEL = simgrid::s4u::Host::extension_create(SIMIX_host_destroy);
 
+    simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
+      const char* id = storage->getName();
+        // TODO, create sg_storage_by_name
+        sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, id);
+        xbt_assert(s != NULL, "Storage not found for name %s", id);
+        SIMIX_storage_create_(s);
+      });
+
+    SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
   }
   if (!simix_timers) {
     simix_timers = xbt_heap_new(8, &free);
   }
-
-  SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
 
   if (sg_cfg_get_boolean("clean_atexit"))
     atexit(SIMIX_clean);

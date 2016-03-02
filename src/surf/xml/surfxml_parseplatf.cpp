@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/instr/instr_private.h" // TRACE_start(). FIXME: remove by subscribing tracing to the surf signals
 
 #include "src/surf/xml/platf.hpp"
 

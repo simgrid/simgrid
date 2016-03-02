@@ -10,6 +10,7 @@
 #include "xbt/dict.h"
 #include "xbt/RngStream.h"
 #include <xbt/signal.hpp>
+#include "src/surf/HostImpl.hpp"
 #include "surf/surf.h"
 
 #include "src/simix/smx_private.h"
@@ -18,7 +19,6 @@
 #include "src/surf/xml/platf_private.hpp"
 
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/host_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf_routing.h" // FIXME: brain dead public header
 #include "src/surf/surf_routing_cluster.hpp"
@@ -62,9 +62,9 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   xbt_assert(! sg_host_by_name(host->id),
       "Refusing to create a second host named '%s'.", host->id);
 
-  simgrid::surf::As* current_routing = routing_get_current();
-  if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
-    current_routing->hierarchy_ = SURF_ROUTING_BASE;
+  simgrid::s4u::As* current_routing = routing_get_current();
+  if (current_routing->hierarchy_ == simgrid::s4u::As::ROUTING_NULL)
+    current_routing->hierarchy_ = simgrid::s4u::As::ROUTING_BASE;
 
   simgrid::surf::NetCard *netcard =
       new simgrid::surf::NetCardImpl(host->id, SURF_NETWORK_ELEMENT_HOST, current_routing);
@@ -101,11 +101,14 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
 
   simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h,
       host->speed_peak,
-      host->pstate,
-      host->speed_scale, host->speed_trace,
+      host->speed_trace,
       host->core_amount,
-      host->initiallyOn, host->state_trace);
+      host->state_trace);
   surf_host_model->createHost(host->id, netcard, cpu, host->properties)->attach(h);
+
+  if (host->pstate != 0)
+    cpu->setPState(host->pstate);
+
   simgrid::s4u::Host::onCreation(*h);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
@@ -117,10 +120,10 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
  */
 void sg_platf_new_router(sg_platf_router_cbarg_t router)
 {
-  simgrid::surf::As* current_routing = routing_get_current();
+  simgrid::s4u::As* current_routing = routing_get_current();
 
-  if (current_routing->hierarchy_ == SURF_ROUTING_NULL)
-    current_routing->hierarchy_ = SURF_ROUTING_BASE;
+  if (current_routing->hierarchy_ == simgrid::s4u::As::ROUTING_NULL)
+    current_routing->hierarchy_ = simgrid::s4u::As::ROUTING_BASE;
   xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
              "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
@@ -199,7 +202,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   // What an inventive way of initializing the AS that I have as ancestor :-(
   sg_platf_new_AS_begin(&AS);
-  simgrid::surf::As *current_routing = routing_get_current();
+  simgrid::s4u::As *current_routing = routing_get_current();
   static_cast<AsCluster*>(current_routing)->parse_specific_arguments(cluster);
 
   if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
@@ -273,9 +276,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       host.pstate = 0;
 
       //host.power_peak = cluster->power;
-      host.speed_scale = 1.0;
       host.core_amount = cluster->core_amount;
-      host.initiallyOn = 1;
       host.coord = "";
       sg_platf_new_host(&host);
       xbt_dynar_free(&host.speed_peak);
@@ -304,14 +305,12 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         link.id        = tmp_link;
         link.bandwidth = cluster->loopback_bw;
         link.latency   = cluster->loopback_lat;
-        link.initiallyOn = 1;
         link.policy    = SURF_LINK_FATPIPE;
         sg_platf_new_link(&link);
         info_loop.link_up   = Link::byName(tmp_link);
         info_loop.link_down = info_loop.link_up;
         free(tmp_link);
-        xbt_dynar_set(current_routing->upDownLinks,
-          rankId*(static_cast<AsCluster*>(current_routing))->nb_links_per_node_, &info_loop);
+        xbt_dynar_set(current_routing->upDownLinks, rankId*(static_cast<AsCluster*>(current_routing))->nb_links_per_node_, &info_loop);
       }
 
       //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -325,16 +324,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         link.id = tmp_link;
         link.bandwidth = cluster->limiter_link;
         link.latency = 0;
-        link.initiallyOn = 1;
         link.policy = SURF_LINK_SHARED;
         sg_platf_new_link(&link);
         info_lim.link_up = Link::byName(tmp_link);
         info_lim.link_down = info_lim.link_up;
         free(tmp_link);
         auto as_cluster = static_cast<AsCluster*>(current_routing);
-        xbt_dynar_set(current_routing->upDownLinks,
-            rankId*(as_cluster)->nb_links_per_node_ + as_cluster->has_loopback_ ,
-            &info_lim);
+        xbt_dynar_set(current_routing->upDownLinks, rankId*(as_cluster)->nb_links_per_node_ + as_cluster->has_loopback_ , &info_lim);
 
       }
 
@@ -389,7 +385,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     link.id        = link_backbone;
     link.bandwidth = cluster->bb_bw;
     link.latency   = cluster->bb_lat;
-    link.initiallyOn = 1;
     link.policy    = cluster->bb_sharing_policy;
 
     sg_platf_new_link(&link);
@@ -420,10 +415,7 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
       storage->type_id,
       storage->content);
 
-  xbt_lib_set(storage_lib,
-      storage->id,
-      ROUTING_STORAGE_LEVEL,
-      (void *) xbt_strdup(storage->type_id));
+  xbt_lib_set(storage_lib, storage->id, ROUTING_STORAGE_LEVEL, (void *) xbt_strdup(storage->type_id));
 
   // if storage content is not specified use the content of storage_type if any
   if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){

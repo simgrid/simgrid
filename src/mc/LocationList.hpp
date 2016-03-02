@@ -7,7 +7,7 @@
 #ifndef SIMGRID_MC_OBJECT_LOCATION_H
 #define SIMGRID_MC_OBJECT_LOCATION_H
 
-#include <stdint.h>
+#include <cstdint>
 
 #include <vector>
 
@@ -15,7 +15,9 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
-#include "simgrid_config.h"
+#include <xbt/base.h>
+#include <xbt/range.hpp>
+
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/AddressSpace.hpp"
@@ -27,20 +29,30 @@ namespace dwarf {
 /** \brief A DWARF expression with optional validity contraints */
 class LocationListEntry {
 public:
-  simgrid::dwarf::DwarfExpression expression;
-  void* lowpc, *highpc;
+  typedef simgrid::xbt::Range<std::uint64_t> range_type;
+private:
+  DwarfExpression expression_;
+  range_type range_ = {0, UINT64_MAX};
+public:
+  LocationListEntry() {}
+  LocationListEntry(DwarfExpression expression, range_type range)
+    : expression_(std::move(expression)), range_(range)
+  {}
+  LocationListEntry(DwarfExpression expression)
+    : expression_(std::move(expression)), range_({0, UINT64_MAX})
+  {}
 
-  LocationListEntry() : lowpc(nullptr), highpc(nullptr) {}
-
-  bool always_valid() const
+  DwarfExpression& expression()
   {
-    return this->lowpc == nullptr && this->highpc == nullptr;
+    return expression_;
+  }
+  DwarfExpression const& expression() const
+  {
+    return expression_;
   }
   bool valid_for_ip(unw_word_t ip) const
   {
-    return always_valid() || (
-      ip >= (unw_word_t) this->lowpc &&
-      ip <  (unw_word_t) this->highpc);
+    return range_.contain(ip);
   }
 };
 

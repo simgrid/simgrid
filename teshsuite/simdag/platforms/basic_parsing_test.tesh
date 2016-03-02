@@ -4,53 +4,13 @@ $ ${bindir:=.}/basic_parsing_test one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 5, link number: 12
 
-$ ${bindir:=.}/basic_parsing_test one_host_availability.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic_parsing_test host_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
+> Workstation number: 5, link number: 1
 
-$ ${bindir:=.}/basic_parsing_test one_host_properties.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/basic_parsing_test link_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
-$ ${bindir:=.}/basic_parsing_test one_host_state_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
-$ ${bindir:=.}/basic_parsing_test one_host_state_off.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
-$ ${bindir:=.}/basic_parsing_test one_host_state_on.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
-$ ${bindir:=.}/basic_parsing_test one_host_trace_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
-$ ${bindir:=.}/basic_parsing_test one_host_trace_inside.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
-$ ${bindir:=.}/basic_parsing_test one_host.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 1
-
-$ ${bindir:=.}/basic_parsing_test one_link_availability.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 2
-
-$ ${bindir:=.}/basic_parsing_test one_link_fatpipe.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 2
-
-$ ${bindir:=.}/basic_parsing_test one_link_shared.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 2
-
-$ ${bindir:=.}/basic_parsing_test one_link_state_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 1, link number: 2
+> Workstation number: 1, link number: 5
 
 $ ${bindir:=.}/basic_parsing_test three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
@@ -58,7 +18,7 @@ $ ${bindir:=.}/basic_parsing_test three_hosts_non_symmetric_route.xml "--log=roo
 
 $ ${bindir:=.}/basic_parsing_test two_clusters.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> Workstation number: 10, link number: 24
+> Workstation number: 4, link number: 12
 
 $ ${bindir:=.}/basic_parsing_test two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
@@ -71,10 +31,6 @@ $ ${bindir:=.}/basic_parsing_test two_hosts_one_link.xml "--log=root.fmt:[%10.6r
 $ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 4, link number: 5
-
-$ ${bindir:=.}/basic_parsing_test ./four_hosts_floyd_bis.xml
-> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
-> Workstation number: 5, link number: 7
 
 $ ${bindir:=.}/basic_parsing_test ./properties.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'host/model' to 'compound'
@@ -91,32 +47,37 @@ $ ${bindir:=.}/basic_parsing_test ./properties.xml --cfg=cpu/optim:TI
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'Vegas'
 > Workstation number: 1, link number: 1
 
+$ cp -f ./bob.trace ./bob0_availability_file.trace
+$ cp -f ./bob.trace ./bob2_availability_file.trace
+$ cp -f ./bob.trace ./bob0_state_file.trace
+$ cp -f ./bob.trace ./bob2_state_file.trace
 $ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 6
+$ rm -f ./bob0_availability_file.trace ./bob2_availability_file.trace ./bob0_state_file.trace ./bob2_state_file.trace
 
 $ ${bindir:=.}/is_router_test ./test_of_is_router.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
-> Workstation number: 10, link number: 1, elmts number: 21
->    - Seen: "host01" is type : 1
->    - Seen: "host02" is type : 1
->    - Seen: "host03" is type : 1
->    - Seen: "host04" is type : 1
->    - Seen: "host05" is type : 1
->    - Seen: "host06" is type : 1
->    - Seen: "host07" is type : 1
->    - Seen: "host08" is type : 1
->    - Seen: "host09" is type : 1
->    - Seen: "host10" is type : 1
->    - Seen: "router1" is type : 2
->    - Seen: "router2" is type : 2
->    - Seen: "router3" is type : 2
->    - Seen: "router4" is type : 2
->    - Seen: "router5" is type : 2
->    - Seen: "AS0" is type : 3
->    - Seen: "AS1" is type : 3
->    - Seen: "AS2" is type : 3
->    - Seen: "AS3" is type : 3
->    - Seen: "AS4" is type : 3
->    - Seen: "AS" is type : 3
+> Host number: 10, link number: 1, elmts number: 21
+>    - Seen: "host01". Type: host
+>    - Seen: "host02". Type: host
+>    - Seen: "host03". Type: host
+>    - Seen: "host04". Type: host
+>    - Seen: "host05". Type: host
+>    - Seen: "host06". Type: host
+>    - Seen: "host07". Type: host
+>    - Seen: "host08". Type: host
+>    - Seen: "host09". Type: host
+>    - Seen: "host10". Type: host
+>    - Seen: "router1". Type: router
+>    - Seen: "router2". Type: router
+>    - Seen: "router3". Type: router
+>    - Seen: "router4". Type: router
+>    - Seen: "router5". Type: router
+>    - Seen: "AS0". Type: AS
+>    - Seen: "AS1". Type: AS
+>    - Seen: "AS2". Type: AS
+>    - Seen: "AS3". Type: AS
+>    - Seen: "AS4". Type: AS
+>    - Seen: "AS". Type: AS
 

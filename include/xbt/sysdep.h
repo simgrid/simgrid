@@ -37,11 +37,9 @@ XBT_PUBLIC(void) XBT_ATTRIB_NORETURN xbt_abort(void);
  * @brief Kill the program with an error message
  * \param ... a format string and its arguments
  *
- * Things are so messed up that the only thing to do now, is to stop the
- * program.
+ * Things are so messed up that the only thing to do now, is to stop the program.
  *
- * The message is handled by a CRITICAL logging request, and may consist of a
- * format string with arguments.
+ * The message is handled by a CRITICAL logging request, and may consist of a format string with arguments.
  */
 #define xbt_die(...)                            \
   do {                                          \
@@ -55,15 +53,6 @@ XBT_LOG_NEW_CATEGORY(xbt, "All XBT categories (simgrid toolbox)");
 #else
 XBT_LOG_EXTERNAL_CATEGORY(xbt);
 #endif
-
-/* these ones live in str.h, but redeclare them here so that we do
-   not need to load the whole str.h and its heavy dependencies */
-#ifndef __USE_GNU               /* do not redeclare existing headers */
-XBT_PUBLIC(int) asprintf(char **ptr, const char *fmt,   /*args */
-                         ...) XBT_ATTRIB_PRINTF(2, 3);
-XBT_PUBLIC(int) vasprintf(char **ptr, const char *fmt, va_list ap);
-#endif
-XBT_PUBLIC(char *) bprintf(const char *fmt, ...) XBT_ATTRIB_PRINTF(1, 2);
 
 /** @addtogroup XBT_syscall
  *  @brief Malloc and associated functions, killing the program on error (with \ref XBT_ex)

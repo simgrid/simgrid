@@ -4,14 +4,12 @@ if(enable_smpi)
   else()
     set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
-
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  add_executable(pingpong pingpong.c)
-  add_executable(dsend dsend.c)
+
+  add_executable       (pingpong pingpong.c)
   target_link_libraries(pingpong simgrid)
-  target_link_libraries(dsend simgrid)
+  add_executable       (dsend    dsend.c)
+  target_link_libraries(dsend    simgrid)
 endif()
 
 set(tesh_files

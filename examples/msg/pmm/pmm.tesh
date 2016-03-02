@@ -3,7 +3,7 @@
 p Testing the Parallel Matrix Multiplication 
 
 ! timeout 120
-$ ./pmm/msg_pmm --log=msg_pmm.thres:verbose --log=no_loc ${srcdir:=.}/../platforms/cluster.xml ${srcdir:=.}/pmm/pmm_9_deploy.xml
+$ ./pmm/msg_pmm --log=msg_pmm.thres:verbose --log=no_loc ${srcdir:=.}/../platforms/cluster.xml
 > [node-0.acme.org:node:(1) 0.000000] [msg_pmm/VERBOSE] Create job 0
 > [node-0.acme.org:node:(1) 0.000000] [msg_pmm/VERBOSE] Create job 1
 > [node-0.acme.org:node:(1) 0.000000] [msg_pmm/VERBOSE] Create job 2

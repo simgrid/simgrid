@@ -20,10 +20,10 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"
 
+#include "src/mc/mc_object_info.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
@@ -100,7 +100,7 @@ static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, D
 /** \brief Get the DW_TAG_type of the DIE
  *
  *  \param die DIE
- *  \return DW_TAG_type attribute as a new string (NULL if none)
+ *  \return DW_TAG_type attribute as a new string (nullptr if none)
  */
 static std::uint64_t MC_dwarf_at_type(Dwarf_Die * die);
 
@@ -258,7 +258,7 @@ static const char *MC_dwarf_attr_integrate_string(Dwarf_Die * die,
 {
   Dwarf_Attribute attr;
   if (!dwarf_attr_integrate(die, attribute, &attr)) {
-    return NULL;
+    return nullptr;
   } else {
     return dwarf_formstring(&attr);
   }
@@ -272,7 +272,7 @@ static const char *MC_dwarf_attr_integrate_string(Dwarf_Die * die,
  *  DW_AT_MIPS_linkage_name is used (at least by GCC).
  *
  *  \param  the DIE
- *  \return linkage name of the given DIE (or NULL)
+ *  \return linkage name of the given DIE (or nullptr)
  * */
 static const char *MC_dwarf_at_linkage_name(Dwarf_Die * die)
 {
@@ -289,7 +289,7 @@ static Dwarf_Off MC_dwarf_attr_dieoffset(Dwarf_Die * die, int attribute)
     return 0;
   dwarf_attr_integrate(die, attribute, &attr);
   Dwarf_Die subtype_die;
-  if (dwarf_formref_die(&attr, &subtype_die) == NULL)
+  if (dwarf_formref_die(&attr, &subtype_die) == nullptr)
     xbt_die("Could not find DIE");
   return dwarf_dieoffset(&subtype_die);
 }
@@ -302,7 +302,7 @@ static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die * die,
     return 0;
   dwarf_attr_integrate(die, DW_AT_type, &attr);
   Dwarf_Die subtype_die;
-  if (dwarf_formref_die(&attr, &subtype_die) == NULL)
+  if (dwarf_formref_die(&attr, &subtype_die) == nullptr)
     xbt_die("Could not find DIE");
   return dwarf_dieoffset(&subtype_die);
 }
@@ -310,7 +310,7 @@ static Dwarf_Off MC_dwarf_attr_integrate_dieoffset(Dwarf_Die * die,
 /** \brief Find the type/subtype (DW_AT_type) for a DIE
  *
  *  \param dit the DIE
- *  \return DW_AT_type reference as a global offset in hexadecimal (or NULL)
+ *  \return DW_AT_type reference as a global offset in hexadecimal (or nullptr)
  */
 static
 std::uint64_t MC_dwarf_at_type(Dwarf_Die * die)
@@ -321,7 +321,7 @@ std::uint64_t MC_dwarf_at_type(Dwarf_Die * die)
 static uint64_t MC_dwarf_attr_integrate_addr(Dwarf_Die * die, int attribute)
 {
   Dwarf_Attribute attr;
-  if (dwarf_attr_integrate(die, attribute, &attr) == NULL)
+  if (dwarf_attr_integrate(die, attribute, &attr) == nullptr)
     return 0;
   Dwarf_Addr value;
   if (dwarf_formaddr(&attr, &value) == 0)
@@ -334,7 +334,7 @@ static uint64_t MC_dwarf_attr_integrate_uint(Dwarf_Die * die, int attribute,
                                              uint64_t default_value)
 {
   Dwarf_Attribute attr;
-  if (dwarf_attr_integrate(die, attribute, &attr) == NULL)
+  if (dwarf_attr_integrate(die, attribute, &attr) == nullptr)
     return default_value;
   Dwarf_Word value;
   return dwarf_formudata(dwarf_attr_integrate(die, attribute, &attr),
@@ -631,7 +631,7 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   }
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-  if (name != NULL) {
+  if (name != nullptr) {
     char* full_name = ns ? bprintf("%s%s::%s", prefix, ns, name) :
       bprintf("%s%s", prefix, name);
     type.name = std::string(full_name);
@@ -666,14 +666,13 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
   case DW_TAG_pointer_type:
   case DW_TAG_reference_type:
   case DW_TAG_rvalue_reference_type:
-    type.is_pointer_type = 1;
     break;
 
   case DW_TAG_structure_type:
   case DW_TAG_union_type:
   case DW_TAG_class_type:
     MC_dwarf_add_members(info, die, unit, &type);
-    char *new_ns = ns == NULL ? xbt_strdup(type.name.c_str())
+    char *new_ns = ns == nullptr ? xbt_strdup(type.name.c_str())
         : bprintf("%s::%s", ns, name);
     MC_dwarf_handle_children(info, die, unit, frame, new_ns);
     free(new_ns);
@@ -709,14 +708,14 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     return nullptr;
 
   Dwarf_Attribute attr_location;
-  if (dwarf_attr(die, DW_AT_location, &attr_location) == NULL)
+  if (dwarf_attr(die, DW_AT_location, &attr_location) == nullptr)
     // No location: do not add it ?
     return nullptr;
 
   std::unique_ptr<simgrid::mc::Variable> variable =
     std::unique_ptr<simgrid::mc::Variable>(new simgrid::mc::Variable());
   variable->dwarf_offset = dwarf_dieoffset(die);
-  variable->global = frame == NULL;     // Can be override base on DW_AT_location
+  variable->global = frame == nullptr;     // Can be override base on DW_AT_location
   variable->object_info = info;
 
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
@@ -750,11 +749,9 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
         uintptr_t offset = (uintptr_t) expr[0].number;
         uintptr_t base = (uintptr_t) info->base_address();
         variable->address = (void *) (base + offset);
-      } else {
-        simgrid::dwarf::LocationListEntry entry;
-        entry.expression = {expr, expr + len};
-        variable->location_list = { std::move(entry) };
-      }
+      } else
+        variable->location_list = {
+          simgrid::dwarf::DwarfExpression(expr, expr + len) };
 
       break;
     }
@@ -793,7 +790,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     default:
       xbt_die
           ("Unhandled form 0x%x, class 0x%X for DW_AT_start_scope of variable %s",
-           form, (int) form_class, name == NULL ? "?" : name);
+           form, (int) form_class, name == nullptr ? "?" : name);
     }
   }
 
@@ -844,19 +841,16 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     xbt_assert(parent_frame, "No parent scope for this scope");
 
   simgrid::mc::Frame frame;
-
   frame.tag = tag;
   frame.id = dwarf_dieoffset(die);
   frame.object_info = info;
 
   if (klass == simgrid::dwarf::TagClass::Subprogram) {
     const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
-    if(ns)
+    if (ns)
       frame.name  = std::string(ns) + "::" + name;
     else if (name)
       frame.name = name;
-    else
-      frame.name.clear();
   }
 
   frame.abstract_origin_id =
@@ -913,13 +907,14 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   // Handle children:
   MC_dwarf_handle_children(info, die, unit, &frame, ns);
 
-  // Someone needs this to be sorted but who?
+  // We sort them in order to have an (somewhat) efficient by name
+  // lookup:
   std::sort(frame.variables.begin(), frame.variables.end(),
     MC_compare_variable);
 
   // Register it:
   if (klass == simgrid::dwarf::TagClass::Subprogram)
-    info->subprograms[frame.id] = frame;
+    info->subprograms[frame.id] = std::move(frame);
   else if (klass == simgrid::dwarf::TagClass::Scope)
     parent_frame->scopes.push_back(std::move(frame));
 }
@@ -932,7 +927,7 @@ static void mc_dwarf_handle_namespace_die(simgrid::mc::ObjectInformation* info,
   const char *name = MC_dwarf_attr_integrate_string(die, DW_AT_name);
   if (frame)
     xbt_die("Unexpected namespace in a subprogram");
-  char *new_ns = ns == NULL ? xbt_strdup(name)
+  char *new_ns = ns == nullptr ? xbt_strdup(name)
       : bprintf("%s::%s", ns, name);
   MC_dwarf_handle_children(info, die, unit, frame, new_ns);
   xbt_free(new_ns);
@@ -1010,7 +1005,7 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   if (fd < 0)
     xbt_die("Could not open file %s", info->file_name.c_str());
   Dwarf *dwarf = dwarf_begin(fd, DWARF_C_READ);
-  if (dwarf == NULL)
+  if (dwarf == nullptr)
     xbt_die("Missing debugging information in %s\n"
       "Your program and its dependencies must have debugging information.\n"
       "You might want to recompile with -g or install the suitable debugging package.\n",
@@ -1025,11 +1020,11 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   Dwarf_Off next_offset = 0;
   size_t length;
 
-  while (dwarf_nextcu(dwarf, offset, &next_offset, &length, NULL, NULL, NULL) ==
+  while (dwarf_nextcu(dwarf, offset, &next_offset, &length, nullptr, NULL, NULL) ==
          0) {
     Dwarf_Die unit_die;
-    if (dwarf_offdie(dwarf, offset + length, &unit_die) != NULL)
-      MC_dwarf_handle_children(info, &unit_die, &unit_die, NULL, NULL);
+    if (dwarf_offdie(dwarf, offset + length, &unit_die) != nullptr)
+      MC_dwarf_handle_children(info, &unit_die, &unit_die, nullptr, NULL);
     offset = next_offset;
   }
 
@@ -1154,7 +1149,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
   std::shared_ptr<simgrid::mc::ObjectInformation> result =
     std::make_shared<simgrid::mc::ObjectInformation>();
   result->file_name = name;
-  MC_find_object_address(maps, result.get());
+  simgrid::mc::find_object_address(maps, result.get());
   MC_dwarf_get_variables(result.get());
   MC_post_process_variables(result.get());
   MC_post_process_types(result.get());

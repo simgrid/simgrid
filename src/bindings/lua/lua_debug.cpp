@@ -18,7 +18,7 @@ extern "C" {
 #include "lua_utils.h"
 #include "xbt.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(lua_debug, bindings, "Lua helper functions");
+XBT_LOG_NEW_DEFAULT_CATEGORY(lua_debug, "Lua bindings (helper functions)");
 
 /**
  * @brief Returns a string representation of a value in the Lua stack.

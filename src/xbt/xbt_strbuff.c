@@ -63,8 +63,7 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
   int addlen;
   int needed_space;
 
-  if (!b)
-    THROWF(arg_error, 0, "Asked to append stuff to NULL buffer");
+  xbt_assert(b, "Asked to append stuff to NULL buffer");
 
   addlen = strlen(toadd);
   needed_space = b->used + addlen + 1;
@@ -75,20 +74,6 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
   }
   strcpy(b->data + b->used, toadd);
   b->used += addlen;
-}
-
-XBT_INLINE void xbt_strbuff_chomp(xbt_strbuff_t b)
-{
-  while (b->used && b->data[b->used - 1] == '\n') {
-    b->used--;
-    b->data[b->used] = '\0';
-  }
-}
-
-XBT_INLINE void xbt_strbuff_trim(xbt_strbuff_t b)
-{
-  xbt_str_trim(b->data, " ");
-  b->used = strlen(b->data);
 }
 
 /** @brief Replaces a set of variables by their values
@@ -121,8 +106,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
     case '\\':
       /* Protected char; pass the protection */
       end++;
-      if (*end == '\0')
-        THROWF(arg_error, 0, "String ends with \\");
+      xbt_assert(*end != '\0', "String ends with \\");
       break;
 
     case '\'':
@@ -161,9 +145,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
               char *p = end_var + 1;
               while (*p != '\0' && *p != '}')
                 p++;
-              if (*p == '\0')
-                THROWF(arg_error, 0,
-                       "Variable default value not terminated ('}' missing)");
+              xbt_assert (*p != '\0', "Variable default value not terminated ('}' missing)");
 
               default_value = xbt_malloc(p - end_var - 1);
               memcpy(default_value, end_var + 2, p - end_var - 2);
@@ -175,15 +157,12 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
             }
             end_var++;
           }
-          if (*end_var == '\0')
-            THROWF(arg_error, 0,
-                   "Variable name not terminated ('}' missing)");
+          xbt_assert(*end_var != '\0', "Variable name not terminated ('}' missing)");
 
           if (!end_subst)       /* already set if there's a default value */
             end_subst = end_var + 1;    /* also kill the } in the name */
 
-          if (end_var == beg_var)
-            THROWF(arg_error, 0, "Variable name empty (${} is not valid)");
+          xbt_assert(end_var != beg_var, "Variable name empty (${} is not valid)");
 
 
         } else {
@@ -194,22 +173,11 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
                  && *end_var != '\n')
             end_var++;
           end_subst = end_var;
-          if (end_var == beg_var)
-            THROWF(arg_error, 0, "Variable name empty ($ is not valid)");
+          xbt_assert (end_var != beg_var, "Variable name empty ($ is not valid)");
         }
-/*        XBT_DEBUG("var='%.*s'; subst='%.*s'; End_var = '%s'",
-            end_var-beg_var,beg_var,
-            end_subst-beg_subst,beg_subst,
-            end_var);*/
 
         /* ok, we now have the variable name. Search the dictionary for the substituted value */
-        value =
-            xbt_dict_get_or_null_ext(patterns, beg_var, end_var - beg_var);
-/*        XBT_DEBUG("Deal with '%s'",b->data);
-        XBT_DEBUG("Search for %.*s, found %s (default value = %s)\n",
-            end_var-beg_var,beg_var,
-            (value?value:"(no value)"),
-            (default_value?default_value:"(no value)"));*/
+        value = xbt_dict_get_or_null_ext(patterns, beg_var, end_var - beg_var);
 
         if (value)
           value = xbt_strdup(value);
@@ -220,18 +188,9 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 
         /* En route for the actual substitution */
         val_len = strlen(value);
-//        XBT_DEBUG("val_len = %d, key_len=%d",val_len,end_subst-beg_subst);
         if (val_len <= end_subst - beg_subst) {
           /* enough room to do the substitute in place */
-//          XBT_DEBUG("Substitute key name by its value: ie '%.*s' by '%.*s'",end_subst-beg_subst,beg_subst,val_len,value);
           memmove(beg_subst, value, val_len);   /* substitute */
-//          XBT_DEBUG("String is now: '%s'",b->data);
-/*          XBT_DEBUG("Move end of string closer (%d chars moved) :\n-'%.*s%.*s'\n+'%.*s%s'",
-              b->used - (end_subst - b->data) + 1,
-              beg_subst-b->data,b->data,
-              b->used-(end_subst-b->data)+1,beg_subst+val_len,
-              beg_subst-b->data,b->data,
-              end_subst);*/
           memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 1); /* move the end of the string closer */
 //          XBT_DEBUG("String is now: '%s'",b->data);
           end = beg_subst + val_len;    /* update the currently explored char in the overall loop */
@@ -240,16 +199,13 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 //          XBT_DEBUG("Used:%d end:%d ending char:%d",b->used,end-b->data,*end);
         } else {
           /* we have to extend the data area */
-          int tooshort =
-              val_len - (end_subst - beg_subst) + 1 /*don't forget \0 */ ;
+          int tooshort = val_len - (end_subst - beg_subst) + 1 /* don't forget \0 */ ;
           int newused = b->used + tooshort;
           end += tooshort;      /* update the pointer of the overall loop */
 //          XBT_DEBUG("Too short (by %d chars; %d chars left in area)",val_len- (end_subst-beg_subst), b->size - b->used);
           if (newused > b->size) {
             /* We have to realloc the data area before (because b->size is too small). We have to update our pointers, too */
-            char *newdata = xbt_realloc(b->data,
-                                    b->used + MAX(minimal_increment,
-                                                  tooshort));
+            char *newdata = xbt_realloc(b->data, b->used + MAX(minimal_increment, tooshort));
             int offset = newdata - b->data;
             b->data = newdata;
             b->size = b->used + MAX(minimal_increment, tooshort);
@@ -272,6 +228,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 
     case '\0':
       done = 1;
+      break;
     }
     end++;
   }

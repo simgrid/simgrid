@@ -32,40 +32,23 @@ typedef struct {
    *  @hideinitializer */
 #define xbt_matrix_get_as(mat,l,c,type) *(type*)xbt_matrix_get_ptr(mat,l,c)
 
-XBT_PUBLIC(xbt_matrix_t) xbt_matrix_new(int lines, int rows,
-                                        const unsigned long elmsize,
-                                        void_f_pvoid_t const free_f);
-XBT_PUBLIC(xbt_matrix_t) xbt_matrix_new_sub(xbt_matrix_t from,
-                                            int lsize, int rsize,
-                                            int lpos, int rpos,
+XBT_PUBLIC(xbt_matrix_t) xbt_matrix_new(int lines, int rows, const unsigned long elmsize, void_f_pvoid_t const free_f);
+XBT_PUBLIC(xbt_matrix_t) xbt_matrix_new_sub(xbt_matrix_t from, int lsize, int rsize, int lpos, int rpos,
                                             pvoid_f_pvoid_t const cpy_f);
 
 XBT_PUBLIC(void) xbt_matrix_free(xbt_matrix_t matrix);
 XBT_PUBLIC(void) xbt_matrix_free_voidp(void *d);
 
-XBT_PUBLIC(void) xbt_matrix_copy_values(xbt_matrix_t dest,
-                                        xbt_matrix_t src,
-                                        unsigned int lsize,
-                                        unsigned int rsize,
-                                        unsigned int lpos_dst,
-                                        unsigned int rpos_dst,
-                                        unsigned int lpos_src,
-                                        unsigned int rpos_src,
-                                        pvoid_f_pvoid_t const cpy_f);
+XBT_PUBLIC(void) xbt_matrix_copy_values(xbt_matrix_t dest, xbt_matrix_t src, unsigned int lsize, unsigned int rsize,
+                                        unsigned int lpos_dst, unsigned int rpos_dst, unsigned int lpos_src,
+                                        unsigned int rpos_src, pvoid_f_pvoid_t const cpy_f);
 
-XBT_PUBLIC(void) xbt_matrix_dump(xbt_matrix_t matrix, const char *name,
-                                 int coords, void_f_pvoid_t display_fun);
+XBT_PUBLIC(void) xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords, void_f_pvoid_t display_fun);
 XBT_PUBLIC(void) xbt_matrix_dump_display_double(void *d);
-
 
 XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_zeros(int lines, int rows);
 XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_id(int lines, int rows);
-XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_rand(int lines, int rows);
 XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_seq(int lines, int rows);
-XBT_PUBLIC(int) xbt_matrix_double_is_seq(xbt_matrix_t mat);
-XBT_PUBLIC(xbt_matrix_t) xbt_matrix_double_new_mult(xbt_matrix_t A,
-                                                    xbt_matrix_t B);
-XBT_PUBLIC(void) xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B,
-                                           /*OUT*/ xbt_matrix_t C);
+XBT_PUBLIC(void) xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B, /*OUT*/ xbt_matrix_t C);
 SG_END_DECL()
 #endif                          /* XBT_MATRIX_H */

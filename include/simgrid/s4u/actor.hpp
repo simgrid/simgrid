@@ -51,7 +51,7 @@ public:
   /** The Actor that is currently running */
   static Actor *current();
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
-  static Actor *byPid(int pid);
+  //static Actor *byPid(int pid); not implemented
 
   /** Retrieves the name of that actor */
   const char*getName();

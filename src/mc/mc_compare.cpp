@@ -13,7 +13,6 @@
 #include <xbt/sysdep.h>
 
 #include "src/internal_config.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_liveness.h"
 #include "src/mc/mc_private.h"
@@ -30,8 +29,6 @@
 
 #include "xbt/mmalloc.h"
 #include "src/xbt/mmalloc/mmprivate.h"
-
-#include "src/xbt/probes.h"
 
 using simgrid::mc::remote;
 
@@ -157,9 +154,9 @@ static int compare_areas_with_type(ComparisonState& state,
       return (addr_pointed1 != addr_pointed2);
     } else {
 
-      if (addr_pointed1 == NULL && addr_pointed2 == NULL)
+      if (addr_pointed1 == nullptr && addr_pointed2 == NULL)
         return 0;
-      if (addr_pointed1 == NULL || addr_pointed2 == NULL)
+      if (addr_pointed1 == nullptr || addr_pointed2 == NULL)
         return 1;
       if (!state.compared_pointers.insert(
           std::make_pair(addr_pointed1, addr_pointed2)).second)
@@ -180,7 +177,7 @@ static int compare_areas_with_type(ComparisonState& state,
           return 1;
         // The pointers are both in the heap:
         return compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
-                                 snapshot2, NULL, type->subtype, pointer_level);
+                                 snapshot2, nullptr, type->subtype, pointer_level);
       }
 
       // The pointers are both in the current object R/W segment:
@@ -289,7 +286,6 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
                                 (char *) current_var.address, snapshot2, r2,
                                 bvariable_type, 0);
     if (res == 1) {
-      XBT_TRACE3(mc, global_diff, -1, -1, current_var->name);
       XBT_VERB("Global variable %s (%p) is different between snapshots",
                current_var.name.c_str(),
                (char *) current_var.address);
@@ -345,7 +341,6 @@ static int compare_local_variables(int process_index,
 
       if (res == 1) {
         // TODO, fix current_varX->subprogram->name to include name if DW_TAG_inlined_subprogram
-        XBT_TRACE3(mc, local_diff, -1, -1, current_var1->name);
         XBT_VERB
             ("Local variable %s (%p - %p) in frame %s "
              "is different between snapshots",
@@ -392,7 +387,6 @@ int snapshot_compare(void *state1, void *state2)
   if (_sg_mc_hash) {
     hash_result = (s1->hash != s2->hash);
     if (hash_result) {
-      XBT_TRACE2(mc, hash_diff, num1, num2);
       XBT_VERB("(%d - %d) Different hash : 0x%" PRIx64 "--0x%" PRIx64, num1,
                num2, s1->hash, s2->hash);
 #ifndef MC_DEBUG
@@ -405,7 +399,6 @@ int snapshot_compare(void *state1, void *state2)
 
   /* Compare enabled processes */
   if (s1->enabled_processes != s2->enabled_processes) {
-      //XBT_TRACE3(mc, state_diff, num1, num2, "Different enabled processes");
       XBT_VERB("(%d - %d) Different enabled processes", num1, num2);
       // return 1; ??
   }
@@ -429,7 +422,6 @@ int snapshot_compare(void *state1, void *state2)
       XBT_VERB("(%d - %d) Different size used in stacks : %zu - %zu", num1,
                num2, size_used1, size_used2);
 #endif
-      XBT_TRACE3(mc, state_diff, num1, num2, "Different stack size");
       return 1;
 #endif
     }
@@ -452,7 +444,6 @@ int snapshot_compare(void *state1, void *state2)
     errors++;
 #else
 #ifdef MC_VERBOSE
-    XBT_TRACE3(mc, state_diff, num1, num2, "Different heap information");
     XBT_VERB("(%d - %d) Different heap information", num1, num2);
 #endif
 
@@ -479,7 +470,6 @@ int snapshot_compare(void *state1, void *state2)
     else diff_local =
         compare_local_variables(stack1->process_index, s1, s2, stack1, stack2);
     if (diff_local > 0) {
-      XBT_TRACE3(mc, state_diff, num1, num2, "Different local variables");
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different local variables between stacks %d", num1,
                 num2, cursor + 1);
@@ -526,7 +516,6 @@ int snapshot_compare(void *state1, void *state2)
         s1, s2);
 
     if (is_diff != 0) {
-      XBT_TRACE3(mc, state_diff, num1, num2, "Different global variables");
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different global variables in %s",
         num1, num2, name.c_str());
@@ -544,7 +533,6 @@ int snapshot_compare(void *state1, void *state2)
 
   /* Compare heap */
   if (mmalloc_compare_heap(s1, s2) > 0) {
-    XBT_TRACE3(mc, state_diff, num1, num2, "Different heap");
 
 #ifdef MC_DEBUG
     XBT_DEBUG("(%d - %d) Different heap (mmalloc_compare)", num1, num2);

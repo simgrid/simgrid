@@ -34,5 +34,4 @@ xbt_automaton_propositional_symbol_t add_proposition(
 
 }
 }
-
 #endif

@@ -7,12 +7,8 @@
 #ifndef SIMGRID_MC_BASE_H
 #define SIMGRID_MC_BASE_H
 
-#include <xbt/misc.h>
-#include <simgrid/simix.h>
-#include "simgrid_config.h"
-#include "src/internal_config.h"
-#include "src/simix/smx_private.h"
-#include "mc/mc.h"
+#include <xbt/base.h>
+#include "src/simix/popping_private.h" // smx_simcall_t
 
 SG_BEGIN_DECL()
 

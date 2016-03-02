@@ -183,7 +183,6 @@ IF(NOT enable_memcheck)
   ELSE()
     ADD_TESH(tesh-xbt-log                          --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage log_usage_ndebug.tesh)
   ENDIF()
-  ADD_TESH(tesh-xbt-graphxml                     --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/graphxml_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/graphxml_usage graphxml_usage.tesh)
   ADD_TESH(tesh-xbt-heap                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/heap_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/heap_bench heap_bench.tesh)
   #ADD_TESH(test-xbt-parmap                         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/parmap_bench --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/parmap_bench parmap_bench.tesh)
   # END TESH TESTS
@@ -192,18 +191,6 @@ IF(NOT enable_memcheck)
   ## INTERFACES ##
   ### MSG ###
   # BEGIN TESH TESTS
-  ADD_TESH_FACTORIES(tesh-msg-get-sender         "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/get_sender ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/get_sender/get_sender.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-host-on-off        "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/host_on_off ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off/host_on_off.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-host-on-off-wait    "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/host_on_off ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off/host_on_off_wait.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-host-on-off-recv    "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/host_on_off ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off/host_on_off_recv.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-host-on-off-processes "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off_processes --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/host_on_off_processes ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/host_on_off_processes/host_on_off_processes.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-pid                "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/pid ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/pid/pid.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-process            "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/process ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process/process.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-process-join       "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/process_join ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/process_join/process_join.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-storage-basic      "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/storage ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/storage/storage_basic.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-task-destroy-cancel "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel --cd ${CMAKE_BINARY_DIR}/teshsuite/msg/task_destroy_cancel ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/task_destroy_cancel/task_destroy_cancel.tesh)
-  ADD_TESH_FACTORIES(tesh-msg-trace              "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/msg/trace --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/trace ${CMAKE_HOME_DIRECTORY}/teshsuite/msg/trace/trace.tesh)
-
   ADD_TESH(msg-file                              --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/msg/io/io.tesh)
   ADD_TESH(msg-storage                           --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/msg/io/storage.tesh)
   ADD_TESH(msg-remote-io                         --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/msg/io/remote.tesh)
@@ -364,11 +351,6 @@ IF(NOT enable_memcheck)
     ENDIF()
     # smpi broken usage
     ADD_TESH_FACTORIES(tesh-smpi-broken          "thread"              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong broken_hostfiles.tesh)
-    # https://gforge.inria.fr/tracker/index.php?func=detail&aid=17132&group_id=12&atid=165
-    ADD_TESH_FACTORIES(tesh-smpi-bug-17132       "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132 --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132.tesh)
-    IF(enable_debug)
-      ADD_TESH_FACTORIES(tesh-smpi-bug-17132-surf-debug "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132 --cd ${CMAKE_BINARY_DIR}/teshsuite/bug-17132 ${CMAKE_HOME_DIRECTORY}/teshsuite/bug-17132/bug-17132-surf-debug.tesh)
-    ENDIF()
     ADD_TESH(tesh-smpi-replay-ti-tracing       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong TI_output.tesh)
     FOREACH (GATHER_COLL default ompi mpich ompi_basic_linear ompi_linear_sync ompi_binomial mvapich2 mvapich2_two_level impi)
       ADD_TESH(tesh-smpi-gather-coll-${GATHER_COLL} --cfg smpi/gather:${GATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/gather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/gather gather_coll.tesh)
@@ -389,6 +371,7 @@ IF(NOT enable_memcheck)
     FOREACH (ALLREDUCE_COLL_LARGE ompi_ring_segmented)
       ADD_TESH(tesh-smpi-allreduce-coll-large-${ALLREDUCE_COLL_LARGE} --cfg smpi/allreduce:${ALLREDUCE_COLL_LARGE} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce allreduce_coll_large.tesh)
     ENDFOREACH()
+    ADD_TESH(tesh-smpi-allreduce-coll-automatic --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/allreduce allreduce_coll_automatic.tesh)
     FOREACH (ALLTOALL_COLL 2dmesh 3dmesh pair pair_rma pair_one_barrier pair_light_barrier
                            pair_mpi_barrier rdb ring ring_light_barrier
                            ring_mpi_barrier ring_one_barrier
@@ -527,7 +510,7 @@ ENDIF()
 
 
   ## OTHER ##
-ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/src/testall)
+ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
 IF(enable_auto_install)
   ADD_TEST(simgrid_install                       make install)

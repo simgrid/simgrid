@@ -7,17 +7,22 @@
 #ifndef SIMGRID_MC_PROCESS_H
 #define SIMGRID_MC_PROCESS_H
 
+#include <cstdint>
+#include <cstddef>
+
 #include <type_traits>
-
-#include <sys/types.h>
-
 #include <vector>
 #include <memory>
 
-#include "simgrid_config.h"
+#include <boost/range/iterator_range.hpp>
+
 #include <sys/types.h>
 
+#include <simgrid_config.h>
+
 #include <xbt/base.h>
+#include <xbt/dynar.h>
+#include <xbt/dynar.hpp>
 #include <xbt/mmalloc.h>
 
 #ifdef HAVE_MC
@@ -32,7 +37,6 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_base.h"
-#include "src/mc/mc_mmalloc.h" // std_heap
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/ObjectInformation.hpp"
@@ -45,19 +49,29 @@ typedef int mc_process_cache_flags_t;
 #define MC_PROCESS_CACHE_FLAG_MALLOC_INFO 2
 #define MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES 4
 
+struct s_mc_smx_process_info {
+  /** MCed address of the process */
+  void* address;
+  /** (Flat) Copy of the process data structure */
+  struct s_smx_process copy;
+  /** Hostname (owned by `mc_modelchecker->hostnames`) */
+  const char* hostname;
+  char* name;
+};
+
 namespace simgrid {
 namespace mc {
 
 struct IgnoredRegion {
   std::uint64_t addr;
-  size_t size;
+  std::size_t size;
 };
 
 struct IgnoredHeapRegion {
   int block;
   int fragment;
   void *address;
-  size_t size;
+  std::size_t size;
 };
 
 /** Representation of a process
@@ -66,6 +80,7 @@ class Process final : public AddressSpace {
 public:
   Process(pid_t pid, int sockfd);
   ~Process();
+  void init();
 
   Process(Process const&) = delete;
   Process(Process &&) = delete;
@@ -74,7 +89,7 @@ public:
 
   // Read memory:
   const void* read_bytes(void* buffer, std::size_t size,
-    remote_ptr<void> address, int process_index = ProcessIndexAny,
+    RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const override;
   void read_variable(const char* name, void* target, size_t size) const;
   template<class T>
@@ -85,17 +100,17 @@ public:
     read_variable(name, &res, sizeof(T));
     return res;
   }
-  char* read_string(remote_ptr<void> address) const;
+  char* read_string(RemotePtr<void> address) const;
 
   // Write memory:
-  void write_bytes(const void* buffer, size_t len, remote_ptr<void> address);
-  void clear_bytes(remote_ptr<void> address, size_t len);
+  void write_bytes(const void* buffer, size_t len, RemotePtr<void> address);
+  void clear_bytes(RemotePtr<void> address, size_t len);
 
   // Debug information:
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info(remote_ptr<void> addr) const;
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_exec(remote_ptr<void> addr) const;
-  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_rw(remote_ptr<void> addr) const;
-  simgrid::mc::Frame* find_function(remote_ptr<void> ip) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info(RemotePtr<void> addr) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_exec(RemotePtr<void> addr) const;
+  std::shared_ptr<simgrid::mc::ObjectInformation> find_object_info_rw(RemotePtr<void> addr) const;
+  simgrid::mc::Frame* find_function(RemotePtr<void> ip) const;
   simgrid::mc::Variable* find_variable(const char* name) const;
 
   // Heap access:
@@ -120,7 +135,7 @@ public:
 
   pid_t pid() const { return pid_; }
 
-  bool in_maestro_stack(remote_ptr<void> p) const
+  bool in_maestro_stack(RemotePtr<void> p) const
   {
     return p >= this->maestro_stack_start_ && p < this->maestro_stack_end_;
   }
@@ -191,22 +206,25 @@ public:
   void unignore_heap(void *address, size_t size);
 
   void ignore_local_variable(const char *var_name, const char *frame_name);
+  int socket() { return socket_; }
+  simgrid::xbt::DynarRange<s_mc_smx_process_info> simix_processes();
 
 private:
   void init_memory_map_info();
   void refresh_heap();
   void refresh_malloc_info();
+
 private:
-  pid_t pid_;
-  int socket_;
-  bool running_;
+  pid_t pid_ = -1;
+  int socket_ = -1;
+  bool running_ = false;
   std::vector<simgrid::xbt::VmMap> memory_map_;
-  remote_ptr<void> maestro_stack_start_, maestro_stack_end_;
-  int memory_file;
+  RemotePtr<void> maestro_stack_start_, maestro_stack_end_;
+  int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
-  int clear_refs_fd_;
-  int pagemap_fd_;
-  bool privatized_;
+  int clear_refs_fd_ = -1;
+  int pagemap_fd_ = -1;
+  bool privatized_ = false;
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
 
@@ -221,16 +239,16 @@ public: // Copies of MCed SMX data structures
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_process_infos;
+  xbt_dynar_t smx_process_infos = nullptr;
 
   /** Copy of `simix_global->process_to_destroy`
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_old_process_infos;
+  xbt_dynar_t smx_old_process_infos = nullptr;
 
   /** State of the cache (which variables are up to date) */
-  mc_process_cache_flags_t cache_flags;
+  mc_process_cache_flags_t cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
   /** Address of the heap structure in the MCed process. */
   void* heap_address;

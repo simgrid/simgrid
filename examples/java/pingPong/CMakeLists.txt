@@ -1,10 +1,8 @@
 set(example java_pingPong)
-set(sources
-  ${CMAKE_CURRENT_SOURCE_DIR}/PingPongTask.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/PingPongTest.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Receiver.java
-  ${CMAKE_CURRENT_SOURCE_DIR}/Sender.java
-  )
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/PingPongTest.java
+            ${CMAKE_CURRENT_SOURCE_DIR}/PingPongTask.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Receiver.java
+	    ${CMAKE_CURRENT_SOURCE_DIR}/Sender.java)
 
 if(enable_java)
   add_custom_command(

@@ -15,7 +15,6 @@
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
 #include "src/smpi/private.h"
-#include <alloca.h>
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -28,7 +27,6 @@
 #include <mc/mc.h>
 
 #include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_mmu.h"
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_protocol.h"
@@ -47,6 +45,11 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
                                 "Logging specific to mc_checkpoint");
 
+}
+
+namespace simgrid {
+namespace mc {
+
 /************************************  Free functions **************************************/
 /*****************************************************************************************/
 
@@ -54,7 +57,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_checkpoint, mc,
  *
  *  @param reg     Target region
  */
-static void MC_region_restore(mc_mem_region_t region)
+static void restore(mc_mem_region_t region)
 {
   switch(region->storage_type()) {
   case simgrid::mc::StorageType::NoData:
@@ -63,7 +66,7 @@ static void MC_region_restore(mc_mem_region_t region)
     break;
 
   case simgrid::mc::StorageType::Flat:
-    mc_model_checker->process().write_bytes(region->flat_data(),
+    mc_model_checker->process().write_bytes(region->flat_data().get(),
       region->size(), region->permanent_address());
     break;
 
@@ -73,15 +76,10 @@ static void MC_region_restore(mc_mem_region_t region)
 
   case simgrid::mc::StorageType::Privatized:
     for (auto& p : region->privatized_data())
-      MC_region_restore(&p);
+      restore(&p);
     break;
   }
 }
-
-}
-
-namespace simgrid {
-namespace mc {
 
 #ifdef HAVE_SMPI
 RegionSnapshot privatized_region(
@@ -118,12 +116,8 @@ RegionSnapshot privatized_region(
 }
 #endif
 
-}
-}
-
-extern "C" {
-
-static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
+static
+void add_region(int index, mc_snapshot_t snapshot,
                                   simgrid::mc::RegionType type,
                                   simgrid::mc::ObjectInformation* object_info,
                                   void *start_addr, void* permanent_addr,
@@ -156,13 +150,13 @@ static void MC_snapshot_add_region(int index, mc_snapshot_t snapshot,
   return;
 }
 
-static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snapshot)
+static void get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snapshot)
 {
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
   int i = 0;
   for (auto const& object_info : process->object_infos) {
-    MC_snapshot_add_region(i, snapshot, simgrid::mc::RegionType::Data,
+    add_region(i, snapshot, simgrid::mc::RegionType::Data,
       object_info.get(),
       object_info->start_rw, object_info->start_rw,
       object_info->end_rw - object_info->start_rw);
@@ -173,7 +167,7 @@ static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t s
   void *start_heap = heap->base;
   void *end_heap = heap->breakval;
 
-  MC_snapshot_add_region(n, snapshot, simgrid::mc::RegionType::Heap, NULL,
+  add_region(n, snapshot, simgrid::mc::RegionType::Heap, nullptr,
                         start_heap, start_heap,
                         (char *) end_heap - (char *) start_heap);
   snapshot->heap_bytes_used = mmalloc_get_bytes_used_remote(
@@ -197,16 +191,16 @@ static void MC_get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t s
  *
  *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
-void MC_find_object_address(
+void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps,
   simgrid::mc::ObjectInformation* result)
 {
   char* file_name = xbt_strdup(result->file_name.c_str());
-  const char *name = basename(file_name);
+  const char *name = xbt_basename(file_name);
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
     if (maps[i].pathname.empty()
-        || strcmp(basename(maps[i].pathname.c_str()), name)) {
+        || strcmp(xbt_basename(maps[i].pathname.c_str()), name)) {
       // Nothing to do
     } else if ((reg.prot & PROT_WRITE)) {
       xbt_assert(!result->start_rw,
@@ -264,7 +258,7 @@ void MC_find_object_address(
  *  \param ip    Instruction pointer
  *  \return      true if the variable is valid
  * */
-static bool mc_valid_variable(simgrid::mc::Variable* var,
+static bool valid_variable(simgrid::mc::Variable* var,
                               simgrid::mc::Frame* scope,
                               const void *ip)
 {
@@ -275,7 +269,7 @@ static bool mc_valid_variable(simgrid::mc::Variable* var,
     return true;
 }
 
-static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
+static void fill_local_variables_values(mc_stack_frame_t stack_frame,
                                            simgrid::mc::Frame* scope,
                                            int process_index,
                                            std::vector<s_local_variable>& result)
@@ -288,7 +282,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
   for(simgrid::mc::Variable& current_variable :
       scope->variables) {
 
-    if (!mc_valid_variable(&current_variable, scope, (void *) stack_frame->ip))
+    if (!valid_variable(&current_variable, scope, (void *) stack_frame->ip))
       continue;
 
     int region_type;
@@ -306,7 +300,7 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
     new_var.region = region_type;
     new_var.address = nullptr;
 
-    if (current_variable.address != NULL) {
+    if (current_variable.address != nullptr) {
       new_var.address = current_variable.address;
     } else if (!current_variable.location_list.empty()) {
       simgrid::dwarf::Location location =
@@ -330,26 +324,20 @@ static void mc_fill_local_variables_values(mc_stack_frame_t stack_frame,
 
   // Recursive processing of nested scopes:
   for(simgrid::mc::Frame& nested_scope : scope->scopes)
-    mc_fill_local_variables_values(
+    fill_local_variables_values(
       stack_frame, &nested_scope, process_index, result);
 }
 
-static std::vector<s_local_variable> MC_get_local_variables_values(
+static std::vector<s_local_variable> get_local_variables_values(
   std::vector<s_mc_stack_frame_t>& stack_frames, int process_index)
 {
   std::vector<s_local_variable> variables;
   for (s_mc_stack_frame_t& stack_frame : stack_frames)
-    mc_fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
+    fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
   return std::move(variables);
 }
 
-static void MC_stack_frame_free_voipd(void *s)
-{
-  mc_stack_frame_t stack_frame = *(mc_stack_frame_t *) s;
-  delete(stack_frame);
-}
-
-static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t stack_context)
+static std::vector<s_mc_stack_frame_t> unwind_stack_frames(mc_unw_context_t stack_context)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
   std::vector<s_mc_stack_frame_t> result;
@@ -413,7 +401,7 @@ static std::vector<s_mc_stack_frame_t> MC_unwind_stack_frames(mc_unw_context_t s
   return std::move(result);
 };
 
-static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t * snapshot)
+static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(mc_snapshot_t * snapshot)
 {
   std::vector<s_mc_snapshot_stack_t> res;
 
@@ -429,8 +417,8 @@ static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t 
       &context) < 0) {
       xbt_die("Could not initialise the libunwind context.");
     }
-    st.stack_frames = MC_unwind_stack_frames(&st.context);
-    st.local_variables = MC_get_local_variables_values(st.stack_frames, stack.process_index);
+    st.stack_frames = unwind_stack_frames(&st.context);
+    st.local_variables = get_local_variables_values(st.stack_frames, stack.process_index);
     st.process_index = stack.process_index;
 
     unw_word_t sp = st.stack_frames[0].sp;
@@ -446,7 +434,7 @@ static std::vector<s_mc_snapshot_stack_t> MC_take_snapshot_stacks(mc_snapshot_t 
 
 }
 
-static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
+static void snapshot_handle_ignore(mc_snapshot_t snapshot)
 {
   xbt_assert(snapshot->process());
   
@@ -469,7 +457,7 @@ static void MC_snapshot_handle_ignore(mc_snapshot_t snapshot)
 
 }
 
-static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
+static void snapshot_ignore_restore(mc_snapshot_t snapshot)
 {
   for (auto const& ignored_data : snapshot->ignored_data)
     snapshot->process()->write_bytes(
@@ -477,7 +465,7 @@ static void MC_snapshot_ignore_restore(mc_snapshot_t snapshot)
       remote(ignored_data.start));
 }
 
-static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
+static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 {
   const size_t fd_dir_path_size = 20;
   char fd_dir_path[fd_dir_path_size];
@@ -488,7 +476,7 @@ static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
     xbt_die("Unexpected buffer is too small for fd_dir_path");
 
   DIR* fd_dir = opendir(fd_dir_path);
-  if (fd_dir == NULL)
+  if (fd_dir == nullptr)
     xbt_die("Cannot open directory '/proc/self/fd'\n");
 
   std::vector<s_fd_infos_t> fds;
@@ -536,7 +524,7 @@ static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
       continue;
 
     // If dot_output enabled, do not handle the corresponding file
-    if (dot_output !=  NULL && strcmp(basename(link), _sg_mc_dot_output_file) == 0)
+    if (dot_output !=  nullptr && strcmp(xbt_basename(link), _sg_mc_dot_output_file) == 0)
       continue;
 
     // This is probably a shared memory used by lttng-ust:
@@ -556,7 +544,7 @@ static std::vector<s_fd_infos_t> MC_get_current_fds(pid_t pid)
   return std::move(fds);
 }
 
-mc_snapshot_t MC_take_snapshot(int num_state)
+mc_snapshot_t take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
@@ -566,19 +554,18 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   snapshot->num_state = num_state;
 
-  smx_process_t process;
-  MC_EACH_SIMIX_PROCESS(process,
-    snapshot->enabled_processes.insert(process->pid));
+  for (auto& p : mc_model_checker->process().simix_processes())
+    snapshot->enabled_processes.insert(p.copy.pid);
 
-  MC_snapshot_handle_ignore(snapshot);
+  snapshot_handle_ignore(snapshot);
 
   if (_sg_mc_snapshot_fds)
-    snapshot->current_fds = MC_get_current_fds(process->pid);
+    snapshot->current_fds = get_current_fds(mc_model_checker->process().pid());
 
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty;
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
-  MC_get_memory_regions(mc_process, snapshot);
+  get_memory_regions(mc_process, snapshot);
   if (use_soft_dirty)
     mc_process->reset_soft_dirty();
 
@@ -586,7 +573,7 @@ mc_snapshot_t MC_take_snapshot(int num_state)
 
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks =
-        MC_take_snapshot_stacks(&snapshot);
+        take_snapshot_stacks(&snapshot);
     if (_sg_mc_hash) {
       snapshot->hash = simgrid::mc::hash(*snapshot);
     } else {
@@ -596,19 +583,19 @@ mc_snapshot_t MC_take_snapshot(int num_state)
     snapshot->hash = 0;
   }
 
-  MC_snapshot_ignore_restore(snapshot);
+  snapshot_ignore_restore(snapshot);
   if (use_soft_dirty)
     mc_model_checker->parent_snapshot_ = snapshot;
   return snapshot;
 }
 
 static inline
-void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
+void restore_snapshot_regions(mc_snapshot_t snapshot)
 {
   for(std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
     if (region)
-      MC_region_restore(region.get());
+      restore(region.get());
   }
 
 #ifdef HAVE_SMPI
@@ -624,7 +611,7 @@ void MC_restore_snapshot_regions(mc_snapshot_t snapshot)
 }
 
 static inline
-void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
+void restore_snapshot_fds(mc_snapshot_t snapshot)
 {
   if (mc_mode == MC_MODE_SERVER)
     xbt_die("FD snapshot not implemented in client/server mode.");
@@ -644,24 +631,26 @@ void MC_restore_snapshot_fds(mc_snapshot_t snapshot)
   }
 }
 
-void MC_restore_snapshot(mc_snapshot_t snapshot)
+void restore_snapshot(mc_snapshot_t snapshot)
 {
   XBT_DEBUG("Restore snapshot %i", snapshot->num_state);
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty;
-  MC_restore_snapshot_regions(snapshot);
+  restore_snapshot_regions(snapshot);
   if (_sg_mc_snapshot_fds)
-    MC_restore_snapshot_fds(snapshot);
+    restore_snapshot_fds(snapshot);
   if (use_soft_dirty)
     mc_model_checker->process().reset_soft_dirty();
-  MC_snapshot_ignore_restore(snapshot);
+  snapshot_ignore_restore(snapshot);
   mc_model_checker->process().cache_flags = 0;
   if (use_soft_dirty)
     mc_model_checker->parent_snapshot_ = snapshot;
 }
 
-mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)
-{
-  return MC_take_snapshot(1);
+}
 }
 
+extern "C"
+mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)
+{
+  return simgrid::mc::take_snapshot(1);
 }

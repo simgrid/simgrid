@@ -24,8 +24,6 @@
 ******************************************************************************/
 
 #include "simgrid/msg.h"
-#include "xbt/log.h"
-#include "xbt/dict.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 
@@ -59,7 +57,6 @@ static int host(int argc, char *argv[]){
   }
   xbt_dict_free(&storage_list);
 
-
   // Create a 200,000 bytes file named './tmp/data.txt' on /sd1
   char* file_name = xbt_strdup("/home/tmp/data.txt");
   msg_file_t file = NULL;
@@ -74,7 +71,6 @@ static int host(int argc, char *argv[]){
   // check that sizes have changed
   XBT_INFO("Free size: %llu bytes", MSG_storage_get_free_size(storage));
   XBT_INFO("Used size: %llu bytes", MSG_storage_get_used_size(storage));
-
 
   // Now retrieve the size of created file and read it completely
   file_size = MSG_file_get_size(file);
@@ -116,7 +112,6 @@ static int host(int argc, char *argv[]){
   xbt_free(data);
   xbt_free(storage_name);
 
-
   // Dump disks contents
   XBT_INFO("*** Dump content of %s ***",MSG_host_get_name(MSG_host_self()));
   xbt_dict_t contents = NULL;
@@ -137,10 +132,8 @@ static int host(int argc, char *argv[]){
   return 1;
 }
 
-
 int main(int argc, char *argv[])
 {
-
   MSG_init(&argc, argv);
   MSG_create_environment(argv[1]);
   MSG_function_register("host", host);

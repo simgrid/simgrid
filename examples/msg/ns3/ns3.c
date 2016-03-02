@@ -4,14 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/msg.h"
-#include "xbt/log.h"
-#include "xbt/asserts.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 
 /** @addtogroup MSG_examples
@@ -20,23 +15,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
  * 
  *  @subsection MSG_ex_PLS Packet level simulators
  * 
- *  These examples demonstrate how to use the bindings to classical
- *  Packet-Level Simulators (PLS), as explained in \ref pls. The most
- *  interesting is probably not the C files since they are unchanged
- *  from the other simulations, but the associated files, such as the
- *  platform files to see how to declare a platform to be used with
- *  the PLS bindings of SimGrid and the tesh files to see how to
- *  actually start a simulation in these settings.
+ *  These examples demonstrate how to use the bindings to classicalPacket-Level Simulators (PLS), as explained in
+ *  \ref pls. The most interesting is probably not the C files since they are unchanged from the other simulations,
+ *  but the associated files, such as the platform files to see how to declare a platform to be used with the PLS
+ *  bindings of SimGrid and the tesh files to see how to actually start a simulation in these settings.
  * 
  * - <b>ns3</b>: Simple ping-pong using ns3 instead of the SimGrid network models. 
- * 
  */
-
-int master(int argc, char *argv[]);
-int slave(int argc, char *argv[]);
-int timer(int argc, char *argv[]);
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file);
 
 int timer_start; //set as 1 in the master process
 
@@ -53,8 +38,7 @@ int count_finished = 0;
 
 #define FINALIZE ((void*)221297)        /* a magic number to tell people to stop working */
 
-/** master */
-int master(int argc, char *argv[])
+static int master(int argc, char *argv[])
 {
   msg_task_t todo;
 
@@ -82,9 +66,7 @@ int master(int argc, char *argv[])
     gl_data_size[id] = task_comm_size;
   }
 
-  {                             /* Process organization */
-    MSG_host_by_name(slavename);
-  }
+  MSG_host_by_name(slavename);
 
   count_finished++;
   timer_start = 1 ;
@@ -98,11 +80,9 @@ int master(int argc, char *argv[])
   XBT_DEBUG ("Finished");
   xbt_free(id_alias);
   return 0;
-}                               /* end_of_master */
+}
 
-
-/** Timer function  */
-int timer(int argc, char *argv[])
+static int timer(int argc, char *argv[])
 {
   double sleep_time;
   double first_sleep;
@@ -120,37 +100,31 @@ int timer(int argc, char *argv[])
 
   do {
     XBT_DEBUG ("Get sleep");
-      MSG_process_sleep(sleep_time);
+    MSG_process_sleep(sleep_time);
   } while(timer_start);
 
   XBT_DEBUG ("Finished");
   return 0;
 }
 
-/** Receiver function  */
-int slave(int argc, char *argv[])
+static int slave(int argc, char *argv[])
 {
-
   msg_task_t task = NULL;
-  int a = MSG_OK;
-  int id = 0;
   char id_alias[10];
 
   xbt_assert(argc==2,"Strange number of arguments expected 1 got %d", argc - 1);
 
   XBT_DEBUG ("Slave started");
 
-  id = xbt_str_parse_int(argv[1], "Invalid id: %s");
+  int id = xbt_str_parse_int(argv[1], "Invalid id: %s");
   sprintf(id_alias, "%d", id);
 
-  a = MSG_task_receive(&(task), id_alias);
+  msg_error_t a = MSG_task_receive(&(task), id_alias);
 
   count_finished--;
   if(count_finished == 0){
       timer_start = 0;
   }
-
-
 
   if (a != MSG_OK) {
     XBT_INFO("Hey?! What's up?");
@@ -158,43 +132,16 @@ int slave(int argc, char *argv[])
   }
 
   elapsed_time = MSG_get_clock() - start_time;
-  
-  XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s",
-      id,
-      MSG_task_get_bytes_amount(task),
-       masternames[id],
-       slavenames[id]);
+
+  XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s", id, MSG_task_get_bytes_amount(task), masternames[id],
+           slavenames[id]);
 //  MSG_task_execute(task);
   MSG_task_destroy(task);
 
   XBT_DEBUG ("Finished");
   return 0;
-}                               /* end_of_slave */
+}
 
-/** Test function */
-msg_error_t test_all(const char *platform_file,
-                     const char *application_file)
-{
-  msg_error_t res = MSG_OK;
-
-  {                             /*  Simulation setting */
-    MSG_create_environment(platform_file);
-  }
-
-  TRACE_declare_mark("endmark");
-
-  {                             /*   Application deployment */
-    MSG_function_register("master", master);
-    MSG_function_register("slave", slave);
-    MSG_function_register("timer", timer);
-
-    MSG_launch_application(application_file);
-  }
-  res = MSG_main();
-  return res;
-}                               /* end_of_test_all */
-
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
@@ -202,11 +149,18 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-            "\tExample: %s platform.xml deployment.xml\n", 
-            argv[0], argv[0]);
-   
+             "\tExample: %s platform.xml deployment.xml\n", argv[0], argv[0]);
 
-  res = test_all(argv[1], argv[2]);
+  MSG_create_environment(argv[1]);
+  TRACE_declare_mark("endmark");
+
+  MSG_function_register("master", master);
+  MSG_function_register("slave", slave);
+  MSG_function_register("timer", timer);
+
+  MSG_launch_application(argv[2]);
+
+  res = MSG_main();
 
   return res != MSG_OK;
 }
