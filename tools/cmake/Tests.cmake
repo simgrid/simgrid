@@ -1,4 +1,3 @@
-
 IF(enable_memcheck)
   include(FindValgrind)
 ENDIF()
@@ -112,7 +111,6 @@ IF(NOT enable_memcheck)
     endif()
     ENDIF()
   ENDIF()
-
 
   ### SIMIX ###
   # BEGIN TESH TESTS
@@ -311,14 +309,9 @@ IF(NOT enable_memcheck)
     ADD_TESH_FACTORIES(tesh-smpi-pt2pt           "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong pt2pt.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-bcast           "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/bcast --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast bcast.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-reduce          "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/reduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce reduce.tesh)
-    ADD_TESH_FACTORIES(tesh-smpi-vector          "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/vector --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/vector vector.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-hvector         "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/hvector --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hvector hvector.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-indexed         "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/indexed --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/indexed indexed.tesh)
-    ADD_TESH_FACTORIES(tesh-smpi-struct          "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/struct --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct struct.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-compute         "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/compute --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute compute.tesh)
-    IF(NOT WIN32)
-      ADD_TESH_FACTORIES(tesh-smpi-shared        "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared shared.tesh)
-    ENDIF()
     # smpi broken usage
     ADD_TESH_FACTORIES(tesh-smpi-broken          "thread"              --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong broken_hostfiles.tesh)
     ADD_TESH(tesh-smpi-replay-ti-tracing       --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong TI_output.tesh)

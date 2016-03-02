@@ -8,13 +8,9 @@ if(enable_smpi)
 
   add_executable       (vector_test vector_test.c)
   target_link_libraries(vector_test simgrid)
+
+  ADD_TESH_FACTORIES(tesh-smpi-vector "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/vector --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/vector vector.tesh)
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/vector.tesh
-  PARENT_SCOPE)
-set(examples_src
-  ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/vector_test.c
-  PARENT_SCOPE)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/vector.tesh    PARENT_SCOPE)
+set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/vector_test.c  PARENT_SCOPE)

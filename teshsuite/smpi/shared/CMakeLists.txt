@@ -9,14 +9,9 @@ if(enable_smpi)
   if(NOT WIN32)
     add_executable       (shared shared.c)
     target_link_libraries(shared simgrid)
+    ADD_TESH_FACTORIES(tesh-smpi-shared "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/shared shared.tesh)
   endif()
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/shared.tesh
-  PARENT_SCOPE)
-set(examples_src
-  ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/shared.c
-  PARENT_SCOPE)
+set(tesh_files    ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/shared.tesh  PARENT_SCOPE)
+set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/shared.c     PARENT_SCOPE)

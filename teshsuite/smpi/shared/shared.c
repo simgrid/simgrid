@@ -11,9 +11,7 @@
 #include <stdint.h>
 #include <inttypes.h>
 
-void* hash(char *str, uint64_t* ans);
-
-void* hash(char *str, uint64_t* ans)
+static void* hash(char *str, uint64_t* ans)
 {
   *ans=5381;
   int c;
@@ -22,7 +20,6 @@ void* hash(char *str, uint64_t* ans)
     *ans = ((*ans << 5) + *ans) + c; /* hash * 33 + c */
   return NULL;
 }
-
 
 int main(int argc, char *argv[])
 {
@@ -34,29 +31,28 @@ int main(int argc, char *argv[])
   uint64_t* buf = SMPI_SHARED_MALLOC(sizeof(uint64_t));
   //one writes data in it
   if(rank==0){
-    *buf=size;  
+    *buf=size;
   }
-  
+
   MPI_Barrier(MPI_COMM_WORLD);
   //everyone reads from it.
   printf("[%d] The value in the shared buffer is: %" PRIu64"\n", rank, *buf);
-  
-  
+
   MPI_Barrier(MPI_COMM_WORLD);
   //Try SMPI_SHARED_CALL function, which should call hash only once and for all.
   char *str = strdup("onceandforall");
   if(rank==size-1){
     SMPI_SHARED_CALL(hash,str,str,buf);  
   }
-  
+
   MPI_Barrier(MPI_COMM_WORLD);
-  
+
   printf("[%d] After change, the value in the shared buffer is: %" PRIu64"\n", rank, *buf);
-  
-  SMPI_SHARED_FREE(buf);  
-  buf=NULL;  
+
+  SMPI_SHARED_FREE(buf);
+  buf=NULL;
   free(str);
-    
+
   MPI_Finalize();
   return 0;
 }

@@ -8,13 +8,9 @@ if(enable_smpi)
 
   add_executable       (struct_test struct_test.c)
   target_link_libraries(struct_test simgrid)
+
+  ADD_TESH_FACTORIES(tesh-smpi-struct "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/struct --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/struct struct.tesh)
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/struct.tesh
-  PARENT_SCOPE)
-set(examples_src
-  ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/struct_test.c
-  PARENT_SCOPE)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/struct.tesh    PARENT_SCOPE)
+set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/struct_test.c  PARENT_SCOPE)
