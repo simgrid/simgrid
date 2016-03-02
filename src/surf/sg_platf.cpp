@@ -415,10 +415,7 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
       storage->type_id,
       storage->content);
 
-  xbt_lib_set(storage_lib,
-      storage->id,
-      ROUTING_STORAGE_LEVEL,
-      (void *) xbt_strdup(storage->type_id));
+  xbt_lib_set(storage_lib, storage->id, ROUTING_STORAGE_LEVEL, (void *) xbt_strdup(storage->type_id));
 
   // if storage content is not specified use the content of storage_type if any
   if(!strcmp(storage->content,"") && strcmp(((storage_type_t) stype)->content,"")){

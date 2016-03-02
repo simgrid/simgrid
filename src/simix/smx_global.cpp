@@ -263,13 +263,11 @@ void SIMIX_global_init(int *argc, char **argv)
         SIMIX_storage_create_(s);
       });
 
-
+    SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
   }
   if (!simix_timers) {
     simix_timers = xbt_heap_new(8, &free);
   }
-
-  SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
 
   if (sg_cfg_get_boolean("clean_atexit"))
     atexit(SIMIX_clean);

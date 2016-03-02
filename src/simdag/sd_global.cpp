@@ -9,6 +9,7 @@
 #include "simgrid/host.h"
 #include "src/simdag/simdag_private.h"
 #include "src/surf/surf_interface.hpp"
+#include "simgrid/s4u/engine.hpp"
 
 #ifdef HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
@@ -90,7 +91,7 @@ void SD_config(const char *key, const char *value){
  */
 void SD_create_environment(const char *platform_file)
 {
-  parse_platform_file(platform_file);
+  simgrid::s4u::Engine::instance()->loadPlatform(platform_file);
 
   XBT_DEBUG("Workstation number: %zu, link number: %d", sg_host_count(), sg_link_count());
 #ifdef HAVE_JEDULE
