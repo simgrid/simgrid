@@ -247,7 +247,6 @@ examples/smpi/mc/bugged2
 examples/smpi/mc/mutual_exclusion
 examples/smpi/mc/non_deterministic
 examples/smpi/mc/send_deterministic
-examples/smpi/MM/MM_mpi
 examples/smpi/mvmul
 examples/smpi/replay_multiple/replay_multiple
 examples/smpi/replay/one_trace
