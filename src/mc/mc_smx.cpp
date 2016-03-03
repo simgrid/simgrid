@@ -29,13 +29,13 @@ bool is_in_vector(smx_process_t p, std::vector<simgrid::mc::SimixProcessInformat
 }
 
 static inline
-mc_smx_process_info_t MC_smx_process_get_info(smx_process_t p)
+simgrid::mc::SimixProcessInformation* MC_smx_process_get_info(smx_process_t p)
 {
   assert(is_in_vector(p, mc_model_checker->process().smx_process_infos)
     || is_in_vector(p, mc_model_checker->process().smx_old_process_infos));
-  mc_smx_process_info_t process_info =
-    (mc_smx_process_info_t)
-      ((char*) p - offsetof(s_mc_smx_process_info_t, copy));
+  simgrid::mc::SimixProcessInformation* process_info =
+    (simgrid::mc::SimixProcessInformation*)
+      ((char*) p - offsetof(simgrid::mc::SimixProcessInformation, copy));
   return process_info;
 }
 
@@ -133,14 +133,14 @@ smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
   if (mc_mode == MC_MODE_CLIENT)
     return process_remote_address;
 
-  mc_smx_process_info_t process_info = MC_smx_resolve_process_info(process_remote_address);
+  simgrid::mc::SimixProcessInformation* process_info = MC_smx_resolve_process_info(process_remote_address);
   if (process_info)
     return &process_info->copy;
   else
     return nullptr;
 }
 
-mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address)
+simgrid::mc::SimixProcessInformation* MC_smx_resolve_process_info(smx_process_t process_remote_address)
 {
   if (mc_mode == MC_MODE_CLIENT)
     xbt_die("No process_info for local process is not enabled.");
@@ -179,7 +179,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   const size_t offset = (char*) &foo.host.name() - (char*) &foo.host;
 
   // Read the simgrid::xbt::string in the MCed process:
-  mc_smx_process_info_t info = MC_smx_process_get_info(p);
+  simgrid::mc::SimixProcessInformation* info = MC_smx_process_get_info(p);
   simgrid::xbt::string_data remote_string;
   auto remote_string_address = remote(
     (simgrid::xbt::string_data*) ((char*) p->host + offset));
@@ -198,7 +198,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
   if (!p->name)
     return nullptr;
 
-  mc_smx_process_info_t info = MC_smx_process_get_info(p);
+  simgrid::mc::SimixProcessInformation* info = MC_smx_process_get_info(p);
   if (info->name.empty()) {
     char* name = process->read_string(p->name);
     info->name = name;

@@ -217,7 +217,7 @@ public:
 
   void ignore_local_variable(const char *var_name, const char *frame_name);
   int socket() { return socket_; }
-  simgrid::xbt::DynarRange<s_mc_smx_process_info> simix_processes();
+  simgrid::xbt::DynarRange<simgrid::mc::SimixProcessInformation> simix_processes();
 
 private:
   void init_memory_map_info();
