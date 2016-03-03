@@ -131,7 +131,7 @@ Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost) {
   TRY{
   MSG_vm_migrate(vm,host);
   } CATCH(e){
-     XBT_INFO("CATCH EXCEPTION MIGRATION %s",e.msg);
+     XBT_VERB("CATCH EXCEPTION MIGRATION %s",e.msg);
      xbt_ex_free(e);
      jxbt_throw_host_failure(env, (char*)"during migration");
   } 

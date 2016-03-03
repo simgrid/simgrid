@@ -60,7 +60,7 @@ static int __can_be_started(sg_host_t vm)
   }
 
   if (pm_overcommit) {
-    XBT_INFO("%s allows memory overcommit.", sg_host_get_name(pm));
+    XBT_VERB("%s allows memory overcommit.", sg_host_get_name(pm));
     return 1;
   }
 
