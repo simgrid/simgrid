@@ -130,9 +130,9 @@ static ssize_t pread_whole(int fd, void *buf, size_t count, std::uint64_t offset
       count  -= res;
       buffer += res;
       offset += res;
-    } else if (res==0) {
+    } else if (res==0)
       return -1;
-    } else if (errno != EINTR) {
+    else if (errno != EINTR) {
       perror("pread_whole");
       return -1;
     }
@@ -150,11 +150,10 @@ static ssize_t pwrite_whole(int fd, const void *buf, size_t count, off_t offset)
       count  -= res;
       buffer += res;
       offset += res;
-    } else if (res==0) {
+    } else if (res==0)
       return -1;
-    } else if (errno != EINTR) {
+    else if (errno != EINTR)
       return -1;
-    }
   }
   return real_count;
 }
@@ -389,34 +388,28 @@ void Process::init_memory_map_info()
 
 std::shared_ptr<simgrid::mc::ObjectInformation> Process::find_object_info(RemotePtr<void> addr) const
 {
-  for (auto const& object_info : this->object_infos) {
+  for (auto const& object_info : this->object_infos)
     if (addr.address() >= (std::uint64_t)object_info->start
-        && addr.address() <= (std::uint64_t)object_info->end) {
+        && addr.address() <= (std::uint64_t)object_info->end)
       return object_info;
-    }
-  }
   return nullptr;
 }
 
 std::shared_ptr<ObjectInformation> Process::find_object_info_exec(RemotePtr<void> addr) const
 {
-  for (std::shared_ptr<ObjectInformation> const& info : this->object_infos) {
+  for (std::shared_ptr<ObjectInformation> const& info : this->object_infos)
     if (addr.address() >= (std::uint64_t) info->start_exec
-        && addr.address() <= (std::uint64_t) info->end_exec) {
+        && addr.address() <= (std::uint64_t) info->end_exec)
       return info;
-    }
-  }
   return nullptr;
 }
 
 std::shared_ptr<ObjectInformation> Process::find_object_info_rw(RemotePtr<void> addr) const
 {
-  for (std::shared_ptr<ObjectInformation> const& info : this->object_infos) {
+  for (std::shared_ptr<ObjectInformation> const& info : this->object_infos)
     if (addr.address() >= (std::uint64_t)info->start_rw
-        && addr.address() <= (std::uint64_t)info->end_rw) {
+        && addr.address() <= (std::uint64_t)info->end_rw)
       return info;
-    }
-  }
   return nullptr;
 }
 
@@ -589,16 +582,14 @@ void Process::ignore_region(std::uint64_t addr, std::size_t size)
 
   std::size_t position;
   if (current_region->addr == addr) {
-    if (current_region->size < size) {
+    if (current_region->size < size)
       position = cursor + 1;
-    } else {
+    else
       position = cursor;
-    }
-  } else if (current_region->addr < addr) {
+  } else if (current_region->addr < addr)
     position = cursor + 1;
-  } else {
+  else
     position = cursor;
-  }
   ignored_regions_.insert(
     ignored_regions_.begin() + position, region);
 }

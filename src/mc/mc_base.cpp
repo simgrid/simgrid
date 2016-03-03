@@ -91,12 +91,11 @@ int MC_request_is_enabled(smx_simcall_t req)
        * communication is not ready, it can timeout and won't block. */
       if (_sg_mc_timeout == 1)
         return TRUE;
-    } else {
-      /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-      if (act->comm.detached && act->comm.src_proc == nullptr
+    }
+    /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
+    else if (act->comm.detached && act->comm.src_proc == nullptr
           && act->comm.type == SIMIX_COMM_READY)
         return (act->comm.dst_proc != nullptr);
-    }
     return (act->comm.src_proc && act->comm.dst_proc);
 
   case SIMCALL_COMM_WAITANY: {
@@ -112,9 +111,9 @@ int MC_request_is_enabled(smx_simcall_t req)
       assert(comms_buffer.elmsize == sizeof(act));
       buffer_size = comms_buffer.elmsize * comms_buffer.used;
       comms = &comms_buffer;
-    } else {
+    } else
       comms = simcall_comm_waitany__get__comms(req);
-    }
+
     // Read all the dynar buffer:
     char buffer[buffer_size];
     if (mc_mode == MC_MODE_SERVER)
@@ -210,10 +209,8 @@ static int prng_random(int min, int max)
 
 int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
 {
-  if (!MC_is_active() && !MC_record_path){
+  if (!MC_is_active() && !MC_record_path)
     return prng_random(min, max);
-  }
-
   return simcall->mc_value;
 }
 

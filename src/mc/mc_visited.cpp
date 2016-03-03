@@ -42,11 +42,11 @@ static int is_exploration_stack_state(mc_visited_state_t state){
 
 void visited_state_free(mc_visited_state_t state)
 {
-  if (state) {
-    if(!is_exploration_stack_state(state))
-      delete state->system_state;
-    xbt_free(state);
-  }
+  if (!state)
+    return;
+  if(!is_exploration_stack_state(state))
+    delete state->system_state;
+  xbt_free(state);
 }
 
 void visited_state_free_voidp(void *s)
@@ -172,16 +172,15 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
       nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
       heap_bytes_used_test = ((mc_visited_state_t) ref_test)->heap_bytes_used;
     }
-    if (nb_processes_test < nb_processes) {
+    if (nb_processes_test < nb_processes)
       start = cursor + 1;
-    } else if (nb_processes_test > nb_processes) {
+    else if (nb_processes_test > nb_processes)
       end = cursor - 1;
-    } else {
-      if (heap_bytes_used_test < heap_bytes_used) {
-        start = cursor + 1;
-      } else if (heap_bytes_used_test > heap_bytes_used) {
-        end = cursor - 1;
-      } else {
+    else if (heap_bytes_used_test < heap_bytes_used)
+      start = cursor + 1;
+    else if (heap_bytes_used_test > heap_bytes_used)
+      end = cursor - 1;
+    else {
         *min = *max = cursor;
         previous_cursor = cursor - 1;
         while (previous_cursor >= 0) {
@@ -216,7 +215,6 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
           next_cursor++;
         }
         return -1;
-      }
     }
   }
   return cursor;
@@ -268,7 +266,6 @@ bool some_dommunications_are_not_finished()
 
 mc_visited_state_t is_visited_state(mc_state_t graph_state)
 {
-
   if (_sg_mc_visited == 0)
     return nullptr;
 
@@ -284,11 +281,9 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)", new_state->system_state, new_state->num, graph_state->num);
 
   if (xbt_dynar_is_empty(visited_states)) {
-
     xbt_dynar_push(visited_states, &new_state);
     return nullptr;
-
-  } else {
+  }
 
     int min = -1, max = -1, index;
 
@@ -336,21 +331,21 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
 
       // The state has not been visited: insert the state in the dynamic array.
       mc_visited_state_t state_test = (mc_visited_state_t) xbt_dynar_get_as(visited_states, index, mc_visited_state_t);
-      if (state_test->nb_processes < new_state->nb_processes) {
+      if (state_test->nb_processes < new_state->nb_processes)
         xbt_dynar_insert_at(visited_states, index + 1, &new_state);
-      } else {
-        if (state_test->heap_bytes_used < new_state->heap_bytes_used)
-          xbt_dynar_insert_at(visited_states, index + 1, &new_state);
-        else
-          xbt_dynar_insert_at(visited_states, index, &new_state);
-      }
+      else if (state_test->heap_bytes_used < new_state->heap_bytes_used)
+        xbt_dynar_insert_at(visited_states, index + 1, &new_state);
+      else
+        xbt_dynar_insert_at(visited_states, index, &new_state);
 
        XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, xbt_dynar_length(visited_states));
 
     }
 
-    // We have reached the maximum number of stored states;
-    if ((ssize_t) xbt_dynar_length(visited_states) > _sg_mc_visited) {
+  if ((ssize_t) xbt_dynar_length(visited_states) <= _sg_mc_visited)
+    return nullptr;
+
+  // We have reached the maximum number of stored states;
 
       XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
 
@@ -360,21 +355,18 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
       unsigned int index2 = 0;
 
       mc_visited_state_t state_test;
-      xbt_dynar_foreach(visited_states, cursor2, state_test){
+      xbt_dynar_foreach(visited_states, cursor2, state_test)
         if (!mc_model_checker->is_important_snapshot(*state_test->system_state)
             && state_test->num < min2) {
           index2 = cursor2;
           min2 = state_test->num;
         }
-      }
 
       // and drop it:
       xbt_dynar_remove_at(visited_states, index2, nullptr);
       XBT_DEBUG("Remove visited state (maximum number of stored states reached)");
-    }
 
     return nullptr;
-  }
 }
 
 /**
@@ -386,18 +378,15 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
     return -1;
 
   mc_visited_pair_t new_visited_pair = nullptr;
-
-  if (visited_pair == nullptr) {
+  if (visited_pair == nullptr)
     new_visited_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
-  } else {
+  else
     new_visited_pair = visited_pair;
-  }
 
   if (xbt_dynar_is_empty(visited_pairs)) {
-
     xbt_dynar_push(visited_pairs, &new_visited_pair);
-
-  } else {
+    return -1;
+  }
 
     int min = -1, max = -1, index;
     //int res;
@@ -449,12 +438,9 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
               xbt_dynar_remove_at(visited_pairs, cursor, &pair_test);
               xbt_dynar_insert_at(visited_pairs, cursor, &new_visited_pair);
               pair_test->visited_removed = 1;
-              if (pair_test->acceptance_pair) {
-                if (pair_test->acceptance_removed == 1)
-                  MC_visited_pair_delete(pair_test);
-              } else {
+              if (!pair_test->acceptance_pair
+                  || pair_test->acceptance_removed == 1)
                 MC_visited_pair_delete(pair_test);
-              }
               return new_visited_pair->other_num;
             }
           }
@@ -464,14 +450,12 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
       xbt_dynar_insert_at(visited_pairs, min, &new_visited_pair);
     } else {
       pair_test = (mc_visited_pair_t) xbt_dynar_get_as(visited_pairs, index, mc_visited_pair_t);
-      if (pair_test->nb_processes < new_visited_pair->nb_processes) {
+      if (pair_test->nb_processes < new_visited_pair->nb_processes)
         xbt_dynar_insert_at(visited_pairs, index + 1, &new_visited_pair);
-      } else {
-        if (pair_test->heap_bytes_used < new_visited_pair->heap_bytes_used)
-          xbt_dynar_insert_at(visited_pairs, index + 1, &new_visited_pair);
-        else
-          xbt_dynar_insert_at(visited_pairs, index, &new_visited_pair);
-      }
+      else if (pair_test->heap_bytes_used < new_visited_pair->heap_bytes_used)
+        xbt_dynar_insert_at(visited_pairs, index + 1, &new_visited_pair);
+      else
+        xbt_dynar_insert_at(visited_pairs, index, &new_visited_pair);
     }
 
     if ((ssize_t) xbt_dynar_length(visited_pairs) > _sg_mc_visited) {
@@ -487,15 +471,9 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
       }
       xbt_dynar_remove_at(visited_pairs, index2, &pair_test);
       pair_test->visited_removed = 1;
-      if (pair_test->acceptance_pair) {
-        if (pair_test->acceptance_removed)
-          MC_visited_pair_delete(pair_test);
-      } else {
+      if (!pair_test->acceptance_pair || pair_test->acceptance_removed)
         MC_visited_pair_delete(pair_test);
-      }
     }
-
-  }
   return -1;
 }
 
