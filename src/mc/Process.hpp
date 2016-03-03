@@ -49,18 +49,21 @@ typedef int mc_process_cache_flags_t;
 #define MC_PROCESS_CACHE_FLAG_MALLOC_INFO 2
 #define MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES 4
 
-struct s_mc_smx_process_info {
-  /** MCed address of the process */
-  void* address;
-  /** (Flat) Copy of the process data structure */
-  struct s_smx_process copy;
-  /** Hostname (owned by `mc_modelchecker->hostnames`) */
-  const char* hostname;
-  char* name;
-};
-
 namespace simgrid {
 namespace mc {
+
+class SimixProcessInformation {
+public:
+  /** MCed address of the process */
+  void* address = nullptr;
+  union {
+    /** (Flat) Copy of the process data structure */
+    struct s_smx_process copy;
+  };
+  /** Hostname (owned by `mc_modelchecker->hostnames`) */
+  const char* hostname = nullptr;
+  char* name = nullptr;
+};
 
 struct IgnoredRegion {
   std::uint64_t addr;

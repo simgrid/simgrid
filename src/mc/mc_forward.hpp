@@ -26,11 +26,13 @@ class Member;
 class Type;
 class Variable;
 class Frame;
+class SimixProcessInformation;
 
 }
 }
 
-struct s_mc_smx_process_info;
+// TODO, remove
+typedef simgrid::mc::SimixProcessInformation s_mc_smx_process_info;
 
 // TODO, try to get rid of the global ModelChecker variable
 extern simgrid::mc::ModelChecker* mc_model_checker;

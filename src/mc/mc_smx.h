@@ -43,7 +43,7 @@
 
 SG_BEGIN_DECL()
 
-typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
+typedef s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
 
 XBT_PRIVATE xbt_dynar_t MC_smx_process_info_list_new(void);
 
