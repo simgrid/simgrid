@@ -11,7 +11,6 @@
 
 #include <xbt/base.h>
 #include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
 #include <xbt/log.h>
 
 #include <simgrid/simix.h>

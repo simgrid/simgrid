@@ -698,13 +698,11 @@ void Process::ignore_local_variable(const char *var_name, const char *frame_name
     info->remove_local_variable(var_name, frame_name);
 }
 
-boost::iterator_range<simgrid::mc::SimixProcessInformation*> Process::simix_processes()
+std::vector<simgrid::mc::SimixProcessInformation>& Process::simix_processes()
 {
   xbt_assert(mc_mode != MC_MODE_CLIENT);
   MC_process_smx_refresh(&mc_model_checker->process());
-  return boost::iterator_range<simgrid::mc::SimixProcessInformation*>(
-    &*smx_process_infos.begin(),
-    &*smx_process_infos.end());
+  return smx_process_infos;
 }
 
 }

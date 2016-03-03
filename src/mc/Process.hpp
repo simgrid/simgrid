@@ -14,15 +14,12 @@
 #include <vector>
 #include <memory>
 
-#include <boost/range/iterator_range.hpp>
-
 #include <sys/types.h>
 
 #include <simgrid_config.h>
 
 #include <xbt/base.h>
 #include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
 #include <xbt/mmalloc.h>
 
 #ifdef HAVE_MC
@@ -217,7 +214,7 @@ public:
 
   void ignore_local_variable(const char *var_name, const char *frame_name);
   int socket() { return socket_; }
-  simgrid::xbt::DynarRange<simgrid::mc::SimixProcessInformation> simix_processes();
+  std::vector<simgrid::mc::SimixProcessInformation>& simix_processes();
 
 private:
   void init_memory_map_info();
