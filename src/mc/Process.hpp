@@ -62,7 +62,14 @@ public:
   };
   /** Hostname (owned by `mc_modelchecker->hostnames`) */
   const char* hostname = nullptr;
-  char* name = nullptr;
+  std::string name;
+
+  void clear()
+  {
+    name.clear();
+    address = nullptr;
+    hostname = nullptr;
+  }
 };
 
 struct IgnoredRegion {
@@ -242,13 +249,13 @@ public: // Copies of MCed SMX data structures
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_process_infos = nullptr;
+  std::vector<SimixProcessInformation> smx_process_infos;
 
   /** Copy of `simix_global->process_to_destroy`
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_old_process_infos = nullptr;
+  std::vector<SimixProcessInformation> smx_old_process_infos;
 
   /** State of the cache (which variables are up to date) */
   mc_process_cache_flags_t cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
@@ -294,6 +301,12 @@ public: // Libunwind-data
    */
   void* unw_underlying_context;
 };
+
+// TODO, remove this
+#define MC_PROCESS_FOREACH(xs, cursor, p) \
+  if (! xs.empty()) \
+  for (auto __it = (cursor = 0, p = &*xs.begin(), xs.begin()); \
+    __it != xs.end(); ++__it, ++cursor, p = &*__it)
 
 /** Open a FD to a remote process memory (`/dev/$pid/mem`)
  */

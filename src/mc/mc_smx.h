@@ -45,8 +45,6 @@ SG_BEGIN_DECL()
 
 typedef s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
 
-XBT_PRIVATE xbt_dynar_t MC_smx_process_info_list_new(void);
-
 XBT_PRIVATE void MC_process_smx_refresh(simgrid::mc::Process* process);
 
 /** Get the issuer of  a simcall (`req->issuer`)

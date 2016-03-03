@@ -230,7 +230,7 @@ void MC_simcall_handle(smx_simcall_t req, int value)
   unsigned i;
   mc_smx_process_info_t pi = nullptr;
 
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, pi) {
+  MC_PROCESS_FOREACH(mc_model_checker->process().smx_process_infos, i, pi) {
     if (req == &pi->copy.simcall) {
       mc_model_checker->simcall_handle(
         mc_model_checker->process(), pi->copy.pid, value);

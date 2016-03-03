@@ -21,33 +21,18 @@ using simgrid::mc::remote;
 
 extern "C" {
 
-static
-void MC_smx_process_info_clear(mc_smx_process_info_t p)
-{
-  p->hostname = nullptr;
-  std::free(p->name);
-  p->name = nullptr;
-}
-
-xbt_dynar_t MC_smx_process_info_list_new(void)
-{
-  return xbt_dynar_new(
-    sizeof(s_mc_smx_process_info_t),
-    ( void_f_pvoid_t) &MC_smx_process_info_clear);
-}
-
 static inline
-bool is_in_dynar(smx_process_t p, xbt_dynar_t dynar)
+bool is_in_vector(smx_process_t p, std::vector<simgrid::mc::SimixProcessInformation>& ps)
 {
-  return (uintptr_t) p >= (uintptr_t) dynar->data
-    && (uintptr_t) p < ((uintptr_t) dynar->data + dynar->used * dynar->elmsize);
+  return (uintptr_t) p >= (uintptr_t) &ps[0]
+    && (uintptr_t) p < (uintptr_t) &ps[ps.size()];
 }
 
 static inline
 mc_smx_process_info_t MC_smx_process_get_info(smx_process_t p)
 {
-  assert(is_in_dynar(p, mc_model_checker->process().smx_process_infos)
-    || is_in_dynar(p, mc_model_checker->process().smx_old_process_infos));
+  assert(is_in_vector(p, mc_model_checker->process().smx_process_infos)
+    || is_in_vector(p, mc_model_checker->process().smx_old_process_infos));
   mc_smx_process_info_t process_info =
     (mc_smx_process_info_t)
       ((char*) p - offsetof(s_mc_smx_process_info_t, copy));
@@ -62,25 +47,23 @@ mc_smx_process_info_t MC_smx_process_get_info(smx_process_t p)
  */
 static void MC_process_refresh_simix_process_list(
   simgrid::mc::Process* process,
-  xbt_dynar_t target, xbt_swag_t remote_swag)
+  std::vector<simgrid::mc::SimixProcessInformation>& target, xbt_swag_t remote_swag)
 {
+  target.clear();
+
   // swag = REMOTE(*simix_global->process_list)
   s_xbt_swag_t swag;
   process->read_bytes(&swag, sizeof(swag), remote(remote_swag));
 
-  smx_process_t p;
-  xbt_dynar_reset(target);
-
   // Load each element of the dynar from the MCed process:
   int i = 0;
-  for (p = (smx_process_t) swag.head; p; ++i) {
+  for (smx_process_t p = (smx_process_t) swag.head; p; ++i) {
 
-    s_mc_smx_process_info_t info;
+    simgrid::mc::SimixProcessInformation info;
     info.address = p;
-    info.name = nullptr;
     info.hostname = nullptr;
     process->read_bytes(&info.copy, sizeof(info.copy), remote(p));
-    xbt_dynar_push(target, &info);
+    target.push_back(std::move(info));
 
     // Lookup next process address:
     p = (smx_process_t) xbt_swag_getNext(&info.copy, swag.offset);
@@ -136,10 +119,10 @@ smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
   mc_smx_process_info_t p;
 
   // Lookup by address:
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, p)
+  MC_PROCESS_FOREACH(mc_model_checker->process().smx_process_infos, i, p)
     if (p->address == address)
       return &p->copy;
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_old_process_infos, i, p)
+  MC_PROCESS_FOREACH(mc_model_checker->process().smx_old_process_infos, i, p)
     if (p->address == address)
       return &p->copy;
 
@@ -167,10 +150,10 @@ mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_a
 
   unsigned index;
   mc_smx_process_info_t process_info;
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, index, process_info)
+  MC_PROCESS_FOREACH(mc_model_checker->process().smx_process_infos, index, process_info)
     if (process_info->address == process_remote_address)
       return process_info;
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_old_process_infos, index, process_info)
+  MC_PROCESS_FOREACH(mc_model_checker->process().smx_old_process_infos, index, process_info)
     if (process_info->address == process_remote_address)
       return process_info;
   xbt_die("Process info not found");
@@ -222,10 +205,12 @@ const char* MC_smx_process_get_name(smx_process_t p)
     return nullptr;
 
   mc_smx_process_info_t info = MC_smx_process_get_info(p);
-  if (!info->name) {
-    info->name = process->read_string(p->name);
+  if (info->name.empty()) {
+    char* name = process->read_string(p->name);
+    info->name = name;
+    free(name);
   }
-  return info->name;
+  return info->name.c_str();
 }
 
 #ifdef HAVE_SMPI
