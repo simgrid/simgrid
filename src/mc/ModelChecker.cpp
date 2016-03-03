@@ -319,9 +319,8 @@ bool ModelChecker::handle_events()
         throw simgrid::xbt::errno_error(errno);
       return handle_message(buffer, size);
     }
-    if (socket_pollfd->revents & POLLERR) {
+    if (socket_pollfd->revents & POLLERR)
       throw_socket_error(socket_pollfd->fd);
-    }
     if (socket_pollfd->revents & POLLHUP)
       xbt_die("Socket hang up?");
   }
@@ -331,9 +330,8 @@ bool ModelChecker::handle_events()
       this->handle_signals();
       return true;
     }
-    if (signalfd_pollfd->revents & POLLERR) {
+    if (signalfd_pollfd->revents & POLLERR)
       throw_socket_error(signalfd_pollfd->fd);
-    }
     if (signalfd_pollfd->revents & POLLHUP)
       xbt_die("Signalfd hang up?");
   }
@@ -427,10 +425,9 @@ void ModelChecker::on_signal(const struct signalfd_siginfo* info)
 void ModelChecker::wait_client(simgrid::mc::Process& process)
 {
   this->resume(process);
-  while (this->process().running()) {
+  while (this->process().running())
     if (!this->handle_events())
       return;
-  }
 }
 
 void ModelChecker::simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value)
@@ -442,10 +439,9 @@ void ModelChecker::simcall_handle(simgrid::mc::Process& process, unsigned long p
   m.value = value;
   process.send_message(m);
   process.cache_flags = (mc_process_cache_flags_t) 0;
-  while (process.running()) {
+  while (process.running())
     if (!this->handle_events())
       return;
-  }
 }
 
 }

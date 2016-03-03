@@ -348,9 +348,8 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
       args = bprintf("comm=%s (%d of %lu)",
         p, value + 1, xbt_dynar_length(&comms));
       xbt_free(p);
-    } else {
+    } else
       args = bprintf("comm at idx %d", value);
-    }
     break;
   }
 
@@ -412,19 +411,18 @@ char *MC_request_to_string(smx_simcall_t req, int value, e_mc_request_type_t req
   }
 
   char* str;
-  if (args != nullptr) {
+  if (args != nullptr)
     str =
         bprintf("[(%lu)%s (%s)] %s(%s)", issuer->pid,
                 MC_smx_process_get_host_name(issuer),
                 MC_smx_process_get_name(issuer),
                 type, args);
-  } else {
+  else
     str =
         bprintf("[(%lu)%s (%s)] %s ", issuer->pid,
                 MC_smx_process_get_host_name(issuer),
                 MC_smx_process_get_name(issuer),
                 type);
-  }
   xbt_free(args);
   return str;
 }

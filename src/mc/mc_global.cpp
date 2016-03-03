@@ -112,9 +112,8 @@ void MC_init()
     MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
 
     smx_process_t process;
-    xbt_swag_foreach(process, simix_global->process_list) {
+    xbt_swag_foreach(process, simix_global->process_list)
       MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
-    }
   }
 }
 
@@ -165,12 +164,11 @@ int MC_deadlock_check()
   smx_process_t process;
   if (xbt_swag_size(simix_global->process_list)) {
     deadlock = TRUE;
-    xbt_swag_foreach(process, simix_global->process_list) {
+    xbt_swag_foreach(process, simix_global->process_list)
       if (MC_process_is_enabled(process)) {
         deadlock = FALSE;
         break;
       }
-    }
   }
   return deadlock;
 }
@@ -514,9 +512,8 @@ double MC_process_clock_get(smx_process_t process)
       return mc_time[process->pid];
     else
       return -1;
-  } else {
+  } else
     return 0;
-  }
 }
 
 void MC_process_clock_add(smx_process_t process, double amount)

@@ -54,9 +54,8 @@ mc_state_t MC_state_new()
  * \param trans The state to be deleted
  */
 void MC_state_delete(mc_state_t state, int free_snapshot){
-  if (state->system_state && free_snapshot){
+  if (state->system_state && free_snapshot)
     delete state->system_state;
-  }
   if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
     xbt_free(state->index_comm);
     xbt_free(state->incomplete_comm_pattern);
@@ -81,13 +80,10 @@ void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process)
 unsigned int MC_state_interleave_size(mc_state_t state)
 {
   unsigned int i, size = 0;
-
-  for (i = 0; i < state->max_pid; i++) {
+  for (i = 0; i < state->max_pid; i++)
     if ((state->proc_status[i].state == MC_INTERLEAVE)
         || (state->proc_status[i].state == MC_MORE_INTERLEAVE))
       size++;
-  }
-
   return size;
 }
 
@@ -154,7 +150,7 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
   case SIMCALL_MC_RANDOM: {
     state->internal_req = *req;
     int random_max = simcall_mc_random__get__max(req);
-    if (value != random_max) {
+    if (value != random_max)
       for (auto& p : mc_model_checker->process().simix_processes()) {
         mc_procstate_t procstate = &state->proc_status[p.copy.pid];
         const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
@@ -163,7 +159,6 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
           break;
         }
       }
-    }
     break;
   }
 
@@ -224,13 +219,12 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         *value = -1;
         while (procstate->interleave_count <
                 read_length(mc_model_checker->process(),
-                  remote(simcall_comm_testany__get__comms(&process->simcall)))) {
+                  remote(simcall_comm_testany__get__comms(&process->simcall))))
           if (MC_request_is_enabled_by_idx
               (&process->simcall, procstate->interleave_count++)) {
             *value = procstate->interleave_count - 1;
             break;
           }
-        }
 
         if (procstate->interleave_count >=
             read_length(mc_model_checker->process(),
@@ -248,15 +242,13 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         s_smx_synchro_t act;
         mc_model_checker->process().read_bytes(
           &act, sizeof(act), remote(remote_act));
-        if (act.comm.src_proc && act.comm.dst_proc) {
+        if (act.comm.src_proc && act.comm.dst_proc)
           *value = 0;
-        } else {
-          if (act.comm.src_proc == nullptr && act.comm.type == SIMIX_COMM_READY
+        else if (act.comm.src_proc == nullptr && act.comm.type == SIMIX_COMM_READY
               && act.comm.detached == 1)
-            *value = 0;
-          else
-            *value = -1;
-        }
+          *value = 0;
+        else
+          *value = -1;
         procstate->state = MC_DONE;
         return &process->simcall;
       }
@@ -264,10 +256,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       case SIMCALL_MC_RANDOM:
         if (procstate->state == MC_INTERLEAVE)
           *value = simcall_mc_random__get__min(&process->simcall);
-        else {
-          if (state->req_num < simcall_mc_random__get__max(&process->simcall))
-            *value = state->req_num + 1;
-        }
+        else if (state->req_num < simcall_mc_random__get__max(&process->simcall))
+          *value = state->req_num + 1;
         procstate->state = MC_DONE;
         return &process->simcall;
 

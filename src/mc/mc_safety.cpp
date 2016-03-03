@@ -112,9 +112,8 @@ int MC_modelcheck_safety(void)
       XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
 
-      if (dot_output != nullptr) {
+      if (dot_output != nullptr)
         req_str = MC_request_get_dot_output(req, value);
-      }
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
@@ -147,12 +146,9 @@ int MC_modelcheck_safety(void)
         if (dot_output != nullptr)
           std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
 
-      } else {
+      } else if (dot_output != nullptr)
+        std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
 
-        if (dot_output != nullptr)
-          std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
-
-      }
 
       xbt_fifo_unshift(mc_stack, next_state);
 
@@ -173,11 +169,8 @@ int MC_modelcheck_safety(void)
         else
           XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
 
-      } else {
-
+      } else
         XBT_DEBUG("There are no more processes to interleave. (depth %d)", xbt_fifo_size(mc_stack) + 1);
-
-      }
 
       /* Trash the current state, no longer needed */
       xbt_fifo_shift(mc_stack);

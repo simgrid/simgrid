@@ -21,9 +21,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
 /* It creates the two heap regions: std_heap and mc_heap */
 void MC_memory_init()
 {
-  if (!malloc_use_mmalloc()) {
+  if (!malloc_use_mmalloc())
     xbt_die("Model-checking support is not enabled: run with simgrid-mc.");
-  }
 }
 
 /* Finalize the memory subsystem */

@@ -246,9 +246,8 @@ Process::~Process()
   this->maestro_stack_start_ = nullptr;
   this->maestro_stack_end_ = nullptr;
 
-  if (this->memory_file >= 0) {
+  if (this->memory_file >= 0)
     close(this->memory_file);
-  }
 
   if (this->unw_underlying_addr_space != unw_local_addr_space) {
     unw_destroy_addr_space(this->unw_underlying_addr_space);

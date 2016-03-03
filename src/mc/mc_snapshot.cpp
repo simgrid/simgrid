@@ -41,15 +41,12 @@ mc_mem_region_t mc_get_snapshot_region(
     if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
 #ifdef HAVE_SMPI
       // Use the current process index of the snapshot:
-      if (process_index == simgrid::mc::ProcessIndexDisabled) {
+      if (process_index == simgrid::mc::ProcessIndexDisabled)
         process_index = snapshot->privatization_index;
-      }
-      if (process_index < 0) {
+      if (process_index < 0)
         xbt_die("Missing process index");
-      }
-      if (process_index >= (int) region->privatized_data().size()) {
+      if (process_index >= (int) region->privatized_data().size())
         xbt_die("Invalid process index");
-      }
       simgrid::mc::RegionSnapshot& priv_region = region->privatized_data()[process_index];
       xbt_assert(priv_region.contain(simgrid::mc::remote(addr)));
       return &priv_region;
@@ -82,9 +79,8 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
 
   void* dest = target;
 
-  if (dest==nullptr) {
+  if (dest==nullptr)
     xbt_die("Missing destination buffer for fragmented memory access");
-  }
 
   // Read each page:
   while (mc_page_number(nullptr, addr) != page_end) {
@@ -127,11 +123,10 @@ int MC_snapshot_region_memcmp(
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
   const void* buffer2 = MC_region_read(region2, buffer2a, addr2, size);
   int res;
-  if (buffer1 == buffer2) {
+  if (buffer1 == buffer2)
     res = 0;
-  } else {
+  else
     res = memcmp(buffer1, buffer2, size);
-  }
   if (!stack_alloc) {
     free(buffer1a);
     free(buffer2a);

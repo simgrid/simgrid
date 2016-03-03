@@ -27,12 +27,11 @@ int MC_protocol_send(int socket, const void* message, std::size_t size)
     MC_mode_name(mc_mode),
     MC_message_type_name(*(e_mc_message_type*) message));
 
-  while (send(socket, message, size, 0) == -1) {
+  while (send(socket, message, size, 0) == -1)
     if (errno == EINTR)
       continue;
     else
       return errno;
-  }
   return 0;
 }
 
@@ -46,11 +45,10 @@ int MC_protocol_send_simple_message(int socket, e_mc_message_type type)
 ssize_t MC_receive_message(int socket, void* message, size_t size, int options)
 {
   int res = recv(socket, message, size, options);
-  if (res != -1) {
+  if (res != -1)
     XBT_DEBUG("Protocol [%s] received %s",
       MC_mode_name(mc_mode),
       MC_message_type_name(*(e_mc_message_type*) message));
-  }
   return res;
 }
 
