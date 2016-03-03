@@ -227,16 +227,12 @@ void MC_simcall_handle(smx_simcall_t req, int value)
     return;
   }
 
-  unsigned i;
-  mc_smx_process_info_t pi = nullptr;
-
-  MC_PROCESS_FOREACH(mc_model_checker->process().smx_process_infos, i, pi) {
-    if (req == &pi->copy.simcall) {
+  for (auto& pi : mc_model_checker->process().smx_process_infos)
+    if (req == &pi.copy.simcall) {
       mc_model_checker->simcall_handle(
-        mc_model_checker->process(), pi->copy.pid, value);
+        mc_model_checker->process(), pi.copy.pid, value);
       return;
     }
-  }
 
   xbt_die("Could not find the request");
 #endif

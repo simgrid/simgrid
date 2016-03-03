@@ -302,12 +302,6 @@ public: // Libunwind-data
   void* unw_underlying_context;
 };
 
-// TODO, remove this
-#define MC_PROCESS_FOREACH(xs, cursor, p) \
-  if (! xs.empty()) \
-  for (auto __it = (cursor = 0, p = &*xs.begin(), xs.begin()); \
-    __it != xs.end(); ++__it, ++cursor, p = &*__it)
-
 /** Open a FD to a remote process memory (`/dev/$pid/mem`)
  */
 XBT_PRIVATE int open_vm(pid_t pid, int flags);

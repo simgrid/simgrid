@@ -115,16 +115,13 @@ smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
   // This is the address of the smx_process in the MCed process:
   void* address = req->issuer;
 
-  unsigned i;
-  mc_smx_process_info_t p;
-
   // Lookup by address:
-  MC_PROCESS_FOREACH(mc_model_checker->process().smx_process_infos, i, p)
-    if (p->address == address)
-      return &p->copy;
-  MC_PROCESS_FOREACH(mc_model_checker->process().smx_old_process_infos, i, p)
-    if (p->address == address)
-      return &p->copy;
+  for (auto& p : mc_model_checker->process().smx_process_infos)
+    if (p.address == address)
+      return &p.copy;
+  for (auto& p : mc_model_checker->process().smx_old_process_infos)
+    if (p.address == address)
+      return &p.copy;
 
   xbt_die("Issuer not found");
 }
@@ -147,15 +144,12 @@ mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_a
 {
   if (mc_mode == MC_MODE_CLIENT)
     xbt_die("No process_info for local process is not enabled.");
-
-  unsigned index;
-  mc_smx_process_info_t process_info;
-  MC_PROCESS_FOREACH(mc_model_checker->process().smx_process_infos, index, process_info)
-    if (process_info->address == process_remote_address)
-      return process_info;
-  MC_PROCESS_FOREACH(mc_model_checker->process().smx_old_process_infos, index, process_info)
-    if (process_info->address == process_remote_address)
-      return process_info;
+  for (auto& process_info : mc_model_checker->process().smx_process_infos)
+    if (process_info.address == process_remote_address)
+      return &process_info;
+  for (auto& process_info : mc_model_checker->process().smx_old_process_infos)
+    if (process_info.address == process_remote_address)
+      return &process_info;
   xbt_die("Process info not found");
 }
 
