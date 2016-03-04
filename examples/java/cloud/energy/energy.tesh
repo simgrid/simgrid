@@ -3,8 +3,6 @@
 $ java -classpath ${classpath:=.} cloud/energy/Main ${srcdir:=.}/../platforms/energy_platform.xml
 > [0.000000] [jmsg/INFO] Using regular java threads.
 > [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Creating and starting two VMs
-> [0.000000] [surf_vm/INFO] Create VM(vmHost1)@PM(MyHost1) with 0 mounted disks
-> [0.000000] [surf_vm/INFO] Create VM(vmHost3)@PM(MyHost3) with 0 mounted disks
 > [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Create two tasks on Host1: one inside a VM, the other directly on the host
 > [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Create two tasks on Host2: both directly on the host
 > [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Create two tasks on Host3: both inside a VM
