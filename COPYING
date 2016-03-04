@@ -90,36 +90,6 @@ include/xbt/mmalloc.h
 
 =========================================================================
 
-In order to use ucontext with windows platform we had those files :
-        src/xbt/win32_ucontext.c
-        src/include/xbt/win32_ucontext.h
-
-Their copyright is the following:
-
-/*
- *      win32-ucontext: Unix ucontext_t operations on Windows platforms
- *      Copyright(C) 2007 Panagiotis E. Hadjidoukas
- *
- *      Contact Email: phadjido@cs.uoi.gr, xdoukas@ceid.upatras.gr
- *
- *      win32-ucontext is free software; you can redistribute it and/or
- *      modify it under the terms of the GNU Lesser General Public
- *      License as published by the Free Software Foundation; either
- *      version 2 of the License, or (at your option) any later version.
- *
- *      win32-ucontext is distributed in the hope that it will be useful,
- *      but WITHOUT ANY WARRANTY; without even the implied warranty of
- *      MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the GNU
- *      Lesser General Public License for more details.
- *
- *      You should have received a copy of the GNU Lesser General Public
- *      License along with SimGrid in the file LICENSE-LGPL-2.1;
- *      if not, write to the Free Software Foundation, Inc.,
- *      51 Franklin St, Fifth Floor, Boston, MA 02110-1301, USA.
- */
-
-=========================================================================
-
 Some examples for SMPI were borowed from an IBM test suite.
 Their copyright is the following:
 /**

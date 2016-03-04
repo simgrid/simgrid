@@ -6,22 +6,12 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-
-#ifdef _XBT_WIN32
-#include "xbt/win32_ucontext.h"
-#include "win32_ucontext.c"
-#else
 #include <ucontext.h>
-#endif
-
-void child(void);
 
 ucontext_t uc_child;
 ucontext_t uc_main;
 
-
-
-void child(void)
+static void child(void)
 {
   if (swapcontext(&uc_child, &uc_main) != 0)
     exit(2);

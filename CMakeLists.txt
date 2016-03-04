@@ -157,10 +157,6 @@ set(INCLUDES
   ${CMAKE_BINARY_DIR}/include
   )
 
-if(WIN32)
-  set(INCLUDES ${INCLUDES} ${CMAKE_HOME_DIRECTORY}/include/xbt ${CMAKE_HOME_DIRECTORY}/src/xbt) #for win32_ucontext.[ch]
-endif()
-
 if(NOT CMAKE_CROSSCOMPILING AND EXISTS /usr/include/)
   set(INCLUDES ${INCLUDES} /usr/include/)
 endif()

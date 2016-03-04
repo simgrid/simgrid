@@ -9,12 +9,7 @@
 
 #include <simgrid_config.h>
 #include <xbt/base.h>
-
-#ifdef _XBT_WIN32
-#  include <xbt/win32_ucontext.h>     /* context relative declarations */
-#else
-#  include <ucontext.h>           /* context relative declarations */
-#endif
+#include <ucontext.h>           /* context relative declarations */
 
 #if HAVE_MC
 #include <dwarf.h>

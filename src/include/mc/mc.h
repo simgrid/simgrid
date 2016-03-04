@@ -12,12 +12,7 @@
 #include <xbt/misc.h>
 #include <simgrid/simix.h>
 #include <simgrid/modelchecker.h> /* our public interface (and definition of HAVE_MC) */
-
-#ifdef _XBT_WIN32
-#  include <xbt/win32_ucontext.h>     /* context relative declarations */
-#else
-#  include <ucontext.h>           /* context relative declarations */
-#endif
+#include <ucontext.h>           /* context relative declarations */
 
 /* Maximum size of the application heap.
  *

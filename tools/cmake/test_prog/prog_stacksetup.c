@@ -8,11 +8,6 @@
 #define _XOPEN_SOURCE 700
 #endif
 
-#ifdef _XBT_WIN32
-#include "xbt/win32_ucontext.h"
-#include "win32_ucontext.c"
-#endif
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -23,13 +18,9 @@
 #endif
 
 #if defined(TEST_makecontext)
-#ifdef _XBT_WIN32
-#include "xbt/win32_ucontext.h"
-#else
 #include <ucontext.h>
 #endif
 
-#endif
 union alltypes {
   long l;
   double d;

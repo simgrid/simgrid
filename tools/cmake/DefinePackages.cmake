@@ -13,7 +13,6 @@ set(EXTRA_DIST
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/surf.h
-  src/include/xbt/win32_ucontext.h
   src/include/xbt/wine_dbghelp.h
   src/msg/msg_private.h
   src/portable.h
@@ -107,7 +106,6 @@ set(EXTRA_DIST
   src/xbt/mmalloc/mmorecore.c
   src/xbt/mmalloc/mmprivate.h
   src/xbt/mmalloc/mrealloc.c
-  src/xbt/win32_ucontext.c
   tools/tesh/generate_tesh
   tools/lualib.patch
   teshsuite/lua/lua_platforms.tesh
@@ -801,7 +799,6 @@ if(WIN32)
     ${simgrid_sources}
     src/simix/ThreadContext.cpp
     src/simix/ThreadContext.hpp
-    src/xbt/win32_ucontext.c
     src/xbt/xbt_os_thread.c
     )
 endif()

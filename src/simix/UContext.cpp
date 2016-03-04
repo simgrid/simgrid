@@ -9,6 +9,7 @@
 #include <stdarg.h>
 
 #include <functional>
+#include <ucontext.h>           /* context relative declarations */
 
 #include "xbt/parmap.h"
 #include "src/simix/smx_private.h"
@@ -16,12 +17,6 @@
 #include "src/internal_config.h"
 #include "src/context_sysv_config.h"        /* loads context system definitions */
 #include "mc/mc.h"
-
-#ifdef _XBT_WIN32
-#  include <xbt/win32_ucontext.h>     /* context relative declarations */
-#else
-#  include <ucontext.h>           /* context relative declarations */
-#endif
 
 /** Many integers are needed to store a pointer
  *
