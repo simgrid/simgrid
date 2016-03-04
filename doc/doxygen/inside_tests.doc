@@ -195,9 +195,9 @@ To add a new integration test, you thus have 3 things to do:
    are displayed (using the #XBT_LOG_ISENABLED() macro), or the
    modification of the log formats to hide the timings when they
    depend on the host machine.\n
-   The script located in <project/directory>/tools/cmake/tesh/generate_tesh.sh can
+   The script located in <project/directory>/tools/tesh/generate_tesh can
    help you a lot in particular if the output is large (though a smaller output is preferable). 
-   There are also example tesh files in the <project/directory>/tools/cmake/tesh/ directory, that can be useful to understand the tesh syntax.
+   There are also example tesh files in the <project/directory>/tools/tesh/ directory, that can be useful to understand the tesh syntax.
    
  - <b>Add your test in the cmake infrastructure</b>. For that, modify
    the file <project/directory>/tools/cmake/Tests.cmake. Make sure to
