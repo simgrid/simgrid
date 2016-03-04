@@ -473,7 +473,7 @@ void RawContext::resume_parallel()
   xbt_os_thread_set_specific(raw_worker_id_key, (void*) worker_id);
   RawContext* worker_context = (RawContext*) SIMIX_context_self();
   raw_workers_context[worker_id] = worker_context;
-  XBT_DEBUG("Saving worker stack %lu", worker_id);
+  XBT_DEBUG("Saving worker stack %zu", worker_id);
   SIMIX_context_set_current(this);
   raw_swapcontext(&worker_context->stack_top_, this->stack_top_);
 #else
