@@ -26,8 +26,7 @@
 #include "xbt/xbt_os_thread.h"  /* This module */
 #include "src/xbt_modinter.h"       /* Initialization/finalization of this module */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
-                                "Synchronization mechanism (OS-level)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS-level)");
 
 /* ********************************* PTHREAD IMPLEMENTATION ************************************ */
 #include <pthread.h>
@@ -91,14 +90,11 @@ static void _os_thread_ex_terminate(xbt_ex_t * e)
 
 void xbt_os_thread_mod_preinit(void)
 {
-  int errcode;
-
   if (thread_mod_inited)
     return;
 
-  if ((errcode = pthread_key_create(&xbt_self_thread_key, NULL)))
-    THROWF(system_error, errcode,
-           "pthread_key_create failed for xbt_self_thread_key");
+  int errcode = pthread_key_create(&xbt_self_thread_key, NULL);
+  xbt_assert(errcode == 0, "pthread_key_create failed for xbt_self_thread_key");
   
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
   main_thread->name = NULL;
@@ -124,7 +120,6 @@ void xbt_os_thread_mod_preinit(void)
 #ifndef HAVE_SEM_INIT
   next_sem_ID_lock = xbt_os_mutex_init();
 #endif
-
 }
 
 void xbt_os_thread_mod_postexit(void)
@@ -149,24 +144,17 @@ void xbt_os_thread_mod_postexit(void)
 }
 
 /* this function is critical to tesh+mmalloc, don't mess with it */
-int xbt_os_thread_atfork(void (*prepare)(void),
-                         void (*parent)(void), void (*child)(void))
+int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void))
 {
-#ifdef WIN32
-  THROW_UNIMPLEMENTED; //pthread_atfork is not implemented in pthread.h on windows
-#else
   return pthread_atfork(prepare, parent, child);
-#endif
 }
 
 static void *wrapper_start_routine(void *s)
 {
   xbt_os_thread_t t = s;
-  int errcode;
 
-  if ((errcode = pthread_setspecific(xbt_self_thread_key, t)))
-    THROWF(system_error, errcode,
-           "pthread_setspecific failed for xbt_self_thread_key");
+  int errcode = pthread_setspecific(xbt_self_thread_key, t);
+  xbt_assert(errcode == 0, "pthread_setspecific failed for xbt_self_thread_key");
 
   void *res = t->start_routine(t->param);
   if (t->detached)
@@ -175,13 +163,8 @@ static void *wrapper_start_routine(void *s)
 }
 
 
-xbt_os_thread_t xbt_os_thread_create(const char *name,
-                                     pvoid_f_pvoid_t start_routine,
-                                     void *param,
-                                     void *extra_data)
+xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_routine, void *param, void *extra_data)
 {
-  int errcode;
-
   xbt_os_thread_t res_thread = xbt_new(s_xbt_os_thread_t, 1);
   res_thread->detached = 0;
   res_thread->name = xbt_strdup(name);
@@ -191,12 +174,8 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,
   XBT_RUNNING_CTX_INITIALIZE(res_thread->running_ctx);
   res_thread->extra_data = extra_data;
   
-  if ((errcode = pthread_create(&(res_thread->t), &thread_attr,
-                                wrapper_start_routine, res_thread)))
-    THROWF(system_error, errcode,
-           "pthread_create failed: %s", strerror(errcode));
-
-
+  int errcode = pthread_create(&(res_thread->t), &thread_attr, wrapper_start_routine, res_thread);
+  xbt_assert(errcode == 0, "pthread_create failed: %s", strerror(errcode));
 
   return res_thread;
 }
@@ -223,23 +202,18 @@ void xbt_os_thread_setstacksize(int stack_size)
 #endif
     0
   };
-  size_t sz;
-  int res;
-  int i;
 
-  if (stack_size < 0)
-    xbt_die("stack size %d is negative, maybe it exceeds MAX_INT?", stack_size);
+  xbt_assert(stack_size >= 0, "stack size %d is negative, maybe it exceeds MAX_INT?", stack_size);
 
-  sz = stack_size;
-  res = pthread_attr_setstacksize(&thread_attr, sz);
+  size_t sz = stack_size;
+  int res = pthread_attr_setstacksize(&thread_attr, sz);
 
-  for (i = 0; res == EINVAL && alignment[i] > 0; i++) {
+  for (int i = 0; res == EINVAL && alignment[i] > 0; i++) {
     /* Invalid size, try again with next multiple of alignment[i]. */
     size_t rem = sz % alignment[i];
     if (rem != 0 || sz == 0) {
       size_t sz2 = sz - rem + alignment[i];
-      XBT_DEBUG("pthread_attr_setstacksize failed for %zd, try again with %zd",
-                sz, sz2);
+      XBT_DEBUG("pthread_attr_setstacksize failed for %zd, try again with %zd", sz, sz2);
       sz = sz2;
       res = pthread_attr_setstacksize(&thread_attr, sz);
     }
@@ -276,12 +250,9 @@ const char *xbt_os_thread_self_name(void)
 
 void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 {
+  int errcode = pthread_join(thread->t, thread_return);
 
-  int errcode;
-
-  if ((errcode = pthread_join(thread->t, thread_return)))
-    THROWF(system_error, errcode, "pthread_join failed: %s",
-           strerror(errcode));
+  xbt_assert(errcode==0, "pthread_join failed: %s", strerror(errcode));
   xbt_os_thread_free_thread_data(thread);
 }
 
@@ -298,18 +269,16 @@ xbt_os_thread_t xbt_os_thread_self(void)
   return pthread_getspecific(xbt_self_thread_key);
 }
 
-void xbt_os_thread_key_create(xbt_os_thread_key_t* key) {
-
-  int errcode;
-  if ((errcode = pthread_key_create(key, NULL)))
-    THROWF(system_error, errcode, "pthread_key_create failed");
+void xbt_os_thread_key_create(xbt_os_thread_key_t* key)
+{
+  int errcode = pthread_key_create(key, NULL);
+  xbt_assert(errcode==0 , "pthread_key_create failed");
 }
 
 void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value) {
 
-  int errcode;
-  if ((errcode = pthread_setspecific(key, value)))
-    THROWF(system_error, errcode, "pthread_setspecific failed");
+  int errcode = pthread_setspecific(key, value);
+  xbt_assert(errcode==0, "pthread_setspecific failed");
 }
 
 void* xbt_os_thread_get_specific(xbt_os_thread_key_t key) {
@@ -345,34 +314,26 @@ typedef struct xbt_os_mutex_ {
 xbt_os_mutex_t xbt_os_mutex_init(void)
 {
   xbt_os_mutex_t res = xbt_new(s_xbt_os_mutex_t, 1);
-  int errcode;
-
-  if ((errcode = pthread_mutex_init(&(res->m), NULL)))
-    THROWF(system_error, errcode, "pthread_mutex_init() failed: %s",
-           strerror(errcode));
+  int errcode = pthread_mutex_init(&(res->m), NULL);
+  xbt_assert(errcode==0, "pthread_mutex_init() failed: %s", strerror(errcode));
 
   return res;
 }
 
 void xbt_os_mutex_acquire(xbt_os_mutex_t mutex)
 {
-  int errcode;
-
-  if ((errcode = pthread_mutex_lock(&(mutex->m))))
-    THROWF(system_error, errcode, "pthread_mutex_lock(%p) failed: %s",
-           mutex, strerror(errcode));
+  int errcode = pthread_mutex_lock(&(mutex->m));
+  xbt_assert(errcode==0, "pthread_mutex_lock(%p) failed: %s", mutex, strerror(errcode));
 }
 
 
 void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
 {
-  int errcode;
-
   if (delay < 0) {
     xbt_os_mutex_acquire(mutex);
 
   } else if (delay == 0) {
-    errcode = pthread_mutex_trylock(&(mutex->m));
+    int errcode = pthread_mutex_trylock(&(mutex->m));
 
     switch (errcode) {
     case 0:
@@ -396,7 +357,7 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
     ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
     XBT_DEBUG("pthread_mutex_timedlock(%p,%p)", &(mutex->m), &ts_end);
 
-    errcode = pthread_mutex_timedlock(&(mutex->m), &ts_end);
+    int errcode = pthread_mutex_timedlock(&(mutex->m), &ts_end);
 
 #else                           /* Well, let's reimplement it since those lazy libc dudes didn't */
     double start = xbt_os_time();
@@ -429,23 +390,17 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
 
 void xbt_os_mutex_release(xbt_os_mutex_t mutex)
 {
-  int errcode;
-
-  if ((errcode = pthread_mutex_unlock(&(mutex->m))))
-    THROWF(system_error, errcode, "pthread_mutex_unlock(%p) failed: %s",
-           mutex, strerror(errcode));
+  int errcode = pthread_mutex_unlock(&(mutex->m));
+  xbt_assert(errcode==0, "pthread_mutex_unlock(%p) failed: %s", mutex, strerror(errcode));
 }
 
 void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
 {
-  int errcode;
-
   if (!mutex)
     return;
 
-  if ((errcode = pthread_mutex_destroy(&(mutex->m))))
-    THROWF(system_error, errcode, "pthread_mutex_destroy(%p) failed: %s",
-           mutex, strerror(errcode));
+  int errcode = pthread_mutex_destroy(&(mutex->m));
+  xbt_assert(errcode == 0, "pthread_mutex_destroy(%p) failed: %s", mutex, strerror(errcode));
   free(mutex);
 }
 
@@ -458,25 +413,19 @@ typedef struct xbt_os_cond_ {
 xbt_os_cond_t xbt_os_cond_init(void)
 {
   xbt_os_cond_t res = xbt_new(s_xbt_os_cond_t, 1);
-  int errcode;
-  if ((errcode = pthread_cond_init(&(res->c), NULL)))
-    THROWF(system_error, errcode, "pthread_cond_init() failed: %s",
-           strerror(errcode));
-
+  int errcode = pthread_cond_init(&(res->c), NULL);
+  xbt_assert(errcode==0, "pthread_cond_init() failed: %s", strerror(errcode));
   return res;
 }
 
 void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
 {
-  int errcode;
-  if ((errcode = pthread_cond_wait(&(cond->c), &(mutex->m))))
-    THROWF(system_error, errcode, "pthread_cond_wait(%p,%p) failed: %s",
-           cond, mutex, strerror(errcode));
+  int errcode = pthread_cond_wait(&(cond->c), &(mutex->m));
+  xbt_assert(errcode==0, "pthread_cond_wait(%p,%p) failed: %s", cond, mutex, strerror(errcode));
 }
 
 
-void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
-                           double delay)
+void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double delay)
 {
   int errcode;
   struct timespec ts_end;
@@ -487,10 +436,8 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
   } else {
     ts_end.tv_sec = (time_t) floor(end);
     ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    XBT_DEBUG("pthread_cond_timedwait(%p,%p,%p)", &(cond->c), &(mutex->m),
-           &ts_end);
-    switch ((errcode =
-             pthread_cond_timedwait(&(cond->c), &(mutex->m), &ts_end))) {
+    XBT_DEBUG("pthread_cond_timedwait(%p,%p,%p)", &(cond->c), &(mutex->m), &ts_end);
+    switch ((errcode = pthread_cond_timedwait(&(cond->c), &(mutex->m), &ts_end))) {
     case 0:
       return;
     case ETIMEDOUT:
@@ -498,39 +445,30 @@ void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
              "condition %p (mutex %p) wasn't signaled before timeout (%f)",
              cond, mutex, delay);
     default:
-      THROWF(system_error, errcode,
-             "pthread_cond_timedwait(%p,%p,%f) failed: %s", cond, mutex,
-             delay, strerror(errcode));
+      THROWF(system_error, errcode, "pthread_cond_timedwait(%p,%p,%f) failed: %s", cond, mutex, delay, strerror(errcode));
     }
   }
 }
 
 void xbt_os_cond_signal(xbt_os_cond_t cond)
 {
-  int errcode;
-  if ((errcode = pthread_cond_signal(&(cond->c))))
-    THROWF(system_error, errcode, "pthread_cond_signal(%p) failed: %s",
-           cond, strerror(errcode));
+  int errcode = pthread_cond_signal(&(cond->c));
+  xbt_assert(errcode==0, "pthread_cond_signal(%p) failed: %s", cond, strerror(errcode));
 }
 
 void xbt_os_cond_broadcast(xbt_os_cond_t cond)
 {
-  int errcode;
-  if ((errcode = pthread_cond_broadcast(&(cond->c))))
-    THROWF(system_error, errcode, "pthread_cond_broadcast(%p) failed: %s",
-           cond, strerror(errcode));
+  int errcode = pthread_cond_broadcast(&(cond->c));
+  xbt_assert(errcode==0, "pthread_cond_broadcast(%p) failed: %s", cond, strerror(errcode));
 }
 
 void xbt_os_cond_destroy(xbt_os_cond_t cond)
 {
-  int errcode;
-
   if (!cond)
     return;
 
-  if ((errcode = pthread_cond_destroy(&(cond->c))))
-    THROWF(system_error, errcode, "pthread_cond_destroy(%p) failed: %s",
-           cond, strerror(errcode));
+  int errcode = pthread_cond_destroy(&(cond->c));
+  xbt_assert(errcode==0, "pthread_cond_destroy(%p) failed: %s", cond, strerror(errcode));
   free(cond);
 }
 
@@ -592,8 +530,6 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
 
 void xbt_os_sem_acquire(xbt_os_sem_t sem)
 {
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot acquire of the NULL semaphore");
   if (sem_wait(sem->ps) < 0)
     THROWF(system_error, errno, "sem_wait() failed: %s", strerror(errno));
 }
@@ -601,9 +537,6 @@ void xbt_os_sem_acquire(xbt_os_sem_t sem)
 void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
 {
   int errcode;
-
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot acquire of the NULL semaphore");
 
   if (delay < 0) {
     xbt_os_sem_acquire(sem);
@@ -661,18 +594,12 @@ void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
 
 void xbt_os_sem_release(xbt_os_sem_t sem)
 {
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot release of the NULL semaphore");
-
   if (sem_post(sem->ps) < 0)
     THROWF(system_error, errno, "sem_post() failed: %s", strerror(errno));
 }
 
 void xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot destroy the NULL sempahore");
-
 #ifdef HAVE_SEM_INIT
   if (sem_destroy(sem->ps) < 0)
     THROWF(system_error, errno, "sem_destroy() failed: %s",
@@ -688,10 +615,6 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
 
 void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
 {
-  if (!sem)
-    THROWF(arg_error, EINVAL,
-           "Cannot get the value of the NULL semaphore");
-
   if (sem_getvalue(&(sem->s), svalue) < 0)
     THROWF(system_error, errno, "sem_getvalue() failed: %s",
            strerror(errno));
