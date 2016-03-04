@@ -9,11 +9,10 @@
 
 #include <simgrid_config.h>
 #include <xbt/base.h>
-#include <ucontext.h>           /* context relative declarations */
 
-#if HAVE_MC
-#include <dwarf.h>
-#endif 
+#ifdef HAVE_UCONTEXT_H
+#include <ucontext.h>           /* context relative declarations */
+#endif
 
 SG_BEGIN_DECL()
 
@@ -21,7 +20,9 @@ typedef struct s_mc_transition *mc_transition_t;
 
 typedef struct s_stack_region{
   void *address;
+#ifdef HAVE_UCONTEXT_H
   ucontext_t* context;
+#endif
   size_t size;
   int block;
   int process_index;
