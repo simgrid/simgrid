@@ -309,7 +309,6 @@ IF(NOT enable_memcheck)
     ADD_TESH_FACTORIES(tesh-smpi-pt2pt           "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pingpong pt2pt.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-bcast           "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/bcast --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/bcast bcast.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-reduce          "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/reduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/reduce reduce.tesh)
-    ADD_TESH_FACTORIES(tesh-smpi-hvector         "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/hvector --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hvector hvector.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-indexed         "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/indexed --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/indexed indexed.tesh)
     ADD_TESH_FACTORIES(tesh-smpi-compute         "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/compute --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute compute.tesh)
     # smpi broken usage

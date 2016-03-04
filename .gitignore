@@ -342,8 +342,7 @@ teshsuite/smpi/compute/compute3
 teshsuite/smpi/dsend
 teshsuite/smpi/gather_coll
 teshsuite/smpi/gather/gather_coll
-teshsuite/smpi/hvector/hvector_test
-teshsuite/smpi/hvector_test
+teshsuite/smpi/type-hvector/type-hvector
 teshsuite/smpi/indexed/indexed_test
 teshsuite/smpi/indexed_test
 teshsuite/smpi/isp/umpire/abort
@@ -1012,11 +1011,9 @@ teshsuite/smpi/scatter/scatter
 teshsuite/smpi/shared/shared
 teshsuite/smpi/smpi_sendrecv
 teshsuite/smpi/split
-teshsuite/smpi/struct/struct_test
-teshsuite/smpi/struct_test
+teshsuite/smpi/type-struct/type-struct
 teshsuite/smpi/ttest01
-teshsuite/smpi/vector_test
-teshsuite/smpi/vector/vector_test
+teshsuite/smpi/type-vector/type-vector
 teshsuite/surf/lmm_usage/lmm_usage
 teshsuite/surf/maxmin_bench/maxmin_bench
 teshsuite/surf/surf_usage/surf_usage

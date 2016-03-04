@@ -1,7 +1,7 @@
 p Test struct
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/struct_test -q --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/type-struct -q --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'

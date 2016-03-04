@@ -1061,14 +1061,11 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/bcast/CMakeLists.txt
   teshsuite/smpi/compute/CMakeLists.txt
   teshsuite/smpi/gather/CMakeLists.txt
-  teshsuite/smpi/hvector/CMakeLists.txt
   teshsuite/smpi/indexed/CMakeLists.txt
   teshsuite/smpi/pingpong/CMakeLists.txt
   teshsuite/smpi/reduce/CMakeLists.txt
   teshsuite/smpi/scatter/CMakeLists.txt
   teshsuite/smpi/shared/CMakeLists.txt
-  teshsuite/smpi/struct/CMakeLists.txt
-  teshsuite/smpi/vector/CMakeLists.txt
   teshsuite/smpi/isp/umpire/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
