@@ -1020,8 +1020,7 @@ teshsuite/xbt/log_usage/log_usage
 teshsuite/xbt/mallocator/mallocator
 teshsuite/xbt/mmalloc/mmalloc_test
 teshsuite/xbt/mmalloc_test
-teshsuite/xbt/parallel_log_crashtest
-teshsuite/xbt/parallel_log/parallel_log_crashtest
+teshsuite/xbt/parallel_log_crashtest/parallel_log_crashtest
 teshsuite/xbt/parmap_bench/parmap_bench
 teshsuite/xbt/parmap_test/parmap_test
 testgraph.dot
