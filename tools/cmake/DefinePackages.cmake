@@ -1052,16 +1052,13 @@ set(CMAKEFILES_TXT
   teshsuite/simix/stack_overflow/CMakeLists.txt
   
   teshsuite/smpi/CMakeLists.txt
-  teshsuite/smpi/allgather/CMakeLists.txt
   teshsuite/smpi/allgatherv/CMakeLists.txt
   teshsuite/smpi/allreduce/CMakeLists.txt
   teshsuite/smpi/alltoall/CMakeLists.txt
   teshsuite/smpi/alltoallv/CMakeLists.txt
   teshsuite/smpi/barrier/CMakeLists.txt
-  teshsuite/smpi/bcast/CMakeLists.txt
   teshsuite/smpi/compute/CMakeLists.txt
   teshsuite/smpi/gather/CMakeLists.txt
-  teshsuite/smpi/indexed/CMakeLists.txt
   teshsuite/smpi/pingpong/CMakeLists.txt
   teshsuite/smpi/reduce/CMakeLists.txt
   teshsuite/smpi/scatter/CMakeLists.txt
