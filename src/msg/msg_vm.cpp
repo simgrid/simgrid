@@ -610,17 +610,17 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
   } else if (ret == MSG_TIMEOUT) {
     sg_size_t remaining = (sg_size_t)MSG_task_get_remaining_communication(task);
     sent = size - remaining;
-    XBT_INFO("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu",
+    XBT_VERB("timeout (%lf s) in sending_migration_data, remaining %llu bytes of %llu",
         timeout, remaining, size);
   }
 
   /* FIXME: why try-and-catch is used here? */
   if(ret == MSG_HOST_FAILURE){
-    //XBT_INFO("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    //XBT_DEBUG("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
     MSG_task_destroy(task);
     THROWF(host_error, 0, "SRC host failed during migration of %s (stage %d)", sg_host_get_name(vm), stage);
   }else if(ret == MSG_TRANSFER_FAILURE){
-    //XBT_INFO("DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
+    //XBT_DEBUG("DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
     MSG_task_destroy(task);
     THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", sg_host_get_name(vm), stage);
   }
@@ -726,13 +726,13 @@ static int migration_tx_fun(int argc, char *argv[])
       /* At stage 1, we do not need timeout. We have to send all the memory
        * pages even though the duration of this tranfer exceeds the timeout
        * value. */
-      XBT_INFO("Stage 1: Gonna send %llu", ramsize);
+      XBT_VERB("Stage 1: Gonna send %llu", ramsize);
       sg_size_t sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, ramsize, ms->mbox, 1, 0, mig_speed, -1);
       remaining_size -= sent;
       computed_during_stage1 = lookup_computed_flop_counts(ms->vm, 1, 0);
 
       if (sent < ramsize) {
-        XBT_INFO("mig-stage1: timeout, force moving to stage 3");
+        XBT_VERB("mig-stage1: timeout, force moving to stage 3");
         skip_stage2 = 1;
       } else if (sent > ramsize)
         XBT_CRITICAL("bug");
@@ -747,7 +747,7 @@ static int migration_tx_fun(int argc, char *argv[])
     double clock_post_send = MSG_get_clock();
     mig_timeout -= (clock_post_send - clock_prev_send);
     if (mig_timeout < 0) {
-      XBT_INFO("The duration of stage 1 exceeds the timeout value (%lf > %lf), skip stage 2",
+      XBT_VERB("The duration of stage 1 exceeds the timeout value (%lf > %lf), skip stage 2",
           (clock_post_send - clock_prev_send), MIGRATION_TIMEOUT_DO_NOT_HARDCODE_ME);
       skip_stage2 = 1;
     }
@@ -815,7 +815,7 @@ static int migration_tx_fun(int argc, char *argv[])
     } else if (sent < updated_size) {
       /* When timeout happens, we move to stage 3. The size of memory pages
        * updated before timeout must be added to the remaining size. */
-      XBT_INFO("mig-stage2.%d: timeout, force moving to stage 3. sent %llu / %llu, eta %lf",
+      XBT_VERB("mig-stage2.%d: timeout, force moving to stage 3. sent %llu / %llu, eta %lf",
           stage2_round, sent, updated_size, (clock_post_send - clock_prev_send));
       remaining_size -= sent;
 
@@ -899,12 +899,12 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
     if(ret == MSG_HOST_FAILURE){
         // Note that since the communication failed, the owner did not change and the task should be destroyed on the other side.
         // Hence, just throw the execption
-        XBT_INFO("SRC crashes, throw an exception (m-control)");
+        XBT_ERROR("SRC crashes, throw an exception (m-control)");
         //MSG_process_kill(tx_process); // Adrien, I made a merge on Nov 28th 2014, I'm not sure whether this line is required or not 
         return -1; 
     } 
     else if((ret == MSG_TRANSFER_FAILURE) || (ret == MSG_TIMEOUT)){ // MSG_TIMEOUT here means that MSG_host_is_avail() returned false.
-        XBT_INFO("DST crashes, throw an exception (m-control)");
+        XBT_ERROR("DST crashes, throw an exception (m-control)");
         return -2;  
     }
 

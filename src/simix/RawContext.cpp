@@ -85,7 +85,7 @@ ContextFactory* raw_factory()
 #ifdef HAVE_THREAD_CONTEXTS
 static xbt_parmap_t raw_parmap;
 static simgrid::simix::RawContext** raw_workers_context;    /* space to save the worker context in each thread */
-static unsigned long raw_threads_working;     /* number of threads that have started their work */
+static uintptr_t raw_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
 #endif
 #ifdef ADAPTIVE_THRESHOLD
@@ -440,10 +440,10 @@ void RawContext::suspend_parallel()
   else {
     /* all processes were run, go to the barrier */
     XBT_DEBUG("No more processes to run");
-    unsigned long worker_id = (unsigned long)(uintptr_t)
+    uintptr_t worker_id = (uintptr_t)
       xbt_os_thread_get_specific(raw_worker_id_key);
     next_context = (RawContext*) raw_workers_context[worker_id];
-    XBT_DEBUG("Restoring worker stack %lu (working threads = %lu)",
+    XBT_DEBUG("Restoring worker stack %zu (working threads = %zu)",
         worker_id, raw_threads_working);
   }
 
@@ -469,8 +469,8 @@ void RawContext::resume_serial()
 void RawContext::resume_parallel()
 {
 #ifdef HAVE_THREAD_CONTEXTS
-  unsigned long worker_id = __sync_fetch_and_add(&raw_threads_working, 1);
-  xbt_os_thread_set_specific(raw_worker_id_key, (void*)(uintptr_t) worker_id);
+  uintptr_t worker_id = __sync_fetch_and_add(&raw_threads_working, 1);
+  xbt_os_thread_set_specific(raw_worker_id_key, (void*) worker_id);
   RawContext* worker_context = (RawContext*) SIMIX_context_self();
   raw_workers_context[worker_id] = worker_context;
   XBT_DEBUG("Saving worker stack %lu", worker_id);

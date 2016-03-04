@@ -15,23 +15,17 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/../../p
 > [Fafard:master_:(1) 6.000000] [msg_test/INFO] ## Test 1 (ended)
 > [Fafard:master_:(1) 6.000000] [msg_test/INFO] ## Test 2 (started): check impact of running a task inside a VM (there is no degradation for the moment)
 > [Fafard:master_:(1) 6.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the VM
-> [6.000000] [surf_vm/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
 > [VM0:compute:(7) 6.013107] [msg_test/INFO] VM0:compute task executed 0.0131068
 > [Fafard:master_:(1) 8.000000] [msg_test/INFO] ## Test 2 (ended)
 > [Fafard:master_:(1) 8.000000] [msg_test/INFO] ## Test 3 (started): check impact of running a task collocated with a VM (there is no VM noise for the moment)
 > [Fafard:master_:(1) 8.000000] [msg_test/INFO] ### Put a VM on a PM, and put a task to the PM
-> [8.000000] [surf_vm/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
 > [Fafard:compute:(8) 8.013107] [msg_test/INFO] Fafard:compute task executed 0.0131068
 > [Fafard:master_:(1) 10.000000] [msg_test/INFO] ## Test 3 (ended)
 > [Fafard:master_:(1) 10.000000] [msg_test/INFO] ## Test 4 (started): compare the cost of running two tasks inside two different VMs collocated or not (for the moment, there is no degradation for the VMs. Hence, the time should be equals to the time of test 1
 > [Fafard:master_:(1) 10.000000] [msg_test/INFO] ### Put two VMs on a PM, and put a task to each VM
-> [10.000000] [surf_vm/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
-> [10.000000] [surf_vm/INFO] Create VM(VM1)@PM(Fafard) with 0 mounted disks
 > [VM0:compute:(9) 10.026214] [msg_test/INFO] VM0:compute task executed 0.0262137
 > [VM1:compute:(10) 10.026214] [msg_test/INFO] VM1:compute task executed 0.0262137
 > [Fafard:master_:(1) 12.000000] [msg_test/INFO] ### Put a VM on each PM, and put a task to each VM
-> [12.000000] [surf_vm/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
-> [12.000000] [surf_vm/INFO] Create VM(VM1)@PM(Tremblay) with 0 mounted disks
 > [VM1:compute:(12) 12.010194] [msg_test/INFO] VM1:compute task executed 0.0101942
 > [VM0:compute:(11) 12.013107] [msg_test/INFO] VM0:compute task executed 0.0131068
 > [Fafard:master_:(1) 14.000000] [msg_test/INFO] ## Test 4 (ended)
@@ -42,33 +36,24 @@ $ $SG_TEST_EXENV ${bindir:=.}/simple_vm$EXEEXT --log=no_loc ${srcdir:=.}/../../p
 > [Tremblay:comm_rx:(18) 19.291085] [msg_test/INFO] Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
 > [Tremblay:comm_rx:(16) 19.291085] [msg_test/INFO] Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
 > [Fafard:master_:(1) 24.000000] [msg_test/INFO] ### Make a connection between PM0 and VM0@PM0
-> [24.000000] [surf_vm/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
 > [VM0:comm_rx:(20) 24.002265] [msg_test/INFO] Fafard:comm_tx to VM0:comm_rx => 0.00226529 sec
 > [Fafard:master_:(1) 29.000000] [msg_test/INFO] ### Make a connection between PM0 and VM0@PM1
-> [29.000000] [surf_vm/INFO] Create VM(VM0)@PM(Tremblay) with 0 mounted disks
 > [VM0:comm_rx:(22) 29.158397] [msg_test/INFO] Fafard:comm_tx to VM0:comm_rx => 0.158397 sec
 > [Fafard:master_:(1) 34.000000] [msg_test/INFO] ### Make two connections between PM0 and VM0@PM1
-> [34.000000] [surf_vm/INFO] Create VM(VM0)@PM(Tremblay) with 0 mounted disks
 > [VM0:comm_rx:(26) 34.291085] [msg_test/INFO] Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
 > [VM0:comm_rx:(24) 34.291085] [msg_test/INFO] Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
 > [Fafard:master_:(1) 39.000000] [msg_test/INFO] ### Make a connection between PM0 and VM0@PM1, and also make a connection between PM0 and PM1
-> [39.000000] [surf_vm/INFO] Create VM(VM0)@PM(Tremblay) with 0 mounted disks
 > [Tremblay:comm_rx:(30) 39.291085] [msg_test/INFO] Fafard:comm_tx to Tremblay:comm_rx => 0.291085 sec
 > [VM0:comm_rx:(28) 39.291085] [msg_test/INFO] Fafard:comm_tx to VM0:comm_rx => 0.291085 sec
 > [Fafard:master_:(1) 44.000000] [msg_test/INFO] ### Make a connection between VM0@PM0 and PM1@PM1, and also make a connection between VM0@PM0 and VM1@PM1
-> [44.000000] [surf_vm/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
-> [44.000000] [surf_vm/INFO] Create VM(VM1)@PM(Tremblay) with 0 mounted disks
 > [VM1:comm_rx:(34) 44.291085] [msg_test/INFO] VM0:comm_tx to VM1:comm_rx => 0.291085 sec
 > [VM1:comm_rx:(32) 44.291085] [msg_test/INFO] VM0:comm_tx to VM1:comm_rx => 0.291085 sec
 > [Fafard:master_:(1) 49.000000] [msg_test/INFO] ## Test 5 (ended)
 > [Fafard:master_:(1) 49.000000] [msg_test/INFO] ## Test 6 (started): Check migration impact (not yet implemented neither on the CPU resource nor on the network one
 > [Fafard:master_:(1) 49.000000] [msg_test/INFO] ### Relocate VM0 between PM0 and PM1
-> [49.000000] [surf_vm/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
 > [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 49.010000] [msg_vm/WARNING] use the default max_downtime value 30ms
-> [Fafard:__pr_mig_tx:VM0(Fafard-Tremblay):(38) 49.010000] [msg_vm/INFO] Stage 1: Gonna send 1073741824
 > [Bourassa:comm_rx:(36) 49.204993] [msg_test/INFO] VM0:comm_tx to Bourassa:comm_rx => 0.204993 sec
 > [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(40) 191.674258] [msg_vm/WARNING] use the default max_downtime value 30ms
-> [Tremblay:__pr_mig_tx:VM0(Tremblay-Fafard):(40) 191.674258] [msg_vm/INFO] Stage 1: Gonna send 1073741824
 > [334.199056] [surf_vm/CRITICAL] FIXME: may need a proper handling, 1
 > [Fafard:master_:(1) 339.199251] [msg_test/INFO] ## Test 6 (ended)
 > [339.199251] [msg_test/INFO] Bye (simulation time 339.199)

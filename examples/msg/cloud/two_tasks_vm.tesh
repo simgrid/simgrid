@@ -3,7 +3,6 @@
 p Testing a vm with two successive tasks
 
 $ $SG_TEST_EXENV ${bindir:=.}/two_tasks_vm$EXEEXT ${srcdir:=.}/../../platforms/small_platform.xml
-> [0.000000] [surf_vm/INFO] Create VM(VM0)@PM(Fafard) with 0 mounted disks
 > [VM0:compute:(2) 0.000000] [msg_test/INFO] VM0:compute task 1 created 0
 > [Fafard:master_:(1) 0.000000] [msg_test/INFO] aTask remaining duration: 1e+09
 > [Fafard:master_:(1) 1.000000] [msg_test/INFO] aTask remaining duration: 9.23704e+08

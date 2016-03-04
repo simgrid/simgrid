@@ -142,7 +142,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   p_action = sub_cpu->execution_start(0);
 
-  XBT_INFO("Create VM(%s)@PM(%s) with %ld mounted disks",
+  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks",
     name, p_hostPM->name().c_str(), xbt_dynar_length(p_storage));
 }
 
