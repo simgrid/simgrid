@@ -114,7 +114,7 @@ int main(int argc, char *argv[])
   hosts = MSG_hosts_as_dynar();
 
   xbt_dynar_foreach(hosts, i, host){
-    XBT_INFO("Host '%s' runs at %.0f flops/s",MSG_host_get_name(host), MSG_get_host_speed(host));
+    XBT_INFO("Host '%s' runs at %.0f flops/s",MSG_host_get_name(host), MSG_host_get_speed(host));
   }
 
   MSG_launch_application(argv[2]);

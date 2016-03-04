@@ -335,11 +335,11 @@ int main(int argc, char *argv[])
   msg_host_t pm2 = xbt_dynar_get_as(hosts_dynar, 2, msg_host_t);
 
   XBT_INFO("%s: %d core(s), %f flops/s per each", MSG_host_get_name(pm0), MSG_host_get_core_number(pm0),
-           MSG_get_host_speed(pm0));
+           MSG_host_get_speed(pm0));
   XBT_INFO("%s: %d core(s), %f flops/s per each", MSG_host_get_name(pm1), MSG_host_get_core_number(pm1),
-           MSG_get_host_speed(pm1));
+           MSG_host_get_speed(pm1));
   XBT_INFO("%s: %d core(s), %f flops/s per each", MSG_host_get_name(pm2), MSG_host_get_core_number(pm2),
-           MSG_get_host_speed(pm2));
+           MSG_host_get_speed(pm2));
 
   MSG_process_create("master", master_main, NULL, pm0);
 

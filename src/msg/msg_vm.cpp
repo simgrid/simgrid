@@ -180,7 +180,7 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char *name,
 {
   /* For the moment, intensity_rate is the percentage against the migration
    * bandwidth */
-  double host_speed = MSG_get_host_speed(pm);
+  double host_speed = MSG_host_get_speed(pm);
   double update_speed = ((double)dp_intensity/100) * mig_netspeed;
 
   msg_vm_t vm = MSG_vm_create_core(pm, name);

@@ -96,7 +96,7 @@ static void test_dynamic_change(void)
   double task1_remain_prev = MSG_task_get_flops_amount(task1);
 
   {
-    const double cpu_speed = MSG_get_host_speed(pm0);
+    const double cpu_speed = MSG_host_get_speed(pm0);
     int i = 0;
     for (i = 0; i < 10; i++) {
       double new_bound = (cpu_speed / 10) * i;
@@ -129,7 +129,7 @@ static void test_dynamic_change(void)
 
 static void test_one_task(msg_host_t hostA)
 {
-  const double cpu_speed = MSG_get_host_speed(hostA);
+  const double cpu_speed = MSG_host_get_speed(hostA);
   const double computation_amount = cpu_speed * 10;
   const char *hostA_name = MSG_host_get_name(hostA);
 
@@ -174,8 +174,8 @@ static void test_one_task(msg_host_t hostA)
 
 static void test_two_tasks(msg_host_t hostA, msg_host_t hostB)
 {
-  const double cpu_speed = MSG_get_host_speed(hostA);
-  xbt_assert(cpu_speed == MSG_get_host_speed(hostB));
+  const double cpu_speed = MSG_host_get_speed(hostA);
+  xbt_assert(cpu_speed == MSG_host_get_speed(hostB));
   const double computation_amount = cpu_speed * 10;
   const char *hostA_name = MSG_host_get_name(hostA);
   const char *hostB_name = MSG_host_get_name(hostB);
@@ -288,7 +288,7 @@ static int master_main(int argc, char *argv[])
 
   {
     msg_host_t vm0 = MSG_vm_create_core(pm0, "VM0");
-    const double cpu_speed = MSG_get_host_speed(pm0);
+    const double cpu_speed = MSG_host_get_speed(pm0);
     MSG_vm_set_bound(vm0, cpu_speed / 10);
     MSG_vm_start(vm0);
 
@@ -317,7 +317,7 @@ static int master_main(int argc, char *argv[])
     MSG_host_set_params(vm0, &params);
     MSG_vm_start(vm0);
 
-    const double cpu_speed = MSG_get_host_speed(pm0);
+    const double cpu_speed = MSG_host_get_speed(pm0);
     MSG_vm_start(vm0);
 
     XBT_INFO("# 10. Test migration");

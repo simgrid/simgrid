@@ -284,11 +284,15 @@ XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
 XBT_PUBLIC(msg_host_t) MSG_host_self(void);
-XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
+XBT_PUBLIC(double) MSG_host_get_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
+
+// deprecated
+XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
+
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
 XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
