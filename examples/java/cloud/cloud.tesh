@@ -5,8 +5,6 @@
 $ java -classpath ${classpath:=.} cloud/Cloud ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (0:maestro@) Start2  hosts
-> [  0.000000] (0:maestro@) Create VM(VM00)@PM(Intel) with 0 mounted disks
-> [  0.000000] (0:maestro@) Create VM(VM01)@PM(Provost) with 0 mounted disks
 > [  0.000000] (1:Master@Jacquelin) create VM00
 > [  0.000000] (1:Master@Jacquelin) Put Worker WRK00 on VM00
 > [  0.000000] (1:Master@Jacquelin) create VM01
@@ -29,9 +27,7 @@ $ java -classpath ${classpath:=.} cloud/Cloud ${srcdir:=.}/../platforms/platform
 > [  4.798398] (3:WRK01@VM01) WRK01 executed task (Task01)
 > [1000.000000] (1:Master@Jacquelin) Migrate everyone to Fernand
 > [1000.000000] (1:Master@Jacquelin) Migrate VM00fromIntelto Fernand
-> [1000.000000] (5:__pr_mig_tx:VM00(Intel-Fernand)@Intel) Stage 1: Gonna send 1073741824
 > [3467.577368] (1:Master@Jacquelin) Migrate VM01fromProvostto Fernand
-> [3467.577368] (7:__pr_mig_tx:VM01(Provost-Fernand)@Provost) Stage 1: Gonna send 1073741824
 > [5931.433875] (0:maestro@) MSG_main finished; Cleaning up the simulation...
 > [5931.433875] (1:Master@Jacquelin) Let's shut down the simulation and kill everyone.
 > [5931.433875] (1:Master@Jacquelin) Master done.

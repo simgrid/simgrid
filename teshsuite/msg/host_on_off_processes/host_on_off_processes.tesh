@@ -68,7 +68,6 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 
 $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 6 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 6: Turn on Jupiter, assign a VM on Jupiter, launch a process inside the VM, and turn off the node
-> [0.000000] [surf_vm/INFO] Create VM(vm0)@PM(Jupiter) with 0 mounted disks
 > [vm0:process_daemon:(2) 0.000000] [msg_test/INFO]   Start daemon on vm0 (76296000.000000)
 > [vm0:process_daemon:(2) 0.000000] [msg_test/INFO]   Execute daemon
 > [Jupiter:process_daemonJUPI:(3) 0.000000] [msg_test/INFO]   Start daemon on Jupiter (76296000.000000)
