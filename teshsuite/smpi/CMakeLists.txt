@@ -7,8 +7,9 @@ if(enable_smpi)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   foreach(x type-hvector type-struct type-vector)
-    add_executable       (${x}/${x}  ${x}/${x}.c)
-    target_link_libraries(${x}/${x}  simgrid)
+    add_executable       (${x}  ${x}/${x}.c)
+    target_link_libraries(${x}  simgrid)
+    set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
 
     set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
     set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
