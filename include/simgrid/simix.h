@@ -423,10 +423,6 @@ XBT_PUBLIC(void *) simcall_comm_get_dst_data(smx_synchro_t comm);
 XBT_PUBLIC(smx_process_t) simcall_comm_get_src_proc(smx_synchro_t comm);
 XBT_PUBLIC(smx_process_t) simcall_comm_get_dst_proc(smx_synchro_t comm);
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-XBT_PUBLIC(int) simcall_comm_is_latency_bounded(smx_synchro_t comm);
-#endif
-
 /************************** Tracing handling **********************************/
 XBT_PUBLIC(void) simcall_set_category(smx_synchro_t synchro, const char *category);
 

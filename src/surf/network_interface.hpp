@@ -290,15 +290,6 @@ namespace simgrid {
 
       void setState(e_surf_action_state_t state);
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-      /**
-       * @brief Check if the action is limited by latency.
-       *
-       * @return 1 if action is limited by latency, 0 otherwise
-       */
-      virtual int getLatencyLimited() {return m_latencyLimited;}
-#endif
-
       double m_latency;
       double m_latCurrent;
       double m_weight;
@@ -306,12 +297,7 @@ namespace simgrid {
       const char* p_senderLinkName;
       double m_senderSize;
       xbt_fifo_item_t p_senderFifoItem;
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-      int m_latencyLimited;
-#endif
-
     };
-
   }
 }
 

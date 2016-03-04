@@ -328,13 +328,11 @@ public abstract class Process implements Runnable {
 		}
 	}
 
-	/**
-	 * This method runs the process. Il calls the method function that you must overwrite.
-	 */
+	/** This method runs the process. Il calls the method function that you must overwrite. */
+	@Override
 	public void run() {
 
 		String[] args = null;      /* do not fill it before the signal or this.args will be empty */
-		//waitSignal(); /* wait for other people to fill the process in */
 
 		try {
 			args = new String[this.args.size()];

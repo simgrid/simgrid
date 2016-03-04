@@ -203,10 +203,6 @@ typedef struct s_smx_synchro {
     } io;
   };
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int latency_limited;
-#endif
-
   char *category;                     /* simix action category for instrumentation */
 } s_smx_synchro_t;
 

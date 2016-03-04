@@ -166,13 +166,6 @@ namespace simgrid {
       for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
           ; it != itend ; ++it) {
         action = static_cast<NetworkAction*>(&*it);
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-        if (lmm_is_variable_limited_by_latency(action->getVariable())) {
-          action->m_latencyLimited = 1;
-        } else {
-          action->m_latencyLimited = 0;
-        }
-#endif
         if (action->m_latency > 0) {
           minRes = (minRes < 0) ? action->m_latency : std::min(minRes, action->m_latency);
         }

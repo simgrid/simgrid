@@ -375,12 +375,6 @@ if(enable_jedule)
   set(HAVE_JEDULE 1)
 endif()
 
-if(enable_latency_bound_tracking)
-  SET(HAVE_LATENCY_BOUND_TRACKING 1)
-else()
-  SET(HAVE_LATENCY_BOUND_TRACKING 0)
-endif()
-
 if(enable_mallocators)
   SET(MALLOCATOR_IS_WANTED 1)
 else()

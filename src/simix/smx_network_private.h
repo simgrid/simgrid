@@ -24,10 +24,6 @@ typedef struct s_smx_rvpoint {
 XBT_PRIVATE void SIMIX_network_init(void);
 XBT_PRIVATE void SIMIX_network_exit(void);
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-XBT_PUBLIC(int) SIMIX_comm_is_latency_bounded(smx_synchro_t comm);
-#endif
-
 XBT_PRIVATE smx_mailbox_t SIMIX_rdv_create(const char *name);
 XBT_PRIVATE void SIMIX_rdv_destroy(smx_mailbox_t rdv);
 XBT_PRIVATE smx_mailbox_t SIMIX_rdv_get_by_name(const char *name);

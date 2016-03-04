@@ -1011,13 +1011,6 @@ smx_process_t simcall_comm_get_dst_proc(smx_synchro_t comm)
   return simcall_BODY_comm_get_dst_proc(comm);
 }
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-int simcall_comm_is_latency_bounded(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_is_latency_bounded(comm);
-}
-#endif
-
 /**
  * \ingroup simix_synchro_management
  *

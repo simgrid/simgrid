@@ -13,6 +13,7 @@ public class As {
 	protected As() {
 	};
 
+	@Override
 	public String toString (){
 		return this.getName(); 
 	}

@@ -305,11 +305,9 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
   }
 }
 
-Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
-                                                double size, double rate)
+Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, double rate)
 {
   int failed = 0;
-  NetworkCm02Action *action = NULL;
   double bandwidth_bound;
   double latency = 0.0;
   std::vector<Link*> * back_route = NULL;
@@ -336,11 +334,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
         failed = 1;
   }
 
-  action = new NetworkCm02Action(this, size, failed);
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  action->m_latencyLimited = 0;
-#endif
+  NetworkCm02Action *action = new NetworkCm02Action(this, size, failed);
   action->m_weight = action->m_latency = latency;
 
   action->m_rate = rate;
@@ -375,8 +369,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst,
     constraints_per_variable += back_route->size();
 
   if (action->m_latency > 0) {
-    action->p_variable = lmm_variable_new(p_maxminSystem, action, 0.0, -1.0,
-                         constraints_per_variable);
+    action->p_variable = lmm_variable_new(p_maxminSystem, action, 0.0, -1.0, constraints_per_variable);
     if (p_updateMechanism == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->m_latency + action->m_lastUpdate);
