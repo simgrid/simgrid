@@ -10,33 +10,31 @@ else()
 endif()
 
 option(release "Whether Release Mode is activated (disable tests on experimental parts)" on)
+
+# How to build
+###
 option(enable_compile_optimizations "Whether to produce efficient code for the SimGrid library" on)
+option(enable_compile_warnings      "Whether compilation warnings should be turned into errors." off)
+option(enable_lto                   "Whether we should try to activate the LTO (link time optimisation)" on)
+option(enable_mallocators           "Enable mallocators (disable only for debugging purpose)." on)
+option(enable_maintainer_mode       "Whether flex and flexml files should be rebuilt." off)
+option(enable_debug                 "Turn this off to remove all debug messages at compile time (faster, but no debug activatable)" on)
+
+
+
+# Optional modules
+###
 option(enable_documentation "Whether to produce documentation" on)
-option(enable_ns3    "Whether ns3 model is activated." off)
-option(enable_java   "Whether the Java bindings are activated." off)
-option(enable_lua    "Whether the Lua bindings are activated." off)
-option(enable_compile_warnings "Whether compilation warnings should be turned into errors." off)
-option(enable_maintainer_mode "Whether flex and flexml files should be rebuilt." off)
-option(enable_tracing "Tracing simulations for visualization." on)
-    
-option(enable_coverage "Whether coverage should be enabled." off)
-mark_as_advanced(enable_coverage)
-mark_as_advanced(enable_memcheck)
 
-option(enable_memcheck "Enable memcheck." off)
-option(enable_memcheck_xml "Enable memcheck with xml output." off)
-mark_as_advanced(enable_memcheck_xml)
+option(enable_ns3            "Whether ns3 model is activated." off)
+option(enable_java           "Whether the Java bindings are activated." off)
+option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
 
-option(enable_mallocators "Enable mallocators (disable only for debugging purpose)." on)
-
-option(enable_print_message "Enable print message during config." off)
-mark_as_advanced(enable_print_message)
+option(enable_lua            "Whether the Lua bindings are activated." off)
+option(enable_tracing        "Tracing simulations for visualization." on)
 
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned off at runtime)" off)
-option(enable_lib_in_jar "Whether the native libraries are bundled in a Java jar file" on)
-option(enable_lto "Whether we should try to activate the LTO (link time optimisation)" on)
-option(enable_jedule "Jedule output of SimDAG." off)
-option(enable_debug "Turn this off to remove all debug messages at compile time (faster, but no debug activatable)" on)
+option(enable_jedule         "Jedule output of SimDAG." off)
 
 if(WIN32)
   option(enable_smpi "Whether SMPI in included in library." off)
@@ -47,6 +45,18 @@ else()
 endif()
 option(enable_smpi_ISP_testsuite "Whether the test suite from ISP should be built." off)
 
+
+# Internal targets used by jenkins
+###
+option(enable_coverage "Whether coverage should be enabled." off)
+mark_as_advanced(enable_coverage)
+option(enable_memcheck "Enable memcheck." off)
+mark_as_advanced(enable_memcheck)
+option(enable_memcheck_xml "Enable memcheck with xml output." off)
+mark_as_advanced(enable_memcheck_xml)
+
+# Cmake, Y U NO hide your garbage??
+###
 mark_as_advanced(HAVE_SSH)
 mark_as_advanced(HAVE_RSYNC)
 mark_as_advanced(BIBTEX2HTML_PATH)
