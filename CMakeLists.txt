@@ -276,7 +276,6 @@ else()
 endif()
 
 # Checks for header libraries functions.
-CHECK_LIBRARY_EXISTS(dl      dlopen                  "" HAVE_DLOPEN_IN_LIBDL)
 CHECK_LIBRARY_EXISTS(execinfo backtrace              "" HAVE_BACKTRACE_IN_LIBEXECINFO)
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
@@ -290,6 +289,7 @@ CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock "" HAVE_MUTEX_TIMEDLOCK_LIB
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   set(CMAKE_REQUIRED_DEFINITIONS "-D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE")
 elseif(MINGW)
+  # Use the GNU version of unusual modifiers like PRIx64
   add_definitions(-D__USE_MINGW_ANSI_STDIO=1)
   set(CMAKE_REQUIRED_DEFINITIONS "-D__USE_MINGW_ANSI_STDIO=1")
 else()
@@ -319,7 +319,6 @@ CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
 
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
-
 if(MINGW) 
   # The detection of vasprintf fails on MinGW, assumingly because it's
   # defined as an inline function in stdio.h instead of a regular
@@ -413,10 +412,7 @@ endif()
 ### Check for GNU dynamic linker
 CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 if (HAVE_DLFCN_H)
-    if(HAVE_DLOPEN_IN_LIBDL)
-      set(DL_LIBRARY "-ldl")
-    endif(HAVE_DLOPEN_IN_LIBDL)
-    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c ${DL_LIBRARY} -o test_gnu_ld
+    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
       WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
       OUTPUT_VARIABLE HAVE_GNU_LD_compil
     )
