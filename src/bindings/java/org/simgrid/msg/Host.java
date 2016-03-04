@@ -66,6 +66,7 @@ public class Host {
 		this.data = null;
 	};
 
+	@Override
 	public String toString (){
 		return this.name; 
 

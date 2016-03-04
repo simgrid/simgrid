@@ -11,7 +11,6 @@
 
 #include <xbt/base.h>
 #include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
 #include <xbt/log.h>
 
 #include <simgrid/simix.h>
@@ -43,10 +42,6 @@
 
 SG_BEGIN_DECL()
 
-typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
-
-XBT_PRIVATE xbt_dynar_t MC_smx_process_info_list_new(void);
-
 XBT_PRIVATE void MC_process_smx_refresh(simgrid::mc::Process* process);
 
 /** Get the issuer of  a simcall (`req->issuer`)
@@ -72,7 +67,7 @@ XBT_PRIVATE int MC_smpi_process_count(void);
 XBT_PRIVATE smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address);
 
 /** Get the process info structure from the process remote address */
-XBT_PRIVATE mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address);
+XBT_PRIVATE simgrid::mc::SimixProcessInformation* MC_smx_resolve_process_info(smx_process_t process_remote_address);
 
 XBT_PRIVATE unsigned long MC_smx_get_maxpid(void);
 

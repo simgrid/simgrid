@@ -399,13 +399,7 @@ NetworkNS3Action::NetworkNS3Action(Model *model, double cost, bool failed)
 : NetworkAction(model, cost, failed)
 {}
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int NetworkNS3Action::getLatencyLimited() {
-    return m_latencyLimited;
-  }
-#endif
-
- void NetworkNS3Action::suspend()
+void NetworkNS3Action::suspend()
 {
   THROW_UNIMPLEMENTED;
 }

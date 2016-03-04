@@ -14,15 +14,12 @@
 #include <vector>
 #include <memory>
 
-#include <boost/range/iterator_range.hpp>
-
 #include <sys/types.h>
 
 #include <simgrid_config.h>
 
 #include <xbt/base.h>
 #include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
 #include <xbt/mmalloc.h>
 
 #ifdef HAVE_MC
@@ -49,18 +46,28 @@ typedef int mc_process_cache_flags_t;
 #define MC_PROCESS_CACHE_FLAG_MALLOC_INFO 2
 #define MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES 4
 
-struct s_mc_smx_process_info {
-  /** MCed address of the process */
-  void* address;
-  /** (Flat) Copy of the process data structure */
-  struct s_smx_process copy;
-  /** Hostname (owned by `mc_modelchecker->hostnames`) */
-  const char* hostname;
-  char* name;
-};
-
 namespace simgrid {
 namespace mc {
+
+class SimixProcessInformation {
+public:
+  /** MCed address of the process */
+  void* address = nullptr;
+  union {
+    /** (Flat) Copy of the process data structure */
+    struct s_smx_process copy;
+  };
+  /** Hostname (owned by `mc_modelchecker->hostnames`) */
+  const char* hostname = nullptr;
+  std::string name;
+
+  void clear()
+  {
+    name.clear();
+    address = nullptr;
+    hostname = nullptr;
+  }
+};
 
 struct IgnoredRegion {
   std::uint64_t addr;
@@ -207,7 +214,7 @@ public:
 
   void ignore_local_variable(const char *var_name, const char *frame_name);
   int socket() { return socket_; }
-  simgrid::xbt::DynarRange<s_mc_smx_process_info> simix_processes();
+  std::vector<simgrid::mc::SimixProcessInformation>& simix_processes();
 
 private:
   void init_memory_map_info();
@@ -239,13 +246,13 @@ public: // Copies of MCed SMX data structures
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_process_infos = nullptr;
+  std::vector<SimixProcessInformation> smx_process_infos;
 
   /** Copy of `simix_global->process_to_destroy`
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_old_process_infos = nullptr;
+  std::vector<SimixProcessInformation> smx_old_process_infos;
 
   /** State of the cache (which variables are up to date) */
   mc_process_cache_flags_t cache_flags = MC_PROCESS_CACHE_FLAG_NONE;

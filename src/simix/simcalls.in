@@ -142,8 +142,6 @@ Proc - set_category (void) (synchro, void*, smx_synchro_t) (category, const char
 
 Proc - run_kernel (void) (code, void*)
 
-## HAVE_LATENCY_BOUND_TRACKING
-Func - comm_is_latency_bounded (int) (comm, void*, smx_synchro_t)
 ## HAVE_MC
 Func H mc_snapshot (void*, mc_snapshot_t)
 Func H mc_compare_snapshots (int) (s1, void*, mc_snapshot_t) (s2, void*, mc_snapshot_t)

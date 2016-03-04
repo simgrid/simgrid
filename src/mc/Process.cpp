@@ -232,8 +232,8 @@ void Process::init()
     remote(std_heap_var->address),
     simgrid::mc::ProcessIndexDisabled);
 
-  this->smx_process_infos = MC_smx_process_info_list_new();
-  this->smx_old_process_infos = MC_smx_process_info_list_new();
+  this->smx_process_infos.clear();
+  this->smx_old_process_infos.clear();
   this->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
   this->unw_underlying_addr_space = unw_create_addr_space(&mc_unw_vmread_accessors, __BYTE_ORDER);
   this->unw_underlying_context = _UPT_create(this->pid_);
@@ -246,9 +246,6 @@ Process::~Process()
 
   this->maestro_stack_start_ = nullptr;
   this->maestro_stack_end_ = nullptr;
-
-  xbt_dynar_free(&this->smx_process_infos);
-  xbt_dynar_free(&this->smx_old_process_infos);
 
   if (this->memory_file >= 0) {
     close(this->memory_file);
@@ -701,11 +698,11 @@ void Process::ignore_local_variable(const char *var_name, const char *frame_name
     info->remove_local_variable(var_name, frame_name);
 }
 
-boost::iterator_range<s_mc_smx_process_info*> Process::simix_processes()
+std::vector<simgrid::mc::SimixProcessInformation>& Process::simix_processes()
 {
   xbt_assert(mc_mode != MC_MODE_CLIENT);
   MC_process_smx_refresh(&mc_model_checker->process());
-  return simgrid::xbt::range<s_mc_smx_process_info>(smx_process_infos);
+  return smx_process_infos;
 }
 
 }

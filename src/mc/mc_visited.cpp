@@ -67,8 +67,8 @@ static mc_visited_state_t visited_state_new()
     process->get_malloc_info());
 
   MC_process_smx_refresh(&mc_model_checker->process());
-  new_state->nb_processes = xbt_dynar_length(
-    mc_model_checker->process().smx_process_infos);
+  new_state->nb_processes =
+    mc_model_checker->process().smx_process_infos.size();
 
   new_state->system_state = simgrid::mc::take_snapshot(mc_stats->expanded_states);
   new_state->num = mc_stats->expanded_states;
@@ -89,8 +89,8 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automa
     process->get_malloc_info());
 
   MC_process_smx_refresh(&mc_model_checker->process());
-  pair->nb_processes = xbt_dynar_length(
-    mc_model_checker->process().smx_process_infos);
+  pair->nb_processes =
+    mc_model_checker->process().smx_process_infos.size();
 
   pair->automaton_state = automaton_state;
   pair->num = pair_num;

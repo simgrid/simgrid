@@ -1380,22 +1380,6 @@ static inline void* simcall_run_kernel__get__code(smx_simcall_t simcall) {
 static inline void simcall_run_kernel__set__code(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-
-static inline smx_synchro_t simcall_comm_is_latency_bounded__get__comm(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_is_latency_bounded__set__comm(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline int simcall_comm_is_latency_bounded__get__result(smx_simcall_t simcall){
-    return  simcall->result.i;
-}
-static inline void simcall_comm_is_latency_bounded__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
-#endif
-
 #ifdef HAVE_MC
 
 static inline mc_snapshot_t simcall_mc_snapshot__get__result(smx_simcall_t simcall){
@@ -1477,10 +1461,6 @@ XBT_PRIVATE sg_size_t simcall_HANDLER_storage_get_free_size(smx_simcall_t simcal
 XBT_PRIVATE sg_size_t simcall_HANDLER_storage_get_used_size(smx_simcall_t simcall, smx_storage_t name);
 XBT_PRIVATE xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char* name);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-
-#endif
-
 #ifdef HAVE_MC
 XBT_PRIVATE mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall);
 XBT_PRIVATE int simcall_HANDLER_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);

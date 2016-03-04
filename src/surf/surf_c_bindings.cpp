@@ -308,12 +308,6 @@ void surf_cpu_action_set_bound(surf_action_t action, double bound) {
   static_cast<simgrid::surf::CpuAction*>(action)->setBound(bound);
 }
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-double surf_network_action_get_latency_limited(surf_action_t action) {
-  return static_cast<simgrid::surf::NetworkAction*>(action)->getLatencyLimited();
-}
-#endif
-
 surf_file_t surf_storage_action_get_file(surf_action_t action){
   return static_cast<simgrid::surf::StorageAction*>(action)->p_file;
 }

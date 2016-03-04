@@ -326,18 +326,6 @@ double MSG_task_get_remaining_communication(msg_task_t task)
   return simcall_comm_get_remains(task->simdata->comm);
 }
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-/** \ingroup m_task_management
- * \brief Return 1 if communication task is limited by latency, 0 otherwise
- */
-int MSG_task_is_latency_bounded(msg_task_t task)
-{
-  xbt_assert((task != NULL) && (task->simdata != NULL), "Invalid parameter");
-  XBT_DEBUG("calling simcall_communication_is_latency_bounded(%p)", task->simdata->comm);
-  return simcall_comm_is_latency_bounded(task->simdata->comm);
-}
-#endif
-
 /** \ingroup m_task_management
  * \brief Returns the size of the data attached to a task #msg_task_t.
  */

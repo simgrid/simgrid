@@ -23,10 +23,12 @@ public class Contact implements Comparable<Object> {
     return distance;
   }
 
+  @Override
   public boolean equals(Object x) {
     return x.equals(id) ;
   }
 
+  @Override
   public int compareTo(Object o) {
     Contact c = (Contact)o;
     if (distance < c.distance) {

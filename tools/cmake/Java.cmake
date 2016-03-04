@@ -134,8 +134,10 @@ if(enable_lib_in_jar)
     
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_SO}      ${JAVA_NATIVE_PATH}/${LIBSIMGRID_SO}
     COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/lib/${LIBSIMGRID_JAVA_SO} ${JAVA_NATIVE_PATH}/${LIBSIMGRID_JAVA_SO}
-    # There is no way to disable the dependency of mingw-64 on that lib, unfortunately
-    # nor to script cmake -E properly, so let's be brutal
+    # There is no way to disable the dependency of mingw-64 on that lib, unfortunately nor to script cmake -E properly
+    # So let's be brutal and copy it in any case (even on non-windows builds).
+    # The copy is only expected to work on the appveyor builder, but that's all we need right now
+    # since our users are directed to download that file as nightly build.
     COMMAND ${CMAKE_COMMAND} -E copy_if_different C:/mingw64/bin/libwinpthread-1.dll  ${JAVA_NATIVE_PATH}/libwinpthread-1.dll || true
     
     COMMAND ${JAVA_ARCHIVE} -uvf ${SIMGRID_JAR}  ${JAVA_NATIVE_PATH}

@@ -17,23 +17,17 @@ public class Storage {
 	 */ 
 	private long bind;
 
-	/**
-	 * Storage name
-	 */
+	/** Storage name */
 	protected String name;
 
-	/**
-	 * User data.
-	 */ 
+	/** User data. */ 
 	private Object data;
-	/**
-	 *
-	 */
 	protected Storage() {
 		this.bind = 0;
 		this.data = null;
 	};
 
+	@Override
 	public String toString (){
 		return this.name; 
 

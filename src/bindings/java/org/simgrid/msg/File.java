@@ -20,6 +20,7 @@ public class File {
 	public File(String path) {
 		open(path);
 	}
+	@Override
 	protected void finalize() {
 
 	}
