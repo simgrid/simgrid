@@ -27,13 +27,10 @@ typedef struct xbt_os_thread_ *xbt_os_thread_t;
 
 #ifdef _XBT_WIN32 /* defined if this is a windows system, 32bits or 64bits) */
 #include <windows.h>
-typedef DWORD xbt_os_thread_key_t;
-#else /* assume that every non-windows system is POSIX-compatible */
+#endif
 
 #include <pthread.h>
 typedef pthread_key_t xbt_os_thread_key_t;
-#endif
-
 /** Calls pthread_atfork() if present, and raise an exception otherwise.
  *
  * The only known user of this wrapper is mmalloc_preinit(), but it is absolutely mandatory there:
