@@ -252,12 +252,6 @@ smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type)
   synchro->comm.src_data=NULL;
   synchro->comm.dst_data=NULL;
 
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  //initialize with unknown value
-  synchro->latency_limited = -1;
-#endif
-
   synchro->category = NULL;
 
   XBT_DEBUG("Create communicate synchro %p", synchro);
@@ -286,10 +280,6 @@ void SIMIX_comm_destroy(smx_synchro_t synchro)
   XBT_DEBUG("Really free communication %p; refcount is now %d", synchro,
       synchro->comm.refcount);
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  synchro->latency_limited = SIMIX_comm_is_latency_bounded( synchro ) ;
-#endif
-
   xbt_free(synchro->name);
   SIMIX_comm_destroy_internal_actions(synchro);
 
@@ -311,9 +301,6 @@ void SIMIX_comm_destroy(smx_synchro_t synchro)
 void SIMIX_comm_destroy_internal_actions(smx_synchro_t synchro)
 {
   if (synchro->comm.surf_comm){
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-    synchro->latency_limited = SIMIX_comm_is_latency_bounded(synchro);
-#endif
     synchro->comm.surf_comm->unref();
     synchro->comm.surf_comm = NULL;
   }
@@ -1017,25 +1004,6 @@ smx_process_t SIMIX_comm_get_dst_proc(smx_synchro_t synchro)
 {
   return synchro->comm.dst_proc;
 }
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-/**
- *  \brief verify if communication is latency bounded
- *  \param comm The communication
- */
-int SIMIX_comm_is_latency_bounded(smx_synchro_t synchro)
-{
-  if(!synchro){
-    return 0;
-  }
-  if (synchro->comm.surf_comm){
-    XBT_DEBUG("Getting latency limited for surf_action (%p)", synchro->comm.surf_comm);
-    synchro->latency_limited = surf_network_action_get_latency_limited(synchro->comm.surf_comm);
-    XBT_DEBUG("synchro limited is %d", synchro->latency_limited);
-  }
-  return synchro->latency_limited;
-}
-#endif
 
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */

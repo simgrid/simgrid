@@ -79,10 +79,6 @@ class NetworkNS3Action : public NetworkAction {
 public:
   NetworkNS3Action(Model *model, double cost, bool failed);
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int getLatencyLimited();
-#endif
-
 bool isSuspended();
 int unref();
 void suspend();

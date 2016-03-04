@@ -226,9 +226,6 @@ private:
   double m_start; /**< start time  */
   char *p_category = NULL;            /**< tracing category for categorized resource utilization monitoring */
 
-  #ifdef HAVE_LATENCY_BOUND_TRACKING
-  int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
-  #endif
   double    m_cost;
   simgrid::surf::Model *p_model;
   void *p_data = NULL; /**< for your convenience */

@@ -354,10 +354,6 @@ XBT_PUBLIC(lmm_constraint_t) lmm_get_first_active_constraint(lmm_system_t sys);
  */
 XBT_PUBLIC(lmm_constraint_t) lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint_t cnst);
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-XBT_PUBLIC(int) lmm_is_variable_limited_by_latency(lmm_variable_t var);
-#endif
-
 /**
  * @brief Get the data associated to a constraint
  * @param cnst A constraint

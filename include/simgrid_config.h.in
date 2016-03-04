@@ -48,9 +48,6 @@
 /* Define if xbt contexts are based on our threads implementation or not */
 #cmakedefine HAVE_THREAD_CONTEXTS @HAVE_THREAD_CONTEXTS@
 
-/* Tracking of latency bound */
-#cmakedefine HAVE_LATENCY_BOUND_TRACKING @HAVE_LATENCY_BOUND_TRACKING@
-
 /* If __thread is available */
 #cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@
 

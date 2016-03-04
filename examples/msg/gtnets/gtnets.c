@@ -74,9 +74,6 @@ static int master(int argc, char *argv[])
 static int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int limited_latency = 0;
-#endif
   double remaining = 0;
   char id_alias[10];
 
@@ -103,25 +100,12 @@ static int slave(int argc, char *argv[])
     for (id = 0; id < NTASKS; id++) {
       if (gl_task_array[id] == NULL) continue;
       if (gl_task_array[id] == task) {
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-        limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
-        if (limited_latency) {
-          XBT_INFO("WARNING FLOW[%d] is limited by latency!!", id);
-        }
-#endif
         XBT_INFO ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
              id, gl_data_size[id] / elapsed_time, masternames[id], slavenames[id], 0.0);
         MSG_task_destroy(gl_task_array[id]);
         gl_task_array[id]=NULL;
       } else {
         remaining = MSG_task_get_remaining_communication(gl_task_array[id]);
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-        limited_latency = MSG_task_is_latency_bounded(gl_task_array[id]);
-
-        if (limited_latency) {
-          XBT_INFO("WARNING FLOW[%d] is limited by latency!!", id);
-        }
-#endif
         XBT_INFO ("===> Estimated Bw of FLOW[%d] : %f ;  message from %s to %s  with remaining : %f",
              id, (gl_data_size[id] - remaining) / elapsed_time, masternames[id], slavenames[id], remaining);
         if(remaining==0) {

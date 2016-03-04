@@ -216,9 +216,6 @@ accepts several options, as listed below.
   @li <b>enable_ns3</b> (ON/OFF): whether you want to use ns3.
       See section @ref pls_simgrid_configuration_ns3.
   @li <b>NS3_HINT</b> (path): Where to search for NS3 (eg /usr or /opt).
-  @li <b>enable_latency_bound_tracking</b> (ON/OFF): enable it if you
-      want to be warned when communications are limited by round trip
-      time while doing packet-level simulation.
   @li <b>enable_documentation</b> (ON/OFF) : whether the documentation should be
        generated during the compilation. Default is ON.
 

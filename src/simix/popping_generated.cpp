@@ -106,10 +106,6 @@ const char* simcall_names[] = {
   "SIMCALL_MC_RANDOM",
   "SIMCALL_SET_CATEGORY",
   "SIMCALL_RUN_KERNEL",
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  "SIMCALL_COMM_IS_LATENCY_BOUNDED",
-#endif
-
 #ifdef HAVE_MC
   "SIMCALL_MC_SNAPSHOT",
   "SIMCALL_MC_COMPARE_SNAPSHOTS",
@@ -522,14 +518,6 @@ case SIMCALL_RUN_KERNEL:
        SIMIX_run_kernel( simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-case SIMCALL_COMM_IS_LATENCY_BOUNDED:
-      simcall->result.i = SIMIX_comm_is_latency_bounded((smx_synchro_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-#endif
 
 #ifdef HAVE_MC
 case SIMCALL_MC_SNAPSHOT:
