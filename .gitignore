@@ -313,8 +313,7 @@ teshsuite/simdag/platforms/graphicator
 teshsuite/simdag/platforms/is_router_test
 teshsuite/simix/check_defaults/check_defaults
 teshsuite/simix/stack_overflow/stack_overflow
-teshsuite/smpi/allgather/allgather_coll
-teshsuite/smpi/allgather_coll
+teshsuite/smpi/coll-allgather/coll-allgather
 teshsuite/smpi/allgatherv/allgatherv_coll
 teshsuite/smpi/allgatherv_coll
 teshsuite/smpi/allreduce/allreduce
@@ -331,11 +330,7 @@ teshsuite/smpi/alltoallv/alltoallv_coll
 teshsuite/smpi/alltoallv_coll
 teshsuite/smpi/barrier/barrier_coll
 teshsuite/smpi/barrier_coll
-teshsuite/smpi/bcast/bcast
-teshsuite/smpi/bcast/bcast_coll
-teshsuite/smpi/bcast_coll
-teshsuite/smpi/compute2
-teshsuite/smpi/compute3
+teshsuite/smpi/coll-bcast/coll-bcast
 teshsuite/smpi/compute/compute
 teshsuite/smpi/compute/compute2
 teshsuite/smpi/compute/compute3
@@ -343,8 +338,7 @@ teshsuite/smpi/dsend
 teshsuite/smpi/gather_coll
 teshsuite/smpi/gather/gather_coll
 teshsuite/smpi/type-hvector/type-hvector
-teshsuite/smpi/indexed/indexed_test
-teshsuite/smpi/indexed_test
+teshsuite/smpi/type-indexed/type-indexed
 teshsuite/smpi/isp/umpire/abort
 teshsuite/smpi/isp/umpire/abort1
 teshsuite/smpi/isp/umpire/abort2
@@ -1026,8 +1020,7 @@ teshsuite/xbt/log_usage/log_usage
 teshsuite/xbt/mallocator/mallocator
 teshsuite/xbt/mmalloc/mmalloc_test
 teshsuite/xbt/mmalloc_test
-teshsuite/xbt/parallel_log_crashtest
-teshsuite/xbt/parallel_log/parallel_log_crashtest
+teshsuite/xbt/parallel_log_crashtest/parallel_log_crashtest
 teshsuite/xbt/parmap_bench/parmap_bench
 teshsuite/xbt/parmap_test/parmap_test
 testgraph.dot

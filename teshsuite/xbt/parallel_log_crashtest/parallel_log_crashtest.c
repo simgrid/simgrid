@@ -31,8 +31,7 @@ static void* crasher_thread(void *arg)
   return NULL;
 }
 
-int crasher(int argc, char *argv[]);
-int crasher(int argc, char *argv[])
+static int crasher(int argc, char *argv[])
 {
   int i;
   xbt_os_thread_t *crashers;

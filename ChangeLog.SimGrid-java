@@ -1,5 +1,11 @@
 ChangeLog for SimGrid-java, before its integration into the main source tree.
 
+SimGrid (3.13) UNRELEASED; urgency=low
+
+ Backwards Compatibility breaks
+   - VM.setBound(int load) is now VM.setBound(double bound) to meet the MSG semantics. Use VM.getSpeed()*load/100 for the legacy behavior.
+
+
 SimGrid-java (3.9) stable; urgency=low
 
  -- 2013-01-30 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>

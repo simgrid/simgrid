@@ -77,11 +77,10 @@ Java_org_simgrid_msg_VM_isRestoring(JNIEnv * env, jobject jvm) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jint load) { 
+Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jdouble bound) { 
 
   msg_vm_t vm = jvm_get_native(env,jvm);
-  double bound = MSG_get_host_speed(vm) * load / 100;
-  MSG_vm_set_bound(vm, bound); 
+  MSG_vm_set_bound(vm, bound);
 }
 
 JNIEXPORT void JNICALL
@@ -131,7 +130,7 @@ Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject jvm, jobject jhost) {
   TRY{
   MSG_vm_migrate(vm,host);
   } CATCH(e){
-     XBT_INFO("CATCH EXCEPTION MIGRATION %s",e.msg);
+     XBT_VERB("CATCH EXCEPTION MIGRATION %s",e.msg);
      xbt_ex_free(e);
      jxbt_throw_host_failure(env, (char*)"during migration");
   } 
@@ -157,47 +156,4 @@ JNIEXPORT void JNICALL
 Java_org_simgrid_msg_VM_restore(JNIEnv *env, jobject jvm) {
   msg_vm_t vm = jvm_get_native(env,jvm);
   MSG_vm_restore(vm);
-}
-
-
-
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_VM_get_pm(JNIEnv *env, jobject jvm) {
-  jobject jhost;
-  msg_vm_t vm = jvm_get_native(env,jvm);
-  msg_host_t host = MSG_vm_get_pm(vm);
-
-  if (!host->extension(JAVA_HOST_LEVEL)) {
-    THROW_DEADCODE;
-    /* the native host not yet associated with the java host instance */
-
-    /* instanciate a new java host instance */
-    jhost = jhost_new_instance(env);
-
-    if (!jhost) {
-      jxbt_throw_jni(env, "java host instantiation failed");
-      return NULL;
-    }
-
-    /* get a global reference to the newly created host */
-    jhost = jhost_ref(env, jhost);
-
-    if (!jhost) {
-      jxbt_throw_jni(env, "global ref allocation failed");
-      return NULL;
-    }
-    /* Sets the host name */
-    const char *name = MSG_host_get_name(host);
-    jobject jname = env->NewStringUTF(name);
-    env->SetObjectField(jhost, jxbt_get_jfield(env,
-      env->FindClass("org/simgrid/msg/Host"), "name", "Ljava/lang/String;"),
-      jname);
-    /* Bind & store it */
-    jhost_bind(jhost, host, env);
-    host->extension_set(JAVA_HOST_LEVEL, (void *) jhost);
-  } else {
-    jhost = (jobject) host->extension(JAVA_HOST_LEVEL);
-  }
-
-  return jhost;
 }

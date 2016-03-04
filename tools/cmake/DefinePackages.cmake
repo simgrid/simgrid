@@ -1052,16 +1052,13 @@ set(CMAKEFILES_TXT
   teshsuite/simix/stack_overflow/CMakeLists.txt
   
   teshsuite/smpi/CMakeLists.txt
-  teshsuite/smpi/allgather/CMakeLists.txt
   teshsuite/smpi/allgatherv/CMakeLists.txt
   teshsuite/smpi/allreduce/CMakeLists.txt
   teshsuite/smpi/alltoall/CMakeLists.txt
   teshsuite/smpi/alltoallv/CMakeLists.txt
   teshsuite/smpi/barrier/CMakeLists.txt
-  teshsuite/smpi/bcast/CMakeLists.txt
   teshsuite/smpi/compute/CMakeLists.txt
   teshsuite/smpi/gather/CMakeLists.txt
-  teshsuite/smpi/indexed/CMakeLists.txt
   teshsuite/smpi/pingpong/CMakeLists.txt
   teshsuite/smpi/reduce/CMakeLists.txt
   teshsuite/smpi/scatter/CMakeLists.txt
@@ -1103,14 +1100,9 @@ set(CMAKEFILES_TXT
   teshsuite/surf/surf_usage/CMakeLists.txt
   teshsuite/surf/trace_usage/CMakeLists.txt
   
-  teshsuite/xbt/heap_bench/CMakeLists.txt
-  teshsuite/xbt/log_large/CMakeLists.txt
+  teshsuite/xbt/CMakeLists.txt
   teshsuite/xbt/log_usage/CMakeLists.txt
-  teshsuite/xbt/mallocator/CMakeLists.txt
   teshsuite/xbt/mmalloc/CMakeLists.txt
-  teshsuite/xbt/parallel_log/CMakeLists.txt
-  teshsuite/xbt/parmap_bench/CMakeLists.txt
-  teshsuite/xbt/parmap_test/CMakeLists.txt
 
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt
