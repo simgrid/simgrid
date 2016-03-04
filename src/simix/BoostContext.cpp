@@ -55,7 +55,7 @@ public:
 
 bool                BoostContext::parallel_        = false;
 xbt_parmap_t        BoostContext::parmap_          = nullptr;
-uintptr_t       BoostContext::threads_working_ = 0;
+uintptr_t           BoostContext::threads_working_ = 0;
 xbt_os_thread_key_t BoostContext::worker_id_key_;
 unsigned long       BoostContext::process_index_   = 0;
 BoostContext*       BoostContext::maestro_context_ = nullptr;

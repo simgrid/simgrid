@@ -186,7 +186,7 @@ Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env,
     return -1;
   }
 
-  return (jdouble) MSG_get_host_speed(host);
+  return (jdouble) MSG_host_get_speed(host);
 }
 
 JNIEXPORT jdouble JNICALL

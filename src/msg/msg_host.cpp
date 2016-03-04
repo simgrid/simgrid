@@ -146,9 +146,19 @@ xbt_dynar_t MSG_hosts_as_dynar(void) {
 /** \ingroup m_host_management
  * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
  */
-double MSG_get_host_speed(msg_host_t host) {
+double MSG_host_get_speed(msg_host_t host) {
   return host->speed();
 }
+
+/** \ingroup m_host_management
+ * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
+ * Deprecated: use MSG_host_get_speed
+ */
+double MSG_get_host_speed(msg_host_t host) {
+  XBT_WARN("MSG_get_host_speed is deprecated: use MSG_host_get_speed");
+  return MSG_host_get_speed(host);
+}
+
 
 /** \ingroup m_host_management
  * \brief Return the number of cores.

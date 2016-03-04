@@ -31,7 +31,7 @@ protected: // static
   static bool parallel_;
   static xbt_parmap_t parmap_;
   static std::vector<BoostContext*> workers_context_;
-  static unsigned long threads_working_;
+  static uintptr_t threads_working_;
   static xbt_os_thread_key_t worker_id_key_;
   static unsigned long process_index_;
   static BoostContext* maestro_context_;
