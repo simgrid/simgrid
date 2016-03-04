@@ -86,7 +86,6 @@ if (enable_documentation)
             ${CMAKE_HOME_DIRECTORY}/COPYING
             ${CMAKE_HOME_DIRECTORY}/ChangeLog
             ${CMAKE_HOME_DIRECTORY}/NEWS
-            ${CMAKE_HOME_DIRECTORY}/ChangeLog.SimGrid-java
             ${CMAKE_HOME_DIRECTORY}/LICENSE-LGPL-2.1
 
     COMMAND ${CMAKE_COMMAND} -E copy ${MANIFEST_IN_FILE} ${MANIFEST_FILE}

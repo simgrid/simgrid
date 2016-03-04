@@ -943,7 +943,6 @@ set(txt_files
   README.java
   README.lua
   ChangeLog
-  ChangeLog.SimGrid-java
   INSTALL
   LICENSE-LGPL-2.1
   NEWS
