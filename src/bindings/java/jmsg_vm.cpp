@@ -77,11 +77,10 @@ Java_org_simgrid_msg_VM_isRestoring(JNIEnv * env, jobject jvm) {
 }
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jint load) { 
+Java_org_simgrid_msg_VM_setBound(JNIEnv *env, jobject jvm, jdouble bound) { 
 
   msg_vm_t vm = jvm_get_native(env,jvm);
-  double bound = MSG_get_host_speed(vm) * load / 100;
-  MSG_vm_set_bound(vm, bound); 
+  MSG_vm_set_bound(vm, bound);
 }
 
 JNIEXPORT void JNICALL

@@ -131,10 +131,10 @@ public class VM extends Host{
 
 
 	/**
-	 * Bound the VM to a certain % of its vcpu capability (e.g. 75% of vm.getSpeed())
-	 * @param load percentage (between [0,100]
+	 * Set a CPU bound for a given VM.
+	 * @param bound in flops/s
 	 */
-	public native void setBound(int load);
+	public native void setBound(double bound);
 
 	/**
 	 * start the VM
