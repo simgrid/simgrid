@@ -18,8 +18,7 @@ int main(int argc, char *argv[])
 
     MPI_Init(&argc, &argv);
     MPI_Comm_size(MPI_COMM_WORLD, &size);
-    if (size < 2)
-    {
+    if (size < 2) {
         printf("Please run with 2 processes.\n");
         MPI_Finalize();
         return 1;
@@ -31,15 +30,13 @@ int main(int argc, char *argv[])
     MPI_Type_indexed(3, blocklen, displacement, type2, &type);
     MPI_Type_commit(&type);
 
-    if (rank == 0)
-    {
+    if (rank == 0) {
         for (i=0; i<27; i++)
             buffer[i] = i;
         MPI_Send(buffer, 1, type, 1, 123, MPI_COMM_WORLD);
     }
 
-    if (rank == 1)
-    {
+    if (rank == 1) {
         for (i=0; i<27; i++)
             buffer[i] = -1;
         MPI_Recv(buffer, 1, type, 0, 123, MPI_COMM_WORLD, &status);

@@ -48,7 +48,6 @@ int main(int argc, char *argv[])
     printf("%d ", rb[i]);
   printf("]\n");
 
-
   if (rank == 0) {
     if (status != MPI_SUCCESS) {
       printf("allgather returned %d\n", status);
