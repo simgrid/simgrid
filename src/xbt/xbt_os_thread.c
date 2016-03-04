@@ -329,11 +329,13 @@ void xbt_os_mutex_acquire(xbt_os_mutex_t mutex)
 
 void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
 {
+  int errcode;
+
   if (delay < 0) {
     xbt_os_mutex_acquire(mutex);
 
   } else if (delay == 0) {
-    int errcode = pthread_mutex_trylock(&(mutex->m));
+    errcode = pthread_mutex_trylock(&(mutex->m));
 
     switch (errcode) {
     case 0:
@@ -359,7 +361,7 @@ void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
 
     int errcode = pthread_mutex_timedlock(&(mutex->m), &ts_end);
 
-#else                           /* Well, let's reimplement it since those lazy libc dudes didn't */
+#else            /* reimplement it since those lazy libc dudes didn't (Mac OSX, hu?) */
     double start = xbt_os_time();
     do {
       errcode = pthread_mutex_trylock(&(mutex->m));
