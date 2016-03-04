@@ -68,7 +68,7 @@ namespace simix {
 #ifdef HAVE_THREAD_CONTEXTS
 static xbt_parmap_t sysv_parmap;
 static simgrid::simix::ParallelUContext** sysv_workers_context;   /* space to save the worker's context in each thread */
-static unsigned long sysv_threads_working;     /* number of threads that have started their work */
+static uintptr_t sysv_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t sysv_worker_id_key; /* thread-specific storage for the thread id */
 #endif
 static unsigned long sysv_process_index = 0;   /* index of the next process to run in the
@@ -316,7 +316,7 @@ void ParallelUContext::resume()
 {
 #ifdef HAVE_THREAD_CONTEXTS
   // What is my containing body?
-  unsigned long worker_id = __sync_fetch_and_add(&sysv_threads_working, 1);
+  uintptr_t worker_id = __sync_fetch_and_add(&sysv_threads_working, 1);
   // Store the number of my containing body in os-thread-specific area :
   xbt_os_thread_set_specific(sysv_worker_id_key, (void*) worker_id);
   // Get my current soul:
@@ -373,8 +373,8 @@ void ParallelUContext::suspend()
     XBT_DEBUG("No more processes to run");
     // Get back the identity of my body that was stored when starting
     // the scheduling round
-    unsigned long worker_id =
-        (unsigned long) xbt_os_thread_get_specific(sysv_worker_id_key);
+    uintptr_t worker_id =
+        (uintptr_t) xbt_os_thread_get_specific(sysv_worker_id_key);
     // Deduce the initial soul of that body
     next_context = (ParallelUContext*) sysv_workers_context[worker_id];
     // When given that soul, the body will wait for the next scheduling round

@@ -55,7 +55,7 @@ public:
 
 bool                BoostContext::parallel_        = false;
 xbt_parmap_t        BoostContext::parmap_          = nullptr;
-unsigned long       BoostContext::threads_working_ = 0;
+uintptr_t       BoostContext::threads_working_ = 0;
 xbt_os_thread_key_t BoostContext::worker_id_key_;
 unsigned long       BoostContext::process_index_   = 0;
 BoostContext*       BoostContext::maestro_context_ = nullptr;
@@ -245,8 +245,8 @@ void BoostParallelContext::suspend()
   }
   else {
     XBT_DEBUG("No more processes to run");
-    unsigned long worker_id =
-      (unsigned long) xbt_os_thread_get_specific(worker_id_key_);
+    uintptr_t worker_id =
+      (uintptr_t) xbt_os_thread_get_specific(worker_id_key_);
     next_context = static_cast<BoostParallelContext*>(
       workers_context_[worker_id]);
   }
@@ -269,7 +269,7 @@ void BoostParallelContext::stop()
 
 void BoostParallelContext::resume()
 {
-  unsigned long worker_id = __sync_fetch_and_add(&threads_working_, 1);
+  uintptr_t worker_id = __sync_fetch_and_add(&threads_working_, 1);
   xbt_os_thread_set_specific(worker_id_key_, (void*) worker_id);
 
   BoostParallelContext* worker_context =
