@@ -232,7 +232,7 @@ examples/simdag/sd_seq_access
 examples/simdag/sd_test
 examples/simdag/sd_test2
 examples/simdag/sd_test_console
-examples/simdag/sd_typed_tasks_test
+examples/simdag/sd_typed_tasks
 examples/simdag/simdag_tracing
 examples/smpi/bcbench
 examples/smpi/energy/f77/sef

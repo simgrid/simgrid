@@ -277,23 +277,6 @@ IF(NOT enable_memcheck)
   ADD_TEST(tesh-simdag-one-link-g5k                ${CMAKE_BINARY_DIR}/teshsuite/simdag/platforms/basic_parsing_test ${CMAKE_HOME_DIRECTORY}/examples/platforms/g5k.xml ONE_LINK)
   # END TESH TESTS
 
-  # BEGIN TESH TESTS
-  IF(HAVE_GRAPHVIZ)
-    ADD_TESH(simdag-dotload                    --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dot --cd ${CMAKE_BINARY_DIR}/examples/simdag/dot ${CMAKE_HOME_DIRECTORY}/examples/simdag/dot/test_simdag_dotload.tesh)
-  ENDIF()
-  ADD_TESH(simdag-simdag                         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag.tesh)
-  ADD_TESH(simdag-simdag2                        --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag2.tesh)
-  ADD_TESH(simdag-typed-tasks                    --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_typed_tasks.tesh)
-  ADD_TESH(simdag-fail                         --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag test_simdag_fail.tesh)
-  ADD_TESH(simdag-avail                          --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag test_simdag_avail.tesh)
-  ADD_TESH(simdag-comm-throttling                --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/test_simdag_comm_throttling.tesh)
-  ADD_TESH(simdag-dax                          --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/dax --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax smalldax.tesh)
-  ADD_TESH(simdag-dax-cycle                      --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag/dax --cd ${CMAKE_BINARY_DIR}/examples/simdag/dax ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax/simple_dax_with_cycle.tesh)
-  ADD_TESH(simdag-prop                           --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/properties/test_prop.tesh)
-  ADD_TESH(simdag-minmin-scheduling              --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/scheduling --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/scheduling test_minmin.tesh)
-  ADD_TESH(simdag-io                             --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/ --setenv srcdir=${CMAKE_HOME_DIRECTORY}/ --cd ${CMAKE_HOME_DIRECTORY}/examples/ ${CMAKE_HOME_DIRECTORY}/examples/simdag/io/io.tesh)
-  # END TESH TESTS
-
   ### SMPI ###
   IF(enable_smpi)
     # BEGIN TESH TESTS
