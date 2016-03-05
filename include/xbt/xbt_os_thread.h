@@ -63,7 +63,6 @@ XBT_PUBLIC(void*) xbt_os_thread_get_specific(xbt_os_thread_key_t key);
 XBT_PUBLIC(void) xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return);
 XBT_PUBLIC(void) xbt_os_thread_yield(void);
 XBT_PUBLIC(void) xbt_os_thread_cancel(xbt_os_thread_t thread);
-XBT_PUBLIC(void *) xbt_os_thread_getparam(void);
 XBT_PUBLIC(void) xbt_os_thread_setstacksize(int stack_size);
 XBT_PUBLIC(void) xbt_os_thread_setguardsize(int guard_size);
 

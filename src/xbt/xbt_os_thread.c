@@ -476,12 +476,6 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond)
   free(cond);
 }
 
-void *xbt_os_thread_getparam(void)
-{
-  xbt_os_thread_t t = xbt_os_thread_self();
-  return t ? t->param : NULL;
-}
-
 typedef struct xbt_os_sem_ {
 #ifndef HAVE_SEM_INIT
   char *name;
