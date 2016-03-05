@@ -264,8 +264,8 @@ src/replay/replay
 testall
 teshsuite/bug-17132/bug-17132
 teshsuite/datadesc_usage.out
-teshsuite/java/semaphore/java_semaphore_gc_compiled
-teshsuite/java/sleep_host_off/java_sleep_host_off_compiled
+teshsuite/java/SemaphoreGC/SemaphoreGC_compiled
+teshsuite/java/SleepHostOff/SleepHostOff_compiled
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf_expression/dwarf-expression
 teshsuite/mc/replay/random_bug

@@ -1022,8 +1022,7 @@ set(CMAKEFILES_TXT
   examples/smpi/energy/f90/CMakeLists.txt
 
   teshsuite/bug-17132/CMakeLists.txt
-  teshsuite/java/semaphore/CMakeLists.txt
-  teshsuite/java/sleep_host_off/CMakeLists.txt
+  teshsuite/java/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt

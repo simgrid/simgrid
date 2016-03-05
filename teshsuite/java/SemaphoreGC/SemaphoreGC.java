@@ -7,7 +7,7 @@
  * This was reported as bug #19893 on gforge.
  */
 
-package semaphore;
+package SemaphoreGC;
 
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
