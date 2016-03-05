@@ -87,20 +87,14 @@
 /* We have mmap and objdump to handle privatization */
 #cmakedefine HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@
 
-#cmakedefine HAVE_MUTEX_TIMEDLOCK @HAVE_MUTEX_TIMEDLOCK@         /* Seems to part of XPG6 standard only */
+#cmakedefine HAVE_PTHREAD @HAVE_PTHREAD@ /* Define to 1 if threads are usable . */
 #cmakedefine HAVE_PTHREAD_SETAFFINITY @HAVE_PTHREAD_SETAFFINITY@ /* Seems to be linux only */
 
 /* Define to 1 if you have the `popen' function. */
 #cmakedefine HAVE_POPEN @HAVE_POPEN@
 
-/* Define to 1 if threads are usable . */
-#cmakedefine HAVE_PTHREAD @HAVE_PTHREAD@
-
 /* Define if sem_init() is avaible or not (part of XPG6 standard only) */
 #cmakedefine HAVE_SEM_INIT @HAVE_SEM_INIT@
-
-/* Define if sem_timedwait() is avaible or not (part of XPG6 standard only) */
-#cmakedefine HAVE_SEM_TIMEDWAIT @HAVE_SEM_TIMEDWAIT@
 
 /* Define to 1 if you have the <signal.h> header file. */
 #cmakedefine HAVE_SIGNAL_H @HAVE_SIGNAL_H@

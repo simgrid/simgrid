@@ -71,7 +71,6 @@ typedef struct xbt_os_mutex_ *xbt_os_mutex_t;
 
 XBT_PUBLIC(xbt_os_mutex_t) xbt_os_mutex_init(void);
 XBT_PUBLIC(void) xbt_os_mutex_acquire(xbt_os_mutex_t mutex);
-XBT_PUBLIC(void) xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay);
 XBT_PUBLIC(void) xbt_os_mutex_release(xbt_os_mutex_t mutex);
 XBT_PUBLIC(void) xbt_os_mutex_destroy(xbt_os_mutex_t mutex);
 
@@ -98,7 +97,6 @@ typedef struct xbt_os_sem_ *xbt_os_sem_t;
 
 XBT_PUBLIC(xbt_os_sem_t) xbt_os_sem_init(unsigned int value);
 XBT_PUBLIC(void) xbt_os_sem_acquire(xbt_os_sem_t sem);
-XBT_PUBLIC(void) xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout);
 XBT_PUBLIC(void) xbt_os_sem_release(xbt_os_sem_t sem);
 XBT_PUBLIC(void) xbt_os_sem_destroy(xbt_os_sem_t sem);
 XBT_PUBLIC(void) xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue);

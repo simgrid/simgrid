@@ -332,70 +332,6 @@ void xbt_os_mutex_acquire(xbt_os_mutex_t mutex)
   xbt_assert(errcode==0, "pthread_mutex_lock(%p) failed: %s", mutex, strerror(errcode));
 }
 
-
-void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
-{
-  int errcode;
-
-  if (delay < 0) {
-    xbt_os_mutex_acquire(mutex);
-
-  } else if (delay == 0) {
-    errcode = pthread_mutex_trylock(&(mutex->m));
-
-    switch (errcode) {
-    case 0:
-      return;
-    case ETIMEDOUT:
-      THROWF(timeout_error, 0, "mutex %p not ready", mutex);
-    default:
-      THROWF(system_error, errcode,
-             "xbt_os_mutex_timedacquire(%p) failed: %s", mutex,
-             strerror(errcode));
-    }
-
-
-  } else {
-
-#ifdef HAVE_MUTEX_TIMEDLOCK
-    struct timespec ts_end;
-    double end = delay + xbt_os_time();
-
-    ts_end.tv_sec = (time_t) floor(end);
-    ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    XBT_DEBUG("pthread_mutex_timedlock(%p,%p)", &(mutex->m), &ts_end);
-
-    int errcode = pthread_mutex_timedlock(&(mutex->m), &ts_end);
-
-#else            /* reimplement it since those lazy libc dudes didn't (Mac OSX, hu?) */
-    double start = xbt_os_time();
-    do {
-      errcode = pthread_mutex_trylock(&(mutex->m));
-      if (errcode == EBUSY)
-        xbt_os_thread_yield();
-    } while (errcode == EBUSY && xbt_os_time() - start < delay);
-
-    if (errcode == EBUSY)
-      errcode = ETIMEDOUT;
-
-#endif                          /* HAVE_MUTEX_TIMEDLOCK */
-
-    switch (errcode) {
-    case 0:
-      return;
-
-    case ETIMEDOUT:
-      THROWF(timeout_error, delay,
-             "mutex %p wasn't signaled before timeout (%f)", mutex, delay);
-
-    default:
-      THROWF(system_error, errcode,
-             "pthread_mutex_timedlock(%p,%f) failed: %s", mutex, delay,
-             strerror(errcode));
-    }
-  }
-}
-
 void xbt_os_mutex_release(xbt_os_mutex_t mutex)
 {
   int errcode = pthread_mutex_unlock(&(mutex->m));
@@ -536,64 +472,6 @@ void xbt_os_sem_acquire(xbt_os_sem_t sem)
     THROWF(system_error, errno, "sem_wait() failed: %s", strerror(errno));
 }
 
-void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
-{
-  int errcode;
-
-  if (delay < 0) {
-    xbt_os_sem_acquire(sem);
-  } else if (delay == 0) {
-    errcode = sem_trywait(sem->ps);
-
-    switch (errcode) {
-    case 0:
-      return;
-    case ETIMEDOUT:
-      THROWF(timeout_error, 0, "semaphore %p not ready", sem);
-    default:
-      THROWF(system_error, errcode,
-             "xbt_os_sem_timedacquire(%p) failed: %s", sem,
-             strerror(errcode));
-    }
-
-  } else {
-#ifdef HAVE_SEM_WAIT
-    struct timespec ts_end;
-    double end = delay + xbt_os_time();
-
-    ts_end.tv_sec = (time_t) floor(end);
-    ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    XBT_DEBUG("sem_timedwait(%p,%p)", sem->ps, &ts_end);
-    errcode = sem_timedwait(sem->s, &ts_end);
-
-#else                           /* Okay, reimplement this function then */
-    double start = xbt_os_time();
-    do {
-      errcode = sem_trywait(sem->ps);
-      if (errcode == EBUSY)
-        xbt_os_thread_yield();
-    } while (errcode == EBUSY && xbt_os_time() - start < delay);
-
-    if (errcode == EBUSY)
-      errcode = ETIMEDOUT;
-#endif
-
-    switch (errcode) {
-    case 0:
-      return;
-
-    case ETIMEDOUT:
-      THROWF(timeout_error, delay,
-             "semaphore %p wasn't signaled before timeout (%f)", sem,
-             delay);
-
-    default:
-      THROWF(system_error, errcode, "sem_timedwait(%p,%f) failed: %s", sem,
-             delay, strerror(errcode));
-    }
-  }
-}
-
 void xbt_os_sem_release(xbt_os_sem_t sem)
 {
   if (sem_post(sem->ps) < 0)
@@ -648,14 +526,6 @@ int xbt_os_get_numcores(void) {
 #endif
 }
 
-
-/***** reentrant mutexes *****/
-typedef struct xbt_os_rmutex_ {
-  xbt_os_mutex_t mutex;
-  xbt_os_thread_t owner;
-  int count;
-} s_xbt_os_rmutex_t;
-
 void xbt_os_thread_set_extra_data(void *data)
 {
   xbt_os_thread_self()->extra_data = data;
@@ -664,11 +534,15 @@ void xbt_os_thread_set_extra_data(void *data)
 void *xbt_os_thread_get_extra_data(void)
 {
   xbt_os_thread_t thread = xbt_os_thread_self();
-  if (thread)
-    return xbt_os_thread_self()->extra_data;
-  else
-    return NULL;
+  return thread ? thread->extra_data : NULL;
 }
+
+/***** reentrant mutexes *****/
+typedef struct xbt_os_rmutex_ {
+  xbt_os_mutex_t mutex;
+  xbt_os_thread_t owner;
+  int count;
+} s_xbt_os_rmutex_t;
 
 xbt_os_rmutex_t xbt_os_rmutex_init(void)
 {

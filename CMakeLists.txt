@@ -268,8 +268,6 @@ CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
 CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread sem_open                "" HAVE_SEM_OPEN_LIB)
-CHECK_LIBRARY_EXISTS(pthread sem_timedwait           "" HAVE_SEM_TIMEDWAIT_LIB)
-CHECK_LIBRARY_EXISTS(pthread pthread_mutex_timedlock "" HAVE_MUTEX_TIMEDLOCK_LIB)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -510,43 +508,6 @@ if(HAVE_PTHREAD)
     message(FATAL_ERROR "Semaphores are not usable (neither sem_open nor sem_init is both compilable and executable), but they are mandatory to threads (you may need to mount /dev).")
   endif()
 
-  ### Test that we have a way to timewait for semaphores
-
-  if(HAVE_SEM_TIMEDWAIT_LIB)
-
-    execute_process(
-      COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_timedwait.c -lpthread"
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      OUTPUT_VARIABLE HAVE_SEM_TIMEDWAIT_run
-      )
-
-    if(HAVE_SEM_TIMEDWAIT_run)
-      set(HAVE_SEM_TIMEDWAIT 0)
-      message(STATUS "timedwait not compilable")
-    else()
-      set(HAVE_SEM_TIMEDWAIT 1)
-      message(STATUS "timedwait is compilable")
-    endif()
-  endif()
-
-  ### HAVE_MUTEX_TIMEDLOCK
-
-  if(HAVE_MUTEX_TIMEDLOCK_LIB)
-
-    execute_process(
-      COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_mutex_timedlock.c -lpthread"
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      OUTPUT_VARIABLE HAVE_MUTEX_TIMEDLOCK_run
-      )
-
-    if(HAVE_MUTEX_TIMEDLOCK_run)
-      set(HAVE_MUTEX_TIMEDLOCK 0)
-      message(STATUS "timedlock not compilable")
-    else()
-      message(STATUS "timedlock is compilable")
-      set(HAVE_MUTEX_TIMEDLOCK 1)
-    endif()
-  endif()
 endif()
 
 # This is needed for ucontext on MacOS X:
@@ -986,8 +947,6 @@ message("HAVE_UCONTEXT ...............: ${HAVE_UCONTEXT}")
 message("")
 message("HAVE_PTHREAD ................: ${HAVE_PTHREAD}")
 message("HAVE_SEM_INIT ...............: ${HAVE_SEM_INIT_LIB}")
-message("HAVE_SEM_TIMEDWAIT ..........: ${HAVE_SEM_TIMEDWAIT_LIB}")
-message("HAVE_MUTEX_TIMEDLOCK ........: ${HAVE_MUTEX_TIMEDLOCK_LIB}")
 message("HAVE_POSIX_GETTIME ..........: ${HAVE_POSIX_GETTIME}")
 message("")
 message("STDC_HEADERS ................: ${STDC_HEADERS}")
