@@ -1,6 +1,6 @@
 foreach(example SemaphoreGC SleepHostOff)
   set(sources ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.java)
-  set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}.tesh PARENT_SCOPE)
+  set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${example}/${example}.tesh PARENT_SCOPE)
 
   if(enable_java)
     add_custom_command(
