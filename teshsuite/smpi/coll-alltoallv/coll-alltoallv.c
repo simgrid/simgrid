@@ -9,27 +9,17 @@
  *      See COPYRIGHT in top-level directory.
  */
 #include <string.h>
-
 #include <stdlib.h>
 #include <stdio.h>
 #include "mpi.h"
 
-/*
-   This program tests MPI_Alltoallv by having processor i send different
-   amounts of data to each processor.
+/* This program tests MPI_Alltoallv by having processor i send different amounts of data to each processor.
 
-   Because there are separate send and receive types to alltoallv,
-   there need to be tests to rearrange data on the fly.  Not done yet.
-
+   TODO As there are separate send and receive types to alltoallv, there need to be tests to rearrange data on the fly.
    The first test sends i items to processor i from all processors.
+   Currently, the test uses only MPI_INT; this is adequate for testing systems that use point-to-point operations
 
-   Currently, the test uses only MPI_INT; this is adequate for testing systems
-   that use point-to-point operations
- */
-
-
-/* example values:
- * For 3 processes:
+   Example values for 3 processes:
  * <0> sbuf: (#9):   [0][1][2][3][4][5][6][7][8]
    <0> scount: (#3): [0][1][2]
    <0> rcount: (#3): [0][0][0]
@@ -54,7 +44,6 @@
    <2> rbuf: (#9):   [3][4][103][104][203][204][-1][-1][-1]
 */
 
-
 static void print_buffer_int(void *buf, int len, char *msg, int rank)
 {
   int tmp, *v;
@@ -70,12 +59,10 @@ static void print_buffer_int(void *buf, int len, char *msg, int rank)
 
 int main(int argc, char **argv)
 {
-
   MPI_Comm comm;
   int *sbuf, *rbuf;
-  int rank, size;
+  int i,rank, size;
   int *sendcounts, *recvcounts, *rdispls, *sdispls;
-  int i;
 
   MPI_Init(&argc, &argv);
 
@@ -104,15 +91,14 @@ int main(int argc, char **argv)
     rdispls[i] = i * rank;
     sdispls[i] = (i * (i + 1)) / 2;
   }
- 
+
   print_buffer_int( sbuf, size*size, strdup("sbuf:"),rank);
   print_buffer_int( sendcounts, size, strdup("scount:"),rank);
   print_buffer_int( recvcounts, size, strdup("rcount:"),rank);
   print_buffer_int( sdispls, size, strdup("sdisp:"),rank);
   print_buffer_int( rdispls, size, strdup("rdisp:"),rank);
-   
-  MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT,
-                rbuf, recvcounts, rdispls, MPI_INT, comm);
+
+  MPI_Alltoallv(sbuf, sendcounts, sdispls, MPI_INT, rbuf, recvcounts, rdispls, MPI_INT, comm);
 
   print_buffer_int( rbuf, size*size, strdup("rbuf:"),rank);
 

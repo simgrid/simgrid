@@ -17,10 +17,8 @@
 
 int main(int argc, char *argv[])
 {
-  int rank, size;
-  int i;
-  int *sb;
-  int *rb;
+  int i, rank, size;
+  int *sb, *rb;
   int status;
 
   int root = 0;
@@ -46,11 +44,10 @@ int main(int argc, char *argv[])
   status = MPI_Gather(sb, count, MPI_INT, rb, count, MPI_INT, root, MPI_COMM_WORLD);
 
   if (rank == root) {
-  printf("[%d] rcvbuf=[", rank);
-  for (i = 0; i < count * size; i++)
-    printf("%d ", rb[i]);
-  printf("]\n");
-
+    printf("[%d] rcvbuf=[", rank);
+    for (i = 0; i < count * size; i++)
+      printf("%d ", rb[i]);
+    printf("]\n");
 
     if (status != MPI_SUCCESS) {
       printf("allgather returned %d\n", status);

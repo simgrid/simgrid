@@ -17,12 +17,9 @@
 
 int main(int argc, char *argv[])
 {
-  int rank, size;
-  int i;
-  int *sb;
-  int *rb;
-  int *recv_counts;
-  int *recv_disps;
+  int i,rank, size;
+  int *sb, *rb;
+  int *recv_counts, *recv_disps;
   int recv_sb_size;
   int status;
 
@@ -32,11 +29,11 @@ int main(int argc, char *argv[])
 
   recv_counts = (int *) xbt_malloc(size * sizeof(int));
   recv_disps = (int *) xbt_malloc(size * sizeof(int));
-  
+
   recv_sb_size = 0;
   for (i = 0; i < size; i++) {
     recv_counts[i] = i + 1;
-    recv_disps[i] = recv_sb_size;    
+    recv_disps[i] = recv_sb_size;
     recv_sb_size += i + 1;
   }
 
@@ -59,7 +56,6 @@ int main(int argc, char *argv[])
   for (i = 0; i < recv_sb_size; i++)
     printf("%d ", rb[i]);
   printf("]\n");
-
 
   if (rank == 0) {
     if (status != MPI_SUCCESS) {

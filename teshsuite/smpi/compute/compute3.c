@@ -57,17 +57,15 @@ int main(int argc, char *argv[])
         else
           fprintf(stderr, "(1)");
         fprintf(stderr,
-                " [rank:%d] Run the first (locally benched) computation. "
-                "It's locally benched, and I want the standard error to go "
-                "below 0.1 second (count is not >0)\n", smpi_process_index());
+                " [rank:%d] Run the first (locally benched) computation. It's locally benched, and I want the "
+                "standard error to go below 0.1 second (count is not >0)\n", smpi_process_index());
       }
       d = compute(d);
      }
   }
 
   if (verbose)
-    fprintf(stderr, "(%12.6f) [rank:%d] The result of the computation is: %f\n",
-            MPI_Wtime(), smpi_process_index(), d);
+    fprintf(stderr, "(%12.6f) [rank:%d] The result of the computation is: %f\n", MPI_Wtime(), smpi_process_index(), d);
   else
     fprintf(stderr, "(2) [rank:%d] Done.\n", smpi_process_index());
 

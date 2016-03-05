@@ -6,7 +6,8 @@ if(enable_smpi)
   endif()
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  foreach(x coll-allgather coll-bcast type-hvector type-indexed type-struct type-vector)
+  foreach(x coll-allgather coll-allgatherv coll-alltoallv coll-barrier coll-bcast coll-gather coll-scatter 
+            type-hvector type-indexed type-struct type-vector)
     add_executable       (${x}  ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -22,15 +23,37 @@ if(enable_smpi)
     ADD_TESH(tesh-smpi-coll-allgather-${ALLGATHER_COLL} --cfg smpi/allgather:${ALLGATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allgather coll-allgather.tesh)
   endforeach()
 
+  foreach (ALLGATHERV_COLL GB pair ring ompi mpich ompi_neighborexchange ompi_bruck mpich_rdb mpich_ring mvapich2 impi)
+    ADD_TESH(tesh-smpi-coll-allgatherv-${ALLGATHERV_COLL} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgatherv --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allgatherv coll-allgatherv.tesh)
+  endforeach()
+
+  foreach (ALLTOALLV_COLL pair pair_light_barrier pair_mpi_barrier pair_one_barrier  ring ring_light_barrier
+                          ring_mpi_barrier ring_one_barrier bruck ompi mpich mvapich2 ompi_basic_linear impi)
+    ADD_TESH(tesh-smpi-coll-alltoallv-${ALLTOALLV_COLL} --cfg smpi/alltoallv:${ALLTOALLV_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-alltoallv --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-alltoallv coll-alltoallv.tesh)
+  endforeach()
+
+  foreach (BARRIER_COLL ompi mpich ompi_basic_linear ompi_tree ompi_bruck ompi_recursivedoubling ompi_doublering mvapich2_pair mvapich2 impi)
+      ADD_TESH(tesh-smpi-coll-barrier-${BARRIER_COLL} --cfg smpi/barrier:${BARRIER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-barrier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-barrier coll-barrier.tesh)
+  endforeach()
+
   foreach (BCAST_COLL arrival_pattern_aware arrival_pattern_aware_wait arrival_scatter binomial_tree flattree 
                       flattree_pipeline NTSB NTSL NTSL_Isend scatter_LR_allgather scatter_rdb_allgather SMP_binary 
                       SMP_binomial SMP_linear ompi mpich ompi_split_bintree ompi_pipeline mvapich2 mvapich2_intra_node 
                       mvapich2_knomial_intra_node impi)
     ADD_TESH(tesh-smpi-coll-bcast-${BCAST_COLL} --cfg smpi/bcast:${BCAST_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-bcast --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-bcast coll-bcast.tesh)
   endforeach()
+
+  foreach (GATHER_COLL ompi mpich ompi_basic_linear ompi_linear_sync ompi_binomial mvapich2 mvapich2_two_level impi)
+    ADD_TESH(tesh-smpi-coll-gather-${GATHER_COLL} --cfg smpi/gather:${GATHER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-gather --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-gather coll-gather.tesh)
+  endforeach()
+
+  foreach (SCATTER_COLL ompi mpich ompi_basic_linear ompi_binomial mvapich2 mvapich2_two_level_binomial mvapich2_two_level_direct impi)
+    ADD_TESH(tesh-smpi-coll-scatter-${SCATTER_COLL} --cfg smpi/scatter:${SCATTER_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-scatter --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-scatter coll-scatter.tesh)
+  endforeach()
 endif()
 
-set(bin_files       ${bin_files}      ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
-                                      ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll  PARENT_SCOPE)
+
+set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll  PARENT_SCOPE)
 set(teshsuite_src ${teshsuite_src}                                             PARENT_SCOPE)
 set(tesh_files    ${tesh_files}                                                PARENT_SCOPE)
