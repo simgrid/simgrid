@@ -57,9 +57,6 @@
 #cmakedefine HAVE_RAW_CONTEXTS @HAVE_RAW_CONTEXTS@
 #cmakedefine HAVE_BOOST_CONTEXTS @HAVE_BOOST_CONTEXTS@
 
-/* Define to 1 if you have the <errno.h> header file. */
-#cmakedefine HAVE_ERRNO_H @HAVE_ERRNO_H@
-
 /* Define to 1 if you have the <execinfo.h> header file. */
 #cmakedefine HAVE_EXECINFO_H @HAVE_EXECINFO_H@
 
@@ -114,9 +111,6 @@
 
 /* Define to 1 if you have the `sysconf' function. */
 #cmakedefine HAVE_SYSCONF @HAVE_SYSCONF@
-
-/* Define to 1 if you have the <sys/stat.h> header file. */
-#cmakedefine HAVE_SYS_STAT_H @HAVE_SYS_STAT_H@
 
 /* Define to 1 if you have the <sys/ptrace.h> header file. */
 #cmakedefine HAVE_SYS_PTRACE_H @HAVE_SYS_PTRACE_H@

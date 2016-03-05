@@ -8,6 +8,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <errno.h>
+
 #if defined(WIN32)
 #elif defined(__MACH__) && defined(__APPLE__)
 #include <stdint.h>
