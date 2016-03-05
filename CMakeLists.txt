@@ -356,12 +356,6 @@ else()
   SET(HAVE_MMALLOC 0)
 endif()
 
-
-if(WIN32) # Those files are not detected despite being present
-  set(HAVE_UCONTEXT_H 1)
-  set(HAVE_MAKECONTEXT 1)
-endif()
-
 set(HAVE_UCONTEXT_CONTEXTS 0)
 set(HAVE_THREAD_CONTEXTS 0)
 
