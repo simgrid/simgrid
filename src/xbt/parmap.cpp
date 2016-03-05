@@ -120,8 +120,6 @@ typedef s_xbt_parmap_thread_data_t *xbt_parmap_thread_data_t;
  */
 xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
 {
-  unsigned int i;
-
   XBT_DEBUG("Create new parmap (%u workers)", num_workers);
 
   /* Initialize the thread pool data structure */
@@ -135,22 +133,20 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
   /* Create the pool of worker threads */
   xbt_parmap_thread_data_t data;
   parmap->workers[0] = NULL;
-#ifdef CORE_BINDING  
-  unsigned int core_bind = 0;
+#ifdef HAVE_PTHREAD_SETAFFINITY
+  int core_bind = 0;
 #endif  
-  for (i = 1; i < num_workers; i++) {
+  for (unsigned int i = 1; i < num_workers; i++) {
     data = xbt_new0(s_xbt_parmap_thread_data_t, 1);
     data->parmap = parmap;
     data->worker_id = i;
-    parmap->workers[i] = xbt_os_thread_create(NULL, xbt_parmap_worker_main,
-                                              data, NULL);
-#ifdef CORE_BINDING  
+    parmap->workers[i] = xbt_os_thread_create(NULL, xbt_parmap_worker_main, data, NULL);
+#ifdef HAVE_PTHREAD_SETAFFINITY
     xbt_os_thread_bind(parmap->workers[i], core_bind); 
-    if(core_bind!=xbt_os_get_numcores()){
+    if (core_bind != xbt_os_get_numcores())
       core_bind++;
-    } else {
+    else
       core_bind = 0; 
-    }
 #endif    
   }
   return parmap;

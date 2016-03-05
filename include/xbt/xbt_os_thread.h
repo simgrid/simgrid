@@ -41,13 +41,13 @@ XBT_PUBLIC(int) xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void)
 
 XBT_PUBLIC(int) xbt_os_get_numcores(void);
 
-XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name, pvoid_f_pvoid_t start_routine, void *param,
-                                                 void *data);
+XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_create(const char *name, pvoid_f_pvoid_t start_routine, void *param, void *data);
 
-//#define CORE_BINDING  //Uncomment this to enable binding of threads to physical cores. Only Linux.
-#ifdef CORE_BINDING
-XBT_PUBLIC(int) xbt_os_thread_bind(xbt_os_thread_t thread, int cpu);
-#endif
+/** Bind the thread to the given core, if possible.
+ *
+ * If pthread_setaffinity_np is not usable on that (non-gnu) platform, this function does nothing.
+ */
+XBT_PUBLIC(int) xbt_os_thread_bind(xbt_os_thread_t thread, int core);
 
 XBT_PUBLIC(void) xbt_os_thread_exit(int *retcode);
 XBT_PUBLIC(void) xbt_os_thread_detach(xbt_os_thread_t thread);

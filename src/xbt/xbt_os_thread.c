@@ -8,6 +8,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/internal_config.h"
+#ifdef HAVE_PTHREAD_SETAFFINITY
+#define _GNU_SOURCE
+#include <sched.h>
+#endif
+
+#include <pthread.h>
+#include <limits.h>
+#include <semaphore.h>
 #include <errno.h>
 
 #if defined(WIN32)
@@ -19,26 +28,16 @@
 #include <unistd.h>
 #endif
 
-#include "src/internal_config.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
-#include "src/xbt/ex_interface.h"   /* We play crude games with exceptions */
+#include "src/xbt/ex_interface.h"  /* We play crude games with exceptions */
 #include "src/portable.h"
-#include "xbt/xbt_os_time.h"    /* Portable time facilities */
-#include "xbt/xbt_os_thread.h"  /* This module */
-#include "src/xbt_modinter.h"       /* Initialization/finalization of this module */
+#include "xbt/xbt_os_time.h"       /* Portable time facilities */
+#include "xbt/xbt_os_thread.h"     /* This module */
+#include "src/xbt_modinter.h"      /* Initialization/finalization of this module */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS-level)");
 
-/* ********************************* PTHREAD IMPLEMENTATION ************************************ */
-#include <pthread.h>
-#include <limits.h>
-#include <semaphore.h>
-
-#ifdef CORE_BINDING
-#define _GNU_SOURCE
-#include <sched.h>
-#endif
 
 /* use named sempahore when sem_init() does not work */
 #ifndef HAVE_SEM_INIT
@@ -182,18 +181,17 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_ro
   return res_thread;
 }
 
-
-#ifdef CORE_BINDING
 int xbt_os_thread_bind(xbt_os_thread_t thread, int cpu){
-  pthread_t pthread = thread->t;
   int errcode = 0;
+#ifdef HAVE_PTHREAD_SETAFFINITY
+  pthread_t pthread = thread->t;
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET(cpu, &cpuset);
   errcode = pthread_setaffinity_np(pthread, sizeof(cpu_set_t), &cpuset);
+#endif
   return errcode;
 }
-#endif
 
 void xbt_os_thread_setstacksize(int stack_size)
 {
