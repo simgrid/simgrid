@@ -87,11 +87,7 @@
 /* We have mmap and objdump to handle privatization */
 #cmakedefine HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@
 
-/* Define to 1 if you have the `makecontext' function. */
-#cmakedefine HAVE_MAKECONTEXT @HAVE_MAKECONTEXT@
-
-/* Define if pthread_mutex_timedlock() is avaible or not (part of XPG6
-   standard only?) */
+/* Define if pthread_mutex_timedlock() is avaible or not (part of XPG6 standard only?) */
 #cmakedefine HAVE_MUTEX_TIMEDLOCK @HAVE_MUTEX_TIMEDLOCK@
 
 /* Define to 1 if you have the `popen' function. */
@@ -129,9 +125,6 @@
 
 /* Define to 1 if you have the <valgrind/valgrind.h> header file. */
 #cmakedefine HAVE_VALGRIND_VALGRIND_H @HAVE_VALGRIND_VALGRIND_H@
-
-/* Define to 1 if you have the <windows.h> header file. */
-#cmakedefine HAVE_WINDOWS_H @HAVE_WINDOWS_H@
 
 #cmakedefine HAVE_VASPRINTF @HAVE_VASPRINTF@
 

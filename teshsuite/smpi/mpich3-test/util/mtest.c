@@ -242,7 +242,7 @@ int MTestReturnValue( int errors )
  * from the tests.
  * MTestSleep( seconds )
  */
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 void MTestSleep( int sec )
 {
