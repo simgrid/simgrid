@@ -996,6 +996,7 @@ set(CMAKEFILES_TXT
   examples/msg/properties/CMakeLists.txt
   examples/msg/semaphores/CMakeLists.txt
   examples/msg/sendrecv/CMakeLists.txt
+  examples/msg/set-maestro/CMakeLists.txt
   examples/msg/start_kill_time/CMakeLists.txt
   examples/msg/suspend/CMakeLists.txt
   examples/msg/token_ring/CMakeLists.txt

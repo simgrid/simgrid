@@ -1,11 +1,6 @@
 #! ./tesh
 
-p Testing the deprecated CM02 network model
-
-! output sort 19
-$ $SG_TEST_EXENV sendrecv/sendrecv_main$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/sendrecv/deployment_sendrecv_main.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
-> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
+! output sort 19 $ $SG_TEST_EXENV set-maestro/set-maestro$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/set-maestro/set-maestro_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sender
 > [  0.000000] (1:sender@Tremblay) host = Jupiter
 > [  0.000000] (1:sender@Tremblay) task_la->data = 0.000000e+00
