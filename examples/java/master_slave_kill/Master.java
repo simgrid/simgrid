@@ -16,32 +16,31 @@ import org.simgrid.msg.Task;
 import master_slave_kill.FinalizeTask;
 
 public class Master extends Process {
-	public Master(String hostname, String name) throws HostNotFoundException {
-		super(hostname, name);
-	}
-	public void main(String[] args) throws MsgException {
-		Msg.info("Master Hello!");
-		Process process2 = null;
-		//Create a slave on host "alice"
-		try {
-			Msg.info("Create process on host 'Boivin'");
-		    process2 = new Slave("Boivin","slave");
-		    process2.start();
-		} catch (MsgException e){
-		    System.out.println("Process2!");
-		}
+  public Master(String hostname, String name) throws HostNotFoundException {
+    super(hostname, name);
+  }
+  public void main(String[] args) throws MsgException {
+    Msg.info("Master Hello!");
+    Process process2 = null;
+    //Create a slave on host "alice"
+    try {
+      Msg.info("Create process on host 'Boivin'");
+      process2 = new Slave("Boivin","slave");
+      process2.start();
+    } catch (MsgException e){
+      System.out.println("Process2!");
+    }
 
-		//Wait for slave "alice"
-		while(true)
-		{
-				Task task = Task.receive("mail1");
-				if (task instanceof FinalizeTask) {
-					Msg.info("Received mail1!");
-					break;
-				}
-		}
-		process2.kill();
+    //Wait for slave "alice"
+    while(true) {
+      Task task = Task.receive("mail1");
+      if (task instanceof FinalizeTask) {
+        Msg.info("Received mail1!");
+        break;
+      }
+    }
+    process2.kill();
 
-		Msg.info("Process2 is now killed, should exit now");
-	}
+    Msg.info("Process2 is now killed, should exit now");
+  }
 }

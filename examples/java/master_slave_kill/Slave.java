@@ -18,22 +18,22 @@ import org.simgrid.msg.Process;
 import master_slave_kill.FinalizeTask;
 
 public class Slave extends Process {
-	public Slave(String hostname, String name) throws HostNotFoundException {
-		super(hostname, name);
-	}
-	public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException, NativeException {
-	Msg.info("Slave Hello!");
-	
-	FinalizeTask task = new FinalizeTask();
-	Msg.info("Send Mail1!");
-	task.send("mail1");
-	
-        try {
-                Task.receive("mail2");
-        } catch (MsgException e) {
-                Msg.debug("Received failed");
-                return;
-        }
-	Msg.info("Receive Mail2!");
+  public Slave(String hostname, String name) throws HostNotFoundException {
+    super(hostname, name);
+  }
+  public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException, NativeException {
+    Msg.info("Slave Hello!");
+
+    FinalizeTask task = new FinalizeTask();
+    Msg.info("Send Mail1!");
+    task.send("mail1");
+
+    try {
+      Task.receive("mail2");
+    } catch (MsgException e) {
+      Msg.debug("Received failed");
+      return;
+    }
+    Msg.info("Receive Mail2!");
   }
 }

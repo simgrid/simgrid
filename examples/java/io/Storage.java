@@ -10,7 +10,7 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.MsgException;
 
 public class Storage {
-  public static void main(String[] args) throws MsgException {      
+  public static void main(String[] args) throws MsgException {
     Msg.init(args);
     if(args.length < 1) {
       Msg.info("Usage   : Storage platform_file ");

@@ -12,7 +12,6 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.TimeoutException;
 import org.simgrid.msg.TransferFailureException;
 
-
 public class Master extends Process {
   public Master(Host host, String name, String[]args) {
     super(host,name,args);

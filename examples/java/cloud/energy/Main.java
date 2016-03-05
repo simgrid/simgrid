@@ -23,7 +23,7 @@ public class Main {
 
     /* construct the platform */
     Msg.createEnvironment(args[0]);
-    
+
     /* Create and start a runner for the experiment */
     new EnergyVMRunner(Host.all()[0],"energy VM runner",null).start();
 

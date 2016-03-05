@@ -18,7 +18,7 @@ public class Receiver extends Process {
 
   public Receiver(Host host, String name, String[]args) {
     super(host,name,args);
-  } 
+  }
 
   public void main(String[] args) throws MsgException {
     Msg.info("hello!");

@@ -1,13 +1,13 @@
 #! tesh
 
 ! output sort 19
-$ java -classpath ${classpath:=.} suspend/Suspend ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/suspend/suspendDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -classpath ${classpath:=.} suspend/Suspend ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
-> [  0.000000] (1:suspend.DreamMaster@Jacquelin) Let's create a lazy guy.
-> [  0.000000] (1:suspend.DreamMaster@Jacquelin) Let's wait a little bit...
+> [  0.000000] (1:DreamMaster@Jacquelin) Let's create a lazy guy.
+> [  0.000000] (1:DreamMaster@Jacquelin) Let's wait a little bit...
 > [  0.000000] (2:Lazy@Jacquelin) Nobody's watching me ? Let's go to sleep.
 > [ 10.000000] (0:maestro@) MSG_main finished; Cleaning up the simulation...
-> [ 10.000000] (1:suspend.DreamMaster@Jacquelin) Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!
-> [ 10.000000] (1:suspend.DreamMaster@Jacquelin) OK, goodbye now.
+> [ 10.000000] (1:DreamMaster@Jacquelin) Let's wake the lazy guy up! >:) BOOOOOUUUHHH!!!!
+> [ 10.000000] (1:DreamMaster@Jacquelin) OK, goodbye now.
 > [ 10.000000] (2:Lazy@Jacquelin) Uuuh ? Did somebody call me ?
 > [ 10.000000] (2:Lazy@Jacquelin) Mmmh, goodbye now.
