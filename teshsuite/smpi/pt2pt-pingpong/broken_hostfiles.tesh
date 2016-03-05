@@ -1,0 +1,8 @@
+! setenv LD_LIBRARY_PATH=../../lib
+! expect return 1
+$ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile_empty  -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
+> [smpirun] ** error: the hostfile '../hostfile_empty' is empty. Aborting.
+
+! expect return 1
+$ ${bindir:=.}/../../../bin/smpirun -hostfile hostfile-does-not-exist.txt -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
+> [smpirun] ** error: the file 'hostfile-does-not-exist.txt' does not exist. Aborting.

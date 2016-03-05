@@ -1,20 +1,7 @@
-p Test dsend
-! setenv LD_LIBRARY_PATH=../../lib
-! output sort
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/dsend -q --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-> [Jupiter:1:(2) 0.000000] [dsend/INFO] rank 1: data exchanged
-> [Tremblay:0:(1) 0.002945] [dsend/INFO] rank 0: data exchanged
-> [rank 0] -> Tremblay
-> [rank 1] -> Jupiter
-
-
 p Test pingpong
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pingpong -q --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
@@ -41,4 +28,3 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../.
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
-

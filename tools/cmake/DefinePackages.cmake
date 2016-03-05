@@ -1052,7 +1052,6 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/allreduce/CMakeLists.txt
   teshsuite/smpi/alltoall/CMakeLists.txt
   teshsuite/smpi/compute/CMakeLists.txt
-  teshsuite/smpi/pingpong/CMakeLists.txt
   teshsuite/smpi/reduce/CMakeLists.txt
   teshsuite/smpi/shared/CMakeLists.txt
   teshsuite/smpi/isp/umpire/CMakeLists.txt

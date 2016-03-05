@@ -14,15 +14,13 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(dsend,"the dsend test");
 int main(int argc, char *argv[]) {
   int rank;
   int data=11;
-   
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-   
+
   if (rank==1) {
     data=22;
     MPI_Send(&data,1,MPI_INT,(rank+1)%2,666,MPI_COMM_WORLD);
-//   smpi_sleep(1000);
   } else {
     MPI_Recv(&data,1,MPI_INT,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,NULL);
     if (data !=22) {

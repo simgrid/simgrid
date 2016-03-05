@@ -7,7 +7,7 @@ if(enable_smpi)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   foreach(x coll-allgather coll-allgatherv coll-alltoallv coll-barrier coll-bcast coll-gather coll-scatter 
-            type-hvector type-indexed type-struct type-vector)
+            pt2pt-dsend pt2pt-pingpong type-hvector type-indexed type-struct type-vector)
     add_executable       (${x}  ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -52,8 +52,13 @@ if(enable_smpi)
   endforeach()
 endif()
 
+# Extra pt2pt pingpong test: broken usage ti-tracing
+ADD_TESH_FACTORIES(tesh-smpi-broken  "thread"   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong broken_hostfiles.tesh)
+ADD_TESH(tesh-smpi-replay-ti-tracing            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong TI_output.tesh)
 
+set(teshsuite_src ${teshsuite_src}                                                                    PARENT_SCOPE)
+set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh         PARENT_SCOPE)
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll  PARENT_SCOPE)
-set(teshsuite_src ${teshsuite_src}                                             PARENT_SCOPE)
-set(tesh_files    ${tesh_files}                                                PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_empty                        PARENT_SCOPE)

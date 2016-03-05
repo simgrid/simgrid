@@ -12,8 +12,7 @@
 int main(int argc, char *argv[])
 {
   const int tag1 = 42, tag2 = 43;       /* Message tag */
-  int rank;
-  int size;
+  int rank, size;
   int msg = 99;
   int err;
   int pivot;
@@ -37,33 +36,26 @@ int main(int argc, char *argv[])
 
   /* start pingpong tests between several pairs */
   for (pivot = 0; pivot < size - 1; pivot++) {
-
     if (pivot == rank) {
-      printf("\n== pivot=%d : pingpong [%d] <--> [%d]\n", pivot, pivot,
-             pivot + 1);
+      printf("\n== pivot=%d : pingpong [%d] <--> [%d]\n", pivot, pivot, pivot + 1);
 
       int dst = rank + 1;
-      printf("[%d] About to send 1st message '%d' to process [%d]\n",
-             rank, msg, dst);
+      printf("[%d] About to send 1st message '%d' to process [%d]\n", rank, msg, dst);
       MPI_Send(&msg, 1, MPI_INT, dst, tag1, MPI_COMM_WORLD);
 
       MPI_Recv(&msg, 1, MPI_INT, dst, tag2, MPI_COMM_WORLD, &status);     /* Receive a message */
-      printf("[%d] Received reply message '%d' from process [%d]\n", rank,
-             msg, dst);
-
+      printf("[%d] Received reply message '%d' from process [%d]\n", rank, msg, dst);
     }
     if ((pivot + 1) == rank) {
       int src = rank - 1;
       MPI_Recv(&msg, 1, MPI_INT, src, tag1, MPI_COMM_WORLD, &status);     /* Receive a message */
-      printf("[%d] Received 1st message '%d' from process [%d]\n", rank,
-             msg, src);
+      printf("[%d] Received 1st message '%d' from process [%d]\n", rank, msg, src);
       msg++;
       printf("[%d] increment message's value to  '%d'\n", rank, msg);
-      printf("[%d] About to send back message '%d' to process [%d]\n",
-             rank, msg, src);
+      printf("[%d] About to send back message '%d' to process [%d]\n", rank, msg, src);
       MPI_Send(&msg, 1, MPI_INT, src, tag2, MPI_COMM_WORLD);
     }
   }
-  MPI_Finalize();         /* Terminate MPI */
+  MPI_Finalize();
   return 0;
 }

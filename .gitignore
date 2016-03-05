@@ -989,8 +989,8 @@ teshsuite/smpi/mpich-test/pt2pt/waitall3
 teshsuite/smpi/mpich-test/pt2pt/waitall4
 teshsuite/smpi/mpich-test/pt2pt/waitany
 teshsuite/smpi/mpich-test/*/*.stdo
-teshsuite/smpi/pingpong/dsend
-teshsuite/smpi/pingpong/pingpong
+teshsuite/smpi/pt2pt-dsend/pt2pt-dsend
+teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong
 teshsuite/smpi/reduce_coll
 teshsuite/smpi/reduce/reduce
 teshsuite/smpi/reduce/reduce_coll

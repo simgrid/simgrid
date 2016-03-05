@@ -1,0 +1,11 @@
+p Test dsend
+! setenv LD_LIBRARY_PATH=../../lib
+! output sort
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 2 ${bindir:=.}/pt2pt-dsend -q --log=smpi_kernel.thres:warning
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [Jupiter:1:(2) 0.000000] [dsend/INFO] rank 1: data exchanged
+> [Tremblay:0:(1) 0.002945] [dsend/INFO] rank 0: data exchanged
+> [rank 0] -> Tremblay
+> [rank 1] -> Jupiter
