@@ -7,30 +7,13 @@ configure_file("${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.pl"
     file(COPY        ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/IPC
          DESTINATION ${CMAKE_BINARY_DIR}/bin)
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/setenv.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/set-output-ignore.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/set-output-sort.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/set-return.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/set-timeout.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/background.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/basic.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/bg-basic.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/bg-set-signal.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/catch-return.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/catch-signal.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/catch-timeout.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/catch-wrong-output.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/cd.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/IO-bigsize.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/IO-broken-pipe.tesh
-  ${CMAKE_CURRENT_SOURCE_DIR}/IO-orders.tesh
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/tesh.pl
-  ${CMAKE_CURRENT_SOURCE_DIR}/generate_tesh
-  PARENT_SCOPE
-  )
+foreach(x setenv set-output-ignore set-output-sort set-return set-timeout background basic bg-basic bg-set-signal
+          catch-return catch-signal catch-timeout catch-wrong-output cd IO-bigsize IO-broken-pipe IO-orders)
+  set(tesh_files  ${tesh_files} ${CMAKE_CURRENT_SOURCE_DIR}/${x}.tesh)
+  if(NOT enable_memcheck AND NOT WIN32)
+    ADD_TESH(tesh-self-${x} --setenv bindir=${CMAKE_BINARY_DIR}/bin ${CMAKE_HOME_DIRECTORY}/tools/tesh/${x}.tesh)
+  endif()
+endforeach()
+
+set(tesh_files ${tesh_files}                                                                               PARENT_SCOPE)
+set(bin_files  ${bin_files}  ${CMAKE_CURRENT_SOURCE_DIR}/tesh.pl ${CMAKE_CURRENT_SOURCE_DIR}/generate_tesh PARENT_SCOPE)
