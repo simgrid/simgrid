@@ -25,6 +25,8 @@ SimGrid (3.13) UNRELEASED; urgency=low
         - SD_workstation_get_computation_time => amount / sg_host_speed()
    - In Java
       - VM.setBound(int load) is now VM.setBound(double bound) to meet the MSG semantics. Use VM.getSpeed()*load/100 for the legacy behavior.
+   - In CMake
+      - option enable_tracing was removed. It was not doing anything since a while.
 
  XML platforms:
  * Switch to platform v4 format.

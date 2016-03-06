@@ -191,10 +191,6 @@ accepts several options, as listed below.
       (the XML parsers and other related elements). Adds an extra
       dependency on flex and flexml.
 
-  @li <b>enable_tracing</b> (ON/OFF): disable this if you have issues
-      with the tracing module. But this module is now very stable and
-      you really should try to enjoy this beauty.
-
   @li <b>enable_smpi</b> (ON/OFF): disable this if you have issues
       with the module allowing to run MPI code on top of SimGrid. This
       module very stable, but if you really don't need it, you can

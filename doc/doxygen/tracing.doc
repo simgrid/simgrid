@@ -12,22 +12,6 @@ and analyze them. This part of the user manual explains how the
 tracing-related features can be enabled and used during the
 development of simulators using the SimGrid library.
 
-\section tracing_tracing_enabling Enabling using CMake
-
-With the sources of SimGrid, it is possible to enable the tracing
-using the parameter <b>-Denable_tracing=ON</b> when the cmake is
-executed.  The sections \ref instr_category_functions, \ref
-instr_mark_functions, and \ref instr_uservariables_functions describe
-all the functions available when this Cmake options is
-activated. These functions will have no effect if SimGrid is
-configured without this option (they are wiped-out by the
-C-preprocessor).
-
-\verbatim
-$ cmake -Denable_tracing=ON .
-$ make
-\endverbatim
-
 \section instr_category_functions Tracing categories functions
 
 The SimGrid library is instrumented so users can trace the platform

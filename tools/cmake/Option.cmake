@@ -31,7 +31,6 @@ option(enable_java           "Whether the Java bindings are activated." off)
 option(enable_lib_in_jar     "Whether the native libraries are bundled in a Java jar file" on)
 
 option(enable_lua            "Whether the Lua bindings are activated." off)
-option(enable_tracing        "Tracing simulations for visualization." on)
 
 option(enable_model-checking "Turn this on to experiment with our prototype of model-checker (hinders the simulation's performance even if turned off at runtime)" off)
 option(enable_jedule         "Jedule output of SimDAG." off)
