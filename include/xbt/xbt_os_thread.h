@@ -74,14 +74,6 @@ XBT_PUBLIC(void) xbt_os_mutex_acquire(xbt_os_mutex_t mutex);
 XBT_PUBLIC(void) xbt_os_mutex_release(xbt_os_mutex_t mutex);
 XBT_PUBLIC(void) xbt_os_mutex_destroy(xbt_os_mutex_t mutex);
 
-/** \brief Thread reentrant mutex data type (opaque structure) */
-typedef struct xbt_os_rmutex_ *xbt_os_rmutex_t;
-
-XBT_PUBLIC(xbt_os_rmutex_t) xbt_os_rmutex_init(void);
-XBT_PUBLIC(void) xbt_os_rmutex_acquire(xbt_os_rmutex_t rmutex);
-XBT_PUBLIC(void) xbt_os_rmutex_release(xbt_os_rmutex_t rmutex);
-XBT_PUBLIC(void) xbt_os_rmutex_destroy(xbt_os_rmutex_t rmutex);
-
 /** \brief Thread condition data type (opaque structure) */
 typedef struct xbt_os_cond_ *xbt_os_cond_t;
 

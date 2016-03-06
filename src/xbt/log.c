@@ -24,7 +24,7 @@
 #include "xbt/xbt_os_thread.h"
 
 int xbt_log_no_loc = 0;         /* if set to true (with --log=no_loc), file localization will be omitted (for tesh tests) */
-static xbt_os_rmutex_t log_cat_init_mutex = NULL;
+static xbt_os_mutex_t log_cat_init_mutex = NULL;
 
 /** \addtogroup XBT_log
  *
@@ -552,7 +552,7 @@ void xbt_log_preinit(void)
   xbt_log_default_layout = xbt_log_layout_simple_new(NULL);
   _XBT_LOGV(XBT_LOG_ROOT_CAT).appender = xbt_log_default_appender;
   _XBT_LOGV(XBT_LOG_ROOT_CAT).layout = xbt_log_default_layout;
-  log_cat_init_mutex = xbt_os_rmutex_init();
+  log_cat_init_mutex = xbt_os_mutex_init();
 }
 
 static void xbt_log_connect_categories(void)
@@ -790,7 +790,7 @@ static void log_cat_exit(xbt_log_category_t cat)
 void xbt_log_postexit(void)
 {
   XBT_VERB("Exiting log");
-  xbt_os_rmutex_destroy(log_cat_init_mutex);
+  xbt_os_mutex_destroy(log_cat_init_mutex);
   xbt_dynar_free(&xbt_log_settings);
   log_cat_exit(&_XBT_LOGV(XBT_LOG_ROOT_CAT));
 }
@@ -885,8 +885,7 @@ static void _xbt_log_cat_apply_set(xbt_log_category_t category,
   if (setting->fmt) {
     xbt_log_layout_set(category, xbt_log_layout_format_new(setting->fmt));
 
-    XBT_DEBUG("Apply settings for category '%s': set format to %s",
-           category->name, setting->fmt);
+    XBT_DEBUG("Apply settings for category '%s': set format to %s", category->name, setting->fmt);
   }
 
   if (setting->additivity != -1) {
@@ -916,14 +915,12 @@ int _xbt_log_cat_init(xbt_log_category_t category,
 {
 #define _xbt_log_cat_init(a, b) (0)
 
-  if (log_cat_init_mutex != NULL) {
-    xbt_os_rmutex_acquire(log_cat_init_mutex);
-  }
+  if (log_cat_init_mutex != NULL)
+    xbt_os_mutex_acquire(log_cat_init_mutex);
 
   if (category->initialized) {
-    if (log_cat_init_mutex != NULL) {
-      xbt_os_rmutex_release(log_cat_init_mutex);
-    }
+    if (log_cat_init_mutex != NULL)
+      xbt_os_mutex_release(log_cat_init_mutex);
     return priority >= category->threshold;
   }
 
@@ -1000,9 +997,8 @@ int _xbt_log_cat_init(xbt_log_category_t category,
   }
 
   category->initialized = 1;
-  if (log_cat_init_mutex != NULL) {
-    xbt_os_rmutex_release(log_cat_init_mutex);
-  }
+  if (log_cat_init_mutex != NULL)
+    xbt_os_mutex_release(log_cat_init_mutex);
   return priority >= category->threshold;
 
 #undef _xbt_log_cat_init

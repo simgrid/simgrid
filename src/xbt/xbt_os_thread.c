@@ -310,7 +310,6 @@ void xbt_os_thread_cancel(xbt_os_thread_t t)
 
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
-  /* KEEP IT IN SYNC WITH xbt_thread.c */
   pthread_mutex_t m;
 } s_xbt_os_mutex_t;
 
@@ -319,8 +318,12 @@ typedef struct xbt_os_mutex_ {
 
 xbt_os_mutex_t xbt_os_mutex_init(void)
 {
+  pthread_mutexattr_t Attr;
+  pthread_mutexattr_init(&Attr);
+  pthread_mutexattr_settype(&Attr, PTHREAD_MUTEX_RECURSIVE);
+
   xbt_os_mutex_t res = xbt_new(s_xbt_os_mutex_t, 1);
-  int errcode = pthread_mutex_init(&(res->m), NULL);
+  int errcode = pthread_mutex_init(&(res->m), &Attr);
   xbt_assert(errcode==0, "pthread_mutex_init() failed: %s", strerror(errcode));
 
   return res;
@@ -350,7 +353,6 @@ void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
 
 /***** condition related functions *****/
 typedef struct xbt_os_cond_ {
-  /* KEEP IT IN SYNC WITH xbt_thread.c */
   pthread_cond_t c;
 } s_xbt_os_cond_t;
 
@@ -535,60 +537,4 @@ void *xbt_os_thread_get_extra_data(void)
 {
   xbt_os_thread_t thread = xbt_os_thread_self();
   return thread ? thread->extra_data : NULL;
-}
-
-/***** reentrant mutexes *****/
-typedef struct xbt_os_rmutex_ {
-  xbt_os_mutex_t mutex;
-  xbt_os_thread_t owner;
-  int count;
-} s_xbt_os_rmutex_t;
-
-xbt_os_rmutex_t xbt_os_rmutex_init(void)
-{
-  xbt_os_rmutex_t rmutex = xbt_new0(struct xbt_os_rmutex_, 1);
-  rmutex->mutex = xbt_os_mutex_init();
-  rmutex->owner = NULL;
-  rmutex->count = 0;
-  return rmutex;
-}
-
-void xbt_os_rmutex_acquire(xbt_os_rmutex_t rmutex)
-{
-  xbt_os_thread_t self = xbt_os_thread_self();
-
-  if (self == NULL) {
-    /* the thread module is not initialized yet */
-    rmutex->owner = NULL;
-    return;
-  }
-
-  if (self != rmutex->owner) {
-    xbt_os_mutex_acquire(rmutex->mutex);
-    rmutex->owner = self;
-    rmutex->count = 1;
-  } else {
-    rmutex->count++;
- }
-}
-
-void xbt_os_rmutex_release(xbt_os_rmutex_t rmutex)
-{
-  if (rmutex->owner == NULL) {
-    /* the thread module was not initialized */
-    return;
-  }
-
-  xbt_assert(rmutex->owner == xbt_os_thread_self());
-
-  if (--rmutex->count == 0) {
-    rmutex->owner = NULL;
-    xbt_os_mutex_release(rmutex->mutex);
-  }
-}
-
-void xbt_os_rmutex_destroy(xbt_os_rmutex_t rmutex)
-{
-  xbt_os_mutex_destroy(rmutex->mutex);
-  xbt_free(rmutex);
 }
