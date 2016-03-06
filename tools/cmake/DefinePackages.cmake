@@ -1088,7 +1088,6 @@ set(CMAKEFILES_TXT
   teshsuite/surf/trace_usage/CMakeLists.txt
   
   teshsuite/xbt/CMakeLists.txt
-  teshsuite/xbt/log_usage/CMakeLists.txt
   teshsuite/xbt/mmalloc/CMakeLists.txt
 
   tools/CMakeLists.txt

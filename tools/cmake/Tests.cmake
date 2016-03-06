@@ -125,22 +125,6 @@ IF(NOT enable_memcheck)
     ENDIF()
   ENDIF()
 
-  ### XBT ###
-  # BEGIN TESH TESTS
-  IF(HAVE_MMALLOC)
-    IF(${ARCH_32_BITS})
-      ADD_TESH(tesh-xbt-mmalloc-32               --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_32.tesh)
-    ELSE()
-      ADD_TESH(tesh-xbt-mmalloc-64               --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_64.tesh)
-    ENDIF()
-  ENDIF()
-  IF(enable_debug)
-    ADD_TESH(tesh-xbt-log                          --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage log_usage.tesh)
-  ELSE()
-    ADD_TESH(tesh-xbt-log                          --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage log_usage_ndebug.tesh)
-  ENDIF()
-  # END TESH TESTS
-
   ## INTERFACES ##
   ### MSG ###
   # BEGIN TESH TESTS
