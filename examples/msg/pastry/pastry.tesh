@@ -3,4 +3,4 @@
 p Testing the Chord implementation with MSG
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/pastry$EXEEXT -nb_bits=6 ${srcdir:=.}/../msg_platform.xml ${srcdir:=.}/chord.xml --cfg=network/crosstraffic:0 --log=msg_chord.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/pastry$EXEEXT -nb_bits=6 ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/pastry10.xml --cfg=network/crosstraffic:0 --log=msg_pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"

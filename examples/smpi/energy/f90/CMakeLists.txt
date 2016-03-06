@@ -5,11 +5,5 @@ if(enable_smpi AND SMPI_FORTRAN)
   target_link_libraries(sef90 simgrid)
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/energy.tesh
-  PARENT_SCOPE)
-set(examples_src
-  ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/sef90.f90
-  PARENT_SCOPE)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy.tesh  PARENT_SCOPE)
+set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/sef90.f90    PARENT_SCOPE)

@@ -55,13 +55,3 @@ $ ${bindir:=.}/io/file ${srcdir:=.}/examples/platforms/storage/storage.xml "--lo
 > [  0.008326] (3:2@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 37033408 / 536870912000
 > [  0.008326] (3:2@carl) 	Close file '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.008326] (0:maestro@) Simulation time 0.00832645
-
-$ ${bindir:=.}/io/file_unlink ${srcdir:=.}/examples/platforms/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Number of host '4'
-> [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
-> [  0.000000] (1:0@denise) 	Unlink file '/home/doc/simgrid/examples/platforms/g5k.xml'
-> [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
-> [  0.001667] (1:0@denise) 	Have written 100000 on /home/doc/simgrid/examples/platforms/g5k.xml
-> [  0.003333] (1:0@denise) 	Have written 100000 on /home/doc/simgrid/examples/platforms/g5k.xml
-> [  0.003333] (1:0@denise) 	Close file '/home/doc/simgrid/examples/platforms/g5k.xml'
-> [  0.003333] (0:maestro@) Simulation time 0.00333333

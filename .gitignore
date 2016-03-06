@@ -138,9 +138,10 @@ examples/msg/cloud/multicore
 examples/msg/cloud/scale
 examples/msg/cloud/simple_vm
 examples/msg/cloud/two_tasks_vm
-examples/msg/energy/consumption/energy_consumption
+examples/msg/energy/consumption/consumption
 examples/msg/energy/onoff/onoff
 examples/msg/energy/pstate/pstate
+examples/msg/energy/vm/vm
 examples/msg/gpu/test_MSG_gpu_task_create
 examples/msg/gtnets/gtnets
 examples/msg/icomms/.kdbgrc.peer3

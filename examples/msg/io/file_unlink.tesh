@@ -1,0 +1,11 @@
+#! ./tesh
+
+$ ${bindir:=.}/io/file_unlink ${srcdir:=.}/examples/platforms/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Number of host '4'
+> [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000000] (1:0@denise) 	Unlink file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.001667] (1:0@denise) 	Have written 100000 on /home/doc/simgrid/examples/platforms/g5k.xml
+> [  0.003333] (1:0@denise) 	Have written 100000 on /home/doc/simgrid/examples/platforms/g5k.xml
+> [  0.003333] (1:0@denise) 	Close file '/home/doc/simgrid/examples/platforms/g5k.xml'
+> [  0.003333] (0:maestro@) Simulation time 0.00333333
