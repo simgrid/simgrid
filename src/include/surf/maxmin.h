@@ -125,7 +125,7 @@
 XBT_PUBLIC_DATA(double) sg_maxmin_precision;
 XBT_PUBLIC_DATA(double) sg_surf_precision;
  
-static XBT_INLINE void double_update(double *variable, double value, double precision)
+static inline void double_update(double *variable, double value, double precision)
 {
   //printf("Updating %g -= %g +- %g\n",*variable,value,precision);
   //xbt_assert(value==0  || value>precision);
@@ -137,12 +137,12 @@ static XBT_INLINE void double_update(double *variable, double value, double prec
     *variable = 0.0;
 }
 
-static XBT_INLINE int double_positive(double value, double precision)
+static inline int double_positive(double value, double precision)
 {
   return (value > precision);
 }
 
-static XBT_INLINE int double_equals(double value1, double value2, double precision)
+static inline int double_equals(double value1, double value2, double precision)
 {
   return (fabs(value1 - value2) < precision);
 }

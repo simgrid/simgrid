@@ -98,7 +98,7 @@ void xbt_dict_free(xbt_dict_t * dict)
 /**
  * Returns the amount of elements in the dict
  */
-XBT_INLINE unsigned int xbt_dict_size(xbt_dict_t dict)
+inline unsigned int xbt_dict_size(xbt_dict_t dict)
 {
   return (dict ? (unsigned int) dict->count : (unsigned int) 0);
 }
@@ -163,7 +163,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
  * Set the \a data in the structure under the \a key, which can be any kind
  * of data, as long as its length is provided in \a key_len.
  */
-XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
+inline void xbt_dict_set_ext(xbt_dict_t dict,
                                  const char *key, int key_len,
                                  void *data, void_f_pvoid_t free_ctn)
 {
@@ -218,7 +218,7 @@ XBT_INLINE void xbt_dict_set_ext(xbt_dict_t dict,
  * set the \a data in the structure under the \a key, which is a
  * null terminated string.
  */
-XBT_INLINE void xbt_dict_set(xbt_dict_t dict,
+inline void xbt_dict_set(xbt_dict_t dict,
                              const char *key, void *data,
                              void_f_pvoid_t free_ctn)
 {
@@ -236,7 +236,7 @@ XBT_INLINE void xbt_dict_set(xbt_dict_t dict,
  *
  * Search the given \a key. Throws not_found_error when not found.
  */
-XBT_INLINE void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
+inline void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
@@ -307,7 +307,7 @@ char *xbt_dict_get_elm_key(xbt_dictelm_t elm)
  * Check xbt_dict_get_or_null() for a version returning NULL without exception when
  * not found.
  */
-XBT_INLINE void *xbt_dict_get(xbt_dict_t dict, const char *key)
+inline void *xbt_dict_get(xbt_dict_t dict, const char *key)
 {
   return xbt_dict_get_elm(dict, key)->content;
 }
@@ -322,7 +322,7 @@ XBT_INLINE void *xbt_dict_get(xbt_dict_t dict, const char *key)
  * Check xbt_dict_get_or_null() for a version returning NULL without exception when
  * not found.
  */
-XBT_INLINE xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
+inline xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 {
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
@@ -335,7 +335,7 @@ XBT_INLINE xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 /**
  * \brief like xbt_dict_get(), but returning NULL when not found
  */
-XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
+inline void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 {
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
@@ -347,7 +347,7 @@ XBT_INLINE void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 /**
  * \brief like xbt_dict_get_elm(), but returning NULL when not found
  */
-XBT_INLINE xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
+inline xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
 {
   unsigned int hash_code = xbt_str_hash(key);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
@@ -368,7 +368,7 @@ XBT_INLINE xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *k
  *
  * Remove the entry associated with the given \a key (throws not_found)
  */
-XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
+inline void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t previous = NULL;
@@ -407,7 +407,7 @@ XBT_INLINE void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_le
  *
  * Remove the entry associated with the given \a key
  */
-XBT_INLINE void xbt_dict_remove(xbt_dict_t dict, const char *key)
+inline void xbt_dict_remove(xbt_dict_t dict, const char *key)
 {
   xbt_dict_remove_ext(dict, key, strlen(key));
 }
@@ -437,7 +437,7 @@ void xbt_dict_reset(xbt_dict_t dict)
  * \brief Return the number of elements in the dict.
  * \param dict a dictionary
  */
-XBT_INLINE int xbt_dict_length(xbt_dict_t dict)
+inline int xbt_dict_length(xbt_dict_t dict)
 {
   return dict->count;
 }
@@ -451,7 +451,7 @@ void xbt_dict_dump_output_string(void *s)
 /**
  * \brief test if the dict is empty or not
  */
-XBT_INLINE int xbt_dict_is_empty(xbt_dict_t dict)
+inline int xbt_dict_is_empty(xbt_dict_t dict)
 {
   return !dict || (xbt_dict_length(dict) == 0);
 }

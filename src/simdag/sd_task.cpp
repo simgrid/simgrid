@@ -116,7 +116,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   return task;
 }
 
-static XBT_INLINE SD_task_t SD_task_create_sized(const char *name, void *data, double amount, int ws_count)
+static inline SD_task_t SD_task_create_sized(const char *name, void *data, double amount, int ws_count)
 {
   SD_task_t task = SD_task_create(name, data, amount);
   task->bytes_amount = xbt_new0(double, ws_count * ws_count);
@@ -857,7 +857,7 @@ double SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_h
   return max_time;
 }
 
-static XBT_INLINE void SD_task_do_schedule(SD_task_t task)
+static inline void SD_task_do_schedule(SD_task_t task)
 {
   if (SD_task_get_state(task) > SD_SCHEDULABLE)
     THROWF(arg_error, 0, "Task '%s' has already been scheduled", SD_task_get_name(task));

@@ -16,7 +16,7 @@ static xbt_swag_t storage_running_action_set_that_does_not_need_being_checked = 
  * CallBacks *
  *************/
 
-static XBT_INLINE void routing_storage_type_free(void *r)
+static inline void routing_storage_type_free(void *r)
 {
   storage_type_t stype = (storage_type_t) r;
   free(stype->model);
@@ -28,7 +28,7 @@ static XBT_INLINE void routing_storage_type_free(void *r)
   free(stype);
 }
 
-static XBT_INLINE void surf_storage_resource_free(void *r)
+static inline void surf_storage_resource_free(void *r)
 {
   // specific to storage
   simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(r);
@@ -36,7 +36,7 @@ static XBT_INLINE void surf_storage_resource_free(void *r)
   delete storage;
 }
 
-static XBT_INLINE void routing_storage_host_free(void *r)
+static inline void routing_storage_host_free(void *r)
 {
   xbt_dynar_t dyn = (xbt_dynar_t) r;
   xbt_dynar_free(&dyn);

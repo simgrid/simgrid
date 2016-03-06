@@ -33,7 +33,7 @@ NS3Sim::NS3Sim(){
 NS3Sim::~NS3Sim(){
 }
 
-static XBT_INLINE void transformSocketPtr (Ptr<Socket> localSocket){
+static inline void transformSocketPtr (Ptr<Socket> localSocket){
   std::stringstream sstream;
   sstream << localSocket ;
   std::string s = sstream.str();

@@ -85,30 +85,10 @@
 # define _XBT_FUNCTION "function"
 #endif
 
-#ifdef DOXYGEN
-#  define XBT_INLINE
-#else
-#  ifndef __cplusplus
-#    if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
-#        define XBT_INLINE inline
-#    elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
-#        define XBT_INLINE inline
-#    else
-#        define XBT_INLINE
-#    endif
-#  else
-#     if defined (_MSC_VER)
-#       define XBT_INLINE __inline
-#     else
-#       define XBT_INLINE  inline
-#     endif
-#  endif /* __cplusplus */
-#endif
-
 #if defined(__GNUC__)
 #   define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
 #else
-#   define XBT_ALWAYS_INLINE XBT_INLINE
+#   define XBT_ALWAYS_INLINE inline
 #endif
 
 #if defined(__GNUC__)

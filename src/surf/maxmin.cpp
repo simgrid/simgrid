@@ -35,7 +35,7 @@ static int Global_debug_id = 1;
 static int Global_const_debug_id = 1;
 
 static void lmm_var_free(lmm_system_t sys, lmm_variable_t var);
-static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
+static inline void lmm_cnst_free(lmm_system_t sys,
                                      lmm_constraint_t cnst);
 
 static void lmm_on_disabled_var(lmm_system_t sys, lmm_constraint_t cnstr);
@@ -131,7 +131,7 @@ void lmm_system_free(lmm_system_t sys)
   free(sys);
 }
 
-static XBT_INLINE void lmm_variable_remove(lmm_system_t sys, lmm_variable_t var)
+static inline void lmm_variable_remove(lmm_system_t sys, lmm_variable_t var)
 {
   int i;
   int nelements;
@@ -183,7 +183,7 @@ static void lmm_var_free(lmm_system_t sys, lmm_variable_t var)
   xbt_mallocator_release(sys->variable_mallocator, var);
 }
 
-static XBT_INLINE void lmm_cnst_free(lmm_system_t sys,
+static inline void lmm_cnst_free(lmm_system_t sys,
                                      lmm_constraint_t cnst)
 {
   make_constraint_inactive(sys, cnst);
@@ -256,7 +256,7 @@ int lmm_constraint_sharing_policy(lmm_constraint_t cnst)
  * Apparently, this call was designed assuming that constraint would no more have elements in it. 
  * If this is not the case, assertion will fail, and you need to add calls e.g. to lmm_shrink before effectively removing it.
  */
-XBT_INLINE void lmm_constraint_free(lmm_system_t sys,
+inline void lmm_constraint_free(lmm_system_t sys,
                                     lmm_constraint_t cnst)
 {
   xbt_assert(!xbt_swag_size(&(cnst->active_element_set)),"Removing constraint but it still has active elements");
@@ -610,7 +610,7 @@ void *lmm_variable_id(lmm_variable_t var)
   return var->id;
 }
 
-static XBT_INLINE void saturated_constraint_set_update(double usage,
+static inline void saturated_constraint_set_update(double usage,
                                                       int cnst_light_num,
                                                       dyn_light_t saturated_constraint_set,
                                                       double *min_usage)
@@ -632,7 +632,7 @@ static XBT_INLINE void saturated_constraint_set_update(double usage,
   }
 }
 
-static XBT_INLINE void saturated_variable_set_update(
+static inline void saturated_variable_set_update(
     s_lmm_constraint_light_t *cnst_light_tab,
     dyn_light_t saturated_constraint_set,
     lmm_system_t sys)
@@ -1240,13 +1240,13 @@ int lmm_constraint_used(lmm_system_t sys, lmm_constraint_t cnst)
   return xbt_swag_belongs(cnst, &(sys->active_constraint_set));
 }
 
-XBT_INLINE lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t
+inline lmm_constraint_t lmm_get_first_active_constraint(lmm_system_t
                                                             sys)
 {
   return (lmm_constraint_t)xbt_swag_getFirst(&(sys->active_constraint_set));
 }
 
-XBT_INLINE lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t
+inline lmm_constraint_t lmm_get_next_active_constraint(lmm_system_t
                                                            sys,
                                                            lmm_constraint_t
                                                            cnst)

@@ -203,7 +203,7 @@ typedef struct xbt_dynar_s {
   void_f_pvoid_t free_f;
 } s_xbt_dynar_t;
 
-static XBT_INLINE int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int idx, void *const dst)
+static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int idx, void *const dst)
 {
   if (!dynar) /* iterating over a NULL dynar is a no-op */
     return FALSE;

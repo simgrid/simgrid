@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(strbuff, xbt, "String buffers");
 ** Buffer code
 **/
 
-XBT_INLINE void xbt_strbuff_empty(xbt_strbuff_t b)
+inline void xbt_strbuff_empty(xbt_strbuff_t b)
 {
   b->used = 0;
   b->data[0] = '\0';
@@ -35,7 +35,7 @@ xbt_strbuff_t xbt_strbuff_new(void)
  *
  * Beware, the ctn is copied, you want to free it afterward, anyhow
  */
-XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
+inline xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 {
   xbt_strbuff_t res = xbt_malloc(sizeof(s_xbt_strbuff_t));
   res->data = xbt_strdup(ctn);
@@ -44,13 +44,13 @@ XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 }
 
 /** @brief frees only the container without touching to the contained string */
-XBT_INLINE void xbt_strbuff_free_container(xbt_strbuff_t b)
+inline void xbt_strbuff_free_container(xbt_strbuff_t b)
 {
   free(b);
 }
 
 /** @brief frees the buffer and its content */
-XBT_INLINE void xbt_strbuff_free(xbt_strbuff_t b)
+inline void xbt_strbuff_free(xbt_strbuff_t b)
 {
   if (b) {
     free(b->data);

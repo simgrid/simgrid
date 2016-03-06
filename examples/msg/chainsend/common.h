@@ -10,7 +10,7 @@
 #include "simgrid/msg.h"
 #include "xbt/sysdep.h"
 
-static XBT_INLINE void queue_pending_connection(msg_comm_t comm, xbt_dynar_t q)
+static inline void queue_pending_connection(msg_comm_t comm, xbt_dynar_t q)
 {
   xbt_dynar_push(q, &comm);
 }

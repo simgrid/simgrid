@@ -42,12 +42,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_mallocator, xbt, "Mallocators");
  * mallocators should be protected from concurrent accesses.  */
 static int initialization_done = 0;
 
-static XBT_INLINE void lock_reset(xbt_mallocator_t m)
+static inline void lock_reset(xbt_mallocator_t m)
 {
   m->lock = 0;
 }
 
-static XBT_INLINE void lock_acquire(xbt_mallocator_t m)
+static inline void lock_acquire(xbt_mallocator_t m)
 {
   if (initialization_done > 1) {
     int *lock = &m->lock;
@@ -56,7 +56,7 @@ static XBT_INLINE void lock_acquire(xbt_mallocator_t m)
   }
 }
 
-static XBT_INLINE void lock_release(xbt_mallocator_t m)
+static inline void lock_release(xbt_mallocator_t m)
 {
   if (initialization_done > 1)
     __sync_lock_release(&m->lock);
@@ -76,7 +76,7 @@ void xbt_mallocator_initialization_is_done(int protect)
 }
 
 /** used by the module to know if it's time to activate the mallocators yet */
-static XBT_INLINE int xbt_mallocator_is_active(void) {
+static inline int xbt_mallocator_is_active(void) {
 #if MALLOCATOR_COMPILED_IN
   return initialization_done && !MC_is_active();
 #else

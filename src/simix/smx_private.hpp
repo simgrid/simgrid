@@ -16,7 +16,7 @@
  * \param context the context to destroy
  * Argument must be stopped first -- runs in maestro context
  */
-static XBT_INLINE void SIMIX_context_free(smx_context_t context)
+static inline void SIMIX_context_free(smx_context_t context)
 {
   delete context;
 }
@@ -25,7 +25,7 @@ static XBT_INLINE void SIMIX_context_free(smx_context_t context)
  * \brief stops the execution of a context
  * \param context to stop
  */
-static XBT_INLINE void SIMIX_context_stop(smx_context_t context)
+static inline void SIMIX_context_stop(smx_context_t context)
 {
   context->stop();
 }
@@ -35,7 +35,7 @@ static XBT_INLINE void SIMIX_context_stop(smx_context_t context)
         scheduled it
  \param context the context to be suspended (it must be the running one)
  */
-static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
+static inline void SIMIX_context_suspend(smx_context_t context)
 {
   context->suspend();
 }
@@ -43,7 +43,7 @@ static XBT_INLINE void SIMIX_context_suspend(smx_context_t context)
 /**
  \brief Executes all the processes to run (in parallel if possible).
  */
-static XBT_INLINE void SIMIX_context_runall(void)
+static inline void SIMIX_context_runall(void)
 {
   if (!xbt_dynar_is_empty(simix_global->process_to_run))
     simix_global->context_factory->run_all();
@@ -52,7 +52,7 @@ static XBT_INLINE void SIMIX_context_runall(void)
 /**
  \brief returns the current running context
  */
-static XBT_INLINE smx_context_t SIMIX_context_self(void)
+static inline smx_context_t SIMIX_context_self(void)
 {
   if (simix_global && simix_global->context_factory)
     return simix_global->context_factory->self();
@@ -65,7 +65,7 @@ static XBT_INLINE smx_context_t SIMIX_context_self(void)
  \param context The context
  \return The SIMIX process
  */
-static XBT_INLINE smx_process_t SIMIX_context_get_process(smx_context_t context)
+static inline smx_process_t SIMIX_context_get_process(smx_context_t context)
 {
   return context->process();
 }

@@ -235,7 +235,7 @@ int find_model_description(s_surf_model_description_t * table,
   return -1;
 }
 
-static XBT_INLINE void surf_storage_free(void *r)
+static inline void surf_storage_free(void *r)
 {
   delete static_cast<simgrid::surf::Storage*>(r);
 }

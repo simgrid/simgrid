@@ -60,7 +60,7 @@ XBT_PUBLIC(double) xbt_str_parse_double(const char* str, const char* error_msg);
 /**
  * @brief Returns the hash code of a string.
  */
-static XBT_INLINE unsigned int xbt_str_hash_ext(const char *str, int str_len)
+static inline unsigned int xbt_str_hash_ext(const char *str, int str_len)
 {
 
 #ifdef DJB2_HASH_FUNCTION
@@ -102,7 +102,7 @@ static XBT_INLINE unsigned int xbt_str_hash_ext(const char *str, int str_len)
 /**
  * @brief Returns the hash code of a string.
  */
-static XBT_INLINE unsigned int xbt_str_hash(const char *str)
+static inline unsigned int xbt_str_hash(const char *str)
 {
 #ifdef DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */

@@ -284,7 +284,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 }
 
 /* Internal function used to factorize code between MSG_task_isend_with_matching() and MSG_task_dsend(). */
-static XBT_INLINE msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
+static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
                                                      int (*match_fun)(void*,void*, smx_synchro_t),
                                                      void *match_data, void_f_pvoid_t cleanup, int detached)
 {

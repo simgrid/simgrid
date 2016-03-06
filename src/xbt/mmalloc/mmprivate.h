@@ -308,7 +308,7 @@ XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, ssize_t size);
 #define LOCK(mdp) pthread_mutex_lock(&mdp->mutex)
 #define UNLOCK(mdp) pthread_mutex_unlock(&mdp->mutex)
 
-static XBT_INLINE void  mmalloc_paranoia(struct mdesc *mdp){
+static inline void  mmalloc_paranoia(struct mdesc *mdp){
 
   /* nothing to fear for no */
 

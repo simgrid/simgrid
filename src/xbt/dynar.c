@@ -15,17 +15,17 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn, xbt, "Dynamic arrays");
 
-static XBT_INLINE void _sanity_check_dynar(xbt_dynar_t dynar)
+static inline void _sanity_check_dynar(xbt_dynar_t dynar)
 {
   xbt_assert(dynar, "dynar is NULL");
 }
 
-static XBT_INLINE void _sanity_check_idx(int idx)
+static inline void _sanity_check_idx(int idx)
 {
   xbt_assert(idx >= 0, "dynar idx(=%d) < 0", (int) (idx));
 }
 
-static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx)
+static inline void _check_inbound_idx(xbt_dynar_t dynar, int idx)
 {
   if (idx < 0 || idx >= (int)dynar->used) {
     THROWF(bound_error, idx,
@@ -34,14 +34,14 @@ static XBT_INLINE void _check_inbound_idx(xbt_dynar_t dynar, int idx)
   }
 }
 
-static XBT_INLINE void _check_populated_dynar(xbt_dynar_t dynar)
+static inline void _check_populated_dynar(xbt_dynar_t dynar)
 {
   if (dynar->used == 0) {
     THROWF(bound_error, 0, "dynar %p is empty", dynar);
   }
 }
 
-static XBT_INLINE
+static inline
 void _xbt_dynar_resize(xbt_dynar_t dynar, unsigned long new_size)
 {
   if (new_size != dynar->size) {
@@ -50,7 +50,7 @@ void _xbt_dynar_resize(xbt_dynar_t dynar, unsigned long new_size)
   }
 }
 
-static XBT_INLINE
+static inline
     void _xbt_dynar_expand(xbt_dynar_t const dynar, const unsigned long nb)
 {
   const unsigned long old_size = dynar->size;
@@ -63,7 +63,7 @@ static XBT_INLINE
   }
 }
 
-static XBT_INLINE
+static inline
     void *_xbt_dynar_elm(const xbt_dynar_t dynar, const unsigned long idx)
 {
   char *const data = (char *) dynar->data;
@@ -72,7 +72,7 @@ static XBT_INLINE
   return data + idx * elmsize;
 }
 
-static XBT_INLINE
+static inline
     void
 _xbt_dynar_get_elm(void *const dst,
                    const xbt_dynar_t dynar, const unsigned long idx)
@@ -134,7 +134,7 @@ void xbt_dynar_free_container(xbt_dynar_t * dynar)
  *
  * \param dynar who to squeeze
  */
-XBT_INLINE void xbt_dynar_reset(xbt_dynar_t const dynar)
+inline void xbt_dynar_reset(xbt_dynar_t const dynar)
 {
   _sanity_check_dynar(dynar);
 
@@ -194,7 +194,7 @@ void xbt_dynar_shrink(xbt_dynar_t dynar, int empty_slots_wanted)
  * kilkil a dynar and its content
  */
 
-XBT_INLINE void xbt_dynar_free(xbt_dynar_t * dynar)
+inline void xbt_dynar_free(xbt_dynar_t * dynar)
 {
   if (dynar && *dynar) {
     xbt_dynar_reset(*dynar);
@@ -213,7 +213,7 @@ void xbt_dynar_free_voidp(void *d)
  *
  * \param dynar the dynar we want to mesure
  */
-XBT_INLINE unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
+inline unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
 {
   return (dynar ? (unsigned long) dynar->used : (unsigned long) 0);
 }
@@ -223,7 +223,7 @@ XBT_INLINE unsigned long xbt_dynar_length(const xbt_dynar_t dynar)
  *\param dynar the dynat we want to check
  */
 
-XBT_INLINE int xbt_dynar_is_empty(const xbt_dynar_t dynar)
+inline int xbt_dynar_is_empty(const xbt_dynar_t dynar)
 {
   return (xbt_dynar_length(dynar) == 0);
 }
@@ -234,7 +234,7 @@ XBT_INLINE int xbt_dynar_is_empty(const xbt_dynar_t dynar)
  * \param idx index of the slot we want to retrieve
  * \param[out] dst where to put the result to.
  */
-XBT_INLINE void
+inline void
 xbt_dynar_get_cpy(const xbt_dynar_t dynar,
                   const unsigned long idx, void *const dst)
 {
@@ -253,7 +253,7 @@ xbt_dynar_get_cpy(const xbt_dynar_t dynar,
  * \warning The returned value is the actual content of the dynar.
  * Make a copy before fooling with it.
  */
-XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
+inline void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
                                    const unsigned long idx)
 {
 
@@ -265,7 +265,7 @@ XBT_INLINE void *xbt_dynar_get_ptr(const xbt_dynar_t dynar,
   return res;
 }
 
-XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
+inline void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
                                       const unsigned long idx)
 {
   _sanity_check_dynar(dynar);
@@ -289,7 +289,7 @@ XBT_INLINE void *xbt_dynar_set_at_ptr(const xbt_dynar_t dynar,
  *
  * If you want to free the previous content, use xbt_dynar_replace().
  */
-XBT_INLINE void xbt_dynar_set(xbt_dynar_t dynar, const int idx,
+inline void xbt_dynar_set(xbt_dynar_t dynar, const int idx,
                               const void *const src)
 {
 
@@ -359,7 +359,7 @@ void *xbt_dynar_insert_at_ptr(xbt_dynar_t const dynar, const int idx)
  * moving the previously existing value and all subsequent ones to one
  * position right in the dynar.
  */
-XBT_INLINE void
+inline void
 xbt_dynar_insert_at(xbt_dynar_t const dynar,
                     const int idx, const void *const src)
 {
@@ -525,13 +525,13 @@ int xbt_dynar_member(xbt_dynar_t const dynar, void *const elem)
  * You can then use regular affectation to set its value instead of relying
  * on the slow memcpy. This is what xbt_dynar_push_as() does.
  */
-XBT_INLINE void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
+inline void *xbt_dynar_push_ptr(xbt_dynar_t const dynar)
 {
   return xbt_dynar_insert_at_ptr(dynar, dynar->used);
 }
 
 /** @brief Add an element at the end of the dynar */
-XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
+inline void xbt_dynar_push(xbt_dynar_t const dynar,
                                const void *const src)
 {
   /* checks done in xbt_dynar_insert_at_ptr */
@@ -543,7 +543,7 @@ XBT_INLINE void xbt_dynar_push(xbt_dynar_t const dynar,
  * You can then use regular affectation to set its value instead of relying
  * on the slow memcpy. This is what xbt_dynar_pop_as() does.
  */
-XBT_INLINE void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
+inline void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
 {
   _check_populated_dynar(dynar);
   XBT_CDEBUG(xbt_dyn, "Pop %p", (void *) dynar);
@@ -552,7 +552,7 @@ XBT_INLINE void *xbt_dynar_pop_ptr(xbt_dynar_t const dynar)
 }
 
 /** @brief Get and remove the last element of the dynar */
-XBT_INLINE void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
+inline void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
 {
 
   /* sanity checks done by remove_at */
@@ -564,7 +564,7 @@ XBT_INLINE void xbt_dynar_pop(xbt_dynar_t const dynar, void *const dst)
  *
  * This is less efficient than xbt_dynar_push()
  */
-XBT_INLINE void xbt_dynar_unshift(xbt_dynar_t const dynar,
+inline void xbt_dynar_unshift(xbt_dynar_t const dynar,
                                   const void *const src)
 {
 
@@ -576,7 +576,7 @@ XBT_INLINE void xbt_dynar_unshift(xbt_dynar_t const dynar,
  *
  * This is less efficient than xbt_dynar_pop()
  */
-XBT_INLINE void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst)
+inline void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst)
 {
 
   /* sanity checks done by remove_at */
@@ -588,7 +588,7 @@ XBT_INLINE void xbt_dynar_shift(xbt_dynar_t const dynar, void *const dst)
  * The mapped function may change the value of the element itself,
  * but should not mess with the structure of the dynar.
  */
-XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar,
+inline void xbt_dynar_map(const xbt_dynar_t dynar,
                               void_f_pvoid_t const op)
 {
   char *const data = (char *) dynar->data;
@@ -609,7 +609,7 @@ XBT_INLINE void xbt_dynar_map(const xbt_dynar_t dynar,
  *
  * This function can be used while traversing without problem.
  */
-XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
+inline void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
                                     unsigned int *const cursor)
 {
 
@@ -624,7 +624,7 @@ XBT_INLINE void xbt_dynar_cursor_rm(xbt_dynar_t dynar,
  * Remark: if the elements stored in the dynar are structures, the compar_fn
  * function has to retrieve the field to sort first.
  */
-XBT_INLINE void xbt_dynar_sort(xbt_dynar_t dynar,
+inline void xbt_dynar_sort(xbt_dynar_t dynar,
                                int_f_cpvoid_cpvoid_t compar_fn)
 {
   qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
@@ -692,7 +692,7 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar,
  *
  *  Note: The dynar won't be usable afterwards.
  */
-XBT_INLINE void *xbt_dynar_to_array(xbt_dynar_t dynar)
+inline void *xbt_dynar_to_array(xbt_dynar_t dynar)
 {
   void *res;
   xbt_dynar_shrink(dynar, 1);

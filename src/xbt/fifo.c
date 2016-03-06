@@ -420,14 +420,14 @@ static void fifo_item_mallocator_reset_f(void *item)
 /** Constructor
  * \return a new bucket
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_new_item(void)
+inline xbt_fifo_item_t xbt_fifo_new_item(void)
 {
   return xbt_mallocator_get(item_mallocator);
 }
 
 /** \deprecated Use #xbt_fifo_new_item instead.
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_newitem(void)
+inline xbt_fifo_item_t xbt_fifo_newitem(void)
 {
   XBT_CWARN(xbt_fifo, "This function is deprecated. Use xbt_fifo_new_item.");
   return xbt_fifo_new_item();
@@ -439,7 +439,7 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_newitem(void)
  *
  * stores \a v in \a i.
  */
-XBT_INLINE void xbt_fifo_set_item_content(xbt_fifo_item_t i, void *v)
+inline void xbt_fifo_set_item_content(xbt_fifo_item_t i, void *v)
 {
   xbt_fifo_setItemcontent(i, v);
 }
@@ -448,7 +448,7 @@ XBT_INLINE void xbt_fifo_set_item_content(xbt_fifo_item_t i, void *v)
  * \param i a bucket
  * \return the object stored \a i.
  */
-XBT_INLINE void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
+inline void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
 {
   return xbt_fifo_getItemcontent(i);
 }
@@ -458,7 +458,7 @@ XBT_INLINE void *xbt_fifo_get_item_content(xbt_fifo_item_t i)
  *
  * Free the bucket but does not modifies the object (if any) that was stored in it.
  */
-XBT_INLINE void xbt_fifo_free_item(xbt_fifo_item_t b)
+inline void xbt_fifo_free_item(xbt_fifo_item_t b)
 {
   xbt_mallocator_release(item_mallocator, b);
   return;
@@ -467,7 +467,7 @@ XBT_INLINE void xbt_fifo_free_item(xbt_fifo_item_t b)
 /** Destructor
  * \deprecated Use #xbt_fifo_free_item instead.
  */
-XBT_INLINE void xbt_fifo_freeitem(xbt_fifo_item_t b)
+inline void xbt_fifo_freeitem(xbt_fifo_item_t b)
 {
   XBT_CWARN(xbt_fifo, "This function is deprecated. Use xbt_fifo_free_item.");
   xbt_fifo_free_item(b);
@@ -478,7 +478,7 @@ XBT_INLINE void xbt_fifo_freeitem(xbt_fifo_item_t b)
  * \param f a list
  * \return the number of buckets in \a f.
  */
-XBT_INLINE int xbt_fifo_size(xbt_fifo_t f)
+inline int xbt_fifo_size(xbt_fifo_t f)
 {
   return f->count;
 }
@@ -489,7 +489,7 @@ XBT_INLINE int xbt_fifo_size(xbt_fifo_t f)
  *
  * Returns NULL if the list is empty.
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
+inline xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
 {
   return l->head;
 }
@@ -500,14 +500,14 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_get_first_item(xbt_fifo_t l)
  *
  * Returns NULL if the list is empty.
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_get_last_item(xbt_fifo_t l)
+inline xbt_fifo_item_t xbt_fifo_get_last_item(xbt_fifo_t l)
 {
   return l->tail;
 }
 
 /** \deprecated Use #xbt_fifo_get_first_item instead.
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
+inline xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
 {
   XBT_CWARN(xbt_fifo, "This function is deprecated. Use xbt_fifo_get_first_item.");
   return xbt_fifo_get_first_item(l);
@@ -519,7 +519,7 @@ XBT_INLINE xbt_fifo_item_t xbt_fifo_getFirstItem(xbt_fifo_t l)
  *
  * Returns NULL if \a i is the tail of the list.
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i)
+inline xbt_fifo_item_t xbt_fifo_get_next_item(xbt_fifo_item_t i)
 {
   if (i)
     return i->next;
@@ -540,7 +540,7 @@ xbt_fifo_item_t xbt_fifo_getNextItem(xbt_fifo_item_t i)
  *
  * Returns NULL if \a i is the head of the list.
  */
-XBT_INLINE xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i)
+inline xbt_fifo_item_t xbt_fifo_get_prev_item(xbt_fifo_item_t i)
 {
   if (i)
     return i->prev;

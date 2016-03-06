@@ -13,7 +13,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf"
 #define ROUTER_PEER(peername) bprintf("router_%s", peername)
 #define LINK_PEER(peername) bprintf("link_%s", peername)
 
-static XBT_INLINE double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst) {
+static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst) {
   double src_coord, dst_coord;
 
   src_coord = xbt_dynar_get_as(src, index, double);

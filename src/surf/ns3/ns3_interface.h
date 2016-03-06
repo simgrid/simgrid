@@ -53,7 +53,7 @@ XBT_PUBLIC(void) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
 XBT_PUBLIC(void) ns3_end_platform(void);
 XBT_PUBLIC(void) ns3_add_cluster(char * bw,char * lat,const char *id);
 
-XBT_INLINE
+inline
 ns3_nodes_t ns3_find_host(const char* id)
 {
   sg_host_t host = sg_host_by_name(id);
