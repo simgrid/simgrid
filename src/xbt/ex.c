@@ -99,11 +99,8 @@ void xbt_backtrace_display(xbt_ex_t * e)
   if (e->used == 0) {
     fprintf(stderr, "(backtrace not set)\n");
   } else {
-    int i;
-
-    fprintf(stderr, "Backtrace (displayed in process %s):\n",
-        SIMIX_process_self_get_name());
-    for (i = 1; i < e->used; i++)       /* no need to display "xbt_backtrace_display" */
+    fprintf(stderr, "Backtrace (displayed in process %s):\n", SIMIX_process_self_get_name());
+    for (int i = 1; i < e->used; i++)       /* no need to display "xbt_backtrace_display" */
       fprintf(stderr, "---> %s\n", e->bt_strings[i] + 4);
   }
 
@@ -111,7 +108,6 @@ void xbt_backtrace_display(xbt_ex_t * e)
   e->msg = NULL;
   xbt_ex_free(*e);
 #else
-
   XBT_ERROR("No backtrace on this arch");
 #endif
 }
@@ -192,13 +188,9 @@ void xbt_ex_display(xbt_ex_t * e)
 
   } else
 #endif
-  {
-    fprintf(stderr,
-            "\n"
-            "**   In %s() at %s:%d\n"
-            "**   (no backtrace available)\n",
-            e->func, e->file, e->line);
-  }
+    fprintf(stderr, "\n"
+        "**   In %s() at %s:%d\n"
+        "**   (no backtrace available)\n", e->func, e->file, e->line);
 }
 
 
@@ -216,16 +208,13 @@ XBT_EXPORT_NO_IMPORT(ex_term_cb_t) __xbt_ex_terminate = &__xbt_ex_terminate_defa
 
 void xbt_ex_free(xbt_ex_t e)
 {
-  int i;
-
   free(e.msg);
 
   if (e.bt_strings) {
-    for (i = 0; i < e.used; i++)
+    for (int i = 0; i < e.used; i++)
       free(e.bt_strings[i]);
     free(e.bt_strings);
   }
-  /* memset(e,0,sizeof(xbt_ex_t)); */
 }
 
 /** \brief returns a short name for the given exception category */
