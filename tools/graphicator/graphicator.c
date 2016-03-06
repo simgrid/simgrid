@@ -4,15 +4,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_WIN32
-#include <unistd.h>
-#endif
-
 #include "simgrid/msg.h"
 #include "xbt/graph.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator,
-                             "Graphicator Logging System");
+XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator, "Graphicator Logging System");
 
 int main(int argc, char **argv)
 {

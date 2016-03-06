@@ -170,15 +170,12 @@ ENDIF()
 
 if(WIN32)
 
-  #Need env INCLUDE
   set(CMAKE_INCLUDE_WIN "${CMAKE_C_COMPILER}")
   set(CMAKE_LIB_WIN "${CMAKE_C_COMPILER}")
   string(REGEX REPLACE "/bin/gcc.*" "/include"  CMAKE_INCLUDE_WIN "${CMAKE_INCLUDE_WIN}")
   string(REGEX REPLACE "/bin/gcc.*" "/lib"  CMAKE_LIB_WIN "${CMAKE_LIB_WIN}")
   set(INCLUDES ${INCLUDES} ${CMAKE_INCLUDE_WIN})
   unset(CMAKE_INCLUDE_WIN)
-
-  set(_XBT_WIN32 1)
 
 endif()
 
@@ -514,23 +511,11 @@ endif()
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
   add_definitions(-D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE)
 endif()
-
-if(WIN32)
-  # We always provide our own implementation of ucontext on Windows.
-  try_compile(HAVE_UCONTEXT
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_AC_CHECK_MCSC.c
-    COMPILE_DEFINITIONS -D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt
-  )
-else()
-  # We always provide our own implementation of ucontext on Windows.
-  try_compile(HAVE_UCONTEXT
+try_compile(HAVE_UCONTEXT
     ${CMAKE_BINARY_DIR}
     ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_AC_CHECK_MCSC.c)
-endif()
 
 #If can have both context
-
 if(HAVE_UCONTEXT)
   set(HAVE_UCONTEXT_CONTEXTS 1)
   message("-- Support for ucontext factory")
@@ -604,15 +589,6 @@ if(HAVE_UCONTEXT_H)
     set(makecontext_CPPFLAGS_2 "-D_XOPEN_SOURCE=700")
   endif()
 
-  if(WIN32)
-    if(ARCH_32_BITS)
-      set(makecontext_CPPFLAGS "-DTEST_makecontext -D_I_X86_")
-    else()
-      set(makecontext_CPPFLAGS "-DTEST_makecontext -D_AMD64_")
-    endif()
-    set(makecontext_CPPFLAGS_2 "-D_XBT_WIN32 -I${CMAKE_HOME_DIRECTORY}/src/include -I${CMAKE_HOME_DIRECTORY}/src/xbt")
-  endif()
-
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
 
   if(CMAKE_CROSSCOMPILING)
@@ -635,8 +611,6 @@ if(HAVE_UCONTEXT_H)
     string(REPLACE "," "" makecontext_size "${MAKECONTEXT_SIZE}")
     set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
     set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
-  else()
-    # message(FATAL_ERROR "makecontext is not compilable")
   endif()
 endif()
 

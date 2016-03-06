@@ -13,7 +13,7 @@
 
 #include "mc/mc.h"
 
-#ifndef _XBT_WIN32
+#ifndef _WIN32
 #include <unistd.h>
 #include <sys/wait.h>
 #include <sys/time.h>

@@ -21,9 +21,6 @@
 #ifndef _M_IX86
 	#cmakedefine _M_IX86 @_M_IX86@
 #endif
-#cmakedefine _XBT_WIN32 @_XBT_WIN32@	// this variable is set if it is a windows platform
-#cmakedefine _WIN32 @_WIN32@		// this variable is set if it is a 32 bits windows platform
-#cmakedefine _WIN64 @_WIN64@		// this variable is set if it is a 64 bits  windows platform
 #cmakedefine APPLE @APPLE@
 /* Set to true if enable_model-checking is true */
 #cmakedefine MMALLOC_WANT_OVERRIDE_LEGACY @MMALLOC_WANT_OVERRIDE_LEGACY@

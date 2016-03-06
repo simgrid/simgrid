@@ -17,7 +17,7 @@
 #include "simgrid/modelchecker.h"
 
 
-#ifdef _XBT_WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <malloc.h>
 #else
@@ -127,7 +127,7 @@ void *SIMIX_context_stack_new(void)
 
   if (smx_context_guard_size > 0 && !MC_is_active()) {
 
-#if defined(_XBT_WIN32) || (PTH_STACKGROWTH != -1)
+#if defined(_WIN32) || (PTH_STACKGROWTH != -1)
     static int warned_once = 0;
     if (!warned_once) {
       XBT_WARN("Stack overflow protection is known to be broken on your system.  Either you're on Windows or PTH_STACKGROWTH != -1 (current value is %d).",
@@ -143,14 +143,14 @@ void *SIMIX_context_stack_new(void)
     char *alloc = (char*)xbt_malloc0(size + xbt_pagesize);
     stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
     *((void **)stack - 1) = alloc;
-#elif !defined(_XBT_WIN32)
+#elif !defined(_WIN32)
     if (posix_memalign(&stack, xbt_pagesize, size) != 0)
       xbt_die("Failed to allocate stack.");
 #else
     stack = _aligned_malloc(size, xbt_pagesize);
 #endif
 
-#ifndef _XBT_WIN32
+#ifndef _WIN32
     if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
       xbt_die("Failed to protect stack: %s", strerror(errno));
       /* This is fatal. We are going to fail at some point when
@@ -184,7 +184,7 @@ void SIMIX_context_stack_delete(void *stack)
   VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
   if (smx_context_guard_size > 0 && !MC_is_active()) {
     stack = (char *)stack - smx_context_guard_size;
     if (mprotect(stack, smx_context_guard_size,

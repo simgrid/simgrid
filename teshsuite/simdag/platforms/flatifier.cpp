@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_WIN32
+#include "src/internal_config.h"
+#ifdef HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 

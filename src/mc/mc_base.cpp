@@ -199,7 +199,7 @@ static int prng_random(int min, int max)
   // Use rejection in order to avoid skew
   unsigned long x;
   do {
-#ifndef _XBT_WIN32
+#ifndef _WIN32
     x = (unsigned long) random();
 #else
     x = (unsigned long) rand();

@@ -15,7 +15,7 @@
 
 #include "xbt/base.h"
 #include "xbt/misc.h"
-#ifdef _XBT_WIN32
+#ifdef _WIN32
 # include <windows.h>
 #endif
 
@@ -39,7 +39,7 @@
 
 #include <fcntl.h>
 
-#ifdef _XBT_WIN32
+#ifdef _WIN32
   #ifndef EWOULDBLOCK
   #define EWOULDBLOCK WSAEWOULDBLOCK
   #endif
