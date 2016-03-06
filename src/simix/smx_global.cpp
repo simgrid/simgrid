@@ -75,8 +75,8 @@ static void _XBT_CALL inthandler(int ignored)
   exit(1);
 }
 
-#ifndef WIN32
-static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
+#ifndef _WIN32
+static void segvhandler(int signum, siginfo_t *siginfo, void *context)
 {
   if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
     fprintf(stderr,
@@ -103,9 +103,9 @@ static void _XBT_CALL segvhandler(int signum, siginfo_t *siginfo, void *context)
 #else
       fprintf(stderr,
         "Sadly, your system does not support --cfg=smpi/privatize_global_variables:yes (yet).\n");
-#endif
+#endif /* HAVE_PRIVATIZATION */
     }
-#endif
+#endif /* HAVE_SMPI */
   }
   raise(signum);
 }
@@ -124,8 +124,7 @@ static void install_segvhandler(void)
   stack.ss_flags = 0;
 
   if (sigaltstack(&stack, &old_stack) == -1) {
-    XBT_WARN("Failed to register alternate signal stack: %s",
-             strerror(errno));
+    XBT_WARN("Failed to register alternate signal stack: %s", strerror(errno));
     return;
   }
   if (!(old_stack.ss_flags & SS_DISABLE)) {
@@ -140,8 +139,7 @@ static void install_segvhandler(void)
   sigemptyset(&action.sa_mask);
 
   if (sigaction(SIGSEGV, &action, &old_action) == -1) {
-    XBT_WARN("Failed to register signal handler for SIGSEGV: %s",
-             strerror(errno));
+    XBT_WARN("Failed to register signal handler for SIGSEGV: %s", strerror(errno));
     return;
   }
   if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
@@ -152,7 +150,7 @@ static void install_segvhandler(void)
   }
 }
 
-#endif
+#endif /* _WIN32 */
 /********************************* SIMIX **************************************/
 
 double SIMIX_timer_next(void)
@@ -244,7 +242,7 @@ void SIMIX_global_init(int *argc, char **argv)
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
 
-#ifndef WIN32
+#ifndef _WIN32
     install_segvhandler();
 #endif
     /* register a function to be called by SURF after the environment creation */

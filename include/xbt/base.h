@@ -63,7 +63,7 @@
 # define XBT_ATTRIB_UNUSED
 # define _XBT_GNUC_CONSTRUCTOR(prio)
 # define _XBT_GNUC_DESTRUCTOR(prio)
-# define  _XBT_NEED_INIT_PRAGMA 1
+# define _XBT_NEED_INIT_PRAGMA 1
 #else
 # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )
 # define XBT_ATTRIB_SCANF( format_idx, arg_idx )
@@ -71,7 +71,7 @@
 # define XBT_ATTRIB_UNUSED
 # define _XBT_GNUC_CONSTRUCTOR(prio)
 # define _XBT_GNUC_DESTRUCTOR(prio)
-# define  _XBT_NEED_INIT_PRAGMA 1
+# define _XBT_NEED_INIT_PRAGMA 1
 
 #endif                          /* gcc or MSVC else */
 
@@ -159,7 +159,7 @@
  * http://unixwiz.net/techtips/win32-callconv.html <-- good documentation
  */
 
-#ifdef _XBT_WIN32
+#ifdef _WIN32
 #  ifndef _XBT_CALL
 #    define _XBT_CALL __cdecl
 #   endif
@@ -206,7 +206,7 @@
 #  define XBT_PRIVATE
 
 /* Link against the DLL */
-#elif (defined(_XBT_WIN32) && !defined(DLL_EXPORT))
+#elif (defined(_WIN32) && !defined(DLL_EXPORT))
 #  define XBT_PUBLIC(type)            __declspec(dllimport) type
 #  define XBT_EXPORT_NO_IMPORT(type)  type
 #  define XBT_IMPORT_NO_EXPORT(type)  __declspec(dllimport) type
@@ -230,21 +230,6 @@
 #  define XBT_PUBLIC_CLASS            class
 #  define XBT_PRIVATE
 
-#endif
-
-#ifdef _MSC_VER /* MSVC has no ssize_t, and I fail to use the SSIZE_T declared in BaseTsd.h */
-  #if defined(_WIN64)
-    typedef __int64 ssize_t;
-  #else
-    typedef long ssize_t;
-  #endif
-
-/* Microsoft wants to improve the code quality blah blah blah */
-/* See: https://msdn.microsoft.com/en-us/library/8ef0s5kh.aspx */
-  /* warning C4996: '_strdup': The POSIX name for this item is deprecated. Instead, use the ISO C and C++ conformant name: _strdup. */
-  #define _CRT_NONSTDC_NO_WARNINGS
-  /* warning C4996: 'fopen': This function or variable may be unsafe. Consider using fopen_s instead. */
-  #define _CRT_SECURE_NO_WARNINGS
 #endif
 
 #if !defined (max) && !defined(__cplusplus)
