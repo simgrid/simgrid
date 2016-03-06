@@ -1,7 +1,6 @@
 /* simgrid_config.h - Results of the configure made visible to user code    */
 
-/* Copyright (c) 2009-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -20,27 +19,15 @@
 #define SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
 
 #define SIMGRID_VERSION_STRING "@SIMGRID_VERSION_STRING@"
-
 #define SIMGRID_VERSION_BANNER "@SIMGRID_VERSION_BANNER@"
 
 /* Version X.Y.Z will get version number XYZ: all digits concatenated without dots
  * (with Y and Z must be on two positions)*/
-
-#define MAKE_SIMGRID_VERSION(major, minor, patch)       \
-  (100UL * (100UL * (major) + (minor)) + (patch))
-#define SIMGRID_VERSION MAKE_SIMGRID_VERSION(SIMGRID_VERSION_MAJOR, \
-                                             SIMGRID_VERSION_MINOR, \
-                                             SIMGRID_VERSION_PATCH)
-
-#cmakedefine _XBT_WIN32 @_XBT_WIN32@	/*this variable is set if it is a windows platform*/
-#cmakedefine _WIN32 @_WIN32@			/*this variable is set if it is a 32 bits windows platform*/
-#cmakedefine _WIN64 @_WIN64@			/*this variable is set if it is a 64 bits  windows platform*/
+#define MAKE_SIMGRID_VERSION(major, minor, patch)   (100UL * (100UL * (major) + (minor)) + (patch))
+#define SIMGRID_VERSION MAKE_SIMGRID_VERSION(SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH)
 
 /* Define to 1 if you have the <unistd.h> header file. */
 #cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
-
-/* Define to 1 if you have the <sys/time.h> header file. */
-#cmakedefine HAVE_SYS_TIME_H @HAVE_SYS_TIME_H@
 
 /* Whether mallocators were enabled in ccmake or not. */
 #define MALLOCATOR_COMPILED_IN @MALLOCATOR_IS_WANTED@

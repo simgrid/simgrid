@@ -6,7 +6,6 @@
 
 #include <stdio.h>
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic_link_test, sd, "SimDag test basic_link_test");
 

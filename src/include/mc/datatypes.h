@@ -7,7 +7,7 @@
 #ifndef MC_DATATYPE_H
 #define MC_DATATYPE_H
 
-#include <simgrid_config.h>
+#include <src/internal_config.h>
 #include <xbt/base.h>
 
 #ifdef HAVE_UCONTEXT_H

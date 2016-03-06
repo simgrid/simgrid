@@ -42,7 +42,7 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
 
   smpi_datatype_extent(recvtype, &recvtype_true_lb, &recvtype_true_extent);
 
-  tmp_buf_rl= (void*)smpi_get_tmp_sendbuffer(total_count*(max(recvtype_true_extent,recvtype_extent)));
+  tmp_buf_rl= (void*)smpi_get_tmp_sendbuffer(total_count*(MAX(recvtype_true_extent,recvtype_extent)));
 
   /* adjust for potential negative lower bound in datatype */
   tmp_buf = (void *)((char*)tmp_buf_rl - recvtype_true_lb);

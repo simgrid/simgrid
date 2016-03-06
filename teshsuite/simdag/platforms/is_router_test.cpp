@@ -5,9 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/simdag.h"
-#include "surf/surf.h"
 #include "src/surf/surf_routing.hpp"
 
 int main(int argc, char **argv)

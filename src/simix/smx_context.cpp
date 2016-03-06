@@ -17,7 +17,7 @@
 #include "simgrid/modelchecker.h"
 
 
-#ifdef _XBT_WIN32
+#ifdef _WIN32
 #include <windows.h>
 #include <malloc.h>
 #else
@@ -33,8 +33,7 @@
 # include <valgrind/valgrind.h>
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix,
-                                "Context switching mechanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mechanism");
 
 char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contexts/factory:value */
 int smx_context_stack_size;
@@ -101,7 +100,7 @@ void SIMIX_context_mod_init(void)
 #else
         XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you install the libboost-context-dev package?)");
 #endif
-        XBT_ERROR("  thread: slow portability layer using system threads (pthreads on UNIX, CreateThread() on windows)");
+        XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
         xbt_die("Please use a valid factory.");
       }
     }
@@ -127,7 +126,7 @@ void *SIMIX_context_stack_new(void)
 
   if (smx_context_guard_size > 0 && !MC_is_active()) {
 
-#if defined(_XBT_WIN32) || (PTH_STACKGROWTH != -1)
+#if defined(_WIN32) || (PTH_STACKGROWTH != -1)
     static int warned_once = 0;
     if (!warned_once) {
       XBT_WARN("Stack overflow protection is known to be broken on your system.  Either you're on Windows or PTH_STACKGROWTH != -1 (current value is %d).",
@@ -143,14 +142,14 @@ void *SIMIX_context_stack_new(void)
     char *alloc = (char*)xbt_malloc0(size + xbt_pagesize);
     stack = alloc - ((uintptr_t)alloc & (xbt_pagesize - 1)) + xbt_pagesize;
     *((void **)stack - 1) = alloc;
-#elif !defined(_XBT_WIN32)
+#elif !defined(_WIN32)
     if (posix_memalign(&stack, xbt_pagesize, size) != 0)
       xbt_die("Failed to allocate stack.");
 #else
     stack = _aligned_malloc(size, xbt_pagesize);
 #endif
 
-#ifndef _XBT_WIN32
+#ifndef _WIN32
     if (mprotect(stack, smx_context_guard_size, PROT_NONE) == -1) {
       xbt_die("Failed to protect stack: %s", strerror(errno));
       /* This is fatal. We are going to fail at some point when
@@ -163,10 +162,8 @@ void *SIMIX_context_stack_new(void)
   }
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
-  unsigned int valgrind_stack_id =
-    VALGRIND_STACK_REGISTER(stack, (char *)stack + smx_context_stack_size);
-  memcpy((char *)stack + smx_context_usable_stack_size, &valgrind_stack_id,
-         sizeof valgrind_stack_id);
+  unsigned int valgrind_stack_id = VALGRIND_STACK_REGISTER(stack, (char *)stack + smx_context_stack_size);
+  memcpy((char *)stack + smx_context_usable_stack_size, &valgrind_stack_id, sizeof valgrind_stack_id);
 #endif
 
   return stack;
@@ -179,16 +176,14 @@ void SIMIX_context_stack_delete(void *stack)
 
 #ifdef HAVE_VALGRIND_VALGRIND_H
   unsigned int valgrind_stack_id;
-  memcpy(&valgrind_stack_id, (char *)stack + smx_context_usable_stack_size,
-         sizeof valgrind_stack_id);
+  memcpy(&valgrind_stack_id, (char *)stack + smx_context_usable_stack_size, sizeof valgrind_stack_id);
   VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
 #endif
 
-#ifndef WIN32
+#ifndef _WIN32
   if (smx_context_guard_size > 0 && !MC_is_active()) {
     stack = (char *)stack - smx_context_guard_size;
-    if (mprotect(stack, smx_context_guard_size,
-                 PROT_READ | PROT_WRITE) == -1) {
+    if (mprotect(stack, smx_context_guard_size, PROT_READ | PROT_WRITE) == -1) {
       XBT_WARN("Failed to remove page protection: %s", strerror(errno));
       /* try to pursue anyway */
     }
@@ -197,16 +192,12 @@ void SIMIX_context_stack_delete(void *stack)
     stack = *((void **)stack - 1);
 #endif
   }
-#endif
+#endif /* not windows */
 
   xbt_free(stack);
 }
 
-/**
- * \brief Returns whether some parallel threads are used
- * for the user contexts.
- * \return 1 if parallelism is used
- */
+/** @brief Returns whether some parallel threads are used for the user contexts. */
 int SIMIX_context_is_parallel(void) {
   return smx_parallel_contexts > 1;
 }

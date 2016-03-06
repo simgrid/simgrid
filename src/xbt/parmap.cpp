@@ -11,7 +11,7 @@
 #include <unistd.h>
 #endif
 
-#ifndef _XBT_WIN32
+#ifndef _WIN32
 #include <sys/syscall.h>
 #endif
 

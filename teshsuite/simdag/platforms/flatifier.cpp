@@ -4,24 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_WIN32
-#include <unistd.h>
-#endif
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <time.h>
-#include <string.h>
-#include <math.h>
-
 #include "src/surf/network_interface.hpp"
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
-#include "xbt/dict.h"
-#include "xbt/ex.h"
 #include "xbt/xbt_os_time.h"
-#include "surf/surf.h"
-#include "src/surf/surf_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier, "Logging specific to this platform parsing tool");
 
@@ -38,8 +23,7 @@ static int name_compare_links(const void *n1, const void *n2)
 static int parse_cmdline(int *timings, char **platformFile, int argc, char **argv)
 {
   int wrong_option = 0;
-  int i;
-  for (i = 1; i < argc; i++) {
+  for (int i = 1; i < argc; i++) {
     if (strlen(argv[i]) > 1 && argv[i][0] == '-' && argv[i][1] == '-') {
       if (!strcmp(argv[i], "--timings")) {
         *timings = 1;

@@ -721,7 +721,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "contexts/guard_size",
                      "Guard size for contexts stacks in memory pages",
                      xbt_cfgelm_int, 1, 1, _sg_cfg_cb_context_guard_size);
-#if defined(_XBT_WIN32) || (PTH_STACKGROWTH != -1)
+#if defined(_WIN32) || (PTH_STACKGROWTH != -1)
     xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/guard_size", 0);
 #else
     xbt_cfg_setdefault_int(_sg_cfg_set, "contexts/guard_size", 1);

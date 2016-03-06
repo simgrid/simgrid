@@ -304,7 +304,7 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY) && defined(__MACH__) && defined(__APPLE__)//attempt for timing of the thread on OSX
+#elif defined(HAVE_GETTIMEOFDAY) && defined(__MACH__) && defined(__APPLE__)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
   mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;

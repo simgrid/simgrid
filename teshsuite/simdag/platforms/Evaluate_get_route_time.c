@@ -8,9 +8,7 @@
 
 
 #include <stdio.h>
-#include <stdlib.h>
 #include "simgrid/simdag.h"
-#include "surf/surf.h"
 #include "xbt/xbt_os_time.h"
 
 #define BILLION  1000000000L;
