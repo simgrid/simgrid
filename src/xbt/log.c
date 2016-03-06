@@ -1161,7 +1161,7 @@ static xbt_log_setting_t _xbt_log_parse_setting(const char *control_string)
     set->fmt = xbt_strdup(eq + 1);
   } else {
     char buff[512];
-    snprintf(buff, min(512, eq - dot), "%s", dot + 1);
+    snprintf(buff, MIN(512, eq - dot), "%s", dot + 1);
     THROWF(arg_error, 0, "Unknown setting of the log category: '%s'",
            buff);
   }

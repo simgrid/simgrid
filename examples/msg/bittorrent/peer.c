@@ -781,7 +781,7 @@ void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece)
   block_index = get_first_block(peer, piece);
   if (block_index != -1) {
     block_length = PIECES_BLOCKS - block_index;
-    block_length = min(BLOCKS_REQUESTED, block_length);
+    block_length = MIN(BLOCKS_REQUESTED, block_length);
     send_request(peer, remote_peer->mailbox, piece, block_index, block_length);
   }
 }

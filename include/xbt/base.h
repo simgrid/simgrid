@@ -199,13 +199,6 @@
 
 #endif
 
-#if !defined (max) && !defined(__cplusplus)
-#  define max(a,b)  (((a) > (b)) ? (a) : (b))
-#endif
-#if !defined (min) && !defined(__cplusplus)
-#  define min(a,b)  (((a) < (b)) ? (a) : (b))
-#endif
-
 #define TRUE  1
 #define FALSE 0
 

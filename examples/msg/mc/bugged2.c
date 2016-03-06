@@ -36,7 +36,7 @@ int server(int argc, char *argv[])
   task2 = NULL;
   XBT_INFO("Received %lu", val2);
 
-  MC_assert(min(val1, val2) == 1);
+  MC_assert(MIN(val1, val2) == 1);
 
   MSG_task_receive(&task1, "mymailbox");
   val1 = xbt_str_parse_int(MSG_task_get_name(task1), "Task name is not a numerical ID: %s");
