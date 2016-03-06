@@ -311,10 +311,6 @@ ENDIF()
   ## OTHER ##
 ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
-IF(enable_auto_install)
-  ADD_TEST(simgrid_install                       make install)
-ENDIF()
-
 IF(enable_memcheck)
   INCLUDE(FindValgrind)
   INCLUDE(${CMAKE_HOME_DIRECTORY}/tools/cmake/memcheck_tests.cmake)
