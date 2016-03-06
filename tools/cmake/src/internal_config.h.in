@@ -12,8 +12,6 @@
 #cmakedefine HAVE_EXECINFO_H          @HAVE_EXECINFO_H@           /* <execinfo.h> */
 #cmakedefine HAVE_FUTEX_H             @HAVE_FUTEX_H@              /* <linux/futex.h> */
 #cmakedefine HAVE_SIGNAL_H            @HAVE_SIGNAL_H@             /* <signal.h> */
-#cmakedefine HAVE_SYS_PTRACE_H        @HAVE_SYS_PTRACE_H@         /* <sys/ptrace.h> */
-#cmakedefine HAVE_SYS_TYPES_H         @HAVE_SYS_TYPES_H@          /* <sys/types.h> */
 #cmakedefine HAVE_UNISTD_H            @HAVE_UNISTD_H@             /* <unistd.h>    */
 #cmakedefine HAVE_UCONTEXT_H          @HAVE_UCONTEXT_H@           /* <ucontext.h>  */
 #cmakedefine HAVE_VALGRIND_VALGRIND_H @HAVE_VALGRIND_VALGRIND_H@  /* <valgrind/valgrind.h> */

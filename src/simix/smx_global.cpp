@@ -6,10 +6,6 @@
 
 #include <stdlib.h>
 #include "src/portable.h"
-#ifdef HAVE_SYS_PTRACE_H
-# include <sys/types.h>
-# include <sys/ptrace.h>
-#endif
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/storage_interface.hpp"
