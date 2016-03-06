@@ -11,13 +11,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
-#ifdef HAVE_CGRAPH_H
+#ifdef HAVE_GRAPHVIZ
 #include <graphviz/cgraph.h>
-#elif HAVE_AGRAPH_H
-#include <graphviz/agraph.h>
-#define agnxtnode(dot, node)    agnxtnode(node)
-#define agfstout(dot, node)     agfstout(node)
-#define agnxtout(dot, edge)     agnxtout(edge)
 #endif
 
 typedef enum {

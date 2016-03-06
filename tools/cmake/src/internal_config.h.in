@@ -51,12 +51,6 @@
 #cmakedefine SMPI_FORTRAN       @SMPI_FORTRAN@
 #cmakedefine HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@ /* We have mmap and objdump to handle privatization */
 
-/* graphviz variables */
-#cmakedefine HAVE_GRAPHVIZ @HAVE_GRAPHVIZ@
-#cmakedefine HAVE_GRAPH_H  @GRAPH_H@
-#cmakedefine HAVE_CGRAPH_H @CGRAPH_H@
-#cmakedefine HAVE_AGRAPH_H @AGRAPH_H@
-
 /* Other function checks */
 #cmakedefine HAVE_MMAP      @HAVE_MMAP@ /* Function mmap */
 #cmakedefine HAVE_SEM_INIT  @HAVE_SEM_INIT@ /* Function sem_init (part of XPG6 standard only) */
@@ -65,5 +59,6 @@
 #cmakedefine HAVE_VASPRINTF @HAVE_VASPRINTF@ /* Function vasprintf */
 
 /* Other checks */
+#cmakedefine ADDR2LINE       "@ADDR2LINE@"     /* Path to the addr2line tool */
+#cmakedefine HAVE_GRAPHVIZ   @HAVE_GRAPHVIZ@   /* The graphviz library */
 #cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@ /* Does the stack growth upward, or downward? */
-#cmakedefine ADDR2LINE "@ADDR2LINE@" /* Path to the addr2line tool */
