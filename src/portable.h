@@ -1,8 +1,6 @@
-/* portable -- header loading to write portable code                         */
-/* loads much more stuff than sysdep.h since the latter is in public interface*/
+/* portable -- header loading to write portable code within SimGrid         */
 
-/* Copyright (c) 2004-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004, 2016. The SimGrid Team. All rights reserved.         */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -33,9 +31,7 @@
 # include <sys/sysctl.h>
 #endif
 
-/****
- **** File handling
- ****/
+/* File handling */
 
 #include <fcntl.h>
 
@@ -67,18 +63,11 @@
 #  define O_BINARY 0
 #endif
 
-/****
- **** Time handling
- ****/
-
-#if HAVE_SYS_TIME_H
-#  include <sys/time.h>
-#endif
+/* Time handling */
+#include <sys/time.h>
 #include <time.h>
 
-/****
- **** Signals
- ****/
+/* Signals */
 #ifdef HAVE_SIGNAL_H
 # include <signal.h>
 #endif
