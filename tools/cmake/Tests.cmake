@@ -1,7 +1,3 @@
-IF(enable_memcheck)
-  include(FindValgrind)
-ENDIF()
-
 IF(enable_smpi AND NOT WIN32)
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc" OUTPUT_VARIABLE "OKITOKI")
   exec_program("chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicxx" OUTPUT_VARIABLE "OKITOKI")
@@ -18,7 +14,7 @@ ENDIF()
 #some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
 # default to posix for these tests if futexes are not supported
 IF(NOT HAVE_FUTEX_H)
-SET(CONTEXTS_SYNCHRO --cfg contexts/synchro:posix)
+  SET(CONTEXTS_SYNCHRO --cfg contexts/synchro:posix)
 ENDIF()
 
 MACRO(ADD_TESH NAME)
@@ -308,7 +304,6 @@ IF(NOT enable_memcheck)
     # END TESH TESTS
   ENDIF()
 
-
   ## BINDINGS ##
   ### LUA ###
   # BEGIN TESH TESTS
@@ -319,7 +314,6 @@ IF(NOT enable_memcheck)
     SET_TESTS_PROPERTIES(lua-platform-masterslave    PROPERTIES ENVIRONMENT "LUA_CPATH=${CMAKE_BINARY_DIR}/examples/lua/?.so")
   ENDIF()
   # END TESH TESTS
-
 
   ### JAVA ###
   IF(enable_java)
@@ -360,5 +354,6 @@ IF(enable_auto_install)
 ENDIF()
 
 IF(enable_memcheck)
+  INCLUDE(FindValgrind)
   INCLUDE(${CMAKE_HOME_DIRECTORY}/tools/cmake/memcheck_tests.cmake)
 ENDIF()
