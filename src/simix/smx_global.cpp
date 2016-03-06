@@ -40,8 +40,7 @@
 #endif
 
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix,
-                                "Logging specific to SIMIX (kernel)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
 
 smx_global_t simix_global = NULL;
 static xbt_heap_t simix_timers = NULL;
@@ -63,7 +62,7 @@ static void SIMIX_synchro_mallocator_reset_f(void* synchro);
 #include <signal.h>
 
 int _sg_do_verbose_exit = 1;
-static void _XBT_CALL inthandler(int ignored)
+static void inthandler(int ignored)
 {
   if ( _sg_do_verbose_exit ) {
      XBT_INFO("CTRL-C pressed. The current status will be displayed before exit (disable that behavior with option 'verbose-exit').");

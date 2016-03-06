@@ -154,19 +154,6 @@
                          a16, a15, a14, a13, a12, a11, a10, a9,         \
                          a8, a7, a6, a5, a4, a3, a2, a1, N, ...) N
 
-/*
- * Function calling convention (not used for now)
- * http://unixwiz.net/techtips/win32-callconv.html <-- good documentation
- */
-
-#ifdef _WIN32
-#  ifndef _XBT_CALL
-#    define _XBT_CALL __cdecl
-#   endif
-#else
-#  define _XBT_CALL
-#endif
-
 /* Handle import/export stuff
  *
  * Rational of XBT_PUBLIC:
