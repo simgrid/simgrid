@@ -35,7 +35,6 @@ XBT_PUBLIC(void) xbt_os_thread_detach(xbt_os_thread_t thread);
 
 XBT_PUBLIC(xbt_os_thread_t) xbt_os_thread_self(void);
 XBT_PUBLIC(const char *) xbt_os_thread_self_name(void);
-XBT_PUBLIC(const char *) xbt_os_thread_name(xbt_os_thread_t);
 XBT_PUBLIC(void) xbt_os_thread_set_extra_data(void *data);
 XBT_PUBLIC(void *) xbt_os_thread_get_extra_data(void);
 XBT_PUBLIC(void) xbt_os_thread_key_create(xbt_os_thread_key_t* key);

@@ -254,11 +254,6 @@ void xbt_os_thread_setguardsize(int guard_size)
 #endif
 }
 
-const char *xbt_os_thread_name(xbt_os_thread_t t)
-{
-  return t->name;
-}
-
 const char *xbt_os_thread_self_name(void)
 {
   xbt_os_thread_t me = xbt_os_thread_self();
