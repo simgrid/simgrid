@@ -150,6 +150,13 @@ void xbt_os_thread_mod_postexit(void)
   __xbt_ex_terminate = &__xbt_ex_terminate_default;
 }
 
+/** Calls pthread_atfork() if present, and raise an exception otherwise.
+ *
+ * The only known user of this wrapper is mmalloc_preinit(), but it is absolutely mandatory there:
+ * when used with tesh, mmalloc *must* be mutex protected and resistant to forks.
+ * This functionality is the only way to get it working (by ensuring that the mutex is consistently released on forks)
+ */
+
 /* this function is critical to tesh+mmalloc, don't mess with it */
 int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void))
 {
@@ -187,6 +194,10 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_ro
   return res_thread;
 }
 
+/** Bind the thread to the given core, if possible.
+ *
+ * If pthread_setaffinity_np is not usable on that (non-gnu) platform, this function does nothing.
+ */
 int xbt_os_thread_bind(xbt_os_thread_t thread, int cpu){
   int errcode = 0;
 #ifdef HAVE_PTHREAD_SETAFFINITY
@@ -368,32 +379,6 @@ void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
 {
   int errcode = pthread_cond_wait(&(cond->c), &(mutex->m));
   xbt_assert(errcode==0, "pthread_cond_wait(%p,%p) failed: %s", cond, mutex, strerror(errcode));
-}
-
-
-void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex, double delay)
-{
-  int errcode;
-  struct timespec ts_end;
-  double end = delay + xbt_os_time();
-
-  if (delay < 0) {
-    xbt_os_cond_wait(cond, mutex);
-  } else {
-    ts_end.tv_sec = (time_t) floor(end);
-    ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    XBT_DEBUG("pthread_cond_timedwait(%p,%p,%p)", &(cond->c), &(mutex->m), &ts_end);
-    switch ((errcode = pthread_cond_timedwait(&(cond->c), &(mutex->m), &ts_end))) {
-    case 0:
-      return;
-    case ETIMEDOUT:
-      THROWF(timeout_error, errcode,
-             "condition %p (mutex %p) wasn't signaled before timeout (%f)",
-             cond, mutex, delay);
-    default:
-      THROWF(system_error, errcode, "pthread_cond_timedwait(%p,%p,%f) failed: %s", cond, mutex, delay, strerror(errcode));
-    }
-  }
 }
 
 void xbt_os_cond_signal(xbt_os_cond_t cond)
