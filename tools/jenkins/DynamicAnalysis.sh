@@ -22,7 +22,7 @@ do_cleanup() {
 
 for pkg in xsltproc valgrind gcovr
 do
-   if dpkg -l |grep -q $pkg 
+   if command -v $pkg
    then 
       echo "$pkg is installed. Good."
    else 
