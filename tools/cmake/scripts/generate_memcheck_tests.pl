@@ -21,12 +21,12 @@ open MAKETEST, $ARGV[1] or die "Unable to open file: \"$ARGV[1]\". $!\n";
 sub var_subst {
     my ($text, $name, $value) = @_;
     if ($value) {
-        $text =~ s/\${$name(?::[=-][^}]*)?}/$value/g;
+        $text =~ s/\$\{$name(?::[=-][^}]*)?\}/$value/g;
         $text =~ s/\$$name(\W|$)/$value$1/g;
     }
     else {
-        $text =~ s/\${$name:=([^}]*)}/$1/g;
-        $text =~ s/\${$name}//g;
+        $text =~ s/\$\{$name:=([^}]*)\}/$1/g;
+        $text =~ s/\$\{$name}//g;
         $text =~ s/\$$name(\W|$)/$1/g;
     }
     return $text;
@@ -88,7 +88,7 @@ while ( defined( $line = <MAKETEST> ) ) {
             if ( $line =~ /(\S+)\s*\)$/ ) {
                 $tesh_file = $1;
                 $tesh_file =~ s/^[^\/\$]/$path\/$&/;
-                $tesh_file =~ s/\${CMAKE_HOME_DIRECTORY}/$proj_dir/g;
+                $tesh_file =~ s/\$\{CMAKE_HOME_DIRECTORY\}/$proj_dir/g;
                 if ( ! -e "$tesh_file" ) {
                     print "# tesh_file: $tesh_file does not exist!\n";
                     print "# $line\n";
