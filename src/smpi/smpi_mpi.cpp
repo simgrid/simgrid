@@ -7,14 +7,12 @@
 #include "private.h"
 #include "simgrid/sg_config.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi,
-                                "Logging specific to SMPI (mpi)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi, smpi, "Logging specific to SMPI (mpi)");
 
 /* MPI User level calls */
 
 int MPI_Init(int *argc, char ***argv)
 {
-
   return PMPI_Init(argc, argv);
 }
 
@@ -103,7 +101,8 @@ int MPI_Type_delete_attr (MPI_Datatype type, int type_keyval)
    return PMPI_Type_delete_attr (type,  type_keyval);
 }
 
-int MPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval, void* extra_state)
+int MPI_Type_create_keyval(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
+                           void* extra_state)
 {
    return PMPI_Type_create_keyval(copy_fn,  delete_fn,  keyval,  extra_state) ;
 }
@@ -172,8 +171,7 @@ int MPI_Group_rank(MPI_Group group, int *rank)
   return PMPI_Group_rank(group, rank);
 }
 
-int MPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1,
-                              MPI_Group group2, int *ranks2)
+int MPI_Group_translate_ranks(MPI_Group group1, int n, int *ranks1, MPI_Group group2, int *ranks2)
 {
   return PMPI_Group_translate_ranks(group1, n, ranks1, group2, ranks2);
 }
@@ -208,14 +206,12 @@ int MPI_Group_excl(MPI_Group group, int n, int *ranks, MPI_Group * newgroup)
   return PMPI_Group_excl(group, n, ranks, newgroup);
 }
 
-int MPI_Group_range_incl(MPI_Group group, int n, int ranges[][3],
-                         MPI_Group * newgroup)
+int MPI_Group_range_incl(MPI_Group group, int n, int ranges[][3], MPI_Group * newgroup)
 {
   return PMPI_Group_range_incl(group, n, ranges, newgroup);
 }
 
-int MPI_Group_range_excl(MPI_Group group, int n, int ranges[][3],
-                         MPI_Group * newgroup)
+int MPI_Group_range_excl(MPI_Group group, int n, int ranges[][3], MPI_Group * newgroup)
 {
   return PMPI_Group_range_excl(group, n, ranges, newgroup);
 }
@@ -245,7 +241,8 @@ int MPI_Comm_delete_attr (MPI_Comm comm, int comm_keyval)
    return PMPI_Comm_delete_attr (comm,  comm_keyval);
 }
 
-int MPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state)
+int MPI_Comm_create_keyval(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval,
+                           void* extra_state)
 {
    return PMPI_Comm_create_keyval(copy_fn,  delete_fn,  keyval,  extra_state) ;
 }
@@ -294,14 +291,12 @@ int MPI_Comm_split(MPI_Comm comm, int color, int key, MPI_Comm* comm_out)
   return PMPI_Comm_split(comm, color, key, comm_out);
 }
 
-int MPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst,
-                  int tag, MPI_Comm comm, MPI_Request * request)
+int MPI_Send_init(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request * request)
 {
   return PMPI_Send_init(buf, count, datatype, dst, tag, comm, request);
 }
 
-int MPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src,
-                  int tag, MPI_Comm comm, MPI_Request * request)
+int MPI_Recv_init(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request * request)
 {
   return PMPI_Recv_init(buf, count, datatype, src, tag, comm, request);
 }
@@ -321,46 +316,37 @@ int MPI_Request_free(MPI_Request * request)
   return PMPI_Request_free(request);
 }
 
-int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src,
-              int tag, MPI_Comm comm, MPI_Request * request)
+int MPI_Irecv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Request * request)
 {
   return PMPI_Irecv(buf, count, datatype, src, tag, comm, request);
 }
 
-int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst,
-              int tag, MPI_Comm comm, MPI_Request * request)
+int MPI_Isend(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm, MPI_Request * request)
 {
   return PMPI_Isend(buf, count, datatype, dst, tag, comm, request);
 }
 
-int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag,
-             MPI_Comm comm, MPI_Status * status)
+int MPI_Recv(void *buf, int count, MPI_Datatype datatype, int src, int tag, MPI_Comm comm, MPI_Status * status)
 {
   return PMPI_Recv(buf, count, datatype, src, tag, comm, status);
 }
 
-int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag,
-             MPI_Comm comm)
+int MPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm)
 {
   return PMPI_Send(buf, count, datatype, dst, tag, comm);
 }
 
-int MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                 int dst, int sendtag, void *recvbuf, int recvcount,
-                 MPI_Datatype recvtype, int src, int recvtag,
-                 MPI_Comm comm, MPI_Status * status)
+int MPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype,int dst, int sendtag, void *recvbuf, int recvcount,
+                 MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status * status)
 {
-  return PMPI_Sendrecv(sendbuf, sendcount, sendtype, dst, sendtag,
-                       recvbuf, recvcount, recvtype, src, recvtag,
+  return PMPI_Sendrecv(sendbuf, sendcount, sendtype, dst, sendtag, recvbuf, recvcount, recvtype, src, recvtag,
                        comm, status);
 }
 
-int MPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype,
-                         int dst, int sendtag, int src, int recvtag,
+int MPI_Sendrecv_replace(void *buf, int count, MPI_Datatype datatype, int dst, int sendtag, int src, int recvtag,
                          MPI_Comm comm, MPI_Status * status)
 {
-  return PMPI_Sendrecv_replace(buf, count, datatype, dst, sendtag, src,
-                               recvtag, comm, status);
+  return PMPI_Sendrecv_replace(buf, count, datatype, dst, sendtag, src, recvtag, comm, status);
 }
 
 int MPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
@@ -368,8 +354,7 @@ int MPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   return PMPI_Test(request, flag, status);
 }
 
-int MPI_Testany(int count, MPI_Request requests[], int *index, int *flag,
-                MPI_Status * status)
+int MPI_Testany(int count, MPI_Request requests[], int *index, int *flag, MPI_Status * status)
 {
   return PMPI_Testany(count, requests, index, flag, status);
 }
@@ -389,8 +374,7 @@ int MPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   return PMPI_Waitall(count, requests, status);
 }
 
-int MPI_Waitsome(int incount, MPI_Request requests[], int *outcount,
-                 int *indices, MPI_Status status[])
+int MPI_Waitsome(int incount, MPI_Request requests[], int *outcount, int *indices, MPI_Status status[])
 {
   return PMPI_Waitsome(incount, requests, outcount, indices, status);
 }
@@ -405,111 +389,82 @@ int MPI_Barrier(MPI_Comm comm)
   return PMPI_Barrier(comm);
 }
 
-int MPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-               void *recvbuf, int recvcount, MPI_Datatype recvtype,
+int MPI_Gather(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount, MPI_Datatype recvtype,
                int root, MPI_Comm comm)
 {
-  return PMPI_Gather(sendbuf, sendcount, sendtype,
-                     recvbuf, recvcount, recvtype,
-                     root, comm);
+  return PMPI_Gather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
 }
 
-int MPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                void *recvbuf, int *recvcounts, int *displs,
+int MPI_Gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcounts, int *displs,
                 MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  return PMPI_Gatherv(sendbuf, sendcount, sendtype,
-                      recvbuf, recvcounts, displs, recvtype,
-                      root, comm);
+  return PMPI_Gatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, root, comm);
 }
 
-int MPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                  void *recvbuf, int recvcount, MPI_Datatype recvtype,
-                  MPI_Comm comm)
+int MPI_Allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int recvcount,
+                  MPI_Datatype recvtype, MPI_Comm comm)
 {
-  return PMPI_Allgather(sendbuf, sendcount, sendtype,
-                        recvbuf, recvcount, recvtype,
-                        comm);
+  return PMPI_Allgather(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
 }
 
-int MPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                   void *recvbuf, int *recvcounts, int *displs,
+int MPI_Allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf, int *recvcounts, int *displs,
                    MPI_Datatype recvtype, MPI_Comm comm)
 {
-  return PMPI_Allgatherv(sendbuf, sendcount, sendtype,
-                         recvbuf, recvcounts, displs, recvtype,
-                         comm);
+  return PMPI_Allgatherv(sendbuf, sendcount, sendtype, recvbuf, recvcounts, displs, recvtype, comm);
 }
 
-int MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                void *recvbuf, int recvcount, MPI_Datatype recvtype,
+int MPI_Scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbuf, int recvcount, MPI_Datatype recvtype,
                 int root, MPI_Comm comm)
 {
-  return PMPI_Scatter(sendbuf, sendcount, sendtype,
-                      recvbuf, recvcount, recvtype,
-                      root, comm);
+  return PMPI_Scatter(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, root, comm);
 }
 
-int MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs,
-                 MPI_Datatype sendtype, void *recvbuf, int recvcount,
+int MPI_Scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype sendtype, void *recvbuf, int recvcount,
                  MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
-  return PMPI_Scatterv(sendbuf, sendcounts, displs, sendtype,
-                       recvbuf, recvcount, recvtype,
-                       root, comm);
+  return PMPI_Scatterv(sendbuf, sendcounts, displs, sendtype, recvbuf, recvcount, recvtype, root, comm);
 }
 
-int MPI_Reduce(void *sendbuf, void *recvbuf, int count,
-               MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
+int MPI_Reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, int root, MPI_Comm comm)
 {
   return PMPI_Reduce(sendbuf, recvbuf, count, datatype, op, root, comm);
 }
 
-int MPI_Reduce_local(void *inbuf, void *inoutbuf, int count,
-    MPI_Datatype datatype, MPI_Op op){
+int MPI_Reduce_local(void *inbuf, void *inoutbuf, int count, MPI_Datatype datatype, MPI_Op op){
   return PMPI_Reduce_local(inbuf, inoutbuf, count, datatype, op);
 }
 
-int MPI_Allreduce(void *sendbuf, void *recvbuf, int count,
-                  MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   return PMPI_Allreduce(sendbuf, recvbuf, count, datatype, op, comm);
 }
 
-int MPI_Scan(void *sendbuf, void *recvbuf, int count,
-             MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   return PMPI_Scan(sendbuf, recvbuf, count, datatype, op, comm);
 }
 
-int MPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts,
-                       MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   return PMPI_Reduce_scatter(sendbuf, recvbuf, recvcounts, datatype, op, comm);
 }
 
-int MPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount,
-                      MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
+int MPI_Reduce_scatter_block(void *sendbuf, void *recvbuf, int recvcount, MPI_Datatype datatype, MPI_Op op,
+                             MPI_Comm comm)
 {
   return PMPI_Reduce_scatter_block(sendbuf, recvbuf, recvcount, datatype, op, comm);
 }
 
-int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,
-                 void *recvbuf, int recvcount, MPI_Datatype recvtype,
-                 MPI_Comm comm)
+int MPI_Alltoall(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbuf, int recvcount,
+                 MPI_Datatype recvtype, MPI_Comm comm)
 {
-  return PMPI_Alltoall(sendbuf, sendcount, sendtype,
-                       recvbuf, recvcount, recvtype,
-                       comm);
+  return PMPI_Alltoall(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
 }
 
-int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps,
-                  MPI_Datatype sendtype, void *recvbuf, int *recvcounts,
+int MPI_Alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype sendtype, void *recvbuf, int *recvcounts,
                   int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  return PMPI_Alltoallv(sendbuf, sendcounts, senddisps, sendtype,
-                        recvbuf, recvcounts, recvdisps, recvtype,
-                        comm);
+  return PMPI_Alltoallv(sendbuf, sendcounts, senddisps, sendtype, recvbuf, recvcounts, recvdisps, recvtype, comm);
 }
 
 int MPI_Alloc_mem(MPI_Aint size, MPI_Info info, void *baseptr){
@@ -666,11 +621,13 @@ int MPI_Pack_external_size(char *datarep, int incount, MPI_Datatype datatype, MP
   return PMPI_Pack_external_size(datarep, incount, datatype, size);
 }
 
-int MPI_Pack_external(char *datarep, void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, MPI_Aint outcount, MPI_Aint *position){
+int MPI_Pack_external(char *datarep, void *inbuf, int incount, MPI_Datatype datatype, void *outbuf, MPI_Aint outcount,
+                      MPI_Aint *position){
   return PMPI_Pack_external(datarep, inbuf, incount, datatype, outbuf, outcount, position);
 }
 
-int MPI_Unpack_external( char *datarep, void *inbuf, MPI_Aint insize, MPI_Aint *position, void *outbuf, int outcount, MPI_Datatype datatype){
+int MPI_Unpack_external(char *datarep, void *inbuf, MPI_Aint insize, MPI_Aint *position, void *outbuf, int outcount,
+                        MPI_Datatype datatype){
   return PMPI_Unpack_external( datarep, inbuf, insize, position, outbuf, outcount, datatype);
 }
 
@@ -682,11 +639,13 @@ int MPI_Type_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype
   return PMPI_Type_hindexed(count, blocklens, indices, old_type, newtype);
 }
 
-int MPI_Type_create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* new_type) {
+int MPI_Type_create_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype old_type,
+                             MPI_Datatype* new_type) {
   return PMPI_Type_create_hindexed(count, blocklens,indices,old_type,new_type);
 }
 
-int MPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indices, MPI_Datatype old_type, MPI_Datatype* newtype) {
+int MPI_Type_create_hindexed_block(int count, int blocklength, MPI_Aint* indices, MPI_Datatype old_type,
+                                   MPI_Datatype* newtype) {
   return PMPI_Type_create_hindexed_block(count, blocklength, indices, old_type, newtype);
 }
 
@@ -702,7 +661,8 @@ int MPI_Type_create_indexed(int count, int* blocklens, int* indices, MPI_Datatyp
   return PMPI_Type_create_indexed(count, blocklens, indices, old_type, newtype);
 }
 
-int MPI_Type_create_indexed_block(int count, int blocklength, int* indices,  MPI_Datatype old_type,  MPI_Datatype *newtype){
+int MPI_Type_create_indexed_block(int count, int blocklength, int* indices,  MPI_Datatype old_type,
+                                  MPI_Datatype *newtype){
   return PMPI_Type_create_indexed_block(count, blocklength, indices, old_type, newtype);
 }
 
@@ -710,7 +670,8 @@ int MPI_Type_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* 
   return PMPI_Type_struct(count, blocklens, indices, old_types, newtype);
 }
 
-int MPI_Type_create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types, MPI_Datatype* newtype) {
+int MPI_Type_create_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types,
+                           MPI_Datatype* newtype) {
   return PMPI_Type_create_struct(count, blocklens, indices, old_types, newtype);
 }
 
@@ -722,11 +683,12 @@ int MPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MP
   return PMPI_Ssend(buf, count, datatype, dest, tag, comm);
 }
 
-int MPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
+int MPI_Ssend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request){
   return PMPI_Ssend_init(buf, count, datatype, dest, tag, comm, request);
 }
 
-int MPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag, MPI_Comm* comm_out) {
+int MPI_Intercomm_create(MPI_Comm local_comm, int local_leader, MPI_Comm peer_comm, int remote_leader, int tag,
+                         MPI_Comm* comm_out) {
   return PMPI_Intercomm_create(local_comm, local_leader, peer_comm, remote_leader, tag, comm_out);
 }
 
@@ -738,7 +700,7 @@ int MPI_Bsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MP
   return PMPI_Bsend(buf, count, datatype, dest, tag, comm);
 }
 
-int MPI_Bsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
+int MPI_Bsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request){
   return PMPI_Bsend_init(buf, count, datatype, dest, tag, comm, request);
 }
 
@@ -778,7 +740,7 @@ int MPI_Rsend(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MP
   return PMPI_Rsend(buf, count, datatype, dest, tag, comm);
 }
 
-int MPI_Rsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request) {
+int MPI_Rsend_init(void* buf, int count, MPI_Datatype datatype, int dest, int tag, MPI_Comm comm, MPI_Request* request){
   return PMPI_Rsend_init(buf, count, datatype, dest, tag, comm, request);
 }
 
@@ -886,14 +848,12 @@ int MPI_Info_free( MPI_Info *info){
 
 int MPI_Get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
     MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
-  return PMPI_Get( origin_addr,origin_count, origin_datatype,target_rank,
-      target_disp, target_count,target_datatype, win);
+  return PMPI_Get(origin_addr,origin_count, origin_datatype,target_rank, target_disp, target_count,target_datatype,win);
 }
 
 int MPI_Put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
     MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win){
-  return PMPI_Put( origin_addr,origin_count, origin_datatype,target_rank,
-      target_disp, target_count,target_datatype, win);
+  return PMPI_Put(origin_addr,origin_count, origin_datatype,target_rank,target_disp, target_count,target_datatype, win);
 }
 
 int MPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
@@ -904,23 +864,19 @@ int MPI_Accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_dat
 
 int MPI_Type_get_envelope( MPI_Datatype datatype, int *num_integers,
                           int *num_addresses, int *num_datatypes, int *combiner){
-  return PMPI_Type_get_envelope(  datatype, num_integers,
-      num_addresses, num_datatypes, combiner);
+  return PMPI_Type_get_envelope(  datatype, num_integers, num_addresses, num_datatypes, combiner);
 }
 
-int MPI_Type_get_contents(MPI_Datatype datatype, int max_integers, int max_addresses,
-                            int max_datatypes, int* array_of_integers, MPI_Aint* array_of_addresses,
-                            MPI_Datatype *array_of_datatypes){
-  return PMPI_Type_get_contents(datatype, max_integers, max_addresses,
-      max_datatypes, array_of_integers, array_of_addresses,
-       array_of_datatypes);
+int MPI_Type_get_contents(MPI_Datatype datatype, int max_integers, int max_addresses, int max_datatypes,
+                          int* array_of_integers, MPI_Aint* array_of_addresses, MPI_Datatype *array_of_datatypes){
+  return PMPI_Type_get_contents(datatype, max_integers, max_addresses,max_datatypes, array_of_integers,
+                                array_of_addresses, array_of_datatypes);
 }
 
-int MPI_Type_create_darray(int size, int rank, int ndims, int* array_of_gsizes,
-                            int* array_of_distribs, int* array_of_dargs, int* array_of_psizes,
-                            int order, MPI_Datatype oldtype, MPI_Datatype *newtype) {
-  return PMPI_Type_create_darray(size, rank, ndims,  array_of_gsizes,
-       array_of_distribs,  array_of_dargs,  array_of_psizes,
+int MPI_Type_create_darray(int size, int rank, int ndims, int* array_of_gsizes, int* array_of_distribs,
+                            int* array_of_dargs, int* array_of_psizes,int order, MPI_Datatype oldtype,
+                            MPI_Datatype *newtype) {
+  return PMPI_Type_create_darray(size, rank, ndims, array_of_gsizes,array_of_distribs, array_of_dargs, array_of_psizes,
       order,  oldtype, newtype) ;
 }
 
@@ -928,7 +884,8 @@ int MPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, M
   return PMPI_Type_create_resized(oldtype,lb, extent, newtype);
 }
 
-int MPI_Type_create_subarray(int ndims,int *array_of_sizes, int *array_of_subsizes, int *array_of_starts, int order, MPI_Datatype oldtype, MPI_Datatype *newtype){
+int MPI_Type_create_subarray(int ndims,int *array_of_sizes, int *array_of_subsizes, int *array_of_starts, int order,
+                             MPI_Datatype oldtype, MPI_Datatype *newtype){
   return PMPI_Type_create_subarray(ndims,array_of_sizes, array_of_subsizes, array_of_starts, order, oldtype, newtype);
 }
 
@@ -937,15 +894,11 @@ int MPI_Type_match_size(int typeclass,int size,MPI_Datatype *datatype){
 }
 
 int MPI_Alltoallw( void *sendbuf, int *sendcnts, int *sdispls, MPI_Datatype *sendtypes,
-                   void *recvbuf, int *recvcnts, int *rdispls, MPI_Datatype *recvtypes,
-                   MPI_Comm comm){
-  return PMPI_Alltoallw( sendbuf, sendcnts, sdispls, sendtypes,
-      recvbuf, recvcnts, rdispls, recvtypes,
-      comm);
+                   void *recvbuf, int *recvcnts, int *rdispls, MPI_Datatype *recvtypes, MPI_Comm comm){
+  return PMPI_Alltoallw( sendbuf, sendcnts, sdispls, sendtypes, recvbuf, recvcnts, rdispls, recvtypes, comm);
 }
 
-int MPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype,
-                MPI_Op op, MPI_Comm comm){
+int MPI_Exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm){
   return PMPI_Exscan(sendbuf, recvbuf, count, datatype, op, comm);
 }
 
@@ -1025,7 +978,8 @@ int MPI_Request_get_status( MPI_Request request, int *flag, MPI_Status *status){
   return PMPI_Request_get_status( request, flag, status);
 }
 
-int MPI_Grequest_start( MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn, MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
+int MPI_Grequest_start(MPI_Grequest_query_function *query_fn, MPI_Grequest_free_function *free_fn,
+                       MPI_Grequest_cancel_function *cancel_fn, void *extra_state, MPI_Request *request){
   return PMPI_Grequest_start( query_fn, free_fn, cancel_fn, extra_state, request);
 }
 
@@ -1078,9 +1032,9 @@ int MPI_Comm_spawn( char *command, char **argv, int maxprocs, MPI_Info info, int
   return PMPI_Comm_spawn( command, argv, maxprocs, info, root, comm, intercomm, array_of_errcodes);
 }
 
-int MPI_Comm_spawn_multiple( int count, char **array_of_commands, char*** array_of_argv,
-                             int* array_of_maxprocs, MPI_Info* array_of_info, int root,
-                             MPI_Comm comm, MPI_Comm *intercomm, int* array_of_errcodes){
+int MPI_Comm_spawn_multiple(int count, char **array_of_commands, char*** array_of_argv, int* array_of_maxprocs,
+                            MPI_Info* array_of_info, int root, MPI_Comm comm, MPI_Comm *intercomm,
+                            int* array_of_errcodes){
   return PMPI_Comm_spawn_multiple( count, array_of_commands, array_of_argv, array_of_maxprocs,
                                   array_of_info, root, comm, intercomm, array_of_errcodes);
 }

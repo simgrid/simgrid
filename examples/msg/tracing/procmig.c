@@ -6,23 +6,17 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/procmig.c</b> This program shows a process migration. Tracing
- * this program with the options below enables a gantt-chart visualization
- * of where the process has been during its execution. Migrations are represented by
- * arrows from the origin to the destination host.
- * You might want to run this program with the following parameters:
+ * - <b>tracing/procmig.c</b> This program shows a process migration. Tracing this program with the options below
+ * enables a gantt-chart visualization of where the process has been during its execution. Migrations are represented by
+ * arrows from the origin to the destination host. You might want to run this program with the following parameters:
  * --cfg=tracing:yes
  * --cfg=tracing/msg/process:yes
  * (See \ref tracing_tracing_options for details)
  */
 
-#include "simgrid/msg.h"            /* core library */
-#include "xbt/sysdep.h"         /* calloc */
+#include "simgrid/msg.h"
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])
@@ -77,26 +71,22 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-/** Main function */
 int main(int argc, char *argv[])
 {
-  /* Argument checking */
   MSG_init(&argc, argv);
   if (argc < 3) {
     XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
     exit(1);
   }
 
-  char *platform_file = argv[1];
-  char *deployment_file = argv[2];
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
 
   TRACE_category ("migration_order");
 
   /* Application deployment */
   MSG_function_register("emigrant", emigrant);
   MSG_function_register("master", master);
-  MSG_launch_application(deployment_file);
+  MSG_launch_application(argv[2]);
 
   MSG_main();
   return 0;

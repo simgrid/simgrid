@@ -23,21 +23,19 @@ typedef struct s_smpi_mpi_instance{
   xbt_bar_t finalization_barrier;
 } s_smpi_mpi_instance_t;
 
-
 /** \ingroup smpi_simulation
  * \brief Registers a running instance of a MPI program.
  *
  * FIXME : remove MSG from the loop at some point.
  * \param name the reference name of the function.
- * \param code the main mpi function (must have the same prototype than the main function of any C program: int ..(int argc, char *argv[]))
+ * \param code the main mpi function (must have a int ..(int argc, char *argv[])) prototype
  * \param num_processes the size of the instance we want to deploy
  */
 void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes)
 {
   SIMIX_function_register(name, code);
 
-  s_smpi_mpi_instance_t* instance =
-      (s_smpi_mpi_instance_t*)xbt_malloc(sizeof(s_smpi_mpi_instance_t));
+  s_smpi_mpi_instance_t* instance = (s_smpi_mpi_instance_t*)xbt_malloc(sizeof(s_smpi_mpi_instance_t));
 
   instance->name = name;
   instance->size = num_processes;
@@ -56,7 +54,6 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   return;
 }
 
-
 //get the index of the process in the process_data array
 void smpi_deployment_register_process(const char* instance_id, int rank, int index,MPI_Comm** comm, xbt_bar_t* bar){
 
@@ -67,7 +64,8 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
     return;
   }
 
-  s_smpi_mpi_instance_t* instance = static_cast<s_smpi_mpi_instance_t*>(xbt_dict_get_or_null(smpi_instances, instance_id));
+  s_smpi_mpi_instance_t* instance =
+     static_cast<s_smpi_mpi_instance_t*>(xbt_dict_get_or_null(smpi_instances, instance_id));
   xbt_assert(instance, "Error, unknown instance %s", instance_id);
 
   if(instance->comm_world == MPI_COMM_NULL){

@@ -1,4 +1,4 @@
-# Expected dfferences between git repository and tardists
+# Expected differences between git repository and tardists
 #
 # lines beginning with '#', and empty lines are ignored
 # lines beginning with '- ' are expected in archive only
@@ -23,22 +23,12 @@
 
 + contrib/.*
 
-+ examples/msg/actions/NAS_LU_S_4/.*
-+ examples/msg/chord/chord3\.xml
-
-+ examples/smpi/MM/host
 + examples/smpi/NAS/.*
 
 + src/simix/README_attempt_without_stack
-+ src/simix/simix_network\.tla
 
 + src/smpi/BUGS
 + src/smpi/colls/alltoall-bruck\.c
-+ src/smpi/fixsrc\.pl
-+ src/smpi/myprintloc\.cocci
-+ src/smpi/patch_source\.sh
-+ src/smpi/replace_globals\.cocci
-+ src/smpi/replace_static\.cocci
 
 + teshsuite/smpi/mpich3-test/f77/attr/.*
 

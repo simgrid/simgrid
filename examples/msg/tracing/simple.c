@@ -21,13 +21,9 @@
 /* Create a log channel to have nice outputs. */
 #include "xbt/log.h"
 #include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-int simple_func(int argc, char *argv[]);
-
-/** Emitter function  */
-int simple_func(int argc, char *argv[])
+static int simple_func(int argc, char *argv[])
 {
   msg_task_t task = MSG_task_create("task", 100, 0, NULL);
   MSG_task_execute (task);
@@ -35,7 +31,6 @@ int simple_func(int argc, char *argv[])
   return 0;
 }
 
-/** Main function */
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
@@ -44,13 +39,11 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  char *platform_file = argv[1];
-  char *deployment_file = argv[2];
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
 
   MSG_function_register("master", simple_func);
   MSG_function_register("slave", simple_func);
-  MSG_launch_application(deployment_file);
+  MSG_launch_application(argv[2]);
 
   MSG_main();
   return 0;

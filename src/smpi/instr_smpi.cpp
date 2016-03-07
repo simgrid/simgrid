@@ -82,7 +82,6 @@ static const char *instr_find_color (const char *state)
   return ret;
 }
 
-
 static char *smpi_container(int rank, char *container, int n)
 {
   snprintf(container, n, "rank-%d", rank);
@@ -91,14 +90,12 @@ static char *smpi_container(int rank, char *container, int n)
 
 static char *TRACE_smpi_get_key(int src, int dst, char *key, int n);
 
-
 static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
 {
   //get the dynar for src#dst
   char aux[INSTR_DEFAULT_STR_SIZE];
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
-
 
   if(!xbt_dynar_is_empty(d)){
     //receive was already pushed, perform a get instead
@@ -236,7 +233,6 @@ void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_e
    new_pajePushStateWithExtra (SIMIX_get_clock(), container, type, value, (void*)extra);
 }
 
-
 void TRACE_smpi_collective_out(int rank, int root, const char *operation)
 {
   if (!TRACE_smpi_is_enabled()) return;
@@ -332,7 +328,6 @@ void TRACE_smpi_sleeping_out(int rank)
   type_t type = PJ_type_get ("MPI_STATE", container->type);
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
-
 
 void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
 {

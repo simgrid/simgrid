@@ -14,7 +14,9 @@ if(enable_java)
     COMMAND ${CMAKE_COMMAND} -E touch ${example}_compiled
   )
   add_custom_target(${example} ALL DEPENDS ${example}_compiled)
+  ADD_TESH(java-bittorrent --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/bittorrent/bittorrent.tesh)
 endif()
+
 
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent.tesh  PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent.xml   PARENT_SCOPE)

@@ -105,16 +105,15 @@ MPI_Topology smpi_cart_topo_create(int ndims) {
 
 /* reorder is ignored, don't know what would be the consequences of a dumb
  * reordering but neither do I see the point of reordering*/
-int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[],
-                         int periods[], int reorder, MPI_Comm *comm_cart) {
+int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[], int reorder, MPI_Comm *comm_cart) {
     int retval = MPI_SUCCESS;
     int i;
     MPI_Topology newCart;
     MPI_Group newGroup, oldGroup;
     int rank, nranks, newSize;
-  
+
     rank = smpi_comm_rank(comm_old);
- 
+
     newSize = 1;
     if(ndims != 0) {
         for (i = 0 ; i < ndims ; i++) {
@@ -130,18 +129,15 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[],
         for (i = 0 ; i < newSize ; i++) {
             smpi_group_set_mapping(newGroup, smpi_group_index(oldGroup, i), i);
         }
-    
+
         newCart->topo.cart->nnodes = newSize;
 
-        /* memcpy(newCart->topo.cart->dims, dims, */
-        /*        ndims * sizeof(*newCart->topo.cart->dims)); */
-        /* memcpy(newCart->topo.cart->periodic, periods, */
-        /*        ndims * sizeof(*newCart->topo.cart->periodic)); */
-    
+        /* memcpy(newCart->topo.cart->dims, dims, ndims * sizeof(*newCart->topo.cart->dims)); */
+        /* memcpy(newCart->topo.cart->periodic, periods, ndims * sizeof(*newCart->topo.cart->periodic)); */
+
         //  FIXME : code duplication... See smpi_mpi_cart_coords
         nranks = newSize;
-        for (i=0; i<ndims; i++)
-        {
+        for (i=0; i<ndims; i++) {
             newCart->topo.cart->dims[i] = dims[i];
             newCart->topo.cart->periodic[i] = periods[i];
             nranks = nranks / dims[i];
@@ -151,13 +147,11 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[],
         }
 
         *comm_cart = smpi_comm_new(newGroup, newCart);
-    }
-    else {
+    } else {
         if (rank == 0) {
             newCart = smpi_cart_topo_create(ndims);
             *comm_cart = smpi_comm_new(smpi_comm_group(MPI_COMM_SELF), newCart);
-        }
-        else {
+        } else {
             *comm_cart = MPI_COMM_NULL;
         }
     }
@@ -193,17 +187,13 @@ int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm)
     return smpi_mpi_cart_create(comm, newNDims, newDims, newPeriodic, 0, newcomm);
 }
 
-
-
-
-int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims,
-                         int coords[]) {
+int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[]) {
     int nnodes;
-    int i;
+
     MPI_Topology topo = smpi_comm_topo(comm);
-  
+
     nnodes = topo->topo.cart->nnodes;
-    for ( i=0; i < topo->topo.cart->ndims; i++ ) {
+    for (int i=0; i < topo->topo.cart->ndims; i++ ) {
         nnodes    = nnodes / topo->topo.cart->dims[i];
         coords[i] = rank / nnodes;
         rank      = rank % nnodes;
@@ -213,8 +203,8 @@ int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims,
 
 int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
     MPI_Topology topo = smpi_comm_topo(comm);
-    int i;
-    for(i = 0 ; i < maxdims ; i++) {
+
+    for(int i = 0 ; i < maxdims ; i++) {
         dims[i] = topo->topo.cart->dims[i];
         periods[i] = topo->topo.cart->periodic[i];
         coords[i] = topo->topo.cart->position[i];
@@ -232,43 +222,36 @@ int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank) {
     for ( i=ndims-1; i >=0; i-- ) {
         coord = coords[i];
 
-        /* The user can give us whatever coordinates he wants. If one of them is
-         * out of range, either this dimension is periodic, and then we
-         * consider the equivalent coordinate inside the bounds, or it is not
-         * and then it is an error
+        /* The user can give us whatever coordinates he wants. If one of them is out of range, either this dimension is
+         * periodic, and we consider the equivalent coordinate inside the bounds, or it's not and then it's an error
          */
         if (coord >= topo->topo.cart->dims[i]) {
             if ( topo->topo.cart->periodic[i] ) {
                 coord = coord % topo->topo.cart->dims[i];
-            }
-            else {
+            } else {
                 // Should I do that ?
                 *rank = -1; 
                 return MPI_ERR_ARG;
             }
-        }
-        else if (coord <  0) {
+        } else if (coord <  0) {
             if(topo->topo.cart->periodic[i]) {
                 coord = coord % topo->topo.cart->dims[i];
                 if (coord) coord = topo->topo.cart->dims[i] + coord;
-            }
-            else {
+            } else {
                 *rank = -1;
                 return MPI_ERR_ARG;
             }
         }
-    
+
         *rank += multiplier * coord;
         multiplier *= topo->topo.cart->dims[i];
     }
     return MPI_SUCCESS;
 }
 
-int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp,
-                        int *rank_source, int *rank_dest) {
+int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp, int *rank_source, int *rank_dest) {
     MPI_Topology topo = smpi_comm_topo(comm);
     int position[topo->topo.cart->ndims];
-
 
     if(topo->topo.cart->ndims == 0) {
         return MPI_ERR_ARG;
@@ -277,8 +260,7 @@ int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp,
         return MPI_ERR_DIMS;
     }
 
-    smpi_mpi_cart_coords(comm, smpi_comm_rank(comm), topo->topo.cart->ndims,
-                         position);
+    smpi_mpi_cart_coords(comm, smpi_comm_rank(comm), topo->topo.cart->ndims, position);
     position[direction] += disp;
 
     if(position[direction] < 0 ||
@@ -286,27 +268,22 @@ int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp,
         if(topo->topo.cart->periodic[direction]) {
             position[direction] %= topo->topo.cart->dims[direction];
             smpi_mpi_cart_rank(comm, position, rank_dest);
-        }
-        else {
+        } else {
             *rank_dest = MPI_PROC_NULL;
         }
-    }
-    else {
+    } else {
         smpi_mpi_cart_rank(comm, position, rank_dest);
     }
 
     position[direction] =  topo->topo.cart->position[direction] - disp;
-    if(position[direction] < 0 ||
-       position[direction] >= topo->topo.cart->dims[direction]) {
+    if(position[direction] < 0 || position[direction] >= topo->topo.cart->dims[direction]) {
         if(topo->topo.cart->periodic[direction]) {
             position[direction] %= topo->topo.cart->dims[direction];
             smpi_mpi_cart_rank(comm, position, rank_source);
-        }
-        else {
+        } else {
             *rank_source = MPI_PROC_NULL;
         }
-    }
-    else {
+    } else {
         smpi_mpi_cart_rank(comm, position, rank_source);
     }
 
@@ -319,8 +296,6 @@ int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims) {
     *ndims = topo->topo.cart->ndims;
     return MPI_SUCCESS;
 }
-
-
 
 // Everything below has been taken from ompi, but could be easily rewritten.
  
@@ -344,7 +319,6 @@ int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims) {
  *
  * $HEADER$
  */
-
 
 /* static functions */
 static int assignnodes(int ndim, int nfactor, int *pfacts,int **pdims);
@@ -495,8 +469,7 @@ assignnodes(int ndim, int nfactor, int *pfacts, int **pdims)
  *          - array of prime factors
  *  Returns:    - MPI_SUCCESS or ERROR
  */
-static int
-getfactors(int num, int *nfactors, int **factors) {
+static int getfactors(int num, int *nfactors, int **factors) {
     int size;
     int d;
     int i;
@@ -532,4 +505,3 @@ getfactors(int num, int *nfactors, int **factors) {
     (*nfactors) = i;
     return MPI_SUCCESS;
 }
-

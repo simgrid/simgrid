@@ -40,14 +40,15 @@
 /* Variables for the SysV contexts */
 @sg_makecontext_stack_addr@
 @sg_makecontext_stack_size@
+
+/* Variable for SysV, raw and Boost contexts */
 #cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@ /* Does the stack growth upward, or downward? */
 
 /* MC variables */
 #cmakedefine HAVE_GETDTABLESIZE    @HAVE_GETDTABLESIZE@    /* getdtablesize: get descriptor table size */
 #cmakedefine HAVE_MMALLOC          @HAVE_MMALLOC@          /* Did we compile mmalloc in? */
 #cmakedefine HAVE_PROCESS_VM_READV @HAVE_PROCESS_VM_READV@ /* process_vm_readv: transfer data between process address spaces */
-#cmakedefine MMALLOC_WANT_OVERRIDE_LEGACY @MMALLOC_WANT_OVERRIDE_LEGACY@ /* Set to true if enable_model-checking is true */
-#cmakedefine HAVE_MC @HAVE_MC@
+#cmakedefine HAVE_MC @HAVE_MC@ /* Set to true if enable_model-checking is true and the dependencies available */
 
 /* SMPI variables */
 #cmakedefine HAVE_SMPI          @HAVE_SMPI@

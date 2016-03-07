@@ -52,6 +52,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
 #define SO_RE "\\.so[\\.0-9]*$"
 #define VERSION_RE "-[\\.0-9-]*$"
 
+// In lexicographic order (but this is currently not used in the code):
 static const char *const FILTERED_LIBS[] = {
   "ld",
   "libbz2",

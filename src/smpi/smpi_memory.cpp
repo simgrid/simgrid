@@ -17,8 +17,7 @@
 
 #include "private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi,
-                                "Memory layout support for SMPI");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
 
 #define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
@@ -39,17 +38,14 @@ void smpi_get_executable_global_size(void)
     // anonymous data segment. This does not happen in practice, however.
 
     // File backed RW entry:
-    if (i->pathname == full_name
-        && (i->prot & PROT_RWX) == PROT_RW) {
+    if (i->pathname == full_name && (i->prot & PROT_RWX) == PROT_RW) {
       smpi_start_data_exe = (char*) i->start_addr;
       smpi_size_data_exe = i->end_addr - i->start_addr;
       ++i;
       /* Here we are making the assumption that a suitable empty region
          following the rw- area is the end of the data segment. It would
          be better to check with the size of the data segment. */
-      if (i != map.end()
-          && i->pathname.empty()
-          && (i->prot & PROT_RWX) == PROT_RW
+      if (i != map.end() && i->pathname.empty() && (i->prot & PROT_RWX) == PROT_RW
           && i->start_addr == (std::uint64_t) smpi_start_data_exe + smpi_size_data_exe) {
         smpi_size_data_exe = i->end_addr - (std::uint64_t) smpi_start_data_exe;
       }
@@ -58,5 +54,4 @@ void smpi_get_executable_global_size(void)
   }
   xbt_die("Did not find my data segment.");
 }
-
 #endif
