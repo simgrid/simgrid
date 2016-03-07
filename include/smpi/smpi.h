@@ -7,10 +7,7 @@
 #ifndef SMPI_H
 #define SMPI_H
 
-#include <simgrid_config.h>
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
 #include <sys/time.h>
 
 #include <stddef.h>

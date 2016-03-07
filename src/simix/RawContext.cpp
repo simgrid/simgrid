@@ -16,9 +16,11 @@
 #include <utility>
 #include <functional>
 
-#include <xbt/log.h>
-#include <xbt/parmap.h>
-#include <xbt/dynar.h>
+#include "src/internal_config.h" 
+
+#include "xbt/log.h"
+#include "xbt/parmap.h"
+#include "xbt/dynar.h"
 
 #include "smx_private.h"
 #include "smx_private.hpp"

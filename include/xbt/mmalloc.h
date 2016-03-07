@@ -10,7 +10,7 @@
 #ifndef MMALLOC_H
 #define MMALLOC_H 1
 
-#include <simgrid_config.h>
+#include "src/internal_config.h"
 #ifdef HAVE_MMALLOC
 
 #ifdef HAVE_STDDEF_H
