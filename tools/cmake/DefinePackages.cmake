@@ -332,7 +332,6 @@ set(SURF_SRC
   src/surf/host_clm03.cpp
   src/surf/HostImpl.cpp
   src/surf/ptask_L07.cpp
-  src/xbt/xbt_sg_stubs.c
   )
 
 set(SIMIX_GENERATED_SRC
