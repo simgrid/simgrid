@@ -24,7 +24,6 @@ $col_underline  = "\033[04m";
 $col_blink      = "\033[05m";
 
 # Customize colors here...
-#
 $col_default = $col_ltgray;
 my (@coltab) = (
     $col_green,                    $col_yellow,
@@ -39,7 +38,6 @@ my (@coltab) = (
 my %pid;
 
 # Get options
-#
 while (($_ = $ARGV[0]) =~ /^-/) {
     shift;
     if (/-location/i) {

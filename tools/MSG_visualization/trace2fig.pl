@@ -14,8 +14,7 @@ use XFig;
 use POSIX;
 
 my($grid_Y_size)=225; 
-my($grid_X_size)=100550; # Can be changed to improve readability in
-                         # function of the total execution time
+my($grid_X_size)=100550; # Can be changed to improve readability in function of the total execution time
 
 my($color_suspended)=1;
 my($color_compute)=2;
@@ -24,9 +23,6 @@ my($color_communicate)=4;
 
 # Determine the order of the colors in the legend
 my(@color_list)=($color_compute,$color_communicate,$color_wait_for_recpt,$color_suspended);
-
-
-
 
 sub read_cat {
     my(%Cat);
@@ -50,7 +46,6 @@ sub read_cat {
     close INPUT;
     return \%Cat;
 }
-
 
 sub read_event {
     my($filename,$Cat)=@_;
@@ -101,7 +96,6 @@ sub read_link {
     return \%link;
 }
 
-
 sub build_cat_tree {
     my($root,$Cat)=@_;
     my(@childs)=();
@@ -113,7 +107,6 @@ sub build_cat_tree {
 	}
 #	print "$$Cat{$cat}{name}\t\t $Cat{$cat}{father}\n";
     }
-    
     return [$root,@childs];
 }
 
@@ -129,7 +122,6 @@ sub build_cat_list {
     }
     unshift @$tree, $root;
 }
-
 
 sub cat_sorting_function {
     my($cat1,$cat2,$Cat)=@_;
@@ -227,8 +219,7 @@ sub draw_cat {
 
     my($max_date)=0;
     foreach $cat (keys %$Cat) {
-	next unless (defined($$Cat{$cat}{Y_min}) && 
-		     defined($$Cat{$cat}{Y_max}));
+	next unless (defined($$Cat{$cat}{Y_min}) && defined($$Cat{$cat}{Y_max}));
 	my(@states)=();
 	my($e);
 	foreach $e (@{$$Cat{$cat}{state}}) {
@@ -244,8 +235,7 @@ sub draw_cat {
 		$state = $$old_event[1];
 
 # LM: I added the next line because of "undefined values"...
-# normally, I think that this should not happen, but this part of code
-# is a bit too cryptic to me
+# normally, I think that this should not happen, but this part of code is a bit too cryptic to me
 		next unless (defined($state));		
 
 		my($line) = new XFig ('polyline');
@@ -291,10 +281,7 @@ sub draw_cat {
 	$fig->add ($line);
     }
 
-
-
 # Host visualization
-
     my($max_Y)= 0;
 
     my($index_fill)=0;
@@ -303,8 +290,7 @@ sub draw_cat {
     my($host_text_x)= $min_x_for_host + 200;
 
     foreach $cat (keys %$Cat) {
-	next unless (defined($$Cat{$cat}{Y_min_host}) && 
-		     defined($$Cat{$cat}{Y_max_host}));
+	next unless (defined($$Cat{$cat}{Y_min_host}) && defined($$Cat{$cat}{Y_max_host}));
 	my($line) = new XFig ('polyline');
 	
 	$line->{'depth'} = 150;  
@@ -378,7 +364,6 @@ sub draw_cat {
     }
     
 # Time axis
-        
     my($line) = new XFig ('polyline');
     $line->{'depth'} = 0;  
     $line->{'subtype'} = 1;  # line
@@ -424,7 +409,6 @@ sub draw_cat {
     $line->{'thickness'} = 0;  
     $line->{'points'} = [ [0,0],[0, -400] ];
     $fig->add ($line);
-    
 }
 
 sub main {
@@ -440,7 +424,6 @@ sub main {
     shift @$cat_list;
 #    print "@$cat_list \n";
     set_cat_position($Cat,$cat_list);
-
     
     my($fig)=create_fig("toto.fig");
     draw_cat($fig,$Cat,$Link);
