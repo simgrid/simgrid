@@ -189,6 +189,7 @@ examples/msg/properties/msg_prop
 examples/msg/semaphores/synchro
 examples/msg/sendrecv/sendrecv
 examples/msg/sendrecv/sendrecv_main
+examples/msg/set-maestro/set-maestro
 examples/msg/simulation.trace
 examples/msg/start_kill_time/sk_time
 examples/msg/suspend/suspend
@@ -209,6 +210,8 @@ examples/msg/tracing/volume
 examples/msg/volume.trace
 examples/msg/z_gtnets.trace
 examples/msg/zmsg_test.trace
+examples/s4u/basic/s4u_basic
+examples/s4u/io/s4u_io
 examples/simdag/dax/dax_test
 examples/simdag/dot/dot_test
 examples/simdag/dot/dot_test2

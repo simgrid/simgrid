@@ -128,7 +128,6 @@ IF(NOT enable_memcheck)
   ## INTERFACES ##
   ### MSG ###
   # BEGIN TESH TESTS
-
   ADD_TESH(tracing-ms                          --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/ms.tesh)
   ADD_TESH(tracing-trace-platform              --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/trace_platform.tesh)
   ADD_TESH(tracing-user-variables              --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/user_variables.tesh)
@@ -137,10 +136,6 @@ IF(NOT enable_memcheck)
   ADD_TESH(tracing-categories                  --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/categories.tesh)
   ADD_TESH(tracing-process-migration           --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg --cd ${CMAKE_HOME_DIRECTORY}/examples/msg tracing/procmig.tesh)
   # END TESH TESTS
-
-  ### S4U ###
-  ADD_TESH_FACTORIES(s4u-basic "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u/basic --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/basic s4u_basic.tesh)
-  ADD_TESH_FACTORIES(s4u-io "thread;ucontext;raw;boost"    --setenv bindir=${CMAKE_BINARY_DIR}/examples/s4u/io --cd ${CMAKE_HOME_DIRECTORY}/examples/s4u/io s4u_io.tesh)
 
   ### SIMDAG ###
   # BEGIN TESH TESTS

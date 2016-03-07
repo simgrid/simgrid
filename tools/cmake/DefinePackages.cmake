@@ -999,8 +999,6 @@ set(CMAKEFILES_TXT
   examples/msg/tracing/CMakeLists.txt
   
   examples/s4u/CMakeLists.txt
-  examples/s4u/basic/CMakeLists.txt
-  examples/s4u/io/CMakeLists.txt
   
   examples/simdag/CMakeLists.txt
   examples/simdag/dax/CMakeLists.txt
