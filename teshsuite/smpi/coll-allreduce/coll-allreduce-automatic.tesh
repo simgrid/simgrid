@@ -3,7 +3,7 @@
 ! output sort 19
 
 p Test allreduce
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/allreduce_coll --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --cfg=smpi/allreduce:automatic --cfg=smpi/async_small_thresh:65536 --cfg=smpi/send_is_detached_thresh:128000 --cfg=smpi/running_power:-1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --cfg=smpi/allreduce:automatic --cfg=smpi/async_small_thresh:65536 --cfg=smpi/send_is_detached_thresh:128000 --cfg=smpi/running_power:-1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.420130] (5:4@Jupiter) The quickest allreduce was redbcast on rank 4 and took 0.007482
 > [  0.420130] (6:5@Jupiter) The quickest allreduce was redbcast on rank 5 and took 0.007513
 > [  0.420130] (7:6@Jupiter) The quickest allreduce was redbcast on rank 6 and took 0.007513
@@ -68,4 +68,3 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ..
 > [rank 7] -> Jupiter
 > [rank 8] -> Fafard
 > [rank 9] -> Fafard
-

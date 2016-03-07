@@ -4,7 +4,7 @@
 
 ! timeout 20
 p Test allreduce
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 --log=xbt_cfg.thres:critical ${bindir:=.}/allreduce_coll 300000 --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce 300000 --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
