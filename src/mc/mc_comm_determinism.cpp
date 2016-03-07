@@ -331,7 +331,7 @@ static void MC_pre_modelcheck_comm_determinism(void)
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
-    if (MC_process_is_enabled(&p.copy))
+    if (simgrid::mc::process_is_enabled(&p.copy))
       MC_state_interleave_process(initial_state, &p.copy);
 
   xbt_fifo_unshift(mc_stack, initial_state);
@@ -363,12 +363,12 @@ static int MC_modelcheck_comm_determinism_main(void)
         && (req = MC_state_get_request(state, &value))
         && (visited_state == nullptr)) {
 
-      req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
+      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
       XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
       
       if (dot_output != nullptr)
-        req_str = MC_request_get_dot_output(req, value);
+        req_str = simgrid::mc::request_get_dot_output(req, value);
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
@@ -379,7 +379,7 @@ static int MC_modelcheck_comm_determinism_main(void)
         call = MC_get_call_type(req);
 
       /* Answer the request */
-      MC_simcall_handle(req, value);    /* After this call req is no longer useful */
+      simgrid::mc::handle_simcall(req, value);    /* After this call req is no longer useful */
 
       if(!initial_global_state->initial_communications_pattern_done)
         MC_handle_comm_pattern(call, req, value, initial_communications_pattern, 0);
@@ -396,7 +396,7 @@ static int MC_modelcheck_comm_determinism_main(void)
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
-          if (MC_process_is_enabled(&p.copy))
+          if (simgrid::mc::process_is_enabled(&p.copy))
             MC_state_interleave_process(next_state, &p.copy);
 
         if (dot_output != nullptr)

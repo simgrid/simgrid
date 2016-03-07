@@ -10,19 +10,19 @@
 #include <xbt/base.h>
 #include "src/simix/popping_private.h" // smx_simcall_t
 
-SG_BEGIN_DECL()
+#ifdef __cplusplus
 
-/** Check if the given simcall can be resolved
- *
- *  \return `TRUE` or `FALSE`
- */
-XBT_PRIVATE int MC_request_is_enabled(smx_simcall_t req);
+namespace simgrid {
+namespace mc {
 
-/** Check if the given simcall is visible
+/** Can this requests can be executed.
  *
- *  \return `TRUE` or `FALSE`
+ *  Most requests are always enabled but WAIT and WAITANY
+ *  are not always enabled: a WAIT where the communication does not
+ *  have both a source and a destination yet is not enabled
+ *  (unless timeout is enabled in the wait and enabeld in SimGridMC).
  */
-XBT_PRIVATE int MC_request_is_visible(smx_simcall_t req);
+XBT_PRIVATE bool request_is_enabled(smx_simcall_t req);
 
 /** Execute everything which is invisible
  *
@@ -30,13 +30,16 @@ XBT_PRIVATE int MC_request_is_visible(smx_simcall_t req);
  *  iteratively until there doesn't remain any. At this point, the function
  *  returns to the caller which can handle the visible (and ready) simcalls.
  */
-XBT_PRIVATE void MC_wait_for_requests(void);
+XBT_PRIVATE void wait_for_requests(void);
 
-XBT_PRIVATE extern double *mc_time;
+XBT_PRIVATE extern std::vector<double> processes_time;
 
 /** Execute a given simcall */
-XBT_PRIVATE void MC_simcall_handle(smx_simcall_t req, int value);
+XBT_PRIVATE void handle_simcall(smx_simcall_t req, int value);
 
-SG_END_DECL()
+}
+}
+
+#endif
 
 #endif

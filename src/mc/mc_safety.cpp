@@ -65,7 +65,7 @@ static void MC_pre_modelcheck_safety()
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
-    if (MC_process_is_enabled(&p.copy)) {
+    if (simgrid::mc::process_is_enabled(&p.copy)) {
       MC_state_interleave_process(initial_state, &p.copy);
       if (mc_reduce_kind != e_mc_reduce_none)
         break;
@@ -108,12 +108,12 @@ int MC_modelcheck_safety(void)
     if (xbt_fifo_size(mc_stack) <= _sg_mc_max_depth && !user_max_depth_reached
         && (req = MC_state_get_request(state, &value)) && visited_state == nullptr) {
 
-      req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
+      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
       XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
 
       if (dot_output != nullptr)
-        req_str = MC_request_get_dot_output(req, value);
+        req_str = simgrid::mc::request_get_dot_output(req, value);
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
@@ -122,7 +122,7 @@ int MC_modelcheck_safety(void)
       //   MC_execute_transition(req, value)
 
       /* Answer the request */
-      MC_simcall_handle(req, value);
+      simgrid::mc::handle_simcall(req, value);
       mc_model_checker->wait_for_requests();
 
       /* Create the new expanded state */
@@ -137,7 +137,7 @@ int MC_modelcheck_safety(void)
 
         /* Get an enabled process and insert it in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
-          if (MC_process_is_enabled(&p.copy)) {
+          if (simgrid::mc::process_is_enabled(&p.copy)) {
             MC_state_interleave_process(next_state, &p.copy);
             if (mc_reduce_kind != e_mc_reduce_none)
               break;
@@ -200,15 +200,15 @@ int MC_modelcheck_safety(void)
               "use --cfg=model-check/reduction:none");
           const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
           xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
-            if (MC_request_depend(req, MC_state_get_internal_request(prev_state))) {
+            if (simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
               if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
                 XBT_DEBUG("Dependent Transitions:");
                 smx_simcall_t prev_req = MC_state_get_executed_request(prev_state, &value);
-                req_str = MC_request_to_string(prev_req, value, MC_REQUEST_INTERNAL);
+                req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::internal);
                 XBT_DEBUG("%s (state=%d)", req_str, prev_state->num);
                 xbt_free(req_str);
                 prev_req = MC_state_get_executed_request(state, &value);
-                req_str = MC_request_to_string(prev_req, value, MC_REQUEST_EXECUTED);
+                req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::executed);
                 XBT_DEBUG("%s (state=%d)", req_str, state->num);
                 xbt_free(req_str);
               }

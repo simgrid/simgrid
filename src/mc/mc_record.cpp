@@ -22,6 +22,7 @@
 #include "src/mc/mc_base.h"
 
 #ifdef HAVE_MC
+#include "src/mc/mc_request.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_smx.h"
@@ -37,7 +38,7 @@ char* MC_record_path = nullptr;
 
 void MC_record_replay(mc_record_item_t start, std::size_t len)
 {
-  MC_wait_for_requests();
+  simgrid::mc::wait_for_requests();
   mc_record_item_t end = start + len;
 
   // Choose the recorded simcall and execute it:
@@ -56,12 +57,13 @@ void MC_record_replay(mc_record_item_t start, std::size_t len)
     smx_simcall_t simcall = &(process->simcall);
     if(!simcall || simcall->call == SIMCALL_NONE)
       xbt_die("No simcall for this process.");
-    if (!MC_request_is_visible(simcall) || !MC_request_is_enabled(simcall))
+    if (!simgrid::mc::request_is_visible(simcall)
+        || !simgrid::mc::request_is_enabled(simcall))
       xbt_die("Unexpected simcall.");
 
     // Execute the request:
     SIMIX_simcall_handle(simcall, item->value);
-    MC_wait_for_requests();
+    simgrid::mc::wait_for_requests();
   }
 }
 
@@ -186,7 +188,7 @@ void MC_record_replay_from_string(const char* path_string)
 
 void MC_record_replay_init()
 {
-  mc_time = xbt_new0(double, simix_process_maxpid);
+  simgrid::mc::processes_time.resize(simix_process_maxpid);
 }
 
 }

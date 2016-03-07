@@ -187,7 +187,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   if (procstate->state != MC_INTERLEAVE
       && procstate->state != MC_MORE_INTERLEAVE)
       return nullptr;
-  if (!MC_process_is_enabled(process))
+  if (!simgrid::mc::process_is_enabled(process))
     return nullptr;
 
   switch (process->simcall.call) {
@@ -197,8 +197,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         while (procstate->interleave_count <
               read_length(mc_model_checker->process(),
                 remote(simcall_comm_waitany__get__comms(&process->simcall)))) {
-          if (MC_request_is_enabled_by_idx
-              (&process->simcall, procstate->interleave_count++)) {
+          if (simgrid::mc::request_is_enabled_by_idx(&process->simcall,
+              procstate->interleave_count++)) {
             *value = procstate->interleave_count - 1;
             break;
           }
@@ -220,8 +220,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         while (procstate->interleave_count <
                 read_length(mc_model_checker->process(),
                   remote(simcall_comm_testany__get__comms(&process->simcall))))
-          if (MC_request_is_enabled_by_idx
-              (&process->simcall, procstate->interleave_count++)) {
+          if (simgrid::mc::request_is_enabled_by_idx(&process->simcall,
+              procstate->interleave_count++)) {
             *value = procstate->interleave_count - 1;
             break;
           }

@@ -148,7 +148,7 @@ void MC_client_main_loop(void)
   while (1) {
     MC_protocol_send_simple_message(mc_client->fd, MC_MESSAGE_WAITING);
     MC_client_handle_messages();
-    MC_wait_for_requests();
+    simgrid::mc::wait_for_requests();
   }
 }
 

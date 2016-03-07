@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <vector>
+
 #include "mc_base.h"
 
 #include "mc/mc.h"
@@ -45,9 +47,17 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");
 
+}
+
 e_mc_mode_t mc_mode;
 
-double *mc_time = nullptr;
+namespace simgrid {
+namespace mc {
+
+std::vector<double> processes_time;
+
+}
+}
 
 #ifdef HAVE_MC
 int user_max_depth_reached = 0;
@@ -103,13 +113,14 @@ void MC_init_dot_output()
 #ifdef HAVE_MC
 void MC_init()
 {
-  mc_time = xbt_new0(double, simix_process_maxpid);
+  simgrid::mc::processes_time.resize(simix_process_maxpid);
 
   if (_sg_mc_visited > 0 || _sg_mc_liveness  || _sg_mc_termination || mc_mode == MC_MODE_SERVER) {
     /* Those requests are handled on the client side and propagated by message
      * to the server: */
 
-    MC_ignore_heap(mc_time, simix_process_maxpid * sizeof(double));
+    MC_ignore_heap(simgrid::mc::processes_time.data(),
+      simix_process_maxpid * sizeof(double));
 
     smx_process_t process;
     xbt_swag_foreach(process, simix_global->process_list)
@@ -131,8 +142,7 @@ void MC_run()
 
 void MC_exit(void)
 {
-  xbt_free(mc_time);
-
+  simgrid::mc::processes_time.clear();
   MC_memory_exit();
   //xbt_abort();
 }
@@ -163,7 +173,7 @@ int MC_deadlock_check()
   if (xbt_swag_size(simix_global->process_list)) {
     deadlock = TRUE;
     xbt_swag_foreach(process, simix_global->process_list)
-      if (MC_process_is_enabled(process)) {
+      if (simgrid::mc::process_is_enabled(process)) {
         deadlock = FALSE;
         break;
       }
@@ -236,7 +246,7 @@ void MC_replay(xbt_fifo_t stack)
 
       /* Debug information */
       if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
-        req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
+        req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
         XBT_DEBUG("Replay: %s (%p)", req_str, state);
         xbt_free(req_str);
       }
@@ -246,7 +256,7 @@ void MC_replay(xbt_fifo_t stack)
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = MC_get_call_type(req);
 
-      MC_simcall_handle(req, value);
+      simgrid::mc::handle_simcall(req, value);
 
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         MC_handle_comm_pattern(call, req, value, nullptr, 1);
@@ -310,14 +320,14 @@ void MC_replay_liveness(xbt_fifo_t stack)
 
           /* Debug information */
           if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
-            req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX);
+            req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
             XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
             xbt_free(req_str);
           }
 
         }
 
-        MC_simcall_handle(req, value);
+        simgrid::mc::handle_simcall(req, value);
         mc_model_checker->wait_for_requests();
       }
 
@@ -361,7 +371,7 @@ void MC_show_stack_safety(xbt_fifo_t stack)
     state = (mc_state_t)xbt_fifo_get_item_content(item);
     req = MC_state_get_executed_request(state, &value);
     if (req) {
-      req_str = MC_request_to_string(req, value, MC_REQUEST_EXECUTED);
+      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
       XBT_INFO("%s", req_str);
       xbt_free(req_str);
     }
@@ -375,7 +385,7 @@ void MC_show_deadlock(smx_simcall_t req)
   XBT_INFO("*** DEAD-LOCK DETECTED ***");
   XBT_INFO("**************************");
   XBT_INFO("Locked request:");
-  /*req_str = MC_request_to_string(req);
+  /*req_str = simgrid::mc::request_to_string(req);
      XBT_INFO("%s", req_str);
      xbt_free(req_str); */
   XBT_INFO("Counter-example execution trace:");
@@ -406,7 +416,7 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
     pair = (mc_pair_t) xbt_fifo_get_item_content(item);
     req = MC_state_get_executed_request(pair->graph_state, &value);
     if (req && req->call != SIMCALL_NONE) {
-      req_str = MC_request_to_string(req, value, MC_REQUEST_EXECUTED);
+      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
       XBT_INFO("%s", req_str);
       xbt_free(req_str);
     }
@@ -505,16 +515,16 @@ static void MC_dump_stacks(FILE* file)
 
 double MC_process_clock_get(smx_process_t process)
 {
-  if (!mc_time)
+  if (simgrid::mc::processes_time.empty())
     return 0;
   if (process != nullptr)
-    return mc_time[process->pid];
+    return simgrid::mc::processes_time[process->pid];
   return -1;
 }
 
 void MC_process_clock_add(smx_process_t process, double amount)
 {
-  mc_time[process->pid] += amount;
+  simgrid::mc::processes_time[process->pid] += amount;
 }
 
 #ifdef HAVE_MC
@@ -549,5 +559,3 @@ void MC_report_crash(int status)
 }
 
 #endif
-
-}

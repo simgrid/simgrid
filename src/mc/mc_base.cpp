@@ -21,6 +21,7 @@
 #include "src/mc/mc_protocol.h"
 
 #ifdef HAVE_MC
+#include "src/mc/mc_request.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_smx.h"
@@ -34,6 +35,8 @@ extern "C" {
 
 XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
+}
+
 int MC_random(int min, int max)
 {
   xbt_assert(mc_mode != MC_MODE_SERVER);
@@ -43,7 +46,10 @@ int MC_random(int min, int max)
   return simcall_mc_random(min, max);
 }
 
-void MC_wait_for_requests(void)
+namespace simgrid {
+namespace mc {
+
+void wait_for_requests(void)
 {
   assert(mc_mode != MC_MODE_SERVER);
 
@@ -55,14 +61,14 @@ void MC_wait_for_requests(void)
     SIMIX_process_runall();
     xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
       req = &process->simcall;
-      if (req->call != SIMCALL_NONE && !MC_request_is_visible(req))
+      if (req->call != SIMCALL_NONE && !simgrid::mc::request_is_visible(req))
         SIMIX_simcall_handle(req, 0);
     }
   }
 }
 
 // Called from both MCer and MCed:
-int MC_request_is_enabled(smx_simcall_t req)
+bool request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
   smx_synchro_t act = 0;
@@ -72,7 +78,7 @@ int MC_request_is_enabled(smx_simcall_t req)
 
   switch (req->call) {
   case SIMCALL_NONE:
-    return FALSE;
+    return false;
 
   case SIMCALL_COMM_WAIT:
     /* FIXME: check also that src and dst processes are not suspended */
@@ -90,7 +96,7 @@ int MC_request_is_enabled(smx_simcall_t req)
       /* If it has a timeout it will be always be enabled, because even if the
        * communication is not ready, it can timeout and won't block. */
       if (_sg_mc_timeout == 1)
-        return TRUE;
+        return true;
     }
     /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
     else if (act->comm.detached && act->comm.src_proc == nullptr
@@ -135,13 +141,13 @@ int MC_request_is_enabled(smx_simcall_t req)
 #endif
         act = xbt_dynar_get_as(comms, index, smx_synchro_t);
       if (act->comm.src_proc && act->comm.dst_proc)
-        return TRUE;
+        return true;
     }
-    return FALSE;
+    return false;
   }
 
   case SIMCALL_MUTEX_TRYLOCK:
-    return TRUE;
+    return true;
 
   case SIMCALL_MUTEX_LOCK: {
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
@@ -153,7 +159,7 @@ int MC_request_is_enabled(smx_simcall_t req)
     }
 #endif
     if(mutex->owner == nullptr)
-      return TRUE;
+      return true;
     else
 #ifdef HAVE_MC
       // TODO, *(mutex->owner) :/
@@ -166,11 +172,11 @@ int MC_request_is_enabled(smx_simcall_t req)
 
   default:
     /* The rest of the requests are always enabled */
-    return TRUE;
+    return true;
   }
 }
 
-int MC_request_is_visible(smx_simcall_t req)
+bool request_is_visible(smx_simcall_t req)
 {
   return req->call == SIMCALL_COMM_ISEND
       || req->call == SIMCALL_COMM_IRECV
@@ -186,6 +192,9 @@ int MC_request_is_visible(smx_simcall_t req)
       || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS
 #endif
       ;
+}
+
+}
 }
 
 static int prng_random(int min, int max)
@@ -214,7 +223,10 @@ int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
   return simcall->mc_value;
 }
 
-void MC_simcall_handle(smx_simcall_t req, int value)
+namespace simgrid {
+namespace mc {
+
+void handle_simcall(smx_simcall_t req, int value)
 {
 #ifndef HAVE_MC
   SIMIX_simcall_handle(req, value);
@@ -235,4 +247,5 @@ void MC_simcall_handle(smx_simcall_t req, int value)
 #endif
 }
 
+}
 }

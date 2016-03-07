@@ -194,7 +194,7 @@ static void MC_pre_modelcheck_liveness(void)
 
       /* Get enabled processes and insert them in the interleave set of the graph_state */
       for (auto& p : mc_model_checker->process().simix_processes())
-        if (MC_process_is_enabled(&p.copy))
+        if (simgrid::mc::process_is_enabled(&p.copy))
           MC_state_interleave_process(initial_pair->graph_state, &p.copy);
 
       initial_pair->requests = MC_state_interleave_size(initial_pair->graph_state);
@@ -270,13 +270,13 @@ static int MC_modelcheck_liveness_main(void)
              xbt_free(initial_global_state->prev_req);
            }
            initial_global_state->prev_pair = current_pair->num;
-           initial_global_state->prev_req = MC_request_get_dot_output(req, value);
+           initial_global_state->prev_req = simgrid::mc::request_get_dot_output(req, value);
            if (current_pair->search_cycle)
              fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
            fflush(dot_output);
          }
 
-         char* req_str = MC_request_to_string(req, value, MC_REQUEST_SIMIX); 
+         char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
          XBT_DEBUG("Execute: %s", req_str);
          xbt_free(req_str);
 
@@ -289,7 +289,7 @@ static int MC_modelcheck_liveness_main(void)
            mc_stats->visited_pairs++;
 
          /* Answer the request */
-         MC_simcall_handle(req, value);
+         simgrid::mc::handle_simcall(req, value);
          
          /* Wait for requests (schedules processes) */
          mc_model_checker->wait_for_requests();
@@ -313,7 +313,7 @@ static int MC_modelcheck_liveness_main(void)
               next_pair->depth = current_pair->depth + 1;
               /* Get enabled processes and insert them in the interleave set of the next graph_state */
               for (auto& p : mc_model_checker->process().simix_processes())
-                if (MC_process_is_enabled(&p.copy))
+                if (simgrid::mc::process_is_enabled(&p.copy))
                   MC_state_interleave_process(next_pair->graph_state, &p.copy);
 
               next_pair->requests = MC_state_interleave_size(next_pair->graph_state);
@@ -388,7 +388,7 @@ int MC_modelcheck_liveness(void)
   int res = MC_modelcheck_liveness_main();
 
   /* We're done */
-  xbt_free(mc_time);
+  simgrid::mc::processes_time.clear();
 
   return res;
 }
