@@ -1,16 +1,9 @@
 add_executable       (stack_overflow stack_overflow.c)
 target_link_libraries(stack_overflow simgrid)
 
-set(tesh_files
-  ${tesh_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.tesh
-  PARENT_SCOPE)
-set(xml_files
-  ${xml_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.xml
-  ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow_platform.xml
-  PARENT_SCOPE)
-set(teshsuite_src
-  ${teshsuite_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.c
-  PARENT_SCOPE)
+ADD_TESH_FACTORIES(stack-overflow "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack_overflow --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow stack_overflow.tesh)
+
+set(tesh_files     ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.tesh          PARENT_SCOPE)
+set(xml_files      ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.xml
+                                     ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow_platform.xml  PARENT_SCOPE)
+set(teshsuite_src  ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow.c             PARENT_SCOPE)
