@@ -148,16 +148,14 @@ int MC_deadlock_check()
     ssize_t s = mc_model_checker->process().receive_message(message);
     if (s == -1)
       xbt_die("Could not receive message");
-    else if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY) {
+    if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY)
       xbt_die("%s received unexpected message %s (%i, size=%i) "
         "expected MC_MESSAGE_DEADLOCK_CHECK_REPLY (%i, size=%i)",
         MC_mode_name(mc_mode),
         MC_message_type_name(message.type), (int) message.type, (int) s,
         (int) MC_MESSAGE_DEADLOCK_CHECK_REPLY, (int) sizeof(message)
         );
-    }
-    else
-      return message.value;
+    return message.value;
   }
 
   int deadlock = FALSE;
@@ -507,13 +505,11 @@ static void MC_dump_stacks(FILE* file)
 
 double MC_process_clock_get(smx_process_t process)
 {
-  if (mc_time) {
-    if (process != nullptr)
-      return mc_time[process->pid];
-    else
-      return -1;
-  } else
+  if (!mc_time)
     return 0;
+  if (process != nullptr)
+    return mc_time[process->pid];
+  return -1;
 }
 
 void MC_process_clock_add(smx_process_t process, double amount)
