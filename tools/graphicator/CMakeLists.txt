@@ -1,6 +1,7 @@
 add_executable       (graphicator graphicator.c)
 target_link_libraries(graphicator simgrid)
 set_target_properties(graphicator PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
+ADD_TESH(graphicator --setenv srcdir=${CMAKE_HOME_DIRECTORY} --setenv bindir=${CMAKE_BINARY_DIR}/bin --cd ${CMAKE_HOME_DIRECTORY}/tools/graphicator graphicator.tesh)
 
 ## Clean generated files
 get_directory_property(extra_clean_files ADDITIONAL_MAKE_CLEAN_FILES)
