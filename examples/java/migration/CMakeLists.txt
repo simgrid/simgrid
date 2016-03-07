@@ -11,6 +11,7 @@ if(enable_java)
     COMMAND ${CMAKE_COMMAND} -E touch ${example}_compiled
   )
   add_custom_target(${example} ALL DEPENDS ${example}_compiled)
+  ADD_TESH(java-migration --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/migration/migration.tesh)
 endif()
 
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/migration.tesh           PARENT_SCOPE)
