@@ -1,5 +1,4 @@
 #!/bin/sh
-#---- smpitools.sh --------------------------------------------------------#
 
 # Copyright (c) 2013-2014. The SimGrid Team.
 # All rights reserved.
@@ -10,8 +9,7 @@
 SAVEIFS="$IFS"
 LISTSEP="$(printf '\b')"
 
-# Create a temporary file, with its name of the form $1_XXX$2, where XXX is
-# replaced by an unique string.
+# Create a temporary file, with its name of the form $1_XXX$2, where XXX is replaced by an unique string.
 # $1: prefix, $2: suffix
 mymktemp () {
     tmp=$(mktemp --suffix="$2" "$1_XXXXXXXXXX" 2> /dev/null)
@@ -67,12 +65,9 @@ list_set () {
     list_add "$@"
 }
 
-# Get the content of a list: positional parameters ($1, $2, ...) are set to the
-# content of the list
+# Get the content of a list: positional parameters ($1, $2, ...) are set to the content of the list
 # $1: list
 # usage:  eval $(list_get list)
 list_get () {
     printf 'IFS="$LISTSEP"; eval set -- \\$%s; IFS="$SAVEIFS"' "$1"
 }
-
-#---- end of smpitools.sh -------------------------------------------------#

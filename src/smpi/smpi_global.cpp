@@ -20,8 +20,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi,
-                                "Logging specific to SMPI (kernel)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 
 typedef struct s_smpi_process_data {
   double simulated;
@@ -59,15 +58,13 @@ MPI_Errhandler *MPI_ERRHANDLER_NULL = NULL;
 
 static char *get_mailbox_name(char *str, int index)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", (int) (sizeof(int) * 2),
-           index);
+  snprintf(str, MAILBOX_NAME_MAXLEN, "SMPI-%0*x", (int) (sizeof(int) * 2), index);
   return str;
 }
 
 static char *get_mailbox_name_small(char *str, int index)
 {
-  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", (int) (sizeof(int) * 2),
-           index);
+  snprintf(str, MAILBOX_NAME_MAXLEN, "small%0*x", (int) (sizeof(int) * 2), index);
   return str;
 }
 
@@ -122,10 +119,10 @@ void smpi_process_init(int *argc, char ***argv)
     // set the process attached to the mailbox
     simcall_rdv_set_receiver(data->mailbox_small, proc);
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
-
   }
   xbt_assert(smpi_process_data(),
-      "smpi_process_data() returned NULL. You probably gave a NULL parameter to MPI_Init. Although it's required by MPI-2, this is currently not supported by SMPI.");
+      "smpi_process_data() returned NULL. You probably gave a NULL parameter to MPI_Init. Although it's required by "
+      "MPI-2, this is currently not supported by SMPI.");
 }
 
 void smpi_process_destroy(void)
@@ -138,13 +135,10 @@ void smpi_process_destroy(void)
   XBT_DEBUG("<%d> Process left the game", index);
 }
 
-/**
- * @brief Prepares the current process for termination.
- */
+/** @brief Prepares the current process for termination. */
 void smpi_process_finalize(void)
 {
-    // This leads to an explosion of the search graph
-    // which cannot be reduced:
+    // This leads to an explosion of the search graph which cannot be reduced:
     if(MC_is_active() || MC_record_replay_is_active())
       return;
 
@@ -153,9 +147,7 @@ void smpi_process_finalize(void)
     xbt_barrier_wait(process_data[index_to_process_data[index]]->finalization_barrier);
 }
 
-/**
- * @brief Check if a process is finalized
- */
+/** @brief Check if a process is finalized */
 int smpi_process_finalized()
 {
   int index = smpi_process_index();
@@ -165,24 +157,18 @@ int smpi_process_finalized()
       return 0;
 }
 
-/**
- * @brief Check if a process is initialized
- */
+/** @brief Check if a process is initialized */
 int smpi_process_initialized(void)
 {
   if (!index_to_process_data){
     return false;
-  }
-  else{
+  } else{
     int index = smpi_process_index();
-    return ( (index != MPI_UNDEFINED)
-             && (process_data[index_to_process_data[index]]->state == SMPI_INITIALIZED));
+    return ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state == SMPI_INITIALIZED));
   }
 }
 
-/**
- * @brief Mark a process as initialized (=MPI_Init called)
- */
+/** @brief Mark a process as initialized (=MPI_Init called) */
 void smpi_process_mark_as_initialized(void)
 {
   int index = smpi_process_index();
@@ -202,7 +188,6 @@ int smpi_process_get_replaying(){
     return process_data[index_to_process_data[index]]->replaying;
   else return _xbt_replay_is_active();
 }
-
 
 int smpi_global_size(void)
 {
@@ -278,7 +263,6 @@ smx_mailbox_t smpi_process_remote_mailbox(int index)
   return data->mailbox;
 }
 
-
 smx_mailbox_t smpi_process_remote_mailbox_small(int index)
 {
   smpi_process_data_t data = smpi_process_remote_data(index);
@@ -345,23 +329,18 @@ int smpi_process_get_sampling(void)
   return data->sampling;
 }
 
-
 void print_request(const char *message, MPI_Request request)
 {
-  XBT_VERB
-      ("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
-       message, request, request->buf, request->size, request->src,
-       request->dst, request->tag, request->flags);
+  XBT_VERB("%s  request %p  [buf = %p, size = %zu, src = %d, dst = %d, tag = %d, flags = %x]",
+       message, request, request->buf, request->size, request->src, request->dst, request->tag, request->flags);
 }
 
-void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
-                                           void *buff, size_t buff_size)
+void smpi_comm_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
   void* tmpbuff=buff;
 
-  if((smpi_privatize_global_variables)
-      && ((char*)buff >= smpi_start_data_exe)
+  if((smpi_privatize_global_variables) && ((char*)buff >= smpi_start_data_exe)
       && ((char*)buff < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
@@ -370,35 +349,26 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t comm,
        memcpy(tmpbuff, buff, buff_size);
   }
 
-
-  if((smpi_privatize_global_variables)
-      && ((char*)comm->comm.dst_buff >= smpi_start_data_exe)
-      && ((char*)comm->comm.dst_buff < smpi_start_data_exe + smpi_size_data_exe )
-    ){
+  if((smpi_privatize_global_variables) && ((char*)comm->comm.dst_buff >= smpi_start_data_exe)
+      && ((char*)comm->comm.dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
        smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->comm.dst_proc))->data))->index);
   }
-
 
   memcpy(comm->comm.dst_buff, tmpbuff, buff_size);
   if (comm->comm.detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI
     // sender to make the original buffer available to the application ASAP
     xbt_free(buff);
-    //It seems that the request is used after the call there this should
-    //be free somewhereelse  but where???
-    //xbt_free(comm->comm.src_data);// inside SMPI the request is keep
-    //inside the user data and should be free
+    //It seems that the request is used after the call there this should be free somewhere else but where???
+    //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
     comm->comm.src_buff = NULL;
   }
 
   if(tmpbuff!=buff)xbt_free(tmpbuff);
-
 }
 
-
-void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm,
-                                           void *buff, size_t buff_size)
+void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t buff_size)
 {
   return;
 }
@@ -406,8 +376,7 @@ void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm,
 static void smpi_check_options(){
   //check correctness of MPI parameters
 
-   xbt_assert(sg_cfg_get_int("smpi/async_small_thresh") <=
-              sg_cfg_get_int("smpi/send_is_detached_thresh"));
+   xbt_assert(sg_cfg_get_int("smpi/async_small_thresh") <= sg_cfg_get_int("smpi/send_is_detached_thresh"));
 
    if (sg_cfg_is_default_value("smpi/running_power")) {
      XBT_INFO("You did not set the power of the host running the simulation.  "
@@ -444,8 +413,7 @@ void smpi_global_init(void)
     process_data[i]->argc                 = NULL;
     process_data[i]->argv                 = NULL;
     process_data[i]->mailbox              = simcall_rdv_create(get_mailbox_name(name, i));
-    process_data[i]->mailbox_small        =
-        simcall_rdv_create(get_mailbox_name_small(name, i));
+    process_data[i]->mailbox_small        = simcall_rdv_create(get_mailbox_name_small(name, i));
     process_data[i]->mailboxes_mutex      = xbt_mutex_init();
     process_data[i]->timer                = xbt_os_timer_new();
     if (MC_is_active())
@@ -457,10 +425,8 @@ void smpi_global_init(void)
     process_data[i]->sampling             = 0;
     process_data[i]->finalization_barrier = NULL;
   }
-  //if the process was launched through smpirun script
-  //we generate a global mpi_comm_world
-  //if not, we let MPI_COMM_NULL, and the comm world
-  //will be private to each mpi instance
+  //if the process was launched through smpirun script we generate a global mpi_comm_world
+  //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
   if(smpirun){
     group = smpi_group_new(process_count);
     MPI_COMM_WORLD = smpi_comm_new(group, NULL);
@@ -538,11 +504,8 @@ static void smpi_init_logs(){
 
   /* Connect log categories.  See xbt/log.c */
 
-  XBT_LOG_CONNECT(smpi);        /* Keep this line as soon as possible in this
-                                   function: xbt_log_appender_file.c depends on it
-                                   DO NOT connect this in XBT or so, or it will be
-                                   useless to xbt_log_appender_file.c */
-
+  XBT_LOG_CONNECT(smpi);  /* Keep this line as soon as possible in this function: xbt_log_appender_file.c depends on it
+                             DO NOT connect this in XBT or so, or it will be useless to xbt_log_appender_file.c */
   XBT_LOG_CONNECT(instr_smpi);
   XBT_LOG_CONNECT(smpi_base);
   XBT_LOG_CONNECT(smpi_bench);
@@ -561,84 +524,62 @@ static void smpi_init_logs(){
 }
 
 static void smpi_init_options(){
-  int gather_id = find_coll_description(mpi_coll_gather_description,
-                                          sg_cfg_get_string("smpi/gather"),"gather");
-    mpi_coll_gather_fun = (int (*)(void *, int, MPI_Datatype,
-                                   void *, int, MPI_Datatype, int, MPI_Comm))
+  int gather_id = find_coll_description(mpi_coll_gather_description, sg_cfg_get_string("smpi/gather"),"gather");
+    mpi_coll_gather_fun = (int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, int, MPI_Comm))
         mpi_coll_gather_description[gather_id].coll;
 
     int allgather_id = find_coll_description(mpi_coll_allgather_description,
                                              sg_cfg_get_string("smpi/allgather"),"allgather");
-    mpi_coll_allgather_fun = (int (*)(void *, int, MPI_Datatype,
-                                      void *, int, MPI_Datatype, MPI_Comm))
+    mpi_coll_allgather_fun = (int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, MPI_Comm))
         mpi_coll_allgather_description[allgather_id].coll;
 
     int allgatherv_id = find_coll_description(mpi_coll_allgatherv_description,
                                               sg_cfg_get_string("smpi/allgatherv"),"allgatherv");
-    mpi_coll_allgatherv_fun = (int (*)(void *, int, MPI_Datatype, void *, int *,
-                                       int *, MPI_Datatype, MPI_Comm))
+    mpi_coll_allgatherv_fun = (int (*)(void *, int, MPI_Datatype, void *, int *, int *, MPI_Datatype, MPI_Comm))
         mpi_coll_allgatherv_description[allgatherv_id].coll;
 
     int allreduce_id = find_coll_description(mpi_coll_allreduce_description,
                                              sg_cfg_get_string("smpi/allreduce"),"allreduce");
-    mpi_coll_allreduce_fun = (int (*)(void *sbuf, void *rbuf, int rcount,
-                                      MPI_Datatype dtype, MPI_Op op,
-                                      MPI_Comm comm))
+    mpi_coll_allreduce_fun = (int (*)(void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm))
         mpi_coll_allreduce_description[allreduce_id].coll;
 
     int alltoall_id = find_coll_description(mpi_coll_alltoall_description,
                                             sg_cfg_get_string("smpi/alltoall"),"alltoall");
-    mpi_coll_alltoall_fun = (int (*)(void *, int, MPI_Datatype,
-                                     void *, int, MPI_Datatype, MPI_Comm))
+    mpi_coll_alltoall_fun = (int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, MPI_Comm))
         mpi_coll_alltoall_description[alltoall_id].coll;
 
     int alltoallv_id = find_coll_description(mpi_coll_alltoallv_description,
                                              sg_cfg_get_string("smpi/alltoallv"),"alltoallv");
-    mpi_coll_alltoallv_fun = (int (*)(void *, int *, int *, MPI_Datatype,
-                                      void *, int *, int *, MPI_Datatype,
-                                      MPI_Comm))
+    mpi_coll_alltoallv_fun = (int (*)(void *, int *, int *, MPI_Datatype, void *, int *, int *, MPI_Datatype, MPI_Comm))
         mpi_coll_alltoallv_description[alltoallv_id].coll;
 
-    int bcast_id = find_coll_description(mpi_coll_bcast_description,
-                                         sg_cfg_get_string("smpi/bcast"),"bcast");
-    mpi_coll_bcast_fun = (int (*)(void *buf, int count, MPI_Datatype datatype,
-                                  int root, MPI_Comm com))
+    int bcast_id = find_coll_description(mpi_coll_bcast_description, sg_cfg_get_string("smpi/bcast"),"bcast");
+    mpi_coll_bcast_fun = (int (*)(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm com))
         mpi_coll_bcast_description[bcast_id].coll;
 
-    int reduce_id = find_coll_description(mpi_coll_reduce_description,
-                                          sg_cfg_get_string("smpi/reduce"),"reduce");
-    mpi_coll_reduce_fun = (int (*)(void *buf, void *rbuf, int count,
-                                   MPI_Datatype datatype, MPI_Op op,
-                                   int root, MPI_Comm comm))
-        mpi_coll_reduce_description[reduce_id].coll;
+    int reduce_id = find_coll_description(mpi_coll_reduce_description, sg_cfg_get_string("smpi/reduce"),"reduce");
+    mpi_coll_reduce_fun = (int (*)(void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
+                                    MPI_Comm comm)) mpi_coll_reduce_description[reduce_id].coll;
 
     int reduce_scatter_id =
         find_coll_description(mpi_coll_reduce_scatter_description,
                               sg_cfg_get_string("smpi/reduce_scatter"),"reduce_scatter");
-    mpi_coll_reduce_scatter_fun = (int (*)(void *sbuf, void *rbuf, int *rcounts,
-                                           MPI_Datatype dtype, MPI_Op op,
-                                           MPI_Comm comm))
-        mpi_coll_reduce_scatter_description[reduce_scatter_id].coll;
+    mpi_coll_reduce_scatter_fun = (int (*)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype, MPI_Op op,
+                                           MPI_Comm comm)) mpi_coll_reduce_scatter_description[reduce_scatter_id].coll;
 
-    int scatter_id = find_coll_description(mpi_coll_scatter_description,
-                                           sg_cfg_get_string("smpi/scatter"),"scatter");
-    mpi_coll_scatter_fun = (int (*)(void *sendbuf, int sendcount,
-                                    MPI_Datatype sendtype, void *recvbuf,
-                                    int recvcount, MPI_Datatype recvtype,
-                                    int root, MPI_Comm comm))
+    int scatter_id = find_coll_description(mpi_coll_scatter_description, sg_cfg_get_string("smpi/scatter"),"scatter");
+    mpi_coll_scatter_fun = (int (*)(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
+                                    int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm))
         mpi_coll_scatter_description[scatter_id].coll;
 
-    int barrier_id = find_coll_description(mpi_coll_barrier_description,
-                                           sg_cfg_get_string("smpi/barrier"),"barrier");
-    mpi_coll_barrier_fun = (int (*)(MPI_Comm comm))
-        mpi_coll_barrier_description[barrier_id].coll;
+    int barrier_id = find_coll_description(mpi_coll_barrier_description, sg_cfg_get_string("smpi/barrier"),"barrier");
+    mpi_coll_barrier_fun = (int (*)(MPI_Comm comm)) mpi_coll_barrier_description[barrier_id].coll;
 
     smpi_cpu_threshold = sg_cfg_get_double("smpi/cpu_threshold");
     smpi_running_power = sg_cfg_get_double("smpi/running_power");
     smpi_privatize_global_variables = sg_cfg_get_boolean("smpi/privatize_global_variables");
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
-
 }
 
 int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
@@ -646,15 +587,13 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
   srand(SMPI_RAND_SEED);
 
   if (getenv("SMPI_PRETEND_CC") != NULL) {
-    /* Hack to ensure that smpicc can pretend to be a simple
-     * compiler. Particularly handy to pass it to the configuration tools */
+    /* Hack to ensure that smpicc can pretend to be a simple compiler. Particularly handy to pass it to the
+     * configuration tools */
     return 0;
   }
-
   smpi_init_logs();
 
   TRACE_global_init(&argc, argv);
-
   TRACE_add_start_function(TRACE_smpi_alloc);
   TRACE_add_end_function(TRACE_smpi_release);
 
@@ -693,15 +632,14 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
       double global_time = xbt_os_timer_elapsed(global_timer);
       XBT_INFO("Simulated time: %g seconds. \n\n"
           "The simulation took %g seconds (after parsing and platform setup)\n"
-          "%g seconds were actual computation of the application"
-          , SIMIX_get_clock(), global_time , smpi_total_benched_time);
+          "%g seconds were actual computation of the application",
+          SIMIX_get_clock(), global_time , smpi_total_benched_time);
           
       if (smpi_total_benched_time/global_time>=0.75)
       XBT_INFO("More than 75%% of the time was spent inside the application code.\n"
       "You may want to use sampling functions or trace replay to reduce this.");
     }
   }
-
   smpi_global_destroy();
 
   TRACE_end();

@@ -14,15 +14,11 @@
 #include "colls/colls.h"
 #include "simgrid/sg_config.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi,
-                                "Logging specific to SMPI (coll)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll)");
 
 s_mpi_coll_description_t mpi_coll_gather_description[] = {
-  {"default",
-   "gather default collective",
-   (void*)smpi_mpi_gather},
-COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {"default", "gather default collective", (void*)smpi_mpi_gather},
+   COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA), {NULL, NULL, NULL}      /* this array must be NULL terminated */
 };
 
 

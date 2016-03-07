@@ -6,8 +6,7 @@
 
 #include "private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi,
-                                "Logging specific to SMPI (group)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
 
 typedef struct s_smpi_mpi_group {
   int size;
@@ -50,10 +49,8 @@ MPI_Group smpi_group_copy(MPI_Group origin)
   xbt_dict_cursor_t cursor = NULL;
   
   int i;
-  if(origin!= smpi_comm_group(MPI_COMM_WORLD)
-            && origin != MPI_GROUP_NULL
-            && origin != smpi_comm_group(MPI_COMM_SELF)
-            && origin != MPI_GROUP_EMPTY)
+  if(origin!= smpi_comm_group(MPI_COMM_WORLD) && origin != MPI_GROUP_NULL
+            && origin != smpi_comm_group(MPI_COMM_SELF) && origin != MPI_GROUP_EMPTY)
     {
       group = xbt_new(s_smpi_mpi_group_t, 1);
       group->size = origin->size;
@@ -71,7 +68,6 @@ MPI_Group smpi_group_copy(MPI_Group origin)
 
   return group;
 }
-
 
 void smpi_group_destroy(MPI_Group group)
 {
@@ -137,7 +133,6 @@ int smpi_group_unuse(MPI_Group group)
     return 0;
   }
   return group->refcount;
-
 }
 
 int smpi_group_size(MPI_Group group)

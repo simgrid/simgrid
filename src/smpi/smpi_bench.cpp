@@ -35,8 +35,7 @@
 #define MAP_ANONYMOUS MAP_ANON
 #endif
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi,
-                                "Logging specific to SMPI (benchmarking)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (benchmarking)");
 
 /* Shared allocations are handled through shared memory segments.
  * Associated data and metadata are used as follows:
@@ -88,8 +87,7 @@ namespace {
 
 /** Some location in the source code
  *
- *  This information is used by SMPI_SHARED_MALLOC to allocate
- *  some shared memory for all simulated processes.
+ *  This information is used by SMPI_SHARED_MALLOC to allocate  some shared memory for all simulated processes.
  */
 class smpi_source_location {
 public:
@@ -300,7 +298,6 @@ int smpi_usleep(useconds_t usecs)
   return (int)private_sleep((double)usecs / 1000000.0);
 }
 
-
 int smpi_gettimeofday(struct timeval *tv, void* tz)
 {
   double now;
@@ -357,6 +354,7 @@ static char *sample_location(int global, const char *file, int line) {
     return bprintf("%s:%d:%d", file, line, smpi_process_index());
   }
 }
+
 static int sample_enough_benchs(local_data_t *data) {
   int res = data->count >= data->iters;
   if (data->threshold>0.0) {
@@ -366,8 +364,7 @@ static int sample_enough_benchs(local_data_t *data) {
       res = 0; // stderr too high yet
   }
   XBT_DEBUG("%s (count:%d iter:%d stderr:%f thres:%f mean:%fs)",
-      (res?"enough benchs":"need more data"),
-      data->count, data->iters, data->relstderr, data->threshold, data->mean);
+      (res?"enough benchs":"need more data"), data->count, data->iters, data->relstderr, data->threshold, data->mean);
   return res;
 }
 
@@ -398,14 +395,17 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
     XBT_DEBUG("XXXXX First time ever on benched nest %s.",loc);
   } else {
     if (data->iters != iters || data->threshold != threshold) {
-      XBT_ERROR("Asked to bench block %s with different settings %d, %f is not %d, %f. How did you manage to give two numbers at the same line??",
-          loc, data->iters, data->threshold, iters,threshold);
+      XBT_ERROR("Asked to bench block %s with different settings %d, %f is not %d, %f. "
+                "How did you manage to give two numbers at the same line??",
+                loc, data->iters, data->threshold, iters,threshold);
       THROW_IMPOSSIBLE;
     }
 
-    // if we already have some data, check whether sample_2 should get one more bench or whether it should emulate the computation instead
+    // if we already have some data, check whether sample_2 should get one more bench or whether it should emulate
+    // the computation instead
     data->benching = !sample_enough_benchs(data);
-    XBT_DEBUG("XXXX Re-entering the benched nest %s. %s",loc, (data->benching?"more benching needed":"we have enough data, skip computes"));
+    XBT_DEBUG("XXXX Re-entering the benched nest %s. %s",loc,
+             (data->benching?"more benching needed":"we have enough data, skip computes"));
   }
   xbt_free(loc);
 }
@@ -427,10 +427,10 @@ int smpi_sample_2(int global, const char *file, int line)
         data->count, data->iters, data->relstderr, data->threshold, data->mean);
     res = 1;
   } else {
-    // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just ran one bench and need to bail out now that our job is done).
-    // Just sleep instead
-    XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f). apply the %fs delay instead",
-        data->count, data->iters, data->relstderr, data->threshold, data->mean);
+    // Enough data, no more bench (either we got enough data from previous visits to this benched nest, or we just
+    //ran one bench and need to bail out now that our job is done). Just sleep instead
+    XBT_DEBUG("No benchmark (either no need, or just ran one): count >= iter (%d >= %d) or stderr<thres (%f<=%f)."
+              " apply the %fs delay instead", data->count, data->iters, data->relstderr, data->threshold, data->mean);
     smpi_execute(data->mean);
     smpi_process_set_sampling(0);
     res = 0; // prepare to capture future, unrelated computations
@@ -438,7 +438,6 @@ int smpi_sample_2(int global, const char *file, int line)
   smpi_bench_begin();
   return res;
 }
-
 
 void smpi_sample_3(int global, const char *file, int line)
 {
@@ -467,7 +466,8 @@ void smpi_sample_3(int global, const char *file, int line)
   data->mean = data->sum / n;
   data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
   if (!sample_enough_benchs(data)) {
-    data->mean = sample; // Still in benching process; We want sample_2 to simulate the exact time of this loop occurrence before leaving, not the mean over the history
+    data->mean = sample; // Still in benching process; We want sample_2 to simulate the exact time of this loop
+                         // occurrence before leaving, not the mean over the history
   }
   XBT_DEBUG("Average mean after %d steps is %f, relative standard error is %f (sample was %f)", data->count,
       data->mean, data->relstderr, sample);
@@ -491,8 +491,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       // Generate a shared memory name from the address of the shared_data:
       char shmname[32]; // cannot be longer than PSHMNAMLEN = 31 on Mac OS X (shm_open raises ENAMETOOLONG otherwise)
       snprintf(shmname, 31, "/shmalloc%p", &*data);
-      fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL,
-                    S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
+      fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
       if (fd < 0) {
         switch(errno) {
           case EEXIST:
@@ -597,16 +596,10 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
    return data;
 }
 
-
-
-
 #define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
-
-/** Map a given SMPI privatization segment (make a SMPI process active)
- */
+/** Map a given SMPI privatization segment (make a SMPI process active) */
 void smpi_switch_data_segment(int dest){
-
   if (smpi_loaded_page==dest)//no need to switch either
    return;
 
@@ -614,24 +607,19 @@ void smpi_switch_data_segment(int dest){
   smpi_really_switch_data_segment(dest);
 }
 
-/** Map a given SMPI privatization segment (make a SMPI process active)
- *  even if SMPI thinks it is already active
+/** Map a given SMPI privatization segment (make a SMPI process active)  even if SMPI thinks it is already active
  *
- *  When doing a state restoration, the state of the restored variables
- *  might not be consistent with the state of the virtual memory.
- *  In this case, we to change the data segment.
+ *  When doing a state restoration, the state of the restored variables  might not be consistent with the state of the
+ *  virtual memory. In this case, we to change the data segment.
  */
 void smpi_really_switch_data_segment(int dest) {
-
   if(smpi_size_data_exe == 0)//no need to switch
     return;
 
 #ifdef HAVE_PRIVATIZATION
-  int i;
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
-    for (i=0; i< smpi_process_count(); i++){
-      memcpy(smpi_privatisation_regions[i].address,
-        TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
+    for (int i=0; i< smpi_process_count(); i++){
+      memcpy(smpi_privatisation_regions[i].address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
     }
   }
 
@@ -659,21 +647,19 @@ void smpi_initialize_global_memory_segments(){
   return;
 #else
 
-  int i = 0;
   smpi_get_executable_global_size();
 
-  XBT_DEBUG ("bss+data segment found : size %d starting at %p",
-    smpi_size_data_exe, smpi_start_data_exe );
+  XBT_DEBUG ("bss+data segment found : size %d starting at %p", smpi_size_data_exe, smpi_start_data_exe );
 
   if (smpi_size_data_exe == 0){//no need to switch
     smpi_privatize_global_variables=0;
     return;
   }
 
-  smpi_privatisation_regions = (smpi_privatisation_region_t) malloc(
-    smpi_process_count() * sizeof(struct s_smpi_privatisation_region));
+  smpi_privatisation_regions =
+    (smpi_privatisation_region_t) malloc(smpi_process_count() * sizeof(struct s_smpi_privatisation_region));
 
-  for (i=0; i< smpi_process_count(); i++){
+  for (int i=0; i< smpi_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside
       void *address = NULL;
       char path[] = "/dev/shm/my-buffer-XXXXXX";
@@ -720,9 +706,7 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
       smpi_privatisation_regions[i].file_descriptor = file_descriptor;
       smpi_privatisation_regions[i].address = address;
   }
-
 #endif
-
 }
 
 void smpi_destroy_global_memory_segments(){
@@ -732,12 +716,10 @@ void smpi_destroy_global_memory_segments(){
   int i;
   for (i=0; i< smpi_process_count(); i++){
     if(munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0) {
-      XBT_WARN("Unmapping of fd %d failed: %s",
-        smpi_privatisation_regions[i].file_descriptor, strerror(errno));
+      XBT_WARN("Unmapping of fd %d failed: %s", smpi_privatisation_regions[i].file_descriptor, strerror(errno));
     }
     close(smpi_privatisation_regions[i].file_descriptor);
   }
   xbt_free(smpi_privatisation_regions);
 #endif
-
 }

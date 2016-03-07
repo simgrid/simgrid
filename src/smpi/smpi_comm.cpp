@@ -14,15 +14,13 @@
 #include "colls/colls.h"
 #include "xbt/ex.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi,
-                                "Logging specific to SMPI (comm)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 
 xbt_dict_t smpi_comm_keyvals = NULL;
 int comm_keyval_id = 0;//avoid collisions
 
-/* Support for cartesian topology was added, but there are 2 other types of
- * topology, graph et dist graph. In order to support them, we have to add a
- * field MPIR_Topo_type, and replace the MPI_Topology field by an union. */
+/* Support for cartesian topology was added, but there are 2 other types of topology, graph et dist graph. In order to
+ * support them, we have to add a field MPIR_Topo_type, and replace the MPI_Topology field by an union. */
 
 typedef struct s_smpi_mpi_communicator {
   MPI_Group group;
@@ -89,7 +87,7 @@ void smpi_comm_destroy(MPI_Comm comm)
 }
 
 int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
-  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
   (*newcomm) = smpi_comm_new(smpi_comm_group(comm), smpi_comm_topo(comm));
@@ -121,7 +119,8 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
       void* value_in;
       void* value_out;
       xbt_dict_foreach(comm->attributes, cursor, key, value_in){
-        smpi_comm_key_elem elem = static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)key, sizeof(int)));
+        smpi_comm_key_elem elem =
+           static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)key, sizeof(int)));
         if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
           ret = elem->copy_fn(comm, *key, NULL, value_in, &value_out, &flag );
           if(ret!=MPI_SUCCESS){
@@ -137,12 +136,10 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
   return ret;
 }
 
-
 MPI_Group smpi_comm_group(MPI_Comm comm)
 {
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
-
   return comm->group;
 }
 
@@ -156,7 +153,6 @@ int smpi_comm_size(MPI_Comm comm)
 {
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
-
   return smpi_group_size(smpi_comm_group(comm));
 }
 
@@ -333,7 +329,8 @@ void smpi_comm_unuse(MPI_Comm comm){
       void * value;
       int flag;
       xbt_dict_foreach(comm->attributes, cursor, key, value){
-        smpi_comm_key_elem elem = static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)key));
+        smpi_comm_key_elem elem =
+           static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)key));
         if(elem &&  elem->delete_fn)
           elem->delete_fn(comm, *key, value, &flag);
       }
@@ -342,8 +339,7 @@ void smpi_comm_unuse(MPI_Comm comm){
   }
 }
 
-static int
-compare_ints (const void *a, const void *b)
+static int compare_ints (const void *a, const void *b)
 {
   const int *da = (const int *) a;
   const int *db = (const int *) b;
@@ -360,15 +356,14 @@ void smpi_comm_init_smp(MPI_Comm comm){
   int comm_size =smpi_comm_size(comm);
   
   // If we are in replay - perform an ugly hack  
-  // say to SimGrid that we are not in replay for a while, because we need 
-  // the buffers to be copied for the following calls
+  // tell SimGrid we are not in replay for a while, because we need the buffers to be copied for the following calls
   int replaying = 0; //cache data to set it back again after
   if(smpi_process_get_replaying()){
    replaying=1;
    smpi_process_set_replaying(0);
   }
 
-  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
   //identify neighbours in comm
@@ -382,8 +377,6 @@ void smpi_comm_init_smp(MPI_Comm comm){
 //      smpi_process_set_comm_intra(MPI_COMM_SELF);
 //      return;
 //  }
-
-
   int i =0;
   int min_index=INT_MAX;//the minimum index will be the leader
   smx_process_t process = NULL;
@@ -412,11 +405,9 @@ void smpi_comm_init_smp(MPI_Comm comm){
     }
   }
 
-
   MPI_Comm comm_intra = smpi_comm_new(group_intra, NULL);
   //MPI_Comm shmem_comm = smpi_process_comm_intra();
   //int intra_rank = smpi_comm_rank(shmem_comm);
-
 
   //if(smpi_process_index()==min_index)
   leader=min_index;
@@ -429,10 +420,10 @@ void smpi_comm_init_smp(MPI_Comm comm){
 
   smpi_coll_tuned_allgather_mpich(&leader, 1, MPI_INT , leaders_map, 1, MPI_INT, comm);
 
-  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
-   
+
   if(!comm->leaders_map){
     comm->leaders_map= leaders_map;
   }else{
@@ -456,7 +447,6 @@ void smpi_comm_init_smp(MPI_Comm comm){
 
   MPI_Group leaders_group = smpi_group_new(leader_group_size);
 
-
   MPI_Comm leader_comm = MPI_COMM_NULL;
   if(MPI_COMM_WORLD!=MPI_COMM_UNINITIALIZED && comm!=MPI_COMM_WORLD){
     //create leader_communicator
@@ -466,7 +456,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
     smpi_comm_set_leaders_comm(comm, leader_comm);
     smpi_comm_set_intra_comm(comm, comm_intra);
 
-    //create intracommunicator
+   //create intracommunicator
    // smpi_comm_set_intra_comm(comm, smpi_comm_split(comm, *(int*)SIMIX_host_self(), comm_rank));
   }else{
     for (i=0; i< leader_group_size;i++)
@@ -501,7 +491,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   }
   smpi_coll_tuned_bcast_mpich(&(comm->is_uniform),1, MPI_INT, 0, comm_intra );
 
-  if(smpi_privatize_global_variables){ //we need to switch here, as the called function may silently touch global variables
+  if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
   // Are the ranks blocked ? = allocated contiguously on the SMP nodes
@@ -517,8 +507,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   }
 
   int global_blocked;
-  smpi_mpi_allreduce(&is_blocked, &(global_blocked), 1,
-            MPI_INT, MPI_LAND, comm);
+  smpi_mpi_allreduce(&is_blocked, &(global_blocked), 1, MPI_INT, MPI_LAND, comm);
 
   if(MPI_COMM_WORLD==MPI_COMM_UNINITIALIZED || comm==MPI_COMM_WORLD){
     if(smpi_comm_rank(comm)==0){
@@ -534,7 +523,8 @@ void smpi_comm_init_smp(MPI_Comm comm){
 }
 
 int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
-  smpi_comm_key_elem elem = static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)&keyval, sizeof(int)));
+  smpi_comm_key_elem elem =
+     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)&keyval, sizeof(int)));
   if(!elem)
     return MPI_ERR_ARG;
   if(elem->delete_fn!=MPI_NULL_DELETE_FN){
@@ -544,7 +534,7 @@ int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
       int ret = elem->delete_fn(comm, keyval, value, &flag);
       if(ret!=MPI_SUCCESS) return ret;
     }
-  }  
+  }
   if(comm->attributes==NULL)
     return MPI_ERR_ARG;
 
@@ -553,7 +543,8 @@ int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
 }
 
 int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
-  smpi_comm_key_elem elem = static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)&keyval, sizeof(int)));
+  smpi_comm_key_elem elem =
+    static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)&keyval, sizeof(int)));
   if(!elem)
     return MPI_ERR_ARG;
   xbt_ex_t ex;
@@ -564,8 +555,7 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
   TRY {
     *(void**)attr_value = xbt_dict_get_ext(comm->attributes,  (const char*)&keyval, sizeof(int));
     *flag=1;
-  }
-  CATCH(ex) {
+  } CATCH(ex) {
     *flag=0;
     xbt_ex_free(ex);
   }
@@ -575,7 +565,8 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
 int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value){
   if(!smpi_comm_keyvals)
   smpi_comm_keyvals = xbt_dict_new();
-  smpi_comm_key_elem elem = static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals,  (const char*)&keyval, sizeof(int)));
+  smpi_comm_key_elem elem =
+    static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals,  (const char*)&keyval, sizeof(int)));
   if(!elem )
     return MPI_ERR_ARG;
   int flag;
@@ -592,16 +583,16 @@ int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value){
   return MPI_SUCCESS;
 }
 
-int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval, void* extra_state){
-
+int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval,
+                            void* extra_state){
   if(!smpi_comm_keyvals)
   smpi_comm_keyvals = xbt_dict_new();
-  
+
   smpi_comm_key_elem value = (smpi_comm_key_elem) xbt_new0(s_smpi_mpi_comm_key_elem_t,1);
-  
+
   value->copy_fn=copy_fn;
   value->delete_fn=delete_fn;
-  
+
   *keyval = comm_keyval_id;
   xbt_dict_set_ext(smpi_comm_keyvals, (const char*)keyval, sizeof(int),(void*)value, NULL);
   comm_keyval_id++;
@@ -609,7 +600,8 @@ int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delet
 }
 
 int smpi_comm_keyval_free(int* keyval){
-  smpi_comm_key_elem elem = static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals,  (const char*)keyval, sizeof(int)));
+  smpi_comm_key_elem elem =
+     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals,  (const char*)keyval, sizeof(int)));
   if(!elem){
     return MPI_ERR_ARG;
   }
