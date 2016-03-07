@@ -226,6 +226,10 @@ if(enable_ns3)
   endif()
 endif()
 
+if(WIN32)
+  set(Boost_USE_STATIC_LIBS 1)
+endif()
+
 find_package(Boost 1.48)
 if(Boost_FOUND)
   include_directories(${Boost_INCLUDE_DIRS})
