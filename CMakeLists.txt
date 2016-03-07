@@ -512,11 +512,10 @@ endif()
 
 if(NOT HAVE_UCONTEXT_H)
   message("-- No ucontext factory: <ucontext.h> not found.")
+elseif(APPLE)
+  message("-- No ucontext factory: Apple don't want us to use them.")
+  set(HAVE_UCONTEXT_H 0)
 else()
-  # This is needed for ucontext on MacOS X:
-  if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    add_definitions(-D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE)
-  endif()
   try_compile(compile_makecontext ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_makecontext.c
     OUTPUT_VARIABLE compile_makecontext_output)
   
