@@ -26,6 +26,7 @@
 + examples/smpi/NAS/.*
 
 + src/simix/README_attempt_without_stack
++ src/simix/simix_network\.tla
 
 + src/smpi/BUGS
 + src/smpi/colls/alltoall-bruck\.c
