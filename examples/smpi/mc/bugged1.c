@@ -10,7 +10,6 @@
 #include <mpi.h>
 #include <simgrid/modelchecker.h>
 
-
 int main(int argc, char **argv)
 {
   int recv_buff, err, size, rank, i;
@@ -43,7 +42,6 @@ int main(int argc, char **argv)
     //#ifdef HAVE_MC
     //MC_assert(recv_buff == size - 1);
     //#endif
-
   }else{
     MPI_Send(&rank, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);
     printf("Sent %d to rank 0\n", rank);

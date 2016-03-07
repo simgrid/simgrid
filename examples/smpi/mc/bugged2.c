@@ -10,7 +10,6 @@
 #include <mpi.h>
 #include <simgrid/modelchecker.h>
 
-
 int main(int argc, char **argv)
 {
   int x,y, err, size, rank;

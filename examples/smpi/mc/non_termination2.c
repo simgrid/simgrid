@@ -5,10 +5,9 @@
 int x;
 
 int main(int argc, char **argv) {
-
   int recv_buff, size, rank;
   MPI_Status status;
-  
+
   MPI_Init(&argc, &argv);
 
   MPI_Comm_size(MPI_COMM_WORLD, &size);   /* Get nr of tasks */
