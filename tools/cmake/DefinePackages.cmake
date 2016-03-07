@@ -423,13 +423,9 @@ set(SIMDAG_SRC
   src/simdag/sd_workstation.cpp
   )
 if(HAVE_GRAPHVIZ)
-  set(SIMDAG_SRC
-    ${SIMDAG_SRC} src/simdag/sd_dotloader.cpp
-    )
+  set(SIMDAG_SRC    ${SIMDAG_SRC} src/simdag/sd_dotloader.cpp)
 else()
-  set(EXTRA_DIST
-    ${EXTRA_DIST} src/simdag/sd_dotloader.cpp
-    )
+  set(EXTRA_DIST    ${EXTRA_DIST} src/simdag/sd_dotloader.cpp)
 endif()
 
 set(BINDINGS_SRC
@@ -759,37 +755,22 @@ set(simgrid_sources
   ${XBT_SRC}
   )
 
-if(${HAVE_JEDULE})
-  set(simgrid_sources
-    ${simgrid_sources}
-    ${JEDULE_SRC}
-    )
+if(${HAVE_JEDULE})  
+  set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
 else()
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    ${JEDULE_SRC}
-    )
+  set(EXTRA_DIST       ${EXTRA_DIST}       ${JEDULE_SRC})
 endif()
 
 if(enable_smpi)
-  set(simgrid_sources
-    ${simgrid_sources}
-    ${SMPI_SRC}
-    )
+  set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
 endif()
 
 if(HAVE_MC)
-  set(simgrid_sources
-    ${simgrid_sources}
-    ${MC_SRC}
-    )
+  set(simgrid_sources  ${simgrid_sources}  ${MC_SRC})
 endif()
 
 if(HAVE_NS3)
-  set(simgrid_sources
-    ${simgrid_sources}
-    ${NS3_SRC}
-    )
+  set(simgrid_sources  ${simgrid_sources}  ${NS3_SRC})
 endif()
 
 # WINDOWS
@@ -803,15 +784,9 @@ if(WIN32)
 endif()
 
 if(${HAVE_LUA})
-  set(simgrid_sources
-    ${simgrid_sources}
-    ${LUA_SRC}
-    )
+  set(simgrid_sources  ${simgrid_sources}  ${LUA_SRC})
 else()
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    ${LUA_SRC}
-    )
+  set(EXTRA_DIST       ${EXTRA_DIST}       ${LUA_SRC})
 endif()
 
 set(DOC_SOURCES
