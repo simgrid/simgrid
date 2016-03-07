@@ -5,7 +5,7 @@ foreach (factory raw thread ucontext)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/factory_${factory}.tesh)
   string (TOUPPER have_${factory}_contexts VARNAME) 
   if (VARNAME)
-    ADD_TESH_FAC(tesh-simix-factory-${factory} --cfg contexts/factory:${factory} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_${factory}.tesh)
+    ADD_TESH(tesh-simix-factory-${factory} --cfg contexts/factory:${factory} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_${factory}.tesh)
   endif()
 endforeach()
 
