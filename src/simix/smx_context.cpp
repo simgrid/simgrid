@@ -129,8 +129,7 @@ void *SIMIX_context_stack_new(void)
 #if !defined(PTH_STACKGROWTH) || (PTH_STACKGROWTH != -1)
     static int warned_once = 0;
     if (!warned_once) {
-      XBT_WARN("Stack overflow protection is known to be broken on your system.  Either you're on Windows or PTH_STACKGROWTH != -1 (current value is %d).",
-               PTH_STACKGROWTH);
+      XBT_WARN("Stack overflow protection is known to be broken on your system.  Either stack grows upwards, or it was not even tested properly.");
       warned_once = 1;
     }
 #endif
