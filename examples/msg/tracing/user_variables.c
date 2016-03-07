@@ -6,26 +6,18 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/user_variables.c</b>: This program demonstrates how to
- * trace user variables associated to the hosts of the platform file.
- * You might want to run this program with the following parameters:
+ * - <b>tracing/user_variables.c</b>: This program demonstrates how to trace user variables associated to the hosts of
+ * the platform file. You might want to run this program with the following parameters:
  * --cfg=tracing:yes
  * --cfg=tracing/platform:yes
  * (See \ref tracing_tracing_options for details)
  */
 
-#include <stdio.h>
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc, printf */
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-int master(int argc, char *argv[]);
-
-int master(int argc, char *argv[])
+static int master(int argc, char *argv[])
 {
   const char *hostname = MSG_host_get_name(MSG_host_self());
   int i;
@@ -56,7 +48,6 @@ int master(int argc, char *argv[])
   return 0;
 }
 
-/** Main function */
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
@@ -65,9 +56,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  char *platform_file = argv[1];
-  char *deployment_file = argv[2];
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
 
   //declaring user variables
   TRACE_host_variable_declare("HDD_capacity");
@@ -76,7 +65,7 @@ int main(int argc, char *argv[])
   //register functions and launch deployment
   MSG_function_register("master", master);
   MSG_function_register("slave", master);
-  MSG_launch_application(deployment_file);
+  MSG_launch_application(argv[2]);
 
   MSG_main();
 

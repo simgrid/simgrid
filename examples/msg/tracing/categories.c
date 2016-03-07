@@ -6,12 +6,11 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/categories.c</b> This is a master/slave program where the master creates
- * tasks, send them to the slaves. For each task received, the slave executes
- * it and then destroys it. This program declares several tracing categories that are
- * used to classify tasks. When the program is executed, the tracing mechanism registers
- * the resource utilization of hosts and links according to these categories. You might
- * want to run this program with the following parameters:
+ * - <b>tracing/categories.c</b> This is a master/slave program where the master creates tasks, send them to the slaves.
+ * For each task received, the slave executes it and then destroys it. This program declares several tracing categories
+ * that are used to classify tasks. When the program is executed, the tracing mechanism registers the resource
+ * utilization of hosts and links according to these categories. You might want to run this program with the following
+ * parameters:
  * --cfg=tracing:yes
  * --cfg=tracing/categorized:yes
  * --cfg=tracing/uncategorized:yes
@@ -22,18 +21,10 @@
 
 #include <stdio.h>
 #include "simgrid/msg.h"
-#include "xbt/sysdep.h"         /* calloc, printf */
 
-/* Create a log channel to have nice outputs. */
-#include "xbt/log.h"
-#include "xbt/asserts.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
-int master(int argc, char *argv[]);
-int slave(int argc, char *argv[]);
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-/** sender function  */
-int master(int argc, char *argv[])
+static int master(int argc, char *argv[])
 {
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   long slaves_count = xbt_str_parse_int(argv[4], "Invalid amount of slaves: %s");
@@ -65,8 +56,7 @@ int master(int argc, char *argv[])
   return 0;
 }
 
-/** Receiver function  */
-int slave(int argc, char *argv[])
+static int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
 
@@ -85,7 +75,6 @@ int slave(int argc, char *argv[])
   return 0;
 }
 
-/** Main function */
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
@@ -94,9 +83,7 @@ int main(int argc, char *argv[])
     exit(1);
   }
 
-  char *platform_file = argv[1];
-  char *deployment_file = argv[2];
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
 
   //declaring user categories with RGB colors
   TRACE_category_with_color ("compute", "1 0 0"); //red
@@ -106,7 +93,7 @@ int main(int argc, char *argv[])
 
   MSG_function_register("master", master);
   MSG_function_register("slave", slave);
-  MSG_launch_application(deployment_file);
+  MSG_launch_application(argv[2]);
 
   MSG_main();
   return 0;
