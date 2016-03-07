@@ -1016,7 +1016,6 @@ set(CMAKEFILES_TXT
   teshsuite/simix/stack_overflow/CMakeLists.txt
   
   teshsuite/smpi/CMakeLists.txt
-  teshsuite/smpi/alltoall/CMakeLists.txt
   teshsuite/smpi/compute/CMakeLists.txt
   teshsuite/smpi/reduce/CMakeLists.txt
   teshsuite/smpi/shared/CMakeLists.txt

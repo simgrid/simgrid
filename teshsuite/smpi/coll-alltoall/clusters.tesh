@@ -3,7 +3,7 @@
 ! output sort
 
 p Test classic - backbone
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform ../../../examples/platforms/cluster.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/../alltoall/alltoall_coll -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/cluster.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 > [rank 0] -> node-0.acme.org
 > [rank 1] -> node-1.acme.org
 > [rank 2] -> node-2.acme.org
@@ -43,7 +43,7 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform 
 
 ! output sort
 p Test separate clusters
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform ../../../examples/platforms/clusters_routing_full.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/../alltoall/alltoall_coll -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/clusters_routing_full.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 > [rank 0] -> node-0.acme.org
 > [rank 1] -> node-1.acme.org
 > [rank 2] -> node-2.acme.org
@@ -83,7 +83,7 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform 
 
 ! output sort
 p Test torus
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform ../../../examples/platforms/torus_cluster.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/../alltoall/alltoall_coll -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/torus_cluster.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 > [rank 0] -> node-0.acme.org
 > [rank 1] -> node-1.acme.org
 > [rank 2] -> node-2.acme.org
@@ -123,7 +123,7 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform 
 
 ! output sort
 p Test fat tree
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform ../../../examples/platforms/fat_tree_cluster.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/../alltoall/alltoall_coll -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/fat_tree_cluster.xml -np 12 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 > [rank 0] -> node-0.acme.org
 > [rank 1] -> node-1.acme.org
 > [rank 2] -> node-2.acme.org
@@ -163,7 +163,7 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform 
 
 ! output sort
 p Test fat tree IB
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ./hostfile_cluster -platform ../../../examples/platforms/fat_tree_cluster.xml -np 12 --cfg=network/model:IB --log=xbt_cfg.thres:critical ${bindir:=.}/../alltoall/alltoall_coll -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_cluster -platform ../../../examples/platforms/fat_tree_cluster.xml -np 12 --cfg=network/model:IB --log=xbt_cfg.thres:critical ${bindir:=.}/coll-alltoall -q --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
 > [rank 0] -> node-0.acme.org
 > [rank 1] -> node-1.acme.org
 > [rank 2] -> node-2.acme.org
