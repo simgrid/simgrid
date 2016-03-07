@@ -15,7 +15,6 @@
 #include "src/simix/smx_private.h"
 #include "src/simix/smx_private.hpp"
 #include "src/internal_config.h"
-#include "src/context_sysv_config.h"        /* loads context system definitions */
 #include "mc/mc.h"
 
 /** Many integers are needed to store a pointer

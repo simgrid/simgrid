@@ -42,13 +42,10 @@ src/*_unit.c
 _*.c
 include/simgrid_config.h
 include/xbt/version.h
-include/instr/tracing_config.h
 include/smpi/smpif.h
-src/context_sysv_config.h
 src/internal_config.h
 src/smpi/smpicc
 src/smpi/smpirun
-simgrid-*.tar.gz
 testprog
 ### Cmake files
 CPackConfig.cmake
@@ -61,7 +58,6 @@ install_manifest.txt
 _CPack_Packages/
 CMakeCache.txt
 DartConfiguration.tcl
-simgrid.nsi
 TAGS
 Testing/
 Makefile

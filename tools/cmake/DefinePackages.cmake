@@ -703,8 +703,7 @@ set(headers_to_install
   )
 set(source_of_generated_headers
   include/simgrid_config.h.in
-  include/smpi/mpif.h.in
-  src/context_sysv_config.h.in)
+  include/smpi/mpif.h.in)
 
 ### depend of some variables setted upper
 # -->HAVE_THREAD_CONTEXTS HAVE_UCONTEXT_CONTEXTS

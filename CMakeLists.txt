@@ -579,23 +579,18 @@ if(GIT_DATE)
 endif()
 #--------------------------------------------------------------------------------------------------
 
-set(makecontext_CPPFLAGS_2 "")
 if(HAVE_UCONTEXT_H)
-  set(makecontext_CPPFLAGS "-DTEST_makecontext")
   if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    set(makecontext_CPPFLAGS_2 "-D_XOPEN_SOURCE=700")
+    set(makecontext_CPPFLAGS "${makecontext_CPPFLAGS} -D_XOPEN_SOURCE=700")
   endif()
 
   file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
 
-  if(CMAKE_CROSSCOMPILING)
-    set(RUN_makecontext_VAR "cross")
-    set(COMPILE_makecontext_VAR "cross")
-  else()
+  if(NOT CMAKE_CROSSCOMPILING)
     try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
       ${CMAKE_BINARY_DIR}
       ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stacksetup.c
-      COMPILE_DEFINITIONS "${makecontext_CPPFLAGS} ${makecontext_CPPFLAGS_2}"
+      COMPILE_DEFINITIONS "${makecontext_CPPFLAGS}"
       )
   endif()
 
@@ -649,9 +644,6 @@ if(ADDR2LINE)
 endif()
 
 ### File to create
-
-configure_file("${CMAKE_HOME_DIRECTORY}/src/context_sysv_config.h.in"
-  "${CMAKE_BINARY_DIR}/src/context_sysv_config.h" @ONLY IMMEDIATE)
 
 SET( CMAKEDEFINE "#cmakedefine" )
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
@@ -720,7 +712,6 @@ set(generated_headers_to_install
   )
 
 set(generated_headers
-  ${CMAKE_CURRENT_BINARY_DIR}/src/context_sysv_config.h
   ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h
   )
 
