@@ -311,8 +311,8 @@ endif()
 execute_process(
   COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-  RESULT_VARIABLE HAVE_thread_storage_run
-  )
+  RESULT_VARIABLE HAVE_thread_storage_run)
+
 
 if(HAVE_thread_storage_run)
   set(HAVE_THREAD_LOCAL_STORAGE 1)
@@ -341,9 +341,9 @@ if(enable_jedule)
 endif()
 
 if(enable_mallocators)
-  SET(MALLOCATOR_IS_WANTED 1)
+  SET(HAVE_MALLOCATOR 1)
 else()
-  SET(MALLOCATOR_IS_WANTED 0)
+  SET(HAVE_MALLOCATOR 0)
 endif()
 
 if(enable_model-checking AND HAVE_MMALLOC)
@@ -352,7 +352,7 @@ if(enable_model-checking AND HAVE_MMALLOC)
   include(FindLibdw)
 else()
   if(enable_model-checking)
-    message(STATUS "Warning: support for model-checking has been disabled because HAVE_MMALLOC is false")
+    message(STATUS "Warning: support for model-checking has been disabled because you are missing either mmap or __thread.")
   endif()
   SET(HAVE_MC 0)
   SET(HAVE_MMALLOC 0)
