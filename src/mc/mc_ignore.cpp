@@ -92,9 +92,9 @@ void MC_register_stack_area(void *stack, smx_process_t process, ucontext_t* cont
       ((char *) stack -
        (char *) heap->heapbase) / BLOCKSIZE + 1;
 #ifdef HAVE_SMPI
-  if (smpi_privatize_global_variables && process) {
+  if (smpi_privatize_global_variables && process)
     region.process_index = smpi_process_index_of_smx_process(process);
-  } else
+  else
 #endif
   region.process_index = -1;
 

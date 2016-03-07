@@ -54,9 +54,8 @@ static e_mc_comm_pattern_difference_t compare_comm_pattern(mc_comm_pattern_t com
     if (!memcmp(comm1->data, comm2->data, comm1->data_size))
       return NONE_DIFF;
     return DATA_DIFF;
-  }else{
+  } else
     return DATA_DIFF;
-  }
   return NONE_DIFF;
 }
 
@@ -249,9 +248,8 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
     pattern->dst_proc = MC_smx_resolve_process(synchro.comm.dst_proc)->pid;
     pattern->dst_host = MC_smx_process_get_host_name(issuer);
-  } else {
+  } else
     xbt_die("Unexpected call_type %i", (int) call_type);
-  }
 
   xbt_dynar_push(
     xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid, xbt_dynar_t),
@@ -267,7 +265,7 @@ void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigne
   int completed = 0;
 
   /* Complete comm pattern */
-  xbt_dynar_foreach(xbt_dynar_get_as(incomplete_communications_pattern, issuer, xbt_dynar_t), cursor, current_comm_pattern) {
+  xbt_dynar_foreach(xbt_dynar_get_as(incomplete_communications_pattern, issuer, xbt_dynar_t), cursor, current_comm_pattern)
     if (current_comm_pattern->comm_addr == comm_addr) {
       update_comm_pattern(current_comm_pattern, comm_addr);
       completed = 1;
@@ -277,17 +275,17 @@ void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigne
       XBT_DEBUG("Remove incomplete comm pattern for process %u at cursor %u", issuer, cursor);
       break;
     }
-  }
+
   if(!completed)
     xbt_die("Corresponding communication not found!");
 
   mc_list_comm_pattern_t pattern = xbt_dynar_get_as(
     initial_communications_pattern, issuer, mc_list_comm_pattern_t);
 
-  if (!initial_global_state->initial_communications_pattern_done) {
+  if (!initial_global_state->initial_communications_pattern_done)
     /* Store comm pattern */
     xbt_dynar_push(pattern->list, &comm_pattern);
-  } else {
+  else {
     /* Evaluate comm determinism */
     deterministic_comm_pattern(issuer, comm_pattern, backtracking);
     pattern->index_comm++;
@@ -369,18 +367,16 @@ static int MC_modelcheck_comm_determinism_main(void)
       XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
       
-      if (dot_output != nullptr) {
+      if (dot_output != nullptr)
         req_str = MC_request_get_dot_output(req, value);
-      }
 
       MC_state_set_executed_request(state, req, value);
       mc_stats->executed_transitions++;
 
       /* TODO : handle test and testany simcalls */
       e_mc_call_type_t call = MC_CALL_TYPE_NONE;
-      if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
+      if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = MC_get_call_type(req);
-      }
 
       /* Answer the request */
       MC_simcall_handle(req, value);    /* After this call req is no longer useful */
@@ -406,12 +402,9 @@ static int MC_modelcheck_comm_determinism_main(void)
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,  next_state->num, req_str);
 
-      } else {
-
-        if (dot_output != nullptr)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
-
-      }
+      } else if (dot_output != nullptr)
+        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
+          state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
 
       xbt_fifo_unshift(mc_stack, next_state);
 
@@ -420,13 +413,12 @@ static int MC_modelcheck_comm_determinism_main(void)
 
     } else {
 
-      if (xbt_fifo_size(mc_stack) > _sg_mc_max_depth) {
+      if (xbt_fifo_size(mc_stack) > _sg_mc_max_depth)
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-      } else if (visited_state != nullptr) {
+      else if (visited_state != nullptr)
         XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
-      } else {
+      else
         XBT_DEBUG("There are no more processes to interleave. (depth %d)", xbt_fifo_size(mc_stack));
-      }
 
       if (!initial_global_state->initial_communications_pattern_done) 
         initial_global_state->initial_communications_pattern_done = 1;
@@ -444,7 +436,7 @@ static int MC_modelcheck_comm_determinism_main(void)
         return SIMGRID_MC_EXIT_DEADLOCK;
       }
 
-      while ((state = (mc_state_t) xbt_fifo_shift(mc_stack)) != nullptr) {
+      while ((state = (mc_state_t) xbt_fifo_shift(mc_stack)) != nullptr)
         if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack) < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
@@ -459,7 +451,7 @@ static int MC_modelcheck_comm_determinism_main(void)
           XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
           MC_state_delete(state, !state->in_visited_states ? 1 : 0);
         }
-      }
+
     }
   }
 
@@ -473,10 +465,9 @@ int MC_modelcheck_comm_determinism(void)
   mc_reduce_kind = e_mc_reduce_none;
   mc_model_checker->wait_for_requests();
 
-  if (mc_mode == MC_MODE_CLIENT) {
+  if (mc_mode == MC_MODE_CLIENT)
     // This will move somehwere else:
     MC_client_handle_messages();
-  }
 
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();

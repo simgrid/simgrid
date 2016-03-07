@@ -30,8 +30,7 @@
  * Makecontext expects integer arguments, we the context
  * variable is decomposed into a serie of integers and
  * each integer is passed as argument to makecontext. */
-static
-void simgrid_makecontext(ucontext_t* ucp, void (*func)(int first, ...), void* arg)
+static void simgrid_makecontext(ucontext_t* ucp, void (*func)(int first, ...), void* arg)
 {
   int ctx_addr[CTX_ADDR_LEN];
   memcpy(ctx_addr, &arg, sizeof(void*));
@@ -43,8 +42,7 @@ void simgrid_makecontext(ucontext_t* ucp, void (*func)(int first, ...), void* ar
     makecontext(ucp, (void (*)()) func, 2, ctx_addr[0], ctx_addr[1]);
     break;
   default:
-    xbt_die("Ucontexts are not supported on this arch yet (addr len = %zu/%zu = %zu)",
-            sizeof(void*), sizeof(int), CTX_ADDR_LEN);
+    xbt_die("Ucontexts are not supported on this arch yet (addr len = %zu/%zu = %zu)", sizeof(void*), sizeof(int), CTX_ADDR_LEN);
   }
 }
 
@@ -210,16 +208,13 @@ UContext::UContext(std::function<void()> code,
     void_pfn_smxprocess_t cleanup_func, smx_process_t process)
   : Context(std::move(code), cleanup_func, process)
 {
-  /* if the user provided a function for the process then use it,
-     otherwise it is the context for maestro */
+  /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
   if (has_code()) {
     this->stack_ = (char*) SIMIX_context_stack_new();
     getcontext(&this->uc_);
     this->uc_.uc_link = nullptr;
-    this->uc_.uc_stack.ss_sp = pth_skaddr_makecontext(
-          this->stack_, smx_context_usable_stack_size);
-    this->uc_.uc_stack.ss_size = pth_sksize_makecontext(
-          this->stack_, smx_context_usable_stack_size);
+    this->uc_.uc_stack.ss_sp   = sg_makecontext_stack_addr(this->stack_);
+    this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
     simgrid_makecontext(&this->uc_, smx_ctx_sysv_wrapper, this);
   } else {
     if (process != NULL && sysv_maestro_context == NULL)

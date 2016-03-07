@@ -37,9 +37,12 @@
 #cmakedefine PROCESSOR_x86_64 @PROCESSOR_x86_64@
 #cmakedefine CMAKE_SYSTEM_PROCESSOR @CMAKE_SYSTEM_PROCESSOR@
 
-/* Variables for the ucontexts */
-@pth_skaddr_makecontext@
-@pth_sksize_makecontext@
+/* Variables for the SysV contexts */
+@sg_makecontext_stack_addr@
+@sg_makecontext_stack_size@
+
+/* Variable for SysV, raw and Boost contexts */
+#cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@ /* Does the stack growth upward, or downward? */
 
 /* MC variables */
 #cmakedefine HAVE_GETDTABLESIZE    @HAVE_GETDTABLESIZE@    /* getdtablesize: get descriptor table size */
@@ -63,4 +66,3 @@
 /* Other checks */
 #cmakedefine ADDR2LINE       "@ADDR2LINE@"     /* Path to the addr2line tool */
 #cmakedefine HAVE_GRAPHVIZ   @HAVE_GRAPHVIZ@   /* The graphviz library */
-#cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@ /* Does the stack growth upward, or downward? */

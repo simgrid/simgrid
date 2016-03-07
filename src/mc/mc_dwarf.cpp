@@ -257,11 +257,10 @@ static const char *MC_dwarf_attr_integrate_string(Dwarf_Die * die,
                                                   int attribute)
 {
   Dwarf_Attribute attr;
-  if (!dwarf_attr_integrate(die, attribute, &attr)) {
+  if (!dwarf_attr_integrate(die, attribute, &attr))
     return nullptr;
-  } else {
+  else
     return dwarf_formstring(&attr);
-  }
 }
 
 /** \brief Get the linkage name of a DIE.
@@ -867,9 +866,8 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
   if (low_pc) {
     // DW_AT_high_pc:
     Dwarf_Attribute attr;
-    if (!dwarf_attr_integrate(die, DW_AT_high_pc, &attr)) {
+    if (!dwarf_attr_integrate(die, DW_AT_high_pc, &attr))
       xbt_die("Missing DW_AT_high_pc matching with DW_AT_low_pc");
-    }
 
     Dwarf_Sword offset;
     Dwarf_Addr high_pc;
@@ -941,9 +939,8 @@ static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf
   Dwarf_Die child;
   int res;
   for (res = dwarf_child(die, &child); res == 0;
-       res = dwarf_siblingof(&child, &child)) {
+       res = dwarf_siblingof(&child, &child))
     MC_dwarf_handle_die(info, &child, unit, frame, ns);
-  }
 }
 
 static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
@@ -1176,7 +1173,7 @@ void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::Obj
         break;
 
     // Resolve full_type:
-    if (!subtype->name.empty() && subtype->byte_size == 0) {
+    if (!subtype->name.empty() && subtype->byte_size == 0)
       for (auto const& object_info : process->object_infos) {
         auto i = object_info->full_types_by_name.find(subtype->name);
         if (i != object_info->full_types_by_name.end()
@@ -1185,7 +1182,7 @@ void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::Obj
           break;
         }
       }
-    } else type->full_type = subtype;
+    else type->full_type = subtype;
 
   }
 }

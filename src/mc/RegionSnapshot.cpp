@@ -119,11 +119,10 @@ RegionSnapshot region(
   RegionType type, void *start_addr, void* permanent_addr, size_t size,
   RegionSnapshot const* ref_region)
 {
-  if (_sg_mc_sparse_checkpoint) {
+  if (_sg_mc_sparse_checkpoint)
     return sparse_region(type, start_addr, permanent_addr, size, ref_region);
-  } else  {
+  else
     return dense_region(type, start_addr, permanent_addr, size);
-  }
 }
 
 RegionSnapshot sparse_region(RegionType region_type,

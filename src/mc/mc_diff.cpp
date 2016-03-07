@@ -86,12 +86,11 @@ static int is_new_heap_area_pair(xbt_dynar_t list, int block1, int fragment1,
   unsigned int cursor = 0;
   heap_area_pair_t current_pair;
 
-  xbt_dynar_foreach(list, cursor, current_pair) {
+  xbt_dynar_foreach(list, cursor, current_pair)
     if (current_pair->block1 == block1 && current_pair->block2 == block2
         && current_pair->fragment1 == fragment1
         && current_pair->fragment2 == fragment2)
       return 0;
-  }
 
   return 1;
 }
@@ -160,7 +159,7 @@ static void match_equals(struct s_mc_diff *state, xbt_dynar_t list)
   unsigned int cursor = 0;
   heap_area_pair_t current_pair;
 
-  xbt_dynar_foreach(list, cursor, current_pair) {
+  xbt_dynar_foreach(list, cursor, current_pair)
 
     if (current_pair->fragment1 != -1) {
 
@@ -178,7 +177,6 @@ static void match_equals(struct s_mc_diff *state, xbt_dynar_t list)
 
     }
 
-  }
 }
 
 /** Check whether two blocks are known to be matching
@@ -715,14 +713,12 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
         res_compare =
             compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
                               snapshot2, previous, nullptr, 0);
-        if (res_compare == 1) {
+        if (res_compare == 1)
           return res_compare;
-        }
         i = pointer_align + sizeof(void *);
         continue;
-      } else {
+      } else
         return 1;
-      }
 
     }
 
@@ -770,9 +766,8 @@ top:
       && ((ignore1 = heap_comparison_ignore_size(state->to_ignore1, real_area1))
           > 0)
       && ((ignore2 = heap_comparison_ignore_size(state->to_ignore2, real_area2))
-          == ignore1)) {
+          == ignore1))
     return 0;
-  }
 
   simgrid::mc::Type *subtype, *subsubtype;
   int res, elm_size;
@@ -794,9 +789,8 @@ top:
     } else {
       if (area_size != -1 && type->byte_size != area_size)
         return -1;
-      else {
+      else
         return (MC_snapshot_region_memcmp(real_area1, heap_region1, real_area2, heap_region2, type->byte_size) != 0);
-      }
     }
     break;
   case DW_TAG_enumeration_type:
@@ -917,9 +911,8 @@ top:
           if (res == 1)
             return res;
         }
-      } else {
+      } else
         return -1;
-      }
     } else {
       for(simgrid::mc::Member& member : type->members) {
         // TODO, optimize this? (for the offset case)
@@ -932,9 +925,8 @@ top:
                                         snapshot1, snapshot2,
                                         previous, member.type, -1,
                                         check_ignore, 0);
-        if (res == 1) {
+        if (res == 1)
           return res;
-        }
       }
     }
     break;
@@ -1075,9 +1067,8 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
       || (block1 > (ssize_t) state->heapsize1) || (block1 < 1)
       || ((char *) area2 < (char *) state->std_heap_copy.heapbase)
       || (block2 > (ssize_t) state->heapsize2) || (block2 < 1)) {
-    if (match_pairs) {
+    if (match_pairs)
       xbt_dynar_free(&previous);
-    }
     return 1;
   }
 
@@ -1158,17 +1149,15 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
 
     if (heapinfo1->busy_block.size !=
         heapinfo2->busy_block.size) {
-      if (match_pairs) {
+      if (match_pairs)
         xbt_dynar_free(&previous);
-      }
       return 1;
     }
 
     if (heapinfo1->busy_block.busy_size !=
         heapinfo2->busy_block.busy_size) {
-      if (match_pairs) {
+      if (match_pairs)
         xbt_dynar_free(&previous);
-      }
       return 1;
     }
 
@@ -1184,12 +1173,10 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
 
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole block.
-    if (type != nullptr && area1 == real_addr_block1) {
+    if (type != nullptr && area1 == real_addr_block1)
       state->types1_(block1, 0) = type;
-    }
-    if (type != nullptr && area2 == real_addr_block2) {
+    if (type != nullptr && area2 == real_addr_block2)
       state->types2_(block2, 0) = type;
-    }
 
     if (size <= 0) {
       if (match_pairs) {
@@ -1265,9 +1252,8 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
         }
         return -1;
       } else {
-        if (match_pairs) {
+        if (match_pairs)
           xbt_dynar_free(&previous);
-        }
         return 1;
       }
     }
@@ -1277,12 +1263,11 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
 
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole fragment.
-    if (type != nullptr && area1 == real_addr_frag1) {
+    if (type != nullptr && area1 == real_addr_frag1)
       state->types1_(block1, frag1) = type;
-    }
-    if (type != nullptr && area2 == real_addr_frag2) {
+    if (type != nullptr && area2 == real_addr_frag2)
       state->types2_(block2, frag2) = type;
-    }
+
     // The type of the variable is already known:
     if (type) {
       new_type1 = type;
@@ -1351,15 +1336,14 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
       size = new_size1;
     }
 
-    if (offset1 == 0 && offset2 == 0) {
-      if (!add_heap_area_pair(previous, block1, frag1, block2, frag2)) {
+    if (offset1 == 0 && offset2 == 0
+      && !add_heap_area_pair(previous, block1, frag1, block2, frag2)) {
         if (match_pairs) {
           match_equals(state, previous);
           xbt_dynar_free(&previous);
         }
         return 0;
       }
-    }
 
     if (size <= 0) {
       if (match_pairs) {
@@ -1376,25 +1360,24 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, m
 
   } else {
 
-    if (match_pairs) {
+    if (match_pairs)
       xbt_dynar_free(&previous);
-    }
     return 1;
 
   }
 
 
   /* Start comparison */
-  if (type) {
+  if (type)
     res_compare =
         compare_heap_area_with_type(state, process_index, area1, area2, snapshot1, snapshot2,
                                     previous, type, size, check_ignore,
                                     pointer_level);
-  } else {
+  else
     res_compare =
         compare_heap_area_without_type(state, process_index, area1, area2, snapshot1, snapshot2,
                                        previous, size, check_ignore);
-  }
+
   if (res_compare == 1) {
     if (match_pairs)
       xbt_dynar_free(&previous);
@@ -1439,13 +1422,13 @@ static int get_pointed_area_size(void *area, int heap)
 
   if (heapinfo[block].type == MMALLOC_TYPE_FREE || heapinfo[block].type == MMALLOC_TYPE_HEAPINFO) {     /* Free block */
     return -1;
-  } else if (heapinfo[block].type == MMALLOC_TYPE_UNFRAGMENTED) {       /* Complete block */
+  else if (heapinfo[block].type == MMALLOC_TYPE_UNFRAGMENTED)       /* Complete block */
     return (int) heapinfo[block].busy_block.busy_size;
-  } else {
+  else
     frag =
         ((uintptr_t) (ADDR2UINT(area) % (BLOCKSIZE))) >> heapinfo[block].type;
     return (int) heapinfo[block].busy_frag.frag_size[frag];
-  }
+
 }
 
 #ifndef max
