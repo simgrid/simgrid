@@ -177,12 +177,8 @@ __ex_mctx_struct} __ex_mctx_t;
  * cleanup that needs to be done regardless of whether an exception is
  * caught. Bypassing these steps will break the exception handling facility.
  * The symptom are likely to be a segfault at the next exception raising point,  
- * ie far away from the point where you did the mistake. If you suspect
- * that kind of error in your code, have a look at the little script
- * <tt>tools/xbt_exception_checker</tt> in the CVS. It extracts all the TRY
- * blocks from a set of C files you give it and display them (and only
- * them) on the standard output. You can then grep for the forbidden 
- * keywords on that output.
+ * ie far away from the point where you did the mistake. Finding the problem can 
+ * reveal challenging, unfortunately.
  *   
  * The CLEANUP and CATCH blocks are regular ISO-C language statement
  * blocks without any restrictions. You are even allowed to throw (and, in the
