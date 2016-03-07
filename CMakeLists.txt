@@ -633,28 +633,22 @@ endif()
 # If the test ran well, remove the test binary
 execute_process(COMMAND ${CMAKE_COMMAND} -E remove test_stackgrowth)
 
-###############
-## System checks
-##
-
 ### check for addr2line
-find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS	)
+find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS)
 if(ADDR2LINE)
   set(ADDR2LINE "${ADDR2LINE}/addr2line")
 endif()
 
-### File to create
+### Generate the required headers and scripts
+#############################################
+configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h"    @ONLY IMMEDIATE)
+configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in"          "${CMAKE_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
 
-SET( CMAKEDEFINE "#cmakedefine" )
-configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
-configure_file("${CMAKE_BINARY_DIR}/src/internal_config.h" "${CMAKE_BINARY_DIR}/src/internal_config.h" @ONLY IMMEDIATE)
-configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in" "${CMAKE_BINARY_DIR}/include/simgrid_config.h" @ONLY IMMEDIATE)
+# We need two versions of the SMPI scripts because they contain the path to the library
+# so, it depends of whether SimGrid is installed, or run from the sources (during the build)
+file(READ ${CMAKE_HOME_DIRECTORY}/src/smpi/smpitools.sh SMPITOOLS_SH) # Definitions shared amongst all scripts, inlined in each of them
 
-set(top_srcdir "${CMAKE_HOME_DIRECTORY}")
-set(srcdir "${CMAKE_HOME_DIRECTORY}/src")
-set(bindir "${CMAKE_BINARY_DIR}")
-
-### Script used when simgrid is installed
+### SMPI script used when simgrid is installed
 set(exec_prefix ${CMAKE_INSTALL_PREFIX})
 set(includeflag "-I${CMAKE_INSTALL_PREFIX}/include -I${CMAKE_INSTALL_PREFIX}/include/smpi")
 set(includedir "${CMAKE_INSTALL_PREFIX}/include")
@@ -665,45 +659,32 @@ if(NS3_LIBRARY_PATH)
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
 
-file(READ ${CMAKE_HOME_DIRECTORY}/src/smpi/smpitools.sh SMPITOOLS_SH)
 configure_file(${CMAKE_HOME_DIRECTORY}/include/smpi/mpif.h.in ${CMAKE_BINARY_DIR}/include/smpi/mpif.h @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/bin/smpicc @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicxx.in ${CMAKE_BINARY_DIR}/bin/smpicxx @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/bin/smpiff @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif90.in ${CMAKE_BINARY_DIR}/bin/smpif90 @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/bin/smpirun @ONLY)
+foreach(script cc cxx ff f90 run)
+  configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpi${script}.in ${CMAKE_BINARY_DIR}/bin/smpi${script} @ONLY)
+endforeach()
 
-### Script used when simgrid is compiling
+### SMPI scripts used when compiling simgrid 
+set(exec_prefix "${CMAKE_BINARY_DIR}/smpi_script/")
 set(includeflag "-I${CMAKE_HOME_DIRECTORY}/include -I${CMAKE_HOME_DIRECTORY}/include/smpi")
 set(includeflag "${includeflag} -I${CMAKE_BINARY_DIR}/include -I${CMAKE_BINARY_DIR}/include/smpi")
 set(includedir "${CMAKE_HOME_DIRECTORY}/include")
-set(exec_prefix "${CMAKE_BINARY_DIR}/smpi_script/")
+set(libdir "${CMAKE_BINARY_DIR}/lib")
 set(CMAKE_SMPI_COMMAND "export LD_LIBRARY_PATH=\"${CMAKE_BINARY_DIR}/lib")
 if(NS3_LIBRARY_PATH)
   set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:${NS3_LIBRARY_PATH}")
 endif()
 set(CMAKE_SMPI_COMMAND "${CMAKE_SMPI_COMMAND}:\${LD_LIBRARY_PATH:+:$LD_LIBRARY_PATH}\"")
-set(libdir "${CMAKE_BINARY_DIR}/lib")
 
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicc.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpicxx.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicxx @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpiff.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpif90.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90 @ONLY)
-configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpirun.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun @ONLY)
-
-set(top_builddir ${CMAKE_HOME_DIRECTORY})
+foreach(script cc cxx ff f90 run)
+  configure_file(${CMAKE_HOME_DIRECTORY}/src/smpi/smpi${script}.in ${CMAKE_BINARY_DIR}/smpi_script/bin/smpi${script} @ONLY)
+endforeach()
 
 if(NOT WIN32)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicc)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpicxx)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpiff)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpif90)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpicxx)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90)
-  execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun)
+  foreach(script cc cxx ff f90 run)
+    execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpi${script})
+    execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/smpi_script/bin/smpi${script})
+  endforeach()
 endif()
 
 set(generated_headers_to_install

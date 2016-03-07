@@ -131,7 +131,7 @@ FULL_PATH_NAMES        = YES
 # If left blank the directory from which doxygen is run is used as the
 # path to strip.
 
-STRIP_FROM_PATH        = @top_srcdir@
+STRIP_FROM_PATH        = @CMAKE_HOME_DIRECTORY@
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of
 # the path mentioned in the documentation of a class, which tells
@@ -673,53 +673,53 @@ INPUT                  = doxygen/index.doc \
                            doxygen/module-smpi.doc \
                            doxygen/module-trace.doc \
                            index-API.doc \
-                         @top_srcdir@/doc/doxygen/logcategories.doc \
-                         @top_srcdir@/src/instr/ \
-                         @bindir@/include \
-                         @top_srcdir@/include/ \
-                         @top_srcdir@/include/xbt \
-                         @top_srcdir@/include/simgrid \
-                         @top_srcdir@/src/include/surf \
-                         @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/src/surf/ \
-                         @top_srcdir@/src/surf/plugins/ \
-                         @top_srcdir@/src/s4u/ \
-                         @top_srcdir@/src/msg/ \
-                         @top_srcdir@/src/smpi/ \
-                         @top_srcdir@/src/simdag \
-                         @top_srcdir@/src/simix \
-                         @bindir@/src
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/logcategories.doc \
+                         @CMAKE_HOME_DIRECTORY@/src/instr/ \
+                         @CMAKE_HOME_DIRECTORY@/include/ \
+                         @CMAKE_HOME_DIRECTORY@/include/xbt \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid \
+                         @CMAKE_HOME_DIRECTORY@/src/include/surf \
+                         @CMAKE_HOME_DIRECTORY@/src/xbt/ \
+                         @CMAKE_HOME_DIRECTORY@/src/surf/ \
+                         @CMAKE_HOME_DIRECTORY@/src/surf/plugins/ \
+                         @CMAKE_HOME_DIRECTORY@/src/s4u/ \
+                         @CMAKE_HOME_DIRECTORY@/src/msg/ \
+                         @CMAKE_HOME_DIRECTORY@/src/smpi/ \
+                         @CMAKE_HOME_DIRECTORY@/src/simdag \
+                         @CMAKE_HOME_DIRECTORY@/src/simix \
+                         @CMAKE_BINARY_DIR@/include \
+                         @CMAKE_BINARY_DIR@/src
 
 
 ###################################################
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
 ###################################################
 
-INPUT +=                 @top_srcdir@/examples/msg/sendrecv/sendrecv.c \
-                         @top_srcdir@/examples/msg/masterslave/masterslave_forwarder.c \
-                         @top_srcdir@/examples/msg/migration \
-                         @top_srcdir@/examples/msg/suspend \
-                         @top_srcdir@/examples/msg/properties \
-                         @top_srcdir@/examples/msg/parallel_task \
-                         @top_srcdir@/examples/msg/priority \
-                         @top_srcdir@/examples/msg/icomms/peer.c \
-                         @top_srcdir@/examples/msg/icomms/peer2.c \
-                         @top_srcdir@/examples/msg/icomms/peer3.c \
-                         @top_srcdir@/examples/msg/tracing/simple.c \
-                         @top_srcdir@/examples/msg/tracing/ms.c \
-                         @top_srcdir@/examples/msg/tracing/categories.c \
-                         @top_srcdir@/examples/msg/tracing/procmig.c \
-                         @top_srcdir@/examples/msg/tracing/trace_platform.c \
-                         @top_srcdir@/examples/msg/tracing/user_variables.c \
-                         @top_srcdir@/examples/msg/tracing/link_user_variables.c \
-                         @top_srcdir@/examples/msg/tracing/link_srcdst_user_variables.c \
-                         @top_srcdir@/examples/msg/ns3 \
-                         @top_srcdir@/examples/msg/io \
-                         @top_srcdir@/examples/msg/gpu \
-                         @top_srcdir@/examples/msg/actions \
-                         @top_srcdir@/examples/msg/token_ring \
-                         @top_srcdir@/examples/msg/pmm \
-                         @top_srcdir@/examples/msg/chord
+INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/sendrecv/sendrecv.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/masterslave/masterslave_forwarder.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/migration \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/suspend \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/properties \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/parallel_task \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/priority \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer2.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer3.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/simple.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/ms.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/categories.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/procmig.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/trace_platform.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/user_variables.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/link_user_variables.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/link_srcdst_user_variables.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/ns3 \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/io \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/gpu \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/actions \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/token_ring \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/pmm \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/chord
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -780,10 +780,10 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ./ \
-                         @top_srcdir@/src/surf/ \
-                         @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/examples \
-                         @top_srcdir@/doc/example_lists
+                         @CMAKE_HOME_DIRECTORY@/src/surf/ \
+                         @CMAKE_HOME_DIRECTORY@/src/xbt/ \
+                         @CMAKE_HOME_DIRECTORY@/examples \
+                         @CMAKE_HOME_DIRECTORY@/doc/example_lists
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -803,8 +803,8 @@ EXAMPLE_RECURSIVE      = YES
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = @top_srcdir@/doc \
-                         @top_srcdir@/doc/webcruft
+IMAGE_PATH             = @CMAKE_HOME_DIRECTORY@/doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/webcruft
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
