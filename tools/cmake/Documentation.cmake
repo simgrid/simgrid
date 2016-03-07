@@ -7,9 +7,7 @@
 ###
 ###  This file is not loaded on windows
 
-
 #### Generate the html documentation
-
 if (enable_documentation)
   find_package(Doxygen REQUIRED)
 else()
@@ -18,9 +16,7 @@ endif()
 
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
-
 if(DOXYGEN_FOUND)
-
   ADD_CUSTOM_TARGET(documentation 
     COMMENT "Generating the SimGrid documentation..."
     DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
@@ -31,10 +27,9 @@ if(DOXYGEN_FOUND)
 
   message(STATUS "Doxygen version: ${DOXYGEN_VERSION}")
 
-  # This is a workaround for older cmake versions
-  # (such as 2.8.7 on Ubuntu 12.04). These cmake versions do not provide the
-  # DOXYGEN_VERSION variable and hence, building the documentation will always
-  # fail. This code is the same as used in the cmake library, version 3.
+  # This is a workaround for older cmake versions (such as 2.8.7 on Ubuntu 12.04). These cmake versions do not provide 
+  # the DOXYGEN_VERSION variable and hence, building the documentation will always  fail. This code is the same as used
+  # in the cmake library, version 3.
   if(DOXYGEN_EXECUTABLE)
     execute_process(COMMAND ${DOXYGEN_EXECUTABLE} "--version" OUTPUT_VARIABLE DOXYGEN_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
   endif()
@@ -44,7 +39,6 @@ if(DOXYGEN_FOUND)
         COMMAND ${CMAKE_COMMAND} -E echo "Doxygen must be at least version 1.8 to generate documentation. Version found: ${DOXYGEN_VERSION}"
       COMMAND false
     )
-
     add_dependencies(documentation error_doxygen)
   endif()
 
@@ -53,16 +47,11 @@ if(DOXYGEN_FOUND)
   foreach(file ${DOC_FIGS})
     string(REPLACE ".fig" ".png" tmp_file ${file})
     string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_HOME_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
-    ADD_CUSTOM_COMMAND(TARGET documentation
-      COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file}
-      )
+    ADD_CUSTOM_COMMAND(TARGET documentation  COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file})
   endforeach()
 
   foreach(file ${DOC_IMG})
-    ADD_CUSTOM_COMMAND(
-      TARGET documentation
-      COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/
-    )
+    ADD_CUSTOM_COMMAND(TARGET documentation COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/)
   endforeach()
 
   ADD_CUSTOM_COMMAND(TARGET documentation
@@ -92,11 +81,7 @@ if(DOXYGEN_FOUND)
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
 
-
-
-#############################################
 ### Fill in the "make sync-gforge" target ###
-#############################################
 
 set(RSYNC_CMD rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --times --omit-dir-times --perms --chmod=a+rX,ug+w,o-w,Dg+s)
 
@@ -119,9 +104,7 @@ add_custom_target(sync-gforge-dtd
   COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
-
 endif() # Doxygen found
-
 
 if (Java_FOUND)
   find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
@@ -154,4 +137,3 @@ install(FILES
   ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpiff.1
   ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpirun.1
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
-
