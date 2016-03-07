@@ -13,7 +13,7 @@
 #define SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@
 #define SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
 
-/* Version as a single integer. v3.4 is 30400; v3.16.2 is 31602; v42 will be 420000, and so on. */
+/* Version as a single integer. v3.4 is 30400, v3.16.2 is 31602, v42 will be 420000, and so on. */
 #define SIMGRID_VERSION (100UL * (100UL * (@SIMGRID_VERSION_MAJOR@) + (@SIMGRID_VERSION_MINOR@)) + (@SIMGRID_VERSION_PATCH@))
 
 #define SIMGRID_VERSION_STRING "@SIMGRID_VERSION_STRING@"
