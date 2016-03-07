@@ -126,7 +126,7 @@ void *SIMIX_context_stack_new(void)
 
   if (smx_context_guard_size > 0 && !MC_is_active()) {
 
-#if defined(_WIN32) || (PTH_STACKGROWTH != -1)
+#if !defined(PTH_STACKGROWTH) || (PTH_STACKGROWTH != -1)
     static int warned_once = 0;
     if (!warned_once) {
       XBT_WARN("Stack overflow protection is known to be broken on your system.  Either you're on Windows or PTH_STACKGROWTH != -1 (current value is %d).",
@@ -226,12 +226,9 @@ void SIMIX_context_set_nthreads(int nb_threads) {
      nb_threads = xbt_os_get_numcores();
      XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
   }   
-  
-  if (nb_threads > 1) {
 #ifndef HAVE_THREAD_CONTEXTS
-    THROWF(arg_error, 0, "The thread factory cannot be run in parallel");
+  xbt_assert(nb_threads == 1, "Parallel runs are impossible when the pthreads are missing.");
 #endif
-  }
   smx_parallel_contexts = nb_threads;
 }
 
