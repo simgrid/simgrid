@@ -10,7 +10,7 @@
 
 #include "xbt/misc.h"
 #include "simgrid_config.h"
-#include "src/internal_config.h" /* MMALLOC_WANT_OVERRIDE_LEGACY */
+#include "src/internal_config.h" /* HAVE_MC */
 #include "src/portable.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -127,7 +127,7 @@ static void xbt_postexit(void)
   xbt_dynar_free(&xbt_cmdline);
   xbt_log_postexit();
   free(xbt_binary_name);
-#ifdef MMALLOC_WANT_OVERRIDE_LEGACY
+#ifdef HAVE_MC
   mmalloc_postexit();
 #endif
 }

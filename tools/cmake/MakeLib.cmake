@@ -88,7 +88,7 @@ if(HAVE_MC)
   endif()
 endif()
 
-if(MMALLOC_WANT_OVERRIDE_LEGACY AND HAVE_GNU_LD)
+if(HAVE_MC AND HAVE_GNU_LD)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl")
 endif()
 
