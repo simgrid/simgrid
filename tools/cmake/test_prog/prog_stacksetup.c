@@ -35,8 +35,6 @@ void handler(void)
 
 int main(int argc, char *argv[])
 {
-  FILE *f;
-  char result[1024];
   int sksize = 32768;
   char *skbuf = (char *) malloc(sksize * 2 + 2 * sizeof(union alltypes));
   if (skbuf == NULL)
@@ -59,20 +57,15 @@ int main(int argc, char *argv[])
   if (handler_addr < skaddr + sksize) {
     /* stack was placed into lower area */
     if (*(skaddr + sksize) != 'A')
-      sprintf(result, "(skaddr)+(sksize)-%d,(sksize)-%d", sizeof(union alltypes), sizeof(union alltypes));
+      printf("(skaddr)+(sksize)-%d;(sksize)-%d", sizeof(union alltypes), sizeof(union alltypes));
     else
-      strcpy(result, "(skaddr)+(sksize),(sksize)");
+      printf("(skaddr)+(sksize);(sksize)");
   } else {
     /* stack was placed into higher area */
     if (*(skaddr + sksize * 2) != 'A')
-      sprintf(result, "(skaddr),(sksize)-%d", sizeof(union alltypes));
+      printf("(skaddr);(sksize)-%d", sizeof(union alltypes));
     else
-      strcpy(result, "(skaddr),(sksize)");
+      printf("(skaddr);(sksize)");
   }
-  if ((f = fopen("conftestval", "w")) == NULL)
-    exit(1);
-  fprintf(f, "%s\n", result);
-  fclose(f);
-  exit(0);
-  return 1;
+  return 0;
 }

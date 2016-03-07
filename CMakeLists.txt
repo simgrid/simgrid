@@ -291,6 +291,8 @@ CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
 CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
 CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
+CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
+CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 if(MINGW) 
@@ -300,8 +302,6 @@ if(MINGW)
   set(HAVE_VASPRINTF 1)
 endif()
 
-CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
-CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 
 #Check if __thread is defined
 execute_process(
@@ -588,21 +588,20 @@ if(HAVE_UCONTEXT_H)
 
   if(NOT CMAKE_CROSSCOMPILING)
     try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-      ${CMAKE_BINARY_DIR}
-      ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stacksetup.c
+      ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stacksetup.c
+      RUN_OUTPUT_VARIABLE stack_setup
       COMPILE_DEFINITIONS "${makecontext_CPPFLAGS}"
       )
   endif()
 
-  if(EXISTS ${CMAKE_BINARY_DIR}/conftestval)
-    file(READ ${CMAKE_BINARY_DIR}/conftestval MAKECONTEXT_ADDR_SIZE)
-    string(REPLACE "\n" "" MAKECONTEXT_ADDR_SIZE "${MAKECONTEXT_ADDR_SIZE}")
-    string(REGEX MATCH ;^.*,;MAKECONTEXT_ADDR "${MAKECONTEXT_ADDR_SIZE}")
-    string(REGEX MATCH ;,.*$; MAKECONTEXT_SIZE "${MAKECONTEXT_ADDR_SIZE}")
-    string(REPLACE "," "" makecontext_addr "${MAKECONTEXT_ADDR}")
-    string(REPLACE "," "" makecontext_size "${MAKECONTEXT_SIZE}")
-    set(pth_skaddr_makecontext "#define pth_skaddr_makecontext(skaddr,sksize) (${makecontext_addr})")
-    set(pth_sksize_makecontext "#define pth_sksize_makecontext(skaddr,sksize) (${makecontext_size})")
+  LIST(LENGTH stack_setup stack_setup_len)
+  if("${stack_setup_len}" STREQUAL "2")
+    LIST(GET stack_setup 0 makecontext_addr)
+    LIST(GET stack_setup 1 makecontext_size)
+    set(sg_makecontext_stack_addr "#define sg_makecontext_stack_addr(skaddr) (${makecontext_addr})")
+    set(sg_makecontext_stack_size "#define sg_makecontext_stack_size(sksize) (${makecontext_size})")
+  else()
+    message(FATAL_ERROR "Could not figure out the stack setup. Compil: ${RUN_makecontext_VAR}. Exec: ${COMPILE_makecontext_VAR}. Output: ${stack_setup}")
   endif()
 endif()
 
