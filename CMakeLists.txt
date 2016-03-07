@@ -336,9 +336,6 @@ else()
   SET(HAVE_MMALLOC 0)
 endif()
 
-set(HAVE_UCONTEXT_CONTEXTS 0)
-set(HAVE_THREAD_CONTEXTS 0)
-
 if(enable_jedule)
   set(HAVE_JEDULE 1)
 endif()
@@ -414,6 +411,8 @@ endif()
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
+
+set(HAVE_THREAD_CONTEXTS 0)
 
 if(HAVE_PTHREAD)
   ### Test that we have a way to create semaphores
@@ -506,14 +505,12 @@ if(HAVE_PTHREAD)
     message(FATAL_ERROR "Semaphores are not usable (neither sem_open nor sem_init is both compilable and executable), but they are mandatory to threads (you may need to mount /dev).")
   endif()
 
-endif()
-
-if(HAVE_PTHREAD)
   set(HAVE_THREAD_CONTEXTS 1)
   message("-- Support for thread context factory ok.")
 endif()
 
 
+set(HAVE_UCONTEXT_CONTEXTS 0)
 if(NOT HAVE_UCONTEXT_H)
   message("-- No ucontext factory: <ucontext.h> not found.")
 elseif(APPLE)
@@ -546,30 +543,30 @@ else()
   else()
     message(FATAL_ERROR "Could not figure out the stack setup. Compil: ${RUN_makecontext_VAR}. Exec: ${COMPILE_makecontext_VAR}. Output: ${stack_setup}")
   endif()
-  
-  # Stack growth direction (upward or downward)
-  try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
-    RUN_OUTPUT_VARIABLE stack
-    COPY_FILE test_stackgrowth)
-
-  if("${stack}" STREQUAL "down")
-    set(PTH_STACKGROWTH "-1")
-  elseif("${stack}" STREQUAL "up")
-    set(PTH_STACKGROWTH "1")
-  else()
-    if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-      set(PTH_STACKGROWTH "-1")
-    elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-      set(PTH_STACKGROWTH "-1")
-    else()
-      message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
-    endif()
-  endif()
-  # If the test ran well, remove the test binary
-  execute_process(COMMAND ${CMAKE_COMMAND} -E remove test_stackgrowth)
 endif()
+
+# Stack growth direction (upward or downward). Used for the following contexts: SysV, raw, Boost
+try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
+  ${CMAKE_BINARY_DIR}
+  ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
+  RUN_OUTPUT_VARIABLE stack
+  COPY_FILE test_stackgrowth)
+
+if("${stack}" STREQUAL "down")
+  set(PTH_STACKGROWTH "-1")
+elseif("${stack}" STREQUAL "up")
+  set(PTH_STACKGROWTH "1")
+else()
+  if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+    set(PTH_STACKGROWTH "-1")
+  elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
+    set(PTH_STACKGROWTH "-1")
+  else()
+    message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
+  endif()
+endif()
+# If the test ran well, remove the test binary
+execute_process(COMMAND ${CMAKE_COMMAND} -E remove test_stackgrowth)
 #--------------------------------------------------------------------------------------------------
 
 ### check for addr2line

@@ -40,6 +40,8 @@
 /* Variables for the SysV contexts */
 @sg_makecontext_stack_addr@
 @sg_makecontext_stack_size@
+
+/* Variable for SysV, raw and Boost contexts */
 #cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@ /* Does the stack growth upward, or downward? */
 
 /* MC variables */
