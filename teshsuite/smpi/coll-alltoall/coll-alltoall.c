@@ -47,7 +47,6 @@ int main(int argc, char *argv[])
     printf("%d ", rb[i]);
   printf("]\n");
 
-
   if (rank == 0) {
     if (status != MPI_SUCCESS) {
       printf("all_to_all returned %d\n", status);

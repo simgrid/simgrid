@@ -56,7 +56,6 @@ static void print_buffer_int(void *buf, int len, char *msg, int rank)
   free(msg);
 }
 
-
 int main(int argc, char **argv)
 {
   MPI_Comm comm;

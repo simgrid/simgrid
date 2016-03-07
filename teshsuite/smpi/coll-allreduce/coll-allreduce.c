@@ -15,8 +15,6 @@
 #define EXIT_FAILURE 1
 #endif
 
-//define MAXLEN  300000
-
 int main(int argc, char *argv[])
 {
   int rank, size;
@@ -51,7 +49,6 @@ int main(int argc, char *argv[])
   for (i =  0; i < size *mult; i++)//do not print everything
     printf("%d ", rb[i]);
   printf("]\n");
-
 
   if (rank == 0) {
     if (status != MPI_SUCCESS) {
