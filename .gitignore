@@ -984,11 +984,8 @@ teshsuite/smpi/mpich-test/pt2pt/waitany
 teshsuite/smpi/mpich-test/*/*.stdo
 teshsuite/smpi/pt2pt-dsend/pt2pt-dsend
 teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong
-teshsuite/smpi/reduce_coll
-teshsuite/smpi/reduce/reduce
-teshsuite/smpi/reduce/reduce_coll
-teshsuite/smpi/reduce/reduce_scatter_coll
-teshsuite/smpi/reduce_scatter_coll
+teshsuite/smpi/coll-reduce/coll-reduce
+teshsuite/smpi/coll-reduce-scatter/coll-reduce-scatter
 teshsuite/smpi/coll-scatter/coll-scatter
 teshsuite/smpi/shared/shared
 teshsuite/smpi/smpi_sendrecv
