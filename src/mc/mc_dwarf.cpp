@@ -1009,7 +1009,11 @@ void read_dwarf_info(simgrid::mc::ObjectInformation* info, Dwarf* dwarf)
 
 /** Get the build-id (NT_GNU_BUILD_ID) from the ELF file
  *
- *  Return an empty vector is none is found.
+ *  This build-id may is used to locate an external debug (DWARF) file
+ *  for this ELF file.
+ *
+ *  @param  elf libelf handle for an ELF file
+ *  @return build-id for this ELF file (or an empty vector if none is found)
  */
 static
 std::vector<char> get_build_id(Elf* elf)
@@ -1017,26 +1021,37 @@ std::vector<char> get_build_id(Elf* elf)
   size_t phnum;
   if (elf_getphdrnum (elf, &phnum) != 0)
     xbt_die("Could not read program headers");
+
+  // Iterate over the program headers and find the PT_NOTE ones:
   for (size_t i = 0; i < phnum; ++i) {
     GElf_Phdr phdr_temp;
     GElf_Phdr *phdr = gelf_getphdr(elf, i, &phdr_temp);
     if (phdr->p_type != PT_NOTE)
       continue;
+
     Elf_Data* data = elf_getdata_rawchunk(elf, phdr->p_offset, phdr->p_filesz, ELF_T_NHDR);
+
+    // Iterate over the notes and find the NT_GNU_BUILD_ID one:
     size_t pos = 0;
     while (1) {
       GElf_Nhdr nhdr;
       size_t name_pos;
       size_t desc_pos;
       pos = gelf_getnote(data, pos, &nhdr, &name_pos, &desc_pos);
+      // A note is identified by a name "GNU" and a integer type within
+      // the namespace defined by this name (here NT_GNU_BUILD_ID):
       if (nhdr.n_type == NT_GNU_BUILD_ID
           && nhdr.n_namesz == sizeof("GNU")
           && memcmp((char*) data->d_buf + name_pos, "GNU", sizeof("GNU")) == 0) {
+
+        // Found the NT_GNU_BUILD_ID note:
         char* start = (char*) data->d_buf + desc_pos;
         char* end = (char*) start + nhdr.n_descsz;
         return std::vector<char>(start, end);
+
       }
     }
+
   }
   return std::vector<char>();
 }
@@ -1046,13 +1061,14 @@ static char hexdigits[16] = {
   'a', 'b', 'c', 'd', 'e', 'f'
 };
 
+/** Binary data to hexadecimal */
 static inline
 std::array<char, 2> to_hex(std::uint8_t byte)
 {
   return { hexdigits[byte >> 4], hexdigits[byte & 0xF] };
 }
 
-/** Hexadecimal representation of some binary data */
+/** Binary data to hexadecimal */
 static
 std::string to_hex(const char* data, std::size_t count)
 {
@@ -1066,17 +1082,24 @@ std::string to_hex(const char* data, std::size_t count)
   return std::move(res);
 }
 
+/** Binary data to hexadecimal */
 static
 std::string to_hex(std::vector<char> const& data)
 {
   return to_hex(data.data(), data.size());
 }
 
+/** Base directories for external debug files */
 const char* debug_paths[] = {
   "/usr/lib/debug/",
-  "/usr/local/lib/debug/"
+  "/usr/local/lib/debug/",
 };
 
+/** Locate an external debug file from the NT_GNU_BUILD_ID
+ *
+ *  This is one of the mechanisms used for
+ *  [separate debug files](https://sourceware.org/gdb/onlinedocs/gdb/Separate-Debug-Files.html).
+ */
 static
 std::string find_by_build_id(std::vector<char> id)
 {
@@ -1103,6 +1126,7 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   if (elf_version(EV_CURRENT) == EV_NONE)
     xbt_die("libelf initialization error");
 
+  // Open the ELF file:
   int fd = open(info->file_name.c_str(), O_RDONLY);
   if (fd < 0)
     xbt_die("Could not open file %s", info->file_name.c_str());
@@ -1113,13 +1137,14 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   if (kind != ELF_K_ELF)
     xbt_die("Not an ELF file 2");
 
+  // Remember if this is a `ET_EXEC` (fixed location) or `ET_DYN` (relocatable):
   Elf64_Half type = get_type(elf);
   if (type == ET_EXEC)
     info->flags |= simgrid::mc::ObjectInformation::Executable;
 
+  // Read DWARF debug information in the file:
   Dwarf* dwarf = dwarf_begin_elf (elf, DWARF_C_READ, nullptr);
   if (dwarf != nullptr) {
-    // This is the simple case where DWARF is located in the ELF file:
     read_dwarf_info(info, dwarf);
     dwarf_end(dwarf);
     elf_end(elf);
@@ -1128,13 +1153,14 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   }
   dwarf_end(dwarf);
 
-  // Try to find it with NT_GNU_BUILD_ID:
+  // If there was no DWARF in the file, try to find it in a separate file
+  // with NT_GNU_BUILD_ID:
   std::vector<char> build_id = get_build_id(elf);
   if (!build_id.empty()) {
     elf_end(elf);
     close(fd);
 
-    // Find a debug file using the build id:
+    // Find the debug file using the build id:
     std::string debug_file = find_by_build_id(build_id);
     if (debug_file.empty()) {
       std::string hex = to_hex(build_id);
@@ -1161,9 +1187,8 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   }
 
   // TODO, try to find DWARF info using debug-link.
-  // Is this debug-link actually used anywhere?
+  // Is this method really used anywhere?
 
-  // Everything failes, complain loudly:
   xbt_die("Debugging information not found for %s\n"
     "Try recompiling with -g\n",
     info->file_name.c_str());
