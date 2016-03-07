@@ -1,7 +1,23 @@
 add_executable       (check_defaults check_defaults.c)
 target_link_libraries(check_defaults simgrid)
 
-set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/factory_raw.tesh
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/factory_thread.tesh
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/factory_ucontext.tesh    PARENT_SCOPE)
-set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/check_defaults.c         PARENT_SCOPE)
+foreach (factory raw thread boost ucontext)
+  set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/factory_${factory}.tesh)
+  string (TOUPPER have_${factory}_contexts VARNAME)
+  if (${VARNAME})
+    ADD_TESH(tesh-simix-factory-${factory} --cfg contexts/factory:${factory} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_${factory}.tesh)
+  endif()
+endforeach()
+
+IF(HAVE_RAW_CONTEXTS)
+  ADD_TESH(tesh-simix-factory-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_raw.tesh)
+ELSEIF(HAVE_UCONTEXT_CONTEXTS)
+  ADD_TESH(tesh-simix-factory-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_ucontext.tesh)
+ELSEIF(HAVE_BOOST_CONTEXTS)
+  ADD_TESH(tesh-simix-factory-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_boost.tesh)
+ELSE()
+  ADD_TESH(tesh-simix-factory-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_thread.tesh)
+ENDIF()
+
+set(tesh_files    ${tesh_files}                                                  PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/check_defaults.c  PARENT_SCOPE)

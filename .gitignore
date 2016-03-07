@@ -315,9 +315,7 @@ teshsuite/simix/check_defaults/check_defaults
 teshsuite/simix/stack_overflow/stack_overflow
 teshsuite/smpi/coll-allgather/coll-allgather
 teshsuite/smpi/coll-allgatherv/coll-allgatherv
-teshsuite/smpi/allreduce/allreduce
-teshsuite/smpi/allreduce/allreduce_coll
-teshsuite/smpi/allreduce_coll
+teshsuite/smpi/coll-allreduce/coll-allreduce
 teshsuite/smpi/alltoall2
 teshsuite/smpi/alltoall/alltoall2
 teshsuite/smpi/alltoall/alltoall_basic

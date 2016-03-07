@@ -6,7 +6,7 @@ if(enable_smpi)
   endif()
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
-  foreach(x coll-allgather coll-allgatherv coll-alltoallv coll-barrier coll-bcast coll-gather coll-scatter 
+  foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoallv coll-barrier coll-bcast coll-gather coll-scatter 
             pt2pt-dsend pt2pt-pingpong type-hvector type-indexed type-struct type-vector)
     add_executable       (${x}  ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
@@ -25,6 +25,11 @@ if(enable_smpi)
 
   foreach (ALLGATHERV_COLL GB pair ring ompi mpich ompi_neighborexchange ompi_bruck mpich_rdb mpich_ring mvapich2 impi)
     ADD_TESH(tesh-smpi-coll-allgatherv-${ALLGATHERV_COLL} --cfg smpi/allgatherv:${ALLGATHERV_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allgatherv --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allgatherv coll-allgatherv.tesh)
+  endforeach()
+
+  foreach (ALLREDUCE_COLL lr rab1 rab2 rab_rdb rdb smp_binomial smp_binomial_pipeline smp_rdb smp_rsag smp_rsag_lr impi
+                          smp_rsag_rab redbcast ompi mpich ompi_ring_segmented mvapich2 mvapich2_rs mvapich2_two_level)
+    ADD_TESH(tesh-smpi-coll-allreduce-${ALLREDUCE_COLL} --cfg smpi/allreduce:${ALLREDUCE_COLL} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce coll-allreduce.tesh)
   endforeach()
 
   foreach (ALLTOALLV_COLL pair pair_light_barrier pair_mpi_barrier pair_one_barrier  ring ring_light_barrier
@@ -52,13 +57,19 @@ if(enable_smpi)
   endforeach()
 endif()
 
+# Extra allreduce test: large automatic
+ADD_TESH(tesh-smpi-coll-allreduce-large --cfg smpi/allreduce:ompi_ring_segmented --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce coll-allreduce-large.tesh)
+ADD_TESH(tesh-smpi-coll-allreduce-automatic --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce coll-allreduce-automatic.tesh)
+
 # Extra pt2pt pingpong test: broken usage ti-tracing
 ADD_TESH_FACTORIES(tesh-smpi-broken  "thread"   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong broken_hostfiles.tesh)
 ADD_TESH(tesh-smpi-replay-ti-tracing            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong TI_output.tesh)
 
-set(teshsuite_src ${teshsuite_src}                                                                    PARENT_SCOPE)
-set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh         PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}                                                                         PARENT_SCOPE)
+set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh              PARENT_SCOPE)
 set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_empty                        PARENT_SCOPE)
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_empty                             PARENT_SCOPE)
