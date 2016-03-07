@@ -504,23 +504,75 @@ if(HAVE_PTHREAD)
 
 endif()
 
-# This is needed for ucontext on MacOS X:
-if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-  add_definitions(-D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE)
-endif()
-try_compile(HAVE_UCONTEXT
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_AC_CHECK_MCSC.c)
-
-#If can have both context
-if(HAVE_UCONTEXT)
-  set(HAVE_UCONTEXT_CONTEXTS 1)
-  message("-- Support for ucontext factory")
-endif()
-
 if(HAVE_PTHREAD)
   set(HAVE_THREAD_CONTEXTS 1)
-  message("-- Support for thread context factory")
+  message("-- Support for thread context factory ok.")
+endif()
+
+
+if(NOT HAVE_UCONTEXT_H)
+  message("-- No ucontext factory: <ucontext.h> not found.")
+else()
+  # This is needed for ucontext on MacOS X:
+  if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
+    add_definitions(-D_XOPEN_SOURCE=700 -D_DARWIN_C_SOURCE)
+  endif()
+  try_compile(compile_makecontext ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_makecontext.c
+    OUTPUT_VARIABLE compile_makecontext_output)
+  
+  #If can have both context
+  if(compile_makecontext)
+    set(HAVE_UCONTEXT_CONTEXTS 1)
+    message("-- Support for ucontext factory ok.")
+  else()
+    message("-- Error: <ucontext.h> exists, but makecontext is not compilable. Compilation output:\n ${compile_makecontext_output}")
+    message("-- No ucontext factory: makecontext() is not compilable.")
+  endif()
+
+  # Stack setup (size and address)
+  try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
+    ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stacksetup.c
+    RUN_OUTPUT_VARIABLE stack_setup)
+
+  LIST(LENGTH stack_setup stack_setup_len)
+  if("${stack_setup_len}" STREQUAL "2")
+    LIST(GET stack_setup 0 makecontext_addr)
+    LIST(GET stack_setup 1 makecontext_size)
+    set(sg_makecontext_stack_addr "#define sg_makecontext_stack_addr(skaddr) (${makecontext_addr})")
+    set(sg_makecontext_stack_size "#define sg_makecontext_stack_size(sksize) (${makecontext_size})")
+  else()
+    message(FATAL_ERROR "Could not figure out the stack setup. Compil: ${RUN_makecontext_VAR}. Exec: ${COMPILE_makecontext_VAR}. Output: ${stack_setup}")
+  endif()
+  
+  # Stack growth direction (upward or downward)
+  try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
+    ${CMAKE_BINARY_DIR}
+    ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
+    RUN_OUTPUT_VARIABLE stack
+    COPY_FILE test_stackgrowth)
+
+  if("${stack}" STREQUAL "down")
+    set(PTH_STACKGROWTH "-1")
+  elseif("${stack}" STREQUAL "up")
+    set(PTH_STACKGROWTH "1")
+  else()
+    if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
+      set(PTH_STACKGROWTH "-1")
+    elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
+      set(PTH_STACKGROWTH "-1")
+    else()
+      message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
+    endif()
+  endif()
+  # If the test ran well, remove the test binary
+  execute_process(COMMAND ${CMAKE_COMMAND} -E remove test_stackgrowth)
+endif()
+#--------------------------------------------------------------------------------------------------
+
+### check for addr2line
+find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS)
+if(ADDR2LINE)
+  set(ADDR2LINE "${ADDR2LINE}/addr2line")
 endif()
 
 ###############
@@ -576,66 +628,6 @@ if(GIT_VERSION)
 endif()
 if(GIT_DATE)
   set(SIMGRID_VERSION_BANNER "${SIMGRID_VERSION_BANNER} (${GIT_DATE})")
-endif()
-#--------------------------------------------------------------------------------------------------
-
-if(HAVE_UCONTEXT_H)
-  if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
-    set(makecontext_CPPFLAGS "${makecontext_CPPFLAGS} -D_XOPEN_SOURCE=700")
-  endif()
-
-  file(REMOVE ${CMAKE_BINARY_DIR}/conftestval)
-
-  if(NOT CMAKE_CROSSCOMPILING)
-    try_run(RUN_makecontext_VAR COMPILE_makecontext_VAR
-      ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stacksetup.c
-      RUN_OUTPUT_VARIABLE stack_setup
-      COMPILE_DEFINITIONS "${makecontext_CPPFLAGS}"
-      )
-  endif()
-
-  LIST(LENGTH stack_setup stack_setup_len)
-  if("${stack_setup_len}" STREQUAL "2")
-    LIST(GET stack_setup 0 makecontext_addr)
-    LIST(GET stack_setup 1 makecontext_size)
-    set(sg_makecontext_stack_addr "#define sg_makecontext_stack_addr(skaddr) (${makecontext_addr})")
-    set(sg_makecontext_stack_size "#define sg_makecontext_stack_size(sksize) (${makecontext_size})")
-  else()
-    message(FATAL_ERROR "Could not figure out the stack setup. Compil: ${RUN_makecontext_VAR}. Exec: ${COMPILE_makecontext_VAR}. Output: ${stack_setup}")
-  endif()
-endif()
-
-#--------------------------------------------------------------------------------------------------
-
-### check for stackgrowth
-if (NOT CMAKE_CROSSCOMPILING)
-  try_run(RUN_stackgrowth_VAR COMPILE_stackgrowth_VAR
-    ${CMAKE_BINARY_DIR}
-    ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_stackgrowth.c
-    RUN_OUTPUT_VARIABLE stack
-    COPY_FILE test_stackgrowth
-  )
-endif()
-if("${stack}" STREQUAL "down")
-  set(PTH_STACKGROWTH "-1")
-elseif("${stack}" STREQUAL "up")
-  set(PTH_STACKGROWTH "1")
-else()
-  if("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "x86_64")
-    set(PTH_STACKGROWTH "-1")
-  elseif("${CMAKE_SYSTEM_PROCESSOR}" STREQUAL "i686")
-    set(PTH_STACKGROWTH "-1")
-  else()
-    message(FATAL_ERROR "Could not figure out the stack direction. Test prog returned: ${stack}; CMAKE_SYSTEM_PROCESSOR: ${CMAKE_SYSTEM_PROCESSOR}.")
-  endif()
-endif()
-# If the test ran well, remove the test binary
-execute_process(COMMAND ${CMAKE_COMMAND} -E remove test_stackgrowth)
-
-### check for addr2line
-find_path(ADDR2LINE NAMES addr2line	PATHS NO_DEFAULT_PATHS)
-if(ADDR2LINE)
-  set(ADDR2LINE "${ADDR2LINE}/addr2line")
 endif()
 
 ### Generate the required headers and scripts
