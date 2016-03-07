@@ -6,6 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/internal_config.h"
 #include "xbt/mallocator.h"
 #include "xbt/asserts.h"
 #include "xbt/sysdep.h"
@@ -77,7 +78,7 @@ void xbt_mallocator_initialization_is_done(int protect)
 
 /** used by the module to know if it's time to activate the mallocators yet */
 static inline int xbt_mallocator_is_active(void) {
-#if MALLOCATOR_COMPILED_IN
+#if HAVE_MALLOCATOR
   return initialization_done && !MC_is_active();
 #else
   return 0;

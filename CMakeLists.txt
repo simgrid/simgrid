@@ -311,8 +311,8 @@ endif()
 execute_process(
   COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-  RESULT_VARIABLE HAVE_thread_storage_run
-  )
+  RESULT_VARIABLE HAVE_thread_storage_run)
+
 
 if(HAVE_thread_storage_run)
   set(HAVE_THREAD_LOCAL_STORAGE 1)
@@ -341,9 +341,9 @@ if(enable_jedule)
 endif()
 
 if(enable_mallocators)
-  SET(MALLOCATOR_IS_WANTED 1)
+  SET(HAVE_MALLOCATOR 1)
 else()
-  SET(MALLOCATOR_IS_WANTED 0)
+  SET(HAVE_MALLOCATOR 0)
 endif()
 
 if(enable_model-checking AND HAVE_MMALLOC)
@@ -352,7 +352,7 @@ if(enable_model-checking AND HAVE_MMALLOC)
   include(FindLibdw)
 else()
   if(enable_model-checking)
-    message(STATUS "Warning: support for model-checking has been disabled because HAVE_MMALLOC is false")
+    message(STATUS "Warning: support for model-checking has been disabled because you are missing either mmap or __thread.")
   endif()
   SET(HAVE_MC 0)
   SET(HAVE_MMALLOC 0)
@@ -867,12 +867,22 @@ endif()
 message("")
 message("##########################################")
 message("#### Content of src/internal_config.h ####")
+message("##########################################")
 file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h config_output)
 LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8) # Pass the file header
 foreach(line ${config_output})
   message("   ${line}")
 endforeach()
-message("####   end of src/internal_config.h   ####")
+message("##########################################")
+message("####   Content of simgrid_config.h    ####")
+message("##########################################")
+file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h config_output)
+LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8 9 -1) # Pass the file header
+foreach(line ${config_output})
+  message("   ${line}")
+endforeach()
+message("##########################################")
+message("####   End of configuration headers   ####")
 message("##########################################")
 
 message("\nConfiguration of package `simgrid':")

@@ -1,4 +1,4 @@
-/* simgrid_config.h - Results of the configure made visible to user code    */
+/* simgrid_config.h - Results of the configure made visible to user code.   */
 
 /* Copyright (c) 2009-2016. The SimGrid Team. All rights reserved.          */
 
@@ -8,44 +8,23 @@
 #ifndef SIMGRID_PUBLIC_CONFIG_H
 #define SIMGRID_PUBLIC_CONFIG_H
 
-/* This file should only contain public declarations, mainly the definitions of SimGrid modules that were compiled in */
-
-/** Define the version numbers of the used header files. 
-    sg_version() can be used to retrieve the version of the dynamic library.
-    But actually, if these numbers don't match, SimGrid refuses to start (so you shouldn't have to care about sg_version() yourself) */
-
+/** Define the version numbers of the used header files. See sg_version() to retrieve the version of the dynamic library. */
 #define SIMGRID_VERSION_MAJOR @SIMGRID_VERSION_MAJOR@
 #define SIMGRID_VERSION_MINOR @SIMGRID_VERSION_MINOR@
 #define SIMGRID_VERSION_PATCH @SIMGRID_VERSION_PATCH@
 
+/* Version as a single integer. v3.4 is 30400, v3.16.2 is 31602, v42 will be 420000, and so on. */
+#define SIMGRID_VERSION (100UL * (100UL * (@SIMGRID_VERSION_MAJOR@) + (@SIMGRID_VERSION_MINOR@)) + (@SIMGRID_VERSION_PATCH@))
+
 #define SIMGRID_VERSION_STRING "@SIMGRID_VERSION_STRING@"
 #define SIMGRID_VERSION_BANNER "@SIMGRID_VERSION_BANNER@"
 
-/* Version X.Y.Z will get version number XYZ: all digits concatenated without dots
- * (with Y and Z must be on two positions)*/
-#define MAKE_SIMGRID_VERSION(major, minor, patch)   (100UL * (100UL * (major) + (minor)) + (patch))
-#define SIMGRID_VERSION MAKE_SIMGRID_VERSION(SIMGRID_VERSION_MAJOR, SIMGRID_VERSION_MINOR, SIMGRID_VERSION_PATCH)
+#cmakedefine HAVE_JEDULE     @HAVE_JEDULE@ /* Was Jedule compiled in?  */
+#cmakedefine HAVE_LUA        @HAVE_LUA@ /* Was the Lua support compiled in? */
+#define HAVE_MALLOCATOR @HAVE_MALLOCATOR@ /* Whether mallocators (object pools) were activated at compilation time. */
+#cmakedefine HAVE_MC         @HAVE_MC@ /* Was the model-checking compiled in? */
+#cmakedefine HAVE_NS3        @HAVE_NS3@ /* Was the NS3 support compiled in? */
 
-/* Define to 1 if you have the <unistd.h> header file. */
-#cmakedefine HAVE_UNISTD_H @HAVE_UNISTD_H@
-
-/* Whether mallocators were enabled in ccmake or not. */
-#define MALLOCATOR_COMPILED_IN @MALLOCATOR_IS_WANTED@
-
-/* Define if xbt contexts are based on our threads implementation or not */
-#cmakedefine HAVE_THREAD_CONTEXTS @HAVE_THREAD_CONTEXTS@
-
-/* If __thread is available */
-#cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@
-
-/* Define to 1 if mmalloc is compiled in. */
-#cmakedefine HAVE_MMALLOC @HAVE_MMALLOC@
-
-#cmakedefine HAVE_JEDULE @HAVE_JEDULE@ /* Was Jedule compiled in?  */
-#cmakedefine HAVE_MC     @HAVE_MC@     /* Was the model-checking compiled in? */
-#cmakedefine HAVE_NS3    @HAVE_NS3@    /* Was the NS3 support compiled in? */
-#cmakedefine HAVE_LUA    @HAVE_LUA@    /* Was the Lua support compiled in? */
-
-#cmakedefine SIMGRID_HAVE_LIBSIG @SIMGRID_HAVE_LIBSIG@
+#cmakedefine SIMGRID_HAVE_LIBSIG @SIMGRID_HAVE_LIBSIG@ /* Used in the public interface xbt/signal.hpp :( */
 
 #endif /* SIMGRID_PUBLIC_CONFIG_H */
