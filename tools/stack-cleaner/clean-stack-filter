@@ -15,7 +15,6 @@ our $lines = "";
 # Size of the stack for this function:
 our $size = 0;
 
-
 # Counter for assigning unique ids to labels:
 our $id=0;
 
@@ -52,14 +51,14 @@ while (<>) {
   if ($scanproc) {
       $lines = $lines . $_;
       if (m/^[ \t]*.cfi_endproc$/) {
-	  emit_code();
+        emit_code();
       } elsif (m/^[ \t]*pushq/) {
-	  $size += 8;
+         $size += 8;
       } elsif (m/^[ \t]*subq[\t *]\$([0-9]*),[ \t]*%rsp$/) {
-          my $val = $1;
-          $val = oct($val) if $val =~ /^0/;
-          $size += $val;
-          emit_code();
+         my $val = $1;
+         $val = oct($val) if $val =~ /^0/;
+         $size += $val;
+         emit_code();
       }
   } elsif (m/^[ \t]*.cfi_startproc$/) {
       print $_;

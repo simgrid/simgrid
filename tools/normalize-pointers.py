@@ -10,7 +10,6 @@
 Tool for normalizing pointers such as two runs have the same 'addresses'
 
 first address encountered will be replaced by 0X0000001, second by 0X0000002, ...
-
 """
 
 import sys

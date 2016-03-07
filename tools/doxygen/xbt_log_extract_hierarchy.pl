@@ -18,9 +18,8 @@ print "        \@{\n";
 # Search for calls to macros defining new channels, and prepare the tree representation
 my %ancestor;
 my %desc;
-# $ancestor{"toto"} is the ancestor of the toto channel
-#    as declared by XBT_LOG_NEW_SUBCATEGORY and XBT_LOG_NEW_DEFAULT_SUBCATEGORY
-#    ie, when the channel toto is initialized (does not work under windows)
+# $ancestor{"toto"} is the ancestor of the toto channel as declared by XBT_LOG_NEW_SUBCATEGORY and 
+# XBT_LOG_NEW_DEFAULT_SUBCATEGORY ie, when the channel toto is initialized (does not work under windows)
 
 # $desc{"toto"} is its description
 my %connected;
@@ -48,12 +47,11 @@ sub cleanup_ctn {
     return @elms;
 }
 
-
 sub parse_file {
     my $filename = shift;
-    
+
     my $data = "";
-    
+
     print "Parse $filename\n" if $debug;
     open IN, "$filename" || die "Cannot read $filename: $!\n";
     while (<IN>) {
@@ -70,16 +68,15 @@ sub parse_file {
     my $connect_data = $data; # save a copy for second parsing phase
     while ($data =~ s/^.*?XBT_LOG_NEW(_DEFAULT)?_(SUB)?CATEGORY\(//s) {
 	$data =~ s/([^"]*"[^"]*")\)//s || die "unparsable macro: $data";
-	    
+
         my ($name,$anc,$desc) = cleanup_ctn($1);
-	    
+    
         # build the tree, checking for name conflict
         die "ERROR: Category name conflict: $name used several times (in $ancestor{$name} and $anc, last time in $filename)\n"
-	   if defined ($ancestor{$name}) && $ancestor{$name} ne $anc &&
-              defined ($desc{$name}) && $desc{$name} ne $desc;
+	   if defined ($ancestor{$name}) && $ancestor{$name} ne $anc && defined ($desc{$name}) && $desc{$name} ne $desc;
        $ancestor{$name}=$anc;
        $desc{$name}=$desc;
-   
+
        print " $name -> $anc\n" if $debug;
    }
 
@@ -101,7 +98,7 @@ close FILES;
 
 # Display the tree, looking for disconnected elems    
 my %used;
-	
+
 sub display_subtree {
     my $name=shift;
     my $indent=shift;
@@ -114,7 +111,7 @@ sub display_subtree {
 	display_subtree($cat,"$indent  ");
     }
 }
-    
+
 display_subtree("XBT_LOG_ROOT_CAT","");
 
 map {
@@ -126,5 +123,4 @@ map {
     warn "Category $_ does not seem to be connected to the root (anc=$ancestor{$_})\n";
 } grep {!defined $used{$_}} sort keys %ancestor;
 
-	
 print "@}*/\n";

@@ -5,8 +5,7 @@ Provides stack-cleaning compilers for x86_64:
  * c++
  * fortran
 
-Each of them modify the generated/given X86_64 assembly by prepending
-stack-cleanup code to each function:
+Each of them modify the generated/given X86_64 assembly by prepending stack-cleanup code to each function:
 
 	movq $0x7ffff7ff8000, %r11
 	cmpq %r11, %rsp
@@ -18,9 +17,7 @@ stack-cleanup code to each function:
         jne  .Lstack_cleaner_loop0:
 .Lstack_cleaner_done0:
 
-The modification of the assembly is done by the clean-stack-filter
-program.
+The modification of the assembly is done by the clean-stack-filter program.
 
-If the underlying compiler is clang, it might be necessary to add the
--no-integrated-as flag in order to force the usage of an external
-assembler.
+If the underlying compiler is clang, it might be necessary to add the -no-integrated-as flag in order to force the 
+usage of an external assembler.
