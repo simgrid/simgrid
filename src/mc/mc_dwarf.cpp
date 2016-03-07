@@ -978,9 +978,8 @@ static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die 
 }
 
 static
-Elf64_Half MC_dwarf_elf_type(Dwarf* dwarf)
+Elf64_Half get_type(Elf* elf)
 {
-  Elf* elf = dwarf_getelf(dwarf);
   Elf64_Ehdr* ehdr64 = elf64_getehdr(elf);
   if (ehdr64)
     return ehdr64->e_type;
@@ -990,28 +989,9 @@ Elf64_Half MC_dwarf_elf_type(Dwarf* dwarf)
   xbt_die("Could not get ELF heeader");
 }
 
-/** \brief Populate the debugging informations of the given ELF object
- *
- *  Read the DWARf information of the EFFL object and populate the
- *  lists of types, variables, functions.
- */
 static
-void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
+void read_dwarf_info(simgrid::mc::ObjectInformation* info, Dwarf* dwarf)
 {
-  int fd = open(info->file_name.c_str(), O_RDONLY);
-  if (fd < 0)
-    xbt_die("Could not open file %s", info->file_name.c_str());
-  Dwarf *dwarf = dwarf_begin(fd, DWARF_C_READ);
-  if (dwarf == nullptr)
-    xbt_die("Missing debugging information in %s\n"
-      "Your program and its dependencies must have debugging information.\n"
-      "You might want to recompile with -g or install the suitable debugging package.\n",
-      info->file_name.c_str());
-
-  Elf64_Half elf_type = MC_dwarf_elf_type(dwarf);
-  if (elf_type == ET_EXEC)
-    info->flags |= simgrid::mc::ObjectInformation::Executable;
-
   // For each compilation unit:
   Dwarf_Off offset = 0;
   Dwarf_Off next_offset = 0;
@@ -1024,8 +1004,47 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
       MC_dwarf_handle_children(info, &unit_die, &unit_die, nullptr, NULL);
     offset = next_offset;
   }
+}
 
-  dwarf_end(dwarf);
+/** \brief Populate the debugging informations of the given ELF object
+ *
+ *  Read the DWARf information of the EFFL object and populate the
+ *  lists of types, variables, functions.
+ */
+static
+void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
+{
+  if (elf_version(EV_CURRENT) == EV_NONE)
+    xbt_die("libelf initialization error");
+
+  int fd = open(info->file_name.c_str(), O_RDONLY);
+  if (fd < 0)
+    xbt_die("Could not open file %s", info->file_name.c_str());
+  Elf* elf = elf_begin(fd, ELF_C_READ, nullptr);
+  if (elf == nullptr)
+    xbt_die("Not an ELF file 1");
+  Elf_Kind kind = elf_kind(elf);
+  if (kind != ELF_K_ELF)
+    xbt_die("Not an ELF file 2");
+
+  Elf64_Half type = get_type(elf);
+  if (type == ET_EXEC)
+    info->flags |= simgrid::mc::ObjectInformation::Executable;
+
+  Dwarf* dwarf = dwarf_begin_elf (elf, DWARF_C_READ, nullptr);
+  // Dwarf *dwarf = dwarf_begin(fd, DWARF_C_READ);
+  if (dwarf != nullptr) {
+    read_dwarf_info(info, dwarf);
+    dwarf_end(dwarf);
+    dwarf = nullptr;
+  }
+  else
+    xbt_die("Missing debugging information in %s\n"
+      "Your program and its dependencies must have debugging information.\n"
+      "You might want to recompile with -g or install the suitable debugging package.\n",
+      info->file_name.c_str());
+
+  elf_end(elf);
   close(fd);
 }
 
