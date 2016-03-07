@@ -57,11 +57,9 @@ static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair)
   new_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
   new_pair->acceptance_pair = 1;
 
-  if (xbt_dynar_is_empty(acceptance_pairs)) {
-
+  if (xbt_dynar_is_empty(acceptance_pairs))
     xbt_dynar_push(acceptance_pairs, &new_pair);
-
-  } else {
+  else {
 
     int min = -1, max = -1, index;
     //int res;
@@ -99,14 +97,12 @@ static mc_visited_pair_t is_reached_acceptance_pair(mc_pair_t pair)
       xbt_dynar_insert_at(acceptance_pairs, min, &new_pair);
     } else {
       pair_test = (mc_visited_pair_t) xbt_dynar_get_as(acceptance_pairs, index, mc_visited_pair_t);
-      if (pair_test->nb_processes < new_pair->nb_processes) {
+      if (pair_test->nb_processes < new_pair->nb_processes)
         xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
-      } else {
-        if (pair_test->heap_bytes_used < new_pair->heap_bytes_used)
-          xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
-        else
-          xbt_dynar_insert_at(acceptance_pairs, index, &new_pair);
-      }
+      else if (pair_test->heap_bytes_used < new_pair->heap_bytes_used)
+        xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
+      else
+        xbt_dynar_insert_at(acceptance_pairs, index, &new_pair);
     }
   }
   return new_pair;
@@ -118,12 +114,11 @@ static void remove_acceptance_pair(int pair_num)
   mc_visited_pair_t pair_test = nullptr;
   int pair_found = 0;
 
-  xbt_dynar_foreach(acceptance_pairs, cursor, pair_test) {
+  xbt_dynar_foreach(acceptance_pairs, cursor, pair_test)
     if (pair_test->num == pair_num) {
        pair_found = 1;
       break;
     }
-  }
 
   if(pair_found == 1) {
     xbt_dynar_remove_at(acceptance_pairs, cursor, &pair_test);
@@ -165,9 +160,8 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
       }
       return -1;
     }
-  case 4:{
-      return 2;
-    }
+  case 4:
+    return 2;
   default:
     return -1;
   }

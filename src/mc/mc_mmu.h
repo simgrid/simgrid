@@ -27,9 +27,8 @@ static inline __attribute__ ((always_inline))
 size_t mc_page_count(size_t size)
 {
   size_t page_count = size >> xbt_pagebits;
-  if (size & (xbt_pagesize-1)) {
+  if (size & (xbt_pagesize-1))
     page_count ++;
-  }
   return page_count;
 }
 

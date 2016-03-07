@@ -212,12 +212,10 @@ int MC_smpi_process_count(void)
 {
   if (mc_mode == MC_MODE_CLIENT)
     return smpi_process_count();
-  else {
-    int res;
-    mc_model_checker->process().read_variable("process_count",
-      &res, sizeof(res));
-    return res;
-  }
+  int res;
+  mc_model_checker->process().read_variable("process_count",
+    &res, sizeof(res));
+  return res;
 }
 #endif
 

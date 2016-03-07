@@ -155,13 +155,11 @@ static void get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snap
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
   int i = 0;
-  for (auto const& object_info : process->object_infos) {
-    add_region(i, snapshot, simgrid::mc::RegionType::Data,
+  for (auto const& object_info : process->object_infos)
+    add_region(i++, snapshot, simgrid::mc::RegionType::Data,
       object_info.get(),
       object_info->start_rw, object_info->start_rw,
       object_info->end_rw - object_info->start_rw);
-    ++i;
-  }
 
   xbt_mheap_t heap = process->get_heap();
   void *start_heap = heap->base;
@@ -175,16 +173,14 @@ static void get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snap
     process->get_malloc_info());
 
 #ifdef HAVE_SMPI
-  if (mc_model_checker->process().privatized() && MC_smpi_process_count()) {
+  if (mc_model_checker->process().privatized() && MC_smpi_process_count())
     // snapshot->privatization_index = smpi_loaded_page
     mc_model_checker->process().read_variable(
       "smpi_loaded_page", &snapshot->privatization_index,
       sizeof(snapshot->privatization_index));
-  } else
+  else
 #endif
-  {
     snapshot->privatization_index = simgrid::mc::ProcessIndexMissing;
-  }
 }
 
 /** \brief Fills the position of the segments (executable, read-only, read/write).
@@ -211,9 +207,8 @@ void find_object_address(
       // .bss is usually after the .data:
       simgrid::xbt::VmMap const& next = maps[i + 1];
       if (next.pathname.empty() && (next.prot & PROT_WRITE)
-          && next.start_addr == reg.end_addr) {
+          && next.start_addr == reg.end_addr)
         result->end_rw = (char*) maps[i + 1].end_addr;
-      }
     } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)) {
       xbt_assert(!result->start_exec,
                  "Multiple executable segments for %s, not supported",
@@ -300,9 +295,9 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
     new_var.region = region_type;
     new_var.address = nullptr;
 
-    if (current_variable.address != nullptr) {
+    if (current_variable.address != nullptr)
       new_var.address = current_variable.address;
-    } else if (!current_variable.location_list.empty()) {
+    else if (!current_variable.location_list.empty()) {
       simgrid::dwarf::Location location =
         simgrid::dwarf::resolve(
           current_variable.location_list,
@@ -315,9 +310,8 @@ static void fill_local_variables_values(mc_stack_frame_t stack_frame,
         xbt_die("Cannot handle non-address variable");
       new_var.address = location.address();
 
-    } else {
+    } else
       xbt_die("No address");
-    }
 
     result.push_back(std::move(new_var));
   }
@@ -345,11 +339,9 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(mc_unw_context_t stac
   unw_cursor_t c;
 
   // TODO, check condition check (unw_init_local==0 means end of frame)
-  if (mc_unw_init_cursor(&c, stack_context) != 0) {
-
+  if (mc_unw_init_cursor(&c, stack_context) != 0)
     xbt_die("Could not initialize stack unwinding");
 
-  } else
     while (1) {
 
       s_mc_stack_frame_t stack_frame;
@@ -386,11 +378,10 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(mc_unw_context_t stac
         break;
 
       int ret = unw_step(&c);
-      if (ret == 0) {
+      if (ret == 0)
         xbt_die("Unexpected end of stack.");
-      } else if (ret < 0) {
+      else if (ret < 0)
         xbt_die("Error while unwinding stack");
-      }
     }
 
   if (result.empty()) {
@@ -414,9 +405,9 @@ static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(mc_snapshot_t * s
       &context, sizeof(context), remote(stack.context));
 
     if (mc_unw_init_context(&st.context, &mc_model_checker->process(),
-      &context) < 0) {
+      &context) < 0)
       xbt_die("Could not initialise the libunwind context.");
-    }
+
     st.stack_frames = unwind_stack_frames(&st.context);
     st.local_variables = get_local_variables_values(st.stack_frames, stack.process_index);
     st.process_index = stack.process_index;
@@ -451,9 +442,8 @@ static void snapshot_handle_ignore(mc_snapshot_t snapshot)
   }
 
   // Zero the memory:
-  for(auto const& region : mc_model_checker->process().ignored_regions()) {
+  for(auto const& region : mc_model_checker->process().ignored_regions())
     snapshot->process()->clear_bytes(remote(region.addr), region.size);
-  }
 
 }
 
@@ -500,12 +490,12 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
     const size_t link_size = 200;
     char link[200];
     res = readlink(source, link, link_size);
-    if (res<0) {
+
+    if (res<0)
       xbt_die("Could not read link for %s", source);
-    }
-    if (res==200) {
+    if (res==200)
       xbt_die("Buffer to small for link of %s", source);
-    }
+
     link[res] = '\0';
 
 #ifdef HAVE_SMPI
@@ -574,14 +564,12 @@ mc_snapshot_t take_snapshot(int num_state)
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
     snapshot->stacks =
         take_snapshot_stacks(&snapshot);
-    if (_sg_mc_hash) {
+    if (_sg_mc_hash)
       snapshot->hash = simgrid::mc::hash(*snapshot);
-    } else {
+    else
       snapshot->hash = 0;
-    }
-  } else {
+  } else
     snapshot->hash = 0;
-  }
 
   snapshot_ignore_restore(snapshot);
   if (use_soft_dirty)
@@ -619,10 +607,9 @@ void restore_snapshot_fds(mc_snapshot_t snapshot)
   for (auto const& fd : snapshot->current_fds) {
     
     int new_fd = open(fd.filename.c_str(), fd.flags);
-    if (new_fd < 0) {
+    if (new_fd < 0)
       xbt_die("Could not reopen the file %s fo restoring the file descriptor",
         fd.filename.c_str());
-    }
     if (new_fd != fd.number) {
       dup2(new_fd, fd.number);
       close(new_fd);

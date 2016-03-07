@@ -150,19 +150,17 @@ static int compare_areas_with_type(ComparisonState& state,
     void* addr_pointed1 = MC_region_read_pointer(region1, real_area1);
     void* addr_pointed2 = MC_region_read_pointer(region2, real_area2);
 
-    if (type->subtype && type->subtype->type == DW_TAG_subroutine_type) {
+    if (type->subtype && type->subtype->type == DW_TAG_subroutine_type)
       return (addr_pointed1 != addr_pointed2);
-    } else {
+    if (addr_pointed1 == nullptr && addr_pointed2 == NULL)
+      return 0;
+    if (addr_pointed1 == nullptr || addr_pointed2 == NULL)
+      return 1;
+    if (!state.compared_pointers.insert(
+        std::make_pair(addr_pointed1, addr_pointed2)).second)
+      return 0;
 
-      if (addr_pointed1 == nullptr && addr_pointed2 == NULL)
-        return 0;
-      if (addr_pointed1 == nullptr || addr_pointed2 == NULL)
-        return 1;
-      if (!state.compared_pointers.insert(
-          std::make_pair(addr_pointed1, addr_pointed2)).second)
-        return 0;
-
-      pointer_level++;
+    pointer_level++;
 
       // Some cases are not handled here:
       // * the pointers lead to different areas (one to the heap, the other to the RW segment ...);
@@ -186,21 +184,19 @@ static int compare_areas_with_type(ComparisonState& state,
           return 1;
         if (!type->type_id)
           return (addr_pointed1 != addr_pointed2);
-        else {
+        else
           return compare_areas_with_type(state, process_index,
                                          addr_pointed1, snapshot1, region1,
                                          addr_pointed2, snapshot2, region2,
                                          type->subtype, pointer_level);
-        }
       }
 
       // TODO, We do not handle very well the case where
       // it belongs to a different (non-heap) region from the current one.
 
-      else {
+      else
         return (addr_pointed1 != addr_pointed2);
-      }
-    }
+
     break;
   }
   case DW_TAG_structure_type:
@@ -243,9 +239,8 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
 #ifdef HAVE_SMPI
   if (r1->storage_type() == simgrid::mc::StorageType::Privatized) {
     xbt_assert(process_index >= 0);
-    if (r2->storage_type() != simgrid::mc::StorageType::Privatized) {
+    if (r2->storage_type() != simgrid::mc::StorageType::Privatized)
       return 1;
-    }
 
     size_t process_count = MC_smpi_process_count();
     xbt_assert(process_count == r1->privatized_data().size()
@@ -309,7 +304,8 @@ static int compare_local_variables(int process_index,
   if (stack1->local_variables.size() != stack2->local_variables.size()) {
     XBT_VERB("Different number of local variables");
     return 1;
-  } else {
+  }
+
     unsigned int cursor = 0;
     local_variable_t current_var1, current_var2;
     int res;
@@ -353,7 +349,6 @@ static int compare_local_variables(int process_index,
       cursor++;
     }
     return 0;
-  }
 }
 
 int snapshot_compare(void *state1, void *state2)
@@ -392,9 +387,8 @@ int snapshot_compare(void *state1, void *state2)
 #ifndef MC_DEBUG
       return 1;
 #endif
-    } else {
+    } else
       XBT_VERB("(%d - %d) Same hash : 0x%" PRIx64, num1, num2, s1->hash);
-    }
   }
 
   /* Compare enabled processes */
