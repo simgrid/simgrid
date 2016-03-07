@@ -72,8 +72,7 @@ private:
 
 ContextFactory* raw_factory()
 {
-  XBT_VERB("Using raw contexts. "
-    "Because the glibc is just not good enough for us.");
+  XBT_VERB("Using raw contexts. Because the glibc is just not good enough for us.");
   return new RawContextFactory();
 }
 

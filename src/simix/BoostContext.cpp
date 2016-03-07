@@ -290,6 +290,7 @@ void BoostParallelContext::resume()
 
 XBT_PRIVATE ContextFactory* boost_factory()
 {
+  XBT_VERB("Using Boost contexts. Welcome to the 21th century.");
   return new BoostContextFactory();
 }
 
