@@ -9,6 +9,7 @@
 
 #include <algorithm>
 #include <memory>
+#include <utility>
 
 #include <cstdlib>
 #define DW_LANG_Objc DW_LANG_ObjC       /* fix spelling error in older dwarf.h */
@@ -1006,6 +1007,91 @@ void read_dwarf_info(simgrid::mc::ObjectInformation* info, Dwarf* dwarf)
   }
 }
 
+/** Get the build-id (NT_GNU_BUILD_ID) from the ELF file
+ *
+ *  Return an empty vector is none is found.
+ */
+static
+std::vector<char> get_build_id(Elf* elf)
+{
+  size_t phnum;
+  if (elf_getphdrnum (elf, &phnum) != 0)
+    xbt_die("Could not read program headers");
+  for (size_t i = 0; i < phnum; ++i) {
+    GElf_Phdr phdr_temp;
+    GElf_Phdr *phdr = gelf_getphdr(elf, i, &phdr_temp);
+    if (phdr->p_type != PT_NOTE)
+      continue;
+    Elf_Data* data = elf_getdata_rawchunk(elf, phdr->p_offset, phdr->p_filesz, ELF_T_NHDR);
+    size_t pos = 0;
+    while (1) {
+      GElf_Nhdr nhdr;
+      size_t name_pos;
+      size_t desc_pos;
+      pos = gelf_getnote(data, pos, &nhdr, &name_pos, &desc_pos);
+      if (nhdr.n_type == NT_GNU_BUILD_ID
+          && nhdr.n_namesz == sizeof("GNU")
+          && memcmp((char*) data->d_buf + name_pos, "GNU", sizeof("GNU")) == 0) {
+        char* start = (char*) data->d_buf + desc_pos;
+        char* end = (char*) start + nhdr.n_descsz;
+        return std::vector<char>(start, end);
+      }
+    }
+  }
+  return std::vector<char>();
+}
+
+static char hexdigits[16] = {
+  '0', '1', '2', '3', '4', '5', '6', '7', '8', '9',
+  'a', 'b', 'c', 'd', 'e', 'f'
+};
+
+static inline
+std::array<char, 2> to_hex(std::uint8_t byte)
+{
+  return { hexdigits[byte >> 4], hexdigits[byte & 0xF] };
+}
+
+/** Hexadecimal representation of some binary data */
+static
+std::string to_hex(const char* data, std::size_t count)
+{
+  std::string res;
+  res.resize(2*count);
+  for (std::size_t i = 0; i < count; i++) {
+    std::array<char, 2> hex_byte = to_hex(data[i]);
+    for (int j = 0; j < 2; ++j)
+      res[2 * i + j] = hex_byte[j];
+  }
+  return std::move(res);
+}
+
+static
+std::string to_hex(std::vector<char> const& data)
+{
+  return to_hex(data.data(), data.size());
+}
+
+const char* debug_paths[] = {
+  "/usr/lib/debug/",
+  "/usr/local/lib/debug/"
+};
+
+static
+std::string find_by_build_id(std::vector<char> id)
+{
+  std::string filename;
+  for (const char* debug_path : debug_paths) {
+    filename = debug_path;
+    filename += ".build-id/" + to_hex(id.data(), 1) + '/'
+      + to_hex(id.data() + 1, id.size() - 1) + ".debug";
+    XBT_DEBUG("Checking debug file: %s", filename.c_str());
+    if (access(filename.c_str(), F_OK) == 0)
+      return std::move(filename);
+  }
+  return std::string();
+}
+
 /** \brief Populate the debugging informations of the given ELF object
  *
  *  Read the DWARf information of the EFFL object and populate the
@@ -1032,20 +1118,55 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
     info->flags |= simgrid::mc::ObjectInformation::Executable;
 
   Dwarf* dwarf = dwarf_begin_elf (elf, DWARF_C_READ, nullptr);
-  // Dwarf *dwarf = dwarf_begin(fd, DWARF_C_READ);
   if (dwarf != nullptr) {
+    // This is the simple case where DWARF is located in the ELF file:
     read_dwarf_info(info, dwarf);
     dwarf_end(dwarf);
-    dwarf = nullptr;
+    elf_end(elf);
+    close(fd);
+    return;
   }
-  else
-    xbt_die("Missing debugging information in %s\n"
-      "Your program and its dependencies must have debugging information.\n"
-      "You might want to recompile with -g or install the suitable debugging package.\n",
-      info->file_name.c_str());
+  dwarf_end(dwarf);
 
-  elf_end(elf);
-  close(fd);
+  // Try to find it with NT_GNU_BUILD_ID:
+  std::vector<char> build_id = get_build_id(elf);
+  if (!build_id.empty()) {
+    elf_end(elf);
+    close(fd);
+
+    // Find a debug file using the build id:
+    std::string debug_file = find_by_build_id(build_id);
+    if (debug_file.empty()) {
+      std::string hex = to_hex(build_id);
+      xbt_die(
+        "Missing debug info for %s with build-id %s\n"
+        "You might want to install the suitable debugging package.\n",
+        info->file_name.c_str(), hex.c_str());
+    }
+
+    // Load the DWARF info from this file:
+    XBT_DEBUG("Load DWARF for %s from %s",
+      info->file_name.c_str(), debug_file.c_str());
+    fd = open(debug_file.c_str(), O_RDONLY);
+    if (fd < 0)
+      xbt_die("Could not open file %s", debug_file.c_str());
+    Dwarf* dwarf = dwarf_begin(fd, DWARF_C_READ);
+    if (dwarf == nullptr)
+      xbt_die("No DWARF info in %s for %s",
+        debug_file.c_str(), info->file_name.c_str());
+    read_dwarf_info(info, dwarf);
+    dwarf_end(dwarf);
+    close(fd);
+    return;
+  }
+
+  // TODO, try to find DWARF info using debug-link.
+  // Is this debug-link actually used anywhere?
+
+  // Everything failes, complain loudly:
+  xbt_die("Debugging information not found for %s\n"
+    "Try recompiling with -g\n",
+    info->file_name.c_str());
 }
 
 // ***** Functions index
