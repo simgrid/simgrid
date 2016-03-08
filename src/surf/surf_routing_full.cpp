@@ -30,7 +30,7 @@ void AsFull::Seal() {
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback_ && hierarchy_ == s4u::As::ROUTING_BASE) {
+  if (routing_platf->loopback_ && hierarchy_ == AsImpl::ROUTING_BASE) {
     for (i = 0; i < table_size; i++) {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {

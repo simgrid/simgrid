@@ -11,7 +11,7 @@
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
-#include "simgrid/s4u/as.hpp"
+#include "simgrid/s4u/As.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 

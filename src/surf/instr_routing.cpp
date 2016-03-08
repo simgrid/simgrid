@@ -6,7 +6,7 @@
 
 #include "src/instr/instr_private.h"
 
-#include "simgrid/s4u/as.hpp"
+#include "src/surf/AsImpl.hpp"
 #include "simgrid/s4u/engine.hpp"
 #include "surf/surf.h"
 #include "src/surf/xml/platf_private.hpp"
@@ -152,7 +152,7 @@ static void recursiveGraphExtraction (simgrid::s4u::As *as, container_t containe
     xbt_dict_cursor_t cursor = NULL;
     char *edge_name;
 
-    as->getGraph(graph, nodes, edges);
+    static_cast<simgrid::surf::AsImpl*>(as)->getGraph(graph, nodes, edges);
     xbt_dict_foreach(edges,cursor,edge_name,edge) {
         linkContainers(
           PJ_container_get((const char*) edge->src->data),
@@ -459,7 +459,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
     }
   }
 
-  as->getGraph(graph, nodes, edges);
+  static_cast<simgrid::surf::AsImpl*>(as)->getGraph(graph, nodes, edges);
 }
 
 xbt_graph_t instr_routing_platform_graph (void)

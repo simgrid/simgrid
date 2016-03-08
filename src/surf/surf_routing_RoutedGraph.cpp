@@ -32,7 +32,7 @@ namespace simgrid {
 namespace surf {
   
 AsRoutedGraph::AsRoutedGraph(const char*name)
-  : As(name)
+  : AsImpl(name)
 {
 }
 
@@ -108,9 +108,9 @@ namespace surf {
         if (route->link_list->size() == 1) {
           Link *link = route->link_list->at(0);
           Onelink *onelink;
-          if (hierarchy_ == s4u::As::ROUTING_BASE)
+          if (hierarchy_ == AsImpl::ROUTING_BASE)
             onelink = new Onelink(link, src_elm, dst_elm);
-          else if (hierarchy_ == s4u::As::ROUTING_RECURSIVE)
+          else if (hierarchy_ == AsImpl::ROUTING_RECURSIVE)
             onelink = new Onelink(link, route->gw_src, route->gw_dst);
           else
             onelink = new Onelink(link, NULL, NULL);
@@ -184,7 +184,7 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(s4u::As::RoutingKind hierarchy,
+sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(AsImpl::RoutingKind hierarchy,
     sg_platf_route_cbarg_t routearg, int change_order)
 {
 
@@ -193,10 +193,10 @@ sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(s4u::As::RoutingKind hier
   result = xbt_new0(s_sg_platf_route_cbarg_t, 1);
   result->link_list = new std::vector<Link*>();
 
-  xbt_assert(hierarchy == s4u::As::ROUTING_BASE || hierarchy == s4u::As::ROUTING_RECURSIVE,
+  xbt_assert(hierarchy == AsImpl::ROUTING_BASE || hierarchy == AsImpl::ROUTING_RECURSIVE,
       "The hierarchy of this AS is neither BASIC nor RECURSIVE, I'm lost here.");
 
-  if (hierarchy == s4u::As::ROUTING_RECURSIVE) {
+  if (hierarchy == AsImpl::ROUTING_RECURSIVE) {
     xbt_assert(routearg->gw_src && routearg->gw_dst, "NULL is obviously a deficient gateway");
 
     result->gw_src = routearg->gw_src;

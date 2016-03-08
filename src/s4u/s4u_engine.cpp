@@ -7,7 +7,7 @@
 
 #include "simgrid/simix.h"
 #include "mc/mc.h"
-#include "simgrid/s4u/as.hpp"
+#include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");

@@ -8,7 +8,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-#include "simgrid/s4u/as.hpp"
+#include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
 
 #ifdef HAVE_LUA

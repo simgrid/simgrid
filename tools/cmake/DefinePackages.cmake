@@ -60,6 +60,7 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
+  src/surf/AsImpl.hpp
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
@@ -291,6 +292,7 @@ set(NS3_SRC
   )
 
 set(SURF_SRC
+  src/surf/AsImpl.cpp
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
@@ -641,7 +643,7 @@ set(headers_to_install
   include/simgrid/link.h
   include/simgrid/s4u/forward.hpp
   include/simgrid/s4u/actor.hpp
-  include/simgrid/s4u/as.hpp
+  include/simgrid/s4u/As.hpp
   include/simgrid/s4u/async.hpp
   include/simgrid/s4u/comm.hpp
   include/simgrid/s4u/engine.hpp  

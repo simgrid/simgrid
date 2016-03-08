@@ -247,7 +247,6 @@ typedef struct probabilist_event_generator *probabilist_event_generator_t;
 void routing_AS_begin(sg_platf_AS_cbarg_t AS);
 void routing_AS_end(void);
 void routing_cluster_add_backbone(Link* bb);
-AS_t routing_get_current();
 /*** END of the parsing cruft ***/
 
 XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform

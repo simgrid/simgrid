@@ -11,7 +11,7 @@
 
 #include "surf_routing.hpp"
 #include "network_interface.hpp"
-#include "simgrid/s4u/as.hpp"
+#include "src/surf/AsImpl.hpp"
 
 namespace simgrid {
 namespace surf {
@@ -25,7 +25,7 @@ class XBT_PRIVATE AsCluster;
 /* ************************************************** */
 /* **************  Cluster ROUTING   **************** */
 
-class AsCluster: public s4u::As {
+class AsCluster: public AsImpl {
 public:
   AsCluster(const char*name);
 

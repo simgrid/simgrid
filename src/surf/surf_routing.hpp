@@ -12,8 +12,9 @@
 
 #include "surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: including this here is pure madness. KILKILKIL XML.
-#include <float.h>
+#include "src/surf/AsImpl.hpp"
 
+#include <float.h>
 #include <vector>
 #include <map>
 
@@ -45,7 +46,7 @@ public:
   virtual int id()=0; // Our rank in the vertices_ array of our containing AS.
   virtual void setId(int id)=0;
   virtual char *name()=0;
-  virtual s4u::As *containingAS()=0; // This is the AS in which I am
+  virtual AsImpl *containingAS()=0; // This is the AS in which I am
   virtual bool isAS()=0;
   virtual bool isHost()=0;
   virtual bool isRouter()=0;
@@ -53,7 +54,7 @@ public:
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, s4u::As *as)
+  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, AsImpl *as)
   : name_(xbt_strdup(name)),
     componentType_(componentType),
     containingAS_(as)
@@ -63,7 +64,7 @@ public:
   int id()           override {return id_;}
   void setId(int id) override {id_ = id;}
   char *name()       override {return name_;}
-  s4u::As *containingAS() override {return containingAS_;}
+  AsImpl *containingAS() override {return containingAS_;}
 
   bool isAS()        override {return componentType_ == SURF_NETWORK_ELEMENT_AS;}
   bool isHost()      override {return componentType_ == SURF_NETWORK_ELEMENT_HOST;}
@@ -73,7 +74,7 @@ private:
   int id_ = -1;
   char *name_;
   e_surf_network_element_type_t componentType_;
-  s4u::As *containingAS_;
+  AsImpl *containingAS_;
 };
 
 /** @ingroup SURF_routing_interface
@@ -95,7 +96,7 @@ XBT_PUBLIC_CLASS RoutingPlatf {
 public:
   RoutingPlatf(Link *loopback);
   ~RoutingPlatf();
-  s4u::As *root_ = nullptr;
+  AsImpl *root_ = nullptr;
   Link *loopback_;
   xbt_dynar_t getOneLinkRoutes(void);
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);

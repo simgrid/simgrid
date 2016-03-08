@@ -51,7 +51,7 @@ void AsDijkstra::Seal()
     graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback_ && hierarchy_ == s4u::As::ROUTING_BASE) {
+  if (routing_platf->loopback_ && hierarchy_ == AsImpl::ROUTING_BASE) {
     xbt_dynar_foreach(xbt_graph_get_nodes(routeGraph_), cursor, node) {
       xbt_edge_t edge = NULL;
 
@@ -259,7 +259,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     if (v == dst_node_id)
       first_gw = gw_dst;
 
-    if (hierarchy_ == s4u::As::ROUTING_RECURSIVE && v != dst_node_id && strcmp(gw_dst->name(), prev_gw_src->name())) {
+    if (hierarchy_ == AsImpl::ROUTING_RECURSIVE && v != dst_node_id && strcmp(gw_dst->name(), prev_gw_src->name())) {
       std::vector<Link*> *e_route_as_to_as = new std::vector<Link*>();
 
       routing_platf->getRouteAndLatency(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, NULL);
@@ -280,7 +280,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     size++;
   }
 
-  if (hierarchy_ == s4u::As::ROUTING_RECURSIVE) {
+  if (hierarchy_ == AsImpl::ROUTING_RECURSIVE) {
     route->gw_src = gw_src;
     route->gw_dst = first_gw;
   }

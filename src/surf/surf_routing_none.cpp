@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
 namespace simgrid {
 namespace surf {
 AsNone::AsNone(const char*name)
-  : As(name)
+  : AsImpl(name)
 {}
 AsNone::~AsNone()
 {}
@@ -22,7 +22,7 @@ void AsNone::getRouteAndLatency(NetCard * /*src*/, NetCard * /*dst*/,
 
 void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*edges*/)
 {
-  XBT_INFO("No routing no graph");
+  XBT_ERROR("No routing no graph");
 }
 }
 }

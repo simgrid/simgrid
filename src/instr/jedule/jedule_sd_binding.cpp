@@ -18,7 +18,7 @@
 #include "simgrid/simdag.h"
 #include "src/simdag/simdag_private.h"
 
-#include "simgrid/s4u/as.hpp"
+#include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
 
 #include <stdio.h>
