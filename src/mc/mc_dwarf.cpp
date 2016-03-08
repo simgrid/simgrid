@@ -1065,7 +1065,9 @@ static char hexdigits[16] = {
 static inline
 std::array<char, 2> to_hex(std::uint8_t byte)
 {
-  return { hexdigits[byte >> 4], hexdigits[byte & 0xF] };
+  // Horrid double braces!
+  // Apparently, this is needed in C++11 (not in C++14).
+  return { { hexdigits[byte >> 4], hexdigits[byte & 0xF] } };
 }
 
 /** Binary data to hexadecimal */
