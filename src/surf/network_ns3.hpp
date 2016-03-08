@@ -53,10 +53,10 @@ public:
 /************
  * Resource *
  ************/
-class NetworkNS3Link : public Link {
+class LinkNS3 : public Link {
 public:
-  NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency);
-  ~NetworkNS3Link();
+  LinkNS3(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency);
+  ~LinkNS3();
 
   void apply_event(tmgr_trace_iterator_t event, double value) override;
   void updateBandwidth(double value) override {THROW_UNIMPLEMENTED;}

@@ -170,8 +170,8 @@ static void create_ns3_topology(void)
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
     char *src = onelink->src_->name();
     char *dst = onelink->dst_->name();
-    simgrid::surf::NetworkNS3Link *link =
-      static_cast<simgrid::surf::NetworkNS3Link *>(onelink->link_);
+    simgrid::surf::LinkNS3 *link =
+      static_cast<simgrid::surf::LinkNS3 *>(onelink->link_);
 
     if (strcmp(src,dst) && link->m_created){
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());
@@ -222,7 +222,7 @@ static void define_callbacks_ns3(void)
  *********/
 static void free_ns3_link(void * elmts)
 {
-  delete static_cast<simgrid::surf::NetworkNS3Link*>(elmts);
+  delete static_cast<simgrid::surf::LinkNS3*>(elmts);
 }
 
 static void free_ns3_host(void * elmts)
@@ -264,7 +264,7 @@ NetworkNS3Model::~NetworkNS3Model() {
 Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
     xbt_dict_t properties){
 
-  Link* link = new NetworkNS3Link(this, name, properties, bandwidth, latency);
+  Link* link = new LinkNS3(this, name, properties, bandwidth, latency);
   Link::onCreation(link);
   return link;
 }
@@ -367,27 +367,26 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
  * Resource *
  ************/
 
-NetworkNS3Link::NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props,
-                           double bw_initial, double lat_initial)
+LinkNS3::LinkNS3(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency)
  : Link(model, name, props)
  , m_created(1)
 {
-  m_bandwidth.peak = bw_initial;
-  m_latency.peak = lat_initial;
+  m_bandwidth.peak = bandwidth;
+  m_latency.peak = latency;
 }
 
-NetworkNS3Link::~NetworkNS3Link()
+LinkNS3::~LinkNS3()
 {
 }
 
-void NetworkNS3Link::apply_event(tmgr_trace_iterator_t event, double value)
+void LinkNS3::apply_event(tmgr_trace_iterator_t event, double value)
 {
   THROW_UNIMPLEMENTED;
 }
-void NetworkNS3Link::setBandwidthTrace(tmgr_trace_t trace) {
+void LinkNS3::setBandwidthTrace(tmgr_trace_t trace) {
   xbt_die("The NS3 network model doesn't support latency state traces");
 }
-void NetworkNS3Link::setLatencyTrace(tmgr_trace_t trace) {
+void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
   xbt_die("The NS3 network model doesn't support latency state traces");
 }
 
