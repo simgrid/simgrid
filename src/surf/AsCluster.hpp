@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,25 +6,12 @@
 #ifndef SURF_ROUTING_CLUSTER_HPP_
 #define SURF_ROUTING_CLUSTER_HPP_
 
-#include <xbt/base.h>
-
-#include "surf_routing.hpp"
-#include "network_interface.hpp"
 #include "src/surf/AsImpl.hpp"
 
 namespace simgrid {
 namespace surf {
 
-/***********
- * Classes *
- ***********/
-
-class XBT_PRIVATE AsCluster;
-
-/* ************************************************** */
-/* **************  Cluster ROUTING   **************** */
-
-class AsCluster: public AsImpl {
+class XBT_PRIVATE AsCluster: public AsImpl {
 public:
   AsCluster(const char*name);
 
@@ -34,7 +20,6 @@ public:
 
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
   virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
-
 
   Link* backbone_ = nullptr;
   void *loopback_ = nullptr;

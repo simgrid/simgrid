@@ -6,13 +6,10 @@
 #ifndef SIMGRID_SURF_AS_HPP
 #define SIMGRID_SURF_AS_HPP
 
-#include "xbt/base.h"
 #include "xbt/graph.h"
 
 #include "simgrid/s4u/forward.hpp"
 #include "simgrid/s4u/As.hpp"
-#include <vector>
-#include <map>
 
 #include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 

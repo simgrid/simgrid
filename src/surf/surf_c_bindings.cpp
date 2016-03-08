@@ -7,7 +7,6 @@
 #include "src/surf/HostImpl.hpp"
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
-#include "surf_routing_cluster.hpp"
 #include "src/instr/instr_private.h"
 #include "plugins/energy.hpp"
 #include "virtual_machine.hpp"

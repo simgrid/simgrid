@@ -1,12 +1,10 @@
-/* Copyright (c) 2006-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
 
-#include "simgrid/s4u/As.hpp"
 #include "src/surf/AsImpl.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 

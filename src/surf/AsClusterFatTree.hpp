@@ -1,5 +1,4 @@
-/* Copyright (c) 2014-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,13 +6,7 @@
 #ifndef SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 #define SURF_ROUTING_CLUSTER_FAT_TREE_HPP_
 
-#include <string>
-#include <map>
-#include <vector>
-
-#include <xbt/base.h>
-
-#include "surf_routing_cluster.hpp"
+#include "src/surf/AsCluster.hpp"
 
 namespace simgrid {
 namespace surf {
@@ -25,14 +18,13 @@ namespace surf {
  * address real world constraints, which are not currently enforced. 
  */
 
-class XBT_PRIVATE FatTreeNode;
 class XBT_PRIVATE FatTreeLink;
 
 /** \brief A node in a fat tree.
  * A FatTreeNode can either be a switch or a processing node. Switches are
  * identified by a negative ID. This class is closely related to fat
  */
-class FatTreeNode {
+class XBT_PRIVATE FatTreeNode {
 public:
   /** Unique ID which identifies every node. */
   int id;
@@ -65,8 +57,7 @@ public:
    * instead of passing by an upper level switch.
    */
   Link* loopback;
-  FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level,
-              int position);
+  FatTreeNode(sg_platf_cluster_cbarg_t cluster, int id, int level, int position);
 };
 
 
@@ -78,8 +69,7 @@ public:
  */
 class FatTreeLink {
 public:
-  FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *source,
-              FatTreeNode *destination);
+  FatTreeLink(sg_platf_cluster_cbarg_t cluster, FatTreeNode *source, FatTreeNode *destination);
   /** Link going up in the tree */
   Link *upLink; 
   /** Link going down in the tree */

@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,20 +6,13 @@
 #ifndef SURF_ROUTING_FULL_HPP_
 #define SURF_ROUTING_FULL_HPP_
 
-#include <xbt/base.h>
-
-#include "surf_routing_RoutedGraph.hpp"
+#include "src/surf/AsRoutedGraph.hpp"
 
 namespace simgrid {
 namespace surf {
 
-/***********
- * Classes *
- ***********/
-class XBT_PRIVATE AsFull;
-
 /** Full routing: fast, large memory requirements, fully expressive */
-class AsFull: public AsRoutedGraph {
+class XBT_PRIVATE AsFull: public AsRoutedGraph {
 public:
 
   AsFull(const char*name);

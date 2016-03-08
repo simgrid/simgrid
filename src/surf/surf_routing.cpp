@@ -5,18 +5,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_routing.hpp"
-#include "surf_routing_cluster.hpp"
 
 #include "simgrid/sg_config.h"
 #include "storage_interface.hpp"
 
 #include "src/surf/AsImpl.hpp"
-#include "src/surf/surf_routing_cluster_torus.hpp"
-#include "src/surf/surf_routing_cluster_fat_tree.hpp"
-#include "src/surf/surf_routing_dijkstra.hpp"
-#include "src/surf/surf_routing_floyd.hpp"
-#include "src/surf/surf_routing_full.hpp"
-#include "src/surf/surf_routing_vivaldi.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 #include <vector>

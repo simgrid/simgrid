@@ -1,15 +1,12 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/base.h>
-
-#include "surf_routing_RoutedGraph.hpp"
-
 #ifndef SURF_ROUTING_DIJKSTRA_HPP_
 #define SURF_ROUTING_DIJKSTRA_HPP_
+
+#include "src/surf/AsRoutedGraph.hpp"
 
 typedef struct graph_node_data {
   int id;
@@ -32,10 +29,8 @@ namespace surf {
  * Classes *
  ***********/
 
-class XBT_PRIVATE AsDijkstra;
-
 /** Dijkstra routing data: fast initialization, slow lookup, small memory requirements, shortest path routing only */
-class AsDijkstra : public AsRoutedGraph {
+class XBT_PRIVATE AsDijkstra : public AsRoutedGraph {
 public:
   AsDijkstra(const char*name, bool cached);
   void Seal() override;

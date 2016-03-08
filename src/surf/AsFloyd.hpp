@@ -1,27 +1,18 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
 #ifndef SURF_ROUTING_FLOYD_HPP_
 #define SURF_ROUTING_FLOYD_HPP_
 
-#include <xbt/base.h>
-
-#include "surf_routing_RoutedGraph.hpp"
+#include "src/surf/AsRoutedGraph.hpp"
 
 namespace simgrid {
 namespace surf {
 
-/***********
- * Classes *
- ***********/
-class XBT_PRIVATE AsFloyd;
-
 /** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
-class AsFloyd: public AsRoutedGraph {
+class XBT_PRIVATE AsFloyd: public AsRoutedGraph {
 public:
   AsFloyd(const char *name);
   ~AsFloyd();

@@ -60,21 +60,23 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.h
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
+
   src/surf/AsImpl.hpp
+  src/surf/AsCluster.hpp
+  src/surf/AsClusterFatTree.hpp
+  src/surf/AsClusterTorus.hpp
+  src/surf/AsDijkstra.hpp
+  src/surf/AsFloyd.hpp
+  src/surf/AsFull.hpp
+  src/surf/AsRoutedGraph.hpp
+  src/surf/AsNone.hpp
+  src/surf/AsVivaldi.hpp
+
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
   src/surf/surf_interface.hpp
   src/surf/surf_private.h
   src/surf/surf_routing.hpp
-  src/surf/surf_routing_cluster.hpp
-  src/surf/surf_routing_cluster_fat_tree.hpp
-  src/surf/surf_routing_cluster_torus.hpp
-  src/surf/surf_routing_dijkstra.hpp
-  src/surf/surf_routing_floyd.hpp
-  src/surf/surf_routing_full.hpp
-  src/surf/surf_routing_RoutedGraph.hpp
-  src/surf/surf_routing_none.hpp
-  src/surf/surf_routing_vivaldi.hpp
   src/surf/vm_hl13.hpp
   src/surf/PropertyHolder.hpp
   src/surf/virtual_machine.hpp
@@ -293,6 +295,16 @@ set(NS3_SRC
 
 set(SURF_SRC
   src/surf/AsImpl.cpp
+  src/surf/AsCluster.cpp
+  src/surf/AsClusterFatTree.cpp
+  src/surf/AsClusterTorus.cpp
+  src/surf/AsDijkstra.cpp
+  src/surf/AsFloyd.cpp
+  src/surf/AsFull.cpp
+  src/surf/AsRoutedGraph.cpp
+  src/surf/AsNone.cpp
+  src/surf/AsVivaldi.cpp
+  
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
   src/surf/cpu_ti.cpp
@@ -314,15 +326,6 @@ set(SURF_SRC
   src/surf/surf_c_bindings.cpp
   src/surf/surf_interface.cpp
   src/surf/surf_routing.cpp
-  src/surf/surf_routing_cluster.cpp
-  src/surf/surf_routing_cluster_fat_tree.cpp
-  src/surf/surf_routing_cluster_torus.cpp
-  src/surf/surf_routing_dijkstra.cpp
-  src/surf/surf_routing_floyd.cpp
-  src/surf/surf_routing_full.cpp
-  src/surf/surf_routing_RoutedGraph.cpp
-  src/surf/surf_routing_none.cpp
-  src/surf/surf_routing_vivaldi.cpp
   src/surf/xml/platf.hpp
   src/surf/xml/platf_private.hpp
   src/surf/xml/surfxml_sax_cb.cpp

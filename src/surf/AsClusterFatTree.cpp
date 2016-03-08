@@ -1,16 +1,16 @@
-#include <cstdlib>
+/* Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.          */
 
-#include <map>
-#include <string>
-#include <utility>
-#include <vector>
-#include <iostream>
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/surf_routing_cluster_fat_tree.hpp"
+#include "src/surf/AsClusterFatTree.hpp"
+#include "src/surf/network_interface.hpp"
+
 #include "xbt/lib.h"
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
+
 #include <iostream>
 #include <fstream>
 #include <sstream>
