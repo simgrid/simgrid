@@ -16,9 +16,6 @@
   #define _GNU_SOURCE
 #endif
 
-/* Attributes are only in recent versions of GCC */
-#if defined(__GNUC__) && (__GNUC__ > 2 || (__GNUC__ == 2 && __GNUC_MINOR__ > 4))
-
 /* On MinGW, stdio.h defines __MINGW_PRINTF_FORMAT and __MINGW_SCANF_FORMAT
    which are the suitable format style (either gnu_printf or ms_printf)
    depending on which version is available (__USE_MINGW_ANSI_STDIO): */
@@ -55,17 +52,6 @@
 #  define _XBT_GNUC_DESTRUCTOR(prio) __attribute__((__destructor__))
 # endif
 # undef _XBT_NEED_INIT_PRAGMA
-
-#else
-# define XBT_ATTRIB_PRINTF( format_idx, arg_idx )
-# define XBT_ATTRIB_SCANF( format_idx, arg_idx )
-# define XBT_ATTRIB_NORETURN
-# define XBT_ATTRIB_UNUSED
-# define _XBT_GNUC_CONSTRUCTOR(prio)
-# define _XBT_GNUC_DESTRUCTOR(prio)
-# define _XBT_NEED_INIT_PRAGMA 1
-
-#endif                          /* gcc or MSVC else */
 
 /* inline and __FUNCTION__ are only in GCC when -ansi is off */
 
