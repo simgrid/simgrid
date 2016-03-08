@@ -207,7 +207,7 @@ void parse_platform_file(const char *file)
       xbt_assert(trace, "Trace %s undefined", trace_name);
       Link *link = Link::byName(elm);
       xbt_assert(link, "Link %s undefined", elm);
-      link->set_state_trace(trace);
+      link->setStateTrace(trace);
     }
 
     xbt_dict_foreach(trace_connect_list_link_bw, cursor, trace_name, elm) {
@@ -215,7 +215,7 @@ void parse_platform_file(const char *file)
       xbt_assert(trace, "Trace %s undefined", trace_name);
       Link *link = Link::byName(elm);
       xbt_assert(link, "Link %s undefined", elm);
-      link->set_bandwidth_trace(trace);
+      link->setBandwidthTrace(trace);
     }
 
     xbt_dict_foreach(trace_connect_list_link_lat, cursor, trace_name, elm) {
@@ -223,7 +223,7 @@ void parse_platform_file(const char *file)
       xbt_assert(trace, "Trace %s undefined", trace_name);
       Link *link = Link::byName(elm);
       xbt_assert(link, "Link %s undefined", elm);
-      link->set_latency_trace(trace);
+      link->setLatencyTrace(trace);
     }
 
     /* Free my data */

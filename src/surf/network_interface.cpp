@@ -109,33 +109,33 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
   if (link->policy == SURF_LINK_FULLDUPLEX) {
     char *link_id;
     link_id = bprintf("%s_UP", link->id);
-    Link *l = surf_network_model->createLink(link_id,
-        link->bandwidth,
-        link->bandwidth_trace,
-        link->latency,
-        link->latency_trace,
+    Link *l = surf_network_model->createLink(link_id, link->bandwidth, link->latency,
         link->policy, link->properties);
+    if (link->latency_trace)
+      l->setLatencyTrace(link->latency_trace);
+    if (link->bandwidth_trace)
+      l->setBandwidthTrace(link->bandwidth_trace);
     if (link->state_trace)
       l->setStateTrace(link->state_trace);
 
     xbt_free(link_id);
     link_id = bprintf("%s_DOWN", link->id);
-    l = surf_network_model->createLink(link_id,
-        link->bandwidth,
-        link->bandwidth_trace,
-        link->latency,
-        link->latency_trace,
+    l = surf_network_model->createLink(link_id, link->bandwidth, link->latency,
         link->policy, link->properties);
+    if (link->latency_trace)
+      l->setLatencyTrace(link->latency_trace);
+    if (link->bandwidth_trace)
+      l->setBandwidthTrace(link->bandwidth_trace);
     if (link->state_trace)
       l->setStateTrace(link->state_trace);
     xbt_free(link_id);
   } else {
-    Link *l=surf_network_model->createLink(link->id,
-        link->bandwidth,
-        link->bandwidth_trace,
-        link->latency,
-        link->latency_trace,
+    Link *l=surf_network_model->createLink(link->id, link->bandwidth, link->latency,
         link->policy, link->properties);
+    if (link->latency_trace)
+      l->setLatencyTrace(link->latency_trace);
+    if (link->bandwidth_trace)
+      l->setBandwidthTrace(link->bandwidth_trace);
     if (link->state_trace)
       l->setStateTrace(link->state_trace);
   }
@@ -209,11 +209,6 @@ namespace simgrid {
       XBT_DEBUG("Create link '%s'",name);
 
     }
-    void Link::setStateTrace(tmgr_trace_t trace) {
-      if (m_stateEvent != nullptr)
-        XBT_INFO("Changing the state trace is not well tested. You're on your own.");
-      m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
-    }
 
     /** @brief use destroy() instead of this destructor */
     Link::~Link() {
@@ -264,22 +259,18 @@ namespace simgrid {
         onStateChange(this);
       }
     }
-    void Link::set_state_trace(tmgr_trace_t trace)
-    {
+    void Link::setStateTrace(tmgr_trace_t trace) {
       xbt_assert(m_stateEvent==NULL,"Cannot set a second state trace to Link %s", getName());
-
       m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
     }
-    void Link::set_bandwidth_trace(tmgr_trace_t trace)
+    void Link::setBandwidthTrace(tmgr_trace_t trace)
     {
       xbt_assert(m_bandwidth.event==NULL,"Cannot set a second bandwidth trace to Link %s", getName());
-
       m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, this);
     }
-    void Link::set_latency_trace(tmgr_trace_t trace)
+    void Link::setLatencyTrace(tmgr_trace_t trace)
     {
       xbt_assert(m_latency.event==NULL,"Cannot set a second latency trace to Link %s", getName());
-
       m_latency.event = future_evt_set->add_trace(trace, 0.0, this);
     }
 

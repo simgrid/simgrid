@@ -161,9 +161,7 @@ NetworkCm02Model::NetworkCm02Model()
   if (!p_maxminSystem)
     p_maxminSystem = lmm_system_new(m_selectiveUpdate);
 
-  routing_model_create(createLink("__loopback__",
-                                498000000, NULL, 0.000015, NULL,
-                                SURF_LINK_FATPIPE, NULL));
+  routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, NULL));
 
   if (p_updateMechanism == UM_LAZY) {
   p_actionHeap = xbt_heap_new(8, NULL);
@@ -173,17 +171,11 @@ NetworkCm02Model::NetworkCm02Model()
   }
 }
 
-Link* NetworkCm02Model::createLink(const char *name,
-    double bw_initial, tmgr_trace_t bw_trace,
-    double lat_initial, tmgr_trace_t lat_trace,
-    e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
+Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
 {
-  xbt_assert(NULL == Link::byName(name),
-             "Link '%s' declared several times in the platform",
-             name);
+  xbt_assert(NULL == Link::byName(name), "Link '%s' declared several times in the platform", name);
 
-  Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial,
-      bw_initial, bw_trace, lat_initial, lat_trace, policy);
+  Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bandwidth, bandwidth, latency, policy);
   Link::onCreation(link);
   return link;
 }
@@ -408,22 +400,15 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
     lmm_system_t system,
     double constraint_value,
-    double bw_peak, tmgr_trace_t bw_trace,
-    double lat_initial, tmgr_trace_t lat_trace,
+    double bw_peak,  double lat_initial,
     e_surf_link_sharing_policy_t policy)
 : Link(model, name, props, lmm_constraint_new(system, this, constraint_value))
 {
   m_bandwidth.scale = 1.0;
   m_bandwidth.peak = bw_peak;
-  if (bw_trace)
-    m_bandwidth.event = future_evt_set->add_trace(bw_trace, 0.0, this);
-  else
-    m_bandwidth.event = NULL;
 
   m_latency.scale = 1.0;
   m_latency.peak = lat_initial;
-  if (lat_trace)
-    m_latency.event = future_evt_set->add_trace(lat_trace, 0.0, this);
 
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(getConstraint());

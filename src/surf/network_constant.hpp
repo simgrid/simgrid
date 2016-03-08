@@ -34,12 +34,8 @@ namespace simgrid {
       bool next_occuring_event_isIdempotent() override {return true;}
       void updateActionsState(double now, double delta) override;
 
-      Link*
-      createLink(const char *name,
-          double bw_initial, tmgr_trace_t bw_trace,
-          double lat_initial, tmgr_trace_t lat_trace,
-          e_surf_link_sharing_policy_t policy,
-          xbt_dict_t properties)          override { DIE_IMPOSSIBLE; }
+      Link* createLink(const char *name, double bw, double lat, e_surf_link_sharing_policy_t policy, xbt_dict_t properties) override
+        { DIE_IMPOSSIBLE; }
     };
 
     /**********

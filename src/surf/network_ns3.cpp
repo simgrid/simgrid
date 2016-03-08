@@ -40,14 +40,15 @@ static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
   if(!IPV4addr)
     IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
-  Link *l = surf_network_model->createLink(link->id,
-      link->bandwidth, link->bandwidth_trace,
-      link->latency, link->latency_trace,
+  Link *l = surf_network_model->createLink(link->id, link->bandwidth, link->latency,
       link->policy, link->properties);
+  if (link->bandwidth_trace)
+    l->setBandwidthTrace(link->latency_trace);
+  if (link->latency_trace)
+    l->setLatencyTrace(link->latency_trace);
   if (link->state_trace)
     l->setStateTrace(link->state_trace);
 }
-
 static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
 {
   const char* router_id = router->name();
@@ -260,17 +261,10 @@ NetworkNS3Model::~NetworkNS3Model() {
   xbt_dict_free(&dict_socket);
 }
 
-Link* NetworkNS3Model::createLink(const char *name,
-    double bw_initial, tmgr_trace_t bw_trace,
-    double lat_initial, tmgr_trace_t lat_trace,
-    e_surf_link_sharing_policy_t policy,
+Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
     xbt_dict_t properties){
-  if (bw_trace)
-    XBT_INFO("The NS3 network model doesn't support bandwidth state traces");
-  if (lat_trace)
-    XBT_INFO("The NS3 network model doesn't support latency state traces");
 
-  Link* link = new NetworkNS3Link(this, name, properties, bw_initial, lat_initial);
+  Link* link = new NetworkNS3Link(this, name, properties, bandwidth, latency);
   Link::onCreation(link);
   return link;
 }
@@ -389,6 +383,12 @@ NetworkNS3Link::~NetworkNS3Link()
 void NetworkNS3Link::apply_event(tmgr_trace_iterator_t event, double value)
 {
   THROW_UNIMPLEMENTED;
+}
+void NetworkNS3Link::setBandwidthTrace(tmgr_trace_t trace) {
+  xbt_die("The NS3 network model doesn't support latency state traces");
+}
+void NetworkNS3Link::setLatencyTrace(tmgr_trace_t trace) {
+  xbt_die("The NS3 network model doesn't support latency state traces");
 }
 
 /**********

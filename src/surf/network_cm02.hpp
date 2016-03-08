@@ -40,10 +40,7 @@ namespace simgrid {
     public:
       NetworkCm02Model();
       ~NetworkCm02Model() { }
-      Link* createLink(const char *name,
-          double bw_initial, tmgr_trace_t bw_trace,
-          double lat_initial, tmgr_trace_t lat_trace,
-          e_surf_link_sharing_policy_t policy,
+      Link* createLink(const char *name, double bandwidth,  double latency, e_surf_link_sharing_policy_t policy,
           xbt_dict_t properties) override;
       void updateActionsStateLazy(double now, double delta) override;
       void updateActionsStateFull(double now, double delta) override;
@@ -62,9 +59,7 @@ namespace simgrid {
     public:
       NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
           lmm_system_t system,
-          double constraint_value,
-          double bw_peak, tmgr_trace_t bw_trace,
-          double lat_initial, tmgr_trace_t lat_trace,
+          double constraint_value, double bw_peak, double lat_initial,
           e_surf_link_sharing_policy_t policy);
 
       void apply_event(tmgr_trace_iterator_t event, double value) override;

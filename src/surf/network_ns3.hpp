@@ -41,13 +41,9 @@ namespace surf {
 class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
-
   ~NetworkNS3Model();
-  Link* createLink(const char *name,
-      double bw_initial, tmgr_trace_t bw_trace,
-      double lat_initial, tmgr_trace_t lat_trace,
-      e_surf_link_sharing_policy_t policy,
-      xbt_dict_t properties) override;
+  Link* createLink(const char *name, double bandwidth, double latency,
+      e_surf_link_sharing_policy_t policy, xbt_dict_t properties) override;
   Action *communicate(NetCard *src, NetCard *dst, double size, double rate);
   double next_occuring_event(double now) override;
   bool next_occuring_event_isIdempotent() {return false;}
@@ -59,13 +55,14 @@ public:
  ************/
 class NetworkNS3Link : public Link {
 public:
-  NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props,
-               double bw_initial, double lat_initial);
+  NetworkNS3Link(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency);
   ~NetworkNS3Link();
 
   void apply_event(tmgr_trace_iterator_t event, double value) override;
   void updateBandwidth(double value) override {THROW_UNIMPLEMENTED;}
   void updateLatency(double value) override {THROW_UNIMPLEMENTED;}
+  void setBandwidthTrace(tmgr_trace_t trace) override;
+  void setLatencyTrace(tmgr_trace_t trace) override;
 
 //private:
  int m_created;
