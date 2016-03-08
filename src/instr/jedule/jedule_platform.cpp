@@ -13,7 +13,7 @@
 #include <stdlib.h>
 #include <string.h>
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 
 static xbt_dict_t host2_simgrid_parent_container;
 static xbt_dict_t container_name2container;

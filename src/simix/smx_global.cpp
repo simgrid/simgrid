@@ -18,20 +18,18 @@
 #include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
-#ifdef HAVE_MC
+#if HAVE_MC
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_client.h"
-#endif
 
-#ifdef HAVE_MC
 #include <stdlib.h>
 #include "src/mc/mc_protocol.h"
 #endif 
 
 #include "src/mc/mc_record.h"
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 #include "src/smpi/private.h"
 #endif
 
@@ -191,7 +189,7 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
  */
 void SIMIX_global_init(int *argc, char **argv)
 {
-#ifdef HAVE_MC
+#if HAVE_MC
   _sg_do_model_check = getenv(MC_ENV_VARIABLE) != NULL;
 #endif
 
@@ -265,7 +263,7 @@ void SIMIX_global_init(int *argc, char **argv)
   if (sg_cfg_get_boolean("clean_atexit"))
     atexit(SIMIX_clean);
 
-#ifdef HAVE_MC
+#if HAVE_MC
   // The communication initialization is done ASAP.
   // We need to communicate  initialization of the different layers to the model-checker.
   MC_client_init();

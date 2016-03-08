@@ -15,7 +15,7 @@
 
 #include <xbt/base.h>
 #include "smx_private.h"
-#ifdef HAVE_MC
+#if HAVE_MC
 #include "src/mc/mc_forward.h"
 #endif
 

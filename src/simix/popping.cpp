@@ -7,7 +7,7 @@
 #include "smx_private.h"
 #include "xbt/fifo.h"
 #include "xbt/xbt_os_thread.h"
-#ifdef HAVE_MC
+#if HAVE_MC
 #include "src/mc/mc_private.h"
 #endif
 

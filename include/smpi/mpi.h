@@ -20,7 +20,7 @@
 #include <sys/time.h> /* Load it before the define next line to not mess with the system headers */
 #define gettimeofday(x, y) smpi_gettimeofday(x, NULL)
 
-#ifdef HAVE_MC
+#if HAVE_MC
 #undef assert
 #define assert(x) MC_assert(x)
 #endif

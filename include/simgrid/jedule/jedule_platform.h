@@ -11,7 +11,7 @@
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 SG_BEGIN_DECL()
 
 typedef struct jed_simgrid_container s_jed_simgrid_container_t, *jed_simgrid_container_t;

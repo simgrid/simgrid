@@ -15,7 +15,7 @@
 #include "simgrid/jedule/jedule_events.h"
 #include "simgrid/jedule/jedule_platform.h"
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 
 void jed_event_add_resources(jed_event_t event, xbt_dynar_t host_selection) {
   xbt_dynar_t resource_subset_list;

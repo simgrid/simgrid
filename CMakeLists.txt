@@ -338,6 +338,8 @@ endif()
 
 if(enable_jedule)
   set(HAVE_JEDULE 1)
+else()
+  set(HAVE_JEDULE 0)
 endif()
 
 if(enable_mallocators)

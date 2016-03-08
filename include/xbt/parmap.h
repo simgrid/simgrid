@@ -44,7 +44,7 @@ XBT_PUBLIC(void) xbt_parmap_destroy(xbt_parmap_t parmap);
 XBT_PUBLIC(void) xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data);
 XBT_PUBLIC(void*) xbt_parmap_next(xbt_parmap_t parmap);
 
-#ifdef HAVE_MC
+#if HAVE_MC
 XBT_PUBLIC(xbt_parmap_t) xbt_parmap_mc_new(unsigned int num_workers, e_xbt_parmap_mode_t mode);
 
 XBT_PUBLIC(int) xbt_parmap_mc_apply(xbt_parmap_t parmap, int_f_pvoid_pvoid_t fun, void *data, unsigned int length,

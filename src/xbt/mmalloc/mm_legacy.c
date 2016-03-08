@@ -51,7 +51,7 @@ xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap)
 }
 
 /* Override the malloc-like functions if MC is activated at compile time */
-#ifdef HAVE_MC 
+#if HAVE_MC
 
 /* ***** Temporary allocator
  *

@@ -11,7 +11,7 @@
 #include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
 
-#ifdef HAVE_LUA
+#if HAVE_LUA
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>

@@ -14,7 +14,7 @@
 
 #include "src/surf/xml/platf.hpp"
 
-#ifdef HAVE_LUA
+#if HAVE_LUA
 extern "C" {
 #include "src/bindings/lua/simgrid_lua.h"
 
@@ -128,14 +128,14 @@ void parse_after_config() {
 /* This function acts as a main in the parsing area. */
 void parse_platform_file(const char *file)
 {
-#ifdef HAVE_LUA
+#if HAVE_LUA
   int is_lua = (file != NULL && strlen(file) > 3 && file[strlen(file)-3] == 'l' && file[strlen(file)-2] == 'u'
         && file[strlen(file)-1] == 'a');
 #endif
 
   sg_platf_init();
 
-#ifdef HAVE_LUA
+#if HAVE_LUA
   /* Check if file extension is "lua". If so, we will use
    * the lua bindings to parse the platform file (since it is
    * written in lua). If not, we will use the (old?) XML parser

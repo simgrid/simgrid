@@ -54,14 +54,12 @@ static void futex_wait(unsigned *uaddr, unsigned val);
 static void futex_wake(unsigned *uaddr, unsigned val);
 #endif
 
-#ifndef _MSC_VER
 static void xbt_parmap_busy_master_wait(xbt_parmap_t parmap);
 static void xbt_parmap_busy_worker_signal(xbt_parmap_t parmap);
 static void xbt_parmap_busy_master_signal(xbt_parmap_t parmap);
 static void xbt_parmap_busy_worker_wait(xbt_parmap_t parmap, unsigned round);
-#endif
 
-#ifdef HAVE_MC
+#if HAVE_MC
 static void xbt_parmap_mc_work(xbt_parmap_t parmap, int worker_id);
 static void *xbt_parmap_mc_worker_main(void *arg);
 #endif
@@ -80,7 +78,7 @@ typedef struct s_xbt_parmap {
   xbt_dynar_t data;                /**< parameters to pass to fun in parallel */
   std::atomic<unsigned int> index; /**< index of the next element of data to pick */
 
-#ifdef HAVE_MC
+#if HAVE_MC
   int finish;
   void* ref_snapshot;
   int_f_pvoid_pvoid_t snapshot_compare;
@@ -152,7 +150,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
   return parmap;
 }
 
-#ifdef HAVE_MC
+#if HAVE_MC
 /**
  * \brief Creates a parallel map object
  * \param num_workers number of worker threads to create
@@ -359,7 +357,7 @@ static void *xbt_parmap_worker_main(void *arg)
   }
 }
 
-#ifdef HAVE_MC
+#if HAVE_MC
 
 /**
  * \brief Applies a list of tasks in parallel.

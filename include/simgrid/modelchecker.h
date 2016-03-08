@@ -26,7 +26,7 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC(int) MC_random(int min, int max);
 
-#ifdef HAVE_MC
+#if HAVE_MC
 
 /* Internal variable used to check if we're running under the MC
  *

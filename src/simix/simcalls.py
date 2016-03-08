@@ -257,7 +257,7 @@ def handle(fd, func, simcalls, guarded_simcalls):
         '\n'.join(filter(nonempty, (func(simcall) for simcall in simcalls))))
 
     for guard, list in guarded_simcalls.items():
-        fd.write('\n#ifdef %s\n' % (guard))
+        fd.write('\n#if %s\n' % (guard))
         fd.write('\n'.join(func(simcall) for simcall in list))
         fd.write('\n#endif\n')
 
@@ -308,7 +308,7 @@ if __name__ == '__main__':
 
     fd.write('#include <xbt/base.h>\n')
     fd.write('#include "smx_private.h"\n')
-    fd.write('#ifdef HAVE_MC\n')
+    fd.write('#if HAVE_MC\n')
     fd.write('#include "src/mc/mc_forward.h"\n')
     fd.write('#endif\n')
     fd.write('\n')

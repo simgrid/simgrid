@@ -372,7 +372,7 @@ static void _sg_cfg_cb__surf_path(const char *name, int pos)
 /* callback to decide if we want to use the model-checking */
 #include "src/xbt_modinter.h"
 
-#ifdef HAVE_MC
+#if HAVE_MC
 extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find a right location for it */
 extern int _sg_do_model_check_record;
 #endif
@@ -381,7 +381,7 @@ static void _sg_cfg_cb_model_check_replay(const char *name, int pos) {
   MC_record_path = xbt_cfg_get_string(_sg_cfg_set, name);
 }
 
-#ifdef HAVE_MC
+#if HAVE_MC
 static void _sg_cfg_cb_model_check_record(const char *name, int pos) {
   _sg_do_model_check_record = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
@@ -583,7 +583,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "model-check/replay",
       "Enable replay mode with the given path", xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay);
 
-#ifdef HAVE_MC
+#if HAVE_MC
     /* do model-checking-record */
     xbt_cfg_register(&_sg_cfg_set, "model-check/record",
                      "Record the model-checking paths",
@@ -761,7 +761,7 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb__surf_network_crosstraffic);
     xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "no");
 
-#ifdef HAVE_NS3
+#if HAVE_NS3
     xbt_cfg_register(&_sg_cfg_set, "ns3/TcpModel",
                      "The ns3 tcp model can be : NewReno or Reno or Tahoe",
                      xbt_cfgelm_string, 1, 1, NULL);

@@ -586,7 +586,7 @@ static void xbt_log_connect_categories(void)
   /* The following categories are only defined in libsimgrid */
 
   /* bindings */
-#ifdef HAVE_LUA
+#if HAVE_LUA
   XBT_LOG_CONNECT(lua);
   XBT_LOG_CONNECT(lua_host);
   XBT_LOG_CONNECT(lua_platf);
@@ -612,14 +612,14 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(instr_TI_trace);
 
   /* jedule */
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
   XBT_LOG_CONNECT(jedule);
   XBT_LOG_CONNECT(jed_out);
   XBT_LOG_CONNECT(jed_sd);
 #endif
 
   /* mc */
-#ifdef HAVE_MC
+#if HAVE_MC
   XBT_LOG_CONNECT(mc);
   XBT_LOG_CONNECT(mc_checkpoint);
   XBT_LOG_CONNECT(mc_comm_determinism);
@@ -665,7 +665,7 @@ static void xbt_log_connect_categories(void)
   /* simdag */
   XBT_LOG_CONNECT(sd);
   XBT_LOG_CONNECT(sd_daxparse);
-#ifdef HAVE_GRAPHVIZ
+#if HAVE_GRAPHVIZ
   XBT_LOG_CONNECT(sd_dotparse);
 #endif
   XBT_LOG_CONNECT(sd_kernel);
@@ -700,7 +700,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_lagrange_dichotomy);
   XBT_LOG_CONNECT(surf_maxmin);
   XBT_LOG_CONNECT(surf_network);
-#ifdef HAVE_NS3
+#if HAVE_NS3
   XBT_LOG_CONNECT(ns3);
 #endif
   XBT_LOG_CONNECT(surf_parse);

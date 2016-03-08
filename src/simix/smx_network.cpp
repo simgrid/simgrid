@@ -178,7 +178,7 @@ smx_synchro_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
       xbt_fifo_remove_item(fifo, item);
       xbt_fifo_free_item(item);
       synchro->comm.refcount++;
-#ifdef HAVE_MC
+#if HAVE_MC
       synchro->comm.rdv_cpy = synchro->comm.rdv;
 #endif
       synchro->comm.rdv = NULL;

@@ -16,7 +16,7 @@
 #include "xbt/str.h"
 #include "xbt/module.h"         /* xbt_binary_name */
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
-#ifdef HAVE_MC
+#if HAVE_MC
 #define UNW_LOCAL_ONLY
 #include <libunwind.h>
 #endif
@@ -374,8 +374,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   free(cmd);
 }
 
-#ifdef HAVE_MC
-
+#if HAVE_MC
 int xbt_libunwind_backtrace(void* bt[XBT_BACKTRACE_SIZE], int size){
   
   int i = 0;

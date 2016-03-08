@@ -62,7 +62,7 @@ s_surf_model_description_t surf_network_model_description[] = {
    surf_network_model_init_IB},
   {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
    surf_network_model_init_CM02},
-#ifdef HAVE_NS3
+#if HAVE_NS3
   {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", surf_network_model_init_NS3},
 #endif
   {"Reno",  "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",

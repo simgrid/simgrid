@@ -26,7 +26,7 @@
 
 #include "src/simix/smx_process_private.h"
 
-#ifdef HAVE_MC
+#if HAVE_MC
 #include <libunwind.h>
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_request.h"
@@ -59,7 +59,7 @@ std::vector<double> processes_time;
 }
 }
 
-#ifdef HAVE_MC
+#if HAVE_MC
 int user_max_depth_reached = 0;
 
 /* MC global data structures */
@@ -117,7 +117,7 @@ void MC_init_dot_output()
 
 }
 
-#ifdef HAVE_MC
+#if HAVE_MC
 void MC_init()
 {
   simgrid::mc::processes_time.resize(simix_process_maxpid);
@@ -154,7 +154,7 @@ void MC_exit(void)
   //xbt_abort();
 }
 
-#ifdef HAVE_MC
+#if HAVE_MC
 int MC_deadlock_check()
 {
   if (mc_mode == MC_MODE_SERVER) {
@@ -538,7 +538,7 @@ void MC_process_clock_add(smx_process_t process, double amount)
   simgrid::mc::processes_time[process->pid] += amount;
 }
 
-#ifdef HAVE_MC
+#if HAVE_MC
 void MC_report_assertion_error(void)
 {
   XBT_INFO("**************************");

@@ -11,7 +11,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "simgrid/s4u/engine.hpp"
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
 #endif
 
@@ -49,7 +49,7 @@ void SD_init(int *argc, char **argv)
 
   xbt_cfg_setdefault_string(_sg_cfg_set, "host/model", "ptask_L07");
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
   jedule_sd_init();
 #endif
 
@@ -94,7 +94,7 @@ void SD_create_environment(const char *platform_file)
   simgrid::s4u::Engine::instance()->loadPlatform(platform_file);
 
   XBT_DEBUG("Workstation number: %zu, link number: %d", sg_host_count(), sg_link_count());
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
   jedule_setup_platform();
 #endif
   XBT_VERB("Starting simulation...");
@@ -265,7 +265,7 @@ void SD_exit(void)
 {
   TRACE_surf_resource_utilization_release();
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
   jedule_sd_cleanup();
   jedule_sd_exit();
 #endif

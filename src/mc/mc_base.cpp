@@ -20,14 +20,14 @@
 #include "mc/mc.h"
 #include "src/mc/mc_protocol.h"
 
-#ifdef HAVE_MC
+#if HAVE_MC
 #include "src/mc/mc_request.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/ModelChecker.hpp"
 #include "src/mc/mc_smx.h"
 #endif
 
-#ifdef HAVE_MC
+#if HAVE_MC
 using simgrid::mc::remote;
 #endif
 
@@ -72,7 +72,7 @@ bool request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
   smx_synchro_t act = 0;
-#ifdef HAVE_MC
+#if HAVE_MC
   s_smx_synchro_t temp_synchro;
 #endif
 
@@ -84,7 +84,7 @@ bool request_is_enabled(smx_simcall_t req)
     /* FIXME: check also that src and dst processes are not suspended */
     act = simcall_comm_wait__get__comm(req);
 
-#ifdef HAVE_MC
+#if HAVE_MC
     // Fetch from MCed memory:
     if (mc_mode == MC_MODE_SERVER) {
       mc_model_checker->process().read(&temp_synchro, remote(act));
@@ -106,7 +106,7 @@ bool request_is_enabled(smx_simcall_t req)
 
   case SIMCALL_COMM_WAITANY: {
     xbt_dynar_t comms;
-#ifdef HAVE_MC
+#if HAVE_MC
 
     s_xbt_dynar_t comms_buffer;
     size_t buffer_size = 0;
@@ -130,7 +130,7 @@ bool request_is_enabled(smx_simcall_t req)
 #endif
 
     for (index = 0; index < comms->used; ++index) {
-#ifdef HAVE_MC
+#if HAVE_MC
       // Fetch act from MCed memory:
       if (mc_mode == MC_MODE_SERVER) {
         memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
@@ -151,7 +151,7 @@ bool request_is_enabled(smx_simcall_t req)
 
   case SIMCALL_MUTEX_LOCK: {
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
-#ifdef HAVE_MC
+#if HAVE_MC
     s_smx_mutex_t temp_mutex;
     if (mc_mode == MC_MODE_SERVER) {
       mc_model_checker->process().read(&temp_mutex, remote(mutex));
@@ -161,7 +161,7 @@ bool request_is_enabled(smx_simcall_t req)
     if(mutex->owner == nullptr)
       return true;
     else
-#ifdef HAVE_MC
+#if HAVE_MC
       // TODO, *(mutex->owner) :/
       return MC_smx_resolve_process(mutex->owner)->pid ==
         MC_smx_resolve_process(req->issuer)->pid;
@@ -224,7 +224,7 @@ namespace mc {
 
 void handle_simcall(smx_simcall_t req, int value)
 {
-#ifndef HAVE_MC
+#if !HAVE_MC
   SIMIX_simcall_handle(req, value);
 #else
   if (mc_mode == MC_MODE_CLIENT) {

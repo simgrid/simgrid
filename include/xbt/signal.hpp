@@ -6,7 +6,7 @@
 #ifndef SIMGRID_XBT_SIGNAL_HPP
 #define SIMGRID_XBT_SIGNAL_HPP
 
-#ifdef SIMGRID_HAVE_LIBSIG
+#if SIMGRID_HAVE_LIBSIG
 #include <sigc++/sigc++.h>
 #else
 #include <boost/signals2.hpp>
@@ -15,7 +15,7 @@
 namespace simgrid {
 namespace xbt {
 
-#ifdef SIMGRID_HAVE_LIBSIG
+#if SIMGRID_HAVE_LIBSIG
 
   // Wraps sigc++ signals with the interface of boost::signals2:
   template<class T> class signal;

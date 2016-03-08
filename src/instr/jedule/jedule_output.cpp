@@ -13,7 +13,7 @@
 
 #include "simgrid/jedule/jedule_output.h"
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_out, jedule, "Logging specific to Jedule output");
 

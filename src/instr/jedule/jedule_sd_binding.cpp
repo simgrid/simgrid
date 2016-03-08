@@ -23,7 +23,7 @@
 
 #include <stdio.h>
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 
 XBT_LOG_NEW_CATEGORY(jedule, "Logging specific to Jedule");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule, "Logging specific to Jedule SD binding");

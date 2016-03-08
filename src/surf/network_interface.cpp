@@ -12,8 +12,7 @@
 #ifndef NETWORK_INTERFACE_CPP_
 #define NETWORK_INTERFACE_CPP_
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
-    "Logging specific to the SURF network module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf, "Logging specific to the SURF network module");
 
 /*********
  * C API *
@@ -64,12 +63,9 @@ namespace simgrid {
 
     boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
     Link *Link::byName(const char* name) {
-      Link * res = NULL;
-      try {
-        res = links->at(name);
-      } catch (std::out_of_range& e) {}
-
-      return res;
+      if (links->find(name) == links->end())
+        return NULL;
+      return  links->at(name);
     }
     /** @brief Returns the amount of links in the platform */
     int Link::linksCount() {

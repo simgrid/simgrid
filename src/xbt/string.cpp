@@ -10,7 +10,7 @@
 namespace simgrid {
 namespace xbt {
 
-#ifdef HAVE_MC
+#if HAVE_MC
 
 const char string::NUL = '\0';
 

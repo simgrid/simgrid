@@ -350,7 +350,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     xbt_dynar_push(sd_global->completed_task_set,&task);
     task->finish_time = task->surf_action->getFinishTime();
     task->remains = 0;
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
     jedule_log_sd_event(task);
 #endif
     break;

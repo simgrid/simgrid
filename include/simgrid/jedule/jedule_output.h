@@ -12,7 +12,7 @@
 #include "jedule_events.h"
 #include "jedule_platform.h"
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 SG_BEGIN_DECL()
 
 extern xbt_dynar_t jedule_event_list;

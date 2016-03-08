@@ -7,7 +7,7 @@
 #ifndef SIMGRIC_XBT_STRING_HPP
 #define SIMGRIC_XBT_STRING_HPP
 
-#ifdef HAVE_MC
+#if HAVE_MC
 
 #include <stdexcept>
 #include <cstddef>

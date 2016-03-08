@@ -221,7 +221,7 @@ UContext::UContext(std::function<void()> code,
       sysv_maestro_context = this;
   }
 
-#ifdef HAVE_MC
+#if HAVE_MC
   if (MC_is_active() && has_code()) {
     MC_register_stack_area(this->stack_, process,
                       &(this->uc_), smx_context_usable_stack_size);

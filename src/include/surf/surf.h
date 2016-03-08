@@ -592,7 +592,7 @@ XBT_PUBLIC(void) surf_network_model_init_Constant(void);
  */
 XBT_PUBLIC(void) surf_network_model_init_CM02(void);
 
-#ifdef HAVE_NS3
+#if HAVE_NS3
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model NS3
  *

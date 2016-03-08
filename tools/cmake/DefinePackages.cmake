@@ -787,7 +787,7 @@ if(WIN32)
     )
 endif()
 
-if(${HAVE_LUA})
+if(HAVE_LUA)
   set(simgrid_sources  ${simgrid_sources}  ${LUA_SRC})
 else()
   set(EXTRA_DIST       ${EXTRA_DIST}       ${LUA_SRC})

@@ -26,7 +26,7 @@ XBT_PRIVATE void MC_client_handle_messages(void);
 XBT_PRIVATE void MC_client_send_message(void* message, std::size_t size);
 XBT_PRIVATE void MC_client_send_simple_message(e_mc_message_type type);
 
-#ifdef HAVE_MC
+#if HAVE_MC
 void MC_ignore(void* addr, std::size_t size);
 #endif
 

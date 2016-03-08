@@ -453,7 +453,7 @@ typedef struct s_instr_extra_data {
 
 SG_END_DECL()
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
 #endif
 

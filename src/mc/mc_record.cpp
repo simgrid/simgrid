@@ -21,7 +21,7 @@
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_base.h"
 
-#ifdef HAVE_MC
+#if HAVE_MC
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_state.h"
@@ -99,7 +99,7 @@ fail:
   return nullptr;
 }
 
-#ifdef HAVE_MC
+#if HAVE_MC
 static char* MC_record_stack_to_string_liveness(xbt_fifo_t stack)
 {
   char* buffer;

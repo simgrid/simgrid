@@ -22,7 +22,7 @@
 #include <xbt/dynar.h>
 #include <xbt/mmalloc.h>
 
-#ifdef HAVE_MC
+#if HAVE_MC
 #include "src/xbt/mmalloc/mmprivate.h"
 #endif
 

@@ -12,7 +12,7 @@
 #include "xbt/dict.h"
 #include "simgrid/jedule/jedule_platform.h"
 
-#ifdef HAVE_JEDULE
+#if HAVE_JEDULE
 SG_BEGIN_DECL()
 
 struct jed_event {
