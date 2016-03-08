@@ -369,10 +369,10 @@ int snapshot_compare(void *state1, void *state2)
     num1 = ((mc_state_t) state1)->num;
     num2 = ((mc_state_t) state2)->num;
   } else {                      /* Safety or comm determinism MC */
-    s1 = ((mc_visited_state_t) state1)->system_state;
-    s2 = ((mc_visited_state_t) state2)->system_state;
-    num1 = ((mc_visited_state_t) state1)->num;
-    num2 = ((mc_visited_state_t) state2)->num;
+    s1 = ((simgrid::mc::VisitedState*) state1)->system_state;
+    s2 = ((simgrid::mc::VisitedState*) state2)->system_state;
+    num1 = ((simgrid::mc::VisitedState*) state1)->num;
+    num2 = ((simgrid::mc::VisitedState*) state2)->num;
   }
 
   int errors = 0;

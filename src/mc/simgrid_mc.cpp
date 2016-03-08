@@ -173,7 +173,7 @@ int main(int argc, char** argv)
     if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
       res = MC_modelcheck_comm_determinism();
     else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')
-      res = MC_modelcheck_safety();
+      res = simgrid::mc::modelcheck_safety();
     else
       res = simgrid::mc::modelcheck_liveness();
     mc_model_checker->shutdown();

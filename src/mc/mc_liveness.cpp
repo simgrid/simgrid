@@ -379,8 +379,8 @@ static int MC_modelcheck_liveness_main(void)
 
 int modelcheck_liveness(void)
 {
-  if (mc_reduce_kind == e_mc_reduce_unset)
-    mc_reduce_kind = e_mc_reduce_none;
+  if (simgrid::mc::reduction_mode == simgrid::mc::ReductionMode::unset)
+    simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
   MC_automaton_load(_sg_mc_property_file);
   mc_model_checker->wait_for_requests();
