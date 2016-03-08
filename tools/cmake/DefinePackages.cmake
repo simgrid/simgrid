@@ -1114,7 +1114,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/test_prog/prog_snprintf.c
   tools/cmake/test_prog/prog_stackgrowth.c
   tools/cmake/test_prog/prog_stacksetup.c
-  tools/cmake/test_prog/prog_thread_storage.c
   tools/cmake/test_prog/prog_vsnprintf.c
   tools/cmake/cross-mingw.cmake
   tools/stack-cleaner/as

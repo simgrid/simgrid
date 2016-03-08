@@ -56,14 +56,6 @@
 # endif
 # undef _XBT_NEED_INIT_PRAGMA
 
-#elif defined(_MSC_VER) /* Microsoft Visual Thing */
-# define XBT_ATTRIB_PRINTF( format_idx, arg_idx )
-# define XBT_ATTRIB_SCANF( format_idx, arg_idx )
-# define XBT_ATTRIB_NORETURN __declspec(noreturn)
-# define XBT_ATTRIB_UNUSED
-# define _XBT_GNUC_CONSTRUCTOR(prio)
-# define _XBT_GNUC_DESTRUCTOR(prio)
-# define _XBT_NEED_INIT_PRAGMA 1
 #else
 # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )
 # define XBT_ATTRIB_SCANF( format_idx, arg_idx )
@@ -89,14 +81,6 @@
 #   define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
 #else
 #   define XBT_ALWAYS_INLINE inline
-#endif
-
-#if defined(__GNUC__)
-#   define XBT_THREAD_LOCAL __thread
-#elif defined(_MSC_VER)
-#   define XBT_THREAD_LOCAL __declspec(thread)
-#else
-#   define XBT_THREAD_LOCAL No thread local on this architecture
 #endif
 
 /* improvable on gcc (by evaluating arguments only once), but wouldn't be portable */

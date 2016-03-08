@@ -30,7 +30,6 @@
 /* Variables for the thread contexts (and parallel mode of raw contexts) */
 #cmakedefine HAVE_PTHREAD              @HAVE_PTHREAD@ /* Define to 1 if threads are usable . */
 #cmakedefine HAVE_PTHREAD_SETAFFINITY  @HAVE_PTHREAD_SETAFFINITY@ /* Does not seems defined on Mac nor Windows */
-#cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@ /* If __thread is available */
 
 /* Variables for the raw contexts (to select the right assembly code) */
 #cmakedefine PROCESSOR_i686         @PROCESSOR_i686@
