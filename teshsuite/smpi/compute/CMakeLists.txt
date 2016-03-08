@@ -12,6 +12,7 @@ if(enable_smpi)
   target_link_libraries(compute2 simgrid)
   add_executable       (compute3 compute3.c)
   target_link_libraries(compute3 simgrid)
+  ADD_TESH_FACTORIES(tesh-smpi-compute "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/compute --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/compute compute.tesh)
 endif()
 
 set(tesh_files

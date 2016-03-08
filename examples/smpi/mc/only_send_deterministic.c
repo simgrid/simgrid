@@ -10,7 +10,6 @@
 #include <mpi.h>
 #include <simgrid/modelchecker.h>
 
-
 int main(int argc, char **argv)
 {
   int recv_buff, err, size, rank, i;
@@ -38,7 +37,6 @@ int main(int argc, char **argv)
       MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
       //printf("Message received from %d\n", recv_buff);
     }
-
   }else{
     MPI_Send(&rank, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);
     //printf("Sent %d to rank 0\n", rank);

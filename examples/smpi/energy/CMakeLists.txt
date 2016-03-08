@@ -8,6 +8,7 @@ if(enable_smpi)
 
   add_executable       (se se.c)
   target_link_libraries(se simgrid)
+  ADD_TESH_FACTORIES(smpi-energy "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/energy.tesh)
 endif()
 
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy.tesh  PARENT_SCOPE)

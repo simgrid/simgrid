@@ -20,7 +20,6 @@ int main(int argc, char **argv) {
   MPI_Type_hvector(SIZE, 1, SIZE*sizeof(double), MPI_DOUBLE, &columntype);
   MPI_Type_commit(&columntype);
 
-
     if (rank == 0) {
       for(i=0; i <SIZE;i++)
         for(j=0; j <SIZE;j++)
