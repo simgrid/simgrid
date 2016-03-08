@@ -240,7 +240,7 @@ void replace_state(
 }
 
 static
-bool some_dommunications_are_not_finished()
+bool some_communications_are_not_finished()
 {
   for (size_t current_process = 1; current_process < MC_smx_get_maxpid(); current_process++) {
     xbt_dynar_t pattern = xbt_dynar_get_as(
@@ -268,7 +268,7 @@ simgrid::mc::VisitedState* is_visited_state(mc_state_t graph_state)
      communications are not finished (at least, data are transfered). These communications 
      are incomplete and they cannot be analyzed and compared with the initial pattern. */
   int partial_comm = (_sg_mc_comms_determinism || _sg_mc_send_determinism) &&
-    some_dommunications_are_not_finished();
+    some_communications_are_not_finished();
 
   simgrid::mc::VisitedState* new_state = new VisitedState();
   graph_state->system_state = new_state->system_state;
