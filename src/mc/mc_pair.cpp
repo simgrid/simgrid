@@ -10,12 +10,13 @@
 #include "src/mc/mc_liveness.h"
 #include "src/mc/mc_private.h"
 
-extern "C" {
+namespace simgrid {
+namespace mc {
 
-mc_pair_t MC_pair_new()
+simgrid::mc::Pair* pair_new()
 {
-  mc_pair_t p = nullptr;
-  p = xbt_new0(s_mc_pair_t, 1);
+  simgrid::mc::Pair* p = nullptr;
+  p = xbt_new0(simgrid::mc::Pair, 1);
   p->num = ++mc_stats->expanded_pairs;
   p->exploration_started = 0;
   p->search_cycle = 0;
@@ -23,7 +24,7 @@ mc_pair_t MC_pair_new()
   return p;
 }
 
-void MC_pair_delete(mc_pair_t p)
+void pair_delete(simgrid::mc::Pair* p)
 {
   p->automaton_state = nullptr;
   if(p->visited_pair_removed)
@@ -33,4 +34,5 @@ void MC_pair_delete(mc_pair_t p)
   p = nullptr;
 }
 
+}
 }

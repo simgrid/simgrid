@@ -109,7 +109,7 @@ static char* MC_record_stack_to_string_liveness(xbt_fifo_t stack)
   xbt_fifo_item_t item;
   xbt_fifo_item_t start = xbt_fifo_get_last_item(stack);
   for (item = start; item; item = xbt_fifo_get_prev_item(item)) {
-    mc_pair_t pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+    simgrid::mc::Pair* pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
     int value;
     smx_simcall_t req = MC_state_get_executed_request(pair->graph_state, &value);
     if (req && req->call != SIMCALL_NONE) {

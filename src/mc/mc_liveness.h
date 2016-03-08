@@ -18,9 +18,14 @@
 
 SG_BEGIN_DECL()
 
-extern XBT_PRIVATE xbt_automaton_t _mc_property_automaton;
+SG_END_DECL()
 
-typedef struct XBT_PRIVATE s_mc_pair {
+namespace simgrid {
+namespace mc {
+
+extern XBT_PRIVATE xbt_automaton_t property_automaton;
+
+struct XBT_PRIVATE Pair {
   int num;
   int search_cycle;
   mc_state_t graph_state; /* System state included */
@@ -30,9 +35,9 @@ typedef struct XBT_PRIVATE s_mc_pair {
   int depth;
   int exploration_started;
   int visited_pair_removed;
-} s_mc_pair_t, *mc_pair_t;
+};
 
-typedef struct XBT_PRIVATE s_mc_visited_pair{
+struct XBT_PRIVATE VisitedPair {
   int num;
   int other_num; /* Dot output for */
   int acceptance_pair;
@@ -43,20 +48,21 @@ typedef struct XBT_PRIVATE s_mc_visited_pair{
   int nb_processes;
   int acceptance_removed;
   int visited_removed;
-} s_mc_visited_pair_t, *mc_visited_pair_t;
+};
 
-XBT_PRIVATE mc_pair_t MC_pair_new(void);
-XBT_PRIVATE void MC_pair_delete(mc_pair_t);
-XBT_PRIVATE mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state);
-XBT_PRIVATE void MC_visited_pair_delete(mc_visited_pair_t p);
+XBT_PRIVATE simgrid::mc::Pair* pair_new(void);
+XBT_PRIVATE void pair_delete(simgrid::mc::Pair*);
+XBT_PRIVATE simgrid::mc::VisitedPair* visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state);
+XBT_PRIVATE void visited_pair_delete(simgrid::mc::VisitedPair* p);
 
-int MC_modelcheck_liveness(void);
-XBT_PRIVATE void MC_show_stack_liveness(xbt_fifo_t stack);
-XBT_PRIVATE void MC_dump_stack_liveness(xbt_fifo_t stack);
+int modelcheck_liveness(void);
+XBT_PRIVATE void show_stack_liveness(xbt_fifo_t stack);
+XBT_PRIVATE void dump_stack_liveness(xbt_fifo_t stack);
 
 XBT_PRIVATE extern xbt_dynar_t visited_pairs;
-XBT_PRIVATE int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair);
+XBT_PRIVATE int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair);
 
-SG_END_DECL()
+}
+}
 
 #endif

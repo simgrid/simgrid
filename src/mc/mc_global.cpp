@@ -71,7 +71,14 @@ mc_global_t initial_global_state = nullptr;
 xbt_fifo_t mc_stack = nullptr;
 
 /* Liveness */
-xbt_automaton_t _mc_property_automaton = nullptr;
+
+namespace simgrid {
+namespace mc {
+
+xbt_automaton_t property_automaton = nullptr;
+
+}
+}
 
 /* Dot output */
 FILE *dot_output = nullptr;
@@ -278,7 +285,7 @@ void MC_replay(xbt_fifo_t stack)
 void MC_replay_liveness(xbt_fifo_t stack)
 {
   xbt_fifo_item_t item;
-  mc_pair_t pair = nullptr;
+  simgrid::mc::Pair* pair = nullptr;
   mc_state_t state = nullptr;
   smx_simcall_t req = nullptr, saved_req = NULL;
   int value, depth = 1;
@@ -289,7 +296,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0) {
     item = xbt_fifo_get_first_item(stack);
-    pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+    pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
     if(pair->graph_state->system_state){
       simgrid::mc::restore_snapshot(pair->graph_state->system_state);
       return;
@@ -304,7 +311,7 @@ void MC_replay_liveness(xbt_fifo_t stack)
          item != xbt_fifo_get_first_item(stack);
          item = xbt_fifo_get_prev_item(item)) {
 
-      pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+      pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
 
       state = (mc_state_t) pair->graph_state;
 
@@ -402,18 +409,20 @@ void MC_show_non_termination(void){
   MC_print_statistics(mc_stats);
 }
 
+namespace simgrid {
+namespace mc {
 
-void MC_show_stack_liveness(xbt_fifo_t stack)
+void show_stack_liveness(xbt_fifo_t stack)
 {
   int value;
-  mc_pair_t pair;
+  simgrid::mc::Pair* pair;
   xbt_fifo_item_t item;
   smx_simcall_t req;
   char *req_str = nullptr;
 
   for (item = xbt_fifo_get_last_item(stack);
        item; item = xbt_fifo_get_prev_item(item)) {
-    pair = (mc_pair_t) xbt_fifo_get_item_content(item);
+    pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
     req = MC_state_get_executed_request(pair->graph_state, &value);
     if (req && req->call != SIMCALL_NONE) {
       req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
@@ -423,12 +432,14 @@ void MC_show_stack_liveness(xbt_fifo_t stack)
   }
 }
 
-
-void MC_dump_stack_liveness(xbt_fifo_t stack)
+void dump_stack_liveness(xbt_fifo_t stack)
 {
-  mc_pair_t pair;
-  while ((pair = (mc_pair_t) xbt_fifo_pop(stack)) != nullptr)
-    MC_pair_delete(pair);
+  simgrid::mc::Pair* pair;
+  while ((pair = (simgrid::mc::Pair*) xbt_fifo_pop(stack)) != nullptr)
+    simgrid::mc::pair_delete(pair);
+}
+
+}
 }
 
 void MC_print_statistics(mc_stats_t stats)
@@ -472,10 +483,10 @@ void MC_print_statistics(mc_stats_t stats)
 
 void MC_automaton_load(const char *file)
 {
-  if (_mc_property_automaton == nullptr)
-    _mc_property_automaton = xbt_automaton_new();
+  if (simgrid::mc::property_automaton == nullptr)
+    simgrid::mc::property_automaton = xbt_automaton_new();
 
-  xbt_automaton_load(_mc_property_automaton, file);
+  xbt_automaton_load(simgrid::mc::property_automaton, file);
 }
 
 // TODO, fix cross-process access (this function is not used)

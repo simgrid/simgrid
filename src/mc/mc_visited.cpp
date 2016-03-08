@@ -25,7 +25,16 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_visited, mc,
                                 "Logging specific to state equaity detection mechanisms");
 
+}
+
+namespace simgrid {
+namespace mc {
+
 xbt_dynar_t visited_pairs;
+
+}
+}
+
 xbt_dynar_t visited_states;
 
 static int is_exploration_stack_state(mc_visited_state_t state){
@@ -76,11 +85,14 @@ static mc_visited_state_t visited_state_new()
   return new_state;
 }
 
-mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
+namespace simgrid {
+namespace mc {
+
+simgrid::mc::VisitedPair* visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
-  mc_visited_pair_t pair = nullptr;
-  pair = xbt_new0(s_mc_visited_pair_t, 1);
+  simgrid::mc::VisitedPair* pair = nullptr;
+  pair = xbt_new0(simgrid::mc::VisitedPair, 1);
   pair->graph_state = graph_state;
   if(pair->graph_state->system_state == nullptr)
     pair->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
@@ -106,11 +118,11 @@ mc_visited_pair_t MC_visited_pair_new(int pair_num, xbt_automaton_state_t automa
   return pair;
 }
 
-static int is_exploration_stack_pair(mc_visited_pair_t pair){
+static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
   xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
   while (item) {
-    if (((mc_pair_t)xbt_fifo_get_item_content(item))->num == pair->num){
-      ((mc_pair_t)xbt_fifo_get_item_content(item))->visited_pair_removed = 1;
+    if (((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->num == pair->num){
+      ((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->visited_pair_removed = 1;
       return 1;
     }
     item = xbt_fifo_get_next_item(item);
@@ -118,7 +130,7 @@ static int is_exploration_stack_pair(mc_visited_pair_t pair){
   return 0;
 }
 
-void MC_visited_pair_delete(mc_visited_pair_t p)
+void visited_pair_delete(simgrid::mc::VisitedPair* p)
 {
   p->automaton_state = nullptr;
   if( !is_exploration_stack_pair(p))
@@ -126,6 +138,9 @@ void MC_visited_pair_delete(mc_visited_pair_t p)
   xbt_dynar_free(&(p->atomic_propositions));
   xbt_free(p);
   p = nullptr;
+}
+
+}
 }
 
 /**
@@ -151,8 +166,8 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
   void *ref_test;
 
   if (_sg_mc_liveness) {
-    nb_processes = ((mc_visited_pair_t) ref)->nb_processes;
-    heap_bytes_used = ((mc_visited_pair_t) ref)->heap_bytes_used;
+    nb_processes = ((simgrid::mc::VisitedPair*) ref)->nb_processes;
+    heap_bytes_used = ((simgrid::mc::VisitedPair*) ref)->heap_bytes_used;
   } else {
     nb_processes = ((mc_visited_state_t) ref)->nb_processes;
     heap_bytes_used = ((mc_visited_state_t) ref)->heap_bytes_used;
@@ -164,9 +179,9 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
   while (start <= end) {
     cursor = (start + end) / 2;
     if (_sg_mc_liveness) {
-      ref_test = (mc_visited_pair_t) xbt_dynar_get_as(list, cursor, mc_visited_pair_t);
-      nb_processes_test = ((mc_visited_pair_t) ref_test)->nb_processes;
-      heap_bytes_used_test = ((mc_visited_pair_t) ref_test)->heap_bytes_used;
+      ref_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(list, cursor, simgrid::mc::VisitedPair*);
+      nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
+      heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
     } else {
       ref_test = (mc_visited_state_t) xbt_dynar_get_as(list, cursor, mc_visited_state_t);
       nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
@@ -185,9 +200,9 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
         previous_cursor = cursor - 1;
         while (previous_cursor >= 0) {
           if (_sg_mc_liveness) {
-            ref_test = (mc_visited_pair_t) xbt_dynar_get_as(list, previous_cursor, mc_visited_pair_t);
-            nb_processes_test = ((mc_visited_pair_t) ref_test)->nb_processes;
-            heap_bytes_used_test = ((mc_visited_pair_t) ref_test)->heap_bytes_used;
+            ref_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(list, previous_cursor, simgrid::mc::VisitedPair*);
+            nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
+            heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
           } else {
             ref_test = (mc_visited_state_t) xbt_dynar_get_as(list, previous_cursor, mc_visited_state_t);
             nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
@@ -201,9 +216,9 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
         size_t next_cursor = cursor + 1;
         while (next_cursor < xbt_dynar_length(list)) {
           if (_sg_mc_liveness) {
-            ref_test = (mc_visited_pair_t) xbt_dynar_get_as(list, next_cursor, mc_visited_pair_t);
-            nb_processes_test = ((mc_visited_pair_t) ref_test)->nb_processes;
-            heap_bytes_used_test = ((mc_visited_pair_t) ref_test)->heap_bytes_used;
+            ref_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(list, next_cursor, simgrid::mc::VisitedPair*);
+            nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
+            heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
           } else {
             ref_test = (mc_visited_state_t) xbt_dynar_get_as(list, next_cursor, mc_visited_state_t);
             nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
@@ -369,17 +384,22 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
     return nullptr;
 }
 
+namespace simgrid {
+namespace mc {
+
 /**
  * \brief Checks whether a given pair has already been visited by the algorithm.
  */
-int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
+int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair) {
 
   if (_sg_mc_visited == 0)
     return -1;
 
-  mc_visited_pair_t new_visited_pair = nullptr;
+  simgrid::mc::VisitedPair* new_visited_pair = nullptr;
   if (visited_pair == nullptr)
-    new_visited_pair = MC_visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
+    new_visited_pair = simgrid::mc::visited_pair_new(
+      pair->num, pair->automaton_state, pair->atomic_propositions,
+      pair->graph_state);
   else
     new_visited_pair = visited_pair;
 
@@ -390,7 +410,7 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
 
     int min = -1, max = -1, index;
     //int res;
-    mc_visited_pair_t pair_test;
+    simgrid::mc::VisitedPair* pair_test;
     int cursor;
 
     index = get_search_interval(visited_pairs, new_visited_pair, &min, &max);
@@ -398,7 +418,7 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
     if (min != -1 && max != -1) {       // Visited pair with same number of processes and same heap bytes used exists
       /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_pairs, min), (max-min)+1, pair);
          if(res != -1){
-         pair_test = (mc_pair_t)xbt_dynar_get_as(visited_pairs, (min+res)-1, mc_pair_t);
+         pair_test = (simgrid::mc::Pair*)xbt_dynar_get_as(visited_pairs, (min+res)-1, simgrid::mc::Pair*);
          if(pair_test->other_num == -1)
          pair->other_num = pair_test->num;
          else
@@ -413,17 +433,17 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
          if(pair_test->stack_removed && pair_test->visited_removed){
          if((pair_test->automaton_state->type == 1) || (pair_test->automaton_state->type == 2)){
          if(pair_test->acceptance_removed){
-         MC_pair_delete(pair_test);
+         simgrid::mc::pair_delete(pair_test);
          }
          }else{
-         MC_pair_delete(pair_test);
+         simgrid::mc::pair_delete(pair_test);
          }
          }
          return pair->other_num;
          } */
       cursor = min;
       while (cursor <= max) {
-        pair_test = (mc_visited_pair_t) xbt_dynar_get_as(visited_pairs, cursor, mc_visited_pair_t);
+        pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(visited_pairs, cursor, simgrid::mc::VisitedPair*);
         if (xbt_automaton_state_compare(pair_test->automaton_state, new_visited_pair->automaton_state) == 0) {
           if (xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, new_visited_pair->atomic_propositions) == 0) {
             if (snapshot_compare(pair_test, new_visited_pair) == 0) {
@@ -440,7 +460,7 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
               pair_test->visited_removed = 1;
               if (!pair_test->acceptance_pair
                   || pair_test->acceptance_removed == 1)
-                MC_visited_pair_delete(pair_test);
+                simgrid::mc::visited_pair_delete(pair_test);
               return new_visited_pair->other_num;
             }
           }
@@ -449,7 +469,7 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
       }
       xbt_dynar_insert_at(visited_pairs, min, &new_visited_pair);
     } else {
-      pair_test = (mc_visited_pair_t) xbt_dynar_get_as(visited_pairs, index, mc_visited_pair_t);
+      pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(visited_pairs, index, simgrid::mc::VisitedPair*);
       if (pair_test->nb_processes < new_visited_pair->nb_processes)
         xbt_dynar_insert_at(visited_pairs, index + 1, &new_visited_pair);
       else if (pair_test->heap_bytes_used < new_visited_pair->heap_bytes_used)
@@ -472,9 +492,10 @@ int is_visited_pair(mc_visited_pair_t visited_pair, mc_pair_t pair) {
       xbt_dynar_remove_at(visited_pairs, index2, &pair_test);
       pair_test->visited_removed = 1;
       if (!pair_test->acceptance_pair || pair_test->acceptance_removed)
-        MC_visited_pair_delete(pair_test);
+        simgrid::mc::visited_pair_delete(pair_test);
     }
   return -1;
 }
 
+}
 }

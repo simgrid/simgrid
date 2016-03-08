@@ -175,7 +175,7 @@ int main(int argc, char** argv)
     else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')
       res = MC_modelcheck_safety();
     else
-      res = MC_modelcheck_liveness();
+      res = simgrid::mc::modelcheck_liveness();
     mc_model_checker->shutdown();
     return res;
   }

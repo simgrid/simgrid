@@ -259,13 +259,13 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
         xbt_die("Support for client-side function proposition is not implemented.");
       XBT_DEBUG("Received symbol: %s", message.name);
 
-      if (_mc_property_automaton == nullptr)
-        _mc_property_automaton = xbt_automaton_new();
+      if (simgrid::mc::property_automaton == nullptr)
+        simgrid::mc::property_automaton = xbt_automaton_new();
 
       simgrid::mc::Process* process = &this->process();
       simgrid::mc::RemotePtr<int> address
         = simgrid::mc::remote((int*) message.data);
-      simgrid::xbt::add_proposition(_mc_property_automaton,
+      simgrid::xbt::add_proposition(simgrid::mc::property_automaton,
         message.name,
         [process, address]() { return process->read(address); }
         );
