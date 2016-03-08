@@ -1380,35 +1380,6 @@ static inline void* simcall_run_kernel__get__code(smx_simcall_t simcall) {
 static inline void simcall_run_kernel__set__code(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-#ifdef HAVE_MC
-
-static inline mc_snapshot_t simcall_mc_snapshot__get__result(smx_simcall_t simcall){
-    return (mc_snapshot_t) simcall->result.dp;
-}
-static inline void simcall_mc_snapshot__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-static inline mc_snapshot_t simcall_mc_compare_snapshots__get__s1(smx_simcall_t simcall) {
-  return (mc_snapshot_t) simcall->args[0].dp;
-}
-static inline void simcall_mc_compare_snapshots__set__s1(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline mc_snapshot_t simcall_mc_compare_snapshots__get__s2(smx_simcall_t simcall) {
-  return (mc_snapshot_t) simcall->args[1].dp;
-}
-static inline void simcall_mc_compare_snapshots__set__s2(smx_simcall_t simcall, void* arg) {
-    simcall->args[1].dp = arg;
-}
-static inline int simcall_mc_compare_snapshots__get__result(smx_simcall_t simcall){
-    return  simcall->result.i;
-}
-static inline void simcall_mc_compare_snapshots__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
-#endif
-
 
 /* The prototype of all simcall handlers, automatically generated for you */
 
@@ -1461,7 +1432,3 @@ XBT_PRIVATE sg_size_t simcall_HANDLER_storage_get_free_size(smx_simcall_t simcal
 XBT_PRIVATE sg_size_t simcall_HANDLER_storage_get_used_size(smx_simcall_t simcall, smx_storage_t name);
 XBT_PRIVATE xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char* name);
 XBT_PRIVATE int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max);
-#ifdef HAVE_MC
-XBT_PRIVATE mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall);
-XBT_PRIVATE int simcall_HANDLER_mc_compare_snapshots(smx_simcall_t simcall, mc_snapshot_t s1, mc_snapshot_t s2);
-#endif

@@ -105,12 +105,7 @@ const char* simcall_names[] = {
   "SIMCALL_ASR_GET_PROPERTIES",
   "SIMCALL_MC_RANDOM",
   "SIMCALL_SET_CATEGORY",
-  "SIMCALL_RUN_KERNEL",
-#ifdef HAVE_MC
-  "SIMCALL_MC_SNAPSHOT",
-  "SIMCALL_MC_COMPARE_SNAPSHOTS",
-#endif
-};
+  "SIMCALL_RUN_KERNEL",};
 
 /**
  * @brief (in kernel mode) unpack the simcall and activate the handler
@@ -518,19 +513,6 @@ case SIMCALL_RUN_KERNEL:
        SIMIX_run_kernel( simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
-
-#ifdef HAVE_MC
-case SIMCALL_MC_SNAPSHOT:
-      simcall->result.dp = simcall_HANDLER_mc_snapshot(simcall );
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_MC_COMPARE_SNAPSHOTS:
-      simcall->result.i = simcall_HANDLER_mc_compare_snapshots(simcall , (mc_snapshot_t) simcall->args[0].dp, (mc_snapshot_t) simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-#endif
     case NUM_SIMCALLS:
       break;
     case SIMCALL_NONE:

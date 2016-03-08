@@ -399,16 +399,6 @@ char *simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid::mc::
     break;
   }
 
-  case SIMCALL_MC_SNAPSHOT:
-    type = "MC_SNAPSHOT";
-    args = nullptr;
-    break;
-
-  case SIMCALL_MC_COMPARE_SNAPSHOTS:
-    type = "MC_COMPARE_SNAPSHOTS";
-    args = nullptr;
-    break;
-
   case SIMCALL_MC_RANDOM:
     type = "MC_RANDOM";
     args = bprintf("%d", value);
@@ -610,24 +600,6 @@ char *request_get_dot_output(smx_simcall_t req, int value)
                   MC_smx_process_get_host_name(issuer), value);
     else
       label = bprintf("[(%lu)] MC_RANDOM (%d)", issuer->pid, value);
-    break;
-
-  case SIMCALL_MC_SNAPSHOT:
-    if (issuer->host)
-      label =
-          bprintf("[(%lu)%s] MC_SNAPSHOT", issuer->pid,
-                  MC_smx_process_get_host_name(issuer));
-    else
-      label = bprintf("[(%lu)] MC_SNAPSHOT", issuer->pid);
-    break;
-
-  case SIMCALL_MC_COMPARE_SNAPSHOTS:
-    if (issuer->host)
-      label =
-          bprintf("[(%lu)%s] MC_COMPARE_SNAPSHOTS", issuer->pid,
-                  MC_smx_process_get_host_name(issuer));
-    else
-      label = bprintf("[(%lu)] MC_COMPARE_SNAPSHOTS", issuer->pid);
     break;
 
   default:

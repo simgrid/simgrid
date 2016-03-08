@@ -39,22 +39,6 @@ void MC_assert(int prop)
   }
 }
 
-void *MC_snapshot(void)
-{
-  return simcall_mc_snapshot();
-}
-
-int simcall_HANDLER_mc_compare_snapshots(smx_simcall_t simcall,
-                                   mc_snapshot_t s1, mc_snapshot_t s2)
-{
-  return snapshot_compare(s1, s2);
-}
-
-int MC_compare_snapshots(void *s1, void *s2)
-{
-  return simcall_mc_compare_snapshots(s1, s2);
-}
-
 void MC_cut(void)
 {
   user_max_depth_reached = 1;

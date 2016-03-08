@@ -187,10 +187,6 @@ bool request_is_visible(smx_simcall_t req)
       || req->call == SIMCALL_MC_RANDOM
       || req->call == SIMCALL_MUTEX_LOCK
       || req->call == SIMCALL_MUTEX_TRYLOCK
-#ifdef HAVE_MC
-      || req->call == SIMCALL_MC_SNAPSHOT
-      || req->call == SIMCALL_MC_COMPARE_SNAPSHOTS
-#endif
       ;
 }
 

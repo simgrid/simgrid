@@ -1291,18 +1291,6 @@ void simcall_run_kernel(std::function<void()> const& code)
   return simcall_BODY_run_kernel((void*) &code);
 }
 
-#ifdef HAVE_MC
-
-void *simcall_mc_snapshot(void) {
-  return simcall_BODY_mc_snapshot();
-}
-
-int simcall_mc_compare_snapshots(void *s1, void *s2) {
-  return simcall_BODY_mc_compare_snapshots((simgrid::mc::Snapshot*)s1, (simgrid::mc::Snapshot*)s2);
-}
-
-#endif /* HAVE_MC */
-
 int simcall_mc_random(int min, int max) {
   return simcall_BODY_mc_random(min, max);
 }

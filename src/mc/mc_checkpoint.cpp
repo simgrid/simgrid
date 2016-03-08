@@ -635,9 +635,3 @@ void restore_snapshot(mc_snapshot_t snapshot)
 
 }
 }
-
-extern "C"
-mc_snapshot_t simcall_HANDLER_mc_snapshot(smx_simcall_t simcall)
-{
-  return simgrid::mc::take_snapshot(1);
-}
