@@ -72,12 +72,6 @@ static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* p
 
     if (min != -1 && max != -1) {       // Acceptance pair with same number of processes and same heap bytes used exists
 
-      // Parallell implementation
-      /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(acceptance_pairs, min), (max-min)+1, pair);
-         if(res != -1){
-         return ((simgrid::mc::Pair*)xbt_dynar_get_as(acceptance_pairs, (min+res)-1, simgrid::mc::Pair*))->num;
-         } */
-
       cursor = min;
       if(pair->search_cycle == 1){
         while (cursor <= max) {

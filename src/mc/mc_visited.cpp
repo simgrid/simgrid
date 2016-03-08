@@ -306,23 +306,6 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
 
     if (min != -1 && max != -1) {
 
-      // Parallell implementation
-      /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_states, min), (max-min)+1, new_state);
-         if(res != -1){
-         mc_visited_state_t state_test = (mc_visited_state_t)xbt_dynar_get_as(visited_states, (min+res)-1, mc_visited_state_t);
-         if(state_test->other_num == -1)
-         new_state->other_num = state_test->num;
-         else
-         new_state->other_num = state_test->other_num;
-         if(dot_output == nullptr)
-         XBT_DEBUG("State %d already visited ! (equal to state %d)", new_state->num, state_test->num);
-         else
-         XBT_DEBUG("State %d already visited ! (equal to state %d (state %d in dot_output))", new_state->num, state_test->num, new_state->other_num);
-         xbt_dynar_remove_at(visited_states, (min + res) - 1, nullptr);
-         xbt_dynar_insert_at(visited_states, (min+res) - 1, &new_state);
-         return new_state->other_num;
-         } */
-
       if (_sg_mc_safety || (!partial_comm
         && initial_global_state->initial_communications_pattern_done)) {
 
@@ -416,31 +399,6 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
     index = get_search_interval(visited_pairs, new_visited_pair, &min, &max);
 
     if (min != -1 && max != -1) {       // Visited pair with same number of processes and same heap bytes used exists
-      /*res = xbt_parmap_mc_apply(parmap, snapshot_compare, xbt_dynar_get_ptr(visited_pairs, min), (max-min)+1, pair);
-         if(res != -1){
-         pair_test = (simgrid::mc::Pair*)xbt_dynar_get_as(visited_pairs, (min+res)-1, simgrid::mc::Pair*);
-         if(pair_test->other_num == -1)
-         pair->other_num = pair_test->num;
-         else
-         pair->other_num = pair_test->other_num;
-         if(dot_output == nullptr)
-         XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", pair->num, pair_test->num);
-         else
-         XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", pair->num, pair_test->num, pair->other_num);
-         xbt_dynar_remove_at(visited_pairs, (min + res) - 1, nullptr);
-         xbt_dynar_insert_at(visited_pairs, (min+res) - 1, &pair);
-         pair_test->visited_removed = 1;
-         if(pair_test->stack_removed && pair_test->visited_removed){
-         if((pair_test->automaton_state->type == 1) || (pair_test->automaton_state->type == 2)){
-         if(pair_test->acceptance_removed){
-         simgrid::mc::pair_delete(pair_test);
-         }
-         }else{
-         simgrid::mc::pair_delete(pair_test);
-         }
-         }
-         return pair->other_num;
-         } */
       cursor = min;
       while (cursor <= max) {
         pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(visited_pairs, cursor, simgrid::mc::VisitedPair*);
