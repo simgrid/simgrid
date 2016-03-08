@@ -83,25 +83,6 @@ IF(NOT enable_memcheck)
     ENDIF()
   ENDIF()
 
-  ###
-  ### Declare that we know that some tests are broken
-  ###
-  IF(release)
-    IF(WIN32 OR CMAKE_SYSTEM_NAME MATCHES "Darwin")
-      # These tests are known to fail on Windows and Mac OS X
-      # (the expected error message is not shown).
-      IF(HAVE_THREAD_CONTEXTS)
-      SET_TESTS_PROPERTIES(stack-overflow-thread PROPERTIES WILL_FAIL true)
-      ENDIF()
-      IF(HAVE_UCONTEXT_CONTEXTS)
-        SET_TESTS_PROPERTIES(stack-overflow-ucontext PROPERTIES WILL_FAIL true)
-      ENDIF()
-      IF(HAVE_RAW_CONTEXTS)
-        SET_TESTS_PROPERTIES(stack-overflow-raw PROPERTIES WILL_FAIL true)
-      ENDIF()
-    ENDIF()
-  ENDIF()
-
   ## INTERFACES ##
   ### SIMDAG ###
   # BEGIN TESH TESTS
