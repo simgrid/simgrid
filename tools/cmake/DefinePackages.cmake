@@ -598,7 +598,6 @@ set(MC_SRC
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp
   src/mc/mc_memory.cpp
-  src/mc/mc_pair.cpp
   src/mc/mc_private.h
   src/mc/mc_request.h
   src/mc/mc_request.cpp

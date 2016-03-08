@@ -40,6 +40,20 @@ xbt_parmap_t parmap;
 
 /********* Static functions *********/
 
+namespace simgrid {
+namespace mc {
+
+Pair::Pair() : num(++mc_stats->expanded_pairs),
+  visited_pair_removed(_sg_mc_visited > 0 ? 0 : 1)
+{}
+
+Pair::~Pair() {
+  this->automaton_state = nullptr;
+  if (this->visited_pair_removed)
+    MC_state_delete(this->graph_state, 1);
+  xbt_dynar_free(&(this->atomic_propositions));
+}
+
 static xbt_dynar_t get_atomic_propositions_values()
 {
   unsigned int cursor = 0;
@@ -180,7 +194,7 @@ static void MC_pre_modelcheck_liveness(void)
   xbt_dynar_foreach(simgrid::mc::property_automaton->states, cursor, automaton_state) {
     if (automaton_state->type == -1) {  /* Initial automaton state */
 
-      initial_pair = simgrid::mc::pair_new();
+      initial_pair = new Pair();
       initial_pair->automaton_state = automaton_state;
       initial_pair->graph_state = MC_state_new();
       initial_pair->atomic_propositions = get_atomic_propositions_values();
@@ -302,7 +316,7 @@ static int MC_modelcheck_liveness_main(void)
            transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
            res = MC_automaton_evaluate_label(transition_succ->label, prop_values);
            if (res == 1 || res == 2) { /* 1 = True transition (always enabled), 2 = enabled transition according to atomic prop values */
-              next_pair = simgrid::mc::pair_new();
+              next_pair = new Pair();
               next_pair->graph_state = MC_state_new();
               next_pair->automaton_state = transition_succ->dst;
               next_pair->atomic_propositions = get_atomic_propositions_values();
@@ -350,7 +364,7 @@ static int MC_modelcheck_liveness_main(void)
           XBT_DEBUG("Delete pair %d at depth %d", current_pair->num, current_pair->depth);
           if (current_pair->automaton_state->type == 1) 
             remove_acceptance_pair(current_pair->num);
-          simgrid::mc::pair_delete(current_pair);
+          delete current_pair;
         }
       }
 
@@ -362,9 +376,6 @@ static int MC_modelcheck_liveness_main(void)
   MC_print_statistics(mc_stats);
   return SIMGRID_MC_EXIT_SUCCESS;
 }
-
-namespace simgrid {
-namespace mc {
 
 int modelcheck_liveness(void)
 {

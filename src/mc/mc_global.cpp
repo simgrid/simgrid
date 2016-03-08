@@ -436,7 +436,7 @@ void dump_stack_liveness(xbt_fifo_t stack)
 {
   simgrid::mc::Pair* pair;
   while ((pair = (simgrid::mc::Pair*) xbt_fifo_pop(stack)) != nullptr)
-    simgrid::mc::pair_delete(pair);
+    delete pair;
 }
 
 }
