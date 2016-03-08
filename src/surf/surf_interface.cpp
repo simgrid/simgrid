@@ -360,32 +360,32 @@ namespace simgrid {
 namespace surf {
 
 Model::Model()
-  : p_maxminSystem(NULL)
+  : maxminSystem_(NULL)
 {
-  p_readyActionSet = new ActionList();
-  p_runningActionSet = new ActionList();
-  p_failedActionSet = new ActionList();
-  p_doneActionSet = new ActionList();
+  readyActionSet_ = new ActionList();
+  runningActionSet_ = new ActionList();
+  failedActionSet_ = new ActionList();
+  doneActionSet_ = new ActionList();
 
-  p_modifiedSet = NULL;
-  p_actionHeap = NULL;
-  p_updateMechanism = UM_UNDEFINED;
-  m_selectiveUpdate = 0;
+  modifiedSet_ = NULL;
+  actionHeap_ = NULL;
+  updateMechanism_ = UM_UNDEFINED;
+  selectiveUpdate_ = 0;
 }
 
 Model::~Model(){
-  delete p_readyActionSet;
-  delete p_runningActionSet;
-  delete p_failedActionSet;
-  delete p_doneActionSet;
+  delete readyActionSet_;
+  delete runningActionSet_;
+  delete failedActionSet_;
+  delete doneActionSet_;
 }
 
 double Model::next_occuring_event(double now)
 {
   //FIXME: set the good function once and for all
-  if (p_updateMechanism == UM_LAZY)
+  if (updateMechanism_ == UM_LAZY)
     return next_occuring_event_lazy(now);
-  else if (p_updateMechanism == UM_FULL)
+  else if (updateMechanism_ == UM_FULL)
     return next_occuring_event_full(now);
   else
     xbt_die("Invalid cpu update mechanism!");
@@ -399,20 +399,20 @@ double Model::next_occuring_event_lazy(double now)
 
   XBT_DEBUG
       ("Before share resources, the size of modified actions set is %zd",
-       p_modifiedSet->size());
+       modifiedSet_->size());
 
-  lmm_solve(p_maxminSystem);
+  lmm_solve(maxminSystem_);
 
   XBT_DEBUG
       ("After share resources, The size of modified actions set is %zd",
-       p_modifiedSet->size());
+       modifiedSet_->size());
 
-  while(!p_modifiedSet->empty()) {
-    action = &(p_modifiedSet->front());
-    p_modifiedSet->pop_front();
+  while(!modifiedSet_->empty()) {
+    action = &(modifiedSet_->front());
+    modifiedSet_->pop_front();
     int max_dur_flag = 0;
 
-    if (action->getStateSet() != p_runningActionSet)
+    if (action->getStateSet() != runningActionSet_)
       continue;
 
     /* bogus priority, skip it */
@@ -451,15 +451,15 @@ double Model::next_occuring_event_lazy(double now)
         action->getMaxDuration());
 
     if (min != -1) {
-      action->heapUpdate(p_actionHeap, min, max_dur_flag ? MAX_DURATION : NORMAL);
+      action->heapUpdate(actionHeap_, min, max_dur_flag ? MAX_DURATION : NORMAL);
       XBT_DEBUG("Insert at heap action(%p) min %f now %f", action, min,
                 now);
     } else DIE_IMPOSSIBLE;
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(p_actionHeap) > 0)
-    min = xbt_heap_maxkey(p_actionHeap) - now;
+  if (xbt_heap_size(actionHeap_) > 0)
+    min = xbt_heap_maxkey(actionHeap_) - now;
   else
     min = -1;
 
@@ -529,9 +529,9 @@ double Model::shareResourcesMaxMin(ActionList *running_actions,
 
 void Model::updateActionsState(double now, double delta)
 {
-  if (p_updateMechanism == UM_FULL)
+  if (updateMechanism_ == UM_FULL)
   updateActionsStateFull(now, delta);
-  else if (p_updateMechanism == UM_LAZY)
+  else if (updateMechanism_ == UM_LAZY)
   updateActionsStateLazy(now, delta);
   else
   xbt_die("Invalid cpu update mechanism!");

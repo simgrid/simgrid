@@ -42,11 +42,11 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
 
   if (!strcmp(optim, "Full")) {
-    p_updateMechanism = UM_FULL;
-    m_selectiveUpdate = select;
+    updateMechanism_ = UM_FULL;
+    selectiveUpdate_ = select;
   } else if (!strcmp(optim, "Lazy")) {
-    p_updateMechanism = UM_LAZY;
-    m_selectiveUpdate = 1;
+    updateMechanism_ = UM_LAZY;
+    selectiveUpdate_ = 1;
     xbt_assert((select == 1)
                ||
                (xbt_cfg_is_default_value
@@ -58,24 +58,24 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
 
-  p_maxminSystem = lmm_system_new(m_selectiveUpdate);
+  maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    p_actionHeap = xbt_heap_new(8, NULL);
-    xbt_heap_set_update_callback(p_actionHeap,  surf_action_lmm_update_index_heap);
-    p_modifiedSet = new ActionLmmList();
-    p_maxminSystem->keep_track = p_modifiedSet;
+    actionHeap_ = xbt_heap_new(8, NULL);
+    xbt_heap_set_update_callback(actionHeap_,  surf_action_lmm_update_index_heap);
+    modifiedSet_ = new ActionLmmList();
+    maxminSystem_->keep_track = modifiedSet_;
   }
 }
 
 CpuCas01Model::~CpuCas01Model()
 {
-  lmm_system_free(p_maxminSystem);
-  p_maxminSystem = NULL;
+  lmm_system_free(maxminSystem_);
+  maxminSystem_ = NULL;
 
-  if (p_actionHeap)
-    xbt_heap_free(p_actionHeap);
-  delete p_modifiedSet;
+  if (actionHeap_)
+    xbt_heap_free(actionHeap_);
+  delete modifiedSet_;
 
   surf_cpu_model_pm = NULL;
 
@@ -94,7 +94,7 @@ Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
 
 double CpuCas01Model::next_occuring_event_full(double /*now*/)
 {
-  return Model::shareResourcesMaxMin(getRunningActionSet(), p_maxminSystem, lmm_solve);
+  return Model::shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
 }
 
 /************

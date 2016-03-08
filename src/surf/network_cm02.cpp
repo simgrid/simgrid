@@ -147,27 +147,27 @@ NetworkCm02Model::NetworkCm02Model()
   int select = xbt_cfg_get_boolean(_sg_cfg_set, "network/maxmin_selective_update");
 
   if (!strcmp(optim, "Full")) {
-    p_updateMechanism = UM_FULL;
-    m_selectiveUpdate = select;
+    updateMechanism_ = UM_FULL;
+    selectiveUpdate_ = select;
   } else if (!strcmp(optim, "Lazy")) {
-    p_updateMechanism = UM_LAZY;
-    m_selectiveUpdate = 1;
+    updateMechanism_ = UM_LAZY;
+    selectiveUpdate_ = 1;
     xbt_assert((select == 1) || (xbt_cfg_is_default_value(_sg_cfg_set, "network/maxmin_selective_update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);
   }
 
-  if (!p_maxminSystem)
-    p_maxminSystem = lmm_system_new(m_selectiveUpdate);
+  if (!maxminSystem_)
+    maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, NULL));
 
-  if (p_updateMechanism == UM_LAZY) {
-  p_actionHeap = xbt_heap_new(8, NULL);
-  xbt_heap_set_update_callback(p_actionHeap, surf_action_lmm_update_index_heap);
-  p_modifiedSet = new ActionLmmList();
-  p_maxminSystem->keep_track = p_modifiedSet;
+  if (updateMechanism_ == UM_LAZY) {
+  actionHeap_ = xbt_heap_new(8, NULL);
+  xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
+  modifiedSet_ = new ActionLmmList();
+  maxminSystem_->keep_track = modifiedSet_;
   }
 }
 
@@ -175,7 +175,7 @@ Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double la
 {
   xbt_assert(NULL == Link::byName(name), "Link '%s' declared several times in the platform", name);
 
-  Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bandwidth, bandwidth, latency, policy);
+  Link* link = new NetworkCm02Link(this, name, properties, maxminSystem_, sg_bandwidth_factor * bandwidth, bandwidth, latency, policy);
   Link::onCreation(link);
   return link;
 }
@@ -183,20 +183,20 @@ Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double la
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
   NetworkCm02Action *action;
-  while ((xbt_heap_size(p_actionHeap) > 0)
-         && (double_equals(xbt_heap_maxkey(p_actionHeap), now, sg_surf_precision))) {
-    action = static_cast<NetworkCm02Action*> (xbt_heap_pop(p_actionHeap));
+  while ((xbt_heap_size(actionHeap_) > 0)
+         && (double_equals(xbt_heap_maxkey(actionHeap_), now, sg_surf_precision))) {
+    action = static_cast<NetworkCm02Action*> (xbt_heap_pop(actionHeap_));
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
-      int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->getVariable());
+      int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable());
 
       for (int i = 0; i < n; i++){
-        lmm_constraint_t constraint = lmm_get_cnst_from_var(p_maxminSystem, action->getVariable(), i);
+        lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
         NetworkCm02Link *link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
         TRACE_surf_link_set_utilization(link->getName(),
                                         action->getCategory(),
                                         (lmm_variable_getvalue(action->getVariable())*
-                                            lmm_get_cnst_weight_from_var(p_maxminSystem,
+                                            lmm_get_cnst_weight_from_var(maxminSystem_,
                                                 action->getVariable(),
                                                 i)),
                                         action->getLastUpdate(),
@@ -207,8 +207,8 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
     // if I am wearing a latency hat
     if (action->getHat() == LATENCY) {
       XBT_DEBUG("Latency paid for action %p. Activating", action);
-      lmm_update_variable_weight(p_maxminSystem, action->getVariable(), action->m_weight);
-      action->heapRemove(p_actionHeap);
+      lmm_update_variable_weight(maxminSystem_, action->getVariable(), action->m_weight);
+      action->heapRemove(actionHeap_);
       action->refreshLastUpdate();
 
         // if I am wearing a max_duration or normal hat
@@ -220,7 +220,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       action->setRemains(0);
       action->finish();
       action->setState(SURF_ACTION_DONE);
-      action->heapRemove(p_actionHeap);
+      action->heapRemove(actionHeap_);
 
       action->gapRemove();
     }
@@ -250,26 +250,26 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
           action->m_latency = 0.0;
         }
         if (action->m_latency == 0.0 && !(action->isSuspended()))
-          lmm_update_variable_weight(p_maxminSystem, action->getVariable(),
+          lmm_update_variable_weight(maxminSystem_, action->getVariable(),
               action->m_weight);
       }
       if (TRACE_is_enabled()) {
-        int n = lmm_get_number_of_cnst_from_var(p_maxminSystem, action->getVariable());
+        int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable());
         for (int i = 0; i < n; i++){
-          lmm_constraint_t constraint = lmm_get_cnst_from_var(p_maxminSystem, action->getVariable(), i);
+          lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
 
           NetworkCm02Link* link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
           TRACE_surf_link_set_utilization(link->getName(),
                                         action->getCategory(),
                                         (lmm_variable_getvalue(action->getVariable())*
-                                            lmm_get_cnst_weight_from_var(p_maxminSystem,
+                                            lmm_get_cnst_weight_from_var(maxminSystem_,
                                                 action->getVariable(),
                                                 i)),
                                         action->getLastUpdate(),
                                         now - action->getLastUpdate());
         }
       }
-      if (!lmm_get_number_of_cnst_from_var (p_maxminSystem, action->getVariable())) {
+      if (!lmm_get_number_of_cnst_from_var (maxminSystem_, action->getVariable())) {
         /* There is actually no link used, hence an infinite bandwidth.
          * This happens often when using models like vivaldi.
          * In such case, just make sure that the action completes immediately.
@@ -328,7 +328,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
   action->m_weight = action->m_latency = latency;
 
   action->m_rate = rate;
-  if (p_updateMechanism == UM_LAZY) {
+  if (updateMechanism_ == UM_LAZY) {
     action->m_indexHeap = -1;
     action->m_lastUpdate = surf_get_clock();
   }
@@ -359,28 +359,28 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
     constraints_per_variable += back_route->size();
 
   if (action->m_latency > 0) {
-    action->p_variable = lmm_variable_new(p_maxminSystem, action, 0.0, -1.0, constraints_per_variable);
-    if (p_updateMechanism == UM_LAZY) {
+    action->p_variable = lmm_variable_new(maxminSystem_, action, 0.0, -1.0, constraints_per_variable);
+    if (updateMechanism_ == UM_LAZY) {
       // add to the heap the event when the latency is payed
       XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->m_latency + action->m_lastUpdate);
-      action->heapInsert(p_actionHeap, action->m_latency + action->m_lastUpdate, route->empty() ? NORMAL : LATENCY);
+      action->heapInsert(actionHeap_, action->m_latency + action->m_lastUpdate, route->empty() ? NORMAL : LATENCY);
     }
   } else
-    action->p_variable = lmm_variable_new(p_maxminSystem, action, 1.0, -1.0, constraints_per_variable);
+    action->p_variable = lmm_variable_new(maxminSystem_, action, 1.0, -1.0, constraints_per_variable);
 
   if (action->m_rate < 0) {
-    lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? sg_tcp_gamma / (2.0 * action->m_latCurrent) : -1.0);
+    lmm_update_variable_bound(maxminSystem_, action->getVariable(), (action->m_latCurrent > 0) ? sg_tcp_gamma / (2.0 * action->m_latCurrent) : -1.0);
   } else {
-    lmm_update_variable_bound(p_maxminSystem, action->getVariable(), (action->m_latCurrent > 0) ? std::min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)) : action->m_rate);
+    lmm_update_variable_bound(maxminSystem_, action->getVariable(), (action->m_latCurrent > 0) ? std::min(action->m_rate, sg_tcp_gamma / (2.0 * action->m_latCurrent)) : action->m_rate);
   }
 
   for (auto link: *route)
-    lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), 1.0);
+    lmm_expand(maxminSystem_, link->getConstraint(), action->getVariable(), 1.0);
 
   if (sg_network_crosstraffic == 1) {
     XBT_DEBUG("Fullduplex active adding backward flow using 5%%");
     for (auto link : *back_route)
-      lmm_expand(p_maxminSystem, link->getConstraint(), action->getVariable(), .05);
+      lmm_expand(maxminSystem_, link->getConstraint(), action->getVariable(), .05);
      
     //Change concurrency_share here, if you want that cross-traffic is included in the SURF concurrency
     //(You would also have to change lmm_element_concurrency())

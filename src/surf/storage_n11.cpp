@@ -70,8 +70,8 @@ StorageN11Model::StorageN11Model() : StorageModel() {
 
   storage_running_action_set_that_does_not_need_being_checked =
       xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
-  if (!p_maxminSystem) {
-    p_maxminSystem = lmm_system_new(storage_selective_update);
+  if (!maxminSystem_) {
+    maxminSystem_ = lmm_system_new(storage_selective_update);
   }
 }
 
@@ -99,7 +99,7 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
   double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"),
       "property Bconnection, storage",type_id);
 
-  Storage *storage = new StorageN11(this, id, properties, p_maxminSystem,
+  Storage *storage = new StorageN11(this, id, properties, maxminSystem_,
       Bread, Bwrite, Bconnection, type_id, (char *)content_name,
       xbt_strdup(content_type), storage_type->size, (char *) attach);
   storageCreatedCallbacks(storage);
@@ -127,7 +127,7 @@ double StorageN11Model::next_occuring_event(double /*now*/)
   StorageAction *write_action;
 
   double min_completion = shareResourcesMaxMin(getRunningActionSet(),
-      p_maxminSystem, lmm_solve);
+      maxminSystem_, lmm_solve);
 
   double rate;
   // Foreach disk

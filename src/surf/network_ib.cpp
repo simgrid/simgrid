@@ -178,7 +178,7 @@ namespace simgrid {
 
         if (!double_equals(penalized_bw, rate_before_update, sg_surf_precision)){
           XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->action->getBound(), (*it)->init_rate );
-          lmm_update_variable_bound(p_maxminSystem, (*it)->action->getVariable(), penalized_bw);
+          lmm_update_variable_bound(maxminSystem_, (*it)->action->getVariable(), penalized_bw);
         }else{
           XBT_DEBUG("%d->%d action %p penalty not updated : bw %f, initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->init_rate );
         }

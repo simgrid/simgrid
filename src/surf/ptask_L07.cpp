@@ -45,9 +45,9 @@ namespace simgrid {
 namespace surf {
 
 HostL07Model::HostL07Model() : HostModel() {
-  p_maxminSystem = lmm_system_new(1);
-  surf_network_model = new NetworkL07Model(this,p_maxminSystem);
-  surf_cpu_model_pm = new CpuL07Model(this,p_maxminSystem);
+  maxminSystem_ = lmm_system_new(1);
+  surf_network_model = new NetworkL07Model(this,maxminSystem_);
+  surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 
   routing_model_create(surf_network_model->createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, NULL));
 }
@@ -61,23 +61,23 @@ CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
   : CpuModel()
   , p_hostModel(hmodel)
   {
-    p_maxminSystem = sys;
+    maxminSystem_ = sys;
   }
 CpuL07Model::~CpuL07Model() {
   surf_cpu_model_pm = NULL;
-  lmm_system_free(p_maxminSystem);
-  p_maxminSystem = NULL;
+  lmm_system_free(maxminSystem_);
+  maxminSystem_ = NULL;
 }
 NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   : NetworkModel()
   , p_hostModel(hmodel)
   {
-    p_maxminSystem = sys;
+    maxminSystem_ = sys;
   }
 NetworkL07Model::~NetworkL07Model()
 {
   surf_network_model = NULL;
-  p_maxminSystem = NULL; // Avoid multi-free
+  maxminSystem_ = NULL; // Avoid multi-free
 }
 
 
@@ -87,7 +87,7 @@ double HostL07Model::next_occuring_event(double /*now*/)
 
   ActionList *running_actions = getRunningActionSet();
   double min = this->shareResourcesMaxMin(running_actions,
-                                              p_maxminSystem,
+                                              maxminSystem_,
                                               bottleneck_solve);
 
   for(ActionList::iterator it(running_actions->begin()), itend(running_actions->end())
@@ -129,7 +129,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       }
       if ((action->m_latency == 0.0) && (action->isSuspended() == 0)) {
         action->updateBound();
-        lmm_update_variable_weight(p_maxminSystem, action->getVariable(), 1.0);
+        lmm_update_variable_weight(maxminSystem_, action->getVariable(), 1.0);
       }
     }
     XBT_DEBUG("Action (%p) : remains (%g) updated by %g.",
@@ -160,7 +160,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       lmm_constraint_t cnst = NULL;
       int i = 0;
 
-      while ((cnst = lmm_get_cnst_from_var(p_maxminSystem, action->getVariable(), i++))) {
+      while ((cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i++))) {
         void *constraint_id = lmm_constraint_id(cnst);
 
         if (static_cast<HostImpl*>(constraint_id)->isOff()) {

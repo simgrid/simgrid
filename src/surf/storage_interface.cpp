@@ -43,7 +43,7 @@ StorageModel::StorageModel()
 }
 
 StorageModel::~StorageModel(){
-  lmm_system_free(p_maxminSystem);
+  lmm_system_free(maxminSystem_);
 
   surf_storage_model = NULL;
 

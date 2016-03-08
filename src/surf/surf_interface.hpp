@@ -274,31 +274,31 @@ public:
   virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
-  virtual ActionList* getReadyActionSet() {return p_readyActionSet;}
+  virtual ActionList* getReadyActionSet() {return readyActionSet_;}
 
   /** @brief Get the set of [actions](@ref Action) in *running* state */
-  virtual ActionList* getRunningActionSet() {return p_runningActionSet;}
+  virtual ActionList* getRunningActionSet() {return runningActionSet_;}
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
-  virtual ActionList* getFailedActionSet() {return p_failedActionSet;}
+  virtual ActionList* getFailedActionSet() {return failedActionSet_;}
 
   /** @brief Get the set of [actions](@ref Action) in *done* state */
-  virtual ActionList* getDoneActionSet() {return p_doneActionSet;}
+  virtual ActionList* getDoneActionSet() {return doneActionSet_;}
 
   /** @brief Get the set of modified [actions](@ref Action) */
-  virtual ActionLmmListPtr getModifiedSet() {return p_modifiedSet;}
+  virtual ActionLmmListPtr getModifiedSet() {return modifiedSet_;}
 
   /** @brief Get the maxmin system of the current Model */
-  lmm_system_t getMaxminSystem() {return p_maxminSystem;}
+  lmm_system_t getMaxminSystem() {return maxminSystem_;}
 
   /**
    * @brief Get the update mechanism of the current Model
    * @see e_UM_t
    */
-  e_UM_t getUpdateMechanism() {return p_updateMechanism;}
+  e_UM_t getUpdateMechanism() {return updateMechanism_;}
 
   /** @brief Get Action heap */
-  xbt_heap_t getActionHeap() {return p_actionHeap;}
+  xbt_heap_t getActionHeap() {return actionHeap_;}
 
   /**
    * @brief Share the resources between the actions
@@ -330,17 +330,17 @@ public:
   virtual bool next_occuring_event_isIdempotent()=0;
 
 protected:
-  ActionLmmListPtr p_modifiedSet;
-  lmm_system_t p_maxminSystem = nullptr;
-  e_UM_t p_updateMechanism = UM_UNDEFINED;
-  int m_selectiveUpdate;
-  xbt_heap_t p_actionHeap;
+  ActionLmmListPtr modifiedSet_;
+  lmm_system_t maxminSystem_ = nullptr;
+  e_UM_t updateMechanism_ = UM_UNDEFINED;
+  int selectiveUpdate_;
+  xbt_heap_t actionHeap_;
 
 private:
-  ActionList* p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
-  ActionList* p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
-  ActionList* p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */
-  ActionList* p_doneActionSet; /**< Actions in state SURF_ACTION_DONE */
+  ActionList* readyActionSet_; /**< Actions in state SURF_ACTION_READY */
+  ActionList* runningActionSet_; /**< Actions in state SURF_ACTION_RUNNING */
+  ActionList* failedActionSet_; /**< Actions in state SURF_ACTION_FAILED */
+  ActionList* doneActionSet_; /**< Actions in state SURF_ACTION_DONE */
 };
 
 }

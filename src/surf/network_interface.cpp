@@ -168,7 +168,7 @@ namespace simgrid {
       ActionList *runningActions = surf_network_model->getRunningActionSet();
       double minRes;
 
-      minRes = shareResourcesMaxMin(runningActions, surf_network_model->p_maxminSystem, surf_network_model->f_networkSolve);
+      minRes = shareResourcesMaxMin(runningActions, surf_network_model->maxminSystem_, surf_network_model->f_networkSolve);
 
       for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
           ; it != itend ; ++it) {

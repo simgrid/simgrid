@@ -68,12 +68,11 @@ namespace simgrid {
 
       /** @brief Destructor */
       ~NetworkModel() {
-        if (p_maxminSystem)
-          lmm_system_free(p_maxminSystem);
-        if (p_actionHeap)
-          xbt_heap_free(p_actionHeap);
-        if (p_modifiedSet)
-          delete p_modifiedSet;
+        if (maxminSystem_)
+          lmm_system_free(maxminSystem_);
+        if (actionHeap_)
+          xbt_heap_free(actionHeap_);
+        delete modifiedSet_;
       }
 
       /**
