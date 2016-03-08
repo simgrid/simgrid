@@ -24,12 +24,6 @@ XBT_PRIVATE bool request_depend(smx_simcall_t req1, smx_simcall_t req2);
 
 XBT_PRIVATE char* request_to_string(smx_simcall_t req, int value, simgrid::mc::RequestType type);
 
-/** Check if the given simcall is visible
- *
- *  \return `TRUE` or `FALSE`
- */
-XBT_PRIVATE bool request_is_visible(smx_simcall_t req);
-
 XBT_PRIVATE bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
 
 /** Is the process ready to execute its simcall?

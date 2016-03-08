@@ -37,6 +37,12 @@ XBT_PRIVATE extern std::vector<double> processes_time;
 /** Execute a given simcall */
 XBT_PRIVATE void handle_simcall(smx_simcall_t req, int value);
 
+/** Check if the given simcall is visible
+ *
+ *  \return `TRUE` or `FALSE`
+ */
+XBT_PRIVATE bool request_is_visible(smx_simcall_t req);
+
 }
 }
 
