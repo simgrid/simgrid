@@ -796,9 +796,19 @@ static void surf_config_models_setup()
  * @param AS_id name of this autonomous system. Must be unique in the platform
  * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
  */
-void routing_AS_begin(sg_platf_AS_cbarg_t AS)
+void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 {
-  XBT_DEBUG("routing_AS_begin");
+  if (!surf_parse_models_setup_already_called) {
+    /* Initialize the surf models. That must be done after we got all config, and before we need the models.
+     * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
+     *
+     * I'm not sure for <trace> and <trace_connect>, there may be a bug here
+     * (FIXME: check it out by creating a file beginning with one of these tags)
+     * but cluster and peer create ASes internally, so putting the code in there is ok.
+     */
+    surf_parse_models_setup_already_called = 1;
+    surf_config_models_setup();
+  }
 
   xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, AS->id, ROUTING_ASR_LEVEL),
       "Refusing to create a second AS called \"%s\".", AS->id);
@@ -855,54 +865,24 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
 
   simgrid::surf::netcardCreatedCallbacks(netcard);
   simgrid::surf::asCreatedCallbacks(new_as);
-}
-
-void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
-{
-  if (!surf_parse_models_setup_already_called) {
-    /* Initialize the surf models. That must be done after we got all config, and before we need the models.
-     * That is, after the last <config> tag, if any, and before the first of cluster|peer|AS|trace|trace_connect
-     *
-     * I'm not sure for <trace> and <trace_connect>, there may be a bug here
-     * (FIXME: check it out by creating a file beginning with one of these tags)
-     * but cluster and peer create ASes internally, so putting the code in there is ok.
-     *
-     * TODO, There used to be a guard protecting here against
-     * xbt_dynar_length(sg_platf_AS_begin_cb_list) because we don't want to
-     * initialize the models if we are parsing the file to get the deployment.
-     * That could happen if the same file would be used for platf and deploy:
-     * it'd contain AS tags even during the deploy parsing. Removing that guard
-     * would result of the models to get re-inited when parsing for deploy.
-     * Currently using the same file for platform and deployment is broken
-     * however. This guard will have to ba adapted in order to make this feature
-     * work again.
-     */
-    surf_parse_models_setup_already_called = 1;
-    surf_config_models_setup();
-  }
-
-  routing_AS_begin(AS);
   if (TRACE_is_enabled())
     sg_instr_AS_begin(AS);
 }
 
-void sg_platf_new_AS_end()
-{
-  routing_AS_end();
-  if (TRACE_is_enabled())
-    sg_instr_AS_end();
-}
 /**
  * \brief Specify that the current description of AS is finished
  *
  * Once you've declared all the content of your AS, you have to close
  * it with this call. Your AS is not usable until you call this function.
  */
-void routing_AS_end()
+void sg_platf_new_AS_end()
 {
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->Seal();
   current_routing = static_cast<simgrid::surf::AsImpl*>(current_routing->father());
+
+  if (TRACE_is_enabled())
+    sg_instr_AS_end();
 }
 
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */

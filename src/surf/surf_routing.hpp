@@ -31,7 +31,6 @@ namespace surf {
  * Classes *
  ***********/
 
-class XBT_PRIVATE RoutingModelDescription;
 class XBT_PRIVATE Onelink;
 class RoutingPlatf;
 
