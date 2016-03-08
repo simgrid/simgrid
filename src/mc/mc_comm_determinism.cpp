@@ -7,6 +7,7 @@
 #include <cstdint>
 
 #include <xbt/dynar.h>
+#include <xbt/dynar.hpp>
 #include <xbt/fifo.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
@@ -304,7 +305,7 @@ static void MC_pre_modelcheck_comm_determinism(void)
   const int maxpid = MC_smx_get_maxpid();
 
   if (_sg_mc_visited > 0)
-    visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
+    simgrid::mc::visited_states = simgrid::xbt::newDeleteDynar<simgrid::mc::VisitedState>();
  
   // Create initial_communications_pattern elements:
   initial_communications_pattern = xbt_dynar_new(sizeof(mc_list_comm_pattern_t), MC_list_comm_pattern_free_voidp);
@@ -342,7 +343,7 @@ static int MC_modelcheck_comm_determinism_main(void)
 
   char *req_str = nullptr;
   int value;
-  mc_visited_state_t visited_state = nullptr;
+  simgrid::mc::VisitedState* visited_state = nullptr;
   smx_simcall_t req = nullptr;
   mc_state_t state = nullptr, next_state = NULL;
 
@@ -392,7 +393,7 @@ static int MC_modelcheck_comm_determinism_main(void)
       /* Create the new expanded state */
       next_state = MC_state_new();
 
-      if ((visited_state = is_visited_state(next_state)) == nullptr) {
+      if ((visited_state = simgrid::mc::is_visited_state(next_state)) == nullptr) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
@@ -462,7 +463,7 @@ static int MC_modelcheck_comm_determinism_main(void)
 int MC_modelcheck_comm_determinism(void)
 {
   XBT_INFO("Check communication determinism");
-  mc_reduce_kind = e_mc_reduce_none;
+  simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
   mc_model_checker->wait_for_requests();
 
   if (mc_mode == MC_MODE_CLIENT)

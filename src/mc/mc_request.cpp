@@ -140,7 +140,7 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
 // Those are MC_state_get_internal_request(state)
 bool request_depend(smx_simcall_t r1, smx_simcall_t r2)
 {
-  if (mc_reduce_kind == e_mc_reduce_none)
+  if (simgrid::mc::reduction_mode == simgrid::mc::ReductionMode::none)
     return true;
 
   if (r1->issuer == r2->issuer)

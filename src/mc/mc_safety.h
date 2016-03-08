@@ -17,31 +17,34 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_state.h"
 
-SG_BEGIN_DECL()
+namespace simgrid {
+namespace mc {
 
-typedef enum {
-  e_mc_reduce_unset,
-  e_mc_reduce_none,
-  e_mc_reduce_dpor
-} e_mc_reduce_t;
+enum class ReductionMode {
+  unset,
+  none,
+  dpor,
+};
 
-extern XBT_PRIVATE e_mc_reduce_t mc_reduce_kind;
+extern XBT_PRIVATE simgrid::mc::ReductionMode reduction_mode;
 
-int MC_modelcheck_safety(void);
+int modelcheck_safety(void);
 
-typedef struct XBT_PRIVATE s_mc_visited_state{
+struct XBT_PRIVATE VisitedState {
   mc_snapshot_t system_state;
   size_t heap_bytes_used;
   int nb_processes;
   int num;
   int other_num; // dot_output for
-}s_mc_visited_state_t, *mc_visited_state_t;
+
+  VisitedState();
+  ~VisitedState();
+};
 
 extern XBT_PRIVATE xbt_dynar_t visited_states;
-XBT_PRIVATE mc_visited_state_t is_visited_state(mc_state_t graph_state);
-XBT_PRIVATE void visited_state_free(mc_visited_state_t state);
-XBT_PRIVATE void visited_state_free_voidp(void *s);
+XBT_PRIVATE simgrid::mc::VisitedState* is_visited_state(mc_state_t graph_state);
 
-SG_END_DECL()
+}
+}
 
 #endif

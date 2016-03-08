@@ -114,4 +114,16 @@ XBT_PUBLIC(void) xbt_automaton_propositional_symbol_free_voidp(void *ps);
 XBT_PUBLIC(void) xbt_automaton_free(xbt_automaton_t a);
 
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+namespace xbt {
+  inline void destroy(xbt_automaton_t a)
+  {
+    xbt_automaton_free(a);
+  }
+}
+}
+#endif
+
 #endif

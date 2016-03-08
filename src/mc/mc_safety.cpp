@@ -10,6 +10,7 @@
 
 #include <xbt/log.h>
 #include <xbt/dynar.h>
+#include <xbt/dynar.hpp>
 #include <xbt/fifo.h>
 #include <xbt/sysdep.h>
 
@@ -31,6 +32,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
 
 }
 
+namespace simgrid {
+namespace mc {
+
 static int is_exploration_stack_state(mc_state_t current_state){
 
   xbt_fifo_item_t item;
@@ -45,15 +49,15 @@ static int is_exploration_stack_state(mc_state_t current_state){
   return 0;
 }
 
-static void MC_modelcheck_safety_init(void);
+static void modelcheck_safety_init(void);
 
 /**
  *  \brief Initialize the DPOR exploration algorithm
  */
-static void MC_pre_modelcheck_safety()
+static void pre_modelcheck_safety()
 {
   if (_sg_mc_visited > 0)
-    visited_states = xbt_dynar_new(sizeof(mc_visited_state_t), visited_state_free_voidp);
+    simgrid::mc::visited_states = simgrid::xbt::newDeleteDynar<simgrid::mc::VisitedState>();
 
   mc_state_t initial_state = MC_state_new();
 
@@ -67,7 +71,7 @@ static void MC_pre_modelcheck_safety()
   for (auto& p : mc_model_checker->process().simix_processes())
     if (simgrid::mc::process_is_enabled(&p.copy)) {
       MC_state_interleave_process(initial_state, &p.copy);
-      if (mc_reduce_kind != e_mc_reduce_none)
+      if (simgrid::mc::reduction_mode != simgrid::mc::ReductionMode::none)
         break;
     }
 
@@ -78,16 +82,16 @@ static void MC_pre_modelcheck_safety()
 /** \brief Model-check the application using a DFS exploration
  *         with DPOR (Dynamic Partial Order Reductions)
  */
-int MC_modelcheck_safety(void)
+int modelcheck_safety(void)
 {
-  MC_modelcheck_safety_init();
+  modelcheck_safety_init();
 
   char *req_str = nullptr;
   int value;
   smx_simcall_t req = nullptr;
   mc_state_t state = nullptr, prev_state = NULL, next_state = NULL;
   xbt_fifo_item_t item = nullptr;
-  mc_visited_state_t visited_state = nullptr;
+  simgrid::mc::VisitedState* visited_state = nullptr;
 
   while (xbt_fifo_size(mc_stack) > 0) {
 
@@ -133,13 +137,13 @@ int MC_modelcheck_safety(void)
           return SIMGRID_MC_EXIT_NON_TERMINATION;
       }
 
-      if ((visited_state = is_visited_state(next_state)) == nullptr) {
+      if ((visited_state = simgrid::mc::is_visited_state(next_state)) == nullptr) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
           if (simgrid::mc::process_is_enabled(&p.copy)) {
             MC_state_interleave_process(next_state, &p.copy);
-            if (mc_reduce_kind != e_mc_reduce_none)
+            if (simgrid::mc::reduction_mode != simgrid::mc::ReductionMode::none)
               break;
           }
 
@@ -193,7 +197,7 @@ int MC_modelcheck_safety(void)
          state that executed that previous request. */
 
       while ((state = (mc_state_t) xbt_fifo_shift(mc_stack))) {
-        if (mc_reduce_kind == e_mc_reduce_dpor) {
+        if (simgrid::mc::reduction_mode == simgrid::mc::ReductionMode::dpor) {
           req = MC_state_get_internal_request(state);
           if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
             xbt_die("Mutex is currently not supported with DPOR, "
@@ -258,12 +262,12 @@ int MC_modelcheck_safety(void)
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-static void MC_modelcheck_safety_init(void)
+static void modelcheck_safety_init(void)
 {
   if(_sg_mc_termination)
-    mc_reduce_kind = e_mc_reduce_none;
-  else if (mc_reduce_kind == e_mc_reduce_unset)
-    mc_reduce_kind = e_mc_reduce_dpor;
+    simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
+  else if (simgrid::mc::reduction_mode == simgrid::mc::ReductionMode::unset)
+    simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::dpor;
   _sg_mc_safety = 1;
   if (_sg_mc_termination)
     XBT_INFO("Check non progressive cycles");
@@ -278,9 +282,12 @@ static void MC_modelcheck_safety_init(void)
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
-  MC_pre_modelcheck_safety();
+  pre_modelcheck_safety();
 
   /* Save the initial state */
   initial_global_state = xbt_new0(s_mc_global_t, 1);
   initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
+}
+
+}
 }

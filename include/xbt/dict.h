@@ -173,4 +173,16 @@ xbt_dict_foreach(head, cursor, key, data) {
 /** @} */
 
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+namespace xbt {
+  inline void destroy(xbt_dict_t d)
+  {
+    xbt_dict_free(&d);
+  }
+}
+}
+#endif
+
 #endif                          /* _XBT_DICT_H */

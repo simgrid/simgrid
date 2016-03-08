@@ -25,9 +25,15 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc,
                                 "Configuration of MC");
 
+}
+
 #ifdef HAVE_MC
+namespace simgrid {
+namespace mc {
 /* Configuration support */
-e_mc_reduce_t mc_reduce_kind = e_mc_reduce_unset;
+simgrid::mc::ReductionMode reduction_mode = simgrid::mc::ReductionMode::unset;
+}
+}
 #endif
 
 #ifndef HAVE_MC
@@ -72,9 +78,9 @@ void _mc_cfg_cb_reduce(const char *name, int pos)
 
   char *val = xbt_cfg_get_string(_sg_cfg_set, name);
   if (!strcasecmp(val, "none"))
-    mc_reduce_kind = e_mc_reduce_none;
+    simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
   else if (!strcasecmp(val, "dpor"))
-    mc_reduce_kind = e_mc_reduce_dpor;
+    simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::dpor;
   else
     xbt_die("configuration option %s can only take 'none' or 'dpor' as a value",
             name);
@@ -196,5 +202,3 @@ void _mc_cfg_cb_termination(const char *name, int pos)
 }
 
 #endif
-
-}

@@ -31,13 +31,9 @@ namespace simgrid {
 namespace mc {
 
 xbt_dynar_t visited_pairs;
-
-}
-}
-
 xbt_dynar_t visited_states;
 
-static int is_exploration_stack_state(mc_visited_state_t state){
+static int is_exploration_stack_state(simgrid::mc::VisitedState* state){
   xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
   while (item) {
     if (((mc_state_t)xbt_fifo_get_item_content(item))->num == state->num){
@@ -49,73 +45,59 @@ static int is_exploration_stack_state(mc_visited_state_t state){
   return 0;
 }
 
-void visited_state_free(mc_visited_state_t state)
-{
-  if (!state)
-    return;
-  if(!is_exploration_stack_state(state))
-    delete state->system_state;
-  xbt_free(state);
-}
-
-void visited_state_free_voidp(void *s)
-{
-  visited_state_free((mc_visited_state_t) * (void **) s);
-}
-
 /**
  * \brief Save the current state
  * \return Snapshot of the current state.
  */
-static mc_visited_state_t visited_state_new()
+VisitedState::VisitedState()
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
-  mc_visited_state_t new_state = xbt_new0(s_mc_visited_state_t, 1);
-  new_state->heap_bytes_used = mmalloc_get_bytes_used_remote(
+  this->heap_bytes_used = mmalloc_get_bytes_used_remote(
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
   MC_process_smx_refresh(&mc_model_checker->process());
-  new_state->nb_processes =
+  this->nb_processes =
     mc_model_checker->process().smx_process_infos.size();
 
-  new_state->system_state = simgrid::mc::take_snapshot(mc_stats->expanded_states);
-  new_state->num = mc_stats->expanded_states;
-  new_state->other_num = -1;
-  return new_state;
+  this->num = mc_stats->expanded_states;
+  this->other_num = -1;
 }
 
-namespace simgrid {
-namespace mc {
+VisitedState::~VisitedState()
+{
+  if(!is_exploration_stack_state(this))
+    delete this->system_state;
+}
 
-simgrid::mc::VisitedPair* visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
+VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
-  simgrid::mc::VisitedPair* pair = nullptr;
-  pair = xbt_new0(simgrid::mc::VisitedPair, 1);
-  pair->graph_state = graph_state;
-  if(pair->graph_state->system_state == nullptr)
-    pair->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
-  pair->heap_bytes_used = mmalloc_get_bytes_used_remote(
+
+  this->graph_state = graph_state;
+  if(this->graph_state->system_state == nullptr)
+    this->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
+  this->heap_bytes_used = mmalloc_get_bytes_used_remote(
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
   MC_process_smx_refresh(&mc_model_checker->process());
-  pair->nb_processes =
+  this->nb_processes =
     mc_model_checker->process().smx_process_infos.size();
 
-  pair->automaton_state = automaton_state;
-  pair->num = pair_num;
-  pair->other_num = -1;
-  pair->acceptance_removed = 0;
-  pair->visited_removed = 0;
-  pair->acceptance_pair = 0;
-  pair->atomic_propositions = xbt_dynar_new(sizeof(int), nullptr);
+  this->automaton_state = automaton_state;
+  this->num = pair_num;
+  this->other_num = -1;
+  this->acceptance_removed = 0;
+  this->visited_removed = 0;
+  this->acceptance_pair = 0;
+  this->atomic_propositions = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(
+    xbt_dynar_new(sizeof(int), nullptr));
+
   unsigned int cursor = 0;
   int value;
   xbt_dynar_foreach(atomic_propositions, cursor, value)
-      xbt_dynar_push_as(pair->atomic_propositions, int, value);
-  return pair;
+      xbt_dynar_push_as(this->atomic_propositions.get(), int, value);
 }
 
 static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
@@ -130,14 +112,10 @@ static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
   return 0;
 }
 
-void visited_pair_delete(simgrid::mc::VisitedPair* p)
+VisitedPair::~VisitedPair()
 {
-  p->automaton_state = nullptr;
-  if( !is_exploration_stack_pair(p))
-    MC_state_delete(p->graph_state, 1);
-  xbt_dynar_free(&(p->atomic_propositions));
-  xbt_free(p);
-  p = nullptr;
+  if( !is_exploration_stack_pair(this))
+    MC_state_delete(this->graph_state, 1);
 }
 
 }
@@ -169,8 +147,8 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
     nb_processes = ((simgrid::mc::VisitedPair*) ref)->nb_processes;
     heap_bytes_used = ((simgrid::mc::VisitedPair*) ref)->heap_bytes_used;
   } else {
-    nb_processes = ((mc_visited_state_t) ref)->nb_processes;
-    heap_bytes_used = ((mc_visited_state_t) ref)->heap_bytes_used;
+    nb_processes = ((simgrid::mc::VisitedState*) ref)->nb_processes;
+    heap_bytes_used = ((simgrid::mc::VisitedState*) ref)->heap_bytes_used;
   }
 
   int start = 0;
@@ -183,9 +161,9 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
       nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
       heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
     } else {
-      ref_test = (mc_visited_state_t) xbt_dynar_get_as(list, cursor, mc_visited_state_t);
-      nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
-      heap_bytes_used_test = ((mc_visited_state_t) ref_test)->heap_bytes_used;
+      ref_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(list, cursor, simgrid::mc::VisitedState*);
+      nb_processes_test = ((simgrid::mc::VisitedState*) ref_test)->nb_processes;
+      heap_bytes_used_test = ((simgrid::mc::VisitedState*) ref_test)->heap_bytes_used;
     }
     if (nb_processes_test < nb_processes)
       start = cursor + 1;
@@ -204,9 +182,9 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
             nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
             heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
           } else {
-            ref_test = (mc_visited_state_t) xbt_dynar_get_as(list, previous_cursor, mc_visited_state_t);
-            nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
-            heap_bytes_used_test = ((mc_visited_state_t) ref_test)->heap_bytes_used;
+            ref_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(list, previous_cursor, simgrid::mc::VisitedState*);
+            nb_processes_test = ((simgrid::mc::VisitedState*) ref_test)->nb_processes;
+            heap_bytes_used_test = ((simgrid::mc::VisitedState*) ref_test)->heap_bytes_used;
           }
           if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
             break;
@@ -220,9 +198,9 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
             nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
             heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
           } else {
-            ref_test = (mc_visited_state_t) xbt_dynar_get_as(list, next_cursor, mc_visited_state_t);
-            nb_processes_test = ((mc_visited_state_t) ref_test)->nb_processes;
-            heap_bytes_used_test = ((mc_visited_state_t) ref_test)->heap_bytes_used;
+            ref_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(list, next_cursor, simgrid::mc::VisitedState*);
+            nb_processes_test = ((simgrid::mc::VisitedState*) ref_test)->nb_processes;
+            heap_bytes_used_test = ((simgrid::mc::VisitedState*) ref_test)->heap_bytes_used;
           }
           if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
             break;
@@ -237,7 +215,7 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
 
 static
 void replace_state(
-  mc_visited_state_t state_test, mc_visited_state_t new_state, int cursor)
+  simgrid::mc::VisitedState* state_test, simgrid::mc::VisitedState* new_state, int cursor)
 {
   if (state_test->other_num == -1)
     new_state->other_num = state_test->num;
@@ -255,14 +233,14 @@ void replace_state(
   /* Replace the old state with the new one (with a bigger num)
      (when the max number of visited states is reached,  the oldest
      one is removed according to its number (= with the min number) */
-  xbt_dynar_remove_at(visited_states, cursor, nullptr);
-  xbt_dynar_insert_at(visited_states, cursor, &new_state);
+  xbt_dynar_remove_at(simgrid::mc::visited_states, cursor, nullptr);
+  xbt_dynar_insert_at(simgrid::mc::visited_states, cursor, &new_state);
   XBT_DEBUG("Replace visited state %d with the new visited state %d",
     state_test->num, new_state->num);
 }
 
 static
-bool some_dommunications_are_not_finished()
+bool some_communications_are_not_finished()
 {
   for (size_t current_process = 1; current_process < MC_smx_get_maxpid(); current_process++) {
     xbt_dynar_t pattern = xbt_dynar_get_as(
@@ -275,11 +253,13 @@ bool some_dommunications_are_not_finished()
   return false;
 }
 
+namespace simgrid {
+namespace mc {
+
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
-
-mc_visited_state_t is_visited_state(mc_state_t graph_state)
+simgrid::mc::VisitedState* is_visited_state(mc_state_t graph_state)
 {
   if (_sg_mc_visited == 0)
     return nullptr;
@@ -288,9 +268,9 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
      communications are not finished (at least, data are transfered). These communications 
      are incomplete and they cannot be analyzed and compared with the initial pattern. */
   int partial_comm = (_sg_mc_comms_determinism || _sg_mc_send_determinism) &&
-    some_dommunications_are_not_finished();
+    some_communications_are_not_finished();
 
-  mc_visited_state_t new_state = visited_state_new();
+  simgrid::mc::VisitedState* new_state = new VisitedState();
   graph_state->system_state = new_state->system_state;
   graph_state->in_visited_states = 1;
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)", new_state->system_state, new_state->num, graph_state->num);
@@ -311,7 +291,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
 
         int cursor = min;
         while (cursor <= max) {
-          mc_visited_state_t state_test = (mc_visited_state_t) xbt_dynar_get_as(visited_states, cursor, mc_visited_state_t);
+          simgrid::mc::VisitedState* state_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(visited_states, cursor, simgrid::mc::VisitedState*);
           if (snapshot_compare(state_test, new_state) == 0) {
             // The state has been visited:
 
@@ -328,7 +308,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
     } else {
 
       // The state has not been visited: insert the state in the dynamic array.
-      mc_visited_state_t state_test = (mc_visited_state_t) xbt_dynar_get_as(visited_states, index, mc_visited_state_t);
+      simgrid::mc::VisitedState* state_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(visited_states, index, simgrid::mc::VisitedState*);
       if (state_test->nb_processes < new_state->nb_processes)
         xbt_dynar_insert_at(visited_states, index + 1, &new_state);
       else if (state_test->heap_bytes_used < new_state->heap_bytes_used)
@@ -352,7 +332,7 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
       unsigned int cursor2 = 0;
       unsigned int index2 = 0;
 
-      mc_visited_state_t state_test;
+      simgrid::mc::VisitedState* state_test;
       xbt_dynar_foreach(visited_states, cursor2, state_test)
         if (!mc_model_checker->is_important_snapshot(*state_test->system_state)
             && state_test->num < min2) {
@@ -367,9 +347,6 @@ mc_visited_state_t is_visited_state(mc_state_t graph_state)
     return nullptr;
 }
 
-namespace simgrid {
-namespace mc {
-
 /**
  * \brief Checks whether a given pair has already been visited by the algorithm.
  */
@@ -380,8 +357,8 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
 
   simgrid::mc::VisitedPair* new_visited_pair = nullptr;
   if (visited_pair == nullptr)
-    new_visited_pair = simgrid::mc::visited_pair_new(
-      pair->num, pair->automaton_state, pair->atomic_propositions,
+    new_visited_pair = new simgrid::mc::VisitedPair(
+      pair->num, pair->automaton_state, pair->atomic_propositions.get(),
       pair->graph_state);
   else
     new_visited_pair = visited_pair;
@@ -403,7 +380,9 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
       while (cursor <= max) {
         pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(visited_pairs, cursor, simgrid::mc::VisitedPair*);
         if (xbt_automaton_state_compare(pair_test->automaton_state, new_visited_pair->automaton_state) == 0) {
-          if (xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, new_visited_pair->atomic_propositions) == 0) {
+          if (xbt_automaton_propositional_symbols_compare_value(
+              pair_test->atomic_propositions.get(),
+              new_visited_pair->atomic_propositions.get()) == 0) {
             if (snapshot_compare(pair_test, new_visited_pair) == 0) {
               if (pair_test->other_num == -1)
                 new_visited_pair->other_num = pair_test->num;
@@ -418,7 +397,7 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
               pair_test->visited_removed = 1;
               if (!pair_test->acceptance_pair
                   || pair_test->acceptance_removed == 1)
-                simgrid::mc::visited_pair_delete(pair_test);
+                delete pair_test;
               return new_visited_pair->other_num;
             }
           }
@@ -450,7 +429,7 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
       xbt_dynar_remove_at(visited_pairs, index2, &pair_test);
       pair_test->visited_removed = 1;
       if (!pair_test->acceptance_pair || pair_test->acceptance_removed)
-        simgrid::mc::visited_pair_delete(pair_test);
+        delete pair_test;
     }
   return -1;
 }
