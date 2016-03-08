@@ -19,14 +19,17 @@ if(enable_smpi)
   add_executable       (smpi_replay        replay/replay.c)
   target_link_libraries(smpi_replay        simgrid)
 
-  if(HAVE_MC)
-    foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1 
-              non_termination2 non_termination3 non_termination4)
-      add_executable       (smpi_${x} mc/${x}.c)
+  foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1 
+            non_termination2 non_termination3 non_termination4)
+    if(HAVE_MC)
+      add_executable       (smpi_${x} ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
       target_link_libraries(smpi_${x} simgrid)
       set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
-      set(examples_src  ${examples_src} mc/${x}.c)
-    endforeach()
+     endif()
+    set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
+  endforeach()
+
+  if(HAVE_MC)
     ADD_TESH(smpi-mc-only-send-determinism -setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/only_send_deterministic.tesh)
   endif()
 
