@@ -15,9 +15,9 @@ message("-- [Java] JNI found: ${JNI_FOUND}")
 message("-- [Java] JNI include dirs: ${JNI_INCLUDE_DIRS}")
 
 if(WIN32)
-  exec_program("java -d32 -version" OUTPUT_VARIABLE IS_32_BITS_JVM)
-  STRING( FIND ${IS_32_BITS_JVM} "Error" POSITION )
-  if(NOT ${POSITION} GREATER -1)
+  execute_process(COMMAND         java -d64 -version
+                  OUTPUT_VARIABLE JVM_IS_64_BITS)
+  if("${JVM_IS_64_BITS}" MATCHES "Error")
     message(fatal_error "SimGrid can only use Java 64 bits")
   endif()
 endif()

@@ -132,7 +132,8 @@ else()
   endif()
 endif()
 
-exec_program("${CMAKE_LINKER} --version" OUTPUT_VARIABLE "LINKER_VERSION")
+execute_process(COMMAND         ${CMAKE_LINKER} --version
+                OUTPUT_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
 ### Find programs and paths
@@ -309,11 +310,10 @@ endif()
 
 #Check if __thread is defined
 execute_process(
-  COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c"
+  COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c -o testprog"
   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
   RESULT_VARIABLE HAVE_thread_storage_run)
-
-
+file(REMOVE testprog)
 if(HAVE_thread_storage_run)
   set(HAVE_THREAD_LOCAL_STORAGE 1)
 else()
@@ -417,8 +417,8 @@ if(HAVE_PTHREAD)
 
   if(HAVE_SEM_OPEN_LIB)
     execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_open.c -lpthread -o sem_open
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    OUTPUT_VARIABLE HAVE_SEM_OPEN_compil
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      OUTPUT_VARIABLE HAVE_SEM_OPEN_compil
     )
 
     # Test sem_open by compiling:
@@ -434,9 +434,9 @@ if(HAVE_PTHREAD)
     # If we're not crosscompiling, we check by executing the program:
     if (HAVE_SEM_OPEN AND NOT CMAKE_CROSSCOMPILING)
       execute_process(COMMAND ./sem_open
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      RESULT_VARIABLE HAVE_SEM_OPEN_run
-      OUTPUT_VARIABLE var_compil
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        RESULT_VARIABLE HAVE_SEM_OPEN_run
+        OUTPUT_VARIABLE var_compil
       )
       if (NOT HAVE_SEM_OPEN_run)
         set(HAVE_SEM_OPEN 1)
@@ -461,8 +461,9 @@ if(HAVE_PTHREAD)
 
   if(HAVE_SEM_INIT_LIB)
     execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_sem_init.c -lpthread -o sem_init
-    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-    RESULT_VARIABLE HAVE_SEM_INIT_run OUTPUT_VARIABLE HAVE_SEM_INIT_compil)
+      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+      RESULT_VARIABLE HAVE_SEM_INIT_run 
+      OUTPUT_VARIABLE HAVE_SEM_INIT_compil)
 
     # Test sem_init by compiling:
     if(HAVE_SEM_INIT_compil)
@@ -477,9 +478,9 @@ if(HAVE_PTHREAD)
     # If we're not crosscompiling, we check by executing the program:
     if (HAVE_SEM_INIT AND NOT CMAKE_CROSSCOMPILING)
       execute_process(COMMAND ./sem_init
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      RESULT_VARIABLE HAVE_SEM_INIT_run
-      OUTPUT_VARIABLE var_compil
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        RESULT_VARIABLE HAVE_SEM_INIT_run
+        OUTPUT_VARIABLE var_compil
       )
       if (NOT HAVE_SEM_INIT_run)
         set(HAVE_SEM_INIT 1)
@@ -564,7 +565,7 @@ else()
   endif()
 endif()
 # If the test ran well, remove the test binary
-execute_process(COMMAND ${CMAKE_COMMAND} -E remove test_stackgrowth)
+file(REMOVE test_stackgrowth)
 #--------------------------------------------------------------------------------------------------
 
 ### check for addr2line
@@ -577,45 +578,36 @@ endif()
 ## GIT version check
 ##
 if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
-  execute_process(COMMAND git remote
-  COMMAND head -n 1
-  WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-  OUTPUT_VARIABLE remote
-  RESULT_VARIABLE ret
-  )
-  string(REPLACE "\n" "" remote "${remote}")
+  execute_process(
+     COMMAND git remote
+     COMMAND head -n 1
+     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+     OUTPUT_VARIABLE remote
+     OUTPUT_STRIP_TRAILING_WHITESPACE)
   #message(STATUS "Git remote: ${remote}")
   execute_process(COMMAND git config --get remote.${remote}.url
-  WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-  OUTPUT_VARIABLE url
-  RESULT_VARIABLE ret
-  )
-  string(REPLACE "\n" "" url "${url}")
+     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+     OUTPUT_VARIABLE url
+     OUTPUT_STRIP_TRAILING_WHITESPACE)
   #message(STATUS "Git url: ${url}")
   if(url)
     execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --pretty=oneline --abbrev-commit -1
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-    OUTPUT_VARIABLE GIT_VERSION
-    RESULT_VARIABLE ret
-    )
-    string(REPLACE "\n" "" GIT_VERSION "${GIT_VERSION}")
+       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+       OUTPUT_VARIABLE GIT_VERSION
+       OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS "Git version: ${GIT_VERSION}")
+    
     execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --pretty=format:%ai .
-    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-    OUTPUT_VARIABLE GIT_DATE
-    RESULT_VARIABLE ret
-    )
-    string(REPLACE "\n" "" GIT_DATE "${GIT_DATE}")
+       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+       OUTPUT_VARIABLE GIT_DATE 
+       OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS "Git date: ${GIT_DATE}")
     string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
     
     execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --pretty=format:%H -1
-                    WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
-		    OUTPUT_VARIABLE SIMGRID_GITHASH
-		    RESULT_VARIABLE ret
-		    )
-    string(REPLACE "\n" "" SIMGRID_GITHASH "${SIMGRID_GITHASH}")
-		    
+       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
+       OUTPUT_VARIABLE SIMGRID_GITHASH
+       OUTPUT_STRIP_TRAILING_WHITESPACE)
   endif()
 elseif(EXISTS ${CMAKE_HOME_DIRECTORY}/.gitversion)
   FILE(STRINGS ${CMAKE_HOME_DIRECTORY}/.gitversion GIT_VERSION)
@@ -633,8 +625,8 @@ endif()
 # Avoid triggering a (full) rebuild by touching the files if they did not really change
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h.generated"    @ONLY IMMEDIATE)
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in"          "${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated" @ONLY IMMEDIATE)
-exec_program("${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/internal_config.h.generated ${CMAKE_BINARY_DIR}/src/internal_config.h")
-exec_program("${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated ${CMAKE_BINARY_DIR}/include/simgrid_config.h")
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/src/internal_config.h.generated ${CMAKE_BINARY_DIR}/src/internal_config.h)
+execute_process(COMMAND ${CMAKE_COMMAND} -E copy_if_different ${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated ${CMAKE_BINARY_DIR}/include/simgrid_config.h)
 file(REMOVE ${CMAKE_BINARY_DIR}/src/internal_config.h.generated)
 file(REMOVE ${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated)
 
@@ -961,7 +953,7 @@ message("")
 message("        Simgrid dependencies ........: ${SIMGRID_DEP}")
 message("")
 
-exec_program("${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/Testing/Notes/" OUTPUT_VARIABLE OKIDOKI)
+execute_process(COMMAND ${CMAKE_COMMAND} -E make_directory ${PROJECT_BINARY_DIR}/Testing/Notes/)
 file(WRITE ${PROJECT_BINARY_DIR}/Testing/Notes/Build  "GIT version : ${GIT_VERSION}\n")
 file(APPEND ${PROJECT_BINARY_DIR}/Testing/Notes/Build "Release     : simgrid-${release_version}\n")
 
