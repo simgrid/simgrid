@@ -47,13 +47,18 @@ extern "C" {
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
 
+}
+
 // ***** Helper stuff
+
+namespace simgrid {
+namespace mc {
 
 #define SO_RE "\\.so[\\.0-9]*$"
 #define VERSION_RE "-[\\.0-9-]*$"
 
 // In lexicographic order (but this is currently not used in the code):
-static const char *const FILTERED_LIBS[] = {
+static const char *const filtered_libraries[] = {
   "ld",
   "libbz2",
   "libboost_chrono",
@@ -83,14 +88,14 @@ static const char *const FILTERED_LIBS[] = {
   "libz"
 };
 
-static bool MC_is_simgrid_lib(const char* libname)
+static bool is_simgrid_lib(const char* libname)
 {
   return !strcmp(libname, "libsimgrid");
 }
 
-static bool MC_is_filtered_lib(const char* libname)
+static bool is_filtered_lib(const char* libname)
 {
-  for (const char* filtered_lib : FILTERED_LIBS)
+  for (const char* filtered_lib : filtered_libraries)
     if (strcmp(libname, filtered_lib)==0)
       return true;
   return false;
@@ -101,7 +106,7 @@ struct s_mc_memory_map_re {
   regex_t version_re;
 };
 
-static char* MC_get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
+static char* get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
 {
   const char* map_basename = xbt_basename((char*) pathname);
 
@@ -163,7 +168,7 @@ static pthread_once_t zero_buffer_flag = PTHREAD_ONCE_INIT;
 static const void* zero_buffer;
 static const size_t zero_buffer_size = 10 * 4096;
 
-static void MC_zero_buffer_init(void)
+static void zero_buffer_init(void)
 {
   int fd = open("/dev/zero", O_RDONLY);
   if (fd<0)
@@ -182,11 +187,6 @@ int open_process_file(pid_t pid, const char* file, int flags)
   return open(buff, flags);
 }
 
-}
-
-namespace simgrid {
-namespace mc {
-
 int open_vm(pid_t pid, int flags)
 {
   const size_t buffer_size = 30;
@@ -199,14 +199,7 @@ int open_vm(pid_t pid, int flags)
   return open(buffer, flags);
 }
 
-  
-}
-}
-
 // ***** Process
-
-namespace simgrid {
-namespace mc {
 
 Process::Process(pid_t pid, int sockfd) :
    AddressSpace(this),pid_(pid), socket_(sockfd), running_(true)
@@ -354,10 +347,10 @@ void Process::init_memory_map_info()
     const bool is_executable = !i;
     char* libname = nullptr;
     if (!is_executable) {
-      libname = MC_get_lib_name(pathname, &res);
+      libname = get_lib_name(pathname, &res);
       if(!libname)
         continue;
-      if (MC_is_filtered_lib(libname)) {
+      if (is_filtered_lib(libname)) {
         free(libname);
         continue;
       }
@@ -368,7 +361,7 @@ void Process::init_memory_map_info()
     this->object_infos.push_back(info);
     if (is_executable)
       this->binary_info = info;
-    else if (libname && MC_is_simgrid_lib(libname))
+    else if (libname && is_simgrid_lib(libname))
       this->libsimgrid_info = info;
     free(libname);
   }
@@ -539,7 +532,7 @@ void Process::write_bytes(const void* buffer, size_t len, RemotePtr<void> addres
 
 void Process::clear_bytes(RemotePtr<void> address, size_t len)
 {
-  pthread_once(&zero_buffer_flag, MC_zero_buffer_init);
+  pthread_once(&zero_buffer_flag, zero_buffer_init);
   while (len) {
     size_t s = len > zero_buffer_size ? zero_buffer_size : len;
     this->write_bytes(zero_buffer, s, address);
