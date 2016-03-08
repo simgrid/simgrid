@@ -69,7 +69,6 @@ public:
       tmgr_trace_t bw_trace,
       double lat_initial,
       tmgr_trace_t lat_trace,
-      tmgr_trace_t state_trace,
       e_surf_link_sharing_policy_t policy,
       xbt_dict_t properties) override;
 
@@ -99,12 +98,9 @@ protected:
 class LinkL07 : public Link {
 public:
   LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
-      double bw_initial,
-          tmgr_trace_t bw_trace,
-          double lat_initial,
-          tmgr_trace_t lat_trace,
-          tmgr_trace_t state_trace,
-          e_surf_link_sharing_policy_t policy);
+      double bw_initial, tmgr_trace_t bw_trace,
+      double lat_initial, tmgr_trace_t lat_trace,
+      e_surf_link_sharing_policy_t policy);
   ~LinkL07(){ };
   bool isUsed() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;

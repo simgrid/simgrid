@@ -52,7 +52,6 @@ HostL07Model::HostL07Model() : HostModel() {
   routing_model_create(surf_network_model->createLink("__loopback__",
                                                     498000000, NULL,
                                                     0.000015, NULL,
-                                                    NULL,
                                                     SURF_LINK_FATPIPE, NULL));
 }
 
@@ -294,22 +293,14 @@ Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t powerPeakList
 }
 
 Link* NetworkL07Model::createLink(const char *name,
-                                 double bw_initial,
-                                 tmgr_trace_t bw_trace,
-                                 double lat_initial,
-                                 tmgr_trace_t lat_trace,
-                                 tmgr_trace_t state_trace,
-                                 e_surf_link_sharing_policy_t policy,
-                                 xbt_dict_t properties)
+    double bw_initial, tmgr_trace_t bw_trace,
+    double lat_initial, tmgr_trace_t lat_trace,
+    e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
 {
   xbt_assert(!Link::byName(name),
-           "Link '%s' declared several times in the platform file.", name);
+           "Link '%s' declared several times in the platform.", name);
 
-  Link* link = new LinkL07(this, name, properties,
-      bw_initial, bw_trace,
-      lat_initial, lat_trace,
-      state_trace,
-      policy);
+  Link* link = new LinkL07(this, name, properties, bw_initial, bw_trace, lat_initial, lat_trace, policy);
   Link::onCreation(link);
   return link;
 }
@@ -340,9 +331,8 @@ CpuL07::~CpuL07()
 LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
              double bw_initial, tmgr_trace_t bw_trace,
              double lat_initial, tmgr_trace_t lat_trace,
-             tmgr_trace_t state_trace,
              e_surf_link_sharing_policy_t policy)
- : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial), state_trace)
+ : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bw_initial))
 {
   m_bandwidth.peak = bw_initial;
   if (bw_trace)

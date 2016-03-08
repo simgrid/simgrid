@@ -84,7 +84,6 @@ namespace simgrid {
        * @param bw_trace The trace associated to the Link bandwidth
        * @param lat_initial The initial latency of the Link in seconds
        * @param lat_trace The trace associated to the Link latency
-       * @param state_trace The trace associated to the Link (state)[e_surf_resource_state_t]
        * @param policy The sharing policy of the Link
        * @param properties Dictionary of properties associated to this Resource
        * @return The created Link
@@ -94,7 +93,6 @@ namespace simgrid {
           tmgr_trace_t bw_trace,
           double lat_initial,
           tmgr_trace_t lat_trace,
-          tmgr_trace_t state_trace,
           e_surf_link_sharing_policy_t policy,
           xbt_dict_t properties)=0;
 
@@ -183,11 +181,11 @@ namespace simgrid {
        * @param name The name of the Link
        * @param props Dictionary of properties associated to this Link
        * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-       * @param state_trace [TODO]
        */
-      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
-          lmm_constraint_t constraint,
-          tmgr_trace_t state_trace);
+      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+
+      /** @brief State traces are used to model the on/off state of the link */
+      void setStateTrace(tmgr_trace_t trace);
 
       /* Link destruction logic */
       /**************************/

@@ -163,7 +163,6 @@ NetworkCm02Model::NetworkCm02Model()
 
   routing_model_create(createLink("__loopback__",
                                 498000000, NULL, 0.000015, NULL,
-                                NULL,
                                 SURF_LINK_FATPIPE, NULL));
 
   if (p_updateMechanism == UM_LAZY) {
@@ -177,7 +176,6 @@ NetworkCm02Model::NetworkCm02Model()
 Link* NetworkCm02Model::createLink(const char *name,
     double bw_initial, tmgr_trace_t bw_trace,
     double lat_initial, tmgr_trace_t lat_trace,
-    tmgr_trace_t state_trace,
     e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
 {
   xbt_assert(NULL == Link::byName(name),
@@ -185,7 +183,7 @@ Link* NetworkCm02Model::createLink(const char *name,
              name);
 
   Link* link = new NetworkCm02Link(this, name, properties, p_maxminSystem, sg_bandwidth_factor * bw_initial,
-                     state_trace, bw_initial, bw_trace, lat_initial, lat_trace, policy);
+      bw_initial, bw_trace, lat_initial, lat_trace, policy);
   Link::onCreation(link);
   return link;
 }
@@ -410,11 +408,10 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
     lmm_system_t system,
     double constraint_value,
-    tmgr_trace_t state_trace,
     double bw_peak, tmgr_trace_t bw_trace,
     double lat_initial, tmgr_trace_t lat_trace,
     e_surf_link_sharing_policy_t policy)
-: Link(model, name, props, lmm_constraint_new(system, this, constraint_value), state_trace)
+: Link(model, name, props, lmm_constraint_new(system, this, constraint_value))
 {
   m_bandwidth.scale = 1.0;
   m_bandwidth.peak = bw_peak;

@@ -38,7 +38,6 @@ namespace simgrid {
       createLink(const char *name,
           double bw_initial, tmgr_trace_t bw_trace,
           double lat_initial, tmgr_trace_t lat_trace,
-          tmgr_trace_t state_trace,
           e_surf_link_sharing_policy_t policy,
           xbt_dict_t properties)          override { DIE_IMPOSSIBLE; }
     };

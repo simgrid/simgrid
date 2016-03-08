@@ -109,28 +109,35 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
   if (link->policy == SURF_LINK_FULLDUPLEX) {
     char *link_id;
     link_id = bprintf("%s_UP", link->id);
-    surf_network_model->createLink(link_id,
+    Link *l = surf_network_model->createLink(link_id,
         link->bandwidth,
         link->bandwidth_trace,
         link->latency,
         link->latency_trace,
-        link->state_trace, link->policy, link->properties);
+        link->policy, link->properties);
+    if (link->state_trace)
+      l->setStateTrace(link->state_trace);
+
     xbt_free(link_id);
     link_id = bprintf("%s_DOWN", link->id);
-    surf_network_model->createLink(link_id,
+    l = surf_network_model->createLink(link_id,
         link->bandwidth,
         link->bandwidth_trace,
         link->latency,
         link->latency_trace,
-        link->state_trace, link->policy, link->properties);
+        link->policy, link->properties);
+    if (link->state_trace)
+      l->setStateTrace(link->state_trace);
     xbt_free(link_id);
   } else {
-    surf_network_model->createLink(link->id,
+    Link *l=surf_network_model->createLink(link->id,
         link->bandwidth,
         link->bandwidth_trace,
         link->latency,
         link->latency_trace,
-        link->state_trace, link->policy, link->properties);
+        link->policy, link->properties);
+    if (link->state_trace)
+      l->setStateTrace(link->state_trace);
   }
 }
 
@@ -191,20 +198,21 @@ namespace simgrid {
       XBT_DEBUG("Create link '%s'",name);
     }
 
-    Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
-        lmm_constraint_t constraint,
-        tmgr_trace_t state_trace)
+    Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
     : Resource(model, name, constraint),
       PropertyHolder(props)
     {
       m_latency.scale = 1;
       m_bandwidth.scale = 1;
-      if (state_trace)
-        m_stateEvent = future_evt_set->add_trace(state_trace, 0.0, this);
 
       links->insert({name, this});
       XBT_DEBUG("Create link '%s'",name);
 
+    }
+    void Link::setStateTrace(tmgr_trace_t trace) {
+      if (m_stateEvent != nullptr)
+        XBT_INFO("Changing the state trace is not well tested. You're on your own.");
+      m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
     }
 
     /** @brief use destroy() instead of this destructor */
