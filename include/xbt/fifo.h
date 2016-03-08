@@ -111,4 +111,16 @@ XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_getPrevItem(xbt_fifo_item_t i);
 
 
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+namespace xbt {
+  inline void destroy(xbt_fifo_t f)
+  {
+    xbt_fifo_free(f);
+  }
+}
+}
+#endif
+
 #endif                          /* _XBT_FIFO_H */

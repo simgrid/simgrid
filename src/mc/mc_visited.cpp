@@ -381,7 +381,7 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
   simgrid::mc::VisitedPair* new_visited_pair = nullptr;
   if (visited_pair == nullptr)
     new_visited_pair = simgrid::mc::visited_pair_new(
-      pair->num, pair->automaton_state, pair->atomic_propositions,
+      pair->num, pair->automaton_state, pair->atomic_propositions.get(),
       pair->graph_state);
   else
     new_visited_pair = visited_pair;

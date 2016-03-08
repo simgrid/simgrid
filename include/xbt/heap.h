@@ -36,4 +36,16 @@ XBT_PUBLIC(void ) xbt_heap_update(xbt_heap_t H, int i, double key);
 
 /* @} */
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+namespace xbt {
+  inline void destroy(xbt_heap_t h)
+  {
+    xbt_heap_free(h);
+  }
+}
+}
+#endif
+
 #endif                          /* _XBT_HEAP_H */

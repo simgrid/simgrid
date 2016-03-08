@@ -48,29 +48,26 @@ Pair::Pair() : num(++mc_stats->expanded_pairs),
 {}
 
 Pair::~Pair() {
-  this->automaton_state = nullptr;
   if (this->visited_pair_removed)
     MC_state_delete(this->graph_state, 1);
-  xbt_dynar_free(&(this->atomic_propositions));
 }
 
-static xbt_dynar_t get_atomic_propositions_values()
+static simgrid::xbt::unique_ptr<s_xbt_dynar_t> get_atomic_propositions_values()
 {
   unsigned int cursor = 0;
   xbt_automaton_propositional_symbol_t ps = nullptr;
-  xbt_dynar_t values = xbt_dynar_new(sizeof(int), nullptr);
+  simgrid::xbt::unique_ptr<s_xbt_dynar_t> values = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(xbt_dynar_new(sizeof(int), nullptr));
   xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, ps) {
     int res = xbt_automaton_propositional_symbol_evaluate(ps);
-    xbt_dynar_push_as(values, int, res);
+    xbt_dynar_push_as(values.get(), int, res);
   }
-
-  return values;
+  return std::move(values);
 }
 
 static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* pair)
 {
   simgrid::mc::VisitedPair* new_pair = nullptr;
-  new_pair = simgrid::mc::visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions, pair->graph_state);
+  new_pair = simgrid::mc::visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions.get(), pair->graph_state);
   new_pair->acceptance_pair = 1;
 
   if (xbt_dynar_is_empty(acceptance_pairs))
@@ -221,7 +218,7 @@ static int MC_modelcheck_liveness_main(void)
   xbt_automaton_transition_t transition_succ = nullptr;
   int cursor = 0;
   simgrid::mc::Pair* next_pair = nullptr;
-  xbt_dynar_t prop_values = nullptr;
+  simgrid::xbt::unique_ptr<s_xbt_dynar_t> prop_values;
   simgrid::mc::VisitedPair* reached_pair = nullptr;
   
   while(xbt_fifo_size(mc_stack) > 0){
@@ -314,7 +311,7 @@ static int MC_modelcheck_liveness_main(void)
          cursor = xbt_dynar_length(current_pair->automaton_state->out) - 1;
          while (cursor >= 0) {
            transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
-           res = MC_automaton_evaluate_label(transition_succ->label, prop_values);
+           res = MC_automaton_evaluate_label(transition_succ->label, prop_values.get());
            if (res == 1 || res == 2) { /* 1 = True transition (always enabled), 2 = enabled transition according to atomic prop values */
               next_pair = new Pair();
               next_pair->graph_state = MC_state_new();
@@ -347,7 +344,7 @@ static int MC_modelcheck_liveness_main(void)
       if(visited_num == -1)
         XBT_DEBUG("No more request to execute. Looking for backtracking point.");
     
-      xbt_dynar_free(&prop_values);
+      prop_values.reset();
     
       /* Traverse the stack backwards until a pair with a non empty interleave
          set is found, deleting all the pairs that have it empty in the way. */

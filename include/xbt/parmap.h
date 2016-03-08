@@ -53,4 +53,16 @@ XBT_PUBLIC(int) xbt_parmap_mc_apply(xbt_parmap_t parmap, int_f_pvoid_pvoid_t fun
 /** \} */
 
 SG_END_DECL()
+
+#ifdef __cplusplus
+namespace simgrid {
+namespace xbt {
+  inline void destroy(xbt_parmap_t p)
+  {
+    xbt_parmap_destroy(p);
+  }
+}
+}
+#endif
+
 #endif

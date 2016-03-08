@@ -14,6 +14,7 @@
 #include <xbt/fifo.h>
 #include <xbt/dynar.h>
 #include <xbt/automaton.h>
+#include <xbt/memory.hpp>
 #include "src/mc/mc_state.h"
 
 SG_BEGIN_DECL()
@@ -30,7 +31,7 @@ struct XBT_PRIVATE Pair {
   int search_cycle = 0;
   mc_state_t graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
-  xbt_dynar_t atomic_propositions = nullptr;
+  simgrid::xbt::unique_ptr<s_xbt_dynar_t> atomic_propositions;
   int requests = 0;
   int depth = 0;
   int exploration_started = 0;
