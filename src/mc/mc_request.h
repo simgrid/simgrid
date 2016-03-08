@@ -11,8 +11,6 @@
 
 #include "src/simix/smx_private.h"
 
-SG_BEGIN_DECL()
-
 namespace simgrid {
 namespace mc {
 
@@ -44,7 +42,5 @@ XBT_PRIVATE char *request_get_dot_output(smx_simcall_t req, int value);
 
 }
 }
-
-SG_END_DECL()
 
 #endif
