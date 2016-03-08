@@ -88,34 +88,34 @@ static mc_visited_state_t visited_state_new()
 namespace simgrid {
 namespace mc {
 
-simgrid::mc::VisitedPair* visited_pair_new(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
+VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
-  simgrid::mc::VisitedPair* pair = nullptr;
-  pair = xbt_new0(simgrid::mc::VisitedPair, 1);
-  pair->graph_state = graph_state;
-  if(pair->graph_state->system_state == nullptr)
-    pair->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
-  pair->heap_bytes_used = mmalloc_get_bytes_used_remote(
+
+  this->graph_state = graph_state;
+  if(this->graph_state->system_state == nullptr)
+    this->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
+  this->heap_bytes_used = mmalloc_get_bytes_used_remote(
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
   MC_process_smx_refresh(&mc_model_checker->process());
-  pair->nb_processes =
+  this->nb_processes =
     mc_model_checker->process().smx_process_infos.size();
 
-  pair->automaton_state = automaton_state;
-  pair->num = pair_num;
-  pair->other_num = -1;
-  pair->acceptance_removed = 0;
-  pair->visited_removed = 0;
-  pair->acceptance_pair = 0;
-  pair->atomic_propositions = xbt_dynar_new(sizeof(int), nullptr);
+  this->automaton_state = automaton_state;
+  this->num = pair_num;
+  this->other_num = -1;
+  this->acceptance_removed = 0;
+  this->visited_removed = 0;
+  this->acceptance_pair = 0;
+  this->atomic_propositions = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(
+    xbt_dynar_new(sizeof(int), nullptr));
+
   unsigned int cursor = 0;
   int value;
   xbt_dynar_foreach(atomic_propositions, cursor, value)
-      xbt_dynar_push_as(pair->atomic_propositions, int, value);
-  return pair;
+      xbt_dynar_push_as(this->atomic_propositions.get(), int, value);
 }
 
 static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
@@ -130,14 +130,10 @@ static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
   return 0;
 }
 
-void visited_pair_delete(simgrid::mc::VisitedPair* p)
+VisitedPair::~VisitedPair()
 {
-  p->automaton_state = nullptr;
-  if( !is_exploration_stack_pair(p))
-    MC_state_delete(p->graph_state, 1);
-  xbt_dynar_free(&(p->atomic_propositions));
-  xbt_free(p);
-  p = nullptr;
+  if( !is_exploration_stack_pair(this))
+    MC_state_delete(this->graph_state, 1);
 }
 
 }
@@ -380,7 +376,7 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
 
   simgrid::mc::VisitedPair* new_visited_pair = nullptr;
   if (visited_pair == nullptr)
-    new_visited_pair = simgrid::mc::visited_pair_new(
+    new_visited_pair = new simgrid::mc::VisitedPair(
       pair->num, pair->automaton_state, pair->atomic_propositions.get(),
       pair->graph_state);
   else
@@ -403,7 +399,9 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
       while (cursor <= max) {
         pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(visited_pairs, cursor, simgrid::mc::VisitedPair*);
         if (xbt_automaton_state_compare(pair_test->automaton_state, new_visited_pair->automaton_state) == 0) {
-          if (xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, new_visited_pair->atomic_propositions) == 0) {
+          if (xbt_automaton_propositional_symbols_compare_value(
+              pair_test->atomic_propositions.get(),
+              new_visited_pair->atomic_propositions.get()) == 0) {
             if (snapshot_compare(pair_test, new_visited_pair) == 0) {
               if (pair_test->other_num == -1)
                 new_visited_pair->other_num = pair_test->num;
@@ -418,7 +416,7 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
               pair_test->visited_removed = 1;
               if (!pair_test->acceptance_pair
                   || pair_test->acceptance_removed == 1)
-                simgrid::mc::visited_pair_delete(pair_test);
+                delete pair_test;
               return new_visited_pair->other_num;
             }
           }
@@ -450,7 +448,7 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
       xbt_dynar_remove_at(visited_pairs, index2, &pair_test);
       pair_test->visited_removed = 1;
       if (!pair_test->acceptance_pair || pair_test->acceptance_removed)
-        simgrid::mc::visited_pair_delete(pair_test);
+        delete pair_test;
     }
   return -1;
 }

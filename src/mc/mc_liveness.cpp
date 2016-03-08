@@ -66,8 +66,9 @@ static simgrid::xbt::unique_ptr<s_xbt_dynar_t> get_atomic_propositions_values()
 
 static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* pair)
 {
-  simgrid::mc::VisitedPair* new_pair = nullptr;
-  new_pair = simgrid::mc::visited_pair_new(pair->num, pair->automaton_state, pair->atomic_propositions.get(), pair->graph_state);
+  simgrid::mc::VisitedPair* new_pair = new VisitedPair(
+    pair->num, pair->automaton_state, pair->atomic_propositions.get(),
+    pair->graph_state);
   new_pair->acceptance_pair = 1;
 
   if (xbt_dynar_is_empty(acceptance_pairs))
@@ -88,7 +89,9 @@ static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* p
         while (cursor <= max) {
           pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(acceptance_pairs, cursor, simgrid::mc::VisitedPair*);
           if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
-            if (xbt_automaton_propositional_symbols_compare_value(pair_test->atomic_propositions, new_pair->atomic_propositions) == 0) {
+            if (xbt_automaton_propositional_symbols_compare_value(
+                pair_test->atomic_propositions.get(),
+                new_pair->atomic_propositions.get()) == 0) {
               if (snapshot_compare(pair_test, new_pair) == 0) {
                 XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
                 xbt_fifo_shift(mc_stack);
@@ -133,7 +136,7 @@ static void remove_acceptance_pair(int pair_num)
     pair_test->acceptance_removed = 1;
 
     if (_sg_mc_visited == 0 || pair_test->visited_removed == 1) 
-      simgrid::mc::visited_pair_delete(pair_test);
+      delete pair_test;
 
   }
 }
