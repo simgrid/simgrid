@@ -25,7 +25,7 @@ public:
   xbt_dynar_t getOneLinkRoutes() override;
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
-  virtual sg_platf_route_cbarg_t newExtendedRoute(AsImpl::RoutingKind hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
+  virtual sg_platf_route_cbarg_t newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg, int change_order);
 protected:
   void getRouteCheckParams(NetCard *src, NetCard *dst);
   void addRouteCheckParams(sg_platf_route_cbarg_t route);

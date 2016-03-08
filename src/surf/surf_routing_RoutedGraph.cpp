@@ -108,9 +108,9 @@ namespace surf {
         if (route->link_list->size() == 1) {
           Link *link = route->link_list->at(0);
           Onelink *onelink;
-          if (hierarchy_ == AsImpl::ROUTING_BASE)
+          if (hierarchy_ == RoutingMode::base)
             onelink = new Onelink(link, src_elm, dst_elm);
-          else if (hierarchy_ == AsImpl::ROUTING_RECURSIVE)
+          else if (hierarchy_ == RoutingMode::recursive)
             onelink = new Onelink(link, route->gw_src, route->gw_dst);
           else
             onelink = new Onelink(link, NULL, NULL);
@@ -184,19 +184,17 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
 /* change a route containing link names into a route containing link entities */
-sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(AsImpl::RoutingKind hierarchy,
-    sg_platf_route_cbarg_t routearg, int change_order)
+sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg, int change_order)
 {
-
   sg_platf_route_cbarg_t result;
 
   result = xbt_new0(s_sg_platf_route_cbarg_t, 1);
   result->link_list = new std::vector<Link*>();
 
-  xbt_assert(hierarchy == AsImpl::ROUTING_BASE || hierarchy == AsImpl::ROUTING_RECURSIVE,
+  xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
       "The hierarchy of this AS is neither BASIC nor RECURSIVE, I'm lost here.");
 
-  if (hierarchy == AsImpl::ROUTING_RECURSIVE) {
+  if (hierarchy == RoutingMode::recursive) {
     xbt_assert(routearg->gw_src && routearg->gw_dst, "NULL is obviously a deficient gateway");
 
     result->gw_src = routearg->gw_src;

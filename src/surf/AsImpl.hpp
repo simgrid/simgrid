@@ -67,13 +67,13 @@ public:
   static void getRouteRecursive(surf::NetCard *src, surf::NetCard *dst, /* OUT */ std::vector<surf::Link*> * links, double *latency);
 
 
-  enum RoutingKind {
-    ROUTING_NULL = 0,   /**< Undefined type                                   */
-    ROUTING_BASE,       /**< Base case: use simple link lists for routing     */
-    ROUTING_RECURSIVE   /**< Recursive case: also return gateway informations */
+  enum class RoutingMode {
+    unset = 0,  /**< Undefined type                                   */
+    base,       /**< Base case: use simple link lists for routing     */
+    recursive   /**< Recursive case: also return gateway informations */
   };
   /* FIXME: protect the following fields once the construction madness is sorted out */
-  RoutingKind hierarchy_ = ROUTING_NULL;
+  RoutingMode hierarchy_ = RoutingMode::unset;
   xbt_dynar_t upDownLinks = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
   surf::NetCard *netcard_ = nullptr; // Our representative in the father AS
 };

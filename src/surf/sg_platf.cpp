@@ -76,8 +76,8 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
       "Refusing to create a second host named '%s'.", host->id);
 
   simgrid::surf::AsImpl* current_routing = routing_get_current();
-  if (current_routing->hierarchy_ == simgrid::surf::AsImpl::ROUTING_NULL)
-    current_routing->hierarchy_ = simgrid::surf::AsImpl::ROUTING_BASE;
+  if (current_routing->hierarchy_ == simgrid::surf::AsImpl::RoutingMode::unset)
+    current_routing->hierarchy_ = simgrid::surf::AsImpl::RoutingMode::base;
 
   simgrid::surf::NetCard *netcard =
       new simgrid::surf::NetCardImpl(host->id, SURF_NETWORK_ELEMENT_HOST, current_routing);
@@ -135,8 +135,8 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 {
   simgrid::surf::AsImpl* current_routing = routing_get_current();
 
-  if (current_routing->hierarchy_ == simgrid::surf::AsImpl::ROUTING_NULL)
-    current_routing->hierarchy_ = simgrid::surf::AsImpl::ROUTING_BASE;
+  if (current_routing->hierarchy_ == simgrid::surf::AsImpl::RoutingMode::unset)
+    current_routing->hierarchy_ = simgrid::surf::AsImpl::RoutingMode::base;
   xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
              "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
@@ -835,8 +835,8 @@ void routing_AS_begin(sg_platf_AS_cbarg_t AS)
     /* it is a part of the tree */
     new_as->father_ = current_routing;
     /* set the father behavior */
-    if (current_routing->hierarchy_ == simgrid::surf::AsImpl::ROUTING_NULL)
-      current_routing->hierarchy_ = simgrid::surf::AsImpl::ROUTING_RECURSIVE;
+    if (current_routing->hierarchy_ == simgrid::surf::AsImpl::RoutingMode::unset)
+      current_routing->hierarchy_ = simgrid::surf::AsImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
     xbt_dict_set(current_routing->children(), AS->id, (void *) new_as, NULL);
     /* add to the father element list */
