@@ -9,12 +9,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* Non-standard header files */
-#cmakedefine HAVE_EXECINFO_H          @HAVE_EXECINFO_H@ /* <execinfo.h> */
-#cmakedefine HAVE_FUTEX_H             @HAVE_FUTEX_H@ /* <linux/futex.h> */
-#cmakedefine HAVE_SIGNAL_H            @HAVE_SIGNAL_H@ /* <signal.h> */
-#cmakedefine HAVE_UNISTD_H            @HAVE_UNISTD_H@ /* <unistd.h>    */
-#cmakedefine HAVE_UCONTEXT_H          @HAVE_UCONTEXT_H@ /* <ucontext.h>  */
-#cmakedefine HAVE_VALGRIND_VALGRIND_H @HAVE_VALGRIND_VALGRIND_H@ /* <valgrind/valgrind.h> */
+#cmakedefine HAVE_EXECINFO_H @HAVE_EXECINFO_H@ /* <execinfo.h> */
+#cmakedefine HAVE_FUTEX_H    @HAVE_FUTEX_H@ /* <linux/futex.h> */
+#cmakedefine HAVE_SIGNAL_H   @HAVE_SIGNAL_H@ /* <signal.h> */
+#cmakedefine HAVE_UNISTD_H   @HAVE_UNISTD_H@ /* <unistd.h> */
+#cmakedefine HAVE_UCONTEXT_H @HAVE_UCONTEXT_H@ /* <ucontext.h> */
+#cmakedefine HAVE_VALGRIND_H @HAVE_VALGRIND_H@ /* <valgrind/valgrind.h> */
 
 /* Time portability */
 #cmakedefine HAVE_GETTIMEOFDAY  @HAVE_GETTIMEOFDAY@ /* Function gettimeofday */
