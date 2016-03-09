@@ -15,8 +15,10 @@ To upgrade your files, use the tool simgrid_update_xml
 
    - The DOCTYPE points to the right URL (this file):
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+     
+   - Kill <gpu>. Was not doing anything.
 
-   - A warning is emited for unit-less values (they are still accepted).
+   - A warning is emitted for unit-less values (they are still accepted).
 
      - speed. Default: 'f' or 'flops'. Also defined:
         'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
@@ -78,7 +80,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS ((prop*), ((AS|ASroute|include|storage_type|storage|link|backbone|cabinet|router|host|gpu|cluster|peer|host_link)*,(route|ASroute|trace|trace_connect|bypassRoute|bypassASroute)*))>
+<!ELEMENT AS ((prop*), ((AS|ASroute|include|storage_type|storage|link|backbone|cabinet|router|host|cluster|peer|host_link)*,(route|ASroute|trace|trace_connect|bypassRoute|bypassASroute)*))>
 <!ATTLIST AS id CDATA #REQUIRED>
 <!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree) #REQUIRED>
 
@@ -112,9 +114,6 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST storage content  CDATA "">
 <!ATTLIST storage content_type  CDATA "txt_unix">
 <!ATTLIST storage attach CDATA #REQUIRED>
-
-<!ELEMENT gpu EMPTY>
-<!ATTLIST gpu name CDATA #REQUIRED>
 
 <!ELEMENT host_link EMPTY>
 <!ATTLIST host_link id CDATA #REQUIRED>

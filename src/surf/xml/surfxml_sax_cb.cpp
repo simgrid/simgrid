@@ -992,9 +992,6 @@ void STag_surfxml_model___prop(void){
   xbt_dict_set(current_model_property_set, A_surfxml_model___prop_id, xbt_strdup(A_surfxml_model___prop_value), nullptr);
 }
 
-void STag_surfxml_gpu(void) {}
-void ETag_surfxml_gpu(void) {}
-
 /* nothing to do in those functions */
 void ETag_surfxml_prop(void){}
 void STag_surfxml_random(void){}

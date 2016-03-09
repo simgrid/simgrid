@@ -66,8 +66,6 @@ XBT_PUBLIC(void) STag_surfxml_cluster(void);
 XBT_PUBLIC(void) ETag_surfxml_cluster(void);
 XBT_PUBLIC(void) STag_surfxml_config(void);
 XBT_PUBLIC(void) ETag_surfxml_config(void);
-XBT_PUBLIC(void) STag_surfxml_gpu(void);
-XBT_PUBLIC(void) ETag_surfxml_gpu(void);
 XBT_PUBLIC(void) STag_surfxml_host(void);
 XBT_PUBLIC(void) ETag_surfxml_host(void);
 XBT_PUBLIC(void) STag_surfxml_host___link(void);
@@ -193,8 +191,6 @@ typedef int AT_surfxml_cluster_topo___parameters;
 typedef enum { AU_surfxml_cluster_topology, A_surfxml_cluster_topology_FLAT,A_surfxml_cluster_topology_TORUS,A_surfxml_cluster_topology_FAT___TREE } AT_surfxml_cluster_topology;
 typedef int AT_surfxml_config_id;
 #define AU_surfxml_config_id NULL
-typedef int AT_surfxml_gpu_name;
-#define AU_surfxml_gpu_name NULL
 typedef int AT_surfxml_host_availability___file;
 #define AU_surfxml_host_availability___file NULL
 typedef int AT_surfxml_host_coordinates;
@@ -471,9 +467,6 @@ XBT_PUBLIC_DATA(short int) surfxml_cluster_topology_isset;
 XBT_PUBLIC_DATA(AT_surfxml_config_id) AX_surfxml_config_id;
 #define A_surfxml_config_id (surfxml_bufferstack + AX_surfxml_config_id)
 XBT_PUBLIC_DATA(short int) surfxml_config_id_isset;
-XBT_PUBLIC_DATA(AT_surfxml_gpu_name) AX_surfxml_gpu_name;
-#define A_surfxml_gpu_name (surfxml_bufferstack + AX_surfxml_gpu_name)
-XBT_PUBLIC_DATA(short int) surfxml_gpu_name_isset;
 XBT_PUBLIC_DATA(AT_surfxml_host_availability___file) AX_surfxml_host_availability___file;
 #define A_surfxml_host_availability___file (surfxml_bufferstack + AX_surfxml_host_availability___file)
 XBT_PUBLIC_DATA(short int) surfxml_host_availability___file_isset;
