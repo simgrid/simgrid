@@ -64,4 +64,4 @@
 
 /* Other checks */
 #cmakedefine ADDR2LINE       "@ADDR2LINE@" /* Path to the addr2line tool */
-#cmakedefine HAVE_GRAPHVIZ   @HAVE_GRAPHVIZ@ /* The graphviz library */
+#define HAVE_GRAPHVIZ   @HAVE_GRAPHVIZ@ /* The graphviz library */
