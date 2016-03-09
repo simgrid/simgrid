@@ -9,7 +9,10 @@
 #include "xbt/automaton.h"
 #include "src/internal_config.h"
 #include <errno.h>
-#include <string.h>             /* strerror */
+#include <string.h>   /* strerror */
+#if HAVE_UNISTD_H
+#include <unistd.h>   /* isatty */
+#endif
 
 static xbt_automaton_t parsed_automaton;
 char* state_id_src;
