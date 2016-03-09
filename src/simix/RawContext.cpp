@@ -123,7 +123,7 @@ extern "C" raw_stack_t raw_makecontext(void* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
 extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 
-#if PROCESSOR_x86_64
+#if SIMGRID_PROCESSOR_x86_64
 __asm__ (
 #if defined(__APPLE__)
    ".text\n"
@@ -203,7 +203,7 @@ __asm__ (
    "   pop %rdi\n"
    "   ret\n"
 );
-#elif PROCESSOR_i686
+#elif SIMGRID_PROCESSOR_i686
 __asm__ (
 #if defined(__APPLE__) || defined(_WIN32)
    ".text\n"
