@@ -47,9 +47,7 @@ public abstract class Process implements Runnable {
 	 * access to it. It is set automatically during the build of the object.
 	 */
 	private long bind;
-	/**
-	 * Indicates if the process is started
-	 */
+	/** Indicates if the process is started */
 	boolean started;
 	/**
 	 * Even if this attribute is public you must never access to it.
@@ -66,8 +64,7 @@ public abstract class Process implements Runnable {
 
 	/** Time at which the process should be created  */
 	protected double startTime = 0;
-	/** Time at which th
-	 * Kill time of the process
+	/** Time at which the process should be killed.
 	 * 
 	 * Set at creation, and used internally by SimGrid
 	 */
@@ -83,9 +80,7 @@ public abstract class Process implements Runnable {
 	public Vector<String> args;
 
 
-	/**
-	 * Default constructor
-	 */
+	/**  Default constructor */
 	protected Process() {
 		this.id = nextProcessId++;
 		this.name = null;

@@ -41,9 +41,7 @@ public class File {
 	 * @param nMemb is the number of elements of data to write 
 	 */
 	public native long write(long size, long nMemb);
-	/**
-	 * Close the file. 	
-	 */
+	/** Close the file. */
 	public native void close();
 
 	/** Class initializer, to initialize various JNI stuff */

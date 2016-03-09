@@ -12,47 +12,26 @@ import org.simgrid.NativeLib;
 
 public final class Msg {
 
-	/** Retrieve the simulation time
-	 * @return The simulation time.
-	 */
+	/** Retrieves the simulation time */
 	public final static native double getClock();
-	/**
-	 * Issue a debug logging message.
-	 * @param s message to log.
-	 */
-	public final static native void debug(String s);
-	/**
-	 * Issue an verbose logging message.
-	 * @param s message to log.
-	 */
-	public final static native void verb(String s);
-
-	/** Issue an information logging message
-	 * @param s
-	 */
-	public final static native void info(String s);
-	/**
-	 * Issue an warning logging message.
-	 * @param s message to log.
-	 */
-	public final static native void warn(String s);
-	/**
-	 * Issue an error logging message.
-	 * @param s message to log.
-	 */
-	public final static native void error(String s);
-	/**
-	 * Issue an critical logging message.
-	 * @param s message to log.
-	 */
+	/** Issue a debug logging message. */
+	public final static native void debug(String msg);
+	/** Issue a verbose logging message. */
+	public final static native void verb(String msg);
+	/** Issue an information logging message */
+	public final static native void info(String msg);
+	/** Issue a warning logging message. */
+	public final static native void warn(String msg);
+	/** Issue an error logging message. */
+	public final static native void error(String msg);
+	/** Issue a critical logging message. */
 	public final static native void critical(String s);
 
 	/*********************************************************************************
 	 * Deployment and initialization related functions                               *
 	 *********************************************************************************/
 
-	/**
-	 * The natively implemented method to initialize a MSG simulation.
+	/** Initialize a MSG simulation.
 	 *
 	 * @param args            The arguments of the command line of the simulation.
 	 */
@@ -61,8 +40,7 @@ public final class Msg {
 	/** Tell the kernel that you want to use the energy plugin */
 	public final static native void energyInit();
 
-	/**
-	 * Run the MSG simulation.
+	/** Run the MSG simulation.
 	 *
 	 * The simulation is not cleaned afterward (see  
 	 * {@link #clean()} if you really insist on cleaning the C side), so you can freely 
@@ -75,22 +53,12 @@ public final class Msg {
 	@Deprecated
 	public final static void clean(){}
 
-	/**
-	 * The native implemented method to create the environment of the simulation.
-	 *
-	 * @param platformFile    The XML file which contains the description of the environment of the simulation
-	 *
-	 */
+	/** Create the simulation environment by parsing a platform file. */
 	public final static native void createEnvironment(String platformFile);
 
 	public final static native As environmentGetRoutingRoot();
 
-	/**
-	 * The method to deploy the simulation.
-	 *
-	 *
-	 * @param deploymentFile
-	 */
+	/** Starts your processes by parsing a deployment file. */
 	public final static native void deployApplication(String deploymentFile);
 
 	/** Example launcher. You can use it or provide your own launcher, as you wish
