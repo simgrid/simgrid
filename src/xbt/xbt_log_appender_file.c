@@ -9,9 +9,6 @@
 #include "src/internal_config.h"
 #include "xbt/sysdep.h"
 #include "src/xbt/log_private.h"
-#if HAVE_SMPI
-#include "src/smpi/private.h" // to access bench_begin/end. Not ultraclean, I confess
-#endif
 #include <stdio.h>
 
 static void append_file(xbt_log_appender_t this_, char *str) {
@@ -26,13 +23,6 @@ static void free_(xbt_log_appender_t this_) {
   if (this_->data != stderr)
     fclose(this_->data);
 }
-
-#if HAVE_SMPI
-void __smpi_bench_dont (void); // Stupid prototype
-void __smpi_bench_dont (void) { /* I'm only a place-holder in case we link without SMPI */; }
-void smpi_bench_begin(void) __attribute__ ((weak, alias ("__smpi_bench_dont")));
-void smpi_bench_end(void)   __attribute__ ((weak, alias ("__smpi_bench_dont")));
-#endif
 
 XBT_LOG_EXTERNAL_CATEGORY(smpi); // To detect if SMPI is inited
 
