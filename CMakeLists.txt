@@ -330,7 +330,9 @@ foreach(var
   HAVE_PROCESS_VM_READV
   HAVE_MMAP
   HAVE_VASPRINTF)
-  if(NOT DEFINED ${var})
+  if(${var})
+    set(${var} 1)
+  else()
     set(${var} 0)
   endif()
 endforeach()
