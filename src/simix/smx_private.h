@@ -7,6 +7,7 @@
 #ifndef _SIMIX_PRIVATE_H
 #define _SIMIX_PRIVATE_H
 
+#include "src/internal_config.h"
 #include "simgrid/simix.h"
 #include "surf/surf.h"
 #include "xbt/base.h"
