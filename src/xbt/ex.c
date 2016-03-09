@@ -122,8 +122,6 @@ void xbt_backtrace_display_current(void)
 
 #if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
 # include "src/xbt/backtrace_linux.c"
-#elif (defined(_WIN32) && defined (_M_IX86)) && !defined(__GNUC__)
-# include "src/xbt/backtrace_windows.c"
 #else
 # include "src/xbt/backtrace_dummy.c"
 #endif

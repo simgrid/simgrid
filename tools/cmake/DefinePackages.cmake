@@ -13,7 +13,6 @@ set(EXTRA_DIST
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/surf.h
-  src/include/xbt/wine_dbghelp.h
   src/msg/msg_private.h
   src/portable.h
   src/simdag/dax.dtd
@@ -90,7 +89,6 @@ set(EXTRA_DIST
   src/xbt/automaton/parserPromela.yacc
   src/xbt/backtrace_dummy.c
   src/xbt/backtrace_linux.c
-  src/xbt/backtrace_windows.c
   src/xbt/dict_private.h
   src/xbt/ex_interface.h
   src/xbt/fifo_private.h
