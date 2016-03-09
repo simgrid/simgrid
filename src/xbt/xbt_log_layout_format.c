@@ -16,7 +16,7 @@
 #include "surf/surf.h"
 #include <stdio.h>
 
-#ifdef HAVE_EXECINFO_H
+#if HAVE_EXECINFO_H
 #  include <execinfo.h> /* Function backtrace */
 #endif
 
