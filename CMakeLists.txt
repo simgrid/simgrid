@@ -274,6 +274,7 @@ CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
 CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread sem_open                "" HAVE_SEM_OPEN_LIB)
+set(HAVE_PTHREAD_SETAFFINITY 0)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -395,6 +396,8 @@ if(enable_smpi)
     message (STATUS "Warning:  no support for SMPI automatic privatization on this platform")
     SET(HAVE_PRIVATIZATION 0)
   endif()
+else()
+  SET(HAVE_SMPI 0)
 endif()
 
 #--------------------------------------------------------------------------------------------------
