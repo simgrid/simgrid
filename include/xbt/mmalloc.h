@@ -7,18 +7,14 @@
 /* Copyright (C) 1991, 1992 Free Software Foundation, Inc.
    This file was then part of the GNU C Library. */
 
-#ifndef MMALLOC_H
-#define MMALLOC_H 1
+#ifndef SIMGRID_MMALLOC_H
+#define SIMGRID_MMALLOC_H 1
 
 #include "src/internal_config.h"
 #ifdef HAVE_MMALLOC
 
-#ifdef HAVE_STDDEF_H
-#  include <stddef.h>
-#else
-#  include <sys/types.h>        /* for size_t */
-#  include <stdio.h>            /* for NULL */
-#endif
+# include <sys/types.h>        /* for size_t */
+# include <stdio.h>            /* for NULL */
 
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
@@ -79,4 +75,4 @@ void* malloc_no_memset(size_t n);
 SG_END_DECL()
 
 #endif
-#endif                          /* MMALLOC_H */
+#endif                          /* SIMGRID_MMALLOC_H */
