@@ -435,7 +435,7 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
   _throw_ctx->exception.pid      = xbt_getpid();                        \
   _throw_ctx->exception.file     = (char*)__FILE__;                     \
   _throw_ctx->exception.line     = __LINE__;                            \
-  _throw_ctx->exception.func     = (char*)_XBT_FUNCTION;                \
+  _throw_ctx->exception.func     = (char*)__func__;                     \
   _throw_ctx->exception.bt_strings = NULL;                              \
   xbt_backtrace_current((xbt_ex_t *)&(_throw_ctx->exception));
 
@@ -457,9 +457,9 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
 #define THROW_IMPOSSIBLE \
   THROWF(unknown_error, 0, "The Impossible Did Happen (yet again)")
 #define THROW_UNIMPLEMENTED \
-  THROWF(unknown_error, 0, "Function %s unimplemented",_XBT_FUNCTION)
+  THROWF(unknown_error, 0, "Function %s unimplemented",__func__)
 #define THROW_DEADCODE \
-  THROWF(unknown_error, 0, "Function %s was supposed to be DEADCODE, but it's not",_XBT_FUNCTION)
+  THROWF(unknown_error, 0, "Function %s was supposed to be DEADCODE, but it's not",__func__)
 
 #define DIE_IMPOSSIBLE xbt_die("The Impossible Did Happen (yet again)")
 

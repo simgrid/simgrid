@@ -32,7 +32,7 @@ SG_BEGIN_DECL()
   _xbt_ex_t->pid      = xbt_getpid();                        \
   _xbt_ex_t->file     = (char*)__FILE__;                     \
   _xbt_ex_t->line     = __LINE__;                            \
-  _xbt_ex_t->func     = (char*)_XBT_FUNCTION;                \
+  _xbt_ex_t->func     = (char*)__func__;                \
   _xbt_ex_t->bt_strings = NULL;                              \
   xbt_backtrace_current(_xbt_ex_t); \
   ptr = _xbt_ex_t; } while(0)

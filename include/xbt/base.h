@@ -53,16 +53,6 @@
 # endif
 # undef _XBT_NEED_INIT_PRAGMA
 
-/* inline and __FUNCTION__ are only in GCC when -ansi is off */
-
-#if defined(__GNUC__) && ! defined(__STRICT_ANSI__)
-# define _XBT_FUNCTION __FUNCTION__
-#elif (defined(__STDC__) && defined(__STDC_VERSION__) && __STDC_VERSION__ >= 199901L)
-# define _XBT_FUNCTION __func__ /* ISO-C99 compliant */
-#else
-# define _XBT_FUNCTION "function"
-#endif
-
 #if defined(__GNUC__)
 #   define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
 #else
