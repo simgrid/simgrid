@@ -11,7 +11,7 @@
 #include <stdio.h>              /* snprintf */
 #include <stdlib.h>             /* snprintf */
 
-#include "src/portable.h"
+#include "src/internal_config.h"
 
 #include "src/xbt_modinter.h"
 

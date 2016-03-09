@@ -13,7 +13,7 @@
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
-#include "src/portable.h"
+#include "src/internal_config.h"
 
 extern const char *xbt_log_priority_names[8];
 extern int xbt_log_no_loc;

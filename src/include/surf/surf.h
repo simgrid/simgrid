@@ -13,7 +13,7 @@
 #include "xbt/graph.h"
 #include "xbt/misc.h"
 #include "xbt/config.h"
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include "surf/surf_routing.h"
 #include "surf/datatypes.h"
 #include "xbt/lib.h"
