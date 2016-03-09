@@ -9,8 +9,6 @@
 #ifndef XBT_BASE_H
 #define XBT_BASE_H
 
-#include "simgrid_config.h"
-
 /* Define _GNU_SOURCE for getline, isfinite, etc. */
 #ifndef _GNU_SOURCE
   #define _GNU_SOURCE

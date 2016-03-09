@@ -67,7 +67,7 @@ ssize_t xbt_getline(char **buf, size_t *n, FILE *stream)
  * The argument is never modified, and the returned value must be freed after use.
  */
 char *xbt_dirname(const char *path) {
-#if _MSC_VER
+#ifdef _MSC_VER
     char drive[_MAX_DRIVE];
     char dir[_MAX_DIR];
     errno_t err;
@@ -85,7 +85,7 @@ char *xbt_dirname(const char *path) {
  * The argument is never modified, and the returned value must be freed after use.
  */
 char *xbt_basename(const char *path) {
-#if _MSC_VER
+#ifdef _MSC_VER
     char file[1024];
     char ext[1024];
     errno_t err;
