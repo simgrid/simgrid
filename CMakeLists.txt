@@ -305,7 +305,15 @@ CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
 CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 
-foreach(var in
+CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
+if(MINGW)
+  # The detection of vasprintf fails on MinGW, assumingly because it's
+  # defined as an inline function in stdio.h instead of a regular
+  # function. So force the result to be 1 despite of the test.
+  set(HAVE_VASPRINTF 1)
+endif()
+
+foreach(var
   HAVE_VALGRIND_H
   HAVE_UNISTD_H
   HAVE_EXECINFO_H
@@ -321,21 +329,11 @@ foreach(var in
   HAVE_POPEN
   HAVE_PROCESS_VM_READV
   HAVE_MMAP
-  TOTO)
-  if (NOT DEFINED ${var})
+  HAVE_VASPRINTF)
+  if(NOT DEFINED ${var})
     set(${var} 0)
   endif()
 endforeach()
-
-SET(HAVE_VASPRINTF 0)
-CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
-if(MINGW) 
-  # The detection of vasprintf fails on MinGW, assumingly because it's
-  # defined as an inline function in stdio.h instead of a regular
-  # function. So force the result to be 1 despite of the test.
-  set(HAVE_VASPRINTF 1)
-endif()
-
 
 #Check if __thread is defined
 execute_process(
