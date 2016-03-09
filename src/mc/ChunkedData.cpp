@@ -44,8 +44,9 @@ ChunkedData::ChunkedData(PageStore& store, AddressSpace& as,
       continue;
     }
 
-      RemotePtr<void> page = remote(addr.address() + (i << xbt_pagebits));
-      xbt_assert(mc_page_offset((void*)page.address())==0,
+      RemotePtr<void> page = remote((void*)
+        simgrid::mc::mmu::join(i, addr.address()));
+      xbt_assert(simgrid::mc::mmu::split(page.address()).second == 0,
         "Not at the beginning of a page");
 
         /* Adding another copy (and a syscall) will probably slow things a lot.

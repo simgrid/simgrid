@@ -74,8 +74,11 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
   // Last byte of the memory area:
   void* end = (char*) addr + size - 1;
 
+  // TODO, we assume the chunks are aligned to natural chunk boundaries.
+  // We should remove this assumption.
+
   // Page of the last byte of the memory area:
-  size_t page_end = mc_page_number(nullptr, end);
+  size_t page_end = simgrid::mc::mmu::split((std::uintptr_t) end).first;
 
   void* dest = target;
 
@@ -83,9 +86,11 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
     xbt_die("Missing destination buffer for fragmented memory access");
 
   // Read each page:
-  while (mc_page_number(nullptr, addr) != page_end) {
+  while (simgrid::mc::mmu::split((std::uintptr_t) addr).first != page_end) {
     void* snapshot_addr = mc_translate_address_region_chunked((uintptr_t) addr, region);
-    void* next_page = mc_page_from_number(nullptr, mc_page_number(NULL, addr) + 1);
+    void* next_page = (void*) simgrid::mc::mmu::join(
+      simgrid::mc::mmu::split((std::uintptr_t) addr).first + 1,
+      0);
     size_t readable = (char*) next_page - (char*) addr;
     memcpy(dest, snapshot_addr, readable);
     addr = (char*) addr + readable;

@@ -38,10 +38,11 @@ XBT_PRIVATE void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_
 static inline __attribute__((always_inline))
 void* mc_translate_address_region_chunked(uintptr_t addr, mc_mem_region_t region)
 {
-  size_t pageno = mc_page_number((void*)region->start().address(), (void*) addr);
-  const void* snapshot_page =
-    region->page_data().page(pageno);
-  return (char*) snapshot_page + mc_page_offset((void*) addr);
+  auto split = simgrid::mc::mmu::split(addr - region->start().address());
+  auto pageno = split.first;
+  auto offset = split.second;
+  const void* snapshot_page = region->page_data().page(pageno);
+  return (char*) snapshot_page + offset;
 }
 
 static inline __attribute__((always_inline))
@@ -249,7 +250,7 @@ const void* MC_region_read(
     {
       // Last byte of the region:
       void* end = (char*) addr + size - 1;
-      if (mc_same_page(addr, end) ) {
+      if (simgrid::mc::mmu::sameChunk((std::uintptr_t) addr, (std::uintptr_t) end) ) {
         // The memory is contained in a single page:
         return mc_translate_address_region_chunked((uintptr_t) addr, region);
       } else {
