@@ -313,30 +313,6 @@ if(MINGW)
   set(HAVE_VASPRINTF 1)
 endif()
 
-foreach(var
-  HAVE_VALGRIND_H
-  HAVE_UNISTD_H
-  HAVE_EXECINFO_H
-  HAVE_SIGNAL_H
-  HAVE_SYS_PARAM_H
-  HAVE_SYS_SYSCTL_H
-  HAVE_UCONTEXT_H
-  HAVE_FUTEX_H
-  HAVE_GETTIMEOFDAY
-  HAVE_NANOSLEEP
-  HAVE_GETDTABLESIZE
-  HAVE_SYSCONF
-  HAVE_POPEN
-  HAVE_PROCESS_VM_READV
-  HAVE_MMAP
-  HAVE_VASPRINTF)
-  if(${var})
-    set(${var} 1)
-  else()
-    set(${var} 0)
-  endif()
-endforeach()
-
 #Check if __thread is defined
 execute_process(
   COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c -o testprog"
@@ -655,6 +631,24 @@ endif()
 
 ### Generate the required headers and scripts
 #############################################
+
+# gcc makes no difference between "#define HAVE_FOOBAR" and "#define HAVE_FOOBAR 0" by default, 
+# but this too error prone. If you forget to include the config.h, you get weird segfaults.
+# If you include it everywhere, everything gets recompiled everytime.
+# So we include only where needed, and compile with -Wundef to notice the missing includes.
+# But cmake sometimes defines to the empty definition (#define HAVE_VALGRIND_H).
+# So we have to make sure that everything got a decent value before generating the files.
+foreach(var HAVE_EXECINFO_H HAVE_FUTEX_H HAVE_GETDTABLESIZE HAVE_GETTIMEOFDAY HAVE_MMAP
+            HAVE_NANOSLEEP  HAVE_POPEN HAVE_POSIX_GETTIME HAVE_PROCESS_VM_READV HAVE_SIGNAL_H
+	    HAVE_SYS_PARAM_H HAVE_SYS_SYSCTL_H HAVE_SYSCONF HAVE_UCONTEXT_H HAVE_UNISTD_H
+	    HAVE_VALGRIND_H HAVE_VASPRINTF)
+  if(${var})
+    set(${var} 1)
+  else()
+    set(${var} 0)
+  endif()
+endforeach()
+
 # Avoid triggering a (full) rebuild by touching the files if they did not really change
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h.generated"    @ONLY IMMEDIATE)
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in"          "${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated" @ONLY IMMEDIATE)
