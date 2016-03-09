@@ -10,6 +10,7 @@
 #include "surf/surf.h"
 #include "surf/maxmin.h"
 #include "src/surf/trace_mgr.hpp"
+#include <stdio.h>
 
 #define NO_MAX_DURATION -1.0
 

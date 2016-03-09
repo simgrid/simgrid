@@ -16,6 +16,10 @@
 #include "surf/surf.h"
 #include <stdio.h>
 
+#ifdef HAVE_EXECINFO_H
+#  include <execinfo.h> /* Function backtrace */
+#endif
+
 extern const char *xbt_log_priority_names[8];
 
 static double format_begin_of_time = -1;

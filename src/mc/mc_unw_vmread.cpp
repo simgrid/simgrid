@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 
+#include <fcntl.h>
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 

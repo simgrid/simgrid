@@ -1,16 +1,17 @@
 /* xbt_os_time.c -- portable interface to time-related functions            */
 
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/internal_config.h"
 #include "xbt/sysdep.h"
-#include "xbt/xbt_os_time.h"    /* this module */
 #include "xbt/log.h"
-#include "src/portable.h"
+#include "xbt/xbt_os_time.h"    /* this module */
 #include <math.h>               /* floor */
+#include <sys/time.h>
+#include <time.h>
 
 #ifdef _WIN32
 #include <sys/timeb.h>

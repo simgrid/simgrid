@@ -6,6 +6,7 @@
 
 #include <unistd.h>
 
+#include <fcntl.h>
 #include <string.h>
 #include <link.h>
 #include <dirent.h>

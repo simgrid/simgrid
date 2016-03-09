@@ -10,6 +10,7 @@
 /* At some point we should use https://github.com/google/googletest instead */
 
 #include "src/portable.h"
+#include <stdio.h>
 
 #include "xbt/sysdep.h"         /* bvprintf */
 #include "xbt/cunit.h"

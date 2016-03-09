@@ -26,6 +26,8 @@
 #include "popping_private.h"
 #include "smx_synchro_private.h"
 
+#include <signal.h>
+
 #ifdef __cplusplus
 
 #include <simgrid/simix.hpp>
