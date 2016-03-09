@@ -100,7 +100,7 @@ typedef struct s_sg_platf_peer_cbarg {
 
 typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
 typedef struct s_sg_platf_route_cbarg {
-  int symmetrical;
+  bool symmetrical;
   const char *src;
   const char *dst;
   sg_netcard_t gw_src;

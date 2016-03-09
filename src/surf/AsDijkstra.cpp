@@ -334,7 +334,7 @@ void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
   newRoute(src->id(), dst->id(), e_route);
 
   // Symmetrical YES
-  if (route->symmetrical == TRUE) {
+  if (route->symmetrical == true) {
     if(!route->gw_dst && !route->gw_src)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
     else

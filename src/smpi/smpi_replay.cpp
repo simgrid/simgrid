@@ -366,7 +366,7 @@ static void action_test(const char *const *action){
   double clock = smpi_process_simulated_elapsed();
   MPI_Request request;
   MPI_Status status;
-  int flag = TRUE;
+  int flag = true;
 
   request = xbt_dynar_pop_as(get_reqq_self(),MPI_Request);
   //if request is null here, this may mean that a previous test has succeeded 

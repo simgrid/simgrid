@@ -394,13 +394,13 @@ int console_add_route(lua_State *L) {
   if (lua_isstring(L, -1)) {
     const char* value = lua_tostring(L, -1);
     if (strcmp("YES", value) == 0) {
-      route.symmetrical = TRUE;
+      route.symmetrical = true;
     }
     else
-      route.symmetrical = FALSE;
+      route.symmetrical = false;
   }
   else {
-    route.symmetrical = TRUE;
+    route.symmetrical = true;
   }
   lua_pop(L,1);
 
@@ -471,12 +471,12 @@ int console_add_ASroute(lua_State *L) {
   if (lua_isstring(L, -1)) {
     const char* value = lua_tostring(L, -1);
     if (strcmp("YES", value) == 0)
-      ASroute.symmetrical = TRUE;
+      ASroute.symmetrical = true;
     else
-      ASroute.symmetrical = FALSE;
+      ASroute.symmetrical = false;
   }
   else {
-    ASroute.symmetrical = TRUE;
+    ASroute.symmetrical = true;
   }
   lua_pop(L,1);
 

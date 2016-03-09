@@ -121,7 +121,7 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
   TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list->size();
 
 
-  if (route->symmetrical == TRUE) {
+  if (route->symmetrical == true) {
     if (route->gw_dst) // AS route (to adapt the error message, if any)
       xbt_assert(nullptr == TO_FLOYD_LINK(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",

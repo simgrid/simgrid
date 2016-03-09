@@ -27,9 +27,9 @@ int ETag_surfxml_include_state(void);
 
 #include "simgrid_dtd.c"
 
-char* surf_parsed_filename = NULL; // to locate parse error messages
+char* surf_parsed_filename = nullptr; // to locate parse error messages
 
-xbt_dynar_t parsed_link_list = NULL;   /* temporary store of current list link of a route */
+xbt_dynar_t parsed_link_list = nullptr;   /* temporary store of current list link of a route */
 /*
  * Helping functions
  */
@@ -87,8 +87,7 @@ struct unit_scale {
   double scale;
 };
 
-/* Note: field `unit' for the last element of parameter `units' should be
- * NULL. */
+/* Note: field `unit' for the last element of parameter `units' should be nullptr. */
 static double surf_parse_get_value_with_unit(const char *string, const struct unit_scale *units,
     const char *entity_kind, const char *name,
     const char *error_msg, const char *default_unit)
@@ -109,9 +108,9 @@ static double surf_parse_get_value_with_unit(const char *string, const struct un
     XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s",string, entity_kind, name, error_msg);
     ptr = (char*)default_unit;
   }
-  for (i = 0; units[i].unit != NULL && strcmp(ptr, units[i].unit) != 0; i++) {
+  for (i = 0; units[i].unit != nullptr && strcmp(ptr, units[i].unit) != 0; i++) {
   }
-  if (units[i].unit != NULL)
+  if (units[i].unit != nullptr)
     res *= units[i].scale;
   else
     surf_parse_error("unknown unit: %s", ptr);
@@ -130,7 +129,7 @@ double surf_parse_get_time(const char *string, const char *entity_kind, const ch
     { "us", 1e-6 },
     { "ns", 1e-9 },
     { "ps", 1e-12 },
-    { NULL, 0 }
+    { nullptr, 0 }
   };
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 's' to your time to get seconds", "s");
@@ -157,7 +156,7 @@ double surf_parse_get_size(const char *string, const char *entity_kind, const ch
     { "Mb",  0.125 * 1e6 },
     { "kb",  0.125 * 1e3 },
     { "b",   0.125 },
-    { NULL,    0 }
+    { nullptr,    0 }
   };
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'B' to get bytes (or 'b' for bits but 1B = 8b).", "B");
@@ -184,7 +183,7 @@ double surf_parse_get_bandwidth(const char *string, const char *entity_kind, con
     { "Mbps",  0.125 * 1e6 },
     { "kbps",  0.125 * 1e3 },
     { "bps",   0.125 },
-    { NULL,    0 }
+    { nullptr,    0 }
   };
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'Bps' to get bytes per second (or 'bps' for bits but 1Bps = 8bps)", "Bps");
@@ -211,7 +210,7 @@ double surf_parse_get_speed(const char *string, const char *entity_kind, const c
     { "kf",         1e3 },
     { "flops",      1.0 },
     { "f",          1.0 },
-    { NULL,         0 }
+    { nullptr,         0 }
   };
   return surf_parse_get_value_with_unit(string, units, entity_kind, name,
       "Append 'f' or 'flops' to your speed to get flop per second", "f");
@@ -225,9 +224,9 @@ double surf_parse_get_speed(const char *string, const char *entity_kind, const c
 /* make sure these symbols are defined as strong ones in this file so that the linker can resolve them */
 
 /* The default current property receiver. Setup in the corresponding opening callbacks. */
-xbt_dict_t current_property_set = NULL;
-xbt_dict_t current_model_property_set = NULL;
-xbt_dict_t as_current_property_set = NULL;
+xbt_dict_t current_property_set = nullptr;
+xbt_dict_t current_model_property_set = nullptr;
+xbt_dict_t as_current_property_set = nullptr;
 int AS_TAG = 0;
 char* as_name_tab[1024];
 void* as_dict_tab[1024];
@@ -235,10 +234,10 @@ int as_prop_nb = 0;
 
 
 /* dictionary of random generator data */
-xbt_dict_t random_data_list = NULL;
+xbt_dict_t random_data_list = nullptr;
 
 YY_BUFFER_STATE surf_input_buffer;
-FILE *surf_file_to_parse = NULL;
+FILE *surf_file_to_parse = nullptr;
 
 /*
  * Stuff relative to storage
@@ -247,7 +246,7 @@ void STag_surfxml_storage(void)
 {
   AS_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage");
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 void ETag_surfxml_storage(void)
 {
@@ -261,14 +260,14 @@ void ETag_surfxml_storage(void)
   storage.properties   = current_property_set;
   storage.attach       = A_surfxml_storage_attach;
   sg_platf_new_storage(&storage);
-  current_property_set = NULL;
+  current_property_set = nullptr;
 }
 void STag_surfxml_storage___type(void)
 {
   AS_TAG = 0;
   XBT_DEBUG("STag_surfxml_storage___type");
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
-  xbt_assert(current_model_property_set == NULL, "Someone forgot to reset the model property set to NULL in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
+  xbt_assert(current_model_property_set == nullptr, "Someone forgot to reset the model property set to nullptr in its closing tag (or XML malformed)");
 }
 void ETag_surfxml_storage___type(void)
 {
@@ -284,8 +283,8 @@ void ETag_surfxml_storage___type(void)
   storage_type.size             = surf_parse_get_size(A_surfxml_storage___type_size,
         "size of storage type", storage_type.id);
   sg_platf_new_storage_type(&storage_type);
-  current_property_set       = NULL;
-  current_model_property_set = NULL;
+  current_property_set       = nullptr;
+  current_model_property_set = nullptr;
 }
 void STag_surfxml_mstorage(void)
 {
@@ -317,9 +316,9 @@ void ETag_surfxml_mount(void)
 /*
  * Stuff relative to the <include> tag
  */
-static xbt_dynar_t surf_input_buffer_stack    = NULL;
-static xbt_dynar_t surf_file_to_parse_stack   = NULL;
-static xbt_dynar_t surf_parsed_filename_stack = NULL;
+static xbt_dynar_t surf_input_buffer_stack    = nullptr;
+static xbt_dynar_t surf_file_to_parse_stack   = nullptr;
+static xbt_dynar_t surf_parsed_filename_stack = nullptr;
 
 void STag_surfxml_include(void)
 {
@@ -337,7 +336,7 @@ void STag_surfxml_include(void)
   surf_input_buffer = surf_parse__create_buffer(surf_file_to_parse, YY_BUF_SIZE);
   surf_parse_push_buffer_state(surf_input_buffer);
 
-  fflush(NULL);
+  fflush(nullptr);
 }
 
 void ETag_surfxml_include(void) {
@@ -358,7 +357,7 @@ void ETag_surfxml_include(void) {
  */
 int ETag_surfxml_include_state(void)
 {
-  fflush(NULL);
+  fflush(nullptr);
   XBT_DEBUG("ETag_surfxml_include_state '%s'",A_surfxml_include_file);
 
   if(xbt_dynar_is_empty(surf_input_buffer_stack)) // nope, that's a true premature EOF. Let the parser die verbosely.
@@ -420,7 +419,7 @@ void ETag_surfxml_platform(void){
 
 void STag_surfxml_host(void){
   AS_TAG = 0;
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 
 void STag_surfxml_prop(void)
@@ -435,7 +434,7 @@ void STag_surfxml_prop(void)
       as_prop_nb++;
     }
     XBT_DEBUG("add prop %s=%s into current AS property set", A_surfxml_prop_id, A_surfxml_prop_value);
-    xbt_dict_set(as_current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), NULL);
+    xbt_dict_set(as_current_property_set, A_surfxml_prop_id, xbt_strdup(A_surfxml_prop_value), nullptr);
   }
   else{
     if (!current_property_set)
@@ -457,8 +456,8 @@ void ETag_surfxml_host(void)    {
 
   buf = A_surfxml_host_speed;
   XBT_DEBUG("Buffer: %s", buf);
-  host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
-  if (strchr(buf, ',') == NULL){
+  host.speed_peak = xbt_dynar_new(sizeof(double), nullptr);
+  if (strchr(buf, ',') == nullptr){
     double speed = surf_parse_get_speed(A_surfxml_host_speed,"speed of host", host.id);
     xbt_dynar_push_as(host.speed_peak,double, speed);
   }
@@ -470,7 +469,7 @@ void ETag_surfxml_host(void)    {
       char* speed_str;
 
       xbt_dynar_get_cpy(pstate_list, i, &speed_str);
-      xbt_str_trim(speed_str, NULL);
+      xbt_str_trim(speed_str, nullptr);
       speed = surf_parse_get_speed(speed_str,"speed of host", host.id);
       xbt_dynar_push_as(host.speed_peak, double, speed);
       XBT_DEBUG("Speed value: %f", speed);
@@ -487,7 +486,7 @@ void ETag_surfxml_host(void)    {
 
   sg_platf_new_host(&host);
   xbt_dynar_free(&host.speed_peak);
-  current_property_set = NULL;
+  current_property_set = nullptr;
 }
 
 void STag_surfxml_host___link(void){
@@ -585,12 +584,12 @@ void ETag_surfxml_cluster(void){
   cluster.state_trace = A_surfxml_cluster_state___file;
   sg_platf_new_cluster(&cluster);
 
-  current_property_set = NULL;
+  current_property_set = nullptr;
 }
 
 void STag_surfxml_cluster(void){
   parse_after_config();
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 
 void STag_surfxml_cabinet(void){
@@ -626,7 +625,7 @@ void STag_surfxml_peer(void){
 
 void STag_surfxml_link(void){
   AS_TAG = 0;
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 
 void ETag_surfxml_link(void){
@@ -658,7 +657,7 @@ void ETag_surfxml_link(void){
 
   sg_platf_new_link(&link);
 
-  current_property_set = NULL;
+  current_property_set = nullptr;
 }
 
 void STag_surfxml_link___ctn(void){
@@ -686,7 +685,7 @@ void ETag_surfxml_backbone(void){
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link,0,sizeof(link));
 
-  link.properties = NULL;
+  link.properties = nullptr;
 
   link.id = A_surfxml_backbone_id;
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id);
@@ -747,8 +746,8 @@ void ETag_surfxml_route(void){
 
   route.src       = A_surfxml_route_src;
   route.dst       = A_surfxml_route_dst;
-  route.gw_src    = NULL;
-  route.gw_dst    = NULL;
+  route.gw_src    = nullptr;
+  route.gw_dst    = nullptr;
   route.link_list = new std::vector<Link*>();
   route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
@@ -762,7 +761,7 @@ void ETag_surfxml_route(void){
 
 
   sg_platf_new_route(&route);
-  parsed_link_list = NULL;
+  parsed_link_list = nullptr;
 }
 
 void ETag_surfxml_ASroute(void){
@@ -794,15 +793,15 @@ void ETag_surfxml_ASroute(void){
   switch (A_surfxml_ASroute_symmetrical) {
   case AU_surfxml_ASroute_symmetrical:
   case A_surfxml_ASroute_symmetrical_YES:
-    ASroute.symmetrical = TRUE;
+    ASroute.symmetrical = true;
     break;
   case A_surfxml_ASroute_symmetrical_NO:
-    ASroute.symmetrical = FALSE;
+    ASroute.symmetrical = false;
     break;
   }
 
   sg_platf_new_route(&ASroute);
-  parsed_link_list = NULL;
+  parsed_link_list = nullptr;
 }
 
 void ETag_surfxml_bypassRoute(void){
@@ -811,9 +810,9 @@ void ETag_surfxml_bypassRoute(void){
 
   route.src = A_surfxml_bypassRoute_src;
   route.dst = A_surfxml_bypassRoute_dst;
-  route.gw_src = NULL;
-  route.gw_dst = NULL;
-  route.symmetrical = FALSE;
+  route.gw_src = nullptr;
+  route.gw_dst = nullptr;
+  route.symmetrical = false;
   route.link_list =  new std::vector<Link*>();
 
   unsigned int cpt;
@@ -841,7 +840,7 @@ void ETag_surfxml_bypassASroute(void){
     ASroute.link_list->push_back(link);
   }
   xbt_dynar_free(&parsed_link_list);
-  ASroute.symmetrical = FALSE;
+  ASroute.symmetrical = false;
 
   ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___src);
   ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_gw___dst);
@@ -897,7 +896,7 @@ void STag_surfxml_AS(void){
   AS.id                    = A_surfxml_AS_id;
   AS.routing               = (int)A_surfxml_AS_routing;
 
-  as_current_property_set = NULL;
+  as_current_property_set = nullptr;
 
   sg_platf_new_AS_begin(&AS);
 }
@@ -918,14 +917,14 @@ void ETag_surfxml_AS(void){
 
 void STag_surfxml_config(void){
   AS_TAG = 0;
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
   XBT_DEBUG("START configuration name = %s",A_surfxml_config_id);
   if (_sg_cfg_init_status == 2) {
     surf_parse_error("All <config> tags must be given before any platform elements (such as <AS>, <host>, <cluster>, <link>, etc).");
   }
 }
 void ETag_surfxml_config(void){
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   char *key;
   char *elem;
   char *cfg;
@@ -940,7 +939,7 @@ void ETag_surfxml_config(void){
   XBT_DEBUG("End configuration name = %s",A_surfxml_config_id);
 
   xbt_dict_free(&current_property_set);
-  current_property_set = NULL;
+  current_property_set = nullptr;
 }
 
 static int argc;
@@ -951,7 +950,7 @@ void STag_surfxml_process(void){
   argc    = 1;
   argv    = xbt_new(char *, 1);
   argv[0] = xbt_strdup(A_surfxml_process_function);
-  xbt_assert(current_property_set == NULL, "Someone forgot to reset the property set to NULL in its closing tag (or XML malformed)");
+  xbt_assert(current_property_set == nullptr, "Someone forgot to reset the property set to nullptr in its closing tag (or XML malformed)");
 }
 
 void ETag_surfxml_process(void){
@@ -977,7 +976,7 @@ void ETag_surfxml_process(void){
   }
 
   sg_platf_new_process(&process);
-  current_property_set = NULL;
+  current_property_set = nullptr;
 }
 
 void STag_surfxml_argument(void){
@@ -990,7 +989,7 @@ void STag_surfxml_model___prop(void){
   if (!current_model_property_set)
     current_model_property_set = xbt_dict_new_homogeneous(xbt_free_f);
 
-  xbt_dict_set(current_model_property_set, A_surfxml_model___prop_id, xbt_strdup(A_surfxml_model___prop_value), NULL);
+  xbt_dict_set(current_model_property_set, A_surfxml_model___prop_id, xbt_strdup(A_surfxml_model___prop_value), nullptr);
 }
 
 void STag_surfxml_gpu(void) {}
@@ -1015,21 +1014,12 @@ void ETag_surfxml_model___prop(void){}
 
 void surf_parse_open(const char *file)
 {
-  static int warned = 0;        /* warn only once */
-  if (!file) {
-    if (!warned) {
-      XBT_WARN
-          ("Bypassing the XML parser since surf_parse_open received a NULL pointer. "
-              "If it is not what you want, go fix your code.");
-      warned = 1;
-    }
-    return;
-  }
+  xbt_assert(file, "Cannot parse the NULL file. Bypassing the parser is strongly deprecated nowadays.");
 
   if (!surf_input_buffer_stack)
-    surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), NULL);
+    surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), nullptr);
   if (!surf_file_to_parse_stack)
-    surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), NULL);
+    surf_file_to_parse_stack = xbt_dynar_new(sizeof(FILE *), nullptr);
 
   if (!surf_parsed_filename_stack)
     surf_parsed_filename_stack = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
@@ -1051,18 +1041,18 @@ void surf_parse_close(void)
   xbt_dynar_free(&surf_file_to_parse_stack);
   xbt_dynar_free(&surf_parsed_filename_stack);
   if (surf_parsed_filename) {
-    char *dir = NULL;
+    char *dir = nullptr;
     xbt_dynar_pop(surf_path, &dir);
     free(dir);
   }
 
   free(surf_parsed_filename);
-  surf_parsed_filename = NULL;
+  surf_parsed_filename = nullptr;
 
   if (surf_file_to_parse) {
     surf_parse__delete_buffer(surf_input_buffer);
     fclose(surf_file_to_parse);
-    surf_file_to_parse = NULL; //Must be reset for Bypass
+    surf_file_to_parse = nullptr; //Must be reset for Bypass
   }
 }
 

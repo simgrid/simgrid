@@ -64,7 +64,7 @@ int user_max_depth_reached = 0;
 
 /* MC global data structures */
 mc_state_t mc_current_state = nullptr;
-char mc_replay_mode = FALSE;
+char mc_replay_mode = false;
 
 mc_stats_t mc_stats = nullptr;
 mc_global_t initial_global_state = nullptr;
@@ -175,13 +175,13 @@ int MC_deadlock_check()
     return message.value;
   }
 
-  int deadlock = FALSE;
+  bool deadlock = false;
   smx_process_t process;
   if (xbt_swag_size(simix_global->process_list)) {
-    deadlock = TRUE;
+    deadlock = true;
     xbt_swag_foreach(process, simix_global->process_list)
       if (simgrid::mc::process_is_enabled(process)) {
-        deadlock = FALSE;
+        deadlock = false;
         break;
       }
   }

@@ -1443,7 +1443,7 @@ static void replace_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 }
 
 #define CREATE_MPI_OP(name, func)                             \
-  static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */, TRUE }; \
+  static s_smpi_mpi_op_t mpi_##name = { &(func) /* func */, true }; \
 MPI_Op name = &mpi_##name;
 
 CREATE_MPI_OP(MPI_MAX, max_func);

@@ -1352,7 +1352,7 @@ int PMPI_Test(MPI_Request * request, int *flag, MPI_Status * status)
   if (request == NULL || flag == NULL) {
     retval = MPI_ERR_ARG;
   } else if (*request == MPI_REQUEST_NULL) {
-    *flag= TRUE;
+    *flag= true;
     smpi_empty_status(status);
     retval = MPI_SUCCESS;
   } else {
@@ -1432,7 +1432,7 @@ int PMPI_Iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* statu
   } else if (comm == MPI_COMM_NULL) {
     retval = MPI_ERR_COMM;
   } else if (source == MPI_PROC_NULL) {
-    *flag=TRUE;
+    *flag=true;
     smpi_empty_status(status);
     status->MPI_SOURCE = MPI_PROC_NULL;
     retval = MPI_SUCCESS;
@@ -3156,7 +3156,7 @@ int PMPI_Info_free( MPI_Info *info){
 }
 
 int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
-  *flag=FALSE;
+  *flag=false;
   if (info == NULL || key == NULL || valuelen <0)
     return MPI_ERR_ARG;
   if (value == NULL)
@@ -3164,7 +3164,7 @@ int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
     memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < static_cast<size_t>(valuelen)) ? strlen(tmpvalue) + 1 : valuelen);
-    *flag=TRUE;
+    *flag=true;
   }
   return MPI_SUCCESS;
 }
@@ -3222,13 +3222,13 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
 }
 
 int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
-  *flag=FALSE;
+  *flag=false;
   if (info == NULL || key == NULL || valuelen==NULL || *valuelen <0)
     return MPI_ERR_ARG;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
     *valuelen=strlen(tmpvalue);
-    *flag=TRUE;
+    *flag=true;
   }
   return MPI_SUCCESS;
 }

@@ -110,7 +110,7 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
   TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()) = newExtendedRoute(hierarchy_, route, 1);
   TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list->shrink_to_fit();
 
-  if (route->symmetrical == TRUE && src_net_elm != dst_net_elm) {
+  if (route->symmetrical == true && src_net_elm != dst_net_elm) {
     if (route->gw_dst && route->gw_src) {
       NetCard* gw_tmp = route->gw_src;
       route->gw_src = route->gw_dst;
