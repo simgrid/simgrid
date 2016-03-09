@@ -27,7 +27,7 @@
 #ifdef _WIN32
 #include <signal.h> /* To silence MSVC on abort() */
 #endif
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #  include <unistd.h>
 #endif
 
@@ -88,12 +88,14 @@ static BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserv
 
 static void xbt_preinit(void) {
   unsigned int seed = 2147483647;
-#ifndef _WIN32
-  xbt_pagesize = sysconf(_SC_PAGESIZE);
-#else
+#ifdef _WIN32
   SYSTEM_INFO si;
   GetSystemInfo(&si);
   xbt_pagesize = si.dwPageSize;
+#elif HAVE_SYSCONF
+  xbt_pagesize = sysconf(_SC_PAGESIZE);
+#else
+  #error Cannot get page size.
 #endif
 
   xbt_pagebits = 0;

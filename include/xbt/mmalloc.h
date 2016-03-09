@@ -11,7 +11,7 @@
 #define SIMGRID_MMALLOC_H 1
 
 #include "src/internal_config.h"
-#ifdef HAVE_MMALLOC
+#if HAVE_MMALLOC
 
 # include <sys/types.h>        /* for size_t */
 # include <stdio.h>            /* for NULL */

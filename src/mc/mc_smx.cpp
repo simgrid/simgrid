@@ -207,7 +207,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
   return info->name.c_str();
 }
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 int MC_smpi_process_count(void)
 {
   if (mc_mode == MC_MODE_CLIENT)

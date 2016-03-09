@@ -160,7 +160,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
         break;
       case 'b':                 /* backtrace; called %throwable in LOG4J */
       case 'B':         /* short backtrace; called %throwable{short} in LOG4J */
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+#if HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
         {
           xbt_ex_t e;
 

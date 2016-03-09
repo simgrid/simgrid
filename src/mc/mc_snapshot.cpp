@@ -39,7 +39,7 @@ mc_mem_region_t mc_get_snapshot_region(
       continue;
 
     if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
       // Use the current process index of the snapshot:
       if (process_index == simgrid::mc::ProcessIndexDisabled)
         process_index = snapshot->privatization_index;

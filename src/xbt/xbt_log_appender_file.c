@@ -6,9 +6,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/internal_config.h"
 #include "xbt/sysdep.h"
 #include "src/xbt/log_private.h"
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 #include "src/smpi/private.h" // to access bench_begin/end. Not ultraclean, I confess
 #endif
 #include <stdio.h>
@@ -26,7 +27,7 @@ static void free_(xbt_log_appender_t this_) {
     fclose(this_->data);
 }
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 void __smpi_bench_dont (void); // Stupid prototype
 void __smpi_bench_dont (void) { /* I'm only a place-holder in case we link without SMPI */; }
 void smpi_bench_begin(void) __attribute__ ((weak, alias ("__smpi_bench_dont")));

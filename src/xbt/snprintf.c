@@ -53,7 +53,7 @@
 #include "src/internal_config.h"  /* Do we need vasprintf? */
 #include <stdio.h>
 
-#if !defined(HAVE_VASPRINTF)
+#if !HAVE_VASPRINTF
 #include <stdarg.h> /* vsnprintf */
 int vasprintf(char **ptr, const char *fmt, va_list ap);
 int vasprintf(char **ptr, const char *fmt, va_list ap)

@@ -82,7 +82,7 @@ static void restore(mc_mem_region_t region)
   }
 }
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 RegionSnapshot privatized_region(
     RegionType region_type, void *start_addr, void* permanent_addr,
     std::size_t size, const RegionSnapshot* ref_region
@@ -134,7 +134,7 @@ void add_region(int index, mc_snapshot_t snapshot,
     ref_region = mc_model_checker->parent_snapshot_->snapshot_regions[index].get();
 
   simgrid::mc::RegionSnapshot region;
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
   const bool privatization_aware = object_info
     && mc_model_checker->process().privatized(*object_info);
   if (privatization_aware && MC_smpi_process_count())
@@ -173,7 +173,7 @@ static void get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snap
     heap->heaplimit,
     process->get_malloc_info());
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
   if (mc_model_checker->process().privatized() && MC_smpi_process_count())
     // snapshot->privatization_index = smpi_loaded_page
     mc_model_checker->process().read_variable(
@@ -499,7 +499,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 
     link[res] = '\0';
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
     if(smpi_is_privatisation_file(link))
       continue;
 #endif
@@ -587,7 +587,7 @@ void restore_snapshot_regions(mc_snapshot_t snapshot)
       restore(region.get());
   }
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
   // TODO, send a message to implement this in the MCed process
   if(snapshot->privatization_index >= 0) {
     // Fix the privatization mmap:

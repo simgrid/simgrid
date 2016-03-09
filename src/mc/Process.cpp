@@ -489,7 +489,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
     std::shared_ptr<simgrid::mc::ObjectInformation> const& info =
       this->find_object_info_rw((void*)address.address());
     // Segment overlap is not handled.
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
     if (info.get() && this->privatized(*info)) {
       if (process_index < 0)
         xbt_die("Missing process index");

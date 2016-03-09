@@ -57,7 +57,7 @@
 #include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
 
 #undef HAVE_BACKTRACE
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+#if HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
 # define HAVE_BACKTRACE 1       /* Hello linux box */
 #endif
 
@@ -120,7 +120,7 @@ void xbt_backtrace_display_current(void)
   xbt_backtrace_display(&e);
 }
 
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+#if HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
 # include "src/xbt/backtrace_linux.c"
 #else
 # include "src/xbt/backtrace_dummy.c"

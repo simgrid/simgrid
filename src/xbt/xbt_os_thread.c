@@ -9,7 +9,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/internal_config.h"
-#ifdef HAVE_PTHREAD_SETAFFINITY
+#if HAVE_PTHREAD_SETAFFINITY
 #define _GNU_SOURCE
 #include <sched.h>
 #endif
@@ -46,7 +46,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS
 
 
 /* use named sempahore when sem_init() does not work */
-#ifndef HAVE_SEM_INIT
+#if !HAVE_SEM_INIT
 static int next_sem_ID = 0;
 static xbt_os_mutex_t next_sem_ID_lock;
 #endif
@@ -124,7 +124,7 @@ void xbt_os_thread_mod_preinit(void)
 
   thread_mod_inited = 1;
 
-#ifndef HAVE_SEM_INIT
+#if !HAVE_SEM_INIT
   next_sem_ID_lock = xbt_os_mutex_init();
 #endif
 }
@@ -141,7 +141,7 @@ void xbt_os_thread_mod_postexit(void)
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;
-#ifndef HAVE_SEM_INIT
+#if !HAVE_SEM_INIT
   xbt_os_mutex_destroy(next_sem_ID_lock);
 #endif
 
@@ -200,7 +200,7 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_ro
  */
 int xbt_os_thread_bind(xbt_os_thread_t thread, int cpu){
   int errcode = 0;
-#ifdef HAVE_PTHREAD_SETAFFINITY
+#if HAVE_PTHREAD_SETAFFINITY
   pthread_t pthread = thread->t;
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
@@ -399,7 +399,7 @@ void xbt_os_cond_destroy(xbt_os_cond_t cond)
 }
 
 typedef struct xbt_os_sem_ {
-#ifndef HAVE_SEM_INIT
+#if !HAVE_SEM_INIT
   char *name;
 #endif
   sem_t s;
@@ -418,7 +418,7 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
    * Any attempt to use it leads to ENOSYS (function not implemented).
    * If such a prehistoric system is detected, do the job with sem_open instead
    */
-#ifdef HAVE_SEM_INIT
+#if HAVE_SEM_INIT
   if (sem_init(&(res->s), 0, value) != 0)
     THROWF(system_error, errno, "sem_init() failed: %s", strerror(errno));
   res->ps = &(res->s);
@@ -462,7 +462,7 @@ void xbt_os_sem_release(xbt_os_sem_t sem)
 
 void xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
-#ifdef HAVE_SEM_INIT
+#if HAVE_SEM_INIT
   if (sem_destroy(sem->ps) < 0)
     THROWF(system_error, errno, "sem_destroy() failed: %s",
            strerror(errno));

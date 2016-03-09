@@ -11,7 +11,7 @@
    Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com */
 
 #include "src/internal_config.h"
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>             /* Prototypes for lseek */
 #endif
 #include <stdio.h>

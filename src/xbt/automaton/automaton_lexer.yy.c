@@ -529,7 +529,7 @@ char *xbt_automaton_parser_text;
 #line 10 "parserPromela.lex"
 
 #include "simgrid_config.h"
-#ifndef HAVE_UNISTD_H
+#if !HAVE_UNISTD_H
 #define YY_NO_UNISTD_H /* hello Windows */
 
 #ifdef _MSC_VER

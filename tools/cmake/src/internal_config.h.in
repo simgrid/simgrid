@@ -9,28 +9,28 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /* Non-standard header files */
-#cmakedefine HAVE_EXECINFO_H @HAVE_EXECINFO_H@ /* <execinfo.h> */
-#cmakedefine HAVE_FUTEX_H    @HAVE_FUTEX_H@ /* <linux/futex.h> */
-#cmakedefine HAVE_SIGNAL_H   @HAVE_SIGNAL_H@ /* <signal.h> */
-#cmakedefine HAVE_UNISTD_H   @HAVE_UNISTD_H@ /* <unistd.h> */
-#cmakedefine HAVE_UCONTEXT_H @HAVE_UCONTEXT_H@ /* <ucontext.h> */
-#cmakedefine HAVE_VALGRIND_H @HAVE_VALGRIND_H@ /* <valgrind/valgrind.h> */
+#define HAVE_EXECINFO_H @HAVE_EXECINFO_H@ /* <execinfo.h> */
+#define HAVE_FUTEX_H    @HAVE_FUTEX_H@ /* <linux/futex.h> */
+#define HAVE_SIGNAL_H   @HAVE_SIGNAL_H@ /* <signal.h> */
+#define HAVE_UNISTD_H   @HAVE_UNISTD_H@ /* <unistd.h> */
+#define HAVE_UCONTEXT_H @HAVE_UCONTEXT_H@ /* <ucontext.h> */
+#define HAVE_VALGRIND_H @HAVE_VALGRIND_H@ /* <valgrind/valgrind.h> */
 
 /* Time portability */
-#cmakedefine HAVE_GETTIMEOFDAY  @HAVE_GETTIMEOFDAY@ /* Function gettimeofday */
-#cmakedefine HAVE_POSIX_GETTIME @HAVE_POSIX_GETTIME@ /* Function clock_gettime */
-#cmakedefine HAVE_NANOSLEEP     @HAVE_NANOSLEEP@ /* Function nanosleep */
+#define HAVE_GETTIMEOFDAY  @HAVE_GETTIMEOFDAY@ /* Function gettimeofday */
+#define HAVE_POSIX_GETTIME @HAVE_POSIX_GETTIME@ /* Function clock_gettime */
+#define HAVE_NANOSLEEP     @HAVE_NANOSLEEP@ /* Function nanosleep */
 
 /* The usable context factories */
-#cmakedefine HAVE_BOOST_CONTEXTS    @HAVE_BOOST_CONTEXTS@
-#cmakedefine HAVE_RAW_CONTEXTS      @HAVE_RAW_CONTEXTS@
-#cmakedefine HAVE_THREAD_CONTEXTS   @HAVE_THREAD_CONTEXTS@
-#cmakedefine HAVE_UCONTEXT_CONTEXTS @HAVE_UCONTEXT_CONTEXTS@
+#define HAVE_BOOST_CONTEXTS    @HAVE_BOOST_CONTEXTS@
+#define HAVE_RAW_CONTEXTS      @HAVE_RAW_CONTEXTS@
+#define HAVE_THREAD_CONTEXTS   @HAVE_THREAD_CONTEXTS@
+#define HAVE_UCONTEXT_CONTEXTS @HAVE_UCONTEXT_CONTEXTS@
 
 /* Variables for the thread contexts (and parallel mode of raw contexts) */
-#cmakedefine HAVE_PTHREAD              @HAVE_PTHREAD@ /* Define to 1 if threads are usable . */
-#cmakedefine HAVE_PTHREAD_SETAFFINITY  @HAVE_PTHREAD_SETAFFINITY@ /* Does not seems defined on Mac nor Windows */
-#cmakedefine HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@ /* If __thread is available */
+#define HAVE_PTHREAD              @HAVE_PTHREAD@ /* Define to 1 if threads are usable . */
+#define HAVE_PTHREAD_SETAFFINITY  @HAVE_PTHREAD_SETAFFINITY@ /* Does not seems defined on Mac nor Windows */
+#define HAVE_THREAD_LOCAL_STORAGE @HAVE_THREAD_LOCAL_STORAGE@ /* If __thread is available */
 
 /* Variables for the raw contexts (to select the right assembly code) */
 #cmakedefine PROCESSOR_i686         @PROCESSOR_i686@
@@ -45,22 +45,22 @@
 #cmakedefine PTH_STACKGROWTH @PTH_STACKGROWTH@ /* Does the stack growth upward, or downward? */
 
 /* MC variables */
-#cmakedefine HAVE_GETDTABLESIZE    @HAVE_GETDTABLESIZE@ /* getdtablesize: get descriptor table size */
-#cmakedefine HAVE_MMALLOC          @HAVE_MMALLOC@ /* Did we compile mmalloc in? */
-#cmakedefine HAVE_PROCESS_VM_READV @HAVE_PROCESS_VM_READV@ /* process_vm_readv: transfer data between process address spaces */
-#cmakedefine HAVE_MC               @HAVE_MC@ /* Set to true if enable_model-checking is true and the dependencies available */
+#define HAVE_GETDTABLESIZE    @HAVE_GETDTABLESIZE@ /* getdtablesize: get descriptor table size */
+#define HAVE_MMALLOC          @HAVE_MMALLOC@ /* Did we compile mmalloc in? */
+#define HAVE_PROCESS_VM_READV @HAVE_PROCESS_VM_READV@ /* process_vm_readv: transfer data between process address spaces */
+#define HAVE_MC               @HAVE_MC@ /* Set to true if enable_model-checking is true and the dependencies available */
 
 /* SMPI variables */
-#cmakedefine HAVE_SMPI          @HAVE_SMPI@
-#cmakedefine SMPI_FORTRAN       @SMPI_FORTRAN@
-#cmakedefine HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@ /* We have mmap and objdump to handle privatization */
+#define HAVE_SMPI          @HAVE_SMPI@
+#define SMPI_FORTRAN       @SMPI_FORTRAN@
+#define HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@ /* We have mmap and objdump to handle privatization */
 
 /* Other function checks */
-#cmakedefine HAVE_MMAP      @HAVE_MMAP@ /* Function mmap */
-#cmakedefine HAVE_SEM_INIT  @HAVE_SEM_INIT@ /* Function sem_init (part of XPG6 standard only) */
-#cmakedefine HAVE_POPEN     @HAVE_POPEN@ /* Function popen */
-#cmakedefine HAVE_SYSCONF   @HAVE_SYSCONF@ /* Function sysconf */
-#cmakedefine HAVE_VASPRINTF @HAVE_VASPRINTF@ /* Function vasprintf */
+#define HAVE_MMAP      @HAVE_MMAP@ /* Function mmap */
+#define HAVE_SEM_INIT  @HAVE_SEM_INIT@ /* Function sem_init (part of XPG6 standard only) */
+#define HAVE_POPEN     @HAVE_POPEN@ /* Function popen */
+#define HAVE_SYSCONF   @HAVE_SYSCONF@ /* Function sysconf */
+#define HAVE_VASPRINTF @HAVE_VASPRINTF@ /* Function vasprintf */
 
 /* Other checks */
 #cmakedefine ADDR2LINE       "@ADDR2LINE@" /* Path to the addr2line tool */

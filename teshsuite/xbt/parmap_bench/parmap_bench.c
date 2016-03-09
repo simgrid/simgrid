@@ -46,7 +46,7 @@ static const char *parmap_mode_name(e_xbt_parmap_mode_t mode)
 static int parmap_skip_mode(e_xbt_parmap_mode_t mode)
 {
   switch (mode) {
-#ifndef HAVE_FUTEX_H
+#if !HAVE_FUTEX_H
   case XBT_PARMAP_FUTEX:
     printf("not available\n");
     return 1;

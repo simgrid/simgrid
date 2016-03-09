@@ -38,7 +38,7 @@ public:
   void resume();
 };
 
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
 class BoostParallelContext : public BoostContext {
 public:
   BoostParallelContext(std::function<void()> code,
@@ -66,7 +66,7 @@ BoostContextFactory::BoostContextFactory()
 {
   BoostContext::parallel_ = SIMIX_context_is_parallel();
   if (BoostContext::parallel_) {
-#ifndef HAVE_THREAD_CONTEXTS
+#if !HAVE_THREAD_CONTEXTS
     xbt_die("No thread support for parallel context execution");
 #else
     int nthreads = SIMIX_context_get_nthreads();
@@ -81,7 +81,7 @@ BoostContextFactory::BoostContextFactory()
 
 BoostContextFactory::~BoostContextFactory()
 {
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
   if (BoostContext::parmap_) {
     xbt_parmap_destroy(BoostContext::parmap_);
     BoostContext::parmap_ = nullptr;
@@ -95,7 +95,7 @@ smx_context_t BoostContextFactory::create_context(std::function<void()>  code,
 {
   BoostContext* context = nullptr;
   if (BoostContext::parallel_)
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
     context = this->new_context<BoostParallelContext>(
       std::move(code), cleanup_func, process);
 #else
@@ -109,7 +109,7 @@ smx_context_t BoostContextFactory::create_context(std::function<void()>  code,
 
 void BoostContextFactory::run_all()
 {
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
   if (BoostContext::parallel_) {
     BoostContext::threads_working_ = 0;
     xbt_parmap_apply(BoostContext::parmap_,
@@ -232,7 +232,7 @@ void BoostSerialContext::stop()
 
 // BoostParallelContext
 
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
 
 void BoostParallelContext::suspend()
 {

@@ -29,7 +29,7 @@
 #define _aligned_free  __mingw_aligned_free 
 #endif //MINGW
 
-#ifdef HAVE_VALGRIND_H
+#if HAVE_VALGRIND_H
 # include <valgrind/valgrind.h>
 #endif
 
@@ -40,7 +40,7 @@ int smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
 int smx_context_guard_size;
 int smx_context_guard_size_was_set = 0;
-#ifdef HAVE_THREAD_LOCAL_STORAGE
+#if HAVE_THREAD_LOCAL_STORAGE
 static XBT_THREAD_LOCAL smx_context_t smx_current_context_parallel;
 #else
 static xbt_os_thread_key_t smx_current_context_key = 0;
@@ -55,7 +55,7 @@ static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAUL
  */
 void SIMIX_context_mod_init(void)
 {
-#if defined(HAVE_THREAD_CONTEXTS) && !defined(HAVE_THREAD_LOCAL_STORAGE)
+#if HAVE_THREAD_CONTEXTS && !HAVE_THREAD_LOCAL_STORAGE
   /* the __thread storage class is not available on this platform:
    * use getspecific/setspecific instead to store the current context in each thread */
   xbt_os_thread_key_create(&smx_current_context_key);
@@ -65,37 +65,37 @@ void SIMIX_context_mod_init(void)
     if (simgrid::simix::factory_initializer)
       simix_global->context_factory = simgrid::simix::factory_initializer();
     else { /* use the factory specified by --cfg=contexts/factory:value */
-#if defined(HAVE_THREAD_CONTEXTS)
+#if HAVE_THREAD_CONTEXTS
       if (!strcmp(smx_context_factory_name, "thread"))
         simix_global->context_factory = simgrid::simix::thread_factory();
 #else
       if (0);
 #endif
-#ifdef HAVE_UCONTEXT_CONTEXTS
+#if HAVE_UCONTEXT_CONTEXTS
       else if (!strcmp(smx_context_factory_name, "ucontext"))
         simix_global->context_factory = simgrid::simix::sysv_factory();
 #endif
-#ifdef HAVE_RAW_CONTEXTS
+#if HAVE_RAW_CONTEXTS
       else if (!strcmp(smx_context_factory_name, "raw"))
         simix_global->context_factory = simgrid::simix::raw_factory();
 #endif
-#ifdef HAVE_BOOST_CONTEXTS
+#if HAVE_BOOST_CONTEXTS
       else if (!strcmp(smx_context_factory_name, "boost"))
         simix_global->context_factory = simgrid::simix::boost_factory();
 #endif
       else {
         XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
-#ifdef HAVE_RAW_CONTEXTS
+#if HAVE_RAW_CONTEXTS
         XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
 #else
         XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
 #endif
-#ifdef HAVE_UCONTEXT_CONTEXTS
+#if HAVE_UCONTEXT_CONTEXTS
         XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
 #else
         XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
 #endif
-#ifdef HAVE_BOOST_CONTEXTS
+#if HAVE_BOOST_CONTEXTS
         XBT_ERROR("  boost: this uses the boost libraries context implementation");
 #else
         XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you install the libboost-context-dev package?)");
@@ -160,7 +160,7 @@ void *SIMIX_context_stack_new(void)
     stack = xbt_malloc0(smx_context_stack_size);
   }
 
-#ifdef HAVE_VALGRIND_H
+#if HAVE_VALGRIND_H
   unsigned int valgrind_stack_id = VALGRIND_STACK_REGISTER(stack, (char *)stack + smx_context_stack_size);
   memcpy((char *)stack + smx_context_usable_stack_size, &valgrind_stack_id, sizeof valgrind_stack_id);
 #endif
@@ -173,7 +173,7 @@ void SIMIX_context_stack_delete(void *stack)
   if (!stack)
     return;
 
-#ifdef HAVE_VALGRIND_H
+#if HAVE_VALGRIND_H
   unsigned int valgrind_stack_id;
   memcpy(&valgrind_stack_id, (char *)stack + smx_context_usable_stack_size, sizeof valgrind_stack_id);
   VALGRIND_STACK_DEREGISTER(valgrind_stack_id);
@@ -225,7 +225,7 @@ void SIMIX_context_set_nthreads(int nb_threads) {
      nb_threads = xbt_os_get_numcores();
      XBT_INFO("Auto-setting contexts/nthreads to %d",nb_threads);
   }   
-#ifndef HAVE_THREAD_CONTEXTS
+#if !HAVE_THREAD_CONTEXTS
   xbt_assert(nb_threads == 1, "Parallel runs are impossible when the pthreads are missing.");
 #endif
   smx_parallel_contexts = nb_threads;
@@ -282,7 +282,7 @@ void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
 smx_context_t SIMIX_context_get_current(void)
 {
   if (SIMIX_context_is_parallel()) {
-#ifdef HAVE_THREAD_LOCAL_STORAGE
+#if HAVE_THREAD_LOCAL_STORAGE
     return smx_current_context_parallel;
 #else
     return xbt_os_thread_get_specific(smx_current_context_key);
@@ -300,7 +300,7 @@ smx_context_t SIMIX_context_get_current(void)
 void SIMIX_context_set_current(smx_context_t context)
 {
   if (SIMIX_context_is_parallel()) {
-#ifdef HAVE_THREAD_LOCAL_STORAGE
+#if HAVE_THREAD_LOCAL_STORAGE
     smx_current_context_parallel = context;
 #else
     xbt_os_thread_set_specific(smx_current_context_key, context);
