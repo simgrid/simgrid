@@ -40,7 +40,11 @@ int smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
 int smx_context_guard_size;
 int smx_context_guard_size_was_set = 0;
-static thread_local smx_context_t smx_current_context_parallel;
+#ifdef HAVE_THREAD_LOCAL_STORAGE
+static XBT_THREAD_LOCAL smx_context_t smx_current_context_parallel;
+#else
+static xbt_os_thread_key_t smx_current_context_key = 0;
+#endif
 static smx_context_t smx_current_context_serial;
 static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
@@ -51,6 +55,11 @@ static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAUL
  */
 void SIMIX_context_mod_init(void)
 {
+#if defined(HAVE_THREAD_CONTEXTS) && !defined(HAVE_THREAD_LOCAL_STORAGE)
+  /* the __thread storage class is not available on this platform:
+   * use getspecific/setspecific instead to store the current context in each thread */
+  xbt_os_thread_key_create(&smx_current_context_key);
+#endif
   if (!simix_global->context_factory) {
     /* select the context factory to use to create the contexts */
     if (simgrid::simix::factory_initializer)
@@ -272,10 +281,16 @@ void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
  */
 smx_context_t SIMIX_context_get_current(void)
 {
-  if (SIMIX_context_is_parallel())
+  if (SIMIX_context_is_parallel()) {
+#ifdef HAVE_THREAD_LOCAL_STORAGE
     return smx_current_context_parallel;
-  else
+#else
+    return xbt_os_thread_get_specific(smx_current_context_key);
+#endif
+  }
+  else {
     return smx_current_context_serial;
+  }
 }
 
 /**
@@ -284,8 +299,14 @@ smx_context_t SIMIX_context_get_current(void)
  */
 void SIMIX_context_set_current(smx_context_t context)
 {
-  if (SIMIX_context_is_parallel())
+  if (SIMIX_context_is_parallel()) {
+#ifdef HAVE_THREAD_LOCAL_STORAGE
     smx_current_context_parallel = context;
-  else
+#else
+    xbt_os_thread_set_specific(smx_current_context_key, context);
+#endif
+  }
+  else {
     smx_current_context_serial = context;
+  }
 }

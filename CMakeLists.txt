@@ -307,6 +307,19 @@ if(MINGW)
   set(HAVE_VASPRINTF 1)
 endif()
 
+
+#Check if __thread is defined
+execute_process(
+  COMMAND "${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_thread_storage.c -o testprog"
+  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+  RESULT_VARIABLE HAVE_thread_storage_run)
+file(REMOVE testprog)
+if(HAVE_thread_storage_run)
+  set(HAVE_THREAD_LOCAL_STORAGE 1)
+else()
+  set(HAVE_THREAD_LOCAL_STORAGE 0)
+endif()
+
 # Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
 IF(HAVE_MMAP AND
    NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND 
@@ -317,7 +330,7 @@ IF(HAVE_MMAP AND
   message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
 ENDIF()
 
-if(HAVE_MMAP)
+if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
   SET(HAVE_MMALLOC 1)
 else()
   SET(HAVE_MMALLOC 0)
