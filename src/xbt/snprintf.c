@@ -52,6 +52,7 @@
 #include "xbt/sysdep.h"           /* xbt_abort() */
 #include "src/internal_config.h"  /* Do we need vasprintf? */
 #include <stdio.h>
+#include <assert.h>
 
 #if !HAVE_VASPRINTF
 #include <stdarg.h> /* vsnprintf */
