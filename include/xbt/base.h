@@ -21,20 +21,14 @@
    depending on which version is available (__USE_MINGW_ANSI_STDIO): */
 #ifdef __MINGW32__
   #include <stdio.h>
-#endif
 
-#if defined(__MINGW32__) && defined(__MINGW_PRINTF_FORMAT)
   # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
      __attribute__((__format__ (__MINGW_PRINTF_FORMAT, format_idx, arg_idx)))
-#else
-  # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
-     __attribute__((__format__ (__printf__, format_idx, arg_idx)))
-#endif
-
-#if defined(__MINGW32__) && defined(__MINGW_SCANF_FORMAT)
   # define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
          __attribute__((__MINGW_SCANF_FORMAT (__scanf__, format_idx, arg_idx)))
 #else
+  # define XBT_ATTRIB_PRINTF( format_idx, arg_idx )    \
+     __attribute__((__format__ (__printf__, format_idx, arg_idx)))
   # define XBT_ATTRIB_SCANF( format_idx, arg_idx )     \
          __attribute__((__format__ (__scanf__, format_idx, arg_idx)))
 #endif
