@@ -13,14 +13,13 @@ set(warnCFLAGS "")
 set(optCFLAGS "")
 
 
-
 if(enable_compile_warnings)
-  set(warnCFLAGS "-fno-common -Wall -Wundef -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
+  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
   if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS}-Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs")
   endif()
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wundef -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs")
   endif()
@@ -30,6 +29,13 @@ if(enable_compile_warnings)
 
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
+endif()
+
+# Activate the warnings on #if FOOBAR when FOOBAR has no value
+# It breaks on FreeBSD within Boost headers, so activate this only in Pure Hardcore debug mode.
+if(enable_maintainer_mode)
+  set(warnCFLAGS "${warnCFLAGS} -Wundef")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
 endif()
 
 # Se the optimisation flags
