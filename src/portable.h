@@ -8,7 +8,6 @@
 #ifndef SIMGRID_PORTABLE_H
 #define SIMGRID_PORTABLE_H
 
-#include "simgrid_config.h"       /* what was compiled in? */
 #include "src/internal_config.h"  /* some information about the environment */
 
 #ifdef _WIN32
@@ -24,9 +23,8 @@
 
 /* File handling */
 #ifdef _WIN32
-  #ifdef S_IRGRP
-    #undef S_IRGRP
+  #ifndef S_IRGRP
+    #define S_IRGRP 0
   #endif
-  #define S_IRGRP 0
 #endif
 #endif                          /* SIMGRID_PORTABLE_H */

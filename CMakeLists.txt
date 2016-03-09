@@ -894,7 +894,7 @@ message("##########################################")
 message("#### Content of src/internal_config.h ####")
 message("##########################################")
 file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h config_output)
-LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8) # Pass the file header
+LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8 9 10) # Pass the file header
 foreach(line ${config_output})
   message("   ${line}")
 endforeach()
