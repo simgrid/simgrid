@@ -468,7 +468,7 @@ int MC_modelcheck_comm_determinism(void)
 
   if (mc_mode == MC_MODE_CLIENT)
     // This will move somehwere else:
-    MC_client_handle_messages();
+    simgrid::mc::Client::get()->handleMessages();
 
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();

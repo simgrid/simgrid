@@ -140,7 +140,7 @@ void MC_run()
 {
   mc_mode = MC_MODE_CLIENT;
   MC_init();
-  MC_client_main_loop();
+  simgrid::mc::Client::get()->mainLoop();
 }
 
 void MC_exit(void)
@@ -155,10 +155,10 @@ int MC_deadlock_check()
 {
   if (mc_mode == MC_MODE_SERVER) {
     int res;
-    if ((res = mc_model_checker->process().send_message(MC_MESSAGE_DEADLOCK_CHECK)))
+    if ((res = mc_model_checker->process().getChannel().send(MC_MESSAGE_DEADLOCK_CHECK)))
       xbt_die("Could not check deadlock state");
     s_mc_int_message_t message;
-    ssize_t s = mc_model_checker->process().receive_message(message);
+    ssize_t s = mc_model_checker->process().getChannel().receive(message);
     if (s == -1)
       xbt_die("Could not receive message");
     if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY)

@@ -22,9 +22,8 @@
 #include <xbt/dynar.h>
 #include <xbt/mmalloc.h>
 
-#if HAVE_MC
 #include "src/xbt/mmalloc/mmprivate.h"
-#endif
+#include "src/mc/Channel.hpp"
 
 #include <simgrid/simix.h>
 #include "src/simix/popping_private.h"
@@ -147,6 +146,9 @@ public:
     return this->heap_info.data();
   }
 
+  Channel const& getChannel() const { return channel_; }
+  Channel& getChannel() { return channel_; }
+
   std::vector<IgnoredRegion> const& ignored_regions() const
   {
     return ignored_regions_;
@@ -168,25 +170,6 @@ public:
   void terminate()
   {
     running_ = false;
-  }
-
-  template<class M>
-  typename std::enable_if< std::is_class<M>::value && std::is_trivial<M>::value, int >::type
-  send_message(M const& m)
-  {
-    return MC_protocol_send(this->socket_, &m, sizeof(M));
-  }
-
-  int send_message(e_mc_message_type message_id)
-  {
-    return MC_protocol_send_simple_message(this->socket_, message_id);
-  }
-
-  template<class M>
-  typename std::enable_if< std::is_class<M>::value && std::is_trivial<M>::value, ssize_t >::type
-  receive_message(M& m)
-  {
-    return MC_receive_message(this->socket_, &m, sizeof(M), 0);
   }
 
   void reset_soft_dirty();
@@ -226,7 +209,6 @@ public:
   void unignore_heap(void *address, size_t size);
 
   void ignore_local_variable(const char *var_name, const char *frame_name);
-  int socket() { return socket_; }
   std::vector<simgrid::mc::SimixProcessInformation>& simix_processes();
   std::vector<simgrid::mc::SimixProcessInformation>& old_simix_processes();
 
@@ -238,7 +220,7 @@ private:
 
 private:
   pid_t pid_ = -1;
-  int socket_ = -1;
+  Channel channel_;
   bool running_ = false;
   std::vector<simgrid::xbt::VmMap> memory_map_;
   RemotePtr<void> maestro_stack_start_, maestro_stack_end_;

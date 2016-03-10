@@ -43,7 +43,7 @@ void MC_ignore_heap(void *address, size_t size)
     heap->heapinfo[message.block].busy_frag.ignore[message.fragment]++;
   }
 
-  if (MC_protocol_send(mc_client->fd, &message, sizeof(message)))
+  if (simgrid::mc::Client::get()->getChannel().send(message))
     xbt_die("Could not send ignored region to MCer");
 }
 
@@ -56,7 +56,8 @@ void MC_remove_ignore_heap(void *address, size_t size)
   message.type = MC_MESSAGE_UNIGNORE_HEAP;
   message.addr = (std::uintptr_t) address;
   message.size = size;
-  MC_client_send_message(&message, sizeof(message));
+  if (simgrid::mc::Client::get()->getChannel().send(message))
+    xbt_die("Could not send UNIGNORE_HEAP mesasge to model-checker");
 }
 
 void MC_ignore_global_variable(const char *name)
@@ -101,7 +102,8 @@ void MC_register_stack_area(void *stack, smx_process_t process, ucontext_t* cont
   s_mc_stack_region_message_t message;
   message.type = MC_MESSAGE_STACK_REGION;
   message.stack_region = region;
-  MC_client_send_message(&message, sizeof(message));
+  if (simgrid::mc::Client::get()->getChannel().send(message))
+    xbt_die("Coule not send STACK_REGION to model-checker");
 }
 
 }

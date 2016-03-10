@@ -114,10 +114,6 @@ typedef struct s_mc_restore_message {
   int index;
 } s_mc_restore_message_t, *mc_restore_message_t;
 
-XBT_PRIVATE int MC_protocol_send(int socket, const void* message, size_t size);
-XBT_PRIVATE int MC_protocol_send_simple_message(int socket, e_mc_message_type type);
-XBT_PRIVATE ssize_t MC_receive_message(int socket, void* message, size_t size, int options);
-
 XBT_PRIVATE const char* MC_message_type_name(e_mc_message_type type);
 XBT_PRIVATE const char* MC_mode_name(e_mc_mode_t mode);
 

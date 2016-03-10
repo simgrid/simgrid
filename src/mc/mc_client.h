@@ -9,28 +9,46 @@
 
 #include <cstddef>
 
+#include <memory>
+
 #include <xbt/base.h>
+
 #include "src/mc/mc_protocol.h"
+#include "src/mc/Channel.hpp"
+
+namespace simgrid {
+namespace mc {
+
+class XBT_PUBLIC() Client {
+private:
+  bool active_ = false;
+  Channel channel_;
+  static std::unique_ptr<Client> client_;
+public:
+  Client();
+  Client(int fd) : active_(true), channel_(fd) {}
+  void handleMessages();
+  Channel const& getChannel() const { return channel_; }
+  Channel& getChannel() { return channel_; }
+  void mainLoop(void);
+
+  // Singleton :/
+  // TODO, remove the singleton antipattern.
+  static Client* initialize();
+  static Client* get()
+  {
+    return client_.get();
+  }
+};
+
+}
+}
 
 SG_BEGIN_DECL()
-
-typedef struct s_mc_client {
-  int active;
-  int fd;
-} s_mc_client_t, *mc_client_t;
-
-extern XBT_PRIVATE mc_client_t mc_client;
-
-XBT_PRIVATE void MC_client_init(void);
-XBT_PRIVATE void MC_client_handle_messages(void);
-XBT_PRIVATE void MC_client_send_message(void* message, std::size_t size);
-XBT_PRIVATE void MC_client_send_simple_message(e_mc_message_type type);
 
 #if HAVE_MC
 void MC_ignore(void* addr, std::size_t size);
 #endif
-
-void MC_client_main_loop(void);
 
 SG_END_DECL()
 

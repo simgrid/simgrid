@@ -88,7 +88,7 @@ void ModelChecker::start()
   // Prepare data for poll:
 
   struct pollfd* socket_pollfd = &fds_[SOCKET_FD_INDEX];
-  socket_pollfd->fd = process_->socket();;
+  socket_pollfd->fd = process_->getChannel().getSocket();
   socket_pollfd->events = POLLIN;
   socket_pollfd->revents = 0;
 
@@ -173,7 +173,7 @@ void ModelChecker::shutdown()
 
 void ModelChecker::resume(simgrid::mc::Process& process)
 {
-  int res = process.send_message(MC_MESSAGE_CONTINUE);
+  int res = process.getChannel().send(MC_MESSAGE_CONTINUE);
   if (res)
     throw simgrid::xbt::errno_error(res);
   process.cache_flags = (mc_process_cache_flags_t) 0;
@@ -310,7 +310,7 @@ bool ModelChecker::handle_events()
 
   if (socket_pollfd->revents) {
     if (socket_pollfd->revents & POLLIN) {
-      ssize_t size = MC_receive_message(socket_pollfd->fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+      ssize_t size = process_->getChannel().receive(buffer, sizeof(buffer), false);
       if (size == -1 && errno != EAGAIN)
         throw simgrid::xbt::errno_error(errno);
       return handle_message(buffer, size);
@@ -433,7 +433,7 @@ void ModelChecker::simcall_handle(simgrid::mc::Process& process, unsigned long p
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
   m.pid   = pid;
   m.value = value;
-  process.send_message(m);
+  process.getChannel().send(m);
   process.cache_flags = (mc_process_cache_flags_t) 0;
   while (process.running())
     if (!this->handle_events())

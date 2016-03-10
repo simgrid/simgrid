@@ -201,7 +201,7 @@ int open_vm(pid_t pid, int flags)
 // ***** Process
 
 Process::Process(pid_t pid, int sockfd) :
-   AddressSpace(this),pid_(pid), socket_(sockfd), running_(true)
+   AddressSpace(this), pid_(pid), channel_(sockfd), running_(true)
 {}
 
 void Process::init()
@@ -233,12 +233,6 @@ void Process::init()
 
 Process::~Process()
 {
-  if (this->socket_ >= 0 && close(this->socket_) < 0)
-    xbt_die("Could not close communication socket");
-
-  this->maestro_stack_start_ = nullptr;
-  this->maestro_stack_end_ = nullptr;
-
   if (this->memory_file >= 0)
     close(this->memory_file);
 
@@ -246,13 +240,8 @@ Process::~Process()
     unw_destroy_addr_space(this->unw_underlying_addr_space);
     _UPT_destroy(this->unw_underlying_context);
   }
-  this->unw_underlying_context = nullptr;
-  this->unw_underlying_addr_space = nullptr;
 
   unw_destroy_addr_space(this->unw_addr_space);
-  this->unw_addr_space = nullptr;
-
-  this->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
   if (this->clear_refs_fd_ >= 0)
     close(this->clear_refs_fd_);

@@ -549,6 +549,8 @@ set(MC_SRC
   src/mc/RemotePtr.hpp
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
+  src/mc/Channel.cpp
+  src/mc/Channel.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp

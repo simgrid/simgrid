@@ -266,7 +266,7 @@ void SIMIX_global_init(int *argc, char **argv)
 #if HAVE_MC
   // The communication initialization is done ASAP.
   // We need to communicate  initialization of the different layers to the model-checker.
-  MC_client_init();
+  simgrid::mc::Client::initialize();
 #endif
 
   if (_sg_cfg_exit_asap)

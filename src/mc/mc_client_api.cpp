@@ -30,8 +30,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
 void MC_assert(int prop)
 {
   if (MC_is_active() && !prop) {
-    MC_client_send_simple_message(MC_MESSAGE_ASSERTION_FAILED);
-    MC_client_handle_messages();
+    if (simgrid::mc::Client::get()->getChannel().send(MC_MESSAGE_ASSERTION_FAILED))
+      xbt_die("Could not send assertion to model-checker");
+    simgrid::mc::Client::get()->handleMessages();
   }
 }
 
@@ -50,7 +51,8 @@ void MC_ignore(void* addr, size_t size)
   message.type = MC_MESSAGE_IGNORE_MEMORY;
   message.addr = (std::uintptr_t) addr;
   message.size = size;
-  MC_client_send_message(&message, sizeof(message));
+  if (simgrid::mc::Client::get()->getChannel().send(message))
+    xbt_die("Could not send IGNORE_MEMORY mesage to model-checker");
 }
 
 void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
@@ -77,5 +79,6 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
   strncpy(message.name, name, sizeof(message.name));
   message.callback = nullptr;
   message.data = value;
-  MC_client_send_message(&message, sizeof(message));
+  if (simgrid::mc::Client::get()->getChannel().send(message))
+    xbt_die("Could send REGISTER_SYMBOL message to model-checker");
 }

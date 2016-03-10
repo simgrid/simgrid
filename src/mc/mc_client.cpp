@@ -25,30 +25,35 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
 
-extern "C" {
+namespace simgrid {
+namespace mc {
 
-mc_client_t mc_client;
+std::unique_ptr<Client> Client::client_;
 
-void MC_client_init(void)
+Client* Client::initialize()
 {
-  if (mc_mode != MC_MODE_NONE)
-    return;
+  // We are not in MC mode:
+  // TODO, handle this more gracefully.
   if (!getenv(MC_ENV_SOCKET_FD))
-    return;
+    return nullptr;
+
+  // Do not break if we are called multiple times:
+  if (client_)
+    return client_.get();
+
+  // Check and set the mode:
+  if (mc_mode != MC_MODE_NONE)
+    abort();
   mc_mode = MC_MODE_CLIENT;
 
-  if (mc_client) {
-    XBT_WARN("MC_client_init called more than once.");
-    return;
-  }
-
+  // Fetch socket from MC_ENV_SOCKET_FD:
   char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
   if (!fd_env)
-    xbt_die("MC socket not found");
-
-  int fd = xbt_str_parse_int(fd_env,bprintf("Variable %s should contain a number but contains '%%s'", MC_ENV_SOCKET_FD));
+    xbt_die("No MC socket passed in the environment");
+  int fd = xbt_str_parse_int(fd_env, bprintf("Variable %s should contain a number but contains '%%s'", MC_ENV_SOCKET_FD));
   XBT_DEBUG("Model-checked application found socket FD %i", fd);
 
+  // Check the socket type/validity:
   int type;
   socklen_t socklen = sizeof(type);
   if (getsockopt(fd, SOL_SOCKET, SO_TYPE, &type, &socklen) != 0)
@@ -57,36 +62,25 @@ void MC_client_init(void)
     xbt_die("Unexpected socket type %i", type);
   XBT_DEBUG("Model-checked application found expected socket type");
 
-  mc_client = xbt_new0(s_mc_client_t, 1);
-  mc_client->fd = fd;
-  mc_client->active = 1;
+  client_ = std::unique_ptr<Client>(new simgrid::mc::Client(fd));
 
-  // Waiting for the model-checker:
+  // Wait for the model-checker:
   if (ptrace(PTRACE_TRACEME, 0, nullptr, NULL) == -1 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");
-  MC_client_handle_messages();
+
+  client_->handleMessages();
+  return client_.get();
 }
 
-void MC_client_send_message(void* message, size_t size)
-{
-  if (MC_protocol_send(mc_client->fd, message, size))
-    xbt_die("Could not send message %i", (int) ((mc_message_t)message)->type);
-}
-
-void MC_client_send_simple_message(e_mc_message_type type)
-{
-  if (MC_protocol_send_simple_message(mc_client->fd, type))
-    xbt_die("Could not send message %i", type);
-}
-
-void MC_client_handle_messages(void)
+void Client::handleMessages()
 {
   while (1) {
     XBT_DEBUG("Waiting messages from model-checker");
 
     char message_buffer[MC_MESSAGE_LENGTH];
     ssize_t s;
-    if ((s = MC_receive_message(mc_client->fd, &message_buffer, sizeof(message_buffer), 0)) < 0)
+
+    if ((s = channel_.receive(&message_buffer, sizeof(message_buffer))) < 0)
       xbt_die("Could not receive commands from the model-checker");
 
     s_mc_message_t message;
@@ -101,7 +95,7 @@ void MC_client_handle_messages(void)
         s_mc_int_message_t answer;
         answer.type = MC_MESSAGE_DEADLOCK_CHECK_REPLY;
         answer.value = result;
-        if (MC_protocol_send(mc_client->fd, &answer, sizeof(answer)))
+        if (channel_.send(answer))
           xbt_die("Could not send response");
       }
       break;
@@ -119,7 +113,8 @@ void MC_client_handle_messages(void)
         if (!process)
           xbt_die("Invalid pid %lu", (unsigned long) message.pid);
         SIMIX_simcall_handle(&process->simcall, message.value);
-        MC_protocol_send_simple_message(mc_client->fd, MC_MESSAGE_WAITING);
+        if (channel_.send(MC_MESSAGE_WAITING))
+          xbt_die("Could not send MESSAGE_WAITING to model-checker");
       }
       break;
 
@@ -143,13 +138,15 @@ void MC_client_handle_messages(void)
   }
 }
 
-void MC_client_main_loop(void)
+void Client::mainLoop(void)
 {
   while (1) {
-    MC_protocol_send_simple_message(mc_client->fd, MC_MESSAGE_WAITING);
-    MC_client_handle_messages();
+    if (channel_.send(MC_MESSAGE_WAITING))
+      xbt_die("Could not send WAITING mesage to model-checker");
+    this->handleMessages();
     simgrid::mc::wait_for_requests();
   }
 }
 
+}
 }

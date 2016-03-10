@@ -603,7 +603,7 @@ void restore_snapshot_regions(mc_snapshot_t snapshot)
     s_mc_restore_message message;
     message.type = MC_MESSAGE_RESTORE;
     message.index = snapshot->privatization_index;
-    mc_model_checker->process().send_message(message);
+    mc_model_checker->process().getChannel().send(message);
   }
 #endif
 }
