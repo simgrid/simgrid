@@ -9,7 +9,11 @@
 #include "xbt/sysdep.h"
 #include "xbt/file.h"    /* this module */
 #include "xbt/log.h"
-#include "src/portable.h"
+#include "src/internal_config.h"
+
+#ifdef _WIN32
+#include <windows.h>
+#endif
 
 #ifndef _MSC_VER
 #include "libgen.h" /* POSIX dirname */

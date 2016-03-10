@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
-#include "src/portable.h"
+#include "src/internal_config.h"
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/storage_interface.hpp"

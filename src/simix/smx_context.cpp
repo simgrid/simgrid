@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"

@@ -11,13 +11,9 @@ package org.simgrid.msg;
  * between processes.
  */
 public class Comm {
-	/**
-	 * Indicates if the communication is a receiving communication
-	 */
+	/** Indicates if the communication is a receiving communication */
 	protected boolean receiving;
-	/**
-	 * Indicates if the communication is finished
-	 */
+	/** Indicates if the communication is finished */
 	protected boolean finished = false;
 	/**
 	 * Represents the bind between the java comm and the
@@ -25,13 +21,9 @@ public class Comm {
 	 * automatically set.
 	 */
 	private long bind = 0;
-	/**
-	 * Represents the bind for the task object pointer. Don't touch it.
-	 */
+	/** Represents the bind for the task object pointer. Don't touch it. */
 	private long taskBind = 0;
-	/**
-	 * Task associated with the comm. Beware, it can be null 
-	 */
+	/** Task associated with the comm. Beware, it can be null */
 	protected Task task = null;
 	/**
 	 * Protected constructor, used by Comm factories
@@ -75,9 +67,7 @@ public class Comm {
 		return task;
 	}
 
-	/**
-	 * Class initializer, to initialize various JNI stuff
-	 */
+	/** Class initializer, to initialize various JNI stuff */
 	public static native void nativeInit();
 	static {
 		org.simgrid.NativeLib.nativeInit();

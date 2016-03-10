@@ -8,18 +8,11 @@
 
 package org.simgrid.msg;
 
-/**
- * This exception is raised when there is an error within the C world of SimGrid. 
- * Refer to the string message for more info on what went wrong.
- */
+/** This exception is raised when there is an error within the C world of SimGrid. */
 public class NativeException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs an <code>NativeException</code> with a detail message. 
-	 *
-	 * @param   s   the detail message.
-	 */
+	/** Constructs an <code>NativeException</code> with a detail message. */
 	public NativeException(String s) {
 		super(s);
 	}

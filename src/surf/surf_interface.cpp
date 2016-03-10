@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include "surf_private.h"
 #include "surf_interface.hpp"
 #include "network_interface.hpp"

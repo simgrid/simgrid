@@ -45,7 +45,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include "src/portable.h"           /* execinfo when available */
+#include "src/internal_config.h"           /* execinfo when available */
 #include "xbt/ex.h"
 #include "xbt/str.h"
 #include "xbt/synchro_core.h"

@@ -21,7 +21,7 @@
 
 #define HAVE_JEDULE     @HAVE_JEDULE@ /* Was Jedule compiled in?  */
 #define HAVE_LUA        @HAVE_LUA@ /* Was the Lua support compiled in? */
-#define HAVE_MALLOCATOR @HAVE_MALLOCATOR@ /* Whether mallocators (object pools) were activated at compilation time. */
+#define HAVE_MALLOCATOR @HAVE_MALLOCATOR@ /* Were mallocators (object pools) compiled in? */
 #define HAVE_MC         @HAVE_MC@ /* Was the model-checking compiled in? */
 #define HAVE_NS3        @HAVE_NS3@ /* Was the NS3 support compiled in? */
 

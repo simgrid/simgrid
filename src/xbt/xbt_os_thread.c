@@ -25,7 +25,8 @@
 #include <semaphore.h>
 #include <errno.h>
 
-#if defined(WIN32)
+#if defined(_WIN32)
+#include <windows.h>
 #elif defined(__MACH__) && defined(__APPLE__)
 #include <stdint.h>
 #include <sys/types.h>
@@ -37,7 +38,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
 #include "src/xbt/ex_interface.h"  /* We play crude games with exceptions */
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include "xbt/xbt_os_time.h"       /* Portable time facilities */
 #include "xbt/xbt_os_thread.h"     /* This module */
 #include "src/xbt_modinter.h"      /* Initialization/finalization of this module */

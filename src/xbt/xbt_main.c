@@ -22,7 +22,7 @@
 
 #include "simgrid/sg_config.h"
 
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include <stdio.h>
 #ifdef _WIN32
 #include <signal.h> /* To silence MSVC on abort() */
