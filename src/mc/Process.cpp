@@ -29,7 +29,6 @@
 #include <xbt/base.h>
 #include <xbt/mmalloc.h>
 
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_ignore.h"
@@ -357,7 +356,7 @@ void Process::init_memory_map_info()
     }
 
     std::shared_ptr<simgrid::mc::ObjectInformation> info =
-      MC_find_object_info(this->memory_map_, pathname);
+      simgrid::mc::createObjectInformation(this->memory_map_, pathname);
     this->object_infos.push_back(info);
     if (is_executable)
       this->binary_info = info;
@@ -371,7 +370,7 @@ void Process::init_memory_map_info()
 
   // Resolve time (including accross differents objects):
   for (auto const& object_info : this->object_infos)
-    MC_post_process_object_info(this, object_info.get());
+    postProcessObjectInformation(this, object_info.get());
 
   xbt_assert(this->maestro_stack_start_, "Did not find maestro_stack_start");
   xbt_assert(this->maestro_stack_end_, "Did not find maestro_stack_end");

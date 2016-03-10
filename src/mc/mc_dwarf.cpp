@@ -25,7 +25,6 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_dwarf.hpp"
 
-#include "src/mc/mc_object_info.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
@@ -1093,6 +1092,7 @@ std::string to_hex(std::vector<char> const& data)
 }
 
 /** Base directories for external debug files */
+static
 const char* debug_paths[] = {
   "/usr/lib/debug/",
   "/usr/local/lib/debug/",
@@ -1307,8 +1307,11 @@ static void MC_post_process_types(simgrid::mc::ObjectInformation* info)
   }
 }
 
+namespace simgrid {
+namespace mc {
+
 /** \brief Finds informations about a given shared object/executable */
-std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
+std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(
   std::vector<simgrid::xbt::VmMap> const& maps, const char *name)
 {
   std::shared_ptr<simgrid::mc::ObjectInformation> result =
@@ -1326,7 +1329,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> MC_find_object_info(
 
 /*************************************************************************/
 
-void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info)
+void postProcessObjectInformation(simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info)
 {
   for (auto& i : info->types) {
 
@@ -1353,6 +1356,9 @@ void MC_post_process_object_info(simgrid::mc::Process* process, simgrid::mc::Obj
     else type->full_type = subtype;
 
   }
+}
+
+}
 }
 
 namespace simgrid {

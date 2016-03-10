@@ -9,10 +9,12 @@
 
 #include <string>
 #include <unordered_map>
+#include <memory>
 #include <vector>
 
 #include <xbt/base.h>
 
+#include "src/xbt/memory_map.hpp"
 #include "src/mc/mc_forward.h"
 #include "src/mc/Type.hpp"
 #include "src/mc/Frame.hpp"
@@ -97,7 +99,10 @@ public:
     const char* name, const char* scope);
 };
 
-
+XBT_PRIVATE std::shared_ptr<ObjectInformation> createObjectInformation(
+  std::vector<simgrid::xbt::VmMap> const& maps, const char* name);
+XBT_PRIVATE void postProcessObjectInformation(
+  simgrid::mc::Process* process, simgrid::mc::ObjectInformation* info);
 
 }
 }
