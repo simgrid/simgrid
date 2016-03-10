@@ -20,10 +20,10 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
                                 "Logging specific to MC (state)");
+
+extern "C" {
 
 /**
  * \brief Creates a state data structure used by the exploration algorithm

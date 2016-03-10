@@ -23,9 +23,9 @@
 #include "src/mc/mc_private.h" // MC_deadlock_check()
 #include "src/mc/mc_smx.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
+
+extern "C" {
 
 mc_client_t mc_client;
 

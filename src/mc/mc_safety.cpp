@@ -25,12 +25,8 @@
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
                                 "Logging specific to MC safety verification ");
-
-}
 
 namespace simgrid {
 namespace mc {

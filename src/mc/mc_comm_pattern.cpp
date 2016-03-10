@@ -15,10 +15,10 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_pattern, mc,
                                 "Logging specific to MC communication patterns");
+
+extern "C" {
 
 mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
 {

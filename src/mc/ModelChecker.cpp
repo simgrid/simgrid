@@ -32,11 +32,7 @@
 #include "src/mc/mc_exit.h"
 #include "src/mc/mc_liveness.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
-
-}
 
 ::simgrid::mc::ModelChecker* mc_model_checker = nullptr;
 

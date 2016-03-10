@@ -20,12 +20,8 @@
 #include "src/mc/Process.hpp"
 #include "src/mc/mc_smx.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_visited, mc,
                                 "Logging specific to state equaity detection mechanisms");
-
-}
 
 namespace simgrid {
 namespace mc {

@@ -29,10 +29,10 @@
 #include "src/mc/mc_liveness.h"
 #endif
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
   " Logging specific to MC record/replay facility");
+
+extern "C" {
 
 char* MC_record_path = nullptr;
 

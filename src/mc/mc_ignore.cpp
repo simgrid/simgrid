@@ -12,10 +12,10 @@
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_client.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ignore, mc,
                                 "Logging specific to MC ignore mechanism");
+
+extern "C" {
 
 // ***** Model-checked
 

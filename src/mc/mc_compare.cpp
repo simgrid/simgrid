@@ -32,12 +32,8 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt,
                                 "Logging specific to mc_compare in mc");
-
-}
 
 namespace simgrid {
 namespace mc {

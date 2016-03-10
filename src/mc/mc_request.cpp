@@ -19,12 +19,8 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_request, mc,
                                 "Logging specific to MC (request)");
-
-}
 
 static char *pointer_to_string(void *pointer);
 static char *buff_size_to_string(size_t size);

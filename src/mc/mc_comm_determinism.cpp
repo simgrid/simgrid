@@ -24,10 +24,10 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc,
                                 "Logging specific to MC communication determinism detection");
+
+extern "C" {
 
 /********** Global variables **********/
 

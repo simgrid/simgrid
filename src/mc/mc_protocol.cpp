@@ -17,9 +17,9 @@
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_client.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_protocol, mc, "Generic MC protocol logic");
+
+extern "C" {
 
 int MC_protocol_send(int socket, const void* message, std::size_t size)
 {
