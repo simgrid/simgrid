@@ -688,8 +688,15 @@ void Process::ignore_local_variable(const char *var_name, const char *frame_name
 std::vector<simgrid::mc::SimixProcessInformation>& Process::simix_processes()
 {
   xbt_assert(mc_mode != MC_MODE_CLIENT);
-  MC_process_smx_refresh(&mc_model_checker->process());
+  this->refresh_simix();
   return smx_process_infos;
+}
+
+std::vector<simgrid::mc::SimixProcessInformation>& Process::old_simix_processes()
+{
+  xbt_assert(mc_mode != MC_MODE_CLIENT);
+  this->refresh_simix();
+  return smx_old_process_infos;
 }
 
 }

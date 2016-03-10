@@ -56,9 +56,8 @@ VisitedState::VisitedState()
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
-  MC_process_smx_refresh(&mc_model_checker->process());
   this->nb_processes =
-    mc_model_checker->process().smx_process_infos.size();
+    mc_model_checker->process().simix_processes().size();
 
   this->num = mc_stats->expanded_states;
   this->other_num = -1;
@@ -81,9 +80,8 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xb
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
-  MC_process_smx_refresh(&mc_model_checker->process());
   this->nb_processes =
-    mc_model_checker->process().smx_process_infos.size();
+    mc_model_checker->process().simix_processes().size();
 
   this->automaton_state = automaton_state;
   this->num = pair_num;

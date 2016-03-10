@@ -82,6 +82,19 @@ struct IgnoredHeapRegion {
 };
 
 /** Representation of a process
+ *
+ *  This class is mixing a lot of differents responsabilities and is tied
+ *  to SIMIX. It should probably split into different classes.
+ *
+ *  Responsabilities:
+ *
+ *  - reading from the process memory (`AddressSpace`);
+ *  - accessing the system state of the porcess (heap, …);
+ *  - storing the SIMIX state of the process;
+ *  - privatization;
+ *  - communication with the model-checked process;
+ *  - stack unwinding;
+ *  - etc.
  */
 class Process final : public AddressSpace {
 public:
@@ -215,11 +228,13 @@ public:
   void ignore_local_variable(const char *var_name, const char *frame_name);
   int socket() { return socket_; }
   std::vector<simgrid::mc::SimixProcessInformation>& simix_processes();
+  std::vector<simgrid::mc::SimixProcessInformation>& old_simix_processes();
 
 private:
   void init_memory_map_info();
   void refresh_heap();
   void refresh_malloc_info();
+  void refresh_simix();
 
 private:
   pid_t pid_ = -1;
