@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
+#include "private.hpp"
 #include <ctype.h>
 #include <wchar.h>
 #include <stdarg.h>
