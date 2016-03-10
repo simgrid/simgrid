@@ -20,7 +20,7 @@ if(enable_memcheck_xml)
 endif()
 
 if(VALGRIND_EXE)
-  execute_process(COMMAND "${VALGRIND_EXE} --version " OUTPUT_VARIABLE "VALGRIND_VERSION")
+  execute_process(COMMAND ${VALGRIND_EXE} --version  OUTPUT_VARIABLE "VALGRIND_VERSION")
   string(REGEX MATCH "[0-9]+.[0-9]+.[0-9]+" NEW_VALGRIND_VERSION "${VALGRIND_VERSION}")
   if(NEW_VALGRIND_VERSION)
     message(STATUS "Valgrind version: ${NEW_VALGRIND_VERSION}")

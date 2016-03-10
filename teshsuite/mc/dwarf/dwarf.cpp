@@ -14,7 +14,6 @@
 #include <mc/mc.h>
 
 #include "mc/datatypes.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_private.h"
 
 #include "src/mc/Process.hpp"

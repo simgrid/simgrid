@@ -41,53 +41,26 @@
 #include <stdio.h>
 #include <string.h>
 
-#include "mpi.h"
-#include "npbparams.h"
-
+#include "smpi/mpi.h"
+#include "nas_common.h"
 #include "simgrid/instr.h" //TRACE_
 
-#ifndef CLASS
-#define CLASS 'S'
-#define NUM_PROCS            1                 
-#endif
 
-//int      passed_verification;
-extern double randlc( double *X, double *A );
-extern
-void c_print_results( char   *name,
-                      char   class,
-                      int    n1, 
-                      int    n2,
-                      int    n3,
-                      int    niter,
-                      int    nprocs_compiled,
-                      int    nprocs_total,
-                      double t,
-                      double mops,
-          char   *optype,
-                      int    passed_verification,
-                      char   *npbversion,
-                      char   *compiletime,
-                      char   *mpicc,
-                      char   *clink,
-                      char   *cmpi_lib,
-                      char   *cmpi_inc,
-                      char   *cflags,
-                      char   *clinkflags );
-          
-void    timer_clear( int n );
-void    timer_start( int n );
-void    timer_stop( int n );
-double  timer_read( int n );
 int timer_on=0,timers_tot=64;
+double start[64], elapsed[64];
 
-int verify(char *bmname,double rnm2){
+char class;
+int nprocs;
+int num_samples;
+int deviation;
+int num_sources;
+
+static int verify(char *bmname,double rnm2){
     double verify_value=0.0;
     double epsilon=1.0E-8;
-    char cls=CLASS;
     int verified=-1;
-    if (cls != 'U') {
-       if(cls=='S') {
+    if (class != 'U') {
+       if(class=='S') {
          if(strstr(bmname,"BH")){
            verify_value=30892725.0;
          }else if(strstr(bmname,"WH")){
@@ -98,18 +71,18 @@ int verify(char *bmname,double rnm2){
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
          }
          verified = 0;
-       }else if(cls=='W') {
+       }else if(class=='W') {
          if(strstr(bmname,"BH")){
        verify_value = 4102461.0;
          }else if(strstr(bmname,"WH")){
-       verify_value = 204280762.0;
+        	 verify_value = 204280762.0;
          }else if(strstr(bmname,"SH")){
        verify_value = 186944764.0;
          }else{
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
          }
          verified = 0;
-       }else if(cls=='A') {
+       }else if(class=='A') {
          if(strstr(bmname,"BH")){
        verify_value = 17809491.0;
          }else if(strstr(bmname,"WH")){
@@ -120,7 +93,7 @@ int verify(char *bmname,double rnm2){
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
          }
      verified = 0;
-       }else if(cls=='B') {
+       }else if(class=='B') {
          if(strstr(bmname,"BH")){
        verify_value = 4317114.0;
          }else if(strstr(bmname,"WH")){
@@ -131,7 +104,7 @@ int verify(char *bmname,double rnm2){
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
        verified = 0;
          }
-       }else if(cls=='C') {
+       }else if(class=='C') {
          if(strstr(bmname,"BH")){
        verify_value = 0.0;
          }else if(strstr(bmname,"WH")){
@@ -142,7 +115,7 @@ int verify(char *bmname,double rnm2){
            fprintf(stderr,"No such benchmark as %s.\n",bmname);
        verified = -1;
          }
-       }else if(cls=='D') {
+       }else if(class=='D') {
          if(strstr(bmname,"BH")){
        verify_value = 0.0;
          }else if(strstr(bmname,"WH")){
@@ -154,7 +127,7 @@ int verify(char *bmname,double rnm2){
          }
          verified = -1;
        }else{
-         fprintf(stderr,"No such class as %c.\n",cls);
+         fprintf(stderr,"No such class as %c.\n",class);
        }
        fprintf(stderr," %s L2 Norm = %f\n",bmname,rnm2);
        if(verified==-1){
@@ -174,7 +147,7 @@ int verify(char *bmname,double rnm2){
     return  verified;  
   }
 
-int ipowMod(int a,long long int n,int md){ 
+static int ipowMod(int a,long long int n,int md){
   int seed=1,q=a,r=1;
   if(n<0){
     fprintf(stderr,"ipowMod: exponent must be nonnegative exp=%lld\n",n);
@@ -203,13 +176,13 @@ int ipowMod(int a,long long int n,int md){
 }
 
 #include "DGraph.h"
-DGraph *buildSH(char cls){
+static DGraph *buildSH(const char cls){
 /*
   Nodes of the graph must be topologically sorted
   to avoid MPI deadlock.
 */
   DGraph *dg;
-  int numSources=NUM_SOURCES; /* must be power of 2 */
+  int numSources=num_sources; /* must be power of 2 */
   int numOfLayers=0,tmpS=numSources>>1;
   int firstLayerNode=0;
   DGArc *ar=NULL;
@@ -263,13 +236,10 @@ DGraph *buildSH(char cls){
   }
 return dg;
 }
-DGraph *buildWH(char cls){
-/*
-  Nodes of the graph must be topologically sorted
-  to avoid MPI deadlock.
-*/
+static DGraph *buildWH(const char cls){
+/*  Nodes of the graph must be topologically sorted to avoid MPI deadlock. */
   int i=0,j=0;
-  int numSources=NUM_SOURCES,maxInDeg=4;
+  int numSources=num_sources,maxInDeg=4;
   int numLayerNodes=numSources,firstLayerNode=0;
   int totComparators=0;
   int numPrevLayerNodes=numLayerNodes;
@@ -308,7 +278,7 @@ DGraph *buildWH(char cls){
     firstLayerNode+=numPrevLayerNodes;
     numPrevLayerNodes=numLayerNodes;
   }
-  source=newNode("Source");
+  source=newNode((char*)"Source");
   AttachNode(dg,source);   
   for(i=0;i<numPrevLayerNodes;i++){
     nd=dg->node[firstLayerNode+i];
@@ -325,13 +295,10 @@ DGraph *buildWH(char cls){
   }
 return dg;
 }
-DGraph *buildBH(char cls){
-/*
-  Nodes of the graph must be topologically sorted
-  to avoid MPI deadlock.
-*/
+static DGraph *buildBH(const char cls){
+/* Nodes of the graph must be topologically sorted to avoid MPI deadlock.*/
   int i=0,j=0;
-  int numSources=NUM_SOURCES,maxInDeg=4;
+  int numSources=num_sources,maxInDeg=4;
   int numLayerNodes=numSources,firstLayerNode=0;
   DGraph *dg;
   DGNode *nd=NULL, *snd=NULL, *sink=NULL;
@@ -368,7 +335,7 @@ DGraph *buildBH(char cls){
     firstLayerNode+=numPrevLayerNodes;
     numPrevLayerNodes=numLayerNodes;
   }
-  sink=newNode("Sink");
+  sink=newNode((char*)"Sink");
   AttachNode(dg,sink);   
   for(i=0;i<numPrevLayerNodes;i++){
     nd=dg->node[firstLayerNode+i];
@@ -382,38 +349,42 @@ typedef struct{
   int len;
   double* val;
 } Arr;
-Arr *newArr(int len){
-  Arr *arr=(Arr *)malloc(sizeof(Arr));
+
+static Arr *newArr(int len){
+  Arr *arr=(Arr *)malloc(sizeof(Arr)); //Arr *arr=(Arr *)SMPI_SHARED_MALLOC(sizeof(Arr));
   arr->len=len;
-  arr->val=(double *)malloc(len*sizeof(double));
+  arr->val=(double *)malloc(len*sizeof(double)); //arr->val=(double *)SMPI_SHARED_MALLOC(len*sizeof(double));
   return arr;
 }
-void arrShow(Arr* a){
+
+static void arrShow(Arr* a){
   if(!a) fprintf(stderr,"-- NULL array\n");
   else{
     fprintf(stderr,"-- length=%d\n",a->len);
   }
 }
-double CheckVal(Arr *feat){
+
+static double CheckVal(Arr *feat){
   double csum=0.0;
   int i=0;
   for(i=0;i<feat->len;i++){
-    csum+=feat->val[i]*feat->val[i]/feat->len; /* The truncation does not work since 
-                                                  result will be 0 for large len  */
+    csum+=feat->val[i]*feat->val[i]/feat->len; /* The truncation does not work since result will be 0 for large len  */
   }
-   return csum;
+  return csum;
 }
-int GetFNumDPar(int* mean, int* stdev){
-  *mean=NUM_SAMPLES;
-  *stdev=STD_DEVIATION;
+
+static int GetFNumDPar(int* mean, int* stdev){
+  *mean=num_samples;
+  *stdev=deviation;
   return 0;
 }
-int GetFeatureNum(char *mbname,int id){
+
+static int GetFeatureNum(char *mbname,int id){
   double tran=314159265.0;
   double A=2*id+1;
   double denom=randlc(&tran,&A);
   char cval='S';
-  int mean=NUM_SAMPLES,stdev=128;
+  int mean=num_samples,stdev=128;
   int rtfs=0,len=0;
   GetFNumDPar(&mean,&stdev);
   rtfs=ipowMod((int)(1/denom)*(int)cval,(long long int) (2*id+1),2*stdev);
@@ -421,7 +392,8 @@ int GetFeatureNum(char *mbname,int id){
   len=mean-stdev+rtfs;
   return len;
 }
-Arr* RandomFeatures(char *bmname,int fdim,int id){
+
+static Arr* RandomFeatures(char *bmname,int fdim,int id){
   int len=GetFeatureNum(bmname,id)*fdim;
   Arr* feat=newArr(len);
   int nxg=2,nyg=2,nzg=2,nfg=5;
@@ -450,31 +422,33 @@ Arr* RandomFeatures(char *bmname,int fdim,int id){
     timer_stop(id+1);
     fprintf(stderr,"** RandomFeatures time in node %d = %f\n",id,timer_read(id+1));
   }
-  return feat;   
+  return feat;
 }
-void Resample(Arr *a,int blen){
+
+static void Resample(Arr *a,int blen){
     long long int i=0,j=0,jlo=0,jhi=0;
     double avval=0.0;
     double *nval=(double *)malloc(blen*sizeof(double));
-    Arr *tmp=newArr(10);
+    //double *nval=(double *)SMPI_SHARED_MALLOC(blen*sizeof(double));
     for(i=0;i<blen;i++) nval[i]=0.0;
     for(i=1;i<a->len-1;i++){
       jlo=(int)(0.5*(2*i-1)*(blen/a->len)); 
       jhi=(int)(0.5*(2*i+1)*(blen/a->len));
 
-      avval=a->val[i]/(jhi-jlo+1);    
+      avval=a->val[i]/(jhi-jlo+1);
       for(j=jlo;j<=jhi;j++){
         nval[j]+=avval;
       }
     }
     nval[0]=a->val[0];
     nval[blen-1]=a->val[a->len-1];
-    free(a->val);
+    free(a->val); //SMPI_SHARED_FREE(a->val);
     a->val=nval;
     a->len=blen;
 }
+
 #define fielddim 4
-Arr* WindowFilter(Arr *a, Arr* b,int w){
+static Arr* WindowFilter(Arr *a, Arr* b,int w){
   int i=0,j=0,k=0;
   double rms0=0.0,rms1=0.0,rmsm1=0.0;
   double weight=((double) (w+1))/(w+2);
@@ -534,7 +508,7 @@ Arr* WindowFilter(Arr *a, Arr* b,int w){
   return a;
 }
 
-int SendResults(DGraph *dg,DGNode *nd,Arr *feat){
+static int SendResults(DGraph *dg,DGNode *nd,Arr *feat){
   int i=0,tag=0;
   DGArc *ar=NULL;
   DGNode *head=NULL;
@@ -553,8 +527,8 @@ int SendResults(DGraph *dg,DGNode *nd,Arr *feat){
   TRACE_smpi_set_category (NULL);
   return 1;
 }
-Arr* CombineStreams(DGraph *dg,DGNode *nd){
-  Arr *resfeat=newArr(NUM_SAMPLES*fielddim);
+static Arr* CombineStreams(DGraph *dg,DGNode *nd){
+  Arr *resfeat=newArr(num_samples*fielddim);
   int i=0,len=0,tag=0;
   DGArc *ar=NULL;
   DGNode *tail=NULL;
@@ -573,27 +547,27 @@ Arr* CombineStreams(DGraph *dg,DGNode *nd){
       feat=newArr(len);
       MPI_Recv(feat->val,feat->len,MPI_DOUBLE,tail->address,tag,MPI_COMM_WORLD,&status);
       resfeat=WindowFilter(resfeat,feat,nd->id);
-      free(feat);
+      free(feat);//SMPI_SHARED_FREE(feat);
     }else{
       featp=(Arr *)tail->feat;
       feat=newArr(featp->len);
       memcpy(feat->val,featp->val,featp->len*sizeof(double));
       resfeat=WindowFilter(resfeat,feat,nd->id);  
-      free(feat);
+      free(feat);//SMPI_SHARED_FREE(feat);
     }
   }
   for(i=0;i<resfeat->len;i++) resfeat->val[i]=((int)resfeat->val[i])/nd->inDegree;
   nd->feat=resfeat;
   return nd->feat;
 }
-double Reduce(Arr *a,int w){
+
+static double Reduce(Arr *a,int w){
   double retv=0.0;
   if(timer_on){
     timer_clear(w);
     timer_start(w);
   }
-  retv=(int)(w*CheckVal(a));/* The casting needed for node  
-                               and array dependent verifcation */
+  retv=(int)(w*CheckVal(a));/* The casting needed for node and array dependent verifcation */
   if(timer_on){
     timer_stop(w);
     fprintf(stderr,"** Reduce time in node %d = %f\n",(w-1),timer_read(w));
@@ -601,7 +575,7 @@ double Reduce(Arr *a,int w){
   return retv;
 }
 
-double ReduceStreams(DGraph *dg,DGNode *nd){
+static double ReduceStreams(DGraph *dg,DGNode *nd){
   double csum=0.0;
   int i=0,len=0,tag=0;
   DGArc *ar=NULL;
@@ -623,7 +597,7 @@ double ReduceStreams(DGraph *dg,DGNode *nd){
       feat=newArr(len);
       MPI_Recv(feat->val,feat->len,MPI_DOUBLE,tail->address,tag,MPI_COMM_WORLD,&status);
       csum+=Reduce(feat,(nd->id+1));  
-      free(feat);
+      free(feat);//SMPI_SHARED_FREE(feat);
     }else{
       csum+=Reduce(tail->feat,(nd->id+1));  
     }
@@ -633,7 +607,7 @@ double ReduceStreams(DGraph *dg,DGNode *nd){
   return retv;
 }
 
-int ProcessNodes(DGraph *dg,int me){
+static int ProcessNodes(DGraph *dg,int me){
   double chksum=0.0;
   Arr *feat=NULL;
   int i=0,verified=0,tag;
@@ -683,17 +657,27 @@ int main(int argc,char **argv ){
   int verified=0, featnum=0;
   double bytes_sent=2.0,tot_time=0.0;
 
-    MPI_Init( &argc, &argv );
-    MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
-    MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
-    TRACE_smpi_set_category ("begin");
+  MPI_Init( &argc, &argv );
+  MPI_Comm_rank( MPI_COMM_WORLD, &my_rank );
+  MPI_Comm_size( MPI_COMM_WORLD, &comm_size );
 
-     if(argc!=2||
-                (  strncmp(argv[1],"BH",2)!=0
-                 &&strncmp(argv[1],"WH",2)!=0
-                 &&strncmp(argv[1],"SH",2)!=0
-                )
-      ){
+  TRACE_smpi_set_category ("begin");
+  get_info(argc, argv, &nprocs, &class);
+  check_info(DT, nprocs, class);
+
+  if      (class == 'S') { num_samples=1728; deviation=128; num_sources=4; }
+  else if (class == 'W') { num_samples=1728*8; deviation=128*2; num_sources=4*2; }
+  else if (class == 'A') { num_samples=1728*64; deviation=128*4; num_sources=4*4; }
+  else if (class == 'B') { num_samples=1728*512; deviation=128*8; num_sources=4*8; }
+  else if (class == 'C') { num_samples=1728*4096; deviation=128*16; num_sources=4*16; }
+  else if (class == 'D') { num_samples=1728*4096*8; deviation=128*32; num_sources=4*32; }
+  else {
+    printf("setparams: Internal error: invalid class type %c\n", class);
+    exit(1);
+  }
+
+
+     if(argc!=2|| (  strncmp(argv[1],"BH",2)!=0 && strncmp(argv[1],"WH",2)!=0 &&strncmp(argv[1],"SH",2)!=0)){
       if(my_rank==0){
         fprintf(stderr,"** Usage: mpirun -np N ../bin/dt.S GraphName\n");
         fprintf(stderr,"** Where \n   - N is integer number of MPI processes\n");
@@ -706,11 +690,11 @@ int main(int argc,char **argv ){
       exit(0);
     } 
    if(strncmp(argv[1],"BH",2)==0){
-      dg=buildBH(CLASS);
+      dg=buildBH(class);
     }else if(strncmp(argv[1],"WH",2)==0){
-      dg=buildWH(CLASS);
+      dg=buildWH(class);
     }else if(strncmp(argv[1],"SH",2)==0){
-      dg=buildSH(CLASS);
+      dg=buildSH(class);
     }
 
     if(timer_on&&dg->numNodes+1>timers_tot){
@@ -740,32 +724,14 @@ int main(int argc,char **argv ){
     verified=ProcessNodes(dg,my_rank);
     TRACE_smpi_set_category ("end");
 
-    featnum=NUM_SAMPLES*fielddim;
+    featnum=num_samples*fielddim;
     bytes_sent=featnum*dg->numArcs;
     bytes_sent/=1048576;
     if(my_rank==0){
       timer_stop(0);
       tot_time=timer_read(0);
-      c_print_results( dg->name,
-                 CLASS,
-                 featnum,
-                 0,
-                 0,
-                 dg->numNodes,
-                 0,
-                 comm_size,
-                 tot_time,
-                 bytes_sent/tot_time,
-                 "bytes transmitted", 
-                 verified,
-                 NPBVERSION,
-                 COMPILETIME,
-                 MPICC,
-                 CLINK,
-                 CMPI_LIB,
-                 CMPI_INC,
-                 CFLAGS,
-                 CLINKFLAGS );
+      c_print_results( dg->name, class, featnum, 0, 0, dg->numNodes, 0, comm_size, tot_time, bytes_sent/tot_time,
+                 "bytes transmitted", verified);
     }          
     MPI_Finalize();
   return 1;
