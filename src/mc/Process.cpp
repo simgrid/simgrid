@@ -314,7 +314,7 @@ void Process::init_memory_map_info()
 
   const char* current_name = nullptr;
 
-  this->object_infos.resize(0);
+  this->object_infos.clear();
 
   for (size_t i=0; i < maps.size(); i++) {
     simgrid::xbt::VmMap const& reg = maps[i];
