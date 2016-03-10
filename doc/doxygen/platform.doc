@@ -1301,7 +1301,7 @@ can only occur as a child of \ref pf_routing_tag_route "&lt;route/&gt;"
 | Attribute name  | Mandatory | Values | Description                                                   |
 | --------------- | --------- | ------ | -----------                                                   |
 | id              | yes       | String | The identifier of the link that should be added to the route. |
-| direction       | maybe     | UP\|DOWN | If the link referenced by \c id has been declared as \ref pf_sharing_policy_fullduplex "FULLDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use FULLDUPLEX, this attribute has no effect.
+| direction       | maybe     | UP\|DOWN | If the link referenced by \c id has been declared as \ref pf_sharing_policy_fullduplex "FULLDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use FULLDUPLEX, do not use this attribute or SimGrid will not find the right link.
 
 #### Example Files ####
 
