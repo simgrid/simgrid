@@ -20,13 +20,6 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 /**************************************/
 /*** Resource Creation & Destruction **/
 /**************************************/
-
-static void ptask_netlink_parse_init(sg_platf_link_cbarg_t link)
-{
-  netlink_parse_init(link);
-  current_property_set = NULL;
-}
-
 void surf_host_model_init_ptask_L07(void)
 {
   XBT_CINFO(xbt_cfg,"Switching to the L07 model to handle parallel tasks.");
@@ -34,7 +27,7 @@ void surf_host_model_init_ptask_L07(void)
   xbt_assert(!surf_network_model, "network model type already defined");
 
   // Define the callbacks to parse the XML
-  simgrid::surf::on_link.connect(ptask_netlink_parse_init);
+  simgrid::surf::on_link.connect(netlink_parse_init);
 
   surf_host_model = new simgrid::surf::HostL07Model();
   xbt_dynar_push(all_existing_models, &surf_host_model);
