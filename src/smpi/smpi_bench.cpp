@@ -616,7 +616,7 @@ void smpi_really_switch_data_segment(int dest) {
   if(smpi_size_data_exe == 0)//no need to switch
     return;
 
-#ifdef HAVE_PRIVATIZATION
+#if HAVE_PRIVATIZATION
   if(smpi_loaded_page==-1){//initial switch, do the copy from the real page here
     for (int i=0; i< smpi_process_count(); i++){
       memcpy(smpi_privatisation_regions[i].address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);
@@ -641,7 +641,7 @@ int smpi_is_privatisation_file(char* file)
 
 void smpi_initialize_global_memory_segments(){
 
-#ifndef HAVE_PRIVATIZATION
+#if !HAVE_PRIVATIZATION
   smpi_privatize_global_variables=0;
   xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
   return;
@@ -712,7 +712,7 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
 void smpi_destroy_global_memory_segments(){
   if (smpi_size_data_exe == 0)//no need to switch
     return;
-#ifdef HAVE_PRIVATIZATION
+#if HAVE_PRIVATIZATION
   int i;
   for (i=0; i< smpi_process_count(); i++){
     if(munmap(smpi_privatisation_regions[i].address, smpi_size_data_exe) < 0) {

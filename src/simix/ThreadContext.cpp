@@ -9,7 +9,7 @@
 
 #include "xbt/function_types.h"
 #include "smx_private.h"
-#include "src/portable.h"           /* loads context system definitions */
+#include "src/internal_config.h"           /* loads context system definitions */
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 #include "src/xbt_modinter.h"       /* prototype of os thread module's init/exit in XBT */

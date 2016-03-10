@@ -49,18 +49,10 @@ public class Host {
 	 * @see				Host.getByName().
 	 */ 
 	private long bind;
-	/**
-	 * Host name
-	 */
 	protected String name;
 
-	/**
-	 * User data.
-	 */ 
+	/** User data. */ 
 	private Object data;
-	/**
-	 *
-	 */
 	protected Host() {
 		this.bind = 0;
 		this.data = null;
@@ -84,26 +76,13 @@ public class Host {
 	 */ 
 	public native static Host getByName(String name) 
 			throws HostNotFoundException, NullPointerException;
-	/**
-	 * This static method returns the count of the installed hosts.
-	 *
-	 * @return			The count of the installed hosts.
-	 */ 
+	/** Counts the installed hosts. */ 
 	public native static int getCount();
 
-	/**
-	 * This static method return an instance to the host of the current process.
-	 *
-	 * @return			The host on which the current process is executed.
-	 */ 
+	/** Returns the host of the current process. */ 
 	public native static Host currentHost();
 
-	/**
-	 * This static method returns all of the hosts of the installed platform.
-	 *
-	 * @return			An array containing all the hosts installed.
-	 *
-	 */ 
+	/** Returns all hosts of the installed platform. */ 
 	public native static Host[] all();
 
 	/** 
@@ -120,99 +99,54 @@ public class Host {
 	public static native void setAsyncMailbox(String mailboxName);
 
 
-	/**
-	 * This method returns the name of a host.
-	 * @return			The name of the host.
-	 *
-	 */ 
+	/** Returns the name of an host. */ 
 	public String getName() {
 		return name;
 	}
 
-	/**
-	 * Sets the data of the host.
-	 * @param data
-	 */
+	/** Sets the user data of the host. */
 	public void setData(Object data) {
 		this.data = data;
 	} 
-	/**
-	 * Gets the data of the host.
-	 *
-	 * @return The data object associated with the host.
-	 */
+	/** Gets the user data of the host. */
 	public Object getData() {
 		return this.data;
 	}
-
-	/**
-	 * Checks whether a host has data.
-	 *
-	 * @return True if the host has an associated data object.
-	 */
+	/** Returns true if the host has an associated data object. */
 	public boolean hasData() {
 		return null != this.data;
 	}
 
-	/**
-	 * This method start the host if it is off
-	 */ 
+	/** Starts the host if it is off */ 
 	public native void on();
-
-	/**
-	 * This method stop the host if it is on
-	 */ 
+	/** Stops the host if it is on */ 
 	public native void off();
 
 
 	/**
-	 * This method returns the speed of the processor of a host,
+	 * This method returns the speed of the processor of a host (in flops),
 	 * regardless of the current load of the machine.
-	 *
-	 * @return			The speed of the processor of the host in flops.
-	 *
 	 */ 
 	public native double getSpeed();
-
-	/**
-	 * This method returns the number of core of a host.
-	 *
-	 * @return			The speed of the processor of the host in flops.
-	 *
-	 */ 
+	/** Returns the number of core of a host. */ 
 	public native double getCoreNumber();
 
-	/**
-	 * Returns the value of a given host property. 
-	 */
+	/** Returns the value of a given host property. */
 	public native String getProperty(String name);
-
-	/**
-	 * Change the value of a given host property. 
-	 */
+	/** Changes the value of a given host property. */
 	public native void setProperty(String name, String value);
-
-	/** This method tests if a host is up and running.
-	 * @return True if the host is available.
-	 */
+	/** Tests if an host is up and running. */
 	public native boolean isOn();
 
-	/** This methods returns the list of mount point names on an host
-	 * @return An array containing all mounted storages on the host
-	 */
+	/** Returns the list of mount point names on an host */
 	public native Storage[] getMountedStorage();
-
-	/** This methods returns the list of storages attached to an host
-	 * @return An array containing all storages (name) attached to the host
-	 */
+	/** This methods returns the list of storages (names) attached to an host */
 	public native String[] getAttachedStorage();
 
 	/** Returns the amount of Joules consumed by that host so far */
 	public native double getConsumedEnergy();
 
-	/**
-	 * Class initializer, to initialize various JNI stuff
-	 */
+	/** Class initializer, to initialize various JNI stuff */
 	public static native void nativeInit();
 	static {
 		nativeInit();

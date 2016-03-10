@@ -140,14 +140,14 @@ RegionSnapshot sparse_region(RegionType region_type,
     "Not at the beginning of a page");
   xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
-  size_t page_count = mc_page_count(size);
+  size_t page_count = simgrid::mc::mmu::chunkCount(size);
 
   std::vector<std::uint64_t> pagemap;
   const size_t* ref_page_numbers = nullptr;
   if (use_soft_dirty) {
     pagemap.resize(page_count);
     process->read_pagemap(pagemap.data(),
-      mc_page_number(nullptr, permanent_addr), page_count);
+      simgrid::mc::mmu::split((std::size_t) permanent_addr).first, page_count);
     ref_page_numbers = ref_region->page_data().pagenos();
   }
 

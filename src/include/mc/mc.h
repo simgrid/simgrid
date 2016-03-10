@@ -10,7 +10,7 @@
 #include <src/internal_config.h>
 #include <simgrid/simix.h>
 #include <simgrid/modelchecker.h> /* our public interface (and definition of HAVE_MC) */
-#ifdef HAVE_UCONTEXT_H
+#if HAVE_UCONTEXT_H
 #include <ucontext.h>           /* context relative declarations */
 #endif
 
@@ -78,7 +78,7 @@ XBT_PUBLIC(void) MC_ignore_heap(void *address, size_t size);
 XBT_PUBLIC(void) MC_remove_ignore_heap(void *address, size_t size);
 XBT_PUBLIC(void) MC_ignore_local_variable(const char *var_name, const char *frame);
 XBT_PUBLIC(void) MC_ignore_global_variable(const char *var_name);
-#ifdef HAVE_UCONTEXT_H
+#if HAVE_UCONTEXT_H
 XBT_PUBLIC(void) MC_register_stack_area(void *stack, smx_process_t process, ucontext_t* context, size_t size);
 #endif
 

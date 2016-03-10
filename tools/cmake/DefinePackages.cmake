@@ -14,7 +14,6 @@ set(EXTRA_DIST
   src/include/surf/maxmin.h
   src/include/surf/surf.h
   src/msg/msg_private.h
-  src/portable.h
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
@@ -573,7 +572,6 @@ set(MC_SRC
   src/mc/mc_unw.h
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
-  src/mc/mc_object_info.h
   src/mc/mc_checkpoint.cpp
   src/mc/mc_snapshot.h
   src/mc/mc_snapshot.cpp

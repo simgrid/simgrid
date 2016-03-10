@@ -202,7 +202,7 @@ int mc_unw_init_context(
 
   // Take a copy of the context for our own purpose:
   context->context = *c;
-#if defined(PROCESSOR_x86_64) || defined(PROCESSOR_i686)
+#if SIMGRID_PROCESSOR_x86_64 || SIMGRID_PROCESSOR_i686
   // On x86_64, ucontext_t contains a pointer to itself for FP registers.
   // We don't really need support for FR registers as they are caller saved
   // and probably never use those fields as libunwind-x86_64 does not read

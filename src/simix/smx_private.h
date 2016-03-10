@@ -7,6 +7,7 @@
 #ifndef _SIMIX_PRIVATE_H
 #define _SIMIX_PRIVATE_H
 
+#include "src/internal_config.h"
 #include "simgrid/simix.h"
 #include "surf/surf.h"
 #include "xbt/base.h"
@@ -25,6 +26,8 @@
 #include "smx_network_private.h"
 #include "popping_private.h"
 #include "smx_synchro_private.h"
+
+#include <signal.h>
 
 #ifdef __cplusplus
 
@@ -221,7 +224,7 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 /* We are using the bottom of the stack to save some information, like the
  * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
  * size for the stack. */
-#ifdef HAVE_VALGRIND_H
+#if HAVE_VALGRIND_H
 # define smx_context_usable_stack_size                                  \
   (smx_context_stack_size - sizeof(unsigned int)) /* for valgrind_stack_id */
 #else

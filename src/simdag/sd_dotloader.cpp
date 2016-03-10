@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/internal_config.h"
 #include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
 #include "xbt/file.h"
@@ -11,7 +12,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_dotparse, sd, "Parsing DOT files");
 
-#ifdef HAVE_GRAPHVIZ
+#if HAVE_GRAPHVIZ
 #include <graphviz/cgraph.h>
 #endif
 
@@ -239,7 +240,9 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
   }
 
   if (result && !acyclic_graph_detail(result)) {
-    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", xbt_basename((char*)filename));
+    char* base = xbt_basename(filename);
+    XBT_ERROR("The DOT described in %s is not a DAG. It contains a cycle.", base);
+    free(base);
     xbt_dynar_free(&result);
     result = NULL;
   }

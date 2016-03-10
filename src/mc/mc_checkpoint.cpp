@@ -6,6 +6,7 @@
 
 #include <unistd.h>
 
+#include <fcntl.h>
 #include <string.h>
 #include <link.h>
 #include <dirent.h>
@@ -14,6 +15,7 @@
 #include "src/mc/mc_private.h"
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
+#include <xbt/memory.hpp>
 #include "src/smpi/private.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
@@ -81,7 +83,7 @@ static void restore(mc_mem_region_t region)
   }
 }
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 RegionSnapshot privatized_region(
     RegionType region_type, void *start_addr, void* permanent_addr,
     std::size_t size, const RegionSnapshot* ref_region
@@ -133,7 +135,7 @@ void add_region(int index, mc_snapshot_t snapshot,
     ref_region = mc_model_checker->parent_snapshot_->snapshot_regions[index].get();
 
   simgrid::mc::RegionSnapshot region;
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
   const bool privatization_aware = object_info
     && mc_model_checker->process().privatized(*object_info);
   if (privatization_aware && MC_smpi_process_count())
@@ -172,7 +174,7 @@ static void get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snap
     heap->heaplimit,
     process->get_malloc_info());
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
   if (mc_model_checker->process().privatized() && MC_smpi_process_count())
     // snapshot->privatization_index = smpi_loaded_page
     mc_model_checker->process().read_variable(
@@ -191,14 +193,19 @@ void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps,
   simgrid::mc::ObjectInformation* result)
 {
-  char* file_name = xbt_strdup(result->file_name.c_str());
-  const char *name = xbt_basename(file_name);
+  char* name = xbt_basename(result->file_name.c_str());
+
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
-    if (maps[i].pathname.empty()
-        || strcmp(xbt_basename(maps[i].pathname.c_str()), name)) {
-      // Nothing to do
-    } else if ((reg.prot & PROT_WRITE)) {
+    if (maps[i].pathname.empty())
+      continue;
+    char* map_basename = xbt_basename(maps[i].pathname.c_str());
+    if (strcmp(name, map_basename) != 0) {
+      free(map_basename);
+      continue;
+    }
+    free(map_basename);
+    if ((reg.prot & PROT_WRITE)) {
       xbt_assert(!result->start_rw,
                  "Multiple read-write segments for %s, not supported",
                  maps[i].pathname.c_str());
@@ -238,7 +245,8 @@ void find_object_address(
 
   xbt_assert(result->start_rw);
   xbt_assert(result->start_exec);
-  free(file_name);
+
+  free(name);
 }
 
 /************************************* Take Snapshot ************************************/
@@ -498,7 +506,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 
     link[res] = '\0';
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
     if(smpi_is_privatisation_file(link))
       continue;
 #endif
@@ -514,8 +522,14 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
       continue;
 
     // If dot_output enabled, do not handle the corresponding file
-    if (dot_output !=  nullptr && strcmp(xbt_basename(link), _sg_mc_dot_output_file) == 0)
-      continue;
+    if (dot_output != nullptr) {
+      char* link_basename = xbt_basename(link);
+      if (strcmp(link_basename, _sg_mc_dot_output_file) == 0) {
+        free(link_basename);
+        continue;
+      }
+      free(link_basename);
+    }
 
     // This is probably a shared memory used by lttng-ust:
     if(strncmp("/dev/shm/ust-shm-tmp-", link, 21)==0)
@@ -586,7 +600,7 @@ void restore_snapshot_regions(mc_snapshot_t snapshot)
       restore(region.get());
   }
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
   // TODO, send a message to implement this in the MCed process
   if(snapshot->privatization_index >= 0) {
     // Fix the privatization mmap:

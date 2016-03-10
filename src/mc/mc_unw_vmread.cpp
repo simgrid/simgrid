@@ -7,6 +7,7 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 
+#include <fcntl.h>
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
@@ -51,7 +52,7 @@ static int access_mem(const unw_addr_space_t as,
   pid_t pid = _UPT_getpid(arg);
   size_t size = sizeof(unw_word_t);
 
-#ifdef HAVE_PROCESS_VM_READV
+#if HAVE_PROCESS_VM_READV
   // process_vm_read implementation.
   // This is only available since Linux 3.2.
 

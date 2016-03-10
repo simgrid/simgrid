@@ -6,10 +6,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/automaton.h"
 #include "src/internal_config.h"
+#include "xbt/automaton.h"
 #include <errno.h>
-#include <string.h>             /* strerror */
+#include <string.h>   /* strerror */
+#if HAVE_UNISTD_H
+# include <unistd.h>   /* isatty */
+#endif
 
 static xbt_automaton_t parsed_automaton;
 char* state_id_src;

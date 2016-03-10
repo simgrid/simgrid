@@ -57,7 +57,7 @@ namespace simix {
 }
 }
 
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
 static xbt_parmap_t sysv_parmap;
 static simgrid::simix::ParallelUContext** sysv_workers_context;   /* space to save the worker's context in each thread */
 static uintptr_t sysv_threads_working;     /* number of threads that have started their work */
@@ -131,7 +131,7 @@ UContextFactory::UContextFactory() : ContextFactory("UContextFactory")
 {
   if (SIMIX_context_is_parallel()) {
     sysv_parallel = true;
-#ifdef HAVE_THREAD_CONTEXTS  /* To use parallel ucontexts a thread pool is needed */
+#if HAVE_THREAD_CONTEXTS  /* To use parallel ucontexts a thread pool is needed */
     int nthreads = SIMIX_context_get_nthreads();
     sysv_parmap = nullptr;
     sysv_workers_context = xbt_new(ParallelUContext*, nthreads);
@@ -147,7 +147,7 @@ UContextFactory::UContextFactory() : ContextFactory("UContextFactory")
 
 UContextFactory::~UContextFactory()
 {
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
   if (sysv_parmap)
     xbt_parmap_destroy(sysv_parmap);
   xbt_free(sysv_workers_context);
@@ -161,7 +161,7 @@ UContextFactory::~UContextFactory()
 void UContextFactory::run_all()
 {
   if (sysv_parallel) {
-    #ifdef HAVE_THREAD_CONTEXTS
+    #if HAVE_THREAD_CONTEXTS
       sysv_threads_working = 0;
       // Parmap_apply ensures that every working thread get an index in the
       // process_to_run array (through an atomic fetch_and_add),
@@ -303,7 +303,7 @@ void ParallelUContext::stop()
 /** Run one particular simulated process on the current thread. */
 void ParallelUContext::resume()
 {
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
   // What is my containing body?
   uintptr_t worker_id = __sync_fetch_and_add(&sysv_threads_working, 1);
   // Store the number of my containing body in os-thread-specific area :
@@ -344,7 +344,7 @@ void ParallelUContext::resume()
  */
 void ParallelUContext::suspend()
 {
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
   /* determine the next context */
   // Get the next soul to embody now:
   smx_process_t next_work = (smx_process_t) xbt_parmap_next(sysv_parmap);

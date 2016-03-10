@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include "surf_private.h"
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
@@ -103,7 +103,7 @@ s_surf_model_description_t surf_storage_model_description[] = {
   {NULL, NULL,  NULL}      /* this array must be NULL terminated */
 };
 
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
 static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
 #endif
 
@@ -342,7 +342,7 @@ void surf_exit(void)
     future_evt_set = nullptr;
   }
 
-#ifdef HAVE_THREAD_CONTEXTS
+#if HAVE_THREAD_CONTEXTS
   xbt_parmap_destroy(surf_parmap);
 #endif
 

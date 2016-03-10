@@ -603,7 +603,7 @@ void xbt_dict_postexit(void)
 #ifdef SIMGRID_TEST
 #include "xbt.h"
 #include "xbt/ex.h"
-#include "src/portable.h"
+#include "src/internal_config.h"
 
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);

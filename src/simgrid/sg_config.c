@@ -19,7 +19,7 @@
 #include "simgrid/simix.h"
 #include "simgrid/sg_config.h"
 #include "simgrid_config.h" /* what was compiled in? */
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 #include "smpi/smpi_interface.h"
 #endif
 #include "mc/mc.h"
@@ -286,7 +286,7 @@ static void _sg_cfg_cb__weight_S(const char *name, int pos)
   sg_weight_S_parameter = xbt_cfg_get_double(_sg_cfg_set, name);
 }
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 /* callback of the mpi collectives */
 static void _sg_cfg_cb__coll(const char *category,
                              s_mpi_coll_description_t * table,
@@ -695,11 +695,11 @@ void sg_config_init(int *argc, char **argv)
         sprintf(description,
                 "Context factory to use in SIMIX. Possible values: %s",
                 dflt_ctx_fact);
-#ifdef HAVE_UCONTEXT_CONTEXTS
+#if HAVE_UCONTEXT_CONTEXTS
       dflt_ctx_fact = "ucontext";
       p += sprintf(p, ", %s", dflt_ctx_fact);
 #endif
-#ifdef HAVE_RAW_CONTEXTS
+#if HAVE_RAW_CONTEXTS
       dflt_ctx_fact = "raw";
       p += sprintf(p, ", %s", dflt_ctx_fact);
 #endif
@@ -745,7 +745,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "contexts/synchro",
                      "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)",
                      xbt_cfgelm_string, 1, 1, _sg_cfg_cb_contexts_parallel_mode);
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
     xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/synchro", "futex");
 #else //No futex on mac and posix is unimplememted yet
     xbt_cfg_setdefault_string(_sg_cfg_set, "contexts/synchro", "busy_wait");
@@ -789,7 +789,7 @@ void sg_config_init(int *argc, char **argv)
                      xbt_cfgelm_string, 1, 1, NULL);
     xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/IB_penalty_factors", "0.965;0.925;1.35");
     
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
     xbt_cfg_register(&_sg_cfg_set, "smpi/running_power",
                      "Power of the host running the simulation (in flop/s). Used to bench the operations.",
                      xbt_cfgelm_double, 1, 1, NULL);

@@ -7,6 +7,11 @@
 //teshsuite/simdag/platforms/evaluate_parse_time ../examples/platforms/nancy.xml
 
 #include <stdio.h>
+#include "src/internal_config.h"
+#if HAVE_UNISTD_H
+#  include <unistd.h>
+#endif
+
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
 #include "xbt/xbt_os_time.h"

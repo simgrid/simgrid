@@ -1,16 +1,17 @@
 /* xbt_os_time.c -- portable interface to time-related functions            */
 
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/internal_config.h"
 #include "xbt/sysdep.h"
-#include "xbt/xbt_os_time.h"    /* this module */
 #include "xbt/log.h"
-#include "src/portable.h"
+#include "xbt/xbt_os_time.h"    /* this module */
 #include <math.h>               /* floor */
+#include <sys/time.h>
+#include <time.h>
 
 #ifdef _WIN32
 #include <sys/timeb.h>
@@ -39,7 +40,7 @@
 
 double xbt_os_time(void)
 {
-#ifdef HAVE_GETTIMEOFDAY
+#if HAVE_GETTIMEOFDAY
   struct timeval tv;
   gettimeofday(&tv, NULL);
 #elif defined(_WIN32)
@@ -95,9 +96,9 @@ void xbt_os_sleep(double sec)
 
 
 struct s_xbt_os_timer {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   struct timespec start, stop, elapse;
-#elif defined(HAVE_GETTIMEOFDAY) || defined(_WIN32)
+#elif HAVE_GETTIMEOFDAY || defined(_WIN32)
   struct timeval start, stop, elapse;
 #else
   unsigned long int start, stop, elapse;
@@ -120,12 +121,12 @@ void xbt_os_timer_free(xbt_os_timer_t timer)
 
 double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
                                           ((double) timer->elapse.tv_sec ) +
       ((((double) timer->stop.tv_nsec) -
         ((double) timer->start.tv_nsec) + ((double) timer->elapse.tv_nsec )) / 1e9);
-#elif defined(HAVE_GETTIMEOFDAY) || defined(_WIN32)
+#elif HAVE_GETTIMEOFDAY || defined(_WIN32)
   return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec)
     + ((double) timer->elapse.tv_sec ) +
       ((((double) timer->stop.tv_usec) -
@@ -138,11 +139,11 @@ double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 
 void xbt_os_walltimer_start(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_REALTIME, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY)
+#elif HAVE_GETTIMEOFDAY
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
   gettimeofday(&(timer->start), NULL);
@@ -168,12 +169,12 @@ void xbt_os_walltimer_start(xbt_os_timer_t timer)
 
 void xbt_os_walltimer_resume(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
 
    timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
   clock_gettime(CLOCK_REALTIME, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY)
+#elif HAVE_GETTIMEOFDAY
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
   gettimeofday(&(timer->start), NULL);
@@ -199,9 +200,9 @@ void xbt_os_walltimer_resume(xbt_os_timer_t timer)
 
 void xbt_os_walltimer_stop(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   clock_gettime(CLOCK_REALTIME, &(timer->stop));
-#elif defined(HAVE_GETTIMEOFDAY)
+#elif HAVE_GETTIMEOFDAY
   gettimeofday(&(timer->stop), NULL);
 #elif defined(_WIN32)
   FILETIME ft;
@@ -222,11 +223,11 @@ void xbt_os_walltimer_stop(xbt_os_timer_t timer)
 
 void xbt_os_cputimer_start(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY)//return time and not cputime in this case
+#elif HAVE_GETTIMEOFDAY //return time and not cputime in this case
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
   gettimeofday(&(timer->start), NULL);
@@ -250,11 +251,11 @@ void xbt_os_cputimer_start(xbt_os_timer_t timer)
 
 void xbt_os_cputimer_resume(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY)
+#elif HAVE_GETTIMEOFDAY
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
   gettimeofday(&(timer->start), NULL);
@@ -278,9 +279,9 @@ void xbt_os_cputimer_resume(xbt_os_timer_t timer)
 
 void xbt_os_cputimer_stop(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   clock_gettime(CLOCK_PROCESS_CPUTIME_ID, &(timer->stop));
-#elif defined(HAVE_GETTIMEOFDAY)
+#elif HAVE_GETTIMEOFDAY
   gettimeofday(&(timer->stop), NULL);
 #elif defined(_WIN32)
   HANDLE h = GetCurrentProcess();
@@ -300,11 +301,11 @@ void xbt_os_cputimer_stop(xbt_os_timer_t timer)
 
 void xbt_os_threadtimer_start(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_nsec = 0;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY) && defined(__MACH__) && defined(__APPLE__)
+#elif HAVE_GETTIMEOFDAY && defined(__MACH__) && defined(__APPLE__)
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
   mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
@@ -313,7 +314,7 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
   thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
   timer->start.tv_usec =  thi->system_time.microseconds + thi->user_time.microseconds;
   timer->start.tv_sec = thi->system_time.seconds + thi->user_time.seconds;
-#elif defined(HAVE_GETTIMEOFDAY)//return time and not cputime in this case
+#elif HAVE_GETTIMEOFDAY //return time and not cputime in this case
   timer->elapse.tv_sec = 0;
   timer->elapse.tv_usec = 0;
   gettimeofday(&(timer->start), NULL);
@@ -335,11 +336,11 @@ void xbt_os_threadtimer_start(xbt_os_timer_t timer)
 
 void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_nsec += timer->stop.tv_nsec - timer->start.tv_nsec;
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->start));
-#elif defined(HAVE_GETTIMEOFDAY) && defined(__MACH__) && defined(__APPLE__)
+#elif HAVE_GETTIMEOFDAY && defined(__MACH__) && defined(__APPLE__)
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
   mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
@@ -348,7 +349,7 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
   thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
   timer->start.tv_usec =  thi->system_time.microseconds + thi->user_time.microseconds;
   timer->start.tv_sec = thi->system_time.seconds + thi->user_time.seconds;
-#elif defined(HAVE_GETTIMEOFDAY)
+#elif HAVE_GETTIMEOFDAY
   timer->elapse.tv_sec += timer->stop.tv_sec - timer->start.tv_sec;
   timer->elapse.tv_usec += timer->stop.tv_usec - timer->start.tv_usec;
   gettimeofday(&(timer->start), NULL);
@@ -372,16 +373,16 @@ void xbt_os_threadtimer_resume(xbt_os_timer_t timer)
 
 void xbt_os_threadtimer_stop(xbt_os_timer_t timer)
 {
-#ifdef HAVE_POSIX_GETTIME
+#if HAVE_POSIX_GETTIME
   clock_gettime(CLOCK_THREAD_CPUTIME_ID, &(timer->stop));
-#elif defined(HAVE_GETTIMEOFDAY) && defined(__MACH__) && defined(__APPLE__)
+#elif HAVE_GETTIMEOFDAY && defined(__MACH__) && defined(__APPLE__)
   mach_msg_type_number_t count = THREAD_BASIC_INFO_COUNT;
   thread_basic_info_data_t thi_data;
   thread_basic_info_t thi = &thi_data;
   thread_info(mach_thread_self(), THREAD_BASIC_INFO, (thread_info_t)thi, &count);
   timer->stop.tv_usec =  thi->system_time.microseconds + thi->user_time.microseconds;
   timer->stop.tv_sec = thi->system_time.seconds + thi->user_time.seconds;
-#elif defined(HAVE_GETTIMEOFDAY)//if nothing else is available, return just time
+#elif HAVE_GETTIMEOFDAY //if nothing else is available, return just time
   gettimeofday(&(timer->stop), NULL);
 #elif defined(_WIN32)
   HANDLE h = GetCurrentThread();

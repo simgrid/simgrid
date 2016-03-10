@@ -12,6 +12,7 @@
 
 #include <utility>
 
+#include <fcntl.h>
 #include <signal.h>
 #include <poll.h>
 

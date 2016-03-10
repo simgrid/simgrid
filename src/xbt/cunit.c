@@ -9,7 +9,8 @@
 /* This is partially inspirated from the OSSP ts (Test Suite Library)       */
 /* At some point we should use https://github.com/google/googletest instead */
 
-#include "src/portable.h"
+#include "src/internal_config.h"
+#include <stdio.h>
 
 #include "xbt/sysdep.h"         /* bvprintf */
 #include "xbt/cunit.h"

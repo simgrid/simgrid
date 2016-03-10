@@ -6,6 +6,7 @@
 #ifndef SIMGRID_XBT_SIGNAL_HPP
 #define SIMGRID_XBT_SIGNAL_HPP
 
+#include "simgrid_config.h"
 #if SIMGRID_HAVE_LIBSIG
 #include <sigc++/sigc++.h>
 #else

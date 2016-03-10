@@ -186,21 +186,26 @@ include_directories(${INCLUDES})
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
 
 ### Determine the assembly flavor that we need today
+set(HAVE_RAW_CONTEXTS 0)
 include(CMakeDetermineSystem)
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
   IF(${ARCH_32_BITS})
     message(STATUS "System processor: i686 (${CMAKE_SYSTEM_PROCESSOR}, 32 bits)")
     set(PROCESSOR_i686 1)
+    set(PROCESSOR_x86_64 0)
   ELSE()
     message(STATUS "System processor: x86_64 (${CMAKE_SYSTEM_PROCESSOR}, 64 bits)")
+    set(PROCESSOR_i686 0)
     set(PROCESSOR_x86_64 1)
   ENDIF()
   if (WIN32)
-    message(STATUS "Disable fast raw contextes on Windows.")
+    message(STATUS "Disable fast raw contexts on Windows.")
   else()
     set(HAVE_RAW_CONTEXTS 1)
   endif()
-
+ELSE()
+  set(PROCESSOR_i686 0)
+  set(PROCESSOR_x86_64 0)
 ENDIF()
 
 include(CheckFunctionExists)
@@ -270,6 +275,7 @@ CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
 CHECK_LIBRARY_EXISTS(pthread sem_init                "" HAVE_SEM_INIT_LIB)
 CHECK_LIBRARY_EXISTS(pthread sem_open                "" HAVE_SEM_OPEN_LIB)
+set(HAVE_PTHREAD_SETAFFINITY 0)
 CHECK_LIBRARY_EXISTS(pthread pthread_setaffinity_np  "" HAVE_PTHREAD_SETAFFINITY)
 
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -300,13 +306,12 @@ CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
 
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
-if(MINGW) 
+if(MINGW)
   # The detection of vasprintf fails on MinGW, assumingly because it's
   # defined as an inline function in stdio.h instead of a regular
   # function. So force the result to be 1 despite of the test.
   set(HAVE_VASPRINTF 1)
 endif()
-
 
 #Check if __thread is defined
 execute_process(
@@ -373,6 +378,8 @@ if(enable_smpi)
     message (STATUS "Warning:  no support for SMPI automatic privatization on this platform")
     SET(HAVE_PRIVATIZATION 0)
   endif()
+else()
+  SET(HAVE_SMPI 0)
 endif()
 
 #--------------------------------------------------------------------------------------------------
@@ -624,6 +631,24 @@ endif()
 
 ### Generate the required headers and scripts
 #############################################
+
+# gcc makes no difference between "#define HAVE_FOOBAR" and "#define HAVE_FOOBAR 0" by default, 
+# but this too error prone. If you forget to include the config.h, you get weird segfaults.
+# If you include it everywhere, everything gets recompiled everytime.
+# So we include only where needed, and compile with -Wundef to notice the missing includes.
+# But cmake sometimes defines to the empty definition (#define HAVE_VALGRIND_H).
+# So we have to make sure that everything got a decent value before generating the files.
+foreach(var HAVE_EXECINFO_H HAVE_FUTEX_H HAVE_GETDTABLESIZE HAVE_GETTIMEOFDAY HAVE_MMAP
+            HAVE_NANOSLEEP  HAVE_POPEN HAVE_POSIX_GETTIME HAVE_PROCESS_VM_READV HAVE_SIGNAL_H
+	    HAVE_SYS_PARAM_H HAVE_SYS_SYSCTL_H HAVE_SYSCONF HAVE_UCONTEXT_H HAVE_UNISTD_H
+	    HAVE_VALGRIND_H HAVE_VASPRINTF)
+  if(${var})
+    set(${var} 1)
+  else()
+    set(${var} 0)
+  endif()
+endforeach()
+
 # Avoid triggering a (full) rebuild by touching the files if they did not really change
 configure_file("${CMAKE_HOME_DIRECTORY}/tools/cmake/src/internal_config.h.in" "${CMAKE_BINARY_DIR}/src/internal_config.h.generated"    @ONLY IMMEDIATE)
 configure_file("${CMAKE_HOME_DIRECTORY}/include/simgrid_config.h.in"          "${CMAKE_BINARY_DIR}/include/simgrid_config.h.generated" @ONLY IMMEDIATE)
@@ -869,7 +894,7 @@ message("##########################################")
 message("#### Content of src/internal_config.h ####")
 message("##########################################")
 file(STRINGS ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h config_output)
-LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8) # Pass the file header
+LIST(REMOVE_AT config_output 0 1 2 3 4 5 6 7 8 9 10) # Pass the file header
 foreach(line ${config_output})
   message("   ${line}")
 endforeach()

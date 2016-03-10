@@ -7,7 +7,7 @@
 #include <atomic>
 
 #include "src/internal_config.h"
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>
 #endif
 
@@ -15,7 +15,7 @@
 #include <sys/syscall.h>
 #endif
 
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
 #include <linux/futex.h>
 #include <limits.h>
 #endif
@@ -45,7 +45,7 @@ static void xbt_parmap_posix_worker_signal(xbt_parmap_t parmap);
 static void xbt_parmap_posix_master_signal(xbt_parmap_t parmap);
 static void xbt_parmap_posix_worker_wait(xbt_parmap_t parmap, unsigned round);
 
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
 static void xbt_parmap_futex_master_wait(xbt_parmap_t parmap);
 static void xbt_parmap_futex_worker_signal(xbt_parmap_t parmap);
 static void xbt_parmap_futex_master_signal(xbt_parmap_t parmap);
@@ -131,7 +131,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
   /* Create the pool of worker threads */
   xbt_parmap_thread_data_t data;
   parmap->workers[0] = NULL;
-#ifdef HAVE_PTHREAD_SETAFFINITY
+#if HAVE_PTHREAD_SETAFFINITY
   int core_bind = 0;
 #endif  
   for (unsigned int i = 1; i < num_workers; i++) {
@@ -139,7 +139,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
     data->parmap = parmap;
     data->worker_id = i;
     parmap->workers[i] = xbt_os_thread_create(NULL, xbt_parmap_worker_main, data, NULL);
-#ifdef HAVE_PTHREAD_SETAFFINITY
+#if HAVE_PTHREAD_SETAFFINITY
     xbt_os_thread_bind(parmap->workers[i], core_bind); 
     if (core_bind != xbt_os_get_numcores())
       core_bind++;
@@ -219,7 +219,7 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
 static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
 {
   if (mode == XBT_PARMAP_DEFAULT) {
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
     mode = XBT_PARMAP_FUTEX;
 #else
     mode = XBT_PARMAP_POSIX;
@@ -243,7 +243,7 @@ static void xbt_parmap_set_mode(xbt_parmap_t parmap, e_xbt_parmap_mode_t mode)
 
 
     case XBT_PARMAP_FUTEX:
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
       parmap->master_wait_f = xbt_parmap_futex_master_wait;
       parmap->worker_signal_f = xbt_parmap_futex_worker_signal;
       parmap->master_signal_f = xbt_parmap_futex_master_signal;
@@ -439,7 +439,7 @@ static void *xbt_parmap_mc_worker_main(void *arg)
 }
 #endif
 
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
 static void futex_wait(unsigned *uaddr, unsigned val)
 {
   XBT_VERB("Waiting on futex %p", uaddr);
@@ -524,7 +524,7 @@ static void xbt_parmap_posix_worker_wait(xbt_parmap_t parmap, unsigned round)
   xbt_os_mutex_release(parmap->ready_mutex);
 }
 
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
 /**
  * \brief Starts the parmap: waits for all workers to be ready and returns.
  *

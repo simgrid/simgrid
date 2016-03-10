@@ -23,7 +23,7 @@
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 #include "src/smpi/private.h"
 #endif
 
@@ -236,7 +236,7 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
 {
   xbt_assert(r1 && r2, "Missing region.");
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
   if (r1->storage_type() == simgrid::mc::StorageType::Privatized) {
     xbt_assert(process_index >= 0);
     if (r2->storage_type() != simgrid::mc::StorageType::Privatized)

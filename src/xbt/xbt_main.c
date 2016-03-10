@@ -8,9 +8,9 @@
 
 #define XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL /* MSVC don't want it to be declared extern in headers and local here */
 
+
 #include "xbt/misc.h"
 #include "simgrid_config.h"
-#include "src/portable.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dynar.h"
@@ -22,9 +22,13 @@
 
 #include "simgrid/sg_config.h"
 
+#include "src/internal_config.h"
 #include <stdio.h>
 #ifdef _WIN32
 #include <signal.h> /* To silence MSVC on abort() */
+#endif
+#if HAVE_UNISTD_H
+#  include <unistd.h>
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
@@ -84,12 +88,14 @@ static BOOL WINAPI DllMain(HINSTANCE hinstDLL, DWORD fdwReason, LPVOID lpvReserv
 
 static void xbt_preinit(void) {
   unsigned int seed = 2147483647;
-#ifndef _WIN32
-  xbt_pagesize = sysconf(_SC_PAGESIZE);
-#else
+#ifdef _WIN32
   SYSTEM_INFO si;
   GetSystemInfo(&si);
   xbt_pagesize = si.dwPageSize;
+#elif HAVE_SYSCONF
+  xbt_pagesize = sysconf(_SC_PAGESIZE);
+#else
+  #error Cannot get page size.
 #endif
 
   xbt_pagebits = 0;

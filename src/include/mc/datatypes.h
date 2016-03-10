@@ -10,7 +10,7 @@
 #include <src/internal_config.h>
 #include <xbt/base.h>
 
-#ifdef HAVE_UCONTEXT_H
+#if HAVE_UCONTEXT_H
 #include <ucontext.h>           /* context relative declarations */
 #endif
 
@@ -20,7 +20,7 @@ typedef struct s_mc_transition *mc_transition_t;
 
 typedef struct s_stack_region{
   void *address;
-#ifdef HAVE_UCONTEXT_H
+#if HAVE_UCONTEXT_H
   ucontext_t* context;
 #endif
   size_t size;

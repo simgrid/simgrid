@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/portable.h"       /* execinfo when available */
+#include "src/internal_config.h"       /* execinfo when available */
 #include "xbt/synchro_core.h"   /* xbt_thread_self_name */
 #include "src/xbt/ex_interface.h"
 #include "xbt/sysdep.h"
@@ -15,6 +15,10 @@
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
+
+#if HAVE_EXECINFO_H
+#  include <execinfo.h> /* Function backtrace */
+#endif
 
 extern const char *xbt_log_priority_names[8];
 
@@ -156,7 +160,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
         break;
       case 'b':                 /* backtrace; called %throwable in LOG4J */
       case 'B':         /* short backtrace; called %throwable{short} in LOG4J */
-#if defined(HAVE_EXECINFO_H) && defined(HAVE_POPEN) && defined(ADDR2LINE)
+#if HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
         {
           xbt_ex_t e;
 

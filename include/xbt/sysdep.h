@@ -60,10 +60,6 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt);
  *  @{
  */
 
-#if defined(_MSC_VER) && !defined(strdup)
-#  define strdup _strdup /* POSIX name is not ANSI complient blabla */
-#endif
-
 /** @brief Like strdup, but xbt_die() on error */
 static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   char *res = NULL;

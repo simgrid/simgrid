@@ -29,7 +29,6 @@
 #include <xbt/base.h>
 #include <xbt/mmalloc.h>
 
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_ignore.h"
@@ -108,13 +107,17 @@ struct s_mc_memory_map_re {
 
 static char* get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
 {
-  const char* map_basename = xbt_basename((char*) pathname);
+  char* map_basename = xbt_basename(pathname);
 
   regmatch_t match;
-  if(regexec(&res->so_re, map_basename, 1, &match, 0))
+  if(regexec(&res->so_re, map_basename, 1, &match, 0)) {
+    free(map_basename);
     return nullptr;
+  }
 
   char* libname = strndup(map_basename, match.rm_so);
+  free(map_basename);
+  map_basename = nullptr;
 
   // Strip the version suffix:
   if(libname && !regexec(&res->version_re, libname, 1, &match, 0)) {
@@ -315,7 +318,7 @@ void Process::init_memory_map_info()
 
   const char* current_name = nullptr;
 
-  this->object_infos.resize(0);
+  this->object_infos.clear();
 
   for (size_t i=0; i < maps.size(); i++) {
     simgrid::xbt::VmMap const& reg = maps[i];
@@ -357,7 +360,7 @@ void Process::init_memory_map_info()
     }
 
     std::shared_ptr<simgrid::mc::ObjectInformation> info =
-      MC_find_object_info(this->memory_map_, pathname);
+      simgrid::mc::createObjectInformation(this->memory_map_, pathname);
     this->object_infos.push_back(info);
     if (is_executable)
       this->binary_info = info;
@@ -371,7 +374,7 @@ void Process::init_memory_map_info()
 
   // Resolve time (including accross differents objects):
   for (auto const& object_info : this->object_infos)
-    MC_post_process_object_info(this, object_info.get());
+    postProcessObjectInformation(this, object_info.get());
 
   xbt_assert(this->maestro_stack_start_, "Did not find maestro_stack_start");
   xbt_assert(this->maestro_stack_end_, "Did not find maestro_stack_end");
@@ -489,7 +492,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
     std::shared_ptr<simgrid::mc::ObjectInformation> const& info =
       this->find_object_info_rw((void*)address.address());
     // Segment overlap is not handled.
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
     if (info.get() && this->privatized(*info)) {
       if (process_index < 0)
         xbt_die("Missing process index");

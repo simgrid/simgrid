@@ -68,7 +68,7 @@ double smpi_get_host_consumed_energy(void) {
   return sg_host_get_consumed_energy(SIMIX_host_self());
 }
 
-#ifdef SMPI_FORTRAN
+#if SMPI_FORTRAN
 
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
 typedef int integer;

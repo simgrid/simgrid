@@ -7,7 +7,7 @@
 #ifndef _SURF_MAXMIN_H
 #define _SURF_MAXMIN_H
 
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
 #include "surf/datatypes.h"

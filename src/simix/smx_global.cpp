@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
-#include "src/portable.h"
+#include "src/internal_config.h"
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/storage_interface.hpp"
@@ -88,9 +88,9 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
     }
   } else  if (siginfo->si_signo == SIGSEGV) {
     fprintf(stderr, "Segmentation fault.\n");
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
     if (smpi_enabled() && !smpi_privatize_global_variables) {
-#ifdef HAVE_PRIVATIZATION
+#if HAVE_PRIVATIZATION
       fprintf(stderr,
         "Try to enable SMPI variable privatization with --cfg=smpi/privatize_global_variables:yes.\n");
 #else

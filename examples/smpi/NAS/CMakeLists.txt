@@ -16,11 +16,10 @@ endif()
 
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/nas_common.h
                                    ${CMAKE_CURRENT_SOURCE_DIR}/nas_common.c
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/setparams.c
                                    ${CMAKE_CURRENT_SOURCE_DIR}/is.c
                                    ${CMAKE_CURRENT_SOURCE_DIR}/dt.c
                                    ${CMAKE_CURRENT_SOURCE_DIR}/ep.c
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/dt-folding.c
                                    ${CMAKE_CURRENT_SOURCE_DIR}/DGraph.c
                                    ${CMAKE_CURRENT_SOURCE_DIR}/DGraph.h
-                                                                             PARENT_SCOPE)
+                                                                              PARENT_SCOPE)
+set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/README.install  PARENT_SCOPE)
