@@ -20,8 +20,7 @@
 
 #include "src/surf/xml/platf_private.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf,
-                                "Logging specific to the SURF parsing module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_parse, surf, "Logging specific to the SURF parsing module");
 #undef CLEANUP
 int ETag_surfxml_include_state(void);
 
