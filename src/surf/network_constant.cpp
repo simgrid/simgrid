@@ -19,14 +19,18 @@ void surf_network_model_init_Constant()
 
   routing_model_create(NULL);
 
-  simgrid::surf::on_link.connect([](sg_platf_link_cbarg_t link){
-    xbt_die("There is no link in the Constant network model. "
-        "Please remove any link from your platform (and switch to routing='None')");
-  });
+  simgrid::surf::on_link.connect(netlink_parse_init);
 }
 
 namespace simgrid {
   namespace surf {
+
+    Link* NetworkConstantModel::createLink(const char *name, double bw, double lat, e_surf_link_sharing_policy_t policy,
+        xbt_dict_t properties) {
+
+      xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
+          "Please remove any link from your platform (and switch to routing='None')", name);
+    }
 
     double NetworkConstantModel::next_occuring_event(double /*now*/)
     {
