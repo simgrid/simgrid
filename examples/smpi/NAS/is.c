@@ -53,8 +53,7 @@ int max_key_log_2;
 int num_bucket_log_2;
 int min_procs=1;
 /* NOTE: THIS CODE CANNOT BE RUN ON ARBITRARILY LARGE NUMBERS OF PROCESSORS. THE LARGEST VERIFIED NUMBER IS 1024.
- * INCREASE max_procs AT YOUR PERIL
- */
+ * INCREASE max_procs AT YOUR PERIL */
 int max_procs=1024;
 
 int total_keys;

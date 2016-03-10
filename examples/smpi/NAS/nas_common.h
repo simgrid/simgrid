@@ -14,15 +14,11 @@
 enum benchmark_types {IS, DT, EP};
 
 int ilog2(int i);
+
 void timer_clear(int n);
 void timer_start(int n);
 void timer_stop(int n);
 double timer_read(int n);
-
-void time_clear(double *onetimer);
-void time_start(double *onetimer);
-void time_stop(int n,double *elapsed,double *start);
-double time_read(int n, double *elapsed);
 
 double vranlc(int n, double x, double a, double *y);
 double randlc(double *X, double*A);

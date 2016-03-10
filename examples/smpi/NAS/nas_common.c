@@ -78,22 +78,6 @@ void check_info(int type, int nprocs, char class)
   }
 }
 
-void time_clear(double *onetimer) {
- *onetimer = 0.0;
-}
-
-void time_start(double *onetimer) {
- *onetimer = MPI_Wtime();
-}
-
-void time_stop(int n,double *elapsed,double *start) {
-  elapsed[n] = MPI_Wtime()- start[n];
-}
-
-double time_read(int n, double *elapsed) {  /* ok, useless, but jsut to keep function call */
-  return(elapsed[n]);
-}
-
 void timer_clear(int n)
 {
   elapsed[n] = 0.0;

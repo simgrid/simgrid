@@ -10,6 +10,7 @@ DGArc *newArc(DGNode *tl,DGNode *hd){
   ar->head=hd;
   return ar;
 }
+
 void arcShow(DGArc *ar){
   DGNode *tl=(DGNode *)ar->tail,
          *hd=(DGNode *)ar->head;
@@ -30,6 +31,7 @@ DGNode *newNode(char *nm){
   nd->feat=NULL;
   return nd;
 }
+
 void nodeShow(DGNode* nd){
   fprintf( stderr,"%3d.%s: (%d,%d)\n", nd->id,nd->name,nd->inDegree,nd->outDegree);
 /*
