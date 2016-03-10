@@ -15,6 +15,7 @@
 #include "src/mc/mc_private.h"
 #include "xbt/module.h"
 #include <xbt/mmalloc.h>
+#include <xbt/memory.hpp>
 #include "src/smpi/private.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
@@ -192,14 +193,19 @@ void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps,
   simgrid::mc::ObjectInformation* result)
 {
-  char* file_name = xbt_strdup(result->file_name.c_str());
-  const char *name = xbt_basename(file_name);
+  char* name = xbt_basename(result->file_name.c_str());
+
   for (size_t i = 0; i < maps.size(); ++i) {
     simgrid::xbt::VmMap const& reg = maps[i];
-    if (maps[i].pathname.empty()
-        || strcmp(xbt_basename(maps[i].pathname.c_str()), name)) {
-      // Nothing to do
-    } else if ((reg.prot & PROT_WRITE)) {
+    if (maps[i].pathname.empty())
+      continue;
+    char* map_basename = xbt_basename(maps[i].pathname.c_str());
+    if (strcmp(name, map_basename) != 0) {
+      free(map_basename);
+      continue;
+    }
+    free(map_basename);
+    if ((reg.prot & PROT_WRITE)) {
       xbt_assert(!result->start_rw,
                  "Multiple read-write segments for %s, not supported",
                  maps[i].pathname.c_str());
@@ -239,7 +245,8 @@ void find_object_address(
 
   xbt_assert(result->start_rw);
   xbt_assert(result->start_exec);
-  free(file_name);
+
+  free(name);
 }
 
 /************************************* Take Snapshot ************************************/
@@ -515,8 +522,14 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
       continue;
 
     // If dot_output enabled, do not handle the corresponding file
-    if (dot_output !=  nullptr && strcmp(xbt_basename(link), _sg_mc_dot_output_file) == 0)
-      continue;
+    if (dot_output != nullptr) {
+      char* link_basename = xbt_basename(link);
+      if (strcmp(link_basename, _sg_mc_dot_output_file) == 0) {
+        free(link_basename);
+        continue;
+      }
+      free(link_basename);
+    }
 
     // This is probably a shared memory used by lttng-ust:
     if(strncmp("/dev/shm/ust-shm-tmp-", link, 21)==0)

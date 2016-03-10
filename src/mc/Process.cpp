@@ -107,13 +107,17 @@ struct s_mc_memory_map_re {
 
 static char* get_lib_name(const char* pathname, struct s_mc_memory_map_re* res)
 {
-  const char* map_basename = xbt_basename((char*) pathname);
+  char* map_basename = xbt_basename(pathname);
 
   regmatch_t match;
-  if(regexec(&res->so_re, map_basename, 1, &match, 0))
+  if(regexec(&res->so_re, map_basename, 1, &match, 0)) {
+    free(map_basename);
     return nullptr;
+  }
 
   char* libname = strndup(map_basename, match.rm_so);
+  free(map_basename);
+  map_basename = nullptr;
 
   // Strip the version suffix:
   if(libname && !regexec(&res->version_re, libname, 1, &match, 0)) {
