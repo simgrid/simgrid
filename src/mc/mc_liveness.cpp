@@ -21,7 +21,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_exit.h"

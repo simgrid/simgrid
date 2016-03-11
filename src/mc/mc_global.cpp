@@ -40,7 +40,7 @@
 
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_protocol.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
                                 "Logging specific to MC (global)");

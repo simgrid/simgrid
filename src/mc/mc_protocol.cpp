@@ -15,7 +15,7 @@
 #include <xbt/log.h>
 
 #include "src/mc/mc_protocol.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_protocol, mc, "Generic MC protocol logic");
 

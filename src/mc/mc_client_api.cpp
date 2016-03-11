@@ -13,7 +13,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_ignore.h"
 #include "src/mc/mc_protocol.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 #include "src/mc/ModelChecker.hpp"
 
 /** \file mc_client_api.cpp

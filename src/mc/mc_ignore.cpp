@@ -10,7 +10,7 @@
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_ignore.h"
 #include "src/mc/mc_protocol.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ignore, mc,
                                 "Logging specific to MC ignore mechanism");

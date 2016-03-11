@@ -21,7 +21,7 @@
 #if HAVE_MC
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_protocol.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 
 #include <stdlib.h>
 #include "src/mc/mc_protocol.h"

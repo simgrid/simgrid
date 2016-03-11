@@ -16,7 +16,7 @@
 #include <xbt/mmalloc.h>
 
 #include "src/mc/mc_protocol.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 
 // We won't need those once the separation MCer/MCed is complete:
 #include "src/mc/mc_ignore.h"
