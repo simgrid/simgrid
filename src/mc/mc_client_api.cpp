@@ -29,19 +29,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
 
 void MC_assert(int prop)
 {
-  if (MC_is_active() && !prop) {
-    if (simgrid::mc::Client::get()->getChannel().send(MC_MESSAGE_ASSERTION_FAILED))
-      xbt_die("Could not send assertion to model-checker");
-    simgrid::mc::Client::get()->handleMessages();
-  }
+  if (MC_is_active() && !prop)
+    simgrid::mc::Client::get()->reportAssertionFailure();
 }
 
 void MC_cut(void)
 {
-  // FIXME, this is a function called in the model-checked
-  // but the variable must be set in the model-checker.
-  // We should send a message here instead.
-  user_max_depth_reached = 1;
+  // FIXME, We want to do this in the model-checker:
+  // user_max_depth_reached = 1;
+  xbt_die("MC_cut() not implemented");
 }
 
 void MC_ignore(void* addr, size_t size)
@@ -49,13 +45,7 @@ void MC_ignore(void* addr, size_t size)
   xbt_assert(mc_mode != MC_MODE_SERVER);
   if (mc_mode != MC_MODE_CLIENT)
     return;
-
-  s_mc_ignore_memory_message_t message;
-  message.type = MC_MESSAGE_IGNORE_MEMORY;
-  message.addr = (std::uintptr_t) addr;
-  message.size = size;
-  if (simgrid::mc::Client::get()->getChannel().send(message))
-    xbt_die("Could not send IGNORE_MEMORY mesage to model-checker");
+  simgrid::mc::Client::get()->ignoreMemory(addr, size);
 }
 
 void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
@@ -74,14 +64,43 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
   xbt_assert(mc_mode != MC_MODE_SERVER);
   if (mc_mode != MC_MODE_CLIENT)
     return;
+  simgrid::mc::Client::get()->declareSymbol(name, value);
+}
 
-  s_mc_register_symbol_message_t message;
-  message.type = MC_MESSAGE_REGISTER_SYMBOL;
-  if (strlen(name) + 1 > sizeof(message.name))
-    xbt_die("Symbol is too long");
-  strncpy(message.name, name, sizeof(message.name));
-  message.callback = nullptr;
-  message.data = value;
-  if (simgrid::mc::Client::get()->getChannel().send(message))
-    xbt_die("Could send REGISTER_SYMBOL message to model-checker");
+/** @brief Register a stack in the model checker
+ *
+ *  The stacks are allocated in the heap. The MC handle them especially
+ *  when we analyse/compare the content of the heap so it must be told where
+ *  they are with this function.
+ *
+ *  @param stack
+ *  @param process Process owning the stack
+ *  @param context
+ *  @param size    Size of the stack
+ */
+void MC_register_stack_area(void *stack, smx_process_t process, ucontext_t* context, size_t size)
+{
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+  simgrid::mc::Client::get()->declareStack(stack, size, process, context);
+}
+
+void MC_ignore_global_variable(const char *name)
+{
+  // TODO, send a message to the model_checker
+  xbt_die("Unimplemented");
+}
+
+void MC_ignore_heap(void *address, size_t size)
+{
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+  simgrid::mc::Client::get()->ignoreHeap(address, size);
+}
+
+void MC_remove_ignore_heap(void *address, size_t size)
+{
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+  simgrid::mc::Client::get()->unignoreHeap(address, size);
 }

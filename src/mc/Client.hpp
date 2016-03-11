@@ -13,6 +13,8 @@
 
 #include <xbt/base.h>
 
+#include <simgrid/simix.h>
+
 #include "src/mc/mc_protocol.h"
 #include "src/mc/Channel.hpp"
 
@@ -31,6 +33,12 @@ public:
   Channel const& getChannel() const { return channel_; }
   Channel& getChannel() { return channel_; }
   void mainLoop(void);
+  void reportAssertionFailure(const char* description = nullptr);
+  void ignoreMemory(void* addr, std::size_t size);
+  void ignoreHeap(void* addr, std::size_t size);
+  void unignoreHeap(void* addr, std::size_t size);
+  void declareSymbol(const char *name, int* value);
+  void declareStack(void *stack, size_t size, smx_process_t process, ucontext_t* context);
 
   // Singleton :/
   // TODO, remove the singleton antipattern.

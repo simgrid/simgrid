@@ -593,7 +593,6 @@ set(MC_SRC
   src/mc/mc_dwarf_tagnames.cpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
-  src/mc/mc_ignore.cpp
   src/mc/mc_ignore.h
   src/mc/mc_mmalloc.h
   src/mc/mc_liveness.h

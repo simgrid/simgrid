@@ -15,6 +15,8 @@
 #include <xbt/sysdep.h>
 #include <xbt/mmalloc.h>
 
+#include "src/internal_config.h"
+
 #include "src/mc/mc_protocol.h"
 #include "src/mc/Client.hpp"
 
@@ -146,6 +148,97 @@ void Client::mainLoop(void)
     this->handleMessages();
     simgrid::mc::wait_for_requests();
   }
+}
+
+void Client::reportAssertionFailure(const char* description)
+{
+  if (channel_.send(MC_MESSAGE_ASSERTION_FAILED))
+    xbt_die("Could not send assertion to model-checker");
+  this->handleMessages();
+}
+
+void Client::ignoreMemory(void* addr, std::size_t size)
+{
+  s_mc_ignore_memory_message_t message;
+  message.type = MC_MESSAGE_IGNORE_MEMORY;
+  message.addr = (std::uintptr_t) addr;
+  message.size = size;
+  if (channel_.send(message))
+    xbt_die("Could not send IGNORE_MEMORY mesage to model-checker");
+}
+
+void Client::ignoreHeap(void* address, std::size_t size)
+{
+  xbt_mheap_t heap = mmalloc_get_current_heap();
+
+  s_mc_ignore_heap_message_t message;
+  message.type = MC_MESSAGE_IGNORE_HEAP;
+  message.address = address;
+  message.size = size;
+  message.block =
+   ((char *) address -
+    (char *) heap->heapbase) / BLOCKSIZE + 1;
+  if (heap->heapinfo[message.block].type == 0) {
+    message.fragment = -1;
+    heap->heapinfo[message.block].busy_block.ignore++;
+  } else {
+    message.fragment =
+        ((uintptr_t) (ADDR2UINT(address) % (BLOCKSIZE))) >>
+        heap->heapinfo[message.block].type;
+    heap->heapinfo[message.block].busy_frag.ignore[message.fragment]++;
+  }
+
+  if (channel_.send(message))
+    xbt_die("Could not send ignored region to MCer");
+}
+
+void Client::unignoreHeap(void* address, std::size_t size)
+{
+  s_mc_ignore_memory_message_t message;
+  message.type = MC_MESSAGE_UNIGNORE_HEAP;
+  message.addr = (std::uintptr_t) address;
+  message.size = size;
+  if (channel_.send(message))
+    xbt_die("Could not send IGNORE_HEAP mesasge to model-checker");
+}
+
+void Client::declareSymbol(const char *name, int* value)
+{
+  s_mc_register_symbol_message_t message;
+  message.type = MC_MESSAGE_REGISTER_SYMBOL;
+  if (strlen(name) + 1 > sizeof(message.name))
+    xbt_die("Symbol is too long");
+  strncpy(message.name, name, sizeof(message.name));
+  message.callback = nullptr;
+  message.data = value;
+  if (channel_.send(message))
+    xbt_die("Could send REGISTER_SYMBOL message to model-checker");
+}
+
+void Client::declareStack(void *stack, size_t size, smx_process_t process, ucontext_t* context)
+{
+  xbt_mheap_t heap = mmalloc_get_current_heap();
+
+  s_stack_region_t region;
+  memset(&region, 0, sizeof(region));
+  region.address = stack;
+  region.context = context;
+  region.size = size;
+  region.block =
+      ((char *) stack -
+       (char *) heap->heapbase) / BLOCKSIZE + 1;
+#if HAVE_SMPI
+  if (smpi_privatize_global_variables && process)
+    region.process_index = smpi_process_index_of_smx_process(process);
+  else
+#endif
+  region.process_index = -1;
+
+  s_mc_stack_region_message_t message;
+  message.type = MC_MESSAGE_STACK_REGION;
+  message.stack_region = region;
+  if (channel_.send(message))
+    xbt_die("Coule not send STACK_REGION to model-checker");
 }
 
 }
