@@ -1530,10 +1530,8 @@ information to SimGrid. Here is a file doing it all :
 
 \section pf_other_tags Tags not (directly) describing the platform
 
-There are 3 tags, that you can use inside a \<platform\> tag that are
-not describing the platform:
-\li \ref pf_random "random": it allows you to define random generators you want to use
-    for your simulation.
+The following tags can be used inside a \<platform\> tag even if they are not
+directly describing the platform:
 \li \ref pf_config "config": it allows you to pass some configuration stuff like, for
     example, the network model and so on. It follows the
 \li \ref pf_include "include": allows you to include another file into the current one.
@@ -1574,11 +1572,6 @@ Tag name        | Description | Documentation
 <AS  id="AS0"  routing="Full">
 ...
 \endverbatim
-
-
-\subsection pf_random random
-
-<b>This has not yet been implemented.</b>
 
 \subsection pf_include include
 
