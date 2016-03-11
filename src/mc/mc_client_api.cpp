@@ -38,6 +38,9 @@ void MC_assert(int prop)
 
 void MC_cut(void)
 {
+  // FIXME, this is a function called in the model-checked
+  // but the variable must be set in the model-checker.
+  // We should send a message here instead.
   user_max_depth_reached = 1;
 }
 
