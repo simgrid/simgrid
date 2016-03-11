@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
      * (internal file)
      */
     fprintf(stdout," NAS Parallel Benchmarks 3.2 -- EP Benchmark");
-    sprintf(size,"%zu",(unsigned long)pow(2,m+1));
+    sprintf(size,"%lu",(unsigned long)pow(2,m+1));
     //size = size.replace('.', ' ');
     fprintf(stdout," Number of random numbers generated: %s\n",size);
     fprintf(stdout," Number of active processes: %d\n",no_nodes);
