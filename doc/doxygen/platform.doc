@@ -1575,21 +1575,28 @@ Tag name        | Description | Documentation
 
 \subsection pf_include include
 
-The \c include tag allows you to import other platforms into your
+Even if it can be used in other contexts, this tag was originally created
+to be used with \ref pf_trace. The idea was to have a file describing the
+platform, and another file attaching traces of a given period to the platform.
+
+The drawback is that the file chuncks that will be included do not
+constitute valid XML files. This may explain why this feature was never really
+used in practice (as far as we know). Other mechanisms, such as the ability to load
+several platform files one after the other, could be considered in the future.
+
+In the meanwhile, the \c include tag allows you to import other platforms into your
 local file. This is done with the intention to help people
 combine their different AS and provide new platforms. Those files
 should contain XML that consists of 
 \ref pf_include "include", \ref pf_cluster "cluster", \ref pf_peer "peer", \ref pf_As "AS", \ref pf_trace "trace", \ref pf_trace "tags".
 
-\note
-    Due to some obscure technical reasons, you have to open
-    and close the tag in order to make it work.
+Do not forget to close the tag to make it work, or you will end up with an invalid XML file.
 
 #### Attributes ####
 
 | Attribute name  | Mandatory | Values                  | Description                                                                                                  |
 | --------------- | --------- | ----------------------  | -----------                                                                                                  |
-| file            | yes       | String                  | Filename of the path you want to include with either relative or absolute path. Syntax is defined by your OS |
+| file            | yes       | String                  | Filename of the path you want to include with either relative or absolute path. |
 
 
 #### Example ####
@@ -1600,7 +1607,7 @@ each of them will then be usable.
 
 \verbatim
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 	<AS id="main" routing="Full">
 		<include file="clusterA.xml"></include>
