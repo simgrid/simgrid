@@ -123,6 +123,9 @@ sub _cleanup {
     CloseHandle( $self->{TEMP_FILE_HANDLE} )
        if defined $self->{TEMP_FILE_HANDLE};
 
+    close( $self->{CHILD_HANDLE} )
+       if defined $self->{CHILD_HANDLE};
+
     $self->{$_} = undef for @cleanup_fields;
 }
 
