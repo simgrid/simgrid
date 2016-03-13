@@ -549,6 +549,10 @@ set(MC_SRC
   src/mc/RemotePtr.hpp
   src/mc/AddressSpace.hpp
   src/mc/AddressSpace.cpp
+  src/mc/Channel.cpp
+  src/mc/Channel.hpp
+  src/mc/Client.cpp
+  src/mc/Client.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -589,7 +593,6 @@ set(MC_SRC
   src/mc/mc_dwarf_tagnames.cpp
   src/mc/mc_hash.hpp
   src/mc/mc_hash.cpp
-  src/mc/mc_ignore.cpp
   src/mc/mc_ignore.h
   src/mc/mc_mmalloc.h
   src/mc/mc_liveness.h
@@ -607,9 +610,7 @@ set(MC_SRC
   src/mc/mc_state.h
   src/mc/mc_state.cpp
   src/mc/mc_visited.cpp
-  src/mc/mc_client.cpp
   src/mc/mc_client_api.cpp
-  src/mc/mc_client.h
   src/mc/mc_protocol.h
   src/mc/mc_protocol.cpp
   src/mc/mc_smx.h

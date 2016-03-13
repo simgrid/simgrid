@@ -12,10 +12,10 @@
 #include "mc/mc.h"
 #include "src/mc/mc_private.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");
+
+extern "C" {
 
 /* Initialize the model-checker memory subsystem */
 /* It creates the two heap regions: std_heap and mc_heap */

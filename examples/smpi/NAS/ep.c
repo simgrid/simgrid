@@ -73,7 +73,7 @@ int main(int argc, char **argv) {
      * (internal file)
      */
     fprintf(stdout," NAS Parallel Benchmarks 3.2 -- EP Benchmark");
-    sprintf(size,"%zu",(unsigned long)pow(2,m+1));
+    sprintf(size,"%lu",(unsigned long)pow(2,m+1));
     //size = size.replace('.', ' ');
     fprintf(stdout," Number of random numbers generated: %s\n",size);
     fprintf(stdout," Number of active processes: %d\n",no_nodes);
@@ -208,7 +208,7 @@ int main(int argc, char **argv) {
         t2   = sqrt(-2. * log(t1) / t1);
         t3   = (x1 * t2);
         t4   = (x2 * t2);
-        l    = (int)(abs(t3) > abs(t4) ? abs(t3) : abs(t4));
+        l    = (int)(fabs(t3) > fabs(t4) ? fabs(t3) : fabs(t4));
         q[l] = q[l] + 1.;
         sx   = sx + t3;
         sy   = sy + t4;
@@ -285,8 +285,8 @@ int main(int argc, char **argv) {
     fprintf(stdout,("sy_verify = " + sy_verify_value);
     */
     if(verified) {
-      sx_err = abs((sx - sx_verify_value)/sx_verify_value);
-      sy_err = abs((sy - sy_verify_value)/sy_verify_value);
+      sx_err = fabs((sx - sx_verify_value)/sx_verify_value);
+      sy_err = fabs((sy - sy_verify_value)/sy_verify_value);
       /*
       fprintf(stdout,("sx_err = " + sx_err);
       fprintf(stdout,("sy_err = " + sx_err);

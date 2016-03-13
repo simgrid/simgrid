@@ -20,17 +20,13 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 #include "src/mc/mc_exit.h"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
                                 "Logging specific to MC safety verification ");
-
-}
 
 namespace simgrid {
 namespace mc {

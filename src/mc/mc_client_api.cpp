@@ -13,7 +13,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_ignore.h"
 #include "src/mc/mc_protocol.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 #include "src/mc/ModelChecker.hpp"
 
 /** \file mc_client_api.cpp
@@ -22,26 +22,22 @@
  *  communicate with the MC (declared in modelchecker.h).
  */
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
   "Public API for the model-checked application");
-
-}
 
 // MC_random() is in mc_base.cpp
 
 void MC_assert(int prop)
 {
-  if (MC_is_active() && !prop) {
-    MC_client_send_simple_message(MC_MESSAGE_ASSERTION_FAILED);
-    MC_client_handle_messages();
-  }
+  if (MC_is_active() && !prop)
+    simgrid::mc::Client::get()->reportAssertionFailure();
 }
 
 void MC_cut(void)
 {
-  user_max_depth_reached = 1;
+  // FIXME, We want to do this in the model-checker:
+  // user_max_depth_reached = 1;
+  xbt_die("MC_cut() not implemented");
 }
 
 void MC_ignore(void* addr, size_t size)
@@ -49,12 +45,7 @@ void MC_ignore(void* addr, size_t size)
   xbt_assert(mc_mode != MC_MODE_SERVER);
   if (mc_mode != MC_MODE_CLIENT)
     return;
-
-  s_mc_ignore_memory_message_t message;
-  message.type = MC_MESSAGE_IGNORE_MEMORY;
-  message.addr = (std::uintptr_t) addr;
-  message.size = size;
-  MC_client_send_message(&message, sizeof(message));
+  simgrid::mc::Client::get()->ignoreMemory(addr, size);
 }
 
 void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
@@ -73,13 +64,43 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
   xbt_assert(mc_mode != MC_MODE_SERVER);
   if (mc_mode != MC_MODE_CLIENT)
     return;
+  simgrid::mc::Client::get()->declareSymbol(name, value);
+}
 
-  s_mc_register_symbol_message_t message;
-  message.type = MC_MESSAGE_REGISTER_SYMBOL;
-  if (strlen(name) + 1 > sizeof(message.name))
-    xbt_die("Symbol is too long");
-  strncpy(message.name, name, sizeof(message.name));
-  message.callback = nullptr;
-  message.data = value;
-  MC_client_send_message(&message, sizeof(message));
+/** @brief Register a stack in the model checker
+ *
+ *  The stacks are allocated in the heap. The MC handle them especially
+ *  when we analyse/compare the content of the heap so it must be told where
+ *  they are with this function.
+ *
+ *  @param stack
+ *  @param process Process owning the stack
+ *  @param context
+ *  @param size    Size of the stack
+ */
+void MC_register_stack_area(void *stack, smx_process_t process, ucontext_t* context, size_t size)
+{
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+  simgrid::mc::Client::get()->declareStack(stack, size, process, context);
+}
+
+void MC_ignore_global_variable(const char *name)
+{
+  // TODO, send a message to the model_checker
+  xbt_die("Unimplemented");
+}
+
+void MC_ignore_heap(void *address, size_t size)
+{
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+  simgrid::mc::Client::get()->ignoreHeap(address, size);
+}
+
+void MC_remove_ignore_heap(void *address, size_t size)
+{
+  if (mc_mode != MC_MODE_CLIENT)
+    return;
+  simgrid::mc::Client::get()->unignoreHeap(address, size);
 }

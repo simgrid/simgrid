@@ -20,12 +20,8 @@
 
 #include "src/mc/mc_record.h"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_config, mc,
                                 "Configuration of MC");
-
-}
 
 #if HAVE_MC
 namespace simgrid {

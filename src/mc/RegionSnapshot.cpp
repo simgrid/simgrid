@@ -14,12 +14,8 @@
 #include "src/mc/ChunkedData.hpp"
 #include "src/mc/RegionSnapshot.hpp"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc,
                                 "Logging specific to region snapshots");
-
-}
 
 namespace simgrid {
 namespace mc {

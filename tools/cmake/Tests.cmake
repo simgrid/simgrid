@@ -175,5 +175,5 @@ ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
 IF(enable_memcheck)
   INCLUDE(FindValgrind)
-  INCLUDE(${CMAKE_HOME_DIRECTORY}/tools/cmake/memcheck_tests.cmake)
+  INCLUDE(${CMAKE_BINARY_DIR}/memcheck_tests.cmake)
 ENDIF()

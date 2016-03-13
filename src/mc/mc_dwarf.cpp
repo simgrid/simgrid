@@ -714,7 +714,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
 
   std::unique_ptr<simgrid::mc::Variable> variable =
     std::unique_ptr<simgrid::mc::Variable>(new simgrid::mc::Variable());
-  variable->dwarf_offset = dwarf_dieoffset(die);
+  variable->id = dwarf_dieoffset(die);
   variable->global = frame == nullptr;     // Can be override base on DW_AT_location
   variable->object_info = info;
 
@@ -740,12 +740,12 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
         xbt_die(
           "Could not read location expression in DW_AT_location "
           "of variable <%" PRIx64 ">%s",
-          (uint64_t) variable->dwarf_offset,
+          (uint64_t) variable->id,
           variable->name.c_str());
       }
 
       if (len == 1 && expr[0].atom == DW_OP_addr) {
-        variable->global = 1;
+        variable->global = true;
         uintptr_t offset = (uintptr_t) expr[0].number;
         uintptr_t base = (uintptr_t) info->base_address();
         variable->address = (void *) (base + offset);
@@ -767,7 +767,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     xbt_die("Unexpected form 0x%x (%i), class 0x%x (%i) list for location "
             "in <%" PRIx64 ">%s",
             form, form, (int) form_class, (int) form_class,
-            (uint64_t) variable->dwarf_offset,
+            (uint64_t) variable->id,
             variable->name.c_str());
   }
 
