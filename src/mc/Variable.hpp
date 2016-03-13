@@ -21,15 +21,24 @@ namespace mc {
 class Variable {
 public:
   Variable() {}
-  unsigned dwarf_offset = 0; /* Global offset of the field. */
-  int global = 0;
+  std::uint32_t id = 0;
+  bool global = false;
   std::string name;
   unsigned type_id = 0;
   simgrid::mc::Type* type = nullptr;
-  // Use either of:
-  simgrid::dwarf::LocationList location_list;
+
+  /** Address of the variable -if it is fixed) */
   void* address = nullptr;
+
+  /** Description of the location of the variable if it's not fixed */
+  simgrid::dwarf::LocationList location_list;
+
+  /** Offset of validity of the variable (DW_AT_start_scope)
+   *
+   *  This variable is not valid since the beginning of its scope.
+   */
   std::size_t start_scope = 0;
+
   simgrid::mc::ObjectInformation* object_info = nullptr;
 };
 

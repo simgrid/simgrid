@@ -44,13 +44,13 @@ int s4u::Actor::main(int argc, char **argv) {
   fprintf(stderr,"Error: You should override the method main(int, char**) in Actor class %s\n",getName());
   return 0;
 }
-s4u::Actor *s4u::Actor::current()
+s4u::Actor &s4u::Actor::self()
 {
   smx_process_t smx_proc = SIMIX_process_self();
   simgrid::s4u::Actor* res = (simgrid::s4u::Actor*) SIMIX_process_self_get_data();
   if (res == NULL) // The smx_process was not created by S4U (but by deployment?). Embed it in a S4U object
     res = new Actor(smx_proc);
-  return res;
+  return *res;
 }
 
 void s4u::Actor::setAutoRestart(bool autorestart) {

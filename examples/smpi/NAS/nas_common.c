@@ -101,8 +101,8 @@ double timer_read(int n)
 double vranlc(int n, double x, double a, double *y)
 {
   int i;
-  long  i246m1=0x00003FFFFFFFFFFF;
-  long  LLx, Lx, La;
+  uint64_t  i246m1=0x00003FFFFFFFFFFF;
+  uint64_t  LLx, Lx, La;
   double d2m46;
 
 // This doesn't work, because the compiler does the calculation in 32 bits and overflows. No standard way (without
@@ -111,8 +111,8 @@ double vranlc(int n, double x, double a, double *y)
 
   d2m46=pow(0.5,46);
 
-  Lx = (long)x;
-  La = (long)a;
+  Lx = (uint64_t)x;
+  La = (uint64_t)a;
   //fprintf(stdout,("================== Vranlc ================");
   //fprintf(stdout,("Before Loop: Lx = " + Lx + ", La = " + La);
   LLx = Lx;

@@ -71,7 +71,6 @@ if(enable_smpi)
   foreach (SCATTER ompi mpich ompi_basic_linear ompi_binomial mvapich2 mvapich2_two_level_binomial mvapich2_two_level_direct impi)
     ADD_TESH(tesh-smpi-coll-scatter-${SCATTER} --cfg smpi/scatter:${SCATTER} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-scatter --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-scatter coll-scatter.tesh)
   endforeach()
-endif()
 
 # Extra allreduce test: large automatic
 ADD_TESH(tesh-smpi-coll-allreduce-large --cfg smpi/allreduce:ompi_ring_segmented --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/coll-allreduce --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/coll-allreduce coll-allreduce-large.tesh)
@@ -83,6 +82,8 @@ ADD_TESH(tesh-smpi-cluster-types --cfg smpi/alltoall:mvapich2 --setenv bindir=${
 # Extra pt2pt pingpong test: broken usage ti-tracing
 ADD_TESH_FACTORIES(tesh-smpi-broken  "thread"   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong broken_hostfiles.tesh)
 ADD_TESH(tesh-smpi-replay-ti-tracing            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong TI_output.tesh)
+
+endif()
 
 set(teshsuite_src ${teshsuite_src}                                                                         PARENT_SCOPE)
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh

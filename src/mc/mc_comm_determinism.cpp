@@ -19,15 +19,15 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/mc_client.h"
+#include "src/mc/Client.hpp"
 #include "src/mc/mc_exit.h"
 
 using simgrid::mc::remote;
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc,
                                 "Logging specific to MC communication determinism detection");
+
+extern "C" {
 
 /********** Global variables **********/
 
@@ -468,7 +468,7 @@ int MC_modelcheck_comm_determinism(void)
 
   if (mc_mode == MC_MODE_CLIENT)
     // This will move somehwere else:
-    MC_client_handle_messages();
+    simgrid::mc::Client::get()->handleMessages();
 
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();

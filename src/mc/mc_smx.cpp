@@ -71,29 +71,35 @@ static void MC_process_refresh_simix_process_list(
   assert(i == swag.count);
 }
 
-void MC_process_smx_refresh(simgrid::mc::Process* process)
+namespace simgrid {
+namespace mc {
+
+void Process::refresh_simix()
 {
   xbt_assert(mc_mode == MC_MODE_SERVER);
-  if (process->cache_flags & MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES)
+  if (this->cache_flags & MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES)
     return;
 
   // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
 
   // simix_global_p = REMOTE(simix_global);
   smx_global_t simix_global_p;
-  process->read_variable("simix_global", &simix_global_p, sizeof(simix_global_p));
+  this->read_variable("simix_global", &simix_global_p, sizeof(simix_global_p));
 
   // simix_global = REMOTE(*simix_global)
   s_smx_global_t simix_global;
-  process->read_bytes(&simix_global, sizeof(simix_global),
+  this->read_bytes(&simix_global, sizeof(simix_global),
     remote(simix_global_p));
 
   MC_process_refresh_simix_process_list(
-    process, process->smx_process_infos, simix_global.process_list);
+    this, this->smx_process_infos, simix_global.process_list);
   MC_process_refresh_simix_process_list(
-    process, process->smx_old_process_infos, simix_global.process_to_destroy);
+    this, this->smx_old_process_infos, simix_global.process_to_destroy);
 
-  process->cache_flags |= MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES;
+  this->cache_flags |= MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES;
+}
+
+}
 }
 
 /** Get the issuer of a simcall (`req->issuer`)
@@ -110,16 +116,14 @@ smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
   if (mc_mode == MC_MODE_CLIENT)
     return req->issuer;
 
-  MC_process_smx_refresh(&mc_model_checker->process());
-
   // This is the address of the smx_process in the MCed process:
   void* address = req->issuer;
 
   // Lookup by address:
-  for (auto& p : mc_model_checker->process().smx_process_infos)
+  for (auto& p : mc_model_checker->process().simix_processes())
     if (p.address == address)
       return &p.copy;
-  for (auto& p : mc_model_checker->process().smx_old_process_infos)
+  for (auto& p : mc_model_checker->process().old_simix_processes())
     if (p.address == address)
       return &p.copy;
 

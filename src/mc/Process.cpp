@@ -41,12 +41,8 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_process, mc,
                                 "MC process information");
-
-}
 
 // ***** Helper stuff
 
@@ -205,7 +201,7 @@ int open_vm(pid_t pid, int flags)
 // ***** Process
 
 Process::Process(pid_t pid, int sockfd) :
-   AddressSpace(this),pid_(pid), socket_(sockfd), running_(true)
+   AddressSpace(this), pid_(pid), channel_(sockfd), running_(true)
 {}
 
 void Process::init()
@@ -237,12 +233,6 @@ void Process::init()
 
 Process::~Process()
 {
-  if (this->socket_ >= 0 && close(this->socket_) < 0)
-    xbt_die("Could not close communication socket");
-
-  this->maestro_stack_start_ = nullptr;
-  this->maestro_stack_end_ = nullptr;
-
   if (this->memory_file >= 0)
     close(this->memory_file);
 
@@ -250,13 +240,8 @@ Process::~Process()
     unw_destroy_addr_space(this->unw_underlying_addr_space);
     _UPT_destroy(this->unw_underlying_context);
   }
-  this->unw_underlying_context = nullptr;
-  this->unw_underlying_addr_space = nullptr;
 
   unw_destroy_addr_space(this->unw_addr_space);
-  this->unw_addr_space = nullptr;
-
-  this->cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
 
   if (this->clear_refs_fd_ >= 0)
     close(this->clear_refs_fd_);
@@ -688,8 +673,15 @@ void Process::ignore_local_variable(const char *var_name, const char *frame_name
 std::vector<simgrid::mc::SimixProcessInformation>& Process::simix_processes()
 {
   xbt_assert(mc_mode != MC_MODE_CLIENT);
-  MC_process_smx_refresh(&mc_model_checker->process());
+  this->refresh_simix();
   return smx_process_infos;
+}
+
+std::vector<simgrid::mc::SimixProcessInformation>& Process::old_simix_processes()
+{
+  xbt_assert(mc_mode != MC_MODE_CLIENT);
+  this->refresh_simix();
+  return smx_old_process_infos;
 }
 
 }
