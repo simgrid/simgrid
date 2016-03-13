@@ -17,7 +17,6 @@
 #define SIMGRID_VERSION (100UL * (100UL * (@SIMGRID_VERSION_MAJOR@) + (@SIMGRID_VERSION_MINOR@)) + (@SIMGRID_VERSION_PATCH@))
 
 #define SIMGRID_VERSION_STRING "@SIMGRID_VERSION_STRING@"
-#define SIMGRID_VERSION_BANNER "@SIMGRID_VERSION_BANNER@"
 
 #define HAVE_JEDULE     @HAVE_JEDULE@ /* Was Jedule compiled in?  */
 #define HAVE_LUA        @HAVE_LUA@ /* Was the Lua support compiled in? */

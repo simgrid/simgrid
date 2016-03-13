@@ -110,12 +110,6 @@ else()
 endif()
 
 set(SIMGRID_VERSION_STRING "SimGrid version ${release_version}${SIMGRID_VERSION_EXTRA}")
-set(SIMGRID_VERSION_BANNER "SIMGRID_VERSION_STRING\\nCopyright (c) 2004-${SIMGRID_VERSION_DATE}. The Simgrid Team.")
-if(release)
-  set(SIMGRID_VERSION_BANNER "${SIMGRID_VERSION_BANNER}\\nRelease build")
-else()
-  set(SIMGRID_VERSION_BANNER "${SIMGRID_VERSION_BANNER}\\nDevelopment build")
-endif()
 
 set(libsimgrid_version "${release_version}")
 set(libsimgrid-java_version "${release_version}")
@@ -622,12 +616,6 @@ elseif(EXISTS ${CMAKE_HOME_DIRECTORY}/.gitversion)
   FILE(STRINGS ${CMAKE_HOME_DIRECTORY}/.gitversion GIT_VERSION)
 endif()
 
-if(GIT_VERSION)
-  set(SIMGRID_VERSION_BANNER "${SIMGRID_VERSION_BANNER} at commit ${GIT_VERSION}")
-endif()
-if(GIT_DATE)
-  set(SIMGRID_VERSION_BANNER "${SIMGRID_VERSION_BANNER} (${GIT_DATE})")
-endif()
 
 ### Generate the required headers and scripts
 #############################################
