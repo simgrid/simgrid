@@ -223,6 +223,7 @@ sub constant
 # }
 
 package Win32API::File::_error;
+require Carp;
 
 use overload
     '""' => sub {
@@ -242,7 +243,7 @@ package Win32API::File;
 my $_error = Win32API::File::_error->new();
 
 sub fileLastError {
-    croak 'Usage: ',__PACKAGE__,'::fileLastError( [$setWin32ErrCode] )'	if @_ > 1;
+    Carp::croak ('Usage: '.__PACKAGE__.'::fileLastError( [$setWin32ErrCode] )')	if @_ > 1;
     $_error->set($_[0]) if defined $_[0];
     return $_error;
 }
@@ -274,8 +275,8 @@ sub QueryDosDevice		{ &QueryDosDeviceA; }
 
 sub OsFHandleOpen {
     if(  3 != @_  ) {
-	croak 'Win32API::File Usage:  ',
-	      'OsFHandleOpen(FILE,$hNativeHandle,"rwatb")';
+	Carp::croak ('Win32API::File Usage:  '.
+	      'OsFHandleOpen(FILE,$hNativeHandle,"rwatb")');
     }
     my( $fh, $osfh, $access )= @_;
     if(  ! ref($fh)  ) {
@@ -324,7 +325,7 @@ sub OsFHandleOpen {
 
 sub GetOsFHandle {
     if(  1 != @_  ) {
-	croak 'Win32API::File Usage:  $OsFHandle= GetOsFHandle(FILE)';
+	Carp::croak ('Win32API::File Usage:  $OsFHandle= GetOsFHandle(FILE)');
     }
     my( $file )= @_;
     if(  ! ref($file)  ) {
@@ -361,7 +362,7 @@ sub GetOsFHandle {
 }
 
 sub getFileSize {
-    croak 'Win32API::File Usage:  $size= getFileSize($hNativeHandle)'
+    Carp::croak ('Win32API::File Usage:  $size= getFileSize($hNativeHandle)')
 	if @_ != 1;
 
     my $handle    = shift;
@@ -378,7 +379,7 @@ sub getFileSize {
 }
 
 sub setFilePointer {
-    croak 'Win32API::File Usage:  $pos= setFilePointer($hNativeHandle, $posl, $from_where)'
+    Carp::croak ('Win32API::File Usage:  $pos= setFilePointer($hNativeHandle, $posl, $from_where)')
 	if @_ != 3;
 
     my ($handle, $pos, $from_where) = @_;
@@ -418,7 +419,7 @@ sub attrLetsToBits
       "t"=>FILE_ATTRIBUTE_TEMPORARY() );
     my( $bits )= 0;
     foreach(  split(//,$lets)  ) {
-	croak "Win32API::File::attrLetsToBits: Unknown attribute letter ($_)"
+	Carp::croak ("Win32API::File::attrLetsToBits: Unknown attribute letter ($_)")
 	  unless  exists $a{$_};
 	$bits |= $a{$_};
     }
@@ -438,15 +439,15 @@ sub createFile
     }
     my( $sPath, $svAccess, $svShare )= @_;
     if(  @_ < 1  ||  3 < @_  ) {
-	croak "Win32API::File::createFile() usage:  \$hObject= createFile(\n",
+	Carp::croak ("Win32API::File::createFile() usage:  \$hObject= createFile(\n",
 	      "  \$sPath, [\$svAccess_qrw_ktn_ce,[\$svShare_rwd,]]",
 	      " [{Option=>\$Value}] )\n",
-	      "    options: @_createFile_Opts\nCalled";
+	      "    options: @_createFile_Opts\nCalled");
     }
     my( $create, $flags, $sec, $model )= ( "", 0, [], 0 );
     if(  ref($opts)  ) {
         my @err= grep( ! $_createFile_Opts{$_}, keys(%$opts) );
-	@err  and  croak "_createFile:  Invalid options (@err)";
+	@err  and  Carp::croak ("_createFile:  Invalid options (@err)");
 	$flags= $opts->{Flags}		if  exists( $opts->{Flags} );
 	$flags |= attrLetsToBits( $opts->{Attributes} )
 					if  exists( $opts->{Attributes} );
@@ -466,8 +467,8 @@ sub createFile
 	$svAccess |= GENERIC_READ()   if  /r/i;
 	$svAccess |= GENERIC_WRITE()   if  /w/i;
     } elsif(  "?" eq $svAccess  ) {
-	croak
-	  "Win32API::File::createFile:  \$svAccess can use the following:\n",
+	Carp::croak
+	  ("Win32API::File::createFile:  \$svAccess can use the following:\n",
 	      "    One or more of the following:\n",
 	      "\tq -- Query access (same as 0)\n",
 	      "\tr -- Read access (GENERIC_READ)\n",
@@ -484,21 +485,21 @@ sub createFile
 	      "  'w'  is the same as 'w  t c'\n",
 	      "  'rw' is the same as 'rw k c'\n",
 	      "  'rt' or 'rn' implies 'c'.\n",
-	      "  Or \$svAccess can be numeric.\n", "Called from";
+	      "  Or \$svAccess can be numeric.\n", "Called from");
     } elsif(  $svAccess == 0  &&  $svAccess !~ /^[-+.]*0/  ) {
-	croak "Win32API::File::createFile:  Invalid \$svAccess ($svAccess)";
+	Carp::croak ("Win32API::File::createFile:  Invalid \$svAccess ($svAccess)");
     }
     if(  $create =~ /^[ktn ce]*$/  ) {
         local( $_ )= $create;
         my( $k, $t, $n, $c, $e )= ( scalar(/k/i), scalar(/t/i),
 	  scalar(/n/i), scalar(/c/i), scalar(/e/i) );
 	if(  1 < $k + $t + $n  ) {
-	    croak "Win32API::File::createFile: \$create must not use ",
-	      qq<more than one of "k", "t", and "n" ($create)>;
+	    Carp::croak ("Win32API::File::createFile: \$create must not use ",
+	      qq<more than one of "k", "t", and "n" ($create)>);
 	}
 	if(  $c  &&  $e  ) {
-	    croak "Win32API::File::createFile: \$create must not use ",
-	      qq<both "c" and "e" ($create)>;
+	    Carp::croak ("Win32API::File::createFile: \$create must not use ",
+	      qq<both "c" and "e" ($create)>);
 	}
 	my $r= ( $svAccess & GENERIC_READ() ) == GENERIC_READ();
 	my $w= ( $svAccess & GENERIC_WRITE() ) == GENERIC_WRITE();
@@ -515,15 +516,15 @@ sub createFile
 	} else { # $n
 	    if(  ! $e  ) {			$create= CREATE_NEW();
 	    } else {
-		croak "Win32API::File::createFile: \$create must not use ",
-		  qq<both "n" and "e" ($create)>;
+		Carp::croak ("Win32API::File::createFile: \$create must not use ",
+		  qq<both "n" and "e" ($create)>);
 	    }
 	}
     } elsif(  "?" eq $create  ) {
-	croak 'Win32API::File::createFile: $create !~ /^[ktn ce]*$/;',
-	      ' pass $svAccess as "?" for more information.';
+	Carp::croak ('Win32API::File::createFile: $create !~ /^[ktn ce]*$/;',
+	      ' pass $svAccess as "?" for more information.');
     } elsif(  $create == 0  &&  $create ne "0"  ) {
-	croak "Win32API::File::createFile: Invalid \$create ($create)";
+	Carp::croak ("Win32API::File::createFile: Invalid \$create ($create)");
     }
     if(  $svShare =~ /^[drw]*$/  ) {
         my %s= ( "d"=>FILE_SHARE_DELETE(), "r"=>FILE_SHARE_READ(),
@@ -534,7 +535,7 @@ sub createFile
 	    $svShare |= $s{$_};
 	}
     } elsif(  $svShare == 0  &&  $svShare !~ /^[-+.]*0/  ) {
-	croak "Win32API::File::createFile: Invalid \$svShare ($svShare)";
+	Carp::croak ("Win32API::File::createFile: Invalid \$svShare ($svShare)");
     }
     return  CreateFileA(
 	      $sPath, $svAccess, $svShare, $sec, $create, $flags, $model );
@@ -551,8 +552,8 @@ sub getLogicalDrives
     if(  ! defined($ref)  ) {
 	return  split( /\0/, $s );
     } elsif(  "ARRAY" ne ref($ref)  ) {
-	croak 'Usage:  C<@arr= getLogicalDrives()> ',
-	      'or C<getLogicalDrives(\\@arr)>', "\n";
+	Carp::croak ('Usage:  C<@arr= getLogicalDrives()> ',
+	      'or C<getLogicalDrives(\\@arr)>', "\n");
     }
     @$ref= split( /\0/, $s );
     return $ref;
@@ -612,13 +613,13 @@ sub _append	{ $_[0]->{_append}	||= $_[1] }
 sub OPEN {
 	my $self  = shift;
 	my $expr  = shift;
-	croak "Only the two argument form of open is supported at this time" if @_;
+	Carp::croak ("Only the two argument form of open is supported at this time") if @_;
 # FIXME: this needs to parse the full Perl open syntax in $expr
 
 	my ($mixed, $mode, $path) =
 		($expr =~ /^\s* (\+)? \s* (<|>|>>)? \s* (.*?) \s*$/x);
 
-	croak "Unsupported open mode" if not $path;
+	Carp::croak ("Unsupported open mode") if not $path;
 
 	my $access = 'r';
 	my $append = $mode eq '>>' ? 1 : 0;
