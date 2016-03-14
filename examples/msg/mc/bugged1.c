@@ -16,10 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 
-int server(int argc, char *argv[]);
-int client(int argc, char *argv[]);
-
-int server(int argc, char *argv[])
+static int server(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   int count = 0;
@@ -37,12 +34,9 @@ int server(int argc, char *argv[])
   return 0;
 }
 
-int client(int argc, char *argv[])
+static int client(int argc, char *argv[])
 {
-
-  msg_task_t task =
-      MSG_task_create(argv[1], 0 /*comp cost */ , 10000 /*comm size */ ,
-                      NULL /*arbitrary data */ );
+  msg_task_t task =  MSG_task_create(argv[1], 0 /*comp cost */ , 10000 /*comm size */ , NULL /*arbitrary data */ );
 
   MSG_task_send(task, "mymailbox");
 
@@ -52,19 +46,14 @@ int client(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-
   MSG_init(&argc, argv);
 
   MSG_create_environment("platform.xml");
 
   MSG_function_register("server", server);
-
   MSG_function_register("client", client);
-
   MSG_launch_application("deploy_bugged1.xml");
 
   MSG_main();
-
   return 0;
-
 }

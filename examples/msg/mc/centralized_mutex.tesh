@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/centralized
+$ ${bindir:=.}/centralized_mutex
 > [Fafard:client:(2) 0.000000] [centralized/INFO] Ask the request
 > [Boivin:client:(3) 0.000000] [centralized/INFO] Ask the request
 > [TeX:client:(4) 0.000000] [centralized/INFO] Ask the request

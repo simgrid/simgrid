@@ -18,10 +18,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(electric_fence, "Example to check the soundness of DPOR");
 
-int server(int argc, char *argv[]);
-int client(int argc, char *argv[]);
 
-int server(int argc, char *argv[])
+static int server(int argc, char *argv[])
 {
   msg_task_t task1 = NULL, task2 = NULL;
   msg_comm_t comm_received1 = NULL, comm_received2 = NULL;
@@ -36,32 +34,26 @@ int server(int argc, char *argv[])
   return 0;
 }
 
-int client(int argc, char *argv[])
+static int client(int argc, char *argv[])
 {
-
   msg_task_t task = MSG_task_create(argv[1], 0, 10000, NULL);
 
   MSG_task_send(task, "mymailbox");
-  
+
   XBT_INFO("Sent!");
   return 0;
 }
 
 int main(int argc, char *argv[])
 {
-
   MSG_init(&argc, argv);
 
   MSG_create_environment("platform.xml");
 
   MSG_function_register("server", server);
-
   MSG_function_register("client", client);
-
   MSG_launch_application("deploy_electric_fence.xml");
 
   MSG_main();
-
   return 0;
-
 }
