@@ -37,13 +37,6 @@
 #include "src/mc/mc_protocol.h"
 #include "src/mc/ObjectInformation.hpp"
 
-// Those flags are used to track down which cached information
-// is still up to date and which information needs to be updated.
-typedef int mc_process_cache_flags_t;
-#define MC_PROCESS_CACHE_FLAG_NONE 0
-#define MC_PROCESS_CACHE_FLAG_HEAP 1
-#define MC_PROCESS_CACHE_FLAG_MALLOC_INFO 2
-#define MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES 4
 
 namespace simgrid {
 namespace mc {
@@ -96,6 +89,13 @@ struct IgnoredHeapRegion {
  *  - etc.
  */
 class Process final : public AddressSpace {
+private:
+  // Those flags are used to track down which cached information
+  // is still up to date and which information needs to be updated.
+  static constexpr int cache_none = 0;
+  static constexpr int cache_heap = 1;
+  static constexpr int cache_malloc = 2;
+  static constexpr int cache_simix_processes = 4;
 public:
   Process(pid_t pid, int sockfd);
   ~Process();
@@ -135,15 +135,20 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
+    if (!(this->cache_flags_ & Process::cache_heap))
       this->refresh_heap();
     return this->heap.get();
   }
   malloc_info* get_malloc_info()
   {
-    if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_MALLOC_INFO))
+    if (!(this->cache_flags_ & Process::cache_malloc))
       this->refresh_malloc_info();
     return this->heap_info.data();
+  }
+  
+  void clear_cache()
+  {
+    this->cache_flags_ = Process::cache_none;
   }
 
   Channel const& getChannel() const { return channel_; }
@@ -251,9 +256,11 @@ public: // Copies of MCed SMX data structures
    */
   std::vector<SimixProcessInformation> smx_old_process_infos;
 
+private:
   /** State of the cache (which variables are up to date) */
-  mc_process_cache_flags_t cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
+  int cache_flags_ = Process::cache_none;
 
+public:
   /** Address of the heap structure in the MCed process. */
   void* heap_address;
 

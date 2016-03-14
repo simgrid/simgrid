@@ -77,7 +77,7 @@ namespace mc {
 void Process::refresh_simix()
 {
   xbt_assert(mc_mode == MC_MODE_SERVER);
-  if (this->cache_flags & MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES)
+  if (this->cache_flags_ & Process::cache_simix_processes)
     return;
 
   // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
@@ -96,7 +96,7 @@ void Process::refresh_simix()
   MC_process_refresh_simix_process_list(
     this, this->smx_old_process_infos, simix_global.process_to_destroy);
 
-  this->cache_flags |= MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES;
+  this->cache_flags_ |= Process::cache_simix_processes;
 }
 
 }
