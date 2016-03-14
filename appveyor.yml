@@ -58,26 +58,26 @@ build_script:
 
 #test_script:
 # IPC::Run broken on windows. We should switch to https://rt.cpan.org/Public/Bug/Display.html?id=104812#txn-1546043
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/async/async.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/bittorrent/bittorrent.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_bypass/bypass.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/chord/chord.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/cloud.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/migration/migration.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/commTime/commtime.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/kademlia/kademlia.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_kill/kill.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/masterslave/masterslave.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/migration/migration.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/mutualExclusion/mutualexclusion.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/pingPong/pingpong.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/priority/priority.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/startKillTime/startKillTime.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfCpuModel/surf_cpu_model.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfPlugin/surf_plugin.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/reservationSurfPlugin/reservation_surf_plugin.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/suspend/suspend.tesh
-#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/tracing/tracingPingPong.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/async/async.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/bittorrent/bittorrent.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_bypass/bypass.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/chord/chord.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/cloud.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/migration/migration.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/commTime/commtime.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/kademlia/kademlia.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_kill/kill.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/masterslave/masterslave.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/migration/migration.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/mutualExclusion/mutualexclusion.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/pingPong/pingpong.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/priority/priority.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/startKillTime/startKillTime.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfCpuModel/surf_cpu_model.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfPlugin/surf_plugin.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/reservationSurfPlugin/reservation_surf_plugin.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/suspend/suspend.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/tracing/tracingPingPong.tesh
 
 artifacts:
 - path: simgrid.jar

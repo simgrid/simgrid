@@ -7,8 +7,9 @@
 #ifndef SIMGRID_MC_CLIENT_H
 #define SIMGRID_MC_CLIENT_H
 
-#include <cstddef>
+#include "src/internal_config.h"
 
+#include <cstddef>
 #include <memory>
 
 #include <xbt/base.h>
@@ -38,7 +39,9 @@ public:
   void ignoreHeap(void* addr, std::size_t size);
   void unignoreHeap(void* addr, std::size_t size);
   void declareSymbol(const char *name, int* value);
+#if HAVE_UCONTEXT_H
   void declareStack(void *stack, size_t size, smx_process_t process, ucontext_t* context);
+#endif
 
   // Singleton :/
   // TODO, remove the singleton antipattern.

@@ -42,8 +42,7 @@
 #include "src/mc/mc_protocol.h"
 #include "src/mc/Client.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc,
-                                "Logging specific to MC (global)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
 e_mc_mode_t mc_mode;
 
