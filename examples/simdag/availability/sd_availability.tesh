@@ -2,7 +2,7 @@
 
 p Test of the management of availability traces with simdag
 
-$ $SG_TEST_EXENV ${bindir:=.}/sd_avail ${srcdir:=.}/../platforms/two_hosts.xml
+$ $SG_TEST_EXENV ${bindir:=.}/availability/sd_availability ${srcdir:=.}/../platforms/two_hosts.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [1.000000] [sd_avail/INFO] link1: bw=125000000, lat=0.000100
 > [1.000000] [sd_avail/INFO] Jupiter: speed=12500000

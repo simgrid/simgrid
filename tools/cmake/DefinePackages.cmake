@@ -980,9 +980,6 @@ set(CMAKEFILES_TXT
   examples/simdag/dax/CMakeLists.txt
   examples/simdag/dot/CMakeLists.txt
   examples/simdag/goal/CMakeLists.txt
-  examples/simdag/io/CMakeLists.txt
-  examples/simdag/properties/CMakeLists.txt
-  examples/simdag/scheduling/CMakeLists.txt
   
   examples/smpi/CMakeLists.txt
   examples/smpi/NAS/CMakeLists.txt
