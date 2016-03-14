@@ -63,7 +63,7 @@ BEGIN {
 }
 
 ## REMOVE OSFHandleOpen
-use IPC::Win32APIFile qw(
+use Win32API::File qw(
    GetOsFHandle
    OsFHandleOpenFd
    OsFHandleOpen
