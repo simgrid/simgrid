@@ -65,9 +65,6 @@ build_script:
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/pingPong/pingpong.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/priority/priority.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/startKillTime/startKillTime.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfCpuModel/surf_cpu_model.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfPlugin/surf_plugin.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/reservationSurfPlugin/reservation_surf_plugin.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/suspend/suspend.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/tracing/tracingPingPong.tesh
 
