@@ -40,6 +40,8 @@ install:
 # Take the newly installed stuff in the path
 - set PATH=C:\mingw64\bin;%PATH%
 - if [%COMPILER%]==[MinGW-w64] rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
+# Install the perl dependencies from CPAN
+- cpan -i Win32API::File
 
 build_script:
 - if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"       -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF .
