@@ -4,4 +4,4 @@ $ ../../smpi_script/bin/smpirun -np 16 -platform ${srcdir:=.}/../../examples/pla
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu_threshold' to '-1'
-> Walltime = 0.402239
+> Walltime = 0.420419
