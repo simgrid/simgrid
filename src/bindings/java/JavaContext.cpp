@@ -60,7 +60,6 @@ void JavaContextFactory::run_all()
   }
 }
 
-
 JavaContext::JavaContext(std::function<void()> code,
         void_pfn_smxprocess_t cleanup_func,
         smx_process_t process)
@@ -69,8 +68,7 @@ JavaContext::JavaContext(std::function<void()> code,
   static int thread_amount=0;
   thread_amount++;
 
-  /* If the user provided a function for the process then use it
-     otherwise is the context for maestro */
+  /* If the user provided a function for the process then use it otherwise is the context for maestro */
   if (has_code()) {
     this->jprocess = nullptr;
     this->begin = xbt_os_sem_init(0);

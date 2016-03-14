@@ -14,7 +14,6 @@
 #include "jxbt_utilities.h"
 #include "jmsg.h"
 
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 static jmethodID jas_method_As_constructor;
@@ -41,8 +40,7 @@ msg_as_t jas_get_native(JNIEnv * env, jobject jas) {
   return (msg_as_t) (uintptr_t) env->GetLongField(jas, jas_field_As_bind);
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls) {
   jclass class_As = env->FindClass("org/simgrid/msg/As");
   jas_method_As_constructor = env->GetMethodID(class_As, "<init>", "()V");
   jas_field_As_bind = jxbt_get_jfield(env,class_As, "bind", "J");
@@ -51,14 +49,12 @@ Java_org_simgrid_msg_As_nativeInit(JNIEnv *env, jclass cls) {
   }
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas) {
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getName(JNIEnv * env, jobject jas) {
   msg_as_t as = jas_get_native(env, jas);
   return env->NewStringUTF(MSG_environment_as_get_name(as));
 }
 
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
   int index = 0;
   jobjectArray jtable;
   jobject tmp_jas;
@@ -98,13 +94,11 @@ Java_org_simgrid_msg_As_getSons(JNIEnv * env, jobject jas) {
 
     env->SetObjectArrayElement(jtable, index, tmp_jas);
     index++;
-
   }
   return jtable;
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
   msg_as_t as = jas_get_native(env, jas);
 
   if (!as) {
@@ -125,8 +119,7 @@ Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobject jas, jobject jname) {
   return jproperty;
 }
 
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
 {
   int index;
   jobjectArray jtable;
@@ -143,7 +136,7 @@ Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
   if (!cls) {
     return NULL;
   }
-  
+
   jtable = env->NewObjectArray((jsize) count, cls, NULL);
 
   if (!jtable) {
@@ -152,7 +145,6 @@ Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jobject jas)
   }
 
   for (index = 0; index < count; index++) {
-
     host = xbt_dynar_get_as(table,index,msg_host_t);
 
     jhost = (jobject) host->extension(JAVA_HOST_LEVEL);

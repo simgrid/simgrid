@@ -13,255 +13,235 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
+
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableDeclare
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare
-  (JNIEnv *, jclass, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    vmVariableDeclare
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare
-  (JNIEnv *, jclass, jstring);
-
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableDeclareWithColor
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclareWithColor
-  (JNIEnv *, jclass, jstring, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclareWithColor (JNIEnv *, jclass, jstring, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableSet
  * Signature: (Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet
-  (JNIEnv *, jclass, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet (JNIEnv *, jclass, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    vmVariableSet
  * Signature: (Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet
-  (JNIEnv *, jclass, jstring, jstring, jdouble);
-
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet (JNIEnv *, jclass, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableAdd
  * Signature: (Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd
-  (JNIEnv *, jclass, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd (JNIEnv *, jclass, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableSub
  * Signature: (Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSub
-  (JNIEnv *, jclass, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSub (JNIEnv *, jclass, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableSetWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSetWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_hostVariableSetWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableAddWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAddWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_hostVariableAddWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostVariableSubWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSubWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_hostVariableSubWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    getHostVariablesName
  * Signature: ()[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_org_simgrid_trace_Trace_getHostVariablesName
-  (JNIEnv *, jclass);
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_trace_Trace_getHostVariablesName (JNIEnv *, jclass);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkVariableDeclare
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclare
-  (JNIEnv *, jclass, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclare (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkVariableDeclareWithColor
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclareWithColor
-  (JNIEnv *, jclass, jstring, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclareWithColor (JNIEnv *, jclass, jstring, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkVariableSet
  * Signature: (Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSet
-  (JNIEnv *, jclass, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSet (JNIEnv *, jclass, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkVariableAdd
  * Signature: (Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAdd
-  (JNIEnv *, jclass, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAdd (JNIEnv *, jclass, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkVariableSub
  * Signature: (Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSub
-  (JNIEnv *, jclass, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSub (JNIEnv *, jclass, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkVariableSetWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSetWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_linkVariableSetWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkVariableAddWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAddWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_linkVariableAddWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkVariableSubWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSubWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_linkVariableSubWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkSrcDstVariableSet
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSet
-  (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_linkSrcDstVariableSet (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkSrcDstVariableAdd
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableAdd
-  (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_linkSrcDstVariableAdd (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkSrcDstVariableSub
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSub
-  (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL
+Java_org_simgrid_trace_Trace_linkSrcDstVariableSub (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkSrcDstVariableSetWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSetWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSetWithTime (JNIEnv *, jclass, jdouble, jstring,
+                                                                                   jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkSrcdstVariableAddWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcdstVariableAddWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcdstVariableAddWithTime (JNIEnv *, jclass, jdouble, jstring,
+                                                                                   jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    linkSrcDstVariableSubWithTime
  * Signature: (DLjava/lang/String;Ljava/lang/String;Ljava/lang/String;D)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSubWithTime
-  (JNIEnv *, jclass, jdouble, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSubWithTime (JNIEnv *, jclass, jdouble, jstring,
+                                                                                   jstring, jstring, jdouble);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    getLinkVariablesName
  * Signature: ()[Ljava/lang/String;
  */
-JNIEXPORT jobjectArray JNICALL Java_org_simgrid_trace_Trace_getLinkVariablesName
-  (JNIEnv *, jclass);
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_trace_Trace_getLinkVariablesName (JNIEnv *, jclass);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostStateDeclare
  * Signature: (Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclare
-  (JNIEnv *, jclass, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclare (JNIEnv *, jclass, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostStateDeclareValue
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclareValue
-  (JNIEnv *, jclass, jstring, jstring, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclareValue (JNIEnv *, jclass, jstring, jstring, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostSetState
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostSetState
-  (JNIEnv *, jclass, jstring, jstring, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostSetState (JNIEnv *, jclass, jstring, jstring, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostPushState
  * Signature: (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPushState
-  (JNIEnv *, jclass, jstring, jstring, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPushState (JNIEnv *, jclass, jstring, jstring, jstring);
 
 /*
  * Class:     org_simgrid_trace_Trace
  * Method:    hostPopState
  * Signature: (Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPopState
-  (JNIEnv *, jclass, jstring, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPopState (JNIEnv *, jclass, jstring, jstring);
 
 #ifdef __cplusplus
 }

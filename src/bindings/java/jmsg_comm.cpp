@@ -41,11 +41,9 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
 
     MSG_task_set_data(task, NULL);
   }
-
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
   jclass jfield_class_Comm = env->FindClass("org/simgrid/msg/Comm");
   if (!jfield_class_Comm) {
     jxbt_throw_native(env,bprintf("Can't find the org/simgrid/msg/Comm class."));
@@ -56,13 +54,13 @@ Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
   jcomm_field_Comm_receiving = jxbt_get_jfield(env, jfield_class_Comm, "receiving", "Z");
   jtask_field_Comm_task = jxbt_get_jfield(env, jfield_class_Comm, "task", "Lorg/simgrid/msg/Task;");
   jcomm_field_Comm_finished = jxbt_get_jfield(env, jfield_class_Comm, "finished", "Z");
-  if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task || !jcomm_field_Comm_finished) {
+  if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task ||
+      !jcomm_field_Comm_finished) {
     jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
   }
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
   msg_comm_t comm;
   msg_task_t *task_received;
 
@@ -73,8 +71,7 @@ Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
   MSG_comm_destroy(comm);
 }
 
-JNIEXPORT jboolean JNICALL
-Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
   msg_comm_t comm;
   comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
 
@@ -100,8 +97,8 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
   }
   return JNI_FALSE;
 }
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
   msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
   if (!comm) {
     jxbt_throw_native(env,bprintf("comm is null"));
@@ -119,9 +116,7 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
   if (status == MSG_OK) {
     jcomm_bind_task(env,jcomm);
     return;
-  }
-  else {
+  } else {
     jmsg_throw_status(env,status);
   }
-
 }
