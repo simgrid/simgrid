@@ -759,7 +759,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register(&_sg_cfg_set, "network/crosstraffic",
                      "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
                      xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb__surf_network_crosstraffic);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "no");
+    xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "yes");
 
 #if HAVE_NS3
     xbt_cfg_register(&_sg_cfg_set, "ns3/TcpModel",

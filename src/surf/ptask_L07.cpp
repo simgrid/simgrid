@@ -306,10 +306,10 @@ CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
   p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,0,double));
 
   if (speedTrace)
-    p_speed.event = future_evt_set->add_trace(speedTrace, 0.0, this);
+    speed_.event = future_evt_set->add_trace(speedTrace, 0.0, this);
 
   if (state_trace)
-    p_stateEvent = future_evt_set->add_trace(state_trace, 0.0, this);
+    stateEvent_ = future_evt_set->add_trace(state_trace, 0.0, this);
 }
 
 CpuL07::~CpuL07()
@@ -358,14 +358,14 @@ void CpuL07::onSpeedChange() {
   lmm_variable_t var = NULL;
   lmm_element_t elem = NULL;
 
-    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), p_speed.peak * p_speed.scale);
+    lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), speed_.peak * speed_.scale);
     while ((var = lmm_get_var_from_cnst
             (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
       Action *action = static_cast<Action*>(lmm_variable_id(var));
 
       lmm_update_variable_bound(getModel()->getMaxminSystem(),
                                 action->getVariable(),
-                                p_speed.scale * p_speed.peak);
+                                speed_.scale * speed_.peak);
     }
 
   Cpu::onSpeedChange();
@@ -378,17 +378,17 @@ bool LinkL07::isUsed(){
 
 void CpuL07::apply_event(tmgr_trace_iterator_t triggered, double value){
   XBT_DEBUG("Updating cpu %s (%p) with value %g", getName(), this, value);
-  if (triggered == p_speed.event) {
-    p_speed.scale = value;
+  if (triggered == speed_.event) {
+    speed_.scale = value;
     onSpeedChange();
-    tmgr_trace_event_unref(&p_speed.event);
+    tmgr_trace_event_unref(&speed_.event);
 
-  } else if (triggered == p_stateEvent) {
+  } else if (triggered == stateEvent_) {
     if (value > 0)
       turnOn();
     else
       turnOff();
-    tmgr_trace_event_unref(&p_stateEvent);
+    tmgr_trace_event_unref(&stateEvent_);
 
   } else {
     xbt_die("Unknown event!\n");

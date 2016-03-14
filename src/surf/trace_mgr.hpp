@@ -8,49 +8,15 @@
 #define _SURF_TMGR_H
 
 #include "xbt/heap.h"
-#include "xbt/dynar.h"
-#include "surf/maxmin.h"
-#include "surf/datatypes.h"
 #include "simgrid/forward.h"
 
 SG_BEGIN_DECL()
-#include "xbt/base.h"
-#include "xbt/swag.h"
 #include "xbt/heap.h"
-#include "trace_mgr.hpp"
-#include "xbt/RngStream.h"
 
 typedef struct tmgr_event {
   double delta;
   double value;
 } s_tmgr_event_t, *tmgr_event_t;
-
-enum e_trace_type {
-  e_trace_list, e_trace_probabilist
-};
-
-enum e_event_generator_type {
-  e_generator_uniform, e_generator_exponential, e_generator_weibull
-};
-
-typedef struct probabilist_event_generator {
-  enum e_event_generator_type type;
-  RngStream rng_stream;
-  double next_value;
-  union {
-    struct {
-      double min;
-      double max;
-    } s_uniform_parameters;
-    struct {
-      double rate;
-    } s_exponential_parameters;
-    struct {
-      double scale;
-      double shape;
-    } s_weibull_parameters;
-  };
-} s_probabilist_event_generator_t;
 
 typedef struct tmgr_trace {
   xbt_dynar_t event_list;
@@ -63,6 +29,7 @@ typedef struct tmgr_trace_iterator {
   sg_resource_t resource;
   int free_me;
 } s_tmgr_trace_event_t;
+typedef struct tmgr_trace_iterator *tmgr_trace_iterator_t;
 
 /* Creation functions */
 XBT_PUBLIC(tmgr_trace_t) tmgr_empty_trace_new(void);

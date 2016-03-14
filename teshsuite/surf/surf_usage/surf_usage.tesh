@@ -9,8 +9,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/surf_usage ${srcdir:=.}/../../../examples/platform
 > [0.000000] [surf_test/INFO] Next Event : 0
 > [0.000000] [surf_test/INFO]    CPU Failed action
 > [0.200000] [surf_test/INFO] Next Event : 0.2
-> [0.200015] [surf_test/INFO] Next Event : 0.200015
-> [0.200015] [surf_test/INFO]    Network Failed action
+> [0.200016] [surf_test/INFO] Next Event : 0.200016
+> [0.200016] [surf_test/INFO]    Network Failed action
 > [7.320000] [surf_test/INFO] Next Event : 7.32
 > [7.320000] [surf_test/INFO]    CPU Done action
 > [10.000000] [surf_test/INFO] Next Event : 10

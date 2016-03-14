@@ -6,8 +6,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/surf_usage2  ${srcdir:=.}/../../../examples/platfo
 > [0.000000] [surf_test/INFO] Next Event : 0
 > [0.000000] [surf_test/INFO]    * Done Action
 > [0.200000] [surf_test/INFO] Next Event : 0.2
-> [0.200015] [surf_test/INFO] Next Event : 0.200015
-> [0.200015] [surf_test/INFO]    * Done Action
+> [0.200016] [surf_test/INFO] Next Event : 0.200016
+> [0.200016] [surf_test/INFO]    * Done Action
 > [7.320000] [surf_test/INFO] Next Event : 7.32
 > [7.320000] [surf_test/INFO]    * Done Action
 > [10.000000] [surf_test/INFO] Next Event : 10

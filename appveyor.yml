@@ -16,15 +16,8 @@ environment:
     BOOST_ROOT: c:\Libraries\boost
     BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
     TESH_ARGS: C:/projects/simgrid/bin/tesh --setenv srcdir=C:/projects/simgrid/examples/java --setenv classpath=C:/projects/simgrid/examples/java;C:/projects/simgrid/teshsuite/java;C:/projects/simgrid/simgrid.jar --cd C:/projects/simgrid/examples/java
-  matrix:
-    - COMPILER: MinGW-w64
 
 install:
-# Sane migwin, as installed by symengine
-#- if [%COMPILER%]==[MinGW-w64] call .appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z
-#- if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
-# Take the newly installed stuff in the path
-#- set PATH=C:\mingw64\bin;%PATH%
 # Strawberry perl is the one to work with gcc
 - choco install strawberryperl -version 5.20.1.1
 - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
@@ -32,13 +25,14 @@ install:
 - cpanm --notest --quiet IPC::Run
 # Lua 
 #- choco install lua53
-# Basic dependencies: gcc and Cmake
+# Basic dependencies: gcc and Cmake (must be placed before Perl in the path)
+- SET PATH=C:\tools\mingw64\bin;%PATH%
 - choco install mingw cmake
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 
 build_script:
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
-- mingw32-make VERBOSE=1
+- C:\tools\mingw64\bin\mingw32-make.exe VERBOSE=1
 - cd C:/projects/simgrid/examples/java && java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml || true
 
 # I cant use the cmake test because of the following error:
@@ -64,9 +58,6 @@ build_script:
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/pingPong/pingpong.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/priority/priority.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/startKillTime/startKillTime.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfCpuModel/surf_cpu_model.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/surfPlugin/surf_plugin.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/reservationSurfPlugin/reservation_surf_plugin.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/suspend/suspend.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/tracing/tracingPingPong.tesh
 

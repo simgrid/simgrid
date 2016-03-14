@@ -190,7 +190,7 @@ void parse_platform_file(const char *file)
       xbt_assert(host, "Host %s undefined", elm);
       simgrid::surf::Cpu *cpu = host->pimpl_cpu;
 
-      cpu->set_state_trace(trace);
+      cpu->setStateTrace(trace);
     }
     xbt_dict_foreach(trace_connect_list_host_speed, cursor, trace_name, elm) {
       tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
@@ -200,7 +200,7 @@ void parse_platform_file(const char *file)
       xbt_assert(host, "Host %s undefined", elm);
       simgrid::surf::Cpu *cpu = host->pimpl_cpu;
 
-      cpu->set_speed_trace(trace);
+      cpu->setSpeedTrace(trace);
     }
     xbt_dict_foreach(trace_connect_list_link_avail, cursor, trace_name, elm) {
       tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
