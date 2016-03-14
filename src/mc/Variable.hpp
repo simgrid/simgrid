@@ -27,15 +27,16 @@ public:
   unsigned type_id = 0;
   simgrid::mc::Type* type = nullptr;
 
-  /** Address of the variable -if it is fixed) */
+  /** Address of the variable (if it is fixed) */
   void* address = nullptr;
 
-  /** Description of the location of the variable if it's not fixed */
+  /** Description of the location of the variable (if it's not fixed) */
   simgrid::dwarf::LocationList location_list;
 
   /** Offset of validity of the variable (DW_AT_start_scope)
    *
-   *  This variable is not valid since the beginning of its scope.
+   *  This is an offset from the variable scope beginning. This variable
+   *  is only valid starting from this offset.
    */
   std::size_t start_scope = 0;
 
