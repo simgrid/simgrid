@@ -38,7 +38,7 @@ install:
 
 build_script:
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
-- mingw32-make VERBOSE=1
+- C:\tools\mingw64\bin\mingw32-make.exe VERBOSE=1
 - cd C:/projects/simgrid/examples/java && java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml || true
 
 # I cant use the cmake test because of the following error:
