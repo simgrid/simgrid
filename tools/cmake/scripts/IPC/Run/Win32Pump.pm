@@ -32,7 +32,7 @@ BEGIN {
 	$VERSION = '0.90';
 }
 
-use IPC::Win32APIFile qw(
+use Win32API::File qw(
    OsFHandleOpen
 );
 

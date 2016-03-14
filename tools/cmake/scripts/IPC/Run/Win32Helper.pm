@@ -39,7 +39,7 @@ require POSIX;
 use Text::ParseWords;
 use Win32::Process;
 use IPC::Run::Debug;
-use IPC::Win32APIFile qw(
+use Win32API::File qw(
    FdGetOsFHandle
    SetHandleInformation
    HANDLE_FLAG_INHERIT
