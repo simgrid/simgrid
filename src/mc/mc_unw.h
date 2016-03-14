@@ -26,28 +26,26 @@
  *  much here.
  */
 
+#include <sys/types.h>
+
 #include <xbt/base.h>
 
 #include <libunwind.h>
 
-#include "src/mc/Process.hpp"
+#include "src/mc/mc_forward.hpp"
+
+namespace simgrid {
+namespace unw {
+
+XBT_PRIVATE unw_addr_space_t create_addr_space();
+XBT_PRIVATE void* create_context(unw_addr_space_t as, pid_t pid);
+
+}
+}
 
 SG_BEGIN_DECL()
 
 // ***** Libunwind namespace
-
-/** Virtual table for our `libunwind-process_vm_readv` implementation.
- *
- *  This implementation reuse most the code of `libunwind-ptrace` but
- *  does not use ptrace() to read the target process memory by
- *  `process_vm_readv()` or `/dev/${pid}/mem` if possible.
- *
- *  Does not support any MC-specific behaviour (privatisation, snapshots)
- *  and `ucontext_t`.
- *
- *  It works with `void*` contexts allocated with `_UPT_create(pid)`.
- */
-extern XBT_PRIVATE unw_accessors_t mc_unw_vmread_accessors;
 
 /** Virtual table for our `libunwind` implementation
  *
