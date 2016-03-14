@@ -32,9 +32,10 @@ install:
 - cpanm --notest --quiet IPC::Run
 # Lua 
 #- choco install lua53
-# Basic dependencies: gcc and Cmake
+# Basic dependencies: gcc and Cmake (must be placed before Perl in the path)
 - choco install mingw cmake
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
+- SET PATH=C:\tools\mingw64\bin;%PATH%
 
 build_script:
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
