@@ -137,20 +137,20 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host,
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
     xbt_dynar_t speedPeakList, int core, double speedPeak)
  : Resource(model, host->name().c_str(), constraint)
- , m_core(core)
- , m_host(host)
+ , coresAmount_(core)
+ , host_(host)
 {
-  p_speed.peak = speedPeak;
-  p_speed.scale = 1;
+  speed_.peak = speedPeak;
+  speed_.scale = 1;
   host->pimpl_cpu = this;
-  xbt_assert(p_speed.scale > 0, "Available speed has to be >0");
+  xbt_assert(speed_.scale > 0, "Available speed has to be >0");
 
   // Copy the power peak array:
-  p_speedPeakList = xbt_dynar_new(sizeof(double), nullptr);
+  speedPeakList_ = xbt_dynar_new(sizeof(double), nullptr);
   unsigned long n = xbt_dynar_length(speedPeakList);
   for (unsigned long i = 0; i != n; ++i) {
     double value = xbt_dynar_get_as(speedPeakList, i, double);
-    xbt_dynar_push(p_speedPeakList, &value);
+    xbt_dynar_push(speedPeakList_, &value);
   }
 
   /* Currently, we assume that a VM does not have a multicore CPU. */
@@ -165,7 +165,7 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
     for (i = 0; i < core; i++) {
       /* just for a unique id, never used as a string. */
       p_constraintCoreId[i] = bprintf("%s:%i", host->name().c_str(), i);
-      p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], p_speed.scale * p_speed.peak);
+      p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], speed_.scale * speed_.peak);
     }
   }
 }
@@ -173,48 +173,48 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
 Cpu::~Cpu()
 {
   if (p_constraintCoreId){
-    for (int i = 0; i < m_core; i++) {
+    for (int i = 0; i < coresAmount_; i++) {
     xbt_free(p_constraintCoreId[i]);
     }
     xbt_free(p_constraintCore);
   }
   if (p_constraintCoreId)
     xbt_free(p_constraintCoreId);
-  if (p_speedPeakList)
-    xbt_dynar_free(&p_speedPeakList);
+  if (speedPeakList_)
+    xbt_dynar_free(&speedPeakList_);
 }
 
 double Cpu::getCurrentPowerPeak()
 {
-  return p_speed.peak;
+  return speed_.peak;
 }
 
 int Cpu::getNbPStates()
 {
-  return xbt_dynar_length(p_speedPeakList);
+  return xbt_dynar_length(speedPeakList_);
 }
 
 void Cpu::setPState(int pstate_index)
 {
-  xbt_dynar_t plist = p_speedPeakList;
+  xbt_dynar_t plist = speedPeakList_;
   xbt_assert(pstate_index <= (int)xbt_dynar_length(plist),
       "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index, (int)xbt_dynar_length(plist));
 
   double new_peak_speed = xbt_dynar_get_as(plist, pstate_index, double);
-  m_pstate = pstate_index;
-  p_speed.peak = new_peak_speed;
+  pstate_ = pstate_index;
+  speed_.peak = new_peak_speed;
 
   onSpeedChange();
 }
 
 int Cpu::getPState()
 {
-  return m_pstate;
+  return pstate_;
 }
 
 double Cpu::getPowerPeakAt(int pstate_index)
 {
-  xbt_dynar_t plist = p_speedPeakList;
+  xbt_dynar_t plist = speedPeakList_;
   xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
 
   return xbt_dynar_get_as(plist, pstate_index, double);
@@ -222,37 +222,37 @@ double Cpu::getPowerPeakAt(int pstate_index)
 
 double Cpu::getSpeed(double load)
 {
-  return load * p_speed.peak;
+  return load * speed_.peak;
 }
 
 double Cpu::getAvailableSpeed()
 {
 /* number between 0 and 1 */
-  return p_speed.scale;
+  return speed_.scale;
 }
 
 void Cpu::onSpeedChange() {
   TRACE_surf_host_set_speed(surf_get_clock(), getName(),
-      m_core * p_speed.scale * p_speed.peak);
+      coresAmount_ * speed_.scale * speed_.peak);
 }
 
 
 int Cpu::getCore()
 {
-  return m_core;
+  return coresAmount_;
 }
 
-void Cpu::set_state_trace(tmgr_trace_t trace)
+void Cpu::setStateTrace(tmgr_trace_t trace)
 {
-  xbt_assert(p_stateEvent==NULL,"Cannot set a second state trace to Host %s", m_host->name().c_str());
+  xbt_assert(stateEvent_==NULL,"Cannot set a second state trace to Host %s", host_->name().c_str());
 
-  p_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
+  stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
 }
-void Cpu::set_speed_trace(tmgr_trace_t trace)
+void Cpu::setSpeedTrace(tmgr_trace_t trace)
 {
-  xbt_assert(p_speed.event==NULL,"Cannot set a second speed trace to Host %s", m_host->name().c_str());
+  xbt_assert(speed_.event==NULL,"Cannot set a second speed trace to Host %s", host_->name().c_str());
 
-  p_speed.event = future_evt_set->add_trace(trace, 0.0, this);
+  speed_.event = future_evt_set->add_trace(trace, 0.0, this);
 }
 
 
@@ -317,7 +317,7 @@ void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
     unsigned long nbits = 0;
 
     /* FIXME: There is much faster algorithms doing this. */
-    for (int i = 0; i < cpu->m_core; i++) {
+    for (int i = 0; i < cpu->coresAmount_; i++) {
       unsigned long has_affinity = (1UL << i) & mask;
       if (has_affinity)
         nbits += 1;
@@ -330,7 +330,7 @@ void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
     }
   }
 
-  for (int i = 0; i < cpu->m_core; i++) {
+  for (int i = 0; i < cpu->coresAmount_; i++) {
     XBT_DEBUG("clear affinity %p to cpu-%d@%s", this, i,  cpu->getName());
     lmm_shrink(cpu->getModel()->getMaxminSystem(), cpu->p_constraintCore[i], var_obj);
 

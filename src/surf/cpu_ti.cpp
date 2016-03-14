@@ -472,17 +472,17 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
   : Cpu(model, host, NULL, core, 0)
 {
   xbt_assert(core==1,"Multi-core not handled by this model yet");
-  m_core = core;
+  coresAmount_ = core;
 
   availTrace_ = new CpuTiTgmr(speedTrace, 1/*scale*/);
 
   actionSet_ = new ActionTiList();
 
-  xbt_dynar_get_cpy(speedPeak, 0, &p_speed.peak);
-  XBT_DEBUG("CPU create: peak=%f", p_speed.peak);
+  xbt_dynar_get_cpy(speedPeak, 0, &speed_.peak);
+  XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
   if (stateTrace)
-    p_stateEvent = future_evt_set->add_trace(stateTrace, 0.0, this);
+    stateEvent_ = future_evt_set->add_trace(stateTrace, 0.0, this);
 
   if (speedTrace && xbt_dynar_length(speedTrace->event_list) > 1) {
   s_tmgr_event_t val;
@@ -490,7 +490,7 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
     xbt_dynar_get_cpy(speedTrace->event_list,
                       xbt_dynar_length(speedTrace->event_list) - 1, &val);
     if (val.delta == 0) {
-      p_speed.event =
+      speed_.event =
           future_evt_set->add_trace(tmgr_empty_trace_new(), availTrace_->lastTime_, this);
     }
   }
@@ -502,25 +502,25 @@ CpuTi::~CpuTi()
   delete availTrace_;
   delete actionSet_;
 }
-void CpuTi::set_speed_trace(tmgr_trace_t trace)
+void CpuTi::setSpeedTrace(tmgr_trace_t trace)
 {
   if (availTrace_)
     delete availTrace_;
 
-  availTrace_ = new CpuTiTgmr(trace, p_speed.scale);
+  availTrace_ = new CpuTiTgmr(trace, speed_.scale);
 
   /* add a fake trace event if periodicity == 0 */
   if (trace && xbt_dynar_length(trace->event_list) > 1) {
     s_tmgr_event_t val;
     xbt_dynar_get_cpy(trace->event_list, xbt_dynar_length(trace->event_list) - 1, &val);
     if (val.delta == 0)
-      p_speed.event = future_evt_set->add_trace(tmgr_empty_trace_new(), 0.0, this);
+      speed_.event = future_evt_set->add_trace(tmgr_empty_trace_new(), 0.0, this);
   }
 }
 
 void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
 {
-  if (event == p_speed.event) {
+  if (event == speed_.event) {
     tmgr_trace_t speedTrace;
     CpuTiTgmr *trace;
     s_tmgr_event_t val;
@@ -534,16 +534,16 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
     speedTrace = availTrace_->speedTrace_;
     xbt_dynar_get_cpy(speedTrace->event_list, xbt_dynar_length(speedTrace->event_list) - 1, &val);
     delete availTrace_;
-    p_speed.scale = val.value;
+    speed_.scale = val.value;
 
     trace = new CpuTiTgmr(TRACE_FIXED, val.value);
     XBT_DEBUG("value %f", val.value);
 
     availTrace_ = trace;
 
-    tmgr_trace_event_unref(&p_speed.event);
+    tmgr_trace_event_unref(&speed_.event);
 
-  } else if (event == p_stateEvent) {
+  } else if (event == stateEvent_) {
     if (value > 0) {
       if(isOff())
         xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
@@ -571,7 +571,7 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
         }
       }
     }
-    tmgr_trace_event_unref(&p_stateEvent);
+    tmgr_trace_event_unref(&stateEvent_);
 
   } else {
     xbt_die("Unknown event!\n");
@@ -619,7 +619,7 @@ void CpuTi::updateActionsFinishTime(double now)
           (action->getRemains()) * sum_priority *
            action->getPriority();
 
-      total_area /= p_speed.peak;
+      total_area /= speed_.peak;
 
       action->setFinishTime(availTrace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
@@ -661,7 +661,7 @@ bool CpuTi::isUsed()
 
 double CpuTi::getAvailableSpeed()
 {
-  p_speed.scale = availTrace_->getPowerScale(surf_get_clock());
+  speed_.scale = availTrace_->getPowerScale(surf_get_clock());
   return Cpu::getAvailableSpeed();
 }
 
@@ -674,7 +674,7 @@ void CpuTi::updateRemainingAmount(double now)
     return;
 
   /* compute the integration area */
-  double area_total = availTrace_->integrate(lastUpdate_, now) * p_speed.peak;
+  double area_total = availTrace_->integrate(lastUpdate_, now) * speed_.peak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
 
   for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {

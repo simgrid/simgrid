@@ -133,25 +133,25 @@ public:
   virtual void setPState(int pstate_index);
   virtual int  getPState();
 
-  simgrid::s4u::Host* getHost() { return m_host; }
+  simgrid::s4u::Host* getHost() { return host_; }
 
 public:
-  int m_core = 1;                /* Amount of cores */
-  simgrid::s4u::Host* m_host;
+  int coresAmount_ = 1;
+  simgrid::s4u::Host* host_;
 
-  xbt_dynar_t p_speedPeakList = NULL; /*< List of supported CPU capacities (pstate related) */
-  int m_pstate = 0;                   /*< Current pstate (index in the speedPeakList)*/
+  xbt_dynar_t speedPeakList_ = NULL; /*< List of supported CPU capacities (pstate related) */
+  int pstate_ = 0;                   /*< Current pstate (index in the speedPeakList)*/
 
   /* Note (hypervisor): */
   lmm_constraint_t *p_constraintCore=NULL;
   void **p_constraintCoreId=NULL;
 
 public:
-  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
-  virtual void set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
+  virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
+  virtual void setSpeedTrace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
 
-  tmgr_trace_iterator_t p_stateEvent = nullptr;
-  s_surf_metric_t p_speed = {1.0, 0, nullptr};
+  tmgr_trace_iterator_t stateEvent_ = nullptr;
+  s_surf_metric_t speed_ = {1.0, 0, nullptr};
 };
 
 /**********
