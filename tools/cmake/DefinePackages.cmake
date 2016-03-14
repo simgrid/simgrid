@@ -1097,6 +1097,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/scripts/IPC/Run/Win32Helper.pm
   tools/cmake/scripts/IPC/Run/Win32IO.pm
   tools/cmake/scripts/IPC/Run/Win32Pump.pm
+  tools/cmake/scripts/IPC/Win32APIFile.pm
   tools/cmake/scripts/Diff.pm
   tools/cmake/scripts/generate_memcheck_tests.pl
   tools/cmake/scripts/my_valgrind.pl

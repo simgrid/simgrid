@@ -19,34 +19,26 @@ environment:
   matrix:
     - COMPILER: MinGW-w64
 
-# MSCV15 is too hard for me: I fail to get the lib to link on that platf (even with c:\Libraries\boost_1_59_0)
-#    - COMPILER: MSVC15
-#      PLATFORM: Win32 # That's actually an appveyor parameter of MSVC15, it's useless with MinGW-w64
-#    - COMPILER: MSVC15
-#      PLATFORM: x64
-
-# When Lua will become mandatory, we will have to download it precompiled. It's Windows after all
-#
-#environment:
-#LUA_HINT: C:/projects/simgrid
-#install:
-#- if [%COMPILER%]==[MinGW-w64] appveyor DownloadFile "http://sourceforge.net/projects/luabinaries/files/5.3/Windows Libraries/Dynamic/lua-5.3_Win64_dllw4_lib.zip/download" -FileName lua.zip || appveyor DownloadFile "http://sourceforge.net/projects/luabinaries/files/5.3/Windows Libraries/Dynamic/lua-5.3_Win64_dllw4_lib.zip/download" -FileName lua.zip
-#- if [%COMPILER%]==[MinGW-w64] 7z x -tzip lua.zip > NULL
-
 install:
 # Sane migwin, as installed by symengine
-- if [%COMPILER%]==[MinGW-w64] call .appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z
-- if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
+#- if [%COMPILER%]==[MinGW-w64] call .appveyor-download.cmd "https://raw.githubusercontent.com/symengine/dependencies/5cff7d1736877336cf9fb58267111beea4fa152f/x86_64-4.9.1-release-posix-seh-rt_v3-rev1.7z" -FileName mw64.7z
+#- if [%COMPILER%]==[MinGW-w64] 7z x -oC:\ mw64.7z > NUL
 # Take the newly installed stuff in the path
-- set PATH=C:\mingw64\bin;%PATH%
-- if [%COMPILER%]==[MinGW-w64] rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
+#- set PATH=C:\mingw64\bin;%PATH%
+# Strawberry perl is the one to work with gcc
+- choco install strawberryperl -version 5.20.1.1
+- SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
+- cpanm --notest --quiet Win32API::File
+- cpanm --notest --quiet IPC::Run
+# Lua 
+#- choco install lua53
+# Cmake
+- choco install cmake
+- rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 
 build_script:
-- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[Win32] cmake -G "Visual Studio 14 2015"       -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF .
-- if [%COMPILER%]==[MSVC15] if [%PLATFORM%]==[x64]   cmake -G "Visual Studio 14 2015 Win64" -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF .
-- if not [%COMPILER%]==[MSVC15]                      cmake -G "MinGW Makefiles"             -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
-- if [%COMPILER%]==[MSVC15]     msbuild ALL_BUILD.vcxproj /verbosity:normal
-- if not [%COMPILER%]==[MSVC15] mingw32-make VERBOSE=1
+- cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
+- make VERBOSE=1
 - cd C:/projects/simgrid/examples/java && java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml || true
 
 # I cant use the cmake test because of the following error:
@@ -57,7 +49,6 @@ build_script:
 #- bash -c "cd C:/projects/simgrid; exec 0<&-; ctest --output-on-failure" < nul || true
 
 #test_script:
-# IPC::Run broken on windows. We should switch to https://rt.cpan.org/Public/Bug/Display.html?id=104812#txn-1546043
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/async/async.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/bittorrent/bittorrent.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_bypass/bypass.tesh
