@@ -117,7 +117,7 @@ tags
 callgrind.out.*
 ### Examples and traces
 *.exe
-examples/msg/actions/actions
+examples/msg/actions/mpi_actions
 examples/msg/actions/storage_actions
 examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen

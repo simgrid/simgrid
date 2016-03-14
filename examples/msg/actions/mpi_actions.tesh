@@ -1,7 +1,7 @@
 # A little tesh file testing most MPI-related actions
 
 ! output sort 19
-$ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment_split.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/mpi_actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml mpi_deployment_split.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > WARNING: THIS BINARY IS KINDA DEPRECATED
 > This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
 > [ 20.703314] (1:p0@Tremblay) p0 recv p1 20.703314
@@ -11,7 +11,7 @@ $ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/
 > [ 32.703314] (0:maestro@) Simulation time 32.7033
 
 ! output sort 19
-$ ${bindir:=.}/actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml deployment.xml mpi_actions_shared.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/mpi_actions --log=actions.thres=verbose ${srcdir:=.}/../../platforms/small_platform_fatpipe.xml mpi_deployment.xml mpi_actions.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > WARNING: THIS BINARY IS KINDA DEPRECATED
 > This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.
 > [  0.000000] (1:p0@Tremblay) p0 comm_size 3 0.000000
