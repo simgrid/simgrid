@@ -240,9 +240,6 @@ typedef struct s_sg_platf_AS_cbarg {
 
 #define SG_PLATF_AS_INITIALIZER {NULL,0}
 
-/** opaque structure defining a event generator for availability based on a probability distribution */
-typedef struct probabilist_event_generator *probabilist_event_generator_t;
-
 /********** Routing **********/
 void routing_cluster_add_backbone(Link* bb);
 /*** END of the parsing cruft ***/
