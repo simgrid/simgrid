@@ -117,7 +117,7 @@ tags
 callgrind.out.*
 ### Examples and traces
 *.exe
-examples/msg/actions/actions
+examples/msg/actions/mpi_actions
 examples/msg/actions/storage_actions
 examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen
@@ -166,7 +166,7 @@ examples/msg/mc/bugged2
 examples/msg/mc/bugged2_liveness
 examples/msg/mc/bugged2_stateful
 examples/msg/mc/bugged3
-examples/msg/mc/centralized
+examples/msg/mc/centralized_mutex
 examples/msg/mc/centralized_liveness
 examples/msg/mc/electric_fence
 examples/msg/mc/test/snapshot_comparison1

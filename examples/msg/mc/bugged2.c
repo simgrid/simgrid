@@ -15,10 +15,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(example, "this example");
 
-int server(int argc, char *argv[]);
-int client(int argc, char *argv[]);
-
-int server(int argc, char *argv[])
+static int server(int argc, char *argv[])
 {
   msg_task_t task1 = NULL;
   msg_task_t task2 = NULL;
@@ -52,7 +49,7 @@ int server(int argc, char *argv[])
   return 0;
 }
 
-int client(int argc, char *argv[])
+static int client(int argc, char *argv[])
 {
   msg_task_t task1 = MSG_task_create(argv[1], 0, 10000, NULL);
   msg_task_t task2 = MSG_task_create(argv[1], 0, 10000, NULL);
@@ -77,6 +74,5 @@ int main(int argc, char *argv[])
   MSG_launch_application("deploy_bugged2.xml");
 
   MSG_main();
-
   return 0;
 }

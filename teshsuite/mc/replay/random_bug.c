@@ -4,16 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-
-#include <xbt/log.h>
 #include <simgrid/msg.h>
 #include <simgrid/modelchecker.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(random_bug, "Application");
 
-/** An (fake) application with a bug occuring for some random values
- */
+/** An (fake) application with a bug occuring for some random values */
 static int app(int argc, char *argv[])
 {
   int x = MC_random(0, 5);

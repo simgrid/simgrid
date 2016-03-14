@@ -1,15 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-  <!-- For using with ping_pong, platform_sendrecv.xml -->
-  <!-- receiver my_name -->
   <process host="Disney" function="receiver"/>
-
-  <!-- sender my_name receiver_name other_sender_name -->
-  <process host="Jill" function="sender">
-    <argument value="X"/>
-  </process>
-  <process host="UNIX" function="sender">
-    <argument value="Y"/>
-  </process>
+  <process host="Jill" function="sender">   <argument value="X"/>  </process>
+  <process host="UNIX" function="sender">   <argument value="Y"/>  </process>
 </platform>

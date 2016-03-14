@@ -685,7 +685,6 @@ int main(int argc,char **argv ){
     dg=buildSH(class);
   }
 
-
   if(timer_on && dg->numNodes+1>timers_tot){
     timer_on=0;
     if(my_rank==0)

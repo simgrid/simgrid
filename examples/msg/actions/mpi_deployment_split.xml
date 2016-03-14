@@ -3,7 +3,7 @@
 <platform version="4">
 <!-- Example file of how to use trace replay, with actions split in separate files, one per process.
      Launch it like this:
-         ./actions homogeneous_3_hosts.xml deployment_split.xml  -->
+         ./mpi_actions homogeneous_3_hosts.xml mpi_deployment_split.xml  -->
 
   <process host="Tremblay" function="p0">
     <argument value="mpi_actions_split_p0.txt"/>

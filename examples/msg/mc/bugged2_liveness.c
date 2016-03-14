@@ -16,16 +16,13 @@
 #include "bugged2_liveness.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged3, "my log messages");
- 
+
 int cs = 0;
 
-int coordinator(int argc, char **argv);
-int client(int argc, char **argv);
-
-int coordinator(int argc, char *argv[])
+static int coordinator(int argc, char *argv[])
 {
   int CS_used = 0;              // initially the CS is idle
-  
+
   while (1) {
     msg_task_t task = NULL;
     MSG_task_receive(&task, "coordinator");
@@ -49,56 +46,47 @@ int coordinator(int argc, char *argv[])
     MSG_task_destroy(task);
     kind = NULL;
   }
-  
+
   return 0;
 }
 
-int client(int argc, char *argv[])
+static int client(int argc, char *argv[])
 {
   int my_pid = MSG_process_get_PID(MSG_process_self());
   char *my_mailbox = xbt_strdup(argv[1]);
   const char* kind;
- 
-  while(1){
 
+  while(1){
     XBT_INFO("Client (%s) asks the request", my_mailbox);
-    MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox),
-                  "coordinator");
+    MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
 
     msg_task_t answer = NULL;
     MSG_task_receive(&answer, my_mailbox);
 
     kind = MSG_task_get_name(answer);
-    
+
     if (!strcmp(kind, "grant")) {
-
       XBT_INFO("Client (%s) got the answer (grant). Sleep a bit and release it", my_mailbox);
-
       if(!strcmp(my_mailbox, "1"))
         cs = 1;
-      
     }else{
-      
       XBT_INFO("Client (%s) got the answer (not grant). Try again", my_mailbox);
-      
     }
 
     MSG_task_destroy(answer);
     kind = NULL;
-    
+
     MSG_process_sleep(my_pid);
   }
-
   return 0;
 }
 
 int main(int argc, char *argv[])
 {
-  
   MSG_init(&argc, argv);
 
   MC_automaton_new_propositional_symbol_pointer("cs", &cs);
-  
+
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);

@@ -19,14 +19,11 @@
  * and the MC does not find the counter-example.
  */
 
-#include <stdio.h>
 #include "simgrid/msg.h"
-#include "xbt/log.h"
 #include "mc/mc.h"
 #include <xbt/synchro_core.h>
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test,
-                             "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 #define BOX_NAME "box"
 
@@ -68,13 +65,11 @@ int main(int argc, char *argv[])
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
        "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
-   const char *platform_file = argv[1];
-  const char *application_file = argv[2];
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
   MSG_function_register("receiver", receiver);
   MSG_function_register("sender", sender);
 
-  MSG_launch_application(application_file);
+  MSG_launch_application(argv[2]);
 #ifndef DISABLE_THE_MUTEX
   mutex = xbt_mutex_init();
 #endif

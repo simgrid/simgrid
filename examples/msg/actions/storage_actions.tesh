@@ -1,0 +1,6 @@
+! output sort 19
+$ ${bindir:=.}/storage_actions --log=storage_actions.thres=verbose ${srcdir:=.}/../../platforms/storage/storage.xml storage_deployment.xml storage_actions.txt "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:p0@denise) p0 open /home/lib/libsimgrid.so.3.6.2 0.000000
+> [  0.063552] (1:p0@denise) p0 read /home/lib/libsimgrid.so.3.6.2 12710497 0.063552
+> [  0.063552] (1:p0@denise) p0 close /home/lib/libsimgrid.so.3.6.2 0.000000
+> [  0.063552] (0:maestro@) Simulation time 0.0635525

@@ -16,10 +16,7 @@
 #define CS_PER_PROCESS 2
 XBT_LOG_NEW_DEFAULT_CATEGORY(centralized, "my log messages");
 
-int coordinator(int argc, char **argv);
-int client(int argc, char **argv);
-
-int coordinator(int argc, char *argv[])
+static int coordinator(int argc, char *argv[])
 {
   xbt_dynar_t requests = xbt_dynar_new(sizeof(char *), NULL);   // dynamic vector storing requests (which are char*)
   int CS_used = 0;              // initially the CS is idle
@@ -41,8 +38,7 @@ int coordinator(int argc, char *argv[])
       }
     } else {                    // that's a release. Check if someone was waiting for the lock
       if (!xbt_dynar_is_empty(requests)) {
-        XBT_INFO("CS release. Grant to queued requests (queue size: %lu)",
-              xbt_dynar_length(requests));
+        XBT_INFO("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
         char *req;
         xbt_dynar_shift(requests, &req);
         MSG_task_send(MSG_task_create("grant", 0, 1000, NULL), req);
@@ -59,7 +55,7 @@ int coordinator(int argc, char *argv[])
   return 0;
 }
 
-int client(int argc, char *argv[])
+static int client(int argc, char *argv[])
 {
   int my_pid = MSG_process_get_PID(MSG_process_self());
   // use my pid as name of mailbox to contact me
@@ -68,16 +64,14 @@ int client(int argc, char *argv[])
   int i;
   for (i = 0; i < CS_PER_PROCESS; i++) {
     XBT_INFO("Ask the request");
-    MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox),
-                  "coordinator");
+    MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
     // wait the answer
     msg_task_t grant = NULL;
     MSG_task_receive(&grant, my_mailbox);
     MSG_task_destroy(grant);
     XBT_INFO("got the answer. Sleep a bit and release it");
     MSG_process_sleep(1);
-    MSG_task_send(MSG_task_create("release", 0, 1000, NULL),
-                  "coordinator");
+    MSG_task_send(MSG_task_create("release", 0, 1000, NULL), "coordinator");
     MSG_process_sleep(my_pid);
   }
   XBT_INFO("Got all the CS I wanted, quit now");
@@ -90,7 +84,7 @@ int main(int argc, char *argv[])
   MSG_create_environment("../msg_platform.xml");
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", client);
-  MSG_launch_application("deploy_mutex.xml");
+  MSG_launch_application("deploy_centralized_mutex.xml");
   MSG_main();
   return 0;
 }
