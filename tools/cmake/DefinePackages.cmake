@@ -908,7 +908,6 @@ set(bin_files
 
 set(txt_files
   ${txt_files}
-  .appveyor-download.cmd
   AUTHORS
   COPYING
   README
