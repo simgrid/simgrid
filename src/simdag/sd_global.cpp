@@ -119,7 +119,6 @@ void SD_create_environment(const char *platform_file)
 xbt_dynar_t SD_simulate(double how_long) {
   /* we stop the simulation when total_time >= how_long */
   double total_time = 0.0;
-  double elapsed_time = 0.0;
   SD_task_t task, dst;
   SD_dependency_t dependency;
   surf_action_t action;
@@ -139,7 +138,7 @@ xbt_dynar_t SD_simulate(double how_long) {
   }
 
   /* main loop */
-  elapsed_time = 0.0;
+  double elapsed_time = 0.0;
   while (elapsed_time >= 0.0 && (how_long < 0.0 || 0.00001 < (how_long -total_time)) &&
          !sd_global->watch_point_reached) {
     surf_model_t model = NULL;

@@ -25,7 +25,7 @@ CTestResults.xml
 src/simdag/dax_dtd.l
 src/surf/xml/simgrid_dtd.l
 ### Jedule
-examples/simdag/scheduling/simgrid.jed
+examples/simdag/scheduling/sd_scheduling.jed
 teshsuite/simdag/platforms/simgrid.jed
 ### Libraries links 
 examples/lua/simgrid.so
@@ -220,7 +220,6 @@ examples/simdag/goal/goal_test
 examples/simdag/io/sd_io
 examples/simdag/properties/sd_properties
 examples/simdag/scheduling/sd_scheduling
-examples/simdag/scheduling/Montage_25.jed
 examples/simdag/availability/sd_availability
 examples/simdag/comm_throttling/sd_comm_throttling
 examples/simdag/fail/sd_fail
