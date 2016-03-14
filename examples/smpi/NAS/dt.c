@@ -664,7 +664,7 @@ int main(int argc,char **argv ){
     exit(1);
   }
 
-  if(argc!=2|| (  strncmp(argv[1],"BH",2)!=0 && strncmp(argv[1],"WH",2)!=0 &&strncmp(argv[1],"SH",2)!=0)){
+  if(argc!=4 || (strncmp(argv[3],"BH",2)!=0 && strncmp(argv[3],"WH",2)!=0 && strncmp(argv[3],"SH",2)!=0)){
     if(my_rank==0){
     fprintf(stderr,"** Usage: mpirun -np N ../bin/dt.S GraphName\n");
     fprintf(stderr,"** Where \n   - N is integer number of MPI processes\n");
@@ -676,15 +676,17 @@ int main(int argc,char **argv ){
     MPI_Finalize();
     exit(0);
   }
-   if(strncmp(argv[1],"BH",2)==0){
+
+  if(strncmp(argv[3],"BH",2)==0){
     dg=buildBH(class);
-  }else if(strncmp(argv[1],"WH",2)==0){
+  }else if(strncmp(argv[3],"WH",2)==0){
     dg=buildWH(class);
-  }else if(strncmp(argv[1],"SH",2)==0){
+  }else if(strncmp(argv[3],"SH",2)==0){
     dg=buildSH(class);
   }
 
-  if(timer_on&&dg->numNodes+1>timers_tot){
+
+  if(timer_on && dg->numNodes+1>timers_tot){
     timer_on=0;
     if(my_rank==0)
     fprintf(stderr,"Not enough timers. Node timeing is off. \n");
