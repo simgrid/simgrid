@@ -8,7 +8,7 @@
 
 #include "surf/surf.h"
 #include "xbt/log.h"
-#include "src/surf/network_cm02.hpp"
+#include "src/surf/network_interface.hpp"
 #include "src/surf/trace_mgr.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
