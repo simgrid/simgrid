@@ -597,6 +597,7 @@ set(MC_SRC
   src/mc/mc_mmalloc.h
   src/mc/mc_liveness.h
   src/mc/LocationList.hpp
+  src/mc/malloc.hpp
   src/mc/LocationList.cpp
   src/mc/mc_liveness.cpp
   src/mc/mc_record.cpp

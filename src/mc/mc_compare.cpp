@@ -18,7 +18,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/mc_dwarf.hpp"
-
+#include "src/mc/malloc.hpp"
 #include "src/mc/Frame.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
@@ -170,7 +170,7 @@ static int compare_areas_with_type(ComparisonState& state,
              && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
           return 1;
         // The pointers are both in the heap:
-        return compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
+        return simgrid::mc::compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
                                  snapshot2, nullptr, type->subtype, pointer_level);
       }
 
@@ -427,7 +427,7 @@ int snapshot_compare(void *state1, void *state2)
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
-  res_init = init_heap_information(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
+  res_init = simgrid::mc::init_heap_information(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
   if (res_init == -1) {
 #ifdef MC_DEBUG
     XBT_DEBUG("(%d - %d) Different heap information", num1, num2);
@@ -472,7 +472,7 @@ int snapshot_compare(void *state1, void *state2)
                num2, cursor + 1);
 #endif
 
-      reset_heap_information();
+      simgrid::mc::reset_heap_information();
 
       return 1;
 #endif
@@ -522,7 +522,7 @@ int snapshot_compare(void *state1, void *state2)
   }
 
   /* Compare heap */
-  if (mmalloc_compare_heap(s1, s2) > 0) {
+  if (simgrid::mc::mmalloc_compare_heap(s1, s2) > 0) {
 
 #ifdef MC_DEBUG
     XBT_DEBUG("(%d - %d) Different heap (mmalloc_compare)", num1, num2);
@@ -537,7 +537,7 @@ int snapshot_compare(void *state1, void *state2)
 #endif
   }
 
-  reset_heap_information();
+  simgrid::mc::reset_heap_information();
 
 #ifdef MC_VERBOSE
   if (errors || hash_result)

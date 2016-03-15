@@ -275,8 +275,4 @@ void* MC_region_read_pointer(mc_mem_region_t region, const void* addr)
 
 SG_END_DECL()
 
-XBT_PRIVATE int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
-                          std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
-                          std::vector<simgrid::mc::IgnoredHeapRegion>* i2);
-
 #endif

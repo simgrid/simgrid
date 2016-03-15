@@ -60,13 +60,6 @@ XBT_PUBLIC( xbt_mheap_t ) mmalloc_get_default_md(void);
 xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap);
 xbt_mheap_t mmalloc_get_current_heap(void);
 
-int mmalloc_compare_heap(mc_snapshot_t snapshot1, mc_snapshot_t snapshot2);
-int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2);
-int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2, xbt_dynar_t to_ignore1, xbt_dynar_t to_ignore2);
-int compare_heap_area(int process_index, const void *area1, const void* area2, mc_snapshot_t snapshot1,
-                      mc_snapshot_t snapshot2, xbt_dynar_t previous, mc_type_t type, int pointer_level);
-void reset_heap_information(void);
-
 size_t mmalloc_get_bytes_used(xbt_mheap_t);
 ssize_t mmalloc_get_busy_size(xbt_mheap_t, void *ptr);
 

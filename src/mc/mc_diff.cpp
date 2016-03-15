@@ -11,6 +11,7 @@
 #include "mc/mc.h"
 #include "xbt/mmalloc.h"
 #include "mc/datatypes.h"
+#include "src/mc/malloc.hpp"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_dwarf.hpp"
@@ -21,12 +22,8 @@ using simgrid::mc::remote;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
                                 "Logging specific to mc_diff in mc");
 
-extern "C" {
-
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
-
-typedef char *type_name;
 
 struct XBT_PRIVATE s_mc_diff {
   s_xbt_mheap_t std_heap_copy;
@@ -218,7 +215,8 @@ static int equal_fragments(struct s_mc_diff *state, int b1, int f1, int b2,
   return 0;
 }
 
-}
+namespace simgrid {
+namespace mc {
 
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
@@ -275,15 +273,13 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
   memset(state->equals_to2, 0,
          state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(s_heap_area_t));
   memset(state->types1, 0,
-         state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(type_name *));
+         state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(char**));
   memset(state->types2, 0,
-         state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(type_name *));
+         state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(char**));
 
   return 0;
 
 }
-
-extern "C" {
 
 void reset_heap_information()
 {
@@ -1588,4 +1584,5 @@ int mmalloc_linear_compare_heap(xbt_mheap_t heap1, xbt_mheap_t heap2)
 }
 #endif
 
+}
 }
