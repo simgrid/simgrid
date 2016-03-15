@@ -19,7 +19,7 @@ typedef struct tmgr_event {
 } s_tmgr_event_t, *tmgr_event_t;
 
 typedef struct tmgr_trace {
-  xbt_dynar_t event_list;
+
 } s_tmgr_trace_t;
 
 /* Iterator within a trace */
@@ -74,8 +74,10 @@ XBT_PUBLIC_CLASS trace_iterator {
 XBT_PUBLIC_CLASS trace {
 public:
   /**  Creates an empty trace */
-  trace() {}
-  virtual ~trace() {}
+  trace();
+  virtual ~trace();
+//private:
+  xbt_dynar_t event_list;
 };
 
 /** @brief Future Event Set (collection of iterators over the traces)

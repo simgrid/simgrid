@@ -17,6 +17,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 static xbt_dict_t trace_list = NULL;
 
+simgrid::trace_mgr::trace::trace()
+{
+}
+
+simgrid::trace_mgr::trace::~trace()
+{
+  xbt_dynar_free(&event_list);
+}
 simgrid::trace_mgr::future_evt_set::future_evt_set()
 {
 }
@@ -47,7 +55,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input, doubl
   xbt_assert(periodicity >= 0,
               "Invalid periodicity %g (must be positive)", periodicity);
 
-  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace = new simgrid::trace_mgr::trace();
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   list = xbt_str_split(input, "\n\r");
@@ -126,7 +134,7 @@ tmgr_trace_t tmgr_empty_trace_new(void)
   tmgr_trace_t trace = NULL;
   s_tmgr_event_t event;
 
-  trace = xbt_new0(s_tmgr_trace_t, 1);
+  trace = new simgrid::trace_mgr::trace();
   trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   event.delta = 0.0;
@@ -138,11 +146,7 @@ tmgr_trace_t tmgr_empty_trace_new(void)
 
 void tmgr_trace_free(tmgr_trace_t trace)
 {
-  if (!trace)
-    return;
-
-  xbt_dynar_free(&(trace->event_list));
-  free(trace);
+  delete trace;
 }
 
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */

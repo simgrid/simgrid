@@ -21,6 +21,7 @@ namespace simgrid {
     class Link;
   }
   namespace trace_mgr {
+    class trace;
     class future_evt_set;
   }
 }
@@ -31,6 +32,7 @@ typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::NetCard surf_NetCard;
 typedef simgrid::surf::Link Link;
 typedef simgrid::surf::Resource surf_Resource;
+typedef simgrid::trace_mgr::trace tmgr_Trace;
 
 #else
 
@@ -40,6 +42,7 @@ typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_NetCard surf_NetCard;
 typedef struct surf_Resource surf_Resource;
 typedef struct Link Link;
+typedef struct Trace tmgr_Trace;
 #endif
 
 typedef simgrid_Host* sg_host_t;
@@ -52,7 +55,7 @@ typedef surf_Resource *sg_resource_t;
 // Types which are in fact dictelmt:
 typedef struct s_xbt_dictelm *sg_storage_t;
 
-typedef struct tmgr_trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
+typedef tmgr_Trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 
 typedef enum {
   SURF_LINK_FULLDUPLEX = 2,
