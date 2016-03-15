@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRIC_XBT_STRING_HPP
-#define SIMGRIC_XBT_STRING_HPP
+#ifndef SIMGRID_XBT_STRING_HPP
+#define SIMGRID_XBT_STRING_HPP
 
 #include "src/internal_config.h"
 #if HAVE_MC

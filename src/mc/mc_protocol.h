@@ -20,7 +20,7 @@ SG_BEGIN_DECL()
 /** Environment variable name set by `simgrid-mc` to enable MC support in the
  *  children MC processes
  */
-#define MC_ENV_VARIABLE "SIMGRIC_MC"
+#define MC_ENV_VARIABLE "SIMGRID_MC"
 
 /** Environment variable name used to pass the communication socket */
 #define MC_ENV_SOCKET_FD "SIMGRID_MC_SOCKET_FD"
