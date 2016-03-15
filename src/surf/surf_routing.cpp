@@ -65,7 +65,7 @@ simgrid::surf::RoutingPlatf *routing_platf = NULL;
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {
   tmgr_trace_t tmgr_trace;
-  if (!trace->file || strcmp(trace->file, "") != 0) {
+  if (trace->file && strcmp(trace->file, "") != 0) {
     tmgr_trace = tmgr_trace_new_from_file(trace->file);
   } else {
     xbt_assert(strcmp(trace->pc_data, ""),
