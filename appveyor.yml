@@ -13,13 +13,13 @@ init:
 
 environment:
   global:
-    BOOST_ROOT: c:\Libraries\boost
-    BOOST_LIBRARYDIR: c:\Libraries\boost\stage\lib
+    BOOST_ROOT: c:\Libraries\boost_1_59_0
+    BOOST_LIBRARYDIR: c:\Libraries\boost_1_59_0\stage\lib
     TESH_ARGS: C:/projects/simgrid/bin/tesh --setenv srcdir=C:/projects/simgrid/examples/java --setenv classpath=C:/projects/simgrid/examples/java;C:/projects/simgrid/teshsuite/java;C:/projects/simgrid/simgrid.jar --cd C:/projects/simgrid/examples/java
 
 install:
 # Strawberry perl is the one to work with gcc
-- choco install strawberryperl -version 5.20.1.1
+- choco install --limit-output strawberryperl -version 5.20.1.1
 - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
 - cpanm --notest --quiet Win32API::File
 - cpanm --notest --quiet IPC::Run
@@ -27,7 +27,7 @@ install:
 #- choco install lua53
 # Basic dependencies: gcc and Cmake (must be placed before Perl in the path)
 - SET PATH=C:\tools\mingw64\bin;%PATH%
-- choco install mingw cmake
+- choco install --limit-output mingw cmake
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 
 build_script:
