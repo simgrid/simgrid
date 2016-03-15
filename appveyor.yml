@@ -27,7 +27,7 @@ install:
 #- choco install lua53
 # Basic dependencies: gcc and Cmake (must be placed before Perl in the path)
 - SET PATH=C:\tools\mingw64\bin;%PATH%
-- choco install mingw cmake
+- choco install mingw cmake --limit-output
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 
 build_script:
