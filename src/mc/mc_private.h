@@ -7,46 +7,38 @@
 #ifndef SIMGRID_MC_PRIVATE_H
 #define SIMGRID_MC_PRIVATE_H
 
+#include "simgrid_config.h"
+
 #include <sys/types.h>
 
-#include "simgrid_config.h"
 #include <stdio.h>
-#include <stdint.h>
-#include <stdbool.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
+
 #include <elfutils/libdw.h>
 
+#include <simgrid/msg.h>
+#include <xbt/fifo.h>
+#include <xbt/config.h>
+#include <xbt/parmap.h>
+#include <xbt/base.h>
+
 #include "mc/mc.h"
-#include "src/mc/mc_base.h"
 #include "mc/datatypes.h"
-#include "xbt/fifo.h"
-#include "xbt/config.h"
+#include "src/mc/mc_base.h"
 
-#ifdef __cplusplus
-#include "src/xbt/memory_map.hpp"
-#endif
-
-#include "xbt/function_types.h"
-#include "xbt/mmalloc.h"
 #include "src/simix/smx_private.h"
 #include "src/xbt/mmalloc/mmprivate.h"
-#include "xbt/automaton.h"
-#include <simgrid/msg.h>
-#include "xbt/strbuff.h"
-#include "xbt/parmap.h"
-#include <xbt/base.h>
 
 #ifdef __cplusplus
 #include "src/mc/mc_forward.hpp"
+#include "src/xbt/memory_map.hpp"
 #endif
 
 #include "src/mc/mc_protocol.h"
 
 SG_BEGIN_DECL()
-
-typedef struct s_mc_function_index_item s_mc_function_index_item_t, *mc_function_index_item_t;
 
 /********************************* MC Global **********************************/
 
