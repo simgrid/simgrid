@@ -24,8 +24,8 @@ namespace mc {
 /** @brief Storage for snapshot memory pages
  *
  * The first (lower) layer of the per-page snapshot mechanism is a page
- * store: it's responsibility is to store immutable shareable
- * reference-counted memory pages independently of the snapshoting
+ * store: its responsibility is to store immutable shareable
+ * reference-counted memory pages independently of the snapshotting
  * logic. Snapshot management and representation, soft-dirty tracking is
  * handled to an higher layer. READMORE
  *

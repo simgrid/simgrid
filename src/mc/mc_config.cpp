@@ -138,7 +138,7 @@ void _mc_cfg_cb_snapshot_fds(const char *name, int pos)
 {
   if (_sg_cfg_init_status && !_sg_do_model_check)
     xbt_die
-        ("You are specifying a value to enable/disable the use of FD snapshoting, but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
+        ("You are specifying a value to enable/disable the use of FD snapshotting, but model-checking was not activated at config time (through bu the program was not runned under the model-checker (with simgrid-mc)). This won't work, sorry.");
 
   _sg_mc_snapshot_fds = xbt_cfg_get_boolean(_sg_cfg_set, name);
 }
