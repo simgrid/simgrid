@@ -14,11 +14,9 @@
 #include "src/surf/cpu_interface.hpp"
 
 #include "xbt/log.h"
-XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test,
-                             "Messages specific for surf example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-const char *string_action(e_surf_action_state_t state);
-const char *string_action(e_surf_action_state_t state)
+static const char *string_action(e_surf_action_state_t state)
 {
   switch (state) {
   case (SURF_ACTION_READY):

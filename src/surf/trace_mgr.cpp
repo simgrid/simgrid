@@ -12,13 +12,15 @@
 #include "surf_private.h"
 #include "xbt/RngStream.h"
 #include <math.h>
+#include <unordered_map>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
-static xbt_dict_t trace_list = NULL;
+static std::unordered_map<const char *, simgrid::trace_mgr::trace*> trace_list;
 
 simgrid::trace_mgr::trace::trace()
 {
+  event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 }
 
 simgrid::trace_mgr::trace::~trace()
@@ -34,7 +36,7 @@ simgrid::trace_mgr::future_evt_set::~future_evt_set()
   xbt_heap_free(p_heap);
 }
 
-tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input, double periodicity)
+tmgr_trace_t tmgr_trace_new_from_string(const char *name, const char *input, double periodicity)
 {
   tmgr_trace_t trace = NULL;
   int linecount = 0;
@@ -44,19 +46,14 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input, doubl
   unsigned int cpt;
   char *val;
 
-  if (trace_list) {
-    trace = (tmgr_trace_t)xbt_dict_get_or_null(trace_list, id);
-    if (trace) {
-      XBT_WARN("Ignoring redefinition of trace %s", id);
-      return trace;
-    }
+  if (trace_list.find(name) != trace_list.end()) {
+    XBT_WARN("Ignoring redefinition of trace %s", name);
+    return trace_list.at(name);
   }
 
-  xbt_assert(periodicity >= 0,
-              "Invalid periodicity %g (must be positive)", periodicity);
+  xbt_assert(periodicity >= 0, "Invalid periodicity %g (must be positive)", periodicity);
 
   trace = new simgrid::trace_mgr::trace();
-  trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   list = xbt_str_split(input, "\n\r");
 
@@ -70,13 +67,13 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input, doubl
       continue;
 
     if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2)
-      xbt_die("%s:%d: Syntax error in trace\n%s", id, linecount, input);
+      xbt_die("%s:%d: Syntax error in trace\n%s", name, linecount, input);
 
     if (last_event) {
       if (last_event->delta > event.delta) {
         xbt_die("%s:%d: Invalid trace: Events must be sorted, "
                 "but time %g > time %g.\n%s",
-                id, linecount, last_event->delta, event.delta, input);
+                name, linecount, last_event->delta, event.delta, input);
       }
       last_event->delta = event.delta - last_event->delta;
     } else {
@@ -93,10 +90,7 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *id, const char *input, doubl
   if (last_event)
     last_event->delta = periodicity;
 
-  if (!trace_list)
-    trace_list = xbt_dict_new_homogeneous((void (*)(void *)) tmgr_trace_free);
-
-  xbt_dict_set(trace_list, id, (void *) trace, NULL);
+  trace_list.insert({xbt_strdup(name), trace});
 
   xbt_dynar_free(&list);
   return trace;
@@ -106,15 +100,11 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 {
   tmgr_trace_t trace = NULL;
 
-  if ((!filename) || (strcmp(filename, "") == 0))
-    return NULL;
+  xbt_assert(filename && filename[0], "Cannot parse a trace from the null or empty filename");
 
-  if (trace_list) {
-    trace = (tmgr_trace_t)xbt_dict_get_or_null(trace_list, filename);
-    if (trace) {
-      XBT_WARN("Ignoring redefinition of trace %s", filename);
-      return trace;
-    }
+  if (trace_list.find(filename) != trace_list.end()) {
+    XBT_WARN("Ignoring redefinition of trace file %s", filename);
+    return trace_list.at(filename);
   }
 
   FILE *f = surf_fopen(filename, "r");
@@ -135,7 +125,6 @@ tmgr_trace_t tmgr_empty_trace_new(void)
   s_tmgr_event_t event;
 
   trace = new simgrid::trace_mgr::trace();
-  trace->event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
 
   event.delta = 0.0;
   event.value = 0.0;
@@ -209,7 +198,8 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
 
 void tmgr_finalize(void)
 {
-  xbt_dict_free(&trace_list);
+  for (auto kv : trace_list)
+    delete kv.second;
 }
 
 void tmgr_trace_event_unref(tmgr_trace_iterator_t *trace_event)

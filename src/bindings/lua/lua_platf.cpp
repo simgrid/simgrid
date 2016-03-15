@@ -202,13 +202,17 @@ int console_add_host(lua_State *L) {
   //get power_trace
   lua_pushstring(L, "availability_file");
   lua_gettable(L, -2);
-  host.speed_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  const char *filename = lua_tostring(L, -1);
+  if (filename)
+    host.speed_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   //get trace state
   lua_pushstring(L, "state_file");
   lua_gettable(L, -2);
-  host.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  filename = lua_tostring(L, -1);
+    if (filename)
+      host.state_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   sg_platf_new_host(&host);
@@ -267,19 +271,25 @@ int  console_add_link(lua_State *L) {
   //get bandwidth_trace value
   lua_pushstring(L, "bandwidth_file");
   lua_gettable(L, -2);
-  link.bandwidth_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  const char *filename = lua_tostring(L, -1);
+  if (filename)
+    link.bandwidth_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   //get latency_trace value
   lua_pushstring(L, "latency_file");
   lua_gettable(L, -2);
-  link.latency_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  filename = lua_tostring(L, -1);
+  if (filename)
+    link.latency_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   //get state_trace value
   lua_pushstring(L, "state_file");
   lua_gettable(L, -2);
-  link.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  filename = lua_tostring(L, -1);
+  if (filename)
+    link.state_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   //get policy value

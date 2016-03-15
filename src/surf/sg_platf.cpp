@@ -270,7 +270,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
         char *avail_file = xbt_str_varsubst(cluster->availability_trace, patterns);
         XBT_DEBUG("\tavailability_file=\"%s\"", avail_file);
-        host.speed_trace = tmgr_trace_new_from_file(avail_file);
+        if (avail_file && avail_file[0])
+          host.speed_trace = tmgr_trace_new_from_file(avail_file);
         xbt_free(avail_file);
       } else {
         XBT_DEBUG("\tavailability_file=\"\"");
@@ -279,7 +280,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       if (cluster->state_trace && strcmp(cluster->state_trace, "")) {
         char *avail_file = xbt_str_varsubst(cluster->state_trace, patterns);
         XBT_DEBUG("\tstate_file=\"%s\"", avail_file);
-        host.state_trace = tmgr_trace_new_from_file(avail_file);
+        if (avail_file && avail_file[0])
+          host.state_trace = tmgr_trace_new_from_file(avail_file);
         xbt_free(avail_file);
       } else {
         XBT_DEBUG("\tstate_file=\"\"");
