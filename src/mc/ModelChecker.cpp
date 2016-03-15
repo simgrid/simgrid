@@ -176,7 +176,7 @@ void ModelChecker::resume(simgrid::mc::Process& process)
   int res = process.getChannel().send(MC_MESSAGE_CONTINUE);
   if (res)
     throw simgrid::xbt::errno_error(res);
-  process.cache_flags = (mc_process_cache_flags_t) 0;
+  process.clear_cache();
 }
 
 static
@@ -434,7 +434,7 @@ void ModelChecker::simcall_handle(simgrid::mc::Process& process, unsigned long p
   m.pid   = pid;
   m.value = value;
   process.getChannel().send(m);
-  process.cache_flags = (mc_process_cache_flags_t) 0;
+  process.clear_cache();
   while (process.running())
     if (!this->handle_events())
       return;

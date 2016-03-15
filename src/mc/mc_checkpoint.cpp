@@ -638,7 +638,7 @@ void restore_snapshot(mc_snapshot_t snapshot)
   if (use_soft_dirty)
     mc_model_checker->process().reset_soft_dirty();
   snapshot_ignore_restore(snapshot);
-  mc_model_checker->process().cache_flags = 0;
+  mc_model_checker->process().clear_cache();
   if (use_soft_dirty)
     mc_model_checker->parent_snapshot_ = snapshot;
 }

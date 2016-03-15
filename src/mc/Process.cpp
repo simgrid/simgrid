@@ -227,8 +227,9 @@ void Process::init()
   this->smx_process_infos.clear();
   this->smx_old_process_infos.clear();
   this->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
-  this->unw_underlying_addr_space = unw_create_addr_space(&mc_unw_vmread_accessors, __BYTE_ORDER);
-  this->unw_underlying_context = _UPT_create(this->pid_);
+  this->unw_underlying_addr_space = simgrid::unw::create_addr_space();
+  this->unw_underlying_context = simgrid::unw::create_context(
+    this->unw_underlying_addr_space, this->pid_);
 }
 
 Process::~Process()
@@ -262,7 +263,7 @@ void Process::refresh_heap()
     this->heap = std::unique_ptr<s_xbt_mheap_t>(new s_xbt_mheap_t());
   this->read_bytes(this->heap.get(), sizeof(struct mdesc),
     remote(this->heap_address), simgrid::mc::ProcessIndexDisabled);
-  this->cache_flags |= MC_PROCESS_CACHE_FLAG_HEAP;
+  this->cache_flags_ |= Process::cache_heap;
 }
 
 /** Refresh the information about the process
@@ -273,15 +274,15 @@ void Process::refresh_heap()
 void Process::refresh_malloc_info()
 {
   xbt_assert(mc_mode == MC_MODE_SERVER);
-  if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
-    this->refresh_heap();
   // Refresh process->heapinfo:
+  if (this->cache_flags_ & Process::cache_malloc)
+    return;
   size_t count = this->heap->heaplimit + 1;
   if (this->heap_info.size() < count)
     this->heap_info.resize(count);
   this->read_bytes(this->heap_info.data(), count * sizeof(malloc_info),
     remote(this->heap->heapinfo), simgrid::mc::ProcessIndexDisabled);
-  this->cache_flags |= MC_PROCESS_CACHE_FLAG_MALLOC_INFO;
+  this->cache_flags_ |= Process::cache_malloc;
 }
 
 /** @brief Finds the range of the different memory segments and binary paths */
