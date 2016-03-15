@@ -58,7 +58,7 @@ pid_t do_fork(F f)
   // Child-process:
   try {
     f();
-    std::exit(EXIT_SUCCESS);
+    _exit(EXIT_SUCCESS);
   }
   catch(...) {
     // The callback should catch exceptions:
@@ -125,7 +125,7 @@ std::pair<pid_t, int> create_model_checked(char** argv)
     close(sockets[1]);
     int res = exec_model_checked(sockets[0], argv);
     XBT_DEBUG("Error in the child process creation");
-    exit(res);
+    _exit(res);
   });
 
   // Parent (model-checker):
