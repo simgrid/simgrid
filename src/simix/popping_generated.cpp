@@ -16,7 +16,7 @@
 #include <xbt/base.h>
 #include "smx_private.h"
 #if HAVE_MC
-#include "src/mc/mc_forward.h"
+#include "src/mc/mc_forward.hpp"
 #endif
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_popping);

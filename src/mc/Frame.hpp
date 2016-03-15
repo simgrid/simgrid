@@ -13,7 +13,7 @@
 #include <xbt/base.h>
 #include <xbt/range.hpp>
 
-#include "src/mc/mc_forward.h"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/LocationList.hpp"
 #include "src/mc/Variable.hpp"
 #include "src/mc/Frame.hpp"

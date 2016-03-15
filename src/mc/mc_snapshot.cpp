@@ -148,8 +148,8 @@ int MC_snapshot_region_memcmp(
  * @return same as memcmp
  * */
 int MC_snapshot_memcmp(
-  const void* addr1, mc_snapshot_t snapshot1,
-  const void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size)
+  const void* addr1, simgrid::mc::Snapshot* snapshot1,
+  const void* addr2, simgrid::mc::Snapshot* snapshot2, int process_index, size_t size)
 {
   mc_mem_region_t region1 = mc_get_snapshot_region(addr1, snapshot1, process_index);
   mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2, process_index);

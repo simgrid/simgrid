@@ -115,7 +115,7 @@ RegionSnapshot privatized_region(
 #endif
 
 static
-void add_region(int index, mc_snapshot_t snapshot,
+void add_region(int index, simgrid::mc::Snapshot* snapshot,
                                   simgrid::mc::RegionType type,
                                   simgrid::mc::ObjectInformation* object_info,
                                   void *start_addr, void* permanent_addr,
@@ -148,7 +148,7 @@ void add_region(int index, mc_snapshot_t snapshot,
   return;
 }
 
-static void get_memory_regions(simgrid::mc::Process* process, mc_snapshot_t snapshot)
+static void get_memory_regions(simgrid::mc::Process* process, simgrid::mc::Snapshot* snapshot)
 {
   const size_t n = process->object_infos.size();
   snapshot->snapshot_regions.resize(n + 1);
@@ -394,7 +394,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
   return std::move(result);
 };
 
-static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(mc_snapshot_t * snapshot)
+static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snapshot* * snapshot)
 {
   std::vector<s_mc_snapshot_stack_t> res;
 
@@ -425,7 +425,7 @@ static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(mc_snapshot_t * s
 
 }
 
-static void snapshot_handle_ignore(mc_snapshot_t snapshot)
+static void snapshot_handle_ignore(simgrid::mc::Snapshot* snapshot)
 {
   xbt_assert(snapshot->process());
   
@@ -447,7 +447,7 @@ static void snapshot_handle_ignore(mc_snapshot_t snapshot)
 
 }
 
-static void snapshot_ignore_restore(mc_snapshot_t snapshot)
+static void snapshot_ignore_restore(simgrid::mc::Snapshot* snapshot)
 {
   for (auto const& ignored_data : snapshot->ignored_data)
     snapshot->process()->write_bytes(
@@ -540,13 +540,13 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
   return std::move(fds);
 }
 
-mc_snapshot_t take_snapshot(int num_state)
+simgrid::mc::Snapshot* take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
   simgrid::mc::Process* mc_process = &mc_model_checker->process();
 
-  mc_snapshot_t snapshot = new simgrid::mc::Snapshot(mc_process);
+  simgrid::mc::Snapshot* snapshot = new simgrid::mc::Snapshot(mc_process);
 
   snapshot->num_state = num_state;
 
@@ -584,7 +584,7 @@ mc_snapshot_t take_snapshot(int num_state)
 }
 
 static inline
-void restore_snapshot_regions(mc_snapshot_t snapshot)
+void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
 {
   for(std::unique_ptr<s_mc_mem_region_t> const& region : snapshot->snapshot_regions) {
     // For privatized, variables we decided it was not necessary to take the snapshot:
@@ -605,7 +605,7 @@ void restore_snapshot_regions(mc_snapshot_t snapshot)
 }
 
 static inline
-void restore_snapshot_fds(mc_snapshot_t snapshot)
+void restore_snapshot_fds(simgrid::mc::Snapshot* snapshot)
 {
   if (mc_mode == MC_MODE_SERVER)
     xbt_die("FD snapshot not implemented in client/server mode.");
@@ -624,7 +624,7 @@ void restore_snapshot_fds(mc_snapshot_t snapshot)
   }
 }
 
-void restore_snapshot(mc_snapshot_t snapshot)
+void restore_snapshot(simgrid::mc::Snapshot* snapshot)
 {
   XBT_DEBUG("Restore snapshot %i", snapshot->num_state);
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty;

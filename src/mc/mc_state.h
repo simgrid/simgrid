@@ -47,7 +47,7 @@ typedef struct XBT_PRIVATE mc_state {
   s_smx_simcall_t executed_req;         /* The executed request of the state */
   int req_num;                      /* The request number (in the case of a
                                        multi-request like waitany ) */
-  mc_snapshot_t system_state;      /* Snapshot of system state */
+  simgrid::mc::Snapshot* system_state;      /* Snapshot of system state */
   int num;
   int in_visited_states;
   // comm determinism verification (xbt_dynar_t<xbt_dynar_t<mc_comm_pattern_t>):

@@ -17,7 +17,7 @@
 
 #include "src/mc/mc_replay.h"
 #include "smx_private.h"
-#include "src/mc/mc_forward.h"
+#include "src/mc/mc_forward.hpp"
 #include "xbt/ex.h"
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"

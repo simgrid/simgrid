@@ -36,7 +36,7 @@ class ModelChecker {
   PageStore page_store_;
   std::unique_ptr<Process> process_;
 public:
-  mc_snapshot_t parent_snapshot_;
+  simgrid::mc::Snapshot* parent_snapshot_;
 
 public:
   ModelChecker(ModelChecker const&) = delete;

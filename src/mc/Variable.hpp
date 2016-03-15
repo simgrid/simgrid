@@ -11,7 +11,7 @@
 
 #include <string>
 
-#include "src/mc/mc_forward.h"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/LocationList.hpp"
 
 namespace simgrid {

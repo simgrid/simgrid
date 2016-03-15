@@ -38,7 +38,10 @@
 #include "xbt/parmap.h"
 #include <xbt/base.h>
 
-#include "src/mc/mc_forward.h"
+#ifdef __cplusplus
+#include "src/mc/mc_forward.hpp"
+#endif
+
 #include "src/mc/mc_protocol.h"
 
 SG_BEGIN_DECL()

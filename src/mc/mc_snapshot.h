@@ -129,7 +129,7 @@ typedef struct XBT_PRIVATE s_mc_snapshot_stack {
 } s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t {
-  mc_snapshot_t snapshot;
+  simgrid::mc::Snapshot* snapshot;
   int prev_pair;
   char *prev_req;
   int initial_communications_pattern_done;
@@ -169,7 +169,7 @@ public: // To be private
 extern "C" {
 
 static inline __attribute__ ((always_inline))
-mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int process_index, mc_mem_region_t region)
+mc_mem_region_t mc_get_region_hinted(void* addr, simgrid::mc::Snapshot* snapshot, int process_index, mc_mem_region_t region)
 {
   if (region->contain(simgrid::mc::remote(addr)))
     return region;
@@ -177,7 +177,7 @@ mc_mem_region_t mc_get_region_hinted(void* addr, mc_snapshot_t snapshot, int pro
     return mc_get_snapshot_region(addr, snapshot, process_index);
 }
 
-static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
+static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
 
 }
 
@@ -186,8 +186,8 @@ static const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot);
 namespace simgrid {
 namespace mc {
 
-XBT_PRIVATE mc_snapshot_t take_snapshot(int num_state);
-XBT_PRIVATE void restore_snapshot(mc_snapshot_t);
+XBT_PRIVATE simgrid::mc::Snapshot* take_snapshot(int num_state);
+XBT_PRIVATE void restore_snapshot(simgrid::mc::Snapshot*);
 
 }
 }
@@ -207,11 +207,11 @@ int MC_snapshot_region_memcmp(
   const void* addr1, mc_mem_region_t region1,
   const void* addr2, mc_mem_region_t region2, std::size_t size);
 XBT_PRIVATE int MC_snapshot_memcmp(
-  const void* addr1, mc_snapshot_t snapshot1,
-  const void* addr2, mc_snapshot_t snapshot2, int process_index, std::size_t size);
+  const void* addr1, simgrid::mc::Snapshot* snapshot1,
+  const void* addr2, simgrid::mc::Snapshot* snapshot2, int process_index, std::size_t size);
 
 static inline __attribute__ ((always_inline))
-const void* mc_snapshot_get_heap_end(mc_snapshot_t snapshot)
+const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
 {
   if(snapshot==NULL)
       xbt_die("snapshot is NULL");

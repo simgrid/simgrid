@@ -13,6 +13,7 @@
 #include <xbt/sysdep.h>
 
 #include "src/internal_config.h"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_liveness.h"
 #include "src/mc/mc_private.h"
@@ -70,8 +71,8 @@ extern "C" {
 
 static int compare_areas_with_type(ComparisonState& state,
                                    int process_index,
-                                   void* real_area1, mc_snapshot_t snapshot1, mc_mem_region_t region1,
-                                   void* real_area2, mc_snapshot_t snapshot2, mc_mem_region_t region2,
+                                   void* real_area1, simgrid::mc::Snapshot* snapshot1, mc_mem_region_t region1,
+                                   void* real_area2, simgrid::mc::Snapshot* snapshot2, mc_mem_region_t region2,
                                    simgrid::mc::Type* type, int pointer_level)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
@@ -227,8 +228,8 @@ static int compare_areas_with_type(ComparisonState& state,
 static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
                                     int process_index,
                                     mc_mem_region_t r1,
-                                    mc_mem_region_t r2, mc_snapshot_t snapshot1,
-                                    mc_snapshot_t snapshot2)
+                                    mc_mem_region_t r2, simgrid::mc::Snapshot* snapshot1,
+                                    simgrid::mc::Snapshot* snapshot2)
 {
   xbt_assert(r1 && r2, "Missing region.");
 
@@ -290,8 +291,8 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
 }
 
 static int compare_local_variables(int process_index,
-                                   mc_snapshot_t snapshot1,
-                                   mc_snapshot_t snapshot2,
+                                   simgrid::mc::Snapshot* snapshot1,
+                                   simgrid::mc::Snapshot* snapshot2,
                                    mc_snapshot_stack_t stack1,
                                    mc_snapshot_stack_t stack2)
 {
@@ -351,7 +352,8 @@ int snapshot_compare(void *state1, void *state2)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  mc_snapshot_t s1, s2;
+  simgrid::mc::Snapshot* s1;
+  simgrid::mc::Snapshot* s2;
   int num1, num2;
 
   if (_sg_mc_liveness) {        /* Liveness MC */

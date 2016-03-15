@@ -568,8 +568,6 @@ set(MC_SRC
   src/mc/Type.hpp
   src/mc/Variable.cpp
   src/mc/Variable.hpp
-
-  src/mc/mc_forward.h
   src/mc/mc_forward.hpp
   src/mc/Process.hpp
   src/mc/Process.cpp

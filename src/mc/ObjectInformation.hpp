@@ -15,7 +15,7 @@
 #include <xbt/base.h>
 
 #include "src/xbt/memory_map.hpp"
-#include "src/mc/mc_forward.h"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/Type.hpp"
 #include "src/mc/Frame.hpp"
 

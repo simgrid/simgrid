@@ -14,7 +14,7 @@
  */
 
 #include "smx_private.h"
-#include "src/mc/mc_forward.h"
+#include "src/mc/mc_forward.hpp"
 #include "xbt/ex.h"
 #include <simgrid/simix.hpp>
   
