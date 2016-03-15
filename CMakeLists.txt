@@ -239,7 +239,8 @@ else()
   else()
     message(FATAL_ERROR "Failed to find Boost libraries."
                         "Did you install libboost-dev and libboost-context-dev?"
-                        "(libboost-context-dev is optional)")
+                        "(libboost-context-dev is optional)"
+                        "SimGrid requires Boost >= 1.48.0")
   endif()
 endif()
 
