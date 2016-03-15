@@ -76,7 +76,6 @@ namespace mc {
 
 void Process::refresh_simix()
 {
-  xbt_assert(mc_mode == MC_MODE_SERVER);
   if (this->cache_flags_ & Process::cache_simix_processes)
     return;
 

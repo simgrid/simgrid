@@ -257,7 +257,6 @@ Process::~Process()
  */
 void Process::refresh_heap()
 {
-  xbt_assert(mc_mode == MC_MODE_SERVER);
   // Read/dereference/refresh the std_heap pointer:
   if (!this->heap)
     this->heap = std::unique_ptr<s_xbt_mheap_t>(new s_xbt_mheap_t());
@@ -273,7 +272,6 @@ void Process::refresh_heap()
  * */
 void Process::refresh_malloc_info()
 {
-  xbt_assert(mc_mode == MC_MODE_SERVER);
   // Refresh process->heapinfo:
   if (this->cache_flags_ & Process::cache_malloc)
     return;
@@ -673,14 +671,12 @@ void Process::ignore_local_variable(const char *var_name, const char *frame_name
 
 std::vector<simgrid::mc::SimixProcessInformation>& Process::simix_processes()
 {
-  xbt_assert(mc_mode != MC_MODE_CLIENT);
   this->refresh_simix();
   return smx_process_infos;
 }
 
 std::vector<simgrid::mc::SimixProcessInformation>& Process::old_simix_processes()
 {
-  xbt_assert(mc_mode != MC_MODE_CLIENT);
   this->refresh_simix();
   return smx_old_process_infos;
 }
