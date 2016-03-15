@@ -5644,7 +5644,7 @@ SET(DOCTYPE);
 case 12:
 /* rule 12 can match eol */
 YY_RULE_SETUP
-FAIL("Bad declaration %s.",surf_parse_text);
+FAIL("Bad declaration %s.\nIf your are using a XML v3 file (check the version attribute in <platform>), please update it with tools/simgrid_update_xml.pl",surf_parse_text);
 	YY_BREAK
 
 case 13:
@@ -5655,7 +5655,7 @@ SET(ROOT_surfxml_platform);
 case 14:
 /* rule 14 can match eol */
 YY_RULE_SETUP
-FAIL("Bad declaration %s.",surf_parse_text);
+FAIL("Bad declaration %s.\nIf your are using a XML v3 file (check the version attribute in <platform>), please update it with tools/simgrid_update_xml.pl",surf_parse_text);
 	YY_BREAK
 case 15:
 YY_RULE_SETUP
@@ -5919,8 +5919,8 @@ YY_RULE_SETUP
   if (!AX_surfxml_ASroute_src) FAIL("Required attribute `src' not set for `ASroute' element.");
   LEAVE; STag_surfxml_ASroute(); surfxml_pcdata_ix = 0; ETag_surfxml_ASroute(); popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS_3: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
   }
  }
 	YY_BREAK
@@ -5944,8 +5944,8 @@ YY_RULE_SETUP
   ETag_surfxml_ASroute();
   popbuffer(); /* attribute */
   switch (YY_START) {
-   case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
-   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_3: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
+   case S_surfxml_AS_3: case S_surfxml_AS_5: SET(S_surfxml_AS_6); break;
+   case S_surfxml_AS: case S_surfxml_AS_1: case S_surfxml_AS_4: case S_surfxml_AS_6: case S_surfxml_AS_7: case S_surfxml_AS_8: SET(S_surfxml_AS_8); break;
   }
  }
 	YY_BREAK
