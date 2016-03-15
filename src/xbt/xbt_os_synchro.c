@@ -15,8 +15,7 @@
 #include "simgrid/simix.h"        /* used implementation */
 #include "../simix/smx_private.h" /* FIXME */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt,
-                                "Synchronization mechanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt, "Synchronization mechanism");
 
 /****** mutex related functions ******/
 struct s_xbt_mutex_ {
@@ -101,7 +100,6 @@ xbt_bar_t xbt_barrier_init(unsigned int count)
   return bar;
 }
 
-
 int xbt_barrier_wait(xbt_bar_t bar)
 {
    int ret=0;
@@ -115,7 +113,6 @@ int xbt_barrier_wait(xbt_bar_t bar)
      xbt_cond_wait(bar->cond, bar->mutex);
      xbt_mutex_release(bar->mutex);
    }
-
    return ret;
 }
 
@@ -125,4 +122,3 @@ void xbt_barrier_destroy(xbt_bar_t bar)
    xbt_cond_destroy(bar->cond);
    xbt_free(bar);
 }
-

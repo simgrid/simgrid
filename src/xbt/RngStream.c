@@ -17,18 +17,15 @@
  *
 \***********************************************************************/
 
-
 #include "xbt/RngStream.h"
 #include "xbt/sysdep.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
 
-
 /*---------------------------------------------------------------------*/
 /* Private part.                                                       */
 /*---------------------------------------------------------------------*/
-
 
 #define norm  2.328306549295727688e-10
 #define m1    4294967087.0
@@ -42,13 +39,8 @@
 #define two53   9007199254740992.0
 #define fact  5.9604644775390625e-8    /* 1 / 2^24 */
 
-
-
-
-/* Default initial seed of the package. Will be updated to become
-   the seed of the next created stream. */
+/* Default initial seed of the package. Will be updated to become the seed of the next created stream. */
 static double nextSeed[6] = { 12345, 12345, 12345, 12345, 12345, 12345 };
-
 
 /* The following are the transition matrices of the two MRG components */
 /* (in matrix form), raised to the powers -1, 1, 2^76, and 2^127, resp.*/
@@ -100,12 +92,6 @@ static double A2p127[3][3] = {
           {    2824425944.0,   32183930.0, 2093834863.0 }
           };
 
-
-
-
-
-/*-------------------------------------------------------------------------*/
-
 static double MultModM (double a, double s, double c, double m)
    /* Compute (a*s + c) % m. m must be < 2^35.  Works also for s, c < 0 */
 {
@@ -127,9 +113,6 @@ static double MultModM (double a, double s, double c, double m)
       return v;
 }
 
-
-/*-------------------------------------------------------------------------*/
-
 static void MatVecModM (double A[3][3], double s[3], double v[3], double m)
    /* Returns v = A*s % m.  Assumes that -m < s[i] < m. */
    /* Works even if v = s. */
@@ -145,11 +128,7 @@ static void MatVecModM (double A[3][3], double s[3], double v[3], double m)
       v[i] = x[i];
 }
 
-
-/*-------------------------------------------------------------------------*/
-
-static void MatMatModM (double A[3][3], double B[3][3], double C[3][3],
-                        double m)
+static void MatMatModM (double A[3][3], double B[3][3], double C[3][3], double m)
    /* Returns C = A*B % m. Work even if A = C or B = C or A = B = C. */
 {
    int i, j;
@@ -167,9 +146,6 @@ static void MatMatModM (double A[3][3], double B[3][3], double C[3][3],
    }
 }
 
-
-/*-------------------------------------------------------------------------*/
-
 static void MatTwoPowModM (double A[3][3], double B[3][3], double m, long e)
   /* Compute matrix B = (A^(2^e) % m);  works even if A = B */
 {
@@ -186,9 +162,6 @@ static void MatTwoPowModM (double A[3][3], double B[3][3], double m, long e)
    for (i = 0; i < e; i++)
       MatMatModM (B, B, B, m);
 }
-
-
-/*-------------------------------------------------------------------------*/
 
 static void MatPowModM (double A[3][3], double B[3][3], double m, long n)
    /* Compute matrix B = A^n % m ;  works even if A = B */
@@ -214,9 +187,6 @@ static void MatPowModM (double A[3][3], double B[3][3], double m, long n)
       n /= 2;
    }
 }
-
-
-/*-------------------------------------------------------------------------*/
 
 static double U01 (RngStream g)
 {
@@ -248,9 +218,6 @@ static double U01 (RngStream g)
    return (g->Anti) ? (1 - u) : u;
 }
 
-
-/*-------------------------------------------------------------------------*/
-
 static double U01d (RngStream g)
 {
    double u;
@@ -265,13 +232,9 @@ static double U01d (RngStream g)
    }
 }
 
-
-/*-------------------------------------------------------------------------*/
-
 static int CheckSeed (unsigned long seed[6])
 {
-   /* Check that the seeds are legitimate values. Returns 0 if legal seeds,
-     -1 otherwise */
+   /* Check that the seeds are legitimate values. Returns 0 if legal seeds, -1 otherwise */
    int i;
 
    for (i = 0; i < 3; ++i) {
@@ -306,11 +269,9 @@ static int CheckSeed (unsigned long seed[6])
    return 0;
 }
 
-
 /*---------------------------------------------------------------------*/
 /* Public part.                                                        */
 /*---------------------------------------------------------------------*/
-
 
 RngStream RngStream_CreateStream (const char name[])
 {
@@ -340,8 +301,6 @@ RngStream RngStream_CreateStream (const char name[])
    return g;
 }
 
-/*-------------------------------------------------------------------------*/
-
 void RngStream_DeleteStream (RngStream * p)
 {
    if (*p == NULL)
@@ -350,8 +309,6 @@ void RngStream_DeleteStream (RngStream * p)
    free (*p);
    *p = NULL;
 }
-
-/*-------------------------------------------------------------------------*/
 
 RngStream RngStream_CopyStream (const RngStream src)
 {
@@ -372,16 +329,12 @@ RngStream RngStream_CopyStream (const RngStream src)
    return g;
 }
 
-/*-------------------------------------------------------------------------*/
-
 void RngStream_ResetStartStream (RngStream g)
 {
    int i;
    for (i = 0; i < 6; ++i)
       g->Cg[i] = g->Bg[i] = g->Ig[i];
 }
-
-/*-------------------------------------------------------------------------*/
 
 void RngStream_ResetNextSubstream (RngStream g)
 {
@@ -392,16 +345,12 @@ void RngStream_ResetNextSubstream (RngStream g)
       g->Cg[i] = g->Bg[i];
 }
 
-/*-------------------------------------------------------------------------*/
-
 void RngStream_ResetStartSubstream (RngStream g)
 {
    int i;
    for (i = 0; i < 6; ++i)
       g->Cg[i] = g->Bg[i];
 }
-
-/*-------------------------------------------------------------------------*/
 
 int RngStream_SetPackageSeed (unsigned long seed[6])
 {
@@ -413,8 +362,6 @@ int RngStream_SetPackageSeed (unsigned long seed[6])
    return 0;                       /* SUCCESS */
 }
 
-/*-------------------------------------------------------------------------*/
-
 int RngStream_SetSeed (RngStream g, unsigned long seed[6])
 {
    int i;
@@ -424,8 +371,6 @@ int RngStream_SetSeed (RngStream g, unsigned long seed[6])
       g->Cg[i] = g->Bg[i] = g->Ig[i] = seed[i];
    return 0;                       /* SUCCESS */
 }
-
-/*-------------------------------------------------------------------------*/
 
 void RngStream_AdvanceState (RngStream g, long e, long c)
 {
@@ -456,16 +401,12 @@ void RngStream_AdvanceState (RngStream g, long e, long c)
    MatVecModM (C2, &g->Cg[3], &g->Cg[3], m2);
 }
 
-/*-------------------------------------------------------------------------*/
-
 void RngStream_GetState (RngStream g, unsigned long seed[6])
 {
    int i;
    for (i = 0; i < 6; ++i)
       seed[i] = g->Cg[i];
 }
-
-/*-------------------------------------------------------------------------*/
 
 void RngStream_WriteState (RngStream g)
 {
@@ -482,8 +423,6 @@ void RngStream_WriteState (RngStream g)
    }
    printf ("%lu }\n\n", (unsigned long) g->Cg[5]);
 }
-
-/*-------------------------------------------------------------------------*/
 
 void RngStream_WriteStateFull (RngStream g)
 {
@@ -515,21 +454,15 @@ void RngStream_WriteStateFull (RngStream g)
    printf ("%lu }\n\n", (unsigned long) g->Cg[5]);
 }
 
-/*-------------------------------------------------------------------------*/
-
 void RngStream_IncreasedPrecis (RngStream g, int incp)
 {
    g->IncPrec = incp;
 }
 
-/*-------------------------------------------------------------------------*/
-
 void RngStream_SetAntithetic (RngStream g, int a)
 {
    g->Anti = a;
 }
-
-/*-------------------------------------------------------------------------*/
 
 double RngStream_RandU01 (RngStream g)
 {
@@ -538,8 +471,6 @@ double RngStream_RandU01 (RngStream g)
    else
       return U01 (g);
 }
-
-/*-------------------------------------------------------------------------*/
 
 int RngStream_RandInt (RngStream g, int i, int j)
 {

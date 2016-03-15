@@ -77,9 +77,7 @@ static double format_begin_of_time = -1;
 #define show_int(data)    show_it(data, "d")
 #define show_double(data) show_it(data, "f")
 
-static int xbt_log_layout_format_doit(xbt_log_layout_t l,
-                                      xbt_log_event_t ev,
-                                      const char *msg_fmt)
+static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, const char *msg_fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -123,8 +121,7 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l,
         length = strtol(q, &q, 10);
         goto handle_modifier;
       case 'c':                 /* category name; LOG4J compliant
-                                   should accept a precision postfix to show the
-                                   hierarchy */
+                                   should accept a precision postfix to show the hierarchy */
         show_string(ev->cat->name);
         break;
       case 'p':                 /* priority name; LOG4J compliant */

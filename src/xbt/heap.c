@@ -23,13 +23,11 @@ static void xbt_heap_increase_key(xbt_heap_t H, int i);
 /**
  * @brief Creates a new heap.
  * \param init_size initial size of the heap
- * \param free_func function to call on each element when you want to free
- *             the whole heap (or NULL if nothing to do).
+ * \param free_func function to call on each element when you want to free the whole heap (or NULL if nothing to do).
  *
  * Creates a new heap.
  */
-inline xbt_heap_t xbt_heap_new(int init_size,
-                                   void_f_pvoid_t const free_func)
+inline xbt_heap_t xbt_heap_new(int init_size, void_f_pvoid_t const free_func)
 {
   xbt_heap_t H = xbt_new0(struct xbt_heap, 1);
   H->size = init_size;
@@ -44,14 +42,10 @@ inline xbt_heap_t xbt_heap_new(int init_size,
  * @param H the heap we're working on
  * \param update_callback function to call on each element to update its index when needed.
  */
-inline void xbt_heap_set_update_callback(xbt_heap_t H,
-                                             void (*update_callback) (void
-                                                                      *,
-                                                                      int))
+inline void xbt_heap_set_update_callback(xbt_heap_t H, void (*update_callback) (void*, int))
 {
   H->update_callback = update_callback;
 }
-
 
 /**
  * @brief kilkil a heap and its content
@@ -95,9 +89,7 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
 
   if (count > size) {
     H->size = (size << 1) + 1;
-    H->items =
-        (void *) xbt_realloc(H->items,
-                         (H->size) * sizeof(struct xbt_heap_item));
+    H->items = (void *) xbt_realloc(H->items, (H->size) * sizeof(struct xbt_heap_item));
   }
 
   item = &(H->items[count - 1]);
@@ -113,9 +105,8 @@ void xbt_heap_push(xbt_heap_t H, void *content, double key)
  * \param H the heap we're working on
  * \return the element with the smallest key
  *
- * Extracts from the heap and returns the element with the smallest
- * key. The element with the next smallest key is automatically moved
- * at the top of the heap.
+ * Extracts from the heap and returns the element with the smallest key. The element with the next smallest key is
+ * automatically moved at the top of the heap.
  */
 void *xbt_heap_pop(xbt_heap_t H)
 {
@@ -135,9 +126,7 @@ void *xbt_heap_pop(xbt_heap_t H)
   xbt_heap_max_heapify(H,0);
   if (H->count < size >> 2 && size > 16) {
     size = (size >> 1) + 1;
-    H->items =
-        (void *) xbt_realloc(items,
-                         size * sizeof(struct xbt_heap_item));
+    H->items = (void *) xbt_realloc(items, size * sizeof(struct xbt_heap_item));
     H->size = size;
   }
 
@@ -152,7 +141,7 @@ void *xbt_heap_pop(xbt_heap_t H)
  * \param i  element position
  * \return the element at position i if ok, NULL otherwise
  *
- * Extracts from the heap and returns the element at position i. The heap is automatically reorded.
+ * Extracts from the heap and returns the element at position i. The heap is automatically reordered.
  */
 void *xbt_heap_remove(xbt_heap_t H, int i)
 {
@@ -269,8 +258,8 @@ static void xbt_heap_max_heapify(xbt_heap_t H, int index)
  * \param H the heap we're working on
  * \param i an item position in the heap
  *
- * Moves up an item at position i to its correct position. Works only
- * when called from xbt_heap_push. Do not use otherwise.
+ * Moves up an item at position i to its correct position. Works only when called from xbt_heap_push.
+ * Do not use otherwise.
  */
 static void xbt_heap_increase_key(xbt_heap_t H, int i)
 {

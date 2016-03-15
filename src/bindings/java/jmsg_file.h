@@ -22,34 +22,32 @@ msg_file_t jfile_get_native(JNIEnv *env, jobject jfile);
  * Method      nativeInit
  * Signature  ()V
  */
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_nativeInit(JNIEnv*, jclass);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_File_nativeInit(JNIEnv*, jclass);
+
 /**
  * Class      org_simgrid_msg_File
  * Method      open
  * Signature  (Ljava/lang/String;Ljava/lang/String;Ljava/lang/String;)V
  */
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_open(JNIEnv*, jobject, jobject);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_File_open(JNIEnv*, jobject, jobject);
+
 /**
  * Class       org_simgrid_msg_File
  * Method      read
  */
-JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_read(JNIEnv*, jobject, jlong);
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_File_read(JNIEnv*, jobject, jlong);
+
 /**
  * Class      org_simgrid_msg_File
  * Method      write
  */
-JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_File_write(JNIEnv*, jobject, jlong);
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_File_write(JNIEnv*, jobject, jlong);
+
 /**
  * Class      org_simgrid_msg_File
  * Method      close
  */
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_File_close(JNIEnv*, jobject);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_File_close(JNIEnv*, jobject);
 
 SG_END_DECL()
-
 #endif

@@ -22,7 +22,6 @@ typedef struct xbt_fifo {
   xbt_fifo_item_t tail;
 } s_xbt_fifo_t;
 
-
 #define xbt_fifo_getFirstitem(l) ((l)?(l)->head:NULL)
 #define xbt_fifo_getNextitem(i) ((i)?(i)->next:NULL)
 #define xbt_fifo_getPrevitem(i) ((i)?(i)->prev:NULL)

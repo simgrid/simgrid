@@ -12,14 +12,11 @@
 #include <src/simix/smx_private.h>
 
 #include "jmsg_process.h"
-
 #include "jmsg_as.h"
-
 #include "jmsg_host.h"
 #include "jmsg_storage.h"
 #include "jmsg_task.h"
 #include "jxbt_utilities.h"
-
 #include "jmsg.h"
 
 #include "JavaContext.hpp"
@@ -75,13 +72,11 @@ void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
   }
 }
 
-
 /***************************************************************************************
  * Unsortable functions                                                        *
  ***************************************************************************************/
 
-JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Msg_getClock(JNIEnv * env, jclass cls)
 {
   return (jdouble) MSG_get_clock();
 }
@@ -94,8 +89,7 @@ static void __JAVA_storage_priv_free(void *storage)
 {
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
   char **argv = NULL;
   int index;
@@ -142,8 +136,7 @@ Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
   free(argv);
 }
 
-JNIEXPORT void JNICALL
-    JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
+JNIEXPORT void JNICALL JNICALL Java_org_simgrid_msg_Msg_run(JNIEnv * env, jclass cls)
 {
   /* Run everything */
   XBT_DEBUG("Ready to run MSG_MAIN");
@@ -174,24 +167,18 @@ JNIEXPORT void JNICALL
     }
   }
   xbt_dynar_free(&storages);
-
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls,
-                                       jstring jplatformFile)
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_createEnvironment(JNIEnv * env, jclass cls, jstring jplatformFile)
 {
-
-  const char *platformFile =
-      env->GetStringUTFChars(jplatformFile, 0);
+  const char *platformFile = env->GetStringUTFChars(jplatformFile, 0);
 
   MSG_create_environment(platformFile);
 
   env->ReleaseStringUTFChars(jplatformFile, platformFile);
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls)
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls)
 {
   msg_as_t as = MSG_environment_get_routing_root();
   jobject jas = jas_new_instance(env);
@@ -209,43 +196,42 @@ Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNIEnv * env, jclass cls)
   return (jobject) jas;
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_debug(JNIEnv * env, jclass cls, jstring js)
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_debug(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
   XBT_DEBUG("%s", s);
   env->ReleaseStringUTFChars(js, s);
 }
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_verb(JNIEnv * env, jclass cls, jstring js)
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_verb(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
   XBT_VERB("%s", s);
   env->ReleaseStringUTFChars(js, s);
 }
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_info(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
   XBT_INFO("%s", s);
   env->ReleaseStringUTFChars(js, s);
 }
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_warn(JNIEnv * env, jclass cls, jstring js)
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_warn(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
   XBT_WARN("%s", s);
   env->ReleaseStringUTFChars(js, s);
 }
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_error(JNIEnv * env, jclass cls, jstring js)
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_error(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
   XBT_ERROR("%s", s);
   env->ReleaseStringUTFChars(js, s);
 }
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_critical(JNIEnv * env, jclass cls, jstring js)
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_critical(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
   XBT_CRITICAL("%s", s);
@@ -255,12 +241,9 @@ Java_org_simgrid_msg_Msg_critical(JNIEnv * env, jclass cls, jstring js)
 static int java_main(int argc, char *argv[]);
 
 JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls,
-                                       jstring jdeploymentFile)
+Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jdeploymentFile)
 {
-
-  const char *deploymentFile =
-      env->GetStringUTFChars(jdeploymentFile, 0);
+  const char *deploymentFile = env->GetStringUTFChars(jdeploymentFile, 0);
 
   SIMIX_function_register_default(java_main);
   MSG_launch_application(deploymentFile);
@@ -292,8 +275,7 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
 static int java_main(int argc, char *argv[])
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::java::JavaContext* context =
-    (simgrid::java::JavaContext*) SIMIX_context_self();
+  simgrid::java::JavaContext* context = (simgrid::java::JavaContext*) SIMIX_context_self();
 
   //Change the "." in class name for "/".
   xbt_str_subst(argv[0],'.','/',0);
@@ -312,8 +294,7 @@ static int java_main(int argc, char *argv[])
     env->NewStringUTF(""));
   int i;
   for (i = 1; i < argc; i++)
-      env->SetObjectArrayElement(args,i - 1,
-        env->NewStringUTF(argv[i]));
+      env->SetObjectArrayElement(args,i - 1, env->NewStringUTF(argv[i]));
   //Retrieve the host for the process.
   jstring jhostName = env->NewStringUTF(MSG_host_get_name(MSG_host_self()));
   jobject jhost = Java_org_simgrid_msg_Host_getByName(env, NULL, jhostName);
@@ -341,14 +322,12 @@ namespace java {
 void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::java::JavaContext* context =
-    (simgrid::java::JavaContext*) SIMIX_context_self();
+  simgrid::java::JavaContext* context = (simgrid::java::JavaContext*) SIMIX_context_self();
   context->jprocess = jprocess;
   smx_process_t process = SIMIX_process_self();
   jprocess_bind(context->jprocess, process, env);
 
-  // Adrien, ugly path, just to bypass creation of context at low levels
-  // (i.e such as for the VM migration for instance)
+  // Adrien, ugly path, just to bypass creation of context at low levels (i.e such as for the VM migration for instance)
   if (context->jprocess == nullptr)
     return;
   else
@@ -357,8 +336,6 @@ void java_main_jprocess(jobject jprocess)
 
 }
 }
-
-
 
 #include "simgrid/plugins/energy.h"
 JNIEXPORT void JNICALL

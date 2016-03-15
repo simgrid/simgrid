@@ -54,8 +54,7 @@ jboolean jhost_is_valid(jobject jhost, JNIEnv * env) {
   }
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls) {
   jclass class_Host = env->FindClass("org/simgrid/msg/Host");
   jhost_method_Host_constructor = env->GetMethodID(class_Host, "<init>", "()V");
   jhost_field_Host_bind = jxbt_get_jfield(env,class_Host, "bind", "J");
@@ -64,9 +63,8 @@ Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass cls) {
     jxbt_throw_native(env,bprintf("Can't find some fields in Java class. You should report this bug."));
   }
 }
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
-                                         jstring jname) {
+
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls, jstring jname) {
   msg_host_t host;                /* native host                                          */
   jobject jhost;                /* global reference to the java host instance returned  */
 
@@ -87,7 +85,6 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
   env->ReleaseStringUTFChars(jname, name);
 
   if (!host->extension(JAVA_HOST_LEVEL)) {       /* native host not associated yet with java host */
-
     /* Instantiate a new java host */
     jhost = jhost_new_instance(env);
 
@@ -108,9 +105,7 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
     /* bind the java host and the native host */
     jhost_bind(jhost, host, env);
 
-    /* the native host data field is set with the global reference to the
-     * java host returned by this function
-     */
+    /* the native host data field is set with the global reference to the java host returned by this function */
     host->extension_set(JAVA_HOST_LEVEL, (void *)jhost);
   }
 
@@ -118,8 +113,7 @@ Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jclass cls,
   return (jobject) host->extension(JAVA_HOST_LEVEL);
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
   jobject jhost;
 
   msg_host_t host = MSG_host_self();
@@ -156,29 +150,24 @@ Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jclass cls) {
   return jhost;
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_on(JNIEnv *env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
   MSG_host_on(host);
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
   MSG_host_off(host); 
 }
 
-JNIEXPORT jint JNICALL
-Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount(JNIEnv * env, jclass cls) {
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
   int nb_host = xbt_dynar_length(hosts);
   xbt_dynar_free(&hosts);
   return (jint) nb_host;
 }
 
-JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env,
-                                        jobject jhost) {
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -189,9 +178,7 @@ Java_org_simgrid_msg_Host_getSpeed(JNIEnv * env,
   return (jdouble) MSG_host_get_speed(host);
 }
 
-JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_Host_getCoreNumber(JNIEnv * env,
-                                        jobject jhost) {
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber(JNIEnv * env, jobject jhost) {
   msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -202,8 +189,7 @@ Java_org_simgrid_msg_Host_getCoreNumber(JNIEnv * env,
   return (jdouble) MSG_host_get_core_number(host);
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, jobject jhost, jobject jname) {
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, jobject jhost, jobject jname) {
   msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -240,10 +226,10 @@ Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobject jhost, jobject jname,
 
   env->ReleaseStringUTFChars((jstring) jvalue, value_java);
   env->ReleaseStringUTFChars((jstring) jname, name);
-
 }
-JNIEXPORT jboolean JNICALL
-Java_org_simgrid_msg_Host_isOn(JNIEnv * env, jobject jhost) {
+
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isOn(JNIEnv * env, jobject jhost)
+{
   msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -254,9 +240,8 @@ Java_org_simgrid_msg_Host_isOn(JNIEnv * env, jobject jhost) {
   return (jboolean) MSG_host_is_on(host);
 }
 
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_Host_getMountedStorage(JNIEnv * env, jobject jhost){
-
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEnv * env, jobject jhost)
+{
   msg_host_t host = jhost_get_native(env, jhost);
   jobject jstorage;
   jstring jname;
@@ -292,8 +277,8 @@ Java_org_simgrid_msg_Host_getMountedStorage(JNIEnv * env, jobject jhost){
   return jtable;
 }
 
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_Host_getAttachedStorage(JNIEnv * env, jobject jhost){
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIEnv * env, jobject jhost)
+{
   msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -318,8 +303,8 @@ Java_org_simgrid_msg_Host_getAttachedStorage(JNIEnv * env, jobject jhost){
   return jtable;
 }
 
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_Host_getStorageContent(JNIEnv * env, jobject jhost){
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getStorageContent(JNIEnv * env, jobject jhost)
+{
   msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -329,9 +314,7 @@ Java_org_simgrid_msg_Host_getStorageContent(JNIEnv * env, jobject jhost){
   return (jobjectArray)MSG_host_get_storage_content(host);
 }
 
-
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
 {
   int index;
   jobjectArray jtable;
@@ -362,8 +345,7 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
     if (!jhost) {
       jname = env->NewStringUTF(MSG_host_get_name(host));
 
-      jhost =
-          Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
+      jhost = Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
       /* FIXME: leak of jname ? */
     }
 
@@ -373,17 +355,16 @@ Java_org_simgrid_msg_Host_all(JNIEnv * env, jclass cls_arg)
   return jtable;
 }
 
-JNIEXPORT void JNICALL 
-Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname){
-
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname)
+{
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
   MSG_mailbox_set_async(name);
   env->ReleaseStringUTFChars((jstring) jname, name);
-
 }
 
 #include "simgrid/plugins/energy.h"
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost) {
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost)
+{
   msg_host_t host = jhost_get_native(env, jhost);
 
   if (!host) {
@@ -392,6 +373,4 @@ JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *e
   }
 
   return MSG_host_get_consumed_energy(host);
-
 }
-

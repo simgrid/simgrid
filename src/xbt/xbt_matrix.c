@@ -14,9 +14,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_matrix, xbt, "2D data storage");
 
 /** \brief constructor */
-xbt_matrix_t xbt_matrix_new(int lines, int rows,
-                            const unsigned long elmsize,
-                            void_f_pvoid_t const free_f)
+xbt_matrix_t xbt_matrix_new(int lines, int rows, const unsigned long elmsize, void_f_pvoid_t const free_f)
 {
   xbt_matrix_t res = xbt_new(s_xbt_matrix_t, 1);
   res->lines = lines;
@@ -28,14 +26,10 @@ xbt_matrix_t xbt_matrix_new(int lines, int rows,
 }
 
 /** \brief Creates a matrix being a submatrix of another one */
-xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from,
-                                int lsize, int rsize,
-                                int lpos, int rpos,
+xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from, int lsize, int rsize, int lpos, int rpos,
                                 pvoid_f_pvoid_t const cpy_f)
 {
-
-  xbt_matrix_t res = xbt_matrix_new(lsize, rsize,
-                                    from->elmsize, from->free_f);
+  xbt_matrix_t res = xbt_matrix_new(lsize, rsize, from->elmsize, from->free_f);
   xbt_matrix_copy_values(res, from, lsize, rsize, 0, 0, lpos, rpos, cpy_f);
   return res;
 }
@@ -61,16 +55,13 @@ void xbt_matrix_free_voidp(void *d)
   xbt_matrix_free((xbt_matrix_t) * (void **) d);
 }
 
-
 /** \brief Display the content of a matrix (debugging purpose)
  *  \param coords: boolean indicating whether we should add the coords of each cell to the output*/
-void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords,
-                     void_f_pvoid_t display_fun)
+void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords, void_f_pvoid_t display_fun)
 {
   unsigned int i, j;
 
-  fprintf(stderr, ">>> Matrix %s dump (%u x %u)\n", name, matrix->lines,
-          matrix->rows);
+  fprintf(stderr, ">>> Matrix %s dump (%u x %u)\n", name, matrix->lines, matrix->rows);
   for (i = 0; i < matrix->lines; i++) {
     fprintf(stderr, "  ");
     for (j = 0; j < matrix->rows; j++) {
@@ -100,18 +91,14 @@ void xbt_matrix_dump_display_double(void *d)
  * \param lpos_src: line offset on destination matrix
  * \param rpos_src: row offset on destination matrix
  */
-void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
-                            unsigned int lsize, unsigned int rsize,
-                            unsigned int lpos_dst, unsigned int rpos_dst,
-                            unsigned int lpos_src, unsigned int rpos_src,
+void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src, unsigned int lsize, unsigned int rsize,
+                            unsigned int lpos_dst, unsigned int rpos_dst,unsigned int lpos_src, unsigned int rpos_src,
                             pvoid_f_pvoid_t const cpy_f)
 {
   unsigned int i, j;
 
-  XBT_DEBUG
-      ("Copy a %ux%u submatrix from %ux%u(of %ux%u) to %ux%u (of %ux%u)",
-       lsize, rsize, lpos_src, rpos_src, src->lines, src->rows, lpos_dst,
-       rpos_dst, dst->lines, dst->rows);
+  XBT_DEBUG ("Copy a %ux%u submatrix from %ux%u(of %ux%u) to %ux%u (of %ux%u)",
+       lsize, rsize, lpos_src, rpos_src, src->lines, src->rows, lpos_dst, rpos_dst, dst->lines, dst->rows);
 
   /* everybody knows that issue is between the chair and the screen (particulary in my office) */
   xbt_assert(src->elmsize == dst->elmsize);
@@ -130,12 +117,10 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
         xbt_matrix_get_as(dst, j + lpos_dst, i + rpos_dst, void *) =
             cpy_f(xbt_matrix_get_ptr(src, j + rpos_src, i + lpos_src));
     } else {
-      memcpy(xbt_matrix_get_ptr(dst, lpos_dst, i + rpos_dst),
-             xbt_matrix_get_ptr(src, lpos_src, i + rpos_src),
+      memcpy(xbt_matrix_get_ptr(dst, lpos_dst, i + rpos_dst), xbt_matrix_get_ptr(src, lpos_src, i + rpos_src),
              dst->elmsize * lsize);
     }
   }
-
 }
 
 /** \brief Creates a new matrix of double filled with zeros */
@@ -171,19 +156,15 @@ xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
 }
 
 /** \brief add to C the result of A*B */
-void xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B,
-                               /*OUT*/ xbt_matrix_t C)
+void xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B, /*OUT*/ xbt_matrix_t C)
 {
   unsigned int i, j, k;
 
-  xbt_assert(A->lines == C->lines,
-              "A->lines != C->lines (%u vs %u)", A->lines, C->lines);
+  xbt_assert(A->lines == C->lines, "A->lines != C->lines (%u vs %u)", A->lines, C->lines);
   xbt_assert(B->rows == C->rows);
 
   for (i = 0; i < C->lines; i++)
     for (j = 0; j < C->rows; j++)
       for (k = 0; k < B->lines; k++)
-        xbt_matrix_get_as(C, i, j, double) +=
-            xbt_matrix_get_as(A, i, k, double) * xbt_matrix_get_as(B, k, j,
-                                                                   double);
+        xbt_matrix_get_as(C, i, j, double) += xbt_matrix_get_as(A, i, k, double) * xbt_matrix_get_as(B, k, j, double);
 }

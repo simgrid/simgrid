@@ -85,16 +85,11 @@ void xbt_os_sleep(double sec)
 #endif
 }
 
-/* TSC (tick-level) timers are said to be unreliable on SMP hosts and thus
-   disabled in SDL source code */
-
+/* TSC (tick-level) timers are said to be unreliable on SMP hosts and thus  disabled in SDL source code */
 
 /* \defgroup XBT_sysdep All system dependency
- * \brief This section describes many macros/functions that can serve as
- *  an OS abstraction.
+ * \brief This section describes many macros/functions that can serve as  an OS abstraction.
  */
-
-
 struct s_xbt_os_timer {
 #if HAVE_POSIX_GETTIME
   struct timespec start, stop, elapse;
@@ -122,18 +117,14 @@ void xbt_os_timer_free(xbt_os_timer_t timer)
 double xbt_os_timer_elapsed(xbt_os_timer_t timer)
 {
 #if HAVE_POSIX_GETTIME
-  return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) +
-                                          ((double) timer->elapse.tv_sec ) +
-      ((((double) timer->stop.tv_nsec) -
-        ((double) timer->start.tv_nsec) + ((double) timer->elapse.tv_nsec )) / 1e9);
+  return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) + ((double) timer->elapse.tv_sec ) +
+      ((((double) timer->stop.tv_nsec) - ((double) timer->start.tv_nsec) + ((double) timer->elapse.tv_nsec )) / 1e9);
 #elif HAVE_GETTIMEOFDAY || defined(_WIN32)
-  return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec)
-    + ((double) timer->elapse.tv_sec ) +
-      ((((double) timer->stop.tv_usec) -
-        ((double) timer->start.tv_usec) + ((double) timer->elapse.tv_usec )) / 1000000.0);
+  return ((double) timer->stop.tv_sec) - ((double) timer->start.tv_sec) + ((double) timer->elapse.tv_sec ) +
+      ((((double) timer->stop.tv_usec) - ((double) timer->start.tv_usec) + ((double) timer->elapse.tv_usec )) /
+         1000000.0);
 #else
-  return (double) timer->stop - (double) timer->start + (double)
-    timer->elapse;
+  return (double) timer->stop - (double) timer->start + (double) timer->elapse;
 #endif
 }
 

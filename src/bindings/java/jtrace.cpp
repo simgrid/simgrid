@@ -24,74 +24,68 @@
 // Define a new category
 XBT_LOG_NEW_DEFAULT_CATEGORY (jtrace, "TRACE for Java(TM)");
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_trace_Trace_hostStateDeclare(JNIEnv * env, jclass cls, jstring js)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclare(JNIEnv * env, jclass cls, jstring js)
 {
   const char *s = env->GetStringUTFChars(js, 0);
   TRACE_host_state_declare(s);  
   env->ReleaseStringUTFChars(js, s);
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_trace_Trace_hostStateDeclareValue
-  (JNIEnv *env, jclass cls, jstring js_state, jstring js_value, jstring js_color)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostStateDeclareValue (JNIEnv *env, jclass cls, jstring js_state,
+                                                                           jstring js_value, jstring js_color)
 {
   const char *state = env->GetStringUTFChars(js_state, 0);
   const char *value = env->GetStringUTFChars(js_value, 0);
   const char *color = env->GetStringUTFChars(js_color, 0);
 
   TRACE_host_state_declare_value(state, value, color);  
-  
+
   env->ReleaseStringUTFChars(js_state, state);
   env->ReleaseStringUTFChars(js_value, value);
   env->ReleaseStringUTFChars(js_color, color);
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_trace_Trace_hostSetState
-  (JNIEnv *env, jclass cls, jstring js_host, jstring js_state, jstring js_value)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostSetState (JNIEnv *env, jclass cls, jstring js_host,
+                                                                  jstring js_state, jstring js_value)
 {
   const char *host = env->GetStringUTFChars(js_host, 0);
   const char *state = env->GetStringUTFChars(js_state, 0);
   const char *value = env->GetStringUTFChars(js_value, 0);
 
   TRACE_host_set_state(host, state, value);  
-  
+
   env->ReleaseStringUTFChars(js_host, host);
   env->ReleaseStringUTFChars(js_state, state);
   env->ReleaseStringUTFChars(js_value, value);
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_trace_Trace_hostPushState
-  (JNIEnv *env, jclass cls, jstring js_host, jstring js_state, jstring js_value)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPushState (JNIEnv *env, jclass cls, jstring js_host,
+                                                                   jstring js_state, jstring js_value)
 {
   const char *host = env->GetStringUTFChars(js_host, 0);
   const char *state = env->GetStringUTFChars(js_state, 0);
   const char *value = env->GetStringUTFChars(js_value, 0);
 
   TRACE_host_push_state(host, state, value);  
-  
+
   env->ReleaseStringUTFChars(js_host, host);
   env->ReleaseStringUTFChars(js_state, state);
   env->ReleaseStringUTFChars(js_value, value);
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_trace_Trace_hostPopState
-  (JNIEnv *env, jclass cls, jstring js_host, jstring js_state)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPopState (JNIEnv *env, jclass cls, jstring js_host,
+                                                                  jstring js_state)
 {
   const char *host = env->GetStringUTFChars(js_host, 0);
   const char *state = env->GetStringUTFChars(js_state, 0);
 
   TRACE_host_pop_state(host, state);  
-  
+
   env->ReleaseStringUTFChars(js_host, host);
   env->ReleaseStringUTFChars(js_state, state);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare
-  (JNIEnv *env, jclass cls, jstring js_state)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare (JNIEnv *env, jclass cls, jstring js_state)
 {
   const char *state = env->GetStringUTFChars(js_state, 0);
 
@@ -100,8 +94,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare
   env->ReleaseStringUTFChars(js_state, state);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet
-  (JNIEnv *env, jclass cls, jstring js_host, jstring js_state, jdouble value)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet (JNIEnv *env, jclass cls, jstring js_host,
+                                                                     jstring js_state, jdouble value)
 {
   const char *host = env->GetStringUTFChars(js_host, 0);
   const char *state = env->GetStringUTFChars(js_state, 0);
@@ -112,8 +106,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSet
   env->ReleaseStringUTFChars(js_state, state);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSub
-  (JNIEnv *env, jclass cls, jstring js_host, jstring js_state, jdouble value)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSub (JNIEnv *env, jclass cls, jstring js_host,
+                                                                     jstring js_state, jdouble value)
 {
   const char *host = env->GetStringUTFChars(js_host, 0);
   const char *state = env->GetStringUTFChars(js_state, 0);
@@ -124,10 +118,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableSub
   env->ReleaseStringUTFChars(js_state, state);
 }
 
-
-
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare
-  (JNIEnv *env, jclass cls, jstring js_state)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare (JNIEnv *env, jclass cls, jstring js_state)
 {
   const char *state = env->GetStringUTFChars(js_state, 0);
 
@@ -136,8 +127,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableDeclare
   env->ReleaseStringUTFChars(js_state, state);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet
-  (JNIEnv *env, jclass cls, jstring js_vm, jstring js_state, jdouble value)
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet (JNIEnv *env, jclass cls, jstring js_vm,
+                                                                   jstring js_state, jdouble value)
 {
   const char *vm = env->GetStringUTFChars(js_vm, 0);
   const char *state = env->GetStringUTFChars(js_state, 0);
@@ -148,9 +139,9 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_vmVariableSet
   env->ReleaseStringUTFChars(js_state, state);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd
-  (JNIEnv *env, jclass cls, jstring js_host, jstring js_state, jdouble value) {
-
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd (JNIEnv *env, jclass cls, jstring js_host,
+                                                                     jstring js_state, jdouble value)
+{
   const char *host = env->GetStringUTFChars(js_host, 0);
   const char *state = env->GetStringUTFChars(js_state, 0);
 

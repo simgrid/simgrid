@@ -21,10 +21,7 @@
 #include "memory_map.hpp"
 
 extern "C" {
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_memory_map, xbt,
-                                "Logging specific to algorithms for memory_map");
-
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_memory_map, xbt, "Logging specific to algorithms for memory_map");
 }
 
 namespace simgrid {
@@ -39,8 +36,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   FILE *fp = std::fopen(path, "r");
   if(fp == NULL)
     std::perror("fopen failed");
-  xbt_assert(fp,
-    "Cannot open %s to investigate the memory map of the process.", path);
+  xbt_assert(fp, "Cannot open %s to investigate the memory map of the process.", path);
   free(path);
   setbuf(fp, NULL);
 
@@ -57,8 +53,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     /* Wipeout the new line character */
     line[read - 1] = '\0';
 
-    /* Tokenize the line using spaces as delimiters and store each token */
-    /* in lfields array. We expect 5 tokens/fields */
+    /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens/fields */
     char* lfields[6];
     lfields[0] = strtok(line, " ");
 
@@ -119,7 +114,6 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     if (lfields[1][4] == 'p')
       memreg.flags |= MAP_PRIVATE;
-
     else if (lfields[1][4] == 's')
       memreg.flags |= MAP_SHARED;
 
@@ -159,8 +153,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Create space for a new map region in the region's array and copy the */
     /* parsed stuff from the temporal memreg variable */
-    XBT_DEBUG("Found region for %s",
-      !memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
+    XBT_DEBUG("Found region for %s", !memreg.pathname.empty() ? memreg.pathname.c_str() : "(null)");
 
     ret.push_back(std::move(memreg));
   }
@@ -169,8 +162,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   std::fclose(fp);
   return ret;
 #else
-  /* On FreeBSD, kinfo_getvmmap() could be used but mmap() support is disabled
-     anyway. */
+  /* On FreeBSD, kinfo_getvmmap() could be used but mmap() support is disabled anyway. */
   xbt_die("Could not get memory map from process %lli", (long long int) pid);
 #endif
 }

@@ -93,7 +93,6 @@ xbt_automaton_exp_label_t xbt_automaton_exp_label_new(int type, ...){
   return label;
 }
 
-
 xbt_dynar_t xbt_automaton_get_states(xbt_automaton_t a){
   return a->states;
 }
@@ -155,14 +154,13 @@ void xbt_automaton_display(xbt_automaton_t a){
   printf("\n\nCurrent state: %s\n", a->current_state->id);
 
   printf("\nStates' List: %lu\n\n", xbt_dynar_length(a->states));
- 
-  
+
   xbt_dynar_foreach(a->states, cursor, state)
     printf("ID: %s, type: %d\n", state->id, state->type);
 
   xbt_automaton_transition_t transition;
   printf("\nTransitions: %lu\n\n", xbt_dynar_length(a->transitions));
-  
+
   xbt_dynar_foreach(a->transitions, cursor, transition){
     printf("label:");
     xbt_automaton_exp_label_display(transition->label);
@@ -171,7 +169,6 @@ void xbt_automaton_display(xbt_automaton_t a){
 }
 
 void xbt_automaton_exp_label_display(xbt_automaton_exp_label_t label){
-
   switch(label->type){
   case 0 :
     printf("(");
@@ -199,7 +196,6 @@ void xbt_automaton_exp_label_display(xbt_automaton_exp_label_t label){
     printf("(1)");
     break;
   }
-
 }
 
 xbt_automaton_state_t xbt_automaton_get_current_state(xbt_automaton_t a){
@@ -307,7 +303,6 @@ int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_
     return 1;
 
   switch(l1->type){
-
   case 0 : // OR 
   case 1 : // AND
     if(xbt_automaton_exp_label_compare(l1->u.or_and.left_exp, l2->u.or_and.left_exp))
@@ -315,30 +310,22 @@ int xbt_automaton_exp_label_compare(xbt_automaton_exp_label_t l1, xbt_automaton_
     else
       return xbt_automaton_exp_label_compare(l1->u.or_and.right_exp, l2->u.or_and.right_exp);
     break;
-
   case 2 : // NOT
     return xbt_automaton_exp_label_compare(l1->u.exp_not, l2->u.exp_not);
     break;
-
   case 3 : // predicat
     return (strcmp(l1->u.predicat, l2->u.predicat));
     break;
-
   case 4 : // 1
     return 0;
     break;
-
   default :
     return -1;
     break;
-
   }
-
 }
 
-
 int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_t s2){
-
   int *iptr1, *iptr2;
   unsigned int cursor;
   unsigned int nb_elem = xbt_dynar_length(s1);
@@ -352,8 +339,6 @@ int xbt_automaton_propositional_symbols_compare_value(xbt_dynar_t s1, xbt_dynar_
 
   return 0;
 }
-
-/************ Free functions ****************/
 
 static void xbt_automaton_transition_free(xbt_automaton_transition_t t);
 static void xbt_automaton_exp_label_free(xbt_automaton_exp_label_t e);

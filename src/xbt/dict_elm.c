@@ -8,21 +8,18 @@
 
 #include "dict_private.h"       /* prototypes of this module */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm, xbt_dict,
-                                "Dictionaries internals");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_elm, xbt_dict, "Dictionaries internals");
 
 xbt_mallocator_t dict_elm_mallocator = NULL;
 xbt_mallocator_t dict_het_elm_mallocator = NULL;
 
-xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
-                              unsigned int hash_code, void *content,
+xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len, unsigned int hash_code, void *content,
                               void_f_pvoid_t free_f)
 {
   xbt_dictelm_t element;
 
   if (dict->homogeneous) {
-    xbt_assert(!free_f,
-               "Cannot set an individual free function in homogeneous dicts.");
+    xbt_assert(!free_f, "Cannot set an individual free function in homogeneous dicts.");
     element = xbt_mallocator_get(dict_elm_mallocator);
   } else {
     xbt_het_dictelm_t het_element = xbt_mallocator_get(dict_het_elm_mallocator);
@@ -63,14 +60,12 @@ void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element)
   }
 }
 
-void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element,
-                          void *data, void_f_pvoid_t free_ctn)
+void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void *data, void_f_pvoid_t free_ctn)
 {
   void_f_pvoid_t free_f;
   if (dict->homogeneous) {
     free_f = dict->free_f;
-    xbt_assert(!free_ctn,
-               "Cannot set an individual free function in homogeneous dicts.");
+    xbt_assert(!free_ctn, "Cannot set an individual free function in homogeneous dicts.");
   } else {
     xbt_het_dictelm_t het_element = (xbt_het_dictelm_t)element;
     free_f  = het_element->free_f;

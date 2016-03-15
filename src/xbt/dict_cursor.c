@@ -1,4 +1,4 @@
-/* dict_cursor - iterators over dictionnaries                               */
+/* dict_cursor - iterators over dictionaries                               */
 
 /* Copyright (c) 2004-2014. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -12,9 +12,7 @@
 
 #include <string.h>             /* strlen() */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict,
-                                "To traverse dictionaries");
-
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict_cursor, xbt_dict, "To traverse dictionaries");
 
 /*####[ Dict cursor functions ]#############################################*/
 /* To traverse (simple) dicts                                               */
@@ -57,7 +55,6 @@ static inline void __cursor_not_null(xbt_dict_cursor_t cursor)
   xbt_assert(cursor, "Null cursor");
 }
 
-
 /** @brief Reinitialize the cursor. Mandatory after removal or add in dict. */
 inline void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
 {
@@ -78,8 +75,7 @@ inline void xbt_dict_cursor_rewind(xbt_dict_cursor_t cursor)
  * @param      dict   on what to let the cursor iterate
  * @param[out] cursor dest address
  */
-inline void xbt_dict_cursor_first(const xbt_dict_t dict,
-                                      xbt_dict_cursor_t * cursor)
+inline void xbt_dict_cursor_first(const xbt_dict_t dict, xbt_dict_cursor_t * cursor)
 {
   XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_cursor_first");
   if (!*cursor) {
@@ -93,10 +89,7 @@ inline void xbt_dict_cursor_first(const xbt_dict_t dict,
   }
 }
 
-
-/**
- * \brief Move to the next element.
- */
+/** \brief Move to the next element. */
 inline void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
 {
   xbt_dictelm_t current;
@@ -109,7 +102,6 @@ inline void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
   line = cursor->line;
 
   if (cursor->dict != NULL) {
-
     if (current != NULL) {
       XBT_CDEBUG(xbt_dict_cursor, "current is not null, take the next element");
       current = current->next;
@@ -133,14 +125,11 @@ inline void xbt_dict_cursor_step(xbt_dict_cursor_t cursor)
  *
  * @returns true if it's ok, false if there is no more data
  */
-inline int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor,
-                                           char **key, void **data)
+inline int xbt_dict_cursor_get_or_free(xbt_dict_cursor_t * cursor, char **key, void **data)
 {
-
   xbt_dictelm_t current;
 
   XBT_CDEBUG(xbt_dict_cursor, "xbt_dict_get_or_free");
-
 
   if (!cursor || !(*cursor))
     return FALSE;
@@ -186,9 +175,7 @@ inline void *xbt_dict_cursor_get_data(xbt_dict_cursor_t cursor)
  * @param data the new data
  * @param free_ctn the function to free the new data
  */
-inline void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor,
-                                         void *data,
-                                         void_f_pvoid_t free_ctn)
+inline void xbt_dict_cursor_set_data(xbt_dict_cursor_t cursor, void *data, void_f_pvoid_t free_ctn)
 {
   __cursor_not_null(cursor);
   xbt_dictelm_set_data(cursor->dict, cursor->current, data, free_ctn);

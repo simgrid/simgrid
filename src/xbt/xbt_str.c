@@ -27,7 +27,6 @@
  *
  * @param s The string to strip. Modified in place.
  * @param char_list A string which contains the characters you want to strip.
- *
  */
 void xbt_str_rtrim(char *s, const char *char_list)
 {
@@ -71,7 +70,6 @@ void xbt_str_rtrim(char *s, const char *char_list)
  *
  * @param s The string to strip. Modified in place.
  * @param char_list A string which contains the characters you want to strip.
- *
  */
 void xbt_str_ltrim(char *s, const char *char_list)
 {
@@ -112,11 +110,9 @@ void xbt_str_ltrim(char *s, const char *char_list)
  *
  * @param s The string to strip.
  * @param char_list A string which contains the characters you want to strip.
- *
  */
 void xbt_str_trim(char *s, const char *char_list)
 {
-
   if (!s)
     return;
 
@@ -155,12 +151,10 @@ void xbt_str_subst(char *str, char from, char to, int occurence)
  *
  * If the variable name contains spaces, use the brace version (ie, ${toto tutu})
  *
- * You can provide a default value to use if the variable is not set in the dict by using
- * '${var:=default}' or '${var:-default}'. These two forms are equivalent, even if they
- * shouldn't to respect the shell standard (:= form should set the value in the dict,
- * but does not) (BUG).
+ * You can provide a default value to use if the variable is not set in the dict by using '${var:=default}' or
+ * '${var:-default}'. These two forms are equivalent, even if they shouldn't to respect the shell standard (:= form
+ * should set the value in the dict, but does not) (BUG).
  */
-
 char *xbt_str_varsubst(const char *str, xbt_dict_t patterns)
 {
   xbt_strbuff_t buff = xbt_strbuff_new_from(str);
@@ -186,7 +180,6 @@ char *xbt_str_varsubst(const char *str, xbt_dict_t patterns)
  *  - "\0"    (ASCII 0  (0x00))  NULL.
  *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  */
-
 xbt_dynar_t xbt_str_split(const char *s, const char *sep)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
@@ -283,14 +276,12 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
  *
  * The string passed as argument must be writable (not const)
  * The elements of the dynar are just parts of the string passed as argument.
- * So if you don't store that argument elsewhere, you should free it in addition
- * to freeing the dynar. This can be done by simply freeing the first argument
- * of the dynar:
+ * So if you don't store that argument elsewhere, you should free it in addition to freeing the dynar. This can be done
+ * by simply freeing the first argument of the dynar:
  *  free(xbt_dynar_get_ptr(dynar,0));
  *
- * Actually this function puts a bunch of \0 in the memory area you passed as
- * argument to separate the elements, and pushes the address of each chunk
- * in the resulting dynar. Yes, that's uneven. Yes, that's gory. But that's efficient.
+ * Actually this function puts a bunch of \0 in the memory area you passed as argument to separate the elements, and
+ * pushes the address of each chunk in the resulting dynar. Yes, that's uneven. Yes, that's gory. But that's efficient.
  */
 xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), NULL);
@@ -308,8 +299,6 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
   end = beg;
 
   while (!done) {
-
-
     switch (*end) {
     case '\\':
       ctn = 1;
@@ -319,7 +308,6 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
         THROWF(arg_error, 0, "String ends with \\");
       end++;                    /* Pass the protected char */
       break;
-
     case '\'':
       ctn = 1;
       if (!in_double_quote) {
@@ -340,15 +328,12 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
         end++;
       }
       break;
-
     case ' ':
     case '\t':
     case '\n':
     case '\0':
       if (*end == '\0' && (in_simple_quote || in_double_quote)) {
-        THROWF(arg_error, 0,
-               "End of string found while searching for %c in %s",
-               (in_simple_quote ? '\'' : '"'), s);
+        THROWF(arg_error, 0, "End of string found while searching for %c in %s", (in_simple_quote ? '\'' : '"'), s);
       }
       if (in_simple_quote || in_double_quote) {
         end++;
@@ -373,7 +358,6 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
         end = beg;
       }
       break;
-
     default:
       ctn = 1;
       end++;
@@ -384,14 +368,11 @@ xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
 
 /** @brief Splits a string into a dynar of strings, taking quotes into account
  *
- * It basically does the same argument separation than the shell, where white
- * spaces can be escaped and where arguments are never split within a
- * quote group.
+ * It basically does the same argument separation than the shell, where white spaces can be escaped and where arguments
+ * are never split within a quote group.
  * Several subsequent spaces are ignored (unless within quotes, of course).
  * You may want to trim the input string, if you want to avoid empty entries
- *
  */
-
 xbt_dynar_t xbt_str_split_quoted(const char *s)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
@@ -442,6 +423,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
   }
   return res;
 }
+
 /** @brief Join a set of strings as a single string
  *
  * The parameter must be a NULL-terminated array of chars,
@@ -476,9 +458,7 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
   return res;
 }
 
-/** @brief creates a new string containing what can be read on a fd
- *
- */
+/** @brief creates a new string containing what can be read on a fd */
 char *xbt_str_from_file(FILE * file)
 {
   xbt_strbuff_t buff = xbt_strbuff_new();
@@ -514,6 +494,7 @@ long int xbt_str_parse_int(const char* str, const char* error_msg)
 
   return res;
 }
+
 /** @brief Parse a double out of a string, or raise an error
  *
  * The #str is passed as argument to your #error_msg, as follows:
@@ -553,8 +534,7 @@ XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_
 
   mytest("Empty", "", "");
   mytest("Basic test", "toto tutu", "totoXXXtutu");
-  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u",
-         "totoXXXtutu");
+  mytest("Useless backslashes", "\\t\\o\\t\\o \\t\\u\\t\\u", "totoXXXtutu");
   mytest("Protected space", "toto\\ tutu", "toto tutu");
   mytest("Several spaces", "toto   tutu", "totoXXXtutu");
   mytest("LTriming", "  toto tatu", "totoXXXtatu");
@@ -562,11 +542,8 @@ XBT_TEST_UNIT("xbt_str_split_quoted", test_split_quoted, "test the function xbt_
   mytest("Single quotes", "'toto tutu' tata", "toto tutuXXXtata");
   mytest("Double quotes", "\"toto tutu\" tata", "toto tutuXXXtata");
   mytest("Mixed quotes", "\"toto' 'tutu\" tata", "toto' 'tutuXXXtata");
-  mytest("Backslashed quotes", "\\'toto tutu\\' tata",
-         "'totoXXXtutu'XXXtata");
-  mytest("Backslashed quotes + quotes", "'toto \\'tutu' tata",
-         "toto 'tutuXXXtata");
-
+  mytest("Backslashed quotes", "\\'toto tutu\\' tata", "'totoXXXtutu'XXXtata");
+  mytest("Backslashed quotes + quotes", "'toto \\'tutu' tata", "toto 'tutuXXXtata");
 }
 
 #define mytest_str(name, input, separator, expected) \
@@ -640,5 +617,4 @@ XBT_TEST_UNIT("xbt_str_parse", test_parse, "Test the parsing functions")
   test_parse_error(xbt_str_parse_double, "Parse '' as a double", rdouble, "");
   test_parse_error(xbt_str_parse_double, "Parse cruft as a double", rdouble, "cruft");
 }
-
 #endif                          /* SIMGRID_TEST */

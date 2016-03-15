@@ -45,7 +45,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS-level)");
 
-
 /* use named sempahore when sem_init() does not work */
 #if !HAVE_SEM_INIT
 static int next_sem_ID = 0;
@@ -117,7 +116,7 @@ void xbt_os_thread_mod_preinit(void)
   if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
     THROWF(system_error, errcode,
            "Impossible to set the SimGrid identity descriptor to the main thread (pthread_setspecific failed)");
-  
+
   __xbt_running_ctx_fetch = _os_thread_get_running_ctx;
   __xbt_ex_terminate = _os_thread_ex_terminate;
 
@@ -176,7 +175,6 @@ static void *wrapper_start_routine(void *s)
     xbt_os_thread_free_thread_data(t);
   return res;
 }
-
 
 xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_routine, void *param, void *extra_data)
 {
@@ -288,13 +286,14 @@ void xbt_os_thread_key_create(xbt_os_thread_key_t* key)
   xbt_assert(errcode==0 , "pthread_key_create failed");
 }
 
-void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value) {
-
+void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value)
+{
   int errcode = pthread_setspecific(key, value);
   xbt_assert(errcode==0, "pthread_setspecific failed");
 }
 
-void* xbt_os_thread_get_specific(xbt_os_thread_key_t key) {
+void* xbt_os_thread_get_specific(xbt_os_thread_key_t key)
+{
   return pthread_getspecific(key);
 }
 
@@ -465,13 +464,11 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
 #if HAVE_SEM_INIT
   if (sem_destroy(sem->ps) < 0)
-    THROWF(system_error, errno, "sem_destroy() failed: %s",
-           strerror(errno));
+    THROWF(system_error, errno, "sem_destroy() failed: %s", strerror(errno));
 #else
   if (sem_close(sem->ps) < 0)
     THROWF(system_error, errno, "sem_close() failed: %s", strerror(errno));
   xbt_free(sem->name);
-
 #endif
   xbt_free(sem);
 }
@@ -482,7 +479,6 @@ void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
     THROWF(system_error, errno, "sem_getvalue() failed: %s",
            strerror(errno));
 }
-
 
 /** @brief Returns the amount of cores on the current host */
 int xbt_os_get_numcores(void) {
