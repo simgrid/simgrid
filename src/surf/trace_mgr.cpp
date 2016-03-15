@@ -38,43 +38,35 @@ simgrid::trace_mgr::future_evt_set::~future_evt_set()
 
 tmgr_trace_t tmgr_trace_new_from_string(const char *name, const char *input, double periodicity)
 {
-  tmgr_trace_t trace = NULL;
   int linecount = 0;
-  s_tmgr_event_t event;
   tmgr_event_t last_event = NULL;
-  xbt_dynar_t list;
   unsigned int cpt;
   char *val;
 
-  if (trace_list.find(name) != trace_list.end()) {
-    XBT_WARN("Ignoring redefinition of trace %s", name);
-    return trace_list.at(name);
-  }
-
+  xbt_assert(trace_list.find(name) == trace_list.end(), "Refusing to define trace %s twice", name);
   xbt_assert(periodicity >= 0, "Invalid periodicity %g (must be positive)", periodicity);
 
-  trace = new simgrid::trace_mgr::trace();
+  tmgr_trace_t trace = new simgrid::trace_mgr::trace();
 
-  list = xbt_str_split(input, "\n\r");
-
+  xbt_dynar_t list = xbt_str_split(input, "\n\r");
   xbt_dynar_foreach(list, cpt, val) {
+    s_tmgr_event_t event;
     linecount++;
     xbt_str_trim(val, " \t\n\r\x0B");
-    if (val[0] == '#' || val[0] == '\0' || val[0] == '%')
+    if (val[0] == '#' || val[0] == '\0' || val[0] == '%') // pass comments
       continue;
 
     if (sscanf(val, "PERIODICITY " "%lg" "\n", &periodicity) == 1)
       continue;
 
-    if (sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) != 2)
-      xbt_die("%s:%d: Syntax error in trace\n%s", name, linecount, input);
+    xbt_assert(sscanf(val, "%lg" " " "%lg" "\n", &event.delta, &event.value) == 2,
+        "%s:%d: Syntax error in trace\n%s", name, linecount, input);
 
     if (last_event) {
-      if (last_event->delta > event.delta) {
-        xbt_die("%s:%d: Invalid trace: Events must be sorted, "
-                "but time %g > time %g.\n%s",
-                name, linecount, last_event->delta, event.delta, input);
-      }
+      xbt_assert(last_event->delta <= event.delta,
+          "%s:%d: Invalid trace: Events must be sorted, but time %g > time %g.\n%s",
+          name, linecount, last_event->delta, event.delta, input);
+
       last_event->delta = event.delta - last_event->delta;
     } else {
       if(event.delta > 0.0){
@@ -98,14 +90,8 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *name, const char *input, dou
 
 tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 {
-  tmgr_trace_t trace = NULL;
-
   xbt_assert(filename && filename[0], "Cannot parse a trace from the null or empty filename");
-
-  if (trace_list.find(filename) != trace_list.end()) {
-    XBT_WARN("Ignoring redefinition of trace file %s", filename);
-    return trace_list.at(filename);
-  }
+  xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename);
 
   FILE *f = surf_fopen(filename, "r");
   xbt_assert(f != NULL,
@@ -113,7 +99,7 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 
   char *tstr = xbt_str_from_file(f);
   fclose(f);
-  trace = tmgr_trace_new_from_string(filename, tstr, 0.);
+  tmgr_trace_t trace = tmgr_trace_new_from_string(filename, tstr, 0.);
   xbt_free(tstr);
 
   return trace;
@@ -121,11 +107,8 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
 
 tmgr_trace_t tmgr_empty_trace_new(void)
 {
-  tmgr_trace_t trace = NULL;
+  tmgr_trace_t trace = new simgrid::trace_mgr::trace();
   s_tmgr_event_t event;
-
-  trace = new simgrid::trace_mgr::trace();
-
   event.delta = 0.0;
   event.value = 0.0;
   xbt_dynar_push(trace->event_list, &event);
