@@ -53,8 +53,7 @@ typedef struct xbt_log_append2_file_s* xbt_log_append2_file_t;
 #define APPEND2_END_TOKEN_CLEAR "\n                   "
 
 static void open_append2_file(xbt_log_append2_file_t data){
-  if(data->count<0)
-  {
+  if(data->count<0) {
     //Roll
     if(!data->file)
       data->file= fopen(data->filename, "w");
@@ -62,8 +61,7 @@ static void open_append2_file(xbt_log_append2_file_t data){
       fputs(APPEND2_END_TOKEN_CLEAR,data->file);
       fseek(data->file,0,SEEK_SET);
     }
-  }
-  else{
+  } else{
     //printf("Splitting\n");
     //Split
     if(data->file)
@@ -79,24 +77,19 @@ static void open_append2_file(xbt_log_append2_file_t data){
     data->count++;
     data->file= fopen(newname, "w");
     xbt_assert(data->file);
-
   }
 }
-  
-
-
 
 static void append2_file(xbt_log_appender_t this_, char *str) {
    xbt_log_append2_file_t d=(xbt_log_append2_file_t) this_->data;
    xbt_assert(d->file);
-   if(ftell(d->file)>=d->limit)
-   {
+   if(ftell(d->file)>=d->limit) {
      open_append2_file(d);
    }
    fputs(str, d->file);
    if(d->count<0){
-          fputs(APPEND2_END_TOKEN,d->file);
-          fseek(d->file,-((signed long)strlen(APPEND2_END_TOKEN)),SEEK_CUR);
+     fputs(APPEND2_END_TOKEN,d->file);
+     fseek(d->file,-((signed long)strlen(APPEND2_END_TOKEN)),SEEK_CUR);
    }
 }
 
@@ -141,4 +134,3 @@ xbt_log_appender_t xbt_log_appender2_file_new(char *arg,int roll) {
   res->data = data;
   return res;
 }
-

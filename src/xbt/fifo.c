@@ -29,7 +29,6 @@ xbt_fifo_t xbt_fifo_new(void)
   return fifo;
 }
 
-
 /** Destructor
  * \param l poor victim
  *
@@ -244,7 +243,6 @@ int xbt_fifo_remove(xbt_fifo_t l, void *t)
 {
   xbt_fifo_item_t current, current_next;
 
-
   for (current = l->head; current; current = current_next) {
     current_next = current->next;
     if (current->content != t)
@@ -257,7 +255,6 @@ int xbt_fifo_remove(xbt_fifo_t l, void *t)
   }
   return 0;
 }
-
 
 /**
  * \param l
@@ -337,18 +334,16 @@ int xbt_fifo_is_in(xbt_fifo_t f, void *content)
  * This function allows to search an item with a user provided function instead
  * of the pointer comparison used elsewhere in this module. Assume for example that you have a fifo of
  * strings. You cannot use xbt_fifo_remove() to remove, say, "TOTO" from it because internally, xbt_fifo_remove()
- * will do something like "if (item->content == "toto"), then remove it". And the pointer to the item content
- * and the pointer to "toto" will never match. As a solution, the current function provides a way to search elements
- * that are semanticaly equivalent instead of only syntaxically. So, removing "Toto" from a fifo can be
- * achieved this way:
+ * will do something like "if (item->content == "toto"), then remove it". And the pointer to the item content and the
+ * pointer to "toto" will never match. As a solution, the current function provides a way to search elements that are
+ * semantically equivalent instead of only syntactically. So, removing "Toto" from a fifo can be achieved this way:
  *
  *  @verbatim
 int my_comparison_function(void *searched, void *seen) {
   return !strcmp(searched, seen);
 }
 
-  xbt_fifo_remove_item(fifo,
-                       xbt_fifo_search_item(fifo, my_comparison_function, "Toto"));
+  xbt_fifo_remove_item(fifo, xbt_fifo_search_item(fifo, my_comparison_function, "Toto"));
 @endverbatim
  *
  * \param f a fifo list
@@ -364,7 +359,6 @@ xbt_fifo_item_t xbt_fifo_search_item(xbt_fifo_t f, int_f_pvoid_pvoid_t cmp_fun, 
     item = item->next;
   }
   return NULL;
-
 }
 
 /**
@@ -561,10 +555,8 @@ xbt_fifo_item_t xbt_fifo_getPrevItem(xbt_fifo_item_t i)
  */
 void xbt_fifo_preinit(void)
 {
-  item_mallocator = xbt_mallocator_new(65536,
-                                       fifo_item_mallocator_new_f,
-                                       fifo_item_mallocator_free_f,
-                                       fifo_item_mallocator_reset_f);
+  item_mallocator = xbt_mallocator_new(65536, fifo_item_mallocator_new_f,
+                                       fifo_item_mallocator_free_f, fifo_item_mallocator_reset_f);
 }
 
 void xbt_fifo_postexit(void)
@@ -574,5 +566,4 @@ void xbt_fifo_postexit(void)
     item_mallocator = NULL;
   }
 }
-
 /* @} */

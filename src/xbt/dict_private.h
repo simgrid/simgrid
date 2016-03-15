@@ -20,7 +20,6 @@
 
 #define MAX_FILL_PERCENT 80
 
-
 typedef struct s_xbt_het_dictelm {
   s_xbt_dictelm_t element;
   void_f_pvoid_t free_f;
@@ -49,10 +48,8 @@ extern XBT_PRIVATE void * dict_het_elm_mallocator_new_f(void);
 
 /*####[ Function prototypes ]################################################*/
 XBT_PRIVATE xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
-                              unsigned int hash_code, void *content,
-                              void_f_pvoid_t free_f);
+                              unsigned int hash_code, void *content, void_f_pvoid_t free_f);
 XBT_PRIVATE void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element);
-XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element,
-                          void *data, void_f_pvoid_t free_ctn);
+XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void *data, void_f_pvoid_t free_ctn);
 
 #endif                          /* _XBT_DICT_PRIVATE_H_ */

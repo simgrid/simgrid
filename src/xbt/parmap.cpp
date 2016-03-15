@@ -351,8 +351,8 @@ static void *xbt_parmap_worker_main(void *arg)
  * \param fun the function to call in parallel
  * \param data each element of this dynar will be passed as an argument to fun
  */
-int xbt_parmap_mc_apply(xbt_parmap_t parmap, int_f_pvoid_pvoid_t fun, 
-                         void* data, unsigned int length,  void* ref_snapshot)
+int xbt_parmap_mc_apply(xbt_parmap_t parmap, int_f_pvoid_pvoid_t fun, void* data, unsigned int length,
+                        void* ref_snapshot)
 {
   /* Assign resources to worker threads */
   parmap->snapshot_compare = fun;
@@ -455,8 +455,7 @@ static void xbt_parmap_posix_master_wait(xbt_parmap_t parmap)
 /**
  * \brief Ends the parmap: wakes the controller thread when all workers terminate.
  *
- * This function is called by all worker threads when they end (not including
- * the controller).
+ * This function is called by all worker threads when they end (not including the controller).
  *
  * \param parmap a parmap
  */
@@ -490,8 +489,7 @@ static void xbt_parmap_posix_master_signal(xbt_parmap_t parmap)
 /**
  * \brief Waits for some work to process.
  *
- * This function is called by each worker thread (not including the controller)
- * when it has no more work to do.
+ * This function is called by each worker thread (not including the controller) when it has no more work to do.
  *
  * \param parmap a parmap
  * \param round  the expected round number
@@ -527,8 +525,7 @@ static void xbt_parmap_futex_master_wait(xbt_parmap_t parmap)
 /**
  * \brief Ends the parmap: wakes the controller thread when all workers terminate.
  *
- * This function is called by all worker threads when they end (not including
- * the controller).
+ * This function is called by all worker threads when they end (not including the controller).
  *
  * \param parmap a parmap
  */
@@ -559,8 +556,7 @@ static void xbt_parmap_futex_master_signal(xbt_parmap_t parmap)
 /**
  * \brief Waits for some work to process.
  *
- * This function is called by each worker thread (not including the controller)
- * when it has no more work to do.
+ * This function is called by each worker thread (not including the controller) when it has no more work to do.
  *
  * \param parmap a parmap
  * \param round  the expected round number
@@ -618,8 +614,7 @@ static void xbt_parmap_busy_master_signal(xbt_parmap_t parmap)
 /**
  * \brief Waits for some work to process.
  *
- * This function is called by each worker thread (not including the controller)
- * when it has no more work to do.
+ * This function is called by each worker thread (not including the controller) when it has no more work to do.
  *
  * \param parmap a parmap
  * \param round  the expected round number

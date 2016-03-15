@@ -10,8 +10,7 @@
 #include <xbt/log.h>
 #include <xbt/lib.h>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_lib, xbt,
-                                "A dict with keys of type (name, level)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_lib, xbt, "A dict with keys of type (name, level)");
 
 xbt_lib_t xbt_lib_new(void)
 {

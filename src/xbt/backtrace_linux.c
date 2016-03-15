@@ -67,7 +67,6 @@ backtrace_helper (struct _Unwind_Context *ctx, void *a)
  * */
 
 int xbt_backtrace_no_malloc(void **array, int size) {
-
   int i = 0;
   for(i=0; i < size; i++)
     array[i] = NULL;
@@ -95,7 +94,6 @@ void xbt_backtrace_current(xbt_ex_t * e)
     exit(1);
   }
 }
-
 
 void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly improved/simplifyied with http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
 {
@@ -152,8 +150,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
           binary_name = bprintf("%s/%s", data, xbt_binary_name);
           if (!stat(binary_name, &stat_buf)) {
             /* Found. */
-            XBT_DEBUG("Looked in the PATH for the binary. Found %s",
-                   binary_name);
+            XBT_DEBUG("Looked in the PATH for the binary. Found %s", binary_name);
             break;
           }
         }
@@ -163,8 +160,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
           e->used = 1;
           e->bt_strings = xbt_new(char *, 1);
 
-          e->bt_strings[0] =
-              bprintf("(binary '%s' not found in the PATH)", xbt_binary_name);
+          e->bt_strings[0] = bprintf("(binary '%s' not found in the PATH)", xbt_binary_name);
           free(backtrace_syms);
           return;
         }
@@ -174,9 +170,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   } else {
     binary_name = xbt_strdup(xbt_binary_name);
   }
-  cmd = curr =
-      xbt_new(char,
-              strlen(ADDR2LINE) + 25 + strlen(binary_name) + 32 * e->used);
+  cmd = curr = xbt_new(char, strlen(ADDR2LINE) + 25 + strlen(binary_name) + 32 * e->used);
 
   curr += sprintf(curr, "%s -f -e %s ", ADDR2LINE, binary_name);
   free(binary_name);
@@ -247,8 +241,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
 
       addr = strtol(addrs[i], &p, 16);
       if (*p != '\0') {
-        XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)",
-                  addrs[i], addr);
+        XBT_CRITICAL("Cannot parse backtrace address '%s' (addr=%#lx)", addrs[i], addr);
       }
       XBT_DEBUG("addr=%s (as string) =%#lx (as number)", addrs[i], addr);
 
@@ -270,8 +263,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
         }
         if (found) {
           XBT_DEBUG("%#lx in [%#lx-%#lx]", addr, first, last);
-          XBT_DEBUG
-              ("Symbol found, map lines not further displayed (even if looking for next ones)");
+          XBT_DEBUG("Symbol found, map lines not further displayed (even if looking for next ones)");
         }
       }
       fclose(maps);
@@ -279,8 +271,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       free(addrs[i]);
 
       if (!found) {
-        XBT_VERB
-            ("Problem while reading the maps file. Following backtrace will be mangled.");
+        XBT_VERB("Problem while reading the maps file. Following backtrace will be mangled.");
         XBT_DEBUG("No dynamic. Static symbol: %s", backtrace_syms[i]);
         e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace_syms[i]);
         continue;
@@ -293,8 +284,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       addrs[i] = bprintf("0x%0*lx", addr_len - 2, addr - offset);
       XBT_DEBUG("offset=%#lx new addr=%s", offset, addrs[i]);
 
-      /* Got it. We have our new address. Let's get the library path and we
-         are set */
+      /* Got it. We have our new address. Let's get the library path and we are set */
       p = xbt_strdup(backtrace_syms[i]);
       if (p[0] == '[') {
         /* library path not displayed in the map file either... */
@@ -335,24 +325,19 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       /* check whether the trick worked */
       if (strcmp("??", line_func)) {
         XBT_DEBUG("Found dynamic symbol %s() at %s", line_func, line_pos);
-        e->bt_strings[i] =
-            bprintf("**   In %s() at %s", line_func, line_pos);
+        e->bt_strings[i] = bprintf("**   In %s() at %s", line_func, line_pos);
       } else {
         /* damn, nothing to do here. Let's print the raw address */
-        XBT_DEBUG("Dynamic symbol not found. Raw address = %s",
-               backtrace_syms[i]);
+        XBT_DEBUG("Dynamic symbol not found. Raw address = %s", backtrace_syms[i]);
         e->bt_strings[i] = bprintf("**   In ?? at %s", backtrace_syms[i]);
       }
-
     }
     free(addrs[i]);
 
     /* Mask the bottom of the stack */
     if (!strncmp("main", line_func, strlen("main")) ||
-        !strncmp("xbt_thread_context_wrapper", line_func,
-                 strlen("xbt_thread_context_wrapper"))
-        || !strncmp("smx_ctx_sysv_wrapper", line_func,
-                    strlen("smx_ctx_sysv_wrapper"))) {
+        !strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper"))
+        || !strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper"))) {
       int j;
 
       for (j = i + 1; j < e->used; j++)
@@ -360,14 +345,11 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       e->used = i + 1;
 
       if (!strncmp
-          ("xbt_thread_context_wrapper", line_func,
-           strlen("xbt_thread_context_wrapper"))) {
+          ("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper"))) {
         free(e->bt_strings[i]);
         e->bt_strings[i] = xbt_strdup("**   (in a separate thread)");
       }
     }
-
-
   }
   pclose(pipe);
   free(addrs);
@@ -377,7 +359,6 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
 
 #if HAVE_MC
 int xbt_libunwind_backtrace(void* bt[XBT_BACKTRACE_SIZE], int size){
-  
   int i = 0;
   for(i=0; i < size; i++)
     bt[i] = NULL;
@@ -389,21 +370,17 @@ int xbt_libunwind_backtrace(void* bt[XBT_BACKTRACE_SIZE], int size){
 
   unw_getcontext (&uc);
   unw_init_local (&c, &uc);
- 
+
   unw_word_t ip;
 
   unw_step(&c);
- 
-  while(unw_step(&c) >= 0 && i < size){
 
+  while(unw_step(&c) >= 0 && i < size){
     unw_get_reg(&c, UNW_REG_IP, &ip);
     bt[i] = (void*)(long)ip;
     i++;
-
   }
 
   return i;
-  
 }
-
 #endif

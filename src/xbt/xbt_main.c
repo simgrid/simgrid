@@ -35,7 +35,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(module, xbt, "module handling");
 
 XBT_LOG_NEW_CATEGORY(smpi, "All SMPI categories"); /* lives here even if that's a bit odd to solve linking issues: this is used in xbt_log_file_appender to detect whether SMPI is used (and thus whether we should unbench the writing to disk) */
 
-
 char *xbt_binary_name = NULL;   /* Name of the system process containing us (mandatory to retrieve neat backtraces) */
 xbt_dynar_t xbt_cmdline = NULL; /* all we got in argv */
 
@@ -63,9 +62,7 @@ static void xbt_postexit(void);
 #include <windows.h>
 
 #ifndef __GNUC__
-/* Should not be necessary but for some reason,
- * DllMain is called twice at attachment and
- * at detachment.*/
+/* Should not be necessary but for some reason, DllMain is called twice at attachment and at detachment.*/
 static int xbt_dll_process_is_attached = 0;
 
 /* see also http://msdn.microsoft.com/en-us/library/ms682583%28VS.85%29.aspx */

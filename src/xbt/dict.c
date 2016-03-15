@@ -15,8 +15,7 @@
 #include "xbt/str.h"
 #include "dict_private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
-                                "Dictionaries provide the same functionalities as hash tables");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same functionalities as hash tables");
 
 /**
  * \brief Constructor
@@ -24,8 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt,
  * \see xbt_dict_new_homogenous(), xbt_dict_free()
  *
  * Creates and initialize a new dictionary with a default hashtable size.
- * The dictionary is heterogeneous: each element can have a different free
- * function.
+ * The dictionary is heterogeneous: each element can have a different free function.
  */
 xbt_dict_t xbt_dict_new(void)
 {
@@ -37,8 +35,7 @@ xbt_dict_t xbt_dict_new(void)
 
 /**
  * \brief Constructor
- * \param free_ctn function to call with (\a data as argument) when
- *        \a data is removed from the dictionary
+ * \param free_ctn function to call with (\a data as argument) when \a data is removed from the dictionary
  * \return pointer to the destination
  * \see xbt_dict_new(), xbt_dict_free()
  *
@@ -95,9 +92,7 @@ void xbt_dict_free(xbt_dict_t * dict)
   }
 }
 
-/**
- * Returns the amount of elements in the dict
- */
+/** Returns the amount of elements in the dict */
 inline unsigned int xbt_dict_size(xbt_dict_t dict)
 {
   return (dict ? (unsigned int) dict->count : (unsigned int) 0);
@@ -114,9 +109,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   xbt_dictelm_t bucklet;
   xbt_dictelm_t *pprev;
 
-  currcell =
-      (xbt_dictelm_t *) xbt_realloc((char *) dict->table,
-                                    newsize * sizeof(xbt_dictelm_t));
+  currcell = (xbt_dictelm_t *) xbt_realloc((char *) dict->table, newsize * sizeof(xbt_dictelm_t));
   memset(&currcell[oldsize], 0, oldsize * sizeof(xbt_dictelm_t));       /* zero second half */
   dict->table_size = --newsize;
   dict->table = currcell;
@@ -127,8 +120,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
       continue;
     twincell = currcell + oldsize;
     for (pprev = currcell, bucklet = *currcell; bucklet; bucklet = *pprev) {
-      /* Since we use "& size" instead of "%size" and since the size was doubled,
-         each bucklet of this cell must either :
+      /* Since we use "& size" instead of "%size" and since the size was doubled, each bucklet of this cell must either:
          - stay  in  cell i (ie, currcell)
          - go to the cell i+oldsize (ie, twincell) */
       if ((bucklet->hash_code & newsize) != i) {        /* Move to b */
@@ -141,7 +133,6 @@ static void xbt_dict_rehash(xbt_dict_t dict)
       } else {
         pprev = &bucklet->next;
       }
-
     }
 
     if (!*currcell)             /* everything moved */
@@ -155,29 +146,22 @@ static void xbt_dict_rehash(xbt_dict_t dict)
  * \param key the key to set the new data
  * \param key_len the size of the \a key
  * \param data the data to add in the dict
- * \param free_ctn function to call with (\a data as argument) when
- *        \a data is removed from the dictionary. This param
- *        will only be considered when the dict was instantiated with
- *        xbt_dict_new() and not xbt_dict_new_homogeneous()
+ * \param free_ctn function to call with (\a data as argument) when \a data is removed from the dictionary. This param
+ *        will only be considered when the dict was instantiated with xbt_dict_new() and not xbt_dict_new_homogeneous()
  *
- * Set the \a data in the structure under the \a key, which can be any kind
- * of data, as long as its length is provided in \a key_len.
+ * Set the \a data in the structure under the \a key, which can be any kind of data, as long as its length is provided
+ * in \a key_len.
  */
-inline void xbt_dict_set_ext(xbt_dict_t dict,
-                                 const char *key, int key_len,
-                                 void *data, void_f_pvoid_t free_ctn)
+inline void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data, void_f_pvoid_t free_ctn)
 {
-
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
 
   xbt_dictelm_t current, previous = NULL;
 
-  XBT_CDEBUG(xbt_dict,
-             "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
+  XBT_CDEBUG(xbt_dict, "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
              dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
-  while (current != NULL &&
-         (hash_code != current->hash_code || key_len != current->key_len
+  while (current != NULL && (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
     previous = current;
     current = current->next;
@@ -197,8 +181,7 @@ inline void xbt_dict_set_ext(xbt_dict_t dict,
     }
   } else {
     XBT_CDEBUG(xbt_dict, "Replace %.*s by %.*s under key %.*s",
-               key_len, (char *) current->content,
-               key_len, (char *) data, key_len, (char *) key);
+               key_len, (char *) current->content, key_len, (char *) data, key_len, (char *) key);
     /* there is already an element with the same key: overwrite it */
     xbt_dictelm_set_data(dict, current, data, free_ctn);
   }
@@ -210,19 +193,13 @@ inline void xbt_dict_set_ext(xbt_dict_t dict,
  * \param dict the dict
  * \param key the key to set the new data
  * \param data the data to add in the dict
- * \param free_ctn function to call with (\a data as argument) when
- *        \a data is removed from the dictionary. This param
- *        will only be considered when the dict was instantiated with
- *        xbt_dict_new() and not xbt_dict_new_homogeneous()
+ * \param free_ctn function to call with (\a data as argument) when \a data is removed from the dictionary. This param
+ *        will only be considered when the dict was instantiated with xbt_dict_new() and not xbt_dict_new_homogeneous()
  *
- * set the \a data in the structure under the \a key, which is a
- * null terminated string.
+ * set the \a data in the structure under the \a key, which is anull terminated string.
  */
-inline void xbt_dict_set(xbt_dict_t dict,
-                             const char *key, void *data,
-                             void_f_pvoid_t free_ctn)
+inline void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t free_ctn)
 {
-
   xbt_dict_set_ext(dict, key, strlen(key), data, free_ctn);
 }
 
@@ -241,8 +218,7 @@ inline void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  while (current != NULL &&
-         (hash_code != current->hash_code || key_len != current->key_len
+  while (current != NULL && (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
     current = current->next;
   }
@@ -259,8 +235,7 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  while (current != NULL &&
-         (hash_code != current->hash_code || key_len != current->key_len
+  while (current != NULL && (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
     current = current->next;
   }
@@ -286,7 +261,6 @@ char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
       current = current->next;
     }
   }
-
   return NULL;
 }
 
@@ -304,13 +278,13 @@ char *xbt_dict_get_elm_key(xbt_dictelm_t elm)
  * \return the data that we are looking for
  *
  * Search the given \a key. Throws not_found_error when not found.
- * Check xbt_dict_get_or_null() for a version returning NULL without exception when
- * not found.
+ * Check xbt_dict_get_or_null() for a version returning NULL without exception when not found.
  */
 inline void *xbt_dict_get(xbt_dict_t dict, const char *key)
 {
   return xbt_dict_get_elm(dict, key)->content;
 }
+
 /**
  * \brief Retrieve element from the dict (null-terminated key)
  *
@@ -319,8 +293,7 @@ inline void *xbt_dict_get(xbt_dict_t dict, const char *key)
  * \return the s_xbt_dictelm_t that we are looking for
  *
  * Search the given \a key. Throws not_found_error when not found.
- * Check xbt_dict_get_or_null() for a version returning NULL without exception when
- * not found.
+ * Check xbt_dict_get_or_null() for a version returning NULL without exception when not found.
  */
 inline xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 {
@@ -344,6 +317,7 @@ inline void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 
   return current->content;
 }
+
 /**
  * \brief like xbt_dict_get_elm(), but returning NULL when not found
  */
@@ -352,12 +326,10 @@ inline xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
   unsigned int hash_code = xbt_str_hash(key);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  while (current != NULL &&
-         (hash_code != current->hash_code || strcmp(key, current->key)))
+  while (current != NULL && (hash_code != current->hash_code || strcmp(key, current->key)))
     current = current->next;
   return current;
 }
-
 
 /**
  * \brief Remove data from the dict (arbitrary key)
@@ -374,8 +346,7 @@ inline void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
   xbt_dictelm_t previous = NULL;
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  while (current != NULL &&
-         (hash_code != current->hash_code || key_len != current->key_len
+  while (current != NULL && (hash_code != current->hash_code || key_len != current->key_len
           || strncmp(key, current->key, key_len))) {
     previous = current;         /* save the previous node */
     current = current->next;
@@ -396,8 +367,6 @@ inline void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
   xbt_dictelm_free(dict, current);
   dict->count--;
 }
-
-
 
 /**
  * \brief Remove data from the dict (null-terminated key)
@@ -462,10 +431,9 @@ inline int xbt_dict_is_empty(xbt_dict_t dict)
  * \param dict the exibitionist
  * \param output a function to dump each data in the tree (check @ref xbt_dict_dump_output_string)
  *
- * Outputs the content of the structure. (for debugging purpose). \a output is a
- * function to output the data. If NULL, data won't be displayed.
+ * Outputs the content of the structure. (for debugging purpose). \a output is a function to output the data. If NULL,
+ * data won't be displayed.
  */
-
 void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
 {
   int i;
@@ -559,13 +527,9 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
  */
 void xbt_dict_preinit(void)
 {
-  dict_elm_mallocator = xbt_mallocator_new(256,
-                                           dict_elm_mallocator_new_f,
-                                           dict_elm_mallocator_free_f,
+  dict_elm_mallocator = xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f,
                                            dict_elm_mallocator_reset_f);
-  dict_het_elm_mallocator = xbt_mallocator_new(256,
-                                               dict_het_elm_mallocator_new_f,
-                                               dict_het_elm_mallocator_free_f,
+  dict_het_elm_mallocator = xbt_mallocator_new(256, dict_het_elm_mallocator_new_f, dict_het_elm_mallocator_free_f,
                                                dict_het_elm_mallocator_reset_f);
 }
 
@@ -605,13 +569,11 @@ void xbt_dict_postexit(void)
 #include "xbt/ex.h"
 #include "src/internal_config.h"
 
-
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);
 
 XBT_TEST_SUITE("dict", "Dict data container");
 
-static void debuged_add_ext(xbt_dict_t head, const char *key,
-                            const char *data_to_fill, void_f_pvoid_t free_f)
+static void debuged_add_ext(xbt_dict_t head, const char *key, const char *data_to_fill, void_f_pvoid_t free_f)
 {
   char *data = xbt_strdup(data_to_fill);
 
@@ -647,7 +609,6 @@ static void fill(xbt_dict_t * head, int homogeneous)
   debuged_add(*head, "123457", free_f);
 }
 
-
 static void search_ext(xbt_dict_t head, const char *key, const char *data)
 {
   char *found;
@@ -656,17 +617,12 @@ static void search_ext(xbt_dict_t head, const char *key, const char *data)
   found = xbt_dict_get(head, key);
   xbt_test_log("Found %s", found);
   if (data) {
-    xbt_test_assert(found,
-                    "data do not match expectations: found NULL while searching for %s",
-                    data);
+    xbt_test_assert(found, "data do not match expectations: found NULL while searching for %s", data);
     if (found)
-      xbt_test_assert(!strcmp(data, found),
-                      "data do not match expectations: found %s while searching for %s",
+      xbt_test_assert(!strcmp(data, found), "data do not match expectations: found %s while searching for %s",
                       found, data);
   } else {
-    xbt_test_assert(!found,
-                    "data do not match expectations: found %s while searching for NULL",
-                    found);
+    xbt_test_assert(!found, "data do not match expectations: found %s while searching for NULL", found);
   }
 }
 
@@ -677,12 +633,10 @@ static void search(xbt_dict_t head, const char *key)
 
 static void debuged_remove(xbt_dict_t head, const char *key)
 {
-
   xbt_test_add("Remove '%s'", key);
   xbt_dict_remove(head, key);
   /*  xbt_dict_dump(head,(void (*)(void*))&printf); */
 }
-
 
 static void traverse(xbt_dict_t head)
 {
@@ -697,8 +651,7 @@ static void traverse(xbt_dict_t head)
     } else {
       xbt_test_log("Seen #%d:  %s", ++i, key);
     }
-    xbt_test_assert(!data || !strcmp(key, data),
-                     "Key(%s) != value(%s). Aborting", key, data);
+    xbt_test_assert(!data || !strcmp(key, data), "Key(%s) != value(%s). Aborting", key, data);
   }
 }
 
@@ -711,10 +664,8 @@ static void search_not_found(xbt_dict_t head, const char *data)
 
   TRY {
     data = xbt_dict_get(head, data);
-    THROWF(unknown_error, 0,
-           "Found something which shouldn't be there (%s)", data);
-  }
-  CATCH(e) {
+    THROWF(unknown_error, 0, "Found something which shouldn't be there (%s)", data);
+  } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
@@ -730,18 +681,13 @@ static void count(xbt_dict_t dict, int length)
   void *data;
   int effective = 0;
 
-
   xbt_test_add("Count elements (expecting %d)", length);
-  xbt_test_assert(xbt_dict_length(dict) == length,
-                   "Announced length(%d) != %d.", xbt_dict_length(dict),
-                   length);
+  xbt_test_assert(xbt_dict_length(dict) == length, "Announced length(%d) != %d.", xbt_dict_length(dict), length);
 
   xbt_dict_foreach(dict, cursor, key, data)
       effective++;
 
-  xbt_test_assert(effective == length, "Effective length(%d) != %d.",
-                   effective, length);
-
+  xbt_test_assert(effective == length, "Effective length(%d) != %d.", effective, length);
 }
 
 static void count_check_get_key(xbt_dict_t dict, int length)
@@ -752,25 +698,16 @@ static void count_check_get_key(xbt_dict_t dict, int length)
   void *data;
   int effective = 0;
 
-
-  xbt_test_add
-      ("Count elements (expecting %d), and test the getkey function",
-       length);
-  xbt_test_assert(xbt_dict_length(dict) == length,
-                   "Announced length(%d) != %d.", xbt_dict_length(dict),
-                   length);
+  xbt_test_add("Count elements (expecting %d), and test the getkey function", length);
+  xbt_test_assert(xbt_dict_length(dict) == length, "Announced length(%d) != %d.", xbt_dict_length(dict), length);
 
   xbt_dict_foreach(dict, cursor, key, data) {
     effective++;
     key2 = xbt_dict_get_key(dict, data);
-    xbt_assert(!strcmp(key, key2),
-                "The data was registered under %s instead of %s as expected",
-                key2, key);
+    xbt_assert(!strcmp(key, key2), "The data was registered under %s instead of %s as expected", key2, key);
   }
 
-  xbt_test_assert(effective == length, "Effective length(%d) != %d.",
-                   effective, length);
-
+  xbt_test_assert(effective == length, "Effective length(%d) != %d.", effective, length);
 }
 
 xbt_ex_t e;
@@ -789,8 +726,7 @@ static void basic_test(int homogeneous)
   traverse(head);
   TRY {
     debuged_remove(head, "12346");
-  }
-  CATCH(e) {
+  } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
@@ -883,8 +819,7 @@ static void remove_test(int homogeneous)
   xbt_test_add("Remove non existing data");
   TRY {
     debuged_remove(head, "Does not exist");
-  }
-  CATCH(e) {
+  } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
@@ -893,8 +828,7 @@ static void remove_test(int homogeneous)
 
   xbt_dict_free(&head);
 
-  xbt_test_add
-      ("Remove each data manually (traversing the resulting dictionary each time)");
+  xbt_test_add("Remove each data manually (traversing the resulting dictionary each time)");
   fill(&head, homogeneous);
   debuged_remove(head, "12a");
   traverse(head);
@@ -910,8 +844,7 @@ static void remove_test(int homogeneous)
   count(head, 3);
   TRY {
     debuged_remove(head, "12346");
-  }
-  CATCH(e) {
+  } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
@@ -925,16 +858,14 @@ static void remove_test(int homogeneous)
   traverse(head);
   TRY {
     debuged_remove(head, "12346");
-  }
-  CATCH(e) {
+  } CATCH(e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
     xbt_ex_free(e);
   }
   traverse(head);
 
-  xbt_test_add
-      ("Free dict, create new fresh one, and then reset the dict");
+  xbt_test_add("Free dict, create new fresh one, and then reset the dict");
   xbt_dict_free(&head);
   fill(&head, homogeneous);
   xbt_dict_reset(head);
@@ -980,8 +911,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
       if (!strcmp(key, "null"))
         found = 1;
     }
-    xbt_test_assert(found,
-                     "the key 'null', associated to NULL is not found");
+    xbt_test_assert(found, "the key 'null', associated to NULL is not found");
   }
   xbt_dict_free(&head);
 }
@@ -1011,11 +941,8 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 
   for (i = 0; i < 10; i++) {
     xbt_test_add("CRASH test number %d (%d to go)", i + 1, 10 - i - 1);
-    xbt_test_log
-        ("Fill the struct, count its elems and frees the structure");
-    xbt_test_log
-        ("using 1000 elements with %d chars long randomized keys.",
-         SIZEOFKEY);
+    xbt_test_log("Fill the struct, count its elems and frees the structure");
+    xbt_test_log("using 1000 elements with %d chars long randomized keys.", SIZEOFKEY);
     head = xbt_dict_new();
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j = 0; j < 1000; j++) {
@@ -1032,9 +959,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 
       xbt_dict_set(head, key, key, &free);
       data = xbt_dict_get(head, key);
-      xbt_test_assert(!strcmp(key, data),
-                       "Retrieved value (%s) != Injected value (%s)", key,
-                       data);
+      xbt_test_assert(!strcmp(key, data), "Retrieved value (%s) != Injected value (%s)", key, data);
 
       count(head, j + 1);
     }
@@ -1044,13 +969,10 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     xbt_dict_free(&head);
   }
 
-
   head = xbt_dict_new();
-  xbt_test_add("Fill %d elements, with keys being the number of element",
-                NB_ELM);
+  xbt_test_add("Fill %d elements, with keys being the number of element", NB_ELM);
   for (j = 0; j < NB_ELM; j++) {
     /* if (!(j%1000)) { printf("."); fflush(stdout); } */
-
     key = xbt_malloc(10);
 
     sprintf(key, "%d", j);
@@ -1058,8 +980,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   }
   /*xbt_dict_dump(head,(void (*)(void*))&printf); */
 
-  xbt_test_add
-      ("Count the elements (retrieving the key and data for each)");
+  xbt_test_add("Count the elements (retrieving the key and data for each)");
   i = countelems(head);
   xbt_test_log("There is %d elements", i);
 
@@ -1069,15 +990,11 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     void *data;
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j = 0; j < NB_ELM; j++) {
-
       sprintf(key, "%d", j);
       data = xbt_dict_get(head, key);
-      xbt_test_assert(!strcmp(key, (char *) data),
-                       "with get, key=%s != data=%s", key, (char *) data);
+      xbt_test_assert(!strcmp(key, (char *) data), "with get, key=%s != data=%s", key, (char *) data);
       data = xbt_dict_get_ext(head, key, strlen(key));
-      xbt_test_assert(!strcmp(key, (char *) data),
-                       "with get_ext, key=%s != data=%s", key,
-                       (char *) data);
+      xbt_test_assert(!strcmp(key, (char *) data), "with get_ext, key=%s != data=%s", key, (char *) data);
     }
   }
   free(key);
@@ -1086,12 +1003,10 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   key = xbt_malloc(10);
   for (j = 0; j < NB_ELM; j++) {
     /* if (!(j%10000)) printf("."); fflush(stdout); */
-
     sprintf(key, "%d", j);
     xbt_dict_remove(head, key);
   }
   free(key);
-
 
   xbt_test_add("Free the structure (twice)");
   xbt_dict_free(&head);
@@ -1107,18 +1022,15 @@ XBT_TEST_UNIT("ext", test_dict_int, "Test dictionnary with int keys")
   int i;
   for (i = 0; i < count; ++i)
     xbt_dict_set_ext(dict, (char*) &i, sizeof(i), (void*) (intptr_t) i, NULL);
-  xbt_test_assert(xbt_dict_size(dict) == count,
-    "Bad number of elements in the dictionnary");
+  xbt_test_assert(xbt_dict_size(dict) == count, "Bad number of elements in the dictionnary");
 
   xbt_test_add("Check elements");
   for (i = 0; i < count; ++i) {
     int res = (int) (intptr_t) xbt_dict_get_ext(dict, (char*) &i, sizeof(i));
-    xbt_test_assert(xbt_dict_size(dict) == count,
-      "Unexpected value at index %i, expected %i but was %i", i, i, res);
+    xbt_test_assert(xbt_dict_size(dict) == count, "Unexpected value at index %i, expected %i but was %i", i, i, res);
   }
 
   xbt_test_add("Free the array");
   xbt_dict_free(&dict);
 }
-
 #endif                          /* SIMGRID_TEST */
