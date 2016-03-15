@@ -118,9 +118,6 @@ void ModelChecker::start()
   if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0'))
     MC_init_dot_output();
 
-  /* Init parmap */
-  //parmap = xbt_parmap_mc_new(xbt_os_get_numcores(), XBT_PARMAP_DEFAULT);
-
   setup_ignore();
 
   ptrace(PTRACE_SETOPTIONS, pid, nullptr, PTRACE_O_TRACEEXIT);

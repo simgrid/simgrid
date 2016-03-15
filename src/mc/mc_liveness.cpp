@@ -13,7 +13,6 @@
 #include <xbt/dynar.h>
 #include <xbt/fifo.h>
 #include <xbt/log.h>
-#include <xbt/parmap.h>
 #include <xbt/sysdep.h>
 
 #include "src/mc/mc_request.h"
@@ -32,7 +31,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 /********* Global variables *********/
 
 xbt_dynar_t acceptance_pairs;
-xbt_parmap_t parmap;
 
 /********* Static functions *********/
 

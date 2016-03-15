@@ -21,7 +21,6 @@
 #include <simgrid/msg.h>
 #include <xbt/fifo.h>
 #include <xbt/config.h>
-#include <xbt/parmap.h>
 #include <xbt/base.h>
 
 #include "mc/mc.h"
@@ -46,7 +45,6 @@ XBT_PRIVATE void MC_init_dot_output();
 
 XBT_PRIVATE extern FILE *dot_output;
 XBT_PRIVATE extern const char* colors[13];
-XBT_PRIVATE extern xbt_parmap_t parmap;
 
 XBT_PRIVATE extern int user_max_depth_reached;
 
