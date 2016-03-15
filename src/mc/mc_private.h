@@ -47,7 +47,6 @@ XBT_PRIVATE extern FILE *dot_output;
 
 XBT_PRIVATE extern int user_max_depth_reached;
 
-XBT_PRIVATE int MC_deadlock_check(void);
 XBT_PRIVATE void MC_replay(xbt_fifo_t stack);
 XBT_PRIVATE void MC_replay_liveness(xbt_fifo_t stack);
 XBT_PRIVATE void MC_show_deadlock(smx_simcall_t req);

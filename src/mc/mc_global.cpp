@@ -133,41 +133,6 @@ void MC_exit(void)
   //xbt_abort();
 }
 
-#if HAVE_MC
-int MC_deadlock_check()
-{
-  if (mc_mode == MC_MODE_SERVER) {
-    int res;
-    if ((res = mc_model_checker->process().getChannel().send(MC_MESSAGE_DEADLOCK_CHECK)))
-      xbt_die("Could not check deadlock state");
-    s_mc_int_message_t message;
-    ssize_t s = mc_model_checker->process().getChannel().receive(message);
-    if (s == -1)
-      xbt_die("Could not receive message");
-    if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY)
-      xbt_die("%s received unexpected message %s (%i, size=%i) "
-        "expected MC_MESSAGE_DEADLOCK_CHECK_REPLY (%i, size=%i)",
-        MC_mode_name(mc_mode),
-        MC_message_type_name(message.type), (int) message.type, (int) s,
-        (int) MC_MESSAGE_DEADLOCK_CHECK_REPLY, (int) sizeof(message)
-        );
-    return message.value;
-  }
-
-  bool deadlock = false;
-  smx_process_t process;
-  if (xbt_swag_size(simix_global->process_list)) {
-    deadlock = true;
-    xbt_swag_foreach(process, simix_global->process_list)
-      if (simgrid::mc::process_is_enabled(process)) {
-        deadlock = false;
-        break;
-      }
-  }
-  return deadlock;
-}
-#endif
-
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.

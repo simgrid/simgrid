@@ -19,10 +19,10 @@
 
 #include "src/mc/mc_protocol.h"
 #include "src/mc/Client.hpp"
+#include "src/mc/mc_request.h"
 
 // We won't need those once the separation MCer/MCed is complete:
 #include "src/mc/mc_ignore.h"
-#include "src/mc/mc_private.h" // MC_deadlock_check()
 #include "src/mc/mc_smx.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client, mc, "MC client logic");
@@ -93,10 +93,22 @@ void Client::handleMessages()
 
     case MC_MESSAGE_DEADLOCK_CHECK:
       {
-        int result = MC_deadlock_check();
+        // Check deadlock:
+        bool deadlock = false;
+        smx_process_t process;
+        if (xbt_swag_size(simix_global->process_list)) {
+          deadlock = true;
+          xbt_swag_foreach(process, simix_global->process_list)
+            if (simgrid::mc::process_is_enabled(process)) {
+              deadlock = false;
+              break;
+            }
+        }
+
+        // Send result:
         s_mc_int_message_t answer;
         answer.type = MC_MESSAGE_DEADLOCK_CHECK_REPLY;
-        answer.value = result;
+        answer.value = deadlock;
         if (channel_.send(answer))
           xbt_die("Could not send response");
       }

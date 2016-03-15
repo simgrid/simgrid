@@ -437,5 +437,24 @@ void ModelChecker::simcall_handle(simgrid::mc::Process& process, unsigned long p
       return;
 }
 
+bool ModelChecker::checkDeadlock()
+{
+  int res;
+  if ((res = this->process().getChannel().send(MC_MESSAGE_DEADLOCK_CHECK)))
+    xbt_die("Could not check deadlock state");
+  s_mc_int_message_t message;
+  ssize_t s = mc_model_checker->process().getChannel().receive(message);
+  if (s == -1)
+    xbt_die("Could not receive message");
+  if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY)
+    xbt_die("%s received unexpected message %s (%i, size=%i) "
+      "expected MC_MESSAGE_DEADLOCK_CHECK_REPLY (%i, size=%i)",
+      MC_mode_name(mc_mode),
+      MC_message_type_name(message.type), (int) message.type, (int) s,
+      (int) MC_MESSAGE_DEADLOCK_CHECK_REPLY, (int) sizeof(message)
+      );
+  return message.value != 0;
+}
+
 }
 }

@@ -71,6 +71,9 @@ public:
     mc_model_checker->wait_client(mc_model_checker->process());
   }
   void exit(int status);
+
+  bool checkDeadlock();
+
 private:
   void setup_ignore();
   bool handle_message(char* buffer, ssize_t size);

@@ -180,7 +180,7 @@ int modelcheck_safety(void)
       visited_state = nullptr;
 
       /* Check for deadlocks */
-      if (MC_deadlock_check()) {
+      if (mc_model_checker->checkDeadlock()) {
         MC_show_deadlock(nullptr);
         return SIMGRID_MC_EXIT_DEADLOCK;
       }
