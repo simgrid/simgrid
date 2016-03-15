@@ -18,10 +18,6 @@ typedef struct tmgr_event {
   double value;
 } s_tmgr_event_t, *tmgr_event_t;
 
-typedef struct tmgr_trace {
-
-} s_tmgr_trace_t;
-
 /* Iterator within a trace */
 typedef struct tmgr_trace_iterator {
   tmgr_trace_t trace;
