@@ -335,16 +335,14 @@ static std::vector<s_local_variable> get_local_variables_values(
   return std::move(variables);
 }
 
-static std::vector<s_mc_stack_frame_t> unwind_stack_frames(mc_unw_context_t stack_context)
+static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindContext* stack_context)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
   std::vector<s_mc_stack_frame_t> result;
 
-  unw_cursor_t c;
+  unw_cursor_t c = stack_context->cursor();
 
   // TODO, check condition check (unw_init_local==0 means end of frame)
-  if (mc_unw_init_cursor(&c, stack_context) != 0)
-    xbt_die("Could not initialize stack unwinding");
 
     while (1) {
 
@@ -408,9 +406,7 @@ static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(mc_snapshot_t * s
     mc_model_checker->process().read_bytes(
       &context, sizeof(context), remote(stack.context));
 
-    if (mc_unw_init_context(&st.context, &mc_model_checker->process(),
-      &context) < 0)
-      xbt_die("Could not initialise the libunwind context.");
+    st.context.initialize(&mc_model_checker->process(), &context);
 
     st.stack_frames = unwind_stack_frames(&st.context);
     st.local_variables = get_local_variables_values(st.stack_frames, stack.process_index);

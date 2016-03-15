@@ -123,7 +123,7 @@ typedef struct s_local_variable{
 
 typedef struct XBT_PRIVATE s_mc_snapshot_stack {
   std::vector<s_local_variable> local_variables;
-  s_mc_unw_context_t context;
+  simgrid::mc::UnwindContext context;
   std::vector<s_mc_stack_frame_t> stack_frames;
   int process_index;
 } s_mc_snapshot_stack_t, *mc_snapshot_stack_t;

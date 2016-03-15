@@ -43,38 +43,51 @@ XBT_PRIVATE void* create_context(unw_addr_space_t as, pid_t pid);
 }
 }
 
-SG_BEGIN_DECL()
+namespace simgrid {
+namespace mc {
 
-// ***** Libunwind namespace
+class UnwindContext {
+  simgrid::mc::AddressSpace* addressSpace_ = nullptr;
+  simgrid::mc::Process*      process_ = nullptr;
+  unw_context_t              unwindContext_;
+public:
+  UnwindContext() {}
+  ~UnwindContext() { clear(); }
+  void initialize(simgrid::mc::Process* process, unw_context_t* c);
+  void clear();
+  unw_cursor_t cursor();
 
-/** Virtual table for our `libunwind` implementation
- *
- *  Stack unwinding on a `simgrid::mc::Process*` (for memory, unwinding information)
- *  and `ucontext_t` (for processor registers).
- *
- *  It works with the `s_mc_unw_context_t` context.
- */
-extern XBT_PRIVATE unw_accessors_t mc_unw_accessors;
+private: // Methods and virtual table for libunwind
+  static int find_proc_info(unw_addr_space_t as,
+                unw_word_t ip, unw_proc_info_t *pip,
+                int need_unwind_info, void* arg) noexcept;
+  static void put_unwind_info(unw_addr_space_t as,
+                unw_proc_info_t *pip, void* arg) noexcept;
+  static int get_dyn_info_list_addr(unw_addr_space_t as,
+                unw_word_t *dilap, void* arg) noexcept;
+  static int access_mem(unw_addr_space_t as,
+                unw_word_t addr, unw_word_t *valp,
+                int write, void* arg) noexcept;
+  static void* get_reg(unw_context_t* context, unw_regnum_t regnum) noexcept;
+  static int access_reg(unw_addr_space_t as,
+                unw_regnum_t regnum, unw_word_t *valp,
+                int write, void* arg) noexcept;
+  static int access_fpreg(unw_addr_space_t as,
+                unw_regnum_t regnum, unw_fpreg_t *fpvalp,
+                int write, void* arg) noexcept;
+  static int resume(unw_addr_space_t as,
+                unw_cursor_t *cp, void* arg) noexcept;
+  static int get_proc_name(unw_addr_space_t as,
+                unw_word_t addr, char *bufp,
+                size_t buf_len, unw_word_t *offp,
+                void* arg) noexcept;
+  static unw_accessors_t accessors;
+public:
+  // Create a libunwind address space:
+  static unw_addr_space_t createUnwindAddressSpace();
+};
 
-// ***** Libunwind context
-
-/** A `libunwind` context
- */
-typedef struct XBT_PRIVATE s_mc_unw_context {
-  simgrid::mc::AddressSpace* address_space;
-  simgrid::mc::Process*       process;
-  unw_context_t      context;
-} s_mc_unw_context_t, *mc_unw_context_t;
-
-/** Initialises an already allocated context */
-XBT_PRIVATE int mc_unw_init_context(
-  mc_unw_context_t context, simgrid::mc::Process* process, unw_context_t* c);
-
-// ***** Libunwind cursor
-
-/** Initialises a `libunwind` cursor */
-XBT_PRIVATE int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context);
-
-SG_END_DECL()
+}
+}
 
 #endif

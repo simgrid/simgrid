@@ -226,7 +226,7 @@ void Process::init()
 
   this->smx_process_infos.clear();
   this->smx_old_process_infos.clear();
-  this->unw_addr_space = unw_create_addr_space(&mc_unw_accessors  , __BYTE_ORDER);
+  this->unw_addr_space = simgrid::mc::UnwindContext::createUnwindAddressSpace();
   this->unw_underlying_addr_space = simgrid::unw::create_addr_space();
   this->unw_underlying_context = simgrid::unw::create_context(
     this->unw_underlying_addr_space, this->pid_);

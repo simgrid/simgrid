@@ -284,7 +284,7 @@ public: // Libunwind-data
 
   /** Full-featured MC-aware libunwind address space for the process
    *
-   *  This address space is using a mc_unw_context_t
+   *  This address space is using a simgrid::mc::UnwindContext*
    *  (with simgrid::mc::Process* / simgrid::mc::AddressSpace*
    *  and unw_context_t).
    */

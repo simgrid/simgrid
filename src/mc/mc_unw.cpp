@@ -24,7 +24,8 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
+namespace simgrid {
+namespace mc {
 
 // ***** Implementation
 
@@ -32,14 +33,14 @@ extern "C" {
  *
  *  Delegates to the local/ptrace implementation.
  */
-static int find_proc_info(unw_addr_space_t as,
+int UnwindContext::find_proc_info(unw_addr_space_t as,
               unw_word_t ip, unw_proc_info_t *pip,
-              int need_unwind_info, void* arg)
+              int need_unwind_info, void* arg) noexcept
 {
-  mc_unw_context_t context = (mc_unw_context_t) arg;
-  return unw_get_accessors(context->process->unw_underlying_addr_space)->find_proc_info(
-    context->process->unw_underlying_addr_space, ip, pip,
-    need_unwind_info, context->process->unw_underlying_context
+  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*) arg;
+  return unw_get_accessors(context->process_->unw_underlying_addr_space)->find_proc_info(
+    context->process_->unw_underlying_addr_space, ip, pip,
+    need_unwind_info, context->process_->unw_underlying_context
   );
 }
 
@@ -47,13 +48,13 @@ static int find_proc_info(unw_addr_space_t as,
  *
  *  Delegates to the local/ptrace implementation.
  */
-static void put_unwind_info(unw_addr_space_t as,
-              unw_proc_info_t *pip, void* arg)
+void UnwindContext::put_unwind_info(unw_addr_space_t as,
+              unw_proc_info_t *pip, void* arg) noexcept
 {
-  mc_unw_context_t context = (mc_unw_context_t) arg;
-  return unw_get_accessors(context->process->unw_underlying_addr_space)->put_unwind_info(
-    context->process->unw_underlying_addr_space, pip,
-    context->process->unw_underlying_context
+  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*) arg;
+  return unw_get_accessors(context->process_->unw_underlying_addr_space)->put_unwind_info(
+    context->process_->unw_underlying_addr_space, pip,
+    context->process_->unw_underlying_context
   );
 }
 
@@ -61,14 +62,14 @@ static void put_unwind_info(unw_addr_space_t as,
  *
  *  Not implemented.
  */
-static int get_dyn_info_list_addr(unw_addr_space_t as,
-              unw_word_t *dilap, void* arg)
+int UnwindContext::get_dyn_info_list_addr(unw_addr_space_t as,
+              unw_word_t *dilap, void* arg) noexcept
 {
-  mc_unw_context_t context = (mc_unw_context_t) arg;
-  return unw_get_accessors(context->process->unw_underlying_addr_space)->get_dyn_info_list_addr(
-    context->process->unw_underlying_addr_space,
+  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*) arg;
+  return unw_get_accessors(context->process_->unw_underlying_addr_space)->get_dyn_info_list_addr(
+    context->process_->unw_underlying_addr_space,
     dilap,
-    context->process->unw_underlying_context
+    context->process_->unw_underlying_context
   );
 }
 
@@ -76,18 +77,18 @@ static int get_dyn_info_list_addr(unw_addr_space_t as,
  *
  *  Delegates to the `simgrid::mc::Process*`.
  */
-static int access_mem(unw_addr_space_t as,
+int UnwindContext::access_mem(unw_addr_space_t as,
               unw_word_t addr, unw_word_t *valp,
-              int write, void* arg)
+              int write, void* arg) noexcept
 {
-  mc_unw_context_t context = (mc_unw_context_t) arg;
+  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*) arg;
   if (write)
     return - UNW_EREADONLYREG;
-  context->address_space->read_bytes(valp, sizeof(unw_word_t), remote(addr));
+  context->addressSpace_->read_bytes(valp, sizeof(unw_word_t), remote(addr));
   return 0;
 }
 
-static void* get_reg(unw_context_t* context, unw_regnum_t regnum)
+void* UnwindContext::get_reg(unw_context_t* context, unw_regnum_t regnum) noexcept
 {
 #ifdef __x86_64
   mcontext_t* mcontext = &context->uc_mcontext;
@@ -118,12 +119,12 @@ static void* get_reg(unw_context_t* context, unw_regnum_t regnum)
 
 /** Read a standard register (libunwind method)
  */
-static int access_reg(unw_addr_space_t as,
+int UnwindContext::access_reg(unw_addr_space_t as,
               unw_regnum_t regnum, unw_word_t *valp,
-              int write, void* arg)
+              int write, void* arg) noexcept
 {
-  mc_unw_context_t as_context = (mc_unw_context_t) arg;
-  unw_context_t* context = &as_context->context;
+  simgrid::mc::UnwindContext* as_context = (simgrid::mc::UnwindContext*) arg;
+  unw_context_t* context = &as_context->unwindContext_;
   if (write)
     return -UNW_EREADONLYREG;
   greg_t* preg = (greg_t*) get_reg(context, regnum);
@@ -139,9 +140,9 @@ static int access_reg(unw_addr_space_t as,
  *  `getcontext()` is not relevant for the caller. It is not really necessary
  *  to save and handle them.
  */
-static int access_fpreg(unw_addr_space_t as,
+int UnwindContext::access_fpreg(unw_addr_space_t as,
               unw_regnum_t regnum, unw_fpreg_t *fpvalp,
-              int write, void* arg)
+              int write, void* arg) noexcept
 {
   return -UNW_EBADREG;
 }
@@ -150,21 +151,21 @@ static int access_fpreg(unw_addr_space_t as,
  *
  * We don't use this.
  */
-static int resume(unw_addr_space_t as,
-              unw_cursor_t *cp, void* arg)
+int UnwindContext::resume(unw_addr_space_t as,
+              unw_cursor_t *cp, void* arg) noexcept
 {
   return -UNW_EUNSPEC;
 }
 
 /** Find informations about a function (libunwind method)
  */
-static int get_proc_name(unw_addr_space_t as,
+int UnwindContext::get_proc_name(unw_addr_space_t as,
               unw_word_t addr, char *bufp,
               size_t buf_len, unw_word_t *offp,
-              void* arg)
+              void* arg) noexcept
 {
-  mc_unw_context_t context = (mc_unw_context_t) arg;
-  simgrid::mc::Frame* frame = context->process->find_function(remote(addr));
+  simgrid::mc::UnwindContext* context = (simgrid::mc::UnwindContext*) arg;
+  simgrid::mc::Frame* frame = context->process_->find_function(remote(addr));
   if (!frame)
     return - UNW_ENOINFO;
   *offp = (unw_word_t) frame->range.begin() - addr;
@@ -180,50 +181,69 @@ static int get_proc_name(unw_addr_space_t as,
 
 // ***** Init
 
-unw_accessors_t mc_unw_accessors =
-  {
-    &find_proc_info,
-    &put_unwind_info,
-    &get_dyn_info_list_addr,
-    &access_mem,
-    &access_reg,
-    &access_fpreg,
-    &resume,
-    &get_proc_name
-  };
+/** Virtual table for our `libunwind` implementation
+ *
+ *  Stack unwinding on a `simgrid::mc::Process*` (for memory, unwinding information)
+ *  and `ucontext_t` (for processor registers).
+ *
+ *  It works with the `simgrid::mc::UnwindContext` context.
+ */
+unw_accessors_t UnwindContext::accessors = {
+  &find_proc_info,
+  &put_unwind_info,
+  &get_dyn_info_list_addr,
+  &access_mem,
+  &access_reg,
+  &access_fpreg,
+  &resume,
+  &get_proc_name
+};
 
-// ***** Context management
-
-int mc_unw_init_context(
-  mc_unw_context_t context, simgrid::mc::Process* process, unw_context_t* c)
+unw_addr_space_t UnwindContext::createUnwindAddressSpace()
 {
-  context->address_space = process;
-  context->process = process;
+  return unw_create_addr_space(&UnwindContext::accessors, __BYTE_ORDER);
+}
+
+void UnwindContext::clear()
+{
+  addressSpace_ = nullptr;
+  process_ = nullptr;
+}
+
+void UnwindContext::initialize(simgrid::mc::Process* process, unw_context_t* c)
+{
+  clear();
+
+  this->addressSpace_ = process;
+  this->process_ = process;
 
   // Take a copy of the context for our own purpose:
-  context->context = *c;
+  this->unwindContext_ = *c;
 #if SIMGRID_PROCESSOR_x86_64 || SIMGRID_PROCESSOR_i686
   // On x86_64, ucontext_t contains a pointer to itself for FP registers.
   // We don't really need support for FR registers as they are caller saved
   // and probably never use those fields as libunwind-x86_64 does not read
   // FP registers from the unw_context_t
   // but we fix the pointer in order to avoid dangling pointers:
-  context->context.uc_mcontext.fpregs = &(context->context.__fpregs_mem);
+  // context->context_.uc_mcontext.fpregs = &(context->context.__fpregs_mem);
+
+  // Let's ignore this and see what happens:
+  this->unwindContext_.uc_mcontext.fpregs = nullptr;
 #else
   // Do we need to do any fixup like this?
   #error Target CPU type is not handled.
 #endif
-
-  return 0;
 }
 
-// ***** Cursor management
-
-int mc_unw_init_cursor(unw_cursor_t *cursor, mc_unw_context_t context)
+unw_cursor_t UnwindContext::cursor()
 {
-  if (!context->process || !context->address_space)
-    return -UNW_EUNSPEC;
-  return unw_init_remote(cursor, context->process->unw_addr_space, context);
+  unw_cursor_t cursor;
+  if (process_ == nullptr
+    || addressSpace_ == nullptr
+    || unw_init_remote(&cursor, process_->unw_addr_space, this) != 0)
+    xbt_die("UnwindContext not initialized");
+  return cursor;
 }
 
+}
 }
