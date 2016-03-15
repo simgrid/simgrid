@@ -77,29 +77,13 @@ xbt_automaton_t property_automaton = nullptr;
 
 /* Dot output */
 FILE *dot_output = nullptr;
-const char *colors[13];
 
 
 /*******************************  Initialisation of MC *******************************/
 /*********************************************************************************/
 
 void MC_init_dot_output()
-{                               /* FIXME : more colors */
-
-  colors[0] = "blue";
-  colors[1] = "red";
-  colors[2] = "green3";
-  colors[3] = "goldenrod";
-  colors[4] = "brown";
-  colors[5] = "purple";
-  colors[6] = "magenta";
-  colors[7] = "turquoise4";
-  colors[8] = "gray25";
-  colors[9] = "forestgreen";
-  colors[10] = "hotpink";
-  colors[11] = "lightblue";
-  colors[12] = "tan";
-
+{
   dot_output = fopen(_sg_mc_dot_output_file, "w");
 
   if (dot_output == nullptr) {

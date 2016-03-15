@@ -465,6 +465,27 @@ bool process_is_enabled(smx_process_t process)
   return simgrid::mc::request_is_enabled(&process->simcall);
 }
 
+static const char* colors[] = {
+  "blue",
+  "red",
+  "green3",
+  "goldenrod",
+  "brown",
+  "purple",
+  "magenta",
+  "turquoise4",
+  "gray25",
+  "forestgreen",
+  "hotpink",
+  "lightblue",
+  "tan",
+};
+
+static inline const char* get_color(int id)
+{
+  return colors[id % (sizeof(colors) / sizeof(colors[0])) ];
+}
+
 char *request_get_dot_output(smx_simcall_t req, int value)
 {
   char *label = nullptr;
@@ -602,9 +623,10 @@ char *request_get_dot_output(smx_simcall_t req, int value)
     THROW_UNIMPLEMENTED;
   }
 
+  const char* color = get_color(issuer->pid - 1);
   char* str =
       bprintf("label = \"%s\", color = %s, fontcolor = %s", label,
-              colors[issuer->pid - 1], colors[issuer->pid - 1]);
+              color, color);
   xbt_free(label);
   return str;
 
