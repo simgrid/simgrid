@@ -44,7 +44,6 @@ done
 
 cd $WORKSPACE/build
 
-make clean
 ctest -D ExperimentalStart || true
 
 cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON \
