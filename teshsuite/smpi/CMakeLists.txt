@@ -8,7 +8,7 @@ if(enable_smpi)
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast 
             coll-gather coll-reduce coll-reduce-scatter coll-scatter pt2pt-dsend pt2pt-pingpong 
-            type-hvector type-indexed type-struct type-vector)
+            type-hvector type-indexed type-struct type-vector bug-17132)
     add_executable       (${x}  ${x}/${x}.c)
     target_link_libraries(${x}  simgrid)
     set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})

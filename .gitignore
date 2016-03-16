@@ -256,7 +256,6 @@ examples/smpi/toto.txt
 examples/smpi/ttest01
 src/replay/replay
 testall
-teshsuite/bug-17132/bug-17132
 teshsuite/datadesc_usage.out
 teshsuite/java/SemaphoreGC/SemaphoreGC_compiled
 teshsuite/java/SleepHostOff/SleepHostOff_compiled
@@ -307,6 +306,7 @@ teshsuite/simdag/platforms/graphicator
 teshsuite/simdag/platforms/is_router_test
 teshsuite/simix/check_defaults/check_defaults
 teshsuite/simix/stack_overflow/stack_overflow
+teshsuite/smpi/bug-17132/bug-17132
 teshsuite/smpi/coll-allgather/coll-allgather
 teshsuite/smpi/coll-allgatherv/coll-allgatherv
 teshsuite/smpi/coll-allreduce/coll-allreduce
