@@ -1,19 +1,7 @@
-p Test compute
-! timeout 5
-$ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform_with_routers.xml -np 3 --log=root.thres:warning ${bindir:=.}/compute 7 --log=smpi_kernel.thres:warning
-> 7 16.000000
-> 7 16.000000
-> 7 16.000000
-
-p Test compute only once
-! timeout 5
-$ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform_with_routers.xml -np 3 --log=root.thres:warning ${bindir:=.}/compute2 7 --log=smpi_kernel.thres:warning
-> 7 16.000000
-
 p Test compute and bench
 ! output sort
 ! timeout 45
-$ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform_with_routers.xml -np 3 --log=root.thres:warning ${bindir:=.}/compute3 quiet --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform_with_routers.xml -np 3 --log=root.thres:warning ${bindir:=.}/macro-sample quiet --log=smpi_kernel.thres:warning
 > (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)
 > (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)
 > (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)

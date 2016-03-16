@@ -1009,8 +1009,6 @@ set(CMAKEFILES_TXT
   teshsuite/simix/stack_overflow/CMakeLists.txt
   
   teshsuite/smpi/CMakeLists.txt
-  teshsuite/smpi/compute/CMakeLists.txt
-  teshsuite/smpi/shared/CMakeLists.txt
   teshsuite/smpi/isp/umpire/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt

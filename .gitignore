@@ -315,10 +315,7 @@ teshsuite/smpi/coll-alltoallv/coll-alltoallv
 teshsuite/smpi/coll-bcast/coll-bcast
 teshsuite/smpi/coll-barrier/coll-barrier
 teshsuite/smpi/coll-gather/coll-gather
-teshsuite/smpi/compute/compute
-teshsuite/smpi/compute/compute2
-teshsuite/smpi/compute/compute3
-teshsuite/smpi/dsend
+teshsuite/smpi/macro-sample/macro-sample
 teshsuite/smpi/type-hvector/type-hvector
 teshsuite/smpi/type-indexed/type-indexed
 teshsuite/smpi/isp/umpire/abort
@@ -981,11 +978,8 @@ teshsuite/smpi/pt2pt-pingpong/pt2pt-pingpong
 teshsuite/smpi/coll-reduce/coll-reduce
 teshsuite/smpi/coll-reduce-scatter/coll-reduce-scatter
 teshsuite/smpi/coll-scatter/coll-scatter
-teshsuite/smpi/shared/shared
-teshsuite/smpi/smpi_sendrecv
-teshsuite/smpi/split
+teshsuite/smpi/macro-shared/macro-shared
 teshsuite/smpi/type-struct/type-struct
-teshsuite/smpi/ttest01
 teshsuite/smpi/type-vector/type-vector
 teshsuite/surf/lmm_usage/lmm_usage
 teshsuite/surf/maxmin_bench/maxmin_bench

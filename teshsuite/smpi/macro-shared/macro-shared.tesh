@@ -2,7 +2,7 @@ p Test compute
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 ! timeout 5
-$ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/shared --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-shared --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
