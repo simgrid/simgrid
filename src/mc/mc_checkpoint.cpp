@@ -261,8 +261,7 @@ void find_object_address(
   if (result->end_exec && (const void*) result->end_exec > result->end)
     result->end = result->end_exec;
 
-  xbt_assert(result->start_rw);
-  xbt_assert(result->start_exec);
+  xbt_assert(rresult->start_exec || result->start_rw || result->start_ro);
 
   free(name);
 }
