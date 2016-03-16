@@ -21,4 +21,3 @@ endforeach()
 
 set(examples_src ${examples_src} ${sources}                                                    PARENT_SCOPE)
 set(tesh_files   ${tesh_files}                                                                 PARENT_SCOPE)
-set(xml_files    ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/SleepHostOff/sleep_host_off_d.xml PARENT_SCOPE)
