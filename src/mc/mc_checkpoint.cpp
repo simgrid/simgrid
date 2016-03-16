@@ -181,10 +181,13 @@ static void get_memory_regions(simgrid::mc::Process* process, simgrid::mc::Snaps
     snapshot->privatization_index = simgrid::mc::ProcessIndexMissing;
 }
 
+#define PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC)
+#define PROT_RW (PROT_READ | PROT_WRITE)
+#define PROT_RX (PROT_READ | PROT_EXEC)
+
 /** \brief Fills the position of the segments (executable, read-only, read/write).
- *
- *  `dl_iterate_phdr` would be more robust but would not work in cross-process.
  * */
+// TODO, use the ELF segment information for more robustness
 void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps,
   simgrid::mc::ObjectInformation* result)
@@ -201,24 +204,43 @@ void find_object_address(
       continue;
     }
     free(map_basename);
-    if ((reg.prot & PROT_WRITE)) {
+
+    // This is the non-GNU_RELRO-part of the data segment:
+    if (reg.prot == PROT_RW) {
       xbt_assert(!result->start_rw,
                  "Multiple read-write segments for %s, not supported",
                  maps[i].pathname.c_str());
       result->start_rw = (char*) reg.start_addr;
       result->end_rw = (char*) reg.end_addr;
-      // .bss is usually after the .data:
-      simgrid::xbt::VmMap const& next = maps[i + 1];
-      if (next.pathname.empty() && (next.prot & PROT_WRITE)
-          && next.start_addr == reg.end_addr)
+
+      // The next VMA might be end of the data segment:
+      if (i + 1 < maps.size()
+          && maps[i + 1].pathname.empty()
+          && maps[i + 1].prot == PROT_RW
+          && maps[i + 1].start_addr == reg.end_addr)
         result->end_rw = (char*) maps[i + 1].end_addr;
-    } else if ((reg.prot & PROT_READ) && (reg.prot & PROT_EXEC)) {
+    }
+
+    // This is the text segment:
+    else if (reg.prot == PROT_RX) {
       xbt_assert(!result->start_exec,
                  "Multiple executable segments for %s, not supported",
                  maps[i].pathname.c_str());
       result->start_exec = (char*) reg.start_addr;
       result->end_exec = (char*) reg.end_addr;
-    } else if ((reg.prot & PROT_READ) && !(reg.prot & PROT_EXEC)) {
+
+      // The next VMA might be end of the data segment:
+      if (i + 1 < maps.size()
+          && maps[i + 1].pathname.empty()
+          && maps[i + 1].prot == PROT_RW
+          && maps[i + 1].start_addr == reg.end_addr) {
+        result->start_rw = (char*) maps[i + 1].start_addr;
+        result->end_rw = (char*) maps[i + 1].end_addr;
+      }
+    }
+
+    // This is the GNU_RELRO-part of the data segment:
+    else if (reg.prot == PROT_READ) {
       xbt_assert(!result->start_ro,
                  "Multiple read only segments for %s, not supported",
                  maps[i].pathname.c_str());
