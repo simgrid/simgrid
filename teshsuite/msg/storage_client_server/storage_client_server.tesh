@@ -1,4 +1,4 @@
-$ ./storage_basic$EXEEXT ${srcdir:=.}/../../../examples/platforms/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ./storage_client_server$EXEEXT ${srcdir:=.}/../../../examples/platforms/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:server@alice) *** Storage info on alice ***
 > [  0.000000] (1:server@alice) 	Storage name: Disk2, mount name: c:
 > [  0.000000] (1:server@alice) 		Free size: 534479374867 bytes

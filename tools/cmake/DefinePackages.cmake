@@ -988,20 +988,15 @@ set(CMAKEFILES_TXT
   examples/smpi/energy/f90/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
+
   teshsuite/mc/CMakeLists.txt
   teshsuite/mc/dwarf/CMakeLists.txt
   teshsuite/mc/dwarf_expression/CMakeLists.txt
   teshsuite/mc/replay/CMakeLists.txt
-  teshsuite/msg/get_sender/CMakeLists.txt
-  teshsuite/msg/host_on_off/CMakeLists.txt
-  teshsuite/msg/host_on_off_processes/CMakeLists.txt
-  teshsuite/msg/listen_async/CMakeLists.txt
-  teshsuite/msg/pid/CMakeLists.txt
-  teshsuite/msg/process/CMakeLists.txt
-  teshsuite/msg/process_join/CMakeLists.txt
-  teshsuite/msg/storage/CMakeLists.txt
-  teshsuite/msg/task_destroy_cancel/CMakeLists.txt
+
+  teshsuite/msg/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
+
   teshsuite/simdag/availability/CMakeLists.txt
   teshsuite/simdag/basic/CMakeLists.txt
   teshsuite/simdag/incomplete/CMakeLists.txt
@@ -1009,6 +1004,7 @@ set(CMAKEFILES_TXT
   teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
+
   teshsuite/simix/check_defaults/CMakeLists.txt
   teshsuite/simix/stack_overflow/CMakeLists.txt
   
