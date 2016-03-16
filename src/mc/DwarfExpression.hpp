@@ -17,6 +17,7 @@
 #include <elfutils/libdw.h>
 
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/AddressSpace.hpp"
 
 /** @file DwarfExession.hpp
  *

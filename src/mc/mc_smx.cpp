@@ -7,8 +7,9 @@
 #include <cassert>
 #include <cstdlib>
 
+#include <vector>
+
 #include <xbt/log.h>
-#include <xbt/dynar.h>
 #include <xbt/str.h>
 #include <xbt/swag.h>
 

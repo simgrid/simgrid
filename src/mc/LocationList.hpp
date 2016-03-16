@@ -20,7 +20,6 @@
 
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/AddressSpace.hpp"
 #include "src/mc/DwarfExpression.hpp"
 
 namespace simgrid {

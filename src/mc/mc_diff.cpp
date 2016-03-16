@@ -7,7 +7,6 @@
 /* mc_diff - Memory snapshooting and comparison                             */
 
 #include "src/xbt/ex_interface.h"   /* internals of backtrace setup */
-#include "xbt/str.h"
 #include "mc/mc.h"
 #include "xbt/mmalloc.h"
 #include "mc/datatypes.h"

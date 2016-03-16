@@ -9,7 +9,9 @@
 
 #include <sys/mman.h>
 
-#include <xbt.h>
+#include <xbt/base.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
 
 #include "src/mc/PageStore.hpp"
 

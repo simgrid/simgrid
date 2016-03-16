@@ -21,9 +21,6 @@
 #include <sys/time.h>
 #endif
 
-#include <xbt/fifo.h>
-#include <xbt/automaton.h>
-
 #include "src/simix/smx_process_private.h"
 
 #if HAVE_MC

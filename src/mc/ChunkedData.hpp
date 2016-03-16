@@ -14,7 +14,6 @@
 #include <vector>
 
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/AddressSpace.hpp"
 #include "src/mc/PageStore.hpp"
 
 namespace simgrid {

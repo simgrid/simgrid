@@ -12,7 +12,6 @@
 
 #include <vector>
 
-#include <xbt/dynar.h>
 #include <xbt/mmalloc.h>
 
 #include "src/mc/mc_forward.hpp"

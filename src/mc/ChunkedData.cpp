@@ -14,6 +14,7 @@
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"
+#include "src/mc/PageStore.hpp"
 
 #define SOFT_DIRTY_BIT_NUMBER 55
 #define SOFT_DIRTY (((uint64_t)1) << SOFT_DIRTY_BIT_NUMBER)

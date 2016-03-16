@@ -16,7 +16,6 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/LocationList.hpp"
 #include "src/mc/Variable.hpp"
-#include "src/mc/Frame.hpp"
 
 namespace simgrid {
 namespace mc {
