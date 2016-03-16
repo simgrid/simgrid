@@ -276,7 +276,7 @@ teshsuite/msg/process_join/process_join
 teshsuite/msg/process/process
 teshsuite/msg/storage_client_server/storage_client_server
 teshsuite/msg/task_destroy_cancel/task_destroy_cancel
-teshsuite/msg/trace/test_trace_integration
+teshsuite/msg/trace_integration/trace_integration
 teshsuite/simdag/availability/availability
 teshsuite/simdag/basic/basic0
 teshsuite/simdag/basic/basic1

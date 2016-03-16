@@ -995,7 +995,6 @@ set(CMAKEFILES_TXT
   teshsuite/mc/replay/CMakeLists.txt
 
   teshsuite/msg/CMakeLists.txt
-  teshsuite/msg/trace/CMakeLists.txt
 
   teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/basic/CMakeLists.txt
