@@ -1043,10 +1043,8 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/perf/CMakeLists.txt
   
-  teshsuite/surf/lmm_usage/CMakeLists.txt
+  teshsuite/surf/CMakeLists.txt
   teshsuite/surf/maxmin_bench/CMakeLists.txt
-  teshsuite/surf/surf_usage/CMakeLists.txt
-  teshsuite/surf/trace_usage/CMakeLists.txt
   
   teshsuite/xbt/CMakeLists.txt
   teshsuite/xbt/mmalloc/CMakeLists.txt

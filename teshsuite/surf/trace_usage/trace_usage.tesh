@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace_usage --cfg=path:../../examples/platforms/trace/
+$ $SG_TEST_EXENV ${bindir:=.}/trace_usage --cfg=path:../../../examples/platforms/trace/
 > [0.000000] [surf_test/INFO] 0:
 > [0.000000] [surf_test/INFO]    Host B: 1
 > [0.000000] [surf_test/INFO] 1:

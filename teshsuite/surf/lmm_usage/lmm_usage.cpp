@@ -85,8 +85,7 @@ static double diff_lagrange_test_1(double x)
            3 / (2 * (3 * (b_test_1 - a_test_1 + x) * (b_test_1 - a_test_1 + x) / 2 + 1)));
 }
 
-void test1(method_t method);
-void test1(method_t method)
+static void test1(method_t method)
 {
   lmm_system_t Sys = NULL;
   lmm_constraint_t L1 = NULL;
@@ -203,8 +202,7 @@ void test1(method_t method)
   lmm_system_free(Sys);
 }
 
-void test2(method_t method);
-void test2(method_t method)
+static void test2(method_t method)
 {
   lmm_system_t Sys = NULL;
   lmm_constraint_t CPU1 = NULL;
@@ -249,8 +247,7 @@ void test2(method_t method)
   lmm_system_free(Sys);
 }
 
-void test3(method_t method);
-void test3(method_t method)
+static void test3(method_t method)
 {
   int flows = 11;
   int links = 10;
@@ -264,7 +261,6 @@ void test3(method_t method)
   lmm_constraint_t *tmp_cnst = NULL;
   lmm_variable_t *tmp_var = NULL;
   char **tmp_name;
-
 
   /*array to add the the constraints of fictitious variables */
   double B[15] = { 10, 10, 10, 10, 10, 10, 10, 10, 10, 10, 1, 1, 1, 1, 1 };

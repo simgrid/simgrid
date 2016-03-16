@@ -990,7 +990,7 @@ teshsuite/smpi/type-vector/type-vector
 teshsuite/surf/lmm_usage/lmm_usage
 teshsuite/surf/maxmin_bench/maxmin_bench
 teshsuite/surf/surf_usage/surf_usage
-teshsuite/surf/surf_usage/surf_usage2
+teshsuite/surf/surf_usage2/surf_usage2
 teshsuite/surf/trace_usage/trace_usage
 teshsuite/xbt/heap_bench/heap_bench
 teshsuite/xbt/log_large/log_large
