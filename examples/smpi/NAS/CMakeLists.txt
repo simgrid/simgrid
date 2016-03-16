@@ -7,11 +7,11 @@ if(enable_smpi)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   add_executable       (is is.c nas_common.c)
-  target_link_libraries(is simgrid m)
+  target_link_libraries(is simgrid)
   add_executable       (ep ep.c nas_common.c)
-  target_link_libraries(ep simgrid m)
+  target_link_libraries(ep simgrid)
   add_executable       (dt dt.c nas_common.c DGraph.c)
-  target_link_libraries(dt simgrid m)
+  target_link_libraries(dt simgrid)
 endif()
 
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/nas_common.h
