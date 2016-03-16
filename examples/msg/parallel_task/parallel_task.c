@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
+#include "simgrid/plugins/energy.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
@@ -70,7 +71,12 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
   MSG_config("host/model", "ptask_L07");
 
-  xbt_assert(argc > 1, "Usage: %s <platform file>", argv[0]);
+  xbt_assert(argc <= 3, "1Usage: %s <platform file> [--energy]", argv[0]);
+  xbt_assert(argc >= 2, "2Usage: %s <platform file> [--energy]", argv[0]);
+
+  if(argc == 3 && argv[2][2] == 'e')
+    sg_energy_plugin_init();
+
   MSG_create_environment(argv[1]);
 
   /* Pick a process, no matter which, from the platform file */
