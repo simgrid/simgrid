@@ -997,11 +997,8 @@ set(CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/msg/trace/CMakeLists.txt
 
-  teshsuite/simdag/availability/CMakeLists.txt
+  teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/basic/CMakeLists.txt
-  teshsuite/simdag/incomplete/CMakeLists.txt
-  teshsuite/simdag/network/mxn/CMakeLists.txt
-  teshsuite/simdag/network/p2p/CMakeLists.txt
   teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
 

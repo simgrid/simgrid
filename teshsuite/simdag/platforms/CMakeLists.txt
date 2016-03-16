@@ -31,6 +31,7 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_Dijks
                                     ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_fullduplex.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_router_id.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform_4p_1switch.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platform_include.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/properties.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/test_of_is_router.xml
@@ -47,6 +48,10 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_Dijks
                                     ${CMAKE_CURRENT_SOURCE_DIR}/clusterA.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/clusterB.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/Dijkstra.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1bb.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1fl.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1sl.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1switch.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bogus_disk_attachment.xml                  PARENT_SCOPE)
 set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.cpp
                                     ${CMAKE_CURRENT_SOURCE_DIR}/is_router_test.cpp                         PARENT_SCOPE)
