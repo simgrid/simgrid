@@ -217,8 +217,7 @@ int main(int argc, char *argv[])
   msg_error_t res;
 
   MSG_init(&argc, argv);
-  xbt_assert(argc > 3,"Usage: %s platform_file deployment_file test_number\n"
-            "\tExample: %s msg_platform.xml msg_deployment.xml 1\n", argv[0], argv[0]);
+  xbt_assert(argc == 3,"Usage: %s platform_file test_number\n\tExample: %s msg_platform.xml 1\n", argv[0], argv[0]);
 
   unsigned int iter;
   char *groups;
@@ -233,11 +232,7 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);
 
-  MSG_function_register("test_launcher", test_launcher);
-  MSG_function_register("process_daemon", process_daemon);
-  MSG_function_register("process_sleep", process_sleep);
-
-  MSG_launch_application(argv[2]);
+  MSG_process_create("test_launcher", test_launcher, NULL, MSG_get_host_by_name("Tremblay"));
 
   res = MSG_main();
 

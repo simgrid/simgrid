@@ -190,13 +190,12 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   /* Check the arguments */
-  xbt_assert(argc > 2,"Usage: %s platform_file deployment_file \n", argv[0]);
+  xbt_assert(argc == 2,"Usage: %s platform_file\n", argv[0]);
 
   MSG_create_environment(argv[1]);
 
-  MSG_function_register("client", client);
-  MSG_function_register("server", server);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("server", server, NULL, MSG_get_host_by_name("alice"));
+  MSG_process_create("client", client, NULL, MSG_get_host_by_name("bob"));
 
   msg_error_t res = MSG_main();
   XBT_INFO("Simulated time: %g", MSG_get_clock());

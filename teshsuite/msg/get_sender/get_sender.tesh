@@ -1,5 +1,5 @@
 ! output sort
-$ ./get_sender  ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/get_sender_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ./get_sender  ${srcdir:=.}/../../../examples/platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:send@Tremblay) Sending
 > [  0.000000] (2:receive@Tremblay) Receiving
 > [  0.000195] (2:receive@Tremblay) Got a message sent by 'send'

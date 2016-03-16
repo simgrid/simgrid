@@ -10,5 +10,4 @@ endforeach()
 
 set(tesh_files    ${tesh_files}                                                    PARENT_SCOPE)
 set(teshsuite_src ${teshsuite_src}                                                 PARENT_SCOPE)
-set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/deployment.xml      PARENT_SCOPE)
 

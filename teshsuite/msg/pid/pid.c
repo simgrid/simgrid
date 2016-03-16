@@ -50,13 +50,14 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
-  MSG_function_register("sendpid", &sendpid);
-  MSG_function_register("killall", &killall);
-
-  MSG_process_killall(atoi(argv[3]));
+  MSG_process_killall(atoi(argv[2]));
 
   MSG_create_environment(argv[1]);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("sendpid", sendpid, NULL, MSG_get_host_by_name("Tremblay"));
+  MSG_process_create("sendpid", sendpid, NULL, MSG_get_host_by_name("Tremblay"));
+  MSG_process_create("sendpid", sendpid, NULL, MSG_get_host_by_name("Tremblay"));
+  MSG_process_create("killall", killall, NULL, MSG_get_host_by_name("Tremblay"));
+
   res = MSG_main();
 
   return res != MSG_OK;

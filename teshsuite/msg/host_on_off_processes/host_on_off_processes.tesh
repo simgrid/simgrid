@@ -1,5 +1,5 @@
 
-$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 1 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
+$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml 1 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 1:
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO]   Create a process on Jupiter
 > [Jupiter:process_daemon:(2) 0.000000] [msg_test/INFO]   Start daemon on Jupiter (76296000.000000)
@@ -12,7 +12,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:test_launcher:(1) 13.000000] [msg_test/INFO]   Test done. See you!
 > [13.000000] [msg_test/INFO] Simulation time 13
 
-$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 2 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
+$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml 2 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 2:
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO]   Turn off Jupiter
 > [0.000000] [simix_process/WARNING] Cannot launch process 'process_daemon' on failed host 'Jupiter'
@@ -24,7 +24,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:test_launcher:(1) 20.000000] [msg_test/INFO]   Test done. See you!
 > [20.000000] [msg_test/INFO] Simulation time 20
 
-$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 3 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
+$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml 3 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 3:
 > [Jupiter:process_sleep:(2) 0.000000] [msg_test/INFO]   I'm alive but I should sleep
 > [Jupiter:process_sleep:(2) 10.000000] [msg_test/INFO]   I'm alive but I should sleep
@@ -43,7 +43,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:test_launcher:(1) 10100.000000] [msg_test/INFO]   Test done. See you!
 > [10100.000000] [msg_test/INFO] Simulation time 10100
 
-$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 4 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
+$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml 4 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 4 (turn off src during a communication) : Create a Process/task to make a communication between Jupiter and Tremblay and turn off Jupiter during the communication
 > [Tremblay:commRX:(2) 10.000000] [msg_test/INFO]   Start RX
 > [Jupiter:commTX:(3) 10.000000] [msg_test/INFO]   Start TX
@@ -55,7 +55,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:commRX:(2) 20.000000] [msg_test/INFO]   RX Done
 > [20.000000] [msg_test/INFO] Simulation time 20
 
-$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 5 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
+$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml 5 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 5 (turn off dest during a communication : Create a Process/task to make a communication between Tremblay and Jupiter and turn off Jupiter during the communication
 > [Jupiter:commRX:(2) 10.000000] [msg_test/INFO]   Start RX
 > [Tremblay:commTX:(3) 10.000000] [msg_test/INFO]   Start TX
@@ -66,7 +66,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:commTX:(3) 40.000000] [msg_test/INFO]   TX done
 > [40.000000] [msg_test/INFO] Simulation time 40
 
-$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_processes_d.xml 6 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
+$ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platform.xml 6 --log=no_loc --log=msg.thresh:error --log=surf_maxmin.thresh:error
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 6: Turn on Jupiter, assign a VM on Jupiter, launch a process inside the VM, and turn off the node
 > [vm0:process_daemon:(2) 0.000000] [msg_test/INFO]   Start daemon on vm0 (76296000.000000)
 > [vm0:process_daemon:(2) 0.000000] [msg_test/INFO]   Execute daemon

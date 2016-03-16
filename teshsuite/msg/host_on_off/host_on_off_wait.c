@@ -49,14 +49,12 @@ int main(int argc, char *argv[])
   msg_error_t res;
 
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
-  MSG_function_register("master", master);
-  MSG_function_register("slave", slave);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("master", master, NULL, MSG_get_host_by_name("Tremblay"));
+  MSG_process_create("slave", slave, NULL, MSG_get_host_by_name("Jupiter"));
 
   res = MSG_main();
 
