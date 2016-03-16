@@ -221,7 +221,7 @@ int main(int argc, char *argv[])
 
   unsigned int iter;
   char *groups;
-  xbt_dynar_t s_tests = xbt_str_split(argv[3], ",");
+  xbt_dynar_t s_tests = xbt_str_split(argv[2], ",");
   int tmp_test = 0;
   tests = xbt_dynar_new(sizeof(int), NULL);
   xbt_dynar_foreach(s_tests, iter, groups) {
