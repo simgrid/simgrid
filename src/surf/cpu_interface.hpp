@@ -25,7 +25,7 @@ class CpuPlugin;
 /*************
  * Callbacks *
  *************/
-XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
+XBT_PUBLIC(std::list<Cpu*>) getActionCpus(CpuAction *action);
 
 /*********
  * Model *

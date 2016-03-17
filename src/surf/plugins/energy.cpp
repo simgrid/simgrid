@@ -206,16 +206,22 @@ static void onCreation(simgrid::s4u::Host& host) {
 }
 
 static void onActionStateChange(simgrid::surf::CpuAction *action, e_surf_action_state_t previous) {
-  const char *name = getActionCpu(action)->getName();
-  simgrid::surf::HostImpl *host = sg_host_by_name(name)->extension<simgrid::surf::HostImpl>();
-  simgrid::surf::VirtualMachine *vm = dynamic_cast<simgrid::surf::VirtualMachine*>(host);
-  if (vm) // If it's a VM, take the corresponding PM
-    host = vm->getPm()->extension<simgrid::surf::HostImpl>();
+  std::list<simgrid::surf::Cpu*> cpus = getActionCpus(action);
+  for(simgrid::surf::Cpu* cpu : cpus) {
+    const char *name = cpu->getName();
+    sg_host_t sghost = sg_host_by_name(name);
+    if(sghost == NULL)
+      continue;
+    simgrid::surf::HostImpl *host = sghost->extension<simgrid::surf::HostImpl>();
+    simgrid::surf::VirtualMachine *vm = dynamic_cast<simgrid::surf::VirtualMachine*>(host);
+    if (vm) // If it's a VM, take the corresponding PM
+      host = vm->getPm()->extension<simgrid::surf::HostImpl>();
 
-  HostEnergy *host_energy = host->p_host->extension<HostEnergy>();
+    HostEnergy *host_energy = host->p_host->extension<HostEnergy>();
 
-  if(host_energy->last_updated < surf_get_clock())
-    host_energy->update();
+    if(host_energy->last_updated < surf_get_clock())
+      host_energy->update();
+  }
 }
 
 static void onHostStateChange(simgrid::s4u::Host &host) {
