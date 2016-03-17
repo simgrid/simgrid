@@ -51,6 +51,7 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_Dijks
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1bb.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1fl.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1sl.xml
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1sl_hetero.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1switch.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bogus_disk_attachment.xml                  PARENT_SCOPE)
 set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.cpp

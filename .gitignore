@@ -294,8 +294,8 @@ teshsuite/simdag/comm-p2p-latency-2/comm-p2p-latency-2
 teshsuite/simdag/comm-p2p-latency-3/comm-p2p-latency-3
 teshsuite/simdag/comm-p2p-latency-bound/comm-p2p-latency-bound
 teshsuite/simdag/network/test_reinit_costs
-teshsuite/simdag/partask/par-comp_only_par
-teshsuite/simdag/partask/par-comp_only_seq
+teshsuite/simdag/comp-only-par/comp-only-par
+teshsuite/simdag/comp-only-seq/comp-only-seq
 teshsuite/simdag/platforms/basic_link_test
 teshsuite/simdag/platforms/basic_parsing_test
 teshsuite/simdag/platforms/basic_tracing

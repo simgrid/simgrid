@@ -998,7 +998,6 @@ set(CMAKEFILES_TXT
 
   teshsuite/simdag/CMakeLists.txt
   teshsuite/simdag/basic/CMakeLists.txt
-  teshsuite/simdag/partask/CMakeLists.txt
   teshsuite/simdag/platforms/CMakeLists.txt
 
   teshsuite/simix/check_defaults/CMakeLists.txt
