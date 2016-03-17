@@ -1,5 +1,5 @@
-foreach(x availability comm-mxn-all2all comm-mxn-independent comm-mxn-scatter comm-p2p-latency-1 comm-p2p-latency-2
-          comm-p2p-latency-3 comm-p2p-latency-bound comp-only-par comp-only-seq incomplete)
+foreach(x availability basic-link-test comm-mxn-all2all comm-mxn-independent comm-mxn-scatter comm-p2p-latency-1 
+          comm-p2p-latency-2 comm-p2p-latency-3 comm-p2p-latency-bound comp-only-par comp-only-seq incomplete)
   add_executable       (${x}  ${x}/${x}.c)
   target_link_libraries(${x}  simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})

@@ -1,4 +1,4 @@
-foreach(x basic_parsing_test basic_link_test evaluate_parse_time evaluate_get_route_time)
+foreach(x basic_parsing_test evaluate_parse_time evaluate_get_route_time)
   add_executable       (${x} ${x}.c)
   target_link_libraries(${x} simgrid)
 
@@ -14,7 +14,6 @@ set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_te
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test_sym_full.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test_bypass.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/basic_link_test.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/get_full_link.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.tesh
