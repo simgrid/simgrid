@@ -5,16 +5,10 @@ foreach(x basic_parsing_test evaluate_parse_time evaluate_get_route_time)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}.c)
 endforeach()
 
-add_executable       (is_router_test          is_router_test.cpp)
-target_link_libraries(is_router_test          simgrid)
-add_executable       (flatifier               flatifier.cpp)
-target_link_libraries(flatifier               simgrid)
-
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test_failing.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test_sym_full.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic_parsing_test_bypass.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/get_full_link.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bogus_two_hosts_asymetric.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bogus_missing_gateway.tesh
@@ -53,11 +47,10 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/four_hosts_Dijks
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1sl_hetero.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platform_2p_1switch.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bogus_disk_attachment.xml                  PARENT_SCOPE)
-set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/flatifier.cpp
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/is_router_test.cpp                         PARENT_SCOPE)
 set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/carol.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/bob.trace
                                     ${CMAKE_CURRENT_SOURCE_DIR}/erin.avail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/link.bw
                                     ${CMAKE_CURRENT_SOURCE_DIR}/link.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/link.lat                                   PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}                                                                         PARENT_SCOPE)

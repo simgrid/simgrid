@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/flatifier$EXEEXT one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
@@ -135,7 +135,7 @@ $ ${bindir:=.}/flatifier$EXEEXT one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
@@ -269,7 +269,7 @@ $ ${bindir:=.}/flatifier$EXEEXT one_cluster_multicore.xml "--log=root.fmt:[%10.6
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
@@ -303,7 +303,7 @@ $ ${bindir:=.}/flatifier$EXEEXT host_attributes.xml "--log=root.fmt:[%10.6r]%e[%
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
@@ -321,7 +321,7 @@ $ ${bindir:=.}/flatifier$EXEEXT link_attributes.xml "--log=root.fmt:[%10.6r]%e[%
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
@@ -364,7 +364,7 @@ $ ${bindir:=.}/flatifier$EXEEXT three_hosts_non_symmetric_route.xml "--log=root.
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
@@ -499,7 +499,7 @@ $ ${bindir:=.}/flatifier$EXEEXT two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
@@ -526,7 +526,7 @@ $ ${bindir:=.}/flatifier$EXEEXT two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]
 > </AS>
 > </platform>
 
-$ ${bindir:=.}/flatifier$EXEEXT two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
+$ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
 > <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">

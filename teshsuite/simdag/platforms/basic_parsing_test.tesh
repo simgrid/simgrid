@@ -55,29 +55,3 @@ $ ${bindir:=.}/basic_parsing_test ./one_cluster_file.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 6
 $ rm -f ./bob0_availability_file.trace ./bob2_availability_file.trace ./bob0_state_file.trace ./bob2_state_file.trace
-
-$ ${bindir:=.}/is_router_test ./test_of_is_router.xml
-> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
-> Host number: 10, link number: 1, elmts number: 21
->    - Seen: "host01". Type: host
->    - Seen: "host02". Type: host
->    - Seen: "host03". Type: host
->    - Seen: "host04". Type: host
->    - Seen: "host05". Type: host
->    - Seen: "host06". Type: host
->    - Seen: "host07". Type: host
->    - Seen: "host08". Type: host
->    - Seen: "host09". Type: host
->    - Seen: "host10". Type: host
->    - Seen: "router1". Type: router
->    - Seen: "router2". Type: router
->    - Seen: "router3". Type: router
->    - Seen: "router4". Type: router
->    - Seen: "router5". Type: router
->    - Seen: "AS0". Type: AS
->    - Seen: "AS1". Type: AS
->    - Seen: "AS2". Type: AS
->    - Seen: "AS3". Type: AS
->    - Seen: "AS4". Type: AS
->    - Seen: "AS". Type: AS
-
