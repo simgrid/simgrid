@@ -15,5 +15,17 @@ if(NOT enable_debug)
   ADD_TESH(tesh-xbt-log   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/log_usage --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/log_usage log_usage_ndebug.tesh)
 endif()
 
-set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/log_usage/log_usage_ndebug.tesh  PARENT_SCOPE)
-set(tesh_files    ${tesh_files}                                                                 PARENT_SCOPE)
+if(HAVE_MMALLOC)
+  add_executable       (mmalloc_test mmalloc_test.c)
+  target_link_libraries(mmalloc_test simgrid)
+  if(${ARCH_32_BITS})
+    ADD_TESH(tesh-xbt-mmalloc-32 --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_32.tesh)
+  else()
+    ADD_TESH(tesh-xbt-mmalloc-64 --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_64.tesh)
+  endif()
+endif()
+
+set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/log_usage/log_usage_ndebug.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc/mmalloc_64.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc/mmalloc_32.tesh          PARENT_SCOPE)
+set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc/mmalloc_test.c           PARENT_SCOPE)

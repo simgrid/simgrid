@@ -2,7 +2,7 @@
 
 p Testing a bypass ASroute
 ! output sort
-$ ${bindir:=.}/basic_parsing_test ${srcdir:=.}/examples/platforms/bypassASroute.xml FULL_LINK
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/examples/platforms/bypassASroute.xml FULL_LINK
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 3, link number: 11
 > Route between 1 and 1
@@ -62,7 +62,7 @@ $ ${bindir:=.}/basic_parsing_test ${srcdir:=.}/examples/platforms/bypassASroute.
 
 p Testing a bypass route
 
-$ ${bindir:=.}/basic_parsing_test ${srcdir:=.}/examples/platforms/bypassRoute.xml FULL_LINK
+$ ${bindir:=.}/basic-parsing-test ${srcdir:=.}/examples/platforms/bypassRoute.xml FULL_LINK
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 4, link number: 10
 > Route between AS_2_host1 and AS_2_host1

@@ -988,22 +988,20 @@ set(CMAKEFILES_TXT
   examples/smpi/energy/f90/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
-
   teshsuite/mc/CMakeLists.txt
-  teshsuite/mc/dwarf/CMakeLists.txt
-  teshsuite/mc/dwarf_expression/CMakeLists.txt
-  teshsuite/mc/replay/CMakeLists.txt
-
+    teshsuite/mc/dwarf/CMakeLists.txt
+    teshsuite/mc/dwarf_expression/CMakeLists.txt
+    teshsuite/mc/replay/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
-
   teshsuite/simdag/CMakeLists.txt
-  teshsuite/simdag/basic/CMakeLists.txt
-  teshsuite/simdag/platforms/CMakeLists.txt
-
-  teshsuite/simix/check_defaults/CMakeLists.txt
-  teshsuite/simix/stack_overflow/CMakeLists.txt
-  
+    teshsuite/simdag/platforms/CMakeLists.txt
+    teshsuite/simix/check_defaults/CMakeLists.txt
+    teshsuite/simix/stack_overflow/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
+  teshsuite/surf/CMakeLists.txt
+    teshsuite/surf/maxmin_bench/CMakeLists.txt
+  teshsuite/xbt/CMakeLists.txt
+  
   teshsuite/smpi/isp/umpire/CMakeLists.txt
   teshsuite/smpi/mpich3-test/CMakeLists.txt
   teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
@@ -1036,12 +1034,6 @@ set(CMAKEFILES_TXT
   teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
   teshsuite/smpi/mpich3-test/perf/CMakeLists.txt
   
-  teshsuite/surf/CMakeLists.txt
-  teshsuite/surf/maxmin_bench/CMakeLists.txt
-  
-  teshsuite/xbt/CMakeLists.txt
-  teshsuite/xbt/mmalloc/CMakeLists.txt
-
   tools/CMakeLists.txt
   tools/graphicator/CMakeLists.txt
   tools/tesh/CMakeLists.txt
