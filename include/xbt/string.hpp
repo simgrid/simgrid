@@ -7,7 +7,6 @@
 #ifndef SIMGRID_XBT_STRING_HPP
 #define SIMGRID_XBT_STRING_HPP
 
-#include "src/internal_config.h"
 #if HAVE_MC
 
 #include <stdexcept>
