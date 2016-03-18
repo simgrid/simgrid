@@ -261,9 +261,9 @@ teshsuite/java/SemaphoreGC/SemaphoreGC_compiled
 teshsuite/java/SleepHostOff/SleepHostOff_compiled
 teshsuite/mc/dwarf/dwarf
 teshsuite/mc/dwarf-expression/dwarf-expression
-teshsuite/mc/replay/random_bug
-teshsuite/mc/with_mutex_handling
-teshsuite/mc/without_mutex_handling
+teshsuite/mc/random-bug/random-bug
+teshsuite/mc/mutex-handling/mutex-handling
+teshsuite/mc/without-mutex-handling
 teshsuite/msg/concurrent_rw/concurrent_rw
 teshsuite/msg/get_sender/get_sender
 teshsuite/msg/host_on_off/host_on_off
