@@ -260,7 +260,7 @@ teshsuite/datadesc_usage.out
 teshsuite/java/SemaphoreGC/SemaphoreGC_compiled
 teshsuite/java/SleepHostOff/SleepHostOff_compiled
 teshsuite/mc/dwarf/dwarf
-teshsuite/mc/dwarf_expression/dwarf-expression
+teshsuite/mc/dwarf-expression/dwarf-expression
 teshsuite/mc/replay/random_bug
 teshsuite/mc/with_mutex_handling
 teshsuite/mc/without_mutex_handling
@@ -279,7 +279,7 @@ teshsuite/msg/task_destroy_cancel/task_destroy_cancel
 teshsuite/msg/trace_integration/trace_integration
 teshsuite/simdag/availability/availability
 teshsuite/simdag/basic-link-test/basic-link-test
-teshsuite/simdag/basic-parsing-test/basic-parsing-test/
+teshsuite/simdag/basic-parsing-test/basic-parsing-test
 teshsuite/simdag/basic0/basic0
 teshsuite/simdag/basic1/basic1
 teshsuite/simdag/basic2/basic2

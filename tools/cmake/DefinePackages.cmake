@@ -989,8 +989,6 @@ set(CMAKEFILES_TXT
 
   teshsuite/java/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt
-    teshsuite/mc/dwarf/CMakeLists.txt
-    teshsuite/mc/dwarf_expression/CMakeLists.txt
     teshsuite/mc/replay/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
