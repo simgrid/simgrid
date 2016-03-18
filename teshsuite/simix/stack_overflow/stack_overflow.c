@@ -42,11 +42,11 @@ int main(int argc, char *argv[])
 {
   SIMIX_global_init(&argc, argv);
 
-  xbt_assert(argc == 3, "Usage: %s platform.xml deployment.xml\n", argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform.xml\n", argv[0]);
 
   SIMIX_function_register("master", master);
   SIMIX_create_environment(argv[1]);
-  SIMIX_launch_application(argv[2]);
+  simcall_process_create("master", master, NULL, "Tremblay", -1, 0, NULL, NULL, 0);
   SIMIX_run();
 
   return 0;
