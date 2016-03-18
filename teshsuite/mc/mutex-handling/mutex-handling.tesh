@@ -1,4 +1,4 @@
 #!/usr/bin/env tesh
 ! expect return 1
 ! output ignore
-$ ${bindir:=.}/../../bin/simgrid-mc ${bindir:=.}/with_mutex_handling ${srcdir:=.}/examples/platforms/platform.xml mutex_handling.xml
+$ ${bindir:=.}/../../../bin/simgrid-mc ${bindir:=.}/with_mutex_handling ${srcdir:=.}/examples/platforms/platform.xml mutex_handling.xml
