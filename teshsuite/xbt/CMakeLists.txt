@@ -16,7 +16,7 @@ if(NOT enable_debug)
 endif()
 
 if(HAVE_MMALLOC)
-  add_executable       (mmalloc_test mmalloc_test.c)
+  add_executable       (mmalloc_test ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc/mmalloc_test.c)
   target_link_libraries(mmalloc_test simgrid)
   if(${ARCH_32_BITS})
     ADD_TESH(tesh-xbt-mmalloc-32 --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/xbt/mmalloc --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/xbt/mmalloc mmalloc_32.tesh)
