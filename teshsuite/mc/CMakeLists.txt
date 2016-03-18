@@ -14,7 +14,7 @@ endforeach()
 add_executable       (without-mutex-handling mutex-handling/mutex-handling.c)
 target_link_libraries(without-mutex-handling simgrid)
 set_target_properties(without-mutex-handling PROPERTIES COMPILE_FLAGS -DDISABLE_THE_MUTEX=1)
-set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling)
+set_target_properties(without-mutex-handling PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mutex-handling)
 
 foreach(x mutex-handling random-bug)
   add_executable       (${x} ${x}/${x}.c)
