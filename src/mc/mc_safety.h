@@ -31,11 +31,11 @@ extern XBT_PRIVATE simgrid::mc::ReductionMode reduction_mode;
 int modelcheck_safety(void);
 
 struct XBT_PRIVATE VisitedState {
-  simgrid::mc::Snapshot* system_state;
-  size_t heap_bytes_used;
-  int nb_processes;
-  int num;
-  int other_num; // dot_output for
+  simgrid::mc::Snapshot* system_state = nullptr;
+  size_t heap_bytes_used = 0;
+  int nb_processes = 0;
+  int num = 0;
+  int other_num = 0; // dot_output for
 
   VisitedState();
   ~VisitedState();

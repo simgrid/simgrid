@@ -55,6 +55,7 @@ VisitedState::VisitedState()
   this->nb_processes =
     mc_model_checker->process().simix_processes().size();
 
+  this->system_state = simgrid::mc::take_snapshot(mc_stats->expanded_states);
   this->num = mc_stats->expanded_states;
   this->other_num = -1;
 }
