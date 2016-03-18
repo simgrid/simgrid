@@ -9,6 +9,9 @@
 
 #include <stdint.h>
 
+#include <vector>
+#include <memory>
+
 #include <simgrid_config.h>
 
 #include <xbt/base.h>
@@ -41,8 +44,8 @@ struct XBT_PRIVATE VisitedState {
   ~VisitedState();
 };
 
-extern XBT_PRIVATE xbt_dynar_t visited_states;
-XBT_PRIVATE simgrid::mc::VisitedState* is_visited_state(mc_state_t graph_state);
+extern XBT_PRIVATE std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
+XBT_PRIVATE std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_state);
 
 }
 }

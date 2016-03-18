@@ -52,8 +52,7 @@ static void modelcheck_safety_init(void);
  */
 static void pre_modelcheck_safety()
 {
-  if (_sg_mc_visited > 0)
-    simgrid::mc::visited_states = simgrid::xbt::newDeleteDynar<simgrid::mc::VisitedState>();
+  simgrid::mc::visited_states.clear();
 
   mc_state_t initial_state = MC_state_new();
 
@@ -87,7 +86,7 @@ int modelcheck_safety(void)
   smx_simcall_t req = nullptr;
   mc_state_t state = nullptr, prev_state = NULL, next_state = NULL;
   xbt_fifo_item_t item = nullptr;
-  simgrid::mc::VisitedState* visited_state = nullptr;
+  std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
 
   while (xbt_fifo_size(mc_stack) > 0) {
 

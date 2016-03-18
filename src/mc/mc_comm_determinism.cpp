@@ -304,8 +304,7 @@ static void MC_pre_modelcheck_comm_determinism(void)
   int i;
   const int maxpid = MC_smx_get_maxpid();
 
-  if (_sg_mc_visited > 0)
-    simgrid::mc::visited_states = simgrid::xbt::newDeleteDynar<simgrid::mc::VisitedState>();
+  simgrid::mc::visited_states.clear();
  
   // Create initial_communications_pattern elements:
   initial_communications_pattern = xbt_dynar_new(sizeof(mc_list_comm_pattern_t), MC_list_comm_pattern_free_voidp);
@@ -343,7 +342,7 @@ static int MC_modelcheck_comm_determinism_main(void)
 
   char *req_str = nullptr;
   int value;
-  simgrid::mc::VisitedState* visited_state = nullptr;
+  std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
   smx_simcall_t req = nullptr;
   mc_state_t state = nullptr, next_state = NULL;
 

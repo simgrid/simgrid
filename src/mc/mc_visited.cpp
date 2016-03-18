@@ -7,6 +7,8 @@
 #include <unistd.h>
 #include <sys/wait.h>
 
+#include <memory>
+
 #include <xbt/automaton.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
@@ -27,7 +29,7 @@ namespace simgrid {
 namespace mc {
 
 xbt_dynar_t visited_pairs;
-xbt_dynar_t visited_states;
+std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
 
 static int is_exploration_stack_state(simgrid::mc::VisitedState* state){
   xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
@@ -208,30 +210,53 @@ int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
   return cursor;
 }
 
-static
-void replace_state(
-  simgrid::mc::VisitedState* state_test, simgrid::mc::VisitedState* new_state, int cursor)
+// TODO, it would make sense to use std::set instead
+template<class T>
+int get_search_interval(std::vector<std::unique_ptr<T>> const& list, T *ref, int *min, int *max)
 {
-  if (state_test->other_num == -1)
-    new_state->other_num = state_test->num;
-  else
-    new_state->other_num = state_test->other_num;
+  int nb_processes = ref->nb_processes;
+  int heap_bytes_used = ref->heap_bytes_used;
 
-  if (dot_output == nullptr)
-    XBT_DEBUG("State %d already visited ! (equal to state %d)",
-      new_state->num, state_test->num);
-  else
-    XBT_DEBUG(
-      "State %d already visited ! (equal to state %d (state %d in dot_output))",
-      new_state->num, state_test->num, new_state->other_num);
+  int cursor = 0;
+  int start = 0;
+  int end = list.size() - 1;
+  while (start <= end) {
+    cursor = (start + end) / 2;
+    int nb_processes_test = list[cursor]->nb_processes;
+    int heap_bytes_used_test = list[cursor]->heap_bytes_used;
 
-  /* Replace the old state with the new one (with a bigger num)
-     (when the max number of visited states is reached,  the oldest
-     one is removed according to its number (= with the min number) */
-  xbt_dynar_remove_at(simgrid::mc::visited_states, cursor, nullptr);
-  xbt_dynar_insert_at(simgrid::mc::visited_states, cursor, &new_state);
-  XBT_DEBUG("Replace visited state %d with the new visited state %d",
-    state_test->num, new_state->num);
+    if (nb_processes_test < nb_processes)
+      start = cursor + 1;
+    else if (nb_processes_test > nb_processes)
+      end = cursor - 1;
+    else if (heap_bytes_used_test < heap_bytes_used)
+      start = cursor + 1;
+    else if (heap_bytes_used_test > heap_bytes_used)
+      end = cursor - 1;
+    else {
+        *min = *max = cursor;
+        int previous_cursor = cursor - 1;
+        while (previous_cursor >= 0) {
+          nb_processes_test = list[previous_cursor]->nb_processes;
+          heap_bytes_used_test = list[previous_cursor]->heap_bytes_used;
+          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
+            break;
+          *min = previous_cursor;
+          previous_cursor--;
+        }
+        size_t next_cursor = cursor + 1;
+        while (next_cursor < list.size()) {
+          nb_processes_test = list[next_cursor]->nb_processes;
+          heap_bytes_used_test = list[next_cursor]->heap_bytes_used;
+          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
+            break;
+          *max = next_cursor;
+          next_cursor++;
+        }
+        return -1;
+    }
+  }
+  return cursor;
 }
 
 static
@@ -254,7 +279,7 @@ namespace mc {
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
-simgrid::mc::VisitedState* is_visited_state(mc_state_t graph_state)
+std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_state)
 {
   if (_sg_mc_visited == 0)
     return nullptr;
@@ -265,19 +290,20 @@ simgrid::mc::VisitedState* is_visited_state(mc_state_t graph_state)
   int partial_comm = (_sg_mc_comms_determinism || _sg_mc_send_determinism) &&
     some_communications_are_not_finished();
 
-  simgrid::mc::VisitedState* new_state = new VisitedState();
+  std::unique_ptr<simgrid::mc::VisitedState> new_state =
+    std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState());
   graph_state->system_state = new_state->system_state;
   graph_state->in_visited_states = 1;
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)", new_state->system_state, new_state->num, graph_state->num);
 
-  if (xbt_dynar_is_empty(visited_states)) {
-    xbt_dynar_push(visited_states, &new_state);
+  if (visited_states.empty()) {
+    visited_states.push_back(std::move(new_state));
     return nullptr;
   }
 
     int min = -1, max = -1, index;
 
-    index = get_search_interval(visited_states, new_state, &min, &max);
+    index = get_search_interval(visited_states, new_state.get(), &min, &max);
 
     if (min != -1 && max != -1) {
 
@@ -286,36 +312,60 @@ simgrid::mc::VisitedState* is_visited_state(mc_state_t graph_state)
 
         int cursor = min;
         while (cursor <= max) {
-          simgrid::mc::VisitedState* state_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(visited_states, cursor, simgrid::mc::VisitedState*);
-          if (snapshot_compare(state_test, new_state) == 0) {
+          if (snapshot_compare(visited_states[cursor].get(), new_state.get()) == 0) {
             // The state has been visited:
 
-            replace_state(state_test, new_state, cursor);
-            return state_test;
+            std::unique_ptr<simgrid::mc::VisitedState> old_state =
+              std::move(visited_states[cursor]);
+
+            if (old_state->other_num == -1)
+              new_state->other_num = old_state->num;
+            else
+              new_state->other_num = old_state->other_num;
+
+            if (dot_output == nullptr)
+              XBT_DEBUG("State %d already visited ! (equal to state %d)",
+                new_state->num, old_state->num);
+            else
+              XBT_DEBUG(
+                "State %d already visited ! (equal to state %d (state %d in dot_output))",
+                new_state->num, old_state->num, new_state->other_num);
+
+            /* Replace the old state with the new one (with a bigger num)
+               (when the max number of visited states is reached,  the oldest
+               one is removed according to its number (= with the min number) */
+            XBT_DEBUG("Replace visited state %d with the new visited state %d",
+              old_state->num, new_state->num);
+
+            simgrid::mc::visited_states[cursor] = std::move(new_state);
+            return std::move(old_state);
           }
           cursor++;
         }
       }
       
-      xbt_dynar_insert_at(visited_states, min, &new_state);
-      XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, xbt_dynar_length(visited_states));
-      
+      XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, (unsigned long) visited_states.size());
+      visited_states.insert(visited_states.begin() + min, std::move(new_state));
+
     } else {
 
       // The state has not been visited: insert the state in the dynamic array.
-      simgrid::mc::VisitedState* state_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(visited_states, index, simgrid::mc::VisitedState*);
+      simgrid::mc::VisitedState* state_test = &*visited_states[index];
+      std::size_t position;
       if (state_test->nb_processes < new_state->nb_processes)
-        xbt_dynar_insert_at(visited_states, index + 1, &new_state);
+        position = index + 1;
       else if (state_test->heap_bytes_used < new_state->heap_bytes_used)
-        xbt_dynar_insert_at(visited_states, index + 1, &new_state);
+        position = index + 1;
       else
-        xbt_dynar_insert_at(visited_states, index, &new_state);
-
-       XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, xbt_dynar_length(visited_states));
+        position = index;
+      visited_states.insert(visited_states.begin() + position, std::move(new_state));
+      XBT_DEBUG("Insert new visited state %d (total : %lu)",
+        visited_states[index]->num,
+        (unsigned long) visited_states.size());
 
     }
 
-  if ((ssize_t) xbt_dynar_length(visited_states) <= _sg_mc_visited)
+  if (visited_states.size() <= (std::size_t) _sg_mc_visited)
     return nullptr;
 
   // We have reached the maximum number of stored states;
@@ -324,19 +374,18 @@ simgrid::mc::VisitedState* is_visited_state(mc_state_t graph_state)
 
       // Find the (index of the) older state (with the smallest num):
       int min2 = mc_stats->expanded_states;
-      unsigned int cursor2 = 0;
       unsigned int index2 = 0;
 
-      simgrid::mc::VisitedState* state_test;
-      xbt_dynar_foreach(visited_states, cursor2, state_test)
-        if (!mc_model_checker->is_important_snapshot(*state_test->system_state)
-            && state_test->num < min2) {
+      for (std::size_t cursor2 = 0; cursor2 != visited_states.size(); ++cursor2)
+        if (!mc_model_checker->is_important_snapshot(
+              *visited_states[cursor2]->system_state)
+            && visited_states[cursor2]->num < min2) {
           index2 = cursor2;
-          min2 = state_test->num;
+          min2 = visited_states[cursor2]->num;
         }
 
       // and drop it:
-      xbt_dynar_remove_at(visited_states, index2, nullptr);
+      visited_states.erase(visited_states.begin() + index2);
       XBT_DEBUG("Remove visited state (maximum number of stored states reached)");
 
     return nullptr;
