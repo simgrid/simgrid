@@ -550,6 +550,8 @@ set(MC_SRC
   src/mc/AddressSpace.cpp
   src/mc/Channel.cpp
   src/mc/Channel.hpp
+  src/mc/Checker.cpp
+  src/mc/Checker.hpp
   src/mc/Client.cpp
   src/mc/Client.hpp
   src/mc/Frame.hpp
@@ -570,6 +572,8 @@ set(MC_SRC
   src/mc/mc_forward.hpp
   src/mc/Process.hpp
   src/mc/Process.cpp
+  src/mc/Session.cpp
+  src/mc/Session.hpp
   src/mc/mc_unw.h
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
