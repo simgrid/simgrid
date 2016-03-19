@@ -55,8 +55,7 @@ public:
   ~CpuL07Model();
 
   Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPeakList,
-                          tmgr_trace_t speedTrace, int core,
-                          tmgr_trace_t state_trace) override;
+                          tmgr_trace_t speedTrace, int core) override;
   HostL07Model *p_hostModel;
 };
 
@@ -80,8 +79,7 @@ public:
 
 class CpuL07 : public Cpu {
 public:
-  CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeakList,
-     tmgr_trace_t power_trace, int core, tmgr_trace_t state_trace);
+  CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeakList, tmgr_trace_t power_trace, int core);
   ~CpuL07();
   bool isUsed() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;

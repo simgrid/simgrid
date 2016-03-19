@@ -46,11 +46,8 @@ public:
    * @param speedPeak The peak spead (max speed in Flops when no external load comes from a trace)
    * @param speedTrace Trace variations
    * @param core The number of core of this Cpu
-   * @param state_trace [TODO]
    */
-  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-                          tmgr_trace_t speedTrace, int core,
-                          tmgr_trace_t state_trace)=0;
+  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak, tmgr_trace_t speedTrace, int core)=0;
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);

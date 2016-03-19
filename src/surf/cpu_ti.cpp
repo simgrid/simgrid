@@ -417,14 +417,12 @@ CpuTiModel::~CpuTiModel()
 Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host,
     xbt_dynar_t speedPeak,
     tmgr_trace_t speedTrace,
-    int core,
-    tmgr_trace_t stateTrace)
+    int core)
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
   xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory speed attribute?");
-  CpuTi *cpu = new CpuTi(this, host, speedPeak, speedTrace, core, stateTrace);
-  return cpu;
+  return new CpuTi(this, host, speedPeak, speedTrace, core);
 }
 
 double CpuTiModel::next_occuring_event(double now)
@@ -467,8 +465,7 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
  * Resource *
  ************/
 CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-        tmgr_trace_t speedTrace, int core,
-        tmgr_trace_t stateTrace)
+        tmgr_trace_t speedTrace, int core)
   : Cpu(model, host, NULL, core, 0)
 {
   xbt_assert(core==1,"Multi-core not handled by this model yet");
@@ -481,18 +478,12 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
   xbt_dynar_get_cpy(speedPeak, 0, &speed_.peak);
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
-  if (stateTrace)
-    stateEvent_ = future_evt_set->add_trace(stateTrace, 0.0, this);
-
   if (speedTrace && xbt_dynar_length(speedTrace->event_list) > 1) {
-  s_tmgr_event_t val;
+    s_tmgr_event_t val;
     // add a fake trace event if periodicity == 0
-    xbt_dynar_get_cpy(speedTrace->event_list,
-                      xbt_dynar_length(speedTrace->event_list) - 1, &val);
-    if (val.delta == 0) {
-      speed_.event =
-          future_evt_set->add_trace(tmgr_empty_trace_new(), availTrace_->lastTime_, this);
-    }
+    xbt_dynar_get_cpy(speedTrace->event_list,  xbt_dynar_length(speedTrace->event_list) - 1, &val);
+    if (val.delta == 0)
+      speed_.event = future_evt_set->add_trace(tmgr_empty_trace_new(), availTrace_->lastTime_, this);
   }
 }
 

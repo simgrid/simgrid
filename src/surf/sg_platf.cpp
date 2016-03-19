@@ -116,8 +116,9 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h,
       host->speed_peak,
       host->speed_trace,
-      host->core_amount,
-      host->state_trace);
+      host->core_amount);
+  if (host->state_trace)
+    cpu->setStateTrace(host->state_trace);
   surf_host_model->createHost(host->id, netcard, cpu, host->properties)->attach(h);
 
   if (host->pstate != 0)
