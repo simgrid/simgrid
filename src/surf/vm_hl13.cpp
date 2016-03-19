@@ -131,9 +131,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
   CpuCas01 *sub_cpu = static_cast<CpuCas01*>(host_PM->pimpl_cpu);
 
   p_cpu = surf_cpu_model_vm->createCpu(host_VM, // the machine hosting the VM
-      sub_cpu->getSpeedPeakList(),        // host->speed_peak,
-      NULL,                       // host->speed_trace,
-      1);                         // host->core_amount,
+      sub_cpu->getSpeedPeakList(), 1 /*cores*/);
   if (sub_cpu->getPState() != 0)
     p_cpu->setPState(sub_cpu->getPState());
 

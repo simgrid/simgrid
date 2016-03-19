@@ -414,15 +414,12 @@ CpuTiModel::~CpuTiModel()
   xbt_heap_free(tiActionHeap_);
 }
 
-Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host,
-    xbt_dynar_t speedPeak,
-    tmgr_trace_t speedTrace,
-    int core)
+Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speeds, int core)
 {
   xbt_assert(core==1,"Multi-core not handled with this model yet");
-  xbt_assert(xbt_dynar_getfirst_as(speedPeak, double) > 0.0,
+  xbt_assert(xbt_dynar_getfirst_as(speeds, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory speed attribute?");
-  return new CpuTi(this, host, speedPeak, speedTrace, core);
+  return new CpuTi(this, host, speeds, core);
 }
 
 double CpuTiModel::next_occuring_event(double now)
@@ -464,20 +461,18 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-        tmgr_trace_t speedTrace, int core)
+CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak, int core)
   : Cpu(model, host, NULL, core, 0)
 {
   xbt_assert(core==1,"Multi-core not handled by this model yet");
   coresAmount_ = core;
-
 
   actionSet_ = new ActionTiList();
 
   xbt_dynar_get_cpy(speedPeak, 0, &speed_.peak);
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
-  setSpeedTrace(speedTrace);
+  speedIntegratedTrace_ = new CpuTiTgmr(NULL, 1/*scale*/);
 }
 
 CpuTi::~CpuTi()

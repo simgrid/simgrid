@@ -43,11 +43,10 @@ public:
    * @brief Create a Cpu
    *
    * @param host The host that will have this CPU
-   * @param speedPeak The peak spead (max speed in Flops when no external load comes from a trace)
-   * @param speedTrace Speed variations
+   * @param speedList The peak speed (max speed in Flops when no external load comes from a trace) for each pstate
    * @param core The number of core of this Cpu
    */
-  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak, tmgr_trace_t speedTrace, int core)=0;
+  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedList, int core)=0;
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
@@ -70,7 +69,7 @@ public:
    * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-   * @param speedPeakList [TODO]
+   * @param speedList [TODO]
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    */

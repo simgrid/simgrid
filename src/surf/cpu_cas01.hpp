@@ -27,7 +27,7 @@ public:
   CpuCas01Model();
   ~CpuCas01Model();
 
-  Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak, tmgr_trace_t speedTrace, int core) override;
+  Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedList, int core) override;
   double next_occuring_event_full(double now) override;
   ActionList *p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };
@@ -38,8 +38,7 @@ public:
 
 class CpuCas01 : public Cpu {
 public:
-  CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-      tmgr_trace_t speedTrace, int core);
+  CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedList, int core);
   ~CpuCas01();
   void apply_event(tmgr_trace_iterator_t event, double value) override;
   CpuAction *execution_start(double size) override;

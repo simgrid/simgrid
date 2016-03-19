@@ -264,28 +264,23 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
   sg_host_t*host_list = xbt_new0(sg_host_t, 2);
   double *flops_amount = xbt_new0(double, 2);
   double *bytes_amount = xbt_new0(double, 4);
-  Action *res = NULL;
 
   host_list[0] = sg_host_by_name(src->name());
   host_list[1] = sg_host_by_name(dst->name());
   bytes_amount[1] = size;
 
-  res = p_hostModel->executeParallelTask(2, host_list, flops_amount, bytes_amount, rate);
-
-  return res;
+  return p_hostModel->executeParallelTask(2, host_list, flops_amount, bytes_amount, rate);
 }
 
-Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t powerPeakList,
-    tmgr_trace_t power_trace, int core)
+Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedsList, int core)
 {
-  return new CpuL07(this, host, powerPeakList, power_trace, core);
+  return new CpuL07(this, host, speedsList, core);
 }
 
 Link* NetworkL07Model::createLink(const char *name, double bandwidth, double latency,
     e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
 {
-  xbt_assert(!Link::byName(name),
-           "Link '%s' declared several times in the platform.", name);
+  xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
 
   Link* link = new LinkL07(this, name, properties, bandwidth, latency, policy);
   Link::onCreation(link);
@@ -296,16 +291,10 @@ Link* NetworkL07Model::createLink(const char *name, double bandwidth, double lat
  * Resource *
  ************/
 
-CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host,
-    xbt_dynar_t speedPeakList,
-    tmgr_trace_t speedTrace,
-    int core)
- : Cpu(model, host, speedPeakList, core, xbt_dynar_get_as(speedPeakList,0,double))
+CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedList, int core)
+ : Cpu(model, host, speedList, core, xbt_dynar_get_as(speedList,0,double))
 {
-  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPeakList,0,double));
-
-  if (speedTrace)
-    speed_.event = future_evt_set->add_trace(speedTrace, 0.0, this);
+  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedList,0,double));
 }
 
 CpuL07::~CpuL07()
