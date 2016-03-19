@@ -41,8 +41,8 @@ namespace simgrid {
       for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
           ; it != itend ; ++it) {
         action = static_cast<NetworkConstantAction*>(&*it);
-        if (action->m_latency > 0 && (min < 0 || action->m_latency < min))
-          min = action->m_latency;
+        if (action->latency_ > 0 && (min < 0 || action->latency_ < min))
+          min = action->latency_;
       }
 
       return min;
@@ -56,11 +56,11 @@ namespace simgrid {
           ; it != itend ; it=itNext) {
         ++itNext;
         action = static_cast<NetworkConstantAction*>(&*it);
-        if (action->m_latency > 0) {
-          if (action->m_latency > delta) {
-            double_update(&(action->m_latency), delta, sg_surf_precision);
+        if (action->latency_ > 0) {
+          if (action->latency_ > delta) {
+            double_update(&(action->latency_), delta, sg_surf_precision);
           } else {
-            action->m_latency = 0.0;
+            action->latency_ = 0.0;
           }
         }
         action->updateRemains(action->getCost() * delta / action->m_latInit);

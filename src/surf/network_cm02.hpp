@@ -48,7 +48,7 @@ namespace simgrid {
       bool next_occuring_event_isIdempotent() override {return true;}
       virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
     protected:
-      bool m_haveGap = false;
+      bool haveGap_ = false;
     };
 
     /************
@@ -81,7 +81,7 @@ namespace simgrid {
     : NetworkAction(model, cost, failed) {};
       void updateRemainingLazy(double now);
     protected:
-      double m_senderGap;
+      double senderGap_;
     };
 
   }

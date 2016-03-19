@@ -101,7 +101,7 @@ namespace simgrid {
 
     NetworkSmpiModel::NetworkSmpiModel()
     : NetworkCm02Model() {
-      m_haveGap=true;
+      haveGap_=true;
     }
 
     NetworkSmpiModel::~NetworkSmpiModel(){
@@ -121,16 +121,16 @@ namespace simgrid {
           gap_lookup = xbt_dict_new_homogeneous(NULL);
         }
         fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
-        action->m_senderGap = 0.0;
+        action->senderGap_ = 0.0;
         if (fifo && xbt_fifo_size(fifo) > 0) {
           /* Compute gap from last send */
           /*last_action =
           (surf_action_network_CM02_t)
           xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));*/
           // bw = net_get_link_bandwidth(link);
-          action->m_senderGap = sg_sender_gap;
+          action->senderGap_ = sg_sender_gap;
           /*  max(sg_sender_gap,last_action->sender.size / bw);*/
-          action->m_latency += action->m_senderGap;
+          action->latency_ += action->senderGap_;
         }
         /* Append action as last send */
         /*action->sender.link_name = link->lmm_resource.generic_resource.name;
@@ -142,7 +142,7 @@ namespace simgrid {
       xbt_dict_set(gap_lookup, action->sender.link_name, fifo, NULL);
     }
     action->sender.fifo_item = xbt_fifo_push(fifo, action);*/
-        action->m_senderSize = size;
+        action->senderSize_ = size;
       }
     }
 
@@ -152,16 +152,16 @@ namespace simgrid {
       size_t size;
       NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_action);
 
-      if (sg_sender_gap > 0.0 && action->p_senderLinkName
-          && action->p_senderFifoItem) {
+      if (sg_sender_gap > 0.0 && action->senderLinkName_
+          && action->senderFifoItem_) {
         fifo =
             (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
-                action->p_senderLinkName);
-        xbt_fifo_remove_item(fifo, action->p_senderFifoItem);
+                action->senderLinkName_);
+        xbt_fifo_remove_item(fifo, action->senderFifoItem_);
         size = xbt_fifo_size(fifo);
         if (size == 0) {
           xbt_fifo_free(fifo);
-          xbt_dict_remove(gap_lookup, action->p_senderLinkName);
+          xbt_dict_remove(gap_lookup, action->senderLinkName_);
           size = xbt_dict_length(gap_lookup);
           if (size == 0) {
             xbt_dict_free(&gap_lookup);

@@ -277,13 +277,13 @@ namespace simgrid {
 
       void setState(e_surf_action_state_t state);
 
-      double m_latency;
-      double m_latCurrent;
-      double m_weight;
-      double m_rate;
-      const char* p_senderLinkName;
-      double m_senderSize;
-      xbt_fifo_item_t p_senderFifoItem;
+      double latency_;
+      double latCurrent_;
+      double weight_;
+      double rate_;
+      const char* senderLinkName_;
+      double senderSize_;
+      xbt_fifo_item_t senderFifoItem_;
     };
   }
 }

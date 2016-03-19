@@ -113,7 +113,7 @@ namespace simgrid {
 
     NetworkIBModel::NetworkIBModel()
     : NetworkSmpiModel() {
-      m_haveGap=false;
+      haveGap_=false;
       active_nodes=NULL;
 
       const char* IB_factors_string=sg_cfg_get_string("smpi/IB_penalty_factors");

@@ -46,8 +46,8 @@ namespace simgrid {
     : NetworkAction(model_, size, false)
     , m_latInit(latency)
     {
-        m_latency = latency;
-        if (m_latency <= 0.0) {
+        latency_ = latency;
+        if (latency_ <= 0.0) {
           p_stateSet = getModel()->getDoneActionSet();
           p_stateSet->push_back(*this);
         }

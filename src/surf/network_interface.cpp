@@ -156,8 +156,8 @@ namespace simgrid {
       for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
           ; it != itend ; ++it) {
         action = static_cast<NetworkAction*>(&*it);
-        if (action->m_latency > 0) {
-          minRes = (minRes < 0) ? action->m_latency : std::min(minRes, action->m_latency);
+        if (action->latency_ > 0) {
+          minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
         }
       }
 
