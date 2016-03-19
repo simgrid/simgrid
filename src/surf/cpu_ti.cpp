@@ -471,34 +471,27 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
   xbt_assert(core==1,"Multi-core not handled by this model yet");
   coresAmount_ = core;
 
-  availTrace_ = new CpuTiTgmr(speedTrace, 1/*scale*/);
 
   actionSet_ = new ActionTiList();
 
   xbt_dynar_get_cpy(speedPeak, 0, &speed_.peak);
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
-  if (speedTrace && xbt_dynar_length(speedTrace->event_list) > 1) {
-    s_tmgr_event_t val;
-    // add a fake trace event if periodicity == 0
-    xbt_dynar_get_cpy(speedTrace->event_list,  xbt_dynar_length(speedTrace->event_list) - 1, &val);
-    if (val.delta == 0)
-      speed_.event = future_evt_set->add_trace(tmgr_empty_trace_new(), availTrace_->lastTime_, this);
-  }
+  setSpeedTrace(speedTrace);
 }
 
 CpuTi::~CpuTi()
 {
   modified(false);
-  delete availTrace_;
+  delete speedIntegratedTrace_;
   delete actionSet_;
 }
 void CpuTi::setSpeedTrace(tmgr_trace_t trace)
 {
-  if (availTrace_)
-    delete availTrace_;
+  if (speedIntegratedTrace_)
+    delete speedIntegratedTrace_;
 
-  availTrace_ = new CpuTiTgmr(trace, speed_.scale);
+  speedIntegratedTrace_ = new CpuTiTgmr(trace, speed_.scale);
 
   /* add a fake trace event if periodicity == 0 */
   if (trace && xbt_dynar_length(trace->event_list) > 1) {
@@ -522,15 +515,15 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
 
     modified(true);
 
-    speedTrace = availTrace_->speedTrace_;
+    speedTrace = speedIntegratedTrace_->speedTrace_;
     xbt_dynar_get_cpy(speedTrace->event_list, xbt_dynar_length(speedTrace->event_list) - 1, &val);
-    delete availTrace_;
+    delete speedIntegratedTrace_;
     speed_.scale = val.value;
 
     trace = new CpuTiTgmr(TRACE_FIXED, val.value);
     XBT_DEBUG("value %f", val.value);
 
-    availTrace_ = trace;
+    speedIntegratedTrace_ = trace;
 
     tmgr_trace_event_unref(&speed_.event);
 
@@ -612,7 +605,7 @@ void CpuTi::updateActionsFinishTime(double now)
 
       total_area /= speed_.peak;
 
-      action->setFinishTime(availTrace_->solve(now, total_area));
+      action->setFinishTime(speedIntegratedTrace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
       if (action->getMaxDuration() != NO_MAX_DURATION &&
           action->getStartTime() + action->getMaxDuration() < action->m_finish)
@@ -652,7 +645,7 @@ bool CpuTi::isUsed()
 
 double CpuTi::getAvailableSpeed()
 {
-  speed_.scale = availTrace_->getPowerScale(surf_get_clock());
+  speed_.scale = speedIntegratedTrace_->getPowerScale(surf_get_clock());
   return Cpu::getAvailableSpeed();
 }
 
@@ -665,7 +658,7 @@ void CpuTi::updateRemainingAmount(double now)
     return;
 
   /* compute the integration area */
-  double area_total = availTrace_->integrate(lastUpdate_, now) * speed_.peak;
+  double area_total = speedIntegratedTrace_->integrate(lastUpdate_, now) * speed_.peak;
   XBT_DEBUG("Flops total: %f, Last update %f", area_total, lastUpdate_);
 
   for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()) ; it != itend ; ++it) {

@@ -126,10 +126,10 @@ public:
 
   void modified(bool modified);
 
-  CpuTiTgmr *availTrace_;       /*< Structure with data needed to integrate trace file */
-  ActionTiList *actionSet_;        /*< set with all actions running on cpu */
-  double sumPriority_;          /*< the sum of actions' priority that are running on cpu */
-  double lastUpdate_ = 0;       /*< last update of actions' remaining amount done */
+  CpuTiTgmr *speedIntegratedTrace_ = NULL;/*< Structure with data needed to integrate trace file */
+  ActionTiList *actionSet_ = NULL;        /*< set with all actions running on cpu */
+  double sumPriority_ = 0; /*< the sum of actions' priority that are running on cpu */
+  double lastUpdate_ = 0;  /*< last update of actions' remaining amount done */
 
   double currentFrequency_;
 

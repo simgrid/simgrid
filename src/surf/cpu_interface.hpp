@@ -44,7 +44,7 @@ public:
    *
    * @param host The host that will have this CPU
    * @param speedPeak The peak spead (max speed in Flops when no external load comes from a trace)
-   * @param speedTrace Trace variations
+   * @param speedTrace Speed variations
    * @param core The number of core of this Cpu
    */
   virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak, tmgr_trace_t speedTrace, int core)=0;
