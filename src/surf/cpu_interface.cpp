@@ -145,10 +145,12 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
  , coresAmount_(core)
  , host_(host)
 {
+  xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->name().c_str());
+
   speed_.peak = xbt_dynar_get_as(speedPerPstate, 0/*pstate*/, double);
   speed_.scale = 1;
   host->pimpl_cpu = this;
-  xbt_assert(speed_.scale > 0, "Available speed has to be >0");
+  xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->name().c_str());
 
   // Copy the power peak array:
   speedPerPstate_ = xbt_dynar_new(sizeof(double), nullptr);

@@ -84,9 +84,6 @@ CpuCas01Model::~CpuCas01Model()
 
 Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
 {
-  xbt_assert(xbt_dynar_getfirst_as(speedPerPstate, double) > 0.0,
-      "Speed has to be >0.0. Did you forget to specify the mandatory power attribute?");
-  xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
   return new CpuCas01(this, host, speedPerPstate, core);
 }
 

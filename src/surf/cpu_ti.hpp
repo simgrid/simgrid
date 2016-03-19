@@ -147,7 +147,7 @@ class CpuTiModel : public CpuModel {
 public:
   CpuTiModel();
   ~CpuTiModel();
-  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speeds, int core) override;
+  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPerPstate, int core) override;
   double next_occuring_event(double now) override;
   void updateActionsState(double now, double delta) override;
 

@@ -414,12 +414,9 @@ CpuTiModel::~CpuTiModel()
   xbt_heap_free(tiActionHeap_);
 }
 
-Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speeds, int core)
+Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
 {
-  xbt_assert(core==1,"Multi-core not handled with this model yet");
-  xbt_assert(xbt_dynar_getfirst_as(speeds, double) > 0.0,
-      "Speed has to be >0.0. Did you forget to specify the mandatory speed attribute?");
-  return new CpuTi(this, host, speeds, core);
+  return new CpuTi(this, host, speedPerPstate, core);
 }
 
 double CpuTiModel::next_occuring_event(double now)
