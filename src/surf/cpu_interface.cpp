@@ -24,17 +24,6 @@ namespace surf {
  * Callbacks *
  *************/
 
-std::list<Cpu*> getActionCpus(CpuAction *action) {
-  std::list<Cpu*> retlist;
-  lmm_system_t sys = action->getModel()->getMaxminSystem();
-  int llen = lmm_get_number_of_cnst_from_var(sys, action->getVariable());
-
-  for(int i = 0; i<llen; i++) {
-    retlist.push_back( (Cpu*)(lmm_constraint_id( lmm_get_cnst_from_var(sys, action->getVariable(), i) )) );
-  }
-  return retlist;
-}
-
 simgrid::xbt::signal<void(CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> cpuActionStateChangedCallbacks;
 
 /*********
@@ -347,6 +336,16 @@ void CpuAction::setState(e_surf_action_state_t state){
   e_surf_action_state_t previous = getState();
   Action::setState(state);
   onStateChange(this, previous);
+}
+std::list<Cpu*> CpuAction::cpus() {
+  std::list<Cpu*> retlist;
+  lmm_system_t sys = getModel()->getMaxminSystem();
+  int llen = lmm_get_number_of_cnst_from_var(sys, getVariable());
+
+  for(int i = 0; i<llen; i++)
+    retlist.push_back( (Cpu*)(lmm_constraint_id( lmm_get_cnst_from_var(sys, getVariable(), i) )) );
+
+  return retlist;
 }
 
 }

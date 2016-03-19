@@ -100,8 +100,7 @@ namespace simgrid {
        * unlimited.
        * @return The action representing the communication
        */
-      virtual Action *communicate(NetCard *src, NetCard *dst,
-          double size, double rate)=0;
+      virtual Action *communicate(NetCard *src, NetCard *dst, double size, double rate)=0;
 
       /** @brief Function pointer to the function to use to solve the lmm_system_t
        *

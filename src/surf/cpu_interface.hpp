@@ -20,16 +20,7 @@ namespace surf {
 class CpuModel;
 class Cpu;
 class CpuAction;
-class CpuPlugin;
-
-/*************
- * Callbacks *
- *************/
-XBT_PUBLIC(std::list<Cpu*>) getActionCpus(CpuAction *action);
-
-/*********
- * Model *
- *********/
+class CpuPlugin;// FIXME:DEADCODE
 
  /** @ingroup SURF_cpu_interface
  * @brief SURF cpu model interface class
@@ -172,6 +163,8 @@ public:
   void setState(e_surf_action_state_t state);
 
   void updateRemainingLazy(double now);
+  std::list<Cpu*> cpus();
+
 };
 
 }

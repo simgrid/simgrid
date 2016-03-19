@@ -206,8 +206,7 @@ static void onCreation(simgrid::s4u::Host& host) {
 }
 
 static void onActionStateChange(simgrid::surf::CpuAction *action, e_surf_action_state_t previous) {
-  std::list<simgrid::surf::Cpu*> cpus = getActionCpus(action);
-  for(simgrid::surf::Cpu* cpu : cpus) {
+  for(simgrid::surf::Cpu* cpu : action->cpus()) {
     const char *name = cpu->getName();
     sg_host_t sghost = sg_host_by_name(name);
     if(sghost == NULL)
