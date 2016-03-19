@@ -151,35 +151,27 @@ public:
  **********/
 
  /** @ingroup SURF_cpu_interface
- * @brief SURF Cpu action interface class
- * @details A CpuAction represent the execution of code on a Cpu
+ * @brief A CpuAction represents the execution of code on one or several Cpus
  */
 XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
 friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
-/** @brief Callbacks handler which emit the callbacks after CpuAction State changed *
- * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_action_state_t previous)`
- */
+  /** @brief Callbacks handler which emit the callbacks after CpuAction State changed *
+   * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_action_state_t previous)`
+   */
   static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t)> onStateChange;
 
-  /** @brief CpuAction constructor */
   CpuAction(simgrid::surf::Model *model, double cost, bool failed)
-    : Action(model, cost, failed) {} //FIXME:DEADCODE?
-
-  /** @brief CpuAction constructor */
+  : Action(model, cost, failed) {} //FIXME:DEADCODE?
   CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
-    : Action(model, cost, failed, var) {}
+  : Action(model, cost, failed, var) {}
 
-  /**
-   * @brief Set the affinity of the current CpuAction
-   * @details [TODO]
-   */
+  /** @brief Set the affinity of the current CpuAction */
   virtual void setAffinity(Cpu *cpu, unsigned long mask);
 
   void setState(e_surf_action_state_t state);
 
   void updateRemainingLazy(double now);
-
 };
 
 }

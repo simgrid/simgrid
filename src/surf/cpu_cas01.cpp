@@ -9,8 +9,7 @@
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
-                                "Logging specific to the SURF CPU IMPROVED module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU IMPROVED module");
 
 /*********
  * Model *
@@ -100,9 +99,6 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t s
     lmm_constraint_new(model->getMaxminSystem(), this, core * xbt_dynar_get_as(speedPerPstate, 0/*pstate*/, double)),
     speedPerPstate, core)
 {
-  XBT_DEBUG("CPU create: peak=%f, pstate=%d", speed_.peak, pstate_);
-
-  coresAmount_ = core;
 }
 
 CpuCas01::~CpuCas01()
@@ -202,7 +198,6 @@ CpuAction *CpuCas01::sleep(double duration)
   XBT_IN("(%s,%g)", getName(), duration);
   CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, isOff(),
       speed_.scale * speed_.peak, getConstraint());
-
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
   action->m_maxDuration = duration;

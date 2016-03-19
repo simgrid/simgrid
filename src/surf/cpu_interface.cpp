@@ -10,10 +10,8 @@
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf,
-                                "Logging specific to the SURF cpu module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf, "Logging specific to the SURF cpu module");
 
-int autoload_surf_cpu_model = 1;
 void_f_void_t surf_cpu_model_init_preparse = NULL;
 
 simgrid::surf::CpuModel *surf_cpu_model_pm;
@@ -96,12 +94,12 @@ void CpuModel::updateActionsStateFull(double now, double delta)
 
   for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
      ; it != itend ; it=itNext) {
-  ++itNext;
+    ++itNext;
     action = static_cast<CpuAction*>(&*it);
     if (TRACE_is_enabled()) {
-      Cpu *x = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
+      Cpu *cpu = static_cast<Cpu*> (lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)) );
 
-      TRACE_surf_host_set_utilization(x->getName(),
+      TRACE_surf_host_set_utilization(cpu->getName(),
                                       action->getCategory(),
                                       lmm_variable_getvalue(action->getVariable()),
                                       now - delta,
@@ -126,15 +124,12 @@ void CpuModel::updateActionsStateFull(double now, double delta)
       action->setState(SURF_ACTION_DONE);
     }
   }
-
-  return;
 }
 
 /************
  * Resource *
  ************/
-Cpu::Cpu(Model *model, simgrid::s4u::Host *host,
-    xbt_dynar_t speedPerPstate, int core)
+Cpu::Cpu(Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
  : Cpu(model, host, NULL/*constraint*/, speedPerPstate, core)
 {
 }
@@ -160,16 +155,13 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
     xbt_dynar_push(speedPerPstate_, &value);
   }
 
-  /* Currently, we assume that a VM does not have a multicore CPU. */
-  if (core > 1)
-    xbt_assert(model == surf_cpu_model_pm);
+  xbt_assert(model == surf_cpu_model_pm || core==1, "Currently, VM cannot be multicore");
 
   if (model->getUpdateMechanism() != UM_UNDEFINED) {
-  p_constraintCore = xbt_new(lmm_constraint_t, core);
-  p_constraintCoreId = xbt_new(void*, core);
+    p_constraintCore = xbt_new(lmm_constraint_t, core);
+    p_constraintCoreId = xbt_new(void*, core);
 
-    int i;
-    for (i = 0; i < core; i++) {
+    for (int i = 0; i < core; i++) {
       /* just for a unique id, never used as a string. */
       p_constraintCoreId[i] = bprintf("%s:%i", host->name().c_str(), i);
       p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], speed_.scale * speed_.peak);
@@ -180,15 +172,12 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
 Cpu::~Cpu()
 {
   if (p_constraintCoreId){
-    for (int i = 0; i < coresAmount_; i++) {
-    xbt_free(p_constraintCoreId[i]);
-    }
+    for (int i = 0; i < coresAmount_; i++)
+      xbt_free(p_constraintCoreId[i]);
     xbt_free(p_constraintCore);
   }
-  if (p_constraintCoreId)
-    xbt_free(p_constraintCoreId);
-  if (speedPerPstate_)
-    xbt_dynar_free(&speedPerPstate_);
+  xbt_free(p_constraintCoreId);
+  xbt_dynar_free(&speedPerPstate_);
 }
 
 double Cpu::getCurrentPowerPeak()
@@ -239,8 +228,7 @@ double Cpu::getAvailableSpeed()
 }
 
 void Cpu::onSpeedChange() {
-  TRACE_surf_host_set_speed(surf_get_clock(), getName(),
-      coresAmount_ * speed_.scale * speed_.peak);
+  TRACE_surf_host_set_speed(surf_get_clock(), getName(), coresAmount_ * speed_.scale * speed_.peak);
 }
 
 
@@ -269,16 +257,10 @@ void Cpu::setSpeedTrace(tmgr_trace_t trace)
 
 void CpuAction::updateRemainingLazy(double now)
 {
-  double delta = 0.0;
+  xbt_assert(getStateSet() == getModel()->getRunningActionSet(), "You're updating an action that is not running.");
+  xbt_assert(getPriority() > 0, "You're updating an action that seems suspended.");
 
-  xbt_assert(getStateSet() == getModel()->getRunningActionSet(),
-      "You're updating an action that is not running.");
-
-  /* bogus priority, skip it */
-  xbt_assert(getPriority() > 0,
-      "You're updating an action that seems suspended.");
-
-  delta = now - m_lastUpdate;
+  double delta = now - m_lastUpdate;
 
   if (m_remains > 0) {
     XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
@@ -330,11 +312,7 @@ void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
         nbits += 1;
     }
 
-    if (nbits > 1) {
-      XBT_CRITICAL("Do not specify multiple cores for an affinity mask.");
-      XBT_CRITICAL("See the comment in cpu_action_set_affinity().");
-      DIE_IMPOSSIBLE;
-    }
+    xbt_assert(nbits <= 1, "Affinity mask cannot span over multiple cores.");
   }
 
   for (int i = 0; i < cpu->coresAmount_; i++) {
