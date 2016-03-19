@@ -134,13 +134,13 @@ void CpuModel::updateActionsStateFull(double now, double delta)
  * Resource *
  ************/
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host,
-    xbt_dynar_t speedPeakList, int core, double speedPeak)
- : Cpu(model, host, NULL/*constraint*/, speedPeakList, core, speedPeak)
+    xbt_dynar_t speedPerPstate, int core, double speedPeak)
+ : Cpu(model, host, NULL/*constraint*/, speedPerPstate, core, speedPeak)
 {
 }
 
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
-    xbt_dynar_t speedPeakList, int core, double speedPeak)
+    xbt_dynar_t speedPerPstate, int core, double speedPeak)
  : Resource(model, host->name().c_str(), constraint)
  , coresAmount_(core)
  , host_(host)
@@ -151,11 +151,11 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
   xbt_assert(speed_.scale > 0, "Available speed has to be >0");
 
   // Copy the power peak array:
-  speedPeakList_ = xbt_dynar_new(sizeof(double), nullptr);
-  unsigned long n = xbt_dynar_length(speedPeakList);
+  speedPerPstate_ = xbt_dynar_new(sizeof(double), nullptr);
+  unsigned long n = xbt_dynar_length(speedPerPstate);
   for (unsigned long i = 0; i != n; ++i) {
-    double value = xbt_dynar_get_as(speedPeakList, i, double);
-    xbt_dynar_push(speedPeakList_, &value);
+    double value = xbt_dynar_get_as(speedPerPstate, i, double);
+    xbt_dynar_push(speedPerPstate_, &value);
   }
 
   /* Currently, we assume that a VM does not have a multicore CPU. */
@@ -185,8 +185,8 @@ Cpu::~Cpu()
   }
   if (p_constraintCoreId)
     xbt_free(p_constraintCoreId);
-  if (speedPeakList_)
-    xbt_dynar_free(&speedPeakList_);
+  if (speedPerPstate_)
+    xbt_dynar_free(&speedPerPstate_);
 }
 
 double Cpu::getCurrentPowerPeak()
@@ -196,12 +196,12 @@ double Cpu::getCurrentPowerPeak()
 
 int Cpu::getNbPStates()
 {
-  return xbt_dynar_length(speedPeakList_);
+  return xbt_dynar_length(speedPerPstate_);
 }
 
 void Cpu::setPState(int pstate_index)
 {
-  xbt_dynar_t plist = speedPeakList_;
+  xbt_dynar_t plist = speedPerPstate_;
   xbt_assert(pstate_index <= (int)xbt_dynar_length(plist),
       "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index, (int)xbt_dynar_length(plist));
 
@@ -219,7 +219,7 @@ int Cpu::getPState()
 
 double Cpu::getPowerPeakAt(int pstate_index)
 {
-  xbt_dynar_t plist = speedPeakList_;
+  xbt_dynar_t plist = speedPerPstate_;
   xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
 
   return xbt_dynar_get_as(plist, pstate_index, double);

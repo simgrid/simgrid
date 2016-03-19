@@ -82,12 +82,12 @@ CpuCas01Model::~CpuCas01Model()
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
-Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedList, int core)
+Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
 {
-  xbt_assert(xbt_dynar_getfirst_as(speedList, double) > 0.0,
+  xbt_assert(xbt_dynar_getfirst_as(speedPerPstate, double) > 0.0,
       "Speed has to be >0.0. Did you forget to specify the mandatory power attribute?");
   xbt_assert(core > 0, "Invalid number of cores %d. Must be larger than 0", core);
-  return new CpuCas01(this, host, speedList, core);
+  return new CpuCas01(this, host, speedPerPstate, core);
 }
 
 double CpuCas01Model::next_occuring_event_full(double /*now*/)
@@ -98,10 +98,10 @@ double CpuCas01Model::next_occuring_event_full(double /*now*/)
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedList, int core)
+CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
 : Cpu(model, host,
-    lmm_constraint_new(model->getMaxminSystem(), this, core * xbt_dynar_get_as(speedList, 0/*pstate*/, double)),
-    speedList, core, xbt_dynar_get_as(speedList, 0/*pstate*/, double))
+    lmm_constraint_new(model->getMaxminSystem(), this, core * xbt_dynar_get_as(speedPerPstate, 0/*pstate*/, double)),
+    speedPerPstate, core, xbt_dynar_get_as(speedPerPstate, 0/*pstate*/, double))
 {
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", speed_.peak, pstate_);
 
@@ -111,11 +111,11 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t s
 CpuCas01::~CpuCas01()
 {
   if (getModel() == surf_cpu_model_pm)
-    xbt_dynar_free(&speedPeakList_);
+    xbt_dynar_free(&speedPerPstate_);
 }
 
 xbt_dynar_t CpuCas01::getSpeedPeakList(){
-  return speedPeakList_;
+  return speedPerPstate_;
 }
 
 bool CpuCas01::isUsed()

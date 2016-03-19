@@ -271,9 +271,9 @@ Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst, double size, do
   return p_hostModel->executeParallelTask(2, host_list, flops_amount, bytes_amount, rate);
 }
 
-Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedsList, int core)
+Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPerPstate, int core)
 {
-  return new CpuL07(this, host, speedsList, core);
+  return new CpuL07(this, host, speedPerPstate, core);
 }
 
 Link* NetworkL07Model::createLink(const char *name, double bandwidth, double latency,
@@ -286,10 +286,10 @@ Link* NetworkL07Model::createLink(const char *name, double bandwidth, double lat
  * Resource *
  ************/
 
-CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedList, int core)
- : Cpu(model, host, speedList, core, xbt_dynar_get_as(speedList,0,double))
+CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
+ : Cpu(model, host, speedPerPstate, core, xbt_dynar_get_as(speedPerPstate,0,double))
 {
-  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedList,0,double));
+  p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPerPstate,0,double));
 }
 
 CpuL07::~CpuL07()

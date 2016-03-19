@@ -43,10 +43,10 @@ public:
    * @brief Create a Cpu
    *
    * @param host The host that will have this CPU
-   * @param speedList The peak speed (max speed in Flops when no external load comes from a trace) for each pstate
+   * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedList, int core)=0;
+  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)=0;
 
   void updateActionsStateLazy(double now, double delta);
   void updateActionsStateFull(double now, double delta);
@@ -81,12 +81,12 @@ public:
    *
    * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
-   * @param speedPeakList [TODO]
+   * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    * @param speedPeak The speed peak of this Cpu in flops (max speed)
    */
   Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
-      xbt_dynar_t speedPeakList, int core, double speedPeak);
+      xbt_dynar_t speedPerPstate, int core, double speedPeak);
 
   ~Cpu();
 
@@ -135,7 +135,7 @@ public:
   int coresAmount_ = 1;
   simgrid::s4u::Host* host_;
 
-  xbt_dynar_t speedPeakList_ = NULL; /*< List of supported CPU capacities (pstate related) */
+  xbt_dynar_t speedPerPstate_ = NULL; /*< List of supported CPU capacities (pstate related) */
   int pstate_ = 0;                   /*< Current pstate (index in the speedPeakList)*/
 
   /* Note (hypervisor): */

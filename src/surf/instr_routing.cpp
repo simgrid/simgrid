@@ -269,7 +269,7 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
     }
 
     double current_speed_state;
-    xbt_dynar_get_cpy(host->speed_peak, host->pstate, &current_speed_state);
+    xbt_dynar_get_cpy(host->speed_per_pstate, host->pstate, &current_speed_state);
     new_pajeSetVariable (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){

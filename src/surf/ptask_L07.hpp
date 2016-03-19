@@ -54,7 +54,7 @@ public:
   CpuL07Model(HostL07Model *hmodel,lmm_system_t sys);
   ~CpuL07Model();
 
-  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedsList, int core) override;
+  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPerPstate, int core) override;
   HostL07Model *p_hostModel;
 };
 

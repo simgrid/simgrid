@@ -114,7 +114,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
 
 
   simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h,
-      host->speed_peak,
+      host->speed_per_pstate,
       host->core_amount);
   if (host->state_trace)
     cpu->setStateTrace(host->state_trace);
@@ -289,15 +289,15 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         XBT_DEBUG("\tstate_file=\"\"");
       }
 
-      host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
-      xbt_dynar_push(host.speed_peak,&cluster->speed);
+      host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(host.speed_per_pstate,&cluster->speed);
       host.pstate = 0;
 
       //host.power_peak = cluster->power;
       host.core_amount = cluster->core_amount;
       host.coord = "";
       sg_platf_new_host(&host);
-      xbt_dynar_free(&host.speed_peak);
+      xbt_dynar_free(&host.speed_per_pstate);
       XBT_DEBUG("</host>");
 
       XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,
@@ -474,10 +474,10 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
       link_id                      = bprintf("link_%s%d%s",cabinet->prefix,i,cabinet->suffix);
       host.id                      = host_id;
       link.id                      = link_id;
-      host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
-      xbt_dynar_push(host.speed_peak,&cabinet->speed);
+      host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
+      xbt_dynar_push(host.speed_per_pstate,&cabinet->speed);
       sg_platf_new_host(&host);
-      xbt_dynar_free(&host.speed_peak);
+      xbt_dynar_free(&host.speed_per_pstate);
       sg_platf_new_link(&link);
 
       char* link_up       = bprintf("%s_UP",link_id);
@@ -724,15 +724,15 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   memset(&host, 0, sizeof(host));
   host.id = host_id;
 
-  host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
-  xbt_dynar_push(host.speed_peak,&peer->speed);
+  host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
+  xbt_dynar_push(host.speed_per_pstate,&peer->speed);
   host.pstate = 0;
   //host.power_peak = peer->power;
   host.speed_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
   sg_platf_new_host(&host);
-  xbt_dynar_free(&host.speed_peak);
+  xbt_dynar_free(&host.speed_per_pstate);
 
   s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   memset(&link, 0, sizeof(link));

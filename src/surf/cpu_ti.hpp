@@ -110,7 +110,7 @@ typedef boost::intrusive::list<CpuTiAction, ActionTiListOptions > ActionTiList;
  ************/
 class CpuTi : public Cpu {
 public:
-  CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak, int core);
+  CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core);
   ~CpuTi();
 
   void setSpeedTrace(tmgr_trace_t trace) override;
