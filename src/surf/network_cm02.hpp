@@ -59,7 +59,7 @@ namespace simgrid {
     public:
       NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
           lmm_system_t system,
-          double constraint_value, double bw_peak, double lat_initial,
+          double constraint_value, double bandwidth, double latency,
           e_surf_link_sharing_policy_t policy);
 
       void apply_event(tmgr_trace_iterator_t event, double value) override;

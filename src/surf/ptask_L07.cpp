@@ -258,8 +258,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
   xbt_free(host_list);
 }
 
-Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst,
-                                       double size, double rate)
+Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst, double size, double rate)
 {
   sg_host_t*host_list = xbt_new0(sg_host_t, 2);
   double *flops_amount = xbt_new0(double, 2);
@@ -280,11 +279,7 @@ Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedsList, i
 Link* NetworkL07Model::createLink(const char *name, double bandwidth, double latency,
     e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
 {
-  xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
-
-  Link* link = new LinkL07(this, name, properties, bandwidth, latency, policy);
-  Link::onCreation(link);
-  return link;
+  return new LinkL07(this, name, properties, bandwidth, latency, policy);
 }
 
 /************
@@ -310,6 +305,8 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props, dou
 
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(getConstraint());
+
+  Link::onCreation(this);
 }
 
 Action *CpuL07::execution_start(double size)

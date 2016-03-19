@@ -185,6 +185,9 @@ namespace simgrid {
     : Resource(model, name, constraint),
       PropertyHolder(props)
     {
+      if (strcmp(name,"__loopback__"))
+        xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
+
       m_latency.scale = 1;
       m_bandwidth.scale = 1;
 

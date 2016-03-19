@@ -260,13 +260,10 @@ NetworkNS3Model::~NetworkNS3Model() {
 Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
     xbt_dict_t properties){
 
-  Link* link = new LinkNS3(this, name, properties, bandwidth, latency);
-  Link::onCreation(link);
-  return link;
+  return new LinkNS3(this, name, properties, bandwidth, latency);
 }
 
-Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst,
-                                   double size, double rate)
+Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst, double size, double rate)
 {
   XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());
   NetworkNS3Action *action = new NetworkNS3Action(this, size, 0);
@@ -369,6 +366,8 @@ LinkNS3::LinkNS3(NetworkNS3Model *model, const char *name, xbt_dict_t props, dou
 {
   m_bandwidth.peak = bandwidth;
   m_latency.peak = latency;
+
+  Link::onCreation(this);
 }
 
 LinkNS3::~LinkNS3()

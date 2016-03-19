@@ -173,11 +173,7 @@ NetworkCm02Model::NetworkCm02Model()
 
 Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
 {
-  xbt_assert(NULL == Link::byName(name), "Link '%s' declared several times in the platform", name);
-
-  Link* link = new NetworkCm02Link(this, name, properties, maxminSystem_, sg_bandwidth_factor * bandwidth, bandwidth, latency, policy);
-  Link::onCreation(link);
-  return link;
+  return new NetworkCm02Link(this, name, properties, maxminSystem_, sg_bandwidth_factor * bandwidth, bandwidth, latency, policy);
 }
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
@@ -400,18 +396,20 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
     lmm_system_t system,
     double constraint_value,
-    double bw_peak,  double lat_initial,
+    double bandwidth,  double latency,
     e_surf_link_sharing_policy_t policy)
 : Link(model, name, props, lmm_constraint_new(system, this, constraint_value))
 {
   m_bandwidth.scale = 1.0;
-  m_bandwidth.peak = bw_peak;
+  m_bandwidth.peak = bandwidth;
 
   m_latency.scale = 1.0;
-  m_latency.peak = lat_initial;
+  m_latency.peak = latency;
 
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(getConstraint());
+
+  Link::onCreation(this);
 }
 
 
