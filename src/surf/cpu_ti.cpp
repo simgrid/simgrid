@@ -462,7 +462,7 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
  * Resource *
  ************/
 CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
-  : Cpu(model, host, NULL, core, 0)
+  : Cpu(model, host, speedPerPstate, core)
 {
   xbt_assert(core==1,"Multi-core not handled by this model yet");
   coresAmount_ = core;

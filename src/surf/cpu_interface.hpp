@@ -69,12 +69,10 @@ public:
    * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-   * @param speedList [TODO]
+   * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
-   * @param speedPeak The speed peak of this Cpu in flops (max speed)
    */
-  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
-    lmm_constraint_t constraint, xbt_dynar_t speedPeakList, int core, double speedPeak);
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint, xbt_dynar_t speedPerPstate, int core);
 
   /**
    * @brief Cpu constructor
@@ -83,10 +81,8 @@ public:
    * @param host The host in which this Cpu should be plugged
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
-   * @param speedPeak The speed peak of this Cpu in flops (max speed)
    */
-  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
-      xbt_dynar_t speedPerPstate, int core, double speedPeak);
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core);
 
   ~Cpu();
 

@@ -287,7 +287,7 @@ Link* NetworkL07Model::createLink(const char *name, double bandwidth, double lat
  ************/
 
 CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
- : Cpu(model, host, speedPerPstate, core, xbt_dynar_get_as(speedPerPstate,0,double))
+ : Cpu(model, host, speedPerPstate, core)
 {
   p_constraint = lmm_constraint_new(model->getMaxminSystem(), this, xbt_dynar_get_as(speedPerPstate,0,double));
 }

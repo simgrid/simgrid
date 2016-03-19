@@ -101,7 +101,7 @@ double CpuCas01Model::next_occuring_event_full(double /*now*/)
 CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
 : Cpu(model, host,
     lmm_constraint_new(model->getMaxminSystem(), this, core * xbt_dynar_get_as(speedPerPstate, 0/*pstate*/, double)),
-    speedPerPstate, core, xbt_dynar_get_as(speedPerPstate, 0/*pstate*/, double))
+    speedPerPstate, core)
 {
   XBT_DEBUG("CPU create: peak=%f, pstate=%d", speed_.peak, pstate_);
 
