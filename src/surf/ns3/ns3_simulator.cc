@@ -26,8 +26,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
 NS3Sim::NS3Sim(){
 }
-NS3Sim::~NS3Sim(){
-}
 
 static inline void transformSocketPtr (Ptr<Socket> localSocket)
 {
@@ -54,21 +52,14 @@ static void delete_mysocket(void *p)
  * 		addr:  ip address
  * 		totalBytes: number of bytes to transmit
  */
-void NS3Sim::create_flow_NS3(
-		Ptr<Node> src,
-		Ptr<Node> dst,
-		uint16_t port_number,
-		double start,
-		const char *addr,
-		uint32_t totalBytes,
+void NS3Sim::create_flow_NS3(Ptr<Node> src, Ptr<Node> dst, uint16_t port_number,
+		double startTime, const char *ipAddr, uint32_t totalBytes,
 		simgrid::surf::NetworkNS3Action * action)
 {
 	if(!dict_socket)
 	  dict_socket = xbt_dict_new_homogeneous(delete_mysocket);
 
-	PacketSinkHelper sink ("ns3::TcpSocketFactory",
-							InetSocketAddress (Ipv4Address::GetAny(),
-							port_number));
+	PacketSinkHelper sink("ns3::TcpSocketFactory", InetSocketAddress (Ipv4Address::GetAny(), port_number));
 	sink.Install (dst);
 
 	Ptr<Socket> sock = Socket::CreateSocket (src, TcpSocketFactory::GetTypeId());
@@ -82,9 +73,11 @@ void NS3Sim::create_flow_NS3(
 	xbt_dict_set(dict_socket,socket_key, mysocket,NULL);
 
 	sock->Bind(InetSocketAddress(port_number));
-	XBT_DEBUG("Create flow starting to %fs + %fs = %fs",start-ns3::Simulator::Now().GetSeconds(), ns3::Simulator::Now().GetSeconds(), start);
+	XBT_DEBUG("Create flow starting to %fs + %fs = %fs",
+	    startTime-ns3::Simulator::Now().GetSeconds(), ns3::Simulator::Now().GetSeconds(), startTime);
 
-	Simulator::Schedule (Seconds(start-ns3::Simulator::Now().GetSeconds()),&StartFlow, sock, addr, port_number);
+	Simulator::Schedule (Seconds(startTime-ns3::Simulator::Now().GetSeconds()),
+	    &StartFlow, sock, ipAddr, port_number);
 }
 
 void NS3Sim::simulator_start(double min){

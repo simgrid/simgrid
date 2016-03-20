@@ -41,7 +41,6 @@ private:
 
 public:
   NS3Sim();
-  ~NS3Sim();
   void create_flow_NS3(ns3::Ptr<ns3::Node> src,
             ns3::Ptr<ns3::Node> dst,
             std::uint16_t port_number,

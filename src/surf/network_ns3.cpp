@@ -284,7 +284,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
-  ns3_finalize();
+  delete ns3_sim;
   xbt_dynar_free_container(&IPV4addr);
   xbt_dict_free(&dict_socket);
 }
@@ -501,14 +501,6 @@ int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalByte
   port_number++;
   if(port_number >= 65001 ) xbt_die("Too many connections! Port number is saturated.");
   return 0;
-}
-
-// clean up
-void ns3_finalize(){
-  if (!ns3_sim)
-    return;
-  delete ns3_sim;
-  ns3_sim = 0;
 }
 
 // initialize the NS3 interface and environment
