@@ -124,8 +124,8 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
     router_id = bprintf("ns3_%s%d%s", cluster->prefix, elmts, cluster->suffix);
     XBT_DEBUG("Create link from '%s' to '%s'",host_id,router_id);
 
-    ns3_nodes_t host_src = ns3_find_host(host_id);
-    ns3_nodes_t host_dst = ns3_find_host(router_id);
+    ns3_node_t host_src = ns3_find_host(host_id);
+    ns3_node_t host_dst = ns3_find_host(router_id);
 
     if(host_src && host_dst){}
     else xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
@@ -181,12 +181,12 @@ static void create_ns3_topology(void)
       XBT_DEBUG("\tLink (%s) bdw:%s lat:%s", link->getName(), link_bdw, link_lat);
 
       //create link ns3
-      ns3_nodes_t host_src = ns3_find_host(src);
+      ns3_node_t host_src = ns3_find_host(src);
       if (!host_src)
-        host_src = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(as_router_lib,src,NS3_ASR_LEVEL));
-      ns3_nodes_t host_dst = ns3_find_host(dst);
+        host_src = static_cast<ns3_node_t>(xbt_lib_get_or_null(as_router_lib,src,NS3_ASR_LEVEL));
+      ns3_node_t host_dst = ns3_find_host(dst);
       if(!host_dst)
-        host_dst = static_cast<ns3_nodes_t>(xbt_lib_get_or_null(as_router_lib,dst,NS3_ASR_LEVEL));
+        host_dst = static_cast<ns3_node_t>(xbt_lib_get_or_null(as_router_lib,dst,NS3_ASR_LEVEL));
 
       if (!host_src || !host_dst)
           xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
@@ -225,7 +225,7 @@ static void free_ns3_link(void * elmts)
 
 static void free_ns3_host(void * elmts)
 {
-  ns3_nodes_t host = static_cast<ns3_nodes_t>(elmts);
+  ns3_node_t host = static_cast<ns3_node_t>(elmts);
   free(host);
 }
 

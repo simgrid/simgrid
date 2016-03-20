@@ -24,11 +24,11 @@ typedef enum {
 } e_ns3_network_element_type_t;
 
 
-typedef struct ns3_nodes{
+typedef struct ns3_node {
   int node_num;
   e_ns3_network_element_type_t type;
   void * data;
-}s_ns3_nodes_t, *ns3_nodes_t;
+} s_ns3_node_t, *ns3_node_t;
 
 XBT_PUBLIC_DATA(int) NS3_EXTENSION_ID;
 
@@ -53,13 +53,13 @@ XBT_PUBLIC(void) ns3_end_platform(void);
 XBT_PUBLIC(void) ns3_add_cluster(char * bw,char * lat,const char *id);
 
 inline
-ns3_nodes_t ns3_find_host(const char* id)
+ns3_node_t ns3_find_host(const char* id)
 {
   sg_host_t host = sg_host_by_name(id);
   if (host == nullptr)
     return nullptr;
   else
-    return (ns3_nodes_t) host->extension(NS3_EXTENSION_ID);
+    return (ns3_node_t) host->extension(NS3_EXTENSION_ID);
 }
 
 SG_END_DECL()

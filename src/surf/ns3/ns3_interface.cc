@@ -54,8 +54,8 @@ char ns3_get_socket_is_finished(void *socket){
 
 int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,void * action)
 {
-	ns3_nodes_t node1 = ns3_find_host(a);
-	ns3_nodes_t node2 = ns3_find_host(b);
+	ns3_node_t node1 = ns3_find_host(a);
+	ns3_node_t node2 = ns3_find_host(b);
 
 	Ptr<Node> src_node = nodes.Get(node1->node_num);
 	Ptr<Node> dst_node = nodes.Get(node2->node_num);
@@ -122,7 +122,7 @@ int ns3_initialize(const char* TcpProtocol){
 
 void * ns3_add_host(const char * id)
 {
-	ns3_nodes_t host  = xbt_new0(s_ns3_nodes_t,1);
+	ns3_node_t host  = xbt_new0(s_ns3_node_t,1);
 	XBT_DEBUG("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
 	Ptr<Node> node =  CreateObject<Node> (0);
 	stack.Install(node);
@@ -136,7 +136,7 @@ void * ns3_add_host(const char * id)
 
 void * ns3_add_host_cluster(const char * id)
 {
-	ns3_nodes_t host  = xbt_new0(s_ns3_nodes_t,1);
+	ns3_node_t host  = xbt_new0(s_ns3_node_t,1);
 	XBT_DEBUG("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
 	Ptr<Node> node =  CreateObject<Node> (0);
 	stack.Install(node);
@@ -151,7 +151,7 @@ void * ns3_add_host_cluster(const char * id)
 
 void * ns3_add_router(const char * id)
 {
-	ns3_nodes_t router  = xbt_new0(s_ns3_nodes_t,1);
+	ns3_node_t router  = xbt_new0(s_ns3_node_t,1);
 	XBT_DEBUG("Interface ns3 add router[%d] '%s'",number_of_nodes,id);
 	Ptr<Node> node =  CreateObject<Node> (0);
 	stack.Install(node);
