@@ -11,6 +11,7 @@
 
 #include <cstdint>
 
+#include "ns3_interface.h"
 #include "ns3/core-module.h"
 #include "my-point-to-point-helper.h"
 
@@ -30,7 +31,7 @@ struct MySocket{
   std::uint32_t remaining;
   std::uint32_t totalBytes;
   char finished;
-  void* action;
+  simgrid::surf::NetworkNS3Action* action;
 };
 
 //Simulator s;
@@ -47,7 +48,7 @@ public:
             double start,
             const char *addr,
             std::uint32_t TotalBytes,
-            void * action);
+            simgrid::surf::NetworkNS3Action * action);
   void simulator_start(double min);
 };
 

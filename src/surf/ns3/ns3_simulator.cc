@@ -61,7 +61,7 @@ void NS3Sim::create_flow_NS3(
 		double start,
 		const char *addr,
 		uint32_t totalBytes,
-		void * action)
+		simgrid::surf::NetworkNS3Action * action)
 {
 	if(!dict_socket)
 	  dict_socket = xbt_dict_new_homogeneous(delete_mysocket);

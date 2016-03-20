@@ -16,6 +16,11 @@
 #include <simgrid/s4u/host.hpp>
 #include <surf/surf_routing.h>
 
+namespace simgrid{
+  namespace surf{
+    class NetworkNS3Action;
+  }
+}
 typedef enum {
   NS3_NETWORK_ELEMENT_NULL = 0,    /* NULL */
   NS3_NETWORK_ELEMENT_HOST,      /* host type */
@@ -27,7 +32,6 @@ typedef enum {
 typedef struct ns3_node {
   int node_num;
   e_ns3_network_element_type_t type;
-  void * data;
 } s_ns3_node_t, *ns3_node_t;
 
 XBT_PUBLIC_DATA(int) NS3_EXTENSION_ID;
@@ -36,9 +40,9 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC(int)    ns3_finalize(void);
 XBT_PUBLIC(int)    ns3_initialize(const char* TcpProtocol);
-XBT_PUBLIC(int)    ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,void * action);
+XBT_PUBLIC(int)    ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action);
 XBT_PUBLIC(void)   ns3_simulator(double min);
-XBT_PUBLIC(void*)  ns3_get_socket_action(void *socket);
+XBT_PUBLIC(simgrid::surf::NetworkNS3Action*)  ns3_get_socket_action(void *socket);
 XBT_PUBLIC(double) ns3_get_socket_remains(void *socket);
 XBT_PUBLIC(double) ns3_get_socket_sent(void *socket);
 XBT_PUBLIC(char)   ns3_get_socket_is_finished(void *socket);

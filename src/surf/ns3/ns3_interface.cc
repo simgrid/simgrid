@@ -36,7 +36,7 @@ void ns3_simulator(double min){
 			ns3_sim->simulator_start(min);
 }
 
-void* ns3_get_socket_action(void *socket){
+simgrid::surf::NetworkNS3Action* ns3_get_socket_action(void *socket){
   return ((MySocket *)socket)->action;
 }
 
@@ -52,7 +52,7 @@ char ns3_get_socket_is_finished(void *socket){
   return ((MySocket *)socket)->finished;
 }
 
-int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,void * action)
+int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)
 {
 	ns3_node_t node1 = ns3_find_host(a);
 	ns3_node_t node2 = ns3_find_host(b);
@@ -129,7 +129,6 @@ void * ns3_add_host(const char * id)
 	nodes.Add(node);
 	host->node_num = number_of_nodes;
 	host->type = NS3_NETWORK_ELEMENT_HOST;
-	host->data = GetPointer(node);
 	number_of_nodes++;
 	return host;
 }
@@ -144,7 +143,6 @@ void * ns3_add_host_cluster(const char * id)
 	nodes.Add(node);
 	host->node_num = number_of_nodes;
 	host->type = NS3_NETWORK_ELEMENT_HOST;
-	host->data = node;
 	number_of_nodes++;
 	return host;
 }
@@ -158,7 +156,6 @@ void * ns3_add_router(const char * id)
 	nodes.Add(node);
 	router->node_num = number_of_nodes;
 	router->type = NS3_NETWORK_ELEMENT_ROUTER;
-	router->data = node;
 	number_of_nodes++;
 	return router;
 }
