@@ -82,9 +82,9 @@ void SIMIX_post_synchro(smx_synchro_t synchro)
 {
   XBT_IN("(%p)",synchro);
   xbt_assert(synchro->type == SIMIX_SYNC_SYNCHRO);
-  if (synchro->synchro.sleep->getState() == SURF_ACTION_FAILED)
+  if (synchro->synchro.sleep->getState() == simgrid::surf::Action::State::failed)
     synchro->state = SIMIX_FAILED;
-  else if(synchro->synchro.sleep->getState() == SURF_ACTION_DONE)
+  else if(synchro->synchro.sleep->getState() == simgrid::surf::Action::State::done)
     synchro->state = SIMIX_SRC_TIMEOUT;
 
   SIMIX_synchro_finish(synchro);  

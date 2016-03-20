@@ -95,7 +95,7 @@ namespace simgrid {
     simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onDestruction;
     simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onStateChange;
 
-    simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)> networkActionStateChangedCallbacks;
+    simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)> networkActionStateChangedCallbacks;
     simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)> networkCommunicateCallbacks;
 
   }
@@ -265,8 +265,8 @@ namespace simgrid {
      * Action *
      **********/
 
-    void NetworkAction::setState(e_surf_action_state_t state){
-      e_surf_action_state_t old = getState();
+    void NetworkAction::setState(Action::State state){
+      Action::State old = getState();
       Action::setState(state);
       networkActionStateChangedCallbacks(this, old, state);
     }

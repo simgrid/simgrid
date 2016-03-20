@@ -143,11 +143,11 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
     if ((action->getRemains() <= 0) &&
         (lmm_get_variable_weight(action->getVariable()) > 0)) {
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
     } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
                (action->getMaxDuration() <= 0)) {
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
       lmm_constraint_t cnst = NULL;
@@ -159,7 +159,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
         if (static_cast<HostImpl*>(constraint_id)->isOff()) {
           XBT_DEBUG("Action (%p) Failed!!", action);
           action->finish();
-          action->setState(SURF_ACTION_FAILED);
+          action->setState(Action::State::failed);
           break;
         }
       }

@@ -48,9 +48,9 @@ XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::Storage*, int, int)>) s
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
- * @details Callback functions have the following signature: `void(StorageAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t)>) storageActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -268,7 +268,7 @@ public:
   StorageAction(Model *model, double cost, bool failed, lmm_variable_t var,
       Storage *storage, e_surf_action_storage_type_t type);
 
-  void setState(e_surf_action_state_t state);
+  void setState(simgrid::surf::Action::State state) override;
 
   e_surf_action_storage_type_t m_type;
   Storage *p_storage;

@@ -326,11 +326,11 @@ void SIMIX_post_io(smx_synchro_t synchro)
 
   switch (synchro->io.surf_io->getState()) {
 
-    case SURF_ACTION_FAILED:
+    case simgrid::surf::Action::State::failed:
       synchro->state = SIMIX_FAILED;
       break;
 
-    case SURF_ACTION_DONE:
+    case simgrid::surf::Action::State::done:
       synchro->state = SIMIX_DONE;
       break;
 

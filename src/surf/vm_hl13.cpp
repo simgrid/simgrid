@@ -193,9 +193,9 @@ void VMHL13::migrate(sg_host_t host_dest)
      /* create a cpu action bound to the pm model at the destination. */
      CpuAction *new_cpu_action = static_cast<CpuAction*>(host_dest->pimpl_cpu->execution_start(0));
 
-     e_surf_action_state_t state = p_action->getState();
-     if (state != SURF_ACTION_DONE)
-       XBT_CRITICAL("FIXME: may need a proper handling, %d", state);
+     Action::State state = p_action->getState();
+     if (state != Action::State::done)
+       XBT_CRITICAL("FIXME: may need a proper handling, %d", static_cast<int>(state));
      if (p_action->getRemainsNoUpdate() > 0)
        XBT_CRITICAL("FIXME: need copy the state(?), %f", p_action->getRemainsNoUpdate());
 

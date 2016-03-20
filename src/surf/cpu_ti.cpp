@@ -449,7 +449,7 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
     action->finish();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
-    action->setState(SURF_ACTION_DONE);
+    action->setState(Action::State::done);
     /* update remaining amount of all actions */
     action->cpu_->updateRemainingAmount(surf_get_clock());
   }
@@ -533,11 +533,11 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
           ; it != itend ; ++it) {
 
         CpuTiAction *action = &*it;
-        if (action->getState() == SURF_ACTION_RUNNING
-         || action->getState() == SURF_ACTION_READY
-         || action->getState() == SURF_ACTION_NOT_IN_THE_SYSTEM) {
+        if (action->getState() == Action::State::running
+         || action->getState() == Action::State::ready
+         || action->getState() == Action::State::not_in_the_system) {
           action->setFinishTime(date);
-          action->setState(SURF_ACTION_FAILED);
+          action->setState(Action::State::failed);
           if (action->indexHeap_ >= 0) {
             CpuTiAction *heap_act = (CpuTiAction*)
                 xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_);
@@ -748,7 +748,7 @@ void CpuTiAction::updateIndexHeap(int i)
   indexHeap_ = i;
 }
 
-void CpuTiAction::setState(e_surf_action_state_t state)
+void CpuTiAction::setState(Action::State state)
 {
   CpuAction::setState(state);
   cpu_->modified(true);
@@ -774,7 +774,7 @@ int CpuTiAction::unref()
 
 void CpuTiAction::cancel()
 {
-  this->setState(SURF_ACTION_FAILED);
+  this->setState(Action::State::failed);
   xbt_heap_remove(getModel()->getActionHeap(), this->indexHeap_);
   cpu_->modified(true);
   return;

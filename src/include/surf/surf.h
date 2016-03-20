@@ -140,24 +140,7 @@ typedef struct surf_model_description {
 XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table, const char *name);
 XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * table);
 
-/** @ingroup SURF_interface
- *  @brief Action states
- *
- *  @see Action
- */
-typedef enum {
-  SURF_ACTION_READY = 0,        /**< Ready        */
-  SURF_ACTION_RUNNING,          /**< Running      */
-  SURF_ACTION_FAILED,           /**< Task Failure */
-  SURF_ACTION_DONE,             /**< Completed    */
-  SURF_ACTION_TO_FREE,          /**< Action to free in next cleanup */
-  SURF_ACTION_NOT_IN_THE_SYSTEM /**< Not in the system anymore. Why did you ask ? */
-} e_surf_action_state_t;
-
-/** @ingroup SURF_vm_interface
- *
- *
- */
+/** @ingroup SURF_vm_interface */
 /* FIXME: Where should the VM state be defined? */
 typedef enum {
   SURF_VM_STATE_CREATED, /**< created, but not yet started */

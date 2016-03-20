@@ -33,10 +33,10 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
 
 static void IB_action_state_changed_callback(
     simgrid::surf::NetworkAction *action,
-    e_surf_action_state_t statein, e_surf_action_state_t stateout)
+    simgrid::surf::Action::State statein, simgrid::surf::Action::State stateout)
 {
   using namespace simgrid::surf;
-  if(statein!=SURF_ACTION_RUNNING|| stateout!=SURF_ACTION_DONE)
+  if(statein!=simgrid::surf::Action::State::running || stateout!=simgrid::surf::Action::State::done)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
   XBT_DEBUG("IB callback - action %p finished", action);

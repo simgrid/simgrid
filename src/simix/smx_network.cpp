@@ -707,7 +707,7 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
     synchro->state = SIMIX_RUNNING;
 
     /* If a link is failed, detect it immediately */
-    if (synchro->comm.surf_comm->getState() == SURF_ACTION_FAILED) {
+    if (synchro->comm.surf_comm->getState() == simgrid::surf::Action::State::failed) {
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
                 sg_host_get_name(sender), sg_host_get_name(receiver));
       synchro->state = SIMIX_LINK_FAILURE;
@@ -875,19 +875,19 @@ void SIMIX_post_comm(smx_synchro_t synchro)
 {
   /* Update synchro state */
   if (synchro->comm.src_timeout &&
-      synchro->comm.src_timeout->getState() == SURF_ACTION_DONE)
+      synchro->comm.src_timeout->getState() == simgrid::surf::Action::State::done)
     synchro->state = SIMIX_SRC_TIMEOUT;
   else if (synchro->comm.dst_timeout &&
-    synchro->comm.dst_timeout->getState() == SURF_ACTION_DONE)
+    synchro->comm.dst_timeout->getState() == simgrid::surf::Action::State::done)
     synchro->state = SIMIX_DST_TIMEOUT;
   else if (synchro->comm.src_timeout &&
-    synchro->comm.src_timeout->getState() == SURF_ACTION_FAILED)
+    synchro->comm.src_timeout->getState() == simgrid::surf::Action::State::failed)
     synchro->state = SIMIX_SRC_HOST_FAILURE;
   else if (synchro->comm.dst_timeout &&
-      synchro->comm.dst_timeout->getState() == SURF_ACTION_FAILED)
+      synchro->comm.dst_timeout->getState() == simgrid::surf::Action::State::failed)
     synchro->state = SIMIX_DST_HOST_FAILURE;
   else if (synchro->comm.surf_comm &&
-    synchro->comm.surf_comm->getState() == SURF_ACTION_FAILED) {
+    synchro->comm.surf_comm->getState() == simgrid::surf::Action::State::failed) {
     XBT_DEBUG("Puta madre. Surf says that the link broke");
     synchro->state = SIMIX_LINK_FAILURE;
   } else

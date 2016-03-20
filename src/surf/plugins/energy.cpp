@@ -205,7 +205,7 @@ static void onCreation(simgrid::s4u::Host& host) {
   host.extension_set(new HostEnergy(&host));
 }
 
-static void onActionStateChange(simgrid::surf::CpuAction *action, e_surf_action_state_t previous) {
+static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf::Action::State previous) {
   for(simgrid::surf::Cpu* cpu : action->cpus()) {
     const char *name = cpu->getName();
     sg_host_t sghost = sg_host_by_name(name);

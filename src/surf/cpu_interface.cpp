@@ -24,7 +24,7 @@ namespace surf {
  * Callbacks *
  *************/
 
-simgrid::xbt::signal<void(CpuAction*, e_surf_action_state_t, e_surf_action_state_t)> cpuActionStateChangedCallbacks;
+simgrid::xbt::signal<void(CpuAction*, Action::State, Action::State)> cpuActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -50,7 +50,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
-    action->setState(SURF_ACTION_DONE);
+    action->setState(Action::State::done);
     action->heapRemove(getActionHeap()); //FIXME: strange call since action was already popped
   }
   if (TRACE_is_enabled()) {
@@ -106,11 +106,11 @@ void CpuModel::updateActionsStateFull(double now, double delta)
     if ((action->getRemainsNoUpdate() <= 0) &&
         (lmm_get_variable_weight(action->getVariable()) > 0)) {
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
     } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
                (action->getMaxDuration() <= 0)) {
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
     }
   }
 }
@@ -330,10 +330,10 @@ void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
   XBT_OUT();
 }
 
-simgrid::xbt::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t)> CpuAction::onStateChange;
+simgrid::xbt::signal<void(simgrid::surf::CpuAction*, Action::State)> CpuAction::onStateChange;
 
-void CpuAction::setState(e_surf_action_state_t state){
-  e_surf_action_state_t previous = getState();
+void CpuAction::setState(Action::State state){
+  Action::State previous = getState();
   Action::setState(state);
   onStateChange(this, previous);
 }

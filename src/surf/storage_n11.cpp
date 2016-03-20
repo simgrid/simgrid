@@ -201,17 +201,17 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
         action->p_storage->m_usedSize == action->p_storage->m_size)
     {
       action->finish();
-      action->setState(SURF_ACTION_FAILED);
+      action->setState(Action::State::failed);
     } else if ((action->getRemainsNoUpdate() <= 0) &&
         (lmm_get_variable_weight(action->getVariable()) > 0))
     {
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
     } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
         (action->getMaxDuration() <= 0))
     {
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
     }
   }
   return;
@@ -309,7 +309,7 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
   m_usedSize -= (fd->size - fd->current_position);
   // If the storage is full before even starting to write
   if(m_usedSize==m_size) {
-    action->setState(SURF_ACTION_FAILED);
+    action->setState(Action::State::failed);
   }
   return action;
 }
@@ -365,7 +365,7 @@ int StorageN11Action::unref()
 
 void StorageN11Action::cancel()
 {
-  setState(SURF_ACTION_FAILED);
+  setState(Action::State::failed);
   return;
 }
 

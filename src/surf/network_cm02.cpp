@@ -215,7 +215,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       XBT_DEBUG("Action %p finished", action);
       action->setRemains(0);
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
       action->heapRemove(actionHeap_);
 
       action->gapRemove();
@@ -280,12 +280,12 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
     if ((action->getRemains() <= 0) &&
         (lmm_get_variable_weight(action->getVariable()) > 0)) {
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
       action->gapRemove();
     } else if (((action->getMaxDuration() != NO_MAX_DURATION)
         && (action->getMaxDuration() <= 0))) {
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
       action->gapRemove();
     }
   }
@@ -438,10 +438,10 @@ void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
         Action *action = static_cast<Action*>( lmm_variable_id(var) );
 
-        if (action->getState() == SURF_ACTION_RUNNING ||
-            action->getState() == SURF_ACTION_READY) {
+        if (action->getState() == Action::State::running ||
+            action->getState() == Action::State::ready) {
           action->setFinishTime(now);
-          action->setState(SURF_ACTION_FAILED);
+          action->setState(Action::State::failed);
         }
       }
     }
@@ -532,13 +532,13 @@ void NetworkCm02Action::updateRemainingLazy(double now)
   if (m_remains <= 0 &&
       (lmm_get_variable_weight(getVariable()) > 0)) {
     finish();
-    setState(SURF_ACTION_DONE);
+    setState(Action::State::done);
 
     heapRemove(getModel()->getActionHeap());
   } else if (((m_maxDuration != NO_MAX_DURATION)
       && (m_maxDuration <= 0))) {
     finish();
-    setState(SURF_ACTION_DONE);
+    setState(Action::State::done);
     heapRemove(getModel()->getActionHeap());
   }
 

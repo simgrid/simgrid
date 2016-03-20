@@ -97,6 +97,16 @@ public:
   typedef boost::intrusive::member_hook<
     Action, boost::intrusive::list_member_hook<>, &Action::action_hook> ActionOptions;
   typedef boost::intrusive::list<Action, ActionOptions> ActionList;
+
+  enum class State {
+    ready = 0,        /**< Ready        */
+    running,          /**< Running      */
+    failed,           /**< Task Failure */
+    done,             /**< Completed    */
+    to_free,          /**< Action to free in next cleanup */
+    not_in_the_system /**< Not in the system anymore. Why did you ask ? */
+  };
+
 private:
   /**
    * @brief Common initializations for the constructors
@@ -131,9 +141,9 @@ public:
   void finish();
 
   /** @brief Get the [state](\ref e_surf_action_state_t) of the current Action */
-  e_surf_action_state_t getState(); /**< get the state*/
+  Action::State getState(); /**< get the state*/
   /** @brief Set the [state](\ref e_surf_action_state_t) of the current Action */
-  virtual void setState(e_surf_action_state_t state);
+  virtual void setState(Action::State state);
 
   /** @brief Get the bound of the current Action */
   double getBound();

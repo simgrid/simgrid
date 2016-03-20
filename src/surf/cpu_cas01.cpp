@@ -164,11 +164,11 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
         Action *action = static_cast<Action*>(lmm_variable_id(var));
 
-        if (action->getState() == SURF_ACTION_RUNNING ||
-            action->getState() == SURF_ACTION_READY ||
-            action->getState() == SURF_ACTION_NOT_IN_THE_SYSTEM) {
+        if (action->getState() == Action::State::running ||
+            action->getState() == Action::State::ready ||
+            action->getState() == Action::State::not_in_the_system) {
           action->setFinishTime(date);
-          action->setState(SURF_ACTION_FAILED);
+          action->setState(Action::State::failed);
         }
       }
     }

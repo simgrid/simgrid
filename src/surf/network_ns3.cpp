@@ -323,7 +323,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     action->setRemains(action->getCost() - ns3_get_socket_sent(data));
 
     if (TRACE_is_enabled() &&
-        action->getState() == SURF_ACTION_RUNNING){
+        action->getState() == Action::State::running){
       double data_sent = ns3_get_socket_sent(data);
       double data_delta_sent = data_sent - action->m_lastSent;
 
@@ -341,7 +341,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
       xbt_dynar_push(socket_to_destroy,&key);
       XBT_DEBUG("Destroy socket %p of action %p", key, action);
       action->finish();
-      action->setState(SURF_ACTION_DONE);
+      action->setState(Action::State::done);
     }
   }
 

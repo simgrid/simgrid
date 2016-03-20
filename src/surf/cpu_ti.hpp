@@ -84,7 +84,7 @@ class CpuTiAction: public CpuAction {
 public:
   CpuTiAction(CpuTiModel *model, double cost, bool failed, CpuTi *cpu);
 
-  void setState(e_surf_action_state_t state) override;
+  void setState(simgrid::surf::Action::State state) override;
   int unref() override;
   void cancel() override;
   void updateIndexHeap(int i);

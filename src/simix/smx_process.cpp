@@ -926,13 +926,13 @@ void SIMIX_post_process_sleep(smx_synchro_t synchro)
   while ((simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls))) {
 
     switch (synchro->sleep.surf_sleep->getState()){
-      case SURF_ACTION_FAILED:
+      case simgrid::surf::Action::State::failed:
         simcall->issuer->context->iwannadie = 1;
         //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         state = SIMIX_SRC_HOST_FAILURE;
         break;
 
-      case SURF_ACTION_DONE:
+      case simgrid::surf::Action::State::done:
         state = SIMIX_DONE;
         break;
 

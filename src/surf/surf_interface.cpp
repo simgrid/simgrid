@@ -674,38 +674,41 @@ void Action::finish() {
     m_finish = surf_get_clock();
 }
 
-e_surf_action_state_t Action::getState()
+Action::State Action::getState()
 {
   if (p_stateSet ==  getModel()->getReadyActionSet())
-    return SURF_ACTION_READY;
+    return Action::State::ready;
   if (p_stateSet ==  getModel()->getRunningActionSet())
-    return SURF_ACTION_RUNNING;
+    return Action::State::running;
   if (p_stateSet ==  getModel()->getFailedActionSet())
-    return SURF_ACTION_FAILED;
+    return Action::State::failed;
   if (p_stateSet ==  getModel()->getDoneActionSet())
-    return SURF_ACTION_DONE;
-  return SURF_ACTION_NOT_IN_THE_SYSTEM;
+    return Action::State::done;
+  return Action::State::not_in_the_system;
 }
 
-void Action::setState(e_surf_action_state_t state)
+void Action::setState(Action::State state)
 {
-  //surf_action_state_t action_state = &(action->model_type->states);
-  XBT_IN("(%p,%s)", this, surf_action_state_names[state]);
   p_stateSet->erase(p_stateSet->iterator_to(*this));
-  if (state == SURF_ACTION_READY)
+  switch (state) {
+  case Action::State::ready:
     p_stateSet = getModel()->getReadyActionSet();
-  else if (state == SURF_ACTION_RUNNING)
+    break;
+  case Action::State::running:
     p_stateSet = getModel()->getRunningActionSet();
-  else if (state == SURF_ACTION_FAILED)
+    break;
+  case Action::State::failed:
     p_stateSet = getModel()->getFailedActionSet();
-  else if (state == SURF_ACTION_DONE)
+    break;
+  case Action::State::done:
     p_stateSet = getModel()->getDoneActionSet();
-  else
+    break;
+  default:
     p_stateSet = NULL;
-
+    break;
+  }
   if (p_stateSet)
     p_stateSet->push_back(*this);
-  XBT_OUT();
 }
 
 double Action::getBound()
@@ -774,7 +777,7 @@ void Action::setPriority(double priority)
 }
 
 void Action::cancel(){
-  setState(SURF_ACTION_FAILED);
+  setState(Action::State::failed);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {
     if (action_lmm_hook.is_linked())
       getModel()->getModifiedSet()->erase(getModel()->getModifiedSet()->iterator_to(*this));
@@ -922,12 +925,12 @@ void Action::updateRemainingLazy(double now)
     if ((m_remains <= 0) &&
         (lmm_get_variable_weight(getVariable()) > 0)) {
       finish();
-      setState(SURF_ACTION_DONE);
+      setState(Action::State::done);
       heapRemove(getModel()->getActionHeap());
     } else if (((m_maxDuration != NO_MAX_DURATION)
         && (m_maxDuration <= 0))) {
       finish();
-      setState(SURF_ACTION_DONE);
+      setState(Action::State::done);
       heapRemove(getModel()->getActionHeap());
     }
   }

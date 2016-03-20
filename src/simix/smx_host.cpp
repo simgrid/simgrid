@@ -483,7 +483,7 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
     /* If the host running the synchro failed, notice it so that the asking
      * process can be killed if it runs on that host itself */
     synchro->state = SIMIX_FAILED;
-  } else if (synchro->execution.surf_exec->getState() == SURF_ACTION_FAILED) {
+  } else if (synchro->execution.surf_exec->getState() == simgrid::surf::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was
      * canceled */
     synchro->state = SIMIX_CANCELED;

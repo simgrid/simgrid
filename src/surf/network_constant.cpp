@@ -69,11 +69,11 @@ namespace simgrid {
 
         if (action->getRemainsNoUpdate() <= 0) {
           action->finish();
-          action->setState(SURF_ACTION_DONE);
+          action->setState(Action::State::done);
         } else if ((action->getMaxDuration() != NO_MAX_DURATION)
             && (action->getMaxDuration() <= 0)) {
           action->finish();
-          action->setState(SURF_ACTION_DONE);
+          action->setState(Action::State::done);
         }
       }
     }

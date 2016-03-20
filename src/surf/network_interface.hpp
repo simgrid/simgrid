@@ -35,8 +35,8 @@ namespace simgrid {
 
 
     /** @brief Callback signal fired when the state of a NetworkAction changes
-     *  Signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)` */
-    XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)>) networkActionStateChangedCallbacks;
+     *  Signature: `void(NetworkAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)` */
+    XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) networkActionStateChangedCallbacks;
 
     /** @brief Callback signal fired when a NetworkAction is created (when a communication starts)
      *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)` */
@@ -274,7 +274,7 @@ namespace simgrid {
       NetworkAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
       : simgrid::surf::Action(model, cost, failed, var) {};
 
-      void setState(e_surf_action_state_t state);
+      void setState(simgrid::surf::Action::State state) override;
 
       double latency_;
       double latCurrent_;
