@@ -162,7 +162,7 @@ double surf_solve(double max_date)
 
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   if (model->getDoneActionSet()->empty())
-  return NULL;
+    return NULL;
   surf_action_t res = &model->getDoneActionSet()->front();
   model->getDoneActionSet()->pop_front();
   return res;
@@ -170,7 +170,7 @@ surf_action_t surf_model_extract_done_action_set(surf_model_t model){
 
 surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
   if (model->getFailedActionSet()->empty())
-  return NULL;
+    return NULL;
   surf_action_t res = &model->getFailedActionSet()->front();
   model->getFailedActionSet()->pop_front();
   return res;
@@ -188,17 +188,8 @@ surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host
   return model->communicate(src->pimpl_netcard, dst->pimpl_netcard, size, rate);
 }
 
-const char *surf_resource_name(surf_cpp_resource_t resource){
-  return resource->getName();
-}
-
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
   return host->pimpl_cpu->sleep(duration);
-}
-
-
-double surf_host_get_available_speed(sg_host_t host){
-  return host->pimpl_cpu->getAvailableSpeed();
 }
 
 surf_action_t surf_host_open(sg_host_t host, const char* fullpath){

@@ -199,19 +199,16 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
 
   arg->argv = xbt_new(char*,argc + 1);
 
-  int i;
-  for (i = 0; i < argc; i++) {
+  for (int i = 0; i < argc; i++)
     arg->argv[i] = xbt_strdup(argv[i]);
-  }
   arg->argv[argc] = NULL;
 
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
-  if( ! sg_host_is_on(host)
-      && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_get_name(host))){
+  if( host->isOff() && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_get_name(host))){
     xbt_dict_set(watched_hosts_lib,sg_host_get_name(host),host,NULL);
-    XBT_DEBUG("Have pushed host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_get_name(host));
+    XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_get_name(host));
   }
   xbt_dynar_push_as(sg_host_simix(host)->auto_restart_processes,smx_process_arg_t,arg);
 }

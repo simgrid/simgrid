@@ -223,17 +223,6 @@ XBT_PUBLIC(void) surf_vm_model_create(const char *name, sg_host_t host_PM);
  */
 XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate);
 
-/**
- * @brief Get the name of a surf resource (cpu, host, network, …)
- *
- * @param resource The surf resource
- * @return The name of the surf resource
- */
-XBT_PUBLIC(const char * ) surf_resource_name(surf_cpp_resource_t resource);
-
-/** @brief Get the available speed of cpu associated to a host */
-XBT_PUBLIC(double) surf_host_get_available_speed(sg_host_t host);
-
 /** @brief Create a sleep action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_sleep(sg_host_t host, double duration);
 

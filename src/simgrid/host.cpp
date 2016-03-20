@@ -120,28 +120,15 @@ xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
 
 // =========== user-level functions ===============
 // ================================================
-
-/** @brief Returns the total speed of a host
- */
+/** @brief Returns the total speed of a host */
 double sg_host_speed(sg_host_t host)
 {
   return host->speed();
 }
 
-double sg_host_get_available_speed(sg_host_t host){
-  return surf_host_get_available_speed(host);
-}
-/** @brief Returns the number of cores of a host
-*/
-int sg_host_core_count(sg_host_t host) {
-  return host->core_count();
-}
-
-/** @brief Returns the state of a host.
- *  @return 1 if the host is active or 0 if it has crashed.
- */
-int sg_host_is_on(sg_host_t host) {
-  return host->isOn();
+double sg_host_get_available_speed(sg_host_t host)
+{
+  return host->pimpl_cpu->getAvailableSpeed();
 }
 
 /** @brief Returns the number of power states for a host.
@@ -192,7 +179,7 @@ void sg_host_dump(sg_host_t host)
   char *key,*data;
 
   XBT_INFO("Displaying host %s", sg_host_get_name(host));
-  XBT_INFO("  - speed: %.0f", sg_host_speed(host));
+  XBT_INFO("  - speed: %.0f", host->speed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
   props = sg_host_get_properties(host);
 

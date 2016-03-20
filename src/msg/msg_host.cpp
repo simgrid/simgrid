@@ -228,8 +228,7 @@ void MSG_host_set_property_value(msg_host_t host, const char *name, char *value,
  */
 int MSG_host_is_on(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-  return sg_host_is_on(host);
+  return host->isOn();
 }
 
 /** @ingroup m_host_management
@@ -239,8 +238,7 @@ int MSG_host_is_on(msg_host_t host)
  */
 int MSG_host_is_off(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-  return !(sg_host_is_on(host));
+  return host->isOff();
 }
 
 /** \ingroup m_host_management
