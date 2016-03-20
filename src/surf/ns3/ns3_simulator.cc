@@ -76,9 +76,6 @@ void NS3Sim::create_flow_NS3(
 	MySocket *mysocket = new MySocket();
 	mysocket->totalBytes = totalBytes;
 	mysocket->remaining = totalBytes;
-	mysocket->bufferedBytes = 0;
-	mysocket->sentBytes = 0;
-	mysocket->finished = 0;
 	mysocket->action = action;
 
 	transformSocketPtr(sock);
@@ -105,8 +102,8 @@ static MySocket* get_my_socket(Ptr<Socket> localSocket) {
 static void receive_callback(Ptr<Socket> localSocket){
   MySocket* mysocket = get_my_socket(localSocket);
 
-  if (mysocket->finished == 0){
-    mysocket->finished = 1;
+  if (mysocket->finished == false){
+    mysocket->finished = true;
     XBT_DEBUG("recv_cb of F[%p, %p, %d]", mysocket, mysocket->action, mysocket->totalBytes);
     XBT_DEBUG("Stop simulator at %f seconds", Simulator::Now().GetSeconds());
     Simulator::Stop(Seconds(0.0));

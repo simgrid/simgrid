@@ -462,7 +462,7 @@ int NetworkNS3Action::unref()
 
 
 void ns3_simulator(double min){
-      ns3_sim->simulator_start(min);
+  ns3_sim->simulator_start(min);
 }
 
 simgrid::surf::NetworkNS3Action* ns3_get_socket_action(void *socket){
@@ -477,7 +477,7 @@ double ns3_get_socket_sent(void *socket){
   return ((MySocket *)socket)->sentBytes;
 }
 
-char ns3_get_socket_is_finished(void *socket){
+bool ns3_get_socket_is_finished(void *socket){
   return ((MySocket *)socket)->finished;
 }
 
@@ -492,9 +492,7 @@ int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalByte
   char* addr = (char*)xbt_dynar_get_as(IPV4addr,node2->node_num,char*);
 
   XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1->node_num, node2->node_num,addr);
-  ns3_sim->create_flow_NS3(src_node,
-      dst_node,
-      port_number,
+  ns3_sim->create_flow_NS3(src_node, dst_node, port_number,
       start,
       addr,
       TotalBytes,
@@ -506,11 +504,11 @@ int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalByte
 }
 
 // clean up
-int ns3_finalize(void){
-  if (!ns3_sim) return -1;
+void ns3_finalize(){
+  if (!ns3_sim)
+    return;
   delete ns3_sim;
   ns3_sim = 0;
-  return 0;
 }
 
 // initialize the NS3 interface and environment

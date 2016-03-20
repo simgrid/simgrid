@@ -26,11 +26,11 @@
 #include "ns3/tcp-socket-factory.h"
 
 struct MySocket{
-  std::uint32_t bufferedBytes;
-  std::uint32_t sentBytes;
+  std::uint32_t bufferedBytes = 0;
+  std::uint32_t sentBytes = 0;
   std::uint32_t remaining;
   std::uint32_t totalBytes;
-  char finished;
+  bool finished = false;
   simgrid::surf::NetworkNS3Action* action;
 };
 
