@@ -38,7 +38,6 @@ XBT_PUBLIC(int)    ns3_finalize(void);
 XBT_PUBLIC(int)    ns3_initialize(const char* TcpProtocol);
 XBT_PUBLIC(int)    ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,void * action);
 XBT_PUBLIC(void)   ns3_simulator(double min);
-XBT_PUBLIC(double) ns3_time(void);
 XBT_PUBLIC(void*)  ns3_get_socket_action(void *socket);
 XBT_PUBLIC(double) ns3_get_socket_remains(void *socket);
 XBT_PUBLIC(double) ns3_get_socket_sent(void *socket);

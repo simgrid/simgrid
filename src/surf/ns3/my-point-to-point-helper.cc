@@ -43,53 +43,6 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
-///> RED Parameters  see src/node/red-queue.* for details
-//.AddAttribute ("Mode",
-//                "Whether to use Bytes (see MaxBytes) or Packets (see MaxPackets) as the maximum queue size metric.",
-//                EnumValue (BYTES), ///> currently supports BYTES only
-//                MakeEnumAccessor (&RedQueue::SetMode),
-//                MakeEnumChecker (BYTES, "Bytes",
-//                                 PACKETS, "Packets"))
-// .AddAttribute ("MaxPackets",
-//                "The maximum number of packets accepted by this RedQueue.",
-//                UintegerValue (100),
-//                MakeUintegerAccessor (&RedQueue::m_maxPackets),
-//                MakeUintegerChecker<uint32_t> ())
-// .AddAttribute ("MaxBytes",
-//                "The maximum number of bytes accepted by this RedQueue.",
-//                UintegerValue (100000),
-//                MakeUintegerAccessor (&RedQueue::m_maxBytes),
-//                MakeUintegerChecker<uint32_t> ())
-// .AddAttribute ("m_burst",
-//                "maximum number of m_burst packets accepted by this queue",
-//                UintegerValue (6), ///> bursts must be > minTh/avpkt
-//                MakeUintegerAccessor (&RedQueue::m_burst),
-//                MakeUintegerChecker<uint32_t> ())
-// .AddAttribute ("m_avPkt",
-//                "In bytes, use with m_burst to determine the time constant for average queue size calculations",
-//                UintegerValue (1024), ///> average packet size
-//                MakeUintegerAccessor (&RedQueue::m_avPkt),
-//                MakeUintegerChecker<uint32_t> ())
-// .AddAttribute ("m_minTh",
-//                "Average queue size at which marking becomes a m_prob",
-//                UintegerValue (5120), ///> in bytes  1024x5
-//                MakeUintegerAccessor (&RedQueue::m_minTh),
-//                MakeUintegerChecker<uint32_t> ())
-// .AddAttribute ("m_maxTh",
-//                "Maximal marking m_prob, should be at least twice min to prevent synchronous retransmits",
-//                UintegerValue (15360), ///> in bytes 1024x15
-//                MakeUintegerAccessor (&RedQueue::m_maxTh),
-//                MakeUintegerChecker<uint32_t> ())
-// .AddAttribute ("m_rate",
-//                "this m_rate is used for calculating the average queue size after some idle time.",
-//                UintegerValue (1500000), ///> in bps, should be set to bandwidth of interface
-//                MakeUintegerAccessor (&RedQueue::m_rate),
-//                MakeUintegerChecker<uint64_t> ())
-// .AddAttribute ("m_prob",
-//                "Probability for marking, suggested values are 0.01 and 0.02",
-//                DoubleValue (0.02),
-//                MakeDoubleAccessor (&RedQueue::m_prob),
-//                MakeDoubleChecker <double> ())
 std::string qMode = "Bytes";
 std::string qBurst = "6";
 std::string qAvPkt = "1024";
@@ -105,14 +58,6 @@ MyPointToPointHelper::MyPointToPointHelper ()
 {
   m_queueFactory.SetTypeId ("ns3::DropTailQueue");
   m_queueFactory_red.SetTypeId ("ns3::RedQueue");
-//  m_queueFactory_red.Set ("Mode",    StringValue (qMode));
-//  m_queueFactory_red.Set ("MaxBytes",StringValue (qLimit));
-//  m_queueFactory_red.Set ("m_burst", StringValue (qBurst));
-//  m_queueFactory_red.Set ("m_avPkt", StringValue (qAvPkt));
-//  m_queueFactory_red.Set ("m_minTh", StringValue (qthMin));
-//  m_queueFactory_red.Set ("m_maxTh", StringValue (qthMax));
-//  m_queueFactory_red.Set ("m_rate",  StringValue (qIdleRate));
-//  m_queueFactory_red.Set ("m_prob",  StringValue (qProb));
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
   m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");
@@ -340,9 +285,7 @@ MyPointToPointHelper::Install (Ptr<Node> a, e_ns3_network_element_type_t type_a,
       uint32_t n2SystemId = b->GetSystemId ();
       uint32_t currSystemId = MpiInterface::GetSystemId ();
       if (n1SystemId != currSystemId || n2SystemId != currSystemId) 
-        {
           useNormalChannel = false;
-        }
     }
   if (useNormalChannel)
     {
@@ -393,9 +336,7 @@ MyPointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
       uint32_t n2SystemId = b->GetSystemId ();
       uint32_t currSystemId = MpiInterface::GetSystemId ();
       if (n1SystemId != currSystemId || n2SystemId != currSystemId)
-        {
           useNormalChannel = false;
-        }
     }
   if (useNormalChannel)
     {

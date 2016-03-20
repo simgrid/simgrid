@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "ns3/core-module.h"
+
 #include "src/surf/network_ns3.hpp"
 
 #include "src/surf/HostImpl.hpp"
@@ -288,11 +290,11 @@ double NetworkNS3Model::next_occuring_event(double now)
   else
     do {
       ns3_simulator(now);
-      time_to_next_flow_completion = ns3_time() - surf_get_clock();//FIXME: use now instead ?
+      time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();//FIXME: use now instead ?
     } while(double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
 
   XBT_DEBUG("min       : %f", now);
-  XBT_DEBUG("ns3  time : %f", ns3_time());
+  XBT_DEBUG("ns3  time : %f", ns3::Simulator::Now().GetSeconds());
   XBT_DEBUG("surf time : %f", surf_get_clock());
   XBT_DEBUG("Next completion %f :", time_to_next_flow_completion);
 
@@ -310,8 +312,8 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
   /* If there are no running flows, just return */
   if (!getRunningActionSet()->size()) {
-    while(double_positive(now-ns3_time(), sg_surf_precision)) {
-      ns3_simulator(now-ns3_time());
+    while(double_positive(now-ns3::Simulator::Now().GetSeconds(), sg_surf_precision)) {
+      ns3_simulator(now-ns3::Simulator::Now().GetSeconds());
     }
     return;
   }

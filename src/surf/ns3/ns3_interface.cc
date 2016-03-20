@@ -37,23 +37,19 @@ void ns3_simulator(double min){
 }
 
 void* ns3_get_socket_action(void *socket){
-		return ns3_sim->get_action_from_socket(socket);
+  return ((MySocket *)socket)->action;
 }
 
 double ns3_get_socket_remains(void *socket){
-		return ns3_sim->get_remains_from_socket(socket);
+  return ((MySocket *)socket)->remaining;
 }
 
 double ns3_get_socket_sent(void *socket){
-  return ns3_sim->get_sent_from_socket(socket);
+  return ((MySocket *)socket)->sentBytes;
 }
 
 char ns3_get_socket_is_finished(void *socket){
-		return ns3_sim->get_finished(socket);
-}
-
-double ns3_time(){
-	return Simulator::Now().GetSeconds();
+  return ((MySocket *)socket)->finished;
 }
 
 int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,void * action)

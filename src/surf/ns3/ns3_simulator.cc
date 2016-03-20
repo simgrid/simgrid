@@ -20,20 +20,17 @@ static char socket_key[24];
 static void receive_callback(Ptr<Socket> localSocket);
 static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace);
 static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent);
-static void StartFlow(Ptr<Socket> sock,
-    const char *to,
-    uint16_t port_number);
+static void StartFlow(Ptr<Socket> sock, const char *to, uint16_t port_number);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
 
-// Constructor.
 NS3Sim::NS3Sim(){
 }
-//Destructor.
 NS3Sim::~NS3Sim(){
 }
 
-static inline void transformSocketPtr (Ptr<Socket> localSocket){
+static inline void transformSocketPtr (Ptr<Socket> localSocket)
+{
   std::stringstream sstream;
   sstream << localSocket ;
   std::string s = sstream.str();
@@ -47,7 +44,7 @@ static void delete_mysocket(void *p)
 }
 
 /*
- * This function create a flow from src to dst
+ * This function creates a flow from src to dst
  *
  * Parameters
  * 		src: node source
@@ -66,15 +63,15 @@ void NS3Sim::create_flow_NS3(
 		uint32_t totalBytes,
 		void * action)
 {
-	if(!dict_socket) dict_socket = xbt_dict_new_homogeneous(delete_mysocket);
+	if(!dict_socket)
+	  dict_socket = xbt_dict_new_homogeneous(delete_mysocket);
 
 	PacketSinkHelper sink ("ns3::TcpSocketFactory",
 							InetSocketAddress (Ipv4Address::GetAny(),
 							port_number));
 	sink.Install (dst);
 
-	Ptr<Socket> sock = Socket::CreateSocket (src,
-							TcpSocketFactory::GetTypeId());
+	Ptr<Socket> sock = Socket::CreateSocket (src, TcpSocketFactory::GetTypeId());
 
 	MySocket *mysocket = new MySocket();
 	mysocket->totalBytes = totalBytes;
@@ -88,27 +85,9 @@ void NS3Sim::create_flow_NS3(
 	xbt_dict_set(dict_socket,socket_key, mysocket,NULL);
 
 	sock->Bind(InetSocketAddress(port_number));
-	XBT_DEBUG("Create flow starting to %fs + %fs = %fs",start-ns3_time(), ns3_time(), start);
+	XBT_DEBUG("Create flow starting to %fs + %fs = %fs",start-ns3::Simulator::Now().GetSeconds(), ns3::Simulator::Now().GetSeconds(), start);
 
-	Simulator::Schedule (Seconds(start-ns3_time()),&StartFlow, sock, addr, port_number);
-//	Simulator::Schedule (Seconds(0.0),&StartFlow, sock, addr, port_number);
-
-}
-
-void* NS3Sim::get_action_from_socket(void *socket){
-	return ((MySocket *)socket)->action;
-}
-
-char NS3Sim::get_finished(void *socket){
-	return ((MySocket *)socket)->finished;
-}
-
-double NS3Sim::get_remains_from_socket(void *socket){
-	return ((MySocket *)socket)->remaining;
-}
-
-double NS3Sim::get_sent_from_socket(void *socket){
-  return ((MySocket *)socket)->sentBytes;
+	Simulator::Schedule (Seconds(start-ns3::Simulator::Now().GetSeconds()),&StartFlow, sock, addr, port_number);
 }
 
 void NS3Sim::simulator_start(double min){
@@ -139,7 +118,7 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 	MySocket* mysocket = get_my_socket(localSocket);
 
 	if (mysocket->remaining == 0){
-		  //all data was already buffered (and socket was already closed), just return
+		  // all data was already buffered (and socket was already closed), just return
 		  return;
 	}
 
@@ -162,9 +141,8 @@ static void send_callback(Ptr<Socket> localSocket, uint32_t txSpace){
 
 	free(data);
 
-	if ((mysocket->bufferedBytes) >= mysocket->totalBytes){
+	if ((mysocket->bufferedBytes) >= mysocket->totalBytes)
 		localSocket->Close();
-	}
 }
 
 static void datasent_callback(Ptr<Socket> localSocket, uint32_t dataSent){
@@ -196,9 +174,7 @@ static void failedConnect_callback(Ptr<Socket> localSocket){
   xbt_die("NS3: a socket failed to connect");
 }
 
-static void StartFlow(Ptr<Socket> sock,
-    const char *to,
-    uint16_t port_number)
+static void StartFlow(Ptr<Socket> sock, const char *to, uint16_t port_number)
 {
   InetSocketAddress serverAddr (to, port_number);
 

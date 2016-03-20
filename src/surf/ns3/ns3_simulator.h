@@ -49,10 +49,6 @@ public:
             std::uint32_t TotalBytes,
             void * action);
   void simulator_start(double min);
-  void* get_action_from_socket(void *socket);
-  double get_remains_from_socket(void *socket);
-  double get_sent_from_socket(void *socket);
-  char get_finished(void *socket);
 };
 
 #endif                          /* __cplusplus */
