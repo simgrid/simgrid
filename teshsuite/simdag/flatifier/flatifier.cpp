@@ -54,10 +54,8 @@ static void create_environment(xbt_os_timer_t parse_time, const char *platformFi
 int main(int argc, char **argv)
 {
   char *platformFile = NULL;
-  unsigned int totalHosts, totalLinks;
   int timings=0;
   int version = 4;
-  const char *link_ctn = "link_ctn";
   unsigned int i;
   xbt_dict_t props = NULL;
   xbt_dict_cursor_t cursor = NULL;
@@ -67,8 +65,6 @@ int main(int argc, char **argv)
   sg_netcard_t value1;
   sg_netcard_t value2;
 
-  sg_host_t *hosts = NULL;
-  SD_link_t *links = NULL;
   xbt_os_timer_t parse_time = xbt_os_timer_new();
 
   SD_init(&argc, argv);
@@ -91,8 +87,8 @@ int main(int argc, char **argv)
     printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
     // Hosts
-    totalHosts = sg_host_count();
-    hosts = sg_host_list();
+    unsigned int totalHosts = sg_host_count();
+    sg_host_t *hosts = sg_host_list();
     qsort((void *) hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
 
     for (i = 0; i < totalHosts; i++) {
@@ -121,8 +117,8 @@ int main(int argc, char **argv)
     }
 
     // Links
-    totalLinks = sg_link_count();
-    links = sg_link_list();
+    unsigned int totalLinks = sg_link_count();
+    SD_link_t *links = sg_link_list();
 
     qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
 
@@ -148,7 +144,7 @@ int main(int argc, char **argv)
         if (! route->empty()){
           printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
           for (auto link: *route)
-            printf("<%s id=\"%s\"/>",link_ctn,link->getName());
+            printf("<link_ctn id=\"%s\"/>",link->getName());
           printf("\n  </route>\n");
         }
         delete route;
@@ -160,7 +156,7 @@ int main(int argc, char **argv)
           std::vector<Link*> *route = new std::vector<Link*>();
           routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route,NULL);
           for (auto link : *route)
-            printf("<%s id=\"%s\"/>",link_ctn,link->getName());
+            printf("<link_ctn id=\"%s\"/>",link->getName());
           delete route;
           printf("\n  </route>\n");
         }
@@ -177,7 +173,7 @@ int main(int argc, char **argv)
             std::vector<Link*> *route = new std::vector<Link*>();
             routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route,NULL);
             for(auto link :*route)
-              printf("<%s id=\"%s\"/>",link_ctn,link->getName());
+              printf("<link_ctn id=\"%s\"/>",link->getName());
             delete route;
             printf("\n  </route>\n");
           }
@@ -188,7 +184,7 @@ int main(int argc, char **argv)
           value2 = sg_host_by_name(dst)->pimpl_netcard;
           routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route, NULL);
           for(auto link : *route)
-            printf("<%s id=\"%s\"/>",link_ctn,link->getName());
+            printf("<link_ctn id=\"%s\"/>",link->getName());
           delete route;
           printf("\n  </route>\n");
         }
@@ -197,10 +193,10 @@ int main(int argc, char **argv)
 
     printf("</AS>\n");
     printf("</platform>\n");
+    free(hosts);
+    free(links);
   }
 
-  free(hosts);
-  free(links);
   SD_exit();
   xbt_os_timer_free(parse_time);
 
