@@ -299,8 +299,8 @@ teshsuite/simdag/comp-only-seq/comp-only-seq
 teshsuite/simdag/flatifier/flatifier
 teshsuite/simdag/incomplete/incomplete
 teshsuite/simdag/is-router/is-router
-teshsuite/simdag/platforms/evaluate_get_route_time
-teshsuite/simdag/platforms/evaluate_parse_time
+teshsuite/simdag/evaluate-get-route-time/evaluate-get-route-time
+teshsuite/simdag/evaluate-parse-time/evaluate-parse-time
 teshsuite/simix/check_defaults/check_defaults
 teshsuite/simix/stack_overflow/stack_overflow
 teshsuite/smpi/bug-17132/bug-17132

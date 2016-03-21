@@ -1,7 +1,5 @@
 <!-- THIS FILE IS INVALID.
-
-It declares a storage attached to a nonexistant host (plouf). See bogus_disk_attachment.tesh -->
-
+     It declares a storage attached to a nonexistant host (plouf). See bogus_disk_attachment.tesh -->
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">

@@ -1,8 +1,6 @@
 <!-- THIS FILE IS INVALID.
-
-It declares a route alice->bob and another bob->alice, both being different.
-It is used to check that this (bogus) file is detected as is (see two_hosts_asymetric.tesh) -->
-
+     It declares a route alice->bob and another bob->alice, both being different.
+     It is used to check that this (bogus) file is detected as is (see two_hosts_asymetric.tesh) -->
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
@@ -14,7 +12,6 @@ It is used to check that this (bogus) file is detected as is (see two_hosts_asym
    <link id="link2" bandwidth="125MBps" latency="50us"/>
 
    <route src="bob" dst="alice"><link_ctn id="link1"/></route>
-
    <route src="alice" dst="bob"><link_ctn id="link2"/></route>
   </AS>
 </platform>

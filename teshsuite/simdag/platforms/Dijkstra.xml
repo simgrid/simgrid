@@ -9,7 +9,6 @@
 
    <link id="1" bandwidth="1MBps" latency="1ms"/>
    <link id="2" bandwidth="1MBps" latency="1ms"/>
-
    <link id="10" bandwidth="1MBps" latency="1ms"/>
    <link id="11" bandwidth="1MBps" latency="1ms"/>
    <link id="12" bandwidth="1MBps" latency="1ms"/>

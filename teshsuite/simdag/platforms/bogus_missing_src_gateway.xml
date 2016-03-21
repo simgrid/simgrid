@@ -2,13 +2,11 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <AS id="World" routing="Full">
-     <AS id="us" routing="Full">
-        <cluster id="cluster" suffix=".cluster.us" prefix="node-" radical="1-4" core="24" speed="9.27114e8f"
-                 bw="938e6Bps" lat="270us"/>
-      </AS>
+    <AS id="us" routing="Full">
+       <cluster id="cluster" suffix=".cluster.us" prefix="node-" radical="1-4" speed="1Gf" bw="938MBps" lat="270us"/>
+    </AS>
     <AS id="fr" routing="Full">
-        <cluster id="grappe" suffix=".grappe.fr" prefix="noeud-" radical="1-4" core="24" speed="9.27114e8f"
-                 bw="938e6Bps" lat="270us"/>
+        <cluster id="grappe" suffix=".grappe.fr" prefix="noeud-" radical="1-4" speed="1Gf" bw="938MBps" lat="270us"/>
     </AS>
 
     <link id="backbone" bandwidth="1.25GBps" latency="500us"/>

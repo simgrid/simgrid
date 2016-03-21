@@ -63,9 +63,7 @@ set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/flatifier/bogus_
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic-parsing-test/basic-parsing-test-sym-full.tesh
                                     ${CMAKE_CURRENT_SOURCE_DIR}/basic-parsing-test/basic-parsing-test-bypass.tesh
                                     PARENT_SCOPE)
-set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_hosts_Dijkstra_ns3.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_hosts_floyd_ns3.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_hosts_floyd.xml
+set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_hosts_floyd.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_multi_hop.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/host_attributes.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link_attributes.xml
@@ -86,7 +84,6 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_missing_dst_gateway.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/bogus_two_hosts_asymetric.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link_fullduplex.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link_symmetrical.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_one_link.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/clusterA.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/clusterB.xml
