@@ -162,7 +162,7 @@ public:
 
   void setState(simgrid::surf::Action::State state) override;
 
-  void updateRemainingLazy(double now);
+  void updateRemainingLazy(double now) override;
   std::list<Cpu*> cpus();
 };
 
