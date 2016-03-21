@@ -28,6 +28,7 @@
 #include "src/mc/mc_exit.h"
 #include "src/mc/Session.hpp"
 #include "src/mc/Checker.hpp"
+#include "src/mc/SafetyChecker.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 
@@ -51,8 +52,8 @@ std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session& sessio
     code = [](Session& session) {
       return MC_modelcheck_comm_determinism(); };
   else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')
-    code = [](Session& session) {
-      return simgrid::mc::modelcheck_safety(); };
+    return std::unique_ptr<simgrid::mc::Checker>(
+      new simgrid::mc::SafetyChecker(session));
   else
     code = [](Session& session) {
       return simgrid::mc::modelcheck_liveness(); };

@@ -31,8 +31,6 @@ enum class ReductionMode {
 
 extern XBT_PRIVATE simgrid::mc::ReductionMode reduction_mode;
 
-int modelcheck_safety(void);
-
 struct XBT_PRIVATE VisitedState {
   simgrid::mc::Snapshot* system_state = nullptr;
   size_t heap_bytes_used = 0;

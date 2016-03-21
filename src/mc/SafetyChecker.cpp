@@ -1,4 +1,4 @@
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -22,6 +22,8 @@
 #include "src/mc/mc_smx.h"
 #include "src/mc/Client.hpp"
 #include "src/mc/mc_exit.h"
+#include "src/mc/Checker.hpp"
+#include "src/mc/SafetyChecker.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -77,7 +79,7 @@ static void pre_modelcheck_safety()
 /** \brief Model-check the application using a DFS exploration
  *         with DPOR (Dynamic Partial Order Reductions)
  */
-int modelcheck_safety(void)
+static int modelcheck_safety(void)
 {
   modelcheck_safety_init();
 
@@ -284,5 +286,18 @@ static void modelcheck_safety_init(void)
   initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
 }
 
+SafetyChecker::SafetyChecker(Session& session) : Checker(session)
+{
+}
+
+SafetyChecker::~SafetyChecker()
+{
+}
+
+int SafetyChecker::run()
+{
+  return simgrid::mc::modelcheck_safety();
+}
+  
 }
 }
