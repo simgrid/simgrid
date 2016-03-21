@@ -30,6 +30,11 @@ foreach(x flatifier is-router)
   ADD_TESH(tesh-simdag-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/${x} ${x}.tesh)
 endforeach()
 
+# test for code coverage
+ADD_TEST(test-help            ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help)
+ADD_TEST(test-help-models     ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help-models)
+ADD_TEST(test-tracing-help    ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help-tracing)
+
 ADD_TESH(tesh-simdag-parser-bypass   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic-parsing-test --setenv srcdir=${CMAKE_HOME_DIRECTORY} basic-parsing-test-bypass.tesh)
 ADD_TESH(tesh-simdag-parser-sym-full --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/basic-parsing-test basic-parsing-test-sym-full.tesh)
 

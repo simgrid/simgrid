@@ -44,13 +44,6 @@ ENDMACRO()
 
 IF(NOT enable_memcheck)
   ### GENERIC  ###
-  # BEGIN TESH TESTS
-  # test for code coverage
-    ADD_TEST(test-help            ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help)
-    ADD_TEST(test-help-models     ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help-models)
-    ADD_TEST(test-tracing-help    ${CMAKE_BINARY_DIR}/teshsuite/simdag/basic-parsing-test/basic-parsing-test --help-tracing)
-  # END TESH TESTS
-
   ### MC ###
   IF(HAVE_MC)
     ADD_TESH_FACTORIES(mc-bugged1                "ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/mc --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/mc bugged1.tesh)
