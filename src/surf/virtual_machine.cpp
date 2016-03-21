@@ -7,8 +7,7 @@
 #include "cpu_cas01.hpp"
 #include "virtual_machine.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf,
-                                "Logging specific to the SURF VM module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
 simgrid::surf::VMModel *surf_vm_model = NULL;
 
@@ -42,8 +41,7 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, xbt_dict_t pr
 }
 
 /*
- * A physical host does not disappear in the current SimGrid code, but a VM may
- * disappear during a simulation.
+ * A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation.
  */
 VirtualMachine::~VirtualMachine()
 {

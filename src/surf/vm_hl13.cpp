@@ -27,13 +27,9 @@ namespace surf {
 /*********
  * Model *
  *********/
-
 VMHL13Model::VMHL13Model() : VMModel() {}
 
 void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
-
-/* ind means ''indirect'' that this is a reference on the whole dict_elm
- * structure (i.e not on the surf_resource_private infos) */
 
 VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 {
@@ -42,10 +38,8 @@ VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
   return vm;
 }
 
-/* In the real world, processes on the guest operating system will be somewhat
- * degraded due to virtualization overhead. The total CPU share that these
- * processes get is smaller than that of the VM process gets on a host
- * operating system. */
+/* In the real world, processes on the guest operating system will be somewhat degraded due to virtualization overhead.
+ * The total CPU share these processes get is smaller than that of the VM process gets on a host operating system. */
 // const double virt_overhead = 0.95;
 const double virt_overhead = 1;
 
@@ -55,7 +49,6 @@ double VMHL13Model::next_occuring_event(double now)
 
   /* 1. Now we know how many resource should be assigned to each virtual
    * machine. We update constraints of the virtual machine layer.
-   *
    *
    * If we have two virtual machine (VM1 and VM2) on a physical machine (PM1).
    *     X1 + X2 = C       (Equation 1)
@@ -74,21 +67,16 @@ double VMHL13Model::next_occuring_event(double now)
    * Equation 1 was solved in the physical machine layer.
    * Equation 2 is solved in the virtual machine layer (here).
    * X1 must be passed to the virtual machine laye as a constraint value.
-   *
    **/
 
   /* iterate for all virtual machines */
-  for (VMModel::vm_list_t::iterator iter =
-         VMModel::ws_vms.begin();
-       iter !=  VMModel::ws_vms.end(); ++iter) {
-
+  for (VMModel::vm_list_t::iterator iter = VMModel::ws_vms.begin(); iter !=  VMModel::ws_vms.end(); ++iter) {
     VirtualMachine *ws_vm = &*iter;
     Cpu *cpu = ws_vm->p_cpu;
     xbt_assert(cpu, "cpu-less host");
 
     double solved_value = ws_vm->p_action->getVariable()->value;
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value,
-        ws_vm->getName(), ws_vm->p_hostPM->name().c_str());
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getName(), ws_vm->p_hostPM->name().c_str());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -96,7 +84,6 @@ double VMHL13Model::next_occuring_event(double now)
     lmm_system_t vcpu_system = cpu->getModel()->getMaxminSystem();
     lmm_update_constraint_bound(vcpu_system, cpu->getConstraint(), virt_overhead * solved_value);
   }
-
 
   /* 2. Calculate resource share at the virtual machine layer. */
   adjustWeightOfDummyCpuActions();
@@ -108,7 +95,6 @@ double VMHL13Model::next_occuring_event(double now)
 /************
  * Resource *
  ************/
-
 VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t host_PM)
  : VirtualMachine(model, name, props, host_PM)
 {
@@ -139,8 +125,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t hos
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   p_action = sub_cpu->execution_start(0);
 
-  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks",
-    name, p_hostPM->name().c_str(), xbt_dynar_length(p_storage));
+  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", name, p_hostPM->name().c_str(), xbt_dynar_length(p_storage));
 }
 
 void VMHL13::suspend()
@@ -173,9 +158,7 @@ void VMHL13::restore()
   p_vm_state = SURF_VM_STATE_RUNNING;
 }
 
-/*
- * Update the physical host of the given VM
- */
+/* Update the physical host of the given VM */
 void VMHL13::migrate(sg_host_t host_dest)
 {
    HostImpl *surfHost_dst = host_dest->extension<HostImpl>();
@@ -222,7 +205,6 @@ void VMHL13::setBound(double bound){
 void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
  p_action->setAffinity(cpu, mask);
 }
-
 
 }
 }

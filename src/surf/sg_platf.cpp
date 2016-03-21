@@ -73,8 +73,7 @@ void sg_platf_exit(void) {
 /** @brief Add an "host" to the current AS */
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
-  xbt_assert(! sg_host_by_name(host->id),
-      "Refusing to create a second host named '%s'.", host->id);
+  xbt_assert(! sg_host_by_name(host->id), "Refusing to create a second host named '%s'.", host->id);
 
   simgrid::surf::AsImpl* current_routing = routing_get_current();
   if (current_routing->hierarchy_ == simgrid::surf::AsImpl::RoutingMode::unset)
@@ -112,7 +111,6 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
 
-
   simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h,
       host->speed_per_pstate,
       host->core_amount);
@@ -143,7 +141,8 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
   xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
              "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
-  simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
+  simgrid::surf::NetCard *netcard =
+    new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
   netcard->setId(current_routing->addComponent(netcard));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) netcard);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, netcard->id());

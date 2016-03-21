@@ -61,8 +61,7 @@ public:
    * @param props Dictionary of properties associated to this VM
    * @param host The host
    */
-  VirtualMachine(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
-            simgrid::s4u::Host *host);
+  VirtualMachine(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, simgrid::s4u::Host *host);
 
   /** @brief Destructor */
   ~VirtualMachine();
@@ -101,7 +100,6 @@ public:
 protected:
   e_surf_vm_state_t p_vm_state = SURF_VM_STATE_CREATED;
 
-
 public:
   boost::intrusive::list_member_hook<> vm_hook;
 };
@@ -123,7 +121,6 @@ public:
    *
    * @param name The name of the new VM
    * @param host_PM The real machine hosting the VM
-   *
    */
   virtual VirtualMachine *createVM(const char *name, sg_host_t host_PM)=0;
   void adjustWeightOfDummyCpuActions() {};
