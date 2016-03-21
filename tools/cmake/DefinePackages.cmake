@@ -991,8 +991,7 @@ set(CMAKEFILES_TXT
   teshsuite/msg/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
     teshsuite/simdag/platforms/CMakeLists.txt
-    teshsuite/simix/check_defaults/CMakeLists.txt
-    teshsuite/simix/stack_overflow/CMakeLists.txt
+  teshsuite/simix/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
     teshsuite/surf/maxmin_bench/CMakeLists.txt
