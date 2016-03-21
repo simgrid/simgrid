@@ -11,6 +11,14 @@ foreach(x availability basic0 basic1 basic2 basic3 basic4 basic5 basic6 basic-li
   ADD_TESH(tesh-simdag-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/${x} ${x}.tesh)
 endforeach()
 
+foreach(x evaluate-parse-time evaluate-get-route-time)
+  add_executable       (${x} ${x}/${x}.c)
+  target_link_libraries(${x} simgrid)
+  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+
+  set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+endforeach()
+
 foreach(x flatifier is-router)
   add_executable       (${x}  ${x}/${x}.cpp)
   target_link_libraries(${x}  simgrid)

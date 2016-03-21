@@ -990,7 +990,6 @@ set(CMAKEFILES_TXT
   teshsuite/mc/CMakeLists.txt
   teshsuite/msg/CMakeLists.txt
   teshsuite/simdag/CMakeLists.txt
-    teshsuite/simdag/platforms/CMakeLists.txt
   teshsuite/simix/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
