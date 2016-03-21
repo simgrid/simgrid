@@ -67,8 +67,8 @@ int main(int argc, char **argv)
   sg_netcard_t value1;
   sg_netcard_t value2;
 
-  sg_host_t *hosts;
-  SD_link_t *links;
+  sg_host_t *hosts = NULL;
+  SD_link_t *links = NULL;
   xbt_os_timer_t parse_time = xbt_os_timer_new();
 
   SD_init(&argc, argv);
