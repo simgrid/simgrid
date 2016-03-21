@@ -67,25 +67,6 @@ IF(NOT enable_memcheck)
     ENDIF()
   ENDIF()
 
-  ## INTERFACES ##
-  ### SIMDAG ###
-  # BEGIN TESH TESTS
-  # these tests need the assertion mechanism
-  # exclude them from memcheck, as they normally die, leaving lots of unfree'd objects
-  IF(enable_debug AND NOT enable_memcheck)
-    ADD_TESH(tesh-parser-bogus-symmetric         --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/flatifier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_two_hosts_asymetric.tesh)
-    ADD_TESH(tesh-parser-bogus-missing-gw        --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/flatifier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_missing_gateway.tesh)
-    ADD_TESH(tesh-parser-bogus-disk-attachment   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/flatifier --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/platforms bogus_disk_attachment.tesh)
-
-    #These tests fail on Windows as the signal returned is not the same as Unix would send.
-    IF(WIN32)
-      set_property(TEST tesh-parser-bogus-symmetric PROPERTY WILL_FAIL TRUE)
-      set_property(TEST tesh-parser-bogus-missing-gw PROPERTY WILL_FAIL TRUE)
-      set_property(TEST tesh-parser-bogus-disk-attachment PROPERTY WILL_FAIL TRUE)
-    ENDIF()
-  ENDIF()
-  # END TESH TESTS
-
   ### SMPI ###
   IF(enable_smpi_MPICH3_testsuite)
     IF(HAVE_THREAD_CONTEXTS)
