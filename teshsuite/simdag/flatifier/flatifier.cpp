@@ -67,8 +67,8 @@ int main(int argc, char **argv)
   sg_netcard_t value1;
   sg_netcard_t value2;
 
-  const sg_host_t *hosts;
-  const SD_link_t *links;
+  sg_host_t *hosts;
+  SD_link_t *links;
   xbt_os_timer_t parse_time = xbt_os_timer_new();
 
   SD_init(&argc, argv);
@@ -198,6 +198,9 @@ int main(int argc, char **argv)
     printf("</AS>\n");
     printf("</platform>\n");
   }
+
+  free(hosts);
+  free(links);
   SD_exit();
   xbt_os_timer_free(parse_time);
 
