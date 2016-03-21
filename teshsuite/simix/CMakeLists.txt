@@ -8,7 +8,11 @@ endforeach()
 
 foreach (factory raw thread boost ucontext)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/check_defaults/factory_${factory}.tesh)
+
   string (TOUPPER have_${factory}_contexts VARNAME)
+  if (${VARNAME} AND release AND (WIN32 OR CMAKE_SYSTEM_NAME MATCHES "Darwin"))
+     SET_TESTS_PROPERTIES(stack-overflow-${factory} PROPERTIES WILL_FAIL true)
+  endif()
   if (${VARNAME})
     ADD_TESH(tesh-simix-factory-${factory} --cfg contexts/factory:${factory} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_${factory}.tesh)
   endif()
@@ -25,12 +29,6 @@ ELSE()
 ENDIF()
 
 ADD_TESH_FACTORIES(stack-overflow "thread;ucontext;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack_overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow stack_overflow.tesh)
-
-if (${VARNAME} AND release AND (WIN32 OR CMAKE_SYSTEM_NAME MATCHES "Darwin"))
-  foreach (factory raw thread ucontext)
-     SET_TESTS_PROPERTIES(stack-overflow-${factory} PROPERTIES WILL_FAIL true)
-  endforeach()
-endif()
 
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
 set(tesh_files     ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow/stack_overflow.tesh        PARENT_SCOPE)
