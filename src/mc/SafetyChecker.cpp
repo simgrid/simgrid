@@ -201,7 +201,8 @@ static int modelcheck_safety(void)
               "use --cfg=model-check/reduction:none");
           const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
           xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
-            if (simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
+            if (simgrid::mc::reduction_mode != simgrid::mc::ReductionMode::none
+                && simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
               if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
                 XBT_DEBUG("Dependent Transitions:");
                 smx_simcall_t prev_req = MC_state_get_executed_request(prev_state, &value);

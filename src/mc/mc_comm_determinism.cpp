@@ -462,7 +462,6 @@ static int MC_modelcheck_comm_determinism_main(void)
 int MC_modelcheck_comm_determinism(void)
 {
   XBT_INFO("Check communication determinism");
-  simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
   mc_model_checker->wait_for_requests();
 
   if (mc_mode == MC_MODE_CLIENT)
