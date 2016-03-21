@@ -14,7 +14,7 @@ foreach(example SemaphoreGC SleepHostOff)
     add_custom_target(${example} ALL DEPENDS ${example}_compiled)
     set_target_properties(${example}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${example})
 
-    ADD_TESH(tesh-java-${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java ${CMAKE_HOME_DIRECTORY}/teshsuite/java/${example}/${example}.tesh)
+    ADD_TESH(tesh-java-${example} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java ${CMAKE_HOME_DIRECTORY}/teshsuite/java/${example}/${example}.tesh)
   endif()
   set(examples_src ${examples_src} ${sources})
 endforeach()
