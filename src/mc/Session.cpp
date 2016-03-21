@@ -144,5 +144,7 @@ void Session::close()
   }
 }
 
+simgrid::mc::Session* session;
+
 }
 }

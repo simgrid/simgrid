@@ -14,10 +14,15 @@ namespace simgrid {
 namespace mc {
 
 class SafetyChecker : public Checker {
+  simgrid::mc::ReductionMode reductionMode_ = simgrid::mc::ReductionMode::unset;
 public:
   SafetyChecker(Session& session);
   ~SafetyChecker();
   int run() override;
+private:
+  // Temp
+  void init();
+  void pre();
 };
 
 }

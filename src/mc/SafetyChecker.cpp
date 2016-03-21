@@ -47,12 +47,10 @@ static int is_exploration_stack_state(mc_state_t current_state){
   return 0;
 }
 
-static void modelcheck_safety_init(void);
-
 /**
  *  \brief Initialize the DPOR exploration algorithm
  */
-static void pre_modelcheck_safety()
+void SafetyChecker::pre()
 {
   simgrid::mc::visited_states.clear();
 
@@ -68,20 +66,16 @@ static void pre_modelcheck_safety()
   for (auto& p : mc_model_checker->process().simix_processes())
     if (simgrid::mc::process_is_enabled(&p.copy)) {
       MC_state_interleave_process(initial_state, &p.copy);
-      if (simgrid::mc::reduction_mode != simgrid::mc::ReductionMode::none)
+      if (reductionMode_ != simgrid::mc::ReductionMode::none)
         break;
     }
 
   xbt_fifo_unshift(mc_stack, initial_state);
 }
 
-
-/** \brief Model-check the application using a DFS exploration
- *         with DPOR (Dynamic Partial Order Reductions)
- */
-static int modelcheck_safety(void)
+int SafetyChecker::run()
 {
-  modelcheck_safety_init();
+  this->init();
 
   char *req_str = nullptr;
   int value;
@@ -140,7 +134,7 @@ static int modelcheck_safety(void)
         for (auto& p : mc_model_checker->process().simix_processes())
           if (simgrid::mc::process_is_enabled(&p.copy)) {
             MC_state_interleave_process(next_state, &p.copy);
-            if (simgrid::mc::reduction_mode != simgrid::mc::ReductionMode::none)
+            if (reductionMode_ != simgrid::mc::ReductionMode::none)
               break;
           }
 
@@ -194,14 +188,14 @@ static int modelcheck_safety(void)
          state that executed that previous request. */
 
       while ((state = (mc_state_t) xbt_fifo_shift(mc_stack))) {
-        if (simgrid::mc::reduction_mode == simgrid::mc::ReductionMode::dpor) {
+        if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
           req = MC_state_get_internal_request(state);
           if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
             xbt_die("Mutex is currently not supported with DPOR, "
               "use --cfg=model-check/reduction:none");
           const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
           xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
-            if (simgrid::mc::reduction_mode != simgrid::mc::ReductionMode::none
+            if (reductionMode_ != simgrid::mc::ReductionMode::none
                 && simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
               if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
                 XBT_DEBUG("Dependent Transitions:");
@@ -260,13 +254,16 @@ static int modelcheck_safety(void)
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-static void modelcheck_safety_init(void)
+void SafetyChecker::init()
 {
-  if(_sg_mc_termination)
-    simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
-  else if (simgrid::mc::reduction_mode == simgrid::mc::ReductionMode::unset)
-    simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::dpor;
+  reductionMode_ = simgrid::mc::reduction_mode;
+  if( _sg_mc_termination)
+    reductionMode_ = simgrid::mc::ReductionMode::none;
+  else if (reductionMode_ == simgrid::mc::ReductionMode::unset)
+    reductionMode_ = simgrid::mc::ReductionMode::dpor;
+
   _sg_mc_safety = 1;
+
   if (_sg_mc_termination)
     XBT_INFO("Check non progressive cycles");
   else
@@ -275,12 +272,10 @@ static void modelcheck_safety_init(void)
 
   XBT_DEBUG("Starting the safety algorithm");
 
-  _sg_mc_safety = 1;
-
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
-  pre_modelcheck_safety();
+  this->pre();
 
   /* Save the initial state */
   initial_global_state = xbt_new0(s_mc_global_t, 1);
@@ -293,11 +288,6 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
 
 SafetyChecker::~SafetyChecker()
 {
-}
-
-int SafetyChecker::run()
-{
-  return simgrid::mc::modelcheck_safety();
 }
   
 }

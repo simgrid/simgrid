@@ -64,6 +64,9 @@ public: // static constructors
   static Session* spawnvp(const char *path, char *const argv[]);
 };
 
+// Temporary
+extern simgrid::mc::Session* session;
+
 }
 }
 

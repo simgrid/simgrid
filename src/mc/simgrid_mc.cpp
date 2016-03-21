@@ -84,6 +84,7 @@ int main(int argc, char** argv)
 
     std::unique_ptr<Session> session =
       std::unique_ptr<Session>(Session::spawnvp(argv[1], argv+1));
+    simgrid::mc::session = session.get();
     std::unique_ptr<simgrid::mc::Checker> checker = createChecker(*session);
     int res = checker->run();
     session->close();
