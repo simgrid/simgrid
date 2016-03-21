@@ -51,6 +51,8 @@ static int dvfs(int argc, char *argv[])
 
   MSG_vm_shutdown(vm_host1);
   MSG_vm_shutdown(vm_host3);
+  MSG_vm_destroy(vm_host1);
+  MSG_vm_destroy(vm_host3);
 
   return 0;
 }

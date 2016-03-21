@@ -43,6 +43,7 @@ Host::Host(const char* name)
 
 Host::~Host() {
   delete pimpl_cpu;
+  delete pimpl_netcard;
   delete mounts;
 }
 

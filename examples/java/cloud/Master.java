@@ -80,6 +80,7 @@ public class Master extends Process {
 
     for (int i = 0; i < vms.size(); i++) {
       vms.get(i).shutdown();
+      vms.get(i).finalize();
     }
     Msg.info("Master done.");
   }

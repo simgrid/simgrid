@@ -67,5 +67,7 @@ public class EnergyVMRunner extends Process {
 
     vmHost1.shutdown(); 
     vmHost3.shutdown(); 
+    vmHost1.finalize(); 
+    vmHost3.finalize(); 
   }
 }
