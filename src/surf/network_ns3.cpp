@@ -29,7 +29,7 @@ static double time_to_next_flow_completion = -1;
  * Crude globals *
  *****************/
 
-extern xbt_dict_t dict_socket;
+extern xbt_dict_t flowFromSock;
 
 static ns3::InternetStackHelper stack;
 static ns3::NodeContainer nodes;
@@ -286,7 +286,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 NetworkNS3Model::~NetworkNS3Model() {
   delete ns3_sim;
   xbt_dynar_free_container(&IPV4addr);
-  xbt_dict_free(&dict_socket);
+  xbt_dict_free(&flowFromSock);
 }
 
 Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
@@ -349,7 +349,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
   }
 
   NetworkNS3Action *action;
-  xbt_dict_foreach(dict_socket,cursor,key,data){
+  xbt_dict_foreach(flowFromSock,cursor,key,data){
     action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
     XBT_DEBUG("Processing socket %p (action %p)",data,action);
     action->setRemains(action->getCost() - ns3_get_socket_sent(data));
@@ -380,10 +380,10 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
   while (!xbt_dynar_is_empty(socket_to_destroy)){
     xbt_dynar_pop(socket_to_destroy,&key);
 
-    void *data = xbt_dict_get (dict_socket, key);
+    void *data = xbt_dict_get (flowFromSock, key);
     action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
     XBT_DEBUG ("Removing socket %p of action %p", key, action);
-    xbt_dict_remove(dict_socket, key);
+    xbt_dict_remove(flowFromSock, key);
   }
   return;
 }
@@ -466,19 +466,19 @@ void ns3_simulator(double min){
 }
 
 simgrid::surf::NetworkNS3Action* ns3_get_socket_action(void *socket){
-  return ((MySocket *)socket)->action;
+  return ((SgFlow *)socket)->action_;
 }
 
 double ns3_get_socket_remains(void *socket){
-  return ((MySocket *)socket)->remaining;
+  return ((SgFlow *)socket)->remaining_;
 }
 
 double ns3_get_socket_sent(void *socket){
-  return ((MySocket *)socket)->sentBytes;
+  return ((SgFlow *)socket)->sentBytes_;
 }
 
 bool ns3_get_socket_is_finished(void *socket){
-  return ((MySocket *)socket)->finished;
+  return ((SgFlow *)socket)->finished_;
 }
 
 int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)

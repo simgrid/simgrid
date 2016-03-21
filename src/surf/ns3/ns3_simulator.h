@@ -25,13 +25,17 @@
 #include "ns3/inet-socket-address.h"
 #include "ns3/tcp-socket-factory.h"
 
-struct MySocket{
-  std::uint32_t bufferedBytes = 0;
-  std::uint32_t sentBytes = 0;
-  std::uint32_t remaining;
-  std::uint32_t totalBytes;
-  bool finished = false;
-  simgrid::surf::NetworkNS3Action* action;
+class SgFlow {
+public:
+  SgFlow(uint32_t totalBytes, simgrid::surf::NetworkNS3Action * action);
+
+//private:
+  std::uint32_t bufferedBytes_ = 0;
+  std::uint32_t sentBytes_ = 0;
+  std::uint32_t remaining_;
+  std::uint32_t totalBytes_;
+  bool finished_ = false;
+  simgrid::surf::NetworkNS3Action* action_;
 };
 
 //Simulator s;
