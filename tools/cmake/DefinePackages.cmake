@@ -993,7 +993,6 @@ set(CMAKEFILES_TXT
   teshsuite/simix/CMakeLists.txt
   teshsuite/smpi/CMakeLists.txt
   teshsuite/surf/CMakeLists.txt
-    teshsuite/surf/maxmin_bench/CMakeLists.txt
   teshsuite/xbt/CMakeLists.txt
   
   teshsuite/smpi/isp/umpire/CMakeLists.txt
