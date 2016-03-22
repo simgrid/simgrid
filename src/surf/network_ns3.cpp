@@ -333,24 +333,22 @@ double NetworkNS3Model::next_occuring_event(double now)
 
 void NetworkNS3Model::updateActionsState(double now, double delta)
 {
-  xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  void *data;
+  static xbt_dynar_t socket_to_destroy = xbt_dynar_new(sizeof(char*),NULL);
 
-  static xbt_dynar_t socket_to_destroy = NULL;
-  if(!socket_to_destroy) socket_to_destroy = xbt_dynar_new(sizeof(char*),NULL);
+  /* If there are no running flows, advance the NS3 simulator and return */
+  if (getRunningActionSet()->empty()) {
 
-  /* If there are no running flows, just return */
-  if (!getRunningActionSet()->size()) {
-    while(double_positive(now-ns3::Simulator::Now().GetSeconds(), sg_surf_precision)) {
+    while(double_positive(now - ns3::Simulator::Now().GetSeconds(), sg_surf_precision))
       ns3_simulator(now-ns3::Simulator::Now().GetSeconds());
-    }
+
     return;
   }
 
-  NetworkNS3Action *action;
+  xbt_dict_cursor_t cursor = NULL;
+  char *key;
+  void *data;
   xbt_dict_foreach(flowFromSock,cursor,key,data){
-    action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
+    NetworkNS3Action * action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
     XBT_DEBUG("Processing socket %p (action %p)",data,action);
     action->setRemains(action->getCost() - ns3_get_socket_sent(data));
 
@@ -380,9 +378,11 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
   while (!xbt_dynar_is_empty(socket_to_destroy)){
     xbt_dynar_pop(socket_to_destroy,&key);
 
-    void *data = xbt_dict_get (flowFromSock, key);
-    action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
-    XBT_DEBUG ("Removing socket %p of action %p", key, action);
+    if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
+      SgFlow *data = (SgFlow*)xbt_dict_get (flowFromSock, key);
+      NetworkNS3Action * action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
+      XBT_DEBUG ("Removing socket %p of action %p", key, action);
+    }
     xbt_dict_remove(flowFromSock, key);
   }
   return;
