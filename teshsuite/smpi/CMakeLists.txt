@@ -15,17 +15,37 @@ if(enable_smpi)
 
     set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
     set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
-
-     ADD_TESH_FACTORIES(tesh-smpi-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/${x} ${x}.tesh)
   endforeach()
 
   if(NOT WIN32)
     add_executable       (macro-shared macro-shared/macro-shared.c)
     target_link_libraries(macro-shared simgrid)
     set_target_properties(macro-shared PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/macro-shared)
+  endif()
+endif()
 
+set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/macro-shared/macro-shared.c                PARENT_SCOPE)
+set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/coll-alltoall/clusters.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/macro-shared/macro-shared.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh              PARENT_SCOPE)
+set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_cluster
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
+                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_empty                             PARENT_SCOPE)
+
+if(enable_smpi)
+  if(NOT WIN32)
     ADD_TESH_FACTORIES(tesh-smpi-macro-shared "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/macro-shared --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/macro-shared macro-shared.tesh)
   endif()
+
+  foreach(x coll-allgather coll-allgatherv coll-allreduce coll-alltoall coll-alltoallv coll-barrier coll-bcast 
+            coll-gather coll-reduce coll-reduce-scatter coll-scatter macro-sample pt2pt-dsend pt2pt-pingpong 
+            type-hvector type-indexed type-struct type-vector bug-17132)
+    ADD_TESH_FACTORIES(tesh-smpi-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/${x} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/${x} ${x}.tesh)
+  endforeach()
 
   foreach (ALLGATHER 2dmesh 3dmesh bruck GB loosely_lr NTSLR_NB pair rdb  rhv ring SMP_NTS smp_simple spreading_simple 
                      ompi mpich ompi_neighborexchange mvapich2 mvapich2_smp impi)
@@ -91,15 +111,3 @@ if(enable_smpi)
   ADD_TESH_FACTORIES(tesh-smpi-broken  "thread"   --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong broken_hostfiles.tesh)
   ADD_TESH(tesh-smpi-replay-ti-tracing            --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/smpi/pt2pt-pingpong --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/pt2pt-pingpong TI_output.tesh)
 endif()
-
-set(teshsuite_src ${teshsuite_src}  ${CMAKE_CURRENT_SOURCE_DIR}/macro-shared/macro-shared.c                PARENT_SCOPE)
-set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-large.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/coll-allreduce/coll-allreduce-automatic.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/coll-alltoall/clusters.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/macro-shared/macro-shared.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/broken_hostfiles.tesh
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/pt2pt-pingpong/TI_output.tesh              PARENT_SCOPE)
-set(bin_files       ${bin_files}    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_cluster
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_coll
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/hostfile_empty                             PARENT_SCOPE)
