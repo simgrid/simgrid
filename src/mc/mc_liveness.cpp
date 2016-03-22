@@ -113,7 +113,10 @@ static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* p
     simgrid::mc::VisitedPair* pair_test;
     int cursor;
 
-    index = get_search_interval(acceptance_pairs, new_pair, &min, &max);
+    index = simgrid::mc::get_search_interval(
+      (simgrid::mc::VisitedPair**) xbt_dynar_get_ptr(acceptance_pairs, 0),
+      xbt_dynar_length(acceptance_pairs),
+      new_pair, &min, &max);
 
     if (min != -1 && max != -1) {       // Acceptance pair with same number of processes and same heap bytes used exists
 
@@ -340,7 +343,9 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
     simgrid::mc::VisitedPair* pair_test;
     int cursor;
 
-    index = get_search_interval(visited_pairs, new_visited_pair, &min, &max);
+    index = get_search_interval(
+      (simgrid::mc::VisitedPair**) xbt_dynar_get_ptr(visited_pairs, 0),
+      xbt_dynar_length(visited_pairs), new_visited_pair, &min, &max);
 
     if (min != -1 && max != -1) {       // Visited pair with same number of processes and same heap bytes used exists
       cursor = min;

@@ -117,147 +117,6 @@ VisitedPair::~VisitedPair()
 }
 }
 
-/**
- *  \brief Find a suitable subrange of candidate duplicates for a given state
- *  \param list dynamic array of states/pairs with candidate duplicates of the current state;
- *  \param ref current state/pair;
- *  \param min (output) index of the beginning of the the subrange
- *  \param max (output) index of the enf of the subrange
- *
- *  Given a suitably ordered array of states/pairs, this function extracts a subrange
- *  (with index *min <= i <= *max) with candidate duplicates of the given state/pair.
- *  This function uses only fast discriminating criterions and does not use the
- *  full state/pair comparison algorithms.
- *
- *  The states/pairs in list MUST be ordered using a (given) weak order
- *  (based on nb_processes and heap_bytes_used).
- *  The subrange is the subrange of "equivalence" of the given state/pair.
- */
-int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max)
-{
-  int cursor = 0, previous_cursor;
-  int nb_processes, heap_bytes_used, nb_processes_test, heap_bytes_used_test;
-  void *ref_test;
-
-  if (_sg_mc_liveness) {
-    nb_processes = ((simgrid::mc::VisitedPair*) ref)->nb_processes;
-    heap_bytes_used = ((simgrid::mc::VisitedPair*) ref)->heap_bytes_used;
-  } else {
-    nb_processes = ((simgrid::mc::VisitedState*) ref)->nb_processes;
-    heap_bytes_used = ((simgrid::mc::VisitedState*) ref)->heap_bytes_used;
-  }
-
-  int start = 0;
-  int end = xbt_dynar_length(list) - 1;
-
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    if (_sg_mc_liveness) {
-      ref_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(list, cursor, simgrid::mc::VisitedPair*);
-      nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
-      heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
-    } else {
-      ref_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(list, cursor, simgrid::mc::VisitedState*);
-      nb_processes_test = ((simgrid::mc::VisitedState*) ref_test)->nb_processes;
-      heap_bytes_used_test = ((simgrid::mc::VisitedState*) ref_test)->heap_bytes_used;
-    }
-    if (nb_processes_test < nb_processes)
-      start = cursor + 1;
-    else if (nb_processes_test > nb_processes)
-      end = cursor - 1;
-    else if (heap_bytes_used_test < heap_bytes_used)
-      start = cursor + 1;
-    else if (heap_bytes_used_test > heap_bytes_used)
-      end = cursor - 1;
-    else {
-        *min = *max = cursor;
-        previous_cursor = cursor - 1;
-        while (previous_cursor >= 0) {
-          if (_sg_mc_liveness) {
-            ref_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(list, previous_cursor, simgrid::mc::VisitedPair*);
-            nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
-            heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
-          } else {
-            ref_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(list, previous_cursor, simgrid::mc::VisitedState*);
-            nb_processes_test = ((simgrid::mc::VisitedState*) ref_test)->nb_processes;
-            heap_bytes_used_test = ((simgrid::mc::VisitedState*) ref_test)->heap_bytes_used;
-          }
-          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
-            break;
-          *min = previous_cursor;
-          previous_cursor--;
-        }
-        size_t next_cursor = cursor + 1;
-        while (next_cursor < xbt_dynar_length(list)) {
-          if (_sg_mc_liveness) {
-            ref_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(list, next_cursor, simgrid::mc::VisitedPair*);
-            nb_processes_test = ((simgrid::mc::VisitedPair*) ref_test)->nb_processes;
-            heap_bytes_used_test = ((simgrid::mc::VisitedPair*) ref_test)->heap_bytes_used;
-          } else {
-            ref_test = (simgrid::mc::VisitedState*) xbt_dynar_get_as(list, next_cursor, simgrid::mc::VisitedState*);
-            nb_processes_test = ((simgrid::mc::VisitedState*) ref_test)->nb_processes;
-            heap_bytes_used_test = ((simgrid::mc::VisitedState*) ref_test)->heap_bytes_used;
-          }
-          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
-            break;
-          *max = next_cursor;
-          next_cursor++;
-        }
-        return -1;
-    }
-  }
-  return cursor;
-}
-
-// TODO, it would make sense to use std::set instead
-template<class T>
-int get_search_interval(std::vector<std::unique_ptr<T>> const& list, T *ref, int *min, int *max)
-{
-  int nb_processes = ref->nb_processes;
-  int heap_bytes_used = ref->heap_bytes_used;
-
-  int cursor = 0;
-  int start = 0;
-  int end = list.size() - 1;
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    int nb_processes_test = list[cursor]->nb_processes;
-    int heap_bytes_used_test = list[cursor]->heap_bytes_used;
-
-    if (nb_processes_test < nb_processes)
-      start = cursor + 1;
-    else if (nb_processes_test > nb_processes)
-      end = cursor - 1;
-    else if (heap_bytes_used_test < heap_bytes_used)
-      start = cursor + 1;
-    else if (heap_bytes_used_test > heap_bytes_used)
-      end = cursor - 1;
-    else {
-        *min = *max = cursor;
-        int previous_cursor = cursor - 1;
-        while (previous_cursor >= 0) {
-          nb_processes_test = list[previous_cursor]->nb_processes;
-          heap_bytes_used_test = list[previous_cursor]->heap_bytes_used;
-          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
-            break;
-          *min = previous_cursor;
-          previous_cursor--;
-        }
-        size_t next_cursor = cursor + 1;
-        while (next_cursor < list.size()) {
-          nb_processes_test = list[next_cursor]->nb_processes;
-          heap_bytes_used_test = list[next_cursor]->heap_bytes_used;
-          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
-            break;
-          *max = next_cursor;
-          next_cursor++;
-        }
-        return -1;
-    }
-  }
-  return cursor;
-}
-
 static
 bool some_communications_are_not_finished()
 {
@@ -302,7 +161,9 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_sta
 
     int min = -1, max = -1, index;
 
-    index = get_search_interval(visited_states, new_state.get(), &min, &max);
+    index = simgrid::mc::get_search_interval(
+      visited_states.data(), visited_states.size(),
+      new_state.get(), &min, &max);
 
     if (min != -1 && max != -1) {
 

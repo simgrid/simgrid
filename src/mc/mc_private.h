@@ -60,8 +60,86 @@ XBT_PRIVATE void MC_show_non_termination(void);
  */
 XBT_PRIVATE extern xbt_fifo_t mc_stack;
 
-XBT_PRIVATE int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max);
+#ifdef __cplusplus
 
+SG_END_DECL()
+
+namespace simgrid {
+namespace mc {
+
+/**
+ *  \brief Find a suitable subrange of candidate duplicates for a given state
+ *  \param list dynamic array of states/pairs with candidate duplicates of the current state;
+ *  \param ref current state/pair;
+ *  \param min (output) index of the beginning of the the subrange
+ *  \param max (output) index of the enf of the subrange
+ *
+ *  Given a suitably ordered array of states/pairs, this function extracts a subrange
+ *  (with index *min <= i <= *max) with candidate duplicates of the given state/pair.
+ *  This function uses only fast discriminating criterions and does not use the
+ *  full state/pair comparison algorithms.
+ *
+ *  The states/pairs in list MUST be ordered using a (given) weak order
+ *  (based on nb_processes and heap_bytes_used).
+ *  The subrange is the subrange of "equivalence" of the given state/pair.
+ */
+// TODO, it would make sense to use std::set instead
+// U = some pointer of T (T*, unique_ptr<T>, shared_ptr<T>)
+template<class U, class T>
+int get_search_interval(
+  U* list, std::size_t count, T *ref, int *min, int *max)
+{
+  int nb_processes = ref->nb_processes;
+  int heap_bytes_used = ref->heap_bytes_used;
+
+  int cursor = 0;
+  int start = 0;
+  int end = count - 1;
+  while (start <= end) {
+    cursor = (start + end) / 2;
+    int nb_processes_test = list[cursor]->nb_processes;
+    int heap_bytes_used_test = list[cursor]->heap_bytes_used;
+
+    if (nb_processes_test < nb_processes)
+      start = cursor + 1;
+    else if (nb_processes_test > nb_processes)
+      end = cursor - 1;
+    else if (heap_bytes_used_test < heap_bytes_used)
+      start = cursor + 1;
+    else if (heap_bytes_used_test > heap_bytes_used)
+      end = cursor - 1;
+    else {
+        *min = *max = cursor;
+        int previous_cursor = cursor - 1;
+        while (previous_cursor >= 0) {
+          nb_processes_test = list[previous_cursor]->nb_processes;
+          heap_bytes_used_test = list[previous_cursor]->heap_bytes_used;
+          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
+            break;
+          *min = previous_cursor;
+          previous_cursor--;
+        }
+        size_t next_cursor = cursor + 1;
+        while (next_cursor < count) {
+          nb_processes_test = list[next_cursor]->nb_processes;
+          heap_bytes_used_test = list[next_cursor]->heap_bytes_used;
+          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
+            break;
+          *max = next_cursor;
+          next_cursor++;
+        }
+        return -1;
+    }
+  }
+  return cursor;
+}
+
+}
+}
+
+#endif
+
+SG_BEGIN_DECL()
 
 /****************************** Statistics ************************************/
 
