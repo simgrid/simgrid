@@ -4,47 +4,35 @@ if(enable_smpi)
   else()
     set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   endif()
-
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
+
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mc/")
 
-  add_executable       (bcbench            bcbench.c)
-  target_link_libraries(bcbench            simgrid)
-  add_executable       (mvmul              mvmul.c)
-  target_link_libraries(mvmul              simgrid)
-  add_executable       (smpi_traced        tracing/smpi_traced.c)
-  target_link_libraries(smpi_traced        simgrid)
-  add_executable       (smpi_traced_simple tracing/smpi_traced_simple.c)
-  target_link_libraries(smpi_traced_simple simgrid)
-  add_executable       (smpi_replay        replay/replay.c)
-  target_link_libraries(smpi_replay        simgrid)
+  foreach(x bcbench mvmul replay trace trace_simple energy)
+    add_executable       (smpi_${x} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+    target_link_libraries(smpi_${x} simgrid)
+    set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+    set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+  endforeach()
 
   foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1 
             non_termination2 non_termination3 non_termination4)
     if(HAVE_MC)
       add_executable       (smpi_${x} ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
       target_link_libraries(smpi_${x} simgrid)
-      set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY "./mc")
+      set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mc)
      endif()
     set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/mc/${x}.c)
   endforeach()
-
-  if(HAVE_MC)
-    ADD_TESH(smpi-mc-only-send-determinism -setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/only_send_deterministic.tesh)
-  endif()
-
-ADD_TESH(smpi-tracing-ptp   --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/tracing/smpi_traced.tesh)
-ADD_TESH(smpi-replay-simple --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/smpi_replay.tesh)
 endif()
 
-set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.tesh
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/smpi_replay.tesh                     PARENT_SCOPE)
-set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/mvmul.c
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/bcbench.c
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.c
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced.c
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/tracing/smpi_traced_simple.c                PARENT_SCOPE)
+set(examples_src  ${examples_src}                                                                          PARENT_SCOPE)
+set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/trace/trace.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/trace_simple/trace_simple.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.tesh                          PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/promela_bugged1_liveness
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1_liveness
                                    ${CMAKE_CURRENT_SOURCE_DIR}/mc/hostfile_bugged1
@@ -66,3 +54,14 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions0.t
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_waitall.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/actions_with_isend.txt
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/split_traces                         PARENT_SCOPE)
+
+if(enable_smpi)
+  if(HAVE_MC)
+    ADD_TESH(smpi-mc-only-send-determinism -setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/mc --cd ${CMAKE_BINARY_DIR}/examples/smpi/mc ${CMAKE_HOME_DIRECTORY}/examples/smpi/mc/only_send_deterministic.tesh)
+  endif()
+
+  ADD_TESH(smpi-tracing        --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace/trace.tesh)
+  ADD_TESH(smpi-tracing-simple --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_simple/trace_simple.tesh)
+  ADD_TESH(smpi-replay         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/replay.tesh)
+  ADD_TESH_FACTORIES(smpi-energy "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/energy.tesh)
+endif()

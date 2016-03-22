@@ -1,0 +1,16 @@
+# use the tested library, not the installed one
+# (since we want to pass it to the child, it has to be redefined before each command)
+# Go for the first test
+
+p Test instrumentation of SMPI
+$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./trace/smpi_trace --log=smpi_kernel.thres:warning
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_trace.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+
+$ rm -f smpi_trace.trace

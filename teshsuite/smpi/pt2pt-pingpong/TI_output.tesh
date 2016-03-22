@@ -40,7 +40,7 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/cpu_threshold:-1 -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=smpi/cpu_threshold:-1 -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard
@@ -146,7 +146,7 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > [rank 2] -> Fafard
 > [rank 3] -> Ginette
 
-$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti_one_file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning
+$ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -trace-ti --cfg=tracing/filename:out_ti.txt --cfg=tracing/smpi/format/ti_one_file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/../../../examples/smpi/replay/smpi_replay ./out_in_ti.txt --log=smpi_kernel.thres:warning
 > [rank 0] -> Tremblay
 > [rank 1] -> Jupiter
 > [rank 2] -> Fafard

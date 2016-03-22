@@ -25,10 +25,8 @@
 int main(int argc, char *argv[])
 {
   int size, rank;
-  int N;
   struct timeval *start_time = NULL, *stop_time = NULL;
   double seconds = 0;
-  int i, j;
   char *buffer;
   int check;
 
@@ -44,11 +42,11 @@ int main(int argc, char *argv[])
     stop_time = (struct timeval *) malloc(sizeof(struct timeval));
   }
 
-  for (N = N_START; N <= N_STOP; N = N_NEXT) {
+  for (int N = N_START; N <= N_STOP; N = N_NEXT) {
     buffer = malloc(sizeof(char) * N);
 
     if (0 == rank) {
-      for (j = 0; j < N; j++) {
+      for (int j = 0; j < N; j++) {
         buffer[j] = (char) (random() % 256);
       }
       if (-1 == gettimeofday(start_time, NULL)) {
@@ -58,10 +56,10 @@ int main(int argc, char *argv[])
       }
     }
 
-    for (i = 0; i < ITER; i++) {
+    for (int i = 0; i < ITER; i++) {
       MPI_Bcast(buffer, N, MPI_BYTE, 0, MPI_COMM_WORLD);
       if (0 == rank) {
-        for (j = 1; j < size; j++) {
+        for (int j = 1; j < size; j++) {
           MPI_Recv(&check, 1, MPI_INT, MPI_ANY_SOURCE, 1, MPI_COMM_WORLD, MPI_STATUS_IGNORE);
         }
       } else {

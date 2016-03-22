@@ -2,21 +2,10 @@
 # (since we want to pass it to the child, it has to be redefined before each command)
 # Go for the first test
 
-p Test instrumentation of SMPI
-$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced --log=smpi_kernel.thres:warning
+p SMPI test
+$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./trace_simple/smpi_trace_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
-
-p Another SMPI test
-$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_trace.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
@@ -25,24 +14,24 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_traced.t
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 
 p Another SMPI test, with only -trace
-$ ../../smpi_script/bin/smpirun -trace -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
+$ ../../smpi_script/bin/smpirun -trace -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./trace_simple/smpi_trace_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_trace.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 
 p Testing without trace parameters
-$ ../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
+$ ../../smpi_script/bin/smpirun -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./trace_simple/smpi_trace_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 
 p Testing grouped tracing
-$ ../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
+$ ../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./trace_simple/smpi_trace_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_trace.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/group' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
@@ -50,9 +39,9 @@ $ ../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_traced.tr
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 
 p Testing generation of viva configuration files
-$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=smpi/cpu_threshold:-1 -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
+$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=smpi/cpu_threshold:-1 -np 3 ./trace_simple/smpi_trace_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_traced.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_trace.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
@@ -65,9 +54,9 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file s
 > [0.003952] [instr_config/INFO] No categories declared, ignoring generation of viva graph configuration
 
 p Testing with parameters but without activating them with the safe switch (-trace)
-$ ../../smpi_script/bin/smpirun -trace-resource -trace-viva -trace-file smpi_traced.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./smpi_traced_simple --log=smpi_kernel.thres:warning
+$ ../../smpi_script/bin/smpirun -trace-resource -trace-viva -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg -np 3 ./trace_simple/smpi_trace_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 
-$ rm -f smpi_traced.trace smpi_uncat.plist smpi_cat.plist
+$ rm -f smpi_trace.trace smpi_uncat.plist smpi_cat.plist

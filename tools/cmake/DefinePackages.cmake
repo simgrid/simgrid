@@ -982,7 +982,6 @@ set(CMAKEFILES_TXT
   examples/smpi/NAS/CMakeLists.txt
   examples/smpi/smpi_msg_masterslave/CMakeLists.txt
   examples/smpi/replay_multiple/CMakeLists.txt
-  examples/smpi/energy/CMakeLists.txt
   examples/smpi/energy/f77/CMakeLists.txt
   examples/smpi/energy/f90/CMakeLists.txt
 
