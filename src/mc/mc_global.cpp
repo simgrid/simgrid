@@ -283,39 +283,6 @@ void MC_show_non_termination(void){
   MC_print_statistics(mc_stats);
 }
 
-namespace simgrid {
-namespace mc {
-
-void show_stack_liveness(xbt_fifo_t stack)
-{
-  int value;
-  simgrid::mc::Pair* pair;
-  xbt_fifo_item_t item;
-  smx_simcall_t req;
-  char *req_str = nullptr;
-
-  for (item = xbt_fifo_get_last_item(stack);
-       item; item = xbt_fifo_get_prev_item(item)) {
-    pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
-    req = MC_state_get_executed_request(pair->graph_state, &value);
-    if (req && req->call != SIMCALL_NONE) {
-      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
-      XBT_INFO("%s", req_str);
-      xbt_free(req_str);
-    }
-  }
-}
-
-void dump_stack_liveness(xbt_fifo_t stack)
-{
-  simgrid::mc::Pair* pair;
-  while ((pair = (simgrid::mc::Pair*) xbt_fifo_pop(stack)) != nullptr)
-    delete pair;
-}
-
-}
-}
-
 void MC_print_statistics(mc_stats_t stats)
 {
   if(_sg_mc_comms_determinism) {

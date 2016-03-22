@@ -349,7 +349,6 @@ static int compare_local_variables(int process_index,
 namespace simgrid {
 namespace mc {
 
-static
 int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc::Snapshot* s2)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
@@ -541,15 +540,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
 #endif
 
   return errors > 0 || hash_result;
-}
-
-int snapshot_compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2)
-{
-  simgrid::mc::Snapshot* s1 = state1->graph_state->system_state;
-  simgrid::mc::Snapshot* s2 = state2->graph_state->system_state;
-  int num1 = state1->num;
-  int num2 = state2->num;
-  return snapshot_compare(num1, s1, num2, s2);
 }
 
 int snapshot_compare(mc_state_t state1, mc_state_t state2)

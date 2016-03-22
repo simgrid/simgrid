@@ -88,6 +88,8 @@ XBT_PRIVATE void MC_print_statistics(mc_stats_t stats);
 XBT_PRIVATE void MC_report_assertion_error(void);
 XBT_PRIVATE void MC_report_crash(int status);
 
+SG_END_DECL()
+
 #ifdef __cplusplus
 
 namespace simgrid {
@@ -96,11 +98,12 @@ namespace mc {
 XBT_PRIVATE void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps, simgrid::mc::ObjectInformation* result);
 
+XBT_PRIVATE
+int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc::Snapshot* s2);
+
 }
 }
 
 #endif
-
-SG_END_DECL()
 
 #endif
