@@ -65,14 +65,12 @@ int main(int argc, char *argv[])
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-            "\tExample: %s msg_platform.xml msg_deployment_suspend.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
-  MSG_function_register("emigrant", emigrant);
-  MSG_function_register("policeman", policeman);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("emigrant", emigrant, NULL, MSG_get_host_by_name("Jacquelin"));
+  MSG_process_create("policeman", policeman, NULL, MSG_get_host_by_name("Boivin"));
 
   mutex = xbt_mutex_init();
   cond = xbt_cond_init();

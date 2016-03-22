@@ -3,7 +3,7 @@
 p Testing the mechanism for computing host energy consumption
 
 ! output sort 19
-$ $SG_TEST_EXENV energy/onoff/onoff$EXEEXT ${srcdir:=.}/energy/onoff/platform_onoff.xml ${srcdir:=.}/energy/onoff/deployment_onoff.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV energy/onoff/onoff$EXEEXT ${srcdir:=.}/energy/onoff/platform_onoff.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:onoff_test@MyHost2) Energetic profile: 95.0:200.0,93.0:170.0,90.0:150.0,       120:120,110:110
 > [  0.000000] (1:onoff_test@MyHost2) Initial peak speed=1E+08 flop/s; Energy dissipated =0E+00 J
 > [  0.000000] (1:onoff_test@MyHost2) Sleep for 10 seconds

@@ -3,7 +3,7 @@
 p Testing a MSG application with properties in the XML for Hosts, Links and Processes
 
 ! output sort 19
-$ $SG_TEST_EXENV properties/msg_prop$EXEEXT ${srcdir:=.}/../platforms/prop.xml ${srcdir:=.}/properties/deployment_properties.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/properties$EXEEXT ${srcdir:=.}/prop.xml ${srcdir:=.}/../msg/properties/properties_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) There are 7 hosts in the environment
 > [  0.000000] (0:maestro@) Host 'node-3.acme.org' runs at 1000000000 flops/s
 > [  0.000000] (0:maestro@) Host 'node-0.acme.org' runs at 1000000000 flops/s

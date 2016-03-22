@@ -3,7 +3,7 @@
 p Testing the remote exception raising feature
 
 ! output sort 19
-$ $SG_TEST_EXENV exception/exception ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/exception/deployment_exception.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" "--cfg=exception/cutpath:1"
+$ $SG_TEST_EXENV exception/exception ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n" "--cfg=exception/cutpath:1"
 > [  0.000000] (1:terrorist@Jacquelin) Let's create a victim.
 > [  0.000000] (2:victim@Jacquelin) Let's work.
 > [  0.000000] (1:terrorist@Jacquelin) Going to sleep for 1 second

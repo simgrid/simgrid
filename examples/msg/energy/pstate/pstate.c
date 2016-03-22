@@ -73,13 +73,12 @@ int main(int argc, char *argv[])
 
   MSG_init(&argc, argv);
 
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-            "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
-  MSG_function_register("dvfs_test", dvfs);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("dvfs_test", dvfs, NULL, MSG_get_host_by_name("MyHost1"));
+  MSG_process_create("dvfs_test", dvfs, NULL, MSG_get_host_by_name("MyHost2"));
 
   res = MSG_main();
 

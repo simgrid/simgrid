@@ -943,47 +943,35 @@ set(CMAKEFILES_TXT
   examples/java/tracing/CMakeLists.txt
   
   examples/msg/CMakeLists.txt
-  examples/msg/actions/CMakeLists.txt
-  examples/msg/bittorrent/CMakeLists.txt
-  examples/msg/chainsend/CMakeLists.txt
-  examples/msg/chord/CMakeLists.txt
-  examples/msg/cloud/CMakeLists.txt
-  examples/msg/energy/CMakeLists.txt
-  examples/msg/exception/CMakeLists.txt
-  examples/msg/gtnets/CMakeLists.txt 
-  examples/msg/icomms/CMakeLists.txt
-  examples/msg/io/CMakeLists.txt
-  examples/msg/kademlia/CMakeLists.txt
-  examples/msg/masterslave/CMakeLists.txt
-  examples/msg/mc/CMakeLists.txt
-  examples/msg/migration/CMakeLists.txt
-  examples/msg/ns3/CMakeLists.txt
-  examples/msg/parallel_task/CMakeLists.txt
-  examples/msg/pastry/CMakeLists.txt
-  examples/msg/pmm/CMakeLists.txt
-  examples/msg/priority/CMakeLists.txt
-  examples/msg/properties/CMakeLists.txt
-  examples/msg/semaphores/CMakeLists.txt
-  examples/msg/sendrecv/CMakeLists.txt
-  examples/msg/set-maestro/CMakeLists.txt
-  examples/msg/start_kill_time/CMakeLists.txt
-  examples/msg/suspend/CMakeLists.txt
-  examples/msg/token_ring/CMakeLists.txt
-  examples/msg/tracing/CMakeLists.txt
-  
+    examples/msg/actions/CMakeLists.txt
+    examples/msg/bittorrent/CMakeLists.txt
+    examples/msg/chainsend/CMakeLists.txt
+    examples/msg/chord/CMakeLists.txt
+    examples/msg/cloud/CMakeLists.txt
+    examples/msg/energy/CMakeLists.txt
+    examples/msg/gtnets/CMakeLists.txt 
+    examples/msg/icomms/CMakeLists.txt
+    examples/msg/io/CMakeLists.txt
+    examples/msg/kademlia/CMakeLists.txt
+    examples/msg/masterslave/CMakeLists.txt
+    examples/msg/mc/CMakeLists.txt
+    examples/msg/ns3/CMakeLists.txt
+    examples/msg/pastry/CMakeLists.txt
+    examples/msg/sendrecv/CMakeLists.txt
+    examples/msg/set-maestro/CMakeLists.txt
+    examples/msg/start_kill_time/CMakeLists.txt
+    examples/msg/tracing/CMakeLists.txt
   examples/s4u/CMakeLists.txt
-  
   examples/simdag/CMakeLists.txt
-  examples/simdag/dax/CMakeLists.txt
-  examples/simdag/dot/CMakeLists.txt
-  examples/simdag/goal/CMakeLists.txt
-  
+    examples/simdag/dax/CMakeLists.txt
+    examples/simdag/dot/CMakeLists.txt
+    examples/simdag/goal/CMakeLists.txt
   examples/smpi/CMakeLists.txt
-  examples/smpi/NAS/CMakeLists.txt
-  examples/smpi/smpi_msg_masterslave/CMakeLists.txt
-  examples/smpi/replay_multiple/CMakeLists.txt
-  examples/smpi/energy/f77/CMakeLists.txt
-  examples/smpi/energy/f90/CMakeLists.txt
+    examples/smpi/NAS/CMakeLists.txt
+    examples/smpi/smpi_msg_masterslave/CMakeLists.txt
+    examples/smpi/replay_multiple/CMakeLists.txt
+    examples/smpi/energy/f77/CMakeLists.txt
+    examples/smpi/energy/f90/CMakeLists.txt
 
   teshsuite/java/CMakeLists.txt
   teshsuite/mc/CMakeLists.txt

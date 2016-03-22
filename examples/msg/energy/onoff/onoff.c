@@ -4,7 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-
 #include "simgrid/msg.h"
 #include "simgrid/plugins/energy.h"
 
@@ -89,13 +88,11 @@ int main(int argc, char *argv[])
   sg_energy_plugin_init();
   MSG_init(&argc, argv);
 
-  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
-       "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
-  MSG_function_register("onoff_test", onoff);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("onoff_test", onoff, NULL, MSG_get_host_by_name("MyHost2"));
 
   res = MSG_main();
 

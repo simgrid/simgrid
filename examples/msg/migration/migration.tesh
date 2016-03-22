@@ -3,7 +3,7 @@
 p Testing the migration feature of MSG
 
 ! output sort 19
-$ $SG_TEST_EXENV migration/migration ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/migration/migration.deploy  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/migration ${srcdir:=.}/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:emigrant@Jacquelin) I'll look for a new job on another machine where the grass is greener.
 > [  0.000000] (1:emigrant@Boivin) Yeah, found something to do
 > [  0.000000] (2:policeman@Boivin) Wait a bit before migrating the emigrant.

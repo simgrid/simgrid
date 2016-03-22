@@ -13,7 +13,4 @@ ADD_TESH_FACTORIES(msg-ptask-energy-consumption "thread;ucontext;raw;boost" --cf
 
 set(examples_src  ${examples_src}                                                                        PARENT_SCOPE)
 set(tesh_files    ${tesh_files}                                                                          PARENT_SCOPE)
-set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/onoff/platform_onoff.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/consumption/deployment_consumption.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/onoff/deployment_onoff.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/pstate/deployment_pstate.xml              PARENT_SCOPE)
+set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/onoff/platform_onoff.xml                  PARENT_SCOPE)

@@ -2,7 +2,7 @@
 
 p Test0 Process without time
 
-$ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/start_kill_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.
 > [ 10.000000] (1:sleeper@node-0.acme.org) Done sleeping.
 > [ 10.000000] (1:sleeper@node-0.acme.org) Exiting now (done sleeping or got killed).
@@ -10,7 +10,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/plat
 
 p Test1 Process with start time
 
-$ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_start.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/start_kill_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_start.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.
 > [  1.000000] (2:sleeper@node-1.acme.org) Hello! I go to sleep.
 > [  2.000000] (3:sleeper@node-2.acme.org) Hello! I go to sleep.
@@ -33,7 +33,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/plat
 
 p Test1 Process with kill time
 
-$ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_kill.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/start_kill_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_kill.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-1.acme.org) Hello! I go to sleep.
 > [  0.000000] (2:sleeper@node-2.acme.org) Hello! I go to sleep.
 > [  0.000000] (3:sleeper@node-3.acme.org) Hello! I go to sleep.
@@ -45,7 +45,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/plat
 
 p Test2 Process with start and kill times
 
-$ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/sk_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_start_kill.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/start_kill_time/start_kill_time ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/start_kill_time/deployment_start_kill.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sleeper@node-0.acme.org) Hello! I go to sleep.
 > [  1.000000] (2:sleeper@node-1.acme.org) Hello! I go to sleep.
 > [  2.000000] (3:sleeper@node-2.acme.org) Hello! I go to sleep.
