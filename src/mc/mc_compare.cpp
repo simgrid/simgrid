@@ -64,8 +64,6 @@ struct ComparisonState {
 
 using simgrid::mc::ComparisonState;
 
-extern "C" {
-
 /************************** Snapshot comparison *******************************/
 /******************************************************************************/
 
@@ -348,30 +346,13 @@ static int compare_local_variables(int process_index,
     return 0;
 }
 
-int snapshot_compare(void *state1, void *state2)
+namespace simgrid {
+namespace mc {
+
+static
+int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc::Snapshot* s2)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-
-  simgrid::mc::Snapshot* s1;
-  simgrid::mc::Snapshot* s2;
-  int num1, num2;
-
-  if (_sg_mc_liveness) {        /* Liveness MC */
-    s1 = ((simgrid::mc::VisitedPair*) state1)->graph_state->system_state;
-    s2 = ((simgrid::mc::VisitedPair*) state2)->graph_state->system_state;
-    num1 = ((simgrid::mc::VisitedPair*) state1)->num;
-    num2 = ((simgrid::mc::VisitedPair*) state2)->num;
-  }else if (_sg_mc_termination) { /* Non-progressive cycle MC */
-    s1 = ((mc_state_t) state1)->system_state;
-    s2 = ((mc_state_t) state2)->system_state;
-    num1 = ((mc_state_t) state1)->num;
-    num2 = ((mc_state_t) state2)->num;
-  } else {                      /* Safety or comm determinism MC */
-    s1 = ((simgrid::mc::VisitedState*) state1)->system_state;
-    s2 = ((simgrid::mc::VisitedState*) state2)->system_state;
-    num1 = ((simgrid::mc::VisitedState*) state1)->num;
-    num2 = ((simgrid::mc::VisitedState*) state2)->num;
-  }
 
   int errors = 0;
   int res_init;
@@ -560,7 +541,34 @@ int snapshot_compare(void *state1, void *state2)
 #endif
 
   return errors > 0 || hash_result;
-
 }
 
+int snapshot_compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2)
+{
+  simgrid::mc::Snapshot* s1 = state1->graph_state->system_state;
+  simgrid::mc::Snapshot* s2 = state2->graph_state->system_state;
+  int num1 = state1->num;
+  int num2 = state2->num;
+  return snapshot_compare(num1, s1, num2, s2);
+}
+
+int snapshot_compare(mc_state_t state1, mc_state_t state2)
+{
+  simgrid::mc::Snapshot* s1 = state1->system_state;
+  simgrid::mc::Snapshot* s2 = state2->system_state;
+  int num1 = state1->num;
+  int num2 = state2->num;
+  return snapshot_compare(num1, s1, num2, s2);
+}
+
+int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::VisitedState* state2)
+{
+  simgrid::mc::Snapshot* s1 = state1->system_state;
+  simgrid::mc::Snapshot* s2 = state2->system_state;
+  int num1 = state1->num;
+  int num2 = state2->num;
+  return snapshot_compare(num1, s1, num2, s2);
+}
+
+}
 }

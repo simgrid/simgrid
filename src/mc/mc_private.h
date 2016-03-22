@@ -80,8 +80,6 @@ XBT_PRIVATE void MC_print_statistics(mc_stats_t stats);
 
 /********************************** Snapshot comparison **********************************/
 
-XBT_PRIVATE int snapshot_compare(void *state1, void *state2);
-
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
 
