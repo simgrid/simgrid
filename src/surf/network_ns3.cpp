@@ -345,17 +345,16 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
   }
 
   xbt_dict_cursor_t cursor = NULL;
-  char *key;
-  void *data;
-  xbt_dict_foreach(flowFromSock,cursor,key,data){
-    NetworkNS3Action * action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
-    XBT_DEBUG("Processing socket %p (action %p)",data,action);
-    action->setRemains(action->getCost() - ns3_get_socket_sent(data));
+  char *ns3Socket;
+  SgFlow *sgFlow;
+  xbt_dict_foreach(flowFromSock,cursor,ns3Socket,sgFlow){
+    NetworkNS3Action * action = sgFlow->action_;
+    XBT_DEBUG("Processing socket %p (action %p)",sgFlow,action);
+    action->setRemains(action->getCost() - sgFlow->sentBytes_);
 
     if (TRACE_is_enabled() &&
         action->getState() == Action::State::running){
-      double data_sent = ns3_get_socket_sent(data);
-      double data_delta_sent = data_sent - action->m_lastSent;
+      double data_delta_sent = sgFlow->sentBytes_ - action->m_lastSent;
 
       std::vector<Link*> *route = new std::vector<Link*>();
 
@@ -364,26 +363,25 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
         TRACE_surf_link_set_utilization (link->getName(), action->getCategory(), (data_delta_sent)/delta, now-delta, delta);
       delete route;
 
-      action->m_lastSent = data_sent;
+      action->m_lastSent = sgFlow->sentBytes_;
     }
 
-    if(ns3_get_socket_is_finished(data) == 1){
-      xbt_dynar_push(socket_to_destroy,&key);
-      XBT_DEBUG("Destroy socket %p of action %p", key, action);
+    if(sgFlow->finished_){
+      xbt_dynar_push(socket_to_destroy,&ns3Socket);
+      XBT_DEBUG("Destroy socket %p of action %p", ns3Socket, action);
       action->finish();
       action->setState(Action::State::done);
     }
   }
 
   while (!xbt_dynar_is_empty(socket_to_destroy)){
-    xbt_dynar_pop(socket_to_destroy,&key);
+    xbt_dynar_pop(socket_to_destroy,&ns3Socket);
 
     if (XBT_LOG_ISENABLED(ns3, xbt_log_priority_debug)) {
-      SgFlow *data = (SgFlow*)xbt_dict_get (flowFromSock, key);
-      NetworkNS3Action * action = static_cast<NetworkNS3Action*>(ns3_get_socket_action(data));
-      XBT_DEBUG ("Removing socket %p of action %p", key, action);
+      SgFlow *flow = (SgFlow*)xbt_dict_get (flowFromSock, ns3Socket);
+      XBT_DEBUG ("Removing socket %p of action %p", ns3Socket, flow->action_);
     }
-    xbt_dict_remove(flowFromSock, key);
+    xbt_dict_remove(flowFromSock, ns3Socket);
   }
   return;
 }
@@ -463,22 +461,6 @@ int NetworkNS3Action::unref()
 
 void ns3_simulator(double min){
   ns3_sim->simulator_start(min);
-}
-
-simgrid::surf::NetworkNS3Action* ns3_get_socket_action(void *socket){
-  return ((SgFlow *)socket)->action_;
-}
-
-double ns3_get_socket_remains(void *socket){
-  return ((SgFlow *)socket)->remaining_;
-}
-
-double ns3_get_socket_sent(void *socket){
-  return ((SgFlow *)socket)->sentBytes_;
-}
-
-bool ns3_get_socket_is_finished(void *socket){
-  return ((SgFlow *)socket)->finished_;
 }
 
 int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)
