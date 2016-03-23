@@ -33,6 +33,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
 namespace simgrid {
 namespace mc {
 
+static void MC_show_non_termination(void)
+{
+  XBT_INFO("******************************************");
+  XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
+  XBT_INFO("******************************************");
+  XBT_INFO("Counter-example execution trace:");
+  MC_dump_stack_safety(mc_stack);
+  MC_print_statistics(mc_stats);
+}
+
 static int is_exploration_stack_state(mc_state_t current_state){
 
   xbt_fifo_item_t item;

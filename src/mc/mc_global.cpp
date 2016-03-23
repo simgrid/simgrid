@@ -247,15 +247,6 @@ void MC_show_deadlock(void)
   MC_print_statistics(mc_stats);
 }
 
-void MC_show_non_termination(void){
-  XBT_INFO("******************************************");
-  XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
-  XBT_INFO("******************************************");
-  XBT_INFO("Counter-example execution trace:");
-  MC_dump_stack_safety(mc_stack);
-  MC_print_statistics(mc_stats);
-}
-
 void MC_print_statistics(mc_stats_t stats)
 {
   if(_sg_mc_comms_determinism) {
