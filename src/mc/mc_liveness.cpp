@@ -316,70 +316,59 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
   else
     new_visited_pair = visited_pair;
 
-  if (xbt_dynar_is_empty(visited_pairs)) {
-    xbt_dynar_push(visited_pairs, &new_visited_pair);
-    return -1;
+  auto visited_pairs = simgrid::xbt::range<simgrid::mc::VisitedPair*>(simgrid::mc::visited_pairs);
+
+  auto range = std::equal_range(visited_pairs.begin(), visited_pairs.end(),
+    new_visited_pair, simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
+
+  for (auto i = range.first; i != range.second; ++i) {
+    simgrid::mc::VisitedPair* pair_test = *i;
+    std::size_t cursor = i - visited_pairs.begin();
+    if (xbt_automaton_state_compare(pair_test->automaton_state, new_visited_pair->automaton_state) == 0) {
+      if (xbt_automaton_propositional_symbols_compare_value(
+          pair_test->atomic_propositions.get(),
+          new_visited_pair->atomic_propositions.get()) == 0) {
+        if (snapshot_compare(pair_test, new_visited_pair) == 0) {
+          if (pair_test->other_num == -1)
+            new_visited_pair->other_num = pair_test->num;
+          else
+            new_visited_pair->other_num = pair_test->other_num;
+          if (dot_output == nullptr)
+            XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_visited_pair->num, pair_test->num);
+          else
+            XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", new_visited_pair->num, pair_test->num, new_visited_pair->other_num);
+          xbt_dynar_remove_at(simgrid::mc::visited_pairs, cursor, &pair_test);
+          xbt_dynar_insert_at(simgrid::mc::visited_pairs, cursor, &new_visited_pair);
+          pair_test->visited_removed = 1;
+          if (!pair_test->acceptance_pair
+              || pair_test->acceptance_removed == 1)
+            delete pair_test;
+          return new_visited_pair->other_num;
+        }
+      }
+    }
   }
 
-    int min = -1, max = -1, index;
-    //int res;
-    simgrid::mc::VisitedPair* pair_test;
-    int cursor;
+  xbt_dynar_insert_at(simgrid::mc::visited_pairs, range.first - visited_pairs.begin(), &new_visited_pair);
 
-    index = get_search_interval(
-      (simgrid::mc::VisitedPair**) xbt_dynar_get_ptr(visited_pairs, 0),
-      xbt_dynar_length(visited_pairs), new_visited_pair, &min, &max);
-
-    if (min != -1 && max != -1) {       // Visited pair with same number of processes and same heap bytes used exists
-      cursor = min;
-      while (cursor <= max) {
-        pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(visited_pairs, cursor, simgrid::mc::VisitedPair*);
-        if (xbt_automaton_state_compare(pair_test->automaton_state, new_visited_pair->automaton_state) == 0) {
-          if (xbt_automaton_propositional_symbols_compare_value(
-              pair_test->atomic_propositions.get(),
-              new_visited_pair->atomic_propositions.get()) == 0) {
-            if (snapshot_compare(pair_test, new_visited_pair) == 0) {
-              if (pair_test->other_num == -1)
-                new_visited_pair->other_num = pair_test->num;
-              else
-                new_visited_pair->other_num = pair_test->other_num;
-              if (dot_output == nullptr)
-                XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_visited_pair->num, pair_test->num);
-              else
-                XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", new_visited_pair->num, pair_test->num, new_visited_pair->other_num);
-              xbt_dynar_remove_at(visited_pairs, cursor, &pair_test);
-              xbt_dynar_insert_at(visited_pairs, cursor, &new_visited_pair);
-              pair_test->visited_removed = 1;
-              if (!pair_test->acceptance_pair
-                  || pair_test->acceptance_removed == 1)
-                delete pair_test;
-              return new_visited_pair->other_num;
-            }
-          }
-        }
-        cursor++;
+  if ((ssize_t) visited_pairs.size() > _sg_mc_visited) {
+    int min2 = mc_stats->expanded_pairs;
+    unsigned int index2 = 0;
+    for (std::size_t i = 0; i != visited_pairs.size(); ++i) {
+      simgrid::mc::VisitedPair* pair_test = visited_pairs[i];
+      if (!mc_model_checker->is_important_snapshot(*pair_test->graph_state->system_state)
+          && pair_test->num < min2) {
+        index2 = i;
+        min2 = pair_test->num;
       }
-      xbt_dynar_insert_at(visited_pairs, min, &new_visited_pair);
-    } else {
-      xbt_dynar_insert_at(visited_pairs, index, &new_visited_pair);
     }
+    simgrid::mc::VisitedPair* pair_test = nullptr;
+    xbt_dynar_remove_at(simgrid::mc::visited_pairs, index2, &pair_test);
+    pair_test->visited_removed = 1;
+    if (!pair_test->acceptance_pair || pair_test->acceptance_removed)
+      delete pair_test;
+  }
 
-    if ((ssize_t) xbt_dynar_length(visited_pairs) > _sg_mc_visited) {
-      int min2 = mc_stats->expanded_pairs;
-      unsigned int cursor2 = 0;
-      unsigned int index2 = 0;
-      xbt_dynar_foreach(visited_pairs, cursor2, pair_test) {
-        if (!mc_model_checker->is_important_snapshot(*pair_test->graph_state->system_state)
-            && pair_test->num < min2) {
-          index2 = cursor2;
-          min2 = pair_test->num;
-        }
-      }
-      xbt_dynar_remove_at(visited_pairs, index2, &pair_test);
-      pair_test->visited_removed = 1;
-      if (!pair_test->acceptance_pair || pair_test->acceptance_removed)
-        delete pair_test;
-    }
   return -1;
 }
 
