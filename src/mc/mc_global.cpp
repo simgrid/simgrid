@@ -308,7 +308,6 @@ void MC_automaton_load(const char *file)
   xbt_automaton_load(simgrid::mc::property_automaton, file);
 }
 
-// TODO, fix cross-process access (this function is not used)
 static void MC_dump_stacks(FILE* file)
 {
   int nstack = 0;
