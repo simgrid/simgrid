@@ -14,6 +14,7 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 #include <xbt/dynar.h>
+#include <xbt/dynar.hpp>
 #include <xbt/fifo.h>
 
 #include "src/mc/mc_comm_pattern.h"
@@ -135,6 +136,21 @@ bool some_communications_are_not_finished()
 namespace simgrid {
 namespace mc {
 
+static void prune_visited_states()
+{
+  while (visited_states.size() > (std::size_t) _sg_mc_visited) {
+    XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
+    auto min_element = std::min_element(visited_states.begin(), visited_states.end(),
+      [](std::unique_ptr<simgrid::mc::VisitedState>& a, std::unique_ptr<simgrid::mc::VisitedState>& b) {
+        return a->num < b->num;
+      });
+    xbt_assert(min_element != visited_states.end());
+    // and drop it:
+    visited_states.erase(min_element);
+    XBT_DEBUG("Remove visited state (maximum number of stored states reached)");
+  }
+}
+
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
@@ -196,31 +212,8 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_sta
 
   XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, (unsigned long) visited_states.size());
   visited_states.insert(range.first, std::move(new_state));
-
-  if (visited_states.size() <= (std::size_t) _sg_mc_visited)
-    return nullptr;
-
-  // We have reached the maximum number of stored states;
-
-      XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
-
-      // Find the (index of the) older state (with the smallest num):
-      int min2 = mc_stats->expanded_states;
-      unsigned int index2 = 0;
-
-      for (std::size_t cursor2 = 0; cursor2 != visited_states.size(); ++cursor2)
-        if (!mc_model_checker->is_important_snapshot(
-              *visited_states[cursor2]->system_state)
-            && visited_states[cursor2]->num < min2) {
-          index2 = cursor2;
-          min2 = visited_states[cursor2]->num;
-        }
-
-      // and drop it:
-      visited_states.erase(visited_states.begin() + index2);
-      XBT_DEBUG("Remove visited state (maximum number of stored states reached)");
-
-    return nullptr;
+  prune_visited_states();
+  return nullptr;
 }
 
 }
