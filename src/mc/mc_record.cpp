@@ -180,15 +180,12 @@ void MC_record_dump_path(xbt_fifo_t stack)
 
 void MC_record_replay_from_string(const char* path_string)
 {
+  simgrid::mc::processes_time.resize(simix_process_maxpid);
   xbt_dynar_t path = MC_record_from_string(path_string);
   mc_record_item_t start = &xbt_dynar_get_as(path, 0, s_mc_record_item_t);
   MC_record_replay(start, xbt_dynar_length(path));
   xbt_dynar_free(&path);
-}
-
-void MC_record_replay_init()
-{
-  simgrid::mc::processes_time.resize(simix_process_maxpid);
+  simgrid::mc::processes_time.clear();
 }
 
 }

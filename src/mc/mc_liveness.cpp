@@ -554,9 +554,6 @@ int modelcheck_liveness(void)
   MC_pre_modelcheck_liveness();
   int res = MC_modelcheck_liveness_main();
 
-  /* We're done */
-  simgrid::mc::processes_time.clear();
-
   return res;
 }
 

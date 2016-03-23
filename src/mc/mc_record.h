@@ -76,8 +76,6 @@ XBT_PRIVATE void MC_record_replay(mc_record_item_t start, size_t count);
  */
 XBT_PRIVATE void MC_record_replay_from_string(const char* data);
 
-XBT_PRIVATE void MC_record_replay_init(void);
-
 SG_END_DECL()
 
 #endif

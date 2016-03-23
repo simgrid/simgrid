@@ -105,6 +105,7 @@ void MC_run()
   xbt_swag_foreach(process, simix_global->process_list)
     MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
   simgrid::mc::Client::get()->mainLoop();
+  simgrid::mc::processes_time.clear();
 }
 
 /**
