@@ -947,15 +947,15 @@ set(CMAKEFILES_TXT
     examples/msg/bittorrent/CMakeLists.txt
     examples/msg/chainsend/CMakeLists.txt
     examples/msg/cloud/CMakeLists.txt
+    examples/msg/dht-kademlia/CMakeLists.txt
+    examples/msg/dht-pastry/CMakeLists.txt
     examples/msg/energy/CMakeLists.txt
     examples/msg/gtnets/CMakeLists.txt 
     examples/msg/icomms/CMakeLists.txt
     examples/msg/io/CMakeLists.txt
-    examples/msg/kademlia/CMakeLists.txt
     examples/msg/masterslave/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
     examples/msg/ns3/CMakeLists.txt
-    examples/msg/pastry/CMakeLists.txt
     examples/msg/sendrecv/CMakeLists.txt
     examples/msg/set-maestro/CMakeLists.txt
     examples/msg/start_kill_time/CMakeLists.txt

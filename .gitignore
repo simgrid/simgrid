@@ -123,10 +123,7 @@ examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen
 examples/msg/categories.trace
 examples/msg/chainsend/chainsend
-examples/msg/chord/chord
-examples/msg/chord/chord_stateful
-examples/msg/chord/deployments
-examples/msg/chord/exp_*
+examples/msg/dht-chord/dht-chord
 examples/msg/cloud/bound
 examples/msg/cloud/master_worker_vm
 examples/msg/cloud/migrate_vm
@@ -151,7 +148,7 @@ examples/msg/io/remote
 examples/msg/io/storage
 examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
-examples/msg/kademlia/kademlia
+examples/msg/dht-kademlia/kademlia
 examples/msg/masterslave/masterslave_arg
 examples/msg/masterslave/masterslave_cluster
 examples/msg/masterslave/masterslave_failure
@@ -180,7 +177,7 @@ examples/msg/ns3/ns3
 examples/msg/parallel_contexts/pcontexts
 examples/msg/parallel_contexts/pcontexts2
 examples/msg/parallel_task/parallel_task
-examples/msg/pastry/pastry
+examples/msg/dht-pastry/pastry
 examples/msg/pmm/pmm
 examples/msg/priority/priority
 examples/msg/procmig.trace

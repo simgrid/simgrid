@@ -1,8 +1,8 @@
 add_executable       (kademlia kademlia.c node.c routing_table.c task.c answer.c)
 target_link_libraries(kademlia simgrid)
 
-ADD_TESH_FACTORIES(msg-kademlia "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia kademlia.tesh)
-ADD_TESH(msg-kademlia-parallel  --cfg contexts/nthreads:4 --cfg contexts/factory:thread ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/kademlia kademlia.tesh)
+ADD_TESH_FACTORIES(msg-dht-kademlia "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia kademlia.tesh)
+ADD_TESH(msg-dht-kademlia-parallel  --cfg contexts/nthreads:4 --cfg contexts/factory:thread ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-kademlia --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-kademlia kademlia.tesh)
 
 foreach (file answer kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/${file}.h)

@@ -3,7 +3,7 @@
 p Testing the Chord implementation with MSG
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT -nb_bits=6 ${srcdir:=.}/platform.xml ${srcdir:=.}/../msg/chord/chord.xml --cfg=network/crosstraffic:0 --log=msg_chord.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/dht-chord$EXEEXT -nb_bits=6 ${srcdir:=.}/platform.xml ${srcdir:=.}/../msg/dht-chord/chord.xml --cfg=network/crosstraffic:0 --log=msg_chord.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000000] (1:node@Gatien) Joining the ring with id 48, knowing node 1
 > [  0.000000] (2:node@McGee) Joining the ring with id 42, knowing node 1
@@ -457,7 +457,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT -nb_bits=6 ${srcdir:=.}/platform.xml 
 > [804.364963] (0:maestro@) Simulated time: 804.365
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/chord$EXEEXT ${srcdir:=.}/routing_none.xml ${srcdir:=.}/../msg/chord/chord10.xml --cfg=network/crosstraffic:0 --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
+$ $SG_TEST_EXENV ${bindir:=.}/dht-chord$EXEEXT ${srcdir:=.}/routing_none.xml ${srcdir:=.}/../msg/dht-chord/chord10.xml --cfg=network/crosstraffic:0 --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
 > [   0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
 > [   0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'
 > [   0.000000] (1:node@node-0.acme.org) My finger table:
