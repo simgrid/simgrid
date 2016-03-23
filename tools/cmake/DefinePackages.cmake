@@ -946,7 +946,6 @@ set(CMAKEFILES_TXT
     examples/msg/actions/CMakeLists.txt
     examples/msg/bittorrent/CMakeLists.txt
     examples/msg/chainsend/CMakeLists.txt
-    examples/msg/chord/CMakeLists.txt
     examples/msg/cloud/CMakeLists.txt
     examples/msg/energy/CMakeLists.txt
     examples/msg/gtnets/CMakeLists.txt 

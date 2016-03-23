@@ -1,4 +1,4 @@
-foreach(x exception migration parallel_task pmm priority properties suspend synchro token_ring)
+foreach(x chord exception migration parallel_task pmm priority properties suspend synchro token_ring)
   add_executable       (${x}     ${x}/${x}.c)
   target_link_libraries(${x}     simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -11,17 +11,25 @@ foreach(file bourassa fafard ginette jupiter link3 link4 link5)
 endforeach()
 
 set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README                       PARENT_SCOPE)
+set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/chord/generate.py            PARENT_SCOPE)
 set(examples_src ${examples_src}                                                           PARENT_SCOPE)
-set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/parallel_task/parallel_task_energy.tesh      PARENT_SCOPE)
-set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/priority/priority_d.xml
+set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord_crosstraffic.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/parallel_task/parallel_task_energy.tesh      PARENT_SCOPE)
+set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/chord/chord10.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/priority/priority_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/properties/properties_d.xml                  PARENT_SCOPE)
 
-foreach(x migration priority properties suspend synchro token_ring)
+foreach(x chord migration priority properties suspend synchro token_ring)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()
 
-ADD_TESH_FACTORIES(msg-ptask        "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_task/parallel_task.tesh)
-ADD_TESH_FACTORIES(msg-ptask-energy "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_task/parallel_task_energy.tesh)
+ADD_TESH_FACTORIES(msg-chord-crosstraffic          "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord_crosstraffic.tesh)
+ADD_TESH_FACTORIES(msg-chord-crosstraffic-parallel "thread;ucontext;raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord_crosstraffic.tesh)
+ADD_TESH_FACTORIES(msg-chord-parallel              "thread;ucontext;raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/chord --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/chord chord.tesh)
+ADD_TESH_FACTORIES(msg-ptask                       "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_task/parallel_task.tesh)
+ADD_TESH_FACTORIES(msg-ptask-energy                "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/parallel_task/parallel_task_energy.tesh)
+
 ADD_TESH(msg-pmm  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/pmm/pmm.tesh)
 # This one is not usable:
 # ADD_TESH_FACTORIES(msg-exception "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/exception/exception.tesh)
