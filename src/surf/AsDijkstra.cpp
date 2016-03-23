@@ -38,7 +38,7 @@ static void graph_edge_data_free(void *e) // FIXME: useless code duplication
 
 namespace simgrid {
 namespace surf {
-void AsDijkstra::Seal()
+void AsDijkstra::seal()
 {
   xbt_node_t node = NULL;
   unsigned int cursor2, cursor;

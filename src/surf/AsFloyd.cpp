@@ -149,7 +149,7 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
   }
 }
 
-void AsFloyd::Seal(){
+void AsFloyd::seal(){
 
   /* set the size of table routing */
   size_t table_size = xbt_dynar_length(vertices_);

@@ -16,7 +16,7 @@ class XBT_PRIVATE AsFull: public AsRoutedGraph {
 public:
 
   AsFull(const char*name);
-  void Seal() override;
+  void seal() override;
   ~AsFull();
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

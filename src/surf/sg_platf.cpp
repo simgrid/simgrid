@@ -948,7 +948,7 @@ void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 void sg_platf_new_AS_end()
 {
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
-  current_routing->Seal();
+  current_routing->seal();
   current_routing = static_cast<simgrid::surf::AsImpl*>(current_routing->father());
 
   if (TRACE_is_enabled())

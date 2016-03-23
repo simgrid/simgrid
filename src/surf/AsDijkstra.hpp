@@ -33,7 +33,7 @@ namespace surf {
 class XBT_PRIVATE AsDijkstra : public AsRoutedGraph {
 public:
   AsDijkstra(const char*name, bool cached);
-  void Seal() override;
+  void seal() override;
 
   ~AsDijkstra();
   xbt_node_t routeGraphNewNode(int id, int graph_id);

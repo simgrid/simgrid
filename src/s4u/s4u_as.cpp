@@ -19,7 +19,7 @@ namespace simgrid {
     : name_(xbt_strdup(name))
     {
     }
-    void As::Seal()
+    void As::seal()
     {
       sealed_ = true;
     }

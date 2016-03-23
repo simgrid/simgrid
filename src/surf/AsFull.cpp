@@ -17,7 +17,7 @@ namespace surf {
   {
   }
 
-void AsFull::Seal() {
+void AsFull::seal() {
   int i;
   sg_platf_route_cbarg_t e_route;
 

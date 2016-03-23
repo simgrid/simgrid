@@ -19,7 +19,7 @@ public:
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
   void addRoute(sg_platf_route_cbarg_t route) override;
-  void Seal() override;
+  void seal() override;
 
 private:
   /* vars to compute the Floyd algorithm. */
