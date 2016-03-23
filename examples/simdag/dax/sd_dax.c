@@ -7,6 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/simdag.h"
+#include "xbt/file.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -79,7 +80,7 @@ int main(int argc, char **argv)
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
   XBT_INFO("------------------- Produce the trace file---------------------------");
-  XBT_INFO("Producing the trace of the run into %s", tracefilename);
+  XBT_INFO("Producing the trace of the run into %s", xbt_basename(tracefilename));
   FILE *out = fopen(tracefilename, "w");
   xbt_assert(out, "Cannot write to %s", tracefilename);
   free(tracefilename);

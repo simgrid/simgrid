@@ -963,9 +963,7 @@ set(CMAKEFILES_TXT
     examples/msg/tracing/CMakeLists.txt
   examples/s4u/CMakeLists.txt
   examples/simdag/CMakeLists.txt
-    examples/simdag/dax/CMakeLists.txt
     examples/simdag/dot/CMakeLists.txt
-    examples/simdag/goal/CMakeLists.txt
   examples/smpi/CMakeLists.txt
     examples/smpi/NAS/CMakeLists.txt
     examples/smpi/smpi_msg_masterslave/CMakeLists.txt

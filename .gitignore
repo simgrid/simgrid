@@ -210,7 +210,7 @@ examples/msg/z_gtnets.trace
 examples/msg/zmsg_test.trace
 examples/s4u/basic/s4u_basic
 examples/s4u/io/s4u_io
-examples/simdag/dax/dax_test
+examples/simdag/dax/sd_dax
 examples/simdag/dot/dot_test
 examples/simdag/dot/dot_test2
 examples/simdag/dot/simulate_dot
