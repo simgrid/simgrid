@@ -7,6 +7,7 @@
 #include <cstring>
 
 #include <algorithm>
+#include <memory>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -103,10 +104,10 @@ static int snapshot_compare(simgrid::mc::VisitedPair* state1, simgrid::mc::Visit
 static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* pair)
 {
   auto acceptance_pairs = simgrid::xbt::range<simgrid::mc::VisitedPair*>(::acceptance_pairs);
-
-  simgrid::mc::VisitedPair* new_pair = new VisitedPair(
-    pair->num, pair->automaton_state, pair->atomic_propositions.get(),
-    pair->graph_state);
+  auto new_pair =
+    std::unique_ptr<simgrid::mc::VisitedPair>(new VisitedPair(
+      pair->num, pair->automaton_state, pair->atomic_propositions.get(),
+      pair->graph_state));
   new_pair->acceptance_pair = 1;
 
   auto res = std::equal_range(acceptance_pairs.begin(), acceptance_pairs.end(),
@@ -119,7 +120,7 @@ static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* p
         if (xbt_automaton_propositional_symbols_compare_value(
             pair_test->atomic_propositions.get(),
             new_pair->atomic_propositions.get()) == 0) {
-          if (snapshot_compare(pair_test, new_pair) == 0) {
+          if (snapshot_compare(pair_test, new_pair.get()) == 0) {
             XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
             xbt_fifo_shift(mc_stack);
             if (dot_output != nullptr)
@@ -130,9 +131,10 @@ static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* p
       }
     }
 
+  auto new_raw_pair = new_pair.release();
   xbt_dynar_insert_at(
-    ::acceptance_pairs, res.first - acceptance_pairs.begin(), &new_pair);
-  return new_pair;
+    ::acceptance_pairs, res.first - acceptance_pairs.begin(), &new_raw_pair);
+  return new_raw_pair;
 }
 
 static void remove_acceptance_pair(int pair_num)
