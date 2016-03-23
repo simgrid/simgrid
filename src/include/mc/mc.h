@@ -66,7 +66,6 @@ XBT_PRIVATE void _mc_cfg_cb_send_determinism(const char *name, int pos);
 XBT_PRIVATE void _mc_cfg_cb_termination(const char *name, int pos);
 
 XBT_PUBLIC(void) MC_run(void);
-XBT_PUBLIC(void) MC_exit(void);
 XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
 XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);
 XBT_PRIVATE void MC_automaton_load(const char *file);

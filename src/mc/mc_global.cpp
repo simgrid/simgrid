@@ -107,13 +107,6 @@ void MC_run()
   simgrid::mc::Client::get()->mainLoop();
 }
 
-void MC_exit(void)
-{
-  simgrid::mc::processes_time.clear();
-  MC_memory_exit();
-  //xbt_abort();
-}
-
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
