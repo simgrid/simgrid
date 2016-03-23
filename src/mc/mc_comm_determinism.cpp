@@ -337,6 +337,20 @@ static void MC_pre_modelcheck_comm_determinism(void)
   xbt_fifo_unshift(mc_stack, initial_state);
 }
 
+static inline
+bool all_communications_are_finished()
+{
+  for (size_t current_process = 1; current_process < MC_smx_get_maxpid(); current_process++) {
+    xbt_dynar_t pattern = xbt_dynar_get_as(
+      incomplete_communications_pattern, current_process, xbt_dynar_t);
+    if (!xbt_dynar_is_empty(pattern)) {
+      XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
+      return false;
+    }
+  }
+  return true;
+}
+
 static int MC_modelcheck_comm_determinism_main(void)
 {
 
@@ -392,7 +406,14 @@ static int MC_modelcheck_comm_determinism_main(void)
       /* Create the new expanded state */
       next_state = MC_state_new();
 
-      if ((visited_state = simgrid::mc::is_visited_state(next_state)) == nullptr) {
+      /* If comm determinism verification, we cannot stop the exploration if
+         some communications are not finished (at least, data are transfered).
+         These communications  are incomplete and they cannot be analyzed and
+         compared with the initial pattern. */
+      bool compare_snapshots = all_communications_are_finished()
+        && initial_global_state->initial_communications_pattern_done;
+
+      if (_sg_mc_visited == 0 || (visited_state = simgrid::mc::is_visited_state(next_state, compare_snapshots)) == nullptr) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())

@@ -116,26 +116,6 @@ VisitedPair::~VisitedPair()
     MC_state_delete(this->graph_state, 1);
 }
 
-}
-}
-
-static
-bool some_communications_are_not_finished()
-{
-  for (size_t current_process = 1; current_process < MC_smx_get_maxpid(); current_process++) {
-    xbt_dynar_t pattern = xbt_dynar_get_as(
-      incomplete_communications_pattern, current_process, xbt_dynar_t);
-    if (!xbt_dynar_is_empty(pattern)) {
-      XBT_DEBUG("Some communications are not finished, cannot stop the exploration ! State not visited.");
-      return true;
-    }
-  }
-  return false;
-}
-
-namespace simgrid {
-namespace mc {
-
 static void prune_visited_states()
 {
   while (visited_states.size() > (std::size_t) _sg_mc_visited) {
@@ -154,16 +134,9 @@ static void prune_visited_states()
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
-std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_state)
+std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_state, bool compare_snpashots)
 {
-  if (_sg_mc_visited == 0)
-    return nullptr;
 
-  /* If comm determinism verification, we cannot stop the exploration if some 
-     communications are not finished (at least, data are transfered). These communications 
-     are incomplete and they cannot be analyzed and compared with the initial pattern. */
-  int partial_comm = (_sg_mc_comms_determinism || _sg_mc_send_determinism) &&
-    some_communications_are_not_finished();
 
   std::unique_ptr<simgrid::mc::VisitedState> new_state =
     std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState());
@@ -174,8 +147,7 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_sta
   auto range = std::equal_range(visited_states.begin(), visited_states.end(),
     new_state.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
-      if (_sg_mc_safety || (!partial_comm
-        && initial_global_state->initial_communications_pattern_done)) {
+      if (compare_snpashots) {
 
         for (auto i = range.first; i != range.second; ++i) {
           auto& visited_state = *i;

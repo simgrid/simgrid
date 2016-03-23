@@ -128,7 +128,7 @@ int SafetyChecker::run()
           return SIMGRID_MC_EXIT_NON_TERMINATION;
       }
 
-      if ((visited_state = simgrid::mc::is_visited_state(next_state)) == nullptr) {
+      if (_sg_mc_visited == 0 || (visited_state = simgrid::mc::is_visited_state(next_state, true)) == nullptr) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
@@ -261,8 +261,6 @@ void SafetyChecker::init()
     reductionMode_ = simgrid::mc::ReductionMode::none;
   else if (reductionMode_ == simgrid::mc::ReductionMode::unset)
     reductionMode_ = simgrid::mc::ReductionMode::dpor;
-
-  _sg_mc_safety = 1;
 
   if (_sg_mc_termination)
     XBT_INFO("Check non progressive cycles");
