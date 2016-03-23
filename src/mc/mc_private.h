@@ -16,6 +16,10 @@
 #include <sys/mman.h>
 #endif
 
+#ifdef __cpluscplus
+#include <algorithm>
+#endif
+
 #include <elfutils/libdw.h>
 
 #include <simgrid/msg.h>
@@ -67,6 +71,15 @@ SG_END_DECL()
 namespace simgrid {
 namespace mc {
 
+struct DerefAndCompareByNbProcessesAndUsedHead {
+  template<class X, class Y>
+  bool operator()(X const& a, Y const& b)
+  {
+    return std::make_pair(a->nb_processes, a->heap_bytes_used) <
+      std::make_pair(b->nb_processes, b->heap_bytes_used);
+  }
+};
+
 /**
  *  \brief Find a suitable subrange of candidate duplicates for a given state
  *  \param list dynamic array of states/pairs with candidate duplicates of the current state;
@@ -89,49 +102,19 @@ template<class U, class T>
 int get_search_interval(
   U* list, std::size_t count, T *ref, int *min, int *max)
 {
-  int nb_processes = ref->nb_processes;
-  int heap_bytes_used = ref->heap_bytes_used;
+  auto res = std::equal_range(
+    list, list + count, ref, DerefAndCompareByNbProcessesAndUsedHead());
 
-  int cursor = 0;
-  int start = 0;
-  int end = count - 1;
-  while (start <= end) {
-    cursor = (start + end) / 2;
-    int nb_processes_test = list[cursor]->nb_processes;
-    int heap_bytes_used_test = list[cursor]->heap_bytes_used;
+  // Not found, but we have the insertion point:
+  if (res.first == res.second)
+    return res.first - list;
 
-    if (nb_processes_test < nb_processes)
-      start = cursor + 1;
-    else if (nb_processes_test > nb_processes)
-      end = cursor - 1;
-    else if (heap_bytes_used_test < heap_bytes_used)
-      start = cursor + 1;
-    else if (heap_bytes_used_test > heap_bytes_used)
-      end = cursor - 1;
-    else {
-        *min = *max = cursor;
-        int previous_cursor = cursor - 1;
-        while (previous_cursor >= 0) {
-          nb_processes_test = list[previous_cursor]->nb_processes;
-          heap_bytes_used_test = list[previous_cursor]->heap_bytes_used;
-          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
-            break;
-          *min = previous_cursor;
-          previous_cursor--;
-        }
-        size_t next_cursor = cursor + 1;
-        while (next_cursor < count) {
-          nb_processes_test = list[next_cursor]->nb_processes;
-          heap_bytes_used_test = list[next_cursor]->heap_bytes_used;
-          if (nb_processes_test != nb_processes || heap_bytes_used_test != heap_bytes_used)
-            break;
-          *max = next_cursor;
-          next_cursor++;
-        }
-        return -1;
-    }
+  // Found, we have the whole matching range:
+  else {
+    *min = res.first - list;
+    *max = (res.second - 1) - list;
+    return -1;
   }
-  return cursor;
 }
 
 }

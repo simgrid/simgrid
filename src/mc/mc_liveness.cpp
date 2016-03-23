@@ -142,13 +142,7 @@ static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* p
       }
       xbt_dynar_insert_at(acceptance_pairs, min, &new_pair);
     } else {
-      pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(acceptance_pairs, index, simgrid::mc::VisitedPair*);
-      if (pair_test->nb_processes < new_pair->nb_processes)
-        xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
-      else if (pair_test->heap_bytes_used < new_pair->heap_bytes_used)
-        xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
-      else
-        xbt_dynar_insert_at(acceptance_pairs, index, &new_pair);
+      xbt_dynar_insert_at(acceptance_pairs, index, &new_pair);
     }
   }
   return new_pair;
@@ -378,13 +372,7 @@ int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* p
       }
       xbt_dynar_insert_at(visited_pairs, min, &new_visited_pair);
     } else {
-      pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(visited_pairs, index, simgrid::mc::VisitedPair*);
-      if (pair_test->nb_processes < new_visited_pair->nb_processes)
-        xbt_dynar_insert_at(visited_pairs, index + 1, &new_visited_pair);
-      else if (pair_test->heap_bytes_used < new_visited_pair->heap_bytes_used)
-        xbt_dynar_insert_at(visited_pairs, index + 1, &new_visited_pair);
-      else
-        xbt_dynar_insert_at(visited_pairs, index, &new_visited_pair);
+      xbt_dynar_insert_at(visited_pairs, index, &new_visited_pair);
     }
 
     if ((ssize_t) xbt_dynar_length(visited_pairs) > _sg_mc_visited) {

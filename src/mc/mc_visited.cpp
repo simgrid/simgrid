@@ -210,15 +210,7 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_sta
     } else {
 
       // The state has not been visited: insert the state in the dynamic array.
-      simgrid::mc::VisitedState* state_test = &*visited_states[index];
-      std::size_t position;
-      if (state_test->nb_processes < new_state->nb_processes)
-        position = index + 1;
-      else if (state_test->heap_bytes_used < new_state->heap_bytes_used)
-        position = index + 1;
-      else
-        position = index;
-      visited_states.insert(visited_states.begin() + position, std::move(new_state));
+      visited_states.insert(visited_states.begin() + index, std::move(new_state));
       XBT_DEBUG("Insert new visited state %d (total : %lu)",
         visited_states[index]->num,
         (unsigned long) visited_states.size());
