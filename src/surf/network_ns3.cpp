@@ -189,9 +189,8 @@ static void create_ns3_topology(void)
 
   //get the onelinks from the parsed platform
   xbt_dynar_t onelink_routes = routing_platf->getOneLinkRoutes();
-  if (!onelink_routes)
-    xbt_die("There is no routes!");
-  XBT_DEBUG("Threr is %ld one-link routes",onelink_routes->used);
+
+  XBT_DEBUG("There is %ld one-link routes",onelink_routes->used);
   //save them in trace file
   simgrid::surf::Onelink *onelink;
   unsigned int iter;
