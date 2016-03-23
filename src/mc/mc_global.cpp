@@ -93,33 +93,17 @@ void MC_init_dot_output()
 
 }
 
-#if HAVE_MC
-void MC_init()
-{
-  simgrid::mc::processes_time.resize(simix_process_maxpid);
-
-  if (_sg_mc_visited > 0 || _sg_mc_liveness  || _sg_mc_termination || mc_mode == MC_MODE_SERVER) {
-    /* Those requests are handled on the client side and propagated by message
-     * to the server: */
-
-    MC_ignore_heap(simgrid::mc::processes_time.data(),
-      simix_process_maxpid * sizeof(double));
-
-    smx_process_t process;
-    xbt_swag_foreach(process, simix_global->process_list)
-      MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
-  }
-}
-
-#endif
-
 /*******************************  Core of MC *******************************/
 /**************************************************************************/
 
 void MC_run()
 {
-  mc_mode = MC_MODE_CLIENT;
-  MC_init();
+  simgrid::mc::processes_time.resize(simix_process_maxpid);
+  MC_ignore_heap(simgrid::mc::processes_time.data(),
+    simgrid::mc::processes_time.size() * sizeof(simgrid::mc::processes_time[0]));
+  smx_process_t process;
+  xbt_swag_foreach(process, simix_global->process_list)
+    MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
   simgrid::mc::Client::get()->mainLoop();
 }
 
