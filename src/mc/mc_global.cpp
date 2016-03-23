@@ -314,29 +314,34 @@ static void MC_dump_stacks(FILE* file)
   int nstack = 0;
   for (auto const& stack : mc_model_checker->process().stack_areas()) {
 
-    xbt_die("Fix cross-process access to the context");
-    unw_context_t * context = (unw_context_t *)stack.context;
     fprintf(file, "Stack %i:\n", nstack);
 
     int nframe = 0;
     char buffer[100];
-    unw_cursor_t c;
-    unw_init_local (&c, context);
+
+    simgrid::mc::UnwindContext context;
+    unw_context_t raw_context =
+      mc_model_checker->process().read<unw_context_t>(
+        simgrid::mc::remote((unw_context_t *)stack.context));
+    context.initialize(&mc_model_checker->process(), &raw_context);
+
+    unw_cursor_t cursor = context.cursor();
+
     unw_word_t off;
     do {
-      const char * name = !unw_get_proc_name(&c, buffer, 100, &off) ? buffer : "?";
+      const char * name = !unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
 #if defined(__x86_64__)
       unw_word_t rip = 0;
       unw_word_t rsp = 0;
-      unw_get_reg(&c, UNW_X86_64_RIP, &rip);
-      unw_get_reg(&c, UNW_X86_64_RSP, &rsp);
+      unw_get_reg(&cursor, UNW_X86_64_RIP, &rip);
+      unw_get_reg(&cursor, UNW_X86_64_RSP, &rsp);
       fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
         nframe, name, (std::uint64_t) rip, (std::uint64_t) rsp);
 #else
       fprintf(file, "  %i: %s\n", nframe, name);
 #endif
       ++nframe;
-    } while(unw_step(&c));
+    } while(unw_step(&cursor));
 
     ++nstack;
   }
