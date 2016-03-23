@@ -37,6 +37,23 @@
 
 #include "src/mc/mc_protocol.h"
 
+#ifdef __cplusplus
+namespace simgrid {
+namespace mc {
+
+struct DerefAndCompareByNbProcessesAndUsedHeap {
+  template<class X, class Y>
+  bool operator()(X const& a, Y const& b)
+  {
+    return std::make_pair(a->nb_processes, a->heap_bytes_used) <
+      std::make_pair(b->nb_processes, b->heap_bytes_used);
+  }
+};
+
+}
+}
+#endif
+
 SG_BEGIN_DECL()
 
 /********************************* MC Global **********************************/
