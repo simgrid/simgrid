@@ -28,6 +28,10 @@ class Variable;
 class Frame;
 class SimixProcessInformation;
 
+class Session;
+class Checker;
+class FunctionalChecker;
+
 }
 }
 

@@ -38,7 +38,7 @@ protected:
   
 public:
   /** @brief Seal your AS once you're done adding content, and before routing stuff through it */
-  virtual void Seal();
+  virtual void seal();
   char *name();
   As *father();;
   xbt_dict_t children(); // Sub AS

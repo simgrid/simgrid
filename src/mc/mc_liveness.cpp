@@ -6,11 +6,15 @@
 
 #include <cstring>
 
+#include <algorithm>
+#include <memory>
+
 #include <unistd.h>
 #include <sys/wait.h>
 
 #include <xbt/automaton.h>
 #include <xbt/dynar.h>
+#include <xbt/dynar.hpp>
 #include <xbt/fifo.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
@@ -21,6 +25,7 @@
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/Client.hpp"
+#include "src/mc/mc_private.h"
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_exit.h"
@@ -37,6 +42,8 @@ xbt_dynar_t acceptance_pairs;
 namespace simgrid {
 namespace mc {
 
+static xbt_dynar_t visited_pairs;
+
 Pair::Pair() : num(++mc_stats->expanded_pairs),
   visited_pair_removed(_sg_mc_visited > 0 ? 0 : 1)
 {}
@@ -44,6 +51,33 @@ Pair::Pair() : num(++mc_stats->expanded_pairs),
 Pair::~Pair() {
   if (this->visited_pair_removed)
     MC_state_delete(this->graph_state, 1);
+}
+
+static  void show_stack_liveness(xbt_fifo_t stack)
+{
+  int value;
+  simgrid::mc::Pair* pair;
+  xbt_fifo_item_t item;
+  smx_simcall_t req;
+  char *req_str = nullptr;
+
+  for (item = xbt_fifo_get_last_item(stack);
+       item; item = xbt_fifo_get_prev_item(item)) {
+    pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
+    req = MC_state_get_executed_request(pair->graph_state, &value);
+    if (req && req->call != SIMCALL_NONE) {
+      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
+      XBT_INFO("%s", req_str);
+      xbt_free(req_str);
+    }
+  }
+}
+
+static void dump_stack_liveness(xbt_fifo_t stack)
+{
+  simgrid::mc::Pair* pair;
+  while ((pair = (simgrid::mc::Pair*) xbt_fifo_pop(stack)) != nullptr)
+    delete pair;
 }
 
 static simgrid::xbt::unique_ptr<s_xbt_dynar_t> get_atomic_propositions_values()
@@ -58,58 +92,49 @@ static simgrid::xbt::unique_ptr<s_xbt_dynar_t> get_atomic_propositions_values()
   return std::move(values);
 }
 
+static int snapshot_compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2)
+{
+  simgrid::mc::Snapshot* s1 = state1->graph_state->system_state;
+  simgrid::mc::Snapshot* s2 = state2->graph_state->system_state;
+  int num1 = state1->num;
+  int num2 = state2->num;
+  return snapshot_compare(num1, s1, num2, s2);
+}
+
 static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* pair)
 {
-  simgrid::mc::VisitedPair* new_pair = new VisitedPair(
-    pair->num, pair->automaton_state, pair->atomic_propositions.get(),
-    pair->graph_state);
+  auto acceptance_pairs = simgrid::xbt::range<simgrid::mc::VisitedPair*>(::acceptance_pairs);
+  auto new_pair =
+    std::unique_ptr<simgrid::mc::VisitedPair>(new VisitedPair(
+      pair->num, pair->automaton_state, pair->atomic_propositions.get(),
+      pair->graph_state));
   new_pair->acceptance_pair = 1;
 
-  if (xbt_dynar_is_empty(acceptance_pairs))
-    xbt_dynar_push(acceptance_pairs, &new_pair);
-  else {
+  auto res = std::equal_range(acceptance_pairs.begin(), acceptance_pairs.end(),
+    new_pair, simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
-    int min = -1, max = -1, index;
-    //int res;
-    simgrid::mc::VisitedPair* pair_test;
-    int cursor;
-
-    index = get_search_interval(acceptance_pairs, new_pair, &min, &max);
-
-    if (min != -1 && max != -1) {       // Acceptance pair with same number of processes and same heap bytes used exists
-
-      cursor = min;
-      if(pair->search_cycle == 1){
-        while (cursor <= max) {
-          pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(acceptance_pairs, cursor, simgrid::mc::VisitedPair*);
-          if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
-            if (xbt_automaton_propositional_symbols_compare_value(
-                pair_test->atomic_propositions.get(),
-                new_pair->atomic_propositions.get()) == 0) {
-              if (snapshot_compare(pair_test, new_pair) == 0) {
-                XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
-                xbt_fifo_shift(mc_stack);
-                if (dot_output != nullptr)
-                  fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
-                return nullptr;
-              }
-            }
+  if (pair->search_cycle == 1)
+    for (auto i = res.first; i != res.second; ++i) {
+      simgrid::mc::VisitedPair* pair_test = *i;
+      if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
+        if (xbt_automaton_propositional_symbols_compare_value(
+            pair_test->atomic_propositions.get(),
+            new_pair->atomic_propositions.get()) == 0) {
+          if (snapshot_compare(pair_test, new_pair.get()) == 0) {
+            XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
+            xbt_fifo_shift(mc_stack);
+            if (dot_output != nullptr)
+              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
+            return nullptr;
           }
-          cursor++;
         }
       }
-      xbt_dynar_insert_at(acceptance_pairs, min, &new_pair);
-    } else {
-      pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(acceptance_pairs, index, simgrid::mc::VisitedPair*);
-      if (pair_test->nb_processes < new_pair->nb_processes)
-        xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
-      else if (pair_test->heap_bytes_used < new_pair->heap_bytes_used)
-        xbt_dynar_insert_at(acceptance_pairs, index + 1, &new_pair);
-      else
-        xbt_dynar_insert_at(acceptance_pairs, index, &new_pair);
     }
-  }
-  return new_pair;
+
+  auto new_raw_pair = new_pair.release();
+  xbt_dynar_insert_at(
+    ::acceptance_pairs, res.first - acceptance_pairs.begin(), &new_raw_pair);
+  return new_raw_pair;
 }
 
 static void remove_acceptance_pair(int pair_num)
@@ -205,6 +230,146 @@ static void MC_pre_modelcheck_liveness(void)
       xbt_fifo_unshift(mc_stack, initial_pair);
     }
   }
+}
+
+static void MC_replay_liveness(xbt_fifo_t stack)
+{
+  xbt_fifo_item_t item;
+  simgrid::mc::Pair* pair = nullptr;
+  mc_state_t state = nullptr;
+  smx_simcall_t req = nullptr, saved_req = NULL;
+  int value, depth = 1;
+  char *req_str;
+
+  XBT_DEBUG("**** Begin Replay ****");
+
+  /* Intermediate backtracking */
+  if(_sg_mc_checkpoint > 0) {
+    item = xbt_fifo_get_first_item(stack);
+    pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
+    if(pair->graph_state->system_state){
+      simgrid::mc::restore_snapshot(pair->graph_state->system_state);
+      return;
+    }
+  }
+
+  /* Restore the initial state */
+  simgrid::mc::restore_snapshot(initial_global_state->snapshot);
+
+    /* Traverse the stack from the initial state and re-execute the transitions */
+    for (item = xbt_fifo_get_last_item(stack);
+         item != xbt_fifo_get_first_item(stack);
+         item = xbt_fifo_get_prev_item(item)) {
+
+      pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
+
+      state = (mc_state_t) pair->graph_state;
+
+      if (pair->exploration_started) {
+
+        saved_req = MC_state_get_executed_request(state, &value);
+
+        if (saved_req != nullptr) {
+          /* because we got a copy of the executed request, we have to fetch the
+             real one, pointed by the request field of the issuer process */
+          const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
+          req = &issuer->simcall;
+
+          /* Debug information */
+          if (XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)) {
+            req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
+            XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state);
+            xbt_free(req_str);
+          }
+
+        }
+
+        simgrid::mc::handle_simcall(req, value);
+        mc_model_checker->wait_for_requests();
+      }
+
+      /* Update statistics */
+      mc_stats->visited_pairs++;
+      mc_stats->executed_transitions++;
+
+      depth++;
+
+    }
+
+  XBT_DEBUG("**** End Replay ****");
+}
+
+/**
+ * \brief Checks whether a given pair has already been visited by the algorithm.
+ */
+static
+int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair)
+{
+  if (_sg_mc_visited == 0)
+    return -1;
+
+  simgrid::mc::VisitedPair* new_visited_pair = nullptr;
+  if (visited_pair == nullptr)
+    new_visited_pair = new simgrid::mc::VisitedPair(
+      pair->num, pair->automaton_state, pair->atomic_propositions.get(),
+      pair->graph_state);
+  else
+    new_visited_pair = visited_pair;
+
+  auto visited_pairs = simgrid::xbt::range<simgrid::mc::VisitedPair*>(simgrid::mc::visited_pairs);
+
+  auto range = std::equal_range(visited_pairs.begin(), visited_pairs.end(),
+    new_visited_pair, simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
+
+  for (auto i = range.first; i != range.second; ++i) {
+    simgrid::mc::VisitedPair* pair_test = *i;
+    std::size_t cursor = i - visited_pairs.begin();
+    if (xbt_automaton_state_compare(pair_test->automaton_state, new_visited_pair->automaton_state) == 0) {
+      if (xbt_automaton_propositional_symbols_compare_value(
+          pair_test->atomic_propositions.get(),
+          new_visited_pair->atomic_propositions.get()) == 0) {
+        if (snapshot_compare(pair_test, new_visited_pair) == 0) {
+          if (pair_test->other_num == -1)
+            new_visited_pair->other_num = pair_test->num;
+          else
+            new_visited_pair->other_num = pair_test->other_num;
+          if (dot_output == nullptr)
+            XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_visited_pair->num, pair_test->num);
+          else
+            XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", new_visited_pair->num, pair_test->num, new_visited_pair->other_num);
+          xbt_dynar_remove_at(simgrid::mc::visited_pairs, cursor, &pair_test);
+          xbt_dynar_insert_at(simgrid::mc::visited_pairs, cursor, &new_visited_pair);
+          pair_test->visited_removed = 1;
+          if (!pair_test->acceptance_pair
+              || pair_test->acceptance_removed == 1)
+            delete pair_test;
+          return new_visited_pair->other_num;
+        }
+      }
+    }
+  }
+
+  xbt_dynar_insert_at(simgrid::mc::visited_pairs, range.first - visited_pairs.begin(), &new_visited_pair);
+
+  if ((ssize_t) visited_pairs.size() > _sg_mc_visited) {
+    int min2 = mc_stats->expanded_pairs;
+    unsigned int index2 = 0;
+    for (std::size_t i = 0; i != visited_pairs.size(); ++i) {
+      simgrid::mc::VisitedPair* pair_test = visited_pairs[i];
+      if (!mc_model_checker->is_important_snapshot(*pair_test->graph_state->system_state)
+          && pair_test->num < min2) {
+        index2 = i;
+        min2 = pair_test->num;
+      }
+    }
+    simgrid::mc::VisitedPair* pair_test = nullptr;
+    xbt_dynar_remove_at(simgrid::mc::visited_pairs, index2, &pair_test);
+    pair_test->visited_removed = 1;
+    if (!pair_test->acceptance_pair || pair_test->acceptance_removed)
+      delete pair_test;
+  }
+
+  return -1;
 }
 
 static int MC_modelcheck_liveness_main(void)
@@ -373,8 +538,6 @@ static int MC_modelcheck_liveness_main(void)
 
 int modelcheck_liveness(void)
 {
-  if (simgrid::mc::reduction_mode == simgrid::mc::ReductionMode::unset)
-    simgrid::mc::reduction_mode = simgrid::mc::ReductionMode::none;
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
   MC_automaton_load(_sg_mc_property_file);
   mc_model_checker->wait_for_requests();

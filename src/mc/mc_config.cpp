@@ -61,7 +61,6 @@ int _sg_mc_visited = 0;
 char *_sg_mc_dot_output_file = nullptr;
 int _sg_mc_comms_determinism = 0;
 int _sg_mc_send_determinism = 0;
-int _sg_mc_safety = 0;
 int _sg_mc_liveness = 0;
 int _sg_mc_snapshot_fds = 0;
 int _sg_mc_termination = 0;

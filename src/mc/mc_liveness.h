@@ -61,11 +61,6 @@ struct XBT_PRIVATE VisitedPair {
 };
 
 int modelcheck_liveness(void);
-XBT_PRIVATE void show_stack_liveness(xbt_fifo_t stack);
-XBT_PRIVATE void dump_stack_liveness(xbt_fifo_t stack);
-
-XBT_PRIVATE extern xbt_dynar_t visited_pairs;
-XBT_PRIVATE int is_visited_pair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair);
 
 }
 }

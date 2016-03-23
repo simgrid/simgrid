@@ -8,6 +8,9 @@
 
 #include <system_error>
 
+#ifndef SIMGRID_MC_SYSTEM_ERROR_HPP
+#define SIMGRID_MC_SYSTEM_ERROR_HPP
+
 namespace simgrid {
 namespace xbt {
 
@@ -31,3 +34,5 @@ std::system_error errno_error(int errnum, const char* what)
 
 }
 }
+
+#endif

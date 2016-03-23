@@ -189,17 +189,15 @@ static void create_ns3_topology(void)
 
   //get the onelinks from the parsed platform
   xbt_dynar_t onelink_routes = routing_platf->getOneLinkRoutes();
-  if (!onelink_routes)
-    xbt_die("There is no routes!");
-  XBT_DEBUG("Have get_onelink_routes, found %ld routes",onelink_routes->used);
+
+  XBT_DEBUG("There is %ld one-link routes",onelink_routes->used);
   //save them in trace file
   simgrid::surf::Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
     char *src = onelink->src_->name();
     char *dst = onelink->dst_->name();
-    simgrid::surf::LinkNS3 *link =
-      static_cast<simgrid::surf::LinkNS3 *>(onelink->link_);
+    simgrid::surf::LinkNS3 *link = static_cast<simgrid::surf::LinkNS3 *>(onelink->link_);
 
     if (strcmp(src,dst) && link->m_created){
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());
@@ -229,43 +227,15 @@ static void create_ns3_topology(void)
   }
 }
 
-static void parse_ns3_end_platform(void)
-{
-  ns3_end_platform();
-}
-
-static void define_callbacks_ns3(void)
-{
-  simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
-  simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_router);
-  simgrid::surf::on_link.connect (parse_ns3_add_link);
-  simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
-  simgrid::surf::asCreatedCallbacks.connect(parse_ns3_add_AS);
-  simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
-  simgrid::surf::on_postparse.connect(&parse_ns3_end_platform); //InitializeRoutes
-}
-
 /*********
  * Model *
  *********/
-static void free_ns3_link(void * elmts)
-{
-  delete static_cast<simgrid::surf::LinkNS3*>(elmts);
-}
-
-static void free_ns3_host(void * elmts)
-{
-  ns3_node_t host = static_cast<ns3_node_t>(elmts);
-  free(host);
-}
-
 void surf_network_model_init_NS3()
 {
   if (surf_network_model)
     return;
 
   surf_network_model = new simgrid::surf::NetworkNS3Model();
-
   xbt_dynar_push(all_existing_models, &surf_network_model);
 }
 
@@ -277,10 +247,16 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
     xbt_die("Impossible to initialize NS3 interface");
   }
   routing_model_create(NULL);
-  define_callbacks_ns3();
+  simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
+  simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_router);
+  simgrid::surf::on_link.connect (parse_ns3_add_link);
+  simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
+  simgrid::surf::asCreatedCallbacks.connect(parse_ns3_add_AS);
+  simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
+  simgrid::surf::on_postparse.connect(&ns3_end_platform); //InitializeRoutes
 
-  NS3_EXTENSION_ID = simgrid::s4u::Host::extension_create(free_ns3_host);
-  NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, free_ns3_host);
+  NS3_EXTENSION_ID = simgrid::s4u::Host::extension_create(xbt_free_f);
+  NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, xbt_free_f);
 }
 
 NetworkNS3Model::~NetworkNS3Model() {

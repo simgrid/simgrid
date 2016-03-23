@@ -550,6 +550,8 @@ set(MC_SRC
   src/mc/AddressSpace.cpp
   src/mc/Channel.cpp
   src/mc/Channel.hpp
+  src/mc/Checker.cpp
+  src/mc/Checker.hpp
   src/mc/Client.cpp
   src/mc/Client.hpp
   src/mc/Frame.hpp
@@ -560,6 +562,8 @@ set(MC_SRC
   src/mc/ObjectInformation.cpp
   src/mc/PageStore.hpp
   src/mc/PageStore.cpp
+  src/mc/SafetyChecker.cpp
+  src/mc/SafetyChecker.hpp
   src/mc/ChunkedData.hpp
   src/mc/ChunkedData.cpp
   src/mc/RegionSnapshot.cpp
@@ -570,6 +574,8 @@ set(MC_SRC
   src/mc/mc_forward.hpp
   src/mc/Process.hpp
   src/mc/Process.cpp
+  src/mc/Session.cpp
+  src/mc/Session.hpp
   src/mc/mc_unw.h
   src/mc/mc_unw.cpp
   src/mc/mc_unw_vmread.cpp
@@ -604,7 +610,6 @@ set(MC_SRC
   src/mc/mc_request.h
   src/mc/mc_request.cpp
   src/mc/mc_safety.h
-  src/mc/mc_safety.cpp
   src/mc/mc_state.h
   src/mc/mc_state.cpp
   src/mc/mc_visited.cpp

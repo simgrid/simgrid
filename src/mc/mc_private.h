@@ -37,6 +37,23 @@
 
 #include "src/mc/mc_protocol.h"
 
+#ifdef __cplusplus
+namespace simgrid {
+namespace mc {
+
+struct DerefAndCompareByNbProcessesAndUsedHeap {
+  template<class X, class Y>
+  bool operator()(X const& a, Y const& b)
+  {
+    return std::make_pair(a->nb_processes, a->heap_bytes_used) <
+      std::make_pair(b->nb_processes, b->heap_bytes_used);
+  }
+};
+
+}
+}
+#endif
+
 SG_BEGIN_DECL()
 
 /********************************* MC Global **********************************/
@@ -48,7 +65,6 @@ XBT_PRIVATE extern FILE *dot_output;
 XBT_PRIVATE extern int user_max_depth_reached;
 
 XBT_PRIVATE void MC_replay(xbt_fifo_t stack);
-XBT_PRIVATE void MC_replay_liveness(xbt_fifo_t stack);
 XBT_PRIVATE void MC_show_deadlock(smx_simcall_t req);
 XBT_PRIVATE void MC_show_stack_safety(xbt_fifo_t stack);
 XBT_PRIVATE void MC_dump_stack_safety(xbt_fifo_t stack);
@@ -60,9 +76,6 @@ XBT_PRIVATE void MC_show_non_termination(void);
  *  It is managed by its head (`xbt_fifo_shift` and `xbt_fifo_unshift`).
  */
 XBT_PRIVATE extern xbt_fifo_t mc_stack;
-
-XBT_PRIVATE int get_search_interval(xbt_dynar_t list, void *ref, int *min, int *max);
-
 
 /****************************** Statistics ************************************/
 
@@ -81,8 +94,6 @@ XBT_PRIVATE void MC_print_statistics(mc_stats_t stats);
 
 /********************************** Snapshot comparison **********************************/
 
-XBT_PRIVATE int snapshot_compare(void *state1, void *state2);
-
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
 
@@ -90,6 +101,8 @@ XBT_PRIVATE int snapshot_compare(void *state1, void *state2);
 
 XBT_PRIVATE void MC_report_assertion_error(void);
 XBT_PRIVATE void MC_report_crash(int status);
+
+SG_END_DECL()
 
 #ifdef __cplusplus
 
@@ -99,11 +112,12 @@ namespace mc {
 XBT_PRIVATE void find_object_address(
   std::vector<simgrid::xbt::VmMap> const& maps, simgrid::mc::ObjectInformation* result);
 
+XBT_PRIVATE
+int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc::Snapshot* s2);
+
 }
 }
 
 #endif
-
-SG_END_DECL()
 
 #endif

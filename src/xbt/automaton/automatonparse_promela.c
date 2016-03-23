@@ -19,8 +19,8 @@ char* state_id_src;
 
 static void new_state(char* id, int src){
 
-  char* id_state = xbt_strdup(id);
-  char* first_part = strtok(id,"_");
+  char* id_copy = xbt_strdup(id);
+  char* first_part = strtok(id_copy,"_");
   int type = 0 ; // -1=initial state; 0=intermediate state; 1=final state
 
   if(strcmp(first_part,"accept")==0){
@@ -31,27 +31,29 @@ static void new_state(char* id, int src){
       type = -1;
     }
   }
+  free(id_copy);
 
   xbt_automaton_state_t state = NULL;
-  state = xbt_automaton_state_exists(parsed_automaton, id_state);
+  state = xbt_automaton_state_exists(parsed_automaton, id);
   if(state == NULL){
-    state = xbt_automaton_state_new(parsed_automaton, type, id_state);
+    state = xbt_automaton_state_new(parsed_automaton, type, id);
   }
 
   if(type==-1)
     parsed_automaton->current_state = state;
 
-  if(src)
-    state_id_src = xbt_strdup(id_state);
-    
+  if(src) {
+    if (state_id_src)
+      free(state_id_src);
+    state_id_src = xbt_strdup(id);
+  }
 }
 
-static void new_transition(char* id, xbt_automaton_exp_label_t label){
-
-  char* id_state = xbt_strdup(id);
+static void new_transition(char* id, xbt_automaton_exp_label_t label)
+{
   xbt_automaton_state_t state_dst = NULL;
   new_state(id, 0);
-  state_dst = xbt_automaton_state_exists(parsed_automaton, id_state);
+  state_dst = xbt_automaton_state_exists(parsed_automaton, id);
   xbt_automaton_state_t state_src = xbt_automaton_state_exists(parsed_automaton, state_id_src);
   
   //xbt_transition_t trans = NULL;
