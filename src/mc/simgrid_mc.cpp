@@ -32,7 +32,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
 
-static
+static inline
 char** argvdup(int argc, char** argv)
 {
   char** argv_copy = xbt_new(char*, argc+1);
@@ -75,15 +75,16 @@ int main(int argc, char** argv)
     mc_mode = MC_MODE_SERVER;
 
     // The initialisation function can touch argv.
-    // We need to keep the original parameters in order to pass them to the
-    // model-checked process so we make a copy of them:
-    int argc_copy = argc;
+    // We make a copy of argv before modifying it in order to pass the original
+    // value to the model-checked:
     char** argv_copy = argvdup(argc, argv);
-    xbt_log_init(&argc_copy, argv_copy);
-    sg_config_init(&argc_copy, argv_copy);
+    xbt_log_init(&argc, argv);
+    sg_config_init(&argc, argv);
 
     std::unique_ptr<Session> session =
-      std::unique_ptr<Session>(Session::spawnvp(argv[1], argv+1));
+      std::unique_ptr<Session>(Session::spawnvp(argv_copy[1], argv_copy+1));
+    free(argv_copy);
+
     simgrid::mc::session = session.get();
     std::unique_ptr<simgrid::mc::Checker> checker = createChecker(*session);
     int res = checker->run();
