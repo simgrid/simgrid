@@ -6,6 +6,8 @@
 
 #include "src/instr/instr_private.h"
 #include "xbt/virtu.h" /* sg_cmdline */
+#include <sstream>
+#include <iomanip> /** std::setprecision **/
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr_trace, "tracing event system");
 
@@ -205,38 +207,37 @@ void print_pajePushState(paje_event_t event)
 {
   XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
             event->timestamp);
-  if (!TRACE_display_sizes()){
-    if (event->timestamp == 0){
-      fprintf(tracing_file, "%d 0 %s %s %s\n", (int)event->event_type, ((pushState_t)event->data)->type->id,
-          ((pushState_t)event->data)->container->id, ((pushState_t)event->data)->value->id);
-    }else{
-      fprintf(tracing_file, "%d %.*f %s %s %s\n", (int)event->event_type, TRACE_precision(), event->timestamp,
-          ((pushState_t)event->data)->type->id, ((pushState_t)event->data)->container->id,
-          ((pushState_t)event->data)->value->id);
-    }
-  }else{
-    if (event->timestamp == 0){
-      fprintf(tracing_file, "%d 0 %s %s %s ", (int)event->event_type, ((pushState_t)event->data)->type->id,
-          ((pushState_t)event->data)->container->id, ((pushState_t)event->data)->value->id);
-      if(((pushState_t)event->data)->extra !=NULL){
-        fprintf(tracing_file, "%d ", ((instr_extra_data)((pushState_t)event->data)->extra)->send_size);
-      }else{
-        fprintf(tracing_file, "0 ");
-      }
-      fprintf(tracing_file, "\n");
 
-    }else{
-      fprintf(tracing_file, "%d %.*f %s %s %s ", (int)event->event_type, TRACE_precision(), event->timestamp,
-          ((pushState_t)event->data)->type->id, ((pushState_t)event->data)->container->id,
-          ((pushState_t)event->data)->value->id);
-      if(((pushState_t)event->data)->extra !=NULL){
-        fprintf(tracing_file, "%d ", ((instr_extra_data)((pushState_t)event->data)->extra)->send_size);
-      }else{
-        fprintf(tracing_file, "0 ");
-      }
-      fprintf(tracing_file, "\n");
+  std::stringstream stream;
+  stream << std::fixed << std::setprecision(TRACE_precision());
+
+  stream << (int) event->event_type
+         << " ";
+
+  /** prevent 0.0000 in the trace - this was the behavior before the transition to c++ **/
+  if (event->timestamp == 0) 
+    stream << 0;
+  else 
+    stream << event->timestamp;
+
+  stream << " " << ((pushState_t)event->data)->type->id
+         << " " << ((pushState_t)event->data)->container->id
+         << " " << ((pushState_t)event->data)->value->id;
+
+  if (TRACE_display_sizes()) {
+    stream << " ";
+    if (((pushState_t)event->data)->extra != NULL) {
+      stream << ((instr_extra_data)((pushState_t)event->data)->extra)->send_size;
+    }
+    else {
+      stream << 0;
     }
   }
+  stream << std::endl;
+
+  // TODO: This can be removed as soon as TRACE_paje_start() has been migrated
+  fprintf(tracing_file, stream.str().c_str());
+
    if(((pushState_t)event->data)->extra!=NULL){
      if(((instr_extra_data)((pushState_t)event->data)->extra)->sendcounts!=NULL)
        xbt_free(((instr_extra_data)((pushState_t)event->data)->extra)->sendcounts);
