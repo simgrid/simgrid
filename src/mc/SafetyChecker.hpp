@@ -22,7 +22,6 @@ public:
 private:
   // Temp
   void init();
-  void pre();
 };
 
 }

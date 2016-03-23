@@ -47,32 +47,6 @@ static int is_exploration_stack_state(mc_state_t current_state){
   return 0;
 }
 
-/**
- *  \brief Initialize the DPOR exploration algorithm
- */
-void SafetyChecker::pre()
-{
-  simgrid::mc::visited_states.clear();
-
-  mc_state_t initial_state = MC_state_new();
-
-  XBT_DEBUG("**************************************************");
-  XBT_DEBUG("Initial state");
-
-  /* Wait for requests (schedules processes) */
-  mc_model_checker->wait_for_requests();
-
-  /* Get an enabled process and insert it in the interleave set of the initial state */
-  for (auto& p : mc_model_checker->process().simix_processes())
-    if (simgrid::mc::process_is_enabled(&p.copy)) {
-      MC_state_interleave_process(initial_state, &p.copy);
-      if (reductionMode_ != simgrid::mc::ReductionMode::none)
-        break;
-    }
-
-  xbt_fifo_unshift(mc_stack, initial_state);
-}
-
 int SafetyChecker::run()
 {
   this->init();
@@ -273,7 +247,25 @@ void SafetyChecker::init()
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
-  this->pre();
+  simgrid::mc::visited_states.clear();
+
+  mc_state_t initial_state = MC_state_new();
+
+  XBT_DEBUG("**************************************************");
+  XBT_DEBUG("Initial state");
+
+  /* Wait for requests (schedules processes) */
+  mc_model_checker->wait_for_requests();
+
+  /* Get an enabled process and insert it in the interleave set of the initial state */
+  for (auto& p : mc_model_checker->process().simix_processes())
+    if (simgrid::mc::process_is_enabled(&p.copy)) {
+      MC_state_interleave_process(initial_state, &p.copy);
+      if (reductionMode_ != simgrid::mc::ReductionMode::none)
+        break;
+    }
+
+  xbt_fifo_unshift(mc_stack, initial_state);
 
   /* Save the initial state */
   initial_global_state = xbt_new0(s_mc_global_t, 1);
