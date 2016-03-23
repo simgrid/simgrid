@@ -8,6 +8,7 @@
 #include <sys/wait.h>
 
 #include <memory>
+#include <algorithm>
 
 #include <xbt/automaton.h>
 #include <xbt/log.h>
@@ -154,29 +155,19 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_sta
   graph_state->in_visited_states = 1;
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)", new_state->system_state, new_state->num, graph_state->num);
 
-  if (visited_states.empty()) {
-    visited_states.push_back(std::move(new_state));
-    return nullptr;
-  }
-
-    int min = -1, max = -1, index;
-
-    index = simgrid::mc::get_search_interval(
-      visited_states.data(), visited_states.size(),
-      new_state.get(), &min, &max);
-
-    if (min != -1 && max != -1) {
+  auto range = std::equal_range(visited_states.begin(), visited_states.end(),
+    new_state.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
       if (_sg_mc_safety || (!partial_comm
         && initial_global_state->initial_communications_pattern_done)) {
 
-        int cursor = min;
-        while (cursor <= max) {
-          if (snapshot_compare(visited_states[cursor].get(), new_state.get()) == 0) {
+        for (auto i = range.first; i != range.second; ++i) {
+          auto& visited_state = *i;
+          if (snapshot_compare(visited_state.get(), new_state.get()) == 0) {
             // The state has been visited:
 
             std::unique_ptr<simgrid::mc::VisitedState> old_state =
-              std::move(visited_states[cursor]);
+              std::move(visited_state);
 
             if (old_state->other_num == -1)
               new_state->other_num = old_state->num;
@@ -197,25 +188,14 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_sta
             XBT_DEBUG("Replace visited state %d with the new visited state %d",
               old_state->num, new_state->num);
 
-            simgrid::mc::visited_states[cursor] = std::move(new_state);
+            visited_state = std::move(new_state);
             return std::move(old_state);
           }
-          cursor++;
         }
       }
-      
-      XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, (unsigned long) visited_states.size());
-      visited_states.insert(visited_states.begin() + min, std::move(new_state));
 
-    } else {
-
-      // The state has not been visited: insert the state in the dynamic array.
-      visited_states.insert(visited_states.begin() + index, std::move(new_state));
-      XBT_DEBUG("Insert new visited state %d (total : %lu)",
-        visited_states[index]->num,
-        (unsigned long) visited_states.size());
-
-    }
+  XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, (unsigned long) visited_states.size());
+  visited_states.insert(range.first, std::move(new_state));
 
   if (visited_states.size() <= (std::size_t) _sg_mc_visited)
     return nullptr;
