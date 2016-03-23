@@ -38,21 +38,13 @@ int main(int argc, char **argv){
     SD_task_dump(task);
   }
 
-  FILE *dotout = fopen("dot.dot", "w");
-  fprintf(dotout, "digraph A {\n");
-  xbt_dynar_foreach(dot, cursor, task) {
-    SD_task_dotty(task, dotout);
-  }
-  fprintf(dotout, "}\n");
-  fclose(dotout);
-
-  /* Schedule them all on all the first workstation */
+  /* Schedule them all on all the first host*/
   XBT_INFO("------------------- Schedule tasks ---------------------------");
-  const sg_host_t *ws_list = sg_host_list();
+  const sg_host_t *hosts = sg_host_list();
   int count = sg_host_count();
   xbt_dynar_foreach(dot, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_PAR_AMDAHL) {
-        SD_task_schedulev(task, count, ws_list);
+        SD_task_schedulev(task, count, hosts);
     }
   }
 

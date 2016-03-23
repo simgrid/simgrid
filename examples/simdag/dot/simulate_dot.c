@@ -32,7 +32,8 @@ int main(int argc, char **argv)
   /* load the DOT file  and schedule tasks */
   dot = SD_dotload_with_sched(argv[2]);
   if(!dot){
-    XBT_CRITICAL("The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose");
+    XBT_CRITICAL("The dot file with the provided scheduling is wrong,"
+                 " more information with the option : --log=sd_dotparse.thres:verbose");
     SD_exit();
     exit(2);
   }
@@ -40,23 +41,14 @@ int main(int argc, char **argv)
   char *tracefilename;
   char *last = strrchr(argv[2], '.');
   tracefilename = bprintf("%.*s.trace", (int) (last == NULL ? strlen(argv[2]) : last - argv[2]),argv[2]);
-  if (argc == 4) 
+  if (argc == 4)
     tracefilename = xbt_strdup(argv[3]);
-  
 
   /* Display all the tasks */
   XBT_INFO("------------------- Display all tasks of the loaded DAG ---------------------------");
   xbt_dynar_foreach(dot, cursor, task) {
     SD_task_dump(task);
   }
-
-  FILE *dotout = fopen("dot.dot", "w");
-  fprintf(dotout, "digraph A {\n");
-  xbt_dynar_foreach(dot, cursor, task) {
-    SD_task_dotty(task, dotout);
-  }
-  fprintf(dotout, "}\n");
-  fclose(dotout);
 
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);

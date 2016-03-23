@@ -1,5 +1,5 @@
 if(HAVE_GRAPHVIZ)
-  foreach(x dot_test ptg_test simulate_dot dot_test2)
+  foreach(x dot_test ptg_test simulate_dot)
     add_executable       (${x}     ${x}.c)
     target_link_libraries(${x}     simgrid)
     set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}.c)
