@@ -453,7 +453,7 @@ static int MC_modelcheck_comm_determinism_main(void)
 
       /* Check for deadlocks */
       if (mc_model_checker->checkDeadlock()) {
-        MC_show_deadlock(nullptr);
+        MC_show_deadlock();
         return SIMGRID_MC_EXIT_DEADLOCK;
       }
 

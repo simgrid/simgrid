@@ -237,16 +237,11 @@ void MC_show_stack_safety(xbt_fifo_t stack)
   }
 }
 
-void MC_show_deadlock(smx_simcall_t req)
+void MC_show_deadlock(void)
 {
-  /*char *req_str = nullptr; */
   XBT_INFO("**************************");
   XBT_INFO("*** DEAD-LOCK DETECTED ***");
   XBT_INFO("**************************");
-  XBT_INFO("Locked request:");
-  /*req_str = simgrid::mc::request_to_string(req);
-     XBT_INFO("%s", req_str);
-     xbt_free(req_str); */
   XBT_INFO("Counter-example execution trace:");
   MC_dump_stack_safety(mc_stack);
   MC_print_statistics(mc_stats);
