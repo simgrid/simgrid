@@ -42,9 +42,11 @@ static void new_state(char* id, int src){
   if(type==-1)
     parsed_automaton->current_state = state;
 
-  if(src)
+  if(src) {
+    if (state_id_src)
+      free(state_id_src);
     state_id_src = xbt_strdup(id);
-    
+  }
 }
 
 static void new_transition(char* id, xbt_automaton_exp_label_t label)
