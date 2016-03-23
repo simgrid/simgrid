@@ -6,11 +6,14 @@
 
 #include <cstring>
 
+#include <algorithm>
+
 #include <unistd.h>
 #include <sys/wait.h>
 
 #include <xbt/automaton.h>
 #include <xbt/dynar.h>
+#include <xbt/dynar.hpp>
 #include <xbt/fifo.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
@@ -99,52 +102,36 @@ static int snapshot_compare(simgrid::mc::VisitedPair* state1, simgrid::mc::Visit
 
 static simgrid::mc::VisitedPair* is_reached_acceptance_pair(simgrid::mc::Pair* pair)
 {
+  auto acceptance_pairs = simgrid::xbt::range<simgrid::mc::VisitedPair*>(::acceptance_pairs);
+
   simgrid::mc::VisitedPair* new_pair = new VisitedPair(
     pair->num, pair->automaton_state, pair->atomic_propositions.get(),
     pair->graph_state);
   new_pair->acceptance_pair = 1;
 
-  if (xbt_dynar_is_empty(acceptance_pairs))
-    xbt_dynar_push(acceptance_pairs, &new_pair);
-  else {
+  auto res = std::equal_range(acceptance_pairs.begin(), acceptance_pairs.end(),
+    new_pair, simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
-    int min = -1, max = -1, index;
-    //int res;
-    simgrid::mc::VisitedPair* pair_test;
-    int cursor;
-
-    index = simgrid::mc::get_search_interval(
-      (simgrid::mc::VisitedPair**) xbt_dynar_get_ptr(acceptance_pairs, 0),
-      xbt_dynar_length(acceptance_pairs),
-      new_pair, &min, &max);
-
-    if (min != -1 && max != -1) {       // Acceptance pair with same number of processes and same heap bytes used exists
-
-      cursor = min;
-      if(pair->search_cycle == 1){
-        while (cursor <= max) {
-          pair_test = (simgrid::mc::VisitedPair*) xbt_dynar_get_as(acceptance_pairs, cursor, simgrid::mc::VisitedPair*);
-          if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
-            if (xbt_automaton_propositional_symbols_compare_value(
-                pair_test->atomic_propositions.get(),
-                new_pair->atomic_propositions.get()) == 0) {
-              if (snapshot_compare(pair_test, new_pair) == 0) {
-                XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
-                xbt_fifo_shift(mc_stack);
-                if (dot_output != nullptr)
-                  fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
-                return nullptr;
-              }
-            }
+  if (pair->search_cycle == 1)
+    for (auto i = res.first; i != res.second; ++i) {
+      simgrid::mc::VisitedPair* pair_test = *i;
+      if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
+        if (xbt_automaton_propositional_symbols_compare_value(
+            pair_test->atomic_propositions.get(),
+            new_pair->atomic_propositions.get()) == 0) {
+          if (snapshot_compare(pair_test, new_pair) == 0) {
+            XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
+            xbt_fifo_shift(mc_stack);
+            if (dot_output != nullptr)
+              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
+            return nullptr;
           }
-          cursor++;
         }
       }
-      xbt_dynar_insert_at(acceptance_pairs, min, &new_pair);
-    } else {
-      xbt_dynar_insert_at(acceptance_pairs, index, &new_pair);
     }
-  }
+
+  xbt_dynar_insert_at(
+    ::acceptance_pairs, res.first - acceptance_pairs.begin(), &new_pair);
   return new_pair;
 }
 

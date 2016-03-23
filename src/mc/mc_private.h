@@ -71,7 +71,7 @@ SG_END_DECL()
 namespace simgrid {
 namespace mc {
 
-struct DerefAndCompareByNbProcessesAndUsedHead {
+struct DerefAndCompareByNbProcessesAndUsedHeap {
   template<class X, class Y>
   bool operator()(X const& a, Y const& b)
   {
@@ -103,7 +103,7 @@ int get_search_interval(
   U* list, std::size_t count, T *ref, int *min, int *max)
 {
   auto res = std::equal_range(
-    list, list + count, ref, DerefAndCompareByNbProcessesAndUsedHead());
+    list, list + count, ref, DerefAndCompareByNbProcessesAndUsedHeap());
 
   // Not found, but we have the insertion point:
   if (res.first == res.second)
