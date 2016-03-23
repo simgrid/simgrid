@@ -236,7 +236,7 @@ void print_pajePushState(paje_event_t event)
   stream << std::endl;
 
   // TODO: This can be removed as soon as TRACE_paje_start() has been migrated
-  fprintf(tracing_file, stream.str().c_str());
+  fprintf(tracing_file, "%s", stream.str().c_str());
 
    if(((pushState_t)event->data)->extra!=NULL){
      if(((instr_extra_data)((pushState_t)event->data)->extra)->sendcounts!=NULL)
