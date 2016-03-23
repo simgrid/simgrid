@@ -16,10 +16,6 @@
 #include <sys/mman.h>
 #endif
 
-#ifdef __cpluscplus
-#include <algorithm>
-#endif
-
 #include <elfutils/libdw.h>
 
 #include <simgrid/msg.h>
@@ -63,66 +59,6 @@ XBT_PRIVATE void MC_show_non_termination(void);
  *  It is managed by its head (`xbt_fifo_shift` and `xbt_fifo_unshift`).
  */
 XBT_PRIVATE extern xbt_fifo_t mc_stack;
-
-#ifdef __cplusplus
-
-SG_END_DECL()
-
-namespace simgrid {
-namespace mc {
-
-struct DerefAndCompareByNbProcessesAndUsedHeap {
-  template<class X, class Y>
-  bool operator()(X const& a, Y const& b)
-  {
-    return std::make_pair(a->nb_processes, a->heap_bytes_used) <
-      std::make_pair(b->nb_processes, b->heap_bytes_used);
-  }
-};
-
-/**
- *  \brief Find a suitable subrange of candidate duplicates for a given state
- *  \param list dynamic array of states/pairs with candidate duplicates of the current state;
- *  \param ref current state/pair;
- *  \param min (output) index of the beginning of the the subrange
- *  \param max (output) index of the enf of the subrange
- *
- *  Given a suitably ordered array of states/pairs, this function extracts a subrange
- *  (with index *min <= i <= *max) with candidate duplicates of the given state/pair.
- *  This function uses only fast discriminating criterions and does not use the
- *  full state/pair comparison algorithms.
- *
- *  The states/pairs in list MUST be ordered using a (given) weak order
- *  (based on nb_processes and heap_bytes_used).
- *  The subrange is the subrange of "equivalence" of the given state/pair.
- */
-// TODO, it would make sense to use std::set instead
-// U = some pointer of T (T*, unique_ptr<T>, shared_ptr<T>)
-template<class U, class T>
-int get_search_interval(
-  U* list, std::size_t count, T *ref, int *min, int *max)
-{
-  auto res = std::equal_range(
-    list, list + count, ref, DerefAndCompareByNbProcessesAndUsedHeap());
-
-  // Not found, but we have the insertion point:
-  if (res.first == res.second)
-    return res.first - list;
-
-  // Found, we have the whole matching range:
-  else {
-    *min = res.first - list;
-    *max = (res.second - 1) - list;
-    return -1;
-  }
-}
-
-}
-}
-
-#endif
-
-SG_BEGIN_DECL()
 
 /****************************** Statistics ************************************/
 
