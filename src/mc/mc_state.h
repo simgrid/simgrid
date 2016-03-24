@@ -68,12 +68,4 @@ XBT_PRIVATE void MC_state_remove_interleave_process(mc_state_t state, smx_proces
 
 SG_END_DECL()
 
-namespace simgrid {
-namespace mc {
-
-XBT_PRIVATE int snapshot_compare(mc_state_t state1, mc_state_t state2);
-
-}
-}
-
 #endif

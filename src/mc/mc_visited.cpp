@@ -131,6 +131,15 @@ static void prune_visited_states()
   }
 }
 
+static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::VisitedState* state2)
+{
+  simgrid::mc::Snapshot* s1 = state1->system_state;
+  simgrid::mc::Snapshot* s2 = state2->system_state;
+  int num1 = state1->num;
+  int num2 = state2->num;
+  return snapshot_compare(num1, s1, num2, s2);
+}
+
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */

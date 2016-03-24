@@ -43,6 +43,15 @@ static void MC_show_non_termination(void)
   MC_print_statistics(mc_stats);
 }
 
+static int snapshot_compare(mc_state_t state1, mc_state_t state2)
+{
+  simgrid::mc::Snapshot* s1 = state1->system_state;
+  simgrid::mc::Snapshot* s2 = state2->system_state;
+  int num1 = state1->num;
+  int num2 = state2->num;
+  return snapshot_compare(num1, s1, num2, s2);
+}
+
 static int is_exploration_stack_state(mc_state_t current_state){
 
   xbt_fifo_item_t item;
