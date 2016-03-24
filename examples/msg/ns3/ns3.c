@@ -8,7 +8,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-
 /** @addtogroup MSG_examples
  * 
  *  @section MSG_ex_models Models-related examples
@@ -126,10 +125,7 @@ static int slave(int argc, char *argv[])
       timer_start = 0;
   }
 
-  if (a != MSG_OK) {
-    XBT_INFO("Hey?! What's up?");
-    xbt_die("Unexpected behavior.");
-  }
+  xbt_assert(a == MSG_OK,"Hey?! What's up? Unexpected behavior");
 
   elapsed_time = MSG_get_clock() - start_time;
 

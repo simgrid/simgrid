@@ -28,32 +28,24 @@ int count_finished = 0;
 
 static int master(int argc, char *argv[])
 {
-  char *slavename = NULL;
-  double task_comm_size = 0;
   msg_task_t todo;
-  char id_alias[10];
-  //unique id to control statistics
-  int id = -1;
 
   xbt_assert(argc == 4, "Strange number of arguments expected 3 got %d", argc - 1);
 
   /* data size */
-  int read;
-  read = sscanf(argv[1], "%lg", &task_comm_size);
-  xbt_assert(read, "Invalid argument %s\n", argv[1]);
+  double task_comm_size = xbt_str_parse_double(argv[1], "Invalid task communication size: %s");
 
   /* slave name */
-  slavename = argv[2];
-  id = atoi(argv[3]);
-  sprintf(id_alias, "flow_%d", id);
+  char *slavename = argv[2];
+  int id = xbt_str_parse_int(argv[3], "Invalid ID as argument 3: %s");   //unique id to control statistics
+  char *id_alias = bprintf("flow_%d", id);
   slavenames[id] = slavename;
   TRACE_category(id_alias);
 
   masternames[id] = MSG_host_get_name(MSG_host_self());
 
   {                             /*  Task creation.  */
-    char sprintf_buffer[64] = "Task_0";
-    todo = MSG_task_create(sprintf_buffer, 0, task_comm_size, NULL);
+    todo = MSG_task_create("Task_0", 0, task_comm_size, NULL);
     MSG_task_set_category(todo, id_alias);
     //keep track of running tasks
     gl_task_array[id] = todo;
@@ -68,6 +60,7 @@ static int master(int argc, char *argv[])
   MSG_task_send(todo, id_alias);
   end_time = MSG_get_clock();
 
+  xbt_free(id_alias);
   return 0;
 }
 
@@ -79,11 +72,11 @@ static int slave(int argc, char *argv[])
 
   xbt_assert(argc == 2, "Strange number of arguments expected 1 got %d", argc - 1);
 
-  int id = atoi(argv[1]);
+  int id = xbt_str_parse_int(argv[1], "Invalid id: %s");
   sprintf(id_alias, "%d", id);
   int trace_id = id;
 
-  int a = MSG_task_receive(&(task), id_alias);
+  msg_error_t a = MSG_task_receive(&(task), id_alias);
 
   count_finished--;
   if(count_finished == 0){
@@ -135,7 +128,6 @@ int main(int argc, char *argv[])
              "\tExample: %s platform.xml deployment.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
-
   TRACE_declare_mark("endmark");
 
   MSG_function_register("master", master);
