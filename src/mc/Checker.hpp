@@ -41,17 +41,6 @@ protected:
   Session& getSession() { return *session_; }
 };
 
-/** Adapt a std::function to a checker */
-class FunctionalChecker : public Checker {
-  Session* session_;
-  std::function<int(Session& session)> function_;
-public:
-  FunctionalChecker(Session& session, std::function<int(Session& session)> f)
-    : Checker(session), function_(std::move(f)) {}
-  ~FunctionalChecker();
-  int run() override;
-};
-
 }
 }
 

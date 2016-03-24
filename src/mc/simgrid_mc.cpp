@@ -45,10 +45,6 @@ char** argvdup(int argc, char** argv)
 static
 std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session& session)
 {
-  using simgrid::mc::Session;
-  using simgrid::mc::FunctionalChecker;
-
-  std::function<int(Session& session)> code;
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
     return std::unique_ptr<simgrid::mc::Checker>(
       new simgrid::mc::CommunicationDeterminismChecker(session));
@@ -58,9 +54,6 @@ std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session& sessio
   else
     return std::unique_ptr<simgrid::mc::Checker>(
       new simgrid::mc::LivenessChecker(session));
-
-  return std::unique_ptr<simgrid::mc::Checker>(
-    new FunctionalChecker(session, std::move(code)));
 }
 
 int main(int argc, char** argv)
