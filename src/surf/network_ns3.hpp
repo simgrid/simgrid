@@ -12,33 +12,10 @@
 #ifndef NETWORK_NS3_HPP_
 #define NETWORK_NS3_HPP_
 
-/***********
- * Classes *
- ***********/
-
 namespace simgrid {
 namespace surf {
 
-class XBT_PRIVATE NetworkNS3Model;
-class XBT_PRIVATE NetworkNS3Action;
-
-}
-}
-
-/*********
- * Tools *
- *********/
-
-XBT_PRIVATE void net_define_callbacks(void);
-
-/*********
- * Model *
- *********/
-
-namespace simgrid {
-namespace surf {
-
-class NetworkNS3Model : public NetworkModel {
+class XBT_PRIVATE NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
   ~NetworkNS3Model();
@@ -71,7 +48,7 @@ public:
 /**********
  * Action *
  **********/
-class NetworkNS3Action : public NetworkAction {
+class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
   NetworkNS3Action(Model *model, double cost, bool failed);
 
