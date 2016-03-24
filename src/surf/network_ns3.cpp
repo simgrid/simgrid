@@ -65,18 +65,6 @@ static void simgrid_ns3_add_host(simgrid::s4u::Host& host)
   host.extension_set(NS3_EXTENSION_ID, ns3host);
 }
 
-static void parse_ns3_add_link(sg_platf_link_cbarg_t link)
-{
-  XBT_DEBUG("NS3_ADD_LINK '%s'",link->id);
-
-  Link *l = surf_network_model->createLink(link->id, link->bandwidth, link->latency, link->policy, link->properties);
-  if (link->bandwidth_trace)
-    l->setBandwidthTrace(link->latency_trace);
-  if (link->latency_trace)
-    l->setLatencyTrace(link->latency_trace);
-  if (link->state_trace)
-    l->setStateTrace(link->state_trace);
-}
 static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
 {
   const char* router_id = router->name();
@@ -249,7 +237,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   routing_model_create(NULL);
   simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
   simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_router);
-  simgrid::surf::on_link.connect (parse_ns3_add_link);
+  simgrid::surf::on_link.connect(netlink_parse_init);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
   simgrid::surf::asCreatedCallbacks.connect(parse_ns3_add_AS);
   simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
@@ -422,7 +410,7 @@ int NetworkNS3Action::unref()
   if (action_hook.is_linked())
     p_stateSet->erase(p_stateSet->iterator_to(*this));
     XBT_DEBUG ("Removing action %p", this);
-  delete this;
+    delete this;
     return 1;
   }
   return 0;
