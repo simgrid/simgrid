@@ -959,9 +959,6 @@ set(CMAKEFILES_TXT
     examples/msg/masterslave/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
     examples/msg/ns3/CMakeLists.txt
-    examples/msg/sendrecv/CMakeLists.txt
-    examples/msg/set-maestro/CMakeLists.txt
-    examples/msg/start_kill_time/CMakeLists.txt
     examples/msg/tracing/CMakeLists.txt
   examples/s4u/CMakeLists.txt
   examples/simdag/CMakeLists.txt

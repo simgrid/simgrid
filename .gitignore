@@ -121,7 +121,6 @@ examples/msg/actions-mpi/actions-mpi
 examples/msg/actions-storage/actions-storage
 examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen
-examples/msg/categories.trace
 examples/msg/chainsend/chainsend
 examples/msg/cloud/bound
 examples/msg/cloud/master_worker_vm
@@ -139,11 +138,9 @@ examples/msg/energy-pstate/energy-pstate
 examples/msg/energy-ptask/energy-ptask
 examples/msg/energy-vm/energy-vm
 examples/msg/gtnets/gtnets
-examples/msg/icomms/.kdbgrc.peer3
 examples/msg/icomms/peer
 examples/msg/icomms/peer2
 examples/msg/icomms/peer3
-examples/msg/icomms/toto.txt
 examples/msg/io/file
 examples/msg/io/file_unlink
 examples/msg/io/remote

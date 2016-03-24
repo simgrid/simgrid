@@ -1,0 +1,73 @@
+#! ./tesh
+
+p Testing with default compound
+
+$ $SG_TEST_EXENV ${bindir:=.}/sendrecv$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/sendrecv/sendrecv_d.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:sender@Tremblay) sender
+> [  0.000000] (1:sender@Tremblay) host = Jupiter
+> [  0.000000] (1:sender@Tremblay) task_la->data = 0.000000e+00
+> [  0.000000] (2:receiver@Jupiter) receiver
+> [  0.019014] (2:receiver@Jupiter) Task received : latency task
+> [  0.019014] (2:receiver@Jupiter) Communic. time 1.901449e-02
+> [  0.019014] (2:receiver@Jupiter) --- la 0.019014 ----
+> [  0.019014] (1:sender@Tremblay) task_bw->data = 1.901449e-02
+> [150.178356] (2:receiver@Jupiter) Task received : bandwidth task
+> [150.178356] (2:receiver@Jupiter) Communic. time 1.501593e+02
+> [150.178356] (2:receiver@Jupiter) --- bw 6659592.318450 ----
+> [150.178356] (0:maestro@) Total simulation time: 1.501784e+02
+
+p Testing the deprecated CM02 network model
+
+$ $SG_TEST_EXENV ${bindir:=.}/sendrecv$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/sendrecv/sendrecv_d.xml --cfg=cpu/model:Cas01 --cfg=network/model:CM02 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'CM02'
+> [  0.000000] (1:sender@Tremblay) sender
+> [  0.000000] (1:sender@Tremblay) host = Jupiter
+> [  0.000000] (1:sender@Tremblay) task_la->data = 0.000000e+00
+> [  0.000000] (2:receiver@Jupiter) receiver
+> [  0.001462] (2:receiver@Jupiter) Task received : latency task
+> [  0.001462] (2:receiver@Jupiter) Communic. time 1.461663e-03
+> [  0.001462] (2:receiver@Jupiter) --- la 0.001462 ----
+> [  0.001462] (1:sender@Tremblay) task_bw->data = 1.461663e-03
+> [145.639041] (2:receiver@Jupiter) Task received : bandwidth task
+> [145.639041] (2:receiver@Jupiter) Communic. time 1.456376e+02
+> [145.639041] (2:receiver@Jupiter) --- bw 6866359.664748 ----
+> [145.639041] (0:maestro@) Total simulation time: 1.456390e+02
+
+p Testing the surf network Reno fairness model using lagrangian approach
+
+$ $SG_TEST_EXENV ${bindir:=.}/sendrecv$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/sendrecv/sendrecv_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Reno" --log=surf_lagrange.thres=critical "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Reno'
+> [  0.000000] (1:sender@Tremblay) sender
+> [  0.000000] (1:sender@Tremblay) host = Jupiter
+> [  0.000000] (1:sender@Tremblay) task_la->data = 0.000000e+00
+> [  0.000000] (2:receiver@Jupiter) receiver
+> [  0.015200] (2:receiver@Jupiter) Task received : latency task
+> [  0.015200] (2:receiver@Jupiter) Communic. time 1.519994e-02
+> [  0.015200] (2:receiver@Jupiter) --- la 0.015200 ----
+> [  0.015200] (1:sender@Tremblay) task_bw->data = 1.519994e-02
+> [158.330528] (2:receiver@Jupiter) Task received : bandwidth task
+> [158.330528] (2:receiver@Jupiter) Communic. time 1.583153e+02
+> [158.330528] (2:receiver@Jupiter) --- bw 6316507.782677 ----
+> [158.330528] (0:maestro@) Total simulation time: 1.583305e+02
+
+p Testing the surf network Vegas fairness model using lagrangian approach
+
+$ $SG_TEST_EXENV ${bindir:=.}/sendrecv$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/sendrecv/sendrecv_d.xml "--cfg=host/model:compound cpu/model:Cas01 network/model:Vegas" "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'host/model' to 'compound'
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/model' to 'Cas01'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Vegas'
+> [  0.000000] (1:sender@Tremblay) sender
+> [  0.000000] (1:sender@Tremblay) host = Jupiter
+> [  0.000000] (1:sender@Tremblay) task_la->data = 0.000000e+00
+> [  0.000000] (2:receiver@Jupiter) receiver
+> [  0.015200] (2:receiver@Jupiter) Task received : latency task
+> [  0.015200] (2:receiver@Jupiter) Communic. time 1.519994e-02
+> [  0.015200] (2:receiver@Jupiter) --- la 0.015200 ----
+> [  0.015200] (1:sender@Tremblay) task_bw->data = 1.519994e-02
+> [158.330528] (2:receiver@Jupiter) Task received : bandwidth task
+> [158.330528] (2:receiver@Jupiter) Communic. time 1.583153e+02
+> [158.330528] (2:receiver@Jupiter) --- bw 6316507.782677 ----
+> [158.330528] (0:maestro@) Total simulation time: 1.583305e+02
