@@ -141,10 +141,10 @@ examples/msg/energy-pstate/energy-pstate
 examples/msg/energy-ptask/energy-ptask
 examples/msg/energy-vm/energy-vm
 examples/msg/gtnets/gtnets
-examples/msg/io/file
-examples/msg/io/file_unlink
-examples/msg/io/remote
-examples/msg/io/storage
+examples/msg/io-file/io-file
+examples/msg/io-file-unlink/io-file-unlink
+examples/msg/io-remote/io-remote
+examples/msg/io-storage/io-storage
 examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
 examples/msg/masterslave/masterslave_arg

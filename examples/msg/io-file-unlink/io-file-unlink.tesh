@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/io/file_unlink ${srcdir:=.}/examples/platforms/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/io-file-unlink ${srcdir:=.}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Number of host '4'
 > [  0.000000] (1:0@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000000] (1:0@denise) 	Unlink file '/home/doc/simgrid/examples/platforms/g5k.xml'

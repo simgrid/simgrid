@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/io/storage$EXEEXT ${srcdir:=.}/examples/platforms/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/io-storage$EXEEXT ${srcdir:=.}/storage/storage.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:(null)@denise) *** Storage info on denise ***
 > [  0.000000] (1:(null)@denise) Storage name: Disk2, mount name: c:
 > [  0.000000] (1:(null)@denise) Total size: 536870912000 bytes

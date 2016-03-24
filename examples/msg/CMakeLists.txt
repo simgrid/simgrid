@@ -1,6 +1,7 @@
 foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord dht-pastry 
-          exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm pmm priority process-kill 
-          process-migration process-suspend properties sendrecv set-maestro start_kill_time synchro token_ring)
+          exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm io-file io-file-unlink 
+          io-remote io-storage pmm priority process-kill process-migration process-suspend properties sendrecv
+          set-maestro start_kill_time synchro token_ring)
   add_executable       (${x}     ${x}/${x}.c)
   target_link_libraries(${x}     simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -33,6 +34,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/action
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/chord10.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/pastry10.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-onoff/platform_onoff.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/io-remote/io-remote_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/priority/priority_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/properties/properties_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/sendrecv/sendrecv_d.xml
@@ -42,8 +44,9 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/action
                                   ${CMAKE_CURRENT_SOURCE_DIR}/start_kill_time/start_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/start_kill_time/start_kill_d.xml             PARENT_SCOPE)
 
-foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord priority process-kill
-        process-migration process-suspend properties sendrecv synchro start_kill_time token_ring)
+foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord io-file io-file-unlink io-remote
+        io-storage priority process-kill process-migration process-suspend properties sendrecv synchro start_kill_time
+        token_ring)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()
 

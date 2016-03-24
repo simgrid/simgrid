@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ ${bindir:=.}/io/remote$EXEEXT ${srcdir:=.}/examples/platforms/storage/remote_io.xml ${srcdir:=.}/examples/msg/io/remote_io.deployment.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
+$ ${bindir:=.}/io-remote$EXEEXT ${srcdir:=.}/storage/remote_io.xml ${srcdir:=.}/../msg/io-remote/io-remote_d.xml "--log=root.fmt:[%10.6r]%e(%i@%5h)%e%m%n"
 > [  0.000000] (0@     ) Init: 12 MiB used on 'Disk1'
 > [  0.000000] (0@     ) Init: 2280 MiB used on 'Disk2'
 > [  0.000000] (1@alice) Opened file 'c:\Windows\setupact.log'
