@@ -42,6 +42,53 @@ xbt_dynar_t acceptance_pairs;
 namespace simgrid {
 namespace mc {
 
+VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
+{
+  simgrid::mc::Process* process = &(mc_model_checker->process());
+
+  this->graph_state = graph_state;
+  if(this->graph_state->system_state == nullptr)
+    this->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
+  this->heap_bytes_used = mmalloc_get_bytes_used_remote(
+    process->get_heap()->heaplimit,
+    process->get_malloc_info());
+
+  this->nb_processes =
+    mc_model_checker->process().simix_processes().size();
+
+  this->automaton_state = automaton_state;
+  this->num = pair_num;
+  this->other_num = -1;
+  this->acceptance_removed = 0;
+  this->visited_removed = 0;
+  this->acceptance_pair = 0;
+  this->atomic_propositions = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(
+    xbt_dynar_new(sizeof(int), nullptr));
+
+  unsigned int cursor = 0;
+  int value;
+  xbt_dynar_foreach(atomic_propositions, cursor, value)
+      xbt_dynar_push_as(this->atomic_propositions.get(), int, value);
+}
+
+static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
+  xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
+  while (item) {
+    if (((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->num == pair->num){
+      ((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->visited_pair_removed = 1;
+      return 1;
+    }
+    item = xbt_fifo_get_next_item(item);
+  }
+  return 0;
+}
+
+VisitedPair::~VisitedPair()
+{
+  if( !is_exploration_stack_pair(this))
+    MC_state_delete(this->graph_state, 1);
+}
+
 static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
                                        xbt_dynar_t atomic_propositions_values)
 {
