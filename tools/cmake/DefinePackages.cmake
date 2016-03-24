@@ -953,7 +953,6 @@ set(CMAKEFILES_TXT
     examples/msg/chainsend/CMakeLists.txt
     examples/msg/cloud/CMakeLists.txt
     examples/msg/dht-kademlia/CMakeLists.txt
-    examples/msg/gtnets/CMakeLists.txt 
     examples/msg/masterslave/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
     examples/msg/ns3/CMakeLists.txt
@@ -1096,6 +1095,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/trace/trace_A.txt
   examples/platforms/trace/trace_B.txt
   examples/platforms/data_center.xml
+  examples/platforms/dogbone.xml
   examples/platforms/energy_platform.xml
   examples/platforms/faulty_host.xml
   examples/platforms/fat_tree_cluster.xml
@@ -1103,6 +1103,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
   examples/platforms/multicore_machine.xml
+  examples/platforms/onelink.xml
   examples/platforms/platform.xml
   examples/platforms/prop.xml
   examples/platforms/routing_cluster.xml

@@ -8,8 +8,10 @@ endif()
 set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/ns3.c                   PARENT_SCOPE)
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/ns3.tesh                PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/3hosts_2links_d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/3links-d-timer.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/3links-d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/dogbone-d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/One_cluster-d.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/Two_clusters-d.xml      PARENT_SCOPE)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/3links-timer_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/3links_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/crosstraffic_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/dogbone_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/onelink_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/one_cluster_d.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/two_clusters_d.xml      PARENT_SCOPE)

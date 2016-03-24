@@ -11,13 +11,13 @@ $ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${s
 
 p 6hosts 3links
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
 > [Ginette:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
 > [Lovelace:slave(6)] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-d-timer.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-timer_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
 > [Ginette:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
@@ -26,12 +26,34 @@ $ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${s
 
 p One cluster
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/ns3/One_cluster-d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/ns3/one_cluster_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [node-6.acme.org:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-2.acme.org to node-6.acme.org
 
 p Two clusters
 
-$ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/Two_clusters-d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/two_clusters_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [node-16.acme.org:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-3.acme.org to node-16.acme.org
+
+p Dogbone
+
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/dogbone.xml ${srcdir:=.}/examples/msg/ns3/dogbone_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+
+p 2hosts 1link
+
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/onelink.xml ${srcdir:=.}/examples/msg/ns3/onelink_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+
+p Crosstraffic TCP option DISABLED
+
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/crosstraffic.xml ${srcdir:=.}/examples/msg/ns3/crosstraffic_d.xml --cfg=network/model:NS3 --cfg=network/crosstraffic:0 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
+
+p Crosstraffic TCP option ENABLED
+
+$ ns3/ns3 ${srcdir:=.}/examples/platforms/crosstraffic.xml ${srcdir:=.}/examples/msg/ns3/crosstraffic_d.xml --cfg=network/model:NS3 --cfg=network/crosstraffic:1 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '1'
