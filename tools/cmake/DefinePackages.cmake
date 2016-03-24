@@ -554,6 +554,8 @@ set(MC_SRC
   src/mc/Checker.hpp
   src/mc/Client.cpp
   src/mc/Client.hpp
+  src/mc/CommunicationDeterminismChecker.cpp
+  src/mc/CommunicationDeterminismChecker.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -585,7 +587,6 @@ set(MC_SRC
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp
-  src/mc/mc_comm_determinism.cpp
   src/mc/mc_compare.cpp
   src/mc/mc_diff.cpp
   src/mc/mc_dwarf.hpp

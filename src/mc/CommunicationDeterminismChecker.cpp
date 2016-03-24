@@ -20,14 +20,13 @@
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/Client.hpp"
+#include "src/mc/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_exit.h"
 
 using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc,
                                 "Logging specific to MC communication determinism detection");
-
-extern "C" {
 
 /********** Global variables **********/
 
@@ -165,10 +164,10 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
         initial_global_state->recv_diff = nullptr;
         MC_print_statistics(mc_stats);
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
-      } 
+      }
     }
   }
-    
+
   MC_comm_pattern_free(comm);
 
 }
@@ -231,7 +230,7 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
       }
       return;
     }
-  } else if (call_type == MC_CALL_TYPE_RECV) {                      
+  } else if (call_type == MC_CALL_TYPE_RECV) {
     pattern->type = SIMIX_COMM_RECEIVE;
     pattern->comm_addr = simcall_comm_irecv__get__result(request);
 
@@ -296,16 +295,28 @@ void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigne
 
 /************************ Main algorithm ************************/
 
-static int MC_modelcheck_comm_determinism_main(void);
+namespace simgrid {
+namespace mc {
 
-static void MC_pre_modelcheck_comm_determinism(void)
+CommunicationDeterminismChecker::CommunicationDeterminismChecker(Session& session)
+  : Checker(session)
+{
+
+}
+
+CommunicationDeterminismChecker::~CommunicationDeterminismChecker()
+{
+
+}
+
+void CommunicationDeterminismChecker::prepare()
 {
   mc_state_t initial_state = nullptr;
   int i;
   const int maxpid = MC_smx_get_maxpid();
 
   simgrid::mc::visited_states.clear();
- 
+
   // Create initial_communications_pattern elements:
   initial_communications_pattern = xbt_dynar_new(sizeof(mc_list_comm_pattern_t), MC_list_comm_pattern_free_voidp);
   for (i=0; i < maxpid; i++){
@@ -323,7 +334,7 @@ static void MC_pre_modelcheck_comm_determinism(void)
   }
 
   initial_state = MC_state_new();
-  
+
   XBT_DEBUG("********* Start communication determinism verification *********");
 
   /* Wait for requests (schedules processes) */
@@ -351,7 +362,7 @@ bool all_communications_are_finished()
   return true;
 }
 
-static int MC_modelcheck_comm_determinism_main(void)
+int CommunicationDeterminismChecker::main(void)
 {
 
   char *req_str = nullptr;
@@ -380,7 +391,7 @@ static int MC_modelcheck_comm_determinism_main(void)
       req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
       XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
-      
+
       if (dot_output != nullptr)
         req_str = simgrid::mc::request_get_dot_output(req, value);
 
@@ -441,7 +452,7 @@ static int MC_modelcheck_comm_determinism_main(void)
       else
         XBT_DEBUG("There are no more processes to interleave. (depth %d)", xbt_fifo_size(mc_stack));
 
-      if (!initial_global_state->initial_communications_pattern_done) 
+      if (!initial_global_state->initial_communications_pattern_done)
         initial_global_state->initial_communications_pattern_done = 1;
 
       /* Trash the current state, no longer needed */
@@ -480,7 +491,7 @@ static int MC_modelcheck_comm_determinism_main(void)
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-int MC_modelcheck_comm_determinism(void)
+int CommunicationDeterminismChecker::run()
 {
   XBT_INFO("Check communication determinism");
   mc_model_checker->wait_for_requests();
@@ -492,7 +503,7 @@ int MC_modelcheck_comm_determinism(void)
   /* Create exploration stack */
   mc_stack = xbt_fifo_new();
 
-  MC_pre_modelcheck_comm_determinism();
+  this->prepare();
 
   initial_global_state = xbt_new0(s_mc_global_t, 1);
   initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
@@ -502,7 +513,8 @@ int MC_modelcheck_comm_determinism(void)
   initial_global_state->recv_diff = nullptr;
   initial_global_state->send_diff = nullptr;
 
-  return MC_modelcheck_comm_determinism_main();
+  return this->main();
 }
 
+}
 }
