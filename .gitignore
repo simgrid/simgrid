@@ -123,7 +123,6 @@ examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen
 examples/msg/categories.trace
 examples/msg/chainsend/chainsend
-examples/msg/dht-chord/dht-chord
 examples/msg/cloud/bound
 examples/msg/cloud/master_worker_vm
 examples/msg/cloud/migrate_vm
@@ -131,6 +130,9 @@ examples/msg/cloud/multicore
 examples/msg/cloud/scale
 examples/msg/cloud/simple_vm
 examples/msg/cloud/two_tasks_vm
+examples/msg/dht-chord/dht-chord
+examples/msg/dht-kademlia/kademlia
+examples/msg/dht-pastry/dht-pastry
 examples/msg/energy-consumption/energy-consumption
 examples/msg/energy-onoff/energy-onoff
 examples/msg/energy-pstate/energy-pstate
@@ -148,7 +150,6 @@ examples/msg/io/remote
 examples/msg/io/storage
 examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
-examples/msg/dht-kademlia/kademlia
 examples/msg/masterslave/masterslave_arg
 examples/msg/masterslave/masterslave_cluster
 examples/msg/masterslave/masterslave_failure
@@ -174,7 +175,6 @@ examples/msg/mc/test/snapshot_comparison5
 examples/msg/migration/migration
 examples/msg/ms.trace
 examples/msg/ns3/ns3
-examples/msg/dht-pastry/pastry
 examples/msg/pmm/pmm
 examples/msg/priority/priority
 examples/msg/procmig.trace
