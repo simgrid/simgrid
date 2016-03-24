@@ -131,11 +131,11 @@ examples/msg/cloud/multicore
 examples/msg/cloud/scale
 examples/msg/cloud/simple_vm
 examples/msg/cloud/two_tasks_vm
-examples/msg/energy/consumption/consumption
-examples/msg/energy/onoff/onoff
-examples/msg/energy/pstate/pstate
-examples/msg/energy/vm/vm
-examples/msg/gpu/test_MSG_gpu_task_create
+examples/msg/energy-consumption/energy-consumption
+examples/msg/energy-onoff/energy-onoff
+examples/msg/energy-pstate/energy-pstate
+examples/msg/energy-ptask/energy-ptask
+examples/msg/energy-vm/energy-vm
 examples/msg/gtnets/gtnets
 examples/msg/icomms/.kdbgrc.peer3
 examples/msg/icomms/peer
@@ -174,9 +174,6 @@ examples/msg/mc/test/snapshot_comparison5
 examples/msg/migration/migration
 examples/msg/ms.trace
 examples/msg/ns3/ns3
-examples/msg/parallel_contexts/pcontexts
-examples/msg/parallel_contexts/pcontexts2
-examples/msg/parallel_task/parallel_task
 examples/msg/dht-pastry/pastry
 examples/msg/pmm/pmm
 examples/msg/priority/priority

@@ -1,9 +1,0 @@
-#! ./tesh
-
-$ $SG_TEST_EXENV parallel_task/parallel_task$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> [  0.000000] (1:test@Fafard) First, build a classical parallel task, with 1 Gflop to execute on each node, and 10MB to exchange between each pair
-> [ 20.625396] (1:test@Fafard) Then, build a parallel task involving only computations and no communication (1 Gflop per node)
-> [ 41.247354] (1:test@Fafard) Finally, trick the ptask to do a 'remote execution', on host Tremblay
-> [ 51.441554] (1:test@Fafard) Goodbye now!
-> [ 51.441554] (0:maestro@) Simulation done.
