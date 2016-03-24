@@ -954,7 +954,6 @@ set(CMAKEFILES_TXT
     examples/msg/cloud/CMakeLists.txt
     examples/msg/dht-kademlia/CMakeLists.txt
     examples/msg/gtnets/CMakeLists.txt 
-    examples/msg/icomms/CMakeLists.txt
     examples/msg/io/CMakeLists.txt
     examples/msg/masterslave/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt

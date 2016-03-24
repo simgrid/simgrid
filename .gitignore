@@ -119,6 +119,9 @@ callgrind.out.*
 *.exe
 examples/msg/actions-mpi/actions-mpi
 examples/msg/actions-storage/actions-storage
+examples/msg/async-wait/async-wait
+examples/msg/async-waitall/async-waitall
+examples/msg/async-waitany/async-waitany
 examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen
 examples/msg/chainsend/chainsend
@@ -138,9 +141,6 @@ examples/msg/energy-pstate/energy-pstate
 examples/msg/energy-ptask/energy-ptask
 examples/msg/energy-vm/energy-vm
 examples/msg/gtnets/gtnets
-examples/msg/icomms/peer
-examples/msg/icomms/peer2
-examples/msg/icomms/peer3
 examples/msg/io/file
 examples/msg/io/file_unlink
 examples/msg/io/remote

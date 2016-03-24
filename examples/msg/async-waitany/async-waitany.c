@@ -8,11 +8,6 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-/** @addtogroup MSG_examples
- * 
- * - <b>msg/icomms/peer3.c</b>: demonstrates the @ref MSG_comm_waitany function
- */
-
 static int sender(int argc, char *argv[])
 {
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
@@ -36,9 +31,7 @@ static int sender(int argc, char *argv[])
 
     sprintf(mailbox, "receiver-%ld", (i % receivers_count));
     sprintf(sprintf_buffer, "Task_%d", i);
-    task =
-        MSG_task_create(sprintf_buffer, task_comp_size,
-                        task_comm_size / coef, NULL);
+    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size / coef, NULL);
     comm = MSG_task_isend(task, mailbox);
     xbt_dynar_push_as(d, msg_comm_t, comm);
     XBT_INFO("Send to receiver-%ld %s comm_size %f", i % receivers_count, sprintf_buffer, task_comm_size / coef);
