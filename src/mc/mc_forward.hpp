@@ -30,7 +30,6 @@ class SimixProcessInformation;
 
 class Session;
 class Checker;
-class FunctionalChecker;
 
 }
 }

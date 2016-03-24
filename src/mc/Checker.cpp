@@ -13,14 +13,5 @@ Checker::~Checker()
 {
 }
 
-FunctionalChecker::~FunctionalChecker()
-{
-}
-
-int FunctionalChecker::run()
-{
-  return function_(*session_);
-}
-
 }
 }
