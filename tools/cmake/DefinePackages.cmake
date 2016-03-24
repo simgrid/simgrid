@@ -598,11 +598,11 @@ set(MC_SRC
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.h
   src/mc/mc_mmalloc.h
-  src/mc/mc_liveness.h
+  src/mc/LivenessChecker.hpp
   src/mc/LocationList.hpp
   src/mc/malloc.hpp
   src/mc/LocationList.cpp
-  src/mc/mc_liveness.cpp
+  src/mc/LivenessChecker.cpp
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp
   src/mc/mc_memory.cpp

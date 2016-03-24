@@ -29,7 +29,7 @@
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_snapshot.h"
-#include "src/mc/mc_liveness.h"
+#include "src/mc/LivenessChecker.hpp"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_unw.h"
 #include "src/mc/mc_smx.h"

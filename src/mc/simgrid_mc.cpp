@@ -24,7 +24,7 @@
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_comm_pattern.h"
-#include "src/mc/mc_liveness.h"
+#include "src/mc/LivenessChecker.hpp"
 #include "src/mc/mc_exit.h"
 #include "src/mc/Session.hpp"
 #include "src/mc/Checker.hpp"
@@ -55,8 +55,8 @@ std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session& sessio
     return std::unique_ptr<simgrid::mc::Checker>(
       new simgrid::mc::SafetyChecker(session));
   else
-    code = [](Session& session) {
-      return simgrid::mc::modelcheck_liveness(); };
+    return std::unique_ptr<simgrid::mc::Checker>(
+      new simgrid::mc::LivenessChecker(session));
 
   return std::unique_ptr<simgrid::mc::Checker>(
     new FunctionalChecker(session, std::move(code)));

@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRID_MC_LIVENESS_H
-#define SIMGRID_MC_LIVENESS_H
+#ifndef SIMGRID_MC_LIVENESS_CHECKER_HPP
+#define SIMGRID_MC_LIVENESS_CHECKER_HPP
 
 #include <stdint.h>
 
@@ -16,6 +16,7 @@
 #include <xbt/automaton.h>
 #include <xbt/memory.hpp>
 #include "src/mc/mc_state.h"
+#include "src/mc/Checker.hpp"
 
 SG_BEGIN_DECL()
 
@@ -60,7 +61,24 @@ struct XBT_PRIVATE VisitedPair {
   ~VisitedPair();
 };
 
-int modelcheck_liveness(void);
+class LivenessChecker : public Checker {
+public:
+  LivenessChecker(Session& session);
+  ~LivenessChecker();
+  int run() override;
+private:
+  int main();
+  void prepare();
+  int compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2);
+  void dumpStack(xbt_fifo_t stack);
+  void showStack(xbt_fifo_t stack);
+  simgrid::xbt::unique_ptr<s_xbt_dynar_t> getPropositionValues();
+  simgrid::mc::VisitedPair* insertAcceptancePair(simgrid::mc::Pair* pair);
+  int insertVisitedPair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair);
+  void showAcceptanceCycle(std::size_t depth);
+  void replay(xbt_fifo_t stack);
+  void removeAcceptancePair(int pair_num);
+};
 
 }
 }

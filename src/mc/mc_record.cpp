@@ -26,7 +26,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_smx.h"
-#include "src/mc/mc_liveness.h"
+#include "src/mc/LivenessChecker.hpp"
 #endif
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
