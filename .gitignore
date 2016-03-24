@@ -151,7 +151,7 @@ examples/msg/masterslave/masterslave_arg
 examples/msg/masterslave/masterslave_cluster
 examples/msg/masterslave/masterslave_failure
 examples/msg/masterslave/masterslave_forwarder
-examples/msg/masterslave/masterslave_kill
+examples/msg/process-kill/process-kill
 examples/msg/masterslave/masterslave_mailbox
 examples/msg/masterslave/toto.txt
 examples/msg/mc/bugged1
@@ -169,7 +169,7 @@ examples/msg/mc/test/snapshot_comparison2
 examples/msg/mc/test/snapshot_comparison3
 examples/msg/mc/test/snapshot_comparison4
 examples/msg/mc/test/snapshot_comparison5
-examples/msg/migration/migration
+examples/msg/process-migration/process-migration
 examples/msg/ms.trace
 examples/msg/ns3/ns3
 examples/msg/pmm/pmm
@@ -181,10 +181,9 @@ examples/msg/sendrecv/sendrecv
 examples/msg/set-maestro/set-maestro
 examples/msg/simulation.trace
 examples/msg/start_kill_time/start_kill_time
-examples/msg/suspend/suspend
+examples/msg/process-suspend/process-suspend
 examples/msg/tasks.trace
 examples/msg/token_ring/token_ring
-examples/msg/toto.txt
 examples/msg/trace/test_trace_integration
 examples/msg/tracing/categories
 examples/msg/tracing/link_srcdst_user_variables

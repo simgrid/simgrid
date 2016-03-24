@@ -1,0 +1,12 @@
+#! ./tesh
+
+p Testing a MSG_process_kill function
+
+$ $SG_TEST_EXENV ${bindir:=.}/process-kill ${srcdir:=.}/small_platform.xml --log=surf_maxmin.thres:error
+> [Tremblay:killer:(1) 0.000000] [msg_test/INFO] Hello!
+> [Fafard:victim:(2) 0.000000] [msg_test/INFO] Hello!
+> [Fafard:victim:(2) 0.000000] [msg_test/INFO] Suspending myself
+> [Tremblay:killer:(1) 10.000000] [msg_test/INFO] Resume process
+> [Tremblay:killer:(1) 10.000000] [msg_test/INFO] Kill process
+> [Tremblay:killer:(1) 10.000000] [msg_test/INFO] OK, goodbye now.
+> [10.000000] [msg_test/INFO] Simulation time 10
