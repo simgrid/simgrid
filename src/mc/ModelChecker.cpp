@@ -30,7 +30,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_ignore.h"
 #include "src/mc/mc_exit.h"
-#include "src/mc/mc_liveness.h"
+#include "src/mc/LivenessChecker.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 

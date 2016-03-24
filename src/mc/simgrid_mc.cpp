@@ -24,10 +24,11 @@
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_comm_pattern.h"
-#include "src/mc/mc_liveness.h"
+#include "src/mc/LivenessChecker.hpp"
 #include "src/mc/mc_exit.h"
 #include "src/mc/Session.hpp"
 #include "src/mc/Checker.hpp"
+#include "src/mc/CommunicationDeterminismChecker.hpp"
 #include "src/mc/SafetyChecker.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_main, mc, "Entry point for simgrid-mc");
@@ -49,14 +50,14 @@ std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session& sessio
 
   std::function<int(Session& session)> code;
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-    code = [](Session& session) {
-      return MC_modelcheck_comm_determinism(); };
+    return std::unique_ptr<simgrid::mc::Checker>(
+      new simgrid::mc::CommunicationDeterminismChecker(session));
   else if (!_sg_mc_property_file || _sg_mc_property_file[0] == '\0')
     return std::unique_ptr<simgrid::mc::Checker>(
       new simgrid::mc::SafetyChecker(session));
   else
-    code = [](Session& session) {
-      return simgrid::mc::modelcheck_liveness(); };
+    return std::unique_ptr<simgrid::mc::Checker>(
+      new simgrid::mc::LivenessChecker(session));
 
   return std::unique_ptr<simgrid::mc::Checker>(
     new FunctionalChecker(session, std::move(code)));

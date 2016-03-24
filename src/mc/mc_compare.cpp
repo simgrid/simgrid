@@ -15,7 +15,7 @@
 #include "src/internal_config.h"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_safety.h"
-#include "src/mc/mc_liveness.h"
+#include "src/mc/LivenessChecker.hpp"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/mc_dwarf.hpp"

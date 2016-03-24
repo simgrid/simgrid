@@ -554,6 +554,8 @@ set(MC_SRC
   src/mc/Checker.hpp
   src/mc/Client.cpp
   src/mc/Client.hpp
+  src/mc/CommunicationDeterminismChecker.cpp
+  src/mc/CommunicationDeterminismChecker.hpp
   src/mc/Frame.hpp
   src/mc/Frame.cpp
   src/mc/ModelChecker.hpp
@@ -585,7 +587,6 @@ set(MC_SRC
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp
-  src/mc/mc_comm_determinism.cpp
   src/mc/mc_compare.cpp
   src/mc/mc_diff.cpp
   src/mc/mc_dwarf.hpp
@@ -598,11 +599,11 @@ set(MC_SRC
   src/mc/mc_hash.cpp
   src/mc/mc_ignore.h
   src/mc/mc_mmalloc.h
-  src/mc/mc_liveness.h
+  src/mc/LivenessChecker.hpp
   src/mc/LocationList.hpp
   src/mc/malloc.hpp
   src/mc/LocationList.cpp
-  src/mc/mc_liveness.cpp
+  src/mc/LivenessChecker.cpp
   src/mc/mc_record.cpp
   src/mc/mc_member.cpp
   src/mc/mc_memory.cpp
