@@ -948,7 +948,6 @@ set(CMAKEFILES_TXT
   examples/java/tracing/CMakeLists.txt
   
   examples/msg/CMakeLists.txt
-    examples/msg/actions/CMakeLists.txt
     examples/msg/bittorrent/CMakeLists.txt
     examples/msg/chainsend/CMakeLists.txt
     examples/msg/cloud/CMakeLists.txt

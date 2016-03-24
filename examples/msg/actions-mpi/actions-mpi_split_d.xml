@@ -5,10 +5,6 @@
      Launch it like this:
          ./mpi_actions homogeneous_3_hosts.xml mpi_deployment_split.xml  -->
 
-  <process host="Tremblay" function="p0">
-    <argument value="mpi_actions_split_p0.txt"/>
-  </process>
-  <process host="Ruby" function="p1">
-    <argument value="mpi_actions_split_p1.txt"/>
-  </process>
+  <process host="Tremblay" function="p0">    <argument value="actions-mpi_split_p0.txt"/>  </process>
+  <process host="Ruby" function="p1">        <argument value="actions-mpi_split_p1.txt"/>  </process>
 </platform>
