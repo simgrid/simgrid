@@ -38,22 +38,34 @@ $ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}
 
 p Dogbone
 
+! timeout 10
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/dogbone.xml ${srcdir:=.}/examples/msg/ns3/dogbone_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [C2:slave(4)] [msg_test/INFO] FLOW[1] : Receive 20000000 bytes from S2 to C2
+> [C1:slave(3)] [msg_test/INFO] FLOW[0] : Receive 20000000 bytes from S1 to C1
 
 p 2hosts 1link
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/onelink.xml ${srcdir:=.}/examples/msg/ns3/onelink_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
+> [C1:slave(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
 
 p Crosstraffic TCP option DISABLED
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/crosstraffic.xml ${srcdir:=.}/examples/msg/ns3/crosstraffic_d.xml --cfg=network/model:NS3 --cfg=network/crosstraffic:0 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
+> [C1:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S1 to C1
+> [C1:slave(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
+> [C1:slave(6)] [msg_test/INFO] FLOW[3] : Receive 1000000 bytes from S1 to C1
+> [S1:slave(8)] [msg_test/INFO] FLOW[4] : Receive 1000000 bytes from C1 to S1
 
 p Crosstraffic TCP option ENABLED
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/crosstraffic.xml ${srcdir:=.}/examples/msg/ns3/crosstraffic_d.xml --cfg=network/model:NS3 --cfg=network/crosstraffic:1 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '1'
+> [C1:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S1 to C1
+> [C1:slave(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
+> [C1:slave(6)] [msg_test/INFO] FLOW[3] : Receive 1000000 bytes from S1 to C1
+> [S1:slave(8)] [msg_test/INFO] FLOW[4] : Receive 1000000 bytes from C1 to S1
