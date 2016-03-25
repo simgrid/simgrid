@@ -417,15 +417,15 @@ void ns3_simulator(double min){
 
 void ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)
 {
-  ns3_node_t node1 = ns3_find_host(a);
-  ns3_node_t node2 = ns3_find_host(b);
+  int node1 = ns3_find_host(a)->node_num;
+  int node2 = ns3_find_host(b)->node_num;
 
-  ns3::Ptr<ns3::Node> src_node = nodes.Get(node1->node_num);
-  ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2->node_num);
+  ns3::Ptr<ns3::Node> src_node = nodes.Get(node1);
+  ns3::Ptr<ns3::Node> dst_node = nodes.Get(node2);
 
-  char* addr = (char*)xbt_dynar_get_as(IPV4addr,node2->node_num,char*);
+  char* addr = (char*)xbt_dynar_get_as(IPV4addr,node2,char*);
 
-  XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1->node_num, node2->node_num,addr);
+  XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1, node2,addr);
   ns3_sim->create_flow_NS3(src_node, dst_node, port_number, start, addr, TotalBytes, action);
 
   port_number++;
@@ -498,8 +498,7 @@ void ns3_add_cluster(char * bw,char * lat,const char *id)
   XBT_DEBUG("Add router %d to cluster",nodes.GetN()-Nodes.GetN()-1);
   Nodes.Add(nodes.Get(nodes.GetN()-Nodes.GetN()-1));
 
-  if(Nodes.GetN() > 65000)
-    xbt_die("Cluster with NS3 is limited to 65000 nodes");
+  xbt_assert(Nodes.GetN() <= 65000, "Cluster with NS3 is limited to 65000 nodes");
   ns3::CsmaHelper csma;
   csma.SetChannelAttribute ("DataRate", ns3::StringValue (bw));
   csma.SetChannelAttribute ("Delay", ns3::StringValue (lat));
@@ -514,8 +513,7 @@ void ns3_add_cluster(char * bw,char * lat,const char *id)
   interfaces.Add(ipv4.Assign (devices));
 
   if(number_of_links == 255){
-    if(number_of_networks == 255)
-      xbt_die("Number of links and networks exceed 255*255");
+    xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
     number_of_links = 1;
     number_of_networks++;
   }else{

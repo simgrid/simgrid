@@ -15,8 +15,6 @@ static void delete_mysocket(void *p)
 }
 xbt_dict_t flowFromSock = xbt_dict_new_homogeneous(delete_mysocket);; // ns3::sock -> SgFlow
 
-NS3Sim SimulatorNS3;
-
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
 static void send_callback(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace);
 static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
