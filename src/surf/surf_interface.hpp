@@ -437,15 +437,15 @@ public:
   virtual void turnOff();
 
 private:
-  const char *p_name;
-  Model *p_model;
-  bool m_isOn;
+  const char *name_;
+  Model *model_;
+  bool isOn_;
 
 public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
   lmm_constraint_t getConstraint();
 protected:
-  lmm_constraint_t p_constraint = nullptr;
+  lmm_constraint_t constraint_ = nullptr;
 };
 
 }

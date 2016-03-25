@@ -566,58 +566,58 @@ Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint)
 {}
   
 Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint, int initiallyOn)
-  : p_name(xbt_strdup(name))
-  , p_model(model)
-  , m_isOn(initiallyOn)
-  , p_constraint(constraint)
+  : name_(xbt_strdup(name))
+  , model_(model)
+  , isOn_(initiallyOn)
+  , constraint_(constraint)
 {}
 
 Resource::Resource(Model *model, const char *name, int initiallyOn)
-  : p_name(xbt_strdup(name))
-  , p_model(model)
-  , m_isOn(initiallyOn)
+  : name_(xbt_strdup(name))
+  , model_(model)
+  , isOn_(initiallyOn)
 {}
 
 
 Resource::~Resource() {
-  xbt_free((void*)p_name);
+  xbt_free((void*)name_);
 }
 
 bool Resource::isOn() {
-  return m_isOn;
+  return isOn_;
 }
 bool Resource::isOff() {
-  return ! m_isOn;
+  return ! isOn_;
 }
 
 void Resource::turnOn()
 {
-  if (!m_isOn) {
-    m_isOn = true;
+  if (!isOn_) {
+    isOn_ = true;
   }
 }
 
 void Resource::turnOff()
 {
-  if (m_isOn) {
-    m_isOn = false;
+  if (isOn_) {
+    isOn_ = false;
   }
 }
 
 Model *Resource::getModel() const {
-  return p_model;
+  return model_;
 }
 
 const char *Resource::getName() const {
-  return p_name;
+  return name_;
 }
 
 bool Resource::operator==(const Resource &other) const {
-  return strcmp(p_name, other.p_name);
+  return strcmp(name_, other.name_);
 }
 
 lmm_constraint_t Resource::getConstraint() {
-  return p_constraint;
+  return constraint_;
 }
 
 }
