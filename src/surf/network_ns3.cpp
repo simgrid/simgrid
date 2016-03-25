@@ -75,13 +75,6 @@ static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
     );
 }
 
-static void parse_ns3_add_AS(simgrid::s4u::As* as)
-{
-  const char* as_id = as->name();
-  XBT_DEBUG("NS3_ADD_AS '%s'", as_id);
-  xbt_lib_set(as_router_lib, as_id, NS3_ASR_LEVEL, ns3_add_AS(as_id) );
-}
-
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
@@ -234,7 +227,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_router);
   simgrid::surf::on_link.connect(netlink_parse_init);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
-  simgrid::surf::asCreatedCallbacks.connect(parse_ns3_add_AS);
   simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
   simgrid::surf::on_postparse.connect(&ns3_end_platform); //InitializeRoutes
 
@@ -542,12 +534,6 @@ void ns3_add_cluster(char * bw,char * lat,const char *id)
     number_of_links++;
   }
   XBT_DEBUG("Number of nodes in Cluster_nodes: %d",Cluster_nodes.GetN());
-}
-
-void * ns3_add_AS(const char * id)
-{
-  XBT_DEBUG("Interface ns3 add AS '%s'",id);
-  return NULL;
 }
 
 static char* transformIpv4Address (ns3::Ipv4Address from){

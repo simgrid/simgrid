@@ -43,7 +43,6 @@ XBT_PUBLIC(void)   ns3_create_flow(const char* a,const char *b,double start,u_in
 XBT_PUBLIC(void)   ns3_simulator(double min);
 XBT_PUBLIC(void *) ns3_add_host_cluster(const char * id);
 XBT_PUBLIC(void *) ns3_add_router(const char * id);
-XBT_PUBLIC(void *) ns3_add_AS(const char * id);
 XBT_PUBLIC(void) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
                 int dst, e_ns3_network_element_type_t type_dst,
                 char * bw,char * lat);
