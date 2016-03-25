@@ -57,7 +57,6 @@ namespace ns3 {
 MyPointToPointHelper::MyPointToPointHelper ()
 {
   m_queueFactory.SetTypeId ("ns3::DropTailQueue");
-  m_queueFactory_red.SetTypeId ("ns3::RedQueue");
   m_deviceFactory.SetTypeId ("ns3::PointToPointNetDevice");
   m_channelFactory.SetTypeId ("ns3::PointToPointChannel");
   m_remoteChannelFactory.SetTypeId ("ns3::PointToPointRemoteChannel");

@@ -538,7 +538,7 @@ void ns3_add_link(int src, int dst, char *bw, char *lat)
     LogComponentEnable("UdpEchoServerApplication", ns3::LOG_LEVEL_INFO);
   }
 
-  ns3::MyPointToPointHelper pointToPoint;
+  ns3::PointToPointHelper pointToPoint;
 
   ns3::NetDeviceContainer netA;
   ns3::Ipv4AddressHelper address;

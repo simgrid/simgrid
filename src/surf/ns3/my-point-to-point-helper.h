@@ -189,7 +189,6 @@ private:
     bool explicitFilename);
 
   ObjectFactory m_queueFactory;
-  ObjectFactory m_queueFactory_red;
   ObjectFactory m_channelFactory;
   ObjectFactory m_remoteChannelFactory;
   ObjectFactory m_deviceFactory;
