@@ -66,6 +66,7 @@ public:
   LivenessChecker(Session& session);
   ~LivenessChecker();
   int run() override;
+  RecordTrace getRecordTrace() override;
 private:
   int main();
   void prepare();

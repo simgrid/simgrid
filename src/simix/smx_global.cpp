@@ -381,7 +381,7 @@ static int process_syscall_color(void *p)
 void SIMIX_run(void)
 {
   if (MC_record_path) {
-    MC_record_replay_from_string(MC_record_path);
+    simgrid::mc::replay(MC_record_path);
     return;
   }
 

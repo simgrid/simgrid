@@ -309,6 +309,27 @@ CommunicationDeterminismChecker::~CommunicationDeterminismChecker()
 
 }
 
+// TODO, deduplicate with SafetyChecker
+RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
+{
+  RecordTrace res;
+
+  xbt_fifo_item_t start = xbt_fifo_get_last_item(mc_stack);
+  for (xbt_fifo_item_t item = start; item; item = xbt_fifo_get_prev_item(item)) {
+
+    // Find (pid, value):
+    mc_state_t state = (mc_state_t) xbt_fifo_get_item_content(item);
+    int value = 0;
+    smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
+    const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
+    const int pid = issuer->pid;
+
+    res.push_back(RecordTraceElement(pid, value));
+  }
+
+  return std::move(res);
+}
+
 void CommunicationDeterminismChecker::prepare()
 {
   mc_state_t initial_state = nullptr;

@@ -8,6 +8,10 @@
 #include <cstdio>
 #include <cstdlib>
 
+#include <stdexcept>
+#include <sstream>
+#include <string>
+
 #include <xbt/fifo.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
@@ -33,25 +37,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_record, mc,
   " Logging specific to MC record/replay facility");
 
 extern "C" {
-
 char* MC_record_path = nullptr;
+}
 
-void MC_record_replay(mc_record_item_t start, std::size_t len)
+namespace simgrid {
+namespace mc {
+
+void replay(RecordTrace const& trace)
 {
   simgrid::mc::wait_for_requests();
-  mc_record_item_t end = start + len;
 
-  // Choose the recorded simcall and execute it:
-  for (mc_record_item_t item=start;item!=end; ++item) {
-
-    XBT_DEBUG("Executing %i$%i", item->pid, item->value);
-/*
-    if (xbt_dynar_is_empty(simix_global->process_to_run))
-      xbt_die("Unexpected end of application.");
-*/
+  for (auto& item : trace) {
+    XBT_DEBUG("Executing %i$%i", item.pid, item.value);
 
     // Choose a request:
-    smx_process_t process = SIMIX_process_from_PID(item->pid);
+    smx_process_t process = SIMIX_process_from_PID(item.pid);
     if (!process)
       xbt_die("Unexpected process.");
     smx_simcall_t simcall = &(process->simcall);
@@ -62,27 +62,34 @@ void MC_record_replay(mc_record_item_t start, std::size_t len)
       xbt_die("Unexpected simcall.");
 
     // Execute the request:
-    SIMIX_simcall_handle(simcall, item->value);
+    SIMIX_simcall_handle(simcall, item.value);
     simgrid::mc::wait_for_requests();
   }
 }
 
-xbt_dynar_t MC_record_from_string(const char* data)
+void replay(const char* path_string)
 {
+  simgrid::mc::processes_time.resize(simix_process_maxpid);
+  simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string);
+  simgrid::mc::replay(trace);
+  simgrid::mc::processes_time.clear();
+}
+
+RecordTrace parseRecordTrace(const char* data)
+{
+  RecordTrace res;
   XBT_INFO("path=%s", data);
   if (!data || !data[0])
-    return nullptr;
-
-  xbt_dynar_t dynar = xbt_dynar_new(sizeof(s_mc_record_item_t), nullptr);
+    throw std::runtime_error("Could not parse record path");
 
   const char* current = data;
   while (*current) {
 
-    s_mc_record_item_t item = { 0, 0 };
+    simgrid::mc::RecordTraceElement item;
     int count = sscanf(current, "%u/%u", &item.pid, &item.value);
     if(count != 2 && count != 1)
-      goto fail;
-    xbt_dynar_push(dynar, &item);
+      throw std::runtime_error("Could not parse record path");
+    res.push_back(item);
 
     // Find next chunk:
     const char* end = std::strchr(current, ';');
@@ -92,100 +99,33 @@ xbt_dynar_t MC_record_from_string(const char* data)
       current = end + 1;
   }
 
-  return dynar;
-
-fail:
-  xbt_dynar_free(&dynar);
-  return nullptr;
+  return std::move(res);
 }
 
 #if HAVE_MC
-static char* MC_record_stack_to_string_liveness(xbt_fifo_t stack)
+
+std::string traceToString(simgrid::mc::RecordTrace const& trace)
 {
-  char* buffer;
-  std::size_t size;
-  std::FILE* file = open_memstream(&buffer, &size);
-
-  xbt_fifo_item_t item;
-  xbt_fifo_item_t start = xbt_fifo_get_last_item(stack);
-  for (item = start; item; item = xbt_fifo_get_prev_item(item)) {
-    simgrid::mc::Pair* pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
-    int value;
-    smx_simcall_t req = MC_state_get_executed_request(pair->graph_state, &value);
-    if (req && req->call != SIMCALL_NONE) {
-      smx_process_t issuer = MC_smx_simcall_get_issuer(req);
-      const int pid = issuer->pid;
-
-      // Serialization the (pid, value) pair:
-      const char* sep = (item!=start) ? ";" : "";
-      if (value)
-        std::fprintf(file, "%s%u/%u", sep, pid, value);
-      else
-        std::fprintf(file, "%s%u", sep, pid);
-    }
+  std::ostringstream stream;
+  for (auto i = trace.begin(); i != trace.end(); ++i) {
+    if (i != trace.begin())
+      stream << ';';
+    stream << i->pid;
+    if (i->value)
+      stream << '/' << i->value;
   }
-
-  std::fclose(file);
-  return buffer;
+  return stream.str();
 }
 
-char* MC_record_stack_to_string(xbt_fifo_t stack)
-{
-  if (_sg_mc_liveness)
-    return MC_record_stack_to_string_liveness(stack);
-
-  xbt_fifo_item_t start = xbt_fifo_get_last_item(stack);
-
-  if (!start) {
-    char* res = (char*) malloc(1 * sizeof(char));
-    res[0] = '\0';
-    return res;
-  }
-
-  char* buffer;
-  std::size_t size;
-  std::FILE* file = open_memstream(&buffer, &size);
-
-  xbt_fifo_item_t item;
-  for (item = start; item; item = xbt_fifo_get_prev_item(item)) {
-
-    // Find (pid, value):
-    mc_state_t state = (mc_state_t) xbt_fifo_get_item_content(item);
-    int value = 0;
-    smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
-    const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
-    const int pid = issuer->pid;
-
-    // Serialization the (pid, value) pair:
-    const char* sep = (item!=start) ? ";" : "";
-    if (value)
-      std::fprintf(file, "%s%u/%u", sep, pid, value);
-    else
-      std::fprintf(file, "%s%u", sep, pid);
-  }
-
-  std::fclose(file);
-  return buffer;
-}
-
-void MC_record_dump_path(xbt_fifo_t stack)
+void dumpRecordPath()
 {
   if (MC_record_is_active()) {
-    char* path = MC_record_stack_to_string(stack);
-    XBT_INFO("Path = %s", path);
-    std::free(path);
+    RecordTrace trace = mc_model_checker->getChecker()->getRecordTrace();
+    XBT_INFO("Path = %s", traceToString(trace).c_str());
   }
 }
+
 #endif
 
-void MC_record_replay_from_string(const char* path_string)
-{
-  simgrid::mc::processes_time.resize(simix_process_maxpid);
-  xbt_dynar_t path = MC_record_from_string(path_string);
-  mc_record_item_t start = &xbt_dynar_get_as(path, 0, s_mc_record_item_t);
-  MC_record_replay(start, xbt_dynar_length(path));
-  xbt_dynar_free(&path);
-  simgrid::mc::processes_time.clear();
 }
-
 }

@@ -426,13 +426,34 @@ LivenessChecker::~LivenessChecker()
 {
 }
 
+RecordTrace LivenessChecker::getRecordTrace() // override
+{
+  RecordTrace res;
+
+  xbt_fifo_item_t start = xbt_fifo_get_last_item(mc_stack);
+  for (xbt_fifo_item_t item = start; item; item = xbt_fifo_get_prev_item(item)) {
+    simgrid::mc::Pair* pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
+    int value;
+    smx_simcall_t req = MC_state_get_executed_request(pair->graph_state, &value);
+    if (req && req->call != SIMCALL_NONE) {
+      smx_process_t issuer = MC_smx_simcall_get_issuer(req);
+      const int pid = issuer->pid;
+
+      // Serialization the (pid, value) pair:
+      res.push_back(RecordTraceElement(pid, value));
+    }
+  }
+
+  return std::move(res);
+}
+
 void LivenessChecker::showAcceptanceCycle(std::size_t depth)
 {
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
   XBT_INFO("|             ACCEPTANCE CYCLE            |");
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
   XBT_INFO("Counter-example that violates formula :");
-  MC_record_dump_path(mc_stack);
+  simgrid::mc::dumpRecordPath();
   this->showStack(mc_stack);
   this->dumpStack(mc_stack);
   MC_print_statistics(mc_stats);

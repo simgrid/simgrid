@@ -19,6 +19,7 @@ public:
   SafetyChecker(Session& session);
   ~SafetyChecker();
   int run() override;
+  RecordTrace getRecordTrace() override;
 private:
   // Temp
   void init();

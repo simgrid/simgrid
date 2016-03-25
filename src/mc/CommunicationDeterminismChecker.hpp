@@ -18,6 +18,7 @@ public:
   CommunicationDeterminismChecker(Session& session);
   ~CommunicationDeterminismChecker();
   int run() override;
+  RecordTrace getRecordTrace() override;
 private:
   void prepare();
   int main();

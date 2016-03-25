@@ -35,6 +35,7 @@ class ModelChecker {
   // This is the parent snapshot of the current state:
   PageStore page_store_;
   std::unique_ptr<Process> process_;
+  Checker* checker_ = nullptr;
 public:
   simgrid::mc::Snapshot* parent_snapshot_;
 
@@ -73,6 +74,9 @@ public:
   void exit(int status);
 
   bool checkDeadlock();
+
+  Checker* getChecker() const { return checker_; }
+  void setChecker(Checker* checker) { checker_ = checker; }
 
 private:
   void setup_ignore();

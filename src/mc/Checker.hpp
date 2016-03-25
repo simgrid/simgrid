@@ -9,8 +9,10 @@
 
 #include <functional>
 #include <memory>
+#include <string>
 
 #include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_record.h"
 
 namespace simgrid {
 namespace mc {
@@ -28,7 +30,7 @@ namespace mc {
 class Checker {
   Session* session_;
 public:
-  Checker(Session& session) : session_(&session) {}
+  Checker(Session& session);
 
   // No copy:
   Checker(Checker const&) = delete;
@@ -36,6 +38,14 @@ public:
 
   virtual ~Checker();
   virtual int run() = 0;
+
+  // Give me your internal state:
+
+  /** Show the current trace/stack
+   *
+   *  Could this be handled in the Session/ModelChecker instead?
+   */
+  virtual RecordTrace getRecordTrace();
 
 protected:
   Session& getSession() { return *session_; }
