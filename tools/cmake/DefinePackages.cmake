@@ -1087,9 +1087,15 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/optorsim/transform_optorsim_platform.pl
   examples/platforms/config.xml
   examples/platforms/config_tracing.xml
+  examples/platforms/trace/bourassa_state.trace
+  examples/platforms/trace/fafard_state.trace
   examples/platforms/trace/faulty_host.trace
+  examples/platforms/trace/ginette_speed.trace
   examples/platforms/trace/jupiter_speed.trace
+  examples/platforms/trace/jupiter_state.trace
   examples/platforms/trace/link1_avail.trace
+  examples/platforms/trace/link3_state.trace
+  examples/platforms/trace/link4_state.trace
   examples/platforms/trace/linkBandwidth7.bw
   examples/platforms/trace/trace_A_failure.txt
   examples/platforms/trace/trace_A.txt

@@ -9,10 +9,6 @@ foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()
 
-foreach(file bourassa fafard ginette jupiter link3 link4)
-  set(txt_files ${txt_files} ${CMAKE_CURRENT_SOURCE_DIR}/${file}_state.trace)
-endforeach()
-
 set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/actions-mpi.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/actions-mpi_split_p0.txt

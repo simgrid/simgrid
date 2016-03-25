@@ -3,15 +3,15 @@
 <platform version="4">
   <AS  id="AS0"  routing="Full">
     <host id="Tremblay" speed="25Mf"/>
-    <host id="Jupiter" speed="25Mf" state_file="jupiter_state.trace"/>
-    <host id="Fafard" speed="25Mf" state_file="fafard_state.trace" />
-    <host id="Ginette" speed="25Mf" state_file="ginette_state.trace"/>
-    <host id="Bourassa" speed="25Mf"state_file="bourassa_state.trace"/>
+    <host id="Jupiter" speed="25Mf" state_file="trace/jupiter_state.trace"/>
+    <host id="Fafard" speed="25Mf" state_file="trace/fafard_state.trace" />
+    <host id="Ginette" speed="25Mf" state_file="trace/ginette_state.trace"/>
+    <host id="Bourassa" speed="25Mf"state_file="trace/bourassa_state.trace"/>
 
     <link id="1" bandwidth="1MBps" latency="0"/>
     <link id="2" bandwidth="1MBps" latency="0"/>
-    <link id="3" bandwidth="1MBps" latency="0" state_file="link3_state.trace" />
-    <link id="4" bandwidth="1MBps" latency="0" state_file="link4_state.trace" />
+    <link id="3" bandwidth="1MBps" latency="0" state_file="trace/link3_state.trace" />
+    <link id="4" bandwidth="1MBps" latency="0" state_file="trace/link4_state.trace" />
     <link id="5" bandwidth="1MBps" latency="0"/>
     <link id="6" bandwidth="1MBps" latency="0"/>
     <link id="7" bandwidth="1MBps" latency="0"/>
