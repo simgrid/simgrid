@@ -1,7 +1,7 @@
 #! ./tesh
 p Modify the rate of communication tasks even when they are auto-scheduled
 
-$ $SG_TEST_EXENV ./comm_throttling/sd_comm_throttling --cfg=network/TCP_gamma:4194304 ${srcdir:=.}/../platforms/2clusters.xml
+$ $SG_TEST_EXENV ./throttling/sd_throttling --cfg=network/TCP_gamma:4194304 ${srcdir:=.}/../platforms/2clusters.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [1.000000] [sd_comm_throttling/INFO] Simulation stopped after 1.0000 seconds

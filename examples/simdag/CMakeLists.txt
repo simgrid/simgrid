@@ -1,4 +1,4 @@
-foreach(x availability dax fail typed_tasks io properties comm_throttling scheduling test)
+foreach(x availability daxload fail typed_tasks io properties throttling dag-dotload ptg-dotload schedule-dotload scheduling test)
   add_executable       (sd_${x}     ${x}/sd_${x}.c)
   target_link_libraries(sd_${x}     simgrid)
   set_target_properties(sd_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -10,15 +10,18 @@ add_executable       (goal_test goal/goal_test.c)
 target_link_libraries(goal_test simgrid)
 set_target_properties(goal_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/goal)
 
-set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/goal/goal_test.c               PARENT_SCOPE)
-set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dax/simple_dax_with_cycle.tesh PARENT_SCOPE)
+set(tesh_files   ${tesh_files}                                                                             PARENT_SCOPE)
+set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/goal/goal_test.c                             PARENT_SCOPE)
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/Montage_25.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dax/simple_dax_with_cycle.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dax/smalldax.xml               PARENT_SCOPE)
-set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/platform_script.lua            PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dax/smalldax.xml                             PARENT_SCOPE)
+set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/platform_script.lua                          PARENT_SCOPE)
+set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_with_cycle.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/ptg-dotload/ptg.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/schedule-dotload/dag_with_bad_schedule.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/schedule-dotload/dag_with_good_schedule.dot  PARENT_SCOPE)
 
-foreach(x availability dax fail typed_tasks io properties comm_throttling scheduling test)
+foreach(x availability daxload fail typed_tasks io properties throttling dag-dotload ptg-dotload schedule-dotload scheduling test)
   ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/${x}/sd_${x}.tesh)
 endforeach()
-
-ADD_TESH(simdag-dax-cycle --setenv bindir=${CMAKE_BINARY_DIR}/examples/simdag/dax --cd ${CMAKE_HOME_DIRECTORY}/examples/simdag/dax simple_dax_with_cycle.tesh)
