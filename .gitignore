@@ -148,8 +148,7 @@ examples/msg/io-storage/io-storage
 examples/msg/irc_isend/peer
 examples/msg/irc_isend/toto.txt
 examples/msg/masterslave/masterslave_arg
-examples/msg/masterslave/masterslave_cluster
-examples/msg/masterslave/masterslave_failure
+examples/msg/failures/failures
 examples/msg/masterslave/masterslave_forwarder
 examples/msg/process-kill/process-kill
 examples/msg/masterslave/masterslave_mailbox

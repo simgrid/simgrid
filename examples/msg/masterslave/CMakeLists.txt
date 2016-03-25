@@ -1,4 +1,4 @@
-foreach (example masterslave_failure masterslave_forwarder masterslave_mailbox)
+foreach (example masterslave_forwarder masterslave_mailbox)
   add_executable       (${example} ${example}.c)
   target_link_libraries(${example} simgrid)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}.c)

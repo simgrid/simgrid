@@ -1,5 +1,5 @@
 foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord dht-pastry 
-          exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm io-file io-file-unlink 
+          exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures io-file io-file-unlink
           io-remote io-storage pmm priority process-kill process-migration process-suspend properties sendrecv
           set-maestro start_kill_time synchro token_ring)
   add_executable       (${x}     ${x}/${x}.c)
@@ -40,9 +40,9 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/action
                                   ${CMAKE_CURRENT_SOURCE_DIR}/start_kill_time/start_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/start_kill_time/start_kill_d.xml             PARENT_SCOPE)
 
-foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord io-file io-file-unlink io-remote
-        io-storage priority process-kill process-migration process-suspend properties sendrecv synchro start_kill_time
-        token_ring)
+foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord failures io-file io-file-unlink 
+        io-remote io-storage priority process-kill process-migration process-suspend properties sendrecv synchro 
+        start_kill_time token_ring)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()
 
