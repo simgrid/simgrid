@@ -38,12 +38,11 @@ XBT_PUBLIC_DATA(int) NS3_EXTENSION_ID;
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(int)    ns3_initialize(const char* TcpProtocol);
-XBT_PUBLIC(int)    ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action);
+XBT_PUBLIC(void)   ns3_initialize(const char* TcpProtocol);
+XBT_PUBLIC(void)   ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action);
 XBT_PUBLIC(void)   ns3_simulator(double min);
 XBT_PUBLIC(void *) ns3_add_host_cluster(const char * id);
 XBT_PUBLIC(void *) ns3_add_router(const char * id);
-XBT_PUBLIC(void *) ns3_add_AS(const char * id);
 XBT_PUBLIC(void) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
                 int dst, e_ns3_network_element_type_t type_dst,
                 char * bw,char * lat);

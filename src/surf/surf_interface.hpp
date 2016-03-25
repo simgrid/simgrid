@@ -374,7 +374,7 @@ namespace surf {
 
 /** @ingroup SURF_interface
  * @brief SURF resource interface class
- * @details A resource represent an element of a component (e.g.: a link for the network)
+ * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or storage
  */
 XBT_PUBLIC_CLASS Resource {
 public:
@@ -395,24 +395,15 @@ public:
    */
   Resource(Model *model, const char *name, lmm_constraint_t constraint);
 
-  Resource(Model *model, const char *name, lmm_constraint_t constraint, int initiallyOn);
-
-  /**
-   * @brief Resource constructor
-   *
-   * @param model Model associated to this Resource
-   * @param name The name of the Resource
-   * @param initiallyOn the initial state of the Resource
-   */
-  Resource(Model *model, const char *name, int initiallyOn);
-
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  Model *getModel();
+  Model *getModel() const;
 
   /** @brief Get the name of the current Resource */
-  const char *getName();
+  const char *getName() const;
+
+  bool operator==(const Resource &other) const;
 
   /**
    * @brief Apply an event of external load event to that storage
@@ -426,27 +417,38 @@ public:
   virtual bool isUsed()=0;
 
   /** @brief Check if the current Resource is active */
-  virtual bool isOn();
+  virtual bool isOn() const;
   /** @brief Check if the current Resource is shut down */
-  virtual bool isOff();
+  virtual bool isOff() const;
   /** @brief Turn on the current Resource */
   virtual void turnOn();
   /** @brief Turn off the current Resource */
   virtual void turnOff();
 
 private:
-  const char *p_name;
-  Model *p_model;
-  bool m_isOn;
+  const char *name_;
+  Model *model_;
+  bool isOn_ = true;
 
 public: /* LMM */
-  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component */
-  lmm_constraint_t getConstraint();
+  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
+  lmm_constraint_t getConstraint() const;
 protected:
-  lmm_constraint_t p_constraint = nullptr;
+  lmm_constraint_t constraint_ = nullptr;
 };
 
 }
+}
+
+namespace std {
+  template <>
+  struct hash<simgrid::surf::Resource>
+  {
+    std::size_t operator()(const simgrid::surf::Resource& r) const
+    {
+      return (std::size_t) xbt_str_hash(r.getName());
+    }
+  };
 }
 
 #endif /* SURF_MODEL_H_ */

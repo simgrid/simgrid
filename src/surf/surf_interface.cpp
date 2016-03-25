@@ -558,62 +558,51 @@ namespace simgrid {
 namespace surf {
 
 Resource::Resource(Model *model, const char *name)
-  : Resource(model, name, 1/*ON*/)
+  : name_(xbt_strdup(name))
+  , model_(model)
 {}
 
 Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint)
-  : Resource(model, name, constraint, 1/*ON*/)
+  : name_(xbt_strdup(name))
+  , model_(model)
+  , constraint_(constraint)
 {}
-  
-Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint, int initiallyOn)
-  : p_name(xbt_strdup(name))
-  , p_model(model)
-  , m_isOn(initiallyOn)
-  , p_constraint(constraint)
-{}
-
-Resource::Resource(Model *model, const char *name, int initiallyOn)
-  : p_name(xbt_strdup(name))
-  , p_model(model)
-  , m_isOn(initiallyOn)
-{}
-
 
 Resource::~Resource() {
-  xbt_free((void*)p_name);
+  xbt_free((void*)name_);
 }
 
-bool Resource::isOn() {
-  return m_isOn;
+bool Resource::isOn() const {
+  return isOn_;
 }
-bool Resource::isOff() {
-  return ! m_isOn;
+bool Resource::isOff() const {
+  return ! isOn_;
 }
 
 void Resource::turnOn()
 {
-  if (!m_isOn) {
-    m_isOn = true;
-  }
+  isOn_ = true;
 }
 
 void Resource::turnOff()
 {
-  if (m_isOn) {
-    m_isOn = false;
-  }
+  isOn_ = false;
 }
 
-Model *Resource::getModel() {
-  return p_model;
+Model *Resource::getModel() const {
+  return model_;
 }
 
-const char *Resource::getName() {
-  return p_name;
+const char *Resource::getName() const {
+  return name_;
 }
 
-lmm_constraint_t Resource::getConstraint() {
-  return p_constraint;
+bool Resource::operator==(const Resource &other) const {
+  return strcmp(name_, other.name_);
+}
+
+lmm_constraint_t Resource::getConstraint() const {
+  return constraint_;
 }
 
 }

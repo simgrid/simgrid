@@ -154,10 +154,10 @@ void HostImpl::attach(simgrid::s4u::Host* host)
   p_host = host;
 }
 
-bool HostImpl::isOn() {
+bool HostImpl::isOn() const {
   return p_cpu->isOn();
 }
-bool HostImpl::isOff() {
+bool HostImpl::isOff() const {
   return p_cpu->isOff();
 }
 void HostImpl::turnOn(){

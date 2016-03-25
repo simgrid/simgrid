@@ -40,9 +40,6 @@ public:
   void updateLatency(double value) override {THROW_UNIMPLEMENTED;}
   void setBandwidthTrace(tmgr_trace_t trace) override;
   void setLatencyTrace(tmgr_trace_t trace) override;
-
-//private:
- int m_created;
 };
 
 /**********
