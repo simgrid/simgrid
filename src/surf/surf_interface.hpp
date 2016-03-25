@@ -409,10 +409,12 @@ public:
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  Model *getModel();
+  Model *getModel() const ;
 
   /** @brief Get the name of the current Resource */
-  const char *getName();
+  const char *getName() const ;
+
+  bool operator==(const Resource &other) const;
 
   /**
    * @brief Apply an event of external load event to that storage
@@ -440,13 +442,24 @@ private:
   bool m_isOn;
 
 public: /* LMM */
-  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component */
+  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
   lmm_constraint_t getConstraint();
 protected:
   lmm_constraint_t p_constraint = nullptr;
 };
 
 }
+}
+
+namespace std {
+  template <>
+  struct hash<simgrid::surf::Resource>
+  {
+    std::size_t operator()(const simgrid::surf::Resource& r) const
+    {
+      return (std::size_t) xbt_str_hash(r.getName());
+    }
+  };
 }
 
 #endif /* SURF_MODEL_H_ */

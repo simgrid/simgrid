@@ -604,12 +604,16 @@ void Resource::turnOff()
   }
 }
 
-Model *Resource::getModel() {
+Model *Resource::getModel() const {
   return p_model;
 }
 
-const char *Resource::getName() {
+const char *Resource::getName() const {
   return p_name;
+}
+
+bool Resource::operator==(const Resource &other) const {
+  return strcmp(p_name, other.p_name);
 }
 
 lmm_constraint_t Resource::getConstraint() {
