@@ -49,7 +49,6 @@ set(EXTRA_DIST
   src/surf/network_ns3.hpp
   src/surf/network_smpi.hpp
   src/surf/network_ib.hpp
-  src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
   src/surf/plugins/energy.hpp
@@ -283,7 +282,6 @@ endif()
 
 set(NS3_SRC
   src/surf/network_ns3.cpp
-  src/surf/ns3/my-point-to-point-helper.cc
   src/surf/ns3/ns3_simulator.cc
   )
 
