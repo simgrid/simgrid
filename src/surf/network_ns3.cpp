@@ -44,9 +44,6 @@ static int number_of_links = 1;
 static int number_of_networks = 1;
 static int port_number = 1025; //Port number is limited from 1025 to 65 000
 
-static NS3Sim* ns3_sim = 0;
-
-
 /*************
  * Callbacks *
  *************/
@@ -237,7 +234,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
-  delete ns3_sim;
   xbt_dynar_free_container(&IPV4addr);
   xbt_dict_free(&flowFromSock);
 }
@@ -408,14 +404,14 @@ int NetworkNS3Action::unref()
 }
 
 
-
-
-
 void ns3_simulator(double min){
-  ns3_sim->simulator_start(min);
+  if (min > 0.0) // If there is a maximum amount of time to run
+    ns3::Simulator::Stop(ns3::Seconds(min));
+  XBT_DEBUG("Start simulator for at most %fs",min);
+  ns3::Simulator::Run ();
 }
 
-void ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)
+void ns3_create_flow(const char* a,const char *b,double startTime,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)
 {
   int node1 = ns3_find_host(a)->node_num;
   int node2 = ns3_find_host(b)->node_num;
@@ -426,7 +422,19 @@ void ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalByt
   char* addr = (char*)xbt_dynar_get_as(IPV4addr,node2,char*);
 
   XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1, node2,addr);
-  ns3_sim->create_flow_NS3(src_node, dst_node, port_number, start, addr, TotalBytes, action);
+  ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
+  sink.Install (dst_node);
+
+  ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket (src_node, ns3::TcpSocketFactory::GetTypeId());
+
+  xbt_dict_set(flowFromSock, transformSocketPtr(sock), new SgFlow(TotalBytes, action), NULL);
+
+  sock->Bind(ns3::InetSocketAddress(port_number));
+  XBT_DEBUG("Create flow starting to %fs + %fs = %fs",
+      startTime-ns3::Simulator::Now().GetSeconds(), ns3::Simulator::Now().GetSeconds(), startTime);
+
+  ns3::Simulator::Schedule (ns3::Seconds(startTime-ns3::Simulator::Now().GetSeconds()),
+      &StartFlow, sock, addr, port_number);
 
   port_number++;
   xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
@@ -434,9 +442,6 @@ void ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalByt
 
 // initialize the NS3 interface and environment
 void ns3_initialize(const char* TcpProtocol){
-  xbt_assert(!ns3_sim, "ns3 already initialized");
-  ns3_sim = new NS3Sim();
-
 //  tcpModel are:
 //  "ns3::TcpNewReno"
 //  "ns3::TcpReno"

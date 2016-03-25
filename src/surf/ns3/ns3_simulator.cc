@@ -18,63 +18,13 @@ xbt_dict_t flowFromSock = xbt_dict_new_homogeneous(delete_mysocket);; // ns3::so
 static void receive_callback(ns3::Ptr<ns3::Socket> socket);
 static void send_callback(ns3::Ptr<ns3::Socket> sock, uint32_t txSpace);
 static void datasent_callback(ns3::Ptr<ns3::Socket> socket, uint32_t dataSent);
-static void StartFlow(ns3::Ptr<ns3::Socket> sock, const char *to, uint16_t port_number);
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(ns3);
-
-NS3Sim::NS3Sim(){
-}
-
-static inline const char *transformSocketPtr (ns3::Ptr<ns3::Socket> localSocket)
-{
-  static char key[24];
-  std::stringstream sstream;
-  sstream << localSocket ;
-  sprintf(key,"%s",sstream.str().c_str());
-
-  return key;
-}
 
 SgFlow::SgFlow(uint32_t totalBytes, simgrid::surf::NetworkNS3Action * action) {
   totalBytes_ = totalBytes;
   remaining_ = totalBytes;
   action_ = action;
-}
-/*
- * This function creates a flow from src to dst
- *
- * Parameters
- * 		src: node source
- * 		dst: node destination
- * 		port_number: The port number to use
- * 		start: the time the communication start
- * 		addr:  ip address
- * 		totalBytes: number of bytes to transmit
- */
-void NS3Sim::create_flow_NS3(ns3::Ptr<ns3::Node> src, ns3::Ptr<ns3::Node> dst, uint16_t port_number,
-		double startTime, const char *ipAddr, uint32_t totalBytes,
-		simgrid::surf::NetworkNS3Action * action)
-{
-	ns3::PacketSinkHelper sink("ns3::TcpSocketFactory", ns3::InetSocketAddress (ns3::Ipv4Address::GetAny(), port_number));
-	sink.Install (dst);
-
-	ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket (src, ns3::TcpSocketFactory::GetTypeId());
-
-	xbt_dict_set(flowFromSock, transformSocketPtr(sock), new SgFlow(totalBytes, action), NULL);
-
-	sock->Bind(ns3::InetSocketAddress(port_number));
-	XBT_DEBUG("Create flow starting to %fs + %fs = %fs",
-	    startTime-ns3::Simulator::Now().GetSeconds(), ns3::Simulator::Now().GetSeconds(), startTime);
-
-	ns3::Simulator::Schedule (ns3::Seconds(startTime-ns3::Simulator::Now().GetSeconds()),
-	    &StartFlow, sock, ipAddr, port_number);
-}
-
-void NS3Sim::simulator_start(double min){
-  if(min > 0.0)
-    ns3::Simulator::Stop(ns3::Seconds(min));
-  XBT_DEBUG("Start simulator '%f'",min);
-  ns3::Simulator::Run ();
 }
 
 static SgFlow* getFlowFromSocket(ns3::Ptr<ns3::Socket> socket) {
@@ -149,7 +99,7 @@ static void failedConnect_callback(ns3::Ptr<ns3::Socket> socket){
   xbt_die("NS3: a socket failed to connect");
 }
 
-static void StartFlow(ns3::Ptr<ns3::Socket> sock, const char *to, uint16_t port_number)
+void StartFlow(ns3::Ptr<ns3::Socket> sock, const char *to, uint16_t port_number)
 {
   ns3::InetSocketAddress serverAddr (to, port_number);
 

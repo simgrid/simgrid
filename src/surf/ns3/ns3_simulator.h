@@ -37,22 +37,17 @@ public:
   simgrid::surf::NetworkNS3Action* action_;
 };
 
-//Simulator s;
-class NS3Sim {
+void StartFlow(ns3::Ptr<ns3::Socket> sock, const char *to, uint16_t port_number);
 
-private:
+static inline const char *transformSocketPtr (ns3::Ptr<ns3::Socket> localSocket)
+{
+  static char key[24];
+  std::stringstream sstream;
+  sstream << localSocket ;
+  sprintf(key,"%s",sstream.str().c_str());
 
-public:
-  NS3Sim();
-  void create_flow_NS3(ns3::Ptr<ns3::Node> src,
-            ns3::Ptr<ns3::Node> dst,
-            std::uint16_t port_number,
-            double start,
-            const char *addr,
-            std::uint32_t TotalBytes,
-            simgrid::surf::NetworkNS3Action * action);
-  void simulator_start(double min);
-};
+  return key;
+}
 
 #endif                          /* __cplusplus */
 
