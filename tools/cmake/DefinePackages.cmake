@@ -52,7 +52,6 @@ set(EXTRA_DIST
   src/surf/ns3/my-point-to-point-helper.h
   src/surf/ns3/ns3_interface.h
   src/surf/ns3/ns3_simulator.h
-  src/surf/ns3/red-queue.h
   src/surf/plugins/energy.hpp
   src/surf/xml/simgrid.dtd
   src/surf/xml/simgrid_dtd.h
@@ -286,7 +285,6 @@ set(NS3_SRC
   src/surf/network_ns3.cpp
   src/surf/ns3/my-point-to-point-helper.cc
   src/surf/ns3/ns3_simulator.cc
-  src/surf/ns3/red-queue.cc
   )
 
 set(SURF_SRC
