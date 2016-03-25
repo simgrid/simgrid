@@ -71,10 +71,7 @@ static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
 {
   const char* router_id = router->name();
   XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
-  xbt_lib_set(as_router_lib,
-              router_id,
-              NS3_ASR_LEVEL,
-              ns3_add_router(router_id)
+  xbt_lib_set(as_router_lib, router_id, NS3_ASR_LEVEL, ns3_add_router(router_id)
     );
 }
 
@@ -93,15 +90,13 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   int start, end, i;
   unsigned int iter;
 
-  xbt_dynar_t radical_elements;
-  xbt_dynar_t radical_ends;
   xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), NULL);
 
   char *router_id,*host_id;
 
-  radical_elements = xbt_str_split(cluster->radical, ",");
+  xbt_dynar_t radical_elements = xbt_str_split(cluster->radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
-    radical_ends = xbt_str_split(groups, "-");
+  xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
 
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
@@ -138,8 +133,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   char * lat = bprintf("%fs", cluster->lat);
   char * bw =  bprintf("%fBps", cluster->bw);
 
-  xbt_dynar_foreach(tab_elements_num,cpt,elmts)
-  {
+  xbt_dynar_foreach(tab_elements_num,cpt,elmts) {
     host_id   = bprintf("%s%d%s", cluster->prefix, elmts, cluster->suffix);
     router_id = bprintf("ns3_%s%d%s", cluster->prefix, elmts, cluster->suffix);
     XBT_DEBUG("Create link from '%s' to '%s'",host_id,router_id);
@@ -147,8 +141,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
     ns3_node_t host_src = ns3_find_host(host_id);
     ns3_node_t host_dst = ns3_find_host(router_id);
 
-    if(host_src && host_dst){}
-    else xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
+    xbt_assert(host_src && host_dst, "\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
     ns3_add_link(host_src->node_num,host_src->type,
                  host_dst->node_num,host_dst->type,
@@ -234,9 +227,8 @@ namespace simgrid {
 namespace surf {
 
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
-  if (ns3_initialize(xbt_cfg_get_string(_sg_cfg_set, "ns3/TcpModel"))) {
-    xbt_die("Impossible to initialize NS3 interface");
-  }
+  ns3_initialize(xbt_cfg_get_string(_sg_cfg_set, "ns3/TcpModel"));
+
   routing_model_create(NULL);
   simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
   simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_router);
@@ -274,7 +266,7 @@ Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst, double size, do
   action->p_dstElm = dst;
   networkCommunicateCallbacks(action, src, dst, size, rate);
 
-  return (surf_action_t) action;
+  return action;
 }
 
 double NetworkNS3Model::next_occuring_event(double now)
@@ -429,7 +421,7 @@ void ns3_simulator(double min){
   ns3_sim->simulator_start(min);
 }
 
-int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)
+void ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalBytes,simgrid::surf::NetworkNS3Action * action)
 {
   ns3_node_t node1 = ns3_find_host(a);
   ns3_node_t node2 = ns3_find_host(b);
@@ -440,19 +432,14 @@ int ns3_create_flow(const char* a,const char *b,double start,u_int32_t TotalByte
   char* addr = (char*)xbt_dynar_get_as(IPV4addr,node2->node_num,char*);
 
   XBT_DEBUG("ns3_create_flow %d Bytes from %d to %d with Interface %s",TotalBytes, node1->node_num, node2->node_num,addr);
-  ns3_sim->create_flow_NS3(src_node, dst_node, port_number,
-      start,
-      addr,
-      TotalBytes,
-      action);
+  ns3_sim->create_flow_NS3(src_node, dst_node, port_number, start, addr, TotalBytes, action);
 
   port_number++;
-  if(port_number >= 65001 ) xbt_die("Too many connections! Port number is saturated.");
-  return 0;
+  xbt_assert(port_number <= 65000, "Too many connections! Port number is saturated.");
 }
 
 // initialize the NS3 interface and environment
-int ns3_initialize(const char* TcpProtocol){
+void ns3_initialize(const char* TcpProtocol){
   xbt_assert(!ns3_sim, "ns3 already initialized");
   ns3_sim = new NS3Sim();
 
@@ -464,27 +451,26 @@ int ns3_initialize(const char* TcpProtocol){
   ns3::Config::SetDefault ("ns3::TcpSocket::SegmentSize", ns3::UintegerValue (1024)); // 1024-byte packet for easier reading
   ns3::Config::SetDefault ("ns3::TcpSocket::DelAckCount", ns3::UintegerValue (1));
 
-  if(!strcmp(TcpProtocol,"default")){
-    return 0;
-  }
-  if(!strcmp(TcpProtocol,"Reno")){
+  if (!strcmp(TcpProtocol,"default"))
+    return;
+
+  if (!strcmp(TcpProtocol,"Reno")) {
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpReno"));
-    return 0;
+    return;
   }
-  if(!strcmp(TcpProtocol,"NewReno")){
+  if (!strcmp(TcpProtocol,"NewReno")) {
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpNewReno"));
-    return 0;
+    return;
   }
   if(!strcmp(TcpProtocol,"Tahoe")){
     XBT_INFO("Switching Tcp protocol to '%s'",TcpProtocol);
     ns3::Config::SetDefault ("ns3::TcpL4Protocol::SocketType", ns3::StringValue("ns3::TcpTahoe"));
-    return 0;
+    return;
   }
 
-  XBT_ERROR("The ns3/TcpModel must be : NewReno or Reno or Tahoe");
-  return 0;
+  xbt_die("The ns3/TcpModel must be : NewReno or Reno or Tahoe");
 }
 
 void * ns3_add_host_cluster(const char * id)
@@ -566,9 +552,9 @@ void * ns3_add_AS(const char * id)
 
 static char* transformIpv4Address (ns3::Ipv4Address from){
   std::stringstream sstream;
-    sstream << from ;
-    std::string s = sstream.str();
-    return bprintf("%s",s.c_str());
+  sstream << from ;
+  std::string s = sstream.str();
+  return bprintf("%s",s.c_str());
 }
 
 void ns3_add_link(int src, e_ns3_network_element_type_t type_src,

@@ -55,11 +55,8 @@ public:
   HostImpl *createHost(const char *name, NetCard *net, Cpu *cpu, xbt_dict_t props);
 
   virtual void adjustWeightOfDummyCpuActions();
-  virtual Action *executeParallelTask(int host_nb,
-      sg_host_t *host_list,
-      double *flops_amount,
-      double *bytes_amount,
-      double rate);
+  virtual Action *executeParallelTask(int host_nb, sg_host_t *host_list,
+      double *flops_amount, double *bytes_amount, double rate);
 
   bool next_occuring_event_isIdempotent() override {return true;}
 };
@@ -88,8 +85,7 @@ public:
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  HostImpl(HostModel *model, const char *name, xbt_dict_t props,
-          xbt_dynar_t storage, Cpu *cpu);
+  HostImpl(HostModel *model, const char *name, xbt_dict_t props, xbt_dynar_t storage, Cpu *cpu);
 
   /**
    * @brief Host constructor
