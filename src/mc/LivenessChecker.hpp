@@ -67,12 +67,11 @@ public:
   ~LivenessChecker();
   int run() override;
   RecordTrace getRecordTrace() override;
+  std::vector<std::string> getTextualTrace() override;
 private:
   int main();
   void prepare();
   int compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2);
-  void dumpStack(xbt_fifo_t stack);
-  void showStack(xbt_fifo_t stack);
   simgrid::xbt::unique_ptr<s_xbt_dynar_t> getPropositionValues();
   simgrid::mc::VisitedPair* insertAcceptancePair(simgrid::mc::Pair* pair);
   int insertVisitedPair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair);

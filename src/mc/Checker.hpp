@@ -46,6 +46,7 @@ public:
    *  Could this be handled in the Session/ModelChecker instead?
    */
   virtual RecordTrace getRecordTrace();
+  virtual std::vector<std::string> getTextualTrace();
 
 protected:
   Session& getSession() { return *session_; }

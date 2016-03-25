@@ -135,33 +135,6 @@ Pair::~Pair() {
     MC_state_delete(this->graph_state, 1);
 }
 
-void LivenessChecker::showStack(xbt_fifo_t stack)
-{
-  int value;
-  simgrid::mc::Pair* pair;
-  xbt_fifo_item_t item;
-  smx_simcall_t req;
-  char *req_str = nullptr;
-
-  for (item = xbt_fifo_get_last_item(stack);
-       item; item = xbt_fifo_get_prev_item(item)) {
-    pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
-    req = MC_state_get_executed_request(pair->graph_state, &value);
-    if (req && req->call != SIMCALL_NONE) {
-      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
-      XBT_INFO("%s", req_str);
-      xbt_free(req_str);
-    }
-  }
-}
-
-void LivenessChecker::dumpStack(xbt_fifo_t stack)
-{
-  simgrid::mc::Pair* pair;
-  while ((pair = (simgrid::mc::Pair*) xbt_fifo_pop(stack)) != nullptr)
-    delete pair;
-}
-
 simgrid::xbt::unique_ptr<s_xbt_dynar_t> LivenessChecker::getPropositionValues()
 {
   unsigned int cursor = 0;
@@ -454,10 +427,27 @@ void LivenessChecker::showAcceptanceCycle(std::size_t depth)
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
   XBT_INFO("Counter-example that violates formula :");
   simgrid::mc::dumpRecordPath();
-  this->showStack(mc_stack);
-  this->dumpStack(mc_stack);
+  for (auto& s : this->getTextualTrace())
+    XBT_INFO("%s", s.c_str());
   MC_print_statistics(mc_stats);
   XBT_INFO("Counter-example depth : %zd", depth);
+}
+
+std::vector<std::string> LivenessChecker::getTextualTrace() // override
+{
+  std::vector<std::string> trace;
+  for (xbt_fifo_item_t item = xbt_fifo_get_last_item(mc_stack);
+       item; item = xbt_fifo_get_prev_item(item)) {
+    simgrid::mc::Pair* pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
+    int value;
+    smx_simcall_t req = MC_state_get_executed_request(pair->graph_state, &value);
+    if (req && req->call != SIMCALL_NONE) {
+      char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
+      trace.push_back(std::string(req_str));
+      xbt_free(req_str);
+    }
+  }
+  return std::move(trace);
 }
 
 int LivenessChecker::main(void)

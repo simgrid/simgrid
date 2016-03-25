@@ -25,7 +25,14 @@ Checker::~Checker()
 {
 }
 
+// virtual
 RecordTrace Checker::getRecordTrace()
+{
+  return {};
+}
+
+// virtual
+std::vector<std::string> Checker::getTextualTrace()
 {
   return {};
 }

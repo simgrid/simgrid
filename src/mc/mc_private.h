@@ -66,8 +66,6 @@ XBT_PRIVATE extern int user_max_depth_reached;
 
 XBT_PRIVATE void MC_replay(xbt_fifo_t stack);
 XBT_PRIVATE void MC_show_deadlock(void);
-XBT_PRIVATE void MC_show_stack_safety(xbt_fifo_t stack);
-XBT_PRIVATE void MC_dump_stack_safety(xbt_fifo_t stack);
 
 /** Stack (of `mc_state_t`) representing the current position of the
  *  the MC in the exploration graph

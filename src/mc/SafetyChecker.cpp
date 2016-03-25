@@ -39,7 +39,8 @@ static void MC_show_non_termination(void)
   XBT_INFO("*** NON-PROGRESSIVE CYCLE DETECTED ***");
   XBT_INFO("******************************************");
   XBT_INFO("Counter-example execution trace:");
-  MC_dump_stack_safety(mc_stack);
+  for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
+    XBT_INFO("%s", s.c_str());
   MC_print_statistics(mc_stats);
 }
 
@@ -84,6 +85,24 @@ RecordTrace SafetyChecker::getRecordTrace() // override
   }
 
   return std::move(res);
+}
+
+std::vector<std::string> SafetyChecker::getTextualTrace() // override
+{
+  std::vector<std::string> trace;
+  for (xbt_fifo_item_t item = xbt_fifo_get_last_item(mc_stack);
+       item; item = xbt_fifo_get_prev_item(item)) {
+    mc_state_t state = (mc_state_t)xbt_fifo_get_item_content(item);
+    int value;
+    smx_simcall_t req = MC_state_get_executed_request(state, &value);
+    if (req) {
+      char* req_str = simgrid::mc::request_to_string(
+        req, value, simgrid::mc::RequestType::executed);
+      trace.push_back(req_str);
+      xbt_free(req_str);
+    }
+  }
+  return std::move(trace);
 }
 
 int SafetyChecker::run()

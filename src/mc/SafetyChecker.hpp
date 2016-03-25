@@ -20,6 +20,7 @@ public:
   ~SafetyChecker();
   int run() override;
   RecordTrace getRecordTrace() override;
+  std::vector<std::string> getTextualTrace() override;
 private:
   // Temp
   void init();

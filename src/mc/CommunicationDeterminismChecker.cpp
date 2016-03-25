@@ -330,6 +330,25 @@ RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
   return std::move(res);
 }
 
+// TODO, deduplicate with SafetyChecker
+std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // override
+{
+  std::vector<std::string> res;
+  for (xbt_fifo_item_t item = xbt_fifo_get_last_item(mc_stack);
+       item; item = xbt_fifo_get_prev_item(item)) {
+    mc_state_t state = (mc_state_t)xbt_fifo_get_item_content(item);
+    int value;
+    smx_simcall_t req = MC_state_get_executed_request(state, &value);
+    if (req) {
+      char* req_str = simgrid::mc::request_to_string(
+        req, value, simgrid::mc::RequestType::executed);
+      res.push_back(req_str);
+      xbt_free(req_str);
+    }
+  }
+  return std::move(res);
+}
+
 void CommunicationDeterminismChecker::prepare()
 {
   mc_state_t initial_state = nullptr;
