@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <cxxabi.h>
+
 #include <vector>
 
 #include "mc_base.h"
@@ -270,16 +272,24 @@ void dumpStack(FILE* file, unw_cursor_t cursor)
   unw_word_t off;
   do {
     const char * name = !unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
+
+    int status;
+
+    // Demangle C++ names:
+    char* realname = abi::__cxa_demangle(name, 0, 0, &status);
+
 #if defined(__x86_64__)
     unw_word_t rip = 0;
     unw_word_t rsp = 0;
     unw_get_reg(&cursor, UNW_X86_64_RIP, &rip);
     unw_get_reg(&cursor, UNW_X86_64_RSP, &rsp);
     fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
-      nframe, name, (std::uint64_t) rip, (std::uint64_t) rsp);
+      nframe, realname ? realname : name, (std::uint64_t) rip, (std::uint64_t) rsp);
 #else
-    fprintf(file, "  %i: %s\n", nframe, name);
+    fprintf(file, "  %i: %s\n", nframe, realname ? realname : name);
 #endif
+
+    free(realname);
     ++nframe;
   } while(unw_step(&cursor));
 }
