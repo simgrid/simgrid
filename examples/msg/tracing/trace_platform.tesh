@@ -1,6 +1,5 @@
 #! ./tesh
 
-
 p Tracing master/slave application
 $ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:tracing/trace_platform.trace --cfg=tracing/categorized:yes ${srcdir:=.}/../platforms/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'

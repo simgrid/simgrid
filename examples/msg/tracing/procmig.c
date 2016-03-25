@@ -74,20 +74,15 @@ static int master(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  if (argc < 3) {
-    XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 1, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
   TRACE_category ("migration_order");
 
-  /* Application deployment */
-  MSG_function_register("emigrant", emigrant);
-  MSG_function_register("master", master);
-  MSG_launch_application(argv[2]);
+  MSG_process_create("emigrant", emigrant, NULL, MSG_get_host_by_name("Fafard"));
+  MSG_process_create("master", master, NULL, MSG_get_host_by_name("Tremblay"));
 
   MSG_main();
   return 0;
-}                               /* end_of_main */
+}
