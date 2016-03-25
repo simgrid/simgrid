@@ -115,8 +115,8 @@ public:
   }
   void attach(simgrid::s4u::Host* host);
 
-  bool isOn() override;
-  bool isOff() override;
+  bool isOn() const override;
+  bool isOff() const override;
   void turnOn() override;
   void turnOff() override;
 
