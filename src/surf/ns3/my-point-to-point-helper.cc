@@ -204,7 +204,7 @@ MyPointToPointHelper::EnableAsciiInternal (
 
   //
   // If we are provided an OutputStreamWrapper, we are expected to use it, and
-  // to providd a context.  We are free to come up with our own context if we
+  // to provide a context.  We are free to come up with our own context if we
   // want, and use the AsciiTraceHelper Hook*WithContext functions, but for 
   // compatibility and simplicity, we just use Config::Connect and let it deal
   // with the context.
@@ -246,71 +246,6 @@ MyPointToPointHelper::Install (NodeContainer c)
 }
 
 NetDeviceContainer 
-MyPointToPointHelper::Install (Ptr<Node> a, e_ns3_network_element_type_t type_a, Ptr<Node> b, e_ns3_network_element_type_t type_b)
-{
-  NetDeviceContainer container;
-  Ptr<Queue> queueA;
-  Ptr<Queue> queueB;
-
-  Ptr<PointToPointNetDevice> devA = m_deviceFactory.Create<PointToPointNetDevice> ();
-  devA->SetAddress (Mac48Address::Allocate ());
-  a->AddDevice (devA);
-
-  if(type_a == NS3_NETWORK_ELEMENT_ROUTER){
-	queueA = m_queueFactory_red.Create<Queue> ();
-  }
-  else
-	  queueA = m_queueFactory.Create<Queue> ();
-  devA->SetQueue (queueA);
-
-  Ptr<PointToPointNetDevice> devB = m_deviceFactory.Create<PointToPointNetDevice> ();
-  devB->SetAddress (Mac48Address::Allocate ());
-  b->AddDevice (devB);
-
-  if(type_b == NS3_NETWORK_ELEMENT_ROUTER){
-	queueB = m_queueFactory_red.Create<Queue> ();
-  }
-  else
-	  queueB = m_queueFactory.Create<Queue> ();
-  devB->SetQueue (queueB);
-
-  // If MPI is enabled, we need to see if both nodes have the same system id 
-  // (rank), and the rank is the same as this instance.  If both are true, 
-  //use a normal p2p channel, otherwise use a remote channel
-  bool useNormalChannel = true;
-  Ptr<PointToPointChannel> channel = 0;
-  if (MpiInterface::IsEnabled ())
-    {
-      uint32_t n1SystemId = a->GetSystemId ();
-      uint32_t n2SystemId = b->GetSystemId ();
-      uint32_t currSystemId = MpiInterface::GetSystemId ();
-      if (n1SystemId != currSystemId || n2SystemId != currSystemId) 
-          useNormalChannel = false;
-    }
-  if (useNormalChannel)
-    {
-      channel = m_channelFactory.Create<PointToPointChannel> ();
-    }
-  else
-    {
-      channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
-      Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
-      Ptr<MpiReceiver> mpiRecB = CreateObject<MpiReceiver> ();
-      mpiRecA->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, devA));
-      mpiRecB->SetReceiveCallback (MakeCallback (&PointToPointNetDevice::Receive, devB));
-      devA->AggregateObject (mpiRecA);
-      devB->AggregateObject (mpiRecB);
-    }
-
-  devA->Attach (channel);
-  devB->Attach (channel);
-  container.Add (devA);
-  container.Add (devB);
-
-  return container;
-}
-
-NetDeviceContainer 
 MyPointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
 {
   NetDeviceContainer container;
@@ -330,20 +265,16 @@ MyPointToPointHelper::Install (Ptr<Node> a, Ptr<Node> b)
   //use a normal p2p channel, otherwise use a remote channel
   bool useNormalChannel = true;
   Ptr<PointToPointChannel> channel = 0;
-  if (MpiInterface::IsEnabled ())
-    {
+  if (MpiInterface::IsEnabled ()) {
       uint32_t n1SystemId = a->GetSystemId ();
       uint32_t n2SystemId = b->GetSystemId ();
       uint32_t currSystemId = MpiInterface::GetSystemId ();
       if (n1SystemId != currSystemId || n2SystemId != currSystemId)
           useNormalChannel = false;
-    }
+  }
   if (useNormalChannel)
-    {
       channel = m_channelFactory.Create<PointToPointChannel> ();
-    }
-  else
-    {
+  else {
       channel = m_remoteChannelFactory.Create<PointToPointRemoteChannel> ();
       Ptr<MpiReceiver> mpiRecA = CreateObject<MpiReceiver> ();
       Ptr<MpiReceiver> mpiRecB = CreateObject<MpiReceiver> ();

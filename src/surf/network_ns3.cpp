@@ -76,7 +76,6 @@ static void simgrid_ns3_add_netcard(simgrid::surf::NetCard* netcard)
   nodes.Add(node);
   ns3netcard->node_num = number_of_nodes++;
 
-
   xbt_lib_set(as_router_lib, id, NS3_ASR_LEVEL, ns3netcard );
 }
 
@@ -141,9 +140,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 
     xbt_assert(host_src && host_dst, "\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
-    ns3_add_link(host_src->node_num,NS3_NETWORK_ELEMENT_HOST,
-                 host_dst->node_num,NS3_NETWORK_ELEMENT_HOST,
-                 bw,lat);
+    ns3_add_link(host_src->node_num, host_dst->node_num, bw,lat);
 
     free(router_id);
     free(host_id);
@@ -201,7 +198,7 @@ static void create_ns3_topology(void)
       if (!host_src || !host_dst)
           xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
-      ns3_add_link(host_src->node_num,NS3_NETWORK_ELEMENT_HOST,host_dst->node_num,NS3_NETWORK_ELEMENT_HOST,link_bdw,link_lat);
+      ns3_add_link(host_src->node_num, host_dst->node_num, link_bdw, link_lat);
 
       xbt_free(link_bdw);
       xbt_free(link_lat);
@@ -534,9 +531,7 @@ static char* transformIpv4Address (ns3::Ipv4Address from){
   return bprintf("%s",s.c_str());
 }
 
-void ns3_add_link(int src, e_ns3_network_element_type_t type_src,
-          int dst, e_ns3_network_element_type_t type_dst,
-          char *bw, char *lat)
+void ns3_add_link(int src, int dst, char *bw, char *lat)
 {
   if(number_of_links == 1 ) {
     LogComponentEnable("UdpEchoClientApplication", ns3::LOG_LEVEL_INFO);
@@ -556,7 +551,7 @@ void ns3_add_link(int src, e_ns3_network_element_type_t type_src,
   pointToPoint.SetChannelAttribute ("Delay", ns3::StringValue (lat));
   //pointToPoint.EnablePcapAll("test_ns3_trace"); //DEBUG
 
-  netA.Add(pointToPoint.Install (a, type_src, b, type_dst));
+  netA.Add(pointToPoint.Install (a, b));
 
   char * adr = bprintf("%d.%d.0.0",number_of_networks,number_of_links);
   address.SetBase (adr, "255.255.0.0");

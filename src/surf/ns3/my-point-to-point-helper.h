@@ -135,16 +135,6 @@ public:
 
   /**
    * \param a first node
-   * \param b second node
-   *
-   * Saves you from having to construct a temporary NodeContainer.
-   * Also, if MPI is enabled, for distributed simulations,
-   * appropriate remote point-to-point channels are created.
-   */
-  NetDeviceContainer Install (Ptr<Node> a, e_ns3_network_element_type_t type_a, Ptr<Node> b, e_ns3_network_element_type_t type_b);
-
-  /**
-   * \param a first node
    * \param bName name of second node
    *
    * Saves you from having to construct a temporary NodeContainer.

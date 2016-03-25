@@ -21,13 +21,6 @@ namespace simgrid{
     class NetworkNS3Action;
   }
 }
-typedef enum {
-  NS3_NETWORK_ELEMENT_NULL = 0,    /* NULL */
-  NS3_NETWORK_ELEMENT_HOST,      /* host type */
-  NS3_NETWORK_ELEMENT_ROUTER,     /* router type */
-  NS3_NETWORK_ELEMENT_AS,        /* AS type */
-} e_ns3_network_element_type_t;
-
 
 typedef struct ns3_node {
   int node_num;
@@ -42,11 +35,9 @@ XBT_PUBLIC(void)   ns3_create_flow(const char* a,const char *b,double start,u_in
 XBT_PUBLIC(void)   ns3_simulator(double min);
 XBT_PUBLIC(void *) ns3_add_host_cluster(const char * id);
 XBT_PUBLIC(void *) ns3_add_router(const char * id);
-XBT_PUBLIC(void) ns3_add_link(int src, e_ns3_network_element_type_t type_src,
-                int dst, e_ns3_network_element_type_t type_dst,
-                char * bw,char * lat);
-XBT_PUBLIC(void) ns3_end_platform(void);
-XBT_PUBLIC(void) ns3_add_cluster(char * bw,char * lat,const char *id);
+XBT_PUBLIC(void)   ns3_add_link(int src, int dst, char * bw,char * lat);
+XBT_PUBLIC(void)   ns3_add_cluster(char * bw,char * lat,const char *id);
+XBT_PUBLIC(void)   ns3_end_platform(void);
 
 inline
 ns3_node_t ns3_find_host(const char* id)
