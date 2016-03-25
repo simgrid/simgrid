@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <unordered_set>
+
 #include "ns3/core-module.h"
 #include "ns3/node.h"
 
@@ -178,8 +180,9 @@ static void create_ns3_topology(void)
   //get the onelinks from the parsed platform
   xbt_dynar_t onelink_routes = routing_platf->getOneLinkRoutes();
 
+  std::unordered_set<simgrid::surf::LinkNS3*> already_seen = std::unordered_set<simgrid::surf::LinkNS3*>();
+
   XBT_DEBUG("There is %ld one-link routes",onelink_routes->used);
-  //save them in trace file
   simgrid::surf::Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
@@ -187,11 +190,11 @@ static void create_ns3_topology(void)
     char *dst = onelink->dst_->name();
     simgrid::surf::LinkNS3 *link = static_cast<simgrid::surf::LinkNS3 *>(onelink->link_);
 
-    if (strcmp(src,dst) && link->m_created){
+    if (strcmp(src,dst) && (already_seen.find(link) == already_seen.end())) {
+      already_seen.insert(link);
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());
       char * link_bdw = bprintf("%fBps", link->getBandwidth());
       char * link_lat = bprintf("%fs", link->getLatency());
-      link->m_created = 0;
 
       //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
       XBT_DEBUG("\tLink (%s) bdw:%s lat:%s", link->getName(), link_bdw, link_lat);
@@ -356,7 +359,6 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
 LinkNS3::LinkNS3(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency)
  : Link(model, name, props)
- , m_created(1)
 {
   m_bandwidth.peak = bandwidth;
   m_latency.peak = latency;
