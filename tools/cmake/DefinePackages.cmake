@@ -1090,7 +1090,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/trace/bourassa_state.trace
   examples/platforms/trace/fafard_state.trace
   examples/platforms/trace/faulty_host.trace
-  examples/platforms/trace/ginette_speed.trace
+  examples/platforms/trace/ginette_state.trace
   examples/platforms/trace/jupiter_speed.trace
   examples/platforms/trace/jupiter_state.trace
   examples/platforms/trace/link1_avail.trace
