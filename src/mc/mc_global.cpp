@@ -259,15 +259,39 @@ void MC_automaton_load(const char *file)
   xbt_automaton_load(simgrid::mc::property_automaton, file);
 }
 
+namespace simgrid {
+namespace mc {
+
+void dumpStack(FILE* file, unw_cursor_t cursor)
+{
+  int nframe = 0;
+  char buffer[100];
+
+  unw_word_t off;
+  do {
+    const char * name = !unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
+#if defined(__x86_64__)
+    unw_word_t rip = 0;
+    unw_word_t rsp = 0;
+    unw_get_reg(&cursor, UNW_X86_64_RIP, &rip);
+    unw_get_reg(&cursor, UNW_X86_64_RSP, &rsp);
+    fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
+      nframe, name, (std::uint64_t) rip, (std::uint64_t) rsp);
+#else
+    fprintf(file, "  %i: %s\n", nframe, name);
+#endif
+    ++nframe;
+  } while(unw_step(&cursor));
+}
+
+}
+}
+
 static void MC_dump_stacks(FILE* file)
 {
   int nstack = 0;
   for (auto const& stack : mc_model_checker->process().stack_areas()) {
-
-    fprintf(file, "Stack %i:\n", nstack);
-
-    int nframe = 0;
-    char buffer[100];
+    fprintf(file, "Stack %i:\n", nstack++);
 
     simgrid::mc::UnwindContext context;
     unw_context_t raw_context =
@@ -276,24 +300,7 @@ static void MC_dump_stacks(FILE* file)
     context.initialize(&mc_model_checker->process(), &raw_context);
 
     unw_cursor_t cursor = context.cursor();
-
-    unw_word_t off;
-    do {
-      const char * name = !unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
-#if defined(__x86_64__)
-      unw_word_t rip = 0;
-      unw_word_t rsp = 0;
-      unw_get_reg(&cursor, UNW_X86_64_RIP, &rip);
-      unw_get_reg(&cursor, UNW_X86_64_RSP, &rsp);
-      fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
-        nframe, name, (std::uint64_t) rip, (std::uint64_t) rsp);
-#else
-      fprintf(file, "  %i: %s\n", nframe, name);
-#endif
-      ++nframe;
-    } while(unw_step(&cursor));
-
-    ++nstack;
+    simgrid::mc::dumpStack(file, cursor);
   }
 }
 #endif
@@ -343,6 +350,8 @@ void MC_report_crash(int status)
   for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("%s", s.c_str());
   MC_print_statistics(mc_stats);
+  XBT_INFO("Stack trace:");
+  mc_model_checker->process().dumpStack();
 }
 
 #endif

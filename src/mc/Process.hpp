@@ -216,6 +216,8 @@ public:
   std::vector<simgrid::mc::SimixProcessInformation>& simix_processes();
   std::vector<simgrid::mc::SimixProcessInformation>& old_simix_processes();
 
+  void dumpStack();
+
 private:
   void init_memory_map_info();
   void refresh_heap();

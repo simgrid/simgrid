@@ -11,6 +11,10 @@
 #include <stdint.h>
 #include <errno.h>
 
+#include <sys/ptrace.h>
+
+#include <cstdio>
+
 #include <sys/types.h>
 #include <fcntl.h>
 #include <unistd.h>
@@ -678,6 +682,36 @@ std::vector<simgrid::mc::SimixProcessInformation>& Process::old_simix_processes(
 {
   this->refresh_simix();
   return smx_old_process_infos;
+}
+
+void Process::dumpStack()
+{
+  unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, __BYTE_ORDER);
+  if (as == nullptr) {
+    XBT_ERROR("Could not initialize ptrace address space");
+    return;
+  }
+
+  void* context = _UPT_create(this->pid_);
+  if (context == nullptr) {
+    unw_destroy_addr_space(as);
+    XBT_ERROR("Could not initialize ptrace context");
+    return;
+  }
+
+  unw_cursor_t cursor;
+  if (unw_init_remote(&cursor, as, context) != 0) {
+    _UPT_destroy(context);
+    unw_destroy_addr_space(as);
+    XBT_ERROR("Could not initialiez ptrace cursor");
+    return;
+  }
+
+  simgrid::mc::dumpStack(stderr, cursor);
+
+  _UPT_destroy(context);
+  unw_destroy_addr_space(as);
+  return;
 }
 
 }
