@@ -41,8 +41,8 @@ p Dogbone
 ! timeout 10
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/dogbone.xml ${srcdir:=.}/examples/msg/ns3/dogbone_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [C2:slave(4)] [msg_test/INFO] FLOW[1] : Receive 20000000 bytes from S2 to C2
 > [C1:slave(3)] [msg_test/INFO] FLOW[0] : Receive 20000000 bytes from S1 to C1
+> [C2:slave(4)] [msg_test/INFO] FLOW[1] : Receive 20000000 bytes from S2 to C2
 
 p 2hosts 1link
 

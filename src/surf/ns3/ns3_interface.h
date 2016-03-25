@@ -31,7 +31,6 @@ typedef enum {
 
 typedef struct ns3_node {
   int node_num;
-  e_ns3_network_element_type_t type;
 } s_ns3_node_t, *ns3_node_t;
 
 XBT_PUBLIC_DATA(int) NS3_EXTENSION_ID;
