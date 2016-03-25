@@ -60,19 +60,24 @@ static void simgrid_ns3_add_host(simgrid::s4u::Host& host)
   ns3::Ptr<ns3::Node> node =  ns3::CreateObject<ns3::Node> (0);
   stack.Install(node);
   nodes.Add(node);
-  ns3host->node_num = number_of_nodes;
-  ns3host->type = NS3_NETWORK_ELEMENT_HOST;
-  number_of_nodes++;
+  ns3host->node_num = number_of_nodes ++;
 
   host.extension_set(NS3_EXTENSION_ID, ns3host);
 }
 
-static void simgrid_ns3_add_router(simgrid::surf::NetCard* router)
+static void simgrid_ns3_add_netcard(simgrid::surf::NetCard* netcard)
 {
-  const char* router_id = router->name();
-  XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
-  xbt_lib_set(as_router_lib, router_id, NS3_ASR_LEVEL, ns3_add_router(router_id)
-    );
+  const char* id = netcard->name();
+
+  ns3_node_t ns3netcard  = xbt_new0(s_ns3_node_t,1);
+  XBT_DEBUG("Interface ns3 add netcard[%d] '%s'",number_of_nodes,id);
+  ns3::Ptr<ns3::Node> node =  ns3::CreateObject<ns3::Node> (0);
+  stack.Install(node);
+  nodes.Add(node);
+  ns3netcard->node_num = number_of_nodes++;
+
+
+  xbt_lib_set(as_router_lib, id, NS3_ASR_LEVEL, ns3netcard );
 }
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
@@ -136,8 +141,8 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 
     xbt_assert(host_src && host_dst, "\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
-    ns3_add_link(host_src->node_num,host_src->type,
-                 host_dst->node_num,host_dst->type,
+    ns3_add_link(host_src->node_num,NS3_NETWORK_ELEMENT_HOST,
+                 host_dst->node_num,NS3_NETWORK_ELEMENT_HOST,
                  bw,lat);
 
     free(router_id);
@@ -196,7 +201,7 @@ static void create_ns3_topology(void)
       if (!host_src || !host_dst)
           xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
-      ns3_add_link(host_src->node_num,host_src->type,host_dst->node_num,host_dst->type,link_bdw,link_lat);
+      ns3_add_link(host_src->node_num,NS3_NETWORK_ELEMENT_HOST,host_dst->node_num,NS3_NETWORK_ELEMENT_HOST,link_bdw,link_lat);
 
       xbt_free(link_bdw);
       xbt_free(link_lat);
@@ -224,7 +229,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 
   routing_model_create(NULL);
   simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
-  simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_router);
+  simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_netcard);
   simgrid::surf::on_link.connect(netlink_parse_init);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
   simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
@@ -474,22 +479,8 @@ void * ns3_add_host_cluster(const char * id)
   Cluster_nodes.Add(node);
   nodes.Add(node);
   host->node_num = number_of_nodes;
-  host->type = NS3_NETWORK_ELEMENT_HOST;
   number_of_nodes++;
   return host;
-}
-
-void * ns3_add_router(const char * id)
-{
-  ns3_node_t router  = xbt_new0(s_ns3_node_t,1);
-  XBT_DEBUG("Interface ns3 add router[%d] '%s'",number_of_nodes,id);
-  ns3::Ptr<ns3::Node> node =  ns3::CreateObject<ns3::Node> (0);
-  stack.Install(node);
-  nodes.Add(node);
-  router->node_num = number_of_nodes;
-  router->type = NS3_NETWORK_ELEMENT_ROUTER;
-  number_of_nodes++;
-  return router;
 }
 
 void ns3_add_cluster(char * bw,char * lat,const char *id)
