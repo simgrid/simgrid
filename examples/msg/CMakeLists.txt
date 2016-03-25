@@ -22,8 +22,7 @@ set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage.txt          PARENT_SCOPE)
 set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/generate.py                        PARENT_SCOPE)
 set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/ns3.c                                    PARENT_SCOPE)
-set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/dht-chord_crosstraffic.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/ns3.tesh                                 PARENT_SCOPE)
+set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/ns3/ns3.tesh                                 PARENT_SCOPE)
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/actions-mpi_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/actions-mpi_split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage_d.xml
@@ -69,8 +68,6 @@ foreach (x categories platform simple)
   ADD_TESH(msg-trace-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/trace-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/trace-${x} trace-${x}.tesh)
 endforeach()
 
-ADD_TESH_FACTORIES(msg-dht-chord-crosstraffic          "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-chord dht-chord_crosstraffic.tesh)
-ADD_TESH_FACTORIES(msg-dht-chord-crosstraffic-parallel "thread;ucontext;raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-chord --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-chord dht-chord_crosstraffic.tesh)
 ADD_TESH_FACTORIES(msg-dht-chord-parallel              "thread;ucontext;raw" --cfg contexts/nthreads:4 ${CONTEXTS_SYNCHRO} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/dht-chord --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/dht-chord dht-chord.tesh)
 ADD_TESH_FACTORIES(msg-energy-pstate-ptask             "thread;ucontext;raw;boost" --cfg host/model:ptask_L07 --log xbt_cfg.threshold:critical --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-pstate/energy-pstate.tesh)
 ADD_TESH_FACTORIES(msg-energy-consumption-ptask        "thread;ucontext;raw;boost" --cfg host/model:ptask_L07 --log xbt_cfg.threshold:critical --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-consumption/energy-consumption.tesh)
