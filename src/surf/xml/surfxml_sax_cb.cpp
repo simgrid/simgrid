@@ -744,10 +744,8 @@ void ETag_surfxml_route(void){
     route.link_list->push_back(link);
   }
 
-
-
   sg_platf_new_route(&route);
-  parsed_link_list = nullptr;
+  xbt_dynar_free(&parsed_link_list);
 }
 
 void ETag_surfxml_ASroute(void){
@@ -775,6 +773,7 @@ void ETag_surfxml_ASroute(void){
     simgrid::surf::Link *link = Link::byName(link_name);
     ASroute.link_list->push_back(link);
   }
+  xbt_dynar_free(&parsed_link_list);
 
   switch (A_surfxml_ASroute_symmetrical) {
   case AU_surfxml_ASroute_symmetrical:
@@ -787,7 +786,6 @@ void ETag_surfxml_ASroute(void){
   }
 
   sg_platf_new_route(&ASroute);
-  parsed_link_list = nullptr;
 }
 
 void ETag_surfxml_bypassRoute(void){
