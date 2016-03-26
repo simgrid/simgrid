@@ -248,16 +248,7 @@ Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double lat
 
 Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst, double size, double rate)
 {
-  XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());
-  NetworkNS3Action *action = new NetworkNS3Action(this, size, 0);
-
-  ns3_create_flow(src->name(), dst->name(), surf_get_clock(), size, action);
-
-  action->p_srcElm = src;
-  action->p_dstElm = dst;
-  networkCommunicateCallbacks(action, src, dst, size, rate);
-
-  return action;
+  return new NetworkNS3Action(this, size, src, dst);
 }
 
 double NetworkNS3Model::next_occuring_event(double now)
@@ -304,16 +295,16 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
     if (TRACE_is_enabled() &&
         action->getState() == Action::State::running){
-      double data_delta_sent = sgFlow->sentBytes_ - action->m_lastSent;
+      double data_delta_sent = sgFlow->sentBytes_ - action->lastSent_;
 
       std::vector<Link*> *route = new std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency (action->p_srcElm, action->p_dstElm, route, NULL);
+      routing_platf->getRouteAndLatency (action->srcElm_, action->dstElm_, route, NULL);
       for (auto link : *route)
         TRACE_surf_link_set_utilization (link->getName(), action->getCategory(), (data_delta_sent)/delta, now-delta, delta);
       delete route;
 
-      action->m_lastSent = sgFlow->sentBytes_;
+      action->lastSent_ = sgFlow->sentBytes_;
     }
 
     if(sgFlow->finished_){
@@ -358,27 +349,33 @@ void LinkNS3::apply_event(tmgr_trace_iterator_t event, double value)
   THROW_UNIMPLEMENTED;
 }
 void LinkNS3::setBandwidthTrace(tmgr_trace_t trace) {
-  xbt_die("The NS3 network model doesn't support latency state traces");
+  xbt_die("The NS3 network model doesn't support bandwidth traces");
 }
 void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
-  xbt_die("The NS3 network model doesn't support latency state traces");
+  xbt_die("The NS3 network model doesn't support latency traces");
 }
 
 /**********
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(Model *model, double cost, bool failed)
-: NetworkAction(model, cost, failed)
-{}
-
-void NetworkNS3Action::suspend()
+NetworkNS3Action::NetworkNS3Action(Model *model, double size, NetCard *src, NetCard *dst)
+: NetworkAction(model, size, false)
 {
+  XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());
+
+  srcElm_ = src;
+  dstElm_ = dst;
+  ns3_create_flow(src->name(), dst->name(), surf_get_clock(), size, this);
+
+  networkCommunicateCallbacks(this, src, dst, size, 0);
+}
+
+void NetworkNS3Action::suspend() {
   THROW_UNIMPLEMENTED;
 }
 
-void NetworkNS3Action::resume()
-{
+void NetworkNS3Action::resume() {
   THROW_UNIMPLEMENTED;
 }
 

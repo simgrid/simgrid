@@ -47,17 +47,17 @@ public:
  **********/
 class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
-  NetworkNS3Action(Model *model, double cost, bool failed);
+  NetworkNS3Action(Model *model, double cost, NetCard *src, NetCard *dst);
 
-bool isSuspended();
-int unref();
-void suspend();
-void resume();
+  bool isSuspended();
+  int unref();
+  void suspend();
+  void resume();
 
 //private:
-  double m_lastSent = 0;
-  NetCard *p_srcElm;
-  NetCard *p_dstElm;
+  double lastSent_ = 0;
+  NetCard *srcElm_;
+  NetCard *dstElm_;
 };
 
 }
