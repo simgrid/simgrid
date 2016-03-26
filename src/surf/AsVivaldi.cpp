@@ -8,9 +8,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");
 
-#define HOST_PEER(peername) bprintf("peer_%s", peername)
-#define ROUTER_PEER(peername) bprintf("router_%s", peername)
-
 namespace simgrid {
 namespace surf {
   static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst) {
@@ -22,17 +19,19 @@ namespace surf {
 
   static xbt_dynar_t getCoordsFromNetcard(NetCard *nc)
   {
-    xbt_dynar_t res;
+    xbt_dynar_t res = nullptr;
     char *tmp_name;
 
     if(nc->isHost()){
-      tmp_name = HOST_PEER(nc->name());
-      res = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(tmp_name)->extension(COORD_HOST_LEVEL);
-      if (res == nullptr)
-        res = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(nc->name())->extension(COORD_HOST_LEVEL);
+      tmp_name = bprintf("peer_%s", nc->name());
+      simgrid::s4u::Host *host = simgrid::s4u::Host::by_name_or_null(tmp_name);
+      if (host == nullptr)
+        host = simgrid::s4u::Host::by_name_or_null(nc->name());
+      if (host != nullptr)
+        res = (xbt_dynar_t) host->extension(COORD_HOST_LEVEL);
     }
     else if(nc->isRouter() || nc->isAS()){
-      tmp_name = ROUTER_PEER(nc->name());
+      tmp_name = bprintf("router_%s", nc->name());
       res = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_name, COORD_ASR_LEVEL);
     }
     else{
@@ -53,8 +52,8 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]", src->name(), src->id(), dst->name(), dst->id());
 
   if(src->isAS()) {
-    char *src_name = ROUTER_PEER(src->name());
-    char *dst_name = ROUTER_PEER(dst->name());
+    char *src_name = bprintf("router_%s",src->name());
+    char *dst_name = bprintf("router_%s",dst->name());
     route->gw_src = (sg_netcard_t) xbt_lib_get_or_null(as_router_lib, src_name, ROUTING_ASR_LEVEL);
     route->gw_dst = (sg_netcard_t) xbt_lib_get_or_null(as_router_lib, dst_name, ROUTING_ASR_LEVEL);
     xbt_free(src_name);
