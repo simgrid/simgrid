@@ -55,7 +55,7 @@ void suspend();
 void resume();
 
 //private:
-  double m_lastSent;
+  double m_lastSent = 0;
   NetCard *p_srcElm;
   NetCard *p_dstElm;
 };

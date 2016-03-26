@@ -201,6 +201,9 @@ static void create_ns3_topology(void)
       xbt_free(link_lat);
     }
   }
+
+  ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
+  ns3::GlobalRouteManager::InitializeRoutes();
 }
 
 /*********
@@ -227,7 +230,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   simgrid::surf::on_link.connect(netlink_parse_init);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
   simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
-  simgrid::surf::on_postparse.connect(&ns3_end_platform); //InitializeRoutes
 
   NS3_EXTENSION_ID = simgrid::s4u::Host::extension_create(xbt_free_f);
   NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, xbt_free_f);
@@ -251,7 +253,6 @@ Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst, double size, do
 
   ns3_create_flow(src->name(), dst->name(), surf_get_clock(), size, action);
 
-  action->m_lastSent = 0;
   action->p_srcElm = src;
   action->p_dstElm = dst;
   networkCommunicateCallbacks(action, src, dst, size, rate);
@@ -404,10 +405,10 @@ int NetworkNS3Action::unref()
 }
 
 
-void ns3_simulator(double min){
-  if (min > 0.0) // If there is a maximum amount of time to run
-    ns3::Simulator::Stop(ns3::Seconds(min));
-  XBT_DEBUG("Start simulator for at most %fs",min);
+void ns3_simulator(double maxSeconds){
+  if (maxSeconds > 0.0) // If there is a maximum amount of time to run
+    ns3::Simulator::Stop(ns3::Seconds(maxSeconds));
+  XBT_DEBUG("Start simulator for at most %fs",maxSeconds);
   ns3::Simulator::Run ();
 }
 
@@ -552,7 +553,6 @@ void ns3_add_link(int src, int dst, char *bw, char *lat)
   XBT_DEBUG("\tAdd PTP from %d to %d bw:'%s' lat:'%s'",src,dst,bw,lat);
   pointToPoint.SetDeviceAttribute ("DataRate", ns3::StringValue (bw));
   pointToPoint.SetChannelAttribute ("Delay", ns3::StringValue (lat));
-  //pointToPoint.EnablePcapAll("test_ns3_trace"); //DEBUG
 
   netA.Add(pointToPoint.Install (a, b));
 
@@ -570,19 +570,11 @@ void ns3_add_link(int src, int dst, char *bw, char *lat)
   xbt_dynar_set_as(IPV4addr,dst,char*,tmp);
   XBT_DEBUG("Have write '%s' for Node '%d'",(char*)xbt_dynar_get_as(IPV4addr,dst,char*),dst);
 
-  if(number_of_links == 255){
-    if(number_of_networks == 255)
-      xbt_die("Number of links and networks exceed 255*255");
+  if (number_of_links == 255){
+    xbt_assert(number_of_networks < 255, "Number of links and networks exceed 255*255");
     number_of_links = 1;
     number_of_networks++;
-  }else{
+  } else {
     number_of_links++;
   }
-}
-
-void ns3_end_platform(void)
-{
-  XBT_DEBUG("InitializeRoutes");
-  ns3::GlobalRouteManager::BuildGlobalRoutingDatabase();
-  ns3::GlobalRouteManager::InitializeRoutes();
 }
