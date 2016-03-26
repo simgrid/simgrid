@@ -71,9 +71,7 @@ CpuCas01Model::~CpuCas01Model()
 {
   lmm_system_free(maxminSystem_);
   maxminSystem_ = NULL;
-
-  if (actionHeap_)
-    xbt_heap_free(actionHeap_);
+  xbt_heap_free(actionHeap_);
   delete modifiedSet_;
 
   surf_cpu_model_pm = NULL;

@@ -53,13 +53,14 @@ inline void xbt_heap_set_update_callback(xbt_heap_t H, void (*update_callback) (
  */
 void xbt_heap_free(xbt_heap_t H)
 {
-  int i;
+  if (!H)
+    return;
+
   if (H->free)
-    for (i = 0; i < H->count; i++)
+    for (int i = 0; i < H->count; i++)
       H->free(H->items[i].content);
   free(H->items);
   free(H);
-  return;
 }
 
 /**
