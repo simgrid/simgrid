@@ -25,7 +25,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network
 int NS3_EXTENSION_ID;
 
 xbt_dynar_t IPV4addr = xbt_dynar_new(sizeof(char*),free);
-static double time_to_next_flow_completion = -1;
 
 /*****************
  * Crude globals *
@@ -48,7 +47,7 @@ static int port_number = 1025; //Port number is limited from 1025 to 65 000
  * Callbacks *
  *************/
 
-static void simgrid_ns3_add_host(simgrid::s4u::Host& host)
+static void ns3_add_host(simgrid::s4u::Host& host)
 {
   const char* id = host.name().c_str();
   XBT_DEBUG("NS3_ADD_HOST '%s'", id);
@@ -62,7 +61,7 @@ static void simgrid_ns3_add_host(simgrid::s4u::Host& host)
   host.extension_set(NS3_EXTENSION_ID, ns3host);
 }
 
-static void simgrid_ns3_add_netcard(simgrid::surf::NetCard* netcard)
+static void ns3_add_netcard(simgrid::surf::NetCard* netcard)
 {
   const char* id = netcard->name();
 
@@ -90,15 +89,14 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 
   xbt_dynar_t radical_elements = xbt_str_split(cluster->radical, ",");
   xbt_dynar_foreach(radical_elements, iter, groups) {
-  xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
+    xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
 
     switch (xbt_dynar_length(radical_ends)) {
     case 1:
       start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
       xbt_dynar_push_as(tab_elements_num, int, start);
       router_id = bprintf("ns3_%s%d%s", cluster->prefix, start, cluster->suffix);
-      simgrid::s4u::Host::by_name_or_create(router_id)
-        ->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
+      simgrid::s4u::Host::by_name_or_create(router_id)->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
       XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
       free(router_id);
       break;
@@ -109,8 +107,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
       for (i = start; i <= end; i++){
         xbt_dynar_push_as(tab_elements_num, int, i);
         router_id = bprintf("ns3_%s%d%s", cluster->prefix, i, cluster->suffix);
-        simgrid::s4u::Host::by_name_or_create(router_id)
-          ->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
+        simgrid::s4u::Host::by_name_or_create(router_id)->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
         XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
         free(router_id);
       }
@@ -225,13 +222,16 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   ns3_initialize(xbt_cfg_get_string(_sg_cfg_set, "ns3/TcpModel"));
 
   routing_model_create(NULL);
-  simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
-  simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_netcard);
+  simgrid::s4u::Host::onCreation.connect(ns3_add_host);
+  simgrid::surf::netcardCreatedCallbacks.connect(ns3_add_netcard);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
-  simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
+  simgrid::surf::on_postparse.connect(&create_ns3_topology);
 
   NS3_EXTENSION_ID = simgrid::s4u::Host::extension_create(xbt_free_f);
   NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, xbt_free_f);
+
+  LogComponentEnable("UdpEchoClientApplication", ns3::LOG_LEVEL_INFO);
+  LogComponentEnable("UdpEchoServerApplication", ns3::LOG_LEVEL_INFO);
 }
 
 NetworkNS3Model::~NetworkNS3Model() {
@@ -252,6 +252,7 @@ Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst, double size, do
 
 double NetworkNS3Model::next_occuring_event(double now)
 {
+  double time_to_next_flow_completion;
   XBT_DEBUG("ns3_next_occuring_event");
 
   //get the first relevant value from the running_actions list
@@ -323,7 +324,6 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     }
     xbt_dict_remove(flowFromSock, ns3Socket);
   }
-  return;
 }
 
 /************
@@ -381,15 +381,15 @@ void NetworkNS3Action::resume() {
   /* Test whether a flow is suspended */
 bool NetworkNS3Action::isSuspended()
 {
-  return 0;
+  return false;
 }
 
 int NetworkNS3Action::unref()
 {
   refcount_--;
   if (!refcount_) {
-  if (action_hook.is_linked())
-    stateSet_->erase(stateSet_->iterator_to(*this));
+    if (action_hook.is_linked())
+      stateSet_->erase(stateSet_->iterator_to(*this));
     XBT_DEBUG ("Removing action %p", this);
     delete this;
     return 1;
@@ -484,7 +484,6 @@ void * ns3_add_host_cluster(const char * id)
 
 void ns3_add_cluster(char * bw,char * lat,const char *id)
 {
-
   XBT_DEBUG("cluster_id: %s",id);
   XBT_DEBUG("bw: %s lat: %s",bw,lat);
   XBT_DEBUG("Number of %s nodes: %d",id,Cluster_nodes.GetN() - number_of_clusters_nodes);
@@ -533,11 +532,6 @@ static char* transformIpv4Address (ns3::Ipv4Address from){
 
 void ns3_add_link(int src, int dst, char *bw, char *lat)
 {
-  if(number_of_links == 1 ) {
-    LogComponentEnable("UdpEchoClientApplication", ns3::LOG_LEVEL_INFO);
-    LogComponentEnable("UdpEchoServerApplication", ns3::LOG_LEVEL_INFO);
-  }
-
   ns3::PointToPointHelper pointToPoint;
 
   ns3::NetDeviceContainer netA;

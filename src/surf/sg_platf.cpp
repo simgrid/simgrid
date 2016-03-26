@@ -96,8 +96,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     unsigned int cursor;
     char*str;
 
-    if (!COORD_HOST_LEVEL)
-      xbt_die ("To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
+    xbt_assert(COORD_HOST_LEVEL, "To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
     /* Pre-parse the host coordinates -- FIXME factorize with routers by overloading the routing->parse_PU function*/
     xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
     xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
