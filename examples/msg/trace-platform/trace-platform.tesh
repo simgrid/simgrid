@@ -1,13 +1,12 @@
 #! ./tesh
 
-
-p Tracing master/slave application
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:tracing/trace_platform.trace --cfg=tracing/categorized:yes ${srcdir:=.}/../platforms/small_platform.xml
+p Tracing platform only
+$ $SG_TEST_EXENV ${bindir:=.}/trace-platform$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:trace_platform.trace --cfg=tracing/categorized:yes ${srcdir:=.}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/trace_platform.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace_platform.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 
-$ tail -n +3 tracing/trace_platform.trace
+$ tail -n +3 trace_platform.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
@@ -218,14 +217,14 @@ $ tail -n +3 tracing/trace_platform.trace
 > 7 0 1 2
 > 7 0 1 4
 
-$ rm -rf tracing/trace_platform.trace
+$ rm -f trace_platform.trace
 
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/trace_platform$EXEEXT --cfg=tracing:yes  --cfg=tracing/filename:tracing/trace_platform.trace --cfg=tracing/categorized:yes ${srcdir:=.}/../platforms/g5k.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-platform$EXEEXT --cfg=tracing:yes  --cfg=tracing/filename:trace_platform.trace --cfg=tracing/categorized:yes ${srcdir:=.}/g5k.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'tracing/trace_platform.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace_platform.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 
-$ tail -n +3 tracing/trace_platform.trace
+$ tail -n +3 trace_platform.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
@@ -30405,4 +30404,4 @@ $ tail -n +3 tracing/trace_platform.trace
 > 7 0 6 4094
 > 7 0 1 3921
 
-$ rm -rf tracing/trace_platform.trace
+$ rm -f trace_platform.trace

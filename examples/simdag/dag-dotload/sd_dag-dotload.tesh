@@ -1,0 +1,228 @@
+#! ./tesh
+p Test the loader of DAG written in the DOT format
+
+$ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/dag-dotload/dag.dot
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
+> [0.000000] [sd_task/INFO] Displaying task root
+> [0.000000] [sd_task/INFO]   - state: schedulable not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 0
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO] Displaying task 0
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000129
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     0->1
+> [0.000000] [sd_task/INFO] Displaying task 1
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000131
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0->1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO] Displaying task 2
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000121
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1->2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO] Displaying task 3
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000231
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2->3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO] Displaying task 4
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO] Displaying task 5
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000046
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     4->5
+> [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO] Displaying task 6
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000092
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO] Displaying task 7
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000041
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6->7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [sd_task/INFO] Displaying task 8
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000250
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7->8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO] Displaying task 9
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000079
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task 0->1
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10001
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO] Displaying task 1->2
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10004
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     1
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO] Displaying task 2->3
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10002
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     2
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     3
+> [0.000000] [sd_task/INFO] Displaying task 4->5
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10029
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     4
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task 6->7
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10005
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     6
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO] Displaying task 7->8
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     8
+> [0.000000] [sd_task/INFO] Displaying task 7->end
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     end
+> [0.000000] [sd_task/INFO] Displaying task root->5
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: end-to-end communication
+> [0.000000] [sd_task/INFO]   - amount: 10014000
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 1
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     root
+> [0.000000] [sd_task/INFO]   - post-dependencies:
+> [0.000000] [sd_task/INFO]     5
+> [0.000000] [sd_task/INFO] Displaying task end
+> [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
+> [0.000000] [sd_task/INFO]   - kind: sequential computation
+> [0.000000] [sd_task/INFO]   - amount: 10000000129
+> [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
+> [0.000000] [sd_task/INFO]   - pre-dependencies:
+> [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [sd_task/INFO]     9
+> [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
+> [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
+> [62.002281] [test/INFO] ------------------- Produce the trace file---------------------------
+> [62.002281] [test/INFO] Producing the trace of the run into dag.trace
+
+$ cat ${srcdir:=.}/dag-dotload/dag.trace
+> [0.000000->0.000000] C2-05 compute 0.000000 flops # root
+> [0.000000->2.000000] C2-06 compute 10000000129.452715 flops # 0
+> [2.000380->4.000380] C2-07 compute 10000000131.133657 flops # 1
+> [4.000760->6.000760] C2-08 compute 10000000121.124870 flops # 2
+> [6.001140->8.001140] C2-09 compute 10000000230.608025 flops # 3
+> [8.001140->18.001140] C1-00 compute 10000000004.994019 flops # 4
+> [18.001520->28.001520] C1-01 compute 10000000046.016401 flops # 5
+> [28.001520->38.001521] C1-02 compute 10000000091.598791 flops # 6
+> [38.001901->48.001901] C1-03 compute 10000000040.679438 flops # 7
+> [48.002281->58.002281] C1-04 compute 10000000250.490017 flops # 8
+> [58.002281->60.002281] C2-05 compute 10000000079.267649 flops # 9
+> [2.000000 -> 2.000380] C2-06 -> C2-07 transfer of 10001 bytes # 0->1
+> [4.000380 -> 4.000760] C2-07 -> C2-08 transfer of 10004 bytes # 1->2
+> [6.000760 -> 6.001140] C2-08 -> C2-09 transfer of 10002 bytes # 2->3
+> [18.001140 -> 18.001520] C1-00 -> C1-01 transfer of 10029 bytes # 4->5
+> [38.001521 -> 38.001901] C1-02 -> C1-03 transfer of 10005 bytes # 6->7
+> [48.001901 -> 48.002281] C1-03 -> C1-04 transfer of 10000 bytes # 7->8
+> [48.001901 -> 48.294118] C1-03 -> C2-05 transfer of 10014000 bytes # 7->end
+> [0.000000 -> 0.292217] C2-05 -> C1-01 transfer of 10014000 bytes # root->5
+> [60.002281->62.002281] C2-05 compute 10000000129.452715 flops # end
+
+$ rm -f ${srcdir:=.}/dag-dotload/dag.trace ${srcdir:=.}/dag-dotload/dot.dot
+
+! expect return 2
+$ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/dag-dotload/dag_with_cycle.dot
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [sd_daxparse/WARNING] the task root is not marked
+> [0.000000] [sd_daxparse/WARNING] the task 0 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 1 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 2 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 3 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 4 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 5 is in a cycle
+> [0.000000] [sd_daxparse/WARNING] the task 6 is in a cycle
+> [0.000000] [sd_dotparse/ERROR] The DOT described in dag_with_cycle.dot is not a DAG. It contains a cycle.
+> [0.000000] [test/CRITICAL] No dot loaded. Do you have a cycle in your graph?

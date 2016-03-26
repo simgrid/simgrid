@@ -1,0 +1,232 @@
+#! ./tesh
+
+p Simple tracing example
+$ $SG_TEST_EXENV ${bindir:=.}/trace-simple$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:trace_simple.trace --cfg=tracing/uncategorized:yes ${srcdir:=.}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace_simple.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
+
+$ tail -n +3 trace_simple.trace
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 HOST
+> 6 0 1 1 0 "Tremblay"
+> 1 2 1 power "1 1 1"
+> 1 3 1 power_used "0.5 0.5 0.5"
+> 6 0 2 1 0 "Jupiter"
+> 6 0 3 1 0 "Fafard"
+> 6 0 4 1 0 "Ginette"
+> 6 0 5 1 0 "Bourassa"
+> 0 4 0 LINK
+> 6 0 6 4 0 "6"
+> 1 5 4 bandwidth "1 1 1"
+> 1 6 4 latency "1 1 1"
+> 1 7 4 bandwidth_used "0.5 0.5 0.5"
+> 6 0 7 4 0 "3"
+> 6 0 8 4 0 "7"
+> 6 0 9 4 0 "9"
+> 6 0 10 4 0 "2"
+> 6 0 11 4 0 "8"
+> 6 0 12 4 0 "1"
+> 6 0 13 4 0 "4"
+> 6 0 14 4 0 "0"
+> 6 0 15 4 0 "5"
+> 6 0 16 4 0 "loopback"
+> 4 8 0 4 4 0-LINK4-LINK4
+> 4 9 0 1 4 0-HOST1-LINK4
+> 4 10 0 4 1 0-LINK4-HOST1
+> 8 0 2 1 98095000.000000
+> 8 0 2 2 76296000.000000
+> 8 0 2 3 76296000.000000
+> 8 0 2 4 48492000.000000
+> 8 0 2 5 48492000.000000
+> 8 0 5 6 41279125.000000
+> 8 0 6 6 0.000060
+> 8 0 5 7 34285625.000000
+> 8 0 6 7 0.000514
+> 8 0 5 8 11618875.000000
+> 8 0 6 8 0.000190
+> 8 0 5 9 7209750.000000
+> 8 0 6 9 0.001462
+> 8 0 5 10 118682500.000000
+> 8 0 6 10 0.000137
+> 8 0 5 11 8158000.000000
+> 8 0 6 11 0.000271
+> 8 0 5 12 34285625.000000
+> 8 0 6 12 0.000514
+> 8 0 5 13 10099625.000000
+> 8 0 6 13 0.000480
+> 8 0 5 14 41279125.000000
+> 8 0 6 14 0.000060
+> 8 0 5 15 27946250.000000
+> 8 0 6 15 0.000278
+> 8 0 5 16 498000000.000000
+> 8 0 6 16 0.000015
+> 15 0 8 0 topology 13 0
+> 16 0 8 0 topology 7 0
+> 15 0 8 0 topology 6 1
+> 16 0 8 0 topology 8 1
+> 15 0 9 0 topology 1 2
+> 16 0 9 0 topology 13 2
+> 15 0 9 0 topology 1 3
+> 16 0 9 0 topology 9 3
+> 15 0 10 0 topology 9 4
+> 16 0 10 0 topology 2 4
+> 15 0 8 0 topology 10 5
+> 16 0 8 0 topology 14 5
+> 15 0 8 0 topology 12 6
+> 16 0 8 0 topology 11 6
+> 15 0 8 0 topology 9 7
+> 16 0 8 0 topology 13 7
+> 15 0 10 0 topology 8 8
+> 16 0 10 0 topology 5 8
+> 15 0 8 0 topology 14 9
+> 16 0 8 0 topology 12 9
+> 15 0 10 0 topology 15 10
+> 16 0 10 0 topology 4 10
+> 15 0 8 0 topology 10 11
+> 16 0 8 0 topology 15 11
+> 15 0 8 0 topology 7 12
+> 16 0 8 0 topology 15 12
+> 15 0 10 0 topology 11 13
+> 16 0 10 0 topology 3 13
+> 15 0 8 0 topology 7 14
+> 16 0 8 0 topology 10 14
+> 15 0 8 0 topology 12 15
+> 16 0 8 0 topology 6 15
+> 15 0 8 0 topology 11 16
+> 16 0 8 0 topology 6 16
+> 8 0 3 1 0.000000
+> 9 0 3 1 98095000.000000
+> 10 0 3 1 98095000.000000
+> 8 0 3 3 0.000000
+> 9 0 3 3 76296000.000000
+> 10 0 3 3 76296000.000000
+> 9 0 3 1 98095000.000000
+> 9 0 3 3 76296000.000000
+> 10 0.000001 3 1 98095000.000000
+> 10 0.000001 3 3 76296000.000000
+> 7 0.000001 1 3
+> 7 0.000001 1 1
+> 7 0.000001 4 16
+> 7 0.000001 4 14
+> 7 0.000001 4 12
+> 7 0.000001 4 10
+> 7 0.000001 4 7
+> 7 0.000001 4 13
+> 7 0.000001 4 15
+> 7 0.000001 4 6
+> 7 0.000001 4 8
+> 7 0.000001 4 11
+> 7 0.000001 4 9
+> 7 0.000001 1 5
+> 7 0.000001 1 2
+> 7 0.000001 1 4
+
+$ rm -f trace_simple.trace

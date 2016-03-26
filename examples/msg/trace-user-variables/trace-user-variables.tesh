@@ -1,7 +1,7 @@
 #! ./tesh
 
 p Tracing user variables
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/user_variables$EXEEXT --cfg=tracing:yes --cfg=tracing/platform:yes ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-user-variables$EXEEXT --cfg=tracing:yes  --cfg=tracing/platform:yes ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave_mailbox.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
 > [0.004078] [msg_test/INFO] Declared host variables:
@@ -16,7 +16,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/tracing/user_variables$EXEEXT --cfg=tracing:yes --
 > [0.004078] [msg_test/INFO] 0-HOST1-LINK3
 > [0.004078] [msg_test/INFO] 0-LINK3-HOST1
 
-$ rm viva_graph.plist
+$ rm -f viva_graph.plist
 
 p Not tracing user variables
-$ $SG_TEST_EXENV ${bindir:=.}/tracing/user_variables$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/tracing/deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-user-variables$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave_mailbox.xml

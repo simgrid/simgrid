@@ -20,7 +20,6 @@ set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/masterslave.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_crosstraffic.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_cpu_ti.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_cpu_ti_crosstraffic.tesh
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_cas01_im.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_multicore.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/masterslave_vivaldi.tesh                    PARENT_SCOPE)
 set(xml_files   ${xml_files}       ${CMAKE_CURRENT_SOURCE_DIR}/deployment_masterslave_forwarder.xml

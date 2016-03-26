@@ -933,7 +933,6 @@ set(CMAKEFILES_TXT
   examples/java/energy/CMakeLists.txt
   examples/java/io/CMakeLists.txt
   examples/java/kademlia/CMakeLists.txt
-  examples/java/master_slave_bypass/CMakeLists.txt
   examples/java/master_slave_kill/CMakeLists.txt
   examples/java/masterslave/CMakeLists.txt
   examples/java/migration/CMakeLists.txt
@@ -951,11 +950,9 @@ set(CMAKEFILES_TXT
     examples/msg/dht-kademlia/CMakeLists.txt
     examples/msg/masterslave/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
-    examples/msg/ns3/CMakeLists.txt
     examples/msg/tracing/CMakeLists.txt
   examples/s4u/CMakeLists.txt
   examples/simdag/CMakeLists.txt
-    examples/simdag/dot/CMakeLists.txt
   examples/smpi/CMakeLists.txt
     examples/smpi/NAS/CMakeLists.txt
     examples/smpi/smpi_msg_masterslave/CMakeLists.txt

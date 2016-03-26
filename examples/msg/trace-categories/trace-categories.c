@@ -19,10 +19,7 @@
  * (See \ref tracing_tracing_options for details)
  */
 
-#include <stdio.h>
 #include "simgrid/msg.h"
-
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 static int master(int argc, char *argv[])
 {
@@ -78,10 +75,8 @@ static int slave(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
