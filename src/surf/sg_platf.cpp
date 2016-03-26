@@ -48,9 +48,9 @@ simgrid::xbt::signal<void(void)> on_postparse;
 
 static int surf_parse_models_setup_already_called = 0;
 
-/* Build the list of hostnames in a cluster or in a cabinet */
-static std::vector<char*> *makeHostnames(const char*prefix, const char*radicals, const char *suffix){
-  std::vector<char*> *hostnames = new std::vector<char*>();
+/* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
+static std::vector<int> *explodesRadical(const char*radicals){
+  std::vector<int> *exploded = new std::vector<int>();
   char *groups;
   unsigned int iter;
 
@@ -75,13 +75,13 @@ static std::vector<char*> *makeHostnames(const char*prefix, const char*radicals,
     }
 
     for (int i = start; i <= end; i++)
-      hostnames->push_back( bprintf("%s%d%s",prefix,i,suffix) );
+      exploded->push_back( i );
 
     xbt_dynar_free(&radical_ends);
   }
   xbt_dynar_free(&radical_elements);
 
-  return hostnames;
+  return exploded;
 }
 
 
@@ -230,19 +230,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   using simgrid::surf::AsClusterTorus;
   using simgrid::surf::AsClusterFatTree;
 
-  char *host_id, *groups, *link_id = NULL;
-  xbt_dict_t patterns = NULL;
   int rankId=0;
 
   s_sg_platf_link_cbarg_t link;
 
-  unsigned int iter;
-
-  /* Parse the topology attributes.
-   * Nothing to do in a vanilla cluster, but that's another story for torus and flat_trees */
+  // What an inventive way of initializing the AS that I have as ancestor :-(
   s_sg_platf_AS_cbarg_t AS;
   AS.id = cluster->id;
-
   switch (cluster->topology) {
   case SURF_CLUSTER_TORUS:
     AS.routing = A_surfxml_AS_routing_ClusterTorus;
@@ -254,8 +248,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     AS.routing = A_surfxml_AS_routing_Cluster;
     break;
   }
-
-  // What an inventive way of initializing the AS that I have as ancestor :-(
   sg_platf_new_AS_begin(&AS);
   simgrid::surf::AsCluster *current_as = static_cast<AsCluster*>(routing_get_current());
   current_as->parse_specific_arguments(cluster);
@@ -270,119 +262,91 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     current_as->has_limiter_ = 1;
   }
 
-  //Make all hosts
-  xbt_dynar_t radical_elements = xbt_str_split(cluster->radical, ",");
-  xbt_dynar_foreach(radical_elements, iter, groups) {
+  std::vector<int> *radicals = explodesRadical(cluster->radical);
+  for (int i : *radicals) {
+    char * host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
+    char * link_id = bprintf("%s_link_%d", cluster->id, i);
 
-    xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
-    int start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-    int end;
+    XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->speed);
 
-    switch (xbt_dynar_length(radical_ends)) {
-    case 1:
-      end = start;
-      break;
-    case 2:
-      end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
-      break;
-    default:
-      surf_parse_error("Malformed radical");
-      break;
+    s_sg_platf_host_cbarg_t host;
+    memset(&host, 0, sizeof(host));
+    host.id = host_id;
+    if ((cluster->properties != NULL) && (!xbt_dict_is_empty(cluster->properties))) {
+      xbt_dict_cursor_t cursor=NULL;
+      char *key,*data;
+      host.properties = xbt_dict_new();
+
+      xbt_dict_foreach(cluster->properties,cursor,key,data) {
+        xbt_dict_set(host.properties, key, xbt_strdup(data),free);
+      }
     }
-    for (int i = start; i <= end; i++) {
-      host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
-      link_id = bprintf("%s_link_%d", cluster->id, i);
 
-      XBT_DEBUG("<host\tid=\"%s\"\tpower=\"%f\">", host_id, cluster->speed);
+    host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
+    xbt_dynar_push(host.speed_per_pstate,&cluster->speed);
+    host.pstate = 0;
+    host.core_amount = cluster->core_amount;
+    host.coord = "";
+    sg_platf_new_host(&host);
+    xbt_dynar_free(&host.speed_per_pstate);
+    XBT_DEBUG("</host>");
 
-      s_sg_platf_host_cbarg_t host;
-      memset(&host, 0, sizeof(host));
-      host.id = host_id;
-      if ((cluster->properties != NULL) && (!xbt_dict_is_empty(cluster->properties))) {
-        xbt_dict_cursor_t cursor=NULL;
-        char *key,*data;
-        host.properties = xbt_dict_new();
+    XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id, cluster->bw, cluster->lat);
 
-        xbt_dict_foreach(cluster->properties,cursor,key,data) {
-          xbt_dict_set(host.properties, key, xbt_strdup(data),free);
-        }
-      }
+    s_surf_parsing_link_up_down_t info_lim, info_loop;
+    // All links are saved in a matrix;
+    // every row describes a single node; every node
+    // may have multiple links.
+    // the first column may store a link from x to x if p_has_loopback is set
+    // the second column may store a limiter link if p_has_limiter is set
+    // other columns are to store one or more link for the node
 
-      host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
-      xbt_dynar_push(host.speed_per_pstate,&cluster->speed);
-      host.pstate = 0;
+    //add a loopback link
+    if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
+      char *tmp_link = bprintf("%s_loopback", link_id);
+      XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
 
-      //host.power_peak = cluster->power;
-      host.core_amount = cluster->core_amount;
-      host.coord = "";
-      sg_platf_new_host(&host);
-      xbt_dynar_free(&host.speed_per_pstate);
-      XBT_DEBUG("</host>");
+      memset(&link, 0, sizeof(link));
+      link.id        = tmp_link;
+      link.bandwidth = cluster->loopback_bw;
+      link.latency   = cluster->loopback_lat;
+      link.policy    = SURF_LINK_FATPIPE;
+      sg_platf_new_link(&link);
+      info_loop.link_up = info_loop.link_down = Link::byName(tmp_link);
+      free(tmp_link);
+      auto as_cluster = static_cast<AsCluster*>(current_as);
+      xbt_dynar_set(as_cluster->privateLinks_, rankId*as_cluster->nb_links_per_node_, &info_loop);
+    }
 
-      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id, cluster->bw, cluster->lat);
+    //add a limiter link (shared link to account for maximal bandwidth of the node)
+    if(cluster->limiter_link!=0){
+      char *tmp_link = bprintf("%s_limiter", link_id);
+      XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
 
-      s_surf_parsing_link_up_down_t info_lim, info_loop;
-      // All links are saved in a matrix;
-      // every row describes a single node; every node
-      // may have multiple links.
-      // the first column may store a link from x to x if p_has_loopback is set
-      // the second column may store a limiter link if p_has_limiter is set
-      // other columns are to store one or more link for the node
+      memset(&link, 0, sizeof(link));
+      link.id = tmp_link;
+      link.bandwidth = cluster->limiter_link;
+      link.latency = 0;
+      link.policy = SURF_LINK_SHARED;
+      sg_platf_new_link(&link);
+      info_lim.link_up = info_lim.link_down = Link::byName(tmp_link);
+      free(tmp_link);
+      xbt_dynar_set(current_as->privateLinks_, rankId * current_as->nb_links_per_node_ + current_as->has_loopback_ , &info_lim);
+    }
 
-      //add a loopback link
-      if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
-        char *tmp_link = bprintf("%s_loopback", link_id);
-        XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
-
-        memset(&link, 0, sizeof(link));
-        link.id        = tmp_link;
-        link.bandwidth = cluster->loopback_bw;
-        link.latency   = cluster->loopback_lat;
-        link.policy    = SURF_LINK_FATPIPE;
-        sg_platf_new_link(&link);
-        info_loop.link_up = info_loop.link_down = Link::byName(tmp_link);
-        free(tmp_link);
-        auto as_cluster = static_cast<AsCluster*>(current_as);
-        xbt_dynar_set(as_cluster->privateLinks_, rankId*as_cluster->nb_links_per_node_, &info_loop);
-      }
-
-      //add a limiter link (shared link to account for maximal bandwidth of the node)
-      if(cluster->limiter_link!=0){
-        char *tmp_link = bprintf("%s_limiter", link_id);
-        XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
-
-        memset(&link, 0, sizeof(link));
-        link.id = tmp_link;
-        link.bandwidth = cluster->limiter_link;
-        link.latency = 0;
-        link.policy = SURF_LINK_SHARED;
-        sg_platf_new_link(&link);
-        info_lim.link_up = info_lim.link_down = Link::byName(tmp_link);
-        free(tmp_link);
-        xbt_dynar_set(current_as->privateLinks_, rankId * current_as->nb_links_per_node_ + current_as->has_loopback_ , &info_lim);
-      }
-
-      //call the cluster function that adds the others links
-      if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
-        ((AsClusterFatTree*) current_as)->addProcessingNode(i);
-      }
-      else {
+    //call the cluster function that adds the others links
+    if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
+      ((AsClusterFatTree*) current_as)->addProcessingNode(i);
+    }
+    else {
       current_as->create_links_for_node(cluster, i, rankId,
           rankId*current_as->nb_links_per_node_ + current_as->has_loopback_ + current_as->has_limiter_ );
-      }
-      xbt_free(link_id);
-      xbt_free(host_id);
-      rankId++;
     }
-
-    xbt_dynar_free(&radical_ends);
+    xbt_free(link_id);
+    xbt_free(host_id);
+    rankId++;
   }
-  xbt_dynar_free(&radical_elements);
 
-  // For fat trees, the links must be created once all nodes have been added
-  if(cluster->topology == SURF_CLUSTER_FAT_TREE) {
-    static_cast<simgrid::surf::AsClusterFatTree*>(current_as)->create_links();
-  }
   // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
   // and it's very useful to connect clusters together
   XBT_DEBUG(" ");
@@ -391,7 +355,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   s_sg_platf_router_cbarg_t router;
   memset(&router, 0, sizeof(router));
   router.id = cluster->router_id;
-  router.coord = "";
   if (!router.id || !strcmp(router.id, ""))
     router.id = newid = bprintf("%s%s_router%s", cluster->prefix, cluster->id, cluster->suffix);
   sg_platf_new_router(&router);
@@ -400,26 +363,22 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   //Make the backbone
   if ((cluster->bb_bw != 0) || (cluster->bb_lat != 0)) {
-    char *link_backbone = bprintf("%s_backbone", cluster->id);
-    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone, cluster->bb_bw, cluster->bb_lat);
 
     memset(&link, 0, sizeof(link));
-    link.id        = link_backbone;
+    link.id        = bprintf("%s_backbone", cluster->id);
     link.bandwidth = cluster->bb_bw;
     link.latency   = cluster->bb_lat;
     link.policy    = cluster->bb_sharing_policy;
 
+    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link.id, cluster->bb_bw, cluster->bb_lat);
     sg_platf_new_link(&link);
 
-    routing_cluster_add_backbone(Link::byName(link_backbone));
-
-    free(link_backbone);
+    routing_cluster_add_backbone(Link::byName(link.id));
+    free((char*)link.id);
   }
 
   XBT_DEBUG("</AS>");
   sg_platf_new_AS_end();
-  XBT_DEBUG(" ");
-  xbt_dict_free(&patterns); // no op if it were never set
 
   simgrid::surf::on_cluster(cluster);
 }
@@ -435,9 +394,10 @@ void routing_cluster_add_backbone(simgrid::surf::Link* bb) {
 
 void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 {
-  std::vector<char*> *hostnames = makeHostnames(cabinet->prefix, cabinet->radical, cabinet->suffix);
+  std::vector<int> *radicals = explodesRadical(cabinet->radical);
 
-  for (char* hostname : *hostnames) {
+  for (int radical : *radicals) {
+    char *hostname = bprintf("%s%d%s", cabinet->prefix, radical, cabinet->suffix);
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.pstate           = 0;
@@ -468,7 +428,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 
     free(hostname);
   }
-  delete(hostnames);
+  delete(radicals);
 }
 
 void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)

@@ -152,7 +152,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
 /* This function makes the assumption that parse_specific_arguments() and
  * addNodes() have already been called
  */
-void AsClusterFatTree::create_links(){
+void AsClusterFatTree::seal(){
   if(this->levels_ == 0) {
     return;
   }
