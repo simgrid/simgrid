@@ -140,7 +140,6 @@ examples/msg/energy-onoff/energy-onoff
 examples/msg/energy-pstate/energy-pstate
 examples/msg/energy-ptask/energy-ptask
 examples/msg/energy-vm/energy-vm
-examples/msg/gtnets/gtnets
 examples/msg/io-file/io-file
 examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
@@ -195,7 +194,6 @@ examples/msg/tracing/trace_platform
 examples/msg/tracing/user_variables
 examples/msg/tracing/volume
 examples/msg/volume.trace
-examples/msg/z_gtnets.trace
 examples/msg/zmsg_test.trace
 examples/s4u/basic/s4u_basic
 examples/s4u/io/s4u_io
