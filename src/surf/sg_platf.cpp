@@ -97,20 +97,19 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     xbt_assert(COORD_HOST_LEVEL, "To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
     /* Pre-parse the host coordinates -- FIXME factorize with routers by overloading the routing->parse_PU function*/
     xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
+    xbt_assert(xbt_dynar_length(ctn_str)==3,"Coordinates of %s must have 3 dimensions", host->id);
+
     xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
     xbt_dynar_foreach(ctn_str,cursor, str) {
       double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
       xbt_dynar_push(ctn,&val);
     }
-    xbt_dynar_shrink(ctn, 0);
     xbt_dynar_free(&ctn_str);
+    xbt_dynar_shrink(ctn, 0);
     h->extension_set(COORD_HOST_LEVEL, (void *) ctn);
-    XBT_DEBUG("Having set host coordinates for '%s'",host->id);
   }
 
-  simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h,
-      host->speed_per_pstate,
-      host->core_amount);
+  simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h, host->speed_per_pstate, host->core_amount);
   if (host->state_trace)
     cpu->setStateTrace(host->state_trace);
   if (host->speed_trace)
@@ -126,9 +125,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     sg_instr_new_host(host);
 }
 
-/**
- * \brief Add a "router" to the network element list
- */
+/** @brief Add a "router" to the network element list */
 void sg_platf_new_router(sg_platf_router_cbarg_t router)
 {
   simgrid::surf::AsImpl* current_routing = routing_get_current();
@@ -147,19 +144,18 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
     unsigned int cursor;
     char*str;
 
-    if (!COORD_ASR_LEVEL)
-      xbt_die ("To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
+    xbt_assert(COORD_ASR_LEVEL, "To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
     /* Pre-parse the host coordinates */
     xbt_dynar_t ctn_str = xbt_str_split_str(router->coord, " ");
+    xbt_assert(xbt_dynar_length(ctn_str)==3,"Coordinates of %s must have 3 dimensions", router->id);
     xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
     xbt_dynar_foreach(ctn_str,cursor, str) {
       double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
       xbt_dynar_push(ctn,&val);
     }
-    xbt_dynar_shrink(ctn, 0);
     xbt_dynar_free(&ctn_str);
+    xbt_dynar_shrink(ctn, 0);
     xbt_lib_set(as_router_lib, router->id, COORD_ASR_LEVEL, (void *) ctn);
-    XBT_DEBUG("Having set router coordinates for '%s'",router->id);
   }
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
@@ -233,19 +229,18 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   // What an inventive way of initializing the AS that I have as ancestor :-(
   sg_platf_new_AS_begin(&AS);
-  simgrid::surf::AsImpl *current_routing = routing_get_current();
-  static_cast<AsCluster*>(current_routing)->parse_specific_arguments(cluster);
+  simgrid::surf::AsCluster *current_as = static_cast<AsCluster*>(routing_get_current());
+  current_as->parse_specific_arguments(cluster);
 
   if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
-      ((AsCluster*)current_routing)->nb_links_per_node_++;
-      ((AsCluster*)current_routing)->has_loopback_=1;
+    current_as->nb_links_per_node_++;
+    current_as->has_loopback_ = 1;
   }
 
   if(cluster->limiter_link!=0){
-      ((AsCluster*)current_routing)->nb_links_per_node_++;
-      ((AsCluster*)current_routing)->has_limiter_=1;
+    current_as->nb_links_per_node_++;
+    current_as->has_limiter_ = 1;
   }
-
 
   //Make all hosts
   xbt_dynar_t radical_elements = xbt_str_split(cluster->radical, ",");
@@ -315,9 +310,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       xbt_dynar_free(&host.speed_per_pstate);
       XBT_DEBUG("</host>");
 
-      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id,
-                cluster->bw, cluster->lat);
-
+      XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id, cluster->bw, cluster->lat);
 
       s_surf_parsing_link_up_down_t info_lim, info_loop;
       // All links are saved in a matrix;
@@ -330,9 +323,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       //add a loopback link
       if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
         char *tmp_link = bprintf("%s_loopback", link_id);
-        XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link,
-                cluster->limiter_link);
-
+        XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
 
         memset(&link, 0, sizeof(link));
         link.id        = tmp_link;
@@ -340,19 +331,16 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         link.latency   = cluster->loopback_lat;
         link.policy    = SURF_LINK_FATPIPE;
         sg_platf_new_link(&link);
-        info_loop.link_up   = Link::byName(tmp_link);
-        info_loop.link_down = info_loop.link_up;
+        info_loop.link_up = info_loop.link_down = Link::byName(tmp_link);
         free(tmp_link);
-        auto as_cluster = static_cast<AsCluster*>(current_routing);
+        auto as_cluster = static_cast<AsCluster*>(current_as);
         xbt_dynar_set(as_cluster->privateLinks_, rankId*as_cluster->nb_links_per_node_, &info_loop);
       }
 
       //add a limiter link (shared link to account for maximal bandwidth of the node)
       if(cluster->limiter_link!=0){
         char *tmp_link = bprintf("%s_limiter", link_id);
-        XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link,
-                cluster->limiter_link);
-
+        XBT_DEBUG("<limiter\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
 
         memset(&link, 0, sizeof(link));
         link.id = tmp_link;
@@ -360,24 +348,18 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         link.latency = 0;
         link.policy = SURF_LINK_SHARED;
         sg_platf_new_link(&link);
-        info_lim.link_up = Link::byName(tmp_link);
-        info_lim.link_down = info_lim.link_up;
+        info_lim.link_up = info_lim.link_down = Link::byName(tmp_link);
         free(tmp_link);
-        auto as_cluster = static_cast<AsCluster*>(current_routing);
-        xbt_dynar_set(as_cluster->privateLinks_, rankId*(as_cluster)->nb_links_per_node_ + as_cluster->has_loopback_ , &info_lim);
-
+        xbt_dynar_set(current_as->privateLinks_, rankId * current_as->nb_links_per_node_ + current_as->has_loopback_ , &info_lim);
       }
-
 
       //call the cluster function that adds the others links
       if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
-        ((AsClusterFatTree*) current_routing)->addProcessingNode(i);
+        ((AsClusterFatTree*) current_as)->addProcessingNode(i);
       }
       else {
-      static_cast<AsCluster*>(current_routing)->create_links_for_node(cluster, i, rankId, rankId*
-          static_cast<AsCluster*>(current_routing)->nb_links_per_node_
-          + static_cast<AsCluster*>(current_routing)->has_loopback_
-          + static_cast<AsCluster*>(current_routing)->has_limiter_ );
+      current_as->create_links_for_node(cluster, i, rankId,
+          rankId*current_as->nb_links_per_node_ + current_as->has_loopback_ + current_as->has_limiter_ );
       }
       xbt_free(link_id);
       xbt_free(host_id);
@@ -390,7 +372,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   // For fat trees, the links must be created once all nodes have been added
   if(cluster->topology == SURF_CLUSTER_FAT_TREE) {
-    static_cast<simgrid::surf::AsClusterFatTree*>(current_routing)->create_links();
+    static_cast<simgrid::surf::AsClusterFatTree*>(current_as)->create_links();
   }
   // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
   // and it's very useful to connect clusters together
@@ -402,18 +384,15 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   router.id = cluster->router_id;
   router.coord = "";
   if (!router.id || !strcmp(router.id, ""))
-    router.id = newid =
-        bprintf("%s%s_router%s", cluster->prefix, cluster->id,
-                cluster->suffix);
+    router.id = newid = bprintf("%s%s_router%s", cluster->prefix, cluster->id, cluster->suffix);
   sg_platf_new_router(&router);
-  ((AsCluster*)current_routing)->router_ = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
+  current_as->router_ = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL);
   free(newid);
 
   //Make the backbone
   if ((cluster->bb_bw != 0) || (cluster->bb_lat != 0)) {
     char *link_backbone = bprintf("%s_backbone", cluster->id);
-    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone,
-              cluster->bb_bw, cluster->bb_lat);
+    XBT_DEBUG("<link\tid=\"%s\" bw=\"%f\" lat=\"%f\"/>", link_backbone, cluster->bb_bw, cluster->bb_lat);
 
     memset(&link, 0, sizeof(link));
     link.id        = link_backbone;

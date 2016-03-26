@@ -27,8 +27,7 @@
 #include "simgrid/instr.h"
 #include "src/mc/mc_replay.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf,
-                                "About the configuration of SimGrid");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_config, surf, "About the configuration of SimGrid");
 
 xbt_cfg_t _sg_cfg_set = NULL;
 

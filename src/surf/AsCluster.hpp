@@ -27,9 +27,9 @@ public:
   Link* backbone_ = nullptr;
   void *loopback_ = nullptr;
   NetCard *router_ = nullptr;
-  int has_limiter_ = 0;
-  int has_loopback_ = 0;
-  int nb_links_per_node_ = 1;
+  int has_limiter_  = 0; /* O or 1. must be an int since it's used to shift the considered index */
+  int has_loopback_ = 0; /* O or 1. must be an int since it's used to shift the considered index */
+  int nb_links_per_node_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
 
 };
 
