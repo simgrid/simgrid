@@ -1754,9 +1754,16 @@ complicated in using it, here is an example of it:
 </platform>
 \endverbatim
 
-Coordinates are then used to calculate latency between two hosts by
-calculating the euclidean distance between the two hosts coordinates.
-The results express the latency in ms.
+Coordinates are then used to calculate latency (in microseconds)
+between two hosts by calculating the distance between the two hosts
+coordinates with the following formula: distance( (x1, y1, z1), (x2,
+y2, z2) ) = euclidian( (x1,y1), (x2,y2) ) + abs(z1) + abs(z2)
+
+In other words, we take the euclidian distance on the two first
+dimensions, and then add the absolute values found on the third
+dimension. This may seem strange, but it was found to allow better
+approximations of the latency matrices (see the paper describing
+Vivaldi).
 
 Note that the previous example defines a routing directly between hosts but it could be also used to define a routing between AS.
 That is for example what is commonly done when using peers (see Section \ref pf_peer).
@@ -1766,7 +1773,7 @@ That is for example what is commonly done when using peers (see Section \ref pf_
 <platform version="4">
 
 <config id="General">
-	<prop id="network/coordinates" value="yes"></prop>
+ <prop id="network/coordinates" value="yes"></prop>
 </config>
  <AS  id="AS0"  routing="Vivaldi">
    <peer id="peer-0" coordinates="173.0 96.8 0.1" power="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us"/>
