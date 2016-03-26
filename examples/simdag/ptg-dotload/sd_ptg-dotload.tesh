@@ -1,7 +1,7 @@
 #! ./tesh
 p Test the loader of PTG (Parallel Task Graph) written in the DOT format
 
-$ $SG_TEST_EXENV ${bindir:=.}/ptg-dotload/sd_ptg-dotload  ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/ptg.dot
+$ $SG_TEST_EXENV ${bindir:=.}/ptg-dotload/sd_ptg-dotload  ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/ptg-dotload/ptg.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root

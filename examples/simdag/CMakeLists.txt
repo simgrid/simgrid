@@ -13,8 +13,8 @@ set_target_properties(goal_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURR
 set(tesh_files   ${tesh_files}                                                                             PARENT_SCOPE)
 set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/goal/goal_test.c                             PARENT_SCOPE)
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/Montage_25.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dax/simple_dax_with_cycle.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dax/smalldax.xml                             PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/daxload/simple_dax_with_cycle.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/daxload/smalldax.xml                         PARENT_SCOPE)
 set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/platform_script.lua                          PARENT_SCOPE)
 set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_with_cycle.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag.dot

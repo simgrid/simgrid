@@ -2,7 +2,7 @@
 p Test the loader of DAG written in the DOT format
 
 ! expect return 2
-$ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=.}/../../platforms/2clusters.xml ${srcdir:=.}/dag_with_bad_schedule.dot
+$ $SG_TEST_EXENV ${bindir:=.}/schedule-dotload/sd_schedule-dotload --log=no_loc  "--log=sd_dotparse.thres:verbose" ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/schedule-dotload/dag_with_bad_schedule.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, task 'end' can not be scheduled on -1 hosts
 > [0.000000] [sd_dotparse/VERBOSE] The schedule is ignored, task '1' can not be scheduled on 0 hosts
@@ -12,7 +12,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc  "--log=sd_dotparse.thres:verbose" 
 > [0.000000] [sd_dotparse/WARNING] The scheduling is ignored
 > [0.000000] [test/CRITICAL] The dot file with the provided scheduling is wrong, more information with the option : --log=sd_dotparse.thres:verbose
 
-$ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../../platforms/2clusters.xml ${srcdir:=.}/dag_with_good_schedule.dot
+$ $SG_TEST_EXENV ${bindir:=.}/schedule-dotload/sd_schedule-dotload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/schedule-dotload/dag_with_good_schedule.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
@@ -215,7 +215,7 @@ $ $SG_TEST_EXENV ./simulate_dot --log=no_loc ${srcdir:=.}/../../platforms/2clust
 > [20.000866] [test/INFO] ------------------- Produce the trace file---------------------------
 > [20.000866] [test/INFO] Producing the trace of the run into dag_with_good_schedule.trace
 
-$ cat ${srcdir:=.}/dag_with_good_schedule.trace
+$ cat ${srcdir:=.}/schedule-dotload/dag_with_good_schedule.trace
 > [0.000000->0.000000] C2-05 compute 0.000000 flops # root
 > [0.000000->2.000000] C2-06 compute 10000000129.452715 flops # 0
 > [0.000000->2.000000] C2-05 compute 10000000131.133657 flops # 1
@@ -237,5 +237,5 @@ $ cat ${srcdir:=.}/dag_with_good_schedule.trace
 > [14.000485 -> 14.020609] C2-05 -> C2-05 transfer of 10014000 bytes # 7->end
 > [18.000866->20.000866] C2-05 compute 10000000129.452715 flops # end
 
-$ rm -f ${srcdir:=.}/dag_with_good_schedule.trace
+$ rm -f ${srcdir:=.}/schedule-dotload/dag_with_good_schedule.trace
 

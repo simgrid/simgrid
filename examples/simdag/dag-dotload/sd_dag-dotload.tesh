@@ -1,7 +1,7 @@
 #! ./tesh
 p Test the loader of DAG written in the DOT format
 
-$ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/dag.dot
+$ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/dag-dotload/dag.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [test/INFO] ------------------- Display all tasks of the loaded DAG ---------------------------
 > [0.000000] [sd_task/INFO] Displaying task root
@@ -189,7 +189,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=
 > [62.002281] [test/INFO] ------------------- Produce the trace file---------------------------
 > [62.002281] [test/INFO] Producing the trace of the run into dag.trace
 
-$ cat ${srcdir:=.}/dag.trace
+$ cat ${srcdir:=.}/dag-dotload/dag.trace
 > [0.000000->0.000000] C2-05 compute 0.000000 flops # root
 > [0.000000->2.000000] C2-06 compute 10000000129.452715 flops # 0
 > [2.000380->4.000380] C2-07 compute 10000000131.133657 flops # 1
@@ -211,10 +211,10 @@ $ cat ${srcdir:=.}/dag.trace
 > [0.000000 -> 0.292217] C2-05 -> C1-01 transfer of 10014000 bytes # root->5
 > [60.002281->62.002281] C2-05 compute 10000000129.452715 flops # end
 
-$ rm -f dag.trace dot.dot
+$ rm -f ${srcdir:=.}/dag-dotload/dag.trace ${srcdir:=.}/dag-dotload/dot.dot
 
 ! expect return 2
-$ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/dag_with_cycle.dot
+$ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/dag-dotload/dag_with_cycle.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
 > [0.000000] [sd_daxparse/WARNING] the task 0 is in a cycle
