@@ -227,7 +227,6 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   routing_model_create(NULL);
   simgrid::s4u::Host::onCreation.connect(simgrid_ns3_add_host);
   simgrid::surf::netcardCreatedCallbacks.connect(simgrid_ns3_add_netcard);
-  simgrid::surf::on_link.connect(netlink_parse_init);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
   simgrid::surf::on_postparse.connect(&create_ns3_topology); //get_one_link_routes
 

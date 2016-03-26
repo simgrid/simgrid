@@ -40,7 +40,6 @@ void surf_network_model_init_LegrandVelho(void)
   if (surf_network_model)
     return;
 
-  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkCm02Model();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
@@ -66,7 +65,6 @@ void surf_network_model_init_CM02(void)
   if (surf_network_model)
     return;
 
-  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkCm02Model();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
@@ -90,7 +88,6 @@ void surf_network_model_init_Reno(void)
   if (surf_network_model)
     return;
 
-  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkCm02Model();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
@@ -108,7 +105,6 @@ void surf_network_model_init_Reno2(void)
   if (surf_network_model)
     return;
 
-  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkCm02Model();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
@@ -125,7 +121,6 @@ void surf_network_model_init_Vegas(void)
   if (surf_network_model)
     return;
 
-  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkCm02Model();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 

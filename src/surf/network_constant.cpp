@@ -18,8 +18,6 @@ void surf_network_model_init_Constant()
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
   routing_model_create(NULL);
-
-  simgrid::surf::on_link.connect(netlink_parse_init);
 }
 
 namespace simgrid {

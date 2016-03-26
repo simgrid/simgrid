@@ -101,29 +101,6 @@ namespace simgrid {
   }
 }
 
-void netlink_parse_init(sg_platf_link_cbarg_t link){
-  std::vector<char*> names;
-
-  if (link->policy == SURF_LINK_FULLDUPLEX) {
-    names.push_back(bprintf("%s_UP", link->id));
-    names.push_back(bprintf("%s_DOWN", link->id));
-  } else {
-    names.push_back(xbt_strdup(link->id));
-  }
-  for (auto link_name : names) {
-    Link *l = surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy, link->properties);
-
-    if (link->latency_trace)
-      l->setLatencyTrace(link->latency_trace);
-    if (link->bandwidth_trace)
-      l->setBandwidthTrace(link->bandwidth_trace);
-    if (link->state_trace)
-      l->setStateTrace(link->state_trace);
-
-    xbt_free(link_name);
-  }
-}
-
 /*********
  * Model *
  *********/

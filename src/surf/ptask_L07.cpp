@@ -26,9 +26,6 @@ void surf_host_model_init_ptask_L07(void)
   xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");
   xbt_assert(!surf_network_model, "network model type already defined");
 
-  // Define the callbacks to parse the XML
-  simgrid::surf::on_link.connect(netlink_parse_init);
-
   surf_host_model = new simgrid::surf::HostL07Model();
   xbt_dynar_push(all_existing_models, &surf_host_model);
 }

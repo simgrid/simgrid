@@ -85,7 +85,6 @@ void surf_network_model_init_IB(void)
   if (surf_network_model)
     return;
 
-  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkIBModel();
   xbt_dynar_push(all_existing_models, &surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);

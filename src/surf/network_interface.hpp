@@ -40,12 +40,6 @@ namespace simgrid {
 
       }
 }
-
-/*********
- * Tools *
- *********/
-XBT_PUBLIC(void) netlink_parse_init(sg_platf_link_cbarg_t link);
-
 /*********
  * Model *
  *********/
