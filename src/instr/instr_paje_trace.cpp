@@ -14,25 +14,26 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr_trace, "tracing event sy
 extern FILE * tracing_file;
 extern s_instr_trace_writer_t active_writer;
 
+static std::stringstream stream;
+
 static void print_paje_debug(std::string functionName, paje_event_t event) {
   XBT_DEBUG("%s: event_type=%d, timestamp=%.*f", __FUNCTION__, (int)event->event_type, TRACE_precision(),
             event->timestamp);
 }
 
-template<typename T> static std::stringstream init_stream(paje_event_t event) {
-  std::stringstream stream;
+template<typename T> static void init_stream(paje_event_t event) {
   stream << std::fixed << std::setprecision(TRACE_precision());
   stream << (int) event->event_type;
-
-  return stream;
 }
 
-static void print_row(std::stringstream& stream) {
+static void print_row() {
   stream << std::endl;
   fprintf(tracing_file, "%s", stream.str().c_str());
+  stream.str("");
+  stream.clear();
 }
 
-static void print_timestamp(std::stringstream& stream, paje_event_t event) {
+static void print_timestamp(paje_event_t event) {
   stream << " ";
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
   if (event->timestamp == 0) 
@@ -42,42 +43,36 @@ static void print_timestamp(std::stringstream& stream, paje_event_t event) {
 }
 
 
-template<typename T> static std::stringstream print_default_pajeLink_row(paje_event_t& event) {
-  std::stringstream stream = init_stream<T>(event);
-  print_timestamp(stream, event);
+template<typename T> static void print_default_pajeLink_row(paje_event_t& event) {
+  init_stream<T>(event);
+  print_timestamp(event);
   stream << " " << static_cast<T>(event->data)->type->id
          << " " << static_cast<T>(event->data)->container->id
          << " " << static_cast<T>(event->data)->value;
-
-  return stream;
 }
 
-template<typename T> static std::stringstream print_default_pajeState_row(paje_event_t& event) {
-  std::stringstream stream = init_stream<T>(event);
-  print_timestamp(stream, event);
+template<typename T> static void print_default_pajeState_row(paje_event_t& event) {
+  init_stream<T>(event);
+  print_timestamp(event);
   stream << " " << static_cast<T>(event->data)->type->id
          << " " << static_cast<T>(event->data)->container->id;
-         
-  return stream;
 }
 
-template<typename T> static std::stringstream print_default_pajeType_row(paje_event_t& event) {
-  std::stringstream stream = init_stream<T>(event);
+template<typename T> static void print_default_pajeType_row(paje_event_t& event) {
+  init_stream<T>(event);
   stream << " " << static_cast<T>(event->data)->type->id
          << " " << static_cast<T>(event->data)->type->father->id
          << " " << static_cast<T>(event->data)->type->name;
-         
-  return stream;
 }
 
 template<typename T> static void print_default_pajeVariable_row(paje_event_t& event) {
-  std::stringstream stream = init_stream<T>(event);
-  print_timestamp(stream, event);
+  init_stream<T>(event);
+  print_timestamp(event);
   stream << " " << static_cast<T>(event->data)->type->id
          << " " << static_cast<T>(event->data)->container->id
          << " " << static_cast<T>(event->data)->value;
          
-  print_row(stream);
+  print_row();
 }
 
 void TRACE_paje_init(void) {
@@ -139,70 +134,70 @@ void TRACE_paje_end(void) {
 
 void print_pajeDefineContainerType(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeType_row<defineContainerType_t>(event);
-  print_row(stream);
+  print_default_pajeType_row<defineContainerType_t>(event);
+  print_row();
 }
 
 void print_pajeDefineVariableType(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeType_row<defineVariableType_t>(event);
+  print_default_pajeType_row<defineVariableType_t>(event);
   stream << " \"" << static_cast<defineVariableType_t>(event->data)->type->color << "\"";
-  print_row(stream);
+  print_row();
 }
 
 void print_pajeDefineStateType(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeType_row<defineStateType_t>(event);
-  print_row(stream);
+  print_default_pajeType_row<defineStateType_t>(event);
+  print_row();
 }
 
 void print_pajeDefineEventType(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeType_row<defineEventType_t>(event);
-  print_row(stream);
+  print_default_pajeType_row<defineEventType_t>(event);
+  print_row();
 }
 
 void print_pajeDefineLinkType(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = init_stream<defineLinkType_t>(event);
+  init_stream<defineLinkType_t>(event);
   stream << " " << static_cast<defineLinkType_t>(event->data)->type->id 
          << " " << static_cast<defineLinkType_t>(event->data)->type->father->id 
          << " " << static_cast<defineLinkType_t>(event->data)->source->id 
          << " " << static_cast<defineLinkType_t>(event->data)->dest->id 
          << " " << static_cast<defineLinkType_t>(event->data)->type->name;
-  print_row(stream);
+  print_row();
 }
 
 void print_pajeDefineEntityValue (paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = init_stream<defineEntityValue_t>(event);
+  init_stream<defineEntityValue_t>(event);
   stream << " "   << static_cast<defineEntityValue_t>(event->data)->value->id
          << " "   << static_cast<defineEntityValue_t>(event->data)->value->father->id
          << " "   << static_cast<defineEntityValue_t>(event->data)->value->name
          << " \"" << static_cast<defineEntityValue_t>(event->data)->value->color << "\"";
-  print_row(stream);
+  print_row();
 }
 
 void print_pajeCreateContainer(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = init_stream<createContainer_t>(event);
-  print_timestamp(stream, event);
+  init_stream<createContainer_t>(event);
+  print_timestamp(event);
   stream << " "   << static_cast<createContainer_t>(event->data)->container->id
          << " "   << static_cast<createContainer_t>(event->data)->container->type->id
          << " "   << static_cast<createContainer_t>(event->data)->container->father->id
          << " \"" << static_cast<createContainer_t>(event->data)->container->name << "\"";
 
-  print_row(stream);
+  print_row();
 }
 
 void print_pajeDestroyContainer(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = init_stream<createContainer_t>(event);
-  print_timestamp(stream, event);
+  init_stream<createContainer_t>(event);
+  print_timestamp(event);
   stream << " "   << static_cast<createContainer_t>(event->data)->container->type->id
          << " "   << static_cast<createContainer_t>(event->data)->container->id;
 
-  print_row(stream);
+  print_row();
 }
 
 void print_pajeSetVariable(paje_event_t event) {
@@ -223,14 +218,14 @@ void print_pajeSubVariable(paje_event_t event) {
 void print_pajeSetState(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
 
-  std::stringstream stream = print_default_pajeState_row<setState_t>(event);
+  print_default_pajeState_row<setState_t>(event);
   stream << " " << static_cast<setState_t>(event->data)->value->id;
-  print_row(stream);
+  print_row();
 }
 
 void print_pajePushState(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeState_row<pushState_t>(event);
+  print_default_pajeState_row<pushState_t>(event);
   stream << " " << static_cast<pushState_t>(event->data)->value->id;
 
   if (TRACE_display_sizes()) {
@@ -242,7 +237,7 @@ void print_pajePushState(paje_event_t event) {
       stream << 0;
     }
   }
-  print_row(stream);
+  print_row();
 
   if (static_cast<pushState_t>(event->data)->extra != NULL) {
     if (static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->sendcounts != NULL)
@@ -255,42 +250,42 @@ void print_pajePushState(paje_event_t event) {
 
 void print_pajePopState(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeState_row<popState_t>(event);
-  print_row(stream);
+  print_default_pajeState_row<popState_t>(event);
+  print_row();
 }
 
 void print_pajeResetState(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeState_row<resetState_t>(event);
-  print_row(stream);
+  print_default_pajeState_row<resetState_t>(event);
+  print_row();
 }
 
 void print_pajeStartLink(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeLink_row<startLink_t>(event);
+  print_default_pajeLink_row<startLink_t>(event);
   stream << " " << static_cast<startLink_t>(event->data)->sourceContainer->id
          << " " << static_cast<startLink_t>(event->data)->key;
 
   if (TRACE_display_sizes()) {
     stream << " " << static_cast<startLink_t>(event->data)->size;
   }
-  print_row(stream);
+  print_row();
 }
 
 void print_pajeEndLink(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = print_default_pajeLink_row<startLink_t>(event);
+  print_default_pajeLink_row<startLink_t>(event);
   stream << " " << static_cast<endLink_t>(event->data)->destContainer->id
          << " " << static_cast<endLink_t>(event->data)->key;
-  print_row(stream);
+  print_row();
 }
 
 void print_pajeNewEvent (paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
-  std::stringstream stream = init_stream<newEvent_t>(event);
-  print_timestamp(stream, event);
+  init_stream<newEvent_t>(event);
+  print_timestamp(event);
   stream << " " << static_cast<newEvent_t>(event->data)->type->id
          << " " << static_cast<newEvent_t>(event->data)->container->id
          << " " << static_cast<newEvent_t>(event->data)->value->id;
-  print_row(stream);
+  print_row();
 }
