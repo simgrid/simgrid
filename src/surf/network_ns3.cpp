@@ -368,7 +368,7 @@ NetworkNS3Action::NetworkNS3Action(Model *model, double size, NetCard *src, NetC
   dstElm_ = dst;
   ns3_create_flow(src->name(), dst->name(), surf_get_clock(), size, this);
 
-  networkCommunicateCallbacks(this, src, dst, size, 0);
+  Link::onCommunicate(this, src, dst);
 }
 
 void NetworkNS3Action::suspend() {

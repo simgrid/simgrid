@@ -49,29 +49,19 @@ static void IB_action_state_changed_callback(
 
 
 static void IB_action_init_callback(
-    simgrid::surf::NetworkAction *action, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
-    double size, double rate)
+    simgrid::surf::NetworkAction *action, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst)
 {
-  using namespace simgrid::surf;
-  if(((NetworkIBModel*)surf_network_model)->active_nodes==NULL)
-    xbt_die("IB comm added, without any node connected !");
+  simgrid::surf::NetworkIBModel* ibModel = (simgrid::surf::NetworkIBModel*)surf_network_model;
 
-  IBNode* act_src= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, src->name());
-  if(act_src==NULL)
-    xbt_die("could not find src node active comms !");
-  //act_src->rate=rate;
+  simgrid::surf::IBNode* act_src= (simgrid::surf::IBNode*) xbt_dict_get_or_null(ibModel->active_nodes, src->name());
+  xbt_assert(act_src, "could not find src node active comms !");
 
-  IBNode* act_dst= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, dst->name());
-  if(act_dst==NULL)
-    xbt_die("could not find dst node active comms !");  
-  // act_dst->rate=rate;
+  simgrid::surf::IBNode* act_dst= (simgrid::surf::IBNode*) xbt_dict_get_or_null(ibModel->active_nodes, dst->name());
+  xbt_assert(act_dst, "could not find dst node active comms !");
 
-  ((NetworkIBModel*)surf_network_model)->active_comms[action]=std::make_pair(act_src, act_dst);
-  //post the action in the second dist, to retrieve in the other callback
-  XBT_DEBUG("IB callback - action %p init", action);
+  ibModel->active_comms[action]=std::make_pair(act_src, act_dst);
 
-  ((NetworkIBModel*)surf_network_model)->updateIBfactors(action, act_src, act_dst, 0);
-
+  ibModel->updateIBfactors(action, act_src, act_dst, 0);
 }
 
 /*********
@@ -91,7 +81,6 @@ static void IB_action_init_callback(
 void surf_network_model_init_IB(void)
 {
   using simgrid::surf::networkActionStateChangedCallbacks;
-  using simgrid::surf::networkCommunicateCallbacks;
 
   if (surf_network_model)
     return;
@@ -100,7 +89,7 @@ void surf_network_model_init_IB(void)
   surf_network_model = new simgrid::surf::NetworkIBModel();
   xbt_dynar_push(all_existing_models, &surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
-  networkCommunicateCallbacks.connect(IB_action_init_callback);
+  Link::onCommunicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
   xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
 

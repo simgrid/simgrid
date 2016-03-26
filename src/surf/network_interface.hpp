@@ -38,11 +38,7 @@ namespace simgrid {
      *  Signature: `void(NetworkAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)` */
     XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) networkActionStateChangedCallbacks;
 
-    /** @brief Callback signal fired when a NetworkAction is created (when a communication starts)
-     *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)` */
-    XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)>) networkCommunicateCallbacks;
-
-  }
+      }
 }
 
 /*********
@@ -196,6 +192,11 @@ namespace simgrid {
       /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off)
        *  Signature: `void(Link*)` */
       static simgrid::xbt::signal<void(simgrid::surf::Link*)> onStateChange;
+
+      /** @brief Callback signal fired when a communication starts
+       *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst)` */
+      static simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst)> onCommunicate;
+
 
 
       /** @brief Get the bandwidth in bytes per second of current Link */

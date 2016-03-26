@@ -386,7 +386,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
   delete route;
   XBT_OUT();
 
-  networkCommunicateCallbacks(action, src, dst, size, rate);
+  Link::onCommunicate(action, src, dst);
   return action;
 }
 

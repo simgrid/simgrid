@@ -78,17 +78,11 @@ namespace simgrid {
       }
     }
 
-    Action *NetworkConstantModel::communicate(NetCard *src, NetCard *dst,
-        double size, double rate)
+    Action *NetworkConstantModel::communicate(NetCard *src, NetCard *dst, double size, double rate)
     {
-      char *src_name = src->name();
-      char *dst_name = dst->name();
-
-      XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
       NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
-      XBT_OUT();
 
-      networkCommunicateCallbacks(action, src, dst, size, rate);
+      Link::onCommunicate(action, src, dst);
       return action;
     }
 
