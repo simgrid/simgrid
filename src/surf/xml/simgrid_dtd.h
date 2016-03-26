@@ -150,8 +150,6 @@ typedef int AT_surfxml_cabinet_speed;
 #define AU_surfxml_cabinet_speed NULL
 typedef int AT_surfxml_cabinet_suffix;
 #define AU_surfxml_cabinet_suffix NULL
-typedef int AT_surfxml_cluster_availability___file;
-#define AU_surfxml_cluster_availability___file NULL
 typedef int AT_surfxml_cluster_bb___bw;
 #define AU_surfxml_cluster_bb___bw NULL
 typedef int AT_surfxml_cluster_bb___lat;
@@ -180,8 +178,6 @@ typedef int AT_surfxml_cluster_router___id;
 typedef enum { AU_surfxml_cluster_sharing___policy, A_surfxml_cluster_sharing___policy_SHARED,A_surfxml_cluster_sharing___policy_FULLDUPLEX,A_surfxml_cluster_sharing___policy_FATPIPE } AT_surfxml_cluster_sharing___policy;
 typedef int AT_surfxml_cluster_speed;
 #define AU_surfxml_cluster_speed NULL
-typedef int AT_surfxml_cluster_state___file;
-#define AU_surfxml_cluster_state___file NULL
 typedef int AT_surfxml_cluster_suffix;
 #define AU_surfxml_cluster_suffix NULL
 typedef int AT_surfxml_cluster_topo___parameters;
@@ -398,9 +394,6 @@ XBT_PUBLIC_DATA(short int) surfxml_cabinet_speed_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cabinet_suffix) AX_surfxml_cabinet_suffix;
 #define A_surfxml_cabinet_suffix (surfxml_bufferstack + AX_surfxml_cabinet_suffix)
 XBT_PUBLIC_DATA(short int) surfxml_cabinet_suffix_isset;
-XBT_PUBLIC_DATA(AT_surfxml_cluster_availability___file) AX_surfxml_cluster_availability___file;
-#define A_surfxml_cluster_availability___file (surfxml_bufferstack + AX_surfxml_cluster_availability___file)
-XBT_PUBLIC_DATA(short int) surfxml_cluster_availability___file_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_bb___bw) AX_surfxml_cluster_bb___bw;
 #define A_surfxml_cluster_bb___bw (surfxml_bufferstack + AX_surfxml_cluster_bb___bw)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_bb___bw_isset;
@@ -446,9 +439,6 @@ XBT_PUBLIC_DATA(short int) surfxml_cluster_sharing___policy_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_speed) AX_surfxml_cluster_speed;
 #define A_surfxml_cluster_speed (surfxml_bufferstack + AX_surfxml_cluster_speed)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_speed_isset;
-XBT_PUBLIC_DATA(AT_surfxml_cluster_state___file) AX_surfxml_cluster_state___file;
-#define A_surfxml_cluster_state___file (surfxml_bufferstack + AX_surfxml_cluster_state___file)
-XBT_PUBLIC_DATA(short int) surfxml_cluster_state___file_isset;
 XBT_PUBLIC_DATA(AT_surfxml_cluster_suffix) AX_surfxml_cluster_suffix;
 #define A_surfxml_cluster_suffix (surfxml_bufferstack + AX_surfxml_cluster_suffix)
 XBT_PUBLIC_DATA(short int) surfxml_cluster_suffix_isset;

@@ -115,8 +115,6 @@ typedef struct s_sg_platf_cluster_cbarg {
   const char* router_id;
   e_surf_link_sharing_policy_t sharing_policy;
   e_surf_link_sharing_policy_t bb_sharing_policy;
-  const char* availability_trace; //don't convert to tmgr_trace_t since there is a trace per host and some rewriting is needed
-  const char* state_trace;
 } s_sg_platf_cluster_cbarg_t;
 
 typedef struct s_sg_platf_cabinet_cbarg *sg_platf_cabinet_cbarg_t;

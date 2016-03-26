@@ -37,7 +37,6 @@ set(xml_files     ${xml_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/four_h
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/two_hosts_multi_hop.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/host_attributes.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link_attributes.xml
-                                    ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_file.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_multicore.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_fullduplex.xml
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/one_cluster_router_id.xml

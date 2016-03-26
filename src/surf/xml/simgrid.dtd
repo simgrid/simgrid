@@ -12,6 +12,9 @@ To upgrade your files, use the tool simgrid_update_xml
    
    - In <host> and <link>, attributes availability and state are gone.
      It was redundent with state and availability traces, and with peak values.
+     
+   - In <cluster>, cannot set the availability nor state traces. 
+     This was too complex and unused.
 
    - The DOCTYPE points to the right URL (this file):
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
@@ -131,8 +134,6 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST cluster bb_bw CDATA "">
 <!ATTLIST cluster bb_lat CDATA "0s">
 <!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
-<!ATTLIST cluster availability_file CDATA "">
-<!ATTLIST cluster state_file CDATA "">
 <!ATTLIST cluster router_id CDATA "">
 <!ATTLIST cluster limiter_link CDATA "">
 <!ATTLIST cluster loopback_bw CDATA "">

@@ -563,8 +563,6 @@ void ETag_surfxml_cluster(void){
     break;
   }
 
-  cluster.availability_trace = A_surfxml_cluster_availability___file;
-  cluster.state_trace = A_surfxml_cluster_state___file;
   sg_platf_new_cluster(&cluster);
 
   current_property_set = nullptr;

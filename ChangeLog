@@ -35,6 +35,8 @@ SimGrid (3.13) UNRELEASED; urgency=low
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
    - In <host> and <link>, attributes availability and state are gone.
      It was redundent with state and availability traces, and with peak values.
+   - In <cluster>, attributes availability_file and state_file are gone.
+     It was too complex and unused.
    - Kill <gpu>. Was not doing anything.
    - The DOCTYPE points to the right URL:
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd

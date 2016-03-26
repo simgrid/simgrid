@@ -238,14 +238,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
   unsigned int iter;
 
-  if ((cluster->availability_trace && strcmp(cluster->availability_trace, ""))
-      || (cluster->state_trace && strcmp(cluster->state_trace, ""))) {
-    patterns = xbt_dict_new_homogeneous(xbt_free_f);
-    xbt_dict_set(patterns, "id", xbt_strdup(cluster->id), NULL);
-    xbt_dict_set(patterns, "prefix", xbt_strdup(cluster->prefix), NULL);
-    xbt_dict_set(patterns, "suffix", xbt_strdup(cluster->suffix), NULL);
-  }
-
   /* Parse the topology attributes.
    * Nothing to do in a vanilla cluster, but that's another story for torus and flat_trees */
   s_sg_platf_AS_cbarg_t AS;
@@ -314,26 +306,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         xbt_dict_foreach(cluster->properties,cursor,key,data) {
           xbt_dict_set(host.properties, key, xbt_strdup(data),free);
         }
-      }
-      if (cluster->availability_trace && strcmp(cluster->availability_trace, "")) {
-        xbt_dict_set(patterns, "radical", bprintf("%d", i), NULL);
-        char *avail_file = xbt_str_varsubst(cluster->availability_trace, patterns);
-        XBT_DEBUG("\tavailability_file=\"%s\"", avail_file);
-        if (avail_file && avail_file[0])
-          host.speed_trace = tmgr_trace_new_from_file(avail_file);
-        xbt_free(avail_file);
-      } else {
-        XBT_DEBUG("\tavailability_file=\"\"");
-      }
-
-      if (cluster->state_trace && strcmp(cluster->state_trace, "")) {
-        char *avail_file = xbt_str_varsubst(cluster->state_trace, patterns);
-        XBT_DEBUG("\tstate_file=\"%s\"", avail_file);
-        if (avail_file && avail_file[0])
-          host.state_trace = tmgr_trace_new_from_file(avail_file);
-        xbt_free(avail_file);
-      } else {
-        XBT_DEBUG("\tstate_file=\"\"");
       }
 
       host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
