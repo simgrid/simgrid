@@ -82,10 +82,8 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   simgrid::surf::NetCard *netcard =
       new simgrid::surf::NetCardImpl(host->id, SURF_NETWORK_ELEMENT_HOST, current_routing);
 
-  netcard->setId(current_routing->addComponent(netcard));
   sg_host_t h = simgrid::s4u::Host::by_name_or_create(host->id);
   h->pimpl_netcard = netcard;
-  simgrid::surf::netcardCreatedCallbacks(netcard);
 
   if(mount_list){
     xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
@@ -142,10 +140,8 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
 
   simgrid::surf::NetCard *netcard =
     new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
-  netcard->setId(current_routing->addComponent(netcard));
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) netcard);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, netcard->id());
-  simgrid::surf::netcardCreatedCallbacks(netcard);
 
   if (router->coord && strcmp(router->coord, "")) {
     unsigned int cursor;
@@ -925,10 +921,8 @@ void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   /* make a new routing component */
   simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->name(), SURF_NETWORK_ELEMENT_AS, current_routing);
 
-  if (current_routing == NULL && routing_platf->root_ == NULL) {
-    /* it is the first one */
+  if (current_routing == NULL && routing_platf->root_ == NULL) { /* it is the first one */
     routing_platf->root_ = new_as;
-    netcard->setId(-1);
   } else if (current_routing != NULL && routing_platf->root_ != NULL) {
 
     xbt_assert(!xbt_dict_get_or_null(current_routing->children(), AS->id),
@@ -940,8 +934,6 @@ void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
       current_routing->hierarchy_ = simgrid::surf::AsImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
     xbt_dict_set(current_routing->children(), AS->id, (void *) new_as, NULL);
-    /* add to the father element list */
-    netcard->setId(current_routing->addComponent(netcard));
   } else {
     THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
@@ -953,7 +945,6 @@ void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   current_routing = new_as;
   current_routing->netcard_ = netcard;
 
-  simgrid::surf::netcardCreatedCallbacks(netcard);
   simgrid::surf::asCreatedCallbacks(new_as);
   if (TRACE_is_enabled())
     sg_instr_AS_begin(AS);

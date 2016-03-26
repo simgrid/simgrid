@@ -27,6 +27,9 @@ SG_END_DECL()
 namespace simgrid {
 namespace surf {
 
+  XBT_PUBLIC_DATA(simgrid::xbt::signal<void(s4u::As*)>) asCreatedCallbacks;
+  XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) netcardCreatedCallbacks;
+
 /***********
  * Classes *
  ***********/
@@ -43,7 +46,6 @@ class NetCard {
 public:
   virtual ~NetCard(){};
   virtual int id()=0; // Our rank in the vertices_ array of our containing AS.
-  virtual void setId(int id)=0;
   virtual char *name()=0;
   virtual AsImpl *containingAS()=0; // This is the AS in which I am
   virtual bool isAS()=0;
@@ -53,15 +55,18 @@ public:
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, AsImpl *as)
+  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, AsImpl *containingAS)
   : name_(xbt_strdup(name)),
     componentType_(componentType),
-    containingAS_(as)
-  {}
+    containingAS_(containingAS)
+  {
+    if (containingAS != nullptr)
+      id_ = containingAS->addComponent(this);
+    simgrid::surf::netcardCreatedCallbacks(this);
+  }
   ~NetCardImpl() { xbt_free(name_);};
 
   int id()           override {return id_;}
-  void setId(int id) override {id_ = id;}
   char *name()       override {return name_;}
   AsImpl *containingAS() override {return containingAS_;}
 
@@ -100,13 +105,6 @@ public:
   xbt_dynar_t getOneLinkRoutes(void);
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
-
-/*************
- * Callbacks *
- *************/
-
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) netcardCreatedCallbacks;
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(s4u::As*)>) asCreatedCallbacks;
 
 }
 }
