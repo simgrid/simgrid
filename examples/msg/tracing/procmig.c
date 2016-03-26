@@ -16,8 +16,6 @@
 
 #include "simgrid/msg.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
-
 /** The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])
 {
@@ -39,7 +37,7 @@ static int emigrant(int argc, char *argv[])
   return 0;
 }
 
-static int master(int argc, char *argv[])
+static int policeman(int argc, char *argv[])
 {
   msg_task_t task = NULL;
 
@@ -81,7 +79,7 @@ int main(int argc, char *argv[])
   TRACE_category ("migration_order");
 
   MSG_process_create("emigrant", emigrant, NULL, MSG_get_host_by_name("Fafard"));
-  MSG_process_create("master", master, NULL, MSG_get_host_by_name("Tremblay"));
+  MSG_process_create("policeman", policeman, NULL, MSG_get_host_by_name("Tremblay"));
 
   MSG_main();
   return 0;

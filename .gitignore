@@ -192,7 +192,7 @@ examples/msg/tracing/procmig
 examples/msg/trace-simple/trace-simple
 examples/msg/tracing/tasks
 examples/msg/trace-platform/trace-platform
-examples/msg/tracing/user_variables
+examples/msg/trace-user-variables/trace-user-variables
 examples/s4u/basic/s4u_basic
 examples/s4u/io/s4u_io
 examples/simdag/daxload/sd_daxload

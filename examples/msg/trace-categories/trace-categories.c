@@ -19,10 +19,7 @@
  * (See \ref tracing_tracing_options for details)
  */
 
-#include <stdio.h>
 #include "simgrid/msg.h"
-
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
 static int master(int argc, char *argv[])
 {

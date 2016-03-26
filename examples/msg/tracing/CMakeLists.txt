@@ -1,4 +1,4 @@
-foreach (example ms procmig user_variables link_user_variables link_srcdst_user_variables)
+foreach (example ms procmig link_user_variables link_srcdst_user_variables)
   add_executable       (${example} ${example}.c)
   target_link_libraries(${example} simgrid)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}.c)

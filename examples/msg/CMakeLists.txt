@@ -1,7 +1,8 @@
 foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord dht-pastry 
           exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures io-file io-file-unlink
           io-remote io-storage pmm priority process-kill process-migration process-suspend properties sendrecv
-          set-maestro start_kill_time synchro token_ring trace-categories trace-platform trace-simple)
+          set-maestro start_kill_time synchro token_ring 
+          trace-categories trace-platform trace-simple trace-user-variables)
   add_executable       (${x}     ${x}/${x}.c)
   target_link_libraries(${x}     simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -64,7 +65,7 @@ foreach (example consumption onoff pstate vm)
   ADD_TESH_FACTORIES(msg-energy-${example} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-${example}/energy-${example}.tesh)
 endforeach()
 
-foreach (x categories platform simple)
+foreach (x categories platform simple user-variables)
   ADD_TESH(msg-trace-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/trace-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/trace-${x} trace-${x}.tesh)
 endforeach()
 
