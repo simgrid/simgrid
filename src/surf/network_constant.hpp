@@ -43,9 +43,7 @@ namespace simgrid {
     class NetworkConstantAction : public NetworkAction {
     public:
       NetworkConstantAction(NetworkConstantModel *model_, double size, double latency);
-      int unref() override;
-      void cancel() override;
-      double m_latInit;
+      double initialLatency_;
     };
 
   }

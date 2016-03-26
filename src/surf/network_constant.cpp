@@ -64,7 +64,7 @@ namespace simgrid {
             action->latency_ = 0.0;
           }
         }
-        action->updateRemains(action->getCost() * delta / action->m_latInit);
+        action->updateRemains(action->getCost() * delta / action->initialLatency_);
         if (action->getMaxDuration() != NO_MAX_DURATION)
           action->updateMaxDuration(delta);
 
@@ -92,7 +92,7 @@ namespace simgrid {
      **********/
     NetworkConstantAction::NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
     : NetworkAction(model_, size, false)
-    , m_latInit(latency)
+    , initialLatency_(latency)
     {
       latency_ = latency;
       if (latency_ <= 0.0) {
@@ -101,22 +101,5 @@ namespace simgrid {
       }
       variable_ = NULL;
     };
-
-    int NetworkConstantAction::unref()
-    {
-      refcount_--;
-      if (!refcount_) {
-        if (action_hook.is_linked())
-          stateSet_->erase(stateSet_->iterator_to(*this));
-        delete this;
-        return 1;
-      }
-      return 0;
-    }
-
-    void NetworkConstantAction::cancel()
-    {
-    }
-
   }
 }
