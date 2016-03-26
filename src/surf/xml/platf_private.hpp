@@ -178,13 +178,6 @@ typedef struct {
 #define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL,0}
 
 typedef struct {
-  const char* type_id;
-  const char* name;
-} s_sg_platf_mstorage_cbarg_t, *sg_platf_mstorage_cbarg_t;
-
-#define SG_PLATF_MSTORAGE_INITIALIZER {NULL,NULL}
-
-typedef struct {
   const char* storageId;
   const char* name;
 } s_sg_platf_mount_cbarg_t, *sg_platf_mount_cbarg_t;
@@ -264,7 +257,6 @@ XBT_PUBLIC(void) sg_platf_new_bypassRoute (sg_platf_route_cbarg_t bypassroute); 
 XBT_PUBLIC(void) sg_platf_new_trace(sg_platf_trace_cbarg_t trace);
 
 XBT_PUBLIC(void) sg_platf_new_storage(sg_platf_storage_cbarg_t storage); // Add a storage to the currently described AS
-XBT_PUBLIC(void) sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage);
 XBT_PUBLIC(void) sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type);
 XBT_PUBLIC(void) sg_platf_new_mount(sg_platf_mount_cbarg_t mount);
 

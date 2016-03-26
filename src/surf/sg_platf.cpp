@@ -580,10 +580,6 @@ void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
       ROUTING_STORAGE_TYPE_LEVEL,
       (void *) stype);
 }
-void sg_platf_new_mstorage(sg_platf_mstorage_cbarg_t mstorage)
-{
-  THROW_UNIMPLEMENTED;
-}
 
 static void mount_free(void *p)
 {
@@ -592,7 +588,6 @@ static void mount_free(void *p)
 }
 
 void sg_platf_new_mount(sg_platf_mount_cbarg_t mount){
-  // Verification of an existing storage
   xbt_assert(xbt_lib_get_or_null(storage_lib, mount->storageId, ROUTING_STORAGE_LEVEL),
       "Cannot mount non-existent disk \"%s\"", mount->storageId);
 

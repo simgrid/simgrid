@@ -285,19 +285,6 @@ void ETag_surfxml_storage___type(void)
   current_property_set       = nullptr;
   current_model_property_set = nullptr;
 }
-void STag_surfxml_mstorage(void)
-{
-  XBT_DEBUG("STag_surfxml_mstorage");
-}
-void ETag_surfxml_mstorage(void)
-{
-  s_sg_platf_mstorage_cbarg_t mstorage = SG_PLATF_MSTORAGE_INITIALIZER;
-  memset(&mstorage,0,sizeof(mstorage));
-
-  mstorage.name    = A_surfxml_mstorage_name;
-  mstorage.type_id = A_surfxml_mstorage_typeId;
-  sg_platf_new_mstorage(&mstorage);
-}
 void STag_surfxml_mount(void)
 {
   XBT_DEBUG("STag_surfxml_mount");

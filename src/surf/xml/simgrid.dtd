@@ -95,11 +95,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST mount storageId CDATA #REQUIRED>
 <!ATTLIST mount name CDATA #REQUIRED>
 
-<!ELEMENT mstorage EMPTY>
-<!ATTLIST mstorage typeId CDATA #REQUIRED>
-<!ATTLIST mstorage name CDATA #REQUIRED>
-
-<!ELEMENT host (prop|mount|mstorage)*>
+<!ELEMENT host (prop|mount)*>
 <!ATTLIST host id CDATA #REQUIRED>
 <!ATTLIST host speed CDATA #REQUIRED>
 <!ATTLIST host core  CDATA "1">

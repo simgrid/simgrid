@@ -928,17 +928,6 @@ required.
 
 \verbinclude example_filelist_xmltag_mount
 
-\anchor pf_storage_entity_mstorage
-#### &lt;mstorage&gt; ####
-\note
-    This is currently unused.
-
-<b>mstorage</b> attributes :
-\li <b>typeId (mandatory)</b>: the id of the <b>storage</b> that must
-    be mounted on that computer.
-\li <b>name (mandatory)</b>: the name that will be the logical
-    reference to this disk (the mount point).
-
 \subsubsection pf_storage_example_files Example files
 
 Several examples were already discussed above; if you're interested in full examples,

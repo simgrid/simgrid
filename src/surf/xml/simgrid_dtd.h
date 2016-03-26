@@ -80,8 +80,6 @@ XBT_PUBLIC(void) STag_surfxml_model___prop(void);
 XBT_PUBLIC(void) ETag_surfxml_model___prop(void);
 XBT_PUBLIC(void) STag_surfxml_mount(void);
 XBT_PUBLIC(void) ETag_surfxml_mount(void);
-XBT_PUBLIC(void) STag_surfxml_mstorage(void);
-XBT_PUBLIC(void) ETag_surfxml_mstorage(void);
 XBT_PUBLIC(void) STag_surfxml_peer(void);
 XBT_PUBLIC(void) ETag_surfxml_peer(void);
 XBT_PUBLIC(void) STag_surfxml_platform(void);
@@ -237,10 +235,6 @@ typedef int AT_surfxml_mount_name;
 #define AU_surfxml_mount_name NULL
 typedef int AT_surfxml_mount_storageId;
 #define AU_surfxml_mount_storageId NULL
-typedef int AT_surfxml_mstorage_name;
-#define AU_surfxml_mstorage_name NULL
-typedef int AT_surfxml_mstorage_typeId;
-#define AU_surfxml_mstorage_typeId NULL
 typedef int AT_surfxml_peer_availability___file;
 #define AU_surfxml_peer_availability___file NULL
 typedef int AT_surfxml_peer_bw___in;
@@ -539,12 +533,6 @@ XBT_PUBLIC_DATA(short int) surfxml_mount_name_isset;
 XBT_PUBLIC_DATA(AT_surfxml_mount_storageId) AX_surfxml_mount_storageId;
 #define A_surfxml_mount_storageId (surfxml_bufferstack + AX_surfxml_mount_storageId)
 XBT_PUBLIC_DATA(short int) surfxml_mount_storageId_isset;
-XBT_PUBLIC_DATA(AT_surfxml_mstorage_name) AX_surfxml_mstorage_name;
-#define A_surfxml_mstorage_name (surfxml_bufferstack + AX_surfxml_mstorage_name)
-XBT_PUBLIC_DATA(short int) surfxml_mstorage_name_isset;
-XBT_PUBLIC_DATA(AT_surfxml_mstorage_typeId) AX_surfxml_mstorage_typeId;
-#define A_surfxml_mstorage_typeId (surfxml_bufferstack + AX_surfxml_mstorage_typeId)
-XBT_PUBLIC_DATA(short int) surfxml_mstorage_typeId_isset;
 XBT_PUBLIC_DATA(AT_surfxml_peer_availability___file) AX_surfxml_peer_availability___file;
 #define A_surfxml_peer_availability___file (surfxml_bufferstack + AX_surfxml_peer_availability___file)
 XBT_PUBLIC_DATA(short int) surfxml_peer_availability___file_isset;
