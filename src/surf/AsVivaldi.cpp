@@ -40,21 +40,30 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     xbt_free(dst_name);
   }
 
+  /* Retrieve the private links */
+  if ((int)xbt_dynar_length(privateLinks_) > src->id()) {
+    s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id(), s_surf_parsing_link_up_down_t);
+    if(info.link_up) { // link up
+      route->link_list->push_back(info.link_up);
+      if (lat)
+        *lat += info.link_up->getLatency();
+    }
+  }
+  if ((int)xbt_dynar_length(privateLinks_)>dst->id()) {
+    s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, dst->id(), s_surf_parsing_link_up_down_t);
+    if(info.link_down) { // link down
+      route->link_list->push_back(info.link_down);
+      if (lat)
+        *lat += info.link_down->getLatency();
+    }
+  }
+
   double euclidean_dist;
   xbt_dynar_t src_ctn, dst_ctn;
   char *tmp_src_name, *tmp_dst_name;
 
   if(src->isHost()){
     tmp_src_name = HOST_PEER(src->name());
-
-    if ((int)xbt_dynar_length(privateLinks_) > src->id()) {
-      s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id(), s_surf_parsing_link_up_down_t);
-      if(info.link_up) { // link up
-        route->link_list->push_back(info.link_up);
-        if (lat)
-          *lat += info.link_up->getLatency();
-      }
-    }
     src_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(tmp_src_name)->extension(COORD_HOST_LEVEL);
     if (src_ctn == nullptr)
       src_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(src->name())->extension(COORD_HOST_LEVEL);
@@ -70,14 +79,6 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   if(dst->isHost()){
     tmp_dst_name = HOST_PEER(dst->name());
 
-    if ((int)xbt_dynar_length(privateLinks_)>dst->id()) {
-      s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, dst->id(), s_surf_parsing_link_up_down_t);
-      if(info.link_down) { // link down
-        route->link_list->push_back(info.link_down);
-        if (lat)
-          *lat += info.link_down->getLatency();
-      }
-    }
     dst_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(tmp_dst_name)->extension(COORD_HOST_LEVEL);
     if (dst_ctn == nullptr)
       dst_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(dst->name())->extension(COORD_HOST_LEVEL);
