@@ -10,19 +10,40 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf"
 
 #define HOST_PEER(peername) bprintf("peer_%s", peername)
 #define ROUTER_PEER(peername) bprintf("router_%s", peername)
-#define LINK_PEER(peername) bprintf("link_%s", peername)
-
-static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst) {
-  double src_coord, dst_coord;
-
-  src_coord = xbt_dynar_get_as(src, index, double);
-  dst_coord = xbt_dynar_get_as(dst, index, double);
-
-  return (src_coord-dst_coord)*(src_coord-dst_coord);
-}
 
 namespace simgrid {
 namespace surf {
+  static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst) {
+    double src_coord = xbt_dynar_get_as(src, index, double);
+    double dst_coord = xbt_dynar_get_as(dst, index, double);
+
+    return (src_coord-dst_coord)*(src_coord-dst_coord);
+  }
+
+  static xbt_dynar_t getCoordsFromNetcard(NetCard *nc)
+  {
+    xbt_dynar_t res;
+    char *tmp_name;
+
+    if(nc->isHost()){
+      tmp_name = HOST_PEER(nc->name());
+      res = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(tmp_name)->extension(COORD_HOST_LEVEL);
+      if (res == nullptr)
+        res = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(nc->name())->extension(COORD_HOST_LEVEL);
+    }
+    else if(nc->isRouter() || nc->isAS()){
+      tmp_name = ROUTER_PEER(nc->name());
+      res = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_name, COORD_ASR_LEVEL);
+    }
+    else{
+      THROW_IMPOSSIBLE;
+    }
+
+    xbt_assert(res,"No coordinate found for element '%s'",tmp_name);
+    free(tmp_name);
+
+    return res;
+  }
   AsVivaldi::AsVivaldi(const char *name)
     : AsCluster(name)
   {}
@@ -43,7 +64,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   /* Retrieve the private links */
   if ((int)xbt_dynar_length(privateLinks_) > src->id()) {
     s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id(), s_surf_parsing_link_up_down_t);
-    if(info.link_up) { // link up
+    if(info.link_up) {
       route->link_list->push_back(info.link_up);
       if (lat)
         *lat += info.link_up->getLatency();
@@ -51,55 +72,21 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   }
   if ((int)xbt_dynar_length(privateLinks_)>dst->id()) {
     s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, dst->id(), s_surf_parsing_link_up_down_t);
-    if(info.link_down) { // link down
+    if(info.link_down) {
       route->link_list->push_back(info.link_down);
       if (lat)
         *lat += info.link_down->getLatency();
     }
   }
 
-  double euclidean_dist;
-  xbt_dynar_t src_ctn, dst_ctn;
-  char *tmp_src_name, *tmp_dst_name;
-
-  if(src->isHost()){
-    tmp_src_name = HOST_PEER(src->name());
-    src_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(tmp_src_name)->extension(COORD_HOST_LEVEL);
-    if (src_ctn == nullptr)
-      src_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(src->name())->extension(COORD_HOST_LEVEL);
-  }
-  else if(src->isRouter() || src->isAS()){
-    tmp_src_name = ROUTER_PEER(src->name());
-    src_ctn = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_src_name, COORD_ASR_LEVEL);
-  }
-  else{
-    THROW_IMPOSSIBLE;
-  }
-
-  if(dst->isHost()){
-    tmp_dst_name = HOST_PEER(dst->name());
-
-    dst_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(tmp_dst_name)->extension(COORD_HOST_LEVEL);
-    if (dst_ctn == nullptr)
-      dst_ctn = (xbt_dynar_t) simgrid::s4u::Host::by_name_or_create(dst->name())->extension(COORD_HOST_LEVEL);
-  }
-  else if(dst->isRouter() || dst->isAS()){
-    tmp_dst_name = ROUTER_PEER(dst->name());
-    dst_ctn = (xbt_dynar_t) xbt_lib_get_or_null(as_router_lib, tmp_dst_name, COORD_ASR_LEVEL);
-  }
-  else{
-    THROW_IMPOSSIBLE;
-  }
-
-  xbt_assert(src_ctn,"No coordinate found for element '%s'",tmp_src_name);
-  xbt_assert(dst_ctn,"No coordinate found for element '%s'",tmp_dst_name);
-  free(tmp_src_name);
-  free(tmp_dst_name);
-
-  euclidean_dist = sqrt (euclidean_dist_comp(0,src_ctn,dst_ctn)+euclidean_dist_comp(1,src_ctn,dst_ctn))
-                      + fabs(xbt_dynar_get_as(src_ctn, 2, double))+fabs(xbt_dynar_get_as(dst_ctn, 2, double));
-
+  /* Compute the extra latency due to the euclidean distance if needed */
   if (lat){
+    xbt_dynar_t srcCoords = getCoordsFromNetcard(src);
+    xbt_dynar_t dstCoords = getCoordsFromNetcard(dst);
+
+    double euclidean_dist = sqrt (euclidean_dist_comp(0,srcCoords,dstCoords)+euclidean_dist_comp(1,srcCoords,dstCoords))
+                              + fabs(xbt_dynar_get_as(srcCoords, 2, double))+fabs(xbt_dynar_get_as(dstCoords, 2, double));
+
     XBT_DEBUG("Updating latency %f += %f",*lat,euclidean_dist);
     *lat += euclidean_dist / 1000.0; //From .ms to .s
   }
