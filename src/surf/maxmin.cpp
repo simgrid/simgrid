@@ -115,15 +115,16 @@ lmm_system_t lmm_system_new(int selective_update)
 
 void lmm_system_free(lmm_system_t sys)
 {
-  lmm_variable_t var = NULL;
-  lmm_constraint_t cnst = NULL;
+  lmm_variable_t var = nullptr;
+  lmm_constraint_t cnst = nullptr;
 
-  
+  if (!sys)
+    return;
+
   while ((var = (lmm_variable_t) extract_variable(sys))) {
     XBT_WARN("Variable %d still in system when freing it: this may be a bug", var->id_int);
     lmm_var_free(sys, var);
   }
-
   while ((cnst = (lmm_constraint_t) extract_constraint(sys)))
     lmm_cnst_free(sys, cnst);
 

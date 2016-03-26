@@ -44,9 +44,7 @@ StorageModel::StorageModel()
 
 StorageModel::~StorageModel(){
   lmm_system_free(maxminSystem_);
-
   surf_storage_model = NULL;
-
   xbt_dynar_free(&p_storageList);
 }
 
