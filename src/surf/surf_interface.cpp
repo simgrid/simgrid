@@ -883,12 +883,8 @@ void Action::updateRemainingLazy(double now)
   }
   else
   {
-    xbt_assert(stateSet_ == getModel()->getRunningActionSet(),
-        "You're updating an action that is not running.");
-
-      /* bogus priority, skip it */
-    xbt_assert(priority_ > 0,
-        "You're updating an action that seems suspended.");
+    xbt_assert(stateSet_ == getModel()->getRunningActionSet(), "You're updating an action that is not running.");
+    xbt_assert(priority_ > 0, "You're updating an action that seems suspended.");
   }
 
   delta = now - lastUpdate_;

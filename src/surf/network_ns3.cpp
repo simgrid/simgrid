@@ -299,7 +299,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
       std::vector<Link*> *route = new std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency (action->srcElm_, action->dstElm_, route, NULL);
+      routing_platf->getRouteAndLatency (action->src_, action->dst_, route, NULL);
       for (auto link : *route)
         TRACE_surf_link_set_utilization (link->getName(), action->getCategory(), (data_delta_sent)/delta, now-delta, delta);
       delete route;
@@ -364,8 +364,8 @@ NetworkNS3Action::NetworkNS3Action(Model *model, double size, NetCard *src, NetC
 {
   XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());
 
-  srcElm_ = src;
-  dstElm_ = dst;
+  src_ = src;
+  dst_ = dst;
   ns3_create_flow(src->name(), dst->name(), surf_get_clock(), size, this);
 
   Link::onCommunicate(this, src, dst);

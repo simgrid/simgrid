@@ -99,7 +99,6 @@ namespace simgrid {
         stateSet_ = getModel()->getDoneActionSet();
         stateSet_->push_back(*this);
       }
-      variable_ = NULL;
     };
   }
 }

@@ -255,7 +255,7 @@ public:
   void gapRemove();
 
 protected:
-  lmm_variable_t variable_;
+  lmm_variable_t variable_ = nullptr;
   double lastValue_ = 0;
   double lastUpdate_ = 0;
   int suspended_ = 0;

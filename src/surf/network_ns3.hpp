@@ -56,8 +56,8 @@ public:
 
 //private:
   double lastSent_ = 0;
-  NetCard *srcElm_;
-  NetCard *dstElm_;
+  NetCard *src_;
+  NetCard *dst_;
 };
 
 }
