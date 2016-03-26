@@ -249,7 +249,7 @@ void STag_surfxml_storage(void)
 }
 void ETag_surfxml_storage(void)
 {
-  s_sg_platf_storage_cbarg_t storage = SG_PLATF_STORAGE_INITIALIZER;
+  s_sg_platf_storage_cbarg_t storage;
   memset(&storage,0,sizeof(storage));
 
   storage.id           = A_surfxml_storage_id;
@@ -270,7 +270,7 @@ void STag_surfxml_storage___type(void)
 }
 void ETag_surfxml_storage___type(void)
 {
-  s_sg_platf_storage_type_cbarg_t storage_type = SG_PLATF_STORAGE_TYPE_INITIALIZER;
+  s_sg_platf_storage_type_cbarg_t storage_type;
   memset(&storage_type,0,sizeof(storage_type));
 
   storage_type.content          = A_surfxml_storage___type_content;
@@ -291,7 +291,7 @@ void STag_surfxml_mount(void)
 }
 void ETag_surfxml_mount(void)
 {
-  s_sg_platf_mount_cbarg_t mount = SG_PLATF_MOUNT_INITIALIZER;
+  s_sg_platf_mount_cbarg_t mount;
   memset(&mount,0,sizeof(mount));
 
   mount.name      = A_surfxml_mount_name;
@@ -431,9 +431,9 @@ void STag_surfxml_prop(void)
 }
 
 void ETag_surfxml_host(void)    {
-  s_sg_platf_host_cbarg_t host = SG_PLATF_HOST_INITIALIZER;
-  char* buf;
+  s_sg_platf_host_cbarg_t host;
   memset(&host,0,sizeof(host));
+  char* buf;
 
 
   host.properties = current_property_set;
@@ -450,13 +450,10 @@ void ETag_surfxml_host(void)    {
   else {
     xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
     unsigned int i;
-    for (i = 0; i < xbt_dynar_length(pstate_list); i++) {
-      double speed;
-      char* speed_str;
-
-      xbt_dynar_get_cpy(pstate_list, i, &speed_str);
+    char* speed_str;
+    xbt_dynar_foreach(pstate_list, i, speed_str) {
       xbt_str_trim(speed_str, nullptr);
-      speed = surf_parse_get_speed(speed_str,"speed of host", host.id);
+      double speed = surf_parse_get_speed(speed_str,"speed of host", host.id);
       xbt_dynar_push_as(host.speed_per_pstate, double, speed);
       XBT_DEBUG("Speed value: %f", speed);
     }
@@ -477,7 +474,7 @@ void ETag_surfxml_host(void)    {
 
 void STag_surfxml_host___link(void){
   XBT_DEBUG("Create a Host_link for %s",A_surfxml_host___link_id);
-  s_sg_platf_host_link_cbarg_t host_link = SG_PLATF_HOST_LINK_INITIALIZER;
+  s_sg_platf_host_link_cbarg_t host_link;
   memset(&host_link,0,sizeof(host_link));
 
   host_link.id        = A_surfxml_host___link_id;
@@ -487,7 +484,7 @@ void STag_surfxml_host___link(void){
 }
 
 void STag_surfxml_router(void){
-  s_sg_platf_router_cbarg_t router = SG_PLATF_ROUTER_INITIALIZER;
+  s_sg_platf_router_cbarg_t router;
   memset(&router, 0, sizeof(router));
 
   router.id    = A_surfxml_router_id;
@@ -497,7 +494,7 @@ void STag_surfxml_router(void){
 }
 
 void ETag_surfxml_cluster(void){
-  s_sg_platf_cluster_cbarg_t cluster = SG_PLATF_CLUSTER_INITIALIZER;
+  s_sg_platf_cluster_cbarg_t cluster;
   memset(&cluster,0,sizeof(cluster));
   cluster.properties = as_current_property_set;
 
@@ -580,7 +577,7 @@ void STag_surfxml_cluster(void){
 
 void STag_surfxml_cabinet(void){
   parse_after_config();
-  s_sg_platf_cabinet_cbarg_t cabinet = SG_PLATF_CABINET_INITIALIZER;
+  s_sg_platf_cabinet_cbarg_t cabinet;
   memset(&cabinet,0,sizeof(cabinet));
   cabinet.id      = A_surfxml_cabinet_id;
   cabinet.prefix  = A_surfxml_cabinet_prefix;
@@ -595,7 +592,7 @@ void STag_surfxml_cabinet(void){
 
 void STag_surfxml_peer(void){
   parse_after_config();
-  s_sg_platf_peer_cbarg_t peer = SG_PLATF_PEER_INITIALIZER;
+  s_sg_platf_peer_cbarg_t peer;
   memset(&peer,0,sizeof(peer));
   peer.id                 = A_surfxml_peer_id;
   peer.speed              = surf_parse_get_speed(A_surfxml_peer_speed, "speed of peer", peer.id);
@@ -615,7 +612,7 @@ void STag_surfxml_link(void){
 }
 
 void ETag_surfxml_link(void){
-  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
+  s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
 
   link.properties          = current_property_set;
@@ -668,11 +665,10 @@ void STag_surfxml_link___ctn(void){
 }
 
 void ETag_surfxml_backbone(void){
-  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
+  s_sg_platf_link_cbarg_t link;
   memset(&link,0,sizeof(link));
 
   link.properties = nullptr;
-
   link.id = A_surfxml_backbone_id;
   link.bandwidth = surf_parse_get_bandwidth(A_surfxml_backbone_bandwidth, "bandwidth of backbone", link.id);
   link.latency = surf_parse_get_time(A_surfxml_backbone_latency, "latency of backbone", link.id);
@@ -833,7 +829,7 @@ void ETag_surfxml_bypassASroute(void){
 }
 
 void ETag_surfxml_trace(void){
-  s_sg_platf_trace_cbarg_t trace = SG_PLATF_TRACE_INITIALIZER;
+  s_sg_platf_trace_cbarg_t trace;
   memset(&trace,0,sizeof(trace));
 
   trace.id = A_surfxml_trace_id;
@@ -846,7 +842,7 @@ void ETag_surfxml_trace(void){
 
 void STag_surfxml_trace___connect(void){
   parse_after_config();
-  s_sg_platf_trace_connect_cbarg_t trace_connect = SG_PLATF_TRACE_CONNECT_INITIALIZER;
+  s_sg_platf_trace_connect_cbarg_t trace_connect;
   memset(&trace_connect,0,sizeof(trace_connect));
 
   trace_connect.element = A_surfxml_trace___connect_element;
@@ -876,9 +872,7 @@ void STag_surfxml_trace___connect(void){
 void STag_surfxml_AS(void){
   parse_after_config();
   AS_TAG                   = 1;
-  s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
-  AS.id                    = A_surfxml_AS_id;
-  AS.routing               = (int)A_surfxml_AS_routing;
+  s_sg_platf_AS_cbarg_t AS = { A_surfxml_AS_id, (int)A_surfxml_AS_routing};
 
   as_current_property_set = nullptr;
 
@@ -938,7 +932,7 @@ void STag_surfxml_process(void){
 }
 
 void ETag_surfxml_process(void){
-  s_sg_platf_process_cbarg_t process = SG_PLATF_PROCESS_INITIALIZER;
+  s_sg_platf_process_cbarg_t process;
   memset(&process,0,sizeof(process));
 
   process.argc       = argc;

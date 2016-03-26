@@ -137,10 +137,10 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 }
 
 void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int , int position){
-  s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
   s_surf_parsing_link_up_down_t info;
   char* link_id = bprintf("%s_link_%d", cluster->id, id);
 
+  s_sg_platf_link_cbarg_t link;
   memset(&link, 0, sizeof(link));
   link.id = link_id;
   link.bandwidth = cluster->bw;
@@ -150,14 +150,13 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
 
   if (link.policy == SURF_LINK_FULLDUPLEX) {
     char *tmp_link = bprintf("%s_UP", link_id);
-    info.link_up = sg_link_by_name(tmp_link);
+    info.link_up = Link::byName(tmp_link);
     xbt_free(tmp_link);
     tmp_link = bprintf("%s_DOWN", link_id);
-    info.link_down = sg_link_by_name(tmp_link);
+    info.link_down = Link::byName(tmp_link);
     xbt_free(tmp_link);
   } else {
-    info.link_up = sg_link_by_name(link_id);
-    info.link_down = info.link_up;
+    info.link_up = info.link_down = Link::byName(link_id);
   }
   xbt_dynar_set(privateLinks_, position, &info);
   xbt_free(link_id);

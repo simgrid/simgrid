@@ -530,10 +530,9 @@ int console_AS_open(lua_State *L) {
  else if(!strcmp(mode,"none")) mode_int = A_surfxml_AS_routing_None;
  else xbt_die("Don't have the model name '%s'",mode);
 
- s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+ s_sg_platf_AS_cbarg_t AS;
  AS.id = id;
  AS.routing = mode_int;
-
  sg_platf_new_AS_begin(&AS);
 
  return 0;

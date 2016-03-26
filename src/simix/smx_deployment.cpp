@@ -114,7 +114,8 @@ void SIMIX_process_set_function(const char *process_host,
                                 double process_start_time,
                                 double process_kill_time)
 {
-  s_sg_platf_process_cbarg_t process = SG_PLATF_PROCESS_INITIALIZER;
+  s_sg_platf_process_cbarg_t process;
+  memset(&process,0,sizeof(process));
 
   sg_host_t host = sg_host_by_name(process_host);
   if (!host)
@@ -139,6 +140,7 @@ void SIMIX_process_set_function(const char *process_host,
   process.host = process_host;
   process.kill_time = process_kill_time;
   process.start_time = process_start_time;
+  process.on_failure = SURF_PROCESS_ON_FAILURE_DIE;
 
   sg_platf_new_process(&process);
 }

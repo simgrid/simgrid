@@ -50,24 +50,16 @@ typedef struct {
   xbt_dict_t properties;
 } s_sg_platf_host_cbarg_t, *sg_platf_host_cbarg_t;
 
-#define SG_PLATF_HOST_INITIALIZER { \
-    NULL, 0, 1, 1, NULL, NULL, NULL, NULL \
-}
-
 typedef struct {
   const char* id;
   const char* link_up;
   const char* link_down;
 } s_sg_platf_host_link_cbarg_t, *sg_platf_host_link_cbarg_t;
 
-#define SG_PLATF_HOST_LINK_INITIALIZER {NULL,NULL,NULL}
-
 typedef struct {
   const char* id;
   const char* coord;
 } s_sg_platf_router_cbarg_t, *sg_platf_router_cbarg_t;
-
-#define SG_PLATF_ROUTER_INITIALIZER {NULL,NULL}
 
 typedef struct {
   const char* id;
@@ -79,10 +71,6 @@ typedef struct {
   e_surf_link_sharing_policy_t policy;
   xbt_dict_t properties;
 } s_sg_platf_link_cbarg_t, *sg_platf_link_cbarg_t;
-
-#define SG_PLATF_LINK_INITIALIZER {\
-  NULL, 0., NULL, 0., NULL, NULL, SURF_LINK_SHARED, NULL \
-}
 
 typedef struct s_sg_platf_peer_cbarg *sg_platf_peer_cbarg_t;
 typedef struct s_sg_platf_peer_cbarg {
@@ -96,8 +84,6 @@ typedef struct s_sg_platf_peer_cbarg {
   tmgr_trace_t state_trace;
 } s_sg_platf_peer_cbarg_t;
 
-#define SG_PLATF_PEER_INITIALIZER {NULL,0.0,0.0,0.0,0.0,NULL,NULL,NULL}
-
 typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
 typedef struct s_sg_platf_route_cbarg {
   bool symmetrical;
@@ -107,8 +93,6 @@ typedef struct s_sg_platf_route_cbarg {
   sg_netcard_t gw_dst;
   std::vector<Link*> *link_list;
 } s_sg_platf_route_cbarg_t;
-
-#define SG_PLATF_ROUTE_INITIALIZER {1,NULL,NULL,NULL,NULL,NULL}
 
 typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;
 typedef struct s_sg_platf_cluster_cbarg {
@@ -135,12 +119,6 @@ typedef struct s_sg_platf_cluster_cbarg {
   const char* state_trace;
 } s_sg_platf_cluster_cbarg_t;
 
-#define SG_PLATF_CLUSTER_INITIALIZER {NULL,NULL,NULL,NULL,0.0,1 \
-  ,1.,1.,0.,0.,0.,0.,0. \
-  ,SURF_CLUSTER_FLAT,NULL,NULL,NULL, \
-  SURF_LINK_SHARED,SURF_LINK_SHARED,NULL \
-  ,NULL}
-
 typedef struct s_sg_platf_cabinet_cbarg *sg_platf_cabinet_cbarg_t;
 typedef struct s_sg_platf_cabinet_cbarg {
   const char* id;
@@ -152,8 +130,6 @@ typedef struct s_sg_platf_cabinet_cbarg {
   double lat;
 } s_sg_platf_cabinet_cbarg_t;
 
-#define SG_PLATF_CABINET_INITIALIZER {NULL,NULL,NULL,NULL,0.0,0.0,0.0}
-
 typedef struct {
   const char* id;
   const char* type_id;
@@ -162,8 +138,6 @@ typedef struct {
   xbt_dict_t properties;
   const char* attach;
 } s_sg_platf_storage_cbarg_t, *sg_platf_storage_cbarg_t;
-
-#define SG_PLATF_STORAGE_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL}
 
 typedef struct {
   const char* id;
@@ -175,22 +149,16 @@ typedef struct {
   sg_size_t size;
 } s_sg_platf_storage_type_cbarg_t, *sg_platf_storage_type_cbarg_t;
 
-#define SG_PLATF_STORAGE_TYPE_INITIALIZER {NULL,NULL,NULL,NULL,NULL,NULL,0}
-
 typedef struct {
   const char* storageId;
   const char* name;
 } s_sg_platf_mount_cbarg_t, *sg_platf_mount_cbarg_t;
-
-#define SG_PLATF_MOUNT_INITIALIZER {NULL,NULL}
 
 typedef struct s_sg_platf_prop_cbarg *sg_platf_prop_cbarg_t;
 typedef struct s_sg_platf_prop_cbarg {
   const char *id;
   const char *value;
 } s_sg_platf_prop_cbarg_t;
-
-#define SG_PLATF_PROP_INITIALIZER {NULL,NULL}
 
 typedef struct s_sg_platf_trace_cbarg *sg_platf_trace_cbarg_t;
 typedef struct s_sg_platf_trace_cbarg {
@@ -200,16 +168,12 @@ typedef struct s_sg_platf_trace_cbarg {
   const char *pc_data;
 } s_sg_platf_trace_cbarg_t;
 
-#define SG_PLATF_TRACE_INITIALIZER {NULL,NULL,0.0,NULL}
-
 typedef struct s_sg_platf_trace_connect_cbarg *sg_platf_trace_connect_cbarg_t;
 typedef struct s_sg_platf_trace_connect_cbarg {
   e_surf_trace_connect_kind_t kind;
   const char *trace;
   const char *element;
 } s_sg_platf_trace_connect_cbarg_t;
-
-#define SG_PLATF_TRACE_CONNECT_INITIALIZER {SURF_TRACE_CONNECT_KIND_LATENCY,NULL,NULL}
 
 typedef struct s_sg_platf_process_cbarg *sg_platf_process_cbarg_t;
 typedef struct s_sg_platf_process_cbarg {
@@ -222,8 +186,6 @@ typedef struct s_sg_platf_process_cbarg {
   double kill_time;
   e_surf_process_on_failure_t on_failure;
 } s_sg_platf_process_cbarg_t;
-
-#define SG_PLATF_PROCESS_INITIALIZER {NULL,0,NULL,NULL,NULL,-1.0,-1.0,SURF_PROCESS_ON_FAILURE_DIE}
 
 typedef struct s_sg_platf_AS_cbarg *sg_platf_AS_cbarg_t;
 typedef struct s_sg_platf_AS_cbarg {

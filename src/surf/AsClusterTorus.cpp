@@ -34,7 +34,6 @@ namespace simgrid {
     }
 
     void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) {
-      s_sg_platf_link_cbarg_t link = SG_PLATF_LINK_INITIALIZER;
       char *link_id;
       unsigned int j = 0;
       /**
@@ -48,6 +47,7 @@ namespace simgrid {
           dim_product = 1;      // Needed to calculate the next neighbour_id
       for (j = 0; j < xbt_dynar_length(dimensions_); j++) {
 
+        s_sg_platf_link_cbarg_t link;
         memset(&link, 0, sizeof(link));
         current_dimension = xbt_dynar_get_as(dimensions_, j, int);
         neighbour_rank_id =
