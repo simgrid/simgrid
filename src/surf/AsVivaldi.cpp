@@ -24,7 +24,7 @@ static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t
 namespace simgrid {
 namespace surf {
   AsVivaldi::AsVivaldi(const char *name)
-    : AsRoutedGraph(name)
+    : AsCluster(name)
   {}
 
 void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
@@ -50,8 +50,8 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   if(src->isHost()){
     tmp_src_name = HOST_PEER(src->name());
 
-    if ((int)xbt_dynar_length(upDownLinks)>src->id()) {
-      info = xbt_dynar_get_as(upDownLinks, src->id(), s_surf_parsing_link_up_down_t);
+    if ((int)xbt_dynar_length(upDownLinks_)>src->id()) {
+      info = xbt_dynar_get_as(upDownLinks_, src->id(), s_surf_parsing_link_up_down_t);
       if(info.link_up) { // link up
         route->link_list->push_back(info.link_up);
         if (lat)
@@ -73,8 +73,8 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   if(dst->isHost()){
     tmp_dst_name = HOST_PEER(dst->name());
 
-    if ((int)xbt_dynar_length(upDownLinks)>dst->id()) {
-      info = xbt_dynar_get_as(upDownLinks, dst->id(), s_surf_parsing_link_up_down_t);
+    if ((int)xbt_dynar_length(upDownLinks_)>dst->id()) {
+      info = xbt_dynar_get_as(upDownLinks_, dst->id(), s_surf_parsing_link_up_down_t);
       if(info.link_down) { // link down
         route->link_list->push_back(info.link_down);
         if (lat)

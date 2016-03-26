@@ -77,7 +77,7 @@ namespace simgrid {
          * note that position rankId*(xbt_dynar_length(dimensions)+has_loopack?+has_limiter?)
          * holds the link "rankId->rankId"
          */
-        xbt_dynar_set(upDownLinks, position + j, &info);
+        xbt_dynar_set(upDownLinks_, position + j, &info);
         dim_product *= current_dimension;
         xbt_free(link_id);
       }
@@ -118,7 +118,7 @@ namespace simgrid {
         return;
 
       if ((src->id() == dst->id()) && has_loopback_) {
-        s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(upDownLinks, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
+        s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(upDownLinks_, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
 
         route->link_list->push_back(info.link_up);
         if (lat)
@@ -200,11 +200,11 @@ namespace simgrid {
         s_surf_parsing_link_up_down_t info;
 
         if (has_limiter_) {    // limiter for sender
-          info = xbt_dynar_get_as(upDownLinks, nodeOffset + has_loopback_, s_surf_parsing_link_up_down_t);
+          info = xbt_dynar_get_as(upDownLinks_, nodeOffset + has_loopback_, s_surf_parsing_link_up_down_t);
           route->link_list->push_back(info.link_up);
         }
 
-        info = xbt_dynar_get_as(upDownLinks, linkOffset, s_surf_parsing_link_up_down_t);
+        info = xbt_dynar_get_as(upDownLinks_, linkOffset, s_surf_parsing_link_up_down_t);
 
         if (use_lnk_up == false) {
           route->link_list->push_back(info.link_down);

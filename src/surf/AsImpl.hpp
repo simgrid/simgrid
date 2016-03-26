@@ -71,7 +71,6 @@ public:
   };
   /* FIXME: protect the following fields once the construction madness is sorted out */
   RoutingMode hierarchy_ = RoutingMode::unset;
-  xbt_dynar_t upDownLinks = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),NULL);
   surf::NetCard *netcard_ = nullptr; // Our representative in the father AS
 };
 

@@ -6,12 +6,13 @@
 #ifndef SURF_ROUTING_VIVALDI_HPP_
 #define SURF_ROUTING_VIVALDI_HPP_
 
-#include "src/surf/AsRoutedGraph.hpp"
+#include "src/surf/AsCluster.hpp"
 
 namespace simgrid {
 namespace surf {
 
-class XBT_PRIVATE AsVivaldi: public AsRoutedGraph {
+/* This derivates from cluster because each host has a private link */
+class XBT_PRIVATE AsVivaldi: public AsCluster {
 public:
   AsVivaldi(const char *name);
   ~AsVivaldi() {};

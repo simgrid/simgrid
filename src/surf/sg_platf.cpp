@@ -343,7 +343,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         info_loop.link_up   = Link::byName(tmp_link);
         info_loop.link_down = info_loop.link_up;
         free(tmp_link);
-        xbt_dynar_set(current_routing->upDownLinks, rankId*(static_cast<AsCluster*>(current_routing))->nb_links_per_node_, &info_loop);
+        auto as_cluster = static_cast<AsCluster*>(current_routing);
+        xbt_dynar_set(as_cluster->upDownLinks_, rankId*as_cluster->nb_links_per_node_, &info_loop);
       }
 
       //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -363,7 +364,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         info_lim.link_down = info_lim.link_up;
         free(tmp_link);
         auto as_cluster = static_cast<AsCluster*>(current_routing);
-        xbt_dynar_set(current_routing->upDownLinks, rankId*(as_cluster)->nb_links_per_node_ + as_cluster->has_loopback_ , &info_lim);
+        xbt_dynar_set(as_cluster->upDownLinks_, rankId*(as_cluster)->nb_links_per_node_ + as_cluster->has_loopback_ , &info_lim);
 
       }
 
@@ -955,26 +956,26 @@ void sg_platf_new_AS_end()
 }
 
 /** @brief Add a link connecting an host to the rest of its AS (which must be cluster or vivaldi) */
-void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t netcard_arg)
+void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
 {
-  simgrid::surf::NetCard *netcard = sg_host_by_name(netcard_arg->id)->pimpl_netcard;
-  xbt_assert(netcard, "Host '%s' not found!", netcard_arg->id);
-  xbt_assert(dynamic_cast<simgrid::surf::AsCluster*>(current_routing) ||
-             dynamic_cast<simgrid::surf::AsVivaldi*>(current_routing),
-      "Only hosts from Cluster and Vivaldi ASes can get a host_link.");
+  simgrid::surf::NetCard *netcard = sg_host_by_name(hostlink->id)->pimpl_netcard;
+  xbt_assert(netcard, "Host '%s' not found!", hostlink->id);
+  xbt_assert(dynamic_cast<simgrid::surf::AsCluster*>(current_routing),
+      "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
   s_surf_parsing_link_up_down_t link_up_down;
-  link_up_down.link_up = Link::byName(netcard_arg->link_up);
-  link_up_down.link_down = Link::byName(netcard_arg->link_down);
+  link_up_down.link_up = Link::byName(hostlink->link_up);
+  link_up_down.link_down = Link::byName(hostlink->link_down);
 
-  xbt_assert(link_up_down.link_up, "Link '%s' not found!",netcard_arg->link_up);
-  xbt_assert(link_up_down.link_down, "Link '%s' not found!",netcard_arg->link_down);
+  xbt_assert(link_up_down.link_up, "Link '%s' not found!",hostlink->link_up);
+  xbt_assert(link_up_down.link_down, "Link '%s' not found!",hostlink->link_down);
 
   // If dynar is is greater than netcard id and if the host_link is already defined
-  if((int)xbt_dynar_length(current_routing->upDownLinks) > netcard->id() &&
-      xbt_dynar_get_as(current_routing->upDownLinks, netcard->id(), void*))
-  surf_parse_error("Host_link for '%s' is already defined!",netcard_arg->id);
+  auto as_cluster = static_cast<simgrid::surf::AsCluster*>(current_routing);
+  if((int)xbt_dynar_length(as_cluster->upDownLinks_) > netcard->id() &&
+      xbt_dynar_get_as(as_cluster->upDownLinks_, netcard->id(), void*))
+  surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
 
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name(), netcard->id());
-  xbt_dynar_set_as(current_routing->upDownLinks, netcard->id(), s_surf_parsing_link_up_down_t, link_up_down);
+  xbt_dynar_set_as(as_cluster->upDownLinks_, netcard->id(), s_surf_parsing_link_up_down_t, link_up_down);
 }

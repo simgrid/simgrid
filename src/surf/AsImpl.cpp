@@ -19,7 +19,6 @@ namespace simgrid {
     }
     AsImpl::~AsImpl()
     {
-      xbt_dynar_free(&upDownLinks);
       delete netcard_;
     }
 
