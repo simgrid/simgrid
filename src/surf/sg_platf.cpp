@@ -714,14 +714,10 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   using simgrid::surf::NetCard;
   using simgrid::surf::AsCluster;
 
-  char *host_id = NULL;
-  char *link_id = NULL;
-  char *router_id = NULL;
+  char *host_id = bprintf("peer_%s", peer->id);
+  char *router_id = bprintf("router_%s", peer->id);
 
   XBT_DEBUG(" ");
-  host_id = bprintf("peer_%s", peer->id);
-  link_id = bprintf("link_%s", peer->id);
-  router_id = bprintf("router_%s", peer->id);
 
   XBT_DEBUG("<AS id=\"%s\"\trouting=\"Cluster\">", peer->id);
   s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
@@ -737,7 +733,6 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
   xbt_dynar_push(host.speed_per_pstate,&peer->speed);
   host.pstate = 0;
-  //host.power_peak = peer->power;
   host.speed_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
@@ -749,13 +744,13 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   link.policy  = SURF_LINK_SHARED;
   link.latency = peer->lat;
 
-  char* link_up = bprintf("%s_UP",link_id);
+  char* link_up = bprintf("link_%s_UP",peer->id);
   XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_up, peer->bw_out, peer->lat);
   link.id = link_up;
   link.bandwidth = peer->bw_out;
   sg_platf_new_link(&link);
 
-  char* link_down = bprintf("%s_DOWN",link_id);
+  char* link_down = bprintf("link_%s_DOWN",peer->id);
   XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_down, peer->bw_in, peer->lat);
   link.id = link_down;
   link.bandwidth = peer->bw_in;
@@ -768,6 +763,8 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   host_link.link_up   = link_up;
   host_link.link_down = link_down;
   sg_platf_new_hostlink(&host_link);
+  free(link_up);
+  free(link_down);
 
   XBT_DEBUG("<router id=\"%s\"/>", router_id);
   s_sg_platf_router_cbarg_t router = SG_PLATF_ROUTER_INITIALIZER;
@@ -781,12 +778,8 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   sg_platf_new_AS_end();
   XBT_DEBUG(" ");
 
-  //xbt_dynar_free(&tab_elements_num);
   free(router_id);
   free(host_id);
-  free(link_id);
-  free(link_up);
-  free(link_down);
 }
 
 void sg_platf_begin() { /* Do nothing: just for symmetry of user code */ }
