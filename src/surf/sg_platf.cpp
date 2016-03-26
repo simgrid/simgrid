@@ -80,7 +80,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     current_routing->hierarchy_ = simgrid::surf::AsImpl::RoutingMode::base;
 
   simgrid::surf::NetCard *netcard =
-      new simgrid::surf::NetCardImpl(host->id, SURF_NETWORK_ELEMENT_HOST, current_routing);
+      new simgrid::surf::NetCardImpl(host->id, simgrid::surf::NetCard::Type::Host, current_routing);
 
   sg_host_t h = simgrid::s4u::Host::by_name_or_create(host->id);
   h->pimpl_netcard = netcard;
@@ -139,7 +139,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
              "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
   simgrid::surf::NetCard *netcard =
-    new simgrid::surf::NetCardImpl(router->id, SURF_NETWORK_ELEMENT_ROUTER, current_routing);
+    new simgrid::surf::NetCardImpl(router->id, simgrid::surf::NetCard::Type::Router, current_routing);
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) netcard);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, netcard->id());
 
@@ -919,7 +919,7 @@ void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   }
 
   /* make a new routing component */
-  simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->name(), SURF_NETWORK_ELEMENT_AS, current_routing);
+  simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->name(), simgrid::surf::NetCard::Type::As, current_routing);
 
   if (current_routing == NULL && routing_platf->root_ == NULL) { /* it is the first one */
     routing_platf->root_ = new_as;

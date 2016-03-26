@@ -51,11 +51,14 @@ public:
   virtual bool isAS()=0;
   virtual bool isHost()=0;
   virtual bool isRouter()=0;
+  enum class Type {
+    Host, Router, As
+  };
 };
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, AsImpl *containingAS)
+  NetCardImpl(const char *name, NetCard::Type componentType, AsImpl *containingAS)
   : name_(xbt_strdup(name)),
     componentType_(componentType),
     containingAS_(containingAS)
@@ -70,14 +73,14 @@ public:
   char *name()       override {return name_;}
   AsImpl *containingAS() override {return containingAS_;}
 
-  bool isAS()        override {return componentType_ == SURF_NETWORK_ELEMENT_AS;}
-  bool isHost()      override {return componentType_ == SURF_NETWORK_ELEMENT_HOST;}
-  bool isRouter()    override {return componentType_ == SURF_NETWORK_ELEMENT_ROUTER;}
+  bool isAS()        override {return componentType_ == Type::As;}
+  bool isHost()      override {return componentType_ == Type::Host;}
+  bool isRouter()    override {return componentType_ == Type::Router;}
 
 private:
   int id_ = -1;
   char *name_;
-  e_surf_network_element_type_t componentType_;
+  NetCard::Type componentType_;
   AsImpl *containingAS_;
 };
 
