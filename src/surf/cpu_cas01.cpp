@@ -200,13 +200,13 @@ CpuAction *CpuCas01::sleep(double duration)
       speed_.scale * speed_.peak, getConstraint());
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
-  action->m_maxDuration = duration;
-  action->m_suspended = 2;
+  action->maxDuration_ = duration;
+  action->suspended_ = 2;
   if (duration == NO_MAX_DURATION) {
     /* Move to the *end* of the corresponding action set. This convention
        is used to speed up update_resource_state  */
     action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
-    action->p_stateSet = static_cast<CpuCas01Model*>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
+    action->stateSet_ = static_cast<CpuCas01Model*>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }
 
@@ -234,9 +234,9 @@ CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double sp
          1.0, speed, 1))
 {
   if (model->getUpdateMechanism() == UM_LAZY) {
-    m_indexHeap = -1;
-    m_lastUpdate = surf_get_clock();
-    m_lastValue = 0.0;
+    indexHeap_ = -1;
+    lastUpdate_ = surf_get_clock();
+    lastValue_ = 0.0;
   }
   lmm_expand(model->getMaxminSystem(), constraint, getVariable(), 1.0);
 }

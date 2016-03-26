@@ -156,32 +156,32 @@ public:
   double getFinishTime();
 
   /** @brief Get the user data associated to the current action */
-  void *getData() {return p_data;}
+  void *getData() {return data_;}
   /** @brief Set the user data associated to the current action */
   void setData(void* data);
 
   /** @brief Get the cost of the current action */
-  double getCost() {return m_cost;}
+  double getCost() {return cost_;}
   /** @brief Set the cost of the current action */
-  void setCost(double cost) {m_cost = cost;}
+  void setCost(double cost) {cost_ = cost;}
 
   /** @brief Update the maximum duration of the current action
    *  @param delta Amount to remove from the MaxDuration */
-  void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta,sg_surf_precision);}
+  void updateMaxDuration(double delta) {double_update(&maxDuration_, delta,sg_surf_precision);}
 
   /** @brief Update the remaining time of the current action
    *  @param delta Amount to remove from the remaining time */
-  void updateRemains(double delta) {double_update(&m_remains, delta, sg_maxmin_precision*sg_surf_precision);}
+  void updateRemains(double delta) {double_update(&remains_, delta, sg_maxmin_precision*sg_surf_precision);}
 
   /** @brief Set the remaining time of the current action */
-  void setRemains(double value) {m_remains = value;}
+  void setRemains(double value) {remains_ = value;}
   /** @brief Get the remaining time of the current action after updating the resource */
   virtual double getRemains();
   /** @brief Get the remaining time of the current action without updating the resource */
   double getRemainsNoUpdate();
 
   /** @brief Set the finish time of the current action */
-  void setFinishTime(double value) {m_finish = value;}
+  void setFinishTime(double value) {finishTime_ = value;}
 
   /**@brief Add a reference to the current action (refcounting) */
   void ref();
@@ -203,42 +203,42 @@ public:
   virtual bool isSuspended();
 
   /** @brief Get the maximum duration of the current action */
-  double getMaxDuration() {return m_maxDuration;}
+  double getMaxDuration() {return maxDuration_;}
   /** @brief Set the maximum duration of the current Action */
   virtual void setMaxDuration(double duration);
 
   /** @brief Get the tracing category associated to the current action */
-  char *getCategory() {return p_category;}
+  char *getCategory() {return category_;}
   /** @brief Set the tracing category of the current Action */
   void setCategory(const char *category);
 
   /** @brief Get the priority of the current Action */
-  double getPriority() {return m_priority;};
+  double getPriority() {return priority_;};
   /** @brief Set the priority of the current Action */
   virtual void setPriority(double priority);
 
   /** @brief Get the state set in which the action is */
-  ActionList* getStateSet() {return p_stateSet;};
+  ActionList* getStateSet() {return stateSet_;};
 
-  s_xbt_swag_hookup_t p_stateHookup = {NULL,NULL};
+  s_xbt_swag_hookup_t stateHookup_ = {NULL,NULL};
 
-  simgrid::surf::Model *getModel() {return p_model;}
+  simgrid::surf::Model *getModel() {return model_;}
 
 protected:
-  ActionList* p_stateSet;
-  double m_priority = 1.0; /**< priority (1.0 by default) */
-  int    m_refcount = 1;
-  double m_remains; /**< How much of that cost remains to be done in the currently running task */
-  double m_maxDuration = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
-  double m_finish = -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
+  ActionList* stateSet_;
+  double priority_ = 1.0; /**< priority (1.0 by default) */
+  int    refcount_ = 1;
+  double remains_; /**< How much of that cost remains to be done in the currently running task */
+  double maxDuration_ = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
+  double finishTime_ = -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
 private:
-  double m_start; /**< start time  */
-  char *p_category = NULL;            /**< tracing category for categorized resource utilization monitoring */
+  double start_; /**< start time  */
+  char *category_ = NULL;            /**< tracing category for categorized resource utilization monitoring */
 
-  double    m_cost;
-  simgrid::surf::Model *p_model;
-  void *p_data = NULL; /**< for your convenience */
+  double    cost_;
+  simgrid::surf::Model *model_;
+  void *data_ = NULL; /**< for your convenience */
 
   /* LMM */
 public:
@@ -247,20 +247,20 @@ public:
   void heapRemove(xbt_heap_t heap);
   void heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat);
   void updateIndexHeap(int i);
-  lmm_variable_t getVariable() {return p_variable;}
-  double getLastUpdate() {return m_lastUpdate;}
-  void refreshLastUpdate() {m_lastUpdate = surf_get_clock();}
-  enum heap_action_type getHat() {return m_hat;}
+  lmm_variable_t getVariable() {return variable_;}
+  double getLastUpdate() {return lastUpdate_;}
+  void refreshLastUpdate() {lastUpdate_ = surf_get_clock();}
+  enum heap_action_type getHat() {return hat_;}
   bool is_linked() {return action_lmm_hook.is_linked();}
   void gapRemove();
 
 protected:
-  lmm_variable_t p_variable;
-  double m_lastValue = 0;
-  double m_lastUpdate = 0;
-  int m_suspended = 0;
-  int m_indexHeap;
-  enum heap_action_type m_hat = NOTSET;
+  lmm_variable_t variable_;
+  double lastValue_ = 0;
+  double lastUpdate_ = 0;
+  int suspended_ = 0;
+  int indexHeap_;
+  enum heap_action_type hat_ = NOTSET;
 };
 
 typedef Action::ActionList ActionList;

@@ -222,7 +222,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
   this->m_latency = latency;
   this->m_rate = rate;
 
-  this->p_variable = lmm_variable_new(model->getMaxminSystem(), this, 1.0,
+  this->variable_ = lmm_variable_new(model->getMaxminSystem(), this, 1.0,
       (rate > 0 ? rate : -1.0),
       host_nb + nb_link);
 
@@ -324,8 +324,8 @@ Action *CpuL07::execution_start(double size)
 Action *CpuL07::sleep(double duration)
 {
   L07Action *action = static_cast<L07Action*>(execution_start(1.0));
-  action->m_maxDuration = duration;
-  action->m_suspended = 2;
+  action->maxDuration_ = duration;
+  action->suspended_ = 2;
   lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), 0.0);
 
   return action;
@@ -453,7 +453,7 @@ void L07Action::updateBound()
   }
   lat_bound = sg_tcp_gamma / (2.0 * lat_current);
   XBT_DEBUG("action (%p) : lat_bound = %g", this, lat_bound);
-  if ((m_latency == 0.0) && (m_suspended == 0)) {
+  if ((m_latency == 0.0) && (suspended_ == 0)) {
     if (m_rate < 0)
       lmm_update_variable_bound(getModel()->getMaxminSystem(), getVariable(), lat_bound);
     else
@@ -464,10 +464,10 @@ void L07Action::updateBound()
 
 int L07Action::unref()
 {
-  m_refcount--;
-  if (!m_refcount) {
+  refcount_--;
+  if (!refcount_) {
     if (action_hook.is_linked())
-      p_stateSet->erase(p_stateSet->iterator_to(*this));
+      stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
     delete this;

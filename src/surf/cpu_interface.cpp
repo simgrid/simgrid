@@ -249,21 +249,21 @@ void CpuAction::updateRemainingLazy(double now)
   xbt_assert(getStateSet() == getModel()->getRunningActionSet(), "You're updating an action that is not running.");
   xbt_assert(getPriority() > 0, "You're updating an action that seems suspended.");
 
-  double delta = now - m_lastUpdate;
+  double delta = now - lastUpdate_;
 
-  if (m_remains > 0) {
-    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
-    double_update(&(m_remains), m_lastValue * delta, sg_maxmin_precision*sg_surf_precision);
+  if (remains_ > 0) {
+    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains was %f, last_update was: %f", this, remains_, lastUpdate_);
+    double_update(&(remains_), lastValue_ * delta, sg_maxmin_precision*sg_surf_precision);
 
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
+      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
     }
-    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, m_remains);
+    XBT_CDEBUG(surf_kernel, "Updating action(%p): remains is now %f", this, remains_);
   }
 
-  m_lastUpdate = now;
-  m_lastValue = lmm_variable_getvalue(getVariable());
+  lastUpdate_ = now;
+  lastValue_ = lmm_variable_getvalue(getVariable());
 }
 
 /*

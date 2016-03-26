@@ -30,6 +30,7 @@ namespace simgrid {
 
       xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
           "Please remove any link from your platform (and switch to routing='None')", name);
+      return nullptr;
     }
 
     double NetworkConstantModel::next_occuring_event(double /*now*/)
@@ -89,13 +90,24 @@ namespace simgrid {
     /**********
      * Action *
      **********/
+    NetworkConstantAction::NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
+    : NetworkAction(model_, size, false)
+    , m_latInit(latency)
+    {
+      latency_ = latency;
+      if (latency_ <= 0.0) {
+        stateSet_ = getModel()->getDoneActionSet();
+        stateSet_->push_back(*this);
+      }
+      variable_ = NULL;
+    };
 
     int NetworkConstantAction::unref()
     {
-      m_refcount--;
-      if (!m_refcount) {
+      refcount_--;
+      if (!refcount_) {
         if (action_hook.is_linked())
-          p_stateSet->erase(p_stateSet->iterator_to(*this));
+          stateSet_->erase(stateSet_->iterator_to(*this));
         delete this;
         return 1;
       }
@@ -104,7 +116,6 @@ namespace simgrid {
 
     void NetworkConstantAction::cancel()
     {
-      return;
     }
 
   }

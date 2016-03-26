@@ -42,17 +42,7 @@ namespace simgrid {
      **********/
     class NetworkConstantAction : public NetworkAction {
     public:
-      NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
-    : NetworkAction(model_, size, false)
-    , m_latInit(latency)
-    {
-        latency_ = latency;
-        if (latency_ <= 0.0) {
-          p_stateSet = getModel()->getDoneActionSet();
-          p_stateSet->push_back(*this);
-        }
-        p_variable = NULL;
-    };
+      NetworkConstantAction(NetworkConstantModel *model_, double size, double latency);
       int unref() override;
       void cancel() override;
       double m_latInit;

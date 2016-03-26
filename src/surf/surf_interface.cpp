@@ -632,17 +632,17 @@ namespace surf {
 void Action::initialize(simgrid::surf::Model *model, double cost, bool failed,
                         lmm_variable_t var)
 {
-  m_remains = cost;
-  m_start = surf_get_clock();
-  m_cost = cost;
-  p_model = model;
-  p_variable = var;
+  remains_ = cost;
+  start_ = surf_get_clock();
+  cost_ = cost;
+  model_ = model;
+  variable_ = var;
   if (failed)
-    p_stateSet = getModel()->getFailedActionSet();
+    stateSet_ = getModel()->getFailedActionSet();
   else
-    p_stateSet = getModel()->getRunningActionSet();
+    stateSet_ = getModel()->getRunningActionSet();
 
-  p_stateSet->push_back(*this);
+  stateSet_->push_back(*this);
 }
 
 Action::Action(simgrid::surf::Model *model, double cost, bool failed)
@@ -656,60 +656,60 @@ Action::Action(simgrid::surf::Model *model, double cost, bool failed, lmm_variab
 }
 
 Action::~Action() {
-  xbt_free(p_category);
+  xbt_free(category_);
 }
 
 void Action::finish() {
-    m_finish = surf_get_clock();
+    finishTime_ = surf_get_clock();
 }
 
 Action::State Action::getState()
 {
-  if (p_stateSet ==  getModel()->getReadyActionSet())
+  if (stateSet_ ==  getModel()->getReadyActionSet())
     return Action::State::ready;
-  if (p_stateSet ==  getModel()->getRunningActionSet())
+  if (stateSet_ ==  getModel()->getRunningActionSet())
     return Action::State::running;
-  if (p_stateSet ==  getModel()->getFailedActionSet())
+  if (stateSet_ ==  getModel()->getFailedActionSet())
     return Action::State::failed;
-  if (p_stateSet ==  getModel()->getDoneActionSet())
+  if (stateSet_ ==  getModel()->getDoneActionSet())
     return Action::State::done;
   return Action::State::not_in_the_system;
 }
 
 void Action::setState(Action::State state)
 {
-  p_stateSet->erase(p_stateSet->iterator_to(*this));
+  stateSet_->erase(stateSet_->iterator_to(*this));
   switch (state) {
   case Action::State::ready:
-    p_stateSet = getModel()->getReadyActionSet();
+    stateSet_ = getModel()->getReadyActionSet();
     break;
   case Action::State::running:
-    p_stateSet = getModel()->getRunningActionSet();
+    stateSet_ = getModel()->getRunningActionSet();
     break;
   case Action::State::failed:
-    p_stateSet = getModel()->getFailedActionSet();
+    stateSet_ = getModel()->getFailedActionSet();
     break;
   case Action::State::done:
-    p_stateSet = getModel()->getDoneActionSet();
+    stateSet_ = getModel()->getDoneActionSet();
     break;
   default:
-    p_stateSet = NULL;
+    stateSet_ = NULL;
     break;
   }
-  if (p_stateSet)
-    p_stateSet->push_back(*this);
+  if (stateSet_)
+    stateSet_->push_back(*this);
 }
 
 double Action::getBound()
 {
-  return (p_variable) ? lmm_variable_getbound(p_variable) : 0;
+  return (variable_) ? lmm_variable_getbound(variable_) : 0;
 }
 
 void Action::setBound(double bound)
 {
   XBT_IN("(%p,%g)", this, bound);
-  if (p_variable)
-    lmm_update_variable_bound(getModel()->getMaxminSystem(), p_variable, bound);
+  if (variable_)
+    lmm_update_variable_bound(getModel()->getMaxminSystem(), variable_, bound);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY && getLastUpdate()!=surf_get_clock())
     heapRemove(getModel()->getActionHeap());
@@ -718,35 +718,35 @@ void Action::setBound(double bound)
 
 double Action::getStartTime()
 {
-  return m_start;
+  return start_;
 }
 
 double Action::getFinishTime()
 {
   /* keep the function behavior, some models (cpu_ti) change the finish time before the action end */
-  return m_remains == 0 ? m_finish : -1;
+  return remains_ == 0 ? finishTime_ : -1;
 }
 
 void Action::setData(void* data)
 {
-  p_data = data;
+  data_ = data;
 }
 
 void Action::setCategory(const char *category)
 {
   XBT_IN("(%p,%s)", this, category);
-  p_category = xbt_strdup(category);
+  category_ = xbt_strdup(category);
   XBT_OUT();
 }
 
 void Action::ref(){
-  m_refcount++;
+  refcount_++;
 }
 
 void Action::setMaxDuration(double duration)
 {
   XBT_IN("(%p,%g)", this, duration);
-  m_maxDuration = duration;
+  maxDuration_ = duration;
   if (getModel()->getUpdateMechanism() == UM_LAZY)      // remove action from the heap
     heapRemove(getModel()->getActionHeap());
   XBT_OUT();
@@ -757,7 +757,7 @@ void Action::gapRemove() {}
 void Action::setPriority(double priority)
 {
   XBT_IN("(%p,%g)", this, priority);
-  m_priority = priority;
+  priority_ = priority;
   lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), priority);
 
   if (getModel()->getUpdateMechanism() == UM_LAZY)
@@ -775,10 +775,10 @@ void Action::cancel(){
 }
 
 int Action::unref(){
-  m_refcount--;
-  if (!m_refcount) {
+  refcount_--;
+  if (!refcount_) {
     if (action_hook.is_linked())
-      p_stateSet->erase(p_stateSet->iterator_to(*this));
+      stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
     if (getModel()->getUpdateMechanism() == UM_LAZY) {
@@ -796,9 +796,9 @@ int Action::unref(){
 void Action::suspend()
 {
   XBT_IN("(%p)", this);
-  if (m_suspended != 2) {
+  if (suspended_ != 2) {
     lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
-    m_suspended = 1;
+    suspended_ = 1;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
       heapRemove(getModel()->getActionHeap());
   }
@@ -808,9 +808,9 @@ void Action::suspend()
 void Action::resume()
 {
   XBT_IN("(%p)", this);
-  if (m_suspended != 2) {
-    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), m_priority);
-    m_suspended = 0;
+  if (suspended_ != 2) {
+    lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), priority_);
+    suspended_ = 0;
     if (getModel()->getUpdateMechanism() == UM_LAZY)
       heapRemove(getModel()->getActionHeap());
   }
@@ -819,7 +819,7 @@ void Action::resume()
 
 bool Action::isSuspended()
 {
-  return m_suspended == 1;
+  return suspended_ == 1;
 }
 /* insert action on heap using a given key and a hat (heap_action_type)
  * a hat can be of three types for communications:
@@ -830,30 +830,30 @@ bool Action::isSuspended()
  */
 void Action::heapInsert(xbt_heap_t heap, double key, enum heap_action_type hat)
 {
-  m_hat = hat;
+  hat_ = hat;
   xbt_heap_push(heap, this, key);
 }
 
 void Action::heapRemove(xbt_heap_t heap)
 {
-  m_hat = NOTSET;
-  if (m_indexHeap >= 0) {
-    xbt_heap_remove(heap, m_indexHeap);
+  hat_ = NOTSET;
+  if (indexHeap_ >= 0) {
+    xbt_heap_remove(heap, indexHeap_);
   }
 }
 
 void Action::heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat)
 {
-  m_hat = hat;
-  if (m_indexHeap >= 0) {
-    xbt_heap_update(heap, m_indexHeap, key);
+  hat_ = hat;
+  if (indexHeap_ >= 0) {
+    xbt_heap_update(heap, indexHeap_, key);
   }else{
     xbt_heap_push(heap, this, key);
   }
 }
 
 void Action::updateIndexHeap(int i) {
-  m_indexHeap = i;
+  indexHeap_ = i;
 }
 
 double Action::getRemains()
@@ -863,12 +863,12 @@ double Action::getRemains()
   if (getModel()->getUpdateMechanism() == UM_LAZY)      /* update remains before return it */
     updateRemainingLazy(surf_get_clock());
   XBT_OUT();
-  return m_remains;
+  return remains_;
 }
 
 double Action::getRemainsNoUpdate()
 {
-  return m_remains;
+  return remains_;
 }
 
 //FIXME split code in the right places
@@ -878,54 +878,54 @@ void Action::updateRemainingLazy(double now)
 
   if(getModel() == surf_network_model)
   {
-    if (m_suspended != 0)
+    if (suspended_ != 0)
       return;
   }
   else
   {
-    xbt_assert(p_stateSet == getModel()->getRunningActionSet(),
+    xbt_assert(stateSet_ == getModel()->getRunningActionSet(),
         "You're updating an action that is not running.");
 
       /* bogus priority, skip it */
-    xbt_assert(m_priority > 0,
+    xbt_assert(priority_ > 0,
         "You're updating an action that seems suspended.");
   }
 
-  delta = now - m_lastUpdate;
+  delta = now - lastUpdate_;
 
-  if (m_remains > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
-    double_update(&m_remains, m_lastValue * delta, sg_surf_precision*sg_maxmin_precision);
+  if (remains_ > 0) {
+    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, remains_, lastUpdate_);
+    double_update(&remains_, lastValue_ * delta, sg_surf_precision*sg_maxmin_precision);
 
     if (getModel() == surf_cpu_model_pm && TRACE_is_enabled()) {
       simgrid::surf::Resource *cpu = static_cast<simgrid::surf::Resource*>(
         lmm_constraint_id(lmm_get_cnst_from_var(getModel()->getMaxminSystem(), getVariable(), 0)));
-      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), m_lastValue, m_lastUpdate, now - m_lastUpdate);
+      TRACE_surf_host_set_utilization(cpu->getName(), getCategory(), lastValue_, lastUpdate_, now - lastUpdate_);
     }
-    XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
+    XBT_DEBUG("Updating action(%p): remains is now %f", this, remains_);
   }
 
   if(getModel() == surf_network_model)
   {
-    if (m_maxDuration != NO_MAX_DURATION)
-      double_update(&m_maxDuration, delta, sg_surf_precision);
+    if (maxDuration_ != NO_MAX_DURATION)
+      double_update(&maxDuration_, delta, sg_surf_precision);
 
     //FIXME: duplicated code
-    if ((m_remains <= 0) &&
+    if ((remains_ <= 0) &&
         (lmm_get_variable_weight(getVariable()) > 0)) {
       finish();
       setState(Action::State::done);
       heapRemove(getModel()->getActionHeap());
-    } else if (((m_maxDuration != NO_MAX_DURATION)
-        && (m_maxDuration <= 0))) {
+    } else if (((maxDuration_ != NO_MAX_DURATION)
+        && (maxDuration_ <= 0))) {
       finish();
       setState(Action::State::done);
       heapRemove(getModel()->getActionHeap());
     }
   }
 
-  m_lastUpdate = now;
-  m_lastValue = lmm_variable_getvalue(getVariable());
+  lastUpdate_ = now;
+  lastValue_ = lmm_variable_getvalue(getVariable());
 }
 
 }

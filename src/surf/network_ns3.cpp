@@ -387,10 +387,10 @@ bool NetworkNS3Action::isSuspended()
 
 int NetworkNS3Action::unref()
 {
-  m_refcount--;
-  if (!m_refcount) {
+  refcount_--;
+  if (!refcount_) {
   if (action_hook.is_linked())
-    p_stateSet->erase(p_stateSet->iterator_to(*this));
+    stateSet_->erase(stateSet_->iterator_to(*this));
     XBT_DEBUG ("Removing action %p", this);
     delete this;
     return 1;

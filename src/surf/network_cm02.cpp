@@ -325,8 +325,8 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
 
   action->rate_ = rate;
   if (updateMechanism_ == UM_LAZY) {
-    action->m_indexHeap = -1;
-    action->m_lastUpdate = surf_get_clock();
+    action->indexHeap_ = -1;
+    action->lastUpdate_ = surf_get_clock();
   }
 
   bandwidth_bound = -1.0;
@@ -355,14 +355,14 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
     constraints_per_variable += back_route->size();
 
   if (action->latency_ > 0) {
-    action->p_variable = lmm_variable_new(maxminSystem_, action, 0.0, -1.0, constraints_per_variable);
+    action->variable_ = lmm_variable_new(maxminSystem_, action, 0.0, -1.0, constraints_per_variable);
     if (updateMechanism_ == UM_LAZY) {
       // add to the heap the event when the latency is payed
-      XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->m_lastUpdate);
-      action->heapInsert(actionHeap_, action->latency_ + action->m_lastUpdate, route->empty() ? NORMAL : LATENCY);
+      XBT_DEBUG("Added action (%p) one latency event at date %f", action, action->latency_ + action->lastUpdate_);
+      action->heapInsert(actionHeap_, action->latency_ + action->lastUpdate_, route->empty() ? NORMAL : LATENCY);
     }
   } else
-    action->p_variable = lmm_variable_new(maxminSystem_, action, 1.0, -1.0, constraints_per_variable);
+    action->variable_ = lmm_variable_new(maxminSystem_, action, 1.0, -1.0, constraints_per_variable);
 
   if (action->rate_ < 0) {
     lmm_update_variable_bound(maxminSystem_, action->getVariable(), (action->latCurrent_ > 0) ? sg_tcp_gamma / (2.0 * action->latCurrent_) : -1.0);
@@ -514,36 +514,36 @@ void NetworkCm02Action::updateRemainingLazy(double now)
 {
   double delta = 0.0;
 
-  if (m_suspended != 0)
+  if (suspended_ != 0)
     return;
 
-  delta = now - m_lastUpdate;
+  delta = now - lastUpdate_;
 
-  if (m_remains > 0) {
-    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, m_remains, m_lastUpdate);
-    double_update(&(m_remains), m_lastValue * delta, sg_maxmin_precision*sg_surf_precision);
+  if (remains_ > 0) {
+    XBT_DEBUG("Updating action(%p): remains was %f, last_update was: %f", this, remains_, lastUpdate_);
+    double_update(&(remains_), lastValue_ * delta, sg_maxmin_precision*sg_surf_precision);
 
-    XBT_DEBUG("Updating action(%p): remains is now %f", this, m_remains);
+    XBT_DEBUG("Updating action(%p): remains is now %f", this, remains_);
   }
 
-  if (m_maxDuration != NO_MAX_DURATION)
-    double_update(&m_maxDuration, delta, sg_surf_precision);
+  if (maxDuration_ != NO_MAX_DURATION)
+    double_update(&maxDuration_, delta, sg_surf_precision);
 
-  if (m_remains <= 0 &&
+  if (remains_ <= 0 &&
       (lmm_get_variable_weight(getVariable()) > 0)) {
     finish();
     setState(Action::State::done);
 
     heapRemove(getModel()->getActionHeap());
-  } else if (((m_maxDuration != NO_MAX_DURATION)
-      && (m_maxDuration <= 0))) {
+  } else if (((maxDuration_ != NO_MAX_DURATION)
+      && (maxDuration_ <= 0))) {
     finish();
     setState(Action::State::done);
     heapRemove(getModel()->getActionHeap());
   }
 
-  m_lastUpdate = now;
-  m_lastValue = lmm_variable_getvalue(getVariable());
+  lastUpdate_ = now;
+  lastValue_ = lmm_variable_getvalue(getVariable());
 }
 
 }

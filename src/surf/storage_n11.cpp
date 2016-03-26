@@ -69,7 +69,7 @@ StorageN11Model::StorageN11Model() : StorageModel() {
   XBT_DEBUG("surf_storage_model_init_internal");
 
   storage_running_action_set_that_does_not_need_being_checked =
-      xbt_swag_new(xbt_swag_offset(*action, p_stateHookup));
+      xbt_swag_new(xbt_swag_offset(*action, stateHookup_));
   if (!maxminSystem_) {
     maxminSystem_ = lmm_system_new(storage_selective_update);
   }
@@ -350,10 +350,10 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
 
 int StorageN11Action::unref()
 {
-  m_refcount--;
-  if (!m_refcount) {
+  refcount_--;
+  if (!refcount_) {
     if (action_hook.is_linked())
-      p_stateSet->erase(p_stateSet->iterator_to(*this));
+      stateSet_->erase(stateSet_->iterator_to(*this));
     if (getVariable())
       lmm_variable_free(getModel()->getMaxminSystem(), getVariable());
     xbt_free(getCategory());
@@ -372,9 +372,9 @@ void StorageN11Action::cancel()
 void StorageN11Action::suspend()
 {
   XBT_IN("(%p)", this);
-  if (m_suspended != 2) {
+  if (suspended_ != 2) {
     lmm_update_variable_weight(getModel()->getMaxminSystem(), getVariable(), 0.0);
-    m_suspended = 1;
+    suspended_ = 1;
   }
   XBT_OUT();
 }
@@ -386,7 +386,7 @@ void StorageN11Action::resume()
 
 bool StorageN11Action::isSuspended()
 {
-  return m_suspended == 1;
+  return suspended_ == 1;
 }
 
 void StorageN11Action::setMaxDuration(double /*duration*/)
