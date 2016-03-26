@@ -344,7 +344,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         info_loop.link_down = info_loop.link_up;
         free(tmp_link);
         auto as_cluster = static_cast<AsCluster*>(current_routing);
-        xbt_dynar_set(as_cluster->upDownLinks_, rankId*as_cluster->nb_links_per_node_, &info_loop);
+        xbt_dynar_set(as_cluster->privateLinks_, rankId*as_cluster->nb_links_per_node_, &info_loop);
       }
 
       //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -364,7 +364,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
         info_lim.link_down = info_lim.link_up;
         free(tmp_link);
         auto as_cluster = static_cast<AsCluster*>(current_routing);
-        xbt_dynar_set(as_cluster->upDownLinks_, rankId*(as_cluster)->nb_links_per_node_ + as_cluster->has_loopback_ , &info_lim);
+        xbt_dynar_set(as_cluster->privateLinks_, rankId*(as_cluster)->nb_links_per_node_ + as_cluster->has_loopback_ , &info_lim);
 
       }
 
@@ -972,10 +972,10 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
 
   // If dynar is is greater than netcard id and if the host_link is already defined
   auto as_cluster = static_cast<simgrid::surf::AsCluster*>(current_routing);
-  if((int)xbt_dynar_length(as_cluster->upDownLinks_) > netcard->id() &&
-      xbt_dynar_get_as(as_cluster->upDownLinks_, netcard->id(), void*))
+  if((int)xbt_dynar_length(as_cluster->privateLinks_) > netcard->id() &&
+      xbt_dynar_get_as(as_cluster->privateLinks_, netcard->id(), void*))
   surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
 
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name(), netcard->id());
-  xbt_dynar_set_as(as_cluster->upDownLinks_, netcard->id(), s_surf_parsing_link_up_down_t, link_up_down);
+  xbt_dynar_set_as(as_cluster->privateLinks_, netcard->id(), s_surf_parsing_link_up_down_t, link_up_down);
 }
