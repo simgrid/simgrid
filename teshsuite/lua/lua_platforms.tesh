@@ -1,6 +1,32 @@
-$ ${bindir:=.}/../../examples/msg/masterslave/masterslave_arg ${srcdir:=.}/../../examples/platforms/small_platform.lua 4 5
-> [0.000000] [msg_test/INFO] Got 5 slaves, 4 tasks to process, and 5 hosts
-> [3.095754] [msg_test/INFO] Simulation time 3.09575
+$ ${bindir:=.}/../../examples/msg/masterslave/masterslave_mailbox ${srcdir:=.}/../../examples/platforms/small_platform.lua ${srcdir:=.}/../../examples/msg/masterslave/deployment_masterslave_mailbox.xml
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slaves and 20 tasks to process
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
+> [Tremblay:master:(1) 0.002265] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-1"
+> [Tremblay:master:(1) 0.171420] [msg_test/INFO] Sending "Task_2" (of 20) to mailbox "slave-2"
+> [Tremblay:master:(1) 0.329817] [msg_test/INFO] Sending "Task_3" (of 20) to mailbox "slave-3"
+> [Tremblay:master:(1) 0.453549] [msg_test/INFO] Sending "Task_4" (of 20) to mailbox "slave-4"
+> [Tremblay:master:(1) 0.586168] [msg_test/INFO] Sending "Task_5" (of 20) to mailbox "slave-0"
+> [Tremblay:master:(1) 0.588433] [msg_test/INFO] Sending "Task_6" (of 20) to mailbox "slave-1"
+> [Tremblay:master:(1) 0.995917] [msg_test/INFO] Sending "Task_7" (of 20) to mailbox "slave-2"
+> [Tremblay:master:(1) 1.154314] [msg_test/INFO] Sending "Task_8" (of 20) to mailbox "slave-3"
+> [Tremblay:master:(1) 1.608379] [msg_test/INFO] Sending "Task_9" (of 20) to mailbox "slave-4"
+> [Tremblay:master:(1) 1.749885] [msg_test/INFO] Sending "Task_10" (of 20) to mailbox "slave-0"
+> [Tremblay:master:(1) 1.752150] [msg_test/INFO] Sending "Task_11" (of 20) to mailbox "slave-1"
+> [Tremblay:master:(1) 1.921304] [msg_test/INFO] Sending "Task_12" (of 20) to mailbox "slave-2"
+> [Tremblay:master:(1) 2.079701] [msg_test/INFO] Sending "Task_13" (of 20) to mailbox "slave-3"
+> [Tremblay:master:(1) 2.763209] [msg_test/INFO] Sending "Task_14" (of 20) to mailbox "slave-4"
+> [Tremblay:master:(1) 2.913601] [msg_test/INFO] Sending "Task_15" (of 20) to mailbox "slave-0"
+> [Tremblay:master:(1) 2.915867] [msg_test/INFO] Sending "Task_16" (of 20) to mailbox "slave-1"
+> [Tremblay:master:(1) 3.085021] [msg_test/INFO] Sending "Task_17" (of 20) to mailbox "slave-2"
+> [Tremblay:master:(1) 3.243418] [msg_test/INFO] Sending "Task_18" (of 20) to mailbox "slave-3"
+> [Tremblay:master:(1) 3.918038] [msg_test/INFO] Sending "Task_19" (of 20) to mailbox "slave-4"
+> [Tremblay:master:(1) 4.077318] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [Tremblay:slave:(2) 4.077513] [msg_test/INFO] I'm done. See you!
+> [Jupiter:slave:(3) 4.096528] [msg_test/INFO] I'm done. See you!
+> [Fafard:slave:(4) 4.122236] [msg_test/INFO] I'm done. See you!
+> [Ginette:slave:(5) 4.965689] [msg_test/INFO] I'm done. See you!
+> [Bourassa:slave:(6) 5.133855] [msg_test/INFO] I'm done. See you!
+> [5.133855] [msg_test/INFO] Simulation time 5.13386
 
 $ $SG_TEST_EXENV ${bindir:=.}/../../examples/msg/token_ring/token_ring ${srcdir:=.}/../../examples/platforms/routing_cluster.lua "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Number of host '6'
