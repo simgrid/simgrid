@@ -788,7 +788,7 @@ static void surf_config_models_setup()
  * @param AS_id name of this autonomous system. Must be unique in the platform
  * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
  */
-void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
+simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 {
   if (!surf_parse_models_setup_already_called) {
     /* Initialize the surf models. That must be done after we got all config, and before we need the models.
@@ -854,6 +854,8 @@ void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   simgrid::surf::asCreatedCallbacks(new_as);
   if (TRACE_is_enabled())
     sg_instr_AS_begin(AS);
+
+  return new_as;
 }
 
 /**

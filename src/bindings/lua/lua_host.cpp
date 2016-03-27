@@ -57,6 +57,7 @@ sg_host_t sglua_check_host(lua_State * L, int index)
 static int l_host_get_by_name(lua_State * L)
 {
   const char *name = luaL_checkstring(L, 1);
+  lua_remove(L, 1); /* remove the args from the stack */
   XBT_DEBUG("Getting host by name...");
   sg_host_t host = sg_host_by_name(name);
   if (host == nullptr)
@@ -69,8 +70,6 @@ static int l_host_get_by_name(lua_State * L)
   lua_setmetatable(L, -2);                /* table userdatum */
   lua_setfield(L, -2, HOST_FIELDNAME);  /* table -- put the userdata as field of the table */
 
-  /* remove the args from the stack */
-  lua_remove(L, 1);
   return 1;
 }
 

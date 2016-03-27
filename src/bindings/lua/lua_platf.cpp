@@ -484,9 +484,17 @@ int console_AS_open(lua_State *L) {
  s_sg_platf_AS_cbarg_t AS;
  AS.id = id;
  AS.routing = mode_int;
- sg_platf_new_AS_begin(&AS);
+ simgrid::s4u::As *new_as = sg_platf_new_AS_begin(&AS);
 
- return 0;
+ /* Build a Lua representation of the new AS on the stack */
+ lua_newtable(L);
+ simgrid::s4u::As **lua_as = (simgrid::s4u::As **) lua_newuserdata(L, sizeof(simgrid::s4u::As *)); /* table userdatum */
+ *lua_as = new_as;
+ luaL_getmetatable(L, PLATF_MODULE_NAME); /* table userdatum metatable */
+ lua_setmetatable(L, -2);                 /* table userdatum */
+ lua_setfield(L, -2, AS_FIELDNAME);       /* table -- put the userdata as field of the table */
+
+ return 1;
 }
 int console_AS_seal(lua_State *L) {
   XBT_DEBUG("Sealing AS");
