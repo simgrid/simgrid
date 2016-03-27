@@ -410,7 +410,7 @@ void STag_surfxml_host(void){
 
 void STag_surfxml_prop(void)
 {
-  if(AS_TAG){
+  if(AS_TAG){ // We need a stack here to retrieve the most recently opened AS
     if (!as_current_property_set){
       xbt_assert(as_prop_nb < 1024, "Number of AS property reach the limit!!!");
       as_current_property_set = xbt_dict_new_homogeneous(xbt_free_f); // Maybe, it should raise an error
@@ -882,13 +882,10 @@ void ETag_surfxml_AS(void){
     xbt_dict_t dict = (xbt_dict_t) as_dict_tab[as_prop_nb-1];
     as_prop_nb--;
     XBT_DEBUG("POP prop %p for AS '%s'",dict,name);
-    xbt_lib_set(as_router_lib,
-        name,
-      ROUTING_PROP_ASR_LEVEL,
-      dict);
+    xbt_lib_set(as_router_lib, name, ROUTING_PROP_ASR_LEVEL, dict);
     xbt_free(name);
   }
-  sg_platf_new_AS_end();
+  sg_platf_new_AS_seal();
 }
 
 void STag_surfxml_config(void){

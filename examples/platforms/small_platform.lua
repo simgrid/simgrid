@@ -51,6 +51,6 @@
 
   simgrid.platf.route_new{AS="AS0",src="Ginette",dest="Bourassa",links="5,2,0,1,6,7"};
 
-  simgrid.platf.AS_close();
+  simgrid.platf.AS_seal();
 
   simgrid.platf.close();

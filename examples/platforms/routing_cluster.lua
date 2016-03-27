@@ -22,7 +22,7 @@ simgrid.platf.AS_open{id="AS0",mode="Full"}
 
     simgrid.platf.backbone_new{id="backbone1",bandwidth="2.25GBps",lat="500us"};
 
-  simgrid.platf.AS_close()
+  simgrid.platf.AS_seal()
   simgrid.platf.AS_open{id="my_cluster2",mode="Cluster"}
     simgrid.platf.router_new{id="router2"}
 
@@ -41,11 +41,11 @@ simgrid.platf.AS_open{id="AS0",mode="Full"}
 
     simgrid.platf.backbone_new{id="backbone2",bandwidth="2.25GBps",lat="500us"}
 
-  simgrid.platf.AS_close()
+  simgrid.platf.AS_seal()
   simgrid.platf.link_new{id="link1-2",bandwidth="2.25GBps",lat="500us"};
 
   simgrid.platf.ASroute_new{src="my_cluster1", dst="my_cluster2",
                             gw_src="router1", gw_dst="router2", links="link1-2"}
 
-simgrid.platf.AS_close()
+simgrid.platf.AS_seal()
 simgrid.platf.close()

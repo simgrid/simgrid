@@ -32,7 +32,7 @@ static const luaL_Reg platf_functions[] = {
     {"open", console_open},
     {"close", console_close},
     {"AS_open", console_AS_open},
-    {"AS_close", console_AS_close},
+    {"AS_seal", console_AS_seal},
     {"backbone_new", console_add_backbone},
     {"host_link_new", console_add_host___link},
     {"host_new", console_add_host},
@@ -537,9 +537,9 @@ int console_AS_open(lua_State *L) {
 
  return 0;
 }
-int console_AS_close(lua_State *L) {
-  XBT_DEBUG("Closing AS");
-  sg_platf_new_AS_end();
+int console_AS_seal(lua_State *L) {
+  XBT_DEBUG("Sealing AS");
+  sg_platf_new_AS_seal();
   return 0;
 }
 

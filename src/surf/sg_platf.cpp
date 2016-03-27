@@ -378,7 +378,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   }
 
   XBT_DEBUG("</AS>");
-  sg_platf_new_AS_end();
+  sg_platf_new_AS_seal();
 
   simgrid::surf::on_cluster(cluster);
 }
@@ -693,7 +693,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   static_cast<AsCluster*>(current_routing)->router_ = static_cast<NetCard*>(xbt_lib_get_or_null(as_router_lib, router.id, ROUTING_ASR_LEVEL));
 
   XBT_DEBUG("</AS>");
-  sg_platf_new_AS_end();
+  sg_platf_new_AS_seal();
   XBT_DEBUG(" ");
 
   free(router_id);
@@ -780,7 +780,7 @@ static void surf_config_models_setup()
  *
  * Add a new autonomous system to the platform. Any elements (such as host,
  * router or sub-AS) added after this call and before the corresponding call
- * to sg_platf_new_AS_close() will be added to this AS.
+ * to sg_platf_new_AS_seal() will be added to this AS.
  *
  * Once this function was called, the configuration concerning the used
  * models cannot be changed anymore.
@@ -857,12 +857,12 @@ void sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 }
 
 /**
- * \brief Specify that the current description of AS is finished
+ * \brief Specify that the description of the current AS is finished
  *
- * Once you've declared all the content of your AS, you have to close
+ * Once you've declared all the content of your AS, you have to seal
  * it with this call. Your AS is not usable until you call this function.
  */
-void sg_platf_new_AS_end()
+void sg_platf_new_AS_seal()
 {
   xbt_assert(current_routing, "Cannot seal the current AS: none under construction");
   current_routing->seal();

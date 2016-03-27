@@ -47,7 +47,7 @@
               simgrid.platf.link_new{id=linkname .. "_loopback",bandwidth=args.loopback_bw,latency=args.loopback_lat,sharing_policy="FATPIPE"}
             end
         end
-        simgrid.platf.AS_close()
+        simgrid.platf.AS_seal()
       end
   end
 
