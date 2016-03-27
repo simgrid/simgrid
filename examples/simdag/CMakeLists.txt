@@ -21,7 +21,11 @@ set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_wi
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ptg-dotload/ptg.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/schedule-dotload/dag_with_bad_schedule.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/schedule-dotload/dag_with_good_schedule.dot  PARENT_SCOPE)
-
-foreach(x availability daxload fail typed_tasks io properties throttling dag-dotload ptg-dotload schedule-dotload scheduling test)
+foreach(x availability daxload fail typed_tasks io properties throttling scheduling test)
   ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/${x}/sd_${x}.tesh)
 endforeach()
+if(HAVE_GRAPHVIZ)
+  foreach(x dag-dotload ptg-dotload schedule-dotload)
+    ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/${x}/sd_${x}.tesh)
+  endforeach()
+endif()
