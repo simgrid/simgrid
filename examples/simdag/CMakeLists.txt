@@ -1,4 +1,4 @@
-foreach(x availability daxload fail typed_tasks io properties throttling dag-dotload ptg-dotload schedule-dotload scheduling test)
+foreach(x availability daxload fail typed_tasks io properties throttling scheduling test)
   add_executable       (sd_${x}     ${x}/sd_${x}.c)
   target_link_libraries(sd_${x}     simgrid)
   set_target_properties(sd_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
@@ -24,8 +24,17 @@ set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_wi
 foreach(x availability daxload fail typed_tasks io properties throttling scheduling test)
   ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/${x}/sd_${x}.tesh)
 endforeach()
+
 if(HAVE_GRAPHVIZ)
   foreach(x dag-dotload ptg-dotload schedule-dotload)
+    add_executable       (sd_${x}     ${x}/sd_${x}.c)
+    target_link_libraries(sd_${x}     simgrid)
+    set_target_properties(sd_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+
     ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/${x}/sd_${x}.tesh)
   endforeach()
 endif()
+foreach(x dag-dotload ptg-dotload schedule-dotload)
+  set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/sd_${x}.c)
+  set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/sd_${x}.tesh)
+endforeach()
