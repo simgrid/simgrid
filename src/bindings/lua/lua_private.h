@@ -23,4 +23,12 @@ const char* sglua_get_msg_error(msg_error_t err);
 
 }
 
+#define lua_ensure(...) \
+  _XBT_IF_ONE_ARG(_lua_ensure_ARG1, _lua_ensure_ARGN, __VA_ARGS__)(__VA_ARGS__)
+#define _lua_ensure_ARG1(cond) \
+  _lua_ensure_ARGN(cond, "Assertion %s failed", #cond)
+#define _lua_ensure_ARGN(cond, ...) \
+  do { if (!(cond)) { luaL_error(L, __VA_ARGS__); return -1;} } while (0)
+
+
 #endif /* LUA_PRIVATE_H */

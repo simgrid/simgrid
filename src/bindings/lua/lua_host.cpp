@@ -59,12 +59,11 @@ static int l_host_get_by_name(lua_State * L)
   const char *name = luaL_checkstring(L, 1);
   XBT_DEBUG("Getting host by name...");
   sg_host_t host = sg_host_by_name(name);
-  if (!host) {
+  if (host == nullptr)
     XBT_ERROR("sg_get_host_by_name failed, requested hostname: %s", name);
-  }
+
   lua_newtable(L);                        /* table */
-  sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t));
-                                          /* table userdatum */
+  sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t)); /* table userdatum */
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME); /* table userdatum metatable */
   lua_setmetatable(L, -2);                /* table userdatum */
