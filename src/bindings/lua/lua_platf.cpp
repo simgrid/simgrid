@@ -22,7 +22,7 @@ extern "C" {
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
 
-#define PLATF_MODULE_NAME "simgrid.platf"
+#define PLATF_MODULE_NAME "simgrid.engine"
 #define AS_FIELDNAME   "__simgrid_as"
 
 /* ********************************************************************************* */

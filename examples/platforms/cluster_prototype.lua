@@ -31,27 +31,27 @@
     -- Check the mode = Cluster here
     return function()
 
-        simgrid.platf.AS_open{id=args.id,mode=args.topology};
+        simgrid.engine.AS_open{id=args.id,mode=args.topology};
 
         if args.bb_bw ~= nil and args.bb_lat ~= nil then
-          simgrid.platf.backbone_new{id=args.id .. "-bb",bandwidth=args.bb_bw,latency=args.bb_lat,sharing_policy=args.bb_sharing_sharing_policy}
+          simgrid.engine.backbone_new{id=args.id .. "-bb",bandwidth=args.bb_bw,latency=args.bb_lat,sharing_policy=args.bb_sharing_sharing_policy}
         end
         for _,i in pairs(args.radical) do
             local hostname = args.prefix .. i .. args.suffix
             local linkname = args.id .."_link_" .. i
-            simgrid.platf.host_new{id=hostname, speed=args.speed,core=args.core,power_trace=args.availability_file,state_trace=args.state_file};
-            simgrid.platf.link_new{id=linkname, bandwidth=args.bw,latency=args.lat, sharing_policy=args.sharing_sharing_policy};
-            simgrid.platf.host_link_new{id=hostname,up=linkname.."_UP",down=linkname.."_DOWN"};
+            simgrid.engine.host_new{id=hostname, speed=args.speed,core=args.core,power_trace=args.availability_file,state_trace=args.state_file};
+            simgrid.engine.link_new{id=linkname, bandwidth=args.bw,latency=args.lat, sharing_policy=args.sharing_sharing_policy};
+            simgrid.engine.host_link_new{id=hostname,up=linkname.."_UP",down=linkname.."_DOWN"};
 
             if args.loopback_bw ~= nil and args.loopback_lat ~= nil then
-              simgrid.platf.link_new{id=linkname .. "_loopback",bandwidth=args.loopback_bw,latency=args.loopback_lat,sharing_policy="FATPIPE"}
+              simgrid.engine.link_new{id=linkname .. "_loopback",bandwidth=args.loopback_bw,latency=args.loopback_lat,sharing_policy="FATPIPE"}
             end
         end
-        simgrid.platf.AS_seal()
+        simgrid.engine.AS_seal()
       end
   end
 
-  simgrid.platf.open();
+  simgrid.engine.open();
   cluster_factory = my_cluster{prefix="node-", suffix=".acme.org", radical=seq(0,262144), host_factory = function(hostno)
       if hostno % 2 == 0 then return "blabla" end
       if hostno % 2 == 1 then return "blublub" end
@@ -64,4 +64,4 @@
   }()
   --my_cluster{prefix="node2-", suffix=".acme.org", radical=seq(0,44) }
 
-  simgrid.platf.close();
+  simgrid.engine.close();
