@@ -110,7 +110,7 @@ RegionSnapshot privatized_region(
   simgrid::mc::RegionSnapshot region = simgrid::mc::RegionSnapshot(
     region_type, start_addr, permanent_addr, size);
   region.privatized_data(std::move(data));
-  return std::move(region);
+  return region;
 }
 #endif
 
@@ -353,7 +353,7 @@ static std::vector<s_local_variable> get_local_variables_values(
   std::vector<s_local_variable> variables;
   for (s_mc_stack_frame_t& stack_frame : stack_frames)
     fill_local_variables_values(&stack_frame, stack_frame.frame, process_index, variables);
-  return std::move(variables);
+  return variables;
 }
 
 static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindContext* stack_context)
@@ -412,7 +412,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
     xbt_abort();
   }
 
-  return std::move(result);
+  return result;
 };
 
 static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snapshot* snapshot)
@@ -442,7 +442,7 @@ static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snap
     snapshot->stack_sizes.push_back(stack_size);
   }
 
-  return std::move(res);
+  return res;
 
 }
 
@@ -558,7 +558,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
   }
 
   closedir (fd_dir);
-  return std::move(fds);
+  return fds;
 }
 
 std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)

@@ -145,7 +145,7 @@ simgrid::xbt::unique_ptr<s_xbt_dynar_t> LivenessChecker::getPropositionValues()
     int res = xbt_automaton_propositional_symbol_evaluate(ps);
     xbt_dynar_push_as(values.get(), int, res);
   }
-  return std::move(values);
+  return values;
 }
 
 int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2)
@@ -417,7 +417,7 @@ RecordTrace LivenessChecker::getRecordTrace() // override
     }
   }
 
-  return std::move(res);
+  return res;
 }
 
 void LivenessChecker::showAcceptanceCycle(std::size_t depth)
@@ -447,7 +447,7 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
       xbt_free(req_str);
     }
   }
-  return std::move(trace);
+  return trace;
 }
 
 int LivenessChecker::main(void)

@@ -84,7 +84,7 @@ RecordTrace SafetyChecker::getRecordTrace() // override
     res.push_back(RecordTraceElement(pid, value));
   }
 
-  return std::move(res);
+  return res;
 }
 
 std::vector<std::string> SafetyChecker::getTextualTrace() // override
@@ -102,7 +102,7 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
       xbt_free(req_str);
     }
   }
-  return std::move(trace);
+  return trace;
 }
 
 int SafetyChecker::run()

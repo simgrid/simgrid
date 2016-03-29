@@ -329,7 +329,7 @@ RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
     res.push_back(RecordTraceElement(pid, value));
   }
 
-  return std::move(res);
+  return res;
 }
 
 // TODO, deduplicate with SafetyChecker
@@ -348,7 +348,7 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
       xbt_free(req_str);
     }
   }
-  return std::move(res);
+  return res;
 }
 
 void CommunicationDeterminismChecker::prepare()

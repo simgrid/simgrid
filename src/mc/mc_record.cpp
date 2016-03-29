@@ -99,7 +99,7 @@ RecordTrace parseRecordTrace(const char* data)
       current = end + 1;
   }
 
-  return std::move(res);
+  return res;
 }
 
 #if HAVE_MC
