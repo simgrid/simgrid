@@ -10,15 +10,16 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
+import org.simgrid.msg.HostNotFoundException;
 
 public class Emigrant extends Process {
-  public Emigrant(Host host, String name, String[]args) {
-    super(host,name,args);
+  public Emigrant(String hostname, String name) throws HostNotFoundException {
+    super(hostname, name);
   }
 
-  public void main(String[] args) throws MsgException {    
-    Migration.mutex.acquire();
-    
+  public void main(String[] args) throws MsgException {
+    Main.mutex.acquire();
+
     Msg.info("I'll look for a new job on another machine where the grass is greener.");
     migrate(Host.getByName("Boivin"));
 
@@ -32,8 +33,8 @@ public class Emigrant extends Process {
     migrate(Host.getByName("Boivin"));
     waitFor(4);
 
-    Migration.processToMigrate = this;
-    Migration.mutex.release();
+    Main.processToMigrate = this;
+    Main.mutex.release();
     suspend();
 
     Msg.info("I've been moved on this new host:" + getHost().getName());

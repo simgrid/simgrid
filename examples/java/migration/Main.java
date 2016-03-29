@@ -9,24 +9,33 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Mutex;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.NativeException;
+import org.simgrid.msg.HostNotFoundException;
 
-public class Migration {
+public class Main {
   public static Mutex mutex;
   public static Process processToMigrate = null;
 
-  public static void main(String[] args) throws NativeException {      
+  public static void main(String[] args) throws NativeException {
     Msg.init(args);
-    if(args.length < 2) {
-      Msg.info("Usage   : Migration platform_file deployment_file");
-      Msg.info("example : Migration ../platforms/platform.xml migrationDeployment.xml");
+    if(args.length < 1) {
+      Msg.info("Usage   : Migration platform_file");
+      Msg.info("example : Migration ../platforms/platform.xml");
       System.exit(1);
     }
     /* Create the mutex */
     mutex = new Mutex();
 
-    /* construct the platform and deploy the application */
+    /* construct the platform*/
     Msg.createEnvironment(args[0]);
-    Msg.deployApplication(args[1]);
+    /* bypass deploymemt */
+    try {
+        Policeman policeman = new Policeman("Boivin","policeman");
+        policeman.start();
+        Emigrant emigrant   = new Emigrant("Jacquelin","emigrant");
+        emigrant.start();
+    } catch (HostNotFoundException e){
+      System.out.println("Create processes failed!");
+    }
 
     /*  execute the simulation. */
     Msg.run();

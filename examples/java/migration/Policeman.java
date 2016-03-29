@@ -10,22 +10,22 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
+import org.simgrid.msg.HostNotFoundException;
 
 public class Policeman extends Process {
-  public Policeman(Host host, String name, String[]args) {
-    super(host,name,args);
+  public Policeman(String hostname, String name) throws HostNotFoundException {
+    super(hostname, name);
   }
 
-  @Override
   public void main(String[] args) throws MsgException {
     waitFor(1);
-    
+
     Msg.info("Wait a bit before migrating the emigrant.");
-    
-    Migration.mutex.acquire();
-    
-    Migration.processToMigrate.migrate(Host.getByName("Jacquelin"));
+
+    Main.mutex.acquire();
+
+    Main.processToMigrate.migrate(Host.getByName("Jacquelin"));
     Msg.info("I moved the emigrant");
-    Migration.processToMigrate.resume();
+    Main.processToMigrate.resume();
   }
 }

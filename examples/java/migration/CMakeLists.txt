@@ -1,5 +1,5 @@
 set(example java_migration)
-set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Migration.java ${CMAKE_CURRENT_SOURCE_DIR}/Emigrant.java ${CMAKE_CURRENT_SOURCE_DIR}/Policeman.java)
+set(sources ${CMAKE_CURRENT_SOURCE_DIR}/Main.java ${CMAKE_CURRENT_SOURCE_DIR}/Emigrant.java ${CMAKE_CURRENT_SOURCE_DIR}/Policeman.java)
 
 if(enable_java)
   add_custom_command(
@@ -15,5 +15,4 @@ if(enable_java)
 endif()
 
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/migration.tesh           PARENT_SCOPE)
-set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/migrationDeployment.xml  PARENT_SCOPE)
 set(examples_src  ${examples_src}  ${sources}                                           PARENT_SCOPE)
