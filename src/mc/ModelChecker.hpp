@@ -55,11 +55,6 @@ public:
   }
   const char* get_host_name(const char* name);
 
-  bool is_important_snapshot(Snapshot const& snapshot) const
-  {
-    return &snapshot == this->parent_snapshot_.get();
-  }
-
   void start();
   void shutdown();
   void resume(simgrid::mc::Process& process);

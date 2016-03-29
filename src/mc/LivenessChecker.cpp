@@ -376,8 +376,7 @@ int LivenessChecker::insertVisitedPair(simgrid::mc::VisitedPair* visited_pair, s
     unsigned int index2 = 0;
     for (std::size_t i = 0; i != (std::size_t) visited_pairs.size(); ++i) {
       simgrid::mc::VisitedPair* pair_test = visited_pairs[i];
-      if (!mc_model_checker->is_important_snapshot(*pair_test->graph_state->system_state)
-          && pair_test->num < min2) {
+      if (pair_test->num < min2) {
         index2 = i;
         min2 = pair_test->num;
       }
