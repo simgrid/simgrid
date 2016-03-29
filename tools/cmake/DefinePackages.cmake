@@ -933,7 +933,7 @@ set(CMAKEFILES_TXT
   examples/java/energy/CMakeLists.txt
   examples/java/io/CMakeLists.txt
   examples/java/kademlia/CMakeLists.txt
-  examples/java/master_slave_kill/CMakeLists.txt
+  examples/java/kill/CMakeLists.txt
   examples/java/masterworker/CMakeLists.txt
   examples/java/migration/CMakeLists.txt
   examples/java/mutualExclusion/CMakeLists.txt
