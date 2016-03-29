@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package migration;
+package process.migration;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Mutex;
 import org.simgrid.msg.Process;

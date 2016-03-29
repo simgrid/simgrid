@@ -923,6 +923,7 @@ set(txt_files
 # The list of cmake build directories is constructed from the following list. 
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
+  examples/java/CMakeLists.txt
   examples/java/async/CMakeLists.txt
   examples/java/bittorrent/CMakeLists.txt
   examples/java/chord/CMakeLists.txt
@@ -933,14 +934,11 @@ set(CMAKEFILES_TXT
   examples/java/energy/CMakeLists.txt
   examples/java/io/CMakeLists.txt
   examples/java/kademlia/CMakeLists.txt
-  examples/java/kill/CMakeLists.txt
   examples/java/masterworker/CMakeLists.txt
-  examples/java/migration/CMakeLists.txt
   examples/java/mutualExclusion/CMakeLists.txt
   examples/java/pingPong/CMakeLists.txt
   examples/java/priority/CMakeLists.txt
   examples/java/startKillTime/CMakeLists.txt
-  examples/java/suspend/CMakeLists.txt
   examples/java/tracing/CMakeLists.txt
   
   examples/msg/CMakeLists.txt

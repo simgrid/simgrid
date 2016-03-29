@@ -1,7 +1,7 @@
 #! tesh
 
 ! output sort 19
-$ java -classpath ${classpath:=.} suspend/Suspend ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ java -classpath ${classpath:=.} process/suspend/Main ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
 > [  0.000000] (1:DreamMaster@Jacquelin) Let's create a lazy guy.
 > [  0.000000] (1:DreamMaster@Jacquelin) Let's wait a little bit...
