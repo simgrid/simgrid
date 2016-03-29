@@ -35,8 +35,8 @@ std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
 static int is_exploration_stack_state(simgrid::mc::VisitedState* state){
   xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
   while (item) {
-    if (((mc_state_t)xbt_fifo_get_item_content(item))->num == state->num){
-      ((mc_state_t)xbt_fifo_get_item_content(item))->in_visited_states = 0;
+    if (((simgrid::mc::State*)xbt_fifo_get_item_content(item))->num == state->num){
+      ((simgrid::mc::State*)xbt_fifo_get_item_content(item))->in_visited_states = 0;
       return 1;
     }
     item = xbt_fifo_get_next_item(item);
@@ -96,7 +96,7 @@ static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::Visi
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
-std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_state, bool compare_snpashots)
+std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* graph_state, bool compare_snpashots)
 {
 
 

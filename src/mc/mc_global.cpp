@@ -57,7 +57,7 @@ std::vector<double> processes_time;
 int user_max_depth_reached = 0;
 
 /* MC global data structures */
-mc_state_t mc_current_state = nullptr;
+simgrid::mc::State* mc_current_state = nullptr;
 char mc_replay_mode = false;
 
 mc_stats_t mc_stats = nullptr;
@@ -122,14 +122,14 @@ void MC_replay(xbt_fifo_t stack)
   char *req_str;
   smx_simcall_t req = nullptr, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
-  mc_state_t state;
+  simgrid::mc::State* state;
   
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0 || _sg_mc_termination || _sg_mc_visited > 0) {
     start_item = xbt_fifo_get_first_item(stack);
-    state = (mc_state_t)xbt_fifo_get_item_content(start_item);
+    state = (simgrid::mc::State*)xbt_fifo_get_item_content(start_item);
     if(state->system_state){
       simgrid::mc::restore_snapshot(state->system_state);
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
@@ -162,7 +162,7 @@ void MC_replay(xbt_fifo_t stack)
        item != xbt_fifo_get_first_item(stack);
        item = xbt_fifo_get_prev_item(item)) {
 
-    state = (mc_state_t) xbt_fifo_get_item_content(item);
+    state = (simgrid::mc::State*) xbt_fifo_get_item_content(item);
     saved_req = MC_state_get_executed_request(state, &value);
     
     if (saved_req) {

@@ -43,7 +43,7 @@ struct XBT_PRIVATE VisitedState {
 };
 
 extern XBT_PRIVATE std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
-XBT_PRIVATE std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_state, bool compare_snpashots);
+XBT_PRIVATE std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* graph_state, bool compare_snpashots);
 
 }
 }

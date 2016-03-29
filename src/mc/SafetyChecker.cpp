@@ -44,7 +44,7 @@ static void MC_show_non_termination(void)
   MC_print_statistics(mc_stats);
 }
 
-static int snapshot_compare(mc_state_t state1, mc_state_t state2)
+static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* state2)
 {
   simgrid::mc::Snapshot* s1 = state1->system_state;
   simgrid::mc::Snapshot* s2 = state2->system_state;
@@ -53,12 +53,12 @@ static int snapshot_compare(mc_state_t state1, mc_state_t state2)
   return snapshot_compare(num1, s1, num2, s2);
 }
 
-static int is_exploration_stack_state(mc_state_t current_state){
+static int is_exploration_stack_state(simgrid::mc::State* current_state){
 
   xbt_fifo_item_t item;
-  mc_state_t stack_state;
+  simgrid::mc::State* stack_state;
   for(item = xbt_fifo_get_first_item(mc_stack); item != nullptr; item = xbt_fifo_get_next_item(item)) {
-    stack_state = (mc_state_t) xbt_fifo_get_item_content(item);
+    stack_state = (simgrid::mc::State*) xbt_fifo_get_item_content(item);
     if(snapshot_compare(stack_state, current_state) == 0){
       XBT_INFO("Non-progressive cycle : state %d -> state %d", stack_state->num, current_state->num);
       return 1;
@@ -75,7 +75,7 @@ RecordTrace SafetyChecker::getRecordTrace() // override
   for (xbt_fifo_item_t item = start; item; item = xbt_fifo_get_prev_item(item)) {
 
     // Find (pid, value):
-    mc_state_t state = (mc_state_t) xbt_fifo_get_item_content(item);
+    simgrid::mc::State* state = (simgrid::mc::State*) xbt_fifo_get_item_content(item);
     int value = 0;
     smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
     const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
@@ -92,7 +92,7 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
   std::vector<std::string> trace;
   for (xbt_fifo_item_t item = xbt_fifo_get_last_item(mc_stack);
        item; item = xbt_fifo_get_prev_item(item)) {
-    mc_state_t state = (mc_state_t)xbt_fifo_get_item_content(item);
+    simgrid::mc::State* state = (simgrid::mc::State*)xbt_fifo_get_item_content(item);
     int value;
     smx_simcall_t req = MC_state_get_executed_request(state, &value);
     if (req) {
@@ -112,14 +112,16 @@ int SafetyChecker::run()
   char *req_str = nullptr;
   int value;
   smx_simcall_t req = nullptr;
-  mc_state_t state = nullptr, prev_state = NULL, next_state = NULL;
+  simgrid::mc::State* state = nullptr;
+  simgrid::mc::State* prev_state = nullptr;
+  simgrid::mc::State* next_state = nullptr;
   xbt_fifo_item_t item = nullptr;
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
 
   while (xbt_fifo_size(mc_stack) > 0) {
 
     /* Get current state */
-    state = (mc_state_t)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    state = (simgrid::mc::State*)xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG
@@ -219,14 +221,14 @@ int SafetyChecker::run()
          executed before it. If it does then add it to the interleave set of the
          state that executed that previous request. */
 
-      while ((state = (mc_state_t) xbt_fifo_shift(mc_stack))) {
+      while ((state = (simgrid::mc::State*) xbt_fifo_shift(mc_stack))) {
         if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
           req = MC_state_get_internal_request(state);
           if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
             xbt_die("Mutex is currently not supported with DPOR, "
               "use --cfg=model-check/reduction:none");
           const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
-          xbt_fifo_foreach(mc_stack, item, prev_state, mc_state_t) {
+          xbt_fifo_foreach(mc_stack, item, prev_state, simgrid::mc::State*) {
             if (reductionMode_ != simgrid::mc::ReductionMode::none
                 && simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
               if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
@@ -307,7 +309,7 @@ void SafetyChecker::init()
 
   simgrid::mc::visited_states.clear();
 
-  mc_state_t initial_state = MC_state_new();
+  simgrid::mc::State* initial_state = MC_state_new();
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");

@@ -43,7 +43,7 @@ static xbt_fifo_t liveness_stack;
 namespace simgrid {
 namespace mc {
 
-VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
+VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, simgrid::mc::State* graph_state)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
 
@@ -257,7 +257,7 @@ void LivenessChecker::replay(xbt_fifo_t stack)
 {
   xbt_fifo_item_t item;
   simgrid::mc::Pair* pair = nullptr;
-  mc_state_t state = nullptr;
+  simgrid::mc::State* state = nullptr;
   smx_simcall_t req = nullptr, saved_req = NULL;
   int value, depth = 1;
   char *req_str;
@@ -284,7 +284,7 @@ void LivenessChecker::replay(xbt_fifo_t stack)
 
       pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
 
-      state = (mc_state_t) pair->graph_state;
+      state = (simgrid::mc::State*) pair->graph_state;
 
       if (pair->exploration_started) {
 

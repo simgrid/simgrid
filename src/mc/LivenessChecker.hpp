@@ -30,7 +30,7 @@ extern XBT_PRIVATE xbt_automaton_t property_automaton;
 struct XBT_PRIVATE Pair {
   int num = 0;
   int search_cycle = 0;
-  mc_state_t graph_state = nullptr; /* System state included */
+  simgrid::mc::State* graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
   simgrid::xbt::unique_ptr<s_xbt_dynar_t> atomic_propositions;
   int requests = 0;
@@ -49,7 +49,7 @@ struct XBT_PRIVATE VisitedPair {
   int num = 0;
   int other_num = 0; /* Dot output for */
   int acceptance_pair = 0;
-  mc_state_t graph_state = nullptr; /* System state included */
+  simgrid::mc::State* graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
   simgrid::xbt::unique_ptr<s_xbt_dynar_t> atomic_propositions;
   size_t heap_bytes_used = 0;
@@ -57,7 +57,7 @@ struct XBT_PRIVATE VisitedPair {
   int acceptance_removed = 0;
   int visited_removed = 0;
 
-  VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state);
+  VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, simgrid::mc::State* graph_state);
   ~VisitedPair();
 };
 

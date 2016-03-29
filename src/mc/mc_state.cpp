@@ -22,21 +22,19 @@ using simgrid::mc::remote;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
                                 "Logging specific to MC (state)");
 
-extern "C" {
-
 /**
  * \brief Creates a state data structure used by the exploration algorithm
  */
-mc_state_t MC_state_new()
+simgrid::mc::State* MC_state_new()
 {
-  mc_state_t state = xbt_new0(s_mc_state_t, 1);
+  simgrid::mc::State* state = new simgrid::mc::State();
+  std::memset(&state->internal_comm, 0, sizeof(state->internal_comm));
+  std::memset(&state->internal_req, 0, sizeof(state->internal_req));
+  std::memset(&state->executed_req, 0, sizeof(state->executed_req));
 
   state->max_pid = MC_smx_get_maxpid();
   state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
-  state->system_state = nullptr;
   state->num = ++mc_stats->expanded_states;
-  state->in_visited_states = 0;
-  state->incomplete_comm_pattern = nullptr;
   /* Stateful model checking */
   if((_sg_mc_checkpoint > 0 && (mc_stats->expanded_states % _sg_mc_checkpoint == 0)) ||  _sg_mc_termination){
     state->system_state = simgrid::mc::take_snapshot(state->num);
@@ -48,35 +46,51 @@ mc_state_t MC_state_new()
   return state;
 }
 
+namespace simgrid {
+namespace mc {
+
+State::State()
+{
+  std::memset(&this->internal_comm, 0, sizeof(this->internal_comm));
+  std::memset(&this->internal_req, 0, sizeof(this->internal_req));
+  std::memset(&this->executed_req, 0, sizeof(this->executed_req));
+}
+
+State::~State()
+{
+  xbt_free(this->index_comm);
+  xbt_free(this->incomplete_comm_pattern);
+  xbt_free(this->proc_status);
+}
+
+}
+}
+
 /**
  * \brief Deletes a state data structure
  * \param trans The state to be deleted
  */
-void MC_state_delete(mc_state_t state, int free_snapshot){
+void MC_state_delete(simgrid::mc::State* state, int free_snapshot)
+{
   if (state->system_state && free_snapshot)
     delete state->system_state;
-  if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
-    xbt_free(state->index_comm);
-    xbt_free(state->incomplete_comm_pattern);
-  }
-  xbt_free(state->proc_status);
-  xbt_free(state);
+  delete state;
 }
 
-void MC_state_interleave_process(mc_state_t state, smx_process_t process)
+void MC_state_interleave_process(simgrid::mc::State* state, smx_process_t process)
 {
   assert(state);
   state->proc_status[process->pid].state = MC_INTERLEAVE;
   state->proc_status[process->pid].interleave_count = 0;
 }
 
-void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process)
+void MC_state_remove_interleave_process(simgrid::mc::State* state, smx_process_t process)
 {
   if (state->proc_status[process->pid].state == MC_INTERLEAVE)
     state->proc_status[process->pid].state = MC_DONE;
 }
 
-unsigned int MC_state_interleave_size(mc_state_t state)
+unsigned int MC_state_interleave_size(simgrid::mc::State* state)
 {
   unsigned int i, size = 0;
   for (i = 0; i < state->max_pid; i++)
@@ -86,12 +100,12 @@ unsigned int MC_state_interleave_size(mc_state_t state)
   return size;
 }
 
-int MC_state_process_is_done(mc_state_t state, smx_process_t process)
+int MC_state_process_is_done(simgrid::mc::State* state, smx_process_t process)
 {
   return state->proc_status[process->pid].state == MC_DONE ? TRUE : FALSE;
 }
 
-void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
+void MC_state_set_executed_request(simgrid::mc::State* state, smx_simcall_t req,
                                    int value)
 {
   state->executed_req = *req;
@@ -167,19 +181,19 @@ void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req,
   }
 }
 
-smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value)
+smx_simcall_t MC_state_get_executed_request(simgrid::mc::State* state, int *value)
 {
   *value = state->req_num;
   return &state->executed_req;
 }
 
-smx_simcall_t MC_state_get_internal_request(mc_state_t state)
+smx_simcall_t MC_state_get_internal_request(simgrid::mc::State* state)
 {
   return &state->internal_req;
 }
 
 static inline smx_simcall_t MC_state_get_request_for_process(
-  mc_state_t state, int*value, smx_process_t process)
+  simgrid::mc::State* state, int*value, smx_process_t process)
 {
   mc_procstate_t procstate = &state->proc_status[process->pid];
 
@@ -268,7 +282,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   return nullptr;
 }
 
-smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
+smx_simcall_t MC_state_get_request(simgrid::mc::State* state, int *value)
 {
   for (auto& p : mc_model_checker->process().simix_processes()) {
     smx_simcall_t res = MC_state_get_request_for_process(state, value, &p.copy);
@@ -276,6 +290,4 @@ smx_simcall_t MC_state_get_request(mc_state_t state, int *value)
       return res;
   }
   return nullptr;
-}
-
 }

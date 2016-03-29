@@ -91,13 +91,13 @@ XBT_PRIVATE void MC_comm_pattern_free_voidp(void *p);
 XBT_PRIVATE void MC_list_comm_pattern_free_voidp(void *p);
 XBT_PRIVATE void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigned int issuer, int backtracking);
 
-XBT_PRIVATE void MC_restore_communications_pattern(mc_state_t state);
+XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
 XBT_PRIVATE mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm);
 XBT_PRIVATE xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t state);
 
-XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(mc_state_t state);
-XBT_PRIVATE void MC_state_copy_index_communications_pattern(mc_state_t state);
+XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state);
+XBT_PRIVATE void MC_state_copy_index_communications_pattern(simgrid::mc::State* state);
 
 XBT_PRIVATE void MC_comm_pattern_free(mc_comm_pattern_t p);
 
