@@ -37,8 +37,8 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-kademlia
-         io-remote priority properties sendrecv set-maestro)
+foreach (file actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-chord 
+         dht-kademlia dht-pastry io-remote priority properties sendrecv set-maestro)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
@@ -61,9 +61,6 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/action
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/chord.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/chord10.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-pastry/pastry10.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-onoff/platform_onoff.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ns3/3hosts_2links_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ns3/3links-timer_d.xml

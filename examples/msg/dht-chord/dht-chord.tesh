@@ -1,916 +1,734 @@
 #! ./tesh
 
-p> Testing the Chord implementation with MSG
+p Testing the Chord implementation with MSG
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/dht-chord$EXEEXT -nb_bits=6 ${srcdir:=.}/platform.xml ${srcdir:=.}/../msg/dht-chord/chord.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:node@Gatien) Joining the ring with id 48, knowing node 1
-> [  0.000000] (2:node@McGee) Joining the ring with id 42, knowing node 1
-> [  0.000000] (3:node@iRMX) Joining the ring with id 38, knowing node 1
-> [  0.000000] (4:node@Geoff) Joining the ring with id 32, knowing node 1
-> [  0.000000] (5:node@TeX) Joining the ring with id 21, knowing node 1
-> [  0.000000] (6:node@Jean_Yves) Joining the ring with id 14, knowing node 1
-> [  0.000000] (7:node@Boivin) Joining the ring with id 8, knowing node 1
-> [  0.000000] (8:node@Jacquelin) My finger table:
-> [  0.000000] (8:node@Jacquelin) Start | Succ
-> [  0.000000] (8:node@Jacquelin)    2  |   1
-> [  0.000000] (8:node@Jacquelin)    3  |   1
-> [  0.000000] (8:node@Jacquelin)    5  |   1
-> [  0.000000] (8:node@Jacquelin)    9  |   1
-> [  0.000000] (8:node@Jacquelin)   17  |   1
-> [  0.000000] (8:node@Jacquelin)   33  |   1
-> [  0.000000] (8:node@Jacquelin) Predecessor: -1
-> [  6.274348] (1:node@Gatien) My finger table:
-> [  6.274348] (1:node@Gatien) Start | Succ
-> [  6.274348] (1:node@Gatien)   49  |   1
-> [  6.274348] (1:node@Gatien)   50  |  48
-> [  6.274348] (1:node@Gatien)   52  |  48
-> [  6.274348] (1:node@Gatien)   56  |  48
-> [  6.274348] (1:node@Gatien)    0  |  48
-> [  6.274348] (1:node@Gatien)   16  |  48
-> [  6.274348] (1:node@Gatien) Predecessor: -1
-> [ 10.888156] (2:node@McGee) My finger table:
-> [ 10.888156] (2:node@McGee) Start | Succ
-> [ 10.888156] (2:node@McGee)   43  |   1
-> [ 10.888156] (2:node@McGee)   44  |  42
-> [ 10.888156] (2:node@McGee)   46  |  42
-> [ 10.888156] (2:node@McGee)   50  |  42
-> [ 10.888156] (2:node@McGee)   58  |  42
-> [ 10.888156] (2:node@McGee)   10  |  42
-> [ 10.888156] (2:node@McGee) Predecessor: -1
-> [ 18.043375] (3:node@iRMX) My finger table:
-> [ 18.043375] (3:node@iRMX) Start | Succ
-> [ 18.043375] (3:node@iRMX)   39  |   1
-> [ 18.043375] (3:node@iRMX)   40  |  38
-> [ 18.043375] (3:node@iRMX)   42  |  38
-> [ 18.043375] (3:node@iRMX)   46  |  38
-> [ 18.043375] (3:node@iRMX)   54  |  38
-> [ 18.043375] (3:node@iRMX)    6  |  38
-> [ 18.043375] (3:node@iRMX) Predecessor: -1
-> [ 20.004944] (4:node@Geoff) My finger table:
-> [ 20.004944] (4:node@Geoff) Start | Succ
-> [ 20.004944] (4:node@Geoff)   33  |   1
-> [ 20.004944] (4:node@Geoff)   34  |  32
-> [ 20.004944] (4:node@Geoff)   36  |  32
-> [ 20.004944] (4:node@Geoff)   40  |  32
-> [ 20.004944] (4:node@Geoff)   48  |  32
-> [ 20.004944] (4:node@Geoff)    0  |  32
-> [ 20.004944] (4:node@Geoff) Predecessor: -1
-> [ 26.812102] (5:node@TeX) My finger table:
-> [ 26.812102] (5:node@TeX) Start | Succ
-> [ 26.812102] (5:node@TeX)   22  |   1
-> [ 26.812102] (5:node@TeX)   23  |  21
-> [ 26.812102] (5:node@TeX)   25  |  21
-> [ 26.812102] (5:node@TeX)   29  |  21
-> [ 26.812102] (5:node@TeX)   37  |  21
-> [ 26.812102] (5:node@TeX)   53  |  21
-> [ 26.812102] (5:node@TeX) Predecessor: -1
-> [ 30.924531] (6:node@Jean_Yves) My finger table:
-> [ 30.924531] (6:node@Jean_Yves) Start | Succ
-> [ 30.924531] (6:node@Jean_Yves)   15  |   1
-> [ 30.924531] (6:node@Jean_Yves)   16  |  14
-> [ 30.924531] (6:node@Jean_Yves)   18  |  14
-> [ 30.924531] (6:node@Jean_Yves)   22  |  14
-> [ 30.924531] (6:node@Jean_Yves)   30  |  14
-> [ 30.924531] (6:node@Jean_Yves)   46  |  14
-> [ 30.924531] (6:node@Jean_Yves) Predecessor: -1
-> [ 36.048186] (7:node@Boivin) My finger table:
-> [ 36.048186] (7:node@Boivin) Start | Succ
-> [ 36.048186] (7:node@Boivin)    9  |   1
-> [ 36.048186] (7:node@Boivin)   10  |   8
-> [ 36.048186] (7:node@Boivin)   12  |   8
-> [ 36.048186] (7:node@Boivin)   16  |   8
-> [ 36.048186] (7:node@Boivin)   24  |   8
-> [ 36.048186] (7:node@Boivin)   40  |   8
-> [ 36.048186] (7:node@Boivin) Predecessor: -1
-> [ 89.998200] (8:node@Jacquelin) My finger table:
-> [ 89.998200] (8:node@Jacquelin) Start | Succ
-> [ 89.998200] (8:node@Jacquelin)    2  |   1
-> [ 89.998200] (8:node@Jacquelin)    3  |   1
-> [ 89.998200] (8:node@Jacquelin)    5  |   1
-> [ 89.998200] (8:node@Jacquelin)    9  |   1
-> [ 89.998200] (8:node@Jacquelin)   17  |   1
-> [ 89.998200] (8:node@Jacquelin)   33  |   1
-> [ 89.998200] (8:node@Jacquelin) Predecessor: 32
-> [109.834289] (8:node@Jacquelin) My finger table:
-> [109.834289] (8:node@Jacquelin) Start | Succ
-> [109.834289] (8:node@Jacquelin)    2  |  32
-> [109.834289] (8:node@Jacquelin)    3  |   1
-> [109.834289] (8:node@Jacquelin)    5  |   1
-> [109.834289] (8:node@Jacquelin)    9  |   1
-> [109.834289] (8:node@Jacquelin)   17  |   1
-> [109.834289] (8:node@Jacquelin)   33  |   1
-> [109.834289] (8:node@Jacquelin) Predecessor: 42
-> [111.997093] (8:node@Jacquelin) My finger table:
-> [111.997093] (8:node@Jacquelin) Start | Succ
-> [111.997093] (8:node@Jacquelin)    2  |  32
-> [111.997093] (8:node@Jacquelin)    3  |   1
-> [111.997093] (8:node@Jacquelin)    5  |   1
-> [111.997093] (8:node@Jacquelin)    9  |   1
-> [111.997093] (8:node@Jacquelin)   17  |   1
-> [111.997093] (8:node@Jacquelin)   33  |   1
-> [111.997093] (8:node@Jacquelin) Predecessor: 48
-> [131.116449] (4:node@Geoff) My finger table:
-> [131.116449] (4:node@Geoff) Start | Succ
-> [131.116449] (4:node@Geoff)   33  |  48
-> [131.116449] (4:node@Geoff)   34  |  32
-> [131.116449] (4:node@Geoff)   36  |  32
-> [131.116449] (4:node@Geoff)   40  |  32
-> [131.116449] (4:node@Geoff)   48  |  32
-> [131.116449] (4:node@Geoff)    0  |  32
-> [131.116449] (4:node@Geoff) Predecessor: 1
-> [160.070553] (1:node@Gatien) My finger table:
-> [160.070553] (1:node@Gatien) Start | Succ
-> [160.070553] (1:node@Gatien)   49  |   1
-> [160.070553] (1:node@Gatien)   50  |  48
-> [160.070553] (1:node@Gatien)   52  |  48
-> [160.070553] (1:node@Gatien)   56  |  48
-> [160.070553] (1:node@Gatien)    0  |  48
-> [160.070553] (1:node@Gatien)   16  |  48
-> [160.070553] (1:node@Gatien) Predecessor: 32
-> [175.080938] (1:node@Gatien) My finger table:
-> [175.080938] (1:node@Gatien) Start | Succ
-> [175.080938] (1:node@Gatien)   49  |   1
-> [175.080938] (1:node@Gatien)   50  |  48
-> [175.080938] (1:node@Gatien)   52  |  48
-> [175.080938] (1:node@Gatien)   56  |  48
-> [175.080938] (1:node@Gatien)    0  |  48
-> [175.080938] (1:node@Gatien)   16  |  48
-> [175.080938] (1:node@Gatien) Predecessor: 42
-> [210.527001] (2:node@McGee) My finger table:
-> [210.527001] (2:node@McGee) Start | Succ
-> [210.527001] (2:node@McGee)   43  |  48
-> [210.527001] (2:node@McGee)   44  |  42
-> [210.527001] (2:node@McGee)   46  |  42
-> [210.527001] (2:node@McGee)   50  |  42
-> [210.527001] (2:node@McGee)   58  |  42
-> [210.527001] (2:node@McGee)   10  |  42
-> [210.527001] (2:node@McGee) Predecessor: 8
-> [213.351968] (2:node@McGee) My finger table:
-> [213.351968] (2:node@McGee) Start | Succ
-> [213.351968] (2:node@McGee)   43  |  48
-> [213.351968] (2:node@McGee)   44  |  42
-> [213.351968] (2:node@McGee)   46  |  42
-> [213.351968] (2:node@McGee)   50  |  42
-> [213.351968] (2:node@McGee)   58  |  42
-> [213.351968] (2:node@McGee)   10  |  42
-> [213.351968] (2:node@McGee) Predecessor: 21
-> [220.117893] (2:node@McGee) My finger table:
-> [220.117893] (2:node@McGee) Start | Succ
-> [220.117893] (2:node@McGee)   43  |  48
-> [220.117893] (2:node@McGee)   44  |  42
-> [220.117893] (2:node@McGee)   46  |  42
-> [220.117893] (2:node@McGee)   50  |  42
-> [220.117893] (2:node@McGee)   58  |  42
-> [220.117893] (2:node@McGee)   10  |  42
-> [220.117893] (2:node@McGee) Predecessor: 32
-> [243.554183] (5:node@TeX) My finger table:
-> [243.554183] (5:node@TeX) Start | Succ
-> [243.554183] (5:node@TeX)   22  |  32
-> [243.554183] (5:node@TeX)   23  |  32
-> [243.554183] (5:node@TeX)   25  |  21
-> [243.554183] (5:node@TeX)   29  |  21
-> [243.554183] (5:node@TeX)   37  |  21
-> [243.554183] (5:node@TeX)   53  |  21
-> [243.554183] (5:node@TeX) Predecessor: -1
-> [244.785257] (2:node@McGee) My finger table:
-> [244.785257] (2:node@McGee) Start | Succ
-> [244.785257] (2:node@McGee)   43  |  48
-> [244.785257] (2:node@McGee)   44  |  42
-> [244.785257] (2:node@McGee)   46  |  42
-> [244.785257] (2:node@McGee)   50  |  42
-> [244.785257] (2:node@McGee)   58  |  42
-> [244.785257] (2:node@McGee)   10  |  42
-> [244.785257] (2:node@McGee) Predecessor: 38
-> [244.894202] (6:node@Jean_Yves) My finger table:
-> [244.894202] (6:node@Jean_Yves) Start | Succ
-> [244.894202] (6:node@Jean_Yves)   15  |  32
-> [244.894202] (6:node@Jean_Yves)   16  |  32
-> [244.894202] (6:node@Jean_Yves)   18  |  14
-> [244.894202] (6:node@Jean_Yves)   22  |  14
-> [244.894202] (6:node@Jean_Yves)   30  |  14
-> [244.894202] (6:node@Jean_Yves)   46  |  14
-> [244.894202] (6:node@Jean_Yves) Predecessor: -1
-> [254.476029] (2:node@McGee) My finger table:
-> [254.476029] (2:node@McGee) Start | Succ
-> [254.476029] (2:node@McGee)   43  |  48
-> [254.476029] (2:node@McGee)   44  |  48
-> [254.476029] (2:node@McGee)   46  |  42
-> [254.476029] (2:node@McGee)   50  |  42
-> [254.476029] (2:node@McGee)   58  |  42
-> [254.476029] (2:node@McGee)   10  |  42
-> [254.476029] (2:node@McGee) Predecessor: 38
-> [257.793952] (4:node@Geoff) My finger table:
-> [257.793952] (4:node@Geoff) Start | Succ
-> [257.793952] (4:node@Geoff)   33  |  42
-> [257.793952] (4:node@Geoff)   34  |  42
-> [257.793952] (4:node@Geoff)   36  |  32
-> [257.793952] (4:node@Geoff)   40  |  32
-> [257.793952] (4:node@Geoff)   48  |  32
-> [257.793952] (4:node@Geoff)    0  |  32
-> [257.793952] (4:node@Geoff) Predecessor: 1
-> [301.405587] (8:node@Jacquelin) My finger table:
-> [301.405587] (8:node@Jacquelin) Start | Succ
-> [301.405587] (8:node@Jacquelin)    2  |  32
-> [301.405587] (8:node@Jacquelin)    3  |  32
-> [301.405587] (8:node@Jacquelin)    5  |   1
-> [301.405587] (8:node@Jacquelin)    9  |   1
-> [301.405587] (8:node@Jacquelin)   17  |   1
-> [301.405587] (8:node@Jacquelin)   33  |   1
-> [301.405587] (8:node@Jacquelin) Predecessor: 48
-> [304.772476] (7:node@Boivin) My finger table:
-> [304.772476] (7:node@Boivin) Start | Succ
-> [304.772476] (7:node@Boivin)    9  |  32
-> [304.772476] (7:node@Boivin)   10  |  32
-> [304.772476] (7:node@Boivin)   12  |   8
-> [304.772476] (7:node@Boivin)   16  |   8
-> [304.772476] (7:node@Boivin)   24  |   8
-> [304.772476] (7:node@Boivin)   40  |   8
-> [304.772476] (7:node@Boivin) Predecessor: -1
-> [307.510216] (4:node@Geoff) My finger table:
-> [307.510216] (4:node@Geoff) Start | Succ
-> [307.510216] (4:node@Geoff)   33  |  42
-> [307.510216] (4:node@Geoff)   34  |  42
-> [307.510216] (4:node@Geoff)   36  |  32
-> [307.510216] (4:node@Geoff)   40  |  32
-> [307.510216] (4:node@Geoff)   48  |  32
-> [307.510216] (4:node@Geoff)    0  |  32
-> [307.510216] (4:node@Geoff) Predecessor: 8
-> [307.783196] (1:node@Gatien) My finger table:
-> [307.783196] (1:node@Gatien) Start | Succ
-> [307.783196] (1:node@Gatien)   49  |   1
-> [307.783196] (1:node@Gatien)   50  |   1
-> [307.783196] (1:node@Gatien)   52  |  48
-> [307.783196] (1:node@Gatien)   56  |  48
-> [307.783196] (1:node@Gatien)    0  |  48
-> [307.783196] (1:node@Gatien)   16  |  48
-> [307.783196] (1:node@Gatien) Predecessor: 42
-> [310.800320] (3:node@iRMX) My finger table:
-> [310.800320] (3:node@iRMX) Start | Succ
-> [310.800320] (3:node@iRMX)   39  |  42
-> [310.800320] (3:node@iRMX)   40  |  42
-> [310.800320] (3:node@iRMX)   42  |  38
-> [310.800320] (3:node@iRMX)   46  |  38
-> [310.800320] (3:node@iRMX)   54  |  38
-> [310.800320] (3:node@iRMX)    6  |  38
-> [310.800320] (3:node@iRMX) Predecessor: -1
-> [313.838656] (4:node@Geoff) My finger table:
-> [313.838656] (4:node@Geoff) Start | Succ
-> [313.838656] (4:node@Geoff)   33  |  38
-> [313.838656] (4:node@Geoff)   34  |  42
-> [313.838656] (4:node@Geoff)   36  |  32
-> [313.838656] (4:node@Geoff)   40  |  32
-> [313.838656] (4:node@Geoff)   48  |  32
-> [313.838656] (4:node@Geoff)    0  |  32
-> [313.838656] (4:node@Geoff) Predecessor: 21
-> [347.040484] (3:node@iRMX) My finger table:
-> [347.040484] (3:node@iRMX) Start | Succ
-> [347.040484] (3:node@iRMX)   39  |  42
-> [347.040484] (3:node@iRMX)   40  |  42
-> [347.040484] (3:node@iRMX)   42  |  38
-> [347.040484] (3:node@iRMX)   46  |  38
-> [347.040484] (3:node@iRMX)   54  |  38
-> [347.040484] (3:node@iRMX)    6  |  38
-> [347.040484] (3:node@iRMX) Predecessor: 32
-> [368.832414] (5:node@TeX) My finger table:
-> [368.832414] (5:node@TeX) Start | Succ
-> [368.832414] (5:node@TeX)   22  |  32
-> [368.832414] (5:node@TeX)   23  |  32
-> [368.832414] (5:node@TeX)   25  |  21
-> [368.832414] (5:node@TeX)   29  |  21
-> [368.832414] (5:node@TeX)   37  |  21
-> [368.832414] (5:node@TeX)   53  |  21
-> [368.832414] (5:node@TeX) Predecessor: 8
-> [374.267193] (6:node@Jean_Yves) My finger table:
-> [374.267193] (6:node@Jean_Yves) Start | Succ
-> [374.267193] (6:node@Jean_Yves)   15  |  21
-> [374.267193] (6:node@Jean_Yves)   16  |  32
-> [374.267193] (6:node@Jean_Yves)   18  |  21
-> [374.267193] (6:node@Jean_Yves)   22  |  14
-> [374.267193] (6:node@Jean_Yves)   30  |  14
-> [374.267193] (6:node@Jean_Yves)   46  |  14
-> [374.267193] (6:node@Jean_Yves) Predecessor: -1
-> [375.175007] (5:node@TeX) My finger table:
-> [375.175007] (5:node@TeX) Start | Succ
-> [375.175007] (5:node@TeX)   22  |  32
-> [375.175007] (5:node@TeX)   23  |  32
-> [375.175007] (5:node@TeX)   25  |  32
-> [375.175007] (5:node@TeX)   29  |  21
-> [375.175007] (5:node@TeX)   37  |  21
-> [375.175007] (5:node@TeX)   53  |  21
-> [375.175007] (5:node@TeX) Predecessor: 8
-> [377.892396] (5:node@TeX) My finger table:
-> [377.892396] (5:node@TeX) Start | Succ
-> [377.892396] (5:node@TeX)   22  |  32
-> [377.892396] (5:node@TeX)   23  |  32
-> [377.892396] (5:node@TeX)   25  |  32
-> [377.892396] (5:node@TeX)   29  |  21
-> [377.892396] (5:node@TeX)   37  |  21
-> [377.892396] (5:node@TeX)   53  |  21
-> [377.892396] (5:node@TeX) Predecessor: 14
-> [381.140620] (4:node@Geoff) My finger table:
-> [381.140620] (4:node@Geoff) Start | Succ
-> [381.140620] (4:node@Geoff)   33  |  38
-> [381.140620] (4:node@Geoff)   34  |  42
-> [381.140620] (4:node@Geoff)   36  |  38
-> [381.140620] (4:node@Geoff)   40  |  32
-> [381.140620] (4:node@Geoff)   48  |  32
-> [381.140620] (4:node@Geoff)    0  |  32
-> [381.140620] (4:node@Geoff) Predecessor: 21
-> [385.057415] (2:node@McGee) My finger table:
-> [385.057415] (2:node@McGee) Start | Succ
-> [385.057415] (2:node@McGee)   43  |  48
-> [385.057415] (2:node@McGee)   44  |  48
-> [385.057415] (2:node@McGee)   46  |  48
-> [385.057415] (2:node@McGee)   50  |  42
-> [385.057415] (2:node@McGee)   58  |  42
-> [385.057415] (2:node@McGee)   10  |  42
-> [385.057415] (2:node@McGee) Predecessor: 38
-> [401.887186] (7:node@Boivin) My finger table:
-> [401.887186] (7:node@Boivin) Start | Succ
-> [401.887186] (7:node@Boivin)    9  |  14
-> [401.887186] (7:node@Boivin)   10  |  32
-> [401.887186] (7:node@Boivin)   12  |   8
-> [401.887186] (7:node@Boivin)   16  |   8
-> [401.887186] (7:node@Boivin)   24  |   8
-> [401.887186] (7:node@Boivin)   40  |   8
-> [401.887186] (7:node@Boivin) Predecessor: 1
-> [428.242792] (8:node@Jacquelin) My finger table:
-> [428.242792] (8:node@Jacquelin) Start | Succ
-> [428.242792] (8:node@Jacquelin)    2  |   8
-> [428.242792] (8:node@Jacquelin)    3  |  32
-> [428.242792] (8:node@Jacquelin)    5  |   8
-> [428.242792] (8:node@Jacquelin)    9  |   1
-> [428.242792] (8:node@Jacquelin)   17  |   1
-> [428.242792] (8:node@Jacquelin)   33  |   1
-> [428.242792] (8:node@Jacquelin) Predecessor: 48
-> [432.513194] (3:node@iRMX) My finger table:
-> [432.513194] (3:node@iRMX) Start | Succ
-> [432.513194] (3:node@iRMX)   39  |  42
-> [432.513194] (3:node@iRMX)   40  |  42
-> [432.513194] (3:node@iRMX)   42  |  42
-> [432.513194] (3:node@iRMX)   46  |  38
-> [432.513194] (3:node@iRMX)   54  |  38
-> [432.513194] (3:node@iRMX)    6  |  38
-> [432.513194] (3:node@iRMX) Predecessor: 32
-> [433.617495] (7:node@Boivin) My finger table:
-> [433.617495] (7:node@Boivin) Start | Succ
-> [433.617495] (7:node@Boivin)    9  |  14
-> [433.617495] (7:node@Boivin)   10  |  32
-> [433.617495] (7:node@Boivin)   12  |  14
-> [433.617495] (7:node@Boivin)   16  |   8
-> [433.617495] (7:node@Boivin)   24  |   8
-> [433.617495] (7:node@Boivin)   40  |   8
-> [433.617495] (7:node@Boivin) Predecessor: 1
-> [439.381100] (6:node@Jean_Yves) My finger table:
-> [439.381100] (6:node@Jean_Yves) Start | Succ
-> [439.381100] (6:node@Jean_Yves)   15  |  21
-> [439.381100] (6:node@Jean_Yves)   16  |  32
-> [439.381100] (6:node@Jean_Yves)   18  |  21
-> [439.381100] (6:node@Jean_Yves)   22  |  14
-> [439.381100] (6:node@Jean_Yves)   30  |  14
-> [439.381100] (6:node@Jean_Yves)   46  |  14
-> [439.381100] (6:node@Jean_Yves) Predecessor: 8
-> [447.065837] (1:node@Gatien) My finger table:
-> [447.065837] (1:node@Gatien) Start | Succ
-> [447.065837] (1:node@Gatien)   49  |   1
-> [447.065837] (1:node@Gatien)   50  |   1
-> [447.065837] (1:node@Gatien)   52  |   1
-> [447.065837] (1:node@Gatien)   56  |  48
-> [447.065837] (1:node@Gatien)    0  |  48
-> [447.065837] (1:node@Gatien)   16  |  48
-> [447.065837] (1:node@Gatien) Predecessor: 42
-> [517.974974] (5:node@TeX) My finger table:
-> [517.974974] (5:node@TeX) Start | Succ
-> [517.974974] (5:node@TeX)   22  |  32
-> [517.974974] (5:node@TeX)   23  |  32
-> [517.974974] (5:node@TeX)   25  |  32
-> [517.974974] (5:node@TeX)   29  |  32
-> [517.974974] (5:node@TeX)   37  |  21
-> [517.974974] (5:node@TeX)   53  |  21
-> [517.974974] (5:node@TeX) Predecessor: 14
-> [536.878549] (4:node@Geoff) My finger table:
-> [536.878549] (4:node@Geoff) Start | Succ
-> [536.878549] (4:node@Geoff)   33  |  38
-> [536.878549] (4:node@Geoff)   34  |  42
-> [536.878549] (4:node@Geoff)   36  |  38
-> [536.878549] (4:node@Geoff)   40  |  42
-> [536.878549] (4:node@Geoff)   48  |  32
-> [536.878549] (4:node@Geoff)    0  |  32
-> [536.878549] (4:node@Geoff) Predecessor: 21
-> [538.333100] (6:node@Jean_Yves) My finger table:
-> [538.333100] (6:node@Jean_Yves) Start | Succ
-> [538.333100] (6:node@Jean_Yves)   15  |  21
-> [538.333100] (6:node@Jean_Yves)   16  |  32
-> [538.333100] (6:node@Jean_Yves)   18  |  21
-> [538.333100] (6:node@Jean_Yves)   22  |  32
-> [538.333100] (6:node@Jean_Yves)   30  |  14
-> [538.333100] (6:node@Jean_Yves)   46  |  14
-> [538.333100] (6:node@Jean_Yves) Predecessor: 8
-> [553.664147] (8:node@Jacquelin) My finger table:
-> [553.664147] (8:node@Jacquelin) Start | Succ
-> [553.664147] (8:node@Jacquelin)    2  |   8
-> [553.664147] (8:node@Jacquelin)    3  |  32
-> [553.664147] (8:node@Jacquelin)    5  |   8
-> [553.664147] (8:node@Jacquelin)    9  |  14
-> [553.664147] (8:node@Jacquelin)   17  |   1
-> [553.664147] (8:node@Jacquelin)   33  |   1
-> [553.664147] (8:node@Jacquelin) Predecessor: 48
-> [554.213185] (2:node@McGee) My finger table:
-> [554.213185] (2:node@McGee) Start | Succ
-> [554.213185] (2:node@McGee)   43  |  48
-> [554.213185] (2:node@McGee)   44  |  48
-> [554.213185] (2:node@McGee)   46  |  48
-> [554.213185] (2:node@McGee)   50  |   1
-> [554.213185] (2:node@McGee)   58  |  42
-> [554.213185] (2:node@McGee)   10  |  42
-> [554.213185] (2:node@McGee) Predecessor: 38
-> [569.831804] (7:node@Boivin) My finger table:
-> [569.831804] (7:node@Boivin) Start | Succ
-> [569.831804] (7:node@Boivin)    9  |  14
-> [569.831804] (7:node@Boivin)   10  |  32
-> [569.831804] (7:node@Boivin)   12  |  14
-> [569.831804] (7:node@Boivin)   16  |  21
-> [569.831804] (7:node@Boivin)   24  |   8
-> [569.831804] (7:node@Boivin)   40  |   8
-> [569.831804] (7:node@Boivin) Predecessor: 1
-> [573.429591] (1:node@Gatien) My finger table:
-> [573.429591] (1:node@Gatien) Start | Succ
-> [573.429591] (1:node@Gatien)   49  |   1
-> [573.429591] (1:node@Gatien)   50  |   1
-> [573.429591] (1:node@Gatien)   52  |   1
-> [573.429591] (1:node@Gatien)   56  |   1
-> [573.429591] (1:node@Gatien)    0  |  48
-> [573.429591] (1:node@Gatien)   16  |  48
-> [573.429591] (1:node@Gatien) Predecessor: 42
-> [577.413922] (3:node@iRMX) My finger table:
-> [577.413922] (3:node@iRMX) Start | Succ
-> [577.413922] (3:node@iRMX)   39  |  42
-> [577.413922] (3:node@iRMX)   40  |  42
-> [577.413922] (3:node@iRMX)   42  |  42
-> [577.413922] (3:node@iRMX)   46  |  48
-> [577.413922] (3:node@iRMX)   54  |  38
-> [577.413922] (3:node@iRMX)    6  |  38
-> [577.413922] (3:node@iRMX) Predecessor: 32
-> [804.365058] (0:maestro@) Messages created: 788
-> [804.365058] (0:maestro@) Simulated time: 804.365
+$ $SG_TEST_EXENV ${bindir:=.}/dht-chord$EXEEXT -nb_bits=6 ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/dht-chord/dht-chord_d.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (10:node@node-9.acme.org) Joining the ring with id 2015253, knowing node 1319738
+> [  0.000000] (1:node@node-0.acme.org) My finger table:
+> [  0.000000] (1:node@node-0.acme.org) Start | Succ
+> [  0.000000] (1:node@node-0.acme.org)   43  |  42
+> [  0.000000] (1:node@node-0.acme.org)   44  |  42
+> [  0.000000] (1:node@node-0.acme.org)   46  |  42
+> [  0.000000] (1:node@node-0.acme.org)   50  |  42
+> [  0.000000] (1:node@node-0.acme.org)   58  |  42
+> [  0.000000] (1:node@node-0.acme.org)   10  |  42
+> [  0.000000] (1:node@node-0.acme.org) Predecessor: -1
+> [  0.000000] (2:node@node-1.acme.org) Joining the ring with id 366680, knowing node 42
+> [  0.000000] (3:node@node-2.acme.org) Joining the ring with id 533744, knowing node 366680
+> [  0.000000] (4:node@node-3.acme.org) Joining the ring with id 1319738, knowing node 42
+> [  0.000000] (5:node@node-4.acme.org) Joining the ring with id 16509405, knowing node 366680
+> [  0.000000] (6:node@node-5.acme.org) Joining the ring with id 10874876, knowing node 533744
+> [  0.000000] (7:node@node-6.acme.org) Joining the ring with id 16728096, knowing node 1319738
+> [  0.000000] (8:node@node-7.acme.org) Joining the ring with id 10004760, knowing node 16509405
+> [  0.000000] (9:node@node-8.acme.org) Joining the ring with id 6518808, knowing node 42
+> [  0.031224] (3:node@node-2.acme.org) My finger table:
+> [  0.031224] (3:node@node-2.acme.org) Start | Succ
+> [  0.031224] (3:node@node-2.acme.org)   49  | 366680
+> [  0.031224] (3:node@node-2.acme.org)   50  | 533744
+> [  0.031224] (3:node@node-2.acme.org)   52  | 533744
+> [  0.031224] (3:node@node-2.acme.org)   56  | 533744
+> [  0.031224] (3:node@node-2.acme.org)    0  | 533744
+> [  0.031224] (3:node@node-2.acme.org)   16  | 533744
+> [  0.031224] (3:node@node-2.acme.org) Predecessor: -1
+> [  0.031224] (6:node@node-5.acme.org) My finger table:
+> [  0.031224] (6:node@node-5.acme.org) Start | Succ
+> [  0.031224] (6:node@node-5.acme.org)   61  | 533744
+> [  0.031224] (6:node@node-5.acme.org)   62  | 10874876
+> [  0.031224] (6:node@node-5.acme.org)    0  | 10874876
+> [  0.031224] (6:node@node-5.acme.org)    4  | 10874876
+> [  0.031224] (6:node@node-5.acme.org)   12  | 10874876
+> [  0.031224] (6:node@node-5.acme.org)   28  | 10874876
+> [  0.031224] (6:node@node-5.acme.org) Predecessor: -1
+> [  0.039030] (5:node@node-4.acme.org) My finger table:
+> [  0.039030] (5:node@node-4.acme.org) Start | Succ
+> [  0.039030] (5:node@node-4.acme.org)   30  | 366680
+> [  0.039030] (5:node@node-4.acme.org)   31  | 16509405
+> [  0.039030] (5:node@node-4.acme.org)   33  | 16509405
+> [  0.039030] (5:node@node-4.acme.org)   37  | 16509405
+> [  0.039030] (5:node@node-4.acme.org)   45  | 16509405
+> [  0.039030] (5:node@node-4.acme.org)   61  | 16509405
+> [  0.039030] (5:node@node-4.acme.org) Predecessor: -1
+> [  0.039030] (8:node@node-7.acme.org) My finger table:
+> [  0.039030] (8:node@node-7.acme.org) Start | Succ
+> [  0.039030] (8:node@node-7.acme.org)   25  | 16509405
+> [  0.039030] (8:node@node-7.acme.org)   26  | 10004760
+> [  0.039030] (8:node@node-7.acme.org)   28  | 10004760
+> [  0.039030] (8:node@node-7.acme.org)   32  | 10004760
+> [  0.039030] (8:node@node-7.acme.org)   40  | 10004760
+> [  0.039030] (8:node@node-7.acme.org)   56  | 10004760
+> [  0.039030] (8:node@node-7.acme.org) Predecessor: -1
+> [  5.007706] (2:node@node-1.acme.org) My finger table:
+> [  5.007706] (2:node@node-1.acme.org) Start | Succ
+> [  5.007706] (2:node@node-1.acme.org)   25  |  42
+> [  5.007706] (2:node@node-1.acme.org)   26  | 366680
+> [  5.007706] (2:node@node-1.acme.org)   28  | 366680
+> [  5.007706] (2:node@node-1.acme.org)   32  | 366680
+> [  5.007706] (2:node@node-1.acme.org)   40  | 366680
+> [  5.007706] (2:node@node-1.acme.org)   56  | 366680
+> [  5.007706] (2:node@node-1.acme.org) Predecessor: -1
+> [  5.023318] (7:node@node-6.acme.org) My finger table:
+> [  5.023318] (7:node@node-6.acme.org) Start | Succ
+> [  5.023318] (7:node@node-6.acme.org)   33  | 1319738
+> [  5.023318] (7:node@node-6.acme.org)   34  | 16728096
+> [  5.023318] (7:node@node-6.acme.org)   36  | 16728096
+> [  5.023318] (7:node@node-6.acme.org)   40  | 16728096
+> [  5.023318] (7:node@node-6.acme.org)   48  | 16728096
+> [  5.023318] (7:node@node-6.acme.org)    0  | 16728096
+> [  5.023318] (7:node@node-6.acme.org) Predecessor: -1
+> [  5.031124] (10:node@node-9.acme.org) My finger table:
+> [  5.031124] (10:node@node-9.acme.org) Start | Succ
+> [  5.031124] (10:node@node-9.acme.org)   22  | 1319738
+> [  5.031124] (10:node@node-9.acme.org)   23  | 2015253
+> [  5.031124] (10:node@node-9.acme.org)   25  | 2015253
+> [  5.031124] (10:node@node-9.acme.org)   29  | 2015253
+> [  5.031124] (10:node@node-9.acme.org)   37  | 2015253
+> [  5.031124] (10:node@node-9.acme.org)   53  | 2015253
+> [  5.031124] (10:node@node-9.acme.org) Predecessor: -1
+> [ 10.007606] (4:node@node-3.acme.org) My finger table:
+> [ 10.007606] (4:node@node-3.acme.org) Start | Succ
+> [ 10.007606] (4:node@node-3.acme.org)   59  |  42
+> [ 10.007606] (4:node@node-3.acme.org)   60  | 1319738
+> [ 10.007606] (4:node@node-3.acme.org)   62  | 1319738
+> [ 10.007606] (4:node@node-3.acme.org)    2  | 1319738
+> [ 10.007606] (4:node@node-3.acme.org)   10  | 1319738
+> [ 10.007606] (4:node@node-3.acme.org)   26  | 1319738
+> [ 10.007606] (4:node@node-3.acme.org) Predecessor: -1
+> [ 15.007506] (9:node@node-8.acme.org) My finger table:
+> [ 15.007506] (9:node@node-8.acme.org) Start | Succ
+> [ 15.007506] (9:node@node-8.acme.org)   25  |  42
+> [ 15.007506] (9:node@node-8.acme.org)   26  | 6518808
+> [ 15.007506] (9:node@node-8.acme.org)   28  | 6518808
+> [ 15.007506] (9:node@node-8.acme.org)   32  | 6518808
+> [ 15.007506] (9:node@node-8.acme.org)   40  | 6518808
+> [ 15.007506] (9:node@node-8.acme.org)   56  | 6518808
+> [ 15.007506] (9:node@node-8.acme.org) Predecessor: -1
+> [ 20.038630] (4:node@node-3.acme.org) My finger table:
+> [ 20.038630] (4:node@node-3.acme.org) Start | Succ
+> [ 20.038630] (4:node@node-3.acme.org)   59  |  42
+> [ 20.038630] (4:node@node-3.acme.org)   60  | 1319738
+> [ 20.038630] (4:node@node-3.acme.org)   62  | 1319738
+> [ 20.038630] (4:node@node-3.acme.org)    2  | 1319738
+> [ 20.038630] (4:node@node-3.acme.org)   10  | 1319738
+> [ 20.038630] (4:node@node-3.acme.org)   26  | 1319738
+> [ 20.038630] (4:node@node-3.acme.org) Predecessor: 16728096
+> [ 20.046436] (5:node@node-4.acme.org) My finger table:
+> [ 20.046436] (5:node@node-4.acme.org) Start | Succ
+> [ 20.046436] (5:node@node-4.acme.org)   30  | 366680
+> [ 20.046436] (5:node@node-4.acme.org)   31  | 16509405
+> [ 20.046436] (5:node@node-4.acme.org)   33  | 16509405
+> [ 20.046436] (5:node@node-4.acme.org)   37  | 16509405
+> [ 20.046436] (5:node@node-4.acme.org)   45  | 16509405
+> [ 20.046436] (5:node@node-4.acme.org)   61  | 16509405
+> [ 20.046436] (5:node@node-4.acme.org) Predecessor: 10004760
+> [ 20.069855] (3:node@node-2.acme.org) My finger table:
+> [ 20.069855] (3:node@node-2.acme.org) Start | Succ
+> [ 20.069855] (3:node@node-2.acme.org)   49  | 366680
+> [ 20.069855] (3:node@node-2.acme.org)   50  | 533744
+> [ 20.069855] (3:node@node-2.acme.org)   52  | 533744
+> [ 20.069855] (3:node@node-2.acme.org)   56  | 533744
+> [ 20.069855] (3:node@node-2.acme.org)    0  | 533744
+> [ 20.069855] (3:node@node-2.acme.org)   16  | 533744
+> [ 20.069855] (3:node@node-2.acme.org) Predecessor: 10874876
+> [ 35.022718] (2:node@node-1.acme.org) My finger table:
+> [ 35.022718] (2:node@node-1.acme.org) Start | Succ
+> [ 35.022718] (2:node@node-1.acme.org)   25  |  42
+> [ 35.022718] (2:node@node-1.acme.org)   26  | 366680
+> [ 35.022718] (2:node@node-1.acme.org)   28  | 366680
+> [ 35.022718] (2:node@node-1.acme.org)   32  | 366680
+> [ 35.022718] (2:node@node-1.acme.org)   40  | 366680
+> [ 35.022718] (2:node@node-1.acme.org)   56  | 366680
+> [ 35.022718] (2:node@node-1.acme.org) Predecessor: 16509405
+> [ 35.038330] (2:node@node-1.acme.org) My finger table:
+> [ 35.038330] (2:node@node-1.acme.org) Start | Succ
+> [ 35.038330] (2:node@node-1.acme.org)   25  |  42
+> [ 35.038330] (2:node@node-1.acme.org)   26  | 366680
+> [ 35.038330] (2:node@node-1.acme.org)   28  | 366680
+> [ 35.038330] (2:node@node-1.acme.org)   32  | 366680
+> [ 35.038330] (2:node@node-1.acme.org)   40  | 366680
+> [ 35.038330] (2:node@node-1.acme.org)   56  | 366680
+> [ 35.038330] (2:node@node-1.acme.org) Predecessor: 533744
+> [ 54.998900] (1:node@node-0.acme.org) My finger table:
+> [ 54.998900] (1:node@node-0.acme.org) Start | Succ
+> [ 54.998900] (1:node@node-0.acme.org)   43  |  42
+> [ 54.998900] (1:node@node-0.acme.org)   44  |  42
+> [ 54.998900] (1:node@node-0.acme.org)   46  |  42
+> [ 54.998900] (1:node@node-0.acme.org)   50  |  42
+> [ 54.998900] (1:node@node-0.acme.org)   58  |  42
+> [ 54.998900] (1:node@node-0.acme.org)   10  |  42
+> [ 54.998900] (1:node@node-0.acme.org) Predecessor: 366680
+> [ 80.060849] (3:node@node-2.acme.org) My finger table:
+> [ 80.060849] (3:node@node-2.acme.org) Start | Succ
+> [ 80.060849] (3:node@node-2.acme.org)   49  | 366680
+> [ 80.060849] (3:node@node-2.acme.org)   50  | 533744
+> [ 80.060849] (3:node@node-2.acme.org)   52  | 533744
+> [ 80.060849] (3:node@node-2.acme.org)   56  | 533744
+> [ 80.060849] (3:node@node-2.acme.org)    0  | 533744
+> [ 80.060849] (3:node@node-2.acme.org)   16  | 533744
+> [ 80.060849] (3:node@node-2.acme.org) Predecessor: 16509405
+> [ 90.045036] (7:node@node-6.acme.org) My finger table:
+> [ 90.045036] (7:node@node-6.acme.org) Start | Succ
+> [ 90.045036] (7:node@node-6.acme.org)   33  | 1319738
+> [ 90.045036] (7:node@node-6.acme.org)   34  | 16728096
+> [ 90.045036] (7:node@node-6.acme.org)   36  | 16728096
+> [ 90.045036] (7:node@node-6.acme.org)   40  | 16728096
+> [ 90.045036] (7:node@node-6.acme.org)   48  | 16728096
+> [ 90.045036] (7:node@node-6.acme.org)    0  | 16728096
+> [ 90.045036] (7:node@node-6.acme.org) Predecessor: 2015253
+> [115.044536] (2:node@node-1.acme.org) My finger table:
+> [115.044536] (2:node@node-1.acme.org) Start | Succ
+> [115.044536] (2:node@node-1.acme.org)   25  |  42
+> [115.044536] (2:node@node-1.acme.org)   26  | 366680
+> [115.044536] (2:node@node-1.acme.org)   28  | 366680
+> [115.044536] (2:node@node-1.acme.org)   32  | 366680
+> [115.044536] (2:node@node-1.acme.org)   40  | 366680
+> [115.044536] (2:node@node-1.acme.org)   56  | 366680
+> [115.044536] (2:node@node-1.acme.org) Predecessor: 1319738
+> [1151.814423] (0:maestro@) Messages created: 2452
+> [1151.814423] (0:maestro@) Simulated time: 1151.81
+> [130.161328] (3:node@node-2.acme.org) My finger table:
+> [130.161328] (3:node@node-2.acme.org) Start | Succ
+> [130.161328] (3:node@node-2.acme.org)   49  | 366680
+> [130.161328] (3:node@node-2.acme.org)   50  | 533744
+> [130.161328] (3:node@node-2.acme.org)   52  | 533744
+> [130.161328] (3:node@node-2.acme.org)   56  | 533744
+> [130.161328] (3:node@node-2.acme.org)    0  | 533744
+> [130.161328] (3:node@node-2.acme.org)   16  | 533744
+> [130.161328] (3:node@node-2.acme.org) Predecessor: 42
+> [135.153422] (8:node@node-7.acme.org) My finger table:
+> [135.153422] (8:node@node-7.acme.org) Start | Succ
+> [135.153422] (8:node@node-7.acme.org)   25  | 16509405
+> [135.153422] (8:node@node-7.acme.org)   26  | 10004760
+> [135.153422] (8:node@node-7.acme.org)   28  | 10004760
+> [135.153422] (8:node@node-7.acme.org)   32  | 10004760
+> [135.153422] (8:node@node-7.acme.org)   40  | 10004760
+> [135.153422] (8:node@node-7.acme.org)   56  | 10004760
+> [135.153422] (8:node@node-7.acme.org) Predecessor: 10874876
+> [160.191952] (4:node@node-3.acme.org) My finger table:
+> [160.191952] (4:node@node-3.acme.org) Start | Succ
+> [160.191952] (4:node@node-3.acme.org)   59  | 366680
+> [160.191952] (4:node@node-3.acme.org)   60  | 1319738
+> [160.191952] (4:node@node-3.acme.org)   62  | 1319738
+> [160.191952] (4:node@node-3.acme.org)    2  | 1319738
+> [160.191952] (4:node@node-3.acme.org)   10  | 1319738
+> [160.191952] (4:node@node-3.acme.org)   26  | 1319738
+> [160.191952] (4:node@node-3.acme.org) Predecessor: 533744
+> [165.207464] (1:node@node-0.acme.org) My finger table:
+> [165.207464] (1:node@node-0.acme.org) Start | Succ
+> [165.207464] (1:node@node-0.acme.org)   43  | 533744
+> [165.207464] (1:node@node-0.acme.org)   44  |  42
+> [165.207464] (1:node@node-0.acme.org)   46  |  42
+> [165.207464] (1:node@node-0.acme.org)   50  |  42
+> [165.207464] (1:node@node-0.acme.org)   58  |  42
+> [165.207464] (1:node@node-0.acme.org)   10  |  42
+> [165.207464] (1:node@node-0.acme.org) Predecessor: 16509405
+> [215.346973] (1:node@node-0.acme.org) My finger table:
+> [215.346973] (1:node@node-0.acme.org) Start | Succ
+> [215.346973] (1:node@node-0.acme.org)   43  | 533744
+> [215.346973] (1:node@node-0.acme.org)   44  |  42
+> [215.346973] (1:node@node-0.acme.org)   46  |  42
+> [215.346973] (1:node@node-0.acme.org)   50  |  42
+> [215.346973] (1:node@node-0.acme.org)   58  |  42
+> [215.346973] (1:node@node-0.acme.org)   10  |  42
+> [215.346973] (1:node@node-0.acme.org) Predecessor: 16728096
+> [240.416727] (5:node@node-4.acme.org) My finger table:
+> [240.416727] (5:node@node-4.acme.org) Start | Succ
+> [240.416727] (5:node@node-4.acme.org)   30  | 16728096
+> [240.416727] (5:node@node-4.acme.org)   31  | 16728096
+> [240.416727] (5:node@node-4.acme.org)   33  | 16509405
+> [240.416727] (5:node@node-4.acme.org)   37  | 16509405
+> [240.416727] (5:node@node-4.acme.org)   45  | 16509405
+> [240.416727] (5:node@node-4.acme.org)   61  | 16509405
+> [240.416727] (5:node@node-4.acme.org) Predecessor: 10004760
+> [240.416727] (8:node@node-7.acme.org) My finger table:
+> [240.416727] (8:node@node-7.acme.org) Start | Succ
+> [240.416727] (8:node@node-7.acme.org)   25  | 16509405
+> [240.416727] (8:node@node-7.acme.org)   26  | 16509405
+> [240.416727] (8:node@node-7.acme.org)   28  | 10004760
+> [240.416727] (8:node@node-7.acme.org)   32  | 10004760
+> [240.416727] (8:node@node-7.acme.org)   40  | 10004760
+> [240.416727] (8:node@node-7.acme.org)   56  | 10004760
+> [240.416727] (8:node@node-7.acme.org) Predecessor: 10874876
+> [240.424533] (6:node@node-5.acme.org) My finger table:
+> [240.424533] (6:node@node-5.acme.org) Start | Succ
+> [240.424533] (6:node@node-5.acme.org)   61  | 10004760
+> [240.424533] (6:node@node-5.acme.org)   62  | 10004760
+> [240.424533] (6:node@node-5.acme.org)    0  | 10874876
+> [240.424533] (6:node@node-5.acme.org)    4  | 10874876
+> [240.424533] (6:node@node-5.acme.org)   12  | 10874876
+> [240.424533] (6:node@node-5.acme.org)   28  | 10874876
+> [240.424533] (6:node@node-5.acme.org) Predecessor: -1
+> [240.432339] (1:node@node-0.acme.org) My finger table:
+> [240.432339] (1:node@node-0.acme.org) Start | Succ
+> [240.432339] (1:node@node-0.acme.org)   43  | 533744
+> [240.432339] (1:node@node-0.acme.org)   44  | 533744
+> [240.432339] (1:node@node-0.acme.org)   46  |  42
+> [240.432339] (1:node@node-0.acme.org)   50  |  42
+> [240.432339] (1:node@node-0.acme.org)   58  |  42
+> [240.432339] (1:node@node-0.acme.org)   10  |  42
+> [240.432339] (1:node@node-0.acme.org) Predecessor: 16728096
+> [240.440145] (10:node@node-9.acme.org) My finger table:
+> [240.440145] (10:node@node-9.acme.org) Start | Succ
+> [240.440145] (10:node@node-9.acme.org)   22  | 16728096
+> [240.440145] (10:node@node-9.acme.org)   23  | 16728096
+> [240.440145] (10:node@node-9.acme.org)   25  | 2015253
+> [240.440145] (10:node@node-9.acme.org)   29  | 2015253
+> [240.440145] (10:node@node-9.acme.org)   37  | 2015253
+> [240.440145] (10:node@node-9.acme.org)   53  | 2015253
+> [240.440145] (10:node@node-9.acme.org) Predecessor: -1
+> [240.463563] (9:node@node-8.acme.org) My finger table:
+> [240.463563] (9:node@node-8.acme.org) Start | Succ
+> [240.463563] (9:node@node-8.acme.org)   25  | 16509405
+> [240.463563] (9:node@node-8.acme.org)   26  | 16509405
+> [240.463563] (9:node@node-8.acme.org)   28  | 6518808
+> [240.463563] (9:node@node-8.acme.org)   32  | 6518808
+> [240.463563] (9:node@node-8.acme.org)   40  | 6518808
+> [240.463563] (9:node@node-8.acme.org)   56  | 6518808
+> [240.463563] (9:node@node-8.acme.org) Predecessor: -1
+> [240.479176] (2:node@node-1.acme.org) My finger table:
+> [240.479176] (2:node@node-1.acme.org) Start | Succ
+> [240.479176] (2:node@node-1.acme.org)   25  | 16509405
+> [240.479176] (2:node@node-1.acme.org)   26  | 16509405
+> [240.479176] (2:node@node-1.acme.org)   28  | 366680
+> [240.479176] (2:node@node-1.acme.org)   32  | 366680
+> [240.479176] (2:node@node-1.acme.org)   40  | 366680
+> [240.479176] (2:node@node-1.acme.org)   56  | 366680
+> [240.479176] (2:node@node-1.acme.org) Predecessor: 1319738
+> [240.479176] (3:node@node-2.acme.org) My finger table:
+> [240.479176] (3:node@node-2.acme.org) Start | Succ
+> [240.479176] (3:node@node-2.acme.org)   49  | 1319738
+> [240.479176] (3:node@node-2.acme.org)   50  | 1319738
+> [240.479176] (3:node@node-2.acme.org)   52  | 533744
+> [240.479176] (3:node@node-2.acme.org)   56  | 533744
+> [240.479176] (3:node@node-2.acme.org)    0  | 533744
+> [240.479176] (3:node@node-2.acme.org)   16  | 533744
+> [240.479176] (3:node@node-2.acme.org) Predecessor: 42
+> [245.455657] (7:node@node-6.acme.org) My finger table:
+> [245.455657] (7:node@node-6.acme.org) Start | Succ
+> [245.455657] (7:node@node-6.acme.org)   33  |  42
+> [245.455657] (7:node@node-6.acme.org)   34  | 16728096
+> [245.455657] (7:node@node-6.acme.org)   36  | 16728096
+> [245.455657] (7:node@node-6.acme.org)   40  | 16728096
+> [245.455657] (7:node@node-6.acme.org)   48  | 16728096
+> [245.455657] (7:node@node-6.acme.org)    0  | 16728096
+> [245.455657] (7:node@node-6.acme.org) Predecessor: 16509405
+> [245.479076] (4:node@node-3.acme.org) My finger table:
+> [245.479076] (4:node@node-3.acme.org) Start | Succ
+> [245.479076] (4:node@node-3.acme.org)   59  | 366680
+> [245.479076] (4:node@node-3.acme.org)   60  | 366680
+> [245.479076] (4:node@node-3.acme.org)   62  | 1319738
+> [245.479076] (4:node@node-3.acme.org)    2  | 1319738
+> [245.479076] (4:node@node-3.acme.org)   10  | 1319738
+> [245.479076] (4:node@node-3.acme.org)   26  | 1319738
+> [245.479076] (4:node@node-3.acme.org) Predecessor: 533744
+> [245.494688] (7:node@node-6.acme.org) My finger table:
+> [245.494688] (7:node@node-6.acme.org) Start | Succ
+> [245.494688] (7:node@node-6.acme.org)   33  |  42
+> [245.494688] (7:node@node-6.acme.org)   34  |  42
+> [245.494688] (7:node@node-6.acme.org)   36  | 16728096
+> [245.494688] (7:node@node-6.acme.org)   40  | 16728096
+> [245.494688] (7:node@node-6.acme.org)   48  | 16728096
+> [245.494688] (7:node@node-6.acme.org)    0  | 16728096
+> [245.494688] (7:node@node-6.acme.org) Predecessor: 16509405
+> [315.633797] (8:node@node-7.acme.org) My finger table:
+> [315.633797] (8:node@node-7.acme.org) Start | Succ
+> [315.633797] (8:node@node-7.acme.org)   25  | 16509405
+> [315.633797] (8:node@node-7.acme.org)   26  | 16509405
+> [315.633797] (8:node@node-7.acme.org)   28  | 10004760
+> [315.633797] (8:node@node-7.acme.org)   32  | 10004760
+> [315.633797] (8:node@node-7.acme.org)   40  | 10004760
+> [315.633797] (8:node@node-7.acme.org)   56  | 10004760
+> [315.633797] (8:node@node-7.acme.org) Predecessor: 2015253
+> [355.734476] (10:node@node-9.acme.org) My finger table:
+> [355.734476] (10:node@node-9.acme.org) Start | Succ
+> [355.734476] (10:node@node-9.acme.org)   22  | 10004760
+> [355.734476] (10:node@node-9.acme.org)   23  | 16728096
+> [355.734476] (10:node@node-9.acme.org)   25  | 2015253
+> [355.734476] (10:node@node-9.acme.org)   29  | 2015253
+> [355.734476] (10:node@node-9.acme.org)   37  | 2015253
+> [355.734476] (10:node@node-9.acme.org)   53  | 2015253
+> [355.734476] (10:node@node-9.acme.org) Predecessor: 10874876
+> [360.695345] (8:node@node-7.acme.org) My finger table:
+> [360.695345] (8:node@node-7.acme.org) Start | Succ
+> [360.695345] (8:node@node-7.acme.org)   25  | 16509405
+> [360.695345] (8:node@node-7.acme.org)   26  | 16509405
+> [360.695345] (8:node@node-7.acme.org)   28  | 16509405
+> [360.695345] (8:node@node-7.acme.org)   32  | 10004760
+> [360.695345] (8:node@node-7.acme.org)   40  | 10004760
+> [360.695345] (8:node@node-7.acme.org)   56  | 10004760
+> [360.695345] (8:node@node-7.acme.org) Predecessor: 2015253
+> [360.695345] (9:node@node-8.acme.org) My finger table:
+> [360.695345] (9:node@node-8.acme.org) Start | Succ
+> [360.695345] (9:node@node-8.acme.org)   25  | 16509405
+> [360.695345] (9:node@node-8.acme.org)   26  | 16509405
+> [360.695345] (9:node@node-8.acme.org)   28  | 16509405
+> [360.695345] (9:node@node-8.acme.org)   32  | 6518808
+> [360.695345] (9:node@node-8.acme.org)   40  | 6518808
+> [360.695345] (9:node@node-8.acme.org)   56  | 6518808
+> [360.695345] (9:node@node-8.acme.org) Predecessor: -1
+> [360.710958] (2:node@node-1.acme.org) My finger table:
+> [360.710958] (2:node@node-1.acme.org) Start | Succ
+> [360.710958] (2:node@node-1.acme.org)   25  | 16509405
+> [360.710958] (2:node@node-1.acme.org)   26  | 16509405
+> [360.710958] (2:node@node-1.acme.org)   28  | 16509405
+> [360.710958] (2:node@node-1.acme.org)   32  | 366680
+> [360.710958] (2:node@node-1.acme.org)   40  | 366680
+> [360.710958] (2:node@node-1.acme.org)   56  | 366680
+> [360.710958] (2:node@node-1.acme.org) Predecessor: 1319738
+> [360.726570] (6:node@node-5.acme.org) My finger table:
+> [360.726570] (6:node@node-5.acme.org) Start | Succ
+> [360.726570] (6:node@node-5.acme.org)   61  | 2015253
+> [360.726570] (6:node@node-5.acme.org)   62  | 10004760
+> [360.726570] (6:node@node-5.acme.org)    0  | 2015253
+> [360.726570] (6:node@node-5.acme.org)    4  | 10874876
+> [360.726570] (6:node@node-5.acme.org)   12  | 10874876
+> [360.726570] (6:node@node-5.acme.org)   28  | 10874876
+> [360.726570] (6:node@node-5.acme.org) Predecessor: -1
+> [365.718664] (4:node@node-3.acme.org) My finger table:
+> [365.718664] (4:node@node-3.acme.org) Start | Succ
+> [365.718664] (4:node@node-3.acme.org)   59  | 366680
+> [365.718664] (4:node@node-3.acme.org)   60  | 366680
+> [365.718664] (4:node@node-3.acme.org)   62  | 366680
+> [365.718664] (4:node@node-3.acme.org)    2  | 1319738
+> [365.718664] (4:node@node-3.acme.org)   10  | 1319738
+> [365.718664] (4:node@node-3.acme.org)   26  | 1319738
+> [365.718664] (4:node@node-3.acme.org) Predecessor: 533744
+> [365.718664] (7:node@node-6.acme.org) My finger table:
+> [365.718664] (7:node@node-6.acme.org) Start | Succ
+> [365.718664] (7:node@node-6.acme.org)   33  |  42
+> [365.718664] (7:node@node-6.acme.org)   34  |  42
+> [365.718664] (7:node@node-6.acme.org)   36  |  42
+> [365.718664] (7:node@node-6.acme.org)   40  | 16728096
+> [365.718664] (7:node@node-6.acme.org)   48  | 16728096
+> [365.718664] (7:node@node-6.acme.org)    0  | 16728096
+> [365.718664] (7:node@node-6.acme.org) Predecessor: 16509405
+> [365.726470] (3:node@node-2.acme.org) My finger table:
+> [365.726470] (3:node@node-2.acme.org) Start | Succ
+> [365.726470] (3:node@node-2.acme.org)   49  | 1319738
+> [365.726470] (3:node@node-2.acme.org)   50  | 1319738
+> [365.726470] (3:node@node-2.acme.org)   52  | 1319738
+> [365.726470] (3:node@node-2.acme.org)   56  | 533744
+> [365.726470] (3:node@node-2.acme.org)    0  | 533744
+> [365.726470] (3:node@node-2.acme.org)   16  | 533744
+> [365.726470] (3:node@node-2.acme.org) Predecessor: 42
+> [365.742082] (5:node@node-4.acme.org) My finger table:
+> [365.742082] (5:node@node-4.acme.org) Start | Succ
+> [365.742082] (5:node@node-4.acme.org)   30  | 16728096
+> [365.742082] (5:node@node-4.acme.org)   31  | 16728096
+> [365.742082] (5:node@node-4.acme.org)   33  |  42
+> [365.742082] (5:node@node-4.acme.org)   37  | 16509405
+> [365.742082] (5:node@node-4.acme.org)   45  | 16509405
+> [365.742082] (5:node@node-4.acme.org)   61  | 16509405
+> [365.742082] (5:node@node-4.acme.org) Predecessor: 10004760
+> [365.749888] (1:node@node-0.acme.org) My finger table:
+> [365.749888] (1:node@node-0.acme.org) Start | Succ
+> [365.749888] (1:node@node-0.acme.org)   43  | 533744
+> [365.749888] (1:node@node-0.acme.org)   44  | 533744
+> [365.749888] (1:node@node-0.acme.org)   46  | 533744
+> [365.749888] (1:node@node-0.acme.org)   50  |  42
+> [365.749888] (1:node@node-0.acme.org)   58  |  42
+> [365.749888] (1:node@node-0.acme.org)   10  |  42
+> [365.749888] (1:node@node-0.acme.org) Predecessor: 16728096
+> [370.765400] (10:node@node-9.acme.org) My finger table:
+> [370.765400] (10:node@node-9.acme.org) Start | Succ
+> [370.765400] (10:node@node-9.acme.org)   22  | 10004760
+> [370.765400] (10:node@node-9.acme.org)   23  | 16728096
+> [370.765400] (10:node@node-9.acme.org)   25  | 16509405
+> [370.765400] (10:node@node-9.acme.org)   29  | 2015253
+> [370.765400] (10:node@node-9.acme.org)   37  | 2015253
+> [370.765400] (10:node@node-9.acme.org)   53  | 2015253
+> [370.765400] (10:node@node-9.acme.org) Predecessor: 10874876
+> [480.919321] (6:node@node-5.acme.org) My finger table:
+> [480.919321] (6:node@node-5.acme.org) Start | Succ
+> [480.919321] (6:node@node-5.acme.org)   61  | 2015253
+> [480.919321] (6:node@node-5.acme.org)   62  | 10004760
+> [480.919321] (6:node@node-5.acme.org)    0  | 2015253
+> [480.919321] (6:node@node-5.acme.org)    4  | 2015253
+> [480.919321] (6:node@node-5.acme.org)   12  | 10874876
+> [480.919321] (6:node@node-5.acme.org)   28  | 10874876
+> [480.919321] (6:node@node-5.acme.org) Predecessor: -1
+> [485.911415] (1:node@node-0.acme.org) My finger table:
+> [485.911415] (1:node@node-0.acme.org) Start | Succ
+> [485.911415] (1:node@node-0.acme.org)   43  | 533744
+> [485.911415] (1:node@node-0.acme.org)   44  | 533744
+> [485.911415] (1:node@node-0.acme.org)   46  | 533744
+> [485.911415] (1:node@node-0.acme.org)   50  | 1319738
+> [485.911415] (1:node@node-0.acme.org)   58  |  42
+> [485.911415] (1:node@node-0.acme.org)   10  |  42
+> [485.911415] (1:node@node-0.acme.org) Predecessor: 16728096
+> [485.966057] (3:node@node-2.acme.org) My finger table:
+> [485.966057] (3:node@node-2.acme.org) Start | Succ
+> [485.966057] (3:node@node-2.acme.org)   49  | 1319738
+> [485.966057] (3:node@node-2.acme.org)   50  | 1319738
+> [485.966057] (3:node@node-2.acme.org)   52  | 1319738
+> [485.966057] (3:node@node-2.acme.org)   56  | 1319738
+> [485.966057] (3:node@node-2.acme.org)    0  | 533744
+> [485.966057] (3:node@node-2.acme.org)   16  | 533744
+> [485.966057] (3:node@node-2.acme.org) Predecessor: 42
+> [485.973863] (4:node@node-3.acme.org) My finger table:
+> [485.973863] (4:node@node-3.acme.org) Start | Succ
+> [485.973863] (4:node@node-3.acme.org)   59  | 366680
+> [485.973863] (4:node@node-3.acme.org)   60  | 366680
+> [485.973863] (4:node@node-3.acme.org)   62  | 366680
+> [485.973863] (4:node@node-3.acme.org)    2  | 366680
+> [485.973863] (4:node@node-3.acme.org)   10  | 1319738
+> [485.973863] (4:node@node-3.acme.org)   26  | 1319738
+> [485.973863] (4:node@node-3.acme.org) Predecessor: 533744
+> [485.973863] (7:node@node-6.acme.org) My finger table:
+> [485.973863] (7:node@node-6.acme.org) Start | Succ
+> [485.973863] (7:node@node-6.acme.org)   33  |  42
+> [485.973863] (7:node@node-6.acme.org)   34  |  42
+> [485.973863] (7:node@node-6.acme.org)   36  |  42
+> [485.973863] (7:node@node-6.acme.org)   40  |  42
+> [485.973863] (7:node@node-6.acme.org)   48  | 16728096
+> [485.973863] (7:node@node-6.acme.org)    0  | 16728096
+> [485.973863] (7:node@node-6.acme.org) Predecessor: 16509405
+> [485.981670] (8:node@node-7.acme.org) My finger table:
+> [485.981670] (8:node@node-7.acme.org) Start | Succ
+> [485.981670] (8:node@node-7.acme.org)   25  | 16509405
+> [485.981670] (8:node@node-7.acme.org)   26  | 16509405
+> [485.981670] (8:node@node-7.acme.org)   28  | 16509405
+> [485.981670] (8:node@node-7.acme.org)   32  | 16728096
+> [485.981670] (8:node@node-7.acme.org)   40  | 10004760
+> [485.981670] (8:node@node-7.acme.org)   56  | 10004760
+> [485.981670] (8:node@node-7.acme.org) Predecessor: 2015253
+> [485.997282] (5:node@node-4.acme.org) My finger table:
+> [485.997282] (5:node@node-4.acme.org) Start | Succ
+> [485.997282] (5:node@node-4.acme.org)   30  | 16728096
+> [485.997282] (5:node@node-4.acme.org)   31  | 16728096
+> [485.997282] (5:node@node-4.acme.org)   33  |  42
+> [485.997282] (5:node@node-4.acme.org)   37  |  42
+> [485.997282] (5:node@node-4.acme.org)   45  | 16509405
+> [485.997282] (5:node@node-4.acme.org)   61  | 16509405
+> [485.997282] (5:node@node-4.acme.org) Predecessor: 10004760
+> [485.997282] (9:node@node-8.acme.org) My finger table:
+> [485.997282] (9:node@node-8.acme.org) Start | Succ
+> [485.997282] (9:node@node-8.acme.org)   25  | 16509405
+> [485.997282] (9:node@node-8.acme.org)   26  | 16509405
+> [485.997282] (9:node@node-8.acme.org)   28  | 16509405
+> [485.997282] (9:node@node-8.acme.org)   32  | 16728096
+> [485.997282] (9:node@node-8.acme.org)   40  | 6518808
+> [485.997282] (9:node@node-8.acme.org)   56  | 6518808
+> [485.997282] (9:node@node-8.acme.org) Predecessor: -1
+> [486.036312] (2:node@node-1.acme.org) My finger table:
+> [486.036312] (2:node@node-1.acme.org) Start | Succ
+> [486.036312] (2:node@node-1.acme.org)   25  | 16509405
+> [486.036312] (2:node@node-1.acme.org)   26  | 16509405
+> [486.036312] (2:node@node-1.acme.org)   28  | 16509405
+> [486.036312] (2:node@node-1.acme.org)   32  | 16728096
+> [486.036312] (2:node@node-1.acme.org)   40  | 366680
+> [486.036312] (2:node@node-1.acme.org)   56  | 366680
+> [486.036312] (2:node@node-1.acme.org) Predecessor: 1319738
+> [491.012794] (10:node@node-9.acme.org) My finger table:
+> [491.012794] (10:node@node-9.acme.org) Start | Succ
+> [491.012794] (10:node@node-9.acme.org)   22  | 10004760
+> [491.012794] (10:node@node-9.acme.org)   23  | 16728096
+> [491.012794] (10:node@node-9.acme.org)   25  | 16509405
+> [491.012794] (10:node@node-9.acme.org)   29  | 16509405
+> [491.012794] (10:node@node-9.acme.org)   37  | 2015253
+> [491.012794] (10:node@node-9.acme.org)   53  | 2015253
+> [491.012794] (10:node@node-9.acme.org) Predecessor: 10874876
+> [601.080848] (6:node@node-5.acme.org) My finger table:
+> [601.080848] (6:node@node-5.acme.org) Start | Succ
+> [601.080848] (6:node@node-5.acme.org)   61  | 2015253
+> [601.080848] (6:node@node-5.acme.org)   62  | 10004760
+> [601.080848] (6:node@node-5.acme.org)    0  | 2015253
+> [601.080848] (6:node@node-5.acme.org)    4  | 2015253
+> [601.080848] (6:node@node-5.acme.org)   12  | 2015253
+> [601.080848] (6:node@node-5.acme.org)   28  | 10874876
+> [601.080848] (6:node@node-5.acme.org) Predecessor: -1
+> [606.151002] (4:node@node-3.acme.org) My finger table:
+> [606.151002] (4:node@node-3.acme.org) Start | Succ
+> [606.151002] (4:node@node-3.acme.org)   59  | 366680
+> [606.151002] (4:node@node-3.acme.org)   60  | 366680
+> [606.151002] (4:node@node-3.acme.org)   62  | 366680
+> [606.151002] (4:node@node-3.acme.org)    2  | 366680
+> [606.151002] (4:node@node-3.acme.org)   10  | 366680
+> [606.151002] (4:node@node-3.acme.org)   26  | 1319738
+> [606.151002] (4:node@node-3.acme.org) Predecessor: 533744
+> [606.190033] (1:node@node-0.acme.org) My finger table:
+> [606.190033] (1:node@node-0.acme.org) Start | Succ
+> [606.190033] (1:node@node-0.acme.org)   43  | 533744
+> [606.190033] (1:node@node-0.acme.org)   44  | 533744
+> [606.190033] (1:node@node-0.acme.org)   46  | 533744
+> [606.190033] (1:node@node-0.acme.org)   50  | 1319738
+> [606.190033] (1:node@node-0.acme.org)   58  | 1319738
+> [606.190033] (1:node@node-0.acme.org)   10  |  42
+> [606.190033] (1:node@node-0.acme.org) Predecessor: 16728096
+> [606.213451] (7:node@node-6.acme.org) My finger table:
+> [606.213451] (7:node@node-6.acme.org) Start | Succ
+> [606.213451] (7:node@node-6.acme.org)   33  |  42
+> [606.213451] (7:node@node-6.acme.org)   34  |  42
+> [606.213451] (7:node@node-6.acme.org)   36  |  42
+> [606.213451] (7:node@node-6.acme.org)   40  |  42
+> [606.213451] (7:node@node-6.acme.org)   48  | 533744
+> [606.213451] (7:node@node-6.acme.org)    0  | 16728096
+> [606.213451] (7:node@node-6.acme.org) Predecessor: 16509405
+> [606.213451] (9:node@node-8.acme.org) My finger table:
+> [606.213451] (9:node@node-8.acme.org) Start | Succ
+> [606.213451] (9:node@node-8.acme.org)   25  | 16509405
+> [606.213451] (9:node@node-8.acme.org)   26  | 16509405
+> [606.213451] (9:node@node-8.acme.org)   28  | 16509405
+> [606.213451] (9:node@node-8.acme.org)   32  | 16728096
+> [606.213451] (9:node@node-8.acme.org)   40  |  42
+> [606.213451] (9:node@node-8.acme.org)   56  | 6518808
+> [606.213451] (9:node@node-8.acme.org) Predecessor: -1
+> [611.252381] (3:node@node-2.acme.org) My finger table:
+> [611.252381] (3:node@node-2.acme.org) Start | Succ
+> [611.252381] (3:node@node-2.acme.org)   49  | 1319738
+> [611.252381] (3:node@node-2.acme.org)   50  | 1319738
+> [611.252381] (3:node@node-2.acme.org)   52  | 1319738
+> [611.252381] (3:node@node-2.acme.org)   56  | 1319738
+> [611.252381] (3:node@node-2.acme.org)    0  | 366680
+> [611.252381] (3:node@node-2.acme.org)   16  | 533744
+> [611.252381] (3:node@node-2.acme.org) Predecessor: 42
+> [616.213251] (5:node@node-4.acme.org) My finger table:
+> [616.213251] (5:node@node-4.acme.org) Start | Succ
+> [616.213251] (5:node@node-4.acme.org)   30  | 16728096
+> [616.213251] (5:node@node-4.acme.org)   31  | 16728096
+> [616.213251] (5:node@node-4.acme.org)   33  |  42
+> [616.213251] (5:node@node-4.acme.org)   37  |  42
+> [616.213251] (5:node@node-4.acme.org)   45  | 533744
+> [616.213251] (5:node@node-4.acme.org)   61  | 16509405
+> [616.213251] (5:node@node-4.acme.org) Predecessor: 10004760
+> [616.228863] (10:node@node-9.acme.org) My finger table:
+> [616.228863] (10:node@node-9.acme.org) Start | Succ
+> [616.228863] (10:node@node-9.acme.org)   22  | 10004760
+> [616.228863] (10:node@node-9.acme.org)   23  | 16728096
+> [616.228863] (10:node@node-9.acme.org)   25  | 16509405
+> [616.228863] (10:node@node-9.acme.org)   29  | 16509405
+> [616.228863] (10:node@node-9.acme.org)   37  |  42
+> [616.228863] (10:node@node-9.acme.org)   53  | 2015253
+> [616.228863] (10:node@node-9.acme.org) Predecessor: 10874876
+> [616.236669] (8:node@node-7.acme.org) My finger table:
+> [616.236669] (8:node@node-7.acme.org) Start | Succ
+> [616.236669] (8:node@node-7.acme.org)   25  | 16509405
+> [616.236669] (8:node@node-7.acme.org)   26  | 16509405
+> [616.236669] (8:node@node-7.acme.org)   28  | 16509405
+> [616.236669] (8:node@node-7.acme.org)   32  | 16728096
+> [616.236669] (8:node@node-7.acme.org)   40  |  42
+> [616.236669] (8:node@node-7.acme.org)   56  | 10004760
+> [616.236669] (8:node@node-7.acme.org) Predecessor: 2015253
+> [616.252281] (2:node@node-1.acme.org) My finger table:
+> [616.252281] (2:node@node-1.acme.org) Start | Succ
+> [616.252281] (2:node@node-1.acme.org)   25  | 16509405
+> [616.252281] (2:node@node-1.acme.org)   26  | 16509405
+> [616.252281] (2:node@node-1.acme.org)   28  | 16509405
+> [616.252281] (2:node@node-1.acme.org)   32  | 16728096
+> [616.252281] (2:node@node-1.acme.org)   40  |  42
+> [616.252281] (2:node@node-1.acme.org)   56  | 366680
+> [616.252281] (2:node@node-1.acme.org) Predecessor: 1319738
+> [726.429621] (7:node@node-6.acme.org) My finger table:
+> [726.429621] (7:node@node-6.acme.org) Start | Succ
+> [726.429621] (7:node@node-6.acme.org)   33  |  42
+> [726.429621] (7:node@node-6.acme.org)   34  |  42
+> [726.429621] (7:node@node-6.acme.org)   36  |  42
+> [726.429621] (7:node@node-6.acme.org)   40  |  42
+> [726.429621] (7:node@node-6.acme.org)   48  | 533744
+> [726.429621] (7:node@node-6.acme.org)    0  | 366680
+> [726.429621] (7:node@node-6.acme.org) Predecessor: 16509405
+> [726.437427] (1:node@node-0.acme.org) My finger table:
+> [726.437427] (1:node@node-0.acme.org) Start | Succ
+> [726.437427] (1:node@node-0.acme.org)   43  | 533744
+> [726.437427] (1:node@node-0.acme.org)   44  | 533744
+> [726.437427] (1:node@node-0.acme.org)   46  | 533744
+> [726.437427] (1:node@node-0.acme.org)   50  | 1319738
+> [726.437427] (1:node@node-0.acme.org)   58  | 1319738
+> [726.437427] (1:node@node-0.acme.org)   10  | 366680
+> [726.437427] (1:node@node-0.acme.org) Predecessor: 16728096
+> [731.320236] (6:node@node-5.acme.org) My finger table:
+> [731.320236] (6:node@node-5.acme.org) Start | Succ
+> [731.320236] (6:node@node-5.acme.org)   61  | 2015253
+> [731.320236] (6:node@node-5.acme.org)   62  | 10004760
+> [731.320236] (6:node@node-5.acme.org)    0  | 2015253
+> [731.320236] (6:node@node-5.acme.org)    4  | 2015253
+> [731.320236] (6:node@node-5.acme.org)   12  | 2015253
+> [731.320236] (6:node@node-5.acme.org)   28  | 16509405
+> [731.320236] (6:node@node-5.acme.org) Predecessor: -1
+> [731.413909] (4:node@node-3.acme.org) My finger table:
+> [731.413909] (4:node@node-3.acme.org) Start | Succ
+> [731.413909] (4:node@node-3.acme.org)   59  | 366680
+> [731.413909] (4:node@node-3.acme.org)   60  | 366680
+> [731.413909] (4:node@node-3.acme.org)   62  | 366680
+> [731.413909] (4:node@node-3.acme.org)    2  | 366680
+> [731.413909] (4:node@node-3.acme.org)   10  | 366680
+> [731.413909] (4:node@node-3.acme.org)   26  | 16509405
+> [731.413909] (4:node@node-3.acme.org) Predecessor: 533744
+> [731.460745] (9:node@node-8.acme.org) My finger table:
+> [731.460745] (9:node@node-8.acme.org) Start | Succ
+> [731.460745] (9:node@node-8.acme.org)   25  | 16509405
+> [731.460745] (9:node@node-8.acme.org)   26  | 16509405
+> [731.460745] (9:node@node-8.acme.org)   28  | 16509405
+> [731.460745] (9:node@node-8.acme.org)   32  | 16728096
+> [731.460745] (9:node@node-8.acme.org)   40  |  42
+> [731.460745] (9:node@node-8.acme.org)   56  | 1319738
+> [731.460745] (9:node@node-8.acme.org) Predecessor: -1
+> [731.468551] (3:node@node-2.acme.org) My finger table:
+> [731.468551] (3:node@node-2.acme.org) Start | Succ
+> [731.468551] (3:node@node-2.acme.org)   49  | 1319738
+> [731.468551] (3:node@node-2.acme.org)   50  | 1319738
+> [731.468551] (3:node@node-2.acme.org)   52  | 1319738
+> [731.468551] (3:node@node-2.acme.org)   56  | 1319738
+> [731.468551] (3:node@node-2.acme.org)    0  | 366680
+> [731.468551] (3:node@node-2.acme.org)   16  | 366680
+> [731.468551] (3:node@node-2.acme.org) Predecessor: 42
+> [736.499676] (5:node@node-4.acme.org) My finger table:
+> [736.499676] (5:node@node-4.acme.org) Start | Succ
+> [736.499676] (5:node@node-4.acme.org)   30  | 16728096
+> [736.499676] (5:node@node-4.acme.org)   31  | 16728096
+> [736.499676] (5:node@node-4.acme.org)   33  |  42
+> [736.499676] (5:node@node-4.acme.org)   37  |  42
+> [736.499676] (5:node@node-4.acme.org)   45  | 533744
+> [736.499676] (5:node@node-4.acme.org)   61  | 366680
+> [736.499676] (5:node@node-4.acme.org) Predecessor: 10004760
+> [736.507482] (8:node@node-7.acme.org) My finger table:
+> [736.507482] (8:node@node-7.acme.org) Start | Succ
+> [736.507482] (8:node@node-7.acme.org)   25  | 16509405
+> [736.507482] (8:node@node-7.acme.org)   26  | 16509405
+> [736.507482] (8:node@node-7.acme.org)   28  | 16509405
+> [736.507482] (8:node@node-7.acme.org)   32  | 16728096
+> [736.507482] (8:node@node-7.acme.org)   40  |  42
+> [736.507482] (8:node@node-7.acme.org)   56  | 1319738
+> [736.507482] (8:node@node-7.acme.org) Predecessor: 2015253
+> [736.515288] (2:node@node-1.acme.org) My finger table:
+> [736.515288] (2:node@node-1.acme.org) Start | Succ
+> [736.515288] (2:node@node-1.acme.org)   25  | 16509405
+> [736.515288] (2:node@node-1.acme.org)   26  | 16509405
+> [736.515288] (2:node@node-1.acme.org)   28  | 16509405
+> [736.515288] (2:node@node-1.acme.org)   32  | 16728096
+> [736.515288] (2:node@node-1.acme.org)   40  |  42
+> [736.515288] (2:node@node-1.acme.org)   56  | 1319738
+> [736.515288] (2:node@node-1.acme.org) Predecessor: 1319738
+> [736.523094] (10:node@node-9.acme.org) My finger table:
+> [736.523094] (10:node@node-9.acme.org) Start | Succ
+> [736.523094] (10:node@node-9.acme.org)   22  | 10004760
+> [736.523094] (10:node@node-9.acme.org)   23  | 16728096
+> [736.523094] (10:node@node-9.acme.org)   25  | 16509405
+> [736.523094] (10:node@node-9.acme.org)   29  | 16509405
+> [736.523094] (10:node@node-9.acme.org)   37  |  42
+> [736.523094] (10:node@node-9.acme.org)   53  | 1319738
+> [736.523094] (10:node@node-9.acme.org) Predecessor: 10874876
+> [971.729156] (6:node@node-5.acme.org) My finger table:
+> [971.729156] (6:node@node-5.acme.org) Start | Succ
+> [971.729156] (6:node@node-5.acme.org)   61  | 2015253
+> [971.729156] (6:node@node-5.acme.org)   62  | 2015253
+> [971.729156] (6:node@node-5.acme.org)    0  | 2015253
+> [971.729156] (6:node@node-5.acme.org)    4  | 2015253
+> [971.729156] (6:node@node-5.acme.org)   12  | 2015253
+> [971.729156] (6:node@node-5.acme.org)   28  | 16509405
+> [971.729156] (6:node@node-5.acme.org) Predecessor: -1
+> [976.744669] (10:node@node-9.acme.org) My finger table:
+> [976.744669] (10:node@node-9.acme.org) Start | Succ
+> [976.744669] (10:node@node-9.acme.org)   22  | 10004760
+> [976.744669] (10:node@node-9.acme.org)   23  | 10004760
+> [976.744669] (10:node@node-9.acme.org)   25  | 16509405
+> [976.744669] (10:node@node-9.acme.org)   29  | 16509405
+> [976.744669] (10:node@node-9.acme.org)   37  |  42
+> [976.744669] (10:node@node-9.acme.org)   53  | 1319738
+> [976.744669] (10:node@node-9.acme.org) Predecessor: 10874876
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/dht-chord$EXEEXT -nb_bits=6 ${srcdir:=.}/platform.xml ${srcdir:=.}/../msg/dht-chord/chord.xml --cfg=network/crosstraffic:0 --log=msg_chord.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
-> [  0.000000] (1:node@Gatien) Joining the ring with id 48, knowing node 1
-> [  0.000000] (2:node@McGee) Joining the ring with id 42, knowing node 1
-> [  0.000000] (3:node@iRMX) Joining the ring with id 38, knowing node 1
-> [  0.000000] (4:node@Geoff) Joining the ring with id 32, knowing node 1
-> [  0.000000] (5:node@TeX) Joining the ring with id 21, knowing node 1
-> [  0.000000] (6:node@Jean_Yves) Joining the ring with id 14, knowing node 1
-> [  0.000000] (7:node@Boivin) Joining the ring with id 8, knowing node 1
-> [  0.000000] (8:node@Jacquelin) My finger table:
-> [  0.000000] (8:node@Jacquelin) Start | Succ
-> [  0.000000] (8:node@Jacquelin)    2  |   1
-> [  0.000000] (8:node@Jacquelin)    3  |   1
-> [  0.000000] (8:node@Jacquelin)    5  |   1
-> [  0.000000] (8:node@Jacquelin)    9  |   1
-> [  0.000000] (8:node@Jacquelin)   17  |   1
-> [  0.000000] (8:node@Jacquelin)   33  |   1
-> [  0.000000] (8:node@Jacquelin) Predecessor: -1
-> [  6.274348] (1:node@Gatien) My finger table:
-> [  6.274348] (1:node@Gatien) Start | Succ
-> [  6.274348] (1:node@Gatien)   49  |   1
-> [  6.274348] (1:node@Gatien)   50  |  48
-> [  6.274348] (1:node@Gatien)   52  |  48
-> [  6.274348] (1:node@Gatien)   56  |  48
-> [  6.274348] (1:node@Gatien)    0  |  48
-> [  6.274348] (1:node@Gatien)   16  |  48
-> [  6.274348] (1:node@Gatien) Predecessor: -1
-> [ 10.888156] (2:node@McGee) My finger table:
-> [ 10.888156] (2:node@McGee) Start | Succ
-> [ 10.888156] (2:node@McGee)   43  |   1
-> [ 10.888156] (2:node@McGee)   44  |  42
-> [ 10.888156] (2:node@McGee)   46  |  42
-> [ 10.888156] (2:node@McGee)   50  |  42
-> [ 10.888156] (2:node@McGee)   58  |  42
-> [ 10.888156] (2:node@McGee)   10  |  42
-> [ 10.888156] (2:node@McGee) Predecessor: -1
-> [ 18.043375] (3:node@iRMX) My finger table:
-> [ 18.043375] (3:node@iRMX) Start | Succ
-> [ 18.043375] (3:node@iRMX)   39  |   1
-> [ 18.043375] (3:node@iRMX)   40  |  38
-> [ 18.043375] (3:node@iRMX)   42  |  38
-> [ 18.043375] (3:node@iRMX)   46  |  38
-> [ 18.043375] (3:node@iRMX)   54  |  38
-> [ 18.043375] (3:node@iRMX)    6  |  38
-> [ 18.043375] (3:node@iRMX) Predecessor: -1
-> [ 20.004944] (4:node@Geoff) My finger table:
-> [ 20.004944] (4:node@Geoff) Start | Succ
-> [ 20.004944] (4:node@Geoff)   33  |   1
-> [ 20.004944] (4:node@Geoff)   34  |  32
-> [ 20.004944] (4:node@Geoff)   36  |  32
-> [ 20.004944] (4:node@Geoff)   40  |  32
-> [ 20.004944] (4:node@Geoff)   48  |  32
-> [ 20.004944] (4:node@Geoff)    0  |  32
-> [ 20.004944] (4:node@Geoff) Predecessor: -1
-> [ 26.812101] (5:node@TeX) My finger table:
-> [ 26.812101] (5:node@TeX) Start | Succ
-> [ 26.812101] (5:node@TeX)   22  |   1
-> [ 26.812101] (5:node@TeX)   23  |  21
-> [ 26.812101] (5:node@TeX)   25  |  21
-> [ 26.812101] (5:node@TeX)   29  |  21
-> [ 26.812101] (5:node@TeX)   37  |  21
-> [ 26.812101] (5:node@TeX)   53  |  21
-> [ 26.812101] (5:node@TeX) Predecessor: -1
-> [ 30.924529] (6:node@Jean_Yves) My finger table:
-> [ 30.924529] (6:node@Jean_Yves) Start | Succ
-> [ 30.924529] (6:node@Jean_Yves)   15  |   1
-> [ 30.924529] (6:node@Jean_Yves)   16  |  14
-> [ 30.924529] (6:node@Jean_Yves)   18  |  14
-> [ 30.924529] (6:node@Jean_Yves)   22  |  14
-> [ 30.924529] (6:node@Jean_Yves)   30  |  14
-> [ 30.924529] (6:node@Jean_Yves)   46  |  14
-> [ 30.924529] (6:node@Jean_Yves) Predecessor: -1
-> [ 36.048185] (7:node@Boivin) My finger table:
-> [ 36.048185] (7:node@Boivin) Start | Succ
-> [ 36.048185] (7:node@Boivin)    9  |   1
-> [ 36.048185] (7:node@Boivin)   10  |   8
-> [ 36.048185] (7:node@Boivin)   12  |   8
-> [ 36.048185] (7:node@Boivin)   16  |   8
-> [ 36.048185] (7:node@Boivin)   24  |   8
-> [ 36.048185] (7:node@Boivin)   40  |   8
-> [ 36.048185] (7:node@Boivin) Predecessor: -1
-> [ 89.998200] (8:node@Jacquelin) My finger table:
-> [ 89.998200] (8:node@Jacquelin) Start | Succ
-> [ 89.998200] (8:node@Jacquelin)    2  |   1
-> [ 89.998200] (8:node@Jacquelin)    3  |   1
-> [ 89.998200] (8:node@Jacquelin)    5  |   1
-> [ 89.998200] (8:node@Jacquelin)    9  |   1
-> [ 89.998200] (8:node@Jacquelin)   17  |   1
-> [ 89.998200] (8:node@Jacquelin)   33  |   1
-> [ 89.998200] (8:node@Jacquelin) Predecessor: 32
-> [109.834284] (8:node@Jacquelin) My finger table:
-> [109.834284] (8:node@Jacquelin) Start | Succ
-> [109.834284] (8:node@Jacquelin)    2  |  32
-> [109.834284] (8:node@Jacquelin)    3  |   1
-> [109.834284] (8:node@Jacquelin)    5  |   1
-> [109.834284] (8:node@Jacquelin)    9  |   1
-> [109.834284] (8:node@Jacquelin)   17  |   1
-> [109.834284] (8:node@Jacquelin)   33  |   1
-> [109.834284] (8:node@Jacquelin) Predecessor: 42
-> [111.997088] (8:node@Jacquelin) My finger table:
-> [111.997088] (8:node@Jacquelin) Start | Succ
-> [111.997088] (8:node@Jacquelin)    2  |  32
-> [111.997088] (8:node@Jacquelin)    3  |   1
-> [111.997088] (8:node@Jacquelin)    5  |   1
-> [111.997088] (8:node@Jacquelin)    9  |   1
-> [111.997088] (8:node@Jacquelin)   17  |   1
-> [111.997088] (8:node@Jacquelin)   33  |   1
-> [111.997088] (8:node@Jacquelin) Predecessor: 48
-> [131.116432] (4:node@Geoff) My finger table:
-> [131.116432] (4:node@Geoff) Start | Succ
-> [131.116432] (4:node@Geoff)   33  |  48
-> [131.116432] (4:node@Geoff)   34  |  32
-> [131.116432] (4:node@Geoff)   36  |  32
-> [131.116432] (4:node@Geoff)   40  |  32
-> [131.116432] (4:node@Geoff)   48  |  32
-> [131.116432] (4:node@Geoff)    0  |  32
-> [131.116432] (4:node@Geoff) Predecessor: 1
-> [160.070532] (1:node@Gatien) My finger table:
-> [160.070532] (1:node@Gatien) Start | Succ
-> [160.070532] (1:node@Gatien)   49  |   1
-> [160.070532] (1:node@Gatien)   50  |  48
-> [160.070532] (1:node@Gatien)   52  |  48
-> [160.070532] (1:node@Gatien)   56  |  48
-> [160.070532] (1:node@Gatien)    0  |  48
-> [160.070532] (1:node@Gatien)   16  |  48
-> [160.070532] (1:node@Gatien) Predecessor: 32
-> [175.080917] (1:node@Gatien) My finger table:
-> [175.080917] (1:node@Gatien) Start | Succ
-> [175.080917] (1:node@Gatien)   49  |   1
-> [175.080917] (1:node@Gatien)   50  |  48
-> [175.080917] (1:node@Gatien)   52  |  48
-> [175.080917] (1:node@Gatien)   56  |  48
-> [175.080917] (1:node@Gatien)    0  |  48
-> [175.080917] (1:node@Gatien)   16  |  48
-> [175.080917] (1:node@Gatien) Predecessor: 42
-> [210.526967] (2:node@McGee) My finger table:
-> [210.526967] (2:node@McGee) Start | Succ
-> [210.526967] (2:node@McGee)   43  |  48
-> [210.526967] (2:node@McGee)   44  |  42
-> [210.526967] (2:node@McGee)   46  |  42
-> [210.526967] (2:node@McGee)   50  |  42
-> [210.526967] (2:node@McGee)   58  |  42
-> [210.526967] (2:node@McGee)   10  |  42
-> [210.526967] (2:node@McGee) Predecessor: 8
-> [213.351933] (2:node@McGee) My finger table:
-> [213.351933] (2:node@McGee) Start | Succ
-> [213.351933] (2:node@McGee)   43  |  48
-> [213.351933] (2:node@McGee)   44  |  42
-> [213.351933] (2:node@McGee)   46  |  42
-> [213.351933] (2:node@McGee)   50  |  42
-> [213.351933] (2:node@McGee)   58  |  42
-> [213.351933] (2:node@McGee)   10  |  42
-> [213.351933] (2:node@McGee) Predecessor: 21
-> [220.117859] (2:node@McGee) My finger table:
-> [220.117859] (2:node@McGee) Start | Succ
-> [220.117859] (2:node@McGee)   43  |  48
-> [220.117859] (2:node@McGee)   44  |  42
-> [220.117859] (2:node@McGee)   46  |  42
-> [220.117859] (2:node@McGee)   50  |  42
-> [220.117859] (2:node@McGee)   58  |  42
-> [220.117859] (2:node@McGee)   10  |  42
-> [220.117859] (2:node@McGee) Predecessor: 32
-> [243.554143] (5:node@TeX) My finger table:
-> [243.554143] (5:node@TeX) Start | Succ
-> [243.554143] (5:node@TeX)   22  |  32
-> [243.554143] (5:node@TeX)   23  |  32
-> [243.554143] (5:node@TeX)   25  |  21
-> [243.554143] (5:node@TeX)   29  |  21
-> [243.554143] (5:node@TeX)   37  |  21
-> [243.554143] (5:node@TeX)   53  |  21
-> [243.554143] (5:node@TeX) Predecessor: -1
-> [244.785216] (2:node@McGee) My finger table:
-> [244.785216] (2:node@McGee) Start | Succ
-> [244.785216] (2:node@McGee)   43  |  48
-> [244.785216] (2:node@McGee)   44  |  42
-> [244.785216] (2:node@McGee)   46  |  42
-> [244.785216] (2:node@McGee)   50  |  42
-> [244.785216] (2:node@McGee)   58  |  42
-> [244.785216] (2:node@McGee)   10  |  42
-> [244.785216] (2:node@McGee) Predecessor: 38
-> [244.894162] (6:node@Jean_Yves) My finger table:
-> [244.894162] (6:node@Jean_Yves) Start | Succ
-> [244.894162] (6:node@Jean_Yves)   15  |  32
-> [244.894162] (6:node@Jean_Yves)   16  |  32
-> [244.894162] (6:node@Jean_Yves)   18  |  14
-> [244.894162] (6:node@Jean_Yves)   22  |  14
-> [244.894162] (6:node@Jean_Yves)   30  |  14
-> [244.894162] (6:node@Jean_Yves)   46  |  14
-> [244.894162] (6:node@Jean_Yves) Predecessor: -1
-> [254.475988] (2:node@McGee) My finger table:
-> [254.475988] (2:node@McGee) Start | Succ
-> [254.475988] (2:node@McGee)   43  |  48
-> [254.475988] (2:node@McGee)   44  |  48
-> [254.475988] (2:node@McGee)   46  |  42
-> [254.475988] (2:node@McGee)   50  |  42
-> [254.475988] (2:node@McGee)   58  |  42
-> [254.475988] (2:node@McGee)   10  |  42
-> [254.475988] (2:node@McGee) Predecessor: 38
-> [257.793913] (4:node@Geoff) My finger table:
-> [257.793913] (4:node@Geoff) Start | Succ
-> [257.793913] (4:node@Geoff)   33  |  42
-> [257.793913] (4:node@Geoff)   34  |  42
-> [257.793913] (4:node@Geoff)   36  |  32
-> [257.793913] (4:node@Geoff)   40  |  32
-> [257.793913] (4:node@Geoff)   48  |  32
-> [257.793913] (4:node@Geoff)    0  |  32
-> [257.793913] (4:node@Geoff) Predecessor: 1
-> [301.405548] (8:node@Jacquelin) My finger table:
-> [301.405548] (8:node@Jacquelin) Start | Succ
-> [301.405548] (8:node@Jacquelin)    2  |  32
-> [301.405548] (8:node@Jacquelin)    3  |  32
-> [301.405548] (8:node@Jacquelin)    5  |   1
-> [301.405548] (8:node@Jacquelin)    9  |   1
-> [301.405548] (8:node@Jacquelin)   17  |   1
-> [301.405548] (8:node@Jacquelin)   33  |   1
-> [301.405548] (8:node@Jacquelin) Predecessor: 48
-> [304.772436] (7:node@Boivin) My finger table:
-> [304.772436] (7:node@Boivin) Start | Succ
-> [304.772436] (7:node@Boivin)    9  |  32
-> [304.772436] (7:node@Boivin)   10  |  32
-> [304.772436] (7:node@Boivin)   12  |   8
-> [304.772436] (7:node@Boivin)   16  |   8
-> [304.772436] (7:node@Boivin)   24  |   8
-> [304.772436] (7:node@Boivin)   40  |   8
-> [304.772436] (7:node@Boivin) Predecessor: -1
-> [307.510173] (4:node@Geoff) My finger table:
-> [307.510173] (4:node@Geoff) Start | Succ
-> [307.510173] (4:node@Geoff)   33  |  42
-> [307.510173] (4:node@Geoff)   34  |  42
-> [307.510173] (4:node@Geoff)   36  |  32
-> [307.510173] (4:node@Geoff)   40  |  32
-> [307.510173] (4:node@Geoff)   48  |  32
-> [307.510173] (4:node@Geoff)    0  |  32
-> [307.510173] (4:node@Geoff) Predecessor: 8
-> [307.783154] (1:node@Gatien) My finger table:
-> [307.783154] (1:node@Gatien) Start | Succ
-> [307.783154] (1:node@Gatien)   49  |   1
-> [307.783154] (1:node@Gatien)   50  |   1
-> [307.783154] (1:node@Gatien)   52  |  48
-> [307.783154] (1:node@Gatien)   56  |  48
-> [307.783154] (1:node@Gatien)    0  |  48
-> [307.783154] (1:node@Gatien)   16  |  48
-> [307.783154] (1:node@Gatien) Predecessor: 42
-> [310.800278] (3:node@iRMX) My finger table:
-> [310.800278] (3:node@iRMX) Start | Succ
-> [310.800278] (3:node@iRMX)   39  |  42
-> [310.800278] (3:node@iRMX)   40  |  42
-> [310.800278] (3:node@iRMX)   42  |  38
-> [310.800278] (3:node@iRMX)   46  |  38
-> [310.800278] (3:node@iRMX)   54  |  38
-> [310.800278] (3:node@iRMX)    6  |  38
-> [310.800278] (3:node@iRMX) Predecessor: -1
-> [313.838612] (4:node@Geoff) My finger table:
-> [313.838612] (4:node@Geoff) Start | Succ
-> [313.838612] (4:node@Geoff)   33  |  38
-> [313.838612] (4:node@Geoff)   34  |  42
-> [313.838612] (4:node@Geoff)   36  |  32
-> [313.838612] (4:node@Geoff)   40  |  32
-> [313.838612] (4:node@Geoff)   48  |  32
-> [313.838612] (4:node@Geoff)    0  |  32
-> [313.838612] (4:node@Geoff) Predecessor: 21
-> [347.040437] (3:node@iRMX) My finger table:
-> [347.040437] (3:node@iRMX) Start | Succ
-> [347.040437] (3:node@iRMX)   39  |  42
-> [347.040437] (3:node@iRMX)   40  |  42
-> [347.040437] (3:node@iRMX)   42  |  38
-> [347.040437] (3:node@iRMX)   46  |  38
-> [347.040437] (3:node@iRMX)   54  |  38
-> [347.040437] (3:node@iRMX)    6  |  38
-> [347.040437] (3:node@iRMX) Predecessor: 32
-> [368.832360] (5:node@TeX) My finger table:
-> [368.832360] (5:node@TeX) Start | Succ
-> [368.832360] (5:node@TeX)   22  |  32
-> [368.832360] (5:node@TeX)   23  |  32
-> [368.832360] (5:node@TeX)   25  |  21
-> [368.832360] (5:node@TeX)   29  |  21
-> [368.832360] (5:node@TeX)   37  |  21
-> [368.832360] (5:node@TeX)   53  |  21
-> [368.832360] (5:node@TeX) Predecessor: 8
-> [374.267135] (6:node@Jean_Yves) My finger table:
-> [374.267135] (6:node@Jean_Yves) Start | Succ
-> [374.267135] (6:node@Jean_Yves)   15  |  21
-> [374.267135] (6:node@Jean_Yves)   16  |  32
-> [374.267135] (6:node@Jean_Yves)   18  |  21
-> [374.267135] (6:node@Jean_Yves)   22  |  14
-> [374.267135] (6:node@Jean_Yves)   30  |  14
-> [374.267135] (6:node@Jean_Yves)   46  |  14
-> [374.267135] (6:node@Jean_Yves) Predecessor: -1
-> [375.174950] (5:node@TeX) My finger table:
-> [375.174950] (5:node@TeX) Start | Succ
-> [375.174950] (5:node@TeX)   22  |  32
-> [375.174950] (5:node@TeX)   23  |  32
-> [375.174950] (5:node@TeX)   25  |  32
-> [375.174950] (5:node@TeX)   29  |  21
-> [375.174950] (5:node@TeX)   37  |  21
-> [375.174950] (5:node@TeX)   53  |  21
-> [375.174950] (5:node@TeX) Predecessor: 8
-> [377.892337] (5:node@TeX) My finger table:
-> [377.892337] (5:node@TeX) Start | Succ
-> [377.892337] (5:node@TeX)   22  |  32
-> [377.892337] (5:node@TeX)   23  |  32
-> [377.892337] (5:node@TeX)   25  |  32
-> [377.892337] (5:node@TeX)   29  |  21
-> [377.892337] (5:node@TeX)   37  |  21
-> [377.892337] (5:node@TeX)   53  |  21
-> [377.892337] (5:node@TeX) Predecessor: 14
-> [381.140564] (4:node@Geoff) My finger table:
-> [381.140564] (4:node@Geoff) Start | Succ
-> [381.140564] (4:node@Geoff)   33  |  38
-> [381.140564] (4:node@Geoff)   34  |  42
-> [381.140564] (4:node@Geoff)   36  |  38
-> [381.140564] (4:node@Geoff)   40  |  32
-> [381.140564] (4:node@Geoff)   48  |  32
-> [381.140564] (4:node@Geoff)    0  |  32
-> [381.140564] (4:node@Geoff) Predecessor: 21
-> [385.057356] (2:node@McGee) My finger table:
-> [385.057356] (2:node@McGee) Start | Succ
-> [385.057356] (2:node@McGee)   43  |  48
-> [385.057356] (2:node@McGee)   44  |  48
-> [385.057356] (2:node@McGee)   46  |  48
-> [385.057356] (2:node@McGee)   50  |  42
-> [385.057356] (2:node@McGee)   58  |  42
-> [385.057356] (2:node@McGee)   10  |  42
-> [385.057356] (2:node@McGee) Predecessor: 38
-> [401.887123] (7:node@Boivin) My finger table:
-> [401.887123] (7:node@Boivin) Start | Succ
-> [401.887123] (7:node@Boivin)    9  |  14
-> [401.887123] (7:node@Boivin)   10  |  32
-> [401.887123] (7:node@Boivin)   12  |   8
-> [401.887123] (7:node@Boivin)   16  |   8
-> [401.887123] (7:node@Boivin)   24  |   8
-> [401.887123] (7:node@Boivin)   40  |   8
-> [401.887123] (7:node@Boivin) Predecessor: 1
-> [428.242722] (8:node@Jacquelin) My finger table:
-> [428.242722] (8:node@Jacquelin) Start | Succ
-> [428.242722] (8:node@Jacquelin)    2  |   8
-> [428.242722] (8:node@Jacquelin)    3  |  32
-> [428.242722] (8:node@Jacquelin)    5  |   8
-> [428.242722] (8:node@Jacquelin)    9  |   1
-> [428.242722] (8:node@Jacquelin)   17  |   1
-> [428.242722] (8:node@Jacquelin)   33  |   1
-> [428.242722] (8:node@Jacquelin) Predecessor: 48
-> [432.513129] (3:node@iRMX) My finger table:
-> [432.513129] (3:node@iRMX) Start | Succ
-> [432.513129] (3:node@iRMX)   39  |  42
-> [432.513129] (3:node@iRMX)   40  |  42
-> [432.513129] (3:node@iRMX)   42  |  42
-> [432.513129] (3:node@iRMX)   46  |  38
-> [432.513129] (3:node@iRMX)   54  |  38
-> [432.513129] (3:node@iRMX)    6  |  38
-> [432.513129] (3:node@iRMX) Predecessor: 32
-> [433.617418] (7:node@Boivin) My finger table:
-> [433.617418] (7:node@Boivin) Start | Succ
-> [433.617418] (7:node@Boivin)    9  |  14
-> [433.617418] (7:node@Boivin)   10  |  32
-> [433.617418] (7:node@Boivin)   12  |  14
-> [433.617418] (7:node@Boivin)   16  |   8
-> [433.617418] (7:node@Boivin)   24  |   8
-> [433.617418] (7:node@Boivin)   40  |   8
-> [433.617418] (7:node@Boivin) Predecessor: 1
-> [439.381023] (6:node@Jean_Yves) My finger table:
-> [439.381023] (6:node@Jean_Yves) Start | Succ
-> [439.381023] (6:node@Jean_Yves)   15  |  21
-> [439.381023] (6:node@Jean_Yves)   16  |  32
-> [439.381023] (6:node@Jean_Yves)   18  |  21
-> [439.381023] (6:node@Jean_Yves)   22  |  14
-> [439.381023] (6:node@Jean_Yves)   30  |  14
-> [439.381023] (6:node@Jean_Yves)   46  |  14
-> [439.381023] (6:node@Jean_Yves) Predecessor: 8
-> [447.065766] (1:node@Gatien) My finger table:
-> [447.065766] (1:node@Gatien) Start | Succ
-> [447.065766] (1:node@Gatien)   49  |   1
-> [447.065766] (1:node@Gatien)   50  |   1
-> [447.065766] (1:node@Gatien)   52  |   1
-> [447.065766] (1:node@Gatien)   56  |  48
-> [447.065766] (1:node@Gatien)    0  |  48
-> [447.065766] (1:node@Gatien)   16  |  48
-> [447.065766] (1:node@Gatien) Predecessor: 42
-> [517.974890] (5:node@TeX) My finger table:
-> [517.974890] (5:node@TeX) Start | Succ
-> [517.974890] (5:node@TeX)   22  |  32
-> [517.974890] (5:node@TeX)   23  |  32
-> [517.974890] (5:node@TeX)   25  |  32
-> [517.974890] (5:node@TeX)   29  |  32
-> [517.974890] (5:node@TeX)   37  |  21
-> [517.974890] (5:node@TeX)   53  |  21
-> [517.974890] (5:node@TeX) Predecessor: 14
-> [536.878464] (4:node@Geoff) My finger table:
-> [536.878464] (4:node@Geoff) Start | Succ
-> [536.878464] (4:node@Geoff)   33  |  38
-> [536.878464] (4:node@Geoff)   34  |  42
-> [536.878464] (4:node@Geoff)   36  |  38
-> [536.878464] (4:node@Geoff)   40  |  42
-> [536.878464] (4:node@Geoff)   48  |  32
-> [536.878464] (4:node@Geoff)    0  |  32
-> [536.878464] (4:node@Geoff) Predecessor: 21
-> [538.332998] (6:node@Jean_Yves) My finger table:
-> [538.332998] (6:node@Jean_Yves) Start | Succ
-> [538.332998] (6:node@Jean_Yves)   15  |  21
-> [538.332998] (6:node@Jean_Yves)   16  |  32
-> [538.332998] (6:node@Jean_Yves)   18  |  21
-> [538.332998] (6:node@Jean_Yves)   22  |  32
-> [538.332998] (6:node@Jean_Yves)   30  |  14
-> [538.332998] (6:node@Jean_Yves)   46  |  14
-> [538.332998] (6:node@Jean_Yves) Predecessor: 8
-> [553.664062] (8:node@Jacquelin) My finger table:
-> [553.664062] (8:node@Jacquelin) Start | Succ
-> [553.664062] (8:node@Jacquelin)    2  |   8
-> [553.664062] (8:node@Jacquelin)    3  |  32
-> [553.664062] (8:node@Jacquelin)    5  |   8
-> [553.664062] (8:node@Jacquelin)    9  |  14
-> [553.664062] (8:node@Jacquelin)   17  |   1
-> [553.664062] (8:node@Jacquelin)   33  |   1
-> [553.664062] (8:node@Jacquelin) Predecessor: 48
-> [554.213099] (2:node@McGee) My finger table:
-> [554.213099] (2:node@McGee) Start | Succ
-> [554.213099] (2:node@McGee)   43  |  48
-> [554.213099] (2:node@McGee)   44  |  48
-> [554.213099] (2:node@McGee)   46  |  48
-> [554.213099] (2:node@McGee)   50  |   1
-> [554.213099] (2:node@McGee)   58  |  42
-> [554.213099] (2:node@McGee)   10  |  42
-> [554.213099] (2:node@McGee) Predecessor: 38
-> [569.831701] (7:node@Boivin) My finger table:
-> [569.831701] (7:node@Boivin) Start | Succ
-> [569.831701] (7:node@Boivin)    9  |  14
-> [569.831701] (7:node@Boivin)   10  |  32
-> [569.831701] (7:node@Boivin)   12  |  14
-> [569.831701] (7:node@Boivin)   16  |  21
-> [569.831701] (7:node@Boivin)   24  |   8
-> [569.831701] (7:node@Boivin)   40  |   8
-> [569.831701] (7:node@Boivin) Predecessor: 1
-> [573.429486] (1:node@Gatien) My finger table:
-> [573.429486] (1:node@Gatien) Start | Succ
-> [573.429486] (1:node@Gatien)   49  |   1
-> [573.429486] (1:node@Gatien)   50  |   1
-> [573.429486] (1:node@Gatien)   52  |   1
-> [573.429486] (1:node@Gatien)   56  |   1
-> [573.429486] (1:node@Gatien)    0  |  48
-> [573.429486] (1:node@Gatien)   16  |  48
-> [573.429486] (1:node@Gatien) Predecessor: 42
-> [577.413817] (3:node@iRMX) My finger table:
-> [577.413817] (3:node@iRMX) Start | Succ
-> [577.413817] (3:node@iRMX)   39  |  42
-> [577.413817] (3:node@iRMX)   40  |  42
-> [577.413817] (3:node@iRMX)   42  |  42
-> [577.413817] (3:node@iRMX)   46  |  48
-> [577.413817] (3:node@iRMX)   54  |  38
-> [577.413817] (3:node@iRMX)    6  |  38
-> [577.413817] (3:node@iRMX) Predecessor: 32
-> [804.364963] (0:maestro@) Messages created: 788
-> [804.364963] (0:maestro@) Simulated time: 804.365
-
-! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/dht-chord$EXEEXT ${srcdir:=.}/routing_none.xml ${srcdir:=.}/../msg/dht-chord/chord10.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
+$ $SG_TEST_EXENV ${bindir:=.}/dht-chord$EXEEXT ${srcdir:=.}/routing_none.xml ${srcdir:=.}/../msg/dht-chord/dht-chord_d.xml --log=msg_chord.thres:verbose "--log=root.fmt:[%11.6r]%e(%i:%P@%h)%e%m%n" --cfg=network/model:Constant
 > [   0.000000] (0:maestro@) Configuration change: Set 'network/model' to 'Constant'
 > [   0.000000] (1:node@node-0.acme.org) My finger table:
 > [   0.000000] (1:node@node-0.acme.org) Start | Succ
