@@ -72,8 +72,6 @@ State::~State()
  */
 void MC_state_delete(simgrid::mc::State* state, int free_snapshot)
 {
-  if (state->system_state && free_snapshot)
-    delete state->system_state;
   delete state;
 }
 

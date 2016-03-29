@@ -46,8 +46,8 @@ static void MC_show_non_termination(void)
 
 static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* state2)
 {
-  simgrid::mc::Snapshot* s1 = state1->system_state;
-  simgrid::mc::Snapshot* s2 = state2->system_state;
+  simgrid::mc::Snapshot* s1 = state1->system_state.get();
+  simgrid::mc::Snapshot* s2 = state2->system_state.get();
   int num1 = state1->num;
   int num2 = state2->num;
   return snapshot_compare(num1, s1, num2, s2);
@@ -285,6 +285,7 @@ int SafetyChecker::run()
 
   XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
+  initial_global_state = nullptr;
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 
@@ -328,7 +329,7 @@ void SafetyChecker::init()
   xbt_fifo_unshift(mc_stack, initial_state);
 
   /* Save the initial state */
-  initial_global_state = xbt_new0(s_mc_global_t, 1);
+  initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
   initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
 }
 

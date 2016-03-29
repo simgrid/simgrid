@@ -61,7 +61,6 @@ simgrid::mc::State* mc_current_state = nullptr;
 char mc_replay_mode = false;
 
 mc_stats_t mc_stats = nullptr;
-mc_global_t initial_global_state = nullptr;
 xbt_fifo_t mc_stack = nullptr;
 
 /* Liveness */
@@ -69,6 +68,7 @@ xbt_fifo_t mc_stack = nullptr;
 namespace simgrid {
 namespace mc {
 
+std::unique_ptr<s_mc_global_t> initial_global_state = nullptr;
 xbt_automaton_t property_automaton = nullptr;
 
 }
@@ -140,7 +140,7 @@ void MC_replay(xbt_fifo_t stack)
 
 
   /* Restore the initial state */
-  simgrid::mc::restore_snapshot(initial_global_state->snapshot);
+  simgrid::mc::restore_snapshot(simgrid::mc::initial_global_state->snapshot);
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
 
@@ -217,16 +217,18 @@ void MC_show_deadlock(void)
 void MC_print_statistics(mc_stats_t stats)
 {
   if(_sg_mc_comms_determinism) {
-    if (!initial_global_state->recv_deterministic && initial_global_state->send_deterministic){
+    if (!simgrid::mc::initial_global_state->recv_deterministic &&
+        simgrid::mc::initial_global_state->send_deterministic){
       XBT_INFO("******************************************************");
       XBT_INFO("**** Only-send-deterministic communication pattern ****");
       XBT_INFO("******************************************************");
-      XBT_INFO("%s", initial_global_state->recv_diff);
-    }else if(!initial_global_state->send_deterministic && initial_global_state->recv_deterministic) {
+      XBT_INFO("%s", simgrid::mc::initial_global_state->recv_diff);
+    }else if(!simgrid::mc::initial_global_state->send_deterministic &&
+        simgrid::mc::initial_global_state->recv_deterministic) {
       XBT_INFO("******************************************************");
       XBT_INFO("**** Only-recv-deterministic communication pattern ****");
       XBT_INFO("******************************************************");
-      XBT_INFO("%s", initial_global_state->send_diff);
+      XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
     }
   }
 
@@ -242,10 +244,13 @@ void MC_print_statistics(mc_stats_t stats)
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }
-  if (initial_global_state != nullptr && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
-    XBT_INFO("Send-deterministic : %s", !initial_global_state->send_deterministic ? "No" : "Yes");
+  if (simgrid::mc::initial_global_state != nullptr
+      && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
+    XBT_INFO("Send-deterministic : %s",
+      !simgrid::mc::initial_global_state->send_deterministic ? "No" : "Yes");
     if (_sg_mc_comms_determinism)
-      XBT_INFO("Recv-deterministic : %s", !initial_global_state->recv_deterministic ? "No" : "Yes");
+      XBT_INFO("Recv-deterministic : %s",
+        !simgrid::mc::initial_global_state->recv_deterministic ? "No" : "Yes");
   }
   if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")){
     int ret=system("free");

@@ -37,7 +37,7 @@ class ModelChecker {
   std::unique_ptr<Process> process_;
   Checker* checker_ = nullptr;
 public:
-  simgrid::mc::Snapshot* parent_snapshot_;
+  std::shared_ptr<simgrid::mc::Snapshot> parent_snapshot_;
 
 public:
   ModelChecker(ModelChecker const&) = delete;
@@ -57,7 +57,7 @@ public:
 
   bool is_important_snapshot(Snapshot const& snapshot) const
   {
-    return &snapshot == this->parent_snapshot_;
+    return &snapshot == this->parent_snapshot_.get();
   }
 
   void start();

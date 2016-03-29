@@ -7,14 +7,14 @@
 #ifndef SIMGRID_MC_STATE_H
 #define SIMGRID_MC_STATE_H
 
+#include <memory>
+
 #include <xbt/base.h>
 #include <xbt/dynar.h>
 
 #include <simgrid_config.h>
 #include "src/simix/smx_private.h"
 #include "src/mc/mc_snapshot.h"
-
-extern XBT_PRIVATE mc_global_t initial_global_state;
 
 /* Possible exploration status of a process in a state */
 typedef enum {
@@ -34,6 +34,8 @@ typedef struct mc_procstate{
 namespace simgrid {
 namespace mc {
 
+extern XBT_PRIVATE std::unique_ptr<s_mc_global_t> initial_global_state;
+
 /* An exploration state.
  *
  *  The `executed_state` is sometimes transformed into another `internal_req`.
@@ -48,7 +50,7 @@ struct XBT_PRIVATE State {
   s_smx_simcall_t executed_req;         /* The executed request of the state */
   int req_num = 0;                      /* The request number (in the case of a
                                        multi-request like waitany ) */
-  simgrid::mc::Snapshot* system_state = 0;      /* Snapshot of system state */
+  std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;      /* Snapshot of system state */
   int num = 0;
   int in_visited_states = 0;
   // comm determinism verification (xbt_dynar_t<xbt_dynar_t<mc_comm_pattern_t>):

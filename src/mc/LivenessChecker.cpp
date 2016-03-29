@@ -150,8 +150,8 @@ simgrid::xbt::unique_ptr<s_xbt_dynar_t> LivenessChecker::getPropositionValues()
 
 int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2)
 {
-  simgrid::mc::Snapshot* s1 = state1->graph_state->system_state;
-  simgrid::mc::Snapshot* s2 = state2->graph_state->system_state;
+  simgrid::mc::Snapshot* s1 = state1->graph_state->system_state.get();
+  simgrid::mc::Snapshot* s2 = state2->graph_state->system_state.get();
   int num1 = state1->num;
   int num2 = state2->num;
   return simgrid::mc::snapshot_compare(num1, s1, num2, s2);
@@ -619,10 +619,12 @@ int LivenessChecker::run()
   liveness_stack = xbt_fifo_new();
 
   /* Create the initial state */
-  initial_global_state = xbt_new0(s_mc_global_t, 1);
+  simgrid::mc::initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
 
   this->prepare();
-  return this->main();
+  int res = this->main();
+  simgrid::mc::initial_global_state = nullptr;
+  return res;
 }
 
 }
