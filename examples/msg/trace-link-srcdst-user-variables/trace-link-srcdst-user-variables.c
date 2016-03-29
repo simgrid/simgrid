@@ -30,8 +30,8 @@ static void create_and_execute_task (void)
 static int master(int argc, char *argv[])
 {
   //Set initial values for the link user variables
-  //This example uses source and destination wheresource and destination are the name of hosts inthe platform file.
-  //The functions will set/change the value of the variablefor all links in the route between source and destination.
+  //This example uses source and destination where source and destination are the name of hosts inthe platform file.
+  //The functions will set/change the value of the variable for all links in the route between source and destination.
 
   //Set the Link_Capacity variable
   TRACE_link_srcdst_variable_set("Tremblay", "Bourassa", "Link_Capacity", 12.34);
@@ -64,10 +64,8 @@ static int master(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  if (argc < 3) {
-    printf("Usage: %s platform_file deployment_file\n", argv[0]);
-    exit(1);
-  }
+  xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
+             "\tExample: %s msg_platform.xml msg_deployment.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
