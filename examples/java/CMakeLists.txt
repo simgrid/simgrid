@@ -9,8 +9,8 @@ set(process_suspend_sources   ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend/Main.j
                               ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend/LazyGuy.java)
 
 foreach (example process_kill process_migration process_suspend)
+  string (REPLACE "_" "/" example_dir ${example})
   if(enable_java)
-    string (REPLACE "_" "/" example_dir ${example})
 
     add_custom_command(
       COMMENT "Building java_${example}..."
