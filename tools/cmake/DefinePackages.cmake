@@ -944,10 +944,7 @@ set(CMAKEFILES_TXT
   examples/java/tracing/CMakeLists.txt
   
   examples/msg/CMakeLists.txt
-    examples/msg/bittorrent/CMakeLists.txt
-    examples/msg/chainsend/CMakeLists.txt
     examples/msg/cloud/CMakeLists.txt
-    examples/msg/dht-kademlia/CMakeLists.txt
     examples/msg/masterslave/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
   examples/s4u/CMakeLists.txt

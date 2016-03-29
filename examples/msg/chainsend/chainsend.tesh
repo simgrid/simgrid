@@ -4,7 +4,7 @@ p Testing the chainsend MSG implementation
 
 ! timeout 60
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/chainsend ${srcdir:=.}/../../platforms/platform.xml ${srcdir:=.}/deployment_tesh.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/chainsend ${srcdir:=.}/platform.xml ${srcdir:=.}/../msg/chainsend/chainsend_d.xml "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [  587.704210] (2:peer@Boivin) ### 587.704224 16777216 bytes (Avg 0.027225 MB/s); copy finished (simulated).
 > [  786.931829] (3:peer@Jean_Yves) ### 786.931824 16777216 bytes (Avg 0.020332 MB/s); copy finished (simulated).
 > [  788.837385] (4:peer@TeX) ### 788.837402 16777216 bytes (Avg 0.020283 MB/s); copy finished (simulated).

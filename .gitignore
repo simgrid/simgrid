@@ -133,7 +133,7 @@ examples/msg/cloud/scale
 examples/msg/cloud/simple_vm
 examples/msg/cloud/two_tasks_vm
 examples/msg/dht-chord/dht-chord
-examples/msg/dht-kademlia/kademlia
+examples/msg/dht-kademlia/dht-kademlia
 examples/msg/dht-pastry/dht-pastry
 examples/msg/energy-consumption/energy-consumption
 examples/msg/energy-onoff/energy-onoff

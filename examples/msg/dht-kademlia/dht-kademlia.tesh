@@ -3,7 +3,7 @@
 p Testing the Kademlia implementation with MSG
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/kademlia ${srcdir:=.}/../../platforms/cluster.xml ${srcdir:=.}/kademlia.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/dht-kademlia ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/dht-kademlia/dht-kademlia_d.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"
 > [  0.000000] ( 1:node@node-0.acme.org) Hi, I'm going to create the network with id 00000000
 > [  0.000000] ( 2:node@node-1.acme.org) Hi, I'm going to join the network with id 00000001
 > [  0.000000] ( 3:node@node-2.acme.org) Hi, I'm going to join the network with id 00000003
