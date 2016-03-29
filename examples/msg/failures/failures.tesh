@@ -3,7 +3,7 @@
 p Testing a simple master/slave example application handling failures TCP crosstraffic DISABLED
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/failures$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/small_platform_with_failures.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave.xml --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/failures$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/small_platform_with_failures.xml ${srcdir:=.}/../msg/masterslave/masterslave_d.xml --cfg=path:${srcdir} --cfg=network/crosstraffic:0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Cannot launch process 'slave' on failed host 'Fafard'
 > [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
 > [  0.000000] (1:master@Tremblay) Jupiter
@@ -104,7 +104,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/failures$EXEEXT --log=xbt_cfg.thres:critical --log
 p Testing a simple master/slave example application handling failures. TCP crosstraffic ENABLED
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/failures$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/small_platform_with_failures.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave.xml --cfg=path:${srcdir} "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/failures$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/small_platform_with_failures.xml ${srcdir:=.}/../msg/masterslave/masterslave_d.xml --cfg=path:${srcdir} "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Cannot launch process 'slave' on failed host 'Fafard'
 > [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
 > [  0.000000] (1:master@Tremblay) Jupiter
@@ -205,7 +205,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/failures$EXEEXT --log=xbt_cfg.thres:critical --log
 p Testing a simple master/slave example application handling failures. CPU_TI optimization enabled
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/failures$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/small_platform_with_failures.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave.xml --cfg=path:${srcdir} -cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/failures$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc ${srcdir:=.}/small_platform_with_failures.xml ${srcdir:=.}/../msg/masterslave/masterslave_d.xml --cfg=path:${srcdir} -cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Cannot launch process 'slave' on failed host 'Fafard'
 > [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
 > [  0.000000] (1:master@Tremblay) Jupiter

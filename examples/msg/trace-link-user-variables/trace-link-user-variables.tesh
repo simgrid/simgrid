@@ -1,7 +1,7 @@
 #! ./tesh
 
 p Trace user variables associated to links of the platform file
-$ $SG_TEST_EXENV ${bindir:=.}/trace-link-user-variables$EXEEXT --cfg=tracing:yes --cfg=tracing/platform:yes ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave_mailbox.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-link-user-variables$EXEEXT --cfg=tracing:yes --cfg=tracing/platform:yes ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
 

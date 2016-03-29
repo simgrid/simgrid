@@ -2,7 +2,7 @@
 
 p Testing a simple master/slave example application
 
-$ $SG_TEST_EXENV ./masterslave/masterslave_mailbox  ${srcdir:=.}/../platforms/vivaldi.xml ${srcdir:=.}/masterslave/deployment_masterslave_vivaldi.xml --cfg=network/latency_factor:1.0 --cfg=network/bandwidth_factor:1.0
+$ $SG_TEST_EXENV ./masterslave-mailbox/masterslave-mailbox  ${srcdir:=.}/../platforms/vivaldi.xml ${srcdir:=.}/masterslave-mailbox/masterslave-mailbox-vivaldi_d.xml --cfg=network/latency_factor:1.0 --cfg=network/bandwidth_factor:1.0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/latency_factor' to '1.0'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/bandwidth_factor' to '1.0'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/coordinates' to 'yes'

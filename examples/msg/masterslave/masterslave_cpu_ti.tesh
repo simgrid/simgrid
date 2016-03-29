@@ -3,7 +3,131 @@
 p Testing a simple master/slave example application
 
 ! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml masterslave/deployment_masterslave.xml --cfg=network/crosstraffic:0 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ $SG_TEST_EXENV ${bindir:=.}/masterslave$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/masterslave_d.xml --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
+> [  0.000000] (1:master@Tremblay) Got 5 slaves and 20 tasks to process
+> [  0.000000] (1:master@Tremblay) Sending "Task_0" to "Jupiter"
+> [  0.169155] (1:master@Tremblay) Sent
+> [  0.169155] (1:master@Tremblay) Sending "Task_1" to "Fafard"
+> [  0.169155] (3:slave@Jupiter) Received "Task_0"
+> [  0.169155] (3:slave@Jupiter) Processing "Task_0"
+> [  0.327551] (1:master@Tremblay) Sent
+> [  0.327551] (1:master@Tremblay) Sending "Task_2" to "Ginette"
+> [  0.327551] (4:slave@Fafard) Received "Task_1"
+> [  0.327551] (4:slave@Fafard) Processing "Task_1"
+> [  0.451283] (1:master@Tremblay) Sent
+> [  0.451283] (1:master@Tremblay) Sending "Task_3" to "Bourassa"
+> [  0.451283] (5:slave@Ginette) Received "Task_2"
+> [  0.451283] (5:slave@Ginette) Processing "Task_2"
+> [  0.583902] (1:master@Tremblay) Sent
+> [  0.583902] (1:master@Tremblay) Sending "Task_4" to "Tremblay"
+> [  0.583902] (1:master@Tremblay) Hey ! It's me ! :)
+> [  0.583902] (6:slave@Bourassa) Received "Task_3"
+> [  0.583902] (6:slave@Bourassa) Processing "Task_3"
+> [  0.586168] (1:master@Tremblay) Sent
+> [  0.586168] (1:master@Tremblay) Sending "Task_5" to "Jupiter"
+> [  0.586168] (2:slave@Tremblay) Received "Task_4"
+> [  0.586168] (2:slave@Tremblay) Processing "Task_4"
+> [  0.824497] (3:slave@Jupiter) "Task_0" done
+> [  0.982894] (4:slave@Fafard) "Task_1" done
+> [  0.993652] (1:master@Tremblay) Sent
+> [  0.993652] (1:master@Tremblay) Sending "Task_6" to "Fafard"
+> [  0.993652] (3:slave@Jupiter) Received "Task_5"
+> [  0.993652] (3:slave@Jupiter) Processing "Task_5"
+> [  1.095878] (2:slave@Tremblay) "Task_4" done
+> [  1.152048] (1:master@Tremblay) Sent
+> [  1.152048] (1:master@Tremblay) Sending "Task_7" to "Ginette"
+> [  1.152048] (4:slave@Fafard) Received "Task_6"
+> [  1.152048] (4:slave@Fafard) Processing "Task_6"
+> [  1.482381] (5:slave@Ginette) "Task_2" done
+> [  1.606113] (1:master@Tremblay) Sent
+> [  1.606113] (1:master@Tremblay) Sending "Task_8" to "Bourassa"
+> [  1.606113] (5:slave@Ginette) Received "Task_7"
+> [  1.606113] (5:slave@Ginette) Processing "Task_7"
+> [  1.615000] (6:slave@Bourassa) "Task_3" done
+> [  1.648994] (3:slave@Jupiter) "Task_5" done
+> [  1.747619] (1:master@Tremblay) Sent
+> [  1.747619] (1:master@Tremblay) Sending "Task_9" to "Tremblay"
+> [  1.747619] (1:master@Tremblay) Hey ! It's me ! :)
+> [  1.747619] (6:slave@Bourassa) Received "Task_8"
+> [  1.747619] (6:slave@Bourassa) Processing "Task_8"
+> [  1.749885] (1:master@Tremblay) Sent
+> [  1.749885] (1:master@Tremblay) Sending "Task_10" to "Jupiter"
+> [  1.749885] (2:slave@Tremblay) Received "Task_9"
+> [  1.749885] (2:slave@Tremblay) Processing "Task_9"
+> [  1.807391] (4:slave@Fafard) "Task_6" done
+> [  1.919039] (1:master@Tremblay) Sent
+> [  1.919039] (1:master@Tremblay) Sending "Task_11" to "Fafard"
+> [  1.919039] (3:slave@Jupiter) Received "Task_10"
+> [  1.919039] (3:slave@Jupiter) Processing "Task_10"
+> [  2.077436] (1:master@Tremblay) Sent
+> [  2.077436] (1:master@Tremblay) Sending "Task_12" to "Ginette"
+> [  2.077436] (4:slave@Fafard) Received "Task_11"
+> [  2.077436] (4:slave@Fafard) Processing "Task_11"
+> [  2.259594] (2:slave@Tremblay) "Task_9" done
+> [  2.574382] (3:slave@Jupiter) "Task_10" done
+> [  2.637211] (5:slave@Ginette) "Task_7" done
+> [  2.732778] (4:slave@Fafard) "Task_11" done
+> [  2.760943] (1:master@Tremblay) Sent
+> [  2.760943] (1:master@Tremblay) Sending "Task_13" to "Bourassa"
+> [  2.760943] (5:slave@Ginette) Received "Task_12"
+> [  2.760943] (5:slave@Ginette) Processing "Task_12"
+> [  2.778717] (6:slave@Bourassa) "Task_8" done
+> [  2.911336] (1:master@Tremblay) Sent
+> [  2.911336] (1:master@Tremblay) Sending "Task_14" to "Tremblay"
+> [  2.911336] (1:master@Tremblay) Hey ! It's me ! :)
+> [  2.911336] (6:slave@Bourassa) Received "Task_13"
+> [  2.911336] (6:slave@Bourassa) Processing "Task_13"
+> [  2.913601] (1:master@Tremblay) Sent
+> [  2.913601] (1:master@Tremblay) Sending "Task_15" to "Jupiter"
+> [  2.913601] (2:slave@Tremblay) Received "Task_14"
+> [  2.913601] (2:slave@Tremblay) Processing "Task_14"
+> [  3.082756] (1:master@Tremblay) Sent
+> [  3.082756] (1:master@Tremblay) Sending "Task_16" to "Fafard"
+> [  3.082756] (3:slave@Jupiter) Received "Task_15"
+> [  3.082756] (3:slave@Jupiter) Processing "Task_15"
+> [  3.241153] (1:master@Tremblay) Sent
+> [  3.241153] (1:master@Tremblay) Sending "Task_17" to "Ginette"
+> [  3.241153] (4:slave@Fafard) Received "Task_16"
+> [  3.241153] (4:slave@Fafard) Processing "Task_16"
+> [  3.423311] (2:slave@Tremblay) "Task_14" done
+> [  3.738098] (3:slave@Jupiter) "Task_15" done
+> [  3.792041] (5:slave@Ginette) "Task_12" done
+> [  3.896495] (4:slave@Fafard) "Task_16" done
+> [  3.915773] (1:master@Tremblay) Sent
+> [  3.915773] (1:master@Tremblay) Sending "Task_18" to "Bourassa"
+> [  3.915773] (5:slave@Ginette) Received "Task_17"
+> [  3.915773] (5:slave@Ginette) Processing "Task_17"
+> [  3.942434] (6:slave@Bourassa) "Task_13" done
+> [  4.075053] (1:master@Tremblay) Sent
+> [  4.075053] (1:master@Tremblay) Sending "Task_19" to "Tremblay"
+> [  4.075053] (1:master@Tremblay) Hey ! It's me ! :)
+> [  4.075053] (6:slave@Bourassa) Received "Task_18"
+> [  4.075053] (6:slave@Bourassa) Processing "Task_18"
+> [  4.077318] (1:master@Tremblay) Sent
+> [  4.077318] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
+> [  4.077318] (2:slave@Tremblay) Received "Task_19"
+> [  4.077318] (2:slave@Tremblay) Processing "Task_19"
+> [  4.096333] (3:slave@Jupiter) Received "finalize"
+> [  4.096333] (3:slave@Jupiter) I'm done. See you!
+> [  4.122041] (4:slave@Fafard) Received "finalize"
+> [  4.122041] (4:slave@Fafard) I'm done. See you!
+> [  4.587028] (2:slave@Tremblay) "Task_19" done
+> [  4.946871] (5:slave@Ginette) "Task_17" done
+> [  4.963423] (5:slave@Ginette) Received "finalize"
+> [  4.963423] (5:slave@Ginette) I'm done. See you!
+> [  5.106151] (6:slave@Bourassa) "Task_18" done
+> [  5.131590] (6:slave@Bourassa) Received "finalize"
+> [  5.131590] (6:slave@Bourassa) I'm done. See you!
+> [  5.131785] (0:maestro@) Simulation time 5.13179
+> [  5.131785] (1:master@Tremblay) Goodbye now!
+> [  5.131785] (2:slave@Tremblay) Received "finalize"
+> [  5.131785] (2:slave@Tremblay) I'm done. See you!
+
+p Testing a simple master/slave example application
+
+! output sort 19
+$ $SG_TEST_EXENV ${bindir:=.}/masterslave$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/masterslave_d.xml --cfg=network/crosstraffic:0 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
 > [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
 > [  0.000000] (1:master@Tremblay) Got 5 slaves and 20 tasks to process
@@ -125,383 +249,3 @@ $ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT ${srcdir:=.}/../platf
 > [  5.532947] (2:slave@Tremblay) Received "finalize"
 > [  5.532947] (2:slave@Tremblay) I'm done. See you!
 
-p Testing a master/slave example application with a forwarder module
-
-! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/masterslave_forwarder$EXEEXT msg_platform.xml masterslave/deployment_masterslave_forwarder.xml --cfg=network/crosstraffic:0 --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'network/crosstraffic' to '0'
-> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
-> [  0.000000] (1:master@Jacquelin) Got 5 slaves and 20 tasks to process
-> [  0.000000] (1:master@Jacquelin) Sending "Task_0" to "iRMX"
-> [  4.772530] (1:master@Jacquelin) Sent
-> [  4.772530] (1:master@Jacquelin) Sending "Task_1" to "Casavant"
-> [  4.772530] (4:slave@iRMX) Received "Task_0"
-> [  4.772530] (4:slave@iRMX) Processing "Task_0"
-> [  4.845345] (4:slave@iRMX) "Task_0" done
-> [  6.900351] (1:master@Jacquelin) Sent
-> [  6.900351] (1:master@Jacquelin) Sending "Task_2" to "Bousquet"
-> [  6.900351] (3:forwarder@Casavant) Received "Task_1"
-> [  6.900351] (3:forwarder@Casavant) Sending "Task_1" to "Robert"
-> [  8.491392] (1:master@Jacquelin) Sent
-> [  8.491392] (1:master@Jacquelin) Sending "Task_3" to "Soucy"
-> [  8.491392] (5:slave@Bousquet) Received "Task_2"
-> [  8.491392] (5:slave@Bousquet) Processing "Task_2"
-> [  8.607896] (5:slave@Bousquet) "Task_2" done
-> [  9.260549] (10:slave@Robert) Received "Task_1"
-> [  9.260549] (10:slave@Robert) Processing "Task_1"
-> [  9.296956] (10:slave@Robert) "Task_1" done
-> [ 10.755127] (1:master@Jacquelin) Sent
-> [ 10.755127] (1:master@Jacquelin) Sending "Task_4" to "Jackson"
-> [ 10.755127] (6:slave@Soucy) Received "Task_3"
-> [ 10.755127] (6:slave@Soucy) Processing "Task_3"
-> [ 10.791535] (6:slave@Soucy) "Task_3" done
-> [ 12.090242] (1:master@Jacquelin) Sent
-> [ 12.090242] (1:master@Jacquelin) Sending "Task_5" to "iRMX"
-> [ 12.090242] (2:forwarder@Jackson) Received "Task_4"
-> [ 12.090242] (2:forwarder@Jackson) Sending "Task_4" to "Kuenning"
-> [ 12.173866] (7:slave@Kuenning) Received "Task_4"
-> [ 12.173866] (7:slave@Kuenning) Processing "Task_4"
-> [ 12.232118] (7:slave@Kuenning) "Task_4" done
-> [ 16.862772] (1:master@Jacquelin) Sent
-> [ 16.862772] (1:master@Jacquelin) Sending "Task_6" to "Casavant"
-> [ 16.862772] (4:slave@iRMX) Received "Task_5"
-> [ 16.862772] (4:slave@iRMX) Processing "Task_5"
-> [ 16.935587] (4:slave@iRMX) "Task_5" done
-> [ 18.990593] (1:master@Jacquelin) Sent
-> [ 18.990593] (1:master@Jacquelin) Sending "Task_7" to "Bousquet"
-> [ 18.990593] (3:forwarder@Casavant) Received "Task_6"
-> [ 18.990593] (3:forwarder@Casavant) Sending "Task_6" to "Sirois"
-> [ 19.793293] (11:slave@Sirois) Received "Task_6"
-> [ 19.793293] (11:slave@Sirois) Processing "Task_6"
-> [ 19.836983] (11:slave@Sirois) "Task_6" done
-> [ 20.581634] (1:master@Jacquelin) Sent
-> [ 20.581634] (1:master@Jacquelin) Sending "Task_8" to "Soucy"
-> [ 20.581634] (5:slave@Bousquet) Received "Task_7"
-> [ 20.581634] (5:slave@Bousquet) Processing "Task_7"
-> [ 20.698138] (5:slave@Bousquet) "Task_7" done
-> [ 22.845369] (1:master@Jacquelin) Sent
-> [ 22.845369] (1:master@Jacquelin) Sending "Task_9" to "Jackson"
-> [ 22.845369] (6:slave@Soucy) Received "Task_8"
-> [ 22.845369] (6:slave@Soucy) Processing "Task_8"
-> [ 22.881777] (6:slave@Soucy) "Task_8" done
-> [ 24.180485] (1:master@Jacquelin) Sent
-> [ 24.180485] (1:master@Jacquelin) Sending "Task_10" to "iRMX"
-> [ 24.180485] (2:forwarder@Jackson) Received "Task_9"
-> [ 24.180485] (2:forwarder@Jackson) Sending "Task_9" to "Browne"
-> [ 27.009931] (8:slave@Browne) Received "Task_9"
-> [ 27.009931] (8:slave@Browne) Processing "Task_9"
-> [ 27.046339] (8:slave@Browne) "Task_9" done
-> [ 28.953014] (1:master@Jacquelin) Sent
-> [ 28.953014] (1:master@Jacquelin) Sending "Task_11" to "Casavant"
-> [ 28.953014] (4:slave@iRMX) Received "Task_10"
-> [ 28.953014] (4:slave@iRMX) Processing "Task_10"
-> [ 29.025830] (4:slave@iRMX) "Task_10" done
-> [ 31.080835] (1:master@Jacquelin) Sent
-> [ 31.080835] (1:master@Jacquelin) Sending "Task_12" to "Bousquet"
-> [ 31.080835] (3:forwarder@Casavant) Received "Task_11"
-> [ 31.080835] (3:forwarder@Casavant) Sending "Task_11" to "Monique"
-> [ 32.472434] (12:slave@Monique) Received "Task_11"
-> [ 32.472434] (12:slave@Monique) Processing "Task_11"
-> [ 32.516124] (12:slave@Monique) "Task_11" done
-> [ 32.671876] (1:master@Jacquelin) Sent
-> [ 32.671876] (1:master@Jacquelin) Sending "Task_13" to "Soucy"
-> [ 32.671876] (5:slave@Bousquet) Received "Task_12"
-> [ 32.671876] (5:slave@Bousquet) Processing "Task_12"
-> [ 32.788380] (5:slave@Bousquet) "Task_12" done
-> [ 34.935611] (1:master@Jacquelin) Sent
-> [ 34.935611] (1:master@Jacquelin) Sending "Task_14" to "Jackson"
-> [ 34.935611] (6:slave@Soucy) Received "Task_13"
-> [ 34.935611] (6:slave@Soucy) Processing "Task_13"
-> [ 34.972019] (6:slave@Soucy) "Task_13" done
-> [ 36.270727] (1:master@Jacquelin) Sent
-> [ 36.270727] (1:master@Jacquelin) Sending "Task_15" to "iRMX"
-> [ 36.270727] (2:forwarder@Jackson) Received "Task_14"
-> [ 36.270727] (2:forwarder@Jackson) Sending "Task_14" to "Stephen"
-> [ 40.508273] (9:slave@Stephen) Received "Task_14"
-> [ 40.508273] (9:slave@Stephen) Processing "Task_14"
-> [ 40.581088] (9:slave@Stephen) "Task_14" done
-> [ 41.043257] (1:master@Jacquelin) Sent
-> [ 41.043257] (1:master@Jacquelin) Sending "Task_16" to "Casavant"
-> [ 41.043257] (4:slave@iRMX) Received "Task_15"
-> [ 41.043257] (4:slave@iRMX) Processing "Task_15"
-> [ 41.116072] (4:slave@iRMX) "Task_15" done
-> [ 43.171078] (1:master@Jacquelin) Sent
-> [ 43.171078] (1:master@Jacquelin) Sending "Task_17" to "Bousquet"
-> [ 43.171078] (3:forwarder@Casavant) Received "Task_16"
-> [ 43.171078] (3:forwarder@Casavant) Sending "Task_16" to "Robert"
-> [ 44.762118] (1:master@Jacquelin) Sent
-> [ 44.762118] (1:master@Jacquelin) Sending "Task_18" to "Soucy"
-> [ 44.762118] (5:slave@Bousquet) Received "Task_17"
-> [ 44.762118] (5:slave@Bousquet) Processing "Task_17"
-> [ 44.878622] (5:slave@Bousquet) "Task_17" done
-> [ 45.531275] (10:slave@Robert) Received "Task_16"
-> [ 45.531275] (10:slave@Robert) Processing "Task_16"
-> [ 45.567683] (10:slave@Robert) "Task_16" done
-> [ 47.025854] (1:master@Jacquelin) Sent
-> [ 47.025854] (1:master@Jacquelin) Sending "Task_19" to "Jackson"
-> [ 47.025854] (6:slave@Soucy) Received "Task_18"
-> [ 47.025854] (6:slave@Soucy) Processing "Task_18"
-> [ 47.062262] (6:slave@Soucy) "Task_18" done
-> [ 48.360969] (1:master@Jacquelin) Sent
-> [ 48.360969] (1:master@Jacquelin) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [ 48.360969] (2:forwarder@Jackson) Received "Task_19"
-> [ 48.360969] (2:forwarder@Jackson) Sending "Task_19" to "Kuenning"
-> [ 48.444592] (7:slave@Kuenning) Received "Task_19"
-> [ 48.444592] (7:slave@Kuenning) Processing "Task_19"
-> [ 48.502845] (7:slave@Kuenning) "Task_19" done
-> [ 50.794024] (4:slave@iRMX) Received "finalize"
-> [ 50.794024] (4:slave@iRMX) I'm done. See you!
-> [ 51.878795] (3:forwarder@Casavant) Received "finalize"
-> [ 51.878795] (3:forwarder@Casavant) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [ 52.689914] (5:slave@Bousquet) Received "finalize"
-> [ 52.689914] (5:slave@Bousquet) I'm done. See you!
-> [ 53.082033] (10:slave@Robert) Received "finalize"
-> [ 53.082033] (10:slave@Robert) I'm done. See you!
-> [ 53.491253] (11:slave@Sirois) Received "finalize"
-> [ 53.491253] (11:slave@Sirois) I'm done. See you!
-> [ 53.843975] (6:slave@Soucy) Received "finalize"
-> [ 53.843975] (6:slave@Soucy) I'm done. See you!
-> [ 54.200695] (12:slave@Monique) Received "finalize"
-> [ 54.200695] (12:slave@Monique) I'm done. See you!
-> [ 54.200695] (3:forwarder@Casavant) I'm done. See you!
-> [ 54.524622] (1:master@Jacquelin) Goodbye now!
-> [ 54.524622] (2:forwarder@Jackson) Received "finalize"
-> [ 54.524622] (2:forwarder@Jackson) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [ 54.529294] (7:slave@Kuenning) Received "finalize"
-> [ 54.529294] (7:slave@Kuenning) I'm done. See you!
-> [ 55.971757] (8:slave@Browne) Received "finalize"
-> [ 55.971757] (8:slave@Browne) I'm done. See you!
-> [ 58.132075] (0:maestro@) Simulation time 58.1321
-> [ 58.132075] (2:forwarder@Jackson) I'm done. See you!
-> [ 58.132075] (9:slave@Stephen) Received "finalize"
-> [ 58.132075] (9:slave@Stephen) I'm done. See you!
-
-p Testing a simple master/slave example application handling failures
-
-! output sort 19
-$ ${bindir:=.}/masterslave_failure$EXEEXT --log=xbt_cfg.thres:critical --log=no_loc small_platform_with_failures.xml masterslave/deployment_masterslave.xml --cfg=network/crosstraffic:0 --cfg=path:${srcdir} --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Cannot launch process 'slave' on failed host 'Fafard'
-> [  0.000000] (1:master@Tremblay) Got 5 slave(s) :
-> [  0.000000] (1:master@Tremblay) Jupiter
-> [  0.000000] (1:master@Tremblay) Fafard
-> [  0.000000] (1:master@Tremblay) Ginette
-> [  0.000000] (1:master@Tremblay) Bourassa
-> [  0.000000] (1:master@Tremblay) Tremblay
-> [  0.000000] (1:master@Tremblay) Got 20 task to process :
-> [  0.165962] (1:master@Tremblay) Send completed
-> [  0.165962] (3:slave@Jupiter) Received "Task"
-> [  0.165962] (3:slave@Jupiter) Communication time : "0.165962"
-> [  0.165962] (3:slave@Jupiter) Processing "Task"
-> [  0.821304] (3:slave@Jupiter) "Task" done
-> [  1.100000] (3:slave@Jupiter) Gloups. The cpu on which I'm running just turned off!. See you!
-> [ 10.165962] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [ 10.306421] (1:master@Tremblay) Send completed
-> [ 10.306421] (4:slave@Ginette) Received "Task"
-> [ 10.306421] (4:slave@Ginette) Communication time : "0.140460"
-> [ 10.306421] (4:slave@Ginette) Processing "Task"
-> [ 10.522294] (1:master@Tremblay) Send completed
-> [ 10.522294] (5:slave@Bourassa) Received "Task"
-> [ 10.522294] (5:slave@Bourassa) Communication time : "0.215872"
-> [ 10.522294] (5:slave@Bourassa) Processing "Task"
-> [ 10.524632] (1:master@Tremblay) Send completed
-> [ 10.524632] (2:slave@Tremblay) Received "Task"
-> [ 10.524632] (2:slave@Tremblay) Communication time : "0.002339"
-> [ 10.524632] (2:slave@Tremblay) Processing "Task"
-> [ 11.034342] (2:slave@Tremblay) "Task" done
-> [ 11.337519] (4:slave@Ginette) "Task" done
-> [ 11.553392] (5:slave@Bourassa) "Task" done
-> [ 20.524632] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Jupiter'. Nevermind. Let's keep going!
-> [ 30.524632] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [ 30.524632] (1:master@Tremblay) Mmh. Something went wrong with 'Ginette'. Nevermind. Let's keep going!
-> [ 30.524632] (4:slave@Ginette) Mmh. Something went wrong. Nevermind. Let's keep going!
-> [ 30.740505] (1:master@Tremblay) Send completed
-> [ 30.740505] (5:slave@Bourassa) Received "Task"
-> [ 30.740505] (5:slave@Bourassa) Communication time : "0.215872"
-> [ 30.740505] (5:slave@Bourassa) Processing "Task"
-> [ 30.742843] (1:master@Tremblay) Send completed
-> [ 30.742843] (2:slave@Tremblay) Received "Task"
-> [ 30.742843] (2:slave@Tremblay) Communication time : "0.002339"
-> [ 30.742843] (2:slave@Tremblay) Processing "Task"
-> [ 31.252553] (2:slave@Tremblay) "Task" done
-> [ 31.771603] (5:slave@Bourassa) "Task" done
-> [ 40.742843] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Jupiter'. Nevermind. Let's keep going!
-> [ 50.742843] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [ 50.883303] (1:master@Tremblay) Send completed
-> [ 50.883303] (4:slave@Ginette) Received "Task"
-> [ 50.883303] (4:slave@Ginette) Communication time : "0.140460"
-> [ 50.883303] (4:slave@Ginette) Processing "Task"
-> [ 51.099175] (1:master@Tremblay) Send completed
-> [ 51.099175] (5:slave@Bourassa) Received "Task"
-> [ 51.099175] (5:slave@Bourassa) Communication time : "0.215872"
-> [ 51.099175] (5:slave@Bourassa) Processing "Task"
-> [ 51.101514] (1:master@Tremblay) Send completed
-> [ 51.101514] (2:slave@Tremblay) Received "Task"
-> [ 51.101514] (2:slave@Tremblay) Communication time : "0.002339"
-> [ 51.101514] (2:slave@Tremblay) Processing "Task"
-> [ 51.611224] (2:slave@Tremblay) "Task" done
-> [ 51.914401] (4:slave@Ginette) "Task" done
-> [ 52.130273] (5:slave@Bourassa) "Task" done
-> [ 61.101514] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Jupiter'. Nevermind. Let's keep going!
-> [ 71.101514] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [ 71.241973] (1:master@Tremblay) Send completed
-> [ 71.241973] (4:slave@Ginette) Received "Task"
-> [ 71.241973] (4:slave@Ginette) Communication time : "0.140460"
-> [ 71.241973] (4:slave@Ginette) Processing "Task"
-> [ 71.457846] (1:master@Tremblay) Send completed
-> [ 71.457846] (5:slave@Bourassa) Received "Task"
-> [ 71.457846] (5:slave@Bourassa) Communication time : "0.215872"
-> [ 71.457846] (5:slave@Bourassa) Processing "Task"
-> [ 71.460184] (1:master@Tremblay) Send completed
-> [ 71.460184] (1:master@Tremblay) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [ 71.460184] (2:slave@Tremblay) Received "Task"
-> [ 71.460184] (2:slave@Tremblay) Communication time : "0.002339"
-> [ 71.460184] (2:slave@Tremblay) Processing "Task"
-> [ 71.969894] (2:slave@Tremblay) "Task" done
-> [ 72.273071] (4:slave@Ginette) "Task" done
-> [ 72.460184] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Jupiter'. Nevermind. Let's keep going!
-> [ 72.488944] (5:slave@Bourassa) "Task" done
-> [ 73.460184] (1:master@Tremblay) Mmh. Got timeouted while speaking to 'Fafard'. Nevermind. Let's keep going!
-> [ 73.473416] (4:slave@Ginette) Received "finalize"
-> [ 73.473416] (4:slave@Ginette) I'm done. See you!
-> [ 73.493752] (5:slave@Bourassa) Received "finalize"
-> [ 73.493752] (5:slave@Bourassa) I'm done. See you!
-> [ 73.493908] (0:maestro@) Simulation time 73.4939
-> [ 73.493908] (1:master@Tremblay) Goodbye now!
-> [ 73.493908] (2:slave@Tremblay) Received "finalize"
-> [ 73.493908] (2:slave@Tremblay) I'm done. See you!
-
-p Testing the bypassing of the flexml parser
-
-! output sort 19
-$ $SG_TEST_EXENV ${bindir:=.}/masterslave_bypass --log=no_loc --cfg=cpu/optim:TI "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'cpu/optim' to 'TI'
-> [  0.000000] (0:maestro@) Bypassing the XML parser since surf_parse_open received a NULL pointer. If it is not what you want, go fix your code.
-> [  0.000000] (1:master@host A) Got 1 slave(s) :
-> [  0.000000] (1:master@host A) 	 host B
-> [  0.000000] (1:master@host A) Got 20 task to process :
-> [  0.000000] (1:master@host A) 	"Task_0"
-> [  0.000000] (1:master@host A) 	"Task_1"
-> [  0.000000] (1:master@host A) 	"Task_2"
-> [  0.000000] (1:master@host A) 	"Task_3"
-> [  0.000000] (1:master@host A) 	"Task_4"
-> [  0.000000] (1:master@host A) 	"Task_5"
-> [  0.000000] (1:master@host A) 	"Task_6"
-> [  0.000000] (1:master@host A) 	"Task_7"
-> [  0.000000] (1:master@host A) 	"Task_8"
-> [  0.000000] (1:master@host A) 	"Task_9"
-> [  0.000000] (1:master@host A) 	"Task_10"
-> [  0.000000] (1:master@host A) 	"Task_11"
-> [  0.000000] (1:master@host A) 	"Task_12"
-> [  0.000000] (1:master@host A) 	"Task_13"
-> [  0.000000] (1:master@host A) 	"Task_14"
-> [  0.000000] (1:master@host A) 	"Task_15"
-> [  0.000000] (1:master@host A) 	"Task_16"
-> [  0.000000] (1:master@host A) 	"Task_17"
-> [  0.000000] (1:master@host A) 	"Task_18"
-> [  0.000000] (1:master@host A) 	"Task_19"
-> [  0.000000] (1:master@host A) Sending "Task_0" to "host B"
-> [  0.000000] (2:slave@host B) I'm a slave
-> [  4.080000] (1:master@host A) Send completed
-> [  4.080000] (1:master@host A) Sending "Task_1" to "host B"
-> [  4.080000] (2:slave@host B) Received "Task_0"
-> [  4.080000] (2:slave@host B) Processing "Task_0"
-> [  4.130000] (2:slave@host B) "Task_0" done
-> [  8.210000] (1:master@host A) Send completed
-> [  8.210000] (1:master@host A) Sending "Task_2" to "host B"
-> [  8.210000] (2:slave@host B) Received "Task_1"
-> [  8.210000] (2:slave@host B) Processing "Task_1"
-> [  8.260000] (2:slave@host B) "Task_1" done
-> [ 12.340000] (1:master@host A) Send completed
-> [ 12.340000] (1:master@host A) Sending "Task_3" to "host B"
-> [ 12.340000] (2:slave@host B) Received "Task_2"
-> [ 12.340000] (2:slave@host B) Processing "Task_2"
-> [ 12.390000] (2:slave@host B) "Task_2" done
-> [ 16.470000] (1:master@host A) Send completed
-> [ 16.470000] (1:master@host A) Sending "Task_4" to "host B"
-> [ 16.470000] (2:slave@host B) Received "Task_3"
-> [ 16.470000] (2:slave@host B) Processing "Task_3"
-> [ 16.520000] (2:slave@host B) "Task_3" done
-> [ 20.600000] (1:master@host A) Send completed
-> [ 20.600000] (1:master@host A) Sending "Task_5" to "host B"
-> [ 20.600000] (2:slave@host B) Received "Task_4"
-> [ 20.600000] (2:slave@host B) Processing "Task_4"
-> [ 20.650000] (2:slave@host B) "Task_4" done
-> [ 24.730000] (1:master@host A) Send completed
-> [ 24.730000] (1:master@host A) Sending "Task_6" to "host B"
-> [ 24.730000] (2:slave@host B) Received "Task_5"
-> [ 24.730000] (2:slave@host B) Processing "Task_5"
-> [ 24.780000] (2:slave@host B) "Task_5" done
-> [ 28.860000] (1:master@host A) Send completed
-> [ 28.860000] (1:master@host A) Sending "Task_7" to "host B"
-> [ 28.860000] (2:slave@host B) Received "Task_6"
-> [ 28.860000] (2:slave@host B) Processing "Task_6"
-> [ 28.910000] (2:slave@host B) "Task_6" done
-> [ 32.990000] (1:master@host A) Send completed
-> [ 32.990000] (1:master@host A) Sending "Task_8" to "host B"
-> [ 32.990000] (2:slave@host B) Received "Task_7"
-> [ 32.990000] (2:slave@host B) Processing "Task_7"
-> [ 33.040000] (2:slave@host B) "Task_7" done
-> [ 37.120000] (1:master@host A) Send completed
-> [ 37.120000] (1:master@host A) Sending "Task_9" to "host B"
-> [ 37.120000] (2:slave@host B) Received "Task_8"
-> [ 37.120000] (2:slave@host B) Processing "Task_8"
-> [ 37.170000] (2:slave@host B) "Task_8" done
-> [ 41.250000] (1:master@host A) Send completed
-> [ 41.250000] (1:master@host A) Sending "Task_10" to "host B"
-> [ 41.250000] (2:slave@host B) Received "Task_9"
-> [ 41.250000] (2:slave@host B) Processing "Task_9"
-> [ 41.300000] (2:slave@host B) "Task_9" done
-> [ 45.380000] (1:master@host A) Send completed
-> [ 45.380000] (1:master@host A) Sending "Task_11" to "host B"
-> [ 45.380000] (2:slave@host B) Received "Task_10"
-> [ 45.380000] (2:slave@host B) Processing "Task_10"
-> [ 45.430000] (2:slave@host B) "Task_10" done
-> [ 49.510000] (1:master@host A) Send completed
-> [ 49.510000] (1:master@host A) Sending "Task_12" to "host B"
-> [ 49.510000] (2:slave@host B) Received "Task_11"
-> [ 49.510000] (2:slave@host B) Processing "Task_11"
-> [ 49.560000] (2:slave@host B) "Task_11" done
-> [ 53.640000] (1:master@host A) Send completed
-> [ 53.640000] (1:master@host A) Sending "Task_13" to "host B"
-> [ 53.640000] (2:slave@host B) Received "Task_12"
-> [ 53.640000] (2:slave@host B) Processing "Task_12"
-> [ 53.690000] (2:slave@host B) "Task_12" done
-> [ 57.770000] (1:master@host A) Send completed
-> [ 57.770000] (1:master@host A) Sending "Task_14" to "host B"
-> [ 57.770000] (2:slave@host B) Received "Task_13"
-> [ 57.770000] (2:slave@host B) Processing "Task_13"
-> [ 57.820000] (2:slave@host B) "Task_13" done
-> [ 61.900000] (1:master@host A) Send completed
-> [ 61.900000] (1:master@host A) Sending "Task_15" to "host B"
-> [ 61.900000] (2:slave@host B) Received "Task_14"
-> [ 61.900000] (2:slave@host B) Processing "Task_14"
-> [ 61.950000] (2:slave@host B) "Task_14" done
-> [ 66.030000] (1:master@host A) Send completed
-> [ 66.030000] (1:master@host A) Sending "Task_16" to "host B"
-> [ 66.030000] (2:slave@host B) Received "Task_15"
-> [ 66.030000] (2:slave@host B) Processing "Task_15"
-> [ 66.080000] (2:slave@host B) "Task_15" done
-> [ 70.160000] (1:master@host A) Send completed
-> [ 70.160000] (1:master@host A) Sending "Task_17" to "host B"
-> [ 70.160000] (2:slave@host B) Received "Task_16"
-> [ 70.160000] (2:slave@host B) Processing "Task_16"
-> [ 70.210000] (2:slave@host B) "Task_16" done
-> [ 74.290000] (1:master@host A) Send completed
-> [ 74.290000] (1:master@host A) Sending "Task_18" to "host B"
-> [ 74.290000] (2:slave@host B) Received "Task_17"
-> [ 74.290000] (2:slave@host B) Processing "Task_17"
-> [ 74.340000] (2:slave@host B) "Task_17" done
-> [ 78.420000] (1:master@host A) Send completed
-> [ 78.420000] (1:master@host A) Sending "Task_19" to "host B"
-> [ 78.420000] (2:slave@host B) Received "Task_18"
-> [ 78.420000] (2:slave@host B) Processing "Task_18"
-> [ 78.470000] (2:slave@host B) "Task_18" done
-> [ 82.550000] (1:master@host A) Send completed
-> [ 82.550000] (1:master@host A) All tasks have been dispatched. Let's tell everybody the computation is over.
-> [ 82.550000] (2:slave@host B) Received "Task_19"
-> [ 82.550000] (2:slave@host B) Processing "Task_19"
-> [ 82.600000] (2:slave@host B) "Task_19" done
-> [ 84.680000] (0:maestro@) Simulation time 84.68
-> [ 84.680000] (1:master@host A) Goodbye now!
-> [ 84.680000] (2:slave@host B) Received "finalize"
-> [ 84.680000] (2:slave@host B) I'm done. See you!

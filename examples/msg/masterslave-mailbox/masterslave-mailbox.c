@@ -49,14 +49,12 @@ static int slave(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
-  int id = -1;
   char mailbox[80];
   XBT_ATTRIB_UNUSED int read;
 
-  read = sscanf(argv[1], "%d", &id);
-  xbt_assert(read, "Invalid argument %s\n", argv[1]);
+  long id= xbt_str_parse_int(argv[1], "Invalid argument %s");
 
-  sprintf(mailbox, "slave-%d", id);
+  sprintf(mailbox, "slave-%ld", id);
 
   while (1) {
     res = MSG_task_receive(&(task), mailbox);

@@ -2,7 +2,7 @@
 
 p Tracing multiple categories master/slave application
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace-categories$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:categories.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:categories.cat.plist --cfg=viva/uncategorized:categories.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave_mailbox.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-categories$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:categories.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:categories.cat.plist --cfg=viva/uncategorized:categories.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'categories.trace'

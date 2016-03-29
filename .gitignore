@@ -144,14 +144,10 @@ examples/msg/io-file/io-file
 examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
-examples/msg/irc_isend/peer
-examples/msg/irc_isend/toto.txt
-examples/msg/masterslave/masterslave_arg
 examples/msg/failures/failures
-examples/msg/masterslave/masterslave_forwarder
+examples/msg/masterslave/masterslave
 examples/msg/process-kill/process-kill
-examples/msg/masterslave/masterslave_mailbox
-examples/msg/masterslave/toto.txt
+examples/msg/masterslave-mailbox/masterslave-mailbox
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
 examples/msg/mc/bugged1_stateful

@@ -1,7 +1,7 @@
 #! ./tesh
 
 p Tracing master/slave application
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterslave.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:trace-masterslave.cat.plist --cfg=viva/uncategorized:trace-masterslave.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave_mailbox.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterslave.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:trace-masterslave.cat.plist --cfg=viva/uncategorized:trace-masterslave.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterslave.trace'
@@ -18,7 +18,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=t
 > [4.214821] [msg_test/INFO] msmark
 
 p Tracing master/slave application with xml config
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT ${srcdir:=.}/config_tracing.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave_mailbox.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT ${srcdir:=.}/config_tracing.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
@@ -35,10 +35,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT ${srcdir:=.}/config_traci
 > [4.214821] [msg_test/INFO] msmark
 
 p Not tracing master/slave application
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave_mailbox.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
 
 p Testing tracing by process
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterslave.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:trace-masterslave.cat.plist --cfg=viva/uncategorized:trace-masterslave.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave/deployment_masterslave_mailbox.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterslave.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:trace-masterslave.cat.plist --cfg=viva/uncategorized:trace-masterslave.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
