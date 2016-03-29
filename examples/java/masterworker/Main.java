@@ -4,14 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package masterslave;
+package masterworker;
 
 import java.io.File;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
-public class Masterslave {
+public class Main {
   public static final int TASK_COMP_SIZE = 10000000;
   public static final int TASK_COMM_SIZE = 10000000;
   /* This only contains the launcher. If you do nothing more than than you can run java simgrid.msg.Msg
@@ -23,7 +23,7 @@ public class Masterslave {
     Msg.init(args);
 
     String platf  = args.length > 1 ? args[0] : "examples/java/platform.xml";
-    String deploy =  args.length > 1 ? args[1] : "examples/java/masterslave/masterslaveDeployment.xml";
+    String deploy =  args.length > 1 ? args[1] : "examples/java/masterworker/masterworkerDeployment.xml";
 
     Msg.verb("Platform: "+platf+"; Deployment:"+deploy+"; Current directory: "+new File(".").getAbsolutePath());
 

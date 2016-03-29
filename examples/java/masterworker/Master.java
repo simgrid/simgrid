@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package masterslave;
+package masterworker;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
@@ -27,21 +27,21 @@ public class Master extends Process {
     double taskComputeSize = Double.valueOf(args[1]).doubleValue();
     double taskCommunicateSize = Double.valueOf(args[2]).doubleValue();
 
-    int slavesCount = Integer.valueOf(args[3]).intValue();
+    int workersCount = Integer.valueOf(args[3]).intValue();
 
-    Msg.info("Hello! Got "+  slavesCount + " slaves and "+tasksCount+" tasks to process");
+    Msg.info("Hello! Got "+  workersCount + " workers and "+tasksCount+" tasks to process");
 
     for (int i = 0; i < tasksCount; i++) {
       Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize); 
-      //Msg.info("Sending \"" + task.getName()+ "\" to \"slave_" + i % slavesCount + "\"");
-      task.send("slave_"+(i%slavesCount));
+      //Msg.info("Sending \"" + task.getName()+ "\" to \"worker_" + i % workersCount + "\"");
+      task.send("worker_"+(i%workersCount));
     }
 
     Msg.info("All tasks have been dispatched. Let's tell everybody the computation is over.");
 
-    for (int i = 0; i < slavesCount; i++) {
-      FinalizeTask task = new FinalizeTask();
-      task.send("slave_"+(i%slavesCount));
+    for (int i = 0; i < workersCount; i++) {
+      Task task = new Task("finalize", 0, 0);
+      task.send("worker_"+(i%workersCount));
     }
 
     Msg.info("Goodbye now!");

@@ -1,0 +1,18 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+  <process host="Jacquelin" function="masterworker.Master">
+     <argument value="5"/>     <!-- Amount of tasks to dispatch -->
+     <argument value="50000"/> <!-- Computation size of each task -->
+     <argument value="10"/>    <!-- Communication size of each one -->
+     <argument value="7"/>     <!-- Amount of workers waiting for orders -->
+  </process>
+
+  <process host="iRMX" function="masterworker.Worker">      <argument value="0"/>  <!-- Input mailbox --> </process>
+  <process host="Bousquet" function="masterworker.Worker">  <argument value="1"/>  <!-- Input mailbox --> </process>
+  <process host="Soucy" function="masterworker.Worker">     <argument value="2"/>  <!-- Input mailbox --> </process>
+  <process host="Kuenning" function="masterworker.Worker">  <argument value="3"/>  <!-- Input mailbox --> </process>
+  <process host="Browne" function="masterworker.Worker">    <argument value="4"/>  <!-- Input mailbox --> </process>
+  <process host="Stephen" function="masterworker.Worker">   <argument value="5"/>  <!-- Input mailbox --> </process>
+  <process host="Robert" function="masterworker.Worker">    <argument value="6"/>  <!-- Input mailbox --> </process>
+</platform>

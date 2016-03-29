@@ -982,7 +982,7 @@ examples/java/io/java_io_compiled
 examples/java/kademlia/java_kademlia_compiled
 examples/java/master_slave_bypass/java_master_slave_bypass_compiled
 examples/java/master_slave_kill/java_master_slave_kill_compiled
-examples/java/masterslave/java_masterslave_compiled
+examples/java/masterworker/java_masterworker_compiled
 examples/java/migration/java_migration_compiled
 examples/java/mutualExclusion/java_mutualExclusion_compiled
 examples/java/pingPong/java_pingPong_compiled

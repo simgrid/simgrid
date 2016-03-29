@@ -1,0 +1,23 @@
+#! tesh
+
+! output sort 19
+
+$ java -classpath ${classpath:=.} masterworker/Main ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/masterworker/masterworkerDeployment.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (1:masterworker.Master@Jacquelin) Hello! Got 7 workers and 5 tasks to process
+> [  3.043675] (2:masterworker.Worker@iRMX) Received "Task_0". Processing it.
+> [  4.058373] (3:masterworker.Worker@Bousquet) Received "Task_1". Processing it.
+> [  5.502067] (4:masterworker.Worker@Soucy) Received "Task_2". Processing it.
+> [  6.359383] (5:masterworker.Worker@Kuenning) Received "Task_3". Processing it.
+> [  7.332717] (1:masterworker.Master@Jacquelin) All tasks have been dispatched. Let's tell everybody the computation is over.
+> [  7.332717] (6:masterworker.Worker@Browne) Received "Task_4". Processing it.
+> [ 10.376375] (2:masterworker.Worker@iRMX) Received Finalize. I'm done. See you!
+> [ 11.391053] (3:masterworker.Worker@Bousquet) Received Finalize. I'm done. See you!
+> [ 12.834740] (4:masterworker.Worker@Soucy) Received Finalize. I'm done. See you!
+> [ 13.692048] (5:masterworker.Worker@Kuenning) Received Finalize. I'm done. See you!
+> [ 14.665378] (6:masterworker.Worker@Browne) Received Finalize. I'm done. See you!
+> [ 16.536717] (7:masterworker.Worker@Stephen) Received Finalize. I'm done. See you!
+> [ 18.348671] (0:maestro@) MSG_main finished; Cleaning up the simulation...
+> [ 18.348671] (1:masterworker.Master@Jacquelin) Goodbye now!
+> [ 18.348671] (8:masterworker.Worker@Robert) Received Finalize. I'm done. See you!
+
