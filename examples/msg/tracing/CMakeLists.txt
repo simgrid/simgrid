@@ -1,4 +1,4 @@
-foreach (example ms procmig)
+foreach (example ms)
   add_executable       (${example} ${example}.c)
   target_link_libraries(${example} simgrid)
   set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${example}.c)
