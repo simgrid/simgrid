@@ -33,7 +33,6 @@ set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/goal/goal_test.c  
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/Montage_25.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/daxload/simple_dax_with_cycle.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/daxload/smalldax.xml                         PARENT_SCOPE)
-set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/platform_script.lua                          PARENT_SCOPE)
 set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_with_cycle.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ptg-dotload/ptg.dot
