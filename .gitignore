@@ -972,17 +972,17 @@ tools/tesh/tesh
 ## touched files to track the dependencies of java examples
 examples/java/async/java_async_compiled
 examples/java/bittorrent/java_bittorrent_compiled
-examples/java/chord/java_chord_compiled
+examples/java/dht/chord/java_dht_chord_compiled
+examples/java/dht/kademlia/java_dht_kademlia_compiled
 examples/java/cloud/java_cloud_compiled
 examples/java/cloud/energy/java_cloud_energy_compiled
 examples/java/cloud/migration/java_cloud_migration_compiled
 examples/java/commTime/java_commTime_compiled
 examples/java/energy/java_energy_compiled
 examples/java/io/java_io_compiled
-examples/java/kademlia/java_kademlia_compiled
 examples/java/process/kill/java_process_kill_compiled
 examples/java/process/migration/java_process_migration_compiled
-examples/java/process_suspend/java_process_suspend_compiled
+examples/java/process/suspend/java_process_suspend_compiled
 examples/java/masterworker/java_masterworker_compiled
 examples/java/mutualExclusion/java_mutualExclusion_compiled
 examples/java/pingPong/java_pingPong_compiled

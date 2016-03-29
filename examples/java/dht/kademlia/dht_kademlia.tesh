@@ -1,0 +1,16 @@
+#! tesh
+
+! output sort 19
+
+$ java -classpath ${classpath:=.} dht/kademlia/Main ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/dht/kademlia/kademlia.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [900.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Boivin:dht.kademlia.Node:(2) 0.000000] [jmsg/INFO] Hi, I'm going to join the network with the id 1!
+> [Boivin:dht.kademlia.Node:(2) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
+> [Jacquelin:dht.kademlia.Node:(1) 0.000000] [jmsg/INFO] Hi, I'm going to create the network with the id 0!
+> [Jacquelin:dht.kademlia.Node:(1) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
+> [Jean_Yves:dht.kademlia.Node:(3) 0.000000] [jmsg/INFO] Hi, I'm going to join the network with the id 2!
+> [Jean_Yves:dht.kademlia.Node:(3) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
+> [TeX:dht.kademlia.Node:(4) 0.000000] [jmsg/INFO] Hi, I'm going to join the network with the id 4!
+> [TeX:dht.kademlia.Node:(4) 900.000000] [jmsg/INFO] 8/8 FIND_NODE have succedded.
+

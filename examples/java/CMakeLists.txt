@@ -1,3 +1,24 @@
+set(dht_chord_sources         ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/Main.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/ChordTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/Common.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/FindSuccessorAnswerTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/FindSuccessorTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/GetPredecessorAnswerTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/GetPredecessorTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/Node.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/NotifyTask.java)
+set(dht_kademlia_sources      ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/Main.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/Answer.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/Bucket.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/Common.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/Contact.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/FindNodeAnswerTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/FindNodeTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/KademliaTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/Node.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/PingAnswerTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/PingTask.java
+                              ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/RoutingTable.java)
 set(process_kill_sources      ${CMAKE_CURRENT_SOURCE_DIR}/process/kill/Main.java
                               ${CMAKE_CURRENT_SOURCE_DIR}/process/kill/Killer.java
                               ${CMAKE_CURRENT_SOURCE_DIR}/process/kill/Victim.java)
@@ -8,7 +29,7 @@ set(process_suspend_sources   ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend/Main.j
                               ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend/DreamMaster.java
                               ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend/LazyGuy.java)
 
-foreach (example process_kill process_migration process_suspend)
+foreach (example dht_chord dht_kademlia process_kill process_migration process_suspend)
   string (REPLACE "_" "/" example_dir ${example})
   if(enable_java)
 
@@ -26,11 +47,13 @@ foreach (example process_kill process_migration process_suspend)
   set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/${example_dir}/${example}.tesh)
 endforeach()
 
-set(examples_src  ${examples_src}  PARENT_SCOPE)
-set(tesh_files    ${tesh_files}    PARENT_SCOPE)
+set(examples_src  ${examples_src}                                                          PARENT_SCOPE)
+set(tesh_files    ${tesh_files}                                                            PARENT_SCOPE)
+set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/chord.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/kademlia.xml   PARENT_SCOPE)
 
 if(enable_java)
-  foreach (example process_kill process_migration process_suspend)
+  foreach (example dht_chord dht_kademlia process_kill process_migration process_suspend)
     string (REPLACE "_" "/" example_dir ${example})
     ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()

@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package kademlia;
+package dht.kademlia;
 
 /**
  * @brief Find node tasks sent by a node to another "Find Node" task sent by a node to another. Ask him for its closest

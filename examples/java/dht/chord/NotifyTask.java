@@ -4,12 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package chord;
+package dht.chord;
 
-public class GetPredecessorAnswerTask extends ChordTask {
-  public int answerId;
-  public GetPredecessorAnswerTask(String issuerHostname, String answerTo, int answerId) {
-    super(issuerHostname,answerTo);
-    this.answerId = answerId;
+public class NotifyTask extends ChordTask {
+  public int requestId;
+  public NotifyTask(String issuerHostname, String answerTo, int requestId) {
+    super(issuerHostname, answerTo);
+    this.requestId = requestId;
   }
 }

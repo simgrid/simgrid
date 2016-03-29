@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package kademlia;
+package dht.kademlia;
 
 public class PingTask extends KademliaTask {
   public PingTask(int senderId) {

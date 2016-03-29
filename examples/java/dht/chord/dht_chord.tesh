@@ -1,0 +1,14 @@
+#! tesh
+
+! output sort 19
+
+$ java -classpath ${classpath:=.} dht/chord/Main ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/dht/chord/chord.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [652.540924] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Boivin:dht.chord.Node:(7) 0.000000] [jmsg/INFO] Joining the ring with id 8 knowing node 1
+> [Gatien:dht.chord.Node:(1) 0.000000] [jmsg/INFO] Joining the ring with id 48 knowing node 1
+> [Geoff:dht.chord.Node:(4) 0.000000] [jmsg/INFO] Joining the ring with id 32 knowing node 1
+> [Jean_Yves:dht.chord.Node:(6) 0.000000] [jmsg/INFO] Joining the ring with id 14 knowing node 1
+> [McGee:dht.chord.Node:(2) 0.000000] [jmsg/INFO] Joining the ring with id 42 knowing node 1
+> [TeX:dht.chord.Node:(5) 0.000000] [jmsg/INFO] Joining the ring with id 21 knowing node 1
+> [iRMX:dht.chord.Node:(3) 0.000000] [jmsg/INFO] Joining the ring with id 38 knowing node 1

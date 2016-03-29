@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package chord;
+package dht.chord;
 
 public class Common {
   public final static int COMM_SIZE = 10;

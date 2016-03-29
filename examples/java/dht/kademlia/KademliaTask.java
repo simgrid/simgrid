@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package kademlia;
-import kademlia.Common;
+package dht.kademlia;
+import dht.kademlia.Common;
 
 import org.simgrid.msg.Task;
 

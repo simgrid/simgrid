@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package chord;
+package dht.chord;
 
-import chord.Common;
+import dht.chord.Common;
 import org.simgrid.msg.Task;
 
 public class ChordTask extends Task {
