@@ -950,7 +950,6 @@ set(CMAKEFILES_TXT
     examples/msg/dht-kademlia/CMakeLists.txt
     examples/msg/masterslave/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
-    examples/msg/tracing/CMakeLists.txt
   examples/s4u/CMakeLists.txt
   examples/simdag/CMakeLists.txt
   examples/smpi/CMakeLists.txt
