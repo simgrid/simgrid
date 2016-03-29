@@ -930,7 +930,6 @@ set(CMAKEFILES_TXT
   examples/java/cloud/energy/CMakeLists.txt
   examples/java/cloud/migration/CMakeLists.txt
   examples/java/commTime/CMakeLists.txt
-  examples/java/energy/CMakeLists.txt
   examples/java/io/CMakeLists.txt
   examples/java/masterworker/CMakeLists.txt
   examples/java/mutualExclusion/CMakeLists.txt

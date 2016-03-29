@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package energy;
+package energy.consumption;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Comm;
@@ -12,16 +12,18 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
-import org.simgrid.msg.TimeoutException;
+import org.simgrid.msg.HostNotFoundException;
 
 public class EnergyConsumer extends Process {
-  public EnergyConsumer(Host host, String name, String[] args) {
-    super(host,name,args);
+  public EnergyConsumer(String hostname, String name) throws HostNotFoundException{
+    super(hostname,name);
   }
 
-  @Override
   public void main(String[] args) throws MsgException {
-     Msg.info("Currently consumed energy: "+getHost().getConsumedEnergy());
+     Msg.info("Energetic profile: " + getHost().getProperty("watt_per_state"));
+     Msg.info("Initial peak speed= " + getHost().getSpeed() + " flop/s; Energy dissipated = "
+              + getHost().getConsumedEnergy() + " J");
+
      this.waitFor(10);
      Msg.info("Currently consumed energy after sleeping 10 sec: "+getHost().getConsumedEnergy());
      new Task(null, 1E9, 0).execute();

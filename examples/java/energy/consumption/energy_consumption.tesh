@@ -2,12 +2,14 @@
 
 ! timeout 15
 
-$ java -classpath ${classpath:=.} energy/Energy ${srcdir:=.}/../platforms/energy_platform.xml
+$ java -classpath ${classpath:=.} energy/consumption/Main ${srcdir:=.}/../platforms/energy_platform.xml
 > [0.000000] [jmsg/INFO] Using regular java threads.
-> [MyHost1:energyConsumer:(1) 0.000000] [jmsg/INFO] Currently consumed energy: 0.0
+> [MyHost1:energyConsumer:(1) 0.000000] [jmsg/INFO] Energetic profile: 100.0:200.0, 93.0:170.0, 90.0:150.0
+> [MyHost1:energyConsumer:(1) 0.000000] [jmsg/INFO] Initial peak speed= 1.0E8 flop/s; Energy dissipated = 0.0 J
 > [MyHost1:energyConsumer:(1) 10.000000] [jmsg/INFO] Currently consumed energy after sleeping 10 sec: 1000.0
 > [MyHost1:energyConsumer:(1) 20.000000] [jmsg/INFO] Currently consumed energy after executing 1E9 flops: 3000.0
 > [20.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [20.000000] [jmsg/INFO] Total simulation time: 20.0
 > [20.000000] [surf_energy/INFO] Total energy of host MyHost1: 3000.000000 Joules
 > [20.000000] [surf_energy/INFO] Total energy of host MyHost2: 2000.000000 Joules
 > [20.000000] [surf_energy/INFO] Total energy of host MyHost3: 2000.000000 Joules

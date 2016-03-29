@@ -4,13 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package energy;
+package energy.consumption;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.MsgException;
 
-public class Energy {
+public class Main {
   public static final double task_comp_size = 10;
   public static final double task_comm_size = 10;
   public static final int hostNB = 2 ; 
@@ -26,14 +26,10 @@ public class Energy {
     }
     /* Construct the platform */
     Msg.createEnvironment(args[0]);
-    Host[] hosts = Host.all();
-    if (hosts.length < 1) {
-      Msg.info("I need at least one host in the platform file, but " + args[0] + " has no host at all");
-      System.exit(42);
-    }
     /* Instanciate a process */
-    new EnergyConsumer(hosts[0],"energyConsumer",null).start();
+    new EnergyConsumer("MyHost1","energyConsumer").start();
     /* Execute the simulation */
     Msg.run();
+    Msg.info("Total simulation time: "+  Msg.getClock());
   }
 }

@@ -978,7 +978,7 @@ examples/java/cloud/java_cloud_compiled
 examples/java/cloud/energy/java_cloud_energy_compiled
 examples/java/cloud/migration/java_cloud_migration_compiled
 examples/java/commTime/java_commTime_compiled
-examples/java/energy/java_energy_compiled
+examples/java/energy/consumption/java_energy_consumption_compiled
 examples/java/io/java_io_compiled
 examples/java/process/kill/java_process_kill_compiled
 examples/java/process/migration/java_process_migration_compiled
