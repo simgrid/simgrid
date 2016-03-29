@@ -32,18 +32,6 @@ namespace mc {
 
 std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
 
-static int is_exploration_stack_state(simgrid::mc::VisitedState* state){
-  xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
-  while (item) {
-    if (((simgrid::mc::State*)xbt_fifo_get_item_content(item))->num == state->num){
-      ((simgrid::mc::State*)xbt_fifo_get_item_content(item))->in_visited_states = 0;
-      return 1;
-    }
-    item = xbt_fifo_get_next_item(item);
-  }
-  return 0;
-}
-
 /**
  * \brief Save the current state
  * \return Snapshot of the current state.
