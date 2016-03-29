@@ -679,7 +679,7 @@ static simgrid::mc::Type MC_dwarf_die_to_type(
     break;
   }
 
-  return std::move(type);
+  return type;
 }
 
 static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
@@ -804,7 +804,7 @@ static std::unique_ptr<simgrid::mc::Variable> MC_die_to_variable(
     variable->name =
       "@anonymous#" + std::to_string(mc_anonymous_variable_index++);
 
-  return std::move(variable);
+  return variable;
 }
 
 static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
@@ -1081,7 +1081,7 @@ std::string to_hex(const char* data, std::size_t count)
     for (int j = 0; j < 2; ++j)
       res[2 * i + j] = hex_byte[j];
   }
-  return std::move(res);
+  return res;
 }
 
 /** Binary data to hexadecimal */
@@ -1113,7 +1113,7 @@ std::string find_by_build_id(std::vector<char> id)
       + to_hex(id.data() + 1, id.size() - 1) + ".debug";
     XBT_DEBUG("Checking debug file: %s", filename.c_str());
     if (access(filename.c_str(), F_OK) == 0)
-      return std::move(filename);
+      return filename;
   }
   return std::string();
 }
@@ -1324,7 +1324,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(
   for (auto& entry : result.get()->subprograms)
     mc_post_process_scope(result.get(), &entry.second);
   MC_make_functions_index(result.get());
-  return std::move(result);
+  return result;
 }
 
 /*************************************************************************/

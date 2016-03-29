@@ -101,7 +101,7 @@ RegionSnapshot dense_region(
 
   XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
             to_cstr(region_type), region.flat_data().get(), permanent_addr, size);
-  return std::move(region);
+  return region;
 }
 
 /** @brief Take a snapshot of a given region
@@ -155,7 +155,7 @@ RegionSnapshot sparse_region(RegionType region_type,
   simgrid::mc::RegionSnapshot region(
     region_type, start_addr, permanent_addr, size);
   region.page_data(std::move(page_data));
-  return std::move(region);
+  return region;
 }
   
 }
