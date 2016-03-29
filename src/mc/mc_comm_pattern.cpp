@@ -70,7 +70,7 @@ static void MC_patterns_copy(xbt_dynar_t dest, xbt_dynar_t source)
   }
 }
 
-void MC_restore_communications_pattern(mc_state_t state)
+void MC_restore_communications_pattern(simgrid::mc::State* state)
 {
   mc_list_comm_pattern_t list_process_comm;
   unsigned int cursor;
@@ -85,7 +85,7 @@ void MC_restore_communications_pattern(mc_state_t state)
     );
 }
 
-void MC_state_copy_incomplete_communications_pattern(mc_state_t state)
+void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state)
 {
   state->incomplete_comm_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
 
@@ -96,7 +96,7 @@ void MC_state_copy_incomplete_communications_pattern(mc_state_t state)
   }
 }
 
-void MC_state_copy_index_communications_pattern(mc_state_t state)
+void MC_state_copy_index_communications_pattern(simgrid::mc::State* state)
 {
   state->index_comm = xbt_dynar_new(sizeof(unsigned int), nullptr);
   mc_list_comm_pattern_t list_process_comm;

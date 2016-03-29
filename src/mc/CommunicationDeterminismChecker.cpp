@@ -133,35 +133,37 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
 
     if (diff != NONE_DIFF) {
       if (comm->type == SIMIX_COMM_SEND){
-        initial_global_state->send_deterministic = 0;
-        if(initial_global_state->send_diff != nullptr)
-          xbt_free(initial_global_state->send_diff);
-        initial_global_state->send_diff = print_determinism_result(diff, process, comm, list->index_comm + 1);
+        simgrid::mc::initial_global_state->send_deterministic = 0;
+        if(simgrid::mc::initial_global_state->send_diff != nullptr)
+          xbt_free(simgrid::mc::initial_global_state->send_diff);
+        simgrid::mc::initial_global_state->send_diff = print_determinism_result(diff, process, comm, list->index_comm + 1);
       }else{
-        initial_global_state->recv_deterministic = 0;
-        if(initial_global_state->recv_diff != nullptr)
-          xbt_free(initial_global_state->recv_diff);
-        initial_global_state->recv_diff = print_determinism_result(diff, process, comm, list->index_comm + 1);
+        simgrid::mc::initial_global_state->recv_deterministic = 0;
+        if(simgrid::mc::initial_global_state->recv_diff != nullptr)
+          xbt_free(simgrid::mc::initial_global_state->recv_diff);
+        simgrid::mc::initial_global_state->recv_diff = print_determinism_result(diff, process, comm, list->index_comm + 1);
       }
-      if(_sg_mc_send_determinism && !initial_global_state->send_deterministic){
+      if(_sg_mc_send_determinism && !simgrid::mc::initial_global_state->send_deterministic){
         XBT_INFO("*********************************************************");
         XBT_INFO("***** Non-send-deterministic communications pattern *****");
         XBT_INFO("*********************************************************");
-        XBT_INFO("%s", initial_global_state->send_diff);
-        xbt_free(initial_global_state->send_diff);
-        initial_global_state->send_diff = nullptr;
+        XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
+        xbt_free(simgrid::mc::initial_global_state->send_diff);
+        simgrid::mc::initial_global_state->send_diff = nullptr;
         MC_print_statistics(mc_stats);
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
-      }else if(_sg_mc_comms_determinism && (!initial_global_state->send_deterministic && !initial_global_state->recv_deterministic)) {
+      }else if(_sg_mc_comms_determinism
+          && (!simgrid::mc::initial_global_state->send_deterministic
+            && !simgrid::mc::initial_global_state->recv_deterministic)) {
         XBT_INFO("****************************************************");
         XBT_INFO("***** Non-deterministic communications pattern *****");
         XBT_INFO("****************************************************");
-        XBT_INFO("%s", initial_global_state->send_diff);
-        XBT_INFO("%s", initial_global_state->recv_diff);
-        xbt_free(initial_global_state->send_diff);
-        initial_global_state->send_diff = nullptr;
-        xbt_free(initial_global_state->recv_diff);
-        initial_global_state->recv_diff = nullptr;
+        XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
+        XBT_INFO("%s", simgrid::mc::initial_global_state->recv_diff);
+        xbt_free(simgrid::mc::initial_global_state->send_diff);
+        simgrid::mc::initial_global_state->send_diff = nullptr;
+        xbt_free(simgrid::mc::initial_global_state->recv_diff);
+        simgrid::mc::initial_global_state->recv_diff = nullptr;
         MC_print_statistics(mc_stats);
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }
@@ -214,7 +216,7 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
         pattern->data, pattern->data_size, remote(synchro.comm.src_buff));
     }
     if(mpi_request.detached){
-      if (!initial_global_state->initial_communications_pattern_done) {
+      if (!simgrid::mc::initial_global_state->initial_communications_pattern_done) {
         /* Store comm pattern */
         xbt_dynar_push(
           xbt_dynar_get_as(
@@ -282,7 +284,7 @@ void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigne
   mc_list_comm_pattern_t pattern = xbt_dynar_get_as(
     initial_communications_pattern, issuer, mc_list_comm_pattern_t);
 
-  if (!initial_global_state->initial_communications_pattern_done)
+  if (!simgrid::mc::initial_global_state->initial_communications_pattern_done)
     /* Store comm pattern */
     xbt_dynar_push(pattern->list, &comm_pattern);
   else {
@@ -309,9 +311,49 @@ CommunicationDeterminismChecker::~CommunicationDeterminismChecker()
 
 }
 
+// TODO, deduplicate with SafetyChecker
+RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
+{
+  RecordTrace res;
+
+  xbt_fifo_item_t start = xbt_fifo_get_last_item(mc_stack);
+  for (xbt_fifo_item_t item = start; item; item = xbt_fifo_get_prev_item(item)) {
+
+    // Find (pid, value):
+    simgrid::mc::State* state = (simgrid::mc::State*) xbt_fifo_get_item_content(item);
+    int value = 0;
+    smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
+    const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
+    const int pid = issuer->pid;
+
+    res.push_back(RecordTraceElement(pid, value));
+  }
+
+  return std::move(res);
+}
+
+// TODO, deduplicate with SafetyChecker
+std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // override
+{
+  std::vector<std::string> res;
+  for (xbt_fifo_item_t item = xbt_fifo_get_last_item(mc_stack);
+       item; item = xbt_fifo_get_prev_item(item)) {
+    simgrid::mc::State* state = (simgrid::mc::State*)xbt_fifo_get_item_content(item);
+    int value;
+    smx_simcall_t req = MC_state_get_executed_request(state, &value);
+    if (req) {
+      char* req_str = simgrid::mc::request_to_string(
+        req, value, simgrid::mc::RequestType::executed);
+      res.push_back(req_str);
+      xbt_free(req_str);
+    }
+  }
+  return std::move(res);
+}
+
 void CommunicationDeterminismChecker::prepare()
 {
-  mc_state_t initial_state = nullptr;
+  simgrid::mc::State* initial_state = nullptr;
   int i;
   const int maxpid = MC_smx_get_maxpid();
 
@@ -369,12 +411,13 @@ int CommunicationDeterminismChecker::main(void)
   int value;
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
   smx_simcall_t req = nullptr;
-  mc_state_t state = nullptr, next_state = NULL;
+  simgrid::mc::State* state = nullptr;
+  simgrid::mc::State* next_state = nullptr;
 
   while (xbt_fifo_size(mc_stack) > 0) {
 
     /* Get current state */
-    state = (mc_state_t) xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    state = (simgrid::mc::State*) xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG("Exploration depth = %d (state = %d, interleaved processes = %d)",
@@ -468,7 +511,7 @@ int CommunicationDeterminismChecker::main(void)
         return SIMGRID_MC_EXIT_DEADLOCK;
       }
 
-      while ((state = (mc_state_t) xbt_fifo_shift(mc_stack)) != nullptr)
+      while ((state = (simgrid::mc::State*) xbt_fifo_shift(mc_stack)) != nullptr)
         if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack) < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
@@ -505,7 +548,7 @@ int CommunicationDeterminismChecker::run()
 
   this->prepare();
 
-  initial_global_state = xbt_new0(s_mc_global_t, 1);
+  initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
   initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
   initial_global_state->initial_communications_pattern_done = 0;
   initial_global_state->recv_deterministic = 1;
@@ -513,7 +556,9 @@ int CommunicationDeterminismChecker::run()
   initial_global_state->recv_diff = nullptr;
   initial_global_state->send_diff = nullptr;
 
-  return this->main();
+  int res = this->main();
+  initial_global_state = nullptr;
+  return res;
 }
 
 }

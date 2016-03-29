@@ -35,8 +35,8 @@ std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
 static int is_exploration_stack_state(simgrid::mc::VisitedState* state){
   xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
   while (item) {
-    if (((mc_state_t)xbt_fifo_get_item_content(item))->num == state->num){
-      ((mc_state_t)xbt_fifo_get_item_content(item))->in_visited_states = 0;
+    if (((simgrid::mc::State*)xbt_fifo_get_item_content(item))->num == state->num){
+      ((simgrid::mc::State*)xbt_fifo_get_item_content(item))->in_visited_states = 0;
       return 1;
     }
     item = xbt_fifo_get_next_item(item);
@@ -65,55 +65,6 @@ VisitedState::VisitedState()
 
 VisitedState::~VisitedState()
 {
-  if(!is_exploration_stack_state(this))
-    delete this->system_state;
-}
-
-VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, mc_state_t graph_state)
-{
-  simgrid::mc::Process* process = &(mc_model_checker->process());
-
-  this->graph_state = graph_state;
-  if(this->graph_state->system_state == nullptr)
-    this->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
-  this->heap_bytes_used = mmalloc_get_bytes_used_remote(
-    process->get_heap()->heaplimit,
-    process->get_malloc_info());
-
-  this->nb_processes =
-    mc_model_checker->process().simix_processes().size();
-
-  this->automaton_state = automaton_state;
-  this->num = pair_num;
-  this->other_num = -1;
-  this->acceptance_removed = 0;
-  this->visited_removed = 0;
-  this->acceptance_pair = 0;
-  this->atomic_propositions = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(
-    xbt_dynar_new(sizeof(int), nullptr));
-
-  unsigned int cursor = 0;
-  int value;
-  xbt_dynar_foreach(atomic_propositions, cursor, value)
-      xbt_dynar_push_as(this->atomic_propositions.get(), int, value);
-}
-
-static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
-  xbt_fifo_item_t item = xbt_fifo_get_first_item(mc_stack);
-  while (item) {
-    if (((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->num == pair->num){
-      ((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->visited_pair_removed = 1;
-      return 1;
-    }
-    item = xbt_fifo_get_next_item(item);
-  }
-  return 0;
-}
-
-VisitedPair::~VisitedPair()
-{
-  if( !is_exploration_stack_pair(this))
-    MC_state_delete(this->graph_state, 1);
 }
 
 static void prune_visited_states()
@@ -131,10 +82,19 @@ static void prune_visited_states()
   }
 }
 
+static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::VisitedState* state2)
+{
+  simgrid::mc::Snapshot* s1 = state1->system_state.get();
+  simgrid::mc::Snapshot* s2 = state2->system_state.get();
+  int num1 = state1->num;
+  int num2 = state2->num;
+  return snapshot_compare(num1, s1, num2, s2);
+}
+
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
-std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(mc_state_t graph_state, bool compare_snpashots)
+std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* graph_state, bool compare_snpashots)
 {
 
 

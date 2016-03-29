@@ -18,6 +18,8 @@ public:
   CommunicationDeterminismChecker(Session& session);
   ~CommunicationDeterminismChecker();
   int run() override;
+  RecordTrace getRecordTrace() override;
+  std::vector<std::string> getTextualTrace() override;
 private:
   void prepare();
   int main();

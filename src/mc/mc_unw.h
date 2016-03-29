@@ -87,6 +87,10 @@ public:
   static unw_addr_space_t createUnwindAddressSpace();
 };
 
+void MC_dump_stack_unw(FILE* file, unw_cursor_t cursor);
+void dumpStack(FILE* file, unw_cursor_t cursor);
+void dumpStack(FILE* file, pid_t pid);
+
 }
 }
 

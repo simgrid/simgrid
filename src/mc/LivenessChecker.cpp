@@ -36,11 +36,59 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 /********* Global variables *********/
 
 xbt_dynar_t acceptance_pairs;
+static xbt_fifo_t liveness_stack;
 
 /********* Static functions *********/
 
 namespace simgrid {
 namespace mc {
+
+VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, simgrid::mc::State* graph_state)
+{
+  simgrid::mc::Process* process = &(mc_model_checker->process());
+
+  this->graph_state = graph_state;
+  if(this->graph_state->system_state == nullptr)
+    this->graph_state->system_state = simgrid::mc::take_snapshot(pair_num);
+  this->heap_bytes_used = mmalloc_get_bytes_used_remote(
+    process->get_heap()->heaplimit,
+    process->get_malloc_info());
+
+  this->nb_processes =
+    mc_model_checker->process().simix_processes().size();
+
+  this->automaton_state = automaton_state;
+  this->num = pair_num;
+  this->other_num = -1;
+  this->acceptance_removed = 0;
+  this->visited_removed = 0;
+  this->acceptance_pair = 0;
+  this->atomic_propositions = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(
+    xbt_dynar_new(sizeof(int), nullptr));
+
+  unsigned int cursor = 0;
+  int value;
+  xbt_dynar_foreach(atomic_propositions, cursor, value)
+      xbt_dynar_push_as(this->atomic_propositions.get(), int, value);
+}
+
+static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
+  xbt_fifo_item_t item = xbt_fifo_get_first_item(liveness_stack);
+  while (item) {
+    if (((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->num == pair->num){
+      ((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->visited_pair_removed = 1;
+      return 1;
+    }
+    item = xbt_fifo_get_next_item(item);
+  }
+  return 0;
+}
+
+VisitedPair::~VisitedPair()
+{
+  if( !is_exploration_stack_pair(this))
+    MC_state_delete(this->graph_state, 1);
+}
 
 static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
                                        xbt_dynar_t atomic_propositions_values)
@@ -88,33 +136,6 @@ Pair::~Pair() {
     MC_state_delete(this->graph_state, 1);
 }
 
-void LivenessChecker::showStack(xbt_fifo_t stack)
-{
-  int value;
-  simgrid::mc::Pair* pair;
-  xbt_fifo_item_t item;
-  smx_simcall_t req;
-  char *req_str = nullptr;
-
-  for (item = xbt_fifo_get_last_item(stack);
-       item; item = xbt_fifo_get_prev_item(item)) {
-    pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
-    req = MC_state_get_executed_request(pair->graph_state, &value);
-    if (req && req->call != SIMCALL_NONE) {
-      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
-      XBT_INFO("%s", req_str);
-      xbt_free(req_str);
-    }
-  }
-}
-
-void LivenessChecker::dumpStack(xbt_fifo_t stack)
-{
-  simgrid::mc::Pair* pair;
-  while ((pair = (simgrid::mc::Pair*) xbt_fifo_pop(stack)) != nullptr)
-    delete pair;
-}
-
 simgrid::xbt::unique_ptr<s_xbt_dynar_t> LivenessChecker::getPropositionValues()
 {
   unsigned int cursor = 0;
@@ -129,8 +150,8 @@ simgrid::xbt::unique_ptr<s_xbt_dynar_t> LivenessChecker::getPropositionValues()
 
 int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2)
 {
-  simgrid::mc::Snapshot* s1 = state1->graph_state->system_state;
-  simgrid::mc::Snapshot* s2 = state2->graph_state->system_state;
+  simgrid::mc::Snapshot* s1 = state1->graph_state->system_state.get();
+  simgrid::mc::Snapshot* s2 = state2->graph_state->system_state.get();
   int num1 = state1->num;
   int num2 = state2->num;
   return simgrid::mc::snapshot_compare(num1, s1, num2, s2);
@@ -157,7 +178,7 @@ simgrid::mc::VisitedPair* LivenessChecker::insertAcceptancePair(simgrid::mc::Pai
             new_pair->atomic_propositions.get()) == 0) {
           if (this->compare(pair_test, new_pair.get()) == 0) {
             XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
-            xbt_fifo_shift(mc_stack);
+            xbt_fifo_shift(liveness_stack);
             if (dot_output != nullptr)
               fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
             return nullptr;
@@ -226,7 +247,7 @@ void LivenessChecker::prepare(void)
       initial_pair->requests = MC_state_interleave_size(initial_pair->graph_state);
       initial_pair->search_cycle = 0;
 
-      xbt_fifo_unshift(mc_stack, initial_pair);
+      xbt_fifo_unshift(liveness_stack, initial_pair);
     }
   }
 }
@@ -236,7 +257,7 @@ void LivenessChecker::replay(xbt_fifo_t stack)
 {
   xbt_fifo_item_t item;
   simgrid::mc::Pair* pair = nullptr;
-  mc_state_t state = nullptr;
+  simgrid::mc::State* state = nullptr;
   smx_simcall_t req = nullptr, saved_req = NULL;
   int value, depth = 1;
   char *req_str;
@@ -263,7 +284,7 @@ void LivenessChecker::replay(xbt_fifo_t stack)
 
       pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
 
-      state = (mc_state_t) pair->graph_state;
+      state = (simgrid::mc::State*) pair->graph_state;
 
       if (pair->exploration_started) {
 
@@ -355,8 +376,7 @@ int LivenessChecker::insertVisitedPair(simgrid::mc::VisitedPair* visited_pair, s
     unsigned int index2 = 0;
     for (std::size_t i = 0; i != (std::size_t) visited_pairs.size(); ++i) {
       simgrid::mc::VisitedPair* pair_test = visited_pairs[i];
-      if (!mc_model_checker->is_important_snapshot(*pair_test->graph_state->system_state)
-          && pair_test->num < min2) {
+      if (pair_test->num < min2) {
         index2 = i;
         min2 = pair_test->num;
       }
@@ -379,17 +399,55 @@ LivenessChecker::~LivenessChecker()
 {
 }
 
+RecordTrace LivenessChecker::getRecordTrace() // override
+{
+  RecordTrace res;
+
+  xbt_fifo_item_t start = xbt_fifo_get_last_item(liveness_stack);
+  for (xbt_fifo_item_t item = start; item; item = xbt_fifo_get_prev_item(item)) {
+    simgrid::mc::Pair* pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
+    int value;
+    smx_simcall_t req = MC_state_get_executed_request(pair->graph_state, &value);
+    if (req && req->call != SIMCALL_NONE) {
+      smx_process_t issuer = MC_smx_simcall_get_issuer(req);
+      const int pid = issuer->pid;
+
+      // Serialization the (pid, value) pair:
+      res.push_back(RecordTraceElement(pid, value));
+    }
+  }
+
+  return std::move(res);
+}
+
 void LivenessChecker::showAcceptanceCycle(std::size_t depth)
 {
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
   XBT_INFO("|             ACCEPTANCE CYCLE            |");
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");
   XBT_INFO("Counter-example that violates formula :");
-  MC_record_dump_path(mc_stack);
-  this->showStack(mc_stack);
-  this->dumpStack(mc_stack);
+  simgrid::mc::dumpRecordPath();
+  for (auto& s : this->getTextualTrace())
+    XBT_INFO("%s", s.c_str());
   MC_print_statistics(mc_stats);
   XBT_INFO("Counter-example depth : %zd", depth);
+}
+
+std::vector<std::string> LivenessChecker::getTextualTrace() // override
+{
+  std::vector<std::string> trace;
+  for (xbt_fifo_item_t item = xbt_fifo_get_last_item(liveness_stack);
+       item; item = xbt_fifo_get_prev_item(item)) {
+    simgrid::mc::Pair* pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(item);
+    int value;
+    smx_simcall_t req = MC_state_get_executed_request(pair->graph_state, &value);
+    if (req && req->call != SIMCALL_NONE) {
+      char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
+      trace.push_back(std::string(req_str));
+      xbt_free(req_str);
+    }
+  }
+  return std::move(trace);
 }
 
 int LivenessChecker::main(void)
@@ -403,10 +461,10 @@ int LivenessChecker::main(void)
   simgrid::xbt::unique_ptr<s_xbt_dynar_t> prop_values;
   simgrid::mc::VisitedPair* reached_pair = nullptr;
 
-  while(xbt_fifo_size(mc_stack) > 0){
+  while(xbt_fifo_size(liveness_stack) > 0){
 
     /* Get current pair */
-    current_pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    current_pair = (simgrid::mc::Pair*) xbt_fifo_get_item_content(xbt_fifo_get_first_item(liveness_stack));
 
     /* Update current state in buchi automaton */
     simgrid::mc::property_automaton->current_state = current_pair->automaton_state;
@@ -503,7 +561,7 @@ int LivenessChecker::main(void)
                 next_pair->search_cycle = 1;
 
               /* Add new pair to the exploration stack */
-              xbt_fifo_unshift(mc_stack, next_pair);
+              xbt_fifo_unshift(liveness_stack, next_pair);
 
            }
            cursor--;
@@ -521,12 +579,12 @@ int LivenessChecker::main(void)
 
       /* Traverse the stack backwards until a pair with a non empty interleave
          set is found, deleting all the pairs that have it empty in the way. */
-      while ((current_pair = (simgrid::mc::Pair*) xbt_fifo_shift(mc_stack)) != nullptr) {
+      while ((current_pair = (simgrid::mc::Pair*) xbt_fifo_shift(liveness_stack)) != nullptr) {
         if (current_pair->requests > 0) {
           /* We found a backtracking point */
           XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
-          xbt_fifo_unshift(mc_stack, current_pair);
-          this->replay(mc_stack);
+          xbt_fifo_unshift(liveness_stack, current_pair);
+          this->replay(liveness_stack);
           XBT_DEBUG("Backtracking done");
           break;
         }else{
@@ -540,7 +598,7 @@ int LivenessChecker::main(void)
 
     } /* End of if (current_pair->requests > 0) else ... */
 
-  } /* End of while(xbt_fifo_size(mc_stack) > 0) */
+  } /* End of while(xbt_fifo_size(liveness_stack) > 0) */
 
   XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
@@ -557,13 +615,15 @@ int LivenessChecker::run()
   _sg_mc_liveness = 1;
 
   /* Create exploration stack */
-  mc_stack = xbt_fifo_new();
+  liveness_stack = xbt_fifo_new();
 
   /* Create the initial state */
-  initial_global_state = xbt_new0(s_mc_global_t, 1);
+  simgrid::mc::initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
 
   this->prepare();
-  return this->main();
+  int res = this->main();
+  simgrid::mc::initial_global_state = nullptr;
+  return res;
 }
 
 }

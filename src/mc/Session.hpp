@@ -38,7 +38,7 @@ class Session {
 private:
   std::unique_ptr<ModelChecker> modelChecker_;
 
-private: //
+private:
   Session(pid_t pid, int socket);
 
   // No copy:

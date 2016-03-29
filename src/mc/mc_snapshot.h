@@ -129,14 +129,14 @@ typedef struct XBT_PRIVATE s_mc_snapshot_stack {
 } s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t {
-  simgrid::mc::Snapshot* snapshot;
-  int prev_pair;
-  char *prev_req;
-  int initial_communications_pattern_done;
-  int recv_deterministic;
-  int send_deterministic;
-  char *send_diff;
-  char *recv_diff;
+  std::shared_ptr<simgrid::mc::Snapshot> snapshot;
+  int prev_pair = 0;
+  char *prev_req = nullptr;
+  int initial_communications_pattern_done = 0;
+  int recv_deterministic = 0;
+  int send_deterministic = 0;
+  char *send_diff = nullptr;
+  char *recv_diff = nullptr;
 }s_mc_global_t, *mc_global_t;
 
 namespace simgrid {
@@ -186,8 +186,8 @@ static const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot);
 namespace simgrid {
 namespace mc {
 
-XBT_PRIVATE simgrid::mc::Snapshot* take_snapshot(int num_state);
-XBT_PRIVATE void restore_snapshot(simgrid::mc::Snapshot*);
+XBT_PRIVATE std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state);
+XBT_PRIVATE void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapshot);
 
 }
 }

@@ -415,7 +415,7 @@ static std::vector<s_mc_stack_frame_t> unwind_stack_frames(simgrid::mc::UnwindCo
   return std::move(result);
 };
 
-static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snapshot* * snapshot)
+static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snapshot* snapshot)
 {
   std::vector<s_mc_snapshot_stack_t> res;
 
@@ -439,7 +439,7 @@ static std::vector<s_mc_snapshot_stack_t> take_snapshot_stacks(simgrid::mc::Snap
 
     size_t stack_size =
       (char*) stack.address + stack.size - (char*) sp;
-    (*snapshot)->stack_sizes.push_back(stack_size);
+    snapshot->stack_sizes.push_back(stack_size);
   }
 
   return std::move(res);
@@ -561,20 +561,21 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
   return std::move(fds);
 }
 
-simgrid::mc::Snapshot* take_snapshot(int num_state)
+std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
 {
   XBT_DEBUG("Taking snapshot %i", num_state);
 
   simgrid::mc::Process* mc_process = &mc_model_checker->process();
 
-  simgrid::mc::Snapshot* snapshot = new simgrid::mc::Snapshot(mc_process);
+  std::shared_ptr<simgrid::mc::Snapshot> snapshot =
+    std::make_shared<simgrid::mc::Snapshot>(mc_process);
 
   snapshot->num_state = num_state;
 
   for (auto& p : mc_model_checker->process().simix_processes())
     snapshot->enabled_processes.insert(p.copy.pid);
 
-  snapshot_handle_ignore(snapshot);
+  snapshot_handle_ignore(snapshot.get());
 
   if (_sg_mc_snapshot_fds)
     snapshot->current_fds = get_current_fds(mc_model_checker->process().pid());
@@ -582,15 +583,14 @@ simgrid::mc::Snapshot* take_snapshot(int num_state)
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty;
 
   /* Save the std heap and the writable mapped pages of libsimgrid and binary */
-  get_memory_regions(mc_process, snapshot);
+  get_memory_regions(mc_process, snapshot.get());
   if (use_soft_dirty)
     mc_process->reset_soft_dirty();
 
   snapshot->to_ignore = mc_model_checker->process().ignored_heap();
 
   if (_sg_mc_visited > 0 || strcmp(_sg_mc_property_file, "")) {
-    snapshot->stacks =
-        take_snapshot_stacks(&snapshot);
+    snapshot->stacks = take_snapshot_stacks(snapshot.get());
     if (_sg_mc_hash)
       snapshot->hash = simgrid::mc::hash(*snapshot);
     else
@@ -598,7 +598,7 @@ simgrid::mc::Snapshot* take_snapshot(int num_state)
   } else
     snapshot->hash = 0;
 
-  snapshot_ignore_restore(snapshot);
+  snapshot_ignore_restore(snapshot.get());
   if (use_soft_dirty)
     mc_model_checker->parent_snapshot_ = snapshot;
   return snapshot;
@@ -645,16 +645,16 @@ void restore_snapshot_fds(simgrid::mc::Snapshot* snapshot)
   }
 }
 
-void restore_snapshot(simgrid::mc::Snapshot* snapshot)
+void restore_snapshot(std::shared_ptr<simgrid::mc::Snapshot> snapshot)
 {
   XBT_DEBUG("Restore snapshot %i", snapshot->num_state);
   const bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty;
-  restore_snapshot_regions(snapshot);
+  restore_snapshot_regions(snapshot.get());
   if (_sg_mc_snapshot_fds)
-    restore_snapshot_fds(snapshot);
+    restore_snapshot_fds(snapshot.get());
   if (use_soft_dirty)
     mc_model_checker->process().reset_soft_dirty();
-  snapshot_ignore_restore(snapshot);
+  snapshot_ignore_restore(snapshot.get());
   mc_model_checker->process().clear_cache();
   if (use_soft_dirty)
     mc_model_checker->parent_snapshot_ = snapshot;

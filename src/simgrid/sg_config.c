@@ -23,7 +23,6 @@
 #include "smpi/smpi_interface.h"
 #endif
 #include "mc/mc.h"
-#include "src/mc/mc_record.h"
 #include "simgrid/instr.h"
 #include "src/mc/mc_replay.h"
 

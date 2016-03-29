@@ -9,6 +9,8 @@
 #include <cstddef>
 #include <cstdint>
 
+#include <cxxabi.h>
+
 #include <vector>
 
 #include "mc_base.h"
@@ -55,11 +57,10 @@ std::vector<double> processes_time;
 int user_max_depth_reached = 0;
 
 /* MC global data structures */
-mc_state_t mc_current_state = nullptr;
+simgrid::mc::State* mc_current_state = nullptr;
 char mc_replay_mode = false;
 
 mc_stats_t mc_stats = nullptr;
-mc_global_t initial_global_state = nullptr;
 xbt_fifo_t mc_stack = nullptr;
 
 /* Liveness */
@@ -67,6 +68,7 @@ xbt_fifo_t mc_stack = nullptr;
 namespace simgrid {
 namespace mc {
 
+std::unique_ptr<s_mc_global_t> initial_global_state = nullptr;
 xbt_automaton_t property_automaton = nullptr;
 
 }
@@ -120,14 +122,14 @@ void MC_replay(xbt_fifo_t stack)
   char *req_str;
   smx_simcall_t req = nullptr, saved_req = NULL;
   xbt_fifo_item_t item, start_item;
-  mc_state_t state;
+  simgrid::mc::State* state;
   
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0 || _sg_mc_termination || _sg_mc_visited > 0) {
     start_item = xbt_fifo_get_first_item(stack);
-    state = (mc_state_t)xbt_fifo_get_item_content(start_item);
+    state = (simgrid::mc::State*)xbt_fifo_get_item_content(start_item);
     if(state->system_state){
       simgrid::mc::restore_snapshot(state->system_state);
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
@@ -138,7 +140,7 @@ void MC_replay(xbt_fifo_t stack)
 
 
   /* Restore the initial state */
-  simgrid::mc::restore_snapshot(initial_global_state->snapshot);
+  simgrid::mc::restore_snapshot(simgrid::mc::initial_global_state->snapshot);
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
 
@@ -160,7 +162,7 @@ void MC_replay(xbt_fifo_t stack)
        item != xbt_fifo_get_first_item(stack);
        item = xbt_fifo_get_prev_item(item)) {
 
-    state = (mc_state_t) xbt_fifo_get_item_content(item);
+    state = (simgrid::mc::State*) xbt_fifo_get_item_content(item);
     saved_req = MC_state_get_executed_request(state, &value);
     
     if (saved_req) {
@@ -201,65 +203,32 @@ void MC_replay(xbt_fifo_t stack)
   XBT_DEBUG("**** End Replay ****");
 }
 
-/**
- * \brief Dumps the contents of a model-checker's stack and shows the actual
- *        execution trace
- * \param stack The stack to dump
- */
-void MC_dump_stack_safety(xbt_fifo_t stack)
-{
-  MC_show_stack_safety(stack);
-  
-  mc_state_t state;
-
-  while ((state = (mc_state_t) xbt_fifo_pop(stack)) != nullptr)
-    MC_state_delete(state, !state->in_visited_states ? 1 : 0);
-}
-
-
-void MC_show_stack_safety(xbt_fifo_t stack)
-{
-  int value;
-  mc_state_t state;
-  xbt_fifo_item_t item;
-  smx_simcall_t req;
-  char *req_str = nullptr;
-
-  for (item = xbt_fifo_get_last_item(stack);
-       item; item = xbt_fifo_get_prev_item(item)) {
-    state = (mc_state_t)xbt_fifo_get_item_content(item);
-    req = MC_state_get_executed_request(state, &value);
-    if (req) {
-      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::executed);
-      XBT_INFO("%s", req_str);
-      xbt_free(req_str);
-    }
-  }
-}
-
 void MC_show_deadlock(void)
 {
   XBT_INFO("**************************");
   XBT_INFO("*** DEAD-LOCK DETECTED ***");
   XBT_INFO("**************************");
   XBT_INFO("Counter-example execution trace:");
-  MC_dump_stack_safety(mc_stack);
+  for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
+    XBT_INFO("%s", s.c_str());
   MC_print_statistics(mc_stats);
 }
 
 void MC_print_statistics(mc_stats_t stats)
 {
   if(_sg_mc_comms_determinism) {
-    if (!initial_global_state->recv_deterministic && initial_global_state->send_deterministic){
+    if (!simgrid::mc::initial_global_state->recv_deterministic &&
+        simgrid::mc::initial_global_state->send_deterministic){
       XBT_INFO("******************************************************");
       XBT_INFO("**** Only-send-deterministic communication pattern ****");
       XBT_INFO("******************************************************");
-      XBT_INFO("%s", initial_global_state->recv_diff);
-    }else if(!initial_global_state->send_deterministic && initial_global_state->recv_deterministic) {
+      XBT_INFO("%s", simgrid::mc::initial_global_state->recv_diff);
+    }else if(!simgrid::mc::initial_global_state->send_deterministic &&
+        simgrid::mc::initial_global_state->recv_deterministic) {
       XBT_INFO("******************************************************");
       XBT_INFO("**** Only-recv-deterministic communication pattern ****");
       XBT_INFO("******************************************************");
-      XBT_INFO("%s", initial_global_state->send_diff);
+      XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
     }
   }
 
@@ -275,10 +244,13 @@ void MC_print_statistics(mc_stats_t stats)
     fprintf(dot_output, "}\n");
     fclose(dot_output);
   }
-  if (initial_global_state != nullptr && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
-    XBT_INFO("Send-deterministic : %s", !initial_global_state->send_deterministic ? "No" : "Yes");
+  if (simgrid::mc::initial_global_state != nullptr
+      && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
+    XBT_INFO("Send-deterministic : %s",
+      !simgrid::mc::initial_global_state->send_deterministic ? "No" : "Yes");
     if (_sg_mc_comms_determinism)
-      XBT_INFO("Recv-deterministic : %s", !initial_global_state->recv_deterministic ? "No" : "Yes");
+      XBT_INFO("Recv-deterministic : %s",
+        !simgrid::mc::initial_global_state->recv_deterministic ? "No" : "Yes");
   }
   if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")){
     int ret=system("free");
@@ -294,15 +266,47 @@ void MC_automaton_load(const char *file)
   xbt_automaton_load(simgrid::mc::property_automaton, file);
 }
 
+namespace simgrid {
+namespace mc {
+
+void dumpStack(FILE* file, unw_cursor_t cursor)
+{
+  int nframe = 0;
+  char buffer[100];
+
+  unw_word_t off;
+  do {
+    const char * name = !unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
+
+    int status;
+
+    // Demangle C++ names:
+    char* realname = abi::__cxa_demangle(name, 0, 0, &status);
+
+#if defined(__x86_64__)
+    unw_word_t rip = 0;
+    unw_word_t rsp = 0;
+    unw_get_reg(&cursor, UNW_X86_64_RIP, &rip);
+    unw_get_reg(&cursor, UNW_X86_64_RSP, &rsp);
+    fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
+      nframe, realname ? realname : name, (std::uint64_t) rip, (std::uint64_t) rsp);
+#else
+    fprintf(file, "  %i: %s\n", nframe, realname ? realname : name);
+#endif
+
+    free(realname);
+    ++nframe;
+  } while(unw_step(&cursor));
+}
+
+}
+}
+
 static void MC_dump_stacks(FILE* file)
 {
   int nstack = 0;
   for (auto const& stack : mc_model_checker->process().stack_areas()) {
-
-    fprintf(file, "Stack %i:\n", nstack);
-
-    int nframe = 0;
-    char buffer[100];
+    fprintf(file, "Stack %i:\n", nstack++);
 
     simgrid::mc::UnwindContext context;
     unw_context_t raw_context =
@@ -311,24 +315,7 @@ static void MC_dump_stacks(FILE* file)
     context.initialize(&mc_model_checker->process(), &raw_context);
 
     unw_cursor_t cursor = context.cursor();
-
-    unw_word_t off;
-    do {
-      const char * name = !unw_get_proc_name(&cursor, buffer, 100, &off) ? buffer : "?";
-#if defined(__x86_64__)
-      unw_word_t rip = 0;
-      unw_word_t rsp = 0;
-      unw_get_reg(&cursor, UNW_X86_64_RIP, &rip);
-      unw_get_reg(&cursor, UNW_X86_64_RSP, &rsp);
-      fprintf(file, "  %i: %s (RIP=0x%" PRIx64 " RSP=0x%" PRIx64 ")\n",
-        nframe, name, (std::uint64_t) rip, (std::uint64_t) rsp);
-#else
-      fprintf(file, "  %i: %s\n", nframe, name);
-#endif
-      ++nframe;
-    } while(unw_step(&cursor));
-
-    ++nstack;
+    simgrid::mc::dumpStack(file, cursor);
   }
 }
 #endif
@@ -354,8 +341,9 @@ void MC_report_assertion_error(void)
   XBT_INFO("*** PROPERTY NOT VALID ***");
   XBT_INFO("**************************");
   XBT_INFO("Counter-example execution trace:");
-  MC_record_dump_path(mc_stack);
-  MC_dump_stack_safety(mc_stack);
+  simgrid::mc::dumpRecordPath();
+  for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
+    XBT_INFO("%s", s.c_str());
   MC_print_statistics(mc_stats);
 }
 
@@ -373,9 +361,12 @@ void MC_report_crash(int status)
   else
     XBT_INFO("No core dump was generated by the system.");
   XBT_INFO("Counter-example execution trace:");
-  MC_record_dump_path(mc_stack);
-  MC_dump_stack_safety(mc_stack);
+  simgrid::mc::dumpRecordPath();
+  for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
+    XBT_INFO("%s", s.c_str());
   MC_print_statistics(mc_stats);
+  XBT_INFO("Stack trace:");
+  mc_model_checker->process().dumpStack();
 }
 
 #endif

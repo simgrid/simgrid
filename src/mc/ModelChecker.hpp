@@ -35,8 +35,9 @@ class ModelChecker {
   // This is the parent snapshot of the current state:
   PageStore page_store_;
   std::unique_ptr<Process> process_;
+  Checker* checker_ = nullptr;
 public:
-  simgrid::mc::Snapshot* parent_snapshot_;
+  std::shared_ptr<simgrid::mc::Snapshot> parent_snapshot_;
 
 public:
   ModelChecker(ModelChecker const&) = delete;
@@ -54,11 +55,6 @@ public:
   }
   const char* get_host_name(const char* name);
 
-  bool is_important_snapshot(Snapshot const& snapshot) const
-  {
-    return &snapshot == this->parent_snapshot_;
-  }
-
   void start();
   void shutdown();
   void resume(simgrid::mc::Process& process);
@@ -73,6 +69,9 @@ public:
   void exit(int status);
 
   bool checkDeadlock();
+
+  Checker* getChecker() const { return checker_; }
+  void setChecker(Checker* checker) { checker_ = checker; }
 
 private:
   void setup_ignore();
