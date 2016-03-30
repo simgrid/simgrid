@@ -138,21 +138,22 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
   auto res = std::equal_range(acceptancePairs_.begin(), acceptancePairs_.end(),
     new_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
-  if (pair->search_cycle)
-    for (auto i = res.first; i != res.second; ++i) {
-      std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
-      if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
-        if (pair_test->atomic_propositions == new_pair->atomic_propositions) {
-          if (this->compare(pair_test.get(), new_pair.get()) == 0) {
-            XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
-            livenessStack_.pop_back();
-            if (dot_output != nullptr)
-              fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, pair_test->num, initial_global_state->prev_req);
-            return nullptr;
-          }
-        }
-      }
-    }
+  if (pair->search_cycle) for (auto i = res.first; i != res.second; ++i) {
+    std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
+    if (xbt_automaton_state_compare(
+          pair_test->automaton_state, new_pair->automaton_state) != 0
+        || pair_test->atomic_propositions != new_pair->atomic_propositions
+        || this->compare(pair_test.get(), new_pair.get()) != 0)
+      continue;
+    XBT_INFO("Pair %d already reached (equal to pair %d) !",
+      new_pair->num, pair_test->num);
+    livenessStack_.pop_back();
+    if (dot_output != nullptr)
+      fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
+        initial_global_state->prev_pair, pair_test->num,
+        initial_global_state->prev_req);
+    return nullptr;
+  }
 
   acceptancePairs_.insert(res.first, new_pair);
   return new_pair;
@@ -280,24 +281,23 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
 
   for (auto i = range.first; i != range.second; ++i) {
     VisitedPair* pair_test = i->get();
-    if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) == 0) {
-      if (pair_test->atomic_propositions == visited_pair->atomic_propositions) {
-        if (this->compare(pair_test, visited_pair.get()) == 0) {
-          if (pair_test->other_num == -1)
-            visited_pair->other_num = pair_test->num;
-          else
-            visited_pair->other_num = pair_test->other_num;
-          if (dot_output == nullptr)
-            XBT_DEBUG("Pair %d already visited ! (equal to pair %d)",
-            visited_pair->num, pair_test->num);
-          else
-            XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))",
-              visited_pair->num, pair_test->num, visited_pair->other_num);
-          (*i) = std::move(visited_pair);
-          return (*i)->other_num;
-        }
-      }
-    }
+    if (xbt_automaton_state_compare(
+          pair_test->automaton_state, visited_pair->automaton_state) != 0
+        || pair_test->atomic_propositions != visited_pair->atomic_propositions
+        || this->compare(pair_test, visited_pair.get()) != 0)
+        continue;
+    if (pair_test->other_num == -1)
+      visited_pair->other_num = pair_test->num;
+    else
+      visited_pair->other_num = pair_test->other_num;
+    if (dot_output == nullptr)
+      XBT_DEBUG("Pair %d already visited ! (equal to pair %d)",
+      visited_pair->num, pair_test->num);
+    else
+      XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))",
+        visited_pair->num, pair_test->num, visited_pair->other_num);
+    (*i) = std::move(visited_pair);
+    return (*i)->other_num;
   }
 
   visitedPairs_.insert(range.first, std::move(visited_pair));
@@ -396,12 +396,10 @@ int LivenessChecker::main(void)
 
     if (current_pair->requests > 0) {
 
-      if (current_pair->automaton_state->type == 1 && !current_pair->exploration_started) {
-        /* If new acceptance pair, return new pair */
-        if ((reached_pair = this->insertAcceptancePair(current_pair)) == nullptr) {
-          this->showAcceptanceCycle(current_pair->depth);
-          return SIMGRID_MC_EXIT_LIVENESS;
-        }
+      if (current_pair->automaton_state->type == 1 && !current_pair->exploration_started
+          && (reached_pair = this->insertAcceptancePair(current_pair)) == nullptr) {
+        this->showAcceptanceCycle(current_pair->depth);
+        return SIMGRID_MC_EXIT_LIVENESS;
       }
 
       /* Pair already visited ? stop the exploration on the current path */
