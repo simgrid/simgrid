@@ -1,3 +1,11 @@
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent)
+set(app_bittorrent_sources    ${srcdir}/Main.java  ${srcdir}/Common.java  ${srcdir}/Connection.java
+                              ${srcdir}/MessageTask.java ${srcdir}/Peer.java  ${srcdir}/Tracker.java
+                              ${srcdir}/TrackerTask.java)
+
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker)
+set(app_masterworker_sources   ${srcdir}/Main.java  ${srcdir}/Master.java ${srcdir}/Worker.java) 
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord)
 set(dht_chord_sources          ${srcdir}/Main.java  ${srcdir}/ChordTask.java  ${srcdir}/Common.java
                                ${srcdir}/FindSuccessorAnswerTask.java  ${srcdir}/FindSuccessorTask.java
@@ -28,7 +36,7 @@ set(process_migration_sources  ${srcdir}/Main.java  ${srcdir}/Emigrant.java  ${s
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend)
 set(process_suspend_sources    ${srcdir}/Main.java  ${srcdir}/DreamMaster.java  ${srcdir}/LazyGuy.java)
 
-foreach (example dht_chord dht_kademlia energy_consumption io_file io_storage 
+foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_consumption io_file io_storage 
          process_kill process_migration process_suspend)
   string (REPLACE "_" "/" example_dir ${example})
   if(enable_java)
@@ -48,11 +56,15 @@ endforeach()
 
 set(examples_src  ${examples_src}                                                          PARENT_SCOPE)
 set(tesh_files    ${tesh_files}                                                            PARENT_SCOPE)
-set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/chord.xml
+set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/generate.py  PARENT_SCOPE)
+set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker/README     PARENT_SCOPE)
+set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bittorrent.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker/masterworker.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/chord.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/kademlia.xml   PARENT_SCOPE)
 
 if(enable_java)
-  foreach (example dht_chord dht_kademlia energy_consumption  io_file io_storage 
+  foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_consumption io_file io_storage 
            process_kill process_migration process_suspend)
     string (REPLACE "_" "/" example_dir ${example})
     ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)

@@ -1,0 +1,25 @@
+#! tesh
+
+! output sort 19
+! timeout 15
+
+$ java -classpath ${classpath:=.} app/bittorrent/Main ${srcdir:=.}/../platforms/platform.xml ${srcdir:=.}/app/bittorrent/bittorrent.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [5000.832370] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [Boivin:app.bittorrent.Peer:(2) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 2
+> [Boivin:app.bittorrent.Peer:(2) 5000.048881] [jmsg/INFO] Here is my current status: 1111111111
+> [Disney:app.bittorrent.Peer:(6) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 6
+> [Disney:app.bittorrent.Peer:(6) 5000.131405] [jmsg/INFO] Here is my current status: 1111111111
+> [Geoff:app.bittorrent.Peer:(5) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 5
+> [Geoff:app.bittorrent.Peer:(5) 5000.764583] [jmsg/INFO] Here is my current status: 1111111111
+> [Jacquelin:app.bittorrent.Tracker:(1) 0.000000] [jmsg/INFO] Tracker launched.
+> [Jacquelin:app.bittorrent.Tracker:(1) 3000.000000] [jmsg/INFO] Tracker is leaving
+> [Jean_Yves:app.bittorrent.Peer:(3) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 3
+> [Jean_Yves:app.bittorrent.Peer:(3) 5000.832370] [jmsg/INFO] Here is my current status: 1111111111
+> [McGee:app.bittorrent.Peer:(8) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 8
+> [McGee:app.bittorrent.Peer:(8) 5000.783574] [jmsg/INFO] Here is my current status: 1111111111
+> [TeX:app.bittorrent.Peer:(4) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 4
+> [TeX:app.bittorrent.Peer:(4) 5000.304959] [jmsg/INFO] Here is my current status: 1111111111
+> [iRMX:app.bittorrent.Peer:(7) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 7
+> [iRMX:app.bittorrent.Peer:(7) 5000.729205] [jmsg/INFO] Here is my current status: 1111111111
+
