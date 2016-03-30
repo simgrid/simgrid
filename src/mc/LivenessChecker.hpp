@@ -83,7 +83,7 @@ private:
   void removeAcceptancePair(int pair_num);
 public:
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
-  std::list<Pair*> livenessStack_;
+  std::list<std::shared_ptr<Pair>> livenessStack_;
   std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
 };
 
