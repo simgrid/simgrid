@@ -319,8 +319,6 @@ RecordTrace LivenessChecker::getRecordTrace() // override
     if (req && req->call != SIMCALL_NONE) {
       smx_process_t issuer = MC_smx_simcall_get_issuer(req);
       const int pid = issuer->pid;
-
-      // Serialization the (pid, value) pair:
       res.push_back(RecordTraceElement(pid, value));
     }
   }
