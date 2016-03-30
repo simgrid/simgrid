@@ -10,10 +10,10 @@
 #include <cstddef>
 
 #include <string>
+#include <list>
 
 #include <simgrid_config.h>
 #include <xbt/base.h>
-#include <xbt/fifo.h>
 #include <xbt/dynar.h>
 #include <xbt/automaton.h>
 #include <xbt/memory.hpp>
@@ -78,11 +78,11 @@ private:
   simgrid::mc::VisitedPair* insertAcceptancePair(simgrid::mc::Pair* pair);
   int insertVisitedPair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair);
   void showAcceptanceCycle(std::size_t depth);
-  void replay(xbt_fifo_t stack);
+  void replay();
   void removeAcceptancePair(int pair_num);
 public: // (non-static wannabe) fields
   static xbt_dynar_t acceptance_pairs;
-  static xbt_fifo_t liveness_stack;
+  static std::list<Pair*> liveness_stack;
 };
 
 }
