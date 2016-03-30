@@ -64,44 +64,31 @@ VisitedPair::~VisitedPair()
 {
 }
 
-static int MC_automaton_evaluate_label(
-  xbt_automaton_exp_label_t l,
-  std::vector<int> const& atomic_propositions_values)
+static bool evaluate_label(
+  xbt_automaton_exp_label_t l, std::vector<int> const& values)
 {
-
   switch (l->type) {
-  case xbt_automaton_exp_label::AUT_OR:{
-      int left_res = MC_automaton_evaluate_label(
-        l->u.or_and.left_exp, atomic_propositions_values);
-      int right_res = MC_automaton_evaluate_label(
-        l->u.or_and.right_exp, atomic_propositions_values);
-      return (left_res || right_res);
-    }
-  case xbt_automaton_exp_label::AUT_AND:{
-      int left_res = MC_automaton_evaluate_label(
-        l->u.or_and.left_exp, atomic_propositions_values);
-      int right_res = MC_automaton_evaluate_label(
-        l->u.or_and.right_exp, atomic_propositions_values);
-      return (left_res && right_res);
-    }
-  case xbt_automaton_exp_label::AUT_NOT:{
-      int res = MC_automaton_evaluate_label(
-        l->u.exp_not, atomic_propositions_values);
-      return (!res);
-    }
+  case xbt_automaton_exp_label::AUT_OR:
+    return evaluate_label(l->u.or_and.left_exp, values)
+      || evaluate_label(l->u.or_and.right_exp, values);
+  case xbt_automaton_exp_label::AUT_AND:
+    return evaluate_label(l->u.or_and.left_exp, values)
+      && evaluate_label(l->u.or_and.right_exp, values);
+  case xbt_automaton_exp_label::AUT_NOT:
+    return !evaluate_label(l->u.exp_not, values);
   case xbt_automaton_exp_label::AUT_PREDICAT:{
       unsigned int cursor = 0;
       xbt_automaton_propositional_symbol_t p = nullptr;
       xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, p) {
         if (std::strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
-          return atomic_propositions_values[cursor];
+          return values[cursor] != 0;
       }
-      return -1;
+      xbt_die("Missing predicate");
     }
   case xbt_automaton_exp_label::AUT_ONE:
-    return 2;
+    return true;
   default:
-    return -1;
+    xbt_die("Unexpected vaue for automaton");
   }
 }
 
@@ -456,8 +443,7 @@ int LivenessChecker::main(void)
          int cursor = xbt_dynar_length(current_pair->automaton_state->out) - 1;
          while (cursor >= 0) {
            xbt_automaton_transition_t transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
-           int res = MC_automaton_evaluate_label(transition_succ->label, prop_values);
-           if (res == 1 || res == 2) { /* 1 = True transition (always enabled), 2 = enabled transition according to atomic prop values */
+           if (evaluate_label(transition_succ->label, prop_values)) {
               std::shared_ptr<Pair> next_pair = std::make_shared<Pair>();
               next_pair->graph_state = std::shared_ptr<simgrid::mc::State>(MC_state_new());
               next_pair->automaton_state = transition_succ->dst;
