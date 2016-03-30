@@ -81,7 +81,7 @@ private:
   void replay();
   void removeAcceptancePair(int pair_num);
 public: // (non-static wannabe) fields
-  static xbt_dynar_t acceptance_pairs;
+  static std::list<VisitedPair*> acceptance_pairs;
   static std::list<Pair*> liveness_stack;
 };
 

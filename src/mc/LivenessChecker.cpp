@@ -40,7 +40,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 namespace simgrid {
 namespace mc {
 
-xbt_dynar_t LivenessChecker::acceptance_pairs;
+std::list<VisitedPair*> LivenessChecker::acceptance_pairs;
 std::list<Pair*> LivenessChecker::liveness_stack;
 
 VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, simgrid::mc::State* graph_state)
@@ -158,7 +158,6 @@ int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::Visi
 
 simgrid::mc::VisitedPair* LivenessChecker::insertAcceptancePair(simgrid::mc::Pair* pair)
 {
-  auto acceptance_pairs = simgrid::xbt::range<simgrid::mc::VisitedPair*>(LivenessChecker::acceptance_pairs);
   auto new_pair =
     std::unique_ptr<simgrid::mc::VisitedPair>(new VisitedPair(
       pair->num, pair->automaton_state, pair->atomic_propositions.get(),
@@ -187,39 +186,27 @@ simgrid::mc::VisitedPair* LivenessChecker::insertAcceptancePair(simgrid::mc::Pai
     }
 
   auto new_raw_pair = new_pair.release();
-  xbt_dynar_insert_at(
-    LivenessChecker::acceptance_pairs, res.first - acceptance_pairs.begin(), &new_raw_pair);
+  acceptance_pairs.insert(res.first, new_raw_pair);
   return new_raw_pair;
 }
 
 void LivenessChecker::removeAcceptancePair(int pair_num)
 {
-  unsigned int cursor = 0;
-  simgrid::mc::VisitedPair* pair_test = nullptr;
-  int pair_found = 0;
-
-  xbt_dynar_foreach(acceptance_pairs, cursor, pair_test)
-    if (pair_test->num == pair_num) {
-       pair_found = 1;
+  for (auto i = acceptance_pairs.begin(); i != acceptance_pairs.end(); ++i)
+    if ((*i)->num == pair_num) {
+      acceptance_pairs.erase(i);
+      (*i)->acceptance_removed = 1;
+      if (_sg_mc_visited == 0 || (*i)->visited_removed == 1)
+        delete *i;
       break;
     }
-
-  if(pair_found == 1) {
-    xbt_dynar_remove_at(acceptance_pairs, cursor, &pair_test);
-
-    pair_test->acceptance_removed = 1;
-
-    if (_sg_mc_visited == 0 || pair_test->visited_removed == 1) 
-      delete pair_test;
-
-  }
 }
 
 void LivenessChecker::prepare(void)
 {
   simgrid::mc::Pair* initial_pair = nullptr;
   mc_model_checker->wait_for_requests();
-  acceptance_pairs = xbt_dynar_new(sizeof(simgrid::mc::VisitedPair*), nullptr);
+  acceptance_pairs.clear();
   if(_sg_mc_visited > 0)
     simgrid::mc::visited_pairs = xbt_dynar_new(sizeof(simgrid::mc::VisitedPair*), nullptr);
 
