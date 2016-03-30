@@ -40,9 +40,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 namespace simgrid {
 namespace mc {
 
-std::list<VisitedPair*> LivenessChecker::acceptance_pairs;
+std::list<std::shared_ptr<VisitedPair>> LivenessChecker::acceptance_pairs;
 std::list<Pair*> LivenessChecker::liveness_stack;
-std::list<VisitedPair*> LivenessChecker::visited_pairs;
+std::list<std::shared_ptr<VisitedPair>> LivenessChecker::visited_pairs;
 
 VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, std::shared_ptr<simgrid::mc::State> graph_state)
 {
@@ -61,8 +61,6 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xb
   this->automaton_state = automaton_state;
   this->num = pair_num;
   this->other_num = -1;
-  this->acceptance_removed = 0;
-  this->visited_removed = 0;
   this->acceptance_pair = 0;
   this->atomic_propositions = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(
     xbt_dynar_new(sizeof(int), nullptr));
@@ -138,25 +136,24 @@ int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::Visi
   return simgrid::mc::snapshot_compare(num1, s1, num2, s2);
 }
 
-simgrid::mc::VisitedPair* LivenessChecker::insertAcceptancePair(simgrid::mc::Pair* pair)
+std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::Pair* pair)
 {
-  auto new_pair =
-    std::unique_ptr<simgrid::mc::VisitedPair>(new VisitedPair(
-      pair->num, pair->automaton_state, pair->atomic_propositions.get(),
-      pair->graph_state));
+  std::shared_ptr<VisitedPair> new_pair = std::make_shared<VisitedPair>(
+    pair->num, pair->automaton_state, pair->atomic_propositions.get(),
+    pair->graph_state);
   new_pair->acceptance_pair = 1;
 
   auto res = std::equal_range(acceptance_pairs.begin(), acceptance_pairs.end(),
-    new_pair, simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
+    new_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
   if (pair->search_cycle == 1)
     for (auto i = res.first; i != res.second; ++i) {
-      simgrid::mc::VisitedPair* pair_test = *i;
+      std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
       if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
         if (xbt_automaton_propositional_symbols_compare_value(
             pair_test->atomic_propositions.get(),
             new_pair->atomic_propositions.get()) == 0) {
-          if (this->compare(pair_test, new_pair.get()) == 0) {
+          if (this->compare(pair_test.get(), new_pair.get()) == 0) {
             XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
             liveness_stack.pop_back();
             if (dot_output != nullptr)
@@ -167,9 +164,8 @@ simgrid::mc::VisitedPair* LivenessChecker::insertAcceptancePair(simgrid::mc::Pai
       }
     }
 
-  auto new_raw_pair = new_pair.release();
-  acceptance_pairs.insert(res.first, new_raw_pair);
-  return new_raw_pair;
+  acceptance_pairs.insert(res.first, new_pair);
+  return new_pair;
 }
 
 void LivenessChecker::removeAcceptancePair(int pair_num)
@@ -177,9 +173,6 @@ void LivenessChecker::removeAcceptancePair(int pair_num)
   for (auto i = acceptance_pairs.begin(); i != acceptance_pairs.end(); ++i)
     if ((*i)->num == pair_num) {
       acceptance_pairs.erase(i);
-      (*i)->acceptance_removed = 1;
-      if (_sg_mc_visited == 0 || (*i)->visited_removed == 1)
-        delete *i;
       break;
     }
 }
@@ -285,54 +278,49 @@ void LivenessChecker::replay()
 /**
  * \brief Checks whether a given pair has already been visited by the algorithm.
  */
-int LivenessChecker::insertVisitedPair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair)
+int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair)
 {
   if (_sg_mc_visited == 0)
     return -1;
 
-  simgrid::mc::VisitedPair* new_visited_pair = nullptr;
   if (visited_pair == nullptr)
-    new_visited_pair = new simgrid::mc::VisitedPair(
+    visited_pair = std::make_shared<VisitedPair>(
       pair->num, pair->automaton_state, pair->atomic_propositions.get(),
       pair->graph_state);
-  else
-    new_visited_pair = visited_pair;
 
   auto range = std::equal_range(visited_pairs.begin(), visited_pairs.end(),
-    new_visited_pair, simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
+    visited_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
   for (auto i = range.first; i != range.second; ++i) {
-    simgrid::mc::VisitedPair* pair_test = *i;
-    if (xbt_automaton_state_compare(pair_test->automaton_state, new_visited_pair->automaton_state) == 0) {
+    VisitedPair* pair_test = i->get();
+    if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) == 0) {
       if (xbt_automaton_propositional_symbols_compare_value(
           pair_test->atomic_propositions.get(),
-          new_visited_pair->atomic_propositions.get()) == 0) {
-        if (this->compare(pair_test, new_visited_pair) == 0) {
+          visited_pair->atomic_propositions.get()) == 0) {
+        if (this->compare(pair_test, visited_pair.get()) == 0) {
           if (pair_test->other_num == -1)
-            new_visited_pair->other_num = pair_test->num;
+            visited_pair->other_num = pair_test->num;
           else
-            new_visited_pair->other_num = pair_test->other_num;
+            visited_pair->other_num = pair_test->other_num;
           if (dot_output == nullptr)
-            XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", new_visited_pair->num, pair_test->num);
+            XBT_DEBUG("Pair %d already visited ! (equal to pair %d)",
+            visited_pair->num, pair_test->num);
           else
-            XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))", new_visited_pair->num, pair_test->num, new_visited_pair->other_num);
-          *i = new_visited_pair;
-          pair_test->visited_removed = 1;
-          if (!pair_test->acceptance_pair
-              || pair_test->acceptance_removed == 1)
-            delete pair_test;
-          return new_visited_pair->other_num;
+            XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))",
+              visited_pair->num, pair_test->num, visited_pair->other_num);
+          (*i) = std::move(visited_pair);
+          return (*i)->other_num;
         }
       }
     }
   }
 
-  visited_pairs.insert(range.first, new_visited_pair);
+  visited_pairs.insert(range.first, std::move(visited_pair));
 
   if (visited_pairs.size() > (std::size_t) _sg_mc_visited) {
     int min2 = mc_stats->expanded_pairs;
 
-    std::list<VisitedPair*>::iterator index2;
+    std::list<std::shared_ptr<VisitedPair>>::iterator index2;
     for (auto i = visited_pairs.begin(); i != visited_pairs.end(); ++i) {
       if ((*i)->num < min2) {
         index2 = i;
@@ -340,11 +328,7 @@ int LivenessChecker::insertVisitedPair(simgrid::mc::VisitedPair* visited_pair, s
       }
     }
 
-    simgrid::mc::VisitedPair* pair_test = *index2;
     visited_pairs.erase(index2);
-    pair_test->visited_removed = 1;
-    if (!pair_test->acceptance_pair || pair_test->acceptance_removed)
-      delete pair_test;
   }
 
   return -1;
@@ -411,7 +395,7 @@ int LivenessChecker::main(void)
   xbt_automaton_transition_t transition_succ = nullptr;
   int cursor = 0;
   simgrid::xbt::unique_ptr<s_xbt_dynar_t> prop_values;
-  simgrid::mc::VisitedPair* reached_pair = nullptr;
+  std::shared_ptr<VisitedPair> reached_pair = nullptr;
 
   while (!liveness_stack.empty()){
 
@@ -577,6 +561,10 @@ int LivenessChecker::run()
   this->prepare();
   int res = this->main();
   simgrid::mc::initial_global_state = nullptr;
+
+  acceptance_pairs.clear();
+  visited_pairs.clear();
+
   return res;
 }
 

@@ -11,6 +11,7 @@
 
 #include <string>
 #include <list>
+#include <memory>
 
 #include <simgrid_config.h>
 #include <xbt/base.h>
@@ -55,8 +56,6 @@ struct XBT_PRIVATE VisitedPair {
   simgrid::xbt::unique_ptr<s_xbt_dynar_t> atomic_propositions;
   std::size_t heap_bytes_used = 0;
   int nb_processes = 0;
-  int acceptance_removed = 0;
-  int visited_removed = 0;
 
   VisitedPair(
     int pair_num, xbt_automaton_state_t automaton_state,
@@ -77,15 +76,15 @@ private:
   void prepare();
   int compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2);
   simgrid::xbt::unique_ptr<s_xbt_dynar_t> getPropositionValues();
-  simgrid::mc::VisitedPair* insertAcceptancePair(simgrid::mc::Pair* pair);
-  int insertVisitedPair(simgrid::mc::VisitedPair* visited_pair, simgrid::mc::Pair* pair);
+  std::shared_ptr<VisitedPair> insertAcceptancePair(simgrid::mc::Pair* pair);
+  int insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair);
   void showAcceptanceCycle(std::size_t depth);
   void replay();
   void removeAcceptancePair(int pair_num);
 public: // (non-static wannabe) fields
-  static std::list<VisitedPair*> acceptance_pairs;
+  static std::list<std::shared_ptr<VisitedPair>> acceptance_pairs;
   static std::list<Pair*> liveness_stack;
-  static std::list<VisitedPair*> visited_pairs;
+  static std::list<std::shared_ptr<VisitedPair>> visited_pairs;
 };
 
 }
