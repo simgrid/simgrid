@@ -51,8 +51,7 @@ VisitedPair::VisitedPair(
     process->get_heap()->heaplimit,
     process->get_malloc_info());
 
-  this->nb_processes =
-    mc_model_checker->process().simix_processes().size();
+  this->nb_processes = mc_model_checker->process().simix_processes().size();
 
   this->automaton_state = automaton_state;
   this->num = pair_num;
@@ -210,39 +209,39 @@ void LivenessChecker::replay()
     if (pair == livenessStack_.back())
       break;
 
-      std::shared_ptr<State> state = pair->graph_state;
+    std::shared_ptr<State> state = pair->graph_state;
 
-      if (pair->exploration_started) {
+    if (pair->exploration_started) {
 
-        int value;
-        smx_simcall_t saved_req = MC_state_get_executed_request(state.get(), &value);
+      int value;
+      smx_simcall_t saved_req = MC_state_get_executed_request(state.get(), &value);
 
-        smx_simcall_t req = nullptr;
+      smx_simcall_t req = nullptr;
 
-        if (saved_req != nullptr) {
-          /* because we got a copy of the executed request, we have to fetch the
+      if (saved_req != nullptr) {
+        /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
-          const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
-          req = &issuer->simcall;
+        const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
+        req = &issuer->simcall;
 
-          /* Debug information */
-          if (XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)) {
-            char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
-            XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state.get());
-            xbt_free(req_str);
-          }
-
+        /* Debug information */
+        if (XBT_LOG_ISENABLED(mc_liveness, xbt_log_priority_debug)) {
+          char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
+          XBT_DEBUG("Replay (depth = %d) : %s (%p)", depth, req_str, state.get());
+          xbt_free(req_str);
         }
 
-        simgrid::mc::handle_simcall(req, value);
-        mc_model_checker->wait_for_requests();
       }
 
-      /* Update statistics */
-      mc_stats->visited_pairs++;
-      mc_stats->executed_transitions++;
+      simgrid::mc::handle_simcall(req, value);
+      mc_model_checker->wait_for_requests();
+    }
 
-      depth++;
+    /* Update statistics */
+    mc_stats->visited_pairs++;
+    mc_stats->executed_transitions++;
+
+    depth++;
 
   }
 
@@ -277,8 +276,7 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
     else
       visited_pair->other_num = pair_test->other_num;
     if (dot_output == nullptr)
-      XBT_DEBUG("Pair %d already visited ! (equal to pair %d)",
-      visited_pair->num, pair_test->num);
+      XBT_DEBUG("Pair %d already visited ! (equal to pair %d)", visited_pair->num, pair_test->num);
     else
       XBT_DEBUG("Pair %d already visited ! (equal to pair %d (pair %d in dot_output))",
         visited_pair->num, pair_test->num, visited_pair->other_num);
