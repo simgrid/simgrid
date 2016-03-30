@@ -12,6 +12,7 @@
 #include <string>
 #include <list>
 #include <memory>
+#include <vector>
 
 #include <simgrid_config.h>
 #include <xbt/base.h>
@@ -35,7 +36,7 @@ struct XBT_PRIVATE Pair {
   int search_cycle = 0;
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
-  simgrid::xbt::unique_ptr<s_xbt_dynar_t> atomic_propositions;
+  std::vector<int> atomic_propositions;
   int requests = 0;
   int depth = 0;
   int exploration_started = 0;
@@ -53,13 +54,13 @@ struct XBT_PRIVATE VisitedPair {
   int acceptance_pair = 0;
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
-  simgrid::xbt::unique_ptr<s_xbt_dynar_t> atomic_propositions;
+  std::vector<int> atomic_propositions;
   std::size_t heap_bytes_used = 0;
   int nb_processes = 0;
 
   VisitedPair(
     int pair_num, xbt_automaton_state_t automaton_state,
-    xbt_dynar_t atomic_propositions,
+    std::vector<int> const& atomic_propositions,
     std::shared_ptr<simgrid::mc::State> graph_state);
   ~VisitedPair();
 };
@@ -75,7 +76,7 @@ private:
   int main();
   void prepare();
   int compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2);
-  simgrid::xbt::unique_ptr<s_xbt_dynar_t> getPropositionValues();
+  std::vector<int> getPropositionValues();
   std::shared_ptr<VisitedPair> insertAcceptancePair(simgrid::mc::Pair* pair);
   int insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair, simgrid::mc::Pair* pair);
   void showAcceptanceCycle(std::size_t depth);

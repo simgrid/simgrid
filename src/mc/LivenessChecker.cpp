@@ -40,7 +40,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 namespace simgrid {
 namespace mc {
 
-VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, std::shared_ptr<simgrid::mc::State> graph_state)
+VisitedPair::VisitedPair(
+  int pair_num, xbt_automaton_state_t automaton_state,
+  std::vector<int> const& atomic_propositions, std::shared_ptr<simgrid::mc::State> graph_state)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
 
@@ -58,36 +60,36 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xb
   this->num = pair_num;
   this->other_num = -1;
   this->acceptance_pair = 0;
-  this->atomic_propositions = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(
-    xbt_dynar_new(sizeof(int), nullptr));
-
-  unsigned int cursor = 0;
-  int value;
-  xbt_dynar_foreach(atomic_propositions, cursor, value)
-      xbt_dynar_push_as(this->atomic_propositions.get(), int, value);
+  this->atomic_propositions = atomic_propositions;
 }
 
 VisitedPair::~VisitedPair()
 {
 }
 
-static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
-                                       xbt_dynar_t atomic_propositions_values)
+static int MC_automaton_evaluate_label(
+  xbt_automaton_exp_label_t l,
+  std::vector<int> const& atomic_propositions_values)
 {
 
   switch (l->type) {
   case 0:{
-      int left_res = MC_automaton_evaluate_label(l->u.or_and.left_exp, atomic_propositions_values);
-      int right_res = MC_automaton_evaluate_label(l->u.or_and.right_exp, atomic_propositions_values);
+      int left_res = MC_automaton_evaluate_label(
+        l->u.or_and.left_exp, atomic_propositions_values);
+      int right_res = MC_automaton_evaluate_label(
+        l->u.or_and.right_exp, atomic_propositions_values);
       return (left_res || right_res);
     }
   case 1:{
-      int left_res = MC_automaton_evaluate_label(l->u.or_and.left_exp, atomic_propositions_values);
-      int right_res = MC_automaton_evaluate_label(l->u.or_and.right_exp, atomic_propositions_values);
+      int left_res = MC_automaton_evaluate_label(
+        l->u.or_and.left_exp, atomic_propositions_values);
+      int right_res = MC_automaton_evaluate_label(
+        l->u.or_and.right_exp, atomic_propositions_values);
       return (left_res && right_res);
     }
   case 2:{
-      int res = MC_automaton_evaluate_label(l->u.exp_not, atomic_propositions_values);
+      int res = MC_automaton_evaluate_label(
+        l->u.exp_not, atomic_propositions_values);
       return (!res);
     }
   case 3:{
@@ -95,7 +97,7 @@ static int MC_automaton_evaluate_label(xbt_automaton_exp_label_t l,
       xbt_automaton_propositional_symbol_t p = nullptr;
       xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, p) {
         if (std::strcmp(xbt_automaton_propositional_symbol_get_name(p), l->u.predicat) == 0)
-          return (int) xbt_dynar_get_as(atomic_propositions_values, cursor, int);
+          return atomic_propositions_values[cursor];
       }
       return -1;
     }
@@ -111,15 +113,13 @@ Pair::Pair() : num(++mc_stats->expanded_pairs)
 
 Pair::~Pair() {}
 
-simgrid::xbt::unique_ptr<s_xbt_dynar_t> LivenessChecker::getPropositionValues()
+std::vector<int> LivenessChecker::getPropositionValues()
 {
+  std::vector<int> values;
   unsigned int cursor = 0;
   xbt_automaton_propositional_symbol_t ps = nullptr;
-  simgrid::xbt::unique_ptr<s_xbt_dynar_t> values = simgrid::xbt::unique_ptr<s_xbt_dynar_t>(xbt_dynar_new(sizeof(int), nullptr));
-  xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, ps) {
-    int res = xbt_automaton_propositional_symbol_evaluate(ps);
-    xbt_dynar_push_as(values.get(), int, res);
-  }
+  xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, ps)
+    values.push_back(xbt_automaton_propositional_symbol_evaluate(ps));
   return values;
 }
 
@@ -135,7 +135,7 @@ int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::Visi
 std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::Pair* pair)
 {
   std::shared_ptr<VisitedPair> new_pair = std::make_shared<VisitedPair>(
-    pair->num, pair->automaton_state, pair->atomic_propositions.get(),
+    pair->num, pair->automaton_state, pair->atomic_propositions,
     pair->graph_state);
   new_pair->acceptance_pair = 1;
 
@@ -146,9 +146,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
     for (auto i = res.first; i != res.second; ++i) {
       std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
       if (xbt_automaton_state_compare(pair_test->automaton_state, new_pair->automaton_state) == 0) {
-        if (xbt_automaton_propositional_symbols_compare_value(
-            pair_test->atomic_propositions.get(),
-            new_pair->atomic_propositions.get()) == 0) {
+        if (pair_test->atomic_propositions == new_pair->atomic_propositions) {
           if (this->compare(pair_test.get(), new_pair.get()) == 0) {
             XBT_INFO("Pair %d already reached (equal to pair %d) !", new_pair->num, pair_test->num);
             livenessStack_.pop_back();
@@ -278,7 +276,7 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
 
   if (visited_pair == nullptr)
     visited_pair = std::make_shared<VisitedPair>(
-      pair->num, pair->automaton_state, pair->atomic_propositions.get(),
+      pair->num, pair->automaton_state, pair->atomic_propositions,
       pair->graph_state);
 
   auto range = std::equal_range(visitedPairs_.begin(), visitedPairs_.end(),
@@ -287,9 +285,7 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
   for (auto i = range.first; i != range.second; ++i) {
     VisitedPair* pair_test = i->get();
     if (xbt_automaton_state_compare(pair_test->automaton_state, visited_pair->automaton_state) == 0) {
-      if (xbt_automaton_propositional_symbols_compare_value(
-          pair_test->atomic_propositions.get(),
-          visited_pair->atomic_propositions.get()) == 0) {
+      if (pair_test->atomic_propositions == visited_pair->atomic_propositions) {
         if (this->compare(pair_test, visited_pair.get()) == 0) {
           if (pair_test->other_num == -1)
             visited_pair->other_num = pair_test->num;
@@ -387,7 +383,6 @@ int LivenessChecker::main(void)
   smx_simcall_t req = nullptr;
   xbt_automaton_transition_t transition_succ = nullptr;
   int cursor = 0;
-  simgrid::xbt::unique_ptr<s_xbt_dynar_t> prop_values;
   std::shared_ptr<VisitedPair> reached_pair = nullptr;
 
   while (!livenessStack_.empty()){
@@ -465,13 +460,13 @@ int LivenessChecker::main(void)
          current_pair->exploration_started = 1;
 
          /* Get values of atomic propositions (variables used in the property formula) */
-         prop_values = this->getPropositionValues();
+         std::vector<int> prop_values = this->getPropositionValues();
 
          /* Evaluate enabled/true transitions in automaton according to atomic propositions values and create new pairs */
          cursor = xbt_dynar_length(current_pair->automaton_state->out) - 1;
          while (cursor >= 0) {
            transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
-           res = MC_automaton_evaluate_label(transition_succ->label, prop_values.get());
+           res = MC_automaton_evaluate_label(transition_succ->label, prop_values);
            if (res == 1 || res == 2) { /* 1 = True transition (always enabled), 2 = enabled transition according to atomic prop values */
               Pair* next_pair = new Pair();
               next_pair->graph_state = std::shared_ptr<simgrid::mc::State>(MC_state_new());
@@ -503,8 +498,6 @@ int LivenessChecker::main(void)
     backtracking:
       if(visited_num == -1)
         XBT_DEBUG("No more request to execute. Looking for backtracking point.");
-
-      prop_values.reset();
 
       /* Traverse the stack backwards until a pair with a non empty interleave
          set is found, deleting all the pairs that have it empty in the way. */
