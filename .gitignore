@@ -978,7 +978,6 @@ examples/java/dht/kademlia/java_dht_kademlia_compiled
 examples/java/cloud/java_cloud_compiled
 examples/java/cloud/energy/java_cloud_energy_compiled
 examples/java/cloud/migration/java_cloud_migration_compiled
-examples/java/commTime/java_commTime_compiled
 examples/java/energy/consumption/java_energy_consumption_compiled
 examples/java/io/file/java_io_file_compiled
 examples/java/io/storage/java_io_storage_compiled
