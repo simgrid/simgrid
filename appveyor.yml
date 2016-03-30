@@ -43,21 +43,25 @@ build_script:
 #- bash -c "cd C:/projects/simgrid; exec 0<&-; ctest --output-on-failure" < nul || true
 
 #test_script:
+# find  examples/java -name '*tesh'|sed 's|^|- perl %TESH_ARGS% C:/projects/simgrid/|' |sort
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/bittorrent/app_bittorrent.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/masterworker/app_masterworker.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/async/async.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/bittorrent/bittorrent.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/chord/chord.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/cloud.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/migration/migration.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/commTime/commtime.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/kademlia/kademlia.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/master_slave_kill/kill.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/masterslave/masterslave.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/migration/migration.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/dht/chord/dht_chord.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/dht/kademlia/dht_kademlia.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/energy/consumption/energy_consumption.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/energy/vm/energy_vm.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/io/file/io_file.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/io/storage/io_storage.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/mutualExclusion/mutualexclusion.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/pingPong/pingpong.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/priority/priority.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/startKillTime/startKillTime.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/suspend/suspend.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/kill/process_kill.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/migration/process_migration.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/startkilltime/process_startkilltime.tesh
+- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/suspend/process_suspend.tesh
 - perl %TESH_ARGS% C:/projects/simgrid/examples/java/tracing/tracingPingPong.tesh
 
 artifacts:
