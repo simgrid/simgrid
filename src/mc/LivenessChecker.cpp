@@ -71,26 +71,26 @@ static int MC_automaton_evaluate_label(
 {
 
   switch (l->type) {
-  case 0:{
+  case xbt_automaton_exp_label::AUT_OR:{
       int left_res = MC_automaton_evaluate_label(
         l->u.or_and.left_exp, atomic_propositions_values);
       int right_res = MC_automaton_evaluate_label(
         l->u.or_and.right_exp, atomic_propositions_values);
       return (left_res || right_res);
     }
-  case 1:{
+  case xbt_automaton_exp_label::AUT_AND:{
       int left_res = MC_automaton_evaluate_label(
         l->u.or_and.left_exp, atomic_propositions_values);
       int right_res = MC_automaton_evaluate_label(
         l->u.or_and.right_exp, atomic_propositions_values);
       return (left_res && right_res);
     }
-  case 2:{
+  case xbt_automaton_exp_label::AUT_NOT:{
       int res = MC_automaton_evaluate_label(
         l->u.exp_not, atomic_propositions_values);
       return (!res);
     }
-  case 3:{
+  case xbt_automaton_exp_label::AUT_PREDICAT:{
       unsigned int cursor = 0;
       xbt_automaton_propositional_symbol_t p = nullptr;
       xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, p) {
@@ -99,7 +99,7 @@ static int MC_automaton_evaluate_label(
       }
       return -1;
     }
-  case 4:
+  case xbt_automaton_exp_label::AUT_ONE:
     return 2;
   default:
     return -1;
