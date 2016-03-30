@@ -50,7 +50,8 @@ foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_c
       COMMENT "Building java_${example}..."
       OUTPUT ${example_dir}/java_${example}_compiled
       DEPENDS ${example_sources} simgrid-java_jar ${SIMGRID_JAR}
-      COMMAND ${JAVA_COMPILE} -classpath ${SIMGRID_JAR} -d ${CMAKE_CURRENT_SOURCE_DIR} ${${example}_sources}
+      COMMAND ${CMAKE_COMMAND} -E make_directory ${example_dir}
+      COMMAND ${JAVA_COMPILE} -classpath ${SIMGRID_JAR} -d ${CMAKE_CURRENT_BINARY_DIR} ${${example}_sources}
       COMMAND ${CMAKE_COMMAND} -E remove ${example_dir}/java_${example}_compiled
       COMMAND ${CMAKE_COMMAND} -E touch ${example_dir}/java_${example}_compiled
     )
