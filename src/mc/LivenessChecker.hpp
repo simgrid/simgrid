@@ -64,7 +64,7 @@ struct XBT_PRIVATE VisitedPair {
   ~VisitedPair();
 };
 
-class LivenessChecker : public Checker {
+class XBT_PRIVATE LivenessChecker : public Checker {
 public:
   LivenessChecker(Session& session);
   ~LivenessChecker();
@@ -81,10 +81,10 @@ private:
   void showAcceptanceCycle(std::size_t depth);
   void replay();
   void removeAcceptancePair(int pair_num);
-public: // (non-static wannabe) fields
-  static std::list<std::shared_ptr<VisitedPair>> acceptance_pairs;
-  static std::list<Pair*> liveness_stack;
-  static std::list<std::shared_ptr<VisitedPair>> visited_pairs;
+public:
+  std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
+  std::list<Pair*> livenessStack_;
+  std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
 };
 
 }

@@ -53,7 +53,7 @@ std::unique_ptr<simgrid::mc::Checker> createChecker(simgrid::mc::Session& sessio
       new simgrid::mc::SafetyChecker(session));
   else
     return std::unique_ptr<simgrid::mc::Checker>(
-      new simgrid::mc::LivenessChecker(session));
+      simgrid::mc::createLivenessChecker(session));
 }
 
 int main(int argc, char** argv)
@@ -82,6 +82,7 @@ int main(int argc, char** argv)
     simgrid::mc::session = session.get();
     std::unique_ptr<simgrid::mc::Checker> checker = createChecker(*session);
     int res = checker->run();
+    checker = nullptr;
     session->close();
     return res;
   }

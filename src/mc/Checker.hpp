@@ -52,6 +52,8 @@ protected:
   Session& getSession() { return *session_; }
 };
 
+XBT_PUBLIC() Checker* createLivenessChecker(Session& session);
+
 }
 }
 
