@@ -81,6 +81,7 @@ private:
   void showAcceptanceCycle(std::size_t depth);
   void replay();
   void removeAcceptancePair(int pair_num);
+  void purgeVisitedPairs();
 public:
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
   std::list<std::shared_ptr<Pair>> livenessStack_;

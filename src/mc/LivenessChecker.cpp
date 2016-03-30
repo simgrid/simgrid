@@ -287,22 +287,19 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
   }
 
   visitedPairs_.insert(range.first, std::move(visited_pair));
-
-  if (visitedPairs_.size() > (std::size_t) _sg_mc_visited) {
-    int min2 = mc_stats->expanded_pairs;
-
-    std::list<std::shared_ptr<VisitedPair>>::iterator index2;
-    for (auto i = visitedPairs_.begin(); i != visitedPairs_.end(); ++i) {
-      if ((*i)->num < min2) {
-        index2 = i;
-        min2 = (*i)->num;
-      }
-    }
-
-    visitedPairs_.erase(index2);
-  }
-
+  this->purgeVisitedPairs();
   return -1;
+}
+
+void LivenessChecker::purgeVisitedPairs()
+{
+  if (_sg_mc_visited != 0 && visitedPairs_.size() > (std::size_t) _sg_mc_visited) {
+    // Remove the oldest entry with a linear search:
+    visitedPairs_.erase(std::min_element(
+      visitedPairs_.begin(), visitedPairs_.end(),
+      [](std::shared_ptr<VisitedPair> const a, std::shared_ptr<VisitedPair> const& b) {
+        return a->num < b->num; } ));
+  }
 }
 
 LivenessChecker::LivenessChecker(Session& session) : Checker(session)
