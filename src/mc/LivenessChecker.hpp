@@ -7,7 +7,9 @@
 #ifndef SIMGRID_MC_LIVENESS_CHECKER_HPP
 #define SIMGRID_MC_LIVENESS_CHECKER_HPP
 
-#include <stdint.h>
+#include <cstddef>
+
+#include <string>
 
 #include <simgrid_config.h>
 #include <xbt/base.h>
@@ -52,7 +54,7 @@ struct XBT_PRIVATE VisitedPair {
   simgrid::mc::State* graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
   simgrid::xbt::unique_ptr<s_xbt_dynar_t> atomic_propositions;
-  size_t heap_bytes_used = 0;
+  std::size_t heap_bytes_used = 0;
   int nb_processes = 0;
   int acceptance_removed = 0;
   int visited_removed = 0;
