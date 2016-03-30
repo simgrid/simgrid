@@ -33,13 +33,13 @@ extern XBT_PRIVATE xbt_automaton_t property_automaton;
 
 struct XBT_PRIVATE Pair {
   int num = 0;
-  int search_cycle = 0;
+  bool search_cycle = false;
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
   std::vector<int> atomic_propositions;
   int requests = 0;
   int depth = 0;
-  int exploration_started = 0;
+  bool exploration_started = false;
 
   Pair();
   ~Pair();
