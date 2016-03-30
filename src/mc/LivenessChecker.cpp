@@ -35,13 +35,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
 
 /********* Global variables *********/
 
-xbt_dynar_t acceptance_pairs;
-static xbt_fifo_t liveness_stack;
-
 /********* Static functions *********/
 
 namespace simgrid {
 namespace mc {
+
+xbt_dynar_t LivenessChecker::acceptance_pairs;
+xbt_fifo_t LivenessChecker::liveness_stack;
 
 VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xbt_dynar_t atomic_propositions, simgrid::mc::State* graph_state)
 {
@@ -73,7 +73,7 @@ VisitedPair::VisitedPair(int pair_num, xbt_automaton_state_t automaton_state, xb
 }
 
 static int is_exploration_stack_pair(simgrid::mc::VisitedPair* pair){
-  xbt_fifo_item_t item = xbt_fifo_get_first_item(liveness_stack);
+  xbt_fifo_item_t item = xbt_fifo_get_first_item(LivenessChecker::liveness_stack);
   while (item) {
     if (((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->num == pair->num){
       ((simgrid::mc::Pair*)xbt_fifo_get_item_content(item))->visited_pair_removed = 1;
@@ -159,7 +159,7 @@ int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::Visi
 
 simgrid::mc::VisitedPair* LivenessChecker::insertAcceptancePair(simgrid::mc::Pair* pair)
 {
-  auto acceptance_pairs = simgrid::xbt::range<simgrid::mc::VisitedPair*>(::acceptance_pairs);
+  auto acceptance_pairs = simgrid::xbt::range<simgrid::mc::VisitedPair*>(LivenessChecker::acceptance_pairs);
   auto new_pair =
     std::unique_ptr<simgrid::mc::VisitedPair>(new VisitedPair(
       pair->num, pair->automaton_state, pair->atomic_propositions.get(),
@@ -189,7 +189,7 @@ simgrid::mc::VisitedPair* LivenessChecker::insertAcceptancePair(simgrid::mc::Pai
 
   auto new_raw_pair = new_pair.release();
   xbt_dynar_insert_at(
-    ::acceptance_pairs, res.first - acceptance_pairs.begin(), &new_raw_pair);
+    LivenessChecker::acceptance_pairs, res.first - acceptance_pairs.begin(), &new_raw_pair);
   return new_raw_pair;
 }
 

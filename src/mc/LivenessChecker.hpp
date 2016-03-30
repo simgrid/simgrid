@@ -78,6 +78,9 @@ private:
   void showAcceptanceCycle(std::size_t depth);
   void replay(xbt_fifo_t stack);
   void removeAcceptancePair(int pair_num);
+public: // (non-static wannabe) fields
+  static xbt_dynar_t acceptance_pairs;
+  static xbt_fifo_t liveness_stack;
 };
 
 }
