@@ -534,7 +534,7 @@ int LivenessChecker::run()
   mc_model_checker->wait_for_requests();
 
   XBT_DEBUG("Starting the liveness algorithm");
-  _sg_mc_liveness = 1;
+
 
   /* Create the initial state */
   simgrid::mc::initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());

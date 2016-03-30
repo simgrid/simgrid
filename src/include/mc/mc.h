@@ -44,7 +44,6 @@ extern XBT_PUBLIC(int) _sg_mc_visited;
 extern XBT_PRIVATE char* _sg_mc_dot_output_file;
 extern XBT_PUBLIC(int) _sg_mc_comms_determinism;
 extern XBT_PUBLIC(int) _sg_mc_send_determinism;
-extern XBT_PRIVATE int _sg_mc_liveness;
 extern XBT_PRIVATE int _sg_mc_snapshot_fds;
 extern XBT_PRIVATE int _sg_mc_termination;
 
