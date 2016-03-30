@@ -21,11 +21,14 @@ set(dht_kademlia_sources       ${srcdir}/Main.java  ${srcdir}/Answer.java  ${src
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/energy/consumption)
 set(energy_consumption_sources ${srcdir}/Main.java  ${srcdir}/EnergyConsumer.java)
 
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/energy/vm)
+set(energy_vm_sources          ${srcdir}/Main.java  ${srcdir}/EnergyVMRunner.java)
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/io/file)
-set(io_file_sources ${srcdir}/Main.java  ${srcdir}/Node.java)
+set(io_file_sources            ${srcdir}/Main.java  ${srcdir}/Node.java)
 
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/io/storage)
-set(io_storage_sources ${srcdir}/Main.java  ${srcdir}/Client.java)
+set(io_storage_sources         ${srcdir}/Main.java  ${srcdir}/Client.java)
 
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/kill)
 set(process_kill_sources       ${srcdir}/Main.java  ${srcdir}/Killer.java  ${srcdir}/Victim.java)
@@ -39,7 +42,7 @@ set(process_startkilltime_sources ${srcdir}/Main.java ${srcdir}/Sleeper.java)
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend)
 set(process_suspend_sources    ${srcdir}/Main.java  ${srcdir}/DreamMaster.java  ${srcdir}/LazyGuy.java)
 
-foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_consumption io_file io_storage 
+foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage 
          process_kill process_migration process_startkilltime process_suspend)
   string (REPLACE "_" "/" example_dir ${example})
   if(enable_java)
@@ -68,8 +71,8 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process/startkilltime/startkilltime.xml   PARENT_SCOPE)
 
 if(enable_java)
-  foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_consumption io_file io_storage 
-           process_kill process_migration process_startkilltime process_suspend)
+  foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_consumption energy_vm io_file 
+           io_storage process_kill process_migration process_startkilltime process_suspend)
     string (REPLACE "_" "/" example_dir ${example})
     ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()

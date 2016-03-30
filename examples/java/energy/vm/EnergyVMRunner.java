@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package cloud.energy;
+package energy.vm;
 
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;

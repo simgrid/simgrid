@@ -1,6 +1,6 @@
 #! tesh
 
-$ java -classpath ${classpath:=.} cloud/energy/Main ${srcdir:=.}/../platforms/energy_platform.xml
+$ java -classpath ${classpath:=.} energy/vm/Main ${srcdir:=.}/../platforms/energy_platform.xml
 > [0.000000] [jmsg/INFO] Using regular java threads.
 > [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Creating and starting two VMs
 > [MyHost1:energy VM runner:(1) 0.000000] [jmsg/INFO] Create two tasks on Host1: one inside a VM, the other directly on the host
