@@ -979,7 +979,8 @@ examples/java/cloud/energy/java_cloud_energy_compiled
 examples/java/cloud/migration/java_cloud_migration_compiled
 examples/java/commTime/java_commTime_compiled
 examples/java/energy/consumption/java_energy_consumption_compiled
-examples/java/io/java_io_compiled
+examples/java/io/file/java_io_file_compiled
+examples/java/io/storage/java_io_storage_compiled
 examples/java/process/kill/java_process_kill_compiled
 examples/java/process/migration/java_process_migration_compiled
 examples/java/process/suspend/java_process_suspend_compiled
@@ -989,9 +990,6 @@ examples/java/pingPong/java_pingPong_compiled
 examples/java/priority/java_priority_compiled
 examples/java/startKillTime/java_startKillTime_compiled
 examples/java/tracing/java_tracing_compiled
-examples/java/reservationSurfPlugin/java_reservation_surf_plugin_compiled
-examples/java/surfCpuModel/java_surf_cpu_model_compiled
-examples/java/surfPlugin/java_surf_plugin_compiled
 /CMakeCache.txt
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness

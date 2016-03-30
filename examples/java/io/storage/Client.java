@@ -18,7 +18,7 @@
  *
 ******************************************************************************/
 
-package io;
+package io.storage;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
