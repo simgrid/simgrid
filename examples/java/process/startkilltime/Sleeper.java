@@ -4,23 +4,22 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package startKillTime;
+package process.startkilltime;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
-/* Lazy Guy Slave, suspends itself ASAP */
-public class Slave extends Process {
-  public Slave(Host host, String name, String[]args) {
+public class Sleeper extends Process {
+  public Sleeper(Host host, String name, String[]args) {
     super(host,name,args);
   }
 
   public void main(String[] args) throws MsgException {
-    Msg.info("Hello!");
+    Msg.info("Hello! I go to sleep.");
     try {
-      waitFor(10.0);
-      Msg.info("OK, goodbye now.");
+      waitFor(Integer.valueOf(args[0]).intValue());
+      Msg.info("Done sleeping");
     } catch (MsgException e) {
       Msg.debug("Wait cancelled.");
     }

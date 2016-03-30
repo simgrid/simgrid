@@ -33,11 +33,14 @@ set(process_kill_sources       ${srcdir}/Main.java  ${srcdir}/Killer.java  ${src
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/migration)
 set(process_migration_sources  ${srcdir}/Main.java  ${srcdir}/Emigrant.java  ${srcdir}/Policeman.java)
 
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/startkilltime)
+set(process_startkilltime_sources ${srcdir}/Main.java ${srcdir}/Sleeper.java)
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend)
 set(process_suspend_sources    ${srcdir}/Main.java  ${srcdir}/DreamMaster.java  ${srcdir}/LazyGuy.java)
 
 foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_consumption io_file io_storage 
-         process_kill process_migration process_suspend)
+         process_kill process_migration process_startkilltime process_suspend)
   string (REPLACE "_" "/" example_dir ${example})
   if(enable_java)
     add_custom_command(
@@ -61,11 +64,12 @@ set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker/
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bittorrent.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker/masterworker.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/chord.xml
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/kademlia.xml   PARENT_SCOPE)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/kademlia.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/process/startkilltime/startkilltime.xml   PARENT_SCOPE)
 
 if(enable_java)
   foreach (example app_bittorrent app_masterworker dht_chord dht_kademlia energy_consumption io_file io_storage 
-           process_kill process_migration process_suspend)
+           process_kill process_migration process_startkilltime process_suspend)
     string (REPLACE "_" "/" example_dir ${example})
     ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()

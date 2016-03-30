@@ -931,7 +931,6 @@ set(CMAKEFILES_TXT
     examples/java/mutualExclusion/CMakeLists.txt
     examples/java/pingPong/CMakeLists.txt
     examples/java/priority/CMakeLists.txt
-    examples/java/startKillTime/CMakeLists.txt
     examples/java/tracing/CMakeLists.txt
   examples/msg/CMakeLists.txt
     examples/msg/cloud/CMakeLists.txt

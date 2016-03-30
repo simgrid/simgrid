@@ -987,7 +987,7 @@ examples/java/process/suspend/java_process_suspend_compiled
 examples/java/mutualExclusion/java_mutualExclusion_compiled
 examples/java/pingPong/java_pingPong_compiled
 examples/java/priority/java_priority_compiled
-examples/java/startKillTime/java_startKillTime_compiled
+examples/java/process/startkilltime/java_process_startkilltime_compiled
 examples/java/tracing/java_tracing_compiled
 /CMakeCache.txt
 examples/smpi/mc/smpi_bugged1
