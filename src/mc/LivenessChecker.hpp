@@ -85,7 +85,7 @@ private:
 public: // (non-static wannabe) fields
   static std::list<VisitedPair*> acceptance_pairs;
   static std::list<Pair*> liveness_stack;
-  static xbt_dynar_t visited_pairs;
+  static std::list<VisitedPair*> visited_pairs;
 };
 
 }
