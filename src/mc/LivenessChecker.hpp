@@ -51,7 +51,6 @@ struct XBT_PRIVATE Pair {
 struct XBT_PRIVATE VisitedPair {
   int num = 0;
   int other_num = 0; /* Dot output for */
-  int acceptance_pair = 0;
   std::shared_ptr<simgrid::mc::State> graph_state = nullptr; /* System state included */
   xbt_automaton_state_t automaton_state = nullptr;
   std::vector<int> atomic_propositions;

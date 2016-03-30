@@ -57,7 +57,6 @@ VisitedPair::VisitedPair(
   this->automaton_state = automaton_state;
   this->num = pair_num;
   this->other_num = -1;
-  this->acceptance_pair = 0;
   this->atomic_propositions = atomic_propositions;
 }
 
@@ -135,7 +134,6 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
   std::shared_ptr<VisitedPair> new_pair = std::make_shared<VisitedPair>(
     pair->num, pair->automaton_state, pair->atomic_propositions,
     pair->graph_state);
-  new_pair->acceptance_pair = 1;
 
   auto res = std::equal_range(acceptancePairs_.begin(), acceptancePairs_.end(),
     new_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
