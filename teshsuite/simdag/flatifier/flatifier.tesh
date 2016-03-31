@@ -1,5 +1,5 @@
 #! ./tesh
-
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -135,6 +135,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster.xml "--log=root.fmt:[%1
 > </AS>
 > </platform>
 
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster_multicore.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -269,6 +270,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/one_cluster_multicore.xml "--log=ro
 > </AS>
 > </platform>
 
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/host_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -303,6 +305,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/host_attributes.xml "--log=root.fmt
 > </AS>
 > </platform>
 
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -321,6 +324,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/link_attributes.xml "--log=root.fmt
 > </AS>
 > </platform>
 
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/three_hosts_non_symmetric_route.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -364,6 +368,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/three_hosts_non_symmetric_route.xml
 > </AS>
 > </platform>
 
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -499,6 +504,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_clusters.xml "--log=root.fmt:[%
 > </AS>
 > </platform>
 
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_multi_hop.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -526,6 +532,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_multi_hop.xml "--log=root
 > </AS>
 > </platform>
 
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_one_link.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -551,6 +558,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ../platforms/two_hosts_one_link.xml "--log=root.
 > </AS>
 > </platform>
 
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
@@ -685,7 +693,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 > </AS>
 > </platform>
 
-
+! output sort
 $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/torus_cluster.xml "--log=root.fmt:[%10.6r]%e[%i:%P@%h]%e%m%n"
 > [  0.000000] [0:maestro@] Switching to the L07 model to handle parallel tasks.
 > <?xml version='1.0'?>
