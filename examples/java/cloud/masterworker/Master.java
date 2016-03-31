@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package cloud;
+package cloud.masterworker;
 
 import java.util.ArrayList;
 
@@ -24,7 +24,7 @@ public class Master extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-    int slavesCount = Cloud.hostNB;
+    int slavesCount = Main.hostNB;
     ArrayList<VM> vms = new ArrayList<VM>();
 
     // Create one VM per host and bind a process inside each one. 
@@ -33,9 +33,9 @@ public class Master extends Process {
       VM vm = new VM(hosts[i+1],"VM0"+i);
       vm.start();
       vms.add(vm);
-      Slave slave = new Slave(vm,i);
-      Msg.info("Put Worker "+slave.getName()+ " on "+vm.getName());
-      slave.start();
+      Worker worker= new Worker(vm,i);
+      Msg.info("Put Worker "+worker.getName()+ " on "+vm.getName());
+      worker.start();
     }
 
     Msg.info("Launched " + vms.size() + " VMs");
@@ -87,7 +87,7 @@ public class Master extends Process {
 
   public void workBatch(int slavesCount) throws MsgException {
     for (int i = 0; i < slavesCount; i++) {
-      Task task = new Task("Task0" + i, Cloud.task_comp_size, Cloud.task_comm_size);
+      Task task = new Task("Task0" + i, Main.task_comp_size, Main.task_comm_size);
       Msg.info("Sending to WRK0" + i);
       task.send("MBOX:WRK0" + i);
     }

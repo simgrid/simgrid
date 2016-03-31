@@ -4,13 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package cloud;
+package cloud.masterworker;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.MsgException;
 
-public class Cloud {
+public class Main {
   public static final double task_comp_size = 10;
   public static final double task_comm_size = 10;
   public static final int hostNB = 2 ; 
@@ -18,8 +18,8 @@ public class Cloud {
     Msg.init(args); 
 
     if (args.length < 1) {
-      Msg.info("Usage   : Cloud platform_file");
-      Msg.info("Usage  : Cloud ../platforms/platform.xml");
+      Msg.info("Usage   : Main platform_file");
+      Msg.info("Usage  : Main ../platforms/platform.xml");
       System.exit(1);
     }
 

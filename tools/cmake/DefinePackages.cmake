@@ -925,8 +925,6 @@ set(txt_files
 set(CMAKEFILES_TXT
   examples/java/CMakeLists.txt
     examples/java/async/CMakeLists.txt
-    examples/java/cloud/CMakeLists.txt
-    examples/java/cloud/migration/CMakeLists.txt
     examples/java/mutualExclusion/CMakeLists.txt
     examples/java/pingPong/CMakeLists.txt
     examples/java/priority/CMakeLists.txt

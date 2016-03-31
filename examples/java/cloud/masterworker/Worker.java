@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package cloud;
+package cloud.masterworker;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
@@ -12,9 +12,9 @@ import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
-public class Slave extends Process {
+public class Worker extends Process {
   private int number;
-  public Slave(Host host, int number) {
+  public Worker(Host host, int number) {
     super(host,"WRK0" + number,null);
     this.number = number;
   }
@@ -27,10 +27,6 @@ public class Slave extends Process {
         task = Task.receive("MBOX:WRK0"+number);
       } catch (MsgException e) {
         Msg.debug("Received failed. I'm done. See you!");
-        break;
-      }
-      if (task instanceof FinalizeTask) {
-        Msg.info("Received Finalize. I'm done. See you!");
         break;
       }
       Msg.info("Received \"" + task.getName() +  "\". Processing it.");
