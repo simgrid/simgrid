@@ -1814,7 +1814,7 @@ characteristics (lookup : time to resolve a route):
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
     not be used.
 
-\subsection pf_switch I want to describe a switch but there is no switch tag !
+\subsection pf_switch How to describe a switch given that is no switch tag?
 
 Actually we did not include switch tag, ok. But when you're trying to
 simulate a switch, the only major impact it has when you're using
@@ -1825,6 +1825,26 @@ using intensively your switch. So, the switch impact is similar to a
 link one. That's why we are used to describe a switch using a link tag
 (as a link is not an edge by a hyperedge, you can connect more than 2
 other links to it).
+
+\subsection pf_multicabinets How to model multi-cabinets clusters?
+
+You have several possibilities, as usual when modeling things. If your
+cabinets are homogeneous and the intercabinet network negligible for
+your study, you should just create a larger cluster with all hosts at
+the same layer. 
+
+In the rare case where your hosts are not homogeneous between the
+cabinets, you can create your cluster completely manually. For that,
+create an As using the Cluster routing, and then use one
+&lt;cabinet&gt; for each cabinet. This cabinet tag can only be used an
+As using the Cluster routing schema, and creating 
+
+Be warned that creating a cluster manually from the XML with
+&lt;cabinet&gt;, &lt;backbone&gt; and friends is rather tedious. The
+easiest way to retrieve some control of your model without diving into
+the &lt;cluster&gt; internals is certainly to create one separate
+&lt;cluster&gt; per cabinet and interconnect them together. This is
+what we did in the G5K example platform for the Graphen cluster.
 
 \subsection pf_platform_multipath How to express multipath routing in platform files?
 
