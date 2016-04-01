@@ -26,19 +26,13 @@
 namespace simgrid {
   namespace surf {
 
-    class NetworkModel;
     class NetworkAction;
-
-    /*************
-     * Callbacks *
-     *************/
-
 
     /** @brief Callback signal fired when the state of a NetworkAction changes
      *  Signature: `void(NetworkAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)` */
     XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) networkActionStateChangedCallbacks;
 
-      }
+  }
 }
 /*********
  * Model *
@@ -70,8 +64,6 @@ namespace simgrid {
        * @param bandwidth The initial bandwidth of the Link in bytes per second
        * @param latency The initial latency of the Link in seconds
        * @param policy The sharing policy of the Link
-       * @param properties Dictionary of properties associated to this Resource
-       * @return The created Link
        */
       virtual Link* createLink(const char *name, double bandwidth, double latency,
           e_surf_link_sharing_policy_t policy, xbt_dict_t properties)=0;
@@ -79,7 +71,7 @@ namespace simgrid {
       /**
        * @brief Create a communication between two hosts.
        * @details It makes calls to the routing part, and execute the communication
-       * between the two end points.
+       *          between the two end points.
        *
        * @param src The source of the communication
        * @param dst The destination of the communication
@@ -144,23 +136,10 @@ namespace simgrid {
         public simgrid::surf::Resource,
         public simgrid::surf::PropertyHolder {
         public:
-      /**
-       * @brief Link constructor
-       *
-       * @param model The NetworkModel associated to this Link
-       * @param name The name of the Link
-       * @param props Dictionary of properties associated to this Link
-       */
-      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props);
 
-      /**
-       * @brief Link constructor
-       *
-       * @param model The NetworkModel associated to this Link
-       * @param name The name of the Link
-       * @param props Dictionary of properties associated to this Link
-       * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-       */
+      /** @brief Constructor of non-LMM links */
+      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props);
+      /** @brief Constructor of LMM links */
       Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
 
       /* Link destruction logic */

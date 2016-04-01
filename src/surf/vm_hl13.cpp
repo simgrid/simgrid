@@ -75,8 +75,8 @@ double VMHL13Model::next_occuring_event(double now)
     Cpu *cpu = ws_vm->p_cpu;
     xbt_assert(cpu, "cpu-less host");
 
-    double solved_value = ws_vm->p_action->getVariable()->value;
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getName(), ws_vm->p_hostPM->name().c_str());
+    double solved_value = ws_vm->action_->getVariable()->value;
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getName(), ws_vm->getPm()->name().c_str());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -123,20 +123,20 @@ VMHL13::VMHL13(VMModel *model, const char* name, sg_host_t host_PM)
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
-  p_action = sub_cpu->execution_start(0);
+  action_ = sub_cpu->execution_start(0);
 
-  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", name, p_hostPM->name().c_str(), xbt_dynar_length(p_storage));
+  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", name, hostPM_->name().c_str(), xbt_dynar_length(p_storage));
 }
 
 void VMHL13::suspend()
 {
-  p_action->suspend();
+  action_->suspend();
   p_vm_state = SURF_VM_STATE_SUSPENDED;
 }
 
 void VMHL13::resume()
 {
-  p_action->resume();
+  action_->resume();
   p_vm_state = SURF_VM_STATE_RUNNING;
 }
 
@@ -145,7 +145,7 @@ void VMHL13::save()
   p_vm_state = SURF_VM_STATE_SAVING;
 
   /* FIXME: do something here */
-  p_action->suspend();
+  action_->suspend();
   p_vm_state = SURF_VM_STATE_SAVED;
 }
 
@@ -154,7 +154,7 @@ void VMHL13::restore()
   p_vm_state = SURF_VM_STATE_RESTORING;
 
   /* FIXME: do something here */
-  p_action->resume();
+  action_->resume();
   p_vm_state = SURF_VM_STATE_RUNNING;
 }
 
@@ -163,47 +163,47 @@ void VMHL13::migrate(sg_host_t host_dest)
 {
    HostImpl *surfHost_dst = host_dest->extension<HostImpl>();
    const char *vm_name = getName();
-   const char *pm_name_src = p_hostPM->name().c_str();
+   const char *pm_name_src = hostPM_->name().c_str();
    const char *pm_name_dst = surfHost_dst->getName();
 
    /* update net_elm with that of the destination physical host */
    sg_host_by_name(vm_name)->pimpl_netcard = sg_host_by_name(pm_name_dst)->pimpl_netcard;
 
-   p_hostPM = host_dest;
+   hostPM_ = host_dest;
 
    /* Update vcpu's action for the new pm */
    {
      /* create a cpu action bound to the pm model at the destination. */
      CpuAction *new_cpu_action = static_cast<CpuAction*>(host_dest->pimpl_cpu->execution_start(0));
 
-     Action::State state = p_action->getState();
+     Action::State state = action_->getState();
      if (state != Action::State::done)
        XBT_CRITICAL("FIXME: may need a proper handling, %d", static_cast<int>(state));
-     if (p_action->getRemainsNoUpdate() > 0)
-       XBT_CRITICAL("FIXME: need copy the state(?), %f", p_action->getRemainsNoUpdate());
+     if (action_->getRemainsNoUpdate() > 0)
+       XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->getRemainsNoUpdate());
 
      /* keep the bound value of the cpu action of the VM. */
-     double old_bound = p_action->getBound();
+     double old_bound = action_->getBound();
      if (old_bound != 0) {
        XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
        new_cpu_action->setBound(old_bound);
      }
 
-     XBT_ATTRIB_UNUSED int ret = p_action->unref();
+     XBT_ATTRIB_UNUSED int ret = action_->unref();
      xbt_assert(ret == 1, "Bug: some resource still remains");
 
-     p_action = new_cpu_action;
+     action_ = new_cpu_action;
    }
 
    XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
 }
 
 void VMHL13::setBound(double bound){
- p_action->setBound(bound);
+ action_->setBound(bound);
 }
 
 void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
- p_action->setAffinity(cpu, mask);
+ action_->setAffinity(cpu, mask);
 }
 
 }

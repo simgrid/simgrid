@@ -34,7 +34,7 @@ VMModel::vm_list_t VMModel::ws_vms;
 
 VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u::Host *hostPM)
 : HostImpl(model, name, NULL, NULL, NULL)
-, p_hostPM(hostPM)
+, hostPM_(hostPM)
 {
   VMModel::ws_vms.push_back(*this);
   simgrid::s4u::Host::by_name_or_create(name)->extension_set<simgrid::surf::HostImpl>(this);
@@ -48,7 +48,7 @@ VirtualMachine::~VirtualMachine()
   VMDestructedCallbacks(this);
   VMModel::ws_vms.erase(VMModel::vm_list_t::s_iterator_to(*this));
   /* Free the cpu_action of the VM. */
-  XBT_ATTRIB_UNUSED int ret = p_action->unref();
+  XBT_ATTRIB_UNUSED int ret = action_->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");
 }
 
@@ -74,7 +74,7 @@ void VirtualMachine::turnOff() {
 
 /** @brief returns the physical machine on which the VM is running **/
 sg_host_t VirtualMachine::getPm() {
-  return p_hostPM;
+  return hostPM_;
 }
 
 }
