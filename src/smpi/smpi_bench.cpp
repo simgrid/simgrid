@@ -723,3 +723,35 @@ void smpi_destroy_global_memory_segments(){
   xbt_free(smpi_privatisation_regions);
 #endif
 }
+
+extern "C" {
+
+  smpi_trace_call_location_t trace_call_location;
+
+  smpi_trace_call_location_t* smpi_trace_get_call_location() {
+    return smpi_process_get_call_location();
+  }
+
+  void smpi_trace_set_call_location(const char* file, int line) {
+    smpi_trace_call_location_t* loc = smpi_process_get_call_location();
+
+    loc->previous_filename   = loc->filename;
+    loc->previous_linenumber = loc->linenumber;
+    loc->filename            = file;
+    loc->linenumber          = line;
+  }
+
+  /**
+   * Required for Fortran bindings
+   */
+  void smpi_trace_set_call_location_(const char* file, int* line) {
+    smpi_trace_set_call_location(file, *line);
+  }
+
+  /** 
+   * Required for Fortran if -fsecond-underscore is activated
+   */
+  void smpi_trace_set_call_location__(const char* file, int* line) {
+    smpi_trace_set_call_location(file, *line);
+  }
+}

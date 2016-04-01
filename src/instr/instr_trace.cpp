@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
+#include "src/instr/instr_smpi.h"
 #include "xbt/virtu.h" /* sg_cmdline */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");
@@ -341,6 +342,11 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, val
   ((setState_t)(event->data))->container = container;
   ((setState_t)(event->data))->value = value;
 
+  smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
+ 
+  ((setState_t)(event->data))->filename   = loc->filename;
+  ((setState_t)(event->data))->linenumber = loc->linenumber;
+
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 
   insert_into_buffer (event);
@@ -359,6 +365,10 @@ void new_pajePushStateWithExtra (double timestamp, container_t container, type_t
   ((pushState_t)(event->data))->container = container;
   ((pushState_t)(event->data))->value = value;
   ((pushState_t)(event->data))->extra = extra;
+
+  smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
+  ((pushState_t)(event->data))->filename   = loc->filename;
+  ((pushState_t)(event->data))->linenumber = loc->linenumber;
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 

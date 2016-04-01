@@ -44,6 +44,7 @@ typedef struct s_smpi_process_data {
   int replaying;                /* is the process replaying a trace */
   xbt_bar_t finalization_barrier;
   int return_value;
+  smpi_trace_call_location_t* trace_call_loc;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -226,6 +227,18 @@ void *smpi_process_get_user_data()
 int smpi_process_count(void)
 {
   return process_count;
+}
+
+/**
+ * \brief Returns a structure that stores the location (filename + linenumber)
+ *        of the last calls to MPI_* functions.
+ *
+ * \see smpi_trace_set_call_location
+ */
+smpi_trace_call_location_t* smpi_process_get_call_location(void)
+{
+  smpi_process_data_t process_data = smpi_process_data();
+  return process_data->trace_call_loc;
 }
 
 int smpi_process_index(void)

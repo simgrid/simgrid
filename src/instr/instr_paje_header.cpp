@@ -163,6 +163,10 @@ static void TRACE_header_PajePushState (int basic, int size)
   fprintf(tracing_file, "%%       Container string\n");
   fprintf(tracing_file, "%%       Value string\n");
   if (size) fprintf(tracing_file, "%%       Size int\n");
+  if (false) {
+    fprintf(tracing_file, "%%       Filename string\n");
+    fprintf(tracing_file, "%%       Linenumber int\n");
+  }
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 
