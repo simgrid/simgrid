@@ -17,7 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-static int master(int argc, char *argv[])
+static int trace_fun(int argc, char *argv[])
 {
   const char *hostname = MSG_host_get_name(MSG_host_self());
   int i;
@@ -61,8 +61,8 @@ int main(int argc, char *argv[])
   TRACE_host_variable_declare("HDD_utilization");
 
   //register functions and launch deployment
-  MSG_function_register("master", master);
-  MSG_function_register("slave", master);
+  MSG_function_register("master", trace_fun);
+  MSG_function_register("worker", trace_fun);
   MSG_launch_application(argv[2]);
 
   MSG_main();

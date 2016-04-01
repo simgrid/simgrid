@@ -1,7 +1,7 @@
 This is a somehow basic master/workers example.
 
 There is 2 kind of processes:
- * Master: creates some tasks, and dispatches them to its slaves
+ * Master: creates some tasks, and dispatches them to its workers
  * Worker: get tasks from the master and run them
 
 At the end of the execution:

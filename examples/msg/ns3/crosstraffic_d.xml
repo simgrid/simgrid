@@ -6,7 +6,7 @@
       <argument value="C1"/>
       <argument value="1"/>
   </process>
-  <process host="C1" function="slave">
+  <process host="C1" function="worker">
     <argument value="1"/>
   </process>
   <process host="S1" function="master">
@@ -14,7 +14,7 @@
       <argument value="C1"/>
       <argument value="2"/>
   </process>
-  <process host="C1" function="slave">
+  <process host="C1" function="worker">
     <argument value="2"/>
   </process>
   <process host="S1" function="master">
@@ -22,7 +22,7 @@
       <argument value="C1"/>
       <argument value="3"/>
   </process>
-  <process host="C1" function="slave">
+  <process host="C1" function="worker">
     <argument value="3"/>
   </process>
   <process host="C1" function="master">
@@ -30,7 +30,7 @@
       <argument value="S1"/>
       <argument value="4"/>
   </process>
-  <process host="S1" function="slave">
+  <process host="S1" function="worker">
     <argument value="4"/>
   </process>
 </platform>

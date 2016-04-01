@@ -1,0 +1,11 @@
+#! tesh
+
+! output sort 19
+
+$ java -classpath ${classpath:=.} task/priority/Main ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/task/priority/priority.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (1:task.priority.Test@Fafard) Hello! Running a task of size 7.6296E7 with priority 1.0
+> [  0.000000] (2:task.priority.Test@Fafard) Hello! Running a task of size 7.6296E7 with priority 2.0
+> [  1.500000] (2:task.priority.Test@Fafard) Goodbye now!
+> [  2.000000] (0:maestro@) MSG_main finished; Cleaning up the simulation...
+> [  2.000000] (1:task.priority.Test@Fafard) Goodbye now!

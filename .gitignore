@@ -29,7 +29,6 @@ examples/simdag/scheduling/sd_scheduling.jed
 teshsuite/simdag/platforms/simgrid.jed
 ### Libraries links 
 examples/lua/simgrid.so
-examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
 examples/lua/console/simgrid.so
 SimGrid-*.tar.gz
@@ -145,9 +144,9 @@ examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
 examples/msg/failures/failures
-examples/msg/masterslave/masterslave
+examples/msg/masterworker/masterworker
 examples/msg/process-kill/process-kill
-examples/msg/masterslave-mailbox/masterslave-mailbox
+examples/msg/masterworker-mailbox/masterworker-mailbox
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
 examples/msg/mc/bugged1_stateful
@@ -167,21 +166,21 @@ examples/msg/process-migration/process-migration
 examples/msg/ms.trace
 examples/msg/ns3/ns3
 examples/msg/pmm/pmm
-examples/msg/priority/priority
+examples/msg/task-priority/task-priority
 examples/msg/procmig.trace
 examples/msg/properties/properties
 examples/msg/synchro/synchro
 examples/msg/sendrecv/sendrecv
 examples/msg/set-maestro/set-maestro
 examples/msg/simulation.trace
-examples/msg/start_kill_time/start_kill_time
+examples/msg/process-startkilltime/process-startkilltime
 examples/msg/process-suspend/process-suspend
 examples/msg/token_ring/token_ring
 examples/msg/trace/test_trace_integration
 examples/msg/trace-categories/trace-categories
 examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables
 examples/msg/trace-link-user-variables/trace-link-user-variables
-examples/msg/trace-masterslave/trace-masterslave
+examples/msg/trace-masterworker/trace-masterworker
 examples/msg/trace-process-migration/trace-process-migration
 examples/msg/trace-simple/trace-simple
 examples/msg/trace-platform/trace-platform
@@ -971,11 +970,13 @@ tools/tesh/tesh
 #########################################
 ## touched files to track the dependencies of java examples
 examples/java/app/bittorrent/java_app_bittorrent_compiled
+examples/java/app/centralizedmutex/java_app_centralizedmutex_compiled
 examples/java/app/masterworker/java_app_masterworker_compiled
-examples/java/async/java_async_compiled
+examples/java/app/pingpong/java_app_pingpong_compiled
+examples/java/async/dsend/java_async_dsend_compiled
 examples/java/dht/chord/java_dht_chord_compiled
 examples/java/dht/kademlia/java_dht_kademlia_compiled
-examples/java/cloud/java_cloud_compiled
+examples/java/cloud/masterworker/java_cloud_masterworker_compiled
 examples/java/cloud/migration/java_cloud_migration_compiled
 examples/java/energy/consumption/java_energy_consumption_compiled
 examples/java/energy/vm/java_energy_vm_compiled
@@ -984,11 +985,9 @@ examples/java/io/storage/java_io_storage_compiled
 examples/java/process/kill/java_process_kill_compiled
 examples/java/process/migration/java_process_migration_compiled
 examples/java/process/suspend/java_process_suspend_compiled
-examples/java/mutualExclusion/java_mutualExclusion_compiled
-examples/java/pingPong/java_pingPong_compiled
-examples/java/priority/java_priority_compiled
 examples/java/process/startkilltime/java_process_startkilltime_compiled
-examples/java/tracing/java_tracing_compiled
+examples/java/task/priority/java_task_priority_compiled
+examples/java/trace/pingpong/java_trace_pingpong_compiled
 /CMakeCache.txt
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness

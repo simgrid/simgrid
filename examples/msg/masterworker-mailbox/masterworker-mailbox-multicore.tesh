@@ -1,0 +1,36 @@
+#! ./tesh
+
+p Testing a simple master/worker example application
+
+$ $SG_TEST_EXENV ./masterworker-mailbox/masterworker-mailbox ${srcdir:=.}/../platforms/multicore_machine.xml ${srcdir:=.}/masterworker-mailbox/masterworker-mailbox-multicore_d.xml --cfg=cpu/model:Cas01 --cfg=cpu/optim:Full
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/optim' to 'Full'
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 6 workers and 20 tasks to process
+> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "worker-0"
+> [Tremblay:master:(1) 0.002203] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "worker-1"
+> [Tremblay:master:(1) 0.004406] [msg_test/INFO] Sending "Task_2" (of 20) to mailbox "worker-2"
+> [Tremblay:master:(1) 0.006610] [msg_test/INFO] Sending "Task_3" (of 20) to mailbox "worker-3"
+> [Tremblay:master:(1) 0.008813] [msg_test/INFO] Sending "Task_4" (of 20) to mailbox "worker-4"
+> [Tremblay:master:(1) 0.011016] [msg_test/INFO] Sending "Task_5" (of 20) to mailbox "worker-5"
+> [Tremblay:master:(1) 0.013219] [msg_test/INFO] Sending "Task_6" (of 20) to mailbox "worker-0"
+> [Tremblay:master:(1) 0.514116] [msg_test/INFO] Sending "Task_7" (of 20) to mailbox "worker-1"
+> [Tremblay:master:(1) 0.516320] [msg_test/INFO] Sending "Task_8" (of 20) to mailbox "worker-2"
+> [Tremblay:master:(1) 0.518523] [msg_test/INFO] Sending "Task_9" (of 20) to mailbox "worker-3"
+> [Tremblay:master:(1) 0.520726] [msg_test/INFO] Sending "Task_10" (of 20) to mailbox "worker-4"
+> [Tremblay:master:(1) 0.522929] [msg_test/INFO] Sending "Task_11" (of 20) to mailbox "worker-5"
+> [Tremblay:master:(1) 0.525132] [msg_test/INFO] Sending "Task_12" (of 20) to mailbox "worker-0"
+> [Tremblay:master:(1) 1.026029] [msg_test/INFO] Sending "Task_13" (of 20) to mailbox "worker-1"
+> [Tremblay:master:(1) 1.028233] [msg_test/INFO] Sending "Task_14" (of 20) to mailbox "worker-2"
+> [Tremblay:master:(1) 1.030436] [msg_test/INFO] Sending "Task_15" (of 20) to mailbox "worker-3"
+> [Tremblay:master:(1) 1.032639] [msg_test/INFO] Sending "Task_16" (of 20) to mailbox "worker-4"
+> [Tremblay:master:(1) 1.034842] [msg_test/INFO] Sending "Task_17" (of 20) to mailbox "worker-5"
+> [Tremblay:master:(1) 1.037045] [msg_test/INFO] Sending "Task_18" (of 20) to mailbox "worker-0"
+> [Tremblay:master:(1) 1.537943] [msg_test/INFO] Sending "Task_19" (of 20) to mailbox "worker-1"
+> [Tremblay:master:(1) 1.540146] [msg_test/INFO] All tasks have been dispatched. Let's tell everybody the computation is over.
+> [Tremblay:worker:(2) 2.047848] [msg_test/INFO] I'm done. See you!
+> [Tremblay:worker:(3) 2.050051] [msg_test/INFO] I'm done. See you!
+> [Tremblay:worker:(4) 2.050246] [msg_test/INFO] I'm done. See you!
+> [Tremblay:worker:(5) 2.050441] [msg_test/INFO] I'm done. See you!
+> [Tremblay:worker:(6) 2.050636] [msg_test/INFO] I'm done. See you!
+> [Tremblay:worker:(7) 2.050832] [msg_test/INFO] I'm done. See you!
+> [2.050832] [msg_test/INFO] Simulation time 2.05083

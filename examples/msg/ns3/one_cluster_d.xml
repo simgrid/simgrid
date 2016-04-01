@@ -6,7 +6,7 @@
       <argument value="node-6.acme.org"/>
       <argument value="1"/>
   </process>
-  <process host="node-6.acme.org" function="slave">
+  <process host="node-6.acme.org" function="worker">
     <argument value="1"/>
   </process>
 </platform>

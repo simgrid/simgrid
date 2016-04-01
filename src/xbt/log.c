@@ -477,8 +477,7 @@ Each category has an optional appender. An appender is a pointer to a
 structure which starts with a pointer to a do_append() function. do_append()
 prints a message to a log.
 
-When a category is passed a message by one of the logging macros, the
-category performs the following actions:
+When a category is passed a message by one of the logging macros, the category performs the following actions:
 
   - if the category has an appender, the message is passed to the
     appender's do_append() function,
@@ -1025,8 +1024,6 @@ static void _set_inherited_thresholds(xbt_log_category_t cat)
       _set_inherited_thresholds(child);
     }
   }
-
-
 }
 
 void xbt_log_threshold_set(xbt_log_category_t cat, e_xbt_log_priority_t threshold)
@@ -1211,8 +1208,7 @@ void xbt_log_control_set(const char *control_string)
     return;
   }
 
-  /* Parse each entry and either use it right now (if the category was already
-     created), or store it for further use */
+  /* Parse each entry and either use it right now (if the category was already created), or store it for further use */
   xbt_dynar_foreach(set_strings, cpt, str) {
     xbt_log_category_t cat = NULL;
 

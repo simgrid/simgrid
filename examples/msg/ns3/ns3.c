@@ -30,7 +30,7 @@ int bool_printed = 0;
 double start_time, end_time, elapsed_time;
 double gl_data_size[NTASKS];
 msg_task_t gl_task_array[NTASKS];
-const char *slavenames[NTASKS];
+const char *workernames[NTASKS];
 const char *masternames[NTASKS];
 int gl_task_array_id = 0;
 int count_finished = 0;
@@ -48,11 +48,11 @@ static int master(int argc, char *argv[])
   /* data size */
   double task_comm_size = xbt_str_parse_double(argv[1], "Invalid task communication size: %s");
 
-  /* slave name */
-  char *slavename = argv[2];
+  /* worker name */
+  char *workername = argv[2];
   int id = xbt_str_parse_int(argv[3], "Invalid ID as argument 3: %s");   //unique id to control statistics
   char *id_alias = bprintf("flow_%d", id);
-  slavenames[id] = slavename;
+  workernames[id] = workername;
   TRACE_category(id_alias);
 
   masternames[id] = MSG_host_get_name(MSG_host_self());
@@ -65,7 +65,7 @@ static int master(int argc, char *argv[])
     gl_data_size[id] = task_comm_size;
   }
 
-  MSG_host_by_name(slavename);
+  MSG_host_by_name(workername);
 
   count_finished++;
   timer_start = 1 ;
@@ -106,14 +106,14 @@ static int timer(int argc, char *argv[])
   return 0;
 }
 
-static int slave(int argc, char *argv[])
+static int worker(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   char id_alias[10];
 
   xbt_assert(argc==2,"Strange number of arguments expected 1 got %d", argc - 1);
 
-  XBT_DEBUG ("Slave started");
+  XBT_DEBUG ("Worker started");
 
   int id = xbt_str_parse_int(argv[1], "Invalid id: %s");
   sprintf(id_alias, "%d", id);
@@ -130,7 +130,7 @@ static int slave(int argc, char *argv[])
   elapsed_time = MSG_get_clock() - start_time;
 
   XBT_INFO("FLOW[%d] : Receive %.0f bytes from %s to %s", id, MSG_task_get_bytes_amount(task), masternames[id],
-           slavenames[id]);
+           workernames[id]);
 //  MSG_task_execute(task);
   MSG_task_destroy(task);
 
@@ -151,7 +151,7 @@ int main(int argc, char *argv[])
   TRACE_declare_mark("endmark");
 
   MSG_function_register("master", master);
-  MSG_function_register("slave", slave);
+  MSG_function_register("worker", worker);
   MSG_function_register("timer", timer);
 
   MSG_launch_application(argv[2]);
