@@ -353,11 +353,7 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
 
 int LivenessChecker::main(void)
 {
-  int visited_num = -1;
-
   while (!livenessStack_.empty()){
-
-    /* Get current pair */
     std::shared_ptr<Pair> current_pair = livenessStack_.back();
 
     /* Update current state in buchi automaton */
@@ -373,97 +369,94 @@ int LivenessChecker::main(void)
       continue;
     }
 
-      std::shared_ptr<VisitedPair> reached_pair;
-      if (current_pair->automaton_state->type == 1 && !current_pair->exploration_started
-          && (reached_pair = this->insertAcceptancePair(current_pair.get())) == nullptr) {
-        this->showAcceptanceCycle(current_pair->depth);
-        return SIMGRID_MC_EXIT_LIVENESS;
+    std::shared_ptr<VisitedPair> reached_pair;
+    if (current_pair->automaton_state->type == 1 && !current_pair->exploration_started
+        && (reached_pair = this->insertAcceptancePair(current_pair.get())) == nullptr) {
+      this->showAcceptanceCycle(current_pair->depth);
+      return SIMGRID_MC_EXIT_LIVENESS;
+    }
+
+    /* Pair already visited ? stop the exploration on the current path */
+    int visited_num = -1;
+    if ((!current_pair->exploration_started)
+      && (visited_num = this->insertVisitedPair(
+        reached_pair, current_pair.get())) != -1) {
+      if (dot_output != nullptr){
+        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, visited_num, initial_global_state->prev_req);
+        fflush(dot_output);
       }
+      XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
+      current_pair->requests = 0;
+      this->backtrack();
+      continue;
+    }
 
-      /* Pair already visited ? stop the exploration on the current path */
-      if ((!current_pair->exploration_started)
-        && (visited_num = this->insertVisitedPair(
-          reached_pair, current_pair.get())) != -1) {
+    int value;
+    smx_simcall_t req = MC_state_get_request(current_pair->graph_state.get(), &value);
 
-        if (dot_output != nullptr){
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, visited_num, initial_global_state->prev_req);
-          fflush(dot_output);
-        }
+    if (dot_output != nullptr) {
+      if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
+        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, current_pair->num, initial_global_state->prev_req);
+        xbt_free(initial_global_state->prev_req);
+      }
+      initial_global_state->prev_pair = current_pair->num;
+      initial_global_state->prev_req = simgrid::mc::request_get_dot_output(req, value);
+      if (current_pair->search_cycle)
+        fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
+      fflush(dot_output);
+    }
 
-        XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
-        current_pair->requests = 0;
-        this->backtrack();
+    char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
+    XBT_DEBUG("Execute: %s", req_str);
+    xbt_free(req_str);
 
-      }else{
+    /* Set request as executed */
+    MC_state_set_executed_request(current_pair->graph_state.get(), req, value);
 
-        int value;
-        smx_simcall_t req = MC_state_get_request(current_pair->graph_state.get(), &value);
+    /* Update mc_stats */
+    mc_stats->executed_transitions++;
+    if (!current_pair->exploration_started)
+      mc_stats->visited_pairs++;
 
-         if (dot_output != nullptr) {
-           if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
-             fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, current_pair->num, initial_global_state->prev_req);
-             xbt_free(initial_global_state->prev_req);
-           }
-           initial_global_state->prev_pair = current_pair->num;
-           initial_global_state->prev_req = simgrid::mc::request_get_dot_output(req, value);
-           if (current_pair->search_cycle)
-             fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
-           fflush(dot_output);
-         }
+    /* Answer the request */
+    simgrid::mc::handle_simcall(req, value);
 
-         char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
-         XBT_DEBUG("Execute: %s", req_str);
-         xbt_free(req_str);
+    /* Wait for requests (schedules processes) */
+    mc_model_checker->wait_for_requests();
 
-         /* Set request as executed */
-         MC_state_set_executed_request(current_pair->graph_state.get(), req, value);
+    current_pair->requests--;
+    current_pair->exploration_started = true;
 
-         /* Update mc_stats */
-         mc_stats->executed_transitions++;
-         if (!current_pair->exploration_started)
-           mc_stats->visited_pairs++;
+    /* Get values of atomic propositions (variables used in the property formula) */
+    std::vector<int> prop_values = this->getPropositionValues();
 
-         /* Answer the request */
-         simgrid::mc::handle_simcall(req, value);
+    /* Evaluate enabled/true transitions in automaton according to atomic propositions values and create new pairs */
+    int cursor = xbt_dynar_length(current_pair->automaton_state->out) - 1;
+    while (cursor >= 0) {
+      xbt_automaton_transition_t transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
+      if (evaluate_label(transition_succ->label, prop_values)) {
+          std::shared_ptr<Pair> next_pair = std::make_shared<Pair>();
+          next_pair->graph_state = std::shared_ptr<simgrid::mc::State>(MC_state_new());
+          next_pair->automaton_state = transition_succ->dst;
+          next_pair->atomic_propositions = this->getPropositionValues();
+          next_pair->depth = current_pair->depth + 1;
+          /* Get enabled processes and insert them in the interleave set of the next graph_state */
+          for (auto& p : mc_model_checker->process().simix_processes())
+            if (simgrid::mc::process_is_enabled(&p.copy))
+              MC_state_interleave_process(next_pair->graph_state.get(), &p.copy);
 
-         /* Wait for requests (schedules processes) */
-         mc_model_checker->wait_for_requests();
+          next_pair->requests = MC_state_interleave_size(next_pair->graph_state.get());
 
-         current_pair->requests--;
-         current_pair->exploration_started = true;
+          /* FIXME : get search_cycle value for each acceptant state */
+          if (next_pair->automaton_state->type == 1 || current_pair->search_cycle)
+            next_pair->search_cycle = true;
 
-         /* Get values of atomic propositions (variables used in the property formula) */
-         std::vector<int> prop_values = this->getPropositionValues();
+          /* Add new pair to the exploration stack */
+          livenessStack_.push_back(std::move(next_pair));
 
-         /* Evaluate enabled/true transitions in automaton according to atomic propositions values and create new pairs */
-         int cursor = xbt_dynar_length(current_pair->automaton_state->out) - 1;
-         while (cursor >= 0) {
-           xbt_automaton_transition_t transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
-           if (evaluate_label(transition_succ->label, prop_values)) {
-              std::shared_ptr<Pair> next_pair = std::make_shared<Pair>();
-              next_pair->graph_state = std::shared_ptr<simgrid::mc::State>(MC_state_new());
-              next_pair->automaton_state = transition_succ->dst;
-              next_pair->atomic_propositions = this->getPropositionValues();
-              next_pair->depth = current_pair->depth + 1;
-              /* Get enabled processes and insert them in the interleave set of the next graph_state */
-              for (auto& p : mc_model_checker->process().simix_processes())
-                if (simgrid::mc::process_is_enabled(&p.copy))
-                  MC_state_interleave_process(next_pair->graph_state.get(), &p.copy);
-
-              next_pair->requests = MC_state_interleave_size(next_pair->graph_state.get());
-
-              /* FIXME : get search_cycle value for each acceptant state */
-              if (next_pair->automaton_state->type == 1 || current_pair->search_cycle)
-                next_pair->search_cycle = true;
-
-              /* Add new pair to the exploration stack */
-              livenessStack_.push_back(std::move(next_pair));
-
-           }
-           cursor--;
-         }
-
-      } /* End of visited_pair test */
+       }
+       cursor--;
+     }
 
   }
 
