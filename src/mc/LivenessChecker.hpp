@@ -81,6 +81,7 @@ private:
   void removeAcceptancePair(int pair_num);
   void purgeVisitedPairs();
   void backtrack();
+  std::shared_ptr<Pair> newPair(Pair* pair, xbt_automaton_state_t state);
 public:
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
   std::list<std::shared_ptr<Pair>> livenessStack_;
