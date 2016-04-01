@@ -24,7 +24,6 @@
 #include "src/mc/mc_protocol.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_comm_pattern.h"
-#include "src/mc/LivenessChecker.hpp"
 #include "src/mc/mc_exit.h"
 #include "src/mc/Session.hpp"
 #include "src/mc/Checker.hpp"

@@ -29,8 +29,6 @@ SG_END_DECL()
 namespace simgrid {
 namespace mc {
 
-extern XBT_PRIVATE xbt_automaton_t property_automaton;
-
 struct XBT_PRIVATE Pair {
   int num = 0;
   bool search_cycle = false;
@@ -82,9 +80,12 @@ private:
   void replay();
   void removeAcceptancePair(int pair_num);
   void purgeVisitedPairs();
+  void backtrack();
+  std::shared_ptr<Pair> newPair(Pair* pair, xbt_automaton_state_t state);
 public:
+  // A stack of (application_state, automaton_state) pairs for DFS exploration:
+  std::list<std::shared_ptr<Pair>> explorationStack_;
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
-  std::list<std::shared_ptr<Pair>> livenessStack_;
   std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
 };
 
