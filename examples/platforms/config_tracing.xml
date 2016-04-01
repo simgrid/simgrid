@@ -5,9 +5,9 @@
     <prop id="tracing/uncategorized" value="yes"/>
     <prop id="tracing/buffer" value="yes"/>
     <prop id="tracing" value="yes"/>
-    <prop id="viva/categorized" value="trace-masterslave.cat.plist"/>
-    <prop id="tracing/filename" value="trace-masterslave.trace"/>
-    <prop id="viva/uncategorized" value="trace-masterslave.uncat.plist"/>
+    <prop id="viva/categorized" value="trace-masterworker.cat.plist"/>
+    <prop id="tracing/filename" value="trace-masterworker.trace"/>
+    <prop id="viva/uncategorized" value="trace-masterworker.uncat.plist"/>
     <prop id="tracing/categorized" value="yes"/>
   </config>
 

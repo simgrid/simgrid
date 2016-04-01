@@ -1,14 +1,14 @@
 #! ./tesh
 
-p Tracing master/slave application
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterslave.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:trace-masterslave.cat.plist --cfg=viva/uncategorized:trace-masterslave.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
+p Tracing master/worker application
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:trace-masterworker.cat.plist --cfg=viva/uncategorized:trace-masterworker.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterworker-mailbox/masterworker-mailbox_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterslave.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterslave.cat.plist'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterslave.uncat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterworker.cat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterworker.uncat.plist'
 > [4.214821] [msg_test/INFO] Declared tracing categories:
 > [4.214821] [msg_test/INFO] request
 > [4.214821] [msg_test/INFO] finalize
@@ -17,14 +17,14 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=t
 > [4.214821] [msg_test/INFO] Declared marks:
 > [4.214821] [msg_test/INFO] msmark
 
-p Tracing master/slave application with xml config
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT ${srcdir:=.}/config_tracing.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
+p Tracing master/worker application with xml config
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT ${srcdir:=.}/config_tracing.xml ${srcdir:=.}/../msg/masterworker-mailbox/masterworker-mailbox_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterslave.cat.plist'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterslave.trace'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterslave.uncat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterworker.cat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterworker.uncat.plist'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [4.214821] [msg_test/INFO] Declared tracing categories:
 > [4.214821] [msg_test/INFO] request
@@ -34,19 +34,19 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT ${srcdir:=.}/config_traci
 > [4.214821] [msg_test/INFO] Declared marks:
 > [4.214821] [msg_test/INFO] msmark
 
-p Not tracing master/slave application
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
+p Not tracing master/worker application
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterworker-mailbox/masterworker-mailbox_d.xml
 
 p Testing tracing by process
-$ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterslave.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:trace-masterslave.cat.plist --cfg=viva/uncategorized:trace-masterslave.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterslave-mailbox/masterslave-mailbox_d.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-masterworker$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:trace-masterworker.trace --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:trace-masterworker.cat.plist --cfg=viva/uncategorized:trace-masterworker.uncat.plist ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/masterworker-mailbox/masterworker-mailbox_d.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterslave.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-masterworker.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterslave.cat.plist'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterslave.uncat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/categorized' to 'trace-masterworker.cat.plist'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'viva/uncategorized' to 'trace-masterworker.uncat.plist'
 > [4.214821] [msg_test/INFO] Declared tracing categories:
 > [4.214821] [msg_test/INFO] request
 > [4.214821] [msg_test/INFO] finalize
@@ -55,7 +55,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/trace-masterslave$EXEEXT --cfg=tracing:yes --cfg=t
 > [4.214821] [msg_test/INFO] Declared marks:
 > [4.214821] [msg_test/INFO] msmark
 
-$ $SG_TEST_EXENV cat trace-masterslave.uncat.plist
+$ $SG_TEST_EXENV cat trace-masterworker.uncat.plist
 >   node = ("HOST","LINK");
 >   edge = ("0-LINK13-LINK13","0-LINK13-HOST1","0-HOST1-LINK13");
 > 
@@ -70,7 +70,7 @@ $ $SG_TEST_EXENV cat trace-masterslave.uncat.plist
 >     values = ("bandwidth_used");
 >   };
 
-$ $SG_TEST_EXENV cat trace-masterslave.cat.plist
+$ $SG_TEST_EXENV cat trace-masterworker.cat.plist
 >   node = ("HOST","LINK");
 >   edge = ("0-LINK13-LINK13","0-LINK13-HOST1","0-HOST1-LINK13");
 > 
@@ -85,4 +85,4 @@ $ $SG_TEST_EXENV cat trace-masterslave.cat.plist
 >     values = ("bcompute","breport","bfinalize","brequest");
 >   };
 
-$ rm -rf trace-masterslave.trace trace-masterslave.cat.plist trace-masterslave.uncat.plist
+$ rm -rf trace-masterworker.trace trace-masterworker.cat.plist trace-masterworker.uncat.plist

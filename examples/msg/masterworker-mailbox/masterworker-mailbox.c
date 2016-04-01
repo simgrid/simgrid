@@ -13,18 +13,18 @@ static int master(int argc, char *argv[])
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
-  long slaves_count = xbt_str_parse_int(argv[4], "Invalid amount of slaves: %s");
+  long workers_count = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
 
   int i;
 
-  XBT_INFO("Got %ld slaves and %ld tasks to process", slaves_count, number_of_tasks);
+  XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);
 
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
     char sprintf_buffer[256];
     msg_task_t task = NULL;
 
-    sprintf(mailbox, "slave-%ld", i % slaves_count);
+    sprintf(mailbox, "worker-%ld", i % workers_count);
     sprintf(sprintf_buffer, "Task_%d", i);
     task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
     if (number_of_tasks < 10000 || i % 10000 == 0)
@@ -34,10 +34,10 @@ static int master(int argc, char *argv[])
   }
 
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (i = 0; i < slaves_count; i++) {
+  for (i = 0; i < workers_count; i++) {
     char mailbox[80];
 
-    sprintf(mailbox, "slave-%ld", i % slaves_count);
+    sprintf(mailbox, "worker-%ld", i % workers_count);
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_send(finalize, mailbox);
   }
@@ -45,7 +45,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-static int slave(int argc, char *argv[])
+static int worker(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
@@ -54,7 +54,7 @@ static int slave(int argc, char *argv[])
 
   long id= xbt_str_parse_int(argv[1], "Invalid argument %s");
 
-  sprintf(mailbox, "slave-%ld", id);
+  sprintf(mailbox, "worker-%ld", id);
 
   while (1) {
     res = MSG_task_receive(&(task), mailbox);
@@ -84,7 +84,7 @@ int main(int argc, char *argv[])
   MSG_create_environment(argv[1]);
 
   MSG_function_register("master", master);
-  MSG_function_register("slave", slave);
+  MSG_function_register("worker", worker);
   MSG_launch_application(argv[2]);
 
   msg_error_t res = MSG_main();

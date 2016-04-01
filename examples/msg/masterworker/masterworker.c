@@ -10,8 +10,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 /** @addtogroup MSG_examples
  * 
- *  - <b>masterslave/masterslave.c: Master/slaves example</b>. This good old example is also very simple. Its
- *    basic version is fully commented on this page: \ref MSG_ex_master_slave, but several variants can be found in the
+ *  - <b>masterworker/masterworker.c: Master/workers example</b>. This good old example is also very simple. Its
+ *    basic version is fully commented on this page: \ref MSG_ex_master_worker, but several variants can be found in the
  *    same directory.
  */
 
@@ -19,9 +19,9 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 static int master(int argc, char *argv[])
 {
-  msg_host_t *slaves = NULL;
+  msg_host_t *workers = NULL;
   msg_task_t *todo = NULL;
-  long slaves_count = 0;
+  long workers_count = 0;
   int i;
 
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
@@ -40,42 +40,42 @@ static int master(int argc, char *argv[])
   }
 
   {                             /* Process organization */
-    slaves_count = argc - 4;
-    slaves = xbt_new0(msg_host_t, slaves_count);
+    workers_count = argc - 4;
+    workers = xbt_new0(msg_host_t, workers_count);
 
     for (i = 4; i < argc; i++) {
-      slaves[i - 4] = MSG_host_by_name(argv[i]);
-      xbt_assert(slaves[i - 4] != NULL, "Unknown host %s. Stopping Now! ", argv[i]);
+      workers[i - 4] = MSG_host_by_name(argv[i]);
+      xbt_assert(workers[i - 4] != NULL, "Unknown host %s. Stopping Now! ", argv[i]);
     }
   }
 
-  XBT_INFO("Got %ld slaves and %ld tasks to process", slaves_count, number_of_tasks);
-  for (i = 0; i < slaves_count; i++)
-    XBT_DEBUG("%s", MSG_host_get_name(slaves[i]));
+  XBT_INFO("Got %ld workers and %ld tasks to process", workers_count, number_of_tasks);
+  for (i = 0; i < workers_count; i++)
+    XBT_DEBUG("%s", MSG_host_get_name(workers[i]));
 
   for (i = 0; i < number_of_tasks; i++) {
-    XBT_INFO("Sending \"%s\" to \"%s\"", todo[i]->name, MSG_host_get_name(slaves[i % slaves_count]));
-    if (MSG_host_self() == slaves[i % slaves_count]) {
+    XBT_INFO("Sending \"%s\" to \"%s\"", todo[i]->name, MSG_host_get_name(workers[i % workers_count]));
+    if (MSG_host_self() == workers[i % workers_count]) {
       XBT_INFO("Hey ! It's me ! :)");
     }
 
-    MSG_task_send(todo[i], MSG_host_get_name(slaves[i % slaves_count]));
+    MSG_task_send(todo[i], MSG_host_get_name(workers[i % workers_count]));
     XBT_INFO("Sent");
   }
 
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
-  for (i = 0; i < slaves_count; i++) {
+  for (i = 0; i < workers_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, FINALIZE);
-    MSG_task_send(finalize, MSG_host_get_name(slaves[i]));
+    MSG_task_send(finalize, MSG_host_get_name(workers[i]));
   }
 
   XBT_INFO("Goodbye now!");
-  free(slaves);
+  free(workers);
   free(todo);
   return 0;
 }
 
-static int slave(int argc, char *argv[])
+static int worker(int argc, char *argv[])
 {
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
@@ -110,7 +110,7 @@ int main(int argc, char *argv[])
   MSG_create_environment(argv[1]);
 
   MSG_function_register("master", master);
-  MSG_function_register("slave", slave);
+  MSG_function_register("worker", worker);
   MSG_launch_application(argv[2]);
 
   res = MSG_main();

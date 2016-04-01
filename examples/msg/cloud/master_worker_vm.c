@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 /** @addtogroup MSG_examples
  *
- *  - <b>cloud/masterslave_virtual_machines.c: Master/workers
+ *  - <b>cloud/master_worker_vm.c: Master/workers
  *    example on a cloud</b>. The classical example revisited to demonstrate the use of virtual machines.
  */
 

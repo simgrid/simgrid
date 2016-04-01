@@ -6,7 +6,7 @@
       <argument value="Jupiter"/>
       <argument value="1"/>
   </process>
-  <process host="Jupiter" function="slave">
+  <process host="Jupiter" function="worker">
     <argument value="1"/>
   </process>
   <process host="Fafard" function="master">
@@ -14,7 +14,7 @@
       <argument value="Ginette"/>
       <argument value="2"/>
   </process>
-  <process host="Ginette" function="slave">
+  <process host="Ginette" function="worker">
     <argument value="2"/>
   </process>
   <process host="Bourassa" function="master">
@@ -22,7 +22,7 @@
       <argument value="Lovelace"/>
       <argument value="3"/>
   </process>
-  <process host="Lovelace" function="slave">
+  <process host="Lovelace" function="worker">
     <argument value="3"/>
   </process>
 </platform>

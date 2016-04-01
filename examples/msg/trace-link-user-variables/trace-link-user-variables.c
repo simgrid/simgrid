@@ -24,7 +24,7 @@ static void create_and_execute_task (void)
   MSG_task_destroy (task);
 }
 
-static int master(int argc, char *argv[])
+static int trace_fun(int argc, char *argv[])
 {
   //set initial values for the link user variables this example only shows for links identified by "6" and "3" in the
   //platform file
@@ -69,9 +69,9 @@ int main(int argc, char *argv[])
   TRACE_link_variable_declare("Link_Capacity");
   TRACE_link_variable_declare_with_color ("Link_Utilization", "0.9 0.1 0.1");
 
-  //register "master" and "slave" functions and launch deployment
-  MSG_function_register("master", master);
-  MSG_function_register("slave", master);
+  //register functions and launch deployment
+  MSG_function_register("master", trace_fun);
+  MSG_function_register("worker", trace_fun);
   MSG_launch_application(argv[2]);
 
   MSG_main();

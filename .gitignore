@@ -29,7 +29,6 @@ examples/simdag/scheduling/sd_scheduling.jed
 teshsuite/simdag/platforms/simgrid.jed
 ### Libraries links 
 examples/lua/simgrid.so
-examples/msg/masterslave/simgrid.so
 examples/simdag/simgrid.so
 examples/lua/console/simgrid.so
 SimGrid-*.tar.gz
@@ -145,9 +144,9 @@ examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
 examples/msg/failures/failures
-examples/msg/masterslave/masterslave
+examples/msg/masterworker/masterworker
 examples/msg/process-kill/process-kill
-examples/msg/masterslave-mailbox/masterslave-mailbox
+examples/msg/masterworker-mailbox/masterworker-mailbox
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
 examples/msg/mc/bugged1_stateful
@@ -181,7 +180,7 @@ examples/msg/trace/test_trace_integration
 examples/msg/trace-categories/trace-categories
 examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables
 examples/msg/trace-link-user-variables/trace-link-user-variables
-examples/msg/trace-masterslave/trace-masterslave
+examples/msg/trace-masterworker/trace-masterworker
 examples/msg/trace-process-migration/trace-process-migration
 examples/msg/trace-simple/trace-simple
 examples/msg/trace-platform/trace-platform

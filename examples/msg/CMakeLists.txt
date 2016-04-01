@@ -1,8 +1,8 @@
 foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord dht-pastry exception 
           energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures io-file io-file-unlink io-remote
-          io-storage masterslave masterslave-mailbox pmm task-priority process-kill process-migration process-suspend 
+          io-storage masterworker masterworker-mailbox pmm task-priority process-kill process-migration process-suspend 
           properties sendrecv set-maestro process-startkilltime synchro token_ring trace-categories 
-          trace-link-srcdst-user-variables trace-link-user-variables trace-masterslave trace-platform 
+          trace-link-srcdst-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-simple trace-user-variables)
   add_executable       (${x}     ${x}/${x}.c)
   target_link_libraries(${x}     simgrid)
@@ -39,7 +39,7 @@ foreach (file answer dht-kademlia node routing_table task)
 endforeach()
 
 foreach (file actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-chord 
-         dht-kademlia dht-pastry io-remote masterslave masterslave-mailbox properties sendrecv set-maestro
+         dht-kademlia dht-pastry io-remote masterworker masterworker-mailbox properties sendrecv set-maestro
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
@@ -58,17 +58,17 @@ set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/chainsend/chainsen
 set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/bittorrent.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/chainsend/chainsend.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave/masterslave_cpu_ti.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave-mailbox/masterslave-mailbox-multicore.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave-mailbox/masterslave-mailbox-vivaldi.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterworker/masterworker_cpu_ti.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterworker-mailbox/masterworker-mailbox-multicore.tesh
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterworker-mailbox/masterworker-mailbox-vivaldi.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ns3/ns3.tesh                                 PARENT_SCOPE)
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/actions-mpi_split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait2_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-onoff/platform_onoff.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave-mailbox/masterslave-mailbox-multicore_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterslave-mailbox/masterslave-mailbox-vivaldi_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterworker-mailbox/masterworker-mailbox-multicore_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/masterworker-mailbox/masterworker-mailbox-vivaldi_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ns3/3hosts_2links_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ns3/3links-timer_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ns3/3links_d.xml
@@ -83,7 +83,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/action
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
 foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-chord dht-kademlia
-        failures io-file io-file-unlink io-remote io-storage masterslave masterslave-mailbox task-priority process-kill 
+        failures io-file io-file-unlink io-remote io-storage masterworker masterworker-mailbox task-priority process-kill 
         process-migration process-suspend properties sendrecv synchro process-startkilltime token_ring)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()
@@ -92,7 +92,7 @@ foreach (example consumption onoff pstate vm)
   ADD_TESH_FACTORIES(msg-energy-${example} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-${example}/energy-${example}.tesh)
 endforeach()
 
-foreach (x categories link-srcdst-user-variables link-user-variables masterslave platform process-migration simple user-variables)
+foreach (x categories link-srcdst-user-variables link-user-variables masterworker platform process-migration simple user-variables)
   ADD_TESH(msg-trace-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/trace-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/trace-${x} trace-${x}.tesh)
 endforeach()
 
@@ -104,11 +104,11 @@ ADD_TESH_FACTORIES(msg-energy-consumption-ptask        "thread;ucontext;raw;boos
 ADD_TESH_FACTORIES(msg-energy-ptask                    "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-ptask/energy-ptask.tesh)
 ADD_TESH_FACTORIES(msg-set-maestro                     "thread" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/set-maestro/set-maestro.tesh)
 
-ADD_TESH_FACTORIES(msg-masterslave-mailbox-multicore   "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave-mailbox/masterslave-mailbox-multicore.tesh)
-ADD_TESH_FACTORIES(msg-masterslave-mailbox-vivaldi     "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave-mailbox/masterslave-mailbox-vivaldi.tesh)
+ADD_TESH_FACTORIES(msg-masterworker-mailbox-multicore   "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterworker-mailbox/masterworker-mailbox-multicore.tesh)
+ADD_TESH_FACTORIES(msg-masterworker-mailbox-vivaldi     "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/masterworker-mailbox/masterworker-mailbox-vivaldi.tesh)
 
 # Weird issue with this one ...
-#ADD_TESH_FACTORIES(msg-masterslave-cpu-ti              "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterslave --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/masterslave masterslave_cpu_ti.tesh)
+#ADD_TESH_FACTORIES(msg-masterworker-cpu-ti              "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/masterworker --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/masterworker masterworker_cpu_ti.tesh)
 
 ADD_TESH(msg-pmm  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/pmm/pmm.tesh)
 

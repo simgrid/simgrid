@@ -6,8 +6,8 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/ms.c</b> This is a master/slave program where the master creates tasks, send them to the slaves. For
- * each task received, the slave executes it and then destroys it. This program uses several tracing functions that
+ * - <b>tracing/ms.c</b> This is a master/worker program where the master creates tasks, send them to the workers. For
+ * each task received, the worker executes it and then destroys it. This program uses several tracing functions that
  * enable the tracing of categorized resource utilization, the use of trace marks, and user variables associated to the
  * hosts of the platform file. You might want to run this program with the following parameters:
  * --cfg=tracing/categorized:yes
@@ -26,7 +26,7 @@ static int master(int argc, char *argv[])
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   double task_comp_size = xbt_str_parse_double(argv[2], "Invalid computational size: %s");
   double task_comm_size = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
-  long slaves_count = xbt_str_parse_int(argv[4], "Invalid amount of slaves: %s");
+  long workers_count = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
 
   //setting the variable "is_master" (previously declared) to value 1
   TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "is_master", 1);
@@ -47,7 +47,7 @@ static int master(int argc, char *argv[])
   }
   TRACE_mark("msmark", "finish_send_tasks");
 
-  for (i = 0; i < slaves_count; i++) {
+  for (i = 0; i < workers_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_set_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");
@@ -56,11 +56,11 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-static int slave(int argc, char *argv[])
+static int worker(int argc, char *argv[])
 {
   msg_task_t task = NULL;
 
-  TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "is_slave", 1);
+  TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "is_worker", 1);
   TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "task_computation", 0);
   while (1) {
     MSG_task_receive(&(task), "master_mailbox");
@@ -88,7 +88,7 @@ int main(int argc, char *argv[])
   MSG_create_environment(argv[1]);
 
   //declaring user variables
-  TRACE_host_variable_declare("is_slave");
+  TRACE_host_variable_declare("is_worker");
   TRACE_host_variable_declare("is_master");
   TRACE_host_variable_declare("task_creation");
   TRACE_host_variable_declare("task_computation");
@@ -106,7 +106,7 @@ int main(int argc, char *argv[])
   TRACE_category_with_color ("report", NULL);
 
   MSG_function_register("master", master);
-  MSG_function_register("slave", slave);
+  MSG_function_register("worker", worker);
   MSG_launch_application(argv[2]);
 
   MSG_main();

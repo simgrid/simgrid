@@ -6,7 +6,7 @@
       <argument value="C1"/>
       <argument value="1"/>
   </process>
-  <process host="C1" function="slave">
+  <process host="C1" function="worker">
     <argument value="1"/>
   </process>
 </platform>
