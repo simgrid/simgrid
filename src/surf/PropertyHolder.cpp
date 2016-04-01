@@ -10,33 +10,33 @@ namespace simgrid {
 namespace surf {
 
 PropertyHolder::PropertyHolder(xbt_dict_t props)
-: p_properties(props)
+: properties_(props)
 {
 }
 
 PropertyHolder::~PropertyHolder() {
-  xbt_dict_free(&p_properties);
+  xbt_dict_free(&properties_);
 }
 
 /** @brief Return the property associated to the provided key (or NULL if not existing) */
 const char *PropertyHolder::getProperty(const char*key) {
-  if (p_properties == NULL)
+  if (properties_ == NULL)
     return NULL;
-  return (const char*) xbt_dict_get_or_null(p_properties,key);
+  return (const char*) xbt_dict_get_or_null(properties_,key);
 }
 
 /** @brief Change the value of a given key in the property set */
 void PropertyHolder::setProperty(const char*key, const char*value) {
-  if (!p_properties)
-    p_properties = xbt_dict_new();
-  xbt_dict_set(p_properties, key, xbt_strdup(value), &xbt_free_f);
+  if (!properties_)
+    properties_ = xbt_dict_new();
+  xbt_dict_set(properties_, key, xbt_strdup(value), &xbt_free_f);
 }
 
 /** @brief Return the whole set of properties. Don't mess with it, dude! */
 xbt_dict_t PropertyHolder::getProperties() {
-  if (!p_properties)
-    p_properties = xbt_dict_new();
-  return p_properties;
+  if (!properties_)
+    properties_ = xbt_dict_new();
+  return properties_;
 }
 
 } /* namespace surf */
