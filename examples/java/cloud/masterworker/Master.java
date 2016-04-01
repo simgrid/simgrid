@@ -24,11 +24,11 @@ public class Master extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-    int slavesCount = Main.hostNB;
+    int workersCount = Main.hostNB;
     ArrayList<VM> vms = new ArrayList<VM>();
 
     // Create one VM per host and bind a process inside each one. 
-    for (int i = 0; i < slavesCount; i++) {
+    for (int i = 0; i < workersCount; i++) {
       Msg.info("create VM0"+i);  
       VM vm = new VM(hosts[i+1],"VM0"+i);
       vm.start();
@@ -41,7 +41,7 @@ public class Master extends Process {
     Msg.info("Launched " + vms.size() + " VMs");
 
     Msg.info("Send a first batch of work to everyone");
-    workBatch(slavesCount);
+    workBatch(workersCount);
 
     Msg.info("Suspend all VMs");
     for (int i = 0; i < vms.size(); i++) {
@@ -63,11 +63,11 @@ public class Master extends Process {
 /*    Msg.info("Add one more process per VM.");
     for (int i = 0; i < vms.size(); i++) {
       VM vm = vms.get(i);
-      Slave slave = new Slave(vm,i + vms.size());
-      slave.start();
+      Worker worker = new Worker(vm,i + vms.size());
+      worker.start();
     }
 
-    workBatch(slavesCount * 2);
+    workBatch(workersCount * 2);
 */
 
     Msg.info("Migrate everyone to "+hosts[3].getName());
@@ -85,8 +85,8 @@ public class Master extends Process {
     Msg.info("Master done.");
   }
 
-  public void workBatch(int slavesCount) throws MsgException {
-    for (int i = 0; i < slavesCount; i++) {
+  public void workBatch(int workersCount) throws MsgException {
+    for (int i = 0; i < workersCount; i++) {
       Task task = new Task("Task0" + i, Main.task_comp_size, Main.task_comm_size);
       Msg.info("Sending to WRK0" + i);
       task.send("MBOX:WRK0" + i);

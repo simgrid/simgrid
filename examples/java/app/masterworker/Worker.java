@@ -26,7 +26,7 @@ public class Worker extends Process {
     }
 
     int num = Integer.valueOf(args[0]).intValue();
-    //Msg.info("Receiving on 'slave_"+num+"'");
+    //Msg.info("Receiving on 'worker_"+num+"'");
 
     while(true) {  
       Task task = Task.receive("worker_"+num);
