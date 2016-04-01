@@ -133,7 +133,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
       continue;
     XBT_INFO("Pair %d already reached (equal to pair %d) !",
       new_pair->num, pair_test->num);
-    livenessStack_.pop_back();
+    explorationStack_.pop_back();
     if (dot_output != nullptr)
       fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
         initial_global_state->prev_pair, pair_test->num,
@@ -166,7 +166,7 @@ void LivenessChecker::prepare(void)
   xbt_automaton_state_t automaton_state;
   xbt_dynar_foreach(simgrid::mc::property_automaton->states, cursor, automaton_state)
     if (automaton_state->type == -1)
-      livenessStack_.push_back(this->newPair(nullptr, automaton_state));
+      explorationStack_.push_back(this->newPair(nullptr, automaton_state));
 }
 
 
@@ -176,7 +176,7 @@ void LivenessChecker::replay()
 
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0) {
-    simgrid::mc::Pair* pair = livenessStack_.back().get();
+    simgrid::mc::Pair* pair = explorationStack_.back().get();
     if(pair->graph_state->system_state){
       simgrid::mc::restore_snapshot(pair->graph_state->system_state);
       return;
@@ -188,8 +188,8 @@ void LivenessChecker::replay()
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
-  for (std::shared_ptr<Pair> const& pair : livenessStack_) {
-    if (pair == livenessStack_.back())
+  for (std::shared_ptr<Pair> const& pair : explorationStack_) {
+    if (pair == explorationStack_.back())
       break;
 
     std::shared_ptr<State> state = pair->graph_state;
@@ -294,7 +294,7 @@ LivenessChecker::~LivenessChecker()
 RecordTrace LivenessChecker::getRecordTrace() // override
 {
   RecordTrace res;
-  for (std::shared_ptr<Pair> const& pair : livenessStack_) {
+  for (std::shared_ptr<Pair> const& pair : explorationStack_) {
     int value;
     smx_simcall_t req = MC_state_get_executed_request(pair->graph_state.get(), &value);
     if (req && req->call != SIMCALL_NONE) {
@@ -322,7 +322,7 @@ void LivenessChecker::showAcceptanceCycle(std::size_t depth)
 std::vector<std::string> LivenessChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;
-  for (std::shared_ptr<Pair> const& pair : livenessStack_) {
+  for (std::shared_ptr<Pair> const& pair : explorationStack_) {
     int value;
     smx_simcall_t req = MC_state_get_executed_request(pair->graph_state.get(), &value);
     if (req && req->call != SIMCALL_NONE) {
@@ -336,8 +336,8 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
 
 int LivenessChecker::main(void)
 {
-  while (!livenessStack_.empty()){
-    std::shared_ptr<Pair> current_pair = livenessStack_.back();
+  while (!explorationStack_.empty()){
+    std::shared_ptr<Pair> current_pair = explorationStack_.back();
 
     /* Update current state in buchi automaton */
     simgrid::mc::property_automaton->current_state = current_pair->automaton_state;
@@ -419,7 +419,7 @@ int LivenessChecker::main(void)
     while (cursor >= 0) {
       xbt_automaton_transition_t transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
       if (evaluate_label(transition_succ->label, prop_values))
-          livenessStack_.push_back(this->newPair(
+          explorationStack_.push_back(this->newPair(
             current_pair.get(), transition_succ->dst));
        cursor--;
      }
@@ -459,13 +459,13 @@ void LivenessChecker::backtrack()
 {
   /* Traverse the stack backwards until a pair with a non empty interleave
      set is found, deleting all the pairs that have it empty in the way. */
-  while (!livenessStack_.empty()) {
-    std::shared_ptr<simgrid::mc::Pair> current_pair = livenessStack_.back();
-    livenessStack_.pop_back();
+  while (!explorationStack_.empty()) {
+    std::shared_ptr<simgrid::mc::Pair> current_pair = explorationStack_.back();
+    explorationStack_.pop_back();
     if (current_pair->requests > 0) {
       /* We found a backtracking point */
       XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
-      livenessStack_.push_back(std::move(current_pair));
+      explorationStack_.push_back(std::move(current_pair));
       this->replay();
       XBT_DEBUG("Backtracking done");
       break;

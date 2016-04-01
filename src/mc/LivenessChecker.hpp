@@ -83,8 +83,9 @@ private:
   void backtrack();
   std::shared_ptr<Pair> newPair(Pair* pair, xbt_automaton_state_t state);
 public:
+  // A stack of (application_state, automaton_state) pairs for DFS exploration:
+  std::list<std::shared_ptr<Pair>> explorationStack_;
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
-  std::list<std::shared_ptr<Pair>> livenessStack_;
   std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
 };
 
