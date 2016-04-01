@@ -924,7 +924,6 @@ set(txt_files
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
   examples/java/CMakeLists.txt
-    examples/java/async/CMakeLists.txt
   examples/msg/CMakeLists.txt
     examples/msg/cloud/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
