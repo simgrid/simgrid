@@ -33,7 +33,7 @@ void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 
 VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 {
-  VirtualMachine* vm = new VMHL13(this, name, NULL, host_PM);
+  VirtualMachine* vm = new VMHL13(this, name, host_PM);
   VMCreatedCallbacks(vm);
   return vm;
 }
@@ -95,8 +95,8 @@ double VMHL13Model::next_occuring_event(double now)
 /************
  * Resource *
  ************/
-VMHL13::VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t host_PM)
- : VirtualMachine(model, name, props, host_PM)
+VMHL13::VMHL13(VMModel *model, const char* name, sg_host_t host_PM)
+ : VirtualMachine(model, name, host_PM)
 {
   /* Currently, we assume a VM has no storage. */
   p_storage = NULL;

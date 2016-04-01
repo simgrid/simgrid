@@ -32,8 +32,8 @@ VMModel::vm_list_t VMModel::ws_vms;
  * Resource *
  ************/
 
-VirtualMachine::VirtualMachine(HostModel *model, const char *name, xbt_dict_t props, simgrid::s4u::Host *hostPM)
-: HostImpl(model, name, props, NULL, NULL, NULL)
+VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u::Host *hostPM)
+: HostImpl(model, name, NULL, NULL, NULL)
 , p_hostPM(hostPM)
 {
   VMModel::ws_vms.push_back(*this);
