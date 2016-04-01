@@ -80,6 +80,7 @@ private:
   void replay();
   void removeAcceptancePair(int pair_num);
   void purgeVisitedPairs();
+  void backtrack();
 public:
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
   std::list<std::shared_ptr<Pair>> livenessStack_;

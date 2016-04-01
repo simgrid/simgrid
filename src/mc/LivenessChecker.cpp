@@ -368,7 +368,10 @@ int LivenessChecker::main(void)
        MC_state_interleave_size(current_pair->graph_state.get()), current_pair->num,
        current_pair->requests);
 
-    if (current_pair->requests > 0) {
+    if (current_pair->requests == 0) {
+      this->backtrack();
+      continue;
+    }
 
       std::shared_ptr<VisitedPair> reached_pair;
       if (current_pair->automaton_state->type == 1 && !current_pair->exploration_started
@@ -389,7 +392,7 @@ int LivenessChecker::main(void)
 
         XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
         current_pair->requests = 0;
-        goto backtracking;
+        this->backtrack();
 
       }else{
 
@@ -462,38 +465,33 @@ int LivenessChecker::main(void)
 
       } /* End of visited_pair test */
 
-    } else {
-
-    backtracking:
-      if(visited_num == -1)
-        XBT_DEBUG("No more request to execute. Looking for backtracking point.");
-
-      /* Traverse the stack backwards until a pair with a non empty interleave
-         set is found, deleting all the pairs that have it empty in the way. */
-      while (!livenessStack_.empty()) {
-        std::shared_ptr<simgrid::mc::Pair> current_pair = livenessStack_.back();
-        livenessStack_.pop_back();
-        if (current_pair->requests > 0) {
-          /* We found a backtracking point */
-          XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
-          livenessStack_.push_back(std::move(current_pair));
-          this->replay();
-          XBT_DEBUG("Backtracking done");
-          break;
-        }else{
-          XBT_DEBUG("Delete pair %d at depth %d", current_pair->num, current_pair->depth);
-          if (current_pair->automaton_state->type == 1)
-            this->removeAcceptancePair(current_pair->num);
-        }
-      }
-
-    } /* End of if (current_pair->requests > 0) else ... */
-
   }
 
   XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
   return SIMGRID_MC_EXIT_SUCCESS;
+}
+
+void LivenessChecker::backtrack()
+{
+  /* Traverse the stack backwards until a pair with a non empty interleave
+     set is found, deleting all the pairs that have it empty in the way. */
+  while (!livenessStack_.empty()) {
+    std::shared_ptr<simgrid::mc::Pair> current_pair = livenessStack_.back();
+    livenessStack_.pop_back();
+    if (current_pair->requests > 0) {
+      /* We found a backtracking point */
+      XBT_DEBUG("Backtracking to depth %d", current_pair->depth);
+      livenessStack_.push_back(std::move(current_pair));
+      this->replay();
+      XBT_DEBUG("Backtracking done");
+      break;
+    } else {
+      XBT_DEBUG("Delete pair %d at depth %d", current_pair->num, current_pair->depth);
+      if (current_pair->automaton_state->type == 1)
+        this->removeAcceptancePair(current_pair->num);
+    }
+  }
 }
 
 int LivenessChecker::run()
