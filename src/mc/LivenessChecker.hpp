@@ -29,8 +29,6 @@ SG_END_DECL()
 namespace simgrid {
 namespace mc {
 
-extern XBT_PRIVATE xbt_automaton_t property_automaton;
-
 struct XBT_PRIVATE Pair {
   int num = 0;
   bool search_cycle = false;
