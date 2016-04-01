@@ -166,9 +166,10 @@ NetworkCm02Model::NetworkCm02Model()
   }
 }
 
-Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
+Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
+    xbt_dict_t properties)
 {
-  return new NetworkCm02Link(this, name, properties, maxminSystem_, sg_bandwidth_factor * bandwidth, bandwidth, latency, policy);
+  return new NetworkCm02Link(this, name, properties, bandwidth, latency, policy, maxminSystem_);
 }
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
@@ -389,11 +390,9 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
  * Resource *
  ************/
 NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
-    lmm_system_t system,
-    double constraint_value,
-    double bandwidth,  double latency,
-    e_surf_link_sharing_policy_t policy)
-: Link(model, name, props, lmm_constraint_new(system, this, constraint_value))
+    double bandwidth,  double latency, e_surf_link_sharing_policy_t policy,
+    lmm_system_t system)
+: Link(model, name, props, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth))
 {
   m_bandwidth.scale = 1.0;
   m_bandwidth.peak = bandwidth;

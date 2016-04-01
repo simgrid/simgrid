@@ -406,7 +406,7 @@ public:
   bool operator==(const Resource &other) const;
 
   /**
-   * @brief Apply an event of external load event to that storage
+   * @brief Apply an event of external load event to that resource
    *
    * @param event What happened
    * @param value [TODO]
