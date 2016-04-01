@@ -33,6 +33,10 @@ set(dht_kademlia_sources       ${srcdir}/Main.java  ${srcdir}/Answer.java  ${src
                                ${srcdir}/KademliaTask.java  ${srcdir}/Node.java  ${srcdir}/PingAnswerTask.java
                                ${srcdir}/PingTask.java  ${srcdir}/RoutingTable.java)
 
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/trace/pingpong)
+set(trace_pingpong_sources     ${srcdir}/Main.java  ${srcdir}/PingPongTask.java ${srcdir}/Receiver.java 
+                               ${srcdir}/Sender.java) 
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/energy/consumption)
 set(energy_consumption_sources ${srcdir}/Main.java  ${srcdir}/EnergyConsumer.java)
 
@@ -62,7 +66,7 @@ set(task_priority_sources      ${srcdir}/Main.java  ${srcdir}/Test.java)
 
 foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong cloud_migration cloud_masterworker 
          dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage process_kill process_migration
-         process_startkilltime process_suspend task_priority)
+         process_startkilltime process_suspend task_priority trace_pingpong)
   string (REPLACE "_" "/" example_dir ${example})
   if(enable_java)
     add_custom_command(
@@ -96,7 +100,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
 if(enable_java)
   foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong cloud_migration cloud_masterworker 
            dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage process_kill process_migration
-           process_startkilltime process_suspend task_priority)
+           process_startkilltime process_suspend task_priority trace_pingpong)
     string (REPLACE "_" "/" example_dir ${example})
     ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()

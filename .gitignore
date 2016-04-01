@@ -988,7 +988,7 @@ examples/java/process/migration/java_process_migration_compiled
 examples/java/process/suspend/java_process_suspend_compiled
 examples/java/process/startkilltime/java_process_startkilltime_compiled
 examples/java/task/priority/java_task_priority_compiled
-examples/java/tracing/java_tracing_compiled
+examples/java/trace/pingpong/java_trace_pingpong_compiled
 /CMakeCache.txt
 examples/smpi/mc/smpi_bugged1
 examples/smpi/mc/smpi_bugged1_liveness
