@@ -1,6 +1,6 @@
 foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord dht-pastry exception 
           energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures io-file io-file-unlink io-remote
-          io-storage masterslave masterslave-mailbox pmm priority process-kill process-migration process-suspend 
+          io-storage masterslave masterslave-mailbox pmm task-priority process-kill process-migration process-suspend 
           properties sendrecv set-maestro process-startkilltime synchro token_ring trace-categories 
           trace-link-srcdst-user-variables trace-link-user-variables trace-masterslave trace-platform 
           trace-process-migration trace-simple trace-user-variables)
@@ -39,7 +39,8 @@ foreach (file answer dht-kademlia node routing_table task)
 endforeach()
 
 foreach (file actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-chord 
-         dht-kademlia dht-pastry io-remote masterslave masterslave-mailbox priority properties sendrecv set-maestro)
+         dht-kademlia dht-pastry io-remote masterslave masterslave-mailbox properties sendrecv set-maestro
+         task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
@@ -82,7 +83,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/action
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
 foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-chord dht-kademlia
-        failures io-file io-file-unlink io-remote io-storage masterslave masterslave-mailbox priority process-kill 
+        failures io-file io-file-unlink io-remote io-storage masterslave masterslave-mailbox task-priority process-kill 
         process-migration process-suspend properties sendrecv synchro process-startkilltime token_ring)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()

@@ -15,17 +15,11 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 static int test(int argc, char *argv[])
 {
-  double computation_amount = 0.0;
-  double priority = 1.0;
-  msg_task_t task = NULL;
-
-  XBT_ATTRIB_UNUSED int res = sscanf(argv[1], "%lg", &computation_amount);
-  xbt_assert(res, "Invalid argument %s\n", argv[1]);
-  res = sscanf(argv[2], "%lg", &priority);
-  xbt_assert(res, "Invalid argument %s\n", argv[2]);
+  double computation_amount = xbt_str_parse_double(argv[1], "Invalid argument: %s");
+  double priority = xbt_str_parse_double(argv[2], "Invalid argument: %s");
 
   XBT_INFO("Hello! Running a task of size %g with priority %g", computation_amount, priority);
-  task = MSG_task_create("Task", computation_amount, 0.0, NULL);
+  msg_task_t task = MSG_task_create("Task", computation_amount, 0.0, NULL);
   MSG_task_set_priority(task, priority);
 
   MSG_task_execute(task);

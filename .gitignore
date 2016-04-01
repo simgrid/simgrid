@@ -167,7 +167,7 @@ examples/msg/process-migration/process-migration
 examples/msg/ms.trace
 examples/msg/ns3/ns3
 examples/msg/pmm/pmm
-examples/msg/priority/priority
+examples/msg/task-priority/task-priority
 examples/msg/procmig.trace
 examples/msg/properties/properties
 examples/msg/synchro/synchro
@@ -986,8 +986,8 @@ examples/java/process/kill/java_process_kill_compiled
 examples/java/process/migration/java_process_migration_compiled
 examples/java/process/suspend/java_process_suspend_compiled
 examples/java/pingPong/java_pingPong_compiled
-examples/java/priority/java_priority_compiled
 examples/java/process/startkilltime/java_process_startkilltime_compiled
+examples/java/task/priority/java_task_priority_compiled
 examples/java/tracing/java_tracing_compiled
 /CMakeCache.txt
 examples/smpi/mc/smpi_bugged1
