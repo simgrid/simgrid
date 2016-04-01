@@ -3,6 +3,10 @@ set(app_bittorrent_sources    ${srcdir}/Main.java  ${srcdir}/Common.java  ${srcd
                               ${srcdir}/MessageTask.java ${srcdir}/Peer.java  ${srcdir}/Tracker.java
                               ${srcdir}/TrackerTask.java)
 
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/centralizedmutex)
+set(app_centralizedmutex_sources  ${srcdir}/Main.java  ${srcdir}/Coordinator.java  ${srcdir}/GrantTask.java
+                              ${srcdir}/Node.java ${srcdir}/ReleaseTask.java  ${srcdir}/RequestTask.java)
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker)
 set(app_masterworker_sources   ${srcdir}/Main.java  ${srcdir}/Master.java ${srcdir}/Worker.java) 
 
@@ -49,9 +53,9 @@ set(process_startkilltime_sources ${srcdir}/Main.java ${srcdir}/Sleeper.java)
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/process/suspend)
 set(process_suspend_sources    ${srcdir}/Main.java  ${srcdir}/DreamMaster.java  ${srcdir}/LazyGuy.java)
 
-foreach (example app_bittorrent app_masterworker cloud_migration cloud_masterworker dht_chord dht_kademlia 
-         energy_consumption energy_vm io_file io_storage process_kill process_migration process_startkilltime 
-         process_suspend)
+foreach (example app_bittorrent app_centralizedmutex app_masterworker cloud_migration cloud_masterworker 
+         dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage process_kill process_migration
+         process_startkilltime process_suspend)
   string (REPLACE "_" "/" example_dir ${example})
   if(enable_java)
     add_custom_command(
@@ -75,15 +79,16 @@ set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/ge
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker/README
                                    ${CMAKE_CURRENT_SOURCE_DIR}/cloud/migration             PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bittorrent.xml
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/app/centralizedmutex/centralizedmutex.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker/masterworker.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord/chord.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/dht/kademlia/kademlia.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/process/startkilltime/startkilltime.xml   PARENT_SCOPE)
 
 if(enable_java)
-  foreach (example app_bittorrent app_masterworker cloud_migration cloud_masterworker dht_chord dht_kademlia 
-         energy_consumption energy_vm io_file io_storage process_kill process_migration process_startkilltime 
-         process_suspend)
+  foreach (example app_bittorrent app_centralizedmutex app_masterworker cloud_migration cloud_masterworker 
+           dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage process_kill process_migration
+           process_startkilltime process_suspend)
     string (REPLACE "_" "/" example_dir ${example})
     ADD_TESH(java-${example}  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/java --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/examples/java ${CMAKE_HOME_DIRECTORY}/examples/java/${example_dir}/${example}.tesh)
   endforeach()

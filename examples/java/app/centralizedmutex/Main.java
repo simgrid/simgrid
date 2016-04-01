@@ -4,25 +4,21 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package mutualExclusion;
+package app.centralizedmutex;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
-public class MutexCentral {
+public class Main {
   public static void main(String[] args) throws NativeException {
     Msg.init(args);
 
-    if(args.length < 2) {
-      Msg.info("Usage: MutexCentral platform_file deployment_file");
-      Msg.info("Fallback to default values");
-      Msg.createEnvironment("../platform/small_platform.xml");
-      Msg.deployApplication("mutex_centralized_deployment.xml");
-    } else {
-      /* construct the platform and deploy the application */
-      Msg.createEnvironment(args[0]);
-      Msg.deployApplication(args[1]);
-    }
+    String platf  = args.length > 1 ? args[0] : "../platforms/small_platform.xml";
+    String deploy =  args.length > 1 ? args[1] : "./centralizedmutex.xml";
+
+    /* construct the platform and deploy the application */
+    Msg.createEnvironment(platf);
+    Msg.deployApplication(deploy);
 
     /*  execute the simulation. */
     Msg.run();
