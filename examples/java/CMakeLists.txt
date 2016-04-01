@@ -14,9 +14,9 @@ set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/cloud/masterworker)
 set(cloud_masterworker_sources ${srcdir}/Main.java  ${srcdir}/Master.java ${srcdir}/Worker.java)
 
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/cloud/migration)
-set(cloud_migration_sources    ${srcdir}/Main.java  ${srcdir}/Daemon.java ${srcdir}/Test.java  
+set(cloud_migration_sources    ${srcdir}/Main.java  ${srcdir}/Daemon.java ${srcdir}/Test.java
                                ${srcdir}/TestHostOnOff.java ${srcdir}/XVM.java)
-                               
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/dht/chord)
 set(dht_chord_sources          ${srcdir}/Main.java  ${srcdir}/ChordTask.java  ${srcdir}/Common.java
                                ${srcdir}/FindSuccessorAnswerTask.java  ${srcdir}/FindSuccessorTask.java
@@ -80,7 +80,7 @@ set(examples_src  ${examples_src}                                               
 set(tesh_files    ${tesh_files}                                                            PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/generate.py  PARENT_SCOPE)
 set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker/README
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/cloud/migration             PARENT_SCOPE)
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/cloud/migration/README                      PARENT_SCOPE)
 set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bittorrent.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app/centralizedmutex/centralizedmutex.xml
                                    ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker/masterworker.xml
