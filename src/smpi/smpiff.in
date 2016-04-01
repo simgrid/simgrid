@@ -16,7 +16,7 @@ CMAKE_LINKARGS="-L@libdir@"
 
 @SMPITOOLS_SH@
 
-list_set FFLAGS "-ff2c" "-fno-second-underscore"
+list_set FFLAGS "-ff2c" "-fno-second-underscore" "-ffixed-line-length-none" "-cpp"
 list_set LINKARGS "-lsimgrid" "-lm" "-lgfortran"
 list_set TMPFILES
 main_name=main
@@ -30,7 +30,9 @@ trap 'cleanup' EXIT
 filter_and_compile() {
     list_add TMPFILES "${TMPFILE}"
     #replace "program main_name by subroutine user\_main (and the end clause as well)"
-    sed 's/[[:space:]]\{6\}[[:space:]]*\(end \)\{0,1\}program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /gI;s/[[:space:]]*use[[:space:]]*mpi/\include \"mpif\.h\" /gI' "${ARG}" > "${TMPFILE}"
+    echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > ${TMPFILE}
+    echo "#line 1 \"${ARG}\"" >> ${TMPFILE}
+    sed 's/[[:space:]]\{6\}[[:space:]]*\(end \)\{0,1\}program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /gI;s/[[:space:]]*use[[:space:]]*mpi/\include \"mpif\.h\" /gI' "${ARG}" >> "${TMPFILE}"
     SRCFILE="${TMPFILE}"
     list_add CMDLINE "${SRCFILE}"
 }
