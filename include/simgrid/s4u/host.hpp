@@ -70,6 +70,8 @@ public:
   double speed();
   int core_count();
   xbt_dict_t properties();
+  const char*property(const char*key);
+  void setProperty(const char*key, const char *value);
   xbt_swag_t processes();
   double currentPowerPeak();
   double powerPeakAt(int pstate_index);
