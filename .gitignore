@@ -973,6 +973,7 @@ tools/tesh/tesh
 examples/java/app/bittorrent/java_app_bittorrent_compiled
 examples/java/app/centralizedmutex/java_app_centralizedmutex_compiled
 examples/java/app/masterworker/java_app_masterworker_compiled
+examples/java/app/pingpong/java_app_pingpong_compiled
 examples/java/async/java_async_compiled
 examples/java/dht/chord/java_dht_chord_compiled
 examples/java/dht/kademlia/java_dht_kademlia_compiled
@@ -985,7 +986,6 @@ examples/java/io/storage/java_io_storage_compiled
 examples/java/process/kill/java_process_kill_compiled
 examples/java/process/migration/java_process_migration_compiled
 examples/java/process/suspend/java_process_suspend_compiled
-examples/java/pingPong/java_pingPong_compiled
 examples/java/process/startkilltime/java_process_startkilltime_compiled
 examples/java/task/priority/java_task_priority_compiled
 examples/java/tracing/java_tracing_compiled

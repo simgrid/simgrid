@@ -4,18 +4,20 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package pingPong;
+package app.pingpong;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
+import org.simgrid.msg.NativeException;
+import org.simgrid.msg.HostNotFoundException;
 
 public class Receiver extends Process {
   final double commSizeLat = 1;
   final double commSizeBw = 100000000;
-  public Receiver(Host host, String name, String[]args) {
-    super(host,name,args);
+  public Receiver(String hostname, String name, String[]args) throws HostNotFoundException, NativeException{
+    super(hostname,name,args);
   }
 
   public void main(String[] args) throws MsgException {

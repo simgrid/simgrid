@@ -10,6 +10,10 @@ set(app_centralizedmutex_sources  ${srcdir}/Main.java  ${srcdir}/Coordinator.jav
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/masterworker)
 set(app_masterworker_sources   ${srcdir}/Main.java  ${srcdir}/Master.java ${srcdir}/Worker.java) 
 
+set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/app/pingpong)
+set(app_pingpong_sources       ${srcdir}/Main.java  ${srcdir}/PingPongTask.java ${srcdir}/Receiver.java 
+                               ${srcdir}/Sender.java) 
+
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/cloud/masterworker)
 set(cloud_masterworker_sources ${srcdir}/Main.java  ${srcdir}/Master.java ${srcdir}/Worker.java)
 
@@ -56,7 +60,7 @@ set(process_suspend_sources    ${srcdir}/Main.java  ${srcdir}/DreamMaster.java  
 set (srcdir ${CMAKE_CURRENT_SOURCE_DIR}/task/priority)
 set(task_priority_sources      ${srcdir}/Main.java  ${srcdir}/Test.java)
 
-foreach (example app_bittorrent app_centralizedmutex app_masterworker cloud_migration cloud_masterworker 
+foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong cloud_migration cloud_masterworker 
          dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage process_kill process_migration
          process_startkilltime process_suspend task_priority)
   string (REPLACE "_" "/" example_dir ${example})
@@ -90,7 +94,7 @@ set(xml_files     ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app/bittorrent/bi
                                    ${CMAKE_CURRENT_SOURCE_DIR}/task/priority/priority.xml                  PARENT_SCOPE)
 
 if(enable_java)
-  foreach (example app_bittorrent app_centralizedmutex app_masterworker cloud_migration cloud_masterworker 
+  foreach (example app_bittorrent app_centralizedmutex app_masterworker app_pingpong cloud_migration cloud_masterworker 
            dht_chord dht_kademlia energy_consumption energy_vm io_file io_storage process_kill process_migration
            process_startkilltime process_suspend task_priority)
     string (REPLACE "_" "/" example_dir ${example})

@@ -4,24 +4,24 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-package pingPong;
+package app.pingpong;
 import org.simgrid.msg.Msg;
+import org.simgrid.msg.MsgException;
 import org.simgrid.msg.NativeException;
  
-public class PingPongTest {
-  public static void main(String[] args) throws NativeException {
+public class Main {
+  public static void main(String[] args) throws MsgException, NativeException{
     Msg.init(args);
-    if(args.length < 2) {
-      Msg.info("Usage   : PingPongTest platform_file deployment_file");
-      Msg.info("example : PingPongTest ../platforms/platform.xml pingPongDeployment.xml");
+    if(args.length < 1) {
+      Msg.info("Usage   : Main platform_file");
+      Msg.info("example : Main ../platforms/platform.xml");
       System.exit(1);
     }
 
-    /* construct the platform and deploy the application */
     Msg.createEnvironment(args[0]);
-    Msg.deployApplication(args[1]);
-    
-    /*  execute the simulation. */
+    new Sender("Jacquelin", "Sender", new String[] {"Boivin"}).start();
+    new Receiver ("Boivin", "Receiver", null).start();
+
     Msg.run();
   }
 }
