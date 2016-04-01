@@ -389,7 +389,7 @@ set(S4U_SRC
 )
 
 set(SIMGRID_SRC
-  src/simgrid/sg_config.c
+  src/simgrid/sg_config.cpp
   src/simgrid/host.cpp
   src/simgrid/util.hpp
   )
