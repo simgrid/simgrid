@@ -236,6 +236,23 @@ void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt
   xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
 }
 
+void xbt_cfg_register_double(xbt_cfg_t * cfg, const char *name, const char *desc, double default_value,xbt_cfg_cb_t cb_set){
+  xbt_cfg_register(cfg,name,desc,xbt_cfgelm_double,1,1,cb_set);
+  xbt_cfg_setdefault_double(cfg, name, default_value);
+}
+void xbt_cfg_register_int(xbt_cfg_t * cfg, const char *name, const char *desc, int default_value,xbt_cfg_cb_t cb_set){
+  xbt_cfg_register(cfg,name,desc,xbt_cfgelm_int,1,1,cb_set);
+  xbt_cfg_setdefault_int(cfg, name, default_value);
+}
+void xbt_cfg_register_string(xbt_cfg_t * cfg, const char *name, const char *desc, const char *default_value, xbt_cfg_cb_t cb_set){
+  xbt_cfg_register(cfg,name,desc,xbt_cfgelm_string,1,1,cb_set);
+  xbt_cfg_setdefault_string(cfg, name, default_value);
+}
+void xbt_cfg_register_boolean(xbt_cfg_t * cfg, const char *name, const char *desc, const char*default_value,xbt_cfg_cb_t cb_set){
+  xbt_cfg_register(cfg,name,desc,xbt_cfgelm_boolean,1,1,cb_set);
+  xbt_cfg_setdefault_boolean(cfg, name, default_value);
+}
+
 void xbt_cfg_register_alias(xbt_cfg_t * cfg, const char *newname, const char *oldname)
 {
   if (*cfg == NULL)

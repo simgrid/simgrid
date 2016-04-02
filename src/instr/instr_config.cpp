@@ -357,37 +357,14 @@ void TRACE_global_init(int *argc, char **argv)
 
   is_initialised = 1;
   /* name of the tracefile */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_FILENAME, "Trace file created by the instrumented SimGrid.",
-                   xbt_cfgelm_string, 1, 1, NULL);
-  xbt_cfg_setdefault_string(_sg_cfg_set, OPT_TRACING_FILENAME, "simgrid.trace");
-
-  /* tracing */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING, "Enable Tracing.", xbt_cfgelm_boolean, 1, 1, NULL);
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING, "no");
-
-  /* register platform in the trace */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_PLATFORM, "Register the platform in the trace as a hierarchy.",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_PLATFORM, "no");
-
-  /* register platform in the trace */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_TOPOLOGY, "Register the platform topology in the trace as a graph.",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_TOPOLOGY, "yes");
-
-  /* smpi */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI, "Tracing of the SMPI interface.", xbt_cfgelm_boolean, 1, 1, NULL);
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI, "no");
-
-  /* smpi grouped */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.",
-                   xbt_cfgelm_boolean, 1, 1, NULL);
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI_GROUP, "no");
-
-  /* smpi computing */
-  xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING,
-                   "Generate states for timing out of SMPI parts of the application", xbt_cfgelm_boolean, 1, 1, NULL);
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING, "no");
+  xbt_cfg_register_string (&_sg_cfg_set, OPT_TRACING_FILENAME,   "Trace file created by the instrumented SimGrid.", "simgrid.trace", NULL);
+  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING,            "Enable Tracing.",                                            "no", NULL);
+  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_PLATFORM,   "Register the platform in the trace as a hierarchy.",         "no", NULL);
+  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_TOPOLOGY,   "Register the platform topology in the trace as a graph.",   "yes", NULL);
+  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_SMPI,       "Tracing of the SMPI interface.",                             "no", NULL);
+  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.",                               "no", NULL);
+  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING,
+      "Generate states for timing out of SMPI parts of the application", "no", NULL);
 
 /* smpi sleeping */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_SLEEPING,
