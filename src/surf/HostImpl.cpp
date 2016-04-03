@@ -31,10 +31,10 @@ simgrid::xbt::Extension<simgrid::s4u::Host, HostImpl> HostImpl::EXTENSION_ID;
 /*********
  * Model *
  *********/
-HostImpl *HostModel::createHost(const char *name,NetCard *netElm, Cpu *cpu, xbt_dict_t props){
+HostImpl *HostModel::createHost(const char *name, NetCard *netElm, Cpu *cpu){
   xbt_dynar_t storageList = (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL);
 
-  HostImpl *host = new simgrid::surf::HostImpl(surf_host_model, name, props, storageList, cpu);
+  HostImpl *host = new simgrid::surf::HostImpl(surf_host_model, name, storageList, cpu);
   XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
   return host;
 }
@@ -61,13 +61,13 @@ void HostModel::adjustWeightOfDummyCpuActions()
 
       /* FIXME: we should use lmm_update_variable_weight() ? */
       /* FIXME: If we assign 1.05 and 0.05, the system makes apparently wrong values. */
-      ws_vm->p_action->setPriority(1);
+      ws_vm->action_->setPriority(1);
 
     } else {
       /* no task exits on this VM */
       XBT_DEBUG("set the weight of the dummy CPU action on PM to 0");
 
-      ws_vm->p_action->setPriority(0);
+      ws_vm->action_->setPriority(0);
     }
   }
 }
@@ -123,19 +123,18 @@ void HostImpl::classInit()
   }
 }
 
-HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
-                     xbt_dynar_t storage, Cpu *cpu)
+HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name)
- , PropertyHolder(props)
+ , PropertyHolder(nullptr)
  , p_storage(storage), p_cpu(cpu)
 {
   p_params.ramsize = 0;
 }
 
-HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint,
+HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, lmm_constraint_t constraint,
                  xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name, constraint)
- , PropertyHolder(props)
+ , PropertyHolder(nullptr)
  , p_storage(storage), p_cpu(cpu)
 {
   p_params.ramsize = 0;
@@ -392,7 +391,7 @@ xbt_dynar_t HostImpl::getVms()
        iter !=  simgrid::surf::VMModel::ws_vms.end(); ++iter) {
 
     simgrid::surf::VirtualMachine *ws_vm = &*iter;
-    if (this == ws_vm->p_hostPM->extension(simgrid::surf::HostImpl::EXTENSION_ID))
+    if (this == ws_vm->getPm()->extension(simgrid::surf::HostImpl::EXTENSION_ID))
       xbt_dynar_push(dyn, &ws_vm);
   }
 

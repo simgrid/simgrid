@@ -117,6 +117,18 @@ xbt_dict_t Host::properties() {
   });
 }
 
+/** Retrieve the property value (or NULL if not set) */
+const char*Host::property(const char*key) {
+  simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
+  return surf_host->getProperty(key);
+}
+void Host::setProperty(const char*key, const char *value){
+  simgrid::simix::kernel([&] {
+    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
+    surf_host->setProperty(key,value);
+  });
+}
+
 /** Get the processes attached to the host */
 xbt_swag_t Host::processes()
 {

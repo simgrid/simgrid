@@ -28,7 +28,7 @@ public:
    */
   xbt_dict_t getProperties();
 private:
-  xbt_dict_t p_properties = NULL;
+  xbt_dict_t properties_ = NULL;
 };
 
 } /* namespace surf */

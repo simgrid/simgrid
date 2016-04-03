@@ -7,65 +7,65 @@ p 3hosts 2links
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3hosts_2links_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
+> [Jupiter:worker(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from Tremblay to Jupiter
 
 p 6hosts 3links
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
-> [Ginette:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
-> [Lovelace:slave(6)] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
+> [Jupiter:worker(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
+> [Ginette:worker(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
+> [Lovelace:worker(6)] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/small_platform_one_link_routes.xml ${srcdir:=.}/examples/msg/ns3/3links-timer_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [Jupiter:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
-> [Ginette:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
-> [Lovelace:slave(6)] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
-> [Lovelace:slave(7)] [msg_test/INFO] FLOW[4] : Receive 2000000 bytes from Bourassa to Lovelace
+> [Jupiter:worker(2)] [msg_test/INFO] FLOW[1] : Receive 100000 bytes from Tremblay to Jupiter
+> [Ginette:worker(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from Fafard to Ginette
+> [Lovelace:worker(6)] [msg_test/INFO] FLOW[3] : Receive 2000000 bytes from Bourassa to Lovelace
+> [Lovelace:worker(7)] [msg_test/INFO] FLOW[4] : Receive 2000000 bytes from Bourassa to Lovelace
 
 p One cluster
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/cluster.xml ${srcdir:=.}/examples/msg/ns3/one_cluster_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [node-6.acme.org:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-2.acme.org to node-6.acme.org
+> [node-6.acme.org:worker(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-2.acme.org to node-6.acme.org
 
 p Two clusters
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/clusters_routing_full.xml ${srcdir:=.}/examples/msg/ns3/two_clusters_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [node-16.acme.org:slave(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-3.acme.org to node-16.acme.org
+> [node-16.acme.org:worker(2)] [msg_test/INFO] FLOW[1] : Receive 100 bytes from node-3.acme.org to node-16.acme.org
 
 p Dogbone
 
 ! timeout 10
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/dogbone.xml ${srcdir:=.}/examples/msg/ns3/dogbone_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [C1:slave(3)] [msg_test/INFO] FLOW[0] : Receive 20000000 bytes from S1 to C1
-> [C2:slave(4)] [msg_test/INFO] FLOW[1] : Receive 20000000 bytes from S2 to C2
+> [C1:worker(3)] [msg_test/INFO] FLOW[0] : Receive 20000000 bytes from S1 to C1
+> [C2:worker(4)] [msg_test/INFO] FLOW[1] : Receive 20000000 bytes from S2 to C2
 
 p 2hosts 1link
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/onelink.xml ${srcdir:=.}/examples/msg/ns3/onelink_d.xml --cfg=network/model:NS3 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
-> [C1:slave(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
+> [C1:worker(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
 
 p Crosstraffic TCP option DISABLED
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/crosstraffic.xml ${srcdir:=.}/examples/msg/ns3/crosstraffic_d.xml --cfg=network/model:NS3 --cfg=network/crosstraffic:0 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '0'
-> [C1:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S1 to C1
-> [C1:slave(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
-> [C1:slave(6)] [msg_test/INFO] FLOW[3] : Receive 1000000 bytes from S1 to C1
-> [S1:slave(8)] [msg_test/INFO] FLOW[4] : Receive 1000000 bytes from C1 to S1
+> [C1:worker(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S1 to C1
+> [C1:worker(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
+> [C1:worker(6)] [msg_test/INFO] FLOW[3] : Receive 1000000 bytes from S1 to C1
+> [S1:worker(8)] [msg_test/INFO] FLOW[4] : Receive 1000000 bytes from C1 to S1
 
 p Crosstraffic TCP option ENABLED
 
 $ ns3/ns3 ${srcdir:=.}/examples/platforms/crosstraffic.xml ${srcdir:=.}/examples/msg/ns3/crosstraffic_d.xml --cfg=network/model:NS3 --cfg=network/crosstraffic:1 "--log=root.fmt:[%h:%P(%i)]%e[%c/%p]%e%m%n"
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'NS3'
 > [:maestro(0)] [xbt_cfg/INFO] Configuration change: Set 'network/crosstraffic' to '1'
-> [C1:slave(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S1 to C1
-> [C1:slave(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
-> [C1:slave(6)] [msg_test/INFO] FLOW[3] : Receive 1000000 bytes from S1 to C1
-> [S1:slave(8)] [msg_test/INFO] FLOW[4] : Receive 1000000 bytes from C1 to S1
+> [C1:worker(4)] [msg_test/INFO] FLOW[2] : Receive 1000000 bytes from S1 to C1
+> [C1:worker(2)] [msg_test/INFO] FLOW[1] : Receive 1000000 bytes from S1 to C1
+> [C1:worker(6)] [msg_test/INFO] FLOW[3] : Receive 1000000 bytes from S1 to C1
+> [S1:worker(8)] [msg_test/INFO] FLOW[4] : Receive 1000000 bytes from C1 to S1

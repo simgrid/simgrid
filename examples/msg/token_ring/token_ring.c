@@ -25,7 +25,7 @@ static int host(int argc, char *argv[])
   char mailbox[256];
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
-  if (host_number == 0){ //master  send then receive
+  if (host_number == 0){ //root: send then receive
     sprintf(mailbox, "%d", host_number+1);
     task = MSG_task_create("Token", task_comp_size, task_comm_size, NULL);
     XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"",host_number,task->name,mailbox);
@@ -35,7 +35,7 @@ static int host(int argc, char *argv[])
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Host \"%d\" received \"%s\"",host_number, MSG_task_get_name(task));
     MSG_task_destroy(task);
-  } else{ //slave receive then send
+  } else{ // receive then send
     res = MSG_task_receive(&(task), MSG_process_get_name(MSG_process_self()));
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Host \"%d\" received \"%s\"",host_number, MSG_task_get_name(task));

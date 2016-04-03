@@ -6,7 +6,7 @@
       <argument value="Jupiter"/>
       <argument value="1"/>
   </process>
-  <process host="Jupiter" function="slave">
+  <process host="Jupiter" function="worker">
     <argument value="1"/>
   </process>
 </platform>

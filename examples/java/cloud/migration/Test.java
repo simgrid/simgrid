@@ -14,8 +14,8 @@ import org.simgrid.msg.Process;
 
 public class Test extends Process{
 
-  Test(Host host, String name, String[] args) throws HostNotFoundException, NativeException  {
-    super(host, name, args);
+  Test(String hostname, String name) throws HostNotFoundException, NativeException  {
+    super(hostname, name);
   }
 
   public void main(String[] strings) throws MsgException {

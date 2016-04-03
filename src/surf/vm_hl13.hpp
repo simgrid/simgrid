@@ -45,7 +45,7 @@ public:
 
 class VMHL13 : public VirtualMachine {
 public:
-  VMHL13(VMModel *model, const char* name, xbt_dict_t props, sg_host_t host_PM);
+  VMHL13(VMModel *model, const char* name, sg_host_t host_PM);
   ~VMHL13() {}
 
   void suspend() override;

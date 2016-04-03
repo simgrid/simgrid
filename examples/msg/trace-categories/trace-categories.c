@@ -6,8 +6,8 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/categories.c</b> This is a master/slave program where the master creates tasks, send them to the slaves.
- * For each task received, the slave executes it and then destroys it. This program declares several tracing categories
+ * - <b>tracing/categories.c</b> This is a master/worker program. The master creates tasks and send them to workers.
+ * For each task received, the worker executes it and then destroys it. This program declares several tracing categories
  * that are used to classify tasks. When the program is executed, the tracing mechanism registers the resource
  * utilization of hosts and links according to these categories. You might want to run this program with the following
  * parameters:
@@ -24,7 +24,7 @@
 static int master(int argc, char *argv[])
 {
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
-  long slaves_count = xbt_str_parse_int(argv[4], "Invalid amount of slaves: %s");
+  long workers_count = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
 
   int i;
   for (i = 0; i < number_of_tasks; i++) {
@@ -44,7 +44,7 @@ static int master(int argc, char *argv[])
     MSG_task_send(task, "master_mailbox");
   }
 
-  for (i = 0; i < slaves_count; i++) {
+  for (i = 0; i < workers_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 1000, 0);
     MSG_task_set_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");
@@ -53,7 +53,7 @@ static int master(int argc, char *argv[])
   return 0;
 }
 
-static int slave(int argc, char *argv[])
+static int worker(int argc, char *argv[])
 {
   msg_task_t task = NULL;
 
@@ -87,7 +87,7 @@ int main(int argc, char *argv[])
   TRACE_category_with_color ("finalize", "0 0 0");//black
 
   MSG_function_register("master", master);
-  MSG_function_register("slave", slave);
+  MSG_function_register("worker", worker);
   MSG_launch_application(argv[2]);
 
   MSG_main();

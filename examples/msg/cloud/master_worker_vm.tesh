@@ -1,6 +1,6 @@
 #! ./tesh
 
-p Testing the Cloud API with a simple masterslave
+p Testing the Cloud API with a simple master/workers
 
 $ $SG_TEST_EXENV ${bindir:=.}/master_worker_vm$EXEEXT --log=no_loc ${srcdir:=.}/../../platforms/platform.xml
 > [Jacquelin:master:(1) 0.000000] [msg_test/INFO] # Launch 2 VMs

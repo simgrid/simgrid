@@ -1,5 +1,3 @@
-/* Master of a basic master/slave example in Java */
-
 /* Copyright (c) 2006-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 

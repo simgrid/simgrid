@@ -1,0 +1,15 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+  <process host="Tremblay" function="app.centralizedmutex.Coordinator">
+    <argument value="2"/> <!-- Amount of CS to serve -->
+  </process>
+  <process host="Jupiter" function="app.centralizedmutex.Node">
+    <argument value="2"/> <!-- initial sleep time -->
+    <argument value="5"/> <!-- CS time -->
+  </process>
+  <process host="Fafard" function="app.centralizedmutex.Node">
+    <argument value="2"/> <!-- initial sleep time -->
+    <argument value="5"/> <!-- CS time -->
+  </process>
+</platform>

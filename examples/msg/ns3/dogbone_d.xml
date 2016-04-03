@@ -11,10 +11,10 @@
       <argument value="C2"/>
       <argument value="1"/>
   </process>
-  <process host="C1" function="slave">
+  <process host="C1" function="worker">
       <argument value="0"/>
   </process>
-  <process host="C2" function="slave">
+  <process host="C2" function="worker">
       <argument value="1"/>
   </process>
 </platform>

@@ -389,7 +389,7 @@ set(S4U_SRC
 )
 
 set(SIMGRID_SRC
-  src/simgrid/sg_config.c
+  src/simgrid/sg_config.cpp
   src/simgrid/host.cpp
   src/simgrid/util.hpp
   )
@@ -924,13 +924,6 @@ set(txt_files
 # Add your CMakeLists file here to see your subdir built.
 set(CMAKEFILES_TXT
   examples/java/CMakeLists.txt
-    examples/java/async/CMakeLists.txt
-    examples/java/cloud/CMakeLists.txt
-    examples/java/cloud/migration/CMakeLists.txt
-    examples/java/mutualExclusion/CMakeLists.txt
-    examples/java/pingPong/CMakeLists.txt
-    examples/java/priority/CMakeLists.txt
-    examples/java/tracing/CMakeLists.txt
   examples/msg/CMakeLists.txt
     examples/msg/cloud/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt

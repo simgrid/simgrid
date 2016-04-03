@@ -151,7 +151,14 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     cpu->setStateTrace(host->state_trace);
   if (host->speed_trace)
     cpu->setSpeedTrace(host->speed_trace);
-  surf_host_model->createHost(host->id, netcard, cpu, host->properties)->attach(h);
+  surf_host_model->createHost(host->id, netcard, cpu)->attach(h);
+
+  if (host->properties) {
+    xbt_dict_cursor_t cursor=NULL;
+    char *key,*data;
+    xbt_dict_foreach(host->properties,cursor,key,data)
+      h->setProperty(key,data);
+  }
 
   if (host->pstate != 0)
     cpu->setPState(host->pstate);

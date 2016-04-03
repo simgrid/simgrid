@@ -53,17 +53,7 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VM
  */
 class VirtualMachine : public HostImpl {
 public:
-  /**
-   * @brief Constructor
-   *
-   * @param model VMModel associated to this VM
-   * @param name The name of the VM
-   * @param props Dictionary of properties associated to this VM
-   * @param host The host
-   */
-  VirtualMachine(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props, simgrid::s4u::Host *host);
-
-  /** @brief Destructor */
+  VirtualMachine(simgrid::surf::HostModel *model, const char *name, simgrid::s4u::Host *host);
   ~VirtualMachine();
 
   /** @brief Suspend the VM */
@@ -88,13 +78,14 @@ public:
   virtual void setAffinity(Cpu *cpu, unsigned long mask)=0;
 
   /* The vm object of the lower layer */
-  CpuAction *p_action;
-  simgrid::s4u::Host *p_hostPM;
+  CpuAction *action_;
+protected:
+  simgrid::s4u::Host *hostPM_;
 
+public:
   void turnOn() override;
   void turnOff() override;
 
-public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
 protected:
