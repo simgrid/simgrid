@@ -357,14 +357,13 @@ void TRACE_global_init(int *argc, char **argv)
 
   is_initialised = 1;
   /* name of the tracefile */
-  xbt_cfg_register_string (&_sg_cfg_set, OPT_TRACING_FILENAME,   "Trace file created by the instrumented SimGrid.", "simgrid.trace", NULL);
-  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING,            "Enable Tracing.",                                            "no", NULL);
-  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_PLATFORM,   "Register the platform in the trace as a hierarchy.",         "no", NULL);
-  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_TOPOLOGY,   "Register the platform topology in the trace as a graph.",   "yes", NULL);
-  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_SMPI,       "Tracing of the SMPI interface.",                             "no", NULL);
-  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.",                               "no", NULL);
-  xbt_cfg_register_boolean(&_sg_cfg_set, OPT_TRACING_SMPI_COMPUTING,
-      "Generate states for timing out of SMPI parts of the application", "no", NULL);
+  xbt_cfg_register_string (OPT_TRACING_FILENAME,   "Trace file created by the instrumented SimGrid.", "simgrid.trace", NULL);
+  xbt_cfg_register_boolean(OPT_TRACING,            "Enable Tracing.",                                            "no", NULL);
+  xbt_cfg_register_boolean(OPT_TRACING_PLATFORM,   "Register the platform in the trace as a hierarchy.",         "no", NULL);
+  xbt_cfg_register_boolean(OPT_TRACING_TOPOLOGY,   "Register the platform topology in the trace as a graph.",   "yes", NULL);
+  xbt_cfg_register_boolean(OPT_TRACING_SMPI,       "Tracing of the SMPI interface.",                             "no", NULL);
+  xbt_cfg_register_boolean(OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.",                               "no", NULL);
+  xbt_cfg_register_boolean(OPT_TRACING_SMPI_COMPUTING, "Generate states for timing out of SMPI parts of the application", "no", NULL);
 
 /* smpi sleeping */
   xbt_cfg_register(&_sg_cfg_set, OPT_TRACING_SMPI_SLEEPING,

@@ -21,6 +21,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
+xbt_cfg_t _sg_cfg_set = NULL;
+
 /* xbt_cfgelm_t: the typedef corresponding to a config variable.
 
    Both data and DTD are mixed, but fixing it now would prevent me to ever defend my thesis. */
@@ -236,36 +238,36 @@ void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt
   xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
 }
 
-void xbt_cfg_register_double(xbt_cfg_t * cfg, const char *name, const char *desc, double default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(cfg,name,desc,xbt_cfgelm_double,1,1,cb_set);
-  xbt_cfg_setdefault_double(cfg, name, default_value);
+void xbt_cfg_register_double(const char *name, const char *desc, double default_value,xbt_cfg_cb_t cb_set){
+  xbt_cfg_register(_sg_cfg_set,name,desc,xbt_cfgelm_double,1,1,cb_set);
+  xbt_cfg_setdefault_double(_sg_cfg_set, name, default_value);
 }
-void xbt_cfg_register_int(xbt_cfg_t * cfg, const char *name, const char *desc, int default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(cfg,name,desc,xbt_cfgelm_int,1,1,cb_set);
-  xbt_cfg_setdefault_int(cfg, name, default_value);
+void xbt_cfg_register_int(const char *name, const char *desc, int default_value,xbt_cfg_cb_t cb_set){
+  xbt_cfg_register(_sg_cfg_set,name,desc,xbt_cfgelm_int,1,1,cb_set);
+  xbt_cfg_setdefault_int(_sg_cfg_set, name, default_value);
 }
-void xbt_cfg_register_string(xbt_cfg_t * cfg, const char *name, const char *desc, const char *default_value, xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(cfg,name,desc,xbt_cfgelm_string,1,1,cb_set);
-  xbt_cfg_setdefault_string(cfg, name, default_value);
+void xbt_cfg_register_string(const char *name, const char *desc, const char *default_value, xbt_cfg_cb_t cb_set){
+  xbt_cfg_register(_sg_cfg_set,name,desc,xbt_cfgelm_string,1,1,cb_set);
+  xbt_cfg_setdefault_string(_sg_cfg_set, name, default_value);
 }
-void xbt_cfg_register_boolean(xbt_cfg_t * cfg, const char *name, const char *desc, const char*default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(cfg,name,desc,xbt_cfgelm_boolean,1,1,cb_set);
-  xbt_cfg_setdefault_boolean(cfg, name, default_value);
+void xbt_cfg_register_boolean(const char *name, const char *desc, const char*default_value,xbt_cfg_cb_t cb_set){
+  xbt_cfg_register(_sg_cfg_set,name,desc,xbt_cfgelm_boolean,1,1,cb_set);
+  xbt_cfg_setdefault_boolean(_sg_cfg_set, name, default_value);
 }
 
-void xbt_cfg_register_alias(xbt_cfg_t * cfg, const char *newname, const char *oldname)
+void xbt_cfg_register_alias(const char *newname, const char *oldname)
 {
-  if (*cfg == NULL)
-    *cfg = xbt_cfg_new();
+  if (_sg_cfg_set == NULL)
+    _sg_cfg_set = xbt_cfg_new();
 
-  xbt_cfgelm_t res = xbt_dict_get_or_null((xbt_dict_t) * cfg, oldname);
+  xbt_cfgelm_t res = xbt_dict_get_or_null(_sg_cfg_set, oldname);
   xbt_assert(NULL == res, "Refusing to register the option '%s' twice.", oldname);
 
-  res = xbt_dict_get_or_null((xbt_dict_t) * cfg, newname);
+  res = xbt_dict_get_or_null(_sg_cfg_set, newname);
   xbt_assert(res, "Cannot define an alias to the non-existing option '%s'.", newname);
 
   res = xbt_new0(s_xbt_cfgelm_t, 1);
-  XBT_DEBUG("Register cfg alias %s -> %s in set %p)",oldname,newname, *cfg);
+  XBT_DEBUG("Register cfg alias %s -> %s)",oldname,newname);
 
   res->desc = bprintf("Deprecated alias for %s",newname);
   res->type = xbt_cfgelm_alias;
@@ -274,7 +276,7 @@ void xbt_cfg_register_alias(xbt_cfg_t * cfg, const char *newname, const char *ol
   res->isdefault = 1;
   res->content = (xbt_dynar_t)newname;
 
-  xbt_dict_set((xbt_dict_t) * cfg, oldname, res, NULL);
+  xbt_dict_set(_sg_cfg_set, oldname, res, NULL);
 }
 
 /** @brief Unregister an element from a config set.
