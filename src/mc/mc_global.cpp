@@ -61,7 +61,6 @@ simgrid::mc::State* mc_current_state = nullptr;
 char mc_replay_mode = false;
 
 mc_stats_t mc_stats = nullptr;
-xbt_fifo_t mc_stack = nullptr;
 
 /* Liveness */
 

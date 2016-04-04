@@ -28,6 +28,8 @@ using simgrid::mc::remote;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_determinism, mc,
                                 "Logging specific to MC communication determinism detection");
 
+XBT_PRIVATE static xbt_fifo_t mc_stack;
+
 /********** Global variables **********/
 
 xbt_dynar_t initial_communications_pattern;

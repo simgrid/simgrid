@@ -30,6 +30,13 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_safety, mc,
                                 "Logging specific to MC safety verification ");
 
+/** Stack (of `simgrid::mc::State*`) representing the current position of the
+ *  the MC in the exploration graph
+ *
+ *  It is managed by its head (`xbt_fifo_shift` and `xbt_fifo_unshift`).
+ */
+XBT_PRIVATE static xbt_fifo_t mc_stack;
+
 namespace simgrid {
 namespace mc {
 
