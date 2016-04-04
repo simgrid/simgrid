@@ -57,7 +57,7 @@ static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* stat
 bool SafetyChecker::checkNonDeterminism(simgrid::mc::State* current_state)
 {
   for (auto i = stack_.rbegin(); i != stack_.rend(); ++i)
-    if(snapshot_compare(*i, current_state) == 0){
+    if (snapshot_compare(i->get(), current_state) == 0){
       XBT_INFO("Non-progressive cycle : state %d -> state %d",
         (*i)->num, current_state->num);
       return true;
@@ -68,9 +68,9 @@ bool SafetyChecker::checkNonDeterminism(simgrid::mc::State* current_state)
 RecordTrace SafetyChecker::getRecordTrace() // override
 {
   RecordTrace res;
-  for (simgrid::mc::State* state : stack_) {
+  for (auto const& state : stack_) {
     int value = 0;
-    smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
+    smx_simcall_t saved_req = MC_state_get_executed_request(state.get(), &value);
     const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
     const int pid = issuer->pid;
     res.push_back(RecordTraceElement(pid, value));
@@ -81,9 +81,9 @@ RecordTrace SafetyChecker::getRecordTrace() // override
 std::vector<std::string> SafetyChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;
-  for (simgrid::mc::State* state : stack_) {
+  for (auto const& state : stack_) {
     int value;
-    smx_simcall_t req = MC_state_get_executed_request(state, &value);
+    smx_simcall_t req = MC_state_get_executed_request(state.get(), &value);
     if (req) {
       char* req_str = simgrid::mc::request_to_string(
         req, value, simgrid::mc::RequestType::executed);
@@ -102,14 +102,13 @@ int SafetyChecker::run()
   int value;
   smx_simcall_t req = nullptr;
   simgrid::mc::State* prev_state = nullptr;
-  simgrid::mc::State* next_state = nullptr;
   xbt_fifo_item_t item = nullptr;
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
 
   while (!stack_.empty()) {
 
     /* Get current state */
-    simgrid::mc::State* state = stack_.back();
+    simgrid::mc::State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG(
@@ -143,20 +142,21 @@ int SafetyChecker::run()
       mc_model_checker->wait_for_requests();
 
       /* Create the new expanded state */
-      next_state = MC_state_new();
+      std::unique_ptr<simgrid::mc::State> next_state =
+        std::unique_ptr<simgrid::mc::State>(MC_state_new());
 
-      if (_sg_mc_termination && this->checkNonDeterminism(next_state)){
+      if (_sg_mc_termination && this->checkNonDeterminism(next_state.get())){
           MC_show_non_termination();
           return SIMGRID_MC_EXIT_NON_TERMINATION;
       }
 
       if (_sg_mc_visited == 0
-          || (visited_state = visitedStates_.addVisitedState(next_state, true)) == nullptr) {
+          || (visited_state = visitedStates_.addVisitedState(next_state.get(), true)) == nullptr) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
           if (simgrid::mc::process_is_enabled(&p.copy)) {
-            MC_state_interleave_process(next_state, &p.copy);
+            MC_state_interleave_process(next_state.get(), &p.copy);
             if (reductionMode_ != simgrid::mc::ReductionMode::none)
               break;
           }
@@ -167,7 +167,7 @@ int SafetyChecker::run()
       } else if (dot_output != nullptr)
         std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
 
-      stack_.push_back(next_state);
+      stack_.push_back(std::move(next_state));
 
       if (dot_output != nullptr)
         xbt_free(req_str);
@@ -192,9 +192,8 @@ int SafetyChecker::run()
           stack_.size() + 1);
 
       /* Trash the current state, no longer needed */
+      XBT_DEBUG("Delete state %d at depth %zi", state->num, stack_.size());
       stack_.pop_back();
-      XBT_DEBUG("Delete state %d at depth %zi", state->num, stack_.size() + 1);
-      MC_state_delete(state, !state->in_visited_states ? 1 : 0);
 
       visited_state = nullptr;
 
@@ -212,16 +211,16 @@ int SafetyChecker::run()
          state that executed that previous request. */
 
       while (!stack_.empty()) {
-        state = stack_.back();
+        std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
         stack_.pop_back();
         if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
-          req = MC_state_get_internal_request(state);
+          req = MC_state_get_internal_request(state.get());
           if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
             xbt_die("Mutex is currently not supported with DPOR, "
               "use --cfg=model-check/reduction:none");
           const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
           for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
-            simgrid::mc::State* prev_state = *i;
+            simgrid::mc::State* prev_state = i->get();
             if (reductionMode_ != simgrid::mc::ReductionMode::none
                 && simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
               if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
@@ -230,7 +229,7 @@ int SafetyChecker::run()
                 req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::internal);
                 XBT_DEBUG("%s (state=%d)", req_str, prev_state->num);
                 xbt_free(req_str);
-                prev_req = MC_state_get_executed_request(state, &value);
+                prev_req = MC_state_get_executed_request(state.get(), &value);
                 req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::executed);
                 XBT_DEBUG("%s (state=%d)", req_str, state->num);
                 xbt_free(req_str);
@@ -261,20 +260,19 @@ int SafetyChecker::run()
           }
         }
 
-        if (MC_state_interleave_size(state)
+        if (MC_state_interleave_size(state.get())
             && stack_.size() < _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %zi",
             state->num, stack_.size() + 1);
-          stack_.push_back(state);
+          stack_.push_back(std::move(state));
           simgrid::mc::replay(stack_);
           XBT_DEBUG("Back-tracking to state %d at depth %zi done",
-            state->num, stack_.size());
+            stack_.back()->num, stack_.size());
           break;
         } else {
           XBT_DEBUG("Delete state %d at depth %zi",
             state->num, stack_.size() + 1);
-          MC_state_delete(state, !state->in_visited_states ? 1 : 0);
         }
       }
     }
@@ -302,7 +300,8 @@ void SafetyChecker::init()
 
   XBT_DEBUG("Starting the safety algorithm");
 
-  simgrid::mc::State* initial_state = MC_state_new();
+  std::unique_ptr<simgrid::mc::State> initial_state =
+    std::unique_ptr<simgrid::mc::State>(MC_state_new());
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
@@ -313,12 +312,12 @@ void SafetyChecker::init()
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
     if (simgrid::mc::process_is_enabled(&p.copy)) {
-      MC_state_interleave_process(initial_state, &p.copy);
+      MC_state_interleave_process(initial_state.get(), &p.copy);
       if (reductionMode_ != simgrid::mc::ReductionMode::none)
         break;
     }
 
-  stack_.push_back(initial_state);
+  stack_.push_back(std::move(initial_state));
 
   /* Save the initial state */
   initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());

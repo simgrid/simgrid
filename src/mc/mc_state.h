@@ -62,7 +62,7 @@ struct XBT_PRIVATE State {
   ~State();
 };
 
-XBT_PRIVATE void replay(std::list<simgrid::mc::State*> const& stack);
+XBT_PRIVATE void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack);
 
 }
 }

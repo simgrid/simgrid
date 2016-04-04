@@ -28,7 +28,7 @@ private:
   int main();
 private:
   /** Stack representing the position in the exploration graph */
-  std::list<simgrid::mc::State*> stack_;
+  std::list<std::unique_ptr<simgrid::mc::State>> stack_;
   simgrid::mc::VisitedStates visitedStates_;
 };
 

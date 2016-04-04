@@ -118,13 +118,13 @@ namespace mc {
  * \param stack The stack with the transitions to execute.
  * \param start Start index to begin the re-execution.
  */
-void replay(std::list<simgrid::mc::State*> const& stack)
+void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
 {
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0 || _sg_mc_termination || _sg_mc_visited > 0) {
-    simgrid::mc::State* state = stack.back();
+    simgrid::mc::State* state = stack.back().get();
     if (state->system_state) {
       simgrid::mc::restore_snapshot(state->system_state);
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
@@ -153,12 +153,12 @@ void replay(std::list<simgrid::mc::State*> const& stack)
   int count = 1;
 
   /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (simgrid::mc::State* state : stack) {
+  for (std::unique_ptr<simgrid::mc::State> const& state : stack) {
     if (state == stack.back())
       break;
 
     int value;
-    smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
+    smx_simcall_t saved_req = MC_state_get_executed_request(state.get(), &value);
     
     if (saved_req) {
       /* because we got a copy of the executed request, we have to fetch the  
@@ -170,7 +170,7 @@ void replay(std::list<simgrid::mc::State*> const& stack)
       /* Debug information */
       if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
         char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
-        XBT_DEBUG("Replay: %s (%p)", req_str, state);
+        XBT_DEBUG("Replay: %s (%p)", req_str, state.get());
         xbt_free(req_str);
       }
 

@@ -8,6 +8,7 @@
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
 #include <list>
+#include <memory>
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/Checker.hpp"
@@ -30,7 +31,7 @@ private:
   bool checkNonDeterminism(simgrid::mc::State* current_state);
 private:
   /** Stack representing the position in the exploration graph */
-  std::list<simgrid::mc::State*> stack_;
+  std::list<std::unique_ptr<simgrid::mc::State>> stack_;
   simgrid::mc::VisitedStates visitedStates_;
 };
 
