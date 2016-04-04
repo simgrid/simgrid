@@ -224,8 +224,8 @@ void print_pajeSetState(paje_event_t event) {
   stream << " " << static_cast<setState_t>(event->data)->value->id;
 
   if (true) { // If (sg_config("tracing/caller_location"))
-    stream << " " << static_cast<setState_t>(event->data)->filename
-           << " " << static_cast<setState_t>(event->data)->linenumber;
+    stream << " \"" << static_cast<setState_t>(event->data)->filename
+           << "\" " << static_cast<setState_t>(event->data)->linenumber;
   }
 
   print_row();
@@ -247,8 +247,8 @@ void print_pajePushState(paje_event_t event) {
   }
 
   if (true) { // If (sg_config("tracing/caller_location"))
-    stream << " " << static_cast<pushState_t>(event->data)->filename
-           << " " << static_cast<pushState_t>(event->data)->linenumber;
+    stream << " \"" << static_cast<pushState_t>(event->data)->filename
+           << "\" " << static_cast<pushState_t>(event->data)->linenumber;
   }
 
   print_row();
