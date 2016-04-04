@@ -19,7 +19,7 @@
 namespace simgrid {
 namespace mc {
 
-class SafetyChecker : public Checker {
+class XBT_PRIVATE SafetyChecker : public Checker {
   simgrid::mc::ReductionMode reductionMode_ = simgrid::mc::ReductionMode::unset;
 public:
   SafetyChecker(Session& session);

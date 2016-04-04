@@ -326,6 +326,11 @@ SafetyChecker::SafetyChecker(Session& session) : Checker(session)
 SafetyChecker::~SafetyChecker()
 {
 }
+
+Checker* createSafetyChecker(Session& session)
+{
+  return new SafetyChecker(session);
+}
   
 }
 }

@@ -27,7 +27,7 @@ struct XBT_PRIVATE VisitedState {
   ~VisitedState();
 };
 
-class VisitedStates {
+class XBT_PRIVATE VisitedStates {
   std::vector<std::unique_ptr<simgrid::mc::VisitedState>> states_;
 public:
   void clear() { states_.clear(); }

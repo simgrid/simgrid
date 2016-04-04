@@ -554,5 +554,10 @@ int CommunicationDeterminismChecker::run()
   return res;
 }
 
+Checker* createCommunicationDeterminismChecker(Session& session)
+{
+  return new CommunicationDeterminismChecker(session);
+}
+
 }
 }

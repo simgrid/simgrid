@@ -19,7 +19,7 @@
 namespace simgrid {
 namespace mc {
 
-class CommunicationDeterminismChecker : public Checker {
+class XBT_PRIVATE CommunicationDeterminismChecker : public Checker {
 public:
   CommunicationDeterminismChecker(Session& session);
   ~CommunicationDeterminismChecker();
