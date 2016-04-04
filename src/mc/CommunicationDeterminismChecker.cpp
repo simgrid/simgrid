@@ -8,7 +8,6 @@
 
 #include <xbt/dynar.h>
 #include <xbt/dynar.hpp>
-#include <xbt/fifo.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
@@ -22,6 +21,7 @@
 #include "src/mc/Client.hpp"
 #include "src/mc/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_exit.h"
+#include "src/mc/VisitedState.hpp"
 
 using simgrid::mc::remote;
 
@@ -315,49 +315,38 @@ CommunicationDeterminismChecker::~CommunicationDeterminismChecker()
 RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
 {
   RecordTrace res;
-
-  xbt_fifo_item_t start = xbt_fifo_get_last_item(mc_stack);
-  for (xbt_fifo_item_t item = start; item; item = xbt_fifo_get_prev_item(item)) {
-
-    // Find (pid, value):
-    simgrid::mc::State* state = (simgrid::mc::State*) xbt_fifo_get_item_content(item);
+  for (auto const& state : stack_) {
     int value = 0;
-    smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
+    smx_simcall_t saved_req = MC_state_get_executed_request(state.get(), &value);
     const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
     const int pid = issuer->pid;
-
     res.push_back(RecordTraceElement(pid, value));
   }
-
   return res;
 }
 
 // TODO, deduplicate with SafetyChecker
 std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // override
 {
-  std::vector<std::string> res;
-  for (xbt_fifo_item_t item = xbt_fifo_get_last_item(mc_stack);
-       item; item = xbt_fifo_get_prev_item(item)) {
-    simgrid::mc::State* state = (simgrid::mc::State*)xbt_fifo_get_item_content(item);
+  std::vector<std::string> trace;
+  for (auto const& state : stack_) {
     int value;
-    smx_simcall_t req = MC_state_get_executed_request(state, &value);
+    smx_simcall_t req = MC_state_get_executed_request(state.get(), &value);
     if (req) {
       char* req_str = simgrid::mc::request_to_string(
         req, value, simgrid::mc::RequestType::executed);
-      res.push_back(req_str);
+      trace.push_back(req_str);
       xbt_free(req_str);
     }
   }
-  return res;
+  return trace;
 }
 
 void CommunicationDeterminismChecker::prepare()
 {
-  simgrid::mc::State* initial_state = nullptr;
+
   int i;
   const int maxpid = MC_smx_get_maxpid();
-
-  simgrid::mc::visited_states.clear();
 
   // Create initial_communications_pattern elements:
   initial_communications_pattern = xbt_dynar_new(sizeof(mc_list_comm_pattern_t), MC_list_comm_pattern_free_voidp);
@@ -375,7 +364,8 @@ void CommunicationDeterminismChecker::prepare()
     xbt_dynar_insert_at(incomplete_communications_pattern, i, &process_pattern);
   }
 
-  initial_state = MC_state_new();
+  std::unique_ptr<simgrid::mc::State> initial_state =
+    std::unique_ptr<simgrid::mc::State>(MC_state_new());
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
@@ -385,9 +375,9 @@ void CommunicationDeterminismChecker::prepare()
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
     if (simgrid::mc::process_is_enabled(&p.copy))
-      MC_state_interleave_process(initial_state, &p.copy);
+      MC_state_interleave_process(initial_state.get(), &p.copy);
 
-  xbt_fifo_unshift(mc_stack, initial_state);
+  stack_.push_back(std::move(initial_state));
 }
 
 static inline
@@ -411,23 +401,21 @@ int CommunicationDeterminismChecker::main(void)
   int value;
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
   smx_simcall_t req = nullptr;
-  simgrid::mc::State* state = nullptr;
-  simgrid::mc::State* next_state = nullptr;
 
-  while (xbt_fifo_size(mc_stack) > 0) {
+  while (!stack_.empty()) {
 
     /* Get current state */
-    state = (simgrid::mc::State*) xbt_fifo_get_item_content(xbt_fifo_get_first_item(mc_stack));
+    simgrid::mc::State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth = %d (state = %d, interleaved processes = %d)",
-              xbt_fifo_size(mc_stack), state->num,
+    XBT_DEBUG("Exploration depth = %zi (state = %d, interleaved processes = %d)",
+              stack_.size(), state->num,
               MC_state_interleave_size(state));
 
     /* Update statistics */
     mc_stats->visited_states++;
 
-    if ((xbt_fifo_size(mc_stack) <= _sg_mc_max_depth)
+    if (stack_.size() <= (std::size_t) _sg_mc_max_depth
         && (req = MC_state_get_request(state, &value))
         && (visited_state == nullptr)) {
 
@@ -458,7 +446,8 @@ int CommunicationDeterminismChecker::main(void)
       mc_model_checker->wait_for_requests();
 
       /* Create the new expanded state */
-      next_state = MC_state_new();
+      std::unique_ptr<simgrid::mc::State> next_state =
+        std::unique_ptr<simgrid::mc::State>(MC_state_new());
 
       /* If comm determinism verification, we cannot stop the exploration if
          some communications are not finished (at least, data are transfered).
@@ -467,12 +456,13 @@ int CommunicationDeterminismChecker::main(void)
       bool compare_snapshots = all_communications_are_finished()
         && initial_global_state->initial_communications_pattern_done;
 
-      if (_sg_mc_visited == 0 || (visited_state = simgrid::mc::is_visited_state(next_state, compare_snapshots)) == nullptr) {
+      if (_sg_mc_visited == 0
+          || (visited_state = visitedStates_.addVisitedState(next_state.get(), compare_snapshots)) == nullptr) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
           if (simgrid::mc::process_is_enabled(&p.copy))
-            MC_state_interleave_process(next_state, &p.copy);
+            MC_state_interleave_process(next_state.get(), &p.copy);
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,  next_state->num, req_str);
@@ -481,27 +471,28 @@ int CommunicationDeterminismChecker::main(void)
         fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
           state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
 
-      xbt_fifo_unshift(mc_stack, next_state);
+      stack_.push_back(std::move(next_state));
 
       if (dot_output != nullptr)
         xbt_free(req_str);
 
     } else {
 
-      if (xbt_fifo_size(mc_stack) > _sg_mc_max_depth)
+      if (stack_.size() > (std::size_t) _sg_mc_max_depth)
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
       else if (visited_state != nullptr)
         XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
       else
-        XBT_DEBUG("There are no more processes to interleave. (depth %d)", xbt_fifo_size(mc_stack));
+        XBT_DEBUG("There are no more processes to interleave. (depth %zi)",
+          stack_.size());
 
       if (!initial_global_state->initial_communications_pattern_done)
         initial_global_state->initial_communications_pattern_done = 1;
 
       /* Trash the current state, no longer needed */
-      xbt_fifo_shift(mc_stack);
-      MC_state_delete(state, !state->in_visited_states ? 1 : 0);
-      XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
+      XBT_DEBUG("Delete state %d at depth %zi",
+        state->num, stack_.size());
+      stack_.pop_back();
 
       visited_state = nullptr;
 
@@ -511,22 +502,27 @@ int CommunicationDeterminismChecker::main(void)
         return SIMGRID_MC_EXIT_DEADLOCK;
       }
 
-      while ((state = (simgrid::mc::State*) xbt_fifo_shift(mc_stack)) != nullptr)
-        if (MC_state_interleave_size(state) && xbt_fifo_size(mc_stack) < _sg_mc_max_depth) {
+      while (!stack_.empty()) {
+        std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
+        stack_.pop_back();
+        if (MC_state_interleave_size(state.get())
+            && stack_.size() < (std::size_t) _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
-          XBT_DEBUG("Back-tracking to state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
-          xbt_fifo_unshift(mc_stack, state);
+          XBT_DEBUG("Back-tracking to state %d at depth %zi",
+            state->num, stack_.size() + 1);
+          stack_.push_back(std::move(state));
 
-          MC_replay(mc_stack);
+          simgrid::mc::replay(stack_);
 
-          XBT_DEBUG("Back-tracking to state %d at depth %d done", state->num, xbt_fifo_size(mc_stack));
+          XBT_DEBUG("Back-tracking to state %d at depth %zi done",
+            stack_.back()->num, stack_.size());
 
           break;
         } else {
-          XBT_DEBUG("Delete state %d at depth %d", state->num, xbt_fifo_size(mc_stack) + 1);
-          MC_state_delete(state, !state->in_visited_states ? 1 : 0);
+          XBT_DEBUG("Delete state %d at depth %zi",
+            state->num, stack_.size() + 1);
         }
-
+      }
     }
   }
 
@@ -543,9 +539,6 @@ int CommunicationDeterminismChecker::run()
     // This will move somehwere else:
     simgrid::mc::Client::get()->handleMessages();
 
-  /* Create exploration stack */
-  mc_stack = xbt_fifo_new();
-
   this->prepare();
 
   initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
@@ -559,6 +552,11 @@ int CommunicationDeterminismChecker::run()
   int res = this->main();
   initial_global_state = nullptr;
   return res;
+}
+
+Checker* createCommunicationDeterminismChecker(Session& session)
+{
+  return new CommunicationDeterminismChecker(session);
 }
 
 }

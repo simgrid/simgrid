@@ -629,7 +629,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_page_snapshot);
   XBT_LOG_CONNECT(mc_request);
   XBT_LOG_CONNECT(mc_safety);
-  XBT_LOG_CONNECT(mc_visited);
+  XBT_LOG_CONNECT(mc_VisitedState);
   XBT_LOG_CONNECT(mc_client);
   XBT_LOG_CONNECT(mc_client_api);
   XBT_LOG_CONNECT(mc_comm_pattern);
