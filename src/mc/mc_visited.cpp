@@ -82,8 +82,6 @@ static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::Visi
  */
 std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* graph_state, bool compare_snpashots)
 {
-
-
   std::unique_ptr<simgrid::mc::VisitedState> new_state =
     std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState());
   graph_state->system_state = new_state->system_state;
@@ -94,40 +92,38 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* 
   auto range = std::equal_range(visited_states.begin(), visited_states.end(),
     new_state.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
-      if (compare_snpashots) {
+  if (compare_snpashots)
+    for (auto i = range.first; i != range.second; ++i) {
+      auto& visited_state = *i;
+      if (snapshot_compare(visited_state.get(), new_state.get()) == 0) {
+        // The state has been visited:
 
-        for (auto i = range.first; i != range.second; ++i) {
-          auto& visited_state = *i;
-          if (snapshot_compare(visited_state.get(), new_state.get()) == 0) {
-            // The state has been visited:
+        std::unique_ptr<simgrid::mc::VisitedState> old_state =
+          std::move(visited_state);
 
-            std::unique_ptr<simgrid::mc::VisitedState> old_state =
-              std::move(visited_state);
+        if (old_state->other_num == -1)
+          new_state->other_num = old_state->num;
+        else
+          new_state->other_num = old_state->other_num;
 
-            if (old_state->other_num == -1)
-              new_state->other_num = old_state->num;
-            else
-              new_state->other_num = old_state->other_num;
+        if (dot_output == nullptr)
+          XBT_DEBUG("State %d already visited ! (equal to state %d)",
+            new_state->num, old_state->num);
+        else
+          XBT_DEBUG(
+            "State %d already visited ! (equal to state %d (state %d in dot_output))",
+            new_state->num, old_state->num, new_state->other_num);
 
-            if (dot_output == nullptr)
-              XBT_DEBUG("State %d already visited ! (equal to state %d)",
-                new_state->num, old_state->num);
-            else
-              XBT_DEBUG(
-                "State %d already visited ! (equal to state %d (state %d in dot_output))",
-                new_state->num, old_state->num, new_state->other_num);
+        /* Replace the old state with the new one (with a bigger num)
+           (when the max number of visited states is reached,  the oldest
+           one is removed according to its number (= with the min number) */
+        XBT_DEBUG("Replace visited state %d with the new visited state %d",
+          old_state->num, new_state->num);
 
-            /* Replace the old state with the new one (with a bigger num)
-               (when the max number of visited states is reached,  the oldest
-               one is removed according to its number (= with the min number) */
-            XBT_DEBUG("Replace visited state %d with the new visited state %d",
-              old_state->num, new_state->num);
-
-            visited_state = std::move(new_state);
-            return std::move(old_state);
-          }
-        }
+        visited_state = std::move(new_state);
+        return std::move(old_state);
       }
+    }
 
   XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, (unsigned long) visited_states.size());
   visited_states.insert(range.first, std::move(new_state));
