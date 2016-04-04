@@ -1,0 +1,36 @@
+/* Copyright (c) 2007-2016. The SimGrid Team.
+ * All rights reserved.                                                     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef SIMGRID_MC_VISITED_STATE_HPP
+#define SIMGRID_MC_VISITED_STATE_HPP
+
+#include <cstddef>
+
+#include <memory>
+
+#include "src/mc/mc_snapshot.h"
+
+namespace simgrid {
+namespace mc {
+
+struct XBT_PRIVATE VisitedState {
+  std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;
+  std::size_t heap_bytes_used = 0;
+  int nb_processes = 0;
+  int num = 0;
+  int other_num = 0; // dot_output for
+
+  VisitedState();
+  ~VisitedState();
+};
+
+extern XBT_PRIVATE std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
+XBT_PRIVATE std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* graph_state, bool compare_snpashots);
+
+}
+}
+
+#endif

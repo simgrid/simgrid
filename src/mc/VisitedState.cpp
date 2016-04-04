@@ -21,8 +21,9 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/Process.hpp"
 #include "src/mc/mc_smx.h"
+#include "src/mc/VisitedState.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_visited, mc,
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc,
                                 "Logging specific to state equaity detection mechanisms");
 
 namespace simgrid {

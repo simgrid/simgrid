@@ -22,6 +22,7 @@
 #include "src/mc/Client.hpp"
 #include "src/mc/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_exit.h"
+#include "src/mc/VisitedState.hpp"
 
 using simgrid::mc::remote;
 

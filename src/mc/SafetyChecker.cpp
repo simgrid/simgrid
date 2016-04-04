@@ -25,6 +25,7 @@
 #include "src/mc/mc_exit.h"
 #include "src/mc/Checker.hpp"
 #include "src/mc/SafetyChecker.hpp"
+#include "src/mc/VisitedState.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 

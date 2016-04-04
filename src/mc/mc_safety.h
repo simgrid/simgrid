@@ -31,20 +31,6 @@ enum class ReductionMode {
 
 extern XBT_PRIVATE simgrid::mc::ReductionMode reduction_mode;
 
-struct XBT_PRIVATE VisitedState {
-  std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;
-  size_t heap_bytes_used = 0;
-  int nb_processes = 0;
-  int num = 0;
-  int other_num = 0; // dot_output for
-
-  VisitedState();
-  ~VisitedState();
-};
-
-extern XBT_PRIVATE std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
-XBT_PRIVATE std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* graph_state, bool compare_snpashots);
-
 }
 }
 
