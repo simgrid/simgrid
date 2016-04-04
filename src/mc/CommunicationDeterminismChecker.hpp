@@ -8,6 +8,7 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/Checker.hpp"
+#include "src/mc/VisitedState.hpp"
 
 #ifndef SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP
 #define SIMGRID_MC_COMMUNICATION_DETERMINISM_CHECKER_HPP
@@ -28,6 +29,7 @@ private:
 private:
   /** Stack representing the position in the exploration graph */
   std::list<simgrid::mc::State*> stack_;
+  simgrid::mc::VisitedStates visitedStates_;
 };
 
 #endif

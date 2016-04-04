@@ -29,7 +29,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_VisitedState, mc,
 namespace simgrid {
 namespace mc {
 
-std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
+static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::VisitedState* state2)
+{
+  simgrid::mc::Snapshot* s1 = state1->system_state.get();
+  simgrid::mc::Snapshot* s2 = state2->system_state.get();
+  int num1 = state1->num;
+  int num2 = state2->num;
+  return snapshot_compare(num1, s1, num2, s2);
+}
 
 /**
  * \brief Save the current state
@@ -54,34 +61,25 @@ VisitedState::~VisitedState()
 {
 }
 
-static void prune_visited_states()
+void VisitedStates::prune()
 {
-  while (visited_states.size() > (std::size_t) _sg_mc_visited) {
+  while (states_.size() > (std::size_t) _sg_mc_visited) {
     XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
-    auto min_element = std::min_element(visited_states.begin(), visited_states.end(),
+    auto min_element = std::min_element(states_.begin(), states_.end(),
       [](std::unique_ptr<simgrid::mc::VisitedState>& a, std::unique_ptr<simgrid::mc::VisitedState>& b) {
         return a->num < b->num;
       });
-    xbt_assert(min_element != visited_states.end());
+    xbt_assert(min_element != states_.end());
     // and drop it:
-    visited_states.erase(min_element);
+    states_.erase(min_element);
     XBT_DEBUG("Remove visited state (maximum number of stored states reached)");
   }
-}
-
-static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::VisitedState* state2)
-{
-  simgrid::mc::Snapshot* s1 = state1->system_state.get();
-  simgrid::mc::Snapshot* s2 = state2->system_state.get();
-  int num1 = state1->num;
-  int num2 = state2->num;
-  return snapshot_compare(num1, s1, num2, s2);
 }
 
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
-std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* graph_state, bool compare_snpashots)
+std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(simgrid::mc::State* graph_state, bool compare_snpashots)
 {
   std::unique_ptr<simgrid::mc::VisitedState> new_state =
     std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState());
@@ -90,7 +88,7 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* 
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)",
     new_state->system_state.get(), new_state->num, graph_state->num);
 
-  auto range = std::equal_range(visited_states.begin(), visited_states.end(),
+  auto range = std::equal_range(states_.begin(), states_.end(),
     new_state.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
   if (compare_snpashots)
@@ -126,9 +124,9 @@ std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* 
       }
     }
 
-  XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, (unsigned long) visited_states.size());
-  visited_states.insert(range.first, std::move(new_state));
-  prune_visited_states();
+  XBT_DEBUG("Insert new visited state %d (total : %lu)", new_state->num, (unsigned long) states_.size());
+  states_.insert(range.first, std::move(new_state));
+  this->prune();
   return nullptr;
 }
 

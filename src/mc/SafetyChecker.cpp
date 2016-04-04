@@ -150,7 +150,8 @@ int SafetyChecker::run()
           return SIMGRID_MC_EXIT_NON_TERMINATION;
       }
 
-      if (_sg_mc_visited == 0 || (visited_state = simgrid::mc::is_visited_state(next_state, true)) == nullptr) {
+      if (_sg_mc_visited == 0
+          || (visited_state = visitedStates_.addVisitedState(next_state, true)) == nullptr) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
@@ -300,8 +301,6 @@ void SafetyChecker::init()
   mc_model_checker->wait_for_requests();
 
   XBT_DEBUG("Starting the safety algorithm");
-
-  simgrid::mc::visited_states.clear();
 
   simgrid::mc::State* initial_state = MC_state_new();
 

@@ -27,8 +27,14 @@ struct XBT_PRIVATE VisitedState {
   ~VisitedState();
 };
 
-extern XBT_PRIVATE std::vector<std::unique_ptr<simgrid::mc::VisitedState>> visited_states;
-XBT_PRIVATE std::unique_ptr<simgrid::mc::VisitedState> is_visited_state(simgrid::mc::State* graph_state, bool compare_snpashots);
+class VisitedStates {
+  std::vector<std::unique_ptr<simgrid::mc::VisitedState>> states_;
+public:
+  void clear() { states_.clear(); }
+  std::unique_ptr<simgrid::mc::VisitedState> addVisitedState(simgrid::mc::State* graph_state, bool compare_snpashots);
+private:
+  void prune();
+};
 
 }
 }

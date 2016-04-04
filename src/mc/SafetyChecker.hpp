@@ -11,6 +11,7 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/Checker.hpp"
+#include "src/mc/VisitedState.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -30,6 +31,7 @@ private:
 private:
   /** Stack representing the position in the exploration graph */
   std::list<simgrid::mc::State*> stack_;
+  simgrid::mc::VisitedStates visitedStates_;
 };
 
 }

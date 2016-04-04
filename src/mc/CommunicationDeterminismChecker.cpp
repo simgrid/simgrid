@@ -349,8 +349,6 @@ void CommunicationDeterminismChecker::prepare()
   int i;
   const int maxpid = MC_smx_get_maxpid();
 
-  simgrid::mc::visited_states.clear();
-
   // Create initial_communications_pattern elements:
   initial_communications_pattern = xbt_dynar_new(sizeof(mc_list_comm_pattern_t), MC_list_comm_pattern_free_voidp);
   for (i=0; i < maxpid; i++){
@@ -458,7 +456,7 @@ int CommunicationDeterminismChecker::main(void)
       bool compare_snapshots = all_communications_are_finished()
         && initial_global_state->initial_communications_pattern_done;
 
-      if (_sg_mc_visited == 0 || (visited_state = simgrid::mc::is_visited_state(next_state, compare_snapshots)) == nullptr) {
+      if (_sg_mc_visited == 0 || (visited_state = visitedStates_.addVisitedState(next_state, compare_snapshots)) == nullptr) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
