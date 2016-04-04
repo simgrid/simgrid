@@ -128,9 +128,9 @@ examples/msg/cloud-capping/cloud-capping
 examples/msg/cloud-masterworker/cloud-masterworker
 examples/msg/cloud-migration/cloud-migration
 examples/msg/cloud-multicore/cloud-multicore
-examples/msg/cloud/scale
-examples/msg/cloud/simple_vm
-examples/msg/cloud/two_tasks_vm
+examples/msg/cloud-scale/cloud-scale
+examples/msg/cloud-simple/cloud-simple
+examples/msg/cloud-two-tasks/cloud-two-tasks
 examples/msg/dht-chord/dht-chord
 examples/msg/dht-kademlia/dht-kademlia
 examples/msg/dht-pastry/dht-pastry
