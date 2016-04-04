@@ -8,7 +8,6 @@
 
 #include <xbt/dynar.h>
 #include <xbt/dynar.hpp>
-#include <xbt/fifo.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 

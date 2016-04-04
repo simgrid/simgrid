@@ -5,6 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <list>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/Checker.hpp"

@@ -10,9 +10,6 @@
 #include <list>
 
 #include <xbt/log.h>
-#include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
-#include <xbt/fifo.h>
 #include <xbt/sysdep.h>
 
 #include "src/mc/mc_state.h"
