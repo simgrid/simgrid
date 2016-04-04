@@ -416,7 +416,7 @@ int CommunicationDeterminismChecker::main(void)
     /* Update statistics */
     mc_stats->visited_states++;
 
-    if (stack_.size() <= _sg_mc_max_depth
+    if (stack_.size() <= (std::size_t) _sg_mc_max_depth
         && (req = MC_state_get_request(state, &value))
         && (visited_state == nullptr)) {
 
@@ -479,7 +479,7 @@ int CommunicationDeterminismChecker::main(void)
 
     } else {
 
-      if (stack_.size() > _sg_mc_max_depth)
+      if (stack_.size() > (std::size_t) _sg_mc_max_depth)
         XBT_WARN("/!\\ Max depth reached ! /!\\ ");
       else if (visited_state != nullptr)
         XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
@@ -507,7 +507,7 @@ int CommunicationDeterminismChecker::main(void)
         std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
         stack_.pop_back();
         if (MC_state_interleave_size(state.get())
-            && stack_.size() < _sg_mc_max_depth) {
+            && stack_.size() < (std::size_t) _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %zi",
             state->num, stack_.size() + 1);

@@ -98,11 +98,8 @@ int SafetyChecker::run()
 {
   this->init();
 
-  char *req_str = nullptr;
   int value;
   smx_simcall_t req = nullptr;
-  simgrid::mc::State* prev_state = nullptr;
-  xbt_fifo_item_t item = nullptr;
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
 
   while (!stack_.empty()) {
@@ -121,10 +118,10 @@ int SafetyChecker::run()
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (stack_.size() <= _sg_mc_max_depth && !user_max_depth_reached
+    if (stack_.size() <= (std::size_t) _sg_mc_max_depth && !user_max_depth_reached
         && (req = MC_state_get_request(state, &value)) && visited_state == nullptr) {
 
-      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
+      char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
       XBT_DEBUG("Execute: %s", req_str);
       xbt_free(req_str);
 
@@ -177,7 +174,8 @@ int SafetyChecker::run()
       /* The interleave set is empty or the maximum depth is reached, let's back-track */
     } else {
 
-      if (stack_.size() > _sg_mc_max_depth || user_max_depth_reached
+      if (stack_.size() > (std::size_t) _sg_mc_max_depth
+          || user_max_depth_reached
           || visited_state != nullptr) {
 
         if (user_max_depth_reached && visited_state == nullptr)
@@ -226,7 +224,7 @@ int SafetyChecker::run()
               if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
                 XBT_DEBUG("Dependent Transitions:");
                 smx_simcall_t prev_req = MC_state_get_executed_request(prev_state, &value);
-                req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::internal);
+                char* req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::internal);
                 XBT_DEBUG("%s (state=%d)", req_str, prev_state->num);
                 xbt_free(req_str);
                 prev_req = MC_state_get_executed_request(state.get(), &value);
@@ -261,7 +259,7 @@ int SafetyChecker::run()
         }
 
         if (MC_state_interleave_size(state.get())
-            && stack_.size() < _sg_mc_max_depth) {
+            && stack_.size() < (std::size_t) _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %zi",
             state->num, stack_.size() + 1);
