@@ -22,6 +22,7 @@
 #include <xbt/fifo.h>
 #include <xbt/config.h>
 #include <xbt/base.h>
+#include <xbt/automaton.h>
 
 #include "mc/mc.h"
 #include "mc/datatypes.h"

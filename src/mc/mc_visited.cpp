@@ -10,7 +10,6 @@
 #include <memory>
 #include <algorithm>
 
-#include <xbt/automaton.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 #include <xbt/dynar.h>
