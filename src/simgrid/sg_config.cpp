@@ -54,14 +54,14 @@ static void sg_config_cmd_line(int *argc, char **argv)
       opt = strchr(argv[i], '=');
       opt++;
 
-      xbt_cfg_set_parse(_sg_cfg_set, opt);
+      xbt_cfg_set_parse(simgrid_config, opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
     } else if (!strcmp(argv[i], "--version")) {
       printf("%s\n", SIMGRID_VERSION_STRING);
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
       printf("Description of the configuration accepted by this simulator:\n");
-      xbt_cfg_help(_sg_cfg_set);
+      xbt_cfg_help(simgrid_config);
       printf(
           "\n"
           "Each of these configurations can be used by adding\n"
@@ -79,7 +79,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-aliases")) {
       printf("Here is a list of all deprecated option names, with their replacement.\n");
-      xbt_cfg_aliases(_sg_cfg_set);
+      xbt_cfg_aliases(simgrid_config);
       printf("Please consider using the recent names\n");
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-models")) {
@@ -115,14 +115,9 @@ static void sg_config_cmd_line(int *argc, char **argv)
 /* callback of the plugin variable */
 static void _sg_cfg_cb__plugin(const char *name, int pos)
 {
-  char *val;
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot load a plugin after the initialization");
 
-  XBT_VERB("PLUGIN");
-  xbt_assert(_sg_cfg_init_status < 2,
-              "Cannot load a plugin after the initialization");
-
-  val = xbt_cfg_get_string(_sg_cfg_set, name);
-
+  char *val = xbt_cfg_get_string(name);
   if (!strcmp(val, "help")) {
     model_help("plugin", surf_plugin_description);
     sg_cfg_exit_early();
@@ -136,13 +131,9 @@ static void _sg_cfg_cb__plugin(const char *name, int pos)
 /* callback of the host/model variable */
 static void _sg_cfg_cb__host_model(const char *name, int pos)
 {
-  char *val;
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  xbt_assert(_sg_cfg_init_status < 2,
-              "Cannot change the model after the initialization");
-
-  val = xbt_cfg_get_string(_sg_cfg_set, name);
-
+  char *val = xbt_cfg_get_string(name);
   if (!strcmp(val, "help")) {
     model_help("host", surf_host_model_description);
     sg_cfg_exit_early();
@@ -155,13 +146,9 @@ static void _sg_cfg_cb__host_model(const char *name, int pos)
 /* callback of the vm/model variable */
 static void _sg_cfg_cb__vm_model(const char *name, int pos)
 {
-  char *val;
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  xbt_assert(_sg_cfg_init_status < 2,
-              "Cannot change the model after the initialization");
-
-  val = xbt_cfg_get_string(_sg_cfg_set, name);
-
+  char *val = xbt_cfg_get_string(name);
   if (!strcmp(val, "help")) {
     model_help("vm", surf_vm_model_description);
     sg_cfg_exit_early();
@@ -174,13 +161,9 @@ static void _sg_cfg_cb__vm_model(const char *name, int pos)
 /* callback of the cpu/model variable */
 static void _sg_cfg_cb__cpu_model(const char *name, int pos)
 {
-  char *val;
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  xbt_assert(_sg_cfg_init_status < 2,
-              "Cannot change the model after the initialization");
-
-  val = xbt_cfg_get_string(_sg_cfg_set, name);
-
+  char *val = xbt_cfg_get_string(name);
   if (!strcmp(val, "help")) {
     model_help("CPU", surf_cpu_model_description);
     sg_cfg_exit_early();
@@ -198,7 +181,7 @@ static void _sg_cfg_cb__optimization_mode(const char *name, int pos)
   xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
-  val = xbt_cfg_get_string(_sg_cfg_set, name);
+  val = xbt_cfg_get_string(name);
 
   if (!strcmp(val, "help")) {
     model_help("optimization", surf_optimization_mode_description);
@@ -217,7 +200,7 @@ static void _sg_cfg_cb__storage_mode(const char *name, int pos)
   xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
-  val = xbt_cfg_get_string(_sg_cfg_set, name);
+  val = xbt_cfg_get_string(name);
 
   if (!strcmp(val, "help")) {
     model_help("storage", surf_storage_model_description);
@@ -236,7 +219,7 @@ static void _sg_cfg_cb__network_model(const char *name, int pos)
   xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
-  val = xbt_cfg_get_string(_sg_cfg_set, name);
+  val = xbt_cfg_get_string(name);
 
   if (!strcmp(val, "help")) {
     model_help("network", surf_network_model_description);
@@ -250,37 +233,37 @@ static void _sg_cfg_cb__network_model(const char *name, int pos)
 /* callbacks of the network models values */
 static void _sg_cfg_cb__tcp_gamma(const char *name, int pos)
 {
-  sg_tcp_gamma = xbt_cfg_get_double(_sg_cfg_set, name);
+  sg_tcp_gamma = xbt_cfg_get_double(name);
 }
 
 static void _sg_cfg_cb__maxmin_precision(const char* name, int pos)
 {
-  sg_maxmin_precision = xbt_cfg_get_double(_sg_cfg_set, name);
+  sg_maxmin_precision = xbt_cfg_get_double(name);
 }
 
 static void _sg_cfg_cb__surf_precision(const char* name, int pos)
 {
-  sg_surf_precision = xbt_cfg_get_double(_sg_cfg_set, name);
+  sg_surf_precision = xbt_cfg_get_double(name);
 }
 
 static void _sg_cfg_cb__sender_gap(const char* name, int pos)
 {
-  sg_sender_gap = xbt_cfg_get_double(_sg_cfg_set, name);
+  sg_sender_gap = xbt_cfg_get_double(name);
 }
 
 static void _sg_cfg_cb__latency_factor(const char *name, int pos)
 {
-  sg_latency_factor = xbt_cfg_get_double(_sg_cfg_set, name);
+  sg_latency_factor = xbt_cfg_get_double(name);
 }
 
 static void _sg_cfg_cb__bandwidth_factor(const char *name, int pos)
 {
-  sg_bandwidth_factor = xbt_cfg_get_double(_sg_cfg_set, name);
+  sg_bandwidth_factor = xbt_cfg_get_double(name);
 }
 
 static void _sg_cfg_cb__weight_S(const char *name, int pos)
 {
-  sg_weight_S_parameter = xbt_cfg_get_double(_sg_cfg_set, name);
+  sg_weight_S_parameter = xbt_cfg_get_double(name);
 }
 
 #if HAVE_SMPI
@@ -294,7 +277,7 @@ static void _sg_cfg_cb__coll(const char *category,
   xbt_assert(_sg_cfg_init_status < 2,
               "Cannot change the model after the initialization");
 
-  val = xbt_cfg_get_string(_sg_cfg_set, name);
+  val = xbt_cfg_get_string(name);
 
   if (!strcmp(val, "help")) {
     coll_help(category, table);
@@ -344,15 +327,15 @@ static void _sg_cfg_cb__coll_barrier(const char *name, int pos){
 }
 
 static void _sg_cfg_cb__wtime_sleep(const char *name, int pos){
-  smpi_wtime_sleep = xbt_cfg_get_double(_sg_cfg_set, name);
+  smpi_wtime_sleep = xbt_cfg_get_double(name);
 }
 
 static void _sg_cfg_cb__iprobe_sleep(const char *name, int pos){
-  smpi_iprobe_sleep = xbt_cfg_get_double(_sg_cfg_set, name);
+  smpi_iprobe_sleep = xbt_cfg_get_double(name);
 }
 
 static void _sg_cfg_cb__test_sleep(const char *name, int pos){
-  smpi_test_sleep = xbt_cfg_get_double(_sg_cfg_set, name);
+  smpi_test_sleep = xbt_cfg_get_double(name);
 }
 
 
@@ -362,7 +345,7 @@ static void _sg_cfg_cb__test_sleep(const char *name, int pos){
 /* callback of the inclusion path */
 static void _sg_cfg_cb__surf_path(const char *name, int pos)
 {
-  char *path = xbt_strdup(xbt_cfg_get_string_at(_sg_cfg_set, name, pos));
+  char *path = xbt_strdup(xbt_cfg_get_string_at(simgrid_config, name, pos));
   xbt_dynar_push(surf_path, &path);
 }
 
@@ -375,12 +358,12 @@ extern int _sg_do_model_check_record;
 #endif
 
 static void _sg_cfg_cb_model_check_replay(const char *name, int pos) {
-  MC_record_path = xbt_cfg_get_string(_sg_cfg_set, name);
+  MC_record_path = xbt_cfg_get_string(name);
 }
 
 #if HAVE_MC
 static void _sg_cfg_cb_model_check_record(const char *name, int pos) {
-  _sg_do_model_check_record = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  _sg_do_model_check_record = xbt_cfg_get_boolean(name);
 }
 #endif
 
@@ -388,46 +371,46 @@ extern int _sg_do_verbose_exit;
 
 static void _sg_cfg_cb_verbose_exit(const char *name, int pos)
 {
-  _sg_do_verbose_exit = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  _sg_do_verbose_exit = xbt_cfg_get_boolean(name);
 }
 
 extern int _sg_do_clean_atexit;
 
 static void _sg_cfg_cb_clean_atexit(const char *name, int pos)
 {
-  _sg_do_clean_atexit = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  _sg_do_clean_atexit = xbt_cfg_get_boolean(name);
 }
 
 static void _sg_cfg_cb_context_factory(const char *name, int pos)
 {
-  smx_context_factory_name = xbt_cfg_get_string(_sg_cfg_set, name);
+  smx_context_factory_name = xbt_cfg_get_string(name);
 }
 
 static void _sg_cfg_cb_context_stack_size(const char *name, int pos)
 {
   smx_context_stack_size_was_set = 1;
-  smx_context_stack_size = xbt_cfg_get_int(_sg_cfg_set, name) * 1024;
+  smx_context_stack_size = xbt_cfg_get_int(name) * 1024;
 }
 
 static void _sg_cfg_cb_context_guard_size(const char *name, int pos)
 {
   smx_context_guard_size_was_set = 1;
-  smx_context_guard_size = xbt_cfg_get_int(_sg_cfg_set, name) * xbt_pagesize;
+  smx_context_guard_size = xbt_cfg_get_int(name) * xbt_pagesize;
 }
 
 static void _sg_cfg_cb_contexts_nthreads(const char *name, int pos)
 {
-  SIMIX_context_set_nthreads(xbt_cfg_get_int(_sg_cfg_set, name));
+  SIMIX_context_set_nthreads(xbt_cfg_get_int(name));
 }
 
 static void _sg_cfg_cb_contexts_parallel_threshold(const char *name, int pos)
 {
-  SIMIX_context_set_parallel_threshold(xbt_cfg_get_int(_sg_cfg_set, name));
+  SIMIX_context_set_parallel_threshold(xbt_cfg_get_int(name));
 }
 
 static void _sg_cfg_cb_contexts_parallel_mode(const char *name, int pos)
 {
-  const char* mode_name = xbt_cfg_get_string(_sg_cfg_set, name);
+  const char* mode_name = xbt_cfg_get_string(name);
   if (!strcmp(mode_name, "posix")) {
     SIMIX_context_set_parallel_mode(XBT_PARMAP_POSIX);
   }
@@ -447,7 +430,7 @@ static void _sg_cfg_cb__surf_network_coordinates(const char *name,
                                                  int pos)
 {
   static int already_set = 0;
-  int val = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  int val = xbt_cfg_get_boolean(name);
   if (val) {
     if (!already_set) {
       COORD_HOST_LEVEL = sg_host_extension_create(xbt_dynar_free_voidp);
@@ -462,7 +445,7 @@ static void _sg_cfg_cb__surf_network_coordinates(const char *name,
 static void _sg_cfg_cb__surf_network_crosstraffic(const char *name,
                                                   int pos)
 {
-  sg_network_crosstraffic = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  sg_network_crosstraffic = xbt_cfg_get_boolean(name);
 }
 
 /* build description line with possible values */
@@ -491,10 +474,8 @@ void sg_config_init(int *argc, char **argv)
   if (_sg_cfg_init_status == 0) { /* Only create stuff if not already inited */
 
     /* Plugins configuration */
-    describe_model(description, surf_plugin_description,
-                   "plugin", "The plugins");
-    xbt_cfg_register(&_sg_cfg_set, "plugin", description,
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__plugin);
+    describe_model(description, surf_plugin_description, "plugin", "The plugins");
+    xbt_cfg_register(&simgrid_config, "plugin", description, xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__plugin);
 
     describe_model(description, surf_cpu_model_description, "model", "The model to use for the CPU");
     xbt_cfg_register_string("cpu/model", description, "Cas01", &_sg_cfg_cb__cpu_model);
@@ -540,7 +521,7 @@ void sg_config_init(int *argc, char **argv)
         NAN, _sg_cfg_cb__weight_S); /* real default for "network/weight_S" is set in network_*.cpp */
 
     /* Inclusion path */
-    xbt_cfg_register(&_sg_cfg_set, "path", "Lookup path for inclusions in platform and deployment XML files",
+    xbt_cfg_register(&simgrid_config, "path", "Lookup path for inclusions in platform and deployment XML files",
                      xbt_cfgelm_string, 1, 0, _sg_cfg_cb__surf_path);
 
     xbt_cfg_register_boolean("cpu/maxmin_selective_update",
@@ -550,7 +531,7 @@ void sg_config_init(int *argc, char **argv)
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
         "no", NULL);
     /* Replay (this part is enabled even if MC it disabled) */
-    xbt_cfg_register(&_sg_cfg_set, "model-check/replay", "Enable replay mode with the given path", xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay);
+    xbt_cfg_register(&simgrid_config, "model-check/replay", "Enable replay mode with the given path", xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay);
 
 #if HAVE_MC
     /* do model-checking-record */
@@ -682,52 +663,49 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_double("smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4, _sg_cfg_cb__test_sleep);
     xbt_cfg_register_double("smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0, _sg_cfg_cb__wtime_sleep);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/coll_selector",
-                     "Which collective selector to use",
-                     xbt_cfgelm_string, 1, 1, NULL);
-    xbt_cfg_setdefault_string(_sg_cfg_set, "smpi/coll_selector", "default");
+    xbt_cfg_register_string("smpi/coll_selector", "Which collective selector to use", "default", NULL);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/gather",
+    xbt_cfg_register(&simgrid_config, "smpi/gather",
                      "Which collective to use for gather",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_gather);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/allgather",
+    xbt_cfg_register(&simgrid_config, "smpi/allgather",
                      "Which collective to use for allgather",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_allgather);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/barrier",
+    xbt_cfg_register(&simgrid_config, "smpi/barrier",
                      "Which collective to use for barrier",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_barrier);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/reduce_scatter",
+    xbt_cfg_register(&simgrid_config, "smpi/reduce_scatter",
                      "Which collective to use for reduce_scatter",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_reduce_scatter);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/scatter",
+    xbt_cfg_register(&simgrid_config, "smpi/scatter",
                      "Which collective to use for scatter",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_scatter);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/allgatherv",
+    xbt_cfg_register(&simgrid_config, "smpi/allgatherv",
                      "Which collective to use for allgatherv",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_allgatherv);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/allreduce",
+    xbt_cfg_register(&simgrid_config, "smpi/allreduce",
                      "Which collective to use for allreduce",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_allreduce);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/alltoall",
+    xbt_cfg_register(&simgrid_config, "smpi/alltoall",
                      "Which collective to use for alltoall",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_alltoall);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/alltoallv",
+    xbt_cfg_register(&simgrid_config, "smpi/alltoallv",
                      "Which collective to use for alltoallv",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_alltoallv);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/bcast",
+    xbt_cfg_register(&simgrid_config, "smpi/bcast",
                      "Which collective to use for bcast",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_bcast);
 
-    xbt_cfg_register(&_sg_cfg_set, "smpi/reduce",
+    xbt_cfg_register(&simgrid_config, "smpi/reduce",
                      "Which collective to use for reduce",
                      xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_reduce);
 #endif // HAVE_SMPI
@@ -743,10 +721,10 @@ void sg_config_init(int *argc, char **argv)
       xbt_assert((initial_path), "__surf_get_initial_path() failed! Can't resolve current Windows directory");
 
       surf_path = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-      xbt_cfg_setdefault_string(_sg_cfg_set, "path", initial_path);
+      xbt_cfg_setdefault_string("path", initial_path);
     }
 
-    xbt_cfg_check(_sg_cfg_set);
+    xbt_cfg_check(simgrid_config);
     _sg_cfg_init_status = 1;
 
     sg_config_cmd_line(argc, argv);
@@ -762,36 +740,36 @@ void sg_config_finalize(void)
   if (!_sg_cfg_init_status)
     return;                     /* Not initialized yet. Nothing to do */
 
-  xbt_cfg_free(&_sg_cfg_set);
+  xbt_cfg_free(&simgrid_config);
   _sg_cfg_init_status = 0;
 }
 
 int sg_cfg_is_default_value(const char *name)
 {
-  return xbt_cfg_is_default_value(_sg_cfg_set, name);
+  return xbt_cfg_is_default_value(name);
 }
 
 int sg_cfg_get_int(const char* name)
 {
-  return xbt_cfg_get_int(_sg_cfg_set, name);
+  return xbt_cfg_get_int(name);
 }
 
 double sg_cfg_get_double(const char* name)
 {
-  return xbt_cfg_get_double(_sg_cfg_set, name);
+  return xbt_cfg_get_double(name);
 }
 
 char* sg_cfg_get_string(const char* name)
 {
-  return xbt_cfg_get_string(_sg_cfg_set, name);
+  return xbt_cfg_get_string(name);
 }
 
 int sg_cfg_get_boolean(const char* name)
 {
-  return xbt_cfg_get_boolean(_sg_cfg_set, name);
+  return xbt_cfg_get_boolean(name);
 }
 
 xbt_dynar_t sg_cfg_get_dynar(const char* name)
 {
-  return xbt_cfg_get_dynar(_sg_cfg_set, name);
+  return xbt_cfg_get_dynar(name);
 }

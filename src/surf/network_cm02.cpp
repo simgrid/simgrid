@@ -43,9 +43,9 @@ void surf_network_model_init_LegrandVelho(void)
   surf_network_model = new simgrid::surf::NetworkCm02Model();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor",      13.01);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",     0.97);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S",         20537);
+  xbt_cfg_setdefault_double("network/latency_factor",      13.01);
+  xbt_cfg_setdefault_double("network/bandwidth_factor",     0.97);
+  xbt_cfg_setdefault_double("network/weight_S",         20537);
 }
 
 /***************************************************************************/
@@ -68,9 +68,9 @@ void surf_network_model_init_CM02(void)
   surf_network_model = new simgrid::surf::NetworkCm02Model();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor",   1.0);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor", 1.0);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S",         0.0);
+  xbt_cfg_setdefault_double("network/latency_factor",   1.0);
+  xbt_cfg_setdefault_double("network/bandwidth_factor", 1.0);
+  xbt_cfg_setdefault_double("network/weight_S",         0.0);
 }
 
 /***************************************************************************/
@@ -94,9 +94,9 @@ void surf_network_model_init_Reno(void)
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
   surf_network_model->f_networkSolve = lagrange_solve;
 
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor",     10.4);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",    0.92);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S",         8775);
+  xbt_cfg_setdefault_double("network/latency_factor",     10.4);
+  xbt_cfg_setdefault_double("network/bandwidth_factor",    0.92);
+  xbt_cfg_setdefault_double("network/weight_S",         8775);
 }
 
 
@@ -111,9 +111,9 @@ void surf_network_model_init_Reno2(void)
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp, func_reno2_fpi);
   surf_network_model->f_networkSolve = lagrange_solve;
 
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor",    10.4);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",   0.92);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S",        8775);
+  xbt_cfg_setdefault_double("network/latency_factor",    10.4);
+  xbt_cfg_setdefault_double("network/bandwidth_factor",   0.92);
+  xbt_cfg_setdefault_double("network/weight_S",        8775);
 }
 
 void surf_network_model_init_Vegas(void)
@@ -127,9 +127,9 @@ void surf_network_model_init_Vegas(void)
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
   surf_network_model->f_networkSolve = lagrange_solve;
 
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/latency_factor",    10.4);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/bandwidth_factor",   0.92);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S",        8775);
+  xbt_cfg_setdefault_double("network/latency_factor",    10.4);
+  xbt_cfg_setdefault_double("network/bandwidth_factor",   0.92);
+  xbt_cfg_setdefault_double("network/weight_S",        8775);
 }
 
 namespace simgrid {
@@ -138,8 +138,8 @@ namespace surf {
 NetworkCm02Model::NetworkCm02Model()
   :NetworkModel()
 {
-  char *optim = xbt_cfg_get_string(_sg_cfg_set, "network/optim");
-  int select = xbt_cfg_get_boolean(_sg_cfg_set, "network/maxmin_selective_update");
+  char *optim = xbt_cfg_get_string("network/optim");
+  int select = xbt_cfg_get_boolean("network/maxmin_selective_update");
 
   if (!strcmp(optim, "Full")) {
     updateMechanism_ = UM_FULL;
@@ -147,7 +147,7 @@ NetworkCm02Model::NetworkCm02Model()
   } else if (!strcmp(optim, "Lazy")) {
     updateMechanism_ = UM_LAZY;
     selectiveUpdate_ = 1;
-    xbt_assert((select == 1) || (xbt_cfg_is_default_value(_sg_cfg_set, "network/maxmin_selective_update")),
+    xbt_assert((select == 1) || (xbt_cfg_is_default_value("network/maxmin_selective_update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);

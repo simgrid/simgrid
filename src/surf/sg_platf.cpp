@@ -725,22 +725,22 @@ static void surf_config_models_setup()
   int storage_id = -1;
   char *storage_model_name = NULL;
 
-  host_model_name = xbt_cfg_get_string(_sg_cfg_set, "host/model");
-  vm_model_name = xbt_cfg_get_string(_sg_cfg_set, "vm/model");
-  network_model_name = xbt_cfg_get_string(_sg_cfg_set, "network/model");
-  cpu_model_name = xbt_cfg_get_string(_sg_cfg_set, "cpu/model");
-  storage_model_name = xbt_cfg_get_string(_sg_cfg_set, "storage/model");
+  host_model_name    = xbt_cfg_get_string("host/model");
+  vm_model_name      = xbt_cfg_get_string("vm/model");
+  network_model_name = xbt_cfg_get_string("network/model");
+  cpu_model_name     = xbt_cfg_get_string("cpu/model");
+  storage_model_name = xbt_cfg_get_string("storage/model");
 
   /* Check whether we use a net/cpu model differing from the default ones, in which case
    * we should switch to the "compound" host model to correctly dispatch stuff to
    * the right net/cpu models.
    */
 
-  if ((!xbt_cfg_is_default_value(_sg_cfg_set, "network/model") ||
-       !xbt_cfg_is_default_value(_sg_cfg_set, "cpu/model")) &&
-      xbt_cfg_is_default_value(_sg_cfg_set, "host/model")) {
+  if ((!xbt_cfg_is_default_value("network/model") ||
+       !xbt_cfg_is_default_value("cpu/model")) &&
+      xbt_cfg_is_default_value("host/model")) {
     host_model_name = "compound";
-    xbt_cfg_set_string(_sg_cfg_set, "host/model", host_model_name);
+    xbt_cfg_set_string("host/model", host_model_name);
   }
 
   XBT_DEBUG("host model: %s", host_model_name);

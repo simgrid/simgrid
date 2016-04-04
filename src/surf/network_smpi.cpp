@@ -91,8 +91,8 @@ void surf_network_model_init_SMPI(void)
   surf_network_model = new simgrid::surf::NetworkSmpiModel();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", 10e-6);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
+  xbt_cfg_setdefault_double("network/sender_gap", 10e-6);
+  xbt_cfg_setdefault_double("network/weight_S", 8775);
 }
 
 namespace simgrid {

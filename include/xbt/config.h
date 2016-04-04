@@ -85,20 +85,20 @@ XBT_PUBLIC(void) xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
 XBT_PUBLIC(void) xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
 
 /* Set the value of the cell \a name in \a cfg with the provided value.*/
-XBT_PUBLIC(void) xbt_cfg_set_int(xbt_cfg_t cfg, const char *name, int val);
-XBT_PUBLIC(void) xbt_cfg_set_double(xbt_cfg_t cfg, const char *name, double val);
-XBT_PUBLIC(void) xbt_cfg_set_string(xbt_cfg_t cfg, const char *name, const char *val);
-XBT_PUBLIC(void) xbt_cfg_set_boolean(xbt_cfg_t cfg, const char *name, const char *val);
-XBT_PUBLIC(void*) xbt_cfg_set_as_string(xbt_cfg_t cfg, const char *name, const char *val);
+XBT_PUBLIC(void) xbt_cfg_set_int       (const char *name, int val);
+XBT_PUBLIC(void) xbt_cfg_set_double    (const char *name, double val);
+XBT_PUBLIC(void) xbt_cfg_set_string    (const char *name, const char *val);
+XBT_PUBLIC(void) xbt_cfg_set_boolean   (const char *name, const char *val);
+XBT_PUBLIC(void*) xbt_cfg_set_as_string(const char *name, const char *val);
 
 /*
   Set the default value of the cell \a name in \a cfg with the provided value.
   If it was already set to something (possibly from the command line), do nothing.
  */
-XBT_PUBLIC(void) xbt_cfg_setdefault_int(xbt_cfg_t cfg, const char *name, int val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_double(xbt_cfg_t cfg, const char *name, double val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_string(xbt_cfg_t cfg, const char *name, const char *val);
-XBT_PUBLIC(void) xbt_cfg_setdefault_boolean(xbt_cfg_t cfg, const char *name, const char *val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_int    (const char *name, int val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_double (const char *name, double val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_string (const char *name, const char *val);
+XBT_PUBLIC(void) xbt_cfg_setdefault_boolean(const char *name, const char *val);
 
 /** @brief Remove the provided value from the cell #name in #cfg. */
 XBT_PUBLIC(void) xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val);
@@ -113,7 +113,7 @@ XBT_PUBLIC(void) xbt_cfg_rm_at(xbt_cfg_t cfg, const char *name, int pos);
 XBT_PUBLIC(void) xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
 
 /** @brief Return if configuration is set by default*/
-XBT_PUBLIC(int) xbt_cfg_is_default_value(xbt_cfg_t cfg, const char *name);
+XBT_PUBLIC(int) xbt_cfg_is_default_value(const char *name);
 
 /* @} */
 
@@ -187,11 +187,11 @@ XBT_PUBLIC(e_xbt_cfgelm_type_t) xbt_cfg_get_type(xbt_cfg_t cfg, const char *name
  *  @{
  */
 
-XBT_PUBLIC(int) xbt_cfg_get_int(xbt_cfg_t cfg, const char *name);
-XBT_PUBLIC(double) xbt_cfg_get_double(xbt_cfg_t cfg, const char *name);
-XBT_PUBLIC(char *) xbt_cfg_get_string(xbt_cfg_t cfg, const char *name);
-XBT_PUBLIC(int) xbt_cfg_get_boolean(xbt_cfg_t cfg, const char *name);
-XBT_PUBLIC(xbt_dynar_t) xbt_cfg_get_dynar(xbt_cfg_t cfg, const char *name);
+XBT_PUBLIC(int)    xbt_cfg_get_int(const char *name);
+XBT_PUBLIC(double) xbt_cfg_get_double(const char *name);
+XBT_PUBLIC(char *) xbt_cfg_get_string(const char *name);
+XBT_PUBLIC(int)    xbt_cfg_get_boolean(const char *name);
+XBT_PUBLIC(xbt_dynar_t) xbt_cfg_get_dynar(const char *name);
 
 XBT_PUBLIC(int) xbt_cfg_get_int_at(xbt_cfg_t cfg, const char *name, int pos);
 XBT_PUBLIC(double) xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos);

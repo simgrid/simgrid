@@ -219,7 +219,7 @@ namespace simgrid {
 namespace surf {
 
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
-  ns3_initialize(xbt_cfg_get_string(_sg_cfg_set, "ns3/TcpModel"));
+  ns3_initialize(xbt_cfg_get_string("ns3/TcpModel"));
 
   routing_model_create(NULL);
   simgrid::s4u::Host::onCreation.connect(ns3_add_host);

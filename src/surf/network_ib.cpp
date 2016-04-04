@@ -90,7 +90,7 @@ void surf_network_model_init_IB(void)
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
   Link::onCommunicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
+  xbt_cfg_setdefault_double("network/weight_S", 8775);
 
 }
 

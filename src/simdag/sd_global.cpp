@@ -47,7 +47,7 @@ void SD_init(int *argc, char **argv)
 
   surf_init(argc, argv);
 
-  xbt_cfg_setdefault_string(_sg_cfg_set, "host/model", "ptask_L07");
+  xbt_cfg_setdefault_string("host/model", "ptask_L07");
 
 #if HAVE_JEDULE
   jedule_sd_init();
@@ -69,7 +69,7 @@ void SD_init(int *argc, char **argv)
  */
 void SD_config(const char *key, const char *value){
   xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");
-  xbt_cfg_set_as_string(_sg_cfg_set, key, value);
+  xbt_cfg_set_as_string(key, value);
 }
 
 /**

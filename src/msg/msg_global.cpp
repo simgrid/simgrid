@@ -23,7 +23,7 @@ static void MSG_exit(void);
 
 static void _sg_cfg_cb_msg_debug_multiple_use(const char *name, int pos)
 {
-  msg_global->debug_multiple_use = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  msg_global->debug_multiple_use = xbt_cfg_get_boolean(name);
 }
 
 static void MSG_host_create_(sg_host_t host)
@@ -45,10 +45,9 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
-    xbt_cfg_register(&_sg_cfg_set, "msg/debug_multiple_use",
-                     "Print backtraces of both processes when there is a conflict of multiple use of a task",
-                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_msg_debug_multiple_use);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "msg/debug_multiple_use", "no");
+    xbt_cfg_register_boolean("msg/debug_multiple_use",
+        "Print backtraces of both processes when there is a conflict of multiple use of a task",
+        "no", _sg_cfg_cb_msg_debug_multiple_use);
 
     SIMIX_global_init(argc, argv);
 
@@ -107,7 +106,7 @@ msg_error_t MSG_main(void)
  */
 void MSG_config(const char *key, const char *value){
   xbt_assert(msg_global,"ERROR: Please call MSG_init() before using MSG_config()");
-  xbt_cfg_set_as_string(_sg_cfg_set, key, value);
+  xbt_cfg_set_as_string(key, value);
 }
 
 /** \ingroup msg_simulation
