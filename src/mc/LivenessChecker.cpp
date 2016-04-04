@@ -40,7 +40,8 @@ namespace mc {
 
 VisitedPair::VisitedPair(
   int pair_num, xbt_automaton_state_t automaton_state,
-  std::vector<int> const& atomic_propositions, std::shared_ptr<simgrid::mc::State> graph_state)
+  std::shared_ptr<const std::vector<int>> atomic_propositions,
+  std::shared_ptr<simgrid::mc::State> graph_state)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
 
@@ -56,7 +57,7 @@ VisitedPair::VisitedPair(
   this->automaton_state = automaton_state;
   this->num = pair_num;
   this->other_num = -1;
-  this->atomic_propositions = atomic_propositions;
+  this->atomic_propositions = std::move(atomic_propositions);
 }
 
 VisitedPair::~VisitedPair()
@@ -96,14 +97,14 @@ Pair::Pair() : num(++mc_stats->expanded_pairs)
 
 Pair::~Pair() {}
 
-std::vector<int> LivenessChecker::getPropositionValues()
+std::shared_ptr<const std::vector<int>> LivenessChecker::getPropositionValues()
 {
   std::vector<int> values;
   unsigned int cursor = 0;
   xbt_automaton_propositional_symbol_t ps = nullptr;
   xbt_dynar_foreach(simgrid::mc::property_automaton->propositional_symbols, cursor, ps)
     values.push_back(xbt_automaton_propositional_symbol_evaluate(ps));
-  return values;
+  return std::make_shared<const std::vector<int>>(std::move(values));
 }
 
 int LivenessChecker::compare(simgrid::mc::VisitedPair* state1, simgrid::mc::VisitedPair* state2)
@@ -128,7 +129,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
     std::shared_ptr<simgrid::mc::VisitedPair> const& pair_test = *i;
     if (xbt_automaton_state_compare(
           pair_test->automaton_state, new_pair->automaton_state) != 0
-        || pair_test->atomic_propositions != new_pair->atomic_propositions
+        || *(pair_test->atomic_propositions) != *(new_pair->atomic_propositions)
         || this->compare(pair_test.get(), new_pair.get()) != 0)
       continue;
     XBT_INFO("Pair %d already reached (equal to pair %d) !",
@@ -160,13 +161,15 @@ void LivenessChecker::prepare(void)
   initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
   initial_global_state->prev_pair = 0;
 
+  std::shared_ptr<const std::vector<int>> propos = this->getPropositionValues();
+
   // For each initial state of the property automaton, push a
   // (application_state, automaton_state) pair to the exploration stack:
   unsigned int cursor = 0;
   xbt_automaton_state_t automaton_state;
   xbt_dynar_foreach(simgrid::mc::property_automaton->states, cursor, automaton_state)
     if (automaton_state->type == -1)
-      explorationStack_.push_back(this->newPair(nullptr, automaton_state));
+      explorationStack_.push_back(this->newPair(nullptr, automaton_state, propos));
 }
 
 
@@ -251,7 +254,7 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
     VisitedPair* pair_test = i->get();
     if (xbt_automaton_state_compare(
           pair_test->automaton_state, visited_pair->automaton_state) != 0
-        || pair_test->atomic_propositions != visited_pair->atomic_propositions
+        || *(pair_test->atomic_propositions) != *(visited_pair->atomic_propositions)
         || this->compare(pair_test, visited_pair.get()) != 0)
         continue;
     if (pair_test->other_num == -1)
@@ -411,16 +414,16 @@ int LivenessChecker::main(void)
     current_pair->exploration_started = true;
 
     /* Get values of atomic propositions (variables used in the property formula) */
-    std::vector<int> prop_values = this->getPropositionValues();
+    std::shared_ptr<const std::vector<int>> prop_values = this->getPropositionValues();
 
     // For each enabled transition in the property automaton, push a
     // (application_state, automaton_state) pair to the exploration stack:
     int cursor = xbt_dynar_length(current_pair->automaton_state->out) - 1;
     while (cursor >= 0) {
       xbt_automaton_transition_t transition_succ = (xbt_automaton_transition_t)xbt_dynar_get_as(current_pair->automaton_state->out, cursor, xbt_automaton_transition_t);
-      if (evaluate_label(transition_succ->label, prop_values))
+      if (evaluate_label(transition_succ->label, *prop_values))
           explorationStack_.push_back(this->newPair(
-            current_pair.get(), transition_succ->dst));
+            current_pair.get(), transition_succ->dst, prop_values));
        cursor--;
      }
 
@@ -431,12 +434,12 @@ int LivenessChecker::main(void)
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 
-std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton_state_t state)
+std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton_state_t state, std::shared_ptr<const std::vector<int>> propositions)
 {
   std::shared_ptr<Pair> next_pair = std::make_shared<Pair>();
   next_pair->automaton_state = state;
   next_pair->graph_state = std::shared_ptr<simgrid::mc::State>(MC_state_new());
-  next_pair->atomic_propositions = this->getPropositionValues();
+  next_pair->atomic_propositions = std::move(propositions);
   if (current_pair)
     next_pair->depth = current_pair->depth + 1;
   else

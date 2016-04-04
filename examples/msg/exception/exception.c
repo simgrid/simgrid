@@ -108,11 +108,10 @@ int main(int argc, char *argv[]) {
   msg_error_t res = MSG_OK;
 
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
+  xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
   MSG_process_create("terrorist", terrorist, NULL, MSG_get_host_by_name("Jacquelin"));
-  MSG_launch_application(argv[2]);
 
   // Launch the simulation
   res = MSG_main();

@@ -18,13 +18,15 @@ $ $SG_TEST_EXENV exception/exception ${srcdir:=.}/../platforms/platform.xml "--l
 > [  3.000000] (2:victim@Jacquelin) The received exception resumed my suspension. Good. Here is it:  ----------------------->8----
 > ** SimGrid: UNCAUGHT EXCEPTION received on exception/exception(2): category: action canceled; value: 0
 > ** Canceled
-> ** Thrown by () on process 0
+> ** Thrown by maestro() on process 0
 > [  0.000000] (0:maestro@) Configuration change: Set 'exception/cutpath' to '1'
 > [  3.000000] (2:victim@Jacquelin) Canceled
 >
-> **   In SIMIX_execution_finish() at smx_host.c
-> **   In SIMIX_run() at smx_global.c
-> **   In MSG_main() at msg_global.c
+> **   In SIMIX_execution_finish() at smx_host.cpp
+> **   In SIMIX_post_host_execute() at smx_host.cpp
+> **   In SIMIX_run() at src/simix/smx_global.cpp:482 (discriminator smx_global.cpp:482 (discriminator 1)
+> **   In SIMIX_simcall_exit() at popping.cpp
+> **   In MSG_main() at msg_global.cpp
 > **   In main() at exception.c
 > [  3.000000] (2:victim@Jacquelin) (end of the second exception) ----8<------------------------
 > [  3.000000] (2:victim@Jacquelin) Let's sleep for 10 seconds.

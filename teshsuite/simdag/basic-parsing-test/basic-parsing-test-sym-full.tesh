@@ -155,6 +155,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/one_cluster_fullduplex.xml FULL_L
 >   Link bob_cluster_link_6_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 
+! output sort
 $ ${bindir:=.}/basic-parsing-test ../platforms/two_clusters.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 4, link number: 12
@@ -271,6 +272,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/two_clusters.xml FULL_LINK "--log
 >   Link alice_cluster_link_1_DOWN: latency = 0.000050, bandwidth = 125000000.000000
 >   Route latency = 0.000600, route bandwidth = 125000000.000000
 
+! output sort
 $ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 2
@@ -291,6 +293,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link.xml FULL_LINK 
 >   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
 >   Route latency = 0.000015, route bandwidth = 498000000.000000
 
+! output sort
 $ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link_fullduplex.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 3
@@ -311,6 +314,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/two_hosts_one_link_fullduplex.xml
 >   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
 >   Route latency = 0.000015, route bandwidth = 498000000.000000
 
+! output sort
 $ ${bindir:=.}/basic-parsing-test ../platforms/Dijkstra.xml FULL_LINK "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > Workstation number: 2, link number: 6
@@ -333,6 +337,7 @@ $ ${bindir:=.}/basic-parsing-test ../platforms/Dijkstra.xml FULL_LINK "--log=roo
 >   Link __loopback__: latency = 0.000015, bandwidth = 498000000.000000
 >   Route latency = 0.000015, route bandwidth = 498000000.000000
 
+! output sort
 $ ${bindir:=.}/basic-parsing-test ../platforms/four_hosts_floyd.xml FULL_LINK
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > Workstation number: 4, link number: 5

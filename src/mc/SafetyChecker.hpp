@@ -7,13 +7,19 @@
 #ifndef SIMGRID_MC_SAFETY_CHECKER_HPP
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
+#include <list>
+#include <memory>
+#include <string>
+#include <vector>
+
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/Checker.hpp"
+#include "src/mc/VisitedState.hpp"
 
 namespace simgrid {
 namespace mc {
 
-class SafetyChecker : public Checker {
+class XBT_PRIVATE SafetyChecker : public Checker {
   simgrid::mc::ReductionMode reductionMode_ = simgrid::mc::ReductionMode::unset;
 public:
   SafetyChecker(Session& session);
@@ -24,6 +30,11 @@ public:
 private:
   // Temp
   void init();
+  bool checkNonDeterminism(simgrid::mc::State* current_state);
+private:
+  /** Stack representing the position in the exploration graph */
+  std::list<std::unique_ptr<simgrid::mc::State>> stack_;
+  simgrid::mc::VisitedStates visitedStates_;
 };
 
 }
