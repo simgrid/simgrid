@@ -53,7 +53,7 @@ static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* stat
   return snapshot_compare(num1, s1, num2, s2);
 }
 
-bool SafetyChecker::is_exploration_stack_state(simgrid::mc::State* current_state)
+bool SafetyChecker::checkNonDeterminism(simgrid::mc::State* current_state)
 {
   for (auto i = stack_.rbegin(); i != stack_.rend(); ++i)
     if(snapshot_compare(*i, current_state) == 0){
@@ -144,7 +144,7 @@ int SafetyChecker::run()
       /* Create the new expanded state */
       next_state = MC_state_new();
 
-      if(_sg_mc_termination && this->is_exploration_stack_state(next_state)){
+      if (_sg_mc_termination && this->checkNonDeterminism(next_state)){
           MC_show_non_termination();
           return SIMGRID_MC_EXIT_NON_TERMINATION;
       }
