@@ -1,0 +1,14 @@
+#! ./tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-multicore$EXEEXT --log=no_loc ${srcdir:=.}/three_multicore_hosts.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) PM0: 1 core(s), 100000000.000000 flops/s per each
+> [  0.000000] (0:maestro@) PM1: 2 core(s), 100000000.000000 flops/s per each
+> [  0.000000] (0:maestro@) PM2: 4 core(s), 100000000.000000 flops/s per each
+> [  0.000000] (1:master@PM0) === Test PM (set affinity) ===
+> [  0.000000] (1:master@PM0) ## 1. start 4 tasks on PM1 (2 cores)
+> [ 10.000000] (1:master@PM0) Task1: 50000000.000000 fops/s
+> [ 10.000000] (1:master@PM0) Task2: 50000000.000000 fops/s
+> [ 10.000000] (1:master@PM0) Task3: 50000000.000000 fops/s
+> [ 10.000000] (1:master@PM0) Task4: 50000000.000000 fops/s
+> [ 10.000000] (1:master@PM0) ## 2. pin all tasks to CPU0
+> [ 10.000000] (1:master@PM0) set affinity(0x0001@PM1) for Task1

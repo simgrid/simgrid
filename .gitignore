@@ -124,10 +124,10 @@ examples/msg/async-waitany/async-waitany
 examples/msg/bittorrent/bittorrent
 examples/msg/bittorrent/bittorrent_platfgen
 examples/msg/chainsend/chainsend
-examples/msg/cloud/bound
-examples/msg/cloud/master_worker_vm
-examples/msg/cloud/migrate_vm
-examples/msg/cloud/multicore
+examples/msg/cloud-capping/cloud-capping
+examples/msg/cloud-masterworker/cloud-masterworker
+examples/msg/cloud-migration/cloud-migration
+examples/msg/cloud-multicore/cloud-multicore
 examples/msg/cloud/scale
 examples/msg/cloud/simple_vm
 examples/msg/cloud/two_tasks_vm
