@@ -7,6 +7,8 @@
 #ifndef SIMGRID_MC_SAFETY_CHECKER_HPP
 #define SIMGRID_MC_SAFETY_CHECKER_HPP
 
+#include <list>
+
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/Checker.hpp"
 
@@ -24,6 +26,10 @@ public:
 private:
   // Temp
   void init();
+  bool is_exploration_stack_state(simgrid::mc::State* current_state);
+private:
+  /** Stack representing the position in the exploration graph */
+  std::list<simgrid::mc::State*> stack_;
 };
 
 }
