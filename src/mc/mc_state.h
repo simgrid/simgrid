@@ -7,6 +7,7 @@
 #ifndef SIMGRID_MC_STATE_H
 #define SIMGRID_MC_STATE_H
 
+#include <list>
 #include <memory>
 
 #include <xbt/base.h>
@@ -60,6 +61,8 @@ struct XBT_PRIVATE State {
   State();
   ~State();
 };
+
+XBT_PRIVATE void replay(std::list<simgrid::mc::State*> const& stack);
 
 }
 }

@@ -109,27 +109,23 @@ void MC_run()
   simgrid::mc::processes_time.clear();
 }
 
+namespace simgrid {
+namespace mc {
+
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
  * \param stack The stack with the transitions to execute.
  * \param start Start index to begin the re-execution.
  */
-void MC_replay(xbt_fifo_t stack)
+void replay(std::list<simgrid::mc::State*> const& stack)
 {
-  int value, count = 1;
-  char *req_str;
-  smx_simcall_t req = nullptr, saved_req = NULL;
-  xbt_fifo_item_t item, start_item;
-  simgrid::mc::State* state;
-  
   XBT_DEBUG("**** Begin Replay ****");
 
   /* Intermediate backtracking */
   if(_sg_mc_checkpoint > 0 || _sg_mc_termination || _sg_mc_visited > 0) {
-    start_item = xbt_fifo_get_first_item(stack);
-    state = (simgrid::mc::State*)xbt_fifo_get_item_content(start_item);
-    if(state->system_state){
+    simgrid::mc::State* state = stack.back();
+    if (state->system_state) {
       simgrid::mc::restore_snapshot(state->system_state);
       if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
         MC_restore_communications_pattern(state);
@@ -143,8 +139,6 @@ void MC_replay(xbt_fifo_t stack)
   /* At the moment of taking the snapshot the raw heap was set, so restoring
    * it will set it back again, we have to unset it to continue  */
 
-  start_item = xbt_fifo_get_last_item(stack);
-
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     // int n = xbt_dynar_length(incomplete_communications_pattern);
     unsigned n = MC_smx_get_maxpid();
@@ -156,24 +150,26 @@ void MC_replay(xbt_fifo_t stack)
     }
   }
 
-  /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (item = start_item;
-       item != xbt_fifo_get_first_item(stack);
-       item = xbt_fifo_get_prev_item(item)) {
+  int count = 1;
 
-    state = (simgrid::mc::State*) xbt_fifo_get_item_content(item);
-    saved_req = MC_state_get_executed_request(state, &value);
+  /* Traverse the stack from the state at position start and re-execute the transitions */
+  for (simgrid::mc::State* state : stack) {
+    if (state == stack.back())
+      break;
+
+    int value;
+    smx_simcall_t saved_req = MC_state_get_executed_request(state, &value);
     
     if (saved_req) {
       /* because we got a copy of the executed request, we have to fetch the  
          real one, pointed by the request field of the issuer process */
 
       const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
-      req = &issuer->simcall;
+      smx_simcall_t req = &issuer->simcall;
 
       /* Debug information */
       if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
-        req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
+        char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
         XBT_DEBUG("Replay: %s (%p)", req_str, state);
         xbt_free(req_str);
       }
@@ -200,6 +196,9 @@ void MC_replay(xbt_fifo_t stack)
   }
 
   XBT_DEBUG("**** End Replay ****");
+}
+
+}
 }
 
 void MC_show_deadlock(void)

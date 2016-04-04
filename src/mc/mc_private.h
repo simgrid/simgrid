@@ -65,7 +65,6 @@ XBT_PRIVATE extern FILE *dot_output;
 
 XBT_PRIVATE extern int user_max_depth_reached;
 
-XBT_PRIVATE void MC_replay(xbt_fifo_t stack);
 XBT_PRIVATE void MC_show_deadlock(void);
 
 /****************************** Statistics ************************************/
