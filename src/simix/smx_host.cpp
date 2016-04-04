@@ -393,8 +393,7 @@ void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigne
   if (synchro->execution.surf_exec) {
     /* just a double check to confirm that this host is the host where this task is running. */
     xbt_assert(synchro->execution.host == host);
-    static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
-      ->setAffinity(host->pimpl_cpu, mask);
+    static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)->setAffinity(host->pimpl_cpu, mask);
   }
 }
 
