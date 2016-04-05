@@ -7,6 +7,8 @@
 #ifndef SIMGRID_MC_REQUEST_H
 #define SIMGRID_MC_REQUEST_H
 
+#include <string>
+
 #include <xbt/base.h>
 
 #include "src/simix/smx_private.h"
@@ -22,7 +24,7 @@ enum class RequestType {
 
 XBT_PRIVATE bool request_depend(smx_simcall_t req1, smx_simcall_t req2);
 
-XBT_PRIVATE char* request_to_string(smx_simcall_t req, int value, simgrid::mc::RequestType type);
+XBT_PRIVATE std::string request_to_string(smx_simcall_t req, int value, simgrid::mc::RequestType type);
 
 XBT_PRIVATE bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx);
 

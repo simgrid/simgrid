@@ -81,12 +81,9 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
   for (auto const& state : stack_) {
     int value;
     smx_simcall_t req = MC_state_get_executed_request(state.get(), &value);
-    if (req) {
-      char* req_str = simgrid::mc::request_to_string(
-        req, value, simgrid::mc::RequestType::executed);
-      trace.push_back(req_str);
-      xbt_free(req_str);
-    }
+    if (req)
+      trace.push_back(simgrid::mc::request_to_string(
+        req, value, simgrid::mc::RequestType::executed));
   }
   return trace;
 }
@@ -125,12 +122,9 @@ int SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-
-    if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
-      char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
-      XBT_DEBUG("Execute: %s", req_str);
-      xbt_free(req_str);
-    }
+    XBT_DEBUG("Execute: %s",
+      simgrid::mc::request_to_string(
+        req, value, simgrid::mc::RequestType::simix).c_str());
 
     char* req_str = nullptr;
     if (dot_output != nullptr)
@@ -232,13 +226,15 @@ int SafetyChecker::backtrack()
             XBT_DEBUG("Dependent Transitions:");
             int value;
             smx_simcall_t prev_req = MC_state_get_executed_request(prev_state, &value);
-            char* req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::internal);
-            XBT_DEBUG("%s (state=%d)", req_str, prev_state->num);
-            xbt_free(req_str);
+            XBT_DEBUG("%s (state=%d)",
+              simgrid::mc::request_to_string(
+                prev_req, value, simgrid::mc::RequestType::internal).c_str(),
+              prev_state->num);
             prev_req = MC_state_get_executed_request(state.get(), &value);
-            req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::executed);
-            XBT_DEBUG("%s (state=%d)", req_str, state->num);
-            xbt_free(req_str);
+            XBT_DEBUG("%s (state=%d)",
+              simgrid::mc::request_to_string(
+                prev_req, value, simgrid::mc::RequestType::executed).c_str(),
+              state->num);
           }
 
           if (!prev_state->processStates[issuer->pid].done())

@@ -9,19 +9,25 @@
 
 #include <simgrid_config.h>
 
+#include <string>
+#include <cstdarg>
+
 #if HAVE_MC
 
 #include <stdexcept>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include <string>
 #include <iterator>
 
 #include <xbt/sysdep.h>
 
+#endif
+
 namespace simgrid {
 namespace xbt {
+
+#if HAVE_MC
 
 /** POD structure representation of a string
  */
@@ -281,21 +287,16 @@ bool operator>=(std::string const& a, string const& b)
   return b <= a;
 }
 
-}
-}
-
 #else
-
-#include <string>
-
-namespace simgrid {
-namespace xbt {
 
 typedef std::string string;
 
-}
-}
-
 #endif
+
+std::string string_vprintf(const char *fmt, va_list ap);
+std::string string_printf(const char *fmt, ...);
+
+}
+}
 
 #endif

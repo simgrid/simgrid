@@ -323,12 +323,9 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
   for (auto const& state : stack_) {
     int value;
     smx_simcall_t req = MC_state_get_executed_request(state.get(), &value);
-    if (req) {
-      char* req_str = simgrid::mc::request_to_string(
-        req, value, simgrid::mc::RequestType::executed);
-      trace.push_back(req_str);
-      xbt_free(req_str);
-    }
+    if (req)
+      trace.push_back(simgrid::mc::request_to_string(
+        req, value, simgrid::mc::RequestType::executed));
   }
   return trace;
 }
@@ -387,8 +384,6 @@ bool all_communications_are_finished()
 
 int CommunicationDeterminismChecker::main(void)
 {
-
-  char *req_str = nullptr;
   int value;
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
   smx_simcall_t req = nullptr;
@@ -410,10 +405,11 @@ int CommunicationDeterminismChecker::main(void)
         && (req = MC_state_get_request(state, &value))
         && (visited_state == nullptr)) {
 
-      req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
-      XBT_DEBUG("Execute: %s", req_str);
-      xbt_free(req_str);
+      XBT_DEBUG("Execute: %s",
+        simgrid::mc::request_to_string(
+          req, value, simgrid::mc::RequestType::simix).c_str());
 
+      char* req_str = nullptr;
       if (dot_output != nullptr)
         req_str = simgrid::mc::request_get_dot_output(req, value);
 

@@ -200,7 +200,7 @@ static char *buff_size_to_string(size_t buff_size)
 }
 
 
-char *simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid::mc::RequestType request_type)
+std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid::mc::RequestType request_type)
 {
   bool use_remote_comm = true;
   switch(request_type) {
@@ -401,16 +401,14 @@ char *simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid::mc::
     THROW_UNIMPLEMENTED;
   }
 
-  char* str;
+  std::string str;
   if (args != nullptr)
-    str =
-        bprintf("[(%lu)%s (%s)] %s(%s)", issuer->pid,
+    str = simgrid::xbt::string_printf("[(%lu)%s (%s)] %s(%s)", issuer->pid,
                 MC_smx_process_get_host_name(issuer),
                 MC_smx_process_get_name(issuer),
                 type, args);
   else
-    str =
-        bprintf("[(%lu)%s (%s)] %s ", issuer->pid,
+    str = simgrid::xbt::string_printf("[(%lu)%s (%s)] %s ", issuer->pid,
                 MC_smx_process_get_host_name(issuer),
                 MC_smx_process_get_name(issuer),
                 type);

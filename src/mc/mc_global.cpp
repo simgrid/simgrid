@@ -167,11 +167,10 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
       smx_simcall_t req = &issuer->simcall;
 
       /* Debug information */
-      if (XBT_LOG_ISENABLED(mc_global, xbt_log_priority_debug)) {
-        char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
-        XBT_DEBUG("Replay: %s (%p)", req_str, state.get());
-        xbt_free(req_str);
-      }
+      XBT_DEBUG("Replay: %s (%p)",
+        simgrid::mc::request_to_string(
+          req, value, simgrid::mc::RequestType::simix).c_str(),
+        state.get());
 
       /* TODO : handle test and testany simcalls */
       e_mc_call_type_t call = MC_CALL_TYPE_NONE;
