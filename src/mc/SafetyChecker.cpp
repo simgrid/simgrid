@@ -125,10 +125,14 @@ int SafetyChecker::run()
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
-    char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
-    XBT_DEBUG("Execute: %s", req_str);
-    xbt_free(req_str);
 
+    if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
+      char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
+      XBT_DEBUG("Execute: %s", req_str);
+      xbt_free(req_str);
+    }
+
+    char* req_str = nullptr;
     if (dot_output != nullptr)
       req_str = simgrid::mc::request_get_dot_output(req, value);
 
