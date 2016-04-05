@@ -138,7 +138,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
     if (dot_output != nullptr)
       fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
         initial_global_state->prev_pair, pair_test->num,
-        initial_global_state->prev_req);
+        initial_global_state->prev_req.c_str());
     return nullptr;
   }
 
@@ -366,7 +366,9 @@ int LivenessChecker::main(void)
       && (visited_num = this->insertVisitedPair(
         reached_pair, current_pair.get())) != -1) {
       if (dot_output != nullptr){
-        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, visited_num, initial_global_state->prev_req);
+        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
+          initial_global_state->prev_pair, visited_num,
+          initial_global_state->prev_req.c_str());
         fflush(dot_output);
       }
       XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
@@ -380,8 +382,10 @@ int LivenessChecker::main(void)
 
     if (dot_output != nullptr) {
       if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
-        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", initial_global_state->prev_pair, current_pair->num, initial_global_state->prev_req);
-        xbt_free(initial_global_state->prev_req);
+        fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
+          initial_global_state->prev_pair, current_pair->num,
+          initial_global_state->prev_req.c_str());
+        initial_global_state->prev_req.clear();
       }
       initial_global_state->prev_pair = current_pair->num;
       initial_global_state->prev_req = simgrid::mc::request_get_dot_output(req, value);

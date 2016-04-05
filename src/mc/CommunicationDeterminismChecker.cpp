@@ -409,7 +409,7 @@ int CommunicationDeterminismChecker::main(void)
         simgrid::mc::request_to_string(
           req, value, simgrid::mc::RequestType::simix).c_str());
 
-      char* req_str = nullptr;
+      std::string req_str;
       if (dot_output != nullptr)
         req_str = simgrid::mc::request_get_dot_output(req, value);
 
@@ -452,16 +452,14 @@ int CommunicationDeterminismChecker::main(void)
             MC_state_interleave_process(next_state.get(), &p.copy);
 
         if (dot_output != nullptr)
-          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num,  next_state->num, req_str);
+          fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
+            state->num,  next_state->num, req_str.c_str());
 
       } else if (dot_output != nullptr)
         fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-          state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
+          state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str.c_str());
 
       stack_.push_back(std::move(next_state));
-
-      if (dot_output != nullptr)
-        xbt_free(req_str);
 
     } else {
 

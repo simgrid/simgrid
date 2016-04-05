@@ -126,7 +126,7 @@ int SafetyChecker::run()
       simgrid::mc::request_to_string(
         req, value, simgrid::mc::RequestType::simix).c_str());
 
-    char* req_str = nullptr;
+    std::string req_str;
     if (dot_output != nullptr)
       req_str = simgrid::mc::request_get_dot_output(req, value);
 
@@ -161,15 +161,15 @@ int SafetyChecker::run()
         }
 
       if (dot_output != nullptr)
-        std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
+        std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
+          state->num, next_state->num, req_str.c_str());
 
     } else if (dot_output != nullptr)
-      std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num, req_str);
+      std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
+        state->num,
+        visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num, req_str.c_str());
 
     stack_.push_back(std::move(next_state));
-
-    if (dot_output != nullptr)
-      xbt_free(req_str);
   }
 
   XBT_INFO("No property violation found.");
