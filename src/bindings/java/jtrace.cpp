@@ -149,20 +149,42 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd (JNIEnv *env
   env->ReleaseStringUTFChars(js_state, state);
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclare (JNIEnv *env, jclass cls, jstring js_var) {
-  const char *variable = env->GetStringUTFChars(js_var, 0);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclare (JNIEnv *env, jclass cls, jstring jvar) {
+  const char *variable = env->GetStringUTFChars(jvar, 0);
   TRACE_link_variable_declare (variable);
-  env->ReleaseStringUTFChars(js_var, variable);
+  env->ReleaseStringUTFChars(jvar, variable);
+}
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclareWithColor (JNIEnv *env, jclass cls, jstring jvar, jstring jcolor) {
+  const char *variable = env->GetStringUTFChars(jvar, 0);
+  const char *color = env->GetStringUTFChars(jcolor, 0);
+  TRACE_link_variable_declare_with_color(variable,color);
+  env->ReleaseStringUTFChars(jvar, variable);
+  env->ReleaseStringUTFChars(jcolor, color);
+}
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSet (JNIEnv *env, jclass cls, jstring jlink, jstring jvar, jdouble jvalue) {
+  const char *link = env->GetStringUTFChars(jlink, 0);
+  const char *variable = env->GetStringUTFChars(jvar, 0);
+  TRACE_link_variable_set(link, variable, jvalue);
+  env->ReleaseStringUTFChars(jlink, link);
+  env->ReleaseStringUTFChars(jvar, variable);
+}
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSet
+  (JNIEnv *env, jclass cls, jstring jsrc, jstring jdst, jstring jvar, jdouble jval)
+{
+  const char *src = env->GetStringUTFChars(jsrc, 0);
+  const char *dst = env->GetStringUTFChars(jdst, 0);
+  const char *variable = env->GetStringUTFChars(jvar, 0);
+  TRACE_link_srcdst_variable_set(src,dst,variable, jval);
+  env->ReleaseStringUTFChars(jsrc, src);
+  env->ReleaseStringUTFChars(jdst, dst);
+  env->ReleaseStringUTFChars(jvar, variable);
 }
 /* Missing calls
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclareWithColor (JNIEnv *, jclass, jstring, jstring);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSet (JNIEnv *, jclass, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAdd (JNIEnv *, jclass, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSub (JNIEnv *env, jclass cls, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSetWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAddWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSubWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
-JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSet (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableAdd (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSub (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
 */
