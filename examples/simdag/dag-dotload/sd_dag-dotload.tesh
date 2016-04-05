@@ -211,7 +211,7 @@ $ cat ${srcdir:=.}/dag-dotload/dag.trace
 > [0.000000 -> 0.292217] C2-05 -> C1-01 transfer of 10014000 bytes # root->5
 > [60.002281->62.002281] C2-05 compute 10000000129.452715 flops # end
 
-$ rm -f ${srcdir:=.}/dag-dotload/dag.trace ${srcdir:=.}/dag-dotload/dot.dot
+$ rm -f ${srcdir:=.}/dag-dotload/dag.trace ${srcdir:=.}/dot.dot
 
 ! expect return 2
 $ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/dag-dotload/dag_with_cycle.dot
