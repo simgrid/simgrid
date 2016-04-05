@@ -30,7 +30,7 @@ public:
 private:
   // Temp
   void init();
-  bool checkNonDeterminism(simgrid::mc::State* current_state);
+  bool checkNonTermination(simgrid::mc::State* current_state);
 private:
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<simgrid::mc::State>> stack_;

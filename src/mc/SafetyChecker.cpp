@@ -51,7 +51,7 @@ static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* stat
   return snapshot_compare(num1, s1, num2, s2);
 }
 
-bool SafetyChecker::checkNonDeterminism(simgrid::mc::State* current_state)
+bool SafetyChecker::checkNonTermination(simgrid::mc::State* current_state)
 {
   for (auto i = stack_.rbegin(); i != stack_.rend(); ++i)
     if (snapshot_compare(i->get(), current_state) == 0){
@@ -139,7 +139,7 @@ int SafetyChecker::run()
       std::unique_ptr<simgrid::mc::State> next_state =
         std::unique_ptr<simgrid::mc::State>(MC_state_new());
 
-      if (_sg_mc_termination && this->checkNonDeterminism(next_state.get())){
+      if (_sg_mc_termination && this->checkNonTermination(next_state.get())) {
           MC_show_non_termination();
           return SIMGRID_MC_EXIT_NON_TERMINATION;
       }
