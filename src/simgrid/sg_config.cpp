@@ -54,7 +54,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       opt = strchr(argv[i], '=');
       opt++;
 
-      xbt_cfg_set_parse(simgrid_config, opt);
+      xbt_cfg_set_parse(opt);
       XBT_DEBUG("Did apply '%s' as config setting", opt);
     } else if (!strcmp(argv[i], "--version")) {
       printf("%s\n", SIMGRID_VERSION_STRING);
@@ -724,7 +724,7 @@ void sg_config_init(int *argc, char **argv)
       xbt_cfg_setdefault_string("path", initial_path);
     }
 
-    xbt_cfg_check(simgrid_config);
+    xbt_cfg_check();
     _sg_cfg_init_status = 1;
 
     sg_config_cmd_line(argc, argv);

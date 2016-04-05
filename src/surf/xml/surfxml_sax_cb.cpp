@@ -904,7 +904,7 @@ void ETag_surfxml_config(void){
   xbt_dict_foreach(current_property_set, cursor, key, elem) {
     cfg = bprintf("%s:%s",key,elem);
     if(xbt_cfg_is_default_value(key))
-      xbt_cfg_set_parse(simgrid_config, cfg);
+      xbt_cfg_set_parse(cfg);
     else
       XBT_INFO("The custom configuration '%s' is already defined by user!",key);
     free(cfg);

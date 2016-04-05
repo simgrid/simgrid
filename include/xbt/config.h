@@ -82,7 +82,7 @@ typedef void* xbt_cfg_t;
 
 XBT_PUBLIC(void) xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
 XBT_PUBLIC(void) xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
-XBT_PUBLIC(void) xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options);
+XBT_PUBLIC(void) xbt_cfg_set_parse(const char *options);
 
 /* Set the value of the cell \a name in \a cfg with the provided value.*/
 XBT_PUBLIC(void) xbt_cfg_set_int       (const char *name, int val);
@@ -171,7 +171,7 @@ XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);
 
 XBT_PUBLIC(void) xbt_cfg_aliases(xbt_cfg_t cfg);
 XBT_PUBLIC(void) xbt_cfg_help(xbt_cfg_t cfg);
-XBT_PUBLIC(void) xbt_cfg_check(xbt_cfg_t cfg);
+XBT_PUBLIC(void) xbt_cfg_check(void);
 XBT_PUBLIC(e_xbt_cfgelm_type_t) xbt_cfg_get_type(xbt_cfg_t cfg, const char *name);
 /*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values

@@ -24,8 +24,8 @@ int main(int argc, char **argv)
 
   surf_init(&argc, argv);       /* Initialize some common structures */
 
-  xbt_cfg_set_string("network/model","CM02");
-  xbt_cfg_set_string("cpu/model","Cas01");
+  xbt_cfg_set_parse("network/model:CM02");
+  xbt_cfg_set_parse("cpu/model:Cas01");
 
   xbt_assert(argc >1, "Usage : %s platform.txt\n", argv[0]);
   parse_platform_file(argv[1]);

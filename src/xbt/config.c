@@ -197,14 +197,13 @@ void xbt_cfgelm_free(void *data)
 void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type, int min,
                       int max, xbt_cfg_cb_t cb_set)
 {
-  xbt_cfgelm_t res;
-
   if (*cfg == NULL)
     *cfg = xbt_cfg_new();
   xbt_assert(type >= xbt_cfgelm_int && type <= xbt_cfgelm_boolean,
               "type of %s not valid (%d should be between %d and %d)",
              name, (int)type, xbt_cfgelm_int, xbt_cfgelm_boolean);
-  res = xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
+
+  xbt_cfgelm_t res = xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
   xbt_assert(NULL == res, "Refusing to register the config element '%s' twice.", name);
 
   res = xbt_new(s_xbt_cfgelm_t, 1);
@@ -239,19 +238,19 @@ void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt
 }
 
 void xbt_cfg_register_double(const char *name, const char *desc, double default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(simgrid_config,name,desc,xbt_cfgelm_double,1,1,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,1,1,cb_set);
   xbt_cfg_setdefault_double(name, default_value);
 }
 void xbt_cfg_register_int(const char *name, const char *desc, int default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(simgrid_config,name,desc,xbt_cfgelm_int,1,1,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,1,1,cb_set);
   xbt_cfg_setdefault_int(name, default_value);
 }
 void xbt_cfg_register_string(const char *name, const char *desc, const char *default_value, xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(simgrid_config,name,desc,xbt_cfgelm_string,1,1,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,1,1,cb_set);
   xbt_cfg_setdefault_string(name, default_value);
 }
 void xbt_cfg_register_boolean(const char *name, const char *desc, const char*default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(simgrid_config,name,desc,xbt_cfgelm_boolean,1,1,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,1,1,cb_set);
   xbt_cfg_setdefault_boolean(name, default_value);
 }
 
@@ -427,21 +426,17 @@ void xbt_cfg_help(xbt_cfg_t cfg)
 }
 
 /** @brief Check that each variable have the right amount of values */
-void xbt_cfg_check(xbt_cfg_t cfg)
+void xbt_cfg_check(void)
 {
   xbt_dict_cursor_t cursor;
   xbt_cfgelm_t variable;
   char *name;
-  int size;
 
-  xbt_assert(cfg, "NULL config set.");
-  XBT_DEBUG("Check cfg set %p", cfg);
-
-  xbt_dict_foreach((xbt_dict_t) cfg, cursor, name, variable) {
+  xbt_dict_foreach((xbt_dict_t) simgrid_config, cursor, name, variable) {
     if (variable->type == xbt_cfgelm_alias)
       continue;
 
-    size = xbt_dynar_length(variable->content);
+    int size = xbt_dynar_length(variable->content);
     if (variable->min > size) {
       xbt_dict_cursor_free(&cursor);
       THROWF(mismatch_error, 0, "Config elem %s needs at least %d %s, but there is only %d values.",
@@ -573,14 +568,13 @@ void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...)
 
 /** @brief Add values parsed from a string into a config set
  *
- * @param cfg config set to fill
  * @param options a string containing the content to add to the config set. This is a '\\t',' ' or '\\n' or ','
  * separated list of variables. Each individual variable is like "[name]:[value]" where [name] is the name of an
  * already registered variable, and [value] conforms to the data type under which this variable was registered.
  *
  * @todo This is a crude manual parser, it should be a proper lexer.
  */
-void xbt_cfg_set_parse(xbt_cfg_t cfg, const char *options)
+void xbt_cfg_set_parse(const char *options)
 {
   if (!options || !strlen(options)) {   /* nothing to do */
     return;
@@ -776,7 +770,6 @@ void xbt_cfg_setdefault_boolean(const char *name, const char *val)
  */
 void xbt_cfg_set_int(const char *name, int val)
 {
-  XBT_VERB("Configuration setting: %s=%d", name, val);
   xbt_cfgelm_t variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_int);
 
   if (variable->max == 1) {
@@ -802,7 +795,6 @@ void xbt_cfg_set_int(const char *name, int val)
  */
 void xbt_cfg_set_double(const char *name, double val)
 {
-  XBT_VERB("Configuration setting: %s=%f", name, val);
   xbt_cfgelm_t variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_double);
 
   if (variable->max == 1) {
@@ -830,12 +822,7 @@ void xbt_cfg_set_double(const char *name, double val)
 void xbt_cfg_set_string(const char *name, const char *val)
 {
   char *newval = xbt_strdup(val);
-
-  XBT_VERB("Configuration setting: %s=%s", name, val);
   xbt_cfgelm_t variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_string);
-
-  XBT_DEBUG("Variable: %d to %d %s (=%d) @%p",
-         variable->min, variable->max, xbt_cfgelm_type_name[variable->type], (int)variable->type, variable);
 
   if (variable->max == 1) {
     if (!xbt_dynar_is_empty(variable->content)) {
@@ -860,15 +847,12 @@ void xbt_cfg_set_string(const char *name, const char *val)
 
 /** @brief Set or add a boolean value to \a name within \a cfg
  *
- * @param cfg the config set
  * @param name the name of the variable
  * @param val the value of the variable
  */
 void xbt_cfg_set_boolean(const char *name, const char *val)
 {
   int i, bval;
-
-  XBT_VERB("Configuration setting: %s=%s", name, val);
   xbt_cfgelm_t variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_boolean);
 
   for (i = 0; xbt_cfgelm_boolean_values[i].true_val != NULL; i++) {
@@ -1214,72 +1198,67 @@ static xbt_cfg_t make_set()
   return set;
 }                               /* end_of_make_set */
 
+extern xbt_cfg_t simgrid_config;
+
 XBT_TEST_UNIT("memuse", test_config_memuse, "Alloc and free a config set")
 {
-  xbt_cfg_t set = make_set();
+  simgrid_config = make_set();
   xbt_test_add("Alloc and free a config set");
-  xbt_cfg_set_parse(set, "peername:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
-  xbt_cfg_free(&set);
-  xbt_cfg_free(&set);
+  xbt_cfg_set_parse("peername:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
+  xbt_cfg_free(&simgrid_config);
 }
 
 XBT_TEST_UNIT("validation", test_config_validation, "Validation tests")
 {
-  xbt_cfg_t set = set = make_set();
   xbt_ex_t e;
 
+  simgrid_config = make_set();
   xbt_test_add("Having too few elements for speed");
-  xbt_cfg_set_parse(set, "peername:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
+  xbt_cfg_set_parse("peername:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
   TRY {
-    xbt_cfg_check(set);
+    xbt_cfg_check();
   } CATCH(e) {
     if (e.category != mismatch_error || strncmp(e.msg, "Config elem speed needs", strlen("Config elem speed needs")))
       xbt_test_fail("Got an exception. msg=%s", e.msg);
     xbt_ex_free(e);
   }
-  xbt_cfg_free(&set);
-  xbt_cfg_free(&set);
 
   xbt_test_add("Having too much values of 'speed'");
-  set = make_set();
-  xbt_cfg_set_parse(set, "peername:toto:42 user:alegrand");
+  xbt_cfg_set_parse("peername:toto:42 user:alegrand");
   TRY {
-    xbt_cfg_set_parse(set, "speed:42 speed:24 speed:34");
+    xbt_cfg_set_parse("speed:42 speed:24 speed:34");
   } CATCH(e) {
     if (e.category != mismatch_error ||
         strncmp(e.msg, "Cannot add value 34 to the config elem speed", strlen("Config elem speed needs")))
       xbt_test_fail("Got an exception. msg=%s", e.msg);
     xbt_ex_free(e);
   }
-  xbt_cfg_check(set);
-  xbt_cfg_free(&set);
-  xbt_cfg_free(&set);
+  xbt_cfg_check();
+  xbt_cfg_free(&simgrid_config);
 }
 
 XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
 {
+  simgrid_config = make_set();
   xbt_test_add("Get a single value");
   {
     /* get_single_value */
     int ival;
-    xbt_cfg_t myset = make_set();
 
-    xbt_cfg_set_parse(myset, "peername:toto:42 speed:42");
+    xbt_cfg_set_parse("peername:toto:42 speed:42");
     ival = xbt_cfg_get_int("speed");
     if (ival != 42)
       xbt_test_fail("Speed value = %d, I expected 42", ival);
-    xbt_cfg_free(&myset);
   }
 
   xbt_test_add("Get multiple values");
   {
     /* get_multiple_value */
     xbt_dynar_t dyn;
-    xbt_cfg_t myset = make_set();
 
-    xbt_cfg_set_parse(myset, "peername:veloce user:foo\nuser:bar\tuser:toto");
-    xbt_cfg_set_parse(myset, "speed:42");
-    xbt_cfg_check(myset);
+    xbt_cfg_set_parse("peername:veloce user:foo\nuser:bar\tuser:toto");
+    xbt_cfg_set_parse("speed:42");
+    xbt_cfg_check();
     dyn = xbt_cfg_get_dynar("user");
 
     if (xbt_dynar_length(dyn) != 3)
@@ -1293,23 +1272,20 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
 
     if (strcmp(xbt_dynar_get_as(dyn, 2, char *), "toto"))
        xbt_test_fail("Dynar[2] = %s, I expected toto", xbt_dynar_get_as(dyn, 2, char *));
-    xbt_cfg_free(&myset);
   }
 
   xbt_test_add("Access to a non-existant entry");
   {
-    /* non-existant_entry */
-    xbt_cfg_t myset = make_set();
     xbt_ex_t e;
 
     TRY {
-      xbt_cfg_set_parse(myset, "color:blue");
+      xbt_cfg_set_parse("color:blue");
     } CATCH(e) {
       if (e.category != not_found_error)
         xbt_test_exception(e);
       xbt_ex_free(e);
     }
-    xbt_cfg_free(&myset);
   }
+  xbt_cfg_free(&simgrid_config);
 }
 #endif                          /* SIMGRID_TEST */
