@@ -1,4 +1,5 @@
-foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany dht-chord dht-pastry exception 
+foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany cloud-capping cloud-masterworker 
+          cloud-migration cloud-multicore cloud-scale cloud-simple cloud-two-tasks dht-chord dht-pastry exception 
           energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures io-file io-file-unlink io-remote
           io-storage masterworker masterworker-mailbox pmm task-priority process-kill process-migration process-suspend 
           properties sendrecv set-maestro process-startkilltime synchro token_ring trace-categories 
@@ -82,7 +83,8 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/action
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
-foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-chord dht-kademlia
+foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend cloud-capping 
+        cloud-masterworker cloud-migration cloud-scale cloud-simple cloud-two-tasks dht-chord dht-kademlia
         failures io-file io-file-unlink io-remote io-storage masterworker masterworker-mailbox task-priority process-kill 
         process-migration process-suspend properties sendrecv synchro process-startkilltime token_ring)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)

@@ -9,33 +9,12 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-/*
- * Usage:
- * ./examples/msg/cloud/scale ../examples/platforms/g5k.xml
- *
- * 1. valgrind --tool=callgrind ./examples/msg/cloud/scale ../examples/platforms/g5k.xml
- * 2. kcachegrind
- **/
-
-static double time_precise(void) {
-  struct timeval tv;
-  int ret = gettimeofday(&tv, NULL);
-  xbt_assert(ret >= 0, "gettimeofday");
-  return (double) tv.tv_sec + tv.tv_usec * 0.001 * 0.001;
-}
-
+static int task_count=0;
 static int computation_fun(int argc, char *argv[]) {
-  for (;;) {
-    // double clock_sta = time_precise();
-
-    msg_task_t task = MSG_task_create("Task", 10000000, 0, NULL);
-    MSG_task_execute(task);
-    MSG_task_destroy(task);
-
-    // double clock_end = time_precise();
-
-    // XBT_INFO("%f", clock_end - clock_sta);
-  }
+  msg_task_t task = MSG_task_create("Task", 2210000, 0, NULL);
+  MSG_task_execute(task);
+  task_count++;
+  MSG_task_destroy(task);
   return 0;
 }
 
@@ -58,6 +37,7 @@ static int master_main(int argc, char *argv[])
     pm[i] = xbt_dynar_get_as(hosts_dynar, i, msg_host_t);
   }
 
+  XBT_INFO("## Test (start)");
   for (i = 0; i < nvm; i++) {
     int pm_index = i % npm;
     char *vm_name = bprintf("vm%d", i);
@@ -69,13 +49,9 @@ static int master_main(int argc, char *argv[])
     xbt_free(vm_name);
   }
 
-  XBT_INFO("## Test (start)");
-
   for (i = 0; i < 10; i++) {
-    double clock_sta = time_precise();
     MSG_process_sleep(1);
-    double clock_end = time_precise();
-    XBT_INFO("duration %f", clock_end - clock_sta);
+    XBT_INFO("Completed tasks: %d", task_count);
   }
 
   for (i = 0; i < nvm; i++) {

@@ -926,7 +926,6 @@ set(txt_files
 set(CMAKEFILES_TXT
   examples/java/CMakeLists.txt
   examples/msg/CMakeLists.txt
-    examples/msg/cloud/CMakeLists.txt
     examples/msg/mc/CMakeLists.txt
   examples/s4u/CMakeLists.txt
   examples/simdag/CMakeLists.txt
@@ -1101,6 +1100,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_harvard.syscoord
   examples/platforms/syscoord/median_meridian.syscoord
   examples/platforms/syscoord/median_p2psim.syscoord
+  examples/platforms/three_multicore_hosts.xml
   examples/platforms/torus_cluster.xml
   examples/platforms/two_hosts.xml
   examples/platforms/two_hosts_platform.xml
