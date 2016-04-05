@@ -96,7 +96,6 @@ int SafetyChecker::run()
   this->init();
 
   int value;
-  smx_simcall_t req = nullptr;
 
   while (!stack_.empty()) {
 
@@ -109,170 +108,175 @@ int SafetyChecker::run()
       stack_.size(), state, state->num,
       MC_state_interleave_size(state));
 
-    /* Update statistics */
     mc_stats->visited_states++;
 
-    /* If there are processes to interleave and the maximum depth has not been reached
-       then perform one step of the exploration algorithm */
-    if (stack_.size() <= (std::size_t) _sg_mc_max_depth
-        && (req = MC_state_get_request(state, &value)) != nullptr
-        && visitedState_ == nullptr) {
-
-      char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
-      XBT_DEBUG("Execute: %s", req_str);
-      xbt_free(req_str);
-
-      if (dot_output != nullptr)
-        req_str = simgrid::mc::request_get_dot_output(req, value);
-
-      MC_state_set_executed_request(state, req, value);
-      mc_stats->executed_transitions++;
-
-      // TODO, bundle both operations in a single message
-      //   MC_execute_transition(req, value)
-
-      /* Answer the request */
-      simgrid::mc::handle_simcall(req, value);
-      mc_model_checker->wait_for_requests();
-
-      /* Create the new expanded state */
-      std::unique_ptr<simgrid::mc::State> next_state =
-        std::unique_ptr<simgrid::mc::State>(MC_state_new());
-
-      if (_sg_mc_termination && this->checkNonTermination(next_state.get())) {
-          MC_show_non_termination();
-          return SIMGRID_MC_EXIT_NON_TERMINATION;
-      }
-
-      if (_sg_mc_visited == 0
-          || (visitedState_ = visitedStates_.addVisitedState(next_state.get(), true)) == nullptr) {
-
-        /* Get an enabled process and insert it in the interleave set of the next state */
-        for (auto& p : mc_model_checker->process().simix_processes())
-          if (simgrid::mc::process_is_enabled(&p.copy)) {
-            MC_state_interleave_process(next_state.get(), &p.copy);
-            if (reductionMode_ != simgrid::mc::ReductionMode::none)
-              break;
-          }
-
-        if (dot_output != nullptr)
-          std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
-
-      } else if (dot_output != nullptr)
-        std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num, req_str);
-
-      stack_.push_back(std::move(next_state));
-
-      if (dot_output != nullptr)
-        xbt_free(req_str);
-
-      /* Let's loop again */
-
-      /* The interleave set is empty or the maximum depth is reached, let's back-track */
-    } else {
-
-      if (stack_.size() > (std::size_t) _sg_mc_max_depth
-          || visitedState_ != nullptr) {
-        if (visitedState_ == nullptr)
-          XBT_WARN("/!\\ Max depth reached ! /!\\ ");
-        else
-          XBT_DEBUG("State already visited (equal to state %d),"
-            " exploration stopped on this path.",
-            visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num);
-      } else
-        XBT_DEBUG("There are no more processes to interleave. (depth %zi)",
-          stack_.size() + 1);
-
-      /* Trash the current state, no longer needed */
-      XBT_DEBUG("Delete state %d at depth %zi", state->num, stack_.size());
-      stack_.pop_back();
-
-      visitedState_ = nullptr;
-
-      /* Check for deadlocks */
-      if (mc_model_checker->checkDeadlock()) {
-        MC_show_deadlock();
-        return SIMGRID_MC_EXIT_DEADLOCK;
-      }
-
-      /* Traverse the stack backwards until a state with a non empty interleave
-         set is found, deleting all the states that have it empty in the way.
-         For each deleted state, check if the request that has generated it 
-         (from it's predecesor state), depends on any other previous request 
-         executed before it. If it does then add it to the interleave set of the
-         state that executed that previous request. */
-
-      while (!stack_.empty()) {
-        std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
-        stack_.pop_back();
-        if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
-          req = MC_state_get_internal_request(state.get());
-          if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
-            xbt_die("Mutex is currently not supported with DPOR, "
-              "use --cfg=model-check/reduction:none");
-          const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
-          for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
-            simgrid::mc::State* prev_state = i->get();
-            if (reductionMode_ != simgrid::mc::ReductionMode::none
-                && simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
-              if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
-                XBT_DEBUG("Dependent Transitions:");
-                smx_simcall_t prev_req = MC_state_get_executed_request(prev_state, &value);
-                char* req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::internal);
-                XBT_DEBUG("%s (state=%d)", req_str, prev_state->num);
-                xbt_free(req_str);
-                prev_req = MC_state_get_executed_request(state.get(), &value);
-                req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::executed);
-                XBT_DEBUG("%s (state=%d)", req_str, state->num);
-                xbt_free(req_str);
-              }
-
-              if (!MC_state_process_is_done(prev_state, issuer))
-                MC_state_interleave_process(prev_state, issuer);
-              else
-                XBT_DEBUG("Process %p is in done set", req->issuer);
-
-              break;
-
-            } else if (req->issuer == MC_state_get_internal_request(prev_state)->issuer) {
-
-              XBT_DEBUG("Simcall %d and %d with same issuer", req->call, MC_state_get_internal_request(prev_state)->call);
-              break;
-
-            } else {
-
-              const smx_process_t previous_issuer = MC_smx_simcall_get_issuer(MC_state_get_internal_request(prev_state));
-              XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant",
-                        req->call, issuer->pid, state->num,
-                        MC_state_get_internal_request(prev_state)->call,
-                        previous_issuer->pid,
-                        prev_state->num);
-
-            }
-          }
-        }
-
-        if (MC_state_interleave_size(state.get())
-            && stack_.size() < (std::size_t) _sg_mc_max_depth) {
-          /* We found a back-tracking point, let's loop */
-          XBT_DEBUG("Back-tracking to state %d at depth %zi",
-            state->num, stack_.size() + 1);
-          stack_.push_back(std::move(state));
-          simgrid::mc::replay(stack_);
-          XBT_DEBUG("Back-tracking to state %d at depth %zi done",
-            stack_.back()->num, stack_.size());
-          break;
-        } else {
-          XBT_DEBUG("Delete state %d at depth %zi",
-            state->num, stack_.size() + 1);
-        }
-      }
+    // The interleave set is empty or the maximum depth is reached,
+    // let's back-track.
+    smx_simcall_t req = nullptr;
+    if (stack_.size() > (std::size_t) _sg_mc_max_depth
+        || (req = MC_state_get_request(state, &value)) == nullptr
+        || visitedState_ != nullptr) {
+      int res = this->backtrack();
+      if (res)
+        return res;
+      else
+        continue;
     }
+
+    // If there are processes to interleave and the maximum depth has not been
+    // reached then perform one step of the exploration algorithm.
+    char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
+    XBT_DEBUG("Execute: %s", req_str);
+    xbt_free(req_str);
+
+    if (dot_output != nullptr)
+      req_str = simgrid::mc::request_get_dot_output(req, value);
+
+    MC_state_set_executed_request(state, req, value);
+    mc_stats->executed_transitions++;
+
+    // TODO, bundle both operations in a single message
+    //   MC_execute_transition(req, value)
+
+    /* Answer the request */
+    simgrid::mc::handle_simcall(req, value);
+    mc_model_checker->wait_for_requests();
+
+    /* Create the new expanded state */
+    std::unique_ptr<simgrid::mc::State> next_state =
+      std::unique_ptr<simgrid::mc::State>(MC_state_new());
+
+    if (_sg_mc_termination && this->checkNonTermination(next_state.get())) {
+        MC_show_non_termination();
+        return SIMGRID_MC_EXIT_NON_TERMINATION;
+    }
+
+    if (_sg_mc_visited == 0
+        || (visitedState_ = visitedStates_.addVisitedState(next_state.get(), true)) == nullptr) {
+
+      /* Get an enabled process and insert it in the interleave set of the next state */
+      for (auto& p : mc_model_checker->process().simix_processes())
+        if (simgrid::mc::process_is_enabled(&p.copy)) {
+          MC_state_interleave_process(next_state.get(), &p.copy);
+          if (reductionMode_ != simgrid::mc::ReductionMode::none)
+            break;
+        }
+
+      if (dot_output != nullptr)
+        std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
+
+    } else if (dot_output != nullptr)
+      std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num, req_str);
+
+    stack_.push_back(std::move(next_state));
+
+    if (dot_output != nullptr)
+      xbt_free(req_str);
   }
 
   XBT_INFO("No property violation found.");
   MC_print_statistics(mc_stats);
   initial_global_state = nullptr;
+  return SIMGRID_MC_EXIT_SUCCESS;
+}
+
+int SafetyChecker::backtrack()
+{
+  if (stack_.size() > (std::size_t) _sg_mc_max_depth
+      || visitedState_ != nullptr) {
+    if (visitedState_ == nullptr)
+      XBT_WARN("/!\\ Max depth reached ! /!\\ ");
+    else
+      XBT_DEBUG("State already visited (equal to state %d),"
+        " exploration stopped on this path.",
+        visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num);
+  } else
+    XBT_DEBUG("There are no more processes to interleave. (depth %zi)",
+      stack_.size() + 1);
+
+  stack_.pop_back();
+
+  visitedState_ = nullptr;
+
+  /* Check for deadlocks */
+  if (mc_model_checker->checkDeadlock()) {
+    MC_show_deadlock();
+    return SIMGRID_MC_EXIT_DEADLOCK;
+  }
+
+  /* Traverse the stack backwards until a state with a non empty interleave
+     set is found, deleting all the states that have it empty in the way.
+     For each deleted state, check if the request that has generated it 
+     (from it's predecesor state), depends on any other previous request 
+     executed before it. If it does then add it to the interleave set of the
+     state that executed that previous request. */
+
+  while (!stack_.empty()) {
+    std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
+    stack_.pop_back();
+    if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
+      smx_simcall_t req = MC_state_get_internal_request(state.get());
+      if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
+        xbt_die("Mutex is currently not supported with DPOR, "
+          "use --cfg=model-check/reduction:none");
+      const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
+      for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
+        simgrid::mc::State* prev_state = i->get();
+        if (reductionMode_ != simgrid::mc::ReductionMode::none
+            && simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
+          if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
+            XBT_DEBUG("Dependent Transitions:");
+            int value;
+            smx_simcall_t prev_req = MC_state_get_executed_request(prev_state, &value);
+            char* req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::internal);
+            XBT_DEBUG("%s (state=%d)", req_str, prev_state->num);
+            xbt_free(req_str);
+            prev_req = MC_state_get_executed_request(state.get(), &value);
+            req_str = simgrid::mc::request_to_string(prev_req, value, simgrid::mc::RequestType::executed);
+            XBT_DEBUG("%s (state=%d)", req_str, state->num);
+            xbt_free(req_str);
+          }
+
+          if (!MC_state_process_is_done(prev_state, issuer))
+            MC_state_interleave_process(prev_state, issuer);
+          else
+            XBT_DEBUG("Process %p is in done set", req->issuer);
+
+          break;
+
+        } else if (req->issuer == MC_state_get_internal_request(prev_state)->issuer) {
+
+          XBT_DEBUG("Simcall %d and %d with same issuer", req->call, MC_state_get_internal_request(prev_state)->call);
+          break;
+
+        } else {
+
+          const smx_process_t previous_issuer = MC_smx_simcall_get_issuer(MC_state_get_internal_request(prev_state));
+          XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant",
+                    req->call, issuer->pid, state->num,
+                    MC_state_get_internal_request(prev_state)->call,
+                    previous_issuer->pid,
+                    prev_state->num);
+
+        }
+      }
+    }
+
+    if (MC_state_interleave_size(state.get())
+        && stack_.size() < (std::size_t) _sg_mc_max_depth) {
+      /* We found a back-tracking point, let's loop */
+      XBT_DEBUG("Back-tracking to state %d at depth %zi",
+        state->num, stack_.size() + 1);
+      stack_.push_back(std::move(state));
+      simgrid::mc::replay(stack_);
+      XBT_DEBUG("Back-tracking to state %d at depth %zi done",
+        stack_.back()->num, stack_.size());
+      break;
+    } else {
+      XBT_DEBUG("Delete state %d at depth %zi",
+        state->num, stack_.size() + 1);
+    }
+  }
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 
