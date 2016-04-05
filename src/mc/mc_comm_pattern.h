@@ -10,6 +10,8 @@
 #include <cstddef>
 #include <cstring>
 
+#include <string>
+
 #include <simgrid_config.h>
 #include <xbt/dynar.h>
 
@@ -29,7 +31,7 @@ typedef struct s_mc_comm_pattern{
   unsigned long dst_proc = 0;
   const char *src_host = nullptr;
   const char *dst_host = nullptr;
-  char *rdv = nullptr;
+  std::string rdv;
   ssize_t data_size = 0;
   void *data = nullptr;
   int tag = 0;
@@ -41,7 +43,6 @@ typedef struct s_mc_comm_pattern{
   }
   ~s_mc_comm_pattern()
   {
-    xbt_free(this->rdv);
     xbt_free(this->data);
   }
 

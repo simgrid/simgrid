@@ -38,7 +38,7 @@ xbt_dynar_t incomplete_communications_pattern;
 static e_mc_comm_pattern_difference_t compare_comm_pattern(mc_comm_pattern_t comm1, mc_comm_pattern_t comm2) {
   if(comm1->type != comm2->type)
     return TYPE_DIFF;
-  if (strcmp(comm1->rdv, comm2->rdv) != 0)
+  if (comm1->rdv != comm2->rdv)
     return RDV_DIFF;
   if (comm1->src_proc != comm2->src_proc)
     return SRC_PROC_DIFF;

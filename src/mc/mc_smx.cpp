@@ -203,11 +203,8 @@ const char* MC_smx_process_get_name(smx_process_t p)
     return nullptr;
 
   simgrid::mc::SimixProcessInformation* info = MC_smx_process_get_info(p);
-  if (info->name.empty()) {
-    char* name = process->read_string(p->name);
-    info->name = name;
-    free(name);
-  }
+  if (info->name.empty())
+    info->name = process->read_string(p->name);
   return info->name.c_str();
 }
 

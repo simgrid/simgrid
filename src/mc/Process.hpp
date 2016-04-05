@@ -13,6 +13,7 @@
 #include <type_traits>
 #include <vector>
 #include <memory>
+#include <string>
 
 #include <sys/types.h>
 
@@ -118,7 +119,7 @@ public:
     read_variable(name, &res, sizeof(T));
     return res;
   }
-  char* read_string(RemotePtr<void> address) const;
+  std::string read_string(RemotePtr<void> address) const;
 
   // Write memory:
   void write_bytes(const void* buffer, size_t len, RemotePtr<void> address);

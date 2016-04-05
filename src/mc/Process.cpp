@@ -439,17 +439,16 @@ void Process::read_variable(const char* name, void* target, size_t size) const
   this->read_bytes(target, size, remote(var->address));
 }
 
-char* Process::read_string(RemotePtr<void> address) const
+std::string Process::read_string(RemotePtr<void> address) const
 {
   if (!address)
-    return nullptr;
+    return {};
 
-  off_t len = 128;
-  char* res = (char*) malloc(len);
+  std::vector<char> res(128);
   off_t off = 0;
 
   while (1) {
-    ssize_t c = pread(this->memory_file, res + off, len - off, (off_t) address.address() + off);
+    ssize_t c = pread(this->memory_file, res.data() + off, res.size() - off, (off_t) address.address() + off);
     if (c == -1) {
       if (errno == EINTR)
         continue;
@@ -459,15 +458,13 @@ char* Process::read_string(RemotePtr<void> address) const
     if (c==0)
       xbt_die("Could not read string from remote process");
 
-    void* p = memchr(res + off, '\0', c);
+    void* p = memchr(res.data() + off, '\0', c);
     if (p)
-      return res;
+      return std::string(res.data());
 
     off += c;
-    if (off == len) {
-      len *= 2;
-      res = (char*) realloc(res, len);
-    }
+    if (off == (off_t) res.size())
+      res.resize(res.size() * 2);
   }
 }
 
