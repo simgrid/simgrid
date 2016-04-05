@@ -13,6 +13,10 @@
 
 #include <vector>
 
+#include <xbt/dynar.h>
+#include <xbt/automaton.h>
+#include <xbt/swag.h>
+
 #include "mc_base.h"
 
 #include "mc/mc.h"

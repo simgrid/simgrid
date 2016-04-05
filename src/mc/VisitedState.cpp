@@ -12,9 +12,6 @@
 
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
-#include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
-#include <xbt/fifo.h>
 
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_safety.h"

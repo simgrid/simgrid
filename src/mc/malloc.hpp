@@ -13,6 +13,7 @@
 #include <vector>
 
 #include <xbt/mmalloc.h>
+#include <xbt/dynar.h>
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/Process.hpp"

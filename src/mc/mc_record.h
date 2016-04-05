@@ -21,7 +21,6 @@
 #include <vector>
 
 #include <xbt/base.h>
-#include <xbt/dynar.h>
 
 namespace simgrid {
 namespace mc {

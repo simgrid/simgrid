@@ -16,6 +16,8 @@
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/Type.hpp"
 
+#include <xbt/dynar.h>
+
 using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,

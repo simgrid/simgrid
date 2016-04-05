@@ -14,6 +14,7 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 #include <xbt/mmalloc.h>
+#include <xbt/swag.h>
 
 #include "src/internal_config.h"
 

@@ -40,10 +40,10 @@ simgrid::mc::SimixProcessInformation* MC_smx_process_get_info(smx_process_t p)
   return process_info;
 }
 
-/** Load the remote swag of processes into a dynar
+/** Load the remote swag of processes into a vector
  *
  *  @param process     MCed process
- *  @param target      Local dynar (to be filled with copies of `s_smx_process_t`)
+ *  @param target      Local vector (to be filled with copies of `s_smx_process_t`)
  *  @param remote_swag Address of the process SWAG in the remote list
  */
 static void MC_process_refresh_simix_process_list(
@@ -56,7 +56,7 @@ static void MC_process_refresh_simix_process_list(
   s_xbt_swag_t swag;
   process->read_bytes(&swag, sizeof(swag), remote(remote_swag));
 
-  // Load each element of the dynar from the MCed process:
+  // Load each element of the vector from the MCed process:
   int i = 0;
   for (smx_process_t p = (smx_process_t) swag.head; p; ++i) {
 

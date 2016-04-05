@@ -19,7 +19,6 @@
 #include <elfutils/libdw.h>
 
 #include <simgrid/msg.h>
-#include <xbt/fifo.h>
 #include <xbt/config.h>
 #include <xbt/base.h>
 #include <xbt/automaton.h>

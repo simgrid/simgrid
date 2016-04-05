@@ -10,6 +10,7 @@
 #include <xbt/str.h>
 #include <xbt/sysdep.h>
 #include <xbt/dynar.h>
+#include <xbt/swag.h>
 
 #include "src/mc/mc_request.h"
 #include "src/mc/mc_safety.h"
