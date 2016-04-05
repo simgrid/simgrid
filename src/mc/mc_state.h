@@ -74,6 +74,11 @@ struct XBT_PRIVATE State {
   State();
   ~State();
 
+  State(State const&) = delete;
+  State operator=(State const&) = delete;
+  State(State const&&) = delete;
+  State operator=(State const&&) = delete;
+
   std::size_t interleaveSize() const;
 };
 
