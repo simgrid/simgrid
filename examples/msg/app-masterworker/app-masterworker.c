@@ -48,16 +48,14 @@ static int master(int argc, char *argv[])
 static int worker(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  XBT_ATTRIB_UNUSED int res;
   char mailbox[80];
-  XBT_ATTRIB_UNUSED int read;
 
   long id= xbt_str_parse_int(argv[1], "Invalid argument %s");
 
   sprintf(mailbox, "worker-%ld", id);
 
   while (1) {
-    res = MSG_task_receive(&(task), mailbox);
+    int res = MSG_task_receive(&(task), mailbox);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
 
 //  XBT_INFO("Received \"%s\"", MSG_task_get_name(task));

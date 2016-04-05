@@ -2,7 +2,7 @@
 
 p Testing a simple master/worker example application
 
-$ $SG_TEST_EXENV ./masterworker-mailbox/masterworker-mailbox  ${srcdir:=.}/../platforms/vivaldi.xml ${srcdir:=.}/masterworker-mailbox/masterworker-mailbox-vivaldi_d.xml --cfg=network/latency_factor:1.0 --cfg=network/bandwidth_factor:1.0
+$ $SG_TEST_EXENV ./app-masterworker/app-masterworker  ${srcdir:=.}/../platforms/vivaldi.xml ${srcdir:=.}/app-masterworker/app-masterworker-vivaldi_d.xml --cfg=network/latency_factor:1.0 --cfg=network/bandwidth_factor:1.0
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/latency_factor' to '1.0'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/bandwidth_factor' to '1.0'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/coordinates' to 'yes'

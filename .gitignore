@@ -121,9 +121,8 @@ examples/msg/actions-storage/actions-storage
 examples/msg/async-wait/async-wait
 examples/msg/async-waitall/async-waitall
 examples/msg/async-waitany/async-waitany
-examples/msg/bittorrent/bittorrent
-examples/msg/bittorrent/bittorrent_platfgen
-examples/msg/chainsend/chainsend
+examples/msg/app-bittorrent/bittorrent
+examples/msg/app-chainsend/chainsend
 examples/msg/cloud-capping/cloud-capping
 examples/msg/cloud-masterworker/cloud-masterworker
 examples/msg/cloud-migration/cloud-migration
@@ -144,9 +143,8 @@ examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
 examples/msg/failures/failures
-examples/msg/masterworker/masterworker
 examples/msg/process-kill/process-kill
-examples/msg/masterworker-mailbox/masterworker-mailbox
+examples/msg/app-masterworker/app-masterworker
 examples/msg/mc/bugged1
 examples/msg/mc/bugged1_liveness
 examples/msg/mc/bugged1_stateful

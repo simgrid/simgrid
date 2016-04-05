@@ -2,7 +2,7 @@
 
 p Testing a simple master/worker example application
 
-$ $SG_TEST_EXENV ./masterworker-mailbox/masterworker-mailbox ${srcdir:=.}/../platforms/multicore_machine.xml ${srcdir:=.}/masterworker-mailbox/masterworker-mailbox-multicore_d.xml --cfg=cpu/model:Cas01 --cfg=cpu/optim:Full
+$ $SG_TEST_EXENV ./app-masterworker/app-masterworker ${srcdir:=.}/../platforms/multicore_machine.xml ${srcdir:=.}/app-masterworker/app-masterworker-multicore_d.xml --cfg=cpu/model:Cas01 --cfg=cpu/optim:Full
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/optim' to 'Full'
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 6 workers and 20 tasks to process
