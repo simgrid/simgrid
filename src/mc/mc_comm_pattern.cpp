@@ -22,7 +22,7 @@ extern "C" {
 
 mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
 {
-  mc_comm_pattern_t res = xbt_new0(s_mc_comm_pattern_t, 1);
+  mc_comm_pattern_t res = new s_mc_comm_pattern_t();
   res->index = comm->index;
   res->type = comm->type;
   res->comm_addr = comm->comm_addr;
@@ -138,10 +138,8 @@ void MC_handle_comm_pattern(
 }
 
 void MC_comm_pattern_free(mc_comm_pattern_t p)
-{
-  xbt_free(p->rdv);
-  xbt_free(p->data);
-  xbt_free(p);
+{  
+  delete p;
   p = nullptr;
 }
 

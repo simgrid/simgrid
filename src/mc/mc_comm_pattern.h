@@ -7,7 +7,8 @@
 #ifndef SIMGRID_MC_COMM_PATTERN_H
 #define SIMGRID_MC_COMM_PATTERN_H
 
-#include <stddef.h>
+#include <cstddef>
+#include <cstring>
 
 #include <simgrid_config.h>
 #include <xbt/dynar.h>
@@ -21,18 +22,33 @@
 SG_BEGIN_DECL()
 
 typedef struct s_mc_comm_pattern{
-  int num;
+  int num = 0;
   smx_synchro_t comm_addr;
-  e_smx_comm_type_t type;
-  unsigned long src_proc;
-  unsigned long dst_proc;
-  const char *src_host;
-  const char *dst_host;
-  char *rdv;
-  ssize_t data_size;
-  void *data;
-  int tag;
-  int index;
+  e_smx_comm_type_t type = SIMIX_COMM_SEND;
+  unsigned long src_proc = 0;
+  unsigned long dst_proc = 0;
+  const char *src_host = nullptr;
+  const char *dst_host = nullptr;
+  char *rdv = nullptr;
+  ssize_t data_size = 0;
+  void *data = nullptr;
+  int tag = 0;
+  int index = 0;
+
+  s_mc_comm_pattern()
+  {
+    std::memset(&comm_addr, 0, sizeof(comm_addr));
+  }
+  ~s_mc_comm_pattern()
+  {
+    xbt_free(this->rdv);
+    xbt_free(this->data);
+  }
+
+  // No copy:
+  s_mc_comm_pattern(s_mc_comm_pattern const&) = delete;
+  s_mc_comm_pattern& operator=(s_mc_comm_pattern const&) = delete;
+
 } s_mc_comm_pattern_t, *mc_comm_pattern_t;
 
 typedef struct s_mc_list_comm_pattern{

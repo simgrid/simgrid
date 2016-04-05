@@ -184,7 +184,7 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
   xbt_dynar_t incomplete_pattern = xbt_dynar_get_as(
     incomplete_communications_pattern, issuer->pid, xbt_dynar_t);
 
-  mc_comm_pattern_t pattern = xbt_new0(s_mc_comm_pattern_t, 1);
+  mc_comm_pattern_t pattern = new s_mc_comm_pattern_t();
   pattern->data_size = -1;
   pattern->data = nullptr;
   pattern->index =
