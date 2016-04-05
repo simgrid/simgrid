@@ -148,7 +148,7 @@ XBT_PUBLIC(void) xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cf
  *  @{
  */
 XBT_PUBLIC(void) xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *description,
-    e_xbt_cfgelm_type_t type, int min, int max, xbt_cfg_cb_t cb_set);
+    e_xbt_cfgelm_type_t type, int min, xbt_cfg_cb_t cb_set);
 XBT_PUBLIC(void) xbt_cfg_register_double (const char *name, const char *desc, double default_val,    xbt_cfg_cb_t cb_set);
 XBT_PUBLIC(void) xbt_cfg_register_int    (const char *name, const char *desc, int default_val,       xbt_cfg_cb_t cb_set);
 XBT_PUBLIC(void) xbt_cfg_register_string (const char *name, const char *desc, const char*default_val,xbt_cfg_cb_t cb_set);

@@ -346,7 +346,8 @@ static void _sg_cfg_cb__test_sleep(const char *name, int pos){
 static void _sg_cfg_cb__surf_path(const char *name, int pos)
 {
   char *path = xbt_strdup(xbt_cfg_get_string_at(simgrid_config, name, pos));
-  xbt_dynar_push(surf_path, &path);
+  if (path[0]) // ignore ""
+    xbt_dynar_push(surf_path, &path);
 }
 
 /* callback to decide if we want to use the model-checking */
@@ -475,7 +476,7 @@ void sg_config_init(int *argc, char **argv)
 
     /* Plugins configuration */
     describe_model(description, surf_plugin_description, "plugin", "The plugins");
-    xbt_cfg_register(&simgrid_config, "plugin", description, xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__plugin);
+    xbt_cfg_register(&simgrid_config, "plugin", description, xbt_cfgelm_string, 0, &_sg_cfg_cb__plugin);
 
     describe_model(description, surf_cpu_model_description, "model", "The model to use for the CPU");
     xbt_cfg_register_string("cpu/model", description, "Cas01", &_sg_cfg_cb__cpu_model);
@@ -521,8 +522,7 @@ void sg_config_init(int *argc, char **argv)
         NAN, _sg_cfg_cb__weight_S); /* real default for "network/weight_S" is set in network_*.cpp */
 
     /* Inclusion path */
-    xbt_cfg_register(&simgrid_config, "path", "Lookup path for inclusions in platform and deployment XML files",
-                     xbt_cfgelm_string, 1, 0, _sg_cfg_cb__surf_path);
+    xbt_cfg_register_string("path", "Lookup path for inclusions in platform and deployment XML files", "", _sg_cfg_cb__surf_path);
 
     xbt_cfg_register_boolean("cpu/maxmin_selective_update",
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
@@ -531,7 +531,7 @@ void sg_config_init(int *argc, char **argv)
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
         "no", NULL);
     /* Replay (this part is enabled even if MC it disabled) */
-    xbt_cfg_register(&simgrid_config, "model-check/replay", "Enable replay mode with the given path", xbt_cfgelm_string, 0, 1, _sg_cfg_cb_model_check_replay);
+    xbt_cfg_register(&simgrid_config, "model-check/replay", "Enable replay mode with the given path", xbt_cfgelm_string, 0, _sg_cfg_cb_model_check_replay);
 
 #if HAVE_MC
     /* do model-checking-record */
@@ -665,49 +665,38 @@ void sg_config_init(int *argc, char **argv)
 
     xbt_cfg_register_string("smpi/coll_selector", "Which collective selector to use", "default", NULL);
 
-    xbt_cfg_register(&simgrid_config, "smpi/gather",
-                     "Which collective to use for gather",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_gather);
+    xbt_cfg_register(&simgrid_config, "smpi/gather", "Which collective to use for gather",
+        xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_gather);
 
-    xbt_cfg_register(&simgrid_config, "smpi/allgather",
-                     "Which collective to use for allgather",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_allgather);
+    xbt_cfg_register(&simgrid_config, "smpi/allgather", "Which collective to use for allgather",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_allgather);
 
-    xbt_cfg_register(&simgrid_config, "smpi/barrier",
-                     "Which collective to use for barrier",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_barrier);
+    xbt_cfg_register(&simgrid_config, "smpi/barrier", "Which collective to use for barrier",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_barrier);
 
-    xbt_cfg_register(&simgrid_config, "smpi/reduce_scatter",
-                     "Which collective to use for reduce_scatter",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_reduce_scatter);
+    xbt_cfg_register(&simgrid_config, "smpi/reduce_scatter", "Which collective to use for reduce_scatter",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_reduce_scatter);
 
-    xbt_cfg_register(&simgrid_config, "smpi/scatter",
-                     "Which collective to use for scatter",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_scatter);
+    xbt_cfg_register(&simgrid_config, "smpi/scatter", "Which collective to use for scatter",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_scatter);
 
-    xbt_cfg_register(&simgrid_config, "smpi/allgatherv",
-                     "Which collective to use for allgatherv",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_allgatherv);
+    xbt_cfg_register(&simgrid_config, "smpi/allgatherv", "Which collective to use for allgatherv",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_allgatherv);
 
-    xbt_cfg_register(&simgrid_config, "smpi/allreduce",
-                     "Which collective to use for allreduce",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_allreduce);
+    xbt_cfg_register(&simgrid_config, "smpi/allreduce", "Which collective to use for allreduce",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_allreduce);
 
-    xbt_cfg_register(&simgrid_config, "smpi/alltoall",
-                     "Which collective to use for alltoall",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_alltoall);
+    xbt_cfg_register(&simgrid_config, "smpi/alltoall", "Which collective to use for alltoall",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_alltoall);
 
-    xbt_cfg_register(&simgrid_config, "smpi/alltoallv",
-                     "Which collective to use for alltoallv",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_alltoallv);
+    xbt_cfg_register(&simgrid_config, "smpi/alltoallv", "Which collective to use for alltoallv",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_alltoallv);
 
-    xbt_cfg_register(&simgrid_config, "smpi/bcast",
-                     "Which collective to use for bcast",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_bcast);
+    xbt_cfg_register(&simgrid_config, "smpi/bcast", "Which collective to use for bcast",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_bcast);
 
-    xbt_cfg_register(&simgrid_config, "smpi/reduce",
-                     "Which collective to use for reduce",
-                     xbt_cfgelm_string, 0, 1, &_sg_cfg_cb__coll_reduce);
+    xbt_cfg_register(&simgrid_config, "smpi/reduce", "Which collective to use for reduce",
+                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_reduce);
 #endif // HAVE_SMPI
 
     xbt_cfg_register_boolean("exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", "no", NULL);
