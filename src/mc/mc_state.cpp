@@ -66,15 +66,6 @@ State::~State()
 }
 }
 
-/**
- * \brief Deletes a state data structure
- * \param trans The state to be deleted
- */
-void MC_state_delete(simgrid::mc::State* state, int free_snapshot)
-{
-  delete state;
-}
-
 void MC_state_interleave_process(simgrid::mc::State* state, smx_process_t process)
 {
   assert(state);

@@ -68,7 +68,6 @@ XBT_PRIVATE void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& st
 }
 
 XBT_PRIVATE simgrid::mc::State* MC_state_new(void);
-XBT_PRIVATE void MC_state_delete(simgrid::mc::State* state, int free_snapshot);
 XBT_PRIVATE void MC_state_interleave_process(simgrid::mc::State* state, smx_process_t process);
 XBT_PRIVATE unsigned int MC_state_interleave_size(simgrid::mc::State* state);
 XBT_PRIVATE int MC_state_process_is_done(simgrid::mc::State* state, smx_process_t process);
