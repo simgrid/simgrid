@@ -100,18 +100,6 @@ XBT_PUBLIC(void) xbt_cfg_setdefault_double (const char *name, double val);
 XBT_PUBLIC(void) xbt_cfg_setdefault_string (const char *name, const char *val);
 XBT_PUBLIC(void) xbt_cfg_setdefault_boolean(const char *name, const char *val);
 
-/** @brief Remove the provided value from the cell #name in #cfg. */
-XBT_PUBLIC(void) xbt_cfg_rm_int(xbt_cfg_t cfg, const char *name, int val);
-XBT_PUBLIC(void) xbt_cfg_rm_double(xbt_cfg_t cfg, const char *name, double val);
-XBT_PUBLIC(void) xbt_cfg_rm_string(xbt_cfg_t cfg, const char *name, const char *val);
-XBT_PUBLIC(void) xbt_cfg_rm_boolean(xbt_cfg_t cfg, const char *name, int val);
-
-/** @brief Remove the value at position \e pos from the config \e cfg */
-XBT_PUBLIC(void) xbt_cfg_rm_at(xbt_cfg_t cfg, const char *name, int pos);
-
-/** @brief rm every values */
-XBT_PUBLIC(void) xbt_cfg_empty(xbt_cfg_t cfg, const char *name);
-
 /** @brief Return if configuration is set by default*/
 XBT_PUBLIC(int) xbt_cfg_is_default_value(const char *name);
 
