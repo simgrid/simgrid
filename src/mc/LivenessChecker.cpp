@@ -345,9 +345,10 @@ int LivenessChecker::main(void)
     /* Update current state in buchi automaton */
     simgrid::mc::property_automaton->current_state = current_pair->automaton_state;
 
-    XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d, interleave size = %d, pair_num = %d, requests = %d)",
+    XBT_DEBUG("********************* ( Depth = %d, search_cycle = %d, interleave size = %zd, pair_num = %d, requests = %d)",
        current_pair->depth, current_pair->search_cycle,
-       MC_state_interleave_size(current_pair->graph_state.get()), current_pair->num,
+       current_pair->graph_state->interleaveSize(),
+       current_pair->num,
        current_pair->requests);
 
     if (current_pair->requests == 0) {
@@ -448,7 +449,7 @@ std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton
   for (auto& p : mc_model_checker->process().simix_processes())
     if (simgrid::mc::process_is_enabled(&p.copy))
       MC_state_interleave_process(next_pair->graph_state.get(), &p.copy);
-  next_pair->requests = MC_state_interleave_size(next_pair->graph_state.get());
+  next_pair->requests = next_pair->graph_state->interleaveSize();
   /* FIXME : get search_cycle value for each acceptant state */
   if (next_pair->automaton_state->type == 1 ||
       (current_pair && current_pair->search_cycle))

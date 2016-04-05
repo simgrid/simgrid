@@ -408,9 +408,9 @@ int CommunicationDeterminismChecker::main(void)
     simgrid::mc::State* state = stack_.back().get();
 
     XBT_DEBUG("**************************************************");
-    XBT_DEBUG("Exploration depth = %zi (state = %d, interleaved processes = %d)",
+    XBT_DEBUG("Exploration depth = %zi (state = %d, interleaved processes = %zd)",
               stack_.size(), state->num,
-              MC_state_interleave_size(state));
+              state->interleaveSize());
 
     /* Update statistics */
     mc_stats->visited_states++;
@@ -505,7 +505,7 @@ int CommunicationDeterminismChecker::main(void)
       while (!stack_.empty()) {
         std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
         stack_.pop_back();
-        if (MC_state_interleave_size(state.get())
+        if (state->interleaveSize()
             && stack_.size() < (std::size_t) _sg_mc_max_depth) {
           /* We found a back-tracking point, let's loop */
           XBT_DEBUG("Back-tracking to state %d at depth %zi",

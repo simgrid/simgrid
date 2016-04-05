@@ -76,7 +76,7 @@ void MC_restore_communications_pattern(simgrid::mc::State* state)
   unsigned int cursor;
 
   xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm)
-    list_process_comm->index_comm = (int)xbt_dynar_get_as(state->index_comm, cursor, int);
+    list_process_comm->index_comm = state->communicationIndices[cursor];
 
   for (unsigned i = 0; i < MC_smx_get_maxpid(); i++)
     MC_patterns_copy(
@@ -98,11 +98,11 @@ void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state)
 
 void MC_state_copy_index_communications_pattern(simgrid::mc::State* state)
 {
-  state->index_comm = xbt_dynar_new(sizeof(unsigned int), nullptr);
+  state->communicationIndices.clear();
   mc_list_comm_pattern_t list_process_comm;
   unsigned int cursor;
   xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm)
-    xbt_dynar_push_as(state->index_comm, unsigned int, list_process_comm->index_comm);
+    state->communicationIndices.push_back(list_process_comm->index_comm);
 }
 
 void MC_handle_comm_pattern(

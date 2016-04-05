@@ -6,6 +6,8 @@
 
 #include <assert.h>
 
+#include <algorithm>
+
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
@@ -31,9 +33,7 @@ simgrid::mc::State* MC_state_new()
   std::memset(&state->internal_comm, 0, sizeof(state->internal_comm));
   std::memset(&state->internal_req, 0, sizeof(state->internal_req));
   std::memset(&state->executed_req, 0, sizeof(state->executed_req));
-
-  state->max_pid = MC_smx_get_maxpid();
-  state->proc_status = xbt_new0(s_mc_procstate_t, state->max_pid);
+  state->processStates.resize(MC_smx_get_maxpid());
   state->num = ++mc_stats->expanded_states;
   /* Stateful model checking */
   if((_sg_mc_checkpoint > 0 && (mc_stats->expanded_states % _sg_mc_checkpoint == 0)) ||  _sg_mc_termination){
@@ -58,9 +58,13 @@ State::State()
 
 State::~State()
 {
-  xbt_free(this->index_comm);
   xbt_free(this->incomplete_comm_pattern);
-  xbt_free(this->proc_status);
+}
+
+std::size_t State::interleaveSize() const
+{
+  return std::count_if(this->processStates.begin(), this->processStates.end(),
+    [](simgrid::mc::ProcessState const& state) { return state.interleave(); });
 }
 
 }
@@ -69,29 +73,14 @@ State::~State()
 void MC_state_interleave_process(simgrid::mc::State* state, smx_process_t process)
 {
   assert(state);
-  state->proc_status[process->pid].state = MC_INTERLEAVE;
-  state->proc_status[process->pid].interleave_count = 0;
+  state->processStates[process->pid].state = simgrid::mc::ProcessInterleaveState::interleave;
+  state->processStates[process->pid].interleave_count = 0;
 }
 
 void MC_state_remove_interleave_process(simgrid::mc::State* state, smx_process_t process)
 {
-  if (state->proc_status[process->pid].state == MC_INTERLEAVE)
-    state->proc_status[process->pid].state = MC_DONE;
-}
-
-unsigned int MC_state_interleave_size(simgrid::mc::State* state)
-{
-  unsigned int i, size = 0;
-  for (i = 0; i < state->max_pid; i++)
-    if ((state->proc_status[i].state == MC_INTERLEAVE)
-        || (state->proc_status[i].state == MC_MORE_INTERLEAVE))
-      size++;
-  return size;
-}
-
-int MC_state_process_is_done(simgrid::mc::State* state, smx_process_t process)
-{
-  return state->proc_status[process->pid].state == MC_DONE ? TRUE : FALSE;
+  if (state->processStates[process->pid].state == simgrid::mc::ProcessInterleaveState::interleave)
+    state->processStates[process->pid].state = simgrid::mc::ProcessInterleaveState::done;
 }
 
 void MC_state_set_executed_request(simgrid::mc::State* state, smx_simcall_t req,
@@ -154,10 +143,10 @@ void MC_state_set_executed_request(simgrid::mc::State* state, smx_simcall_t req,
     int random_max = simcall_mc_random__get__max(req);
     if (value != random_max)
       for (auto& p : mc_model_checker->process().simix_processes()) {
-        mc_procstate_t procstate = &state->proc_status[p.copy.pid];
+        simgrid::mc::ProcessState* procstate = &state->processStates[p.copy.pid];
         const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
         if (p.copy.pid == issuer->pid) {
-          procstate->state = MC_MORE_INTERLEAVE;
+          procstate->state = simgrid::mc::ProcessInterleaveState::more_interleave;
           break;
         }
       }
@@ -184,11 +173,10 @@ smx_simcall_t MC_state_get_internal_request(simgrid::mc::State* state)
 static inline smx_simcall_t MC_state_get_request_for_process(
   simgrid::mc::State* state, int*value, smx_process_t process)
 {
-  mc_procstate_t procstate = &state->proc_status[process->pid];
+  simgrid::mc::ProcessState* procstate = &state->processStates[process->pid];
 
-  if (procstate->state != MC_INTERLEAVE
-      && procstate->state != MC_MORE_INTERLEAVE)
-      return nullptr;
+  if (!procstate->interleave())
+    return nullptr;
   if (!simgrid::mc::process_is_enabled(process))
     return nullptr;
 
@@ -209,7 +197,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         if (procstate->interleave_count >=
             simgrid::mc::read_length(mc_model_checker->process(),
               simgrid::mc::remote(simcall_comm_waitany__get__comms(&process->simcall))))
-          procstate->state = MC_DONE;
+          procstate->state = simgrid::mc::ProcessInterleaveState::done;
 
         if (*value != -1)
           return &process->simcall;
@@ -231,7 +219,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         if (procstate->interleave_count >=
             read_length(mc_model_checker->process(),
               remote(simcall_comm_testany__get__comms(&process->simcall))))
-          procstate->state = MC_DONE;
+          procstate->state = simgrid::mc::ProcessInterleaveState::done;
 
         if (*value != -1 || start_count == 0)
           return &process->simcall;
@@ -251,20 +239,20 @@ static inline smx_simcall_t MC_state_get_request_for_process(
           *value = 0;
         else
           *value = -1;
-        procstate->state = MC_DONE;
+        procstate->state = simgrid::mc::ProcessInterleaveState::done;
         return &process->simcall;
       }
 
       case SIMCALL_MC_RANDOM:
-        if (procstate->state == MC_INTERLEAVE)
+        if (procstate->state == simgrid::mc::ProcessInterleaveState::interleave)
           *value = simcall_mc_random__get__min(&process->simcall);
         else if (state->req_num < simcall_mc_random__get__max(&process->simcall))
           *value = state->req_num + 1;
-        procstate->state = MC_DONE;
+        procstate->state = simgrid::mc::ProcessInterleaveState::done;
         return &process->simcall;
 
       default:
-        procstate->state = MC_DONE;
+        procstate->state = simgrid::mc::ProcessInterleaveState::done;
         *value = 0;
         return &process->simcall;
   }

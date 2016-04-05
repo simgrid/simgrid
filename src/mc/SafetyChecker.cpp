@@ -104,9 +104,9 @@ int SafetyChecker::run()
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG(
-      "Exploration depth=%zi (state=%p, num %d)(%u interleave)",
+      "Exploration depth=%zi (state=%p, num %d)(%zu interleave)",
       stack_.size(), state, state->num,
-      MC_state_interleave_size(state));
+      state->interleaveSize());
 
     mc_stats->visited_states++;
 
@@ -241,7 +241,7 @@ int SafetyChecker::backtrack()
             xbt_free(req_str);
           }
 
-          if (!MC_state_process_is_done(prev_state, issuer))
+          if (!prev_state->processStates[issuer->pid].done())
             MC_state_interleave_process(prev_state, issuer);
           else
             XBT_DEBUG("Process %p is in done set", req->issuer);
@@ -266,7 +266,7 @@ int SafetyChecker::backtrack()
       }
     }
 
-    if (MC_state_interleave_size(state.get())
+    if (state->interleaveSize()
         && stack_.size() < (std::size_t) _sg_mc_max_depth) {
       /* We found a back-tracking point, let's loop */
       XBT_DEBUG("Back-tracking to state %d at depth %zi",
