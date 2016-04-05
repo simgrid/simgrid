@@ -88,9 +88,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostPopState (JNIEnv *env, j
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableDeclare (JNIEnv *env, jclass cls, jstring js_state)
 {
   const char *state = env->GetStringUTFChars(js_state, 0);
-
   TRACE_host_variable_declare(state);
-
   env->ReleaseStringUTFChars(js_state, state);
 }
 
@@ -150,3 +148,21 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_hostVariableAdd (JNIEnv *env
   env->ReleaseStringUTFChars(js_host, host);
   env->ReleaseStringUTFChars(js_state, state);
 }
+
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclare (JNIEnv *env, jclass cls, jstring js_var) {
+  const char *variable = env->GetStringUTFChars(js_var, 0);
+  TRACE_link_variable_declare (variable);
+  env->ReleaseStringUTFChars(js_var, variable);
+}
+/* Missing calls
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableDeclareWithColor (JNIEnv *, jclass, jstring, jstring);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSet (JNIEnv *, jclass, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAdd (JNIEnv *, jclass, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSub (JNIEnv *env, jclass cls, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSetWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAddWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSubWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSet (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableAdd (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSub (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
+*/
