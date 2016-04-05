@@ -22,7 +22,6 @@
 
 #include <xbt/base.h>
 #include <xbt/dynar.h>
-#include <xbt/fifo.h>
 
 namespace simgrid {
 namespace mc {
@@ -66,14 +65,6 @@ SG_BEGIN_DECL()
 #define MC_record_is_active() _sg_do_model_check_record
 
 // **** Data conversion
-
-/** Generate a string representation
-*
-* The current format is a ";"-delimited list of pairs:
-* "pid0,value0;pid2,value2;pid3,value3". The value can be
-* omitted is it is null.
-*/
-XBT_PRIVATE char* MC_record_stack_to_string(xbt_fifo_t stack);
 
 SG_END_DECL()
 
