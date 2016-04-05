@@ -46,15 +46,9 @@ static e_mc_comm_pattern_difference_t compare_comm_pattern(mc_comm_pattern_t com
     return DST_PROC_DIFF;
   if (comm1->tag != comm2->tag)
     return TAG_DIFF;
-  if (comm1->data_size != comm2->data_size)
+  if (comm1->data.size() != comm2->data.size())
     return DATA_SIZE_DIFF;
-  if(comm1->data == nullptr && comm2->data == NULL)
-    return NONE_DIFF;
-  if(comm1->data != nullptr && comm2->data !=NULL) {
-    if (!memcmp(comm1->data, comm2->data, comm1->data_size))
-      return NONE_DIFF;
-    return DATA_DIFF;
-  } else
+  if (comm1->data != comm2->data)
     return DATA_DIFF;
   return NONE_DIFF;
 }
@@ -108,14 +102,13 @@ static void update_comm_pattern(mc_comm_pattern_t comm_pattern, smx_synchro_t co
   comm_pattern->dst_proc = dst_proc->pid;
   comm_pattern->src_host = MC_smx_process_get_host_name(src_proc);
   comm_pattern->dst_host = MC_smx_process_get_host_name(dst_proc);
-  if (comm_pattern->data_size == -1 && comm.comm.src_buff != nullptr) {
+  if (comm_pattern->data.size() == 0 && comm.comm.src_buff != nullptr) {
     size_t buff_size;
     mc_model_checker->process().read(
       &buff_size, remote(comm.comm.dst_buff_size));
-    comm_pattern->data_size = buff_size;
-    comm_pattern->data = xbt_malloc0(comm_pattern->data_size);
+    comm_pattern->data.resize(buff_size);
     mc_model_checker->process().read_bytes(
-      comm_pattern->data, comm_pattern->data_size,
+      comm_pattern->data.data(), comm_pattern->data.size(),
       remote(comm.comm.src_buff));
   }
 }
@@ -185,8 +178,6 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     incomplete_communications_pattern, issuer->pid, xbt_dynar_t);
 
   mc_comm_pattern_t pattern = new s_mc_comm_pattern_t();
-  pattern->data_size = -1;
-  pattern->data = nullptr;
   pattern->index =
     initial_pattern->index_comm + xbt_dynar_length(incomplete_pattern);
 
@@ -210,10 +201,10 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     pattern->tag = mpi_request.tag;
 
     if(synchro.comm.src_buff != nullptr){
-      pattern->data_size = synchro.comm.src_buff_size;
-      pattern->data = xbt_malloc0(pattern->data_size);
+      pattern->data.resize(synchro.comm.src_buff_size);
       mc_model_checker->process().read_bytes(
-        pattern->data, pattern->data_size, remote(synchro.comm.src_buff));
+        pattern->data.data(), pattern->data.size(),
+        remote(synchro.comm.src_buff));
     }
     if(mpi_request.detached){
       if (!simgrid::mc::initial_global_state->initial_communications_pattern_done) {

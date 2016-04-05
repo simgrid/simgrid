@@ -11,6 +11,7 @@
 #include <cstring>
 
 #include <string>
+#include <vector>
 
 #include <simgrid_config.h>
 #include <xbt/dynar.h>
@@ -32,18 +33,13 @@ typedef struct s_mc_comm_pattern{
   const char *src_host = nullptr;
   const char *dst_host = nullptr;
   std::string rdv;
-  ssize_t data_size = 0;
-  void *data = nullptr;
+  std::vector<char> data;
   int tag = 0;
   int index = 0;
 
   s_mc_comm_pattern()
   {
     std::memset(&comm_addr, 0, sizeof(comm_addr));
-  }
-  ~s_mc_comm_pattern()
-  {
-    xbt_free(this->data);
   }
 
   // No copy:

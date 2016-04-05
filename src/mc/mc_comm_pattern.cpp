@@ -27,20 +27,9 @@ mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
   res->type = comm->type;
   res->comm_addr = comm->comm_addr;
   res->rdv = comm->rdv;
-  res->data_size = -1;
-  res->data = nullptr;
-  if (comm->type == SIMIX_COMM_SEND) {
-    res->src_proc = comm->src_proc;
-    res->src_host = comm->src_host;
-    if (comm->data != nullptr) {
-      res->data_size = comm->data_size;
-      res->data = xbt_malloc0(comm->data_size);
-      memcpy(res->data, comm->data, comm->data_size);
-    }
-  } else {
-    res->dst_proc = comm->dst_proc;
-    res->dst_host = comm->dst_host;
-  }
+  res->data = comm->data;
+  res->dst_proc = comm->dst_proc;
+  res->dst_host = comm->dst_host;
   return res;
 }
 
