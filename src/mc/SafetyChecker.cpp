@@ -106,17 +106,18 @@ int SafetyChecker::run()
 
     XBT_DEBUG("**************************************************");
     XBT_DEBUG(
-      "Exploration depth=%zi (state=%p, num %d)(%u interleave, user_max_depth %d)",
+      "Exploration depth=%zi (state=%p, num %d)(%u interleave)",
       stack_.size(), state, state->num,
-      MC_state_interleave_size(state), user_max_depth_reached);
+      MC_state_interleave_size(state));
 
     /* Update statistics */
     mc_stats->visited_states++;
 
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
-    if (stack_.size() <= (std::size_t) _sg_mc_max_depth && !user_max_depth_reached
-        && (req = MC_state_get_request(state, &value)) && visited_state == nullptr) {
+    if (stack_.size() <= (std::size_t) _sg_mc_max_depth
+        && (req = MC_state_get_request(state, &value))
+        && visited_state == nullptr) {
 
       char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
       XBT_DEBUG("Execute: %s", req_str);
@@ -172,12 +173,9 @@ int SafetyChecker::run()
     } else {
 
       if (stack_.size() > (std::size_t) _sg_mc_max_depth
-          || user_max_depth_reached
           || visited_state != nullptr) {
 
-        if (user_max_depth_reached && visited_state == nullptr)
-          XBT_DEBUG("User max depth reached !");
-        else if (visited_state == nullptr)
+        if (visited_state == nullptr)
           XBT_WARN("/!\\ Max depth reached ! /!\\ ");
         else
           XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);

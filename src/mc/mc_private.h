@@ -63,8 +63,6 @@ XBT_PRIVATE void MC_init_dot_output();
 
 XBT_PRIVATE extern FILE *dot_output;
 
-XBT_PRIVATE extern int user_max_depth_reached;
-
 XBT_PRIVATE void MC_show_deadlock(void);
 
 /****************************** Statistics ************************************/

@@ -54,7 +54,6 @@ std::vector<double> processes_time;
 }
 
 #if HAVE_MC
-int user_max_depth_reached = 0;
 
 /* MC global data structures */
 simgrid::mc::State* mc_current_state = nullptr;

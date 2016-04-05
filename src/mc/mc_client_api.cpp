@@ -35,7 +35,6 @@ void MC_assert(int prop)
 void MC_cut(void)
 {
   // FIXME, We want to do this in the model-checker:
-  // user_max_depth_reached = 1;
   xbt_die("MC_cut() not implemented");
 }
 
