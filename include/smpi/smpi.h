@@ -181,6 +181,22 @@ SG_BEGIN_DECL()
 #define MPI_LOCK_EXCLUSIVE           1
 #define MPI_LOCK_SHARED              2
 
+#define MPI_MODE_RDONLY              2
+#define MPI_MODE_RDWR                8
+#define MPI_MODE_WRONLY              4
+#define MPI_MODE_CREATE              1
+#define MPI_MODE_EXCL               64
+#define MPI_MODE_DELETE_ON_CLOSE    16
+#define MPI_MODE_UNIQUE_OPEN        32
+#define MPI_MODE_APPEND            128
+#define MPI_MODE_SEQUENTIAL        256
+#define MPI_FILE_NULL ((MPI_File) 0)
+#define MPI_DISPLACEMENT_CURRENT   -54278278
+#define MPI_SEEK_SET            600
+#define MPI_SEEK_CUR            602
+#define MPI_SEEK_END            604
+#define MPI_MAX_DATAREP_STRING  128
+
 // FIXME : used nowhere...
 typedef enum MPIR_Combiner_enum{
   MPI_COMBINER_NAMED,
@@ -726,6 +742,47 @@ MPI_CALL(XBT_PUBLIC(int),  MPI_Win_start,(MPI_Group group, int assert, MPI_Win w
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_test,(MPI_Win win, int *flag));
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_unlock,(int rank, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_wait,(MPI_Win win));
+
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_errhandler , (MPI_File file, MPI_Errhandler *errhandler));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_errhandler, (MPI_File file, MPI_Errhandler errhandler));
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_open,(MPI_Comm comm, const char *filename, int amode, MPI_Info info, MPI_File *fh));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_close,(MPI_File *fh));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_delete,(const char *filename, MPI_Info info));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_size,(MPI_File fh, MPI_Offset size));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_size,(MPI_File fh, MPI_Offset *size));
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_view,(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype,
+                      const char *datarep, MPI_Info info));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_view,(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype,
+                      char *datarep));
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype,
+                     MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_at_all,(MPI_File fh, MPI_Offset offset, void * buf, int count,
+                         MPI_Datatype datatype, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_at,(MPI_File fh, MPI_Offset offset, const void * buf, int count,
+                      MPI_Datatype datatype, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_at_all,(MPI_File fh, MPI_Offset offset, const void *buf, int count,
+                          MPI_Datatype datatype, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_atomicity,(MPI_File fh, int flag));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_atomicity,(MPI_File fh, int *flag));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_sync,(MPI_File fh));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_File_read_at_all_begin,(MPI_File fh, MPI_Offset offset, void *buf, int count,
+                               MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int), MPI_File_read_at_all_end,(MPI_File fh, void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int), MPI_File_write_at_all_begin,(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_at_all_end,(MPI_File fh, const void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_all_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_all_end,(MPI_File fh, void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_all_begin,(MPI_File fh, const void *buf, int count, MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_all_end,(MPI_File fh, const void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_ordered_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_ordered_end,(MPI_File fh, void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_ordered_begin,(MPI_File fh, const void *buf, int count, MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_ordered_end,(MPI_File fh, const void *buf, MPI_Status *status));
 
 //FIXME: End of all the not yet implemented stuff
 

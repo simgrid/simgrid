@@ -1110,3 +1110,122 @@ MPI_Errhandler MPI_Errhandler_f2c(MPI_Fint errhandler){
 MPI_Fint MPI_Errhandler_c2f(MPI_Errhandler errhandler){
   return PMPI_Errhandler_c2f(errhandler);
 }
+
+int MPI_File_get_errhandler (MPI_File file, MPI_Errhandler *errhandler){
+  return PMPI_File_get_errhandler(file, errhandler);
+}
+
+int MPI_File_set_errhandler(MPI_File file, MPI_Errhandler errhandler){
+  return PMPI_File_set_errhandler(file, errhandler);
+}
+
+int MPI_File_open(MPI_Comm comm, const char *filename, int amode, MPI_Info info, MPI_File *fh){
+  return PMPI_File_open(comm, filename, amode, info, fh);
+}
+
+int MPI_File_close(MPI_File *fh){
+  return PMPI_File_close(fh);
+}
+
+int MPI_File_delete(const char *filename, MPI_Info info){
+  return PMPI_File_delete(filename, info);
+}
+
+int MPI_File_set_size(MPI_File fh, MPI_Offset size){
+  return PMPI_File_set_size(fh,size);
+}
+
+int MPI_File_get_size(MPI_File fh, MPI_Offset *size){
+  return PMPI_File_get_size(fh, size);
+}
+
+int MPI_File_set_view(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info){
+  return PMPI_File_set_view(fh, disp, etype, filetype, datarep, info);
+}
+
+int MPI_File_get_view(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep){
+  return PMPI_File_get_view(fh, disp, etype, filetype, datarep);
+}
+
+int MPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  return PMPI_File_read_at(fh,offset,buf,count,datatype,status);
+}
+
+int MPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void * buf, int count,
+                         MPI_Datatype datatype, MPI_Status *status){
+  return PMPI_File_read_at_all(fh,offset, buf, count,
+                         datatype, status);
+}
+
+int MPI_File_write_at(MPI_File fh, MPI_Offset offset, const void * buf, int count,
+                      MPI_Datatype datatype, MPI_Status *status){
+  return PMPI_File_write_at(fh, offset,buf, count, datatype, status);
+}
+
+int MPI_File_write_at_all(MPI_File fh, MPI_Offset offset, const void *buf, int count,
+                          MPI_Datatype datatype, MPI_Status *status){
+  return PMPI_File_write_at_all(fh,offset,buf,count, datatype,status);
+}
+
+int MPI_File_set_atomicity(MPI_File fh, int flag){
+  return PMPI_File_set_atomicity(fh,flag);
+}
+
+int MPI_File_get_atomicity(MPI_File fh, int *flag){
+  return PMPI_File_get_atomicity(fh, flag);
+}
+
+int MPI_File_sync(MPI_File fh){
+  return PMPI_File_sync(fh);
+}
+
+int MPI_File_read_at_all_begin(MPI_File fh, MPI_Offset offset, void *buf, int count,
+                               MPI_Datatype datatype){
+  return PMPI_File_read_at_all_begin(fh,offset,buf,count,datatype);
+}
+
+int MPI_File_read_at_all_end(MPI_File fh, void *buf, MPI_Status *status){
+  return PMPI_File_read_at_all_end(fh,buf,status);
+}
+
+int MPI_File_write_at_all_begin(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype){
+  return PMPI_File_write_at_all_begin(fh,offset,buf,count,datatype);
+}
+
+int MPI_File_write_at_all_end(MPI_File fh, const void *buf, MPI_Status *status){
+  return PMPI_File_write_at_all_end(fh,buf,status);
+}
+
+int MPI_File_read_all_begin(MPI_File fh, void *buf, int count, MPI_Datatype datatype){
+  return PMPI_File_read_all_begin(fh, buf,count,datatype);
+}
+
+int MPI_File_read_all_end(MPI_File fh, void *buf, MPI_Status *status){
+  return PMPI_File_read_all_end(fh, buf, status);
+}
+
+int MPI_File_write_all_begin(MPI_File fh, const void *buf, int count, MPI_Datatype datatype){
+  return PMPI_File_write_all_begin(fh, buf, count,datatype);
+}
+
+int MPI_File_write_all_end(MPI_File fh, const void *buf, MPI_Status *status){
+  return PMPI_File_write_all_end(fh,buf,status);
+}
+
+int MPI_File_read_ordered_begin(MPI_File fh, void *buf, int count, MPI_Datatype datatype){
+  return PMPI_File_read_ordered_begin(fh, buf, count, datatype);
+}
+
+int MPI_File_read_ordered_end(MPI_File fh, void *buf, MPI_Status *status){
+  return PMPI_File_read_ordered_end(fh, buf, status);
+}
+
+int MPI_File_write_ordered_begin(MPI_File fh, const void *buf, int count, MPI_Datatype datatype){
+  return PMPI_File_write_ordered_begin(fh, buf,count, datatype);
+}
+
+int MPI_File_write_ordered_end(MPI_File fh, const void *buf, MPI_Status *status){
+  return PMPI_File_write_ordered_end(fh,buf, status);
+}
+
+
