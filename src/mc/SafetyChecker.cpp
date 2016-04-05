@@ -97,7 +97,6 @@ int SafetyChecker::run()
 
   int value;
   smx_simcall_t req = nullptr;
-  std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
 
   while (!stack_.empty()) {
 
@@ -116,8 +115,8 @@ int SafetyChecker::run()
     /* If there are processes to interleave and the maximum depth has not been reached
        then perform one step of the exploration algorithm */
     if (stack_.size() <= (std::size_t) _sg_mc_max_depth
-        && (req = MC_state_get_request(state, &value))
-        && visited_state == nullptr) {
+        && (req = MC_state_get_request(state, &value)) != nullptr
+        && visitedState_ == nullptr) {
 
       char* req_str = simgrid::mc::request_to_string(req, value, simgrid::mc::RequestType::simix);
       XBT_DEBUG("Execute: %s", req_str);
@@ -146,7 +145,7 @@ int SafetyChecker::run()
       }
 
       if (_sg_mc_visited == 0
-          || (visited_state = visitedStates_.addVisitedState(next_state.get(), true)) == nullptr) {
+          || (visitedState_ = visitedStates_.addVisitedState(next_state.get(), true)) == nullptr) {
 
         /* Get an enabled process and insert it in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
@@ -160,7 +159,7 @@ int SafetyChecker::run()
           std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, next_state->num, req_str);
 
       } else if (dot_output != nullptr)
-        std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visited_state->other_num == -1 ? visited_state->num : visited_state->other_num, req_str);
+        std::fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n", state->num, visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num, req_str);
 
       stack_.push_back(std::move(next_state));
 
@@ -173,13 +172,13 @@ int SafetyChecker::run()
     } else {
 
       if (stack_.size() > (std::size_t) _sg_mc_max_depth
-          || visited_state != nullptr) {
-
-        if (visited_state == nullptr)
+          || visitedState_ != nullptr) {
+        if (visitedState_ == nullptr)
           XBT_WARN("/!\\ Max depth reached ! /!\\ ");
         else
-          XBT_DEBUG("State already visited (equal to state %d), exploration stopped on this path.", visited_state->other_num == -1 ? visited_state->num : visited_state->other_num);
-
+          XBT_DEBUG("State already visited (equal to state %d),"
+            " exploration stopped on this path.",
+            visitedState_->other_num == -1 ? visitedState_->num : visitedState_->other_num);
       } else
         XBT_DEBUG("There are no more processes to interleave. (depth %zi)",
           stack_.size() + 1);
@@ -188,7 +187,7 @@ int SafetyChecker::run()
       XBT_DEBUG("Delete state %d at depth %zi", state->num, stack_.size());
       stack_.pop_back();
 
-      visited_state = nullptr;
+      visitedState_ = nullptr;
 
       /* Check for deadlocks */
       if (mc_model_checker->checkDeadlock()) {
