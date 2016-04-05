@@ -278,20 +278,6 @@ void xbt_cfg_register_alias(const char *newname, const char *oldname)
   xbt_dict_set(simgrid_config, oldname, res, NULL);
 }
 
-/** @brief Unregister an element from a config set.
- *
- *  @param cfg the config set
- *  @param name the name of the element to be freed
- *
- *  Note that it removes both the description and the actual content.
- *  Throws not_found when no such element exists.
- */
-void xbt_cfg_unregister(xbt_cfg_t cfg, const char *name)
-{
-  XBT_DEBUG("Unregister elm '%s' from set %p", name, cfg);
-  xbt_dict_remove((xbt_dict_t) cfg, name);
-}
-
 /**
  * @brief Parse a string and register the stuff described.
  *

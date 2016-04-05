@@ -154,7 +154,6 @@ XBT_PUBLIC(void) xbt_cfg_register_int    (const char *name, const char *desc, in
 XBT_PUBLIC(void) xbt_cfg_register_string (const char *name, const char *desc, const char*default_val,xbt_cfg_cb_t cb_set);
 XBT_PUBLIC(void) xbt_cfg_register_boolean(const char *name, const char *desc, const char*default_val,xbt_cfg_cb_t cb_set);
 XBT_PUBLIC(void) xbt_cfg_register_alias(const char *newname, const char *oldname);
-XBT_PUBLIC(void) xbt_cfg_unregister(xbt_cfg_t cfg, const char *name);
 XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);
 
 XBT_PUBLIC(void) xbt_cfg_aliases(xbt_cfg_t cfg);
