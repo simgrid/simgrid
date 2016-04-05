@@ -116,7 +116,7 @@ tags
 callgrind.out.*
 ### Examples and traces
 *.exe
-examples/msg/actions-mpi/actions-mpi
+examples/msg/actions-comm/actions-comm
 examples/msg/actions-storage/actions-storage
 examples/msg/async-wait/async-wait
 examples/msg/async-waitall/async-waitall

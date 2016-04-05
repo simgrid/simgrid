@@ -1,4 +1,4 @@
-foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany cloud-capping cloud-masterworker 
+foreach(x actions-comm actions-storage async-wait async-waitall async-waitany cloud-capping cloud-masterworker 
           cloud-migration cloud-multicore cloud-scale cloud-simple cloud-two-tasks dht-chord dht-pastry exception 
           energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures io-file io-file-unlink io-remote
           io-storage masterworker masterworker-mailbox pmm task-priority process-kill process-migration process-suspend 
@@ -39,16 +39,16 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-chord 
+foreach (file actions-comm actions-storage async-wait async-waitall async-waitany bittorrent chainsend dht-chord 
          dht-kademlia dht-pastry io-remote masterworker masterworker-mailbox properties sendrecv set-maestro
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
 set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/actions-mpi.txt
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/actions-mpi_split_p0.txt
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/actions-mpi_split_p1.txt
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm.txt
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p0.txt
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-storage/actions-storage.txt          PARENT_SCOPE)
 set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/bittorrent/generate.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/generate.py
@@ -83,7 +83,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-mpi/action
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
-foreach(x actions-mpi actions-storage async-wait async-waitall async-waitany bittorrent chainsend cloud-capping 
+foreach(x actions-comm actions-storage async-wait async-waitall async-waitany bittorrent chainsend cloud-capping 
         cloud-masterworker cloud-migration cloud-scale cloud-simple cloud-two-tasks dht-chord dht-kademlia
         failures io-file io-file-unlink io-remote io-storage masterworker masterworker-mailbox task-priority process-kill 
         process-migration process-suspend properties sendrecv synchro process-startkilltime token_ring)

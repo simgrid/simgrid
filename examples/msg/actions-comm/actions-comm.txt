@@ -32,22 +32,6 @@ p0 barrier
 p1 barrier
 p2 barrier
 
-p0 reduce 5e8 5e8
-p1 reduce 5e8 5e8
-p2 reduce 5e8 5e8
-
-p0 compute 5e8
-p1 compute 5e8
-p2 compute 5e8
-
-p0 barrier
-p1 barrier
-p2 barrier
-
-p0 allReduce 5e8 5e8
-p1 allReduce 5e8 5e8
-p2 allReduce 5e8 5e8
-
 p0 finalize
 p1 finalize
 p2 finalize

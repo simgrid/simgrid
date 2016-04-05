@@ -210,58 +210,6 @@ static void action_barrier(const char *const *action)
   }
 }
 
-static void action_reduce(const char *const *action)
-{
-  int i;
-  char *reduce_identifier;
-  char mailbox[80];
-  double comm_size = parse_double(action[2]);
-  double comp_size = parse_double(action[3]);
-  msg_task_t comp_task = NULL;
-  const char *process_name;
-  double clock = MSG_get_clock();
-
-  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
-
-  xbt_assert(communicator_size, "Size of Communicator is not defined can't use collective operations");
-
-  process_name = MSG_process_get_name(MSG_process_self());
-
-  reduce_identifier = bprintf("reduce_%d", counters->reduce_counter++);
-
-  if (!strcmp(process_name, "p0")) {
-    XBT_DEBUG("%s: %s is the Root", reduce_identifier, process_name);
-
-    msg_comm_t *comms = xbt_new0(msg_comm_t, communicator_size - 1);
-    msg_task_t *tasks = xbt_new0(msg_task_t, communicator_size - 1);
-    for (i = 1; i < communicator_size; i++) {
-      sprintf(mailbox, "%s_p%d_p0", reduce_identifier, i);
-      comms[i - 1] = MSG_task_irecv(&(tasks[i - 1]), mailbox);
-    }
-    MSG_comm_waitall(comms, communicator_size - 1, -1);
-    for (i = 1; i < communicator_size; i++) {
-      MSG_comm_destroy(comms[i - 1]);
-      MSG_task_destroy(tasks[i - 1]);
-    }
-    xbt_free(comms);
-    xbt_free(tasks);
-
-    comp_task = MSG_task_create("reduce_comp", comp_size, 0, NULL);
-    XBT_DEBUG("%s: computing 'reduce_comp'", reduce_identifier);
-    MSG_task_execute(comp_task);
-    MSG_task_destroy(comp_task);
-    XBT_DEBUG("%s: computed", reduce_identifier);
-  } else {
-    XBT_DEBUG("%s: %s sends", reduce_identifier, process_name);
-    sprintf(mailbox, "%s_%s_p0", reduce_identifier, process_name);
-    XBT_DEBUG("put on %s", mailbox);
-    MSG_task_send(MSG_task_create(reduce_identifier, 0, comm_size, NULL), mailbox);
-  }
-
-  log_action(action, MSG_get_clock() - clock);
-  xbt_free(reduce_identifier);
-}
-
 static void action_bcast(const char *const *action)
 {
   int i;
@@ -304,83 +252,6 @@ static void action_bcast(const char *const *action)
 
   log_action(action, MSG_get_clock() - clock);
   xbt_free(bcast_identifier);
-}
-
-static void action_sleep(const char *const *action)
-{
-  const char *duration = action[2];
-  double clock = MSG_get_clock();
-
-  ACT_DEBUG("Entering %s", NAME);
-  MSG_process_sleep(parse_double(duration));
-  log_action(action, MSG_get_clock() - clock);
-}
-
-static void action_allReduce(const char *const *action)
-{
-  int i;
-  char *allreduce_identifier;
-  char mailbox[80];
-  double comm_size = parse_double(action[2]);
-  double comp_size = parse_double(action[3]);
-  msg_task_t task = NULL, comp_task = NULL;
-  const char *process_name;
-  double clock = MSG_get_clock();
-
-  process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
-
-  xbt_assert(communicator_size, "Size of Communicator is not defined, can't use collective operations");
-
-  process_name = MSG_process_get_name(MSG_process_self());
-
-  allreduce_identifier = bprintf("allReduce_%d", counters->allReduce_counter++);
-
-  if (!strcmp(process_name, "p0")) {
-    XBT_DEBUG("%s: %s is the Root", allreduce_identifier, process_name);
-
-    msg_comm_t *comms = xbt_new0(msg_comm_t, communicator_size - 1);
-    msg_task_t *tasks = xbt_new0(msg_task_t, communicator_size - 1);
-    for (i = 1; i < communicator_size; i++) {
-      sprintf(mailbox, "%s_p%d_p0", allreduce_identifier, i);
-      comms[i - 1] = MSG_task_irecv(&(tasks[i - 1]), mailbox);
-    }
-    MSG_comm_waitall(comms, communicator_size - 1, -1);
-    for (i = 1; i < communicator_size; i++) {
-      MSG_comm_destroy(comms[i - 1]);
-      MSG_task_destroy(tasks[i - 1]);
-    }
-    xbt_free(tasks);
-
-    comp_task = MSG_task_create("allReduce_comp", comp_size, 0, NULL);
-    XBT_DEBUG("%s: computing 'reduce_comp'", allreduce_identifier);
-    MSG_task_execute(comp_task);
-    MSG_task_destroy(comp_task);
-    XBT_DEBUG("%s: computed", allreduce_identifier);
-
-    for (i = 1; i < communicator_size; i++) {
-      sprintf(mailbox, "%s_p0_p%d", allreduce_identifier, i);
-      comms[i - 1] = MSG_task_isend(MSG_task_create(mailbox, 0, comm_size, NULL), mailbox);
-    }
-    MSG_comm_waitall(comms, communicator_size - 1, -1);
-    for (i = 1; i < communicator_size; i++)
-      MSG_comm_destroy(comms[i - 1]);
-    xbt_free(comms);
-
-    XBT_DEBUG("%s: all messages sent by %s have been received", allreduce_identifier, process_name);
-  } else {
-    XBT_DEBUG("%s: %s sends", allreduce_identifier, process_name);
-    sprintf(mailbox, "%s_%s_p0", allreduce_identifier, process_name);
-    XBT_DEBUG("put on %s", mailbox);
-    MSG_task_send(MSG_task_create(allreduce_identifier, 0, comm_size, NULL), mailbox);
-
-    sprintf(mailbox, "%s_p0_%s", allreduce_identifier, process_name);
-    MSG_task_receive(&task, mailbox);
-    MSG_task_destroy(task);
-    XBT_DEBUG("%s: %s has received", allreduce_identifier, process_name);
-  }
-
-  log_action(action, MSG_get_clock() - clock);
-  xbt_free(allreduce_identifier);
 }
 
 static void action_comm_size(const char *const *action)
@@ -444,10 +315,6 @@ int main(int argc, char *argv[])
        "\tExample: %s msg_platform.xml msg_deployment.xml ",
        argv[0],argv[0],argv[0]);
 
-  printf("WARNING: THIS BINARY IS KINDA DEPRECATED\n"
-   "This example is still relevant if you want to learn about MSG-based trace replay, but if you want to simulate "
-   "MPI-like traces, you should use the newer version that is in the examples/smpi/replay directory instead.\n");
-   
   MSG_create_environment(argv[1]);
   MSG_launch_application(argv[2]);
 
@@ -462,9 +329,6 @@ int main(int argc, char *argv[])
   xbt_replay_action_register("wait", action_wait);
   xbt_replay_action_register("barrier", action_barrier);
   xbt_replay_action_register("bcast", action_bcast);
-  xbt_replay_action_register("reduce", action_reduce);
-  xbt_replay_action_register("allReduce", action_allReduce);
-  xbt_replay_action_register("sleep", action_sleep);
   xbt_replay_action_register("compute", action_compute);
 
   /* Actually do the simulation using MSG_action_trace_run */
