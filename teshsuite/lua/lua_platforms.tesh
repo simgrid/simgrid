@@ -1,4 +1,4 @@
-$ ${bindir:=.}/../../examples/msg/masterslave/masterslave_mailbox ${srcdir:=.}/../../examples/platforms/small_platform.lua ${srcdir:=.}/../../examples/msg/masterslave/deployment_masterslave_mailbox.xml
+$ ${bindir:=.}/../../examples/msg/masterworker-mailbox/masterworker-mailbox ${srcdir:=.}/../../examples/platforms/small_platform.lua ${srcdir:=.}/../../examples/msg/masterslave/deployment_masterslave_mailbox.xml
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Got 5 slaves and 20 tasks to process
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Sending "Task_0" (of 20) to mailbox "slave-0"
 > [Tremblay:master:(1) 0.002265] [msg_test/INFO] Sending "Task_1" (of 20) to mailbox "slave-1"
