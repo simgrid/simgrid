@@ -3582,3 +3582,120 @@ int PMPI_Win_test(MPI_Win win, int *flag){
 int PMPI_Win_unlock(int rank, MPI_Win win){
   NOT_YET_IMPLEMENTED
 }
+
+int PMPI_File_get_errhandler (MPI_File file, MPI_Errhandler *errhandler){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_set_errhandler(MPI_File file, MPI_Errhandler errhandler){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_open(MPI_Comm comm, const char *filename, int amode, MPI_Info info, MPI_File *fh){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_close(MPI_File *fh){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_delete(const char *filename, MPI_Info info){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_set_size(MPI_File fh, MPI_Offset size){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_get_size(MPI_File fh, MPI_Offset *size){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_set_view(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype, const char *datarep, MPI_Info info){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_get_view(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype, char *datarep){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_read_at(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_read_at_all(MPI_File fh, MPI_Offset offset, void * buf, int count,
+                         MPI_Datatype datatype, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_write_at(MPI_File fh, MPI_Offset offset, const void * buf, int count,
+                      MPI_Datatype datatype, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_write_at_all(MPI_File fh, MPI_Offset offset, const void *buf, int count, MPI_Datatype datatype, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_set_atomicity(MPI_File fh, int flag){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_get_atomicity(MPI_File fh, int *flag){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_sync(MPI_File fh){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_read_at_all_begin(MPI_File fh, MPI_Offset offset, void *buf, int count,
+                               MPI_Datatype datatype){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_read_at_all_end(MPI_File fh, void *buf, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_write_at_all_begin(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_write_at_all_end(MPI_File fh, const void *buf, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_read_all_begin(MPI_File fh, void *buf, int count, MPI_Datatype datatype){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_read_all_end(MPI_File fh, void *buf, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_write_all_begin(MPI_File fh, const void *buf, int count, MPI_Datatype datatype){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_write_all_end(MPI_File fh, const void *buf, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_read_ordered_begin(MPI_File fh, void *buf, int count, MPI_Datatype datatype){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_read_ordered_end(MPI_File fh, void *buf, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_write_ordered_begin(MPI_File fh, const void *buf, int count, MPI_Datatype datatype){
+  NOT_YET_IMPLEMENTED
+}
+
+int PMPI_File_write_ordered_end(MPI_File fh, const void *buf, MPI_Status *status){
+  NOT_YET_IMPLEMENTED
+}
+
+
