@@ -144,10 +144,8 @@ void xbt_init(int *argc, char **argv)
 
   xbt_binary_name = xbt_strdup(argv[0]);
   xbt_cmdline = xbt_dynar_new(sizeof(char*),NULL);
-  int i;
-  for (i=0;i<*argc;i++) {
+  for (int i=0;i<*argc;i++)
     xbt_dynar_push(xbt_cmdline,&(argv[i]));
-  }
   
   xbt_log_init(argc, argv);
 }

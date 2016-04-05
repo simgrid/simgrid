@@ -38,8 +38,8 @@ int main(int argc, char **argv)
 {
   double now = -1.0;
   surf_init(&argc, argv);       /* Initialize some common structures */
-  xbt_cfg_set_parse(_sg_cfg_set, "cpu/model:Cas01");
-  xbt_cfg_set_parse(_sg_cfg_set, "network/model:CM02");
+  xbt_cfg_set_parse("cpu/model:Cas01");
+  xbt_cfg_set_parse("network/model:CM02");
 
   xbt_assert(argc >1, "Usage : %s platform.txt\n", argv[0]);
   parse_platform_file(argv[1]);

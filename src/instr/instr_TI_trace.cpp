@@ -69,7 +69,7 @@ void print_TICreateContainer(paje_event_t event)
     prefix = xbt_os_time();
   }
 
-  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file") || temp == NULL) {
+  if (!xbt_cfg_get_boolean("tracing/smpi/format/ti_one_file") || temp == NULL) {
     char *folder_name = bprintf("%s_files", TRACE_get_filename());
     char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix, ((createContainer_t) event->data)->container->name);
 #ifdef WIN32
@@ -78,8 +78,7 @@ void print_TICreateContainer(paje_event_t event)
     mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
 #endif
     temp = fopen(filename, "w");
-    if (temp == NULL)
-      xbt_die("Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
+    xbt_assert(temp, "Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
     fprintf(tracing_file, "%s\n", filename);
 
     xbt_free(folder_name);
@@ -91,7 +90,7 @@ void print_TICreateContainer(paje_event_t event)
 
 void print_TIDestroyContainer(paje_event_t event)
 {
-  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file")|| xbt_dict_length(tracing_files) == 1) {
+  if (!xbt_cfg_get_boolean("tracing/smpi/format/ti_one_file")|| xbt_dict_length(tracing_files) == 1) {
     FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, ((destroyContainer_t) event->data)->container->name);
     fclose(f);
   }

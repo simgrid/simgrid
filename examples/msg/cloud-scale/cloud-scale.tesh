@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/cloud-scale$EXEEXT ${srcdir:=.}/platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-scale$EXEEXT ${srcdir:=.}/platform.xml --cfg=contexts/stack_size:1000 
 > [Jacquelin:master_:(1) 0.000000] [msg_test/INFO] ## Test (start)
 > [Jacquelin:master_:(1) 1.000000] [msg_test/INFO] Completed tasks: 0
 > [Jacquelin:master_:(1) 2.000000] [msg_test/INFO] Completed tasks: 600

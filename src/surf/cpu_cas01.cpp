@@ -19,7 +19,7 @@ void surf_cpu_model_init_Cas01()
   xbt_assert(!surf_cpu_model_pm);
   xbt_assert(!surf_cpu_model_vm);
 
-  char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
+  char *optim = xbt_cfg_get_string("cpu/optim");
   if (!strcmp(optim, "TI")) {
     surf_cpu_model_init_ti();
     return;
@@ -37,8 +37,8 @@ namespace surf {
 
 CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 {
-  char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
-  int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
+  char *optim = xbt_cfg_get_string("cpu/optim");
+  int select = xbt_cfg_get_boolean("cpu/maxmin_selective_update");
 
   if (!strcmp(optim, "Full")) {
     updateMechanism_ = UM_FULL;
@@ -47,9 +47,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
     updateMechanism_ = UM_LAZY;
     selectiveUpdate_ = 1;
     xbt_assert((select == 1)
-               ||
-               (xbt_cfg_is_default_value
-                (_sg_cfg_set, "cpu/maxmin_selective_update")),
+               || (xbt_cfg_is_default_value("cpu/maxmin_selective_update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);

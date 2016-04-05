@@ -9,7 +9,7 @@
 /** Config Globals */
 SG_BEGIN_DECL()
 
-XBT_PUBLIC_DATA(xbt_cfg_t) _sg_cfg_set;
+XBT_PUBLIC_DATA(xbt_cfg_t) simgrid_config;
 XBT_PUBLIC_DATA(int) _sg_cfg_init_status;
 XBT_PUBLIC_DATA(int) _sg_cfg_exit_asap;
 XBT_PUBLIC(int) sg_cfg_is_default_value(const char* name);
