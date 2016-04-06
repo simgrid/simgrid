@@ -81,7 +81,6 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(simgri
   std::unique_ptr<simgrid::mc::VisitedState> new_state =
     std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState());
   graph_state->system_state = new_state->system_state;
-  graph_state->in_visited_states = 1;
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)",
     new_state->system_state.get(), new_state->num, graph_state->num);
 

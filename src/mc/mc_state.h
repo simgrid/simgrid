@@ -91,21 +91,44 @@ struct ProcessState {
  *  See `MC_state_set_executed_request()`.
  */
 struct XBT_PRIVATE State {
+
+  /** Sequential state number (used for debugging) */
+  int num = 0;
+
+  /* Next transition to explore for this communication
+   *
+   * Some transitions are not deterministic such as:
+   *
+   * * waitany which can receive different messages;
+   *
+   * * random which can produce different values.
+   *
+   * This variable is used to keep track of which transition
+   * should be explored next for a given simcall.
+   */
+  int req_num = 0;
+
   /** State's exploration status by process */
   std::vector<ProcessState> processStates;
-  s_smx_synchro_t internal_comm;        /* To be referenced by the internal_req */
-  s_smx_simcall_t internal_req;         /* Internal translation of request */
-  s_smx_simcall_t executed_req;         /* The executed request of the state */
-  int req_num = 0;                      /* The request number (in the case of a
-                                       multi-request like waitany ) */
-  std::shared_ptr<simgrid::mc::Snapshot> system_state = nullptr;      /* Snapshot of system state */
-  int num = 0;
-  int in_visited_states = 0;
 
-  // comm determinism verification (xbt_dynar_t<xbt_dynar_t<simgrid::mc::PatternCommunication*>):
+  /** The simcall */
+  s_smx_simcall_t executed_req;
+
+  /* Internal translation of the simcall
+   *
+   * IMCALL_COMM_TESTANY is translated to a SIMCALL_COMM_TEST
+   * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.
+   */
+  s_smx_simcall_t internal_req;
+
+  /* Can be used as a copy of the remote synchro object */
+  s_smx_synchro_t internal_comm;
+
+  /** Snapshot of system state (if needed) */
+  std::shared_ptr<simgrid::mc::Snapshot> system_state;
+
+  // For CommunicationDeterminismChecker
   std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern;
-
-  // For communication determinism verification:
   std::vector<unsigned> communicationIndices;
 
   State();
