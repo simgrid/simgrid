@@ -25,43 +25,6 @@
 namespace simgrid {
 namespace mc {
 
-struct PatternCommunication {
-  int num = 0;
-  smx_synchro_t comm_addr;
-  e_smx_comm_type_t type = SIMIX_COMM_SEND;
-  unsigned long src_proc = 0;
-  unsigned long dst_proc = 0;
-  const char *src_host = nullptr;
-  const char *dst_host = nullptr;
-  std::string rdv;
-  std::vector<char> data;
-  int tag = 0;
-  int index = 0;
-
-  PatternCommunication()
-  {
-    std::memset(&comm_addr, 0, sizeof(comm_addr));
-  }
-
-  PatternCommunication dup() const
-  {
-    simgrid::mc::PatternCommunication res;
-    // num?
-    res.comm_addr = this->comm_addr;
-    res.type = this->type;
-    // src_proc?
-    // dst_proc?
-    res.dst_proc = this->dst_proc;
-    res.dst_host = this->dst_host;
-    res.rdv = this->rdv;
-    res.data = this->data;
-    // tag?
-    res.index = this->index;
-    return res;
-  }
-
-};
-
 struct PatternCommunicationList {
   unsigned int index_comm = 0;
   xbt_dynar_t list = nullptr;

@@ -22,6 +22,43 @@ namespace mc {
 
 extern XBT_PRIVATE std::unique_ptr<s_mc_global_t> initial_global_state;
 
+struct PatternCommunication {
+  int num = 0;
+  smx_synchro_t comm_addr;
+  e_smx_comm_type_t type = SIMIX_COMM_SEND;
+  unsigned long src_proc = 0;
+  unsigned long dst_proc = 0;
+  const char *src_host = nullptr;
+  const char *dst_host = nullptr;
+  std::string rdv;
+  std::vector<char> data;
+  int tag = 0;
+  int index = 0;
+
+  PatternCommunication()
+  {
+    std::memset(&comm_addr, 0, sizeof(comm_addr));
+  }
+
+  PatternCommunication dup() const
+  {
+    simgrid::mc::PatternCommunication res;
+    // num?
+    res.comm_addr = this->comm_addr;
+    res.type = this->type;
+    // src_proc?
+    // dst_proc?
+    res.dst_proc = this->dst_proc;
+    res.dst_host = this->dst_host;
+    res.rdv = this->rdv;
+    res.data = this->data;
+    // tag?
+    res.index = this->index;
+    return res;
+  }
+
+};
+
 /* Possible exploration status of a process in a state */
 enum class ProcessInterleaveState {
   no_interleave=0, /* Do not interleave (do not execute) */
@@ -66,18 +103,12 @@ struct XBT_PRIVATE State {
   int in_visited_states = 0;
 
   // comm determinism verification (xbt_dynar_t<xbt_dynar_t<simgrid::mc::PatternCommunication*>):
-  xbt_dynar_t incomplete_comm_pattern = nullptr;
+  std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern;
 
   // For communication determinism verification:
   std::vector<unsigned> communicationIndices;
 
   State();
-  ~State();
-
-  State(State const&) = delete;
-  State operator=(State const&) = delete;
-  State(State const&&) = delete;
-  State operator=(State const&&) = delete;
 
   std::size_t interleaveSize() const;
 };

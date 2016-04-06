@@ -53,11 +53,6 @@ State::State()
   std::memset(&this->executed_req, 0, sizeof(this->executed_req));
 }
 
-State::~State()
-{
-  xbt_free(this->incomplete_comm_pattern);
-}
-
 std::size_t State::interleaveSize() const
 {
   return std::count_if(this->processStates.begin(), this->processStates.end(),

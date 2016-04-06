@@ -19,28 +19,12 @@ using simgrid::mc::remote;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_pattern, mc,
                                 "Logging specific to MC communication patterns");
 
-static xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t patterns)
-{
-  xbt_dynar_t res = simgrid::xbt::newDeleteDynar<simgrid::mc::PatternCommunication>();
-
-  simgrid::mc::PatternCommunication* comm;
-  unsigned int cursor;
-  xbt_dynar_foreach(patterns, cursor, comm) {
-    simgrid::mc::PatternCommunication* copy_comm = new simgrid::mc::PatternCommunication(comm->dup());
-    xbt_dynar_push(res, &copy_comm);
-  }
-
-  return res;
-}
-
-static void MC_patterns_copy(xbt_dynar_t dest, xbt_dynar_t source)
+static void MC_patterns_copy(xbt_dynar_t dest,
+  std::vector<simgrid::mc::PatternCommunication> const& source)
 {
   xbt_dynar_reset(dest);
-
-  unsigned int cursor;
-  simgrid::mc::PatternCommunication* comm;
-  xbt_dynar_foreach(source, cursor, comm) {
-    simgrid::mc::PatternCommunication* copy_comm = new simgrid::mc::PatternCommunication(comm->dup());
+  for (simgrid::mc::PatternCommunication const& comm : source) {
+    simgrid::mc::PatternCommunication* copy_comm = new simgrid::mc::PatternCommunication(comm.dup());
     xbt_dynar_push(dest, &copy_comm);
   }
 }
@@ -56,18 +40,21 @@ void MC_restore_communications_pattern(simgrid::mc::State* state)
   for (unsigned i = 0; i < MC_smx_get_maxpid(); i++)
     MC_patterns_copy(
       xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t),
-      xbt_dynar_get_as(state->incomplete_comm_pattern, i, xbt_dynar_t)
+      state->incomplete_comm_pattern[i]
     );
 }
 
 void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state)
 {
-  state->incomplete_comm_pattern = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
-
+  state->incomplete_comm_pattern.clear();
   for (unsigned i=0; i < MC_smx_get_maxpid(); i++) {
-    xbt_dynar_t comms = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
-    xbt_dynar_t copy = MC_comm_patterns_dup(comms);
-    xbt_dynar_insert_at(state->incomplete_comm_pattern, i, &copy);
+    xbt_dynar_t patterns = xbt_dynar_get_as(incomplete_communications_pattern, i, xbt_dynar_t);
+    std::vector<simgrid::mc::PatternCommunication> res;
+    simgrid::mc::PatternCommunication* comm;
+    unsigned int cursor;
+    xbt_dynar_foreach(patterns, cursor, comm)
+      res.push_back(comm->dup());
+    state->incomplete_comm_pattern.push_back(std::move(res));
   }
 }
 
