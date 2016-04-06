@@ -267,63 +267,59 @@ static void _sg_cfg_cb__weight_S(const char *name, int pos)
 }
 
 #if HAVE_SMPI
-/* callback of the mpi collectives */
-static void _sg_cfg_cb__coll(const char *category,
+/* callback of the mpi collectives: simply check that this is a valid name. It will be picked up in smpi_global.cpp */
+static void _check_coll(const char *category,
                              s_mpi_coll_description_t * table,
-                             const char *name, int pos)
+                             const char *name)
 {
-  char *val;
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the collective algorithm after the initialization");
 
-  xbt_assert(_sg_cfg_init_status < 2,
-              "Cannot change the model after the initialization");
+  char *val = xbt_cfg_get_string(name);
 
-  val = xbt_cfg_get_string(name);
-
-  if (!strcmp(val, "help")) {
+  if (val && !strcmp(val, "help")) {
     coll_help(category, table);
     sg_cfg_exit_early();
   }
 
-  /* New Module missing */
   find_coll_description(table, val, category);
 }
-static void _sg_cfg_cb__coll_gather(const char *name, int pos){
-  _sg_cfg_cb__coll("gather", mpi_coll_gather_description, name, pos);
+static void _check_coll_gather(const char *name, int pos){
+  _check_coll("gather", mpi_coll_gather_description, name);
 }
-static void _sg_cfg_cb__coll_allgather(const char *name, int pos){
-  _sg_cfg_cb__coll("allgather", mpi_coll_allgather_description, name, pos);
+static void _check_coll_allgather(const char *name, int pos){
+  _check_coll("allgather", mpi_coll_allgather_description, name);
 }
-static void _sg_cfg_cb__coll_allgatherv(const char *name, int pos){
-  _sg_cfg_cb__coll("allgatherv", mpi_coll_allgatherv_description, name, pos);
+static void _check_coll_allgatherv(const char *name, int pos){
+  _check_coll("allgatherv", mpi_coll_allgatherv_description, name);
 }
-static void _sg_cfg_cb__coll_allreduce(const char *name, int pos)
+static void _check_coll_allreduce(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("allreduce", mpi_coll_allreduce_description, name, pos);
+  _check_coll("allreduce", mpi_coll_allreduce_description, name);
 }
-static void _sg_cfg_cb__coll_alltoall(const char *name, int pos)
+static void _check_coll_alltoall(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("alltoall", mpi_coll_alltoall_description, name, pos);
+  _check_coll("alltoall", mpi_coll_alltoall_description, name);
 }
-static void _sg_cfg_cb__coll_alltoallv(const char *name, int pos)
+static void _check_coll_alltoallv(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("alltoallv", mpi_coll_alltoallv_description, name, pos);
+  _check_coll("alltoallv", mpi_coll_alltoallv_description, name);
 }
-static void _sg_cfg_cb__coll_bcast(const char *name, int pos)
+static void _check_coll_bcast(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("bcast", mpi_coll_bcast_description, name, pos);
+  _check_coll("bcast", mpi_coll_bcast_description, name);
 }
-static void _sg_cfg_cb__coll_reduce(const char *name, int pos)
+static void _check_coll_reduce(const char *name, int pos)
 {
-  _sg_cfg_cb__coll("reduce", mpi_coll_reduce_description, name, pos);
+  _check_coll("reduce", mpi_coll_reduce_description, name);
 }
-static void _sg_cfg_cb__coll_reduce_scatter(const char *name, int pos){
-  _sg_cfg_cb__coll("reduce_scatter", mpi_coll_reduce_scatter_description, name, pos);
+static void _check_coll_reduce_scatter(const char *name, int pos){
+  _check_coll("reduce_scatter", mpi_coll_reduce_scatter_description, name);
 }
-static void _sg_cfg_cb__coll_scatter(const char *name, int pos){
-  _sg_cfg_cb__coll("scatter", mpi_coll_scatter_description, name, pos);
+static void _check_coll_scatter(const char *name, int pos){
+  _check_coll("scatter", mpi_coll_scatter_description, name);
 }
-static void _sg_cfg_cb__coll_barrier(const char *name, int pos){
-  _sg_cfg_cb__coll("barrier", mpi_coll_barrier_description, name, pos);
+static void _check_coll_barrier(const char *name, int pos){
+  _check_coll("barrier", mpi_coll_barrier_description, name);
 }
 
 static void _sg_cfg_cb__wtime_sleep(const char *name, int pos){
@@ -663,45 +659,23 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_double("smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4, _sg_cfg_cb__test_sleep);
     xbt_cfg_register_double("smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0, _sg_cfg_cb__wtime_sleep);
 
-    xbt_cfg_register_string("smpi/coll_selector", "Which collective selector to use", "default", NULL);
-
-    xbt_cfg_register(&simgrid_config, "smpi/gather", "Which collective to use for gather",
-        xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_gather);
-
-    xbt_cfg_register(&simgrid_config, "smpi/allgather", "Which collective to use for allgather",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_allgather);
-
-    xbt_cfg_register(&simgrid_config, "smpi/barrier", "Which collective to use for barrier",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_barrier);
-
-    xbt_cfg_register(&simgrid_config, "smpi/reduce_scatter", "Which collective to use for reduce_scatter",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_reduce_scatter);
-
-    xbt_cfg_register(&simgrid_config, "smpi/scatter", "Which collective to use for scatter",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_scatter);
-
-    xbt_cfg_register(&simgrid_config, "smpi/allgatherv", "Which collective to use for allgatherv",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_allgatherv);
-
-    xbt_cfg_register(&simgrid_config, "smpi/allreduce", "Which collective to use for allreduce",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_allreduce);
-
-    xbt_cfg_register(&simgrid_config, "smpi/alltoall", "Which collective to use for alltoall",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_alltoall);
-
-    xbt_cfg_register(&simgrid_config, "smpi/alltoallv", "Which collective to use for alltoallv",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_alltoallv);
-
-    xbt_cfg_register(&simgrid_config, "smpi/bcast", "Which collective to use for bcast",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_bcast);
-
-    xbt_cfg_register(&simgrid_config, "smpi/reduce", "Which collective to use for reduce",
-                     xbt_cfgelm_string, 0, &_sg_cfg_cb__coll_reduce);
+    xbt_cfg_register_string("smpi/coll_selector",  "Which collective selector to use", "default", NULL);
+    xbt_cfg_register_string("smpi/gather",         "Which collective to use for gather", nullptr, &_check_coll_gather);
+    xbt_cfg_register_string("smpi/allgather",      "Which collective to use for allgather", nullptr, &_check_coll_allgather);
+    xbt_cfg_register_string("smpi/barrier",        "Which collective to use for barrier", nullptr, &_check_coll_barrier);
+    xbt_cfg_register_string("smpi/reduce_scatter", "Which collective to use for reduce_scatter", nullptr, &_check_coll_reduce_scatter);
+    xbt_cfg_register_string("smpi/scatter",        "Which collective to use for scatter", nullptr, &_check_coll_scatter);
+    xbt_cfg_register_string("smpi/allgatherv",     "Which collective to use for allgatherv", nullptr, &_check_coll_allgatherv);
+    xbt_cfg_register_string("smpi/allreduce",      "Which collective to use for allreduce", nullptr, &_check_coll_allreduce);
+    xbt_cfg_register_string("smpi/alltoall",       "Which collective to use for alltoall", nullptr, &_check_coll_alltoall);
+    xbt_cfg_register_string("smpi/alltoallv",      "Which collective to use for alltoallv", nullptr, &_check_coll_alltoallv);
+    xbt_cfg_register_string("smpi/bcast",          "Which collective to use for bcast", nullptr, &_check_coll_bcast);
+    xbt_cfg_register_string("smpi/reduce",         "Which collective to use for reduce", nullptr, &_check_coll_reduce);
 #endif // HAVE_SMPI
 
     xbt_cfg_register_boolean("exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", "no", NULL);
 
-    xbt_cfg_register_boolean("clean_atexit", "Whether to cleanup SimGrid (XBT,SIMIX,MSG) at exit. Disable it if your code segfaults at ending.",
+    xbt_cfg_register_boolean("clean_atexit", "Whether to cleanup SimGrid at exit. Disable it if your code segfaults at ending.",
                      "yes", _sg_cfg_cb_clean_atexit);
 
     if (!surf_path) {
