@@ -130,7 +130,7 @@ make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
 if test "$(uname -o)" != "Msys"; then
   cd $WORKSPACE/build
-  cd `cat VERSION`
+  cd `cat VERSION`/build
 fi
 
 TRES=0
