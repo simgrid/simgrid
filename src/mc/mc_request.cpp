@@ -107,7 +107,7 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
 
   if (r1->call == SIMCALL_COMM_WAIT
       && (r2->call == SIMCALL_COMM_WAIT || r2->call == SIMCALL_COMM_TEST)
-      && (synchro1->comm.src_proc == nullptr || synchro1->comm.dst_proc == NULL))
+      && (synchro1->comm.src_proc == nullptr || synchro1->comm.dst_proc == nullptr))
     return false;
 
   if (r1->call == SIMCALL_COMM_TEST &&
@@ -314,7 +314,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
         act = remote_act;
 
     char* p;
-    if (act->comm.src_proc == nullptr || act->comm.dst_proc == NULL) {
+    if (act->comm.src_proc == nullptr || act->comm.dst_proc == nullptr) {
       type = "Test FALSE";
       p = pointer_to_string(remote_act);
       args = bprintf("comm=%s", p);
@@ -540,7 +540,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
     s_smx_synchro_t synchro;
     mc_model_checker->process().read_bytes(&synchro,
       sizeof(synchro), remote(remote_act));
-    if (synchro.comm.src_proc == nullptr || synchro.comm.dst_proc == NULL) {
+    if (synchro.comm.src_proc == nullptr || synchro.comm.dst_proc == nullptr) {
       if (issuer->host)
         label = simgrid::xbt::string_printf("[(%lu)%s] Test FALSE",
                     issuer->pid,

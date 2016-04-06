@@ -68,7 +68,7 @@ Client* Client::initialize()
   client_ = std::unique_ptr<Client>(new simgrid::mc::Client(fd));
 
   // Wait for the model-checker:
-  if (ptrace(PTRACE_TRACEME, 0, nullptr, NULL) == -1 || raise(SIGSTOP) != 0)
+  if (ptrace(PTRACE_TRACEME, 0, nullptr, nullptr) == -1 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");
 
   client_->handleMessages();

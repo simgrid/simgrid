@@ -213,8 +213,8 @@ XBT_PRIVATE int MC_snapshot_memcmp(
 static inline __attribute__ ((always_inline))
 const void* mc_snapshot_get_heap_end(simgrid::mc::Snapshot* snapshot)
 {
-  if(snapshot==NULL)
-      xbt_die("snapshot is NULL");
+  if(snapshot==nullptr)
+      xbt_die("snapshot is nullptr");
   return mc_model_checker->process().get_heap()->breakval;
 }
 
