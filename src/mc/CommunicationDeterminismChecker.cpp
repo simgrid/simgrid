@@ -520,10 +520,6 @@ int CommunicationDeterminismChecker::run()
   XBT_INFO("Check communication determinism");
   mc_model_checker->wait_for_requests();
 
-  if (mc_mode == MC_MODE_CLIENT)
-    // This will move somehwere else:
-    simgrid::mc::Client::get()->handleMessages();
-
   this->prepare();
 
   initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
