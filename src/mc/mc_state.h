@@ -65,7 +65,7 @@ struct XBT_PRIVATE State {
   int num = 0;
   int in_visited_states = 0;
 
-  // comm determinism verification (xbt_dynar_t<xbt_dynar_t<mc_comm_pattern_t>):
+  // comm determinism verification (xbt_dynar_t<xbt_dynar_t<simgrid::mc::PatternCommunication*>):
   xbt_dynar_t incomplete_comm_pattern = nullptr;
 
   // For communication determinism verification:

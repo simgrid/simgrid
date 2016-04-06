@@ -22,9 +22,10 @@
 
 #include "src/mc/mc_state.h"
 
-SG_BEGIN_DECL()
+namespace simgrid {
+namespace mc {
 
-typedef struct s_mc_comm_pattern{
+struct PatternCommunication {
   int num = 0;
   smx_synchro_t comm_addr;
   e_smx_comm_type_t type = SIMIX_COMM_SEND;
@@ -37,27 +38,32 @@ typedef struct s_mc_comm_pattern{
   int tag = 0;
   int index = 0;
 
-  s_mc_comm_pattern()
+  PatternCommunication()
   {
     std::memset(&comm_addr, 0, sizeof(comm_addr));
   }
 
   // No copy:
-  s_mc_comm_pattern(s_mc_comm_pattern const&) = delete;
-  s_mc_comm_pattern& operator=(s_mc_comm_pattern const&) = delete;
+  PatternCommunication(PatternCommunication const&) = delete;
+  PatternCommunication& operator=(PatternCommunication const&) = delete;
 
-} s_mc_comm_pattern_t, *mc_comm_pattern_t;
+};
 
-typedef struct s_mc_list_comm_pattern{
+struct PatternCommunicationList {
   unsigned int index_comm = 0;
   xbt_dynar_t list = nullptr;
 
-  s_mc_list_comm_pattern() {}
-  ~s_mc_list_comm_pattern()
+  PatternCommunicationList() {}
+  ~PatternCommunicationList()
   {
     xbt_dynar_free(&(this->list));
   }
-}s_mc_list_comm_pattern_t, *mc_list_comm_pattern_t;
+};
+
+}
+}
+
+SG_BEGIN_DECL()
 
 /**
  *  Type: `xbt_dynar_t<mc_list_comm_pattenr_t>`
@@ -65,7 +71,7 @@ typedef struct s_mc_list_comm_pattern{
 extern XBT_PRIVATE xbt_dynar_t initial_communications_pattern;
 
 /**
- *  Type: `xbt_dynar_t<xbt_dynar_t<mc_comm_pattern_t>>`
+ *  Type: `xbt_dynar_t<xbt_dynar_t<simgrid::mc::PatternCommunication*>>`
  */
 extern XBT_PRIVATE xbt_dynar_t incomplete_communications_pattern;
 
@@ -110,7 +116,7 @@ XBT_PRIVATE void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_a
 
 XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 
-XBT_PRIVATE mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm);
+XBT_PRIVATE simgrid::mc::PatternCommunication* MC_comm_pattern_dup(simgrid::mc::PatternCommunication* comm);
 XBT_PRIVATE xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t state);
 
 XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state);

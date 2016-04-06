@@ -21,9 +21,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_pattern, mc,
 
 extern "C" {
 
-mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
+simgrid::mc::PatternCommunication* MC_comm_pattern_dup(simgrid::mc::PatternCommunication* comm)
 {
-  mc_comm_pattern_t res = new s_mc_comm_pattern_t();
+  simgrid::mc::PatternCommunication* res = new simgrid::mc::PatternCommunication();
   res->index = comm->index;
   res->type = comm->type;
   res->comm_addr = comm->comm_addr;
@@ -36,12 +36,12 @@ mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
 
 xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t patterns)
 {
-  xbt_dynar_t res = simgrid::xbt::newDeleteDynar<s_mc_comm_pattern_t>();
+  xbt_dynar_t res = simgrid::xbt::newDeleteDynar<simgrid::mc::PatternCommunication>();
 
-  mc_comm_pattern_t comm;
+  simgrid::mc::PatternCommunication* comm;
   unsigned int cursor;
   xbt_dynar_foreach(patterns, cursor, comm) {
-    mc_comm_pattern_t copy_comm = MC_comm_pattern_dup(comm);
+    simgrid::mc::PatternCommunication* copy_comm = MC_comm_pattern_dup(comm);
     xbt_dynar_push(res, &copy_comm);
   }
 
@@ -53,16 +53,16 @@ static void MC_patterns_copy(xbt_dynar_t dest, xbt_dynar_t source)
   xbt_dynar_reset(dest);
 
   unsigned int cursor;
-  mc_comm_pattern_t comm;
+  simgrid::mc::PatternCommunication* comm;
   xbt_dynar_foreach(source, cursor, comm) {
-    mc_comm_pattern_t copy_comm = MC_comm_pattern_dup(comm);
+    simgrid::mc::PatternCommunication* copy_comm = MC_comm_pattern_dup(comm);
     xbt_dynar_push(dest, &copy_comm);
   }
 }
 
 void MC_restore_communications_pattern(simgrid::mc::State* state)
 {
-  mc_list_comm_pattern_t list_process_comm;
+  simgrid::mc::PatternCommunicationList* list_process_comm;
   unsigned int cursor;
 
   xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm)
@@ -89,7 +89,7 @@ void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state)
 void MC_state_copy_index_communications_pattern(simgrid::mc::State* state)
 {
   state->communicationIndices.clear();
-  mc_list_comm_pattern_t list_process_comm;
+  simgrid::mc::PatternCommunicationList* list_process_comm;
   unsigned int cursor;
   xbt_dynar_foreach(initial_communications_pattern, cursor, list_process_comm)
     state->communicationIndices.push_back(list_process_comm->index_comm);
