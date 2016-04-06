@@ -30,9 +30,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
 simgrid::mc::State* MC_state_new()
 {
   simgrid::mc::State* state = new simgrid::mc::State();
-  std::memset(&state->internal_comm, 0, sizeof(state->internal_comm));
-  std::memset(&state->internal_req, 0, sizeof(state->internal_req));
-  std::memset(&state->executed_req, 0, sizeof(state->executed_req));
   state->processStates.resize(MC_smx_get_maxpid());
   state->num = ++mc_stats->expanded_states;
   /* Stateful model checking */
@@ -56,11 +53,6 @@ State::State()
   std::memset(&this->executed_req, 0, sizeof(this->executed_req));
 }
 
-State::~State()
-{
-  xbt_free(this->incomplete_comm_pattern);
-}
-
 std::size_t State::interleaveSize() const
 {
   return std::count_if(this->processStates.begin(), this->processStates.end(),
@@ -75,12 +67,6 @@ void MC_state_interleave_process(simgrid::mc::State* state, smx_process_t proces
   assert(state);
   state->processStates[process->pid].state = simgrid::mc::ProcessInterleaveState::interleave;
   state->processStates[process->pid].interleave_count = 0;
-}
-
-void MC_state_remove_interleave_process(simgrid::mc::State* state, smx_process_t process)
-{
-  if (state->processStates[process->pid].state == simgrid::mc::ProcessInterleaveState::interleave)
-    state->processStates[process->pid].state = simgrid::mc::ProcessInterleaveState::done;
 }
 
 void MC_state_set_executed_request(simgrid::mc::State* state, smx_simcall_t req,

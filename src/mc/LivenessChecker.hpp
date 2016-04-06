@@ -16,7 +16,6 @@
 
 #include <simgrid_config.h>
 #include <xbt/base.h>
-#include <xbt/dynar.h>
 #include <xbt/automaton.h>
 #include <xbt/memory.hpp>
 #include "src/mc/mc_state.h"

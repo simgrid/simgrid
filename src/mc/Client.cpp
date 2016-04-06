@@ -14,6 +14,7 @@
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 #include <xbt/mmalloc.h>
+#include <xbt/swag.h>
 
 #include "src/internal_config.h"
 
@@ -67,7 +68,7 @@ Client* Client::initialize()
   client_ = std::unique_ptr<Client>(new simgrid::mc::Client(fd));
 
   // Wait for the model-checker:
-  if (ptrace(PTRACE_TRACEME, 0, nullptr, NULL) == -1 || raise(SIGSTOP) != 0)
+  if (ptrace(PTRACE_TRACEME, 0, nullptr, nullptr) == -1 || raise(SIGSTOP) != 0)
     xbt_die("Could not wait for the model-checker");
 
   client_->handleMessages();

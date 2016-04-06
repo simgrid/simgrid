@@ -7,7 +7,9 @@
 #include <cassert>
 #include <cstdio>
 
-#include <list>
+#include <memory>
+#include <string>
+#include <vector>
 
 #include <xbt/log.h>
 #include <xbt/sysdep.h>

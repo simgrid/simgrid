@@ -13,6 +13,10 @@
 
 #include <vector>
 
+#include <xbt/dynar.h>
+#include <xbt/automaton.h>
+#include <xbt/swag.h>
+
 #include "mc_base.h"
 
 #include "mc/mc.h"
@@ -145,7 +149,7 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
     assert(n == xbt_dynar_length(initial_communications_pattern));
     for (unsigned j=0; j < n ; j++) {
       xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
-      xbt_dynar_get_as(initial_communications_pattern, j, mc_list_comm_pattern_t)->index_comm = 0;
+      xbt_dynar_get_as(initial_communications_pattern, j, simgrid::mc::PatternCommunicationList*)->index_comm = 0;
     }
   }
 

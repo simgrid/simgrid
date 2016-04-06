@@ -146,9 +146,9 @@ static int compare_areas_with_type(ComparisonState& state,
 
     if (type->subtype && type->subtype->type == DW_TAG_subroutine_type)
       return (addr_pointed1 != addr_pointed2);
-    if (addr_pointed1 == nullptr && addr_pointed2 == NULL)
+    if (addr_pointed1 == nullptr && addr_pointed2 == nullptr)
       return 0;
-    if (addr_pointed1 == nullptr || addr_pointed2 == NULL)
+    if (addr_pointed1 == nullptr || addr_pointed2 == nullptr)
       return 1;
     if (!state.compared_pointers.insert(
         std::make_pair(addr_pointed1, addr_pointed2)).second)

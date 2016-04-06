@@ -998,11 +998,11 @@ void read_dwarf_info(simgrid::mc::ObjectInformation* info, Dwarf* dwarf)
   Dwarf_Off next_offset = 0;
   size_t length;
 
-  while (dwarf_nextcu(dwarf, offset, &next_offset, &length, nullptr, NULL, NULL) ==
+  while (dwarf_nextcu(dwarf, offset, &next_offset, &length, nullptr, nullptr, nullptr) ==
          0) {
     Dwarf_Die unit_die;
     if (dwarf_offdie(dwarf, offset + length, &unit_die) != nullptr)
-      MC_dwarf_handle_children(info, &unit_die, &unit_die, nullptr, NULL);
+      MC_dwarf_handle_children(info, &unit_die, &unit_die, nullptr, nullptr);
     offset = next_offset;
   }
 }

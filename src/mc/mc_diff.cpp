@@ -16,6 +16,8 @@
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/Type.hpp"
 
+#include <xbt/dynar.h>
+
 using simgrid::mc::remote;
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
@@ -378,7 +380,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
           res_compare =
               compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2, snapshot1, snapshot2,
-                                nullptr, NULL, 0);
+                                nullptr, nullptr, 0);
 
           if (res_compare != 1) {
             for (k = 1; k < heapinfo2->busy_block.size; k++)
@@ -417,7 +419,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
         res_compare =
             compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2, snapshot1, snapshot2,
-                              nullptr, NULL, 0);
+                              nullptr, nullptr, 0);
 
         if (res_compare != 1) {
           for (k = 1; k < heapinfo2b->busy_block.size; k++)
@@ -469,7 +471,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
             res_compare =
                 compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2, snapshot1, snapshot2,
-                                  nullptr, NULL, 0);
+                                  nullptr, nullptr, 0);
 
             if (res_compare != 1)
               equal = 1;
@@ -517,7 +519,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
             res_compare =
                 compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2, snapshot2, snapshot2,
-                                  nullptr, NULL, 0);
+                                  nullptr, nullptr, 0);
 
             if (res_compare != 1) {
               equal = 1;
@@ -1021,7 +1023,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
   int type_size = -1;
   int offset1 = 0, offset2 = 0;
   int new_size1 = -1, new_size2 = -1;
-  simgrid::mc::Type *new_type1 = nullptr, *new_type2 = NULL;
+  simgrid::mc::Type *new_type1 = nullptr, *new_type2 = nullptr;
 
   int match_pairs = 0;
 
@@ -1305,7 +1307,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
         return -1;
       }
 
-      if (new_type1 != nullptr && new_type2 != NULL && new_type1 != new_type2) {
+      if (new_type1 != nullptr && new_type2 != nullptr && new_type1 != new_type2) {
 
         type = new_type1;
         while (type->byte_size == 0 && type->subtype != nullptr)

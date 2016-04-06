@@ -12,7 +12,6 @@
 #include <sstream>
 #include <string>
 
-#include <xbt/fifo.h>
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
 
