@@ -22,10 +22,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 xbt_cfg_t simgrid_config = NULL;
+static void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type, xbt_cfg_cb_t cb_set);
 
-/* xbt_cfgelm_t: the typedef corresponding to a config variable.
-
-   Both data and DTD are mixed, but fixing it now would prevent me to ever defend my thesis. */
+/* xbt_cfgelm_t: the typedef corresponding to a config variable. */
 
 typedef struct {
   /* Description */
@@ -33,7 +32,6 @@ typedef struct {
 
   /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
-  int min;
   unsigned isdefault:1;
 
   /* Callbacks */
@@ -43,7 +41,7 @@ typedef struct {
   xbt_dynar_t content;
 } s_xbt_cfgelm_t, *xbt_cfgelm_t;
 
-static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count] = { "int", "double", "string", "boolean", "any" };
+static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count] = { "int", "double", "string", "boolean", "any", "outofbound" };
 
 const struct xbt_boolean_couple xbt_cfgelm_boolean_values[] = {
   { "yes",    "no"},
@@ -86,9 +84,8 @@ void xbt_cfg_cpy(xbt_cfg_t tocopy, xbt_cfg_t * whereto)
   *whereto = NULL;
   xbt_assert(tocopy, "cannot copy NULL config");
 
-  xbt_dict_foreach((xbt_dict_t) tocopy, cursor, name, variable) {
-    xbt_cfg_register(whereto, name, variable->desc, variable->type, variable->min, variable->cb_set);
-  }
+  xbt_dict_foreach((xbt_dict_t) tocopy, cursor, name, variable)
+    xbt_cfg_register(whereto, name, variable->desc, variable->type, variable->cb_set);
 }
 
 /** @brief Destructor */
@@ -123,8 +120,8 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
     printf("%s  %s:", indent, key);
 
     size = xbt_dynar_length(variable->content);
-    printf ("%d_%s. Actual size=%d. postset=%p, List of values:\n",
-            variable->min, xbt_cfgelm_type_name[variable->type], size, variable->cb_set);
+    printf ("%s. Actual size=%d. postset=%p, List of values:\n",
+            xbt_cfgelm_type_name[variable->type], size, variable->cb_set);
 
     switch (variable->type) {
     case xbt_cfgelm_int:
@@ -190,10 +187,9 @@ void xbt_cfgelm_free(void *data)
  *  @param name the name of the config element
  *  @param desc a description for this item (used by xbt_cfg_help())
  *  @param type the type of the config element
- *  @param min the minimum number of values for this config element (0 for optional elements)
  *  @param cb_set callback function called when a value is set
  */
-void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type, int min, xbt_cfg_cb_t cb_set)
+static void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type, xbt_cfg_cb_t cb_set)
 {
   if (*cfg == NULL)
     *cfg = xbt_cfg_new();
@@ -205,12 +201,11 @@ void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt
   xbt_assert(NULL == res, "Refusing to register the config element '%s' twice.", name);
 
   res = xbt_new(s_xbt_cfgelm_t, 1);
-  XBT_DEBUG("Register cfg elm %s (%s) (%d %s (=%d) @%p in set %p)",
-            name, desc, min, xbt_cfgelm_type_name[type], (int)type, res, *cfg);
+  XBT_DEBUG("Register cfg elm %s (%s) (%s (=%d) @%p in set %p)",
+            name, desc, xbt_cfgelm_type_name[type], (int)type, res, *cfg);
 
   res->desc = xbt_strdup(desc);
   res->type = type;
-  res->min = min;
   res->cb_set = cb_set;
   res->isdefault = 1;
 
@@ -235,19 +230,19 @@ void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt
 }
 
 void xbt_cfg_register_double(const char *name, const char *desc, double default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,1,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,cb_set);
   xbt_cfg_setdefault_double(name, default_value);
 }
 void xbt_cfg_register_int(const char *name, const char *desc, int default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,1,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,cb_set);
   xbt_cfg_setdefault_int(name, default_value);
 }
 void xbt_cfg_register_string(const char *name, const char *desc, const char *default_value, xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,1,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,cb_set);
   xbt_cfg_setdefault_string(name, default_value);
 }
 void xbt_cfg_register_boolean(const char *name, const char *desc, const char*default_value,xbt_cfg_cb_t cb_set){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,1,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,cb_set);
   xbt_cfg_setdefault_boolean(name, default_value);
 }
 
@@ -267,7 +262,6 @@ void xbt_cfg_register_alias(const char *newname, const char *oldname)
 
   res->desc = bprintf("Deprecated alias for %s",newname);
   res->type = xbt_cfgelm_alias;
-  res->min = 1;
   res->isdefault = 1;
   res->content = (xbt_dynar_t)newname;
 
@@ -281,8 +275,8 @@ void xbt_cfg_register_alias(const char *newname, const char *oldname)
  * @param entry a string describing the element to register
  *
  * The string may consist in several variable descriptions separated by a space.
- * Each of them must use the following syntax: \<name\>:\<min nb\>_to_\<max nb\>_\<type\>
- * with type being one of  'string','int' or 'double'.
+ * Each of them must use the following syntax: \<name\>:\<type\>
+ * with type being one of  'string','int','bool' or 'double'.
  *
  * Note that this does not allow to set the description, so you should prefer the other interface
  */
@@ -291,32 +285,24 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
   char *entrycpy = xbt_strdup(entry);
   char *tok;
 
-  int min;
   e_xbt_cfgelm_type_t type;
   XBT_DEBUG("Register string '%s'", entry);
 
   tok = strchr(entrycpy, ':');
-  xbt_assert(tok, "Invalid config element descriptor: %s%s", entry, "; Should be <name>:<min nb>_to_<max nb>_<type>");
+  xbt_assert(tok, "Invalid config element descriptor: %s; Should be <name>:<type>", entry);
   *(tok++) = '\0';
 
-  min = strtol(tok, &tok, 10);
-  xbt_assert(tok, "Invalid minimum in config element descriptor %s", entry);
-
-  xbt_assert(*tok == '_', "Invalid config element descriptor: %s%s", entry,
-              "; Should be <name>:<min nb>_to_<max nb>_<type>");
-  tok++;
-
   for (type = (e_xbt_cfgelm_type_t)0; type < xbt_cfgelm_type_count && strcmp(tok, xbt_cfgelm_type_name[type]); type++);
-  xbt_assert(type < xbt_cfgelm_type_count, "Invalid type in config element descriptor: %s%s", entry,
-              "; Should be one of 'string', 'int' or 'double'.");
+  xbt_assert(type < xbt_cfgelm_type_count,
+      "Invalid type in config element descriptor: %s; Should be one of 'string', 'int' or 'double'.", entry);
 
-  xbt_cfg_register(cfg, entrycpy, NULL, type, min, NULL);
+  xbt_cfg_register(cfg, entrycpy, NULL, type, NULL);
 
   free(entrycpy);               /* strdup'ed by dict mechanism, but cannot be const */
 }
 
 /** @brief Displays the declared aliases and their description */
-void xbt_cfg_aliases(xbt_cfg_t cfg)
+void xbt_cfg_aliases(void)
 {
   xbt_dict_cursor_t dict_cursor;
   unsigned int dynar_cursor;
@@ -324,12 +310,12 @@ void xbt_cfg_aliases(xbt_cfg_t cfg)
   char *name;
   xbt_dynar_t names = xbt_dynar_new(sizeof(char *), NULL);
 
-  xbt_dict_foreach((xbt_dict_t )cfg, dict_cursor, name, variable)
+  xbt_dict_foreach((xbt_dict_t )simgrid_config, dict_cursor, name, variable)
     xbt_dynar_push(names, &name);
   xbt_dynar_sort_strings(names);
 
   xbt_dynar_foreach(names, dynar_cursor, name) {
-    variable = xbt_dict_get((xbt_dict_t )cfg, name);
+    variable = xbt_dict_get((xbt_dict_t )simgrid_config, name);
 
     if (variable->type == xbt_cfgelm_alias)
       printf("   %s: %s\n", name, variable->desc);
@@ -337,7 +323,7 @@ void xbt_cfg_aliases(xbt_cfg_t cfg)
 }
 
 /** @brief Displays the declared options and their description */
-void xbt_cfg_help(xbt_cfg_t cfg)
+void xbt_cfg_help(void)
 {
   xbt_dict_cursor_t dict_cursor;
   unsigned int dynar_cursor;
@@ -345,27 +331,24 @@ void xbt_cfg_help(xbt_cfg_t cfg)
   char *name;
   xbt_dynar_t names = xbt_dynar_new(sizeof(char *), NULL);
 
-  xbt_dict_foreach((xbt_dict_t )cfg, dict_cursor, name, variable)
+  xbt_dict_foreach((xbt_dict_t )simgrid_config, dict_cursor, name, variable)
     xbt_dynar_push(names, &name);
   xbt_dynar_sort_strings(names);
 
   xbt_dynar_foreach(names, dynar_cursor, name) {
-    int i;
     int size;
-    variable = xbt_dict_get((xbt_dict_t )cfg, name);
+    variable = xbt_dict_get((xbt_dict_t )simgrid_config, name);
     if (variable->type == xbt_cfgelm_alias)
       continue;
 
     printf("   %s: %s\n", name, variable->desc);
     printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
-    if (variable->min != 1)
-      printf("Arity: min:%d", variable->min);
     size = xbt_dynar_length(variable->content);
-    printf("Current value%s: ", (size <= 1 ? "" : "s"));
+    printf("Current value: ");
 
     if (size != 1)
       printf(size == 0 ? "n/a\n" : "{ ");
-    for (i = 0; i < size; i++) {
+    for (int i = 0; i < size; i++) {
       const char *sep = (size == 1 ? "\n" : (i < size - 1 ? ", " : " }\n"));
 
       switch (variable->type) {
@@ -396,33 +379,6 @@ void xbt_cfg_help(xbt_cfg_t cfg)
   xbt_dynar_free(&names);
 }
 
-/** @brief Check that each variable have the right amount of values */
-void xbt_cfg_check(void)
-{
-  xbt_dict_cursor_t cursor;
-  xbt_cfgelm_t variable;
-  char *name;
-
-  xbt_dict_foreach((xbt_dict_t) simgrid_config, cursor, name, variable) {
-    if (variable->type == xbt_cfgelm_alias)
-      continue;
-
-    int size = xbt_dynar_length(variable->content);
-    if (variable->min > size) {
-      xbt_dict_cursor_free(&cursor);
-      THROWF(mismatch_error, 0, "Config elem %s needs at least %d %s, but there is only %d values.",
-             name, variable->min, xbt_cfgelm_type_name[variable->type], size);
-    }
-
-    if (variable->isdefault && size > variable->min) {
-      xbt_dict_cursor_free(&cursor);
-      THROWF(mismatch_error, 0, "Config elem %s theoretically accepts %d %s, but has a default of %d values.",
-             name, variable->min, xbt_cfgelm_type_name[variable->type], size);
-    }
-  }
-  xbt_dict_cursor_free(&cursor);
-}
-
 static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name, e_xbt_cfgelm_type_t type)
 {
   xbt_cfgelm_t res = xbt_dict_get_or_null((xbt_dict_t) cfg, name);
@@ -435,7 +391,7 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name, e_xbt_cfgelm
   }
 
   if (!res) {
-    xbt_cfg_help(cfg);
+    xbt_cfg_help();
     fflush(stdout);
     THROWF(not_found_error, 0, "No registered variable '%s' in this config set.", name);
   }
@@ -479,7 +435,7 @@ void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
   char *str;
   int i;
   double d;
-  e_xbt_cfgelm_type_t type = xbt_cfgelm_any; /* Set a dummy value to make gcc happy. It cannot get uninitialized */
+  e_xbt_cfgelm_type_t type = xbt_cfgelm_type_count; /* Set a dummy value to make gcc happy. It cannot get uninitialized */
 
   xbt_ex_t e;
 
@@ -977,9 +933,9 @@ static xbt_cfg_t make_set()
   xbt_cfg_t set = NULL;
 
   xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg), xbt_log_priority_critical);
-  xbt_cfg_register_str(&set, "speed:1_int");
-  xbt_cfg_register_str(&set, "peername:1_string");
-  xbt_cfg_register_str(&set, "user:1_string");
+  xbt_cfg_register_str(&set, "speed:int");
+  xbt_cfg_register_str(&set, "peername:string");
+  xbt_cfg_register_str(&set, "user:string");
 
   return set;
 }                               /* end_of_make_set */
@@ -991,35 +947,6 @@ XBT_TEST_UNIT("memuse", test_config_memuse, "Alloc and free a config set")
   simgrid_config = make_set();
   xbt_test_add("Alloc and free a config set");
   xbt_cfg_set_parse("peername:veloce user:bidule");
-  xbt_cfg_free(&simgrid_config);
-}
-
-XBT_TEST_UNIT("validation", test_config_validation, "Validation tests")
-{
-  xbt_ex_t e;
-
-  simgrid_config = make_set();
-  xbt_test_add("Having too few elements for speed");
-  xbt_cfg_set_parse("peername:veloce user:mquinson\nuser:oaumage\tuser:alegrand");
-  TRY {
-    xbt_cfg_check();
-  } CATCH(e) {
-    if (e.category != mismatch_error || strncmp(e.msg, "Config elem speed needs", strlen("Config elem speed needs")))
-      xbt_test_fail("Got an exception. msg=%s", e.msg);
-    xbt_ex_free(e);
-  }
-
-  xbt_test_add("Having too much values of 'speed'");
-  xbt_cfg_set_parse("peername:toto:42 user:machin");
-  TRY {
-    xbt_cfg_set_parse("speed:42 speed:24");
-  } CATCH(e) {
-    if (e.category != mismatch_error ||
-        strncmp(e.msg, "Cannot add value 34 to the config elem speed", strlen("Config elem speed needs")))
-      xbt_test_fail("Got an exception. msg=%s", e.msg);
-    xbt_ex_free(e);
-  }
-  xbt_cfg_check();
   xbt_cfg_free(&simgrid_config);
 }
 

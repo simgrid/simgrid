@@ -61,7 +61,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--cfg-help") || !strcmp(argv[i], "--help")) {
       printf("Description of the configuration accepted by this simulator:\n");
-      xbt_cfg_help(simgrid_config);
+      xbt_cfg_help();
       printf(
           "\n"
           "Each of these configurations can be used by adding\n"
@@ -79,7 +79,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-aliases")) {
       printf("Here is a list of all deprecated option names, with their replacement.\n");
-      xbt_cfg_aliases(simgrid_config);
+      xbt_cfg_aliases();
       printf("Please consider using the recent names\n");
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-models")) {
@@ -118,6 +118,9 @@ static void _sg_cfg_cb__plugin(const char *name, int pos)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot load a plugin after the initialization");
 
   char *val = xbt_cfg_get_string(name);
+  if (val==nullptr)
+    return;
+
   if (!strcmp(val, "help")) {
     model_help("plugin", surf_plugin_description);
     sg_cfg_exit_early();
@@ -472,7 +475,7 @@ void sg_config_init(int *argc, char **argv)
 
     /* Plugins configuration */
     describe_model(description, surf_plugin_description, "plugin", "The plugins");
-    xbt_cfg_register(&simgrid_config, "plugin", description, xbt_cfgelm_string, 0, &_sg_cfg_cb__plugin);
+    xbt_cfg_register_string("plugin", description, nullptr, &_sg_cfg_cb__plugin);
 
     describe_model(description, surf_cpu_model_description, "model", "The model to use for the CPU");
     xbt_cfg_register_string("cpu/model", description, "Cas01", &_sg_cfg_cb__cpu_model);
@@ -527,7 +530,7 @@ void sg_config_init(int *argc, char **argv)
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
         "no", NULL);
     /* Replay (this part is enabled even if MC it disabled) */
-    xbt_cfg_register(&simgrid_config, "model-check/replay", "Enable replay mode with the given path", xbt_cfgelm_string, 0, _sg_cfg_cb_model_check_replay);
+    xbt_cfg_register_string("model-check/replay", "Enable replay mode with the given path", nullptr, _sg_cfg_cb_model_check_replay);
 
 #if HAVE_MC
     /* do model-checking-record */
@@ -687,7 +690,6 @@ void sg_config_init(int *argc, char **argv)
       xbt_cfg_setdefault_string("path", initial_path);
     }
 
-    xbt_cfg_check();
     _sg_cfg_init_status = 1;
 
     sg_config_cmd_line(argc, argv);

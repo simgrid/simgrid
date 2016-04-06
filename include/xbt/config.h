@@ -147,8 +147,6 @@ XBT_PUBLIC(void) xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cf
  *
  *  @{
  */
-XBT_PUBLIC(void) xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *description,
-    e_xbt_cfgelm_type_t type, int min, xbt_cfg_cb_t cb_set);
 XBT_PUBLIC(void) xbt_cfg_register_double (const char *name, const char *desc, double default_val,    xbt_cfg_cb_t cb_set);
 XBT_PUBLIC(void) xbt_cfg_register_int    (const char *name, const char *desc, int default_val,       xbt_cfg_cb_t cb_set);
 XBT_PUBLIC(void) xbt_cfg_register_string (const char *name, const char *desc, const char*default_val,xbt_cfg_cb_t cb_set);
@@ -156,9 +154,8 @@ XBT_PUBLIC(void) xbt_cfg_register_boolean(const char *name, const char *desc, co
 XBT_PUBLIC(void) xbt_cfg_register_alias(const char *newname, const char *oldname);
 XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);
 
-XBT_PUBLIC(void) xbt_cfg_aliases(xbt_cfg_t cfg);
-XBT_PUBLIC(void) xbt_cfg_help(xbt_cfg_t cfg);
-XBT_PUBLIC(void) xbt_cfg_check(void);
+XBT_PUBLIC(void) xbt_cfg_aliases(void);
+XBT_PUBLIC(void) xbt_cfg_help(void);
 XBT_PUBLIC(e_xbt_cfgelm_type_t) xbt_cfg_get_type(xbt_cfg_t cfg, const char *name);
 /*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values
