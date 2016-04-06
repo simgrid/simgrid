@@ -181,8 +181,10 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
 
 void tmgr_finalize(void)
 {
-  for (auto kv : trace_list)
+  for (auto kv : trace_list) {
+    xbt_free((char*)kv.first);
     delete kv.second;
+  }
 }
 
 void tmgr_trace_event_unref(tmgr_trace_iterator_t *trace_event)
