@@ -119,10 +119,8 @@ static void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunic
     xbt_dynar_get_as(initial_communications_pattern, process, simgrid::mc::PatternCommunicationList*);
 
   if(!backtracking){
-    simgrid::mc::PatternCommunication* initial_comm =
-      xbt_dynar_get_as(list->list, list->index_comm, simgrid::mc::PatternCommunication*);
     e_mc_comm_pattern_difference_t diff =
-      compare_comm_pattern(initial_comm, comm);
+      compare_comm_pattern(list->list[list->index_comm].get(), comm);
 
     if (diff != NONE_DIFF) {
       if (comm->type == SIMIX_COMM_SEND){
@@ -162,9 +160,6 @@ static void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunic
       }
     }
   }
-
-  delete comm;
-
 }
 
 /********** Non Static functions ***********/
@@ -177,7 +172,9 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
   xbt_dynar_t incomplete_pattern = xbt_dynar_get_as(
     incomplete_communications_pattern, issuer->pid, xbt_dynar_t);
 
-  simgrid::mc::PatternCommunication* pattern = new simgrid::mc::PatternCommunication();
+  std::unique_ptr<simgrid::mc::PatternCommunication> pattern =
+    std::unique_ptr<simgrid::mc::PatternCommunication>(
+      new simgrid::mc::PatternCommunication());
   pattern->index =
     initial_pattern->index_comm + xbt_dynar_length(incomplete_pattern);
 
@@ -209,14 +206,13 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     if(mpi_request.detached){
       if (!simgrid::mc::initial_global_state->initial_communications_pattern_done) {
         /* Store comm pattern */
-        xbt_dynar_push(
-          xbt_dynar_get_as(
-            initial_communications_pattern, pattern->src_proc, simgrid::mc::PatternCommunicationList*
-          )->list,
-          &pattern);
+        simgrid::mc::PatternCommunicationList* list = xbt_dynar_get_as(
+          initial_communications_pattern, pattern->src_proc,
+          simgrid::mc::PatternCommunicationList*);
+        list->list.push_back(std::move(pattern));
       } else {
         /* Evaluate comm determinism */
-        deterministic_comm_pattern(pattern->src_proc, pattern, backtracking);
+        deterministic_comm_pattern(pattern->src_proc, pattern.get(), backtracking);
         xbt_dynar_get_as(
           initial_communications_pattern, pattern->src_proc, simgrid::mc::PatternCommunicationList*
         )->index_comm++;
@@ -244,17 +240,18 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
   } else
     xbt_die("Unexpected call_type %i", (int) call_type);
 
-  xbt_dynar_push(
-    xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid, xbt_dynar_t),
-    &pattern);
-
-  XBT_DEBUG("Insert incomplete comm pattern %p for process %lu", pattern, issuer->pid);
+  XBT_DEBUG("Insert incomplete comm pattern %p for process %lu",
+    pattern.get(), issuer->pid);
+  xbt_dynar_t dynar =
+    xbt_dynar_get_as(incomplete_communications_pattern, issuer->pid, xbt_dynar_t);
+  simgrid::mc::PatternCommunication* pattern2 = pattern.release();
+  xbt_dynar_push(dynar, &pattern2);
 }
 
 void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigned int issuer, int backtracking) {
   simgrid::mc::PatternCommunication* current_comm_pattern;
   unsigned int cursor = 0;
-  simgrid::mc::PatternCommunication* comm_pattern;
+  std::unique_ptr<simgrid::mc::PatternCommunication> comm_pattern;
   int completed = 0;
 
   /* Complete comm pattern */
@@ -262,9 +259,11 @@ void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigne
     if (current_comm_pattern->comm_addr == comm_addr) {
       update_comm_pattern(current_comm_pattern, comm_addr);
       completed = 1;
+      simgrid::mc::PatternCommunication* temp;
       xbt_dynar_remove_at(
         xbt_dynar_get_as(incomplete_communications_pattern, issuer, xbt_dynar_t),
-        cursor, &comm_pattern);
+        cursor, &temp);
+      comm_pattern = std::unique_ptr<simgrid::mc::PatternCommunication>(temp);
       XBT_DEBUG("Remove incomplete comm pattern for process %u at cursor %u", issuer, cursor);
       break;
     }
@@ -277,10 +276,10 @@ void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigne
 
   if (!simgrid::mc::initial_global_state->initial_communications_pattern_done)
     /* Store comm pattern */
-    xbt_dynar_push(pattern->list, &comm_pattern);
+    pattern->list.push_back(std::move(comm_pattern));
   else {
     /* Evaluate comm determinism */
-    deterministic_comm_pattern(issuer, comm_pattern, backtracking);
+    deterministic_comm_pattern(issuer, comm_pattern.get(), backtracking);
     pattern->index_comm++;
   }
 }
@@ -340,8 +339,6 @@ void CommunicationDeterminismChecker::prepare()
   initial_communications_pattern = simgrid::xbt::newDeleteDynar<simgrid::mc::PatternCommunicationList*>();
   for (i=0; i < maxpid; i++){
     simgrid::mc::PatternCommunicationList* process_list_pattern = new simgrid::mc::PatternCommunicationList();
-    process_list_pattern->list = simgrid::xbt::newDeleteDynar<simgrid::mc::PatternCommunication>();
-    process_list_pattern->index_comm = 0;
     xbt_dynar_insert_at(initial_communications_pattern, i, &process_list_pattern);
   }
 

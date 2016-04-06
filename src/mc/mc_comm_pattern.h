@@ -27,13 +27,7 @@ namespace mc {
 
 struct PatternCommunicationList {
   unsigned int index_comm = 0;
-  xbt_dynar_t list = nullptr;
-
-  PatternCommunicationList() {}
-  ~PatternCommunicationList()
-  {
-    xbt_dynar_free(&(this->list));
-  }
+  std::vector<std::unique_ptr<simgrid::mc::PatternCommunication>> list;
 };
 
 }
