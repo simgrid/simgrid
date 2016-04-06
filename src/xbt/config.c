@@ -21,7 +21,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
-xbt_cfg_t simgrid_config = NULL;
+XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = NULL;
 static void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type, xbt_cfg_cb_t cb_set);
 
 /* xbt_cfgelm_t: the typedef corresponding to a config variable. */
