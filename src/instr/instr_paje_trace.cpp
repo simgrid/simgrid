@@ -141,7 +141,8 @@ void print_pajeDefineContainerType(paje_event_t event) {
 void print_pajeDefineVariableType(paje_event_t event) {
   print_paje_debug(__FUNCTION__, event);
   print_default_pajeType_row<defineVariableType_t>(event);
-  stream << " \"" << static_cast<defineVariableType_t>(event->data)->type->color << "\"";
+  if(static_cast<defineVariableType_t>(event->data)->type->color)
+    stream << " \"" << static_cast<defineVariableType_t>(event->data)->type->color << "\"";
   print_row();
 }
 
@@ -173,8 +174,9 @@ void print_pajeDefineEntityValue (paje_event_t event) {
   init_stream<defineEntityValue_t>(event);
   stream << " "   << static_cast<defineEntityValue_t>(event->data)->value->id
          << " "   << static_cast<defineEntityValue_t>(event->data)->value->father->id
-         << " "   << static_cast<defineEntityValue_t>(event->data)->value->name
-         << " \"" << static_cast<defineEntityValue_t>(event->data)->value->color << "\"";
+         << " "   << static_cast<defineEntityValue_t>(event->data)->value->name;
+  if(static_cast<defineEntityValue_t>(event->data)->value->color)
+    stream << " \"" << static_cast<defineEntityValue_t>(event->data)->value->color << "\"";
   print_row();
 }
 
