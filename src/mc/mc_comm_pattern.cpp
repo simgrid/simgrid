@@ -8,6 +8,7 @@
 
 #include <xbt/sysdep.h>
 #include <xbt/dynar.h>
+#include <xbt/dynar.hpp>
 
 #include "src/mc/mc_comm_pattern.h"
 #include "src/mc/mc_smx.h"
@@ -35,7 +36,7 @@ mc_comm_pattern_t MC_comm_pattern_dup(mc_comm_pattern_t comm)
 
 xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t patterns)
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(mc_comm_pattern_t), MC_comm_pattern_free_voidp);
+  xbt_dynar_t res = simgrid::xbt::newDeleteDynar<s_mc_comm_pattern_t>();
 
   mc_comm_pattern_t comm;
   unsigned int cursor;
@@ -126,22 +127,11 @@ void MC_handle_comm_pattern(
 
 }
 
-void MC_comm_pattern_free(mc_comm_pattern_t p)
-{  
-  delete p;
-  p = nullptr;
-}
-
 static void MC_list_comm_pattern_free(mc_list_comm_pattern_t l)
 {
   xbt_dynar_free(&(l->list));
   xbt_free(l);
   l = nullptr;
-}
-
-void MC_comm_pattern_free_voidp(void *p)
-{
-  MC_comm_pattern_free((mc_comm_pattern_t) * (void **) p);
 }
 
 void MC_list_comm_pattern_free_voidp(void *p)

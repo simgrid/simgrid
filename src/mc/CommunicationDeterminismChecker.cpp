@@ -163,7 +163,7 @@ static void deterministic_comm_pattern(int process, mc_comm_pattern_t comm, int 
     }
   }
 
-  MC_comm_pattern_free(comm);
+  delete comm;
 
 }
 
@@ -340,7 +340,7 @@ void CommunicationDeterminismChecker::prepare()
   initial_communications_pattern = xbt_dynar_new(sizeof(mc_list_comm_pattern_t), MC_list_comm_pattern_free_voidp);
   for (i=0; i < maxpid; i++){
     mc_list_comm_pattern_t process_list_pattern = xbt_new0(s_mc_list_comm_pattern_t, 1);
-    process_list_pattern->list = xbt_dynar_new(sizeof(mc_comm_pattern_t), MC_comm_pattern_free_voidp);
+    process_list_pattern->list = simgrid::xbt::newDeleteDynar<s_mc_comm_pattern_t>();
     process_list_pattern->index_comm = 0;
     xbt_dynar_insert_at(initial_communications_pattern, i, &process_list_pattern);
   }
