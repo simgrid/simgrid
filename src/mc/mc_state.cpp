@@ -30,9 +30,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
 simgrid::mc::State* MC_state_new()
 {
   simgrid::mc::State* state = new simgrid::mc::State();
-  std::memset(&state->internal_comm, 0, sizeof(state->internal_comm));
-  std::memset(&state->internal_req, 0, sizeof(state->internal_req));
-  std::memset(&state->executed_req, 0, sizeof(state->executed_req));
   state->processStates.resize(MC_smx_get_maxpid());
   state->num = ++mc_stats->expanded_states;
   /* Stateful model checking */
