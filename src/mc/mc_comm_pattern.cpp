@@ -127,16 +127,4 @@ void MC_handle_comm_pattern(
 
 }
 
-static void MC_list_comm_pattern_free(mc_list_comm_pattern_t l)
-{
-  xbt_dynar_free(&(l->list));
-  xbt_free(l);
-  l = nullptr;
-}
-
-void MC_list_comm_pattern_free_voidp(void *p)
-{
-  MC_list_comm_pattern_free((mc_list_comm_pattern_t) * (void **) p);
-}
-
 }

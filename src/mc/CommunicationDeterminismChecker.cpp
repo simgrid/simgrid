@@ -337,9 +337,9 @@ void CommunicationDeterminismChecker::prepare()
   const int maxpid = MC_smx_get_maxpid();
 
   // Create initial_communications_pattern elements:
-  initial_communications_pattern = xbt_dynar_new(sizeof(mc_list_comm_pattern_t), MC_list_comm_pattern_free_voidp);
+  initial_communications_pattern = simgrid::xbt::newDeleteDynar<mc_list_comm_pattern_t>();
   for (i=0; i < maxpid; i++){
-    mc_list_comm_pattern_t process_list_pattern = xbt_new0(s_mc_list_comm_pattern_t, 1);
+    mc_list_comm_pattern_t process_list_pattern = new s_mc_list_comm_pattern_t();
     process_list_pattern->list = simgrid::xbt::newDeleteDynar<s_mc_comm_pattern_t>();
     process_list_pattern->index_comm = 0;
     xbt_dynar_insert_at(initial_communications_pattern, i, &process_list_pattern);

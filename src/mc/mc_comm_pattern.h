@@ -49,8 +49,14 @@ typedef struct s_mc_comm_pattern{
 } s_mc_comm_pattern_t, *mc_comm_pattern_t;
 
 typedef struct s_mc_list_comm_pattern{
-  unsigned int index_comm;
-  xbt_dynar_t list;
+  unsigned int index_comm = 0;
+  xbt_dynar_t list = nullptr;
+
+  s_mc_list_comm_pattern() {}
+  ~s_mc_list_comm_pattern()
+  {
+    xbt_dynar_free(&(this->list));
+  }
 }s_mc_list_comm_pattern_t, *mc_list_comm_pattern_t;
 
 /**
@@ -100,7 +106,6 @@ static inline e_mc_call_type_t MC_get_call_type(smx_simcall_t req)
 
 XBT_PRIVATE void MC_get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking);
 XBT_PRIVATE void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern, int backtracking);
-XBT_PRIVATE void MC_list_comm_pattern_free_voidp(void *p);
 XBT_PRIVATE void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigned int issuer, int backtracking);
 
 XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
