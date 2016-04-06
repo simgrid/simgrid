@@ -102,7 +102,9 @@ if test "$(uname -o)" != "Msys"; then
   echo "XX"
   tar xzf `cat VERSION`.tar.gz
   cd `cat VERSION`
-  SRCFOLDER="."
+  mkdir build
+  cd build
+  SRCFOLDER=".."
 else
 #for windows we don't make dist, but we still want to build out of source
   SRCFOLDER=$WORKSPACE
