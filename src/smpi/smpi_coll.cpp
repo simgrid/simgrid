@@ -122,14 +122,13 @@ void coll_help(const char *category, s_mpi_coll_description_t * table)
 int find_coll_description(s_mpi_coll_description_t * table,
                            char *name, const char *desc)
 {
-  int i;
   char *name_list = NULL;
   int selector_on=0;
   if(name==NULL){//no argument provided, use active selector's algorithm
     name=(char*)sg_cfg_get_string("smpi/coll_selector");
     selector_on=1;
   }
-  for (i = 0; table[i].name; i++)
+  for (int i = 0; table[i].name; i++)
     if (!strcmp(name, table[i].name)) {
       if (strcmp(table[i].name,"default"))
         XBT_INFO("Switch to algorithm %s for collective %s",table[i].name,desc);
@@ -139,7 +138,7 @@ int find_coll_description(s_mpi_coll_description_t * table,
   if(selector_on){
     // collective seems not handled by the active selector, try with default one
     name=(char*)"default";
-    for (i = 0; table[i].name; i++)
+    for (int i = 0; table[i].name; i++)
       if (!strcmp(name, table[i].name)) {
         return i;
     }
@@ -147,7 +146,7 @@ int find_coll_description(s_mpi_coll_description_t * table,
   if (!table[0].name)
     xbt_die("No collective is valid for '%s'! This is a bug.",name);
   name_list = xbt_strdup(table[0].name);
-  for (i = 1; table[i].name; i++) {
+  for (int i = 1; table[i].name; i++) {
     name_list = static_cast<char*>(xbt_realloc(name_list,
                     strlen(name_list) + strlen(table[i].name) + 3));
     strcat(name_list, ", ");

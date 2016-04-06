@@ -150,14 +150,6 @@ void xbt_init(int *argc, char **argv)
   xbt_log_init(argc, argv);
 }
 
-/** @brief Finalize the xbt mechanisms.
- *  @warning this function is deprecated. Just don't call it, there is nothing more to do to finalize xbt*/
-void xbt_exit()
-{
-  XBT_WARN("This function is deprecated, you shouldn't use it");
-}
-
-
 /* these two functions belong to xbt/sysdep.h, which have no corresponding .c file */
 /** @brief like free, but you can be sure that it is a function  */
 void xbt_free_f(void *p)
