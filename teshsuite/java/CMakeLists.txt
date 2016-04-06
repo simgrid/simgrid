@@ -21,6 +21,6 @@ set(examples_src ${examples_src} ${sources}                                     
 set(tesh_files   ${tesh_files}                                                                 PARENT_SCOPE)
 
 if(enable_java)
-  ADD_TESH(tesh-java-SemaphoreGC  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/SemaphoreGC  SemaphoreGC.tesh)
-  ADD_TESH(tesh-java-SleepHostOff --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/SleepHostOff SleepHostOff.tesh)
+  ADD_TESH(tesh-java-SemaphoreGC  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/SemaphoreGC  ${CMAKE_HOME_DIRECTORY}/teshsuite/java/SemaphoreGC/SemaphoreGC.tesh)
+  ADD_TESH(tesh-java-SleepHostOff --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --setenv classpath=${TESH_CLASSPATH} --cd ${CMAKE_BINARY_DIR}/teshsuite/java/SleepHostOff ${CMAKE_HOME_DIRECTORY}/teshsuite/java/SleepHostOff/SleepHostOff.tesh)
 endif()
