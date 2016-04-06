@@ -69,12 +69,6 @@ void MC_state_interleave_process(simgrid::mc::State* state, smx_process_t proces
   state->processStates[process->pid].interleave_count = 0;
 }
 
-void MC_state_remove_interleave_process(simgrid::mc::State* state, smx_process_t process)
-{
-  if (state->processStates[process->pid].state == simgrid::mc::ProcessInterleaveState::interleave)
-    state->processStates[process->pid].state = simgrid::mc::ProcessInterleaveState::done;
-}
-
 void MC_state_set_executed_request(simgrid::mc::State* state, smx_simcall_t req,
                                    int value)
 {

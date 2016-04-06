@@ -124,6 +124,5 @@ XBT_PRIVATE void MC_state_set_executed_request(simgrid::mc::State* state, smx_si
 XBT_PRIVATE smx_simcall_t MC_state_get_executed_request(simgrid::mc::State* state, int *value);
 XBT_PRIVATE smx_simcall_t MC_state_get_internal_request(simgrid::mc::State* state);
 XBT_PRIVATE smx_simcall_t MC_state_get_request(simgrid::mc::State* state, int *value);
-XBT_PRIVATE void MC_state_remove_interleave_process(simgrid::mc::State* state, smx_process_t process);
 
 #endif
