@@ -940,7 +940,7 @@ static xbt_cfg_t make_set()
   return set;
 }                               /* end_of_make_set */
 
-extern xbt_cfg_t simgrid_config;
+XBT_PUBLIC_DATA(xbt_cfg_t) simgrid_config;
 
 XBT_TEST_UNIT("memuse", test_config_memuse, "Alloc and free a config set")
 {
