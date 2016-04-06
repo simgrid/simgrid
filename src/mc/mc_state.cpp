@@ -69,82 +69,6 @@ void MC_state_interleave_process(simgrid::mc::State* state, smx_process_t proces
   state->processStates[process->pid].interleave_count = 0;
 }
 
-void MC_state_set_executed_request(simgrid::mc::State* state, smx_simcall_t req,
-                                   int value)
-{
-  state->executed_req = *req;
-  state->req_num = value;
-
-  /* The waitany and testany request are transformed into a wait or test request over the
-   * corresponding communication action so it can be treated later by the dependence
-   * function. */
-  switch (req->call) {
-  case SIMCALL_COMM_WAITANY: {
-    state->internal_req.call = SIMCALL_COMM_WAIT;
-    state->internal_req.issuer = req->issuer;
-    smx_synchro_t remote_comm;
-    read_element(mc_model_checker->process(),
-      &remote_comm, remote(simcall_comm_waitany__get__comms(req)),
-      value, sizeof(remote_comm));
-    mc_model_checker->process().read(&state->internal_comm, remote(remote_comm));
-    simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
-    simcall_comm_wait__set__timeout(&state->internal_req, 0);
-    break;
-  }
-
-  case SIMCALL_COMM_TESTANY:
-    state->internal_req.call = SIMCALL_COMM_TEST;
-    state->internal_req.issuer = req->issuer;
-
-    if (value > 0) {
-      smx_synchro_t remote_comm;
-      read_element(mc_model_checker->process(),
-        &remote_comm, remote(simcall_comm_testany__get__comms(req)),
-        value, sizeof(remote_comm));
-      mc_model_checker->process().read(&state->internal_comm, remote(remote_comm));
-    }
-
-    simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
-    simcall_comm_test__set__result(&state->internal_req, value);
-    break;
-
-  case SIMCALL_COMM_WAIT:
-    state->internal_req = *req;
-    mc_model_checker->process().read_bytes(&state->internal_comm ,
-      sizeof(state->internal_comm), remote(simcall_comm_wait__get__comm(req)));
-    simcall_comm_wait__set__comm(&state->executed_req, &state->internal_comm);
-    simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
-    break;
-
-  case SIMCALL_COMM_TEST:
-    state->internal_req = *req;
-    mc_model_checker->process().read_bytes(&state->internal_comm,
-      sizeof(state->internal_comm), remote(simcall_comm_test__get__comm(req)));
-    simcall_comm_test__set__comm(&state->executed_req, &state->internal_comm);
-    simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
-    break;
-
-  case SIMCALL_MC_RANDOM: {
-    state->internal_req = *req;
-    int random_max = simcall_mc_random__get__max(req);
-    if (value != random_max)
-      for (auto& p : mc_model_checker->process().simix_processes()) {
-        simgrid::mc::ProcessState* procstate = &state->processStates[p.copy.pid];
-        const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
-        if (p.copy.pid == issuer->pid) {
-          procstate->state = simgrid::mc::ProcessInterleaveState::more_interleave;
-          break;
-        }
-      }
-    break;
-  }
-
-  default:
-    state->internal_req = *req;
-    break;
-  }
-}
-
 smx_simcall_t MC_state_get_executed_request(simgrid::mc::State* state, int *value)
 {
   *value = state->req_num;
@@ -166,8 +90,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   if (!simgrid::mc::process_is_enabled(process))
     return nullptr;
 
+  smx_simcall_t req = nullptr;
   switch (process->simcall.call) {
-
       case SIMCALL_COMM_WAITANY:
         *value = -1;
         while (procstate->interleave_count <
@@ -184,10 +108,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
             simgrid::mc::read_length(mc_model_checker->process(),
               simgrid::mc::remote(simcall_comm_waitany__get__comms(&process->simcall))))
           procstate->state = simgrid::mc::ProcessInterleaveState::done;
-
         if (*value != -1)
-          return &process->simcall;
-
+          req = &process->simcall;
         break;
 
       case SIMCALL_COMM_TESTANY: {
@@ -208,7 +130,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
           procstate->state = simgrid::mc::ProcessInterleaveState::done;
 
         if (*value != -1 || start_count == 0)
-          return &process->simcall;
+           req = &process->simcall;
 
         break;
       }
@@ -226,7 +148,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         else
           *value = -1;
         procstate->state = simgrid::mc::ProcessInterleaveState::done;
-        return &process->simcall;
+        req = &process->simcall;
+        break;
       }
 
       case SIMCALL_MC_RANDOM:
@@ -235,14 +158,93 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         else if (state->req_num < simcall_mc_random__get__max(&process->simcall))
           *value = state->req_num + 1;
         procstate->state = simgrid::mc::ProcessInterleaveState::done;
-        return &process->simcall;
+        req = &process->simcall;
+        break;
 
       default:
         procstate->state = simgrid::mc::ProcessInterleaveState::done;
         *value = 0;
-        return &process->simcall;
+        req = &process->simcall;
+        break;
   }
-  return nullptr;
+  if (!req)
+    return nullptr;
+
+  // Fetch the data of the request and translate it:
+
+  state->executed_req = *req;
+  state->req_num = *value;
+
+  /* The waitany and testany request are transformed into a wait or test request
+   * over the corresponding communication action so it can be treated later by
+   * the dependence function. */
+  switch (req->call) {
+  case SIMCALL_COMM_WAITANY: {
+    state->internal_req.call = SIMCALL_COMM_WAIT;
+    state->internal_req.issuer = req->issuer;
+    smx_synchro_t remote_comm;
+    read_element(mc_model_checker->process(),
+      &remote_comm, remote(simcall_comm_waitany__get__comms(req)),
+      *value, sizeof(remote_comm));
+    mc_model_checker->process().read(&state->internal_comm, remote(remote_comm));
+    simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
+    simcall_comm_wait__set__timeout(&state->internal_req, 0);
+    break;
+  }
+
+  case SIMCALL_COMM_TESTANY:
+    state->internal_req.call = SIMCALL_COMM_TEST;
+    state->internal_req.issuer = req->issuer;
+
+    if (*value > 0) {
+      smx_synchro_t remote_comm;
+      read_element(mc_model_checker->process(),
+        &remote_comm, remote(simcall_comm_testany__get__comms(req)),
+        *value, sizeof(remote_comm));
+      mc_model_checker->process().read(&state->internal_comm, remote(remote_comm));
+    }
+
+    simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
+    simcall_comm_test__set__result(&state->internal_req, *value);
+    break;
+
+  case SIMCALL_COMM_WAIT:
+    state->internal_req = *req;
+    mc_model_checker->process().read_bytes(&state->internal_comm ,
+      sizeof(state->internal_comm), remote(simcall_comm_wait__get__comm(req)));
+    simcall_comm_wait__set__comm(&state->executed_req, &state->internal_comm);
+    simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
+    break;
+
+  case SIMCALL_COMM_TEST:
+    state->internal_req = *req;
+    mc_model_checker->process().read_bytes(&state->internal_comm,
+      sizeof(state->internal_comm), remote(simcall_comm_test__get__comm(req)));
+    simcall_comm_test__set__comm(&state->executed_req, &state->internal_comm);
+    simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
+    break;
+
+  case SIMCALL_MC_RANDOM: {
+    state->internal_req = *req;
+    int random_max = simcall_mc_random__get__max(req);
+    if (*value != random_max)
+      for (auto& p : mc_model_checker->process().simix_processes()) {
+        simgrid::mc::ProcessState* procstate = &state->processStates[p.copy.pid];
+        const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
+        if (p.copy.pid == issuer->pid) {
+          procstate->state = simgrid::mc::ProcessInterleaveState::more_interleave;
+          break;
+        }
+      }
+    break;
+  }
+
+  default:
+    state->internal_req = *req;
+    break;
+  }
+
+  return req;
 }
 
 smx_simcall_t MC_state_get_request(simgrid::mc::State* state, int *value)

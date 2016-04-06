@@ -132,7 +132,6 @@ int SafetyChecker::run()
     if (dot_output != nullptr)
       req_str = simgrid::mc::request_get_dot_output(req, value);
 
-    MC_state_set_executed_request(state, req, value);
     mc_stats->executed_transitions++;
 
     // TODO, bundle both operations in a single message

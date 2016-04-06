@@ -398,9 +398,6 @@ int LivenessChecker::main(void)
       simgrid::mc::request_to_string(
         req, value, simgrid::mc::RequestType::simix).c_str());
 
-    /* Set request as executed */
-    MC_state_set_executed_request(current_pair->graph_state.get(), req, value);
-
     /* Update mc_stats */
     mc_stats->executed_transitions++;
     if (!current_pair->exploration_started)
