@@ -19,29 +19,14 @@ using simgrid::mc::remote;
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_comm_pattern, mc,
                                 "Logging specific to MC communication patterns");
 
-extern "C" {
-
-simgrid::mc::PatternCommunication* MC_comm_pattern_dup(simgrid::mc::PatternCommunication* comm)
-{
-  simgrid::mc::PatternCommunication* res = new simgrid::mc::PatternCommunication();
-  res->index = comm->index;
-  res->type = comm->type;
-  res->comm_addr = comm->comm_addr;
-  res->rdv = comm->rdv;
-  res->data = comm->data;
-  res->dst_proc = comm->dst_proc;
-  res->dst_host = comm->dst_host;
-  return res;
-}
-
-xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t patterns)
+static xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t patterns)
 {
   xbt_dynar_t res = simgrid::xbt::newDeleteDynar<simgrid::mc::PatternCommunication>();
 
   simgrid::mc::PatternCommunication* comm;
   unsigned int cursor;
   xbt_dynar_foreach(patterns, cursor, comm) {
-    simgrid::mc::PatternCommunication* copy_comm = MC_comm_pattern_dup(comm);
+    simgrid::mc::PatternCommunication* copy_comm = new simgrid::mc::PatternCommunication(comm->dup());
     xbt_dynar_push(res, &copy_comm);
   }
 
@@ -55,7 +40,7 @@ static void MC_patterns_copy(xbt_dynar_t dest, xbt_dynar_t source)
   unsigned int cursor;
   simgrid::mc::PatternCommunication* comm;
   xbt_dynar_foreach(source, cursor, comm) {
-    simgrid::mc::PatternCommunication* copy_comm = MC_comm_pattern_dup(comm);
+    simgrid::mc::PatternCommunication* copy_comm = new simgrid::mc::PatternCommunication(comm->dup());
     xbt_dynar_push(dest, &copy_comm);
   }
 }
@@ -124,7 +109,5 @@ void MC_handle_comm_pattern(
   default:
     xbt_die("Unexpected call type %i", (int)call_type);
   }
-
-}
 
 }

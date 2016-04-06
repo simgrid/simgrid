@@ -43,9 +43,22 @@ struct PatternCommunication {
     std::memset(&comm_addr, 0, sizeof(comm_addr));
   }
 
-  // No copy:
-  PatternCommunication(PatternCommunication const&) = delete;
-  PatternCommunication& operator=(PatternCommunication const&) = delete;
+  PatternCommunication dup() const
+  {
+    simgrid::mc::PatternCommunication res;
+    // num?
+    res.comm_addr = this->comm_addr;
+    res.type = this->type;
+    // src_proc?
+    // dst_proc?
+    res.dst_proc = this->dst_proc;
+    res.dst_host = this->dst_host;
+    res.rdv = this->rdv;
+    res.data = this->data;
+    // tag?
+    res.index = this->index;
+    return res;
+  }
 
 };
 
@@ -115,9 +128,6 @@ XBT_PRIVATE void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_
 XBT_PRIVATE void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigned int issuer, int backtracking);
 
 XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
-
-XBT_PRIVATE simgrid::mc::PatternCommunication* MC_comm_pattern_dup(simgrid::mc::PatternCommunication* comm);
-XBT_PRIVATE xbt_dynar_t MC_comm_patterns_dup(xbt_dynar_t state);
 
 XBT_PRIVATE void MC_state_copy_incomplete_communications_pattern(simgrid::mc::State* state);
 XBT_PRIVATE void MC_state_copy_index_communications_pattern(simgrid::mc::State* state);
