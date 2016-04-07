@@ -359,7 +359,6 @@ Here are the existing format directives:
  - %%l: location where the log event was raised (LOG4J compatible, like '%%F:%%L' -- this is a l as in 'l'etter)
  - %%L: line number where the log event was raised (LOG4J compatible)
  - %%M: function name (LOG4J compatible -- called method name here of course).
-   Defined only when using gcc because there is no __FUNCTION__ elsewhere.
 
  - %%b: full backtrace (Called %%throwable in LOG4J).
    Defined only under windows or when using the GNU libc because backtrace() is not defined
