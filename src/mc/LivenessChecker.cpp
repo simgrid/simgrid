@@ -199,7 +199,7 @@ void LivenessChecker::replay()
 
     if (pair->exploration_started) {
 
-      int value = state->req_num;
+      int req_num = state->req_num;
       smx_simcall_t saved_req = &state->executed_req;
 
       smx_simcall_t req = nullptr;
@@ -214,11 +214,11 @@ void LivenessChecker::replay()
         XBT_DEBUG("Replay (depth = %d) : %s (%p)",
           depth,
           simgrid::mc::request_to_string(
-            req, value, simgrid::mc::RequestType::simix).c_str(),
+            req, req_num, simgrid::mc::RequestType::simix).c_str(),
           state.get());
       }
 
-      simgrid::mc::handle_simcall(req, value);
+      simgrid::mc::handle_simcall(req, req_num);
       mc_model_checker->wait_for_requests();
     }
 
@@ -318,11 +318,11 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;
   for (std::shared_ptr<Pair> const& pair : explorationStack_) {
-    int value = pair->graph_state->req_num;
+    int req_num = pair->graph_state->req_num;
     smx_simcall_t req = &pair->graph_state->executed_req;
     if (req && req->call != SIMCALL_NONE)
       trace.push_back(simgrid::mc::request_to_string(
-        req, value, simgrid::mc::RequestType::executed));
+        req, req_num, simgrid::mc::RequestType::executed));
   }
   return trace;
 }
