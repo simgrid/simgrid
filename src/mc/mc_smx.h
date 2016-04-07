@@ -52,7 +52,7 @@ XBT_PRIVATE void MC_process_smx_refresh(simgrid::mc::Process* process);
  *  @param process the MCed process
  *  @param req     the simcall (copied in the local process)
  */
-XBT_PRIVATE smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req);
+XBT_PRIVATE smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req);
 
 XBT_PRIVATE const char* MC_smx_process_get_name(smx_process_t p);
 XBT_PRIVATE const char* MC_smx_process_get_host_name(smx_process_t p);

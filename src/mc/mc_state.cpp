@@ -59,6 +59,12 @@ std::size_t State::interleaveSize() const
     [](simgrid::mc::ProcessState const& state) { return state.isToInterleave(); });
 }
 
+RecordTraceElement State::getRecordElement() const
+{
+  smx_process_t issuer = MC_smx_simcall_get_issuer(&this->executed_req);
+  return RecordTraceElement(issuer->pid, this->req_num);
+}
+
 }
 }
 

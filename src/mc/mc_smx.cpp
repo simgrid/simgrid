@@ -111,7 +111,7 @@ void Process::refresh_simix()
  *  @param process the MCed process
  *  @param req     the simcall (copied in the local process)
  */
-smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
+smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 {
   if (mc_mode == MC_MODE_CLIENT)
     return req->issuer;

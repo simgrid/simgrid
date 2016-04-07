@@ -305,13 +305,8 @@ CommunicationDeterminismChecker::~CommunicationDeterminismChecker()
 RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
 {
   RecordTrace res;
-  for (auto const& state : stack_) {
-    int value = 0;
-    smx_simcall_t saved_req = MC_state_get_executed_request(state.get(), &value);
-    const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
-    const int pid = issuer->pid;
-    res.push_back(RecordTraceElement(pid, value));
-  }
+  for (auto const& state : stack_)
+    res.push_back(state->getRecordElement());
   return res;
 }
 

@@ -296,15 +296,8 @@ LivenessChecker::~LivenessChecker()
 RecordTrace LivenessChecker::getRecordTrace() // override
 {
   RecordTrace res;
-  for (std::shared_ptr<Pair> const& pair : explorationStack_) {
-    int value;
-    smx_simcall_t req = MC_state_get_executed_request(pair->graph_state.get(), &value);
-    if (req && req->call != SIMCALL_NONE) {
-      smx_process_t issuer = MC_smx_simcall_get_issuer(req);
-      const int pid = issuer->pid;
-      res.push_back(RecordTraceElement(pid, value));
-    }
-  }
+  for (std::shared_ptr<Pair> const& pair : explorationStack_)
+    res.push_back(pair->graph_state->getRecordElement());
   return res;
 }
 

@@ -16,6 +16,7 @@
 #include <simgrid_config.h>
 #include "src/simix/smx_private.h"
 #include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_record.h"
 
 namespace simgrid {
 namespace mc {
@@ -156,6 +157,7 @@ struct XBT_PRIVATE State {
   {
     this->processStates[process->pid].interleave();
   }
+  RecordTraceElement getRecordElement() const;
 };
 
 XBT_PRIVATE void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack);
