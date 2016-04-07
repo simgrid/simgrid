@@ -134,7 +134,7 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
   return true;
 }
 
-// Those are MC_state_get_internal_request(state)
+// Those are internal_req
 bool request_depend(smx_simcall_t r1, smx_simcall_t r2)
 {
   if (r1->issuer == r2->issuer)

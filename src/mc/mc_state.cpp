@@ -68,11 +68,6 @@ RecordTraceElement State::getRecordElement() const
 }
 }
 
-smx_simcall_t MC_state_get_internal_request(simgrid::mc::State* state)
-{
-  return &state->internal_req;
-}
-
 static inline smx_simcall_t MC_state_get_request_for_process(
   simgrid::mc::State* state, int*value, smx_process_t process)
 {

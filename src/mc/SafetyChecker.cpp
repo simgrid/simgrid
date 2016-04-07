@@ -209,7 +209,7 @@ int SafetyChecker::backtrack()
     std::unique_ptr<simgrid::mc::State> state = std::move(stack_.back());
     stack_.pop_back();
     if (reductionMode_ == simgrid::mc::ReductionMode::dpor) {
-      smx_simcall_t req = MC_state_get_internal_request(state.get());
+      smx_simcall_t req = &state->internal_req;
       if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR, "
           "use --cfg=model-check/reduction:none");
@@ -217,7 +217,7 @@ int SafetyChecker::backtrack()
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         simgrid::mc::State* prev_state = i->get();
         if (reductionMode_ != simgrid::mc::ReductionMode::none
-            && simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
+            && simgrid::mc::request_depend(req, &prev_state->internal_req)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
             int value = prev_state->req_num;
@@ -241,17 +241,17 @@ int SafetyChecker::backtrack()
 
           break;
 
-        } else if (req->issuer == MC_state_get_internal_request(prev_state)->issuer) {
+        } else if (req->issuer == prev_state->internal_req.issuer) {
 
-          XBT_DEBUG("Simcall %d and %d with same issuer", req->call, MC_state_get_internal_request(prev_state)->call);
+          XBT_DEBUG("Simcall %d and %d with same issuer", req->call, prev_state->internal_req.call);
           break;
 
         } else {
 
-          const smx_process_t previous_issuer = MC_smx_simcall_get_issuer(MC_state_get_internal_request(prev_state));
+          const smx_process_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
           XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant",
                     req->call, issuer->pid, state->num,
-                    MC_state_get_internal_request(prev_state)->call,
+                    prev_state->internal_req.call,
                     previous_issuer->pid,
                     prev_state->num);
 
