@@ -131,7 +131,7 @@ struct xbt_boolean_couple {
 };
 
 /** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
-typedef void (*xbt_cfg_cb_t) (const char *, int);
+typedef void (*xbt_cfg_cb_t) (const char *);
 
 XBT_PUBLIC(xbt_cfg_t) xbt_cfg_new(void);
 XBT_PUBLIC(void) xbt_cfg_cpy(xbt_cfg_t tocopy,  /* OUT */xbt_cfg_t * whereto);

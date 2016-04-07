@@ -21,7 +21,7 @@ static void MSG_exit(void);
 
 /********************************* MSG **************************************/
 
-static void _sg_cfg_cb_msg_debug_multiple_use(const char *name, int pos)
+static void _sg_cfg_cb_msg_debug_multiple_use(const char *name)
 {
   msg_global->debug_multiple_use = xbt_cfg_get_boolean(name);
 }

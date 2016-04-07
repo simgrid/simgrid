@@ -683,9 +683,8 @@ void xbt_cfg_setdefault_boolean(const char *name, const char *val)
     XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.", name, val);
 }
 
-/** @brief Set or add an integer value to \a name within \a cfg
+/** @brief Set an integer value to \a name within \a cfg
  *
- * @param cfg the config set
  * @param name the name of the variable
  * @param val the value of the variable
  */
@@ -696,15 +695,14 @@ void xbt_cfg_set_int(const char *name, int val)
   xbt_dynar_set(variable->content, 0, &val);
 
   if (variable->cb_set)
-    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
+    variable->cb_set(name);
   variable->isdefault = 0;
 }
 
 /** @brief Set or add a double value to \a name within \a cfg
  *
- * @param cfg the config set
  * @param name the name of the variable
- * @param val the doule to set
+ * @param val the double to set
  */
 void xbt_cfg_set_double(const char *name, double val)
 {
@@ -713,7 +711,7 @@ void xbt_cfg_set_double(const char *name, double val)
   xbt_dynar_set(variable->content, 0, &val);
 
   if (variable->cb_set)
-    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
+    variable->cb_set(name);
   variable->isdefault = 0;
 }
 
@@ -737,7 +735,7 @@ void xbt_cfg_set_string(const char *name, const char *val)
   xbt_dynar_set(variable->content, 0, &newval);
 
   if (variable->cb_set)
-    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
+    variable->cb_set(name);
   variable->isdefault = 0;
 }
 
@@ -748,10 +746,10 @@ void xbt_cfg_set_string(const char *name, const char *val)
  */
 void xbt_cfg_set_boolean(const char *name, const char *val)
 {
-  int i, bval;
+  int bval=-1;
   xbt_cfgelm_t variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_boolean);
 
-  for (i = 0; xbt_cfgelm_boolean_values[i].true_val != NULL; i++) {
+  for (int i = 0; xbt_cfgelm_boolean_values[i].true_val != NULL; i++) {
     if (strcmp(val, xbt_cfgelm_boolean_values[i].true_val) == 0){
       bval = 1;
       break;
@@ -761,14 +759,11 @@ void xbt_cfg_set_boolean(const char *name, const char *val)
       break;
     }
   }
-  if (xbt_cfgelm_boolean_values[i].true_val == NULL) {
-    xbt_die("Value of option '%s' not valid. Should be a boolean (yes,no,on,off,true,false,0,1)", val);
-  }
-
+  xbt_assert(bval != -1, "Value of option '%s' not valid. Should be a boolean (yes,no,on,off,true,false,0,1)", val);
   xbt_dynar_set(variable->content, 0, &bval);
 
   if (variable->cb_set)
-    variable->cb_set(name, xbt_dynar_length(variable->content) - 1);
+    variable->cb_set(name);
   variable->isdefault = 0;
 }
 

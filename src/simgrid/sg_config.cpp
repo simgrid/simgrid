@@ -113,7 +113,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
 }
 
 /* callback of the plugin variable */
-static void _sg_cfg_cb__plugin(const char *name, int pos)
+static void _sg_cfg_cb__plugin(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot load a plugin after the initialization");
 
@@ -132,7 +132,7 @@ static void _sg_cfg_cb__plugin(const char *name, int pos)
 }
 
 /* callback of the host/model variable */
-static void _sg_cfg_cb__host_model(const char *name, int pos)
+static void _sg_cfg_cb__host_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
@@ -147,7 +147,7 @@ static void _sg_cfg_cb__host_model(const char *name, int pos)
 }
 
 /* callback of the vm/model variable */
-static void _sg_cfg_cb__vm_model(const char *name, int pos)
+static void _sg_cfg_cb__vm_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
@@ -162,7 +162,7 @@ static void _sg_cfg_cb__vm_model(const char *name, int pos)
 }
 
 /* callback of the cpu/model variable */
-static void _sg_cfg_cb__cpu_model(const char *name, int pos)
+static void _sg_cfg_cb__cpu_model(const char *name)
 {
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
@@ -177,7 +177,7 @@ static void _sg_cfg_cb__cpu_model(const char *name, int pos)
 }
 
 /* callback of the cpu/model variable */
-static void _sg_cfg_cb__optimization_mode(const char *name, int pos)
+static void _sg_cfg_cb__optimization_mode(const char *name)
 {
   char *val;
 
@@ -196,7 +196,7 @@ static void _sg_cfg_cb__optimization_mode(const char *name, int pos)
 }
 
 /* callback of the cpu/model variable */
-static void _sg_cfg_cb__storage_mode(const char *name, int pos)
+static void _sg_cfg_cb__storage_mode(const char *name)
 {
   char *val;
 
@@ -215,7 +215,7 @@ static void _sg_cfg_cb__storage_mode(const char *name, int pos)
 }
 
 /* callback of the network_model variable */
-static void _sg_cfg_cb__network_model(const char *name, int pos)
+static void _sg_cfg_cb__network_model(const char *name)
 {
   char *val;
 
@@ -234,37 +234,37 @@ static void _sg_cfg_cb__network_model(const char *name, int pos)
 }
 
 /* callbacks of the network models values */
-static void _sg_cfg_cb__tcp_gamma(const char *name, int pos)
+static void _sg_cfg_cb__tcp_gamma(const char *name)
 {
   sg_tcp_gamma = xbt_cfg_get_double(name);
 }
 
-static void _sg_cfg_cb__maxmin_precision(const char* name, int pos)
+static void _sg_cfg_cb__maxmin_precision(const char* name)
 {
   sg_maxmin_precision = xbt_cfg_get_double(name);
 }
 
-static void _sg_cfg_cb__surf_precision(const char* name, int pos)
+static void _sg_cfg_cb__surf_precision(const char* name)
 {
   sg_surf_precision = xbt_cfg_get_double(name);
 }
 
-static void _sg_cfg_cb__sender_gap(const char* name, int pos)
+static void _sg_cfg_cb__sender_gap(const char* name)
 {
   sg_sender_gap = xbt_cfg_get_double(name);
 }
 
-static void _sg_cfg_cb__latency_factor(const char *name, int pos)
+static void _sg_cfg_cb__latency_factor(const char *name)
 {
   sg_latency_factor = xbt_cfg_get_double(name);
 }
 
-static void _sg_cfg_cb__bandwidth_factor(const char *name, int pos)
+static void _sg_cfg_cb__bandwidth_factor(const char *name)
 {
   sg_bandwidth_factor = xbt_cfg_get_double(name);
 }
 
-static void _sg_cfg_cb__weight_S(const char *name, int pos)
+static void _sg_cfg_cb__weight_S(const char *name)
 {
   sg_weight_S_parameter = xbt_cfg_get_double(name);
 }
@@ -286,54 +286,54 @@ static void _check_coll(const char *category,
 
   find_coll_description(table, val, category);
 }
-static void _check_coll_gather(const char *name, int pos){
+static void _check_coll_gather(const char *name){
   _check_coll("gather", mpi_coll_gather_description, name);
 }
-static void _check_coll_allgather(const char *name, int pos){
+static void _check_coll_allgather(const char *name){
   _check_coll("allgather", mpi_coll_allgather_description, name);
 }
-static void _check_coll_allgatherv(const char *name, int pos){
+static void _check_coll_allgatherv(const char *name){
   _check_coll("allgatherv", mpi_coll_allgatherv_description, name);
 }
-static void _check_coll_allreduce(const char *name, int pos)
+static void _check_coll_allreduce(const char *name)
 {
   _check_coll("allreduce", mpi_coll_allreduce_description, name);
 }
-static void _check_coll_alltoall(const char *name, int pos)
+static void _check_coll_alltoall(const char *name)
 {
   _check_coll("alltoall", mpi_coll_alltoall_description, name);
 }
-static void _check_coll_alltoallv(const char *name, int pos)
+static void _check_coll_alltoallv(const char *name)
 {
   _check_coll("alltoallv", mpi_coll_alltoallv_description, name);
 }
-static void _check_coll_bcast(const char *name, int pos)
+static void _check_coll_bcast(const char *name)
 {
   _check_coll("bcast", mpi_coll_bcast_description, name);
 }
-static void _check_coll_reduce(const char *name, int pos)
+static void _check_coll_reduce(const char *name)
 {
   _check_coll("reduce", mpi_coll_reduce_description, name);
 }
-static void _check_coll_reduce_scatter(const char *name, int pos){
+static void _check_coll_reduce_scatter(const char *name){
   _check_coll("reduce_scatter", mpi_coll_reduce_scatter_description, name);
 }
-static void _check_coll_scatter(const char *name, int pos){
+static void _check_coll_scatter(const char *name){
   _check_coll("scatter", mpi_coll_scatter_description, name);
 }
-static void _check_coll_barrier(const char *name, int pos){
+static void _check_coll_barrier(const char *name){
   _check_coll("barrier", mpi_coll_barrier_description, name);
 }
 
-static void _sg_cfg_cb__wtime_sleep(const char *name, int pos){
+static void _sg_cfg_cb__wtime_sleep(const char *name){
   smpi_wtime_sleep = xbt_cfg_get_double(name);
 }
 
-static void _sg_cfg_cb__iprobe_sleep(const char *name, int pos){
+static void _sg_cfg_cb__iprobe_sleep(const char *name){
   smpi_iprobe_sleep = xbt_cfg_get_double(name);
 }
 
-static void _sg_cfg_cb__test_sleep(const char *name, int pos){
+static void _sg_cfg_cb__test_sleep(const char *name){
   smpi_test_sleep = xbt_cfg_get_double(name);
 }
 
@@ -342,7 +342,7 @@ static void _sg_cfg_cb__test_sleep(const char *name, int pos){
 #endif
 
 /* callback of the inclusion path */
-static void _sg_cfg_cb__surf_path(const char *name, int pos)
+static void _sg_cfg_cb__surf_path(const char *name)
 {
   char *path = xbt_strdup(xbt_cfg_get_string(name));
   if (path[0]) // ignore ""
@@ -357,58 +357,58 @@ extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find
 extern int _sg_do_model_check_record;
 #endif
 
-static void _sg_cfg_cb_model_check_replay(const char *name, int pos) {
+static void _sg_cfg_cb_model_check_replay(const char *name) {
   MC_record_path = xbt_cfg_get_string(name);
 }
 
 #if HAVE_MC
-static void _sg_cfg_cb_model_check_record(const char *name, int pos) {
+static void _sg_cfg_cb_model_check_record(const char *name) {
   _sg_do_model_check_record = xbt_cfg_get_boolean(name);
 }
 #endif
 
 extern int _sg_do_verbose_exit;
 
-static void _sg_cfg_cb_verbose_exit(const char *name, int pos)
+static void _sg_cfg_cb_verbose_exit(const char *name)
 {
   _sg_do_verbose_exit = xbt_cfg_get_boolean(name);
 }
 
 extern int _sg_do_clean_atexit;
 
-static void _sg_cfg_cb_clean_atexit(const char *name, int pos)
+static void _sg_cfg_cb_clean_atexit(const char *name)
 {
   _sg_do_clean_atexit = xbt_cfg_get_boolean(name);
 }
 
-static void _sg_cfg_cb_context_factory(const char *name, int pos)
+static void _sg_cfg_cb_context_factory(const char *name)
 {
   smx_context_factory_name = xbt_cfg_get_string(name);
 }
 
-static void _sg_cfg_cb_context_stack_size(const char *name, int pos)
+static void _sg_cfg_cb_context_stack_size(const char *name)
 {
   smx_context_stack_size_was_set = 1;
   smx_context_stack_size = xbt_cfg_get_int(name) * 1024;
 }
 
-static void _sg_cfg_cb_context_guard_size(const char *name, int pos)
+static void _sg_cfg_cb_context_guard_size(const char *name)
 {
   smx_context_guard_size_was_set = 1;
   smx_context_guard_size = xbt_cfg_get_int(name) * xbt_pagesize;
 }
 
-static void _sg_cfg_cb_contexts_nthreads(const char *name, int pos)
+static void _sg_cfg_cb_contexts_nthreads(const char *name)
 {
   SIMIX_context_set_nthreads(xbt_cfg_get_int(name));
 }
 
-static void _sg_cfg_cb_contexts_parallel_threshold(const char *name, int pos)
+static void _sg_cfg_cb_contexts_parallel_threshold(const char *name)
 {
   SIMIX_context_set_parallel_threshold(xbt_cfg_get_int(name));
 }
 
-static void _sg_cfg_cb_contexts_parallel_mode(const char *name, int pos)
+static void _sg_cfg_cb_contexts_parallel_mode(const char *name)
 {
   const char* mode_name = xbt_cfg_get_string(name);
   if (!strcmp(mode_name, "posix")) {
@@ -426,8 +426,7 @@ static void _sg_cfg_cb_contexts_parallel_mode(const char *name, int pos)
   }
 }
 
-static void _sg_cfg_cb__surf_network_coordinates(const char *name,
-                                                 int pos)
+static void _sg_cfg_cb__surf_network_coordinates(const char *name)
 {
   static int already_set = 0;
   int val = xbt_cfg_get_boolean(name);
@@ -442,8 +441,7 @@ static void _sg_cfg_cb__surf_network_coordinates(const char *name,
       xbt_die("Setting of whether to use coordinate cannot be disabled once set.");
 }
 
-static void _sg_cfg_cb__surf_network_crosstraffic(const char *name,
-                                                  int pos)
+static void _sg_cfg_cb__surf_network_crosstraffic(const char *name)
 {
   sg_network_crosstraffic = xbt_cfg_get_boolean(name);
 }
