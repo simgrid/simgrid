@@ -360,7 +360,7 @@ void CommunicationDeterminismChecker::prepare()
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
     if (simgrid::mc::process_is_enabled(&p.copy))
-      MC_state_interleave_process(initial_state.get(), &p.copy);
+      initial_state->interleave(&p.copy);
 
   stack_.push_back(std::move(initial_state));
 }
@@ -445,7 +445,7 @@ int CommunicationDeterminismChecker::main(void)
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
           if (simgrid::mc::process_is_enabled(&p.copy))
-            MC_state_interleave_process(next_state.get(), &p.copy);
+            next_state->interleave(&p.copy);
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",

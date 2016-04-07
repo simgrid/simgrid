@@ -59,28 +59,46 @@ struct PatternCommunication {
 
 };
 
-/* Possible exploration status of a process in a state */
-enum class ProcessInterleaveState {
-  no_interleave=0, /* Do not interleave (do not execute) */
-  interleave,      /* Interleave the process (one or more request) */
-  more_interleave, /* Interleave twice the process (for mc_random simcall) */
-  done             /* Already interleaved */
-};
-
 /* On every state, each process has an entry of the following type */
-struct ProcessState {
-  /** Exploration control information */
-  ProcessInterleaveState state = ProcessInterleaveState::no_interleave;
-  /** Number of times that the process was interleaved */
-  unsigned int interleave_count;
+class ProcessState {
+  /* Possible exploration status of a process in a state */
+  enum class InterleavingType {
+    /** We do not have to execute this process transitions */
+    disabled = 0,
+    /** We still have to execute (some of) this process transitions */
+    interleave,
+    /** We have already executed this process transitions */
+    done,
+  };
 
-  bool done() const
+  /** Exploration control information */
+  InterleavingType state = InterleavingType::disabled;
+public:
+
+  /** Number of times that the process was interleaved */
+  // TODO, make this private
+  unsigned int interleave_count = 0;
+
+  bool isDisabled() const
   {
-    return this->state == ProcessInterleaveState::done;
+    return this->state == InterleavingType::disabled;
   }
-  bool interleave() const {
-    return this->state == ProcessInterleaveState::interleave
-      || this->state == ProcessInterleaveState::more_interleave;
+  bool isDone() const
+  {
+    return this->state == InterleavingType::done;
+  }
+  bool isToInterleave() const
+  {
+    return this->state == InterleavingType::interleave;
+  }
+  void interleave()
+  {
+    this->state = InterleavingType::interleave;
+    this->interleave_count = 0;
+  }
+  void setDone()
+  {
+    this->state = InterleavingType::done;
   }
 };
 
@@ -134,6 +152,10 @@ struct XBT_PRIVATE State {
   State();
 
   std::size_t interleaveSize() const;
+  void interleave(smx_process_t process)
+  {
+    this->processStates[process->pid].interleave();
+  }
 };
 
 XBT_PRIVATE void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack);
@@ -142,7 +164,6 @@ XBT_PRIVATE void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& st
 }
 
 XBT_PRIVATE simgrid::mc::State* MC_state_new(void);
-XBT_PRIVATE void MC_state_interleave_process(simgrid::mc::State* state, smx_process_t process);
 XBT_PRIVATE smx_simcall_t MC_state_get_executed_request(simgrid::mc::State* state, int *value);
 XBT_PRIVATE smx_simcall_t MC_state_get_internal_request(simgrid::mc::State* state);
 XBT_PRIVATE smx_simcall_t MC_state_get_request(simgrid::mc::State* state, int *value);

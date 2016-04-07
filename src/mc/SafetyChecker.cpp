@@ -156,7 +156,7 @@ int SafetyChecker::run()
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& p : mc_model_checker->process().simix_processes())
         if (simgrid::mc::process_is_enabled(&p.copy)) {
-          MC_state_interleave_process(next_state.get(), &p.copy);
+          next_state->interleave(&p.copy);
           if (reductionMode_ != simgrid::mc::ReductionMode::none)
             break;
         }
@@ -238,8 +238,8 @@ int SafetyChecker::backtrack()
               state->num);
           }
 
-          if (!prev_state->processStates[issuer->pid].done())
-            MC_state_interleave_process(prev_state, issuer);
+          if (!prev_state->processStates[issuer->pid].isDone())
+            prev_state->interleave(issuer);
           else
             XBT_DEBUG("Process %p is in done set", req->issuer);
 
@@ -309,7 +309,7 @@ void SafetyChecker::init()
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
     if (simgrid::mc::process_is_enabled(&p.copy)) {
-      MC_state_interleave_process(initial_state.get(), &p.copy);
+      initial_state->interleave(&p.copy);
       if (reductionMode_ != simgrid::mc::ReductionMode::none)
         break;
     }
