@@ -3223,7 +3223,7 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
 
 int PMPI_Info_get_valuelen( MPI_Info info, char *key, int *valuelen, int *flag){
   *flag=false;
-  if (info == NULL || key == NULL || valuelen==NULL || *valuelen <0)
+  if (info == NULL || key == NULL || valuelen==NULL)
     return MPI_ERR_ARG;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
