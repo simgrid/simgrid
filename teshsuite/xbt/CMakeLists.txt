@@ -10,7 +10,7 @@ endforeach()
 if(HAVE_MMALLOC)
   add_executable       (mmalloc_test ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc/mmalloc_test.c)
   target_link_libraries(mmalloc_test simgrid)
-  set_target_properties(mmalloc_test  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}/mmalloc)
+  set_target_properties(mmalloc_test  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/mmalloc)
 endif()
 
 set(tesh_files    ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/log_usage/log_usage_ndebug.tesh
