@@ -89,8 +89,6 @@ int SafetyChecker::run()
 {
   this->init();
 
-  int value;
-
   while (!stack_.empty()) {
 
     /* Get current state */
@@ -108,7 +106,7 @@ int SafetyChecker::run()
     // let's back-track.
     smx_simcall_t req = nullptr;
     if (stack_.size() > (std::size_t) _sg_mc_max_depth
-        || (req = MC_state_get_request(state, &value)) == nullptr
+        || (req = MC_state_get_request(state)) == nullptr
         || visitedState_ != nullptr) {
       int res = this->backtrack();
       if (res)
@@ -117,23 +115,25 @@ int SafetyChecker::run()
         continue;
     }
 
+    int req_num = state->req_num;
+
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
     XBT_DEBUG("Execute: %s",
       simgrid::mc::request_to_string(
-        req, value, simgrid::mc::RequestType::simix).c_str());
+        req, req_num, simgrid::mc::RequestType::simix).c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = simgrid::mc::request_get_dot_output(req, value);
+      req_str = simgrid::mc::request_get_dot_output(req, req_num);
 
     mc_stats->executed_transitions++;
 
     // TODO, bundle both operations in a single message
-    //   MC_execute_transition(req, value)
+    //   MC_execute_transition(req, req_num)
 
     /* Answer the request */
-    simgrid::mc::handle_simcall(req, value);
+    simgrid::mc::handle_simcall(req, req_num);
     mc_model_checker->wait_for_requests();
 
     /* Create the new expanded state */

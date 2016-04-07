@@ -315,11 +315,10 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
-    int value = state->req_num;
     smx_simcall_t req = &state->executed_req;
     if (req)
       trace.push_back(simgrid::mc::request_to_string(
-        req, value, simgrid::mc::RequestType::executed));
+        req, state->req_num, simgrid::mc::RequestType::executed));
   }
   return trace;
 }
@@ -376,7 +375,6 @@ bool all_communications_are_finished()
 
 int CommunicationDeterminismChecker::main(void)
 {
-  int value;
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
   smx_simcall_t req = nullptr;
 
@@ -394,16 +392,18 @@ int CommunicationDeterminismChecker::main(void)
     mc_stats->visited_states++;
 
     if (stack_.size() <= (std::size_t) _sg_mc_max_depth
-        && (req = MC_state_get_request(state, &value))
+        && (req = MC_state_get_request(state)) != nullptr
         && (visited_state == nullptr)) {
+
+      int req_num = state->req_num;
 
       XBT_DEBUG("Execute: %s",
         simgrid::mc::request_to_string(
-          req, value, simgrid::mc::RequestType::simix).c_str());
+          req, req_num, simgrid::mc::RequestType::simix).c_str());
 
       std::string req_str;
       if (dot_output != nullptr)
-        req_str = simgrid::mc::request_get_dot_output(req, value);
+        req_str = simgrid::mc::request_get_dot_output(req, req_num);
 
       mc_stats->executed_transitions++;
 
@@ -413,12 +413,12 @@ int CommunicationDeterminismChecker::main(void)
         call = MC_get_call_type(req);
 
       /* Answer the request */
-      simgrid::mc::handle_simcall(req, value);    /* After this call req is no longer useful */
+      simgrid::mc::handle_simcall(req, req_num);    /* After this call req is no longer useful */
 
       if(!initial_global_state->initial_communications_pattern_done)
-        MC_handle_comm_pattern(call, req, value, initial_communications_pattern, 0);
+        MC_handle_comm_pattern(call, req, req_num, initial_communications_pattern, 0);
       else
-        MC_handle_comm_pattern(call, req, value, nullptr, 0);
+        MC_handle_comm_pattern(call, req, req_num, nullptr, 0);
 
       /* Wait for requests (schedules processes) */
       mc_model_checker->wait_for_requests();

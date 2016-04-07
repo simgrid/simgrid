@@ -370,8 +370,8 @@ int LivenessChecker::main(void)
       continue;
     }
 
-    int value;
-    smx_simcall_t req = MC_state_get_request(current_pair->graph_state.get(), &value);
+    smx_simcall_t req = MC_state_get_request(current_pair->graph_state.get());
+    int req_num = current_pair->graph_state->req_num;
 
     if (dot_output != nullptr) {
       if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
@@ -381,7 +381,7 @@ int LivenessChecker::main(void)
         initial_global_state->prev_req.clear();
       }
       initial_global_state->prev_pair = current_pair->num;
-      initial_global_state->prev_req = simgrid::mc::request_get_dot_output(req, value);
+      initial_global_state->prev_req = simgrid::mc::request_get_dot_output(req, req_num);
       if (current_pair->search_cycle)
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);
@@ -389,7 +389,7 @@ int LivenessChecker::main(void)
 
     XBT_DEBUG("Execute: %s",
       simgrid::mc::request_to_string(
-        req, value, simgrid::mc::RequestType::simix).c_str());
+        req, req_num, simgrid::mc::RequestType::simix).c_str());
 
     /* Update mc_stats */
     mc_stats->executed_transitions++;
@@ -397,7 +397,7 @@ int LivenessChecker::main(void)
       mc_stats->visited_pairs++;
 
     /* Answer the request */
-    simgrid::mc::handle_simcall(req, value);
+    simgrid::mc::handle_simcall(req, req_num);
 
     /* Wait for requests (schedules processes) */
     mc_model_checker->wait_for_requests();
