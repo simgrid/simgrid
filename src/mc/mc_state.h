@@ -103,40 +103,33 @@ public:
   }
 };
 
-/* An exploration state.
- *
- *  The `executed_state` is sometimes transformed into another `internal_req`.
- *  For example WAITANY is transformes into a WAIT and TESTANY into TEST.
- *  See `MC_state_get_request_for_process()`.
+/* A node in the exploration graph (kind-of)
  */
 struct XBT_PRIVATE State {
 
   /** Sequential state number (used for debugging) */
   int num = 0;
 
-  /* Next transition to explore for this communication
+  /* Which transition was executed for this simcall
    *
-   * Some transitions are not deterministic such as:
+   * Some simcalls can lead to different transitions:
    *
-   * * waitany which can receive different messages;
+   * * waitany/testany can trigger on different messages;
    *
-   * * random which can produce different values.
-   *
-   * This variable is used to keep track of which transition
-   * should be explored next for a given simcall.
+   * * random can produce different values.
    */
   int req_num = 0;
 
   /** State's exploration status by process */
   std::vector<ProcessState> processStates;
 
-  /** The simcall */
+  /** The simcall which was executed */
   s_smx_simcall_t executed_req;
 
   /* Internal translation of the simcall
    *
-   * IMCALL_COMM_TESTANY is translated to a SIMCALL_COMM_TEST
-   * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.
+   * SIMCALL_COMM_TESTANY is translated to a SIMCALL_COMM_TEST
+   * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.  
    */
   s_smx_simcall_t internal_req;
 
