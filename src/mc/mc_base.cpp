@@ -214,30 +214,3 @@ int simcall_HANDLER_mc_random(smx_simcall_t simcall, int min, int max)
     return prng_random(min, max);
   return simcall->mc_value;
 }
-
-namespace simgrid {
-namespace mc {
-
-void handle_simcall(smx_simcall_t req, int value)
-{
-#if !HAVE_MC
-  SIMIX_simcall_handle(req, value);
-#else
-  if (mc_mode == MC_MODE_CLIENT) {
-    SIMIX_simcall_handle(req, value);
-    return;
-  }
-
-  for (auto& pi : mc_model_checker->process().smx_process_infos)
-    if (req == &pi.copy.simcall) {
-      mc_model_checker->simcall_handle(
-        mc_model_checker->process(), pi.copy.pid, value);
-      return;
-    }
-
-  xbt_die("Could not find the request");
-#endif
-}
-
-}
-}

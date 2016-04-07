@@ -115,6 +115,17 @@ void MC_run()
 namespace simgrid {
 namespace mc {
 
+void handle_simcall(smx_simcall_t req, int value)
+{
+  for (auto& pi : mc_model_checker->process().smx_process_infos)
+    if (req == &pi.copy.simcall) {
+      mc_model_checker->simcall_handle(
+        mc_model_checker->process(), pi.copy.pid, value);
+      return;
+    }
+  xbt_die("Could not find the request");
+}
+
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
@@ -182,10 +193,8 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
         call = MC_get_call_type(req);
 
       simgrid::mc::handle_simcall(req, value);
-
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         MC_handle_comm_pattern(call, req, value, nullptr, 1);
-
       mc_model_checker->wait_for_requests();
 
       count++;
