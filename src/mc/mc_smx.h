@@ -41,8 +41,6 @@
 
 SG_BEGIN_DECL()
 
-XBT_PRIVATE void MC_process_smx_refresh(simgrid::mc::Process* process);
-
 /** Get the issuer of  a simcall (`req->issuer`)
  *
  *  In split-process mode, it does the black magic necessary to get an address
