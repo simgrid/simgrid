@@ -29,7 +29,6 @@ enum class RegionType {
   Data = 2
 };
 
-// TODO, use Boost.Variant instead of this
 enum class StorageType {
   NoData = 0,
   Flat = 1,

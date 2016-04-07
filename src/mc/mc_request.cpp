@@ -101,9 +101,11 @@ bool request_depend_asymmetric(smx_simcall_t r1, smx_simcall_t r2)
   /* FIXME: the following rule assumes that the result of the
    * isend/irecv call is not stored in a buffer used in the
    * test call. */
-  /*if(   (r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
+#if 0
+  if((r1->call == SIMCALL_COMM_ISEND || r1->call == SIMCALL_COMM_IRECV)
      &&  r2->call == SIMCALL_COMM_TEST)
-     return FALSE; */
+     return FALSE;
+#endif
 
   if (r1->call == SIMCALL_COMM_WAIT
       && (r2->call == SIMCALL_COMM_WAIT || r2->call == SIMCALL_COMM_TEST)
