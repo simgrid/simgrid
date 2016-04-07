@@ -21,7 +21,7 @@ set(HAVE_NS3 0)
 set(NS3_HINT ${ns3_path} CACHE PATH "Path to search for NS3 lib and include")
 
 find_library(NS3_LIBRARIES
-  NAME ns3-core ns3.14-core ns3.15-core ns3.16-core ns3.17-core ns3.18-core ns3.19-core ns3.20-core ns3.21-core ns3.22-core
+  NAME ns3-core ns3.14-core ns3.15-core ns3.16-core ns3.17-core ns3.18-core ns3.19-core ns3.20-core ns3.21-core ns3.22-core ns3.25-core
   PATH_SUFFIXES lib64 lib ns3/lib
   PATHS
   ${NS3_HINT}
@@ -29,7 +29,7 @@ find_library(NS3_LIBRARIES
 
 find_path(NS3_INCLUDE_DIR
   NAME ns3/core-module.h
-  PATH_SUFFIXES include ns3/include include/ns3.14 include/ns3.15 include/ns3.16 include/ns3.17 include/ns3.18 include/ns3.19 include/ns3.20 include/ns3.21 include/ns3.22
+  PATH_SUFFIXES include ns3/include include/ns3.14 include/ns3.15 include/ns3.16 include/ns3.17 include/ns3.18 include/ns3.19 include/ns3.20 include/ns3.21 include/ns3.22 include/ns3.25
   PATHS
   ${NS3_HINT}
   )
