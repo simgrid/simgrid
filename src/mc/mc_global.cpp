@@ -160,8 +160,8 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
     if (state == stack.back())
       break;
 
-    int value;
-    smx_simcall_t saved_req = MC_state_get_executed_request(state.get(), &value);
+    int value = state->req_num;
+    smx_simcall_t saved_req = &state->executed_req;
     
     if (saved_req) {
       /* because we got a copy of the executed request, we have to fetch the  

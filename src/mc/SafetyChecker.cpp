@@ -76,8 +76,8 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
-    int value;
-    smx_simcall_t req = MC_state_get_executed_request(state.get(), &value);
+    int value = state->req_num;
+    smx_simcall_t req = &state->executed_req;
     if (req)
       trace.push_back(simgrid::mc::request_to_string(
         req, value, simgrid::mc::RequestType::executed));
@@ -220,13 +220,14 @@ int SafetyChecker::backtrack()
             && simgrid::mc::request_depend(req, MC_state_get_internal_request(prev_state))) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            int value;
-            smx_simcall_t prev_req = MC_state_get_executed_request(prev_state, &value);
+            int value = prev_state->req_num;
+            smx_simcall_t prev_req = &prev_state->executed_req;
             XBT_DEBUG("%s (state=%d)",
               simgrid::mc::request_to_string(
                 prev_req, value, simgrid::mc::RequestType::internal).c_str(),
               prev_state->num);
-            prev_req = MC_state_get_executed_request(state.get(), &value);
+            value = state->req_num;
+            prev_req = &state->executed_req;
             XBT_DEBUG("%s (state=%d)",
               simgrid::mc::request_to_string(
                 prev_req, value, simgrid::mc::RequestType::executed).c_str(),

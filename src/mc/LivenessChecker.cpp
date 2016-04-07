@@ -199,8 +199,8 @@ void LivenessChecker::replay()
 
     if (pair->exploration_started) {
 
-      int value;
-      smx_simcall_t saved_req = MC_state_get_executed_request(state.get(), &value);
+      int value = state->req_num;
+      smx_simcall_t saved_req = &state->executed_req;
 
       smx_simcall_t req = nullptr;
 
@@ -318,8 +318,8 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;
   for (std::shared_ptr<Pair> const& pair : explorationStack_) {
-    int value;
-    smx_simcall_t req = MC_state_get_executed_request(pair->graph_state.get(), &value);
+    int value = pair->graph_state->req_num;
+    smx_simcall_t req = &pair->graph_state->executed_req;
     if (req && req->call != SIMCALL_NONE)
       trace.push_back(simgrid::mc::request_to_string(
         req, value, simgrid::mc::RequestType::executed));
