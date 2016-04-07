@@ -865,61 +865,6 @@ int xbt_cfg_get_boolean(const char *name)
   return xbt_dynar_get_as(variable->content, 0, int);
 }
 
-/** @brief Retrieve the dynar of all the values stored in a variable
- *
- * @param cfg where to search in
- * @param name what to search for
- *
- * Get the data stored in the config set.
- *
- * \warning the returned value is the actual content of the config set
- */
-xbt_dynar_t xbt_cfg_get_dynar(const char *name)
-{
-  xbt_cfgelm_t variable = NULL;
-  xbt_ex_t e;
-
-  TRY {
-    variable = xbt_dict_get((xbt_dict_t) simgrid_config, name);
-  } CATCH(e) {
-    if (e.category == not_found_error) {
-      xbt_ex_free(e);
-      THROWF(not_found_error, 0, "No registered variable %s in this config set", name);
-    }
-    RETHROW;
-  }
-
-  return variable->content;
-}
-
-/** @brief Retrieve one of the integer value of a variable */
-int xbt_cfg_get_int_at(xbt_cfg_t cfg, const char *name, int pos)
-{
-  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_int);
-  return xbt_dynar_get_as(variable->content, pos, int);
-}
-
-/** @brief Retrieve one of the double value of a variable */
-double xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos)
-{
-  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_double);
-  return xbt_dynar_get_as(variable->content, pos, double);
-}
-
-/** @brief Retrieve one of the string value of a variable */
-char *xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos)
-{
-  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_string);
-  return xbt_dynar_get_as(variable->content, pos, char *);
-}
-
-/** @brief Retrieve one of the boolean value of a variable */
-int xbt_cfg_get_boolean_at(xbt_cfg_t cfg, const char *name, int pos)
-{
-  xbt_cfgelm_t variable = xbt_cfgelm_get(cfg, name, xbt_cfgelm_boolean);
-  return xbt_dynar_get_as(variable->content, pos, int);
-}
-
 #ifdef SIMGRID_TEST
 #include "xbt.h"
 #include "xbt/ex.h"

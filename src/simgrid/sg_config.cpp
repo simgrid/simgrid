@@ -344,7 +344,7 @@ static void _sg_cfg_cb__test_sleep(const char *name, int pos){
 /* callback of the inclusion path */
 static void _sg_cfg_cb__surf_path(const char *name, int pos)
 {
-  char *path = xbt_strdup(xbt_cfg_get_string_at(simgrid_config, name, pos));
+  char *path = xbt_strdup(xbt_cfg_get_string(name));
   if (path[0]) // ignore ""
     xbt_dynar_push(surf_path, &path);
 }
@@ -734,7 +734,3 @@ int sg_cfg_get_boolean(const char* name)
   return xbt_cfg_get_boolean(name);
 }
 
-xbt_dynar_t sg_cfg_get_dynar(const char* name)
-{
-  return xbt_cfg_get_dynar(name);
-}

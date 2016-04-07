@@ -175,12 +175,6 @@ XBT_PUBLIC(int)    xbt_cfg_get_int(const char *name);
 XBT_PUBLIC(double) xbt_cfg_get_double(const char *name);
 XBT_PUBLIC(char *) xbt_cfg_get_string(const char *name);
 XBT_PUBLIC(int)    xbt_cfg_get_boolean(const char *name);
-XBT_PUBLIC(xbt_dynar_t) xbt_cfg_get_dynar(const char *name);
-
-XBT_PUBLIC(int) xbt_cfg_get_int_at(xbt_cfg_t cfg, const char *name, int pos);
-XBT_PUBLIC(double) xbt_cfg_get_double_at(xbt_cfg_t cfg, const char *name, int pos);
-XBT_PUBLIC(char *) xbt_cfg_get_string_at(xbt_cfg_t cfg, const char *name, int pos);
-XBT_PUBLIC(int) xbt_cfg_get_boolean_at(xbt_cfg_t cfg, const char *name, int pos);
 
 /** @} */
 
