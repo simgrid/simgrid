@@ -48,21 +48,21 @@ extern XBT_PRIVATE int _sg_mc_snapshot_fds;
 extern XBT_PRIVATE int _sg_mc_termination;
 
 /********************************* Global *************************************/
-XBT_PRIVATE void _mc_cfg_cb_reduce(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_checkpoint(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_sparse_checkpoint(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_ksm(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_soft_dirty(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_property(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_timeout(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_snapshot_fds(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_hash(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_max_depth(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_visited(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_dot_output(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_comms_determinism(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_send_determinism(const char *name, int pos);
-XBT_PRIVATE void _mc_cfg_cb_termination(const char *name, int pos);
+XBT_PRIVATE void _mc_cfg_cb_reduce(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_checkpoint(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_sparse_checkpoint(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_ksm(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_soft_dirty(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_property(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_timeout(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_snapshot_fds(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_hash(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_max_depth(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_visited(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_dot_output(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_comms_determinism(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_send_determinism(const char *name);
+XBT_PRIVATE void _mc_cfg_cb_termination(const char *name);
 
 XBT_PUBLIC(void) MC_run(void);
 XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
