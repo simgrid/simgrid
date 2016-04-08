@@ -147,10 +147,10 @@ XBT_PUBLIC(void) xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cf
  *
  *  @{
  */
-XBT_PUBLIC(void) xbt_cfg_register_double (const char *name, const char *desc, double default_val,    xbt_cfg_cb_t cb_set);
-XBT_PUBLIC(void) xbt_cfg_register_int    (const char *name, const char *desc, int default_val,       xbt_cfg_cb_t cb_set);
-XBT_PUBLIC(void) xbt_cfg_register_string (const char *name, const char *desc, const char*default_val,xbt_cfg_cb_t cb_set);
-XBT_PUBLIC(void) xbt_cfg_register_boolean(const char *name, const char *desc, const char*default_val,xbt_cfg_cb_t cb_set);
+XBT_PUBLIC(void) xbt_cfg_register_double (const char *name, double default_val,    xbt_cfg_cb_t cb_set, const char *desc);
+XBT_PUBLIC(void) xbt_cfg_register_int    (const char *name, int default_val,       xbt_cfg_cb_t cb_set, const char *desc);
+XBT_PUBLIC(void) xbt_cfg_register_string (const char *name, const char*default_val,xbt_cfg_cb_t cb_set, const char *desc);
+XBT_PUBLIC(void) xbt_cfg_register_boolean(const char *name, const char*default_val,xbt_cfg_cb_t cb_set, const char *desc);
 XBT_PUBLIC(void) xbt_cfg_register_alias(const char *newname, const char *oldname);
 XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);
 
