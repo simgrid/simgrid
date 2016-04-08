@@ -292,8 +292,10 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       } else
         act = remote_act;
 
-      smx_process_t src_proc = MC_smx_resolve_process(simgrid::mc::remote(act->comm.src_proc));
-      smx_process_t dst_proc = MC_smx_resolve_process(simgrid::mc::remote(act->comm.dst_proc));
+      smx_process_t src_proc = mc_model_checker->process().resolveProcess(
+        simgrid::mc::remote(act->comm.src_proc));
+      smx_process_t dst_proc = mc_model_checker->process().resolveProcess(
+        simgrid::mc::remote(act->comm.dst_proc));
       args = bprintf("comm=%s [(%lu)%s (%s)-> (%lu)%s (%s)]", p,
                      src_proc ? src_proc->pid : 0,
                      src_proc ? MC_smx_process_get_host_name(src_proc) : "",
@@ -326,8 +328,10 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       type = "Test TRUE";
       p = pointer_to_string(remote_act);
 
-      smx_process_t src_proc = MC_smx_resolve_process(simgrid::mc::remote(act->comm.src_proc));
-      smx_process_t dst_proc = MC_smx_resolve_process(simgrid::mc::remote(act->comm.dst_proc));
+      smx_process_t src_proc = mc_model_checker->process().resolveProcess(
+        simgrid::mc::remote(act->comm.src_proc));
+      smx_process_t dst_proc = mc_model_checker->process().resolveProcess(
+        simgrid::mc::remote(act->comm.dst_proc));
       args = bprintf("comm=%s [(%lu)%s (%s) -> (%lu)%s (%s)]", p,
                      src_proc->pid,
                      MC_smx_process_get_name(src_proc),
@@ -392,7 +396,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
 
     args = bprintf("locked = %d, owner = %d, sleeping = %d",
       mutex.locked,
-      mutex.owner != nullptr ? (int) MC_smx_resolve_process(simgrid::mc::remote(mutex.owner))->pid : -1,
+      mutex.owner != nullptr ? (int) mc_model_checker->process().resolveProcess(
+        simgrid::mc::remote(mutex.owner))->pid : -1,
       mutex_sleeping.count);
     break;
   }
@@ -522,8 +527,10 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
       mc_model_checker->process().read_bytes(&synchro,
         sizeof(synchro), remote(remote_act));
 
-      smx_process_t src_proc = MC_smx_resolve_process(simgrid::mc::remote(synchro.comm.src_proc));
-      smx_process_t dst_proc = MC_smx_resolve_process(simgrid::mc::remote(synchro.comm.dst_proc));
+      smx_process_t src_proc = mc_model_checker->process().resolveProcess(
+        simgrid::mc::remote(synchro.comm.src_proc));
+      smx_process_t dst_proc = mc_model_checker->process().resolveProcess(
+        simgrid::mc::remote(synchro.comm.dst_proc));
       if (issuer->host)
         label = simgrid::xbt::string_printf("[(%lu)%s] Wait [(%lu)->(%lu)]",
                     issuer->pid,

@@ -57,17 +57,6 @@ XBT_PRIVATE const char* MC_smx_process_get_host_name(smx_process_t p);
 
 XBT_PRIVATE int MC_smpi_process_count(void);
 
-
-/* ***** Resolve (local/MCer structure from remote/MCed addresses) ***** */
-
-/** Get a local copy of the process from the process remote address */
-XBT_PRIVATE smx_process_t MC_smx_resolve_process(
-  simgrid::mc::RemotePtr<s_smx_process_t> process_remote_address);
-
-/** Get the process info structure from the process remote address */
-XBT_PRIVATE simgrid::mc::SimixProcessInformation* MC_smx_resolve_process_info(
-  simgrid::mc::RemotePtr<s_smx_process_t> process_remote_address);
-
 XBT_PRIVATE unsigned long MC_smx_get_maxpid(void);
 
 SG_END_DECL()

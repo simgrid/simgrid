@@ -129,36 +129,6 @@ smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
   xbt_die("Issuer not found");
 }
 
-smx_process_t MC_smx_resolve_process(
-  simgrid::mc::RemotePtr<s_smx_process_t> process_remote_address)
-{
-  xbt_assert(mc_mode == MC_MODE_SERVER);
-
-  if (!process_remote_address)
-    return nullptr;
-
-  simgrid::mc::SimixProcessInformation* process_info =
-    MC_smx_resolve_process_info(process_remote_address);
-  if (process_info)
-    return &process_info->copy;
-  else
-    return nullptr;
-}
-
-simgrid::mc::SimixProcessInformation* MC_smx_resolve_process_info(
-  simgrid::mc::RemotePtr<s_smx_process_t> process_remote_address)
-{
-  xbt_assert(mc_mode == MC_MODE_SERVER);
-
-  for (auto& process_info : mc_model_checker->process().smx_process_infos)
-    if (process_info.address == process_remote_address)
-      return &process_info;
-  for (auto& process_info : mc_model_checker->process().smx_old_process_infos)
-    if (process_info.address == process_remote_address)
-      return &process_info;
-  xbt_die("Process info not found");
-}
-
 const char* MC_smx_process_get_host_name(smx_process_t p)
 {
   if (mc_mode == MC_MODE_CLIENT)

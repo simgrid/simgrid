@@ -76,8 +76,8 @@ struct IgnoredHeapRegion {
 
 /** Representation of a process
  *
- *  This class is mixing a lot of differents responsabilities and is tied
- *  to SIMIX. It should probably split into different classes.
+ *  This class is mixing a lot of different responsabilities and is tied
+ *  to SIMIX. It should probably be split into different classes.
  *
  *  Responsabilities:
  *
@@ -217,6 +217,34 @@ public:
   void ignore_local_variable(const char *var_name, const char *frame_name);
   std::vector<simgrid::mc::SimixProcessInformation>& simix_processes();
   std::vector<simgrid::mc::SimixProcessInformation>& old_simix_processes();
+
+  /** Get a local description of a remote SIMIX process */
+  simgrid::mc::SimixProcessInformation* resolveProcessInfo(
+    simgrid::mc::RemotePtr<s_smx_process_t> process)
+  {
+    xbt_assert(mc_mode == MC_MODE_SERVER);
+    if (!process)
+      return nullptr;
+    this->refresh_simix();
+    for (auto& process_info : this->smx_process_infos)
+      if (process_info.address == process)
+        return &process_info;
+    for (auto& process_info : this->smx_old_process_infos)
+      if (process_info.address == process)
+        return &process_info;
+    return nullptr;
+  }
+
+  /** Get a local copy of the SIMIX process structure */
+  smx_process_t resolveProcess(simgrid::mc::RemotePtr<s_smx_process_t> process)
+  {
+    simgrid::mc::SimixProcessInformation* process_info =
+      this->resolveProcessInfo(process);
+    if (process_info)
+      return &process_info->copy;
+    else
+      return nullptr;
+  }
 
   void dumpStack();
 

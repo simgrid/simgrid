@@ -96,8 +96,10 @@ static void update_comm_pattern(simgrid::mc::PatternCommunication* comm_pattern,
   s_smx_synchro_t comm;
   mc_model_checker->process().read(&comm, remote(comm_addr));
 
-  smx_process_t src_proc = MC_smx_resolve_process(simgrid::mc::remote(comm.comm.src_proc));
-  smx_process_t dst_proc = MC_smx_resolve_process(simgrid::mc::remote(comm.comm.dst_proc));
+  smx_process_t src_proc = mc_model_checker->process().resolveProcess(
+    simgrid::mc::remote(comm.comm.src_proc));
+  smx_process_t dst_proc = mc_model_checker->process().resolveProcess(
+    simgrid::mc::remote(comm.comm.dst_proc));
   comm_pattern->src_proc = src_proc->pid;
   comm_pattern->dst_proc = dst_proc->pid;
   comm_pattern->src_host = MC_smx_process_get_host_name(src_proc);
@@ -189,7 +191,8 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     char* remote_name = mc_model_checker->process().read<char*>(
       (std::uint64_t)(synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name));
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
-    pattern->src_proc = MC_smx_resolve_process(simgrid::mc::remote(synchro.comm.src_proc))->pid;
+    pattern->src_proc = mc_model_checker->process().resolveProcess(
+      simgrid::mc::remote(synchro.comm.src_proc))->pid;
     pattern->src_host = MC_smx_process_get_host_name(issuer);
 
     struct s_smpi_mpi_request mpi_request =
@@ -235,7 +238,8 @@ void MC_get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type
     mc_model_checker->process().read(&remote_name,
       remote(synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name));
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
-    pattern->dst_proc = MC_smx_resolve_process(simgrid::mc::remote(synchro.comm.dst_proc))->pid;
+    pattern->dst_proc = mc_model_checker->process().resolveProcess(
+      simgrid::mc::remote(synchro.comm.dst_proc))->pid;
     pattern->dst_host = MC_smx_process_get_host_name(issuer);
   } else
     xbt_die("Unexpected call_type %i", (int) call_type);
