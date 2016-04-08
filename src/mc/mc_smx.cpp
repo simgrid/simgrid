@@ -20,20 +20,15 @@
 
 using simgrid::mc::remote;
 
-extern "C" {
-
+/** Statically "upcast" a s_smx_process_t into a SimixProcessInformation
+ *
+ *  This gets 'processInfo' from '&processInfo->copy'. It upcasts in the
+ *  sense that we could achieve the same thing by having SimixProcessInformation
+ *  inherit from s_smx_process_t but we don't really want to do that.
+ */
 static inline
-bool is_in_vector(smx_process_t p, std::vector<simgrid::mc::SimixProcessInformation>& ps)
+simgrid::mc::SimixProcessInformation* process_info_cast(smx_process_t p)
 {
-  return (uintptr_t) p >= (uintptr_t) &ps[0]
-    && (uintptr_t) p < (uintptr_t) &ps[ps.size()];
-}
-
-static inline
-simgrid::mc::SimixProcessInformation* MC_smx_process_get_info(smx_process_t p)
-{
-  assert(is_in_vector(p, mc_model_checker->process().smx_process_infos)
-    || is_in_vector(p, mc_model_checker->process().smx_old_process_infos));
   simgrid::mc::SimixProcessInformation* process_info =
     (simgrid::mc::SimixProcessInformation*)
       ((char*) p - offsetof(simgrid::mc::SimixProcessInformation, copy));
@@ -155,7 +150,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   const size_t offset = (char*) &foo.host.name() - (char*) &foo.host;
 
   // Read the simgrid::xbt::string in the MCed process:
-  simgrid::mc::SimixProcessInformation* info = MC_smx_process_get_info(p);
+  simgrid::mc::SimixProcessInformation* info = process_info_cast(p);
   simgrid::xbt::string_data remote_string;
   auto remote_string_address = remote(
     (simgrid::xbt::string_data*) ((char*) p->host + offset));
@@ -174,7 +169,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
   if (!p->name)
     return nullptr;
 
-  simgrid::mc::SimixProcessInformation* info = MC_smx_process_get_info(p);
+  simgrid::mc::SimixProcessInformation* info = process_info_cast(p);
   if (info->name.empty())
     info->name = process->read_string(p->name);
   return info->name.c_str();
@@ -198,6 +193,4 @@ unsigned long MC_smx_get_maxpid(void)
   mc_model_checker->process().read_variable("simix_process_maxpid",
     &maxpid, sizeof(maxpid));
   return maxpid;
-}
-
 }
