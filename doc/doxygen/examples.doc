@@ -136,14 +136,13 @@ We can also wait for the arrival of all messages.
 \skipline Receiver function
 \until end_of_receiver
 
-\subsubsection MSG_ex_master_slave Basic Master/Slaves
+\subsubsection MSG_ex_master_worker Basic Master/Workers
 
-Simulation of a master-slave application using a realistic platform
-and an external description of the deployment.
+Simulation of a master-worker application using a realistic platform and an external description of the deployment.
 
-\paragraph MSG_ex_ms_TOC Table of contents:
+\paragraph MSG_ex_mw_TOC Table of contents:
 
-   - \ref MSG_ext_ms_preliminary
+   - \ref MSG_ext_mw_preliminary
    - \ref MSG_ext_ms_master
    - \ref MSG_ext_ms_slave
    - \ref MSG_ext_ms_forwarder
@@ -155,10 +154,9 @@ and an external description of the deployment.
 
 <hr>
 
-\dontinclude msg/masterslave/masterslave_forwarder.c
+\dontinclude msg/app-masterworker/app-masterworker.c
 
-
-\paragraph MSG_ext_ms_preliminary Preliminary declarations
+\paragraph MSG_ext_mw_preliminary Preliminary declarations
 
 \skip include
 \until printf

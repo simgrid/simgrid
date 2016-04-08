@@ -35,8 +35,6 @@ static void action_Isend(const char *const *action);
 typedef struct {
   int last_Irecv_sender_id;
   int bcast_counter;
-  int reduce_counter;
-  int allReduce_counter;
   xbt_dynar_t isends;           /* of msg_comm_t */
   /* Used to implement irecv+wait */
   xbt_dynar_t irecvs;           /* of msg_comm_t */

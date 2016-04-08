@@ -696,9 +696,9 @@ INPUT                  = doxygen/index.doc \
 ###################################################
 
 INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/sendrecv/sendrecv.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/masterslave/masterslave_forwarder.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/migration \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/suspend \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/app-masterworker/app-masterworker.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/process-suspend/process-suspend.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/properties \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/parallel_task \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/priority \

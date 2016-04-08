@@ -11,8 +11,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 /** @addtogroup MSG_examples
  *  
- *  - <b>migration/migration.c</b> Demonstrates how to use the @ref MSG_process_migrate function to let processes
- *    change the host they run on after their start.
+ *  - <b>process-migration/process-migration.c: Process migration example</b>. Demonstrates how to use the
+ *    @ref MSG_process_migrate function to let processes change the host they run on after their start.
  */
 
 xbt_mutex_t mutex = NULL;

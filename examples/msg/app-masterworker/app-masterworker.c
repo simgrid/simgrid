@@ -8,6 +8,12 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
+/** @addtogroup MSG_examples
+ *
+ *  - <b>app-masterworker/app-masterworker.c: Master/workers example</b>. This good old example is also very simple. Its
+ *    basic version is fully commented on this page: \ref MSG_ex_master_worker.
+ */
+
 static int master(int argc, char *argv[])
 {
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
