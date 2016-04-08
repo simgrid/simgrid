@@ -1,8 +1,8 @@
-foreach(x actions-comm actions-storage app-masterworker async-wait async-waitall async-waitany cloud-capping
-          cloud-masterworker cloud-migration cloud-multicore cloud-simple cloud-two-tasks dht-chord 
+foreach(x actions-comm actions-storage app-masterworker app-pmm app-token-ring async-wait async-waitall async-waitany
+          cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple cloud-two-tasks dht-chord 
           dht-pastry exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures io-file 
-          io-file-unlink io-remote io-storage pmm task-priority process-kill process-migration process-suspend 
-          properties sendrecv set-maestro process-startkilltime synchro token_ring trace-categories 
+          io-file-unlink io-remote io-storage task-priority process-kill process-migration process-suspend 
+          properties sendrecv set-maestro process-startkilltime synchro trace-categories 
           trace-link-srcdst-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-simple trace-user-variables)
   add_executable       (${x}     ${x}/${x}.c)
@@ -13,9 +13,9 @@ foreach(x actions-comm actions-storage app-masterworker async-wait async-waitall
 endforeach()
 
 if(HAVE_NS3)
-  add_executable       (ns3 ns3/ns3.c)
-  target_link_libraries(ns3 simgrid)
-  set_target_properties(ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/ns3)
+  add_executable       (network-ns3 network-ns3/network-ns3.c)
+  target_link_libraries(network-ns3 simgrid)
+  set_target_properties(network-ns3  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/network-ns3)
 endif()
 
 add_executable       (bittorrent app-bittorrent/bittorrent.c app-bittorrent/messages.c app-bittorrent/peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
@@ -54,13 +54,13 @@ set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/gen
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py                     PARENT_SCOPE)
 set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/chainsend.c
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/common.h
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/ns3.c                                    PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/network-ns3.c                    PARENT_SCOPE)
 set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/app-chainsend.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/dht-kademlia.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore.tesh
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi.tesh
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/ns3.tesh                                 PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/network-ns3.tesh                 PARENT_SCOPE)
 set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-multicore_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/app-masterworker/app-masterworker-vivaldi_d.xml
@@ -68,23 +68,23 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actio
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait3_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/async-wait/async-wait4_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/energy-onoff/platform_onoff.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/3hosts_2links_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/3links-timer_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/3links_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/crosstraffic_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/dogbone_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/onelink_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/one_cluster_d.xml
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/ns3/two_clusters_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3hosts_2links_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3links-timer_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/3links_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/crosstraffic_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/dogbone_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/onelink_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/one_cluster_d.xml
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/two_clusters_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/baseline_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/kill_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
-foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker async-wait async-waitall
-          async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks 
+foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-token-ring async-wait
+          async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks 
           dht-chord dht-kademlia failures io-file io-file-unlink io-remote io-storage task-priority process-kill
-          process-migration process-suspend properties sendrecv synchro process-startkilltime token_ring)
+          process-migration process-suspend properties sendrecv synchro process-startkilltime)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()
 
@@ -107,10 +107,10 @@ ADD_TESH_FACTORIES(msg-set-maestro                     "thread" --setenv srcdir=
 ADD_TESH_FACTORIES(app-masterworker-multicore   "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-multicore.tesh)
 ADD_TESH_FACTORIES(app-masterworker-vivaldi     "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-masterworker/app-masterworker-vivaldi.tesh)
 
-ADD_TESH(msg-pmm  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/pmm/pmm.tesh)
+ADD_TESH(msg-app-pmm  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/app-pmm/app-pmm.tesh)
 
 if(HAVE_NS3)
-  ADD_TESH_FACTORIES(msg-ns3 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/ns3/ns3.tesh)
+  ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)
 endif()
 
 # These one are not usable:

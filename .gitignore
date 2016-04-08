@@ -161,8 +161,8 @@ examples/msg/mc/test/snapshot_comparison4
 examples/msg/mc/test/snapshot_comparison5
 examples/msg/process-migration/process-migration
 examples/msg/ms.trace
-examples/msg/ns3/ns3
-examples/msg/pmm/pmm
+examples/msg/network-ns3/network-ns3
+examples/msg/app-pmm/app-pmm
 examples/msg/task-priority/task-priority
 examples/msg/procmig.trace
 examples/msg/properties/properties
@@ -172,8 +172,7 @@ examples/msg/set-maestro/set-maestro
 examples/msg/simulation.trace
 examples/msg/process-startkilltime/process-startkilltime
 examples/msg/process-suspend/process-suspend
-examples/msg/token_ring/token_ring
-examples/msg/trace/test_trace_integration
+examples/msg/app-token-ring/app-token-ring
 examples/msg/trace-categories/trace-categories
 examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables
 examples/msg/trace-link-user-variables/trace-link-user-variables
