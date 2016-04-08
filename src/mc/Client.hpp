@@ -22,6 +22,10 @@
 namespace simgrid {
 namespace mc {
 
+/** Model-checked-side of the communication protocol
+ *
+ *  Send messages to the model-checker and handles message from it.
+ */
 class XBT_PUBLIC() Client {
 private:
   bool active_ = false;

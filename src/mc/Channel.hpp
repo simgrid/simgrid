@@ -16,6 +16,11 @@
 namespace simgrid {
 namespace mc {
 
+/** A channel for exchanging messages between model-checker and model-checked
+ *
+ *  This hides the way the messages are transfered. Currently, they are sent
+ *  over a SOCK_DGRAM socket.
+ */
 class Channel {
   int socket_ = -1;
   template<class M>

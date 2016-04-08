@@ -164,7 +164,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  /* Horrible hack to find the offset of the id in the simgrid::s4u::Host.
+  /* HACK, Horrible hack to find the offset of the id in the simgrid::s4u::Host.
 
      Offsetof is not supported for non-POD types but this should
      work in pratice for the targets currently supported by the MC

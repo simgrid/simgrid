@@ -301,7 +301,6 @@ CommunicationDeterminismChecker::~CommunicationDeterminismChecker()
 
 }
 
-// TODO, deduplicate with SafetyChecker
 RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
 {
   RecordTrace res;
@@ -310,7 +309,6 @@ RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
   return res;
 }
 
-// TODO, deduplicate with SafetyChecker
 std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;

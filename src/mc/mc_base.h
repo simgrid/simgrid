@@ -15,7 +15,7 @@
 namespace simgrid {
 namespace mc {
 
-/** Can this requests can be executed.
+/** Can this requests can be executed?
  *
  *  Most requests are always enabled but WAIT and WAITANY
  *  are not always enabled: a WAIT where the communication does not
