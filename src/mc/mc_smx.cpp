@@ -113,8 +113,7 @@ void Process::refresh_simix()
  */
 smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 {
-  if (mc_mode == MC_MODE_CLIENT)
-    return req->issuer;
+  xbt_assert(mc_mode == MC_MODE_SERVER);
 
   // This is the address of the smx_process in the MCed process:
   auto address = simgrid::mc::remote(req->issuer);
@@ -133,10 +132,10 @@ smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 smx_process_t MC_smx_resolve_process(
   simgrid::mc::RemotePtr<s_smx_process_t> process_remote_address)
 {
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+
   if (!process_remote_address)
     return nullptr;
-  if (mc_mode == MC_MODE_CLIENT)
-    return process_remote_address.local();
 
   simgrid::mc::SimixProcessInformation* process_info =
     MC_smx_resolve_process_info(process_remote_address);
@@ -149,8 +148,8 @@ smx_process_t MC_smx_resolve_process(
 simgrid::mc::SimixProcessInformation* MC_smx_resolve_process_info(
   simgrid::mc::RemotePtr<s_smx_process_t> process_remote_address)
 {
-  if (mc_mode == MC_MODE_CLIENT)
-    xbt_die("No process_info for local process is not enabled.");
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+
   for (auto& process_info : mc_model_checker->process().smx_process_infos)
     if (process_info.address == process_remote_address)
       return &process_info;

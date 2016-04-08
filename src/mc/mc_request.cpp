@@ -205,6 +205,8 @@ static char *buff_size_to_string(size_t buff_size)
 
 std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid::mc::RequestType request_type)
 {
+  xbt_assert(mc_mode == MC_MODE_SERVER);
+
   bool use_remote_comm = true;
   switch(request_type) {
   case simgrid::mc::RequestType::simix:
