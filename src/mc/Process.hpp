@@ -33,6 +33,7 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_base.h"
+#include "src/mc/RemotePtr.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/ObjectInformation.hpp"
@@ -44,7 +45,7 @@ namespace mc {
 class SimixProcessInformation {
 public:
   /** MCed address of the process */
-  void* address = nullptr;
+  RemotePtr<s_smx_process_t> address = nullptr;
   union {
     /** (Flat) Copy of the process data structure */
     struct s_smx_process copy;

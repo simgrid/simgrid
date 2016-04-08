@@ -158,8 +158,8 @@ bool request_is_enabled(smx_simcall_t req)
     else
 #if HAVE_MC
       // TODO, *(mutex->owner) :/
-      return MC_smx_resolve_process(mutex->owner)->pid ==
-        MC_smx_resolve_process(req->issuer)->pid;
+      return MC_smx_resolve_process(simgrid::mc::remote(mutex->owner))->pid ==
+        MC_smx_resolve_process(simgrid::mc::remote(req->issuer))->pid;
 #else
       return mutex->owner->pid == req->issuer->pid;
 #endif

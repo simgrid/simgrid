@@ -34,6 +34,11 @@ public:
   RemotePtr(T* address) : address_((std::uintptr_t)address) {}
   std::uint64_t address() const { return address_; }
 
+  /** Turn into a local pointer
+   *
+   (if the remote process is not, in fact, remote) */
+  T* local() { return (T*) address_; }
+
   operator bool() const
   {
     return address_;
