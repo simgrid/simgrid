@@ -565,7 +565,6 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
               // TODO, add address
               XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                         heapinfo1->busy_block.busy_size);
-              //mmalloc_backtrace_block_display((void*)heapinfo1, i);
             }
             nb_diff1++;
           }
@@ -583,7 +582,6 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
                     ("Block %zu, Fragment %zu not found (size used = %zd)",
                      i, j,
                      heapinfo1->busy_frag.frag_size[j]);
-                //mmalloc_backtrace_fragment_display((void*)heapinfo1, i, j);
               }
               nb_diff1++;
             }
@@ -607,7 +605,6 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
               // TODO, print address of the block
               XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                         heapinfo2->busy_block.busy_size);
-              //mmalloc_backtrace_block_display((void*)heapinfo2, i);
             }
             nb_diff2++;
           }
@@ -625,7 +622,6 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
                     ("Block %zu, Fragment %zu not found (size used = %zd)",
                      i, j,
                      heapinfo2->busy_frag.frag_size[j]);
-                //mmalloc_backtrace_fragment_display((void*)heapinfo2, i, j);
               }
               nb_diff2++;
             }
