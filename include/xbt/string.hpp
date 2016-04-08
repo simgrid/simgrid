@@ -36,9 +36,9 @@ struct string_data {
   std::size_t len;
 };
 
-/** A std::string with well-known representation
+/** A std::string-like with well-known representation
  *
- *  This is a (incomplete) drop-in replacement for `std::string`.
+ *  HACK, this is a (incomplete) replacement for `std::string`.
  *  It has a fixed POD representation (`simgrid::xbt::string_data`)
  *  which can be used to easily read the string content from another
  *  process.
