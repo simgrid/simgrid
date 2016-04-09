@@ -158,9 +158,9 @@ Check the examples in <b>examples/msg/actions/actions.c</b> for details.
 /**
 @defgroup MSG_examples MSG examples
 @ingroup MSG_API
-@brief MSG examples from examples directory examples/msg
+@brief .
 
-MSG comes with an extensive set of examples. It is sometimes difficult to find the one you need. This list aims at helping you finding the example from which you can learn what you want to.
+Finding the right example in examples/msg is sometimes difficult. This list aims at helping you to find the example from which you can learn what you want to.
 
 \section msg_bsc_ex Basic examples
 

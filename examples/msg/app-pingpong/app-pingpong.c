@@ -8,11 +8,11 @@
 
 /** @addtogroup MSG_examples
  *
- *  - <b>Ping-pong example: app-pingpong/app-pingpong.c </b>. It's hard to think of a simpler example. The tesh file
+ *  - <b>Ping-Pong: app-pingpong/app-pingpong.c </b>. It's hard to think of a simpler example. The tesh file
  *    laying in the directory is instructive concerning the way to pass options to the simulators (see \ref options).
  */
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(pingpong,"Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(mag_app_pingpong,"Messages specific for this msg example");
 
 static int pinger(int argc, char *argv[])
 {

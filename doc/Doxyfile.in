@@ -699,10 +699,10 @@ INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pi
                          @CMAKE_HOME_DIRECTORY@/examples/msg/app-masterworker/app-masterworker.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-suspend/process-suspend.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/task-priority/task-priority.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/properties \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/parallel_task \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/priority \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/async-wait/async-wait.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer2.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer3.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/simple.c \

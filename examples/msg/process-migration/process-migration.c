@@ -7,38 +7,37 @@
 #include "simgrid/msg.h"
 #include "xbt/synchro_core.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_migration, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
- *  
- *  - <b>process-migration/process-migration.c: Process migration example</b>. Demonstrates how to use the
- *    @ref MSG_process_migrate function to let processes change the host they run on after their start.
+ *
+ *  - <b>Process migration: process-migration/process-migration.c</b>. Processes can move or be moved from a host to
+ *    another  while they are running thanks to the @ref MSG_process_migrate function.
  */
 
-xbt_mutex_t mutex = NULL;
-xbt_cond_t cond = NULL;
-static msg_process_t process_to_migrate = NULL;
+xbt_mutex_t checkpoint = NULL;
+xbt_cond_t identification = NULL;
+static msg_process_t controlled_process = NULL;
 
-/** The guy we will move from host to host. It move alone and then is moved by policeman back  */
+/** The Emigrant will be moved from host to host. */
 static int emigrant(int argc, char *argv[])
 {
-  msg_task_t task;
-  XBT_INFO("I'll look for a new job on another machine where the grass is greener.");
-  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin"));
+  XBT_INFO("I'll look for a new job on another machine ('Boivin') where the grass is greener.");
+  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin"));    /** - First, move to another host by myself */
 
   XBT_INFO("Yeah, found something to do");
-  task = MSG_task_create("job", 98095000, 0, NULL);
+  msg_task_t task = MSG_task_create("job", 98095000, 0, NULL);            /** - Execute some work there */
   MSG_task_execute(task);
   MSG_task_destroy(task);
   MSG_process_sleep(2);
   XBT_INFO("Moving back home after work");
-  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Jacquelin"));
-  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin"));
+  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Jacquelin")); /** - Move back to original location */
+  MSG_process_migrate(MSG_process_self(), MSG_host_by_name("Boivin"));    /** - Go back to the other host to sleep*/
   MSG_process_sleep(4);
-  xbt_mutex_acquire(mutex);
-  process_to_migrate = MSG_process_self();
-  xbt_cond_broadcast(cond);
-  xbt_mutex_release(mutex);
+  xbt_mutex_acquire(checkpoint);                                          /** - Get controlled at checkpoint */
+  controlled_process = MSG_process_self();                                /** - and get moved back by @ref policeman */
+  xbt_cond_broadcast(identification);
+  xbt_mutex_release(checkpoint);
   MSG_process_suspend(MSG_process_self());
   msg_host_t h = MSG_process_get_host(MSG_process_self());
   XBT_INFO("I've been moved on this new host: %s", MSG_host_get_name(h));
@@ -46,16 +45,16 @@ static int emigrant(int argc, char *argv[])
   return 0;
 }
 
-/* This function move the emigrant on Jacquelin */
+/** The policeman check for emigrants and move them back to 'Jacquelin' */
 static int policeman(int argc, char *argv[])
 {
-  xbt_mutex_acquire(mutex);
-  XBT_INFO("Wait a bit before migrating the emigrant.");
-  while (process_to_migrate == NULL) xbt_cond_wait(cond, mutex);
-  MSG_process_migrate(process_to_migrate, MSG_host_by_name("Jacquelin"));
+  xbt_mutex_acquire(checkpoint);
+  XBT_INFO("Wait at the checkpoint.");  /** - Wait at @ref checkpoint to control the @ref identification of processes */
+  while (controlled_process == NULL) xbt_cond_wait(identification, checkpoint);
+  MSG_process_migrate(controlled_process, MSG_host_by_name("Jacquelin")); /** - Move an emigrant to Jacquelin */
   XBT_INFO("I moved the emigrant");
-  MSG_process_resume(process_to_migrate);
-  xbt_mutex_release(mutex);
+  MSG_process_resume(controlled_process);
+  xbt_mutex_release(checkpoint);
 
   return 0;
 }
@@ -67,17 +66,17 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
-  MSG_create_environment(argv[1]);
-
+  MSG_create_environment(argv[1]);  /** - Load the platform description */
+  /** - Create and deploy @ref emigrant and @ref policeman processes */
   MSG_process_create("emigrant", emigrant, NULL, MSG_get_host_by_name("Jacquelin"));
   MSG_process_create("policeman", policeman, NULL, MSG_get_host_by_name("Boivin"));
 
-  mutex = xbt_mutex_init();
-  cond = xbt_cond_init();
-  res = MSG_main();
+  checkpoint = xbt_mutex_init();     /** - Initiate @ref checkpoint and @ref identification*/
+  identification = xbt_cond_init();
+  res = MSG_main();                  /** - Run the simulation */
   XBT_INFO("Simulation time %g", MSG_get_clock());
-  xbt_cond_destroy(cond);
-  xbt_mutex_destroy(mutex);
+  xbt_cond_destroy(identification);
+  xbt_mutex_destroy(checkpoint);
 
   return res != MSG_OK;
 }
