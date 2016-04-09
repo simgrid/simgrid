@@ -357,38 +357,38 @@ void TRACE_global_init(int *argc, char **argv)
 
   is_initialised = 1;
   /* name of the tracefile */
-  xbt_cfg_register_string (OPT_TRACING_FILENAME,   "Trace file created by the instrumented SimGrid.", "simgrid.trace", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING,            "Enable Tracing.",                                            "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_PLATFORM,   "Register the platform in the trace as a hierarchy.",         "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_TOPOLOGY,   "Register the platform topology in the trace as a graph.",   "yes", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI,       "Tracing of the SMPI interface.",                             "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI_GROUP, "Group MPI processes by host.",                               "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI_COMPUTING, "Generate states for timing out of SMPI parts of the application", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI_SLEEPING,  "Generate states for timing out of SMPI parts of the application", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_SMPI_INTERNALS, "View internal messages sent by Collective communications in SMPI", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_CATEGORIZED,    "Tracing categorized resource utilization of hosts and links.", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_UNCATEGORIZED,  "Tracing uncategorized resource utilization of hosts and links.", "no", NULL);
+  xbt_cfg_register_string (OPT_TRACING_FILENAME, "simgrid.trace", NULL, "Trace file created by the instrumented SimGrid.");
+  xbt_cfg_register_boolean(OPT_TRACING, "no", NULL, "Enable Tracing.");
+  xbt_cfg_register_boolean(OPT_TRACING_PLATFORM, "no", NULL, "Register the platform in the trace as a hierarchy.");
+  xbt_cfg_register_boolean(OPT_TRACING_TOPOLOGY, "yes", NULL, "Register the platform topology in the trace as a graph.");
+  xbt_cfg_register_boolean(OPT_TRACING_SMPI, "no", NULL, "Tracing of the SMPI interface.");
+  xbt_cfg_register_boolean(OPT_TRACING_SMPI_GROUP,"no", NULL, "Group MPI processes by host.");
+  xbt_cfg_register_boolean(OPT_TRACING_SMPI_COMPUTING, "no", NULL, "Generate states for timing out of SMPI parts of the application");
+  xbt_cfg_register_boolean(OPT_TRACING_SMPI_SLEEPING, "no", NULL, "Generate states for timing out of SMPI parts of the application");
+  xbt_cfg_register_boolean(OPT_TRACING_SMPI_INTERNALS, "no", NULL, "View internal messages sent by Collective communications in SMPI");
+  xbt_cfg_register_boolean(OPT_TRACING_CATEGORIZED, "no", NULL, "Tracing categorized resource utilization of hosts and links.");
+  xbt_cfg_register_boolean(OPT_TRACING_UNCATEGORIZED, "no", NULL, "Tracing uncategorized resource utilization of hosts and links.");
 
-  xbt_cfg_register_boolean(OPT_TRACING_MSG_PROCESS,  "Tracing of MSG process behavior.", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_MSG_VM,       "Tracing of MSG process behavior.", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_LINK,  "Do not trace link bandwidth and latency.", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_POWER, "Do not trace host power.", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_BUFFER,        "Buffer trace events to put them in temporal order.", "yes", NULL);
+  xbt_cfg_register_boolean(OPT_TRACING_MSG_PROCESS, "no", NULL, "Tracing of MSG process behavior.");
+  xbt_cfg_register_boolean(OPT_TRACING_MSG_VM, "no", NULL, "Tracing of MSG process behavior.");
+  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_LINK, "no", NULL, "Do not trace link bandwidth and latency.");
+  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_POWER, "no", NULL, "Do not trace host power.");
+  xbt_cfg_register_boolean(OPT_TRACING_BUFFER, "yes", NULL, "Buffer trace events to put them in temporal order.");
 
-  xbt_cfg_register_boolean(OPT_TRACING_ONELINK_ONLY, "Use only routes with one link to trace platform.", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_DESTROY, "Disable platform containers destruction.", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_BASIC, "Avoid extended events (impoverished trace file).", "no", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_DISPLAY_SIZES, "(smpi only) Extended events with message size information", "no", NULL);
-  xbt_cfg_register_string(OPT_TRACING_FORMAT, "(smpi only) Switch the output format of Tracing" ,"Paje", NULL);
-  xbt_cfg_register_boolean(OPT_TRACING_FORMAT_TI_ONEFILE, "(smpi only) For replay format only : output to one file only", "no", NULL);
-  xbt_cfg_register_string(OPT_TRACING_COMMENT, "Comment to be added on the top of the trace file.", "", NULL);
-  xbt_cfg_register_string(OPT_TRACING_COMMENT_FILE,
-      "The contents of the file are added to the top of the trace file as comment.", "", NULL);
-  xbt_cfg_register_int(OPT_TRACING_PRECISION, "Numerical precision used when timestamping events "
-      "(expressed in number of digits after decimal point)", 6, NULL);
+  xbt_cfg_register_boolean(OPT_TRACING_ONELINK_ONLY, "no", NULL, "Use only routes with one link to trace platform.");
+  xbt_cfg_register_boolean(OPT_TRACING_DISABLE_DESTROY, "no", NULL, "Disable platform containers destruction.");
+  xbt_cfg_register_boolean(OPT_TRACING_BASIC, "no", NULL, "Avoid extended events (impoverished trace file).");
+  xbt_cfg_register_boolean(OPT_TRACING_DISPLAY_SIZES, "no", NULL, "(smpi only) Extended events with message size information");
+  xbt_cfg_register_string(OPT_TRACING_FORMAT, "Paje", NULL, "(smpi only) Switch the output format of Tracing");
+  xbt_cfg_register_boolean(OPT_TRACING_FORMAT_TI_ONEFILE, "no", NULL, "(smpi only) For replay format only : output to one file only");
+  xbt_cfg_register_string(OPT_TRACING_COMMENT, "", NULL, "Comment to be added on the top of the trace file.");
+  xbt_cfg_register_string(OPT_TRACING_COMMENT_FILE, "", NULL,
+      "The contents of the file are added to the top of the trace file as comment.");
+  xbt_cfg_register_int(OPT_TRACING_PRECISION, 6, NULL, "Numerical precision used when timestamping events "
+      "(expressed in number of digits after decimal point)");
   /* Viva graph configuration for uncategorized tracing */
-  xbt_cfg_register_string(OPT_VIVA_UNCAT_CONF, "Viva Graph configuration file for uncategorized resource utilization traces.", "", NULL);
-  xbt_cfg_register_string(OPT_VIVA_CAT_CONF, "Viva Graph configuration file for categorized resource utilization traces.", "", NULL);
+  xbt_cfg_register_string(OPT_VIVA_UNCAT_CONF, "", NULL, "Viva Graph configuration file for uncategorized resource utilization traces.");
+  xbt_cfg_register_string(OPT_VIVA_CAT_CONF, "", NULL, "Viva Graph configuration file for categorized resource utilization traces.");
 
   /* instrumentation can be considered configured now */
   trace_configured = 1;

@@ -45,9 +45,8 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
-    xbt_cfg_register_boolean("msg/debug_multiple_use",
-        "Print backtraces of both processes when there is a conflict of multiple use of a task",
-        "no", _sg_cfg_cb_msg_debug_multiple_use);
+    xbt_cfg_register_boolean("msg/debug_multiple_use", "no", _sg_cfg_cb_msg_debug_multiple_use,
+        "Print backtraces of both processes when there is a conflict of multiple use of a task");
 
     SIMIX_global_init(argc, argv);
 

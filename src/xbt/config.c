@@ -229,19 +229,19 @@ static void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc
   xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
 }
 
-void xbt_cfg_register_double(const char *name, const char *desc, double default_value,xbt_cfg_cb_t cb_set){
+void xbt_cfg_register_double(const char *name, double default_value,xbt_cfg_cb_t cb_set, const char *desc){
   xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,cb_set);
   xbt_cfg_setdefault_double(name, default_value);
 }
-void xbt_cfg_register_int(const char *name, const char *desc, int default_value,xbt_cfg_cb_t cb_set){
+void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc) {
   xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,cb_set);
   xbt_cfg_setdefault_int(name, default_value);
 }
-void xbt_cfg_register_string(const char *name, const char *desc, const char *default_value, xbt_cfg_cb_t cb_set){
+void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc){
   xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,cb_set);
   xbt_cfg_setdefault_string(name, default_value);
 }
-void xbt_cfg_register_boolean(const char *name, const char *desc, const char*default_value,xbt_cfg_cb_t cb_set){
+void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc){
   xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,cb_set);
   xbt_cfg_setdefault_boolean(name, default_value);
 }

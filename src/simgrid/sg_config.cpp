@@ -473,101 +473,95 @@ void sg_config_init(int *argc, char **argv)
 
     /* Plugins configuration */
     describe_model(description, surf_plugin_description, "plugin", "The plugins");
-    xbt_cfg_register_string("plugin", description, nullptr, &_sg_cfg_cb__plugin);
+    xbt_cfg_register_string("plugin", nullptr, &_sg_cfg_cb__plugin, description);
 
     describe_model(description, surf_cpu_model_description, "model", "The model to use for the CPU");
-    xbt_cfg_register_string("cpu/model", description, "Cas01", &_sg_cfg_cb__cpu_model);
+    xbt_cfg_register_string("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, description);
 
     describe_model(description, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the CPU");
-    xbt_cfg_register_string("cpu/optim", description, "Lazy", &_sg_cfg_cb__optimization_mode);
+    xbt_cfg_register_string("cpu/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
 
     describe_model(description, surf_storage_model_description, "model", "The model to use for the storage");
-    xbt_cfg_register_string("storage/model", description, "default", &_sg_cfg_cb__storage_mode);
+    xbt_cfg_register_string("storage/model", "default", &_sg_cfg_cb__storage_mode, description);
 
     describe_model(description, surf_network_model_description, "model", "The model to use for the network");
-    xbt_cfg_register_string("network/model", description, "LV08", &_sg_cfg_cb__network_model);
+    xbt_cfg_register_string("network/model", "LV08", &_sg_cfg_cb__network_model, description);
 
     describe_model(description, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the network");
-    xbt_cfg_register_string("network/optim", description, "Lazy", &_sg_cfg_cb__optimization_mode);
+    xbt_cfg_register_string("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
 
     describe_model(description, surf_host_model_description, "model", "The model to use for the host");
-    xbt_cfg_register_string("host/model", description, "default", &_sg_cfg_cb__host_model);
+    xbt_cfg_register_string("host/model", "default", &_sg_cfg_cb__host_model, description);
 
     describe_model(description, surf_vm_model_description, "model", "The model to use for the vm");
-    xbt_cfg_register_string("vm/model", description, "default", &_sg_cfg_cb__vm_model);
+    xbt_cfg_register_string("vm/model", "default", &_sg_cfg_cb__vm_model, description);
 
-    xbt_cfg_register_double("network/TCP_gamma",
-        "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)",
-        4194304.0, _sg_cfg_cb__tcp_gamma);
-
-    xbt_cfg_register_double("surf/precision", "Numerical precision used when updating simulation times (in seconds)",
-        0.00001, _sg_cfg_cb__surf_precision);
-
-    xbt_cfg_register_double("maxmin/precision",
-        "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)",
-        0.00001, _sg_cfg_cb__maxmin_precision);
+    xbt_cfg_register_double("network/TCP_gamma",  4194304.0, _sg_cfg_cb__tcp_gamma,
+        "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)");
+    xbt_cfg_register_double("surf/precision", 0.00001, _sg_cfg_cb__surf_precision,
+        "Numerical precision used when updating simulation times (in seconds)");
+    xbt_cfg_register_double("maxmin/precision", 0.00001, _sg_cfg_cb__maxmin_precision,
+        "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)");
 
     /* The parameters of network models */
 
-    xbt_cfg_register_double("network/sender_gap", "Minimum gap between two overlapping sends", NAN, _sg_cfg_cb__sender_gap); /* real default for "network/sender_gap" is set in network_smpi.cpp */
-    xbt_cfg_register_double("network/latency_factor", "Correction factor to apply to the provided latency (default value set by network model)",
-        1.0, _sg_cfg_cb__latency_factor);
-    xbt_cfg_register_double("network/bandwidth_factor", "Correction factor to apply to the provided bandwidth (default value set by network model)",
-        1.0, _sg_cfg_cb__bandwidth_factor);
-    xbt_cfg_register_double("network/weight_S",
-        "Correction factor to apply to the weight of competing streams (default value set by network model)",
-        NAN, _sg_cfg_cb__weight_S); /* real default for "network/weight_S" is set in network_*.cpp */
+    xbt_cfg_register_double("network/sender_gap", NAN, _sg_cfg_cb__sender_gap,
+        "Minimum gap between two overlapping sends"); /* real default for "network/sender_gap" is set in network_smpi.cpp */
+    xbt_cfg_register_double("network/latency_factor", 1.0, _sg_cfg_cb__latency_factor,
+        "Correction factor to apply to the provided latency (default value set by network model)");
+    xbt_cfg_register_double("network/bandwidth_factor", 1.0, _sg_cfg_cb__bandwidth_factor, "Correction factor to apply to the provided bandwidth (default value set by network model)");
+    xbt_cfg_register_double("network/weight_S", NAN, _sg_cfg_cb__weight_S, /* real default for "network/weight_S" is set in network_*.cpp */
+        "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
     /* Inclusion path */
-    xbt_cfg_register_string("path", "Lookup path for inclusions in platform and deployment XML files", "", _sg_cfg_cb__surf_path);
+    xbt_cfg_register_string("path", "", _sg_cfg_cb__surf_path, "Lookup path for inclusions in platform and deployment XML files");
 
-    xbt_cfg_register_boolean("cpu/maxmin_selective_update",
-        "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
-        "no", NULL);
-    xbt_cfg_register_boolean("network/maxmin_selective_update",
-        "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)",
-        "no", NULL);
+    xbt_cfg_register_boolean("cpu/maxmin_selective_update", "no", NULL,
+        "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
+    xbt_cfg_register_boolean("network/maxmin_selective_update", "no", NULL,
+        "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
     /* Replay (this part is enabled even if MC it disabled) */
-    xbt_cfg_register_string("model-check/replay", "Enable replay mode with the given path", nullptr, _sg_cfg_cb_model_check_replay);
+    xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
+        "Model-check path to replay (as reported by SimGrid when a violation is reported)");
 
 #if HAVE_MC
     /* do model-checking-record */
-    xbt_cfg_register_boolean("model-check/record", "Record the model-checking paths", "no", _sg_cfg_cb_model_check_record);
+    xbt_cfg_register_boolean("model-check/record", "no", _sg_cfg_cb_model_check_record, "Record the model-checking paths");
 
-    xbt_cfg_register_int("model-check/checkpoint",
-                     "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
-                     "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.",
-                     0, _mc_cfg_cb_checkpoint);
+    xbt_cfg_register_int("model-check/checkpoint", 0, _mc_cfg_cb_checkpoint,
+        "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
+        "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.");
 
-    xbt_cfg_register_boolean("model-check/sparse_checkpoint", "Use sparse per-page snapshots.", "no", _mc_cfg_cb_sparse_checkpoint);
-    xbt_cfg_register_boolean("model-check/soft-dirty", "Use sparse per-page snapshots.", "no", _mc_cfg_cb_soft_dirty);
-    xbt_cfg_register_boolean("model-check/ksm", "Kernel same-page merging", "no", _mc_cfg_cb_ksm);
+    xbt_cfg_register_boolean("model-check/sparse_checkpoint", "no", _mc_cfg_cb_sparse_checkpoint, "Use sparse per-page snapshots.");
+    xbt_cfg_register_boolean("model-check/soft-dirty", "no", _mc_cfg_cb_soft_dirty, "Use sparse per-page snapshots.");
+    xbt_cfg_register_boolean("model-check/ksm", "no", _mc_cfg_cb_ksm, "Kernel same-page merging");
 
-    xbt_cfg_register_string("model-check/property", "Name of the file containing the property, as formated by the ltl2ba program.",
-        "", _mc_cfg_cb_property);
+    xbt_cfg_register_string("model-check/property","", _mc_cfg_cb_property,
+        "Name of the file containing the property, as formated by the ltl2ba program.");
+    xbt_cfg_register_boolean("model-check/communications_determinism", "no", _mc_cfg_cb_comms_determinism,
+        "Whether to enable the detection of communication determinism");
 
-    xbt_cfg_register_boolean("model-check/communications_determinism",
-        "Whether to enable the detection of communication determinism", "no", _mc_cfg_cb_comms_determinism);
-
-    xbt_cfg_register_boolean("model-check/send_determinism",
-        "Enable/disable the detection of send-determinism in the communications schemes", "no", _mc_cfg_cb_send_determinism);
+    xbt_cfg_register_boolean("model-check/send_determinism", "no", _mc_cfg_cb_send_determinism,
+        "Enable/disable the detection of send-determinism in the communications schemes");
 
     /* Specify the kind of model-checking reduction */
-    xbt_cfg_register_string("model-check/reduction", "Specify the kind of exploration reduction (either none or DPOR)", "dpor", _mc_cfg_cb_reduce);
-    xbt_cfg_register_boolean("model-check/timeout", "Whether to enable timeouts for wait requests", "no",  _mc_cfg_cb_timeout);
+    xbt_cfg_register_string("model-check/reduction", "dpor", _mc_cfg_cb_reduce,
+        "Specify the kind of exploration reduction (either none or DPOR)");
+    xbt_cfg_register_boolean("model-check/timeout", "no",  _mc_cfg_cb_timeout,
+        "Whether to enable timeouts for wait requests");
 
-    xbt_cfg_register_boolean("model-check/hash", "Whether to enable state hash for state comparison (experimental)", "no", _mc_cfg_cb_hash);
-    xbt_cfg_register_boolean("model-check/snapshot_fds", "Whether file descriptors must be snapshoted (currently unusable)", "no",  _mc_cfg_cb_snapshot_fds);
-    xbt_cfg_register_int("model-check/max_depth", "Maximal exploration depth (default: 1000)", 1000, _mc_cfg_cb_max_depth);
-    xbt_cfg_register_int("model-check/visited",
-        "Specify the number of visited state stored for state comparison reduction. If value=5, the last 5 visited states are stored. If value=0 (the default), all states are stored.",
-        0, _mc_cfg_cb_visited);
+    xbt_cfg_register_boolean("model-check/hash", "no", _mc_cfg_cb_hash, "Whether to enable state hash for state comparison (experimental)");
+    xbt_cfg_register_boolean("model-check/snapshot_fds", "no",  _mc_cfg_cb_snapshot_fds,
+        "Whether file descriptors must be snapshoted (currently unusable)");
+    xbt_cfg_register_int("model-check/max_depth", 1000, _mc_cfg_cb_max_depth, "Maximal exploration depth (default: 1000)");
+    xbt_cfg_register_int("model-check/visited", 0, _mc_cfg_cb_visited,
+        "Specify the number of visited state stored for state comparison reduction. If value=5, the last 5 visited states are stored. If value=0 (the default), all states are stored.");
 
-    xbt_cfg_register_string("model-check/dot_output", "Name of dot output file corresponding to graph state", "", _mc_cfg_cb_dot_output);
-    xbt_cfg_register_boolean("model-check/termination", "Whether to enable non progressive cycle detection", "no", _mc_cfg_cb_termination);
+    xbt_cfg_register_string("model-check/dot_output", "", _mc_cfg_cb_dot_output, "Name of dot output file corresponding to graph state");
+    xbt_cfg_register_boolean("model-check/termination", "no", _mc_cfg_cb_termination, "Whether to enable non progressive cycle detection");
 #endif
 
-    xbt_cfg_register_boolean("verbose-exit", "Activate the \"do nothing\" mode in Ctrl-C", "yes", _sg_cfg_cb_verbose_exit);
+    xbt_cfg_register_boolean("verbose-exit", "yes", _sg_cfg_cb_verbose_exit, "Activate the \"do nothing\" mode in Ctrl-C");
 
     /* context factory */
     const char *dflt_ctx_fact = "thread";
@@ -586,98 +580,97 @@ void sg_config_init(int *argc, char **argv)
 #endif
       sprintf(p, ".");
     }
-    xbt_cfg_register_string("contexts/factory", description, dflt_ctx_fact, _sg_cfg_cb_context_factory);
+    xbt_cfg_register_string("contexts/factory", dflt_ctx_fact, _sg_cfg_cb_context_factory, description);
 
-    xbt_cfg_register_int("contexts/stack_size", "Stack size of contexts in KiB", 8*1024, _sg_cfg_cb_context_stack_size);
+    xbt_cfg_register_int("contexts/stack_size", 8*1024, _sg_cfg_cb_context_stack_size, "Stack size of contexts in KiB");
     /* (FIXME: this is unpleasant) Reset this static variable that was altered when setting the default value. */
     smx_context_stack_size_was_set = 0;
 
     /* guard size for contexts stacks in memory pages */
-    xbt_cfg_register_int("contexts/guard_size", "Guard size for contexts stacks in memory pages",
+    xbt_cfg_register_int("contexts/guard_size",
 #if defined(_WIN32) || (PTH_STACKGROWTH != -1)
-        0, _sg_cfg_cb_context_guard_size);
+        0,
 #else
-        1, _sg_cfg_cb_context_guard_size);
+        1,
 #endif
+    _sg_cfg_cb_context_guard_size, "Guard size for contexts stacks in memory pages");
     /* No, it was not set yet (the above setdefault() changed this to 1). */
     smx_context_guard_size_was_set = 0;
 
-    xbt_cfg_register_int("contexts/nthreads", "Number of parallel threads used to execute user contexts", 1, _sg_cfg_cb_contexts_nthreads);
+    xbt_cfg_register_int("contexts/nthreads", 1, _sg_cfg_cb_contexts_nthreads, "Number of parallel threads used to execute user contexts");
 
-    xbt_cfg_register_int("contexts/parallel_threshold", "Minimal number of user contexts to be run in parallel (raw contexts only)",
-        2, _sg_cfg_cb_contexts_parallel_threshold);
+    xbt_cfg_register_int("contexts/parallel_threshold", 2, _sg_cfg_cb_contexts_parallel_threshold,
+        "Minimal number of user contexts to be run in parallel (raw contexts only)");
 
     /* synchronization mode for parallel user contexts */
-    xbt_cfg_register_string("contexts/synchro", "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)",
 #if HAVE_FUTEX_H
-    "futex",     _sg_cfg_cb_contexts_parallel_mode);
+    xbt_cfg_register_string("contexts/synchro", "futex",     _sg_cfg_cb_contexts_parallel_mode,
+        "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
 #else //No futex on mac and posix is unimplememted yet
-    "busy_wait", _sg_cfg_cb_contexts_parallel_mode);
+    xbt_cfg_register_string("contexts/synchro", "busy_wait", _sg_cfg_cb_contexts_parallel_mode,
+        "Synchronization mode to use when running contexts in parallel (either futex, posix or busy_wait)");
 #endif
 
-    xbt_cfg_register_boolean("network/coordinates", "Whether we use a coordinate-based routing (as Vivaldi)",
-        "no", _sg_cfg_cb__surf_network_coordinates);
+    xbt_cfg_register_boolean("network/coordinates", "no", _sg_cfg_cb__surf_network_coordinates,
+        "Whether we use a coordinate-based routing (as Vivaldi)");
 
-    xbt_cfg_register_boolean("network/crosstraffic", "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)",
-        "yes", _sg_cfg_cb__surf_network_crosstraffic);
+    xbt_cfg_register_boolean("network/crosstraffic", "yes", _sg_cfg_cb__surf_network_crosstraffic,
+        "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)");
 
 #if HAVE_NS3
-    xbt_cfg_register_string("ns3/TcpModel", "The ns3 tcp model can be : NewReno or Reno or Tahoe", "default", NULL);
+    xbt_cfg_register_string("ns3/TcpModel", "default", NULL, "The ns3 tcp model can be : NewReno or Reno or Tahoe");
 #endif
 
     //For smpi/bw_factor and smpi/lat_factor
-    //Default value have to be "threshold0:value0;threshold1:value1;...;thresholdN:valueN"
-    //test is if( size >= thresholdN ) return valueN;
-    //Values can be modified with command line --cfg=smpi/bw_factor:"threshold0:value0;threshold1:value1;...;thresholdN:valueN"
-    //  or with tag config put line <prop id="smpi/bw_factor" value="threshold0:value0;threshold1:value1;...;thresholdN:valueN"></prop>
     // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
-    xbt_cfg_register_string("smpi/bw_factor", "Bandwidth factors for smpi.",
-        "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084", NULL);
+    xbt_cfg_register_string("smpi/bw_factor",
+        "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084", NULL,
+        "Bandwidth factors for smpi. Format: 'threshold0:value0;threshold1:value1;...;thresholdN:valueN', meaning if(size >=thresholdN ) return valueN.");
 
-    xbt_cfg_register_string("smpi/lat_factor", "Latency factors for smpi.",
-        "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467", NULL);
+    xbt_cfg_register_string("smpi/lat_factor",
+        "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467", NULL, "Latency factors for smpi.");
     
-    xbt_cfg_register_string("smpi/IB_penalty_factors",
-        "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)",
-        "0.965;0.925;1.35", NULL);
+    xbt_cfg_register_string("smpi/IB_penalty_factors", "0.965;0.925;1.35", NULL,
+        "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)");
     
 #if HAVE_SMPI
-    xbt_cfg_register_double("smpi/running_power", "Power of the host running the simulation (in flop/s). Used to bench the operations.", 20000.0, NULL);
-    xbt_cfg_register_boolean("smpi/display_timing", "Whether we should display the timing after simulation.", "no", NULL);
-    xbt_cfg_register_boolean("smpi/simulate_computation", "Whether the computational part of the simulated application should be simulated.", "yes", NULL);
-    xbt_cfg_register_boolean("smpi/use_shared_malloc", "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.", "yes", NULL);
-    xbt_cfg_register_double("smpi/cpu_threshold", "Minimal computation time (in seconds) not discarded, or -1 for infinity.", 1e-6, NULL);
-    xbt_cfg_register_int("smpi/async_small_thresh", "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver",
-        0, NULL);
-    xbt_cfg_register_int("smpi/send_is_detached_thresh", "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend",
-        65536, NULL);
+    xbt_cfg_register_double("smpi/running_power", 20000.0, NULL, "Power of the host running the simulation (in flop/s). Used to bench the operations.");
+    xbt_cfg_register_boolean("smpi/display_timing", "no", NULL, "Whether we should display the timing after simulation.");
+    xbt_cfg_register_boolean("smpi/simulate_computation", "yes", NULL, "Whether the computational part of the simulated application should be simulated.");
+    xbt_cfg_register_boolean("smpi/use_shared_malloc", "yes", NULL, "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
+    xbt_cfg_register_double("smpi/cpu_threshold", 1e-6, NULL, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
+    xbt_cfg_register_int("smpi/async_small_thresh", 0, NULL,
+        "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver");
+    xbt_cfg_register_int("smpi/send_is_detached_thresh", 65536, NULL,
+        "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
 
-    xbt_cfg_register_boolean("smpi/privatize_global_variables", "Whether we should privatize global variable at runtime.", "no", NULL);
-    xbt_cfg_register_string("smpi/os",  "Small messages timings (MPI_Send minimum time for small messages)", "1:0:0:0:0", NULL);
-    xbt_cfg_register_string("smpi/ois", "Small messages timings (MPI_Isend minimum time for small messages)", "1:0:0:0:0", NULL);
-    xbt_cfg_register_string("smpi/or",  "Small messages timings (MPI_Recv minimum time for small messages)", "1:0:0:0:0", NULL);
-    xbt_cfg_register_double("smpi/iprobe", "Minimum time to inject inside a call to MPI_Iprobe", 1e-4, _sg_cfg_cb__iprobe_sleep);
-    xbt_cfg_register_double("smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4, _sg_cfg_cb__test_sleep);
-    xbt_cfg_register_double("smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0, _sg_cfg_cb__wtime_sleep);
+    xbt_cfg_register_boolean("smpi/privatize_global_variables", "no", NULL, "Whether we should privatize global variable at runtime.");
+    xbt_cfg_register_string("smpi/os", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Send minimum time for small messages)");
+    xbt_cfg_register_string("smpi/ois", "1:0:0:0:0", NULL, "Small messages timings (MPI_Isend minimum time for small messages)");
+    xbt_cfg_register_string("smpi/or", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Recv minimum time for small messages)");
+    xbt_cfg_register_double("smpi/iprobe", 1e-4, _sg_cfg_cb__iprobe_sleep, "Minimum time to inject inside a call to MPI_Iprobe");
+    xbt_cfg_register_double("smpi/test", 1e-4, _sg_cfg_cb__test_sleep, "Minimum time to inject inside a call to MPI_Test");
+    xbt_cfg_register_double("smpi/wtime", 0.0, _sg_cfg_cb__wtime_sleep, "Minimum time to inject inside a call to MPI_Wtime");
 
-    xbt_cfg_register_string("smpi/coll_selector",  "Which collective selector to use", "default", NULL);
-    xbt_cfg_register_string("smpi/gather",         "Which collective to use for gather", nullptr, &_check_coll_gather);
-    xbt_cfg_register_string("smpi/allgather",      "Which collective to use for allgather", nullptr, &_check_coll_allgather);
-    xbt_cfg_register_string("smpi/barrier",        "Which collective to use for barrier", nullptr, &_check_coll_barrier);
-    xbt_cfg_register_string("smpi/reduce_scatter", "Which collective to use for reduce_scatter", nullptr, &_check_coll_reduce_scatter);
-    xbt_cfg_register_string("smpi/scatter",        "Which collective to use for scatter", nullptr, &_check_coll_scatter);
-    xbt_cfg_register_string("smpi/allgatherv",     "Which collective to use for allgatherv", nullptr, &_check_coll_allgatherv);
-    xbt_cfg_register_string("smpi/allreduce",      "Which collective to use for allreduce", nullptr, &_check_coll_allreduce);
-    xbt_cfg_register_string("smpi/alltoall",       "Which collective to use for alltoall", nullptr, &_check_coll_alltoall);
-    xbt_cfg_register_string("smpi/alltoallv",      "Which collective to use for alltoallv", nullptr, &_check_coll_alltoallv);
-    xbt_cfg_register_string("smpi/bcast",          "Which collective to use for bcast", nullptr, &_check_coll_bcast);
-    xbt_cfg_register_string("smpi/reduce",         "Which collective to use for reduce", nullptr, &_check_coll_reduce);
+    xbt_cfg_register_string("smpi/coll_selector", "default", NULL, "Which collective selector to use");
+    xbt_cfg_register_string("smpi/gather",        nullptr, &_check_coll_gather, "Which collective to use for gather");
+    xbt_cfg_register_string("smpi/allgather",     nullptr, &_check_coll_allgather, "Which collective to use for allgather");
+    xbt_cfg_register_string("smpi/barrier",       nullptr, &_check_coll_barrier, "Which collective to use for barrier");
+    xbt_cfg_register_string("smpi/reduce_scatter",nullptr, &_check_coll_reduce_scatter, "Which collective to use for reduce_scatter");
+    xbt_cfg_register_string("smpi/scatter",       nullptr, &_check_coll_scatter, "Which collective to use for scatter");
+    xbt_cfg_register_string("smpi/allgatherv",    nullptr, &_check_coll_allgatherv, "Which collective to use for allgatherv");
+    xbt_cfg_register_string("smpi/allreduce",     nullptr, &_check_coll_allreduce, "Which collective to use for allreduce");
+    xbt_cfg_register_string("smpi/alltoall",      nullptr, &_check_coll_alltoall, "Which collective to use for alltoall");
+    xbt_cfg_register_string("smpi/alltoallv",     nullptr, &_check_coll_alltoallv,"Which collective to use for alltoallv");
+    xbt_cfg_register_string("smpi/bcast",         nullptr, &_check_coll_bcast, "Which collective to use for bcast");
+    xbt_cfg_register_string("smpi/reduce",        nullptr, &_check_coll_reduce, "Which collective to use for reduce");
 #endif // HAVE_SMPI
 
-    xbt_cfg_register_boolean("exception/cutpath", "Whether to cut all path information from call traces, used e.g. in exceptions.", "no", NULL);
+    xbt_cfg_register_boolean("exception/cutpath", "no", NULL,
+        "Whether to cut all path information from call traces, used e.g. in exceptions.");
 
-    xbt_cfg_register_boolean("clean_atexit", "Whether to cleanup SimGrid at exit. Disable it if your code segfaults at ending.",
-                     "yes", _sg_cfg_cb_clean_atexit);
+    xbt_cfg_register_boolean("clean_atexit", "yes", _sg_cfg_cb_clean_atexit,
+        "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
 
     if (!surf_path) {
       /* retrieves the current directory of the current process */
