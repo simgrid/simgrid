@@ -695,7 +695,7 @@ INPUT                  = doxygen/index.doc \
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
 ###################################################
 
-INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/sendrecv/sendrecv.c \
+INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pingpong.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/app-masterworker/app-masterworker.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-suspend/process-suspend.c \

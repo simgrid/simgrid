@@ -167,7 +167,7 @@ examples/msg/task-priority/task-priority
 examples/msg/procmig.trace
 examples/msg/properties/properties
 examples/msg/synchro/synchro
-examples/msg/sendrecv/sendrecv
+examples/msg/app-pingpong/app-pingpong
 examples/msg/set-maestro/set-maestro
 examples/msg/simulation.trace
 examples/msg/process-startkilltime/process-startkilltime
