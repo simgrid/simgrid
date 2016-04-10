@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_migration, "Messages specific for this 
 
 /** @addtogroup MSG_examples
  *
- *  - <b>Process migration: process-migration/process-migration.c</b>. Processes can move or be moved from a host to
+ *  - <b>Process Migration: process-migration/process-migration.c</b>. Processes can move or be moved from a host to
  *    another  while they are running thanks to the @ref MSG_process_migrate function.
  */
 
