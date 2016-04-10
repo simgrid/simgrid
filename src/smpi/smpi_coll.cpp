@@ -125,7 +125,7 @@ int find_coll_description(s_mpi_coll_description_t * table,
   char *name_list = NULL;
   int selector_on=0;
   if(name==NULL){//no argument provided, use active selector's algorithm
-    name=(char*)sg_cfg_get_string("smpi/coll_selector");
+    name=(char*)xbt_cfg_get_string("smpi/coll_selector");
     selector_on=1;
   }
   for (int i = 0; table[i].name; i++)

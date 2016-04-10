@@ -126,7 +126,7 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 static double smpi_os(double size)
 {
   if (!smpi_os_values) {
-    smpi_os_values = parse_factor(sg_cfg_get_string("smpi/os"));
+    smpi_os_values = parse_factor(xbt_cfg_get_string("smpi/os"));
     smpi_register_static(smpi_os_values, xbt_dynar_free_voidp);
   }
   unsigned int iter = 0;
@@ -155,7 +155,7 @@ static double smpi_os(double size)
 static double smpi_ois(double size)
 {
   if (!smpi_ois_values) {
-    smpi_ois_values = parse_factor(sg_cfg_get_string("smpi/ois"));
+    smpi_ois_values = parse_factor(xbt_cfg_get_string("smpi/ois"));
     smpi_register_static(smpi_ois_values, xbt_dynar_free_voidp);
   }
   unsigned int iter = 0;
@@ -182,7 +182,7 @@ static double smpi_ois(double size)
 static double smpi_or(double size)
 {
   if (!smpi_or_values) {
-    smpi_or_values = parse_factor(sg_cfg_get_string("smpi/or"));
+    smpi_or_values = parse_factor(xbt_cfg_get_string("smpi/or"));
     smpi_register_static(smpi_or_values, xbt_dynar_free_voidp);
   }
   unsigned int iter = 0;
@@ -334,7 +334,7 @@ void smpi_mpi_start(MPI_Request request)
   if (request->flags & RECV) {
     print_request("New recv", request);
 
-    int async_small_thresh = sg_cfg_get_int("smpi/async_small_thresh");
+    int async_small_thresh = xbt_cfg_get_int("smpi/async_small_thresh");
 
     xbt_mutex_t mut = smpi_process_mailboxes_mutex();
     if (async_small_thresh != 0 ||request->flags & RMA)
@@ -412,7 +412,7 @@ void smpi_mpi_start(MPI_Request request)
         XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
     }
 
-    int async_small_thresh = sg_cfg_get_int("smpi/async_small_thresh");
+    int async_small_thresh = xbt_cfg_get_int("smpi/async_small_thresh");
 
     xbt_mutex_t mut=smpi_process_remote_mailboxes_mutex(receiver);
 
@@ -449,7 +449,7 @@ void smpi_mpi_start(MPI_Request request)
 
     void* buf = request->buf;
     if ( (! (request->flags & SSEND)) &&
-         (static_cast<int>(request->size) < sg_cfg_get_int("smpi/send_is_detached_thresh"))) {
+         (static_cast<int>(request->size) < xbt_cfg_get_int("smpi/send_is_detached_thresh"))) {
       void *oldbuf = NULL;
       request->detached = 1;
       XBT_DEBUG("Send request %p is detached", request);
@@ -836,7 +836,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   print_request("New iprobe", request);
   // We have to test both mailboxes as we don't know if we will receive one one or another
-  if (sg_cfg_get_int("smpi/async_small_thresh")>0){
+  if (xbt_cfg_get_int("smpi/async_small_thresh")>0){
       mailbox = smpi_process_mailbox_small();
       XBT_DEBUG("trying to probe the perm recv mailbox");
       request->action = simcall_comm_iprobe(mailbox, 0, request->src, request->tag, &match_recv, (void*)request);

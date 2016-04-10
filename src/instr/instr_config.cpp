@@ -111,7 +111,7 @@ int TRACE_start()
     TRACE_init();
 
     /* open the trace file(s) */
-    const char* format = sg_cfg_get_string(OPT_TRACING_FORMAT);
+    const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s\n", format);
     if(!strcmp(format, "Paje")){
       TRACE_paje_init();
@@ -193,7 +193,7 @@ int TRACE_end()
     xbt_dict_free(&created_categories);
 
     /* close the trace files */
-    const char* format = sg_cfg_get_string(OPT_TRACING_FORMAT);
+    const char* format = xbt_cfg_get_string(OPT_TRACING_FORMAT);
     XBT_DEBUG("Tracing format %s\n", format);
     if(!strcmp(format, "Paje")){
       TRACE_paje_end();

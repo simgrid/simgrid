@@ -104,7 +104,7 @@ namespace simgrid {
       haveGap_=false;
       active_nodes=NULL;
 
-      const char* IB_factors_string=sg_cfg_get_string("smpi/IB_penalty_factors");
+      const char* IB_factors_string=xbt_cfg_get_string("smpi/IB_penalty_factors");
       xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
 
       surf_parse_assert(xbt_dynar_length(radical_elements)==3,

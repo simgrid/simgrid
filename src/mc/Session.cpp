@@ -81,7 +81,7 @@ Session::Session(pid_t pid, int socket)
   std::unique_ptr<simgrid::mc::Process> process(new simgrid::mc::Process(pid, socket));
   // TODO, automatic detection of the config from the process
   process->privatized(
-    sg_cfg_get_boolean("smpi/privatize_global_variables"));
+    xbt_cfg_get_boolean("smpi/privatize_global_variables"));
   modelChecker_ = std::unique_ptr<ModelChecker>(
     new simgrid::mc::ModelChecker(std::move(process)));
   xbt_assert(mc_model_checker == nullptr);

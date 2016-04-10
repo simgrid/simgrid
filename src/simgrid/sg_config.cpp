@@ -430,9 +430,7 @@ static void describe_model(char *result,
             model_description[0].name ? model_description[0].name : "n/a");
   for (int i = 1; model_description[i].name; i++)
     p += sprintf(p, ", %s", model_description[i].name);
-  sprintf(p,
-      ".\n       (use 'help' as a value to see the long description of each %s)",
-          name);
+  sprintf(p, ".\n       (use 'help' as a value to see the long description of each %s)", name);
 }
 
 /* create the config set, register what should be and parse the command line*/
@@ -539,9 +537,7 @@ void sg_config_init(int *argc, char **argv)
     const char *dflt_ctx_fact = "thread";
     {
       char *p = description +
-        sprintf(description,
-                "Context factory to use in SIMIX. Possible values: %s",
-                dflt_ctx_fact);
+        sprintf(description, "Context factory to use in SIMIX. Possible values: %s", dflt_ctx_fact);
 #if HAVE_UCONTEXT_CONTEXTS
       dflt_ctx_fact = "ucontext";
       p += sprintf(p, ", %s", dflt_ctx_fact);
@@ -671,29 +667,3 @@ void sg_config_finalize(void)
   xbt_cfg_free(&simgrid_config);
   _sg_cfg_init_status = 0;
 }
-
-int sg_cfg_is_default_value(const char *name)
-{
-  return xbt_cfg_is_default_value(name);
-}
-
-int sg_cfg_get_int(const char* name)
-{
-  return xbt_cfg_get_int(name);
-}
-
-double sg_cfg_get_double(const char* name)
-{
-  return xbt_cfg_get_double(name);
-}
-
-char* sg_cfg_get_string(const char* name)
-{
-  return xbt_cfg_get_string(name);
-}
-
-int sg_cfg_get_boolean(const char* name)
-{
-  return xbt_cfg_get_boolean(name);
-}
-
