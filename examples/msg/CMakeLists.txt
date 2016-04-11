@@ -1,8 +1,8 @@
-foreach(x actions-comm actions-storage app-masterworker app-pmm app-token-ring async-wait async-waitall async-waitany
-          cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple cloud-two-tasks dht-chord 
-          dht-pastry exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures io-file 
-          io-file-unlink io-remote io-storage task-priority process-kill process-migration process-suspend 
-          properties sendrecv set-maestro process-startkilltime synchro trace-categories 
+foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
+          async-waitany cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple cloud-two-tasks
+          dht-chord dht-pastry exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures 
+          io-file io-file-unlink io-remote io-storage task-priority process-kill process-migration process-suspend 
+          properties set-maestro process-startkilltime synchro trace-categories 
           trace-link-srcdst-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-simple trace-user-variables)
   add_executable       (${x}     ${x}/${x}.c)
@@ -39,8 +39,8 @@ foreach (file answer dht-kademlia node routing_table task)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/${file}.h)
 endforeach()
 
-foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker async-wait async-waitall
-         async-waitany dht-chord dht-kademlia dht-pastry io-remote properties sendrecv set-maestro task-priority)
+foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
+         async-waitall async-waitany dht-chord dht-kademlia dht-pastry io-remote properties set-maestro task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
@@ -81,10 +81,10 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actio
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
-foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-token-ring async-wait
-          async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks 
-          dht-chord dht-kademlia failures io-file io-file-unlink io-remote io-storage task-priority process-kill
-          process-migration process-suspend properties sendrecv synchro process-startkilltime)
+foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
+          async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
+          cloud-two-tasks dht-chord dht-kademlia failures io-file io-file-unlink io-remote io-storage task-priority 
+          process-kill process-migration process-suspend properties synchro process-startkilltime)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()
 

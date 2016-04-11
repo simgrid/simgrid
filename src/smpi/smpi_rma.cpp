@@ -120,9 +120,9 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
     }
 
     MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqs));
+    win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
     smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
     xbt_free(treqs);
-    win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
 
   }
   win->assert = assert;
@@ -359,9 +359,9 @@ int smpi_mpi_win_complete(MPI_Win win){
   }
 
   MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
+  win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   xbt_free(treqs);
-  win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
   win->opened--; //we're closed for business !
   return MPI_SUCCESS;
 }
@@ -408,9 +408,9 @@ int smpi_mpi_win_wait(MPI_Win win){
   }
 
   MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
+  win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   xbt_free(treqs);
-  win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
   win->opened--; //we're opened for business !
   return MPI_SUCCESS;
 }

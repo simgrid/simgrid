@@ -695,17 +695,18 @@ INPUT                  = doxygen/index.doc \
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
 ###################################################
 
-INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/sendrecv/sendrecv.c \
+INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pingpong.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/app-token-ring/app-token-ring.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/app-masterworker/app-masterworker.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/process-suspend/process-suspend.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/properties \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/parallel_task \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/priority \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/async-wait/async-wait.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer2.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer3.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/simple.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/process-suspend/process-suspend.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/task-priority/task-priority.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/properties \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/parallel_task \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/trace-simple/trace-simple.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/ms.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/categories.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/procmig.c \
@@ -717,7 +718,6 @@ INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/sendrecv/sendrecv.c
                          @CMAKE_HOME_DIRECTORY@/examples/msg/io \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/gpu \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/actions \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/token_ring \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/pmm \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/chord
 

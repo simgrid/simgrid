@@ -10,64 +10,62 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(ring, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
  * 
- *  @section MSG_ex_apps Examples of full applications
- * 
- * - <b>token_ring/ring_call.c</b>: Classical token ring communication, where a token is exchanged along a ring to
- *   reach every participant.
+ * - <b>Token Ring: app-token-ring/app-token-ring.c</b>: Classical token ring communication, where a token is exchanged
+ *   along a ring to reach every participant. The tesh file laying in the directory shows how to run the same example on
+ *   different platforms.
  */
 
-static int host(int argc, char *argv[])
+/** Single function for all hosts */
+static int foo(int argc, char *argv[])
 {
-  unsigned int task_comp_size = 50000000;
-  unsigned int task_comm_size = 1000000;
-  int host_number =
-          xbt_str_parse_int(MSG_process_get_name(MSG_process_self()), "Process name must be an integer but is: %s");
+  unsigned int task_comm_size = 1000000; /** The token is 1MB long*/
+  int rank = xbt_str_parse_int(MSG_process_get_name(MSG_process_self()), "Invalid process name: %s");
   char mailbox[256];
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
-  if (host_number == 0){ //root: send then receive
-    sprintf(mailbox, "%d", host_number+1);
-    task = MSG_task_create("Token", task_comp_size, task_comm_size, NULL);
-    XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"",host_number,task->name,mailbox);
+  if (rank == 0){ /** - The root (rank 0) first sends the token then waits to receive it back */
+    sprintf(mailbox, "%d", rank+1);
+    task = MSG_task_create("Token", 0, task_comm_size, NULL);
+    XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"", rank, task->name,mailbox);
     MSG_task_send(task, mailbox);
     task = NULL;
     res = MSG_task_receive(&(task), MSG_process_get_name(MSG_process_self()));
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
-    XBT_INFO("Host \"%d\" received \"%s\"",host_number, MSG_task_get_name(task));
+    XBT_INFO("Host \"%d\" received \"%s\"", rank, MSG_task_get_name(task));
     MSG_task_destroy(task);
-  } else{ // receive then send
+  } else{ /** - The others receive from their left neighbor (rank-1) and send to their right neighbor (rank+1) */
     res = MSG_task_receive(&(task), MSG_process_get_name(MSG_process_self()));
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
-    XBT_INFO("Host \"%d\" received \"%s\"",host_number, MSG_task_get_name(task));
+    XBT_INFO("Host \"%d\" received \"%s\"",rank, MSG_task_get_name(task));
 
-    if(host_number+1 == MSG_get_host_number())
+    if(rank+1 == MSG_get_host_number()) /** - Except for the last one which sends the token back to rank 0 */
       sprintf(mailbox, "0");
     else
-      sprintf(mailbox, "%d", host_number+1);
-    XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"",host_number,task->name,mailbox);
+      sprintf(mailbox, "%d", rank+1);
+    XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"",rank,task->name,mailbox);
     MSG_task_send(task, mailbox);
   }
   return 0;
 }
 
-int main(int argc, char **argv)
+int main(int argc, char *argv[])
 {
   unsigned int i;
   MSG_init(&argc, argv);
-  MSG_create_environment(argv[1]);
+  MSG_create_environment(argv[1]);       /** - Load the platform description */
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   msg_host_t h;
-  MSG_function_register("host", host);
+  MSG_function_register("foo", foo);
 
   XBT_INFO("Number of host '%d'",MSG_get_host_number());
-  xbt_dynar_foreach (hosts, i, h){
+  xbt_dynar_foreach (hosts, i, h){      /** - Give a unique rank to each host and create a @ref foo process on each */
     char* name_host = bprintf("%u",i);
-    MSG_process_create(name_host, host, NULL, h);
+    MSG_process_create(name_host, foo, NULL, h);
     free(name_host);
   }
   xbt_dynar_free(&hosts);
 
-  int res = MSG_main();
+  int res = MSG_main();                 /** - Run the simulation */
   XBT_INFO("Simulation time %g", MSG_get_clock());
   return res != MSG_OK;
 }
