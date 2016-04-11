@@ -51,6 +51,9 @@ while [ $# -gt 0 ]; do
             printf '%b\n' "$SIMGRID_GITHASH"
             exit 0
             ;;
+        '-trace-call-location')
+            list_add_not_empty CMDLINE "-DTRACE_CALL_LOCATION"
+            ;;
         '-compiler-version' | '--compiler-version')
             ${CC} --version
             ;;
