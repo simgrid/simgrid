@@ -263,6 +263,18 @@ else()
   set(HAVE_BOOST_CONTEXTS 0)
 endif()
 
+# Try again to see if we have libboost-context
+find_package(Boost 1.42 COMPONENTS context)
+set(Boost_FOUND 1) # We don't care of whether this component is missing
+
+if(Boost_FOUND AND Boost_GRAPH_FOUND)
+  set(HAVE_BOOST_GRAPH 1)
+else()
+  message ("   boost        : found.")
+  message ("   boost-graph  : missing. Install libboost-graph-dev for this optional feature.")
+  set(HAVE_BOOST_GRAPH 0)
+endif()
+
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(execinfo backtrace              "" HAVE_BACKTRACE_IN_LIBEXECINFO)
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
