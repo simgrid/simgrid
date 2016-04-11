@@ -17,6 +17,7 @@
 #include "src/simix/smx_private.h"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_record.h"
+#include "src/mc/Transition.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -110,18 +111,10 @@ struct XBT_PRIVATE State {
   /** Sequential state number (used for debugging) */
   int num = 0;
 
-  /* Which transition was executed for this simcall
-   *
-   * Some simcalls can lead to different transitions:
-   *
-   * * waitany/testany can trigger on different messages;
-   *
-   * * random can produce different values.
-   */
-  int req_num = 0;
-
   /** State's exploration status by process */
   std::vector<ProcessState> processStates;
+
+  Transition transition;
 
   /** The simcall which was executed */
   s_smx_simcall_t executed_req;
@@ -150,7 +143,7 @@ struct XBT_PRIVATE State {
   {
     this->processStates[process->pid].interleave();
   }
-  RecordTraceElement getRecordElement() const;
+  Transition getRecordElement() const;
 };
 
 XBT_PRIVATE void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack);

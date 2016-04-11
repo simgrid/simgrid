@@ -29,6 +29,7 @@
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_exit.h"
+#include "src/mc/Transition.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");
@@ -199,7 +200,7 @@ void LivenessChecker::replay()
 
     if (pair->exploration_started) {
 
-      int req_num = state->req_num;
+      int req_num = state->transition.argument;
       smx_simcall_t saved_req = &state->executed_req;
 
       smx_simcall_t req = nullptr;
@@ -218,7 +219,7 @@ void LivenessChecker::replay()
           state.get());
       }
 
-      simgrid::mc::handle_simcall(req, req_num);
+      mc_model_checker->handle_simcall(state->transition);
       mc_model_checker->wait_for_requests();
     }
 
@@ -318,7 +319,7 @@ std::vector<std::string> LivenessChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;
   for (std::shared_ptr<Pair> const& pair : explorationStack_) {
-    int req_num = pair->graph_state->req_num;
+    int req_num = pair->graph_state->transition.argument;
     smx_simcall_t req = &pair->graph_state->executed_req;
     if (req && req->call != SIMCALL_NONE)
       trace.push_back(simgrid::mc::request_to_string(
@@ -371,7 +372,7 @@ int LivenessChecker::main(void)
     }
 
     smx_simcall_t req = MC_state_get_request(current_pair->graph_state.get());
-    int req_num = current_pair->graph_state->req_num;
+    int req_num = current_pair->graph_state->transition.argument;
 
     if (dot_output != nullptr) {
       if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
@@ -397,7 +398,7 @@ int LivenessChecker::main(void)
       mc_stats->visited_pairs++;
 
     /* Answer the request */
-    simgrid::mc::handle_simcall(req, req_num);
+    mc_model_checker->handle_simcall(current_pair->graph_state->transition);
 
     /* Wait for requests (schedules processes) */
     mc_model_checker->wait_for_requests();

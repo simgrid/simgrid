@@ -44,6 +44,7 @@
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/Client.hpp"
+#include "src/mc/Transition.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
@@ -115,17 +116,6 @@ void MC_run()
 namespace simgrid {
 namespace mc {
 
-void handle_simcall(smx_simcall_t req, int req_num)
-{
-  for (auto& pi : mc_model_checker->process().smx_process_infos)
-    if (req == &pi.copy.simcall) {
-      mc_model_checker->simcall_handle(
-        mc_model_checker->process(), pi.copy.pid, req_num);
-      return;
-    }
-  xbt_die("Could not find the request");
-}
-
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
@@ -171,7 +161,7 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
     if (state == stack.back())
       break;
 
-    int req_num = state->req_num;
+    int req_num = state->transition.argument;
     smx_simcall_t saved_req = &state->executed_req;
     
     if (saved_req) {
@@ -192,7 +182,7 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = MC_get_call_type(req);
 
-      simgrid::mc::handle_simcall(req, req_num);
+      mc_model_checker->handle_simcall(state->transition);
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         MC_handle_comm_pattern(call, req, req_num, nullptr, 1);
       mc_model_checker->wait_for_requests();

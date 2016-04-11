@@ -22,6 +22,7 @@
 #include "src/mc/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_exit.h"
 #include "src/mc/VisitedState.hpp"
+#include "src/mc/Transition.hpp"
 
 using simgrid::mc::remote;
 
@@ -320,7 +321,7 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
     smx_simcall_t req = &state->executed_req;
     if (req)
       trace.push_back(simgrid::mc::request_to_string(
-        req, state->req_num, simgrid::mc::RequestType::executed));
+        req, state->transition.argument, simgrid::mc::RequestType::executed));
   }
   return trace;
 }
@@ -397,7 +398,7 @@ int CommunicationDeterminismChecker::main(void)
         && (req = MC_state_get_request(state)) != nullptr
         && (visited_state == nullptr)) {
 
-      int req_num = state->req_num;
+      int req_num = state->transition.argument;
 
       XBT_DEBUG("Execute: %s",
         simgrid::mc::request_to_string(
@@ -415,7 +416,8 @@ int CommunicationDeterminismChecker::main(void)
         call = MC_get_call_type(req);
 
       /* Answer the request */
-      simgrid::mc::handle_simcall(req, req_num);    /* After this call req is no longer useful */
+      mc_model_checker->handle_simcall(state->transition);
+      /* After this call req is no longer useful */
 
       if(!initial_global_state->initial_communications_pattern_done)
         MC_handle_comm_pattern(call, req, req_num, initial_communications_pattern, 0);

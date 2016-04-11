@@ -25,6 +25,7 @@
 #include "src/mc/Checker.hpp"
 #include "src/mc/SafetyChecker.hpp"
 #include "src/mc/VisitedState.hpp"
+#include "src/mc/Transition.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -76,7 +77,7 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
-    int value = state->req_num;
+    int value = state->transition.argument;
     smx_simcall_t req = &state->executed_req;
     if (req)
       trace.push_back(simgrid::mc::request_to_string(
@@ -115,7 +116,7 @@ int SafetyChecker::run()
         continue;
     }
 
-    int req_num = state->req_num;
+    int req_num = state->transition.argument;
 
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
@@ -133,7 +134,7 @@ int SafetyChecker::run()
     //   MC_execute_transition(req, req_num)
 
     /* Answer the request */
-    simgrid::mc::handle_simcall(req, req_num);
+    mc_model_checker->handle_simcall(state->transition);
     mc_model_checker->wait_for_requests();
 
     /* Create the new expanded state */
@@ -220,13 +221,13 @@ int SafetyChecker::backtrack()
             && simgrid::mc::request_depend(req, &prev_state->internal_req)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            int value = prev_state->req_num;
+            int value = prev_state->transition.argument;
             smx_simcall_t prev_req = &prev_state->executed_req;
             XBT_DEBUG("%s (state=%d)",
               simgrid::mc::request_to_string(
                 prev_req, value, simgrid::mc::RequestType::internal).c_str(),
               prev_state->num);
-            value = state->req_num;
+            value = state->transition.argument;
             prev_req = &state->executed_req;
             XBT_DEBUG("%s (state=%d)",
               simgrid::mc::request_to_string(

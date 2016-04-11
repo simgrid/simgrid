@@ -23,6 +23,7 @@
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_base.h"
+#include "src/mc/Transition.hpp"
 
 #if HAVE_MC
 #include "src/mc/mc_request.h"
@@ -46,11 +47,11 @@ void replay(RecordTrace const& trace)
 {
   simgrid::mc::wait_for_requests();
 
-  for (auto& item : trace) {
-    XBT_DEBUG("Executing %i$%i", item.pid, item.value);
+  for (simgrid::mc::Transition const& transition : trace) {
+    XBT_DEBUG("Executing %i$%i", transition.pid, transition.argument);
 
     // Choose a request:
-    smx_process_t process = SIMIX_process_from_PID(item.pid);
+    smx_process_t process = SIMIX_process_from_PID(transition.pid);
     if (!process)
       xbt_die("Unexpected process.");
     smx_simcall_t simcall = &(process->simcall);
@@ -61,7 +62,7 @@ void replay(RecordTrace const& trace)
       xbt_die("Unexpected simcall.");
 
     // Execute the request:
-    SIMIX_simcall_handle(simcall, item.value);
+    SIMIX_simcall_handle(simcall, transition.argument);
     simgrid::mc::wait_for_requests();
   }
 }
@@ -84,8 +85,8 @@ RecordTrace parseRecordTrace(const char* data)
   const char* current = data;
   while (*current) {
 
-    simgrid::mc::RecordTraceElement item;
-    int count = sscanf(current, "%u/%u", &item.pid, &item.value);
+    simgrid::mc::Transition item;
+    int count = sscanf(current, "%u/%u", &item.pid, &item.argument);
     if(count != 2 && count != 1)
       throw std::runtime_error("Could not parse record path");
     res.push_back(item);
@@ -110,8 +111,8 @@ std::string traceToString(simgrid::mc::RecordTrace const& trace)
     if (i != trace.begin())
       stream << ';';
     stream << i->pid;
-    if (i->value)
-      stream << '/' << i->value;
+    if (i->argument)
+      stream << '/' << i->argument;
   }
   return stream.str();
 }
