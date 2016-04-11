@@ -8,6 +8,7 @@
 #include "xbt/virtu.h" /* sg_cmdline */
 #include <sstream>
 #include <iomanip> /** std::setprecision **/
+#include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_trace, instr_trace, "tracing event system");
 
@@ -223,7 +224,7 @@ void print_pajeSetState(paje_event_t event) {
   print_default_pajeState_row<setState_t>(event);
   stream << " " << static_cast<setState_t>(event->data)->value->id;
 
-  if (true) { // If (sg_config("tracing/caller_location"))
+  if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     stream << " \"" << static_cast<setState_t>(event->data)->filename
            << "\" " << static_cast<setState_t>(event->data)->linenumber;
   }
@@ -246,7 +247,7 @@ void print_pajePushState(paje_event_t event) {
     }
   }
 
-  if (true) { // If (sg_config("tracing/caller_location"))
+  if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     stream << " \"" << static_cast<pushState_t>(event->data)->filename
            << "\" " << static_cast<pushState_t>(event->data)->linenumber;
   }

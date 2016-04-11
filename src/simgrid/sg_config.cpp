@@ -573,6 +573,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thresh");
     xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thres");
 
+    xbt_cfg_register_boolean("smpi/trace-call-location", "no", NULL, "Should filename and linenumber of MPI calls be traced?");
+
     xbt_cfg_register_int("smpi/send-is-detached-thresh", 65536, NULL,
         "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
     xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thresh");
