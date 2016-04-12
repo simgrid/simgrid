@@ -619,6 +619,7 @@ set(MC_SRC
   src/mc/mc_xbt.hpp
   src/mc/mc_xbt.cpp
   src/mc/mc_exit.h
+  src/mc/Transition.hpp
   )
 
 set(MC_SIMGRID_MC_SRC

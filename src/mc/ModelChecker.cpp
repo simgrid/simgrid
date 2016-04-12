@@ -30,6 +30,7 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_ignore.h"
 #include "src/mc/mc_exit.h"
+#include "src/mc/Transition.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
@@ -422,16 +423,16 @@ void ModelChecker::wait_client(simgrid::mc::Process& process)
       return;
 }
 
-void ModelChecker::simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value)
+void ModelChecker::handle_simcall(Transition const& transition)
 {
   s_mc_simcall_handle_message m;
   memset(&m, 0, sizeof(m));
   m.type  = MC_MESSAGE_SIMCALL_HANDLE;
-  m.pid   = pid;
-  m.value = value;
-  process.getChannel().send(m);
-  process.clear_cache();
-  while (process.running())
+  m.pid   = transition.pid;
+  m.value = transition.argument;
+  this->process_->getChannel().send(m);
+  this->process_->clear_cache();
+  while (this->process_->running())
     if (!this->handle_events())
       return;
 }

@@ -66,43 +66,44 @@ static void smpi_init_fortran_types(){
      datatype_lookup = xbt_dict_new_homogeneous(NULL);
      win_lookup = xbt_dict_new_homogeneous(NULL);
      info_lookup = xbt_dict_new_homogeneous(NULL);
-     smpi_type_c2f(MPI_BYTE);
-     smpi_type_c2f(MPI_CHAR);
+     smpi_type_c2f(MPI_BYTE);//MPI_BYTE
+     smpi_type_c2f(MPI_CHAR);//MPI_CHARACTER
      #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
-     smpi_type_c2f(MPI_INT);
-     smpi_type_c2f(MPI_INT);
+     smpi_type_c2f(MPI_INT);//MPI_LOGICAL
+     smpi_type_c2f(MPI_INT);//MPI_INTEGER
      #else
-     smpi_type_c2f(MPI_LONG);
-     smpi_type_c2f(MPI_LONG);
+     smpi_type_c2f(MPI_LONG);//MPI_LOGICAL
+     smpi_type_c2f(MPI_LONG);//MPI_INTEGER
      #endif
-     smpi_type_c2f(MPI_INT8_T);
-     smpi_type_c2f(MPI_INT16_T);
-     smpi_type_c2f(MPI_INT32_T);
-     smpi_type_c2f(MPI_INT64_T);
-     smpi_type_c2f(MPI_FLOAT);
-     smpi_type_c2f(MPI_FLOAT);
-     smpi_type_c2f(MPI_DOUBLE);
-     smpi_type_c2f(MPI_DOUBLE);
-     smpi_type_c2f(MPI_C_FLOAT_COMPLEX);
-     smpi_type_c2f(MPI_C_DOUBLE_COMPLEX);
+     smpi_type_c2f(MPI_INT8_T);//MPI_INTEGER1
+     smpi_type_c2f(MPI_INT16_T);//MPI_INTEGER2
+     smpi_type_c2f(MPI_INT32_T);//MPI_INTEGER4
+     smpi_type_c2f(MPI_INT64_T);//MPI_INTEGER8
+     smpi_type_c2f(MPI_FLOAT);//MPI_REAL
+     smpi_type_c2f(MPI_FLOAT);//MPI_REAL4
+     smpi_type_c2f(MPI_DOUBLE);//MPI_REAL8
+     smpi_type_c2f(MPI_DOUBLE);//MPI_DOUBLE_PRECISION
+     smpi_type_c2f(MPI_C_FLOAT_COMPLEX);//MPI_COMPLEX
+     smpi_type_c2f(MPI_C_DOUBLE_COMPLEX);//MPI_DOUBLE_COMPLEX
      #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
-     smpi_type_c2f(MPI_2INT);
+     smpi_type_c2f(MPI_2INT);//MPI_2INTEGER
      #else
-     smpi_type_c2f(MPI_2LONG);
+     smpi_type_c2f(MPI_2LONG);//MPI_2INTEGER
      #endif
-     smpi_type_c2f(MPI_UINT8_T);
-     smpi_type_c2f(MPI_UINT16_T);
-     smpi_type_c2f(MPI_UINT32_T);
-     smpi_type_c2f(MPI_UINT64_T);
-     smpi_type_c2f(MPI_2FLOAT);
-     smpi_type_c2f(MPI_2DOUBLE);
-     smpi_type_c2f(MPI_DOUBLE);
-     smpi_type_c2f(MPI_DOUBLE);
-     smpi_type_c2f(MPI_INT);
-     smpi_type_c2f(MPI_DATATYPE_NULL);
-     smpi_type_c2f(MPI_DATATYPE_NULL);
-     smpi_type_c2f(MPI_DATATYPE_NULL);
-     smpi_type_c2f(MPI_DATATYPE_NULL);
+     smpi_type_c2f(MPI_UINT8_T);//MPI_LOGICAL1
+     smpi_type_c2f(MPI_UINT16_T);//MPI_LOGICAL2
+     smpi_type_c2f(MPI_UINT32_T);//MPI_LOGICAL4
+     smpi_type_c2f(MPI_UINT64_T);//MPI_LOGICAL8
+     smpi_type_c2f(MPI_2FLOAT);//MPI_2REAL
+     smpi_type_c2f(MPI_2DOUBLE);//MPI_2DOUBLE_PRECISION
+     smpi_type_c2f(MPI_UINT64_T);//MPI_AINT
+     smpi_type_c2f(MPI_UINT64_T);//MPI_OFFSET
+     smpi_type_c2f(MPI_UINT64_T);//MPI_COUNT
+     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_REAL16
+     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_COMPLEX8
+     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_COMPLEX16
+     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_COMPLEX32
+     smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_PACKED
      op_lookup = xbt_dict_new_homogeneous(NULL);
      smpi_op_c2f(MPI_MAX);
      smpi_op_c2f(MPI_MIN);
