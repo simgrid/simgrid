@@ -32,15 +32,21 @@ public final class NativeLib {
 		try {
 			/* Prefer the version of the library bundled into the jar file and use it */
 			loadLib(name);
-		} catch (SimGridLibNotFoundException e) {
+		} catch (SimGridLibNotFoundException embeededException) {
 			/* If not found, try to see if we can find a version on disk */
 			try {
 				System.loadLibrary(name);
-			} catch (UnsatisfiedLinkError e2) {
-				if (! name.equals("boost_context")) {
-					System.err.println("Cannot load the bindings to the "+name+" library in path "+getPath());
-					e.printStackTrace();
-					System.err.println("This jar file does not seem to fit your system, and I cannot find an installation of SimGrid.");
+			} catch (UnsatisfiedLinkError systemException) {
+				if (! name.equals("boost_context")) { // Ignore when we cannot load boost_context
+					
+					System.err.println("\nCannot load the bindings to the "+name+" library in path "+getPath());
+					Throwable cause = embeededException.getCause();
+					if (cause instanceof java.lang.UnsatisfiedLinkError && cause.getMessage().matches(".*libcgraph.so.*"))
+						System.err.println("HINT: Try to install the libcgraph package (sudo apt-get install libcgraph).");
+					else
+						System.err.println("This jar file does not seem to fit your system, and no usable SimGrid installation found on disk.");
+					System.err.println();
+					cause.printStackTrace();
 					System.exit(1);
 				}
 			}
@@ -116,10 +122,8 @@ public final class NativeLib {
 			in.close();
 			out.close();
 			System.load(fileOut.getAbsolutePath());
-		} catch (Exception e) {
-			System.err.println("Error while extracting the native library from the jar: ");
-			e.printStackTrace();
-			throw new SimGridLibNotFoundException("Cannot load the bindings to the "+name+" library in path "+getPath(),   e);
+		} catch (Throwable e) {
+			throw new SimGridLibNotFoundException("Cannot load the bindings to the "+name+" library in path "+getPath(), e);
 		}
 	}
 
@@ -154,7 +158,7 @@ class SimGridLibNotFoundException extends Exception {
 		super(msg);
 	}
 
-	public SimGridLibNotFoundException(String msg, Exception e) {
+	public SimGridLibNotFoundException(String msg, Throwable e) {
 		super(msg,e);
 	}
 }
