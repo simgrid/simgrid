@@ -41,10 +41,16 @@ public final class NativeLib {
 					
 					System.err.println("\nCannot load the bindings to the "+name+" library in path "+getPath());
 					Throwable cause = embeededException.getCause();
-					if (cause instanceof java.lang.UnsatisfiedLinkError && cause.getMessage().matches(".*libcgraph.so.*"))
-						System.err.println("HINT: Try to install the libcgraph package (sudo apt-get install libcgraph).");
-					else
+					if (cause instanceof java.lang.UnsatisfiedLinkError) {
+						if (cause.getMessage().matches(".*libcgraph.so.*"))
+							System.err.println("HINT: Try to install the libcgraph package (sudo apt-get install libcgraph).");
+						else if (cause.getMessage().matches(".*libboost_context.so.*"))
+							System.err.println("HINT: Try to install the boost-context package (sudo apt-get install libboost-context-dev).");
+						else
+							System.err.println("Try to install the missing dependencies, which name should appear above.");							
+					} else {
 						System.err.println("This jar file does not seem to fit your system, and no usable SimGrid installation found on disk.");
+					}
 					System.err.println();
 					cause.printStackTrace();
 					System.exit(1);
