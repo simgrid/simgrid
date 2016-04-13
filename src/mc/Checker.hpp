@@ -13,6 +13,7 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_record.h"
+#include "src/mc/Session.hpp"
 
 namespace simgrid {
 namespace mc {

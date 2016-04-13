@@ -30,6 +30,7 @@
 #include "src/mc/mc_safety.h"
 #include "src/mc/mc_exit.h"
 #include "src/mc/Transition.hpp"
+#include "src/mc/Session.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_liveness, mc,
                                 "Logging specific to algorithms for liveness properties verification");
@@ -218,8 +219,7 @@ void LivenessChecker::replay()
           state.get());
       }
 
-      mc_model_checker->handle_simcall(state->transition);
-      mc_model_checker->wait_for_requests();
+      this->getSession().execute(state->transition);
     }
 
     /* Update statistics */
