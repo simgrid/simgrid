@@ -144,15 +144,12 @@ use strict;
 my $fromversion=-1;
 my $toversion=4;
 
-my($output_string);
-
-my $filename = $ARGV[0] or die "simgrid_update_xml.pl <platform.xml>\n";
+my $filename = $ARGV[0] or die "Usage: simgrid_update_xml.pl file_to_convert.xml\nPlease provide an XML to convert as a parameter.\n";
 open INPUT, "$filename" or die "Cannot open input file $filename: $!\n";
 
-$output_string = "<?xml version='1.0'?>\n".
+my $output_string = "<?xml version='1.0'?>\n".
     "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n".
     "<platform version=\"$toversion\">\n";
-
 
 my($AS_opened)=0;
 
