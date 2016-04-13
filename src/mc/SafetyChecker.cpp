@@ -91,8 +91,8 @@ void SafetyChecker::logState() // override
 {
   Checker::logState();
   XBT_INFO("Expanded states = %lu", expandedStatesCount_);
-  XBT_INFO("Visited states = %lu", mc_stats->visited_states);
-  XBT_INFO("Executed transitions = %lu", mc_stats->executed_transitions);
+  XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
+  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
 }
 
 int SafetyChecker::run()
@@ -110,7 +110,7 @@ int SafetyChecker::run()
       stack_.size(), state, state->num,
       state->interleaveSize());
 
-    mc_stats->visited_states++;
+    mc_model_checker->visited_states++;
 
     // The interleave set is empty or the maximum depth is reached,
     // let's back-track.
@@ -135,7 +135,7 @@ int SafetyChecker::run()
     if (dot_output != nullptr)
       req_str = simgrid::mc::request_get_dot_output(req, state->transition.argument);
 
-    mc_stats->executed_transitions++;
+    mc_model_checker->executed_transitions++;
 
     /* Answer the request */
     this->getSession().execute(state->transition);

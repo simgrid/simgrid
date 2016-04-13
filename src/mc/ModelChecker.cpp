@@ -111,9 +111,6 @@ void ModelChecker::start()
 
   process_->init();
 
-  /* Initialize statistics */
-  mc_stats = xbt_new0(s_mc_stats_t, 1);
-
   if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0'))
     MC_init_dot_output();
 

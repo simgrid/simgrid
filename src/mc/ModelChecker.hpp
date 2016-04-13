@@ -81,6 +81,9 @@ private:
   void handle_waitpid();
   void on_signal(const struct signalfd_siginfo* info);
 
+public:
+  unsigned long visited_states = 0;
+  unsigned long executed_transitions = 0;
 };
 
 }

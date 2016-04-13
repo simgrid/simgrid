@@ -64,15 +64,6 @@ XBT_PRIVATE extern FILE *dot_output;
 
 XBT_PRIVATE void MC_show_deadlock(void);
 
-/****************************** Statistics ************************************/
-
-typedef struct mc_stats {
-  unsigned long visited_states;
-  unsigned long executed_transitions;
-} s_mc_stats_t, *mc_stats_t;
-
-XBT_PRIVATE extern mc_stats_t mc_stats;
-
 /********************************** Snapshot comparison **********************************/
 
 //#define MC_DEBUG 1

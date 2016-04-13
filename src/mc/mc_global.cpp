@@ -64,8 +64,6 @@ std::vector<double> processes_time;
 simgrid::mc::State* mc_current_state = nullptr;
 char mc_replay_mode = false;
 
-mc_stats_t mc_stats = nullptr;
-
 /* Liveness */
 
 namespace simgrid {
@@ -189,8 +187,8 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
     }
 
     /* Update statistics */
-    mc_stats->visited_states++;
-    mc_stats->executed_transitions++;
+    mc_model_checker->visited_states++;
+    mc_model_checker->executed_transitions++;
 
   }
 

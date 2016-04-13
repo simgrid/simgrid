@@ -345,8 +345,8 @@ void CommunicationDeterminismChecker::logState() // override
     XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
   }
   XBT_INFO("Expanded states = %lu", expandedStatesCount_);
-  XBT_INFO("Visited states = %lu", mc_stats->visited_states);
-  XBT_INFO("Executed transitions = %lu", mc_stats->executed_transitions);
+  XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
+  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
   if (simgrid::mc::initial_global_state != nullptr)
     XBT_INFO("Send-deterministic : %s",
       !simgrid::mc::initial_global_state->send_deterministic ? "No" : "Yes");
@@ -418,7 +418,7 @@ int CommunicationDeterminismChecker::main(void)
               state->interleaveSize());
 
     /* Update statistics */
-    mc_stats->visited_states++;
+    mc_model_checker->visited_states++;
 
     if (stack_.size() <= (std::size_t) _sg_mc_max_depth
         && (req = MC_state_get_request(state)) != nullptr
@@ -434,7 +434,7 @@ int CommunicationDeterminismChecker::main(void)
       if (dot_output != nullptr)
         req_str = simgrid::mc::request_get_dot_output(req, req_num);
 
-      mc_stats->executed_transitions++;
+      mc_model_checker->executed_transitions++;
 
       /* TODO : handle test and testany simcalls */
       e_mc_call_type_t call = MC_CALL_TYPE_NONE;
