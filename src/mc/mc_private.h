@@ -71,9 +71,6 @@ XBT_PRIVATE void MC_show_deadlock(void);
 
 /********************************** Miscellaneous **********************************/
 
-XBT_PRIVATE void MC_report_assertion_error(void);
-XBT_PRIVATE void MC_report_crash(int status);
-
 SG_END_DECL()
 
 #ifdef __cplusplus
