@@ -140,8 +140,6 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
 
   /* Restore the initial state */
   simgrid::mc::restore_snapshot(simgrid::mc::initial_global_state->snapshot);
-  /* At the moment of taking the snapshot the raw heap was set, so restoring
-   * it will set it back again, we have to unset it to continue  */
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     // int n = xbt_dynar_length(incomplete_communications_pattern);
