@@ -38,7 +38,7 @@ struct XBT_PRIVATE Pair {
   int depth = 0;
   bool exploration_started = false;
 
-  Pair();
+  Pair(unsigned long expanded_pairs);
   ~Pair();
 
   Pair(Pair const&) = delete;
@@ -87,6 +87,9 @@ public:
   std::list<std::shared_ptr<Pair>> explorationStack_;
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
   std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
+private:
+  unsigned long visitedPairsCount_ = 0;
+  unsigned long expandedPairsCount_ = 0;
 };
 
 }
