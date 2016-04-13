@@ -151,7 +151,7 @@ XBT_PRIVATE void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& st
 }
 }
 
-XBT_PRIVATE simgrid::mc::State* MC_state_new(void);
+XBT_PRIVATE simgrid::mc::State* MC_state_new(unsigned long state_number);
 XBT_PRIVATE smx_simcall_t MC_state_get_request(simgrid::mc::State* state);
 
 #endif

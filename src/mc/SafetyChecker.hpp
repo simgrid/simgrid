@@ -38,6 +38,7 @@ private:
   std::list<std::unique_ptr<simgrid::mc::State>> stack_;
   simgrid::mc::VisitedStates visitedStates_;
   std::unique_ptr<simgrid::mc::VisitedState> visitedState_;
+  unsigned long expandedStatesCount_ = 0;
 };
 
 }

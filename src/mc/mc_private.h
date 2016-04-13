@@ -12,11 +12,6 @@
 #include <sys/types.h>
 
 #include <stdio.h>
-#ifndef WIN32
-#include <sys/mman.h>
-#endif
-
-#include <elfutils/libdw.h>
 
 #include <simgrid/msg.h>
 #include <xbt/config.h>
@@ -28,14 +23,11 @@
 #include "src/mc/mc_base.h"
 
 #include "src/simix/smx_private.h"
-#include "src/xbt/mmalloc/mmprivate.h"
 
 #ifdef __cplusplus
 #include "src/mc/mc_forward.hpp"
 #include "src/xbt/memory_map.hpp"
 #endif
-
-#include "src/mc/mc_protocol.h"
 
 #ifdef __cplusplus
 namespace simgrid {
@@ -64,26 +56,12 @@ XBT_PRIVATE extern FILE *dot_output;
 
 XBT_PRIVATE void MC_show_deadlock(void);
 
-/****************************** Statistics ************************************/
-
-typedef struct mc_stats {
-  unsigned long state_size;
-  unsigned long visited_states;
-  unsigned long expanded_states;
-  unsigned long executed_transitions;
-} s_mc_stats_t, *mc_stats_t;
-
-XBT_PRIVATE extern mc_stats_t mc_stats;
-
 /********************************** Snapshot comparison **********************************/
 
 //#define MC_DEBUG 1
 #define MC_VERBOSE 1
 
 /********************************** Miscellaneous **********************************/
-
-XBT_PRIVATE void MC_report_assertion_error(void);
-XBT_PRIVATE void MC_report_crash(int status);
 
 SG_END_DECL()
 

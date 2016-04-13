@@ -224,7 +224,7 @@ void LivenessChecker::replay()
 
     /* Update statistics */
     visitedPairsCount_++;
-    mc_stats->executed_transitions++;
+    mc_model_checker->executed_transitions++;
 
     depth++;
 
@@ -306,7 +306,7 @@ void LivenessChecker::logState() // override
   Checker::logState();
   XBT_INFO("Expanded pairs = %lu", expandedPairsCount_);
   XBT_INFO("Visited pairs = %lu", visitedPairsCount_);
-  XBT_INFO("Executed transitions = %lu", mc_stats->executed_transitions);
+  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
 }
 
 void LivenessChecker::showAcceptanceCycle(std::size_t depth)
@@ -399,8 +399,8 @@ int LivenessChecker::main(void)
       simgrid::mc::request_to_string(
         req, req_num, simgrid::mc::RequestType::simix).c_str());
 
-    /* Update mc_stats */
-    mc_stats->executed_transitions++;
+    /* Update stats */
+    mc_model_checker->executed_transitions++;
     if (!current_pair->exploration_started)
       visitedPairsCount_++;
 
@@ -438,7 +438,7 @@ std::shared_ptr<Pair> LivenessChecker::newPair(Pair* current_pair, xbt_automaton
 {
   std::shared_ptr<Pair> next_pair = std::make_shared<Pair>(++expandedPairsCount_);
   next_pair->automaton_state = state;
-  next_pair->graph_state = std::shared_ptr<simgrid::mc::State>(MC_state_new());
+  next_pair->graph_state = std::shared_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
   next_pair->atomic_propositions = std::move(propositions);
   if (current_pair)
     next_pair->depth = current_pair->depth + 1;

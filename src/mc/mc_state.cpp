@@ -28,13 +28,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_state, mc,
 /**
  * \brief Creates a state data structure used by the exploration algorithm
  */
-simgrid::mc::State* MC_state_new()
+simgrid::mc::State* MC_state_new(unsigned long state_number)
 {
   simgrid::mc::State* state = new simgrid::mc::State();
   state->processStates.resize(MC_smx_get_maxpid());
-  state->num = ++mc_stats->expanded_states;
+  state->num = state_number;
   /* Stateful model checking */
-  if((_sg_mc_checkpoint > 0 && (mc_stats->expanded_states % _sg_mc_checkpoint == 0)) ||  _sg_mc_termination){
+  if((_sg_mc_checkpoint > 0 && (state_number % _sg_mc_checkpoint == 0)) ||  _sg_mc_termination){
     state->system_state = simgrid::mc::take_snapshot(state->num);
     if(_sg_mc_comms_determinism || _sg_mc_send_determinism){
       MC_state_copy_incomplete_communications_pattern(state);

@@ -23,7 +23,7 @@ struct XBT_PRIVATE VisitedState {
   int num = 0;
   int other_num = 0; // dot_output for
 
-  VisitedState();
+  VisitedState(unsigned long state_number);
   ~VisitedState();
 };
 
@@ -31,7 +31,7 @@ class XBT_PRIVATE VisitedStates {
   std::vector<std::unique_ptr<simgrid::mc::VisitedState>> states_;
 public:
   void clear() { states_.clear(); }
-  std::unique_ptr<simgrid::mc::VisitedState> addVisitedState(simgrid::mc::State* graph_state, bool compare_snpashots);
+  std::unique_ptr<simgrid::mc::VisitedState> addVisitedState(unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snpashots);
 private:
   void prune();
 };
