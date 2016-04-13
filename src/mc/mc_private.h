@@ -12,11 +12,6 @@
 #include <sys/types.h>
 
 #include <stdio.h>
-#ifndef WIN32
-#include <sys/mman.h>
-#endif
-
-#include <elfutils/libdw.h>
 
 #include <simgrid/msg.h>
 #include <xbt/config.h>
@@ -28,14 +23,11 @@
 #include "src/mc/mc_base.h"
 
 #include "src/simix/smx_private.h"
-#include "src/xbt/mmalloc/mmprivate.h"
 
 #ifdef __cplusplus
 #include "src/mc/mc_forward.hpp"
 #include "src/xbt/memory_map.hpp"
 #endif
-
-#include "src/mc/mc_protocol.h"
 
 #ifdef __cplusplus
 namespace simgrid {

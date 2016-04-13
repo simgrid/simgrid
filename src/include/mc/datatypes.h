@@ -16,8 +16,6 @@
 
 SG_BEGIN_DECL()
 
-typedef struct s_mc_transition *mc_transition_t;
-
 typedef struct s_stack_region{
   void *address;
 #if HAVE_UCONTEXT_H

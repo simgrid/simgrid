@@ -11,6 +11,7 @@
 
 #include "mc/mc.h"
 #include "src/mc/mc_private.h"
+#include "src/xbt/mmalloc/mmprivate.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_memory, mc,
                                 "Logging specific to MC (memory)");
@@ -26,7 +27,6 @@ void MC_memory_init()
 }
 
 /* Finalize the memory subsystem */
-#include "src/xbt_modinter.h"
 void MC_memory_exit(void)
 {
 }
