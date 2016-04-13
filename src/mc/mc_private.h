@@ -67,7 +67,6 @@ XBT_PRIVATE void MC_show_deadlock(void);
 /****************************** Statistics ************************************/
 
 typedef struct mc_stats {
-  unsigned long state_size;
   unsigned long visited_states;
   unsigned long executed_transitions;
 } s_mc_stats_t, *mc_stats_t;
