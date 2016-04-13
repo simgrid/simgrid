@@ -49,6 +49,9 @@ public:
   ~Session();
   void close();
 
+public:
+  void execute(Transition const& transition);
+
 public: // static constructors
 
   /** Create a new session by forking

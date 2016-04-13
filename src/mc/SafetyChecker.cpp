@@ -26,6 +26,7 @@
 #include "src/mc/SafetyChecker.hpp"
 #include "src/mc/VisitedState.hpp"
 #include "src/mc/Transition.hpp"
+#include "src/mc/Session.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -116,26 +117,20 @@ int SafetyChecker::run()
         continue;
     }
 
-    int req_num = state->transition.argument;
-
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
     XBT_DEBUG("Execute: %s",
       simgrid::mc::request_to_string(
-        req, req_num, simgrid::mc::RequestType::simix).c_str());
+        req, state->transition.argument, simgrid::mc::RequestType::simix).c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = simgrid::mc::request_get_dot_output(req, req_num);
+      req_str = simgrid::mc::request_get_dot_output(req, state->transition.argument);
 
     mc_stats->executed_transitions++;
 
-    // TODO, bundle both operations in a single message
-    //   MC_execute_transition(req, req_num)
-
     /* Answer the request */
-    mc_model_checker->handle_simcall(state->transition);
-    mc_model_checker->wait_for_requests();
+    this->getSession().execute(state->transition);
 
     /* Create the new expanded state */
     std::unique_ptr<simgrid::mc::State> next_state =

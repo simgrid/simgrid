@@ -94,6 +94,12 @@ Session::~Session()
   this->close();
 }
 
+void Session::execute(Transition const& transition)
+{
+  modelChecker_->handle_simcall(transition);
+  modelChecker_->wait_for_requests();
+}
+
 // static
 Session* Session::fork(std::function<void(void)> code)
 {
