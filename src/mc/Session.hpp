@@ -51,6 +51,7 @@ public:
 
 public:
   void execute(Transition const& transition);
+  void logState();
 
 public: // static constructors
 

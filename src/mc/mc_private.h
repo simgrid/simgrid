@@ -77,8 +77,6 @@ typedef struct mc_stats {
 
 XBT_PRIVATE extern mc_stats_t mc_stats;
 
-XBT_PRIVATE void MC_print_statistics(mc_stats_t stats);
-
 /********************************** Snapshot comparison **********************************/
 
 //#define MC_DEBUG 1

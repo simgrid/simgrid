@@ -144,7 +144,7 @@ static void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunic
         XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
         xbt_free(simgrid::mc::initial_global_state->send_diff);
         simgrid::mc::initial_global_state->send_diff = nullptr;
-        MC_print_statistics(mc_stats);
+        simgrid::mc::session->logState();
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }else if(_sg_mc_comms_determinism
           && (!simgrid::mc::initial_global_state->send_deterministic
@@ -158,7 +158,7 @@ static void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunic
         simgrid::mc::initial_global_state->send_diff = nullptr;
         xbt_free(simgrid::mc::initial_global_state->recv_diff);
         simgrid::mc::initial_global_state->recv_diff = nullptr;
-        MC_print_statistics(mc_stats);
+        simgrid::mc::session->logState();
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }
     }
@@ -503,7 +503,7 @@ int CommunicationDeterminismChecker::main(void)
     }
   }
 
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 

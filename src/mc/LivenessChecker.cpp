@@ -310,7 +310,7 @@ void LivenessChecker::showAcceptanceCycle(std::size_t depth)
   simgrid::mc::dumpRecordPath();
   for (auto& s : this->getTextualTrace())
     XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
   XBT_INFO("Counter-example depth : %zd", depth);
 }
 
@@ -422,7 +422,7 @@ int LivenessChecker::main(void)
   }
 
   XBT_INFO("No property violation found.");
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 

@@ -208,51 +208,7 @@ void MC_show_deadlock(void)
   XBT_INFO("Counter-example execution trace:");
   for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
-}
-
-void MC_print_statistics(mc_stats_t stats)
-{
-  if(_sg_mc_comms_determinism) {
-    if (!simgrid::mc::initial_global_state->recv_deterministic &&
-        simgrid::mc::initial_global_state->send_deterministic){
-      XBT_INFO("******************************************************");
-      XBT_INFO("**** Only-send-deterministic communication pattern ****");
-      XBT_INFO("******************************************************");
-      XBT_INFO("%s", simgrid::mc::initial_global_state->recv_diff);
-    }else if(!simgrid::mc::initial_global_state->send_deterministic &&
-        simgrid::mc::initial_global_state->recv_deterministic) {
-      XBT_INFO("******************************************************");
-      XBT_INFO("**** Only-recv-deterministic communication pattern ****");
-      XBT_INFO("******************************************************");
-      XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
-    }
-  }
-
-  if (stats->expanded_pairs == 0) {
-    XBT_INFO("Expanded states = %lu", stats->expanded_states);
-    XBT_INFO("Visited states = %lu", stats->visited_states);
-  } else {
-    XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
-    XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
-  }
-  XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0')) {
-    fprintf(dot_output, "}\n");
-    fclose(dot_output);
-  }
-  if (simgrid::mc::initial_global_state != nullptr
-      && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
-    XBT_INFO("Send-deterministic : %s",
-      !simgrid::mc::initial_global_state->send_deterministic ? "No" : "Yes");
-    if (_sg_mc_comms_determinism)
-      XBT_INFO("Recv-deterministic : %s",
-        !simgrid::mc::initial_global_state->recv_deterministic ? "No" : "Yes");
-  }
-  if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")){
-    int ret=system("free");
-    if(ret!=0)XBT_WARN("system call did not return 0, but %d",ret);
-  }
+  simgrid::mc::session->logState();
 }
 
 void MC_automaton_load(const char *file)
@@ -341,7 +297,7 @@ void MC_report_assertion_error(void)
   simgrid::mc::dumpRecordPath();
   for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
 }
 
 void MC_report_crash(int status)
@@ -361,7 +317,7 @@ void MC_report_crash(int status)
   simgrid::mc::dumpRecordPath();
   for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
   XBT_INFO("Stack trace:");
   mc_model_checker->process().dumpStack();
 }

@@ -43,7 +43,7 @@ static void MC_show_non_termination(void)
   XBT_INFO("Counter-example execution trace:");
   for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
 }
 
 static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* state2)
@@ -165,7 +165,7 @@ int SafetyChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
   initial_global_state = nullptr;
   return SIMGRID_MC_EXIT_SUCCESS;
 }
