@@ -295,9 +295,6 @@ void SafetyChecker::init()
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
 
-  /* Wait for requests (schedules processes) */
-  mc_model_checker->wait_for_requests();
-
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
     if (simgrid::mc::process_is_enabled(&p.copy)) {

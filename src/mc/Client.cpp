@@ -156,10 +156,10 @@ void Client::handleMessages()
 void Client::mainLoop(void)
 {
   while (1) {
+    simgrid::mc::wait_for_requests();
     if (channel_.send(MC_MESSAGE_WAITING))
       xbt_die("Could not send WAITING mesage to model-checker");
     this->handleMessages();
-    simgrid::mc::wait_for_requests();
   }
 }
 

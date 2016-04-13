@@ -158,7 +158,6 @@ void LivenessChecker::removeAcceptancePair(int pair_num)
 
 void LivenessChecker::prepare(void)
 {
-  mc_model_checker->wait_for_requests();
   initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
   initial_global_state->prev_pair = 0;
 
