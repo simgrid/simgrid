@@ -82,12 +82,11 @@ private:
   void purgeVisitedPairs();
   void backtrack();
   std::shared_ptr<Pair> newPair(Pair* pair, xbt_automaton_state_t state, std::shared_ptr<const std::vector<int>> propositions);
-public:
+private:
   // A stack of (application_state, automaton_state) pairs for DFS exploration:
   std::list<std::shared_ptr<Pair>> explorationStack_;
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
   std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
-private:
   unsigned long visitedPairsCount_ = 0;
   unsigned long expandedPairsCount_ = 0;
 };
