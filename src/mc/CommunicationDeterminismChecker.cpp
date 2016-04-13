@@ -344,7 +344,7 @@ void CommunicationDeterminismChecker::logState() // override
     XBT_INFO("******************************************************");
     XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
   }
-  XBT_INFO("Expanded states = %lu", mc_stats->expanded_states);
+  XBT_INFO("Expanded states = %lu", expandedStatesCount_);
   XBT_INFO("Visited states = %lu", mc_stats->visited_states);
   XBT_INFO("Executed transitions = %lu", mc_stats->executed_transitions);
   if (simgrid::mc::initial_global_state != nullptr)
@@ -376,7 +376,7 @@ void CommunicationDeterminismChecker::prepare()
   }
 
   std::unique_ptr<simgrid::mc::State> initial_state =
-    std::unique_ptr<simgrid::mc::State>(MC_state_new());
+    std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
 
   XBT_DEBUG("********* Start communication determinism verification *********");
 
@@ -455,7 +455,7 @@ int CommunicationDeterminismChecker::main(void)
 
       /* Create the new expanded state */
       std::unique_ptr<simgrid::mc::State> next_state =
-        std::unique_ptr<simgrid::mc::State>(MC_state_new());
+        std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
 
       /* If comm determinism verification, we cannot stop the exploration if
          some communications are not finished (at least, data are transfered).
@@ -465,7 +465,8 @@ int CommunicationDeterminismChecker::main(void)
         && initial_global_state->initial_communications_pattern_done;
 
       if (_sg_mc_visited == 0
-          || (visited_state = visitedStates_.addVisitedState(next_state.get(), compare_snapshots)) == nullptr) {
+          || (visited_state = visitedStates_.addVisitedState(
+            expandedStatesCount_, next_state.get(), compare_snapshots)) == nullptr) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())

@@ -39,7 +39,7 @@ static int snapshot_compare(simgrid::mc::VisitedState* state1, simgrid::mc::Visi
  * \brief Save the current state
  * \return Snapshot of the current state.
  */
-VisitedState::VisitedState()
+VisitedState::VisitedState(unsigned long state_number)
 {
   simgrid::mc::Process* process = &(mc_model_checker->process());
   this->heap_bytes_used = mmalloc_get_bytes_used_remote(
@@ -49,8 +49,8 @@ VisitedState::VisitedState()
   this->nb_processes =
     mc_model_checker->process().simix_processes().size();
 
-  this->system_state = simgrid::mc::take_snapshot(mc_stats->expanded_states);
-  this->num = mc_stats->expanded_states;
+  this->system_state = simgrid::mc::take_snapshot(state_number);
+  this->num = state_number;
   this->other_num = -1;
 }
 
@@ -76,10 +76,11 @@ void VisitedStates::prune()
 /**
  * \brief Checks whether a given state has already been visited by the algorithm.
  */
-std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(simgrid::mc::State* graph_state, bool compare_snpashots)
+std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
+  unsigned long state_number, simgrid::mc::State* graph_state, bool compare_snpashots)
 {
   std::unique_ptr<simgrid::mc::VisitedState> new_state =
-    std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState());
+    std::unique_ptr<simgrid::mc::VisitedState>(new VisitedState(state_number));
   graph_state->system_state = new_state->system_state;
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)",
     new_state->system_state.get(), new_state->num, graph_state->num);

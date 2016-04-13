@@ -89,6 +89,7 @@ private:
   std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
   unsigned long visitedPairsCount_ = 0;
   unsigned long expandedPairsCount_ = 0;
+  unsigned long expandedStatesCount_ = 0;
 };
 
 }
