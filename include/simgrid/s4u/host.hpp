@@ -83,7 +83,7 @@ public:
   xbt_dict_t mountedStoragesAsDict(); // HACK
   xbt_dynar_t attachedStorages();
 
-  /** Get an associative list [mount point]->[Storage] off all local mount points.
+  /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
