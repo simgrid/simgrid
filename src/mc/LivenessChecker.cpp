@@ -301,6 +301,14 @@ RecordTrace LivenessChecker::getRecordTrace() // override
   return res;
 }
 
+void LivenessChecker::logState() // override
+{
+  Checker::logState();
+  XBT_INFO("Expanded pairs = %lu", mc_stats->expanded_pairs);
+  XBT_INFO("Visited pairs = %lu", mc_stats->visited_pairs);
+  XBT_INFO("Executed transitions = %lu", mc_stats->executed_transitions);
+}
+
 void LivenessChecker::showAcceptanceCycle(std::size_t depth)
 {
   XBT_INFO("*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*-*");

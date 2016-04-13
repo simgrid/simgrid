@@ -18,6 +18,7 @@
 #include "src/mc/Session.hpp"
 #include "src/mc/mc_state.h"
 #include "src/mc/mc_private.h"
+#include "src/mc/Checker.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 
@@ -106,41 +107,11 @@ void Session::execute(Transition const& transition)
 
 void Session::logState()
 {
-  if(_sg_mc_comms_determinism) {
-    if (!simgrid::mc::initial_global_state->recv_deterministic &&
-        simgrid::mc::initial_global_state->send_deterministic){
-      XBT_INFO("******************************************************");
-      XBT_INFO("**** Only-send-deterministic communication pattern ****");
-      XBT_INFO("******************************************************");
-      XBT_INFO("%s", simgrid::mc::initial_global_state->recv_diff);
-    }else if(!simgrid::mc::initial_global_state->send_deterministic &&
-        simgrid::mc::initial_global_state->recv_deterministic) {
-      XBT_INFO("******************************************************");
-      XBT_INFO("**** Only-recv-deterministic communication pattern ****");
-      XBT_INFO("******************************************************");
-      XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
-    }
-  }
+  mc_model_checker->getChecker()->logState();
 
-  if (mc_stats->expanded_pairs == 0) {
-    XBT_INFO("Expanded states = %lu", mc_stats->expanded_states);
-    XBT_INFO("Visited states = %lu", mc_stats->visited_states);
-  } else {
-    XBT_INFO("Expanded pairs = %lu", mc_stats->expanded_pairs);
-    XBT_INFO("Visited pairs = %lu", mc_stats->visited_pairs);
-  }
-  XBT_INFO("Executed transitions = %lu", mc_stats->executed_transitions);
   if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0')) {
     fprintf(dot_output, "}\n");
     fclose(dot_output);
-  }
-  if (simgrid::mc::initial_global_state != nullptr
-      && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
-    XBT_INFO("Send-deterministic : %s",
-      !simgrid::mc::initial_global_state->send_deterministic ? "No" : "Yes");
-    if (_sg_mc_comms_determinism)
-      XBT_INFO("Recv-deterministic : %s",
-        !simgrid::mc::initial_global_state->recv_deterministic ? "No" : "Yes");
   }
   if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")){
     int ret=system("free");

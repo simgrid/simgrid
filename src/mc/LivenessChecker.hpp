@@ -68,6 +68,7 @@ public:
   int run() override;
   RecordTrace getRecordTrace() override;
   std::vector<std::string> getTextualTrace() override;
+  void logState() override;
 private:
   int main();
   void prepare();

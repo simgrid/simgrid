@@ -48,6 +48,7 @@ public:
    */
   virtual RecordTrace getRecordTrace();
   virtual std::vector<std::string> getTextualTrace();
+  virtual void logState();
 
 protected:
   Session& getSession() { return *session_; }

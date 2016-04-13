@@ -326,6 +326,35 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
   return trace;
 }
 
+void CommunicationDeterminismChecker::logState() // override
+{
+  Checker::logState();
+  if (_sg_mc_comms_determinism &&
+      !simgrid::mc::initial_global_state->recv_deterministic &&
+      simgrid::mc::initial_global_state->send_deterministic) {
+    XBT_INFO("******************************************************");
+    XBT_INFO("**** Only-send-deterministic communication pattern ****");
+    XBT_INFO("******************************************************");
+    XBT_INFO("%s", simgrid::mc::initial_global_state->recv_diff);
+  } else if(_sg_mc_comms_determinism &&
+      !simgrid::mc::initial_global_state->send_deterministic &&
+      simgrid::mc::initial_global_state->recv_deterministic) {
+    XBT_INFO("******************************************************");
+    XBT_INFO("**** Only-recv-deterministic communication pattern ****");
+    XBT_INFO("******************************************************");
+    XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
+  }
+  XBT_INFO("Expanded states = %lu", mc_stats->expanded_states);
+  XBT_INFO("Visited states = %lu", mc_stats->visited_states);
+  XBT_INFO("Executed transitions = %lu", mc_stats->executed_transitions);
+  if (simgrid::mc::initial_global_state != nullptr)
+    XBT_INFO("Send-deterministic : %s",
+      !simgrid::mc::initial_global_state->send_deterministic ? "No" : "Yes");
+  if (simgrid::mc::initial_global_state != nullptr && _sg_mc_comms_determinism)
+    XBT_INFO("Recv-deterministic : %s",
+      !simgrid::mc::initial_global_state->recv_deterministic ? "No" : "Yes");
+}
+
 void CommunicationDeterminismChecker::prepare()
 {
 

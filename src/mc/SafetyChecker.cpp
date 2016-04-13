@@ -87,6 +87,14 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
   return trace;
 }
 
+void SafetyChecker::logState() // override
+{
+  Checker::logState();
+  XBT_INFO("Expanded states = %lu", mc_stats->expanded_states);
+  XBT_INFO("Visited states = %lu", mc_stats->visited_states);
+  XBT_INFO("Executed transitions = %lu", mc_stats->executed_transitions);
+}
+
 int SafetyChecker::run()
 {
   this->init();

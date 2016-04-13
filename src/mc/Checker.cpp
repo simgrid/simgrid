@@ -37,5 +37,10 @@ std::vector<std::string> Checker::getTextualTrace()
   return {};
 }
 
+// virtual
+void Checker::logState()
+{
+}
+
 }
 }
