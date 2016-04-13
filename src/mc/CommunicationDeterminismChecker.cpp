@@ -310,7 +310,7 @@ RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
-    res.push_back(state->getRecordElement());
+    res.push_back(state->getTransition());
   return res;
 }
 

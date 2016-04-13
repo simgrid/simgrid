@@ -60,7 +60,7 @@ std::size_t State::interleaveSize() const
     [](simgrid::mc::ProcessState const& state) { return state.isToInterleave(); });
 }
 
-Transition State::getRecordElement() const
+Transition State::getTransition() const
 {
   return this->transition;
 }

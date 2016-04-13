@@ -298,7 +298,7 @@ RecordTrace LivenessChecker::getRecordTrace() // override
 {
   RecordTrace res;
   for (std::shared_ptr<Pair> const& pair : explorationStack_)
-    res.push_back(pair->graph_state->getRecordElement());
+    res.push_back(pair->graph_state->getTransition());
   return res;
 }
 
