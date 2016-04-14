@@ -298,7 +298,7 @@ void SafetyChecker::restoreState()
   for (std::unique_ptr<simgrid::mc::State> const& state : stack_) {
     if (state == stack_.back())
       break;
-      session->execute(state->transition);
+    session->execute(state->transition);
     /* Update statistics */
     mc_model_checker->visited_states++;
     mc_model_checker->executed_transitions++;
