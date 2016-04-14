@@ -400,6 +400,57 @@ bool all_communications_are_finished()
   return true;
 }
 
+void CommunicationDeterminismChecker::restoreState()
+{
+  /* Intermediate backtracking */
+  {
+    simgrid::mc::State* state = stack_.back().get();
+    if (state->system_state) {
+      simgrid::mc::restore_snapshot(state->system_state);
+      MC_restore_communications_pattern(state);
+      return;
+    }
+  }
+
+  /* Restore the initial state */
+  simgrid::mc::session->restoreInitialState();
+
+  // int n = xbt_dynar_length(incomplete_communications_pattern);
+  unsigned n = MC_smx_get_maxpid();
+  assert(n == xbt_dynar_length(incomplete_communications_pattern));
+  assert(n == xbt_dynar_length(initial_communications_pattern));
+  for (unsigned j=0; j < n ; j++) {
+    xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
+    xbt_dynar_get_as(initial_communications_pattern, j, simgrid::mc::PatternCommunicationList*)->index_comm = 0;
+  }
+
+  /* Traverse the stack from the state at position start and re-execute the transitions */
+  for (std::unique_ptr<simgrid::mc::State> const& state : stack_) {
+    if (state == stack_.back())
+      break;
+
+    int req_num = state->transition.argument;
+    smx_simcall_t saved_req = &state->executed_req;
+    xbt_assert(saved_req);
+
+    /* because we got a copy of the executed request, we have to fetch the
+       real one, pointed by the request field of the issuer process */
+
+    const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
+    smx_simcall_t req = &issuer->simcall;
+
+    /* TODO : handle test and testany simcalls */
+    e_mc_call_type_t call = MC_get_call_type(req);
+    mc_model_checker->handle_simcall(state->transition);
+    MC_handle_comm_pattern(call, req, req_num, nullptr, 1);
+    mc_model_checker->wait_for_requests();
+
+    /* Update statistics */
+    mc_model_checker->visited_states++;
+    mc_model_checker->executed_transitions++;
+  }
+}
+
 int CommunicationDeterminismChecker::main(void)
 {
   std::unique_ptr<simgrid::mc::VisitedState> visited_state = nullptr;
@@ -517,7 +568,7 @@ int CommunicationDeterminismChecker::main(void)
             state->num, stack_.size() + 1);
           stack_.push_back(std::move(state));
 
-          simgrid::mc::restoreState(stack_);
+          this->restoreState();
 
           XBT_DEBUG("Back-tracking to state %d at depth %zi done",
             stack_.back()->num, stack_.size());
