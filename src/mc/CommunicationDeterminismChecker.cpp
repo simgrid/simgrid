@@ -540,12 +540,11 @@ int CommunicationDeterminismChecker::main(void)
 int CommunicationDeterminismChecker::run()
 {
   XBT_INFO("Check communication determinism");
-  mc_model_checker->wait_for_requests();
+  simgrid::mc::session->initialize();
 
   this->prepare();
 
   initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
-  initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
   initial_global_state->initial_communications_pattern_done = 0;
   initial_global_state->recv_deterministic = 1;
   initial_global_state->send_deterministic = 1;

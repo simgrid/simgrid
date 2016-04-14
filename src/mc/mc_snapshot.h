@@ -129,7 +129,6 @@ typedef struct XBT_PRIVATE s_mc_snapshot_stack {
 } s_mc_snapshot_stack_t, *mc_snapshot_stack_t;
 
 typedef struct s_mc_global_t {
-  std::shared_ptr<simgrid::mc::Snapshot> snapshot;
   int prev_pair = 0;
   std::string prev_req;
   int initial_communications_pattern_done = 0;

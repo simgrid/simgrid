@@ -159,7 +159,6 @@ void LivenessChecker::removeAcceptancePair(int pair_num)
 
 void LivenessChecker::prepare(void)
 {
-  initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
   initial_global_state->prev_pair = 0;
 
   std::shared_ptr<const std::vector<int>> propos = this->getPropositionValues();
@@ -188,7 +187,7 @@ void LivenessChecker::replay()
   }
 
   /* Restore the initial state */
-  simgrid::mc::restore_snapshot(initial_global_state->snapshot);
+  simgrid::mc::session->restoreInitialState();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
@@ -484,14 +483,12 @@ int LivenessChecker::run()
 {
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
   MC_automaton_load(_sg_mc_property_file);
-  mc_model_checker->wait_for_requests();
 
   XBT_DEBUG("Starting the liveness algorithm");
-
-  /* Create the initial state */
   simgrid::mc::initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
-
+  simgrid::mc::session->initialize();
   this->prepare();
+
   int res = this->main();
   simgrid::mc::initial_global_state = nullptr;
 
