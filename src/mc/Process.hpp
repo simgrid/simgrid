@@ -178,9 +178,6 @@ public:
     running_ = false;
   }
 
-  void reset_soft_dirty();
-  void read_pagemap(uint64_t* pagemap, size_t start_page, size_t page_count);
-
   bool privatized(ObjectInformation const& info) const
   {
     return privatized_ && info.executable();
@@ -262,8 +259,6 @@ private:
   RemotePtr<void> maestro_stack_start_, maestro_stack_end_;
   int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
-  int clear_refs_fd_ = -1;
-  int pagemap_fd_ = -1;
   bool privatized_ = false;
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
