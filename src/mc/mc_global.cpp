@@ -60,10 +60,6 @@ std::vector<double> processes_time;
 
 #if HAVE_MC
 
-/* MC global data structures */
-simgrid::mc::State* mc_current_state = nullptr;
-char mc_replay_mode = false;
-
 /* Liveness */
 
 namespace simgrid {
