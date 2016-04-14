@@ -345,10 +345,8 @@ void CommunicationDeterminismChecker::logState() // override
   XBT_INFO("Expanded states = %lu", expandedStatesCount_);
   XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
   XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
-  if (this != nullptr)
-    XBT_INFO("Send-deterministic : %s",
-      !this->send_deterministic ? "No" : "Yes");
-  if (this != nullptr && _sg_mc_comms_determinism)
+  XBT_INFO("Send-deterministic : %s", !this->send_deterministic ? "No" : "Yes");
+  if (_sg_mc_comms_determinism)
     XBT_INFO("Recv-deterministic : %s",
       !this->recv_deterministic ? "No" : "Yes");
 }
