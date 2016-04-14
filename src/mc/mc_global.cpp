@@ -119,7 +119,7 @@ namespace mc {
  * \param stack The stack with the transitions to execute.
  * \param start Start index to begin the re-execution.
  */
-void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
+void restoreState(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
 {
   XBT_DEBUG("**** Begin Replay ****");
 

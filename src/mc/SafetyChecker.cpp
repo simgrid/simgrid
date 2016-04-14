@@ -268,7 +268,7 @@ int SafetyChecker::backtrack()
       XBT_DEBUG("Back-tracking to state %d at depth %zi",
         state->num, stack_.size() + 1);
       stack_.push_back(std::move(state));
-      simgrid::mc::replay(stack_);
+      simgrid::mc::restoreState(stack_);
       XBT_DEBUG("Back-tracking to state %d at depth %zi done",
         stack_.back()->num, stack_.size());
       break;
