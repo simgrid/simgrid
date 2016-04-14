@@ -38,7 +38,7 @@ struct XBT_PRIVATE Pair {
   int depth = 0;
   bool exploration_started = false;
 
-  Pair();
+  Pair(unsigned long expanded_pairs);
   ~Pair();
 
   Pair(Pair const&) = delete;
@@ -68,6 +68,7 @@ public:
   int run() override;
   RecordTrace getRecordTrace() override;
   std::vector<std::string> getTextualTrace() override;
+  void logState() override;
 private:
   int main();
   void prepare();
@@ -81,11 +82,14 @@ private:
   void purgeVisitedPairs();
   void backtrack();
   std::shared_ptr<Pair> newPair(Pair* pair, xbt_automaton_state_t state, std::shared_ptr<const std::vector<int>> propositions);
-public:
+private:
   // A stack of (application_state, automaton_state) pairs for DFS exploration:
   std::list<std::shared_ptr<Pair>> explorationStack_;
   std::list<std::shared_ptr<VisitedPair>> acceptancePairs_;
   std::list<std::shared_ptr<VisitedPair>> visitedPairs_;
+  unsigned long visitedPairsCount_ = 0;
+  unsigned long expandedPairsCount_ = 0;
+  unsigned long expandedStatesCount_ = 0;
 };
 
 }

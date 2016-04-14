@@ -13,6 +13,7 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_record.h"
+#include "src/mc/Session.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -47,6 +48,7 @@ public:
    */
   virtual RecordTrace getRecordTrace();
   virtual std::vector<std::string> getTextualTrace();
+  virtual void logState();
 
 protected:
   Session& getSession() { return *session_; }

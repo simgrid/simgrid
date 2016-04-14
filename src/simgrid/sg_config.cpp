@@ -47,11 +47,10 @@ static void sg_config_cmd_line(int *argc, char **argv)
 {
   int shall_exit = 0;
   int i, j;
-  char *opt;
 
   for (j = i = 1; i < *argc; i++) {
     if (!strncmp(argv[i], "--cfg=", strlen("--cfg="))) {
-      opt = strchr(argv[i], '=');
+      char *opt = strchr(argv[i], '=');
       opt++;
 
       xbt_cfg_set_parse(opt);
@@ -83,15 +82,13 @@ static void sg_config_cmd_line(int *argc, char **argv)
       printf("Please consider using the recent names\n");
       shall_exit = 1;
     } else if (!strcmp(argv[i], "--help-models")) {
-      int k;
-
       model_help("host", surf_host_model_description);
       printf("\n");
       model_help("CPU", surf_cpu_model_description);
       printf("\n");
       model_help("network", surf_network_model_description);
       printf("\nLong description of all optimization levels accepted by the models of this simulator:\n");
-      for (k = 0; surf_optimization_mode_description[k].name; k++)
+      for (int k = 0; surf_optimization_mode_description[k].name; k++)
         printf("  %s: %s\n",
                surf_optimization_mode_description[k].name,
                surf_optimization_mode_description[k].description);
@@ -126,7 +123,6 @@ static void _sg_cfg_cb__plugin(const char *name)
     sg_cfg_exit_early();
   }
 
-  /* New Module missing */
   int plugin_id = find_model_description(surf_plugin_description, val);
   surf_plugin_description[plugin_id].model_init_preparse();
 }
@@ -179,13 +175,9 @@ static void _sg_cfg_cb__cpu_model(const char *name)
 /* callback of the cpu/model variable */
 static void _sg_cfg_cb__optimization_mode(const char *name)
 {
-  char *val;
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  xbt_assert(_sg_cfg_init_status < 2,
-              "Cannot change the model after the initialization");
-
-  val = xbt_cfg_get_string(name);
-
+  char *val = xbt_cfg_get_string(name);
   if (!strcmp(val, "help")) {
     model_help("optimization", surf_optimization_mode_description);
     sg_cfg_exit_early();
@@ -198,32 +190,23 @@ static void _sg_cfg_cb__optimization_mode(const char *name)
 /* callback of the cpu/model variable */
 static void _sg_cfg_cb__storage_mode(const char *name)
 {
-  char *val;
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  xbt_assert(_sg_cfg_init_status < 2,
-              "Cannot change the model after the initialization");
-
-  val = xbt_cfg_get_string(name);
-
+  char *val = xbt_cfg_get_string(name);
   if (!strcmp(val, "help")) {
     model_help("storage", surf_storage_model_description);
     sg_cfg_exit_early();
   }
 
-  /* New Module missing */
   find_model_description(surf_storage_model_description, val);
 }
 
 /* callback of the network_model variable */
 static void _sg_cfg_cb__network_model(const char *name)
 {
-  char *val;
+  xbt_assert(_sg_cfg_init_status < 2, "Cannot change the model after the initialization");
 
-  xbt_assert(_sg_cfg_init_status < 2,
-              "Cannot change the model after the initialization");
-
-  val = xbt_cfg_get_string(name);
-
+  char *val = xbt_cfg_get_string(name);
   if (!strcmp(val, "help")) {
     model_help("network", surf_network_model_description);
     sg_cfg_exit_early();
@@ -278,7 +261,6 @@ static void _check_coll(const char *category,
   xbt_assert(_sg_cfg_init_status < 2, "Cannot change the collective algorithm after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-
   if (val && !strcmp(val, "help")) {
     coll_help(category, table);
     sg_cfg_exit_early();
@@ -336,9 +318,6 @@ static void _sg_cfg_cb__iprobe_sleep(const char *name){
 static void _sg_cfg_cb__test_sleep(const char *name){
   smpi_test_sleep = xbt_cfg_get_double(name);
 }
-
-
-
 #endif
 
 /* callback of the inclusion path */
@@ -352,30 +331,24 @@ static void _sg_cfg_cb__surf_path(const char *name)
 /* callback to decide if we want to use the model-checking */
 #include "src/xbt_modinter.h"
 
-#if HAVE_MC
-extern int _sg_do_model_check;   /* this variable lives in xbt_main until I find a right location for it */
-extern int _sg_do_model_check_record;
-#endif
-
 static void _sg_cfg_cb_model_check_replay(const char *name) {
   MC_record_path = xbt_cfg_get_string(name);
 }
 
 #if HAVE_MC
+extern int _sg_do_model_check_record;
 static void _sg_cfg_cb_model_check_record(const char *name) {
   _sg_do_model_check_record = xbt_cfg_get_boolean(name);
 }
 #endif
 
 extern int _sg_do_verbose_exit;
-
 static void _sg_cfg_cb_verbose_exit(const char *name)
 {
   _sg_do_verbose_exit = xbt_cfg_get_boolean(name);
 }
 
 extern int _sg_do_clean_atexit;
-
 static void _sg_cfg_cb_clean_atexit(const char *name)
 {
   _sg_do_clean_atexit = xbt_cfg_get_boolean(name);
@@ -455,12 +428,9 @@ static void describe_model(char *result,
   char *p = result +
     sprintf(result, "%s. Possible values: %s", description,
             model_description[0].name ? model_description[0].name : "n/a");
-  int i;
-  for (i = 1; model_description[i].name; i++)
+  for (int i = 1; model_description[i].name; i++)
     p += sprintf(p, ", %s", model_description[i].name);
-  sprintf(p,
-      ".\n       (use 'help' as a value to see the long description of each %s)",
-          name);
+  sprintf(p, ".\n       (use 'help' as a value to see the long description of each %s)", name);
 }
 
 /* create the config set, register what should be and parse the command line*/
@@ -567,9 +537,7 @@ void sg_config_init(int *argc, char **argv)
     const char *dflt_ctx_fact = "thread";
     {
       char *p = description +
-        sprintf(description,
-                "Context factory to use in SIMIX. Possible values: %s",
-                dflt_ctx_fact);
+        sprintf(description, "Context factory to use in SIMIX. Possible values: %s", dflt_ctx_fact);
 #if HAVE_UCONTEXT_CONTEXTS
       dflt_ctx_fact = "ucontext";
       p += sprintf(p, ", %s", dflt_ctx_fact);
@@ -699,29 +667,3 @@ void sg_config_finalize(void)
   xbt_cfg_free(&simgrid_config);
   _sg_cfg_init_status = 0;
 }
-
-int sg_cfg_is_default_value(const char *name)
-{
-  return xbt_cfg_is_default_value(name);
-}
-
-int sg_cfg_get_int(const char* name)
-{
-  return xbt_cfg_get_int(name);
-}
-
-double sg_cfg_get_double(const char* name)
-{
-  return xbt_cfg_get_double(name);
-}
-
-char* sg_cfg_get_string(const char* name)
-{
-  return xbt_cfg_get_string(name);
-}
-
-int sg_cfg_get_boolean(const char* name)
-{
-  return xbt_cfg_get_boolean(name);
-}
-

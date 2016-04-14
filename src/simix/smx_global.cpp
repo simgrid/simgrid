@@ -260,7 +260,7 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_timers = xbt_heap_new(8, &free);
   }
 
-  if (sg_cfg_get_boolean("clean_atexit"))
+  if (xbt_cfg_get_boolean("clean_atexit"))
     atexit(SIMIX_clean);
 
 #if HAVE_MC

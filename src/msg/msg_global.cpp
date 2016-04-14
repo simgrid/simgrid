@@ -75,7 +75,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
   MSG_FILE_LEVEL = xbt_lib_add_level(file_lib, (void_f_pvoid_t) __MSG_file_destroy);
-  if(sg_cfg_get_boolean("clean_atexit")) atexit(MSG_exit);
+  if(xbt_cfg_get_boolean("clean_atexit")) atexit(MSG_exit);
 }
 
 /** \ingroup msg_simulation

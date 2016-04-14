@@ -11,6 +11,10 @@
 #include <link.h>
 #include <dirent.h>
 
+#ifndef WIN32
+#include <sys/mman.h>
+#endif
+
 #include "src/internal_config.h"
 #include "src/mc/mc_private.h"
 #include "xbt/module.h"

@@ -9,11 +9,16 @@
 
 #include <functional>
 
+#include <xbt/log.h>
 #include <xbt/system_error.hpp>
 #include <simgrid/sg_config.h>
 #include <simgrid/modelchecker.h>
+#include <mc/mc.h>
 
 #include "src/mc/Session.hpp"
+#include "src/mc/mc_state.h"
+#include "src/mc/mc_private.h"
+#include "src/mc/Checker.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_Session, mc, "Model-checker session");
 
@@ -81,7 +86,7 @@ Session::Session(pid_t pid, int socket)
   std::unique_ptr<simgrid::mc::Process> process(new simgrid::mc::Process(pid, socket));
   // TODO, automatic detection of the config from the process
   process->privatized(
-    sg_cfg_get_boolean("smpi/privatize_global_variables"));
+    xbt_cfg_get_boolean("smpi/privatize_global_variables"));
   modelChecker_ = std::unique_ptr<ModelChecker>(
     new simgrid::mc::ModelChecker(std::move(process)));
   xbt_assert(mc_model_checker == nullptr);
@@ -92,6 +97,26 @@ Session::Session(pid_t pid, int socket)
 Session::~Session()
 {
   this->close();
+}
+
+void Session::execute(Transition const& transition)
+{
+  modelChecker_->handle_simcall(transition);
+  modelChecker_->wait_for_requests();
+}
+
+void Session::logState()
+{
+  mc_model_checker->getChecker()->logState();
+
+  if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0')) {
+    fprintf(dot_output, "}\n");
+    fclose(dot_output);
+  }
+  if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")){
+    int ret=system("free");
+    if(ret!=0)XBT_WARN("system call did not return 0, but %d",ret);
+  }
 }
 
 // static

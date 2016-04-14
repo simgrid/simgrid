@@ -22,7 +22,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = NULL;
-static void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type, xbt_cfg_cb_t cb_set);
 
 /* xbt_cfgelm_t: the typedef corresponding to a config variable. */
 
@@ -36,6 +35,11 @@ typedef struct {
 
   /* Callbacks */
   xbt_cfg_cb_t cb_set;
+
+  /* Advanced callbacks */
+  xbt_cfg_cb_ext_t cb_set_ext;
+  void* cb_set_data;
+  xbt_cfg_cb_free_t cb_set_free;
 
   /* actual content (could be an union or something) */
   xbt_dynar_t content;
@@ -65,27 +69,6 @@ static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name, e_xbt_cfgelm
 xbt_cfg_t xbt_cfg_new(void)
 {
   return (xbt_cfg_t) xbt_dict_new_homogeneous(&xbt_cfgelm_free);
-}
-
-/** \brief Copy an existing configuration set
- *
- * @param whereto the config set to be created
- * @param tocopy the source data
- *
- * This only copy the registrations, not the actual content
- */
-void xbt_cfg_cpy(xbt_cfg_t tocopy, xbt_cfg_t * whereto)
-{
-  xbt_dict_cursor_t cursor = NULL;
-  xbt_cfgelm_t variable = NULL;
-  char *name = NULL;
-
-  XBT_DEBUG("Copy cfg set %p", tocopy);
-  *whereto = NULL;
-  xbt_assert(tocopy, "cannot copy NULL config");
-
-  xbt_dict_foreach((xbt_dict_t) tocopy, cursor, name, variable)
-    xbt_cfg_register(whereto, name, variable->desc, variable->type, variable->cb_set);
 }
 
 /** @brief Destructor */
@@ -120,7 +103,7 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
     printf("%s  %s:", indent, key);
 
     size = xbt_dynar_length(variable->content);
-    printf ("%s. Actual size=%d. postset=%p, List of values:\n",
+    printf ("%s. Actual size=%d. postset=%p\n",
             xbt_cfgelm_type_name[variable->type], size, variable->cb_set);
 
     switch (variable->type) {
@@ -174,6 +157,8 @@ void xbt_cfgelm_free(void *data)
   XBT_DEBUG("Frees cfgelm %p", c);
   if (!c)
     return;
+  if (c->cb_set_free)
+    c->cb_set_free(c->cb_set_data);
   xbt_free(c->desc);
   if (c->type != xbt_cfgelm_alias)
     xbt_dynar_free(&(c->content));
@@ -189,7 +174,10 @@ void xbt_cfgelm_free(void *data)
  *  @param type the type of the config element
  *  @param cb_set callback function called when a value is set
  */
-static void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type, xbt_cfg_cb_t cb_set)
+static void xbt_cfg_register(
+  xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type,
+  xbt_cfg_cb_t cb_set,
+  xbt_cfg_cb_ext_t cb_set_ext, void* cb_set_data, xbt_cfg_cb_free_t cb_set_free)
 {
   if (*cfg == NULL)
     *cfg = xbt_cfg_new();
@@ -207,6 +195,9 @@ static void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc
   res->desc = xbt_strdup(desc);
   res->type = type;
   res->cb_set = cb_set;
+  res->cb_set_ext = cb_set_ext;
+  res->cb_set_data = cb_set_data;
+  res->cb_set_free = cb_set_free;
   res->isdefault = 1;
 
   switch (type) {
@@ -229,21 +220,38 @@ static void xbt_cfg_register(xbt_cfg_t * cfg, const char *name, const char *desc
   xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
 }
 
+
+
 void xbt_cfg_register_double(const char *name, double default_value,xbt_cfg_cb_t cb_set, const char *desc){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,cb_set, NULL, NULL, NULL);
   xbt_cfg_setdefault_double(name, default_value);
 }
 void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc) {
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,cb_set, NULL, NULL, NULL);
   xbt_cfg_setdefault_int(name, default_value);
 }
 void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,cb_set, NULL, NULL, NULL);
   xbt_cfg_setdefault_string(name, default_value);
 }
 void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,cb_set);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,cb_set, NULL, NULL, NULL);
   xbt_cfg_setdefault_boolean(name, default_value);
+}
+
+/** Register a config with an extended callback
+ *
+ *  @param name      Name of the flag
+ *  @param desc      Description of the flag
+ *  @param type      Type of the flag
+ *  @param cb        Extended callback
+ *  @param data      Data associated with the callback
+ *  @param data_free Function used to free the callback data (or NULL)
+ */
+void xbt_cfg_register_ext(const char *name, const char *desc, e_xbt_cfgelm_type_t type,
+  xbt_cfg_cb_ext_t cb, void* data, xbt_cfg_cb_free_t data_free)
+{
+  xbt_cfg_register(&simgrid_config, name, desc, type, NULL, cb, data, data_free);
 }
 
 void xbt_cfg_register_alias(const char *newname, const char *oldname)
@@ -296,7 +304,7 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
   xbt_assert(type < xbt_cfgelm_type_count,
       "Invalid type in config element descriptor: %s; Should be one of 'string', 'int' or 'double'.", entry);
 
-  xbt_cfg_register(cfg, entrycpy, NULL, type, NULL);
+  xbt_cfg_register(cfg, entrycpy, NULL, type, NULL, NULL, NULL, NULL);
 
   free(entrycpy);               /* strdup'ed by dict mechanism, but cannot be const */
 }
@@ -696,6 +704,8 @@ void xbt_cfg_set_int(const char *name, int val)
 
   if (variable->cb_set)
     variable->cb_set(name);
+  if (variable->cb_set_ext)
+    variable->cb_set_ext(name, variable->cb_set_data);
   variable->isdefault = 0;
 }
 
@@ -712,6 +722,8 @@ void xbt_cfg_set_double(const char *name, double val)
 
   if (variable->cb_set)
     variable->cb_set(name);
+  if (variable->cb_set_ext)
+    variable->cb_set_ext(name, variable->cb_set_data);
   variable->isdefault = 0;
 }
 
@@ -736,6 +748,8 @@ void xbt_cfg_set_string(const char *name, const char *val)
 
   if (variable->cb_set)
     variable->cb_set(name);
+  if (variable->cb_set_ext)
+    variable->cb_set_ext(name, variable->cb_set_data);
   variable->isdefault = 0;
 }
 
@@ -764,6 +778,8 @@ void xbt_cfg_set_boolean(const char *name, const char *val)
 
   if (variable->cb_set)
     variable->cb_set(name);
+  if (variable->cb_set_ext)
+    variable->cb_set_ext(name, variable->cb_set_data);
   variable->isdefault = 0;
 }
 

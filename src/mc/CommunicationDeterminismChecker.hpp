@@ -29,10 +29,12 @@ public:
 private:
   void prepare();
   int main();
+  void logState() override;
 private:
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<simgrid::mc::State>> stack_;
   simgrid::mc::VisitedStates visitedStates_;
+  unsigned long expandedStatesCount_ = 0;
 };
 
 #endif

@@ -154,7 +154,7 @@ void xbt_ex_display(xbt_ex_t * e)
     int i;
     int cutpath = 0;
     TRY { // We don't want to have an exception while checking how to deal with the one we already have, do we?
-      cutpath = sg_cfg_get_boolean("exception/cutpath");
+      cutpath = xbt_cfg_get_boolean("exception/cutpath");
     } CATCH_ANONYMOUS { }
 
     fprintf(stderr, "\n");

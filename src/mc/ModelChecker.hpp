@@ -21,6 +21,7 @@
 #include "src/mc/Process.hpp"
 #include "src/mc/PageStore.hpp"
 #include "src/mc/mc_protocol.h"
+#include "src/mc/Transition.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -61,7 +62,7 @@ public:
   void loop();
   bool handle_events();
   void wait_client(simgrid::mc::Process& process);
-  void simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value);
+  void handle_simcall(Transition const& transition);
   void wait_for_requests()
   {
     mc_model_checker->wait_client(mc_model_checker->process());
@@ -80,6 +81,9 @@ private:
   void handle_waitpid();
   void on_signal(const struct signalfd_siginfo* info);
 
+public:
+  unsigned long visited_states = 0;
+  unsigned long executed_transitions = 0;
 };
 
 }

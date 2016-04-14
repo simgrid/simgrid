@@ -22,27 +22,14 @@
 
 #include <xbt/base.h>
 
+#include "src/mc/Transition.hpp"
+
 namespace simgrid {
 namespace mc {
 
-/** An element in the recorded path
- *
- *  At each decision point, we need to record which process transition
- *  is trigerred and potentially which value is associated with this
- *  transition. The value is used to find which communication is triggerred
- *  in things like waitany and for associating a given value of MC_random()
- *  calls.
- */
-struct RecordTraceElement {
-  int pid = 0;
-  int value = 0;
-  RecordTraceElement() {}
-  RecordTraceElement(int pid, int value) : pid(pid), value(value) {}
-};
+typedef std::vector<Transition> RecordTrace;
 
-typedef std::vector<RecordTraceElement> RecordTrace;
-
-/** Convert a string representation of the path into a array of `simgrid::mc::RecordTraceElement`
+/** Convert a string representation of the path into a array of `simgrid::mc::Transition`
  */
 XBT_PRIVATE RecordTrace parseRecordTrace(const char* data);
 XBT_PRIVATE std::string traceToString(simgrid::mc::RecordTrace const& trace);

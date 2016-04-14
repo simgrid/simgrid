@@ -6,7 +6,6 @@
 
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
-#include <xbt/automaton.h>
 #include <simgrid/modelchecker.h>
 
 #include "src/mc/mc_record.h"

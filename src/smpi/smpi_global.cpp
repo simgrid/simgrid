@@ -376,9 +376,9 @@ void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t 
 static void smpi_check_options(){
   //check correctness of MPI parameters
 
-   xbt_assert(sg_cfg_get_int("smpi/async_small_thresh") <= sg_cfg_get_int("smpi/send_is_detached_thresh"));
+   xbt_assert(xbt_cfg_get_int("smpi/async_small_thresh") <= xbt_cfg_get_int("smpi/send_is_detached_thresh"));
 
-   if (sg_cfg_is_default_value("smpi/running_power")) {
+   if (xbt_cfg_is_default_value("smpi/running_power")) {
      XBT_INFO("You did not set the power of the host running the simulation.  "
               "The timings will certainly not be accurate.  "
               "Use the option \"--cfg=smpi/running_power:<flops>\" to set its value."
@@ -524,60 +524,60 @@ static void smpi_init_logs(){
 }
 
 static void smpi_init_options(){
-  int gather_id = find_coll_description(mpi_coll_gather_description, sg_cfg_get_string("smpi/gather"),"gather");
+  int gather_id = find_coll_description(mpi_coll_gather_description, xbt_cfg_get_string("smpi/gather"),"gather");
     mpi_coll_gather_fun = (int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, int, MPI_Comm))
         mpi_coll_gather_description[gather_id].coll;
 
     int allgather_id = find_coll_description(mpi_coll_allgather_description,
-                                             sg_cfg_get_string("smpi/allgather"),"allgather");
+                                             xbt_cfg_get_string("smpi/allgather"),"allgather");
     mpi_coll_allgather_fun = (int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, MPI_Comm))
         mpi_coll_allgather_description[allgather_id].coll;
 
     int allgatherv_id = find_coll_description(mpi_coll_allgatherv_description,
-                                              sg_cfg_get_string("smpi/allgatherv"),"allgatherv");
+                                              xbt_cfg_get_string("smpi/allgatherv"),"allgatherv");
     mpi_coll_allgatherv_fun = (int (*)(void *, int, MPI_Datatype, void *, int *, int *, MPI_Datatype, MPI_Comm))
         mpi_coll_allgatherv_description[allgatherv_id].coll;
 
     int allreduce_id = find_coll_description(mpi_coll_allreduce_description,
-                                             sg_cfg_get_string("smpi/allreduce"),"allreduce");
+                                             xbt_cfg_get_string("smpi/allreduce"),"allreduce");
     mpi_coll_allreduce_fun = (int (*)(void *sbuf, void *rbuf, int rcount, MPI_Datatype dtype, MPI_Op op, MPI_Comm comm))
         mpi_coll_allreduce_description[allreduce_id].coll;
 
     int alltoall_id = find_coll_description(mpi_coll_alltoall_description,
-                                            sg_cfg_get_string("smpi/alltoall"),"alltoall");
+                                            xbt_cfg_get_string("smpi/alltoall"),"alltoall");
     mpi_coll_alltoall_fun = (int (*)(void *, int, MPI_Datatype, void *, int, MPI_Datatype, MPI_Comm))
         mpi_coll_alltoall_description[alltoall_id].coll;
 
     int alltoallv_id = find_coll_description(mpi_coll_alltoallv_description,
-                                             sg_cfg_get_string("smpi/alltoallv"),"alltoallv");
+                                             xbt_cfg_get_string("smpi/alltoallv"),"alltoallv");
     mpi_coll_alltoallv_fun = (int (*)(void *, int *, int *, MPI_Datatype, void *, int *, int *, MPI_Datatype, MPI_Comm))
         mpi_coll_alltoallv_description[alltoallv_id].coll;
 
-    int bcast_id = find_coll_description(mpi_coll_bcast_description, sg_cfg_get_string("smpi/bcast"),"bcast");
+    int bcast_id = find_coll_description(mpi_coll_bcast_description, xbt_cfg_get_string("smpi/bcast"),"bcast");
     mpi_coll_bcast_fun = (int (*)(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm com))
         mpi_coll_bcast_description[bcast_id].coll;
 
-    int reduce_id = find_coll_description(mpi_coll_reduce_description, sg_cfg_get_string("smpi/reduce"),"reduce");
+    int reduce_id = find_coll_description(mpi_coll_reduce_description, xbt_cfg_get_string("smpi/reduce"),"reduce");
     mpi_coll_reduce_fun = (int (*)(void *buf, void *rbuf, int count, MPI_Datatype datatype, MPI_Op op, int root,
                                     MPI_Comm comm)) mpi_coll_reduce_description[reduce_id].coll;
 
     int reduce_scatter_id =
         find_coll_description(mpi_coll_reduce_scatter_description,
-                              sg_cfg_get_string("smpi/reduce_scatter"),"reduce_scatter");
+                              xbt_cfg_get_string("smpi/reduce_scatter"),"reduce_scatter");
     mpi_coll_reduce_scatter_fun = (int (*)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype, MPI_Op op,
                                            MPI_Comm comm)) mpi_coll_reduce_scatter_description[reduce_scatter_id].coll;
 
-    int scatter_id = find_coll_description(mpi_coll_scatter_description, sg_cfg_get_string("smpi/scatter"),"scatter");
+    int scatter_id = find_coll_description(mpi_coll_scatter_description, xbt_cfg_get_string("smpi/scatter"),"scatter");
     mpi_coll_scatter_fun = (int (*)(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
                                     int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm))
         mpi_coll_scatter_description[scatter_id].coll;
 
-    int barrier_id = find_coll_description(mpi_coll_barrier_description, sg_cfg_get_string("smpi/barrier"),"barrier");
+    int barrier_id = find_coll_description(mpi_coll_barrier_description, xbt_cfg_get_string("smpi/barrier"),"barrier");
     mpi_coll_barrier_fun = (int (*)(MPI_Comm comm)) mpi_coll_barrier_description[barrier_id].coll;
 
-    smpi_cpu_threshold = sg_cfg_get_double("smpi/cpu_threshold");
-    smpi_running_power = sg_cfg_get_double("smpi/running_power");
-    smpi_privatize_global_variables = sg_cfg_get_boolean("smpi/privatize_global_variables");
+    smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu_threshold");
+    smpi_running_power = xbt_cfg_get_double("smpi/running_power");
+    smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize_global_variables");
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 }
@@ -628,7 +628,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
     SIMIX_run();
 
     xbt_os_walltimer_stop(global_timer);
-    if (sg_cfg_get_boolean("smpi/display_timing")){
+    if (xbt_cfg_get_boolean("smpi/display_timing")){
       double global_time = xbt_os_timer_elapsed(global_timer);
       XBT_INFO("Simulated time: %g seconds. \n\n"
           "The simulation took %g seconds (after parsing and platform setup)\n"

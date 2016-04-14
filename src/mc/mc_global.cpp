@@ -44,6 +44,7 @@
 #include "src/mc/mc_record.h"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/Client.hpp"
+#include "src/mc/Transition.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
@@ -62,8 +63,6 @@ std::vector<double> processes_time;
 /* MC global data structures */
 simgrid::mc::State* mc_current_state = nullptr;
 char mc_replay_mode = false;
-
-mc_stats_t mc_stats = nullptr;
 
 /* Liveness */
 
@@ -115,17 +114,6 @@ void MC_run()
 namespace simgrid {
 namespace mc {
 
-void handle_simcall(smx_simcall_t req, int req_num)
-{
-  for (auto& pi : mc_model_checker->process().smx_process_infos)
-    if (req == &pi.copy.simcall) {
-      mc_model_checker->simcall_handle(
-        mc_model_checker->process(), pi.copy.pid, req_num);
-      return;
-    }
-  xbt_die("Could not find the request");
-}
-
 /**
  * \brief Re-executes from the state at position start all the transitions indicated by
  *        a given model-checker stack.
@@ -150,8 +138,6 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
 
   /* Restore the initial state */
   simgrid::mc::restore_snapshot(simgrid::mc::initial_global_state->snapshot);
-  /* At the moment of taking the snapshot the raw heap was set, so restoring
-   * it will set it back again, we have to unset it to continue  */
 
   if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
     // int n = xbt_dynar_length(incomplete_communications_pattern);
@@ -171,7 +157,7 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
     if (state == stack.back())
       break;
 
-    int req_num = state->req_num;
+    int req_num = state->transition.argument;
     smx_simcall_t saved_req = &state->executed_req;
     
     if (saved_req) {
@@ -192,7 +178,7 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         call = MC_get_call_type(req);
 
-      simgrid::mc::handle_simcall(req, req_num);
+      mc_model_checker->handle_simcall(state->transition);
       if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
         MC_handle_comm_pattern(call, req, req_num, nullptr, 1);
       mc_model_checker->wait_for_requests();
@@ -201,8 +187,8 @@ void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
     }
 
     /* Update statistics */
-    mc_stats->visited_states++;
-    mc_stats->executed_transitions++;
+    mc_model_checker->visited_states++;
+    mc_model_checker->executed_transitions++;
 
   }
 
@@ -220,51 +206,7 @@ void MC_show_deadlock(void)
   XBT_INFO("Counter-example execution trace:");
   for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
-}
-
-void MC_print_statistics(mc_stats_t stats)
-{
-  if(_sg_mc_comms_determinism) {
-    if (!simgrid::mc::initial_global_state->recv_deterministic &&
-        simgrid::mc::initial_global_state->send_deterministic){
-      XBT_INFO("******************************************************");
-      XBT_INFO("**** Only-send-deterministic communication pattern ****");
-      XBT_INFO("******************************************************");
-      XBT_INFO("%s", simgrid::mc::initial_global_state->recv_diff);
-    }else if(!simgrid::mc::initial_global_state->send_deterministic &&
-        simgrid::mc::initial_global_state->recv_deterministic) {
-      XBT_INFO("******************************************************");
-      XBT_INFO("**** Only-recv-deterministic communication pattern ****");
-      XBT_INFO("******************************************************");
-      XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
-    }
-  }
-
-  if (stats->expanded_pairs == 0) {
-    XBT_INFO("Expanded states = %lu", stats->expanded_states);
-    XBT_INFO("Visited states = %lu", stats->visited_states);
-  } else {
-    XBT_INFO("Expanded pairs = %lu", stats->expanded_pairs);
-    XBT_INFO("Visited pairs = %lu", stats->visited_pairs);
-  }
-  XBT_INFO("Executed transitions = %lu", stats->executed_transitions);
-  if ((_sg_mc_dot_output_file != nullptr) && (_sg_mc_dot_output_file[0] != '\0')) {
-    fprintf(dot_output, "}\n");
-    fclose(dot_output);
-  }
-  if (simgrid::mc::initial_global_state != nullptr
-      && (_sg_mc_comms_determinism || _sg_mc_send_determinism)) {
-    XBT_INFO("Send-deterministic : %s",
-      !simgrid::mc::initial_global_state->send_deterministic ? "No" : "Yes");
-    if (_sg_mc_comms_determinism)
-      XBT_INFO("Recv-deterministic : %s",
-        !simgrid::mc::initial_global_state->recv_deterministic ? "No" : "Yes");
-  }
-  if (getenv("SIMGRID_MC_SYSTEM_STATISTICS")){
-    int ret=system("free");
-    if(ret!=0)XBT_WARN("system call did not return 0, but %d",ret);
-  }
+  simgrid::mc::session->logState();
 }
 
 void MC_automaton_load(const char *file)
@@ -342,40 +284,3 @@ void MC_process_clock_add(smx_process_t process, double amount)
 {
   simgrid::mc::processes_time[process->pid] += amount;
 }
-
-#if HAVE_MC
-void MC_report_assertion_error(void)
-{
-  XBT_INFO("**************************");
-  XBT_INFO("*** PROPERTY NOT VALID ***");
-  XBT_INFO("**************************");
-  XBT_INFO("Counter-example execution trace:");
-  simgrid::mc::dumpRecordPath();
-  for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
-    XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
-}
-
-void MC_report_crash(int status)
-{
-  XBT_INFO("**************************");
-  XBT_INFO("** CRASH IN THE PROGRAM **");
-  XBT_INFO("**************************");
-  if (WIFSIGNALED(status))
-    XBT_INFO("From signal: %s", strsignal(WTERMSIG(status)));
-  else if (WIFEXITED(status))
-    XBT_INFO("From exit: %i", WEXITSTATUS(status));
-  if (WCOREDUMP(status))
-    XBT_INFO("A core dump was generated by the system.");
-  else
-    XBT_INFO("No core dump was generated by the system.");
-  XBT_INFO("Counter-example execution trace:");
-  simgrid::mc::dumpRecordPath();
-  for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
-    XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
-  XBT_INFO("Stack trace:");
-  mc_model_checker->process().dumpStack();
-}
-
-#endif

@@ -11,7 +11,6 @@
 #include "xbt/sysdep.h"
 #include "xbt/str.h"            /* headers of these functions */
 #include "xbt/strbuff.h"
-#include "xbt/matrix.h"         /* for the diff */
 
 /**  @brief Strip whitespace (or other characters) from the end of a string.
  *

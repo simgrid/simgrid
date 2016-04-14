@@ -25,6 +25,8 @@
 #include "src/mc/Checker.hpp"
 #include "src/mc/SafetyChecker.hpp"
 #include "src/mc/VisitedState.hpp"
+#include "src/mc/Transition.hpp"
+#include "src/mc/Session.hpp"
 
 #include "src/xbt/mmalloc/mmprivate.h"
 
@@ -41,7 +43,7 @@ static void MC_show_non_termination(void)
   XBT_INFO("Counter-example execution trace:");
   for (auto& s : mc_model_checker->getChecker()->getTextualTrace())
     XBT_INFO("%s", s.c_str());
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
 }
 
 static int snapshot_compare(simgrid::mc::State* state1, simgrid::mc::State* state2)
@@ -68,7 +70,7 @@ RecordTrace SafetyChecker::getRecordTrace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
-    res.push_back(state->getRecordElement());
+    res.push_back(state->getTransition());
   return res;
 }
 
@@ -76,13 +78,21 @@ std::vector<std::string> SafetyChecker::getTextualTrace() // override
 {
   std::vector<std::string> trace;
   for (auto const& state : stack_) {
-    int value = state->req_num;
+    int value = state->transition.argument;
     smx_simcall_t req = &state->executed_req;
     if (req)
       trace.push_back(simgrid::mc::request_to_string(
         req, value, simgrid::mc::RequestType::executed));
   }
   return trace;
+}
+
+void SafetyChecker::logState() // override
+{
+  Checker::logState();
+  XBT_INFO("Expanded states = %lu", expandedStatesCount_);
+  XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
+  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
 }
 
 int SafetyChecker::run()
@@ -100,7 +110,7 @@ int SafetyChecker::run()
       stack_.size(), state, state->num,
       state->interleaveSize());
 
-    mc_stats->visited_states++;
+    mc_model_checker->visited_states++;
 
     // The interleave set is empty or the maximum depth is reached,
     // let's back-track.
@@ -115,30 +125,24 @@ int SafetyChecker::run()
         continue;
     }
 
-    int req_num = state->req_num;
-
     // If there are processes to interleave and the maximum depth has not been
     // reached then perform one step of the exploration algorithm.
     XBT_DEBUG("Execute: %s",
       simgrid::mc::request_to_string(
-        req, req_num, simgrid::mc::RequestType::simix).c_str());
+        req, state->transition.argument, simgrid::mc::RequestType::simix).c_str());
 
     std::string req_str;
     if (dot_output != nullptr)
-      req_str = simgrid::mc::request_get_dot_output(req, req_num);
+      req_str = simgrid::mc::request_get_dot_output(req, state->transition.argument);
 
-    mc_stats->executed_transitions++;
-
-    // TODO, bundle both operations in a single message
-    //   MC_execute_transition(req, req_num)
+    mc_model_checker->executed_transitions++;
 
     /* Answer the request */
-    simgrid::mc::handle_simcall(req, req_num);
-    mc_model_checker->wait_for_requests();
+    this->getSession().execute(state->transition);
 
     /* Create the new expanded state */
     std::unique_ptr<simgrid::mc::State> next_state =
-      std::unique_ptr<simgrid::mc::State>(MC_state_new());
+      std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
 
     if (_sg_mc_termination && this->checkNonTermination(next_state.get())) {
         MC_show_non_termination();
@@ -146,7 +150,7 @@ int SafetyChecker::run()
     }
 
     if (_sg_mc_visited == 0
-        || (visitedState_ = visitedStates_.addVisitedState(next_state.get(), true)) == nullptr) {
+        || (visitedState_ = visitedStates_.addVisitedState(expandedStatesCount_, next_state.get(), true)) == nullptr) {
 
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& p : mc_model_checker->process().simix_processes())
@@ -169,7 +173,7 @@ int SafetyChecker::run()
   }
 
   XBT_INFO("No property violation found.");
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
   initial_global_state = nullptr;
   return SIMGRID_MC_EXIT_SUCCESS;
 }
@@ -220,13 +224,13 @@ int SafetyChecker::backtrack()
             && simgrid::mc::request_depend(req, &prev_state->internal_req)) {
           if (XBT_LOG_ISENABLED(mc_safety, xbt_log_priority_debug)) {
             XBT_DEBUG("Dependent Transitions:");
-            int value = prev_state->req_num;
+            int value = prev_state->transition.argument;
             smx_simcall_t prev_req = &prev_state->executed_req;
             XBT_DEBUG("%s (state=%d)",
               simgrid::mc::request_to_string(
                 prev_req, value, simgrid::mc::RequestType::internal).c_str(),
               prev_state->num);
-            value = state->req_num;
+            value = state->transition.argument;
             prev_req = &state->executed_req;
             XBT_DEBUG("%s (state=%d)",
               simgrid::mc::request_to_string(
@@ -294,13 +298,10 @@ void SafetyChecker::init()
   XBT_DEBUG("Starting the safety algorithm");
 
   std::unique_ptr<simgrid::mc::State> initial_state =
-    std::unique_ptr<simgrid::mc::State>(MC_state_new());
+    std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
 
   XBT_DEBUG("**************************************************");
   XBT_DEBUG("Initial state");
-
-  /* Wait for requests (schedules processes) */
-  mc_model_checker->wait_for_requests();
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())

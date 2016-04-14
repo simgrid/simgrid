@@ -22,6 +22,7 @@
 #include "src/mc/CommunicationDeterminismChecker.hpp"
 #include "src/mc/mc_exit.h"
 #include "src/mc/VisitedState.hpp"
+#include "src/mc/Transition.hpp"
 
 using simgrid::mc::remote;
 
@@ -143,7 +144,7 @@ static void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunic
         XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
         xbt_free(simgrid::mc::initial_global_state->send_diff);
         simgrid::mc::initial_global_state->send_diff = nullptr;
-        MC_print_statistics(mc_stats);
+        simgrid::mc::session->logState();
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }else if(_sg_mc_comms_determinism
           && (!simgrid::mc::initial_global_state->send_deterministic
@@ -157,7 +158,7 @@ static void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunic
         simgrid::mc::initial_global_state->send_diff = nullptr;
         xbt_free(simgrid::mc::initial_global_state->recv_diff);
         simgrid::mc::initial_global_state->recv_diff = nullptr;
-        MC_print_statistics(mc_stats);
+        simgrid::mc::session->logState();
         mc_model_checker->exit(SIMGRID_MC_EXIT_NON_DETERMINISM);
       }
     }
@@ -309,7 +310,7 @@ RecordTrace CommunicationDeterminismChecker::getRecordTrace() // override
 {
   RecordTrace res;
   for (auto const& state : stack_)
-    res.push_back(state->getRecordElement());
+    res.push_back(state->getTransition());
   return res;
 }
 
@@ -320,9 +321,38 @@ std::vector<std::string> CommunicationDeterminismChecker::getTextualTrace() // o
     smx_simcall_t req = &state->executed_req;
     if (req)
       trace.push_back(simgrid::mc::request_to_string(
-        req, state->req_num, simgrid::mc::RequestType::executed));
+        req, state->transition.argument, simgrid::mc::RequestType::executed));
   }
   return trace;
+}
+
+void CommunicationDeterminismChecker::logState() // override
+{
+  Checker::logState();
+  if (_sg_mc_comms_determinism &&
+      !simgrid::mc::initial_global_state->recv_deterministic &&
+      simgrid::mc::initial_global_state->send_deterministic) {
+    XBT_INFO("******************************************************");
+    XBT_INFO("**** Only-send-deterministic communication pattern ****");
+    XBT_INFO("******************************************************");
+    XBT_INFO("%s", simgrid::mc::initial_global_state->recv_diff);
+  } else if(_sg_mc_comms_determinism &&
+      !simgrid::mc::initial_global_state->send_deterministic &&
+      simgrid::mc::initial_global_state->recv_deterministic) {
+    XBT_INFO("******************************************************");
+    XBT_INFO("**** Only-recv-deterministic communication pattern ****");
+    XBT_INFO("******************************************************");
+    XBT_INFO("%s", simgrid::mc::initial_global_state->send_diff);
+  }
+  XBT_INFO("Expanded states = %lu", expandedStatesCount_);
+  XBT_INFO("Visited states = %lu", mc_model_checker->visited_states);
+  XBT_INFO("Executed transitions = %lu", mc_model_checker->executed_transitions);
+  if (simgrid::mc::initial_global_state != nullptr)
+    XBT_INFO("Send-deterministic : %s",
+      !simgrid::mc::initial_global_state->send_deterministic ? "No" : "Yes");
+  if (simgrid::mc::initial_global_state != nullptr && _sg_mc_comms_determinism)
+    XBT_INFO("Recv-deterministic : %s",
+      !simgrid::mc::initial_global_state->recv_deterministic ? "No" : "Yes");
 }
 
 void CommunicationDeterminismChecker::prepare()
@@ -346,12 +376,9 @@ void CommunicationDeterminismChecker::prepare()
   }
 
   std::unique_ptr<simgrid::mc::State> initial_state =
-    std::unique_ptr<simgrid::mc::State>(MC_state_new());
+    std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
 
   XBT_DEBUG("********* Start communication determinism verification *********");
-
-  /* Wait for requests (schedules processes) */
-  mc_model_checker->wait_for_requests();
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
@@ -391,13 +418,13 @@ int CommunicationDeterminismChecker::main(void)
               state->interleaveSize());
 
     /* Update statistics */
-    mc_stats->visited_states++;
+    mc_model_checker->visited_states++;
 
     if (stack_.size() <= (std::size_t) _sg_mc_max_depth
         && (req = MC_state_get_request(state)) != nullptr
         && (visited_state == nullptr)) {
 
-      int req_num = state->req_num;
+      int req_num = state->transition.argument;
 
       XBT_DEBUG("Execute: %s",
         simgrid::mc::request_to_string(
@@ -407,7 +434,7 @@ int CommunicationDeterminismChecker::main(void)
       if (dot_output != nullptr)
         req_str = simgrid::mc::request_get_dot_output(req, req_num);
 
-      mc_stats->executed_transitions++;
+      mc_model_checker->executed_transitions++;
 
       /* TODO : handle test and testany simcalls */
       e_mc_call_type_t call = MC_CALL_TYPE_NONE;
@@ -415,7 +442,8 @@ int CommunicationDeterminismChecker::main(void)
         call = MC_get_call_type(req);
 
       /* Answer the request */
-      simgrid::mc::handle_simcall(req, req_num);    /* After this call req is no longer useful */
+      mc_model_checker->handle_simcall(state->transition);
+      /* After this call req is no longer useful */
 
       if(!initial_global_state->initial_communications_pattern_done)
         MC_handle_comm_pattern(call, req, req_num, initial_communications_pattern, 0);
@@ -427,7 +455,7 @@ int CommunicationDeterminismChecker::main(void)
 
       /* Create the new expanded state */
       std::unique_ptr<simgrid::mc::State> next_state =
-        std::unique_ptr<simgrid::mc::State>(MC_state_new());
+        std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
 
       /* If comm determinism verification, we cannot stop the exploration if
          some communications are not finished (at least, data are transfered).
@@ -437,7 +465,8 @@ int CommunicationDeterminismChecker::main(void)
         && initial_global_state->initial_communications_pattern_done;
 
       if (_sg_mc_visited == 0
-          || (visited_state = visitedStates_.addVisitedState(next_state.get(), compare_snapshots)) == nullptr) {
+          || (visited_state = visitedStates_.addVisitedState(
+            expandedStatesCount_, next_state.get(), compare_snapshots)) == nullptr) {
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
@@ -504,7 +533,7 @@ int CommunicationDeterminismChecker::main(void)
     }
   }
 
-  MC_print_statistics(mc_stats);
+  simgrid::mc::session->logState();
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 
