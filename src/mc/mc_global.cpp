@@ -69,7 +69,6 @@ char mc_replay_mode = false;
 namespace simgrid {
 namespace mc {
 
-std::unique_ptr<s_mc_global_t> initial_global_state = nullptr;
 xbt_automaton_t property_automaton = nullptr;
 
 }

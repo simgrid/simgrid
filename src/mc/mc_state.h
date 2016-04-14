@@ -22,8 +22,6 @@
 namespace simgrid {
 namespace mc {
 
-extern XBT_PRIVATE std::unique_ptr<s_mc_global_t> initial_global_state;
-
 struct PatternCommunication {
   int num = 0;
   smx_synchro_t comm_addr;

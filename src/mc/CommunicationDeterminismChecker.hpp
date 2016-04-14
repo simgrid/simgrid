@@ -30,11 +30,22 @@ private:
   void prepare();
   int main();
   void logState() override;
+  void deterministic_comm_pattern(int process, simgrid::mc::PatternCommunication* comm, int backtracking);
+public:
+  // These are used by functions which should be moved in CommunicationDeterminismChecker:
+  void get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking);
+  void complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigned int issuer, int backtracking);
 private:
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<simgrid::mc::State>> stack_;
   simgrid::mc::VisitedStates visitedStates_;
   unsigned long expandedStatesCount_ = 0;
+
+  int initial_communications_pattern_done = 0;
+  int recv_deterministic = 0;
+  int send_deterministic = 0;
+  char *send_diff = nullptr;
+  char *recv_diff = nullptr;
 };
 
 #endif
