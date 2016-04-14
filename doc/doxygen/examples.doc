@@ -143,14 +143,11 @@ Simulation of a master-worker application using a realistic platform and an exte
 \paragraph MSG_ex_mw_TOC Table of contents:
 
    - \ref MSG_ext_mw_preliminary
-   - \ref MSG_ext_ms_master
-   - \ref MSG_ext_ms_slave
-   - \ref MSG_ext_ms_forwarder
-   - \ref MSG_ext_ms_core
-   - \ref MSG_ext_ms_main
-   - \ref MSG_ext_ms_helping
-   - \ref MSG_ext_ms_application
-   - \ref MSG_ext_ms_platform
+   - \ref MSG_ext_mw_master
+   - \ref MSG_ext_mw_worker
+   - \ref MSG_ext_mw_core
+   - \ref MSG_ext_mw_platform
+   - \ref MSG_ext_mw_application
 
 <hr>
 
@@ -159,83 +156,67 @@ Simulation of a master-worker application using a realistic platform and an exte
 \paragraph MSG_ext_mw_preliminary Preliminary declarations
 
 \skip include
-\until printf
-\until }
+\until example");
+\skipline Master expects
 
-\paragraph MSG_ext_ms_master Master code
+\paragraph MSG_ext_mw_master Master code
 
-This function has to be assigned to a #msg_process_t that will behave as
-the master. It should not be called directly but either given as a
-parameter to #MSG_process_create() or registered as a public function
-through #MSG_function_register() and then automatically assigned to a
-process through #MSG_launch_application().
+This function has to be assigned to a #msg_process_t that will behave as the master. It should not be called directly 
+but either given as a parameter to #MSG_process_create() or registered as a public function through 
+#MSG_function_register() and then automatically assigned to a process through #MSG_launch_application().
 
 C style arguments (argc/argv) are interpreted as:
    - the number of tasks to distribute
-   - the computation size of each task
-   - the size of the files associated to each task
-   - a list of host that will accept those tasks.
+   - the computational size of each task
+   - the communication size of each task
+   - the number of workers managed by the master.
 
-Tasks are dumbly sent in a round-robin style.
+Tasks are evenly sent in a round-robin style.
 
-\until end_of_master
+\until return 0;
+\until }
+\skipline Worker expects
 
-\paragraph MSG_ext_ms_slave Slave code
+\paragraph MSG_ext_mw_worker Worker code
 
-This function has to be assigned to a #msg_process_t that has to behave
-as a slave. Just like the master function (described in \ref
-MSG_ext_ms_master), it should not be called directly.
+This function has to be assigned to a #msg_process_t that has to behave as a worker. Just like the master function 
+(described in \ref MSG_ext_mw_master), it should not be called directly.
 
-This function keeps waiting for tasks and executes them as it receives them.
+C style arguments (argc/argv) are interpreted as:
+   - a unique id used to build the mailbox name of the worker
 
-\until end_of_slave
+This function keeps waiting for tasks and executes them as it receives them. When a special task named 'finalize' is
+received from the master, the process ends its execution.
 
-\paragraph MSG_ext_ms_forwarder Forwarder code
+\until return 0;
+\until }
 
-This function has to be assigned to a #msg_process_t that has to behave
-as a forwarder. Just like the master function (described in \ref
-MSG_ext_ms_master), it should not be called directly.
+\paragraph MSG_ext_mw_core Main function
 
-C style arguments (argc/argv) are interpreted as a list of hosts that
-will accept those tasks.
-
-This function keeps waiting for tasks and dispatches them to its slaves.
-
-\until end_of_forwarder
-
-\paragraph MSG_ext_ms_core Simulation core
-
-This function is the core of the simulation and is divided only into 3 parts
-thanks to MSG_create_environment() and MSG_launch_application().
-   -# Simulation settings : MSG_create_environment() creates a realistic
+This function is the core of the simulation and is divided only into 3 parts:
+   -# Simulation settings : #MSG_create_environment() creates a realistic
       environment
    -# Application deployment : create the processes on the right locations with
-      MSG_launch_application()
+      #MSG_launch_application()
    -# The simulation is run with #MSG_main()
 
 Its arguments are:
-	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
-	- <i>application_file</i>: the name of a file containing a valid surfxml application description
+   - <i>platform_file</i>: the name of a file containing an valid platform description.
+   - <i>deployment_file</i>: the name of a file containing a valid application description
+\line main
+\until OK;
+\until }
 
-\until end_of_test_all
+\subsubsection MSG_ext_mw_platform Example of a platform file
 
-\paragraph MSG_ext_ms_main Main() function
-
-This initializes MSG, runs a simulation, and free all data-structures created by MSG.
-
-\until end_of_main
-
-\subsubsection MSG_ext_ms_helping Helping files
-
-\paragraph MSG_ext_ms_application Example of a deployment file
-
-The following listing can be found in \c examples/msg/masterslave/deployment_masterslave_forwarder.xml:
-
-\include msg/masterslave/deployment_masterslave_forwarder.xml
-
-\paragraph MSG_ext_ms_platform Example of a platform file
-
+The following platform description can be found in \c examples/msg/platforms/small_platform.xml
 \include platforms/small_platform.xml
+
+\subsubsection MSG_ext_mw_application Example of a deployment file
+
+The following application description can be found in \c examples/msg/app-masterworker/app-masterworker_d.xml:
+
+\include msg/app-masterworker/app-masterworker_d.xml
 
 */
 
