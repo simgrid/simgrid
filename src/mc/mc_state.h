@@ -144,8 +144,6 @@ struct XBT_PRIVATE State {
   Transition getTransition() const;
 };
 
-XBT_PRIVATE void restoreState(std::list<std::unique_ptr<simgrid::mc::State>> const& stack);
-
 }
 }
 
