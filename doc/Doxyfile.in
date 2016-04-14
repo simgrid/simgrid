@@ -704,9 +704,7 @@ INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pi
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-suspend/process-suspend.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-kill/process-kill.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/task-priority/task-priority.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/properties \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/parallel_task \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/process-startkilltime/process-startkilltime.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/trace-simple/trace-simple.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/ms.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/categories.c \
@@ -720,7 +718,10 @@ INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pi
                          @CMAKE_HOME_DIRECTORY@/examples/msg/gpu \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/actions \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/pmm \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/chord
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/chord\
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/task-priority/task-priority.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/properties \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/parallel_task
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is

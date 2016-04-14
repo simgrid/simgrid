@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_suspend, "Messages specific for this ms
 /** @addtogroup MSG_examples
  *  @section MSG_ex_process Acting on Processes
  * 
- * - <b>Process Suspend/Resume: process-suspend/process-suspend.c</b>. Processes can be suspended and resumed during
+ * - <b>Suspend/Resume: process-suspend/process-suspend.c</b>. Processes can be suspended and resumed during
  *   their executions thanks to the @ref MSG_process_suspend and @ref MSG_process_resume functions.
  */
 

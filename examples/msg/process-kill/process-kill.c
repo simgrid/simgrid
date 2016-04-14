@@ -9,7 +9,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_kill, "Messages specific for this msg example");
 /** @addtogroup MSG_examples
  *
- *  - <b>Process Killing: process-kill/process-kill.c</b>. Processes can also be killed by another if needed thanks to
+ *  - <b>Killing: process-kill/process-kill.c</b>. Processes can also be killed by another if needed thanks to
  *    the @ref MSG_process_kill function.
  */
 
