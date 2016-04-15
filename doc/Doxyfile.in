@@ -702,6 +702,7 @@ INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pi
                          @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer2.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/icomms/peer3.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-suspend/process-suspend.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/process-kill/process-kill.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/task-priority/task-priority.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/properties \

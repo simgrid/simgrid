@@ -139,8 +139,8 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
     explorationStack_.pop_back();
     if (dot_output != nullptr)
       fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-        initial_global_state->prev_pair, pair_test->num,
-        initial_global_state->prev_req.c_str());
+        this->previousPair_, pair_test->num,
+        this->previousRequest_.c_str());
     return nullptr;
   }
 
@@ -159,8 +159,7 @@ void LivenessChecker::removeAcceptancePair(int pair_num)
 
 void LivenessChecker::prepare(void)
 {
-  initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
-  initial_global_state->prev_pair = 0;
+  this->previousPair_ = 0;
 
   std::shared_ptr<const std::vector<int>> propos = this->getPropositionValues();
 
@@ -188,7 +187,7 @@ void LivenessChecker::replay()
   }
 
   /* Restore the initial state */
-  simgrid::mc::restore_snapshot(initial_global_state->snapshot);
+  simgrid::mc::session->restoreInitialState();
 
   /* Traverse the stack from the initial state and re-execute the transitions */
   int depth = 1;
@@ -368,8 +367,8 @@ int LivenessChecker::main(void)
         reached_pair, current_pair.get())) != -1) {
       if (dot_output != nullptr){
         fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-          initial_global_state->prev_pair, visited_num,
-          initial_global_state->prev_req.c_str());
+          this->previousPair_, visited_num,
+          this->previousRequest_.c_str());
         fflush(dot_output);
       }
       XBT_DEBUG("Pair already visited (equal to pair %d), exploration on the current path stopped.", visited_num);
@@ -382,14 +381,14 @@ int LivenessChecker::main(void)
     int req_num = current_pair->graph_state->transition.argument;
 
     if (dot_output != nullptr) {
-      if (initial_global_state->prev_pair != 0 && initial_global_state->prev_pair != current_pair->num) {
+      if (this->previousPair_ != 0 && this->previousPair_ != current_pair->num) {
         fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",
-          initial_global_state->prev_pair, current_pair->num,
-          initial_global_state->prev_req.c_str());
-        initial_global_state->prev_req.clear();
+          this->previousPair_, current_pair->num,
+          this->previousRequest_.c_str());
+        this->previousRequest_.clear();
       }
-      initial_global_state->prev_pair = current_pair->num;
-      initial_global_state->prev_req = simgrid::mc::request_get_dot_output(req, req_num);
+      this->previousPair_ = current_pair->num;
+      this->previousRequest_ = simgrid::mc::request_get_dot_output(req, req_num);
       if (current_pair->search_cycle)
         fprintf(dot_output, "%d [shape=doublecircle];\n", current_pair->num);
       fflush(dot_output);
@@ -484,16 +483,12 @@ int LivenessChecker::run()
 {
   XBT_INFO("Check the liveness property %s", _sg_mc_property_file);
   MC_automaton_load(_sg_mc_property_file);
-  mc_model_checker->wait_for_requests();
 
   XBT_DEBUG("Starting the liveness algorithm");
-
-  /* Create the initial state */
-  simgrid::mc::initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
-
+  simgrid::mc::session->initialize();
   this->prepare();
+
   int res = this->main();
-  simgrid::mc::initial_global_state = nullptr;
 
   return res;
 }

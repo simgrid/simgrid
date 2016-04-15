@@ -80,9 +80,7 @@ static inline e_mc_call_type_t MC_get_call_type(smx_simcall_t req)
   }
 }
 
-XBT_PRIVATE void MC_get_comm_pattern(xbt_dynar_t communications_pattern, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking);
 XBT_PRIVATE void MC_handle_comm_pattern(e_mc_call_type_t call_type, smx_simcall_t request, int value, xbt_dynar_t current_pattern, int backtracking);
-XBT_PRIVATE void MC_complete_comm_pattern(xbt_dynar_t list, smx_synchro_t comm_addr, unsigned int issuer, int backtracking);
 
 XBT_PRIVATE void MC_restore_communications_pattern(simgrid::mc::State* state);
 

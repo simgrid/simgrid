@@ -174,7 +174,6 @@ int SafetyChecker::run()
 
   XBT_INFO("No property violation found.");
   simgrid::mc::session->logState();
-  initial_global_state = nullptr;
   return SIMGRID_MC_EXIT_SUCCESS;
 }
 
@@ -269,7 +268,7 @@ int SafetyChecker::backtrack()
       XBT_DEBUG("Back-tracking to state %d at depth %zi",
         state->num, stack_.size() + 1);
       stack_.push_back(std::move(state));
-      simgrid::mc::replay(stack_);
+      this->restoreState();
       XBT_DEBUG("Back-tracking to state %d at depth %zi done",
         stack_.back()->num, stack_.size());
       break;
@@ -279,6 +278,31 @@ int SafetyChecker::backtrack()
     }
   }
   return SIMGRID_MC_EXIT_SUCCESS;
+}
+
+void SafetyChecker::restoreState()
+{
+  /* Intermediate backtracking */
+  {
+    simgrid::mc::State* state = stack_.back().get();
+    if (state->system_state) {
+      simgrid::mc::restore_snapshot(state->system_state);
+      return;
+    }
+  }
+
+  /* Restore the initial state */
+  simgrid::mc::session->restoreInitialState();
+
+  /* Traverse the stack from the state at position start and re-execute the transitions */
+  for (std::unique_ptr<simgrid::mc::State> const& state : stack_) {
+    if (state == stack_.back())
+      break;
+    session->execute(state->transition);
+    /* Update statistics */
+    mc_model_checker->visited_states++;
+    mc_model_checker->executed_transitions++;
+  }
 }
 
 void SafetyChecker::init()
@@ -293,7 +317,7 @@ void SafetyChecker::init()
     XBT_INFO("Check non progressive cycles");
   else
     XBT_INFO("Check a safety property");
-  mc_model_checker->wait_for_requests();
+  simgrid::mc::session->initialize();
 
   XBT_DEBUG("Starting the safety algorithm");
 
@@ -312,10 +336,6 @@ void SafetyChecker::init()
     }
 
   stack_.push_back(std::move(initial_state));
-
-  /* Save the initial state */
-  initial_global_state = std::unique_ptr<s_mc_global_t>(new s_mc_global_t());
-  initial_global_state->snapshot = simgrid::mc::take_snapshot(0);
 }
 
 SafetyChecker::SafetyChecker(Session& session) : Checker(session)

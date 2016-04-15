@@ -90,6 +90,8 @@ private:
   unsigned long visitedPairsCount_ = 0;
   unsigned long expandedPairsCount_ = 0;
   unsigned long expandedStatesCount_ = 0;
+  int previousPair_ = 0;
+  std::string previousRequest_;
 };
 
 }
