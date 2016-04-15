@@ -36,24 +36,36 @@ void increment(e_xbt_cfgelm_type_t& type)
 
 /* xbt_cfgelm_t: the typedef corresponding to a config variable. */
 
-typedef struct {
+typedef struct s_xbt_cfgelm_t {
   /* Description */
-  char *desc;
+  std::string desc;
 
   /* Allowed type of the variable */
   e_xbt_cfgelm_type_t type;
-  unsigned isdefault:1;
+  bool isdefault = true;
 
   /* Callbacks */
-  xbt_cfg_cb_t cb_set;
+  xbt_cfg_cb_t cb_set = nullptr;
 
   /* Advanced callbacks */
-  xbt_cfg_cb_ext_t cb_set_ext;
-  void* cb_set_data;
-  xbt_cfg_cb_free_t cb_set_free;
+  xbt_cfg_cb_ext_t cb_set_ext = nullptr;
+  void* cb_set_data = nullptr;
+  xbt_cfg_cb_free_t cb_set_free = nullptr;
 
   /* actual content (could be an union or something) */
-  xbt_dynar_t content;
+  xbt_dynar_t content = nullptr;
+
+  ~s_xbt_cfgelm_t()
+  {
+    XBT_DEBUG("Frees cfgelm %p", this);
+    if (!this)
+      return;
+    if (this->cb_set_free)
+      this->cb_set_free(this->cb_set_data);
+    if (this->type != xbt_cfgelm_alias)
+      xbt_dynar_free(&(this->content));
+  }
+
 } s_xbt_cfgelm_t, *xbt_cfgelm_t;
 
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count] = { "int", "double", "string", "boolean", "any", "outofbound" };
@@ -67,7 +79,10 @@ const struct xbt_boolean_couple xbt_cfgelm_boolean_values[] = {
 };
 
 /* Internal stuff used in cache to free a variable */
-static void xbt_cfgelm_free(void *data);
+static void xbt_cfgelm_free(void *data)
+{
+  delete (xbt_cfgelm_t) data;
+}
 
 /* Retrieve the variable we'll modify */
 static xbt_cfgelm_t xbt_cfgelm_get(xbt_cfg_t cfg, const char *name, e_xbt_cfgelm_type_t type);
@@ -158,24 +173,6 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
   xbt_dict_cursor_free(&cursor);
 }
 
-/*
- * free an config element
- */
-void xbt_cfgelm_free(void *data)
-{
-  xbt_cfgelm_t c = (xbt_cfgelm_t) data;
-
-  XBT_DEBUG("Frees cfgelm %p", c);
-  if (!c)
-    return;
-  if (c->cb_set_free)
-    c->cb_set_free(c->cb_set_data);
-  xbt_free(c->desc);
-  if (c->type != xbt_cfgelm_alias)
-    xbt_dynar_free(&(c->content));
-  free(c);
-}
-
 /*----[ Registering stuff ]-----------------------------------------------*/
 /** @brief Register an element within a config set
  *
@@ -199,17 +196,15 @@ static void xbt_cfg_register(
   xbt_cfgelm_t res = (xbt_cfgelm_t) xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
   xbt_assert(NULL == res, "Refusing to register the config element '%s' twice.", name);
 
-  res = xbt_new(s_xbt_cfgelm_t, 1);
+  res = new s_xbt_cfgelm_t();
   XBT_DEBUG("Register cfg elm %s (%s) (%s (=%d) @%p in set %p)",
             name, desc, xbt_cfgelm_type_name[type], (int)type, res, *cfg);
-
-  res->desc = xbt_strdup(desc);
   res->type = type;
+  res->desc = desc;
   res->cb_set = cb_set;
   res->cb_set_ext = cb_set_ext;
   res->cb_set_data = cb_set_data;
   res->cb_set_free = cb_set_free;
-  res->isdefault = 1;
 
   switch (type) {
   case xbt_cfgelm_int:
@@ -228,10 +223,9 @@ static void xbt_cfg_register(
     XBT_ERROR("%d is an invalid type code", (int)type);
     break;
   }
+
   xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
 }
-
-
 
 void xbt_cfg_register_double(const char *name, double default_value,xbt_cfg_cb_t cb_set, const char *desc){
   xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,cb_set, NULL, NULL, NULL);
@@ -276,12 +270,11 @@ void xbt_cfg_register_alias(const char *newname, const char *oldname)
   res = (xbt_cfgelm_t) xbt_dict_get_or_null((xbt_dict_t) simgrid_config, newname);
   xbt_assert(res, "Cannot define an alias to the non-existing option '%s'.", newname);
 
-  res = xbt_new0(s_xbt_cfgelm_t, 1);
+  res = new s_xbt_cfgelm_t();
   XBT_DEBUG("Register cfg alias %s -> %s)",oldname,newname);
 
   res->desc = bprintf("Deprecated alias for %s",newname);
   res->type = xbt_cfgelm_alias;
-  res->isdefault = 1;
   res->content = (xbt_dynar_t)newname;
 
   xbt_dict_set((xbt_dict_t) simgrid_config, oldname, res, NULL);
@@ -337,7 +330,7 @@ void xbt_cfg_aliases(void)
     variable = (xbt_cfgelm_t) xbt_dict_get((xbt_dict_t )simgrid_config, name);
 
     if (variable->type == xbt_cfgelm_alias)
-      printf("   %s: %s\n", name, variable->desc);
+      printf("   %s: %s\n", name, variable->desc.c_str());
   }
 }
 
@@ -360,7 +353,7 @@ void xbt_cfg_help(void)
     if (variable->type == xbt_cfgelm_alias)
       continue;
 
-    printf("   %s: %s\n", name, variable->desc);
+    printf("   %s: %s\n", name, variable->desc.c_str());
     printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
     size = xbt_dynar_length(variable->content);
     printf("Current value: ");
@@ -648,7 +641,7 @@ void xbt_cfg_setdefault_int(const char *name, int val)
 
   if (variable->isdefault){
     xbt_cfg_set_int(name, val);
-    variable->isdefault = 1;
+    variable->isdefault = true;
   } else
     XBT_DEBUG("Do not override configuration variable '%s' with value '%d' because it was already set.", name, val);
 }
@@ -664,7 +657,7 @@ void xbt_cfg_setdefault_double(const char *name, double val)
 
   if (variable->isdefault) {
     xbt_cfg_set_double(name, val);
-    variable->isdefault = 1;
+    variable->isdefault = true;
   } else
     XBT_DEBUG("Do not override configuration variable '%s' with value '%f' because it was already set.", name, val);
 }
@@ -680,7 +673,7 @@ void xbt_cfg_setdefault_string(const char *name, const char *val)
 
   if (variable->isdefault){
     xbt_cfg_set_string(name, val);
-    variable->isdefault = 1;
+    variable->isdefault = true;
   } else
     XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.", name, val);
 }
@@ -696,7 +689,7 @@ void xbt_cfg_setdefault_boolean(const char *name, const char *val)
 
   if (variable->isdefault){
     xbt_cfg_set_boolean(name, val);
-    variable->isdefault = 1;
+    variable->isdefault = true;
   }
    else
     XBT_DEBUG("Do not override configuration variable '%s' with value '%s' because it was already set.", name, val);
@@ -717,7 +710,7 @@ void xbt_cfg_set_int(const char *name, int val)
     variable->cb_set(name);
   if (variable->cb_set_ext)
     variable->cb_set_ext(name, variable->cb_set_data);
-  variable->isdefault = 0;
+  variable->isdefault = false;
 }
 
 /** @brief Set or add a double value to \a name within \a cfg
@@ -735,7 +728,7 @@ void xbt_cfg_set_double(const char *name, double val)
     variable->cb_set(name);
   if (variable->cb_set_ext)
     variable->cb_set_ext(name, variable->cb_set_data);
-  variable->isdefault = 0;
+  variable->isdefault = false;
 }
 
 /** @brief Set or add a string value to \a name within \a cfg
@@ -761,7 +754,7 @@ void xbt_cfg_set_string(const char *name, const char *val)
     variable->cb_set(name);
   if (variable->cb_set_ext)
     variable->cb_set_ext(name, variable->cb_set_data);
-  variable->isdefault = 0;
+  variable->isdefault = false;
 }
 
 /** @brief Set or add a boolean value to \a name within \a cfg
@@ -791,7 +784,7 @@ void xbt_cfg_set_boolean(const char *name, const char *val)
     variable->cb_set(name);
   if (variable->cb_set_ext)
     variable->cb_set_ext(name, variable->cb_set_data);
-  variable->isdefault = 0;
+  variable->isdefault = false;
 }
 
 
