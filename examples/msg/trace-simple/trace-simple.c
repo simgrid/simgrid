@@ -8,12 +8,11 @@
 
 /** @addtogroup MSG_examples
  * 
- * @section MSG_ex_tracing Tracing and vizualisation features
- * 
- * - <b>tracing/simple.c</b> very simple program where each process creates, executes and destroy a task. You might want
- *  to run this program with the following parameters:
- *   --cfg=tracing/uncategorized:yes
- *   (See \ref tracing_tracing_options for details)
+ * @section MSG_ex_tracing Tracing and visualization features
+ * Tracing can be activated by various configuration options which are illustrated in these example.
+ * See \ref tracing_tracing_options for details.
+ * - <b>Basic example: trace-simple/trace-simple.c</b>. In this very simple program, each process creates, executes,
+ *   and destroy a task. You might want to run it with the <i>--cfg=tracing/uncategorized:yes</i> option.
  */
 
 static int simple_func(int argc, char *argv[])

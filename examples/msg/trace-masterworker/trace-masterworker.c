@@ -6,20 +6,17 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/ms.c</b> This is a master/worker program where the master creates tasks, send them to the workers. For
- * each task received, the worker executes it and then destroys it. This program uses several tracing functions that
- * enable the tracing of categorized resource utilization, the use of trace marks, and user variables associated to the
- * hosts of the platform file. You might want to run this program with the following parameters:
- * --cfg=tracing/categorized:yes
- * --cfg=tracing/uncategorized:yes
- * --cfg=viva/categorized:viva_cat.plist
- * --cfg=viva/uncategorized:viva_uncat.plist
- * (See \ref tracing_tracing_options for details)
+ * - <b>Master/Worker: trace-masterworker/trace-masterworker.c</b> This is an augmented version of our basic
+ *   master/worker example. It uses several tracing functions that enable the tracing of categorized resource
+ *   utilization, the use of trace marks, and user variables associated to the hosts of the platform file. You might
+ *   want to run this program with the following configuration options:
+ *   <i>--cfg=tracing/categorized:yes</i>, <i>--cfg=tracing/uncategorized:yes</i>,
+ *   <i>--cfg=viva/categorized:viva_cat.plist</i>, and <i>--cfg=viva/uncategorized:viva_uncat.plist</i>.
  */
 
 #include "simgrid/msg.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_trace_masterworker, "Messages specific for this msg example");
 
 static int master(int argc, char *argv[])
 {

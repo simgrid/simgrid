@@ -5,12 +5,14 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /** @addtogroup MSG_examples
+ *
+ * @section MSG_ex_tracing_user_variables Tracing user variables
+ * The tracing mechanism of SimGrid also allows to associate user variables to resources described in the platform file.
+ * The following examples illustrate this feature. They have to be run with the <i>--cfg=tracing:yes</i> and
+ * <i>--cfg=tracing/platform:yes</i> options.
  * 
- * - <b>tracing/user_variables.c</b>: This program demonstrates how to trace user variables associated to the hosts of
- * the platform file. You might want to run this program with the following parameters:
- * --cfg=tracing:yes
- * --cfg=tracing/platform:yes
- * (See \ref tracing_tracing_options for details)
+ * - <b>Hosts: trace-user-variables/trace-user-variables.c</b>. This example shows how user defined variables can be
+ *   associated to an host and how to manage the tracing of their evolution.
  */
 #include <stdio.h>
 #include "simgrid/msg.h"

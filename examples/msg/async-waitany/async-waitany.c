@@ -6,7 +6,12 @@
 
 #include "simgrid/msg.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitany, "Messages specific for this msg example");
+
+/** @addtogroup MSG_examples
+ *
+ * - <b>Wait any: async-waitany/async-waitany.c</b>. Illustrates the use of the @ref MSG_comm_waitany function.
+ */
 
 static int sender(int argc, char *argv[])
 {

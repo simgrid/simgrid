@@ -8,12 +8,8 @@
 
 /** @addtogroup MSG_examples
  *
- * - <b>tracing/link_user_variables.c</b>: This program demonstrates how to trace user variables associated to the
- * links of the platform file. You need to provide the name of the link to update the value of the variable associated
- * to that link. You might want to run this program with the following parameters:
- * --cfg=tracing:yes
- * --cfg=tracing/platform:yes
- * (See \ref tracing_tracing_options for details)
+ * - <b>Links: trace-link-user-variables/trace-link-user-variables.c</b>. You need to provide the name of the link to
+ *   update the value of the variable associated to that link.
  */
 
 //dump function to create and execute a task

@@ -9,7 +9,7 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_process_kill, "Messages specific for this msg example");
 /** @addtogroup MSG_examples
  *
- *  - <b>Process Killing: process-kill/process-kill.c</b>. Processes can also be killed by another if needed thanks to
+ *  - <b>Killing: process-kill/process-kill.c</b>. Processes can also be killed by another if needed thanks to
  *    the @ref MSG_process_kill function.
  */
 
@@ -49,8 +49,6 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);   /** - Load the platform description */
   /** - Create and deploy @ref killer process */
-  MSG_function_register("killer", killer);
-  MSG_function_register("victim", victim);
   MSG_process_create("killer", killer, NULL, MSG_host_by_name("Tremblay"));
 
   res = MSG_main();                 /** - Run the simulation */

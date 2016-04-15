@@ -6,17 +6,11 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/categories.c</b> This is a master/worker program. The master creates tasks and send them to workers.
- * For each task received, the worker executes it and then destroys it. This program declares several tracing categories
+ * - <b>Setting Categories: trace-categories/trace-categories.c</b>. This example declares several tracing categories
  * that are used to classify tasks. When the program is executed, the tracing mechanism registers the resource
  * utilization of hosts and links according to these categories. You might want to run this program with the following
- * parameters:
- * --cfg=tracing:yes
- * --cfg=tracing/categorized:yes
- * --cfg=tracing/uncategorized:yes
- * --cfg=viva/categorized:viva_cat.plist
- * --cfg=viva/uncategorized:viva_uncat.plist
- * (See \ref tracing_tracing_options for details)
+ * options: <i>--cfg=tracing:yes</i>, <i>--cfg=tracing/categorized:yes</i>, <i>--cfg=tracing/uncategorized:yes</i>,
+ * <i>--cfg=viva/categorized:viva_cat.plist</i>, and <i>--cfg=viva/uncategorized:viva_uncat.plist</i>.
  */
 
 #include "simgrid/msg.h"
