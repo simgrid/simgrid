@@ -6,11 +6,9 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/trace_platform.c</b>: This program demonstrates how a platform file is traced to a Paje trace file
- * format using the tracing mechanism of Simgrid. You might want to run this program with the following parameters:
- * --cfg=tracing:yes
- * --cfg=tracing/categorized:yes
- * (See \ref tracing_tracing_options for details)
+ * - <b>Tracing the platform: trace-platform/trace-platform.c</b>. This example just loads a platform file to
+ *  demonstrate how it can be traced into the Paje trace file format. You might want to run this program with the
+ *  following options: <i>--cfg=tracing:yes</i> and <i>--cfg=tracing/categorized:yes</i>.
  */
 
 #include "simgrid/msg.h"

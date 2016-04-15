@@ -706,13 +706,13 @@ INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pi
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-startkilltime/process-startkilltime.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/trace-simple/trace-simple.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/ms.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/categories.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/procmig.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/trace_platform.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/user_variables.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/link_user_variables.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/tracing/link_srcdst_user_variables.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/trace-platform/trace-platform.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/trace-categories/trace-categories.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/trace-masterworker/trace-masterworker.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/trace-process-migration/trace-process-migration.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/trace-user-variables/trace-user-variables.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/trace-link-user-variables/trace-link-user-variables.c \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/ns3 \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/io \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/gpu \

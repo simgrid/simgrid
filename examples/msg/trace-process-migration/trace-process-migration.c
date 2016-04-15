@@ -6,12 +6,10 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>tracing/procmig.c</b> This program shows a process migration. Tracing this program with the options below
- * enables a gantt-chart visualization of where the process has been during its execution. Migrations are represented by
- * arrows from the origin to the destination host. You might want to run this program with the following parameters:
- * --cfg=tracing:yes
- * --cfg=tracing/msg/process:yes
- * (See \ref tracing_tracing_options for details)
+ * - <b>Process migration: trace-process-migration/trace-process-migration.c</b>. Running this program with the
+ *   <i>--cfg=tracing:yes</i> and <i>--cfg=tracing/msg/process:yes</i> options  enables a Gantt-chart visualization of
+ *   where the process has been hosted during its execution. Migrations are represented by arrows from the origin to
+ *   the destination host.
  */
 
 #include "simgrid/msg.h"
