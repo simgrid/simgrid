@@ -2,7 +2,7 @@
 ! setenv LD_LIBRARY_PATH=../../lib
 
 p Test allreduce
-$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --cfg=smpi/allreduce:automatic --cfg=smpi/async_small_thresh:65536 --cfg=smpi/send_is_detached_thresh:128000 --cfg=smpi/running_power:-1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --cfg=smpi/allreduce:automatic --cfg=smpi/async_small_thresh:65536 --cfg=smpi/send_is_detached_thresh:128000 --cfg=smpi/cpu_threshold:-1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay
 > [rank 2] -> Tremblay
@@ -19,22 +19,22 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ..
 > [rank 13] -> Ginette
 > [rank 14] -> Ginette
 > [rank 15] -> Ginette
-> [  0.420156] (8:7@Jupiter) The quickest allreduce was redbcast on rank 7 and took 0.007545
-> [  0.420156] (5:4@Jupiter) The quickest allreduce was redbcast on rank 4 and took 0.007484
-> [  0.420156] (7:6@Jupiter) The quickest allreduce was redbcast on rank 6 and took 0.007514
-> [  0.420156] (6:5@Jupiter) The quickest allreduce was redbcast on rank 5 and took 0.007514
-> [  0.420368] (14:13@Ginette) The quickest allreduce was mvapich2_two_level on rank 13 and took 0.007278
-> [  0.420368] (13:12@Ginette) The quickest allreduce was mvapich2_two_level on rank 12 and took 0.007247
-> [  0.420368] (16:15@Ginette) The quickest allreduce was ompi on rank 15 and took 0.007263
-> [  0.420368] (15:14@Ginette) The quickest allreduce was mvapich2_two_level on rank 14 and took 0.007278
-> [  0.421760] (2:1@Tremblay) The quickest allreduce was redbcast on rank 1 and took 0.006005
-> [  0.421760] (3:2@Tremblay) The quickest allreduce was redbcast on rank 2 and took 0.006005
-> [  0.421760] (4:3@Tremblay) The quickest allreduce was redbcast on rank 3 and took 0.006036
-> [  0.422911] (12:11@Fafard) The quickest allreduce was mvapich2_two_level on rank 11 and took 0.006523
-> [  0.422911] (10:9@Fafard) The quickest allreduce was mvapich2_two_level on rank 9 and took 0.006492
-> [  0.422911] (9:8@Fafard) The quickest allreduce was mvapich2_two_level on rank 8 and took 0.006462
-> [  0.422911] (11:10@Fafard) The quickest allreduce was mvapich2_two_level on rank 10 and took 0.006492
-> [  0.426896] (1:0@Tremblay) For rank 0, the quickest was redbcast : 0.005990 , but global was mvapich2_two_level : 0.008672 at max
+> [  0.420171] (8:7@Jupiter) The quickest allreduce was redbcast on rank 7 and took 0.007545
+> [  0.420171] (5:4@Jupiter) The quickest allreduce was redbcast on rank 4 and took 0.007484
+> [  0.420171] (7:6@Jupiter) The quickest allreduce was redbcast on rank 6 and took 0.007514
+> [  0.420171] (6:5@Jupiter) The quickest allreduce was redbcast on rank 5 and took 0.007514
+> [  0.420383] (14:13@Ginette) The quickest allreduce was mvapich2_two_level on rank 13 and took 0.007278
+> [  0.420383] (13:12@Ginette) The quickest allreduce was mvapich2_two_level on rank 12 and took 0.007247
+> [  0.420383] (16:15@Ginette) The quickest allreduce was ompi on rank 15 and took 0.007263
+> [  0.420383] (15:14@Ginette) The quickest allreduce was mvapich2_two_level on rank 14 and took 0.007278
+> [  0.421775] (2:1@Tremblay) The quickest allreduce was redbcast on rank 1 and took 0.006005
+> [  0.421775] (3:2@Tremblay) The quickest allreduce was redbcast on rank 2 and took 0.006005
+> [  0.421775] (4:3@Tremblay) The quickest allreduce was redbcast on rank 3 and took 0.006036
+> [  0.422926] (12:11@Fafard) The quickest allreduce was mvapich2_two_level on rank 11 and took 0.006523
+> [  0.422926] (10:9@Fafard) The quickest allreduce was mvapich2_two_level on rank 9 and took 0.006492
+> [  0.422926] (9:8@Fafard) The quickest allreduce was mvapich2_two_level on rank 8 and took 0.006462
+> [  0.422926] (11:10@Fafard) The quickest allreduce was mvapich2_two_level on rank 10 and took 0.006492
+> [  0.426911] (1:0@Tremblay) For rank 0, the quickest was redbcast : 0.005990 , but global was mvapich2_two_level : 0.008672 at max
 > [0] sndbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 ]
 > [1] sndbuf=[16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
 > [2] sndbuf=[32 33 34 35 36 37 38 39 40 41 42 43 44 45 46 47 ]
