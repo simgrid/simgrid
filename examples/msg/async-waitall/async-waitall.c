@@ -6,11 +6,11 @@
 
 #include "simgrid/msg.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitall, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
  * 
- * - <b>msg/icomms/peer2.c</b>: demonstrates the @ref MSG_comm_waitall function
+ * - <b>Wait all: async-waitall/async-waitall.c</b>. Illustrates the use of the @ref MSG_comm_waitall function.
  */
 
 static int sender(int argc, char *argv[])
