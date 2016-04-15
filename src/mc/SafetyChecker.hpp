@@ -33,6 +33,7 @@ private:
   void init();
   bool checkNonTermination(simgrid::mc::State* current_state);
   int backtrack();
+  void restoreState();
 private:
   /** Stack representing the position in the exploration graph */
   std::list<std::unique_ptr<simgrid::mc::State>> stack_;

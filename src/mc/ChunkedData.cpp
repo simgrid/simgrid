@@ -16,9 +16,6 @@
 #include "src/mc/ChunkedData.hpp"
 #include "src/mc/PageStore.hpp"
 
-#define SOFT_DIRTY_BIT_NUMBER 55
-#define SOFT_DIRTY (((uint64_t)1) << SOFT_DIRTY_BIT_NUMBER)
-
 namespace simgrid {
 namespace mc {
 
@@ -29,21 +26,13 @@ namespace mc {
  *  @return                Snapshot page numbers of this new snapshot
  */
 ChunkedData::ChunkedData(PageStore& store, AddressSpace& as,
-    RemotePtr<void> addr, std::size_t page_count,
-    const std::size_t* ref_page_numbers, const std::uint64_t* pagemap)
+    RemotePtr<void> addr, std::size_t page_count)
 {
   store_ = &store;
   this->pagenos_.resize(page_count);
   std::vector<char> buffer(xbt_pagesize);
 
   for (size_t i = 0; i != page_count; ++i) {
-
-    // We don't have to compare soft-clean pages:
-    if (ref_page_numbers && pagemap && !(pagemap[i] & SOFT_DIRTY)) {
-      pagenos_[i] = ref_page_numbers[i];
-      store_->ref_page(ref_page_numbers[i]);
-      continue;
-    }
 
       RemotePtr<void> page = remote((void*)
         simgrid::mc::mmu::join(i, addr.address()));

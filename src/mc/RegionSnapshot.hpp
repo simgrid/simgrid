@@ -266,15 +266,13 @@ public:
 
 RegionSnapshot privatized_region(
     RegionType region_type, void *start_addr, void* permanent_addr,
-    std::size_t size, const RegionSnapshot* ref_region);
+    std::size_t size);
 RegionSnapshot dense_region(
   RegionType type, void *start_addr, void* data_addr, std::size_t size);
 simgrid::mc::RegionSnapshot sparse_region(
-  RegionType type, void *start_addr, void* data_addr, std::size_t size,
-  RegionSnapshot const* ref_region);
+  RegionType type, void *start_addr, void* data_addr, std::size_t size);
 simgrid::mc::RegionSnapshot region(
-  RegionType type, void *start_addr, void* data_addr, std::size_t size,
-  RegionSnapshot const* ref_region);
+  RegionType type, void *start_addr, void* data_addr, std::size_t size);
 
 }
 }

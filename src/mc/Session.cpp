@@ -99,10 +99,22 @@ Session::~Session()
   this->close();
 }
 
+void Session::initialize()
+{
+  xbt_assert(initialSnapshot_ == nullptr);
+  mc_model_checker->wait_for_requests();
+  initialSnapshot_ = simgrid::mc::take_snapshot(0);
+}
+
 void Session::execute(Transition const& transition)
 {
   modelChecker_->handle_simcall(transition);
   modelChecker_->wait_for_requests();
+}
+
+void Session::restoreInitialState()
+{
+  simgrid::mc::restore_snapshot(this->initialSnapshot_);
 }
 
 void Session::logState()
@@ -162,6 +174,7 @@ Session* Session::spawnvp(const char *path, char *const argv[])
 
 void Session::close()
 {
+  initialSnapshot_ = nullptr;
   if (modelChecker_) {
     modelChecker_->shutdown();
     modelChecker_ = nullptr;

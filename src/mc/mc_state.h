@@ -22,8 +22,6 @@
 namespace simgrid {
 namespace mc {
 
-extern XBT_PRIVATE std::unique_ptr<s_mc_global_t> initial_global_state;
-
 struct PatternCommunication {
   int num = 0;
   smx_synchro_t comm_addr;
@@ -145,8 +143,6 @@ struct XBT_PRIVATE State {
   }
   Transition getTransition() const;
 };
-
-XBT_PRIVATE void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack);
 
 }
 }

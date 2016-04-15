@@ -60,16 +60,11 @@ std::vector<double> processes_time;
 
 #if HAVE_MC
 
-/* MC global data structures */
-simgrid::mc::State* mc_current_state = nullptr;
-char mc_replay_mode = false;
-
 /* Liveness */
 
 namespace simgrid {
 namespace mc {
 
-std::unique_ptr<s_mc_global_t> initial_global_state = nullptr;
 xbt_automaton_t property_automaton = nullptr;
 
 }
@@ -109,93 +104,6 @@ void MC_run()
     MC_ignore_heap(&(process->process_hookup), sizeof(process->process_hookup));
   simgrid::mc::Client::get()->mainLoop();
   simgrid::mc::processes_time.clear();
-}
-
-namespace simgrid {
-namespace mc {
-
-/**
- * \brief Re-executes from the state at position start all the transitions indicated by
- *        a given model-checker stack.
- * \param stack The stack with the transitions to execute.
- * \param start Start index to begin the re-execution.
- */
-void replay(std::list<std::unique_ptr<simgrid::mc::State>> const& stack)
-{
-  XBT_DEBUG("**** Begin Replay ****");
-
-  /* Intermediate backtracking */
-  if(_sg_mc_checkpoint > 0 || _sg_mc_termination || _sg_mc_visited > 0) {
-    simgrid::mc::State* state = stack.back().get();
-    if (state->system_state) {
-      simgrid::mc::restore_snapshot(state->system_state);
-      if(_sg_mc_comms_determinism || _sg_mc_send_determinism) 
-        MC_restore_communications_pattern(state);
-      return;
-    }
-  }
-
-
-  /* Restore the initial state */
-  simgrid::mc::restore_snapshot(simgrid::mc::initial_global_state->snapshot);
-
-  if (_sg_mc_comms_determinism || _sg_mc_send_determinism) {
-    // int n = xbt_dynar_length(incomplete_communications_pattern);
-    unsigned n = MC_smx_get_maxpid();
-    assert(n == xbt_dynar_length(incomplete_communications_pattern));
-    assert(n == xbt_dynar_length(initial_communications_pattern));
-    for (unsigned j=0; j < n ; j++) {
-      xbt_dynar_reset((xbt_dynar_t)xbt_dynar_get_as(incomplete_communications_pattern, j, xbt_dynar_t));
-      xbt_dynar_get_as(initial_communications_pattern, j, simgrid::mc::PatternCommunicationList*)->index_comm = 0;
-    }
-  }
-
-  int count = 1;
-
-  /* Traverse the stack from the state at position start and re-execute the transitions */
-  for (std::unique_ptr<simgrid::mc::State> const& state : stack) {
-    if (state == stack.back())
-      break;
-
-    int req_num = state->transition.argument;
-    smx_simcall_t saved_req = &state->executed_req;
-    
-    if (saved_req) {
-      /* because we got a copy of the executed request, we have to fetch the  
-         real one, pointed by the request field of the issuer process */
-
-      const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
-      smx_simcall_t req = &issuer->simcall;
-
-      /* Debug information */
-      XBT_DEBUG("Replay: %s (%p)",
-        simgrid::mc::request_to_string(
-          req, req_num, simgrid::mc::RequestType::simix).c_str(),
-        state.get());
-
-      /* TODO : handle test and testany simcalls */
-      e_mc_call_type_t call = MC_CALL_TYPE_NONE;
-      if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-        call = MC_get_call_type(req);
-
-      mc_model_checker->handle_simcall(state->transition);
-      if (_sg_mc_comms_determinism || _sg_mc_send_determinism)
-        MC_handle_comm_pattern(call, req, req_num, nullptr, 1);
-      mc_model_checker->wait_for_requests();
-
-      count++;
-    }
-
-    /* Update statistics */
-    mc_model_checker->visited_states++;
-    mc_model_checker->executed_transitions++;
-
-  }
-
-  XBT_DEBUG("**** End Replay ****");
-}
-
-}
 }
 
 void MC_show_deadlock(void)

@@ -181,14 +181,6 @@ static void zero_buffer_init(void)
   close(fd);
 }
 
-static
-int open_process_file(pid_t pid, const char* file, int flags)
-{
-  char buff[50];
-  snprintf(buff, sizeof(buff), "/proc/%li/%s", (long) pid, file);
-  return open(buff, flags);
-}
-
 int open_vm(pid_t pid, int flags)
 {
   const size_t buffer_size = 30;
@@ -246,11 +238,6 @@ Process::~Process()
   }
 
   unw_destroy_addr_space(this->unw_addr_space);
-
-  if (this->clear_refs_fd_ >= 0)
-    close(this->clear_refs_fd_);
-  if (this->pagemap_fd_ >= 0)
-    close(this->pagemap_fd_);
 }
 
 /** Refresh the information about the process
@@ -572,30 +559,6 @@ void Process::ignore_region(std::uint64_t addr, std::size_t size)
     position = cursor;
   ignored_regions_.insert(
     ignored_regions_.begin() + position, region);
-}
-
-void Process::reset_soft_dirty()
-{
-  if (this->clear_refs_fd_ < 0) {
-    this->clear_refs_fd_ = open_process_file(pid_, "clear_refs", O_WRONLY|O_CLOEXEC);
-    if (this->clear_refs_fd_ < 0)
-      xbt_die("Could not open clear_refs file for soft-dirty tracking. Run as root?");
-  }
-  if(::write(this->clear_refs_fd_, "4\n", 2) != 2)
-    xbt_die("Could not reset softdirty bits");
-}
-
-void Process::read_pagemap(uint64_t* pagemap, size_t page_start, size_t page_count)
-{
-  if (pagemap_fd_ < 0) {
-    pagemap_fd_ = open_process_file(pid_, "pagemap", O_RDONLY|O_CLOEXEC);
-    if (pagemap_fd_ < 0)
-      xbt_die("Could not open pagemap file for soft-dirty tracking. Run as root?");
-  }
-  ssize_t bytesize = sizeof(uint64_t) * page_count;
-  off_t offset = sizeof(uint64_t) * page_start;
-  if (pread_whole(pagemap_fd_, pagemap, bytesize, offset) != bytesize)
-    xbt_die("Could not read pagemap");
 }
 
 void Process::ignore_heap(IgnoredHeapRegion const& region)

@@ -26,7 +26,7 @@ namespace mc {
  * The first (lower) layer of the per-page snapshot mechanism is a page
  * store: its responsibility is to store immutable shareable
  * reference-counted memory pages independently of the snapshotting
- * logic. Snapshot management and representation, soft-dirty tracking is
+ * logic. Snapshot management and representation is
  * handled to an higher layer. READMORE
  *
  * Data structure:
