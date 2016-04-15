@@ -158,7 +158,7 @@ In addition to the classical cmake configuration variables, SimGrid
 accepts several options, as listed below.
 
   @li <b>CMAKE_INSTALL_PREFIX</b> (path): Where to install SimGrid
-      (e.g. /usr/local or /opt).
+      (/opt/simgrid or /usr/local or elsewhere).
 
   @li <b>enable_compile_optimizations</b> (ON/OFF): request the
       compiler to produce efficient code. You want to activate it,
@@ -340,8 +340,6 @@ ctest -R msg- -j5 --output-on-failure # You changed MSG and want to check that y
 
 \section install_setting_own Setting up your own code
 
-\subsection install_setting_MSG MSG code on Unix
-
 Do not build your simulator by modifying the SimGrid examples.  Go
 outside the SimGrid source tree and create your own working directory
 (say <tt>/home/joe/SimGrid/MyFirstScheduler/</tt>).
@@ -369,52 +367,66 @@ Makefile. It is a generic Makefile that we have used many times with
 our students when we teach the C language.
 
 \verbatim
+# The first rule of a Makefile is the default target. It will be built when make is called with no parameter
+# Here, we want to build the binary 'masterslave'
 all: masterslave
+
+# This second rule lists the dependencies of the masterslave binary
+# How this dependencies are linked is described in an implicit rule below
 masterslave: masterslave.o sched.o
 
-INSTALL_PATH = $$HOME
-CC = gcc
-PEDANTIC_PARANOID_FREAK =       -O0 -Wshadow -Wcast-align \
-				-Waggregate-return -Wmissing-prototypes -Wmissing-declarations \
-				-Wstrict-prototypes -Wmissing-prototypes -Wmissing-declarations \
-				-Wmissing-noreturn -Wredundant-decls -Wnested-externs \
-				-Wpointer-arith -Wwrite-strings -finline-functions
-REASONABLY_CAREFUL_DUDE =	-Wall
-NO_PRAYER_FOR_THE_WICKED =	-w -O2
-WARNINGS = 			$(REASONABLY_CAREFUL_DUDE)
-CFLAGS = -g $(WARNINGS)
+# These third give the dependencies of the each source file
+masterslave.o: masterslave.c sched.h # list every .h that you use
+sched.o: sched.c sched.h
 
-INCLUDES = -I$(INSTALL_PATH)/include
-DEFS = -L$(INSTALL_PATH)/lib/
-LDADD = -lm -lsimgrid
-LIBS =
+# Some configuration
+SIMGRID_INSTALL_PATH = /opt/simgrid # Where you installed simgrid
+CC = gcc                            # Your compiler
+WARNING = -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
+          -Wmissing-declarations -Wstrict-prototypes -Wmissing-prototypes \
+          -Wmissing-declarations -Wmissing-noreturn -Wredundant-decls \
+          -Wnested-externs -Wpointer-arith -Wwrite-strings -finline-functions
 
+# CFLAGS = -g -O0 $(WARNINGS) # Use this line to make debugging easier
+CFLAGS = -g -02 $(WARNINGS) # Use this line to get better performances
+
+# No change should be mandated past that line
+#############################################
+# The following are implicit rules, used by default to actually build
+# the targets for which you listed the dependencies above.
+
+# The blanks before the $(CC) must be a Tab char, not spaces
 %: %.o
-	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) $^ $(LIBS) $(LDADD) -o $@
-
+	$(CC) -L$(SIMGRID_INSTALL_PATH)/lib/    $(CFLAGS) $^ -lsimgrid -o $@
 %.o: %.c
-	$(CC) $(INCLUDES) $(DEFS) $(CFLAGS) -c -o $@ $<
+	$(CC) -I$(SIMGRID_INSTALL_PATH)/include $(CFLAGS) -c -o $@ $<
 
 clean:
-	rm -f $(BIN_FILES) *.o *~
-.SUFFIXES:
+	rm -f *.o *~
 .PHONY: clean
-
 \endverbatim
 
-The first two lines indicates what should be build when typing make
-(<tt>masterslave</tt>) and of which files it is to be made of
-(<tt>masterslave.o</tt> and <tt>sched.o</tt>). This makefile assumes
-that you have set up correctly your <tt>LD_LIBRARY_PATH</tt> variable
-(look, there is a <tt>LDADD = -lm -lsimgrid</tt>). If you prefer using
-the static version, remove the <tt>-lsimgrid</tt> and add a
-<tt>$(INSTALL_PATH)/lib/libsimgrid.a</tt> on the next line, right
-after the <tt>LIBS = </tt>.
+The comments of this file should be enough to understand what's going
+on. If you are completely new to makefiles, you should install the
+<tt>make-doc</tt> package and type this command in a terminal: 
+<tt>info make</tt>.
 
-More generally, if you have never written a Makefile by yourself, type
-in a terminal: <tt>info make</tt> and read the introduction. The
-previous example should be enough for a first try but you may want to
-perform some more complex compilations...
+Sometimes, the following error message (or similar) will be produced.
+@verbatim
+masterworker.c:209: undefined reference to `sg_version_check'
+masterworker.c:209: undefined reference to `MSG_init_nocheck'
+(and possibly many other undefined references)
+@endverbatim
 
+It means that the system does not manage to find simgrid when it tries
+to execute your programs. Specify where to search with the
+<tt>LD_LIBRARY_PATH</tt> variable. Try running the following command
+before executing your code. If it helps, you should add this line to
+your ~/.bashrc so that it gets executed each time you log into your
+computer.
+
+@verbatim
+export LD_LIBRARY_PATH=/opt/simgrid/lib
+@endverbatim
 
 */
