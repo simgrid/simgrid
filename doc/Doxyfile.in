@@ -713,7 +713,7 @@ INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pi
                          @CMAKE_HOME_DIRECTORY@/examples/msg/trace-user-variables/trace-user-variables.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/trace-link-user-variables/trace-link-user-variables.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/ns3 \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/network-ns3/network-ns3.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/io \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/gpu \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/actions \

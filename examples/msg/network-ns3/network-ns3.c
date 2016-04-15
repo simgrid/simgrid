@@ -14,12 +14,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
  * 
  *  @subsection MSG_ex_PLS Packet level simulators
  * 
- *  These examples demonstrate how to use the bindings to classicalPacket-Level Simulators (PLS), as explained in
+ *  This example demonstrates how to use the bindings to a classical Packet-Level Simulators (PLS), as explained in
  *  \ref pls. The most interesting is probably not the C files since they are unchanged from the other simulations,
- *  but the associated files, such as the platform files to see how to declare a platform to be used with the PLS
- *  bindings of SimGrid and the tesh files to see how to actually start a simulation in these settings.
+ *  but the associated files, such as the platform file to see how to declare a platform to be used with the PLS
+ *  bindings of SimGrid and the tesh file to see how to actually start a simulation in these settings.
  * 
- * - <b>ns3</b>: Simple ping-pong using ns3 instead of the SimGrid network models. 
+ * - <b>ns-3: network-ns3/network-ns3.c</b>. Simple ping-pong using ns-3 instead of the SimGrid network models.
  */
 
 int timer_start; //set as 1 in the master process
