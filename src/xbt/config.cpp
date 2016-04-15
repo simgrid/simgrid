@@ -3,7 +3,11 @@
 
 #include <stdio.h>
 
+#include <cerrno>
+#include <cstring>
+#include <climits>
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
 
@@ -24,7 +28,6 @@ XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = NULL;
 
 namespace {
 
-// We could define some range/iterator for the num values.
 static inline
 void increment(e_xbt_cfgelm_type_t& type)
 {
@@ -44,13 +47,11 @@ typedef struct s_xbt_cfgelm_t {
   e_xbt_cfgelm_type_t type;
   bool isdefault = true;
 
-  /* Callbacks */
+  /* Callback */
   xbt_cfg_cb_t cb_set = nullptr;
 
-  /* Advanced callbacks */
-  xbt_cfg_cb_ext_t cb_set_ext = nullptr;
-  void* cb_set_data = nullptr;
-  xbt_cfg_cb_free_t cb_set_free = nullptr;
+  /* Advanced callback (for xbt_cfgelm_string only) */
+  std::function<void(const char* value)> callback;
 
   /* actual content (could be an union or something) */
   xbt_dynar_t content = nullptr;
@@ -58,10 +59,6 @@ typedef struct s_xbt_cfgelm_t {
   ~s_xbt_cfgelm_t()
   {
     XBT_DEBUG("Frees cfgelm %p", this);
-    if (!this)
-      return;
-    if (this->cb_set_free)
-      this->cb_set_free(this->cb_set_data);
     if (this->type != xbt_cfgelm_alias)
       xbt_dynar_free(&(this->content));
   }
@@ -81,7 +78,8 @@ const struct xbt_boolean_couple xbt_cfgelm_boolean_values[] = {
 /* Internal stuff used in cache to free a variable */
 static void xbt_cfgelm_free(void *data)
 {
-  delete (xbt_cfgelm_t) data;
+  if (data)
+    delete (xbt_cfgelm_t) data;
 }
 
 /* Retrieve the variable we'll modify */
@@ -185,7 +183,7 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
 static void xbt_cfg_register(
   xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type,
   xbt_cfg_cb_t cb_set,
-  xbt_cfg_cb_ext_t cb_set_ext, void* cb_set_data, xbt_cfg_cb_free_t cb_set_free)
+  std::function<void(const char* value)> callback = std::function<void(const char* value)>())
 {
   if (*cfg == NULL)
     *cfg = xbt_cfg_new();
@@ -200,11 +198,10 @@ static void xbt_cfg_register(
   XBT_DEBUG("Register cfg elm %s (%s) (%s (=%d) @%p in set %p)",
             name, desc, xbt_cfgelm_type_name[type], (int)type, res, *cfg);
   res->type = type;
-  res->desc = desc;
+  if (desc)
+    res->desc = desc;
   res->cb_set = cb_set;
-  res->cb_set_ext = cb_set_ext;
-  res->cb_set_data = cb_set_data;
-  res->cb_set_free = cb_set_free;
+  res->callback = std::move(callback);
 
   switch (type) {
   case xbt_cfgelm_int:
@@ -228,35 +225,20 @@ static void xbt_cfg_register(
 }
 
 void xbt_cfg_register_double(const char *name, double default_value,xbt_cfg_cb_t cb_set, const char *desc){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,cb_set, NULL, NULL, NULL);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,cb_set);
   xbt_cfg_setdefault_double(name, default_value);
 }
 void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc) {
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,cb_set, NULL, NULL, NULL);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,cb_set);
   xbt_cfg_setdefault_int(name, default_value);
 }
 void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,cb_set, NULL, NULL, NULL);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,cb_set);
   xbt_cfg_setdefault_string(name, default_value);
 }
 void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,cb_set, NULL, NULL, NULL);
+  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,cb_set);
   xbt_cfg_setdefault_boolean(name, default_value);
-}
-
-/** Register a config with an extended callback
- *
- *  @param name      Name of the flag
- *  @param desc      Description of the flag
- *  @param type      Type of the flag
- *  @param cb        Extended callback
- *  @param data      Data associated with the callback
- *  @param data_free Function used to free the callback data (or NULL)
- */
-void xbt_cfg_register_ext(const char *name, const char *desc, e_xbt_cfgelm_type_t type,
-  xbt_cfg_cb_ext_t cb, void* data, xbt_cfg_cb_free_t data_free)
-{
-  xbt_cfg_register(&simgrid_config, name, desc, type, NULL, cb, data, data_free);
 }
 
 void xbt_cfg_register_alias(const char *newname, const char *oldname)
@@ -308,7 +290,7 @@ void xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry)
   xbt_assert(type < xbt_cfgelm_type_count,
       "Invalid type in config element descriptor: %s; Should be one of 'string', 'int' or 'double'.", entry);
 
-  xbt_cfg_register(cfg, entrycpy, NULL, type, NULL, NULL, NULL, NULL);
+  xbt_cfg_register(cfg, entrycpy, NULL, type, NULL);
 
   free(entrycpy);               /* strdup'ed by dict mechanism, but cannot be const */
 }
@@ -708,8 +690,6 @@ void xbt_cfg_set_int(const char *name, int val)
 
   if (variable->cb_set)
     variable->cb_set(name);
-  if (variable->cb_set_ext)
-    variable->cb_set_ext(name, variable->cb_set_data);
   variable->isdefault = false;
 }
 
@@ -726,8 +706,6 @@ void xbt_cfg_set_double(const char *name, double val)
 
   if (variable->cb_set)
     variable->cb_set(name);
-  if (variable->cb_set_ext)
-    variable->cb_set_ext(name, variable->cb_set_data);
   variable->isdefault = false;
 }
 
@@ -752,8 +730,22 @@ void xbt_cfg_set_string(const char *name, const char *val)
 
   if (variable->cb_set)
     variable->cb_set(name);
-  if (variable->cb_set_ext)
-    variable->cb_set_ext(name, variable->cb_set_data);
+
+  if (variable->callback) {
+    try {
+      variable->callback(val);
+    }
+    catch(std::range_error& e) {
+      xbt_die("Invalid flag %s=%s: %s", val, name, e.what());
+    }
+    catch(std::exception& e) {
+      xbt_die("Error for flag %s=%s: %s", val, name, e.what());
+    }
+    catch(...) {
+      xbt_die("Error for flag %s=%s", val, name);
+    }
+  }
+
   variable->isdefault = false;
 }
 
@@ -782,8 +774,6 @@ void xbt_cfg_set_boolean(const char *name, const char *val)
 
   if (variable->cb_set)
     variable->cb_set(name);
-  if (variable->cb_set_ext)
-    variable->cb_set_ext(name, variable->cb_set_data);
   variable->isdefault = false;
 }
 
@@ -883,32 +873,68 @@ int xbt_cfg_get_boolean(const char *name)
 namespace simgrid {
 namespace config {
 
-static void callCallback(const char* name, void* data)
+bool parseBool(const char* value)
 {
-  (*(std::function<void(const char*)>*) data)(name);
+  for (int i = 0; xbt_cfgelm_boolean_values[i].true_val != NULL; i++) {
+    if (std::strcmp(value, xbt_cfgelm_boolean_values[i].true_val) == 0)
+      return true;
+    if (std::strcmp(value, xbt_cfgelm_boolean_values[i].false_val) == 0)
+      return false;
+  }
+  throw std::range_error("not a boolean");
 }
 
-static void freeCallback(void* data)
+double parseDouble(const char* value)
 {
-  delete (std::function<void(const char*)>*) data;
+  char* end;
+  errno = 0;
+  double res = std::strtod(value, &end);
+  if (errno == ERANGE)
+    throw std::range_error("out of range");
+  else if (errno)
+    xbt_die("Unexpected errno");
+  if (end == value || *end != '\0')
+    throw std::range_error("invalid double");
+  else
+    return res;
 }
 
-void registerConfig(const char* name, const char* description,
-  e_xbt_cfgelm_type_t type,
-  std::function<void(const char*)> callback)
+long int parseLong(const char* value)
 {
-  std::function<void(const char*)>* code
-    = new std::function<void(const char*)>(std::move(callback));
-  xbt_cfg_register_ext(name, description, type,
-    callCallback, code, freeCallback);
+  char* end;
+  errno = 0;
+  long int res = std::strtol(value, &end, 0);
+  if (errno) {
+    if (res == LONG_MIN && errno == ERANGE)
+      throw std::range_error("underflow");
+    else if (res == LONG_MAX && errno == ERANGE)
+      throw std::range_error("overflow");
+    xbt_die("Unexpected errno");
+  }
+  if (end == value || *end != '\0')
+    throw std::range_error("invalid integer");
+  else
+    return res;
+}
+
+void declareFlag(const char* name, const char* description,
+  std::function<void(const char* value)> callback)
+{
+  xbt_cfg_register(&simgrid_config, name, description, xbt_cfgelm_string, NULL,
+    std::move(callback));
 }
 
 }
 }
 
 #ifdef SIMGRID_TEST
+
+#include <string>
+
 #include "xbt.h"
 #include "xbt/ex.h"
+
+#include <xbt/config.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_cfg);
 
@@ -964,4 +990,27 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
   }
   xbt_cfg_free(&simgrid_config);
 }
+
+XBT_TEST_UNIT("c++flags", test_config_cxx_flags, "C++ flags")
+{
+  simgrid_config = make_set();
+  xbt_test_add("C++ declaration of flags");
+
+  simgrid::config::Flag<int> int_flag("int", "", 0);
+  simgrid::config::Flag<std::string> string_flag("string", "", "foo");
+  simgrid::config::Flag<double> double_flag("double", "", 0.32);
+  simgrid::config::Flag<bool> bool_flag1("bool1", "", false);
+  simgrid::config::Flag<bool> bool_flag2("bool2", "", true);
+
+  xbt_test_add("Parse values");
+  xbt_cfg_set_parse("int:42 string:bar double:8.0 bool1:true bool2:false");
+  xbt_test_assert(int_flag == 42, "Check int flag");
+  xbt_test_assert(string_flag == "bar", "Check string flag");
+  xbt_test_assert(double_flag == 8.0, "Check double flag");
+  xbt_test_assert(bool_flag1, "Check bool1 flag");
+  xbt_test_assert(!bool_flag2, "Check bool2 flag");
+
+  xbt_cfg_free(&simgrid_config);
+}
+
 #endif                          /* SIMGRID_TEST */
