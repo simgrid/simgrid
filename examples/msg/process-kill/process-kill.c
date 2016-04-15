@@ -49,8 +49,6 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);   /** - Load the platform description */
   /** - Create and deploy @ref killer process */
-  MSG_function_register("killer", killer);
-  MSG_function_register("victim", victim);
   MSG_process_create("killer", killer, NULL, MSG_host_by_name("Tremblay"));
 
   res = MSG_main();                 /** - Run the simulation */
