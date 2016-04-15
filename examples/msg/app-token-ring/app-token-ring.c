@@ -6,11 +6,11 @@
 
 #include "simgrid/msg.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(ring, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_app_token_ring, "Messages specific for this msg example");
 
 /** @addtogroup MSG_examples
  * 
- * - <b>Token Ring: app-token-ring/app-token-ring.c</b>: Classical token ring communication, where a token is exchanged
+ * - <b>Token Ring: app-token-ring/app-token-ring.c</b>. Classical token ring communication, where a token is exchanged
  *   along a ring to reach every participant. The tesh file laying in the directory shows how to run the same example on
  *   different platforms.
  */
@@ -55,7 +55,6 @@ int main(int argc, char *argv[])
   MSG_create_environment(argv[1]);       /** - Load the platform description */
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   msg_host_t h;
-  MSG_function_register("foo", foo);
 
   XBT_INFO("Number of host '%d'",MSG_get_host_number());
   xbt_dynar_foreach (hosts, i, h){      /** - Give a unique rank to each host and create a @ref foo process on each */

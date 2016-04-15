@@ -8,7 +8,7 @@
 
 /** @addtogroup MSG_examples
  *
- *  - <b>Ping-Pong: app-pingpong/app-pingpong.c </b>. It's hard to think of a simpler example. The tesh file
+ *  - <b>Ping-Pong: app-pingpong/app-pingpong.c</b>. It's hard to think of a simpler example. The tesh file
  *    laying in the directory is instructive concerning the way to pass options to the simulators (see \ref options).
  */
 
