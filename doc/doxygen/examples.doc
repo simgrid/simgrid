@@ -31,111 +31,6 @@ example from which you can learn what you want to.
 
 \subsection MSG_ex_basics Basic examples and features
 
-\subsubsection MSG_ex_asynchronous_communications Asynchronous communications
-
-
-Simulation of asynchronous communications between a sender and a receiver using a realistic platform and
-an external description of the deployment.
-
- - \ref MSG_ext_icomms_code
-   - \ref MSG_ext_icomms_preliminary
-   - \ref MSG_ext_icomms_Sender
-   - \ref MSG_ext_icomms_Receiver
-   - \ref MSG_ext_icomms_core
-   - \ref MSG_ext_icomms_Main
- - \ref MSG_ext_icomms_fct_Waitall
- - \ref MSG_ext_icomms_fct_Waitany
-
-<hr>
-
-\dontinclude msg/icomms/peer.c
-
-\paragraph MSG_ext_icomms_code Code of the application
-
-\paragraph MSG_ext_icomms_preliminary Preliminary declarations
-\skip include
-\until Sender function
-
-\paragraph MSG_ext_icomms_Sender Sender function
-
-A host can send an an asynchronous message with \c MSG_task_isend(). %As this function is non-blocking,
-we have to call \c MSG_comm_test() to know if the communication has finished and finally destroy it with a call to \c MSG_comm_destroy().
-It is also possible to call \c MSG_comm_wait() which, is provides a shortcut.
-
-  C style arguments (argc/argv) are interpreted as:
-   - the number of tasks to distribute
-   - the computation size of each task
-   - the size of the files associated to each task
-   - a list of host that will accept those tasks.
-   - the time to sleep at the beginning of the function
-   - This time defined the process sleep time
-			if time = 0 use of MSG_comm_wait()
-			if time > 0 use of MSG_comm_test()
-
-
-\until Receiver function
-
-\paragraph MSG_ext_icomms_Receiver Receiver function
-
-This function executes tasks when it receives them. %As the receiving is asynchronous we have to test the communication to know
-if it is completed or not with \c MSG_comm_test() or wait for the completion \c MSG_comm_wait().
-
-  C style arguments (argc/argv) are interpreted as:
-   - the id to use for received the communication.
-   - the time to sleep at the beginning of the function
-   - This time defined the process sleep time
-			if time = 0 use of MSG_comm_wait()
-			if time > 0 use of MSG_comm_test()
-
-\until Test function
-
-\paragraph MSG_ext_icomms_core Simulation core
-
-  This function is the core of the simulation and is divided only into 3 parts
-  thanks to MSG_create_environment() and MSG_launch_application().
-     -# Simulation settings : MSG_create_environment() creates a realistic
-        environment
-     -# Application deployment : create the processes on the right locations with
-        MSG_launch_application()
-     -# The simulation is run with #MSG_main()
-
-  Its arguments are:
-	- <i>platform_file</i>: the name of a file containing an valid surfxml platform description.
-	- <i>application_file</i>: the name of a file containing a valid surfxml application description
-
-\until Main function
-
-\paragraph MSG_ext_icomms_Main Main function
-
-This initializes MSG, runs a simulation, and free all data-structures created by MSG.
-
-\until end_of_main
-
-\dontinclude msg/icomms/peer2.c
-
-\paragraph MSG_ext_icomms_fct_Waitall Waitall function for sender
-
-The use of this function permit to send all messages and wait for the completion of all in one time.
-
-\skipline Sender function
-\until end_of_sender
-
-\paragraph MSG_ext_icomms_fct_Waitany Waitany function
-
-The MSG_comm_waitany() function return the place of the first message send or receive from a xbt_dynar_t table.
-
-\paragraph MSG_ext_icomms_fct_Waitany_sender From a sender
-We can use this function to wait all sent messages.
-\dontinclude msg/icomms/peer3.c
-\skipline Sender function
-\until end_of_sender
-
-\paragraph MSG_ext_icomms_fct_Waitany_receiver From a receiver
-We can also wait for the arrival of all messages.
-\dontinclude msg/icomms/peer3.c
-\skipline Receiver function
-\until end_of_receiver
-
 \subsubsection MSG_ex_master_worker Basic Master/Workers
 
 Simulation of a master-worker application using a realistic platform and an external description of the deployment.
@@ -146,8 +41,8 @@ Simulation of a master-worker application using a realistic platform and an exte
    - \ref MSG_ext_mw_master
    - \ref MSG_ext_mw_worker
    - \ref MSG_ext_mw_core
-   - \ref MSG_ext_mw_platform
-   - \ref MSG_ext_mw_application
+     - \ref MSG_ext_mw_platform
+     - \ref MSG_ext_mw_application
 
 <hr>
 
@@ -207,16 +102,103 @@ Its arguments are:
 \until OK;
 \until }
 
-\subsubsection MSG_ext_mw_platform Example of a platform file
+\paragraph MSG_ext_mw_platform Example of a platform file
 
 The following platform description can be found in \c examples/msg/platforms/small_platform.xml
 \include platforms/small_platform.xml
 
-\subsubsection MSG_ext_mw_application Example of a deployment file
+\paragraph MSG_ext_mw_application Example of a deployment file
 
 The following application description can be found in \c examples/msg/app-masterworker/app-masterworker_d.xml:
 
 \include msg/app-masterworker/app-masterworker_d.xml
+
+\subsubsection MSG_ex_asynchronous_communications Asynchronous communications
+
+Simulation of asynchronous communications between a sender and a receiver using a realistic platform and
+an external description of the deployment.
+
+ - \ref MSG_ext_async_code
+   - \ref MSG_ext_async_preliminary
+   - \ref MSG_ext_async_Sender
+   - \ref MSG_ext_async_Receiver
+   - \ref MSG_ext_async_Main
+ - \ref MSG_ext_async_fct_Waitall
+ - \ref MSG_ext_async_fct_Waitany
+
+<hr>
+
+\dontinclude msg/async-wait/async-wait.c
+
+\paragraph MSG_ext_async_code Code of the application
+
+\paragraph MSG_ext_async_preliminary Preliminary declarations
+\skip include
+\until Sender
+
+\paragraph MSG_ext_async_Sender Sender function
+
+A host can send an asynchronous message with \c MSG_task_isend(). %As this function is non-blocking, we have to call 
+\c MSG_comm_test() to know if the communication is complete and evenetually destroy it with a call to 
+\c MSG_comm_destroy(). It is also possible to call \c MSG_comm_wait() which provides a shortcut.
+
+  C style arguments (argc/argv) are interpreted as:
+   - the number of tasks to distribute
+   - the computation size of each task
+   - the size of the files associated to each task
+   - the number of receivers that will accept those tasks
+   - the time to sleep at the beginning of the function. This time defines the process sleep time:
+           - if time = 0, use MSG_comm_wait()
+           - if time > 0, use MSG_comm_test()
+
+\until Receiver
+
+\paragraph MSG_ext_async_Receiver Receiver function
+
+This function executes tasks when it receives them. %As the receiving is asynchronous, we have to test the completion of
+the communication with \c MSG_comm_test() or wait for it with \c MSG_comm_wait().
+
+  C style arguments (argc/argv) are interpreted as:
+   - the id to use for received the communication.
+   - the time to sleep at the beginning of the function
+   - This time defined the process sleep time
+           - if time = 0 use of MSG_comm_wait()
+           - if time > 0 use of MSG_comm_test()
+
+\until return
+\until }
+
+\paragraph MSG_ext_async_Main Main function
+
+This function is the core of the simulation and is divided only into 3 parts:
+     -# Simulation settings : MSG_create_environment() loads a platform description
+     -# Application deployment : create the processes on the right locations with MSG_launch_application()
+     -# The simulation is run with #MSG_main()
+
+  Its arguments are:
+    - <i>platform_file</i>: the name of a file containing an valid platform description.
+    - <i>application_file</i>: the name of a file containing a valid application deployment.
+
+\until return
+\until }
+
+\dontinclude msg/async-waitall/async-waitall.c
+
+\paragraph MSG_ext_async_fct_Waitall Waitall function
+
+The use of MSG_comm_waitall() allows a process to send all the tasks and then wait for the completion of all in one call.
+
+\skipline static
+\until return
+\until }
+
+\paragraph MSG_ext_async_fct_Waitany Waitany function
+
+The MSG_comm_waitany() function returns the place of the first message send or receive from a xbt_dynar.
+
+\skipline static
+\until return
+\until }
 
 */
 
