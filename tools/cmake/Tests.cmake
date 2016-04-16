@@ -14,7 +14,6 @@ ENDIF()
 
 IF(enable_memcheck)
   INCLUDE(FindValgrind)
-  INCLUDE(${CMAKE_BINARY_DIR}/memcheck_tests.cmake)
 ENDIF()
 
 #some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
