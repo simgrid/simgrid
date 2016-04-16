@@ -370,7 +370,15 @@ sub exec_cmd {
     ###
     # exec the command line
 
-    my @cmdline = quotewords( '\s+', 0, $cmd{'cmd'} );
+    my @cmdline;
+    if(defined $ENV{VALGRIND_COMMAND}) {
+      push @cmdline, $ENV{VALGRIND_COMMAND};
+      push @cmdline, split(" ", $ENV{VALGRIND_COMMAND_OPTIONS});
+      if($cmd{'timeout'} ne 'no'){
+          $cmd{'timeout'}=$cmd{'timeout'}*20
+      }
+    }
+    push @cmdline, quotewords( '\s+', 0, $cmd{'cmd'} );
     my $input = defined($cmd{'in'})? join("\n",@{$cmd{'in'}}) : "";
     my $output = " " x 10240; $output = ""; # Preallocate 10kB, and reset length to 0
     $cmd{'got'} = \$output;

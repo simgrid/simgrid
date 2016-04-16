@@ -54,7 +54,10 @@ cmake -Denable_documentation=OFF -Denable_lua=OFF  \
       -Denable_memcheck_xml=ON $WORKSPACE
 
 ctest -D ExperimentalBuild -V
-ctest -D ExperimentalMemCheck || true
+ctest -D ExperimentalTest || true
+
+unset VALGRIND_COMMAND
+unset VALGRIND_COMMAND_OPTIONS
 
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
