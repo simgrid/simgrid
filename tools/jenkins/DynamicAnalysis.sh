@@ -56,12 +56,9 @@ cmake -Denable_documentation=OFF -Denable_lua=OFF  \
 ctest -D ExperimentalBuild -V
 ctest -D ExperimentalTest || true
 
-unset VALGRIND_COMMAND
-unset VALGRIND_COMMAND_OPTIONS
-
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
    find . -iname "*.memcheck" -exec mv {} $WORKSPACE/memcheck \;
-   mv Testing/`head -n 1 < Testing/TAG`/DynamicAnalysis.xml  $WORKSPACE
+   mv Testing/`head -n 1 < Testing/TAG`/Test.xml  $WORKSPACE/DynamicAnalysis.xml
 fi
 
