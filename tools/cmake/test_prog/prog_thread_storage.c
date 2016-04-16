@@ -6,12 +6,7 @@
 
 #include <stdio.h>
 
-#ifdef _MSC_VER
-__declspec(thread)
-#else
-__thread 
-#endif
-int thread_specific_variable = 0;
+__thread int thread_specific_variable = 0;
 
 int main(void) {
   thread_specific_variable++;
