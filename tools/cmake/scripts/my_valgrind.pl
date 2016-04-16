@@ -13,7 +13,7 @@ my @argv = ("valgrind");
 my $count = 0;
 
 while (defined(my $arg = shift)) {
-    print "arg($count)$arg\n";
+    #print "arg($count)$arg\n";
     if ($arg =~ m!/smpirun$!) {
         @argv = ( $arg, "-wrapper", "@argv" );
     } elsif ($arg eq "--cd") {
@@ -30,5 +30,5 @@ while (defined(my $arg = shift)) {
 #print "COMMAND : $bin $option $cd $path\n";
 #print "cd $path\n";
 #print "valgrind --trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no $bin $option\n";
-print "@argv\n\n";
+#print "@argv\n\n";
 system @argv;

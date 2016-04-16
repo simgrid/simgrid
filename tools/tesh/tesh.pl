@@ -373,7 +373,8 @@ sub exec_cmd {
     my @cmdline;
     if(defined $ENV{VALGRIND_COMMAND}) {
       push @cmdline, $ENV{VALGRIND_COMMAND};
-      push @cmdline, split(" ", $ENV{VALGRIND_COMMAND_OPTIONS});
+    my $noquotes = substr $ENV{VALGRIND_OPTIONS}, 1, -1;
+      push @cmdline, split(" ", $noquotes);
       if($cmd{'timeout'} ne 'no'){
           $cmd{'timeout'}=$cmd{'timeout'}*20
       }
@@ -790,7 +791,7 @@ sub cd_cmd($) {
 # Command setenv. Gets "variable=content", and update the environment accordingly
 sub setenv_cmd($) {
     my $arg = shift;
-    if ( $arg =~ /^(.*)=(.*)$/ ) {
+    if ( $arg =~ /^(.*?)=(.*)$/ ) {
         my ( $var, $ctn ) = ( $1, $2 );
         print "[Tesh/INFO] setenv $var=$ctn\n";
         $environ{$var} = $ctn;

@@ -8,7 +8,13 @@ ENDIF()
 
 SET(TESH_COMMAND ${PERL_EXECUTABLE} ${CMAKE_BINARY_DIR}/bin/tesh)
 IF(CMAKE_HOST_WIN32)
-  SET(TESH_OPTION $TESH_OPTION --timeout 50)
+  SET(TESH_OPTION ${TESH_OPTION} --timeout 50)
+ENDIF()
+
+
+IF(enable_memcheck)
+  INCLUDE(FindValgrind)
+  INCLUDE(${CMAKE_BINARY_DIR}/memcheck_tests.cmake)
 ENDIF()
 
 #some tests may take forever on non futexes systems, using busy_wait with n cores < n workers
@@ -42,7 +48,7 @@ MACRO(ADD_TESH_FACTORIES NAME FACTORIES)
   ENDFOREACH()
 ENDMACRO()
 
-IF(NOT enable_memcheck)
+#IF(NOT enable_memcheck)
   ### GENERIC  ###
   ### MC ###
   IF(HAVE_MC)
@@ -114,12 +120,8 @@ IF(NOT enable_memcheck)
       SET(TESH_CLASSPATH "${CMAKE_BINARY_DIR}/examples/java/:${CMAKE_BINARY_DIR}/teshsuite/java/:${SIMGRID_JAR}")
     ENDIF()
   ENDIF()
-ENDIF()
+#ENDIF()
 
   ## OTHER ##
 ADD_TEST(testall                                 ${CMAKE_BINARY_DIR}/testall)
 
-IF(enable_memcheck)
-  INCLUDE(FindValgrind)
-  INCLUDE(${CMAKE_BINARY_DIR}/memcheck_tests.cmake)
-ENDIF()
