@@ -58,7 +58,7 @@ ctest -D ExperimentalTest || true
 
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
-   find . -iname "*.memcheck" -exec mv {} $WORKSPACE/memcheck \;
+   find $WORKSPACE -iname "*.memcheck" -exec mv {} $WORKSPACE/memcheck \;
    mv Testing/`head -n 1 < Testing/TAG`/Test.xml  $WORKSPACE/DynamicAnalysis.xml
 fi
 

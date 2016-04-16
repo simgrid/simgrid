@@ -15,7 +15,6 @@ do_cleanup() {
       rm -rf "$d" || die "Could not remote $d"
     fi
   done
-  find $WORKSPACE -name "memcheck_test_*.memcheck" -exec rm {} \;
 }
 
 ### Check the node installation
