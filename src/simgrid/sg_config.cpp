@@ -323,9 +323,11 @@ static void _sg_cfg_cb__test_sleep(const char *name){
 /* callback of the inclusion path */
 static void _sg_cfg_cb__surf_path(const char *name)
 {
-  char *path = xbt_strdup(xbt_cfg_get_string(name));
-  if (path[0]) // ignore ""
+  char *path = xbt_cfg_get_string(name);
+  if (path[0]) {// ignore ""
+    path = xbt_strdup(path);
     xbt_dynar_push(surf_path, &path);
+  }
 }
 
 /* callback to decide if we want to use the model-checking */
