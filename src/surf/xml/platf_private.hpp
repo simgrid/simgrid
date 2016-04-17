@@ -91,7 +91,7 @@ typedef struct s_sg_platf_route_cbarg {
   const char *dst;
   sg_netcard_t gw_src;
   sg_netcard_t gw_dst;
-  std::vector<Link*> *link_list;
+  std::vector<Link*> link_list;
 } s_sg_platf_route_cbarg_t;
 
 typedef struct s_sg_platf_cluster_cbarg *sg_platf_cluster_cbarg_t;

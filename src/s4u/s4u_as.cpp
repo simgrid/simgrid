@@ -82,19 +82,19 @@ namespace simgrid {
       if (e_route->gw_dst) {
         XBT_DEBUG("Load bypassASroute from %s@%s to %s@%s",
             src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
-        xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
+        xbt_assert(!e_route->link_list.empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
             src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
         xbt_assert(bypassRoutes_.find({src,dst}) == bypassRoutes_.end(), "The bypass route between %s@%s and %s@%s already exists.",
             src, e_route->gw_src->name(), dst, e_route->gw_dst->name());
       } else {
         XBT_DEBUG("Load bypassRoute from %s to %s", src, dst);
-        xbt_assert(!e_route->link_list->empty(),                         "Bypass route between %s and %s cannot be empty.",    src, dst);
+        xbt_assert(!e_route->link_list.empty(),                         "Bypass route between %s and %s cannot be empty.",    src, dst);
         xbt_assert(bypassRoutes_.find({src,dst}) == bypassRoutes_.end(), "The bypass route between %s and %s already exists.", src, dst);
       }
 
       /* Build a copy that will be stored in the dict */
       std::vector<surf::Link*> *newRoute = new std::vector<surf::Link*>();
-      for (auto link: *e_route->link_list)
+      for (auto link: e_route->link_list)
         newRoute->push_back(link);
 
       /* Store it */

@@ -36,8 +36,7 @@ void AsFull::seal() {
         e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src = NULL;
         e_route->gw_dst = NULL;
-        e_route->link_list = new std::vector<Link*>();
-        e_route->link_list->push_back(routing_platf->loopback_);
+        e_route->link_list.push_back(routing_platf->loopback_);
         TO_ROUTE_FULL(i, i) = e_route;
       }
     }
@@ -47,15 +46,11 @@ void AsFull::seal() {
 AsFull::~AsFull(){
   if (routingTable_) {
     int table_size = (int)xbt_dynar_length(vertices_);
-    int i, j;
     /* Delete routing table */
-    for (i = 0; i < table_size; i++)
-      for (j = 0; j < table_size; j++) {
-        if (TO_ROUTE_FULL(i,j)){
-          delete TO_ROUTE_FULL(i,j)->link_list;
+    for (int i = 0; i < table_size; i++)
+      for (int j = 0; j < table_size; j++)
+        if (TO_ROUTE_FULL(i,j))
           xbt_free(TO_ROUTE_FULL(i,j));
-        }
-      }
     xbt_free(routingTable_);
   }
 }
@@ -75,8 +70,8 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
   if (e_route) {
     res->gw_src = e_route->gw_src;
     res->gw_dst = e_route->gw_dst;
-    for (auto link : *e_route->link_list) {
-      res->link_list->push_back(link);
+    for (auto link : e_route->link_list) {
+      res->link_list.push_back(link);
       if (lat)
         *lat += static_cast<Link*>(link)->getLatency();
     }
@@ -108,7 +103,7 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
 
   /* Add the route to the base */
   TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()) = newExtendedRoute(hierarchy_, route, 1);
-  TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list->shrink_to_fit();
+  TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list.shrink_to_fit();
 
   if (route->symmetrical == true && src_net_elm != dst_net_elm) {
     if (route->gw_dst && route->gw_src) {
@@ -125,7 +120,7 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
           "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.", dst,src);
 
     TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()) = newExtendedRoute(hierarchy_, route, 0);
-    TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())->link_list->shrink_to_fit();
+    TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())->link_list.shrink_to_fit();
   }
 }
 

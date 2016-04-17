@@ -120,7 +120,7 @@ namespace simgrid {
       if ((src->id() == dst->id()) && has_loopback_) {
         s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
 
-        route->link_list->push_back(info.link_up);
+        route->link_list.push_back(info.link_up);
         if (lat)
           *lat += info.link_up->getLatency();
         return;
@@ -201,17 +201,17 @@ namespace simgrid {
 
         if (has_limiter_) {    // limiter for sender
           info = xbt_dynar_get_as(privateLinks_, nodeOffset + has_loopback_, s_surf_parsing_link_up_down_t);
-          route->link_list->push_back(info.link_up);
+          route->link_list.push_back(info.link_up);
         }
 
         info = xbt_dynar_get_as(privateLinks_, linkOffset, s_surf_parsing_link_up_down_t);
 
         if (use_lnk_up == false) {
-          route->link_list->push_back(info.link_down);
+          route->link_list.push_back(info.link_down);
           if (lat)
             *lat += info.link_down->getLatency();
         } else {
-          route->link_list->push_back(info.link_up);
+          route->link_list.push_back(info.link_up);
           if (lat)
             *lat += info.link_up->getLatency();
         }

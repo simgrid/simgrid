@@ -728,18 +728,16 @@ void ETag_surfxml_route(void){
   route.dst       = A_surfxml_route_dst;
   route.gw_src    = nullptr;
   route.gw_dst    = nullptr;
-  route.link_list = new std::vector<Link*>();
   route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
   unsigned int cpt;
   char *link_name;
   xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
     simgrid::surf::Link *link = Link::byName(link_name);
-    route.link_list->push_back(link);
+    route.link_list.push_back(link);
   }
 
   sg_platf_new_route(&route);
-  delete route.link_list;
   xbt_dynar_free(&parsed_link_list);
 }
 
@@ -760,13 +758,12 @@ void ETag_surfxml_ASroute(void){
     surf_parse_error("gw_dst=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
                      A_surfxml_ASroute_gw___dst, ASroute.src, ASroute.dst);
 
-  ASroute.link_list =  new std::vector<Link*>();
 
   unsigned int cpt;
   char *link_name;
   xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
     simgrid::surf::Link *link = Link::byName(link_name);
-    ASroute.link_list->push_back(link);
+    ASroute.link_list.push_back(link);
   }
   xbt_dynar_free(&parsed_link_list);
 
@@ -792,13 +789,12 @@ void ETag_surfxml_bypassRoute(void){
   route.gw_src = nullptr;
   route.gw_dst = nullptr;
   route.symmetrical = false;
-  route.link_list =  new std::vector<Link*>();
 
   unsigned int cpt;
   char *link_name;
   xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
     simgrid::surf::Link *link = Link::byName(link_name);
-    route.link_list->push_back(link);
+    route.link_list.push_back(link);
   }
   xbt_dynar_free(&parsed_link_list);
 
@@ -811,12 +807,11 @@ void ETag_surfxml_bypassASroute(void){
 
   ASroute.src         = A_surfxml_bypassASroute_src;
   ASroute.dst         = A_surfxml_bypassASroute_dst;
-  ASroute.link_list   =  new std::vector<Link*>();
   unsigned int cpt;
   char *link_name;
   xbt_dynar_foreach(parsed_link_list, cpt, link_name) {
     simgrid::surf::Link *link = Link::byName(link_name);
-    ASroute.link_list->push_back(link);
+    ASroute.link_list.push_back(link);
   }
   xbt_dynar_free(&parsed_link_list);
   ASroute.symmetrical = false;

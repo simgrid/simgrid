@@ -28,10 +28,7 @@ static void graph_node_map_elem_free(void *e)
 static void graph_edge_data_free(void *e) // FIXME: useless code duplication
 {
   sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t) e;
-  if (e_route) {
-    delete e_route->link_list;
-    xbt_free(e_route);
-  }
+  xbt_free(e_route);
 }
 
 /* Utility functions */
@@ -64,8 +61,7 @@ void AsDijkstra::seal()
 
       if (!found) {
         sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-        e_route->link_list = new std::vector<Link*>();
-        e_route->link_list->push_back(routing_platf->loopback_);
+        e_route->link_list.push_back(routing_platf->loopback_);
         xbt_graph_new_edge(routeGraph_, node, node, e_route);
       }
     }
@@ -167,8 +163,8 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
     e_route = (sg_platf_route_cbarg_t) xbt_graph_edge_get_data(edge);
 
-    for (auto link: *e_route->link_list) {
-      route->link_list->insert(route->link_list->begin(), link);
+    for (auto link: e_route->link_list) {
+      route->link_list.insert(route->link_list.begin(), link);
       if (lat)
         *lat += static_cast<Link*>(link)->getLatency();
     }
@@ -218,7 +214,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
         graph_node_data_t data = (graph_node_data_t) xbt_graph_node_get_data(u_node);
         int u_id = data->graph_id;
         sg_platf_route_cbarg_t tmp_e_route = (sg_platf_route_cbarg_t) xbt_graph_edge_get_data(edge);
-        int cost_v_u = tmp_e_route->link_list->size();    /* count of links, old model assume 1 */
+        int cost_v_u = tmp_e_route->link_list.size();    /* count of links, old model assume 1 */
 
         if (cost_v_u + cost_arr[*v_id] < cost_arr[u_id]) {
           pred_arr[u_id] = *v_id;
@@ -262,17 +258,17 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
       std::vector<Link*> *e_route_as_to_as = new std::vector<Link*>();
 
       routing_platf->getRouteAndLatency(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, NULL);
-      auto pos = route->link_list->begin();
+      auto pos = route->link_list.begin();
       for (auto link : *e_route_as_to_as) {
-        route->link_list->insert(pos, link);
+        route->link_list.insert(pos, link);
         if (lat)
           *lat += link->getLatency();
         pos++;
       }
     }
 
-    for (auto link: *e_route->link_list) {
-      route->link_list->insert(route->link_list->begin(), link);
+    for (auto link: e_route->link_list) {
+      route->link_list.insert(route->link_list.begin(), link);
       if (lat)
         *lat += static_cast<Link*>(link)->getLatency();
     }

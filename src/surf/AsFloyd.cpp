@@ -68,11 +68,11 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
     sg_platf_route_cbarg_t e_route = xbt_dynar_pop_as(route_stack, sg_platf_route_cbarg_t);
 
     if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != NULL && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
-      routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src, route->link_list, lat);
+      routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src, &route->link_list, lat);
     }
 
-    for (auto link: *e_route->link_list) {
-      route->link_list->push_back(link);
+    for (auto link: e_route->link_list) {
+      route->link_list.push_back(link);
       if (lat)
         *lat += link->getLatency();
     }
@@ -118,7 +118,7 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
 
   TO_FLOYD_LINK(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, 1);
   TO_FLOYD_PRED(src->id(), dst->id()) = src->id();
-  TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list->size();
+  TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list.size();
 
 
   if (route->symmetrical == true) {
@@ -145,7 +145,7 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
 
     TO_FLOYD_LINK(dst->id(), src->id()) = newExtendedRoute(hierarchy_, route, 0);
     TO_FLOYD_PRED(dst->id(), src->id()) = dst->id();
-    TO_FLOYD_COST(dst->id(), src->id()) = (TO_FLOYD_LINK(dst->id(), src->id()))->link_list->size();   /* count of links, old model assume 1 */
+    TO_FLOYD_COST(dst->id(), src->id()) = (TO_FLOYD_LINK(dst->id(), src->id()))->link_list.size();   /* count of links, old model assume 1 */
   }
 }
 
@@ -177,8 +177,7 @@ void AsFloyd::seal(){
         e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->gw_src = NULL;
         e_route->gw_dst = NULL;
-        e_route->link_list = new std::vector<Link*>();
-        e_route->link_list->push_back(routing_platf->loopback_);
+        e_route->link_list.push_back(routing_platf->loopback_);
         TO_FLOYD_LINK(i, i) = e_route;
         TO_FLOYD_PRED(i, i) = i;
         TO_FLOYD_COST(i, i) = 1;
