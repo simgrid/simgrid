@@ -98,11 +98,9 @@ ThreadContext::ThreadContext(std::function<void()> code,
     void_pfn_smxprocess_t cleanup, smx_process_t process, bool maestro)
   : AttachContext(std::move(code), cleanup, process)
 {
-  // We do not need the semaphores when maestro is in main:
-  // if (!(maestro && !code)) {
-    this->begin_ = xbt_os_sem_init(0);
-    this->end_ = xbt_os_sem_init(0);
-  // }
+  // We do not need the semaphores when maestro is in main, but we create them anyway for simplicity wrt the case where maestro is externalized
+  this->begin_ = xbt_os_sem_init(0);
+  this->end_ = xbt_os_sem_init(0);
 
   /* If the user provided a function for the process then use it */
   if (has_code()) {
@@ -130,15 +128,12 @@ ThreadContext::ThreadContext(std::function<void()> code,
 
 ThreadContext::~ThreadContext()
 {
-  /* check if this is the context of maestro (it doesn't have a real thread) */
-  if (this->thread_) {
-    /* wait about the thread terminason */
+  if (this->thread_) /* If there is a thread (maestro don't have any), wait for its termination */
     xbt_os_thread_join(this->thread_, nullptr);
 
-    /* destroy the synchronisation objects */
-    xbt_os_sem_destroy(this->begin_);
-    xbt_os_sem_destroy(this->end_);
-  }
+  /* destroy the synchronization objects */
+  xbt_os_sem_destroy(this->begin_);
+  xbt_os_sem_destroy(this->end_);
 }
 
 void *ThreadContext::wrapper(void *param)
