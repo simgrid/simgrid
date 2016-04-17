@@ -268,14 +268,14 @@ of such a file is presented below.
 
 ~~~{.py}
   PERIODICITY 10.0
-  1.0 -1.0
-  2.0 1.0
+  1.0 0
+  2.0 1
 ~~~
 
-A negative value means <b>down</b> (i.e., OFF) while a positive one means <b>up and
-  running</b> (i.e., ON). From time 0.0 to time 1.0, the host is on. At time 1.0, it is
-turned off and at time 2.0, it is turned on again until time 12 (2.0 plus the
-periodicity 10.0). It will be turned on again at time 13.0 until time 23.0, and
+A zero value means <b>down</b> (i.e., OFF) while a positive one means <b>up and
+  running</b> (i.e., ON). From time 0.0 to time 1.0, the host is on as usual. At time 1.0, it is
+turned off and at time 2.0, it is turned on again until time 12 (2 plus the
+periodicity 10). It will be turned off again at time 13.0 until time 23.0, and
 so on.
 
 
