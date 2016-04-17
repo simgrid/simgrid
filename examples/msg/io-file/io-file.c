@@ -6,13 +6,8 @@
 
 /** @addtogroup MSG_examples
  * 
- * @subsection MSG_ex_resources Other resource kinds
- * 
- * This section contains some sparse examples of how to use the other
- * kind of resources, such as disk or GPU. These resources are quite
- * experimental for now, but here we go anyway.
- * 
- * - <b>io/file.c</b> Example with the disk resource
+ * - <b>File management: io-file/io-file.c</b>. This example illustrates the use of operations on file
+ *   (@ref MSG_file_open, @ref MSG_file_read, @ref MSG_file_write, or @ref MSG_file_close).
  */
 
 #define FILENAME1 "/home/doc/simgrid/examples/platforms/g5k.xml"
@@ -85,9 +80,13 @@ static int host(int argc, char *argv[])
   XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu",
             filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
 
-  XBT_INFO("\tClose file '%s'",filename);
-  MSG_file_close(file);
-
+  if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
+    XBT_INFO("\tUnlink file '%s'",MSG_file_get_name(file));
+    MSG_file_unlink(file);
+  } else {
+    XBT_INFO("\tClose file '%s'",filename);
+    MSG_file_close(file);
+  }
   return 0;
 }
 

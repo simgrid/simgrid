@@ -1,7 +1,7 @@
 foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
           async-waitany cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple cloud-two-tasks
           dht-chord dht-pastry exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures 
-          io-file io-file-unlink io-remote io-storage task-priority process-kill process-migration process-suspend 
+          io-file io-remote io-storage task-priority process-kill process-migration process-suspend 
           properties set-maestro process-startkilltime synchro trace-categories 
           trace-link-srcdst-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-simple trace-user-variables)
@@ -83,7 +83,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actio
 
 foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
           async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
-          cloud-two-tasks dht-chord dht-kademlia failures io-file io-file-unlink io-remote io-storage task-priority 
+          cloud-two-tasks dht-chord dht-kademlia failures io-file io-remote io-storage task-priority 
           process-kill process-migration process-suspend properties synchro process-startkilltime)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()

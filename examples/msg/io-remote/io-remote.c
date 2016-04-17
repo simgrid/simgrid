@@ -6,7 +6,7 @@
 
 /** @addtogroup MSG_examples
  * 
- * - <b>io/remote.c</b> Example of delegated I/O operations
+ * - <b>Remote I/O: io-remote/io-remote.c</b> I/O operation can also be done in a remote, which is illustrated here.
  */
 
 #include "simgrid/msg.h"
