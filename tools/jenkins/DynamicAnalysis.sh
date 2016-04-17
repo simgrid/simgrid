@@ -42,6 +42,8 @@ do
   mkdir "$d" || die "Could not create $d"
 done
 
+NUMPROC="$(nproc)" || NUMPROC=1
+
 cd $WORKSPACE/build
 
 ### Proceed with the tests
@@ -53,8 +55,9 @@ cmake -Denable_documentation=OFF -Denable_lua=OFF  \
       -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF \
       -Denable_memcheck_xml=ON $WORKSPACE
 
-ctest -D ExperimentalBuild -V
-ctest -D ExperimentalTest || true
+
+make -j$NUMPROC
+ctest -D ExperimentalTest -j$NUMPROC || true
 
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
