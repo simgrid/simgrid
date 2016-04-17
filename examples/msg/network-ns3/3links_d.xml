@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <process host="Tremblay" function="master">
-      <argument value="100000"/>
+      <argument value="10000"/>
       <argument value="Jupiter"/>
       <argument value="1"/>
   </process>
@@ -10,7 +10,7 @@
     <argument value="1"/>
   </process>
   <process host="Fafard" function="master">
-      <argument value="1000000"/>
+      <argument value="10000"/>
       <argument value="Ginette"/>
       <argument value="2"/>
   </process>
@@ -18,7 +18,7 @@
     <argument value="2"/>
   </process>
   <process host="Bourassa" function="master">
-      <argument value="2000000"/>
+      <argument value="10000"/>
       <argument value="Lovelace"/>
       <argument value="3"/>
   </process>

@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <process host="S1" function="master">
-      <argument value="1000000"/>
+      <argument value="10000"/>
       <argument value="C1"/>
       <argument value="1"/>
   </process>
