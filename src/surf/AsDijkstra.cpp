@@ -356,7 +356,6 @@ void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
     sg_platf_route_cbarg_t link_route_back = newExtendedRoute(hierarchy_, route, 0);
     newRoute(dst->id(), src->id(), link_route_back);
   }
-  delete route->link_list;
 }
 
 }

@@ -739,6 +739,7 @@ void ETag_surfxml_route(void){
   }
 
   sg_platf_new_route(&route);
+  delete route.link_list;
   xbt_dynar_free(&parsed_link_list);
 }
 

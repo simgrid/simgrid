@@ -380,6 +380,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
   }
 
   delete route;
+  delete back_route;
   XBT_OUT();
 
   Link::onCommunicate(action, src, dst);
