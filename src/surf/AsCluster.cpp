@@ -32,7 +32,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
     if((src->id() == dst->id()) && has_loopback_  ){
       info = xbt_dynar_get_as(privateLinks_, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
-      route->link_list.push_back(info.link_up);
+      route->link_list->push_back(info.link_up);
       if (lat)
         *lat += info.link_up->getLatency();
       return;
@@ -41,12 +41,12 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
     if (has_limiter_){          // limiter for sender
       info = xbt_dynar_get_as(privateLinks_, src->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
-      route->link_list.push_back((Link*)info.link_up);
+      route->link_list->push_back((Link*)info.link_up);
     }
 
     info = xbt_dynar_get_as(privateLinks_, src->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
     if (info.link_up) {         // link up
-      route->link_list.push_back(info.link_up);
+      route->link_list->push_back(info.link_up);
       if (lat)
         *lat += info.link_up->getLatency();
     }
@@ -54,7 +54,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   }
 
   if (backbone_) {
-    route->link_list.push_back(backbone_);
+    route->link_list->push_back(backbone_);
     if (lat)
       *lat += backbone_->getLatency();
   }
@@ -63,19 +63,20 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     info = xbt_dynar_get_as(privateLinks_, dst->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
 
     if (info.link_down) {       // link down
-      route->link_list.push_back(info.link_down);
+      route->link_list->push_back(info.link_down);
       if (lat)
         *lat += info.link_down->getLatency();
     }
     if (has_limiter_){          // limiter for receiver
         info = xbt_dynar_get_as(privateLinks_, dst->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
-        route->link_list.push_back(info.link_up);
+        route->link_list->push_back(info.link_up);
     }
   }
 }
 
 void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
+  int isrc;
   int table_size = xbt_dynar_length(vertices_);
 
   NetCard *src;
@@ -95,7 +96,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
-  for (int isrc = 0; isrc < table_size; isrc++) {
+  for (isrc = 0; isrc < table_size; isrc++) {
     src = xbt_dynar_get_as(vertices_, isrc, NetCard*);
 
     if (! src->isRouter()) {

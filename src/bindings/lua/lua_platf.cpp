@@ -338,10 +338,11 @@ int console_add_route(lua_State *L) {
   type = lua_gettable(L,-2);
   lua_ensure(type == LUA_TSTRING,
       "Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
+  route.link_list = new std::vector<Link*>();
   xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
   if (xbt_dynar_is_empty(names)) {
     /* unique name */
-    route.link_list.push_back(Link::byName(lua_tostring(L, -1)));
+    route.link_list->push_back(Link::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     unsigned int cpt;
@@ -349,7 +350,7 @@ int console_add_route(lua_State *L) {
     xbt_dynar_foreach(names, cpt, name) {
       if (strlen(name)>0) {
         Link *link = Link::byName(name);
-        route.link_list.push_back(link);
+        route.link_list->push_back(link);
       }
     }
   }
@@ -413,10 +414,11 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L,"links");
   lua_gettable(L,-2);
+  ASroute.link_list = new std::vector<Link*>();
   xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
   if (xbt_dynar_is_empty(names)) {
     /* unique name with no comma */
-    ASroute.link_list.push_back(Link::byName(lua_tostring(L, -1)));
+    ASroute.link_list->push_back(Link::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
     unsigned int cpt;
@@ -424,7 +426,7 @@ int console_add_ASroute(lua_State *L) {
     xbt_dynar_foreach(names, cpt, name) {
       if (strlen(name)>0) {
         Link *link = Link::byName(name);
-        ASroute.link_list.push_back(link);
+        ASroute.link_list->push_back(link);
       }
     }
   }

@@ -192,13 +192,14 @@ namespace simgrid {
 
       /* If src and dst are in the same AS, life is good */
       if (src_ancestor == dst_ancestor) {       /* SURF_ROUTING_BASE */
+        route.link_list = links;
         common_ancestor->getRouteAndLatency(src, dst, &route, latency);
-        for (surf::Link *link : route.link_list)
-          links->push_back(link);
         return;
       }
 
       /* Not in the same AS, no bypass. We'll have to find our path between the ASes recursively*/
+
+      route.link_list = new std::vector<surf::Link*>();
 
       common_ancestor->getRouteAndLatency(src_ancestor->netcard_, dst_ancestor->netcard_, &route, latency);
       xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
@@ -207,12 +208,14 @@ namespace simgrid {
       /* If source gateway is not our source, we have to recursively find our way up to this point */
       if (src != route.gw_src)
         getRouteRecursive(src, route.gw_src, links, latency);
-      for (auto link: route.link_list)
+      for (auto link: *route.link_list)
         links->push_back(link);
 
       /* If dest gateway is not our destination, we have to recursively find our way from this point */
       if (route.gw_dst != dst)
         getRouteRecursive(route.gw_dst, dst, links, latency);
+
     }
+
   }
 };
