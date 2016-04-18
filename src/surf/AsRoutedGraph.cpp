@@ -16,7 +16,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic imple
 
 void routing_route_free(sg_platf_route_cbarg_t route)
 {
-  xbt_free(route);
+  if (route) {
+    delete route->link_list;
+    xbt_free(route);
+  }
 }
 
 namespace simgrid {
@@ -86,17 +89,18 @@ namespace surf {
   {
     xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
     sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
+    route->link_list = new std::vector<Link*>();
 
     int table_size = (int)xbt_dynar_length(vertices_);
     for(int src=0; src < table_size; src++) {
       for(int dst=0; dst< table_size; dst++) {
-        route->link_list.clear();
+        route->link_list->clear();
         NetCard *src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
         NetCard *dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
         this->getRouteAndLatency(src_elm, dst_elm,route, NULL);
 
-        if (route->link_list.size() == 1) {
-          Link *link = route->link_list.at(0);
+        if (route->link_list->size() == 1) {
+          Link *link = route->link_list->at(0);
           Onelink *onelink;
           if (hierarchy_ == RoutingMode::base)
             onelink = new Onelink(link, src_elm, dst_elm);
@@ -127,6 +131,7 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
           xbt_dynar_get_as(vertices_, dst, NetCard*);
 
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+      route->link_list = new std::vector<Link*>();
 
       getRouteAndLatency(my_src, my_dst, route, NULL);
 
@@ -143,7 +148,7 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
         previous_name = my_src->name();
       }
 
-      for (auto link: route->link_list) {
+      for (auto link: *route->link_list) {
         const char *link_name = link->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         current_name = link_name;
@@ -163,6 +168,7 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
       new_xbt_graph_edge(graph, previous, current, edges);
       XBT_DEBUG ("  %s -> %s", previous_name, current_name);
 
+      delete route->link_list;
       xbt_free (route);
     }
   }
@@ -177,6 +183,7 @@ sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(RoutingMode hierarchy, sg
   sg_platf_route_cbarg_t result;
 
   result = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+  result->link_list = new std::vector<Link*>();
 
   xbt_assert(hierarchy == RoutingMode::base || hierarchy == RoutingMode::recursive,
       "The hierarchy of this AS is neither BASIC nor RECURSIVE, I'm lost here.");
@@ -188,11 +195,11 @@ sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(RoutingMode hierarchy, sg
     result->gw_dst = routearg->gw_dst;
   }
 
-  for (auto link : routearg->link_list) {
+  for (auto link : *routearg->link_list) {
     if (change_order)
-      result->link_list.push_back(link);
+      result->link_list->push_back(link);
     else
-      result->link_list.insert(result->link_list.begin(), link);
+      result->link_list->insert(result->link_list->begin(), link);
   }
 
   return result;
@@ -223,7 +230,7 @@ void AsRoutedGraph::addRouteCheckParams(sg_platf_route_cbarg_t route) {
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);
     xbt_assert(src, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, srcName);
     xbt_assert(dst, "Cannot add a route from %s to %s: %s does not exist.", srcName, dstName, dstName);
-    xbt_assert(! route->link_list.empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
+    xbt_assert(! route->link_list->empty(), "Empty route (between %s and %s) forbidden.", srcName, dstName);
     xbt_assert(! src->isAS(), "When defining a route, src cannot be an AS such as '%s'. Did you meant to have an ASroute?", srcName);
     xbt_assert(! dst->isAS(), "When defining a route, dst cannot be an AS such as '%s'. Did you meant to have an ASroute?", dstName);
   } else {
@@ -242,7 +249,7 @@ void AsRoutedGraph::addRouteCheckParams(sg_platf_route_cbarg_t route) {
         srcName,route->gw_src->name(), dstName,route->gw_dst->name(), srcName);
     xbt_assert(dst, "Cannot add a route from %s@%s to %s@%s: %s does not exist.",
         srcName,route->gw_src->name(), dstName,route->gw_dst->name(), dstName);
-    xbt_assert(! route->link_list.empty(), "Empty route (between %s@%s and %s@%s) forbidden.",
+    xbt_assert(! route->link_list->empty(), "Empty route (between %s@%s and %s@%s) forbidden.",
         srcName,route->gw_src->name(), dstName,route->gw_dst->name());
   }
 }
