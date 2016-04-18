@@ -164,6 +164,7 @@ foreach $_ (@ARGV) {
     elsif (/--?timeoutarg=(.*)/) { $timeoutArgPattern = $1; }
     elsif (/--?execarg=(.*)/) { $execarg = "$execarg $1"; }
     elsif (/--?setenv/) {  }
+    elsif (/--?enable-coverage/) {  }
     elsif (/VALGRIND_COMMAND=(.*)/) { 
         $valgrind = $1; }
     elsif (/VALGRIND_OPTIONS=(.*)/) {
