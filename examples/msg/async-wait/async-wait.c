@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_wait, "Messages specific for this msg exa
 
 /** @addtogroup MSG_examples
  * 
- * @section MSG_ex_icomms Asynchronous communications
+ * @section msg_ex_async Asynchronous communications
  * 
  * In addition to the fully documented example of \ref MSG_ex_asynchronous_communications, there are several othe
  * examples shipped in the archive:

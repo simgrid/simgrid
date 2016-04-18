@@ -10,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 /** @addtogroup MSG_examples
  * 
- *  @section MSG_ex_models Models-related examples
+ *  @section msg_ex_models Models-related examples
  * 
  *  @subsection MSG_ex_PLS Packet level simulators
  * 

@@ -8,7 +8,7 @@
 
 /** @addtogroup MSG_examples
  * 
- * @section MSG_ex_tracing Tracing and visualization features
+ * @section msg_ex_tracing Tracing and visualization features
  * Tracing can be activated by various configuration options which are illustrated in these example.
  * See \ref tracing_tracing_options for details.
  * - <b>Basic example: trace-simple/trace-simple.c</b>. In this very simple program, each process creates, executes,

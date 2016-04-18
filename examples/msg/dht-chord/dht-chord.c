@@ -11,10 +11,9 @@
 
 /** @addtogroup MSG_examples
  *
- *  - <b>chord/chord.c: Classical Chord P2P protocol</b>
- *    This example implements the well known Chord P2P protocol. Its main advantage is that it constitute a fully
- *    working non-trivial example. In addition, its implementation is rather efficient, as demonstrated in
- *    http://hal.inria.fr/inria-00602216/
+ *  - <b>Chord P2P protocol dht-chord/dht-chord.c:</b>. This example implements the well known Chord P2P protocol. Its
+ *    main advantage is that it constitutes a fully working non-trivial example. In addition, its implementation is
+ *    rather efficient, as demonstrated in http://hal.inria.fr/inria-00602216/
  */
 
 

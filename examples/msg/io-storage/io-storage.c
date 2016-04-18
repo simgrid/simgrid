@@ -6,7 +6,7 @@
 
 /** @addtogroup MSG_examples
  * 
- * @section MSG_ex_resources Simulation disks and files
+ * @section msg_ex_io Simulation disks and files
  *
  * This section lists some examples of storage simulation. This part of SimGrid is still preliminary.
  *

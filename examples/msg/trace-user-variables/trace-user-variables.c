@@ -6,7 +6,7 @@
 
 /** @addtogroup MSG_examples
  *
- * @section MSG_ex_tracing_user_variables Tracing user variables
+ * @section msg_ex_tracing_user_variables Tracing user variables
  * The tracing mechanism of SimGrid also allows to associate user variables to resources described in the platform file.
  * The following examples illustrate this feature. They have to be run with the <i>--cfg=tracing:yes</i> and
  * <i>--cfg=tracing/platform:yes</i> options.
