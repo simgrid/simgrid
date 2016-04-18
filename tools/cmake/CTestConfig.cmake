@@ -10,7 +10,11 @@ else()
   endif()
 endif()
 
+if(NOT enable_memcheck)
   set(DART_TESTING_TIMEOUT "300") #TIMEOUT FOR EACH TEST
+else()
+  set(DART_TESTING_TIMEOUT "3000") #TIMEOUT FOR EACH TEST
+endif()
 
 if(enable_compile_warnings AND enable_compile_optimizations)
   SET(BUILDNAME "FULL_FLAGS" CACHE INTERNAL "Buildname" FORCE)

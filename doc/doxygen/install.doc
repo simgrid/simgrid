@@ -388,7 +388,7 @@ WARNING = -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
           -Wnested-externs -Wpointer-arith -Wwrite-strings -finline-functions
 
 # CFLAGS = -g -O0 $(WARNINGS) # Use this line to make debugging easier
-CFLAGS = -g -02 $(WARNINGS) # Use this line to get better performances
+CFLAGS = -g -O2 $(WARNINGS) # Use this line to get better performances
 
 # No change should be mandated past that line
 #############################################

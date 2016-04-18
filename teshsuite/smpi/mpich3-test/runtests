@@ -72,6 +72,7 @@ $testCount = 0;          # Used with batchRun to count tests.
 $batrundir = ".";        # Set to the directory into which to run the examples
 
 $execarg="";
+$wrapparg="";
 # TAP (Test Anything Protocol) output
 my $tapoutput = 0;
 my $tapfile = '';
@@ -162,6 +163,11 @@ foreach $_ (@ARGV) {
     elsif (/--?batchdir=(.*)/) { $batrundir = $1; }
     elsif (/--?timeoutarg=(.*)/) { $timeoutArgPattern = $1; }
     elsif (/--?execarg=(.*)/) { $execarg = "$execarg $1"; }
+    elsif (/--?setenv/) {  }
+    elsif (/VALGRIND_COMMAND=(.*)/) { 
+        $valgrind = $1; }
+    elsif (/VALGRIND_OPTIONS=(.*)/) {
+         $wrapparg = "-wrapper \"$valgrind $1\""; }
     elsif (/--?xmlfile=(.*)/) {
 	$xmlfile   = $1;
 	if (! ($xmlfile =~ /^\//)) {
@@ -602,7 +608,7 @@ sub RunMPIProgram {
 	&$InitForTest();
     }
     print STDOUT "Env includes $progEnv\n" if $verbose;
-    print STDOUT "$mpiexec $mpiexecArgs $np_arg $np $program_wrapper ./$programname $progArgs\n" if $verbose;
+    print STDOUT "$mpiexec $wrapparg $mpiexecArgs $np_arg $np $program_wrapper ./$programname $progArgs\n" if $verbose;
     print STDOUT "." if $showProgress;
     # Save and restore the environment if necessary before running mpiexec.
     if ($progEnv ne "") {
@@ -616,7 +622,7 @@ sub RunMPIProgram {
 	    }
 	}
     }
-    open ( MPIOUT, "$mpiexec $np_arg $np $mpiexecArgs $program_wrapper ./$programname $progArgs 2>&1 |" ) ||
+    open ( MPIOUT, "$mpiexec $wrapparg $np_arg $np $mpiexecArgs $program_wrapper ./$programname $progArgs 2>&1 |" ) ||
 	die "Could not run ./$programname\n";
     if ($progEnv ne "") {
 	%ENV = %saveEnv;
@@ -627,7 +633,7 @@ sub RunMPIProgram {
     }
     else {
 	if ($verbose) {
-	    $inline = "$mpiexec $np_arg $np $program_wrapper ./$programname\n";
+	    $inline = "$mpiexec $wrapparg $np_arg $np $program_wrapper ./$programname\n";
 	}
 	else {
 	    $inline = "";
