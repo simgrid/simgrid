@@ -373,8 +373,7 @@ sub exec_cmd {
     my @cmdline;
     if(defined $ENV{VALGRIND_COMMAND}) {
       push @cmdline, $ENV{VALGRIND_COMMAND};
-    my $noquotes = substr $ENV{VALGRIND_OPTIONS}, 1, -1;
-      push @cmdline, split(" ", $noquotes);
+      push @cmdline, split(" ", $ENV{VALGRIND_OPTIONS});
       if($cmd{'timeout'} ne 'no'){
           $cmd{'timeout'}=$cmd{'timeout'}*20
       }
