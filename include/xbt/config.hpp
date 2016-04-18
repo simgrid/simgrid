@@ -21,9 +21,9 @@
 namespace simgrid {
 namespace config {
 
-bool parseBool(const char* value);
-double parseDouble(const char* value);
-long int parseLong(const char* value);
+XBT_PUBLIC(bool) parseBool(const char* value);
+XBT_PUBLIC(double) parseDouble(const char* value);
+XBT_PUBLIC(long int) parseLong(const char* value);
 
 template<class T> struct parse_option {
   static inline T parse(const char* value)
