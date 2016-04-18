@@ -132,8 +132,6 @@ struct xbt_boolean_couple {
 
 /** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
 typedef void (*xbt_cfg_cb_t) (const char * name);
-typedef void (*xbt_cfg_cb_ext_t)(const char * name, void* cb_data);
-typedef void (*xbt_cfg_cb_free_t)(void* cb_data);
 
 XBT_PUBLIC(xbt_cfg_t) xbt_cfg_new(void);
 XBT_PUBLIC(void) xbt_cfg_free(xbt_cfg_t * cfg);
@@ -154,10 +152,6 @@ XBT_PUBLIC(void) xbt_cfg_register_string (const char *name, const char*default_v
 XBT_PUBLIC(void) xbt_cfg_register_boolean(const char *name, const char*default_val,xbt_cfg_cb_t cb_set, const char *desc);
 XBT_PUBLIC(void) xbt_cfg_register_alias(const char *newname, const char *oldname);
 XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);
-
-XBT_PUBLIC(void) xbt_cfg_register_ext(
-  const char *name, const char *desc, e_xbt_cfgelm_type_t type,
-  xbt_cfg_cb_ext_t cb, void* data, xbt_cfg_cb_free_t data_free);
 
 XBT_PUBLIC(void) xbt_cfg_aliases(void);
 XBT_PUBLIC(void) xbt_cfg_help(void);

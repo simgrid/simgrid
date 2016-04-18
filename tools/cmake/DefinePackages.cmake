@@ -238,7 +238,6 @@ set(XBT_SRC
   src/xbt/RngStream.c
   src/xbt/automaton/automaton.c
   src/xbt/automaton/automatonparse_promela.c
-  src/xbt/config.c
   src/xbt/config.cpp
   src/xbt/cunit.c
   src/xbt/dict.c

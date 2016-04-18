@@ -7,9 +7,13 @@
 #ifndef _XBT_CONFIG_HPP_
 #define _XBT_CONFIG_HPP_
 
+#include <cstdlib>
+
 #include <functional>
+#include <stdexcept>
 #include <string>
 #include <type_traits>
+#include <utility>
 
 #include <xbt/base.h>
 #include <xbt/config.h>
@@ -17,92 +21,70 @@
 namespace simgrid {
 namespace config {
 
-/** Get the base type of a e_xbt_cfgelm_type_t
- *
- *  * `type` is the type used in the config framework to store
- *     the values of this type;
- *
- *  * `get()` is used to get such a value from the configuration.
- */
-template<e_xbt_cfgelm_type_t type>
-struct base_type;
-template<> struct base_type<xbt_cfgelm_boolean> {
-  typedef bool type;
-  static inline bool get(const char* name)
+bool parseBool(const char* value);
+double parseDouble(const char* value);
+long int parseLong(const char* value);
+
+template<class T> struct parse_option {
+  static inline T parse(const char* value)
   {
-    return xbt_cfg_get_boolean(name) ? true : false;
-  }
-};
-template<> struct base_type<xbt_cfgelm_int> {
-  typedef int type;
-  static inline int get(const char* name)
-  {
-    return xbt_cfg_get_int(name);
-  }
-};
-template<> struct base_type<xbt_cfgelm_double> {
-  typedef double type;
-  static inline double get(const char* name)
-  {
-    return xbt_cfg_get_double(name);
-  }
-};
-template<> struct base_type<xbt_cfgelm_string> {
-  typedef std::string type;
-  static inline std::string get(const char* name)
-  {
-    char* value = xbt_cfg_get_string(name);
-    return value != nullptr ? value : "";
+    return T(value);
   }
 };
 
-/** Associate the e_xbt_cfgelm_type_t to use for a given type */
-template<class T>
-struct cfgelm_type : public std::integral_constant<e_xbt_cfgelm_type_t,
-  std::is_same<T, bool>::value ? xbt_cfgelm_boolean :
-  std::is_integral<T>::value ? xbt_cfgelm_int :
-  std::is_floating_point<T>::value ? xbt_cfgelm_double :
-  xbt_cfgelm_string>
-{};
+template<> struct parse_option<std::string> {
+  static inline std::string parse(const char* value)
+  {
+    return std::string(value);
+  }
+};
 
-/** Get a value of a given type from the configuration */
+template<>
+struct parse_option<double> {
+  static inline double parse(const char* value)
+  {
+    return parseDouble(value);
+  }
+};
+
+template<>
+struct parse_option<int> {
+  static inline double parse(const char* value)
+  {
+    return parseLong(value);
+  }
+};
+
+template<>
+struct parse_option<bool> {
+  static inline bool parse(const char* value)
+  {
+    return parseBool(value);
+  }
+};
+
 template<class T> inline
-T get(const char* name)
+T parse(const char* value)
 {
-  return T(base_type<cfgelm_type<T>::value>::get(name));
-}
-template<class T> inline
-T get(std::string const& name)
-{
-  return T(base_type<cfgelm_type<T>::value>::get(name.c_str()));
+  return parse_option<T>::parse(value);
 }
 
-inline void setDefault(const char* name, int value)
-{
-  xbt_cfg_setdefault_int(name, value);
-}
-inline void setDefault(const char* name, double value)
-{
-  xbt_cfg_setdefault_double(name, value);
-}
-inline void setDefault(const char* name, const char* value)
-{
-  xbt_cfg_setdefault_string(name, value);
-}
-inline void setDefault(const char* name, std::string const& value)
-{
-  xbt_cfg_setdefault_string(name, value.c_str());
-}
-inline void setDefault(const char* name, bool value)
-{
-  xbt_cfg_setdefault_boolean(name, value ? "yes" : "no");
-}
-
-/** Set the default value of a given configuration option */
 template<class T> inline
-void setDefault(const char* name, T value)
+std::string to_string(T&& value)
 {
-  setDefault(name, base_type<cfgelm_type<T>::value>::type(value));
+  return std::to_string(std::forward<T>(value));
+}
+inline std::string const& to_string(std::string& value)
+{
+  return value;
+}
+inline std::string const& to_string(std::string const& value)
+{
+  return value;
+}
+inline std::string to_string(std::string&& value)
+{
+  return std::move(value);
 }
 
 // Register:
@@ -111,12 +93,10 @@ void setDefault(const char* name, T value)
  *
  *  @param name        name of the option
  *  @param description Description of the option
- *  @param type        config storage type for the option
- *  @param callback    called with the option name (expected to use `simgrid::config::get`)
+ *  @param callback    called with the option value
  */
-XBT_PUBLIC(void) registerConfig(const char* name, const char* description,
-  e_xbt_cfgelm_type_t type,
-  std::function<void(const char*)> callback);
+XBT_PUBLIC(void) declareFlag(const char* name, const char* description,
+  std::function<void(const char* value)> callback);
 
 /** Bind a variable to configuration flag
  *
@@ -125,30 +105,91 @@ XBT_PUBLIC(void) registerConfig(const char* name, const char* description,
  *  @param description Option description
  */
 template<class T>
-void declareFlag(T& value, const char* name, const char* description)
+void bindFlag(T& value, const char* name, const char* description)
 {
-  registerConfig(name, description, cfgelm_type<T>::value,
-    [&value](const char* name) {
-      value = simgrid::config::get<T>(name);
-    });
-  setDefault(name, value);
+  using namespace std;
+  declareFlag(name, description, [&value](const char* val) {
+    value = simgrid::config::parse<T>(val);
+  });
+  xbt_cfg_setdefault_string(name, simgrid::config::to_string(value).c_str());
 }
 
 /** Bind a variable to configuration flag
  *
- *  @param value Bound variable
- *  @param name  Flag name
- *  @param description Option description
- *  @f     Callback (called with the option name) providing the value
+ *  <pre><code>
+ *  static int x;
+ *  simgrid::config::bindFlag(a, "x", [](const char* value) {
+ *    return simgrid::config::parse(value);
+ *  }
+ *  </pre><code>
  */
+// F is a parser, F : const char* -> T
 template<class T, class F>
-void declareFlag(T& value, const char* name, const char* description, F f)
+typename std::enable_if<std::is_same<
+  T,
+  typename std::remove_cv< decltype(
+    std::declval<F>()(std::declval<const char*>())
+  ) >::type
+>::value, void>::type
+bindFlag(T& value, const char* name, const char* description,
+  F callback)
 {
-  registerConfig(name, description, cfgelm_type<T>::value,
-    [&value,f](const char* name) {
-      value = f(name);
-    });
-  setDefault(name, value);
+  declareFlag(name, description, [&value,callback](const char* val) {
+    value = callback(val);
+  });
+  xbt_cfg_setdefault_string(name, to_string(value).c_str());
+}
+
+/** Bind a variable to configuration flag
+ *
+ *  <pre><code>
+ *  static int x;
+ *  simgrid::config::bindFlag(a, "x", [](int x) {
+ *    if (x < x_min || x => x_max)
+ *      throw std::range_error("must be in [x_min, x_max)")
+ *  });
+ *  </pre><code>
+ */
+// F is a checker, F : T& -> ()
+template<class T, class F>
+typename std::enable_if<std::is_same<
+  void,
+  decltype( std::declval<F>()(std::declval<const T&>()) )
+>::value, void>::type
+bindFlag(T& value, const char* name, const char* description,
+  F callback)
+{
+  declareFlag(name, description, [&value,callback](const char* val) {
+    T res = parse<T>(val);
+    callback(res);
+    value = std::move(res);
+  });
+  xbt_cfg_setdefault_string(name, to_string(value).c_str());
+}
+
+/** Bind a variable to configuration flag
+ *
+ *  <pre><code>
+ *  static int x;
+ *  simgrid::config::bindFlag(a, "x", [](int x) { return return x > 0; });
+ *  </pre><code>
+ */
+// F is a predicate, F : T const& -> bool
+template<class T, class F>
+typename std::enable_if<std::is_same<
+  bool,
+  decltype( std::declval<F>()(std::declval<const T&>()) )
+>::value, void>::type
+bindFlag(T& value, const char* name, const char* description,
+  F callback)
+{
+  declareFlag(name, description, [&value,callback](const char* val) {
+    T res = parse<T>(val);
+    if (!callback(res))
+      throw std::range_error("invalid value");
+    value = std::move(res);
+  });
+  xbt_cfg_setdefault_string(name, to_string(value).c_str());
 }
 
 /** A variable bound to a CLI option
@@ -160,7 +201,7 @@ void declareFlag(T& value, const char* name, const char* description, F f)
  *  </code></pre>
  */
 template<class T>
-class flag {
+class Flag {
   T value_;
 public:
 
@@ -170,14 +211,20 @@ public:
    *  @param desc  Flag description
    *  @param value Flag initial/default value
    */
-  flag(const char* name, const char* desc, T value) : value_(value)
+  Flag(const char* name, const char* desc, T value) : value_(value)
   {
-    declareFlag(value_, name, desc);
+    simgrid::config::bindFlag(value_, name, desc);
+  }
+
+  template<class F>
+  Flag(const char* name, const char* desc, T value, F callback) : value_(value)
+  {
+    simgrid::config::bindFlag(value_, name, desc, std::move(callback));
   }
 
   // No copy:
-  flag(flag const&) = delete;
-  flag& operator=(flag const&) = delete;
+  Flag(Flag const&) = delete;
+  Flag& operator=(Flag const&) = delete;
 
   // Get the underlying value:
   T& get() { return value_; }
@@ -186,6 +233,16 @@ public:
   // Implicit conversion to the underlying type:
   operator T&() { return value_; }
   operator T const&() const{ return value_; }
+
+  // Basic interop with T:
+  Flag& operator=(T const& that) { value_ = that; return *this; }
+  Flag& operator=(T && that)     { value_ = that; return *this; }
+  bool operator==(T const& that) const { return value_ == that; }
+  bool operator!=(T const& that) const { return value_ != that; }
+  bool operator<(T const& that) const { return value_ < that; }
+  bool operator>(T const& that) const { return value_ > that; }
+  bool operator<=(T const& that) const { return value_ <= that; }
+  bool operator>=(T const& that) const { return value_ >= that; }
 };
 
 }

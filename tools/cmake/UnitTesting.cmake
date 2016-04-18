@@ -12,7 +12,7 @@ set(FILES_CONTAINING_UNITTESTS
   src/xbt/swag.c
   src/xbt/xbt_str.c
   src/xbt/xbt_strbuff.c
-  src/xbt/config.c
+  src/xbt/config.cpp
 )
 
 if(HAVE_MC)
