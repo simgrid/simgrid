@@ -26,7 +26,7 @@ int type_keyval_id=0;//avoid collisions
   static s_smpi_mpi_datatype_t mpi_##name = {         \
     (char*) # name,                                   \
     sizeof(type),   /* size */                        \
-    0,              /*was 1 has_subtype*/             \
+    0,              /*was 1 sizeof_subtype*/             \
     0,              /* lb */                          \
     sizeof(type),   /* ub = lb + size */              \
     DT_FLAG_BASIC,  /* flags */                       \
@@ -40,7 +40,7 @@ const MPI_Datatype name = &mpi_##name;
   static s_smpi_mpi_datatype_t mpi_##name = {         \
     (char*) # name,                                   \
     0,              /* size */                        \
-    0,              /* was 1 has_subtype*/            \
+    0,              /* was 1 sizeof_subtype*/            \
     0,              /* lb */                          \
     0,              /* ub = lb + size */              \
     DT_FLAG_BASIC,  /* flags */                       \
@@ -178,10 +178,9 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
   int ret=MPI_SUCCESS;
   *new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   memcpy(*new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
-  if (datatype->has_subtype){
-    //FIXME: may copy too much information.
-    (*new_t)->substruct=xbt_new(s_smpi_mpi_struct_t,1);
-    memcpy((*new_t)->substruct, datatype->substruct, sizeof(s_smpi_mpi_struct_t));
+  if (datatype->sizeof_subtype){
+    (*new_t)->substruct=xbt_malloc(datatype->sizeof_subtype);
+    memcpy((*new_t)->substruct, datatype->substruct, datatype->sizeof_subtype);
   }
   if(datatype->name)
     (*new_t)->name = xbt_strdup(datatype->name);
@@ -251,15 +250,15 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     recvcount *= smpi_datatype_size(recvtype);
     count = sendcount < recvcount ? sendcount : recvcount;
 
-    if(sendtype->has_subtype == 0 && recvtype->has_subtype == 0) {
+    if(sendtype->sizeof_subtype == 0 && recvtype->sizeof_subtype == 0) {
       if(!smpi_process_get_replaying()) memcpy(recvbuf, sendbuf, count);
     }
-    else if (sendtype->has_subtype == 0)
+    else if (sendtype->sizeof_subtype == 0)
     {
       s_smpi_subtype_t *subtype =  static_cast<s_smpi_subtype_t*>(recvtype->substruct);
       subtype->unserialize( sendbuf, recvbuf, recvcount/smpi_datatype_size(recvtype), subtype, MPI_REPLACE);
     }
-    else if (recvtype->has_subtype == 0)
+    else if (recvtype->sizeof_subtype == 0)
     {
       s_smpi_subtype_t *subtype =  static_cast<s_smpi_subtype_t*>(sendtype->substruct);
       subtype->serialize(sendbuf, recvbuf, sendcount/smpi_datatype_size(sendtype), subtype);
@@ -296,7 +295,7 @@ void serialize_vector( const void *noncontiguous_vector, void *contiguous_vector
   char* noncontiguous_vector_char = (char*)noncontiguous_vector;
 
   for (i = 0; i < type_c->block_count * count; i++) {
-      if (type_c->old_type->has_subtype == 0)
+      if (type_c->old_type->sizeof_subtype == 0)
         memcpy(contiguous_vector_char, noncontiguous_vector_char, type_c->block_length * type_c->size_oldtype);
       else
         ((s_smpi_subtype_t*)type_c->old_type->substruct)->serialize( noncontiguous_vector_char,
@@ -329,7 +328,7 @@ void unserialize_vector( const void *contiguous_vector, void *noncontiguous_vect
   char* noncontiguous_vector_char = (char*)noncontiguous_vector;
 
   for (i = 0; i < type_c->block_count * count; i++) {
-    if (type_c->old_type->has_subtype == 0)
+    if (type_c->old_type->sizeof_subtype == 0)
       smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length,
           &type_c->old_type);
      /* memcpy(noncontiguous_vector_char,
@@ -363,12 +362,12 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride, int block_le
   return new_t;
 }
 
-void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int has_subtype, void *struct_type,
+void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int sizeof_subtype, void *struct_type,
                           int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   new_t->name = NULL;
   new_t->size = size;
-  new_t->has_subtype = size>0? has_subtype:0;
+  new_t->sizeof_subtype = size>0? sizeof_subtype:0;
   new_t->lb = lb;
   new_t->ub = ub;
   new_t->flags = flags;
@@ -406,7 +405,7 @@ void smpi_datatype_free(MPI_Datatype* type){
       return;
   }
 
-  if ((*type)->has_subtype == 1){
+  if ((*type)->sizeof_subtype != 0){
     ((s_smpi_subtype_t *)(*type)->substruct)->subtype_free(type);  
     xbt_free((*type)->substruct);
   }
@@ -497,7 +496,7 @@ s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb, int block
 int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new_type, MPI_Aint lb)
 {
   int retval;
-  if(old_type->has_subtype){
+  if(old_type->sizeof_subtype){
     //handle this case as a hvector with stride equals to the extent of the datatype
     return smpi_datatype_hvector(count, 1, smpi_datatype_get_extent(old_type), old_type, new_type);
   }
@@ -505,7 +504,7 @@ int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new
   s_smpi_mpi_contiguous_t* subtype = smpi_datatype_contiguous_create( lb, count, old_type,smpi_datatype_size(old_type));
 
   smpi_datatype_create(new_type, count * smpi_datatype_size(old_type),lb,lb + count * smpi_datatype_size(old_type),
-            1,subtype, DT_FLAG_CONTIGUOUS);
+            sizeof(s_smpi_mpi_contiguous_t),subtype, DT_FLAG_CONTIGUOUS);
   retval=MPI_SUCCESS;
   return retval;
 }
@@ -520,11 +519,11 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
     lb=smpi_datatype_lb(old_type);
     ub=((count-1)*stride+blocklen-1)*smpi_datatype_get_extent(old_type)+smpi_datatype_ub(old_type);
   }
-  if(old_type->has_subtype || stride != blocklen){
+  if(old_type->sizeof_subtype || stride != blocklen){
 
     s_smpi_mpi_vector_t* subtype = smpi_datatype_vector_create(stride, blocklen, count, old_type,
                                                                 smpi_datatype_size(old_type));
-    smpi_datatype_create(new_type, count * (blocklen) * smpi_datatype_size(old_type), lb, ub, 1, subtype,
+    smpi_datatype_create(new_type, count * (blocklen) * smpi_datatype_size(old_type), lb, ub, sizeof(s_smpi_mpi_vector_t), subtype,
                          DT_FLAG_VECTOR);
     retval=MPI_SUCCESS;
   }else{
@@ -558,7 +557,7 @@ void serialize_hvector( const void *noncontiguous_hvector, void *contiguous_hvec
   char* noncontiguous_vector_char = (char*)noncontiguous_hvector;
 
   for (i = 0; i < type_c->block_count * count; i++) {
-    if (type_c->old_type->has_subtype == 0)
+    if (type_c->old_type->sizeof_subtype == 0)
       memcpy(contiguous_vector_char, noncontiguous_vector_char, type_c->block_length * type_c->size_oldtype);
     else
       ((s_smpi_subtype_t*)type_c->old_type->substruct)->serialize( noncontiguous_vector_char,
@@ -589,7 +588,7 @@ void unserialize_hvector( const void *contiguous_vector, void *noncontiguous_vec
   char* noncontiguous_vector_char = (char*)noncontiguous_vector;
 
   for (i = 0; i < type_c->block_count * count; i++) {
-    if (type_c->old_type->has_subtype == 0)
+    if (type_c->old_type->sizeof_subtype == 0)
       smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length, &type_c->old_type);
              /*memcpy(noncontiguous_vector_char,
            contiguous_vector_char, type_c->block_length * type_c->size_oldtype);*/
@@ -639,11 +638,11 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
     lb=smpi_datatype_lb(old_type);
     ub=((count-1)*stride)+(blocklen-1)*smpi_datatype_get_extent(old_type)+smpi_datatype_ub(old_type);
   }
-  if(old_type->has_subtype || stride != blocklen*smpi_datatype_get_extent(old_type)){
+  if(old_type->sizeof_subtype || stride != blocklen*smpi_datatype_get_extent(old_type)){
     s_smpi_mpi_hvector_t* subtype = smpi_datatype_hvector_create( stride, blocklen, count, old_type,
                                                                   smpi_datatype_size(old_type));
 
-    smpi_datatype_create(new_type, count * blocklen * smpi_datatype_size(old_type), lb,ub, 1, subtype, DT_FLAG_VECTOR);
+    smpi_datatype_create(new_type, count * blocklen * smpi_datatype_size(old_type), lb,ub, sizeof(s_smpi_mpi_hvector_t), subtype, DT_FLAG_VECTOR);
     retval=MPI_SUCCESS;
   }else{
     smpi_datatype_create(new_type, count * blocklen * smpi_datatype_size(old_type),0,count * blocklen *
@@ -671,7 +670,7 @@ void serialize_indexed( const void *noncontiguous_indexed, void *contiguous_inde
   char* noncontiguous_indexed_char = (char*)noncontiguous_indexed+type_c->block_indices[0] * type_c->size_oldtype;
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_type->has_subtype == 0)
+      if (type_c->old_type->sizeof_subtype == 0)
         memcpy(contiguous_indexed_char, noncontiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
       else
         ((s_smpi_subtype_t*)type_c->old_type->substruct)->serialize( noncontiguous_indexed_char,
@@ -706,7 +705,7 @@ void unserialize_indexed( const void *contiguous_indexed, void *noncontiguous_in
     (char*)noncontiguous_indexed+type_c->block_indices[0]*smpi_datatype_get_extent(type_c->old_type);
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_type->has_subtype == 0)
+      if (type_c->old_type->sizeof_subtype == 0)
         smpi_op_apply(op, contiguous_indexed_char, noncontiguous_indexed_char, &type_c->block_lengths[i],
                     &type_c->old_type);
                /*memcpy(noncontiguous_indexed_char ,
@@ -782,17 +781,17 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
 
     if ( (i< count -1) && (indices[i]+blocklens[i] != indices[i+1]) )contiguous=0;
   }
-  if (old_type->has_subtype == 1)
+  if (old_type->sizeof_subtype != 0)
     contiguous=0;
 
   if(!contiguous){
     s_smpi_mpi_indexed_t* subtype = smpi_datatype_indexed_create( blocklens, indices, count, old_type,
                                                                   smpi_datatype_size(old_type));
-     smpi_datatype_create(new_type,  size * smpi_datatype_size(old_type),lb,ub,1, subtype, DT_FLAG_DATA);
+     smpi_datatype_create(new_type,  size * smpi_datatype_size(old_type),lb,ub,sizeof(s_smpi_mpi_indexed_t), subtype, DT_FLAG_DATA);
   }else{
     s_smpi_mpi_contiguous_t* subtype = smpi_datatype_contiguous_create( lb, size, old_type,
                                                                   smpi_datatype_size(old_type));
-    smpi_datatype_create(new_type, size * smpi_datatype_size(old_type), lb, ub, 1, subtype,
+    smpi_datatype_create(new_type, size * smpi_datatype_size(old_type), lb, ub, sizeof(s_smpi_mpi_contiguous_t), subtype,
                          DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);
   }
   retval=MPI_SUCCESS;
@@ -816,7 +815,7 @@ void serialize_hindexed( const void *noncontiguous_hindexed, void *contiguous_hi
   char* noncontiguous_hindexed_char = (char*)noncontiguous_hindexed+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_type->has_subtype == 0)
+      if (type_c->old_type->sizeof_subtype == 0)
         memcpy(contiguous_hindexed_char, noncontiguous_hindexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
       else
         ((s_smpi_subtype_t*)type_c->old_type->substruct)->serialize( noncontiguous_hindexed_char,
@@ -851,7 +850,7 @@ void unserialize_hindexed( const void *contiguous_hindexed, void *noncontiguous_
   char* noncontiguous_hindexed_char = (char*)noncontiguous_hindexed+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_type->has_subtype == 0)
+      if (type_c->old_type->sizeof_subtype == 0)
         smpi_op_apply(op, contiguous_hindexed_char, noncontiguous_hindexed_char, &type_c->block_lengths[i],
                             &type_c->old_type);
         /*memcpy(noncontiguous_hindexed_char,contiguous_hindexed_char,type_c->block_lengths[i]*type_c->size_oldtype);*/
@@ -923,13 +922,13 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
     if ( (i< count -1) && (indices[i]+blocklens[i]*static_cast<int>(smpi_datatype_size(old_type)) != indices[i+1]) )
       contiguous=0;
   }
-  if (old_type->has_subtype == 1 || lb!=0)
+  if (old_type->sizeof_subtype != 0 || lb!=0)
     contiguous=0;
 
   if(!contiguous){
     s_smpi_mpi_hindexed_t* subtype = smpi_datatype_hindexed_create( blocklens, indices, count, old_type,
                                                                   smpi_datatype_size(old_type));
-    smpi_datatype_create(new_type,  size * smpi_datatype_size(old_type), lb, ub ,1, subtype, DT_FLAG_DATA);
+    smpi_datatype_create(new_type,  size * smpi_datatype_size(old_type), lb, ub ,sizeof(s_smpi_mpi_hindexed_t), subtype, DT_FLAG_DATA);
   }else{
     s_smpi_mpi_contiguous_t* subtype = smpi_datatype_contiguous_create(lb,size, old_type, smpi_datatype_size(old_type));
     smpi_datatype_create(new_type,  size * smpi_datatype_size(old_type), 0,size * smpi_datatype_size(old_type),
@@ -957,7 +956,7 @@ void serialize_struct( const void *noncontiguous_struct, void *contiguous_struct
   char* noncontiguous_struct_char = (char*)noncontiguous_struct+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_types[i]->has_subtype == 0)
+      if (type_c->old_types[i]->sizeof_subtype == 0)
         memcpy(contiguous_struct_char, noncontiguous_struct_char,
                type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));
       else
@@ -994,7 +993,7 @@ void unserialize_struct( const void *contiguous_struct, void *noncontiguous_stru
   char* noncontiguous_struct_char = (char*)noncontiguous_struct+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
-      if (type_c->old_types[i]->has_subtype == 0)
+      if (type_c->old_types[i]->sizeof_subtype == 0)
         smpi_op_apply(op, contiguous_struct_char, noncontiguous_struct_char, &type_c->block_lengths[i],
            & type_c->old_types[i]);
       /*memcpy(noncontiguous_struct_char,
@@ -1068,7 +1067,7 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
   for(i=0; i< count; i++){
     if (blocklens[i]<0)
       return MPI_ERR_ARG;
-    if (old_types[i]->has_subtype == 1)
+    if (old_types[i]->sizeof_subtype != 0)
       contiguous=0;
 
     size += blocklens[i]*smpi_datatype_size(old_types[i]);
@@ -1092,7 +1091,7 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
   if(!contiguous){
     s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create( blocklens, indices, count, old_types);
 
-    smpi_datatype_create(new_type,  size, lb, ub,1, subtype, DT_FLAG_DATA);
+    smpi_datatype_create(new_type,  size, lb, ub,sizeof(s_smpi_mpi_struct_t), subtype, DT_FLAG_DATA);
   }else{
     s_smpi_mpi_contiguous_t* subtype = smpi_datatype_contiguous_create( lb, size, MPI_CHAR, 1);
     smpi_datatype_create(new_type,  size, lb, ub,1, subtype, DT_FLAG_DATA|DT_FLAG_CONTIGUOUS);

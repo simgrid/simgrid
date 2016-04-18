@@ -2635,7 +2635,7 @@ int PMPI_Type_create_resized(MPI_Datatype oldtype,MPI_Aint lb, MPI_Aint extent, 
     MPI_Datatype types[3] = { MPI_LB, oldtype, MPI_UB };
 
     s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create( blocks, disps, 3, types);
-    smpi_datatype_create(newtype,oldtype->size, lb, lb + extent, 1 , subtype, DT_FLAG_VECTOR);
+    smpi_datatype_create(newtype,oldtype->size, lb, lb + extent, sizeof(s_smpi_mpi_struct_t) , subtype, DT_FLAG_VECTOR);
 
     (*newtype)->flags &= ~DT_FLAG_COMMITED;
     return MPI_SUCCESS;

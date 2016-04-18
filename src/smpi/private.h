@@ -53,7 +53,7 @@ typedef struct s_smpi_mpi_datatype{
   char* name;
   size_t size;
   /* this let us know if a serialization is required*/
-  size_t has_subtype;
+  size_t sizeof_subtype;
   MPI_Aint lb;
   MPI_Aint ub;
   int flags;
@@ -221,7 +221,7 @@ XBT_PRIVATE int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indi
 XBT_PRIVATE int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datatype* old_types,
                        MPI_Datatype* new_type);
 
-XBT_PRIVATE void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int has_subtype,
+XBT_PRIVATE void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int sizeof_subtype,
                        void *struct_type, int flags);
 
 XBT_PRIVATE void smpi_datatype_free(MPI_Datatype* type);

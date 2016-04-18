@@ -237,11 +237,11 @@ static MPI_Request build_request(void *buf, int count, MPI_Datatype datatype, in
 
   s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
 
-  if(((flags & RECV) && (flags & ACCUMULATE)) || (datatype->has_subtype == 1)){
+  if(((flags & RECV) && (flags & ACCUMULATE)) || (datatype->sizeof_subtype != 0)){
     // This part handles the problem of non-contiguous memory
     old_buf = buf;
     buf = count==0 ? NULL : xbt_malloc(count*smpi_datatype_size(datatype));
-    if ((datatype->has_subtype == 1) && (flags & SEND)) {
+    if ((datatype->sizeof_subtype != 0) && (flags & SEND)) {
       subtype->serialize(old_buf, buf, count, datatype->substruct);
     }
   }
@@ -454,7 +454,7 @@ void smpi_mpi_start(MPI_Request request)
       request->detached = 1;
       XBT_DEBUG("Send request %p is detached", request);
       request->refcount++;
-      if(request->old_type->has_subtype == 0){
+      if(request->old_type->sizeof_subtype == 0){
         oldbuf = request->buf;
         if (!smpi_process_get_replaying() && oldbuf && request->size!=0){
           if((smpi_privatize_global_variables)
@@ -671,7 +671,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     print_request("Finishing", req);
     MPI_Datatype datatype = req->old_type;
 
-    if((req->flags & ACCUMULATE) || (datatype->has_subtype == 1)){
+    if((req->flags & ACCUMULATE) || (datatype->sizeof_subtype != 0)){
       if (!smpi_process_get_replaying()){
         if( smpi_privatize_global_variables && ((char*)req->old_buf >= smpi_start_data_exe)
             && ((char*)req->old_buf < smpi_start_data_exe + smpi_size_data_exe )){
@@ -680,7 +680,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
         }
       }
 
-      if(datatype->has_subtype == 1){
+      if(datatype->sizeof_subtype != 0){
         // This part handles the problem of non-contignous memory the unserialization at the reception
         s_smpi_subtype_t *subtype = static_cast<s_smpi_subtype_t*>(datatype->substruct);
         if(req->flags & RECV)
