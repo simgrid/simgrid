@@ -12,7 +12,6 @@
 #  - No way to specify a minimal version (v3.10 is hardcoded).
 #  - No proper find_package() integration
 
-
 ## ADDING A NS3 VERSION.
 #   - Add ns3.${version}-core to the NAME line of the find_library below
 #   - Add include/ns3{version} to the PATH_SUFFIXES line of the find_path below
@@ -34,8 +33,6 @@ find_path(NS3_INCLUDE_DIR
   ${NS3_HINT}
   )
 
-
-
 if(NS3_INCLUDE_DIR)
   message(STATUS "Looking for ns3/core-module.h - found")
 else()
@@ -50,7 +47,6 @@ else()
   message(STATUS "Looking for lib ns3-core - not found")
 endif()
 mark_as_advanced(NS3_LIBRARIES)
-
 
 if(NS3_INCLUDE_DIR)
   if(NS3_LIBRARIES)

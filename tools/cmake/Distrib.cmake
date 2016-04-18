@@ -22,11 +22,9 @@ if(enable_smpi)
   endif()
 endif()
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/tesh  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 
-install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
+install(PROGRAMS ${CMAKE_BINARY_DIR}/bin/graphicator  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/)
 
 install(PROGRAMS ${CMAKE_HOME_DIRECTORY}/tools/MSG_visualization/colorize.pl
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/bin/
@@ -45,28 +43,22 @@ add_custom_target(simgrid_update_xml ALL
   COMMAND ${CMAKE_COMMAND} -E copy ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl ${CMAKE_BINARY_DIR}/bin/simgrid_update_xml)
 
 # libraries
-install(TARGETS simgrid
-  DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
+install(TARGETS simgrid DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
 
 if(enable_java)
   set(SIMGRID_JAR_TO_INSTALL "${SIMGRID_JAR}")
-  install(TARGETS simgrid-java
-      DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
+  install(TARGETS simgrid-java   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/lib/)
   install(FILES ${SIMGRID_JAR_TO_INSTALL}
       DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/java/
       RENAME simgrid.jar)
 endif()
 
 # include files
-set(HEADERS
-  ${headers_to_install}
-  ${generated_headers_to_install}
-  )
+set(HEADERS  ${headers_to_install}  ${generated_headers_to_install})
 foreach(file ${HEADERS})
   get_filename_component(location ${file} PATH)
   string(REPLACE "${CMAKE_CURRENT_BINARY_DIR}/" "" location "${location}")
-  install(FILES ${file}
-    DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${location})
+  install(FILES ${file} DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/${location})
 endforeach(file ${HEADERS})
 
 # example files

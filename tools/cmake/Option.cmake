@@ -20,8 +20,6 @@ option(enable_mallocators           "Enable mallocators (disable only for debugg
 option(enable_maintainer_mode       "Whether flex and flexml files should be rebuilt." off)
 option(enable_debug                 "Turn this off to remove all debug messages at compile time (faster, but no debug activatable)" on)
 
-
-
 # Optional modules
 ###
 option(enable_documentation "Whether to produce documentation" on)
@@ -43,7 +41,6 @@ else()
   option(enable_smpi_MPICH3_testsuite "Whether the test suite form MPICH 3 should be built" off)
 endif()
 option(enable_smpi_ISP_testsuite "Whether the test suite from ISP should be built." off)
-
 
 # Internal targets used by jenkins
 ###

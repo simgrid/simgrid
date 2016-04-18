@@ -16,7 +16,6 @@ find_library(HAVE_CDT_LIB
   PATH_SUFFIXES lib/graphviz lib
   PATHS         /opt;/opt/local;/opt/csw;/sw;/usr)
 
-
 if(HAVE_CDT_LIB AND HAVE_CGRAPH_LIB AND HAVE_CGRAPH_H)
   string(REGEX REPLACE "/libcgraph.*" "" lib_graphviz ${HAVE_CGRAPH_LIB})
 

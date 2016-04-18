@@ -42,11 +42,9 @@ target_link_libraries(simgrid-java simgrid)
 
 get_target_property(COMMON_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
 if (COMMON_INCLUDES)
-  set_target_properties(simgrid-java PROPERTIES
-    INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
+  set_target_properties(simgrid-java PROPERTIES  INCLUDE_DIRECTORIES "${COMMON_INCLUDES};${JNI_INCLUDE_DIRS}")
 else()
-  set_target_properties(simgrid-java PROPERTIES
-    INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
+  set_target_properties(simgrid-java PROPERTIES  INCLUDE_DIRECTORIES "${JNI_INCLUDE_DIRS}")
 endif()
 
 get_target_property(CHECK_INCLUDES simgrid-java INCLUDE_DIRECTORIES)
@@ -61,10 +59,8 @@ set(SIMGRID_JAR "${CMAKE_BINARY_DIR}/simgrid.jar")
 set(MANIFEST_IN_FILE "${CMAKE_HOME_DIRECTORY}/src/bindings/java/MANIFEST.in")
 set(MANIFEST_FILE "${CMAKE_BINARY_DIR}/src/bindings/java/MANIFEST.MF")
 
-set(LIBSIMGRID_SO
-  libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
-set(LIBSIMGRID_JAVA_SO
-  ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(LIBSIMGRID_SO       libsimgrid${CMAKE_SHARED_LIBRARY_SUFFIX})
+set(LIBSIMGRID_JAVA_SO  ${CMAKE_SHARED_LIBRARY_PREFIX}simgrid-java${CMAKE_SHARED_LIBRARY_SUFFIX})
 
 ## Here is how to build simgrid.jar
 ##
@@ -104,8 +100,6 @@ endif()
 ###
 
 if(enable_lib_in_jar)
-
-  
   set(SG_SYSTEM_NAME ${CMAKE_SYSTEM_NAME})
   
   if(${SG_SYSTEM_NAME} MATCHES "kFreeBSD")

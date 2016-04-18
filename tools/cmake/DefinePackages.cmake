@@ -491,9 +491,7 @@ set(JTRACE_C_SRC
   src/bindings/java/jtrace.h
 )
 
-set(JTRACE_JAVA_SRC
-  src/bindings/java/org/simgrid/trace/Trace.java
-)
+set(JTRACE_JAVA_SRC src/bindings/java/org/simgrid/trace/Trace.java)
 
 list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
 list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
@@ -722,27 +720,16 @@ else() # NOT pthread
 endif()
 
 if(${HAVE_THREAD_CONTEXTS}) #pthread
-  set(SURF_SRC
-    ${SURF_SRC}
-    src/xbt/xbt_os_thread.c
-    )
+  set(SURF_SRC    ${SURF_SRC}   src/xbt/xbt_os_thread.c)
 else() # NOT pthread
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    src/xbt/xbt_os_thread.c
+  set(EXTRA_DIST  ${EXTRA_DIST} src/xbt/xbt_os_thread.c
     )
 endif()
 
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SURF_SRC
-    ${SURF_SRC}
-    src/simix/UContext.cpp
-    )
+  set(SURF_SRC    ${SURF_SRC}   src/simix/UContext.cpp)
 else() # NOT ucontext
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    src/simix/UContext.cpp
-    )
+  set(EXTRA_DIST  ${EXTRA_DIST} src/simix/UContext.cpp)
 endif()
 
 ### Simgrid Lib sources
