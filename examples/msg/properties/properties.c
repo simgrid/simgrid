@@ -93,9 +93,7 @@ static int bob(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
   unsigned int i;
-  xbt_dynar_t hosts;
   msg_host_t host;
 
   MSG_init(&argc, argv);
@@ -111,17 +109,15 @@ int main(int argc, char *argv[])
 
   XBT_INFO("There are %d hosts in the environment", MSG_get_host_number());
 
-  hosts = MSG_hosts_as_dynar();
-
+  xbt_dynar_t hosts = MSG_hosts_as_dynar();
   xbt_dynar_foreach(hosts, i, host){
     XBT_INFO("Host '%s' runs at %.0f flops/s",MSG_host_get_name(host), MSG_host_get_speed(host));
   }
+  xbt_dynar_free(&hosts);
 
   MSG_launch_application(argv[2]);
 
-  res = MSG_main();
-
-  xbt_dynar_free(&hosts);
+  msg_error_t res =  MSG_main();
 
   return res!=MSG_OK;
 }

@@ -198,6 +198,7 @@ static int master_main(int argc, char *argv[])
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
   msg_host_t pm1 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
+  xbt_dynar_free(&hosts_dynar);
 
   XBT_INFO("# 1. Put a single task on a PM. ");
   test_one_task(pm0);

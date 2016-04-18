@@ -49,6 +49,7 @@ static void test_pm_pin(void)
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
   msg_host_t pm1 = xbt_dynar_get_as(hosts_dynar, 1, msg_host_t);
   msg_host_t pm2 = xbt_dynar_get_as(hosts_dynar, 2, msg_host_t);
+  xbt_dynar_free(&hosts_dynar);
 
   struct task_data t1;
   struct task_data t2;
@@ -145,6 +146,7 @@ static void test_vm_pin(void)
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t); // 1 cores
   msg_host_t pm1 = xbt_dynar_get_as(hosts_dynar, 1, msg_host_t); // 2 cores
   msg_host_t pm2 = xbt_dynar_get_as(hosts_dynar, 2, msg_host_t); // 4 cores
+  xbt_dynar_free(&hosts_dynar);
 
   /* set up VMs on PM2 (4 cores) */
   msg_vm_t vm0 = MSG_vm_create_core(pm2, "VM0");
@@ -333,6 +335,7 @@ int main(int argc, char *argv[])
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
   msg_host_t pm1 = xbt_dynar_get_as(hosts_dynar, 1, msg_host_t);
   msg_host_t pm2 = xbt_dynar_get_as(hosts_dynar, 2, msg_host_t);
+  xbt_dynar_free(&hosts_dynar);
 
   XBT_INFO("%s: %d core(s), %f flops/s per each", MSG_host_get_name(pm0), MSG_host_get_core_number(pm0),
            MSG_host_get_speed(pm0));

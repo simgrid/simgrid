@@ -202,6 +202,7 @@ int main(int argc, char *argv[])
     msg_host_t pm = xbt_dynar_get_as(pms, i, msg_host_t);
     xbt_dynar_push(worker_pms, &pm);
   }
+  xbt_dynar_free(&pms);
 
   /* Start the master process on the master pm. */
   MSG_process_create("master", master_fun, worker_pms, master_pm);
@@ -210,7 +211,6 @@ int main(int argc, char *argv[])
   XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
 
   xbt_dynar_free(&worker_pms);
-  xbt_dynar_free(&pms);
 
   return !(res == MSG_OK);
 }

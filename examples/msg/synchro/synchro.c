@@ -38,6 +38,7 @@ int main(int argc, char* argv[])
 
   xbt_dynar_t hosts = MSG_hosts_as_dynar();
   msg_host_t h = xbt_dynar_get_as(hosts,0,msg_host_t);
+  xbt_dynar_free(&hosts);
 
   sem = MSG_sem_init(1);
   char** aliceTimes = xbt_new(char*, 9);
