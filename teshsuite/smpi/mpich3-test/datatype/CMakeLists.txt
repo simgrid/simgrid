@@ -29,6 +29,11 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   target_link_libraries(sendrecvt4 simgrid mtest_c)
 endif()
 
+if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
+  ADD_TEST(test-smpi-mpich3-datatype-raw   ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/datatype ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/datatype -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/privatize_global_variables:${HAVE_PRIVATIZATION})
+  SET_TESTS_PROPERTIES(test-smpi-mpich3-datatype-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+endif()
+
 foreach(file blockindexed-misc blockindexed-zero-count contents contigstruct contig-zero-count cxx-types darray-cyclic 
         darray-pack dataalign gaddress get-elements get-elements-pairtype getpartelm get-struct hindexed_block
         hindexed_block_contents hindexed-zeros hvecblklen indexed-misc large-count large_type large_type_sendrec lbub
