@@ -27,6 +27,15 @@ SimGrid (3.13) UNRELEASED; urgency=low
       - VM.setBound(int load) is now VM.setBound(double bound) to meet the MSG semantics. Use VM.getSpeed()*load/100 for the legacy behavior.
    - In CMake
       - option enable_tracing was removed. It was not doing anything since a while.
+   - In the ModelChecker:
+      - the model-checker now ptraces the model-checked process which means
+        you cannot use a debugger on the latter anymore (we might make this
+        optional in the feature);
+      - removed soft-dirty page tracking;
+      - remove model-checked side snapshot management,
+        MC_snapshot() and MC_compare_snapshot();
+      - keep the MC_cut() function as a stub (it was not really working
+        in the previous release).
 
  XML platforms:
  * Switch to platform v4 format.
@@ -81,6 +90,8 @@ SimGrid (3.13) UNRELEASED; urgency=low
  SMPI
  * Remove old default barrier/bcast buggy algorithms (see #18407)
  * Various bug fixes to handle more codes
+ * Remove the need for the --foreground option of smpirun (it is still
+   accepted for backward compatibility).
 
  XBT
  * Kill the setset data container: MC don't use it anymore.
@@ -92,7 +103,14 @@ SimGrid (3.13) UNRELEASED; urgency=low
  * New functions:
    - xbt_dynar_sort_strings(), when the content is char*
    - xbt_str_parse_int / xbt_str_parse_double, wrapping strtol/strtod
-     They throw exceptions on invalid input.
+     They throw exceptions on invalid input;
+ * C++ support for declaring CLI flags (simgrid::config::Flag);
+ * class for abstracting different signal backends (simgrid::xbt::signal).
+
+ MC
+ * refactoring and cleanup of the code;
+ * ongoing process to cleanly separate the model-checking algorithms
+   from the code model-checking support.
  
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
