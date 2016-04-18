@@ -26,11 +26,11 @@ You can also install it from scratch with the following commands:
 
 \verbatim
 # Download the source
-wget http://www.nsnam.org/release/ns-allinone-3.22.tar.bz2
-tar -xf ns-allinone-3.22.tar.bz2
-cd ns-allinone-3.22/ns-3.22/
+wget http://www.nsnam.org/release/ns-allinone-3.25.tar.bz2
+tar -xf ns-allinone-3.25.tar.bz2
+cd ns-allinone-3.25/ns-3.25/
 # Configure, build and install
-./waf configure --prefix="ns-3_install_directory"
+./waf configure --prefix="/opt/ns3" # or give another path if you prefer
 ./waf
 ./waf install
 \endverbatim
@@ -43,7 +43,7 @@ Normally, you just have to enable ns-3 in ccmake or cmake as follows. If you ins
 drop the ns3_path configuration item.
 
 \verbatim
-cmake . -Denable_ns3=ON -Dns3_path=<ns3_path>
+cmake . -Denable_ns3=ON -DNS3_HINT=/opt/ns3 # or change the path if needed
 \endverbatim
 
 By the end of the configuration, cmake reports whether ns-3 was found. You can also double-check by executing the tests
@@ -55,8 +55,8 @@ $ ctest -R ns3
 \endverbatim
 
 If you have a ns-3 version that is not known to SimGrid (yet), the detection may fail. In that case, edit the
-tools/cmake/Modules/FindNS3.cmake file in your SimGrid tree. The required changes are very easy, and documented at the 
-beginning of this file.
+tools/cmake/Modules/FindNS3.cmake file in your SimGrid tree. The
+required changes are very easy, and documented in the file header.
 
 If the compilation fails when linking the library because of some .a file that cannot be used dynamically, this is 
 probably because you only installed the libns3-dev library on your Debian, where you also need libns3-3. This is 
@@ -67,7 +67,7 @@ probably a bug of the libns3-dev package that should depend on the dynamic libra
 A working example of ns-3/SimGrid interactions can be found in examples/msg/network-ns3/. Basically, you just have to 
 run your SimGrid simulation with the configuration option "network/model" set to "NS3". The rest remains unchanged.
 
-The following should work from the examples/msg/network-ns3 folder (nestwork-ns3 is the name of our example binary).
+The following should work from the examples/msg/network-ns3 folder (network-ns3 is the name of our example binary).
 
 \verbatim
 ./network-ns3 ./3hosts_2links_p.xml 3hosts_2links_d.xml --cfg=network/model:NS3 --log=root.threshold:info
