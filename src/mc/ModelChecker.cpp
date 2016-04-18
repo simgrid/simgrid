@@ -82,7 +82,7 @@ void ModelChecker::start()
   sigemptyset(&set);
   sigaddset(&set, SIGCHLD);
   if (sigprocmask(SIG_BLOCK, &set, nullptr) == -1)
-    throw simgrid::xbt::errno_error(errno);
+    throw simgrid::xbt::errno_error();
 
   sigset_t full_set;
   sigfillset(&full_set);
@@ -96,7 +96,7 @@ void ModelChecker::start()
 
   int signal_fd = signalfd(-1, &set, 0);
   if (signal_fd == -1)
-    throw simgrid::xbt::errno_error(errno);
+    throw simgrid::xbt::errno_error();
 
   struct pollfd* signalfd_pollfd = &fds_[SIGNAL_FD_INDEX];
   signalfd_pollfd->fd = signal_fd;
@@ -170,7 +170,7 @@ void ModelChecker::resume(simgrid::mc::Process& process)
 {
   int res = process.getChannel().send(MC_MESSAGE_CONTINUE);
   if (res)
-    throw simgrid::xbt::errno_error(res);
+    throw simgrid::xbt::errno_error();
   process.clear_cache();
 }
 
@@ -181,7 +181,7 @@ void throw_socket_error(int fd)
   socklen_t errlen = sizeof(error);
   if (getsockopt(fd, SOL_SOCKET, SO_ERROR, (void *)&error, &errlen) == -1)
     error = errno;
-  throw simgrid::xbt::errno_error(errno);
+  throw simgrid::xbt::errno_error();
 }
 
 static void MC_report_crash(int status)
@@ -333,7 +333,7 @@ bool ModelChecker::handle_events()
     case EINTR:
       continue;
     default:
-      throw simgrid::xbt::errno_error(errno);
+      throw simgrid::xbt::errno_error();
     }
   }
 
@@ -341,7 +341,7 @@ bool ModelChecker::handle_events()
     if (socket_pollfd->revents & POLLIN) {
       ssize_t size = process_->getChannel().receive(buffer, sizeof(buffer), false);
       if (size == -1 && errno != EAGAIN)
-        throw simgrid::xbt::errno_error(errno);
+        throw simgrid::xbt::errno_error();
       return handle_message(buffer, size);
     }
     if (socket_pollfd->revents & POLLERR)
@@ -380,7 +380,7 @@ void ModelChecker::handle_signals()
       if (errno == EINTR)
         continue;
       else
-        throw simgrid::xbt::errno_error(errno);
+        throw simgrid::xbt::errno_error();
     } else if (size != sizeof(info))
         return throw std::runtime_error(
           "Bad communication with model-checked application");
@@ -405,7 +405,7 @@ void ModelChecker::handle_waitpid()
           break;
       } else {
         XBT_ERROR("Could not wait for pid");
-        throw simgrid::xbt::errno_error(errno);
+        throw simgrid::xbt::errno_error();
       }
     }
 

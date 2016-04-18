@@ -43,6 +43,15 @@ std::error_code errno_code(int errnum)
   return std::error_code(errnum, errno_category());
 }
 
+/** Create an `error_code` from `errno` (and clear it) */
+inline
+std::error_code errno_code()
+{
+  int errnum = errno;
+  errno = 0;
+  return errno_code(errnum);
+}
+
 /** Create a `system_error` from an `errno` value
  *
  *  This is expected to to whatever is right to create a
@@ -58,6 +67,19 @@ inline
 std::system_error errno_error(int errnum, const char* what)
 {
   return std::system_error(errno_code(errnum), what);
+}
+
+/** Create a `system_code` from `errno` (and clear it) */
+inline
+std::system_error errno_error()
+{
+  return std::system_error(errno_code());
+}
+
+inline
+std::system_error errno_error(const char* what)
+{
+  return std::system_error(errno_code(), what);
 }
 
 }

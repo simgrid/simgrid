@@ -32,9 +32,9 @@ static void setup_child_environment(int socket)
   sigset_t mask;
   sigemptyset (&mask);
   if (sigprocmask(SIG_SETMASK, &mask, nullptr) < 0)
-    throw simgrid::xbt::errno_error(errno, "Could not unblock signals");
+    throw simgrid::xbt::errno_error("Could not unblock signals");
   if (prctl(PR_SET_PDEATHSIG, SIGHUP) != 0)
-    throw simgrid::xbt::errno_error(errno, "Could not PR_SET_PDEATHSIG");
+    throw simgrid::xbt::errno_error("Could not PR_SET_PDEATHSIG");
 #endif
 
   int res;
@@ -42,7 +42,7 @@ static void setup_child_environment(int socket)
   // Remove CLOEXEC in order to pass the socket to the exec-ed program:
   int fdflags = fcntl(socket, F_GETFD, 0);
   if (fdflags == -1 || fcntl(socket, F_SETFD, fdflags & ~FD_CLOEXEC) == -1)
-    throw simgrid::xbt::errno_error(errno, "Could not remove CLOEXEC for socket");
+    throw simgrid::xbt::errno_error("Could not remove CLOEXEC for socket");
 
   // Set environment:
   setenv(MC_ENV_VARIABLE, "1", 1);
@@ -66,7 +66,7 @@ pid_t do_fork(F code)
 {
   pid_t pid = fork();
   if (pid < 0)
-    throw simgrid::xbt::errno_error(errno, "Could not fork model-checked process");
+    throw simgrid::xbt::errno_error("Could not fork model-checked process");
   if (pid != 0)
     return pid;
 
@@ -141,7 +141,7 @@ Session* Session::fork(std::function<void(void)> code)
   int sockets[2];
   res = socketpair(AF_LOCAL, SOCK_DGRAM | SOCK_CLOEXEC, 0, sockets);
   if (res == -1)
-    throw simgrid::xbt::errno_error(errno, "Could not create socketpair");
+    throw simgrid::xbt::errno_error("Could not create socketpair");
 
   pid_t pid = do_fork([&] {
     ::close(sockets[1]);
