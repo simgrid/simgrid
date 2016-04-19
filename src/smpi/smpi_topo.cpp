@@ -203,8 +203,8 @@ int smpi_mpi_cart_coords(MPI_Comm comm, int rank, int maxdims, int coords[]) {
 
 int smpi_mpi_cart_get(MPI_Comm comm, int maxdims, int* dims, int* periods, int* coords) {
     MPI_Topology topo = smpi_comm_topo(comm);
-
-    for(int i = 0 ; i < maxdims ; i++) {
+    int ndims=topo->topo.cart->ndims < maxdims ? topo->topo.cart->ndims : maxdims;
+    for(int i = 0 ; i < ndims ; i++) {
         dims[i] = topo->topo.cart->dims[i];
         periods[i] = topo->topo.cart->periodic[i];
         coords[i] = topo->topo.cart->position[i];
