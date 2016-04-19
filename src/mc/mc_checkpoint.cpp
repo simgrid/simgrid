@@ -246,13 +246,13 @@ void find_object_address(
   }
 
   result->start = result->start_rw;
-  if ((const void*) result->start_ro > result->start)
+  if ((const void*) result->start_ro < result->start)
     result->start = result->start_ro;
-  if ((const void*) result->start_exec > result->start)
+  if ((const void*) result->start_exec < result->start)
     result->start = result->start_exec;
 
   result->end = result->end_rw;
-  if (result->end_ro && (const void*) result->end_ro < result->end)
+  if (result->end_ro && (const void*) result->end_ro > result->end)
     result->end = result->end_ro;
   if (result->end_exec && (const void*) result->end_exec > result->end)
     result->end = result->end_exec;
