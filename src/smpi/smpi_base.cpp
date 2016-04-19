@@ -1085,7 +1085,7 @@ void smpi_mpi_reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_
 {
     int i, size, count;
     int *displs;
-    int rank = smpi_process_index();
+    int rank = smpi_comm_rank(comm);
     void *tmpbuf;
 
     /* arbitrarily choose root as rank 0 */
