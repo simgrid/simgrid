@@ -68,15 +68,6 @@ typedef struct simdata_file {
 XBT_PRIVATE int __MSG_host_get_file_descriptor_id(msg_host_t host);
 XBT_PRIVATE void __MSG_host_release_file_descriptor_id(msg_host_t host, int id);
 
-/*************** Begin GPU ***************/
-typedef struct simdata_gpu_task {
-  double flops_amount;    /* Computation size */
-  double dispatch_latency;
-  double collect_latency;
-  int isused;  /* Indicates whether the task is used in SIMIX currently */
-} s_simdata_gpu_task_t;
-/*************** End GPU ***************/
-
 /******************************* Process *************************************/
 
 typedef struct simdata_process {

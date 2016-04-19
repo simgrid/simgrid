@@ -102,40 +102,6 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
   return task;
 }
 
-/*************** Begin GPU ***************/
-/** \ingroup m_task_management
- * \brief Creates a new #msg_gpu_task_t.
-
- * A constructor for #msg_gpu_task_t taking four arguments and returning a pointer to the new created GPU task.
-
- * \param name a name for the object. It is for user-level information and can be NULL.
- * \param flops_amount a value of the processing amount (in flop)needed to process this new task. If 0, then it cannot
- * be executed with MSG_gpu_task_execute(). This value has to be >=0.
- * \param dispatch_latency time in seconds to load this task on the GPU
- * \param collect_latency time in seconds to transfer result from the GPU back to the CPU (host) when done
-
- * \see msg_gpu_task_t
- * \return The new corresponding object.
- */
-msg_gpu_task_t MSG_gpu_task_create(const char *name, double flops_amount, double dispatch_latency,
-                                   double collect_latency)
-{
-  msg_gpu_task_t task = xbt_new(s_msg_gpu_task_t, 1);
-  simdata_gpu_task_t simdata = xbt_new(s_simdata_gpu_task_t, 1);
-  task->simdata = simdata;
-  /* Task structure */
-  task->name = xbt_strdup(name);
-
-  /* Simulator Data */
-  simdata->flops_amount = flops_amount;
-  simdata->dispatch_latency   = dispatch_latency;
-  simdata->collect_latency    = collect_latency;
-
-  /* TRACE_msg_gpu_task_create(task); FIXME*/
-  return task;
-}
-/*************** End GPU ***************/
-
 /** \ingroup m_task_management
  * \brief Return the user data of a #msg_task_t.
  *

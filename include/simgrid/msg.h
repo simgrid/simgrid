@@ -130,26 +130,6 @@ static inline msg_storage_priv_t MSG_storage_priv(msg_storage_t storage){
   return (msg_storage_priv_t )xbt_lib_get_level(storage, MSG_STORAGE_LEVEL);
 }
 
-/*************** Begin GPU ***************/
-typedef struct simdata_gpu_task *simdata_gpu_task_t;
-
-typedef struct msg_gpu_task {
-  char *name;                   /**< @brief task name if any */
-  simdata_gpu_task_t simdata;       /**< @brief simulator data */
-  long long int counter;        /* task unique identifier for instrumentation */
-  char *category;               /* task category for instrumentation */
-} s_msg_gpu_task_t;
-
-/** @brief GPU task datatype.
-    @ingroup m_task_management
-
-    A <em>task</em> may then be defined by a <em>computing
-    amount</em>, a <em>dispatch latency</em> and a <em>collect latency</em>.
-    \see m_task_management
-*/
-typedef struct msg_gpu_task *msg_gpu_task_t;
-/*************** End GPU ***************/
-
 /**
  * \brief @brief Communication action.
  * \ingroup msg_task_usage
@@ -382,10 +362,6 @@ XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process);
 XBT_PUBLIC(msg_task_t) MSG_task_create(const char *name,
                                      double flops_amount,
                                      double bytes_amount, void *data);
-XBT_PUBLIC(msg_gpu_task_t) MSG_gpu_task_create(const char *name,
-                                     double flops_amount,
-                                     double dispatch_latency,
-                                     double collect_latency);
 XBT_PUBLIC(msg_task_t) MSG_parallel_task_create(const char *name,
                                               int host_nb,
                                               const msg_host_t * host_list,
