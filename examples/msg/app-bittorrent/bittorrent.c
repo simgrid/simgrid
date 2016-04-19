@@ -13,7 +13,6 @@
 /** Bittorrent example launcher */
 int main(int argc, char *argv[])
 {
-  xbt_dynar_t host_list;
   msg_host_t host;
   unsigned i;
 
@@ -27,7 +26,7 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(platform_file);
 
-  host_list = MSG_hosts_as_dynar();
+  xbt_dynar_t host_list = MSG_hosts_as_dynar();
   xbt_dynar_foreach(host_list, i, host) {
     char descr[512];
     RngStream stream;
