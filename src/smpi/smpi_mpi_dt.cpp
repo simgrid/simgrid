@@ -419,7 +419,7 @@ void smpi_datatype_free(MPI_Datatype* type){
 void smpi_datatype_use(MPI_Datatype type){
 
   if(type)type->in_use++;
-XBT_INFO("using type %p, counter %d ", type, type->in_use);
+
   if(type->sizeof_substruct!=0){
     ((s_smpi_subtype_t *)(type)->substruct)->subtype_use(&type);  
   }
@@ -433,7 +433,6 @@ void smpi_datatype_unuse(MPI_Datatype type){
   if (type->in_use > 0)
     type->in_use--;
 
-XBT_INFO("unusing type %p, counter %d ", type, type->in_use);
   if(type->sizeof_substruct!=0){
     ((s_smpi_subtype_t *)(type)->substruct)->subtype_free(&type);  
   }
