@@ -159,7 +159,7 @@ int PMPI_Type_free(MPI_Datatype * datatype)
   if (*datatype == MPI_DATATYPE_NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    smpi_datatype_free(datatype);
+    smpi_datatype_unuse(*datatype);
     retval = MPI_SUCCESS;
   }
   return retval;

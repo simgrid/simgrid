@@ -99,6 +99,7 @@ XBT_PRIVATE void unserialize_contiguous( const void *contiguous_vector, void *no
                          void *type, MPI_Op op);
 XBT_PRIVATE void serialize_contiguous( const void *noncontiguous_vector, void *contiguous_vector, int count,void *type);
 XBT_PRIVATE void free_contiguous(MPI_Datatype* type);
+XBT_PRIVATE void use_contiguous(MPI_Datatype* type);
 XBT_PRIVATE s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb, int block_count,
                                                   MPI_Datatype old_type, int size_oldtype);
                                                   
@@ -106,6 +107,7 @@ XBT_PRIVATE void unserialize_vector( const void *contiguous_vector, void *noncon
                          MPI_Op op);
 XBT_PRIVATE void serialize_vector( const void *noncontiguous_vector, void *contiguous_vector, int count, void *type);
 XBT_PRIVATE void free_vector(MPI_Datatype* type);
+XBT_PRIVATE void use_vector(MPI_Datatype* type);
 XBT_PRIVATE s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride, int block_length, int block_count,
                                                   MPI_Datatype old_type, int size_oldtype);
 
@@ -113,6 +115,7 @@ XBT_PRIVATE void unserialize_hvector( const void *contiguous_vector, void *nonco
                          MPI_Op op);
 XBT_PRIVATE void serialize_hvector( const void *noncontiguous_vector, void *contiguous_vector, int count, void *type);
 XBT_PRIVATE void free_hvector(MPI_Datatype* type);
+XBT_PRIVATE void use_hvector(MPI_Datatype* type);
 XBT_PRIVATE s_smpi_mpi_hvector_t* smpi_datatype_hvector_create( MPI_Aint block_stride, int block_length,
                                                   int block_count, MPI_Datatype old_type, int size_oldtype);
 
@@ -120,6 +123,7 @@ XBT_PRIVATE void unserialize_indexed( const void *contiguous_indexed, void *nonc
                          void *type, MPI_Op op);
 XBT_PRIVATE void serialize_indexed( const void *noncontiguous_vector, void *contiguous_vector, int count, void *type);
 XBT_PRIVATE void free_indexed(MPI_Datatype* type);
+XBT_PRIVATE void use_indexed(MPI_Datatype* type);
 XBT_PRIVATE s_smpi_mpi_indexed_t* smpi_datatype_indexed_create(int* block_lengths, int* block_indices,
                                                   int block_count, MPI_Datatype old_type, int size_oldtype);
 
@@ -127,6 +131,7 @@ XBT_PRIVATE void unserialize_hindexed( const void *contiguous_indexed, void *non
                          void *type, MPI_Op op);
 XBT_PRIVATE void serialize_hindexed( const void *noncontiguous_vector, void *contiguous_vector, int count, void *type);
 XBT_PRIVATE void free_hindexed(MPI_Datatype* type);
+XBT_PRIVATE void use_hindexed(MPI_Datatype* type);
 XBT_PRIVATE s_smpi_mpi_hindexed_t* smpi_datatype_hindexed_create(int* block_lengths, MPI_Aint* block_indices,
                                                   int block_count, MPI_Datatype old_type, int size_oldtype);
 
@@ -134,6 +139,7 @@ XBT_PRIVATE void unserialize_struct( const void *contiguous_indexed, void *nonco
                          MPI_Op op);
 XBT_PRIVATE void serialize_struct( const void *noncontiguous_vector, void *contiguous_vector, int count, void *type);
 XBT_PRIVATE void free_struct(MPI_Datatype* type);
+XBT_PRIVATE void use_struct(MPI_Datatype* type);
 XBT_PRIVATE s_smpi_mpi_struct_t* smpi_datatype_struct_create(int* block_lengths, MPI_Aint* block_indices,
                                                   int block_count, MPI_Datatype* old_types);
 
