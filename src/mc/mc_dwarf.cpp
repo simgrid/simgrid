@@ -887,7 +887,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
     case simgrid::dwarf::FormClass::Address:
       if (dwarf_formaddr(&attr, &high_pc) != 0)
         xbt_die("Could not read address");
-      frame.range.begin() = base + high_pc;
+      frame.range.end() = base + high_pc;
       break;
 
     default:
