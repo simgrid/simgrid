@@ -16,6 +16,7 @@ return MPI_SUCCESS; \
 
 #define WRAPPED_PMPI_CALL(type,name,args,args2) \
 type name args { \
+XBT_VERB("SMPI - Entering %s", __FUNCTION__);\
 return P##name args2 ; \
 }\
 
