@@ -41,6 +41,16 @@
    fun:makecontext
 }
 
+#There seems to be an issue with libc using an uninitialized value somewhere in dlopen
+{
+   Invalid read in backtrace, called after makecontext
+   Memcheck:Cond
+   fun:index
+   fun:expand_dynamic_string_token
+   ...
+   fun:_dl_start
+}
+
 # Memory leaks appearing to be in libcgraph.  They can be seen with the
 # following simple program:
 # ,----
