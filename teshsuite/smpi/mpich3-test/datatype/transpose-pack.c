@@ -96,6 +96,7 @@ int main(int argc, char *argv[])
 	printf(" No Errors\n");
     }
     MPI_Finalize();
+    free(buffer);
     return 0;
 }
 
