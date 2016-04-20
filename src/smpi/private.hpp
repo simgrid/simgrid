@@ -8,4 +8,5 @@ XBT_PRIVATE papi_counter_t& smpi_process_counter_data(void);
 XBT_PRIVATE int smpi_process_event_set(void);
 #endif
 
+extern std::map<std::string, double> location2speedup;
 #endif

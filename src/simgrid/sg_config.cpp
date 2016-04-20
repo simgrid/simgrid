@@ -586,7 +586,7 @@ void sg_config_init(int *argc, char **argv)
 #if HAVE_PAPI
     xbt_cfg_register_string("smpi/papi-events", nullptr, NULL, "This switch enables tracking the specified counters with PAPI");
 #endif
-
+    xbt_cfg_register_string("smpi/comp-adjustment-file", nullptr, NULL, "A file containing speedups or slowdowns for some parts of the code.");
     xbt_cfg_register_string("smpi/os", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Send minimum time for small messages)");
     xbt_cfg_register_string("smpi/ois", "1:0:0:0:0", NULL, "Small messages timings (MPI_Isend minimum time for small messages)");
     xbt_cfg_register_string("smpi/or", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Recv minimum time for small messages)");

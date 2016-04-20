@@ -22,8 +22,13 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
+#include <fstream>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
+#include <boost/tokenizer.hpp>
+#include <boost/algorithm/string.hpp> /* trim_right / trim_left */
+
+std::map<std::string, double> location2speedup;
 
 typedef struct s_smpi_process_data {
   double simulated;
@@ -420,6 +425,29 @@ void smpi_global_init(void)
     global_timer = xbt_os_timer_new();
     xbt_os_walltimer_start(global_timer);
   }
+
+  if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { 
+    std::string filename {xbt_cfg_get_string("smpi/comp-adjustment-file")};
+    std::ifstream fstream(filename);
+    if (!fstream.is_open()) {
+      xbt_die("Could not open file %s. Does it exist?", filename.c_str());
+    }
+
+    std::string line;
+    typedef boost::tokenizer< boost::escaped_list_separator<char>> Tokenizer;
+    std::getline(fstream, line); // Skip the header line
+    while (std::getline(fstream, line)) {
+      Tokenizer tok(line);
+      Tokenizer::iterator it  = tok.begin();
+      Tokenizer::iterator end = std::next(tok.begin());
+
+      std::string location = *it;
+      boost::trim(location);
+      location2speedup.insert(std::pair<std::string, double>(location, std::stod(*end)));
+    }
+
+  }
+
   if (process_count == 0){
     process_count = SIMIX_process_count();
     smpirun=1;
@@ -444,6 +472,7 @@ void smpi_global_init(void)
     process_data[i]->sampling             = 0;
     process_data[i]->finalization_barrier = NULL;
     process_data[i]->return_value         = 0;
+    process_data[i]->trace_call_loc       = xbt_new(smpi_trace_call_location_t, 1);
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
