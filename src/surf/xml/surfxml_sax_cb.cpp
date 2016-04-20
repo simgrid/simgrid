@@ -781,6 +781,7 @@ void ETag_surfxml_ASroute(void){
   }
 
   sg_platf_new_route(&ASroute);
+  delete ASroute.link_list;
 }
 
 void ETag_surfxml_bypassRoute(void){

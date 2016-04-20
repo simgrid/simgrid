@@ -210,6 +210,7 @@ namespace simgrid {
         getRouteRecursive(src, route.gw_src, links, latency);
       for (auto link: *route.link_list)
         links->push_back(link);
+      delete route.link_list;
 
       /* If dest gateway is not our destination, we have to recursively find our way from this point */
       if (route.gw_dst != dst)
