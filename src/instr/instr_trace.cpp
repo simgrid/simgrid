@@ -368,18 +368,7 @@ void new_pajePushStateWithExtra (double timestamp, container_t container, type_t
 
 void new_pajePushState (double timestamp, container_t container, type_t type, val_t value)
 {
-  paje_event_t event = xbt_new0(s_paje_event_t, 1);
-  event->event_type = PAJE_PushState;
-  event->timestamp = timestamp;
-  event->print = active_writer.print_PushState;
-  event->free = free_paje_event;
-  event->data = xbt_new0(s_pushState_t, 1);
-  ((pushState_t)(event->data))->type = type;
-  ((pushState_t)(event->data))->container = container;
-  ((pushState_t)(event->data))->value = value;
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-
-  insert_into_buffer (event);
+  new_pajePushStateWithExtra(timestamp, container, type, value, nullptr);
 }
 
 void new_pajePopState (double timestamp, container_t container, type_t type)
