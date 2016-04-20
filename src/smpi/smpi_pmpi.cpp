@@ -718,7 +718,7 @@ int PMPI_Comm_group(MPI_Comm comm, MPI_Group * group)
   } else {
     *group = smpi_comm_group(comm);
     if(*group!= smpi_comm_group(MPI_COMM_WORLD) && *group != MPI_GROUP_NULL
-              && *group != smpi_comm_group(MPI_COMM_SELF) && *group != MPI_GROUP_EMPTY)
+              && *group != MPI_GROUP_EMPTY)
     smpi_group_use(*group);
     retval = MPI_SUCCESS;
   }
@@ -757,6 +757,8 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
     retval = MPI_ERR_ARG;
   } else {
     retval = smpi_comm_dup(comm, newcomm);
+    if(retval==MPI_SUCCESS)
+      smpi_group_use(smpi_comm_group(*newcomm));
   }
   return retval;
 }
@@ -775,7 +777,7 @@ int PMPI_Comm_create(MPI_Comm comm, MPI_Group group, MPI_Comm * newcomm)
     *newcomm= MPI_COMM_NULL;
     retval = MPI_SUCCESS;
   }else{
-
+    smpi_group_use(group);
     *newcomm = smpi_comm_new(group, NULL);
     retval = MPI_SUCCESS;
   }

@@ -63,7 +63,6 @@ MPI_Comm smpi_comm_new(MPI_Group group, MPI_Topology topo)
 
   comm = xbt_new(s_smpi_mpi_communicator_t, 1);
   comm->group = group;
-  smpi_group_use(comm->group);
   comm->refcount=1;
   comm->topoType = MPI_INVALID_TOPO;
   comm->topo = topo;
@@ -81,7 +80,6 @@ void smpi_comm_destroy(MPI_Comm comm)
 {
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
-  smpi_group_unuse(comm->group);
   smpi_topo_destroy(comm->topo); // there's no use count on topos
   smpi_comm_unuse(comm);
 }
@@ -90,7 +88,8 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
      smpi_switch_data_segment(smpi_process_index());
    }
-  (*newcomm) = smpi_comm_new(smpi_comm_group(comm), smpi_comm_topo(comm));
+  MPI_Group cp=smpi_group_copy(smpi_comm_group(comm));
+  (*newcomm) = smpi_comm_new(cp, smpi_comm_topo(comm));
   int ret = MPI_SUCCESS;
   //todo: faire en sorte que ça fonctionne avec un communicator dupliqué (refaire un init_smp ?)
   
@@ -231,6 +230,7 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
   int* recvbuf;
   int* rankmap;
   MPI_Group group, group_root, group_out;
+  MPI_Group* group_snd;
   MPI_Request* requests;
 
   group_root = group_out = NULL;
@@ -250,6 +250,7 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
   xbt_free(sendbuf);
   /* Do the actual job */
   if(rank == 0) {
+    group_snd = xbt_new(MPI_Group, size);
     rankmap = xbt_new(int, 2 * size);
     for(i = 0; i < size; i++) {
       if(recvbuf[2 * i] == MPI_UNDEFINED) {
@@ -275,7 +276,6 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
         group_root = group_out; /* Save root's group */
       }
       for(j = 0; j < count; j++) {
-        //increment refcounter in order to avoid freeing the group too quick before copy
         index = smpi_group_index(group, rankmap[2 * j]);
         smpi_group_set_mapping(group_out, index, j);
       }
@@ -283,7 +283,8 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
       reqs = 0;
       for(j = 0; j < count; j++) {
         if(rankmap[2 * j] != 0) {
-          requests[reqs] = smpi_isend_init(&group_out, 1, MPI_PTR, rankmap[2 * j], system_tag, comm);
+          group_snd[reqs]=smpi_group_copy(group_out);
+          requests[reqs] = smpi_isend_init(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, comm);
           reqs++;
         }
       }
@@ -292,13 +293,12 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
       xbt_free(requests);
     }
     xbt_free(recvbuf);
+    xbt_free(rankmap);
+    xbt_free(group_snd);
     group_out = group_root; /* exit with root's group */
   } else {
     if(color != MPI_UNDEFINED) {
       smpi_mpi_recv(&group_out, 1, MPI_PTR, 0, system_tag, comm, MPI_STATUS_IGNORE);
-      if(group_out){
-        group_out=smpi_group_copy(group_out);
-      }
     } /* otherwise, exit with group_out == NULL */
   }
   return group_out ? smpi_comm_new(group_out, NULL) : MPI_COMM_NULL;
@@ -307,6 +307,7 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
 void smpi_comm_use(MPI_Comm comm){
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
+  smpi_group_use(comm->group);
   comm->refcount++;
 }
 
@@ -314,6 +315,7 @@ void smpi_comm_unuse(MPI_Comm comm){
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
   comm->refcount--;
+  smpi_group_unuse(comm->group);
   if(comm->refcount==0){
     if(comm->intra_comm != MPI_COMM_NULL)
       smpi_comm_unuse(comm->intra_comm);

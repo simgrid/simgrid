@@ -150,7 +150,7 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
     } else {
         if (rank == 0) {
             newCart = smpi_cart_topo_create(ndims);
-            *comm_cart = smpi_comm_new(smpi_comm_group(MPI_COMM_SELF), newCart);
+            *comm_cart = smpi_comm_new(smpi_group_copy(smpi_comm_group(MPI_COMM_SELF)), newCart);
         } else {
             *comm_cart = MPI_COMM_NULL;
         }

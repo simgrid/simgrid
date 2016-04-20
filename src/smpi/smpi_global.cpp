@@ -448,19 +448,15 @@ void smpi_global_destroy(void)
   smpi_bench_destroy();
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
       while (smpi_group_unuse(smpi_comm_group(MPI_COMM_WORLD)) > 0);
-      xbt_free(MPI_COMM_WORLD);
       xbt_barrier_destroy(process_data[0]->finalization_barrier);
   }else{
       smpi_deployment_cleanup_instances();
   }
-  MPI_COMM_WORLD = MPI_COMM_NULL;
   for (i = 0; i < count; i++) {
     if(process_data[i]->comm_self!=MPI_COMM_NULL){
-      smpi_group_unuse(smpi_comm_group(process_data[i]->comm_self));
       smpi_comm_destroy(process_data[i]->comm_self);
     }
     if(process_data[i]->comm_intra!=MPI_COMM_NULL){
-      smpi_group_unuse(smpi_comm_group(process_data[i]->comm_intra));
       smpi_comm_destroy(process_data[i]->comm_intra);
     }
     xbt_os_timer_free(process_data[i]->timer);
@@ -471,6 +467,10 @@ void smpi_global_destroy(void)
   }
   xbt_free(process_data);
   process_data = NULL;
+
+  if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED)
+    xbt_free(MPI_COMM_WORLD);
+  MPI_COMM_WORLD = MPI_COMM_NULL;
 
   xbt_free(index_to_process_data);
   if(smpi_privatize_global_variables)
