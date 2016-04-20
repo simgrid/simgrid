@@ -354,6 +354,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_free(host_id);
     rankId++;
   }
+  delete radicals;
 
   // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
   // and it's very useful to connect clusters together
