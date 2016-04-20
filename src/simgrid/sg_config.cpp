@@ -581,6 +581,10 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("smpi/privatize-global-variables", "no", NULL, "Whether we should privatize global variable at runtime.");
     xbt_cfg_register_alias("smpi/privatize-global-variables", "smpi/privatize_global_variables");
 
+#if HAVE_PAPI
+    xbt_cfg_register_string("smpi/papi-events", nullptr, NULL, "This switch enables tracking the specified counters with PAPI");
+#endif
+
     xbt_cfg_register_string("smpi/os", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Send minimum time for small messages)");
     xbt_cfg_register_string("smpi/ois", "1:0:0:0:0", NULL, "Small messages timings (MPI_Isend minimum time for small messages)");
     xbt_cfg_register_string("smpi/or", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Recv minimum time for small messages)");
