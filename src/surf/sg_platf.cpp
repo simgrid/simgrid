@@ -158,6 +158,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     char *key,*data;
     xbt_dict_foreach(host->properties,cursor,key,data)
       h->setProperty(key,data);
+    xbt_dict_free(&host->properties);
   }
 
   if (host->pstate != 0)

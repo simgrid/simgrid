@@ -166,7 +166,7 @@ public class Host {
 
   /**
    * This method returns the number of tasks currently running on a host.
-   * The external load (comming from an availability trace) is not taken in account.
+   * The external load (coming from an availability trace) is not taken in account.
    *
    * @return      The number of tasks currently running on a host.
    */ 

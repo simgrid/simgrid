@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_wait, "Messages specific for this msg exa
  * 
  * @section msg_ex_async Asynchronous communications
  * 
- * In addition to the fully documented example of \ref MSG_ex_asynchronous_communications, there are several othe
+ * In addition to the fully documented example of \ref MSG_ex_asynchronous_communications, there are several other
  * examples shipped in the archive:
  * 
  * - <b>Basic example: async-wait/async-wait.c</b>. Illustrates the use of asynchronous functions (@ref MSG_task_isend,

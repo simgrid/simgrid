@@ -138,7 +138,7 @@ static int raw_client(int argc, char *argv[])
 {
 #ifdef GARBAGE_STACK
   // At this point the stack of the callee (client) is probably filled with
-  // zeros and unitialized variables will contain 0. This call will place
+  // zeros and uninitialized variables will contain 0. This call will place
   // random byes in the stack of the callee:
   garbage_stack();
 #endif

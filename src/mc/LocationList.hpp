@@ -25,7 +25,7 @@
 namespace simgrid {
 namespace dwarf {
 
-/** \brief A DWARF expression with optional validity contraints */
+/** \brief A DWARF expression with optional validity constraints */
 class LocationListEntry {
 public:
   typedef simgrid::xbt::Range<std::uint64_t> range_type;

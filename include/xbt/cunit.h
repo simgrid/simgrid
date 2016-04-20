@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This is partially inspirated from the OSSP ts (Test Suite Library)       */
+/* This is partially inspired from the OSSP ts (Test Suite Library)         */
 
 #ifndef _XBT_CUNIT_H_
 #define _XBT_CUNIT_H_

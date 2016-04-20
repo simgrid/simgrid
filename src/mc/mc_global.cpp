@@ -74,7 +74,7 @@ xbt_automaton_t property_automaton = nullptr;
 FILE *dot_output = nullptr;
 
 
-/*******************************  Initialisation of MC *******************************/
+/*******************************  Initialization of MC *******************************/
 /*********************************************************************************/
 
 void MC_init_dot_output()
@@ -139,7 +139,7 @@ void dumpStack(FILE* file, unw_cursor_t cursor)
 
     int status;
 
-    // Demangle C++ names:
+    // Unmangle C++ names:
     char* realname = abi::__cxa_demangle(name, 0, 0, &status);
 
 #if defined(__x86_64__)
