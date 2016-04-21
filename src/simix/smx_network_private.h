@@ -13,13 +13,13 @@
 #include "popping_private.h"
 
 /** @brief Rendez-vous point datatype */
-typedef struct s_smx_rvpoint {
+typedef struct s_smx_mailbox {
   char *name;
   xbt_fifo_t comm_fifo;
   void *data;
   smx_process_t permanent_receiver; //process which the mailbox is attached to
   xbt_fifo_t done_comm_fifo;//messages already received in the permanent receive mode
-} s_smx_rvpoint_t;
+} s_smx_mailbox_t;
 
 XBT_PRIVATE void SIMIX_network_init(void);
 XBT_PRIVATE void SIMIX_network_exit(void);

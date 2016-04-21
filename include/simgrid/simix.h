@@ -138,7 +138,7 @@ typedef smx_process_t (*smx_creation_func_t) (
 /**
  * \ingroup simix_rdv_management
  */
-typedef struct s_smx_rvpoint *smx_mailbox_t;
+typedef struct s_smx_mailbox *smx_mailbox_t;
 
 XBT_PUBLIC(void*) SIMIX_comm_get_src_data(smx_synchro_t synchro);
 XBT_PUBLIC(void*) SIMIX_comm_get_dst_data(smx_synchro_t synchro);

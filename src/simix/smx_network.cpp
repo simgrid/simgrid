@@ -49,7 +49,7 @@ smx_mailbox_t SIMIX_rdv_create(const char *name)
   smx_mailbox_t rdv = name ? (smx_mailbox_t) xbt_dict_get_or_null(rdv_points, name) : NULL;
 
   if (!rdv) {
-    rdv = xbt_new0(s_smx_rvpoint_t, 1);
+    rdv = xbt_new0(s_smx_mailbox_t, 1);
     rdv->name = name ? xbt_strdup(name) : NULL;
     rdv->comm_fifo = xbt_fifo_new();
     rdv->done_comm_fifo = xbt_fifo_new();
