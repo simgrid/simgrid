@@ -43,7 +43,7 @@
 
 #There seems to be an issue with libc using an uninitialized value somewhere in dlopen
 {
-   Invalid read in backtrace, called after makecontext
+   Invalid read in dl_start
    Memcheck:Cond
    fun:index
    fun:expand_dynamic_string_token
@@ -51,6 +51,19 @@
    fun:_dl_start
 }
 
+# 72704 bytes leak from GCC >5.1 https://gcc.gnu.org/bugzilla/show_bug.cgi?id=64535
+{
+   Memory leak in dl_init
+   Memcheck:Leak
+   match-leak-kinds:reachable
+   fun:call_init.part.0
+   fun:_dl_init
+}
+
+#48 bytes 
+{
+   Memory leak 
+}
 # Memory leaks appearing to be in libcgraph.  They can be seen with the
 # following simple program:
 # ,----
