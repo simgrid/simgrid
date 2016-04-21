@@ -51,12 +51,12 @@ const char* simcall_names[] = {
   "SIMCALL_PROCESS_ON_EXIT",
   "SIMCALL_PROCESS_AUTO_RESTART_SET",
   "SIMCALL_PROCESS_RESTART",
-  "SIMCALL_RDV_CREATE",
-  "SIMCALL_RDV_DESTROY",
-  "SIMCALL_RDV_COMM_COUNT_BY_HOST",
-  "SIMCALL_RDV_GET_HEAD",
-  "SIMCALL_RDV_SET_RECEIVER",
-  "SIMCALL_RDV_GET_RECEIVER",
+  "SIMCALL_MBOX_CREATE",
+  "SIMCALL_MBOX_DESTROY",
+  "SIMCALL_MBOX_COMM_COUNT_BY_HOST",
+  "SIMCALL_MBOX_GET_HEAD",
+  "SIMCALL_MBOX_SET_RECEIVER",
+  "SIMCALL_MBOX_GET_RECEIVER",
   "SIMCALL_COMM_IPROBE",
   "SIMCALL_COMM_SEND",
   "SIMCALL_COMM_ISEND",
@@ -254,33 +254,33 @@ case SIMCALL_PROCESS_RESTART:
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_RDV_CREATE:
-      simcall->result.dp = SIMIX_rdv_create( simcall->args[0].cc);
+case SIMCALL_MBOX_CREATE:
+      simcall->result.dp = SIMIX_mbox_create( simcall->args[0].cc);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_RDV_DESTROY:
-       SIMIX_rdv_destroy((smx_mailbox_t) simcall->args[0].dp);
+case SIMCALL_MBOX_DESTROY:
+       SIMIX_mbox_destroy((smx_mailbox_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_RDV_COMM_COUNT_BY_HOST:
-      simcall->result.ui = SIMIX_rdv_comm_count_by_host((smx_mailbox_t) simcall->args[0].dp,(sg_host_t) simcall->args[1].dp);
+case SIMCALL_MBOX_COMM_COUNT_BY_HOST:
+      simcall->result.ui = SIMIX_mbox_comm_count_by_host((smx_mailbox_t) simcall->args[0].dp,(sg_host_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_RDV_GET_HEAD:
-      simcall->result.dp = SIMIX_rdv_get_head((smx_mailbox_t) simcall->args[0].dp);
+case SIMCALL_MBOX_GET_HEAD:
+      simcall->result.dp = SIMIX_mbox_get_head((smx_mailbox_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_RDV_SET_RECEIVER:
-       SIMIX_rdv_set_receiver((smx_mailbox_t) simcall->args[0].dp,(smx_process_t) simcall->args[1].dp);
+case SIMCALL_MBOX_SET_RECEIVER:
+       SIMIX_mbox_set_receiver((smx_mailbox_t) simcall->args[0].dp,(smx_process_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
-case SIMCALL_RDV_GET_RECEIVER:
-      simcall->result.dp = SIMIX_rdv_get_receiver((smx_mailbox_t) simcall->args[0].dp);
+case SIMCALL_MBOX_GET_RECEIVER:
+      simcall->result.dp = SIMIX_mbox_get_receiver((smx_mailbox_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

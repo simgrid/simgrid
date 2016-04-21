@@ -155,11 +155,11 @@ typedef struct s_smx_synchro {
 
     struct {
       e_smx_comm_type_t type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
-      smx_mailbox_t rdv;                  /* Rendez-vous where the comm is queued */
+      smx_mailbox_t mbox;             /* Rendez-vous where the comm is queued */
 
 #if HAVE_MC
-      smx_mailbox_t rdv_cpy;              /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
-                                         (comm.rdv set to NULL when the communication is removed from the mailbox
+      smx_mailbox_t mbox_cpy;         /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
+                                         (comm.mbox set to NULL when the communication is removed from the mailbox
                                          (used as garbage collector)) */
 #endif
       int refcount;                   /* Number of processes involved in the cond */

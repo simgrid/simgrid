@@ -13,22 +13,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mail
 
 msg_mailbox_t MSG_mailbox_new(const char *alias)
 {
-  return simcall_rdv_create(alias);
+  return simcall_mbox_create(alias);
 }
 
 void MSG_mailbox_free(void *mailbox)
 {
-  simcall_rdv_destroy((msg_mailbox_t)mailbox);
+  simcall_mbox_destroy((msg_mailbox_t)mailbox);
 }
 
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
-  return (NULL == simcall_rdv_get_head(mailbox));
+  return (NULL == simcall_mbox_get_head(mailbox));
 }
 
 msg_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 {
-  smx_synchro_t comm = simcall_rdv_get_head(mailbox);
+  smx_synchro_t comm = simcall_mbox_get_head(mailbox);
 
   if (!comm)
     return NULL;
@@ -38,12 +38,12 @@ msg_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
 
 int MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, msg_host_t host)
 {
-  return simcall_rdv_comm_count_by_host(mailbox, host);
+  return simcall_mbox_comm_count_by_host(mailbox, host);
 }
 
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 {
-  msg_mailbox_t mailbox = simcall_rdv_get_by_name(alias);
+  msg_mailbox_t mailbox = simcall_mbox_get_by_name(alias);
 
   if (!mailbox)
     mailbox = MSG_mailbox_new(alias);
@@ -63,7 +63,7 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 void MSG_mailbox_set_async(const char *alias){
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
-  simcall_rdv_set_receiver(mailbox, SIMIX_process_self());
+  simcall_mbox_set_receiver(mailbox, SIMIX_process_self());
   XBT_VERB("%s mailbox set to receive eagerly for process %p\n",alias, SIMIX_process_self());
 }
 

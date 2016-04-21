@@ -13,90 +13,90 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 
-static xbt_dict_t rdv_points = NULL;
+static xbt_dict_t mailboxes = NULL;
 XBT_EXPORT_NO_IMPORT(unsigned long int) smx_total_comms = 0;
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_synchro_t comm);
 static smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type);
-static inline void SIMIX_rdv_push(smx_mailbox_t rdv, smx_synchro_t comm);
+static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t comm);
 static smx_synchro_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
                                         int (*match_fun)(void *, void *,smx_synchro_t),
                                         void *user_data, smx_synchro_t my_synchro);
 static smx_synchro_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
                                         int (*match_fun)(void *, void *,smx_synchro_t),
                                         void *user_data, smx_synchro_t my_synchro);
-static void SIMIX_rdv_free(void *data);
+static void SIMIX_mbox_free(void *data);
 static void SIMIX_comm_start(smx_synchro_t synchro);
 
 void SIMIX_network_init(void)
 {
-  rdv_points = xbt_dict_new_homogeneous(SIMIX_rdv_free);
+  mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
 }
 
 void SIMIX_network_exit(void)
 {
-  xbt_dict_free(&rdv_points);
+  xbt_dict_free(&mailboxes);
 }
 
 /******************************************************************************/
 /*                           Rendez-Vous Points                               */
 /******************************************************************************/
 
-smx_mailbox_t SIMIX_rdv_create(const char *name)
+smx_mailbox_t SIMIX_mbox_create(const char *name)
 {
-  /* two processes may have pushed the same rdv_create simcall at the same time */
-  smx_mailbox_t rdv = name ? (smx_mailbox_t) xbt_dict_get_or_null(rdv_points, name) : NULL;
+  /* two processes may have pushed the same mbox_create simcall at the same time */
+  smx_mailbox_t mbox = name ? (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name) : NULL;
 
-  if (!rdv) {
-    rdv = xbt_new0(s_smx_mailbox_t, 1);
-    rdv->name = name ? xbt_strdup(name) : NULL;
-    rdv->comm_fifo = xbt_fifo_new();
-    rdv->done_comm_fifo = xbt_fifo_new();
-    rdv->permanent_receiver=NULL;
+  if (!mbox) {
+    mbox = xbt_new0(s_smx_mailbox_t, 1);
+    mbox->name = name ? xbt_strdup(name) : NULL;
+    mbox->comm_fifo = xbt_fifo_new();
+    mbox->done_comm_fifo = xbt_fifo_new();
+    mbox->permanent_receiver=NULL;
 
-    XBT_DEBUG("Creating a mailbox at %p with name %s", rdv, name);
+    XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
 
-    if (rdv->name)
-      xbt_dict_set(rdv_points, rdv->name, rdv, NULL);
+    if (mbox->name)
+      xbt_dict_set(mailboxes, mbox->name, mbox, NULL);
   }
-  return rdv;
+  return mbox;
 }
 
-void SIMIX_rdv_destroy(smx_mailbox_t rdv)
+void SIMIX_mbox_destroy(smx_mailbox_t mbox)
 {
-  if (rdv->name)
-    xbt_dict_remove(rdv_points, rdv->name);
+  if (mbox->name)
+    xbt_dict_remove(mailboxes, mbox->name);
 }
 
-void SIMIX_rdv_free(void *data)
+void SIMIX_mbox_free(void *data)
 {
-  XBT_DEBUG("rdv free %p", data);
-  smx_mailbox_t rdv = (smx_mailbox_t) data;
-  xbt_free(rdv->name);
-  xbt_fifo_free(rdv->comm_fifo);
-  xbt_fifo_free(rdv->done_comm_fifo);
+  XBT_DEBUG("mbox free %p", data);
+  smx_mailbox_t mbox = (smx_mailbox_t) data;
+  xbt_free(mbox->name);
+  xbt_fifo_free(mbox->comm_fifo);
+  xbt_fifo_free(mbox->done_comm_fifo);
 
-  xbt_free(rdv);
+  xbt_free(mbox);
 }
 
-xbt_dict_t SIMIX_get_rdv_points()
+xbt_dict_t SIMIX_get_mailboxes()
 {
-  return rdv_points;
+  return mailboxes;
 }
 
-smx_mailbox_t SIMIX_rdv_get_by_name(const char *name)
+smx_mailbox_t SIMIX_mbox_get_by_name(const char *name)
 {
-  return (smx_mailbox_t) xbt_dict_get_or_null(rdv_points, name);
+  return (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name);
 }
 
-int SIMIX_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host)
+int SIMIX_mbox_comm_count_by_host(smx_mailbox_t mbox, sg_host_t host)
 {
   smx_synchro_t comm = NULL;
   xbt_fifo_item_t item = NULL;
   int count = 0;
 
-  xbt_fifo_foreach(rdv->comm_fifo, item, comm, smx_synchro_t) {
+  xbt_fifo_foreach(mbox->comm_fifo, item, comm, smx_synchro_t) {
     if (comm->comm.src_proc->host == host)
       count++;
   }
@@ -104,52 +104,52 @@ int SIMIX_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host)
   return count;
 }
 
-smx_synchro_t SIMIX_rdv_get_head(smx_mailbox_t rdv)
+smx_synchro_t SIMIX_mbox_get_head(smx_mailbox_t mbox)
 {
   return (smx_synchro_t) xbt_fifo_get_item_content(
-    xbt_fifo_get_first_item(rdv->comm_fifo));
+    xbt_fifo_get_first_item(mbox->comm_fifo));
 }
 
 /**
  *  \brief get the receiver (process associated to the mailbox)
- *  \param rdv The rendez-vous point
+ *  \param mbox The rendez-vous point
  *  \return process The receiving process (NULL if not set)
  */
-smx_process_t SIMIX_rdv_get_receiver(smx_mailbox_t rdv)
+smx_process_t SIMIX_mbox_get_receiver(smx_mailbox_t mbox)
 {
-  return rdv->permanent_receiver;
+  return mbox->permanent_receiver;
 }
 
 /**
  *  \brief set the receiver of the rendez vous point to allow eager sends
- *  \param rdv The rendez-vous point
+ *  \param mbox The rendez-vous point
  *  \param process The receiving process
  */
-void SIMIX_rdv_set_receiver(smx_mailbox_t rdv, smx_process_t process)
+void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
 {
-  rdv->permanent_receiver=process;
+  mbox->permanent_receiver=process;
 }
 
 /**
  *  \brief Pushes a communication synchro into a rendez-vous point
- *  \param rdv The rendez-vous point
+ *  \param mbox The mailbox
  *  \param comm The communication synchro
  */
-static inline void SIMIX_rdv_push(smx_mailbox_t rdv, smx_synchro_t comm)
+static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t comm)
 {
-  xbt_fifo_push(rdv->comm_fifo, comm);
-  comm->comm.rdv = rdv;
+  xbt_fifo_push(mbox->comm_fifo, comm);
+  comm->comm.mbox = mbox;
 }
 
 /**
  *  \brief Removes a communication synchro from a rendez-vous point
- *  \param rdv The rendez-vous point
+ *  \param mbox The rendez-vous point
  *  \param comm The communication synchro
  */
-void SIMIX_rdv_remove(smx_mailbox_t rdv, smx_synchro_t comm)
+void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t comm)
 {
-  xbt_fifo_remove(rdv->comm_fifo, comm);
-  comm->comm.rdv = NULL;
+  xbt_fifo_remove(mbox->comm_fifo, comm);
+  comm->comm.mbox = NULL;
 }
 
 /**
@@ -179,9 +179,9 @@ smx_synchro_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
       xbt_fifo_free_item(item);
       synchro->comm.refcount++;
 #if HAVE_MC
-      synchro->comm.rdv_cpy = synchro->comm.rdv;
+      synchro->comm.mbox_cpy = synchro->comm.mbox;
 #endif
-      synchro->comm.rdv = NULL;
+      synchro->comm.mbox = NULL;
       return synchro;
     }
     XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
@@ -292,8 +292,8 @@ void SIMIX_comm_destroy(smx_synchro_t synchro)
     synchro->comm.src_buff = NULL;
   }
 
-  if(synchro->comm.rdv)
-    SIMIX_rdv_remove(synchro->comm.rdv, synchro);
+  if(synchro->comm.mbox)
+    SIMIX_mbox_remove(synchro->comm.mbox, synchro);
 
   xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
 }
@@ -316,19 +316,19 @@ void SIMIX_comm_destroy_internal_actions(smx_synchro_t synchro)
   }
 }
 
-void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_mailbox_t rdv,
+void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_mailbox_t mbox,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_synchro_t),
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),
           void *data, double timeout){
-  smx_synchro_t comm = simcall_HANDLER_comm_isend(simcall, src, rdv, task_size, rate,
+  smx_synchro_t comm = simcall_HANDLER_comm_isend(simcall, src, mbox, task_size, rate,
                            src_buff, src_buff_size, match_fun, NULL, copy_data_fun,
                data, 0);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
-smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src_proc, smx_mailbox_t rdv,
+smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src_proc, smx_mailbox_t mbox,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_synchro_t),
@@ -336,7 +336,7 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),// used to copy data if not default one
                           void *data, int detached)
 {
-  XBT_DEBUG("send from %p", rdv);
+  XBT_DEBUG("send from %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
   smx_synchro_t this_synchro = SIMIX_comm_new(SIMIX_COMM_SEND);
@@ -345,22 +345,22 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
    *
    * If it is not found then push our communication into the rendez-vous point */
-  smx_synchro_t other_synchro = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_RECEIVE, match_fun, data, this_synchro);
+  smx_synchro_t other_synchro = SIMIX_fifo_get_comm(mbox->comm_fifo, SIMIX_COMM_RECEIVE, match_fun, data, this_synchro);
 
   if (!other_synchro) {
     other_synchro = this_synchro;
 
-    if (rdv->permanent_receiver!=NULL){
+    if (mbox->permanent_receiver!=NULL){
       //this mailbox is for small messages, which have to be sent right now
       other_synchro->state = SIMIX_READY;
-      other_synchro->comm.dst_proc=rdv->permanent_receiver;
+      other_synchro->comm.dst_proc=mbox->permanent_receiver;
       other_synchro->comm.refcount++;
-      xbt_fifo_push(rdv->done_comm_fifo,other_synchro);
-      other_synchro->comm.rdv=rdv;
-      XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", rdv, &(other_synchro->comm));
+      xbt_fifo_push(mbox->done_comm_fifo,other_synchro);
+      other_synchro->comm.mbox=mbox;
+      XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", mbox, &(other_synchro->comm));
 
     }else{
-      SIMIX_rdv_push(rdv, this_synchro);
+      SIMIX_mbox_push(mbox, this_synchro);
     }
   } else {
     XBT_DEBUG("Receive already pushed");
@@ -405,53 +405,53 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
   return (detached ? NULL : other_synchro);
 }
 
-void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t rdv,
+void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox,
                          void *dst_buff, size_t *dst_buff_size,
                          int (*match_fun)(void *, void *, smx_synchro_t),
                          void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                          void *data, double timeout, double rate)
 {
-  smx_synchro_t comm = SIMIX_comm_irecv(receiver, rdv, dst_buff,
+  smx_synchro_t comm = SIMIX_comm_irecv(receiver, mbox, dst_buff,
                            dst_buff_size, match_fun, copy_data_fun, data, rate);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t rdv,
+smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox,
     void *dst_buff, size_t *dst_buff_size,
     int (*match_fun)(void *, void *, smx_synchro_t),
     void (*copy_data_fun)(smx_synchro_t, void*, size_t),
     void *data, double rate)
 {
-  return SIMIX_comm_irecv(receiver, rdv, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
+  return SIMIX_comm_irecv(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
 }
 
-smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t rdv, void *dst_buff, size_t *dst_buff_size,
+smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
     int (*match_fun)(void *, void *, smx_synchro_t),
     void (*copy_data_fun)(smx_synchro_t, void*, size_t), // used to copy data if not default one
     void *data, double rate)
 {
-  XBT_DEBUG("recv from %p %p", rdv, rdv->comm_fifo);
+  XBT_DEBUG("recv from %p %p", mbox, mbox->comm_fifo);
   smx_synchro_t this_synchro = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
 
   smx_synchro_t other_synchro;
   //communication already done, get it inside the fifo of completed comms
-  if (rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0) {
+  if (mbox->permanent_receiver && xbt_fifo_size(mbox->done_comm_fifo)!=0) {
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the already received fifo
-    other_synchro = SIMIX_fifo_get_comm(rdv->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_synchro);
+    other_synchro = SIMIX_fifo_get_comm(mbox->done_comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_synchro);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (!other_synchro)  {
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
       other_synchro = this_synchro;
-      SIMIX_rdv_push(rdv, this_synchro);
+      SIMIX_mbox_push(mbox, this_synchro);
     } else {
       if(other_synchro->comm.surf_comm && SIMIX_comm_get_remains(other_synchro)==0.0) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",&(other_synchro->comm));
         other_synchro->state = SIMIX_DONE;
         other_synchro->comm.type = SIMIX_COMM_DONE;
-        other_synchro->comm.rdv = NULL;
+        other_synchro->comm.mbox = NULL;
       }
       other_synchro->comm.refcount--;
       SIMIX_comm_destroy(this_synchro);
@@ -464,12 +464,12 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t rdv, void *
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_synchro = SIMIX_fifo_get_comm(rdv->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_synchro);
+    other_synchro = SIMIX_fifo_get_comm(mbox->comm_fifo, SIMIX_COMM_SEND, match_fun, data, this_synchro);
 
     if (!other_synchro) {
-      XBT_DEBUG("Receive pushed first %d", xbt_fifo_size(rdv->comm_fifo));
+      XBT_DEBUG("Receive pushed first %d", xbt_fifo_size(mbox->comm_fifo));
       other_synchro = this_synchro;
-      SIMIX_rdv_push(rdv, this_synchro);
+      SIMIX_mbox_push(mbox, this_synchro);
     } else {
       SIMIX_comm_destroy(this_synchro);
       --smx_total_comms; // this creation was a pure waste
@@ -501,17 +501,17 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t rdv, void *
   return other_synchro;
 }
 
-smx_synchro_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t rdv,
+smx_synchro_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox,
                                    int type, int src, int tag,
                                    int (*match_fun)(void *, void *, smx_synchro_t),
                                    void *data){
-  return SIMIX_comm_iprobe(simcall->issuer, rdv, type, src, tag, match_fun, data);
+  return SIMIX_comm_iprobe(simcall->issuer, mbox, type, src, tag, match_fun, data);
 }
 
-smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t rdv, int type, int src,
+smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data)
 {
-  XBT_DEBUG("iprobe from %p %p", rdv, rdv->comm_fifo);
+  XBT_DEBUG("iprobe from %p %p", mbox, mbox->comm_fifo);
   smx_synchro_t this_synchro;
   int smx_type;
   if(type == 1){
@@ -522,19 +522,19 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t rdv, int t
     smx_type = SIMIX_COMM_SEND;
   } 
   smx_synchro_t other_synchro=NULL;
-  if(rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0){
+  if(mbox->permanent_receiver && xbt_fifo_size(mbox->done_comm_fifo)!=0){
     //find a match in the already received fifo
       XBT_DEBUG("first try in the perm recv mailbox");
 
     other_synchro = SIMIX_fifo_probe_comm(
-      rdv->done_comm_fifo, (e_smx_comm_type_t) smx_type,
+      mbox->done_comm_fifo, (e_smx_comm_type_t) smx_type,
       match_fun, data, this_synchro);
   }
  // }else{
     if(!other_synchro){
         XBT_DEBUG("try in the normal mailbox");
         other_synchro = SIMIX_fifo_probe_comm(
-          rdv->comm_fifo, (e_smx_comm_type_t) smx_type,
+          mbox->comm_fifo, (e_smx_comm_type_t) smx_type,
           match_fun, data, this_synchro);
     }
 //  }
@@ -758,8 +758,8 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
     }
 
     /* If the synchro is still in a rendez-vous point then remove from it */
-    if (synchro->comm.rdv)
-      SIMIX_rdv_remove(synchro->comm.rdv, synchro);
+    if (synchro->comm.mbox)
+      SIMIX_mbox_remove(synchro->comm.mbox, synchro);
 
     XBT_DEBUG("SIMIX_comm_finish: synchro state = %d", (int)synchro->state);
 
@@ -907,10 +907,10 @@ void SIMIX_post_comm(smx_synchro_t synchro)
 
 void SIMIX_comm_cancel(smx_synchro_t synchro)
 {
-  /* if the synchro is a waiting state means that it is still in a rdv */
+  /* if the synchro is a waiting state means that it is still in a mbox */
   /* so remove from it and delete it */
   if (synchro->state == SIMIX_WAITING) {
-    SIMIX_rdv_remove(synchro->comm.rdv, synchro);
+    SIMIX_mbox_remove(synchro->comm.mbox, synchro);
     synchro->state = SIMIX_CANCELED;
   }
   else if (!MC_is_active() /* when running the MC there are no surf actions */

@@ -136,7 +136,7 @@ typedef smx_process_t (*smx_creation_func_t) (
 
 /******************************* Networking ***********************************/
 /**
- * \ingroup simix_rdv_management
+ * \ingroup simix_mbox_management
  */
 typedef struct s_smx_mailbox *smx_mailbox_t;
 
@@ -258,9 +258,9 @@ XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_synchro
 XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_synchro_t comm, void* buff, size_t buff_size);
 XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_synchro_t comm, void* buff, size_t buff_size);
 
-XBT_PUBLIC(smx_synchro_t) SIMIX_comm_get_send_match(smx_mailbox_t rdv, int (*match_fun)(void*, void*), void* data);
-XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_mailbox_t rdv, int (*match_fun)(void*, void*), void* data);
-XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_mailbox_t rdv, int (*match_fun)(void*, void*), void* data);
+XBT_PUBLIC(smx_synchro_t) SIMIX_comm_get_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
+XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
+XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(void) SIMIX_comm_finish(smx_synchro_t synchro);
 
 /******************************************************************************/
@@ -365,26 +365,26 @@ XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);
 /************************** Comunication simcalls *****************************/
 /***** Rendez-vous points *****/
 
-XBT_PUBLIC(smx_mailbox_t) simcall_rdv_create(const char *name);
-XBT_PUBLIC(void) simcall_rdv_destroy(smx_mailbox_t rvp);
-XBT_PUBLIC(smx_mailbox_t) simcall_rdv_get_by_name(const char *name);
-XBT_PUBLIC(int) simcall_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host);
-XBT_PUBLIC(smx_synchro_t) simcall_rdv_get_head(smx_mailbox_t rdv);
-XBT_PUBLIC(smx_process_t) simcall_rdv_get_receiver(smx_mailbox_t rdv);
-XBT_PUBLIC(void) simcall_rdv_set_receiver(smx_mailbox_t rdv , smx_process_t process);
+XBT_PUBLIC(smx_mailbox_t) simcall_mbox_create(const char *name);
+XBT_PUBLIC(void) simcall_mbox_destroy(smx_mailbox_t mbox);
+XBT_PUBLIC(smx_mailbox_t) simcall_mbox_get_by_name(const char *name);
+XBT_PUBLIC(int) simcall_mbox_comm_count_by_host(smx_mailbox_t mbox, sg_host_t host);
+XBT_PUBLIC(smx_synchro_t) simcall_mbox_get_head(smx_mailbox_t mbox);
+XBT_PUBLIC(smx_process_t) simcall_mbox_get_receiver(smx_mailbox_t mbox);
+XBT_PUBLIC(void) simcall_mbox_set_receiver(smx_mailbox_t mbox , smx_process_t process);
 
-XBT_PUBLIC(xbt_dict_t) SIMIX_get_rdv_points(void);
+XBT_PUBLIC(xbt_dict_t) SIMIX_get_mailboxes(void);
 
 /***** Communication simcalls *****/
 
-XBT_PUBLIC(void) simcall_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size,
+XBT_PUBLIC(void) simcall_comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_size,
                                      double rate, void *src_buff,
                                      size_t src_buff_size,
                                      int (*match_fun)(void *, void *, smx_synchro_t),
                                      void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                      void *data, double timeout);
 
-XBT_PUBLIC(smx_synchro_t) simcall_comm_isend(smx_process_t sender, smx_mailbox_t rdv,
+XBT_PUBLIC(smx_synchro_t) simcall_comm_isend(smx_process_t sender, smx_mailbox_t mbox,
                                               double task_size,
                                               double rate, void *src_buff,
                                               size_t src_buff_size,
@@ -393,19 +393,19 @@ XBT_PUBLIC(smx_synchro_t) simcall_comm_isend(smx_process_t sender, smx_mailbox_t
                                               void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                               void *data, int detached);
 
-XBT_PUBLIC(void) simcall_comm_recv(smx_process_t receiver, smx_mailbox_t rdv, void *dst_buff,
+XBT_PUBLIC(void) simcall_comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff,
                                    size_t * dst_buff_size,
                                    int (*match_fun)(void *, void *, smx_synchro_t),
                                    void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                    void *data, double timeout, double rate);
 
-XBT_PUBLIC(smx_synchro_t) simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t rdv, void *dst_buff,
+XBT_PUBLIC(smx_synchro_t) simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff,
                                             size_t * dst_buff_size,
                                             int (*match_fun)(void *, void *, smx_synchro_t),
                                             void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                             void *data, double rate);
 
-XBT_PUBLIC(smx_synchro_t) simcall_comm_iprobe(smx_mailbox_t rdv, int type, int src, int tag,
+XBT_PUBLIC(smx_synchro_t) simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
                                 int (*match_fun)(void *, void *, smx_synchro_t), void *data);
 XBT_PUBLIC(void) simcall_comm_cancel(smx_synchro_t comm);
 

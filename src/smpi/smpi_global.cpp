@@ -117,7 +117,7 @@ void smpi_process_init(int *argc, char ***argv)
     data->argc = argc;
     data->argv = argv;
     // set the process attached to the mailbox
-    simcall_rdv_set_receiver(data->mailbox_small, proc);
+    simcall_mbox_set_receiver(data->mailbox_small, proc);
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
   xbt_assert(smpi_process_data(),
@@ -412,8 +412,8 @@ void smpi_global_init(void)
     //process_data[i]->index              = i;
     process_data[i]->argc                 = NULL;
     process_data[i]->argv                 = NULL;
-    process_data[i]->mailbox              = simcall_rdv_create(get_mailbox_name(name, i));
-    process_data[i]->mailbox_small        = simcall_rdv_create(get_mailbox_name_small(name, i));
+    process_data[i]->mailbox              = simcall_mbox_create(get_mailbox_name(name, i));
+    process_data[i]->mailbox_small        = simcall_mbox_create(get_mailbox_name_small(name, i));
     process_data[i]->mailboxes_mutex      = xbt_mutex_init();
     process_data[i]->timer                = xbt_os_timer_new();
     if (MC_is_active())
@@ -464,8 +464,8 @@ void smpi_global_destroy(void)
       smpi_comm_destroy(process_data[i]->comm_intra);
     }
     xbt_os_timer_free(process_data[i]->timer);
-    simcall_rdv_destroy(process_data[i]->mailbox);
-    simcall_rdv_destroy(process_data[i]->mailbox_small);
+    simcall_mbox_destroy(process_data[i]->mailbox);
+    simcall_mbox_destroy(process_data[i]->mailbox_small);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
     xbt_free(process_data[i]);
   }
