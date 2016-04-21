@@ -14,7 +14,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 
 static xbt_dict_t mailboxes = NULL;
-XBT_EXPORT_NO_IMPORT(unsigned long int) smx_total_comms = 0;
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_synchro_t comm);
@@ -250,7 +249,6 @@ smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type)
   synchro->category = NULL;
 
   XBT_DEBUG("Create communicate synchro %p", synchro);
-  ++smx_total_comms;
 
   return synchro;
 }
@@ -361,7 +359,6 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
     XBT_DEBUG("Receive already pushed");
 
     SIMIX_comm_destroy(this_synchro);
-    --smx_total_comms; // this creation was a pure waste
 
     other_synchro->state = SIMIX_READY;
     other_synchro->comm.type = SIMIX_COMM_READY;
@@ -450,7 +447,6 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
       }
       other_synchro->comm.refcount--;
       SIMIX_comm_destroy(this_synchro);
-      --smx_total_comms; // this creation was a pure waste
     }
   } else {
     /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
@@ -467,7 +463,6 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
       SIMIX_mbox_push(mbox, this_synchro);
     } else {
       SIMIX_comm_destroy(this_synchro);
-      --smx_total_comms; // this creation was a pure waste
       other_synchro->state = SIMIX_READY;
       other_synchro->comm.type = SIMIX_COMM_READY;
       //other_synchro->comm.refcount--;
@@ -536,7 +531,6 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
   if(other_synchro)other_synchro->comm.refcount--;
 
   SIMIX_comm_destroy(this_synchro);
-  --smx_total_comms;
   return other_synchro;
 }
 

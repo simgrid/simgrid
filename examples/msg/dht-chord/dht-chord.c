@@ -34,8 +34,6 @@ static int periodic_lookup_delay = 10;
 
 static const double sleep_delay = 4.9999;
 
-extern long int smx_total_comms;
-
 /* Finger element. */
 typedef struct s_finger {
   int id;
@@ -1043,7 +1041,6 @@ int main(int argc, char *argv[])
   MSG_launch_application(application_file);
 
   msg_error_t res = MSG_main();
-  XBT_CRITICAL("Messages created: %ld", smx_total_comms);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   chord_exit();

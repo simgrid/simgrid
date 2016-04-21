@@ -149,9 +149,6 @@ void ModelChecker::setup_ignore()
 
   /* Static variable used for tracing */
   process.ignore_global_variable("counter");
-
-  /* SIMIX */
-  process.ignore_global_variable("smx_total_comms");
 }
 
 void ModelChecker::shutdown()

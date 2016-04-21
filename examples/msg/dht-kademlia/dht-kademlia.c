@@ -15,8 +15,6 @@
   */
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_kademlia, "Messages specific for this msg example");
 
-extern long unsigned int smx_total_comms;
-
 /* Main loop for the process */
 static void main_loop(node_t node, double deadline)
 {
@@ -441,7 +439,6 @@ int main(int argc, char *argv[])
 
   msg_error_t res = MSG_main();
 
-  XBT_CRITICAL("Messages created: %ld", smx_total_comms);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   return res != MSG_OK;
