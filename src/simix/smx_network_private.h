@@ -21,8 +21,7 @@ typedef struct s_smx_mailbox {
   xbt_fifo_t done_comm_fifo;//messages already received in the permanent receive mode
 } s_smx_mailbox_t;
 
-XBT_PRIVATE void SIMIX_network_init(void);
-XBT_PRIVATE void SIMIX_network_exit(void);
+XBT_PRIVATE void SIMIX_mailbox_exit(void);
 
 XBT_PRIVATE smx_mailbox_t SIMIX_mbox_create(const char *name);
 XBT_PRIVATE void SIMIX_mbox_destroy(smx_mailbox_t mbox);

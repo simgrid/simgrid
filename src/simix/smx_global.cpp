@@ -230,8 +230,6 @@ void SIMIX_global_init(int *argc, char **argv)
     __xbt_running_ctx_fetch = SIMIX_process_get_running_context;
     __xbt_ex_terminate = SIMIX_process_exception_terminate;
 
-    SIMIX_network_init();
-
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
 
@@ -298,7 +296,7 @@ void SIMIX_clean(void)
   SIMIX_process_killall(simix_global->maestro_process, 1);
 
   /* Exit the SIMIX network module */
-  SIMIX_network_exit();
+  SIMIX_mailbox_exit();
 
   xbt_heap_free(simix_timers);
   simix_timers = NULL;

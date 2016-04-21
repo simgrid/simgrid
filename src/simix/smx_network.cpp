@@ -10,10 +10,12 @@
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "xbt/dict.h"
+#include "simgrid/s4u/mailbox.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 
-static xbt_dict_t mailboxes = NULL;
+static void SIMIX_mbox_free(void *data);
+static xbt_dict_t mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_synchro_t comm);
@@ -25,15 +27,9 @@ static smx_synchro_t SIMIX_fifo_probe_comm(xbt_fifo_t fifo, e_smx_comm_type_t ty
 static smx_synchro_t SIMIX_fifo_get_comm(xbt_fifo_t fifo, e_smx_comm_type_t type,
                                         int (*match_fun)(void *, void *,smx_synchro_t),
                                         void *user_data, smx_synchro_t my_synchro);
-static void SIMIX_mbox_free(void *data);
 static void SIMIX_comm_start(smx_synchro_t synchro);
 
-void SIMIX_network_init(void)
-{
-  mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
-}
-
-void SIMIX_network_exit(void)
+void SIMIX_mailbox_exit(void)
 {
   xbt_dict_free(&mailboxes);
 }
