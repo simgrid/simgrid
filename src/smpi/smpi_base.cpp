@@ -693,9 +693,9 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
       }
     }
     smpi_comm_unuse(req->comm);
+    smpi_datatype_unuse(req->old_type);
   }
 
-    smpi_datatype_unuse(req->old_type);
   if (TRACE_smpi_view_internals()) {
     if(req->flags & RECV){
       int rank = smpi_process_index();
@@ -705,6 +705,8 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   }
 
   if(req->detached_sender!=NULL){
+    smpi_datatype_unuse(req->detached_sender->old_type);
+    smpi_comm_unuse(req->detached_sender->comm);
     smpi_mpi_request_free(&(req->detached_sender));
   }
   if(req->flags & PERSISTENT)
