@@ -80,11 +80,6 @@ void SIMIX_mbox_free(void *data)
   xbt_free(mbox);
 }
 
-xbt_dict_t SIMIX_get_mailboxes()
-{
-  return mailboxes;
-}
-
 smx_mailbox_t SIMIX_mbox_get_by_name(const char *name)
 {
   return (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name);
