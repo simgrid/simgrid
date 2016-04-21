@@ -24,7 +24,6 @@ typedef struct s_smx_mailbox {
 XBT_PRIVATE void SIMIX_mailbox_exit(void);
 
 XBT_PRIVATE smx_mailbox_t SIMIX_mbox_create(const char *name);
-XBT_PRIVATE void SIMIX_mbox_destroy(smx_mailbox_t mbox);
 XBT_PRIVATE smx_mailbox_t SIMIX_mbox_get_by_name(const char *name);
 XBT_PRIVATE void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t comm);
 XBT_PRIVATE int SIMIX_mbox_comm_count_by_host(smx_mailbox_t mbox, sg_host_t host);

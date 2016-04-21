@@ -445,13 +445,6 @@ static inline void simcall_mbox_create__set__result(smx_simcall_t simcall, void*
     simcall->result.dp = result;
 }
 
-static inline smx_mailbox_t simcall_mbox_destroy__get__mbox(smx_simcall_t simcall) {
-  return (smx_mailbox_t) simcall->args[0].dp;
-}
-static inline void simcall_mbox_destroy__set__mbox(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-
 static inline smx_mailbox_t simcall_mbox_comm_count_by_host__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[0].dp;
 }

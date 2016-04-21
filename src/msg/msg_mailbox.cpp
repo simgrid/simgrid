@@ -16,11 +16,6 @@ msg_mailbox_t MSG_mailbox_new(const char *alias)
   return simcall_mbox_create(alias);
 }
 
-void MSG_mailbox_free(void *mailbox)
-{
-  simcall_mbox_destroy((msg_mailbox_t)mailbox);
-}
-
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
   return (NULL == simcall_mbox_get_head(mailbox));

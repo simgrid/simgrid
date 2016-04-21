@@ -738,16 +738,6 @@ smx_mailbox_t simcall_mbox_create(const char *name)
   return simcall_BODY_mbox_create(name);
 }
 
-
-/**
- *  \ingroup simix_mbox_management
- *  \brief Destroy a rendez-vous point
- *  \param mbox The rendez-vous point to destroy
- */
-void simcall_mbox_destroy(smx_mailbox_t mbox)
-{
-  simcall_BODY_mbox_destroy(mbox);
-}
 /**
  *  \ingroup simix_mbox_management
  *  \brief Returns a rendez-vous point knowing its name

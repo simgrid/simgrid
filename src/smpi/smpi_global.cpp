@@ -460,8 +460,6 @@ void smpi_global_destroy(void)
       smpi_comm_destroy(process_data[i]->comm_intra);
     }
     xbt_os_timer_free(process_data[i]->timer);
-    simcall_mbox_destroy(process_data[i]->mailbox);
-    simcall_mbox_destroy(process_data[i]->mailbox_small);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
     xbt_free(process_data[i]);
   }

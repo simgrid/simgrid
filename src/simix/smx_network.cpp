@@ -40,28 +40,21 @@ void SIMIX_mailbox_exit(void)
 
 smx_mailbox_t SIMIX_mbox_create(const char *name)
 {
+  xbt_assert(name, "Mailboxes must have a name");
   /* two processes may have pushed the same mbox_create simcall at the same time */
-  smx_mailbox_t mbox = name ? (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name) : NULL;
+  smx_mailbox_t mbox = (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name);
 
   if (!mbox) {
     mbox = xbt_new0(s_smx_mailbox_t, 1);
-    mbox->name = name ? xbt_strdup(name) : NULL;
+    mbox->name = xbt_strdup(name);
     mbox->comm_fifo = xbt_fifo_new();
     mbox->done_comm_fifo = xbt_fifo_new();
     mbox->permanent_receiver=NULL;
 
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
-
-    if (mbox->name)
-      xbt_dict_set(mailboxes, mbox->name, mbox, NULL);
+    xbt_dict_set(mailboxes, mbox->name, mbox, NULL);
   }
   return mbox;
-}
-
-void SIMIX_mbox_destroy(smx_mailbox_t mbox)
-{
-  if (mbox->name)
-    xbt_dict_remove(mailboxes, mbox->name);
 }
 
 void SIMIX_mbox_free(void *data)
