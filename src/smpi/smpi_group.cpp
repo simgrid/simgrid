@@ -49,8 +49,8 @@ MPI_Group smpi_group_copy(MPI_Group origin)
   xbt_dict_cursor_t cursor = NULL;
   
   int i;
-  if(origin!= smpi_comm_group(MPI_COMM_WORLD) && origin != MPI_GROUP_NULL
-            && origin != smpi_comm_group(MPI_COMM_SELF) && origin != MPI_GROUP_EMPTY)
+  if(origin != MPI_GROUP_NULL
+            && origin != MPI_GROUP_EMPTY)
     {
       group = xbt_new(s_smpi_mpi_group_t, 1);
       group->size = origin->size;
@@ -62,7 +62,9 @@ MPI_Group smpi_group_copy(MPI_Group origin)
       }
 
       xbt_dict_foreach(origin->index_to_rank_map, cursor, key, ptr_rank) {
-        xbt_dict_set(group->index_to_rank_map, key, ptr_rank, NULL);
+        int * cp = (int*)xbt_malloc(sizeof(int));
+        *cp=*(int*)ptr_rank;
+        xbt_dict_set(group->index_to_rank_map, key, cp, NULL);
       }
     }
 
@@ -73,7 +75,6 @@ void smpi_group_destroy(MPI_Group group)
 {
   if(group!= smpi_comm_group(MPI_COMM_WORLD)
           && group != MPI_GROUP_NULL
-          && group != smpi_comm_group(MPI_COMM_SELF)
           && group != MPI_GROUP_EMPTY)
   smpi_group_unuse(group);
 }

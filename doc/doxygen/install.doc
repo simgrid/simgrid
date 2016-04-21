@@ -1,20 +1,17 @@
-/*!
-@page install Installing Simgrid
+/*! @page install Installing Simgrid
 
 @tableofcontents
 
-SimGrid should work out of the box on Linux, Mac OSX, FreeBSD and
-Windows (under windows, only the Java interfaces are available atm).
+SimGrid should work out of the box on Linux, Mac OSX, FreeBSD, and Windows (under windows, only the Java interfaces are
+available at the moment).
 
-The easiest way to install SimGrid is to go for a binary package.
-Under Debian or Ubuntu, this is very easy as SimGrid is directly
-integrated to the official repositories.  If you just want to use
-Java, simply copy the jar file on your disk and you're set.
+The easiest way to install SimGrid is to go for a @ref install_binary "binary package". Under Debian or Ubuntu, this is 
+very easy as SimGrid is directly integrated to the official repositories. 
+If you just want to use @ref install_binary_java "Java", simply copy the jar file on your disk and you're set.
 
-Recompiling an official archive is not much more complex, actually.
-SimGrid has very few dependencies and rely only on very standard
-tools.  First, download the *@SimGridRelease.tar.gz* archive
-from [the download page](https://gforge.inria.fr/frs/?group_id=12).
+Recompiling an official archive is not much more complex. SimGrid has very few dependencies and rely only on very 
+standard tools.  First, download the *@SimGridRelease.tar.gz* archive from the 
+[download page](https://gforge.inria.fr/frs/?group_id=12).
 Then, recompiling the archive should be done in a few lines:
 
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
@@ -25,61 +22,46 @@ make
 make install
 ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
-If you want to stay on the bleeding edge, you should get the latest
-git version, and recompile it as you would do for an official archive.
-Depending on the files you change in the source tree, some extra
-tools may be needed.
+If you want to stay on the bleeding edge, you should get the latest git version, and recompile it as you would do for 
+an official archive. Depending on the files you change in the source tree, some extra tools may be needed.
 
 @section install_binary Installing a binary package
 
 @subsection install_binary_linux Binary packages for linux
 
-Most of the developers use a Debian or Ubuntu system, and some of us
-happen to be Debian Maintainers, so the packages for these systems are
-well integrated with these systems and very up-to-date. To install them,
-simply type:
+Most of the developers use a Debian or Ubuntu system, and some of us happen to be Debian Maintainers, so the packages 
+for these systems are well integrated with these systems and very up-to-date. To install them, simply type:
 
 @verbatim
 apt-get install simgrid
 @endverbatim
 
-On other Linux variants, you probably want to go for a source install.
-Please contact us if you want to contribute the build scripts for your
-preferred distribution.
+For other Linux variants, you probably want to go for a @ref install_src "source install". Please contact us if you want
+to contribute the build scripts for your preferred distribution.
 
 @subsection install_binary_java Using the binary jar file
 
-The easiest way to install the Java bindings of SimGrid is to grab the
-jar file from the
-<a href="https://gforge.inria.fr/frs/?group_id=12">Download page</a>,
-and copy it in your classpath (typically, in the same directory than
-your source code). If you go for that version, there is no need to
-install the C library as it is bundled within the jar file. Actually,
-only a bunch of architectures are supported this way to keep the
-jar file size under control and because we don't have access to every
-exotic architectures ourselves.
+The easiest way to install the Java bindings of SimGrid is to grab the jar file from the 
+[download page](https://gforge.inria.fr/frs/?group_id=12) and copy it in your classpath (typically, in the same 
+directory as your source code). If you go for that version, there is no need to install the C library as it is already 
+bundled within the jar file. Actually, only a bunch of architectures are supported this way to keep the jar file size 
+under control and because we don't have access to every exotic architectures ourselves.
 
-If the jarfile fails on you, complaining that your architecture is not
-supported, drop us an email: we may extend the jarfile for you, if we
-have access to your architecture to build SimGrid on it.
+If the jarfile fails on you, complaining that your architecture is not supported, drop us an email on 
+<mailto:simgrid-devel@lists.gforge.inria.fr>. We may extend the jarfile for you, provided we have access to this 
+particular architecture to build SimGrid on it.
 
-If the error message is about the boost-context library, then you
-should install that library on your machine. This is a known issue in
-the 3.12 release that will be fixed in the next release.
+If the error message is about the boost-context library, then you should install that library on your machine. This is 
+a known issue in the 3.12 release that will be fixed in the next release.
 
 You can retrieve a nightly build of the jar file from our autobuilders. 
-For Windows, head to 
-<a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>.
-Click on the artefact link on the right, and grab your file. If the
-latest build failed, there will be no artefact so you will need to
-first click on "History" on the top to search for the last successful
-build.
-For non-Windows systems (Linux, Mac or FreeBSD), head to 
-<a href="https://ci.inria.fr/simgrid/job/SimGrid-Multi">Jenkins</a>.
-In the build history, pick the last green (or at least yellow) build
-that is not blinking (ie, that is done building). In the list, pick a
-system that is close to your system, and click on the ball in the
-Debug row. The build artefact appear on the top of the resulting page.
+For Windows, head to [AppVeyor](https://ci.appveyor.com/project/mquinson/simgrid).
+Click on the artefact link on the right, and grab your file. If the latest build failed, there will be no artefact. Then
+you will need to first click on "History" on the top and search for the last successful build.
+For non-Windows systems (Linux, Mac or FreeBSD), head to [Jenkins](https://ci.inria.fr/simgrid/job/SimGrid-Multi).
+In the build history, pick the last green (or at least yellow) build that is not blinking (i.e., not currently under 
+build). In the list, pick a system that is close to yours, and click on the ball in the Debug row. The build artefact 
+will appear on the top of the resulting page.
 
 @section install_src Installing from source
 
@@ -89,28 +71,23 @@ SimGrid only uses very standard tools:
   - C compiler, C++ compiler, make and friends.
   - perl (but you may try to go without it)
   - We use cmake to configure our compilation
-      (<a href="http://www.cmake.org/cmake/resources/software.html">download page</a>).
+      ([download page](http://www.cmake.org/cmake/resources/software.html)).
       You need cmake version 2.8.8 or higher. You may want to use ccmake
       for a graphical interface over cmake.
   - LibBoost:
-    - osX: with <a href="http://www.finkproject.org/">fink</a>: `fink install boost1.53.nopython`,
+    - osX: with [fink](http://www.finkproject.org/): `fink install boost1.53.nopython`,
       or with homebrew: `brew install boost`
-    - debian: `apt-get install libboost-dev libboost-context-dev`
+    - debian/ubuntu: `apt-get install libboost-dev libboost-context-dev`
   - Java (only needed if you want to use the Java bindings): Grab a
-    full JDK from http://www.oracle.com/technetwork/java/javase/downloads
+    [full JDK](http://www.oracle.com/technetwork/java/javase/downloads)
 
-For platform specific details, please see  @ref install_cmake_mac and
-@ref install_cmake_windows.
+For platform specific details, please see  @ref install_cmake_mac and @ref install_cmake_windows.
 
-@subsection install_src_fetch Retrieving the source
+@subsection install_src_fetch Getting the sources
 
-If you just want to use SimGrid, you should probably grab the latest
-stable version available from the
-<a href="https://gforge.inria.fr/frs/?group_id=12">download page</a>.
-We do our best to release soon and release often, but sometimes you
-need to install the developer version of SimGrid, directly from the
-git repository. Avoid the git version if you are not sure, as it may
-break on you, or even worse.
+If you just want to use SimGrid, you should probably grab the latest stable version available from the 
+[download page](https://gforge.inria.fr/frs/?group_id=12). We do our best to release soon and release often, but 
+sometimes you need to install the developer version of SimGrid, directly from the git repository.
 
 @verbatim
 git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid
@@ -118,35 +95,31 @@ git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid
 
 @subsection install_src_config Configuring the build
 
-Note that compile-time options are very different from @ref options
-"run-time options".
+Note that compile-time options are very different from @ref options "run-time options".
 
 \subsubsection install_cmake_howto Setting compilation options
 
-The default configuration should be ok for most usages, but if you
-need to change something, there is several ways to do so. First, you
-can use environment variables. For example, you can change the used
-compilers by issuing these commands before launching cmake:
+The default configuration should be fine for most usages, but if you need to change something, there are several ways 
+to do so. First, you can use environment variables. For example, you can change the compilers used by issuing these 
+commands before launching cmake:
 
 @verbatim
 export CC=gcc-4.7
 export CXX=g++-4.7
 @endverbatim
 
-Note that other variables are available, such as CFLAGS and CXXFLAGS to add
-options for respectively the C compiler and the C++ compiler.
+Note that other variables are available, such as CFLAGS and CXXFLAGS to add options respectively for the C and C++ 
+compilers.
 
-Another way to do so is to use the -D argument of cmake as follows.
-Note that the terminating dot is mandatory (see @ref
+Another way to do so is to use the -D argument of cmake as follows. Note that the terminating dot is mandatory (see @ref
 install_cmake_outsrc to understand its meaning).
 
 @verbatim
 cmake -DCC=clang -DCXX=clang++ .
 @endverbatim
 
-Finally, you can use a graphical interface such as ccmake to change
-these settings. Simply follow the instructions after starting the
-interface.
+Finally, you can use a graphical interface such as ccmake to change these settings. Simply follow the instructions after
+starting the interface.
 
 @verbatim
 ccmake .
@@ -154,85 +127,65 @@ ccmake .
 
 \subsubsection install_cmake_list SimGrid compilation options
 
-In addition to the classical cmake configuration variables, SimGrid
-accepts several options, as listed below.
+In addition to the classical cmake configuration variables, SimGrid accepts several options, as listed below.
 
-  @li <b>CMAKE_INSTALL_PREFIX</b> (path): Where to install SimGrid
-      (/opt/simgrid or /usr/local or elsewhere).
+  @li <b>CMAKE_INSTALL_PREFIX</b> (path): Where to install SimGrid (/opt/simgrid, /usr/local, or elsewhere).
 
   @li <b>enable_compile_optimizations</b> (ON/OFF): request the
       compiler to produce efficient code. You want to activate it,
       unless you want to debug SimGrid itself (as efficient code may
       be appear mangled to the debuggers).
 
-  @li <b>enable_debug</b> (ON/OFF): disable this if simulation speed
-      really matters to you. All log messages of gravity debug or
-      below will be discarded at compilation time. Since there is
-      quite a bunch of such log messages in SimGrid itself, this can
-      reveal faster than discarding them at runtime as usually. But of
-      course, it is then impossible to get any debug message from
-      SimGrid if something goes wrong.
+  @li <b>enable_compile_warnings</b> (ON/OFF): request the compiler to issue error messages whenever the source code is
+      not perfectly clean. If you are a SimGrid developer, you have to activate this option to enforce the code quality.
+      As a regular user, this option is likely to bring you issues only.
 
-  @li <b>enable_model-checking</b> (ON/OFF): Only enable this if you
-      actually plan to use the model-checking aspect of SimGrid. This
-      mode of execution is still under heavy work, but it should be
-      rather usable now. Be <b>warned</b> that this option will hinder
-      your simulation speed even if you simulate without activating
-      the model-checker. We are working on improving this situation.
+  @li <b>enable_debug</b> (ON/OFF): disable this if simulation speed really matters to you. All log messages of 
+      gravity debug or below will be discarded at compilation time. As there is quite a bunch of such log messages in 
+      SimGrid internals, this can reveal faster than discarding them at runtime as usual. However, it thus obviously 
+      becomes impossible to get any debug message from SimGrid if something goes wrong.
 
-  @li <b>enable_compile_warnings</b> (ON/OFF): request the compiler to
-      issue error message whenever the source code is not perfectly
-      clean. If you develop SimGrid itself, you must activate it to
-      ensure the code quality, but as a user, that option will only
-      bring you issues.
+  @li <b>enable_documentation</b> (ON/OFF) : whether the documentation should be generated during the compilation.
 
-  @li <b>enable_maintainer_mode</b> (ON/OFF): you only need to set
-      this option if you modify very specific parts of SimGrid itself
-      (the XML parsers and other related elements). Adds an extra
-      dependency on flex and flexml.
+  @li <b>enable_jedule</b> (ON/OFF): enable this to get SimDag producing execution traces that can then be visualized 
+      with the Jedule external tool.
 
-  @li <b>enable_smpi</b> (ON/OFF): disable this if you have issues
-      with the module allowing to run MPI code on top of SimGrid. This
-      module very stable, but if you really don't need it, you can
-      disable it.
+  @li <b>enable_lua</b> (ON/OFF): enable this if you want to enjoy the lua bindings of SimGrid. Adds an extra dependency
+      on the lua library and developer header files.
 
-  @li <b>enable_mallocators</b> (ON/OFF): disable this when tracking
-      memory issues within SimGrid, or the caching mechanism used
-      internally will fool the debuggers.
+  @li <b>enable_maintainer_mode</b> (ON/OFF): you only need to set this option if you modify very specific parts of
+      SimGrid itself (e.g., the XML parsers and other related elements). Moreover, this adds an extra dependency on 
+      flex and flexml.
 
-  @li <b>enable_jedule</b> (ON/OFF): enable this to get SimDag
-      producing traces that can then be visualized with the Jedule
-      external tool.
+  @li <b>enable_mallocators</b> (ON/OFF): disable this when tracking memory issues within SimGrid, or the caching 
+      mechanism used internally will fool the debuggers.
 
-  @li <b>enable_lua</b> (ON/OFF): enable this if you want to enjoy the
-      lua bindings of SimGrid. Adds an extra dependency on lua library
-      and developer header files.
+  @li <b>enable_model-checking</b> (ON/OFF): Only enable this if you actually plan to use the model-checking feature of 
+      SimGrid. This execution mode is still under heavy work, but should be rather usable now. Be <b>warned</b> that 
+      this option will hinder simulation speed even if you simulate without activating the model-checker. We are 
+      working on improving this situation.
 
+  @li <b>enable_ns3</b> (ON/OFF): whether you want to use ns-3. See section @ref pls_simgrid_configuration_ns3.
 
-  @li <b>enable_ns3</b> (ON/OFF): whether you want to use ns3.
-      See section @ref pls_simgrid_configuration_ns3.
-  @li <b>NS3_HINT</b> (path): Where to search for NS3 (eg /usr or /opt).
-  @li <b>enable_documentation</b> (ON/OFF) : whether the documentation should be
-       generated during the compilation. Default is ON.
+  @li <b>enable_smpi</b> (ON/OFF): disable this if you have issues with the module allowing to run MPI code on top of 
+      SimGrid. This module is very stable, but if you don't really need it, you can disable it safely.
 
 \subsubsection install_cmake_reset Resetting the compilation configuration
 
-If you need to empty the cache of values saved by cmake (either
-because you added a new library or because something seriously went
-wrong), you can simply delete the file CMakeCache.txt that is created
-at the root of the source tree. You may also want to edit this file
-directly in some circumstances.
+If you need to empty the cache of values saved by cmake (either because you added a new library or because something 
+seriously went wrong), you can simply delete the file CMakeCache.txt that is created at the root of the source tree. 
+You may also want to directly edit this file in some circumstances.
 
 \subsubsection install_cmake_outsrc Compiling into a separate directory
 
 By default, the files produced during the compilation are placed in
-the source directory. As the compilation generates a lot of files, it
-is advised to to put them all in a separate directory. It is then
+the source directory. As compilation generates a lot of files, it
+is advised to put them all in a separate directory. It is then
 easier to cleanup, and this allows to compile several configurations
 out of the same source tree. For that, simply enter the directory
 where you want the produced files to land, and invoke cmake (or
 ccmake) with the full path to the SimGrid source as last argument.
-This approach is called "compilation out of source tree".
+This approach is called "out-of-source-tree compilation".
 
 @verbatim
 mkdir build
@@ -298,7 +251,7 @@ In addition, several compilation targets are provided in SimGrid. If
 your system is well configured, the full list of targets is available
 for completion when using the Tab key. Note that some of the existing
 targets are not really for public consumption so don't worry if some
-stuff don't work for you.
+stuff doesn't work for you.
 
 @verbatim
 make simgrid			Build only the SimGrid library and not any example
@@ -308,7 +261,7 @@ make install 			Install the project (doc/ bin/ lib/ include/)
 make uninstall			Uninstall the project (doc/ bin/ lib/ include/)
 make dist			Build a distribution archive (tgz)
 make distcheck			Check the dist (make + make dist + tests on the distribution)
-make doc			Create SimGrid documentation
+make documentation		Create SimGrid documentation
 @endverbatim
 
 If you want to see what is really happening, try adding VERBOSE=1 to
@@ -427,6 +380,28 @@ computer.
 
 @verbatim
 export LD_LIBRARY_PATH=/opt/simgrid/lib
+@endverbatim
+
+@subsection install_src_32 Compiling a 32 bit version
+
+On a multiarch x86_64 Linux, it should be possible to compile a 32 bit
+version of SimGrid with something like:
+
+@verbatim
+CFLAGS=-m32 \
+CXXFLAGS=-m32 \
+PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig/ \
+cmake . \
+-DCMAKE_SYSTEM_PROCESSOR=i386 \
+-DCMAKE_Fortran_COMPILE=/some/path/to/i686-linux-gnu-gfortran \
+-DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran
+@endverbatim
+
+where i686-linux-gnu-gfortran can be implemented as:
+
+@verbatim
+#!/bin/sh
+exec gfortran -m32 "$@"
 @endverbatim
 
 */
