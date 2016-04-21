@@ -163,9 +163,6 @@ foreach $_ (@ARGV) {
     elsif (/--?batchdir=(.*)/) { $batrundir = $1; }
     elsif (/--?timeoutarg=(.*)/) { $timeoutArgPattern = $1; }
     elsif (/--?execarg=(.*)/) { $execarg = "$execarg $1"; }
-    elsif (/--?setenv/) {  }
-    elsif (/--?enable-coverage/) {  }
-    elsif (/--?timeout/) {  }
     elsif (/VALGRIND_COMMAND=(.*)/) { 
         $valgrind = $1; }
     elsif (/VALGRIND_OPTIONS=(.*)/) {
@@ -214,14 +211,6 @@ foreach $_ (@ARGV) {
         print TAPOUT "# date ${date}\n";
         # we do not know at this point how many tests will be run, so do
         # not print a test plan line like "1..450" until the very end
-    }
-    else {
-	print STDERR "Unrecognized argument $_\n";
-	print STDERR "runtests [-tests=testfile] [-np=nprocesses] \
-        [-maxnp=max-nprocesses] [-srcdir=location-of-tests] \
-        [-xmlfile=filename ] [-noxmlclose] \
-        [-verbose] [-showprogress] [-debug] [-batch]\n";
-	exit(1);
     }
 }
 
