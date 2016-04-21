@@ -12,6 +12,12 @@ SimGrid (3.13) UNRELEASED; urgency=low
      Lua can still be used to describe platforms
    - Removed Java kernel plug-ins.
      Will be reintroduced after the ongoing major internals reorg.
+   - In MSG
+      - the following functions were removed.
+        They were too specific and should be reimplemented in a generic
+        way, with filter function.
+	- MSG_task_listen_from_host
+	- MSG_mailbox_get_count_host_waiting_tasks
    - In SimDag 
       - the SD_application_reinit function was removed. It was a noop for a while. 
       - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 

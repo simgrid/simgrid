@@ -73,20 +73,6 @@ smx_mailbox_t SIMIX_mbox_get_by_name(const char *name)
   return (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name);
 }
 
-int SIMIX_mbox_comm_count_by_host(smx_mailbox_t mbox, sg_host_t host)
-{
-  smx_synchro_t comm = NULL;
-  xbt_fifo_item_t item = NULL;
-  int count = 0;
-
-  xbt_fifo_foreach(mbox->comm_fifo, item, comm, smx_synchro_t) {
-    if (comm->comm.src_proc->host == host)
-      count++;
-  }
-
-  return count;
-}
-
 smx_synchro_t SIMIX_mbox_get_head(smx_mailbox_t mbox)
 {
   return (smx_synchro_t) xbt_fifo_get_item_content(

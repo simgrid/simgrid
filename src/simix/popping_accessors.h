@@ -445,25 +445,6 @@ static inline void simcall_mbox_create__set__result(smx_simcall_t simcall, void*
     simcall->result.dp = result;
 }
 
-static inline smx_mailbox_t simcall_mbox_comm_count_by_host__get__mbox(smx_simcall_t simcall) {
-  return (smx_mailbox_t) simcall->args[0].dp;
-}
-static inline void simcall_mbox_comm_count_by_host__set__mbox(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline sg_host_t simcall_mbox_comm_count_by_host__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[1].dp;
-}
-static inline void simcall_mbox_comm_count_by_host__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[1].dp = arg;
-}
-static inline unsigned int simcall_mbox_comm_count_by_host__get__result(smx_simcall_t simcall){
-    return  simcall->result.ui;
-}
-static inline void simcall_mbox_comm_count_by_host__set__result(smx_simcall_t simcall, unsigned int result){
-    simcall->result.ui = result;
-}
-
 static inline smx_mailbox_t simcall_mbox_get_head__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[0].dp;
 }

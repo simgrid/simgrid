@@ -753,19 +753,6 @@ smx_mailbox_t simcall_mbox_get_by_name(const char *name)
 
 /**
  *  \ingroup simix_mbox_management
- *  \brief Counts the number of communication synchros of a given host pending
- *         on a rendez-vous point.
- *  \param mbox The rendez-vous point
- *  \param host The host to be counted
- *  \return The number of comm synchros pending in the mbox
- */
-int simcall_mbox_comm_count_by_host(smx_mailbox_t mbox, sg_host_t host)
-{
-  return simcall_BODY_mbox_comm_count_by_host(mbox, host);
-}
-
-/**
- *  \ingroup simix_mbox_management
  *  \brief returns the communication at the head of the rendez-vous
  *  \param mbox The rendez-vous point
  *  \return The communication or NULL if empty

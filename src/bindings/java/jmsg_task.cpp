@@ -652,24 +652,6 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Task_listen(JNIEnv * env, jclass
   return (jboolean) rv;
 }
 
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFromHost(JNIEnv * env, jclass cls, jstring jalias, jobject jhost)
-{
-  int rv;
-  const char *alias;
-
-  msg_host_t host = jhost_get_native(env, jhost);
-
-  if (!host) {
-    jxbt_throw_notbound(env, "host", jhost);
-    return -1;
-  }
-  alias = env->GetStringUTFChars(jalias, 0);
-  rv = MSG_task_listen_from_host(alias, host);
-  env->ReleaseStringUTFChars(jalias, alias);
-
-  return (jint) rv;
-}
-
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv * env, jclass cls, jstring jalias)
 {
   int rv;

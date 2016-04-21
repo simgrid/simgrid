@@ -31,11 +31,6 @@ msg_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
   return (msg_task_t) simcall_comm_get_src_data(comm);
 }
 
-int MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, msg_host_t host)
-{
-  return simcall_mbox_comm_count_by_host(mailbox, host);
-}
-
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 {
   msg_mailbox_t mailbox = simcall_mbox_get_by_name(alias);

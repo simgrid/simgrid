@@ -830,20 +830,6 @@ int MSG_task_listen(const char *alias)
 }
 
 /** \ingroup msg_task_usage
- * \brief Check the number of communication actions of a given host pending in a mailbox.
- *
- * \param alias the name of the mailbox to be considered
- * \param host the host to check for communication
- *
- * \return Returns the number of pending communication actions of the host in the given mailbox, 0 if there is no
- *         pending communication actions.
- */
-int MSG_task_listen_from_host(const char *alias, msg_host_t host)
-{
-  return MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias(alias), host);
-}
-
-/** \ingroup msg_task_usage
  * \brief Look if there is a communication on a mailbox and return the PID of the sender process.
  *
  * \param alias the name of the mailbox to be considered

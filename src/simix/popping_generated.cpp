@@ -52,7 +52,6 @@ const char* simcall_names[] = {
   "SIMCALL_PROCESS_AUTO_RESTART_SET",
   "SIMCALL_PROCESS_RESTART",
   "SIMCALL_MBOX_CREATE",
-  "SIMCALL_MBOX_COMM_COUNT_BY_HOST",
   "SIMCALL_MBOX_GET_HEAD",
   "SIMCALL_MBOX_SET_RECEIVER",
   "SIMCALL_MBOX_GET_RECEIVER",
@@ -255,11 +254,6 @@ case SIMCALL_PROCESS_RESTART:
 
 case SIMCALL_MBOX_CREATE:
       simcall->result.dp = SIMIX_mbox_create( simcall->args[0].cc);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_MBOX_COMM_COUNT_BY_HOST:
-      simcall->result.ui = SIMIX_mbox_comm_count_by_host((smx_mailbox_t) simcall->args[0].dp,(sg_host_t) simcall->args[1].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 
