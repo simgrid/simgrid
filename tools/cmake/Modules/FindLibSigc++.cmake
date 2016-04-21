@@ -12,7 +12,7 @@ find_path(PATH_LIBSIGC++_H "sigc++/sigc++.h"
 find_path(PATH_LIBSIGC++CONFIG_H "sigc++config.h"
   HINTS
   $ENV{LD_LIBRARY_PATH}
-  PATH_SUFFIXES lib/x86_64-linux-gnu/sigc++-2.0/include/ include/
+  PATH_SUFFIXES lib/${CMAKE_LIBRARY_ARCHITECTURE}/sigc++-2.0/include/ include/
   PATHS
   /opt
   /opt/local
@@ -24,7 +24,7 @@ find_library(PATH_LIBSIGC++_LIB
   NAMES sigc-2.0
   HINTS
   $ENV{LD_LIBRARY_PATH}
-  PATH_SUFFIXES lib/x86_64-linux-gnu/ lib/sigc++/ lib/
+  PATH_SUFFIXES lib/${CMAKE_LIBRARY_ARCHITECTURE}/ lib/sigc++/ lib/
   PATHS
   /opt
   /opt/local
