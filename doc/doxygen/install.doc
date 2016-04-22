@@ -393,8 +393,9 @@ CXXFLAGS=-m32 \
 PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig/ \
 cmake . \
 -DCMAKE_SYSTEM_PROCESSOR=i386 \
--DCMAKE_Fortran_COMPILE=/some/path/to/i686-linux-gnu-gfortran \
--DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran
+-DCMAKE_Fortran_COMPILER=/some/path/to/i686-linux-gnu-gfortran \
+-DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran \
+-DCMAKE_Fortran_FLAGS=-m32
 @endverbatim
 
 where i686-linux-gnu-gfortran can be implemented as:
