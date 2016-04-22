@@ -13,15 +13,10 @@
 #include "xbt/synchro_core.h"
 
 #include "simgrid/simix.h"        /* used implementation */
-#include "../simix/smx_private.h" /* FIXME */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt, "Synchronization mechanism");
 
 /****** mutex related functions ******/
-struct s_xbt_mutex_ {
-  s_smx_mutex_t mutex;
-};
-
 xbt_mutex_t xbt_mutex_init(void)
 {
   return (xbt_mutex_t) simcall_mutex_init();
@@ -48,10 +43,6 @@ void xbt_mutex_destroy(xbt_mutex_t mutex)
 }
 
 /***** condition related functions *****/
-struct s_xbt_cond_ {
-  s_smx_cond_t cond;
-};
-
 xbt_cond_t xbt_cond_init(void)
 {
   return (xbt_cond_t) simcall_cond_init();
