@@ -438,7 +438,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
     other_synchro = SIMIX_deque_get_filtered(mbox->comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro);
 
     if (!other_synchro) {
-      XBT_DEBUG("Receive pushed first %lu", mbox->comm_queue->size());
+      XBT_DEBUG("Receive pushed first %zu", mbox->comm_queue->size());
       other_synchro = this_synchro;
       SIMIX_mbox_push(mbox, this_synchro);
     } else {
