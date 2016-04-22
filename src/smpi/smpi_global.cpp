@@ -445,7 +445,6 @@ void smpi_global_init(void)
       boost::trim(location);
       location2speedup.insert(std::pair<std::string, double>(location, std::stod(*end)));
     }
-
   }
 
   if (process_count == 0){

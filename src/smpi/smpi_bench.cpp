@@ -740,13 +740,11 @@ void smpi_destroy_global_memory_segments(){
 
 extern "C" {
 
-  smpi_trace_call_location_t trace_call_location;
-
   smpi_trace_call_location_t* smpi_trace_get_call_location() {
     return smpi_process_get_call_location();
   }
 
-  void smpi_trace_set_call_location(const char* file, int line) {
+  void smpi_trace_set_call_location(const char* file, const int line) {
     smpi_trace_call_location_t* loc = smpi_process_get_call_location();
 
     loc->previous_filename   = loc->filename;
