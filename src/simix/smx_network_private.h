@@ -7,6 +7,7 @@
 #ifndef _SIMIX_NETWORK_PRIVATE_H
 #define _SIMIX_NETWORK_PRIVATE_H
 
+#include <deque>
 #include <xbt/base.h>
 
 #include "simgrid/simix.h"
@@ -15,10 +16,10 @@
 /** @brief Rendez-vous point datatype */
 typedef struct s_smx_mailbox {
   char *name;
-  xbt_fifo_t comm_fifo;
+  std::deque<smx_synchro_t> *comm_queue;
   void *data;
   smx_process_t permanent_receiver; //process which the mailbox is attached to
-  xbt_fifo_t done_comm_fifo;//messages already received in the permanent receive mode
+  std::deque<smx_synchro_t> *done_comm_queue;//messages already received in the permanent receive mode
 } s_smx_mailbox_t;
 
 XBT_PRIVATE void SIMIX_mailbox_exit(void);
