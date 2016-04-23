@@ -21,8 +21,7 @@ static void SIMIX_comm_copy_data(smx_synchro_t comm);
 static smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type);
 static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t comm);
 static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx_comm_type_t type,
-                                        int (*match_fun)(void *, void *,smx_synchro_t),
-                                        void *user_data, smx_synchro_t my_synchro,int extract);
+    int (*match_fun)(void *, void *,smx_synchro_t), void *user_data, smx_synchro_t my_synchro, bool remove_matching);
 static void SIMIX_comm_start(smx_synchro_t synchro);
 
 void SIMIX_mailbox_exit(void)
@@ -129,7 +128,7 @@ void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t comm)
  *  \return The communication synchro if found, NULL otherwise
  */
 static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx_comm_type_t type,
-    int (*match_fun)(void *, void *,smx_synchro_t), void *this_user_data, smx_synchro_t my_synchro, int extract)
+    int (*match_fun)(void *, void *,smx_synchro_t), void *this_user_data, smx_synchro_t my_synchro, bool remove_matching)
 {
   void* other_user_data = NULL;
 
@@ -144,7 +143,8 @@ static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx
         (!match_fun               ||               match_fun(this_user_data,  other_user_data, synchro)) &&
         (!synchro->comm.match_fun || synchro->comm.match_fun(other_user_data, this_user_data,  my_synchro))) {
       XBT_DEBUG("Found a matching communication synchro %p", synchro);
-      if(extract!=0) deque->erase(it);
+      if (remove_matching)
+        deque->erase(it);
       synchro->comm.refcount++;
 #if HAVE_MC
       synchro->comm.mbox_cpy = synchro->comm.mbox;
@@ -277,7 +277,8 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
    *
    * If it is not found then push our communication into the rendez-vous point */
-  smx_synchro_t other_synchro = _find_matching_comm(mbox->comm_queue, SIMIX_COMM_RECEIVE, match_fun, data, this_synchro,1);
+  smx_synchro_t other_synchro =
+      _find_matching_comm(mbox->comm_queue, SIMIX_COMM_RECEIVE, match_fun, data, this_synchro, /*remove_matching*/true);
 
   if (!other_synchro) {
     other_synchro = this_synchro;
@@ -371,7 +372,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the already received fifo
-    other_synchro = _find_matching_comm(mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,1);
+    other_synchro = _find_matching_comm(mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,/*remove_matching*/true);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (!other_synchro)  {
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
@@ -394,7 +395,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_synchro = _find_matching_comm(mbox->comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,1);
+    other_synchro = _find_matching_comm(mbox->comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,/*remove_matching*/true);
 
     if (!other_synchro) {
       XBT_DEBUG("Receive pushed first %zu", mbox->comm_queue->size());
@@ -453,11 +454,13 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
   smx_synchro_t other_synchro=NULL;
   if(mbox->permanent_receiver && ! mbox->done_comm_queue->empty()){
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
-    other_synchro = _find_matching_comm(mbox->done_comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_synchro,0);
+    other_synchro =
+        _find_matching_comm(mbox->done_comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_synchro,/*remove_matching*/false);
   }
   if (!other_synchro){
     XBT_DEBUG("check if we have more luck in the normal mailbox");
-    other_synchro = _find_matching_comm(mbox->comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_synchro,0);
+    other_synchro =
+        _find_matching_comm(mbox->comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_synchro,/*remove_matching*/false);
   }
   if(other_synchro)
     other_synchro->comm.refcount--;
