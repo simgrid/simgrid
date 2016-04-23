@@ -3,8 +3,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef __cplusplus
-
 #ifndef SIMGRID_S4U_MAILBOX_HPP
 #define SIMGRID_S4U_MAILBOX_HPP
 
@@ -36,18 +34,21 @@ protected:
   smx_mailbox_t getInferior() { return inferior_; }
 
 public:
+  /** Get the name of that mailbox */
+  const char *getName();
   /** Retrieve the mailbox associated to the given string */
   static Mailbox *byName(const char *name);
   /** Returns whether the mailbox contains queued communications */
   bool empty();
 
 private:
+  std::string name_;
   smx_mailbox_t inferior_;
   static boost::unordered_map<std::string, Mailbox *> *mailboxes;
 };
 }} // namespace simgrid::s4u
 
-#endif
+#endif /* C++ */
 
 XBT_PUBLIC(sg_mbox_t) sg_mbox_by_name(const char*name);
 XBT_PUBLIC(int) sg_mbox_is_empty(sg_mbox_t mbox);
