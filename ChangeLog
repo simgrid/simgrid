@@ -18,6 +18,8 @@ SimGrid (3.13) UNRELEASED; urgency=low
         way, with filter function.
 	- MSG_task_listen_from_host
 	- MSG_mailbox_get_count_host_waiting_tasks
+      - MSG_mailbox_put_with_timeout was removed. 
+        Please use MSG_task_send_with_timeout instead.
    - In SimDag 
       - the SD_application_reinit function was removed. It was a noop for a while. 
       - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 

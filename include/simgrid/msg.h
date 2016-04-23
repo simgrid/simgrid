@@ -490,8 +490,6 @@ XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task
                                                  double timeout);
 XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *task, msg_host_t host,
                                                          double timeout, double rate);
-XBT_PUBLIC(msg_error_t) MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task, double timeout);
-
 
 /************************** Action handling **********************************/
 XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);
