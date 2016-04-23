@@ -38,6 +38,8 @@ protected:
 public:
   /** Retrieve the mailbox associated to the given string */
   static Mailbox *byName(const char *name);
+  /** Returns whether the mailbox contains queued communications */
+  bool empty();
 
 private:
   smx_mailbox_t inferior_;
@@ -46,5 +48,8 @@ private:
 }} // namespace simgrid::s4u
 
 #endif
+
+XBT_PUBLIC(sg_mbox_t) sg_mbox_by_name(const char*name);
+XBT_PUBLIC(int) sg_mbox_is_empty(sg_mbox_t mbox);
 
 #endif /* SIMGRID_S4U_MAILBOX_HPP */

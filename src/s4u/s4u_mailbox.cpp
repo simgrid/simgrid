@@ -36,3 +36,14 @@ s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
   }
   return res;
 }
+
+bool s4u::Mailbox::empty() {
+  return nullptr == simcall_mbox_get_head(inferior_);
+}
+
+sg_mbox_t sg_mbox_by_name(const char*name){
+  return s4u::Mailbox::byName(name);
+}
+int sg_mbox_is_empty(sg_mbox_t mbox) {
+  return mbox->empty();
+}

@@ -13,6 +13,7 @@ namespace simgrid {
   namespace s4u {
     class As;
     class Host;
+    class Mailbox;
   }
   namespace surf {
     class Resource;
@@ -26,8 +27,9 @@ namespace simgrid {
   }
 }
 
-typedef simgrid::s4u::Host simgrid_Host;
 typedef simgrid::s4u::As simgrid_As;
+typedef simgrid::s4u::Host simgrid_Host;
+typedef simgrid::s4u::Mailbox simgrid_Mailbox;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::surf::NetCard surf_NetCard;
 typedef simgrid::surf::Link Link;
@@ -36,8 +38,9 @@ typedef simgrid::trace_mgr::trace tmgr_Trace;
 
 #else
 
-typedef struct simgrid_Host simgrid_Host;
 typedef struct simgrid_As   simgrid_As;
+typedef struct simgrid_Host simgrid_Host;
+typedef struct simgrid_Mailbox simgrid_Mailbox;
 typedef struct surf_Cpu surf_Cpu;
 typedef struct surf_NetCard surf_NetCard;
 typedef struct surf_Resource surf_Resource;
@@ -45,8 +48,9 @@ typedef struct Link Link;
 typedef struct Trace tmgr_Trace;
 #endif
 
-typedef simgrid_Host* sg_host_t;
 typedef simgrid_As *AS_t;
+typedef simgrid_Host* sg_host_t;
+typedef simgrid_Mailbox* sg_mbox_t;
 
 typedef surf_Cpu *surf_cpu_t;
 typedef surf_NetCard *sg_netcard_t;
