@@ -603,9 +603,11 @@ void simcall_process_set_data(smx_process_t process, void *data)
   simgrid::simix::kernel(std::bind(SIMIX_process_set_data, process, data));
 }
 
-static void kill_process(void* arg)
+static void kill_process_from_timer(void* arg)
 {
-  simix_global->kill_process_function((smx_process_t) arg);
+  smx_process_t process = (smx_process_t) arg;
+  simix_global->kill_process_function(process);
+  process->kill_timer=NULL;
 }
 
 /**
@@ -619,7 +621,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
     if (simix_global->kill_process_function) {
       XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
           sg_host_get_name(process->host));
-      process->kill_timer = SIMIX_timer_set(kill_time, kill_process, process);
+      process->kill_timer = SIMIX_timer_set(kill_time, kill_process_from_timer, process);
     }
   }
 }
