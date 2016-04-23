@@ -15,7 +15,6 @@
 
 /** @brief Rendez-vous point datatype */
 typedef struct s_smx_mailbox {
-  char *name;
   std::deque<smx_synchro_t> *comm_queue;
   void *data;
   smx_process_t permanent_receiver; //process which the mailbox is attached to

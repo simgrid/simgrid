@@ -41,13 +41,12 @@ smx_mailbox_t SIMIX_mbox_create(const char *name)
 
   if (!mbox) {
     mbox = xbt_new0(s_smx_mailbox_t, 1);
-    mbox->name = xbt_strdup(name);
     mbox->comm_queue = new std::deque<smx_synchro_t>();
     mbox->done_comm_queue = nullptr; // Allocated on need only
     mbox->permanent_receiver=NULL;
 
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
-    xbt_dict_set(mailboxes, mbox->name, mbox, NULL);
+    xbt_dict_set(mailboxes, name, mbox, NULL);
   }
   return mbox;
 }
@@ -56,7 +55,6 @@ void SIMIX_mbox_free(void *data)
 {
   XBT_DEBUG("mbox free %p", data);
   smx_mailbox_t mbox = (smx_mailbox_t) data;
-  xbt_free(mbox->name);
   delete mbox->comm_queue;
   delete mbox->done_comm_queue;
 
