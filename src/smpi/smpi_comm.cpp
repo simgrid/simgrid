@@ -288,6 +288,9 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
           reqs++;
         }
       }
+      if(i != 0) {
+        smpi_group_destroy(group_out);
+      }
       smpi_mpi_startall(reqs, requests);
       smpi_mpi_waitall(reqs, requests, MPI_STATUS_IGNORE);
       xbt_free(requests);
