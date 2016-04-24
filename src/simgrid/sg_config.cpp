@@ -504,7 +504,7 @@ void sg_config_init(int *argc, char **argv)
         "Specify the amount of steps between checkpoints during stateful model-checking (default: 0 => stateless verification). "
         "If value=1, one checkpoint is saved for each step => faster verification, but huge memory consumption; higher values are good compromises between speed and memory consumption.");
 
-    xbt_cfg_register_boolean("model-check/sparse_checkpoint", "no", _mc_cfg_cb_sparse_checkpoint, "Use sparse per-page snapshots.");
+    xbt_cfg_register_boolean("model-check/sparse-checkpoint", "no", _mc_cfg_cb_sparse_checkpoint, "Use sparse per-page snapshots.");
     xbt_cfg_register_boolean("model-check/ksm", "no", _mc_cfg_cb_ksm, "Kernel same-page merging");
 
     xbt_cfg_register_string("model-check/property","", _mc_cfg_cb_property,
