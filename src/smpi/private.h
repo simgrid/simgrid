@@ -262,6 +262,8 @@ XBT_PRIVATE MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key);
 XBT_PRIVATE int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm);
 XBT_PRIVATE void smpi_comm_use(MPI_Comm comm);
 XBT_PRIVATE void smpi_comm_unuse(MPI_Comm comm);
+XBT_PRIVATE void smpi_comm_cleanup_attributes(MPI_Comm comm);
+XBT_PRIVATE void smpi_comm_cleanup_smp(MPI_Comm comm);
 XBT_PRIVATE void smpi_comm_set_leaders_comm(MPI_Comm comm, MPI_Comm leaders);
 XBT_PRIVATE void smpi_comm_set_intra_comm(MPI_Comm comm, MPI_Comm leaders);
 XBT_PRIVATE int* smpi_comm_get_non_uniform_map(MPI_Comm comm);
