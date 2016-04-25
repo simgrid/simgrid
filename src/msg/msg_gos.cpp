@@ -307,7 +307,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
     } else {
       xbt_assert(t_simdata->isused == 0,
                  "This task is still being used somewhere else. You cannot send it now. Go fix your code!"
-                 "(use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
+                 "(use --cfg=msg/debug-multiple-use:on to get the backtrace of the other process)");
     }
   }
 
@@ -816,7 +816,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
     } else {
       xbt_assert(t_simdata->isused == 0,
                  "This task is still being used somewhere else. You cannot send it now. Go fix your code!"
-                 " (use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
+                 " (use --cfg=msg/debug-multiple-use:on to get the backtrace of the other process)");
     }
   }
 

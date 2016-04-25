@@ -43,6 +43,10 @@ SimGrid (3.13) UNRELEASED; urgency=low
         MC_snapshot() and MC_compare_snapshot();
       - keep the MC_cut() function as a stub (it was not really working
         in the previous release).
+	
+ Options:
+ * All options are consistently in kebab-case (but the tracing ones). 
+   Old names are kept as alias.
 
  XML platforms:
  * Switch to platform v4 format.

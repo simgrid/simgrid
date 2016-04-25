@@ -565,7 +565,7 @@ static void smpi_init_options(){
 
     int reduce_scatter_id =
         find_coll_description(mpi_coll_reduce_scatter_description,
-                              xbt_cfg_get_string("smpi/reduce_scatter"),"reduce_scatter");
+                              xbt_cfg_get_string("smpi/reduce-scatter"),"reduce_scatter");
     mpi_coll_reduce_scatter_fun = (int (*)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype, MPI_Op op,
                                            MPI_Comm comm)) mpi_coll_reduce_scatter_description[reduce_scatter_id].coll;
 

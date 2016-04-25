@@ -45,7 +45,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
-    xbt_cfg_register_boolean("msg/debug_multiple_use", "no", _sg_cfg_cb_msg_debug_multiple_use,
+    xbt_cfg_register_boolean("msg/debug-multiple-use", "no", _sg_cfg_cb_msg_debug_multiple_use,
         "Print backtraces of both processes when there is a conflict of multiple use of a task");
 
     SIMIX_global_init(argc, argv);
@@ -75,7 +75,7 @@ void MSG_init_nocheck(int *argc, char **argv) {
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
   MSG_FILE_LEVEL = xbt_lib_add_level(file_lib, (void_f_pvoid_t) __MSG_file_destroy);
-  if(xbt_cfg_get_boolean("clean_atexit")) atexit(MSG_exit);
+  if(xbt_cfg_get_boolean("clean-atexit")) atexit(MSG_exit);
 }
 
 /** \ingroup msg_simulation

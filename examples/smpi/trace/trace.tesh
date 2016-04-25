@@ -11,6 +11,6 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-file smpi_trace.tr
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 
 $ rm -f smpi_trace.trace

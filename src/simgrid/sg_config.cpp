@@ -468,8 +468,9 @@ void sg_config_init(int *argc, char **argv)
     describe_model(description, surf_vm_model_description, "model", "The model to use for the vm");
     xbt_cfg_register_string("vm/model", "default", &_sg_cfg_cb__vm_model, description);
 
-    xbt_cfg_register_double("network/TCP_gamma",  4194304.0, _sg_cfg_cb__tcp_gamma,
+    xbt_cfg_register_double("network/TCP-gamma",  4194304.0, _sg_cfg_cb__tcp_gamma,
         "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)");
+    xbt_cfg_register_alias("network/TCP-gamma","network/TCP_gamma");
     xbt_cfg_register_double("surf/precision", 0.00001, _sg_cfg_cb__surf_precision,
         "Numerical precision used when updating simulation times (in seconds)");
     xbt_cfg_register_double("maxmin/precision", 0.00001, _sg_cfg_cb__maxmin_precision,
@@ -477,21 +478,27 @@ void sg_config_init(int *argc, char **argv)
 
     /* The parameters of network models */
 
-    xbt_cfg_register_double("network/sender_gap", NAN, _sg_cfg_cb__sender_gap,
-        "Minimum gap between two overlapping sends"); /* real default for "network/sender_gap" is set in network_smpi.cpp */
-    xbt_cfg_register_double("network/latency_factor", 1.0, _sg_cfg_cb__latency_factor,
+    xbt_cfg_register_double("network/sender-gap", NAN, _sg_cfg_cb__sender_gap,
+        "Minimum gap between two overlapping sends"); /* real default for "network/sender-gap" is set in network_smpi.cpp */
+    xbt_cfg_register_alias("network/sender-gap","network/sender_gap");
+    xbt_cfg_register_double("network/latency-factor", 1.0, _sg_cfg_cb__latency_factor,
         "Correction factor to apply to the provided latency (default value set by network model)");
-    xbt_cfg_register_double("network/bandwidth_factor", 1.0, _sg_cfg_cb__bandwidth_factor, "Correction factor to apply to the provided bandwidth (default value set by network model)");
-    xbt_cfg_register_double("network/weight_S", NAN, _sg_cfg_cb__weight_S, /* real default for "network/weight_S" is set in network_*.cpp */
+    xbt_cfg_register_alias("network/latency-factor","network/latency_factor");
+    xbt_cfg_register_double("network/bandwidth-factor", 1.0, _sg_cfg_cb__bandwidth_factor, "Correction factor to apply to the provided bandwidth (default value set by network model)");
+    xbt_cfg_register_alias("network/bandwidth-factor","network/bandwidth_factor");
+    xbt_cfg_register_double("network/weight-S", NAN, _sg_cfg_cb__weight_S, /* real default for "network/weight-S" is set in network_*.cpp */
         "Correction factor to apply to the weight of competing streams (default value set by network model)");
+    xbt_cfg_register_alias("network/weight-S","network/weight_S");
 
     /* Inclusion path */
     xbt_cfg_register_string("path", "", _sg_cfg_cb__surf_path, "Lookup path for inclusions in platform and deployment XML files");
 
-    xbt_cfg_register_boolean("cpu/maxmin_selective_update", "no", NULL,
+    xbt_cfg_register_boolean("cpu/maxmin-selective-update", "no", NULL,
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
-    xbt_cfg_register_boolean("network/maxmin_selective_update", "no", NULL,
+    xbt_cfg_register_alias("cpu/maxmin-selective-update","cpu/maxmin_selective_update");
+    xbt_cfg_register_boolean("network/maxmin-selective-update", "no", NULL,
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
+    xbt_cfg_register_alias("network/maxmin-selective-update","network/maxmin_selective_update");
     /* Replay (this part is enabled even if MC it disabled) */
     xbt_cfg_register_string("model-check/replay", nullptr, _sg_cfg_cb_model_check_replay,
         "Model-check path to replay (as reported by SimGrid when a violation is reported)");
@@ -509,11 +516,13 @@ void sg_config_init(int *argc, char **argv)
 
     xbt_cfg_register_string("model-check/property","", _mc_cfg_cb_property,
         "Name of the file containing the property, as formated by the ltl2ba program.");
-    xbt_cfg_register_boolean("model-check/communications_determinism", "no", _mc_cfg_cb_comms_determinism,
+    xbt_cfg_register_boolean("model-check/communications-determinism", "no", _mc_cfg_cb_comms_determinism,
         "Whether to enable the detection of communication determinism");
+    xbt_cfg_register_alias("model-check/communications-determinism","model-check/communications_determinism");
 
-    xbt_cfg_register_boolean("model-check/send_determinism", "no", _mc_cfg_cb_send_determinism,
+    xbt_cfg_register_boolean("model-check/send-determinism", "no", _mc_cfg_cb_send_determinism,
         "Enable/disable the detection of send-determinism in the communications schemes");
+    xbt_cfg_register_alias("model-check/send-determinism","model-check/send_determinism");
 
     /* Specify the kind of model-checking reduction */
     xbt_cfg_register_string("model-check/reduction", "dpor", _mc_cfg_cb_reduce,
@@ -522,13 +531,16 @@ void sg_config_init(int *argc, char **argv)
         "Whether to enable timeouts for wait requests");
 
     xbt_cfg_register_boolean("model-check/hash", "no", _mc_cfg_cb_hash, "Whether to enable state hash for state comparison (experimental)");
-    xbt_cfg_register_boolean("model-check/snapshot_fds", "no",  _mc_cfg_cb_snapshot_fds,
+    xbt_cfg_register_boolean("model-check/snapshot-fds", "no",  _mc_cfg_cb_snapshot_fds,
         "Whether file descriptors must be snapshoted (currently unusable)");
-    xbt_cfg_register_int("model-check/max_depth", 1000, _mc_cfg_cb_max_depth, "Maximal exploration depth (default: 1000)");
+    xbt_cfg_register_alias("model-check/snapshot-fds","model-check/snapshot_fds");
+    xbt_cfg_register_int("model-check/max-depth", 1000, _mc_cfg_cb_max_depth, "Maximal exploration depth (default: 1000)");
+    xbt_cfg_register_alias("model-check/max-depth","model-check/max_depth");
     xbt_cfg_register_int("model-check/visited", 0, _mc_cfg_cb_visited,
         "Specify the number of visited state stored for state comparison reduction. If value=5, the last 5 visited states are stored. If value=0 (the default), all states are stored.");
 
-    xbt_cfg_register_string("model-check/dot_output", "", _mc_cfg_cb_dot_output, "Name of dot output file corresponding to graph state");
+    xbt_cfg_register_string("model-check/dot-output", "", _mc_cfg_cb_dot_output, "Name of dot output file corresponding to graph state");
+    xbt_cfg_register_alias("model-check/dot-output","model-check/dot_output");
     xbt_cfg_register_boolean("model-check/termination", "no", _mc_cfg_cb_termination, "Whether to enable non progressive cycle detection");
 #endif
 
@@ -551,12 +563,13 @@ void sg_config_init(int *argc, char **argv)
     }
     xbt_cfg_register_string("contexts/factory", dflt_ctx_fact, _sg_cfg_cb_context_factory, description);
 
-    xbt_cfg_register_int("contexts/stack_size", 8*1024, _sg_cfg_cb_context_stack_size, "Stack size of contexts in KiB");
+    xbt_cfg_register_int("contexts/stack-size", 8*1024, _sg_cfg_cb_context_stack_size, "Stack size of contexts in KiB");
     /* (FIXME: this is unpleasant) Reset this static variable that was altered when setting the default value. */
     smx_context_stack_size_was_set = 0;
+    xbt_cfg_register_alias("contexts/stack-size","contexts/stack_size");
 
     /* guard size for contexts stacks in memory pages */
-    xbt_cfg_register_int("contexts/guard_size",
+    xbt_cfg_register_int("contexts/guard-size",
 #if defined(_WIN32) || (PTH_STACKGROWTH != -1)
         0,
 #else
@@ -565,11 +578,12 @@ void sg_config_init(int *argc, char **argv)
     _sg_cfg_cb_context_guard_size, "Guard size for contexts stacks in memory pages");
     /* No, it was not set yet (the above setdefault() changed this to 1). */
     smx_context_guard_size_was_set = 0;
-
+    xbt_cfg_register_alias("contexts/guard-size","contexts/guard_size");
     xbt_cfg_register_int("contexts/nthreads", 1, _sg_cfg_cb_contexts_nthreads, "Number of parallel threads used to execute user contexts");
 
-    xbt_cfg_register_int("contexts/parallel_threshold", 2, _sg_cfg_cb_contexts_parallel_threshold,
+    xbt_cfg_register_int("contexts/parallel-threshold", 2, _sg_cfg_cb_contexts_parallel_threshold,
         "Minimal number of user contexts to be run in parallel (raw contexts only)");
+    xbt_cfg_register_alias("contexts/parallel-threshold","contexts/parallel_threshold");
 
     /* synchronization mode for parallel user contexts */
 #if HAVE_FUTEX_H
@@ -592,15 +606,18 @@ void sg_config_init(int *argc, char **argv)
 
     //For smpi/bw_factor and smpi/lat_factor
     // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
-    xbt_cfg_register_string("smpi/bw_factor",
+    xbt_cfg_register_string("smpi/bw-factor",
         "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084", NULL,
         "Bandwidth factors for smpi. Format: 'threshold0:value0;threshold1:value1;...;thresholdN:valueN', meaning if(size >=thresholdN ) return valueN.");
+    xbt_cfg_register_alias("smpi/bw-factor","smpi/bw_factor");
 
-    xbt_cfg_register_string("smpi/lat_factor",
+    xbt_cfg_register_string("smpi/lat-factor",
         "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467", NULL, "Latency factors for smpi.");
+    xbt_cfg_register_alias("smpi/lat-factor","smpi/lat_factor");
     
-    xbt_cfg_register_string("smpi/IB_penalty_factors", "0.965;0.925;1.35", NULL,
+    xbt_cfg_register_string("smpi/IB-penalty-factors", "0.965;0.925;1.35", NULL,
         "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)");
+    xbt_cfg_register_alias("smpi/IB-penalty-factors","smpi/IB_penalty_factors");
     
 #if HAVE_SMPI
     xbt_cfg_register_double("smpi/running-power", 20000.0, NULL, "Power of the host running the simulation (in flop/s). Used to bench the operations.");
@@ -636,11 +653,13 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_double("smpi/test", 1e-4, _sg_cfg_cb__test_sleep, "Minimum time to inject inside a call to MPI_Test");
     xbt_cfg_register_double("smpi/wtime", 0.0, _sg_cfg_cb__wtime_sleep, "Minimum time to inject inside a call to MPI_Wtime");
 
-    xbt_cfg_register_string("smpi/coll_selector", "default", NULL, "Which collective selector to use");
+    xbt_cfg_register_string("smpi/coll-selector", "default", NULL, "Which collective selector to use");
+    xbt_cfg_register_alias("smpi/coll-selector","smpi/coll_selector");
     xbt_cfg_register_string("smpi/gather",        nullptr, &_check_coll_gather, "Which collective to use for gather");
     xbt_cfg_register_string("smpi/allgather",     nullptr, &_check_coll_allgather, "Which collective to use for allgather");
     xbt_cfg_register_string("smpi/barrier",       nullptr, &_check_coll_barrier, "Which collective to use for barrier");
-    xbt_cfg_register_string("smpi/reduce_scatter",nullptr, &_check_coll_reduce_scatter, "Which collective to use for reduce_scatter");
+    xbt_cfg_register_string("smpi/reduce-scatter",nullptr, &_check_coll_reduce_scatter, "Which collective to use for reduce_scatter");
+    xbt_cfg_register_alias("smpi/reduce-scatter","smpi/reduce_scatter");
     xbt_cfg_register_string("smpi/scatter",       nullptr, &_check_coll_scatter, "Which collective to use for scatter");
     xbt_cfg_register_string("smpi/allgatherv",    nullptr, &_check_coll_allgatherv, "Which collective to use for allgatherv");
     xbt_cfg_register_string("smpi/allreduce",     nullptr, &_check_coll_allreduce, "Which collective to use for allreduce");
@@ -653,8 +672,9 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("exception/cutpath", "no", NULL,
         "Whether to cut all path information from call traces, used e.g. in exceptions.");
 
-    xbt_cfg_register_boolean("clean_atexit", "yes", _sg_cfg_cb_clean_atexit,
+    xbt_cfg_register_boolean("clean-atexit", "yes", _sg_cfg_cb_clean_atexit,
         "Whether to cleanup SimGrid at exit. Disable it if your code segfaults after its end.");
+    xbt_cfg_register_alias("clean-atexit","clean_atexit");
 
     if (!surf_path) {
       /* retrieves the current directory of the current process */

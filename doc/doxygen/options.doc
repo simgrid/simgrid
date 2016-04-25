@@ -176,16 +176,16 @@ configurations.
       now).
     - \b Full: Full update of remaining and variables. Slow but may be
       useful when debugging.
-  - items \b network/maxmin_selective_update and
-    \b cpu/maxmin_selective_update: configure whether the underlying
+  - items \b network/maxmin-selective-update and
+    \b cpu/maxmin-selective-update: configure whether the underlying
     should be lazily updated or not. It should have no impact on the
     computed timings, but should speed up the computation.
 
-It is still possible to disable the \c maxmin_selective_update feature
+It is still possible to disable the \c maxmin-selective-update feature
 because it can reveal counter-productive in very specific scenarios
 where the interaction level is high. In particular, if all your
 communication share a given backbone link, you should disable it:
-without \c maxmin_selective_update, every communications are updated
+without \c maxmin-selective-update, every communications are updated
 at each step through a simple loop over them. With that feature
 enabled, every communications will still get updated in this case
 (because of the dependency induced by the backbone), but through a
@@ -216,7 +216,7 @@ speedup or a slowdown because of the synchronization costs of threads.
 
 The analytical models need to know the maximal TCP window size to take
 the TCP congestion mechanism into account. This is set to 20000 by
-default, but can be changed using the \b network/TCP_gamma item.
+default, but can be changed using the \b network/TCP-gamma item.
 
 On linux, this value can be retrieved using the following
 commands. Both give a set of values, and you should use the last one,
@@ -247,7 +247,7 @@ InfiniBand network behavior can be modeled through 3 parameters, as explained in
 These factors can be changed through the following option:
 
 \verbatim
-smpi/IB_penalty_factors:"βe;βs;γs"
+smpi/IB-penalty-factors:"βe;βs;γs"
 \endverbatim
 
 By default SMPI uses factors computed on the Stampede Supercomputer at TACC, with optimal
@@ -284,7 +284,7 @@ initialization are done in the simulator.
 (this configuration item is experimental and may change or disapear)
 
 It is possible to specify a timing gap between consecutive emission on
-the same network card through the \b network/sender_gap item. This
+the same network card through the \b network/sender-gap item. This
 is still under investigation as of writting, and the default value is
 to wait 10 microseconds (1e-5 seconds) between emissions.
 
@@ -295,7 +295,7 @@ to wait 10 microseconds (1e-5 seconds) between emissions.
 It is possible to specify that messages below a certain size will be sent
 as soon as the call to MPI_Send is issued, without waiting for the
 correspondant receive. This threshold can be configured through the
-\b smpi/async_small_thresh item. The default value is 0. This behavior can also be
+\b smpi/async-small-thresh item. The default value is 0. This behavior can also be
 manually set for MSG mailboxes, by setting the receiving mode of the mailbox
 with a call to \ref MSG_mailbox_set_async . For MSG, all messages sent to this
 mailbox will have this behavior, so consider using two mailboxes if needed.
@@ -402,9 +402,9 @@ This only works in safety mode.
 
 This options is disabled by default.
 
-\subsection options_modelchecking_dot_output model-check/dot_output, Dot output
+\subsection options_modelchecking_dot_output model-check/dot-output, Dot output
 
-If set, the \b model-check/dot_output configuration item is the name of a file
+If set, the \b model-check/dot-output configuration item is the name of a file
 in which to write a dot file of the path leading the found property (safety or
 liveness violation) as well as the cycle for liveness properties. This dot file
 can then fed to the graphviz dot tool to generate an corresponding graphical
@@ -412,7 +412,7 @@ representation.
 
 \subsection options_modelchecking_max_depth model-check/max_depth, Depth limit
 
-The \b model-checker/max_depth can set the maximum depth of the exploration
+The \b model-checker/max-depth can set the maximum depth of the exploration
 graph of the model-checker. If this limit is reached, a logging message is
 sent and the results might not be exact.
 
@@ -426,8 +426,8 @@ set to \b yes, the model-checker will explore timeouts of `wait` operations.
 
 \subsection options_modelchecking_comm_determinism Communication determinism
 
-The \b model-check/communications_determinism and
-\b model-check/send_determinism items can be used to select the communication
+The \b model-check/communications-determinism and
+\b model-check/send-determinism items can be used to select the communication
 determinism mode of the model-checker which checks determinism properties of
 the communications of an application.
 
@@ -577,7 +577,7 @@ rather disturbing: this leads to stack overflow (overwriting other
 stacks), leading to segfaults with corrupted stack traces.
 
 If you want to push the scalability limits of your code, you might
-want to reduce the \b contexts/stack_size item. Its default value
+want to reduce the \b contexts/stack-size item. Its default value
 is 8192 (in KiB), while our Chord simulation works with stacks as small
 as 16 KiB, for example. For the thread factory, the default value
 is the one of the system, if it is too large/small, it has to be set
@@ -612,7 +612,7 @@ the amount of cores auto-detected).
 Even if you asked several worker threads using the previous option,
 you can request to start the parallel execution (and pay the
 associated synchronization costs) only if the potential parallelism is
-large enough. For that, set the \b contexts/parallel_threshold
+large enough. For that, set the \b contexts/parallel-threshold
 item to the minimal amount of user contexts needed to start the
 parallel execution. In any given simulation round, if that amount is
 not reached, the contexts will be run sequentially directly by the
@@ -702,7 +702,7 @@ doing. This option shows a backtrace of the other process.
 Enable this option by adding
 
 \verbatim
---cfg=msg/debug_multiple_use:on
+--cfg=msg/debug-multiple-use:on
 \endverbatim
 
 \section options_smpi Configuring SMPI
@@ -727,14 +727,14 @@ to update it to get accurate simulation results.
 
 When the code is constituted of numerous consecutive MPI calls, the
 previous mechanism feeds the simulation kernel with numerous tiny
-computations. The \b smpi/cpu_threshold item becomes handy when this
+computations. The \b smpi/cpu-threshold item becomes handy when this
 impacts badly the simulation performance. It specifies a threshold (in
 seconds) below which the execution chunks are not reported to the
 simulation kernel (default value: 1e-6).
 
 
 \note
-    The option smpi/cpu_threshold ignores any computation time spent
+    The option smpi/cpu-threshold ignores any computation time spent
     below this threshold. SMPI does not consider the \a amount of these
     computations; there is no offset for this. Hence, by using a
     value that is too low, you may end up with unreliable simulation
@@ -762,7 +762,7 @@ computation.
     you should check the SMPI_SAMPLE macros, documented in the chapter
     \ref SMPI_adapting_speed.
 
-\subsection options_model_smpi_bw_factor smpi/bw_factor: Bandwidth factors
+\subsection options_model_smpi_bw_factor smpi/bw-factor: Bandwidth factors
 
 The possible throughput of network links is often dependent on the
 message sizes, as protocols may adapt to different message sizes. With
@@ -797,12 +797,12 @@ to 1, \c smpirun will display this information when the simulation ends. \verbat
 Simulation time: 1e3 seconds.
 \endverbatim
 
-\subsection options_model_smpi_lat_factor smpi/lat_factor: Latency factors
+\subsection options_model_smpi_lat_factor smpi/lat-factor: Latency factors
 
 The motivation and syntax for this option is identical to the motivation/syntax
-of smpi/bw_factor, see \ref options_model_smpi_bw_factor for details.
+of smpi/bw-factor, see \ref options_model_smpi_bw_factor for details.
 
-There is an important difference, though: While smpi/bw_factor \a reduces the
+There is an important difference, though: While smpi/bw-factor \a reduces the
 actual bandwidth (i.e., values between 0 and 1 are valid), latency factors
 increase the latency, i.e., values larger than or equal to 1 are valid here.
 
@@ -860,7 +860,7 @@ by changing the \b smpi/send-is-detached item. The default value is 65536.
 \subsection options_model_smpi_collectives Simulating MPI collective algorithms
 
 SMPI implements more than 100 different algorithms for MPI collective communication, to accurately
-simulate the behavior of most of the existing MPI libraries. The \b smpi/coll_selector item can be used
+simulate the behavior of most of the existing MPI libraries. The \b smpi/coll-selector item can be used
  to use the decision logic of either OpenMPI or MPICH libraries (values: ompi or mpich, by default SMPI
 uses naive version of collective operations). Each collective operation can be manually selected with a
 \b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_collective_algorithms .
@@ -994,7 +994,7 @@ option to force a call to MPI_Wtime to advance the time as well.
 The C / C++ standard contains a function called \b [atexit](http://www.cplusplus.com/reference/cstdlib/atexit/).
 atexit registers callbacks, which are called just before the program terminates.
 
-By setting the configuration option clean_atexit to 1 (true), a callback
+By setting the configuration option clean-atexit to 1 (true), a callback
 is registered and will clean up some variables and terminate/cleanup the tracing.
 
 TODO: Add when this should be used.
@@ -1043,9 +1043,9 @@ tasks. If it is not possible you might use ucontext instead.
 A stack guard page is usually used which prevents the stack from
 overflowing on other parts of the memory. However this might have a
 performance impact if a huge number of processes is created.  The
-option \b contexts:guard_size is the number of stack guard pages
+option \b contexts:guard-size is the number of stack guard pages
 used. By setting it to 0, no guard pages will be used: in this case,
-you should avoid using small stacks (\b stack_size) as the stack will
+you should avoid using small stacks (\b stack-size) as the stack will
 silently overflow on other parts of the memory.
 
 \section options_index Index of all existing configuration options
@@ -1059,16 +1059,16 @@ silently overflow on other parts of the memory.
   \b Please \b note: You can also pass the command-line option "--help" and
      "--help-cfg" to an executable that uses simgrid.
 
-- \c clean_atexit: \ref options_generic_clean_atexit
+- \c clean-atexit: \ref options_generic_clean_atexit
 
 - \c contexts/factory: \ref options_virt_factory
-- \c contexts/guard_size: \ref options_virt_parallel
+- \c contexts/guard-size: \ref options_virt_parallel
 - \c contexts/nthreads: \ref options_virt_parallel
 - \c contexts/parallel_threshold: \ref options_virt_parallel
-- \c contexts/stack_size: \ref options_virt_stacksize
+- \c contexts/stack-size: \ref options_virt_stacksize
 - \c contexts/synchro: \ref options_virt_parallel
 
-- \c cpu/maxmin_selective_update: \ref options_model_optim
+- \c cpu/maxmin-selective-update: \ref options_model_optim
 - \c cpu/model: \ref options_model_select
 - \c cpu/optim: \ref options_model_optim
 
@@ -1078,34 +1078,34 @@ silently overflow on other parts of the memory.
 
 - \c maxmin/precision: \ref options_model_precision
 
-- \c msg/debug_multiple_use: \ref options_msg_debug_multiple_use
+- \c msg/debug-multiple-use: \ref options_msg_debug_multiple_use
 
 - \c model-check: \ref options_modelchecking
 - \c model-check/checkpoint: \ref options_modelchecking_steps
-- \c model-check/communications_determinism: \ref options_modelchecking_comm_determinism
-- \c model-check/dot_output: \ref options_modelchecking_dot_output
+- \c model-check/communications-determinism: \ref options_modelchecking_comm_determinism
+- \c model-check/dot-output: \ref options_modelchecking_dot_output
 - \c model-check/hash: \ref options_modelchecking_hash
 - \c model-check/property: \ref options_modelchecking_liveness
-- \c model-check/max_depth: \ref options_modelchecking_max_depth
+- \c model-check/max-depth: \ref options_modelchecking_max_depth
 - \c model-check/record: \ref options_modelchecking_recordreplay
 - \c model-check/reduction: \ref options_modelchecking_reduction
 - \c model-check/replay: \ref options_modelchecking_recordreplay
-- \c model-check/send_determinism: \ref options_modelchecking_comm_determinism
+- \c model-check/send-determinism: \ref options_modelchecking_comm_determinism
 - \c model-check/sparse-checkpoint: \ref options_modelchecking_sparse_checkpoint
 - \c model-check/termination: \ref options_modelchecking_termination
 - \c model-check/timeout: \ref options_modelchecking_timeout
 - \c model-check/visited: \ref options_modelchecking_visited
 
-- \c network/bandwidth_factor: \ref options_model_network_coefs
+- \c network/bandwidth-factor: \ref options_model_network_coefs
 - \c network/coordinates: \ref options_model_network_coord
 - \c network/crosstraffic: \ref options_model_network_crosstraffic
-- \c network/latency_factor: \ref options_model_network_coefs
-- \c network/maxmin_selective_update: \ref options_model_optim
+- \c network/latency-factor: \ref options_model_network_coefs
+- \c network/maxmin-selective-update: \ref options_model_optim
 - \c network/model: \ref options_model_select
 - \c network/optim: \ref options_model_optim
 - \c network/sender_gap: \ref options_model_network_sendergap
-- \c network/TCP_gamma: \ref options_model_network_gamma
-- \c network/weight_S: \ref options_model_network_coefs
+- \c network/TCP-gamma: \ref options_model_network_gamma
+- \c network/weight-S: \ref options_model_network_coefs
 
 - \c ns3/TcpModel: \ref options_pls
 - \c path: \ref options_generic_path

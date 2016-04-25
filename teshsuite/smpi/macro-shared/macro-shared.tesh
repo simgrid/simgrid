@@ -5,7 +5,7 @@ p Test compute
 $ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/macro-shared --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0] After change, the value in the shared buffer is: 16053117601147974045
 > [0] The value in the shared buffer is: 4
 > [1] After change, the value in the shared buffer is: 16053117601147974045

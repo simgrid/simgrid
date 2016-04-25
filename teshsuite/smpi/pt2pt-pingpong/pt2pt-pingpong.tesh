@@ -8,7 +8,7 @@ $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../.
 > == pivot=2 : pingpong [2] <--> [3]
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0] About to send 1st message '99' to process [1]
 > [0] Received reply message '100' from process [1]
 > [1] About to send 1st message '100' to process [2]

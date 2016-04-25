@@ -17,7 +17,7 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_in_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu-threshold' to '-1'
 > [0] About to send 1st message '99' to process [1]
@@ -52,7 +52,7 @@ $ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -tra
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu-threshold' to '-1'
 > [Jupiter:1:(2) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
@@ -123,7 +123,7 @@ $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.t
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_in_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format/ti_one_file' to 'yes'
 > [0] About to send 1st message '99' to process [1]
@@ -158,7 +158,7 @@ $ ${bindir:=.}/../../../bin/smpirun -ext smpi_replay --log=replay.:critical -tra
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/computing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP_gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'out_ti.txt'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi/format/ti_one_file' to 'yes'
 > [Jupiter:1:(2) 0.016798] [smpi_replay/INFO] Simulation time 0.016798
