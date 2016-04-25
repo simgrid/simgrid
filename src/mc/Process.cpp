@@ -77,7 +77,6 @@ static const char *const filtered_libraries[] = {
   "libm",
   "libpthread",
   "librt",
-  "libsigc",
   "libstdc++",
   "libunwind",
   "libunwind-x86_64",
