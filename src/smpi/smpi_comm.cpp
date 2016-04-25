@@ -314,12 +314,22 @@ void smpi_comm_use(MPI_Comm comm){
   comm->refcount++;
 }
 
-void smpi_comm_unuse(MPI_Comm comm){
-  if (comm == MPI_COMM_UNINITIALIZED)
-    comm = smpi_process_comm_world();
-  comm->refcount--;
-  smpi_group_unuse(comm->group);
-  if(comm->refcount==0){
+void smpi_comm_cleanup_attributes(MPI_Comm comm){
+  if(comm->attributes !=NULL){
+    xbt_dict_cursor_t cursor = NULL;
+    int* key;
+    void * value;
+    int flag;
+    xbt_dict_foreach(comm->attributes, cursor, key, value){
+      smpi_comm_key_elem elem =
+         static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)key));
+      if(elem &&  elem->delete_fn)
+        elem->delete_fn(comm, *key, value, &flag);
+    }
+  }
+}
+
+void smpi_comm_cleanup_smp(MPI_Comm comm){
     if(comm->intra_comm != MPI_COMM_NULL)
       smpi_comm_unuse(comm->intra_comm);
     if(comm->leaders_comm != MPI_COMM_NULL)
@@ -328,18 +338,17 @@ void smpi_comm_unuse(MPI_Comm comm){
       xbt_free(comm->non_uniform_map);
     if(comm->leaders_map !=NULL)
       xbt_free(comm->leaders_map);
-    if(comm->attributes !=NULL){
-      xbt_dict_cursor_t cursor = NULL;
-      int* key;
-      void * value;
-      int flag;
-      xbt_dict_foreach(comm->attributes, cursor, key, value){
-        smpi_comm_key_elem elem =
-           static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)key));
-        if(elem &&  elem->delete_fn)
-          elem->delete_fn(comm, *key, value, &flag);
-      }
-    }
+}
+
+void smpi_comm_unuse(MPI_Comm comm){
+  if (comm == MPI_COMM_UNINITIALIZED)
+    comm = smpi_process_comm_world();
+  comm->refcount--;
+  smpi_group_unuse(comm->group);
+
+  if(comm->refcount==0){
+    smpi_comm_cleanup_smp(comm);
+    smpi_comm_cleanup_attributes(comm);
     xbt_free(comm);
   }
 }
@@ -467,9 +476,13 @@ void smpi_comm_init_smp(MPI_Comm comm){
     for (i=0; i< leader_group_size;i++)
       smpi_group_set_mapping(leaders_group, leader_list[i], i);
 
-    leader_comm = smpi_comm_new(leaders_group, NULL);
-    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL)
+    if(smpi_comm_get_leaders_comm(comm)==MPI_COMM_NULL){
+      leader_comm = smpi_comm_new(leaders_group, NULL);
       smpi_comm_set_leaders_comm(comm, leader_comm);
+    }else{
+      leader_comm=smpi_comm_get_leaders_comm(comm);
+      smpi_group_unuse(leaders_group);
+    }
     smpi_process_set_comm_intra(comm_intra);
   }
 

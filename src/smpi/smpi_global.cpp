@@ -466,8 +466,12 @@ void smpi_global_destroy(void)
   xbt_free(process_data);
   process_data = NULL;
 
-  if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED)
+  if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
+    smpi_comm_cleanup_smp(MPI_COMM_WORLD);
+    smpi_comm_cleanup_attributes(MPI_COMM_WORLD);
     xbt_free(MPI_COMM_WORLD);
+  }
+
   MPI_COMM_WORLD = MPI_COMM_NULL;
 
   xbt_free(index_to_process_data);
