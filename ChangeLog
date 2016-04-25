@@ -45,8 +45,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
         in the previous release).
 	
  Options:
- * All options are consistently in kebab-case (but the tracing ones). 
-   Old names are kept as alias.
+ * All options are consistently in kebab-case. Old names are kept as alias.
 
  XML platforms:
  * Switch to platform v4 format.

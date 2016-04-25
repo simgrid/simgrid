@@ -457,7 +457,7 @@ if [ -n "${TRACE_ACTIVE}" ]; then
     fi
 
     if [ -n "${TRACE_COMMENT_FILE}" ]; then
-        TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment_file:${TRACE_COMMENT_FILE}"
+        TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment-file:${TRACE_COMMENT_FILE}"
     fi
 
     if [ -n "${TRACE_GROUPED}" ]; then

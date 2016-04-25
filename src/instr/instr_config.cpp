@@ -14,18 +14,18 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_TRACING_BASIC                "tracing/basic"
 #define OPT_TRACING_BUFFER               "tracing/buffer"
 #define OPT_TRACING_CATEGORIZED          "tracing/categorized"
-#define OPT_TRACING_COMMENT_FILE         "tracing/comment_file"
+#define OPT_TRACING_COMMENT_FILE         "tracing/comment-file"
 #define OPT_TRACING_COMMENT              "tracing/comment"
-#define OPT_TRACING_DISABLE_DESTROY      "tracing/disable_destroy"
-#define OPT_TRACING_DISABLE_LINK         "tracing/disable_link"
-#define OPT_TRACING_DISABLE_POWER        "tracing/disable_power"
-#define OPT_TRACING_DISPLAY_SIZES        "tracing/smpi/display_sizes"
+#define OPT_TRACING_DISABLE_DESTROY      "tracing/disable-destroy"
+#define OPT_TRACING_DISABLE_LINK         "tracing/disable-link"
+#define OPT_TRACING_DISABLE_POWER        "tracing/disable-power"
+#define OPT_TRACING_DISPLAY_SIZES        "tracing/smpi/display-sizes"
 #define OPT_TRACING_FILENAME             "tracing/filename"
-#define OPT_TRACING_FORMAT_TI_ONEFILE    "tracing/smpi/format/ti_one_file"
+#define OPT_TRACING_FORMAT_TI_ONEFILE    "tracing/smpi/format/ti-one-file"
 #define OPT_TRACING_FORMAT               "tracing/smpi/format"
 #define OPT_TRACING_MSG_PROCESS          "tracing/msg/process"
 #define OPT_TRACING_MSG_VM               "tracing/msg/vm"
-#define OPT_TRACING_ONELINK_ONLY         "tracing/onelink_only"
+#define OPT_TRACING_ONELINK_ONLY         "tracing/onelink-only"
 #define OPT_TRACING_PLATFORM             "tracing/platform"
 #define OPT_TRACING_PRECISION            "tracing/precision"
 #define OPT_TRACING_SMPI_COMPUTING       "tracing/smpi/computing"
@@ -389,6 +389,14 @@ void TRACE_global_init(int *argc, char **argv)
   /* Viva graph configuration for uncategorized tracing */
   xbt_cfg_register_string(OPT_VIVA_UNCAT_CONF, "", NULL, "Viva Graph configuration file for uncategorized resource utilization traces.");
   xbt_cfg_register_string(OPT_VIVA_CAT_CONF, "", NULL, "Viva Graph configuration file for categorized resource utilization traces.");
+
+  xbt_cfg_register_alias(OPT_TRACING_COMMENT_FILE,"tracing/comment_file");
+  xbt_cfg_register_alias(OPT_TRACING_DISABLE_DESTROY, "tracing/disable_destroy");
+  xbt_cfg_register_alias(OPT_TRACING_DISABLE_LINK, "tracing/disable_link");
+  xbt_cfg_register_alias(OPT_TRACING_DISABLE_POWER, "tracing/disable_power");
+  xbt_cfg_register_alias(OPT_TRACING_DISPLAY_SIZES, "tracing/smpi/display_sizes");
+  xbt_cfg_register_alias(OPT_TRACING_FORMAT_TI_ONEFILE, "tracing/smpi/format/ti_one_file");
+  xbt_cfg_register_alias(OPT_TRACING_ONELINK_ONLY, "tracing/onelink_only");
 
   /* instrumentation can be considered configured now */
   trace_configured = 1;

@@ -683,7 +683,7 @@ reproduce an experiment. You have two ways to do that:
 
 - Add the contents of a textual file on top of the trace file as comment:
 \verbatim
---cfg=tracing/comment_file:my_file_with_additional_information.txt
+--cfg=tracing/comment-file:my_file_with_additional_information.txt
 \endverbatim
 
 Please, use these two parameters (for comments) to make reproducible
