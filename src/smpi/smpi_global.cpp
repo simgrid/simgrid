@@ -40,6 +40,7 @@ typedef struct s_smpi_process_data {
   char* instance_id;
   int replaying;                /* is the process replaying a trace */
   xbt_bar_t finalization_barrier;
+  int return_value;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -424,6 +425,7 @@ void smpi_global_init(void)
     process_data[i]->state                = SMPI_UNINITIALIZED;
     process_data[i]->sampling             = 0;
     process_data[i]->finalization_barrier = NULL;
+    process_data[i]->return_value         = 0;
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
@@ -481,6 +483,7 @@ void smpi_global_destroy(void)
 }
 
 #ifndef WIN32
+
 void __attribute__ ((weak)) user_main_()
 {
   xbt_die("Should not be in this smpi_simulated_main");
@@ -494,9 +497,18 @@ int __attribute__ ((weak)) smpi_simulated_main_(int argc, char **argv)
   return 0;
 }
 
+inline static int smpi_main_wrapper(int argc, char **argv){
+  int ret = smpi_simulated_main_(argc,argv);
+  if(ret !=0){
+    XBT_WARN("SMPI process did not return 0. Return value : %d", ret);
+    smpi_process_data()->return_value=ret;
+  }
+  return 0;
+}
+
 int __attribute__ ((weak)) main(int argc, char **argv)
 {
-  return smpi_main(smpi_simulated_main_, argc, argv);
+  return smpi_main(smpi_main_wrapper, argc, argv);
 }
 
 #endif
@@ -642,11 +654,19 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
       "You may want to use sampling functions or trace replay to reduce this.");
     }
   }
+  int count = smpi_process_count();
+  int i, ret=0;
+  for (i = 0; i < count; i++) {
+    if(process_data[i]->return_value!=0){
+      ret=process_data[i]->return_value;//return first non 0 value
+      break;
+    }
+  }
   smpi_global_destroy();
 
   TRACE_end();
 
-  return 0;
+  return ret;
 }
 
 // This function can be called from extern file, to initialize logs, options, and processes of smpi
