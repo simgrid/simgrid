@@ -720,7 +720,7 @@ say that if you have a large computation between a \c MPI_Recv() and a
 code, and create an execution task within the simulator to take this
 into account. For that, the actual duration is measured on the host
 machine and then scaled to the power of the corresponding simulated
-machine. The variable \b smpi/running_power allows to specify the
+machine. The variable \b smpi/running-power allows to specify the
 computational power of the host machine (in flop/s) to use when
 scaling the execution times. It defaults to 20000, but you really want
 to update it to get accurate simulation results.
@@ -752,8 +752,8 @@ being replayed/simulated. At the moment, these computation events can
 be simulated using SMPI by calling internal smpi_execute*() functions.
 
 To disable the benchmarking/simulation of computation in the simulated
-application, the variable \b smpi/simulate_computation should be set to no.
-Equivalently, setting \b smpi/cpu_threshold to -1 also ignores all
+application, the variable \b smpi/simulate-computation should be set to no.
+Equivalently, setting \b smpi/cpu-threshold to -1 also ignores all
 computation.
 
 \note
@@ -784,7 +784,7 @@ Here, MAX_BANDWIDTH denotes the bandwidth of the link.
     1. http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
     2. http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
 
-\subsection options_smpi_timing smpi/display_timing: Reporting simulation time
+\subsection options_smpi_timing smpi/display-timing: Reporting simulation time
 
 \b Default: 0 (false)
 
@@ -792,7 +792,7 @@ Most of the time, you run MPI code with SMPI to compute the time it
 would take to run it on a platform. But since the
 code is run through the \c smpirun script, you don't have any control
 on the launcher code, making it difficult to report the simulated time
-when the simulation ends. If you set the \b smpi/display_timing item
+when the simulation ends. If you set the \b smpi/display-timing item
 to 1, \c smpirun will display this information when the simulation ends. \verbatim
 Simulation time: 1e3 seconds.
 \endverbatim
@@ -818,7 +818,7 @@ This is the default value:
     1. http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
     2. http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
 
-\subsection options_smpi_global smpi/privatize_global_variables: Automatic privatization of global variables
+\subsection options_smpi_global smpi/privatize-global-variables: Automatic privatization of global variables
 
 MPI executables are meant to be executed in separated processes, but SMPI is
 executed in only one process. Global variables from executables will be placed
@@ -844,7 +844,7 @@ To avoid this, several options are possible :
   linking is advised (but not with the simgrid library, to avoid replicating
   its own global variables).
 
-  To use this runtime automatic switching, the variable \b smpi/privatize_global_variables
+  To use this runtime automatic switching, the variable \b smpi/privatize-global-variables
   should be set to yes
 
 
@@ -855,7 +855,7 @@ This threshold specifies the size in bytes under which the send will return
 immediately. This is different from the threshold detailed in  \ref options_model_network_asyncsend
 because the message is not effectively sent when the send is posted. SMPI still waits for the
 correspondant receive to be posted to perform the communication operation. This threshold can be set
-by changing the \b smpi/send_is_detached item. The default value is 65536.
+by changing the \b smpi/send-is-detached item. The default value is 65536.
 
 \subsection options_model_smpi_collectives Simulating MPI collective algorithms
 
@@ -955,7 +955,7 @@ Here is an example:
     to sleep increases linearly with the number of previously failed testk.
 
 
-\subsection options_model_smpi_use_shared_malloc smpi/use_shared_malloc: Use shared memory
+\subsection options_model_smpi_use_shared_malloc smpi/use-shared-malloc: Factorize malloc()s
 
 \b Default: 1
 
@@ -1115,23 +1115,23 @@ silently overflow on other parts of the memory.
 - \c surf/precision: \ref options_model_precision
 
 - \c <b>For collective operations of SMPI, please refer to Section \ref options_index_smpi_coll</b>
-- \c smpi/async_small_thresh: \ref options_model_network_asyncsend
-- \c smpi/bw_factor: \ref options_model_smpi_bw_factor
-- \c smpi/coll_selector: \ref options_model_smpi_collectives
-- \c smpi/cpu_threshold: \ref options_smpi_bench
-- \c smpi/display_timing: \ref options_smpi_timing
-- \c smpi/lat_factor: \ref options_model_smpi_lat_factor
-- \c smpi/IB_penalty_factors: \ref options_model_network_coefs
+- \c smpi/async-small-thresh: \ref options_model_network_asyncsend
+- \c smpi/bw-factor: \ref options_model_smpi_bw_factor
+- \c smpi/coll-selector: \ref options_model_smpi_collectives
+- \c smpi/cpu-threshold: \ref options_smpi_bench
+- \c smpi/display-timing: \ref options_smpi_timing
+- \c smpi/lat-factor: \ref options_model_smpi_lat_factor
+- \c smpi/IB-penalty-factors: \ref options_model_network_coefs
 - \c smpi/iprobe: \ref options_model_smpi_iprobe
 - \c smpi/ois: \ref options_model_smpi_ois
 - \c smpi/or: \ref options_model_smpi_or
 - \c smpi/os: \ref options_model_smpi_os
-- \c smpi/privatize_global_variables: \ref options_smpi_global
-- \c smpi/running_power: \ref options_smpi_bench
-- \c smpi/send_is_detached_thresh: \ref options_model_smpi_detached
-- \c smpi/simulate_computation: \ref options_smpi_bench
+- \c smpi/privatize-global-variables: \ref options_smpi_global
+- \c smpi/running-power: \ref options_smpi_bench
+- \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
+- \c smpi/simulate-computation: \ref options_smpi_bench
 - \c smpi/test: \ref options_model_smpi_test
-- \c smpi/use_shared_malloc: \ref options_model_smpi_use_shared_malloc
+- \c smpi/use-shared-malloc: \ref options_model_smpi_use_shared_malloc
 - \c smpi/wtime: \ref options_model_smpi_wtime
 
 - \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.

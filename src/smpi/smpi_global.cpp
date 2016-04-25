@@ -376,12 +376,12 @@ void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t 
 static void smpi_check_options(){
   //check correctness of MPI parameters
 
-   xbt_assert(xbt_cfg_get_int("smpi/async_small_thresh") <= xbt_cfg_get_int("smpi/send_is_detached_thresh"));
+   xbt_assert(xbt_cfg_get_int("smpi/async-small-thresh") <= xbt_cfg_get_int("smpi/send-is-detached-thresh"));
 
-   if (xbt_cfg_is_default_value("smpi/running_power")) {
+   if (xbt_cfg_is_default_value("smpi/running-power")) {
      XBT_INFO("You did not set the power of the host running the simulation.  "
               "The timings will certainly not be accurate.  "
-              "Use the option \"--cfg=smpi/running_power:<flops>\" to set its value."
+              "Use the option \"--cfg=smpi/running-power:<flops>\" to set its value."
               "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
    }
 }
@@ -573,9 +573,9 @@ static void smpi_init_options(){
     int barrier_id = find_coll_description(mpi_coll_barrier_description, xbt_cfg_get_string("smpi/barrier"),"barrier");
     mpi_coll_barrier_fun = (int (*)(MPI_Comm comm)) mpi_coll_barrier_description[barrier_id].coll;
 
-    smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu_threshold");
-    smpi_running_power = xbt_cfg_get_double("smpi/running_power");
-    smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize_global_variables");
+    smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
+    smpi_running_power = xbt_cfg_get_double("smpi/running-power");
+    smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 }
@@ -626,7 +626,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
     SIMIX_run();
 
     xbt_os_walltimer_stop(global_timer);
-    if (xbt_cfg_get_boolean("smpi/display_timing")){
+    if (xbt_cfg_get_boolean("smpi/display-timing")){
       double global_time = xbt_os_timer_elapsed(global_timer);
       XBT_INFO("Simulated time: %g seconds. \n\n"
           "The simulation took %g seconds (after parsing and platform setup)\n"

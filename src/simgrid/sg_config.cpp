@@ -603,17 +603,32 @@ void sg_config_init(int *argc, char **argv)
         "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)");
     
 #if HAVE_SMPI
-    xbt_cfg_register_double("smpi/running_power", 20000.0, NULL, "Power of the host running the simulation (in flop/s). Used to bench the operations.");
-    xbt_cfg_register_boolean("smpi/display_timing", "no", NULL, "Whether we should display the timing after simulation.");
-    xbt_cfg_register_boolean("smpi/simulate_computation", "yes", NULL, "Whether the computational part of the simulated application should be simulated.");
-    xbt_cfg_register_boolean("smpi/use_shared_malloc", "yes", NULL, "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
-    xbt_cfg_register_double("smpi/cpu_threshold", 1e-6, NULL, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
-    xbt_cfg_register_int("smpi/async_small_thresh", 0, NULL,
-        "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver");
-    xbt_cfg_register_int("smpi/send_is_detached_thresh", 65536, NULL,
-        "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
+    xbt_cfg_register_double("smpi/running-power", 20000.0, NULL, "Power of the host running the simulation (in flop/s). Used to bench the operations.");
+    xbt_cfg_register_alias("smpi/running-power","smpi/running_power");
 
-    xbt_cfg_register_boolean("smpi/privatize_global_variables", "no", NULL, "Whether we should privatize global variable at runtime.");
+    xbt_cfg_register_boolean("smpi/display-timing", "no", NULL, "Whether we should display the timing after simulation.");
+    xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");
+
+    xbt_cfg_register_boolean("smpi/simulate-computation", "yes", NULL, "Whether the computational part of the simulated application should be simulated.");
+    xbt_cfg_register_alias("smpi/simulate-computation","smpi/simulate_computation");
+
+    xbt_cfg_register_boolean("smpi/use-shared-malloc", "yes", NULL, "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
+    xbt_cfg_register_alias("smpi/use-shared-malloc", "smpi/use_shared_malloc");
+
+    xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, NULL, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
+    xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");
+
+    xbt_cfg_register_int("smpi/async-small-thresh", 0, NULL,
+        "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver");
+    xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thres");
+
+    xbt_cfg_register_int("smpi/send-is-detached-thresh", 65536, NULL,
+        "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
+    xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thresh");
+
+    xbt_cfg_register_boolean("smpi/privatize-global-variables", "no", NULL, "Whether we should privatize global variable at runtime.");
+    xbt_cfg_register_alias("smpi/privatize-global-variables", "smpi/privatize_global_variables");
+
     xbt_cfg_register_string("smpi/os", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Send minimum time for small messages)");
     xbt_cfg_register_string("smpi/ois", "1:0:0:0:0", NULL, "Small messages timings (MPI_Isend minimum time for small messages)");
     xbt_cfg_register_string("smpi/or", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Recv minimum time for small messages)");
