@@ -40,6 +40,8 @@ XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
 protected:
   smx_storage_t inferior();
 private:
+  friend s4u::Engine;
+
   static boost::unordered_map<std::string, Storage *> *storages_;
   std::string name_;
   smx_storage_t inferior_;

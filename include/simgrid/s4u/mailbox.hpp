@@ -56,6 +56,7 @@ private:
   std::string name_;
   smx_mailbox_t inferior_;
   static boost::unordered_map<std::string, Mailbox *> *mailboxes;
+  friend s4u::Engine;
 };
 }} // namespace simgrid::s4u
 

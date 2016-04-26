@@ -9,6 +9,8 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
+#include "simgrid/s4u/mailbox.hpp"
+#include "simgrid/s4u/storage.hpp"
 
 XBT_LOG_NEW_CATEGORY(s4u,"Log channels of the S4U (Simgrid for you) interface");
 using namespace simgrid;
@@ -27,6 +29,13 @@ s4u::Engine *s4u::Engine::instance() {
   if (s4u::Engine::instance_ == nullptr)
     new Engine(0,nullptr);
   return s4u::Engine::instance_;
+}
+
+void s4u::Engine::shutdown() {
+  delete s4u::Engine::instance_;
+  s4u::Engine::instance_ = nullptr;
+  delete s4u::Mailbox::mailboxes;
+  delete s4u::Storage::storages_;
 }
 
 double s4u::Engine::getClock()

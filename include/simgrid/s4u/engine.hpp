@@ -21,6 +21,9 @@ public:
   /** Constructor, taking the command line parameters of your main function */
   Engine(int *argc, char **argv);
 
+  /** Finalize the default engine and all its dependencies */
+  static void shutdown();
+
   /** @brief Load a platform file describing the environment
    *
    * The environment is either a XML file following the simgrid.dtd formalism, or a lua file.
