@@ -476,6 +476,10 @@ void smpi_global_destroy(void)
 
   MPI_COMM_WORLD = MPI_COMM_NULL;
 
+  if (!MC_is_active()) {
+    xbt_os_timer_free(global_timer);
+  }
+
   xbt_free(index_to_process_data);
   if(smpi_privatize_global_variables)
     smpi_destroy_global_memory_segments();

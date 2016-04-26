@@ -123,6 +123,8 @@ extern "C" raw_stack_t raw_makecontext(void* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
 extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 
+// TODO, we should handle FP, MMX and the x87 control-word (for x86 and x86_64)
+
 #if SIMGRID_PROCESSOR_x86_64
 __asm__ (
 #if defined(__APPLE__)
@@ -242,18 +244,24 @@ __asm__ (
    ".type raw_swapcontext,@function\n"
    "raw_swapcontext:\n"
 #endif
-   "   movl 4(%esp),%eax\n" /* old */
-   "   movl 8(%esp),%edx\n" /* new */
+   // Fetch the parameters:
+   "   movl 4(%esp),%eax\n" /* old (raw_stack_t*) */
+   "   movl 8(%esp),%edx\n" /* new (raw_stack_t)  */
+   // Save registers of the current context on the stack:
    "   pushl %ebp\n"
    "   pushl %ebx\n"
    "   pushl %esi\n"
    "   pushl %edi\n"
+   // Save the current context (stack pointer) in *old:
    "   movl %esp,(%eax)\n"
+   // Switch to the stack of the new context:
    "   movl %edx,%esp\n"
+   // Pop the values of the new context:
    "   popl %edi\n"
    "   popl %esi\n"
    "   popl %ebx\n"
    "   popl %ebp\n"
+   // Return using the return address of the new context:
    "   retl\n"
 );
 #else

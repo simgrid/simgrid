@@ -16,6 +16,7 @@
 #include "mc/mc.h"
 #include "virtual_machine.hpp"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "simgrid/s4u/engine.hpp"
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (kernel)");
@@ -348,6 +349,7 @@ void surf_exit(void)
 
   tmgr_finalize();
   sg_platf_exit();
+  simgrid::s4u::Engine::shutdown();
 
   NOW = 0;                      /* Just in case the user plans to restart the simulation afterward */
 }

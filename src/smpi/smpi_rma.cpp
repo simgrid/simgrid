@@ -355,6 +355,7 @@ int smpi_mpi_win_complete(MPI_Win win){
   win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   xbt_free(treqs);
+  smpi_group_unuse(win->group);
   win->opened--; //we're closed for business !
   return MPI_SUCCESS;
 }
@@ -404,6 +405,7 @@ int smpi_mpi_win_wait(MPI_Win win){
   win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   xbt_free(treqs);
+  smpi_group_unuse(win->group);
   win->opened--; //we're opened for business !
   return MPI_SUCCESS;
 }

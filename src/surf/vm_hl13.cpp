@@ -127,6 +127,9 @@ VMHL13::VMHL13(VMModel *model, const char* name, sg_host_t host_PM)
 
   XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", name, hostPM_->name().c_str(), xbt_dynar_length(p_storage));
 }
+VMHL13::~VMHL13() {
+  delete p_cpu;
+}
 
 void VMHL13::suspend()
 {
