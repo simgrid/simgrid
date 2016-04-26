@@ -1,48 +1,38 @@
-/*! \page platform %Model the underlying platform
+/*! \page platform Model the underlying platform
 
 @tableofcontents
 
 In order to run any simulation, SimGrid must be provided with three things:
-something to run (i.e., your code), a description of the platform on which you
-want to simulate your application and lastly information about the deployment
-process: Which process should be deployed to which processor/core?
+something to run (i.e., your code), a description of the platform on which you want to simulate your application, and 
+information about the deployment of the application: Which process should be executed onto which processor/core?
 
-For the last two items, there are essentially two possible ways you can provide
+For the last two items, there are essentially three possible ways you can provide
 this information as an input:
-\li You can program, if you're using MSG, some of MSG's platform and
-    deployment functions (\ref msg_simulation). If you want to use this,
-    check the particular documentation. (You can also check the section
-    \ref pf_flexml_bypassing, however, this documentation is deprecated;
-    there is a new, but undocumented, way to do it properly).
-\li You can use two XML files: one contains the platform description while
-    the other contains the deployment instructions. The platform description
-    can also be in Lua format.
+\li You can program, if you're using MSG, some of the platform and
+    deployment functions. If you choose to follow this approach, check the dedicated documentation
+    (\ref msg_simulation).
+\li You can use two XML files: one for the platform description and the other for the deployment. 
+\li You can program the description of your platform  in Lua format.
 
-For more information on SimGrid's deployment features, please refer to
-the \ref deployment documentation.
+For more information on SimGrid's deployment features, please refer to the \ref deployment section.
 
-The platform description may be intricate. This documentation is all
-about how to write this file: The basic concepts are introduced. Furthermore,
-advanced options are explained. Additionally, some hints and tips on how to
-write a good platform description are given.
+The platform description may be intricate. This documentation is all about how to write this file. First, the basic 
+concepts are introduced. Then, advanced options are explained. Finally, some hints and tips on how to write a better 
+platform description are given.
 
 \section pf_overview Some words about XML and DTD
 
-We chose to use XML not only because it's extensible but also because many
-tools (and plugins for existing tools) are available that facilitate editing and
-validating XML files. Furthermore, libraries that parse XML are often already
+We opted for XML not only because it is extensible but also because many tools (and plugins for existing tools) are 
+available that facilitate editing and validating XML files. Furthermore, libraries that parse XML are often already
 available and very well tested.
 
-The XML checking is done based on the Document Type Definition (DTD) file,
-available at
-<a href="http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd</a>.
+The XML checking is done based on the [simgrid.dtd](http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd) Document Type 
+Definition (DTD) file.
 
 If you read the DTD, you should notice the following:
-\li The platform tags contain a version attribute; the current version is 4.
-    This property might be used in the future to provide backwards
-    compatibility.
-\li The DTD contains definitions for the two files used by SimGrid (i.e.,
-    platform description and deployment).
+\li The platform tag has a version attribute. The current version is <b>4</b>. This attribute might be used in the 
+    provide backward compatibility.
+\li The DTD contains definitions for both the platform description and deployment files used by SimGrid.
 
 \section pf_basics Basic concepts
 
