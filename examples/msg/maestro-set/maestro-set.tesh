@@ -1,6 +1,6 @@
 #! ./tesh
 
-! output sort 19 $ $SG_TEST_EXENV set-maestro/set-maestro$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/set-maestro/set-maestro_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+! output sort 19 $ $SG_TEST_EXENV maestro-set/maestro-set$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/maestro-set/maestro-set_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (1:sender@Tremblay) sender
 > [  0.000000] (1:sender@Tremblay) host = Jupiter
 > [  0.000000] (1:sender@Tremblay) task_la->data = 0.000000e+00

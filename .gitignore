@@ -141,7 +141,7 @@ examples/msg/io-file/io-file
 examples/msg/io-file-unlink/io-file-unlink
 examples/msg/io-remote/io-remote
 examples/msg/io-storage/io-storage
-examples/msg/failures/failures
+examples/msg/platform-failures/platform-failures
 examples/msg/process-kill/process-kill
 examples/msg/app-masterworker/app-masterworker
 examples/msg/mc/bugged1
@@ -165,10 +165,10 @@ examples/msg/network-ns3/network-ns3
 examples/msg/app-pmm/app-pmm
 examples/msg/task-priority/task-priority
 examples/msg/procmig.trace
-examples/msg/properties/properties
-examples/msg/synchro/synchro
+examples/msg/platform-properties/platform-properties
+examples/msg/synchro-semaphore/synchro-semaphore
 examples/msg/app-pingpong/app-pingpong
-examples/msg/set-maestro/set-maestro
+examples/msg/maestro-set/maestro-set
 examples/msg/simulation.trace
 examples/msg/process-startkilltime/process-startkilltime
 examples/msg/process-suspend/process-suspend
