@@ -43,6 +43,15 @@ public:
   /** Returns whether the mailbox contains queued communications */
   bool empty();
 
+  /** Declare that the specified process is a permanent receiver on that mailbox
+   *
+   * It means that the communications sent to this mailbox will start flowing to its host even before he does a recv().
+   * This models the real behavior of TCP and MPI communications, amongst other.
+   */
+  void setReceiver(smx_process_t process);
+  /** Return the process declared as permanent receiver, or nullptr if none **/
+  smx_process_t receiver();
+
 private:
   std::string name_;
   smx_mailbox_t inferior_;
@@ -54,5 +63,7 @@ private:
 
 XBT_PUBLIC(sg_mbox_t) sg_mbox_by_name(const char*name);
 XBT_PUBLIC(int) sg_mbox_is_empty(sg_mbox_t mbox);
+XBT_PUBLIC(void)sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process);
+XBT_PUBLIC(smx_process_t) sg_mbox_receiver(sg_mbox_t mbox);
 
 #endif /* SIMGRID_S4U_MAILBOX_HPP */

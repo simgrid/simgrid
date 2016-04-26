@@ -45,9 +45,24 @@ bool s4u::Mailbox::empty() {
   return nullptr == simcall_mbox_get_head(inferior_);
 }
 
+void s4u::Mailbox::setReceiver(smx_process_t process) {
+  simcall_mbox_set_receiver(inferior_, process);
+}
+smx_process_t s4u::Mailbox::receiver() {
+  return simcall_mbox_get_receiver(inferior_);
+}
+
+/*------- C functions -------*/
+
 sg_mbox_t sg_mbox_by_name(const char*name){
   return s4u::Mailbox::byName(name);
 }
 int sg_mbox_is_empty(sg_mbox_t mbox) {
   return mbox->empty();
+}
+void sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process) {
+  mbox->setReceiver(process);
+}
+smx_process_t sg_mbox_receiver(sg_mbox_t mbox) {
+  return mbox->receiver();
 }
