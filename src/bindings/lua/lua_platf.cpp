@@ -541,7 +541,7 @@ void sglua_register_platf_functions(lua_State* L)
 {
   lua_getglobal(L, "simgrid");     /* simgrid */
   luaL_newlib(L, platf_functions); /* simgrid simgrid.platf */
-  lua_setfield(L, -2, "platf");    /* simgrid */
+  lua_setfield(L, -2, "engine");   /* simgrid */
 
   lua_pop(L, 1);                   /* -- */
 }
