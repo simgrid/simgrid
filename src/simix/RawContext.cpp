@@ -123,6 +123,8 @@ extern "C" raw_stack_t raw_makecontext(void* malloced_stack, int stack_size,
                                    rawctx_entry_point_t entry_point, void* arg);
 extern "C" void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context);
 
+// TODO, we should handle FP, MMX and the x87 control-word (for x86 and x86_64)
+
 #if SIMGRID_PROCESSOR_x86_64
 __asm__ (
 #if defined(__APPLE__)
