@@ -2,11 +2,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
 
  The Easter Trim Release.
 
- Backwards Compatibility breaks
-   - Some command line options were renamed for consistency sake:
-     - smpi/async_small_thres        -> smpi/async_small_thresh
-     - smpi/send_is_detached_thres   -> smpi/send_is_detached_thresh 
-
+ * Backwards Compatibility breaks
    - Removed Lua simulation bindings (switch to C or Java for that).
      Lua can still be used to describe platforms
    - Removed Java kernel plug-ins.

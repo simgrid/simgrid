@@ -638,10 +638,12 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_int("smpi/async-small-thresh", 0, NULL,
         "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver");
     xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thresh");
+    xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thres");
 
     xbt_cfg_register_int("smpi/send-is-detached-thresh", 65536, NULL,
         "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
     xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thresh");
+    xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thres");
 
     xbt_cfg_register_boolean("smpi/privatize-global-variables", "no", NULL, "Whether we should privatize global variable at runtime.");
     xbt_cfg_register_alias("smpi/privatize-global-variables", "smpi/privatize_global_variables");
