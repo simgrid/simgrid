@@ -17,7 +17,6 @@
 typedef struct s_smx_mailbox {
   char *name;
   std::deque<smx_synchro_t> *comm_queue;
-  void *data;
   smx_process_t permanent_receiver; //process which the mailbox is attached to
   std::deque<smx_synchro_t> *done_comm_queue;//messages already received in the permanent receive mode
 } s_smx_mailbox_t;
