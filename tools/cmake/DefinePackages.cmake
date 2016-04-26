@@ -270,20 +270,14 @@ set(XBT_SRC
   src/xbt/xbt_strbuff.c
   src/xbt/xbt_virtu.c
   src/xbt_modinter.h
-
   )
 
 if(HAVE_MMALLOC)
-  set(XBT_SRC
-    ${XBT_SRC}
-    src/xbt/mmalloc/mm.c
-    )
+  set(XBT_SRC ${XBT_SRC}  src/xbt/mmalloc/mm.c )
 endif()
 
-set(NS3_SRC
-  src/surf/network_ns3.cpp
-  src/surf/ns3/ns3_simulator.cc
-  )
+set(NS3_SRC  src/surf/network_ns3.cpp
+             src/surf/ns3/ns3_simulator.cc )
 
 set(SURF_SRC
   src/surf/AsImpl.cpp
@@ -331,13 +325,12 @@ set(SURF_SRC
   src/surf/ptask_L07.cpp
   )
 
-set(SIMIX_GENERATED_SRC
-  src/simix/popping_generated.cpp
-  )
+set(SIMIX_GENERATED_SRC   src/simix/popping_generated.cpp  )
 set(SIMIX_SRC
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
   src/simix/Context.cpp
+  src/simix/RawContext.cpp
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
@@ -351,17 +344,6 @@ set(SIMIX_SRC
 
   ${SIMIX_GENERATED_SRC}
   )
-
-# Don't try to compile our inline assembly with MSVC
-if (MSVC)
-  set(EXTRA_DIST
-      ${EXTRA_DIST}
-      src/simix/RawContext.cpp)
-else()
-  set(SIMIX_SRC
-      ${SIMIX_SRC}
-      src/simix/RawContext.cpp)
-endif()
 
 # Boost context may not be available
 if (HAVE_BOOST_CONTEXTS)
@@ -620,8 +602,7 @@ set(MC_SRC
   src/mc/Transition.hpp
   )
 
-set(MC_SIMGRID_MC_SRC
-  src/mc/simgrid_mc.cpp)
+set(MC_SIMGRID_MC_SRC  src/mc/simgrid_mc.cpp)
 
 set(headers_to_install
   include/msg/msg.h

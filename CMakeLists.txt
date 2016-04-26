@@ -16,63 +16,55 @@ endif()
 ## 
 ## Check the C/C++ standard that we need
 ##   See also tools/cmake/GCCFlags.cmake that sets our paranoid warning flags
-if (MSVC)
-  message("-- You are compiling SimGrid with MicroSoft Visual C. Good luck.")
+INCLUDE(CheckCCompilerFlag)
+CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
 
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -D_SCL_SECURE_NO_WARNINGS")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -D_SCL_SECURE_NO_WARNINGS")
-else() # gcc or clang
-  INCLUDE(CheckCCompilerFlag)
-  CHECK_C_COMPILER_FLAG(-fstack-cleaner HAVE_C_STACK_CLEANER)
+## Request full debugging flags
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
+set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
 
-  ## Request full debugging flags
-  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -g3")
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -g3")
-  set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -g")
-
-  if (CMAKE_COMPILER_IS_GNUCC)    
-    if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
-      message(FATAL_ERROR
-              "SimGrid needs at least g++ version 4.7 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
-  	      "You need a sufficient support of c++11 to compile SimGrid.")
-    endif()
+if (CMAKE_COMPILER_IS_GNUCC)    
+  if (CMAKE_CXX_COMPILER_VERSION VERSION_LESS "4.7")
+    message(FATAL_ERROR
+            "SimGrid needs at least g++ version 4.7 to compile but you have ${CMAKE_CXX_COMPILER_VERSION}."
+            "You need a sufficient support of c++11 to compile SimGrid.")
   endif()
+endif()
 
-  ## We need a decent support of the c++11 standard
-  include(CheckCXXCompilerFlag)
-  CHECK_CXX_COMPILER_FLAG("-std=gnu++11" COMPILER_SUPPORTS_CXX11)
-  if(COMPILER_SUPPORTS_CXX11)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
-  else() 
-    message(FATAL_ERROR 
-            "The compiler ${CMAKE_CXX_COMPILER} (v${CMAKE_CXX_COMPILER_VERSION}) has no C++11 support. "
-            "Please use a decent C++ compiler.")
-  endif()
+## We need a decent support of the c++11 standard
+include(CheckCXXCompilerFlag)
+CHECK_CXX_COMPILER_FLAG("-std=gnu++11" COMPILER_SUPPORTS_CXX11)
+if(COMPILER_SUPPORTS_CXX11)
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++11")
+else() 
+  message(FATAL_ERROR 
+          "The compiler ${CMAKE_CXX_COMPILER} (v${CMAKE_CXX_COMPILER_VERSION}) has no C++11 support. "
+           "Please use a decent C++ compiler.")
+endif()
 
-  ### And we need C11 standard, too
-  include(CheckCCompilerFlag)
-  CHECK_C_COMPILER_FLAG("-std=gnu11" COMPILER_SUPPORTS_C11)
-  if(COMPILER_SUPPORTS_C11)
-    set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
-  else()
-    message(FATAL_ERROR 
-            "The compiler ${CMAKE_C_COMPILER} (v${CMAKE_C_COMPILER_VERSION}) has no C11 support. "
-            "Please use a decent C compiler "
-            "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
-  endif()
-  if(APPLE AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "4.6"))
-      ### gcc 4.[1-5] cannot compile ucontext on OSX
-      message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
-      set(HAVE_UCONTEXT_H 0)
-  endif()
-endif() # NOT MSVC
+### And we need C11 standard, too
+include(CheckCCompilerFlag)
+CHECK_C_COMPILER_FLAG("-std=gnu11" COMPILER_SUPPORTS_C11)
+if(COMPILER_SUPPORTS_C11)
+  set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -std=gnu11")
+else()
+  message(FATAL_ERROR 
+          "The compiler ${CMAKE_C_COMPILER} (v${CMAKE_C_COMPILER_VERSION}) has no C11 support. "
+          "Please use a decent C compiler "
+          "(note that c++11 support of ${CMAKE_CXX_COMPILER} seems ok).")
+endif()
+if(APPLE AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "4.6"))
+  ### gcc 4.[1-5] cannot compile ucontext on OSX
+  message(STATUS "Ucontext can't be used with this version of gcc (must be greater than 4.5)")
+  set(HAVE_UCONTEXT_H 0)
+endif()
 
 ### SMPI vs. Fortran
 if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
-  # Call enable_language(Fortran) in order to load the build rules for
-  # this language, needed by teshsuite/smpi/mpich-test/.  Use
-  # CMAKE_FORCE_Fortran_COMPILER to bypass checks for a working
-  # compiler (smpiff don't exist at configure time).
+  # Call enable_language(Fortran) in order to load the build rules for this language, needed by 
+  # teshsuite/smpi/mpich-test/.  Use CMAKE_FORCE_Fortran_COMPILER to bypass checks for a working compiler (smpiff 
+  # doesn't exist at configure time).
   include(CMakeForceCompiler)
   if(NOT COMMAND CMAKE_FORCE_Fortran_COMPILER)
     MACRO(CMAKE_FORCE_Fortran_COMPILER compiler id)
@@ -126,8 +118,7 @@ else()
   endif()
 endif()
 
-execute_process(COMMAND         ${CMAKE_LINKER} --version
-                OUTPUT_VARIABLE LINKER_VERSION)
+execute_process(COMMAND   ${CMAKE_LINKER}   --version    OUTPUT_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
 ### Find programs and paths
@@ -164,14 +155,12 @@ ELSE()
 ENDIF()
 
 if(WIN32)
-
   set(CMAKE_INCLUDE_WIN "${CMAKE_C_COMPILER}")
   set(CMAKE_LIB_WIN "${CMAKE_C_COMPILER}")
   string(REGEX REPLACE "/bin/gcc.*" "/include"  CMAKE_INCLUDE_WIN "${CMAKE_INCLUDE_WIN}")
   string(REGEX REPLACE "/bin/gcc.*" "/lib"  CMAKE_LIB_WIN "${CMAKE_LIB_WIN}")
   set(INCLUDES ${INCLUDES} ${CMAKE_INCLUDE_WIN})
   unset(CMAKE_INCLUDE_WIN)
-
 endif()
 
 include_directories(${INCLUDES})
@@ -392,41 +381,38 @@ endif()
 ### Check for GNU dynamic linker
 CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 if (HAVE_DLFCN_H)
-    execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
-      WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-      OUTPUT_VARIABLE HAVE_GNU_LD_compil
-    )
-    if(HAVE_GNU_LD_compil)
-      set(HAVE_GNU_LD 0)
-      message(STATUS "Warning: test program toward GNU ld failed to compile:")
-      message(STATUS "${HAVE_GNU_LD_comp_output}")
+  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
+                  WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                  OUTPUT_VARIABLE HAVE_GNU_LD_compil
+  )
+  if(HAVE_GNU_LD_compil)
+    set(HAVE_GNU_LD 0)
+    message(STATUS "Warning: test program toward GNU ld failed to compile:")
+    message(STATUS "${HAVE_GNU_LD_comp_output}")
+  else()
+    execute_process(COMMAND ./test_gnu_ld
+                    WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                    RESULT_VARIABLE HAVE_GNU_LD_run
+                    OUTPUT_VARIABLE var_exec
+                   )
+
+    if(NOT HAVE_GNU_LD_run)
+      set(HAVE_GNU_LD 1)
+      message(STATUS "We are using GNU dynamic linker")
     else()
-
-      execute_process(COMMAND ./test_gnu_ld
-          WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-          RESULT_VARIABLE HAVE_GNU_LD_run
-          OUTPUT_VARIABLE var_exec
-      )
-
-      if(NOT HAVE_GNU_LD_run)
-        set(HAVE_GNU_LD 1)
-        message(STATUS "We are using GNU dynamic linker")
-      else()
-        set(HAVE_GNU_LD 0)
-        message(STATUS "Warning: error while checking for GNU ld:")
-        message(STATUS "Test output: '${var_exec}'")
-        message(STATUS "Exit status: ${HAVE_GNU_LD_run}")
-      endif()
-      file(REMOVE test_gnu_ld)
+      set(HAVE_GNU_LD 0)
+      message(STATUS "Warning: error while checking for GNU ld:")
+      message(STATUS "Test output: '${var_exec}'")
+      message(STATUS "Exit status: ${HAVE_GNU_LD_run}")
     endif()
+    file(REMOVE test_gnu_ld)
+  endif()
 endif()
-
 
 #--------------------------------------------------------------------------------------------------
 ### Initialize of CONTEXT THREADS
 
 set(HAVE_THREAD_CONTEXTS 0)
-
 if(HAVE_PTHREAD)
   ### Test that we have a way to create semaphores
 
@@ -469,7 +455,6 @@ if(HAVE_PTHREAD)
       endif()
     endif()
     file(REMOVE sem_open)
-
   else()
     set(HAVE_SEM_OPEN 0)
   endif()
@@ -523,7 +508,6 @@ if(HAVE_PTHREAD)
   message("-- Support for thread context factory ok.")
 endif()
 
-
 set(HAVE_UCONTEXT_CONTEXTS 0)
 if(NOT HAVE_UCONTEXT_H)
   message("-- No ucontext factory: <ucontext.h> not found.")
@@ -533,7 +517,7 @@ elseif(APPLE)
 else()
   try_compile(compile_makecontext ${CMAKE_BINARY_DIR} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_makecontext.c
     OUTPUT_VARIABLE compile_makecontext_output)
-  
+
   #If can have both context
   if(compile_makecontext)
     set(HAVE_UCONTEXT_CONTEXTS 1)
@@ -611,14 +595,14 @@ if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
        OUTPUT_VARIABLE GIT_VERSION
        OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS "Git version: ${GIT_VERSION}")
-    
+
     execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log -n 1 --pretty=format:%ai .
        WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
        OUTPUT_VARIABLE GIT_DATE 
        OUTPUT_STRIP_TRAILING_WHITESPACE)
     message(STATUS "Git date: ${GIT_DATE}")
     string(REGEX REPLACE " .*" "" GIT_VERSION "${GIT_VERSION}")
-    
+
     execute_process(COMMAND git --git-dir=${CMAKE_HOME_DIRECTORY}/.git log --pretty=format:%H -1
        WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/.git/
        OUTPUT_VARIABLE SIMGRID_GITHASH
@@ -627,7 +611,6 @@ if(EXISTS ${CMAKE_HOME_DIRECTORY}/.git/)
 elseif(EXISTS ${CMAKE_HOME_DIRECTORY}/.gitversion)
   FILE(STRINGS ${CMAKE_HOME_DIRECTORY}/.gitversion GIT_VERSION)
 endif()
-
 
 ### Generate the required headers and scripts
 #############################################
@@ -638,10 +621,9 @@ endif()
 # So we include only where needed, and compile with -Wundef to notice the missing includes.
 # But cmake sometimes defines to the empty definition (#define HAVE_VALGRIND_H).
 # So we have to make sure that everything got a decent value before generating the files.
-foreach(var HAVE_EXECINFO_H HAVE_FUTEX_H HAVE_GETDTABLESIZE HAVE_GETTIMEOFDAY HAVE_MMAP
-            HAVE_NANOSLEEP  HAVE_POPEN HAVE_POSIX_GETTIME HAVE_PROCESS_VM_READV HAVE_SIGNAL_H
-	    HAVE_SYS_PARAM_H HAVE_SYS_SYSCTL_H HAVE_SYSCONF HAVE_UCONTEXT_H HAVE_UNISTD_H
-	    HAVE_VALGRIND_H HAVE_VASPRINTF)
+foreach(var HAVE_EXECINFO_H HAVE_FUTEX_H HAVE_GETDTABLESIZE HAVE_GETTIMEOFDAY HAVE_MMAP HAVE_NANOSLEEP HAVE_POPEN
+            HAVE_POSIX_GETTIME HAVE_PROCESS_VM_READV HAVE_SIGNAL_H HAVE_SYS_PARAM_H HAVE_SYS_SYSCTL_H HAVE_SYSCONF 
+            HAVE_UCONTEXT_H HAVE_UNISTD_H HAVE_VALGRIND_H HAVE_VASPRINTF)
   if(${var})
     set(${var} 1)
   else()
@@ -706,9 +688,7 @@ set(generated_headers_to_install
   ${CMAKE_CURRENT_BINARY_DIR}/include/simgrid_config.h
   )
 
-set(generated_headers
-  ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h
-  )
+set(generated_headers  ${CMAKE_CURRENT_BINARY_DIR}/src/internal_config.h )
 
 set(generated_files_to_clean
   ${generated_headers}
@@ -737,7 +717,7 @@ if(NOT "${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_gather.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_gather.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/actions_allgatherv.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay/actions_allgatherv.txt COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/hostfile ${CMAKE_BINARY_DIR}/teshsuite/smpi/hostfile COPYONLY)
-  
+
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/description_file ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/description_file COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/README ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/README COPYONLY)
   configure_file(${CMAKE_HOME_DIRECTORY}/examples/smpi/replay_multiple/smpi_replay.txt ${CMAKE_BINARY_DIR}/examples/smpi/replay_multiple/smpi_replay.txt COPYONLY)
