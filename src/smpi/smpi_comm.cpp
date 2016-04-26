@@ -284,14 +284,13 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
       for(j = 0; j < count; j++) {
         if(rankmap[2 * j] != 0) {
           group_snd[reqs]=smpi_group_copy(group_out);
-          requests[reqs] = smpi_isend_init(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, comm);
+          requests[reqs] = smpi_mpi_isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, comm);
           reqs++;
         }
       }
       if(i != 0) {
         smpi_group_destroy(group_out);
       }
-      smpi_mpi_startall(reqs, requests);
       smpi_mpi_waitall(reqs, requests, MPI_STATUS_IGNORE);
       xbt_free(requests);
     }
