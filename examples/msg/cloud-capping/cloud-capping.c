@@ -55,6 +55,7 @@ static int worker_busy_loop_main(int argc, char *argv[])
 {
   msg_task_t *task = MSG_process_get_data(MSG_process_self());
   MSG_task_execute(*task);
+  MSG_task_destroy(*task);
 
   return 0;
 }
@@ -66,6 +67,7 @@ static void test_dynamic_change(void)
 {
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
+  xbt_dynar_free(&hosts_dynar);
 
   msg_host_t vm0 = MSG_vm_create_core(pm0, "VM0");
   msg_host_t vm1 = MSG_vm_create_core(pm0, "VM1");
@@ -314,6 +316,7 @@ int main(int argc, char *argv[])
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
   msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
   launch_master(pm0);
+  xbt_dynar_free(&hosts_dynar);
 
   int res = MSG_main();
   XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
