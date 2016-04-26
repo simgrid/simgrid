@@ -255,7 +255,7 @@ void xbt_cfg_register_alias(const char *newname, const char *oldname)
   res = new s_xbt_cfgelm_t();
   XBT_DEBUG("Register cfg alias %s -> %s)",oldname,newname);
 
-  res->desc = bprintf("Deprecated alias for %s",newname);
+  res->desc = std::string("Deprecated alias for ")+std::string(newname);
   res->type = xbt_cfgelm_alias;
   res->content = (xbt_dynar_t)newname;
 

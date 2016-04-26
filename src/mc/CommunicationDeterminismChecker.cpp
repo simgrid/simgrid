@@ -192,7 +192,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
       (std::uint64_t) pattern->comm_addr);
 
     char* remote_name = mc_model_checker->process().read<char*>(
-      (std::uint64_t)(synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name));
+      (std::uint64_t)(synchro.comm.mbox ? &synchro.comm.mbox->name : &synchro.comm.mbox_cpy->name));
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
     pattern->src_proc = mc_model_checker->process().resolveProcess(
       simgrid::mc::remote(synchro.comm.src_proc))->pid;
@@ -239,7 +239,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
 
     char* remote_name;
     mc_model_checker->process().read(&remote_name,
-      remote(synchro.comm.rdv ? &synchro.comm.rdv->name : &synchro.comm.rdv_cpy->name));
+      remote(synchro.comm.mbox ? &synchro.comm.mbox->name : &synchro.comm.mbox_cpy->name));
     pattern->rdv = mc_model_checker->process().read_string(remote_name);
     pattern->dst_proc = mc_model_checker->process().resolveProcess(
       simgrid::mc::remote(synchro.comm.dst_proc))->pid;

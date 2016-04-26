@@ -986,7 +986,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/MakeLibWin.cmake
   tools/cmake/Modules/FindGFortran.cmake
   tools/cmake/Modules/FindGraphviz.cmake
-  tools/cmake/Modules/FindLibSigc++.cmake
   tools/cmake/Modules/FindLibdw.cmake
   tools/cmake/Modules/FindLibunwind.cmake
   tools/cmake/Modules/FindLuaSimgrid.cmake

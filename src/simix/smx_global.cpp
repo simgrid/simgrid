@@ -92,10 +92,10 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
     if (smpi_enabled() && !smpi_privatize_global_variables) {
 #if HAVE_PRIVATIZATION
       fprintf(stderr,
-        "Try to enable SMPI variable privatization with --cfg=smpi/privatize_global_variables:yes.\n");
+        "Try to enable SMPI variable privatization with --cfg=smpi/privatize-global-variables:yes.\n");
 #else
       fprintf(stderr,
-        "Sadly, your system does not support --cfg=smpi/privatize_global_variables:yes (yet).\n");
+        "Sadly, your system does not support --cfg=smpi/privatize-global-variables:yes (yet).\n");
 #endif /* HAVE_PRIVATIZATION */
     }
 #endif /* HAVE_SMPI */
@@ -230,8 +230,6 @@ void SIMIX_global_init(int *argc, char **argv)
     __xbt_running_ctx_fetch = SIMIX_process_get_running_context;
     __xbt_ex_terminate = SIMIX_process_exception_terminate;
 
-    SIMIX_network_init();
-
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
 
@@ -260,7 +258,7 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_timers = xbt_heap_new(8, &free);
   }
 
-  if (xbt_cfg_get_boolean("clean_atexit"))
+  if (xbt_cfg_get_boolean("clean-atexit"))
     atexit(SIMIX_clean);
 
 #if HAVE_MC
@@ -298,7 +296,7 @@ void SIMIX_clean(void)
   SIMIX_process_killall(simix_global->maestro_process, 1);
 
   /* Exit the SIMIX network module */
-  SIMIX_network_exit();
+  SIMIX_mailbox_exit();
 
   xbt_heap_free(simix_timers);
   simix_timers = NULL;

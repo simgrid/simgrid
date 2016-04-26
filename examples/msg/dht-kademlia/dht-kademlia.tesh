@@ -30,5 +30,4 @@ $ $SG_TEST_EXENV ${bindir:=.}/dht-kademlia ${srcdir:=.}/cluster.xml ${srcdir:=.}
 > [780.000000] (10:node@node-9.acme.org) 5/5 FIND_NODE have succeeded
 > [780.000000] (12:node@node-11.acme.org) 6/6 FIND_NODE have succeeded
 > [780.000000] ( 4:node@node-3.acme.org) 5/5 FIND_NODE have succeeded
-> [780.000000] ( 0:maestro@) Messages created: 1179
 > [780.000000] ( 0:maestro@) Simulated time: 780

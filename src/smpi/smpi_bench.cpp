@@ -261,9 +261,8 @@ void smpi_bench_end(void)
     xbt_die("Aborting.");
   }
   // Simulate the benchmarked computation unless disabled via command-line argument
-  if (xbt_cfg_get_boolean("smpi/simulate_computation")) {
+  if (xbt_cfg_get_boolean("smpi/simulate-computation")) 
     smpi_execute(xbt_os_timer_elapsed(timer));
-  }
 
   smpi_total_benched_time += xbt_os_timer_elapsed(timer);
 }
@@ -481,7 +480,7 @@ void smpi_sample_3(int global, const char *file, int line)
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   void* mem;
-  if (xbt_cfg_get_boolean("smpi/use_shared_malloc")){
+  if (xbt_cfg_get_boolean("smpi/use-shared-malloc")){
     int fd;
     smpi_source_location loc(file, line);
     auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
@@ -524,7 +523,7 @@ void smpi_shared_free(void *ptr)
 {
   char loc[PTR_STRLEN];
 
-  if (xbt_cfg_get_boolean("smpi/use_shared_malloc")){
+  if (xbt_cfg_get_boolean("smpi/use-shared-malloc")){
     snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
     if (meta == allocs_metadata.end()) {

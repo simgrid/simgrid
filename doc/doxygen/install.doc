@@ -382,4 +382,27 @@ computer.
 export LD_LIBRARY_PATH=/opt/simgrid/lib
 @endverbatim
 
+@subsection install_src_32 Compiling a 32 bit version
+
+On a multiarch x86_64 Linux, it should be possible to compile a 32 bit
+version of SimGrid with something like:
+
+@verbatim
+CFLAGS=-m32 \
+CXXFLAGS=-m32 \
+PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig/ \
+cmake . \
+-DCMAKE_SYSTEM_PROCESSOR=i386 \
+-DCMAKE_Fortran_COMPILER=/some/path/to/i686-linux-gnu-gfortran \
+-DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran \
+-DCMAKE_Fortran_FLAGS=-m32
+@endverbatim
+
+where i686-linux-gnu-gfortran can be implemented as:
+
+@verbatim
+#!/bin/sh
+exec gfortran -m32 "$@"
+@endverbatim
+
 */

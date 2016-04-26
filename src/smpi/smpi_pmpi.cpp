@@ -757,8 +757,6 @@ int PMPI_Comm_dup(MPI_Comm comm, MPI_Comm * newcomm)
     retval = MPI_ERR_ARG;
   } else {
     retval = smpi_comm_dup(comm, newcomm);
-    if(retval==MPI_SUCCESS)
-      smpi_group_use(smpi_comm_group(*newcomm));
   }
   return retval;
 }

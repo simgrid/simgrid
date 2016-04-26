@@ -40,6 +40,7 @@ typedef struct s_smpi_process_data {
   char* instance_id;
   int replaying;                /* is the process replaying a trace */
   xbt_bar_t finalization_barrier;
+  int return_value;
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = NULL;
@@ -117,7 +118,7 @@ void smpi_process_init(int *argc, char ***argv)
     data->argc = argc;
     data->argv = argv;
     // set the process attached to the mailbox
-    simcall_rdv_set_receiver(data->mailbox_small, proc);
+    simcall_mbox_set_receiver(data->mailbox_small, proc);
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
   xbt_assert(smpi_process_data(),
@@ -376,12 +377,12 @@ void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t 
 static void smpi_check_options(){
   //check correctness of MPI parameters
 
-   xbt_assert(xbt_cfg_get_int("smpi/async_small_thresh") <= xbt_cfg_get_int("smpi/send_is_detached_thresh"));
+   xbt_assert(xbt_cfg_get_int("smpi/async-small-thresh") <= xbt_cfg_get_int("smpi/send-is-detached-thresh"));
 
-   if (xbt_cfg_is_default_value("smpi/running_power")) {
+   if (xbt_cfg_is_default_value("smpi/running-power")) {
      XBT_INFO("You did not set the power of the host running the simulation.  "
               "The timings will certainly not be accurate.  "
-              "Use the option \"--cfg=smpi/running_power:<flops>\" to set its value."
+              "Use the option \"--cfg=smpi/running-power:<flops>\" to set its value."
               "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
    }
 }
@@ -412,8 +413,8 @@ void smpi_global_init(void)
     //process_data[i]->index              = i;
     process_data[i]->argc                 = NULL;
     process_data[i]->argv                 = NULL;
-    process_data[i]->mailbox              = simcall_rdv_create(get_mailbox_name(name, i));
-    process_data[i]->mailbox_small        = simcall_rdv_create(get_mailbox_name_small(name, i));
+    process_data[i]->mailbox              = simcall_mbox_create(get_mailbox_name(name, i));
+    process_data[i]->mailbox_small        = simcall_mbox_create(get_mailbox_name_small(name, i));
     process_data[i]->mailboxes_mutex      = xbt_mutex_init();
     process_data[i]->timer                = xbt_os_timer_new();
     if (MC_is_active())
@@ -424,6 +425,7 @@ void smpi_global_init(void)
     process_data[i]->state                = SMPI_UNINITIALIZED;
     process_data[i]->sampling             = 0;
     process_data[i]->finalization_barrier = NULL;
+    process_data[i]->return_value         = 0;
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
@@ -460,16 +462,18 @@ void smpi_global_destroy(void)
       smpi_comm_destroy(process_data[i]->comm_intra);
     }
     xbt_os_timer_free(process_data[i]->timer);
-    simcall_rdv_destroy(process_data[i]->mailbox);
-    simcall_rdv_destroy(process_data[i]->mailbox_small);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);
   process_data = NULL;
 
-  if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED)
+  if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
+    smpi_comm_cleanup_smp(MPI_COMM_WORLD);
+    smpi_comm_cleanup_attributes(MPI_COMM_WORLD);
     xbt_free(MPI_COMM_WORLD);
+  }
+
   MPI_COMM_WORLD = MPI_COMM_NULL;
 
   xbt_free(index_to_process_data);
@@ -479,6 +483,7 @@ void smpi_global_destroy(void)
 }
 
 #ifndef WIN32
+
 void __attribute__ ((weak)) user_main_()
 {
   xbt_die("Should not be in this smpi_simulated_main");
@@ -492,9 +497,18 @@ int __attribute__ ((weak)) smpi_simulated_main_(int argc, char **argv)
   return 0;
 }
 
+inline static int smpi_main_wrapper(int argc, char **argv){
+  int ret = smpi_simulated_main_(argc,argv);
+  if(ret !=0){
+    XBT_WARN("SMPI process did not return 0. Return value : %d", ret);
+    smpi_process_data()->return_value=ret;
+  }
+  return 0;
+}
+
 int __attribute__ ((weak)) main(int argc, char **argv)
 {
-  return smpi_main(smpi_simulated_main_, argc, argv);
+  return smpi_main(smpi_main_wrapper, argc, argv);
 }
 
 #endif
@@ -563,7 +577,7 @@ static void smpi_init_options(){
 
     int reduce_scatter_id =
         find_coll_description(mpi_coll_reduce_scatter_description,
-                              xbt_cfg_get_string("smpi/reduce_scatter"),"reduce_scatter");
+                              xbt_cfg_get_string("smpi/reduce-scatter"),"reduce_scatter");
     mpi_coll_reduce_scatter_fun = (int (*)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype, MPI_Op op,
                                            MPI_Comm comm)) mpi_coll_reduce_scatter_description[reduce_scatter_id].coll;
 
@@ -575,9 +589,9 @@ static void smpi_init_options(){
     int barrier_id = find_coll_description(mpi_coll_barrier_description, xbt_cfg_get_string("smpi/barrier"),"barrier");
     mpi_coll_barrier_fun = (int (*)(MPI_Comm comm)) mpi_coll_barrier_description[barrier_id].coll;
 
-    smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu_threshold");
-    smpi_running_power = xbt_cfg_get_double("smpi/running_power");
-    smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize_global_variables");
+    smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
+    smpi_running_power = xbt_cfg_get_double("smpi/running-power");
+    smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;
 }
@@ -628,7 +642,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
     SIMIX_run();
 
     xbt_os_walltimer_stop(global_timer);
-    if (xbt_cfg_get_boolean("smpi/display_timing")){
+    if (xbt_cfg_get_boolean("smpi/display-timing")){
       double global_time = xbt_os_timer_elapsed(global_timer);
       XBT_INFO("Simulated time: %g seconds. \n\n"
           "The simulation took %g seconds (after parsing and platform setup)\n"
@@ -640,11 +654,19 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
       "You may want to use sampling functions or trace replay to reduce this.");
     }
   }
+  int count = smpi_process_count();
+  int i, ret=0;
+  for (i = 0; i < count; i++) {
+    if(process_data[i]->return_value!=0){
+      ret=process_data[i]->return_value;//return first non 0 value
+      break;
+    }
+  }
   smpi_global_destroy();
 
   TRACE_end();
 
-  return 0;
+  return ret;
 }
 
 // This function can be called from extern file, to initialize logs, options, and processes of smpi

@@ -90,7 +90,7 @@ void surf_network_model_init_IB(void)
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
   Link::onCommunicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
-  xbt_cfg_setdefault_double("network/weight_S", 8775);
+  xbt_cfg_setdefault_double("network/weight-S", 8775);
 
 }
 
@@ -104,15 +104,15 @@ namespace simgrid {
       haveGap_=false;
       active_nodes=NULL;
 
-      const char* IB_factors_string=xbt_cfg_get_string("smpi/IB_penalty_factors");
+      const char* IB_factors_string=xbt_cfg_get_string("smpi/IB-penalty-factors");
       xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
 
       surf_parse_assert(xbt_dynar_length(radical_elements)==3,
-          "smpi/IB_penalty_factors should be provided and contain 3 elements, semi-colon separated : for example 0.965;0.925;1.35");
+          "smpi/IB-penalty-factors should be provided and contain 3 elements, semi-colon separated. Example: 0.965;0.925;1.35");
 
-      Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB_penalty_factors is not numerical: %s");
-      Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB_penalty_factors is not numerical: %s");
-      ys = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 2, char *), "Third part of smpi/IB_penalty_factors is not numerical: %s");
+      Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB-penalty-factors is not numerical: %s");
+      Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB-penalty-factors is not numerical: %s");
+      ys = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 2, char *), "Third part of smpi/IB-penalty-factors is not numerical: %s");
 
       xbt_dynar_free(&radical_elements);
     }

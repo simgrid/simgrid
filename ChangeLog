@@ -2,16 +2,19 @@ SimGrid (3.13) UNRELEASED; urgency=low
 
  The Easter Trim Release.
 
- Backwards Compatibility breaks
-   - Some command line options were renamed for consistency sake:
-     - model-check/sparse-checkpoint -> model-check/sparse_checkpoint
-     - smpi/async_small_thres        -> smpi/async_small_thresh
-     - smpi/send_is_detached_thres   -> smpi/send_is_detached_thresh 
-
+ * Backwards Compatibility breaks
    - Removed Lua simulation bindings (switch to C or Java for that).
      Lua can still be used to describe platforms
    - Removed Java kernel plug-ins.
      Will be reintroduced after the ongoing major internals reorg.
+   - In MSG
+      - the following functions were removed.
+        They were too specific and should be reimplemented in a generic
+        way, with filter function.
+	- MSG_task_listen_from_host
+	- MSG_mailbox_get_count_host_waiting_tasks
+      - MSG_mailbox_put_with_timeout was removed. 
+        Please use MSG_task_send_with_timeout instead.
    - In SimDag 
       - the SD_application_reinit function was removed. It was a noop for a while. 
       - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 
@@ -36,6 +39,9 @@ SimGrid (3.13) UNRELEASED; urgency=low
         MC_snapshot() and MC_compare_snapshot();
       - keep the MC_cut() function as a stub (it was not really working
         in the previous release).
+	
+ Options:
+ * All options are consistently in kebab-case. Old names are kept as alias.
 
  XML platforms:
  * Switch to platform v4 format.

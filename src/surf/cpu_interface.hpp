@@ -4,8 +4,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <list>
+
+#include <xbt/base.h>
+#include <xbt/dynar.h>
+#include <xbt/signal.hpp>
+
+#include <simgrid/forward.h>
+#include <simgrid/s4u/host.hpp>
+
+#include "surf/datatypes.h"
 #include "surf_interface.hpp"
 #include "maxmin_private.hpp"
+#include "trace_mgr.hpp"
 
 #ifndef SURF_CPU_INTERFACE_HPP_
 #define SURF_CPU_INTERFACE_HPP_

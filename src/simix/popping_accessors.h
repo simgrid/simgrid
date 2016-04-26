@@ -432,88 +432,62 @@ static inline void simcall_process_restart__set__result(smx_simcall_t simcall, v
     simcall->result.dp = result;
 }
 
-static inline const char* simcall_rdv_create__get__name(smx_simcall_t simcall) {
+static inline const char* simcall_mbox_create__get__name(smx_simcall_t simcall) {
   return  simcall->args[0].cc;
 }
-static inline void simcall_rdv_create__set__name(smx_simcall_t simcall, const char* arg) {
+static inline void simcall_mbox_create__set__name(smx_simcall_t simcall, const char* arg) {
     simcall->args[0].cc = arg;
 }
-static inline smx_mailbox_t simcall_rdv_create__get__result(smx_simcall_t simcall){
+static inline smx_mailbox_t simcall_mbox_create__get__result(smx_simcall_t simcall){
     return (smx_mailbox_t) simcall->result.dp;
 }
-static inline void simcall_rdv_create__set__result(smx_simcall_t simcall, void* result){
+static inline void simcall_mbox_create__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
 
-static inline smx_mailbox_t simcall_rdv_destroy__get__rdv(smx_simcall_t simcall) {
+static inline smx_mailbox_t simcall_mbox_get_head__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[0].dp;
 }
-static inline void simcall_rdv_destroy__set__rdv(smx_simcall_t simcall, void* arg) {
+static inline void simcall_mbox_get_head__set__mbox(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-
-static inline smx_mailbox_t simcall_rdv_comm_count_by_host__get__rdv(smx_simcall_t simcall) {
-  return (smx_mailbox_t) simcall->args[0].dp;
-}
-static inline void simcall_rdv_comm_count_by_host__set__rdv(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline sg_host_t simcall_rdv_comm_count_by_host__get__host(smx_simcall_t simcall) {
-  return (sg_host_t) simcall->args[1].dp;
-}
-static inline void simcall_rdv_comm_count_by_host__set__host(smx_simcall_t simcall, void* arg) {
-    simcall->args[1].dp = arg;
-}
-static inline unsigned int simcall_rdv_comm_count_by_host__get__result(smx_simcall_t simcall){
-    return  simcall->result.ui;
-}
-static inline void simcall_rdv_comm_count_by_host__set__result(smx_simcall_t simcall, unsigned int result){
-    simcall->result.ui = result;
-}
-
-static inline smx_mailbox_t simcall_rdv_get_head__get__rdv(smx_simcall_t simcall) {
-  return (smx_mailbox_t) simcall->args[0].dp;
-}
-static inline void simcall_rdv_get_head__set__rdv(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline smx_synchro_t simcall_rdv_get_head__get__result(smx_simcall_t simcall){
+static inline smx_synchro_t simcall_mbox_get_head__get__result(smx_simcall_t simcall){
     return (smx_synchro_t) simcall->result.dp;
 }
-static inline void simcall_rdv_get_head__set__result(smx_simcall_t simcall, void* result){
+static inline void simcall_mbox_get_head__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
 
-static inline smx_mailbox_t simcall_rdv_set_receiver__get__rdv(smx_simcall_t simcall) {
+static inline smx_mailbox_t simcall_mbox_set_receiver__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[0].dp;
 }
-static inline void simcall_rdv_set_receiver__set__rdv(smx_simcall_t simcall, void* arg) {
+static inline void simcall_mbox_set_receiver__set__mbox(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_process_t simcall_rdv_set_receiver__get__receiver(smx_simcall_t simcall) {
+static inline smx_process_t simcall_mbox_set_receiver__get__receiver(smx_simcall_t simcall) {
   return (smx_process_t) simcall->args[1].dp;
 }
-static inline void simcall_rdv_set_receiver__set__receiver(smx_simcall_t simcall, void* arg) {
+static inline void simcall_mbox_set_receiver__set__receiver(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
 
-static inline smx_mailbox_t simcall_rdv_get_receiver__get__rdv(smx_simcall_t simcall) {
+static inline smx_mailbox_t simcall_mbox_get_receiver__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[0].dp;
 }
-static inline void simcall_rdv_get_receiver__set__rdv(smx_simcall_t simcall, void* arg) {
+static inline void simcall_mbox_get_receiver__set__mbox(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_process_t simcall_rdv_get_receiver__get__result(smx_simcall_t simcall){
+static inline smx_process_t simcall_mbox_get_receiver__get__result(smx_simcall_t simcall){
     return (smx_process_t) simcall->result.dp;
 }
-static inline void simcall_rdv_get_receiver__set__result(smx_simcall_t simcall, void* result){
+static inline void simcall_mbox_get_receiver__set__result(smx_simcall_t simcall, void* result){
     simcall->result.dp = result;
 }
 
-static inline smx_mailbox_t simcall_comm_iprobe__get__rdv(smx_simcall_t simcall) {
+static inline smx_mailbox_t simcall_comm_iprobe__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[0].dp;
 }
-static inline void simcall_comm_iprobe__set__rdv(smx_simcall_t simcall, void* arg) {
+static inline void simcall_comm_iprobe__set__mbox(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
 static inline int simcall_comm_iprobe__get__type(smx_simcall_t simcall) {
@@ -559,10 +533,10 @@ static inline smx_process_t simcall_comm_send__get__sender(smx_simcall_t simcall
 static inline void simcall_comm_send__set__sender(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_mailbox_t simcall_comm_send__get__rdv(smx_simcall_t simcall) {
+static inline smx_mailbox_t simcall_comm_send__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[1].dp;
 }
-static inline void simcall_comm_send__set__rdv(smx_simcall_t simcall, void* arg) {
+static inline void simcall_comm_send__set__mbox(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
 static inline double simcall_comm_send__get__task_size(smx_simcall_t simcall) {
@@ -620,10 +594,10 @@ static inline smx_process_t simcall_comm_isend__get__sender(smx_simcall_t simcal
 static inline void simcall_comm_isend__set__sender(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_mailbox_t simcall_comm_isend__get__rdv(smx_simcall_t simcall) {
+static inline smx_mailbox_t simcall_comm_isend__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[1].dp;
 }
-static inline void simcall_comm_isend__set__rdv(smx_simcall_t simcall, void* arg) {
+static inline void simcall_comm_isend__set__mbox(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
 static inline double simcall_comm_isend__get__task_size(smx_simcall_t simcall) {
@@ -693,10 +667,10 @@ static inline smx_process_t simcall_comm_recv__get__receiver(smx_simcall_t simca
 static inline void simcall_comm_recv__set__receiver(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_mailbox_t simcall_comm_recv__get__rdv(smx_simcall_t simcall) {
+static inline smx_mailbox_t simcall_comm_recv__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[1].dp;
 }
-static inline void simcall_comm_recv__set__rdv(smx_simcall_t simcall, void* arg) {
+static inline void simcall_comm_recv__set__mbox(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
 static inline void* simcall_comm_recv__get__dst_buff(smx_simcall_t simcall) {
@@ -748,10 +722,10 @@ static inline smx_process_t simcall_comm_irecv__get__receiver(smx_simcall_t simc
 static inline void simcall_comm_irecv__set__receiver(smx_simcall_t simcall, void* arg) {
     simcall->args[0].dp = arg;
 }
-static inline smx_mailbox_t simcall_comm_irecv__get__rdv(smx_simcall_t simcall) {
+static inline smx_mailbox_t simcall_comm_irecv__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[1].dp;
 }
-static inline void simcall_comm_irecv__set__rdv(smx_simcall_t simcall, void* arg) {
+static inline void simcall_comm_irecv__set__mbox(smx_simcall_t simcall, void* arg) {
     simcall->args[1].dp = arg;
 }
 static inline void* simcall_comm_irecv__get__dst_buff(smx_simcall_t simcall) {
@@ -1399,11 +1373,11 @@ XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double dur
 XBT_PRIVATE smx_synchro_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask);
 XBT_PRIVATE void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t execution);
 XBT_PRIVATE smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process_t process);
-XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t rdv, int type, int src, int tag, simix_match_func_t match_fun, void* data);
-XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);
-XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
-XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate);
-XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t rdv, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
+XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox, int type, int src, int tag, simix_match_func_t match_fun, void* data);
+XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);
+XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
+XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate);
+XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
 XBT_PRIVATE void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t comms);
 XBT_PRIVATE void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t comm, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t comm);

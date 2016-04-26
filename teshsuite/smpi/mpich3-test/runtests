@@ -155,7 +155,7 @@ foreach $_ (@ARGV) {
     elsif (/--?maxnp=(.*)/) { $np_max = $1; }
     elsif (/--?tests=(.*)/) { $listfiles = $1; }
     elsif (/--?srcdir=(.*)/) { $srcdir = $1;
-	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_coll --log=root.thr:critical --cfg=smpi/running_power:1e9  --cfg=smpi/async_small_thresh:65536"; }
+	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_coll --log=root.thr:critical --cfg=smpi/running-power:1e9  --cfg=smpi/async-small-thresh:65536"; }
     elsif (/--?verbose/) { $verbose = 1; }
     elsif (/--?showprogress/) { $showProgress = 1; }
     elsif (/--?debug/) { $debug = 1; }
@@ -163,9 +163,6 @@ foreach $_ (@ARGV) {
     elsif (/--?batchdir=(.*)/) { $batrundir = $1; }
     elsif (/--?timeoutarg=(.*)/) { $timeoutArgPattern = $1; }
     elsif (/--?execarg=(.*)/) { $execarg = "$execarg $1"; }
-    elsif (/--?setenv/) {  }
-    elsif (/--?enable-coverage/) {  }
-    elsif (/--?timeout/) {  }
     elsif (/VALGRIND_COMMAND=(.*)/) { 
         $valgrind = $1; }
     elsif (/VALGRIND_OPTIONS=(.*)/) {
@@ -214,14 +211,6 @@ foreach $_ (@ARGV) {
         print TAPOUT "# date ${date}\n";
         # we do not know at this point how many tests will be run, so do
         # not print a test plan line like "1..450" until the very end
-    }
-    else {
-	print STDERR "Unrecognized argument $_\n";
-	print STDERR "runtests [-tests=testfile] [-np=nprocesses] \
-        [-maxnp=max-nprocesses] [-srcdir=location-of-tests] \
-        [-xmlfile=filename ] [-noxmlclose] \
-        [-verbose] [-showprogress] [-debug] [-batch]\n";
-	exit(1);
     }
 }
 

@@ -24,6 +24,4 @@
 #define HAVE_MC         @HAVE_MC@ /* Was the model-checking compiled in? */
 #define HAVE_NS3        @HAVE_NS3@ /* Was the NS3 support compiled in? */
 
-#define SIMGRID_HAVE_LIBSIG @SIMGRID_HAVE_LIBSIG@ /* Used in the public interface xbt/signal.hpp :( */
-
 #endif /* SIMGRID_PUBLIC_CONFIG_H */

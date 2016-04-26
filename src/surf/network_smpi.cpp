@@ -91,8 +91,8 @@ void surf_network_model_init_SMPI(void)
   surf_network_model = new simgrid::surf::NetworkSmpiModel();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
-  xbt_cfg_setdefault_double("network/sender_gap", 10e-6);
-  xbt_cfg_setdefault_double("network/weight_S", 8775);
+  xbt_cfg_setdefault_double("network/sender-gap", 10e-6);
+  xbt_cfg_setdefault_double("network/weight-S", 8775);
 }
 
 namespace simgrid {
@@ -172,7 +172,7 @@ namespace simgrid {
     double NetworkSmpiModel::bandwidthFactor(double size)
     {
       if (!smpi_bw_factor)
-        smpi_bw_factor = parse_factor(xbt_cfg_get_string("smpi/bw_factor"));
+        smpi_bw_factor = parse_factor(xbt_cfg_get_string("smpi/bw-factor"));
 
       unsigned int iter = 0;
       s_smpi_factor_t fact;
@@ -192,7 +192,7 @@ namespace simgrid {
     double NetworkSmpiModel::latencyFactor(double size)
     {
       if (!smpi_lat_factor)
-        smpi_lat_factor = parse_factor(xbt_cfg_get_string("smpi/lat_factor"));
+        smpi_lat_factor = parse_factor(xbt_cfg_get_string("smpi/lat-factor"));
 
       unsigned int iter = 0;
       s_smpi_factor_t fact;

@@ -178,6 +178,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
   int ret=MPI_SUCCESS;
   *new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   memcpy(*new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
+  (*new_t)->in_use=1;
   if (datatype->sizeof_substruct){
     (*new_t)->substruct=xbt_malloc(datatype->sizeof_substruct);
     memcpy((*new_t)->substruct, datatype->substruct, datatype->sizeof_substruct);
@@ -197,6 +198,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
         if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
           ret = elem->copy_fn(datatype, *key, NULL, value_in, &value_out, &flag );
           if(ret!=MPI_SUCCESS){
+            smpi_datatype_unuse(*new_t);
             *new_t=MPI_DATATYPE_NULL;
             return ret;
           }
@@ -776,7 +778,6 @@ s_smpi_mpi_indexed_t* smpi_datatype_indexed_create( int* block_lengths, int* blo
   new_t->base.unserialize = &unserialize_indexed;
   new_t->base.subtype_free = &free_indexed;
   new_t->base.subtype_use = &use_indexed;
- //TODO : add a custom function for each time to clean these 
   new_t->block_lengths= xbt_new(int, block_count);
   new_t->block_indices= xbt_new(int, block_count);
   int i;
@@ -927,7 +928,6 @@ s_smpi_mpi_hindexed_t* smpi_datatype_hindexed_create( int* block_lengths, MPI_Ai
   new_t->base.unserialize = &unserialize_hindexed;
   new_t->base.subtype_free = &free_hindexed;
   new_t->base.subtype_use = &use_hindexed;
- //TODO : add a custom function for each time to clean these 
   new_t->block_lengths= xbt_new(int, block_count);
   new_t->block_indices= xbt_new(MPI_Aint, block_count);
   int i;
@@ -1084,7 +1084,6 @@ s_smpi_mpi_struct_t* smpi_datatype_struct_create( int* block_lengths, MPI_Aint* 
   new_t->base.unserialize = &unserialize_struct;
   new_t->base.subtype_free = &free_struct;
   new_t->base.subtype_use = &use_struct;
- //TODO : add a custom function for each time to clean these 
   new_t->block_lengths= xbt_new(int, block_count);
   new_t->block_indices= xbt_new(MPI_Aint, block_count);
   new_t->old_types=  xbt_new(MPI_Datatype, block_count);
@@ -1095,10 +1094,7 @@ s_smpi_mpi_struct_t* smpi_datatype_struct_create( int* block_lengths, MPI_Aint* 
     new_t->old_types[i]=old_types[i];
     smpi_datatype_use(new_t->old_types[i]);
   }
-  //new_t->block_lengths = block_lengths;
-  //new_t->block_indices = block_indices;
   new_t->block_count = block_count;
-  //new_t->old_types = old_types;
   return new_t;
 }
 

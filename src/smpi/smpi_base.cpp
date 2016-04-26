@@ -252,10 +252,12 @@ static MPI_Request build_request(void *buf, int count, MPI_Datatype datatype, in
   request->old_type = datatype;
 
   request->size = smpi_datatype_size(datatype) * count;
+  smpi_datatype_use(datatype);
   request->src = src;
   request->dst = dst;
   request->tag = tag;
   request->comm = comm;
+  smpi_comm_use(request->comm);
   request->action = NULL;
   request->flags = flags;
   request->detached = 0;
@@ -272,7 +274,6 @@ static MPI_Request build_request(void *buf, int count, MPI_Datatype datatype, in
   request->op = MPI_REPLACE;
   request->send = 0;
   request->recv = 0;
- // if (flags & SEND) smpi_datatype_unuse(datatype);
 
   return request;
 }
@@ -334,7 +335,7 @@ void smpi_mpi_start(MPI_Request request)
   if (request->flags & RECV) {
     print_request("New recv", request);
 
-    int async_small_thresh = xbt_cfg_get_int("smpi/async_small_thresh");
+    int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
     xbt_mutex_t mut = smpi_process_mailboxes_mutex();
     if (async_small_thresh != 0 ||request->flags & RMA)
@@ -382,8 +383,6 @@ void smpi_mpi_start(MPI_Request request)
 
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
-    smpi_datatype_use(request->old_type);
-    smpi_comm_use(request->comm);
     request->action = simcall_comm_irecv(SIMIX_process_self(), mailbox, request->buf, &request->real_size, &match_recv,
                                          !smpi_process_get_replaying()? &smpi_comm_copy_buffer_callback
                                          : &smpi_comm_null_copy_buffer_callback, request, -1.0);
@@ -412,7 +411,7 @@ void smpi_mpi_start(MPI_Request request)
         XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
     }
 
-    int async_small_thresh = xbt_cfg_get_int("smpi/async_small_thresh");
+    int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
     xbt_mutex_t mut=smpi_process_remote_mailboxes_mutex(receiver);
 
@@ -449,7 +448,7 @@ void smpi_mpi_start(MPI_Request request)
 
     void* buf = request->buf;
     if ( (! (request->flags & SSEND)) && ((request->flags & RMA) ||
-         (static_cast<int>(request->size) < xbt_cfg_get_int("smpi/send_is_detached_thresh")))) {
+         (static_cast<int>(request->size) < xbt_cfg_get_int("smpi/send-is-detached-thresh")))) {
       void *oldbuf = NULL;
       request->detached = 1;
       XBT_DEBUG("Send request %p is detached", request);
@@ -472,8 +471,6 @@ void smpi_mpi_start(MPI_Request request)
 
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
-    smpi_datatype_use(request->old_type);
-    smpi_comm_use(request->comm);
     request->action = simcall_comm_isend(SIMIX_process_from_PID(request->src+1), mailbox, request->size, -1.0,
                                          buf, request->real_size, &match_send,
                          &xbt_free_f, // how to free the userdata if a detached send fails
@@ -508,6 +505,8 @@ void smpi_mpi_request_free(MPI_Request * request)
     if((*request)->refcount<0) xbt_die("wrong refcount");
 
     if((*request)->refcount==0){
+        smpi_datatype_unuse((*request)->old_type);
+        smpi_comm_unuse((*request)->comm);
         print_request("Destroying", (*request));
         xbt_free(*request);
         *request = MPI_REQUEST_NULL;
@@ -530,6 +529,7 @@ MPI_Request smpi_rma_send_init(void *buf, int count, MPI_Datatype datatype, int 
     request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype,  src, dst, tag,
                             comm, RMA | NON_PERSISTENT | ISEND | SEND | PREPARED | ACCUMULATE);
     request->op = op;
+//    smpi_datatype_use(datatype);
   }
   return request;
 }
@@ -545,6 +545,7 @@ MPI_Request smpi_rma_recv_init(void *buf, int count, MPI_Datatype datatype, int 
     request = build_request(buf==MPI_BOTTOM ? (void*)0 : buf, count, datatype,  src, dst, tag,
                             comm, RMA | NON_PERSISTENT | RECV | PREPARED | ACCUMULATE);
     request->op = op;
+//    smpi_datatype_use(datatype);
   }
   return request;
 }
@@ -692,10 +693,8 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
           smpi_op_apply(req->op, req->buf, req->old_buf, &n, &datatype);
       }
     }
-    smpi_comm_unuse(req->comm);
   }
 
-    smpi_datatype_unuse(req->old_type);
   if (TRACE_smpi_view_internals()) {
     if(req->flags & RECV){
       int rank = smpi_process_index();
@@ -836,7 +835,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   print_request("New iprobe", request);
   // We have to test both mailboxes as we don't know if we will receive one one or another
-  if (xbt_cfg_get_int("smpi/async_small_thresh")>0){
+  if (xbt_cfg_get_int("smpi/async-small-thresh")>0){
       mailbox = smpi_process_mailbox_small();
       XBT_DEBUG("trying to probe the perm recv mailbox");
       request->action = simcall_comm_iprobe(mailbox, 0, request->src, request->tag, &match_recv, (void*)request);

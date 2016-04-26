@@ -307,7 +307,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
     } else {
       xbt_assert(t_simdata->isused == 0,
                  "This task is still being used somewhere else. You cannot send it now. Go fix your code!"
-                 "(use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
+                 "(use --cfg=msg/debug-multiple-use:on to get the backtrace of the other process)");
     }
   }
 
@@ -794,7 +794,79 @@ msg_error_t MSG_task_send_bounded(msg_task_t task, const char *alias, double max
  */
 msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, double timeout)
 {
-  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias), task, timeout);
+  msg_error_t ret = MSG_OK;
+  simdata_task_t t_simdata = NULL;
+  msg_process_t process = MSG_process_self();
+  simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data();
+  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
+
+  int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
+
+  /* Prepare the task to send */
+  t_simdata = task->simdata;
+  t_simdata->sender = process;
+  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
+
+  if (t_simdata->isused != 0) {
+    if (msg_global->debug_multiple_use){
+      XBT_ERROR("This task is already used in there:");
+      xbt_backtrace_display((xbt_ex_t*) t_simdata->isused);
+      XBT_ERROR("And you try to reuse it from here:");
+      xbt_backtrace_display_current();
+    } else {
+      xbt_assert(t_simdata->isused == 0,
+                 "This task is still being used somewhere else. You cannot send it now. Go fix your code!"
+                 " (use --cfg=msg/debug-multiple-use:on to get the backtrace of the other process)");
+    }
+  }
+
+  if (msg_global->debug_multiple_use)
+    MSG_BT(t_simdata->isused, "Using Backtrace");
+  else
+    t_simdata->isused = (void*)1;
+  t_simdata->comm = NULL;
+  msg_global->sent_msg++;
+
+  p_simdata->waiting_task = task;
+
+  xbt_ex_t e;
+  /* Try to send it by calling SIMIX network layer */
+  TRY {
+    smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simix call  */
+    comm = simcall_comm_isend(SIMIX_process_self(), mailbox,t_simdata->bytes_amount,
+                              t_simdata->rate, task, sizeof(void *), NULL, NULL, NULL, task, 0);
+    if (TRACE_is_enabled())
+      simcall_set_category(comm, task->category);
+     t_simdata->comm = comm;
+     simcall_comm_wait(comm, timeout);
+  }
+
+  CATCH(e) {
+    switch (e.category) {
+    case cancel_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    case network_error:
+      ret = MSG_TRANSFER_FAILURE;
+      break;
+    case timeout_error:
+      ret = MSG_TIMEOUT;
+      break;
+    default:
+      RETHROW;
+    }
+    xbt_ex_free(e);
+
+    /* If the send failed, it is not used anymore */
+    if (msg_global->debug_multiple_use && t_simdata->isused!=0)
+      xbt_ex_free(*(xbt_ex_t*)t_simdata->isused);
+    t_simdata->isused = 0;
+  }
+
+  p_simdata->waiting_task = NULL;
+  if (call_end)
+    TRACE_msg_task_put_end();
+  MSG_RETURN(ret);
 }
 
 /** \ingroup msg_task_usage
@@ -813,7 +885,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
 msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias, double timeout, double maxrate)
 {
   task->simdata->rate = maxrate;
-  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias), task, timeout);
+  return MSG_task_send_with_timeout(task, alias, timeout);
 }
 
 /** \ingroup msg_task_usage
@@ -825,22 +897,8 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  */
 int MSG_task_listen(const char *alias)
 {
-  smx_mailbox_t rdv = MSG_mailbox_get_by_alias(alias);
-  return !MSG_mailbox_is_empty(rdv) || (rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0);
-}
-
-/** \ingroup msg_task_usage
- * \brief Check the number of communication actions of a given host pending in a mailbox.
- *
- * \param alias the name of the mailbox to be considered
- * \param host the host to check for communication
- *
- * \return Returns the number of pending communication actions of the host in the given mailbox, 0 if there is no
- *         pending communication actions.
- */
-int MSG_task_listen_from_host(const char *alias, msg_host_t host)
-{
-  return MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias(alias), host);
+  smx_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
+  return !MSG_mailbox_is_empty(mbox) || (mbox->permanent_receiver && !mbox->done_comm_queue->empty());
 }
 
 /** \ingroup msg_task_usage

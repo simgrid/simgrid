@@ -29,8 +29,6 @@ static int nb_bits = 16;
 static int timeout = 50;
 static int max_simulation_time = 1000;
 
-extern long int smx_total_comms;
-
 typedef struct s_node {
   int id;                                 //128bits generated random(2^128 -1)
   int known_id;
@@ -571,7 +569,6 @@ int main(int argc, char *argv[])
   MSG_launch_application(options[1]);
 
   msg_error_t res = MSG_main();
-  XBT_CRITICAL("Messages created: %ld", smx_total_comms);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   return res != MSG_OK;

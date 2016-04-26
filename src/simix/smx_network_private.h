@@ -7,39 +7,37 @@
 #ifndef _SIMIX_NETWORK_PRIVATE_H
 #define _SIMIX_NETWORK_PRIVATE_H
 
+#include <deque>
 #include <xbt/base.h>
 
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
 /** @brief Rendez-vous point datatype */
-typedef struct s_smx_rvpoint {
+typedef struct s_smx_mailbox {
   char *name;
-  xbt_fifo_t comm_fifo;
+  std::deque<smx_synchro_t> *comm_queue;
   void *data;
   smx_process_t permanent_receiver; //process which the mailbox is attached to
-  xbt_fifo_t done_comm_fifo;//messages already received in the permanent receive mode
-} s_smx_rvpoint_t;
+  std::deque<smx_synchro_t> *done_comm_queue;//messages already received in the permanent receive mode
+} s_smx_mailbox_t;
 
-XBT_PRIVATE void SIMIX_network_init(void);
-XBT_PRIVATE void SIMIX_network_exit(void);
+XBT_PRIVATE void SIMIX_mailbox_exit(void);
 
-XBT_PRIVATE smx_mailbox_t SIMIX_rdv_create(const char *name);
-XBT_PRIVATE void SIMIX_rdv_destroy(smx_mailbox_t rdv);
-XBT_PRIVATE smx_mailbox_t SIMIX_rdv_get_by_name(const char *name);
-XBT_PRIVATE void SIMIX_rdv_remove(smx_mailbox_t rdv, smx_synchro_t comm);
-XBT_PRIVATE int SIMIX_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host);
-XBT_PRIVATE smx_synchro_t SIMIX_rdv_get_head(smx_mailbox_t rdv);
-XBT_PRIVATE void SIMIX_rdv_set_receiver(smx_mailbox_t rdv, smx_process_t proc);
-XBT_PRIVATE smx_process_t SIMIX_rdv_get_receiver(smx_mailbox_t rdv);
-XBT_PRIVATE smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t rdv,
+XBT_PRIVATE smx_mailbox_t SIMIX_mbox_create(const char *name);
+XBT_PRIVATE smx_mailbox_t SIMIX_mbox_get_by_name(const char *name);
+XBT_PRIVATE void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t comm);
+XBT_PRIVATE smx_synchro_t SIMIX_mbox_get_head(smx_mailbox_t mbox);
+XBT_PRIVATE void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t proc);
+XBT_PRIVATE smx_process_t SIMIX_mbox_get_receiver(smx_mailbox_t mbox);
+XBT_PRIVATE smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox,
                               void *dst_buff, size_t *dst_buff_size,
                               int (*)(void *, void *, smx_synchro_t),
                               void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                               void *data, double rate);
 XBT_PRIVATE void SIMIX_comm_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_comm_destroy_internal_actions(smx_synchro_t synchro);
-XBT_PRIVATE smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t rdv, int type, int src,
+XBT_PRIVATE smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data);
 XBT_PRIVATE void SIMIX_post_comm(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_comm_cancel(smx_synchro_t synchro);

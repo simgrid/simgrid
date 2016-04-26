@@ -603,9 +603,11 @@ void simcall_process_set_data(smx_process_t process, void *data)
   simgrid::simix::kernel(std::bind(SIMIX_process_set_data, process, data));
 }
 
-static void kill_process(void* arg)
+static void kill_process_from_timer(void* arg)
 {
-  simix_global->kill_process_function((smx_process_t) arg);
+  smx_process_t process = (smx_process_t) arg;
+  simix_global->kill_process_function(process);
+  process->kill_timer=NULL;
 }
 
 /**
@@ -619,7 +621,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
     if (simix_global->kill_process_function) {
       XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
           sg_host_get_name(process->host));
-      process->kill_timer = SIMIX_timer_set(kill_time, kill_process, process);
+      process->kill_timer = SIMIX_timer_set(kill_time, kill_process_from_timer, process);
     }
   }
 }
@@ -728,79 +730,54 @@ e_smx_state_t simcall_process_sleep(double duration)
 }
 
 /**
- *  \ingroup simix_rdv_management
+ *  \ingroup simix_mbox_management
  *  \brief Creates a new rendez-vous point
  *  \param name The name of the rendez-vous point
  *  \return The created rendez-vous point
  */
-smx_mailbox_t simcall_rdv_create(const char *name)
+smx_mailbox_t simcall_mbox_create(const char *name)
 {
-  return simcall_BODY_rdv_create(name);
+  return simcall_BODY_mbox_create(name);
 }
 
-
 /**
- *  \ingroup simix_rdv_management
- *  \brief Destroy a rendez-vous point
- *  \param rdv The rendez-vous point to destroy
- */
-void simcall_rdv_destroy(smx_mailbox_t rdv)
-{
-  simcall_BODY_rdv_destroy(rdv);
-}
-/**
- *  \ingroup simix_rdv_management
+ *  \ingroup simix_mbox_management
  *  \brief Returns a rendez-vous point knowing its name
  */
-smx_mailbox_t simcall_rdv_get_by_name(const char *name)
+smx_mailbox_t simcall_mbox_get_by_name(const char *name)
 {
-  xbt_assert(name != NULL, "Invalid parameter for simcall_rdv_get_by_name (name is NULL)");
-
   /* FIXME: this is a horrible loss of performance, so we hack it out by
    * skipping the simcall (for now). It works in parallel, it won't work on
    * distributed but probably we will change MSG for that. */
 
-  return SIMIX_rdv_get_by_name(name);
+  return SIMIX_mbox_get_by_name(name);
 }
 
 /**
- *  \ingroup simix_rdv_management
- *  \brief Counts the number of communication synchros of a given host pending
- *         on a rendez-vous point.
- *  \param rdv The rendez-vous point
- *  \param host The host to be counted
- *  \return The number of comm synchros pending in the rdv
- */
-int simcall_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host)
-{
-  return simcall_BODY_rdv_comm_count_by_host(rdv, host);
-}
-
-/**
- *  \ingroup simix_rdv_management
+ *  \ingroup simix_mbox_management
  *  \brief returns the communication at the head of the rendez-vous
- *  \param rdv The rendez-vous point
+ *  \param mbox The rendez-vous point
  *  \return The communication or NULL if empty
  */
-smx_synchro_t simcall_rdv_get_head(smx_mailbox_t rdv)
+smx_synchro_t simcall_mbox_get_head(smx_mailbox_t mbox)
 {
-  return simcall_BODY_rdv_get_head(rdv);
+  return simcall_BODY_mbox_get_head(mbox);
 }
 
-void simcall_rdv_set_receiver(smx_mailbox_t rdv, smx_process_t process)
+void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
 {
-  simcall_BODY_rdv_set_receiver(rdv, process);
+  simcall_BODY_mbox_set_receiver(mbox, process);
 }
 
-smx_process_t simcall_rdv_get_receiver(smx_mailbox_t rdv)
+smx_process_t simcall_mbox_get_receiver(smx_mailbox_t mbox)
 {
-  return simcall_BODY_rdv_get_receiver(rdv);
+  return simcall_BODY_mbox_get_receiver(mbox);
 }
 
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate,
+void simcall_comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
                          int (*match_fun)(void *, void *, smx_synchro_t),
                          void (*copy_data_fun)(smx_synchro_t, void*, size_t), void *data,
@@ -811,18 +788,18 @@ void simcall_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size
   xbt_assert(std::isfinite(rate), "rate is not finite!");
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
-  xbt_assert(rdv, "No rendez-vous point defined for send");
+  xbt_assert(mbox, "No rendez-vous point defined for send");
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
     smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
-    comm = simcall_comm_isend(sender, rdv, task_size, rate,
+    comm = simcall_comm_isend(sender, mbox, task_size, rate,
         src_buff, src_buff_size, match_fun, NULL, copy_data_fun, data, 0);
     simcall_comm_wait(comm, timeout);
     comm = NULL;
   }
   else {
-    simcall_BODY_comm_send(sender, rdv, task_size, rate, src_buff, src_buff_size,
+    simcall_BODY_comm_send(sender, mbox, task_size, rate, src_buff, src_buff_size,
                          match_fun, copy_data_fun, data, timeout);
   }
 }
@@ -830,7 +807,7 @@ void simcall_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate,
+smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
                               int (*match_fun)(void *, void *, smx_synchro_t),
                               void (*clean_fun)(void *),
@@ -842,9 +819,9 @@ smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t rdv, double
   xbt_assert(std::isfinite(task_size), "task_size is not finite!");
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  xbt_assert(rdv, "No rendez-vous point defined for isend");
+  xbt_assert(mbox, "No rendez-vous point defined for isend");
 
-  return simcall_BODY_comm_isend(sender, rdv, task_size, rate, src_buff,
+  return simcall_BODY_comm_isend(sender, mbox, task_size, rate, src_buff,
                                  src_buff_size, match_fun,
                                  clean_fun, copy_data_fun, data, detached);
 }
@@ -852,50 +829,50 @@ smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t rdv, double
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_recv(smx_process_t receiver, smx_mailbox_t rdv, void *dst_buff, size_t * dst_buff_size,
+void simcall_comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t * dst_buff_size,
                        int (*match_fun)(void *, void *, smx_synchro_t),
                        void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                        void *data, double timeout, double rate)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  xbt_assert(rdv, "No rendez-vous point defined for recv");
+  xbt_assert(mbox, "No rendez-vous point defined for recv");
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
     smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
-    comm = simcall_comm_irecv(receiver, rdv, dst_buff, dst_buff_size,
+    comm = simcall_comm_irecv(receiver, mbox, dst_buff, dst_buff_size,
                               match_fun, copy_data_fun, data, rate);
     simcall_comm_wait(comm, timeout);
     comm = NULL;
   }
   else {
-    simcall_BODY_comm_recv(receiver, rdv, dst_buff, dst_buff_size,
+    simcall_BODY_comm_recv(receiver, mbox, dst_buff, dst_buff_size,
                            match_fun, copy_data_fun, data, timeout, rate);
   }
 }
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t rdv, void *dst_buff, size_t *dst_buff_size,
+smx_synchro_t simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
                                 int (*match_fun)(void *, void *, smx_synchro_t),
                                 void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                                 void *data, double rate)
 {
-  xbt_assert(rdv, "No rendez-vous point defined for irecv");
+  xbt_assert(mbox, "No rendez-vous point defined for irecv");
 
-  return simcall_BODY_comm_irecv(receiver, rdv, dst_buff, dst_buff_size,
+  return simcall_BODY_comm_irecv(receiver, mbox, dst_buff, dst_buff_size,
                                  match_fun, copy_data_fun, data, rate);
 }
 
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_iprobe(smx_mailbox_t rdv, int type, int src, int tag,
+smx_synchro_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
                                 int (*match_fun)(void *, void *, smx_synchro_t), void *data)
 {
-  xbt_assert(rdv, "No rendez-vous point defined for iprobe");
+  xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
-  return simcall_BODY_comm_iprobe(rdv, type, src, tag, match_fun, data);
+  return simcall_BODY_comm_iprobe(mbox, type, src, tag, match_fun, data);
 }
 
 /**

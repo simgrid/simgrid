@@ -66,11 +66,6 @@ if(HAVE_GRAPHVIZ)
   endif()
 endif()
 
-if(SIMGRID_HAVE_LIBSIG)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")
-  add_definitions(-DLIBSIGC)
-endif()
-
 if(HAVE_MC)
   # The availability of libunwind was checked in CompleteInFiles.cmake
   #   (that includes FindLibunwind.cmake), so simply load it now.

@@ -31,6 +31,8 @@ install:
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 
 build_script:
+- SET CFLAGS=-Wno-deprecated-declarations   # ignore C:/Libraries/boost_1_59_0/boost/smart_ptr/shared_ptr.hpp:461:22: warning: 'template<class> class std::auto_ptr' is deprecated [-Wdeprecated-declarations]
+- SET CPPFLAGS=-Wno-deprecated-declarations # ignore issues within boost
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
 - C:\tools\mingw64\bin\mingw32-make.exe VERBOSE=1
 - cd C:/projects/simgrid/examples/java && java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml || true

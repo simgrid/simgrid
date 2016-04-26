@@ -26,7 +26,7 @@ SG_BEGIN_DECL()
  * #MSG_task_send and friends) hide this object behind a string
  * alias. That mean that you don't provide the mailbox on which you
  * want to send your task, but only the name of this mailbox. */
-typedef struct s_smx_rvpoint *msg_mailbox_t;
+typedef struct s_smx_mailbox *msg_mailbox_t;
 
 /* ******************************** Environment ************************************ */
 typedef simgrid_As *msg_as_t;
@@ -440,7 +440,6 @@ XBT_PUBLIC(msg_task_t) MSG_comm_get_task(msg_comm_t comm);
 XBT_PUBLIC(msg_error_t) MSG_comm_get_status(msg_comm_t comm);
 
 XBT_PUBLIC(int) MSG_task_listen(const char *alias);
-XBT_PUBLIC(int) MSG_task_listen_from_host(const char *alias, msg_host_t host);
 XBT_PUBLIC(msg_error_t) MSG_task_send_with_timeout(msg_task_t task, const char *alias, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias, double timeout, double maxrate);
 XBT_PUBLIC(msg_error_t) MSG_task_send(msg_task_t task, const char *alias);
@@ -487,20 +486,10 @@ XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
  */
 XBT_PUBLIC(msg_task_t) MSG_mailbox_get_head(msg_mailbox_t mailbox);
 
-/* @brief MSG_mailbox_get_count_host_waiting_tasks
- * Return the number of tasks waiting to be received in a mailbox and sent by a host.
- * @param  mailbox  The mailbox concerned by the operation.
- * @param  host     The host containing the processes that sended the tasks.
- * @return          The number of tasks in the mailbox specified by the parameter mailbox and sended by all the
- *                  processes located on the host specified by the parameter host.
- */
-XBT_PUBLIC(int) MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, msg_host_t host);
 XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task, msg_host_t host,
                                                  double timeout);
 XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *task, msg_host_t host,
                                                          double timeout, double rate);
-XBT_PUBLIC(msg_error_t) MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task, double timeout);
-
 
 /************************** Action handling **********************************/
 XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);

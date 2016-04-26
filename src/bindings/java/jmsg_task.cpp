@@ -359,13 +359,10 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Task_sendBounded(JNIEnv * env,jobjec
 JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass cls, jstring jalias, jdouble jtimeout,
                                                             jobject jhost)
 {
-  msg_error_t rv;
-  msg_task_t *task = xbt_new(msg_task_t,1);
-  *task = NULL;
+  msg_task_t task = NULL;
 
   msg_host_t host = NULL;
   jobject jtask_global, jtask_local;
-  const char *alias;
 
   if (jhost) {
     host = jhost_get_native(env, jhost);
@@ -376,24 +373,22 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Task_receive(JNIEnv * env, jclass
     }
   }
 
-  alias = env->GetStringUTFChars(jalias, 0);
-  rv = MSG_task_receive_ext(task, alias, (double) jtimeout, host);
+  const char *alias = env->GetStringUTFChars(jalias, 0);
+  msg_error_t rv = MSG_task_receive_ext(&task, alias, (double) jtimeout, host);
   if (env->ExceptionOccurred())
     return NULL;
   if (rv != MSG_OK) {
     jmsg_throw_status(env,rv);
     return NULL;
   }
-  jtask_global = (jobject) MSG_task_get_data(*task);
+  jtask_global = (jobject) MSG_task_get_data(task);
 
   /* Convert the global ref into a local ref so that the JVM can free the stuff */
   jtask_local = env->NewLocalRef(jtask_global);
   env->DeleteGlobalRef(jtask_global);
-  MSG_task_set_data(*task, NULL);
+  MSG_task_set_data(task, NULL);
 
   env->ReleaseStringUTFChars(jalias, alias);
-
-  xbt_free(task);
 
   return (jobject) jtask_local;
 }
@@ -655,24 +650,6 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Task_listen(JNIEnv * env, jclass
   env->ReleaseStringUTFChars(jalias, alias);
 
   return (jboolean) rv;
-}
-
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFromHost(JNIEnv * env, jclass cls, jstring jalias, jobject jhost)
-{
-  int rv;
-  const char *alias;
-
-  msg_host_t host = jhost_get_native(env, jhost);
-
-  if (!host) {
-    jxbt_throw_notbound(env, "host", jhost);
-    return -1;
-  }
-  alias = env->GetStringUTFChars(jalias, 0);
-  rv = MSG_task_listen_from_host(alias, host);
-  env->ReleaseStringUTFChars(jalias, alias);
-
-  return (jint) rv;
 }
 
 JNIEXPORT jint JNICALL Java_org_simgrid_msg_Task_listenFrom(JNIEnv * env, jclass cls, jstring jalias)

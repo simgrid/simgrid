@@ -359,11 +359,6 @@ public class Task {
 	public native static boolean listen(String mailbox);
 
 	/**
-	 * Counts the number of tasks waiting to be received on the \a mailbox identified by the specified alia and sended by the specified \a host.
-	 */
-	public native static int listenFromHost(String alias, Host host);
-
-	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */
 	public static native void nativeInit();

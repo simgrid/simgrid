@@ -6,10 +6,12 @@
 #ifndef SIMGRID_S4U_MAILBOX_HPP
 #define SIMGRID_S4U_MAILBOX_HPP
 
-#include <boost/unordered_map.hpp>
-
 #include <xbt/base.h>
 #include <simgrid/s4u/forward.hpp>
+
+#ifdef __cplusplus
+
+# include <boost/unordered_map.hpp>
 #include <simgrid/s4u/actor.hpp>
 
 namespace simgrid {
@@ -38,6 +40,8 @@ public:
   const char *getName();
   /** Retrieve the mailbox associated to the given string */
   static Mailbox *byName(const char *name);
+  /** Returns whether the mailbox contains queued communications */
+  bool empty();
 
 private:
   std::string name_;
@@ -45,5 +49,10 @@ private:
   static boost::unordered_map<std::string, Mailbox *> *mailboxes;
 };
 }} // namespace simgrid::s4u
+
+#endif /* C++ */
+
+XBT_PUBLIC(sg_mbox_t) sg_mbox_by_name(const char*name);
+XBT_PUBLIC(int) sg_mbox_is_empty(sg_mbox_t mbox);
 
 #endif /* SIMGRID_S4U_MAILBOX_HPP */

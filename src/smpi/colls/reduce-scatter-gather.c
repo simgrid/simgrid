@@ -21,7 +21,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
   int recv_idx, last_idx = 0, newdst;
   int dst, send_cnt, recv_cnt, newroot, newdst_tree_root;
   int newroot_tree_root, new_count;
-  int tag = COLL_TAG_REDUCE;
+  int tag = COLL_TAG_REDUCE,temporary_buffer=0;
   void *send_ptr, *recv_ptr, *tmp_buf;
 
   cnts = NULL;
@@ -40,6 +40,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
   /* If I'm not the root, then my recvbuf may not be valid, therefore
   I have to allocate a temporary one */
   if (rank != root && !recvbuf) {
+    temporary_buffer=1;
     recvbuf = (void *)smpi_get_tmp_recvbuffer(count * extent);
   }
   /* find nearest power-of-two less than or equal to comm_size */
@@ -401,6 +402,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
   }
   if (tmp_buf)
     smpi_free_tmp_buffer(tmp_buf);
+  if(temporary_buffer==1) smpi_free_tmp_buffer(recvbuf);
   if (cnts)
     free(cnts);
   if (disps)

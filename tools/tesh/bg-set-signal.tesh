@@ -10,7 +10,7 @@ $ cd temp_testdir-bg-set-signal
 $ mkfile segfault.pl
 
 ! expect signal SIGSEGV
-& perl segfault.pl
+$ perl segfault.pl
 
 $ cd ..
 $ cmake -E remove_directory temp_testdir-bg-set-signal

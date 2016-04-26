@@ -79,8 +79,8 @@ XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_get_prev_item(xbt_fifo_item_t i);
  * asserts and stuff
  * \param f a list (#xbt_fifo_t)
  * \param i a bucket (#xbt_fifo_item_t)
- * \param type a type
  * \param n an object of type \a type.
+ * \param type the type of objects contained in the fifo
  * @hideinitializer
  *
  * Iterates over the whole list. 

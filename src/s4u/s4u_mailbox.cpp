@@ -32,11 +32,22 @@ s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
     res = mailboxes->at(name);
   } catch (std::out_of_range& e) {
     // FIXME: there is a potential race condition here where two actors run Mailbox::byName on a non-existent mailbox
-    // during the same scheduling round. Both will be interrupted in the simcall creating the underlying simix rdv.
+    // during the same scheduling round. Both will be interrupted in the simcall creating the underlying simix mbox.
     // Only one simix object will be created, but two S4U objects will be created.
     // Only one S4U object will be stored in the hashmap and used, and the other one will be leaked.
-    new Mailbox(name,simcall_rdv_create(name));
+    new Mailbox(name,simcall_mbox_create(name));
     res = mailboxes->at(name); // Use the stored one, even if it's not the one I created myself.
   }
   return res;
+}
+
+bool s4u::Mailbox::empty() {
+  return nullptr == simcall_mbox_get_head(inferior_);
+}
+
+sg_mbox_t sg_mbox_by_name(const char*name){
+  return s4u::Mailbox::byName(name);
+}
+int sg_mbox_is_empty(sg_mbox_t mbox) {
+  return mbox->empty();
 }
