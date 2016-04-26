@@ -1,6 +1,6 @@
 foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
           async-waitany cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple cloud-two-tasks
-          dht-chord dht-pastry exception energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures 
+          dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm failures 
           io-file io-remote io-storage task-priority process-kill process-migration process-suspend 
           platform-properties set-maestro process-startkilltime synchro trace-categories 
           trace-link-srcdst-user-variables trace-link-user-variables trace-masterworker trace-platform 
@@ -113,6 +113,5 @@ if(HAVE_NS3)
   ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)
 endif()
 
-# These one are not usable:
-# ADD_TESH_FACTORIES(msg-exception "thread;ucontext;raw" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/exception/exception.tesh)
+# This one is not usable:
 # ADD_TESH_FACTORIES(msg-dht-pastry                    "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-pastry --cd ${CMAKE_BINARY_DIR}/examples/msg/dht-pastry dht-pastry.tesh)
