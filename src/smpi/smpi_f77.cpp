@@ -6,7 +6,7 @@
 
 #include <limits.h>
 #include <stdio.h>
-
+#include "smpi_mpi_dt_private.h"
 #include "private.h"
 #include "xbt.h"
 
@@ -96,7 +96,7 @@ static void smpi_init_fortran_types(){
      smpi_type_c2f(MPI_UINT64_T);//MPI_LOGICAL8
      smpi_type_c2f(MPI_2FLOAT);//MPI_2REAL
      smpi_type_c2f(MPI_2DOUBLE);//MPI_2DOUBLE_PRECISION
-     smpi_type_c2f(MPI_UINT64_T);//MPI_AINT
+     smpi_type_c2f(MPI_PTR);//MPI_AINT
      smpi_type_c2f(MPI_UINT64_T);//MPI_OFFSET
      smpi_type_c2f(MPI_UINT64_T);//MPI_COUNT
      smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_REAL16
