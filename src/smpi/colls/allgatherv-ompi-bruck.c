@@ -162,8 +162,8 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
                                      rbuf, 1, new_rdtype, recvfrom,
                                      COLL_TAG_ALLGATHERV,
                                      comm, MPI_STATUS_IGNORE);
-      smpi_datatype_free(&new_sdtype);
-      smpi_datatype_free(&new_rdtype);
+      smpi_datatype_unuse(new_sdtype);
+      smpi_datatype_unuse(new_rdtype);
 
    }
 
