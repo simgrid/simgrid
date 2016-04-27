@@ -13,7 +13,6 @@ int main(int argc, char **argv)
 {
   unsigned int ctr;
   SD_task_t task;
-  xbt_dynar_t changed_tasks;
 
   double computation_amount[4];
   double communication_amount[16] = { 0 };
@@ -24,7 +23,7 @@ int main(int argc, char **argv)
   xbt_assert(argc > 1, "Usage: %s platform_file\n\nExample: %s two_clusters.xml", argv[0], argv[0]);
   SD_create_environment(argv[1]);
 
-  const sg_host_t *hosts = sg_host_list();
+  sg_host_t *hosts = sg_host_list();
 
   /* creation of some typed tasks and their dependencies */
   SD_task_t seq_comp1 = SD_task_create_comp_seq("Seq. comp. 1", NULL, 1e9);
@@ -63,15 +62,16 @@ int main(int argc, char **argv)
 
   SD_task_schedule(par_comp3, 4, host_list, computation_amount, communication_amount, -1);
 
-  changed_tasks = SD_simulate(-1.0);
+  xbt_dynar_t changed_tasks = SD_simulate(-1.0);
   xbt_dynar_foreach(changed_tasks, ctr, task) {
     XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task), SD_task_get_start_time(task),
              SD_task_get_finish_time(task));
   }
 
-  xbt_dynar_foreach(changed_tasks, ctr, task) {
+  xbt_dynar_foreach(changed_tasks, ctr, task)
     SD_task_destroy(task);
-  }
+
+  xbt_free(hosts);
   SD_exit();
   return 0;
 }
