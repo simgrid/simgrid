@@ -95,9 +95,9 @@ if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 endif()
 
-if(HAVE_BACKTRACE_IN_LIBEXECINFO)
+if(HAVE_BACKTRACE)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
-endif(HAVE_BACKTRACE_IN_LIBEXECINFO)
+endif()
 
 # Compute the dependencies of SMPI
 ##################################

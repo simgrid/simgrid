@@ -57,6 +57,7 @@
 #define HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@ /* We have mmap and objdump to handle privatization */
 
 /* Other function checks */
+#define HAVE_BACKTRACE @HAVE_BACKTRACE@ /* Function backtrace */
 #define HAVE_MMAP      @HAVE_MMAP@ /* Function mmap */
 #define HAVE_SEM_INIT  @HAVE_SEM_INIT@ /* Function sem_init (part of XPG6 standard only) */
 #define HAVE_POPEN     @HAVE_POPEN@ /* Function popen */

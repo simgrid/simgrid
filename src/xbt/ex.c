@@ -56,11 +56,6 @@
 
 #include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
 
-#undef HAVE_BACKTRACE
-#if HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
-# define HAVE_BACKTRACE 1       /* Hello linux box */
-#endif
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mecanism");
 
 XBT_EXPORT_NO_IMPORT(const xbt_running_ctx_t) __xbt_ex_ctx_initializer = XBT_RUNNING_CTX_INITIALIZER;
@@ -115,7 +110,7 @@ void xbt_backtrace_display_current(void)
   xbt_backtrace_display(&e);
 }
 
-#if HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
+#if HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
 # include "src/xbt/backtrace_linux.c"
 #else
 # include "src/xbt/backtrace_dummy.c"

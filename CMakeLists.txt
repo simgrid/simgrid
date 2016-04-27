@@ -275,7 +275,7 @@ endif()
 #endif()
 
 # Checks for header libraries functions.
-CHECK_LIBRARY_EXISTS(execinfo backtrace              "" HAVE_BACKTRACE_IN_LIBEXECINFO)
+CHECK_LIBRARY_EXISTS(execinfo backtrace              "" HAVE_BACKTRACE)
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
@@ -632,7 +632,7 @@ endif()
 # So we include only where needed, and compile with -Wundef to notice the missing includes.
 # But cmake sometimes defines to the empty definition (#define HAVE_VALGRIND_H).
 # So we have to make sure that everything got a decent value before generating the files.
-foreach(var HAVE_EXECINFO_H HAVE_FUTEX_H HAVE_GETDTABLESIZE HAVE_GETTIMEOFDAY HAVE_MMAP HAVE_NANOSLEEP HAVE_POPEN
+foreach(var HAVE_BACKTRACE HAVE_EXECINFO_H HAVE_FUTEX_H HAVE_GETDTABLESIZE HAVE_GETTIMEOFDAY HAVE_MMAP HAVE_NANOSLEEP HAVE_POPEN
             HAVE_POSIX_GETTIME HAVE_PROCESS_VM_READV HAVE_SIGNAL_H HAVE_SYS_PARAM_H HAVE_SYS_SYSCTL_H HAVE_SYSCONF 
             HAVE_UCONTEXT_H HAVE_UNISTD_H HAVE_VALGRIND_H HAVE_VASPRINTF)
   if(${var})
