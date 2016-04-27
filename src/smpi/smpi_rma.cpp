@@ -77,6 +77,11 @@ int smpi_mpi_win_free( MPI_Win* win){
   if((*win)->info!=MPI_INFO_NULL){
     MPI_Info_free(&(*win)->info);
   }
+
+  mpi_coll_barrier_fun((*win)->comm);
+  int rank=smpi_comm_rank((*win)->comm);
+  if(rank == 0)
+    xbt_barrier_destroy((*win)->bar);
   xbt_free(*win);
   *win = MPI_WIN_NULL;
   return MPI_SUCCESS;
