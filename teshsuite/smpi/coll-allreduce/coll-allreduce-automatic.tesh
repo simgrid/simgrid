@@ -2,6 +2,7 @@
 ! setenv LD_LIBRARY_PATH=../../lib
 
 p Test allreduce
+! output sort
 $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allreduce --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error --cfg=smpi/allreduce:automatic --cfg=smpi/async-small-thresh:65536 --cfg=smpi/send-is-detached-thresh:128000 --cfg=smpi/cpu-threshold:-1 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [rank 0] -> Tremblay
 > [rank 1] -> Tremblay

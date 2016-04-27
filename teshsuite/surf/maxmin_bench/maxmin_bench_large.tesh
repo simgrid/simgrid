@@ -2,6 +2,7 @@
 
 ! timeout 50
 ! expect return 0
+! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench big 1
 > Starting 0: (807)
 > Starting to solve(812)
