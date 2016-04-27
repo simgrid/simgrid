@@ -95,10 +95,6 @@ if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 endif()
 
-if(HAVE_BACKTRACE)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
-endif()
-
 # Compute the dependencies of SMPI
 ##################################
 if(enable_smpi AND APPLE)

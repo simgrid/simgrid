@@ -275,7 +275,6 @@ endif()
 #endif()
 
 # Checks for header libraries functions.
-CHECK_LIBRARY_EXISTS(execinfo backtrace              "" HAVE_BACKTRACE)
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
 CHECK_LIBRARY_EXISTS(pthread pthread_create          "" HAVE_PTHREAD)
@@ -303,6 +302,7 @@ CHECK_INCLUDE_FILE("sys/sysctl.h" HAVE_SYS_SYSCTL_H)
 CHECK_INCLUDE_FILE("ucontext.h" HAVE_UCONTEXT_H)
 CHECK_INCLUDE_FILE("linux/futex.h" HAVE_FUTEX_H)
 
+CHECK_FUNCTION_EXISTS(backtrace HAVE_BACKTRACE)
 CHECK_FUNCTION_EXISTS(gettimeofday HAVE_GETTIMEOFDAY)
 CHECK_FUNCTION_EXISTS(nanosleep HAVE_NANOSLEEP)
 CHECK_FUNCTION_EXISTS(getdtablesize HAVE_GETDTABLESIZE)
