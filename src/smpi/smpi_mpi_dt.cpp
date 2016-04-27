@@ -488,11 +488,11 @@ void unserialize_contiguous(const void *contiguous_vector, void *noncontiguous_v
 }
 
 void free_contiguous(MPI_Datatype* d){
-  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
+  smpi_datatype_unuse(((s_smpi_mpi_contiguous_t *)(*d)->substruct)->old_type);
 }
 
 void use_contiguous(MPI_Datatype* d){
-  smpi_datatype_use(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
+  smpi_datatype_use(((s_smpi_mpi_contiguous_t *)(*d)->substruct)->old_type);
 }
 
 /* Create a Sub type contiguous to be able to serialize and unserialize it the structure s_smpi_mpi_contiguous_t is
@@ -650,11 +650,11 @@ s_smpi_mpi_hvector_t* smpi_datatype_hvector_create( MPI_Aint block_stride, int b
 
 //do nothing for vector types
 void free_hvector(MPI_Datatype* d){
-  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
+  smpi_datatype_unuse(((s_smpi_mpi_hvector_t *)(*d)->substruct)->old_type);
 }
 
 void use_hvector(MPI_Datatype* d){
-  smpi_datatype_use(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
+  smpi_datatype_use(((s_smpi_mpi_hvector_t *)(*d)->substruct)->old_type);
 }
 
 int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
@@ -915,7 +915,7 @@ void free_hindexed(MPI_Datatype* type){
 }
 
 void use_hindexed(MPI_Datatype* type){
-  smpi_datatype_use(((s_smpi_mpi_indexed_t *)(*type)->substruct)->old_type);
+  smpi_datatype_use(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->old_type);
 }
 
 /* Create a Sub type hindexed to be able to serialize and unserialize it the structure s_smpi_mpi_hindexed_t is derived
