@@ -62,6 +62,41 @@
    fun:_dl_init
 }
 
+# SG3.13 : We will remove NetCards soon, so ignore these ones 
+{
+   Memory leak in Netcards
+   Memcheck:Leak
+   match-leak-kinds: definite
+   ...
+   fun:sg_platf_new_router
+   fun:STag_surfxml_router
+   fun:surf_parse_lex
+   ...
+   fun:parse_platform_file
+   fun:SIMIX_create_environment
+   fun:smpi_main
+   fun:main
+}
+
+{
+   Memory leak in Netcards
+   Memcheck:Leak
+   match-leak-kinds: indirect
+   fun:malloc
+   fun:strdup
+   fun:xbt_strdup
+   ...
+   fun:sg_platf_new_router
+   fun:STag_surfxml_router
+   fun:surf_parse_lex
+   ...
+   fun:parse_platform_file
+   fun:SIMIX_create_environment
+   fun:smpi_main
+   fun:main
+}
+
+
 # Memory leaks appearing to be in libcgraph.  They can be seen with the
 # following simple program:
 # ,----
