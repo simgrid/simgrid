@@ -1,4 +1,4 @@
-SimGrid (3.13) UNRELEASED; urgency=low
+SimGrid (3.13) stable; urgency=low
 
  The Half Release, a.k.a. the Zealous Easter Trim.
  
@@ -128,7 +128,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
  * ongoing process to cleanly separate the model-checking algorithms
    from the code model-checking support.
  
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Wed Apr 27 21:00:53 CEST 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.12) stable; urgency=low
 
