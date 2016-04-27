@@ -121,6 +121,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
      They throw exceptions on invalid input;
  * C++ support for declaring CLI flags (simgrid::config::Flag);
  * class for abstracting different signal backends (simgrid::xbt::signal).
+   with no external dependencies (we need very simple signals).
 
  MC
  * refactoring and cleanup of the code;
