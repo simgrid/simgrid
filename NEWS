@@ -14,8 +14,7 @@ The Half Release, a.k.a. the Zealous Easter Trim.
  * Introducing v4 of the XML platform format
    - Many long-due cleanups (details in the Changelog)
 
- * MSG examples fully reorganized to help new users in
-   C and Java
+ * MSG examples fully reorganized (in C and Java)
 
  * The S4U interface is rising, toward SimGrid 4
    - All host manipulations now done in S4U
