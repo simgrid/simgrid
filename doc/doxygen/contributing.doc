@@ -46,12 +46,12 @@ your page, that simply renders as <a href="http://simgrid.gforge.inria.fr/">Simg
 
 Or you can prefer this version with a little logo (if you want to
 contribute another logo for that, please don't hesitate ;)
-<img src="http://simgrid.gforge.inria.fr/logos/SIMGRID_Logo_Thumbs_up.png"/>
+<img src="http://simgrid.gforge.inria.fr/logos/simgrid_logo.png"/>
 
 @verbatim
 <a href="http://simgrid.gforge.inria.fr/" 
    title="Versatile simulation of distributed systems: Grid Simulator, P2P simulator, MPI simulator, Cloud Simulator or HPC Simulator">
-   <img src="http://simgrid.gforge.inria.fr/logos/SIMGRID_Logo_Thumbs_up.png"
+   <img src="http://simgrid.gforge.inria.fr/logos/simgrid_logo.png"
         alt="Versatile simulation of distributed systems: Grid Simulator, P2P simulator, MPI simulator, Cloud Simulator or HPC Simulator" align="center"> 
 </a>
 @endverbatim
