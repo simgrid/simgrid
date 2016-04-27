@@ -97,7 +97,7 @@ parameter (but something like "dynar: the provided dynar" is not
 considered as an informative documentation and can be omitted), and
 give any information you feel useful to the user. In particular, add
 links to any other location of the documentation that could provide
-interesting additional informations.
+interesting additional information.
 
 \section inside_doxygen_page Adding a new page to the user guide
 

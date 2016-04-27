@@ -45,7 +45,7 @@ public:
    * Things are rather complex here because we have to find the path from ASes to ASes, and within each.
    * In addition, the different ASes may use differing routing models.
    * Some ASes may be routed in full, others may have only some connection information and use a shortest path on top of that, and so on.
-   * Some ASes may even not have any predefined links and use only coordinate informations to compute the latency.
+   * Some ASes may even not have any predefined links and use only coordinate information to compute the latency.
    *
    * So, the path is constructed recursively, with each traversed AS adding its information to the set.
    * The algorithm for that is explained in http://hal.inria.fr/hal-00650233/
@@ -67,7 +67,7 @@ public:
   enum class RoutingMode {
     unset = 0,  /**< Undefined type                                   */
     base,       /**< Base case: use simple link lists for routing     */
-    recursive   /**< Recursive case: also return gateway informations */
+    recursive   /**< Recursive case: also return gateway information  */
   };
   /* FIXME: protect the following fields once the construction madness is sorted out */
   RoutingMode hierarchy_ = RoutingMode::unset;

@@ -329,7 +329,7 @@ void SIMIX_clean(void)
 
 #ifdef TIME_BENCH_AMDAHL
   xbt_os_cputimer_stop(simix_global->timer_seq);
-  XBT_INFO("Amdahl timing informations. Sequential time: %f; Parallel time: %f",
+  XBT_INFO("Amdahl timings. Sequential time: %f; Parallel time: %f",
            xbt_os_timer_elapsed(simix_global->timer_seq),
            xbt_os_timer_elapsed(simix_global->timer_par));
   xbt_os_timer_free(simix_global->timer_seq);

@@ -70,7 +70,7 @@ XBT_PUBLIC(void) xbt_test_exit(void);
  *
  * @{ 
  */
-/** @brief Provide informations about the suite declared in this file
+/** @brief Provide information about the suite declared in this file
  *  @hideinitializer
  * 
  * Actually, this macro is only used by the script extracting the test units, but that should be transparent for you.
@@ -131,7 +131,7 @@ XBT_PUBLIC(void) xbt_test_exception(xbt_ex_t e);
 
 /** @brief Declare that the lastly started test was expected to fail (and actually failed) */
 XBT_PUBLIC(void) xbt_test_expect_failure(void);
-/** @brief Declare that the lastly started test should be skiped today */
+/** @brief Declare that the lastly started test should be skipped today */
 XBT_PUBLIC(void) xbt_test_skip(void);
 
 /** @} */

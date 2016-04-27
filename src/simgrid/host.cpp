@@ -171,7 +171,7 @@ const char *sg_host_get_property_value(sg_host_t host, const char *name)
   return (const char*) xbt_dict_get_or_null(sg_host_get_properties(host), name);
 }
 
-/** @brief Displays debugging informations about a host */
+/** @brief Displays debugging information about a host */
 void sg_host_dump(sg_host_t host)
 {
   xbt_dict_t props;

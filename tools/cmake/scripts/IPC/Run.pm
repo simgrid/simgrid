@@ -2946,7 +2946,7 @@ sub _select_loop {
 SELECT:
    while ( $self->pumpable ) {
       if ( $io_occurred && $self->{break_on_io} ) {
-         _debug "exiting _select(): io occured and break_on_io set"
+         _debug "exiting _select(): io occurred and break_on_io set"
 	    if _debugging_details;
          last;
       }

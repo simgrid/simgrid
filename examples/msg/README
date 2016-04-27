@@ -28,7 +28,7 @@ Basic examples and features
  * suspend/suspend.c: Demonstrates how to suspend and resume processes
    using MSG_process_suspend() and MSG_process_resume().
 
- * properties/msg_prop.c Attaching arbitrary informations to host,
+ * properties/msg_prop.c Attaching arbitrary information to host,
    processes and such, and retrieving them with
    MSG_host_get_properties(), MSG_host_get_property_value(),
    MSG_process_get_properties() and MSG_process_get_property_value().

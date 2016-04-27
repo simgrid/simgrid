@@ -403,7 +403,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
   if (parameters.size() != 4){
-    surf_parse_error("Fat trees are defined by the levels number and 3 vectors, see the documentation for more informations");
+    surf_parse_error("Fat trees are defined by the levels number and 3 vectors, see the documentation for more information");
   }
 
   // The first parts of topo_parameters should be the levels number
@@ -413,7 +413,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if(tmp.size() != this->levels_) {
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
-                     ", see the documentation for more informations"); 
+                     ", see the documentation for more information");
   }
   for(size_t i = 0 ; i < tmp.size() ; i++){
     this->lowerLevelNodesNumber_.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid lower level node number: %s"));
@@ -423,7 +423,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster
   boost::split(tmp, parameters[2], boost::is_any_of(","));
   if(tmp.size() != this->levels_) {
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
-                     ", see the documentation for more informations"); 
+                     ", see the documentation for more information");
   }
   for(size_t i = 0 ; i < tmp.size() ; i++){
     this->upperLevelNodesNumber_.push_back(xbt_str_parse_int(tmp[i].c_str(), "Invalid upper level node number: %s"));
@@ -433,7 +433,7 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster
   boost::split(tmp, parameters[3], boost::is_any_of(","));
   if(tmp.size() != this->levels_) {
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
-                     ", see the documentation for more informations"); 
+                     ", see the documentation for more information");
     
   }
   for(size_t i = 0 ; i < tmp.size() ; i++){

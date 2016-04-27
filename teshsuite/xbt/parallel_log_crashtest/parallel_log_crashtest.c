@@ -1,4 +1,4 @@
-/* synchro_crashtest -- tries to crash the logging mecanism by doing // logs*/
+/* synchro_crashtest -- tries to crash the logging mechanism by doing // logs*/
 
 /* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -10,8 +10,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(synchro_crashtest, "Logs of this example");
 
-int test_amount = 99;           /* Up to 999 to not break the logs (and thus the testing mecanism) */
-int crasher_amount = 99;        /* Up to 99  to not break the logs (and thus the testing mecanism) */
+int test_amount = 99;           /* Up to 999 to not break the logs (and thus the testing mechanism) */
+int crasher_amount = 99;        /* Up to 99  to not break the logs (and thus the testing mechanism) */
 int *id;                        /* to pass a pointer to the threads without race condition */
 
 int more_info = 0;              /* SET IT TO TRUE TO GET MORE INFO */
@@ -38,7 +38,7 @@ static int crasher(int argc, char *argv[])
 
   xbt_init(&argc, argv);
 
-  /* initializations of the philosopher mecanisms */
+  /* initializations of the philosopher mechanisms */
   id = xbt_new0(int, crasher_amount);
   crashers = xbt_new(xbt_os_thread_t, crasher_amount);
 

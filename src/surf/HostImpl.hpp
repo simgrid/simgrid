@@ -177,7 +177,7 @@ public:
   virtual Action *write(surf_file_t fd, sg_size_t size);
 
   /**
-   * @brief Get the informations of a file descriptor
+   * @brief Get the information of a file descriptor
    * @details The returned xbt_dynar_t contains:
    *  - the size of the file,
    *  - the mount point,
@@ -186,7 +186,7 @@ public:
    *  - the storage content type
    *
    * @param fd The file descriptor
-   * @return An xbt_dynar_t with the file informations
+   * @return An xbt_dynar_t with the file information
    */
   virtual xbt_dynar_t getInfo(surf_file_t fd);
 

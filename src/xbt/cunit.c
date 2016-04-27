@@ -683,7 +683,7 @@ void xbt_test_expect_failure(void)
 void xbt_test_skip(void)
 {
   xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
-      "Test skiped even before being declared (broken unit: %s)", _xbt_test_current_unit->title);
+      "Test skipped even before being declared (broken unit: %s)", _xbt_test_current_unit->title);
   xbt_test_test_t test = xbt_dynar_getlast_as(_xbt_test_current_unit->tests, xbt_test_test_t);
   test->ignored = 1;
 }

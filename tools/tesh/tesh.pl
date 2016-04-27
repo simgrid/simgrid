@@ -177,7 +177,7 @@ by the lexicographical sort.
 
 The solution is to prefix each line of your output with temporal
 information so that lines can be grouped by timestamps. The
-lexicographical sort then only applies to lines that occured at the
+lexicographical sort then only applies to lines that occurred at the
 same timestamp. Here is a SimGrid example:
 
     # Sort only lines depending on the first 19 chars
@@ -403,7 +403,7 @@ sub analyze_result {
     eval {
 	finish( $cmd{'job'} );
     };
-    if ($@) { # deal with the errors that occured in the child process
+    if ($@) { # deal with the errors that occurred in the child process
 	if ($@ =~ /timeout/) {
 	    $cmd{'job'}->kill_kill;
 	    $cmd{'timeouted'} = 1;

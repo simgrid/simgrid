@@ -8,7 +8,7 @@
 # CallType must be one of the three:
 #
 #  - Func: returning a value immediately (within the same scheduling round)
-#    examples: all getters that only retrieve informations with no side effect
+#    examples: all getters that only retrieve information with no side effect
 #
 #  - Proc: not returning any value (but doing so immediately) 
 #    examples: all setters, *_cancel 

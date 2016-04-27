@@ -887,7 +887,7 @@ SimGrid (3.7) stable; urgency=low
   XBT:
   * Logs:
     - Add new runtime parameters --help-logs and --help-log-categories
-      to display informations about supported logging parameters and
+      to display information about supported logging parameters and
       categories.
     - Old deprecated parameters --{gras,surf,msg,simix,xbt}-log=...
       don't exists anymore.
@@ -1561,7 +1561,7 @@ SimGrid (3.3.4) stable; urgency=low
 
  SIMIX:
  * New SIMIX network module. Provides:
-   - Mailbox: rendez-vous mecanism to find with who you want to speak
+   - Mailbox: rendez-vous mechanism to find with who you want to speak
    - Synchronous send/recv: easier and hopefully faster since the
      logic is handled in the maestro process directly now
    - Asynchronous send/recv: you dreamt of it? It's here now
@@ -2036,12 +2036,12 @@ SimGrid (3.2) stable; urgency=high
      (just like the main() function)
 
   GRAS new features and improvements:
-  * New module mecanism where user code can use per process globals [Mt]
+  * New module mechanism where user code can use per process globals [Mt]
     This is similar to gras_userdata_*() functions, but for libraries. It
       factorize some code developped over and over in the examples and AMOK.
     It has still to be documented and used (only amok/peermanagement is
       converted for now).
-  * Fix a vicious bug in the TCP buffering mecanism which leaded to message
+  * Fix a vicious bug in the TCP buffering mechanism which leaded to message
     loss when they were small enough to fit into the buffer and sent quickly
     enough so that they can all get received in one shoot.
   * gras_datadesc_by_name and gras_msgtype_by_name: now raise an exception
@@ -2079,7 +2079,7 @@ SimGrid (3.2) stable; urgency=high
 
   XBT:
   * When running manually src/testall, you select specific units [Mt]
-    testall is the result of our cunit mecanism, and should replace all
+    testall is the result of our cunit mechanism, and should replace all
     the scripty thingy around since bash don't run easily on billware.
 
   * A mallocator system has been added. [Christophe Thiery]
@@ -2106,7 +2106,7 @@ SimGrid (3.2) stable; urgency=high
          . Lesson 3: Passing arguments to the processes (in SG)
          . Lesson 4: Attaching callbacks to messages
          . Lesson 5: Using globals in processes
-         . Lesson 6: Logging informations properly
+         . Lesson 6: Logging information properly
          . Lesson 7: Using internal timers
          . Lesson 8: Handling errors through exceptions
          . Lesson 9: Exchanging simple data
@@ -2165,7 +2165,7 @@ SimGrid (3.1) stable; urgency=high
     is up or down. [AL]
 
   GRAS:
-  * New! a real RPC mecanism, as it ought to be since too long. [MQ]
+  * New! a real RPC mechanism, as it ought to be since too long. [MQ]
       Exception occurring on server-side are propagated back to client (!).
 
     API CHANGE: the callback changed their prototype. Change:
@@ -2297,7 +2297,7 @@ SimGrid (3.0.1) stable; urgency=low
      - Don't use it for receive since we send data sizes and data on the
        same stream, so we wouldn't be able to chain large amount of chunks
        before having to flush the stuff to read the size.
-  * Rework the transport plugin mecanism to simplify it and reduce the
+  * Rework the transport plugin mechanism to simplify it and reduce the
     amount of pointer dereferencement when searching for the right function
     to use.
 
@@ -2328,7 +2328,7 @@ SimGrid (2.96) unstable; urgency=low
 
   XBT:
   * New! Exception handling with setjmp or such (code from OSSP ex) [MQ]
-    This deprecates the xbt_error_t mecanisms.
+    This deprecates the xbt_error_t mechanisms.
     It modifies (simplifies) all XBT and GRAS API.
     MSG API keeps unchanged (exceptions raised by XBT are catched from
      within MSG and masked with existing error handling facilities)
@@ -2454,7 +2454,7 @@ SimGrid (2.94) unstable; urgency=low
   * Add xbt_os_time(). As the rest of xbt/portability, this is not public
     for users. Instead, each programming environment (GRAS, MSG,...) use it
     when needed to provide such a feature to users.
-    Don't shortcut the mecanism or you will also shortcut the virtualization
+    Don't shortcut the mechanism or you will also shortcut the virtualization
     you need on the simulator.
 
   >>>Martin<<<
@@ -2477,7 +2477,7 @@ SimGrid (2.94) unstable; urgency=low
   * Rename gras_get_my_fqdn to gras_os_myname and implement it in the simulator
     RL would imply a DNS resolver, which is *hard* to do in a portable way
     (and therefore delayed).
-  * Implement a real timer mecanism and use it in timing macros. This allows
+  * Implement a real timer mechanism and use it in timing macros. This allows
     to avoid rounding errors and get a 0.000005 sec precision in timing
     macros. While I was at it, various cleanups:
      - allow to declare more than one timed section per file (fix a stupid bug)
@@ -2907,7 +2907,7 @@ SimGrid (2.90) unstable; urgency=low
 
 2004-07-13 Martin Quinson
   version 0.1
-  - No major issue in previous version => change versionning schema
+  - No major issue in previous version => change versioning schema
   - Re-enable little64 convertion test now that Abdou kindly regenerated the
     corresponding dataset.
 

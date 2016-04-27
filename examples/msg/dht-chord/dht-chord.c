@@ -697,7 +697,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   // Once upon a time, our code assumed that here, task_received != task_sent all the time
   //
   // This assumption is wrong (as messages from differing round can interleave), leading to a bug in our code.
-  // We failed to find this bug directly, as it only occured on large platforms, leading to hardly usable traces.
+  // We failed to find this bug directly, as it only occurred on large platforms, leading to hardly usable traces.
   // Instead, we used the model-checker to track down the issue by adding the following test here in the code:
   //   if (MC_is_active()) {
   //      MC_assert(task_received == task_sent);

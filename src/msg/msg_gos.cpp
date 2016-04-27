@@ -702,9 +702,9 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
 /**
  * \ingroup msg_task_usage
- * \brief Returns the error (if any) that occured during a finished communication.
+ * \brief Returns the error (if any) that occurred during a finished communication.
  * \param comm a finished communication
- * \return the status of the communication, or #MSG_OK if no error occured
+ * \return the status of the communication, or #MSG_OK if no error occurred
  * during the communication
  */
 msg_error_t MSG_comm_get_status(msg_comm_t comm) {

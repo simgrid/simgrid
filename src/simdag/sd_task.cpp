@@ -507,7 +507,7 @@ e_SD_task_kind_t SD_task_get_kind(SD_task_t task)
   return task->kind;
 }
 
-/** @brief Displays debugging informations about a task */
+/** @brief Displays debugging information about a task */
 void SD_task_dump(SD_task_t task)
 {
   unsigned int counter;

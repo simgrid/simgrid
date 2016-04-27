@@ -553,7 +553,7 @@ to the most effient:
    pthreads or windows native threads)
  - \b ucontext: fast factory using System V contexts (or a portability
    layer of our own on top of Windows fibers)
- - \b raw: amazingly fast factory using a context switching mecanism
+ - \b raw: amazingly fast factory using a context switching mechanism
    of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now)
  - \b boost: This uses the [context implementation](http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html)

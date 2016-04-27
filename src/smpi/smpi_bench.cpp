@@ -496,7 +496,7 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
           case EEXIST:
             xbt_die("Please cleanup /dev/shm/%s", shmname);
           default:
-            xbt_die("An unhandled error occured while opening %s. shm_open: %s", shmname, strerror(errno));
+            xbt_die("An unhandled error occurred while opening %s. shm_open: %s", shmname, strerror(errno));
         }
       }
       data->second.fd = fd;

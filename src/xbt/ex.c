@@ -56,7 +56,7 @@
 
 #include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mecanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");
 
 XBT_EXPORT_NO_IMPORT(const xbt_running_ctx_t) __xbt_ex_ctx_initializer = XBT_RUNNING_CTX_INITIALIZER;
 

@@ -216,7 +216,7 @@ XBT_PUBLIC(surf_action_t) surf_host_read(sg_host_t host, surf_file_t fd, sg_size
 XBT_PUBLIC(surf_action_t) surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size);
 
 /**
- * @brief Get the informations of a file descriptor
+ * @brief Get the information of a file descriptor
  * @details The returned xbt_dynar_t contains:
  *  - the size of the file,
  *  - the mount point,
@@ -226,7 +226,7 @@ XBT_PUBLIC(surf_action_t) surf_host_write(sg_host_t host, surf_file_t fd, sg_siz
  *
  * @param host The surf host
  * @param fd The file descriptor
- * @return An xbt_dynar_t with the file informations
+ * @return An xbt_dynar_t with the file information
  */
 XBT_PUBLIC(xbt_dynar_t) surf_host_get_info(sg_host_t host, surf_file_t fd);
 

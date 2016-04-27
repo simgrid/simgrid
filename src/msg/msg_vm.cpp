@@ -340,7 +340,7 @@ static int migration_rx_fun(int argc, char *argv[])
     ret = MSG_task_recv(&task, ms->mbox);
     {
       if (ret != MSG_OK) {
-        // An error occured, clean the code and return
+        // An error occurred, clean the code and return
         // The owner did not change, hence the task should be only destroyed on the other side
         xbt_free(finalize_task_name);
         return 0;
@@ -831,7 +831,7 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
  }
 #endif
 
-  /* wait until the migration have finished or on error has occured */
+  /* wait until the migration have finished or on error has occurred */
   {
     XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
     msg_task_t task = NULL;

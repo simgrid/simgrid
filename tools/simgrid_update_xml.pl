@@ -41,7 +41,7 @@ changes in each version.
 
 =item 
 
-The version attribute of platform were added to allow file versionning.
+The version attribute of platform were added to allow file versioning.
 
 =item
 

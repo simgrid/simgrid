@@ -477,7 +477,7 @@ do so.
 
 \subsubsection faq_trouble_err_logcat "gcc: _simgrid_this_log_category_does_not_exist__??? undeclared (first use in this function)"
 
-This is because you are using the log mecanism, but you didn't created
+This is because you are using the log mechanism, but you didn't created
 any default category in this file. You should refer to \ref XBT_log
 for all the details, but you simply forgot to call one of
 XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
@@ -589,7 +589,7 @@ This is when valgrind starts complaining about longjmp things, just like:
 ==21434==    at 0x420DC3A: __longjmp (__longjmp.S:48)
 \endverbatim
 
-This is the sign that you didn't used the exception mecanism well. Most
+This is the sign that you didn't used the exception mechanism well. Most
 probably, you have a <tt>return;</tt> somewhere within a <tt>TRY{}</tt>
 block. This is <b>evil</b>, and you must not do this. Did you read the section
 about \ref XBT_ex??
@@ -653,7 +653,7 @@ will run only one half of the true SimGrid potential.
 
 Unfortunately, we cannot debug every code written in SimGrid.  We
 furthermore believe that the framework provides ways enough
-information to debug such informations yourself. If the textual output
+information to debug such information yourself. If the textual output
 is not enough, Make sure to check the \ref faq_visualization FAQ entry to see
 how to get a graphical one.
 
