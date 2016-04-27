@@ -11,6 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/module.h"
 #include <math.h>
+#include "src/surf/surf_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
@@ -357,7 +358,7 @@ static void test3(method_t method)
 
 int main(int argc, char **argv)
 {
-  xbt_init(&argc, argv);
+  surf_init(&argc, argv);
 
   XBT_INFO("***** Test 1 (Max-Min)");
   test1(MAXMIN);
@@ -380,5 +381,6 @@ int main(int argc, char **argv)
   XBT_INFO("***** Test 3 (Lagrange - Reno)");
   test3(LAGRANGE_RENO);
 
+  surf_exit();
   return 0;
 }
