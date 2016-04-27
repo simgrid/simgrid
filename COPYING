@@ -42,7 +42,7 @@ The file src/xbt/snprintf.c contains this license text:
 
 =========================================================================
 
-The exception handling mecanism (mainly living in src/xbt/ex.c and
+The exception handling mechanism (mainly living in src/xbt/ex.c and
 include/xbt/ex.h) was adapted from code from Ralf S. Engelschall and
 others in the OSSP project. The OSSP version has the following license:
 
@@ -71,13 +71,6 @@ others in the OSSP project. The OSSP version has the following license:
 **  OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF
 **  SUCH DAMAGE.
 
-
-=========================================================================
-
-The sha implementation (src/xbt/xbt_sha.c:) was borowed and adapted
-from the iksemel one (http://code.google.com/p/iksemel/). Both the
-original and the current version of this code is distributed under the
-LGPL v2.1 license.
 
 =========================================================================
 
