@@ -866,7 +866,7 @@ int smpi_coll_tuned_reduce_scatter_mvapich2(void *sendbuf, void *recvbuf, int *r
           recvcnts, datatype,
           op, comm);
   }
-
+  xbt_free(disps);
   return mpi_errno;
 
 }

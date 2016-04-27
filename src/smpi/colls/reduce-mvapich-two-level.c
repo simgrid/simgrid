@@ -180,6 +180,8 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
                                   root, comm);
         }
         /* We are done */
+        if(tmp_buf!=NULL) 
+          smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
         goto fn_exit;
     }
     

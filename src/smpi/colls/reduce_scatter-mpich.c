@@ -480,8 +480,8 @@ int smpi_coll_tuned_reduce_scatter_mpich_rdb(void *sendbuf, void *recvbuf, int r
                     }
                 }
 
-                smpi_datatype_free(&sendtype);
-                smpi_datatype_free(&recvtype);
+                smpi_datatype_unuse(sendtype);
+                smpi_datatype_unuse(recvtype);
 
                 mask <<= 1;
                 i++;
