@@ -1,7 +1,14 @@
 SimGrid (3.13) UNRELEASED; urgency=low
 
- The Easter Trim Release.
-
+ The Half Release, aka the Zeleous Easter Trim.
+ 
+ - We removed half of the lines, that were mostly experimental cruft.
+   v3.12 lasted 286000 lines of code, v3.13 is only 142000 lines
+   (not counting blanks and comments -- according to openhub.net)
+ - The internals are now compiled in C++ (and will soon be clean C++)
+ - We removed 75 klines of XML, 12 klines of Java, 5 klines of cmake, 
+   59 klines of C, etc. We added only 29 klines of C++ in replacement.
+   
  * Backwards Compatibility breaks
    - Removed Lua simulation bindings (switch to C or Java for that).
      Lua can still be used to describe platforms
@@ -75,6 +82,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
    MSG_host_* and SD_workstation_* are #define to the sg_host_* ones
 
  MSG
+ * The examples were completely reorganized, for your browsing pleasure.
  * Kill all deprecated functions (the ones you had when declaring MSG_DEPRECATED). 
    They were deprecated since a few years, and probably did not even compile anymore.
 
