@@ -854,7 +854,6 @@ set(DOC_IMG
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
-  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/DiscoveringSimgrid.gif
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
   ${CMAKE_HOME_DIRECTORY}/doc/webcruft/storage_sample_scenario.png
