@@ -1,6 +1,6 @@
 SimGrid (3.13) UNRELEASED; urgency=low
 
- The Half Release, aka the Zeleous Easter Trim.
+ The Half Release, a.k.a. the Zealous Easter Trim.
  
  - We removed half of the lines, that were mostly experimental cruft.
    v3.12 lasted 286000 lines of code, v3.13 is only 142000 lines
@@ -18,12 +18,12 @@ SimGrid (3.13) UNRELEASED; urgency=low
       - the following functions were removed.
         They were too specific and should be reimplemented in a generic
         way, with filter function.
-	- MSG_task_listen_from_host
-	- MSG_mailbox_get_count_host_waiting_tasks
-      - MSG_mailbox_put_with_timeout was removed. 
-        Please use MSG_task_send_with_timeout instead.
+          - MSG_task_listen_from_host
+          - MSG_mailbox_get_count_host_waiting_tasks
+          - MSG_mailbox_put_with_timeout was removed. 
+            Please use MSG_task_send_with_timeout instead.
    - In SimDag 
-      - the SD_application_reinit function was removed. It was a noop for a while. 
+      - the SD_application_reinit function was removed. It has been a noop for a while. 
       - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 
         replaced by a more flexible mechanism.
       - The following functions thus do not exist anymore
@@ -34,9 +34,10 @@ SimGrid (3.13) UNRELEASED; urgency=low
         - SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
         - SD_workstation_get_computation_time => amount / sg_host_speed()
    - In Java
-      - VM.setBound(int load) is now VM.setBound(double bound) to meet the MSG semantics. Use VM.getSpeed()*load/100 for the legacy behavior.
+      - VM.setBound(int load) is now VM.setBound(double bound) to meet the MSG semantics. 
+        Use VM.getSpeed()*load/100 for the legacy behavior.
    - In CMake
-      - option enable_tracing was removed. It was not doing anything since a while.
+      - option enable_tracing was removed. It was not doing anything for a while.
    - In the ModelChecker:
       - the model-checker now ptraces the model-checked process which means
         you cannot use a debugger on the latter anymore (we might make this
@@ -46,7 +47,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
         MC_snapshot() and MC_compare_snapshot();
       - keep the MC_cut() function as a stub (it was not really working
         in the previous release).
-	
+
  Options:
  * All options are consistently in kebab-case. Old names are kept as alias.
 
@@ -82,7 +83,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
    MSG_host_* and SD_workstation_* are #define to the sg_host_* ones
 
  MSG
- * The examples were completely reorganized, for your browsing pleasure.
+ * The examples were completely reorganized (in C and Java), for your browsing pleasure.
  * Kill all deprecated functions (the ones you had when declaring MSG_DEPRECATED). 
    They were deprecated since a few years, and probably did not even compile anymore.
 
@@ -96,8 +97,8 @@ SimGrid (3.13) UNRELEASED; urgency=low
  Simix
  * simgrid::simix::kernel() is the closure callback. It ensures that
     the lambda or closure passed as a parameter will run in kernel mode.
-   Every callbacks should be rewritten to that interface at some point.
-   
+   All the callback functions should be rewritten to that interface at some point.
+
  Surf
  * Reorganizing and cleaning the internals all around the place.
 

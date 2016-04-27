@@ -4,7 +4,7 @@ __   _____ _ __ ___(_) ___  _ __   |___ / / |___ /
  \ V /  __/ |  \__ \ | (_) | | | |  ___) || |___) |
   \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|____/
 
-The Half Release, aka the Zeleous Easter Trim.
+The Half Release, a.k.a. the Zealous Easter Trim.
 
  * Half of the lines of code are gone.
    - v3.12: 286k lines; v3.13: 142k lines (+ comments)
@@ -14,7 +14,8 @@ The Half Release, aka the Zeleous Easter Trim.
  * Introducing v4 of the XML platform format
    - Many long-due cleanups (details in the Changelog)
 
- * MSG examples fully reoganized to help new users
+ * MSG examples fully reorganized to help new users in
+   C and Java
 
  * The S4U interface is rising, toward SimGrid 4
    - All host manipulations now done in S4U
