@@ -89,7 +89,7 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
    int *new_scounts = NULL, *new_sdispls = NULL;
    ptrdiff_t slb, rlb, sext, rext;
    char *tmpsend = NULL, *tmprecv = NULL;
-   MPI_Datatype new_rdtype, new_sdtype;
+   MPI_Datatype new_rdtype = MPI_DATATYPE_NULL, new_sdtype = MPI_DATATYPE_NULL;
 
    size = smpi_comm_size(comm);
    rank = smpi_comm_rank(comm);
