@@ -9,6 +9,7 @@
 
 #include <cstddef>
 
+#include <exception>
 #include <string>
 #include <utility>
 #include <memory>
