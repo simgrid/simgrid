@@ -50,8 +50,7 @@ $ make dist
 
 \subsection inside_release_c_postchecks Check list after releasing
 
-- Tag the git repository (don't forget to push the tags to the main
-  repo)
+- Tag the git repository (don't forget to push the tags to the main repo)
 - Push the archive files on gforge
 - Rebuild and resynchronize the website so that the file gets visible
   from our download page (see @ref inside_doxygen_website).
@@ -62,5 +61,6 @@ $ make dist
     - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
+ - Post a news on gforge
 
 */
