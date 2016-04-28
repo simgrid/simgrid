@@ -148,7 +148,6 @@ typedef void (*void_pfn_smxprocess_t) (smx_process_t);
 /* for auto-restart function */
 typedef void (*void_pfn_sghost_t) (sg_host_t);
 
-extern char* smx_context_factory_name;
 extern int smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
 extern int smx_context_guard_size;

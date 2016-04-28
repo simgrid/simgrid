@@ -356,11 +356,6 @@ static void _sg_cfg_cb_clean_atexit(const char *name)
   _sg_do_clean_atexit = xbt_cfg_get_boolean(name);
 }
 
-static void _sg_cfg_cb_context_factory(const char *name)
-{
-  smx_context_factory_name = xbt_cfg_get_string(name);
-}
-
 static void _sg_cfg_cb_context_stack_size(const char *name)
 {
   smx_context_stack_size_was_set = 1;
@@ -545,23 +540,6 @@ void sg_config_init(int *argc, char **argv)
 #endif
 
     xbt_cfg_register_boolean("verbose-exit", "yes", _sg_cfg_cb_verbose_exit, "Activate the \"do nothing\" mode in Ctrl-C");
-
-    /* context factory */
-    const char *dflt_ctx_fact = "thread";
-    {
-      char *p = description +
-        sprintf(description, "Context factory to use in SIMIX. Possible values: %s", dflt_ctx_fact);
-#if HAVE_UCONTEXT_CONTEXTS
-      dflt_ctx_fact = "ucontext";
-      p += sprintf(p, ", %s", dflt_ctx_fact);
-#endif
-#if HAVE_RAW_CONTEXTS
-      dflt_ctx_fact = "raw";
-      p += sprintf(p, ", %s", dflt_ctx_fact);
-#endif
-      sprintf(p, ".");
-    }
-    xbt_cfg_register_string("contexts/factory", dflt_ctx_fact, _sg_cfg_cb_context_factory, description);
 
     xbt_cfg_register_int("contexts/stack-size", 8*1024, _sg_cfg_cb_context_stack_size, "Stack size of contexts in KiB");
     /* (FIXME: this is unpleasant) Reset this static variable that was altered when setting the default value. */

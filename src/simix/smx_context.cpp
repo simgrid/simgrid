@@ -6,6 +6,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <utility>
+#include <string>
+
+#include <xbt/config.hpp>
+#include <xbt/range.hpp>
+
 #include "src/internal_config.h"
 #include "xbt/log.h"
 #include "xbt/swag.h"
@@ -35,7 +41,43 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mechanism");
 
-char* smx_context_factory_name = NULL; /* factory name specified by --cfg=contexts/factory:value */
+static std::pair<const char*, simgrid::simix::ContextFactoryInitializer> context_factories[] = {
+#if HAVE_RAW_CONTEXTS
+  { "raw", simgrid::simix::raw_factory },
+#endif
+#if HAVE_UCONTEXT_CONTEXTS
+  { "ucontext", simgrid::simix::sysv_factory },
+#endif
+#if HAVE_BOOST_CONTEXTS
+  { "boost", simgrid::simix::boost_factory },
+#endif
+#if HAVE_THREAD_CONTEXTS
+  { "thread", simgrid::simix::thread_factory },
+#endif
+};
+
+static_assert(sizeof(context_factories) != 0,
+  "No context factories are enabled for this build");
+
+// Create the list of possible contexts:
+static inline
+std::string contexts_list()
+{
+  std::string res;
+  const std::size_t n = sizeof(context_factories) / sizeof(context_factories[0]);
+  std::size_t i = 0;
+  for (std::size_t i = 1; i != n; ++i) {
+    res += ", ";
+    res += context_factories[i].first;
+  }
+  return res;
+}
+
+static simgrid::config::Flag<std::string> context_factory_name(
+  "contexts/factory",
+  (std::string("Possible values: ")+contexts_list()).c_str(),
+  context_factories[0].first);
+
 int smx_context_stack_size;
 int smx_context_stack_size_was_set = 0;
 int smx_context_guard_size;
@@ -50,7 +92,30 @@ static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
 static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
 
-/** 
+static inline
+void invalid_context_factory()
+{
+  XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
+#if HAVE_RAW_CONTEXTS
+  XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
+#else
+  XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+#if HAVE_UCONTEXT_CONTEXTS
+  XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
+#else
+  XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+#if HAVE_BOOST_CONTEXTS
+  XBT_ERROR("  boost: this uses the boost libraries context implementation");
+#else
+  XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you install the libboost-context-dev package?)");
+#endif
+  XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
+  xbt_die("Please use a valid factory.");
+}
+
+/**
  * This function is called by SIMIX_global_init() to initialize the context module.
  */
 void SIMIX_context_mod_init(void)
@@ -60,51 +125,21 @@ void SIMIX_context_mod_init(void)
    * use getspecific/setspecific instead to store the current context in each thread */
   xbt_os_thread_key_create(&smx_current_context_key);
 #endif
-  if (!simix_global->context_factory) {
-    /* select the context factory to use to create the contexts */
-    if (simgrid::simix::factory_initializer)
-      simix_global->context_factory = simgrid::simix::factory_initializer();
-    else { /* use the factory specified by --cfg=contexts/factory:value */
-#if HAVE_THREAD_CONTEXTS
-      if (!strcmp(smx_context_factory_name, "thread"))
-        simix_global->context_factory = simgrid::simix::thread_factory();
-#else
-      if (0);
-#endif
-#if HAVE_UCONTEXT_CONTEXTS
-      else if (!strcmp(smx_context_factory_name, "ucontext"))
-        simix_global->context_factory = simgrid::simix::sysv_factory();
-#endif
-#if HAVE_RAW_CONTEXTS
-      else if (!strcmp(smx_context_factory_name, "raw"))
-        simix_global->context_factory = simgrid::simix::raw_factory();
-#endif
-#if HAVE_BOOST_CONTEXTS
-      else if (!strcmp(smx_context_factory_name, "boost"))
-        simix_global->context_factory = simgrid::simix::boost_factory();
-#endif
-      else {
-        XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
-#if HAVE_RAW_CONTEXTS
-        XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
-#else
-        XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
-#endif
-#if HAVE_UCONTEXT_CONTEXTS
-        XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
-#else
-        XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
-#endif
-#if HAVE_BOOST_CONTEXTS
-        XBT_ERROR("  boost: this uses the boost libraries context implementation");
-#else
-        XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you install the libboost-context-dev package?)");
-#endif
-        XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
-        xbt_die("Please use a valid factory.");
-      }
-    }
+  if (simix_global->context_factory)
+    return;
+  /* select the context factory to use to create the contexts */
+  if (simgrid::simix::factory_initializer) {
+    simix_global->context_factory = simgrid::simix::factory_initializer();
+    return;
   }
+  /* use the factory specified by --cfg=contexts/factory:value */
+  for (auto const& factory : context_factories)
+    if (context_factory_name == factory.first) {
+      simix_global->context_factory = factory.second();
+      break;
+    }
+  if (simix_global->context_factory == nullptr)
+    invalid_context_factory();
 }
 
 /**
