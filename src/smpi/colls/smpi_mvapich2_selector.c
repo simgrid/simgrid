@@ -1006,3 +1006,32 @@ int smpi_coll_tuned_scatter_mvapich2(void *sendbuf,
   return (mpi_errno);
 }
 
+
+void smpi_coll_cleanup_mvapich2(){
+int i=0;
+if(mv2_alltoall_thresholds_table)
+  xbt_free(mv2_alltoall_thresholds_table[i]);
+xbt_free(mv2_alltoall_thresholds_table);
+xbt_free(mv2_size_alltoall_tuning_table);
+xbt_free(mv2_alltoall_table_ppn_conf);
+
+xbt_free(mv2_gather_thresholds_table);
+  if(mv2_allgather_thresholds_table)
+xbt_free(mv2_allgather_thresholds_table[0]);
+xbt_free(mv2_size_allgather_tuning_table);
+xbt_free(mv2_allgather_table_ppn_conf);
+xbt_free(mv2_allgather_thresholds_table);
+
+
+xbt_free(mv2_allgatherv_thresholds_table);
+xbt_free(mv2_reduce_thresholds_table);
+xbt_free(mv2_red_scat_thresholds_table);
+xbt_free(mv2_allreduce_thresholds_table);
+xbt_free(mv2_bcast_thresholds_table);
+if(mv2_scatter_thresholds_table)
+  xbt_free(mv2_scatter_thresholds_table[0]);
+xbt_free(mv2_scatter_thresholds_table);
+xbt_free(mv2_size_scatter_tuning_table);
+xbt_free(mv2_scatter_table_ppn_conf);
+}
+

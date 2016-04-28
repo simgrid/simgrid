@@ -167,6 +167,7 @@ int (*mpi_coll_reduce_fun)(void *buf, void *rbuf, int count, MPI_Datatype dataty
 int (*mpi_coll_reduce_scatter_fun)(void *sbuf, void *rbuf, int *rcounts,MPI_Datatype dtype,MPI_Op  op,MPI_Comm  comm);
 int (*mpi_coll_scatter_fun)(void *sendbuf, int sendcount, MPI_Datatype sendtype,void *recvbuf, int recvcount, MPI_Datatype recvtype,int root, MPI_Comm comm);
 int (*mpi_coll_barrier_fun)(MPI_Comm comm);
+void (*smpi_coll_cleanup_callback)(void);
 
 
 int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount,
