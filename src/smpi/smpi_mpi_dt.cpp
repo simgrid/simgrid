@@ -498,6 +498,7 @@ void use_contiguous(MPI_Datatype* d){
  * erived from s_smpi_subtype which required the functions unserialize and serialize */
 s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb, int block_count, MPI_Datatype old_type,
                                                   int size_oldtype){
+  if(block_count==0)return NULL;
   s_smpi_mpi_contiguous_t *new_t= xbt_new(s_smpi_mpi_contiguous_t,1);
   new_t->base.serialize = &serialize_contiguous;
   new_t->base.unserialize = &unserialize_contiguous;
