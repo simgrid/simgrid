@@ -65,7 +65,6 @@ std::string contexts_list()
 {
   std::string res;
   const std::size_t n = sizeof(context_factories) / sizeof(context_factories[0]);
-  std::size_t i = 0;
   for (std::size_t i = 1; i != n; ++i) {
     res += ", ";
     res += context_factories[i].first;
