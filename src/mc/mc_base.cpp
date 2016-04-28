@@ -35,9 +35,11 @@ XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
 int MC_random(int min, int max)
 {
+#if HAVE_MC
   xbt_assert(mc_model_checker == nullptr);
   /* TODO, if the MC is disabled we do not really need to make a simcall for
    * this :) */
+#endif
   return simcall_mc_random(min, max);
 }
 
@@ -46,7 +48,9 @@ namespace mc {
 
 void wait_for_requests(void)
 {
+#if HAVE_MC
   xbt_assert(mc_model_checker == nullptr);
+#endif
 
   smx_process_t process;
   smx_simcall_t req;
