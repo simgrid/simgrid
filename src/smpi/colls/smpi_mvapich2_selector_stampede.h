@@ -1032,9 +1032,9 @@ static void init_mv2_bcast_tables_stampede(){
  //Stampede,
   if(smpi_coll_cleanup_callback==NULL)
     smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
-        mv2_size_bcast_tuning_table=8;
-        mv2_bcast_thresholds_table = xbt_malloc(mv2_size_bcast_tuning_table *
-                                                 sizeof (mv2_bcast_tuning_table));
+  mv2_size_bcast_tuning_table=8;
+  mv2_bcast_thresholds_table = xbt_malloc(mv2_size_bcast_tuning_table *
+  sizeof (mv2_bcast_tuning_table));
 
   mv2_bcast_tuning_table mv2_tmp_bcast_thresholds_table[]={
     {
@@ -1668,8 +1668,8 @@ int MPIR_Scatter_mcst_wrap_MV2(void *sendbuf,
 
 
 static void init_mv2_scatter_tables_stampede(){
-  if(smpi_coll_cleanup_callback==NULL)
-    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
+    if(smpi_coll_cleanup_callback==NULL)
+      smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
 
     int agg_table_sum = 0;
     int i;
