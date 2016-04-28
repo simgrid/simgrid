@@ -179,6 +179,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
   *new_t= xbt_new(s_smpi_mpi_datatype_t,1);
   memcpy(*new_t, datatype, sizeof(s_smpi_mpi_datatype_t));
   (*new_t)->in_use=1;
+  (*new_t)->flags &= ~DT_FLAG_PREDEFINED;
   if (datatype->sizeof_substruct){
     (*new_t)->substruct=xbt_malloc(datatype->sizeof_substruct);
     memcpy((*new_t)->substruct, datatype->substruct, datatype->sizeof_substruct);
