@@ -1494,11 +1494,14 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   smpi_bench_end();
   //save requests information for tracing
   int i;
-  int *srcs = xbt_new0(int, count);
-  int *dsts = xbt_new0(int, count);
-  int *recvs = xbt_new0(int, count);
-  MPI_Comm *comms = xbt_new0(MPI_Comm, count);
-
+  int *srcs = NULL, *dsts = NULL, *recvs = NULL;
+  MPI_Comm* comms = NULL;
+  if(count>0){
+    srcs = xbt_new0(int, count);
+    dsts = xbt_new0(int, count);
+    recvs = xbt_new0(int, count);
+    comms = xbt_new0(MPI_Comm, count);
+  }
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];      //already received requests are no longer valid
     if (req) {
