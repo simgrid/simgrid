@@ -27,10 +27,8 @@ Channel::~Channel()
 
 int Channel::send(const void* message, size_t size) const
 {
-  XBT_DEBUG("Protocol [%s] send %s",
-    MC_mode_name(mc_mode),
+  XBT_DEBUG("Send %s",
     MC_message_type_name(*(e_mc_message_type*) message));
-
   while (::send(this->socket_, message, size, 0) == -1)
     if (errno == EINTR)
       continue;
@@ -43,8 +41,7 @@ ssize_t Channel::receive(void* message, size_t size, bool block) const
 {
   int res = recv(this->socket_, message, size, block ? 0 : MSG_DONTWAIT);
   if (res != -1)
-    XBT_DEBUG("Protocol [%s] received %s",
-      MC_mode_name(mc_mode),
+    XBT_DEBUG("Receive %s",
       MC_message_type_name(*(e_mc_message_type*) message));
   return res;
 }

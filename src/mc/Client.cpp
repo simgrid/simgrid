@@ -16,6 +16,8 @@
 #include <xbt/mmalloc.h>
 #include <xbt/swag.h>
 
+#include <simgrid/modelchecker.h>
+
 #include "src/internal_config.h"
 
 #include "src/mc/mc_protocol.h"
@@ -44,10 +46,7 @@ Client* Client::initialize()
   if (client_)
     return client_.get();
 
-  // Check and set the mode:
-  if (mc_mode != MC_MODE_NONE)
-    abort();
-  mc_mode = MC_MODE_CLIENT;
+  _sg_do_model_check = 1;
 
   // Fetch socket from MC_ENV_SOCKET_FD:
   char* fd_env = std::getenv(MC_ENV_SOCKET_FD);
@@ -144,8 +143,7 @@ void Client::handleMessages()
       break;
 
     default:
-      xbt_die("%s received unexpected message %s (%i)",
-        MC_mode_name(mc_mode),
+      xbt_die("Received unexpected message %s (%i)",
         MC_message_type_name(message.type),
         message.type
       );

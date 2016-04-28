@@ -25,16 +25,6 @@ SG_BEGIN_DECL()
 /** Environment variable name used to pass the communication socket */
 #define MC_ENV_SOCKET_FD "SIMGRID_MC_SOCKET_FD"
 
-// ***** MC mode
-
-typedef enum {
-  MC_MODE_NONE = 0,
-  MC_MODE_CLIENT,
-  MC_MODE_SERVER
-} e_mc_mode_t;
-
-extern e_mc_mode_t mc_mode;
-
 // ***** Messages
 
 typedef enum {
@@ -115,7 +105,6 @@ typedef struct s_mc_restore_message {
 } s_mc_restore_message_t, *mc_restore_message_t;
 
 XBT_PRIVATE const char* MC_message_type_name(e_mc_message_type type);
-XBT_PRIVATE const char* MC_mode_name(e_mc_mode_t mode);
 
 SG_END_DECL()
 

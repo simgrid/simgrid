@@ -618,8 +618,7 @@ void restore_snapshot_regions(simgrid::mc::Snapshot* snapshot)
 static inline
 void restore_snapshot_fds(simgrid::mc::Snapshot* snapshot)
 {
-  if (mc_mode == MC_MODE_SERVER)
-    xbt_die("FD snapshot not implemented in client/server mode.");
+  xbt_die("FD snapshot not implemented in client/server mode.");
 
   for (auto const& fd : snapshot->current_fds) {
     

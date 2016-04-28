@@ -48,8 +48,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_global, mc, "Logging specific to MC (global)");
 
-e_mc_mode_t mc_mode;
-
 namespace simgrid {
 namespace mc {
 

@@ -28,39 +28,41 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_client_api, mc,
 
 void MC_assert(int prop)
 {
+  xbt_assert(mc_model_checker == nullptr);
   if (MC_is_active() && !prop)
     simgrid::mc::Client::get()->reportAssertionFailure();
 }
 
 void MC_cut(void)
 {
+  xbt_assert(mc_model_checker == nullptr);
+  if (!MC_is_active())
+    return;
   // FIXME, We want to do this in the model-checker:
   xbt_die("MC_cut() not implemented");
 }
 
 void MC_ignore(void* addr, size_t size)
 {
-  xbt_assert(mc_mode != MC_MODE_SERVER);
-  if (mc_mode != MC_MODE_CLIENT)
+  xbt_assert(mc_model_checker == nullptr);
+  if (!MC_is_active())
     return;
   simgrid::mc::Client::get()->ignoreMemory(addr, size);
 }
 
 void MC_automaton_new_propositional_symbol(const char *id, int(*fct)(void))
 {
-  xbt_assert(mc_mode != MC_MODE_SERVER);
-  if (mc_mode != MC_MODE_CLIENT)
+  xbt_assert(mc_model_checker == nullptr);
+  if (!MC_is_active())
     return;
-
   xbt_die("Support for client-side function proposition is not implemented: "
-    "use MC_automaton_new_propositional_symbol_pointer instead."
-  );
+    "use MC_automaton_new_propositional_symbol_pointer instead.");
 }
 
 void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
 {
-  xbt_assert(mc_mode != MC_MODE_SERVER);
-  if (mc_mode != MC_MODE_CLIENT)
+  xbt_assert(mc_model_checker == nullptr);
+  if (!MC_is_active())
     return;
   simgrid::mc::Client::get()->declareSymbol(name, value);
 }
@@ -78,27 +80,33 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
  */
 void MC_register_stack_area(void *stack, smx_process_t process, ucontext_t* context, size_t size)
 {
-  if (mc_mode != MC_MODE_CLIENT)
+  xbt_assert(mc_model_checker == nullptr);
+  if (!MC_is_active())
     return;
   simgrid::mc::Client::get()->declareStack(stack, size, process, context);
 }
 
 void MC_ignore_global_variable(const char *name)
 {
+  xbt_assert(mc_model_checker == nullptr);
+  if (!MC_is_active())
+    return;
   // TODO, send a message to the model_checker
   xbt_die("Unimplemented");
 }
 
 void MC_ignore_heap(void *address, size_t size)
 {
-  if (mc_mode != MC_MODE_CLIENT)
+  xbt_assert(mc_model_checker == nullptr);
+  if (!MC_is_active())
     return;
   simgrid::mc::Client::get()->ignoreHeap(address, size);
 }
 
 void MC_remove_ignore_heap(void *address, size_t size)
 {
-  if (mc_mode != MC_MODE_CLIENT)
+  xbt_assert(mc_model_checker == nullptr);
+  if (!MC_is_active())
     return;
   simgrid::mc::Client::get()->unignoreHeap(address, size);
 }

@@ -35,7 +35,7 @@ XBT_LOG_NEW_CATEGORY(mc, "All MC categories");
 
 int MC_random(int min, int max)
 {
-  xbt_assert(mc_mode != MC_MODE_SERVER);
+  xbt_assert(mc_model_checker == nullptr);
   /* TODO, if the MC is disabled we do not really need to make a simcall for
    * this :) */
   return simcall_mc_random(min, max);
@@ -46,7 +46,7 @@ namespace mc {
 
 void wait_for_requests(void)
 {
-  assert(mc_mode != MC_MODE_SERVER);
+  xbt_assert(mc_model_checker == nullptr);
 
   smx_process_t process;
   smx_simcall_t req;
@@ -81,7 +81,7 @@ bool request_is_enabled(smx_simcall_t req)
 
 #if HAVE_MC
     // Fetch from MCed memory:
-    if (mc_mode == MC_MODE_SERVER) {
+    if (mc_model_checker != nullptr) {
       mc_model_checker->process().read(&temp_synchro, remote(act));
       act = &temp_synchro;
     }
@@ -105,7 +105,7 @@ bool request_is_enabled(smx_simcall_t req)
 
     s_xbt_dynar_t comms_buffer;
     size_t buffer_size = 0;
-    if (mc_mode == MC_MODE_SERVER) {
+    if (mc_model_checker != nullptr) {
       // Read dynar:
       mc_model_checker->process().read(
         &comms_buffer, remote(simcall_comm_waitany__get__comms(req)));
@@ -117,7 +117,7 @@ bool request_is_enabled(smx_simcall_t req)
 
     // Read all the dynar buffer:
     char buffer[buffer_size];
-    if (mc_mode == MC_MODE_SERVER)
+    if (mc_model_checker != nullptr)
       mc_model_checker->process().read_bytes(buffer, sizeof(buffer),
         remote(comms->data));
 #else
@@ -127,7 +127,7 @@ bool request_is_enabled(smx_simcall_t req)
     for (index = 0; index < comms->used; ++index) {
 #if HAVE_MC
       // Fetch act from MCed memory:
-      if (mc_mode == MC_MODE_SERVER) {
+      if (mc_model_checker != nullptr) {
         memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
         mc_model_checker->process().read(&temp_synchro, remote(act));
         act = &temp_synchro;
@@ -148,7 +148,7 @@ bool request_is_enabled(smx_simcall_t req)
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
 #if HAVE_MC
     s_smx_mutex_t temp_mutex;
-    if (mc_mode == MC_MODE_SERVER) {
+    if (mc_model_checker != nullptr) {
       mc_model_checker->process().read(&temp_mutex, remote(mutex));
       mutex = &temp_mutex;
     }
@@ -157,7 +157,7 @@ bool request_is_enabled(smx_simcall_t req)
     if(mutex->owner == nullptr)
       return true;
 #if HAVE_MC
-    else if (mc_mode == MC_MODE_SERVER) {
+    else if (mc_model_checker != nullptr) {
       simgrid::mc::Process& modelchecked = mc_model_checker->process();
       // TODO, *(mutex->owner) :/
       return modelchecked.resolveProcess(simgrid::mc::remote(mutex->owner))->pid

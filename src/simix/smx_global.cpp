@@ -190,7 +190,9 @@ void SIMIX_set_maestro(void (*code)(void*), void* data)
 void SIMIX_global_init(int *argc, char **argv)
 {
 #if HAVE_MC
-  _sg_do_model_check = getenv(MC_ENV_VARIABLE) != NULL;
+  // The communication initialization is done ASAP.
+  // We need to communicate  initialization of the different layers to the model-checker.
+  simgrid::mc::Client::initialize();
 #endif
 
   s_smx_process_t proc;
@@ -260,12 +262,6 @@ void SIMIX_global_init(int *argc, char **argv)
 
   if (xbt_cfg_get_boolean("clean-atexit"))
     atexit(SIMIX_clean);
-
-#if HAVE_MC
-  // The communication initialization is done ASAP.
-  // We need to communicate  initialization of the different layers to the model-checker.
-  simgrid::mc::Client::initialize();
-#endif
 
   if (_sg_cfg_exit_asap)
     exit(0);

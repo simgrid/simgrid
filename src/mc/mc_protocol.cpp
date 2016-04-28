@@ -50,17 +50,3 @@ const char* MC_message_type_name(e_mc_message_type type)
     return "?";
   }
 }
-
-const char* MC_mode_name(e_mc_mode_t mode)
-{
-  switch(mode) {
-  case MC_MODE_NONE:
-    return "NONE";
-  case MC_MODE_CLIENT:
-    return "CLIENT";
-  case MC_MODE_SERVER:
-    return "SERVER";
-  default:
-    return "?";
-  }
-}

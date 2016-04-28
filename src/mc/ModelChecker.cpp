@@ -476,9 +476,8 @@ bool ModelChecker::checkDeadlock()
   if (s == -1)
     xbt_die("Could not receive message");
   if (s != sizeof(message) || message.type != MC_MESSAGE_DEADLOCK_CHECK_REPLY)
-    xbt_die("%s received unexpected message %s (%i, size=%i) "
+    xbt_die("Received unexpected message %s (%i, size=%i) "
       "expected MC_MESSAGE_DEADLOCK_CHECK_REPLY (%i, size=%i)",
-      MC_mode_name(mc_mode),
       MC_message_type_name(message.type), (int) message.type, (int) s,
       (int) MC_MESSAGE_DEADLOCK_CHECK_REPLY, (int) sizeof(message)
       );

@@ -108,7 +108,7 @@ void Process::refresh_simix()
  */
 smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 {
-  xbt_assert(mc_mode == MC_MODE_SERVER);
+  xbt_assert(mc_model_checker != nullptr);
 
   // This is the address of the smx_process in the MCed process:
   auto address = simgrid::mc::remote(req->issuer);
@@ -126,7 +126,7 @@ smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 
 const char* MC_smx_process_get_host_name(smx_process_t p)
 {
-  if (mc_mode == MC_MODE_CLIENT)
+  if (mc_model_checker == nullptr)
     return sg_host_get_name(p->host);
 
   simgrid::mc::Process* process = &mc_model_checker->process();
@@ -164,7 +164,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
 const char* MC_smx_process_get_name(smx_process_t p)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-  if (mc_mode == MC_MODE_CLIENT)
+  if (mc_model_checker == nullptr)
     return p->name;
   if (!p->name)
     return nullptr;
@@ -178,7 +178,7 @@ const char* MC_smx_process_get_name(smx_process_t p)
 #if HAVE_SMPI
 int MC_smpi_process_count(void)
 {
-  if (mc_mode == MC_MODE_CLIENT)
+  if (mc_model_checker == nullptr)
     return smpi_process_count();
   int res;
   mc_model_checker->process().read_variable("process_count",

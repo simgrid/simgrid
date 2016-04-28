@@ -219,7 +219,7 @@ public:
   simgrid::mc::SimixProcessInformation* resolveProcessInfo(
     simgrid::mc::RemotePtr<s_smx_process_t> process)
   {
-    xbt_assert(mc_mode == MC_MODE_SERVER);
+    xbt_assert(mc_model_checker != nullptr);
     if (!process)
       return nullptr;
     this->refresh_simix();

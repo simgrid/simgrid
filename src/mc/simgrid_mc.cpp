@@ -63,7 +63,6 @@ int main(int argc, char** argv)
 
     // Currently, we need this before sg_config_init:
     _sg_do_model_check = 1;
-    mc_mode = MC_MODE_SERVER;
 
     // The initialisation function can touch argv.
     // We make a copy of argv before modifying it in order to pass the original
