@@ -12,7 +12,6 @@
 #include <memory>
 #include <utility>
 
-#include <boost/function.hpp>
 #include <boost/intrusive/list.hpp>
 
 #include <xbt/signal.hpp>
