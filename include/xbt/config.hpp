@@ -99,7 +99,7 @@ XBT_PUBLIC(void) declareFlag(const char* name, const char* description,
   std::function<void(const char* value)> callback);
 
 template<class T, class F>
-XBT_PUBLIC(void) declareFlag(const char* name, const char* description, F callback)
+void declareFlag(const char* name, const char* description, F callback)
 {
   declareFlag(name, description, [callback](const char* value) {
     callback(parse<T>(value));
