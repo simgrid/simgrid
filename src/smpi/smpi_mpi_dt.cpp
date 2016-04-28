@@ -236,6 +236,8 @@ void smpi_datatype_get_name(MPI_Datatype datatype, char* name, int* length){
 }
 
 void smpi_datatype_set_name(MPI_Datatype datatype, char* name){
+  if(datatype->name!=NULL &&  !(datatype->flags & DT_FLAG_PREDEFINED))
+    xbt_free(datatype->name);
   datatype->name = xbt_strdup(name);;
 }
 
@@ -388,6 +390,15 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int s
 
 void smpi_datatype_free(MPI_Datatype* type){
   xbt_assert((*type)->in_use >= 0);
+
+  if((*type)->flags & DT_FLAG_PREDEFINED)return;
+
+  //if still used, mark for deletion
+  if((*type)->in_use!=0){
+      (*type)->flags |=DT_FLAG_DESTROYED;
+      return;
+  }
+
   if((*type)->attributes !=NULL){
     xbt_dict_cursor_t cursor = NULL;
     int* key;
@@ -401,21 +412,12 @@ void smpi_datatype_free(MPI_Datatype* type){
     }
   }
 
-  if((*type)->flags & DT_FLAG_PREDEFINED)return;
-
-  //if still used, mark for deletion
-  if((*type)->in_use!=0){
-      (*type)->flags |=DT_FLAG_DESTROYED;
-      return;
-  }
-
   if ((*type)->sizeof_substruct != 0){
     //((s_smpi_subtype_t *)(*type)->substruct)->subtype_free(type);  
     xbt_free((*type)->substruct);
   }
-  if ((*type)->name != NULL){
-    xbt_free((*type)->name);
-  }
+  xbt_free((*type)->name);
+  xbt_free(*type);
   *type = MPI_DATATYPE_NULL;
 }
 
@@ -441,11 +443,7 @@ void smpi_datatype_unuse(MPI_Datatype type){
   }
 
   if(type && type->in_use == 0){
-    MPI_Datatype t = type;
-    if (!(type->flags & DT_FLAG_DESTROYED))
-      smpi_datatype_free(&type);
-    if(t->flags & DT_FLAG_PREDEFINED) return;
-    xbt_free(t);
+    smpi_datatype_free(&type);
   }
 #if HAVE_MC
   if(MC_is_active())
