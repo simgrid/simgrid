@@ -78,7 +78,16 @@ SG_BEGIN_DECL()
  * @{
  */
 /** @brief Configuration set's data type is opaque. */
+#ifdef __cplusplus
+namespace simgrid {
+namespace config {
+class Config;
+}
+}
+typedef simgrid::config::Config* xbt_cfg_t;
+#else
 typedef void* xbt_cfg_t;
+#endif
 
 XBT_PUBLIC(void) xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
 XBT_PUBLIC(void) xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);

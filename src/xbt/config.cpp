@@ -67,6 +67,34 @@ struct ConfigurationElement {
 
 };
 
+struct Config {
+  xbt_dict_t options;
+
+  Config();
+  ~Config();
+
+  // No copy:
+  Config(Config const&) = delete;
+  Config& operator=(Config const&) = delete;
+};
+
+/* Internal stuff used in cache to free a variable */
+static void xbt_cfgelm_free(void *data)
+{
+  if (data)
+    delete (simgrid::config::ConfigurationElement*) data;
+}
+
+Config::Config() :
+  options(xbt_dict_new_homogeneous(xbt_cfgelm_free))
+{}
+
+Config::~Config()
+{
+  XBT_DEBUG("Frees cfg set %p", this);
+  xbt_dict_free(&this->options);
+}
+
 }
 }
 
@@ -80,13 +108,6 @@ const struct xbt_boolean_couple xbt_cfgelm_boolean_values[] = {
   {  NULL,    NULL}
 };
 
-/* Internal stuff used in cache to free a variable */
-static void xbt_cfgelm_free(void *data)
-{
-  if (data)
-    delete (simgrid::config::ConfigurationElement*) data;
-}
-
 /* Retrieve the variable we'll modify */
 static simgrid::config::ConfigurationElement* xbt_cfgelm_get(xbt_cfg_t cfg, const char *name, e_xbt_cfgelm_type_t type);
 
@@ -97,14 +118,13 @@ static simgrid::config::ConfigurationElement* xbt_cfgelm_get(xbt_cfg_t cfg, cons
  */
 xbt_cfg_t xbt_cfg_new(void)
 {
-  return (xbt_cfg_t) xbt_dict_new_homogeneous(&xbt_cfgelm_free);
+  return new simgrid::config::Config();
 }
 
 /** @brief Destructor */
 void xbt_cfg_free(xbt_cfg_t * cfg)
 {
-  XBT_DEBUG("Frees cfg set %p", cfg);
-  xbt_dict_free((xbt_dict_t *) cfg);
+  delete *cfg;
 }
 
 /** @brief Dump a config set for debuging purpose
@@ -115,7 +135,7 @@ void xbt_cfg_free(xbt_cfg_t * cfg)
  */
 void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
 {
-  xbt_dict_t dict = (xbt_dict_t) cfg;
+  xbt_dict_t dict = cfg->options;
   xbt_dict_cursor_t cursor = NULL;
   simgrid::config::ConfigurationElement* variable = NULL;
   char *key = NULL;
@@ -196,7 +216,7 @@ static void xbt_cfg_register(
               "type of %s not valid (%d should be between %d and %d)",
              name, (int)type, xbt_cfgelm_int, xbt_cfgelm_boolean);
 
-  simgrid::config::ConfigurationElement* res = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null((xbt_dict_t) * cfg, name);
+  simgrid::config::ConfigurationElement* res = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null((*cfg)->options, name);
   xbt_assert(NULL == res, "Refusing to register the config element '%s' twice.", name);
 
   res = new simgrid::config::ConfigurationElement();
@@ -226,7 +246,7 @@ static void xbt_cfg_register(
     break;
   }
 
-  xbt_dict_set((xbt_dict_t) * cfg, name, res, NULL);
+  xbt_dict_set((*cfg)->options, name, res, NULL);
 }
 
 void xbt_cfg_register_double(const char *name, double default_value,xbt_cfg_cb_t cb_set, const char *desc){
@@ -251,10 +271,10 @@ void xbt_cfg_register_alias(const char *newname, const char *oldname)
   if (simgrid_config == NULL)
     simgrid_config = xbt_cfg_new();
 
-  simgrid::config::ConfigurationElement* res = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null((xbt_dict_t) simgrid_config, oldname);
+  simgrid::config::ConfigurationElement* res = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null(simgrid_config->options, oldname);
   xbt_assert(NULL == res, "Refusing to register the option '%s' twice.", oldname);
 
-  res = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null((xbt_dict_t) simgrid_config, newname);
+  res = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null(simgrid_config->options, newname);
   xbt_assert(res, "Cannot define an alias to the non-existing option '%s'.", newname);
 
   res = new simgrid::config::ConfigurationElement();
@@ -264,7 +284,7 @@ void xbt_cfg_register_alias(const char *newname, const char *oldname)
   res->type = xbt_cfgelm_alias;
   res->content = (xbt_dynar_t)newname;
 
-  xbt_dict_set((xbt_dict_t) simgrid_config, oldname, res, NULL);
+  xbt_dict_set(simgrid_config->options, oldname, res, NULL);
 }
 
 /**
@@ -309,12 +329,12 @@ void xbt_cfg_aliases(void)
   char *name;
   xbt_dynar_t names = xbt_dynar_new(sizeof(char *), NULL);
 
-  xbt_dict_foreach((xbt_dict_t )simgrid_config, dict_cursor, name, variable)
+  xbt_dict_foreach(simgrid_config->options, dict_cursor, name, variable)
     xbt_dynar_push(names, &name);
   xbt_dynar_sort_strings(names);
 
   xbt_dynar_foreach(names, dynar_cursor, name) {
-    variable = (simgrid::config::ConfigurationElement*) xbt_dict_get((xbt_dict_t )simgrid_config, name);
+    variable = (simgrid::config::ConfigurationElement*) xbt_dict_get(simgrid_config->options, name);
 
     if (variable->type == xbt_cfgelm_alias)
       printf("   %s: %s\n", name, variable->desc.c_str());
@@ -330,13 +350,13 @@ void xbt_cfg_help(void)
   char *name;
   xbt_dynar_t names = xbt_dynar_new(sizeof(char *), NULL);
 
-  xbt_dict_foreach((xbt_dict_t )simgrid_config, dict_cursor, name, variable)
+  xbt_dict_foreach(simgrid_config->options, dict_cursor, name, variable)
     xbt_dynar_push(names, &name);
   xbt_dynar_sort_strings(names);
 
   xbt_dynar_foreach(names, dynar_cursor, name) {
     int size;
-    variable = (simgrid::config::ConfigurationElement*) xbt_dict_get((xbt_dict_t )simgrid_config, name);
+    variable = (simgrid::config::ConfigurationElement*) xbt_dict_get(simgrid_config->options, name);
     if (variable->type == xbt_cfgelm_alias)
       continue;
 
@@ -380,7 +400,7 @@ void xbt_cfg_help(void)
 
 static simgrid::config::ConfigurationElement* xbt_cfgelm_get(xbt_cfg_t cfg, const char *name, e_xbt_cfgelm_type_t type)
 {
-  simgrid::config::ConfigurationElement* res = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null((xbt_dict_t) cfg, name);
+  simgrid::config::ConfigurationElement* res = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null(cfg->options, name);
 
   // The user used the old name. Switch to the new one after a short warning
   while (res && res->type == xbt_cfgelm_alias) {
@@ -412,7 +432,7 @@ e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
 {
   simgrid::config::ConfigurationElement* variable = NULL;
 
-  variable = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null((xbt_dict_t) cfg, name);
+  variable = (simgrid::config::ConfigurationElement*) xbt_dict_get_or_null(cfg->options, name);
   if (!variable)
     THROWF(not_found_error, 0, "Can't get the type of '%s' since this variable does not exist", name);
 
@@ -572,7 +592,7 @@ void *xbt_cfg_set_as_string(const char *key, const char *value) {
 
   TRY {
     while (variable == NULL) {
-      variable = (simgrid::config::ConfigurationElement*) xbt_dict_get((xbt_dict_t) simgrid_config, key);
+      variable = (simgrid::config::ConfigurationElement*) xbt_dict_get(simgrid_config->options, key);
       if (variable->type == xbt_cfgelm_alias) {
         const char *newname = (const char*)variable->content;
         XBT_INFO("Note: configuration '%s' is deprecated. Please use '%s' instead.", key, newname);
