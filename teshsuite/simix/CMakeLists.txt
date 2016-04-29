@@ -23,7 +23,9 @@ ELSE()
   ADD_TESH(tesh-simix-factory-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_thread.tesh)
 ENDIF()
 
+if (NOT enable_memcheck)
 ADD_TESH_FACTORIES(stack-overflow "thread;ucontext;boost;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack_overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow stack_overflow.tesh)
+endif()
 
 foreach (factory raw thread boost ucontext)
   string (TOUPPER have_${factory}_contexts VARNAME)
