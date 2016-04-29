@@ -21,7 +21,7 @@
  */
 
 #define SKIP 4
-#define NUM_SIZES 16
+#define NUM_SIZES 15
 #define FRACTION 1.0
 
 /* Don't make the number of loops too high; we create so many
