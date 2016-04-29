@@ -126,7 +126,6 @@ typedef enum {
   xbt_cfgelm_double,                     /**< double */
   xbt_cfgelm_string,                    /**< char* */
   xbt_cfgelm_boolean,                   /**< int */
-  xbt_cfgelm_alias,    /**< redirection from a deprecated name to a better one */
   //! @cond
   xbt_cfgelm_any,               /* not shown to users to prevent errors */
   xbt_cfgelm_type_count
