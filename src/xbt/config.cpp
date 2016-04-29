@@ -55,14 +55,28 @@ struct ConfigurationElement {
   /* Advanced callback (for xbt_cfgelm_string only) */
   std::function<void(const char* value)> callback;
 
-  /* actual content (could be an union or something) */
-  xbt_dynar_t content = nullptr;
+  union {
+    int int_content;
+    double double_content;
+    char* string_content;
+    bool boolean_content;
+  };
 
   ~ConfigurationElement()
   {
     XBT_DEBUG("Frees cfgelm %p", this);
-    if (this->type != xbt_cfgelm_alias)
-      xbt_dynar_free(&(this->content));
+    switch(this->type) {
+    case xbt_cfgelm_int:
+    case xbt_cfgelm_double:
+    case xbt_cfgelm_boolean:
+      break;
+    case xbt_cfgelm_string:
+    case xbt_cfgelm_alias:
+      free(string_content);
+      break;
+    default:
+      xbt_die("Unexpected config type");
+    }
   }
 
 };
@@ -139,46 +153,25 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
   xbt_dict_cursor_t cursor = NULL;
   simgrid::config::ConfigurationElement* variable = NULL;
   char *key = NULL;
-  int i;
-  int size;
-  int ival;
-  char *sval;
-  double dval;
 
   if (name)
     printf("%s>> Dumping of the config set '%s':\n", indent, name);
 
   xbt_dict_foreach(dict, cursor, key, variable) {
-    printf("%s  %s:", indent, key);
-
-    size = xbt_dynar_length(variable->content);
-    printf ("%s. Actual size=%d. postset=%p\n",
-            xbt_cfgelm_type_name[variable->type], size, variable->cb_set);
-
+    const char* type_name = xbt_cfgelm_type_name[variable->type];
     switch (variable->type) {
     case xbt_cfgelm_int:
-      for (i = 0; i < size; i++) {
-        ival = xbt_dynar_get_as(variable->content, i, int);
-        printf("%s    %d\n", indent, ival);
-      }
+      printf("%s  %s: ()%s) %i", indent, key, type_name, variable->int_content);
       break;
     case xbt_cfgelm_double:
-      for (i = 0; i < size; i++) {
-        dval = xbt_dynar_get_as(variable->content, i, double);
-        printf("%s    %f\n", indent, dval);
-      }
+      printf("%s  %s: ()%s) %f", indent, key, type_name, variable->double_content);
       break;
     case xbt_cfgelm_string:
-      for (i = 0; i < size; i++) {
-        sval = xbt_dynar_get_as(variable->content, i, char *);
-        printf("%s    %s\n", indent, sval);
-      }
+      printf("%s  %s: ()%s) %s", indent, key, type_name, variable->string_content);
       break;
     case xbt_cfgelm_boolean:
-      for (i = 0; i < size; i++) {
-        ival = xbt_dynar_get_as(variable->content, i, int);
-        printf("%s    %d\n", indent, ival);
-      }
+      printf("%s  %s: ()%s) %s", indent, key, type_name,
+        variable->boolean_content ? "true" : "false");
       break;
     case xbt_cfgelm_alias:
       /* no content */
@@ -205,10 +198,8 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
  *  @param type the type of the config element
  *  @param cb_set callback function called when a value is set
  */
-static void xbt_cfg_register(
-  xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type,
-  xbt_cfg_cb_t cb_set,
-  std::function<void(const char* value)> callback = std::function<void(const char* value)>())
+static simgrid::config::ConfigurationElement* xbt_cfg_register(
+  xbt_cfg_t * cfg, const char *name, const char *desc, e_xbt_cfgelm_type_t type, xbt_cfg_cb_t cb_set)
 {
   if (*cfg == NULL)
     *cfg = xbt_cfg_new();
@@ -223,23 +214,23 @@ static void xbt_cfg_register(
   XBT_DEBUG("Register cfg elm %s (%s) (%s (=%d) @%p in set %p)",
             name, desc, xbt_cfgelm_type_name[type], (int)type, res, *cfg);
   res->type = type;
+  res->cb_set = cb_set;
   if (desc)
     res->desc = desc;
-  res->cb_set = cb_set;
-  res->callback = std::move(callback);
 
+  // Set a default default value:
   switch (type) {
   case xbt_cfgelm_int:
-    res->content = xbt_dynar_new(sizeof(int), NULL);
+    res->int_content = 0;
     break;
   case xbt_cfgelm_double:
-    res->content = xbt_dynar_new(sizeof(double), NULL);
+    res->double_content = 0.0;
     break;
   case xbt_cfgelm_string:
-    res->content = xbt_dynar_new(sizeof(char *), xbt_free_ref);
+    res->string_content = nullptr;
     break;
   case xbt_cfgelm_boolean:
-    res->content = xbt_dynar_new(sizeof(int), NULL);
+    res->boolean_content = false;
     break;
   default:
     XBT_ERROR("%d is an invalid type code", (int)type);
@@ -247,21 +238,26 @@ static void xbt_cfg_register(
   }
 
   xbt_dict_set((*cfg)->options, name, res, NULL);
+  return res;
 }
 
-void xbt_cfg_register_double(const char *name, double default_value,xbt_cfg_cb_t cb_set, const char *desc){
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_double,cb_set);
+void xbt_cfg_register_double(const char *name, double default_value,xbt_cfg_cb_t cb_set, const char *desc)
+{
+  xbt_cfg_register(&simgrid_config, name, desc, xbt_cfgelm_double, cb_set);
   xbt_cfg_setdefault_double(name, default_value);
 }
-void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc) {
-  xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_int,cb_set);
+void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc)
+{
+  xbt_cfg_register(&simgrid_config, name, desc, xbt_cfgelm_int, cb_set);
   xbt_cfg_setdefault_int(name, default_value);
 }
-void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc){
+void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc)
+{
   xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_string,cb_set);
   xbt_cfg_setdefault_string(name, default_value);
 }
-void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc){
+void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc)
+{
   xbt_cfg_register(&simgrid_config,name,desc,xbt_cfgelm_boolean,cb_set);
   xbt_cfg_setdefault_boolean(name, default_value);
 }
@@ -282,7 +278,7 @@ void xbt_cfg_register_alias(const char *newname, const char *oldname)
 
   res->desc = std::string("Deprecated alias for ")+std::string(newname);
   res->type = xbt_cfgelm_alias;
-  res->content = (xbt_dynar_t)newname;
+  res->string_content = xbt_strdup(newname);
 
   xbt_dict_set(simgrid_config->options, oldname, res, NULL);
 }
@@ -355,45 +351,32 @@ void xbt_cfg_help(void)
   xbt_dynar_sort_strings(names);
 
   xbt_dynar_foreach(names, dynar_cursor, name) {
-    int size;
     variable = (simgrid::config::ConfigurationElement*) xbt_dict_get(simgrid_config->options, name);
     if (variable->type == xbt_cfgelm_alias)
       continue;
 
     printf("   %s: %s\n", name, variable->desc.c_str());
     printf("       Type: %s; ", xbt_cfgelm_type_name[variable->type]);
-    size = xbt_dynar_length(variable->content);
     printf("Current value: ");
-
-    if (size != 1)
-      printf(size == 0 ? "n/a\n" : "{ ");
-    for (int i = 0; i < size; i++) {
-      const char *sep = (size == 1 ? "\n" : (i < size - 1 ? ", " : " }\n"));
 
       switch (variable->type) {
       case xbt_cfgelm_int:
-        printf("%d%s", xbt_dynar_get_as(variable->content, i, int), sep);
+        printf("%d\n", variable->int_content);
         break;
       case xbt_cfgelm_double:
-        printf("%f%s", xbt_dynar_get_as(variable->content, i, double), sep);
+        printf("%f\n", variable->double_content);
         break;
       case xbt_cfgelm_string:
-        printf("'%s'%s", xbt_dynar_get_as(variable->content, i, char *), sep);
+        printf("'%s'\n", variable->string_content);
         break;
-      case xbt_cfgelm_boolean: {
-        int b = xbt_dynar_get_as(variable->content, i, int);
-        const char *bs = b ? xbt_cfgelm_boolean_values[0].true_val: xbt_cfgelm_boolean_values[0].false_val;
-        if (b == 0 || b == 1)
-          printf("'%s'%s", bs, sep);
-        else
-          printf("'%s/%d'%s", bs, b, sep);
+      case xbt_cfgelm_boolean:
+        printf("'%s'\n", variable->boolean_content ? "true" : "false");
         break;
-      }
       default:
-        printf("Invalid type!!%s", sep);
+        printf("Invalid type!!\n");
         break;
       }
-    }
+
   }
   xbt_dynar_free(&names);
 }
@@ -404,7 +387,7 @@ static simgrid::config::ConfigurationElement* xbt_cfgelm_get(xbt_cfg_t cfg, cons
 
   // The user used the old name. Switch to the new one after a short warning
   while (res && res->type == xbt_cfgelm_alias) {
-    const char* newname = (const char *)res->content;
+    const char* newname = res->string_content;
     XBT_INFO("Option %s has been renamed to %s. Consider switching.", name, newname);
     res = xbt_cfgelm_get(cfg, newname, type);
   }
@@ -594,7 +577,7 @@ void *xbt_cfg_set_as_string(const char *key, const char *value) {
     while (variable == NULL) {
       variable = (simgrid::config::ConfigurationElement*) xbt_dict_get(simgrid_config->options, key);
       if (variable->type == xbt_cfgelm_alias) {
-        const char *newname = (const char*)variable->content;
+        const char *newname = variable->string_content;
         XBT_INFO("Note: configuration '%s' is deprecated. Please use '%s' instead.", key, newname);
         key = newname;
         variable = NULL;
@@ -710,9 +693,7 @@ void xbt_cfg_setdefault_boolean(const char *name, const char *val)
 void xbt_cfg_set_int(const char *name, int val)
 {
   simgrid::config::ConfigurationElement* variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_int);
-
-  xbt_dynar_set(variable->content, 0, &val);
-
+  variable->int_content = val;
   if (variable->cb_set)
     variable->cb_set(name);
   variable->isdefault = false;
@@ -726,9 +707,7 @@ void xbt_cfg_set_int(const char *name, int val)
 void xbt_cfg_set_double(const char *name, double val)
 {
   simgrid::config::ConfigurationElement* variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_double);
-
-  xbt_dynar_set(variable->content, 0, &val);
-
+  variable->double_content = val;
   if (variable->cb_set)
     variable->cb_set(name);
   variable->isdefault = false;
@@ -743,18 +722,12 @@ void xbt_cfg_set_double(const char *name, double val)
  */
 void xbt_cfg_set_string(const char *name, const char *val)
 {
-  char *newval = xbt_strdup(val);
   simgrid::config::ConfigurationElement* variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_string);
-
-  if (!xbt_dynar_is_empty(variable->content)) {
-    char *sval = xbt_dynar_get_as(variable->content, 0, char *);
-    free(sval);
-  }
-
-  xbt_dynar_set(variable->content, 0, &newval);
-
+  free(variable->string_content);
+  variable->string_content = xbt_strdup(val);
   if (variable->cb_set)
     variable->cb_set(name);
+  variable->isdefault = false;
 
   if (variable->callback) {
     try {
@@ -770,8 +743,6 @@ void xbt_cfg_set_string(const char *name, const char *val)
       xbt_die("Error for flag %s=%s", val, name);
     }
   }
-
-  variable->isdefault = false;
 }
 
 /** @brief Set or add a boolean value to \a name within \a cfg
@@ -795,8 +766,7 @@ void xbt_cfg_set_boolean(const char *name, const char *val)
     }
   }
   xbt_assert(bval != -1, "Value of option '%s' not valid. Should be a boolean (yes,no,on,off,true,false,0,1)", val);
-  xbt_dynar_set(variable->content, 0, &bval);
-
+  variable->boolean_content = bval;
   if (variable->cb_set)
     variable->cb_set(name);
   variable->isdefault = false;
@@ -816,18 +786,11 @@ int xbt_cfg_is_default_value(const char *name)
  * @param name the name of the variable
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() instead.
  */
 int xbt_cfg_get_int(const char *name)
 {
   simgrid::config::ConfigurationElement* variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_int);
-
-  if (xbt_dynar_length(variable->content) > 1) {
-    XBT_WARN("You asked for the first value of the config element '%s', but there is %lu values",
-         name, xbt_dynar_length(variable->content));
-  }
-
-  return xbt_dynar_get_as(variable->content, 0, int);
+  return variable->int_content;
 }
 
 /** @brief Retrieve a double value of a variable (get a warning if not uniq)
@@ -836,18 +799,11 @@ int xbt_cfg_get_int(const char *name)
  * @param name the name of the variable
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() instead.
  */
 double xbt_cfg_get_double(const char *name)
 {
   simgrid::config::ConfigurationElement* variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_double);
-
-  if (xbt_dynar_length(variable->content) > 1) {
-    XBT_WARN ("You asked for the first value of the config element '%s', but there is %lu values\n",
-         name, xbt_dynar_length(variable->content));
-  }
-
-  return xbt_dynar_get_as(variable->content, 0, double);
+  return variable->double_content;
 }
 
 /** @brief Retrieve a string value of a variable (get a warning if not uniq)
@@ -856,23 +812,15 @@ double xbt_cfg_get_double(const char *name)
  * @param name the name of the variable
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using
- * xbt_cfg_get_dynar() instead. Returns NULL if there is no value.
+ * If there is more than one value, it will issue a warning.
+ * Returns NULL if there is no value.
  *
  * \warning the returned value is the actual content of the config set
  */
 char *xbt_cfg_get_string(const char *name)
 {
   simgrid::config::ConfigurationElement* variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_string);
-
-  if (xbt_dynar_length(variable->content) > 1) {
-    XBT_WARN("You asked for the first value of the config element '%s', but there is %lu values\n",
-         name, xbt_dynar_length(variable->content));
-  } else if (xbt_dynar_is_empty(variable->content)) {
-    return NULL;
-  }
-
-  return xbt_dynar_get_as(variable->content, 0, char *);
+  return variable->string_content;
 }
 
 /** @brief Retrieve a boolean value of a variable (get a warning if not uniq)
@@ -881,18 +829,12 @@ char *xbt_cfg_get_string(const char *name)
  * @param name the name of the variable
  *
  * Returns the first value from the config set under the given name.
- * If there is more than one value, it will issue a warning. Consider using xbt_cfg_get_dynar() instead.
+ * If there is more than one value, it will issue a warning.
  */
 int xbt_cfg_get_boolean(const char *name)
 {
   simgrid::config::ConfigurationElement* variable = xbt_cfgelm_get(simgrid_config, name, xbt_cfgelm_boolean);
-
-  if (xbt_dynar_length(variable->content) > 1) {
-    XBT_WARN("You asked for the first value of the config element '%s', but there is %lu values",
-         name, xbt_dynar_length(variable->content));
-  }
-
-  return xbt_dynar_get_as(variable->content, 0, int);
+  return variable->boolean_content;
 }
 
 namespace simgrid {
@@ -945,8 +887,9 @@ long int parseLong(const char* value)
 void declareFlag(const char* name, const char* description,
   std::function<void(const char* value)> callback)
 {
-  xbt_cfg_register(&simgrid_config, name, description, xbt_cfgelm_string, NULL,
-    std::move(callback));
+  simgrid::config::ConfigurationElement* e = xbt_cfg_register(
+    &simgrid_config, name, description, xbt_cfgelm_string, NULL);
+  e->callback = std::move(callback);
 }
 
 }
