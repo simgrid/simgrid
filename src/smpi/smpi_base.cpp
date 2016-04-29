@@ -1365,9 +1365,9 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
     xbt_free(tmpbufs);
     xbt_free(requests);
 
-    if( sendbuf == MPI_IN_PLACE ) {
-      smpi_free_tmp_buffer(sendtmpbuf);
-    }
+  }
+  if( sendbuf == MPI_IN_PLACE ) {
+    smpi_free_tmp_buffer(sendtmpbuf);
   }
 }
 

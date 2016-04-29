@@ -3177,6 +3177,7 @@ int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
     return MPI_ERR_ARG;
   *newinfo = xbt_new(s_smpi_mpi_info_t, 1);
   (*newinfo)->info_dict= xbt_dict_new_homogeneous(NULL);
+  (*newinfo)->refcount=1;
   xbt_dict_cursor_t cursor = NULL;
   int *key;
   void* data;
