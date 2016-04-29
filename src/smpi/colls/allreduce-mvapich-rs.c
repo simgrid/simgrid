@@ -263,6 +263,8 @@
 
                 mask >>= 1;
             }
+            xbt_free(disps);
+            xbt_free(cnts);
         }
     }
 
