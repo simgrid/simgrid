@@ -2705,6 +2705,7 @@ int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
     retval = MPI_ERR_WIN;
   }else {
     smpi_mpi_win_get_group(win, group);
+    smpi_group_use(*group);
   }
   return retval;
 }
