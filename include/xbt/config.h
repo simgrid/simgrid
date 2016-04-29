@@ -89,8 +89,6 @@ typedef simgrid::config::Config* xbt_cfg_t;
 typedef void* xbt_cfg_t;
 #endif
 
-XBT_PUBLIC(void) xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...);
-XBT_PUBLIC(void) xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa);
 XBT_PUBLIC(void) xbt_cfg_set_parse(const char *options);
 
 /* Set the value of the cell \a name in \a cfg with the provided value.*/
@@ -120,24 +118,6 @@ XBT_PUBLIC(int) xbt_cfg_is_default_value(const char *name);
  *  @{
  */
 
-  /** @brief possible content of each configuration cell */
-typedef enum {
-  xbt_cfgelm_int = 0,                    /**< int */
-  xbt_cfgelm_double,                     /**< double */
-  xbt_cfgelm_string,                    /**< char* */
-  xbt_cfgelm_boolean,                   /**< int */
-  //! @cond
-  xbt_cfgelm_any,               /* not shown to users to prevent errors */
-  xbt_cfgelm_type_count
-  //! @endcond
-} e_xbt_cfgelm_type_t;
-
-/** Boolean possible values **/
-struct xbt_boolean_couple {
-  const char *true_val;
-  const char *false_val;
-};
-
 /** \brief Callback types. They get the name of the modified entry, and the position of the changed value */
 typedef void (*xbt_cfg_cb_t) (const char * name);
 
@@ -163,7 +143,7 @@ XBT_PUBLIC(void) xbt_cfg_register_str(xbt_cfg_t * cfg, const char *entry);
 
 XBT_PUBLIC(void) xbt_cfg_aliases(void);
 XBT_PUBLIC(void) xbt_cfg_help(void);
-XBT_PUBLIC(e_xbt_cfgelm_type_t) xbt_cfg_get_type(xbt_cfg_t cfg, const char *name);
+
 /*  @} */
 /** @defgroup XBT_cfg_get Getting the stored values
  *  @ingroup XBT_config

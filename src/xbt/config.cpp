@@ -26,6 +26,19 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = NULL;
 
+/** @brief possible content of each configuration cell */
+typedef enum {
+  xbt_cfgelm_int = 0,                    /**< int */
+  xbt_cfgelm_double,                     /**< double */
+  xbt_cfgelm_string,                    /**< char* */
+  xbt_cfgelm_boolean,                   /**< int */
+  //! @cond
+  xbt_cfgelm_any,               /* not shown to users to prevent errors */
+  xbt_cfgelm_type_count
+  //! @endcond
+} e_xbt_cfgelm_type_t;
+
+
 namespace {
 
 static inline
@@ -39,6 +52,12 @@ void increment(e_xbt_cfgelm_type_t& type)
 
 static const char *xbt_cfgelm_type_name[xbt_cfgelm_type_count] = {
   "int", "double", "string", "boolean", "any"
+};
+
+/** Boolean possible values **/
+struct xbt_boolean_couple {
+  const char *true_val;
+  const char *false_val;
 };
 
 const struct xbt_boolean_couple xbt_cfgelm_boolean_values[] = {
@@ -440,87 +459,7 @@ static simgrid::config::ConfigurationElement* xbt_cfgelm_get(xbt_cfg_t cfg, cons
   return res;
 }
 
-/** @brief Get the type of this variable in that configuration set
- *
- * @param cfg the config set
- * @param name the name of the element
- *
- * @return the type of the given element
- */
-e_xbt_cfgelm_type_t xbt_cfg_get_type(xbt_cfg_t cfg, const char *name)
-{
-  simgrid::config::ConfigurationElement* variable = (*cfg)[name];
-  if (!variable)
-    THROWF(not_found_error, 0, "Can't get the type of '%s' since this variable does not exist", name);
-  XBT_DEBUG("type in variable = %d", (int)variable->type);
-  return variable->type;
-}
-
 /*----[ Setting ]---------------------------------------------------------*/
-/**  @brief va_args version of xbt_cfg_set
- *
- * @param cfg config set to fill
- * @param name  variable name
- * @param pa  variable value
- *
- * Add some values to the config set.
- */
-void xbt_cfg_set_vargs(xbt_cfg_t cfg, const char *name, va_list pa)
-{
-  char *str;
-  int i;
-  double d;
-  e_xbt_cfgelm_type_t type = xbt_cfgelm_type_count; /* Set a dummy value to make gcc happy. It cannot get uninitialized */
-
-  xbt_ex_t e;
-
-  TRY {
-    type = xbt_cfg_get_type(cfg, name);
-  }
-  CATCH(e) {
-    if (e.category == not_found_error) {
-      xbt_ex_free(e);
-      THROWF(not_found_error, 0, "Can't set the property '%s' since it's not registered", name);
-    }
-    RETHROW;
-  }
-
-  switch (type) {
-  case xbt_cfgelm_string:
-    str = va_arg(pa, char *);
-    xbt_cfg_set_string(name, str);
-    break;
-  case xbt_cfgelm_int:
-    i = va_arg(pa, int);
-    xbt_cfg_set_int(name, i);
-    break;
-  case xbt_cfgelm_double:
-    d = va_arg(pa, double);
-    xbt_cfg_set_double(name, d);
-    break;
-  case xbt_cfgelm_boolean:
-    str = va_arg(pa, char *);
-    xbt_cfg_set_boolean(name, str);
-    break;
-  default:
-    xbt_die("Config element variable %s not valid (type=%d)", name, (int)type);
-  }
-}
-
-/** @brief Add a NULL-terminated list of pairs {(char*)key, value} to the set
- *
- * @param cfg config set to fill
- * @param name variable name
- * @param ... variable value
- */
-void xbt_cfg_set(xbt_cfg_t cfg, const char *name, ...)
-{
-  va_list pa;
-
-  va_start(pa, name);
-  xbt_cfg_set_vargs(cfg, name, pa);
-  va_end(pa);
-}
 
 /** @brief Add values parsed from a string into a config set
  *
