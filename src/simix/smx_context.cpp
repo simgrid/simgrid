@@ -127,7 +127,7 @@ void SIMIX_context_mod_init(void)
   if (simix_global->context_factory)
     return;
   /* select the context factory to use to create the contexts */
-  if (simgrid::simix::factory_initializer) {
+  if (simgrid::simix::factory_initializer) { // Give Java a chance to hijack the factory mechanism
     simix_global->context_factory = simgrid::simix::factory_initializer();
     return;
   }
