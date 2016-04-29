@@ -340,6 +340,9 @@ static int MPIR_Allgather_RD_Allgather_Comm_MV2( void *sendbuf,
 static void init_mv2_allgather_tables_stampede(){
   int i;
   int agg_table_sum = 0;
+
+  if(smpi_coll_cleanup_callback==NULL)
+    smpi_coll_cleanup_callback=&smpi_coll_cleanup_mvapich2;
   mv2_allgather_tuning_table **table_ptrs = NULL;
   mv2_allgather_num_ppn_conf = 3;
   mv2_allgather_thresholds_table

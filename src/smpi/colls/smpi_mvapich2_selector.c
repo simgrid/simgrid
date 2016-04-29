@@ -1016,8 +1016,8 @@ xbt_free(mv2_size_alltoall_tuning_table);
 xbt_free(mv2_alltoall_table_ppn_conf);
 
 xbt_free(mv2_gather_thresholds_table);
-  if(mv2_allgather_thresholds_table)
-xbt_free(mv2_allgather_thresholds_table[0]);
+if(mv2_allgather_thresholds_table)
+  xbt_free(mv2_allgather_thresholds_table[0]);
 xbt_free(mv2_size_allgather_tuning_table);
 xbt_free(mv2_allgather_table_ppn_conf);
 xbt_free(mv2_allgather_thresholds_table);
