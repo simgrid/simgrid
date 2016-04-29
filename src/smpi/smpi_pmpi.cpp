@@ -1654,11 +1654,11 @@ int PMPI_Bcast(void *buf, int count, MPI_Datatype datatype, int root, MPI_Comm c
     dt_size_send = smpi_datatype_size(datatype);
   extra->send_size = count*dt_size_send;
   TRACE_smpi_collective_in(rank, root_traced, __FUNCTION__, extra);
-
+  if(smpi_comm_size(comm)>1)
     mpi_coll_bcast_fun(buf, count, datatype, root, comm);
-    retval = MPI_SUCCESS;
+  retval = MPI_SUCCESS;
 
-    TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
+  TRACE_smpi_collective_out(rank, root_traced, __FUNCTION__);
   }
 
   smpi_bench_begin();
