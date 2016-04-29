@@ -284,6 +284,7 @@ void mpi_finalize_(int* ierr) {
      xbt_dict_free(&group_lookup);
      xbt_dict_free(&comm_lookup);
      xbt_dict_free(&win_lookup);
+     xbt_dict_free(&info_lookup);
    }
 }
 
