@@ -44,6 +44,9 @@ xbt_dict_t xbt_dict_new(void)
  */
 xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
 {
+  if (dict_elm_mallocator == NULL)
+    xbt_dict_preinit();
+
   xbt_dict_t dict;
 
   dict = xbt_new(s_xbt_dict_t, 1);
@@ -527,10 +530,14 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
  */
 void xbt_dict_preinit(void)
 {
-  dict_elm_mallocator = xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f,
-                                           dict_elm_mallocator_reset_f);
-  dict_het_elm_mallocator = xbt_mallocator_new(256, dict_het_elm_mallocator_new_f, dict_het_elm_mallocator_free_f,
-                                               dict_het_elm_mallocator_reset_f);
+  if (dict_elm_mallocator == NULL)
+    dict_elm_mallocator = xbt_mallocator_new(
+      256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f,
+      dict_elm_mallocator_reset_f);
+  if (dict_het_elm_mallocator == NULL)
+    dict_het_elm_mallocator = xbt_mallocator_new(
+      256, dict_het_elm_mallocator_new_f, dict_het_elm_mallocator_free_f,
+      dict_het_elm_mallocator_reset_f);
 }
 
 /**
