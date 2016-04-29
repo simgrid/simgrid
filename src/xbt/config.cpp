@@ -533,11 +533,9 @@ void xbt_cfg_set_parse(const char *options)
  *
  * @param key name of the variable to modify
  * @param value string representation of the value to set
- *
- * @return the first char after the parsed value in val
  */
 
-void *xbt_cfg_set_as_string(const char *key, const char *value)
+void xbt_cfg_set_as_string(const char *key, const char *value)
 {
   simgrid::config::ConfigurationElement* variable = (*simgrid_config)[key];
   if (variable == nullptr)
@@ -553,27 +551,23 @@ void *xbt_cfg_set_as_string(const char *key, const char *value)
     break;
   case xbt_cfgelm_int:
     i = strtol(value, &ret, 0);
-    if (ret == value) {
+    if (ret == value || *ret != '\0')
       xbt_die("Value of option %s not valid. Should be an integer", key);
-    }
     xbt_cfg_set_int(key, i);  /* throws */
     break;
   case xbt_cfgelm_double:
     d = strtod(value, &ret);
-    if (ret == value) {
+    if (ret == value || *ret != '\0')
       xbt_die("Value of option %s not valid. Should be a double", key);
-    }
     xbt_cfg_set_double(key, d);       /* throws */
     break;
   case xbt_cfgelm_boolean:
     xbt_cfg_set_boolean(key, value);  /* throws */
-    ret = (char *)value + strlen(value);
     break;
   default:
     THROWF(unknown_error, 0, "Type of config element %s is not valid.", key);
     break;
   }
-  return ret;
 }
 
 /** @brief Set an integer value to \a name within \a cfg if it wasn't changed yet
