@@ -238,7 +238,8 @@ int smpi_coll_tuned_bcast_mvapich2_knomial_intra_node(void *buffer,
             mask /= mv2_intra_node_knomial_factor;
         }
     }
-
+    xbt_free(reqarray);
+    xbt_free(starray);
     return mpi_errno;
 }
 
