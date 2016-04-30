@@ -543,8 +543,6 @@ void sg_platf_new_bypassRoute(sg_platf_route_cbarg_t bypassRoute)
 
 void sg_platf_new_process(sg_platf_process_cbarg_t process)
 {
-  xbt_assert(simix_global,"Cannot create process without SIMIX.");
-
   sg_host_t host = sg_host_by_name(process->host);
   if (!host) {
     // The requested host does not exist. Do a nice message to the user
@@ -589,9 +587,9 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   arg->name = xbt_strdup(arg->argv[0]);
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
-  if (!sg_host_simix(host)->boot_processes) {
+  if (!sg_host_simix(host)->boot_processes)
     sg_host_simix(host)->boot_processes = xbt_dynar_new(sizeof(smx_process_arg_t), _SIMIX_host_free_process_arg);
-  }
+
   xbt_dynar_push_as(sg_host_simix(host)->boot_processes,smx_process_arg_t,arg);
 
   if (start_time > SIMIX_get_clock()) {
@@ -605,8 +603,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
 
-    XBT_DEBUG("Process %s(%s) will be started at time %f", arg->name,
-           arg->hostname, start_time);
+    XBT_DEBUG("Process %s(%s) will be started at time %f", arg->name, arg->hostname, start_time);
     SIMIX_timer_set(start_time, [](void* arg) {
       SIMIX_process_create_from_wrapper((smx_process_arg_t) arg);
     }, arg);
