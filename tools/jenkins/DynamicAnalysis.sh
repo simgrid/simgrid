@@ -20,7 +20,7 @@ do_cleanup() {
 
 ### Check the node installation
 
-for pkg in valgrind
+for pkg in valgrind pcregrep
 do
    if command -v $pkg
    then 
@@ -62,6 +62,8 @@ ctest -D ExperimentalTest -j$NUMPROC || true
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
    find $WORKSPACE -iname "*.memcheck" -exec mv {} $WORKSPACE/memcheck \;
+   #remove all "empty" files
+   pcregrep -r -l -M "status\>\n\n\<errorcounts" $WORKSPACE/memcheck/* | xargs rm -f
    mv Testing/`head -n 1 < Testing/TAG`/Test.xml  $WORKSPACE/DynamicAnalysis.xml
 fi
 
