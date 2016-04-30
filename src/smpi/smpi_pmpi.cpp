@@ -3219,7 +3219,8 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
   int num=0;
   xbt_dict_foreach(info->info_dict,cursor,keyn,data){
     if(num==n){
-     strcpy(key,keyn);
+      strcpy(key,keyn);
+      xbt_dict_cursor_free(&cursor);
       return MPI_SUCCESS;
     }
     num++;
