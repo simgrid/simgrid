@@ -271,9 +271,6 @@ int smx_cleaned = 0;
  */
 void SIMIX_clean(void)
 {
-#ifdef TIME_BENCH_PER_SR
-  smx_ctx_raw_new_sr();
-#endif
   if (smx_cleaned) return; // to avoid double cleaning by java and C
   smx_cleaned = 1;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");

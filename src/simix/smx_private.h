@@ -56,11 +56,6 @@ typedef struct s_smx_context_factory *smx_context_factory_t;
 
 SG_BEGIN_DECL()
 
-/* Define only for SimGrid benchmarking purposes */
-//#define TIME_BENCH_PER_SR     /* this aims at measuring the time spent in each scheduling round per each thread. The code is thus run in sequential to bench separately each SSR */
-//#define ADAPTIVE_THRESHOLD    /* this is to enable the adaptive threshold algorithm in raw contexts*/
-//#define TIME_BENCH_ENTIRE_SRS /* more general benchmark than TIME_BENCH_PER_SR. It aims to measure the total time spent in a whole scheduling round (including synchro costs)*/
-
 /********************************** Simix Global ******************************/
 typedef struct s_smx_global {
   smx_context_factory_t context_factory;

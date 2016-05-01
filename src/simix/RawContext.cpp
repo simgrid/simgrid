@@ -89,30 +89,11 @@ static simgrid::simix::RawContext** raw_workers_context;    /* space to save the
 static uintptr_t raw_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
 #endif
-#ifdef ADAPTIVE_THRESHOLD
-#define SCHED_ROUND_LIMIT 5
-static xbt_os_timer_t round_time;
-static double par_time,seq_time;
-static double par_ratio,seq_ratio;
-static int reached_seq_limit, reached_par_limit;
-static unsigned int par_proc_that_ran = 0,seq_proc_that_ran = 0;  /* Counters of processes that have run in SCHED_ROUND_LIMIT scheduling rounds */
-static unsigned int seq_sched_round=0, par_sched_round=0; /* Amount of SR that ran serial/parallel*/
-/*Varables used to calculate running variance and mean*/
-static double prev_avg_par_proc=0,prev_avg_seq_proc=0;
-static double delta=0;
-static double s_par_proc=0,s_seq_proc=0; /*Standard deviation of number of processes computed in par/seq during the current simulation*/
-static double avg_par_proc=0,sd_par_proc=0;
-static double avg_seq_proc=0,sd_seq_proc=0;
-static long long par_window=(long long)HUGE_VAL,seq_window=0;
-#endif
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
                                                * list of runnable processes */
 static simgrid::simix::RawContext* raw_maestro_context;
 
 static bool raw_context_parallel = false;
-#ifdef ADAPTIVE_THRESHOLD
-static bool raw_context_adaptative = false;
-#endif
 
 // ***** Raw context routines
 
@@ -289,9 +270,6 @@ namespace simix {
 RawContextFactory::RawContextFactory()
   : ContextFactory("RawContextFactory")
 {
-#ifdef ADAPTIVE_THRESHOLD
-  raw_context_adaptative = (SIMIX_context_get_parallel_threshold() > 1);
-#endif
   raw_context_parallel = SIMIX_context_is_parallel();
   if (raw_context_parallel) {
 #if HAVE_THREAD_CONTEXTS
@@ -304,11 +282,6 @@ RawContextFactory::RawContextFactory()
 #endif
     // TODO, if(SIMIX_context_get_parallel_threshold() > 1) => choose dynamically
   }
-#ifdef ADAPTIVE_THRESHOLD
-  round_time = xbt_os_timer_new();
-  reached_seq_limit = 0;
-  reached_par_limit = 0;
-#endif
 }
 
 RawContextFactory::~RawContextFactory()
@@ -367,11 +340,6 @@ void RawContext::stop()
 
 void RawContextFactory::run_all()
 {
-#ifdef ADAPTIVE_THRESHOLD
-  if (raw_context_adaptative)
-    run_all_adaptative();
-  else
-#endif
   if (raw_context_parallel)
     run_all_parallel();
   else
@@ -490,88 +458,7 @@ void RawContext::resume_parallel()
 #endif
 }
 
-/**
- * \brief Resumes all processes ready to run.
- */
-#ifdef ADAPTIVE_THRESHOLD
-void RawContectFactory::run_all_adaptative()
-{
-  unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
-  unsigned long threshold = SIMIX_context_get_parallel_threshold();
-  reached_seq_limit = (seq_sched_round % SCHED_ROUND_LIMIT == 0);
-  reached_par_limit = (par_sched_round % SCHED_ROUND_LIMIT == 0);
-
-  if(reached_seq_limit && reached_par_limit){
-    par_ratio = (par_proc_that_ran != 0) ? (par_time / (double)par_proc_that_ran) : 0;
-    seq_ratio = (seq_proc_that_ran != 0) ? (seq_time / (double)seq_proc_that_ran) : 0;
-    if(seq_ratio > par_ratio){
-       if(nb_processes < avg_par_proc) {
-          threshold = (threshold>2) ? threshold - 1 : threshold ;
-          SIMIX_context_set_parallel_threshold(threshold);
-        }
-    } else {
-        if(nb_processes > avg_seq_proc){
-          SIMIX_context_set_parallel_threshold(threshold+1);
-        }
-    }
-  }
-
-  if (nb_processes >= SIMIX_context_get_parallel_threshold()) {
-    simix_global->context_factory->suspend = smx_ctx_raw_suspend_parallel;
-    if (nb_processes < par_window){
-      par_sched_round++;
-      xbt_os_walltimer_start(round_time);
-      smx_ctx_raw_runall_parallel();
-      xbt_os_walltimer_stop(round_time);
-      par_time += xbt_os_timer_elapsed(round_time);
-
-      prev_avg_par_proc = avg_par_proc;
-      delta = nb_processes - avg_par_proc;
-      avg_par_proc = (par_sched_round==1) ? nb_processes : avg_par_proc + delta / (double) par_sched_round;
-
-      if(par_sched_round>=2){
-        s_par_proc = s_par_proc + (nb_processes - prev_avg_par_proc) * delta;
-        sd_par_proc = sqrt(s_par_proc / (par_sched_round-1));
-        par_window = (int) (avg_par_proc + sd_par_proc);
-      }else{
-        sd_par_proc = 0;
-      }
-
-      par_proc_that_ran += nb_processes;
-    } else{
-      smx_ctx_raw_runall_parallel();
-    }
-  } else {
-    simix_global->context_factory->suspend = smx_ctx_raw_suspend_serial;
-    if(nb_processes > seq_window){
-      seq_sched_round++;
-      xbt_os_walltimer_start(round_time);
-      smx_ctx_raw_runall_serial();
-      xbt_os_walltimer_stop(round_time);
-      seq_time += xbt_os_timer_elapsed(round_time);
-
-      prev_avg_seq_proc = avg_seq_proc;
-      delta = (nb_processes-avg_seq_proc);
-      avg_seq_proc = (seq_sched_round==1) ? nb_processes : avg_seq_proc + delta / (double) seq_sched_round;
-
-      if(seq_sched_round>=2){
-        s_seq_proc = s_seq_proc + (nb_processes - prev_avg_seq_proc)*delta;
-        sd_seq_proc = sqrt(s_seq_proc / (seq_sched_round-1));
-        seq_window = (int) (avg_seq_proc - sd_seq_proc);
-      } else {
-        sd_seq_proc = 0;
-      }
-
-      seq_proc_that_ran += nb_processes;
-    } else {
-      smx_ctx_raw_runall_serial();
-    }
-  }
-}
-
-#else
-
-// TODO
+/** @brief Resumes all processes ready to run. */
 void RawContextFactory::run_all_adaptative()
 {
   unsigned long nb_processes = xbt_dynar_length(simix_global->process_to_run);
@@ -586,7 +473,6 @@ void RawContextFactory::run_all_adaptative()
         this->run_all_serial();
     }
 }
-#endif
 
 }
 }
