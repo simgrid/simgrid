@@ -1306,10 +1306,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   void **tmpbufs;
 
   char* sendtmpbuf = (char*) sendbuf;
-  if( sendbuf == MPI_IN_PLACE ) {
-    sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype));
-    smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
-  }
+
 
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
@@ -1317,6 +1314,11 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   if(!smpi_op_is_commute(op)){
     smpi_coll_tuned_reduce_ompi_basic_linear(sendtmpbuf, recvbuf, count, datatype, op, root, comm);
     return;
+  }
+
+  if( sendbuf == MPI_IN_PLACE ) {
+    sendtmpbuf = (char *)smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype));
+    smpi_datatype_copy(recvbuf, count, datatype,sendtmpbuf, count, datatype);
   }
   
   if(rank != root) {

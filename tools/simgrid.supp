@@ -67,7 +67,6 @@
 {
    Memory leak in Netcards
    Memcheck:Leak
-   match-leak-kinds: definite
    ...
    fun:sg_platf_new_router
    fun:STag_surfxml_router
@@ -75,8 +74,6 @@
    ...
    fun:parse_platform_file
    fun:SIMIX_create_environment
-   fun:smpi_main
-   fun:main
 }
 
 {

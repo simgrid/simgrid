@@ -55,7 +55,6 @@ MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info 
   if(rank==0){
     win->bar=xbt_barrier_init(comm_size);
   }
-
   mpi_coll_allgather_fun(&(win->connected_wins[rank]), sizeof(MPI_Win), MPI_BYTE, win->connected_wins, sizeof(MPI_Win),
                          MPI_BYTE, comm);
 
@@ -100,7 +99,6 @@ void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length){
 void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group){
   if(win->comm != MPI_COMM_NULL){
     *group = smpi_comm_group(win->comm);
-    smpi_group_use(*group);
   }
 }
 

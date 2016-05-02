@@ -201,6 +201,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
           if(ret!=MPI_SUCCESS){
             smpi_datatype_unuse(*new_t);
             *new_t=MPI_DATATYPE_NULL;
+            xbt_dict_cursor_free(&cursor);
             return ret;
           }
           if(flag)
@@ -410,6 +411,7 @@ void smpi_datatype_free(MPI_Datatype* type){
       if(elem &&  elem->delete_fn)
         elem->delete_fn(*type,*key, value, &flag);
     }
+    xbt_dict_free(&(*type)->attributes);
   }
 
   if ((*type)->sizeof_substruct != 0){

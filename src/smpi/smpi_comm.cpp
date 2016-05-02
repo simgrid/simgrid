@@ -325,6 +325,7 @@ void smpi_comm_cleanup_attributes(MPI_Comm comm){
       if(elem &&  elem->delete_fn)
         elem->delete_fn(comm, *key, value, &flag);
     }
+    xbt_dict_free(&comm->attributes);
   }
 }
 

@@ -2705,6 +2705,7 @@ int PMPI_Win_get_group(MPI_Win  win, MPI_Group * group){
     retval = MPI_ERR_WIN;
   }else {
     smpi_mpi_win_get_group(win, group);
+    smpi_group_use(*group);
   }
   return retval;
 }
@@ -3166,6 +3167,7 @@ int PMPI_Info_get(MPI_Info info,char *key,int valuelen, char *value, int *flag){
     return MPI_ERR_INFO_VALUE;
   char* tmpvalue=(char*)xbt_dict_get_or_null(info->info_dict, key);
   if(tmpvalue){
+    memset(value, 0, valuelen);
     memcpy(value,tmpvalue, (strlen(tmpvalue) + 1 < static_cast<size_t>(valuelen)) ? strlen(tmpvalue) + 1 : valuelen);
     *flag=true;
   }
@@ -3217,7 +3219,8 @@ int PMPI_Info_get_nthkey( MPI_Info info, int n, char *key){
   int num=0;
   xbt_dict_foreach(info->info_dict,cursor,keyn,data){
     if(num==n){
-     strcpy(key,keyn);
+      strcpy(key,keyn);
+      xbt_dict_cursor_free(&cursor);
       return MPI_SUCCESS;
     }
     num++;

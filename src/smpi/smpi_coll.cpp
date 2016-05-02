@@ -124,7 +124,8 @@ int find_coll_description(s_mpi_coll_description_t * table,
 {
   char *name_list = NULL;
   int selector_on=0;
-  if(name==NULL){//no argument provided, use active selector's algorithm
+  if (name==NULL || name[0] == '\0') {
+    //no argument provided, use active selector's algorithm
     name=(char*)xbt_cfg_get_string("smpi/coll-selector");
     selector_on=1;
   }
