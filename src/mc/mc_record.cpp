@@ -79,7 +79,7 @@ RecordTrace parseRecordTrace(const char* data)
 {
   RecordTrace res;
   XBT_INFO("path=%s", data);
-  if (!data || !data[0])
+  if (data == nullptr || data[0] == '\0')
     throw std::runtime_error("Could not parse record path");
 
   const char* current = data;

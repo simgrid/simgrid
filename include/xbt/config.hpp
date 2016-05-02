@@ -21,54 +21,6 @@
 namespace simgrid {
 namespace config {
 
-XBT_PUBLIC(bool) parseBool(const char* value);
-XBT_PUBLIC(double) parseDouble(const char* value);
-XBT_PUBLIC(long int) parseLong(const char* value);
-
-template<class T> struct parse_option {
-  static inline T parse(const char* value)
-  {
-    return T(value);
-  }
-};
-
-template<> struct parse_option<std::string> {
-  static inline std::string parse(const char* value)
-  {
-    return std::string(value);
-  }
-};
-
-template<>
-struct parse_option<double> {
-  static inline double parse(const char* value)
-  {
-    return parseDouble(value);
-  }
-};
-
-template<>
-struct parse_option<int> {
-  static inline double parse(const char* value)
-  {
-    return parseLong(value);
-  }
-};
-
-template<>
-struct parse_option<bool> {
-  static inline bool parse(const char* value)
-  {
-    return parseBool(value);
-  }
-};
-
-template<class T> inline
-T parse(const char* value)
-{
-  return parse_option<T>::parse(value);
-}
-
 template<class T> inline
 std::string to_string(T&& value)
 {
@@ -87,24 +39,37 @@ inline std::string to_string(std::string&& value)
   return std::move(value);
 }
 
+// Get config
+
+template<class T>
+XBT_PUBLIC(T const&) getConfig(const char* name);
+
+extern template XBT_PUBLIC(int const&) getConfig<int>(const char* name);
+extern template XBT_PUBLIC(double const&) getConfig<double>(const char* name);
+extern template XBT_PUBLIC(bool const&) getConfig<bool>(const char* name);
+extern template XBT_PUBLIC(std::string const&) getConfig<std::string>(const char* name);
+
 // Register:
 
 /** Register a configuration flag
  *
  *  @param name        name of the option
  *  @param description Description of the option
+ *  @param value       Initial/default value
  *  @param callback    called with the option value
  */
+template<class T>
 XBT_PUBLIC(void) declareFlag(const char* name, const char* description,
-  std::function<void(const char* value)> callback);
+  T value, std::function<void(const T&)> callback = std::function<void(const T&)>());
 
-template<class T, class F>
-void declareFlag(const char* name, const char* description, F callback)
-{
-  declareFlag(name, description, [callback](const char* value) {
-    callback(parse<T>(value));
-  });
-}
+extern template XBT_PUBLIC(void) declareFlag(const char* name,
+  const char* description, int value, std::function<void(int const &)> callback);
+extern template XBT_PUBLIC(void) declareFlag(const char* name,
+  const char* description, double value, std::function<void(double const &)> callback);
+extern template XBT_PUBLIC(void) declareFlag(const char* name,
+  const char* description, bool value, std::function<void(bool const &)> callback);
+extern template XBT_PUBLIC(void) declareFlag(const char* name,
+  const char* description, std::string value, std::function<void(std::string const &)> callback);
 
 /** Bind a variable to configuration flag
  *
@@ -116,10 +81,9 @@ template<class T>
 void bindFlag(T& value, const char* name, const char* description)
 {
   using namespace std;
-  declareFlag(name, description, [&value](const char* val) {
-    value = simgrid::config::parse<T>(val);
+  declareFlag<T>(name, description, value, [&value](T const& val) {
+    value = val;
   });
-  xbt_cfg_setdefault_string(name, simgrid::config::to_string(value).c_str());
 }
 
 /** Bind a variable to configuration flag
@@ -142,10 +106,9 @@ typename std::enable_if<std::is_same<
 bindFlag(T& value, const char* name, const char* description,
   F callback)
 {
-  declareFlag(name, description, [&value,callback](const char* val) {
+  declareFlag(name, description, value, [&value,callback](const char* val) {
     value = callback(val);
   });
-  xbt_cfg_setdefault_string(name, to_string(value).c_str());
 }
 
 /** Bind a variable to configuration flag
@@ -167,12 +130,10 @@ typename std::enable_if<std::is_same<
 bindFlag(T& value, const char* name, const char* description,
   F callback)
 {
-  declareFlag(name, description, [&value,callback](const char* val) {
-    T res = parse<T>(val);
-    callback(res);
-    value = std::move(res);
+  declareFlag(name, description, value, [&value,callback](const T& val) {
+    callback(val);
+    value = std::move(val);
   });
-  xbt_cfg_setdefault_string(name, to_string(value).c_str());
 }
 
 /** Bind a variable to configuration flag
@@ -191,13 +152,11 @@ typename std::enable_if<std::is_same<
 bindFlag(T& value, const char* name, const char* description,
   F callback)
 {
-  declareFlag(name, description, [&value,callback](const char* val) {
-    T res = parse<T>(val);
-    if (!callback(res))
+  declareFlag(name, description, value, [&value,callback](const T& val) {
+    if (!callback(val))
       throw std::range_error("invalid value");
-    value = std::move(res);
+    value = std::move(val);
   });
-  xbt_cfg_setdefault_string(name, to_string(value).c_str());
 }
 
 /** A variable bound to a CLI option

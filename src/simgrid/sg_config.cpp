@@ -115,7 +115,7 @@ static void _sg_cfg_cb__plugin(const char *name)
   xbt_assert(_sg_cfg_init_status < 2, "Cannot load a plugin after the initialization");
 
   char *val = xbt_cfg_get_string(name);
-  if (val==nullptr)
+  if (val==nullptr || val[0] == '\0')
     return;
 
   if (!strcmp(val, "help")) {
@@ -335,6 +335,8 @@ static void _sg_cfg_cb__surf_path(const char *name)
 
 static void _sg_cfg_cb_model_check_replay(const char *name) {
   MC_record_path = xbt_cfg_get_string(name);
+  if (MC_record_path[0] == '\0')
+    MC_record_path = nullptr;
 }
 
 #if HAVE_MC
