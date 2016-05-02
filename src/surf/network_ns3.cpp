@@ -6,6 +6,8 @@
 
 #include <unordered_set>
 
+#include <xbt/config.hpp>
+
 #include "ns3/core-module.h"
 #include "ns3/node.h"
 
@@ -215,11 +217,15 @@ void surf_network_model_init_NS3()
   xbt_dynar_push(all_existing_models, &surf_network_model);
 }
 
+static simgrid::config::Flag<std::string> ns3_tcp_model("ns3/TcpModel",
+  "The ns3 tcp model can be : NewReno or Reno or Tahoe",
+  "default");
+
 namespace simgrid {
 namespace surf {
 
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
-  ns3_initialize(xbt_cfg_get_string("ns3/TcpModel"));
+  ns3_initialize(ns3_tcp_model.get().c_str());
 
   routing_model_create(NULL);
   simgrid::s4u::Host::onCreation.connect(ns3_add_host);

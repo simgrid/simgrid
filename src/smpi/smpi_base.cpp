@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/config.hpp>
+
 #include "private.h"
 #include "xbt/virtu.h"
 #include "mc/mc.h"
@@ -68,13 +70,17 @@ typedef struct s_smpi_factor_multival { // FIXME: this should be merged (dedupli
   int nb_values;
   double values[4];//arbitrary set to 4
 } s_smpi_factor_multival_t;
+
 xbt_dynar_t smpi_os_values = NULL;
 xbt_dynar_t smpi_or_values = NULL;
 xbt_dynar_t smpi_ois_values = NULL;
 
-double smpi_wtime_sleep = 0.0;
-double smpi_iprobe_sleep = 1e-4;
-double smpi_test_sleep = 1e-4;
+static XBT_PRIVATE simgrid::config::Flag<double> smpi_wtime_sleep(
+  "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
+static XBT_PRIVATE simgrid::config::Flag<double> smpi_iprobe_sleep(
+  "smpi/iprobe", "Minimum time to inject inside a call to MPI_Iprobe", 1e-4);
+static XBT_PRIVATE simgrid::config::Flag<double> smpi_test_sleep(
+  "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
 static int factor_cmp(const void *pa, const void *pb)
 {

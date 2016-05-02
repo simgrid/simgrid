@@ -8,6 +8,7 @@
 
 #include "xbt/misc.h"
 #include "xbt/config.h"
+#include "xbt/config.hpp"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "xbt/str.h"
@@ -216,42 +217,6 @@ static void _sg_cfg_cb__network_model(const char *name)
   find_model_description(surf_network_model_description, val);
 }
 
-/* callbacks of the network models values */
-static void _sg_cfg_cb__tcp_gamma(const char *name)
-{
-  sg_tcp_gamma = xbt_cfg_get_double(name);
-}
-
-static void _sg_cfg_cb__maxmin_precision(const char* name)
-{
-  sg_maxmin_precision = xbt_cfg_get_double(name);
-}
-
-static void _sg_cfg_cb__surf_precision(const char* name)
-{
-  sg_surf_precision = xbt_cfg_get_double(name);
-}
-
-static void _sg_cfg_cb__sender_gap(const char* name)
-{
-  sg_sender_gap = xbt_cfg_get_double(name);
-}
-
-static void _sg_cfg_cb__latency_factor(const char *name)
-{
-  sg_latency_factor = xbt_cfg_get_double(name);
-}
-
-static void _sg_cfg_cb__bandwidth_factor(const char *name)
-{
-  sg_bandwidth_factor = xbt_cfg_get_double(name);
-}
-
-static void _sg_cfg_cb__weight_S(const char *name)
-{
-  sg_weight_S_parameter = xbt_cfg_get_double(name);
-}
-
 #if HAVE_SMPI
 /* callback of the mpi collectives: simply check that this is a valid name. It will be picked up in smpi_global.cpp */
 static void _check_coll(const char *category,
@@ -307,28 +272,7 @@ static void _check_coll_barrier(const char *name){
   _check_coll("barrier", mpi_coll_barrier_description, name);
 }
 
-static void _sg_cfg_cb__wtime_sleep(const char *name){
-  smpi_wtime_sleep = xbt_cfg_get_double(name);
-}
-
-static void _sg_cfg_cb__iprobe_sleep(const char *name){
-  smpi_iprobe_sleep = xbt_cfg_get_double(name);
-}
-
-static void _sg_cfg_cb__test_sleep(const char *name){
-  smpi_test_sleep = xbt_cfg_get_double(name);
-}
 #endif
-
-/* callback of the inclusion path */
-static void _sg_cfg_cb__surf_path(const char *name)
-{
-  char *path = xbt_cfg_get_string(name);
-  if (path[0]) {// ignore ""
-    path = xbt_strdup(path);
-    xbt_dynar_push(surf_path, &path);
-  }
-}
 
 /* callback to decide if we want to use the model-checking */
 #include "src/xbt_modinter.h"
@@ -465,30 +409,43 @@ void sg_config_init(int *argc, char **argv)
     describe_model(description, surf_vm_model_description, "model", "The model to use for the vm");
     xbt_cfg_register_string("vm/model", "default", &_sg_cfg_cb__vm_model, description);
 
-    xbt_cfg_register_double("network/TCP-gamma",  4194304.0, _sg_cfg_cb__tcp_gamma,
-        "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)");
-    xbt_cfg_register_alias("network/TCP-gamma","network/TCP_gamma");
-    xbt_cfg_register_double("surf/precision", 0.00001, _sg_cfg_cb__surf_precision,
-        "Numerical precision used when updating simulation times (in seconds)");
-    xbt_cfg_register_double("maxmin/precision", 0.00001, _sg_cfg_cb__maxmin_precision,
-        "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)");
+    simgrid::config::bindFlag(sg_tcp_gamma = 4194304.0,
+      { "network/TCP-gamma", "network/TCP_gamma" },
+      "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)");
+    simgrid::config::bindFlag(sg_surf_precision = 0.00001,
+      "surf/precision",
+      "Numerical precision used when updating simulation times (in seconds)");
+    simgrid::config::bindFlag(sg_maxmin_precision = 0.00001,
+      "maxmin/precision",
+      "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)");
 
     /* The parameters of network models */
 
-    xbt_cfg_register_double("network/sender-gap", NAN, _sg_cfg_cb__sender_gap,
-        "Minimum gap between two overlapping sends"); /* real default for "network/sender-gap" is set in network_smpi.cpp */
-    xbt_cfg_register_alias("network/sender-gap","network/sender_gap");
-    xbt_cfg_register_double("network/latency-factor", 1.0, _sg_cfg_cb__latency_factor,
-        "Correction factor to apply to the provided latency (default value set by network model)");
-    xbt_cfg_register_alias("network/latency-factor","network/latency_factor");
-    xbt_cfg_register_double("network/bandwidth-factor", 1.0, _sg_cfg_cb__bandwidth_factor, "Correction factor to apply to the provided bandwidth (default value set by network model)");
-    xbt_cfg_register_alias("network/bandwidth-factor","network/bandwidth_factor");
-    xbt_cfg_register_double("network/weight-S", NAN, _sg_cfg_cb__weight_S, /* real default for "network/weight-S" is set in network_*.cpp */
-        "Correction factor to apply to the weight of competing streams (default value set by network model)");
-    xbt_cfg_register_alias("network/weight-S","network/weight_S");
+    // real default for "network/sender-gap" is set in network_smpi.cpp:
+    simgrid::config::bindFlag(sg_sender_gap = NAN,
+      { "network/sender-gap", "network/sender_gap" },
+      "Minimum gap between two overlapping sends");
+    simgrid::config::bindFlag(sg_latency_factor = 1.0,
+      { "network/latency-factor", "network/latency_factor" },
+      "Correction factor to apply to the provided latency (default value set by network model)");
+    simgrid::config::bindFlag(sg_bandwidth_factor = 1.0,
+      { "network/bandwidth-factor", "network/bandwidth_factor" },
+      "Correction factor to apply to the provided bandwidth (default value set by network model)");
+    // real default for "network/weight-S" is set in network_*.cpp:
+    simgrid::config::bindFlag(sg_weight_S_parameter = NAN,
+      { "network/weight-S", "network/weight_S" },
+      "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
     /* Inclusion path */
-    xbt_cfg_register_string("path", "", _sg_cfg_cb__surf_path, "Lookup path for inclusions in platform and deployment XML files");
+    simgrid::config::declareFlag<std::string>("path",
+      "Lookup path for inclusions in platform and deployment XML files",
+      "",
+      [](std::string const& path) {
+        if (path[0] != '\0') {
+          char* copy = xbt_strdup(path.c_str());
+          xbt_dynar_push(surf_path, &copy);
+        }
+      });
 
     xbt_cfg_register_boolean("cpu/maxmin-selective-update", "no", NULL,
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
@@ -580,10 +537,6 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("network/crosstraffic", "yes", _sg_cfg_cb__surf_network_crosstraffic,
         "Activate the interferences between uploads and downloads for fluid max-min models (LV08, CM02)");
 
-#if HAVE_NS3
-    xbt_cfg_register_string("ns3/TcpModel", "default", NULL, "The ns3 tcp model can be : NewReno or Reno or Tahoe");
-#endif
-
     //For smpi/bw_factor and smpi/lat_factor
     // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
     xbt_cfg_register_string("smpi/bw-factor",
@@ -631,9 +584,6 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("smpi/os", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Send minimum time for small messages)");
     xbt_cfg_register_string("smpi/ois", "1:0:0:0:0", NULL, "Small messages timings (MPI_Isend minimum time for small messages)");
     xbt_cfg_register_string("smpi/or", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Recv minimum time for small messages)");
-    xbt_cfg_register_double("smpi/iprobe", 1e-4, _sg_cfg_cb__iprobe_sleep, "Minimum time to inject inside a call to MPI_Iprobe");
-    xbt_cfg_register_double("smpi/test", 1e-4, _sg_cfg_cb__test_sleep, "Minimum time to inject inside a call to MPI_Test");
-    xbt_cfg_register_double("smpi/wtime", 0.0, _sg_cfg_cb__wtime_sleep, "Minimum time to inject inside a call to MPI_Wtime");
 
     xbt_cfg_register_string("smpi/coll-selector", "default", NULL, "Which collective selector to use");
     xbt_cfg_register_alias("smpi/coll-selector","smpi/coll_selector");
