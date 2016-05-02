@@ -90,31 +90,6 @@ void bindFlag(T& value, const char* name, const char* description)
  *
  *  <pre><code>
  *  static int x;
- *  simgrid::config::bindFlag(a, "x", [](const char* value) {
- *    return simgrid::config::parse(value);
- *  }
- *  </pre><code>
- */
-// F is a parser, F : const char* -> T
-template<class T, class F>
-typename std::enable_if<std::is_same<
-  T,
-  typename std::remove_cv< decltype(
-    std::declval<F>()(std::declval<const char*>())
-  ) >::type
->::value, void>::type
-bindFlag(T& value, const char* name, const char* description,
-  F callback)
-{
-  declareFlag(name, description, value, [&value,callback](const char* val) {
-    value = callback(val);
-  });
-}
-
-/** Bind a variable to configuration flag
- *
- *  <pre><code>
- *  static int x;
  *  simgrid::config::bindFlag(a, "x", [](int x) {
  *    if (x < x_min || x => x_max)
  *      throw std::range_error("must be in [x_min, x_max)")
