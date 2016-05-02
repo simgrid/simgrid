@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <signal.h> /* Signal handling */
 #include <stdlib.h>
 #include "src/internal_config.h"
 
@@ -52,8 +53,6 @@ static void* SIMIX_synchro_mallocator_new_f(void);
 static void SIMIX_synchro_mallocator_free_f(void* synchro);
 static void SIMIX_synchro_mallocator_reset_f(void* synchro);
 
-/* FIXME: Yeah, I'll do it in a portable maner one day [Mt] */
-#include <signal.h>
 
 int _sg_do_verbose_exit = 1;
 static void inthandler(int ignored)
@@ -144,8 +143,8 @@ static void install_segvhandler(void)
 }
 
 #endif /* _WIN32 */
-/********************************* SIMIX **************************************/
 
+/********************************* SIMIX **************************************/
 double SIMIX_timer_next(void)
 {
   return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
@@ -154,12 +153,6 @@ double SIMIX_timer_next(void)
 static void kill_process(smx_process_t process)
 {
   SIMIX_process_kill(process, NULL);
-}
-
-static void SIMIX_storage_create_(smx_storage_t storage)
-{
-  const char* key = xbt_dict_get_elm_key(storage);
-  SIMIX_storage_create(key, storage, NULL);
 }
 
 static std::function<void()> maestro_code;
@@ -242,12 +235,13 @@ void SIMIX_global_init(int *argc, char **argv)
     SIMIX_HOST_LEVEL = simgrid::s4u::Host::extension_create(SIMIX_host_destroy);
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
-      const char* id = storage->getName();
-        // TODO, create sg_storage_by_name
-        sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, id);
-        xbt_assert(s != NULL, "Storage not found for name %s", id);
-        SIMIX_storage_create_(s);
-      });
+      const char* name = storage->getName();
+      // TODO, create sg_storage_by_name
+      sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);
+      xbt_assert(s != NULL, "Storage not found for name %s", name);
+
+      SIMIX_storage_create(name, s, NULL);
+    });
 
     SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
   }
