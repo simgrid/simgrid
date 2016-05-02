@@ -430,6 +430,13 @@ template XBT_PUBLIC(double const&) getConfig<double>(const char* name);
 template XBT_PUBLIC(bool const&) getConfig<bool>(const char* name);
 template XBT_PUBLIC(std::string const&) getConfig<std::string>(const char* name);
 
+// ***** alias *****
+
+void alias(const char* realname, const char* aliasname)
+{
+  simgrid_config->alias(realname, aliasname);
+}
+
 // ***** declareFlag *****
 
 template<class T>
@@ -450,7 +457,6 @@ template XBT_PUBLIC(void) declareFlag(const char* name,
   const char* description, bool value, std::function<void(bool const &)> callback);
 template XBT_PUBLIC(void) declareFlag(const char* name,
   const char* description, std::string value, std::function<void(std::string const &)> callback);
-
 
 }
 }

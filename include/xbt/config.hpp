@@ -10,6 +10,7 @@
 #include <cstdlib>
 
 #include <functional>
+#include <initializer_list>
 #include <stdexcept>
 #include <string>
 #include <type_traits>
@@ -71,6 +72,18 @@ extern template XBT_PUBLIC(void) declareFlag(const char* name,
 extern template XBT_PUBLIC(void) declareFlag(const char* name,
   const char* description, std::string value, std::function<void(std::string const &)> callback);
 
+// ***** alias *****
+
+XBT_PUBLIC(void) alias(const char* realname, const char* aliasname);
+
+inline
+void alias(std::initializer_list<const char*> names)
+{
+  auto i = names.begin();
+  for (++i; i != names.end(); ++i)
+    alias(*names.begin(), *i);
+}
+
 /** Bind a variable to configuration flag
  *
  *  @param value Bound variable
@@ -86,6 +99,13 @@ void bindFlag(T& value, const char* name, const char* description)
   });
 }
 
+template<class T>
+void bindFlag(T& value, std::initializer_list<const char*> names, const char* description)
+{
+  bindFlag(value, *names.begin(), description);
+  alias(names);
+}
+
 /** Bind a variable to configuration flag
  *
  *  <pre><code>
@@ -97,6 +117,18 @@ void bindFlag(T& value, const char* name, const char* description)
  *  </pre><code>
  */
 // F is a checker, F : T& -> ()
+template<class T, class F>
+typename std::enable_if<std::is_same<
+  void,
+  decltype( std::declval<F>()(std::declval<const T&>()) )
+>::value, void>::type
+bindFlag(T& value, std::initializer_list<const char*> names, const char* description,
+  F callback)
+{
+  bindFlag(value, *names.begin(), description);
+  alias(names);
+}
+
 template<class T, class F>
 typename std::enable_if<std::is_same<
   void,
