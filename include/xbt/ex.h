@@ -45,6 +45,8 @@
 #ifndef __XBT_EX_H__
 #define __XBT_EX_H__
 
+#include <stdlib.h>
+
 #include "xbt/sysdep.h"
 #include "xbt/misc.h"
 #include "xbt/virtu.h"
@@ -403,8 +405,7 @@ XBT_PUBLIC( void )__xbt_ex_terminate_default(xbt_ex_t * e);
       __xbt_ex_terminate((xbt_ex_t*)&(ctx->exception)); /* not catched */ \
     else                                                                \
       __ex_mctx_restore(ctx->ctx_mctx); /* catched somewhere */         \
-    abort();  /* nope, stupid GCC, we won't survive a THROW */          \
-              /* (this won't be reached) */                             \
+    XBT_UNREACHABLE();                                                  \
   } while(0)
 
 /** @brief Helper macro for THROW and THROWF
