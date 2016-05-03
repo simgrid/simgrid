@@ -7,6 +7,8 @@
 #ifndef _XBT_CONFIG_HPP_
 #define _XBT_CONFIG_HPP_
 
+#include <xbt/base.h>
+
 #include <cstdlib>
 
 #include <functional>
@@ -21,6 +23,15 @@
 
 namespace simgrid {
 namespace config {
+
+XBT_PUBLIC_CLASS missing_key_error : public std::runtime_error {
+public:
+  explicit missing_key_error(const std::string& what)
+    : std::runtime_error(what) {}
+  explicit missing_key_error(const char* what)
+    : std::runtime_error(what) {}
+  ~missing_key_error();
+};
 
 template<class T> inline
 std::string to_string(T&& value)
