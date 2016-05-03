@@ -30,7 +30,7 @@ public:
     : std::runtime_error(what) {}
   explicit missing_key_error(const char* what)
     : std::runtime_error(what) {}
-  ~missing_key_error();
+  ~missing_key_error() noexcept;
 };
 
 template<class T> inline
