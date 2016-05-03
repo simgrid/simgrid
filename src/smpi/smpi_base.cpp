@@ -75,11 +75,11 @@ xbt_dynar_t smpi_os_values = NULL;
 xbt_dynar_t smpi_or_values = NULL;
 xbt_dynar_t smpi_ois_values = NULL;
 
-static XBT_PRIVATE simgrid::config::Flag<double> smpi_wtime_sleep(
+static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
-static XBT_PRIVATE simgrid::config::Flag<double> smpi_iprobe_sleep(
+static simgrid::config::Flag<double> smpi_iprobe_sleep(
   "smpi/iprobe", "Minimum time to inject inside a call to MPI_Iprobe", 1e-4);
-static XBT_PRIVATE simgrid::config::Flag<double> smpi_test_sleep(
+static simgrid::config::Flag<double> smpi_test_sleep(
   "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
 static int factor_cmp(const void *pa, const void *pb)
