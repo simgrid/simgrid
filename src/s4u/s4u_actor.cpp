@@ -27,15 +27,15 @@ static int s4u_actor_runner(int argc, char **argv)
 using namespace simgrid;
 
 s4u::Actor::Actor(smx_process_t smx_proc) {
-  p_smx_process = smx_proc;
+  inferior_ = smx_proc;
 }
 s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv)
     : s4u::Actor::Actor(name,host, argc,argv, -1) {
 }
 s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv, double killTime) {
-  p_smx_process = simcall_process_create(name, s4u_actor_runner, this, host->name().c_str(), killTime, argc, argv, NULL/*properties*/,0);
+  inferior_ = simcall_process_create(name, s4u_actor_runner, this, host->name().c_str(), killTime, argc, argv, NULL/*properties*/,0);
 
-  xbt_assert(p_smx_process,"Cannot create the actor");
+  xbt_assert(inferior_,"Cannot create the actor");
 //  TRACE_msg_process_create(procname, simcall_process_get_PID(p_smx_process), host->getInferior());
 //  simcall_process_on_exit(p_smx_process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,p_smx_process);
 }
@@ -54,30 +54,30 @@ s4u::Actor &s4u::Actor::self()
 }
 
 void s4u::Actor::setAutoRestart(bool autorestart) {
-  simcall_process_auto_restart_set(p_smx_process,autorestart);
+  simcall_process_auto_restart_set(inferior_,autorestart);
 }
 
 s4u::Host *s4u::Actor::getHost() {
-  return s4u::Host::by_name(sg_host_get_name(simcall_process_get_host(p_smx_process)));
+  return s4u::Host::by_name(sg_host_get_name(simcall_process_get_host(inferior_)));
 }
 const char* s4u::Actor::getName() {
-  return simcall_process_get_name(p_smx_process);
+  return simcall_process_get_name(inferior_);
 }
 int s4u::Actor::getPid(){
-  return simcall_process_get_PID(p_smx_process);
+  return simcall_process_get_PID(inferior_);
 }
 
 void s4u::Actor::setKillTime(double time) {
-  simcall_process_set_kill_time(p_smx_process,time);
+  simcall_process_set_kill_time(inferior_,time);
 }
 double s4u::Actor::getKillTime() {
-  return simcall_process_get_kill_time(p_smx_process);
+  return simcall_process_get_kill_time(inferior_);
 }
 void s4u::Actor::killAll() {
   simcall_process_killall(1);
 }
 void s4u::Actor::kill() {
-  simcall_process_kill(p_smx_process);
+  simcall_process_kill(inferior_);
 }
 
 void s4u::Actor::sleep(double duration) {

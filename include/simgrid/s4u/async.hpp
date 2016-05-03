@@ -33,10 +33,10 @@ protected:
   virtual ~Async();
   
 private:
-  struct s_smx_synchro *p_inferior = NULL;
+  struct s_smx_synchro *inferior_ = NULL;
 
 private:
-  e_s4u_async_state_t p_state = inited;
+  e_s4u_async_state_t state_ = inited;
 public:
   /** Starts a previously created async.
    *
@@ -53,10 +53,10 @@ public:
   /** Cancel that async */
   //virtual void cancel();
   /** Retrieve the current state of the async */
-  e_s4u_async_state_t getState() {return p_state;}
+  e_s4u_async_state_t getState() {return state_;}
 
 private:
-  double p_remains = 0;
+  double remains_ = 0;
 public:
   /** Get the remaining amount of work that this Async entails. When it's 0, it's done. */
   double getRemains();
@@ -66,12 +66,12 @@ public:
   void setRemains(double remains);
 
 private:
-  void *p_userData = NULL;
+  void *userData_ = NULL;
 public:
   /** Put some user data onto the Async */
-  void setUserData(void *data) {p_userData=data;}
+  void setUserData(void *data) {userData_=data;}
   /** Retrieve the user data of the Async */
-  void *getUserData() { return p_userData; }
+  void *getUserData() { return userData_; }
 }; // class
 
 }}; // Namespace simgrid::s4u
