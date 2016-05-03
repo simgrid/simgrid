@@ -220,14 +220,22 @@ public:
   operator T const&() const{ return value_; }
 
   // Basic interop with T:
-  Flag& operator=(T const& that) { value_ = that; return *this; }
-  Flag& operator=(T && that)     { value_ = that; return *this; }
-  bool operator==(T const& that) const { return value_ == that; }
-  bool operator!=(T const& that) const { return value_ != that; }
-  bool operator<(T const& that) const { return value_ < that; }
-  bool operator>(T const& that) const { return value_ > that; }
-  bool operator<=(T const& that) const { return value_ <= that; }
-  bool operator>=(T const& that) const { return value_ >= that; }
+  template<class U>
+  Flag& operator=(U const& that) { value_ = that; return *this; }
+  template<class U>
+  Flag& operator=(U && that)     { value_ = that; return *this; }
+  template<class U>
+  bool operator==(U const& that) const { return value_ == that; }
+  template<class U>
+  bool operator!=(U const& that) const { return value_ != that; }
+  template<class U>
+  bool operator<(U const& that) const { return value_ < that; }
+  template<class U>
+  bool operator>(U const& that) const { return value_ > that; }
+  template<class U>
+  bool operator<=(U const& that) const { return value_ <= that; }
+  template<class U>
+  bool operator>=(U const& that) const { return value_ >= that; }
 };
 
 }
