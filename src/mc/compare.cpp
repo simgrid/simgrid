@@ -34,20 +34,34 @@
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/mc_dwarf.hpp"
-#include "src/mc/malloc.hpp"
 #include "src/mc/Frame.hpp"
 #include "src/mc/ObjectInformation.hpp"
 #include "src/mc/Variable.hpp"
-#include "src/mc/malloc.hpp"
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_dwarf.hpp"
 #include "src/mc/Type.hpp"
 
-using simgrid::mc::remote;
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt,
                                 "Logging specific to mc_compare in mc");
+
+namespace simgrid {
+namespace mc {
+
+struct ProcessComparisonState;
+struct StateComparator;
+
+static int compare_heap_area(
+  int process_index, const void *area1, const void* area2,
+  Snapshot* snapshot1, Snapshot* snapshot2,
+  xbt_dynar_t previous, Type* type, int pointer_level);
+
+static void reset_heap_information(void);
+
+}
+}
+
+using simgrid::mc::remote;
 
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
@@ -272,15 +286,6 @@ void StateComparator::match_equals(xbt_dynar_t list)
   }
 }
 
-int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
-                          std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
-                          std::vector<simgrid::mc::IgnoredHeapRegion>* i2)
-{
-  if (mc_diff_info == nullptr)
-    mc_diff_info = std::unique_ptr<StateComparator>(new StateComparator());
-  return mc_diff_info->initHeapInformation(heap1, heap2, i1, i2);
-}
-
 void ProcessComparisonState::initHeapInformation(xbt_mheap_t heap,
                         std::vector<simgrid::mc::IgnoredHeapRegion>* i)
 {
@@ -308,6 +313,17 @@ int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
   return 0;
 }
 
+static
+int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
+                          std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
+                          std::vector<simgrid::mc::IgnoredHeapRegion>* i2)
+{
+  if (mc_diff_info == nullptr)
+    mc_diff_info = std::unique_ptr<StateComparator>(new StateComparator());
+  return mc_diff_info->initHeapInformation(heap1, heap2, i1, i2);
+}
+
+static inline
 void reset_heap_information()
 {
 
@@ -323,6 +339,7 @@ mc_mem_region_t MC_get_heap_region(simgrid::mc::Snapshot* snapshot)
   xbt_die("No heap region");
 }
 
+static
 int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
@@ -989,6 +1006,7 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
  * @param pointer_level
  * @return 0 (same), 1 (different), -1
  */
+static
 int compare_heap_area(int process_index, const void *area1, const void *area2, simgrid::mc::Snapshot* snapshot1,
                       simgrid::mc::Snapshot* snapshot2, xbt_dynar_t previous,
                       simgrid::mc::Type* type, int pointer_level)
