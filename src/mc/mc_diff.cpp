@@ -746,8 +746,13 @@ static int compare_heap_area_with_type(struct s_mc_diff *state, int process_inde
                                        int pointer_level)
 {
 top:
-  // HACK: This should not happen but in pratice, there is some
-  // DW_TAG_typedef without DW_AT_type. We should fix this somehow.
+
+  // HACK: This should not happen but in pratice, there are some
+  // DW_TAG_typedef without an associated DW_AT_type:
+  //<1><538832>: Abbrev Number: 111 (DW_TAG_typedef)
+  //    <538833>   DW_AT_name        : (indirect string, offset: 0x2292f3): gregset_t
+  //    <538837>   DW_AT_decl_file   : 98
+  //    <538838>   DW_AT_decl_line   : 37
   if (type == nullptr)
     return 0;
 
