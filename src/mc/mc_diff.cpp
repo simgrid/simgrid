@@ -6,6 +6,10 @@
 
 /* mc_diff - Memory snapshooting and comparison                             */
 
+#include <array>
+#include <memory>
+#include <utility>
+
 #include "src/xbt/ex_interface.h"   /* internals of backtrace setup */
 #include "mc/mc.h"
 #include "xbt/mmalloc.h"
@@ -26,25 +30,52 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_diff, xbt,
 /*********************************** Heap comparison ***********************************/
 /***************************************************************************************/
 
-struct XBT_PRIVATE s_mc_diff {
-  s_xbt_mheap_t std_heap_copy;
-  std::size_t heaplimit;
-  // Number of blocks in the heaps:
-  std::size_t heapsize1, heapsize2;
-  std::vector<simgrid::mc::IgnoredHeapRegion>* to_ignore1;
-  std::vector<simgrid::mc::IgnoredHeapRegion>* to_ignore2;
-  s_heap_area_t *equals_to1, *equals_to2;
-  simgrid::mc::Type **types1;
-  simgrid::mc::Type **types2;
-  std::size_t available;
+namespace simgrid {
+namespace mc {
+
+struct ProcessComparisonState {
+  std::vector<simgrid::mc::IgnoredHeapRegion>* to_ignore = nullptr;
+  std::vector<s_heap_area_t> equals_to;
+  std::vector<simgrid::mc::Type*> types;
+  std::size_t heapsize = 0;
+
+  void initHeapInformation(xbt_mheap_t heap,
+                          std::vector<simgrid::mc::IgnoredHeapRegion>* i);
 };
 
-#define equals_to1_(i,j) equals_to1[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
-#define equals_to2_(i,j) equals_to2[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
-#define types1_(i,j) types1[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
-#define types2_(i,j) types2[ MAX_FRAGMENT_PER_BLOCK*(i) + (j)]
+struct StateComparator {
+  s_xbt_mheap_t std_heap_copy;
+  std::size_t heaplimit;
+  std::array<ProcessComparisonState, 2> processStates;
 
-static __thread struct s_mc_diff *mc_diff_info = nullptr;
+  int initHeapInformation(
+    xbt_mheap_t heap1, xbt_mheap_t heap2,
+    std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
+    std::vector<simgrid::mc::IgnoredHeapRegion>* i2);
+
+  s_heap_area_t& equals_to1_(std::size_t i, std::size_t j)
+  {
+    return processStates[0].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
+  }
+  s_heap_area_t& equals_to2_(std::size_t i, std::size_t j)
+  {
+    return processStates[1].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
+  }
+  Type*& types1_(std::size_t i, std::size_t j)
+  {
+    return processStates[0].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
+  }
+  Type*& types2_(std::size_t i, std::size_t j)
+  {
+    return processStates[1].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
+  }
+};
+
+}
+}
+
+// TODO, make this a field of ModelChecker or something similar
+static std::unique_ptr<simgrid::mc::StateComparator> mc_diff_info;
 
 /*********************************** Free functions ************************************/
 
@@ -151,7 +182,7 @@ static bool is_block_stack(int block)
   return false;
 }
 
-static void match_equals(struct s_mc_diff *state, xbt_dynar_t list)
+static void match_equals(simgrid::mc::StateComparator *state, xbt_dynar_t list)
 {
 
   unsigned int cursor = 0;
@@ -184,7 +215,7 @@ static void match_equals(struct s_mc_diff *state, xbt_dynar_t list)
  *  @param b2     Block of state 2
  *  @return       if the blocks are known to be matching
  */
-static int equal_blocks(struct s_mc_diff *state, int b1, int b2)
+static int equal_blocks(simgrid::mc::StateComparator *state, int b1, int b2)
 {
 
   if (state->equals_to1_(b1, 0).block == b2
@@ -203,7 +234,7 @@ static int equal_blocks(struct s_mc_diff *state, int b1, int b2)
  *  @param f2     Fragment of state 2
  *  @return       if the fragments are known to be matching
  */
-static int equal_fragments(struct s_mc_diff *state, int b1, int f1, int b2,
+static int equal_fragments(simgrid::mc::StateComparator *state, int b1, int f1, int b2,
                            int f2)
 {
 
@@ -223,63 +254,36 @@ int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i2)
 {
-  if (mc_diff_info == nullptr) {
-    mc_diff_info = xbt_new0(struct s_mc_diff, 1);
-    mc_diff_info->equals_to1 = nullptr;
-    mc_diff_info->equals_to2 = nullptr;
-    mc_diff_info->types1 = nullptr;
-    mc_diff_info->types2 = nullptr;
-  }
-  struct s_mc_diff *state = mc_diff_info;
+  if (mc_diff_info == nullptr)
+    mc_diff_info = std::unique_ptr<StateComparator>(new StateComparator());
+  return mc_diff_info->initHeapInformation(heap1, heap2, i1, i2);
+}
 
+void ProcessComparisonState::initHeapInformation(xbt_mheap_t heap,
+                        std::vector<simgrid::mc::IgnoredHeapRegion>* i)
+{
+  auto heaplimit = ((struct mdesc *) heap)->heaplimit;
+  this->heapsize = ((struct mdesc *) heap)->heapsize;
+  this->to_ignore = i;
+  this->equals_to.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, s_heap_area {0, 0, 0});
+  this->types.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, nullptr);
+}
+
+int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
+                          std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
+                          std::vector<simgrid::mc::IgnoredHeapRegion>* i2)
+{
   if ((((struct mdesc *) heap1)->heaplimit !=
        ((struct mdesc *) heap2)->heaplimit)
       ||
       ((((struct mdesc *) heap1)->heapsize !=
         ((struct mdesc *) heap2)->heapsize)))
     return -1;
-
-  state->heaplimit = ((struct mdesc *) heap1)->heaplimit;
-  
-  state->std_heap_copy = *mc_model_checker->process().get_heap();
-
-  state->heapsize1 = heap1->heapsize;
-  state->heapsize2 = heap2->heapsize;
-
-  state->to_ignore1 = i1;
-  state->to_ignore2 = i2;
-
-  if (state->heaplimit > state->available) {
-    state->equals_to1 = (s_heap_area_t*)
-        realloc(state->equals_to1,
-                state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
-                sizeof(s_heap_area_t));
-    state->types1 = (simgrid::mc::Type**)
-        realloc(state->types1,
-                state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
-                sizeof(simgrid::mc::Type*));
-    state->equals_to2 = (s_heap_area_t*)
-        realloc(state->equals_to2,
-                state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
-                sizeof(s_heap_area_t));
-    state->types2 = (simgrid::mc::Type**)
-        realloc(state->types2,
-                state->heaplimit * MAX_FRAGMENT_PER_BLOCK *
-                sizeof(simgrid::mc::Type*));
-    state->available = state->heaplimit;
-  }
-
-  memset(state->equals_to1, 0,
-         state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(s_heap_area_t));
-  memset(state->equals_to2, 0,
-         state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(s_heap_area_t));
-  memset(state->types1, 0,
-         state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(char**));
-  memset(state->types2, 0,
-         state->heaplimit * MAX_FRAGMENT_PER_BLOCK * sizeof(char**));
-
+  this->heaplimit = ((struct mdesc *) heap1)->heaplimit;
+  this->std_heap_copy = *mc_model_checker->process().get_heap();
+  this->processStates[0].initHeapInformation(heap1, i1);
+  this->processStates[1].initHeapInformation(heap2, i2);
   return 0;
-
 }
 
 void reset_heap_information()
@@ -303,7 +307,7 @@ mc_mem_region_t MC_get_heap_region(simgrid::mc::Snapshot* snapshot)
 int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-  struct s_mc_diff *state = mc_diff_info;
+  simgrid::mc::StateComparator *state = mc_diff_info.get();
 
   /* Start comparison */
   size_t i1, i2, j1, j2, k;
@@ -648,12 +652,13 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
  * @param size
  * @param check_ignore
  */
-static int compare_heap_area_without_type(struct s_mc_diff *state, int process_index,
-                                          const void *real_area1, const void *real_area2,
-                                          simgrid::mc::Snapshot* snapshot1,
-                                          simgrid::mc::Snapshot* snapshot2,
-                                          xbt_dynar_t previous, int size,
-                                          int check_ignore)
+static int compare_heap_area_without_type(
+  simgrid::mc::StateComparator *state, int process_index,
+  const void *real_area1, const void *real_area2,
+  simgrid::mc::Snapshot* snapshot1,
+  simgrid::mc::Snapshot* snapshot2,
+  xbt_dynar_t previous, int size,
+  int check_ignore)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
 
@@ -669,10 +674,10 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
 
     if (check_ignore > 0) {
       if ((ignore1 =
-           heap_comparison_ignore_size(state->to_ignore1,
+           heap_comparison_ignore_size(state->processStates[0].to_ignore,
                                        (char *) real_area1 + i)) != -1) {
         if ((ignore2 =
-             heap_comparison_ignore_size(state->to_ignore2,
+             heap_comparison_ignore_size(state->processStates[1].to_ignore,
                                          (char *) real_area2 + i)) == ignore1) {
           if (ignore1 == 0) {
             check_ignore--;
@@ -737,13 +742,14 @@ static int compare_heap_area_without_type(struct s_mc_diff *state, int process_i
  * @param pointer_level
  * @return               0 (same), 1 (different), -1 (unknown)
  */
-static int compare_heap_area_with_type(struct s_mc_diff *state, int process_index,
-                                       const void *real_area1, const void *real_area2,
-                                       simgrid::mc::Snapshot* snapshot1,
-                                       simgrid::mc::Snapshot* snapshot2,
-                                       xbt_dynar_t previous, simgrid::mc::Type* type,
-                                       int area_size, int check_ignore,
-                                       int pointer_level)
+static int compare_heap_area_with_type(
+  simgrid::mc::StateComparator *state, int process_index,
+  const void *real_area1, const void *real_area2,
+  simgrid::mc::Snapshot* snapshot1,
+  simgrid::mc::Snapshot* snapshot2,
+  xbt_dynar_t previous, simgrid::mc::Type* type,
+  int area_size, int check_ignore,
+  int pointer_level)
 {
 top:
 
@@ -761,9 +767,11 @@ top:
   ssize_t ignore1, ignore2;
 
   if ((check_ignore > 0)
-      && ((ignore1 = heap_comparison_ignore_size(state->to_ignore1, real_area1))
+      && ((ignore1 = heap_comparison_ignore_size(
+        state->processStates[0].to_ignore, real_area1))
           > 0)
-      && ((ignore2 = heap_comparison_ignore_size(state->to_ignore2, real_area2))
+      && ((ignore2 = heap_comparison_ignore_size(
+          state->processStates[1].to_ignore, real_area2))
           == ignore1))
     return 0;
 
@@ -1013,7 +1021,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  struct s_mc_diff *state = mc_diff_info;
+  simgrid::mc::StateComparator *state = mc_diff_info.get();
 
   int res_compare;
   ssize_t block1, frag1, block2, frag2;
@@ -1062,9 +1070,9 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
   }
   // If either block is not in the expected area of memory:
   if (((char *) area1 < (char *) state->std_heap_copy.heapbase)
-      || (block1 > (ssize_t) state->heapsize1) || (block1 < 1)
+      || (block1 > (ssize_t) state->processStates[0].heapsize) || (block1 < 1)
       || ((char *) area2 < (char *) state->std_heap_copy.heapbase)
-      || (block2 > (ssize_t) state->heapsize2) || (block2 < 1)) {
+      || (block2 > (ssize_t) state->processStates[1].heapsize) || (block2 < 1)) {
     if (match_pairs)
       xbt_dynar_free(&previous);
     return 1;
