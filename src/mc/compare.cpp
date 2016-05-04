@@ -52,11 +52,10 @@ struct ProcessComparisonState;
 struct StateComparator;
 
 static int compare_heap_area(
+  StateComparator& state,
   int process_index, const void *area1, const void* area2,
   Snapshot* snapshot1, Snapshot* snapshot2,
   xbt_dynar_t previous, Type* type, int pointer_level);
-
-static void reset_heap_information(void);
 
 }
 }
@@ -78,12 +77,13 @@ struct HeapLocation {
 
 typedef std::array<HeapLocation, 2> HeapLocationPair;
 
-struct HeapArea {
+struct HeapArea : public HeapLocation {
   bool valid = false;
   int block = 0;
   int fragment = 0;
-
   HeapArea() {}
+  HeapArea(int block)
+    : valid(true), block(block) {}
   HeapArea(int block, int fragment = 0)
     : valid(true), block(block), fragment(fragment) {}
 };
@@ -98,10 +98,38 @@ struct ProcessComparisonState {
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i);
 };
 
+namespace {
+
+/** A hash which works with more stuff
+ *
+ *  It can hash pairs: the standard hash currently doesn't include this.
+ */
+template<class X> struct hash : public std::hash<X> {};
+
+template<class X, class Y>
+struct hash<std::pair<X,Y>> {
+  std::size_t operator()(std::pair<X,Y>const& x) const
+  {
+    struct hash<X> h1;
+    struct hash<X> h2;
+    return h1(x.first) ^ h2(x.second);
+  }
+};
+
+}
+
+
 struct StateComparator {
   s_xbt_mheap_t std_heap_copy;
   std::size_t heaplimit;
   std::array<ProcessComparisonState, 2> processStates;
+
+  std::unordered_set<std::pair<void*, void*>, hash<std::pair<void*, void*>>> compared_pointers;
+
+  void clear()
+  {
+    compared_pointers.clear();
+  }
 
   int initHeapInformation(
     xbt_mheap_t heap1, xbt_mheap_t heap2,
@@ -177,9 +205,6 @@ struct StateComparator {
 
 }
 }
-
-// TODO, make this a field of ModelChecker or something similar
-static std::unique_ptr<simgrid::mc::StateComparator> mc_diff_info;
 
 /************************************************************************************/
 
@@ -300,22 +325,6 @@ int StateComparator::initHeapInformation(xbt_mheap_t heap1, xbt_mheap_t heap2,
   return 0;
 }
 
-static
-int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
-                          std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
-                          std::vector<simgrid::mc::IgnoredHeapRegion>* i2)
-{
-  if (mc_diff_info == nullptr)
-    mc_diff_info = std::unique_ptr<StateComparator>(new StateComparator());
-  return mc_diff_info->initHeapInformation(heap1, heap2, i1, i2);
-}
-
-static inline
-void reset_heap_information()
-{
-
-}
-
 // TODO, have a robust way to find it in O(1)
 static inline
 mc_mem_region_t MC_get_heap_region(simgrid::mc::Snapshot* snapshot)
@@ -327,10 +336,10 @@ mc_mem_region_t MC_get_heap_region(simgrid::mc::Snapshot* snapshot)
 }
 
 static
-int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
+int mmalloc_compare_heap(
+  simgrid::mc::StateComparator& state, simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-  simgrid::mc::StateComparator *state = mc_diff_info.get();
 
   /* Start comparison */
   size_t i1, i2, j1, j2, k;
@@ -358,7 +367,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
   const malloc_info* heapinfos2 = snapshot2->read<malloc_info*>(
     (std::uint64_t)heapinfo_address, simgrid::mc::ProcessIndexMissing);
 
-  while (i1 < state->heaplimit) {
+  while (i1 < state.heaplimit) {
 
     const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(heap_region1, &heapinfo_temp1, &heapinfos1[i1], sizeof(malloc_info));
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(heap_region2, &heapinfo_temp2, &heapinfos2[i1], sizeof(malloc_info));
@@ -375,20 +384,20 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
     addr_block1 =
         ((void *) (((ADDR2UINT(i1)) - 1) * BLOCKSIZE +
-                   (char *) state->std_heap_copy.heapbase));
+                   (char *) state.std_heap_copy.heapbase));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED) {       /* Large block */
 
       if (is_stack(addr_block1)) {
         for (k = 0; k < heapinfo1->busy_block.size; k++)
-          state->equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
+          state.equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
         for (k = 0; k < heapinfo2->busy_block.size; k++)
-          state->equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
+          state.equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
         i1 += heapinfo1->busy_block.size;
         continue;
       }
 
-      if (state->equals_to1_(i1, 0).valid) {
+      if (state.equals_to1_(i1, 0).valid) {
         i1++;
         continue;
       }
@@ -399,26 +408,26 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
       /* Try first to associate to same block in the other heap */
       if (heapinfo2->type == heapinfo1->type
-        && state->equals_to2_(i1, 0).valid == 0) {
+        && state.equals_to2_(i1, 0).valid == 0) {
         addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE +
-                       (char *) state->std_heap_copy.heapbase;
-        res_compare =
-            compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2, snapshot1, snapshot2,
-                              nullptr, nullptr, 0);
+                       (char *) state.std_heap_copy.heapbase;
+        res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing,
+            addr_block1, addr_block2, snapshot1, snapshot2,
+            nullptr, nullptr, 0);
         if (res_compare != 1) {
           for (k = 1; k < heapinfo2->busy_block.size; k++)
-            state->equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
+            state.equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
           for (k = 1; k < heapinfo1->busy_block.size; k++)
-            state->equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
+            state.equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
           equal = 1;
           i1 += heapinfo1->busy_block.size;
         }
       }
 
-      while (i2 < state->heaplimit && !equal) {
+      while (i2 < state.heaplimit && !equal) {
 
         addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE +
-                       (char *) state->std_heap_copy.heapbase;
+                       (char *) state.std_heap_copy.heapbase;
 
         if (i2 == i1) {
           i2++;
@@ -432,20 +441,20 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
           continue;
         }
 
-        if (state->equals_to2_(i2, 0).valid) {
+        if (state.equals_to2_(i2, 0).valid) {
           i2++;
           continue;
         }
 
-        res_compare =
-            compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_block1, addr_block2, snapshot1, snapshot2,
-                              nullptr, nullptr, 0);
+        res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing,
+            addr_block1, addr_block2, snapshot1, snapshot2,
+            nullptr, nullptr, 0);
 
         if (res_compare != 1) {
           for (k = 1; k < heapinfo2b->busy_block.size; k++)
-            state->equals_to2_(i2 + k, 0) = HeapArea(i1, -1);
+            state.equals_to2_(i2 + k, 0) = HeapArea(i1, -1);
           for (k = 1; k < heapinfo1->busy_block.size; k++)
-            state->equals_to1_(i1 + k, 0) = HeapArea(i2, -1);
+            state.equals_to1_(i1 + k, 0) = HeapArea(i2, -1);
           equal = 1;
           i1 += heapinfo1->busy_block.size;
         }
@@ -457,7 +466,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
       if (!equal) {
         XBT_DEBUG("Block %zu not found (size_used = %zu, addr = %p)", i1,
                   heapinfo1->busy_block.busy_size, addr_block1);
-        i1 = state->heaplimit + 1;
+        i1 = state.heaplimit + 1;
         nb_diff1++;
         //i1++;
       }
@@ -469,7 +478,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
         if (heapinfo1->busy_frag.frag_size[j1] == -1) /* Free fragment */
           continue;
 
-        if (state->equals_to1_(i1, j1).valid)
+        if (state.equals_to1_(i1, j1).valid)
           continue;
 
         addr_frag1 =
@@ -480,22 +489,22 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
         /* Try first to associate to same fragment in the other heap */
         if (heapinfo2->type == heapinfo1->type
-            && !state->equals_to2_(i1, j1).valid) {
+            && !state.equals_to2_(i1, j1).valid) {
           addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE +
-                         (char *) state->std_heap_copy.heapbase;
+                         (char *) state.std_heap_copy.heapbase;
           addr_frag2 =
               (void *) ((char *) addr_block2 +
                         (j1 << heapinfo2->type));
-          res_compare =
-              compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2, snapshot1, snapshot2,
-                                nullptr, nullptr, 0);
+          res_compare = compare_heap_area(state, simgrid::mc::ProcessIndexMissing,
+              addr_frag1, addr_frag2, snapshot1, snapshot2,
+              nullptr, nullptr, 0);
           if (res_compare != 1)
             equal = 1;
         }
 
 
 
-        while (i2 < state->heaplimit && !equal) {
+        while (i2 < state.heaplimit && !equal) {
 
           const malloc_info* heapinfo2b = (const malloc_info*) MC_region_read(
             heap_region2, &heapinfo_temp2b, &heapinfos2[i2],
@@ -523,19 +532,19 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
             if (i2 == i1 && j2 == j1)
               continue;
 
-            if (state->equals_to2_(i2, j2).valid)
+            if (state.equals_to2_(i2, j2).valid)
               continue;
 
             addr_block2 = (ADDR2UINT(i2) - 1) * BLOCKSIZE +
-                           (char *) state->std_heap_copy.heapbase;
+                           (char *) state.std_heap_copy.heapbase;
             addr_frag2 =
                 (void *) ((char *) addr_block2 +
                           (j2 << heapinfo2b->type));
 
-            res_compare =
-                compare_heap_area(simgrid::mc::ProcessIndexMissing, addr_frag1, addr_frag2, snapshot2, snapshot2,
-                                  nullptr, nullptr, 0);
-
+            res_compare = compare_heap_area(
+                state, simgrid::mc::ProcessIndexMissing,
+                addr_frag1, addr_frag2, snapshot2, snapshot2,
+                nullptr, nullptr, 0);
             if (res_compare != 1) {
               equal = 1;
               break;
@@ -552,8 +561,8 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
               ("Block %zu, fragment %zu not found (size_used = %zd, address = %p)\n",
                i1, j1, heapinfo1->busy_frag.frag_size[j1],
                addr_frag1);
-          i2 = state->heaplimit + 1;
-          i1 = state->heaplimit + 1;
+          i2 = state.heaplimit + 1;
+          i1 = state.heaplimit + 1;
           nb_diff1++;
           break;
         }
@@ -569,14 +578,14 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
   /* All blocks/fragments are equal to another block/fragment ? */
   size_t i = 1, j = 0;
 
-  for(i = 1; i < state->heaplimit; i++) {
+  for(i = 1; i < state.heaplimit; i++) {
     const malloc_info* heapinfo1 = (const malloc_info*) MC_region_read(
       heap_region1, &heapinfo_temp1, &heapinfos1[i], sizeof(malloc_info));
 
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED
-        && i1 == state->heaplimit
+        && i1 == state.heaplimit
         && heapinfo1->busy_block.busy_size > 0
-        && !state->equals_to1_(i, 0).valid) {
+        && !state.equals_to1_(i, 0).valid) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                 heapinfo1->busy_block.busy_size);
       nb_diff1++;
@@ -585,25 +594,25 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
     if (heapinfo1->type <= 0)
       continue;
     for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo1->type); j++)
-      if (i1 == state->heaplimit
+      if (i1 == state.heaplimit
           && heapinfo1->busy_frag.frag_size[j] > 0
-          && !state->equals_to1_(i, j).valid) {
+          && !state.equals_to1_(i, j).valid) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)",
           i, j, heapinfo1->busy_frag.frag_size[j]);
         nb_diff1++;
       }
   }
 
-  if (i1 == state->heaplimit)
+  if (i1 == state.heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap1 : %d", nb_diff1);
 
-  for (i=1; i < state->heaplimit; i++) {
+  for (i=1; i < state.heaplimit; i++) {
     const malloc_info* heapinfo2 = (const malloc_info*) MC_region_read(
       heap_region2, &heapinfo_temp2, &heapinfos2[i], sizeof(malloc_info));
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED
-        && i1 == state->heaplimit
+        && i1 == state.heaplimit
         && heapinfo2->busy_block.busy_size > 0
-        && !state->equals_to2_(i, 0).valid) {
+        && !state.equals_to2_(i, 0).valid) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                 heapinfo2->busy_block.busy_size);
       nb_diff2++;
@@ -613,9 +622,9 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
       continue;
 
     for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo2->type); j++)
-      if (i1 == state->heaplimit
+      if (i1 == state.heaplimit
           && heapinfo2->busy_frag.frag_size[j] > 0
-          && !state->equals_to2_(i, j).valid) {
+          && !state.equals_to2_(i, j).valid) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)",
           i, j, heapinfo2->busy_frag.frag_size[j]);
         nb_diff2++;
@@ -623,7 +632,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
   }
 
-  if (i1 == state->heaplimit)
+  if (i1 == state.heaplimit)
     XBT_DEBUG("Number of blocks/fragments not found in heap2 : %d", nb_diff2);
 
   return nb_diff1 > 0 || nb_diff2 > 0;
@@ -641,7 +650,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
  * @param check_ignore
  */
 static int compare_heap_area_without_type(
-  simgrid::mc::StateComparator *state, int process_index,
+  simgrid::mc::StateComparator& state, int process_index,
   const void *real_area1, const void *real_area2,
   simgrid::mc::Snapshot* snapshot1,
   simgrid::mc::Snapshot* snapshot2,
@@ -656,10 +665,10 @@ static int compare_heap_area_without_type(
 
     if (check_ignore > 0) {
       ssize_t ignore1 = heap_comparison_ignore_size(
-        state->processStates[0].to_ignore, (char *) real_area1 + i);
+        state.processStates[0].to_ignore, (char *) real_area1 + i);
       if (ignore1 != -1) {
         ssize_t ignore2 = heap_comparison_ignore_size(
-          state->processStates[1].to_ignore, (char *) real_area2 + i);
+          state.processStates[1].to_ignore, (char *) real_area2 + i);
         if (ignore2 == ignore1) {
           if (ignore1 == 0) {
             check_ignore--;
@@ -687,14 +696,14 @@ static int compare_heap_area_without_type(
         continue;
       }
 
-      if (addr_pointed1 > state->std_heap_copy.heapbase
+      if (addr_pointed1 > state.std_heap_copy.heapbase
            && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-           && addr_pointed2 > state->std_heap_copy.heapbase
+           && addr_pointed2 > state.std_heap_copy.heapbase
            && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)) {
         // Both addreses are in the heap:
-        int res_compare =
-            compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
-                              snapshot2, previous, nullptr, 0);
+        int res_compare = compare_heap_area(state ,process_index,
+          addr_pointed1, addr_pointed2,
+          snapshot1, snapshot2, previous, nullptr, 0);
         if (res_compare == 1)
           return res_compare;
         i = pointer_align + sizeof(void *);
@@ -725,7 +734,7 @@ static int compare_heap_area_without_type(
  * @return               0 (same), 1 (different), -1 (unknown)
  */
 static int compare_heap_area_with_type(
-  simgrid::mc::StateComparator *state, int process_index,
+  simgrid::mc::StateComparator& state, int process_index,
   const void *real_area1, const void *real_area2,
   simgrid::mc::Snapshot* snapshot1,
   simgrid::mc::Snapshot* snapshot2,
@@ -749,10 +758,10 @@ top:
 
   if (check_ignore > 0) {
     ssize_t ignore1 = heap_comparison_ignore_size(
-      state->processStates[0].to_ignore, real_area1);
+      state.processStates[0].to_ignore, real_area1);
     if (ignore1 > 0
         && heap_comparison_ignore_size(
-          state->processStates[1].to_ignore, real_area2) == ignore1)
+          state.processStates[1].to_ignore, real_area2) == ignore1)
       return 0;
   }
 
@@ -850,13 +859,14 @@ top:
     if (pointer_level <= 1) {
       addr_pointed1 = snapshot1->read(remote((void**)real_area1), process_index);
       addr_pointed2 = snapshot2->read(remote((void**)real_area2), process_index);
-      if (addr_pointed1 > state->std_heap_copy.heapbase
+      if (addr_pointed1 > state.std_heap_copy.heapbase
           && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-          && addr_pointed2 > state->std_heap_copy.heapbase
+          && addr_pointed2 > state.std_heap_copy.heapbase
           && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
-        return compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
-                                 snapshot2, previous, type->subtype,
-                                 pointer_level);
+        return compare_heap_area(state, process_index,
+            addr_pointed1, addr_pointed2, snapshot1,
+            snapshot2, previous, type->subtype,
+            pointer_level);
       else
         return (addr_pointed1 != addr_pointed2);
     }
@@ -867,14 +877,15 @@ top:
       addr_pointed2 = snapshot2->read(
         remote((void**)((char*) real_area2 + i * sizeof(void *))),
         process_index);
-      if (addr_pointed1 > state->std_heap_copy.heapbase
+      if (addr_pointed1 > state.std_heap_copy.heapbase
           && addr_pointed1 < mc_snapshot_get_heap_end(snapshot1)
-          && addr_pointed2 > state->std_heap_copy.heapbase
+          && addr_pointed2 > state.std_heap_copy.heapbase
           && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2))
         res =
-            compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
-                              snapshot2, previous, type->subtype,
-                              pointer_level);
+            compare_heap_area(state, process_index,
+              addr_pointed1, addr_pointed2, snapshot1,
+              snapshot2, previous, type->subtype,
+              pointer_level);
       else
         res = (addr_pointed1 != addr_pointed2);
       if (res == 1)
@@ -994,13 +1005,14 @@ static simgrid::mc::Type* get_offset_type(void *real_base_address, simgrid::mc::
  * @return 0 (same), 1 (different), -1
  */
 static
-int compare_heap_area(int process_index, const void *area1, const void *area2, simgrid::mc::Snapshot* snapshot1,
-                      simgrid::mc::Snapshot* snapshot2, xbt_dynar_t previous,
+int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
+                      const void *area1, const void *area2,
+                      simgrid::mc::Snapshot* snapshot1,
+                      simgrid::mc::Snapshot* snapshot2,
+                      xbt_dynar_t previous,
                       simgrid::mc::Type* type, int pointer_level)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-
-  simgrid::mc::StateComparator *state = mc_diff_info.get();
 
   int res_compare;
   ssize_t block1, frag1, block2, frag2;
@@ -1034,26 +1046,26 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
   // Get block number:
   block1 =
       ((char *) area1 -
-       (char *) state->std_heap_copy.heapbase) / BLOCKSIZE + 1;
+       (char *) state.std_heap_copy.heapbase) / BLOCKSIZE + 1;
   block2 =
       ((char *) area2 -
-       (char *) state->std_heap_copy.heapbase) / BLOCKSIZE + 1;
+       (char *) state.std_heap_copy.heapbase) / BLOCKSIZE + 1;
 
   // If either block is a stack block:
   if (is_block_stack((int) block1) && is_block_stack((int) block2)) {
     add_heap_area_pair(previous, block1, -1, block2, -1);
     if (match_pairs) {
-      state->match_equals(previous);
+      state.match_equals(previous);
       xbt_dynar_free(&previous);
     }
     return 0;
   }
 
   // If either block is not in the expected area of memory:
-  if (((char *) area1 < (char *) state->std_heap_copy.heapbase)
-      || (block1 > (ssize_t) state->processStates[0].heapsize) || (block1 < 1)
-      || ((char *) area2 < (char *) state->std_heap_copy.heapbase)
-      || (block2 > (ssize_t) state->processStates[1].heapsize) || (block2 < 1)) {
+  if (((char *) area1 < (char *) state.std_heap_copy.heapbase)
+      || (block1 > (ssize_t) state.processStates[0].heapsize) || (block1 < 1)
+      || ((char *) area2 < (char *) state.std_heap_copy.heapbase)
+      || (block2 > (ssize_t) state.processStates[1].heapsize) || (block2 < 1)) {
     if (match_pairs)
       xbt_dynar_free(&previous);
     return 1;
@@ -1061,9 +1073,9 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
   // Process address of the block:
   real_addr_block1 = (ADDR2UINT(block1) - 1) * BLOCKSIZE +
-                 (char *) state->std_heap_copy.heapbase;
+                 (char *) state.std_heap_copy.heapbase;
   real_addr_block2 = (ADDR2UINT(block2) - 1) * BLOCKSIZE +
-                 (char *) state->std_heap_copy.heapbase;
+                 (char *) state.std_heap_copy.heapbase;
 
   if (type) {
 
@@ -1096,7 +1108,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
     && (heapinfo2->type == MMALLOC_TYPE_FREE || heapinfo2->type ==MMALLOC_TYPE_HEAPINFO)) {
     /* Free block */
     if (match_pairs) {
-      state->match_equals(previous);
+      state.match_equals(previous);
       xbt_dynar_free(&previous);
     }
     return 0;
@@ -1111,11 +1123,11 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
     offset1 = (char *) area1 - (char *) real_addr_block1;
     offset2 = (char *) area2 - (char *) real_addr_block2;
 
-    if (state->equals_to1_(block1, 0).valid
-        && state->equals_to2_(block2, 0).valid
-        && state->blocksEqual(block1, block2)) {
+    if (state.equals_to1_(block1, 0).valid
+        && state.equals_to2_(block2, 0).valid
+        && state.blocksEqual(block1, block2)) {
       if (match_pairs) {
-        state->match_equals(previous);
+        state.match_equals(previous);
         xbt_dynar_free(&previous);
       }
       return 0;
@@ -1126,7 +1138,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
           && type_size != (ssize_t)   heapinfo2->busy_block.busy_size
           && (type->name.empty() || type->name == "struct s_smx_context")) {
         if (match_pairs) {
-          state->match_equals(previous);
+          state.match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1147,7 +1159,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
     if (!add_heap_area_pair(previous, block1, -1, block2, -1)) {
       if (match_pairs) {
-        state->match_equals(previous);
+        state.match_equals(previous);
         xbt_dynar_free(&previous);
       }
       return 0;
@@ -1158,13 +1170,13 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole block.
     if (type != nullptr && area1 == real_addr_block1)
-      state->types1_(block1, 0) = type;
+      state.types1_(block1, 0) = type;
     if (type != nullptr && area2 == real_addr_block2)
-      state->types2_(block2, 0) = type;
+      state.types2_(block2, 0) = type;
 
     if (size <= 0) {
       if (match_pairs) {
-        state->match_equals(previous);
+        state.match_equals(previous);
         xbt_dynar_free(&previous);
       }
       return 0;
@@ -1198,7 +1210,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
       if (heapinfo1->busy_frag.frag_size[frag1] == -1
           || heapinfo2->busy_frag.frag_size[frag2] == -1) {
         if (match_pairs) {
-          state->match_equals(previous);
+          state.match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1207,7 +1219,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
       if (type_size != heapinfo1->busy_frag.frag_size[frag1]
           || type_size != heapinfo2->busy_frag.frag_size[frag2]) {
         if (match_pairs) {
-          state->match_equals(previous);
+          state.match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1215,11 +1227,11 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
     }
 
     // Check if the blocks are already matched together:
-    if (state->equals_to1_(block1, frag1).valid
-        && state->equals_to2_(block2, frag2).valid) {
-      if (offset1==offset2 && state->fragmentsEqual(block1, frag1, block2, frag2)) {
+    if (state.equals_to1_(block1, frag1).valid
+        && state.equals_to2_(block2, frag2).valid) {
+      if (offset1==offset2 && state.fragmentsEqual(block1, frag1, block2, frag2)) {
         if (match_pairs) {
-          state->match_equals(previous);
+          state.match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return 0;
@@ -1230,7 +1242,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
         heapinfo2->busy_frag.frag_size[frag2]) {
       if (type_size == -1) {
         if (match_pairs) {
-          state->match_equals(previous);
+          state.match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1247,9 +1259,9 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
     // Remember (basic) type inference.
     // The current data structure only allows us to do this for the whole fragment.
     if (type != nullptr && area1 == real_addr_frag1)
-      state->types1_(block1, frag1) = type;
+      state.types1_(block1, frag1) = type;
     if (type != nullptr && area2 == real_addr_frag2)
-      state->types2_(block2, frag2) = type;
+      state.types2_(block2, frag2) = type;
 
     // The type of the variable is already known:
     if (type) {
@@ -1257,37 +1269,37 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
       new_type2 = type;
     }
     // Type inference from the block type.
-    else if (state->types1_(block1, frag1) != nullptr
-             || state->types2_(block2, frag2) != nullptr) {
+    else if (state.types1_(block1, frag1) != nullptr
+             || state.types2_(block2, frag2) != nullptr) {
 
       offset1 = (char *) area1 - (char *) real_addr_frag1;
       offset2 = (char *) area2 - (char *) real_addr_frag2;
 
-      if (state->types1_(block1, frag1) != nullptr
-          && state->types2_(block2, frag2) != nullptr) {
+      if (state.types1_(block1, frag1) != nullptr
+          && state.types2_(block2, frag2) != nullptr) {
         new_type1 =
-            get_offset_type(real_addr_frag1, state->types1_(block1, frag1),
+            get_offset_type(real_addr_frag1, state.types1_(block1, frag1),
                             offset1, size, snapshot1, process_index);
         new_type2 =
-            get_offset_type(real_addr_frag2, state->types2_(block2, frag2),
+            get_offset_type(real_addr_frag2, state.types2_(block2, frag2),
                             offset1, size, snapshot2, process_index);
-      } else if (state->types1_(block1, frag1) != nullptr) {
+      } else if (state.types1_(block1, frag1) != nullptr) {
         new_type1 =
-            get_offset_type(real_addr_frag1, state->types1_(block1, frag1),
+            get_offset_type(real_addr_frag1, state.types1_(block1, frag1),
                             offset1, size, snapshot1, process_index);
         new_type2 =
-            get_offset_type(real_addr_frag2, state->types1_(block1, frag1),
+            get_offset_type(real_addr_frag2, state.types1_(block1, frag1),
                             offset2, size, snapshot2, process_index);
-      } else if (state->types2_(block2, frag2) != nullptr) {
+      } else if (state.types2_(block2, frag2) != nullptr) {
         new_type1 =
-            get_offset_type(real_addr_frag1, state->types2_(block2, frag2),
+            get_offset_type(real_addr_frag1, state.types2_(block2, frag2),
                             offset1, size, snapshot1, process_index);
         new_type2 =
-            get_offset_type(real_addr_frag2, state->types2_(block2, frag2),
+            get_offset_type(real_addr_frag2, state.types2_(block2, frag2),
                             offset2, size, snapshot2, process_index);
       } else {
         if (match_pairs) {
-          state->match_equals(previous);
+          state.match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1307,7 +1319,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
       } else {
         if (match_pairs) {
-          state->match_equals(previous);
+          state.match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1322,7 +1334,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
     if (offset1 == 0 && offset2 == 0
       && !add_heap_area_pair(previous, block1, frag1, block2, frag2)) {
         if (match_pairs) {
-          state->match_equals(previous);
+          state.match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return 0;
@@ -1330,7 +1342,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
     if (size <= 0) {
       if (match_pairs) {
-        state->match_equals(previous);
+        state.match_equals(previous);
         xbt_dynar_free(&previous);
       }
       return 0;
@@ -1366,7 +1378,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
   }
 
   if (match_pairs) {
-    state->match_equals(previous);
+    state.match_equals(previous);
     xbt_dynar_free(&previous);
   }
 
@@ -1376,38 +1388,10 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 }
 }
 
-namespace simgrid {
-namespace mc {
-
-/** A hash which works with more stuff
- *
- *  It can hash pairs: the standard hash currently doesn't include this.
- */
-template<class X> struct hash : public std::hash<X> {};
-
-template<class X, class Y>
-struct hash<std::pair<X,Y>> {
-  std::size_t operator()(std::pair<X,Y>const& x) const
-  {
-    struct hash<X> h1;
-    struct hash<X> h2;
-    return h1(x.first) ^ h2(x.second);
-  }
-};
-
-struct ComparisonState {
-  std::unordered_set<std::pair<void*, void*>, hash<std::pair<void*, void*>>> compared_pointers;
-};
-
-}
-}
-
-using simgrid::mc::ComparisonState;
-
 /************************** Snapshot comparison *******************************/
 /******************************************************************************/
 
-static int compare_areas_with_type(ComparisonState& state,
+static int compare_areas_with_type(simgrid::mc::StateComparator& state,
                                    int process_index,
                                    void* real_area1, simgrid::mc::Snapshot* snapshot1, mc_mem_region_t region1,
                                    void* real_area2, simgrid::mc::Snapshot* snapshot2, mc_mem_region_t region2,
@@ -1509,8 +1493,9 @@ static int compare_areas_with_type(ComparisonState& state,
              && addr_pointed2 < mc_snapshot_get_heap_end(snapshot2)))
           return 1;
         // The pointers are both in the heap:
-        return simgrid::mc::compare_heap_area(process_index, addr_pointed1, addr_pointed2, snapshot1,
-                                 snapshot2, nullptr, type->subtype, pointer_level);
+        return simgrid::mc::compare_heap_area(state,
+          process_index, addr_pointed1, addr_pointed2, snapshot1,
+          snapshot2, nullptr, type->subtype, pointer_level);
       }
 
       // The pointers are both in the current object R/W segment:
@@ -1563,11 +1548,12 @@ static int compare_areas_with_type(ComparisonState& state,
   return 0;
 }
 
-static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
-                                    int process_index,
-                                    mc_mem_region_t r1,
-                                    mc_mem_region_t r2, simgrid::mc::Snapshot* snapshot1,
-                                    simgrid::mc::Snapshot* snapshot2)
+static int compare_global_variables(
+  simgrid::mc::StateComparator& state,
+  simgrid::mc::ObjectInformation* object_info,
+  int process_index,
+  mc_mem_region_t r1, mc_mem_region_t r2,
+  simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot* snapshot2)
 {
   xbt_assert(r1 && r2, "Missing region.");
 
@@ -1583,7 +1569,8 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
 
     // Compare the global variables separately for each simulates process:
     for (size_t process_index = 0; process_index < process_count; process_index++) {
-      int is_diff = compare_global_variables(object_info, process_index,
+      int is_diff = compare_global_variables(state,
+        object_info, process_index,
         &r1->privatized_data()[process_index],
         &r2->privatized_data()[process_index],
         snapshot1, snapshot2);
@@ -1595,8 +1582,6 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
   xbt_assert(r1->storage_type() != simgrid::mc::StorageType::Privatized);
 #endif
   xbt_assert(r2->storage_type() != simgrid::mc::StorageType::Privatized);
-
-  ComparisonState state;
 
   std::vector<simgrid::mc::Variable>& variables = object_info->global_variables;
 
@@ -1610,8 +1595,7 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
       continue;
 
     simgrid::mc::Type* bvariable_type = current_var.type;
-    int res =
-        compare_areas_with_type(state, process_index,
+    int res = compare_areas_with_type(state, process_index,
                                 (char *) current_var.address, snapshot1, r1,
                                 (char *) current_var.address, snapshot2, r2,
                                 bvariable_type, 0);
@@ -1628,14 +1612,13 @@ static int compare_global_variables(simgrid::mc::ObjectInformation* object_info,
 
 }
 
-static int compare_local_variables(int process_index,
+static int compare_local_variables(simgrid::mc::StateComparator& state,
+                                   int process_index,
                                    simgrid::mc::Snapshot* snapshot1,
                                    simgrid::mc::Snapshot* snapshot2,
                                    mc_snapshot_stack_t stack1,
                                    mc_snapshot_stack_t stack2)
 {
-  ComparisonState state;
-
   if (stack1->local_variables.size() != stack2->local_variables.size()) {
     XBT_VERB("Different number of local variables");
     return 1;
@@ -1689,8 +1672,17 @@ static int compare_local_variables(int process_index,
 namespace simgrid {
 namespace mc {
 
+static std::unique_ptr<simgrid::mc::StateComparator> state_comparator;
+
 int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc::Snapshot* s2)
 {
+  // TODO, make this a field of ModelChecker or something similar
+
+  if (state_comparator == nullptr)
+    state_comparator = std::unique_ptr<StateComparator>(new StateComparator());
+  else
+    state_comparator->clear();
+
   simgrid::mc::Process* process = &mc_model_checker->process();
 
   int errors = 0;
@@ -1749,7 +1741,9 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     alloca(sizeof(struct mdesc)), sizeof(struct mdesc),
     remote(process->heap_address),
     simgrid::mc::ProcessIndexMissing, simgrid::mc::ReadOptions::lazy());
-  res_init = simgrid::mc::init_heap_information(heap1, heap2, &s1->to_ignore, &s2->to_ignore);
+  res_init = state_comparator->initHeapInformation(
+    heap1, heap2, &s1->to_ignore, &s2->to_ignore);
+
   if (res_init == -1) {
 #ifdef MC_DEBUG
     XBT_DEBUG("(%d - %d) Different heap information", num1, num2);
@@ -1779,8 +1773,8 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
       XBT_DEBUG("(%d - %d) Stacks with different process index (%i vs %i)", num1, num2,
         stack1->process_index, stack2->process_index);
     }
-    else diff_local =
-        compare_local_variables(stack1->process_index, s1, s2, stack1, stack2);
+    else diff_local = compare_local_variables(*state_comparator,
+      stack1->process_index, s1, s2, stack1, stack2);
     if (diff_local > 0) {
 #ifdef MC_DEBUG
       XBT_DEBUG("(%d - %d) Different local variables between stacks %d", num1,
@@ -1793,8 +1787,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
       XBT_VERB("(%d - %d) Different local variables between stacks %d", num1,
                num2, cursor + 1);
 #endif
-
-      simgrid::mc::reset_heap_information();
 
       return 1;
 #endif
@@ -1822,10 +1814,9 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
 
     /* Compare global variables */
     is_diff =
-      compare_global_variables(region1->object_info(),
-        simgrid::mc::ProcessIndexDisabled,
-        region1, region2,
-        s1, s2);
+      compare_global_variables(*state_comparator,
+        region1->object_info(), simgrid::mc::ProcessIndexDisabled,
+        region1, region2, s1, s2);
 
     if (is_diff != 0) {
 #ifdef MC_DEBUG
@@ -1844,7 +1835,7 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
   }
 
   /* Compare heap */
-  if (simgrid::mc::mmalloc_compare_heap(s1, s2) > 0) {
+  if (simgrid::mc::mmalloc_compare_heap(*state_comparator, s1, s2) > 0) {
 
 #ifdef MC_DEBUG
     XBT_DEBUG("(%d - %d) Different heap (mmalloc_compare)", num1, num2);
@@ -1858,8 +1849,6 @@ int snapshot_compare(int num1, simgrid::mc::Snapshot* s1, int num2, simgrid::mc:
     return 1;
 #endif
   }
-
-  simgrid::mc::reset_heap_information();
 
 #ifdef MC_VERBOSE
   if (errors || hash_result)
