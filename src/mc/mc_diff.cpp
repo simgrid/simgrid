@@ -69,6 +69,55 @@ struct StateComparator {
   {
     return processStates[1].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
   }
+
+  s_heap_area_t const& equals_to1_(std::size_t i, std::size_t j) const
+  {
+    return processStates[0].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
+  }
+  s_heap_area_t const& equals_to2_(std::size_t i, std::size_t j) const
+  {
+    return processStates[1].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
+  }
+  Type* const& types1_(std::size_t i, std::size_t j) const
+  {
+    return processStates[0].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
+  }
+  Type* const& types2_(std::size_t i, std::size_t j) const
+  {
+    return processStates[1].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
+  }
+
+  /** Check whether two blocks are known to be matching
+   *
+   *  @param state  State used
+   *  @param b1     Block of state 1
+   *  @param b2     Block of state 2
+   *  @return       if the blocks are known to be matching
+   */
+  bool blocksEqual(int b1, int b2) const
+  {
+    return this->equals_to1_(b1, 0).block == b2
+        && this->equals_to2_(b2, 0).block == b1;
+  }
+
+  /** Check whether two fragments are known to be matching
+   *
+   *  @param state  State used
+   *  @param b1     Block of state 1
+   *  @param f1     Fragment of state 1
+   *  @param b2     Block of state 2
+   *  @param f2     Fragment of state 2
+   *  @return       if the fragments are known to be matching
+   */
+  int fragmentsEqual(int b1, int f1, int b2, int f2) const
+  {
+    return this->equals_to1_(b1, f1).block == b2
+        && this->equals_to1_(b1, f1).fragment == f2
+        && this->equals_to2_(b2, f2).block == b1
+        && this->equals_to2_(b2, f2).fragment == f1;
+  }
+
+  void match_equals(xbt_dynar_t list);
 };
 
 }
@@ -182,73 +231,28 @@ static bool is_block_stack(int block)
   return false;
 }
 
-static void match_equals(simgrid::mc::StateComparator *state, xbt_dynar_t list)
-{
+namespace simgrid {
+namespace mc {
 
+void StateComparator::match_equals(xbt_dynar_t list)
+{
   unsigned int cursor = 0;
   heap_area_pair_t current_pair;
 
-  xbt_dynar_foreach(list, cursor, current_pair)
-
+  xbt_dynar_foreach(list, cursor, current_pair) {
     if (current_pair->fragment1 != -1) {
-
-      state->equals_to1_(current_pair->block1, current_pair->fragment1) =
+      this->equals_to1_(current_pair->block1, current_pair->fragment1) =
           make_heap_area(current_pair->block2, current_pair->fragment2);
-      state->equals_to2_(current_pair->block2, current_pair->fragment2) =
+      this->equals_to2_(current_pair->block2, current_pair->fragment2) =
           make_heap_area(current_pair->block1, current_pair->fragment1);
-
     } else {
-
-      state->equals_to1_(current_pair->block1, 0) =
+      this->equals_to1_(current_pair->block1, 0) =
           make_heap_area(current_pair->block2, current_pair->fragment2);
-      state->equals_to2_(current_pair->block2, 0) =
+      this->equals_to2_(current_pair->block2, 0) =
           make_heap_area(current_pair->block1, current_pair->fragment1);
-
     }
-
+  }
 }
-
-/** Check whether two blocks are known to be matching
- *
- *  @param state  State used
- *  @param b1     Block of state 1
- *  @param b2     Block of state 2
- *  @return       if the blocks are known to be matching
- */
-static int equal_blocks(simgrid::mc::StateComparator *state, int b1, int b2)
-{
-
-  if (state->equals_to1_(b1, 0).block == b2
-      && state->equals_to2_(b2, 0).block == b1)
-    return 1;
-
-  return 0;
-}
-
-/** Check whether two fragments are known to be matching
- *
- *  @param state  State used
- *  @param b1     Block of state 1
- *  @param f1     Fragment of state 1
- *  @param b2     Block of state 2
- *  @param f2     Fragment of state 2
- *  @return       if the fragments are known to be matching
- */
-static int equal_fragments(simgrid::mc::StateComparator *state, int b1, int f1, int b2,
-                           int f2)
-{
-
-  if (state->equals_to1_(b1, f1).block == b2
-      && state->equals_to1_(b1, f1).fragment == f2
-      && state->equals_to2_(b2, f2).block == b1
-      && state->equals_to2_(b2, f2).fragment == f1)
-    return 1;
-
-  return 0;
-}
-
-namespace simgrid {
-namespace mc {
 
 int init_heap_information(xbt_mheap_t heap1, xbt_mheap_t heap2,
                           std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
@@ -1063,7 +1067,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
   if (is_block_stack((int) block1) && is_block_stack((int) block2)) {
     add_heap_area_pair(previous, block1, -1, block2, -1);
     if (match_pairs) {
-      match_equals(state, previous);
+      state->match_equals(previous);
       xbt_dynar_free(&previous);
     }
     return 0;
@@ -1116,7 +1120,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
     /* Free block */
     if (match_pairs) {
-      match_equals(state, previous);
+      state->match_equals(previous);
       xbt_dynar_free(&previous);
     }
     return 0;
@@ -1132,9 +1136,9 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
     if (state->equals_to1_(block1, 0).valid
         && state->equals_to2_(block2, 0).valid) {
-      if (equal_blocks(state, block1, block2)) {
+      if (state->blocksEqual(block1, block2)) {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return 0;
@@ -1146,7 +1150,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
           && type_size != (ssize_t)   heapinfo2->busy_block.busy_size
           && (type->name.empty() || type->name == "struct s_smx_context")) {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1169,7 +1173,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
     if (!add_heap_area_pair(previous, block1, -1, block2, -1)) {
       if (match_pairs) {
-        match_equals(state, previous);
+        state->match_equals(previous);
         xbt_dynar_free(&previous);
       }
       return 0;
@@ -1186,7 +1190,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
     if (size <= 0) {
       if (match_pairs) {
-        match_equals(state, previous);
+        state->match_equals(previous);
         xbt_dynar_free(&previous);
       }
       return 0;
@@ -1221,7 +1225,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
       if (heapinfo1->busy_frag.frag_size[frag1] == -1
           || heapinfo2->busy_frag.frag_size[frag2] == -1) {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1230,7 +1234,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
       if (type_size != heapinfo1->busy_frag.frag_size[frag1]
           || type_size != heapinfo2->busy_frag.frag_size[frag2]) {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1240,9 +1244,9 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
     // Check if the blocks are already matched together:
     if (state->equals_to1_(block1, frag1).valid
         && state->equals_to2_(block2, frag2).valid) {
-      if (offset1==offset2 && equal_fragments(state, block1, frag1, block2, frag2)) {
+      if (offset1==offset2 && state->fragmentsEqual(block1, frag1, block2, frag2)) {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return 0;
@@ -1253,7 +1257,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
         heapinfo2->busy_frag.frag_size[frag2]) {
       if (type_size == -1) {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1310,7 +1314,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
                             offset2, size, snapshot2, process_index);
       } else {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1330,7 +1334,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
       } else {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return -1;
@@ -1345,7 +1349,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
     if (offset1 == 0 && offset2 == 0
       && !add_heap_area_pair(previous, block1, frag1, block2, frag2)) {
         if (match_pairs) {
-          match_equals(state, previous);
+          state->match_equals(previous);
           xbt_dynar_free(&previous);
         }
         return 0;
@@ -1353,7 +1357,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
 
     if (size <= 0) {
       if (match_pairs) {
-        match_equals(state, previous);
+        state->match_equals(previous);
         xbt_dynar_free(&previous);
       }
       return 0;
@@ -1391,7 +1395,7 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
   }
 
   if (match_pairs) {
-    match_equals(state, previous);
+    state->match_equals(previous);
     xbt_dynar_free(&previous);
   }
 
