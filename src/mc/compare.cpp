@@ -69,9 +69,28 @@ using simgrid::mc::remote;
 namespace simgrid {
 namespace mc {
 
+struct HeapLocation {
+  int block = 0;
+  int fragment = 0;
+  HeapLocation() {}
+  HeapLocation(int block, int fragment = 0) : block(block), fragment(fragment) {}
+};
+
+typedef std::array<HeapLocation, 2> HeapLocationPair;
+
+struct HeapArea {
+  bool valid = false;
+  int block = 0;
+  int fragment = 0;
+
+  HeapArea() {}
+  HeapArea(int block, int fragment = 0)
+    : valid(true), block(block), fragment(fragment) {}
+};
+
 struct ProcessComparisonState {
   std::vector<simgrid::mc::IgnoredHeapRegion>* to_ignore = nullptr;
-  std::vector<s_heap_area_t> equals_to;
+  std::vector<HeapArea> equals_to;
   std::vector<simgrid::mc::Type*> types;
   std::size_t heapsize = 0;
 
@@ -89,11 +108,11 @@ struct StateComparator {
     std::vector<simgrid::mc::IgnoredHeapRegion>* i1,
     std::vector<simgrid::mc::IgnoredHeapRegion>* i2);
 
-  s_heap_area_t& equals_to1_(std::size_t i, std::size_t j)
+  HeapArea& equals_to1_(std::size_t i, std::size_t j)
   {
     return processStates[0].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
   }
-  s_heap_area_t& equals_to2_(std::size_t i, std::size_t j)
+  HeapArea& equals_to2_(std::size_t i, std::size_t j)
   {
     return processStates[1].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
   }
@@ -106,11 +125,11 @@ struct StateComparator {
     return processStates[1].types[ MAX_FRAGMENT_PER_BLOCK * i + j];
   }
 
-  s_heap_area_t const& equals_to1_(std::size_t i, std::size_t j) const
+  HeapArea const& equals_to1_(std::size_t i, std::size_t j) const
   {
     return processStates[0].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
   }
-  s_heap_area_t const& equals_to2_(std::size_t i, std::size_t j) const
+  HeapArea const& equals_to2_(std::size_t i, std::size_t j) const
   {
     return processStates[1].equals_to[ MAX_FRAGMENT_PER_BLOCK * i + j];
   }
@@ -164,44 +183,31 @@ static std::unique_ptr<simgrid::mc::StateComparator> mc_diff_info;
 
 /************************************************************************************/
 
-static s_heap_area_t make_heap_area(int block, int fragment)
-{
-  s_heap_area_t area;
-  area.valid = 1;
-  area.block = block;
-  area.fragment = fragment;
-  return area;
-}
-
 static int is_new_heap_area_pair(xbt_dynar_t list, int block1, int fragment1,
                                  int block2, int fragment2)
 {
 
   unsigned int cursor = 0;
-  heap_area_pair_t current_pair;
-
+  simgrid::mc::HeapLocationPair* current_pair;
   xbt_dynar_foreach(list, cursor, current_pair)
-    if (current_pair->block1 == block1 && current_pair->block2 == block2
-        && current_pair->fragment1 == fragment1
-        && current_pair->fragment2 == fragment2)
+    if ((*current_pair)[0].block == block1
+        && (*current_pair)[1].block == block2
+        && (*current_pair)[0].fragment == fragment1
+        && (*current_pair)[1].fragment == fragment2)
       return 0;
-
   return 1;
 }
 
 static int add_heap_area_pair(xbt_dynar_t list, int block1, int fragment1,
                               int block2, int fragment2)
 {
-
   if (!is_new_heap_area_pair(list, block1, fragment1, block2, fragment2))
     return 0;
-
-  heap_area_pair_t pair = nullptr;
-  pair = xbt_new0(s_heap_area_pair_t, 1);
-  pair->block1 = block1;
-  pair->fragment1 = fragment1;
-  pair->block2 = block2;
-  pair->fragment2 = fragment2;
+  simgrid::mc::HeapLocationPair* pair = xbt_new0(simgrid::mc::HeapLocationPair, 1);
+  (*pair)[0].block = block1;
+  (*pair)[0].fragment = fragment1;
+  (*pair)[1].block = block2;
+  (*pair)[1].fragment = fragment2;
   xbt_dynar_push(list, &pair);
   return 1;
 }
@@ -250,19 +256,19 @@ namespace mc {
 void StateComparator::match_equals(xbt_dynar_t list)
 {
   unsigned int cursor = 0;
-  heap_area_pair_t current_pair;
+  simgrid::mc::HeapLocationPair* current_pair;
 
   xbt_dynar_foreach(list, cursor, current_pair) {
-    if (current_pair->fragment1 != -1) {
-      this->equals_to1_(current_pair->block1, current_pair->fragment1) =
-          make_heap_area(current_pair->block2, current_pair->fragment2);
-      this->equals_to2_(current_pair->block2, current_pair->fragment2) =
-          make_heap_area(current_pair->block1, current_pair->fragment1);
+    if ((*current_pair)[0].fragment != -1) {
+      this->equals_to1_((*current_pair)[0].block, (*current_pair)[0].fragment) =
+          simgrid::mc::HeapArea((*current_pair)[1].block, (*current_pair)[1].fragment);
+      this->equals_to2_((*current_pair)[1].block, (*current_pair)[1].fragment) =
+          simgrid::mc::HeapArea((*current_pair)[0].block, (*current_pair)[0].fragment);
     } else {
-      this->equals_to1_(current_pair->block1, 0) =
-          make_heap_area(current_pair->block2, current_pair->fragment2);
-      this->equals_to2_(current_pair->block2, 0) =
-          make_heap_area(current_pair->block1, current_pair->fragment1);
+      this->equals_to1_((*current_pair)[0].block, 0) =
+          simgrid::mc::HeapArea((*current_pair)[1].block, (*current_pair)[1].fragment);
+      this->equals_to2_((*current_pair)[1].block, 0) =
+          simgrid::mc::HeapArea((*current_pair)[0].block, (*current_pair)[0].fragment);
     }
   }
 }
@@ -273,7 +279,7 @@ void ProcessComparisonState::initHeapInformation(xbt_mheap_t heap,
   auto heaplimit = ((struct mdesc *) heap)->heaplimit;
   this->heapsize = ((struct mdesc *) heap)->heapsize;
   this->to_ignore = i;
-  this->equals_to.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, s_heap_area {0, 0, 0});
+  this->equals_to.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, HeapArea());
   this->types.assign(heaplimit * MAX_FRAGMENT_PER_BLOCK, nullptr);
 }
 
@@ -375,9 +381,9 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
       if (is_stack(addr_block1)) {
         for (k = 0; k < heapinfo1->busy_block.size; k++)
-          state->equals_to1_(i1 + k, 0) = make_heap_area(i1, -1);
+          state->equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
         for (k = 0; k < heapinfo2->busy_block.size; k++)
-          state->equals_to2_(i1 + k, 0) = make_heap_area(i1, -1);
+          state->equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
         i1 += heapinfo1->busy_block.size;
         continue;
       }
@@ -401,9 +407,9 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
                               nullptr, nullptr, 0);
         if (res_compare != 1) {
           for (k = 1; k < heapinfo2->busy_block.size; k++)
-            state->equals_to2_(i1 + k, 0) = make_heap_area(i1, -1);
+            state->equals_to2_(i1 + k, 0) = HeapArea(i1, -1);
           for (k = 1; k < heapinfo1->busy_block.size; k++)
-            state->equals_to1_(i1 + k, 0) = make_heap_area(i1, -1);
+            state->equals_to1_(i1 + k, 0) = HeapArea(i1, -1);
           equal = 1;
           i1 += heapinfo1->busy_block.size;
         }
@@ -437,9 +443,9 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
         if (res_compare != 1) {
           for (k = 1; k < heapinfo2b->busy_block.size; k++)
-            state->equals_to2_(i2 + k, 0) = make_heap_area(i1, -1);
+            state->equals_to2_(i2 + k, 0) = HeapArea(i1, -1);
           for (k = 1; k < heapinfo1->busy_block.size; k++)
-            state->equals_to1_(i1 + k, 0) = make_heap_area(i2, -1);
+            state->equals_to1_(i1 + k, 0) = HeapArea(i2, -1);
           equal = 1;
           i1 += heapinfo1->busy_block.size;
         }
@@ -474,7 +480,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
 
         /* Try first to associate to same fragment in the other heap */
         if (heapinfo2->type == heapinfo1->type
-            && state->equals_to2_(i1, j1).valid == 0) {
+            && !state->equals_to2_(i1, j1).valid) {
           addr_block2 = (ADDR2UINT(i1) - 1) * BLOCKSIZE +
                          (char *) state->std_heap_copy.heapbase;
           addr_frag2 =
@@ -570,7 +576,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
     if (heapinfo1->type == MMALLOC_TYPE_UNFRAGMENTED
         && i1 == state->heaplimit
         && heapinfo1->busy_block.busy_size > 0
-        && state->equals_to1_(i, 0).valid == 0) {
+        && !state->equals_to1_(i, 0).valid) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                 heapinfo1->busy_block.busy_size);
       nb_diff1++;
@@ -581,7 +587,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
     for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo1->type); j++)
       if (i1 == state->heaplimit
           && heapinfo1->busy_frag.frag_size[j] > 0
-          && state->equals_to1_(i, j).valid == 0) {
+          && !state->equals_to1_(i, j).valid) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)",
           i, j, heapinfo1->busy_frag.frag_size[j]);
         nb_diff1++;
@@ -597,7 +603,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
     if (heapinfo2->type == MMALLOC_TYPE_UNFRAGMENTED
         && i1 == state->heaplimit
         && heapinfo2->busy_block.busy_size > 0
-        && state->equals_to2_(i, 0).valid == 0) {
+        && !state->equals_to2_(i, 0).valid) {
       XBT_DEBUG("Block %zu not found (size used = %zu)", i,
                 heapinfo2->busy_block.busy_size);
       nb_diff2++;
@@ -609,7 +615,7 @@ int mmalloc_compare_heap(simgrid::mc::Snapshot* snapshot1, simgrid::mc::Snapshot
     for (j = 0; j < (size_t) (BLOCKSIZE >> heapinfo2->type); j++)
       if (i1 == state->heaplimit
           && heapinfo2->busy_frag.frag_size[j] > 0
-          && state->equals_to2_(i, j).valid == 0) {
+          && !state->equals_to2_(i, j).valid) {
         XBT_DEBUG("Block %zu, Fragment %zu not found (size used = %zd)",
           i, j, heapinfo2->busy_frag.frag_size[j]);
         nb_diff2++;
@@ -1020,8 +1026,8 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
   malloc_info heapinfo_temp1, heapinfo_temp2;
 
   if (previous == nullptr) {
-    previous = xbt_dynar_new(sizeof(heap_area_pair_t), [](void *d) {
-      xbt_free((heap_area_pair_t) * (void **) d); });
+    previous = xbt_dynar_new(sizeof(simgrid::mc::HeapLocationPair*), [](void *d) {
+      xbt_free((simgrid::mc::HeapLocationPair*) * (void **) d); });
     match_pairs = 1;
   }
 

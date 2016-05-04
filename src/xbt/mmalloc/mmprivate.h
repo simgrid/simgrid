@@ -115,19 +115,6 @@ struct mstats
   size_t bytes_free;    /* Byte total of chunks in the free list. */
 };
 
-typedef struct s_heap_area{
-  int valid;
-  int block;
-  int fragment;
-}s_heap_area_t, *heap_area_t;
-
-typedef struct s_heap_area_pair{
-  int block1;
-  int fragment1;
-  int block2;
-  int fragment2;
-}s_heap_area_pair_t, *heap_area_pair_t;
-
 #define MMALLOC_TYPE_HEAPINFO (-2)
 #define MMALLOC_TYPE_FREE (-1)
 #define MMALLOC_TYPE_UNFRAGMENTED 0
