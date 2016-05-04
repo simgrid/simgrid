@@ -382,7 +382,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
    }
   //identify neighbours in comm
   //get the indexes of all processes sharing the same simix host
-  xbt_swag_t process_list = simcall_host_get_process_list(SIMIX_host_self());
+  xbt_swag_t process_list = SIMIX_host_self()->processes();
   int intra_comm_size = 0;
   //only one process/node, disable SMP support and return
 //  if(intra_comm_size==1){

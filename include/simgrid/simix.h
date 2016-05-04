@@ -272,12 +272,7 @@ XBT_PUBLIC(void) SIMIX_comm_finish(smx_synchro_t synchro);
 XBT_PUBLIC(void) simcall_call(smx_process_t process);
 
 /******************************* Host simcalls ********************************/
-/* TODO use handlers and keep sg_host_t hidden from higher levels */
-XBT_PUBLIC(xbt_swag_t) simcall_host_get_process_list(sg_host_t host);
 XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
-
-XBT_PUBLIC(double) simcall_host_get_current_power_peak(sg_host_t host);
-XBT_PUBLIC(double) simcall_host_get_power_peak_at(sg_host_t host, int pstate_index);
 
 XBT_PUBLIC(smx_synchro_t) simcall_execution_start(const char *name,
                                                 double flops_amount,
@@ -297,11 +292,6 @@ XBT_PUBLIC(void) simcall_execution_set_priority(smx_synchro_t execution, double 
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_synchro_t execution, double bound);
 XBT_PUBLIC(void) simcall_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask);
 XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_synchro_t execution);
-
-XBT_PUBLIC(xbt_dict_t) simcall_host_get_mounted_storage_list(sg_host_t host);
-XBT_PUBLIC(xbt_dynar_t) simcall_host_get_attached_storage_list(sg_host_t host);
-XBT_PUBLIC(void) simcall_host_get_params(sg_host_t vm, vm_params_t param);
-XBT_PUBLIC(void) simcall_host_set_params(sg_host_t vm, vm_params_t param);
 
 /******************************* VM simcalls ********************************/
 // Create the vm_workstation at the SURF level
