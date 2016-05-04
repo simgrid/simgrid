@@ -563,8 +563,7 @@ set(MC_SRC
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp
-  src/mc/mc_compare.cpp
-  src/mc/mc_diff.cpp
+  src/mc/compare.cpp
   src/mc/mc_dwarf.hpp
   src/mc/mc_dwarf.cpp
   src/mc/mc_dwarf_attrnames.cpp
