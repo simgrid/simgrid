@@ -162,25 +162,6 @@ struct StateComparator {
 // TODO, make this a field of ModelChecker or something similar
 static std::unique_ptr<simgrid::mc::StateComparator> mc_diff_info;
 
-/*********************************** Free functions ************************************/
-
-static void heap_area_pair_free(heap_area_pair_t pair)
-{
-  xbt_free(pair);
-  pair = nullptr;
-}
-
-static void heap_area_pair_free_voidp(void *d)
-{
-  heap_area_pair_free((heap_area_pair_t) * (void **) d);
-}
-
-static void heap_area_free(heap_area_t area)
-{
-  xbt_free(area);
-  area = nullptr;
-}
-
 /************************************************************************************/
 
 static s_heap_area_t make_heap_area(int block, int fragment)
@@ -1039,10 +1020,11 @@ int compare_heap_area(int process_index, const void *area1, const void *area2, s
   malloc_info heapinfo_temp1, heapinfo_temp2;
 
   if (previous == nullptr) {
-    previous =
-        xbt_dynar_new(sizeof(heap_area_pair_t), heap_area_pair_free_voidp);
+    previous = xbt_dynar_new(sizeof(heap_area_pair_t), [](void *d) {
+      xbt_free((heap_area_pair_t) * (void **) d); });
     match_pairs = 1;
   }
+
   // Get block number:
   block1 =
       ((char *) area1 -
