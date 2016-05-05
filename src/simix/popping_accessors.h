@@ -843,19 +843,6 @@ static inline void simcall_comm_get_remains__set__result(smx_simcall_t simcall, 
     simcall->result.d = result;
 }
 
-static inline smx_synchro_t simcall_comm_get_state__get__comm(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_get_state__set__comm(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline e_smx_state_t simcall_comm_get_state__get__result(smx_simcall_t simcall){
-    return (e_smx_state_t) simcall->result.i;
-}
-static inline void simcall_comm_get_state__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
-
 static inline smx_synchro_t simcall_comm_get_src_data__get__comm(smx_simcall_t simcall) {
   return (smx_synchro_t) simcall->args[0].dp;
 }

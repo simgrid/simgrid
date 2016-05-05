@@ -989,27 +989,6 @@ inline static double simcall_BODY_comm_get_remains(smx_synchro_t comm) {
     return (double) self->simcall.result.d;
   }
   
-inline static e_smx_state_t simcall_BODY_comm_get_state(smx_synchro_t comm) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_comm_get_state(comm);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_COMM_GET_STATE;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) comm;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return (e_smx_state_t) self->simcall.result.i;
-  }
-  
 inline static void* simcall_BODY_comm_get_src_data(smx_synchro_t comm) {
     smx_process_t self = SIMIX_process_self();
 

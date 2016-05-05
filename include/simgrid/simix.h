@@ -402,7 +402,6 @@ XBT_PUBLIC(int) simcall_comm_testany(xbt_dynar_t comms);
 
 /* Getters and setters */
 XBT_PUBLIC(double) simcall_comm_get_remains(smx_synchro_t comm);
-XBT_PUBLIC(e_smx_state_t) simcall_comm_get_state(smx_synchro_t comm);
 XBT_PUBLIC(void *) simcall_comm_get_src_data(smx_synchro_t comm);
 XBT_PUBLIC(void *) simcall_comm_get_dst_data(smx_synchro_t comm);
 XBT_PUBLIC(smx_process_t) simcall_comm_get_src_proc(smx_synchro_t comm);

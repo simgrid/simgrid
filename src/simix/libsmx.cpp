@@ -897,15 +897,6 @@ double simcall_comm_get_remains(smx_synchro_t comm)
  * \ingroup simix_comm_management
  *
  */
-e_smx_state_t simcall_comm_get_state(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_state(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
 void *simcall_comm_get_src_data(smx_synchro_t comm)
 {
   return simcall_BODY_comm_get_src_data(comm);
