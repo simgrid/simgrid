@@ -620,7 +620,6 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_checkpoint);
   XBT_LOG_CONNECT(mc_comm_determinism);
   XBT_LOG_CONNECT(mc_compare);
-  XBT_LOG_CONNECT(mc_diff);
   XBT_LOG_CONNECT(mc_dwarf);
   XBT_LOG_CONNECT(mc_hash);
   XBT_LOG_CONNECT(mc_liveness);

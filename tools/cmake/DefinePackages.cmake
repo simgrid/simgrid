@@ -563,8 +563,7 @@ set(MC_SRC
   src/mc/mc_page_snapshot.cpp
   src/mc/mc_comm_pattern.h
   src/mc/mc_comm_pattern.cpp
-  src/mc/mc_compare.cpp
-  src/mc/mc_diff.cpp
+  src/mc/compare.cpp
   src/mc/mc_dwarf.hpp
   src/mc/mc_dwarf.cpp
   src/mc/mc_dwarf_attrnames.cpp
@@ -577,7 +576,6 @@ set(MC_SRC
   src/mc/mc_mmalloc.h
   src/mc/LivenessChecker.hpp
   src/mc/LocationList.hpp
-  src/mc/malloc.hpp
   src/mc/LocationList.cpp
   src/mc/LivenessChecker.cpp
   src/mc/mc_record.cpp
