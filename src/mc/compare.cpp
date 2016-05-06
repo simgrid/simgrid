@@ -1016,7 +1016,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
   int new_size1 = -1, new_size2 = -1;
   simgrid::mc::Type *new_type1 = nullptr, *new_type2 = nullptr;
 
-  int match_pairs = 0;
+  bool match_pairs = false;
 
   // This is the address of std_heap->heapinfo in the application process:
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
@@ -1031,7 +1031,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
   simgrid::mc::HeapLocationPairs current;
   if (previous == nullptr) {
     previous = &current;
-    match_pairs = 1;
+    match_pairs = true;
   }
 
   // Get block number:
