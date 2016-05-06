@@ -60,16 +60,6 @@ static inline smx_context_t SIMIX_context_self(void)
     return nullptr;
 }
 
-/**
- \brief returns the SIMIX process associated to a context
- \param context The context
- \return The SIMIX process
- */
-static inline smx_process_t SIMIX_context_get_process(smx_context_t context)
-{
-  return context->process();
-}
-
 namespace simgrid {
 namespace simix {
 

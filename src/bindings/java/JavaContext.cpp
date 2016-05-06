@@ -132,7 +132,7 @@ void JavaContext::stop()
    // jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process %s killed :) (file smx_context_java.c)", MSG_process_get_name( (msg_process_t)context) ));
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError",
       bprintf("Process %s killed :) (file JavaContext.cpp)",
-      simcall_process_get_name((smx_process_t) SIMIX_context_get_process(this))) );
+      simcall_process_get_name(this->process()) ));
     XBT_DEBUG("Trigger a cancel error at the C level");
     THROWF(cancel_error, 0, "process cancelled");
   } else {
