@@ -88,8 +88,6 @@ XBT_PUBLIC(void) SIMIX_clean(void);
     _smx_throw_issuer->doexception = 1;                                 \
   } else ((void)0)
 
-#define SMX_THROW() RETHROW
-
 /* ******************************** File ************************************ */
 typedef struct s_smx_file {
   surf_file_t surf_file;
