@@ -852,17 +852,6 @@ void SIMIX_comm_cancel(smx_synchro_t synchro)
   }
 }
 
-void SIMIX_comm_suspend(smx_synchro_t synchro)
-{
-  synchro->suspend(); // FIXME: USELESS
-}
-
-void SIMIX_comm_resume(smx_synchro_t synchro)
-{
-  synchro->resume(); // FIXME: USELESS
-}
-
-
 /************* synchro Getters **************/
 
 /**

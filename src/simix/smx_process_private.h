@@ -103,8 +103,6 @@ XBT_PRIVATE smx_synchro_t SIMIX_process_join(smx_process_t issuer, smx_process_t
 XBT_PRIVATE smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration);
 XBT_PRIVATE void SIMIX_post_process_sleep(smx_synchro_t synchro);
 
-XBT_PRIVATE void SIMIX_process_sleep_suspend(smx_synchro_t synchro);
-XBT_PRIVATE void SIMIX_process_sleep_resume(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
 XBT_PRIVATE smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer);

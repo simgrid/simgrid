@@ -42,8 +42,6 @@ XBT_PRIVATE void SIMIX_post_comm(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_comm_cancel(smx_synchro_t synchro);
 XBT_PRIVATE double SIMIX_comm_get_remains(smx_synchro_t synchro);
 XBT_PRIVATE e_smx_state_t SIMIX_comm_get_state(smx_synchro_t synchro);
-XBT_PRIVATE void SIMIX_comm_suspend(smx_synchro_t synchro);
-XBT_PRIVATE void SIMIX_comm_resume(smx_synchro_t synchro);
 XBT_PRIVATE smx_process_t SIMIX_comm_get_src_proc(smx_synchro_t synchro);
 XBT_PRIVATE smx_process_t SIMIX_comm_get_dst_proc(smx_synchro_t synchro);
 

@@ -912,16 +912,6 @@ void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
   }
 }
 
-void SIMIX_process_sleep_suspend(smx_synchro_t synchro)
-{
-  synchro->suspend(); //FIXME: USELESS
-}
-
-void SIMIX_process_sleep_resume(smx_synchro_t synchro)
-{
-  synchro->resume();  //FIXME: USELESS
-}
-
 /**
  * \brief Calling this function makes the process to yield.
  *
