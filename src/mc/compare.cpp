@@ -10,6 +10,7 @@
 
 #include <array>
 #include <memory>
+#include <set>
 #include <utility>
 #include <unordered_set>
 
@@ -48,6 +49,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_compare, xbt,
 namespace simgrid {
 namespace mc {
 
+struct HeapLocation;
+typedef std::array<HeapLocation, 2> HeapLocationPair;
+typedef std::set<HeapLocationPair> HeapLocationPairs;
+struct HeapArea;
 struct ProcessComparisonState;
 struct StateComparator;
 
@@ -55,7 +60,7 @@ static int compare_heap_area(
   StateComparator& state,
   int process_index, const void *area1, const void* area2,
   Snapshot* snapshot1, Snapshot* snapshot2,
-  xbt_dynar_t previous, Type* type, int pointer_level);
+  HeapLocationPairs* previous, Type* type, int pointer_level);
 
 }
 }
@@ -71,11 +76,29 @@ namespace mc {
 struct HeapLocation {
   int block = 0;
   int fragment = 0;
+
   HeapLocation() {}
   HeapLocation(int block, int fragment = 0) : block(block), fragment(fragment) {}
+
+  bool operator==(HeapLocation const& that) const
+  {
+    return block == that.block && fragment == that.fragment;
+  }
+  bool operator<(HeapLocation const& that) const
+  {
+    return std::make_pair(block, fragment)
+      < std::make_pair(that.block, that.fragment);
+  }
 };
 
-typedef std::array<HeapLocation, 2> HeapLocationPair;
+static inline
+HeapLocationPair makeHeapLocationPair(int block1, int fragment1, int block2, int fragment2)
+{
+  return simgrid::mc::HeapLocationPair({
+    simgrid::mc::HeapLocation(block1, fragment1),
+    simgrid::mc::HeapLocation(block2, fragment2)
+  });
+}
 
 struct HeapArea : public HeapLocation {
   bool valid = false;
@@ -200,42 +223,13 @@ struct StateComparator {
         && this->equals_to2_(b2, f2).fragment == f1;
   }
 
-  void match_equals(xbt_dynar_t list);
+  void match_equals(HeapLocationPairs* list);
 };
 
 }
 }
 
 /************************************************************************************/
-
-static int is_new_heap_area_pair(xbt_dynar_t list, int block1, int fragment1,
-                                 int block2, int fragment2)
-{
-
-  unsigned int cursor = 0;
-  simgrid::mc::HeapLocationPair* current_pair;
-  xbt_dynar_foreach(list, cursor, current_pair)
-    if ((*current_pair)[0].block == block1
-        && (*current_pair)[1].block == block2
-        && (*current_pair)[0].fragment == fragment1
-        && (*current_pair)[1].fragment == fragment2)
-      return 0;
-  return 1;
-}
-
-static int add_heap_area_pair(xbt_dynar_t list, int block1, int fragment1,
-                              int block2, int fragment2)
-{
-  if (!is_new_heap_area_pair(list, block1, fragment1, block2, fragment2))
-    return 0;
-  simgrid::mc::HeapLocationPair* pair = xbt_new0(simgrid::mc::HeapLocationPair, 1);
-  (*pair)[0].block = block1;
-  (*pair)[0].fragment = fragment1;
-  (*pair)[1].block = block2;
-  (*pair)[1].fragment = fragment2;
-  xbt_dynar_push(list, &pair);
-  return 1;
-}
 
 static ssize_t heap_comparison_ignore_size(
   std::vector<simgrid::mc::IgnoredHeapRegion>* ignore_list,
@@ -278,22 +272,19 @@ static bool is_block_stack(int block)
 namespace simgrid {
 namespace mc {
 
-void StateComparator::match_equals(xbt_dynar_t list)
+void StateComparator::match_equals(HeapLocationPairs* list)
 {
-  unsigned int cursor = 0;
-  simgrid::mc::HeapLocationPair* current_pair;
-
-  xbt_dynar_foreach(list, cursor, current_pair) {
-    if ((*current_pair)[0].fragment != -1) {
-      this->equals_to1_((*current_pair)[0].block, (*current_pair)[0].fragment) =
-          simgrid::mc::HeapArea((*current_pair)[1].block, (*current_pair)[1].fragment);
-      this->equals_to2_((*current_pair)[1].block, (*current_pair)[1].fragment) =
-          simgrid::mc::HeapArea((*current_pair)[0].block, (*current_pair)[0].fragment);
+  for (auto const& pair : *list) {
+    if (pair[0].fragment != -1) {
+      this->equals_to1_(pair[0].block, pair[0].fragment) =
+          simgrid::mc::HeapArea(pair[1].block, pair[1].fragment);
+      this->equals_to2_(pair[1].block, pair[1].fragment) =
+          simgrid::mc::HeapArea(pair[0].block, pair[0].fragment);
     } else {
-      this->equals_to1_((*current_pair)[0].block, 0) =
-          simgrid::mc::HeapArea((*current_pair)[1].block, (*current_pair)[1].fragment);
-      this->equals_to2_((*current_pair)[1].block, 0) =
-          simgrid::mc::HeapArea((*current_pair)[0].block, (*current_pair)[0].fragment);
+      this->equals_to1_(pair[0].block, 0) =
+          simgrid::mc::HeapArea(pair[1].block, pair[1].fragment);
+      this->equals_to2_(pair[1].block, 0) =
+          simgrid::mc::HeapArea(pair[0].block, pair[0].fragment);
     }
   }
 }
@@ -654,7 +645,7 @@ static int compare_heap_area_without_type(
   const void *real_area1, const void *real_area2,
   simgrid::mc::Snapshot* snapshot1,
   simgrid::mc::Snapshot* snapshot2,
-  xbt_dynar_t previous, int size,
+  HeapLocationPairs* previous, int size,
   int check_ignore)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
@@ -738,7 +729,7 @@ static int compare_heap_area_with_type(
   const void *real_area1, const void *real_area2,
   simgrid::mc::Snapshot* snapshot1,
   simgrid::mc::Snapshot* snapshot2,
-  xbt_dynar_t previous, simgrid::mc::Type* type,
+  HeapLocationPairs* previous, simgrid::mc::Type* type,
   int area_size, int check_ignore,
   int pointer_level)
 {
@@ -1009,7 +1000,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
                       const void *area1, const void *area2,
                       simgrid::mc::Snapshot* snapshot1,
                       simgrid::mc::Snapshot* snapshot2,
-                      xbt_dynar_t previous,
+                      HeapLocationPairs* previous,
                       simgrid::mc::Type* type, int pointer_level)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
@@ -1025,7 +1016,7 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
   int new_size1 = -1, new_size2 = -1;
   simgrid::mc::Type *new_type1 = nullptr, *new_type2 = nullptr;
 
-  int match_pairs = 0;
+  bool match_pairs = false;
 
   // This is the address of std_heap->heapinfo in the application process:
   void* heapinfo_address = &((xbt_mheap_t) process->heap_address)->heapinfo;
@@ -1037,10 +1028,10 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
 
   malloc_info heapinfo_temp1, heapinfo_temp2;
 
+  simgrid::mc::HeapLocationPairs current;
   if (previous == nullptr) {
-    previous = xbt_dynar_new(sizeof(simgrid::mc::HeapLocationPair*), [](void *d) {
-      xbt_free((simgrid::mc::HeapLocationPair*) * (void **) d); });
-    match_pairs = 1;
+    previous = &current;
+    match_pairs = true;
   }
 
   // Get block number:
@@ -1053,11 +1044,10 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
 
   // If either block is a stack block:
   if (is_block_stack((int) block1) && is_block_stack((int) block2)) {
-    add_heap_area_pair(previous, block1, -1, block2, -1);
-    if (match_pairs) {
+    previous->insert(simgrid::mc::makeHeapLocationPair(
+      block1, -1, block2, -1));
+    if (match_pairs)
       state.match_equals(previous);
-      xbt_dynar_free(&previous);
-    }
     return 0;
   }
 
@@ -1066,8 +1056,6 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
       || (block1 > (ssize_t) state.processStates[0].heapsize) || (block1 < 1)
       || ((char *) area2 < (char *) state.std_heap_copy.heapbase)
       || (block2 > (ssize_t) state.processStates[1].heapsize) || (block2 < 1)) {
-    if (match_pairs)
-      xbt_dynar_free(&previous);
     return 1;
   }
 
@@ -1107,10 +1095,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
   if ((heapinfo1->type == MMALLOC_TYPE_FREE || heapinfo1->type==MMALLOC_TYPE_HEAPINFO)
     && (heapinfo2->type == MMALLOC_TYPE_FREE || heapinfo2->type ==MMALLOC_TYPE_HEAPINFO)) {
     /* Free block */
-    if (match_pairs) {
+    if (match_pairs)
       state.match_equals(previous);
-      xbt_dynar_free(&previous);
-    }
     return 0;
   }
 
@@ -1126,10 +1112,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
     if (state.equals_to1_(block1, 0).valid
         && state.equals_to2_(block2, 0).valid
         && state.blocksEqual(block1, block2)) {
-      if (match_pairs) {
+      if (match_pairs)
         state.match_equals(previous);
-        xbt_dynar_free(&previous);
-      }
       return 0;
     }
 
@@ -1137,31 +1121,21 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
       if (type_size != (ssize_t) heapinfo1->busy_block.busy_size
           && type_size != (ssize_t)   heapinfo2->busy_block.busy_size
           && (type->name.empty() || type->name == "struct s_smx_context")) {
-        if (match_pairs) {
+        if (match_pairs)
           state.match_equals(previous);
-          xbt_dynar_free(&previous);
-        }
         return -1;
       }
     }
 
-    if (heapinfo1->busy_block.size != heapinfo2->busy_block.size) {
-      if (match_pairs)
-        xbt_dynar_free(&previous);
+    if (heapinfo1->busy_block.size != heapinfo2->busy_block.size)
       return 1;
-    }
-
-    if (heapinfo1->busy_block.busy_size != heapinfo2->busy_block.busy_size) {
-      if (match_pairs)
-        xbt_dynar_free(&previous);
+    if (heapinfo1->busy_block.busy_size != heapinfo2->busy_block.busy_size)
       return 1;
-    }
 
-    if (!add_heap_area_pair(previous, block1, -1, block2, -1)) {
-      if (match_pairs) {
+    if (!previous->insert(simgrid::mc::makeHeapLocationPair(
+        block1, -1, block2, -1)).second) {
+      if (match_pairs)
         state.match_equals(previous);
-        xbt_dynar_free(&previous);
-      }
       return 0;
     }
 
@@ -1175,10 +1149,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
       state.types2_(block2, 0) = type;
 
     if (size <= 0) {
-      if (match_pairs) {
+      if (match_pairs)
         state.match_equals(previous);
-        xbt_dynar_free(&previous);
-      }
       return 0;
     }
 
@@ -1209,19 +1181,15 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
     if (type_size != -1) {
       if (heapinfo1->busy_frag.frag_size[frag1] == -1
           || heapinfo2->busy_frag.frag_size[frag2] == -1) {
-        if (match_pairs) {
+        if (match_pairs)
           state.match_equals(previous);
-          xbt_dynar_free(&previous);
-        }
         return -1;
       }
       // ?
       if (type_size != heapinfo1->busy_frag.frag_size[frag1]
           || type_size != heapinfo2->busy_frag.frag_size[frag2]) {
-        if (match_pairs) {
+        if (match_pairs)
           state.match_equals(previous);
-          xbt_dynar_free(&previous);
-        }
         return -1;
       }
     }
@@ -1230,10 +1198,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
     if (state.equals_to1_(block1, frag1).valid
         && state.equals_to2_(block2, frag2).valid) {
       if (offset1==offset2 && state.fragmentsEqual(block1, frag1, block2, frag2)) {
-        if (match_pairs) {
+        if (match_pairs)
           state.match_equals(previous);
-          xbt_dynar_free(&previous);
-        }
         return 0;
       }
     }
@@ -1241,16 +1207,11 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
     if (heapinfo1->busy_frag.frag_size[frag1] !=
         heapinfo2->busy_frag.frag_size[frag2]) {
       if (type_size == -1) {
-        if (match_pairs) {
-          state.match_equals(previous);
-          xbt_dynar_free(&previous);
-        }
-        return -1;
-      } else {
         if (match_pairs)
-          xbt_dynar_free(&previous);
+          state.match_equals(previous);
+        return -1;
+      } else
         return 1;
-      }
     }
 
     // Size of the fragment:
@@ -1298,10 +1259,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
             get_offset_type(real_addr_frag2, state.types2_(block2, frag2),
                             offset2, size, snapshot2, process_index);
       } else {
-        if (match_pairs) {
+        if (match_pairs)
           state.match_equals(previous);
-          xbt_dynar_free(&previous);
-        }
         return -1;
       }
 
@@ -1318,10 +1277,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
         new_size2 = type->byte_size;
 
       } else {
-        if (match_pairs) {
+        if (match_pairs)
           state.match_equals(previous);
-          xbt_dynar_free(&previous);
-        }
         return -1;
       }
     }
@@ -1332,19 +1289,16 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
     }
 
     if (offset1 == 0 && offset2 == 0
-      && !add_heap_area_pair(previous, block1, frag1, block2, frag2)) {
-        if (match_pairs) {
+      && !previous->insert(simgrid::mc::makeHeapLocationPair(
+        block1, frag1, block2, frag2)).second) {
+        if (match_pairs)
           state.match_equals(previous);
-          xbt_dynar_free(&previous);
-        }
         return 0;
       }
 
     if (size <= 0) {
-      if (match_pairs) {
+      if (match_pairs)
         state.match_equals(previous);
-        xbt_dynar_free(&previous);
-      }
       return 0;
     }
 
@@ -1353,11 +1307,8 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
             heapinfo1->busy_frag.ignore[frag1]))
       check_ignore = heapinfo1->busy_frag.ignore[frag1];
 
-  } else {
-    if (match_pairs)
-      xbt_dynar_free(&previous);
+  } else
     return 1;
-  }
 
 
   /* Start comparison */
@@ -1371,17 +1322,11 @@ int compare_heap_area(simgrid::mc::StateComparator& state, int process_index,
         compare_heap_area_without_type(state, process_index, area1, area2, snapshot1, snapshot2,
                                        previous, size, check_ignore);
 
-  if (res_compare == 1) {
-    if (match_pairs)
-      xbt_dynar_free(&previous);
+  if (res_compare == 1)
     return res_compare;
-  }
 
-  if (match_pairs) {
+  if (match_pairs)
     state.match_equals(previous);
-    xbt_dynar_free(&previous);
-  }
-
   return 0;
 }
 
