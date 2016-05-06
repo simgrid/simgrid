@@ -22,6 +22,9 @@ namespace simix {
     char *name;                        /* synchro name if any */
     xbt_fifo_t simcalls;               /* List of simcalls waiting for this synchro */
     char *category = nullptr;          /* For instrumentation */
+
+    virtual void suspend()=0;
+    virtual void resume()=0;
   };
 }} // namespace simgrid::simix
 #else /* not C++ */

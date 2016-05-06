@@ -416,16 +416,12 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro
 
 void SIMIX_execution_suspend(smx_synchro_t synchro)
 {
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
-  if(exec->surf_exec)
-    exec->surf_exec->suspend();
+  synchro->suspend(); // FIXME: USELESS
 }
 
 void SIMIX_execution_resume(smx_synchro_t synchro)
 {
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
-  if(exec->surf_exec)
-    exec->surf_exec->resume();
+  synchro->resume(); // FIXME: USELESS
 }
 
 void SIMIX_execution_finish(smx_synchro_t synchro)

@@ -644,8 +644,6 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t proces
 
 smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 {
-  xbt_assert((process != NULL), "Invalid parameters");
-
   if (process->suspended) {
     XBT_DEBUG("Process '%s' is already suspended", process->name);
     return NULL;
@@ -653,32 +651,14 @@ smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 
   process->suspended = 1;
 
-  /* If we are suspending another process, and it is waiting on a sync, suspend its synchronization. */
+  /* If we are suspending another process that is waiting on a sync, suspend its synchronization. */
   if (process != issuer) {
 
-    if (process->waiting_synchro) {
+    if (process->waiting_synchro)
+      process->waiting_synchro->suspend();
+    /* If the other process is not waiting, its suspension is delayed to when the process is rescheduled. */
 
-      simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec*>(process->waiting_synchro);
-      if (exec != nullptr) {
-        SIMIX_execution_suspend(process->waiting_synchro);
-      }
-
-      simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm*>(process->waiting_synchro);
-      if (comm != nullptr) {
-        SIMIX_comm_suspend(process->waiting_synchro);
-      }
-
-      simgrid::simix::Sleep *sleep = dynamic_cast<simgrid::simix::Sleep*>(process->waiting_synchro);
-      if (sleep != nullptr) {
-        SIMIX_process_sleep_suspend(process->waiting_synchro);
-      }
-
-      /* The suspension of raw synchros is delayed to when the process is rescheduled. */
-      return NULL;
-    } else {
-      /* If the other process is not waiting, its suspension is delayed to when the process is rescheduled. */
-      return NULL;
-    }
+    return NULL;
   } else {
     /* FIXME: computation size is zero. Is it okay that bound is zero ? */
     return SIMIX_execution_start(process, "suspend", 0.0, 1.0, 0.0, 0);
@@ -706,24 +686,7 @@ void SIMIX_process_resume(smx_process_t process, smx_process_t issuer)
   if (process != issuer) {
 
     if (process->waiting_synchro) {
-    simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec*>(process->waiting_synchro);
-    if (exec != nullptr) {
-      SIMIX_execution_resume(process->waiting_synchro);
-    }
-
-    simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm*>(process->waiting_synchro);
-    if (comm != nullptr) {
-      SIMIX_comm_resume(process->waiting_synchro);
-    }
-
-    simgrid::simix::Sleep *sleep = dynamic_cast<simgrid::simix::Sleep*>(process->waiting_synchro);
-    if (sleep != nullptr) {
-      SIMIX_process_sleep_resume(process->waiting_synchro);
-    }
-
-    /* I cannot resume raw synchros now. This is delayed to when the process is rescheduled at
-     * the end of the synchro. */
-
+      process->waiting_synchro->resume();
     }
   } else XBT_WARN("Strange. Process %p is trying to resume himself.", issuer);
 
@@ -951,16 +914,12 @@ void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
 
 void SIMIX_process_sleep_suspend(smx_synchro_t synchro)
 {
-  simgrid::simix::Sleep *sleep = static_cast<simgrid::simix::Sleep*>(synchro);
-  sleep->surf_sleep->suspend();
+  synchro->suspend(); //FIXME: USELESS
 }
 
 void SIMIX_process_sleep_resume(smx_synchro_t synchro)
 {
-  XBT_DEBUG("Synchro state is %d on process_sleep_resume.", synchro->state);
-  simgrid::simix::Sleep *sleep = static_cast<simgrid::simix::Sleep*>(synchro);
-
-  sleep->surf_sleep->resume();
+  synchro->resume();  //FIXME: USELESS
 }
 
 /**

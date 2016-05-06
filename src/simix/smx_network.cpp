@@ -854,22 +854,12 @@ void SIMIX_comm_cancel(smx_synchro_t synchro)
 
 void SIMIX_comm_suspend(smx_synchro_t synchro)
 {
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  /*FIXME: shall we suspend also the timeout synchro? */
-  if (comm->surf_comm)
-    comm->surf_comm->suspend();
-  /* in the other case, the action will be suspended on creation, in SIMIX_comm_start() */
+  synchro->suspend(); // FIXME: USELESS
 }
 
 void SIMIX_comm_resume(smx_synchro_t synchro)
 {
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  /*FIXME: check what happen with the timeouts */
-  if (comm->surf_comm)
-    comm->surf_comm->resume();
-  /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
+  synchro->resume(); // FIXME: USELESS
 }
 
 

@@ -348,6 +348,11 @@ set(SIMIX_SRC
   src/simix/smx_vm.cpp
   src/simix/popping.cpp
   src/simix/Synchro.cpp
+  src/simix/SynchroComm.cpp
+  src/simix/SynchroExec.cpp
+  src/simix/SynchroSleep.cpp
+  src/simix/SynchroRaw.cpp
+  src/simix/SynchroIo.cpp
   
   ${SIMIX_GENERATED_SRC}
   )

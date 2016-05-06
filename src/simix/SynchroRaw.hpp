@@ -6,6 +6,7 @@
 #ifndef _SIMIX_SYNCHRO_RAW_HPP
 #define _SIMIX_SYNCHRO_RAW_HPP
 
+#include "surf/surf.h"
 #include "src/simix/Synchro.h"
 
 namespace simgrid {
@@ -14,6 +15,9 @@ namespace simix {
   /** Used to implement mutexes, semaphores and conditions */
   XBT_PUBLIC_CLASS Raw : public Synchro {
   public:
+    void suspend();
+    void resume();
+
     surf_action_t sleep;
   };
 

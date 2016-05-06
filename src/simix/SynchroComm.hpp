@@ -6,6 +6,7 @@
 #ifndef _SIMIX_SYNCHRO_COMM_HPP
 #define _SIMIX_SYNCHRO_COMM_HPP
 
+#include "surf/surf.h"
 #include "src/simix/Synchro.h"
 
 typedef enum {
@@ -20,6 +21,9 @@ namespace simix {
 
   XBT_PUBLIC_CLASS Comm : public Synchro {
   public:
+    void suspend();
+    void resume();
+
     e_smx_comm_type_t type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
     smx_mailbox_t mbox;             /* Rendez-vous where the comm is queued */
 

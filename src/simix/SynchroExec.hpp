@@ -6,6 +6,7 @@
 #ifndef _SIMIX_SYNCHRO_EXEC_HPP
 #define _SIMIX_SYNCHRO_EXEC_HPP
 
+#include "surf/surf.h"
 #include "src/simix/Synchro.h"
 
 namespace simgrid {
@@ -13,6 +14,9 @@ namespace simix {
 
   XBT_PUBLIC_CLASS Exec : public Synchro {
   public:
+    void suspend();
+    void resume();
+
     sg_host_t host;                /* The host where the execution takes place */
     surf_action_t surf_exec;        /* The Surf execution action encapsulated */
   };

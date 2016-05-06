@@ -6,6 +6,7 @@
 #ifndef _SIMIX_SYNCHRO_SLEEP_HPP
 #define _SIMIX_SYNCHRO_SLEEP_HPP
 
+#include "surf/surf.h"
 #include "src/simix/Synchro.h"
 
 namespace simgrid {
@@ -13,6 +14,9 @@ namespace simix {
 
   XBT_PUBLIC_CLASS Sleep : public Synchro {
   public:
+    void suspend();
+    void resume();
+
     sg_host_t host;                /* The host that is sleeping */
     surf_action_t surf_sleep;       /* The Surf sleeping action encapsulated */
   };
