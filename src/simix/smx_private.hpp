@@ -11,47 +11,14 @@
 #include "smx_private.h"
 #include "src/simix/popping_private.h"
 
-/**
- * \brief destroy a context
- * \param context the context to destroy
- * Argument must be stopped first -- runs in maestro context
- */
-static inline void SIMIX_context_free(smx_context_t context)
-{
-  delete context;
-}
-
-/**
- * \brief stops the execution of a context
- * \param context to stop
- */
-static inline void SIMIX_context_stop(smx_context_t context)
-{
-  context->stop();
-}
-
-/**
- \brief suspends a context and return the control back to the one which
-        scheduled it
- \param context the context to be suspended (it must be the running one)
- */
-static inline void SIMIX_context_suspend(smx_context_t context)
-{
-  context->suspend();
-}
-
-/**
- \brief Executes all the processes to run (in parallel if possible).
- */
+/** @brief Executes all the processes to run (in parallel if possible). */
 static inline void SIMIX_context_runall(void)
 {
   if (!xbt_dynar_is_empty(simix_global->process_to_run))
     simix_global->context_factory->run_all();
 }
 
-/**
- \brief returns the current running context
- */
+/** @brief returns the current running context */
 static inline smx_context_t SIMIX_context_self(void)
 {
   if (simix_global && simix_global->context_factory)

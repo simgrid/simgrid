@@ -290,7 +290,7 @@ static void *xbt_parmap_worker_main(void *arg)
       XBT_DEBUG("Worker %d has finished", data->worker_id);
     /* We are destroying the parmap */
     } else {
-      SIMIX_context_free(context);
+      delete context;
       xbt_free(data);
       return NULL;
     }

@@ -125,7 +125,7 @@ void SIMIX_process_empty_trash(void)
   while ((process = (smx_process_t) xbt_swag_extract(simix_global->process_to_destroy))) {
     XBT_DEBUG("Getting rid of %p",process);
 
-    SIMIX_context_free(process->context);
+    delete process->context;
 
     /* Free the exception allocated at creation time */
     free(process->running_ctx);
@@ -198,8 +198,7 @@ void SIMIX_process_stop(smx_process_t arg) {
                                         arg->auto_restart);
   }
   XBT_DEBUG("Process %s (%s) is dead",arg->name,sg_host_get_name(arg->host));
-  /* stop the context */
-  SIMIX_context_stop(arg->context);
+  arg->context->stop();
 }
 
 /**
@@ -925,7 +924,7 @@ void SIMIX_process_yield(smx_process_t self)
   XBT_DEBUG("Yield process '%s'", self->name);
 
   /* Go into sleep and return control to maestro */
-  SIMIX_context_suspend(self->context);
+  self->context->suspend();
 
   /* Ok, maestro returned control to us */
   XBT_DEBUG("Control returned to me: '%s'", self->name);

@@ -293,7 +293,7 @@ void SIMIX_clean(void)
   simix_global->mutex = NULL;
 
   /* Let's free maestro now */
-  SIMIX_context_free(simix_global->maestro_process->context);
+  delete simix_global->maestro_process->context;
   xbt_free(simix_global->maestro_process->running_ctx);
   xbt_free(simix_global->maestro_process);
   simix_global->maestro_process = NULL;
