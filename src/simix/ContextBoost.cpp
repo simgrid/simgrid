@@ -20,7 +20,7 @@
 #include "smx_private.h"
 #include "smx_private.hpp"
 #include "src/internal_config.h"
-#include "src/simix/BoostContext.hpp"
+#include "src/simix/ContextBoost.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 

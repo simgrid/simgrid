@@ -81,10 +81,10 @@ void SIMIX_process_cleanup(smx_process_t process)
       comm->src_proc = NULL;
 
       /* I'm not supposed to destroy a detached comm from the sender side, */
-      if (!comm->detached)
-        SIMIX_comm_destroy(comm);
+      if (comm->detached)
+        XBT_DEBUG("Don't destroy it since it's a detached comm and I'm the sender");
       else
-        XBT_DEBUG("Don't destroy it since it's a detached comm");
+        SIMIX_comm_destroy(comm);
 
     }
     else if (comm->dst_proc == process){

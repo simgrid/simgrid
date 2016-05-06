@@ -336,7 +336,7 @@ set(SIMIX_SRC
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
   src/simix/Context.cpp
-  src/simix/RawContext.cpp
+  src/simix/ContextRaw.cpp
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
@@ -361,13 +361,13 @@ set(SIMIX_SRC
 if (HAVE_BOOST_CONTEXTS)
   set(SIMIX_SRC
       ${SIMIX_SRC}
-      src/simix/BoostContext.hpp
-      src/simix/BoostContext.cpp)
+      src/simix/ContextBoost.hpp
+      src/simix/ContextBoost.cpp)
 else()
   set(EXTRA_DIST
       ${EXTRA_DIST}
-      src/simix/BoostContext.hpp
-      src/simix/BoostContext.cpp)
+      src/simix/ContextBoost.hpp
+      src/simix/ContextBoost.cpp)
 endif()
 
 set(S4U_SRC
@@ -699,14 +699,14 @@ set(source_of_generated_headers
 if(${HAVE_THREAD_CONTEXTS}) #pthread
   set(SURF_SRC
     ${SURF_SRC}
-    src/simix/ThreadContext.cpp
-    src/simix/ThreadContext.hpp
+    src/simix/ContextThread.cpp
+    src/simix/ContextThread.hpp
     )
 else() # NOT pthread
   set(EXTRA_DIST
     ${EXTRA_DIST}
-    src/simix/ThreadContext.cpp
-    src/simix/ThreadContext.hpp
+    src/simix/ContextThread.cpp
+    src/simix/ContextThread.hpp
     )
 endif()
 
@@ -718,9 +718,9 @@ else() # NOT pthread
 endif()
 
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SURF_SRC    ${SURF_SRC}   src/simix/UContext.cpp)
+  set(SURF_SRC    ${SURF_SRC}   src/simix/ContextUnix.cpp)
 else() # NOT ucontext
-  set(EXTRA_DIST  ${EXTRA_DIST} src/simix/UContext.cpp)
+  set(EXTRA_DIST  ${EXTRA_DIST} src/simix/ContextUnix.cpp)
 endif()
 
 ### Simgrid Lib sources
@@ -759,8 +759,8 @@ endif()
 if(WIN32)
   set(simgrid_sources
     ${simgrid_sources}
-    src/simix/ThreadContext.cpp
-    src/simix/ThreadContext.hpp
+    src/simix/ContextThread.cpp
+    src/simix/ContextThread.hpp
     src/xbt/xbt_os_thread.c
     )
 endif()
