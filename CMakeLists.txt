@@ -371,6 +371,10 @@ else()
   SET(HAVE_MMALLOC 0)
 endif()
 
+if (enable_model-checking AND enable_ns3)
+  message(FATAL_ERROR "Cannot activate both model-checking and NS3 bindings: NS3 pull too much dependencies for the MC to work")
+endif()
+
 if(enable_smpi)
   include(FindGFortran)
   SET(HAVE_SMPI 1)
