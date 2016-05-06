@@ -235,8 +235,7 @@ int SIMIX_context_is_parallel(void) {
 }
 
 /**
- * \brief Returns the number of parallel threads used
- * for the user contexts.
+ * @brief Returns the number of parallel threads used for the user contexts.
  * \return the number of threads (1 means no parallelism)
  */
 int SIMIX_context_get_nthreads(void) {

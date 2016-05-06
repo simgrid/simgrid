@@ -528,13 +528,13 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t synchro)
 {
   simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
 
-  if(MC_is_active() || MC_record_replay_is_active()){
+  if (MC_is_active() || MC_record_replay_is_active()){
     simcall_comm_test__set__result(simcall, comm->src_proc && comm->dst_proc);
-    if(simcall_comm_test__get__result(simcall)){
+    if (simcall_comm_test__get__result(simcall)){
       synchro->state = SIMIX_DONE;
       xbt_fifo_push(synchro->simcalls, simcall);
       SIMIX_comm_finish(synchro);
-    }else{
+    } else {
       SIMIX_simcall_answer(simcall);
     }
     return;
@@ -613,9 +613,8 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
   unsigned int cursor = 0;
   xbt_dynar_t synchros = simcall_comm_waitany__get__comms(simcall);
 
-  xbt_dynar_foreach(synchros, cursor, synchro) {
+  xbt_dynar_foreach(synchros, cursor, synchro)
     xbt_fifo_remove(synchro->simcalls, simcall);
-  }
 }
 
 /**
