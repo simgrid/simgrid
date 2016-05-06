@@ -17,6 +17,10 @@
 #include "xbt/dict.h"
 #include "xbt/config.h"
 #include "src/instr/instr_private.h"
+
+#include "src/simix/SynchroExec.hpp"
+#include "src/simix/SynchroComm.hpp"
+
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/
@@ -38,8 +42,8 @@ SG_BEGIN_DECL()
   ptr = _xbt_ex_t; } while(0)
 
 typedef struct simdata_task {
-  smx_synchro_t compute;         /* SIMIX modeling of computation */
-  smx_synchro_t comm;            /* SIMIX modeling of communication */
+  simgrid::simix::Exec *compute;         /* SIMIX modeling of computation */
+  simgrid::simix::Comm *comm;            /* SIMIX modeling of communication */
   double bytes_amount;    /* Data size */
   double flops_amount;    /* Computation size */
   msg_process_t sender;

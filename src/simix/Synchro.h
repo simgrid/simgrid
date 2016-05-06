@@ -1,0 +1,32 @@
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#ifndef _SIMIX_SYNCHRO_HPP
+#define _SIMIX_SYNCHRO_HPP
+#include "simgrid/forward.h"
+
+#ifdef __cplusplus
+
+#include <simgrid/simix.hpp>
+
+namespace simgrid {
+namespace simix {
+
+  class Synchro {
+  public:
+    Synchro();
+    virtual ~Synchro();
+    e_smx_state_t state;               /* State of the synchro */
+    char *name;                        /* synchro name if any */
+    xbt_fifo_t simcalls;               /* List of simcalls waiting for this synchro */
+    char *category = nullptr;          /* For instrumentation */
+  };
+}} // namespace simgrid::simix
+#else /* not C++ */
+
+
+#endif
+
+#endif

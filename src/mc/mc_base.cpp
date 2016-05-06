@@ -20,6 +20,9 @@
 #include "mc/mc.h"
 #include "src/mc/mc_protocol.h"
 
+#include "src/simix/Synchro.h"
+#include "src/simix/SynchroComm.hpp"
+
 #if HAVE_MC
 #include "src/mc/mc_request.h"
 #include "src/mc/Process.hpp"
@@ -70,9 +73,8 @@ void wait_for_requests(void)
 bool request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
-  smx_synchro_t act = 0;
 #if HAVE_MC
-  s_smx_synchro_t temp_synchro;
+  simgrid::simix::Synchro temp_synchro;
 #endif
 
   switch (req->call) {
@@ -80,8 +82,9 @@ bool request_is_enabled(smx_simcall_t req)
     return false;
 
   case SIMCALL_COMM_WAIT:
+  {
     /* FIXME: check also that src and dst processes are not suspended */
-    act = simcall_comm_wait__get__comm(req);
+    simgrid::simix::Comm *act = static_cast<simgrid::simix::Comm*>(simcall_comm_wait__get__comm(req));
 
 #if HAVE_MC
     // Fetch from MCed memory:
@@ -98,13 +101,15 @@ bool request_is_enabled(smx_simcall_t req)
         return true;
     }
     /* On the other hand if it hasn't a timeout, check if the comm is ready.*/
-    else if (act->comm.detached && act->comm.src_proc == nullptr
-          && act->comm.type == SIMIX_COMM_READY)
-        return (act->comm.dst_proc != nullptr);
-    return (act->comm.src_proc && act->comm.dst_proc);
+    else if (act->detached && act->src_proc == nullptr
+          && act->type == SIMIX_COMM_READY)
+        return (act->dst_proc != nullptr);
+    return (act->src_proc && act->dst_proc);
+  }
 
   case SIMCALL_COMM_WAITANY: {
     xbt_dynar_t comms;
+    simgrid::simix::Comm *act = static_cast<simgrid::simix::Comm*>(simcall_comm_wait__get__comm(req));
 #if HAVE_MC
 
     s_xbt_dynar_t comms_buffer;
@@ -138,8 +143,8 @@ bool request_is_enabled(smx_simcall_t req)
       }
       else
 #endif
-        act = xbt_dynar_get_as(comms, index, smx_synchro_t);
-      if (act->comm.src_proc && act->comm.dst_proc)
+        act = xbt_dynar_get_as(comms, index, simgrid::simix::Comm*);
+      if (act->src_proc && act->dst_proc)
         return true;
     }
     return false;

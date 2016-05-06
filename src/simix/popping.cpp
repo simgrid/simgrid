@@ -11,6 +11,12 @@
 #include "src/mc/mc_private.h"
 #endif
 
+#include "src/simix/SynchroExec.hpp"
+#include "src/simix/SynchroComm.hpp"
+#include "src/simix/SynchroSleep.hpp"
+#include "src/simix/SynchroRaw.hpp"
+#include "src/simix/SynchroIo.hpp"
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_popping, simix,
                                 "Popping part of SIMIX (transmuting from user request into kernel handlers)");
 
@@ -31,32 +37,34 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
 
 void SIMIX_simcall_exit(smx_synchro_t synchro)
 {
-  switch (synchro->type) {
+  simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec*>(synchro);
+  if (exec != nullptr) {
+    SIMIX_post_host_execute(synchro);
+    return;
+  }
 
-    case SIMIX_SYNC_EXECUTE:
-    case SIMIX_SYNC_PARALLEL_EXECUTE:
-      SIMIX_post_host_execute(synchro);
-      break;
+  simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm*>(synchro);
+  if (comm != nullptr) {
+    SIMIX_post_comm(synchro);
+    return;
+  }
 
-    case SIMIX_SYNC_COMMUNICATE:
-      SIMIX_post_comm(synchro);
-      break;
+  simgrid::simix::Sleep *sleep = dynamic_cast<simgrid::simix::Sleep*>(synchro);
+  if (sleep != nullptr) {
+    SIMIX_post_process_sleep(synchro);
+    return;
+  }
 
-    case SIMIX_SYNC_SLEEP:
-      SIMIX_post_process_sleep(synchro);
-      break;
+  simgrid::simix::Raw *raw = dynamic_cast<simgrid::simix::Raw*>(synchro);
+  if (raw != nullptr) {
+    SIMIX_post_synchro(synchro);
+    return;
+  }
 
-    case SIMIX_SYNC_JOIN:
-      SIMIX_post_process_sleep(synchro);
-      break;
-
-    case SIMIX_SYNC_SYNCHRO:
-      SIMIX_post_synchro(synchro);
-      break;
-
-    case SIMIX_SYNC_IO:
-      SIMIX_post_io(synchro);
-      break;
+  simgrid::simix::Io *io = dynamic_cast<simgrid::simix::Io*>(synchro);
+  if (io != nullptr) {
+    SIMIX_post_io(synchro);
+    return;
   }
 }
 

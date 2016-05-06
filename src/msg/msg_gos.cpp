@@ -67,9 +67,10 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       simdata->isused = (void*)1;
 
     if (simdata->host_nb > 0) {
-      simdata->compute = simcall_execution_parallel_start(task->name, simdata->host_nb,simdata->host_list,
+      simdata->compute = static_cast<simgrid::simix::Exec*>(
+          simcall_execution_parallel_start(task->name, simdata->host_nb,simdata->host_list,
                                                        simdata->flops_parallel_amount, simdata->bytes_parallel_amount,
-                                                       1.0, -1.0);
+                                                       1.0, -1.0));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
       unsigned long affinity_mask =
@@ -78,8 +79,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       XBT_DEBUG("execute %s@%s with affinity(0x%04lx)",
                 MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
 
-      simdata->compute = simcall_execution_start(task->name, simdata->flops_amount, simdata->priority,
-                                                 simdata->bound, affinity_mask);
+          simdata->compute = static_cast<simgrid::simix::Exec*>(
+              simcall_execution_start(task->name, simdata->flops_amount, simdata->priority,
+                                                 simdata->bound, affinity_mask));
     }
     simcall_set_category(simdata->compute, task->category);
     p_simdata->waiting_action = simdata->compute;
@@ -321,7 +323,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   /* Send it by calling SIMIX network layer */
   smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->bytes_amount, t_simdata->rate,
                                          task, sizeof(void *), match_fun, cleanup, NULL, match_data,detached);
-  t_simdata->comm = act; /* FIXME: is the field t_simdata->comm still useful? */
+  t_simdata->comm = static_cast<simgrid::simix::Comm*>(act); /* FIXME: is the field t_simdata->comm still useful? */
 
   msg_comm_t comm;
   if (detached) {
@@ -837,7 +839,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
                               t_simdata->rate, task, sizeof(void *), NULL, NULL, NULL, task, 0);
     if (TRACE_is_enabled())
       simcall_set_category(comm, task->category);
-     t_simdata->comm = comm;
+     t_simdata->comm = static_cast<simgrid::simix::Comm*>(comm);
      simcall_comm_wait(comm, timeout);
   }
 

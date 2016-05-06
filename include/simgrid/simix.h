@@ -91,9 +91,6 @@ typedef struct s_smx_file *smx_file_t;
 typedef xbt_dictelm_t smx_storage_t;
 typedef struct s_smx_storage_priv *smx_storage_priv_t;
 
-/********************************** Synchro *************************************/
-typedef struct s_smx_synchro *smx_synchro_t; /* FIXME: replace by specialized synchro handlers */
-
 /* ****************************** Process *********************************** */
 /** @brief Process datatype
     @ingroup simix_process_management

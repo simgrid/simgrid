@@ -19,6 +19,12 @@
 #include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
+#include "src/simix/SynchroExec.hpp"
+#include "src/simix/SynchroComm.hpp"
+#include "src/simix/SynchroSleep.hpp"
+#include "src/simix/SynchroIo.hpp"
+#include "src/simix/SynchroRaw.hpp"
+
 #if HAVE_MC
 #include "src/mc/mc_private.h"
 #include "src/mc/mc_protocol.h"
@@ -48,11 +54,6 @@ typedef struct s_smx_timer {
 } s_smx_timer_t;
 
 void (*SMPI_switch_data_segment)(int) = NULL;
-
-static void* SIMIX_synchro_mallocator_new_f(void);
-static void SIMIX_synchro_mallocator_free_f(void* synchro);
-static void SIMIX_synchro_mallocator_reset_f(void* synchro);
-
 
 int _sg_do_verbose_exit = 1;
 static void inthandler(int ignored)
@@ -204,9 +205,6 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->create_process_function = SIMIX_process_create;
     simix_global->kill_process_function = kill_process;
     simix_global->cleanup_process_function = SIMIX_process_cleanup;
-    simix_global->synchro_mallocator = xbt_mallocator_new(65536,
-        SIMIX_synchro_mallocator_new_f, SIMIX_synchro_mallocator_free_f,
-        SIMIX_synchro_mallocator_reset_f);
     simix_global->mutex = xbt_os_mutex_init();
 
     surf_init(argc, argv);      /* Initialize SURF structures */
@@ -309,7 +307,6 @@ void SIMIX_clean(void)
 
   surf_exit();
 
-  xbt_mallocator_free(simix_global->synchro_mallocator);
   xbt_free(simix_global);
   simix_global = NULL;
 
@@ -607,36 +604,34 @@ void SIMIX_display_process_status(void)
     if (process->waiting_synchro) {
 
       const char* synchro_description = "unknown";
-      switch (process->waiting_synchro->type) {
 
-      case SIMIX_SYNC_EXECUTE:
+      if (dynamic_cast<simgrid::simix::Exec*>(process->waiting_synchro) != nullptr)
         synchro_description = "execution";
-        break;
 
+      if (dynamic_cast<simgrid::simix::Comm*>(process->waiting_synchro) != nullptr)
+        synchro_description = "communication";
+
+      if (dynamic_cast<simgrid::simix::Sleep*>(process->waiting_synchro) != nullptr)
+        synchro_description = "sleeping";
+
+      if (dynamic_cast<simgrid::simix::Raw*>(process->waiting_synchro) != nullptr)
+        synchro_description = "synchronization";
+
+      if (dynamic_cast<simgrid::simix::Io*>(process->waiting_synchro) != nullptr)
+        synchro_description = "I/O";
+
+
+      /*
+        switch (process->waiting_synchro->type) {
       case SIMIX_SYNC_PARALLEL_EXECUTE:
         synchro_description = "parallel execution";
-        break;
-
-      case SIMIX_SYNC_COMMUNICATE:
-        synchro_description = "communication";
-        break;
-
-      case SIMIX_SYNC_SLEEP:
-        synchro_description = "sleeping";
         break;
 
       case SIMIX_SYNC_JOIN:
         synchro_description = "joining";
         break;
+*/
 
-      case SIMIX_SYNC_SYNCHRO:
-        synchro_description = "synchronization";
-        break;
-
-      case SIMIX_SYNC_IO:
-        synchro_description = "I/O";
-        break;
-      }
       XBT_INFO("Process %lu (%s@%s): waiting for %s synchro %p (%s) in state %d to finish",
           process->pid, process->name, sg_host_get_name(process->host),
           synchro_description, process->waiting_synchro,
@@ -646,26 +641,6 @@ void SIMIX_display_process_status(void)
       XBT_INFO("Process %lu (%s@%s)", process->pid, process->name, sg_host_get_name(process->host));
     }
   }
-}
-
-static void* SIMIX_synchro_mallocator_new_f(void) {
-  smx_synchro_t synchro = xbt_new(s_smx_synchro_t, 1);
-  synchro->simcalls = xbt_fifo_new();
-  return synchro;
-}
-
-static void SIMIX_synchro_mallocator_free_f(void* synchro) {
-  xbt_fifo_free(((smx_synchro_t) synchro)->simcalls);
-  xbt_free(synchro);
-}
-
-static void SIMIX_synchro_mallocator_reset_f(void* synchro) {
-
-  // we also recycle the simcall list
-  xbt_fifo_t fifo = ((smx_synchro_t) synchro)->simcalls;
-  xbt_fifo_reset(fifo);
-  memset(synchro, 0, sizeof(s_smx_synchro_t));
-  ((smx_synchro_t) synchro)->simcalls = fifo;
 }
 
 xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char *name){

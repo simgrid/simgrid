@@ -11,8 +11,9 @@
 #include "xbt/dict.h"
 #include "mc/mc.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix,
-                                "Logging specific to SIMIX (io)");
+#include "src/simix/SynchroIo.hpp"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 
 
 /**
@@ -59,23 +60,17 @@ void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t s
 
 smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
-  smx_synchro_t synchro;
-
   /* check if the host is active */
-  if (host->isOff()) {
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_get_name(host));
-  }
+  if (host->isOff())
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
 
-  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
-  synchro->type = SIMIX_SYNC_IO;
+
+  simgrid::simix::Io *synchro = new simgrid::simix::Io();
   synchro->name = NULL;
-  synchro->category = NULL;
+  synchro->host = host;
+  synchro->surf_io = surf_host_read(host, fd->surf_file, size);
 
-  synchro->io.host = host;
-  synchro->io.surf_io = surf_host_read(host, fd->surf_file, size);
-
-  synchro->io.surf_io->setData(synchro);
+  synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -91,23 +86,14 @@ void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t 
 
 smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
-  smx_synchro_t synchro;
+  if (host->isOff())
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
 
-  /* check if the host is active */
-  if (host->isOff()) {
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_get_name(host));
-  }
-
-  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
-  synchro->type = SIMIX_SYNC_IO;
+  simgrid::simix::Io *synchro = new simgrid::simix::Io();
   synchro->name = NULL;
-  synchro->category = NULL;
-
-  synchro->io.host = host;
-  synchro->io.surf_io = surf_host_write(host, fd->surf_file, size);
-
-  synchro->io.surf_io->setData(synchro);
+  synchro->host = host;
+  synchro->surf_io = surf_host_write(host, fd->surf_file, size);
+  synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -123,23 +109,14 @@ void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, sg_h
 
 smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
 {
-  smx_synchro_t synchro;
+  if (host->isOff())
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
 
-  /* check if the host is active */
-  if (host->isOff()) {
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_get_name(host));
-  }
-
-  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
-  synchro->type = SIMIX_SYNC_IO;
+  simgrid::simix::Io *synchro = new simgrid::simix::Io();
   synchro->name = NULL;
-  synchro->category = NULL;
-
-  synchro->io.host = host;
-  synchro->io.surf_io = surf_host_open(host, fullpath);
-
-  synchro->io.surf_io->setData(synchro);
+  synchro->host = host;
+  synchro->surf_io = surf_host_open(host, fullpath);
+  synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -155,23 +132,14 @@ void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, sg_host_t 
 
 smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
 {
-  smx_synchro_t synchro;
+  if (host->isOff())
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
 
-  /* check if the host is active */
-  if (host->isOff()) {
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_get_name(host));
-  }
-
-  synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
-  synchro->type = SIMIX_SYNC_IO;
+  simgrid::simix::Io *synchro = new simgrid::simix::Io();
   synchro->name = NULL;
-  synchro->category = NULL;
-
-  synchro->io.host = host;
-  synchro->io.surf_io = surf_host_close(host, fd->surf_file);
-
-  synchro->io.surf_io->setData(synchro);
+  synchro->host = host;
+  synchro->surf_io = surf_host_close(host, fd->surf_file);
+  synchro->surf_io->setData(synchro);
   XBT_DEBUG("Create io synchro %p", synchro);
 
   return synchro;
@@ -181,11 +149,8 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
 //SIMIX FILE UNLINK
 int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
 {
-  /* check if the host is active */
-  if (host->isOff()) {
-    THROWF(host_error, 0, "Host %s failed, you cannot call this function",
-           sg_host_get_name(host));
-  }
+  if (host->isOff())
+    THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
 
   int res = surf_host_unlink(host, fd->surf_file);
   xbt_free(fd);
@@ -249,7 +214,6 @@ int SIMIX_file_move(smx_process_t process, smx_file_t file, const char* fullpath
 }
 
 sg_size_t SIMIX_storage_get_size(smx_storage_t storage){
-  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
   return surf_storage_get_size(storage);
 }
 
@@ -278,17 +242,14 @@ xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage){
 }
 
 const char* SIMIX_storage_get_name(smx_storage_t storage){
-  xbt_assert((storage != NULL), "Invalid parameters");
   return sg_storage_name(storage);
 }
 
 xbt_dict_t SIMIX_storage_get_content(smx_storage_t storage){
-  xbt_assert((storage != NULL), "Invalid parameters (simix storage is NULL)");
   return surf_storage_get_content(storage);
 }
 
 const char* SIMIX_storage_get_host(smx_storage_t storage){
-  xbt_assert((storage != NULL), "Invalid parameters");
   return surf_storage_get_host(storage);
 }
 
@@ -297,11 +258,13 @@ void SIMIX_post_io(smx_synchro_t synchro)
   xbt_fifo_item_t i;
   smx_simcall_t simcall;
 
+  simgrid::simix::Io *io = static_cast<simgrid::simix::Io*>(synchro);
+
   xbt_fifo_foreach(synchro->simcalls,i,simcall,smx_simcall_t) {
     switch (simcall->call) {
     case SIMCALL_FILE_OPEN: {
       smx_file_t tmp = xbt_new(s_smx_file_t,1);
-      tmp->surf_file = surf_storage_action_get_file(synchro->io.surf_io);
+      tmp->surf_file = surf_storage_action_get_file(io->surf_io);
       simcall_file_open__set__result(simcall, tmp);
       break;
     }
@@ -310,13 +273,11 @@ void SIMIX_post_io(smx_synchro_t synchro)
       simcall_file_close__set__result(simcall, 0);
       break;
     case SIMCALL_FILE_WRITE:
-      simcall_file_write__set__result(simcall,
-        synchro->io.surf_io->getCost());
+      simcall_file_write__set__result(simcall, io->surf_io->getCost());
       break;
 
     case SIMCALL_FILE_READ:
-      simcall_file_read__set__result(simcall,
-        synchro->io.surf_io->getCost());
+      simcall_file_read__set__result(simcall, io->surf_io->getCost());
       break;
 
     default:
@@ -324,7 +285,7 @@ void SIMIX_post_io(smx_synchro_t synchro)
     }
   }
 
-  switch (synchro->io.surf_io->getState()) {
+  switch (io->surf_io->getState()) {
 
     case simgrid::surf::Action::State::failed:
       synchro->state = SIMIX_FAILED;
@@ -344,10 +305,11 @@ void SIMIX_post_io(smx_synchro_t synchro)
 
 void SIMIX_io_destroy(smx_synchro_t synchro)
 {
+  simgrid::simix::Io *io = static_cast<simgrid::simix::Io*>(synchro);
   XBT_DEBUG("Destroy synchro %p", synchro);
-  if (synchro->io.surf_io)
-    synchro->io.surf_io->unref();
-  xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
+  if (io->surf_io)
+    io->surf_io->unref();
+  delete io;
 }
 
 void SIMIX_io_finish(smx_synchro_t synchro)

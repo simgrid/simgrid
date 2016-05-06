@@ -390,8 +390,8 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
   }
 
   {
-    smx_synchro_t compute = task->simdata->compute;
-    msg_host_t host_now = compute->execution.host;  // simix_private.h is necessary
+    simgrid::simix::Exec *compute = task->simdata->compute;
+    msg_host_t host_now = compute->host;  // simix_private.h is necessary
     if (host_now != host) {
       /* task is not yet executed on this host */
       XBT_INFO("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(host),

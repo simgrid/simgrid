@@ -11,8 +11,10 @@
 #include "src/surf/virtual_machine.hpp"
 #include "src/surf/HostImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix,
-                                "SIMIX hosts");
+#include "src/simix/SynchroExec.hpp"
+#include "src/simix/SynchroComm.hpp"
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
 static void SIMIX_execution_finish(smx_synchro_t synchro);
 
@@ -162,8 +164,7 @@ const char* SIMIX_host_self_get_name(void)
 void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(smx_process_arg_t*)data;
-  int i;
-  for (i = 0; i < arg->argc; i++)
+  for (int i = 0; i < arg->argc; i++)
     xbt_free(arg->argv[i]);
   xbt_free(arg->argv);
   xbt_free(arg->name);
@@ -266,35 +267,32 @@ smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
      double flops_amount, double priority, double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
-  smx_synchro_t synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
-  synchro->type = SIMIX_SYNC_EXECUTE;
-  synchro->name = xbt_strdup(name);
-  synchro->state = SIMIX_RUNNING;
-  synchro->execution.host = issuer->host;
-  synchro->category = NULL;
+  simgrid::simix::Exec *exec = new simgrid::simix::Exec();
+  exec->name = xbt_strdup(name);
+  exec->state = SIMIX_RUNNING;
+  exec->host = issuer->host;
 
   /* set surf's action */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
 
-    synchro->execution.surf_exec = issuer->host->pimpl_cpu->execution_start(flops_amount);
-    synchro->execution.surf_exec->setData(synchro);
-    synchro->execution.surf_exec->setPriority(priority);
+    exec->surf_exec = issuer->host->pimpl_cpu->execution_start(flops_amount);
+    exec->surf_exec->setData(exec);
+    exec->surf_exec->setPriority(priority);
 
     if (bound != 0)
-      static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
-        ->setBound(bound);
+      static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
 
     if (affinity_mask != 0) {
       /* just a double check to confirm that this host is the host where this task is running. */
-      xbt_assert(synchro->execution.host == issuer->host);
-      static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)
+      xbt_assert(exec->host == issuer->host);
+      static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)
         ->setAffinity(issuer->host->pimpl_cpu, affinity_mask);
     }
   }
 
-  XBT_DEBUG("Create execute synchro %p: %s", synchro, synchro->name);
+  XBT_DEBUG("Create execute synchro %p: %s", exec, exec->name);
 
-  return synchro;
+  return exec;
 }
 
 smx_synchro_t SIMIX_execution_parallel_start(const char *name,
@@ -302,16 +300,14 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
     double *flops_amount, double *bytes_amount,
     double amount, double rate){
 
-  sg_host_t*host_list_cpy = NULL;
+  sg_host_t *host_list_cpy = NULL;
   int i;
 
   /* alloc structures and initialize */
-  smx_synchro_t synchro = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
-  synchro->type = SIMIX_SYNC_PARALLEL_EXECUTE;
-  synchro->name = xbt_strdup(name);
-  synchro->state = SIMIX_RUNNING;
-  synchro->execution.host = NULL; /* FIXME: do we need the list of hosts? */
-  synchro->category = NULL;
+  simgrid::simix::Exec *exec = new simgrid::simix::Exec();
+  exec->name = xbt_strdup(name);
+  exec->state = SIMIX_RUNNING;
+  exec->host = nullptr; /* FIXME: do we need the list of hosts? */
 
   /* set surf's synchro */
   host_list_cpy = xbt_new0(sg_host_t, host_nb);
@@ -328,43 +324,42 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
 
   /* set surf's synchro */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
-    synchro->execution.surf_exec =
-      surf_host_model->executeParallelTask(
-          host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
-
-    synchro->execution.surf_exec->setData(synchro);
+    exec->surf_exec = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
+    exec->surf_exec->setData(exec);
   }
-  XBT_DEBUG("Create parallel execute synchro %p", synchro);
+  XBT_DEBUG("Create parallel execute synchro %p", exec);
 
-  return synchro;
+  return exec;
 }
 
 void SIMIX_execution_destroy(smx_synchro_t synchro)
 {
   XBT_DEBUG("Destroy synchro %p", synchro);
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
 
-  if (synchro->execution.surf_exec) {
-    synchro->execution.surf_exec->unref();
-    synchro->execution.surf_exec = NULL;
+  if (exec->surf_exec) {
+    exec->surf_exec->unref();
+    exec->surf_exec = NULL;
   }
-  xbt_free(synchro->name);
-  xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
+  delete exec;
 }
 
 void SIMIX_execution_cancel(smx_synchro_t synchro)
 {
   XBT_DEBUG("Cancel synchro %p", synchro);
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
 
-  if (synchro->execution.surf_exec)
-    synchro->execution.surf_exec->cancel();
+  if (exec->surf_exec)
+    exec->surf_exec->cancel();
 }
 
 double SIMIX_execution_get_remains(smx_synchro_t synchro)
 {
   double result = 0.0;
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
 
   if (synchro->state == SIMIX_RUNNING)
-    result = synchro->execution.surf_exec->getRemains();
+    result = exec->surf_exec->getRemains();
 
   return result;
 }
@@ -376,24 +371,25 @@ e_smx_state_t SIMIX_execution_get_state(smx_synchro_t synchro)
 
 void SIMIX_execution_set_priority(smx_synchro_t synchro, double priority)
 {
-  if(synchro->execution.surf_exec)
-    synchro->execution.surf_exec->setPriority(priority);
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  if(exec->surf_exec)
+    exec->surf_exec->setPriority(priority);
 }
 
 void SIMIX_execution_set_bound(smx_synchro_t synchro, double bound)
 {
-  if(synchro->execution.surf_exec)
-    static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)->setBound(bound);
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  if(exec->surf_exec)
+    static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
 }
 
 void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask)
 {
-  xbt_assert(synchro->type == SIMIX_SYNC_EXECUTE);
-
-  if (synchro->execution.surf_exec) {
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  if(exec->surf_exec) {
     /* just a double check to confirm that this host is the host where this task is running. */
-    xbt_assert(synchro->execution.host == host);
-    static_cast<simgrid::surf::CpuAction*>(synchro->execution.surf_exec)->setAffinity(host->pimpl_cpu, mask);
+    xbt_assert(exec->host == host);
+    static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setAffinity(host->pimpl_cpu, mask);
   }
 }
 
@@ -420,14 +416,16 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro
 
 void SIMIX_execution_suspend(smx_synchro_t synchro)
 {
-  if(synchro->execution.surf_exec)
-    synchro->execution.surf_exec->suspend();
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  if(exec->surf_exec)
+    exec->surf_exec->suspend();
 }
 
 void SIMIX_execution_resume(smx_synchro_t synchro)
 {
-  if(synchro->execution.surf_exec)
-    synchro->execution.surf_exec->resume();
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  if(exec->surf_exec)
+    exec->surf_exec->resume();
 }
 
 void SIMIX_execution_finish(smx_synchro_t synchro)
@@ -476,23 +474,23 @@ void SIMIX_execution_finish(smx_synchro_t synchro)
 
 void SIMIX_post_host_execute(smx_synchro_t synchro)
 {
-  if (synchro->type == SIMIX_SYNC_EXECUTE && /* FIMXE: handle resource failure
-                                               * for parallel tasks too */
-      synchro->execution.host->isOff()) {
-    /* If the host running the synchro failed, notice it so that the asking
+  simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec *>(synchro);
+
+  if (exec != nullptr && exec->host && /* FIMXE: handle resource failure for parallel tasks too */
+      exec->host->isOff()) {
+    /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
     synchro->state = SIMIX_FAILED;
-  } else if (synchro->execution.surf_exec->getState() == simgrid::surf::Action::State::failed) {
-    /* If the host running the synchro didn't fail, then the synchro was
-     * canceled */
+  } else if (exec->surf_exec->getState() == simgrid::surf::Action::State::failed) {
+    /* If the host running the synchro didn't fail, then the synchro was canceled */
     synchro->state = SIMIX_CANCELED;
   } else {
     synchro->state = SIMIX_DONE;
   }
 
-  if (synchro->execution.surf_exec) {
-    synchro->execution.surf_exec->unref();
-    synchro->execution.surf_exec = NULL;
+  if (exec != nullptr && exec->surf_exec) {
+    exec->surf_exec->unref();
+    exec->surf_exec = NULL;
   }
 
   /* If there are simcalls associated with the synchro, then answer them */
@@ -505,9 +503,16 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
 void SIMIX_set_category(smx_synchro_t synchro, const char *category)
 {
   if (synchro->state != SIMIX_RUNNING) return;
-  if (synchro->type == SIMIX_SYNC_EXECUTE){
-    synchro->execution.surf_exec->setCategory(category);
-  }else if (synchro->type == SIMIX_SYNC_COMMUNICATE){
-    synchro->comm.surf_comm->setCategory(category);
+
+  simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec *>(synchro);
+  if (exec != nullptr) {
+    exec->surf_exec->setCategory(category);
+    return;
+  }
+
+  simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm *>(synchro);
+  if (comm != nullptr) {
+    comm->surf_comm->setCategory(category);
+    return;
   }
 }

@@ -14,6 +14,8 @@
 #include "simgrid/sg_config.h"
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
+#include "src/simix/SynchroComm.hpp"
+
 
 #include <float.h>              /* DBL_MAX */
 #include <stdint.h>
@@ -335,34 +337,37 @@ void print_request(const char *message, MPI_Request request)
        message, request, request->buf, request->size, request->src, request->dst, request->tag, request->flags);
 }
 
-void smpi_comm_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t buff_size)
+void smpi_comm_copy_buffer_callback(smx_synchro_t synchro, void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
   void* tmpbuff=buff;
+  simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm*>(synchro);
 
   if((smpi_privatize_global_variables) && ((char*)buff >= smpi_start_data_exe)
       && ((char*)buff < smpi_start_data_exe + smpi_size_data_exe )
     ){
        XBT_DEBUG("Privatization : We are copying from a zone inside global memory... Saving data to temp buffer !");
-       smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->comm.src_proc))->data))->index);
+
+
+       smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->src_proc))->data))->index);
        tmpbuff = (void*)xbt_malloc(buff_size);
        memcpy(tmpbuff, buff, buff_size);
   }
 
-  if((smpi_privatize_global_variables) && ((char*)comm->comm.dst_buff >= smpi_start_data_exe)
-      && ((char*)comm->comm.dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
+  if((smpi_privatize_global_variables) && ((char*)comm->dst_buff >= smpi_start_data_exe)
+      && ((char*)comm->dst_buff < smpi_start_data_exe + smpi_size_data_exe )){
        XBT_DEBUG("Privatization : We are copying to a zone inside global memory - Switch data segment");
-       smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->comm.dst_proc))->data))->index);
+       smpi_switch_data_segment(((smpi_process_data_t)(((simdata_process_t)SIMIX_process_get_data(comm->dst_proc))->data))->index);
   }
 
-  memcpy(comm->comm.dst_buff, tmpbuff, buff_size);
-  if (comm->comm.detached) {
+  memcpy(comm->dst_buff, tmpbuff, buff_size);
+  if (comm->detached) {
     // if this is a detached send, the source buffer was duplicated by SMPI
     // sender to make the original buffer available to the application ASAP
     xbt_free(buff);
     //It seems that the request is used after the call there this should be free somewhere else but where???
     //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
-    comm->comm.src_buff = NULL;
+    comm->src_buff = NULL;
   }
 
   if(tmpbuff!=buff)xbt_free(tmpbuff);

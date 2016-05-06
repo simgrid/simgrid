@@ -12,6 +12,7 @@
 #include <xbt/misc.h>
 
 #include <simgrid/s4u/forward.hpp>
+#include "simgrid/forward.h"
 
 SG_BEGIN_DECL();
 typedef enum {
@@ -33,7 +34,7 @@ protected:
   virtual ~Async();
   
 private:
-  struct s_smx_synchro *inferior_ = NULL;
+  simgrid::simix::Synchro *inferior_ = NULL;
 
 private:
   e_s4u_async_state_t state_ = inited;

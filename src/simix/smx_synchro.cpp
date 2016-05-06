@@ -8,6 +8,7 @@
 #include "smx_private.h"
 #include "xbt/log.h"
 
+#include "src/simix/SynchroRaw.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix,
                                 "SIMIX Synchronization (mutex, semaphores and conditions)");
@@ -25,13 +26,10 @@ static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
 {
   XBT_IN("(%p, %f)",smx_host,timeout);
 
-  smx_synchro_t sync;
-  sync = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
-  sync->type = SIMIX_SYNC_SYNCHRO;
-  sync->name = xbt_strdup("synchro");
-  sync->synchro.sleep = surf_host_sleep(smx_host, timeout);
-
-  sync->synchro.sleep->setData(sync);
+  simgrid::simix::Raw *sync = new simgrid::simix::Raw();
+  sync->name = nullptr;
+  sync->sleep = surf_host_sleep(smx_host, timeout);
+  sync->sleep->setData(sync);
   XBT_OUT();
   return sync;
 }
@@ -69,25 +67,23 @@ void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall)
 
 void SIMIX_synchro_destroy(smx_synchro_t synchro)
 {
-  XBT_IN("(%p)",synchro);
   XBT_DEBUG("Destroying synchro %p", synchro);
-  xbt_assert(synchro->type == SIMIX_SYNC_SYNCHRO);
-  synchro->synchro.sleep->unref();
-  xbt_free(synchro->name);
-  xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
-  XBT_OUT();
+  simgrid::simix::Raw *raw = static_cast<simgrid::simix::Raw*>(synchro);
+
+  raw->sleep->unref();
+  delete raw;
 }
 
 void SIMIX_post_synchro(smx_synchro_t synchro)
 {
   XBT_IN("(%p)",synchro);
-  xbt_assert(synchro->type == SIMIX_SYNC_SYNCHRO);
-  if (synchro->synchro.sleep->getState() == simgrid::surf::Action::State::failed)
-    synchro->state = SIMIX_FAILED;
-  else if(synchro->synchro.sleep->getState() == simgrid::surf::Action::State::done)
-    synchro->state = SIMIX_SRC_TIMEOUT;
+  simgrid::simix::Raw *raw = static_cast<simgrid::simix::Raw*>(synchro);
+  if (raw->sleep->getState() == simgrid::surf::Action::State::failed)
+    raw->state = SIMIX_FAILED;
+  else if(raw->sleep->getState() == simgrid::surf::Action::State::done)
+    raw->state = SIMIX_SRC_TIMEOUT;
 
-  SIMIX_synchro_finish(synchro);  
+  SIMIX_synchro_finish(raw);
   XBT_OUT();
 }
 

@@ -69,7 +69,6 @@ typedef struct s_smx_global {
   void_pfn_smxprocess_t kill_process_function;
   /** Callback used when killing a SMX_process */
   void_pfn_smxprocess_t cleanup_process_function;
-  xbt_mallocator_t synchro_mallocator;
 
   xbt_os_mutex_t mutex;
 } s_smx_global_t, *smx_global_t;
@@ -93,104 +92,6 @@ typedef struct s_smx_file {
   surf_file_t surf_file;
   void* data;                   /**< @brief user data */
 } s_smx_file_t;
-
-/********************************* synchro *************************************/
-
-typedef enum {
-  SIMIX_SYNC_EXECUTE,
-  SIMIX_SYNC_PARALLEL_EXECUTE,
-  SIMIX_SYNC_COMMUNICATE,
-  SIMIX_SYNC_JOIN,
-  SIMIX_SYNC_SLEEP,
-  SIMIX_SYNC_SYNCHRO,
-  SIMIX_SYNC_IO,
-} e_smx_synchro_type_t;
-
-typedef enum {
-  SIMIX_COMM_SEND,
-  SIMIX_COMM_RECEIVE,
-  SIMIX_COMM_READY,
-  SIMIX_COMM_DONE
-} e_smx_comm_type_t;
-
-typedef enum {
-  SIMIX_IO_OPEN,
-  SIMIX_IO_WRITE,
-  SIMIX_IO_READ,
-  SIMIX_IO_STAT
-} e_smx_io_type_t;
-
-/** @brief synchro datatype */
-typedef struct s_smx_synchro {
-
-  e_smx_synchro_type_t type;          /* Type of SIMIX synchro */
-  e_smx_state_t state;               /* State of the synchro */
-  char *name;                        /* synchro name if any */
-  xbt_fifo_t simcalls;               /* List of simcalls waiting for this synchro */
-
-  /* Data specific to each synchro type */
-  union {
-
-    struct {
-      sg_host_t host;                /* The host where the execution takes place */
-      surf_action_t surf_exec;        /* The Surf execution action encapsulated */
-    } execution; /* Possibly parallel execution */
-
-    struct {
-      e_smx_comm_type_t type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
-      smx_mailbox_t mbox;             /* Rendez-vous where the comm is queued */
-
-#if HAVE_MC
-      smx_mailbox_t mbox_cpy;         /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
-                                         (comm.mbox set to NULL when the communication is removed from the mailbox
-                                         (used as garbage collector)) */
-#endif
-      int refcount;                   /* Number of processes involved in the cond */
-      int detached;                   /* If detached or not */
-
-      void (*clean_fun)(void*);       /* Function to clean the detached src_buf if something goes wrong */
-      int (*match_fun)(void*,void*,smx_synchro_t);  /* Filter function used by the other side. It is used when
-                                         looking if a given communication matches my needs. For that, myself must match the
-                                         expectations of the other side, too. See  */
-      void (*copy_data_fun) (smx_synchro_t, void*, size_t);
-
-      /* Surf action data */
-      surf_action_t surf_comm;        /* The Surf communication action encapsulated */
-      surf_action_t src_timeout;      /* Surf's actions to instrument the timeouts */
-      surf_action_t dst_timeout;      /* Surf's actions to instrument the timeouts */
-      smx_process_t src_proc;
-      smx_process_t dst_proc;
-      double rate;
-      double task_size;
-
-      /* Data to be transfered */
-      void *src_buff;
-      void *dst_buff;
-      size_t src_buff_size;
-      size_t *dst_buff_size;
-      unsigned copied:1;              /* whether the data were already copied */
-
-      void* src_data;                 /* User data associated to communication */
-      void* dst_data;
-    } comm;
-
-    struct {
-      sg_host_t host;                /* The host that is sleeping */
-      surf_action_t surf_sleep;       /* The Surf sleeping action encapsulated */
-    } sleep;
-
-    struct {
-      surf_action_t sleep;
-    } synchro;
-
-    struct {
-      sg_host_t host;
-      surf_action_t surf_io;
-    } io;
-  };
-
-  char *category;                     /* simix action category for instrumentation */
-} s_smx_synchro_t;
 
 XBT_PRIVATE void SIMIX_context_mod_init(void);
 XBT_PRIVATE void SIMIX_context_mod_exit(void);
