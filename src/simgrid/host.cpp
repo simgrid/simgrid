@@ -12,8 +12,6 @@
 #include "src/surf/HostImpl.hpp"
 #include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
-#include "src/simix/smx_private.hpp"
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
 size_t sg_host_count()

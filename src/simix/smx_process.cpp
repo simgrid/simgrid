@@ -12,7 +12,6 @@
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "src/mc/Client.hpp"
-#include "src/simix/smx_private.hpp"
 #include "src/msg/msg_private.h"
 
 #include "src/simix/SynchroSleep.hpp"

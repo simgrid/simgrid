@@ -29,7 +29,6 @@ set(EXTRA_DIST
   src/simix/smx_io_private.h
   src/simix/smx_network_private.h
   src/simix/smx_private.h
-  src/simix/smx_private.hpp
   src/simix/smx_process_private.h
   src/simix/smx_synchro_private.h
   src/simix/Synchro.h

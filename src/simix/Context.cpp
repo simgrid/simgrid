@@ -14,8 +14,7 @@
 
 #include "mc/mc.h"
 
-#include <src/simix/smx_private.h>
-#include <src/simix/smx_private.hpp>
+#include "src/simix/smx_private.h"
 
 void SIMIX_process_set_cleanup_function(
   smx_process_t process, void_pfn_smxprocess_t cleanup)

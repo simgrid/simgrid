@@ -23,7 +23,6 @@
 #include "xbt/dynar.h"
 
 #include "smx_private.h"
-#include "smx_private.hpp"
 #include "mc/mc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);

@@ -15,7 +15,7 @@
 #include <simgrid/simix.h>
 #include <xbt/xbt_os_thread.h>
 
-#include "src/simix/smx_private.hpp"
+#include "src/simix/smx_private.h"
 
 #include "jmsg.h"
 #include "jmsg_process.h"

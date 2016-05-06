@@ -36,12 +36,14 @@
 namespace simgrid {
 namespace simix {
 
-/* Hack: let msg load directly the right factory
- *
- * This is a factory of factory! How nice is this?
- */
+/* This allows Java to hijack the context factory (Java induces factories of factory :) */
 typedef ContextFactory* (*ContextFactoryInitializer)(void);
 XBT_PUBLIC_DATA(ContextFactoryInitializer) factory_initializer;
+
+XBT_PRIVATE ContextFactory* thread_factory();
+XBT_PRIVATE ContextFactory* sysv_factory();
+XBT_PRIVATE ContextFactory* raw_factory();
+XBT_PRIVATE ContextFactory* boost_factory();
 
 }
 }
@@ -115,23 +117,34 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 # define smx_context_usable_stack_size smx_context_stack_size
 #endif
 
+/** @brief Executes all the processes to run (in parallel if possible). */
+static inline void SIMIX_context_runall(void)
+{
+  if (!xbt_dynar_is_empty(simix_global->process_to_run))
+    simix_global->context_factory->run_all();
+}
+
+/** @brief returns the current running context */
+static inline smx_context_t SIMIX_context_self(void)
+{
+  if (simix_global && simix_global->context_factory)
+    return simix_global->context_factory->self();
+  else
+    return nullptr;
+}
+
 XBT_PRIVATE void *SIMIX_context_stack_new(void);
 XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
 
 XBT_PRIVATE void SIMIX_context_set_current(smx_context_t context);
 XBT_PRIVATE smx_context_t SIMIX_context_get_current(void);
 
-/* ****************************** */
-/* context manipulation functions */
-/* ****************************** */
-
 XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
 
 XBT_PRIVATE void SIMIX_post_create_environment(void);
 
 // FIXME, Dirty hack for SMPI+MSG
-XBT_PRIVATE void SIMIX_process_set_cleanup_function(
-  smx_process_t process, void_pfn_smxprocess_t cleanup);
+XBT_PRIVATE void SIMIX_process_set_cleanup_function(smx_process_t process, void_pfn_smxprocess_t cleanup);
 
 SG_END_DECL()
 

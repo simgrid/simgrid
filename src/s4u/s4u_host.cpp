@@ -15,7 +15,7 @@
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_process_private.h"
-#include "src/simix/smx_private.hpp"
+#include "src/simix/smx_private.h"
 #include "src/surf/cpu_interface.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"

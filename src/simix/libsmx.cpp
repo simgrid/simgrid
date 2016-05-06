@@ -21,7 +21,6 @@
 #include "xbt/ex.h"
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"
-#include "src/simix/smx_private.hpp"
 
 #include <simgrid/simix.hpp>
 

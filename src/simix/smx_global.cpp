@@ -12,7 +12,6 @@
 #include "src/surf/storage_interface.hpp"
 #include "src/surf/xml/platf.hpp"
 #include "smx_private.h"
-#include "smx_private.hpp"
 #include "xbt/str.h"
 #include "xbt/ex.h"             /* ex_backtrace_display */
 #include "mc/mc.h"

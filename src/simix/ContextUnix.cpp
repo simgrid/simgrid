@@ -13,7 +13,6 @@
 
 #include "xbt/parmap.h"
 #include "src/simix/smx_private.h"
-#include "src/simix/smx_private.hpp"
 #include "src/internal_config.h"
 #include "mc/mc.h"
 
