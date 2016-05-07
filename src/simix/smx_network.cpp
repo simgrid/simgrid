@@ -203,8 +203,7 @@ void SIMIX_comm_destroy(smx_synchro_t synchro)
 
   if (comm->refcount <= 0) {
     xbt_backtrace_display_current();
-    xbt_die("The refcount of comm %p is already 0 before decreasing it. "
-            "That's a bug! If you didn't test and/or wait the same communication twice in your code, then the bug is SimGrid's...", synchro);
+    xbt_die("This comm has a negative refcount! You must not call test() or wait() more than once on a given communication.");
   }
   comm->refcount--;
   if (comm->refcount > 0)
