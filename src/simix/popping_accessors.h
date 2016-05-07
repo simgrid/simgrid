@@ -771,13 +771,6 @@ static inline void simcall_comm_irecv__set__result(smx_simcall_t simcall, void* 
     simcall->result.dp = result;
 }
 
-static inline smx_synchro_t simcall_comm_cancel__get__comm(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_cancel__set__comm(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-
 static inline xbt_dynar_t simcall_comm_waitany__get__comms(smx_simcall_t simcall) {
   return (xbt_dynar_t) simcall->args[0].dp;
 }

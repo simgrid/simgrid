@@ -833,24 +833,6 @@ void SIMIX_post_comm(smx_synchro_t synchro)
   }
 }
 
-void SIMIX_comm_cancel(smx_synchro_t synchro)
-{
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  /* if the synchro is a waiting state means that it is still in a mbox */
-  /* so remove from it and delete it */
-  if (comm->state == SIMIX_WAITING) {
-    SIMIX_mbox_remove(comm->mbox, synchro);
-    comm->state = SIMIX_CANCELED;
-  }
-  else if (!MC_is_active() /* when running the MC there are no surf actions */
-           && !MC_record_replay_is_active()
-           && (comm->state == SIMIX_READY || comm->state == SIMIX_RUNNING)) {
-
-    comm->surf_comm->cancel();
-  }
-}
-
 /************* synchro Getters **************/
 
 /**

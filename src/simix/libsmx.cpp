@@ -22,6 +22,8 @@
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"
 
+#include "src/simix/SynchroComm.hpp"
+
 #include <simgrid/simix.hpp>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
@@ -827,9 +829,12 @@ smx_synchro_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_cancel(smx_synchro_t comm)
+void simcall_comm_cancel(smx_synchro_t synchro)
 {
-  simcall_BODY_comm_cancel(comm);
+  simgrid::simix::kernel([synchro]{
+    simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
+    comm->cancel();
+  });
 }
 
 /**

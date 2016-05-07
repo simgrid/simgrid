@@ -5,6 +5,10 @@
 
 #include "src/simix/SynchroComm.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "src/simix/smx_network_private.h"
+#include "simgrid/modelchecker.h"
+#include "src/mc/mc_replay.h"
+
 
 void simgrid::simix::Comm::suspend() {
   /* FIXME: shall we suspend also the timeout synchro? */
@@ -19,4 +23,19 @@ void simgrid::simix::Comm::resume() {
   if (surf_comm)
     surf_comm->resume();
   /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
+}
+
+void simgrid::simix::Comm::cancel() {
+  /* if the synchro is a waiting state means that it is still in a mbox */
+  /* so remove from it and delete it */
+  if (state == SIMIX_WAITING) {
+    SIMIX_mbox_remove(mbox, this);
+    state = SIMIX_CANCELED;
+  }
+  else if (!MC_is_active() /* when running the MC there are no surf actions */
+           && !MC_record_replay_is_active()
+           && (state == SIMIX_READY || state == SIMIX_RUNNING)) {
+
+    surf_comm->cancel();
+  }
 }

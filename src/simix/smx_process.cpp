@@ -72,7 +72,7 @@ void SIMIX_process_cleanup(smx_process_t process)
 
     /* make sure no one will finish the comm after this process is destroyed,
      * because src_proc or dst_proc would be an invalid pointer */
-    SIMIX_comm_cancel(comm);
+    comm->cancel();
 
     if (comm->src_proc == process) {
       XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
@@ -506,7 +506,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
     } else if (comm != nullptr) {
       xbt_fifo_remove(process->comms, process->waiting_synchro);
-      SIMIX_comm_cancel(process->waiting_synchro);
+      comm->cancel();
       xbt_fifo_remove(process->waiting_synchro->simcalls, &process->simcall);
       SIMIX_comm_destroy(process->waiting_synchro);
 
@@ -559,8 +559,8 @@ void SIMIX_process_throw(smx_process_t process, xbt_errcat_t cat, int value, con
 
     simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm*>(process->waiting_synchro);
     if (comm != nullptr) {
-      xbt_fifo_remove(process->comms, process->waiting_synchro);
-      SIMIX_comm_cancel(process->waiting_synchro);
+      xbt_fifo_remove(process->comms, comm);
+      comm->cancel();
     }
 
     simgrid::simix::Sleep *sleep = dynamic_cast<simgrid::simix::Sleep*>(process->waiting_synchro);
