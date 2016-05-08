@@ -20,7 +20,6 @@ static xbt_dict_t mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_synchro_t comm);
-static smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type);
 static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t comm);
 static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx_comm_type_t type,
     int (*match_fun)(void *, void *,smx_synchro_t), void *user_data, smx_synchro_t my_synchro, bool remove_matching);
@@ -173,25 +172,6 @@ static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx
 /******************************************************************************/
 
 /**
- *  \brief Creates a new communicate synchro
- *  \param type The direction of communication (comm_send, comm_recv)
- *  \return The new communicate synchro
- */
-smx_synchro_t SIMIX_comm_new(e_smx_comm_type_t type)
-{
-  simgrid::simix::Comm *comm = new simgrid::simix::Comm();
-  comm->state = SIMIX_WAITING;
-  comm->type = type;
-  comm->refcount = 1;
-  comm->src_data=NULL;
-  comm->dst_data=NULL;
-
-  XBT_DEBUG("Create communicate synchro %p", comm);
-
-  return comm;
-}
-
-/**
  *  \brief Destroy a communicate synchro
  *  \param synchro The communicate synchro to be destroyed
  */
@@ -269,7 +249,7 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
   XBT_DEBUG("send from %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
-  smx_synchro_t this_synchro = SIMIX_comm_new(SIMIX_COMM_SEND);
+  smx_synchro_t this_synchro = new simgrid::simix::Comm(SIMIX_COMM_SEND);
 
   /* Look for communication synchro matching our needs. We also provide a description of
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
@@ -364,7 +344,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
     void *data, double rate)
 {
   XBT_DEBUG("recv from %p %p", mbox, mbox->comm_queue);
-  smx_synchro_t this_synchro = SIMIX_comm_new(SIMIX_COMM_RECEIVE);
+  smx_synchro_t this_synchro = new simgrid::simix::Comm(SIMIX_COMM_RECEIVE);
 
   smx_synchro_t other_synchro;
   //communication already done, get it inside the fifo of completed comms
@@ -449,10 +429,10 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
   smx_synchro_t this_synchro;
   int smx_type;
   if(type == 1){
-    this_synchro=SIMIX_comm_new(SIMIX_COMM_SEND);
+    this_synchro = new simgrid::simix::Comm(SIMIX_COMM_SEND);
     smx_type = SIMIX_COMM_RECEIVE;
   } else{
-    this_synchro=SIMIX_comm_new(SIMIX_COMM_RECEIVE);
+    this_synchro = new simgrid::simix::Comm(SIMIX_COMM_RECEIVE);
     smx_type = SIMIX_COMM_SEND;
   } 
   smx_synchro_t other_synchro=NULL;

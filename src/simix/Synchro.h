@@ -19,7 +19,7 @@ namespace simix {
     Synchro();
     virtual ~Synchro();
     e_smx_state_t state;               /* State of the synchro */
-    char *name;                        /* synchro name if any */
+    char *name = nullptr;              /* synchro name if any */
     xbt_fifo_t simcalls;               /* List of simcalls waiting for this synchro */
     char *category = nullptr;          /* For instrumentation */
 

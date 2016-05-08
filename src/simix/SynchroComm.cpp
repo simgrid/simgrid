@@ -9,7 +9,17 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
 
+simgrid::simix::Comm::Comm(e_smx_comm_type_t _type) {
+  state = SIMIX_WAITING;
+  this->type = _type;
+  refcount = 1;
+  src_data=NULL;
+  dst_data=NULL;
+
+  XBT_DEBUG("Create communicate synchro %p", this);
+}
 void simgrid::simix::Comm::suspend() {
   /* FIXME: shall we suspend also the timeout synchro? */
   if (surf_comm)
