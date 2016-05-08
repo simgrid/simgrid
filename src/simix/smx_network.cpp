@@ -843,11 +843,6 @@ double SIMIX_comm_get_remains(smx_synchro_t synchro)
   return remains;
 }
 
-e_smx_state_t SIMIX_comm_get_state(smx_synchro_t synchro)
-{
-  return synchro->state;
-}
-
 /**
  *  \brief Return the user data associated to the sender of the communication
  *  \param synchro The communication
