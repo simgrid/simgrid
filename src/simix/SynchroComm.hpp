@@ -25,6 +25,7 @@ namespace simix {
     void suspend();
     void resume();
     void cancel();
+    double remains();
 
     e_smx_comm_type_t type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
     smx_mailbox_t mbox = nullptr;   /* Rendez-vous where the comm is queued */

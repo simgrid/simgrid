@@ -361,7 +361,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
     } else {
       simgrid::simix::Comm *other_comm = static_cast<simgrid::simix::Comm*>(other_synchro);
 
-      if(other_comm->surf_comm && SIMIX_comm_get_remains(other_comm)==0.0) {
+      if(other_comm->surf_comm && other_comm->remains()==0.0) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",other_comm);
         other_comm->state = SIMIX_DONE;
         other_comm->type = SIMIX_COMM_DONE;
@@ -813,35 +813,6 @@ void SIMIX_post_comm(smx_synchro_t synchro)
 }
 
 /************* synchro Getters **************/
-
-/**
- *  \brief get the amount remaining from the communication
- *  \param synchro The communication
- */
-double SIMIX_comm_get_remains(smx_synchro_t synchro)
-{
-  if(!synchro)
-    return 0;
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  double remains;
-  switch (synchro->state) {
-
-  case SIMIX_RUNNING:
-    remains = comm->surf_comm->getRemains();
-    break;
-
-  case SIMIX_WAITING:
-  case SIMIX_READY:
-    remains = 0; /*FIXME: check what should be returned */
-    break;
-
-  default:
-    remains = 0; /*FIXME: is this correct? */
-    break;
-  }
-  return remains;
-}
 
 /**
  *  \brief Return the user data associated to the sender of the communication

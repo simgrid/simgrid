@@ -64,7 +64,6 @@ const char* simcall_names[] = {
   "SIMCALL_COMM_WAIT",
   "SIMCALL_COMM_TEST",
   "SIMCALL_COMM_TESTANY",
-  "SIMCALL_COMM_GET_REMAINS",
   "SIMCALL_COMM_GET_SRC_DATA",
   "SIMCALL_COMM_GET_DST_DATA",
   "SIMCALL_COMM_GET_SRC_PROC",
@@ -308,11 +307,6 @@ case SIMCALL_COMM_TEST:
 case SIMCALL_COMM_TESTANY:
        simcall_HANDLER_comm_testany(simcall , (xbt_dynar_t) simcall->args[0].dp);
        break;  
-
-case SIMCALL_COMM_GET_REMAINS:
-      simcall->result.d = SIMIX_comm_get_remains((smx_synchro_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
 
 case SIMCALL_COMM_GET_SRC_DATA:
       simcall->result.dp = SIMIX_comm_get_src_data((smx_synchro_t) simcall->args[0].dp);

@@ -287,9 +287,8 @@ void MSG_task_set_bytes_amount(msg_task_t task, double data_size)
  */
 double MSG_task_get_remaining_communication(msg_task_t task)
 {
-  xbt_assert((task != NULL) && (task->simdata != NULL), "Invalid parameter");
   XBT_DEBUG("calling simcall_communication_get_remains(%p)", task->simdata->comm);
-  return simcall_comm_get_remains(task->simdata->comm);
+  return task->simdata->comm->remains();
 }
 
 /** \ingroup m_task_management

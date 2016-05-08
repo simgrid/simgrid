@@ -49,3 +49,22 @@ void simgrid::simix::Comm::cancel() {
     surf_comm->cancel();
   }
 }
+
+/**  @brief get the amount remaining from the communication */
+double simgrid::simix::Comm::remains() {
+  switch (state) {
+
+  case SIMIX_RUNNING:
+    return surf_comm->getRemains();
+    break;
+
+  case SIMIX_WAITING:
+  case SIMIX_READY:
+    return 0; /*FIXME: check what should be returned */
+    break;
+
+  default:
+    return 0; /*FIXME: is this correct? */
+    break;
+  }
+}

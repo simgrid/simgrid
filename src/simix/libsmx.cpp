@@ -892,15 +892,6 @@ int simcall_comm_test(smx_synchro_t comm)
  * \ingroup simix_comm_management
  *
  */
-double simcall_comm_get_remains(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_remains(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
 void *simcall_comm_get_src_data(smx_synchro_t comm)
 {
   return simcall_BODY_comm_get_src_data(comm);
