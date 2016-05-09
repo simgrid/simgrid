@@ -155,43 +155,6 @@ static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx
 /******************************************************************************/
 /*                          Communication synchros                            */
 /******************************************************************************/
-
-/**
- *  \brief Destroy a communicate synchro
- *  \param synchro The communicate synchro to be destroyed
- */
-void SIMIX_comm_destroy(smx_synchro_t synchro)
-{
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  XBT_DEBUG("Destroy synchro %p (refcount: %d), state: %d", comm, comm->refcount, (int)comm->state);
-
-  if (comm->refcount <= 0) {
-    xbt_backtrace_display_current();
-    xbt_die("This comm has a negative refcount! You must not call test() or wait() more than once on a given communication.");
-  }
-  comm->refcount--;
-  if (comm->refcount > 0)
-      return;
-  XBT_DEBUG("Really free communication %p; refcount is now %d", comm, comm->refcount);
-
-  comm->cleanupSurf();
-
-  if (comm->detached && comm->state != SIMIX_DONE) {
-    /* the communication has failed and was detached:
-     * we have to free the buffer */
-    if (comm->clean_fun) {
-      comm->clean_fun(comm->src_buff);
-    }
-    comm->src_buff = NULL;
-  }
-
-  if(comm->mbox)
-    SIMIX_mbox_remove(comm->mbox, comm);
-
-  delete comm;
-}
-
 void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_mailbox_t mbox,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
@@ -215,7 +178,7 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
   XBT_DEBUG("send from %p", mbox);
 
   /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
-  smx_synchro_t this_synchro = new simgrid::simix::Comm(SIMIX_COMM_SEND);
+  simgrid::simix::Comm* this_synchro = new simgrid::simix::Comm(SIMIX_COMM_SEND);
 
   /* Look for communication synchro matching our needs. We also provide a description of
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
@@ -244,8 +207,7 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
     }
   } else {
     XBT_DEBUG("Receive already pushed");
-
-    SIMIX_comm_destroy(this_synchro);
+    this_synchro->unref();
 
     other_comm->state = SIMIX_READY;
     other_comm->type = SIMIX_COMM_READY;
@@ -310,7 +272,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
     void *data, double rate)
 {
   XBT_DEBUG("recv from %p %p", mbox, mbox->comm_queue);
-  smx_synchro_t this_synchro = new simgrid::simix::Comm(SIMIX_COMM_RECEIVE);
+  simgrid::simix::Comm* this_synchro = new simgrid::simix::Comm(SIMIX_COMM_RECEIVE);
 
   smx_synchro_t other_synchro;
   //communication already done, get it inside the fifo of completed comms
@@ -334,7 +296,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
         other_comm->mbox = NULL;
       }
       other_comm->refcount--;
-      SIMIX_comm_destroy(this_synchro);
+      static_cast<simgrid::simix::Comm*>(this_synchro)->unref();
     }
   } else {
     /* Prepare a synchro describing us, so that it gets passed to the user-provided filter of other side */
@@ -350,7 +312,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
       other_synchro = this_synchro;
       SIMIX_mbox_push(mbox, this_synchro);
     } else {
-      SIMIX_comm_destroy(this_synchro);
+      this_synchro->unref();
       simgrid::simix::Comm *other_comm = static_cast<simgrid::simix::Comm*>(other_synchro);
 
       other_comm->state = SIMIX_READY;
@@ -392,24 +354,24 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
                               int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data)
 {
   XBT_DEBUG("iprobe from %p %p", mbox, mbox->comm_queue);
-  smx_synchro_t this_synchro;
+  simgrid::simix::Comm* this_comm;
   int smx_type;
   if(type == 1){
-    this_synchro = new simgrid::simix::Comm(SIMIX_COMM_SEND);
+    this_comm = new simgrid::simix::Comm(SIMIX_COMM_SEND);
     smx_type = SIMIX_COMM_RECEIVE;
   } else{
-    this_synchro = new simgrid::simix::Comm(SIMIX_COMM_RECEIVE);
+    this_comm = new simgrid::simix::Comm(SIMIX_COMM_RECEIVE);
     smx_type = SIMIX_COMM_SEND;
   } 
   smx_synchro_t other_synchro=NULL;
   if(mbox->permanent_receiver && ! mbox->done_comm_queue->empty()){
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
     other_synchro =
-        _find_matching_comm(mbox->done_comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_synchro,/*remove_matching*/false);
+        _find_matching_comm(mbox->done_comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
   }
   if (!other_synchro){
     XBT_DEBUG("check if we have more luck in the normal mailbox");
-    other_synchro = _find_matching_comm(mbox->comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_synchro,/*remove_matching*/false);
+    other_synchro = _find_matching_comm(mbox->comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
   }
 
   if(other_synchro) {
@@ -417,7 +379,7 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
     other_comm->refcount--;
   }
 
-  SIMIX_comm_destroy(this_synchro);
+  this_comm->unref();
   return other_synchro;
 }
 
@@ -733,7 +695,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
   }
 
   while (destroy_count-- > 0)
-    SIMIX_comm_destroy(synchro);
+    static_cast<simgrid::simix::Comm*>(synchro)->unref();
 }
 
 /**

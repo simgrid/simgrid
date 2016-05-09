@@ -26,6 +26,7 @@ namespace simix {
     void resume();
     void cancel();
     double remains();
+    void unref();
     void cleanupSurf(); // FIXME: make me protected
 
     e_smx_comm_type_t type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */

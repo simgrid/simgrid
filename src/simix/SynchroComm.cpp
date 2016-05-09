@@ -73,6 +73,34 @@ double simgrid::simix::Comm::remains()
   }
 }
 
+void simgrid::simix::Comm::unref()
+{
+  XBT_DEBUG("Destroy synchro %p (refcount: %d), state: %d", this, refcount, (int)state);
+
+  xbt_assert(refcount > 0,
+      "This comm has a negative refcount! You must not call test() or wait() more than once on a given communication.");
+
+  refcount--;
+  if (refcount > 0)
+      return;
+  XBT_DEBUG("Really free communication %p; refcount is now %d", this, refcount);
+
+  cleanupSurf();
+
+  if (detached && state != SIMIX_DONE) {
+    /* the communication has failed and was detached:
+     * we have to free the buffer */
+    if (clean_fun)
+      clean_fun(src_buff);
+    src_buff = NULL;
+  }
+
+  if(mbox)
+    SIMIX_mbox_remove(mbox, this);
+
+  delete this;
+}
+
 /** @brief This is part of the cleanup process, probably an internal command */
 void simgrid::simix::Comm::cleanupSurf()
 {

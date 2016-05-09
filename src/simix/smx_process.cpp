@@ -83,7 +83,7 @@ void SIMIX_process_cleanup(smx_process_t process)
       if (comm->detached)
         XBT_DEBUG("Don't destroy it since it's a detached comm and I'm the sender");
       else
-        SIMIX_comm_destroy(comm);
+        comm->unref();
 
     }
     else if (comm->dst_proc == process){
@@ -95,7 +95,7 @@ void SIMIX_process_cleanup(smx_process_t process)
         /* the comm will be freed right now, remove it from the sender */
         xbt_fifo_remove(comm->src_proc->comms, comm);
       }
-      SIMIX_comm_destroy(comm);
+      comm->unref();
     } else {
       xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro);
     }
@@ -508,7 +508,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
       xbt_fifo_remove(process->comms, process->waiting_synchro);
       comm->cancel();
       xbt_fifo_remove(process->waiting_synchro->simcalls, &process->simcall);
-      SIMIX_comm_destroy(process->waiting_synchro);
+      comm->unref();
 
     } else if (sleep != nullptr) {
       SIMIX_process_sleep_destroy(process->waiting_synchro);
