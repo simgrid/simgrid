@@ -17,6 +17,8 @@
 #include <dwarf.h>
 #include <elfutils/libdw.h>
 
+#include <boost/algorithm/string/predicate.hpp>
+
 #include <simgrid_config.h>
 #include "src/simgrid/util.hpp"
 #include <xbt/log.h>
@@ -571,11 +573,35 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
 
       // TODO, we should use another type (because is is not a type but a member)
       simgrid::mc::Member member;
-      member.inheritance = tag == DW_TAG_inheritance;
+      if (tag == DW_TAG_inheritance)
+        member.flags |= simgrid::mc::Member::INHERITANCE_FLAG;
 
       const char *name = MC_dwarf_attr_integrate_string(&child, DW_AT_name);
       if (name)
         member.name = name;
+      // Those base names are used by GCC and clang for virtual table pointers
+      // respectively ("__vptr$ClassName", "__vptr.ClassName"):
+      if (boost::algorithm::starts_with(member.name, "__vptr$") ||
+        boost::algorithm::starts_with(member.name, "__vptr."))
+        member.flags |= simgrid::mc::Member::VIRTUAL_POINTER_FLAG;
+      // A cleaner stolution would be to check against the type:
+      // ---
+      // tag: DW_TAG_member
+      // name: "_vptr$Foo"
+      // type:
+      //   # Type for a pointer to a vtable
+      //   tag: DW_TAG_pointer_type
+      //   type:
+      //     # Type for a vtable:
+      //     tag: DW_TAG_pointer_type
+      //     name: "__vtbl_ptr_type"
+      //     type:
+      //       tag: DW_TAG_subroutine_type
+      //       type:
+      //         tag: DW_TAG_base_type
+      //         name: "int"
+      // ---
+
       member.byte_size =
           MC_dwarf_attr_integrate_uint(&child, DW_AT_byte_size, 0);
       member.type_id = MC_dwarf_at_type(&child);

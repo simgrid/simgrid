@@ -7,6 +7,7 @@
 #ifndef SIMGRID_MC_ADDRESS_SPACE_H
 #define SIMGRID_MC_ADDRESS_SPACE_H
 
+#include <cassert>
 #include <cstddef>
 #include <cstdint>
 #include <type_traits>
@@ -90,6 +91,17 @@ public:
   static constexpr ReadOptions lazy() { return ReadOptions(1); }
 };
 
+/** A value read from another process */
+template<class T>
+class Remote {
+private:
+  char buffer[sizeof(T)];
+public:
+  void*       data() { return buffer; }
+  const void* data() const { return buffer; }
+  constexpr std::size_t size() const { return sizeof(T); }
+};
+
 /** A given state of a given process (abstract base class)
  *
  *  Currently, this might either be:
@@ -124,6 +136,12 @@ public:
   void read(T *buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny)
   {
     this->read_bytes(buffer, sizeof(T), ptr, process_index);
+  }
+
+  template<class T> inline
+  void read(Remote<T>& buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny)
+  {
+    this->read_bytes(buffer.data(), sizeof(T), ptr, process_index);
   }
 
   /** Read a given data structure from the address space */
