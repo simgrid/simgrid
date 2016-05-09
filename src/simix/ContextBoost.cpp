@@ -18,7 +18,6 @@
 #include <xbt/xbt_os_thread.h>
 
 #include "smx_private.h"
-#include "smx_private.hpp"
 #include "src/internal_config.h"
 #include "src/simix/ContextBoost.hpp"
 
