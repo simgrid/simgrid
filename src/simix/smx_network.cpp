@@ -137,7 +137,7 @@ static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx
       XBT_DEBUG("Found a matching communication synchro %p", comm);
       if (remove_matching)
         deque->erase(it);
-      comm->refcount++;
+      comm->ref();
 #if HAVE_MC
       comm->mbox_cpy = comm->mbox;
 #endif
@@ -197,7 +197,7 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
       //this mailbox is for small messages, which have to be sent right now
       other_synchro->state = SIMIX_READY;
       other_comm->dst_proc=mbox->permanent_receiver;
-      other_comm->refcount++;
+      other_comm->ref();
       mbox->done_comm_queue->push_back(other_synchro);
       other_comm->mbox=mbox;
       XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", mbox, &(other_comm));
@@ -218,8 +218,8 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
   /* if the communication synchro is detached then decrease the refcount
    * by one, so it will be eliminated by the receiver's destroy call */
   if (detached) {
-    other_comm->detached = 1;
-    other_comm->refcount--;
+    other_comm->detached = true;
+    other_comm->ref();
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = NULL;
@@ -295,7 +295,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
         other_comm->type = SIMIX_COMM_DONE;
         other_comm->mbox = NULL;
       }
-      other_comm->refcount--;
+      other_comm->unref();
       static_cast<simgrid::simix::Comm*>(this_synchro)->unref();
     }
   } else {
@@ -374,10 +374,8 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
     other_synchro = _find_matching_comm(mbox->comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
   }
 
-  if(other_synchro) {
-    simgrid::simix::Comm *other_comm = static_cast<simgrid::simix::Comm*>(other_synchro);
-    other_comm->refcount--;
-  }
+  if(other_synchro)
+    other_synchro->unref();
 
   this_comm->unref();
   return other_synchro;

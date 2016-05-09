@@ -20,13 +20,13 @@ namespace simgrid {
 namespace simix {
 
   XBT_PUBLIC_CLASS Comm : public Synchro {
+    ~Comm();
   public:
     Comm(e_smx_comm_type_t type);
     void suspend();
     void resume();
     void cancel();
     double remains();
-    void unref();
     void cleanupSurf(); // FIXME: make me protected
 
     e_smx_comm_type_t type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
@@ -37,7 +37,6 @@ namespace simix {
                                        (comm.mbox set to NULL when the communication is removed from the mailbox
                                        (used as garbage collector)) */
 #endif
-    int refcount = 1;               /* Number of processes involved in the cond */
     bool detached = false;          /* If detached or not */
 
     void (*clean_fun)(void*);       /* Function to clean the detached src_buf if something goes wrong */

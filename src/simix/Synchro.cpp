@@ -13,3 +13,18 @@ simgrid::simix::Synchro::~Synchro() {
   xbt_fifo_free(simcalls);
   xbt_free(name);
 }
+
+void simgrid::simix::Synchro::ref()
+{
+  refcount++;
+}
+void simgrid::simix::Synchro::unref()
+{
+  xbt_assert(refcount > 0,
+      "This synchro has a negative refcount! You can only call test() or wait() once per synchronization.");
+
+  refcount--;
+  if (refcount>0)
+    return;
+  delete this;
+}

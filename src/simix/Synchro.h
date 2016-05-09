@@ -25,6 +25,11 @@ namespace simix {
 
     virtual void suspend()=0;
     virtual void resume()=0;
+
+    void ref();
+    void unref();
+  private:
+    int refcount=1;
   };
 }} // namespace simgrid::simix
 #else /* not C++ */

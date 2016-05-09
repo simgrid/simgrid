@@ -6,6 +6,11 @@
 #include "src/simix/SynchroExec.hpp"
 #include "src/surf/surf_interface.hpp"
 
+simgrid::simix::Exec::~Exec()
+{
+  if (surf_exec)
+    surf_exec->unref();
+}
 void simgrid::simix::Exec::suspend()
 {
   if (surf_exec)
@@ -24,16 +29,4 @@ double simgrid::simix::Exec::remains()
     return surf_exec->getRemains();
 
   return 0;
-}
-
-void simgrid::simix::Exec::unref()
-{
-  refcount--;
-  if (refcount > 0)
-    return;
-
-  if (surf_exec)
-    surf_exec->unref();
-
-  delete this;
 }

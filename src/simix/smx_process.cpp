@@ -91,7 +91,7 @@ void SIMIX_process_cleanup(smx_process_t process)
           comm, (int)comm->state, comm->src_proc, comm->dst_proc);
       comm->dst_proc = NULL;
 
-      if (comm->detached && comm->refcount == 1 && comm->src_proc != NULL) {
+      if (comm->detached && /* FIXME: This code should be moved within comm->unref() anyway. comm->refcount == 1 &&*/ comm->src_proc != NULL) {
         /* the comm will be freed right now, remove it from the sender */
         xbt_fifo_remove(comm->src_proc->comms, comm);
       }
