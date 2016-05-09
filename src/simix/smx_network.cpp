@@ -549,16 +549,13 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
 
     /* If any of the process is suspend, create the synchro but stop its execution,
        it will be restarted when the sender process resume */
-    if (SIMIX_process_is_suspended(comm->src_proc) ||
-        SIMIX_process_is_suspended(comm->dst_proc)) {
-      /* FIXME: check what should happen with the synchro state */
-
+    if (SIMIX_process_is_suspended(comm->src_proc) || SIMIX_process_is_suspended(comm->dst_proc)) {
       if (SIMIX_process_is_suspended(comm->src_proc))
-        XBT_DEBUG("The communication is suspended on startup because src (%s:%s) were suspended since it initiated the communication",
-                  sg_host_get_name(comm->src_proc->host), comm->src_proc->name);
+        XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the communication",
+            comm->src_proc->name, sg_host_get_name(comm->src_proc->host));
       else
-        XBT_DEBUG("The communication is suspended on startup because dst (%s:%s) were suspended since it initiated the communication",
-                  sg_host_get_name(comm->dst_proc->host), comm->dst_proc->name);
+        XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the communication",
+            comm->dst_proc->name, sg_host_get_name(comm->dst_proc->host));
 
       comm->surf_comm->suspend();
     }
@@ -730,9 +727,8 @@ void SIMIX_post_comm(smx_synchro_t synchro)
   comm->cleanupSurf();
 
   /* if there are simcalls associated with the synchro, then answer them */
-  if (xbt_fifo_size(synchro->simcalls)) {
+  if (xbt_fifo_size(synchro->simcalls))
     SIMIX_comm_finish(comm);
-  }
 }
 
 /******************************************************************************/
