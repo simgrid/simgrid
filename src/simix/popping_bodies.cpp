@@ -612,27 +612,6 @@ inline static smx_mailbox_t simcall_BODY_mbox_create(const char* name) {
     return (smx_mailbox_t) self->simcall.result.dp;
   }
   
-inline static smx_synchro_t simcall_BODY_mbox_get_head(smx_mailbox_t mbox) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_mbox_get_head(mbox);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_MBOX_GET_HEAD;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) mbox;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    return (smx_synchro_t) self->simcall.result.dp;
-  }
-  
 inline static void simcall_BODY_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t receiver) {
     smx_process_t self = SIMIX_process_self();
 

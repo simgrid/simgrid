@@ -69,11 +69,6 @@ smx_mailbox_t SIMIX_mbox_get_by_name(const char *name)
   return (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name);
 }
 
-smx_synchro_t SIMIX_mbox_get_head(smx_mailbox_t mbox)
-{
-  return mbox->comm_queue->empty()? nullptr:mbox->comm_queue->front();
-}
-
 /**
  *  \brief set the receiver of the rendez vous point to allow eager sends
  *  \param mbox The rendez-vous point

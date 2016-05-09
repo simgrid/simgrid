@@ -43,7 +43,7 @@ s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
 }
 
 bool s4u::Mailbox::empty() {
-  return nullptr == simcall_mbox_get_head(pimpl_);
+  return nullptr == simcall_mbox_front(pimpl_);
 }
 
 void s4u::Mailbox::setReceiver(smx_process_t process) {

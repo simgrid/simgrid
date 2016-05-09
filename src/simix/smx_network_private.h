@@ -26,7 +26,6 @@ XBT_PRIVATE void SIMIX_mailbox_exit(void);
 XBT_PRIVATE smx_mailbox_t SIMIX_mbox_create(const char *name);
 XBT_PRIVATE smx_mailbox_t SIMIX_mbox_get_by_name(const char *name);
 XBT_PRIVATE void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t comm);
-XBT_PRIVATE smx_synchro_t SIMIX_mbox_get_head(smx_mailbox_t mbox);
 XBT_PRIVATE void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t proc);
 XBT_PRIVATE smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox,
                               void *dst_buff, size_t *dst_buff_size,

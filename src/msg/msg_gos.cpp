@@ -915,7 +915,7 @@ int MSG_task_listen_from(const char *alias)
 {
   msg_task_t task;
 
-  if (NULL == (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
+  if (NULL == (task = MSG_mailbox_front(MSG_mailbox_get_by_alias(alias))))
     return -1;
 
   return MSG_process_get_PID(task->simdata->sender);

@@ -484,7 +484,7 @@ XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
  * @param   mailbox  The mailbox concerned by the operation.
  * @return           The task at the head of the mailbox.
  */
-XBT_PUBLIC(msg_task_t) MSG_mailbox_get_head(msg_mailbox_t mailbox);
+XBT_PUBLIC(msg_task_t) MSG_mailbox_front(msg_mailbox_t mailbox);
 
 XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task, msg_host_t host,
                                                  double timeout);
@@ -596,6 +596,11 @@ xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
+
+
+/* Functions renamed in 3.14 */
+#define MSG_mailbox_get_head(m) MSG_mailbox_front(m)
+
 
 SG_END_DECL()
 #endif

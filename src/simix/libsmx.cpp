@@ -686,9 +686,10 @@ smx_mailbox_t simcall_mbox_get_by_name(const char *name)
  *  \param mbox The rendez-vous point
  *  \return The communication or NULL if empty
  */
-smx_synchro_t simcall_mbox_get_head(smx_mailbox_t mbox)
+smx_synchro_t simcall_mbox_front(smx_mailbox_t mbox)
 {
-  return simcall_BODY_mbox_get_head(mbox);
+
+  return mbox->comm_queue->empty()? nullptr:mbox->comm_queue->front();
 }
 
 void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)

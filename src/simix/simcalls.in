@@ -77,7 +77,6 @@ Proc - process_auto_restart_set (void) (process, void*, smx_process_t) (auto_res
 Func H process_restart (void*, smx_process_t) (process, void*, smx_process_t)
 
 Func - mbox_create (void*, smx_mailbox_t) (name, const char*)
-Func - mbox_get_head (void*, smx_synchro_t) (mbox, void*, smx_mailbox_t)
 Proc - mbox_set_receiver (void) (mbox, void*, smx_mailbox_t) (receiver, void*, smx_process_t)
 
 Func H comm_iprobe (void*, smx_synchro_t) (mbox, void*, smx_mailbox_t) (type, int) (src, int) (tag, int) (match_fun, FPtr, simix_match_func_t) (data, void*)

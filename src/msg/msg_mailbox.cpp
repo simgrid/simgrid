@@ -18,12 +18,12 @@ msg_mailbox_t MSG_mailbox_new(const char *alias)
 
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
-  return (NULL == simcall_mbox_get_head(mailbox));
+  return (NULL == simcall_mbox_front(mailbox));
 }
 
-msg_task_t MSG_mailbox_get_head(msg_mailbox_t mailbox)
+msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
 {
-  smx_synchro_t comm = simcall_mbox_get_head(mailbox);
+  smx_synchro_t comm = simcall_mbox_front(mailbox);
 
   if (!comm)
     return NULL;
