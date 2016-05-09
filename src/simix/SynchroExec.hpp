@@ -16,6 +16,7 @@ namespace simix {
   public:
     void suspend();
     void resume();
+    double remains();
 
     sg_host_t host;                /* The host where the execution takes place */
     surf_action_t surf_exec;        /* The Surf execution action encapsulated */

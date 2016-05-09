@@ -17,3 +17,11 @@ void simgrid::simix::Exec::resume()
   if (surf_exec)
     surf_exec->resume();
 }
+
+double simgrid::simix::Exec::remains()
+{
+  if (state == SIMIX_RUNNING)
+    return surf_exec->getRemains();
+
+  return 0;
+}

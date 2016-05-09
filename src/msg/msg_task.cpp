@@ -252,7 +252,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
  */
 double MSG_task_get_flops_amount(msg_task_t task) {
   if (task->simdata->compute) {
-    return simcall_execution_get_remains(task->simdata->compute);
+    return task->simdata->compute->remains();
   } else {
     return task->simdata->flops_amount;
   }

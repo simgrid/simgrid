@@ -151,30 +151,6 @@ void simcall_execution_cancel(smx_synchro_t execution)
 
 /**
  * \ingroup simix_process_management
- * \brief Returns how much of an execution synchro remains to be done.
- *
- * \param execution The execution synchro
- * \return The remaining amount
- */
-double simcall_execution_get_remains(smx_synchro_t execution)
-{
-  return simcall_BODY_execution_get_remains(execution);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Returns the state of an execution synchro.
- *
- * \param execution The execution synchro
- * \return The state
- */
-e_smx_state_t simcall_execution_get_state(smx_synchro_t execution)
-{
-  return simcall_BODY_execution_get_state(execution);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Changes the priority of an execution synchro.
  *
  * This functions changes the priority only. It calls a surf function.

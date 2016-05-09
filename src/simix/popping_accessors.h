@@ -303,32 +303,6 @@ static inline void simcall_execution_cancel__set__execution(smx_simcall_t simcal
     simcall->args[0].dp = arg;
 }
 
-static inline smx_synchro_t simcall_execution_get_remains__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_execution_get_remains__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline double simcall_execution_get_remains__get__result(smx_simcall_t simcall){
-    return  simcall->result.d;
-}
-static inline void simcall_execution_get_remains__set__result(smx_simcall_t simcall, double result){
-    simcall->result.d = result;
-}
-
-static inline smx_synchro_t simcall_execution_get_state__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_execution_get_state__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline e_smx_state_t simcall_execution_get_state__get__result(smx_simcall_t simcall){
-    return (e_smx_state_t) simcall->result.i;
-}
-static inline void simcall_execution_get_state__set__result(smx_simcall_t simcall, int result){
-    simcall->result.i = result;
-}
-
 static inline smx_synchro_t simcall_execution_set_priority__get__execution(smx_simcall_t simcall) {
   return (smx_synchro_t) simcall->args[0].dp;
 }

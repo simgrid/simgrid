@@ -45,8 +45,6 @@ XBT_PRIVATE smx_synchro_t SIMIX_execution_parallel_start(const char *name,
     double amount, double rate);
 XBT_PRIVATE void SIMIX_execution_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_execution_cancel(smx_synchro_t synchro);
-XBT_PRIVATE double SIMIX_execution_get_remains(smx_synchro_t synchro);
-XBT_PRIVATE e_smx_state_t SIMIX_execution_get_state(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_execution_set_priority(smx_synchro_t synchro, double priority);
 XBT_PRIVATE void SIMIX_execution_set_bound(smx_synchro_t synchro, double bound);
 XBT_PRIVATE void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask);

@@ -353,22 +353,6 @@ void SIMIX_execution_cancel(smx_synchro_t synchro)
     exec->surf_exec->cancel();
 }
 
-double SIMIX_execution_get_remains(smx_synchro_t synchro)
-{
-  double result = 0.0;
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
-
-  if (synchro->state == SIMIX_RUNNING)
-    result = exec->surf_exec->getRemains();
-
-  return result;
-}
-
-e_smx_state_t SIMIX_execution_get_state(smx_synchro_t synchro)
-{
-  return synchro->state;
-}
-
 void SIMIX_execution_set_priority(smx_synchro_t synchro, double priority)
 {
   simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
