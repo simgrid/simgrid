@@ -37,8 +37,6 @@ XBT_PRIVATE void SIMIX_comm_destroy(smx_synchro_t synchro);
 XBT_PRIVATE smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data);
 XBT_PRIVATE void SIMIX_post_comm(smx_synchro_t synchro);
-XBT_PRIVATE smx_process_t SIMIX_comm_get_src_proc(smx_synchro_t synchro);
-XBT_PRIVATE smx_process_t SIMIX_comm_get_dst_proc(smx_synchro_t synchro);
 
 #endif
 

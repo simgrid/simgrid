@@ -23,12 +23,12 @@ int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 
 msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
 {
-  smx_synchro_t comm = simcall_mbox_front(mailbox);
+  simgrid::simix::Comm* comm = static_cast<simgrid::simix::Comm*>(simcall_mbox_front(mailbox));
 
   if (!comm)
     return NULL;
 
-  return (msg_task_t) simcall_comm_get_src_data(comm);
+  return (msg_task_t) comm->src_data;
 }
 
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)

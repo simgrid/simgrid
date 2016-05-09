@@ -137,9 +137,6 @@ typedef smx_process_t (*smx_creation_func_t) (
  */
 typedef struct s_smx_mailbox *smx_mailbox_t;
 
-XBT_PUBLIC(void*) SIMIX_comm_get_src_data(smx_synchro_t synchro);
-XBT_PUBLIC(void*) SIMIX_comm_get_dst_data(smx_synchro_t synchro);
-
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_process_t);
 /* for auto-restart function */
@@ -393,12 +390,6 @@ XBT_PUBLIC(unsigned int) simcall_comm_waitany(xbt_dynar_t comms);
 XBT_PUBLIC(void) simcall_comm_wait(smx_synchro_t comm, double timeout);
 XBT_PUBLIC(int) simcall_comm_test(smx_synchro_t comm);
 XBT_PUBLIC(int) simcall_comm_testany(xbt_dynar_t comms);
-
-/* Getters and setters */
-XBT_PUBLIC(void *) simcall_comm_get_src_data(smx_synchro_t comm);
-XBT_PUBLIC(void *) simcall_comm_get_dst_data(smx_synchro_t comm);
-XBT_PUBLIC(smx_process_t) simcall_comm_get_src_proc(smx_synchro_t comm);
-XBT_PUBLIC(smx_process_t) simcall_comm_get_dst_proc(smx_synchro_t comm);
 
 /************************** Tracing handling **********************************/
 XBT_PUBLIC(void) simcall_set_category(smx_synchro_t synchro, const char *category);

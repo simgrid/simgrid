@@ -733,14 +733,16 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
  * \param buff the data copied
  * \param buff_size size of the buffer
  */
-void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size) {
-  // copy the task
+void MSG_comm_copy_data_from_SIMIX(smx_synchro_t synchro, void* buff, size_t buff_size)
+{
+  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
+
   SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);
 
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
     msg_task_t task = (msg_task_t) buff;
-    msg_global->task_copy_callback(task, simcall_comm_get_src_proc(comm), simcall_comm_get_dst_proc(comm));
+    msg_global->task_copy_callback(task, comm->src_proc, comm->dst_proc);
   }
 }
 

@@ -771,58 +771,6 @@ static inline void simcall_comm_testany__set__result(smx_simcall_t simcall, int 
     simcall->result.i = result;
 }
 
-static inline smx_synchro_t simcall_comm_get_src_data__get__comm(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_get_src_data__set__comm(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline void* simcall_comm_get_src_data__get__result(smx_simcall_t simcall){
-    return  simcall->result.dp;
-}
-static inline void simcall_comm_get_src_data__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-static inline smx_synchro_t simcall_comm_get_dst_data__get__comm(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_get_dst_data__set__comm(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline void* simcall_comm_get_dst_data__get__result(smx_simcall_t simcall){
-    return  simcall->result.dp;
-}
-static inline void simcall_comm_get_dst_data__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-static inline smx_synchro_t simcall_comm_get_src_proc__get__comm(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_get_src_proc__set__comm(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline smx_process_t simcall_comm_get_src_proc__get__result(smx_simcall_t simcall){
-    return (smx_process_t) simcall->result.dp;
-}
-static inline void simcall_comm_get_src_proc__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
-static inline smx_synchro_t simcall_comm_get_dst_proc__get__comm(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_comm_get_dst_proc__set__comm(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline smx_process_t simcall_comm_get_dst_proc__get__result(smx_simcall_t simcall){
-    return (smx_process_t) simcall->result.dp;
-}
-static inline void simcall_comm_get_dst_proc__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
 static inline smx_mutex_t simcall_mutex_init__get__result(smx_simcall_t simcall){
     return (smx_mutex_t) simcall->result.dp;
 }

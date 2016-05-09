@@ -861,42 +861,6 @@ int simcall_comm_test(smx_synchro_t comm)
 }
 
 /**
- * \ingroup simix_comm_management
- *
- */
-void *simcall_comm_get_src_data(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_src_data(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
-void *simcall_comm_get_dst_data(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_dst_data(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
-smx_process_t simcall_comm_get_src_proc(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_src_proc(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
-smx_process_t simcall_comm_get_dst_proc(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_dst_proc(comm);
-}
-
-/**
  * \ingroup simix_synchro_management
  *
  */

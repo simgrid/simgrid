@@ -775,46 +775,6 @@ void SIMIX_post_comm(smx_synchro_t synchro)
   }
 }
 
-/************* synchro Getters **************/
-
-/**
- *  \brief Return the user data associated to the sender of the communication
- *  \param synchro The communication
- *  \return the user data
- */
-void* SIMIX_comm_get_src_data(smx_synchro_t synchro)
-{
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  return comm->src_data;
-}
-
-/**
- *  \brief Return the user data associated to the receiver of the communication
- *  \param synchro The communication
- *  \return the user data
- */
-void* SIMIX_comm_get_dst_data(smx_synchro_t synchro)
-{
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  return comm->dst_data;
-}
-
-smx_process_t SIMIX_comm_get_src_proc(smx_synchro_t synchro)
-{
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  return comm->src_proc;
-}
-
-smx_process_t SIMIX_comm_get_dst_proc(smx_synchro_t synchro)
-{
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  return comm->dst_proc;
-}
-
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/

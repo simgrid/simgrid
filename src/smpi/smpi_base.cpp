@@ -856,7 +856,8 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   }
 
   if (request->action){
-    MPI_Request req = (MPI_Request)SIMIX_comm_get_src_data(request->action);
+    simgrid::simix::Comm *sync_comm = static_cast<simgrid::simix::Comm*>(request->action);
+    MPI_Request req = (MPI_Request)sync_comm->src_data;
     *flag = 1;
     if(status != MPI_STATUS_IGNORE && !(req->flags & PREPARED)) {
       status->MPI_SOURCE = smpi_group_rank(smpi_comm_group(comm), req->src);
