@@ -29,7 +29,7 @@ public:
   File(const char *fullpath, void* userdata);
   ~File();
 private:
-  smx_file_t inferior_;
+  smx_file_t pimpl_;
   const char *path_;
 
 public:

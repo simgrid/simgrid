@@ -33,7 +33,7 @@ public:
   ~Mailbox();
   
 protected:
-  smx_mailbox_t getInferior() { return inferior_; }
+  smx_mailbox_t getInferior() { return pimpl_; }
 
 public:
   /** Get the name of that mailbox */
@@ -54,7 +54,7 @@ public:
 
 private:
   std::string name_;
-  smx_mailbox_t inferior_;
+  smx_mailbox_t pimpl_;
   static boost::unordered_map<std::string, Mailbox *> *mailboxes;
   friend s4u::Engine;
 };

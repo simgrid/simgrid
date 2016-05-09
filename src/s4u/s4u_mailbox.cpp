@@ -19,7 +19,7 @@ boost::unordered_map <std::string, s4u::Mailbox *> *s4u::Mailbox::mailboxes = ne
 
 
 s4u::Mailbox::Mailbox(const char*name, smx_mailbox_t inferior) {
-  inferior_ = inferior;
+  pimpl_ = inferior;
   name_ = name;
   mailboxes->insert({name, this});
 }
@@ -42,14 +42,14 @@ s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
 }
 
 bool s4u::Mailbox::empty() {
-  return nullptr == simcall_mbox_get_head(inferior_);
+  return nullptr == simcall_mbox_get_head(pimpl_);
 }
 
 void s4u::Mailbox::setReceiver(smx_process_t process) {
-  simcall_mbox_set_receiver(inferior_, process);
+  simcall_mbox_set_receiver(pimpl_, process);
 }
 smx_process_t s4u::Mailbox::receiver() {
-  return simcall_mbox_get_receiver(inferior_);
+  return simcall_mbox_get_receiver(pimpl_);
 }
 
 /*------- C functions -------*/

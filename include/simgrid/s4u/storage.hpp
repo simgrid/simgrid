@@ -44,7 +44,7 @@ private:
 
   static boost::unordered_map<std::string, Storage *> *storages_;
   std::string name_;
-  smx_storage_t inferior_;
+  smx_storage_t pimpl_;
 
 
 public:

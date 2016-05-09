@@ -73,12 +73,12 @@ void s4u::Comm::start() {
   xbt_assert(state_ == inited);
 
   if (srcBuff_ != NULL) { // Sender side
-    inferior_ = simcall_comm_isend(sender_->getInferior(), mailbox_->getInferior(), remains_, rate_,
+    pimpl_ = simcall_comm_isend(sender_->getInferior(), mailbox_->getInferior(), remains_, rate_,
         srcBuff_, srcBuffSize_,
         matchFunction_, cleanFunction_, copyDataFunction_,
         userData_, detached_);
   } else if (dstBuff_ != NULL) { // Receiver side
-    inferior_ = simcall_comm_irecv(receiver_->getInferior(), mailbox_->getInferior(), dstBuff_, &dstBuffSize_,
+    pimpl_ = simcall_comm_irecv(receiver_->getInferior(), mailbox_->getInferior(), dstBuff_, &dstBuffSize_,
         matchFunction_, copyDataFunction_,
         userData_, rate_);
 
@@ -91,7 +91,7 @@ void s4u::Comm::wait() {
   xbt_assert(state_ == started || state_ == inited);
 
   if (state_ == started)
-    simcall_comm_wait(inferior_, -1/*timeout*/);
+    simcall_comm_wait(pimpl_, -1/*timeout*/);
   else {// p_state == inited. Save a simcall and do directly a blocking send/recv
     if (srcBuff_ != NULL) {
       simcall_comm_send(sender_->getInferior(), mailbox_->getInferior(), remains_, rate_,
@@ -110,7 +110,7 @@ void s4u::Comm::wait(double timeout) {
   xbt_assert(state_ == started || state_ == inited);
 
   if (state_ == started) {
-    simcall_comm_wait(inferior_, timeout);
+    simcall_comm_wait(pimpl_, timeout);
     state_ = finished;
     return;
   }

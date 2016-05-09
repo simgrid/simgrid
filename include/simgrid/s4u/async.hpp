@@ -34,7 +34,7 @@ protected:
   virtual ~Async();
   
 private:
-  simgrid::simix::Synchro *inferior_ = NULL;
+  simgrid::simix::Synchro *pimpl_ = NULL;
 
 private:
   e_s4u_async_state_t state_ = inited;

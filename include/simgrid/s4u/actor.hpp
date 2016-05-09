@@ -95,9 +95,9 @@ public:
   void send(Mailbox &chan, void*payload, size_t simulatedSize);
 
 protected:
-  smx_process_t getInferior() {return inferior_;}
+  smx_process_t getInferior() {return pimpl_;}
 private:
-  smx_process_t inferior_;
+  smx_process_t pimpl_;
 };
 }} // namespace simgrid::s4u
 
