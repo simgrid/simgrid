@@ -20,7 +20,8 @@ simgrid::simix::Comm::Comm(e_smx_comm_type_t _type) {
 
   XBT_DEBUG("Create communicate synchro %p", this);
 }
-void simgrid::simix::Comm::suspend() {
+void simgrid::simix::Comm::suspend()
+{
   /* FIXME: shall we suspend also the timeout synchro? */
   if (surf_comm)
     surf_comm->suspend();
@@ -28,14 +29,16 @@ void simgrid::simix::Comm::suspend() {
 
 }
 
-void simgrid::simix::Comm::resume() {
+void simgrid::simix::Comm::resume()
+{
   /*FIXME: check what happen with the timeouts */
   if (surf_comm)
     surf_comm->resume();
   /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
-void simgrid::simix::Comm::cancel() {
+void simgrid::simix::Comm::cancel()
+{
   /* if the synchro is a waiting state means that it is still in a mbox */
   /* so remove from it and delete it */
   if (state == SIMIX_WAITING) {
@@ -51,7 +54,8 @@ void simgrid::simix::Comm::cancel() {
 }
 
 /**  @brief get the amount remaining from the communication */
-double simgrid::simix::Comm::remains() {
+double simgrid::simix::Comm::remains()
+{
   switch (state) {
 
   case SIMIX_RUNNING:
@@ -66,5 +70,24 @@ double simgrid::simix::Comm::remains() {
   default:
     return 0; /*FIXME: is this correct? */
     break;
+  }
+}
+
+/** @brief This is part of the cleanup process, probably an internal command */
+void simgrid::simix::Comm::cleanupSurf()
+{
+  if (surf_comm){
+    surf_comm->unref();
+    surf_comm = NULL;
+  }
+
+  if (src_timeout){
+    src_timeout->unref();
+    src_timeout = NULL;
+  }
+
+  if (dst_timeout){
+    dst_timeout->unref();
+    dst_timeout = NULL;
   }
 }

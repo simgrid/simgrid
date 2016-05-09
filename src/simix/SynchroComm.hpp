@@ -26,6 +26,7 @@ namespace simix {
     void resume();
     void cancel();
     double remains();
+    void cleanupSurf(); // FIXME: make me protected
 
     e_smx_comm_type_t type;         /* Type of the communication (SIMIX_COMM_SEND or SIMIX_COMM_RECEIVE) */
     smx_mailbox_t mbox = nullptr;   /* Rendez-vous where the comm is queued */
@@ -36,7 +37,7 @@ namespace simix {
                                        (used as garbage collector)) */
 #endif
     int refcount = 1;               /* Number of processes involved in the cond */
-    int detached = 0;               /* If detached or not */
+    bool detached = false;          /* If detached or not */
 
     void (*clean_fun)(void*);       /* Function to clean the detached src_buf if something goes wrong */
     int (*match_fun)(void*,void*,smx_synchro_t);  /* Filter function used by the other side. It is used when
@@ -58,7 +59,7 @@ namespace simix {
     void *dst_buff = nullptr;
     size_t src_buff_size;
     size_t *dst_buff_size;
-    unsigned copied = 0;          /* whether the data were already copied */
+    bool copied = false;          /* whether the data were already copied */
 
     void* src_data;                 /* User data associated to communication */
     void* dst_data;

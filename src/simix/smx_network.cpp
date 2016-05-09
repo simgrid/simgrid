@@ -175,7 +175,7 @@ void SIMIX_comm_destroy(smx_synchro_t synchro)
       return;
   XBT_DEBUG("Really free communication %p; refcount is now %d", comm, comm->refcount);
 
-  SIMIX_comm_destroy_internal_actions(synchro);
+  comm->cleanupSurf();
 
   if (comm->detached && comm->state != SIMIX_DONE) {
     /* the communication has failed and was detached:
@@ -190,25 +190,6 @@ void SIMIX_comm_destroy(smx_synchro_t synchro)
     SIMIX_mbox_remove(comm->mbox, comm);
 
   delete comm;
-}
-
-void SIMIX_comm_destroy_internal_actions(smx_synchro_t synchro)
-{
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-  if (comm->surf_comm){
-    comm->surf_comm->unref();
-    comm->surf_comm = NULL;
-  }
-
-  if (comm->src_timeout){
-    comm->src_timeout->unref();
-    comm->src_timeout = NULL;
-  }
-
-  if (comm->dst_timeout){
-    comm->dst_timeout->unref();
-    comm->dst_timeout = NULL;
-  }
 }
 
 void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_mailbox_t mbox,
@@ -442,9 +423,6 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
 
 void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, double timeout)
 {
-  /* the simcall may be a wait, a send or a recv */
-  surf_action_t sleep;
-
   /* Associate this simcall to the wait synchro */
   XBT_DEBUG("simcall_HANDLER_comm_wait, %p", synchro);
 
@@ -477,7 +455,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, dou
   if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
     SIMIX_comm_finish(synchro);
   } else { /* if (timeout >= 0) { we need a surf sleep action even when there is no timeout, otherwise surf won't tell us when the host fails */
-    sleep = surf_host_sleep(simcall->issuer->host, timeout);
+    surf_action_t sleep = surf_host_sleep(simcall->issuer->host, timeout);
     sleep->setData(synchro);
 
     simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
@@ -606,7 +584,7 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
       XBT_DEBUG("Communication from '%s' to '%s' failed to start because of a link failure",
                 sg_host_get_name(sender), sg_host_get_name(receiver));
       comm->state = SIMIX_LINK_FAILURE;
-      SIMIX_comm_destroy_internal_actions(synchro);
+      comm->cleanupSurf();
     }
 
     /* If any of the process is suspend, create the synchro but stop its execution,
@@ -789,7 +767,7 @@ void SIMIX_post_comm(smx_synchro_t synchro)
             comm, (int)comm->state, comm->src_proc, comm->dst_proc, comm->detached);
 
   /* destroy the surf actions associated with the Simix communication */
-  SIMIX_comm_destroy_internal_actions(comm);
+  comm->cleanupSurf();
 
   /* if there are simcalls associated with the synchro, then answer them */
   if (xbt_fifo_size(synchro->simcalls)) {
