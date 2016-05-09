@@ -696,11 +696,6 @@ void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
   simcall_BODY_mbox_set_receiver(mbox, process);
 }
 
-smx_process_t simcall_mbox_get_receiver(smx_mailbox_t mbox)
-{
-  return simcall_BODY_mbox_get_receiver(mbox);
-}
-
 /**
  * \ingroup simix_comm_management
  */

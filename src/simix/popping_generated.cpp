@@ -52,7 +52,6 @@ const char* simcall_names[] = {
   "SIMCALL_MBOX_CREATE",
   "SIMCALL_MBOX_GET_HEAD",
   "SIMCALL_MBOX_SET_RECEIVER",
-  "SIMCALL_MBOX_GET_RECEIVER",
   "SIMCALL_COMM_IPROBE",
   "SIMCALL_COMM_SEND",
   "SIMCALL_COMM_ISEND",
@@ -249,11 +248,6 @@ case SIMCALL_MBOX_GET_HEAD:
 
 case SIMCALL_MBOX_SET_RECEIVER:
        SIMIX_mbox_set_receiver((smx_mailbox_t) simcall->args[0].dp,(smx_process_t) simcall->args[1].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_MBOX_GET_RECEIVER:
-      simcall->result.dp = SIMIX_mbox_get_receiver((smx_mailbox_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

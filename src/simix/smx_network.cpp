@@ -75,16 +75,6 @@ smx_synchro_t SIMIX_mbox_get_head(smx_mailbox_t mbox)
 }
 
 /**
- *  \brief get the receiver (process associated to the mailbox)
- *  \param mbox The rendez-vous point
- *  \return process The receiving process (NULL if not set)
- */
-smx_process_t SIMIX_mbox_get_receiver(smx_mailbox_t mbox)
-{
-  return mbox->permanent_receiver;
-}
-
-/**
  *  \brief set the receiver of the rendez vous point to allow eager sends
  *  \param mbox The rendez-vous point
  *  \param process The receiving process

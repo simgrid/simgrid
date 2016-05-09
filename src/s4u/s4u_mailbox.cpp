@@ -6,6 +6,7 @@
 
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
+#include "src/simix/smx_network_private.h"
 
 #include "simgrid/s4u/mailbox.hpp"
 
@@ -48,8 +49,9 @@ bool s4u::Mailbox::empty() {
 void s4u::Mailbox::setReceiver(smx_process_t process) {
   simcall_mbox_set_receiver(pimpl_, process);
 }
+/** @brief get the receiver (process associated to the mailbox) */
 smx_process_t s4u::Mailbox::receiver() {
-  return simcall_mbox_get_receiver(pimpl_);
+  return pimpl_->permanent_receiver;
 }
 
 /*------- C functions -------*/

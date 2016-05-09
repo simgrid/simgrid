@@ -445,19 +445,6 @@ static inline void simcall_mbox_set_receiver__set__receiver(smx_simcall_t simcal
     simcall->args[1].dp = arg;
 }
 
-static inline smx_mailbox_t simcall_mbox_get_receiver__get__mbox(smx_simcall_t simcall) {
-  return (smx_mailbox_t) simcall->args[0].dp;
-}
-static inline void simcall_mbox_get_receiver__set__mbox(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-static inline smx_process_t simcall_mbox_get_receiver__get__result(smx_simcall_t simcall){
-    return (smx_process_t) simcall->result.dp;
-}
-static inline void simcall_mbox_get_receiver__set__result(smx_simcall_t simcall, void* result){
-    simcall->result.dp = result;
-}
-
 static inline smx_mailbox_t simcall_comm_iprobe__get__mbox(smx_simcall_t simcall) {
   return (smx_mailbox_t) simcall->args[0].dp;
 }
