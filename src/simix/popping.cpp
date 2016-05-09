@@ -39,7 +39,7 @@ void SIMIX_simcall_exit(smx_synchro_t synchro)
 {
   simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec*>(synchro);
   if (exec != nullptr) {
-    SIMIX_post_host_execute(synchro);
+    SIMIX_post_host_execute(exec);
     return;
   }
 

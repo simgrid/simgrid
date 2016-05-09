@@ -278,7 +278,6 @@ XBT_PUBLIC(smx_synchro_t) simcall_execution_parallel_start(const char *name,
                                                      double *bytes_amount,
                                                      double amount,
                                                      double rate);
-XBT_PUBLIC(void) simcall_execution_destroy(smx_synchro_t execution);
 XBT_PUBLIC(void) simcall_execution_cancel(smx_synchro_t execution);
 XBT_PUBLIC(void) simcall_execution_set_priority(smx_synchro_t execution, double priority);
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_synchro_t execution, double bound);

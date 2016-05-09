@@ -40,7 +40,6 @@ const char* simcall_names[] = {
   "SIMCALL_PROCESS_SLEEP",
   "SIMCALL_EXECUTION_START",
   "SIMCALL_EXECUTION_PARALLEL_START",
-  "SIMCALL_EXECUTION_DESTROY",
   "SIMCALL_EXECUTION_CANCEL",
   "SIMCALL_EXECUTION_SET_PRIORITY",
   "SIMCALL_EXECUTION_SET_BOUND",
@@ -184,11 +183,6 @@ case SIMCALL_EXECUTION_START:
 
 case SIMCALL_EXECUTION_PARALLEL_START:
       simcall->result.dp = SIMIX_execution_parallel_start( simcall->args[0].cc, simcall->args[1].i,(sg_host_t*) simcall->args[2].dp,(double*) simcall->args[3].dp,(double*) simcall->args[4].dp, simcall->args[5].d, simcall->args[6].d);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_EXECUTION_DESTROY:
-       SIMIX_execution_destroy((smx_synchro_t) simcall->args[0].dp);
       SIMIX_simcall_answer(simcall);
       break;  
 

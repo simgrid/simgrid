@@ -196,7 +196,6 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_destroy(msg_task_t task)
 {
-  smx_synchro_t action = NULL;
   xbt_assert((task != NULL), "Invalid parameter");
 
   if (task->simdata->isused) {
@@ -207,9 +206,8 @@ msg_error_t MSG_task_destroy(msg_task_t task)
 
   xbt_free(task->name);
 
-  action = task->simdata->compute;
-  if (action)
-    simcall_execution_destroy(action);
+  if (task->simdata->compute)
+    task->simdata->compute->unref();
 
   /* parallel tasks only */
   xbt_free(task->simdata->host_list);

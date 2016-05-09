@@ -395,27 +395,6 @@ inline static smx_synchro_t simcall_BODY_execution_parallel_start(const char* na
     return (smx_synchro_t) self->simcall.result.dp;
   }
   
-inline static void simcall_BODY_execution_destroy(smx_synchro_t execution) {
-    smx_process_t self = SIMIX_process_self();
-
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_execution_destroy(execution);
-    /* end of the guide intended to the poor programmer wanting to go from MSG to Surf */
-
-    self->simcall.call = SIMCALL_EXECUTION_DESTROY;
-    memset(&self->simcall.result, 0, sizeof(self->simcall.result));
-    memset(self->simcall.args, 0, sizeof(self->simcall.args));
-    self->simcall.args[0].dp = (void*) execution;
-    if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
-                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
-      SIMIX_process_yield(self);
-    } else {
-      SIMIX_simcall_handle(&self->simcall, 0);
-    }    
-    
-  }
-  
 inline static void simcall_BODY_execution_cancel(smx_synchro_t execution) {
     smx_process_t self = SIMIX_process_self();
 

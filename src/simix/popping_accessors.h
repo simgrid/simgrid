@@ -289,13 +289,6 @@ static inline void simcall_execution_parallel_start__set__result(smx_simcall_t s
     simcall->result.dp = result;
 }
 
-static inline smx_synchro_t simcall_execution_destroy__get__execution(smx_simcall_t simcall) {
-  return (smx_synchro_t) simcall->args[0].dp;
-}
-static inline void simcall_execution_destroy__set__execution(smx_simcall_t simcall, void* arg) {
-    simcall->args[0].dp = arg;
-}
-
 static inline smx_synchro_t simcall_execution_cancel__get__execution(smx_simcall_t simcall) {
   return (smx_synchro_t) simcall->args[0].dp;
 }

@@ -502,7 +502,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
     simgrid::simix::Io *io = dynamic_cast<simgrid::simix::Io*>(process->waiting_synchro);
 
     if (exec != nullptr) {
-      SIMIX_execution_destroy(process->waiting_synchro);
+      exec->unref();
 
     } else if (comm != nullptr) {
       xbt_fifo_remove(process->comms, process->waiting_synchro);

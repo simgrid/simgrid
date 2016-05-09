@@ -12,6 +12,8 @@
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
+#include "src/simix/SynchroExec.hpp"
+
 SG_BEGIN_DECL()
 
 /** @brief Host datatype from SIMIX POV */
@@ -43,7 +45,6 @@ XBT_PRIVATE smx_synchro_t SIMIX_execution_parallel_start(const char *name,
     int host_nb, sg_host_t *host_list,
     double *flops_amount, double *bytes_amount,
     double amount, double rate);
-XBT_PRIVATE void SIMIX_execution_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_execution_cancel(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_execution_set_priority(smx_synchro_t synchro, double priority);
 XBT_PRIVATE void SIMIX_execution_set_bound(smx_synchro_t synchro, double bound);
@@ -52,7 +53,7 @@ XBT_PRIVATE void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t h
 XBT_PRIVATE void SIMIX_execution_suspend(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_execution_resume(smx_synchro_t synchro);
 
-XBT_PRIVATE void SIMIX_post_host_execute(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_post_host_execute(simgrid::simix::Exec *exec);
 XBT_PRIVATE void SIMIX_set_category(smx_synchro_t synchro, const char *category);
 
 /* vm related stuff */

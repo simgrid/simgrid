@@ -25,3 +25,15 @@ double simgrid::simix::Exec::remains()
 
   return 0;
 }
+
+void simgrid::simix::Exec::unref()
+{
+  refcount--;
+  if (refcount > 0)
+    return;
+
+  if (surf_exec)
+    surf_exec->unref();
+
+  delete this;
+}

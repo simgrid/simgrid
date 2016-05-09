@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
-static void SIMIX_execution_finish(smx_synchro_t synchro);
+static void SIMIX_execution_finish(simgrid::simix::Exec *exec);
 
 /**
  * \brief Internal function to create a SIMIX host.
@@ -332,18 +332,6 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
   return exec;
 }
 
-void SIMIX_execution_destroy(smx_synchro_t synchro)
-{
-  XBT_DEBUG("Destroy synchro %p", synchro);
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
-
-  if (exec->surf_exec) {
-    exec->surf_exec->unref();
-    exec->surf_exec = NULL;
-  }
-  delete exec;
-}
-
 void SIMIX_execution_cancel(smx_synchro_t synchro)
 {
   XBT_DEBUG("Cancel synchro %p", synchro);
@@ -379,7 +367,7 @@ void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigne
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro)
 {
-
+  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
 
   /* Associate this simcall to the synchro */
@@ -389,13 +377,13 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro
   /* set surf's synchro */
   if (MC_is_active() || MC_record_replay_is_active()) {
     synchro->state = SIMIX_DONE;
-    SIMIX_execution_finish(synchro);
+    SIMIX_execution_finish(exec);
     return;
   }
 
   /* If the synchro is already finished then perform the error handling */
   if (synchro->state != SIMIX_RUNNING)
-    SIMIX_execution_finish(synchro);
+    SIMIX_execution_finish(exec);
 }
 
 void SIMIX_execution_suspend(smx_synchro_t synchro)
@@ -408,14 +396,14 @@ void SIMIX_execution_resume(smx_synchro_t synchro)
   synchro->resume(); // FIXME: USELESS
 }
 
-void SIMIX_execution_finish(smx_synchro_t synchro)
+void SIMIX_execution_finish(simgrid::simix::Exec *exec)
 {
   xbt_fifo_item_t item;
   smx_simcall_t simcall;
 
-  xbt_fifo_foreach(synchro->simcalls, item, simcall, smx_simcall_t) {
+  xbt_fifo_foreach(exec->simcalls, item, simcall, smx_simcall_t) {
 
-    switch (synchro->state) {
+    switch (exec->state) {
 
       case SIMIX_DONE:
         /* do nothing, synchro done */
@@ -435,37 +423,34 @@ void SIMIX_execution_finish(smx_synchro_t synchro)
 
       default:
         xbt_die("Internal error in SIMIX_execution_finish: unexpected synchro state %d",
-            (int)synchro->state);
+            (int)exec->state);
     }
-    /* check if the host is down */
-    if (simcall->issuer->host->isOff()) {
+    /* Fail the process if the host is down */
+    if (simcall->issuer->host->isOff())
       simcall->issuer->context->iwannadie = 1;
-    }
 
-    simcall->issuer->waiting_synchro =    NULL;
-    simcall_execution_wait__set__result(simcall, synchro->state);
+    simcall->issuer->waiting_synchro = NULL;
+    simcall_execution_wait__set__result(simcall, exec->state);
     SIMIX_simcall_answer(simcall);
   }
 
   /* We no longer need it */
-  SIMIX_execution_destroy(synchro);
+  exec->unref();
 }
 
 
-void SIMIX_post_host_execute(smx_synchro_t synchro)
+void SIMIX_post_host_execute(simgrid::simix::Exec *exec)
 {
-  simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec *>(synchro);
-
   if (exec != nullptr && exec->host && /* FIMXE: handle resource failure for parallel tasks too */
       exec->host->isOff()) {
     /* If the host running the synchro failed, notice it. This way, the asking
      * process can be killed if it runs on that host itself */
-    synchro->state = SIMIX_FAILED;
+    exec->state = SIMIX_FAILED;
   } else if (exec->surf_exec->getState() == simgrid::surf::Action::State::failed) {
     /* If the host running the synchro didn't fail, then the synchro was canceled */
-    synchro->state = SIMIX_CANCELED;
+    exec->state = SIMIX_CANCELED;
   } else {
-    synchro->state = SIMIX_DONE;
+    exec->state = SIMIX_DONE;
   }
 
   if (exec != nullptr && exec->surf_exec) {
@@ -474,9 +459,8 @@ void SIMIX_post_host_execute(smx_synchro_t synchro)
   }
 
   /* If there are simcalls associated with the synchro, then answer them */
-  if (xbt_fifo_size(synchro->simcalls)) {
-    SIMIX_execution_finish(synchro);
-  }
+  if (xbt_fifo_size(exec->simcalls))
+    SIMIX_execution_finish(exec);
 }
 
 

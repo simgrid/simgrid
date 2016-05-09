@@ -17,9 +17,12 @@ namespace simix {
     void suspend();
     void resume();
     double remains();
+    void unref();
 
     sg_host_t host;                /* The host where the execution takes place */
     surf_action_t surf_exec;        /* The Surf execution action encapsulated */
+  private:
+    int refcount = 1;
   };
 
 }} // namespace simgrid::simix

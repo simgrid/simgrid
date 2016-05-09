@@ -127,18 +127,6 @@ smx_synchro_t simcall_execution_parallel_start(const char *name,
 
 /**
  * \ingroup simix_process_management
- * \brief Destroys an execution synchro.
- *
- * Destroys a synchro, freeing its memory. This function cannot be called if there are a conditional waiting for it.
- * \param execution The execution synchro to destroy
- */
-void simcall_execution_destroy(smx_synchro_t execution)
-{
-  simcall_BODY_execution_destroy(execution);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Cancels an execution synchro.
  *
  * This functions stops the execution. It calls a surf function.
