@@ -25,6 +25,7 @@ namespace simix {
     Comm(e_smx_comm_type_t type);
     void suspend();
     void resume();
+    void post() override;
     void cancel();
     double remains();
     void cleanupSurf(); // FIXME: make me protected

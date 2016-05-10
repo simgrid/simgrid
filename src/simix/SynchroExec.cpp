@@ -5,6 +5,7 @@
 
 #include "src/simix/SynchroExec.hpp"
 #include "src/surf/surf_interface.hpp"
+#include "src/simix/smx_host_private.h"
 
 simgrid::simix::Exec::~Exec()
 {
@@ -29,4 +30,27 @@ double simgrid::simix::Exec::remains()
     return surf_exec->getRemains();
 
   return 0;
+}
+
+void simgrid::simix::Exec::post()
+{
+  if (host && host->isOff()) {/* FIMXE: handle resource failure for parallel tasks too */
+    /* If the host running the synchro failed, notice it. This way, the asking
+     * process can be killed if it runs on that host itself */
+    state = SIMIX_FAILED;
+  } else if (surf_exec->getState() == simgrid::surf::Action::State::failed) {
+    /* If the host running the synchro didn't fail, then the synchro was canceled */
+    state = SIMIX_CANCELED;
+  } else {
+    state = SIMIX_DONE;
+  }
+
+  if (surf_exec) {
+    surf_exec->unref();
+    surf_exec = NULL;
+  }
+
+  /* If there are simcalls associated with the synchro, then answer them */
+  if (xbt_fifo_size(simcalls))
+    SIMIX_execution_finish(this);
 }

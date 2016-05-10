@@ -16,6 +16,7 @@ namespace simix {
   public:
     void suspend();
     void resume();
+    void post() override;
 
     sg_host_t host;                /* The host that is sleeping */
     surf_action_t surf_sleep;       /* The Surf sleeping action encapsulated */

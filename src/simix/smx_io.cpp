@@ -255,52 +255,6 @@ const char* SIMIX_storage_get_host(smx_storage_t storage){
 
 void SIMIX_post_io(smx_synchro_t synchro)
 {
-  xbt_fifo_item_t i;
-  smx_simcall_t simcall;
-
-  simgrid::simix::Io *io = static_cast<simgrid::simix::Io*>(synchro);
-
-  xbt_fifo_foreach(synchro->simcalls,i,simcall,smx_simcall_t) {
-    switch (simcall->call) {
-    case SIMCALL_FILE_OPEN: {
-      smx_file_t tmp = xbt_new(s_smx_file_t,1);
-      tmp->surf_file = surf_storage_action_get_file(io->surf_io);
-      simcall_file_open__set__result(simcall, tmp);
-      break;
-    }
-    case SIMCALL_FILE_CLOSE:
-      xbt_free(simcall_file_close__get__fd(simcall));
-      simcall_file_close__set__result(simcall, 0);
-      break;
-    case SIMCALL_FILE_WRITE:
-      simcall_file_write__set__result(simcall, io->surf_io->getCost());
-      break;
-
-    case SIMCALL_FILE_READ:
-      simcall_file_read__set__result(simcall, io->surf_io->getCost());
-      break;
-
-    default:
-      break;
-    }
-  }
-
-  switch (io->surf_io->getState()) {
-
-    case simgrid::surf::Action::State::failed:
-      synchro->state = SIMIX_FAILED;
-      break;
-
-    case simgrid::surf::Action::State::done:
-      synchro->state = SIMIX_DONE;
-      break;
-
-    default:
-      THROW_IMPOSSIBLE;
-      break;
-  }
-
-  SIMIX_io_finish(synchro);
 }
 
 void SIMIX_io_destroy(smx_synchro_t synchro)

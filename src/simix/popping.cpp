@@ -37,35 +37,7 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
 
 void SIMIX_simcall_exit(smx_synchro_t synchro)
 {
-  simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec*>(synchro);
-  if (exec != nullptr) {
-    SIMIX_post_host_execute(exec);
-    return;
-  }
-
-  simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm*>(synchro);
-  if (comm != nullptr) {
-    SIMIX_post_comm(synchro);
-    return;
-  }
-
-  simgrid::simix::Sleep *sleep = dynamic_cast<simgrid::simix::Sleep*>(synchro);
-  if (sleep != nullptr) {
-    SIMIX_post_process_sleep(synchro);
-    return;
-  }
-
-  simgrid::simix::Raw *raw = dynamic_cast<simgrid::simix::Raw*>(synchro);
-  if (raw != nullptr) {
-    SIMIX_post_synchro(synchro);
-    return;
-  }
-
-  simgrid::simix::Io *io = dynamic_cast<simgrid::simix::Io*>(synchro);
-  if (io != nullptr) {
-    SIMIX_post_io(synchro);
-    return;
-  }
+  synchro->post();
 }
 
 void SIMIX_run_kernel(void* code)

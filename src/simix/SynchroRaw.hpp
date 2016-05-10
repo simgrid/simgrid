@@ -17,6 +17,7 @@ namespace simix {
   public:
     void suspend();
     void resume();
+    void post() override;
 
     surf_action_t sleep;
   };

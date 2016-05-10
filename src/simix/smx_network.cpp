@@ -693,44 +693,6 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
     static_cast<simgrid::simix::Comm*>(synchro)->unref();
 }
 
-/**
- * \brief This function is called when a Surf communication synchro is finished.
- * \param synchro the corresponding Simix communication
- */
-void SIMIX_post_comm(smx_synchro_t synchro)
-{
-  simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  /* Update synchro state */
-  if (comm->src_timeout &&
-      comm->src_timeout->getState() == simgrid::surf::Action::State::done)
-    synchro->state = SIMIX_SRC_TIMEOUT;
-  else if (comm->dst_timeout &&
-    comm->dst_timeout->getState() == simgrid::surf::Action::State::done)
-    synchro->state = SIMIX_DST_TIMEOUT;
-  else if (comm->src_timeout &&
-    comm->src_timeout->getState() == simgrid::surf::Action::State::failed)
-    synchro->state = SIMIX_SRC_HOST_FAILURE;
-  else if (comm->dst_timeout &&
-      comm->dst_timeout->getState() == simgrid::surf::Action::State::failed)
-    synchro->state = SIMIX_DST_HOST_FAILURE;
-  else if (comm->surf_comm &&
-    comm->surf_comm->getState() == simgrid::surf::Action::State::failed) {
-    synchro->state = SIMIX_LINK_FAILURE;
-  } else
-    synchro->state = SIMIX_DONE;
-
-  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d",
-            comm, (int)comm->state, comm->src_proc, comm->dst_proc, comm->detached);
-
-  /* destroy the surf actions associated with the Simix communication */
-  comm->cleanupSurf();
-
-  /* if there are simcalls associated with the synchro, then answer them */
-  if (xbt_fifo_size(synchro->simcalls))
-    SIMIX_comm_finish(comm);
-}
-
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/

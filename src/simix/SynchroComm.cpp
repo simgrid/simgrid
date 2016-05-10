@@ -109,3 +109,30 @@ void simgrid::simix::Comm::cleanupSurf()
     dst_timeout = NULL;
   }
 }
+
+void simgrid::simix::Comm::post()
+{
+  /* Update synchro state */
+  if (src_timeout &&  src_timeout->getState() == simgrid::surf::Action::State::done)
+    state = SIMIX_SRC_TIMEOUT;
+  else if (dst_timeout && dst_timeout->getState() == simgrid::surf::Action::State::done)
+    state = SIMIX_DST_TIMEOUT;
+  else if (src_timeout && src_timeout->getState() == simgrid::surf::Action::State::failed)
+    state = SIMIX_SRC_HOST_FAILURE;
+  else if (dst_timeout && dst_timeout->getState() == simgrid::surf::Action::State::failed)
+    state = SIMIX_DST_HOST_FAILURE;
+  else if (surf_comm && surf_comm->getState() == simgrid::surf::Action::State::failed) {
+    state = SIMIX_LINK_FAILURE;
+  } else
+    state = SIMIX_DONE;
+
+  XBT_DEBUG("SIMIX_post_comm: comm %p, state %d, src_proc %p, dst_proc %p, detached: %d",
+            this, (int)state, src_proc, dst_proc, detached);
+
+  /* destroy the surf actions associated with the Simix communication */
+  cleanupSurf();
+
+  /* if there are simcalls associated with the synchro, then answer them */
+  if (xbt_fifo_size(simcalls))
+    SIMIX_comm_finish(this);
+}

@@ -859,46 +859,6 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   return synchro;
 }
 
-void SIMIX_post_process_sleep(smx_synchro_t synchro)
-{
-  smx_simcall_t simcall;
-  e_smx_state_t state;
-  simgrid::simix::Sleep *sleep = static_cast<simgrid::simix::Sleep*>(synchro);
-
-  while ((simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls))) {
-
-    switch (sleep->surf_sleep->getState()){
-      case simgrid::surf::Action::State::failed:
-        simcall->issuer->context->iwannadie = 1;
-        //SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
-        state = SIMIX_SRC_HOST_FAILURE;
-        break;
-
-      case simgrid::surf::Action::State::done:
-        state = SIMIX_DONE;
-        break;
-
-      default:
-        THROW_IMPOSSIBLE;
-        break;
-    }
-    if (simcall->issuer->host->isOff()) {
-      simcall->issuer->context->iwannadie = 1;
-    }
-    simcall_process_sleep__set__result(simcall, state);
-    simcall->issuer->waiting_synchro = NULL;
-    if (simcall->issuer->suspended) {
-      XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
-      simcall->issuer->suspended = 0;
-      simcall_HANDLER_process_suspend(simcall, simcall->issuer);
-    } else {
-      SIMIX_simcall_answer(simcall);
-    }
-  }
-
-  SIMIX_process_sleep_destroy(synchro);
-}
-
 void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
 {
   XBT_DEBUG("Destroy synchro %p", synchro);

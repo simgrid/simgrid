@@ -16,6 +16,7 @@ namespace simix {
   public:
     void suspend();
     void resume();
+    void post() override;
 
     sg_host_t host;
     surf_action_t surf_io;

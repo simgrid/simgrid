@@ -17,6 +17,7 @@ namespace simix {
   public:
     void suspend();
     void resume();
+    void post() override;
     double remains();
 
     sg_host_t host;                /* The host where the execution takes place */

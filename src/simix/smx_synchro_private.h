@@ -10,6 +10,7 @@
 #include "xbt/base.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
+#include "src/simix/popping_private.h"
 
 typedef struct s_smx_mutex {
   unsigned int locked;
@@ -30,6 +31,7 @@ typedef struct s_smx_sem {
 XBT_PRIVATE void SIMIX_post_synchro(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall);
 XBT_PRIVATE void SIMIX_synchro_destroy(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_synchro_finish(smx_synchro_t synchro);
 
 XBT_PRIVATE smx_mutex_t SIMIX_mutex_init(void);
 XBT_PRIVATE int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer);

@@ -16,8 +16,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
-static void SIMIX_execution_finish(simgrid::simix::Exec *exec);
-
 /**
  * \brief Internal function to create a SIMIX host.
  * \param name name of the host to create
@@ -437,32 +435,6 @@ void SIMIX_execution_finish(simgrid::simix::Exec *exec)
   /* We no longer need it */
   exec->unref();
 }
-
-
-void SIMIX_post_host_execute(simgrid::simix::Exec *exec)
-{
-  if (exec != nullptr && exec->host && /* FIMXE: handle resource failure for parallel tasks too */
-      exec->host->isOff()) {
-    /* If the host running the synchro failed, notice it. This way, the asking
-     * process can be killed if it runs on that host itself */
-    exec->state = SIMIX_FAILED;
-  } else if (exec->surf_exec->getState() == simgrid::surf::Action::State::failed) {
-    /* If the host running the synchro didn't fail, then the synchro was canceled */
-    exec->state = SIMIX_CANCELED;
-  } else {
-    exec->state = SIMIX_DONE;
-  }
-
-  if (exec != nullptr && exec->surf_exec) {
-    exec->surf_exec->unref();
-    exec->surf_exec = NULL;
-  }
-
-  /* If there are simcalls associated with the synchro, then answer them */
-  if (xbt_fifo_size(exec->simcalls))
-    SIMIX_execution_finish(exec);
-}
-
 
 void SIMIX_set_category(smx_synchro_t synchro, const char *category)
 {

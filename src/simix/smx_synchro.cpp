@@ -14,7 +14,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix,
                                 "SIMIX Synchronization (mutex, semaphores and conditions)");
 
 static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
-static void SIMIX_synchro_finish(smx_synchro_t synchro);
 static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_process_t issuer, smx_simcall_t simcall);
 static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
@@ -74,20 +73,7 @@ void SIMIX_synchro_destroy(smx_synchro_t synchro)
   delete raw;
 }
 
-void SIMIX_post_synchro(smx_synchro_t synchro)
-{
-  XBT_IN("(%p)",synchro);
-  simgrid::simix::Raw *raw = static_cast<simgrid::simix::Raw*>(synchro);
-  if (raw->sleep->getState() == simgrid::surf::Action::State::failed)
-    raw->state = SIMIX_FAILED;
-  else if(raw->sleep->getState() == simgrid::surf::Action::State::done)
-    raw->state = SIMIX_SRC_TIMEOUT;
-
-  SIMIX_synchro_finish(raw);
-  XBT_OUT();
-}
-
-static void SIMIX_synchro_finish(smx_synchro_t synchro)
+void SIMIX_synchro_finish(smx_synchro_t synchro)
 {
   XBT_IN("(%p)",synchro);
   smx_simcall_t simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls);

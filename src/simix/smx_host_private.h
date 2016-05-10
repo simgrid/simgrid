@@ -52,8 +52,8 @@ XBT_PRIVATE void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t h
 
 XBT_PRIVATE void SIMIX_execution_suspend(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_execution_resume(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_execution_finish(simgrid::simix::Exec *exec);
 
-XBT_PRIVATE void SIMIX_post_host_execute(simgrid::simix::Exec *exec);
 XBT_PRIVATE void SIMIX_set_category(smx_synchro_t synchro, const char *category);
 
 /* vm related stuff */
