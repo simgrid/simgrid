@@ -10,6 +10,7 @@
 #include <cassert>
 #include <cstddef>
 #include <cstdint>
+#include <cstring>
 #include <type_traits>
 
 #include "src/mc/mc_forward.hpp"
@@ -91,15 +92,47 @@ public:
   static constexpr ReadOptions lazy() { return ReadOptions(1); }
 };
 
-/** A value read from another process */
+/** A value from another process
+ *
+ *  This represents a value from another process:
+ *
+ *  * constructor/destructor are disabled;
+ *
+ *  * raw memory copy (std::memcpy) is used to copy Remote<T>;
+ *
+ *  * raw memory comparison is used to compare them;
+ *
+ *  * when T is a trivial type, Remote is convertible to a T.
+ *
+ *  We currently only handle the case where the type has the same layout
+ *  in the current process and in the target process: we don't handle
+ *  cross-architecture (such as 32-bit/64-bit access).
+ */
 template<class T>
 class Remote {
 private:
+  // If we use a union, it won't work with abstract types:
   char buffer[sizeof(T)];
 public:
+  // HACK, some code currently cast this to T* which is **not** legal.
   void*       data() { return buffer; }
   const void* data() const { return buffer; }
   constexpr std::size_t size() const { return sizeof(T); }
+  operator T() const {
+    static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
+    T res;
+    std::memcpy(&res, buffer, sizeof(T));
+    return res;
+  }
+  Remote() {}
+  Remote(T const& x)
+  {
+    std::memcpy(&x, buffer, sizeof(T));
+  }
+  Remote& operator=(T const& x)
+  {
+    std::memcpy(&x, buffer, sizeof(T));
+  }
 };
 
 /** A given state of a given process (abstract base class)
@@ -146,11 +179,11 @@ public:
 
   /** Read a given data structure from the address space */
   template<class T> inline
-  T read(RemotePtr<T> ptr, int process_index = ProcessIndexMissing)
+  Remote<T> read(RemotePtr<T> ptr, int process_index = ProcessIndexMissing)
   {
-    static_assert(std::is_trivial<T>::value, "Cannot read a non-trivial type");
-    T res;
-    return *(T*)this->read_bytes(&res, sizeof(T), ptr, process_index);
+    Remote<T> res;
+    this->read_bytes(&res, sizeof(T), ptr, process_index);
+    return res;
   }
 };
 
