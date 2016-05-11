@@ -14,8 +14,8 @@ namespace simix {
 
   XBT_PUBLIC_CLASS Sleep : public Synchro {
   public:
-    void suspend();
-    void resume();
+    void suspend() override;
+    void resume() override;
     void post() override;
 
     sg_host_t host;                /* The host that is sleeping */

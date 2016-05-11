@@ -15,8 +15,8 @@ namespace simix {
   XBT_PUBLIC_CLASS Exec : public Synchro {
     ~Exec();
   public:
-    void suspend();
-    void resume();
+    void suspend() override;
+    void resume() override;
     void post() override;
     double remains();
 

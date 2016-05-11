@@ -23,8 +23,8 @@ namespace simix {
     ~Comm();
   public:
     Comm(e_smx_comm_type_t type);
-    void suspend();
-    void resume();
+    void suspend() override;
+    void resume() override;
     void post() override;
     void cancel();
     double remains();

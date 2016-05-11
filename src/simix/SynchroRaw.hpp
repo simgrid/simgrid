@@ -15,8 +15,8 @@ namespace simix {
   /** Used to implement mutexes, semaphores and conditions */
   XBT_PUBLIC_CLASS Raw : public Synchro {
   public:
-    void suspend();
-    void resume();
+    void suspend() override;
+    void resume() override;
     void post() override;
 
     surf_action_t sleep;
