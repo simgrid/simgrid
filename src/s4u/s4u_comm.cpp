@@ -9,7 +9,7 @@
 
 #include "simgrid/s4u/comm.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm,s4u_async,"S4U asynchronous communications");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm,s4u_activity,"S4U asynchronous communications");
 using namespace simgrid;
 
 s4u::Comm::~Comm() {

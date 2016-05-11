@@ -9,7 +9,7 @@
 namespace simgrid {
 namespace s4u {
 
-class Async;
+class Activity;
 class Comm;
 class Engine;
 class Host;

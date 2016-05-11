@@ -7,21 +7,21 @@
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
 
-#include "simgrid/s4u/async.hpp"
+#include "simgrid/s4u/Activity.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_async,s4u,"S4U asynchronous actions");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity,s4u,"S4U activities");
 using namespace simgrid;
 
-s4u::Async::Async() {
+s4u::Activity::Activity() {
 
 }
-s4u::Async::~Async() {
+s4u::Activity::~Activity() {
 
 }
 
-void s4u::Async::setRemains(double remains) {
-  xbt_assert(state_ == inited, "Cannot change the remaining amount of work once the Async is started");
+void s4u::Activity::setRemains(double remains) {
+  xbt_assert(state_ == inited, "Cannot change the remaining amount of work once the Activity is started");
   remains_ = remains;
 }
 
