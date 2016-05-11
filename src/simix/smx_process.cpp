@@ -627,15 +627,14 @@ void SIMIX_process_change_host(smx_process_t process,
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t process)
 {
-  smx_synchro_t sync_suspend =
-      SIMIX_process_suspend(process, simcall->issuer);
+  smx_synchro_t sync_suspend = SIMIX_process_suspend(process, simcall->issuer);
 
   if (process != simcall->issuer) {
     SIMIX_simcall_answer(simcall);
   } else {
     xbt_fifo_push(sync_suspend->simcalls, simcall);
     process->waiting_synchro = sync_suspend;
-    SIMIX_execution_suspend(process->waiting_synchro);
+    process->waiting_synchro->suspend();
   }
   /* If we are suspending ourselves, then just do not finish the simcall now */
 }

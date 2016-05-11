@@ -384,16 +384,6 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro
     SIMIX_execution_finish(exec);
 }
 
-void SIMIX_execution_suspend(smx_synchro_t synchro)
-{
-  synchro->suspend(); // FIXME: USELESS
-}
-
-void SIMIX_execution_resume(smx_synchro_t synchro)
-{
-  synchro->resume(); // FIXME: USELESS
-}
-
 void SIMIX_execution_finish(simgrid::simix::Exec *exec)
 {
   xbt_fifo_item_t item;
