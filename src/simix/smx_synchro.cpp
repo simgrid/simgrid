@@ -69,7 +69,6 @@ void SIMIX_synchro_destroy(smx_synchro_t synchro)
   XBT_DEBUG("Destroying synchro %p", synchro);
   simgrid::simix::Raw *raw = static_cast<simgrid::simix::Raw*>(synchro);
 
-  raw->sleep->unref();
   delete raw;
 }
 

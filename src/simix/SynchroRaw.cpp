@@ -9,6 +9,10 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_synchro);
 
+simgrid::simix::Raw::~Raw()
+{
+  sleep->unref();
+}
 void simgrid::simix::Raw::suspend()
 {
   /* The suspension of raw synchros is delayed to when the process is rescheduled. */
