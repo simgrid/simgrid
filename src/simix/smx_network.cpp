@@ -215,11 +215,9 @@ smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sr
   }
   xbt_fifo_push(src_proc->comms, other_synchro);
 
-  /* if the communication synchro is detached then decrease the refcount
-   * by one, so it will be eliminated by the receiver's destroy call */
+
   if (detached) {
     other_comm->detached = true;
-    other_comm->ref();
     other_comm->clean_fun = clean_fun;
   } else {
     other_comm->clean_fun = NULL;
@@ -683,6 +681,8 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       if(simcall->issuer == comm->dst_proc){
         if(comm->src_proc)
           xbt_fifo_remove(comm->src_proc->comms, synchro);
+        //in case of a detached comm we have an extra ref to remove, as the sender won't do it
+        destroy_count++;
       }
     }
     SIMIX_simcall_answer(simcall);
