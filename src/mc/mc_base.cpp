@@ -6,6 +6,8 @@
 
 #include <cassert>
 
+#include <algorithm>
+
 #include <simgrid_config.h>
 
 #include <xbt/log.h>
@@ -21,7 +23,11 @@
 #include "src/mc/mc_protocol.h"
 
 #include "src/simix/Synchro.h"
+#include "src/simix/SynchroIo.hpp"
 #include "src/simix/SynchroComm.hpp"
+#include "src/simix/SynchroRaw.hpp"
+#include "src/simix/SynchroSleep.hpp"
+#include "src/simix/SynchroExec.hpp"
 
 #if HAVE_MC
 #include "src/mc/mc_request.h"
@@ -73,9 +79,7 @@ void wait_for_requests(void)
 bool request_is_enabled(smx_simcall_t req)
 {
   unsigned int index = 0;
-#if HAVE_MC
-  simgrid::simix::Synchro temp_synchro;
-#endif
+  // TODO, add support for the subtypes?
 
   switch (req->call) {
   case SIMCALL_NONE:
@@ -88,9 +92,11 @@ bool request_is_enabled(smx_simcall_t req)
 
 #if HAVE_MC
     // Fetch from MCed memory:
+    // HACK, type puning
+    simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
     if (mc_model_checker != nullptr) {
-      mc_model_checker->process().read(&temp_synchro, remote(act));
-      act = &temp_synchro;
+      mc_model_checker->process().read(temp_comm, remote(act));
+      act = static_cast<simgrid::simix::Comm*>(temp_comm.data());
     }
 #endif
 
@@ -136,10 +142,12 @@ bool request_is_enabled(smx_simcall_t req)
     for (index = 0; index < comms->used; ++index) {
 #if HAVE_MC
       // Fetch act from MCed memory:
+      // HACK, type puning
+      simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
       if (mc_model_checker != nullptr) {
         memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
-        mc_model_checker->process().read(&temp_synchro, remote(act));
-        act = &temp_synchro;
+        mc_model_checker->process().read(temp_comm, remote(act));
+        act = static_cast<simgrid::simix::Comm*>(temp_comm.data());
       }
       else
 #endif

@@ -49,7 +49,7 @@ namespace mc {
 
 State::State()
 {
-  std::memset(&this->internal_comm, 0, sizeof(this->internal_comm));
+  std::memset(this->internal_comm.data(), 0, this->internal_comm.size());
   std::memset(&this->internal_req, 0, sizeof(this->internal_req));
   std::memset(&this->executed_req, 0, sizeof(this->executed_req));
 }
@@ -126,14 +126,15 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       }
 
       case SIMCALL_COMM_WAIT: {
-        smx_synchro_t remote_act = simcall_comm_wait__get__comm(&process->simcall);
-        s_smx_synchro_t act;
-        mc_model_checker->process().read_bytes(
-          &act, sizeof(act), remote(remote_act));
-        if (act.comm.src_proc && act.comm.dst_proc)
+        simgrid::mc::RemotePtr<simgrid::simix::Comm> remote_act = remote(
+          static_cast<simgrid::simix::Comm*>(simcall_comm_wait__get__comm(&process->simcall)));
+        simgrid::mc::Remote<simgrid::simix::Comm> temp_act;
+        mc_model_checker->process().read(temp_act, remote_act);
+        simgrid::simix::Comm* act = static_cast<simgrid::simix::Comm*>(temp_act.data());
+        if (act->src_proc && act->dst_proc)
           state->transition.argument = 0;
-        else if (act.comm.src_proc == nullptr && act.comm.type == SIMIX_COMM_READY
-              && act.comm.detached == 1)
+        else if (act->src_proc == nullptr && act->type == SIMIX_COMM_READY
+              && act->detached == 1)
           state->transition.argument = 0;
         else
           state->transition.argument = -1;
@@ -178,7 +179,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     read_element(mc_model_checker->process(),
       &remote_comm, remote(simcall_comm_waitany__get__comms(req)),
       state->transition.argument, sizeof(remote_comm));
-    mc_model_checker->process().read(&state->internal_comm, remote(remote_comm));
+    mc_model_checker->process().read(state->internal_comm, remote(
+      static_cast<simgrid::simix::Comm*>(remote_comm)));
     simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
     simcall_comm_wait__set__timeout(&state->internal_req, 0);
     break;
@@ -193,7 +195,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       read_element(mc_model_checker->process(),
         &remote_comm, remote(simcall_comm_testany__get__comms(req)),
         state->transition.argument, sizeof(remote_comm));
-      mc_model_checker->process().read(&state->internal_comm, remote(remote_comm));
+      mc_model_checker->process().read(state->internal_comm, remote(
+        static_cast<simgrid::simix::Comm*>(remote_comm)));
     }
 
     simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);

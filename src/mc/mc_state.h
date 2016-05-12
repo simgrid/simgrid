@@ -15,6 +15,11 @@
 
 #include <simgrid_config.h>
 #include "src/simix/smx_private.h"
+#include "src/simix/SynchroIo.hpp"
+#include "src/simix/SynchroComm.hpp"
+#include "src/simix/SynchroRaw.hpp"
+#include "src/simix/SynchroSleep.hpp"
+#include "src/simix/SynchroExec.hpp"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/Transition.hpp"
@@ -22,10 +27,16 @@
 namespace simgrid {
 namespace mc {
 
+enum class PatternCommunicationType {
+  none = 0,
+  send = 1,
+  receive = 2,
+};
+
 struct PatternCommunication {
   int num = 0;
   smx_synchro_t comm_addr;
-  e_smx_comm_type_t type = SIMIX_COMM_SEND;
+  PatternCommunicationType type = PatternCommunicationType::send;
   unsigned long src_proc = 0;
   unsigned long dst_proc = 0;
   const char *src_host = nullptr;
@@ -125,7 +136,7 @@ struct XBT_PRIVATE State {
   s_smx_simcall_t internal_req;
 
   /* Can be used as a copy of the remote synchro object */
-  s_smx_synchro_t internal_comm;
+  simgrid::mc::Remote<simgrid::simix::Comm> internal_comm;
 
   /** Snapshot of system state (if needed) */
   std::shared_ptr<simgrid::mc::Snapshot> system_state;
