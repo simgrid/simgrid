@@ -93,7 +93,7 @@ const char* simcall_names[] = {
   "SIMCALL_SET_CATEGORY",
   "SIMCALL_RUN_KERNEL",};
 
-/**
+/** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler
  * 
  * This function is generated from src/simix/simcalls.in
