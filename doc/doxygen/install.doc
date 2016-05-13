@@ -6,24 +6,10 @@ SimGrid should work out of the box on Linux, Mac OSX, FreeBSD, and Windows (unde
 available at the moment).
 
 The easiest way to install SimGrid is to go for a @ref install_binary "binary package". Under Debian or Ubuntu, this is 
-very easy as SimGrid is directly integrated to the official repositories. 
-If you just want to use @ref install_binary_java "Java", simply copy the jar file on your disk and you're set.
-
-Recompiling an official archive is not much more complex. SimGrid has very few dependencies and rely only on very 
-standard tools.  First, download the *@SimGridRelease.tar.gz* archive from the 
-[download page](https://gforge.inria.fr/frs/?group_id=12).
-Then, recompiling the archive should be done in a few lines:
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
-tar xf @SimGridRelease.tar.gz
-cd @SimGridRelease
-cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
-make
-make install
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
-If you want to stay on the bleeding edge, you should get the latest git version, and recompile it as you would do for 
-an official archive. Depending on the files you change in the source tree, some extra tools may be needed.
+very easy as SimGrid is directly integrated to the official repositories. For other Linux variants, you probably want 
+to go for a @ref install_src "source install". Please contact us if you want to contribute the build scripts for your 
+preferred distribution. If you just want to use @ref install_binary_java "Java", simply copy the jar file on your disk 
+and you're set.
 
 @section install_binary Installing a binary package
 
@@ -35,9 +21,6 @@ for these systems are well integrated with these systems and very up-to-date. To
 @verbatim
 apt-get install simgrid
 @endverbatim
-
-For other Linux variants, you probably want to go for a @ref install_src "source install". Please contact us if you want
-to contribute the build scripts for your preferred distribution.
 
 @subsection install_binary_java Using the binary jar file
 
@@ -67,7 +50,7 @@ will appear on the top of the resulting page.
 
 @subsection install_src_deps Resolving the dependencies
 
-SimGrid only uses very standard tools:
+Recompiling an official archive is not much more complex. SimGrid only uses very standard tools:
   - C compiler, C++ compiler, make and friends.
   - perl (but you may try to go without it)
   - We use cmake to configure our compilation
@@ -85,9 +68,20 @@ For platform specific details, please see  @ref install_cmake_mac and @ref insta
 
 @subsection install_src_fetch Getting the sources
 
-If you just want to use SimGrid, you should probably grab the latest stable version available from the 
-[download page](https://gforge.inria.fr/frs/?group_id=12). We do our best to release soon and release often, but 
-sometimes you need to install the developer version of SimGrid, directly from the git repository.
+You can download the *@SimGridRelease.tar.gz* archive from the 
+[download page](https://gforge.inria.fr/frs/?group_id=12).
+Then, recompiling the archive should be done in a few lines:
+
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~{.sh}
+tar xf @SimGridRelease.tar.gz
+cd @SimGridRelease
+cmake -DCMAKE_INSTALL_PREFIX=/opt/simgrid .
+make
+make install
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+If you want to stay on the bleeding edge, you should get the latest git version, and recompile it as you would do for 
+an official archive. Depending on the files you change in the source tree, some extra tools may be needed.
 
 @verbatim
 git clone git://scm.gforge.inria.fr/simgrid/simgrid.git simgrid
@@ -131,44 +125,51 @@ In addition to the classical cmake configuration variables, SimGrid accepts seve
 
   @li <b>CMAKE_INSTALL_PREFIX</b> (path): Where to install SimGrid (/opt/simgrid, /usr/local, or elsewhere).
 
-  @li <b>enable_compile_optimizations</b> (ON/OFF): request the
-      compiler to produce efficient code. You want to activate it,
-      unless you want to debug SimGrid itself (as efficient code may
-      be appear mangled to the debuggers).
+  @li <b>enable_compile_optimizations</b> (ON/OFF) to request the compiler to produce efficient code. You want to 
+      activate it, unless you plan to debug SimGrid itself. Indeed, efficient code may be appear mangled to debuggers.
 
-  @li <b>enable_compile_warnings</b> (ON/OFF): request the compiler to issue error messages whenever the source code is
-      not perfectly clean. If you are a SimGrid developer, you have to activate this option to enforce the code quality.
-      As a regular user, this option is likely to bring you issues only.
+  @li <b>enable_compile_warnings</b> (ON/OFF) to request the compiler to issue error messages whenever the source code
+      is not perfectly clean. If you are a SimGrid developer, you have to activate this option to enforce the code 
+      quality. As a regular user, this option is likely to bring you issues only.
 
-  @li <b>enable_debug</b> (ON/OFF): disable this if simulation speed really matters to you. All log messages of 
-      gravity debug or below will be discarded at compilation time. As there is quite a bunch of such log messages in 
-      SimGrid internals, this can reveal faster than discarding them at runtime as usual. However, it thus obviously 
-      becomes impossible to get any debug message from SimGrid if something goes wrong.
+  @li <b>enable_debug</b> (ON/OFF) allows to discard all log messages of gravity debug or below at compile time, if 
+      simulation speed matters. As there is quite a bunch of such log messages in SimGrid internals, this can reveal 
+      faster than discarding them at runtime as usual. However, it obviously becomes impossible to get any debug 
+      message from SimGrid if something goes wrong.
 
-  @li <b>enable_documentation</b> (ON/OFF) : whether the documentation should be generated during the compilation.
+  @li <b>enable_documentation</b> (ON/OFF) to generate the documentation pages.
 
-  @li <b>enable_jedule</b> (ON/OFF): enable this to get SimDag producing execution traces that can then be visualized 
-      with the Jedule external tool.
+  @li <b>enable_java</b> (ON/OFF) to enjoy the java bindings of SimGrid.
 
-  @li <b>enable_lua</b> (ON/OFF): enable this if you want to enjoy the lua bindings of SimGrid. Adds an extra dependency
-      on the lua library and developer header files.
+  @li <b>enable_jedule</b> (ON/OFF) to get SimDag producing execution traces that can then be visualized with the 
+      Jedule external tool.
 
-  @li <b>enable_maintainer_mode</b> (ON/OFF): you only need to set this option if you modify very specific parts of
-      SimGrid itself (e.g., the XML parsers and other related elements). Moreover, this adds an extra dependency on 
-      flex and flexml.
+  @li <b>enable_lua</b> (ON/OFF) to enjoy the lua bindings of SimGrid. It adds an extra dependency on the lua library 
+      and developer header files.
 
-  @li <b>enable_mallocators</b> (ON/OFF): disable this when tracking memory issues within SimGrid, or the caching 
+  @li <b>enable_lib_in_jar</b> (ON/OFF) to XXX
+
+  @li <b>enable_lto</b> (ON/OFF) to XXX
+
+  @li <b>enable_maintainer_mode</b> (ON/OFF) is only needed if you plan to modify very specific parts of SimGrid
+      (e.g., the XML parsers and other related elements). Moreover, this adds an extra dependency on flex and flexml.
+
+  @li <b>enable_mallocators</b> (ON/OFF) has to be disabled when tracking memory issues within SimGrid, or the caching 
       mechanism used internally will fool the debuggers.
 
-  @li <b>enable_model-checking</b> (ON/OFF): Only enable this if you actually plan to use the model-checking feature of 
+  @li <b>enable_model-checking</b> (ON/OFF) if you actually plan to use the model-checking feature of 
       SimGrid. This execution mode is still under heavy work, but should be rather usable now. Be <b>warned</b> that 
       this option will hinder simulation speed even if you simulate without activating the model-checker. We are 
       working on improving this situation.
 
-  @li <b>enable_ns3</b> (ON/OFF): whether you want to use ns-3. See section @ref pls_simgrid_configuration_ns3.
+  @li <b>enable_ns3</b> (ON/OFF) if you want to use ns-3. See section @ref pls_simgrid_configuration_ns3.
 
-  @li <b>enable_smpi</b> (ON/OFF): disable this if you have issues with the module allowing to run MPI code on top of 
-      SimGrid. This module is very stable, but if you don't really need it, you can disable it safely.
+  @li <b>enable_smpi</b> (ON/OFF) has to be disabled if you have issues with the module allowing to run MPI code on 
+      top of SimGrid. This module is very stable, but if you don't really need it, you can disable it safely.
+
+  @li <b>enable_smpi_ISP_testsuite</b> (ON/OFF) to XXX
+
+  @li <b>enable_smpi_MPICH3_testsuite</b> (ON/OFF) to XXX
 
 \subsubsection install_cmake_reset Resetting the compilation configuration
 
