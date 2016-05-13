@@ -13,7 +13,6 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
 /** @addtogroup m_host_management
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
  * (#msg_host_t) and the functions for managing it.
  *  
  *  A <em>location</em> (or <em>host</em>) is any possible place where  a process may run. Thus it may be represented

@@ -53,8 +53,6 @@ details).
     #MSG_function_register (and maybe #MSG_function_register_default)
  -# Launch your processes from a deployment file with #MSG_launch_application
  -# Run the simulation with #MSG_main
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Simulation Control" --> @endhtmlonly
 */
 
 /** @defgroup m_process_management Process Management Functions
@@ -73,16 +71,12 @@ details).
  *  @brief This section describes the task structure of MSG
  *         (#msg_task_t) and the functions for managing it. See
  *         \ref msg_task_usage to see how to put the tasks in action.
- *
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Tasks" --> \endhtmlonly
  */
 
 /** @defgroup msg_mailbox_management Mailbox Management Functions
  *  @ingroup MSG_API
  *  @brief This section describes the mailbox structure of MSG
  *         (#msg_mailbox_t) and the functions for managing it.
- *
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Mailbox" --> \endhtmlonly
  */
 
 /** @defgroup msg_task_usage Task Actions
@@ -134,8 +128,6 @@ details).
 @defgroup msg_trace_driven Trace-driven simulations
 @ingroup MSG_API
 @brief This section describes the functions allowing to build trace-driven simulations.
-
-\htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Trace-Driven" --> \endhtmlonly
 
 This is very handy when you want to test an algorithm or protocol that
 does nothing unless it receives some events from outside. For example,

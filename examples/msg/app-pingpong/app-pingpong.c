@@ -8,6 +8,8 @@
 
 /** @addtogroup MSG_examples
  *
+ *  @example app-pingpong/app-pingpong.c
+ * 
  *  - <b>Ping-Pong: app-pingpong/app-pingpong.c</b>. It's hard to think of a simpler example. The tesh file
  *    laying in the directory is instructive concerning the way to pass options to the simulators (see \ref options).
  */
@@ -19,14 +21,14 @@ static int pinger(int argc, char *argv[])
   XBT_INFO("Ping -> %s", argv[1]);
   xbt_assert(MSG_host_by_name(argv[1]) != NULL, "Unknown host %s. Stopping Now! ", argv[1]);
 
-  /** - Do the ping with a 1-Byte task (latency bound) ... */
+  /* - Do the ping with a 1-Byte task (latency bound) ... */
   double time = MSG_get_clock();
   msg_task_t ping_task = MSG_task_create("small communication (latency bound)", 0.0, 1, NULL);
   ping_task->data = xbt_new(double, 1);
   *(double *) ping_task->data = time;
   MSG_task_send(ping_task, argv[1]);
 
-  /** - ... then wait for the (large) pong */
+  /* - ... then wait for the (large) pong */
   msg_task_t pong_task = NULL;
   int a = MSG_task_receive(&pong_task,MSG_host_get_name(MSG_host_self()));
   xbt_assert(a == MSG_OK, "Unexpected behavior");

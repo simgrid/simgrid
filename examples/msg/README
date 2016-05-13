@@ -1,3 +1,6 @@
+This file follows the Doxygen syntax to be included in the documentation.
+
+/** 
 MSG comes with an extensive set of examples. It is sometimes difficult
 to find the one you need. This list aims at helping you finding the
 example from which you can learn what you want to.
@@ -133,3 +136,6 @@ Examples of full applications
    constitute a fully working non-trivial example. In addition, its
    implementation is rather efficient, as demonstrated in
    [57]http://hal.inria.fr/inria-00602216/
+
+
+*/

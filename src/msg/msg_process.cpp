@@ -13,7 +13,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_process, msg, "Logging specific to MSG (process)");
 
 /** @addtogroup m_process_management
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Processes" --> \endhtmlonly
  *
  *  Processes (#msg_process_t) are independent agents that can do stuff on their own. They are in charge of executing
  *  your code interacting with the simulated world.

@@ -10,7 +10,6 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
 /** @addtogroup msg_file_management
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Files" --> \endhtmlonly
  * (#msg_file_t) and the functions for managing it.
  *
  *  \see #msg_file_t
@@ -414,7 +413,6 @@ void __MSG_file_destroy(msg_file_priv_t file) {
 
 /********************************* Storage **************************************/
 /** @addtogroup msg_storage_management
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Storages" --> \endhtmlonly
  * (#msg_storage_t) and the functions for managing it.
  */
 

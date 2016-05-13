@@ -85,86 +85,64 @@
 @defgroup SURF_c_bindings   SURF C bindings
 @ingroup SURF_API
 @brief Describes the c bindings of SURF
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf C bindings" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_interface   SURF Interface
 @ingroup SURF_API
 @brief Describes the general interface for all components (Cpu, Network, Storage, Host, VM)
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf Interface" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_routing_interface   SURF Routing Interface
 @ingroup SURF_API
 @brief Describes the routing interface
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Surf Routing" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_cpu_interface   SURF Cpu Interface
 @ingroup SURF_API
 @brief Describes the general Cpu interface for all Cpu implementations
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Cpu Interface" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_network_interface   SURF Network Interface
 @ingroup SURF_API
 @brief Describes the general Network interface for all Network implementations
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Network Interface" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_storage_interface   SURF Storage Interface
 @ingroup SURF_API
 @brief Describes the general  interface for all Storage implementations
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Storage Interface" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_host_interface   SURF Host Interface
 @ingroup SURF_API
 @brief Describes the general  interface for all Host implementations
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Host Interface" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_vm_interface   SURF VM Interface
 @ingroup SURF_API
 @brief Describes the general  interface for all VM implementations
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="VM Interface" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_lmm   SURF Linear MaxMin
 @ingroup SURF_API
 @brief Describes how the linear MaxMin system work
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="SURF Linear MaxMin" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_callbacks   SURF callbacks
 @ingroup SURF_API
 @brief Describes how to use the SURF callbacks
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="SURF callbacks" --> @endhtmlonly
 */
 
 /**
 @defgroup SURF_plugin_energy   SURF Energy Plugin
 @ingroup SURF_API
 @brief Describes how to use the energy plugin.
-
-@htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Energy plugin" --> @endhtmlonly
 */
