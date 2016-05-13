@@ -1,28 +1,18 @@
 <doxygenlayout version="1.0">
   <!-- Navigation index tabs for HTML output -->
   <navindex>
-    <!--<tab type="usergroup" visible="yes" title="Getting started" intro="Getting started" url="@ref getting_started">
-      <tab type="user" visible="yes" url="@ref getting_started" title="What to read" />
-      <tab type="user" visible="yes" url="@ref install" title="Installing SimGrid" />
-      <tab type="user" visible="yes" url="@ref help" title="Getting help" />
-    </tab>-->
     
     <tab type="mainpage" visible="yes" title="SimGrid User Documentation" />
 
     <tab type="usergroup" visible="yes" title="Reference documentation" intro="Reference documentation">
       <tab type="namespaces" visible="no" title="">
-      <tab type="namespaces" visible="yes" title="" intro=""/>
-      <tab type="namespacemembers" visible="yes" title="" intro=""/>
-    </tab>
+        <tab type="namespaces" visible="yes" title="" intro=""/>
+      </tab>
       <tab type="classes" visible="no" title="">
         <tab type="classes" visible="yes" title="" intro=""/>
         <tab type="classindex" visible="$ALPHABETICAL_INDEX" title=""/> 
         <tab type="hierarchy" visible="yes" title="" intro=""/>
-        <tab type="classmembers" visible="yes" title="" intro=""/>
-      </tab>
-      <tab type="files" visible="no" title="">
-        <tab type="files" visible="yes" title="" intro=""/>
-        <tab type="globals" visible="yes" title="" intro=""/>
+        <tab type="classmembers" visible="no" title="" intro=""/>
       </tab>
       <tab type="modules" visible="no" title="" intro="">
         <tab type="modules" visible="yes" title="APIs Reference"
@@ -137,6 +127,7 @@
 
   <!-- Layout definition for a group page -->
   <group>
+    <detaileddescription title=""/>
     <briefdescription visible="yes"/>
     <groupgraph visible="$GROUP_GRAPHS"/>
     <memberdecl>
@@ -160,7 +151,6 @@
       <friends title=""/>
       <membergroups visible="yes"/>
     </memberdecl>
-    <detaileddescription title=""/>
     <memberdef>
       <pagedocs/>
       <inlineclasses title=""/>

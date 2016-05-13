@@ -168,7 +168,7 @@
 #  define XBT_IMPORT_NO_EXPORT(type)  type
 #  define XBT_PUBLIC_DATA(type)       extern type
 #  define XBT_PUBLIC_CLASS            class
-#  define XBT_PRIVATE
+#  define XBT_PRIVATE                 /** @private */
 
 #endif
 

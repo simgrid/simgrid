@@ -17,6 +17,7 @@
 #include "src/mc/mc_forward.hpp"
 #include "xbt/ex.h"
 #include <simgrid/simix.hpp>
+/** @cond */ // Please Doxygen, don't look at this
   
 inline static void simcall_BODY_vm_suspend(sg_host_t ind_vm) {
     smx_process_t self = SIMIX_process_self();
@@ -1549,4 +1550,4 @@ inline static void simcall_BODY_run_kernel(void* code) {
       SIMIX_simcall_handle(&self->simcall, 0);
     }    
     
-  }
+  }/** @endcond */

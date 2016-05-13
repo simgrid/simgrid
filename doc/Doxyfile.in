@@ -1466,14 +1466,13 @@ INCLUDE_FILE_PATTERNS  =
 # undefined via #undef or recursively expanded use the := operator
 # instead of the = operator.
 
-PREDEFINED             = DOXYGEN \
-                         DOXYGEN_SKIP_IT \
-                         XBT_PUBLIC(type)="extern type" \
+PREDEFINED             = XBT_PUBLIC(type)="extern type" \
                          XBT_EXPORT_NO_IMPORT(type)=type \
                          XBT_IMPORT_NO_EXPORT(type)=type \
                          XBT_PUBLIC_DATA(type)="extern type" \
                          XBT_PUBLIC_CLASS=class \
-                         XBT_INLINE= 
+                         XBT_INLINE= \
+			 XBT_PRIVATE=/** @private /
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.

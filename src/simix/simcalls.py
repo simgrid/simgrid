@@ -323,7 +323,7 @@ if __name__ == '__main__':
 
     fd.write('};\n\n')
 
-    fd.write('/**\n')
+    fd.write('/** @private\n')
     fd.write(
         ' * @brief (in kernel mode) unpack the simcall and activate the handler\n')
     fd.write(' * \n')
@@ -365,5 +365,7 @@ if __name__ == '__main__':
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
     fd.write('#include <simgrid/simix.hpp>\n')
+    fd.write("/** @cond */ // Please Doxygen, don't look at this\n")
     handle(fd, Simcall.body, simcalls, simcalls_dict)
+    fd.write("/** @endcond */\n");
     fd.close()
