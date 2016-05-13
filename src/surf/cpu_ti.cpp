@@ -68,7 +68,6 @@ CpuTiTgmr::~CpuTiTgmr()
 * Wrapper around surf_cpu_integrate_trace_simple() to get
 * the cyclic effect.
 *
-* \param trace Trace structure.
 * \param a      Begin of interval
 * \param b      End of interval
 * \return the integrate value. -1 if an error occurs.
@@ -253,7 +252,6 @@ double CpuTiTgmr::solveSomewhatSimple(double a, double amount)
 /**
  * \brief Auxiliary function to solve integral.
  *  It returns the date when the requested amount of flops is available
- * \param trace    Trace structure
  * \param a        Initial point
  * \param amount  Amount of flops
  * \return The date when amount is available.
@@ -280,7 +278,6 @@ double CpuTiTrace::solveSimple(double a, double amount)
 * \brief Auxiliary function to update the CPU speed scale.
 *
 *  This function uses the trace structure to return the speed scale at the determined time a.
-* \param trace    Trace structure to search the updated speed scale
 * \param a        Time
 * \return CPU speed scale
 */
@@ -302,7 +299,6 @@ double CpuTiTgmr::getPowerScale(double a)
 *
 * \param  speedTrace    CPU availability trace
 * \param  value          Percentage of CPU speed available (useful to fixed tracing)
-* \param  spacing        Initial spacing
 * \return  Integration trace structure
 */
 CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)

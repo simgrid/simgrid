@@ -125,7 +125,7 @@ void bindFlag(T& value, std::initializer_list<const char*> names, const char* de
  *    if (x < x_min || x => x_max)
  *      throw std::range_error("must be in [x_min, x_max)")
  *  });
- *  </pre><code>
+ *  </code></pre>
  */
 // F is a checker, F : T& -> ()
 template<class T, class F>
@@ -159,7 +159,7 @@ bindFlag(T& value, const char* name, const char* description,
  *  <pre><code>
  *  static int x;
  *  simgrid::config::bindFlag(a, "x", [](int x) { return return x > 0; });
- *  </pre><code>
+ *  </code></pre>
  */
 // F is a predicate, F : T const& -> bool
 template<class T, class F>
