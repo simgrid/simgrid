@@ -1648,7 +1648,7 @@ Here is an example  of trace when no file name is provided:
 | trace           | yes       | String                 | Identifier of the referenced trace (specified of the trace's \c id attribute)                     |
 | element         | yes       | String                 | The identifier of the referenced entity as given by its \c id attribute                           |
 
-\section pf_hints Hints and tips, or how to write a platform efficiently
+\section pf_hints Hints, tips and frequently requested features
 
 Now you should know at least the syntax and be able to create a
 platform by your own. However, after having ourselves wrote some platforms, there
@@ -1804,19 +1804,22 @@ characteristics (lookup : time to resolve a route):
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
     not be used.
 
-\subsection pf_switch How to describe a switch given that is no switch tag?
+\subsection pf_switch I want to describe a switch but there is no switch tag!
 
-Actually we did not include switch tag, ok. But when you're trying to
-simulate a switch, the only major impact it has when you're using
-fluid model (and SimGrid uses fluid model unless you activate 
-ns-3 or constant network mode) is the impact of the upper limit of
-the switch motherboard speed that will eventually be reached if you're
-using intensively your switch. So, the switch impact is similar to a
-link one. That's why we are used to describe a switch using a link tag
-(as a link is not an edge by a hyperedge, you can connect more than 2
-other links to it).
+Actually we did not include switch tag. But when you're trying to
+simulate a switch, assuming 
+fluid bandwidth models are used (which SimGrid uses by default unless 
+ns-3 or constant network models are activated), the limiting factor is
+switch backplane bandwidth. So, essentially, at least from
+the simulation perspective, a switch is similar to a
+link: some device that is traversed by flows and with some latency and
+so,e maximum bandwidth. Thus, you can simply simulate a switch as a
+link. Many links
+can be connected to this "switch", which is then included in routes just
+as a normal link.
 
-\subsection pf_multicabinets How to model multi-cabinets clusters?
+
+\subsection pf_multicabinets I want to describe multi-cabinets clusters!
 
 You have several possibilities, as usual when modeling things. If your
 cabinets are homogeneous and the intercabinet network negligible for
@@ -1836,7 +1839,7 @@ the &lt;cluster&gt; internals is certainly to create one separate
 &lt;cluster&gt; per cabinet and interconnect them together. This is
 what we did in the G5K example platform for the Graphen cluster.
 
-\subsection pf_platform_multipath How to express multipath routing in platform files?
+\subsection pf_platform_multipath I want to express multipath routing in platform files!
 
 It is unfortunately impossible to express the fact that there is more
 than one routing path between two given hosts. Let's consider the

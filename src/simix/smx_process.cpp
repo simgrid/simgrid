@@ -516,7 +516,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
 
     } else if (raw != nullptr) {
       SIMIX_synchro_stop_waiting(process, &process->simcall);
-      SIMIX_synchro_destroy(process->waiting_synchro);
+      delete process->waiting_synchro;
 
     } else if (io != nullptr) {
       SIMIX_io_destroy(process->waiting_synchro);
