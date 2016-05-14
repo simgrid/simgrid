@@ -100,7 +100,8 @@ if test "$(uname -o)" != "Msys"; then
   echo "XX"
   echo "XX Open the resulting archive"
   echo "XX"
-  tar xzf `cat VERSION`.tar.gz
+  gunzip `cat VERSION`.tar.gz
+  tar xf `cat VERSION`.tar
   cd `cat VERSION`
   mkdir build
   cd build
