@@ -696,17 +696,11 @@ set(source_of_generated_headers
 ### depend of some variables setted upper
 # -->HAVE_THREAD_CONTEXTS HAVE_UCONTEXT_CONTEXTS
 if(${HAVE_THREAD_CONTEXTS}) #pthread
-  set(SURF_SRC
-    ${SURF_SRC}
-    src/simix/ContextThread.cpp
-    src/simix/ContextThread.hpp
-    )
+  set(SURF_SRC   ${SURF_SRC}   src/simix/ContextThread.cpp
+                               src/simix/ContextThread.hpp )
 else() # NOT pthread
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    src/simix/ContextThread.cpp
-    src/simix/ContextThread.hpp
-    )
+  set(EXTRA_DIST ${EXTRA_DIST} src/simix/ContextThread.cpp
+                               src/simix/ContextThread.hpp )
 endif()
 
 if(${HAVE_THREAD_CONTEXTS}) #pthread

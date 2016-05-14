@@ -61,7 +61,6 @@ public class Host {
 	@Override
 	public String toString (){
 		return this.name; 
-
 	}
 
 	/**
@@ -74,8 +73,7 @@ public class Host {
 	 * @exception		HostNotFoundException if the name of the host is not valid.
 	 *					NativeException if the native version of this method failed.
 	 */ 
-	public native static Host getByName(String name) 
-			throws HostNotFoundException, NullPointerException;
+	public native static Host getByName(String name) throws HostNotFoundException, NullPointerException;
 	/** Counts the installed hosts. */ 
 	public native static int getCount();
 
@@ -98,17 +96,14 @@ public class Host {
 	 */
 	public static native void setAsyncMailbox(String mailboxName);
 
-
-	/** Returns the name of an host. */ 
 	public String getName() {
 		return name;
 	}
 
-	/** Sets the user data of the host. */
 	public void setData(Object data) {
 		this.data = data;
 	} 
-	/** Gets the user data of the host. */
+
 	public Object getData() {
 		return this.data;
 	}
@@ -122,18 +117,14 @@ public class Host {
 	/** Stops the host if it is on */ 
 	public native void off();
 
-
 	/**
 	 * This method returns the speed of the processor of a host (in flops),
 	 * regardless of the current load of the machine.
 	 */ 
 	public native double getSpeed();
-	/** Returns the number of core of a host. */ 
 	public native double getCoreNumber();
 
-	/** Returns the value of a given host property. */
 	public native String getProperty(String name);
-	/** Changes the value of a given host property. */
 	public native void setProperty(String name, String value);
 	/** Tests if an host is up and running. */
 	public native boolean isOn();
