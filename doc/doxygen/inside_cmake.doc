@@ -1,141 +1,137 @@
 /*! 
-@page inside_cmake Modifying the cmake files
+@page inside_cmake Adding source files or examples
 
 \tableofcontents
 
-\section inside_cmake_intro Generalities on Cmake
-
-\subsection inside_cmake_what What is Cmake?
-
-CMake is a family of tools designed to build, test and package
-software. CMake is used to control the software compilation process
-using simple platform and compiler independent configuration files.
-CMake generates native makefiles and workspaces that can be used in
-the compiler environment of your choice. For more information see
-official web site <a href="http://www.cmake.org/">here</a>.
-
-\subsection inside_cmake_why Why cmake?
-
-CMake permits to developers to compile projects on different
-platforms. Then many tools are embedded like ctest for making test, a
-link to cdash for vizualise results but also test coverage and bug
-reports.
+SimGrid uses CMake which is a family of tools designed to build, test, and package software. CMake is used to control the software 
+compilation process using simple platform- and compiler-independent configuration files. CMake generates native 
+makefiles and workspaces that can be used in the compiler environment of your choice. For more information see
+the <a href="http://www.cmake.org/">official CMake web site</a>.
 
 \section inside_cmake_addsrc How to add source files?
 
-If you want modified, add or delete source files from a library you have to edit <project/directory>/tools/cmake/DefinePackages.cmake.
-Chose the section you are interested in and modify it.
+If you want to rename, add, or delete source file(s) in the SimGrid distribution, you have to edit the 
+$SIMGRID_INSTALL_PATH/tools/cmake/DefinePackages.cmake configuration file. Files are organized in sections, then find 
+the section you are interested in and modify it. For instance, a new S4U source file will have to be listed in:
 
 \verbatim
-set(SMPI_SRC
-  src/smpi/smpi_base.c
-  src/smpi/smpi_bench.c
-  src/smpi/smpi_c99.c
-  src/smpi/smpi_coll.c
-  src/smpi/smpi_comm.c
-  src/smpi/smpi_global.c
-  src/smpi/smpi_group.c
-  src/smpi/smpi_mpi.c
-  src/smpi/smpi_mpi_dt.c
-  src/smpi/smpi_pmpi.c
-  src/smpi/smpi_replay.c
-  )
+set(S4U_SRC
+  src/s4u/s4u_actor.cpp
+  src/s4u/s4u_as.cpp
+  src/s4u/s4u_activity.cpp
+  src/s4u/s4u_comm.cpp
+  src/s4u/s4u_engine.cpp  
+  src/s4u/s4u_file.cpp  
+  src/s4u/s4u_host.cpp  
+  src/s4u/s4u_mailbox.cpp
+  src/s4u/s4u_storage.cpp
+)
 \endverbatim
 
-If your source is always added to the library, you are set. But if
-it's optional, you must ensure that it gets added to the source
-distribution when not compiled in, or it may well be missing if the
-archive is built without the option activating your source. This is
-done by adding the files to the EXTRA_DIST list, as in the following
-example:
+If sources file always have to be included into the library, you are all set. However, ther inclusion may depend on 
+specific compiling options. For instance, if Boost contexts are not available, you don't want to compile the 
+src/simix/ContextBoost.* files but still add them to the source distribution. This is done by adding those files to the
+ EXTRA_DIST list, as follows:
 
 \verbatim
-### If fortran is installed compile source other-whise source is only copied in the dist 
-if(SMPI_FORTRAN)
-  set(SMPI_SRC
-    ${SMPI_SRC}
-    src/smpi/smpi_f77.c
-    )
+if (HAVE_BOOST_CONTEXTS)
+  set(SIMIX_SRC   ${SIMIX_SRC}  src/simix/ContextBoost.hpp
+                                src/simix/ContextBoost.cpp)
 else()
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    src/smpi/smpi_f77.c
-  )
+  set(EXTRA_DIST  ${EXTRA_DIST} src/simix/ContextBoost.hpp
+                                src/simix/ContextBoost.cpp)
 endif()
 \endverbatim
 
-Don't forget to run the "make distcheck" target after any modification
-to the cmake files: it checks whether all necessary files are present
-in the distribution.
+Once you're done, you must run "make distcheck" to ensure that you did not forget to add any file to the distributed 
+archives. This ensures that everything was commited correctly, so you have to first commit before running 
+"make distcheck". If you forgot something, you want to "git commit --amend". But never amend a commit that you already 
+pushed to public repositories! Do a second commit in that case.
 
 \section inside_cmake_examples How to add an example?
 
-The first rule is that the content of examples/ must be interesting to
-the users. It is expected that the users will take one of these
-examples and start editing it to make it fit their needs.
-So, it should be self-contained, informative and should use only the
-public APIs.
+The first rule is that the content of examples/ must be interesting to the users. It is expected that the users will 
+take one of these examples and start editing it to make it fit their needs. So, it should be self-contained, 
+informative, and should use only the public APIs.
 
-To ensure that all examples actually work as expected, every examples
-are also used as integration test (see \ref inside_tests), but you
-should still strive to keep the code under examples/ as informative as
-possible for the users. In particular, torture test cases should be
-placed in teshsuite/, not examples/, so that the users don't stumble
+To ensure that all examples actually work as expected, every example is also used as an integration test (see 
+@ref inside_tests), but you should still strive to keep the code under examples/ as informative as possible for the 
+users. In particular, torture test cases should be placed in teshsuite/, not examples/, so that the users don't stumble
 upon them by error.
 
-To add a new example, create a CMakeList.txt in the chosen source
-directory. It must specify where to create the executable, the source
-list, dependencies and the name of the binary.
+To add a new example, the first thing is to find the right place to add it. The examples/ directory is organized as 
+follows:
+ - examples/java/ for examples using the Java bindings to the MSG API. This directory contains packages (app, async, 
+   cloud, ...) which in turn contain individual examples. If your new example fits in an existing package, add it here,
+   or create a new package otherwise. 
+ - examples/msg/ for examples using the MSG API. Here the naming convention is package-example (e.g., app-masterworker).
+   Again, please try to fit to an existing package before creating a new one.
+ - examples/platforms/ only contains platforms descriptions in the XML format (see @ref platform for details)
+ - examples/s4u/ for examples using the emerging S4U API
+ - examples/simdag/ for examples using the SimDag API
+ - examples/smpi/ or examples using the SMPI API
+
+In each of these directories, there is a CMakeLists.txt file that has to be edited to include the new examples. For 
+instance, examples/msg/CMakeLists.txt starts with a loop over all the (currently) existing tests in which we
+ - compile and link the source file (which has to be named as the directory
+ - add the source and tesh files to the distribution.
 
 \verbatim
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(Hello Hello.c)
-
-### Add definitions for compile
-target_link_libraries(Hello simgrid)
-
-### You have to put all new files in the apropriated section 
-### If they are not there, they can't be on the dist package. 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
-set(examples_src
-  ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/Hello.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-  PARENT_SCOPE
-  )
+foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
+          async-waitany cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple 
+          cloud-two-tasks dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm
+          platform-failures io-file io-remote io-storage task-priority process-kill process-migration 
+          process-suspend platform-properties maestro-set process-startkilltime synchro-semaphore trace-categories 
+          trace-link-srcdst-user-variables trace-link-user-variables trace-masterworker trace-platform 
+          trace-process-migration trace-simple trace-user-variables)
+  add_executable       (${x}     ${x}/${x}.c)
+  target_link_libraries(${x}     simgrid)
+  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+  set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
+endforeach()
 \endverbatim
 
-Then, you have to add your CMakeLists.txt to CMAKEFILES_TXT in <project/directory>/tools/cmake/DefinePackages.cmake:
+Some more complex examples may require more than one source file. If it is the case for your example, you will find 
+inspiration in the following example
+
 \verbatim
-set(CMAKEFILES_TXT
-  <path_to_your_CMakeList.txt>
-  )
+add_executable       (bittorrent app-bittorrent/bittorrent.c app-bittorrent/messages.c app-bittorrent/peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
+target_link_libraries(bittorrent simgrid)
+set_target_properties(bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
+foreach (file bittorrent connection messages peer tracker)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
+endforeach()
 \endverbatim
 
-And finally, add the tesh file and register your example to the
-testing infrastructure. See \ref inside_tests_add_integration for more
-details.
+If your example require a deployment file (see @ref deployment for details), name it as the source file adding "_d.xml".
+Then add the name of your example to this foreach loop.
 
-Once you're done, you must run "make distcheck" to ensure that you did
-not forget to add any file to the distributed archives. This ensures
-that everything was commited correctly, so you have to first commit
-before running "make distcheck". If you forgot something, you want to
-"git commit --amend". But never amend a commit that you already pushed
-to public repositories! Do a second commit in that case.
+\verbatim
+foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
+         async-waitall async-waitany dht-chord dht-kademlia dht-pastry io-remote platform-properties maestro-set 
+         task-priority)
+  set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
+endforeach()
+\endverbatim
 
+If your example includes extra source, text, XML, or tesh files, add them to the existing lists. Finally, register your 
+example to the testing infrastructure. See \ref inside_tests_add_integration for more details.
+
+\verbatim
+foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
+          async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
+          cloud-two-tasks dht-chord dht-kademlia platform-failures io-file io-remote io-storage task-priority 
+          process-kill process-migration process-suspend platform-properties synchro-semaphore process-startkilltime)
+  ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
+endforeach()
+\endverbatim
+
+Note that the structure of the CMakeLists.txt file may vary from one directory to another, but there are enough existing
+examples to find one that can be adapted to your own example.
+
+Once you're done, you must run "make distcheck" to ensure that you did not forget to add any file to the distributed 
+archives. This ensures that everything was commited correctly, so you have to first commit before running 
+"make distcheck". If you forgot something, you want to "git commit --amend". But never amend a commit that you already 
+pushed to public repositories! Do a second commit in that case.
 */
