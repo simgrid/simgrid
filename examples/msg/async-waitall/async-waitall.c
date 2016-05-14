@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,11 +6,6 @@
 #include "simgrid/msg.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_async_waitall, "Messages specific for this msg example");
-
-/** @addtogroup MSG_examples
- * 
- * - <b>Wait all: async-waitall/async-waitall.c</b>. Illustrates the use of the @ref MSG_comm_waitall function.
- */
 
 static int sender(int argc, char *argv[])
 {

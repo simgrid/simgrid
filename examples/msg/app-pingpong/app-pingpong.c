@@ -6,14 +6,6 @@
 
 #include "simgrid/msg.h"
 
-/** @addtogroup MSG_examples
- *
- *  @example app-pingpong/app-pingpong.c
- * 
- *  - <b>Ping-Pong: app-pingpong/app-pingpong.c</b>. It's hard to think of a simpler example. The tesh file
- *    laying in the directory is instructive concerning the way to pass options to the simulators (see \ref options).
- */
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(mag_app_pingpong,"Messages specific for this msg example");
 
 static int pinger(int argc, char *argv[])
@@ -48,7 +40,7 @@ static int ponger(int argc, char *argv[])
   XBT_INFO("Pong -> %s", argv[1]);
   xbt_assert(MSG_host_by_name(argv[1]) != NULL, "Unknown host %s. Stopping Now! ", argv[1]);
 
-  /** - Receive the (small) ping first ....*/
+  /* - Receive the (small) ping first ....*/
   msg_task_t ping_task = NULL;
   int a = MSG_task_receive(&ping_task, MSG_host_get_name(MSG_host_self()));
   xbt_assert(a == MSG_OK, "Unexpected behavior");
@@ -60,7 +52,7 @@ static int ponger(int argc, char *argv[])
   MSG_task_destroy(ping_task);
   XBT_INFO(" Ping time (latency bound) %e", communication_time);
 
-  /**  - ... Then send a 1GB pong back (bandwidth bound) */
+  /*  - ... Then send a 1GB pong back (bandwidth bound) */
   double time = MSG_get_clock();
   msg_task_t pong_task = MSG_task_create("large communication (bandwidth bound)", 0.0, 1e9, NULL);
   pong_task->data = xbt_new(double, 1);
@@ -80,14 +72,14 @@ int main(int argc, char *argv[])
   xbt_assert(argc > 2, "Usage: %s platform_file deployment_file\n"
              "\tExample: %s ../../platform/small_platform.xml app-pingpong_d.xml\n", argv[0], argv[0]);
 
-  MSG_create_environment(argv[1]);          /** - Load the platform description */
+  MSG_create_environment(argv[1]);          /* - Load the platform description */
 
-  MSG_function_register("pinger", pinger);  /** - Register the function to be executed by the processes */
+  MSG_function_register("pinger", pinger);  /* - Register the function to be executed by the processes */
   MSG_function_register("ponger", ponger);
 
-  MSG_launch_application(argv[2]);          /** - Deploy the application */
+  MSG_launch_application(argv[2]);          /* - Deploy the application */
 
-  res = MSG_main();                         /** - Run the simulation */
+  res = MSG_main();                         /* - Run the simulation */
 
   XBT_INFO("Total simulation time: %e", MSG_get_clock());
   return res!=MSG_OK;

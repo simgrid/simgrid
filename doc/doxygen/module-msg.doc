@@ -145,31 +145,3 @@ simulated process.
 Check the examples in <b>examples/msg/actions/actions.c</b> for details.
 
  */
-
-
-/**
-@defgroup MSG_examples MSG examples
-@ingroup MSG_API
-@brief .
-
-
-Finding the right example in examples/msg is sometimes difficult. This list aims at helping you to find the example from which you can learn what you want to.
-  - @ref msg_ex_basic
-  - @ref msg_ex_async
-  - @ref msg_ex_process
-  - @ref msg_ex_tracing
-  - @ref msg_ex_tracing_user_variables
-  - @ref msg_ex_models
-  - @ref msg_ex_io
-  - @ref msg_ex_actions
-  - @ref msg_ex_full_apps
-  - @ref msg_ex_misc
-
-\section msg_ex_basic Basic examples
-*/
-
-
-
-
-
-

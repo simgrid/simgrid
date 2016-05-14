@@ -45,7 +45,7 @@ foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-mast
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
 
-set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README
+set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README.doc
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actions-comm_split_p1.txt

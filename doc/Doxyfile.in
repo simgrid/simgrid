@@ -695,12 +695,7 @@ INPUT                  = doxygen/index.doc \
 ##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
 ###################################################
 
-INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/app-pingpong/app-pingpong.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/app-token-ring/app-token-ring.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/app-masterworker/app-masterworker.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/async-wait/async-wait.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/async-waitall/async-waitall.c \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/async-waitany/async-waitany.c \
+INPUT +=                 @CMAKE_HOME_DIRECTORY@/examples/msg/README.doc \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-suspend/process-suspend.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-kill/process-kill.c \
                          @CMAKE_HOME_DIRECTORY@/examples/msg/process-migration/process-migration.c \

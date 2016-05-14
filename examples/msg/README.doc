@@ -1,28 +1,90 @@
 This file follows the Doxygen syntax to be included in the documentation.
 
 /** 
-MSG comes with an extensive set of examples. It is sometimes difficult
-to find the one you need. This list aims at helping you finding the
-example from which you can learn what you want to.
+ @defgroup MSG_examples MSG examples
+ @ingroup MSG_API
+ @brief Find the MSG example fitting your needs from the extensive set provided in the archive.
+
+  - @ref msg_ex_basic
+  - @ref msg_ex_async
+  - @ref msg_ex_process
+  - @ref msg_ex_tracing
+  - @ref msg_ex_tracing_user_variables
+  - @ref msg_ex_models
+  - @ref msg_ex_io
+  - @ref msg_ex_actions
+  - @ref msg_ex_full_apps
+  - @ref msg_ex_misc
+		    
+@section msg_ex_basic Basic examples and features
+
+ - <b>Ping Pong</b>: @ref examples/msg/app-pingpong/app-pingpong.c\n
+   It's hard to think of a simpler example: it is just sending one
+   message back and forth.  
+   The tesh file laying in the directory show how to start the
+   simulator binary, enlighting how to pass options to the simulators
+   (as detailed in Section \ref options). 
+
+ - <b>Token Ring</b>.
+   @ref examples/msg/app-token-ring/app-token-ring.c\n
+   Classical communication pattern, where a token is exchanged
+   along a ring to reach every participant. 
+   The tesh file laying in the directory shows how to run the same
+   example on different virtual platforms.
+
+ - <b>Master Workers</b>.
+   @ref examples/msg/app-masterworker/app-masterworker.c\n
+   Another good old example, where one Master process has a bunch of
+   task to dispatch to a set of several Worker processes. It is fully
+   commented in @ref MSG_ex_master_worker.
+
+@section msg_ex_async Asynchronous communications
+
+In addition to the fully documented example of @ref
+MSG_ex_asynchronous_communications, there are several other examples
+shipped in the archive:
+  
+ - <b>Basic asynchronous communications</b>. 
+   @ref examples/msg/async-wait/async-wait.c \n
+   Illustrates how to have non-blocking communications, that are
+   communications running in the background leaving the process free
+   to do something else during their completion. The main functions
+   involved are @ref MSG_task_isend, @ref MSG_task_irecv, and @ref
+   MSG_comm_wait.
+ 
+ - <b>Waiting for all communications in a set</b>.
+   @ref examples/msg/async-waitall/async-waitall.c\n
+   The @ref MSG_comm_waitall function is useful when you want to block
+   until all activities in a given set have completed.
+   
+ - <b>Waiting for the first completed communication in a set</b>.
+   @ref examples/msg/async-waitall/async-waitany.c\n
+   The @ref MSG_comm_waitany function is useful when you want to block
+   until one activity of the set completes, no matter which terminates
+   first.
+
+*/
+
+As a human, you can stop reading at this point. The rest is garbage:
+
+Every example must be listed in the following, but it's not possible
+to move this content upper as each example directive seems to eat the
+next doxygen commands. 
+
+
+/**
+@defgroup MSG_ex_examples ignored
+@example examples/msg/app-pingpong/app-pingpong.c        
+@example examples/msg/app-token-ring/app-token-ring.c    
+@example examples/msg/app-masterworker/app-masterworker.c
+
+@example examples/msg/async-wait/async-wait.c
+@example examples/msg/async-waitall/async-waitall.c
+@example examples/msg/async-waitall/async-waitany.c
+*/
 
 Basic examples and features
 ===========================
- * sendrecv/sendrecv.c: Ping-pong example. It's hard to think of a
-   simpler example. The tesh files laying in the directory are
-   instructive concerning the way to pass options to the simulators
-   (as described in "Simgrid options and configurations").
-
- * masterslave/masterslave_forwarder.c: Master/slaves example. This
-   good old example is also very simple. Its basic version is fully
-   commented in the web documentation, but several variants can be
-   found in the same directory.
-
- * masterslave/masterslave_console.c: demonstrate how to use lua files
-   instead of XML for the platform and deployment declaration using
-   MSG_load_platform_script(). The most interesting part is probably
-   not the C code, but rather the masterslave/masterslave_script.lua,
-   which demonstrates how to express the platform and deployment in
-   lua.
 
  * migration/migration.c Demonstrates how to use the
    MSG_process_migrate() function to let processes change the host
@@ -48,17 +110,6 @@ Basic examples and features
  * priority/priority.c: Demonstrates the use of
    MSG_task_set_priority() to change the computation priority of a
    given task.
-
-Asynchronous communications
-===========================
-There is several examples of asynchronous communications coming in the
-archive. In addition to the fully documented example [50]Asynchronous
-communications, there is several other examples in the archive:
-   
- * msg/icomms/peer.c: basic example of async functions
-   (MSG_task_isend, MSG_task_irecv, MSG_comm_wait)
- * msg/icomms/peer2.c: demonstrates the MSG_comm_waitall() function
- * msg/icomms/peer3.c: demonstrates the MSG_comm_waitany() function
 
 Tracing and visualization features
 ==================================
@@ -123,14 +174,6 @@ probably be changed to use SMPI internals instead, but wasn't, so far.
 Examples of full applications
 =============================
 
- * token_ring/ring_call.c: Classical token ring communication, where a
-   token is exchanged along a ring to reach every participant.
-
- * pmm/msg_pmm.c: Parallel Matrix Multiplication is a little
-   application. This is something that most MPI developper have
-   written during their class, here implemented using MSG instead of
-   MPI.
-
  * chord/chord.c: Classical Chord P2P protocol This example implements
    the well known Chord P2P protocol. Its main advantage is that it
    constitute a fully working non-trivial example. In addition, its
@@ -138,4 +181,3 @@ Examples of full applications
    [57]http://hal.inria.fr/inria-00602216/
 
 
-*/
