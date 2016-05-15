@@ -1,4 +1,5 @@
-This file follows the Doxygen syntax to be included in the documentation.
+This file follows the Doxygen syntax to be included in the
+documentation, but it should remain readable directly.
 
 /** 
  @defgroup MSG_examples MSG examples
@@ -63,13 +64,81 @@ shipped in the archive:
    until one activity of the set completes, no matter which terminates
    first.
 
+@section msg_ex_process Acting on Processes
+
+  - <b>Suspend and Resume processes</b>.
+    @ref examples/msg/process-suspend/process-suspend.c \n
+    Processes can be suspended and resumed during their executions
+    thanks to the @ref MSG_process_suspend and @ref MSG_process_resume functions.
+
+  - <b>Kill processes</b>.
+    @ref examples/msg/process-kill/process-kill.c \n
+    Processes can forcefully stop other processes with the @ref MSG_process_kill function.
+     
+  - <b>Migrating processes</b>.
+    @ref examples/msg/process-migration/process-migration.c \n
+    Processes can move or be moved from a host to another with the @ref MSG_process_migrate function.
+    
+  - <b>Controling the process life cycle from the XML</b>.
+    @ref examples/msg/process-startkilltime/process-startkilltime.c \n
+    You can specify a start time and a kill time in the deployment
+    file. See all *_d.xml files in this directory.
+
+@section msg_ex_tracing Tracing and visualization features
+
+Tracing can be activated by various configuration options which
+are illustrated in these example. See also the 
+@ref tracing_tracing_options "full list of options related to tracing".
+
+  - <b>Basic example</b>. @ref examples/msg/trace-simple/trace-simple.c \n
+    In this very simple program, each process creates, executes,
+    and destroy a task. You might want to run it with the
+    <i>--cfg=tracing/uncategorized:yes</i> option.
+
+  - <b>Platform tracing</b>.
+    @ref examples/msg/trace-platform/trace-platform.c \n
+    This program is a toy example just loading the platform, so that
+    you can play with the  <i>--cfg=tracing:yes</i> and
+    <i>--cfg=tracing/categorized:yes</i> options and visualize the
+    result.
+
+  - <b>Setting Categories</b>.
+    @ref examples/msg/trace-categories/trace-categories.c \n
+    This example declares several tracing categories
+    to that are used to classify its tasks. When the program is executed,
+    the tracing mechanism registers the resource utilization of hosts
+    and links according to these categories.\n
+    You want to run this program with the following options:
+    <i>--cfg=tracing:yes</i>, <i>--cfg=tracing/categorized:yes</i>,
+    <i>--cfg=tracing/uncategorized:yes</i>, <i>--cfg=viva/categorized:viva_cat.plist</i>, and
+    <i>--cfg=viva/uncategorized:viva_uncat.plist</i>.
+
+    
+    
+@example examples/msg/trace-masterworker/trace-masterworker.c
+@example examples/msg/trace-process-migration/trace-process-migration.c
+@example examples/msg/trace-user-variables/trace-user-variables.c
+@example examples/msg/trace-link-user-variables/trace-link-user-variables.c
+@example examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c
+@example examples/msg/network-ns3/network-ns3.c
+@example examples/msg/io-storage/io-storage.c
+@example examples/msg/io-file/io-file.c
+@example examples/msg/io-remote/io-remote.c
+@example examples/msg/actions-comm/actions-comm.c
+@example examples/msg/actions-storage/actions-storage.c
+@example examples/msg/app-pmm/app-pmm.c
+@example examples/msg/dht-chord
+@example examples/msg/task-priority/task-priority.c
+@example examples/msg/properties/properties.c
+
 */
 
 As a human, you can stop reading at this point. The rest is garbage:
 
 Every example must be listed in the following, but it's not possible
-to move this content upper as each example directive seems to eat the
-next doxygen commands. 
+to move this content upper as each @example directive seems to eat the
+next doxygen commands (and the content is placed at the top of the
+example file). 
 
 
 /**
@@ -81,6 +150,32 @@ next doxygen commands.
 @example examples/msg/async-wait/async-wait.c
 @example examples/msg/async-waitall/async-waitall.c
 @example examples/msg/async-waitall/async-waitany.c
+
+@example examples/msg/process-suspend/process-suspend.c
+@example examples/msg/process-kill/process-kill.c
+@example examples/msg/process-migration/process-migration.c
+@example examples/msg/process-startkilltime/process-startkilltime.c
+
+@example examples/msg/trace-simple/trace-simple.c
+@example examples/msg/trace-platform/trace-platform.c
+@example examples/msg/trace-categories/trace-categories.c
+@example examples/msg/trace-masterworker/trace-masterworker.c
+@example examples/msg/trace-process-migration/trace-process-migration.c
+@example examples/msg/trace-user-variables/trace-user-variables.c
+@example examples/msg/trace-link-user-variables/trace-link-user-variables.c
+@example examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c
+
+@example examples/msg/network-ns3/network-ns3.c
+@example examples/msg/io-storage/io-storage.c
+@example examples/msg/io-file/io-file.c
+@example examples/msg/io-remote/io-remote.c
+@example examples/msg/actions-comm/actions-comm.c
+@example examples/msg/actions-storage/actions-storage.c
+@example examples/msg/app-pmm/app-pmm.c
+@example examples/msg/dht-chord
+@example examples/msg/task-priority/task-priority.c
+@example examples/msg/properties/properties.c
+			 
 */
 
 Basic examples and features

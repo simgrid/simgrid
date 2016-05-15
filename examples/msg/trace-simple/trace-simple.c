@@ -1,19 +1,9 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010, 2012-2016. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
-
-/** @addtogroup MSG_examples
- * 
- * @section msg_ex_tracing Tracing and visualization features
- * Tracing can be activated by various configuration options which are illustrated in these example.
- * See \ref tracing_tracing_options for details.
- * - <b>Basic example: trace-simple/trace-simple.c</b>. In this very simple program, each process creates, executes,
- *   and destroy a task. You might want to run it with the <i>--cfg=tracing/uncategorized:yes</i> option.
- */
 
 static int simple_func(int argc, char *argv[])
 {
