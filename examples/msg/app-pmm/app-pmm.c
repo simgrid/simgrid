@@ -1,7 +1,6 @@
-/* pmm - parallel matrix multiplication "double diffusion"                  */
+/* pmm - double broadcast parallel matrix multiplication                    */
 
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,13 +8,6 @@
 #include "simgrid/msg.h"
 #include "xbt/matrix.h"
 #include "xbt/xbt_os_time.h"
-
-/** @addtogroup MSG_examples
- *  @section msg_ex_full_apps Examples of full applications
- *
- * - <b>Parallel Matrix Multiplication: app-pmm/app-pmm.c</b>. This little application is something that most MPI
- *   developers have written during their studies. Here it is implemented in MSG.
- */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm, "Messages specific for this msg example");
 

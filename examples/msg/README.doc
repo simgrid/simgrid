@@ -15,7 +15,7 @@ documentation, but it should remain readable directly.
     - @ref msg_ex_ns3
     - @ref msg_ex_io
   - @ref msg_ex_actions
-  - @ref msg_ex_full_apps
+  - @ref msg_ex_apps
   - @ref msg_ex_misc
 		    
 @section msg_ex_basic Basic examples and features
@@ -199,10 +199,52 @@ simulated storages.
     I/O operations can also be done in a remote, i.e. when the
     accessed disk is not mounted on the caller's host.
 
-  - @ref examples/msg/actions-comm/actions-comm.c \n
-  - @ref examples/msg/actions-storage/actions-storage.c \n
-  - @ref examples/msg/app-pmm/app-pmm.c \n
-  - @ref examples/msg/dht-chord \n
+@section msg_ex_actions Following Workload Traces
+
+This section details how to run trace-driven simulations. It is very
+handy when you want to test an algorithm or protocol that only react
+to external events. For example, many P2P protocols react to user
+requests, but do nothing if there is no such event.
+
+In such situations, you should write your protocol in C, and separate
+the workload that you want to play onto your protocol in a separate
+text file. Declare a function handling each type of the events in your
+trace, register them using @ref xbt_replay_action_register in your
+main, and then use @ref MSG_action_trace_run to launch the simulation.
+
+Then, you can either have one trace file containing all your events,
+or a file per simulated process: the former may be easier to work
+with, but the second is more efficient on very large traces. Check
+also the tesh files in the example directories for details.
+
+  - <b>Communication replay</b>.
+    @ref examples/msg/actions-comm/actions-comm.c \n
+    Presents a set of event handlers reproducing classical communication
+    primitives (synchronous and asynchronous send/receive, broadcast,
+    barrier, etc).
+
+  - <b>I/O replay</b>.
+    @ref examples/msg/actions-storage/actions-storage.c \n
+    Presents a set of event handlers reproducing classical I/O
+    primitives (open, read, write, close, etc).
+
+@section msg_ex_apps Examples of Full Applications
+ 
+  - <b>Parallel Matrix Multiplication</b>.
+    @ref examples/msg/app-pmm/app-pmm.c \n
+    This little application multiplies two matrices in parallel. Each
+    of the 9 processes computes a sub-block of the result, with the
+    sub-blocks of the input matrices exchanged between the processes. \n
+    This is a classical assignment in MPI lectures, here implemented
+    in MSG.
+
+  - <b>Chord P2P protocol</b>.
+    @ref examples/msg/dht-chord/dht-chord.c \n
+    This example implements the well known Chord protocol,
+    constituting a fully working non-trivial example. This 
+    implementation is also very efficient, as demonstrated in 
+    http://hal.inria.fr/inria-00602216/
+    
   - @ref examples/msg/task-priority/task-priority.c \n
   - @ref examples/msg/properties/properties.c \n
 
@@ -245,10 +287,13 @@ example file).
 @example examples/msg/io-storage/io-storage.c
 @example examples/msg/io-file/io-file.c
 @example examples/msg/io-remote/io-remote.c
+
 @example examples/msg/actions-comm/actions-comm.c
 @example examples/msg/actions-storage/actions-storage.c
+
 @example examples/msg/app-pmm/app-pmm.c
 @example examples/msg/dht-chord
+
 @example examples/msg/task-priority/task-priority.c
 @example examples/msg/properties/properties.c
 			 
@@ -274,29 +319,6 @@ Basic examples and features
  * priority/priority.c: Demonstrates the use of
    MSG_task_set_priority() to change the computation priority of a
    given task.
-
-Trace driven simulations
-========================
-
-The actions/actions.c example demonstrates how to run trace-driven
-simulations. It is very handy when you want to test an algorithm or
-protocol that does nothing unless it receives some events from
-outside. For example, a P2P protocol reacts to requests from the user,
-but does nothing if there is no such event.
-
-In such situations, SimGrid allows to write your protocol in your C
-file, and the events to react to in a separate text file. Declare a
-function handling each of the events that you want to accept in your
-trace files, register them using MSG_action_register in your main, and
-then use MSG_action_trace_run to launch the simulation. You can either
-have one trace file containing all your events, or a file per
-simulated process. Check the tesh files in the example directory for
-details on how to do it.
-
-This example uses this approach to replay MPI-like traces. It comes
-with a set of event handlers reproducing MPI events. This is somehow
-similar to SMPI, yet differently implemented. This code should
-probably be changed to use SMPI internals instead, but wasn't, so far.
 
 Examples of full applications
 =============================

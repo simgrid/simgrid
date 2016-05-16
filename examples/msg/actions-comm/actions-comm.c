@@ -1,5 +1,4 @@
-/* Copyright (c) 2009-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,24 +6,6 @@
 #include "simgrid/msg.h"
 #include "simgrid/simix.h"      /* semaphores for the barrier */
 #include <xbt/replay.h>
-
-/** @addtogroup MSG_examples
- *
- *  @section msg_ex_actions Trace driven simulations
- * 
- *  This section details how to run trace-driven simulations. It is very handy when you  want to test an algorithm or
- *  protocol that does nothing unless it receives some events from outside. For example, a P2P protocol reacts to
- *  requests from the user, but does nothing if there is no such event.
- * 
- *  In such situations, SimGrid allows you to write your protocol in a C file, and the events to react to in a separate
- *  text file. Declare a function handling each of the events that you want to accept in your trace files, register
- *  them using \ref xbt_replay_action_register in your main, and then use \ref MSG_action_trace_run to launch the
- *  simulation. You can either have one trace file containing all your events, or a file per simulated process. Check
- *  the tesh files in the example directories for details on how to do it.
- *
- *  - <b>Communication: actions-comm/actions-comm.c</b>. This example comes with a set of event handlers reproducing
- *  some classical communication primitives (synchronous and asynchronous send/receive, broadcast, barrier, ...).
- */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(actions, "Messages specific for this msg example");
 int communicator_size = 0;
@@ -209,33 +190,30 @@ static void action_barrier(const char *const *action)
 
 static void action_bcast(const char *const *action)
 {
-  int i;
-  char *bcast_identifier;
   char mailbox[80];
   double comm_size = parse_double(action[2]);
   msg_task_t task = NULL;
-  const char *process_name;
   double clock = MSG_get_clock();
 
   process_globals_t counters = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
   xbt_assert(communicator_size, "Size of Communicator is not defined, can't use collective operations");
 
-  process_name = MSG_process_get_name(MSG_process_self());
+  const char * process_name = MSG_process_get_name(MSG_process_self());
 
-  bcast_identifier = bprintf("bcast_%d", counters->bcast_counter++);
+  char *bcast_identifier = bprintf("bcast_%d", counters->bcast_counter++);
 
   if (!strcmp(process_name, "p0")) {
     XBT_DEBUG("%s: %s is the Root", bcast_identifier, process_name);
 
     msg_comm_t *comms = xbt_new0(msg_comm_t, communicator_size - 1);
 
-    for (i = 1; i < communicator_size; i++) {
+    for (int i = 1; i < communicator_size; i++) {
       sprintf(mailbox, "%s_p0_p%d", bcast_identifier, i);
       comms[i - 1] = MSG_task_isend(MSG_task_create(mailbox, 0, comm_size, NULL), mailbox);
     }
     MSG_comm_waitall(comms, communicator_size - 1, -1);
-    for (i = 1; i < communicator_size; i++)
+    for (int i = 1; i < communicator_size; i++)
       MSG_comm_destroy(comms[i - 1]);
     xbt_free(comms);
 
@@ -294,7 +272,6 @@ static void action_finalize(const char *const *action)
   }
 }
 
-/** Main function */
 int main(int argc, char *argv[])
 {
   msg_error_t res = MSG_OK;
@@ -333,8 +310,7 @@ int main(int argc, char *argv[])
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
-  /* Explicit finalization of the action module is required now*/
-  MSG_action_exit();
+  MSG_action_exit(); /* Explicit finalization of the action module */
 
   return res != MSG_OK;
 }
