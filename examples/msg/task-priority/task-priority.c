@@ -1,18 +1,10 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
-
-/** @addtogroup MSG_examples
- * 
- * @section msg_ex_misc Miscellaneous
- * - <b>Task priorities: task-priority/task-priority.c</b>. This examples demonstrates the use of
- *   @ref MSG_task_set_priority to change the computation priority of a given task.
- */
 
 static int test(int argc, char *argv[])
 {

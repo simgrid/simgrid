@@ -1,18 +1,9 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/msg.h"
-
-/** @addtogroup MSG_examples
- * 
- * - <b>User-defined properties: properties/properties.c</b> Attaching arbitrary information to host, processes and
- *   such, and retrieving them with @ref MSG_host_get_properties, @ref MSG_host_get_property_value,
- *   @ref MSG_process_get_properties, and @ref MSG_process_get_property_value. Also make sure to read the platform and
- *   deployment XML files to see how to declare these data.
- */
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(test, "Property test");
 

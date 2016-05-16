@@ -6,7 +6,6 @@
 #include "simgrid/msg.h"
 #include "simgrid/modelchecker.h"
 #include <xbt/RngStream.h>
-#include "src/mc/mc_replay.h" // FIXME: this is an internal header
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord, "Messages specific for this msg example");
 

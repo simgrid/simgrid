@@ -244,18 +244,31 @@ also the tesh files in the example directories for details.
     constituting a fully working non-trivial example. This 
     implementation is also very efficient, as demonstrated in 
     http://hal.inria.fr/inria-00602216/
-    
-  - @ref examples/msg/task-priority/task-priority.c \n
-  - @ref examples/msg/properties/properties.c \n
 
+@section msg_ex_misc Miscellaneous
+
+ - <b>Task priorities</b>.
+   @ref examples/msg/task-priority/task-priority.c \n
+   Demonstrates the use of @ref MSG_task_set_priority to change the
+   computation priority of  a given task.
+
+ - <b>User-defined properties</b>.
+   @ref examples/msg/platform-properties/platform-properties.c \n
+   Attaching arbitrary information to host, processes and
+   such, and retrieving them with @ref MSG_host_get_properties,
+   @ref MSG_host_get_property_value, @ref MSG_process_get_properties, and 
+   @ref MSG_process_get_property_value. Also make sure to read the
+   platform and deployment XML files to see how to declare these data.
+ 
+TODO: Document the many other examples that we have 
 */
 
 As a human, you can stop reading at this point. The rest is garbage:
 
 Every example must be listed in the following, but it's not possible
-to move this content upper as each @example directive seems to eat the
-next doxygen commands (and the content is placed at the top of the
-example file). 
+to move this content upper as each @example directive seems to eat
+everything until the next */ marker (and the content is placed at the
+top of the example file). 
 
 
 /**
@@ -298,35 +311,4 @@ example file).
 @example examples/msg/properties/properties.c
 			 
 */
-
-Basic examples and features
-===========================
-
- * properties/msg_prop.c Attaching arbitrary information to host,
-   processes and such, and retrieving them with
-   MSG_host_get_properties(), MSG_host_get_property_value(),
-   MSG_process_get_properties() and MSG_process_get_property_value().
-   Also make sure to read the platform and deployment XML files to see
-   how to declare these data.
-
- * parallel_task/parallel_task.c: Demonstrates the use of
-   MSG_parallel_task_create(), to create special tasks that run on
-   several hosts at the same time. The resulting simulations are very
-   close to what can be achieved in SimDag, but still allows to use
-   the other features of MSG (it'd be cool to be able to mix
-   interfaces, but it's not possible ATM).
-
- * priority/priority.c: Demonstrates the use of
-   MSG_task_set_priority() to change the computation priority of a
-   given task.
-
-Examples of full applications
-=============================
-
- * chord/chord.c: Classical Chord P2P protocol This example implements
-   the well known Chord P2P protocol. Its main advantage is that it
-   constitute a fully working non-trivial example. In addition, its
-   implementation is rather efficient, as demonstrated in
-   [57]http://hal.inria.fr/inria-00602216/
-
 
