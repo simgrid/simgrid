@@ -132,7 +132,7 @@ are illustrated in these example. See also the
     @endverbatim     
 
 TODO: These tracing examples should be integrated in the examples to
-not dupplicate the C files. A full command line to see the result in
+not duplicate the C files. A full command line to see the result in
 the right tool (viva/vite/FrameSoc) should be given along with some
 screenshots.
 
@@ -143,22 +143,20 @@ the platform file. The following examples illustrate this feature.
 They have to be run with the following options:
 @verbatim --cfg=tracing:yes --cfg=tracing/platform:yes
 @endverbatim
- 
+
   - <b>Attaching variables to Hosts</b>.
-    @ref examples/msg/trace-user-variables/trace-user-variables.c 
-  
+    @ref examples/msg/trace-host-user-variables/trace-host-user-variables.c 
+
   - <b>Attaching variables to Links</b>.
     @ref examples/msg/trace-link-user-variables/trace-link-user-variables.c \n
     The tricky part is that you have to know the name of the link you
     want to enhance with a variable.
-    
+
   - <b>Attaching variables to network Routes</b>
     @ref examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c \n
     It is often easier to update a given variable for all links of a
     given network path (identified by its source and destination
     hosts) instead of knowing the name of each specific link.
-
-TODO: rename trace-user-variables to trace-host-user-variables
 
 TODO: rename trace-link-srcdst-user-variables to trace-route-user-variables
 
