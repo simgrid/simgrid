@@ -1,7 +1,6 @@
-/* xbt.h - Public interface to the xbt (simgrid's toolbox)                     */
+/* xbt.h - Public interface to the xbt (simgrid's toolbox)                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -175,7 +174,7 @@
 #define TRUE  1
 #define FALSE 0
 
-/*! C++ users need love */
+/* C++ users need love */
 #ifndef SG_BEGIN_DECL
 # ifdef __cplusplus
 #  define SG_BEGIN_DECL() extern "C" {
