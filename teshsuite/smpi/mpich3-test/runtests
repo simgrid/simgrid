@@ -73,6 +73,8 @@ $batrundir = ".";        # Set to the directory into which to run the examples
 
 $execarg="";
 $wrapparg="";
+
+$enabled_privatization = 1; # disable tests that need SMPI privatization to run
 # TAP (Test Anything Protocol) output
 my $tapoutput = 0;
 my $tapfile = '';
@@ -163,6 +165,9 @@ foreach $_ (@ARGV) {
     elsif (/--?batchdir=(.*)/) { $batrundir = $1; }
     elsif (/--?timeoutarg=(.*)/) { $timeoutArgPattern = $1; }
     elsif (/--?execarg=(.*)/) { $execarg = "$execarg $1"; }
+    elsif (/--?privatization=(.*)/) { 
+print STDERR "privatization called\n";
+$enabled_privatization = $1; }
     elsif (/VALGRIND_COMMAND=(.*)/) { 
         $valgrind = $1; }
     elsif (/VALGRIND_OPTIONS=(.*)/) {
@@ -363,6 +368,7 @@ sub RunList {
 	my $requiresMPIX   = "";
 	my $progEnv    = "";
 	my $mpiVersion = "";
+        my $needs_privatization = 0;
         my $xfail = "";
 	if ($#args >= 1) { $np = $args[1]; }
 	# Process the key=value arguments
@@ -391,6 +397,9 @@ sub RunList {
 		elsif ($key eq "mpiversion") {
 		    $mpiVersion = $value;
 		}
+		elsif ($key eq "needs_privatization") {
+		    $needs_privatization = $value;
+		}
 		elsif ($key eq "strict") {
 		    $requiresStrict = $value
 		}
@@ -411,6 +420,13 @@ sub RunList {
 
 	# skip empty lines
 	if ($programname eq "") { next; }
+
+	#if privatization is disabled, and if the test needs it, ignore it
+	if ($needs_privatization == 1 &&
+		$enabled_privatization != 1) {
+                SkippedTest($programname, $np, $workdir, "requires SMPI privatization");
+	        next; 
+	}
 
 	if ($np eq "") { $np = $np_default; }
 	if ($np_max > 0 && $np > $np_max) { $np = $np_max; }
