@@ -1,5 +1,7 @@
-/* Copyright (c) 2004-2014,2016. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2014,2016. The SimGrid Team. All rights reserved.     */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
 
@@ -685,8 +687,8 @@ void xbt_cfg_setdefault_boolean(const char *key, const char *value)
 
 /** @brief Set an integer value to \a name within \a cfg
  *
- * @param name the name of the variable
- * @param val the value of the variable
+ * @param key the name of the variable
+ * @param value the value of the variable
  */
 void xbt_cfg_set_int(const char *key, int value)
 {
@@ -700,8 +702,8 @@ void xbt_cfg_set_int(const char *key, int value)
 
 /** @brief Set or add a double value to \a name within \a cfg
  *
- * @param name the name of the variable
- * @param val the double to set
+ * @param key the name of the variable
+ * @param value the double to set
  */
 void xbt_cfg_set_double(const char *key, double value)
 {
@@ -715,9 +717,8 @@ void xbt_cfg_set_double(const char *key, double value)
 
 /** @brief Set or add a string value to \a name within \a cfg
  *
- * @param cfg the config set
- * @param name the name of the variable
- * @param val the value to be added
+ * @param key the name of the variable
+ * @param value the value to be added
  *
  */
 void xbt_cfg_set_string(const char *key, const char *value)
@@ -732,8 +733,8 @@ void xbt_cfg_set_string(const char *key, const char *value)
 
 /** @brief Set or add a boolean value to \a name within \a cfg
  *
- * @param name the name of the variable
- * @param val the value of the variable
+ * @param key the name of the variable
+ * @param value the value of the variable
  */
 void xbt_cfg_set_boolean(const char *key, const char *value)
 {
@@ -758,7 +759,7 @@ int xbt_cfg_is_default_value(const char *key)
 /*----[ Getting ]---------------------------------------------------------*/
 /** @brief Retrieve an integer value of a variable (get a warning if not uniq)
  *
- * @param name the name of the variable
+ * @param key the name of the variable
  *
  * Returns the first value from the config set under the given name.
  */
@@ -772,8 +773,7 @@ int xbt_cfg_get_int(const char *key)
 
 /** @brief Retrieve a double value of a variable (get a warning if not uniq)
  *
- * @param cfg the config set
- * @param name the name of the variable
+ * @param key the name of the variable
  *
  * Returns the first value from the config set under the given name.
  */
@@ -787,8 +787,7 @@ double xbt_cfg_get_double(const char *key)
 
 /** @brief Retrieve a string value of a variable (get a warning if not uniq)
  *
- * @param cfg the config set
- * @param name the name of the variable
+ * @param key the name of the variable
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning.
@@ -806,8 +805,7 @@ char *xbt_cfg_get_string(const char *key)
 
 /** @brief Retrieve a boolean value of a variable (get a warning if not uniq)
  *
- * @param cfg the config set
- * @param name the name of the variable
+ * @param key the name of the variable
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning.
