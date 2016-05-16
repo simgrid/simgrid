@@ -955,7 +955,7 @@ void lmm_solve(lmm_system_t sys)
  * 
  *  Makes var->bound equal to bound. Whenever this function is called a change is  signed in the system. To
  *  avoid false system changing detection it is a good idea to test (bound != 0) before calling it.
-*/
+ */
 void lmm_update_variable_bound(lmm_system_t sys, lmm_variable_t var, double bound)
 {
   sys->modified = 1;
@@ -973,10 +973,7 @@ int lmm_concurrency_slack(lmm_constraint_t cnstr){
   return  cnstr->concurrency_limit - cnstr->concurrency_current;  
 }
 
-/** \brief Measure the minimum concurrency slack across all constraints where var is involved
- *
- * \param The variable to check for
- */
+/** \brief Measure the minimum concurrency slack across all constraints where the given var is involved */
 int lmm_cnstrs_min_concurrency_slack(lmm_variable_t var){
   int i;
   //FIXME MARTIN: Replace by infinite value std::numeric_limits<int>::(max)(), or something better within Simgrid?

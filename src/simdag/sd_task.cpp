@@ -656,13 +656,13 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
 }
 
 /**
- * \brief Returns the name given as input when dependency has been created..
+ * \brief Returns the name given as input when dependency has been created.
  *
  * \param src a task
  * \param dst a task depending on \a src
- *
  */
-const char *SD_task_dependency_get_name(SD_task_t src, SD_task_t dst){
+const char *SD_task_dependency_get_name(SD_task_t src, SD_task_t dst)
+{
   unsigned int i;
   SD_dependency_t dependency;
 

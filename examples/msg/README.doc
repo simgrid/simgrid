@@ -288,9 +288,9 @@ top of the example file).
 @example examples/msg/trace-categories/trace-categories.c
 @example examples/msg/trace-masterworker/trace-masterworker.c
 @example examples/msg/trace-process-migration/trace-process-migration.c
-@example examples/msg/trace-user-variables/trace-user-variables.c
+@example examples/msg/trace-host-user-variables/trace-host-user-variables.c
 @example examples/msg/trace-link-user-variables/trace-link-user-variables.c
-@example examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c
+@example examples/msg/trace-route-user-variables/trace-route-user-variables.c
 
 @example examples/msg/network-ns3/network-ns3.c
 
@@ -302,10 +302,10 @@ top of the example file).
 @example examples/msg/actions-storage/actions-storage.c
 
 @example examples/msg/app-pmm/app-pmm.c
-@example examples/msg/dht-chord
+@example examples/msg/dht-chord/dht-chord.c
 
 @example examples/msg/task-priority/task-priority.c
-@example examples/msg/properties/properties.c
+@example examples/msg/platform-properties/platform-properties.c
 			 
 */
 
