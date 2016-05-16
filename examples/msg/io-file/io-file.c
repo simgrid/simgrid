@@ -1,14 +1,7 @@
-/* Copyright (c) 2008-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2008-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-/** @addtogroup MSG_examples
- * 
- * - <b>File management: io-file/io-file.c</b>. This example illustrates the use of operations on file
- *   (@ref MSG_file_open, @ref MSG_file_read, @ref MSG_file_write, or @ref MSG_file_close).
- */
 
 #define FILENAME1 "/home/doc/simgrid/examples/platforms/g5k.xml"
 #define FILENAME2 "c:\\Windows\\setupact.log"

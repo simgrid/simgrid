@@ -12,7 +12,8 @@ documentation, but it should remain readable directly.
   - @ref msg_ex_tracing
     - @ref msg_ex_tracing_user_variables
   - @ref msg_ex_models
-  - @ref msg_ex_io
+    - @ref msg_ex_ns3
+    - @ref msg_ex_io
   - @ref msg_ex_actions
   - @ref msg_ex_full_apps
   - @ref msg_ex_misc
@@ -84,6 +85,8 @@ shipped in the archive:
     You can specify a start time and a kill time in the deployment
     file. See all *_d.xml files in this directory.
 
+TODO: add an example using @ref MSG_process_create()
+
 @section msg_ex_tracing Tracing and visualization features
 
 Tracing can be activated by various configuration options which
@@ -127,7 +130,12 @@ are illustrated in these example. See also the
     options to that extend:
     @verbatim -cfg=tracing:yes --cfg=tracing/msg/process:yes
     @endverbatim     
- 
+
+TODO: These tracing examples should be integrated in the examples to
+not dupplicate the C files. A full command line to see the result in
+the right tool (viva/vite/FrameSoc) should be given along with some
+screenshots.
+
 @subsection msg_ex_tracing_user_variables Tracing user variables
 
 You can also attach your own variables to a any resource described in
@@ -149,11 +157,48 @@ They have to be run with the following options:
     It is often easier to update a given variable for all links of a
     given network path (identified by its source and destination
     hosts) instead of knowing the name of each specific link.
+
+TODO: rename trace-user-variables to trace-host-user-variables
+
+TODO: rename trace-link-srcdst-user-variables to trace-route-user-variables
+
+@section msg_ex_models Models-related examples
+
+@subsection msg_ex_ns3 NS3 as a SimGrid Network Model
+
+This example demonstrates how to use the bindings to the Network
+Simulator, as explained in @ref pls. The most
+interesting is probably not the C files since they are unchanged from
+the other simulations, but the associated files, such as the platform
+file to see how to declare a platform to be used with the PLS bindings
+of SimGrid and the tesh file to see how to actually start a simulation
+in these settings.
+  
+  - @ref examples/msg/network-ns3/network-ns3.c. Simple ping-pong using
+    ns-3 instead of the SimGrid network models.
+
+TODO: merge the C files
+
+TODO: show the XML files instead if it's what is interesting. On a "XML example files" page that does not exist yet.
+
+@subsection msg_ex_io Simulating disks and files
+
+The examples of this section demonstrate how to interact with the
+simulated storages.
+
+  - <b>Basic example</b>.
+    @ref examples/msg/io-storage/io-storage.c \n
+    All main storage and file functions are demoed.
     
-  - @ref examples/msg/network-ns3/network-ns3.c \n
-  - @ref examples/msg/io-storage/io-storage.c \n
-  - @ref examples/msg/io-file/io-file.c \n
-  - @ref examples/msg/io-remote/io-remote.c \n
+  - <b>File Management</b>. @ref examples/msg/io-file/io-file.c \n
+    This example illustrates the use of operations on file
+    (@ref MSG_file_open, @ref MSG_file_read, @ref MSG_file_write,
+    or @ref MSG_file_close).
+    
+  - <b>Remote I/O</b>. @ref examples/msg/io-remote/io-remote.c \n
+    I/O operations can also be done in a remote, i.e. when the
+    accessed disk is not mounted on the caller's host.
+
   - @ref examples/msg/actions-comm/actions-comm.c \n
   - @ref examples/msg/actions-storage/actions-storage.c \n
   - @ref examples/msg/app-pmm/app-pmm.c \n
@@ -196,6 +241,7 @@ example file).
 @example examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c
 
 @example examples/msg/network-ns3/network-ns3.c
+
 @example examples/msg/io-storage/io-storage.c
 @example examples/msg/io-file/io-file.c
 @example examples/msg/io-remote/io-remote.c
@@ -228,30 +274,6 @@ Basic examples and features
  * priority/priority.c: Demonstrates the use of
    MSG_task_set_priority() to change the computation priority of a
    given task.
-
-Models-related examples
-=======================
-
-Packet level simulators
------------------------
-These examples demonstrate how to use the bindings to classical
-Packet-Level Simulators (PLS), as explained in the relevant part of
-the web documentation. The most interesting is probably not the C
-files since they are unchanged from the other simulations, but the
-associated files, such as the platform files to see how to declare a
-platform to be used with the PLS bindings of SimGrid and the tesh
-files to see how to actually start a simulation in these settings.
-   
- * ns3: Simple ping-pong using ns3 instead of the SimGrid models
- * gtnets Simple ping-pong using GTNeTs instead of the SimGrid models
-
-Other resource kinds
---------------------
-This section contains some sparse examples of how to use the other
-kind of resources, such as disk. These resources are quite
-experimental for now, but here we go anyway. 
-
- * io/file.c Example with the disk resource
 
 Trace driven simulations
 ========================

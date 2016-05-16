@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -7,20 +6,6 @@
 #include "simgrid/msg.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
-
-/** @addtogroup MSG_examples
- * 
- *  @section msg_ex_models Models-related examples
- * 
- *  @subsection MSG_ex_PLS Packet level simulators
- * 
- *  This example demonstrates how to use the bindings to a classical Packet-Level Simulators (PLS), as explained in
- *  \ref pls. The most interesting is probably not the C files since they are unchanged from the other simulations,
- *  but the associated files, such as the platform file to see how to declare a platform to be used with the PLS
- *  bindings of SimGrid and the tesh file to see how to actually start a simulation in these settings.
- * 
- * - <b>ns-3: network-ns3/network-ns3.c</b>. Simple ping-pong using ns-3 instead of the SimGrid network models.
- */
 
 int timer_start; //set as 1 in the master process
 
