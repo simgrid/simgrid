@@ -153,12 +153,10 @@ They have to be run with the following options:
     want to enhance with a variable.
 
   - <b>Attaching variables to network Routes</b>
-    @ref examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c \n
+    @ref examples/msg/trace-route-user-variables/trace-route-user-variables.c \n
     It is often easier to update a given variable for all links of a
     given network path (identified by its source and destination
     hosts) instead of knowing the name of each specific link.
-
-TODO: rename trace-link-srcdst-user-variables to trace-route-user-variables
 
 @section msg_ex_models Models-related examples
 

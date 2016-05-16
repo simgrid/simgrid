@@ -3,7 +3,7 @@ foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app
           dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm platform-failures 
           io-file io-remote io-storage task-priority process-kill process-migration process-suspend 
           platform-properties maestro-set process-startkilltime synchro-semaphore trace-categories 
-          trace-link-srcdst-user-variables trace-link-user-variables trace-masterworker trace-platform 
+          trace-route-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-simple trace-host-user-variables)
   add_executable       (${x}     ${x}/${x}.c)
   target_link_libraries(${x}     simgrid)
@@ -93,7 +93,7 @@ foreach (example consumption onoff pstate vm)
   ADD_TESH_FACTORIES(msg-energy-${example} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-${example}/energy-${example}.tesh)
 endforeach()
 
-foreach (x categories link-srcdst-user-variables link-user-variables masterworker platform process-migration simple host-user-variables)
+foreach (x categories route-user-variables link-user-variables masterworker platform process-migration simple host-user-variables)
   ADD_TESH(msg-trace-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/trace-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/trace-${x} trace-${x}.tesh)
 endforeach()
 
