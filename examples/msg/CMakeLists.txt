@@ -85,7 +85,8 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actio
 foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
           async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
           cloud-two-tasks dht-chord dht-kademlia platform-failures io-file io-remote io-storage task-priority 
-          process-kill process-migration process-suspend platform-properties synchro-semaphore process-startkilltime)
+          process-create process-kill process-migration process-suspend platform-properties synchro-semaphore 
+          process-startkilltime)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
 endforeach()
 
@@ -93,7 +94,7 @@ foreach (example consumption onoff pstate vm)
   ADD_TESH_FACTORIES(msg-energy-${example} "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/energy-${example}/energy-${example}.tesh)
 endforeach()
 
-foreach (x categories route-user-variables link-user-variables masterworker platform process-migration simple host-user-variables)
+foreach (x categories route-user-variables link-user-variables masterworker platform process-migration host-user-variables)
   ADD_TESH(msg-trace-${x} --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/trace-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/trace-${x} trace-${x}.tesh)
 endforeach()
 
