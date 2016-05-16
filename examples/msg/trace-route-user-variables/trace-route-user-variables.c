@@ -1,18 +1,9 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/msg.h>
-
-/** @addtogroup MSG_examples
- *
- * - <b>Routes: trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c</b>. Instead of providing the name
- *   of the link to update one of its variable, this example shows how to provide two hosts as parameter (source and
- *   destination, as defined in the platform file). The tracing mechanism will get the route between these two hosts, if
- *   it is defined in the platform file, and update the variable of all the links of that route to the value provided.
- */
 
 //dump function to create and execute a task
 static void create_and_execute_task (void)

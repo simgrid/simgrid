@@ -1,12 +1,12 @@
 #! ./tesh
 
 p Simple tracing example
-$ $SG_TEST_EXENV ${bindir:=.}/trace-simple$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:trace_simple.trace --cfg=tracing/uncategorized:yes ${srcdir:=.}/small_platform.xml
+$ $SG_TEST_EXENV ${bindir:=.}/trace-simple$EXEEXT --cfg=tracing:yes --cfg=tracing/filename:trace-simple.trace --cfg=tracing/uncategorized:yes ${srcdir:=.}/small_platform.xml
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace_simple.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'trace-simple.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
 
-$ tail -n +3 trace_simple.trace
+$ tail -n +3 trace-simple.trace
 > %EventDef PajeDefineContainerType 0
 > %       Alias string
 > %       Type string
@@ -229,4 +229,4 @@ $ tail -n +3 trace_simple.trace
 > 7 0.000001 1 2
 > 7 0.000001 1 4
 
-$ rm -f trace_simple.trace
+$ rm -f trace-simple.trace

@@ -1,17 +1,7 @@
-/* Copyright (c) 2006-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-/** @addtogroup MSG_examples
- * 
- * @section msg_ex_io Simulation disks and files
- *
- * This section lists some examples of storage simulation. This part of SimGrid is still preliminary.
- *
- * - <b>Basic example: io-storage/io-storage.c</b>. This example implements all main storage and file functions.
- */
 
 #include "simgrid/msg.h"
 
@@ -20,7 +10,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(storage,"Messages specific for this simulation");
 static int host(int argc, char *argv[]){
   const char* host_name = MSG_host_get_name(MSG_host_self());
 
-  /** - Display information on the disks mounted by the current host */
+  /* - Display information on the disks mounted by the current host */
   XBT_INFO("*** Storage info on %s ***", host_name);
 
   xbt_dict_cursor_t cursor = NULL;
@@ -28,11 +18,11 @@ static int host(int argc, char *argv[]){
   char* storage_name;
   msg_storage_t storage = NULL;
 
-  /** - Retrieve all mount points of current host */
+  /* - Retrieve all mount points of current host */
   xbt_dict_t storage_list = MSG_host_get_mounted_storage_list(MSG_host_self());
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name)  {
-    /** - For each disk mounted on host:
+    /* - For each disk mounted on host:
            - Retrieve disk's information */
     XBT_INFO("Storage name: %s, mount name: %s", storage_name, mount_name);
     storage = MSG_storage_get_by_name(storage_name);
@@ -47,28 +37,28 @@ static int host(int argc, char *argv[]){
   }
   xbt_dict_free(&storage_list);
 
-  /** - Create a 200,000 bytes file named './tmp/data.txt' on /sd1 */
+  /* - Create a 200,000 bytes file named './tmp/data.txt' on /sd1 */
   char* file_name = xbt_strdup("/home/tmp/data.txt");
   msg_file_t file = NULL;
   sg_size_t write, read, file_size;
 
-  /** - Open an non-existing file which amounts to create it. */
+  /* - Open an non-existing file which amounts to create it. */
   file = MSG_file_open(file_name, NULL);
   write = MSG_file_write(file, 200000);  // Write 200,000 bytes
   XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, file_name);
   MSG_file_dump(file);
 
-  /** - Check that sizes have changed */
+  /* - Check that sizes have changed */
   XBT_INFO("Free size: %llu bytes", MSG_storage_get_free_size(storage));
   XBT_INFO("Used size: %llu bytes", MSG_storage_get_used_size(storage));
 
-  /**  - Retrieve the size of created file and read it completely */
+  /*  - Retrieve the size of created file and read it completely */
   file_size = MSG_file_get_size(file);
   MSG_file_seek(file, 0, SEEK_SET);
   read = MSG_file_read(file, file_size);
   XBT_INFO("Read %llu bytes on %s", read, file_name);
 
-  /** - Then write 100,000 bytes in tmp/data.txt */
+  /* - Then write 100,000 bytes in tmp/data.txt */
   write = MSG_file_write(file, 100000);  // Write 100,000 bytes
   XBT_INFO("Write %llu bytes on %s", write, file_name);
   MSG_file_dump(file);
@@ -76,20 +66,20 @@ static int host(int argc, char *argv[]){
   storage_name = xbt_strdup("Disk4");
   storage = MSG_storage_get_by_name(storage_name);
 
-  /**  - Move file from ./tmp/data.txt to ./tmp/simgrid.readme */
+  /*  - Move file from ./tmp/data.txt to ./tmp/simgrid.readme */
   XBT_INFO("*** Move '/tmp/data.txt' into '/tmp/simgrid.readme'");
   MSG_file_move(file, "/home/tmp/simgrid.readme");
 
-  /** - Attach some user data to the file */
+  /* - Attach some user data to the file */
   MSG_file_set_data(file, xbt_strdup("777"));
-  /** - Then retrieve this data */
+  /* - Then retrieve this data */
   char *data = MSG_file_get_data(file);
   XBT_INFO("User data attached to the file: %s", data);
 
   MSG_file_close(file);
   free(file_name);
 
-  /** - Attach some user data to disk1 */
+  /* - Attach some user data to disk1 */
   XBT_INFO("*** Get/set data for storage element: %s ***",storage_name);
 
   data = MSG_storage_get_data(storage);
@@ -102,7 +92,7 @@ static int host(int argc, char *argv[]){
   xbt_free(data);
   xbt_free(storage_name);
 
-  /** - Finally dump disks contents */
+  /* - Finally dump disks contents */
   XBT_INFO("*** Dump content of %s ***",MSG_host_get_name(MSG_host_self()));
   xbt_dict_t contents = NULL;
   contents = MSG_host_get_storage_content(MSG_host_self()); // contents is a dict of dicts

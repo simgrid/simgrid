@@ -1,5 +1,4 @@
-/* Copyright (c) 2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2015-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,11 +7,6 @@
 #include <xbt/replay.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(storage_actions, "Messages specific for this example");
-/** @addtogroup MSG_examples
- *
- *  - <b>I/O: actions-comm/actions-comm.c</b>. This example comes with a set of event handlers reproducing
- *  some classical I/O primitives (open, read, write, close, ...).
- */
 
 static xbt_dict_t opened_files = NULL;
 

@@ -1,16 +1,9 @@
-/* Copyright (c) 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2012-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <simgrid/msg.h>
-
-/** @addtogroup MSG_examples
- *
- * - <b>Links: trace-link-user-variables/trace-link-user-variables.c</b>. You need to provide the name of the link to
- *   update the value of the variable associated to that link.
- */
 
 //dump function to create and execute a task
 static void create_and_execute_task (void)

@@ -1,5 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -8,14 +7,6 @@
 #include "simgrid/modelchecker.h"
 #include <xbt/RngStream.h>
 #include "src/mc/mc_replay.h" // FIXME: this is an internal header
-
-/** @addtogroup MSG_examples
- *
- *  - <b>Chord P2P protocol dht-chord/dht-chord.c:</b>. This example implements the well known Chord P2P protocol. Its
- *    main advantage is that it constitutes a fully working non-trivial example. In addition, its implementation is
- *    rather efficient, as demonstrated in http://hal.inria.fr/inria-00602216/
- */
-
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord, "Messages specific for this msg example");
 
@@ -109,7 +100,7 @@ static void check_predecessor(node_t node);
 static void random_lookup(node_t);
 static void quit_notify(node_t node);
 
-/* \brief Global initialization of the Chord simulation. */
+/* Global initialization of the Chord simulation. */
 static void chord_initialize(void)
 {
   // compute the powers of 2 once for all
@@ -147,19 +138,14 @@ static void chord_exit(void)
   xbt_free(powers2);
 }
 
-/**
- * \brief Turns an id into an equivalent id in [0, nb_keys).
- * \param id an id
- * \return the corresponding normalized id
- */
+/* Turns an id into an equivalent id in [0, nb_keys). */
 static int normalize(int id)
 {
   // like id % nb_keys, but works with negatives numbers (and faster)
   return id & (nb_keys - 1);
 }
 
-/**
- * \brief Returns whether an id belongs to the interval [start, end].
+/* Returns whether an id belongs to the interval [start, end].
  *
  * The parameters are noramlized to make sure they are between 0 and nb_keys - 1).
  * 1 belongs to [62, 3]
@@ -192,8 +178,7 @@ static int is_in_interval(int id, int start, int end)
   return id <= end;
 }
 
-/**
- * \brief Gets the mailbox name of a host given its chord id.
+/* Gets the mailbox name of a host given its chord id.
  * \param node_id id of a node
  * \param mailbox pointer to where the mailbox name should be written
  * (there must be enough space)
@@ -203,10 +188,7 @@ static void get_mailbox(int node_id, char* mailbox)
   snprintf(mailbox, MAILBOX_NAME_SIZE - 1, "%d", node_id);
 }
 
-/**
- * \brief Frees the memory used by a task.
- * \param task the MSG task to destroy
- */
+/* Frees the memory used by a task and destroy it */
 static void task_free(void* task)
 {
   // TODO add a parameter data_free_function to MSG_task_create?
@@ -216,10 +198,7 @@ static void task_free(void* task)
   }
 }
 
-/**
- * \brief Displays the finger table of a node.
- * \param node a node
- */
+/* Displays the finger table of a node. */
 static void print_finger_table(node_t node)
 {
   if (XBT_LOG_ISENABLED(msg_chord, xbt_log_priority_verbose)) {
@@ -233,8 +212,8 @@ static void print_finger_table(node_t node)
   }
 }
 
-/**
- * \brief Sets a finger of the current node.
+/* Sets a finger of the current node.
+ * 
  * \param node the current node
  * \param finger_index index of the finger to set (0 to nb_bits - 1)
  * \param id the id to set for this finger
@@ -249,8 +228,8 @@ static void set_finger(node_t node, int finger_index, int id)
   }
 }
 
-/**
- * \brief Sets the predecessor of the current node.
+/* Sets the predecessor of the current node.
+ * 
  * \param node the current node
  * \param id the id to predecessor, or -1 to unset the predecessor
  */
@@ -268,8 +247,8 @@ static void set_predecessor(node_t node, int predecessor_id)
   }
 }
 
-/**
- * \brief Node Function
+/* Node main Function
+ * 
  * Arguments:
  * - my id
  * - the id of a guy I know in the system (except for the first node)
@@ -426,11 +405,10 @@ int node(int argc, char *argv[])
   return 0;
 }
 
-/**
- * \brief This function is called when the current node receives a task.
+/* This function is called when the current node receives a task.
+ * 
  * \param node the current node
- * \param task the task to handle (don't touch it then:
- * it will be destroyed, reused or forwarded)
+ * \param task the task to handle (don't touch it afterward: it will be destroyed, reused or forwarded)
  */
 static void handle_task(node_t node, msg_task_t task) {
 
@@ -525,10 +503,7 @@ static void handle_task(node_t node, msg_task_t task) {
   }
 }
 
-/**
- * \brief Initializes the current node as the first one of the system.
- * \param node the current node
- */
+/* Initializes the current node as the first one of the system */
 static void create(node_t node)
 {
   XBT_DEBUG("Create a new Chord ring...");
@@ -536,9 +511,8 @@ static void create(node_t node)
   print_finger_table(node);
 }
 
-/**
- * \brief Makes the current node join the ring, knowing the id of a node
- * already in the ring
+/* Makes the current node join the ring, knowing the id of a node already in the ring
+ * 
  * \param node the current node
  * \param known_id id of a node already in the ring
  * \return 1 if the join operation succeeded, 0 otherwise
@@ -549,10 +523,8 @@ static int join(node_t node, int known_id)
   set_predecessor(node, -1); // no predecessor (yet)
 
   /*
-  int i;
-  for (i = 0; i < nb_bits; i++) {
+  for (int i = 0; i < nb_bits; i++) 
     set_finger(node, i, known_id);
-  }
   */
 
   int successor_id = remote_find_successor(node, known_id, node->id);
@@ -567,21 +539,14 @@ static int join(node_t node, int known_id)
   return successor_id != -1;
 }
 
-/**
- * \brief Makes the current node quit the system
- * \param node the current node
- */
+/* Makes the current node quit the system */
 static void leave(node_t node)
 {
   XBT_DEBUG("Well Guys! I Think it's time for me to quit ;)");
   quit_notify(node);
 }
 
-/**
- * \brief Notifies the successor and the predecessor of the current node
- * of the departure
- * \param node the current node
- */
+/* Notifies the successor and the predecessor of the current node before leaving */
 static void quit_notify(node_t node)
 {
   char mailbox[MAILBOX_NAME_SIZE];
@@ -621,8 +586,8 @@ static void quit_notify(node_t node)
 
 }
 
-/**
- * \brief Makes the current node find the successor node of an id.
+/* Makes the current node find the successor node of an id.
+ * 
  * \param node the current node
  * \param id the id to find
  * \return the id of the successor node, or -1 if the request failed
@@ -639,8 +604,8 @@ static int find_successor(node_t node, int id)
   return remote_find_successor(node, closest, id);
 }
 
-/**
- * \brief Asks another node the successor node of an id.
+/* \brief Asks another node the successor node of an id.
+ * 
  * \param node the current node
  * \param ask_to the node to ask to
  * \param id the id to find
@@ -732,8 +697,8 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   return successor;
 }
 
-/**
- * \brief Asks another node its predecessor.
+/* Asks its predecessor to a remote node
+ * 
  * \param node the current node
  * \param ask_to the node to ask to
  * \return the id of its predecessor node, or -1 if the request failed
@@ -811,9 +776,8 @@ static int remote_get_predecessor(node_t node, int ask_to)
   return predecessor_id;
 }
 
-/**
- * \brief Returns the closest preceding finger of an id
- * with respect to the finger table of the current node.
+/* Returns the closest preceding finger of an id with respect to the finger table of the current node.
+ * 
  * \param node the current node
  * \param id the id to find
  * \return the closest preceding finger of that id
@@ -829,11 +793,7 @@ int closest_preceding_node(node_t node, int id)
   return node->id;
 }
 
-/**
- * \brief This function is called periodically. It checks the immediate
- * successor of the current node.
- * \param node the current node
- */
+/* This function is called periodically. It checks the immediate successor of the current node. */
 static void stabilize(node_t node)
 {
   XBT_DEBUG("Stabilizing node");
@@ -858,11 +818,7 @@ static void stabilize(node_t node)
   }
 }
 
-/**
- * \brief Notifies the current node that its predecessor may have changed.
- * \param node the current node
- * \param candidate_id the possible new predecessor
- */
+/* Notifies the current node that its predecessor may have changed. */
 static void notify(node_t node, int predecessor_candidate_id) {
 
   if (node->pred_id == -1
@@ -876,12 +832,7 @@ static void notify(node_t node, int predecessor_candidate_id) {
   }
 }
 
-/**
- * \brief Notifies a remote node that its predecessor may have changed.
- * \param node the current node
- * \param notify_id id of the node to notify
- * \param candidate_id the possible new predecessor
- */
+/* Notifies a remote node that its predecessor may have changed. */
 static void remote_notify(node_t node, int notify_id, int predecessor_candidate_id) {
 
       task_data_t req_data = xbt_new0(s_task_data_t, 1);
@@ -897,11 +848,7 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
       MSG_task_dsend(task, mailbox, task_free);
     }
 
-/**
- * \brief This function is called periodically.
- * It refreshes the finger table of the current node.
- * \param node the current node
- */
+/* refreshes the finger table of the current node (called periodically) */
 static void fix_fingers(node_t node) {
 
   XBT_DEBUG("Fixing fingers");
@@ -917,11 +864,7 @@ static void fix_fingers(node_t node) {
   }
 }
 
-/**
- * \brief This function is called periodically.
- * It checks whether the predecessor has failed
- * \param node the current node
- */
+/* checks whether the predecessor has failed (called periodically) */
 static void check_predecessor(node_t node)
 {
   XBT_DEBUG("Checking whether my predecessor is alive");
@@ -987,10 +930,7 @@ static void check_predecessor(node_t node)
   }
 }
 
-/**
- * \brief Performs a find successor request to a random id.
- * \param node the current node
- */
+/* Performs a find successor request to a random id */
 static void random_lookup(node_t node)
 {
   int random_index = RngStream_RandInt (node->stream, 0, nb_bits - 1);
