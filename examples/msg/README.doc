@@ -67,6 +67,11 @@ shipped in the archive:
 
 @section msg_ex_process Acting on Processes
 
+  - <b>Creating processes</b>. 
+    @ref examples/msg/process-create/process-create.c \n
+    Most processes are started from the deployment XML file, but they
+    can also be used with the @ref MSG_process_create() function.
+
   - <b>Suspend and Resume processes</b>.
     @ref examples/msg/process-suspend/process-suspend.c \n
     Processes can be suspended and resumed during their executions
@@ -85,18 +90,14 @@ shipped in the archive:
     You can specify a start time and a kill time in the deployment
     file. See all *_d.xml files in this directory.
 
-TODO: add an example using @ref MSG_process_create()
-
 @section msg_ex_tracing Tracing and visualization features
 
 Tracing can be activated by various configuration options which
 are illustrated in these example. See also the 
 @ref tracing_tracing_options "full list of options related to tracing".
 
-  - <b>Basic example</b>. @ref examples/msg/trace-simple/trace-simple.c \n
-    In this very simple program, each process creates, executes,
-    and destroy a task. Recommanded options:
-    @verbatim --cfg=tracing:yes --cfg=tracing/uncategorized:yes @endverbatim
+It is interesting to run the process-create example with the following
+options to see the task executions:
 
   - <b>Platform tracing</b>.
     @ref examples/msg/trace-platform/trace-platform.c \n
@@ -281,12 +282,12 @@ top of the example file).
 @example examples/msg/async-waitall/async-waitall.c
 @example examples/msg/async-waitall/async-waitany.c
 
+@example examples/msg/process-create/process-create.c
 @example examples/msg/process-suspend/process-suspend.c
 @example examples/msg/process-kill/process-kill.c
 @example examples/msg/process-migration/process-migration.c
 @example examples/msg/process-startkilltime/process-startkilltime.c
 
-@example examples/msg/trace-simple/trace-simple.c
 @example examples/msg/trace-platform/trace-platform.c
 @example examples/msg/trace-categories/trace-categories.c
 @example examples/msg/trace-masterworker/trace-masterworker.c

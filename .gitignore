@@ -170,6 +170,7 @@ examples/msg/synchro-semaphore/synchro-semaphore
 examples/msg/app-pingpong/app-pingpong
 examples/msg/maestro-set/maestro-set
 examples/msg/simulation.trace
+examples/msg/process-create/process-create
 examples/msg/process-startkilltime/process-startkilltime
 examples/msg/process-suspend/process-suspend
 examples/msg/app-token-ring/app-token-ring
@@ -178,7 +179,6 @@ examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables
 examples/msg/trace-link-user-variables/trace-link-user-variables
 examples/msg/trace-masterworker/trace-masterworker
 examples/msg/trace-process-migration/trace-process-migration
-examples/msg/trace-simple/trace-simple
 examples/msg/trace-platform/trace-platform
 examples/msg/trace-user-variables/trace-user-variables
 examples/s4u/basic/s4u_basic
