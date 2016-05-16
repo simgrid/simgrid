@@ -10,7 +10,7 @@ documentation, but it should remain readable directly.
   - @ref msg_ex_async
   - @ref msg_ex_process
   - @ref msg_ex_tracing
-  - @ref msg_ex_tracing_user_variables
+    - @ref msg_ex_tracing_user_variables
   - @ref msg_ex_models
   - @ref msg_ex_io
   - @ref msg_ex_actions
@@ -92,44 +92,74 @@ are illustrated in these example. See also the
 
   - <b>Basic example</b>. @ref examples/msg/trace-simple/trace-simple.c \n
     In this very simple program, each process creates, executes,
-    and destroy a task. You might want to run it with the
-    <i>--cfg=tracing/uncategorized:yes</i> option.
+    and destroy a task. Recommanded options:
+    @verbatim --cfg=tracing:yes --cfg=tracing/uncategorized:yes @endverbatim
 
   - <b>Platform tracing</b>.
     @ref examples/msg/trace-platform/trace-platform.c \n
     This program is a toy example just loading the platform, so that
-    you can play with the  <i>--cfg=tracing:yes</i> and
-    <i>--cfg=tracing/categorized:yes</i> options and visualize the
-    result.
+    you can play with the platform visualization. Recommanded options:
+    @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes
+    @endverbatim
 
   - <b>Setting Categories</b>.
     @ref examples/msg/trace-categories/trace-categories.c \n
     This example declares several tracing categories
     to that are used to classify its tasks. When the program is executed,
     the tracing mechanism registers the resource utilization of hosts
-    and links according to these categories.\n
-    You want to run this program with the following options:
-    <i>--cfg=tracing:yes</i>, <i>--cfg=tracing/categorized:yes</i>,
-    <i>--cfg=tracing/uncategorized:yes</i>, <i>--cfg=viva/categorized:viva_cat.plist</i>, and
-    <i>--cfg=viva/uncategorized:viva_uncat.plist</i>.
+    and links according to these categories. Recommanded options:
+    @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:viva_cat.plist --cfg=viva/uncategorized:viva_uncat.plist
+    @endverbatim
+    
+  - <b>Master Workers tracing</b>.
+    @ref examples/msg/trace-masterworker/trace-masterworker.c \n
+    This is an augmented version of our basic master/worker example
+    using several tracing features. It traces resource usage, sorted
+    out in several categories; Trace marks and user variables are also
+    used. Recommanded options:
+    @verbatim --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:viva_cat.plist --cfg=viva/uncategorized:viva_uncat.plist
+    @endverbatim
+    
+  - <b>Process migration tracing</b>.
+    @ref examples/msg/trace-process-migration/trace-process-migration.c \n
+    This version is enhanced so that the process migrations can be
+    displayed as arrows in a Gantt-chart visualization. Recommanded
+    options to that extend:
+    @verbatim -cfg=tracing:yes --cfg=tracing/msg/process:yes
+    @endverbatim     
+ 
+@subsection msg_ex_tracing_user_variables Tracing user variables
 
+You can also attach your own variables to a any resource described in
+the platform file. The following examples illustrate this feature.
+They have to be run with the following options:
+@verbatim --cfg=tracing:yes --cfg=tracing/platform:yes
+@endverbatim
+ 
+  - <b>Attaching variables to Hosts</b>.
+    @ref examples/msg/trace-user-variables/trace-user-variables.c 
+  
+  - <b>Attaching variables to Links</b>.
+    @ref examples/msg/trace-link-user-variables/trace-link-user-variables.c \n
+    The tricky part is that you have to know the name of the link you
+    want to enhance with a variable.
     
+  - <b>Attaching variables to network Routes</b>
+    @ref examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c \n
+    It is often easier to update a given variable for all links of a
+    given network path (identified by its source and destination
+    hosts) instead of knowing the name of each specific link.
     
-@example examples/msg/trace-masterworker/trace-masterworker.c
-@example examples/msg/trace-process-migration/trace-process-migration.c
-@example examples/msg/trace-user-variables/trace-user-variables.c
-@example examples/msg/trace-link-user-variables/trace-link-user-variables.c
-@example examples/msg/trace-link-srcdst-user-variables/trace-link-srcdst-user-variables.c
-@example examples/msg/network-ns3/network-ns3.c
-@example examples/msg/io-storage/io-storage.c
-@example examples/msg/io-file/io-file.c
-@example examples/msg/io-remote/io-remote.c
-@example examples/msg/actions-comm/actions-comm.c
-@example examples/msg/actions-storage/actions-storage.c
-@example examples/msg/app-pmm/app-pmm.c
-@example examples/msg/dht-chord
-@example examples/msg/task-priority/task-priority.c
-@example examples/msg/properties/properties.c
+  - @ref examples/msg/network-ns3/network-ns3.c \n
+  - @ref examples/msg/io-storage/io-storage.c \n
+  - @ref examples/msg/io-file/io-file.c \n
+  - @ref examples/msg/io-remote/io-remote.c \n
+  - @ref examples/msg/actions-comm/actions-comm.c \n
+  - @ref examples/msg/actions-storage/actions-storage.c \n
+  - @ref examples/msg/app-pmm/app-pmm.c \n
+  - @ref examples/msg/dht-chord \n
+  - @ref examples/msg/task-priority/task-priority.c \n
+  - @ref examples/msg/properties/properties.c \n
 
 */
 
@@ -181,13 +211,6 @@ example file).
 Basic examples and features
 ===========================
 
- * migration/migration.c Demonstrates how to use the
-   MSG_process_migrate() function to let processes change the host
-   they run on after their start.
-
- * suspend/suspend.c: Demonstrates how to suspend and resume processes
-   using MSG_process_suspend() and MSG_process_resume().
-
  * properties/msg_prop.c Attaching arbitrary information to host,
    processes and such, and retrieving them with
    MSG_host_get_properties(), MSG_host_get_property_value(),
@@ -205,19 +228,6 @@ Basic examples and features
  * priority/priority.c: Demonstrates the use of
    MSG_task_set_priority() to change the computation priority of a
    given task.
-
-Tracing and visualization features
-==================================
- * tracing/simple.c very simple program that creates, executes and
-   destroy a task
- * tracing/ms.c TODO
- * tracing/categories.c example with the declaration of multiple
-   categories
- * tracing/procmig.c example to trace process migration using the mask
-   TRACE_PROCESS
- * tracing/trace_platform.c: Demonstrates how to trace the platform
- * tracing/user_variables.c: Demonstrates how to trace user-provided
-   variables
 
 Models-related examples
 =======================

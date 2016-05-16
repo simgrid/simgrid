@@ -1,19 +1,8 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010, 2012-2016. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** @addtogroup MSG_examples
- *
- * @section msg_ex_tracing_user_variables Tracing user variables
- * The tracing mechanism of SimGrid also allows to associate user variables to resources described in the platform file.
- * The following examples illustrate this feature. They have to be run with the <i>--cfg=tracing:yes</i> and
- * <i>--cfg=tracing/platform:yes</i> options.
- * 
- * - <b>Hosts: trace-user-variables/trace-user-variables.c</b>. This example shows how user defined variables can be
- *   associated to an host and how to manage the tracing of their evolution.
- */
 #include <stdio.h>
 #include "simgrid/msg.h"
 
@@ -22,13 +11,12 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 static int trace_fun(int argc, char *argv[])
 {
   const char *hostname = MSG_host_get_name(MSG_host_self());
-  int i;
 
   //the hostname has an empty HDD with a capacity of 100000 (bytes)
   TRACE_host_variable_set(hostname, "HDD_capacity", 100000);
   TRACE_host_variable_set(hostname, "HDD_utilization", 0);
 
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     //create and execute a task just to make the simulated time advance
     msg_task_t task = MSG_task_create("task", 10000, 0, NULL);
     MSG_task_execute (task);
@@ -38,7 +26,7 @@ static int trace_fun(int argc, char *argv[])
     TRACE_host_variable_add(hostname, "HDD_utilization", 100);
   }
 
-  for (i = 0; i < 10; i++) {
+  for (int i = 0; i < 10; i++) {
     //create and execute a task just to make the simulated time advance
     msg_task_t task = MSG_task_create("task", 10000, 0, NULL);
     MSG_task_execute (task);

@@ -1,18 +1,7 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-/** @addtogroup MSG_examples
- * 
- * - <b>Master/Worker: trace-masterworker/trace-masterworker.c</b> This is an augmented version of our basic
- *   master/worker example. It uses several tracing functions that enable the tracing of categorized resource
- *   utilization, the use of trace marks, and user variables associated to the hosts of the platform file. You might
- *   want to run this program with the following configuration options:
- *   <i>--cfg=tracing/categorized:yes</i>, <i>--cfg=tracing/uncategorized:yes</i>,
- *   <i>--cfg=viva/categorized:viva_cat.plist</i>, and <i>--cfg=viva/uncategorized:viva_uncat.plist</i>.
- */
 
 #include "simgrid/msg.h"
 
@@ -29,8 +18,7 @@ static int master(int argc, char *argv[])
   TRACE_host_variable_set(MSG_host_get_name(MSG_host_self()), "is_master", 1);
 
   TRACE_mark("msmark", "start_send_tasks");
-  int i;
-  for (i = 0; i < number_of_tasks; i++) {
+  for (int i = 0; i < number_of_tasks; i++) {
     msg_task_t task = NULL;
     task = MSG_task_create("task", task_comp_size, task_comm_size, NULL);
 
@@ -44,7 +32,7 @@ static int master(int argc, char *argv[])
   }
   TRACE_mark("msmark", "finish_send_tasks");
 
-  for (i = 0; i < workers_count; i++) {
+  for (int i = 0; i < workers_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_set_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");

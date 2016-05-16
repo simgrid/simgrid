@@ -10,8 +10,7 @@ static int master(int argc, char *argv[])
   long number_of_tasks = xbt_str_parse_int(argv[1], "Invalid amount of tasks: %s");
   long workers_count = xbt_str_parse_int(argv[4], "Invalid amount of workers: %s");
 
-  int i;
-  for (i = 0; i < number_of_tasks; i++) {
+  for (int i = 0; i < number_of_tasks; i++) {
     msg_task_t task = NULL;
 
     /* creating task and setting its category */
@@ -28,7 +27,7 @@ static int master(int argc, char *argv[])
     MSG_task_send(task, "master_mailbox");
   }
 
-  for (i = 0; i < workers_count; i++) {
+  for (int i = 0; i < workers_count; i++) {
     msg_task_t finalize = MSG_task_create("finalize", 0, 1000, 0);
     MSG_task_set_category(finalize, "finalize");
     MSG_task_send(finalize, "master_mailbox");

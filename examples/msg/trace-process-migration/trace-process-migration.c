@@ -1,20 +1,11 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** @addtogroup MSG_examples
- * 
- * - <b>Process migration: trace-process-migration/trace-process-migration.c</b>. Running this program with the
- *   <i>--cfg=tracing:yes</i> and <i>--cfg=tracing/msg/process:yes</i> options  enables a Gantt-chart visualization of
- *   where the process has been hosted during its execution. Migrations are represented by arrows from the origin to
- *   the destination host.
- */
-
 #include "simgrid/msg.h"
 
-/** The guy we will move from host to host. It move alone and then is moved by policeman back  */
+/* The guy we will move from host to host. It move alone and then is moved by policeman back  */
 static int emigrant(int argc, char *argv[])
 {
   msg_task_t task = NULL;
