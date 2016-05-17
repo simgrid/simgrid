@@ -54,14 +54,14 @@ public:
   
   /** Method to create a new actor, the template parameter must extend the class Actor. In addition  the inheritance must be public. */
   template<class ActorSubClass> static ActorSubClass *createActor(const char*name, s4u::Host *host, int argc, char **argv, double killTime) {
-     Actor *res = dynamic_cast<Actor*>(new ActorSubClass());
+     ActorSubClass *res = new ActorSubClass();
      xbt_assert(res,"The actor class must extends the class simgrid::s4u::Actor.");
      
-     res->pimpl_ = simcall_process_create(name, s4u_actor_runner, static_cast<void*>(res), host->name().c_str(), killTime, argc, argv, NULL/*properties*/,1);
+     static_cast<Actor*>(res)->pimpl_ = simcall_process_create(name, s4u_actor_runner, static_cast<void*>(res), host->name().c_str(), killTime, argc, argv, NULL/*properties*/,1);
      xbt_assert(res->pimpl_,"Cannot create the actor");
    //  TRACE_msg_process_create(procname, simcall_process_get_PID(p_smx_process), host->getInferior());
    //  simcall_process_on_exit(p_smx_process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,p_smx_process);
-     return dynamic_cast<ActorSubClass*>(res);
+     return res;
   };
   
   Actor();
