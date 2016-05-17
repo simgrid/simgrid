@@ -5,16 +5,12 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 /********************* Files and Storage handling ****************************
- * This example implements all main storage and file functions of the MSG API
+ * This example implements some storage related functions of the MSG API
  *
  * Scenario :
  * - display information on the disks mounted by the current host
- * - create a 200,000 bytes file
- * - completely read the created file
- * - write 100,000 bytes in the file
- * - rename the created file
- * - attach some user data to a disk
- * - dump disk's contents
+ * - attach some properties to a disk
+ * - list all the storage elements in the platform
  *
 ******************************************************************************/
 

@@ -4,6 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+/********************* Files and Storage handling ****************************
+ * This example implements all main file functions of the MSG API
+ *
+ * Scenario: Each host
+ * - opens a file
+ * - tries to read 10,000 bytes in this file
+ * - writes 100,000 bytes in the file
+ * - seeks back to the beginning of the file
+ * - tries to read 150,000 bytes in this file
+ *
+******************************************************************************/
+
 package io.file;
 
 import org.simgrid.msg.Msg;
@@ -54,13 +66,16 @@ public class Node extends Process {
     Msg.info("Open file " + filename);
     File file = new File(filename);
 
-    long read = file.read(10000000,1);
+    long read = file.read(10000,1);
     Msg.info("Having read " + read + " on " + filename);
 
-    long write = file.read(100000,1);
+    long write = file.write(100000,1);
     Msg.info("Having write " + write + " on " + filename);
 
-    read = file.read(10000000,1);
+    Msg.info("Seek back to the beginning of " + filename);
+    file.seek(0,file.SEEK_SET);
+
+    read = file.read(150000,1);
     Msg.info("Having read " + read + " on " + filename);  
   }
 }
