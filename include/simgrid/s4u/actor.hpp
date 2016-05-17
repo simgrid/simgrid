@@ -10,8 +10,11 @@
 #include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
 
+int s4u_actor_runner(int argc, char **argv);
+
 namespace simgrid {
 namespace s4u {
+
 
 /** @brief Simulation Agent
  *
@@ -39,10 +42,29 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS Actor {
   friend Comm;
+  friend int ::s4u_actor_runner(int argc, char **argv);
+
   Actor(smx_process_t smx_proc);
 public:
-  Actor(const char*name, s4u::Host *host, int argc, char **argv);
-  Actor(const char*name, s4u::Host *host, int argc, char **argv, double killTime);
+  
+  /** Method to create a new actor, the template parameter must extend the class Actor. In addition  the inheritance must be public.  */
+  template<class ActorSubClass> static ActorSubClass *createActor(const char*name, s4u::Host *host, int argc, char **argv) {
+    return createActor<ActorSubClass>( name, host, argc, argv, -1);
+  };
+  
+  /** Method to create a new actor, the template parameter must extend the class Actor. In addition  the inheritance must be public. */
+  template<class ActorSubClass> static ActorSubClass *createActor(const char*name, s4u::Host *host, int argc, char **argv, double killTime) {
+     Actor *res = dynamic_cast<Actor*>(new ActorSubClass());
+     xbt_assert(res,"The actor class must extends the class simgrid::s4u::Actor.");
+     
+     res->pimpl_ = simcall_process_create(name, s4u_actor_runner, static_cast<void*>(res), host->name().c_str(), killTime, argc, argv, NULL/*properties*/,1);
+     xbt_assert(res->pimpl_,"Cannot create the actor");
+   //  TRACE_msg_process_create(procname, simcall_process_get_PID(p_smx_process), host->getInferior());
+   //  simcall_process_on_exit(p_smx_process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,p_smx_process);
+     return dynamic_cast<ActorSubClass*>(res);
+  };
+  
+  Actor();
   virtual ~Actor() {}
 
   /** The main method of your agent */
