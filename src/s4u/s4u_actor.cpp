@@ -15,9 +15,10 @@
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 
 /* C main function of a actor, running this->main */
-static int s4u_actor_runner(int argc, char **argv)
+int s4u_actor_runner(int argc, char **argv)
 {
-  simgrid::s4u::Actor *actor = (simgrid::s4u::Actor*) SIMIX_process_self_get_data();
+  simgrid::s4u::Actor *actor = static_cast<simgrid::s4u::Actor*>(SIMIX_process_self_get_data());
+  actor->pimpl_ = SIMIX_process_self();
   int res = actor->main(argc,argv);
   return res;
 }
@@ -26,18 +27,10 @@ static int s4u_actor_runner(int argc, char **argv)
 
 using namespace simgrid;
 
-s4u::Actor::Actor(smx_process_t smx_proc) {
-  pimpl_ = smx_proc;
+s4u::Actor::Actor(smx_process_t smx_proc) : pimpl_(smx_proc) {
 }
-s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv)
-    : s4u::Actor::Actor(name,host, argc,argv, -1) {
-}
-s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv, double killTime) {
-  pimpl_ = simcall_process_create(name, s4u_actor_runner, this, host->name().c_str(), killTime, argc, argv, NULL/*properties*/,0);
 
-  xbt_assert(pimpl_,"Cannot create the actor");
-//  TRACE_msg_process_create(procname, simcall_process_get_PID(p_smx_process), host->getInferior());
-//  simcall_process_on_exit(p_smx_process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,p_smx_process);
+s4u::Actor::Actor() : pimpl_(NULL) { 
 }
 
 int s4u::Actor::main(int argc, char **argv) {

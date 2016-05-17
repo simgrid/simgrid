@@ -9,10 +9,9 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
-class Worker : simgrid::s4u::Actor {
+class Worker : public simgrid::s4u::Actor {
 public:
-  Worker(const char*procname, simgrid::s4u::Host *host,int argc, char **argv)
-      : simgrid::s4u::Actor(procname,host,argc,argv){}
+  Worker() {}
 
   int main(int argc, char **argv) {
     XBT_INFO("Hello s4u, I'm ready to serve");
@@ -24,10 +23,9 @@ public:
   }
 };
 
-class Master : simgrid::s4u::Actor {
+class Master : public simgrid::s4u::Actor {
 public:
-  Master(const char*procname, simgrid::s4u::Host *host,int argc, char **argv)
-      : Actor(procname,host,argc,argv){}
+  Master(){}
 
   int main(int argc, char **argv) {
     const char *msg = "GaBuZoMeu";
@@ -43,9 +41,10 @@ public:
 int main(int argc, char **argv) {
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
   e->loadPlatform("../../platforms/two_hosts_platform.xml");
+  
+  simgrid::s4u::Actor::createActor<Worker>("worker", simgrid::s4u::Host::by_name("host0"), 0, NULL);
+  simgrid::s4u::Actor::createActor<Master>("master", simgrid::s4u::Host::by_name("host1"), 0, NULL);
 
-  new Worker("worker", simgrid::s4u::Host::by_name("host0"), 0, NULL);
-  new Master("master", simgrid::s4u::Host::by_name("host1"), 0, NULL);
   e->run();
   return 0;
 }
