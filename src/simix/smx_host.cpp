@@ -23,9 +23,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 void SIMIX_host_create(sg_host_t host) // FIXME: braindead prototype. Take sg_host as parameter
 {
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
-  s_smx_process_t proc;
 
   /* Host structure */
+  simgrid::simix::Process proc;
   smx_host->process_list = xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
   /* Update global variables */

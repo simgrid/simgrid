@@ -136,7 +136,7 @@ void SIMIX_process_empty_trash(void)
     xbt_dynar_free(&process->on_exit);
 
     xbt_free(process->name);
-    xbt_free(process);
+    delete process;
   }
 }
 
@@ -147,7 +147,7 @@ void create_maestro(std::function<void()> code)
 {
   smx_process_t maestro = NULL;
   /* Create maestro process and intilialize it */
-  maestro = xbt_new0(s_smx_process_t, 1);
+  maestro = new simgrid::simix::Process();
   maestro->pid = simix_process_maxpid++;
   maestro->ppid = -1;
   maestro->name = (char*) "";
@@ -277,7 +277,7 @@ smx_process_t SIMIX_process_create(
     xbt_free(argv);
   }
   else {
-    process = xbt_new0(s_smx_process_t, 1);
+    process = new simgrid::simix::Process();
 
     xbt_assert(((code != NULL) && (host != NULL)), "Invalid parameters");
     /* Process data */
@@ -368,7 +368,7 @@ smx_process_t SIMIX_process_attach(
     return nullptr;
   }
 
-  smx_process_t process = xbt_new0(s_smx_process_t, 1);
+  smx_process_t process = new simgrid::simix::Process();
   /* Process data */
   process->pid = simix_process_maxpid++;
   process->name = xbt_strdup(name);

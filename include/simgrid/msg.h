@@ -152,7 +152,7 @@ typedef struct msg_comm *msg_comm_t;
     structure, but always use the provided API to interact with
     processes.
  */
-typedef struct s_smx_process *msg_process_t;
+typedef smx_process_t msg_process_t;
 
 /** @brief Return code of most MSG functions
     @ingroup msg_simulation

@@ -105,7 +105,7 @@ smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall){
 smx_mutex_t SIMIX_mutex_init(void)
 {
   XBT_IN("()");
-  s_smx_process_t p;            /* useful to initialize sleeping swag */
+  simgrid::simix::Process p;            /* useful to initialize sleeping swag */
 
   smx_mutex_t mutex = xbt_new0(s_smx_mutex_t, 1);
   mutex->locked = 0;
@@ -231,7 +231,7 @@ void SIMIX_mutex_destroy(smx_mutex_t mutex)
 smx_cond_t SIMIX_cond_init(void)
 {
   XBT_IN("()");
-  s_smx_process_t p;
+  simgrid::simix::Process p;
   smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->mutex = NULL;
@@ -372,7 +372,7 @@ void SIMIX_cond_destroy(smx_cond_t cond)
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
   XBT_IN("(%u)",value);
-  s_smx_process_t p;
+  simgrid::simix::Process p;
 
   smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
   sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));

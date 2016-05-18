@@ -21,16 +21,28 @@
 
 namespace simgrid {
 namespace simix {
+
+  /** @brief Process datatype
+      @ingroup simix_process_management
+
+      A process may be defined as a <em>code</em>, with some <em>private
+      data</em>, executing in a <em>location</em>.
+      \see m_process_management
+    @{ */
+  class Process;
   class Context;
   class ContextFactory;
+
 }
 }
 
 typedef simgrid::simix::Context *smx_context_t;
+typedef simgrid::simix::Process *smx_process_t;
 
 #else
 
 typedef struct s_smx_context *smx_context_t;
+typedef struct s_smx_process *smx_process_t;
 
 #endif
 
@@ -92,14 +104,7 @@ typedef xbt_dictelm_t smx_storage_t;
 typedef struct s_smx_storage_priv *smx_storage_priv_t;
 
 /* ****************************** Process *********************************** */
-/** @brief Process datatype
-    @ingroup simix_process_management
 
-    A process may be defined as a <em>code</em>, with some <em>private
-    data</em>, executing in a <em>location</em>.
-    \see m_process_management
-  @{ */
-typedef struct s_smx_process *smx_process_t;
 typedef enum {
   SMX_EXIT_SUCCESS = 0,
   SMX_EXIT_FAILURE = 1

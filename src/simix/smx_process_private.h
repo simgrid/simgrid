@@ -12,8 +12,6 @@
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
-SG_BEGIN_DECL()
-
 typedef struct s_smx_process_exit_fun {
   int_f_pvoid_pvoid_t fun;
   void *arg;
@@ -31,39 +29,52 @@ typedef struct s_smx_process_arg {
   unsigned auto_restart:1;
 } s_smx_process_arg_t, *smx_process_arg_t;
 
-/** @brief Process datatype */
-typedef struct s_smx_process {
-  s_xbt_swag_hookup_t process_hookup;   /* simix_global->process_list */
-  s_xbt_swag_hookup_t synchro_hookup;   /* {mutex,cond,sem}->sleeping */
-  s_xbt_swag_hookup_t host_proc_hookup; /* smx_host->process_lis */
-  s_xbt_swag_hookup_t destroy_hookup;   /* simix_global->process_to_destroy */
+namespace simgrid {
+namespace simix {
 
-  unsigned long pid;
-  unsigned long ppid;
-  char *name;                   /**< @brief process name if any */
-  sg_host_t host;          /* the host on which the process is running */
-  smx_context_t context;        /* the context (uctx/raw/thread) that executes the user function */
-  xbt_running_ctx_t *running_ctx;
-  unsigned doexception:1;
-  unsigned blocked:1;
-  unsigned suspended:1;
-  unsigned auto_restart:1;
+class Process {
+public:
 
-  sg_host_t new_host;          /* if not null, the host on which the process must migrate to */
-  smx_synchro_t waiting_synchro;  /* the current blocking synchro if any */
-  xbt_fifo_t comms;       /* the current non-blocking communication synchros */
-  xbt_dict_t properties;
+  // TODO, replace with boost intrusive container hooks
+  s_xbt_swag_hookup_t process_hookup = { nullptr, nullptr };   /* simix_global->process_list */
+  s_xbt_swag_hookup_t synchro_hookup = { nullptr, nullptr };   /* {mutex,cond,sem}->sleeping */
+  s_xbt_swag_hookup_t host_proc_hookup = { nullptr, nullptr }; /* smx_host->process_lis */
+  s_xbt_swag_hookup_t destroy_hookup = { nullptr, nullptr };   /* simix_global->process_to_destroy */
+
+  unsigned long pid = 0;
+  unsigned long ppid = 0;
+  char *name = nullptr;         /**< @brief process name if any */
+  sg_host_t host = nullptr;     /* the host on which the process is running */
+  smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
+  xbt_running_ctx_t *running_ctx = nullptr;
+
+  // TODO, pack them
+  bool doexception = false;
+  bool blocked = false;
+  bool suspended = false;
+  bool auto_restart = false;
+
+  sg_host_t new_host = nullptr;     /* if not null, the host on which the process must migrate to */
+  smx_synchro_t waiting_synchro = nullptr;  /* the current blocking synchro if any */
+  xbt_fifo_t comms = nullptr;       /* the current non-blocking communication synchros */
+  xbt_dict_t properties = nullptr;
   s_smx_simcall_t simcall;
-  void *data;                   /* kept for compatibility, it should be replaced with moddata */
-  xbt_dynar_t on_exit;     /* list of functions executed when the process dies */
+  void *data = nullptr;    /* kept for compatibility, it should be replaced with moddata */
+  xbt_dynar_t on_exit = nullptr; /* list of functions executed when the process dies */
 
-  xbt_main_func_t code;
-  int argc;
-  char **argv;
-  smx_timer_t kill_timer;
-  int segment_index;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
-} s_smx_process_t;
+  xbt_main_func_t code = nullptr;
+  int argc = 0;
+  char **argv = nullptr;
+  smx_timer_t kill_timer = nullptr;
+  int segment_index = 0;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
+};
 
+}
+}
+
+typedef simgrid::simix::Process* smx_process_t;
+
+SG_BEGIN_DECL()
 
 XBT_PRIVATE smx_process_t SIMIX_process_create(
                           const char *name,
