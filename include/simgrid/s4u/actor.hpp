@@ -27,34 +27,34 @@ namespace s4u {
  *
  * \verbatim
  * #include "s4u/actor.hpp"
- *
- * class Worker : simgrid::s4u::Actor {
- *
- *     int main(int argc, char **argv) {
- *    printf("Hello s4u");
- *    }
+ * 
+ * class Worker {
+ *   int operator()() {
+ *     printf("Hello s4u");
+ *     return 0;
+ *   }
  * };
+ *
+ * new Actor("worker", host, Worker());
  * \endverbatim
  *
  */
 XBT_PUBLIC_CLASS Actor {
-  friend Comm;
   Actor(smx_process_t smx_proc);
 public:
-  Actor(const char*name, s4u::Host *host, int argc, char **argv);
-  Actor(const char*name, s4u::Host *host, int argc, char **argv, double killTime);
-  virtual ~Actor() {}
+  Actor(const char* name, s4u::Host *host, double killTime, std::function<int()> code);
+  Actor(const char* name, s4u::Host *host, std::function<int()> code)
+    : Actor(name, host, -1, std::move(code)) {};
+  template<class C>
+  Actor(const char* name, s4u::Host *host, C code)
+    : Actor(name, host, -1, std::function<int()>(std::move(code))) {}
+  ~Actor();
 
-  /** The main method of your agent */
-  virtual int main(int argc, char **argv);
-
-  /** The Actor that is currently running */
-  static Actor &self();
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
   //static Actor *byPid(int pid); not implemented
 
   /** Retrieves the name of that actor */
-  const char*getName();
+  const char* getName();
   /** Retrieves the host on which that actor is running */
   s4u::Host *getHost();
   /** Retrieves the PID of that actor */
@@ -67,8 +67,6 @@ public:
   /** Retrieves the time at which that actor will be killed (or -1 if not set) */
   double getKillTime();
 
-  /** Ask kindly to all actors to die. Only the issuer will survive. */
-  static void killAll();
   /** Ask the actor to die.
    *
    * It will only notice your request when doing a simcall next time (a communication or similar).
@@ -76,64 +74,47 @@ public:
    */
   void kill();
 
+  // Static methods on all actors:
+
+  /** Ask kindly to all actors to die. Only the issuer will survive. */
+  static void killAll();
+
+  // Static methods working on the current actor:
+
   /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
-  void sleep(double duration);
+  static void sleep(double duration);
 
   /** Block the actor, computing the given amount of flops */
-  e_smx_state_t execute(double flop);
+  static e_smx_state_t execute(double flop);
 
   /** Block the actor until it gets a message from the given mailbox.
    *
    * See \ref Comm for the full communication API (including non blocking communications).
    */
-  void *recv(Mailbox &chan);
+  static void *recv(Mailbox &chan);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox
    *
    * See \ref Comm for the full communication API (including non blocking communications).
   */
-  void send(Mailbox &chan, void*payload, size_t simulatedSize);
+  static void send(Mailbox &chan, void*payload, size_t simulatedSize);
 
 protected:
   smx_process_t getInferior() {return pimpl_;}
 private:
-  smx_process_t pimpl_;
+  smx_process_t pimpl_ = nullptr;
 };
+
 }} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_ACTOR_HPP */
 
 #if 0
 
-public abstract class Actor implements Runnable {
-  /** Suspends the process. See {@link #resume()} to resume it afterward */
-  public native void suspend();
-  /** Resume a process that was suspended by {@link #suspend()}. */
-  public native void resume();  
-  /** Tests if a process is suspended. */
-  public native boolean isSuspended();
+public final class Actor {
   
-  /**
-   * Returns the value of a given process property. 
-   */
-  public native String getProperty(String name);
-
-
-  /**
-   * Migrates a process to another host.
-   *
-   * @param host      The host where to migrate the process.
-   *
-   */
-  public native void migrate(Host host);  
-
-  public native void exit();    
-  /**
-   * This static method returns the current amount of processes running
-   *
-   * @return      The count of the running processes
-   */ 
-  public native static int getCount();
+  public Actor(String name, Host host, double killTime, Runnable code);
+  // ....
 
 }
 #endif

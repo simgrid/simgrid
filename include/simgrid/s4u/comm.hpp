@@ -26,13 +26,13 @@ public:
 
 public:
   /** Creates (but don't start) an async send to the mailbox #dest */
-  static Comm &send_init(Actor *sender, Mailbox &dest);
+  static Comm &send_init(Mailbox &dest);
   /** Creates and start an async send to the mailbox #dest */
-  static Comm &send_async(s4u::Actor *sender, Mailbox &dest, void *data, int simulatedByteAmount);
+  static Comm &send_async(Mailbox &dest, void *data, int simulatedByteAmount);
     /** Creates (but don't start) an async recv onto the mailbox #from */
-  static Comm &recv_init(s4u::Actor *receiver, Mailbox &from);
+  static Comm &recv_init(Mailbox &from);
   /** Creates and start an async recv to the mailbox #from */
-  static Comm &recv_async(s4u::Actor *receiver, Mailbox &from, void **data);
+  static Comm &recv_async(Mailbox &from, void **data);
 
   void start() override;
   void wait() override;
@@ -72,8 +72,8 @@ private: /* FIXME: expose these elements in the API */
   void (*copyDataFunction_)(smx_synchro_t, void*, size_t) = NULL;
 
 private:
-  Actor *sender_ = NULL;
-  Actor *receiver_ = NULL;
+  smx_process_t sender_ = NULL;
+  smx_process_t receiver_ = NULL;
   Mailbox *mailbox_ = NULL;
 };
 

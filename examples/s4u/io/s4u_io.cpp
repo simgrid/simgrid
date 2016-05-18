@@ -11,10 +11,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
-class myHost : simgrid::s4u::Actor {
+class MyHost {
 public:
-  myHost(const char*procname, simgrid::s4u::Host *host,int argc, char **argv)
-: simgrid::s4u::Actor(procname,host,argc,argv){}
 
   void show_info(boost::unordered_map <std::string, simgrid::s4u::Storage*> const&mounts) {
     XBT_INFO("Storage info on %s:",
@@ -34,7 +32,7 @@ public:
     }
   }
 
-  int main(int argc, char **argv) {
+  int operator()() {
     boost::unordered_map <std::string, simgrid::s4u::Storage *> const& mounts =
       simgrid::s4u::Host::current()->mountedStorages();
 
@@ -105,11 +103,11 @@ public:
   }
 };
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
   e->loadPlatform("../../platforms/storage/storage.xml");
-
-  new myHost("host", simgrid::s4u::Host::by_name("denise"), 0, NULL);
+  new simgrid::s4u::Actor("host", simgrid::s4u::Host::by_name("denise"), MyHost());
   e->run();
   return 0;
 }

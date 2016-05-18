@@ -9,31 +9,23 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
-class Worker : simgrid::s4u::Actor {
+class Worker {
 public:
-  Worker(const char*procname, simgrid::s4u::Host *host,int argc, char **argv)
-      : simgrid::s4u::Actor(procname,host,argc,argv){}
-
-  int main(int argc, char **argv) {
+  int operator()() {
     XBT_INFO("Hello s4u, I'm ready to serve");
-
-    char *msg = (char*)recv(*simgrid::s4u::Mailbox::byName("worker"));
+    char *msg = (char*)simgrid::s4u::Actor::recv(*simgrid::s4u::Mailbox::byName("worker"));
     XBT_INFO("I received '%s'",msg);
     XBT_INFO("I'm done. See you.");
     return 1;
   }
 };
 
-class Master : simgrid::s4u::Actor {
+class Master {
 public:
-  Master(const char*procname, simgrid::s4u::Host *host,int argc, char **argv)
-      : Actor(procname,host,argc,argv){}
-
-  int main(int argc, char **argv) {
+  int operator()() {
     const char *msg = "GaBuZoMeu";
     XBT_INFO("Hello s4u, I have something to send");
-    send(*simgrid::s4u::Mailbox::byName("worker"), xbt_strdup(msg), strlen(msg));
-
+    simgrid::s4u::Actor::send(*simgrid::s4u::Mailbox::byName("worker"), xbt_strdup(msg), strlen(msg));
     XBT_INFO("I'm done. See you.");
     return 1;
   }
@@ -43,9 +35,8 @@ public:
 int main(int argc, char **argv) {
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
   e->loadPlatform("../../platforms/two_hosts_platform.xml");
-
-  new Worker("worker", simgrid::s4u::Host::by_name("host0"), 0, NULL);
-  new Master("master", simgrid::s4u::Host::by_name("host1"), 0, NULL);
+  new simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("host0"), Worker());
+  new simgrid::s4u::Actor("master", simgrid::s4u::Host::by_name("host1"), 0, Master());
   e->run();
   return 0;
 }
