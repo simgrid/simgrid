@@ -1656,6 +1656,22 @@ are some best practices you should pay attention to in order to
 produce good platform and some choices you can make in order to have
 faster simulations. Here's some hints and tips, then.
 
+@subsection Finding the platform example that you need
+
+Most platform files that we ship are in the @c examples/platforms
+folder. The good old @c grep tool can find the examples you need when
+wondering on a specific XML tag. Here is an example session searching
+for @ref pf_trace "trace_connect":
+
+@verbatim
+% cd examples/platforms
+% grep -R -i -n --include="*.xml" "trace_connect" .
+./two_hosts_platform_with_availability_included.xml:26:<trace_connect kind="SPEED" trace="A" element="Cpu A"/>
+./two_hosts_platform_with_availability_included.xml:27:<trace_connect kind="HOST_AVAIL" trace="A_failure" element="Cpu A"/>
+./two_hosts_platform_with_availability_included.xml:28:<trace_connect kind="SPEED" trace="B" element="Cpu B"/>
+./two_hosts.xml:17:  <trace_connect trace="Tremblay_power" element="Tremblay" kind="SPEED"/>
+@endverbatim
+
 \subsection pf_as_h AS Hierarchy
 The AS design allows SimGrid to go fast, because computing route is
 done only for the set of resources defined in this AS. If you're using
