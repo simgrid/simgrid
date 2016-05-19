@@ -84,7 +84,7 @@ void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
 /**
  *  \brief Pushes a communication synchro into a rendez-vous point
  *  \param mbox The mailbox
- *  \param comm The communication synchro
+ *  \param synchro The communication synchro
  */
 static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t synchro)
 {
@@ -97,7 +97,7 @@ static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t synchro)
 /**
  *  \brief Removes a communication synchro from a rendez-vous point
  *  \param mbox The rendez-vous point
- *  \param comm The communication synchro
+ *  \param synchro The communication synchro
  */
 void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t synchro)
 {

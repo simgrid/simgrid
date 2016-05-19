@@ -50,11 +50,7 @@ void smpi_set_host_pstate(int pstate_index)
 {
   sg_host_set_pstate(SIMIX_host_self(), pstate_index);
 }
-/**
- * \brief Gets the pstate at which the processor currently running
- *
- * \param pstate_index pstate to switch to
- */
+/** @brief Gets the pstate at which the processor currently running */
 int smpi_get_host_pstate() {
   return sg_host_get_pstate(SIMIX_host_self());
 }
