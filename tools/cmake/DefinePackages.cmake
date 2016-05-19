@@ -783,6 +783,7 @@ set(DOC_SOURCES
 
   doc/doxygen/FAQ.doc
   doc/doxygen/advanced.doc
+  doc/doxygen/application.doc
   doc/doxygen/bindings.doc
   doc/doxygen/contributing.doc
   doc/doxygen/deployment.doc

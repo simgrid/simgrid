@@ -1,0 +1,37 @@
+/** 
+@page app Describing your application
+
+TBD
+
+* Main concepts
+
+  - *Actor* (or process in legacy interfaces of SimGrid)
+  
+  - *Activities*: resource usage that applications do. This is what
+    takes time.
+    
+    Any given actor can do at most one foreground activity, while it
+    can also do several non-blocking activities in the background.
+    
+  - These activities take place on *Resources* (links, compute
+    machine, disks). Resources should be described (created) in the
+    Virtual Platform (link), but your application have many other ways
+    to interact with the resource.  
+
+  - The resources are arranged in a hierarchy of *Autonomous Systems*,
+    with which the application can also interact. The AS knows the
+    networking path between one resource to another.
+
+Speak of mailboxes here? Where if not?
+
+* Interfaces to describe applications
+
+- Simple C++ interface: S4U that is currently designed
+- Simple Legacy C interfaces: MSG and SimDag, with comparison.
+- Simple Java Interface: Currently MSG-based, but will be replaced with S4U stuff when ready
+- MPI applications
+
+- Arbitrary applications: Simterpose and Remote SimGrid (they are currently far from being usable).
+- State our goal of BYOS (build your own simulator), even if it's just a neat name for now
+
+*/

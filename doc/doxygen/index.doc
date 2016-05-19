@@ -11,7 +11,7 @@
 @endhtmlonly
 
 - @subpage getting_started
-  - @ref install
+  - @subpage install
   - @ref contact
 - @subpage tutorial
   - @subpage platform
