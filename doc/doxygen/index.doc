@@ -12,17 +12,16 @@
 
 - @subpage getting_started
   - @subpage install
-  - @ref contact
-- @subpage tutorial
+- @subpage application
   - @subpage platform
-  - @subpage options
   - @subpage deployment
+  - @subpage options
+  - @subpage tutorial
   - @subpage examples
 - @subpage advanced
   - @ref bindings
   - @ref pls
   - @ref tracing
-- @subpage FAQ
 - @subpage inside
   - @ref inside_tests
   - @ref inside_doxygen
@@ -30,6 +29,8 @@
   - @ref inside_cmake
   - @ref inside_release
 - @subpage contributing
+  - @ref contact
+- @subpage FAQ
 
 @htmlonly
 </td><td width="50%" align="center">

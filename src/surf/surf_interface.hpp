@@ -139,9 +139,9 @@ public:
   /** @brief Mark that the action is now finished */
   void finish();
 
-  /** @brief Get the [state](\ref e_surf_action_state_t) of the current Action */
+  /** @brief Get the [state](\ref simgrid::surf::Action::State) of the current Action */
   Action::State getState(); /**< get the state*/
-  /** @brief Set the [state](\ref e_surf_action_state_t) of the current Action */
+  /** @brief Set the [state](\ref simgrid::surf::Action::State) of the current Action */
   virtual void setState(Action::State state);
 
   /** @brief Get the bound of the current Action */

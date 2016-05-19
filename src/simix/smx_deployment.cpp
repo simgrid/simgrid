@@ -57,7 +57,7 @@ void SIMIX_launch_application(const char *file)
 }
 
 /**
- * \brief Registers a #smx_process_code_t code in a global table.
+ * \brief Registers a #xbt_main_func_t code in a global table.
  *
  * Registers a code function in a global table.
  * This table is then used by #SIMIX_launch_application.
@@ -72,15 +72,14 @@ void SIMIX_function_register(const char *name, xbt_main_func_t code)
 
 static xbt_main_func_t default_function = NULL;
 /**
- * \brief Registers a #smx_process_code_t code as default value.
+ * \brief Registers a #xbt_main_func_t code as default value.
  *
  * Registers a code function as being the default value. This function will get used by SIMIX_launch_application() when there is no registered function of the requested name in.
  * \param code the function
  */
 void SIMIX_function_register_default(xbt_main_func_t code)
 {
-  xbt_assert(simix_global,
-              "SIMIX_global_init has to be called before SIMIX_function_register.");
+  xbt_assert(simix_global, "SIMIX_global_init has to be called before SIMIX_function_register.");
 
   default_function = code;
 }

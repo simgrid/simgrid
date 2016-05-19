@@ -2,28 +2,35 @@
 
 @tableofcontents
 
-SimGrid is a simulator of distributed computer systems. It can be used
-to either assess abstract algorithms, or to profile and debug real
-distributed applications.  SimGrid enables studies in the domains of
-(data-)Grids, Clusters, IaaS Clouds, High Performance Computing,
-Volunteer Computing and Peer-to-Peer.
+SimGrid is a framework to simulate distributed computer systems. 
 
-SimGrid is a feature rich framework, with many options and
-possibilities. Hopefully its documentation will help you getting at
-full gear. But nothing's perfect, and this documentation is really no
-exception here. Please help us improving it by reporting the issues
-that you see.
+It can be used to either assess abstract algorithms, or to profile and
+debug real distributed applications.  SimGrid enables studies in the
+domains of (data-)Grids, Clusters, IaaS Clouds, High Performance
+Computing, Volunteer Computing and Peer-to-Peer.
+
+Technically speaking, SimGrid is a library. It is not a graphical 
+interface nor a command-line simulator running user scripts. You
+interact with SimGrid by writting programs with the exposed functions
+to build your own simulator.
+
+SimGrid have many features, many options and many possibilities. The
+documentation aims at smoothing the learning curve. But nothing's
+perfect, and this documentation is really no exception here. Please
+help us improving it by reporting the issues that you see and
+proposing the content that is still missing.
 
 SimGrid is a Free Software distributed under the LGPL licence. It
 means that you are welcome to use it as you wish, or even to modify
 and distribute your version (as long as your version is as free as
 ours). It also means that SimGrid is developed by a vivid community of
-users and developers. We hope that you will join the community!
+users and developers. We hope that you will come and join us!
 
-SimGrid beneficied of many fundings from various research instances,
-including: the ANR, Inria, CNRS, University of Lorraine, University of
-Hawai'i at Manoa, ENS Rennes and many others. Thanks to our generous
-donators! SimGrid would not exist without the research that they funded.
+SimGrid is the result of over 15 years of research from several
+groups, both in France and in the USA. It benefited of many fundings
+from various research instances, including the ANR, Inria, CNRS,
+University of Lorraine, University of Hawai'i at Manoa, ENS Rennes and
+many others. Many thanks to our generous donators!
 
 @section starting_components Typical Study based on SimGrid
 
@@ -71,12 +78,12 @@ The questions that SimGrid can solve include the following:
    platform for testing purpose. SimGrid also allows co-design of the
    platform and the application by modifying both of them.
 
- - **Debug Real Applications**. With real platforms, is sometimes
+ - **Debug Real Applications**. With real systems, is sometimes
    difficult to reproduce the exact run leading to the bug that you
    are tracking. SimGrid gives you experimental reproducibility,
-   clairevoyance (you can explore every part of the system in no
-   [simulated] time without modifying it). It makes it very easy to
-   mock some parts of the real system that are not under study.
+   clairevoyance (you can explore every part of the system, and your
+   probe will not change the simulated state). It also makes it easy
+   to mock some parts of the real system that are not under study.
 
 @section starting_gears SimGrid Execution Gears
 
@@ -97,7 +104,7 @@ explored. In some sense, this gear tests your application for all
 possible platforms that you could imagine (and more).
   
 You just provide the application and its deployment (amount of
-processes and parameters), and the model-checker will literally
+processes and parameters), and the model-checker will litterally
 explore all possible outcomes by testing all possible message
 interleaving: if at some point a given process can either receive the
 message A first or the message B depending on the platform
@@ -125,6 +132,16 @@ example that the application took 42 steps to run, but there is no way
 to know the amount of seconds that it took or the amount of watts that
 it dissipated.
 
+Finally, the model checker only explores the interleavings of
+computations and communications. Other factors such as thread
+execution interleaving are not considered by the SimGrid model
+checker.
+
+The model checker may well miss existing issues, as it computes the
+possible outcomes *from a given initial situation*. There is no way to
+prove the correction of your application in all generality with this
+tool.
+
 ** **Benchmark Recording Gear**. During debug sessions, continuous
 integration testing and other similar use cases, you are often only
 interested in the control flow. If your application apply filters to
@@ -140,6 +157,15 @@ the real hosting machine to benchmark it.
 
 TBD
 
+- Many publications
+- Accurate speedup prediction for the Mont-Blanc cluster
+- It already happened that a divergence between the simulated outcome
+  and the reality resulted from a testbed misconfiguration. In some
+  sense, we fixed the reality because it was not getting the result
+  that SimGrid correctly computed :)
+- Star-PU, BigDFT, TomP2P use SimGrid to chase their bugs and improve
+  their efficiency.
+
 @section starting_limits SimGrid Limits
 
 This framework is by no means the perfect holly grail able to solve
@@ -150,6 +176,10 @@ multithreaded systems are not in the scope. You could probably tweak
 SimGrid for such studies (or the framework could possibily be extended
 in this direction), but another framework specifically targeting this
 usecase would probably be more suited.
+
+** **There is currently no support for IoT studies and wireless networks**. 
+The framework could certainly be improved in this direction, but this
+is still to be done.
 
 ** **There is no perfect model, only models adapted to your study.**
 The SimGrid models target fast, large studies yet requesting a
@@ -172,7 +202,7 @@ with SimGrid**:
 
 Now that you know about the basic concepts of SimGrid, you can give it
 a try. If it's not done yet, first @ref install "install it". Then,
-proceed to the section on @ref app "describing the application" that
+proceed to the section on @ref application "describing the application" that
 you want to study.
 
 */
