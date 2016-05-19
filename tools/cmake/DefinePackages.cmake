@@ -507,6 +507,7 @@ set(TRACING_SRC
   src/instr/instr_paje_types.cpp
   src/instr/instr_paje_values.cpp
   src/instr/instr_private.h
+  src/instr/instr_smpi.h
   src/instr/instr_resource_utilization.cpp
   src/instr/instr_trace.cpp
   )
