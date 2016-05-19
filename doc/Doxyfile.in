@@ -644,7 +644,6 @@ WARN_LOGFILE           =
 
 INPUT                  = doxygen/index.doc \
                          doxygen/getting_started.doc \
-                         doxygen/getting_started_index.doc \
                          doxygen/tutorial.doc \
                          doxygen/install.doc \
                          doxygen/examples.doc \

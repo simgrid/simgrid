@@ -788,7 +788,6 @@ set(DOC_SOURCES
   doc/doxygen/deployment.doc
   doc/doxygen/footer.html
   doc/doxygen/getting_started.doc
-  doc/doxygen/getting_started_index.doc
   doc/doxygen/header.html
   doc/doxygen/help.doc
   doc/doxygen/index.doc
