@@ -12,7 +12,7 @@
 
 - @subpage getting_started
   - @ref install
-  - @ref help
+  - @ref contact
 - @subpage tutorial
   - @subpage platform
   - @subpage options

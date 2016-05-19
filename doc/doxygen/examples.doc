@@ -1,10 +1,5 @@
 /*! \page examples SimGrid Examples
 
-\note 
-  This page is under work -- sorry for the inconvenience (FIXME).
-
-- @ref help
-
 \tableofcontents
 
 SimGrid comes with many examples provided in the examples/ directory.

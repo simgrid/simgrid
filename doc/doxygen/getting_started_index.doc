@@ -3,7 +3,7 @@
 
 - @subpage getting_started
 - @subpage install
-    - @ref help
+    - @ref contact
 - @subpage advanced
   - @ref bindings
   - @ref pls
