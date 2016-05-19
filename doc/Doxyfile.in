@@ -672,7 +672,6 @@ INPUT                  = doxygen/index.doc \
                            doxygen/module-simix.doc \
                            doxygen/module-smpi.doc \
                            doxygen/module-trace.doc \
-                           index-API.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/logcategories.doc \
                          @CMAKE_HOME_DIRECTORY@/src/instr/ \
                          @CMAKE_HOME_DIRECTORY@/include/ \

@@ -100,7 +100,6 @@ doc/html
 doc/index.php
 doc/simgrid.tag
 doc/doxygen/logcategories.doc
-doc/index-API.doc
 doc/simgrid_modules.map
 doc/javadoc
 ### Specific of project 
