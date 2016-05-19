@@ -14,7 +14,7 @@
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
 
-#include <src/instr/instr_smpi.h>
+#include "src/instr/instr_smpi.h"
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
