@@ -156,7 +156,7 @@ void create_maestro(std::function<void()> code)
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
 
   if (!code) {
-    maestro->context = SIMIX_context_new(NULL, 0, nullptr, NULL, maestro);
+    maestro->context = SIMIX_context_new(std::function<void()>(), NULL, maestro);
   } else {
     if (!simix_global)
       xbt_die("simix is not initialized, please call MSG_init first");
@@ -315,7 +315,9 @@ smx_process_t SIMIX_process_create(
 
 
     XBT_VERB("Create context %s", process->name);
-    process->context = SIMIX_context_new(code, argc, argv, simix_global->cleanup_process_function, process);
+    process->context = SIMIX_context_new(
+      simgrid::simix::wrap_main(code, argc, argv),
+      simix_global->cleanup_process_function, process);
 
     process->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
     XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);

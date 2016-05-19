@@ -7,6 +7,8 @@
 #ifndef _SIMIX_PRIVATE_H
 #define _SIMIX_PRIVATE_H
 
+#include <functional>
+
 #include "src/internal_config.h"
 #include "simgrid/simix.h"
 #include "surf/surf.h"
@@ -99,7 +101,7 @@ XBT_PRIVATE void SIMIX_context_mod_init(void);
 XBT_PRIVATE void SIMIX_context_mod_exit(void);
 
 XBT_PRIVATE smx_context_t SIMIX_context_new(
-  xbt_main_func_t code, int argc, char **argv,
+  std::function<void()> code,
   void_pfn_smxprocess_t cleanup_func,
   smx_process_t simix_process);
 

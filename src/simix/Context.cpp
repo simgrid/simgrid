@@ -30,14 +30,14 @@ void SIMIX_process_set_cleanup_function(
  * \param cleanup_func the function to call when the context stops
  */
 smx_context_t SIMIX_context_new(
-  xbt_main_func_t code, int argc, char **argv,
+  std::function<void()> code,
   void_pfn_smxprocess_t cleanup_func,
   smx_process_t simix_process)
 {
   if (!simix_global)
     xbt_die("simix is not initialized, please call MSG_init first");
   return simix_global->context_factory->create_context(
-    simgrid::simix::wrap_main(code, argc, argv), cleanup_func, simix_process);
+    std::move(code), cleanup_func, simix_process);
 }
 
 namespace simgrid {
