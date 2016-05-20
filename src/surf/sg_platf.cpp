@@ -604,8 +604,20 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->properties = current_property_set;
 
     XBT_DEBUG("Process %s(%s) will be started at time %f", arg->name, arg->hostname, start_time);
-    SIMIX_timer_set(start_time, [](void* arg) {
-      SIMIX_process_create_from_wrapper((smx_process_arg_t) arg);
+    SIMIX_timer_set(start_time, [](void* p) {
+      smx_process_arg_t arg = static_cast<smx_process_arg_t>(p);
+      simix_global->create_process_function(
+                                            arg->name,
+                                            arg->code,
+                                            arg->data,
+                                            arg->hostname,
+                                            arg->kill_time,
+                                            arg->argc,
+                                            arg->argv,
+                                            arg->properties,
+                                            arg->auto_restart,
+                                            NULL);
+      delete arg;
     }, arg);
   } else {                      // start_time <= SIMIX_get_clock()
     XBT_DEBUG("Starting Process %s(%s) right now", arg->name, sg_host_get_name(host));

@@ -201,29 +201,6 @@ void SIMIX_process_stop(smx_process_t arg) {
   arg->context->stop();
 }
 
-/**
- * \brief Same as SIMIX_process_create() but with only one argument (used by timers).
- * This function frees the argument.
- * \return the process created
- */
-smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
-
-  smx_process_t process = simix_global->create_process_function(
-                                        args->name,
-                                        args->code,
-                                        args->data,
-                                        args->hostname,
-                                        args->kill_time,
-                                        args->argc,
-                                        args->argv,
-                                        args->properties,
-                                        args->auto_restart,
-                                        NULL);
-  delete args;
-  return process;
-}
-
-
 void* simcall_HANDLER_process_create(smx_simcall_t simcall,
                           const char *name,
                           xbt_main_func_t code,
