@@ -13,6 +13,7 @@
 - @subpage getting_started
   - @subpage install
 - @subpage application
+  - @subpage MSG_API
   - @subpage platform
   - @subpage deployment
   - @subpage options

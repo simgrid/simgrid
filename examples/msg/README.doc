@@ -6,7 +6,7 @@ documentation, but it should remain readable directly.
  @ingroup MSG_API
  @brief Find the MSG example fitting your needs from the extensive set provided in the archive.
 
-  - @ref msg_ex_basic
+  - @ref msg_ex_basics
   - @ref msg_ex_async
   - @ref msg_ex_process
   - @ref msg_ex_tracing
@@ -18,7 +18,7 @@ documentation, but it should remain readable directly.
   - @ref msg_ex_apps
   - @ref msg_ex_misc
 		    
-@section msg_ex_basic Basic examples and features
+@section msg_ex_basics Basic examples and features
 
  - <b>Ping Pong</b>: @ref examples/msg/app-pingpong/app-pingpong.c\n
    It's hard to think of a simpler example: it is just sending one

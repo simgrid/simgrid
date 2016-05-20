@@ -1,10 +1,4 @@
 /**
-@defgroup MSG_API      MSG
-@brief Simple programming environment
-
-*/
-
-/**
 @defgroup XBT_API      XBT
 @brief The core toolbox of SimGrid, containing usefull datatypes and friends
 */

@@ -791,8 +791,7 @@ static void surf_config_models_setup()
  * Once this function was called, the configuration concerning the used
  * models cannot be changed anymore.
  *
- * @param AS_id name of this autonomous system. Must be unique in the platform
- * @param wanted_routing_type one of Full, Floyd, Dijkstra or similar. Full list in the variable routing_models, in src/surf/surf_routing.c
+ * @param AS the parameters defining the AS to build.
  */
 simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 {

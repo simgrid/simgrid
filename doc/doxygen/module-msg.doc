@@ -1,4 +1,6 @@
-/** \addtogroup MSG_API
+/**
+@defgroup MSG_API  MSG: Simple API for Concurrent Sequential Process Algorithms
+@brief Simple programming environment
 
 MSG was the first distributed programming environment provided within SimGrid,
 and is still the most commonly used nowadays. If you are unsure of the interface

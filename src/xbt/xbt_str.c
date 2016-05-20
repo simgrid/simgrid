@@ -478,8 +478,8 @@ char *xbt_str_from_file(FILE * file)
 
 /** @brief Parse an integer out of a string, or raise an error
  *
- * The #str is passed as argument to your #error_msg, as follows:
- *       THROWF(arg_error, 0, error_msg, str);
+ * The @a str is passed as argument to your @a error_msg, as follows:
+ * @verbatim THROWF(arg_error, 0, error_msg, str); @endverbatim
  */
 long int xbt_str_parse_int(const char* str, const char* error_msg)
 {
@@ -496,8 +496,8 @@ long int xbt_str_parse_int(const char* str, const char* error_msg)
 
 /** @brief Parse a double out of a string, or raise an error
  *
- * The #str is passed as argument to your #error_msg, as follows:
- *       THROWF(arg_error, 0, error_msg, str);
+ * The @a str is passed as argument to your @a error_msg, as follows:
+ * @verbatim THROWF(arg_error, 0, error_msg, str); @endverbatim
  */
 double xbt_str_parse_double(const char* str, const char* error_msg)
 {

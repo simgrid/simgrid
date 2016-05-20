@@ -36,9 +36,9 @@ namespace simgrid {
     void AsClusterTorus::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) {
       char *link_id;
       unsigned int j = 0;
-      /**
+      /*
        * Create all links that exist in the torus.
-       * Each rank creates #dimensions-1 links
+       * Each rank creates @a dimensions-1 links
        */
       int neighbour_rank_id = 0;        // The other node the link connects
       int current_dimension = 0,        // which dimension are we currently in?
@@ -72,7 +72,7 @@ namespace simgrid {
           info.link_up = Link::byName(link_id);
           info.link_down = info.link_up;
         }
-        /**
+        /*
          * Add the link to its appropriate position;
          * note that position rankId*(xbt_dynar_length(dimensions)+has_loopack?+has_limiter?)
          * holds the link "rankId->rankId"
@@ -92,8 +92,7 @@ namespace simgrid {
 
       if (!xbt_dynar_is_empty(dimensions)) {
         dimensions_ = xbt_dynar_new(sizeof(int), NULL);
-        /**
-         * We are in a torus cluster
+        /* We are in a torus cluster
          * Parse attribute dimensions="dim1,dim2,dim3,...,dimN"
          * and safe it in a dynarray.
          * Additionally, we need to know how many ranks we have in total
@@ -127,14 +126,14 @@ namespace simgrid {
       }
 
 
-      /**
+      /*
        * Dimension based routing routes through each dimension consecutively
        * TODO Change to dynamic assignment
        */
       unsigned int j, cur_dim, dim_product = 1;
       int current_node = src->id();
       int unsigned next_node = 0;
-      /**
+      /*
        * Arrays that hold the coordinates of the current node and
        * the target; comparing the values at the i-th position of
        * both arrays, we can easily assess whether we need to route
@@ -143,7 +142,7 @@ namespace simgrid {
       unsigned int *myCoords, *targetCoords;
       myCoords = rankId_to_coords(src->id(), dimensions_);
       targetCoords = rankId_to_coords(dst->id(), dimensions_);
-      /**
+      /*
        * linkOffset describes the offset where the link
        * we want to use is stored
        * (+1 is added because each node has a link from itself to itself,

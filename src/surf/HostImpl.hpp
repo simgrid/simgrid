@@ -81,7 +81,6 @@ public:
    *
    * @param model HostModel associated to this Host
    * @param name The name of the Host
-   * @param props Dictionary of properties associated to this Host
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host
    */
@@ -92,7 +91,6 @@ public:
    *
    * @param model HostModel associated to this Host
    * @param name The name of the Host
-   * @param props Dictionary of properties associated to this Host
    * @param constraint The lmm constraint associated to this Host if it is part of a LMM component
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host

@@ -64,6 +64,7 @@ namespace simgrid {
        * @param bandwidth The initial bandwidth of the Link in bytes per second
        * @param latency The initial latency of the Link in seconds
        * @param policy The sharing policy of the Link
+       * @param props Dictionary of properties associated to this Link
        */
       virtual Link* createLink(const char *name, double bandwidth, double latency,
           e_surf_link_sharing_policy_t policy, xbt_dict_t properties)=0;
@@ -130,7 +131,7 @@ namespace simgrid {
      ************/
     /** @ingroup SURF_network_interface
      * @brief SURF network link interface class
-     * @details A Link represents the link between two [hosts](\ref Host)
+     * @details A Link represents the link between two [hosts](\ref simgrid::surf::Host)
      */
     class Link :
         public simgrid::surf::Resource,

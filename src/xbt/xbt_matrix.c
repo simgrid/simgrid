@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_matrix, xbt, "2D data storage");
 
-/** \brief constructor */
+/** @brief constructor */
 xbt_matrix_t xbt_matrix_new(int lines, int rows, const unsigned long elmsize, void_f_pvoid_t const free_f)
 {
   xbt_matrix_t res = xbt_new(s_xbt_matrix_t, 1);
@@ -23,7 +23,7 @@ xbt_matrix_t xbt_matrix_new(int lines, int rows, const unsigned long elmsize, vo
   return res;
 }
 
-/** \brief Creates a matrix being a submatrix of another one */
+/** @brief Creates a matrix being a submatrix of another one */
 xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from, int lsize, int rsize, int lpos, int rpos,
                                 pvoid_f_pvoid_t const cpy_f)
 {
@@ -32,7 +32,7 @@ xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from, int lsize, int rsize, int lpo
   return res;
 }
 
-/** \brief destructor */
+/** @brief destructor */
 void xbt_matrix_free(xbt_matrix_t mat)
 {
   if (mat) {
@@ -46,8 +46,8 @@ void xbt_matrix_free(xbt_matrix_t mat)
   }
 }
 
-/** \brief Display the content of a matrix (debugging purpose)
- *  \param coords: boolean indicating whether we should add the coords of each cell to the output*/
+/** @brief Display the content of a matrix (debugging purpose)
+ *  @param coords: boolean indicating whether we should add the coords of each cell to the output*/
 void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords, void_f_pvoid_t display_fun)
 {
   fprintf(stderr, ">>> Matrix %s dump (%u x %u)\n", name, matrix->lines, matrix->rows);
@@ -65,15 +65,16 @@ void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords, void_f_p
   fprintf(stderr, "<<< end_of_matrix %s dump\n", name);
 }
 
-/** \brief Copy the values from the matrix src into the matrix dst
- * \param dest: destination
- * \param src: source
- * \param lsize: number of lines to copy
- * \param rsize: number of rows to copy
- * \param lpos_dst: line offset on destination matrix
- * \param rpos_dst: row offset on destination matrix
- * \param lpos_src: line offset on destination matrix
- * \param rpos_src: row offset on destination matrix
+/** @brief Copy the values from the matrix src into the matrix dst
+ * @param dst: destination
+ * @param src: source
+ * @param lsize: number of lines to copy
+ * @param rsize: number of rows to copy
+ * @param lpos_dst: line offset on destination matrix
+ * @param rpos_dst: row offset on destination matrix
+ * @param lpos_src: line offset on destination matrix
+ * @param rpos_src: row offset on destination matrix
+ * @param cpy_f: the function to use to copy the elements over
  */
 void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src, unsigned int lsize, unsigned int rsize,
                             unsigned int lpos_dst, unsigned int rpos_dst,unsigned int lpos_src, unsigned int rpos_src,
@@ -105,7 +106,7 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src, unsigned int lsi
   }
 }
 
-/** \brief Creates a new matrix of double filled with zeros */
+/** @brief Creates a new matrix of double filled with zeros */
 xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
@@ -114,7 +115,7 @@ xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows)
   return res;
 }
 
-/** \brief Creates a new matrix of double being the identity matrix */
+/** @brief Creates a new matrix of double being the identity matrix */
 xbt_matrix_t xbt_matrix_double_new_id(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_double_new_zeros(lines, rows);
@@ -124,7 +125,7 @@ xbt_matrix_t xbt_matrix_double_new_id(int lines, int rows)
   return res;
 }
 
-/** \brief Creates a new matrix of double containing the sequence of numbers in order */
+/** @brief Creates a new matrix of double containing the sequence of numbers in order */
 xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
@@ -135,7 +136,7 @@ xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
   return res;
 }
 
-/** \brief add to C the result of A*B */
+/** @brief add to C the result of A*B */
 void xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B, /*OUT*/ xbt_matrix_t C)
 {
   xbt_assert(A->lines == C->lines, "A->lines != C->lines (%u vs %u)", A->lines, C->lines);

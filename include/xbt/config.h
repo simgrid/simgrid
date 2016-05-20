@@ -43,27 +43,7 @@ SG_BEGIN_DECL()
  *
  *  \section XBT_cfg_ex Example of use
  *
- *  \dontinclude config.c
- *
- *  First, let's create a configuration set with some registered variables.
- *  This must be done by the configurable library before the user interactions.
- *
- *  \skip make_set
- *  \until end_of_make_set
- *
- *  Now, set and get a single value
- *  \skip get_single_value
- *  \skip int
- *  \until cfg_free
- *
- *  And now, set and get a multiple value
- *  \skip get_multiple_value
- *  \skip dyn
- *  \until cfg_free
- *
- *  All those functions throws mismatch_error if asked to deal with an  unregistered variable.
- *  \skip myset
- *  \until cfg_free
+ *  TBD
  */
 /** @defgroup XBT_cfg_use User interface: changing values
  *  @ingroup XBT_config

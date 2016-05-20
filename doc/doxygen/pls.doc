@@ -87,9 +87,9 @@ A ns-3 platform is automatically created from the provided SimGrid platform file
 
 More about ns-3 simulator <a href="http://www.nsnam.org/">(Official website)</a>
 
-\subsection pls_examples Examples
+\subsection ns3_examples Examples
 
-There is an example in the \c examples/ folder, that shows how to use the bindings. See also the \ref MSG_ex_PLS 
-"documentation for this example".
+For an example using NS3 as a SimGrid module, please refer to the 
+@ref msg_ex_ns3 "relevant section" of the documentation.
 
 */

@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -9,15 +8,14 @@
 #include "src/surf/virtual_machine.hpp"
 #include "src/surf/HostImpl.hpp"
 
-//If you need to log some stuffs, just uncomment these two lines and uses XBT_DEBUG for instance
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms)");
 
 /* **** create a VM **** */
 
 /**
- * \brief Internal function to create a SIMIX host.
- * \param name name of the host to create
- * \param data some user data (may be NULL)
+ * @brief Internal function to create a SIMIX host.
+ * @param name name of the host to create
+ * @param data some user data (may be NULL)
  */
 sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
 {
@@ -105,9 +103,9 @@ e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm)
 }
 
 /**
- * \brief Function to migrate a SIMIX VM host.
+ * @brief Function to migrate a SIMIX VM host.
  *
- * \param host the vm host to migrate (a sg_host_t)
+ * @param host the vm host to migrate (a sg_host_t)
  */
 void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm)
 {
@@ -119,7 +117,7 @@ void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm)
 }
 
 /**
- * \brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
+ * @brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
  *  The simcall actually invokes the following calls: 
  *     simcall_vm_set_affinity(vm, src_pm, 0); 
  *     simcall_vm_migrate(vm, dst_pm); 
@@ -127,9 +125,9 @@ void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm)
  *
  * It is called at the end of the migration_rx_fun function from msg/msg_vm.c
  *
- * \param vm VM to migrate
- * \param src_pm  Source physical host
- * \param dst_pmt Destination physical host
+ * @param vm VM to migrate
+ * @param src_pm  Source physical host
+ * @param dst_pmt Destination physical host
  */
 void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
 {
@@ -145,9 +143,9 @@ void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst
 } 
 
 /**
- * \brief Function to get the physical host of the given SIMIX VM host.
+ * @brief Function to get the physical host of the given SIMIX VM host.
  *
- * \param host the vm host to get_phys_host (a sg_host_t)
+ * @param host the vm host to get_phys_host (a sg_host_t)
  */
 void *SIMIX_vm_get_pm(sg_host_t ind_vm)
 {
@@ -156,10 +154,10 @@ void *SIMIX_vm_get_pm(sg_host_t ind_vm)
 }
 
 /**
- * \brief Function to set the CPU bound of the given SIMIX VM host.
+ * @brief Function to set the CPU bound of the given SIMIX VM host.
  *
- * \param host the vm host (a sg_host_t)
- * \param bound bound (a double)
+ * @param host the vm host (a sg_host_t)
+ * @param bound bound (a double)
  */
 void SIMIX_vm_set_bound(sg_host_t ind_vm, double bound)
 {
@@ -168,11 +166,11 @@ void SIMIX_vm_set_bound(sg_host_t ind_vm, double bound)
 }
 
 /**
- * \brief Function to set the CPU affinity of the given SIMIX VM host.
+ * @brief Function to set the CPU affinity of the given SIMIX VM host.
  *
- * \param host the vm host (a sg_host_t)
- * \param host the pm host (a sg_host_t)
- * \param mask affinity mask (a unsigned long)
+ * @param host the vm host (a sg_host_t)
+ * @param host the pm host (a sg_host_t)
+ * @param mask affinity mask (a unsigned long)
  */
 void SIMIX_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mask)
 {
@@ -185,11 +183,11 @@ void SIMIX_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mas
 
 
 /**
- * \brief Function to suspend a SIMIX VM host. This function stops the execution of the
+ * @brief Function to suspend a SIMIX VM host. This function stops the execution of the
  * VM. All the processes on this VM will pause. The state of the VM is
  * preserved on memory. We can later resume it again.
  *
- * \param host the vm host to suspend (a sg_host_t)
+ * @param host the vm host to suspend (a sg_host_t)
  */
 void SIMIX_vm_suspend(sg_host_t ind_vm, smx_process_t issuer)
 {
@@ -226,10 +224,10 @@ void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm)
 
 
 /**
- * \brief Function to resume a SIMIX VM host. This function restart the execution of the
+ * @brief Function to resume a SIMIX VM host. This function restart the execution of the
  * VM. All the processes on this VM will run again.
  *
- * \param host the vm host to resume (a sg_host_t)
+ * @param host the vm host to resume (a sg_host_t)
  */
 void SIMIX_vm_resume(sg_host_t ind_vm, smx_process_t issuer)
 {
@@ -257,11 +255,11 @@ void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm)
 
 
 /**
- * \brief Function to save a SIMIX VM host.
+ * @brief Function to save a SIMIX VM host.
  * This function is the same as vm_suspend, but the state of the VM is saved to the disk, and not preserved on memory.
  * We can later restore it again.
  *
- * \param host the vm host to save (a sg_host_t)
+ * @param host the vm host to save (a sg_host_t)
  */
 void SIMIX_vm_save(sg_host_t ind_vm, smx_process_t issuer)
 {
@@ -290,10 +288,10 @@ void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm)
 
 
 /**
- * \brief Function to restore a SIMIX VM host. This function restart the execution of the
+ * @brief Function to restore a SIMIX VM host. This function restart the execution of the
  * VM. All the processes on this VM will run again.
  *
- * \param host the vm host to restore (a sg_host_t)
+ * @param host the vm host to restore (a sg_host_t)
  */
 void SIMIX_vm_restore(sg_host_t ind_vm, smx_process_t issuer)
 {
@@ -321,11 +319,11 @@ void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm)
 
 
 /**
- * \brief Function to shutdown a SIMIX VM host. This function powers off the
+ * @brief Function to shutdown a SIMIX VM host. This function powers off the
  * VM. All the processes on this VM will be killed. But, the state of the VM is
  * preserved on memory. We can later start it again.
  *
- * \param host the vm host to shutdown (a sg_host_t)
+ * @param host the vm host to shutdown (a sg_host_t)
  */
 void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer)
 {
@@ -356,9 +354,9 @@ void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm)
 
 
 /**
- * \brief Function to destroy a SIMIX VM host.
+ * @brief Function to destroy a SIMIX VM host.
  *
- * \param vm the vm host to destroy (a sg_host_t)
+ * @param vm the vm host to destroy (a sg_host_t)
  */
 void SIMIX_vm_destroy(sg_host_t vm)
 {
