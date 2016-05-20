@@ -187,7 +187,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
   if (!sg_host_simix(host)->auto_restart_processes) {
     sg_host_simix(host)->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
   }
-  smx_process_arg_t arg = new s_smx_process_arg_t();
+  smx_process_arg_t arg = new simgrid::simix::ProcessArg();
   arg->name = name;
   arg->code = code;
   arg->data = data;

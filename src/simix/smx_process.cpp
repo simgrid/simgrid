@@ -991,7 +991,7 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
   XBT_DEBUG("Restarting process %s on %s", process->name, sg_host_get_name(process->host));
   //retrieve the arguments of the old process
   //FIXME: Factorize this with SIMIX_host_add_auto_restart_process ?
-  s_smx_process_arg_t arg;
+  simgrid::simix::ProcessArg arg;
   arg.code = process->code;
   arg.hostname = sg_host_get_name(process->host);
   arg.kill_time = SIMIX_timer_get_date(process->kill_timer);

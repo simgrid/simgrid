@@ -575,7 +575,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   smx_process_arg_t arg = NULL;
   smx_process_t process_created = NULL;
 
-  arg = new s_smx_process_arg_t();
+  arg = new simgrid::simix::ProcessArg();
   arg->code = parse_code;
   arg->data = NULL;
   arg->hostname = sg_host_get_name(host);
@@ -593,7 +593,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   xbt_dynar_push_as(sg_host_simix(host)->boot_processes,smx_process_arg_t,arg);
 
   if (start_time > SIMIX_get_clock()) {
-    arg = new s_smx_process_arg_t();
+    arg = new simgrid::simix::ProcessArg();
     arg->name = process->argv[0];
     arg->code = parse_code;
     arg->data = NULL;

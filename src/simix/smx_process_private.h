@@ -19,7 +19,10 @@ typedef struct s_smx_process_exit_fun {
   void *arg;
 } s_smx_process_exit_fun_t, *smx_process_exit_fun_t;
 
-typedef class s_smx_process_arg {
+namespace simgrid {
+namespace simix {
+
+class ProcessArg {
 public:
   std::string name;
   xbt_main_func_t code;
@@ -30,10 +33,7 @@ public:
   double kill_time;
   xbt_dict_t properties;
   unsigned auto_restart:1;
-} s_smx_process_arg_t, *smx_process_arg_t;
-
-namespace simgrid {
-namespace simix {
+};
 
 class Process {
 public:
@@ -74,6 +74,8 @@ public:
 
 }
 }
+
+typedef simgrid::simix::ProcessArg *smx_process_arg_t;
 
 typedef simgrid::simix::Process* smx_process_t;
 
