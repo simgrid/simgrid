@@ -217,11 +217,6 @@ void* simcall_HANDLER_process_create(
   return res;
 }
 
-static void kill_process(void* process)
-{
-  simix_global->kill_process_function((smx_process_t) process);
-}
-
 /**
  * \brief Internal function to create a process.
  *
@@ -315,7 +310,9 @@ smx_process_t SIMIX_process_create(
     if (kill_time > SIMIX_get_clock() && simix_global->kill_process_function) {
       XBT_DEBUG("Process %s(%s) will be kill at time %f",
         process->name.c_str(), sg_host_get_name(process->host), kill_time);
-      process->kill_timer = SIMIX_timer_set(kill_time, kill_process, process);
+      process->kill_timer = SIMIX_timer_set(kill_time, [=]() {
+        simix_global->kill_process_function(process);
+      });
     }
 
     /* Tracing the process creation */
