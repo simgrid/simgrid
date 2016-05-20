@@ -219,7 +219,7 @@ smx_process_t SIMIX_process_create_from_wrapper(smx_process_arg_t args) {
                                         args->properties,
                                         args->auto_restart,
                                         NULL);
-  xbt_free(args);
+  delete args;
   return process;
 }
 

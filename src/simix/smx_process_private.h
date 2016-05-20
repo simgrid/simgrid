@@ -17,7 +17,8 @@ typedef struct s_smx_process_exit_fun {
   void *arg;
 } s_smx_process_exit_fun_t, *smx_process_exit_fun_t;
 
-typedef struct s_smx_process_arg {
+typedef class s_smx_process_arg {
+public:
   char *name;
   xbt_main_func_t code;
   void *data;

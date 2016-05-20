@@ -166,7 +166,7 @@ void _SIMIX_host_free_process_arg(void *data)
     xbt_free(arg->argv[i]);
   xbt_free(arg->argv);
   xbt_free(arg->name);
-  xbt_free(arg);
+  delete arg;
 }
 /**
  * \brief Add a process to the list of the processes that the host will restart when it comes back
@@ -188,7 +188,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
   if (!sg_host_simix(host)->auto_restart_processes) {
     sg_host_simix(host)->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
   }
-  smx_process_arg_t arg = xbt_new(s_smx_process_arg_t,1);
+  smx_process_arg_t arg = new s_smx_process_arg_t();
   arg->name = xbt_strdup(name);
   arg->code = code;
   arg->data = data;
