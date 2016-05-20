@@ -57,7 +57,7 @@ void SIMIX_host_on(sg_host_t h)
                                               NULL,
                                               arg->hostname,
                                               arg->kill_time,
-                                              arg->args.argc(), arg->args.to_argv(),
+                                              arg->args,
                                               arg->properties,
                                               arg->auto_restart,
                                               NULL);
@@ -216,7 +216,7 @@ void SIMIX_host_autorestart(sg_host_t host)
                                             NULL,
                                             arg->hostname,
                                             arg->kill_time,
-                                            arg->args.argc(), arg->args.to_argv(),
+                                            arg->args,
                                             arg->properties,
                                             arg->auto_restart,
                                             NULL);

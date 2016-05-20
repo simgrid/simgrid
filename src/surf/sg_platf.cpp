@@ -608,7 +608,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
                                             arg->data,
                                             arg->hostname,
                                             arg->kill_time,
-                                            arg->args.argc(), arg->args.to_argv(),
+                                            std::move(arg->args),
                                             arg->properties,
                                             arg->auto_restart,
                                             NULL);
@@ -625,7 +625,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
                                             NULL,
                                             sg_host_get_name(host),
                                             kill_time,
-                                            arg->args.argc(), arg->args.to_argv(),
+                                            arg->args,
                                             current_property_set,
                                             auto_restart, NULL);
     else

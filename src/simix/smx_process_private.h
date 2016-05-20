@@ -86,7 +86,7 @@ XBT_PRIVATE smx_process_t SIMIX_process_create(
                           void *data,
                           const char *hostname,
                           double kill_time,
-                          int argc, char **argv,
+                          simgrid::simix::args args,
                           xbt_dict_t properties,
                           int auto_restart,
                           smx_process_t parent_process);

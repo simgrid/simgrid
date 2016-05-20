@@ -210,10 +210,16 @@ void* simcall_HANDLER_process_create(smx_simcall_t simcall,
                           double kill_time,
                           int argc, char **argv,
                           xbt_dict_t properties,
-                          int auto_restart){
-  return (void*)SIMIX_process_create(name, code, data, hostname,
-                       kill_time, argc, argv, properties, auto_restart,
+                          int auto_restart)
+{
+  simgrid::simix::args args(argc, argv);
+  void* res = SIMIX_process_create(name, code, data, hostname,
+                       kill_time, std::move(args), properties, auto_restart,
                        simcall->issuer);
+  for (int i = 0; i != argc; ++i)
+    xbt_free(argv[i]);
+  xbt_free(argv);
+  return res;
 }
 
 static void kill_process(void* process)
@@ -236,7 +242,7 @@ smx_process_t SIMIX_process_create(
                           void *data,
                           const char *hostname,
                           double kill_time,
-                          int argc, char **argv,
+                          simgrid::simix::args args,
                           xbt_dict_t properties,
                           int auto_restart,
                           smx_process_t parent_process)
@@ -247,12 +253,9 @@ smx_process_t SIMIX_process_create(
   XBT_DEBUG("Start process %s on host '%s'", name, hostname);
 
   if (host->isOff()) {
-    int i;
     XBT_WARN("Cannot launch process '%s' on failed host '%s'", name,
           hostname);
-    for (i = 0; i < argc; i++)
-      xbt_free(argv[i]);
-    xbt_free(argv);
+    return nullptr;
   }
   else {
     process = new simgrid::simix::Process();
@@ -288,16 +291,12 @@ smx_process_t SIMIX_process_create(
     /* Process data for auto-restart */
     process->auto_restart = auto_restart;
     process->code = code;
-    process->args.assign(argc, argv);
+    process->args = args;
 
     XBT_VERB("Create context %s", process->name.c_str());
     process->context = SIMIX_context_new(
-      simgrid::simix::wrap_main(code, argc, argv),
+      simgrid::simix::wrap_main(code, std::move(args)),
       simix_global->cleanup_process_function, process);
-
-    for (int i = 0; i < argc; i++)
-      free(argv[i]);
-    free(argv);
 
     process->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
     XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);
@@ -1013,7 +1012,7 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
     return simix_global->create_process_function(
       arg.name.c_str(), arg.code, arg.data,
       arg.hostname, arg.kill_time,
-      arg.args.argc(), arg.args.to_argv(),
+      arg.args,
       arg.properties, arg.auto_restart,
       nullptr);
   else

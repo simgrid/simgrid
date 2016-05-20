@@ -549,8 +549,7 @@ double SIMIX_timer_get_date(smx_timer_t timer) {
  * to call SIMIX_process_create().
  * \param function create process function
  */
-void SIMIX_function_register_process_create(smx_creation_func_t
-                                                       function)
+void SIMIX_function_register_process_create(smx_creation_func_t function)
 {
   simix_global->create_process_function = function;
 }

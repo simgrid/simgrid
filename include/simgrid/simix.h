@@ -111,31 +111,6 @@ typedef enum {
 } smx_process_exit_status_t;
 /** @} */
 
-
-/*
- * Type of function that creates a process.
- * The function must accept the following parameters:
- * void* process: the process created will be stored there
- * const char *name: a name for the object. It is for user-level information and can be NULL
- * xbt_main_func_t code: is a function describing the behavior of the process
- * void *data: data a pointer to any data one may want to attach to the new object.
- * sg_host_t host: the location where the new process is executed
- * int argc, char **argv: parameters passed to code
- * xbt_dict_t pros: properties
- */
-typedef smx_process_t (*smx_creation_func_t) (
-                                      /* name */ const char*,
-                                      /* code */ xbt_main_func_t,
-                                      /* userdata */ void*,
-                                      /* hostname */ const char*,
-                                      /* kill_time */ double,
-                                      /* argc */ int,
-                                      /* argv */ char**,
-                                      /* props */ xbt_dict_t,
-                                      /* auto_restart */ int,
-                                      /* parent_process */ smx_process_t);
-
-
 /******************************* Networking ***********************************/
 /**
  * \ingroup simix_mbox_management
@@ -178,7 +153,6 @@ XBT_PUBLIC(void) SIMIX_global_init(int *argc, char **argv);
 XBT_PUBLIC(void) SIMIX_set_maestro(void (*code)(void*), void* data);
 
 XBT_PUBLIC(void) SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function);
-XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
 XBT_PUBLIC(void) SIMIX_function_register_process_kill(void_pfn_smxprocess_t function);
 
 /* Simulation execution */

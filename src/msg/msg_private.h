@@ -79,8 +79,6 @@ typedef struct simdata_process {
   msg_host_t put_host;            /* used for debugging purposes */
   smx_synchro_t waiting_action;
   msg_task_t waiting_task;
-  char **argv;                  /* arguments table if any */
-  int argc;                     /* arguments number if any */
   msg_error_t last_errno;       /* the last value returned by a MSG_function */
 
   void* data;                   /* user data */
@@ -143,7 +141,7 @@ XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
 XBT_PRIVATE smx_process_t MSG_process_create_from_SIMIX(const char *name,
                                    xbt_main_func_t code, void *data,
                                    const char *hostname, double kill_time,
-                                   int argc, char **argv,
+                                   simgrid::simix::args args,
                                    xbt_dict_t properties, int auto_restart,
                                    smx_process_t parent_process);
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
