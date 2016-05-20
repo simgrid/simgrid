@@ -175,6 +175,8 @@ typedef struct s_setState {
   container_t container;
   type_t type;
   val_t value;
+  const char* filename;
+  int linenumber;
 }s_setState_t;
 
 typedef struct s_pushState *pushState_t;
@@ -183,6 +185,8 @@ typedef struct s_pushState {
   type_t type;
   val_t value;
   int size;
+  const char* filename;
+  int linenumber;
   void* extra;
 }s_pushState_t;
 

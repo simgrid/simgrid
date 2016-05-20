@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
+#include "simgrid/sg_config.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_paje_header, instr, "Paje tracing event system (header)");
 
@@ -163,6 +164,10 @@ static void TRACE_header_PajePushState (int basic, int size)
   fprintf(tracing_file, "%%       Container string\n");
   fprintf(tracing_file, "%%       Value string\n");
   if (size) fprintf(tracing_file, "%%       Size int\n");
+  if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+    fprintf(tracing_file, "%%       Filename string\n");
+    fprintf(tracing_file, "%%       Linenumber int\n");
+  }
   fprintf(tracing_file, "%%EndEventDef\n");
 }
 

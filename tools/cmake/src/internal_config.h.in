@@ -56,6 +56,9 @@
 #define SMPI_FORTRAN       @SMPI_FORTRAN@
 #define HAVE_PRIVATIZATION @HAVE_PRIVATIZATION@ /* We have mmap and objdump to handle privatization */
 
+/* Make PAPI available? */
+#define HAVE_PAPI @HAVE_PAPI@
+
 /* Other function checks */
 #define HAVE_BACKTRACE @HAVE_BACKTRACE@ /* Function backtrace */
 #define HAVE_MMAP      @HAVE_MMAP@ /* Function mmap */

@@ -762,6 +762,33 @@ computation.
     you should check the SMPI_SAMPLE macros, documented in the chapter
     \ref SMPI_adapting_speed.
 
+\subsection options_model_smpi_adj_file smpi/comp-adjustment-file: Slow-down or speed-up parts of your code.
+
+This option allows you to pass a file that contains two columns: The first column
+defines the section that will be subject to a speedup; the second column is the speedup.
+
+For instance:
+
+\verbatim
+"start:stop","ratio"
+"exchange_1.f:30:exchange_1.f:130",1.18244559422142
+\endverbatim
+
+The first line is the header - you must include it.
+The following line means that the code between two consecutive MPI calls on
+line 30 in exchange_1.f and line 130 in exchange_1.f should receive a speedup
+of 1.18244559422142. The value for the second column is therefore a speedup, if it is
+larger than 1 and a slow-down if it is smaller than 1. Nothing will be changed if it is
+equal to 1.
+
+Of course, you can set any arbitrary filenames you want (so the start and end don't have to be
+in the same file), but be aware that this mechanism only supports \i consecutive calls!
+
+\note
+    Please note that you must pass the \b -trace-call-location flag to smpicc
+    or smpiff, respectively! This flag activates some macro definitions in our
+    mpi.h / mpi.f files that help with obtaining the call location.
+
 \subsection options_model_smpi_bw_factor smpi/bw-factor: Bandwidth factors
 
 The possible throughput of network links is often dependent on the
@@ -1118,6 +1145,7 @@ silently overflow on other parts of the memory.
 - \c smpi/async-small-thresh: \ref options_model_network_asyncsend
 - \c smpi/bw-factor: \ref options_model_smpi_bw_factor
 - \c smpi/coll-selector: \ref options_model_smpi_collectives
+- \c smpi/comp-adjustment-file: \ref options_model_smpi_adj_file
 - \c smpi/cpu-threshold: \ref options_smpi_bench
 - \c smpi/display-timing: \ref options_smpi_timing
 - \c smpi/lat-factor: \ref options_model_smpi_lat_factor

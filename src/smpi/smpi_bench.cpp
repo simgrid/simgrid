@@ -11,6 +11,7 @@
 
 #include "src/internal_config.h"
 #include "private.h"
+#include "private.hpp"
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
@@ -251,6 +252,7 @@ void smpi_bench_end(void)
   if (MC_is_active() || MC_record_replay_is_active())
     return;
 
+  double speedup = 1;
   xbt_os_timer_t timer = smpi_process_timer();
   xbt_os_threadtimer_stop(timer);
 //  smpi_switch_data_segment(smpi_process_count());
@@ -260,9 +262,22 @@ void smpi_bench_end(void)
     xbt_backtrace_display_current();
     xbt_die("Aborting.");
   }
+
+  if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { // Maybe we need to artificially speed up or slow
+                                                         // down our computation based on our statistical analysis.
+
+    smpi_trace_call_location_t* loc                  = smpi_process_get_call_location();
+    std::string key                                  = loc->get_composed_key();
+    std::map<std::string, double>::const_iterator it = location2speedup.find(key);
+    if (it != location2speedup.end()) {
+      speedup = it->second;
+    }
+  }
+  
   // Simulate the benchmarked computation unless disabled via command-line argument
-  if (xbt_cfg_get_boolean("smpi/simulate-computation")) 
-    smpi_execute(xbt_os_timer_elapsed(timer));
+  if (xbt_cfg_get_boolean("smpi/simulate-computation")) {
+    smpi_execute(xbt_os_timer_elapsed(timer)/speedup);
+  }
 
   smpi_total_benched_time += xbt_os_timer_elapsed(timer);
 }
@@ -721,4 +736,34 @@ void smpi_destroy_global_memory_segments(){
   }
   xbt_free(smpi_privatisation_regions);
 #endif
+}
+
+extern "C" {
+
+  smpi_trace_call_location_t* smpi_trace_get_call_location() {
+    return smpi_process_get_call_location();
+  }
+
+  void smpi_trace_set_call_location(const char* file, const int line) {
+    smpi_trace_call_location_t* loc = smpi_process_get_call_location();
+
+    loc->previous_filename   = loc->filename;
+    loc->previous_linenumber = loc->linenumber;
+    loc->filename            = file;
+    loc->linenumber          = line;
+  }
+
+  /**
+   * Required for Fortran bindings
+   */
+  void smpi_trace_set_call_location_(const char* file, int* line) {
+    smpi_trace_set_call_location(file, *line);
+  }
+
+  /** 
+   * Required for Fortran if -fsecond-underscore is activated
+   */
+  void smpi_trace_set_call_location__(const char* file, int* line) {
+    smpi_trace_set_call_location(file, *line);
+  }
 }
