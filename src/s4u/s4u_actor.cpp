@@ -14,30 +14,17 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 
-static int s4u_actor_runner(int argc, char **argv)
-{
-  // Move the callback from the heap to the stack:
-  std::unique_ptr<std::function<int()>> code2 =
-    std::unique_ptr<std::function<int()>>(
-      static_cast<std::function<int()>*>(
-        SIMIX_process_self_get_data()));
-  std::function<int()> code = std::move(*code2);
-  code2 = nullptr;
-  // Call it:
-  // TODO, handle exceptions
-  return code();
-}
-
 using namespace simgrid;
 
 s4u::Actor::Actor(smx_process_t smx_proc) : pimpl_(smx_proc) {}
 
 s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::function<int()> code)
 {
-  std::function<int()>* code2 = new std::function<int()>(std::move(code));
+  // TODO, when autorestart is used, the std::function is copied so the new
+  // instance will get a fresh (reinitialized) state. Is this what we want?
   this->pimpl_ = simcall_process_create(
-    name, s4u_actor_runner, code2, host->name().c_str(),
-    killTime, 0, NULL, NULL, 0);
+    name, std::move(code), nullptr, host->name().c_str(),
+    killTime, NULL, 0);
 }
 
 s4u::Actor::~Actor() {}
