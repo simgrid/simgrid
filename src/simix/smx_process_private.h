@@ -7,6 +7,8 @@
 #ifndef _SIMIX_PROCESS_PRIVATE_H
 #define _SIMIX_PROCESS_PRIVATE_H
 
+#include <string>
+
 #include <xbt/base.h>
 
 #include "simgrid/simix.h"
@@ -19,7 +21,7 @@ typedef struct s_smx_process_exit_fun {
 
 typedef class s_smx_process_arg {
 public:
-  char *name;
+  std::string name;
   xbt_main_func_t code;
   void *data;
   const char *hostname;

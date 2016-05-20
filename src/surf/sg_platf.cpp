@@ -584,7 +584,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   int i;
   for (i=0; i<process->argc; i++)
     arg->argv[i] = xbt_strdup(process->argv[i]);
-  arg->name = xbt_strdup(arg->argv[0]);
+  arg->name = arg->argv[0];
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
   if (!sg_host_simix(host)->boot_processes)
@@ -594,7 +594,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
   if (start_time > SIMIX_get_clock()) {
     arg = new s_smx_process_arg_t();
-    arg->name = (char*)(process->argv)[0];
+    arg->name = process->argv[0];
     arg->code = parse_code;
     arg->data = NULL;
     arg->hostname = sg_host_get_name(host);
@@ -603,11 +603,12 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
 
-    XBT_DEBUG("Process %s(%s) will be started at time %f", arg->name, arg->hostname, start_time);
+    XBT_DEBUG("Process %s(%s) will be started at time %f",
+      arg->name.c_str(), arg->hostname, start_time);
     SIMIX_timer_set(start_time, [](void* p) {
       smx_process_arg_t arg = static_cast<smx_process_arg_t>(p);
       simix_global->create_process_function(
-                                            arg->name,
+                                            arg->name.c_str(),
                                             arg->code,
                                             arg->data,
                                             arg->hostname,
@@ -620,11 +621,12 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
       delete arg;
     }, arg);
   } else {                      // start_time <= SIMIX_get_clock()
-    XBT_DEBUG("Starting Process %s(%s) right now", arg->name, sg_host_get_name(host));
+    XBT_DEBUG("Starting Process %s(%s) right now",
+      arg->name.c_str(), sg_host_get_name(host));
 
     if (simix_global->create_process_function)
       process_created = simix_global->create_process_function(
-          arg->name,
+          arg->name.c_str(),
                                             parse_code,
                                             NULL,
                                             sg_host_get_name(host),
@@ -634,7 +636,8 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
                                             current_property_set,
                                             auto_restart, NULL);
     else
-      process_created = simcall_process_create(arg->name, parse_code, NULL, sg_host_get_name(host), kill_time, process->argc,
+      process_created = simcall_process_create(
+          arg->name.c_str(), parse_code, NULL, sg_host_get_name(host), kill_time, process->argc,
           (char**)process->argv, current_property_set,auto_restart);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
