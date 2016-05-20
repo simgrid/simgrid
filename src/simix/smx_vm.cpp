@@ -203,7 +203,7 @@ void SIMIX_vm_suspend(sg_host_t ind_vm, smx_process_t issuer)
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
-    XBT_DEBUG("suspend %s", smx_process->name);
+    XBT_DEBUG("suspend %s", smx_process->name.c_str());
     SIMIX_process_suspend(smx_process, issuer);
   }
 
@@ -243,7 +243,7 @@ void SIMIX_vm_resume(sg_host_t ind_vm, smx_process_t issuer)
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
-    XBT_DEBUG("resume %s", smx_process->name);
+    XBT_DEBUG("resume %s", smx_process->name.c_str());
     SIMIX_process_resume(smx_process, issuer);
   }
 }
@@ -276,7 +276,7 @@ void SIMIX_vm_save(sg_host_t ind_vm, smx_process_t issuer)
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
-    XBT_DEBUG("suspend %s", smx_process->name);
+    XBT_DEBUG("suspend %s", smx_process->name.c_str());
     SIMIX_process_suspend(smx_process, issuer);
   }
 }
@@ -307,7 +307,7 @@ void SIMIX_vm_restore(sg_host_t ind_vm, smx_process_t issuer)
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
-    XBT_DEBUG("resume %s", smx_process->name);
+    XBT_DEBUG("resume %s", smx_process->name.c_str());
     SIMIX_process_resume(smx_process, issuer);
   }
 }
@@ -337,7 +337,7 @@ void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer)
 
   smx_process_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(ind_vm)->process_list) {
-    XBT_DEBUG("kill %s", smx_process->name);
+    XBT_DEBUG("kill %s", smx_process->name.c_str());
     SIMIX_process_kill(smx_process, issuer);
   }
 

@@ -49,31 +49,25 @@ void SIMIX_host_on(sg_host_t h)
     unsigned int cpt;
     smx_process_arg_t arg;
     xbt_dynar_foreach(host->boot_processes,cpt,arg) {
-
-      char** argv = xbt_new(char*, arg->argc);
-      for (int i=0; i<arg->argc; i++)
-        argv[i] = xbt_strdup(arg->argv[i]);
-
-      XBT_DEBUG("Booting Process %s(%s) right now", arg->argv[0], arg->hostname);
+      XBT_DEBUG("Booting Process %s(%s) right now",
+        arg->name.c_str(), arg->hostname);
       if (simix_global->create_process_function) {
-        simix_global->create_process_function(argv[0],
+        simix_global->create_process_function(arg->name.c_str(),
                                               arg->code,
                                               NULL,
                                               arg->hostname,
                                               arg->kill_time,
-                                              arg->argc,
-                                              argv,
+                                              arg->args.argc(), arg->args.to_argv(),
                                               arg->properties,
                                               arg->auto_restart,
                                               NULL);
       } else {
-        simcall_process_create(arg->argv[0],
+        simcall_process_create(arg->name.c_str(),
                                arg->code,
                                NULL,
                                arg->hostname,
                                arg->kill_time,
-                               arg->argc,
-                               argv,
+                               arg->args.argc(), arg->args.to_argv(),
                                arg->properties,
                                arg->auto_restart);
       }
@@ -100,11 +94,13 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
       smx_process_t process = NULL;
       xbt_swag_foreach(process, host->process_list) {
         SIMIX_process_kill(process, issuer);
-        XBT_DEBUG("Killing %s on %s by %s", process->name,  sg_host_get_name(process->host), issuer->name);
+        XBT_DEBUG("Killing %s on %s by %s",
+          process->name.c_str(),  sg_host_get_name(process->host),
+          issuer->name.c_str());
       }
     }
   } else {
-    XBT_INFO("Host %s is already off",h->name().c_str());
+    XBT_INFO("Host %s is already off", h->name().c_str());
   }
 }
 
@@ -126,7 +122,7 @@ void SIMIX_host_destroy(void *h)
     smx_process_t process = NULL;
 
     xbt_swag_foreach(process, host->process_list) {
-      tmp = bprintf("%s\n\t%s", msg, process->name);
+      tmp = bprintf("%s\n\t%s", msg, process->name.c_str());
       free(msg);
       msg = tmp;
     }
@@ -162,9 +158,6 @@ const char* SIMIX_host_self_get_name(void)
 void _SIMIX_host_free_process_arg(void *data)
 {
   smx_process_arg_t arg = *(smx_process_arg_t*)data;
-  for (int i = 0; i < arg->argc; i++)
-    xbt_free(arg->argv[i]);
-  xbt_free(arg->argv);
   delete arg;
 }
 /**
@@ -193,14 +186,7 @@ void SIMIX_host_add_auto_restart_process(sg_host_t host,
   arg->data = data;
   arg->hostname = hostname;
   arg->kill_time = kill_time;
-  arg->argc = argc;
-
-  arg->argv = xbt_new(char*,argc + 1);
-
-  for (int i = 0; i < argc; i++)
-    arg->argv[i] = xbt_strdup(argv[i]);
-  arg->argv[argc] = NULL;
-
+  arg->args.assign(argc, argv);
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
@@ -223,35 +209,27 @@ void SIMIX_host_autorestart(sg_host_t host)
 
   xbt_dynar_foreach (process_list, cpt, arg) {
 
-    XBT_DEBUG("Restarting Process %s(%s) right now", arg->argv[0], arg->hostname);
+    XBT_DEBUG("Restarting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
     if (simix_global->create_process_function) {
-      simix_global->create_process_function(arg->argv[0],
+      simix_global->create_process_function(arg->name.c_str(),
                                             arg->code,
                                             NULL,
                                             arg->hostname,
                                             arg->kill_time,
-                                            arg->argc,
-                                            arg->argv,
+                                            arg->args.argc(), arg->args.to_argv(),
                                             arg->properties,
                                             arg->auto_restart,
                                             NULL);
     } else {
-      simcall_process_create(arg->argv[0],
+      simcall_process_create(arg->name.c_str(),
                              (xbt_main_func_t) arg->code,
                              NULL,
                              arg->hostname,
                              arg->kill_time,
-                             arg->argc,
-                             arg->argv,
+                             arg->args.argc(), arg->args.to_argv(),
                              arg->properties,
                              arg->auto_restart);
-
     }
-    /* arg->argv is used by the process created above.  Hide it to
-     * _SIMIX_host_free_process_arg() which is called by xbt_dynar_reset()
-     * below. */
-    arg->argc = 0;
-    arg->argv = NULL;
   }
   xbt_dynar_reset(process_list);
 }

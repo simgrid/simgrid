@@ -33,7 +33,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 void simcall_call(smx_process_t process)
 {
   if (process != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", process->name,
+    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", process->name.c_str(),
               SIMIX_simcall_name(process->simcall.call), (int)process->simcall.call);
     SIMIX_process_yield(process);
   } else {
@@ -375,6 +375,8 @@ smx_process_t simcall_process_create(const char *name,
                               xbt_dict_t properties,
                               int auto_restart)
 {
+  if (name == nullptr)
+    name = "";
   return (smx_process_t) simcall_BODY_process_create(name, code, data, hostname,
                               kill_time, argc, argv, properties,
                               auto_restart);
@@ -534,7 +536,8 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
 
   if (kill_time > SIMIX_get_clock()) {
     if (simix_global->kill_process_function) {
-      XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
+      XBT_DEBUG("Set kill time %f for process %s(%s)",
+          kill_time, process->name.c_str(),
           sg_host_get_name(process->host));
       process->kill_timer = SIMIX_timer_set(kill_time, kill_process_from_timer, process);
     }

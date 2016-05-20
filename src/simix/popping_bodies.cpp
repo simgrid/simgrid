@@ -31,7 +31,7 @@ inline static void simcall_BODY_vm_suspend(sg_host_t ind_vm) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) ind_vm;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -52,7 +52,7 @@ inline static void simcall_BODY_vm_resume(sg_host_t ind_vm) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) ind_vm;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -73,7 +73,7 @@ inline static void simcall_BODY_vm_shutdown(sg_host_t ind_vm) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) ind_vm;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -94,7 +94,7 @@ inline static void simcall_BODY_vm_save(sg_host_t ind_vm) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) ind_vm;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -115,7 +115,7 @@ inline static void simcall_BODY_vm_restore(sg_host_t ind_vm) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) ind_vm;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -144,7 +144,7 @@ inline static void* simcall_BODY_process_create(const char* name, xbt_main_func_
     self->simcall.args[7].dp = (void*) properties;
     self->simcall.args[8].i = (int) auto_restart;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -165,7 +165,7 @@ inline static void simcall_BODY_process_kill(smx_process_t process) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) process;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -186,7 +186,7 @@ inline static void simcall_BODY_process_killall(int reset_pid) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].i = (int) reset_pid;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -207,7 +207,7 @@ inline static void simcall_BODY_process_cleanup(smx_process_t process) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) process;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -228,7 +228,7 @@ inline static void simcall_BODY_process_suspend(smx_process_t process) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) process;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -249,7 +249,7 @@ inline static void simcall_BODY_process_resume(smx_process_t process) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) process;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -271,7 +271,7 @@ inline static void simcall_BODY_process_set_host(smx_process_t process, sg_host_
     self->simcall.args[0].dp = (void*) process;
     self->simcall.args[1].dp = (void*) dest;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -292,7 +292,7 @@ inline static int simcall_BODY_process_is_suspended(smx_process_t process) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) process;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -314,7 +314,7 @@ inline static int simcall_BODY_process_join(smx_process_t process, double timeou
     self->simcall.args[0].dp = (void*) process;
     self->simcall.args[1].d = (double) timeout;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -335,7 +335,7 @@ inline static int simcall_BODY_process_sleep(double duration) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].d = (double) duration;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -360,7 +360,7 @@ inline static smx_synchro_t simcall_BODY_execution_start(const char* name, doubl
     self->simcall.args[3].d = (double) bound;
     self->simcall.args[4].ul = (unsigned long) affinity_mask;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -387,7 +387,7 @@ inline static smx_synchro_t simcall_BODY_execution_parallel_start(const char* na
     self->simcall.args[5].d = (double) amount;
     self->simcall.args[6].d = (double) rate;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -408,7 +408,7 @@ inline static void simcall_BODY_execution_cancel(smx_synchro_t execution) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -430,7 +430,7 @@ inline static void simcall_BODY_execution_set_priority(smx_synchro_t execution, 
     self->simcall.args[0].dp = (void*) execution;
     self->simcall.args[1].d = (double) priority;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -452,7 +452,7 @@ inline static void simcall_BODY_execution_set_bound(smx_synchro_t execution, dou
     self->simcall.args[0].dp = (void*) execution;
     self->simcall.args[1].d = (double) bound;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -475,7 +475,7 @@ inline static void simcall_BODY_execution_set_affinity(smx_synchro_t execution, 
     self->simcall.args[1].dp = (void*) ws;
     self->simcall.args[2].ul = (unsigned long) mask;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -496,7 +496,7 @@ inline static int simcall_BODY_execution_wait(smx_synchro_t execution) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) execution;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -519,7 +519,7 @@ inline static void simcall_BODY_process_on_exit(smx_process_t process, int_f_pvo
     self->simcall.args[1].fp = (FPtr) fun;
     self->simcall.args[2].dp = (void*) data;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -541,7 +541,7 @@ inline static void simcall_BODY_process_auto_restart_set(smx_process_t process, 
     self->simcall.args[0].dp = (void*) process;
     self->simcall.args[1].i = (int) auto_restart;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -562,7 +562,7 @@ inline static smx_process_t simcall_BODY_process_restart(smx_process_t process) 
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) process;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -583,7 +583,7 @@ inline static smx_mailbox_t simcall_BODY_mbox_create(const char* name) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].cc = (const char*) name;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -605,7 +605,7 @@ inline static void simcall_BODY_mbox_set_receiver(smx_mailbox_t mbox, smx_proces
     self->simcall.args[0].dp = (void*) mbox;
     self->simcall.args[1].dp = (void*) receiver;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -631,7 +631,7 @@ inline static smx_synchro_t simcall_BODY_comm_iprobe(smx_mailbox_t mbox, int typ
     self->simcall.args[4].fp = (FPtr) match_fun;
     self->simcall.args[5].dp = (void*) data;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -661,7 +661,7 @@ inline static void simcall_BODY_comm_send(smx_process_t sender, smx_mailbox_t mb
     self->simcall.args[8].dp = (void*) data;
     self->simcall.args[9].d = (double) timeout;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -692,7 +692,7 @@ inline static smx_synchro_t simcall_BODY_comm_isend(smx_process_t sender, smx_ma
     self->simcall.args[9].dp = (void*) data;
     self->simcall.args[10].i = (int) detached;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -721,7 +721,7 @@ inline static void simcall_BODY_comm_recv(smx_process_t receiver, smx_mailbox_t 
     self->simcall.args[7].d = (double) timeout;
     self->simcall.args[8].d = (double) rate;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -749,7 +749,7 @@ inline static smx_synchro_t simcall_BODY_comm_irecv(smx_process_t receiver, smx_
     self->simcall.args[6].dp = (void*) data;
     self->simcall.args[7].d = (double) rate;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -770,7 +770,7 @@ inline static int simcall_BODY_comm_waitany(xbt_dynar_t comms) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) comms;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -792,7 +792,7 @@ inline static void simcall_BODY_comm_wait(smx_synchro_t comm, double timeout) {
     self->simcall.args[0].dp = (void*) comm;
     self->simcall.args[1].d = (double) timeout;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -813,7 +813,7 @@ inline static int simcall_BODY_comm_test(smx_synchro_t comm) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) comm;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -834,7 +834,7 @@ inline static int simcall_BODY_comm_testany(xbt_dynar_t comms) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) comms;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -855,7 +855,7 @@ inline static smx_mutex_t simcall_BODY_mutex_init() {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
 
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -876,7 +876,7 @@ inline static void simcall_BODY_mutex_lock(smx_mutex_t mutex) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) mutex;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -897,7 +897,7 @@ inline static int simcall_BODY_mutex_trylock(smx_mutex_t mutex) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) mutex;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -918,7 +918,7 @@ inline static void simcall_BODY_mutex_unlock(smx_mutex_t mutex) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) mutex;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -939,7 +939,7 @@ inline static smx_cond_t simcall_BODY_cond_init() {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
 
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -960,7 +960,7 @@ inline static void simcall_BODY_cond_signal(smx_cond_t cond) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) cond;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -982,7 +982,7 @@ inline static void simcall_BODY_cond_wait(smx_cond_t cond, smx_mutex_t mutex) {
     self->simcall.args[0].dp = (void*) cond;
     self->simcall.args[1].dp = (void*) mutex;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1005,7 +1005,7 @@ inline static void simcall_BODY_cond_wait_timeout(smx_cond_t cond, smx_mutex_t m
     self->simcall.args[1].dp = (void*) mutex;
     self->simcall.args[2].d = (double) timeout;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1026,7 +1026,7 @@ inline static void simcall_BODY_cond_broadcast(smx_cond_t cond) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) cond;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1047,7 +1047,7 @@ inline static smx_sem_t simcall_BODY_sem_init(unsigned int capacity) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].ui = (unsigned int) capacity;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1068,7 +1068,7 @@ inline static void simcall_BODY_sem_release(smx_sem_t sem) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) sem;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1089,7 +1089,7 @@ inline static int simcall_BODY_sem_would_block(smx_sem_t sem) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) sem;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1110,7 +1110,7 @@ inline static void simcall_BODY_sem_acquire(smx_sem_t sem) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) sem;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1132,7 +1132,7 @@ inline static void simcall_BODY_sem_acquire_timeout(smx_sem_t sem, double timeou
     self->simcall.args[0].dp = (void*) sem;
     self->simcall.args[1].d = (double) timeout;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1153,7 +1153,7 @@ inline static int simcall_BODY_sem_get_capacity(smx_sem_t sem) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) sem;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1176,7 +1176,7 @@ inline static sg_size_t simcall_BODY_file_read(smx_file_t fd, sg_size_t size, sg
     self->simcall.args[1].sgsz = (sg_size_t) size;
     self->simcall.args[2].dp = (void*) host;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1199,7 +1199,7 @@ inline static sg_size_t simcall_BODY_file_write(smx_file_t fd, sg_size_t size, s
     self->simcall.args[1].sgsz = (sg_size_t) size;
     self->simcall.args[2].dp = (void*) host;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1221,7 +1221,7 @@ inline static smx_file_t simcall_BODY_file_open(const char* fullpath, sg_host_t 
     self->simcall.args[0].cc = (const char*) fullpath;
     self->simcall.args[1].dp = (void*) host;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1243,7 +1243,7 @@ inline static int simcall_BODY_file_close(smx_file_t fd, sg_host_t host) {
     self->simcall.args[0].dp = (void*) fd;
     self->simcall.args[1].dp = (void*) host;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1265,7 +1265,7 @@ inline static int simcall_BODY_file_unlink(smx_file_t fd, sg_host_t host) {
     self->simcall.args[0].dp = (void*) fd;
     self->simcall.args[1].dp = (void*) host;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1286,7 +1286,7 @@ inline static sg_size_t simcall_BODY_file_get_size(smx_file_t fd) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) fd;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1307,7 +1307,7 @@ inline static sg_size_t simcall_BODY_file_tell(smx_file_t fd) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) fd;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1330,7 +1330,7 @@ inline static int simcall_BODY_file_seek(smx_file_t fd, sg_offset_t offset, int 
     self->simcall.args[1].sgoff = (sg_offset_t) offset;
     self->simcall.args[2].i = (int) origin;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1351,7 +1351,7 @@ inline static xbt_dynar_t simcall_BODY_file_get_info(smx_file_t fd) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) fd;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1373,7 +1373,7 @@ inline static int simcall_BODY_file_move(smx_file_t fd, const char* fullpath) {
     self->simcall.args[0].dp = (void*) fd;
     self->simcall.args[1].cc = (const char*) fullpath;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1394,7 +1394,7 @@ inline static sg_size_t simcall_BODY_storage_get_free_size(smx_storage_t storage
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) storage;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1415,7 +1415,7 @@ inline static sg_size_t simcall_BODY_storage_get_used_size(smx_storage_t name) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) name;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1436,7 +1436,7 @@ inline static xbt_dict_t simcall_BODY_storage_get_properties(smx_storage_t stora
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) storage;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1457,7 +1457,7 @@ inline static xbt_dict_t simcall_BODY_storage_get_content(smx_storage_t storage)
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) storage;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1478,7 +1478,7 @@ inline static xbt_dict_t simcall_BODY_asr_get_properties(const char* name) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].cc = (const char*) name;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1500,7 +1500,7 @@ inline static int simcall_BODY_mc_random(int min, int max) {
     self->simcall.args[0].i = (int) min;
     self->simcall.args[1].i = (int) max;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1522,7 +1522,7 @@ inline static void simcall_BODY_set_category(smx_synchro_t synchro, const char* 
     self->simcall.args[0].dp = (void*) synchro;
     self->simcall.args[1].cc = (const char*) category;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {
@@ -1543,7 +1543,7 @@ inline static void simcall_BODY_run_kernel(void* code) {
     memset(self->simcall.args, 0, sizeof(self->simcall.args));
     self->simcall.args[0].dp = (void*) code;
     if (self != simix_global->maestro_process) {
-      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name,
+      XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),
                 SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);
       SIMIX_process_yield(self);
     } else {

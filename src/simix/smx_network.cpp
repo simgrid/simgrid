@@ -550,10 +550,10 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
     if (SIMIX_process_is_suspended(comm->src_proc) || SIMIX_process_is_suspended(comm->dst_proc)) {
       if (SIMIX_process_is_suspended(comm->src_proc))
         XBT_DEBUG("The communication is suspended on startup because src (%s@%s) was suspended since it initiated the communication",
-            comm->src_proc->name, sg_host_get_name(comm->src_proc->host));
+            comm->src_proc->name.c_str(), sg_host_get_name(comm->src_proc->host));
       else
         XBT_DEBUG("The communication is suspended on startup because dst (%s@%s) was suspended since it initiated the communication",
-            comm->dst_proc->name, sg_host_get_name(comm->dst_proc->host));
+            comm->dst_proc->name.c_str(), sg_host_get_name(comm->dst_proc->host));
 
       comm->surf_comm->suspend();
     }
@@ -635,7 +635,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
                 synchro,
                 comm->src_proc ? sg_host_get_name(comm->src_proc->host) : NULL,
                 comm->dst_proc ? sg_host_get_name(comm->dst_proc->host) : NULL,
-                simcall->issuer->name, simcall->issuer, comm->detached);
+                simcall->issuer->name.c_str(), simcall->issuer, comm->detached);
       if (comm->src_proc == simcall->issuer) {
         XBT_DEBUG("I'm source");
       } else if (comm->dst_proc == simcall->issuer) {

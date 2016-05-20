@@ -82,13 +82,37 @@ typename std::result_of<F()>::type kernel(F&& code)
 
 class args {
 private:
-  int argc_;
-  char** argv_;
+  int argc_ = 0;
+  char** argv_ = nullptr;
 public:
 
   // Main constructors
-  args() : argc_(0), argv_(nullptr) {}
-  args(int argc, char** argv) : argc_(argc), argv_(argv) {}
+  args() {}
+
+  void assign(int argc, const char*const* argv)
+  {
+    clear();
+    char** new_argv = xbt_new(char*,argc + 1);
+    for (int i = 0; i < argc; i++)
+      new_argv[i] = xbt_strdup(argv[i]);
+    new_argv[argc] = nullptr;
+    this->argc_ = argc;
+    this->argv_ = new_argv;
+  }
+  args(int argc, const char*const* argv)
+  {
+    this->assign(argc, argv);
+  }
+
+  char** to_argv() const
+  {
+    const int argc = argc_;
+    char** argv = xbt_new(char*, argc + 1);
+    for (int i=0; i< argc; i++)
+      argv[i] = xbt_strdup(argv_[i]);
+    argv[argc] = nullptr;
+    return argv;
+  }
 
   // Free
   void clear()
@@ -102,8 +126,15 @@ public:
   ~args() { clear(); }
 
   // Copy
-  args(args const& that) = delete;
-  args& operator=(args const& that) = delete;
+  args(args const& that)
+  {
+    this->assign(that.argc(), that.argv());
+  }
+  args& operator=(args const& that)
+  {
+    this->assign(that.argc(), that.argv());
+    return *this;
+  }
 
   // Move:
   args(args&& that) : argc_(that.argc_), argv_(that.argv_)
@@ -127,7 +158,7 @@ public:
 };
 
 inline
-std::function<void()> wrap_main(xbt_main_func_t code, int argc, char **argv)
+std::function<void()> wrap_main(xbt_main_func_t code, int argc, const char*const* argv)
 {
   if (code) {
     auto arg = std::make_shared<simgrid::simix::args>(argc, argv);

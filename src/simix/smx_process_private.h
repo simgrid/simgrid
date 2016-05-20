@@ -11,6 +11,7 @@
 
 #include <xbt/base.h>
 
+#include <simgrid/simix.hpp>
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
@@ -25,14 +26,13 @@ namespace simix {
 class ProcessArg {
 public:
   std::string name;
-  xbt_main_func_t code;
-  void *data;
-  const char *hostname;
-  int argc;
-  char **argv;
-  double kill_time;
-  xbt_dict_t properties;
-  unsigned auto_restart:1;
+  xbt_main_func_t code = nullptr;
+  simgrid::simix::args args;
+  void *data = nullptr;
+  const char *hostname = nullptr;
+  double kill_time = 0.0;
+  xbt_dict_t properties  = nullptr;
+  bool auto_restart = false;
 };
 
 class Process {
@@ -46,7 +46,7 @@ public:
 
   unsigned long pid = 0;
   unsigned long ppid = 0;
-  char *name = nullptr;         /**< @brief process name if any */
+  std::string name;
   sg_host_t host = nullptr;     /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
   xbt_running_ctx_t *running_ctx = nullptr;
@@ -66,8 +66,7 @@ public:
   xbt_dynar_t on_exit = nullptr; /* list of functions executed when the process dies */
 
   xbt_main_func_t code = nullptr;
-  int argc = 0;
-  char **argv = nullptr;
+  simgrid::simix::args args;
   smx_timer_t kill_timer = nullptr;
   int segment_index = 0;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 };

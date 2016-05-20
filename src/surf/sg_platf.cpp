@@ -576,15 +576,11 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   smx_process_t process_created = NULL;
 
   arg = new simgrid::simix::ProcessArg();
+  arg->name = std::string(process->argv[0]);
   arg->code = parse_code;
   arg->data = NULL;
   arg->hostname = sg_host_get_name(host);
-  arg->argc = process->argc;
-  arg->argv = xbt_new(char *,process->argc);
-  int i;
-  for (i=0; i<process->argc; i++)
-    arg->argv[i] = xbt_strdup(process->argv[i]);
-  arg->name = arg->argv[0];
+  arg->args.assign(process->argc, process->argv);
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
   if (!sg_host_simix(host)->boot_processes)
@@ -594,12 +590,11 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
   if (start_time > SIMIX_get_clock()) {
     arg = new simgrid::simix::ProcessArg();
-    arg->name = process->argv[0];
+    arg->name = std::string(process->argv[0]);
     arg->code = parse_code;
     arg->data = NULL;
     arg->hostname = sg_host_get_name(host);
-    arg->argc = process->argc;
-    arg->argv = (char**)(process->argv);
+    arg->args.assign(process->argc, process->argv);
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
 
@@ -613,8 +608,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
                                             arg->data,
                                             arg->hostname,
                                             arg->kill_time,
-                                            arg->argc,
-                                            arg->argv,
+                                            arg->args.argc(), arg->args.to_argv(),
                                             arg->properties,
                                             arg->auto_restart,
                                             NULL);
@@ -631,14 +625,13 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
                                             NULL,
                                             sg_host_get_name(host),
                                             kill_time,
-                                            process->argc,
-                                            (char**)(process->argv),
+                                            arg->args.argc(), arg->args.to_argv(),
                                             current_property_set,
                                             auto_restart, NULL);
     else
       process_created = simcall_process_create(
-          arg->name.c_str(), parse_code, NULL, sg_host_get_name(host), kill_time, process->argc,
-          (char**)process->argv, current_property_set,auto_restart);
+          arg->name.c_str(), parse_code, NULL, sg_host_get_name(host), kill_time,
+          arg->args.argc(), arg->args.to_argv(), current_property_set,auto_restart);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process_created) {
