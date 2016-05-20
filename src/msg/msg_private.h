@@ -189,4 +189,10 @@ XBT_PRIVATE void TRACE_msg_vm_restore(msg_vm_t vm);
 XBT_PRIVATE void TRACE_msg_vm_end(msg_vm_t vm);
 
 SG_END_DECL()
+
+XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(
+  const char *name, xbt_main_func_t code, void *data,
+  msg_host_t host, simgrid::simix::args args,
+  xbt_dict_t properties);
+
 #endif

@@ -1019,10 +1019,29 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
     return simcall_process_create(
       arg.name.c_str(), arg.code, arg.data,
       arg.hostname, arg.kill_time,
-      arg.args.argc(), arg.args.to_argv(),
+      arg.args,
       arg.properties, arg.auto_restart);
 }
 
 void SIMIX_segment_index_set(smx_process_t proc, int index){
   proc->segment_index = index;
+}
+
+smx_process_t simcall_process_create(const char *name,
+                                          xbt_main_func_t code,
+                                          void *data,
+                                          const char *hostname,
+                                          double kill_time,
+                                          simgrid::simix::args args,
+                                          xbt_dict_t properties,
+                                          int auto_restart)
+{
+  if (name == nullptr)
+    name = "";
+  smx_process_t self = SIMIX_process_self();
+  return simgrid::simix::kernel([&] {
+    return SIMIX_process_create(name, code, data, hostname,
+          kill_time, std::move(args), properties, auto_restart,
+          self);
+  });
 }

@@ -308,4 +308,13 @@ typedef smx_process_t (*smx_creation_func_t) (
 extern "C"
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
 
+XBT_PUBLIC(smx_process_t) simcall_process_create(const char *name,
+                                          xbt_main_func_t code,
+                                          void *data,
+                                          const char *hostname,
+                                          double kill_time,
+                                          simgrid::simix::args args,
+                                          xbt_dict_t properties,
+                                          int auto_restart);
+
 #endif

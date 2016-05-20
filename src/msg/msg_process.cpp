@@ -126,7 +126,20 @@ msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_
  * \return The new corresponding object.
  */
 msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
-                                                int argc, char **argv, xbt_dict_t properties)
+                                                  int argc, char **argv, xbt_dict_t properties)
+{
+  msg_process_t res = MSG_process_create_with_environment(name, code, data, host,
+    simgrid::simix::args(argc, argv), properties);
+  for (int i = 0; i != argc; ++i)
+    xbt_free(argv[i]);
+  xbt_free(argv);
+  return res;
+}
+
+msg_process_t MSG_process_create_with_environment(
+  const char *name, xbt_main_func_t code, void *data,
+  msg_host_t host, simgrid::simix::args args,
+  xbt_dict_t properties)
 {
   xbt_assert(code != NULL && host != NULL, "Invalid parameters: host and code params must not be NULL");
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
@@ -141,7 +154,8 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
 
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
-  process = simcall_process_create(name, code, simdata, sg_host_get_name(host), -1, argc, argv, properties,0);
+  process = simcall_process_create(
+    name, code, simdata, sg_host_get_name(host), -1, std::move(args), properties, 0);
 
   if (!process) {
     /* Undo everything we have just changed */

@@ -631,7 +631,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     else
       process_created = simcall_process_create(
           arg->name.c_str(), parse_code, NULL, sg_host_get_name(host), kill_time,
-          arg->args.argc(), arg->args.to_argv(), current_property_set,auto_restart);
+          arg->args, current_property_set,auto_restart);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process_created) {
