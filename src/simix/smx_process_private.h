@@ -7,6 +7,7 @@
 #ifndef _SIMIX_PROCESS_PRIVATE_H
 #define _SIMIX_PROCESS_PRIVATE_H
 
+#include <functional>
 #include <string>
 
 #include <xbt/base.h>
@@ -26,8 +27,7 @@ namespace simix {
 class ProcessArg {
 public:
   std::string name;
-  xbt_main_func_t code = nullptr;
-  simgrid::simix::args args;
+  std::function<void()> code;
   void *data = nullptr;
   const char *hostname = nullptr;
   double kill_time = 0.0;
@@ -65,8 +65,7 @@ public:
   void *data = nullptr;    /* kept for compatibility, it should be replaced with moddata */
   xbt_dynar_t on_exit = nullptr; /* list of functions executed when the process dies */
 
-  xbt_main_func_t code = nullptr;
-  simgrid::simix::args args;
+  std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
   int segment_index = 0;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 };
@@ -82,11 +81,10 @@ SG_BEGIN_DECL()
 
 XBT_PRIVATE smx_process_t SIMIX_process_create(
                           const char *name,
-                          xbt_main_func_t code,
+                          std::function<void()> code,
                           void *data,
                           const char *hostname,
                           double kill_time,
-                          simgrid::simix::args args,
                           xbt_dict_t properties,
                           int auto_restart,
                           smx_process_t parent_process);

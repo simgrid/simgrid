@@ -7,6 +7,8 @@
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
 
+#include <functional>
+
 #include "simgrid/msg.h"
 #include "simgrid/simix.h"
 #include "src/include/surf/surf.h"
@@ -139,9 +141,8 @@ XBT_PRIVATE void __MSG_file_destroy(msg_file_priv_t host);
 
 XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
 XBT_PRIVATE smx_process_t MSG_process_create_from_SIMIX(const char *name,
-                                   xbt_main_func_t code, void *data,
+                                   std::function<void()> code, void *data,
                                    const char *hostname, double kill_time,
-                                   simgrid::simix::args args,
                                    xbt_dict_t properties, int auto_restart,
                                    smx_process_t parent_process);
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
@@ -191,8 +192,7 @@ XBT_PRIVATE void TRACE_msg_vm_end(msg_vm_t vm);
 SG_END_DECL()
 
 XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(
-  const char *name, xbt_main_func_t code, void *data,
-  msg_host_t host, simgrid::simix::args args,
-  xbt_dict_t properties);
+  const char *name, std::function<void()> code, void *data,
+  msg_host_t host, xbt_dict_t properties);
 
 #endif

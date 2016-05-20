@@ -7,6 +7,8 @@
 #ifndef _SIMIX_HOST_PRIVATE_H
 #define _SIMIX_HOST_PRIVATE_H
 
+#include <functional>
+
 #include <xbt/base.h>
 
 #include "simgrid/simix.h"
@@ -29,11 +31,10 @@ XBT_PRIVATE void SIMIX_host_destroy(void *host);
 
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
                                          const char *name,
-                                         xbt_main_func_t code,
+                                         std::function<void()> code,
                                          void *data,
                                          const char *hostname,
                                          double kill_time,
-                                         int argc, char **argv,
                                          xbt_dict_t properties,
                                          int auto_restart);
 

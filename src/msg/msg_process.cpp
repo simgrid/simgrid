@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <functional>
+
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
@@ -52,13 +54,14 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
 }
 
 /* This function creates a MSG process. It has the prototype enforced by SIMIX_function_register_process_create */
-smx_process_t MSG_process_create_from_SIMIX(const char *name, xbt_main_func_t code, void *data, const char *hostname,
-                                            double kill_time, simgrid::simix::args args, xbt_dict_t properties,
-                                            int auto_restart, smx_process_t parent_process)
+smx_process_t MSG_process_create_from_SIMIX(
+  const char *name, std::function<void()> code, void *data, const char *hostname,
+  double kill_time, xbt_dict_t properties,
+  int auto_restart, smx_process_t parent_process)
 {
   msg_host_t host = MSG_host_by_name(hostname);
   msg_process_t p = MSG_process_create_with_environment(
-    name, code, data, host, args.argc(), args.to_argv(), properties);
+    name, std::move(code), data, host, properties);
   if (p) {
     MSG_process_set_kill_time(p,kill_time);
     MSG_process_auto_restart_set(p,auto_restart);
@@ -128,8 +131,9 @@ msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_
 msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
                                                   int argc, char **argv, xbt_dict_t properties)
 {
-  msg_process_t res = MSG_process_create_with_environment(name, code, data, host,
-    simgrid::simix::args(argc, argv), properties);
+  msg_process_t res = MSG_process_create_with_environment(name,
+    simgrid::simix::wrap_main(code, argc, argv), data, host,
+    properties);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);
@@ -137,9 +141,8 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
 }
 
 msg_process_t MSG_process_create_with_environment(
-  const char *name, xbt_main_func_t code, void *data,
-  msg_host_t host, simgrid::simix::args args,
-  xbt_dict_t properties)
+  const char *name, std::function<void()> code, void *data,
+  msg_host_t host, xbt_dict_t properties)
 {
   xbt_assert(code != NULL && host != NULL, "Invalid parameters: host and code params must not be NULL");
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
@@ -155,7 +158,7 @@ msg_process_t MSG_process_create_with_environment(
   /* Let's create the process: SIMIX may decide to start it right now,
    * even before returning the flow control to us */
   process = simcall_process_create(
-    name, code, simdata, sg_host_get_name(host), -1, std::move(args), properties, 0);
+    name, std::move(code), simdata, sg_host_get_name(host), -1,  properties, 0);
 
   if (!process) {
     /* Undo everything we have just changed */

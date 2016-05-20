@@ -296,11 +296,10 @@ XBT_PUBLIC(void) create_maestro(std::function<void()> code);
  */
 typedef smx_process_t (*smx_creation_func_t) (
                                       /* name */ const char*,
-                                      /* code */ xbt_main_func_t,
+                                      std::function<void()> code,
                                       /* userdata */ void*,
                                       /* hostname */ const char*,
                                       /* kill_time */ double,
-                                      simgrid::simix::args args,
                                       /* props */ xbt_dict_t,
                                       /* auto_restart */ int,
                                       /* parent_process */ smx_process_t);
@@ -309,11 +308,10 @@ extern "C"
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
 
 XBT_PUBLIC(smx_process_t) simcall_process_create(const char *name,
-                                          xbt_main_func_t code,
+                                          std::function<void()> code,
                                           void *data,
                                           const char *hostname,
                                           double kill_time,
-                                          simgrid::simix::args args,
                                           xbt_dict_t properties,
                                           int auto_restart);
 

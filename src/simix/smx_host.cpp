@@ -57,7 +57,6 @@ void SIMIX_host_on(sg_host_t h)
                                               NULL,
                                               arg->hostname,
                                               arg->kill_time,
-                                              arg->args,
                                               arg->properties,
                                               arg->auto_restart,
                                               NULL);
@@ -67,7 +66,6 @@ void SIMIX_host_on(sg_host_t h)
                                NULL,
                                arg->hostname,
                                arg->kill_time,
-                               arg->args,
                                arg->properties,
                                arg->auto_restart);
       }
@@ -167,26 +165,20 @@ void _SIMIX_host_free_process_arg(void *data)
  * The processes will only be restarted once, meaning that you will have to register the process
  * again to restart the process again.
  */
-void SIMIX_host_add_auto_restart_process(sg_host_t host,
-                                         const char *name,
-                                         xbt_main_func_t code,
-                                         void *data,
-                                         const char *hostname,
-                                         double kill_time,
-                                         int argc, char **argv,
-                                         xbt_dict_t properties,
-                                         int auto_restart)
+void SIMIX_host_add_auto_restart_process(
+  sg_host_t host, const char *name, std::function<void()> code,
+  void* data, const char *hostname, double kill_time,
+  xbt_dict_t properties, int auto_restart)
 {
   if (!sg_host_simix(host)->auto_restart_processes) {
     sg_host_simix(host)->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
   }
   smx_process_arg_t arg = new simgrid::simix::ProcessArg();
   arg->name = name;
-  arg->code = code;
+  arg->code = std::move(code);
   arg->data = data;
   arg->hostname = hostname;
   arg->kill_time = kill_time;
-  arg->args.assign(argc, argv);
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
@@ -216,17 +208,15 @@ void SIMIX_host_autorestart(sg_host_t host)
                                             NULL,
                                             arg->hostname,
                                             arg->kill_time,
-                                            arg->args,
                                             arg->properties,
                                             arg->auto_restart,
                                             NULL);
     } else {
       simcall_process_create(arg->name.c_str(),
-                             (xbt_main_func_t) arg->code,
+                             arg->code,
                              NULL,
                              arg->hostname,
                              arg->kill_time,
-                             arg->args,
                              arg->properties,
                              arg->auto_restart);
     }

@@ -572,15 +572,16 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   double kill_time  = process->kill_time;
   int auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
 
+  std::function<void()> code = simgrid::simix::wrap_main(parse_code, process->argc, process->argv);
+
   smx_process_arg_t arg = NULL;
   smx_process_t process_created = NULL;
 
   arg = new simgrid::simix::ProcessArg();
   arg->name = std::string(process->argv[0]);
-  arg->code = parse_code;
+  arg->code = code;
   arg->data = NULL;
   arg->hostname = sg_host_get_name(host);
-  arg->args.assign(process->argc, process->argv);
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
   if (!sg_host_simix(host)->boot_processes)
@@ -589,12 +590,12 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   xbt_dynar_push_as(sg_host_simix(host)->boot_processes,smx_process_arg_t,arg);
 
   if (start_time > SIMIX_get_clock()) {
+
     arg = new simgrid::simix::ProcessArg();
     arg->name = std::string(process->argv[0]);
-    arg->code = parse_code;
+    arg->code = std::move(code);
     arg->data = NULL;
     arg->hostname = sg_host_get_name(host);
-    arg->args.assign(process->argc, process->argv);
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
 
@@ -604,11 +605,10 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
       smx_process_arg_t arg = static_cast<smx_process_arg_t>(p);
       simix_global->create_process_function(
                                             arg->name.c_str(),
-                                            arg->code,
+                                            std::move(arg->code),
                                             arg->data,
                                             arg->hostname,
                                             arg->kill_time,
-                                            std::move(arg->args),
                                             arg->properties,
                                             arg->auto_restart,
                                             NULL);
@@ -620,18 +620,13 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
     if (simix_global->create_process_function)
       process_created = simix_global->create_process_function(
-          arg->name.c_str(),
-                                            parse_code,
-                                            NULL,
-                                            sg_host_get_name(host),
-                                            kill_time,
-                                            arg->args,
-                                            current_property_set,
-                                            auto_restart, NULL);
+          arg->name.c_str(), std::move(code), NULL,
+          sg_host_get_name(host), kill_time,
+          current_property_set, auto_restart, NULL);
     else
       process_created = simcall_process_create(
-          arg->name.c_str(), parse_code, NULL, sg_host_get_name(host), kill_time,
-          arg->args, current_property_set,auto_restart);
+          arg->name.c_str(), std::move(code), NULL, sg_host_get_name(host), kill_time,
+          current_property_set,auto_restart);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process_created) {
