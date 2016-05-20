@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <functional>
+
 #include <signal.h> /* Signal handling */
 #include <stdlib.h>
 #include "src/internal_config.h"
@@ -47,9 +49,12 @@ static xbt_heap_t simix_timers = NULL;
 
 /** @brief Timer datatype */
 typedef struct s_smx_timer {
-  double date;
-  void(* func)(void*);
-  void* args;
+  double date = 0.0;
+  std::function<void()> callback;
+
+  s_smx_timer() {}
+  s_smx_timer(double date, std::function<void()> callback)
+    : date(date), callback(std::move(callback)) {}
 } s_smx_timer_t;
 
 void (*SMPI_switch_data_segment)(int) = NULL;
@@ -241,9 +246,10 @@ void SIMIX_global_init(int *argc, char **argv)
 
     SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
   }
-  if (!simix_timers) {
-    simix_timers = xbt_heap_new(8, &free);
-  }
+  if (!simix_timers)
+    simix_timers = xbt_heap_new(8, [](void* p) {
+      delete static_cast<smx_timer_t>(p);
+    });
 
   if (xbt_cfg_get_boolean("clean-atexit"))
     atexit(SIMIX_clean);
@@ -464,9 +470,15 @@ void SIMIX_run(void)
        //FIXME: make the timers being real callbacks
        // (i.e. provide dispatchers that read and expand the args)
        timer = (smx_timer_t) xbt_heap_pop(simix_timers);
-       if (timer->func)
-         timer->func(timer->args);
-       xbt_free(timer);
+       if (timer->callback) {
+         try {
+           timer->callback();
+         }
+         catch(...) {
+           xbt_die("Exception throwed ouf of timer callback");
+         }
+       }
+       delete timer;
     }
 
     /* Wake up all processes waiting for a Surf action to finish */
@@ -523,14 +535,18 @@ void SIMIX_run(void)
  */
 smx_timer_t SIMIX_timer_set(double date, void (*function)(void*), void *arg)
 {
-  smx_timer_t timer = xbt_new0(s_smx_timer_t, 1);
-
-  timer->date = date;
-  timer->func = function;
-  timer->args = arg;
+  smx_timer_t timer = new s_smx_timer_t(date, std::bind(function, arg));
   xbt_heap_push(simix_timers, timer, date);
   return timer;
 }
+
+smx_timer_t SIMIX_timer_set(double date, std::function<void()> callback)
+{
+  smx_timer_t timer = new s_smx_timer_t(date, std::move(callback));
+  xbt_heap_push(simix_timers, timer, date);
+  return timer;
+}
+
 /** @brief cancels a timer that was added earlier */
 void SIMIX_timer_remove(smx_timer_t timer) {
   xbt_heap_rm_elm(simix_timers, timer, timer->date);

@@ -315,4 +315,12 @@ XBT_PUBLIC(smx_process_t) simcall_process_create(const char *name,
                                           xbt_dict_t properties,
                                           int auto_restart);
 
+XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, std::function<void()> callback);
+
+template<class R, class T> inline
+XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, R(*callback)(T*), T* arg)
+{
+  return SIMIX_timer_set(date, [=](){ callback(arg); });
+}
+
 #endif
