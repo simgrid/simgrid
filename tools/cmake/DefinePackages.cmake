@@ -811,7 +811,7 @@ set(DOC_SOURCES
   doc/doxygen/module-surf.doc
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
-  doc/doxygen/modules.doc
+  doc/doxygen/module-index.doc
   doc/doxygen/options.doc
   doc/doxygen/platform.doc
   doc/doxygen/pls.doc

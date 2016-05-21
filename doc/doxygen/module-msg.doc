@@ -1,5 +1,5 @@
 /**
-@page MSG_API  MSG: Simple API for CSP Algorithms
+@defgroup MSG_API  MSG: Simple API for CSP Algorithms
 @brief Simple programming environment
 
 MSG is a simple API to write algorithms organized with Concurrent

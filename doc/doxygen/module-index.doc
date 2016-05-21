@@ -1,3 +1,31 @@
+/** \defgroup SD_API      SimDag
+    \brief Programming environment for DAG applications
+
+    SimDag provides some functionnalities to simulate parallel task scheduling
+    with DAGs models (Direct Acyclic Graphs).
+    The old versions of SimGrid were based on DAGs. But the DAG part (named SG)
+    was removed in SimGrid 3 because the new kernel (\ref SURF_API) was implemented. \ref SURF_API
+    was much faster and more flexible than SG and did not use DAGs.
+    SimDag is a new implementation of DAGs handling and it is built on top of \ref SURF_API.
+
+    \section SD_who Who should use this (and who shouldn't)
+
+    You should use this programming environment of the SimGrid suite if you want
+    to study algorithms and heuristics with DAGs of parallel tasks.
+    If you don't need to use DAGs for your simulation, have a look at the
+    \ref MSG_API programming environment.
+    If you want to study an existing MPI program, have a look at the
+    \ref SMPI_API one.
+    If none of those programming environments fits your needs, you may
+    consider implementing your own directly on top of \ref SURF_API (but you
+    probably want to contact us before).
+*/
+
+/** \defgroup SMPI_API      SMPI
+    \brief Programming environment for the simulation of MPI applications
+*/
+
+
 /**
 @defgroup XBT_API      XBT
 @brief The core toolbox of SimGrid, containing usefull datatypes and friends
@@ -31,34 +59,6 @@ parameter in the command line (see \ref tracing for details).
 */
 
 
-/** \defgroup SMPI_API      SMPI
-    \brief Programming environment for the simulation of MPI applications
-*/
-
-
-/** \defgroup SD_API      SimDag
-    \brief Programming environment for DAG applications
-
-    SimDag provides some functionnalities to simulate parallel task scheduling
-    with DAGs models (Direct Acyclic Graphs).
-    The old versions of SimGrid were based on DAGs. But the DAG part (named SG)
-    was removed in SimGrid 3 because the new kernel (\ref SURF_API) was implemented. \ref SURF_API
-    was much faster and more flexible than SG and did not use DAGs.
-    SimDag is a new implementation of DAGs handling and it is built on top of \ref SURF_API.
-
-    \section SD_who Who should use this (and who shouldn't)
-
-    You should use this programming environment of the SimGrid suite if you want
-    to study algorithms and heuristics with DAGs of parallel tasks.
-    If you don't need to use DAGs for your simulation, have a look at the
-    \ref MSG_API programming environment.
-    If you want to study an existing MPI program, have a look at the
-    \ref SMPI_API one.
-    If none of those programming environments fits your needs, you may
-    consider implementing your own directly on top of \ref SURF_API (but you
-    probably want to contact us before).
-
-*/
 
 /**
 @defgroup SURF_API SURF

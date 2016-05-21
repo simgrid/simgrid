@@ -18,7 +18,6 @@
       - \ref XBT_set
         Data are associated to both an ID (0(1) search) and a name
       - \ref XBT_fifo
-      - \ref XBT_queue
       - \ref XBT_swag
       - \ref XBT_heap
       - \ref XBT_peer
@@ -84,8 +83,6 @@
      /** @defgroup XBT_graph General purpose graph library */
      /** @defgroup XBT_parmap Parallel map */    
      /** @defgroup XBT_peer Peer */	
-     /** @defgroup XBT_queue Queue */
-     /** @defgroup XBT_sock Sock */	
      /** @defgroup XBT_synchro Synchro stuff */	
      /** @defgroup XBT_thread Thread stuff */	
      /** @defgroup XBT_context Portable context implementation */		

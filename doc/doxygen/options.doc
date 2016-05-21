@@ -782,7 +782,7 @@ larger than 1 and a slow-down if it is smaller than 1. Nothing will be changed i
 equal to 1.
 
 Of course, you can set any arbitrary filenames you want (so the start and end don't have to be
-in the same file), but be aware that this mechanism only supports \i consecutive calls!
+in the same file), but be aware that this mechanism only supports @em consecutive calls!
 
 \note
     Please note that you must pass the \b -trace-call-location flag to smpicc
