@@ -34,7 +34,7 @@ may want to use one of the following:
 /**
 @defgroup msg_simulation   Main MSG simulation Functions
 @ingroup MSG_API
-@brief Describes how to setup and control your simulation.
+@brief How to setup and control your simulation.
 
 The basic workflow is the following (check the \ref MSG_examples for
 details).
@@ -56,20 +56,18 @@ details).
 
 /** @defgroup m_host_management Host Management Functions
  *  @ingroup MSG_API
- *  @brief This section describes the host structure of MSG
+ *  @brief Host structure of MSG
  */
 
 /** @defgroup m_task_management Task Management Functions
  *  @ingroup MSG_API
- *  @brief This section describes the task structure of MSG
- *         (#msg_task_t) and the functions for managing it. See
+ *  @brief Task structure of MSG (#msg_task_t) and associated functions. See
  *         \ref msg_task_usage to see how to put the tasks in action.
  */
 
 /** @defgroup msg_mailbox_management Mailbox Management Functions
  *  @ingroup MSG_API
- *  @brief This section describes the mailbox structure of MSG
- *         (#msg_mailbox_t) and the functions for managing it.
+ *  @brief Mailbox structure of MSG (#msg_mailbox_t) and associated functions.
  */
 
 /** @defgroup msg_task_usage Task Actions
@@ -80,15 +78,14 @@ details).
 
 /** @defgroup msg_synchro Explicit Synchronization Functions
  *  @ingroup MSG_API
- *  @brief This section describes several explicit synchronization
- *         mechanisms existing in MSG: semaphores (#msg_sem_t) and friends.
+ *  @brief Explicit synchronization mechanisms: semaphores (#msg_sem_t) and friends.
  *
  * In some situations, these things are very helpful to synchronize processes without message exchanges.
  */
 
 /** @defgroup msg_VMs VMs
  *  @ingroup MSG_API
- *  @brief This section describes the interface created to mimic IaaS clouds.
+ *  @brief Interface created to mimic IaaS clouds.
  *
  *  With it, you can create virtual machines to put your processes
  *  into, and interact directly with the VMs to manage groups of
@@ -105,14 +102,12 @@ details).
 
 /** @defgroup msg_storage_management Storage Management Functions
  *  @ingroup MSG_API
- *  @brief This section describes the storage structure of MSG
- *         (#msg_storage_t) and the functions for managing it. It
- *   is based on POSIX functions.
+ *  @brief Storage structure of MSG (#msg_storage_t) and associated functions, inspired from POSIX.
  */
 
 /** @defgroup msg_file File Management Functions
     @ingroup MSG_API
-    @brief MSG files (#msg_file_t) and associated functions, inspired from POSIX file handling.
+    @brief MSG files (#msg_file_t) and associated functions, inspired from POSIX.
 */
 
 /**

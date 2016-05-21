@@ -115,7 +115,7 @@
   <!-- Layout definition for a group page -->
   <group>
     <detaileddescription title=""/>
-    <briefdescription visible="yes"/>
+    <briefdescription visible="no"/>
     <groupgraph visible="$GROUP_GRAPHS"/>
     <memberdecl>
       <classes visible="yes" title=""/>

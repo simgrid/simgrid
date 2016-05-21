@@ -75,11 +75,11 @@ void SD_config(const char *key, const char *value){
 /**
  * \brief Creates the environment
  *
- * The environment (i.e. the \ref sg_host_management "hosts" and the \ref SD_link_management "links") is created with
+ * The environment (i.e. the \ref SD_host_api "hosts" and the \ref SD_link_api "links") is created with
  * the data stored in the given XML platform file.
  *
  * \param platform_file name of an XML file describing the environment to create
- * \see sg_host_management, SD_link_management
+ * \see SD_host_api, SD_link_api
  *
  * The XML file follows this DTD:
  *

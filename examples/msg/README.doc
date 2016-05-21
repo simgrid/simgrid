@@ -269,7 +269,6 @@ top of the example file).
 
 
 /**
-@defgroup MSG_ex_examples ignored
 @example examples/msg/app-pingpong/app-pingpong.c        
 @example examples/msg/app-token-ring/app-token-ring.c    
 @example examples/msg/app-masterworker/app-masterworker.c

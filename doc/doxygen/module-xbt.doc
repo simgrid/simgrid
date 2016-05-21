@@ -27,7 +27,7 @@
   @{ */
    /** @defgroup XBT_grounding   Grounding features */
    /** @defgroup XBT_adt         Usual data structures */
-   /** @defgroup XBT_misc        Misc general purposes library components */
+   /** @defgroup XBT_misc        Miscellaneous */
 /** @} */
 
 

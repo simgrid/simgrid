@@ -17,29 +17,26 @@
 
 SG_BEGIN_DECL()
 
-/** @brief Link datatype
-    @ingroup SD_datatypes_management
+/** @brief Link opaque datatype
+    @ingroup SD_link_api
 
     A link is a network node represented as a <em>name</em>, a <em>bandwidth</em> and a <em>latency</em>.
-    A route is a list of links between two workstations.
-
-    @see SD_link_management */
+    A route is a list of links between two hosts.
+ */
 typedef Link *SD_link_t;
 
-/** @brief Task datatype
-    @ingroup SD_datatypes_management
+/** @brief Task opaque datatype
+    @ingroup SD_task_api
 
     A task is some <em>computing amount</em> that can be executed in parallel on several hosts.
     A task may depend on other tasks, which means that the task cannot start until the other tasks are done.
     Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
 
-    @see SD_task_management */
+    */
 typedef struct SD_task *SD_task_t;
 
 /** @brief Task states
-    @ingroup SD_datatypes_management
-
-    @see SD_task_management */
+    @ingroup SD_task_api */
 typedef enum {
   SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
   SD_SCHEDULABLE = 0x0001,   /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
@@ -52,9 +49,7 @@ typedef enum {
 } e_SD_task_state_t;
 
 /** @brief Task kinds
-    @ingroup SD_datatypes_management
-
-    @see SD_task_management */
+    @ingroup SD_task_api */
 typedef enum {
   SD_TASK_NOT_TYPED = 0,      /**< @brief no specified type */
   SD_TASK_COMM_E2E = 1,       /**< @brief end to end communication */
@@ -64,21 +59,16 @@ typedef enum {
 } e_SD_task_kind_t;
 
 /** @brief Storage datatype
-    @ingroup SD_datatypes_management
-
-    @see SD_storage_management */
+    @ingroup SD_storage_api */
 typedef xbt_dictelm_t SD_storage_t;
 
 /************************** Workstation handling ****************************/
-/** @defgroup sg_host_management Hosts
- *  @brief Functions for managing the Hosts
- *
- *  This section describes the functions for managing the hosts.
+/** @addtogroup SD_host_api
  *
  *  A host is a place where a task can be executed.
  *  A host is represented as a <em>physical resource with computing capabilities</em> and has a <em>name</em>.
  *
- *  The hosts are created when you call the function SD_create_environment.
+ *  The hosts are created from the description file when you call the function SD_create_environment.
  *
  *  @see sg_host_t
  *  @{
@@ -93,7 +83,7 @@ XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
 /** @} */
 
 /************************** Task handling ************************************/
-/** @defgroup SD_task_management Tasks
+/** @defgroup SD_task_api Tasks
  *  @brief Functions for managing the tasks
  *
  *  This section describes the functions for managing the tasks.
@@ -102,7 +92,7 @@ XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
  *  A task may depend on other tasks, which means that the task cannot start until the other tasks are done.
  *  Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
  *
- *  @see SD_task_t, SD_task_dependency_management
+ *  @see SD_task_t, @see SD_task_dependency_api
  *  @{
  */
 XBT_PUBLIC(SD_task_t) SD_task_create(const char *name, void *data, double amount);
@@ -155,12 +145,11 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 /** @} */
 
-/** @defgroup SD_task_dependency_management Tasks dependencies
- *  @brief Functions for managing the task dependencies
- *
+/** @addtogroup SD_task_dependency_api 
+ * 
  *  This section describes the functions for managing the dependencies between the tasks.
  *
- *  @see SD_task_management
+ *  @see SD_task_api
  *  @{
  */
 XBT_PUBLIC(void) SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
@@ -171,8 +160,7 @@ XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @} */
 
 /************************** Global *******************************************/
-/** @defgroup SD_simulation Simulation
- *  @brief Functions for creating the environment and launching the simulation
+/** @addtogroup SD_simulation Simulation
  *
  *  This section describes the functions for initializing SimDag, launching the simulation and exiting SimDag.
  *

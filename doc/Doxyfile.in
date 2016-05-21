@@ -665,9 +665,9 @@ INPUT                  = doxygen/index.doc \
                          doxygen/tracing.doc \
 			 doxygen/FAQ.doc \
 			 doxygen/module-msg.doc \
+			 doxygen/module-sd.doc \
 			 doxygen/module-index.doc \
                            doxygen/module-xbt.doc \
-                           doxygen/module-sd.doc \
                            doxygen/module-surf.doc \
                            doxygen/module-simix.doc \
                            doxygen/module-smpi.doc \
