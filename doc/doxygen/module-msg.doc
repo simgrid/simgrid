@@ -1,25 +1,20 @@
 /**
-@defgroup MSG_API  MSG: Simple API for Concurrent Sequential Process Algorithms
+@page MSG_API  MSG: Simple API for CSP Algorithms
 @brief Simple programming environment
 
-MSG was the first distributed programming environment provided within SimGrid,
-and is still the most commonly used nowadays. If you are unsure of the interface
-you should use, they you probably want to use MSG. It constitutes a convenient
-simplification of the reality of distributed systems. It can be used to build
-rather realistic simulations, but remains simple to use: most unpleasant
-technical elements can be abstracted away rather easily.  If you want to use the
-C programming language, your are in the right section. If you prefer not to use
-this venerable but demanding language, please refer to the @ref MSG_Java section.
+MSG is a simple API to write algorithms organized with Concurrent
+Sequential Processes (CSP) that interact by exchanging messages. It
+constitutes a convenient simplification of the reality of distributed
+systems. It can be used to build rather realistic simulations, but
+remains simple to use: most unpleasant technical elements can be
+abstracted away rather easily.
 
-If you think that MSG may not be the interface you need, please consider the
-other user interfaces provided by SimGrid: If you want to use DAGs, have a look
-at the \ref SD_API programming environment. If you want to study an existing MPI
-program, have a look at the \ref SMPI_API one. If none of those programming
-environments fits your needs, you may consider implementing your own directly on
-top of \ref SIMIX_API, or even on top of \ref SURF_API (but you want to contact
-us before digging into these badly documented internal modules).
+If you are unsure, then you probably want to use MSG. Otherwise, you
+may want to use one of the following:
 
-
+ - MSG in Java instead of C: @ref MSG_Java.
+ - If you want to use DAGs: @ref SD_API.
+ - If you want to study a MPI application: @ref SMPI_API.
 
 \section MSG_funct Offered functionalities
    - \ref msg_simulation
@@ -27,18 +22,14 @@ us before digging into these badly documented internal modules).
    - \ref m_host_management
    - \ref m_task_management
    - \ref msg_mailbox_management
-   - \ref msg_file_management
+   - @ref msg_file
    - \ref msg_task_usage
    - \ref msg_VMs
    - \ref msg_synchro
    - \ref msg_trace_driven
    - \ref MSG_examples
 
-
-  Also make sure to visit the page @ref MSG_examples.
-*/
-
-
+*/ 
 
 /**
 @defgroup msg_simulation   Main MSG simulation Functions
@@ -119,12 +110,10 @@ details).
  *   is based on POSIX functions.
  */
 
-/** @defgroup msg_file_management File Management Functions
- *  @ingroup MSG_API
- *  @brief This section describes the file structure of MSG
- *         (#msg_file_t) and the functions for managing it. It
- *   is based on POSIX functions.
- */
+/** @defgroup msg_file File Management Functions
+    @ingroup MSG_API
+    @brief MSG files (#msg_file_t) and associated functions, inspired from POSIX file handling.
+*/
 
 /**
 @defgroup msg_trace_driven Trace-driven simulations

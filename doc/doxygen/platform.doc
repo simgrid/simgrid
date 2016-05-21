@@ -694,8 +694,8 @@ id              | yes       | string | Name of the link that is supposed to act 
   is just some doc valuable only at the time of writing.
   This section describes the storage management under SimGrid ; nowadays
   it's only usable with MSG. It relies basically on linux-like concepts.
-  You also may want to have a look to its corresponding section in \ref
-  msg_file_management ; access functions are organized as a POSIX-like
+  You also may want to have a look to its corresponding section in 
+  @ref msg-file-page ; access functions are organized as a POSIX-like
   interface.
 
 \subsubsection pf_sto_conc Storage - Main Concepts

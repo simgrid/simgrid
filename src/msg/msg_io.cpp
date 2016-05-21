@@ -9,7 +9,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
-/** @addtogroup msg_file_management
+/** @addtogroup msg_file
  * (#msg_file_t) and the functions for managing it.
  *
  *  \see #msg_file_t
@@ -32,7 +32,7 @@ void __MSG_file_get_info(msg_file_t fd){
   xbt_dynar_free_container(&info);
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  *
  * \brief Set the user data of a #msg_file_t.
  *
@@ -45,7 +45,7 @@ msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
   return MSG_OK;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  *
  * \brief Return the user data of a #msg_file_t.
  *
@@ -57,7 +57,7 @@ void *MSG_file_get_data(msg_file_t fd)
   return priv->data;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Display information related to a file descriptor
  *
  * \param fd is a the file descriptor
@@ -80,7 +80,7 @@ void MSG_file_dump (msg_file_t fd){
            priv->content_type, priv->desc_id);
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Read a file (local or remote)
  *
  * \param size of the file to read
@@ -126,7 +126,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   return read_size;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Write into a file (local or remote)
  *
  * \param size of the file to write
@@ -176,7 +176,7 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
   return write_size;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Opens the file whose name is the string pointed to by path
  *
  * \param fullpath is the file location on the storage
@@ -204,7 +204,7 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   return fd;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Close the file
  *
  * \param fd is the file to close
@@ -225,7 +225,7 @@ int MSG_file_close(msg_file_t fd)
   return res;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Unlink the file pointed by fd
  *
  * \param fd is the file descriptor (#msg_file_t)
@@ -243,7 +243,7 @@ msg_error_t MSG_file_unlink(msg_file_t fd)
   return (msg_error_t) res;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Return the size of a file
  *
  * \param fd is the file descriptor (#msg_file_t)
@@ -255,7 +255,7 @@ sg_size_t MSG_file_get_size(msg_file_t fd){
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Set the file position indicator in the msg_file_t by adding offset bytes
  * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
  *
@@ -273,7 +273,7 @@ msg_error_t MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin)
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Returns the current value of the position indicator of the file
  *
  * \param fd : file object that identifies the stream
@@ -293,7 +293,7 @@ const char *MSG_file_get_name(msg_file_t fd) {
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Move a file to another location on the *same mount point*.
  *
  */
@@ -304,7 +304,7 @@ msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Copy a file to another location on a remote host.
  * \param file : the file to move
  * \param host : the remote host where the file has to be copied
@@ -388,7 +388,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Move a file to another location on a remote host.
  * \param file : the file to move
  * \param host : the remote host where the file has to be moved

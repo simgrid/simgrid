@@ -79,13 +79,10 @@ typedef struct msg_task *msg_task_t;
 /* ******************************** VM ************************************* */
 typedef msg_host_t msg_vm_t;
 
-/** ******************************** File ************************************ */
+/* ******************************** File ************************************ */
 
-/** @brief File datatype.
-*  @ingroup msg_file_management
-*
-*  You should consider this as an opaque object.
-*/
+/** @brief Opaque object describing a File in MSG.
+ *  @ingroup msg_file */
 typedef xbt_dictelm_t msg_file_t;
 typedef s_xbt_dictelm_t s_msg_file_t;
 
