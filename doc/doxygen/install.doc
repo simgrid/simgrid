@@ -50,7 +50,7 @@ will appear on the top of the resulting page.
    @ref contributing_bugs "you should report".\n
    If your system is actually not supported, you should compile your
    own jarfile @ref install_src "by compiling SimGrid" on your
-   machine. If you feel so, @ref contact "contact us" so that we add
+   machine. If you feel so, @ref community_contact "contact us" so that we add
    your architecture to the list.
 
  - **Library not found: boost-context**.\n 
@@ -253,7 +253,7 @@ Actually your help is welcome.
 The drawback of MinGW-64 is that the produced DLL are not compatible
 with MS Visual C. <a href="http://clang.llvm.org/docs/MSVCCompatibility.html">clang-cl</a>
 sounds promising to fix this. If you get something working, please
-@ref contact "tell us".
+@ref community_contact "tell us".
 
 @subsubsection install_src_32bits 32 bits Builds on Multi-arch Linux
 

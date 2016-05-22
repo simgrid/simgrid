@@ -1,7 +1,10 @@
-/*! \page tracing Tracing Simulations
+/*! \page outcomes_vizu Visualization and Statistical Analysis
 
+SimGrid comes with an extensive support to trace and register what
+happens during the simulation, so that it can be either visualized or
+statistically analysed after the simulation. 
 
-Tracing is widely used to observe and understand the behavior of
+This tracing is widely used to observe and understand the behavior of
 parallel applications and distributed algorithms. Usually, this is
 done in a two-step fashion: the user instruments the application and
 the traces are analyzed after the end of the execution. The analysis

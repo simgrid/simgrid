@@ -60,7 +60,7 @@ shipped in the archive:
    until all activities in a given set have completed.
    
  - <b>Waiting for the first completed communication in a set</b>.
-   @ref examples/msg/async-waitall/async-waitany.c\n
+   @ref examples/msg/async-waitany/async-waitany.c\n
    The @ref MSG_comm_waitany function is useful when you want to block
    until one activity of the set completes, no matter which terminates
    first.
@@ -275,7 +275,7 @@ top of the example file).
 
 @example examples/msg/async-wait/async-wait.c
 @example examples/msg/async-waitall/async-waitall.c
-@example examples/msg/async-waitall/async-waitany.c
+@example examples/msg/async-waitany/async-waitany.c
 
 @example examples/msg/process-create/process-create.c
 @example examples/msg/process-suspend/process-suspend.c

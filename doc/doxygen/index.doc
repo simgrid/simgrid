@@ -14,23 +14,32 @@
   - @subpage install
 - @subpage application
   - @subpage MSG_API
-  - @subpage platform
+  - @subpage SD_API
+  - @subpage SMPI_API
+  - @subpage bindings
+- @subpage platform
+  - @subpage models
+  - @subpage pls
+- @subpage scenario
   - @subpage deployment
   - @subpage options
+- @subpage outcomes
+  - @subpage outcomes_logs
+  - @subpage outcomes_vizu
+  - @subpage outcomes_MC
+- Use Cases
+  - Energy, Clouds
+  - Scalability Tweaks
   - @subpage tutorial
   - @subpage examples
-- @subpage advanced
-  - @ref bindings
-  - @ref pls
-  - @ref tracing
-- @subpage inside
-  - @ref inside_tests
-  - @ref inside_doxygen
-  - @ref inside_extending
-  - @ref inside_cmake
-  - @ref inside_release
-- @subpage contributing
-  - @ref contact
+- @subpage uhood
+  - Simulating Resource Sharing
+  - Context Switching
+  - @subpage inside
+- @subpage community
+  - @subpage community_contact
+  - @subpage community_giveback
+  - @subpage community_extend
 - @subpage FAQ
 
 @htmlonly

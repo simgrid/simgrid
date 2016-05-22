@@ -1,7 +1,3 @@
-/** \defgroup SMPI_API      SMPI
-    \brief Programming environment for the simulation of MPI applications
-*/
-
 /**
 @defgroup XBT_API      XBT
 @brief The core toolbox of SimGrid, containing useful datatypes and friends
@@ -23,7 +19,7 @@ The API enables the declaration of categories and a function to
 associate them to the tasks (MSG and SD). The tasks that are not
 classified according to a category are not traced. If no categories
 are specified, simulations can still be traced using a special
-parameter in the command line (see \ref tracing for details).
+parameter in the command line (see \ref outcomes_vizu for details).
 */
 
 

@@ -50,7 +50,7 @@ static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
  *  task category. Tasks that do not belong to a category are not traced. The color for the category that is being
  *  declared is random. This function has no effect if a category with the same name has been already declared.
  *
- * See \ref tracing for details on how to trace the (categorized) resource utilization.
+ * See \ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
  *
  *  \param category The name of the new tracing category to be created.
  *
@@ -68,10 +68,10 @@ void TRACE_category(const char *category)
  *  So, to specify a red color, pass "1 0 0" as color parameter. A light-gray color can be specified using "0.7 0.7 0.7"
  *   as color. This function has no effect if a category with the same name has been already declared.
  *
- * See \ref tracing for details on how to trace the (categorized) resource utilization.
+ * See \ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
  *
  *  \param category The name of the new tracing category to be created.
- *  \param color The color of the category (see \ref tracing to
+ *  \param color The color of the category (see \ref outcomes_vizu to
  *  know how to correctly specify the color)
  *
  *  \see MSG_task_set_category, SD_task_set_category
@@ -115,7 +115,7 @@ void TRACE_category_with_color (const char *category, const char *color)
  * This function should be used to get categories that were already declared with #TRACE_category or with
  * #TRACE_category_with_color.
  *
- * See \ref tracing for details on how to trace the (categorized) resource utilization.
+ * See \ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
  *
  * \return A dynar with the declared categories, must be freed with xbt_dynar_free.
  *

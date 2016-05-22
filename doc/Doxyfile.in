@@ -646,23 +646,31 @@ INPUT                  = doxygen/index.doc \
                          doxygen/getting_started.doc \
                          doxygen/install.doc \
 			 doxygen/application.doc \
-                         doxygen/tutorial.doc \
-                         doxygen/examples.doc \
-                           doxygen/platform.doc \
+                           doxygen/bindings.doc \
+                         doxygen/platform.doc \
+			   doxygen/models.doc \
+                           doxygen/pls.doc \
+			 doxygen/scenario.doc \
                            doxygen/deployment.doc \
                            doxygen/options.doc \
-                           doxygen/help.doc \
- 			 doxygen/advanced.doc \
-                           doxygen/pls.doc \
-                           doxygen/bindings.doc \
+			 doxygen/outcomes.doc \
+			   doxygen/outcomes_logs.doc \
+			   doxygen/outcomes_vizu.doc \
+			   doxygen/outcomes_MC.doc \
+                         doxygen/tutorial.doc \
+                         doxygen/examples.doc \
+ 			 doxygen/uhood.doc \
 			   doxygen/inside.doc \
 			     doxygen/inside_doxygen.doc \
 			     doxygen/inside_extending.doc \
 			     doxygen/inside_cmake.doc \
 			     doxygen/inside_tests.doc \
 			     doxygen/inside_release.doc \
-			   doxygen/contributing.doc \
-                         doxygen/tracing.doc \
+			 doxygen/community.doc \
+                           doxygen/community_contact.doc \
+			   doxygen/community_contributing.doc \
+			   doxygen/community_extend.doc \
+                           doxygen/community_giveback.doc \
 			 doxygen/FAQ.doc \
 			 doxygen/module-msg.doc \
 			 doxygen/module-sd.doc \

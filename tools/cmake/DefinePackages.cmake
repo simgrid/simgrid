@@ -786,15 +786,17 @@ set(DOC_SOURCES
   doc/triva-time_interval.svg
 
   doc/doxygen/FAQ.doc
-  doc/doxygen/advanced.doc
   doc/doxygen/application.doc
   doc/doxygen/bindings.doc
-  doc/doxygen/contributing.doc
+  doc/doxygen/community.doc
+  doc/doxygen/community_contact.doc
+  doc/doxygen/community_extend.doc
+  doc/doxygen/community_giveback.doc
   doc/doxygen/deployment.doc
+  doc/doxygen/examples.doc
   doc/doxygen/footer.html
   doc/doxygen/getting_started.doc
   doc/doxygen/header.html
-  doc/doxygen/help.doc
   doc/doxygen/index.doc
   doc/doxygen/inside.doc
   doc/doxygen/inside_tests.doc
@@ -804,6 +806,7 @@ set(DOC_SOURCES
   doc/doxygen/inside_release.doc
   doc/doxygen/install.doc
   doc/doxygen/tutorial.doc
+  doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
@@ -813,11 +816,15 @@ set(DOC_SOURCES
   doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
   doc/doxygen/options.doc
+  doc/doxygen/outcomes.doc  
+  doc/doxygen/outcomes_logs.doc  
+  doc/doxygen/outcomes_MC.doc  
+  doc/doxygen/outcomes_vizu.doc  
   doc/doxygen/platform.doc
   doc/doxygen/pls.doc
+  doc/doxygen/scenario.doc
   doc/doxygen/stylesheet.css
-  doc/doxygen/tracing.doc
-  doc/doxygen/examples.doc
+  doc/doxygen/uhood.doc
 
   doc/manpage/smpicc.1
   doc/manpage/smpicxx.1

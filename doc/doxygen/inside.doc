@@ -1,7 +1,6 @@
-/*! @page inside SimGrid Developer Guide
+/*! @page inside Coding Standard and Project Architecture
 
-This page does not exist yet, sorry. We are currently refurbishing the
-user documentation -- the internal documentation will follow (FIXME).
+TBD: Coding Standard
 
 There is two main things you want to know about the internals of
 SimGrid. First, you need to understand the component organization, as

@@ -1,5 +1,7 @@
-/** @addtogroup SMPI_API
-
+/** 
+@defgroup SMPI_API      SMPI: Semulate real MPI applications
+@brief Programming environment for the simulation of MPI applications
+    
 This programming environment enables the study of MPI application by
 emulating them on top of the SimGrid simulator. This is particularly
 interesting to study existing MPI applications within the comfort of

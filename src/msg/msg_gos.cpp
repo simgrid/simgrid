@@ -931,7 +931,7 @@ int MSG_task_listen_from(const char *alias)
  * parameter category must contain a category that was previously declared with the function #TRACE_category
  * (or with #TRACE_category_with_color).
  *
- * See \ref tracing for details on how to trace the (categorized) resource utilization.
+ * See \ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
  *
  * \param task the task that is going to be categorized
  * \param category the name of the category to be associated to the task

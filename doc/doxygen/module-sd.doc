@@ -1,5 +1,6 @@
-/** @defgroup SD_API      SimDag for DAG applications
-    @brief Programming environment for DAG applications
+/** 
+@defgroup SD_API      SimDag: Simulate DAG algorithms
+@brief Programming environment for DAG applications
 
 SimDag provides functionnalities to simulate parallel task scheduling
 arranged in DAGs (Direct Acyclic Graphs). Only centralized algorithms
