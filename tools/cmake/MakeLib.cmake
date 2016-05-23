@@ -109,6 +109,9 @@ target_link_libraries(simgrid 	${SIMGRID_DEP})
 
 # Dependencies from maintainer mode
 ###################################
+if(enable_maintainer_mode)
+  add_dependencies(simgrid smpi_generated_headers_call_location_tracing)
+endif()
 if(enable_maintainer_mode AND PYTHON_EXE)
   add_dependencies(simgrid simcalls_generated_src)
 endif()
