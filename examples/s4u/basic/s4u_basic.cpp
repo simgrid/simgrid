@@ -11,23 +11,21 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
 class Worker {
 public:
-  int operator()() {
+  void operator()() {
     XBT_INFO("Hello s4u, I'm ready to serve");
     char *msg = (char*)simgrid::s4u::Actor::recv(*simgrid::s4u::Mailbox::byName("worker"));
     XBT_INFO("I received '%s'",msg);
     XBT_INFO("I'm done. See you.");
-    return 1;
   }
 };
 
 class Master {
 public:
-  int operator()() {
+  void operator()() {
     const char *msg = "GaBuZoMeu";
     XBT_INFO("Hello s4u, I have something to send");
     simgrid::s4u::Actor::send(*simgrid::s4u::Mailbox::byName("worker"), xbt_strdup(msg), strlen(msg));
     XBT_INFO("I'm done. See you.");
-    return 1;
   }
 };
 

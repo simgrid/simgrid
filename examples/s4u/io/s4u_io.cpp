@@ -32,7 +32,7 @@ public:
     }
   }
 
-  int operator()() {
+  void operator()() {
     boost::unordered_map <std::string, simgrid::s4u::Storage *> const& mounts =
       simgrid::s4u::Host::current()->mountedStorages();
 
@@ -99,7 +99,6 @@ public:
       }
       xbt_dict_free(&contents);
      */
-    return 0;
   }
 };
 

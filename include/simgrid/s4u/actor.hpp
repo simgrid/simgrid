@@ -29,7 +29,7 @@ namespace s4u {
  * #include "s4u/actor.hpp"
  * 
  * class Worker {
- *   int operator()() {
+ *   void operator()() {
  *     printf("Hello s4u");
  *     return 0;
  *   }
