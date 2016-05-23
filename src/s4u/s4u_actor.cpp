@@ -18,7 +18,7 @@ using namespace simgrid;
 
 s4u::Actor::Actor(smx_process_t smx_proc) : pimpl_(smx_proc) {}
 
-s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::function<int()> code)
+s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
 {
   // TODO, when autorestart is used, the std::function is copied so the new
   // instance will get a fresh (reinitialized) state. Is this what we want?

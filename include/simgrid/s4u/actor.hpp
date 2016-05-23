@@ -42,12 +42,12 @@ namespace s4u {
 XBT_PUBLIC_CLASS Actor {
   Actor(smx_process_t smx_proc);
 public:
-  Actor(const char* name, s4u::Host *host, double killTime, std::function<int()> code);
-  Actor(const char* name, s4u::Host *host, std::function<int()> code)
+  Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
+  Actor(const char* name, s4u::Host *host, std::function<void()> code)
     : Actor(name, host, -1, std::move(code)) {};
   template<class C>
   Actor(const char* name, s4u::Host *host, C code)
-    : Actor(name, host, -1, std::function<int()>(std::move(code))) {}
+    : Actor(name, host, -1, std::function<void()>(std::move(code))) {}
   ~Actor();
 
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
