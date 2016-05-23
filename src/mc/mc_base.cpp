@@ -96,7 +96,7 @@ bool request_is_enabled(smx_simcall_t req)
     simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
     if (mc_model_checker != nullptr) {
       mc_model_checker->process().read(temp_comm, remote(act));
-      act = static_cast<simgrid::simix::Comm*>(temp_comm.data());
+      act = static_cast<simgrid::simix::Comm*>(temp_comm.getBuffer());
     }
 #endif
 
@@ -147,7 +147,7 @@ bool request_is_enabled(smx_simcall_t req)
       if (mc_model_checker != nullptr) {
         memcpy(&act, buffer + comms->elmsize * index, sizeof(act));
         mc_model_checker->process().read(temp_comm, remote(act));
-        act = static_cast<simgrid::simix::Comm*>(temp_comm.data());
+        act = static_cast<simgrid::simix::Comm*>(temp_comm.getBuffer());
       }
       else
 #endif

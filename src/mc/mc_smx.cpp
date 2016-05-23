@@ -20,7 +20,7 @@
 
 using simgrid::mc::remote;
 
-/** Statically "upcast" a s_smx_process_t into a SimixProcessInformation
+/** HACK, Statically "upcast" a s_smx_process_t into a SimixProcessInformation
  *
  *  This gets 'processInfo' from '&processInfo->copy'. It upcasts in the
  *  sense that we could achieve the same thing by having SimixProcessInformation
@@ -29,9 +29,11 @@ using simgrid::mc::remote;
 static inline
 simgrid::mc::SimixProcessInformation* process_info_cast(smx_process_t p)
 {
+  simgrid::mc::SimixProcessInformation temp;
+  std::size_t offset = (char*) temp.copy.getBuffer() - (char*)&temp;
+
   simgrid::mc::SimixProcessInformation* process_info =
-    (simgrid::mc::SimixProcessInformation*)
-      ((char*) p - offsetof(simgrid::mc::SimixProcessInformation, copy));
+    (simgrid::mc::SimixProcessInformation*) ((char*) p - offset);
   return process_info;
 }
 
@@ -116,10 +118,10 @@ smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
   // Lookup by address:
   for (auto& p : mc_model_checker->process().simix_processes())
     if (p.address == address)
-      return &p.copy;
+      return p.copy.getBuffer();
   for (auto& p : mc_model_checker->process().old_simix_processes())
     if (p.address == address)
-      return &p.copy;
+      return p.copy.getBuffer();
 
   xbt_die("Issuer not found");
 }
@@ -151,10 +153,9 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
 
   // Read the simgrid::xbt::string in the MCed process:
   simgrid::mc::SimixProcessInformation* info = process_info_cast(p);
-  simgrid::xbt::string_data remote_string;
   auto remote_string_address = remote(
     (simgrid::xbt::string_data*) ((char*) p->host + offset));
-  process->read_bytes(&remote_string, sizeof(remote_string), remote_string_address);
+  simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   char hostname[remote_string.len];
   process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
   info->hostname = mc_model_checker->get_host_name(hostname);
@@ -165,13 +166,13 @@ const char* MC_smx_process_get_name(smx_process_t p)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
   if (mc_model_checker == nullptr)
-    return p->name;
-  if (!p->name)
-    return nullptr;
+    return p->name.c_str();
 
   simgrid::mc::SimixProcessInformation* info = process_info_cast(p);
-  if (info->name.empty())
-    info->name = process->read_string(p->name);
+  if (info->name.empty()) {
+    simgrid::xbt::string_data string_data = (simgrid::xbt::string_data&)p->name;
+    info->name = process->read_string(remote(string_data.data), string_data.len);
+  }
   return info->name.c_str();
 }
 

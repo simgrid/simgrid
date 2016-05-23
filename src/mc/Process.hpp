@@ -45,11 +45,9 @@ namespace mc {
 class SimixProcessInformation {
 public:
   /** MCed address of the process */
-  RemotePtr<s_smx_process_t> address = nullptr;
-  union {
-    /** (Flat) Copy of the process data structure */
-    struct s_smx_process copy;
-  };
+  RemotePtr<simgrid::simix::Process> address = nullptr;
+  Remote<simgrid::simix::Process> copy;
+
   /** Hostname (owned by `mc_modelchecker->hostnames`) */
   const char* hostname = nullptr;
   std::string name;
@@ -120,7 +118,11 @@ public:
     read_variable(name, &res, sizeof(T));
     return res;
   }
-  std::string read_string(RemotePtr<void> address) const;
+  std::string read_string(RemotePtr<char> address) const;
+  std::string read_string(RemotePtr<char> address, std::size_t len) const
+  {
+    return AddressSpace::read_string(address, len);
+  }
 
   // Write memory:
   void write_bytes(const void* buffer, size_t len, RemotePtr<void> address);
@@ -217,7 +219,7 @@ public:
 
   /** Get a local description of a remote SIMIX process */
   simgrid::mc::SimixProcessInformation* resolveProcessInfo(
-    simgrid::mc::RemotePtr<s_smx_process_t> process)
+    simgrid::mc::RemotePtr<simgrid::simix::Process> process)
   {
     xbt_assert(mc_model_checker != nullptr);
     if (!process)
@@ -233,12 +235,12 @@ public:
   }
 
   /** Get a local copy of the SIMIX process structure */
-  smx_process_t resolveProcess(simgrid::mc::RemotePtr<s_smx_process_t> process)
+  simgrid::simix::Process* resolveProcess(simgrid::mc::RemotePtr<simgrid::simix::Process> process)
   {
     simgrid::mc::SimixProcessInformation* process_info =
       this->resolveProcessInfo(process);
     if (process_info)
-      return &process_info->copy;
+      return process_info->copy.getBuffer();
     else
       return nullptr;
   }

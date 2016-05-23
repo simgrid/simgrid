@@ -291,7 +291,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       if (use_remote_comm) {
         mc_model_checker->process().read(temp_synchro, remote(
           static_cast<simgrid::simix::Comm*>(remote_act)));
-        act = static_cast<simgrid::simix::Comm*>(temp_synchro.data());
+        act = temp_synchro.getBuffer();
       } else
         act = remote_act;
 
@@ -319,7 +319,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     if (use_remote_comm) {
       mc_model_checker->process().read(temp_synchro, remote(
         static_cast<simgrid::simix::Comm*>(remote_act)));
-      act = static_cast<simgrid::simix::Comm*>(temp_synchro.data());
+      act = temp_synchro.getBuffer();
     } else
       act = remote_act;
 
@@ -466,7 +466,7 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
   simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
   mc_model_checker->process().read(temp_comm, remote(
     static_cast<simgrid::simix::Comm*>(remote_act)));
-  simgrid::simix::Comm* comm = static_cast<simgrid::simix::Comm*>(temp_comm.data());
+  simgrid::simix::Comm* comm = temp_comm.getBuffer();
   return comm->src_proc && comm->dst_proc;
 }
 
@@ -531,7 +531,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
       simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
       mc_model_checker->process().read(temp_comm, remote(
         static_cast<simgrid::simix::Comm*>(remote_act)));
-      simgrid::simix::Comm* comm = static_cast<simgrid::simix::Comm*>(temp_comm.data());
+      simgrid::simix::Comm* comm = temp_comm.getBuffer();
 
       smx_process_t src_proc = mc_model_checker->process().resolveProcess(
         simgrid::mc::remote(comm->src_proc));
@@ -557,7 +557,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
     simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
     mc_model_checker->process().read(temp_comm, remote(
       static_cast<simgrid::simix::Comm*>(remote_act)));
-    simgrid::simix::Comm* comm = static_cast<simgrid::simix::Comm*>(temp_comm.data());
+    simgrid::simix::Comm* comm = temp_comm.getBuffer();
     if (comm->src_proc == nullptr || comm->dst_proc == nullptr) {
       if (issuer->host)
         label = simgrid::xbt::string_printf("[(%lu)%s] Test FALSE",

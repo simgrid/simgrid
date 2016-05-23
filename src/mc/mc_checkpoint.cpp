@@ -569,7 +569,7 @@ std::shared_ptr<simgrid::mc::Snapshot> take_snapshot(int num_state)
   snapshot->num_state = num_state;
 
   for (auto& p : mc_model_checker->process().simix_processes())
-    snapshot->enabled_processes.insert(p.copy.pid);
+    snapshot->enabled_processes.insert(p.copy.getBuffer()->pid);
 
   snapshot_handle_ignore(snapshot.get());
 

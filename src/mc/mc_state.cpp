@@ -49,7 +49,7 @@ namespace mc {
 
 State::State()
 {
-  std::memset(this->internal_comm.data(), 0, this->internal_comm.size());
+  this->internal_comm.clear();
   std::memset(&this->internal_req, 0, sizeof(this->internal_req));
   std::memset(&this->executed_req, 0, sizeof(this->executed_req));
 }
@@ -130,7 +130,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
           static_cast<simgrid::simix::Comm*>(simcall_comm_wait__get__comm(&process->simcall)));
         simgrid::mc::Remote<simgrid::simix::Comm> temp_act;
         mc_model_checker->process().read(temp_act, remote_act);
-        simgrid::simix::Comm* act = static_cast<simgrid::simix::Comm*>(temp_act.data());
+        simgrid::simix::Comm* act = temp_act.getBuffer();
         if (act->src_proc && act->dst_proc)
           state->transition.argument = 0;
         else if (act->src_proc == nullptr && act->type == SIMIX_COMM_READY
@@ -230,7 +230,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
 smx_simcall_t MC_state_get_request(simgrid::mc::State* state)
 {
   for (auto& p : mc_model_checker->process().simix_processes()) {
-    smx_simcall_t res = MC_state_get_request_for_process(state, &p.copy);
+    smx_simcall_t res = MC_state_get_request_for_process(state, p.copy.getBuffer());
     if (res)
       return res;
   }

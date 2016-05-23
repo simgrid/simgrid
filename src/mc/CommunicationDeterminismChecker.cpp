@@ -101,7 +101,7 @@ static void update_comm_pattern(
   simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
   mc_model_checker->process().read(temp_comm, comm_addr);
   simgrid::simix::Comm* comm =
-    static_cast<simgrid::simix::Comm*>(temp_comm.data());
+    static_cast<simgrid::simix::Comm*>(temp_comm.getBuffer());
 
   smx_process_t src_proc = mc_model_checker->process().resolveProcess(
     simgrid::mc::remote(comm->src_proc));
@@ -199,7 +199,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     mc_model_checker->process().read(temp_synchro, remote(
       static_cast<simgrid::simix::Comm*>(pattern->comm_addr)));
     simgrid::simix::Comm* synchro =
-      static_cast<simgrid::simix::Comm*>(temp_synchro.data());
+      static_cast<simgrid::simix::Comm*>(temp_synchro.getBuffer());
 
     char* remote_name = mc_model_checker->process().read<char*>(
       (std::uint64_t)(synchro->mbox ? &synchro->mbox->name : &synchro->mbox_cpy->name));
@@ -247,8 +247,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
     mc_model_checker->process().read(temp_comm, remote(
       static_cast<simgrid::simix::Comm*>(pattern->comm_addr)));
-    simgrid::simix::Comm* comm =
-      static_cast<simgrid::simix::Comm*>(temp_comm.data());
+    simgrid::simix::Comm* comm = temp_comm.getBuffer();
 
     char* remote_name;
     mc_model_checker->process().read(&remote_name,
@@ -393,8 +392,8 @@ void CommunicationDeterminismChecker::prepare()
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
-    if (simgrid::mc::process_is_enabled(&p.copy))
-      initial_state->interleave(&p.copy);
+    if (simgrid::mc::process_is_enabled(p.copy.getBuffer()))
+      initial_state->interleave(p.copy.getBuffer());
 
   stack_.push_back(std::move(initial_state));
 }
@@ -532,8 +531,8 @@ int CommunicationDeterminismChecker::main(void)
 
         /* Get enabled processes and insert them in the interleave set of the next state */
         for (auto& p : mc_model_checker->process().simix_processes())
-          if (simgrid::mc::process_is_enabled(&p.copy))
-            next_state->interleave(&p.copy);
+          if (simgrid::mc::process_is_enabled(p.copy.getBuffer()))
+            next_state->interleave(p.copy.getBuffer());
 
         if (dot_output != nullptr)
           fprintf(dot_output, "\"%d\" -> \"%d\" [%s];\n",

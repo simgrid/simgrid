@@ -154,8 +154,8 @@ int SafetyChecker::run()
 
       /* Get an enabled process and insert it in the interleave set of the next state */
       for (auto& p : mc_model_checker->process().simix_processes())
-        if (simgrid::mc::process_is_enabled(&p.copy)) {
-          next_state->interleave(&p.copy);
+        if (simgrid::mc::process_is_enabled(p.copy.getBuffer())) {
+          next_state->interleave(p.copy.getBuffer());
           if (reductionMode_ != simgrid::mc::ReductionMode::none)
             break;
         }
@@ -329,8 +329,8 @@ void SafetyChecker::init()
 
   /* Get an enabled process and insert it in the interleave set of the initial state */
   for (auto& p : mc_model_checker->process().simix_processes())
-    if (simgrid::mc::process_is_enabled(&p.copy)) {
-      initial_state->interleave(&p.copy);
+    if (simgrid::mc::process_is_enabled(p.copy.getBuffer())) {
+      initial_state->interleave(p.copy.getBuffer());
       if (reductionMode_ != simgrid::mc::ReductionMode::none)
         break;
     }

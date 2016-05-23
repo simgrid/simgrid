@@ -124,12 +124,12 @@ public:
     assign(s, s == nullptr ? 0 : std::strlen(s));
     return *this;
   }
-  string& operator=(string& s)
+  string& operator=(string const& s)
   {
     assign(s.c_str(), s.size());
     return *this;
   }
-  string& operator=(std::string& s)
+  string& operator=(std::string const& s)
   {
     assign(s.c_str(), s.size());
     return *this;
@@ -188,71 +188,78 @@ public:
     string_data::data = (char*) &NUL;
   }
 
-  // Compare
-  int compare(string const& that) const
+  bool equals(const char* data, std::size_t len) const
   {
-    size_t n = std::min(this->size(), that.size());
-    int res = memcmp(this->c_str(), that.c_str(), n);
+    return this->size() == len
+      && std::memcmp(this->c_str(), data, len) == 0;
+  }
+
+  bool operator==(string const& that) const
+  {
+    return this->equals(that.c_str(), that.size());
+  }
+  bool operator==(std::string const& that) const
+  {
+    return this->equals(that.c_str(), that.size());
+  }
+  bool operator==(const char* that) const
+  {
+    return this->equals(that, std::strlen(that));
+  }
+
+  template<class X>
+  bool operator!=(X const& that) const
+  {
+    return !((*this) == that);
+  }
+
+  // Compare:
+  int compare(const char* data, std::size_t len) const
+  {
+    size_t n = std::min(this->size(), len);
+    int res = memcmp(this->c_str(), data, n);
     if (res != 0)
       return res;
-    else if (this->size() == that.size())
+    else if (this->size() == len)
       return 0;
-    else if (this->size() < that.size())
+    else if (this->size() < len)
       return -1;
     else
       return 1;
   }
-  bool operator==(string const& that) const
+  int compare(string const& that) const
   {
-    return this->size() == that.size()
-      && std::memcmp(this->c_str(), that.c_str(), this->size()) == 0;
+    return this->compare(that.c_str(), that.size());
   }
-  bool operator!=(string const& that) const
+  int compare(std::string const& that) const
   {
-    return !(*this == that);
+    return this->compare(that.c_str(), that.size());
   }
-  bool operator<(string const& that) const
+  int compare(const char* that) const
   {
-    return compare(that) < 0;
-  }
-  bool operator<=(string const& that) const
-  {
-    return compare(that) <= 0;
-  }
-  bool operator>(string const& that) const
-  {
-    return compare(that) > 0;
-  }
-  bool operator>=(string const& that) const
-  {
-    return compare(that) >= 0;
+    return this->compare(that, std::strlen(that));
   }
 
-  // Compare with std::string
-  bool operator==(std::string const& that) const
+  // Define < <= >= > in term of compare():
+  template<class X>
+  bool operator<(X const& that) const
   {
-    return this->size() == that.size()
-      && std::memcmp(this->c_str(), that.c_str(), this->size()) == 0;
+    return this->compare(that) < 0;
   }
-  bool operator!=(std::string const& that) const
+  template<class X>
+  bool operator<=(X const& that) const
   {
-    return !(*this == that);
+    return this->compare(that) <= 0;
   }
-  bool operator<(std::string const& that) const
+  template<class X>
+  bool operator>(X const& that) const
   {
-    return compare(that) < 0;
+    return this->compare(that) > 0;
   }
-  bool operator<=(std::string const& that) const
+  template<class X>
+  bool operator>=(X const& that) const
   {
-    return compare(that) <= 0;
-  }
-  bool operator>(std::string const& that) const
-  {
-    return compare(that) > 0;
-  }
-  bool operator>=(std::string const& that) const
-  {
-    return compare(that) >= 0;
+    return this->compare(that) >= 0;
   }
 };
 

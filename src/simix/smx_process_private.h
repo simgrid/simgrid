@@ -11,6 +11,7 @@
 #include <string>
 
 #include <xbt/base.h>
+#include <xbt/string.hpp>
 
 #include <simgrid/simix.hpp>
 #include "simgrid/simix.h"
@@ -46,7 +47,7 @@ public:
 
   unsigned long pid = 0;
   unsigned long ppid = 0;
-  std::string name;
+  simgrid::xbt::string name;
   sg_host_t host = nullptr;     /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
   xbt_running_ctx_t *running_ctx = nullptr;

@@ -13,6 +13,9 @@
 #include <cstring>
 #include <type_traits>
 
+#include <string>
+#include <vector>
+
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/RemotePtr.hpp"
 
@@ -92,7 +95,7 @@ public:
   static constexpr ReadOptions lazy() { return ReadOptions(1); }
 };
 
-/** A value from another process
+/** HACK, A value from another process
  *
  *  This represents a value from another process:
  *
@@ -109,29 +112,31 @@ public:
  *  cross-architecture (such as 32-bit/64-bit access).
  */
 template<class T>
-class Remote {
+union Remote {
 private:
-  // If we use a union, it won't work with abstract types:
-  char buffer[sizeof(T)];
+  T buffer;
 public:
-  // HACK, some code currently cast this to T* which is **not** legal.
-  void*       data() { return buffer; }
-  const void* data() const { return buffer; }
-  constexpr std::size_t size() const { return sizeof(T); }
+  Remote() {}
+  ~Remote() {}
+  Remote(Remote const& that)
+  {
+    std::memcpy(&buffer, &that.buffer, sizeof(buffer));
+  }
+  Remote& operator=(Remote const& that)
+  {
+    std::memcpy(&buffer, &that.buffer, sizeof(buffer));
+    return *this;
+  }
+  T*       getBuffer() { return &buffer; }
+  const T* getBuffer() const { return &buffer; }
+  std::size_t getBufferSize() const { return sizeof(T); }
   operator T() const {
     static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
-    T res;
-    std::memcpy(&res, buffer, sizeof(T));
-    return res;
+    return buffer;
   }
-  Remote() {}
-  Remote(T const& x)
+  void clear()
   {
-    std::memcpy(&x, buffer, sizeof(T));
-  }
-  Remote& operator=(T const& x)
-  {
-    std::memcpy(&x, buffer, sizeof(T));
+    std::memset(static_cast<void*>(&buffer), 0, sizeof(T));
   }
 };
 
@@ -166,25 +171,35 @@ public:
 
   /** Read a given data structure from the address space */
   template<class T> inline
-  void read(T *buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny)
+  void read(T *buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny) const
   {
     this->read_bytes(buffer, sizeof(T), ptr, process_index);
   }
 
   template<class T> inline
-  void read(Remote<T>& buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny)
+  void read(Remote<T>& buffer, RemotePtr<T> ptr, int process_index = ProcessIndexAny) const
   {
-    this->read_bytes(buffer.data(), sizeof(T), ptr, process_index);
+    this->read_bytes(buffer.getBuffer(), sizeof(T), ptr, process_index);
   }
 
   /** Read a given data structure from the address space */
   template<class T> inline
-  Remote<T> read(RemotePtr<T> ptr, int process_index = ProcessIndexMissing)
+  Remote<T> read(RemotePtr<T> ptr, int process_index = ProcessIndexMissing) const
   {
     Remote<T> res;
     this->read_bytes(&res, sizeof(T), ptr, process_index);
     return res;
   }
+
+  std::string read_string(RemotePtr<char> address, std::size_t len) const
+  {
+    // TODO, use std::vector with .data() in C++17 to avoid useless copies
+    std::vector<char> buffer(len);
+    buffer[len] = '\0';
+    this->read_bytes(buffer.data(), len, address);
+    return std::string(buffer.data(), buffer.size());
+  }
+
 };
 
 }

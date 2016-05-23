@@ -167,7 +167,7 @@ static void MC_dump_stacks(FILE* file)
 
     simgrid::mc::UnwindContext context;
     unw_context_t raw_context =
-      mc_model_checker->process().read<unw_context_t>(
+      (unw_context_t) mc_model_checker->process().read<unw_context_t>(
         simgrid::mc::remote((unw_context_t *)stack.context));
     context.initialize(&mc_model_checker->process(), &raw_context);
 

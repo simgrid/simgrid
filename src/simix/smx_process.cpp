@@ -252,7 +252,7 @@ smx_process_t SIMIX_process_create(
     xbt_assert(code && host != NULL, "Invalid parameters");
     /* Process data */
     process->pid = simix_process_maxpid++;
-    process->name = std::string(name);
+    process->name = simgrid::xbt::string(name);
     process->host = host;
     process->data = data;
     process->comms = xbt_fifo_new();
