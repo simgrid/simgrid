@@ -90,22 +90,22 @@ namespace this_actor {
   // Static methods working on the current actor:
 
   /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
-  void sleep(double duration);
+  XBT_PUBLIC(void) sleep(double duration);
 
   /** Block the actor, computing the given amount of flops */
-  e_smx_state_t execute(double flop);
+  XBT_PUBLIC(e_smx_state_t) execute(double flop);
 
   /** Block the actor until it gets a message from the given mailbox.
    *
    * See \ref Comm for the full communication API (including non blocking communications).
    */
-  void *recv(Mailbox &chan);
+  XBT_PUBLIC(void*) recv(Mailbox &chan);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox
    *
    * See \ref Comm for the full communication API (including non blocking communications).
   */
-  void send(Mailbox &chan, void*payload, size_t simulatedSize);
+  XBT_PUBLIC(void) send(Mailbox &chan, void*payload, size_t simulatedSize);
 
 };
 
