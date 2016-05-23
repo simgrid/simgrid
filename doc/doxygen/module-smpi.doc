@@ -32,8 +32,8 @@ may want to turn to the other SimGrid interfaces such as the
 \section SMPI_what What can run within SMPI?
 
 You can run unmodified MPI applications (both C and Fortran) within
-SMPI, provided that (1) you only use MPI calls that we implemented in
-MPI and (2) you don't use any globals in your application.
+SMPI, provided that you only use MPI calls that we implemented in
+MPI. Global variables should be handled correctly on Linux systems.
 
 \subsection SMPI_what_coverage MPI coverage of SMPI
 
