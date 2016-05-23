@@ -63,16 +63,21 @@ void s4u::Actor::killAll() {
   simcall_process_killall(1);
 }
 
-void s4u::Actor::sleep(double duration) {
+
+namespace simgrid {
+namespace s4u {
+namespace this_actor {
+
+void sleep(double duration) {
   simcall_process_sleep(duration);
 }
 
-e_smx_state_t s4u::Actor::execute(double flops) {
+e_smx_state_t execute(double flops) {
   smx_synchro_t s = simcall_execution_start(NULL,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
   return simcall_execution_wait(s);
 }
 
-void *s4u::Actor::recv(Mailbox &chan) {
+void* recv(Mailbox &chan) {
   void *res = NULL;
   Comm c = Comm::recv_init(chan);
   c.setDstData(&res,sizeof(res));
@@ -80,10 +85,14 @@ void *s4u::Actor::recv(Mailbox &chan) {
   return res;
 }
 
-void s4u::Actor::send(Mailbox &chan, void *payload, size_t simulatedSize) {
+void send(Mailbox &chan, void *payload, size_t simulatedSize) {
   Comm c = Comm::send_init(chan);
   c.setRemains(simulatedSize);
   c.setSrcData(payload);
   // c.start() is optional.
   c.wait();
+}
+
+}
+}
 }

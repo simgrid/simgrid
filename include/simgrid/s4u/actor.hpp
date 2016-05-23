@@ -79,30 +79,34 @@ public:
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
 
+protected:
+  smx_process_t getInferior() {return pimpl_;}
+private:
+  smx_process_t pimpl_ = nullptr;
+};
+
+namespace this_actor {
+
   // Static methods working on the current actor:
 
   /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
-  static void sleep(double duration);
+  void sleep(double duration);
 
   /** Block the actor, computing the given amount of flops */
-  static e_smx_state_t execute(double flop);
+  e_smx_state_t execute(double flop);
 
   /** Block the actor until it gets a message from the given mailbox.
    *
    * See \ref Comm for the full communication API (including non blocking communications).
    */
-  static void *recv(Mailbox &chan);
+  void *recv(Mailbox &chan);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox
    *
    * See \ref Comm for the full communication API (including non blocking communications).
   */
-  static void send(Mailbox &chan, void*payload, size_t simulatedSize);
+  void send(Mailbox &chan, void*payload, size_t simulatedSize);
 
-protected:
-  smx_process_t getInferior() {return pimpl_;}
-private:
-  smx_process_t pimpl_ = nullptr;
 };
 
 }} // namespace simgrid::s4u

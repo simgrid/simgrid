@@ -13,7 +13,7 @@ class Worker {
 public:
   void operator()() {
     XBT_INFO("Hello s4u, I'm ready to serve");
-    char *msg = (char*)simgrid::s4u::Actor::recv(*simgrid::s4u::Mailbox::byName("worker"));
+    char *msg = (char*)simgrid::s4u::this_actor::recv(*simgrid::s4u::Mailbox::byName("worker"));
     XBT_INFO("I received '%s'",msg);
     XBT_INFO("I'm done. See you.");
   }
@@ -24,7 +24,7 @@ public:
   void operator()() {
     const char *msg = "GaBuZoMeu";
     XBT_INFO("Hello s4u, I have something to send");
-    simgrid::s4u::Actor::send(*simgrid::s4u::Mailbox::byName("worker"), xbt_strdup(msg), strlen(msg));
+    simgrid::s4u::this_actor::send(*simgrid::s4u::Mailbox::byName("worker"), xbt_strdup(msg), strlen(msg));
     XBT_INFO("I'm done. See you.");
   }
 };
