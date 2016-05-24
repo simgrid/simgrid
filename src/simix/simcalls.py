@@ -168,7 +168,7 @@ class Simcall(object):
                              for i, arg in enumerate(self.args)))
         res.append('    if (self != simix_global->maestro_process) {')
         res.append(
-            '      XBT_DEBUG("Yield process \'%s\' on simcall %s (%d)", self->name,')
+            '      XBT_DEBUG("Yield process \'%s\' on simcall %s (%d)", self->name.c_str(),')
         res.append(
             '                SIMIX_simcall_name(self->simcall.call), (int)self->simcall.call);')
         res.append('      SIMIX_process_yield(self);')
