@@ -1,20 +1,22 @@
-/*! \page pls Packet level simulation
+/*! \page pls_ns3 ns-3 as a SimGrid model
 
 \tableofcontents
 
-It is possible to use a packet-level network simulator instead of the default flow-based models. You may want to use 
-this feature if you have doubts about the validity of the default model or want to perform some validation experiments.
+You can use the well-known 
+<a href="http://www.nsnam.org/"><b>ns-3</b></a> packet-level network
+simulator as a SimGrid model, for example to investigate the validity
+of your simulation. 
 
-At the moment, we support the well-known <a href="http://www.nsnam.org/"><b>ns-3</b></a> packet-level simulator. Earlier 
-releases of SimGrid did support the <b>GTNetS</b> simulator. Its support could possibly be revived by someone who would
-need it.
+This binding is still somehow limited: you can only express what is at
+the intersection between ns-3 and SimGrid. For example, ns-3 wireless
+models are not available, while no route longuer than 1 must appear in
+your SimGrid platform (add routers on need).
 
-\section pls_simgrid_configuration_ns3 ns-3 as a SimGrid model
+But if you stick to what is possible in both systems, there should be
+very little things to change in your SimGrid settings (platform and
+experimental scenario) to use ns-3
 
-This section explains how  to replace the SimGrid network models by those of the well-known 
-<a href="http://www.nsnam.org/">ns-3</a> packet-level network simulator.
-
-\subsection pls_simgrid_configuration_ns3_install Installing ns-3
+\section pls_ns3_install Installing ns-3
 
 The easiest is to install it with the package manager. Under Debian/Ubuntu, simply type as root:
 
@@ -37,7 +39,7 @@ cd ns-allinone-3.25/ns-3.25/
 
 For more information, please refer to the ns-3 documentation.
 
-\subsection pls_simgrid_configuration_ns3_config Enabling SimGrid's support for ns-3
+\section pls_ns3_config Enabling SimGrid's support for ns-3
 
 Normally, you just have to enable ns-3 in ccmake or cmake as follows. If you installed ns-3 in a regular path, just
 drop the ns3_path configuration item.
@@ -62,10 +64,11 @@ If the compilation fails when linking the library because of some .a file that c
 probably because you only installed the libns3-dev library on your Debian, where you also need libns3-3. This is 
 probably a bug of the libns3-dev package that should depend on the dynamic libraries corresponding to its .so files.
 
-\subsection pls_simgrid_configuration_ns3_use Using ns-3 from SimGrid
+\section pls_ns3_use Using ns-3 from SimGrid
 
-A working example of ns-3/SimGrid interactions can be found in examples/msg/network-ns3/. Basically, you just have to 
-run your SimGrid simulation with the configuration option "network/model" set to "NS3". The rest remains unchanged.
+Basically, you just have to run your SimGrid simulation with the
+configuration option "network/model" set to "NS3". The rest remains
+unchanged.
 
 The following should work from the examples/msg/network-ns3 folder (network-ns3 is the name of our example binary).
 
@@ -76,7 +79,7 @@ The following should work from the examples/msg/network-ns3 folder (network-ns3 
 A ns-3 platform is automatically created from the provided SimGrid platform file. However, there are some known caveats:
 
 <ul>
-  <li>The default values (e.g., TCP parameters) are the ns3  values. Don't blame us for them.</li>  
+  <li>The default values (e.g., TCP parameters) are the ns3 values. Don't blame us for them.</li>  
 
   <li>ns-3 networks are routed using the shortest path algorithm, using
    ns3::Ipv4GlobalRoutingHelper::PopulateRoutingTables.</li>

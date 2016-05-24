@@ -815,13 +815,13 @@ set(DOC_SOURCES
   doc/doxygen/module-trace.doc
   doc/doxygen/module-xbt.doc
   doc/doxygen/module-index.doc
+  doc/doxygen/ns3.doc
   doc/doxygen/options.doc
   doc/doxygen/outcomes.doc  
   doc/doxygen/outcomes_logs.doc  
   doc/doxygen/outcomes_MC.doc  
   doc/doxygen/outcomes_vizu.doc  
   doc/doxygen/platform.doc
-  doc/doxygen/pls.doc
   doc/doxygen/scenario.doc
   doc/doxygen/stylesheet.css
   doc/doxygen/uhood.doc
@@ -983,6 +983,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindLibunwind.cmake
   tools/cmake/Modules/FindLuaSimgrid.cmake
   tools/cmake/Modules/FindNS3.cmake
+  tools/cmake/Modules/FindPAPI.cmake
   tools/cmake/Modules/FindRngStream.cmake
   tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
@@ -1011,6 +1012,7 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/test_prog/prog_thread_storage.c
   tools/cmake/test_prog/prog_vsnprintf.c
   tools/cmake/cross-mingw.cmake
+  tools/smpi/generate_smpi_defines.pl
   tools/stack-cleaner/as
   tools/stack-cleaner/cc
   tools/stack-cleaner/c++

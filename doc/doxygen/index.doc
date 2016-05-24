@@ -19,7 +19,7 @@
   - @subpage bindings
 - @subpage platform
   - @subpage models
-  - @subpage pls
+  - @subpage pls_ns3
 - @subpage scenario
   - @subpage deployment
   - @subpage options

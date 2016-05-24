@@ -164,10 +164,10 @@ They have to be run with the following options:
 @subsection msg_ex_ns3 NS3 as a SimGrid Network Model
 
 This example demonstrates how to use the bindings to the Network
-Simulator, as explained in @ref pls. The most
+Simulator, as explained in @ref pls_ns3. The most
 interesting is probably not the C files since they are unchanged from
 the other simulations, but the associated files, such as the platform
-file to see how to declare a platform to be used with the PLS bindings
+file to see how to declare a platform to be used with the ns-3 bindings
 of SimGrid and the tesh file to see how to actually start a simulation
 in these settings.
   
