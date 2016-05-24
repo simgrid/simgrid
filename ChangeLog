@@ -1,5 +1,10 @@
 SimGrid (3.14) UNRELEASED; urgency=low
 
+ SMPI
+ * Call-location tracing for SMPI.
+   You can add the exact location (filename / linenumber) of an MPI call to 
+   your trace files and slow down or speed up the simulation between two 
+   consecutive calls by using an adjustment file. (See the documentation.)
 
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
@@ -113,10 +118,6 @@ SimGrid (3.13) stable; urgency=low
  * Various bug fixes to handle more codes
  * Remove the need for the --foreground option of smpirun (it is still
    accepted for backward compatibility).
- * Call-location tracing for SMPI.
-   You can add the exact location (filename / linenumber) of an MPI call to 
-   your trace files and slow down or speed up the simulation between two 
-   consecutive calls by using an adjustment file. (See the documentation.)
 
  XBT
  * Kill the setset data container: MC don't use it anymore.
