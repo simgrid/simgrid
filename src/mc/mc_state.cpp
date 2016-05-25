@@ -181,7 +181,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
       state->transition.argument, sizeof(remote_comm));
     mc_model_checker->process().read(state->internal_comm, remote(
       static_cast<simgrid::simix::Comm*>(remote_comm)));
-    simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
+    simcall_comm_wait__set__comm(&state->internal_req, state->internal_comm.getBuffer());
     simcall_comm_wait__set__timeout(&state->internal_req, 0);
     break;
   }
@@ -199,7 +199,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         static_cast<simgrid::simix::Comm*>(remote_comm)));
     }
 
-    simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
+    simcall_comm_test__set__comm(&state->internal_req, state->internal_comm.getBuffer());
     simcall_comm_test__set__result(&state->internal_req, state->transition.argument);
     break;
 
@@ -207,16 +207,16 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     state->internal_req = *req;
     mc_model_checker->process().read_bytes(&state->internal_comm ,
       sizeof(state->internal_comm), remote(simcall_comm_wait__get__comm(req)));
-    simcall_comm_wait__set__comm(&state->executed_req, &state->internal_comm);
-    simcall_comm_wait__set__comm(&state->internal_req, &state->internal_comm);
+    simcall_comm_wait__set__comm(&state->executed_req, state->internal_comm.getBuffer());
+    simcall_comm_wait__set__comm(&state->internal_req, state->internal_comm.getBuffer());
     break;
 
   case SIMCALL_COMM_TEST:
     state->internal_req = *req;
     mc_model_checker->process().read_bytes(&state->internal_comm,
       sizeof(state->internal_comm), remote(simcall_comm_test__get__comm(req)));
-    simcall_comm_test__set__comm(&state->executed_req, &state->internal_comm);
-    simcall_comm_test__set__comm(&state->internal_req, &state->internal_comm);
+    simcall_comm_test__set__comm(&state->executed_req, state->internal_comm.getBuffer());
+    simcall_comm_test__set__comm(&state->internal_req, state->internal_comm.getBuffer());
     break;
 
   default:
