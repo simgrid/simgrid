@@ -88,10 +88,8 @@ public:
       string_data::data[string_data::len] = '\0';
     }
   }
-  string() : string (nullptr, 0) {}
-  string(const char* s)
-    : string(s, s == nullptr ? 0 : strlen(s))
-  {}
+  string() : string (const_cast<char*>(&NUL), 0) {}
+  string(const char* s) : string(s, strlen(s)) {}
   string(string const& s) : string(s.c_str(), s.size()) {}
   string(string&& s)
   {
@@ -105,15 +103,15 @@ public:
   // Assign
   void assign(const char* s, size_t size)
   {
-    if (string_data::data != &NUL)
+    if (string_data::data != &NUL) {
       std::free(string_data::data);
-    if (size == 0) {
-      string_data::len = 0;
       string_data::data = nullptr;
-    } else {
+      string_data::len = 0;
+    }
+    if (size != 0) {
       string_data::len = size;
       string_data::data = (char*) std::malloc(string_data::len + 1);
-      memcpy(string_data::data, s, string_data::len);
+      std::memcpy(string_data::data, s, string_data::len);
       string_data::data[string_data::len] = '\0';
     }
   }
@@ -121,7 +119,7 @@ public:
   // Copy
   string& operator=(const char* s)
   {
-    assign(s, s == nullptr ? 0 : std::strlen(s));
+    assign(s, std::strlen(s));
     return *this;
   }
   string& operator=(string const& s)
@@ -185,7 +183,7 @@ public:
   void clear()
   {
     string_data::len = 0;
-    string_data::data = (char*) &NUL;
+    string_data::data = const_cast<char*>(&NUL);
   }
 
   bool equals(const char* data, std::size_t len) const
