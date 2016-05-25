@@ -9,48 +9,17 @@
 import re
 import glob
 
-types = [
-    ('char', 'c'),
-    ('const char*', 'cc'),
-    ('int', 'i'),
-    ('long', 'l'),
-    ('unsigned char', 'uc'),
-    ('unsigned short', 'us'),
-    ('unsigned int', 'ui'),
-    ('unsigned long', 'ul'),
-    ('float', 'f'),
-    ('double', 'd'),
-    ('void*', 'dp'),
-    ('FPtr', 'fp'),
-    ('const void*', 'cp'),
-    ('size_t', 'sz'),
-    ('sg_size_t', 'sgsz'),
-    ('sg_offset_t', 'sgoff'),
-    ('void', ''),
-    ('void*', 'dp'),
-    ('FPtr', 'fp'),
-    ]
-
-
 class Arg(object):
-    simcall_types = {k: v for k, v in types}
 
-    def __init__(self, name, type, casted=None):
+    def __init__(self, name, type):
         self.name = name
         self.type = type
-        self.casted = casted
-        assert type in self.simcall_types, '%s not in (%s)' % (
-            type, ', '.join(self.simcall_types.keys()))
 
     def field(self):
         return self.simcall_types[self.type]
 
     def rettype(self):
-        return '%s' % self.casted if self.casted else self.type
-
-    def cast(self):
-        return '(%s)' % self.casted if self.casted else ''
-
+        return self.type
 
 class Simcall(object):
     simcalls_BODY = None
@@ -208,10 +177,10 @@ def parse(fn):
         assert (handler == 'H' or handler == '-'), "Invalid need_handler indication: '%s'. Faulty line:\n%s\n" % (
             handler, line)
         sargs = []
-        for n, t, c in re.findall(r'\((.*?), *(.*?)(?:, *(.*?))?\)', args):
-            sargs.append(Arg(n, t, c))
+        for n, t in re.findall(r'\((.*?), *(.*?)\)', args):
+            sargs.append(Arg(n, t))
         sim = Simcall(name, handler == 'H',
-                      Arg('result', rest, resc), sargs, ans)
+                      Arg('result', rest), sargs, ans)
         if resdi is None:
             simcalls.append(sim)
         else:
