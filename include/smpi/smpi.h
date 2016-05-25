@@ -14,8 +14,6 @@
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
 
-#include "src/instr/instr_smpi.h"
-
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
   type name args; \
@@ -812,12 +810,17 @@ XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp (void);
 XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line, int iters, double threshold);
 XBT_PUBLIC(int) smpi_sample_2(int global, const char *file, int line);
 XBT_PUBLIC(void) smpi_sample_3(int global, const char *file, int line);
+
+/** 
+ * Functions for call location tracing. These functions will be
+ * called from the user's application! (With the __FILE__ and __LINE__ values
+ * passed as parameters.)
+ */
 XBT_PUBLIC(void) smpi_trace_set_call_location(const char *file, int line);
 /** Fortran binding **/
 XBT_PUBLIC(void) smpi_trace_set_call_location_(const char *file, int* line);
 /** Fortran binding + -fsecond-underscore **/
 XBT_PUBLIC(void) smpi_trace_set_call_location__(const char *file, int* line);
-XBT_PUBLIC(smpi_trace_call_location_t*) smpi_process_get_call_location(void);
 
 #define SMPI_SAMPLE_LOCAL(iters,thres) for(smpi_sample_1(0, __FILE__, __LINE__, iters, thres); \
                                            smpi_sample_2(0, __FILE__, __LINE__);      \
