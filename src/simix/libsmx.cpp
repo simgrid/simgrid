@@ -377,9 +377,14 @@ smx_process_t simcall_process_create(const char *name,
 {
   if (name == nullptr)
     name = "";
-  return (smx_process_t) simcall_BODY_process_create(name, code, data, hostname,
-                              kill_time, argc, argv, properties,
-                              auto_restart);
+  auto wrapped_code = simgrid::simix::wrap_main(code, argc, argv);
+  for (int i = 0; i != argc; ++i)
+    xbt_free(argv[i]);
+  xbt_free(argv);
+  smx_process_t res = simcall_process_create(name,
+    std::move(wrapped_code),
+    data, hostname, kill_time, properties, auto_restart);
+  return res;
 }
 
 /**

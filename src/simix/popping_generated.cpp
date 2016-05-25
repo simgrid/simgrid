@@ -28,7 +28,6 @@ const char* simcall_names[] = {
   "SIMCALL_VM_SHUTDOWN",
   "SIMCALL_VM_SAVE",
   "SIMCALL_VM_RESTORE",
-  "SIMCALL_PROCESS_CREATE",
   "SIMCALL_PROCESS_KILL",
   "SIMCALL_PROCESS_KILLALL",
   "SIMCALL_PROCESS_CLEANUP",
@@ -126,11 +125,6 @@ case SIMCALL_VM_SAVE:
 
 case SIMCALL_VM_RESTORE:
        simcall_HANDLER_vm_restore(simcall , (sg_host_t) simcall->args[0].dp);
-      SIMIX_simcall_answer(simcall);
-      break;  
-
-case SIMCALL_PROCESS_CREATE:
-      simcall->result.dp = simcall_HANDLER_process_create(simcall ,  simcall->args[0].cc, (xbt_main_func_t) simcall->args[1].fp,  simcall->args[2].dp,  simcall->args[3].cc,  simcall->args[4].d,  simcall->args[5].i, (char**) simcall->args[6].dp, (xbt_dict_t) simcall->args[7].dp,  simcall->args[8].i);
       SIMIX_simcall_answer(simcall);
       break;  
 
