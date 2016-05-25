@@ -202,21 +202,6 @@ void SIMIX_process_stop(smx_process_t arg) {
   arg->context->stop();
 }
 
-void* simcall_HANDLER_process_create(
-  smx_simcall_t simcall, const char *name, xbt_main_func_t code,
-  void *data, const char *hostname, double kill_time,
-  int argc, char **argv, xbt_dict_t properties,
-  int auto_restart)
-{
-  void* res = SIMIX_process_create(
-    name, simgrid::simix::wrap_main(code, argc, argv), data, hostname,
-    kill_time, properties, auto_restart, simcall->issuer);
-  for (int i = 0; i != argc; ++i)
-    xbt_free(argv[i]);
-  xbt_free(argv);
-  return res;
-}
-
 /**
  * \brief Internal function to create a process.
  *
