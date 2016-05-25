@@ -822,6 +822,7 @@ set(DOC_SOURCES
   doc/doxygen/outcomes_MC.doc  
   doc/doxygen/outcomes_vizu.doc  
   doc/doxygen/platform.doc
+  doc/doxygen/platform_lua.doc
   doc/doxygen/scenario.doc
   doc/doxygen/stylesheet.css
   doc/doxygen/uhood.doc

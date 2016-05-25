@@ -232,16 +232,4 @@ If you want to make this change permanent on your machine, edit your
 `/etc/sysctl.conf` file. Otherwise, you have to redo it by calling
 sysctl after each reboot.
 
-\section bindings_binding_lua Lua Binding
-
-\subsection bindings_binding_lua_about What is lua ?
-Lua is a lightweight, reflective, imperative and functional programming language,
- designed as a scripting language with extensible semantics as a primary goal (see official web site <a href="http://www.lua.org">here</a>).
-\subsubsection bindings_binding_lua_why Why lua ?
-Lua is a fast, portable and powerful script language, quite simple to use for developpers.
-it combines procedural features with powerful data description facilities,
- by using a simple, yet powerful, mechanism of tables.
-Lua has a relatively simple C API compared to other scripting languages,
-and accordingly it provides a robust, easy to use it.
-
  */
