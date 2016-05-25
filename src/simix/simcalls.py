@@ -9,13 +9,31 @@
 import re
 import glob
 
-types = [(
-    'TCHAR', 'char', 'c'), ('TSTRING', 'const char*', 'cc'), ('TINT', 'int', 'i'), ('TLONG', 'long', 'l'), ('TUCHAR', 'unsigned char', 'uc'), ('TUSHORT', 'unsigned short', 'us'), ('TUINT', 'unsigned int', 'ui'), ('TULONG', 'unsigned long', 'ul'), ('TFLOAT', 'float', 'f'),
-    ('TDOUBLE', 'double', 'd'), ('TDPTR', 'void*', 'dp'), ('TFPTR', 'FPtr', 'fp'), ('TCPTR', 'const void*', 'cp'), ('TSIZE', 'size_t', 'sz'), ('TSGSIZE', 'sg_size_t', 'sgsz'), ('TSGOFF', 'sg_offset_t', 'sgoff'), ('TVOID', 'void', ''), ('TDSPEC', 'void*', 'dp'), ('TFSPEC', 'FPtr', 'fp')]
+types = [
+    ('char', 'c'),
+    ('const char*', 'cc'),
+    ('int', 'i'),
+    ('long', 'l'),
+    ('unsigned char', 'uc'),
+    ('unsigned short', 'us'),
+    ('unsigned int', 'ui'),
+    ('unsigned long', 'ul'),
+    ('float', 'f'),
+    ('double', 'd'),
+    ('void*', 'dp'),
+    ('FPtr', 'fp'),
+    ('const void*', 'cp'),
+    ('size_t', 'sz'),
+    ('sg_size_t', 'sgsz'),
+    ('sg_offset_t', 'sgoff'),
+    ('void', ''),
+    ('void*', 'dp'),
+    ('FPtr', 'fp'),
+    ]
 
 
 class Arg(object):
-    simcall_types = {k: v for _, k, v in types}
+    simcall_types = {k: v for k, v in types}
 
     def __init__(self, name, type, casted=None):
         self.name = name
