@@ -63,8 +63,7 @@ if(enable_maintainer_mode AND NOT WIN32)
   )
   
   SET_DIRECTORY_PROPERTIES(PROPERTIES ADDITIONAL_MAKE_CLEAN_FILES
-    "${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h"
-    "${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h"
+    "${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces.h;${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_extended_traces_fortran.h"
   )
 endif()
 
