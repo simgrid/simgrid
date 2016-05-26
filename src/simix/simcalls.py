@@ -169,13 +169,9 @@ def parse(fn):
         if line.startswith('#') or not line:
             continue
         match = re.match(
-            r'^(Proc|Func|Blck)\s*([H-])\s*(\S*)\s*(\S*)\s*\(*([^\(\)]*)\)\s*;?$', line)
+            r'^(\S*)\s*(\S*)\s*\(*([^\(\)]*)\)\s*(\[\[.*\]\])?\s*;\s*?$', line)
         assert match, line
-        ans, handler, ret, name, args = match.groups()
-        assert (ans == 'Proc' or ans == 'Func' or ans == 'Blck'), "Invalid call type: '%s'. Faulty line:\n%s\n" % (
-            ans, line)
-        assert (handler == 'H' or handler == '-'), "Invalid need_handler indication: '%s'. Faulty line:\n%s\n" % (
-            handler, line)
+        ret, name, args, attrs = match.groups()
         sargs = []
         if not re.match("^\s*$", args):
             for arg in re.split(",", args):
@@ -185,8 +181,21 @@ def parse(fn):
                 t = t.strip()
                 n = n.strip()
                 sargs.append(Arg(n, t))
-        sim = Simcall(name, handler == 'H',
-                      Arg('result', ret), sargs, ans)
+        if ret == "void":
+            ans = "Proc"
+        else:
+            ans = "Func"
+        handler = True
+        if attrs:
+            attrs = attrs[2:-2]
+            for attr in re.split(",", attrs):
+                if attr == "block":
+                    ans = "Blck"
+                elif attr == "nohandler":
+                    handler = False
+                else:
+                    assert False, "Unknown attribute %s in: %s" % (attr, line)
+        sim = Simcall(name, handler, Arg('result', ret), sargs, ans)
         if resdi is None:
             simcalls.append(sim)
         else:
