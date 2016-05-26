@@ -43,7 +43,7 @@ class Simcall(object):
             print '# ERROR: No function calling simcall_BODY_%s' % self.name
             print '# Add something like this to libsmx.c:'
             print '%s simcall_%s(%s) {' % (self.res.rettype(), self.name, ', '.join('%s %s' % (arg.rettype(), arg.name) for arg in self.args))
-            print '  return simcall_BODY_%s(%s);' % (self.name)
+            print '  return simcall_BODY_%s(%s);' % (self.name, "...")
             print '}'
             return False
 
@@ -169,18 +169,24 @@ def parse(fn):
         if line.startswith('#') or not line:
             continue
         match = re.match(
-            r'(\S*?) *(\S*?) *(\S*?) *\((.*?)(?:, *(.*?))?\) *(.*)', line)
+            r'^(Proc|Func|Blck)\s*([H-])\s*(\S*)\s*(\S*)\s*\(*([^\(\)]*)\)\s*;?$', line)
         assert match, line
-        ans, handler, name, rest, resc, args = match.groups()
+        ans, handler, ret, name, args = match.groups()
         assert (ans == 'Proc' or ans == 'Func' or ans == 'Blck'), "Invalid call type: '%s'. Faulty line:\n%s\n" % (
             ans, line)
         assert (handler == 'H' or handler == '-'), "Invalid need_handler indication: '%s'. Faulty line:\n%s\n" % (
             handler, line)
         sargs = []
-        for n, t in re.findall(r'\((.*?), *(.*?)\)', args):
-            sargs.append(Arg(n, t))
+        if not re.match("^\s*$", args):
+            for arg in re.split(",", args):
+                args = args.strip()
+                match = re.match("^(.*?)\s*?(\S+)$", arg)
+                t, n = match.groups()
+                t = t.strip()
+                n = n.strip()
+                sargs.append(Arg(n, t))
         sim = Simcall(name, handler == 'H',
-                      Arg('result', rest), sargs, ans)
+                      Arg('result', ret), sargs, ans)
         if resdi is None:
             simcalls.append(sim)
         else:
