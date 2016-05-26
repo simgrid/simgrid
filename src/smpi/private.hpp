@@ -1,3 +1,8 @@
+/* Copyright (c) 2016. The SimGrid Team. All rights reserved.               */
+
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
+
 #ifndef SMPI_PRIVATE_HPP
 #define SMPI_PRIVATE_HPP
 
@@ -11,10 +16,8 @@ XBT_PRIVATE int smpi_process_event_set(void);
 #endif
 
 extern std::map<std::string, double> location2speedup;
-#endif
 
-/** 
- * \brief Returns the last call location (filename, linenumber). Process-specific.
- */
+/** @brief Returns the last call location (filename, linenumber). Process-specific. */
 XBT_PUBLIC(smpi_trace_call_location_t*) smpi_process_get_call_location(void);
 XBT_PUBLIC(smpi_trace_call_location_t*) smpi_trace_get_call_location();
+#endif
