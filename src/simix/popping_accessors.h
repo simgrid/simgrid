@@ -1143,11 +1143,11 @@ static inline void simcall_set_category__set__category(smx_simcall_t simcall, co
     simgrid::simix::marshal<const char*>(simcall->args[1], arg);
 }
 
-static inline void* simcall_run_kernel__get__code(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<void*>(simcall->args[0]);
+static inline std::function<void()> const* simcall_run_kernel__get__code(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<std::function<void()> const*>(simcall->args[0]);
 }
-static inline void simcall_run_kernel__set__code(smx_simcall_t simcall, void* arg) {
-    simgrid::simix::marshal<void*>(simcall->args[0], arg);
+static inline void simcall_run_kernel__set__code(smx_simcall_t simcall, std::function<void()> const* arg) {
+    simgrid::simix::marshal<std::function<void()> const*>(simcall->args[0], arg);
 }
 
 /* The prototype of all simcall handlers, automatically generated for you */

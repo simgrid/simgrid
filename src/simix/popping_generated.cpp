@@ -420,7 +420,7 @@ case SIMCALL_SET_CATEGORY:
       break;
 
 case SIMCALL_RUN_KERNEL:
-      SIMIX_run_kernel(simgrid::simix::unmarshal<void*>(simcall->args[0]));
+      SIMIX_run_kernel(simgrid::simix::unmarshal<std::function<void()> const*>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
       break;
     case NUM_SIMCALLS:

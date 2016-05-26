@@ -13,6 +13,7 @@
  * That's not about http://en.wikipedia.org/wiki/Poop, despite the odor :)
  */
 
+#include <functional>
 #include "smx_private.h"
 #include "src/mc/mc_forward.hpp"
 #include "xbt/ex.h"
@@ -436,8 +437,8 @@ inline static void simcall_BODY_set_category(smx_synchro_t synchro, const char* 
     return simcall<void, smx_synchro_t, const char*>(SIMCALL_SET_CATEGORY, synchro, category);
   }
   
-inline static void simcall_BODY_run_kernel(void* code) {
+inline static void simcall_BODY_run_kernel(std::function<void()> const* code) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) SIMIX_run_kernel(code);
-    return simcall<void, void*>(SIMCALL_RUN_KERNEL, code);
+    return simcall<void, std::function<void()> const*>(SIMCALL_RUN_KERNEL, code);
   }/** @endcond */

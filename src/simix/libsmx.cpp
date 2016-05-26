@@ -1126,7 +1126,7 @@ xbt_dict_t simcall_storage_get_content(smx_storage_t storage)
 
 void simcall_run_kernel(std::function<void()> const& code)
 {
-  return simcall_BODY_run_kernel((void*) &code);
+  return simcall_BODY_run_kernel(&code);
 }
 
 int simcall_mc_random(int min, int max) {

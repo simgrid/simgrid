@@ -171,7 +171,7 @@ def parse(fn):
         if line.startswith('#') or not line:
             continue
         match = re.match(
-            r'^(\S+)\s+([^\)\(\s]+)\s*\(*([^\(\)]*)\)\s*(\[\[.*\]\])?\s*;\s*?$', line)
+            r'^(\S+)\s+([^\)\(\s]+)\s*\(*(.*)\)\s*(\[\[.*\]\])?\s*;\s*?$', line)
         assert match, line
         ret, name, args, attrs = match.groups()
         sargs = []
@@ -344,6 +344,7 @@ if __name__ == '__main__':
     # smx_popping_bodies.cpp
     #
     fd = header('popping_bodies.cpp')
+    fd.write('#include <functional>\n')
     fd.write('#include "smx_private.h"\n')
     fd.write('#include "src/mc/mc_forward.hpp"\n')
     fd.write('#include "xbt/ex.h"\n')
