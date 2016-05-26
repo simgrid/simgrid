@@ -26,7 +26,6 @@
 #endif
 
 #if TRACE_CALL_LOCATION
-//#include "src/instr/instr_smpi.h"
 #include <smpi/smpi_extended_traces.h>
 #endif
 
