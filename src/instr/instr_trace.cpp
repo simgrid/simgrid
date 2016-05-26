@@ -6,6 +6,7 @@
 
 #include "src/instr/instr_private.h"
 #include "src/instr/instr_smpi.h"
+#include "src/smpi/private.hpp"
 #include "xbt/virtu.h" /* sg_cmdline */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");

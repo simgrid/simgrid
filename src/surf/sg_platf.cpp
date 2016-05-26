@@ -9,6 +9,7 @@
 #include "xbt/str.h"
 #include "xbt/dict.h"
 #include "xbt/RngStream.h"
+#include <xbt/functional.hpp>
 #include <xbt/signal.hpp>
 #include "src/surf/HostImpl.hpp"
 #include "surf/surf.h"
@@ -572,7 +573,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   double kill_time  = process->kill_time;
   int auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
 
-  std::function<void()> code = simgrid::simix::wrap_main(parse_code, process->argc, process->argv);
+  std::function<void()> code = simgrid::xbt::wrapMain(parse_code, process->argc, process->argv);
 
   smx_process_arg_t arg = NULL;
   smx_process_t process_created = NULL;

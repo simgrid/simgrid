@@ -3,31 +3,21 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-# CallType handler? name (resulttype,resultcast) (arg0name,arg0type,arg0cast) (arg1name,arg1type,arg1cast)
-
-# CallType must be one of the three:
+# The simcalls are given as C-like signatures (one per line):
 #
-#  - Func: returning a value immediately (within the same scheduling round)
-#    examples: all getters that only retrieve information with no side effect
+# int foo(int x, int y);
+# int foo(int x, int y) [[block]];
+# int foo(int x, int y) [[nohandler]];
+# int foo(int x, int y) [[block, nohandler]];
 #
-#  - Proc: not returning any value (but doing so immediately) 
-#    examples: all setters, *_cancel 
+# The `block` attribut is used for calls which do not return in the same
+# scheduling round. The answer requires some interaction with SURF,
+# even if this can still occure at the same timestamp under some
+# circonstances (eg if the surf_action cannot start because of resources
+# that are down) examples: things that last some time (communicate, execute,
+# mutex_lock).
 #
-#  - Blck: Blocking call that does not return in the same scheduling round.
-#    The answer requires some interaction with SURF, even if this can
-#    still occure at the same timestamp under some circonstances (eg
-#    if the surf_action cannot start because of resources that are down)
-#    examples: things that last some time (communicate, execute, mutex_lock)
-#
-#    In a perfect world, these answers would also be handled by the
-#    script, but we are not there yet. Instead, the answer is manually
-#    generated in one of the SIMIX_post_*() functions, that are called
-#    when we unpack the done and failed actions returned by surf after
-#    a surf simulation round. Weird things happen if you forget to
-#    answer a given simcall in there...
-
-# Handler? is either "H" if we need to generate a handler or "-" if we should go without handlers
-
+# The `nohandler` is used to disable handlers.
 # I wish we could completely remove the handlers as their only use is
 # to adapt the interface between the exported symbol that is visible
 # by the user applications and the internal symbol that is implemented 
@@ -46,83 +36,83 @@
 # ./include/simgrid/simix.h (otherwise you will get a warning at the
 # compilation time)
 
-Proc H vm_suspend (void) (ind_vm, void*, sg_host_t)
-Proc H vm_resume (void) (ind_vm, void*, sg_host_t)
-Proc H vm_shutdown (void) (ind_vm, void*, sg_host_t)
-Proc H vm_save (void) (ind_vm, void*, sg_host_t)
-Proc H vm_restore (void) (ind_vm, void*, sg_host_t)
+void vm_suspend(sg_host_t ind_vm);
+void vm_resume(sg_host_t ind_vm);
+void vm_shutdown(sg_host_t ind_vm);
+void vm_save(sg_host_t ind_vm);
+void vm_restore(sg_host_t ind_vm);
 
-Proc H process_kill (void) (process, void*, smx_process_t)
-Proc H process_killall (void) (reset_pid, int)
-Proc - process_cleanup (void) (process, void*, smx_process_t)
-Blck H process_suspend (void) (process, void*, smx_process_t)
-Proc H process_resume (void) (process, void*, smx_process_t)
-Proc H process_set_host (void) (process, void*, smx_process_t) (dest, void*, sg_host_t)
-Func - process_is_suspended (int) (process, void*, smx_process_t)
-Blck H process_join (int) (process, void*, smx_process_t) (timeout, double)
-Blck H process_sleep (int) (duration, double)
+void process_kill(smx_process_t process);
+void process_killall(int reset_pid);
+void process_cleanup(smx_process_t process) [[nohandler]];
+void process_suspend(smx_process_t process) [[block]];
+void process_resume(smx_process_t process);
+void process_set_host(smx_process_t process, sg_host_t dest);
+int  process_is_suspended(smx_process_t process) [[nohandler]];
+int  process_join(smx_process_t process, double timeout) [[block]];
+int  process_sleep(double duration) [[block]];
 
-Func H execution_start (void*, smx_synchro_t) (name, const char*) (flops_amount, double) (priority, double) (bound, double) (affinity_mask, unsigned long)
-Func - execution_parallel_start (void*, smx_synchro_t) (name, const char*) (host_nb, int) (host_list, void*, sg_host_t*) (flops_amount, void*, double*) (bytes_amount, void*, double*) (amount, double) (rate, double)
-Proc - execution_cancel (void) (execution, void*, smx_synchro_t)
-Proc - execution_set_priority (void) (execution, void*, smx_synchro_t) (priority, double)
-Proc - execution_set_bound (void) (execution, void*, smx_synchro_t) (bound, double)
-Proc - execution_set_affinity (void) (execution, void*, smx_synchro_t) (ws, void*, sg_host_t) (mask, unsigned long)
-Blck H execution_wait (int) (execution, void*, smx_synchro_t)
+smx_synchro_t execution_start(const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask);
+smx_synchro_t execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) [[nohandler]];
+void          execution_cancel(smx_synchro_t execution) [[nohandler]];
+void          execution_set_priority(smx_synchro_t execution, double priority) [[nohandler]];
+void          execution_set_bound(smx_synchro_t execution, double bound) [[nohandler]];
+void          execution_set_affinity(smx_synchro_t execution, sg_host_t ws, unsigned long mask) [[nohandler]];
+int           execution_wait(smx_synchro_t execution) [[block]];
 
-Proc - process_on_exit (void) (process, void*, smx_process_t) (fun, FPtr, int_f_pvoid_pvoid_t) (data, void*)
-Proc - process_auto_restart_set (void) (process, void*, smx_process_t) (auto_restart, int)
-Func H process_restart (void*, smx_process_t) (process, void*, smx_process_t)
+void          process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void* data) [[nohandler]];
+void          process_auto_restart_set(smx_process_t process, int auto_restart) [[nohandler]];
+smx_process_t process_restart(smx_process_t process);
 
-Func - mbox_create (void*, smx_mailbox_t) (name, const char*)
-Proc - mbox_set_receiver (void) (mbox, void*, smx_mailbox_t) (receiver, void*, smx_process_t)
+smx_mailbox_t mbox_create(const char* name) [[nohandler]];
+void          mbox_set_receiver(smx_mailbox_t mbox, smx_process_t receiver) [[nohandler]];
 
-Func H comm_iprobe (void*, smx_synchro_t) (mbox, void*, smx_mailbox_t) (type, int) (src, int) (tag, int) (match_fun, FPtr, simix_match_func_t) (data, void*)
-Blck H comm_send (void)                  (sender, void*, smx_process_t) (mbox, void*, smx_mailbox_t)  (task_size, double) (rate, double) (src_buff, void*) (src_buff_size, size_t) (match_fun, FPtr, simix_match_func_t) (copy_data_fun, FPtr, simix_copy_data_func_t) (data, void*) (timeout, double)
-Func H comm_isend (void*, smx_synchro_t) (sender, void*, smx_process_t) (mbox, void*, smx_mailbox_t) (task_size, double) (rate, double) (src_buff, void*) (src_buff_size, size_t) (match_fun, FPtr, simix_match_func_t) (clean_fun, FPtr, simix_clean_func_t) (copy_data_fun, FPtr, simix_copy_data_func_t) (data, void*) (detached, int)
-Blck H comm_recv (void)                  (receiver, void*, smx_process_t) (mbox, void*, smx_mailbox_t) (dst_buff, void*) (dst_buff_size, void*, size_t*) (match_fun, FPtr, simix_match_func_t) (copy_data_fun, FPtr, simix_copy_data_func_t) (data, void*) (timeout, double) (rate, double)
-Func H comm_irecv (void*, smx_synchro_t) (receiver, void*, smx_process_t) (mbox, void*, smx_mailbox_t) (dst_buff, void*) (dst_buff_size, void*, size_t*) (match_fun, FPtr, simix_match_func_t) (copy_data_fun, FPtr, simix_copy_data_func_t) (data, void*) (rate, double)
-Blck H comm_waitany (int) (comms, void*, xbt_dynar_t)
-Blck H comm_wait (void) (comm, void*, smx_synchro_t) (timeout, double)
-Blck H comm_test (int) (comm, void*, smx_synchro_t)
-Blck H comm_testany (int) (comms, void*, xbt_dynar_t)
+smx_synchro_t comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag, simix_match_func_t match_fun, void* data);
+void          comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) [[block]];
+smx_synchro_t comm_isend(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
+void          comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate) [[block]];
+smx_synchro_t comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
+int           comm_waitany(xbt_dynar_t comms) [[block]];
+void          comm_wait(smx_synchro_t comm, double timeout) [[block]];
+int           comm_test(smx_synchro_t comm) [[block]];
+int           comm_testany(xbt_dynar_t comms) [[block]];
 
-Func H mutex_init (void*, smx_mutex_t)
-Blck H mutex_lock (void) (mutex, void*, smx_mutex_t)
-Func H mutex_trylock (int) (mutex, void*, smx_mutex_t)
-Proc H mutex_unlock (void) (mutex, void*, smx_mutex_t)
+smx_mutex_t mutex_init();
+void        mutex_lock(smx_mutex_t mutex) [[block]];
+int         mutex_trylock(smx_mutex_t mutex);
+void        mutex_unlock(smx_mutex_t mutex);
 
-Func - cond_init (void*, smx_cond_t)
-Proc - cond_signal (void) (cond, void*, smx_cond_t)
-Blck H cond_wait (void) (cond, void*, smx_cond_t) (mutex, void*, smx_mutex_t)
-Blck H cond_wait_timeout (void) (cond, void*, smx_cond_t) (mutex, void*, smx_mutex_t) (timeout, double)
-Proc - cond_broadcast (void) (cond, void*, smx_cond_t)
+smx_cond_t cond_init() [[nohandler]];
+void       cond_signal(smx_cond_t cond) [[nohandler]];
+void       cond_wait(smx_cond_t cond, smx_mutex_t mutex) [[block]];
+void       cond_wait_timeout(smx_cond_t cond, smx_mutex_t mutex, double timeout) [[block]];
+void       cond_broadcast(smx_cond_t cond) [[nohandler]];
 
-Func - sem_init (void*, smx_sem_t) (capacity, unsigned int)
-Proc H sem_release (void) (sem, void*, smx_sem_t)
-Func H sem_would_block (int) (sem, void*, smx_sem_t)
-Blck H sem_acquire (void) (sem, void*, smx_sem_t)
-Blck H sem_acquire_timeout (void) (sem, void*, smx_sem_t) (timeout, double)
-Func H sem_get_capacity (int) (sem, void*, smx_sem_t)
+smx_sem_t sem_init(unsigned int capacity) [[nohandler]];
+void      sem_release(smx_sem_t sem);
+int       sem_would_block(smx_sem_t sem);
+void      sem_acquire(smx_sem_t sem) [[block]];
+void      sem_acquire_timeout(smx_sem_t sem, double timeout) [[block]];
+int       sem_get_capacity(smx_sem_t sem);
 
-Blck H file_read (sg_size_t) (fd, void*, smx_file_t) (size, sg_size_t) (host, void*, sg_host_t)
-Blck H file_write (sg_size_t) (fd, void*, smx_file_t) (size, sg_size_t) (host, void*, sg_host_t)
-Blck H file_open (void*, smx_file_t) (fullpath, const char*) (host, void*, sg_host_t)
-Blck H file_close (int) (fd, void*, smx_file_t) (host, void*, sg_host_t)
-Func - file_unlink (int) (fd, void*, smx_file_t) (host, void*, sg_host_t)
-Func H file_get_size (sg_size_t) (fd, void*, smx_file_t)
-Func H file_tell (sg_size_t) (fd, void*, smx_file_t)
-Func H file_seek (int) (fd, void*, smx_file_t) (offset, sg_offset_t) (origin, int)
-Func H file_get_info (void*, xbt_dynar_t) (fd, void*, smx_file_t)
-Func H file_move (int) (fd, void*, smx_file_t) (fullpath, const char*)
+sg_size_t   file_read(smx_file_t fd, sg_size_t size, sg_host_t host) [[block]];
+sg_size_t   file_write(smx_file_t fd, sg_size_t size, sg_host_t host) [[block]];
+smx_file_t  file_open(const char* fullpath, sg_host_t host) [[block]];
+int         file_close(smx_file_t fd, sg_host_t host) [[block]];
+int         file_unlink(smx_file_t fd, sg_host_t host) [[nohandler]];
+sg_size_t   file_get_size(smx_file_t fd);
+sg_size_t   file_tell(smx_file_t fd);
+int         file_seek(smx_file_t fd, sg_offset_t offset, int origin);
+xbt_dynar_t file_get_info(smx_file_t fd);
+int         file_move(smx_file_t fd, const char* fullpath);
 
-Func H storage_get_free_size (sg_size_t) (storage, void*, smx_storage_t)
-Func H storage_get_used_size (sg_size_t) (name, void*, smx_storage_t)
-Func - storage_get_properties (void*, xbt_dict_t) (storage, void*, smx_storage_t)
-Func - storage_get_content (void*, xbt_dict_t) (storage, void*, smx_storage_t)
+sg_size_t  storage_get_free_size(smx_storage_t storage);
+sg_size_t  storage_get_used_size(smx_storage_t name);
+xbt_dict_t storage_get_properties(smx_storage_t storage) [[nohandler]];
+xbt_dict_t storage_get_content(smx_storage_t storage) [[nohandler]];
 
-Func H asr_get_properties (void*, xbt_dict_t) (name, const char*)
-Func H mc_random (int) (min, int) (max, int)
-Proc - set_category (void) (synchro, void*, smx_synchro_t) (category, const char*)
+xbt_dict_t asr_get_properties(const char* name);
+int        mc_random(int min, int max);
+void       set_category(smx_synchro_t synchro, const char* category) [[nohandler]];
 
-Proc - run_kernel (void) (code, void*)
+void       run_kernel(std::function<void()> const* code) [[nohandler]];

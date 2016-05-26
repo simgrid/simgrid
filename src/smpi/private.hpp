@@ -17,3 +17,4 @@ extern std::map<std::string, double> location2speedup;
  * \brief Returns the last call location (filename, linenumber). Process-specific.
  */
 XBT_PUBLIC(smpi_trace_call_location_t*) smpi_process_get_call_location(void);
+XBT_PUBLIC(smpi_trace_call_location_t*) smpi_trace_get_call_location();

@@ -25,22 +25,18 @@ typedef void (*FPtr)(void); // Hide the ugliness
 /* Pack all possible scalar types in an union */
 union u_smx_scalar {
   char            c;
-  const char*     cc;
   short           s;
   int             i;
   long            l;
+  long long       ll;
   unsigned char   uc;
   unsigned short  us;
   unsigned int    ui;
   unsigned long   ul;
-  float           f;
+  unsigned long long ull;
   double          d;
-  size_t          sz;
-  sg_size_t       sgsz;
-  sg_offset_t     sgoff;
   void*           dp;
   FPtr            fp;
-  const void*     cp;
 };
 
 /**
@@ -57,15 +53,13 @@ typedef struct s_smx_simcall {
 #define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall)->mc_value = (value))
 #define SIMCALL_GET_MC_VALUE(simcall) ((simcall)->mc_value)
 
-#include "popping_accessors.h"
-
 /******************************** General *************************************/
 
 XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t);
 XBT_PRIVATE void SIMIX_simcall_handle(smx_simcall_t, int);
 XBT_PRIVATE void SIMIX_simcall_exit(smx_synchro_t);
 XBT_PRIVATE const char *SIMIX_simcall_name(e_smx_simcall_t kind);
-XBT_PRIVATE void SIMIX_run_kernel(void* code);
+XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
 
 SG_END_DECL()
 
@@ -74,18 +68,26 @@ SG_END_DECL()
 namespace simgrid {
 namespace simix {
 
+template<class T>
+class type {
+  constexpr bool operator==(type) const    { return true; }
+  template<class U>
+  constexpr bool operator==(type<U>) const { return false; }
+  constexpr bool operator!=(type) const    { return false; }
+  template<class U>
+  constexpr bool operator!=(type<U>) const { return true; }
+};
+
 template<typename T> struct marshal_t {};
 #define SIMIX_MARSHAL(T, field) \
-  template<> struct marshal_t<T> { \
-    static void marshal(u_smx_scalar& simcall, T value) \
-    { \
-      simcall.field = value; \
-    } \
-    static T unmarshal(u_smx_scalar const& simcall) \
-    { \
-      return simcall.field; \
-    } \
-  };
+  inline void marshal(type<T>, u_smx_scalar& simcall, T value) \
+  { \
+    simcall.field = value; \
+  } \
+  inline T unmarshal(type<T>, u_smx_scalar const& simcall) \
+  { \
+    return simcall.field; \
+  }
 
 SIMIX_MARSHAL(char, c);
 SIMIX_MARSHAL(short, s);
@@ -95,155 +97,79 @@ SIMIX_MARSHAL(unsigned char, uc);
 SIMIX_MARSHAL(unsigned short, us);
 SIMIX_MARSHAL(unsigned int, ui);
 SIMIX_MARSHAL(unsigned long, ul);
-SIMIX_MARSHAL(float, f);
+SIMIX_MARSHAL(unsigned long long, ull);
+SIMIX_MARSHAL(long long, ll);
+SIMIX_MARSHAL(float, d);
 SIMIX_MARSHAL(double, d);
 SIMIX_MARSHAL(FPtr, fp);
 
-template<typename T> struct marshal_t<T*> {
-  static void marshal(u_smx_scalar& simcall, T* value)
-  {
-    simcall.dp = value;
-  }
-  static T* unmarshal(u_smx_scalar const& simcall)
-  {
-    return simcall.dp;
-  }
-};
+inline
+void unmarshal(type<void>, u_smx_scalar const& simcall) {}
 
-template<> struct marshal_t<void> {
-  static void unmarshal(u_smx_scalar const& simcall) {}
-};
+template<class T> inline
+void marshal(type<T*>, u_smx_scalar& simcall, T* value)
+{
+  simcall.dp = (void*) value;
+}
+template<class T> inline
+T* unmarshal(type<T*>, u_smx_scalar const& simcall)
+{
+  return static_cast<T*>(simcall.dp);
+}
+
+template<class R, class... T> inline
+void marshal(type<R(*)(T...)>, u_smx_scalar& simcall, R(*value)(T...))
+{
+  simcall.fp = (FPtr) value;
+}
+template<class R, class... T> inline
+auto unmarshal(type<R(*)(T...)>, u_smx_scalar simcall) -> R(*)(T...)
+{
+  return (R(*)(T...)) simcall.fp;
+}
 
 template<class T> inline
 void marshal(u_smx_scalar& simcall, T const& value)
 {
-  marshal_t<T>::marshal(simcall, value);
+  return marshal(type<T>(), simcall, value);
 }
-
 template<class T> inline
-T unmarshal(u_smx_scalar const& simcall)
+typename std::remove_reference<T>::type unmarshal(u_smx_scalar& simcall)
 {
-  return marshal_t<T>::unmarshal(simcall);
+  return unmarshal(type<T>(), simcall);
 }
 
-template<class A> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A&& a)
+template<std::size_t I>
+inline void marshalArgs(smx_simcall_t simcall) {}
+
+template<std::size_t I, class A>
+inline void marshalArgs(smx_simcall_t simcall, A const& a)
+{
+  marshal(simcall->args[I], a);
+}
+
+template<std::size_t I, class A, class... B>
+inline void marshalArgs(smx_simcall_t simcall, A const& a, B const&... b)
+{
+  marshal(simcall->args[I], a);
+  marshalArgs<I+1>(simcall, b...);
+}
+
+/** Initialize the simcall */
+template<class... A> inline
+void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A const&... a)
 {
   simcall->call = call;
   memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-}
-
-template<class A, class B> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A&& a, B&& b)
-{
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-  marshal(simcall->args[1], std::forward<B>(b));
-}
-
-template<class A, class B, class C> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A&& a, B&& b, C&& c)
-{
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-  marshal(simcall->args[1], std::forward<B>(b));
-  marshal(simcall->args[2], std::forward<C>(c));
-}
-
-template<class A, class B, class C, class D> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A&& a, B&& b, C&& c, D&& d)
-{
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-  marshal(simcall->args[1], std::forward<B>(b));
-  marshal(simcall->args[2], std::forward<C>(c));
-  marshal(simcall->args[3], std::forward<D>(d));
-}
-
-template<class A, class B, class C, class D, class E> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call, A&& a, B&& b, C&& c, D&& d, E&& e)
-{
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-  marshal(simcall->args[1], std::forward<B>(b));
-  marshal(simcall->args[2], std::forward<C>(c));
-  marshal(simcall->args[3], std::forward<D>(d));
-  marshal(simcall->args[4], std::forward<E>(e));
-}
-
-template<class A, class B, class C, class D, class E, class F> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call,
-  A&& a, B&& b, C&& c, D&& d, E&& e, F&& f)
-{
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-  marshal(simcall->args[1], std::forward<B>(b));
-  marshal(simcall->args[2], std::forward<C>(c));
-  marshal(simcall->args[3], std::forward<D>(d));
-  marshal(simcall->args[4], std::forward<E>(e));
-  marshal(simcall->args[5], std::forward<F>(f));
-}
-
-template<class A, class B, class C, class D, class E, class F, class G> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call,
-  A&& a, B&& b, C&& c, D&& d, E&& e, F&& f, G&& g)
-{
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-  marshal(simcall->args[1], std::forward<B>(b));
-  marshal(simcall->args[2], std::forward<C>(c));
-  marshal(simcall->args[3], std::forward<D>(d));
-  marshal(simcall->args[4], std::forward<E>(e));
-  marshal(simcall->args[5], std::forward<F>(f));
-  marshal(simcall->args[6], std::forward<G>(g));
-}
-
-template<class A, class B, class C,
-          class D, class E, class F, class G, class H> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call,
-  A&& a, B&& b, C&& c, D&& d, E&& e, F&& f, G&& g, H&& h)
-{
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-  marshal(simcall->args[1], std::forward<B>(b));
-  marshal(simcall->args[2], std::forward<C>(c));
-  marshal(simcall->args[3], std::forward<D>(d));
-  marshal(simcall->args[4], std::forward<E>(e));
-  marshal(simcall->args[5], std::forward<F>(f));
-  marshal(simcall->args[6], std::forward<G>(g));
-  marshal(simcall->args[7], std::forward<H>(h));
-}
-
-template<class A, class B, class C,
-          class D, class E, class F,
-          class G, class H, class I> inline
-void marshal(smx_simcall_t simcall, e_smx_simcall_t call,
-  A&& a, B&& b, C&& c, D&& d, E&& e, F&& f, G&& g, H&& h, I&& i)
-{
-  simcall->call = call;
-  memset(&simcall->result, 0, sizeof(simcall->result));
-  marshal(simcall->args[0], std::forward<A>(a));
-  marshal(simcall->args[1], std::forward<B>(b));
-  marshal(simcall->args[2], std::forward<C>(c));
-  marshal(simcall->args[3], std::forward<D>(d));
-  marshal(simcall->args[4], std::forward<E>(e));
-  marshal(simcall->args[5], std::forward<F>(f));
-  marshal(simcall->args[6], std::forward<G>(g));
-  marshal(simcall->args[7], std::forward<H>(h));
-  marshal(simcall->args[8], std::forward<I>(i));
+  memset(simcall->args, 0, sizeof(simcall->args));
+  marshalArgs<0>(simcall, a...);
 }
 
 }
 }
 
 #endif
+
+#include "popping_accessors.h"
 
 #endif

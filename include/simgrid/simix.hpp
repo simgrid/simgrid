@@ -18,41 +18,14 @@
 #include <type_traits>
 
 #include <xbt/function_types.h>
+#include <xbt/future.hpp>
+
 #include <simgrid/simix.h>
 
 XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
 
 namespace simgrid {
 namespace simix {
-
-/** Fulfill a promise by executing a given code */
-template<class R, class F>
-void fulfill_promise(std::promise<R>& promise, F&& code)
-{
-  try {
-    promise.set_value(std::forward<F>(code)());
-  }
-  catch(...) {
-    promise.set_exception(std::current_exception());
-  }
-}
-
-/** Fulfill a promise by executing a given code
- *
- *  This is a special version for `std::promise<void>` because the default
- *  version does not compile in this case.
- */
-template<class F>
-void fulfill_promise(std::promise<void>& promise, F&& code)
-{
-  try {
-    std::forward<F>(code)();
-    promise.set_value();
-  }
-  catch(...) {
-    promise.set_exception(std::current_exception());
-  }
-}
 
 /** Execute some code in the kernel/maestro
  *
@@ -75,112 +48,9 @@ typename std::result_of<F()>::type kernel(F&& code)
   std::promise<R> promise;
   simcall_run_kernel([&]{
     xbt_assert(SIMIX_is_maestro(), "Not in maestro");
-    fulfill_promise(promise, std::forward<F>(code));
+    simgrid::xbt::fulfillPromise(promise, std::forward<F>(code));
   });
   return promise.get_future().get();
-}
-
-class args {
-private:
-  int argc_ = 0;
-  char** argv_ = nullptr;
-public:
-
-  // Main constructors
-  args() {}
-
-  void assign(int argc, const char*const* argv)
-  {
-    clear();
-    char** new_argv = xbt_new(char*,argc + 1);
-    for (int i = 0; i < argc; i++)
-      new_argv[i] = xbt_strdup(argv[i]);
-    new_argv[argc] = nullptr;
-    this->argc_ = argc;
-    this->argv_ = new_argv;
-  }
-  args(int argc, const char*const* argv)
-  {
-    this->assign(argc, argv);
-  }
-
-  char** to_argv() const
-  {
-    const int argc = argc_;
-    char** argv = xbt_new(char*, argc + 1);
-    for (int i=0; i< argc; i++)
-      argv[i] = xbt_strdup(argv_[i]);
-    argv[argc] = nullptr;
-    return argv;
-  }
-
-  // Free
-  void clear()
-  {
-    for (int i = 0; i < this->argc_; i++)
-      free(this->argv_[i]);
-    free(this->argv_);
-    this->argc_ = 0;
-    this->argv_ = nullptr;
-  }
-  ~args() { clear(); }
-
-  // Copy
-  args(args const& that)
-  {
-    this->assign(that.argc(), that.argv());
-  }
-  args& operator=(args const& that)
-  {
-    this->assign(that.argc(), that.argv());
-    return *this;
-  }
-
-  // Move:
-  args(args&& that) : argc_(that.argc_), argv_(that.argv_)
-  {
-    that.argc_ = 0;
-    that.argv_ = nullptr;
-  }
-  args& operator=(args&& that)
-  {
-    this->argc_ = that.argc_;
-    this->argv_ = that.argv_;
-    that.argc_ = 0;
-    that.argv_ = nullptr;
-    return *this;
-  }
-
-  int    argc()            const { return argc_; }
-  char** argv()                  { return argv_; }
-  const char*const* argv() const { return argv_; }
-  char* operator[](std::size_t i) { return argv_[i]; }
-};
-
-inline std::function<void()> wrap_main(
-  xbt_main_func_t code,  std::shared_ptr<simgrid::simix::args> args)
-{
-  if (code) {
-    return [=]() {
-      code(args->argc(), args->argv());
-    };
-  }
-  else return std::function<void()>();
-}
-
-inline
-std::function<void()> wrap_main(xbt_main_func_t code, simgrid::simix::args args)
-{
-  if (code)
-    return wrap_main(code, std::unique_ptr<simgrid::simix::args>(
-      new simgrid::simix::args(std::move(args))));
-  else return std::function<void()>();
-}
-
-inline
-std::function<void()> wrap_main(xbt_main_func_t code, int argc, const char*const* argv)
-{
-  return wrap_main(code, simgrid::simix::args(argc, argv));
 }
 
 class Context;
