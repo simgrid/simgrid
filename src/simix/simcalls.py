@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-# Copyright (c) 2014-2015. The SimGrid Team. All rights reserved.
+# Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -121,8 +121,10 @@ class Simcall(object):
             res.append("      simgrid::simix::marshal<%s>(simcall->result, %s);" % (self.res.rettype(), call))
         else:
             res.append("      " + call + ";");
-        res.append('      %sbreak;  \n' %
-                   ('SIMIX_simcall_answer(simcall);\n      ' if self.call_kind != 'Blck' else ' '))
+        if self.call_kind != 'Blck':
+            res.append('      SIMIX_simcall_answer(simcall);')
+        res.append('      break;')
+        res.append('')
         return '\n'.join(res)
 
     def body(self):
