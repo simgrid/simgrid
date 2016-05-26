@@ -12,6 +12,7 @@
 
 - @subpage getting_started
   - @subpage install
+  - @subpage install_yours
 - @subpage application
   - @subpage MSG_API
   - @subpage SD_API

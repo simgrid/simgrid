@@ -807,6 +807,7 @@ set(DOC_SOURCES
   doc/doxygen/inside_extending.doc
   doc/doxygen/inside_release.doc
   doc/doxygen/install.doc
+  doc/doxygen/install_yours.doc
   doc/doxygen/tutorial.doc
   doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
