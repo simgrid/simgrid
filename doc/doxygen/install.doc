@@ -179,7 +179,7 @@ In addition to the classical cmake configuration variables, SimGrid accepts seve
       will **hinder simulation speed** even when the model-checker is
       not activated at run time.
 
-  @li <b>enable_ns3</b> (ON/OFF) if you want to use ns-3. See section @ref pls_simgrid_configuration_ns3.
+  @li <b>enable_ns3</b> (ON/OFF) if you want to use ns-3. See section @ref pls_ns3.
 
   @li <b>enable_smpi</b> (ON/OFF) to run MPI code on top of SimGrid.
 

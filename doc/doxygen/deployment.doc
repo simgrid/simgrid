@@ -1,7 +1,5 @@
 /*! @page deployment Deploy the simulation
 
-@section dep_over Overview
-
 When you want to simulate the behavior of your code with SimGrid, you need
 to tell SimGrid exactly what code (that you wrote) is supposed to be run by which host - so you need to assign
 processes/functions to hosts. The hosts in question here are the hosts of your platform model; see Section @ref platform for details on how to set one up.
@@ -34,12 +32,9 @@ attributes are mandatory; however, there are some optional attributes to the pro
 | kill_time       | no        | int (Default: -1.0)    | The simulated time when this function will end to be computed. By default, it stops only when it's done.                  |
 | on_failure      | no        | DIE\|RESTART (Default: "DIE")   | What should be done when the process fails.                  |
 
-#### An example ####
+#### Examples ####
 
-A complete example including a @ref MSG_ext_ms_application "deployment file" can be found 
-in the Section @ref msg_ex_basics "MSG basics".
-
-See also files such as @c examples/msg/masterslave/deployment_masterslave.xml.
+Almost any @ref MSG_examples include a deployment file.
 
 ### The argument tag ###
 
@@ -56,12 +51,5 @@ executed by this process) in the order you declare them.
 | Attribute name  | Mandatory | Values                 | Description                                                                                                               |
 | --------------- | --------- | ---------------------- | -----------                                                                                                               |
 | value           | yes       | String                 | Contains the value for this parameter |
-
-#### An example ####
-
-A complete example including a @ref MSG_ext_ms_application "deployment file" can be found 
-in the Section @ref msg_ex_basics "MSG basics".
-
-See also files such as @c examples/msg/masterslave/deployment_masterslave.xml.
 
 */

@@ -11,16 +11,9 @@
 namespace simgrid {
 namespace surf {
 
-/** \file surf_routing_cluster_fat_tree.cpp
- *  The class AsClusterFatTree describes PGFT, as introduced by Eitan Zahavi
- * in "D-Mod-K Routing Providing Non-Blocking Traffic for Shift Permutations
- * on Real Life Fat Trees" (2010). RLFT are PGFT with some restrictions to 
- * address real world constraints, which are not currently enforced. 
- */
-
 class XBT_PRIVATE FatTreeLink;
 
-/** \brief A node in a fat tree.
+/** \brief A node in a fat tree (@ref AsClusterFatTree).
  * A FatTreeNode can either be a switch or a processing node. Switches are
  * identified by a negative ID. This class is closely related to fat
  */
@@ -62,7 +55,7 @@ public:
 
 
 
-/** \brief Link in a fat tree.
+/** \brief Link in a fat tree (@ref AsClusterFatTree).
  *
  * Represents a single, duplex link in a fat tree. This is necessary to have a tree.
  * It is equivalent to a physical link.
@@ -80,15 +73,17 @@ public:
   FatTreeNode *downNode;
 };
 
-
 /** 
  * \class AsClusterFatTree
  *
  * \brief Fat tree representation and routing.
  *
- * Generate fat trees according to the topology asked for. Almost everything
- * is based on the work of Eitan Zahavi in "D-Mod-K Routing Providing
- * Non-Blocking Traffic for Shift Permutations on Real Life Fat Trees" (2010).
+ * Generate fat trees according to the topology asked for, according to:
+ * Eitan Zahavi, D-Mod-K Routing Providing Non-Blocking Traffic for Shift
+ * Permutations on Real Life Fat Trees (2010).
+ *
+ * RLFT are PGFT with some restrictions to address real world constraints,
+ * which are not currently enforced.
  *
  * The exact topology is described in the mandatory topo_parameters
  * field, and follow the "h ; m_h, ..., m_1 ; w_h, ..., w_1 ; p_h, ..., p_1" format.

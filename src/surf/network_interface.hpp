@@ -131,7 +131,7 @@ namespace simgrid {
      ************/
     /** @ingroup SURF_network_interface
      * @brief SURF network link interface class
-     * @details A Link represents the link between two [hosts](\ref simgrid::surf::Host)
+     * @details A Link represents the link between two [hosts](\ref simgrid::surf::HostImpl)
      */
     class Link :
         public simgrid::surf::Resource,
@@ -222,7 +222,7 @@ namespace simgrid {
      **********/
     /** @ingroup SURF_network_interface
      * @brief SURF network action interface class
-     * @details A NetworkAction represents a communication between two [hosts](\ref Host)
+     * @details A NetworkAction represents a communication between two [hosts](\ref HostImpl)
      */
     class NetworkAction : public simgrid::surf::Action {
     public:
