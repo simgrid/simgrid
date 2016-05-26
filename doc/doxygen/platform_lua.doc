@@ -2,10 +2,15 @@
 
 @tableofcontents
 
+
 To describe your virtual platform, you can provide a lua script
-instead of an XML file. In the near future, this should become
-possible from in C++ and Java thanks to the the S4U interface. When
-this happens, the lua interface will be changed to match the S4U one.
+instead of an XML file. This is really easy: just pass the script file
+where an XML file was expected (eg in @ref MSG_create_environment()),
+and you are done. 
+
+In the near future, it should become possible to change the platform
+from in C++ and Java thanks to the the S4U interface. When this
+happens, the lua interface will be changed to match the S4U one.
 
 That is why the current lua API is not documented. It is very close to
 the XML interface, and you have some examples that you can use to
