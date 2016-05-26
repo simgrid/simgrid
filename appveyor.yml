@@ -1,6 +1,6 @@
 # This file automatize the testing of SimGrid on Windows using the appveyor.com continuous integration service
 #
-# Build logs: https://ci.appveyor.com/project/mquinson/simgrid
+# Build logs: https://ci.appveyor.com/project/simgrid/simgrid
 
 os: Visual Studio 2015
 version: "{build}"

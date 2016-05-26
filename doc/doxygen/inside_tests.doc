@@ -234,9 +234,9 @@ We use <a href="https://ci.inria.fr/simgrid/">Jenkins on Inria
 servers</a> as a workhorse: it runs all of our tests for many
 configurations. It takes a long time to answer, and it often reports
 issues but when it's green, then you know that SimGrid is very fit!
-We use <a href="https://travis-ci.org/mquinson/simgrid">Travis</a> to
+We use <a href="https://travis-ci.org/simgrid/simgrid">Travis</a> to
 quickly run some tests on Linux and Mac. It answers quickly but may
-miss issues. And we use <a href="https://ci.appveyor.com/project/mquinson/simgrid">AppVeyor</a>
+miss issues. And we use <a href="https://ci.appveyor.com/project/simgrid/simgrid">AppVeyor</a>
 to build and somehow test SimGrid on windows. 
 
 \subsection inside_tests_jenkins Jenkins on the Inria CI servers
@@ -282,14 +282,14 @@ Travis is a free (as in free beer) Continuous Integration system that
 open-sourced project can use freely. It is very well integrated in the
 GitHub ecosystem. There is a plenty of documentation out there. Our
 configuration is in the file .travis.yml as it should be, and the
-result is here: https://travis-ci.org/mquinson/simgrid
+result is here: https://travis-ci.org/simgrid/simgrid
 
 \subsection inside_tests_appveyor AppVeyor
 
 AppVeyor aims at becoming the Travis of Windows. It is maybe less
 mature than Travis, or maybe it is just that I'm less trained in
 Windows. Our configuration is in the file appveyor.yml as it should
-be, and the result is here: https://ci.appveyor.com/project/mquinson/simgrid
+be, and the result is here: https://ci.appveyor.com/project/simgrid/simgrid
 
 It should be noted that I miserably failed to use the environment
 provided by AppVeyor, since SimGrid does not build with Microsoft

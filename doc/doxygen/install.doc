@@ -33,7 +33,7 @@ bits, Windows 64 bits, FreeBSD (64 bits).
 
 @subsection install_binary_java_builder Nightly built Java Package
 
-For Windows, head to [AppVeyor](https://ci.appveyor.com/project/mquinson/simgrid).
+For Windows, head to [AppVeyor](https://ci.appveyor.com/project/simgrid/simgrid).
 Click on the artefact link on the right, and grab your file. If the latest build failed, there will be no artefact. Then
 you will need to first click on "History" on the top and search for the last successful build.
 
