@@ -220,10 +220,7 @@ smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
      double flops_amount, double priority, double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
-  simgrid::simix::Exec *exec = new simgrid::simix::Exec();
-  exec->name = xbt_strdup(name);
-  exec->state = SIMIX_RUNNING;
-  exec->host = issuer->host;
+  simgrid::simix::Exec *exec = new simgrid::simix::Exec(name, issuer->host);
 
   /* set surf's action */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
@@ -257,10 +254,7 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
   int i;
 
   /* alloc structures and initialize */
-  simgrid::simix::Exec *exec = new simgrid::simix::Exec();
-  exec->name = xbt_strdup(name);
-  exec->state = SIMIX_RUNNING;
-  exec->host = nullptr; /* FIXME: do we need the list of hosts? */
+  simgrid::simix::Exec *exec = new simgrid::simix::Exec(name, nullptr);
 
   /* set surf's synchro */
   host_list_cpy = xbt_new0(sg_host_t, host_nb);

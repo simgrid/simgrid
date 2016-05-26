@@ -15,13 +15,14 @@ namespace simix {
   XBT_PUBLIC_CLASS Exec : public Synchro {
     ~Exec();
   public:
+    Exec(const char*name, sg_host_t host);
     void suspend() override;
     void resume() override;
     void post() override;
     double remains();
 
-    sg_host_t host;                /* The host where the execution takes place */
-    surf_action_t surf_exec;        /* The Surf execution action encapsulated */
+    sg_host_t host; /* The host where the execution takes place. If NULL, then this is a parallel exec (and only surf knows the hosts) */
+    surf_action_t surf_exec=nullptr;/* The Surf execution action encapsulated */
   };
 
 }} // namespace simgrid::simix

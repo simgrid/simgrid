@@ -7,6 +7,12 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_host_private.h"
 
+simgrid::simix::Exec::Exec(const char*name, sg_host_t hostarg)
+{
+  name = xbt_strdup(name);
+  state = SIMIX_RUNNING;
+  host = hostarg;
+}
 simgrid::simix::Exec::~Exec()
 {
   if (surf_exec)
