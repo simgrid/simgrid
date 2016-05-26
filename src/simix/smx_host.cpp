@@ -16,10 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
-/**
- * \brief Internal function to create a SIMIX host.
- * \param name name of the host to create
- */
+/** @brief Internal function to create a SIMIX host. */
 void SIMIX_host_create(sg_host_t host) // FIXME: braindead prototype. Take sg_host as parameter
 {
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
@@ -32,10 +29,7 @@ void SIMIX_host_create(sg_host_t host) // FIXME: braindead prototype. Take sg_ho
   sg_host_simix_set(host, smx_host);
 }
 
-/**
- * \brief Start the host if it is off
- *
- */
+/** @brief Start the host if it is off */
 void SIMIX_host_on(sg_host_t h)
 {
   smx_host_priv_t host = sg_host_simix(h);
@@ -73,10 +67,7 @@ void SIMIX_host_on(sg_host_t h)
   }
 }
 
-/**
- * \brief Stop the host if it is on
- *
- */
+/** @brief Stop the host if it is on */
 void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
 {
   smx_host_priv_t host = sg_host_simix(h);
@@ -142,8 +133,7 @@ sg_host_t SIMIX_host_self(void)
   return (process == NULL) ? NULL : SIMIX_process_get_host(process);
 }
 
-/* needs to be public and without simcall because it is called
-   by exceptions and logging events */
+/* needs to be public and without simcall for exceptions and logging events */
 const char* SIMIX_host_self_get_name(void)
 {
   sg_host_t host = SIMIX_host_self();
@@ -188,9 +178,7 @@ void SIMIX_host_add_auto_restart_process(
   }
   xbt_dynar_push_as(sg_host_simix(host)->auto_restart_processes,smx_process_arg_t,arg);
 }
-/**
- * \brief Restart the list of processes that have been registered to the host
- */
+/** @brief Restart the list of processes that have been registered to the host */
 void SIMIX_host_autorestart(sg_host_t host)
 {
   unsigned int cpt;

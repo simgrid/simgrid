@@ -686,6 +686,7 @@ INPUT                  = doxygen/index.doc \
                          @CMAKE_HOME_DIRECTORY@/include/ \
                          @CMAKE_HOME_DIRECTORY@/include/xbt \
                          @CMAKE_HOME_DIRECTORY@/include/simgrid \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/s4u \
                          @CMAKE_HOME_DIRECTORY@/src/include/surf \
                          @CMAKE_HOME_DIRECTORY@/src/xbt/ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/ \
