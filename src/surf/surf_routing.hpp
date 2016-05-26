@@ -16,7 +16,6 @@
 
 #include <float.h>
 #include <vector>
-#include <map>
 
 SG_BEGIN_DECL()
 XBT_PUBLIC(void) routing_model_create(Link *loopback);

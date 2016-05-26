@@ -28,7 +28,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp> /* trim_right / trim_left */
 
-std::map<std::string, double> location2speedup;
+std::unordered_map<std::string, double> location2speedup;
 
 typedef struct s_smpi_process_data {
   double simulated;

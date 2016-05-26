@@ -8,7 +8,7 @@
 
 #include <xbt/base.h>
 
-#include <map>
+#include <utility>
 
 #include "src/surf/HostImpl.hpp"
 

@@ -266,9 +266,9 @@ void smpi_bench_end(void)
   if (xbt_cfg_get_string("smpi/comp-adjustment-file")[0] != '\0') { // Maybe we need to artificially speed up or slow
                                                          // down our computation based on our statistical analysis.
 
-    smpi_trace_call_location_t* loc                  = smpi_process_get_call_location();
-    std::string key                                  = loc->get_composed_key();
-    std::map<std::string, double>::const_iterator it = location2speedup.find(key);
+    smpi_trace_call_location_t* loc                            = smpi_process_get_call_location();
+    std::string key                                            = loc->get_composed_key();
+    std::unordered_map<std::string, double>::const_iterator it = location2speedup.find(key);
     if (it != location2speedup.end()) {
       speedup = it->second;
     }
