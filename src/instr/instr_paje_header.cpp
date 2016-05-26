@@ -165,8 +165,12 @@ static void TRACE_header_PajePushState (int basic, int size)
   fprintf(tracing_file, "%%       Value string\n");
   if (size) fprintf(tracing_file, "%%       Size int\n");
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
-    fprintf(tracing_file, "%%       Filename string\n");
-    fprintf(tracing_file, "%%       Linenumber int\n");
+    /**
+     * paje currently (May 2016) uses "Filename" and "Linenumber" as
+     * reserved words. We cannot use them...
+     */
+    fprintf(tracing_file, "%%       Fname string\n");
+    fprintf(tracing_file, "%%       Lnumber int\n");
   }
   fprintf(tracing_file, "%%EndEventDef\n");
 }
