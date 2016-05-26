@@ -669,6 +669,8 @@ set(headers_to_install
   include/xbt/fifo.h
   include/xbt/file.h
   include/xbt/function_types.h
+  include/xbt/functional.hpp
+  include/xbt/future.hpp
   include/xbt/graph.h
   include/xbt/heap.h
   include/xbt/lib.h

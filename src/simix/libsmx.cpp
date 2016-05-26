@@ -15,6 +15,8 @@
 
 #include <functional>
 
+#include <xbt/functional.hpp>
+
 #include "src/mc/mc_replay.h"
 #include "smx_private.h"
 #include "src/mc/mc_forward.hpp"
@@ -377,7 +379,7 @@ smx_process_t simcall_process_create(const char *name,
 {
   if (name == nullptr)
     name = "";
-  auto wrapped_code = simgrid::simix::wrap_main(code, argc, argv);
+  auto wrapped_code = simgrid::xbt::wrapMain(code, argc, argv);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);

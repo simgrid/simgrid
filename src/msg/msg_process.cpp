@@ -9,6 +9,7 @@
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/functional.hpp"
 #include "src/simix/smx_process_private.h"
 #include "src/simix/smx_private.h"
 
@@ -132,7 +133,8 @@ msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_fun
                                                   int argc, char **argv, xbt_dict_t properties)
 {
   msg_process_t res = MSG_process_create_with_environment(name,
-    simgrid::simix::wrap_main(code, argc, argv), data, host,
+    code ? simgrid::xbt::wrapMain(code, argc, argv) : std::function<void()>(),
+    data, host,
     properties);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
