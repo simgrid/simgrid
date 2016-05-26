@@ -313,4 +313,13 @@ only the most important breakages.
 The build results are here:
 https://buildd.debian.org/status/package.php?p=simgrid
 
+\subsection inside_tests_sonarqube SonarQube
+
+SonarQube is an open-source code quality analysis solution. Their nice
+code scanners are provided as plugin. The one for C++ is not free, but
+open-source project can use it at no cost. That is what we are doing.
+
+Don't miss the great looking dashboard here: 
+https://nemo.sonarqube.org/overview?id=simgrid
+
 */
