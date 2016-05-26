@@ -25,7 +25,7 @@
 #define assert(x) MC_assert(x)
 #endif
 
-#if TRACE_CALL_LOCATION
+#ifdef TRACE_CALL_LOCATION /* Defined by smpicc on the command line */
 #include <smpi/smpi_extended_traces.h>
 #endif
 
