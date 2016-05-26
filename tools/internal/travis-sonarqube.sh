@@ -1,6 +1,6 @@
 #! /bin/sh
 
-# Run SonarQube on travis.
+# Run SonarQube on travis. First version was given per email by one of the SonarQube engineer.
 
 # Install required software
 installSonarQubeScanner() {
@@ -22,7 +22,7 @@ installBuildWrapper
 
 # triggers the compilation through the build wrapper to gather compilation database
 ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs
-make build-nocheck
+make all
 
-# and finally execute the actual SonarQube analysis
-sonar-scanner -Dsonar.host.url=https://nemo.sonarqube.org -Dsonar.login=7f3a6edf2fc5fcfa22c3fb95ce13597dc4b1fb15
+# and finally execute the actual SonarQube analysis (the SONAR_TOKEN is set from the travis web interface, to not expose it)
+sonar-scanner -Dsonar.host.url=https://nemo.sonarqube.org -Dsonar.login=$SONAR_TOKEN
