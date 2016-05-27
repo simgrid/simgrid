@@ -2,6 +2,8 @@
 
 # Run SonarQube on travis. First version was given per email by one of the SonarQube engineer.
 
+set -ex
+
 # Install required software
 installSonarQubeScanner() {
   export SONAR_SCANNER_HOME=$HOME/.sonar/sonar-scanner-2.6
