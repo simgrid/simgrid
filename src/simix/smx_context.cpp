@@ -42,16 +42,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mechani
 
 static std::pair<const char*, simgrid::simix::ContextFactoryInitializer> context_factories[] = {
 #if HAVE_RAW_CONTEXTS
-  { "raw", simgrid::simix::raw_factory },
+  { "raw", &simgrid::simix::raw_factory },
 #endif
 #if HAVE_UCONTEXT_CONTEXTS
-  { "ucontext", simgrid::simix::sysv_factory },
+  { "ucontext", &simgrid::simix::sysv_factory },
 #endif
 #if HAVE_BOOST_CONTEXTS
-  { "boost", simgrid::simix::boost_factory },
+  { "boost", &simgrid::simix::boost_factory },
 #endif
 #if HAVE_THREAD_CONTEXTS
-  { "thread", simgrid::simix::thread_factory },
+  { "thread", &simgrid::simix::thread_factory },
 #endif
 };
 
