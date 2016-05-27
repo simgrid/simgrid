@@ -21,6 +21,9 @@ installSonarQubeScanner
 installBuildWrapper
 
 # triggers the compilation through the build wrapper to gather compilation database
+# We need to clean the build that was used for the tests before to ensure that everything gets rebuilt:
+#   sonarqube only use what's built throught its wrappers
+make clean
 ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs make all
 
 # and finally execute the actual SonarQube analysis (the SONAR_TOKEN is set from the travis web interface, to not expose it)
