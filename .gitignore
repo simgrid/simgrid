@@ -220,6 +220,7 @@ examples/smpi/smpi_msg_masterslave/masterslave_mailbox_smpi
 examples/smpi/replay/smpi_replay
 examples/smpi/trace/smpi_trace
 examples/smpi/trace_simple/smpi_trace_simple
+examples/smpi/trace_call_location/smpi_trace_call_location
 testall
 teshsuite/datadesc_usage.out
 teshsuite/java/SemaphoreGC/SemaphoreGC_compiled
