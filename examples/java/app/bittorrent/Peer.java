@@ -33,10 +33,10 @@ public class Peer extends Process {
   protected char[][] bitfieldBlocks = new char[Common.FILE_PIECES][Common.PIECES_BLOCKS];
   protected short[] piecesCount = new short[Common.FILE_PIECES];
   protected int piecesRequested = 0;
-  protected ArrayList<Integer> currentPieces = new ArrayList<Integer>();
+  protected ArrayList<Integer> currentPieces = new ArrayList<>();
   protected int currentPiece = -1;
-  protected HashMap<Integer, Connection> activePeers = new HashMap<Integer, Connection>();  
-  protected HashMap<Integer, Connection> peers = new HashMap<Integer, Connection>();
+  protected HashMap<Integer, Connection> activePeers = new HashMap<>();
+  protected HashMap<Integer, Connection> peers = new HashMap<>();
   protected Comm commReceived = null;
 
   public Peer(Host host, String name, String[]args) {
@@ -115,6 +115,7 @@ public class Peer extends Process {
         }
       }
       catch (MsgException e) {
+        e.printStackTrace();
         commReceived = null;
       }
     }
@@ -176,7 +177,8 @@ public class Peer extends Process {
   }
 
   private boolean getPeersData() {
-    boolean success = false, sendSuccess = false;
+    boolean success = false;
+    boolean sendSuccess = false;
     double timeout = Msg.getClock() + Common.GET_PEERS_TIMEOUT;
     //Build the task to send to the tracker
     TrackerTask taskSend = new TrackerTask(hostname, mailboxTracker, id);
@@ -188,6 +190,7 @@ public class Peer extends Process {
         sendSuccess = true;
       }
       catch (MsgException e) {
+        e.printStackTrace();
       }
     }
     while (!success && Msg.getClock() < timeout) {
@@ -204,7 +207,9 @@ public class Peer extends Process {
           success = true;
         }
       }
-      catch (MsgException e) {}
+      catch (MsgException e) {
+        e.printStackTrace();
+      }
       commReceived = null;
     }
     commReceived = null;
@@ -379,16 +384,14 @@ public class Peer extends Process {
     if (currentPieces.size() >= (Common.FILE_PIECES - pieces)) {
       return;
     }
-    if (true || pieces < 3) {
-      int peerPiece;
+//    if (pieces < 3) {
       do {
         currentPiece = stream.randInt(0,Common.FILE_PIECES - 1);
       } while (!(bitfield[currentPiece] == '0' && !currentPieces.contains(currentPiece)));
-    }
-    else {
-      //trivial min algorithm.
-      //TODO
-    }
+//    }
+//    else {
+      //TODO trivial min algorithm.
+//    }
     currentPieces.add(currentPiece);
     Msg.debug("New interested piece: " + currentPiece);
     assert currentPiece >= 0 && currentPiece < Common.FILE_PIECES;
@@ -434,7 +437,7 @@ public class Peer extends Process {
             }
             i++;
           } //TODO: Not really the best way ever
-          if (!peerChoosed.interested) {
+          if (peerChoosed != null && !peerChoosed.interested) {
             peerChoosed = null;
           }
           j++;

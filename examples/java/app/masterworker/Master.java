@@ -23,17 +23,17 @@ public class Master extends Process {
       System.exit(1);
     }
 
-    int tasksCount = Integer.valueOf(args[0]).intValue();
-    double taskComputeSize = Double.valueOf(args[1]).doubleValue();
-    double taskCommunicateSize = Double.valueOf(args[2]).doubleValue();
+    int tasksCount = Integer.parseInt(args[0]);
+    double taskComputeSize = Double.parseDouble(args[1]);
+    double taskCommunicateSize = Double.parseDouble(args[2]);
 
-    int workersCount = Integer.valueOf(args[3]).intValue();
+    int workersCount = Integer.parseInt(args[3]);
 
     Msg.info("Hello! Got "+  workersCount + " workers and "+tasksCount+" tasks to process");
 
     for (int i = 0; i < tasksCount; i++) {
       Task task = new Task("Task_" + i, taskComputeSize, taskCommunicateSize); 
-      //Msg.info("Sending \"" + task.getName()+ "\" to \"worker_" + i % workersCount + "\"");
+      Msg.debug("Sending \"" + task.getName()+ "\" to \"worker_" + i % workersCount + "\"");
       task.send("worker_"+(i%workersCount));
     }
 

@@ -7,7 +7,7 @@
 package app.bittorrent;
 
 /* Common constants for use in the simulation */
-public class Common {
+class Common {
   public static final String TRACKER_MAILBOX = "tracker_mailbox";
   public static final int FILE_SIZE = 5120;
   public static final int FILE_PIECE_SIZE = 512;

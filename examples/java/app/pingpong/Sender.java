@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
+	/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -35,8 +35,8 @@ public class Sender extends Process {
       try {
         mailboxes[pos] = Host.getByName(args[pos]).getName();
       } catch (HostNotFoundException e) {
+        e.printStackTrace();
         Msg.info("Invalid deployment file: " + e.toString());
-        System.exit(1);
       }
     }
 
