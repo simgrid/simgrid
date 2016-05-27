@@ -131,7 +131,7 @@ static void install_segvhandler(void)
   }
 
   struct sigaction action, old_action;
-  action.sa_sigaction = segvhandler;
+  action.sa_sigaction = &segvhandler;
   action.sa_flags = SA_ONSTACK | SA_RESETHAND | SA_SIGINFO;
   sigemptyset(&action.sa_mask);
 
@@ -205,9 +205,9 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global->maestro_process = NULL;
     simix_global->registered_functions = xbt_dict_new_homogeneous(NULL);
 
-    simix_global->create_process_function = SIMIX_process_create;
-    simix_global->kill_process_function = kill_process;
-    simix_global->cleanup_process_function = SIMIX_process_cleanup;
+    simix_global->create_process_function = &SIMIX_process_create;
+    simix_global->kill_process_function = &kill_process;
+    simix_global->cleanup_process_function = &SIMIX_process_cleanup;
     simix_global->mutex = xbt_os_mutex_init();
 
     surf_init(argc, argv);      /* Initialize SURF structures */
@@ -218,8 +218,8 @@ void SIMIX_global_init(int *argc, char **argv)
     simgrid::simix::create_maestro(maestro_code);
 
     /* context exception handlers */
-    __xbt_running_ctx_fetch = SIMIX_process_get_running_context;
-    __xbt_ex_terminate = SIMIX_process_exception_terminate;
+    __xbt_running_ctx_fetch = &SIMIX_process_get_running_context;
+    __xbt_ex_terminate = &SIMIX_process_exception_terminate;
 
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);

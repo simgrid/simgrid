@@ -55,9 +55,9 @@ typedef struct s_smx_simcall {
 
 /******************************** General *************************************/
 
-XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t);
-XBT_PRIVATE void SIMIX_simcall_handle(smx_simcall_t, int);
-XBT_PRIVATE void SIMIX_simcall_exit(smx_synchro_t);
+XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t simcall);
+XBT_PRIVATE void SIMIX_simcall_handle(smx_simcall_t simcall, int value);
+XBT_PRIVATE void SIMIX_simcall_exit(smx_synchro_t synchro);
 XBT_PRIVATE const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
 

@@ -119,8 +119,8 @@ XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
 XBT_PRIVATE smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
 
-void SIMIX_segment_index_set(smx_process_t, int);
-extern void (*SMPI_switch_data_segment)(int);
+void SIMIX_segment_index_set(smx_process_t process, int segment_index);
+extern void (*SMPI_switch_data_segment)(int dest);
 
 SG_END_DECL()
 
