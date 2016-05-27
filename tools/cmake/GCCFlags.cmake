@@ -129,8 +129,8 @@ if(NOT enable_debug)
   set(CMAKE_CXX_FLAGS "-DNDEBUG ${CMAKE_CXX_FLAGS}")
 endif()
 
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${optCFLAGS} ${warnCFLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${optCFLAGS} ${warnCXXFLAGS}")
+set(CMAKE_C_FLAGS   "${warnCFLAGS} ${CMAKE_C_FLAGS}   ${optCFLAGS}")
+set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
 # Try to make Mac a bit more complient to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
