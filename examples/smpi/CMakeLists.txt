@@ -1,9 +1,5 @@
 if(enable_smpi)
-  if(WIN32)
-    set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
-  else()
-    set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
-  endif()
+  set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mc/")
