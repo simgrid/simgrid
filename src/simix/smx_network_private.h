@@ -30,7 +30,7 @@ XBT_PRIVATE void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t comm);
 XBT_PRIVATE void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t proc);
 XBT_PRIVATE smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox,
                               void *dst_buff, size_t *dst_buff_size,
-                              int (*)(void *, void *, smx_synchro_t),
+                              int (*match_fun)(void *, void *, smx_synchro_t),
                               void (*copy_data_fun)(smx_synchro_t, void*, size_t),
                               void *data, double rate);
 XBT_PRIVATE smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int type, int src,

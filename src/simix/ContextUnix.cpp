@@ -116,7 +116,7 @@ public:
   UContextFactory();
   ~UContextFactory() override;
   Context* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t, smx_process_t process) override;
+    void_pfn_smxprocess_t cleanup, smx_process_t process) override;
   void run_all() override;
 };
 
