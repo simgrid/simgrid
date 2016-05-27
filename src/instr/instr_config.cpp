@@ -39,29 +39,29 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_config, instr, "Configuration");
 #define OPT_VIVA_CAT_CONF                "viva/categorized"
 #define OPT_VIVA_UNCAT_CONF              "viva/uncategorized"
 
-static int trace_enabled = 0;
-static int trace_platform;
-static int trace_platform_topology;
-static int trace_smpi_enabled;
-static int trace_smpi_grouped;
-static int trace_smpi_computing;
-static int trace_smpi_sleeping;
-static int trace_view_internals;
-static int trace_categorized;
-static int trace_uncategorized;
-static int trace_msg_process_enabled;
-static int trace_msg_vm_enabled;
-static int trace_buffer;
-static int trace_onelink_only;
-static int trace_disable_destroy;
-static int trace_basic;
-static int trace_display_sizes = 0;
-static int trace_disable_link;
-static int trace_disable_power;
+static bool trace_enabled = false;
+static bool trace_platform;
+static bool trace_platform_topology;
+static bool trace_smpi_enabled;
+static bool trace_smpi_grouped;
+static bool trace_smpi_computing;
+static bool trace_smpi_sleeping;
+static bool trace_view_internals;
+static bool trace_categorized;
+static bool trace_uncategorized;
+static bool trace_msg_process_enabled;
+static bool trace_msg_vm_enabled;
+static bool trace_buffer;
+static bool trace_onelink_only;
+static bool trace_disable_destroy;
+static bool trace_basic;
+static bool trace_display_sizes = false;
+static bool trace_disable_link;
+static bool trace_disable_power;
 static int trace_precision;
 
-static int trace_configured = 0;
-static int trace_active = 0;
+static bool trace_configured = false;
+static bool trace_active = false;
 
 static void TRACE_getopts(void)
 {
@@ -214,108 +214,108 @@ int TRACE_end()
   return retval;
 }
 
-int TRACE_needs_platform (void)
+bool TRACE_needs_platform (void)
 {
   return TRACE_msg_process_is_enabled() || TRACE_msg_vm_is_enabled() || TRACE_categorized() ||
          TRACE_uncategorized() || TRACE_platform () || (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
 }
 
-int TRACE_is_enabled(void)
+bool TRACE_is_enabled(void)
 {
   return trace_enabled;
 }
 
-int TRACE_platform(void)
+bool TRACE_platform(void)
 {
   return trace_platform;
 }
 
-int TRACE_platform_topology(void)
+bool TRACE_platform_topology(void)
 {
   return trace_platform_topology;
 }
 
-int TRACE_is_configured(void)
+bool TRACE_is_configured(void)
 {
   return trace_configured;
 }
 
-int TRACE_smpi_is_enabled(void)
+bool TRACE_smpi_is_enabled(void)
 {
   return (trace_smpi_enabled || TRACE_smpi_is_grouped()) && TRACE_is_enabled();
 }
 
-int TRACE_smpi_is_grouped(void)
+bool TRACE_smpi_is_grouped(void)
 {
   return trace_smpi_grouped;
 }
 
-int TRACE_smpi_is_computing(void)
+bool TRACE_smpi_is_computing(void)
 {
   return trace_smpi_computing;
 }
 
-int TRACE_smpi_is_sleeping(void)
+bool TRACE_smpi_is_sleeping(void)
 {
   return trace_smpi_sleeping;
 }
 
-int TRACE_smpi_view_internals(void)
+bool TRACE_smpi_view_internals(void)
 {
   return trace_view_internals;
 }
 
-int TRACE_categorized (void)
+bool TRACE_categorized (void)
 {
   return trace_categorized;
 }
 
-int TRACE_uncategorized (void)
+bool TRACE_uncategorized (void)
 {
   return trace_uncategorized;
 }
 
-int TRACE_msg_process_is_enabled(void)
+bool TRACE_msg_process_is_enabled(void)
 {
   return trace_msg_process_enabled && TRACE_is_enabled();
 }
 
-int TRACE_msg_vm_is_enabled(void)
+bool TRACE_msg_vm_is_enabled(void)
 {
   return trace_msg_vm_enabled && TRACE_is_enabled();
 }
 
-int TRACE_disable_link(void)
+bool TRACE_disable_link(void)
 {
   return trace_disable_link && TRACE_is_enabled();
 }
 
-int TRACE_disable_speed(void)
+bool TRACE_disable_speed(void)
 {
   return trace_disable_power && TRACE_is_enabled();
 }
 
-int TRACE_buffer (void)
+bool TRACE_buffer (void)
 {
   return trace_buffer && TRACE_is_enabled();
 }
 
-int TRACE_onelink_only (void)
+bool TRACE_onelink_only (void)
 {
   return trace_onelink_only && TRACE_is_enabled();
 }
 
-int TRACE_disable_destroy (void)
+bool TRACE_disable_destroy (void)
 {
   return trace_disable_destroy && TRACE_is_enabled();
 }
 
-int TRACE_basic (void)
+bool TRACE_basic (void)
 {
   return trace_basic && TRACE_is_enabled();
 }
 
-int TRACE_display_sizes (void)
+bool TRACE_display_sizes (void)
 {
    return trace_display_sizes && trace_smpi_enabled && TRACE_is_enabled();
 }
