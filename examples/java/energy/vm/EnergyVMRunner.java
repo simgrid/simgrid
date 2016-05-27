@@ -5,8 +5,16 @@
 
 package energy.vm;
 
-import org.simgrid.msg.*;
+import org.simgrid.msg.Msg;
+import org.simgrid.msg.VM;
+import org.simgrid.msg.Host;
+import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
+import org.simgrid.msg.MsgException;
+import org.simgrid.msg.HostFailureException;
+import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.TaskCancelledException;
+import org.simgrid.msg.NativeException;
 
 /* This class is a process in charge of running the test. It creates and starts the VMs, and fork processes within VMs */
 public class EnergyVMRunner extends Process {
@@ -16,11 +24,12 @@ public class EnergyVMRunner extends Process {
       super(host, name); 
     }
 
-    public void main(String[] args) {    
+    @Override
+    public void main(String[] strings) {
       Task  task = new Task(this.getHost().getName()+"-task", 300E6 , 0);
       try {
-        task.execute();   
-      } catch (Exception e) {
+        task.execute();
+      } catch (HostFailureException | TaskCancelledException e) {
         e.printStackTrace();
       } 
       Msg.info("This worker is done."); 
@@ -31,6 +40,7 @@ public class EnergyVMRunner extends Process {
     super(host, name, args);
   }
 
+  @Override
   public void main(String[] strings) throws MsgException, HostNotFoundException {
     double startTime = 0;
     double endTime = 0;

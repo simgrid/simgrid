@@ -6,8 +6,6 @@
 
 package cloud.migration;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Random; 
 
 import org.simgrid.msg.*;
@@ -15,21 +13,18 @@ import org.simgrid.msg.Process;
 
 // This test aims at validating that the migration process is robust in face of host turning off either on the SRC 
 // node or on the DST node. 
-public class TestHostOnOff extends Process{    
+public class TestHostOnOff extends Process{
 
   public static Host host0 = null;
   public static Host host1 = null;
   public static Host host2 = null;
 
-
-  TestHostOnOff(Host host, String name, String[] args) throws HostNotFoundException, NativeException {
+  TestHostOnOff(Host host, String name, String[] args) throws NativeException {
     super(host, name, args);
   }
 
+  @Override
   public void main(String[] strings) throws MsgException {
-    double startTime = 0;
-    double endTime = 0;
-
     /* get hosts 1 and 2*/
     try {
       host0 = Host.getByName("host0");
@@ -41,18 +36,18 @@ public class TestHostOnOff extends Process{
 
     // Robustness on the SRC node
     //for (int i =0 ; i < 55000 ; i++)
-    //  test_vm_migrate(host1, i);
+    //  testVMMigrate(host1, i);
 
     // Robustness on the DST node
     //for (int i =0 ; i < 55000 ; i++)
-    //  test_vm_migrate(host2, i);
+    //  testVMMigrate(host2, i);
 
     /* End of Tests */
     Msg.info("Nor more tests, Bye Bye !");
     Main.setEndOfTest();
   }
 
-  public static void test_vm_migrate (Host hostToKill, long killAt) throws MsgException {
+  public static void testVMMigrate (Host hostToKill, long killAt) throws MsgException {
     Msg.info("**** **** **** ***** ***** Test Migrate with host shutdown ***** ***** **** **** ****");
     Msg.info("Turn on one host, assign a VM on this host, launch a process inside the VM, migrate the VM and "
              + "turn off either the SRC or DST");
@@ -121,15 +116,14 @@ public class TestHostOnOff extends Process{
     Process.sleep(20000);
   }
 
-  public static void test_vm_shutdown_destroy () throws HostFailureException {
+  public static void testVMShutdownDestroy () throws HostFailureException {
     Msg.info("**** **** **** ***** ***** Test shutdown a VM ***** ***** **** **** ****");
     Msg.info("Turn on host1, assign a VM on host1, launch a process inside the VM, and turn off the vm, " +
         "and check whether you can reallocate the same VM");
 
     // Create VM0
     int dpRate = 70;
-    XVM vm0 = null;
-    vm0 = new XVM(host1, "vm0",
+    XVM vm0 = new XVM(host1, "vm0",
         1, // Nb of vcpu
         2048, // Ramsize,
         125, // Net Bandwidth
