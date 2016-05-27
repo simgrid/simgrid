@@ -20,7 +20,7 @@ namespace simgrid {
 namespace simix {
 
   XBT_PUBLIC_CLASS Comm : public Synchro {
-    ~Comm();
+    ~Comm() override;
   public:
     Comm(e_smx_comm_type_t type);
     void suspend() override;

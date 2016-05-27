@@ -13,7 +13,7 @@ namespace simgrid {
 namespace simix {
 
   XBT_PUBLIC_CLASS Exec : public Synchro {
-    ~Exec();
+    ~Exec() override;
   public:
     Exec(const char*name, sg_host_t host);
     void suspend() override;

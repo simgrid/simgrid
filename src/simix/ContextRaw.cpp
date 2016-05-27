@@ -43,7 +43,7 @@ public:
   RawContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process);
-  ~RawContext();
+  ~RawContext() override;
 public:
   static void wrapper(void* arg);
   void stop() override;
@@ -59,7 +59,7 @@ private:
 class RawContextFactory : public ContextFactory {
 public:
   RawContextFactory();
-  ~RawContextFactory();
+  ~RawContextFactory() override;
   RawContext* create_context(std::function<void()> code,
     void_pfn_smxprocess_t, smx_process_t process) override;
   void run_all() override;
