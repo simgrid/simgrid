@@ -44,13 +44,11 @@ static int sender(int argc, char *argv[])
   xbt_dynar_free(&d);
 
   /* Here we are waiting for the completion of all tasks */
-  sprintf(mailbox, "finalize");
-
   msg_comm_t res_irecv;
   XBT_ATTRIB_UNUSED msg_error_t res_wait;
   for (i = 0; i < receivers_count; i++) {
     task = NULL;
-    res_irecv = MSG_task_irecv(&(task), mailbox);
+    res_irecv = MSG_task_irecv(&(task), "finalize");
     res_wait = MSG_comm_wait(res_irecv, -1);
     xbt_assert(res_wait == MSG_OK, "MSG_comm_wait failed");
     MSG_comm_destroy(res_irecv);
@@ -99,8 +97,7 @@ static int receiver(int argc, char *argv[])
   xbt_free(task);
 
   /* Here we tell to sender that all tasks are done */
-  sprintf(mailbox, "finalize");
-  res_irecv = MSG_task_isend(MSG_task_create(NULL, 0, 0, NULL), mailbox);
+  res_irecv = MSG_task_isend(MSG_task_create(NULL, 0, 0, NULL), "finalize");
   MSG_comm_wait(res_irecv, -1);
   MSG_comm_destroy(res_irecv);
   XBT_INFO("I'm done. See you!");

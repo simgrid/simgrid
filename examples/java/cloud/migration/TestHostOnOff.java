@@ -23,7 +23,6 @@ public class TestHostOnOff extends Process{
     super(host, name, args);
   }
 
-  @Override
   public void main(String[] strings) throws MsgException {
     /* get hosts 1 and 2*/
     try {

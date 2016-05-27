@@ -23,11 +23,12 @@ public class Killer extends Process {
       poorVictim = new Victim("Boivin","victim");
       poorVictim.start();
     } catch (MsgException e){
-      System.out.println("Cannot create the victim process!");
+      Msg.error("Cannot create the victim process!");
     }
     sleep(10000);
     Msg.info("Resume Process");
-    poorVictim.resume();
+    if (poorVictim != null)
+      poorVictim.resume();
     sleep(1000);
     Msg.info("Kill Process");
     poorVictim.kill();
