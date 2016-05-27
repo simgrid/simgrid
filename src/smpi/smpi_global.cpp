@@ -471,7 +471,10 @@ void smpi_global_init(void)
     process_data[i]->sampling             = 0;
     process_data[i]->finalization_barrier = NULL;
     process_data[i]->return_value         = 0;
-    process_data[i]->trace_call_loc       = xbt_new(smpi_trace_call_location_t, 1);
+
+    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+      process_data[i]->trace_call_loc     = xbt_new(smpi_trace_call_location_t, 1);
+    }
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
@@ -509,7 +512,9 @@ void smpi_global_destroy(void)
     }
     xbt_os_timer_free(process_data[i]->timer);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
-    xbt_free(process_data[i]->trace_call_loc);
+    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+      xbt_free(process_data[i]->trace_call_loc);
+    }
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);
