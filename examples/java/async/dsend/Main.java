@@ -11,7 +11,7 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.NativeException;
 import org.simgrid.msg.HostNotFoundException;
 
-public class Main {
+class Main {
   public static void main(String[] args) throws NativeException, HostNotFoundException {
     Msg.init(args);
 

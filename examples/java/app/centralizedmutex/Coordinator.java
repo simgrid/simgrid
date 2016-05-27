@@ -14,16 +14,17 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 
 public class Coordinator extends Process {
+  LinkedList<RequestTask> waitingQueue=new LinkedList<>();
+  int csToServe;
+
   public Coordinator(Host host, String name, String[]args) {
     super(host,name,args);
   }
-  LinkedList<RequestTask> waitingQueue=new LinkedList<RequestTask>();
-  int CsToServe;
 
   public void main(String[] args) throws MsgException {
-    CsToServe = Integer.parseInt(args[0]);
+    csToServe = Integer.parseInt(args[0]);
     Task task;
-    while (CsToServe >0) {
+    while (csToServe >0) {
       task = Task.receive("coordinator");
       if (task instanceof RequestTask) {
         RequestTask t = (RequestTask) task;
@@ -40,8 +41,8 @@ public class Coordinator extends Process {
           GrantTask tosend = new GrantTask();
           tosend.send(req.from);
         }
-        CsToServe--;
-        if (waitingQueue.isEmpty() && CsToServe==0) {
+        csToServe--;
+        if (waitingQueue.isEmpty() && csToServe==0) {
           Msg.info("we should shutdown the simulation now");
         }
       }

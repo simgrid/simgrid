@@ -25,8 +25,8 @@ public class Worker extends Process {
       System.exit(1);
     }
 
-    int num = Integer.valueOf(args[0]).intValue();
-    //Msg.info("Receiving on 'worker_"+num+"'");
+    int num = Integer.parseInt(args[0]);
+    Msg.debug("Receiving on 'worker_"+num+"'");
 
     while(true) {  
       Task task = Task.receive("worker_"+num);
@@ -37,7 +37,9 @@ public class Worker extends Process {
       Msg.info("Received \"" + task.getName() +  "\". Processing it.");
       try {
         task.execute();
-      } catch (TaskCancelledException e) {}
+      } catch (TaskCancelledException e) {
+        e.printStackTrace();
+      }
     }
 
     Msg.info("Received Finalize. I'm done. See you!");

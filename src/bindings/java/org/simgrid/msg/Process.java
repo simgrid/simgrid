@@ -354,7 +354,7 @@ public abstract class Process implements Runnable {
 	 */
 	public abstract void main(String[]args) throws MsgException;
 
-	public native void exit();    
+	public native void exit();
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */

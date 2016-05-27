@@ -9,7 +9,7 @@ package app.centralizedmutex;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
-public class Main {
+class Main {
   public static void main(String[] args) throws NativeException {
     Msg.init(args);
 

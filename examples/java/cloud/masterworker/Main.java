@@ -10,7 +10,7 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.MsgException;
 
-public class Main {
+class Main {
   public static final double task_comp_size = 10;
   public static final double task_comm_size = 10;
   public static final int hostNB = 2 ; 
