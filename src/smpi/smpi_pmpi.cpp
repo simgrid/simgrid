@@ -27,7 +27,7 @@ int PMPI_Init(int *argc, char ***argv)
   // PMPI_Init is call only one time by only by SMPI process
   int already_init;
   MPI_Initialized(&already_init);
-  if(!(already_init)){
+  if(already_init == 0){
     smpi_process_init(argc, argv);
     smpi_process_mark_as_initialized();
     int rank = smpi_process_index();
