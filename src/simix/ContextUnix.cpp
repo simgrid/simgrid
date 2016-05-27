@@ -82,7 +82,7 @@ public:
   friend UContextFactory;
   UContext(std::function<void()>  code,
     void_pfn_smxprocess_t cleanup_func, smx_process_t process);
-  ~UContext();
+  ~UContext() override;
 };
 
 class SerialUContext : public UContext {
@@ -114,8 +114,8 @@ public:
   friend ParallelUContext;
 
   UContextFactory();
-  virtual ~UContextFactory();
-  virtual Context* create_context(std::function<void()> code,
+  ~UContextFactory() override;
+  Context* create_context(std::function<void()> code,
     void_pfn_smxprocess_t, smx_process_t process) override;
   void run_all() override;
 };

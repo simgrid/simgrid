@@ -24,7 +24,7 @@ public:
   ThreadContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process, bool maestro =false);
-  ~ThreadContext();
+  ~ThreadContext() override;
   void stop() override;
   void suspend() override;
   void attach_start() override;
@@ -46,8 +46,8 @@ public:
 class ThreadContextFactory : public ContextFactory {
 public:
   ThreadContextFactory();
-  ~ThreadContextFactory();
-  virtual ThreadContext* create_context(std::function<void()> code,
+  ~ThreadContextFactory() override;
+  ThreadContext* create_context(std::function<void()> code,
     void_pfn_smxprocess_t cleanup_func,  smx_process_t process) override;
   void run_all() override;
   ThreadContext* self() override;

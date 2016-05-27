@@ -52,7 +52,7 @@ while [ $# -gt 0 ]; do
             exit 0
             ;;
         '-trace-call-location')
-            list_add_not_empty CMDLINE "-DTRACE_CALL_LOCATION"
+            list_add_not_empty CMDARGS "-DTRACE_CALL_LOCATION"
             ;;
         '-compiler-version' | '--compiler-version')
             ${CC} --version

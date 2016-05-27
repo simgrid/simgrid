@@ -11,7 +11,7 @@
 
 set(warnCFLAGS "")
 set(optCFLAGS "")
-
+set(warnCXXFLAGS "")
 
 if(enable_compile_warnings)
   set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
@@ -19,12 +19,12 @@ if(enable_compile_warnings)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
+  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
   if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
   if (CMAKE_CXX_COMPILER_ID MATCHES "Clang") # don't care about class that become struct
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-mismatched-tags")
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags")
   endif()
 
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
@@ -129,8 +129,8 @@ if(NOT enable_debug)
   set(CMAKE_CXX_FLAGS "-DNDEBUG ${CMAKE_CXX_FLAGS}")
 endif()
 
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${optCFLAGS} ${warnCFLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${optCFLAGS}")
+set(CMAKE_C_FLAGS   "${warnCFLAGS} ${CMAKE_C_FLAGS}   ${optCFLAGS}")
+set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
 # Try to make Mac a bit more complient to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
