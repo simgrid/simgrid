@@ -509,6 +509,7 @@ void smpi_global_destroy(void)
     }
     xbt_os_timer_free(process_data[i]->timer);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
+    xbt_free(process_data[i]->trace_call_loc);
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);
