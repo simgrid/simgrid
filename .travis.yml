@@ -44,15 +44,13 @@ addons:
 before_install:
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo add-apt-repository --yes ppa:kubuntu-ppa/backports ; fi # cmake higher than 2.8.7
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo apt-get update  -qq ; fi
-   - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo apt-get install -y cmake valgrind default-jdk gfortran libboost-chrono1.48-dev libunwind-dev libelf-dev libdw-dev ; fi
+   - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo apt-get install -y cmake valgrind default-jdk gfortran libboost-chrono1.48-dev ; fi
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo update-alternatives --install /usr/bin/gcc gcc /usr/bin/gcc-4.7 50 ; fi
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 50 ; fi
 script:
-   - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . && make VERBOSE=1 && ctest --output-on-failure --timeout 100
-   - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then ./tools/internal/travis-sonarqube.sh ; fi
-# branches:
-#   only:
-#      - master
+   - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . 
+   - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then ./tools/internal/travis-sonarqube.sh ; fi # run make in the sonar wrapper
+   - ctest --output-on-failure --timeout 100
 notifications:
   recipients:
     - martin.quinson@ens-rennes.fr
