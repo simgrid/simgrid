@@ -14,10 +14,8 @@ static int master(int argc, char *argv[])
   double task_comm_size = 1E6;
   double timeout = 1;
 
-  char mailbox[256];
+  const char * mailbox = "jupi";
   xbt_ex_t ex;
-
-  sprintf(mailbox, "jupi");
 
   msg_task_t task = MSG_task_create("normal", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending task: \"%s\"", task->name);
@@ -83,10 +81,9 @@ static int slave(int argc, char *argv[])
   msg_task_t task;
   XBT_ATTRIB_UNUSED int res;
   int id = -1;
-  char mailbox[80];
+  const char * mailbox = "jupi";
   double start, end;
-  sprintf(mailbox, "jupi");
-
+ 
   while (1) {
     task = NULL;
     res = MSG_task_receive(&(task), mailbox);

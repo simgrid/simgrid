@@ -39,8 +39,7 @@ static int process_sleep(int argc, char *argv[])
 static int commTX(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  char mailbox[80];
-  sprintf(mailbox, "comm");
+  const char * mailbox = "comm";
   XBT_INFO("  Start TX");
   task = MSG_task_create("COMM", 0, 100000000, NULL);
   MSG_task_isend(task, mailbox);
@@ -53,8 +52,7 @@ static int commTX(int argc, char *argv[])
 static int commRX(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  char mailbox[80];
-  sprintf(mailbox, "comm");
+  const char * mailbox = "comm";
   XBT_INFO("  Start RX");
   msg_error_t error = MSG_task_receive(&(task), mailbox);
   if (error==MSG_OK) {
