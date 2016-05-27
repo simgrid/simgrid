@@ -177,8 +177,8 @@ XBT_PRIVATE void smpi_process_simulated_start(void);
 XBT_PRIVATE double smpi_process_simulated_elapsed(void);
 XBT_PRIVATE void smpi_process_set_sampling(int s);
 XBT_PRIVATE int smpi_process_get_sampling(void);
-XBT_PRIVATE void smpi_process_set_replaying(int s);
-XBT_PRIVATE int smpi_process_get_replaying(void);
+XBT_PRIVATE void smpi_process_set_replaying(bool s);
+XBT_PRIVATE bool smpi_process_get_replaying(void);
 
 XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm**, xbt_bar_t*);
 XBT_PRIVATE void smpi_deployment_cleanup_instances(void);

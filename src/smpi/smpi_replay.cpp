@@ -979,7 +979,7 @@ void smpi_replay_run(int *argc, char***argv){
   /* First initializes everything */
   smpi_process_init(argc, argv);
   smpi_process_mark_as_initialized();
-  smpi_process_set_replaying(1);
+  smpi_process_set_replaying(true);
 
   int rank = smpi_process_index();
   TRACE_smpi_init(rank);
