@@ -8,12 +8,14 @@ if(enable_smpi)
 
   file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/mc/")
 
-  foreach(x bcbench mvmul replay trace trace_simple energy)
+  foreach(x bcbench mvmul replay trace trace_simple trace_call_location energy)
     add_executable       (smpi_${x} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
     target_link_libraries(smpi_${x} simgrid)
     set_target_properties(smpi_${x} PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
     set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
   endforeach()
+
+  set_target_properties(smpi_trace_call_location PROPERTIES COMPILE_FLAGS "-trace-call-location")
 
   foreach(x bugged1 bugged2 bugged1_liveness only_send_deterministic mutual_exclusion non_termination1 
             non_termination2 non_termination3 non_termination4)
@@ -30,6 +32,7 @@ set(examples_src  ${examples_src}                                               
 set(tesh_files    ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/energy/energy.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace/trace.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/trace_simple/trace_simple.tesh
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/trace_call_location/trace_call_location.tesh
                                    ${CMAKE_CURRENT_SOURCE_DIR}/replay/replay.tesh                          PARENT_SCOPE)
 set(bin_files     ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
                                    ${CMAKE_CURRENT_SOURCE_DIR}/energy/hostfile
@@ -62,6 +65,7 @@ if(enable_smpi)
 
   ADD_TESH(smpi-tracing        --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace/trace.tesh)
   ADD_TESH(smpi-tracing-simple --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_simple/trace_simple.tesh)
+  ADD_TESH(smpi-tracing-call-location --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/trace_call_location/trace_call_location.tesh)
   ADD_TESH(smpi-replay         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi --cd ${CMAKE_BINARY_DIR}/examples/smpi ${CMAKE_HOME_DIRECTORY}/examples/smpi/replay/replay.tesh)
   ADD_TESH_FACTORIES(smpi-energy "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/smpi/energy --cd ${CMAKE_BINARY_DIR}/examples/smpi/energy ${CMAKE_HOME_DIRECTORY}/examples/smpi/energy/energy.tesh)
 endif()
