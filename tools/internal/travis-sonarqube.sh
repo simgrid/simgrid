@@ -1,7 +1,18 @@
 #! /bin/sh
 
-# Run SonarQube on travis. First version was given per email by one of the SonarQube engineer.
+# Install and run SonarQube on travis. 
+#
+# Use it as a wrapper to your build command, eg: ./travis-sonarqube.sh make VERBOSE=1
 
+# On Mac OSX, you don't want to run SonarQube but to exec the build command directly.
+if [ ${TRAVIS_OS_NAME} != 'linux' ] 
+then
+  exec "$@"
+fi
+# Passed this point, we are on Linux (exec never returns)
+
+
+# Be verbose and fail fast
 set -ex
 
 # Install required software
@@ -23,9 +34,7 @@ installSonarQubeScanner
 installBuildWrapper
 
 # triggers the compilation through the build wrapper to gather compilation database
-# We need to clean the build that was used for the tests before to ensure that everything gets rebuilt (sonarqube only use what's built throught its wrappers)
-# Plus, we need to activate MC so that it does not get throught the quality net :)
-./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs make VERBOSE=1
+./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs "$@"
 
 # and finally execute the actual SonarQube analysis (the SONAR_TOKEN is set from the travis web interface, to not expose it)
 sonar-scanner -Dsonar.host.url=https://nemo.sonarqube.org -Dsonar.login=$SONAR_TOKEN

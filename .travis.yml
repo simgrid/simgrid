@@ -49,7 +49,7 @@ before_install:
    - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then sudo update-alternatives --install /usr/bin/g++ g++ /usr/bin/g++-4.7 50 ; fi
 script:
    - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . 
-   - if [ ${TRAVIS_OS_NAME} = 'linux' ] ; then ./tools/internal/travis-sonarqube.sh ; else make VERBOSE=1 ; fi # run make in the sonar wrapper
+   - ./tools/internal/travis-sonarqube.sh make VERBOSE=1 # run make in the sonar wrapper
    - ctest --output-on-failure --timeout 100
 notifications:
   recipients:
