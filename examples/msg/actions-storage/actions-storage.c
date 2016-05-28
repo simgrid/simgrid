@@ -30,7 +30,7 @@ static msg_file_t get_file_descriptor(const char *file_name){
   char full_name[1024];
   msg_file_t file = NULL;
 
-  sprintf(full_name, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
+  snprintf(full_name,1023, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
 
   file = (msg_file_t) xbt_dict_get_or_null(opened_files, full_name);
   return file;
@@ -52,7 +52,7 @@ static void action_open(const char *const *action) {
   msg_file_t file = NULL;
   double clock = MSG_get_clock();
 
-  sprintf(full_name, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
+  snprintf(full_name,1023, "%s:%s", MSG_process_get_name(MSG_process_self()), file_name);
 
   ACT_DEBUG("Entering Open: %s (filename: %s)", NAME, file_name);
   file = MSG_file_open(file_name, NULL);

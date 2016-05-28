@@ -19,16 +19,16 @@ static int sender(int argc, char *argv[])
   msg_task_t task = NULL;
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
-    char sprintf_buffer[256];
-    sprintf(mailbox, "receiver-%ld", i % receivers_count);
-    sprintf(sprintf_buffer, "Task_%d", i);
-    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+    char snprintf_buffer[256];
+    snprintf(mailbox,255, "receiver-%ld", i % receivers_count);
+    snprintf(snprintf_buffer,255, "Task_%d", i);
+    task = MSG_task_create(snprintf_buffer, task_comp_size, task_comm_size, NULL);
     comm[i] = MSG_task_isend(task, mailbox);
     XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
   }
   for (i = 0; i < receivers_count; i++) {
     char mailbox[80];
-    sprintf(mailbox, "receiver-%ld", i % receivers_count);
+    snprintf(mailbox,79, "receiver-%ld", i % receivers_count);
     task = MSG_task_create("finalize", 0, 0, 0);
     comm[i + number_of_tasks] = MSG_task_isend(task, mailbox);
     XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
@@ -55,7 +55,7 @@ static int receiver(int argc, char *argv[])
   read = sscanf(argv[1], "%d", &id);
   xbt_assert(read, "Invalid argument %s\n", argv[1]);
   MSG_process_sleep(10);
-  sprintf(mailbox, "receiver-%d", id);
+  snprintf(mailbox,79, "receiver-%d", id);
   while (1) {
     res_irecv = MSG_task_irecv(&(task), mailbox);
     XBT_INFO("Wait to receive a task");

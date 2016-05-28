@@ -19,7 +19,7 @@ static int sender(int argc, char *argv[])
   int i;
   msg_task_t task;
   char mailbox[256];
-  char sprintf_buffer[256];
+  char snprintf_buffer[256];
   msg_comm_t comm;
 
   for (i = 0; i < number_of_tasks; i++) {
@@ -28,12 +28,12 @@ static int sender(int argc, char *argv[])
     else
       coef = (i + 1);
 
-    sprintf(mailbox, "receiver-%ld", (i % receivers_count));
-    sprintf(sprintf_buffer, "Task_%d", i);
-    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size / coef, NULL);
+    snprintf(mailbox,255, "receiver-%ld", (i % receivers_count));
+    snprintf(snprintf_buffer,255, "Task_%d", i);
+    task = MSG_task_create(snprintf_buffer, task_comp_size, task_comm_size / coef, NULL);
     comm = MSG_task_isend(task, mailbox);
     xbt_dynar_push_as(d, msg_comm_t, comm);
-    XBT_INFO("Send to receiver-%ld %s comm_size %f", i % receivers_count, sprintf_buffer, task_comm_size / coef);
+    XBT_INFO("Send to receiver-%ld %s comm_size %f", i % receivers_count, snprintf_buffer, task_comm_size / coef);
   }
   /* Here we are waiting for the completion of all communications */
 
@@ -70,7 +70,7 @@ static int receiver(int argc, char *argv[])
   XBT_ATTRIB_UNUSED int read;
   read = sscanf(argv[1], "%d", &id);
   xbt_assert(read, "Invalid argument %s\n", argv[1]);
-  sprintf(mailbox, "receiver-%d", id);
+  snprintf(mailbox,79, "receiver-%d", id);
   MSG_process_sleep(10);
   msg_comm_t res_irecv;
   for (int i = 0; i < tasks; i++) {

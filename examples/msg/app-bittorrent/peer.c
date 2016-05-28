@@ -204,8 +204,8 @@ int get_peers_data(peer_t peer)
 void peer_init(peer_t peer, int id, int seed)
 {
   peer->id = id;
-  sprintf(peer->mailbox, "%d", id);
-  sprintf(peer->mailbox_tracker, "tracker_%d", id);
+  snprintf(peer->mailbox,MAILBOX_SIZE-1, "%d", id);
+  snprintf(peer->mailbox_tracker,MAILBOX_SIZE-1, "tracker_%d", id);
   peer->peers = xbt_dict_new();
   peer->active_peers = xbt_dict_new();
   peer->hostname = MSG_host_get_name(MSG_host_self());

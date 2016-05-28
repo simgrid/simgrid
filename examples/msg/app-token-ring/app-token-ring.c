@@ -16,7 +16,7 @@ static int foo(int argc, char *argv[])
   msg_task_t task = NULL;
   XBT_ATTRIB_UNUSED int res;
   if (rank == 0){ /* - The root (rank 0) first sends the token then waits to receive it back */
-    sprintf(mailbox, "%d", rank+1);
+    snprintf(mailbox,255, "%d", rank+1);
     task = MSG_task_create("Token", 0, task_comm_size, NULL);
     XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"", rank, task->name,mailbox);
     MSG_task_send(task, mailbox);
@@ -31,9 +31,9 @@ static int foo(int argc, char *argv[])
     XBT_INFO("Host \"%d\" received \"%s\"",rank, MSG_task_get_name(task));
 
     if(rank+1 == MSG_get_host_number()) /* - Except for the last one which sends the token back to rank 0 */
-      sprintf(mailbox, "0");
+      snprintf(mailbox,255, "0");
     else
-      sprintf(mailbox, "%d", rank+1);
+      snprintf(mailbox,255, "%d", rank+1);
     XBT_INFO("Host \"%d\" send '%s' to Host \"%s\"",rank,task->name,mailbox);
     MSG_task_send(task, mailbox);
   }

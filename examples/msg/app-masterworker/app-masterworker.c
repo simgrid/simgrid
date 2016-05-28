@@ -24,8 +24,8 @@ static int master(int argc, char *argv[])
     char mailbox[256];
     char task_name[256];
 
-    sprintf(mailbox, "worker-%ld", i % workers_count); /* - Select a @ref worker in a round-robin way */
-    sprintf(task_name, "Task_%d", i);
+    snprintf(mailbox,255, "worker-%ld", i % workers_count); /* - Select a @ref worker in a round-robin way */
+    snprintf(task_name,255, "Task_%d", i);
     msg_task_t task = MSG_task_create(task_name, comp_size, comm_size, NULL);   /* - Create a task */
     if (number_of_tasks < 10000 || i % 10000 == 0)
       XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_tasks, mailbox);
@@ -37,7 +37,7 @@ static int master(int argc, char *argv[])
   for (i = 0; i < workers_count; i++) { /* - Eventually tell all the workers to stop by sending a "finalize" task */
     char mailbox[80];
 
-    sprintf(mailbox, "worker-%ld", i % workers_count);
+    snprintf(mailbox,79, "worker-%ld", i % workers_count);
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_send(finalize, mailbox);
   }
@@ -53,7 +53,7 @@ static int worker(int argc, char *argv[])
 
   long id= xbt_str_parse_int(argv[1], "Invalid argument %s");
 
-  sprintf(mailbox, "worker-%ld", id);
+  snprintf(mailbox,79, "worker-%ld", id);
 
   while (1) {  /* The worker wait in an infinite loop for tasks sent by the \ref master */
     int res = MSG_task_receive(&(task), mailbox);

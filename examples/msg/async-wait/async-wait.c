@@ -25,13 +25,13 @@ static int sender(int argc, char *argv[])
   MSG_process_sleep(sleep_start_time);
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
-    char sprintf_buffer[256];
+    char snprintf_buffer[256];
 
-    sprintf(mailbox, "receiver-%ld", i % receivers_count);
-    sprintf(sprintf_buffer, "Task_%d", i);
+    snprintf(mailbox,255, "receiver-%ld", i % receivers_count);
+    snprintf(snprintf_buffer,255, "Task_%d", i);
 
     /* This process first creates a task and send it asynchronously with @ref MSG_task_isend. Then, if: */
-    task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
+    task = MSG_task_create(snprintf_buffer, task_comp_size, task_comm_size, NULL);
     comm = MSG_task_isend(task, mailbox);
     XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
 
@@ -47,7 +47,7 @@ static int sender(int argc, char *argv[])
 
   for (i = 0; i < receivers_count; i++) {
     char mailbox[80];
-    sprintf(mailbox, "receiver-%ld", i % receivers_count);
+    snprintf(mailbox,79, "receiver-%ld", i % receivers_count);
     task = MSG_task_create("finalize", 0, 0, 0);
     comm = MSG_task_isend(task, mailbox);
     XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
@@ -79,7 +79,7 @@ static int receiver(int argc, char *argv[])
 
   MSG_process_sleep(sleep_start_time); /* This process first sleeps for "start time" seconds.  */
 
-  sprintf(mailbox, "receiver-%d", id);
+  snprintf(mailbox,79, "receiver-%d", id);
   while (1) {
     res_irecv = MSG_task_irecv(&(task), mailbox); /* Then it posts asynchronous receives (@ref MSG_task_irecv) and*/
     XBT_INFO("Wait to receive a task");
