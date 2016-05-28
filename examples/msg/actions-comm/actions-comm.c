@@ -70,7 +70,7 @@ static void action_send(const char *const *action)
   double size = parse_double(size_str);
   double clock = MSG_get_clock();
 
-  sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
+  snprintf(to,249, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
 
   ACT_DEBUG("Entering Send: %s (size: %g)", NAME, size);
   if (size < 65536) {
@@ -90,7 +90,7 @@ static void action_Isend(const char *const *action)
   double clock = MSG_get_clock();
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
-  sprintf(to, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
+  snprintf(to,249, "%s_%s", MSG_process_get_name(MSG_process_self()), action[2]);
   msg_comm_t comm = MSG_task_isend(MSG_task_create(to, 0, parse_double(size), NULL), to);
   xbt_dynar_push(globals->isends, &comm);
 
@@ -105,7 +105,7 @@ static void action_recv(const char *const *action)
   msg_task_t task = NULL;
   double clock = MSG_get_clock();
 
-  sprintf(mailbox_name, "%s_%s", action[2], MSG_process_get_name(MSG_process_self()));
+  snprintf(mailbox_name,249, "%s_%s", action[2], MSG_process_get_name(MSG_process_self()));
 
   ACT_DEBUG("Receiving: %s", NAME);
   msg_error_t res = MSG_task_receive(&task, mailbox_name);
@@ -125,7 +125,7 @@ static void action_Irecv(const char *const *action)
 
   XBT_DEBUG("Irecv on %s", MSG_process_get_name(MSG_process_self()));
 
-  sprintf(mailbox, "%s_%s", action[2], MSG_process_get_name(MSG_process_self()));
+  snprintf(mailbox,249, "%s_%s", action[2], MSG_process_get_name(MSG_process_self()));
   msg_task_t t = NULL;
   xbt_dynar_push(globals->tasks, &t);
   msg_comm_t c = MSG_task_irecv(xbt_dynar_get_ptr(globals->tasks, xbt_dynar_length(globals->tasks) - 1), mailbox);
@@ -181,7 +181,7 @@ static void action_barrier(const char *const *action)
   ACT_DEBUG("Exiting barrier: %s", NAME);
 
   processes_arrived_sofar--;
-  if (!processes_arrived_sofar) {
+  if (processes_arrived_sofar<=0) {
     SIMIX_cond_destroy(cond);
     SIMIX_mutex_destroy(mutex);
     mutex = NULL;
@@ -209,7 +209,7 @@ static void action_bcast(const char *const *action)
     msg_comm_t *comms = xbt_new0(msg_comm_t, communicator_size - 1);
 
     for (int i = 1; i < communicator_size; i++) {
-      sprintf(mailbox, "%s_p0_p%d", bcast_identifier, i);
+      snprintf(mailbox,79, "%s_p0_p%d", bcast_identifier, i);
       comms[i - 1] = MSG_task_isend(MSG_task_create(mailbox, 0, comm_size, NULL), mailbox);
     }
     MSG_comm_waitall(comms, communicator_size - 1, -1);
@@ -219,7 +219,7 @@ static void action_bcast(const char *const *action)
 
     XBT_DEBUG("%s: all messages sent by %s have been received", bcast_identifier, process_name);
   } else {
-    sprintf(mailbox, "%s_p0_%s", bcast_identifier, process_name);
+    snprintf(mailbox,79, "%s_p0_%s", bcast_identifier, process_name);
     MSG_task_receive(&task, mailbox);
     MSG_task_destroy(task);
     XBT_DEBUG("%s: %s has received", bcast_identifier, process_name);
