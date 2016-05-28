@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-<!--              router1 -------------link1-2--------------router2
+<!--              router1 - - - - - - link1-2 - - - - - - router2
        __________________________                   _________________________
        |                        |                   |                        |
        |        backbone1       |                   |      backbone2         |
