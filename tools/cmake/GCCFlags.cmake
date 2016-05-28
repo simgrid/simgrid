@@ -14,7 +14,7 @@ set(optCFLAGS "")
 set(warnCXXFLAGS "")
 
 if(enable_compile_warnings)
-  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
+  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
   if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
@@ -26,6 +26,9 @@ if(enable_compile_warnings)
   if (CMAKE_CXX_COMPILER_ID MATCHES "Clang") # don't care about class that become struct
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags")
   endif()
+
+  # the one specific to C but refused by C++
+  set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
 
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
