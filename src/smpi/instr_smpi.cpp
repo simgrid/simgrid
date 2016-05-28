@@ -71,14 +71,18 @@ static const char *instr_find_color (const char *state)
 {
   char *target = str_tolower (state);
   const char *ret = NULL;
-  const char *current;
   unsigned int i = 0;
-  while ((current = smpi_colors[i])){
-    if (strcmp (state, current) == 0){ ret = smpi_colors[i+1]; break; } //exact match
-    if (strstr(target, current)) { ret = smpi_colors[i+1]; break; }; //as substring
+  const char *current = smpi_colors[i];
+  while ((current != NULL)){
+    if (strcmp (state, current) == 0 //exact match
+        || strstr(target, current) ){//as substring
+         ret = smpi_colors[i+1]; 
+         break; 
+    }
     i+=2;
+    current = smpi_colors[i];
   }
-  free (target);
+  xbt_free(target);
   return ret;
 }
 
@@ -97,7 +101,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
 
-  if(!xbt_dynar_is_empty(d)){
+  if(xbt_dynar_is_empty(d) == 0){
     //receive was already pushed, perform a get instead
     TRACE_smpi_get_key(src , dst, key ,n);
     return key;
@@ -110,11 +114,11 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
 
   //generate the key
   static unsigned long long counter = 0;
-
-  snprintf(key, n, "%d_%d_%llu", src, dst, counter++);
+  counter++;
+  snprintf(key, n, "%d_%d_%llu", src, dst, counter);
 
   //push it
-  char *a = (char*)xbt_strdup(key);
+  char *a = static_cast<char*> (xbt_strdup(key));
   xbt_dynar_push_as(d, char *, a);
 
   return key;
@@ -125,9 +129,6 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
   char aux[INSTR_DEFAULT_STR_SIZE];
   snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
-
- // xbt_assert(!xbt_dynar_is_empty(d),
- //     "Trying to get a link key (for message reception) that has no corresponding send (%s).", __FUNCTION__);
 
   // sometimes the receive may be posted before the send
   if(xbt_dynar_is_empty(d)){

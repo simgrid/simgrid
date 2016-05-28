@@ -327,9 +327,10 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu-threshold' to '-1'
 > [Tremblay:0:(1) 0.004041] [smpi_replay/VERBOSE] 0 allToAll 500 500 0.004041
-> [Fafard:2:(3) 0.006920] [smpi_replay/VERBOSE] 2 allToAll 500 500 0.006920
 > [Jupiter:1:(2) 0.006920] [smpi_replay/VERBOSE] 1 allToAll 500 500 0.006920
-> [Jupiter:1:(2) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
+> [Fafard:2:(3) 0.006920] [smpi_replay/VERBOSE] 2 allToAll 500 500 0.006920
+> [Fafard:2:(3) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
+
 
 $ rm -f replay/one_trace
 

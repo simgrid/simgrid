@@ -272,22 +272,22 @@ XBT_PUBLIC(void) new_pajeEndLink (double timestamp, container_t container, type_
 XBT_PUBLIC(void) new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
 /* from instr_config.c */
-XBT_PRIVATE int TRACE_needs_platform (void);
-XBT_PRIVATE int TRACE_is_enabled(void);
-XBT_PRIVATE int TRACE_platform(void);
-XBT_PRIVATE int TRACE_platform_topology(void);
-XBT_PRIVATE int TRACE_is_configured(void);
-XBT_PRIVATE int TRACE_categorized (void);
-XBT_PRIVATE int TRACE_uncategorized (void);
-XBT_PRIVATE int TRACE_msg_process_is_enabled(void);
-XBT_PRIVATE int TRACE_msg_vm_is_enabled(void);
-XBT_PRIVATE int TRACE_buffer (void);
-XBT_PRIVATE int TRACE_disable_link(void);
-XBT_PRIVATE int TRACE_disable_speed(void);
-XBT_PRIVATE int TRACE_onelink_only (void);
-XBT_PRIVATE int TRACE_disable_destroy (void);
-XBT_PRIVATE int TRACE_basic (void);
-XBT_PRIVATE int TRACE_display_sizes (void);
+XBT_PRIVATE bool TRACE_needs_platform (void);
+XBT_PRIVATE bool TRACE_is_enabled(void);
+XBT_PRIVATE bool TRACE_platform(void);
+XBT_PRIVATE bool TRACE_platform_topology(void);
+XBT_PRIVATE bool TRACE_is_configured(void);
+XBT_PRIVATE bool TRACE_categorized (void);
+XBT_PRIVATE bool TRACE_uncategorized (void);
+XBT_PRIVATE bool TRACE_msg_process_is_enabled(void);
+XBT_PRIVATE bool TRACE_msg_vm_is_enabled(void);
+XBT_PRIVATE bool TRACE_buffer (void);
+XBT_PRIVATE bool TRACE_disable_link(void);
+XBT_PRIVATE bool TRACE_disable_speed(void);
+XBT_PRIVATE bool TRACE_onelink_only (void);
+XBT_PRIVATE bool TRACE_disable_destroy (void);
+XBT_PRIVATE bool TRACE_basic (void);
+XBT_PRIVATE bool TRACE_display_sizes (void);
 XBT_PRIVATE char *TRACE_get_comment (void);
 XBT_PRIVATE char *TRACE_get_comment_file (void);
 XBT_PRIVATE int TRACE_precision (void);
@@ -300,11 +300,11 @@ XBT_PRIVATE void instr_pause_tracing (void);
 XBT_PRIVATE void instr_resume_tracing (void);
 
 /* Public functions used in SMPI */
-XBT_PUBLIC(int) TRACE_smpi_is_enabled(void);
-XBT_PUBLIC(int) TRACE_smpi_is_grouped(void);
-XBT_PUBLIC(int) TRACE_smpi_is_computing(void);
-XBT_PUBLIC(int) TRACE_smpi_is_sleeping(void);
-XBT_PUBLIC(int) TRACE_smpi_view_internals(void);
+XBT_PUBLIC(bool) TRACE_smpi_is_enabled(void);
+XBT_PUBLIC(bool) TRACE_smpi_is_grouped(void);
+XBT_PUBLIC(bool) TRACE_smpi_is_computing(void);
+XBT_PUBLIC(bool) TRACE_smpi_is_sleeping(void);
+XBT_PUBLIC(bool) TRACE_smpi_view_internals(void);
 
 /* from resource_utilization.c */
 XBT_PRIVATE void TRACE_surf_host_set_utilization(const char *resource, const char *category, double value, double now,

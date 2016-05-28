@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 # Copyright 2016 Vincent Danjean <vincent.danjean@inria.fr>
 # 
 # Call this script like this:

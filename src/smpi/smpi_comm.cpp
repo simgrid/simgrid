@@ -371,10 +371,10 @@ void smpi_comm_init_smp(MPI_Comm comm){
   
   // If we are in replay - perform an ugly hack  
   // tell SimGrid we are not in replay for a while, because we need the buffers to be copied for the following calls
-  int replaying = 0; //cache data to set it back again after
+  bool replaying = false; //cache data to set it back again after
   if(smpi_process_get_replaying()){
-   replaying=1;
-   smpi_process_set_replaying(0);
+   replaying=true;
+   smpi_process_set_replaying(false);
   }
 
   if(smpi_privatize_global_variables){ //we need to switch as the called function may silently touch global variables
@@ -536,8 +536,8 @@ void smpi_comm_init_smp(MPI_Comm comm){
   }
   xbt_free(leader_list);
   
-  if(replaying==1)
-    smpi_process_set_replaying(1); 
+  if(replaying)
+    smpi_process_set_replaying(true); 
 }
 
 int smpi_comm_attr_delete(MPI_Comm comm, int keyval){

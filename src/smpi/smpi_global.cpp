@@ -46,7 +46,7 @@ typedef struct s_smpi_process_data {
   char state;
   int sampling;                 /* inside an SMPI_SAMPLE_ block? */
   char* instance_id;
-  int replaying;                /* is the process replaying a trace */
+  bool replaying;                /* is the process replaying a trace */
   xbt_bar_t finalization_barrier;
   int return_value;
   smpi_trace_call_location_t* trace_call_loc;
@@ -110,7 +110,7 @@ void smpi_process_init(int *argc, char ***argv)
     if(temp_bar != NULL) data->finalization_barrier = temp_bar;
     data->index       = index;
     data->instance_id = instance_id;
-    data->replaying   = 0;
+    data->replaying   = false;
     //xbt_free(simcall_process_get_data(proc));
 
     simdata_process_t simdata = static_cast<simdata_process_t>(simcall_process_get_data(proc));
@@ -185,17 +185,17 @@ void smpi_process_mark_as_initialized(void)
     process_data[index_to_process_data[index]]->state = SMPI_INITIALIZED;
 }
 
-void smpi_process_set_replaying(int value){
+void smpi_process_set_replaying(bool value){
   int index = smpi_process_index();
   if ((index != MPI_UNDEFINED) && (process_data[index_to_process_data[index]]->state != SMPI_FINALIZED))
     process_data[index_to_process_data[index]]->replaying = value;
 }
 
-int smpi_process_get_replaying(){
+bool smpi_process_get_replaying(){
   int index = smpi_process_index();
   if (index != MPI_UNDEFINED)
     return process_data[index_to_process_data[index]]->replaying;
-  else return _xbt_replay_is_active();
+  else return (_xbt_replay_is_active() != 0);
 }
 
 int smpi_global_size(void)
@@ -471,7 +471,10 @@ void smpi_global_init(void)
     process_data[i]->sampling             = 0;
     process_data[i]->finalization_barrier = NULL;
     process_data[i]->return_value         = 0;
-    process_data[i]->trace_call_loc       = xbt_new(smpi_trace_call_location_t, 1);
+
+    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+      process_data[i]->trace_call_loc     = xbt_new(smpi_trace_call_location_t, 1);
+    }
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
@@ -509,6 +512,9 @@ void smpi_global_destroy(void)
     }
     xbt_os_timer_free(process_data[i]->timer);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
+    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+      xbt_free(process_data[i]->trace_call_loc);
+    }
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);
