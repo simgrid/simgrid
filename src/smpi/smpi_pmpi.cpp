@@ -262,7 +262,7 @@ int PMPI_Op_create(MPI_User_function * function, int commute, MPI_Op * op)
   if (function == NULL || op == NULL) {
     retval = MPI_ERR_ARG;
   } else {
-    *op = smpi_op_new(function, commute);
+    *op = smpi_op_new(function, (commute!=0));
     retval = MPI_SUCCESS;
   }
   return retval;

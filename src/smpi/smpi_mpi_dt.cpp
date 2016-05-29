@@ -406,7 +406,7 @@ void smpi_datatype_free(MPI_Datatype* type){
     xbt_dict_foreach((*type)->attributes, cursor, key, value){
       smpi_type_key_elem elem =
           static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(key), sizeof(int)));
-      if(elem!=NULL &&  elem->delete_fn)
+      if(elem!=NULL && elem->delete_fn!=NULL)
         elem->delete_fn(*type,*key, value, &flag);
     }
     xbt_dict_free(&(*type)->attributes);
@@ -796,7 +796,7 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
   int i;
   int retval;
   int size = 0;
-  int contiguous=1;
+  bool contiguous=true;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
@@ -815,10 +815,10 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
       ub = indices[i]*smpi_datatype_get_extent(old_type)+blocklens[i]*smpi_datatype_ub(old_type);
 
     if ( (i< count -1) && (indices[i]+blocklens[i] != indices[i+1]) )
-      contiguous=0;
+      contiguous=false;
   }
   if (old_type->sizeof_substruct != 0)
-    contiguous=0;
+    contiguous=false;
 
   if(!contiguous){
     s_smpi_mpi_indexed_t* subtype = smpi_datatype_indexed_create( blocklens, indices, count, old_type,
@@ -946,7 +946,7 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
   int i;
   int retval;
   int size = 0;
-  int contiguous=1;
+  bool contiguous=true;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
@@ -964,10 +964,10 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
       ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_type);
 
     if ( (i< count -1) && (indices[i]+blocklens[i]*(static_cast<int>(smpi_datatype_size(old_type))) != indices[i+1]) )
-      contiguous=0;
+      contiguous=false;
   }
   if (old_type->sizeof_substruct != 0 || lb!=0)
-    contiguous=0;
+    contiguous=false;
 
   if(!contiguous){
     s_smpi_mpi_hindexed_t* subtype = smpi_datatype_hindexed_create( blocklens, indices, count, old_type,
@@ -1101,7 +1101,7 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
 {
   int i;
   size_t size = 0;
-  int contiguous=1;
+  bool contiguous=true;
   size = 0;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
@@ -1109,22 +1109,22 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
     lb=indices[0] + smpi_datatype_lb(old_types[0]);
     ub=indices[0] + blocklens[0]*smpi_datatype_ub(old_types[0]);
   }
-  int forced_lb=0;
-  int forced_ub=0;
+  bool forced_lb=false;
+  bool forced_ub=false;
   for(i=0; i< count; i++){
     if (blocklens[i]<0)
       return MPI_ERR_ARG;
     if (old_types[i]->sizeof_substruct != 0)
-      contiguous=0;
+      contiguous=false;
 
     size += blocklens[i]*smpi_datatype_size(old_types[i]);
     if (old_types[i]==MPI_LB){
       lb=indices[i];
-      forced_lb=1;
+      forced_lb=true;
     }
     if (old_types[i]==MPI_UB){
       ub=indices[i];
-      forced_ub=1;
+      forced_ub=true;
     }
 
     if(!forced_lb && indices[i]+smpi_datatype_lb(old_types[i])<lb) 
@@ -1133,10 +1133,10 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
       ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_types[i]);
 
     if ( (i< count -1) && (indices[i]+blocklens[i]*static_cast<int>(smpi_datatype_size(old_types[i])) != indices[i+1]) )
-      contiguous=0;
+      contiguous=false;
   }
 
-  if(contiguous==0){
+  if(!contiguous){
     s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create( blocklens, indices, count, old_types);
 
     smpi_datatype_create(new_type,  size, lb, ub,sizeof(s_smpi_mpi_struct_t), subtype, DT_FLAG_DATA);
@@ -1154,7 +1154,7 @@ void smpi_datatype_commit(MPI_Datatype *datatype)
 
 typedef struct s_smpi_mpi_op {
   MPI_User_function *func;
-  int is_commute;
+  bool is_commute;
 } s_smpi_mpi_op_t;
 
 #define MAX_OP(a, b)  (b) = (a) < (b) ? (b) : (a)
@@ -1531,7 +1531,7 @@ CREATE_MPI_OP(MPI_MAXLOC, maxloc_func);
 CREATE_MPI_OP(MPI_MINLOC, minloc_func);
 CREATE_MPI_OP(MPI_REPLACE, replace_func);
 
-MPI_Op smpi_op_new(MPI_User_function * function, int commute)
+MPI_Op smpi_op_new(MPI_User_function * function, bool commute)
 {
   MPI_Op op;
   op = xbt_new(s_smpi_mpi_op_t, 1);
@@ -1540,9 +1540,9 @@ MPI_Op smpi_op_new(MPI_User_function * function, int commute)
   return op;
 }
 
-int smpi_op_is_commute(MPI_Op op)
+bool smpi_op_is_commute(MPI_Op op)
 {
-  return (op==MPI_OP_NULL) ? 1 : op-> is_commute;
+  return (op==MPI_OP_NULL) ? true : op-> is_commute;
 }
 
 void smpi_op_destroy(MPI_Op op)
@@ -1588,7 +1588,7 @@ int smpi_type_attr_delete(MPI_Datatype type, int keyval){
 int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag){
   smpi_type_key_elem elem =
     static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
-  if(!elem)
+  if(elem==NULL)
     return MPI_ERR_ARG;
   xbt_ex_t ex;
   if(type->attributes==NULL){
@@ -1607,8 +1607,8 @@ int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* fla
 }
 
 int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
-  if(!smpi_type_keyvals)
-  smpi_type_keyvals = xbt_dict_new();
+  if(smpi_type_keyvals==NULL)
+    smpi_type_keyvals = xbt_dict_new();
   smpi_type_key_elem elem =
      static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
   if(elem==NULL)
@@ -1616,7 +1616,7 @@ int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
   int flag;
   void* value;
   smpi_type_attr_get(type, keyval, &value, &flag);
-  if(flag && elem->delete_fn!=MPI_NULL_DELETE_FN){
+  if(flag!=0 && elem->delete_fn!=MPI_NULL_DELETE_FN){
     int ret = elem->delete_fn(type, keyval, value, &flag);
     if(ret!=MPI_SUCCESS) 
       return ret;
@@ -1630,8 +1630,8 @@ int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
 
 int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
                             void* extra_state){
-  if(!smpi_type_keyvals)
-  smpi_type_keyvals = xbt_dict_new();
+  if(smpi_type_keyvals==NULL)
+    smpi_type_keyvals = xbt_dict_new();
 
   smpi_type_key_elem value = (smpi_type_key_elem) xbt_new0(s_smpi_mpi_type_key_elem_t,1);
 
@@ -1647,7 +1647,7 @@ int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
 int smpi_type_keyval_free(int* keyval){
   smpi_type_key_elem elem =
     static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(keyval), sizeof(int)));
-  if(!elem){
+  if(elem==0){
     return MPI_ERR_ARG;
   }
   xbt_dict_remove_ext(smpi_type_keyvals, reinterpret_cast<const char*>(keyval), sizeof(int));

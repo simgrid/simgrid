@@ -415,7 +415,7 @@ void smpi_mpi_start(MPI_Request request)
 
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime = 0.0;
-    if(request->detached != 0 || (request->flags & (ISEND|SSEND))){// issend should be treated as isend
+    if(request->detached != 0 || ((request->flags & (ISEND|SSEND)) != 0)){// issend should be treated as isend
       //isend and send timings may be different
       sleeptime = ((request->flags & ISEND) != 0)? smpi_ois(request->size) : smpi_os(request->size);
     }
@@ -671,7 +671,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   MPI_Request req = *request;
   smpi_empty_status(status);
 
-  if(!((req->detached != 0) && req->flags & SEND) && ((req->flags & PREPARED) == 0)){
+  if(!((req->detached != 0) && ((req->flags & SEND) != 0)) && ((req->flags & PREPARED) == 0)){
     if(status != MPI_STATUS_IGNORE) {
       int src = req->src == MPI_ANY_SOURCE ? req->real_src : req->src;
       status->MPI_SOURCE = smpi_group_rank(smpi_comm_group(req->comm), src);
@@ -708,7 +708,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
     }
   }
 
-  if (TRACE_smpi_view_internals() && req->flags & RECV){
+  if (TRACE_smpi_view_internals() && ((req->flags & RECV) != 0)){
     int rank = smpi_process_index();
     int src_traced = (req->src == MPI_ANY_SOURCE ? req->real_src : req->src);
     TRACE_smpi_recv(rank, src_traced, rank);

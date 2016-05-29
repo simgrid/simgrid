@@ -305,7 +305,7 @@ void smpi_comm_cleanup_attributes(MPI_Comm comm){
     xbt_dict_foreach(comm->attributes, cursor, key, value){
       smpi_comm_key_elem elem =
          static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null(smpi_comm_keyvals, reinterpret_cast<const char*>(key)));
-      if(elem!=NULL &&  elem->delete_fn)
+      if(elem!=NULL &&  elem->delete_fn!=NULL)
         elem->delete_fn(comm, *key, value, &flag);
     }
     xbt_dict_free(&comm->attributes);

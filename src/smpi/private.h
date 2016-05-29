@@ -234,8 +234,8 @@ XBT_PRIVATE int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void*
                        MPI_Comm comm);
 
 XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
-XBT_PRIVATE MPI_Op smpi_op_new(MPI_User_function * function, int commute);
-XBT_PRIVATE int smpi_op_is_commute(MPI_Op op);
+XBT_PRIVATE MPI_Op smpi_op_new(MPI_User_function * function, bool commute);
+XBT_PRIVATE bool smpi_op_is_commute(MPI_Op op);
 XBT_PRIVATE void smpi_op_destroy(MPI_Op op);
 XBT_PRIVATE void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
 
@@ -399,7 +399,7 @@ XBT_PRIVATE int smpi_type_keyval_free(int* keyval);
 // utilities
 extern XBT_PRIVATE double smpi_cpu_threshold;
 extern XBT_PRIVATE double smpi_running_power;
-extern XBT_PRIVATE int smpi_privatize_global_variables;
+extern XBT_PRIVATE bool smpi_privatize_global_variables;
 extern XBT_PRIVATE char* smpi_start_data_exe; //start of the data+bss segment of the executable
 extern XBT_PRIVATE int smpi_size_data_exe; //size of the data+bss segment of the executable
 

@@ -46,7 +46,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 
   process_count+=num_processes;
 
-  if(!smpi_instances){
+  if(smpi_instances==NULL){
     smpi_instances = xbt_dict_new_homogeneous(xbt_free_f);
   }
 
@@ -57,7 +57,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 //get the index of the process in the process_data array
 void smpi_deployment_register_process(const char* instance_id, int rank, int index,MPI_Comm** comm, xbt_bar_t* bar){
 
-  if(!smpi_instances){//no instance registered, we probably used smpirun.
+  if(smpi_instances==NULL){//no instance registered, we probably used smpirun.
     index_to_process_data[index]=index;
     *bar = NULL;
     *comm = NULL;

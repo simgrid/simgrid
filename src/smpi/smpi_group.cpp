@@ -113,7 +113,7 @@ int smpi_group_rank(MPI_Group group, int index)
   ptr_rank = static_cast<int*>(xbt_dict_get_or_null(group->index_to_rank_map, key));
   xbt_free(key);
 
-  if (!ptr_rank)
+  if (ptr_rank==NULL)
     return MPI_UNDEFINED;
   return *ptr_rank;
 }

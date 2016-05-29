@@ -80,7 +80,7 @@ double smpi_running_power;
 int smpi_loaded_page = -1;
 char* smpi_start_data_exe = NULL;
 int smpi_size_data_exe = 0;
-int smpi_privatize_global_variables;
+bool smpi_privatize_global_variables;
 double smpi_total_benched_time = 0;
 smpi_privatisation_region_t smpi_privatisation_regions;
 
@@ -414,7 +414,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
 
     // if we already have some data, check whether sample_2 should get one more bench or whether it should emulate
     // the computation instead
-    data->benching = !sample_enough_benchs(data);
+    data->benching = (sample_enough_benchs(data) == 0);
     XBT_DEBUG("XXXX Re-entering the benched nest %s. %s",loc,
              (data->benching?"more benching needed":"we have enough data, skip computes"));
   }
@@ -597,7 +597,7 @@ void* smpi_shared_get_call(const char* func, const char* input) {
 void* smpi_shared_set_call(const char* func, const char* input, void* data) {
    char* loc = bprintf("%s:%s", func, input);
 
-   if(!calls) {
+   if(calls==0) {
       calls = xbt_dict_new_homogeneous(NULL);
    }
    xbt_dict_set(calls, loc, data, NULL);
@@ -651,7 +651,7 @@ int smpi_is_privatisation_file(char* file)
 void smpi_initialize_global_memory_segments(){
 
 #if !HAVE_PRIVATIZATION
-  smpi_privatize_global_variables=0;
+  smpi_privatize_global_variables=false;
   xbt_die("You are trying to use privatization on a system that does not support it. Don't.");
   return;
 #else
@@ -661,7 +661,7 @@ void smpi_initialize_global_memory_segments(){
   XBT_DEBUG ("bss+data segment found : size %d starting at %p", smpi_size_data_exe, smpi_start_data_exe );
 
   if (smpi_size_data_exe == 0){//no need to switch
-    smpi_privatize_global_variables=0;
+    smpi_privatize_global_variables=false;
     return;
   }
 

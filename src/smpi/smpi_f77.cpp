@@ -796,7 +796,7 @@ void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, i
   tkey[keylen]='\0';
   *ierr = MPI_Info_get(smpi_info_f2c(*info),tkey,*valuelen, value, flag);
   xbt_free(tkey);
-  if(*flag==true){
+  if(*flag!=0){
     int replace=0;
     int i=0;
     for (i=0; i<*valuelen; i++){
