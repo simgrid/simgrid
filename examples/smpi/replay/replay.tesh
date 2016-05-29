@@ -231,8 +231,8 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu-threshold' to '-1'
-> [Jupiter:1:(2) 0.164463] [smpi_replay/VERBOSE] 1 recv 0 1e6 0.164463
 > [Tremblay:0:(1) 0.164463] [smpi_replay/VERBOSE] 0 send 1 1e6 0.164463
+> [Jupiter:1:(2) 0.164463] [smpi_replay/VERBOSE] 1 recv 0 1e6 0.164463
 > [Jupiter:1:(2) 13.271310] [smpi_replay/VERBOSE] 1 compute 1e9 13.106847
 > [Jupiter:1:(2) 13.271310] [smpi_replay/VERBOSE] 1 Isend 0 1e6 0.000000
 > [Jupiter:1:(2) 13.271310] [smpi_replay/VERBOSE] 1 Irecv 0 1e6 0.000000
@@ -253,8 +253,8 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu-threshold' to '-1'
-> [Jupiter:1:(2) 1.491472] [smpi_replay/VERBOSE] 1 recv 0 1e7 1.491472
 > [Tremblay:0:(1) 1.491472] [smpi_replay/VERBOSE] 0 send 1 1e7 1.491472
+> [Jupiter:1:(2) 1.491472] [smpi_replay/VERBOSE] 1 recv 0 1e7 1.491472
 > [Tremblay:0:(1) 1.493448] [smpi_replay/VERBOSE] 0 barrier 0.001976
 > [Jupiter:1:(2) 1.494910] [smpi_replay/VERBOSE] 1 barrier 0.003438
 > [Fafard:2:(3) 1.495424] [smpi_replay/VERBOSE] 2 barrier 1.495424
@@ -327,9 +327,10 @@ $ ../../smpi_script/bin/smpirun -ext smpi_replay --log=replay.thresh:critical --
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu-threshold' to '-1'
 > [Tremblay:0:(1) 0.004041] [smpi_replay/VERBOSE] 0 allToAll 500 500 0.004041
-> [Jupiter:1:(2) 0.006920] [smpi_replay/VERBOSE] 1 allToAll 500 500 0.006920
 > [Fafard:2:(3) 0.006920] [smpi_replay/VERBOSE] 2 allToAll 500 500 0.006920
-> [Fafard:2:(3) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
+> [Jupiter:1:(2) 0.006920] [smpi_replay/VERBOSE] 1 allToAll 500 500 0.006920
+> [Jupiter:1:(2) 0.006920] [smpi_replay/INFO] Simulation time 0.006920
+
 
 
 $ rm -f replay/one_trace

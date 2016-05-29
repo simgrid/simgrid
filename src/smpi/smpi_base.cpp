@@ -390,7 +390,7 @@ void smpi_mpi_start(MPI_Request request)
 
     //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
     double sleeptime = (request->detached != 0) ? smpi_or(request->size) : 0.0;
-    if(sleeptime >= 0.0){
+    if(sleeptime > 0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("receiving size of %zu : sleep %f ", request->size, smpi_or(request->size));
     }
@@ -420,7 +420,7 @@ void smpi_mpi_start(MPI_Request request)
       sleeptime = ((request->flags & ISEND) != 0)? smpi_ois(request->size) : smpi_os(request->size);
     }
 
-    if(sleeptime >= 0.0){
+    if(sleeptime > 0.0){
         simcall_process_sleep(sleeptime);
         XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
     }
