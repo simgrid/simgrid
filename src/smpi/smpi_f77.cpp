@@ -58,7 +58,7 @@ static char* get_key_id(char* key, int id) {
 }
 
 static void smpi_init_fortran_types(){
-   if(!comm_lookup){
+   if(comm_lookup == NULL){
      comm_lookup = xbt_dict_new_homogeneous(NULL);
      smpi_comm_c2f(MPI_COMM_WORLD);
      group_lookup = xbt_dict_new_homogeneous(NULL);
@@ -68,13 +68,13 @@ static void smpi_init_fortran_types(){
      info_lookup = xbt_dict_new_homogeneous(NULL);
      smpi_type_c2f(MPI_BYTE);//MPI_BYTE
      smpi_type_c2f(MPI_CHAR);//MPI_CHARACTER
-     #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
+#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
      smpi_type_c2f(MPI_INT);//MPI_LOGICAL
      smpi_type_c2f(MPI_INT);//MPI_INTEGER
-     #else
+#else
      smpi_type_c2f(MPI_LONG);//MPI_LOGICAL
      smpi_type_c2f(MPI_LONG);//MPI_INTEGER
-     #endif
+#endif
      smpi_type_c2f(MPI_INT8_T);//MPI_INTEGER1
      smpi_type_c2f(MPI_INT16_T);//MPI_INTEGER2
      smpi_type_c2f(MPI_INT32_T);//MPI_INTEGER4
@@ -85,11 +85,11 @@ static void smpi_init_fortran_types(){
      smpi_type_c2f(MPI_DOUBLE);//MPI_DOUBLE_PRECISION
      smpi_type_c2f(MPI_C_FLOAT_COMPLEX);//MPI_COMPLEX
      smpi_type_c2f(MPI_C_DOUBLE_COMPLEX);//MPI_DOUBLE_COMPLEX
-     #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
+#if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
      smpi_type_c2f(MPI_2INT);//MPI_2INTEGER
-     #else
+#else
      smpi_type_c2f(MPI_2LONG);//MPI_2INTEGER
-     #endif
+#endif
      smpi_type_c2f(MPI_UINT8_T);//MPI_LOGICAL1
      smpi_type_c2f(MPI_UINT16_T);//MPI_LOGICAL2
      smpi_type_c2f(MPI_UINT32_T);//MPI_LOGICAL4
@@ -137,14 +137,15 @@ MPI_Comm smpi_comm_f2c(int comm) {
   smpi_init_fortran_types();
   if(comm == -2) {
     return MPI_COMM_SELF;
-  }else if(comm==0){
+  } else if(comm==0){
     return MPI_COMM_WORLD;
-  } else if(comm_lookup && comm >= 0) {
+  } else if(comm_lookup != NULL && comm >= 0) {
       char key[KEY_SIZE];
-      MPI_Comm tmp =  (MPI_Comm)xbt_dict_get_or_null(comm_lookup,get_key_id(key, comm));
+      MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(comm_lookup,get_key_id(key, comm)));
       return tmp != NULL ? tmp : MPI_COMM_NULL ;
+  } else {
+    return MPI_COMM_NULL;
   }
-  return MPI_COMM_NULL;
 }
 
 int smpi_group_c2f(MPI_Group group) {
@@ -159,11 +160,12 @@ MPI_Group smpi_group_f2c(int group) {
   smpi_init_fortran_types();
   if(group == -2) {
     return MPI_GROUP_EMPTY;
-  } else if(group_lookup && group >= 0) {
+  } else if(group_lookup != NULL && group >= 0) {
     char key[KEY_SIZE];
-    return (MPI_Group)xbt_dict_get_or_null(group_lookup, get_key(key, group));
+    return static_cast<MPI_Group>(xbt_dict_get_or_null(group_lookup, get_key(key, group)));
+  } else {
+    return MPI_GROUP_NULL;
   }
-  return MPI_GROUP_NULL;
 }
 
 static void free_group(int group) {
@@ -182,8 +184,9 @@ int smpi_request_c2f(MPI_Request req) {
 MPI_Request smpi_request_f2c(int req) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
-  if(req==MPI_FORTRAN_REQUEST_NULL)return MPI_REQUEST_NULL;
-  return (MPI_Request)xbt_dict_get(request_lookup, get_key_id(key, req));
+  if(req==MPI_FORTRAN_REQUEST_NULL)
+    return MPI_REQUEST_NULL;
+  return static_cast<MPI_Request>(xbt_dict_get(request_lookup, get_key_id(key, req)));
 }
 
 static void free_request(int request) {
@@ -203,7 +206,7 @@ int smpi_type_c2f(MPI_Datatype datatype) {
 MPI_Datatype smpi_type_f2c(int datatype) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
-  return datatype >= 0 ? (MPI_Datatype)xbt_dict_get_or_null(datatype_lookup, get_key(key, datatype)): MPI_DATATYPE_NULL;
+  return datatype >= 0 ? static_cast<MPI_Datatype>(xbt_dict_get_or_null(datatype_lookup, get_key(key, datatype))): MPI_DATATYPE_NULL;
 }
 
 static void free_datatype(int datatype) {
@@ -222,7 +225,7 @@ int smpi_op_c2f(MPI_Op op) {
 MPI_Op smpi_op_f2c(int op) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
-   return op >= 0 ? (MPI_Op)xbt_dict_get_or_null(op_lookup,  get_key(key, op)): MPI_OP_NULL;
+   return op >= 0 ? static_cast<MPI_Op>(xbt_dict_get_or_null(op_lookup,  get_key(key, op))): MPI_OP_NULL;
 }
 
 static void free_op(int op) {
@@ -241,7 +244,7 @@ int smpi_win_c2f(MPI_Win win) {
 MPI_Win smpi_win_f2c(int win) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
-   return win >= 0 ? (MPI_Win)xbt_dict_get_or_null(win_lookup,  get_key(key, win)) : MPI_WIN_NULL;
+   return win >= 0 ? static_cast<MPI_Win>(xbt_dict_get_or_null(win_lookup,  get_key(key, win))) : MPI_WIN_NULL;
 }
 
 static void free_win(int win) {
@@ -260,7 +263,7 @@ int smpi_info_c2f(MPI_Info info) {
 MPI_Info smpi_info_f2c(int info) {
   smpi_init_fortran_types();
   char key[KEY_SIZE];
-   return info >= 0 ? (MPI_Info)xbt_dict_get_or_null(info_lookup,  get_key(key, info)) : MPI_INFO_NULL;
+   return info >= 0 ? static_cast<MPI_Info>(xbt_dict_get_or_null(info_lookup,  get_key(key, info))) : MPI_INFO_NULL;
 }
 
 static void free_info(int info) {
@@ -369,7 +372,7 @@ void mpi_initialized_(int* flag, int* ierr){
 
 void mpi_send_init_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-  buf = (char *) FORT_BOTTOM(buf);
+  buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Send_init(buf, *count, smpi_type_f2c(*datatype), *dst, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
     *request = smpi_request_c2f(req);
@@ -378,7 +381,7 @@ void mpi_send_init_(void *buf, int* count, int* datatype, int* dst, int* tag, in
 
 void mpi_isend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-  buf = (char *) FORT_BOTTOM(buf);
+  buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Isend(buf, *count, smpi_type_f2c(*datatype), *dst, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
     *request = smpi_request_c2f(req);
@@ -387,7 +390,7 @@ void mpi_isend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* c
 
 void mpi_irsend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-  buf = (char *) FORT_BOTTOM(buf);
+  buf = static_cast<char *>(FORT_BOTTOM(buf));
   *ierr = MPI_Irsend(buf, *count, smpi_type_f2c(*datatype), *dst, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
     *request = smpi_request_c2f(req);
@@ -395,26 +398,26 @@ void mpi_irsend_(void *buf, int* count, int* datatype, int* dst, int* tag, int* 
 }
 
 void mpi_send_(void* buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* ierr) {
-  buf = (char *) FORT_BOTTOM(buf);
+  buf = static_cast<char *>(FORT_BOTTOM(buf));
    *ierr = MPI_Send(buf, *count, smpi_type_f2c(*datatype), *dst, *tag, smpi_comm_f2c(*comm));
 }
 
 void mpi_rsend_(void* buf, int* count, int* datatype, int* dst, int* tag, int* comm, int* ierr) {
-  buf = (char *) FORT_BOTTOM(buf);
+  buf = static_cast<char *>(FORT_BOTTOM(buf));
    *ierr = MPI_Rsend(buf, *count, smpi_type_f2c(*datatype), *dst, *tag, smpi_comm_f2c(*comm));
 }
 
 void mpi_sendrecv_(void* sendbuf, int* sendcount, int* sendtype, int* dst, int* sendtag, void *recvbuf, int* recvcount,
                    int* recvtype, int* src, int* recvtag, int* comm, MPI_Status* status, int* ierr) {
-  sendbuf = (char *) FORT_BOTTOM(sendbuf);
-  recvbuf = (char *) FORT_BOTTOM(recvbuf);
+  sendbuf = static_cast<char *>( FORT_BOTTOM(sendbuf));
+  recvbuf = static_cast<char *>( FORT_BOTTOM(recvbuf));
    *ierr = MPI_Sendrecv(sendbuf, *sendcount, smpi_type_f2c(*sendtype), *dst, *sendtag, recvbuf, *recvcount,
                         smpi_type_f2c(*recvtype), *src, *recvtag, smpi_comm_f2c(*comm), FORT_STATUS_IGNORE(status));
 }
 
 void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-  buf = (char *) FORT_BOTTOM(buf);
+  buf = static_cast<char *>( FORT_BOTTOM(buf));
   *ierr = MPI_Recv_init(buf, *count, smpi_type_f2c(*datatype), *src, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
     *request = smpi_request_c2f(req);
@@ -423,7 +426,7 @@ void mpi_recv_init_(void *buf, int* count, int* datatype, int* src, int* tag, in
 
 void mpi_irecv_(void *buf, int* count, int* datatype, int* src, int* tag, int* comm, int* request, int* ierr) {
   MPI_Request req;
-  buf = (char *) FORT_BOTTOM(buf);
+  buf = static_cast<char *>( FORT_BOTTOM(buf));
   *ierr = MPI_Irecv(buf, *count, smpi_type_f2c(*datatype), *src, *tag, smpi_comm_f2c(*comm), &req);
   if(*ierr == MPI_SUCCESS) {
     *request = smpi_request_c2f(req);
@@ -431,7 +434,7 @@ void mpi_irecv_(void *buf, int* count, int* datatype, int* src, int* tag, int* c
 }
 
 void mpi_recv_(void* buf, int* count, int* datatype, int* src, int* tag, int* comm, MPI_Status* status, int* ierr) {
-  buf = (char *) FORT_BOTTOM(buf);
+  buf = static_cast<char *>( FORT_BOTTOM(buf));
   *ierr = MPI_Recv(buf, *count, smpi_type_f2c(*datatype), *src, *tag, smpi_comm_f2c(*comm), status);
 }
 
@@ -450,7 +453,7 @@ void mpi_startall_(int* count, int* requests, int* ierr) {
     reqs[i] = smpi_request_f2c(requests[i]);
   }
   *ierr = MPI_Startall(*count, reqs);
-  free(reqs);
+  xbt_free(reqs);
 }
 
 void mpi_wait_(int* request, MPI_Status* status, int* ierr) {
@@ -476,7 +479,7 @@ void mpi_waitany_(int* count, int* requests, int* index, MPI_Status* status, int
       free_request(requests[*index]);
       requests[*index]=MPI_FORTRAN_REQUEST_NULL;
   }
-  free(reqs);
+  xbt_free(reqs);
 }
 
 void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr) {
@@ -495,7 +498,7 @@ void mpi_waitall_(int* count, int* requests, MPI_Status* status, int* ierr) {
       }
   }
 
-  free(reqs);
+  xbt_free(reqs);
 }
 
 void mpi_barrier_(int* comm, int* ierr) {
@@ -507,65 +510,65 @@ void mpi_bcast_(void *buf, int* count, int* datatype, int* root, int* comm, int*
 }
 
 void mpi_reduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* root, int* comm, int* ierr) {
-  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
-  sendbuf = (char *) FORT_BOTTOM(sendbuf);
-  recvbuf = (char *) FORT_BOTTOM(recvbuf);
+  sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
+  sendbuf = static_cast<char *>( FORT_BOTTOM(sendbuf));
+  recvbuf = static_cast<char *>( FORT_BOTTOM(recvbuf));
   *ierr = MPI_Reduce(sendbuf, recvbuf, *count, smpi_type_f2c(*datatype), smpi_op_f2c(*op), *root, smpi_comm_f2c(*comm));
 }
 
 void mpi_allreduce_(void* sendbuf, void* recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr) {
-  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
+  sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
   *ierr = MPI_Allreduce(sendbuf, recvbuf, *count, smpi_type_f2c(*datatype), smpi_op_f2c(*op), smpi_comm_f2c(*comm));
 }
 
 void mpi_reduce_scatter_(void* sendbuf, void* recvbuf, int* recvcounts, int* datatype, int* op, int* comm, int* ierr) {
-  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
+  sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
   *ierr = MPI_Reduce_scatter(sendbuf, recvbuf, recvcounts, smpi_type_f2c(*datatype),
                         smpi_op_f2c(*op), smpi_comm_f2c(*comm));
 }
 
 void mpi_scatter_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype,
                    int* root, int* comm, int* ierr) {
-  recvbuf = (char *) FORT_IN_PLACE(recvbuf);
+  recvbuf = static_cast<char *>( FORT_IN_PLACE(recvbuf));
   *ierr = MPI_Scatter(sendbuf, *sendcount, smpi_type_f2c(*sendtype),
                       recvbuf, *recvcount, smpi_type_f2c(*recvtype), *root, smpi_comm_f2c(*comm));
 }
 
 void mpi_scatterv_(void* sendbuf, int* sendcounts, int* displs, int* sendtype,
                    void* recvbuf, int* recvcount, int* recvtype, int* root, int* comm, int* ierr) {
-  recvbuf = (char *) FORT_IN_PLACE(recvbuf);
+  recvbuf = static_cast<char *>( FORT_IN_PLACE(recvbuf));
   *ierr = MPI_Scatterv(sendbuf, sendcounts, displs, smpi_type_f2c(*sendtype),
                       recvbuf, *recvcount, smpi_type_f2c(*recvtype), *root, smpi_comm_f2c(*comm));
 }
 
 void mpi_gather_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype,
                   int* root, int* comm, int* ierr) {
-  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
-  sendbuf = (char *) FORT_BOTTOM(sendbuf);
-  recvbuf = (char *) FORT_BOTTOM(recvbuf);
+  sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
+  sendbuf = static_cast<char *>( FORT_BOTTOM(sendbuf));
+  recvbuf = static_cast<char *>( FORT_BOTTOM(recvbuf));
   *ierr = MPI_Gather(sendbuf, *sendcount, smpi_type_f2c(*sendtype),
                      recvbuf, *recvcount, smpi_type_f2c(*recvtype), *root, smpi_comm_f2c(*comm));
 }
 
 void mpi_gatherv_(void* sendbuf, int* sendcount, int* sendtype,
                   void* recvbuf, int* recvcounts, int* displs, int* recvtype, int* root, int* comm, int* ierr) {
-  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
-  sendbuf = (char *) FORT_BOTTOM(sendbuf);
-  recvbuf = (char *) FORT_BOTTOM(recvbuf);
+  sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
+  sendbuf = static_cast<char *>( FORT_BOTTOM(sendbuf));
+  recvbuf = static_cast<char *>( FORT_BOTTOM(recvbuf));
   *ierr = MPI_Gatherv(sendbuf, *sendcount, smpi_type_f2c(*sendtype),
                      recvbuf, recvcounts, displs, smpi_type_f2c(*recvtype), *root, smpi_comm_f2c(*comm));
 }
 
 void mpi_allgather_(void* sendbuf, int* sendcount, int* sendtype, void* recvbuf, int* recvcount, int* recvtype,
                      int* comm, int* ierr) {
-  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
+  sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
   *ierr = MPI_Allgather(sendbuf, *sendcount, smpi_type_f2c(*sendtype),
                         recvbuf, *recvcount, smpi_type_f2c(*recvtype), smpi_comm_f2c(*comm));
 }
 
 void mpi_allgatherv_(void* sendbuf, int* sendcount, int* sendtype,
                      void* recvbuf, int* recvcounts,int* displs, int* recvtype, int* comm, int* ierr) {
-  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
+  sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
   *ierr = MPI_Allgatherv(sendbuf, *sendcount, smpi_type_f2c(*sendtype),
                         recvbuf, recvcounts, displs, smpi_type_f2c(*recvtype), smpi_comm_f2c(*comm));
 }
@@ -704,7 +707,7 @@ void mpi_win_free_( int* win, int* ierr){
 
 void mpi_win_create_( int *base, MPI_Aint* size, int* disp_unit, int* info, int* comm, int *win, int* ierr){
   MPI_Win tmp;
-  *ierr =  MPI_Win_create( (void*)base, *size, *disp_unit, smpi_info_f2c(*info), smpi_comm_f2c(*comm),&tmp);
+  *ierr =  MPI_Win_create( static_cast<void*>(base), *size, *disp_unit, smpi_info_f2c(*info), smpi_comm_f2c(*comm),&tmp);
  if(*ierr == MPI_SUCCESS) {
    *win = smpi_win_c2f(tmp);
  }
@@ -727,22 +730,24 @@ void mpi_win_wait_(int* win, int* ierr){
 }
 
 void mpi_win_set_name_ (int*  win, char * name, int* ierr, int size){
- //handle trailing blanks
- while(name[size-1]==' ')size--;
- while(*name==' '){//handle leading blanks
-   size --;
-   name++;
- }
- char* tname = xbt_new(char,size+1);
- strncpy(tname, name, size);
- tname[size]='\0';
- *ierr = MPI_Win_set_name(smpi_win_f2c(*win), tname);
- xbt_free(tname);
+  //handle trailing blanks
+  while(name[size-1]==' ')
+    size--;
+  while(*name==' '){//handle leading blanks
+    size--;
+    name++;
+  }
+  char* tname = xbt_new(char,size+1);
+  strncpy(tname, name, size);
+  tname[size]='\0';
+  *ierr = MPI_Win_set_name(smpi_win_f2c(*win), tname);
+  xbt_free(tname);
 }
 
 void mpi_win_get_name_ (int*  win, char * name, int* len, int* ierr){
- *ierr = MPI_Win_get_name(smpi_win_f2c(*win),name,len);
- if(*len>0) name[*len]=' ';//blank padding, not \0
+  *ierr = MPI_Win_get_name(smpi_win_f2c(*win),name,len);
+  if(*len>0) 
+    name[*len]=' ';//blank padding, not \0
 }
 
 void mpi_info_create_( int *info, int* ierr){
@@ -754,48 +759,53 @@ void mpi_info_create_( int *info, int* ierr){
 }
 
 void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int keylen, unsigned int valuelen){
- //handle trailing blanks
- while(key[keylen-1]==' ')keylen--;
- while(*key==' '){//handle leading blanks
-   keylen --;
-   key++;
- }
- char* tkey = xbt_new(char,keylen+1);
- strncpy(tkey, key, keylen);
- tkey[keylen]='\0';  
- 
- while(value[valuelen-1]==' ')valuelen--;
- while(*value==' '){//handle leading blanks
-   valuelen --;
-   value++;
- }
- char* tvalue = xbt_new(char,valuelen+1);
- strncpy(tvalue, value, valuelen);
- 
- tvalue[valuelen]='\0'; 
- *ierr =  MPI_Info_set( smpi_info_f2c(*info), tkey, tvalue);
- xbt_free(tkey);
+  //handle trailing blanks
+  while(key[keylen-1]==' ')
+    keylen--;
+  while(*key==' '){//handle leading blanks
+    keylen--;
+    key++;
+  }
+  char* tkey = xbt_new(char,keylen+1);
+  strncpy(tkey, key, keylen);
+  tkey[keylen]='\0';  
+
+  while(value[valuelen-1]==' ')
+    valuelen--;
+  while(*value==' '){//handle leading blanks
+    valuelen--;
+    value++;
+  }
+  char* tvalue = xbt_new(char,valuelen+1);
+  strncpy(tvalue, value, valuelen);
+
+  tvalue[valuelen]='\0'; 
+  *ierr =  MPI_Info_set( smpi_info_f2c(*info), tkey, tvalue);
+  xbt_free(tkey);
 }
 
 void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, int* ierr, unsigned int keylen ){
- while(key[keylen-1]==' ')keylen--;
- while(*key==' '){//handle leading blanks
-   keylen --;
-   key++;
- }  char* tkey = xbt_new(char,keylen+1);
- strncpy(tkey, key, keylen);
- tkey[keylen]='\0';
- *ierr = MPI_Info_get(smpi_info_f2c(*info),tkey,*valuelen, value, flag);
- xbt_free(tkey);
- if(*flag==true){
-   int replace=0, i=0;
-   for (i=0; i<*valuelen; i++){
-     if(value[i]=='\0')
-       replace=1;
-     if(replace)
-       value[i]=' ';
-   }
- } 
+  while(key[keylen-1]==' ')
+    keylen--;
+  while(*key==' '){//handle leading blanks
+    keylen--;
+    key++;
+  }  
+  char* tkey = xbt_new(char,keylen+1);
+  strncpy(tkey, key, keylen);
+  tkey[keylen]='\0';
+  *ierr = MPI_Info_get(smpi_info_f2c(*info),tkey,*valuelen, value, flag);
+  xbt_free(tkey);
+  if(*flag==true){
+    int replace=0;
+    int i=0;
+    for (i=0; i<*valuelen; i++){
+      if(value[i]=='\0')
+        replace=1;
+      if(replace)
+        value[i]=' ';
+    }
+  } 
 }
 
 void mpi_info_free_(int* info, int* ierr){
@@ -808,19 +818,19 @@ void mpi_info_free_(int* info, int* ierr){
 
 void mpi_get_( int *origin_addr, int* origin_count, int* origin_datatype, int *target_rank,
     MPI_Aint* target_disp, int *target_count, int* tarsmpi_type_f2c, int* win, int* ierr){
-  *ierr =  MPI_Get( (void*)origin_addr,*origin_count, smpi_type_f2c(*origin_datatype),*target_rank,
+  *ierr =  MPI_Get( static_cast<void*>(origin_addr),*origin_count, smpi_type_f2c(*origin_datatype),*target_rank,
       *target_disp, *target_count,smpi_type_f2c(*tarsmpi_type_f2c), smpi_win_f2c(*win));
 }
 
 void mpi_accumulate_( int *origin_addr, int* origin_count, int* origin_datatype, int *target_rank,
     MPI_Aint* target_disp, int *target_count, int* tarsmpi_type_f2c, int* op, int* win, int* ierr){
-  *ierr =  MPI_Accumulate( (void*)origin_addr,*origin_count, smpi_type_f2c(*origin_datatype),*target_rank,
+  *ierr =  MPI_Accumulate( static_cast<void *>(origin_addr),*origin_count, smpi_type_f2c(*origin_datatype),*target_rank,
       *target_disp, *target_count,smpi_type_f2c(*tarsmpi_type_f2c), smpi_op_f2c(*op), smpi_win_f2c(*win));
 }
 
 void mpi_put_( int *origin_addr, int* origin_count, int* origin_datatype, int *target_rank,
     MPI_Aint* target_disp, int *target_count, int* tarsmpi_type_f2c, int* win, int* ierr){
-  *ierr =  MPI_Put( (void*)origin_addr,*origin_count, smpi_type_f2c(*origin_datatype),*target_rank,
+  *ierr =  MPI_Put( static_cast<void *>(origin_addr),*origin_count, smpi_type_f2c(*origin_datatype),*target_rank,
       *target_disp, *target_count,smpi_type_f2c(*tarsmpi_type_f2c), smpi_win_f2c(*win));
 }
 
@@ -874,7 +884,8 @@ void mpi_type_set_name_ (int*  datatype, char * name, int* ierr, int size){
 
 void mpi_type_get_name_ (int*  datatype, char * name, int* len, int* ierr){
  *ierr = MPI_Type_get_name(smpi_type_f2c(*datatype),name,len);
-  if(*len>0) name[*len]=' ';
+  if(*len>0) 
+    name[*len]=' ';
 }
 
 void mpi_type_get_attr_ (int* type, int* type_keyval, void *attribute_val, int* flag, int* ierr){
@@ -894,7 +905,7 @@ void mpi_type_delete_attr_ (int* type, int* type_keyval, int* ierr){
 
 void mpi_type_create_keyval_ (void* copy_fn, void*  delete_fn, int* keyval, void* extra_state, int* ierr){
 
- *ierr = MPI_Type_create_keyval((MPI_Type_copy_attr_function*)copy_fn, (MPI_Type_delete_attr_function*) delete_fn,
+ *ierr = MPI_Type_create_keyval(reinterpret_cast<MPI_Type_copy_attr_function*>(copy_fn), reinterpret_cast<MPI_Type_delete_attr_function*>(delete_fn),
                                 keyval,  extra_state) ;
 }
 
@@ -903,7 +914,7 @@ void mpi_type_free_keyval_ (int* keyval, int* ierr) {
 }
 
 void mpi_pcontrol_ (int* level , int* ierr){
- *ierr = MPI_Pcontrol(*(const int*)level);
+ *ierr = MPI_Pcontrol(*static_cast<const int*>(level));
 }
 
 void mpi_type_get_extent_ (int* datatype, MPI_Aint * lb, MPI_Aint * extent, int* ierr){
@@ -918,7 +929,7 @@ void mpi_type_get_true_extent_ (int* datatype, MPI_Aint * lb, MPI_Aint * extent,
 
 void mpi_op_create_ (void * function, int* commute, int* op, int* ierr){
   MPI_Op tmp;
- *ierr = MPI_Op_create((MPI_User_function*)function,* commute, &tmp);
+ *ierr = MPI_Op_create(reinterpret_cast<MPI_User_function*>(function),*commute, &tmp);
  if(*ierr == MPI_SUCCESS) {
    *op = smpi_op_c2f(tmp);
  }
@@ -1028,7 +1039,7 @@ void mpi_comm_delete_attr_ (int* comm, int* comm_keyval, int* ierr){
 
 void mpi_comm_create_keyval_ (void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr){
 
- *ierr = MPI_Comm_create_keyval((MPI_Comm_copy_attr_function*)copy_fn,  (MPI_Comm_delete_attr_function*)delete_fn,
+ *ierr = MPI_Comm_create_keyval(reinterpret_cast<MPI_Comm_copy_attr_function*>(copy_fn),  reinterpret_cast<MPI_Comm_delete_attr_function*>(delete_fn),
          keyval,  extra_state) ;
 }
 
@@ -1038,7 +1049,8 @@ void mpi_comm_free_keyval_ (int* keyval, int* ierr) {
 
 void mpi_comm_get_name_ (int* comm, char* name, int* len, int* ierr){
  *ierr = MPI_Comm_get_name(smpi_comm_f2c(*comm), name, len);
-  if(*len>0) name[*len]=' ';
+  if(*len>0) 
+    name[*len]=' ';
 }
 
 void mpi_comm_compare_ (int* comm1, int* comm2, int *result, int* ierr){
@@ -1079,12 +1091,11 @@ void mpi_testany_ (int* count, int* requests, int *index, int *flag, MPI_Status*
     reqs[i] = smpi_request_f2c(requests[i]);
   }
   *ierr = MPI_Testany(*count, reqs, index, flag, FORT_STATUS_IGNORE(status));
-  if(*index!=MPI_UNDEFINED)
-  if(reqs[*index]==MPI_REQUEST_NULL){
+  if(*index!=MPI_UNDEFINED && reqs[*index]==MPI_REQUEST_NULL){
     free_request(requests[*index]);
     requests[*index]=MPI_FORTRAN_REQUEST_NULL;
   }
-  free(reqs);
+  xbt_free(reqs);
 }
 
 void mpi_waitsome_ (int* incount, int* requests, int *outcount, int *indices, MPI_Status* status, int* ierr)
@@ -1103,7 +1114,7 @@ void mpi_waitsome_ (int* incount, int* requests, int *outcount, int *indices, MP
         requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
     }
   }
-  free(reqs);
+  xbt_free(reqs);
 }
 
 void mpi_reduce_local_ (void *inbuf, void *inoutbuf, int* count, int* datatype, int* op, int* ierr){
@@ -1114,7 +1125,7 @@ void mpi_reduce_local_ (void *inbuf, void *inoutbuf, int* count, int* datatype, 
 void mpi_reduce_scatter_block_ (void *sendbuf, void *recvbuf, int* recvcount, int* datatype, int* op, int* comm,
                                 int* ierr)
 {
-  sendbuf = (char *) FORT_IN_PLACE(sendbuf);
+  sendbuf = static_cast<char *>( FORT_IN_PLACE(sendbuf));
  *ierr = MPI_Reduce_scatter_block(sendbuf, recvbuf, *recvcount, smpi_type_f2c(*datatype), smpi_op_f2c(*op),
                                   smpi_comm_f2c(*comm));
 }
@@ -1200,27 +1211,27 @@ void mpi_error_class_ (int* errorcode, int* errorclass, int* ierr) {
 }
 
 void mpi_errhandler_create_ (void* function, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_create((MPI_Handler_function*)function, (MPI_Errhandler*)errhandler);
+ *ierr = MPI_Errhandler_create(reinterpret_cast<MPI_Handler_function*>(function), static_cast<MPI_Errhandler*>(errhandler));
 }
 
 void mpi_errhandler_free_ (void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_free((MPI_Errhandler*)errhandler);
+ *ierr = MPI_Errhandler_free(static_cast<MPI_Errhandler*>(errhandler));
 }
 
 void mpi_errhandler_get_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_get(smpi_comm_f2c(*comm), (MPI_Errhandler*) errhandler);
+ *ierr = MPI_Errhandler_get(smpi_comm_f2c(*comm), static_cast<MPI_Errhandler*>(errhandler));
 }
 
 void mpi_errhandler_set_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(smpi_comm_f2c(*comm), *(MPI_Errhandler*)errhandler);
+ *ierr = MPI_Errhandler_set(smpi_comm_f2c(*comm), *static_cast<MPI_Errhandler*>(errhandler));
 }
 
 void mpi_comm_set_errhandler_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(smpi_comm_f2c(*comm), *(MPI_Errhandler*)errhandler);
+ *ierr = MPI_Errhandler_set(smpi_comm_f2c(*comm), *static_cast<MPI_Errhandler*>(errhandler));
 }
 
 void mpi_comm_get_errhandler_ (int* comm, void* errhandler, int* ierr) {
- *ierr = MPI_Errhandler_set(smpi_comm_f2c(*comm), (MPI_Errhandler*)errhandler);
+ *ierr = MPI_Errhandler_set(smpi_comm_f2c(*comm), static_cast<MPI_Errhandler*>(errhandler));
 }
 
 void mpi_type_contiguous_ (int* count, int* old_type, int*  newtype, int* ierr) {
@@ -1255,14 +1266,12 @@ void mpi_testsome_ (int* incount, int*  requests, int* outcount, int* indices, M
   }
   *ierr = MPI_Testsome(*incount, reqs, outcount, indices, FORT_STATUSES_IGNORE(statuses));
   for(i=0;i<*incount;i++){
-    if(indices[i]){
-      if(reqs[indices[i]]==MPI_REQUEST_NULL){
-          free_request(requests[indices[i]]);
-          requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
-      }
+    if(indices[i] && reqs[indices[i]]==MPI_REQUEST_NULL){
+      free_request(requests[indices[i]]);
+      requests[indices[i]]=MPI_FORTRAN_REQUEST_NULL;
     }
   }
-  free(reqs);
+  xbt_free(reqs);
 }
 
 void mpi_comm_test_inter_ (int* comm, int* flag, int* ierr) {
@@ -1333,7 +1342,7 @@ void mpi_type_create_indexed_block_ (int* count, int* blocklength, int* indices,
 void mpi_type_struct_ (int* count, int* blocklens, MPI_Aint* indices, int* old_types, int*  newtype, int* ierr) {
   MPI_Datatype tmp;
   int i=0;
-  MPI_Datatype* types = (MPI_Datatype*)xbt_malloc(*count*sizeof(MPI_Datatype));
+  MPI_Datatype* types = static_cast<MPI_Datatype*>(xbt_malloc(*count*sizeof(MPI_Datatype)));
   for(i=0; i< *count; i++){
     types[i] = smpi_type_f2c(old_types[i]);
   }
@@ -1347,7 +1356,7 @@ void mpi_type_struct_ (int* count, int* blocklens, MPI_Aint* indices, int* old_t
 void mpi_type_create_struct_(int* count, int* blocklens, MPI_Aint* indices, int*  old_types, int*  newtype, int* ierr){
   MPI_Datatype tmp;
   int i=0;
-  MPI_Datatype* types = (MPI_Datatype*)xbt_malloc(*count*sizeof(MPI_Datatype));
+  MPI_Datatype* types = static_cast<MPI_Datatype*>(xbt_malloc(*count*sizeof(MPI_Datatype)));
   for(i=0; i< *count; i++){
     types[i] = smpi_type_f2c(old_types[i]);
   }
@@ -1449,7 +1458,7 @@ void mpi_rsend_init_ (void* buf, int* count, int* datatype, int *dest, int* tag,
 }
 
 void mpi_keyval_create_ (void* copy_fn, void* delete_fn, int* keyval, void* extra_state, int* ierr) {
- *ierr = MPI_Keyval_create((MPI_Copy_function*)copy_fn, (MPI_Delete_function*)delete_fn, keyval, extra_state);
+ *ierr = MPI_Keyval_create(reinterpret_cast<MPI_Copy_function*>(copy_fn),reinterpret_cast<MPI_Delete_function*>(delete_fn), keyval, extra_state);
 }
 
 void mpi_keyval_free_ (int* keyval, int* ierr) {
@@ -1486,7 +1495,7 @@ void mpi_type_get_contents_ (int* datatype, int* max_integers, int* max_addresse
                              int* array_of_integers, MPI_Aint* array_of_addresses,
  int* array_of_datatypes, int* ierr){
  *ierr = MPI_Type_get_contents(smpi_type_f2c(*datatype), *max_integers, *max_addresses,*max_datatypes,
-                               array_of_integers, array_of_addresses, (MPI_Datatype*)array_of_datatypes);
+                               array_of_integers, array_of_addresses, reinterpret_cast<MPI_Datatype*>(array_of_datatypes));
 }
 
 void mpi_type_create_darray_ (int* size, int* rank, int* ndims, int* array_of_gsizes, int* array_of_distribs,
@@ -1529,8 +1538,8 @@ void mpi_type_match_size_ (int* typeclass,int* size,int* datatype, int* ierr){
 
 void mpi_alltoallw_ ( void *sendbuf, int *sendcnts, int *sdispls, int* sendtypes, void *recvbuf, int *recvcnts,
                       int *rdispls, int* recvtypes, int* comm, int* ierr){
- *ierr = MPI_Alltoallw( sendbuf, sendcnts, sdispls, (MPI_Datatype*) sendtypes, recvbuf, recvcnts, rdispls,
-                        (MPI_Datatype*)recvtypes, smpi_comm_f2c(*comm));
+ *ierr = MPI_Alltoallw( sendbuf, sendcnts, sdispls, reinterpret_cast<MPI_Datatype*>(sendtypes), recvbuf, recvcnts, rdispls,
+                        reinterpret_cast<MPI_Datatype*>(recvtypes), smpi_comm_f2c(*comm));
 }
 
 void mpi_exscan_ (void *sendbuf, void *recvbuf, int* count, int* datatype, int* op, int* comm, int* ierr){
@@ -1574,7 +1583,7 @@ void mpi_comm_get_info_ (int* comm, int* info, int* ierr){
 }
 
 void mpi_comm_create_errhandler_ ( void *function, void *errhandler, int* ierr){
- *ierr = MPI_Comm_create_errhandler( (MPI_Comm_errhandler_fn*) function, (MPI_Errhandler*)errhandler);
+ *ierr = MPI_Comm_create_errhandler( reinterpret_cast<MPI_Comm_errhandler_fn*>(function), static_cast<MPI_Errhandler*>(errhandler));
 }
 
 void mpi_add_error_class_ ( int *errorclass, int* ierr){
@@ -1602,29 +1611,31 @@ void mpi_info_dup_ (int* info, int* newinfo, int* ierr){
 }
 
 void mpi_info_get_valuelen_ ( int* info, char *key, int *valuelen, int *flag, int* ierr, unsigned int keylen){
- while(key[keylen-1]==' ')keylen--;
- while(*key==' '){//handle leading blanks
-   keylen --;
-   key++;
- }
- char* tkey = xbt_new(char, keylen+1);
- strncpy(tkey, key, keylen);
- tkey[keylen]='\0';
- *ierr = MPI_Info_get_valuelen( smpi_info_f2c(*info), tkey, valuelen, flag);
- xbt_free(tkey);
+  while(key[keylen-1]==' ')
+    keylen--;
+  while(*key==' '){//handle leading blanks
+    keylen--;
+    key++;
+  }
+  char* tkey = xbt_new(char, keylen+1);
+  strncpy(tkey, key, keylen);
+  tkey[keylen]='\0';
+  *ierr = MPI_Info_get_valuelen( smpi_info_f2c(*info), tkey, valuelen, flag);
+  xbt_free(tkey);
 }
 
 void mpi_info_delete_ (int* info, char *key, int* ierr, unsigned int keylen){
- while(key[keylen-1]==' ')keylen--;
- while(*key==' '){//handle leading blanks
-   keylen --;
-   key++;
- }
- char* tkey = xbt_new(char, keylen+1);
- strncpy(tkey, key, keylen);
- tkey[keylen]='\0';
- *ierr = MPI_Info_delete(smpi_info_f2c(*info), tkey);
- xbt_free(tkey);
+  while(key[keylen-1]==' ')
+    keylen--;
+  while(*key==' '){//handle leading blanks
+    keylen--;
+    key++;
+  }
+  char* tkey = xbt_new(char, keylen+1);
+  strncpy(tkey, key, keylen);
+  tkey[keylen]='\0';
+  *ierr = MPI_Info_delete(smpi_info_f2c(*info), tkey);
+  xbt_free(tkey);
 }
 
 void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
@@ -1632,10 +1643,10 @@ void mpi_info_get_nkeys_ ( int* info, int *nkeys, int* ierr){
 }
 
 void mpi_info_get_nthkey_ ( int* info, int* n, char *key, int* ierr, unsigned int keylen){
- *ierr = MPI_Info_get_nthkey( smpi_info_f2c(*info), *n, key);
- unsigned int i = 0;
- for (i=strlen(key); i<keylen; i++)
- key[i]=' ';
+  *ierr = MPI_Info_get_nthkey( smpi_info_f2c(*info), *n, key);
+  unsigned int i = 0;
+  for (i=strlen(key); i<keylen; i++)
+    key[i]=' ';
 }
 
 void mpi_get_version_ (int *version,int *subversion, int* ierr){
@@ -1652,8 +1663,8 @@ void mpi_request_get_status_ ( int* request, int *flag, MPI_Status* status, int*
 
 void mpi_grequest_start_ ( void *query_fn, void *free_fn, void *cancel_fn, void *extra_state, int*request, int* ierr){
   MPI_Request tmp;
-  *ierr = MPI_Grequest_start( (MPI_Grequest_query_function*)query_fn, (MPI_Grequest_free_function*)free_fn,
-                              (MPI_Grequest_cancel_function*)cancel_fn, extra_state, &tmp);
+  *ierr = MPI_Grequest_start( reinterpret_cast<MPI_Grequest_query_function*>(query_fn), reinterpret_cast<MPI_Grequest_free_function*>(free_fn),
+                              reinterpret_cast<MPI_Grequest_cancel_function*>(cancel_fn), extra_state, &tmp);
  if(*ierr == MPI_SUCCESS) {
    *request = smpi_request_c2f(tmp);
  }
@@ -1673,22 +1684,22 @@ void mpi_status_set_elements_ ( MPI_Status* status, int* datatype, int* count, i
 
 void mpi_comm_connect_ ( char *port_name, int* info, int* root, int* comm, int*newcomm, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_connect( port_name, *(MPI_Info*)info, *root, smpi_comm_f2c(*comm), &tmp);
+  *ierr = MPI_Comm_connect( port_name, *reinterpret_cast<MPI_Info*>(info), *root, smpi_comm_f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newcomm = smpi_comm_c2f(tmp);
   }
 }
 
 void mpi_publish_name_ ( char *service_name, int* info, char *port_name, int* ierr){
- *ierr = MPI_Publish_name( service_name, *(MPI_Info*)info, port_name);
+ *ierr = MPI_Publish_name( service_name, *reinterpret_cast<MPI_Info*>(info), port_name);
 }
 
 void mpi_unpublish_name_ ( char *service_name, int* info, char *port_name, int* ierr){
- *ierr = MPI_Unpublish_name( service_name, *(MPI_Info*)info, port_name);
+ *ierr = MPI_Unpublish_name( service_name, *reinterpret_cast<MPI_Info*>(info), port_name);
 }
 
 void mpi_lookup_name_ ( char *service_name, int* info, char *port_name, int* ierr){
- *ierr = MPI_Lookup_name( service_name, *(MPI_Info*)info, port_name);
+ *ierr = MPI_Lookup_name( service_name, *reinterpret_cast<MPI_Info*>(info), port_name);
 }
 
 void mpi_comm_join_ ( int* fd, int* intercomm, int* ierr){
@@ -1700,7 +1711,7 @@ void mpi_comm_join_ ( int* fd, int* intercomm, int* ierr){
 }
 
 void mpi_open_port_ ( int* info, char *port_name, int* ierr){
- *ierr = MPI_Open_port( *(MPI_Info*)info,port_name);
+ *ierr = MPI_Open_port( *reinterpret_cast<MPI_Info*>(info),port_name);
 }
 
 void mpi_close_port_ ( char *port_name, int* ierr){
@@ -1709,7 +1720,7 @@ void mpi_close_port_ ( char *port_name, int* ierr){
 
 void mpi_comm_accept_ ( char *port_name, int* info, int* root, int* comm, int*newcomm, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_accept( port_name, *(MPI_Info*)info, *root, smpi_comm_f2c(*comm), &tmp);
+  *ierr = MPI_Comm_accept( port_name, *reinterpret_cast<MPI_Info*>(info), *root, smpi_comm_f2c(*comm), &tmp);
   if(*ierr == MPI_SUCCESS) {
     *newcomm = smpi_comm_c2f(tmp);
   }
@@ -1718,7 +1729,7 @@ void mpi_comm_accept_ ( char *port_name, int* info, int* root, int* comm, int*ne
 void mpi_comm_spawn_ ( char *command, char *argv, int* maxprocs, int* info, int* root, int* comm, int* intercomm,
                        int* array_of_errcodes, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_spawn( command, NULL, *maxprocs, *(MPI_Info*)info, *root, smpi_comm_f2c(*comm), &tmp,
+  *ierr = MPI_Comm_spawn( command, NULL, *maxprocs, *reinterpret_cast<MPI_Info*>(info), *root, smpi_comm_f2c(*comm), &tmp,
                           array_of_errcodes);
   if(*ierr == MPI_SUCCESS) {
     *intercomm = smpi_comm_c2f(tmp);
@@ -1730,7 +1741,7 @@ void mpi_comm_spawn_multiple_ ( int* count, char *array_of_commands, char** arra
  int* comm, int* intercomm, int* array_of_errcodes, int* ierr){
  MPI_Comm tmp;
  *ierr = MPI_Comm_spawn_multiple(* count, &array_of_commands, &array_of_argv, array_of_maxprocs,
- (MPI_Info*)array_of_info, *root, smpi_comm_f2c(*comm), &tmp, array_of_errcodes);
+ reinterpret_cast<MPI_Info*>(array_of_info), *root, smpi_comm_f2c(*comm), &tmp, array_of_errcodes);
  if(*ierr == MPI_SUCCESS) {
    *intercomm = smpi_comm_c2f(tmp);
  }

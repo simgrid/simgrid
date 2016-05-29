@@ -1,6 +1,4 @@
-/* smpi_mpi_dt.c -- MPI primitives to handle datatypes                        */
-/* FIXME: a very incomplete implementation                                    */
-
+/* smpi_mpi_dt.c -- MPI primitives to handle datatypes                      */
 /* Copyright (c) 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -154,8 +152,8 @@ CREATE_MPI_DATATYPE(MPI_PACKED, char);
 CREATE_MPI_DATATYPE(MPI_PTR, void*);
 
 /** Check if the datatype is usable for communications */
-int is_datatype_valid(MPI_Datatype datatype) {
-    return datatype != MPI_DATATYPE_NULL && (datatype->flags & DT_FLAG_COMMITED);
+bool is_datatype_valid(MPI_Datatype datatype) {
+    return datatype != MPI_DATATYPE_NULL && ((datatype->flags & DT_FLAG_COMMITED) != 0);
 }
 
 size_t smpi_datatype_size(MPI_Datatype datatype)
@@ -195,8 +193,8 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
       void* value_out;
       xbt_dict_foreach(datatype->attributes, cursor, key, value_in){
         smpi_type_key_elem elem =
-          static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals,  (const char*)key, sizeof(int)));
-        if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
+          static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals,  reinterpret_cast<const char*>(key), sizeof(int)));
+        if(elem != NULL && elem->copy_fn!=MPI_NULL_COPY_FN){
           ret = elem->copy_fn(datatype, *key, NULL, value_in, &value_out, &flag );
           if(ret!=MPI_SUCCESS){
             smpi_datatype_unuse(*new_t);
@@ -205,7 +203,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
             return ret;
           }
           if(flag)
-            xbt_dict_set_ext((*new_t)->attributes, (const char*)key, sizeof(int),value_out, NULL);
+            xbt_dict_set_ext((*new_t)->attributes, reinterpret_cast<const char*>(key), sizeof(int),value_out, NULL);
         }
       }
     }
@@ -233,13 +231,13 @@ MPI_Aint smpi_datatype_get_extent(MPI_Datatype datatype){
 
 void smpi_datatype_get_name(MPI_Datatype datatype, char* name, int* length){
   *length = strlen(datatype->name);
-  strcpy(name, datatype->name);
+  strncpy(name, datatype->name, *length+1);
 }
 
 void smpi_datatype_set_name(MPI_Datatype datatype, char* name){
-  if(datatype->name!=NULL &&  !(datatype->flags & DT_FLAG_PREDEFINED))
+  if(datatype->name!=NULL &&  (datatype->flags & DT_FLAG_PREDEFINED) == 0)
     xbt_free(datatype->name);
-  datatype->name = xbt_strdup(name);;
+  datatype->name = xbt_strdup(name);
 }
 
 int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
@@ -257,7 +255,8 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     count = sendcount < recvcount ? sendcount : recvcount;
 
     if(sendtype->sizeof_substruct == 0 && recvtype->sizeof_substruct == 0) {
-      if(!smpi_process_get_replaying()) memcpy(recvbuf, sendbuf, count);
+      if(!smpi_process_get_replaying()) 
+        memcpy(recvbuf, sendbuf, count);
     }
     else if (sendtype->sizeof_substruct == 0)
     {
@@ -277,7 +276,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
       subtype =  static_cast<s_smpi_subtype_t*>(recvtype->substruct);
       subtype->unserialize( buf_tmp, recvbuf,count/smpi_datatype_size(recvtype), subtype, MPI_REPLACE);
 
-      free(buf_tmp);
+      xbt_free(buf_tmp);
     }
   }
 
@@ -295,16 +294,16 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
  */
 void serialize_vector( const void *noncontiguous_vector, void *contiguous_vector, int count, void *type)
 {
-  s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)type;
+  s_smpi_mpi_vector_t* type_c = reinterpret_cast<s_smpi_mpi_vector_t*>(type);
   int i;
-  char* contiguous_vector_char = (char*)contiguous_vector;
-  char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+  char* contiguous_vector_char = static_cast<char*>(contiguous_vector);
+  const char* noncontiguous_vector_char = static_cast<const char*>(noncontiguous_vector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
       if (type_c->old_type->sizeof_substruct == 0)
         memcpy(contiguous_vector_char, noncontiguous_vector_char, type_c->block_length * type_c->size_oldtype);
       else
-        ((s_smpi_subtype_t*)type_c->old_type->substruct)->serialize( noncontiguous_vector_char,
+        static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->serialize( noncontiguous_vector_char,
                                                                      contiguous_vector_char,
                                                                      type_c->block_length, type_c->old_type->substruct);
 
@@ -327,20 +326,18 @@ void serialize_vector( const void *noncontiguous_vector, void *contiguous_vector
  */
 void unserialize_vector( const void *contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
 {
-  s_smpi_mpi_vector_t* type_c = (s_smpi_mpi_vector_t*)type;
+  s_smpi_mpi_vector_t* type_c = reinterpret_cast<s_smpi_mpi_vector_t*>(type);
   int i;
 
-  char* contiguous_vector_char = (char*)contiguous_vector;
-  char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+  const char* contiguous_vector_char = static_cast<const char*>(contiguous_vector);
+  char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
     if (type_c->old_type->sizeof_substruct == 0)
       smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length,
           &type_c->old_type);
-     /* memcpy(noncontiguous_vector_char,
-             contiguous_vector_char, type_c->block_length * type_c->size_oldtype);*/
     else
-      ((s_smpi_subtype_t*)type_c->old_type->substruct)->unserialize(contiguous_vector_char, noncontiguous_vector_char,
+      static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->unserialize(contiguous_vector_char, noncontiguous_vector_char,
                                                                     type_c->block_length,type_c->old_type->substruct,
                                                                     op);
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
@@ -392,7 +389,8 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int s
 void smpi_datatype_free(MPI_Datatype* type){
   xbt_assert((*type)->in_use >= 0);
 
-  if((*type)->flags & DT_FLAG_PREDEFINED)return;
+  if((*type)->flags & DT_FLAG_PREDEFINED)
+    return;
 
   //if still used, mark for deletion
   if((*type)->in_use!=0){
@@ -407,8 +405,8 @@ void smpi_datatype_free(MPI_Datatype* type){
     int flag;
     xbt_dict_foreach((*type)->attributes, cursor, key, value){
       smpi_type_key_elem elem =
-          static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)key, sizeof(int)));
-      if(elem &&  elem->delete_fn)
+          static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(key), sizeof(int)));
+      if(elem!=NULL &&  elem->delete_fn)
         elem->delete_fn(*type,*key, value, &flag);
     }
     xbt_dict_free(&(*type)->attributes);
@@ -425,10 +423,11 @@ void smpi_datatype_free(MPI_Datatype* type){
 
 void smpi_datatype_use(MPI_Datatype type){
 
-  if(type)type->in_use++;
+  if(type != MPI_DATATYPE_NULL)
+    type->in_use++;
 
   if(type->sizeof_substruct!=0){
-    ((s_smpi_subtype_t *)(type)->substruct)->subtype_use(&type);  
+    static_cast<s_smpi_subtype_t *>((type)->substruct)->subtype_use(&type);  
   }
 #if HAVE_MC
   if(MC_is_active())
@@ -441,10 +440,10 @@ void smpi_datatype_unuse(MPI_Datatype type){
     type->in_use--;
 
   if(type->sizeof_substruct!=0){
-    ((s_smpi_subtype_t *)(type)->substruct)->subtype_free(&type);  
+    static_cast<s_smpi_subtype_t *>((type)->substruct)->subtype_free(&type);  
   }
 
-  if(type && type->in_use == 0){
+  if(type != MPI_DATATYPE_NULL && type->in_use == 0){
     smpi_datatype_free(&type);
   }
 #if HAVE_MC
@@ -465,9 +464,9 @@ void smpi_datatype_unuse(MPI_Datatype type){
  */
 void serialize_contiguous( const void *noncontiguous_hvector, void *contiguous_hvector, int count, void *type)
 {
-  s_smpi_mpi_contiguous_t* type_c = (s_smpi_mpi_contiguous_t*)type;
-  char* contiguous_vector_char = (char*)contiguous_hvector;
-  char* noncontiguous_vector_char = (char*)noncontiguous_hvector+type_c->lb;
+  s_smpi_mpi_contiguous_t* type_c = reinterpret_cast<s_smpi_mpi_contiguous_t*>(type);
+  char* contiguous_vector_char = static_cast<char*>(contiguous_hvector);
+  const char* noncontiguous_vector_char = static_cast<const char*>(noncontiguous_hvector)+type_c->lb;
   memcpy(contiguous_vector_char, noncontiguous_vector_char, count* type_c->block_count * type_c->size_oldtype);
 }
 /* Copies contiguous data into noncontiguous memory.
@@ -480,27 +479,27 @@ void serialize_contiguous( const void *noncontiguous_hvector, void *contiguous_h
  */
 void unserialize_contiguous(const void *contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
 {
-  s_smpi_mpi_contiguous_t* type_c = (s_smpi_mpi_contiguous_t*)type;
-  char* contiguous_vector_char = (char*)contiguous_vector;
-  char* noncontiguous_vector_char = (char*)noncontiguous_vector+type_c->lb;
+  s_smpi_mpi_contiguous_t* type_c = reinterpret_cast<s_smpi_mpi_contiguous_t*>(type);
+  const char* contiguous_vector_char = static_cast<const char*>(contiguous_vector);
+  char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector)+type_c->lb;
   int n= count* type_c->block_count;
   smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &n, &type_c->old_type);
-  /*memcpy(noncontiguous_vector_char, contiguous_vector_char, count*  type_c->block_count * type_c->size_oldtype);*/
 }
 
 void free_contiguous(MPI_Datatype* d){
-  smpi_datatype_unuse(((s_smpi_mpi_contiguous_t *)(*d)->substruct)->old_type);
+  smpi_datatype_unuse(reinterpret_cast<s_smpi_mpi_contiguous_t*>((*d)->substruct)->old_type);
 }
 
 void use_contiguous(MPI_Datatype* d){
-  smpi_datatype_use(((s_smpi_mpi_contiguous_t *)(*d)->substruct)->old_type);
+  smpi_datatype_use(reinterpret_cast<s_smpi_mpi_contiguous_t*>((*d)->substruct)->old_type);
 }
 
 /* Create a Sub type contiguous to be able to serialize and unserialize it the structure s_smpi_mpi_contiguous_t is
  * erived from s_smpi_subtype which required the functions unserialize and serialize */
 s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb, int block_count, MPI_Datatype old_type,
                                                   int size_oldtype){
-  if(block_count==0)return NULL;
+  if(block_count==0)
+    return NULL;
   s_smpi_mpi_contiguous_t *new_t= xbt_new(s_smpi_mpi_contiguous_t,1);
   new_t->base.serialize = &serialize_contiguous;
   new_t->base.unserialize = &unserialize_contiguous;
@@ -534,14 +533,15 @@ int smpi_datatype_contiguous(int count, MPI_Datatype old_type, MPI_Datatype* new
 int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (blocklen<0) return MPI_ERR_ARG;
+  if (blocklen<0) 
+    return MPI_ERR_ARG;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
     lb=smpi_datatype_lb(old_type);
     ub=((count-1)*stride+blocklen-1)*smpi_datatype_get_extent(old_type)+smpi_datatype_ub(old_type);
   }
-  if(old_type->sizeof_substruct || stride != blocklen){
+  if(old_type->sizeof_substruct != 0 || stride != blocklen){
 
     s_smpi_mpi_vector_t* subtype = smpi_datatype_vector_create(stride, blocklen, count, old_type,
                                                                 smpi_datatype_size(old_type));
@@ -558,11 +558,11 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
 }
 
 void free_vector(MPI_Datatype* d){
-  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
+  smpi_datatype_unuse(reinterpret_cast<s_smpi_mpi_indexed_t*>((*d)->substruct)->old_type);
 }
 
 void use_vector(MPI_Datatype* d){
-  smpi_datatype_use(((s_smpi_mpi_indexed_t *)(*d)->substruct)->old_type);
+  smpi_datatype_use(reinterpret_cast<s_smpi_mpi_indexed_t*>((*d)->substruct)->old_type);
 }
 
 /* Hvector Implementation - Vector with stride in bytes */
@@ -577,16 +577,16 @@ void use_vector(MPI_Datatype* d){
  */
 void serialize_hvector( const void *noncontiguous_hvector, void *contiguous_hvector, int count, void *type)
 {
-  s_smpi_mpi_hvector_t* type_c = (s_smpi_mpi_hvector_t*)type;
+  s_smpi_mpi_hvector_t* type_c = reinterpret_cast<s_smpi_mpi_hvector_t*>(type);
   int i;
-  char* contiguous_vector_char = (char*)contiguous_hvector;
-  char* noncontiguous_vector_char = (char*)noncontiguous_hvector;
+  char* contiguous_vector_char = static_cast<char*>(contiguous_hvector);
+  const char* noncontiguous_vector_char = static_cast<const char*>(noncontiguous_hvector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
     if (type_c->old_type->sizeof_substruct == 0)
       memcpy(contiguous_vector_char, noncontiguous_vector_char, type_c->block_length * type_c->size_oldtype);
     else
-      ((s_smpi_subtype_t*)type_c->old_type->substruct)->serialize( noncontiguous_vector_char,
+      static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->serialize( noncontiguous_vector_char,
                                                                    contiguous_vector_char,
                                                                    type_c->block_length, type_c->old_type->substruct);
 
@@ -607,19 +607,17 @@ void serialize_hvector( const void *noncontiguous_hvector, void *contiguous_hvec
  */
 void unserialize_hvector( const void *contiguous_vector, void *noncontiguous_vector, int count, void *type, MPI_Op op)
 {
-  s_smpi_mpi_hvector_t* type_c = (s_smpi_mpi_hvector_t*)type;
+  s_smpi_mpi_hvector_t* type_c = reinterpret_cast<s_smpi_mpi_hvector_t*>(type);
   int i;
 
-  char* contiguous_vector_char = (char*)contiguous_vector;
-  char* noncontiguous_vector_char = (char*)noncontiguous_vector;
+  const char* contiguous_vector_char = static_cast<const char*>(contiguous_vector);
+  char* noncontiguous_vector_char = static_cast<char*>(noncontiguous_vector);
 
   for (i = 0; i < type_c->block_count * count; i++) {
     if (type_c->old_type->sizeof_substruct == 0)
       smpi_op_apply(op, contiguous_vector_char, noncontiguous_vector_char, &type_c->block_length, &type_c->old_type);
-             /*memcpy(noncontiguous_vector_char,
-           contiguous_vector_char, type_c->block_length * type_c->size_oldtype);*/
     else
-      ((s_smpi_subtype_t*)type_c->old_type->substruct)->unserialize( contiguous_vector_char, noncontiguous_vector_char,
+      static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->unserialize( contiguous_vector_char, noncontiguous_vector_char,
                                                                      type_c->block_length, type_c->old_type->substruct,
                                                                      op);
     contiguous_vector_char += type_c->block_length*type_c->size_oldtype;
@@ -652,24 +650,25 @@ s_smpi_mpi_hvector_t* smpi_datatype_hvector_create( MPI_Aint block_stride, int b
 
 //do nothing for vector types
 void free_hvector(MPI_Datatype* d){
-  smpi_datatype_unuse(((s_smpi_mpi_hvector_t *)(*d)->substruct)->old_type);
+  smpi_datatype_unuse(reinterpret_cast<s_smpi_mpi_hvector_t*>((*d)->substruct)->old_type);
 }
 
 void use_hvector(MPI_Datatype* d){
-  smpi_datatype_use(((s_smpi_mpi_hvector_t *)(*d)->substruct)->old_type);
+  smpi_datatype_use(reinterpret_cast<s_smpi_mpi_hvector_t*>((*d)->substruct)->old_type);
 }
 
 int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype old_type, MPI_Datatype* new_type)
 {
   int retval;
-  if (blocklen<0) return MPI_ERR_ARG;
+  if (blocklen<0) 
+    return MPI_ERR_ARG;
   MPI_Aint lb = 0;
   MPI_Aint ub = 0;
   if(count>0){
     lb=smpi_datatype_lb(old_type);
     ub=((count-1)*stride)+(blocklen-1)*smpi_datatype_get_extent(old_type)+smpi_datatype_ub(old_type);
   }
-  if(old_type->sizeof_substruct || stride != blocklen*smpi_datatype_get_extent(old_type)){
+  if(old_type->sizeof_substruct != 0 || stride != blocklen*smpi_datatype_get_extent(old_type)){
     s_smpi_mpi_hvector_t* subtype = smpi_datatype_hvector_create( stride, blocklen, count, old_type,
                                                                   smpi_datatype_size(old_type));
 
@@ -695,16 +694,16 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
  */
 void serialize_indexed( const void *noncontiguous_indexed, void *contiguous_indexed, int count, void *type)
 {
-  s_smpi_mpi_indexed_t* type_c = (s_smpi_mpi_indexed_t*)type;
+  s_smpi_mpi_indexed_t* type_c = reinterpret_cast<s_smpi_mpi_indexed_t*>(type);
   int i,j;
-  char* contiguous_indexed_char = (char*)contiguous_indexed;
-  char* noncontiguous_indexed_char = (char*)noncontiguous_indexed+type_c->block_indices[0] * type_c->size_oldtype;
+  char* contiguous_indexed_char = static_cast<char*>(contiguous_indexed);
+  const char* noncontiguous_indexed_char = static_cast<const char*>(noncontiguous_indexed)+type_c->block_indices[0] * type_c->size_oldtype;
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_type->sizeof_substruct == 0)
         memcpy(contiguous_indexed_char, noncontiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
       else
-        ((s_smpi_subtype_t*)type_c->old_type->substruct)->serialize( noncontiguous_indexed_char,
+        static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->serialize( noncontiguous_indexed_char,
                                                                      contiguous_indexed_char,
                                                                      type_c->block_lengths[i],
                                                                      type_c->old_type->substruct);
@@ -712,11 +711,11 @@ void serialize_indexed( const void *noncontiguous_indexed, void *contiguous_inde
       contiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
       if (i<type_c->block_count-1)
         noncontiguous_indexed_char =
-          (char*)noncontiguous_indexed + type_c->block_indices[i+1]*smpi_datatype_get_extent(type_c->old_type);
+          static_cast<const char*>(noncontiguous_indexed) + type_c->block_indices[i+1]*smpi_datatype_get_extent(type_c->old_type);
       else
         noncontiguous_indexed_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_type);
     }
-    noncontiguous_indexed=(void*)noncontiguous_indexed_char;
+    noncontiguous_indexed=static_cast<const void*>(noncontiguous_indexed_char);
   }
 }
 /* Copies contiguous data into noncontiguous memory.
@@ -729,20 +728,18 @@ void serialize_indexed( const void *noncontiguous_indexed, void *contiguous_inde
  */
 void unserialize_indexed( const void *contiguous_indexed, void *noncontiguous_indexed, int count, void *type, MPI_Op op)
 {
-  s_smpi_mpi_indexed_t* type_c = (s_smpi_mpi_indexed_t*)type;
+  s_smpi_mpi_indexed_t* type_c = reinterpret_cast<s_smpi_mpi_indexed_t*>(type);
   int i,j;
-  char* contiguous_indexed_char = (char*)contiguous_indexed;
+  const char* contiguous_indexed_char = static_cast<const char*>(contiguous_indexed);
   char* noncontiguous_indexed_char =
-    (char*)noncontiguous_indexed+type_c->block_indices[0]*smpi_datatype_get_extent(type_c->old_type);
+    static_cast<char*>(noncontiguous_indexed)+type_c->block_indices[0]*smpi_datatype_get_extent(type_c->old_type);
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_type->sizeof_substruct == 0)
         smpi_op_apply(op, contiguous_indexed_char, noncontiguous_indexed_char, &type_c->block_lengths[i],
                     &type_c->old_type);
-               /*memcpy(noncontiguous_indexed_char ,
-             contiguous_indexed_char, type_c->block_lengths[i] * type_c->size_oldtype);*/
       else
-        ((s_smpi_subtype_t*)type_c->old_type->substruct)->unserialize( contiguous_indexed_char,
+        static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->unserialize( contiguous_indexed_char,
                                                                        noncontiguous_indexed_char,
                                                                        type_c->block_lengths[i],
                                                                        type_c->old_type->substruct, op);
@@ -750,24 +747,24 @@ void unserialize_indexed( const void *contiguous_indexed, void *noncontiguous_in
       contiguous_indexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
       if (i<type_c->block_count-1)
         noncontiguous_indexed_char =
-          (char*)noncontiguous_indexed + type_c->block_indices[i+1]*smpi_datatype_get_extent(type_c->old_type);
+          static_cast<char*>(noncontiguous_indexed) + type_c->block_indices[i+1]*smpi_datatype_get_extent(type_c->old_type);
       else
         noncontiguous_indexed_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_type);
     }
-    noncontiguous_indexed=(void*)noncontiguous_indexed_char;
+    noncontiguous_indexed=static_cast<void*>(noncontiguous_indexed_char);
   }
 }
 
 void free_indexed(MPI_Datatype* type){
   if((*type)->in_use==0){
-    xbt_free(((s_smpi_mpi_indexed_t *)(*type)->substruct)->block_lengths);
-    xbt_free(((s_smpi_mpi_indexed_t *)(*type)->substruct)->block_indices);
+    xbt_free(reinterpret_cast<s_smpi_mpi_indexed_t*>((*type)->substruct)->block_lengths);
+    xbt_free(reinterpret_cast<s_smpi_mpi_indexed_t*>((*type)->substruct)->block_indices);
   }
-  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*type)->substruct)->old_type);
+  smpi_datatype_unuse(reinterpret_cast<s_smpi_mpi_indexed_t*>((*type)->substruct)->old_type);
 }
 
 void use_indexed(MPI_Datatype* type){
-  smpi_datatype_use(((s_smpi_mpi_indexed_t *)(*type)->substruct)->old_type);
+  smpi_datatype_use(reinterpret_cast<s_smpi_mpi_indexed_t*>((*type)->substruct)->old_type);
 }
 
 
@@ -817,7 +814,8 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
     if(indices[i]*smpi_datatype_get_extent(old_type)+blocklens[i]*smpi_datatype_ub(old_type)>ub)
       ub = indices[i]*smpi_datatype_get_extent(old_type)+blocklens[i]*smpi_datatype_ub(old_type);
 
-    if ( (i< count -1) && (indices[i]+blocklens[i] != indices[i+1]) )contiguous=0;
+    if ( (i< count -1) && (indices[i]+blocklens[i] != indices[i+1]) )
+      contiguous=0;
   }
   if (old_type->sizeof_substruct != 0)
     contiguous=0;
@@ -847,27 +845,27 @@ int smpi_datatype_indexed(int count, int* blocklens, int* indices, MPI_Datatype 
  */
 void serialize_hindexed( const void *noncontiguous_hindexed, void *contiguous_hindexed, int count, void *type)
 {
-  s_smpi_mpi_hindexed_t* type_c = (s_smpi_mpi_hindexed_t*)type;
+  s_smpi_mpi_hindexed_t* type_c = reinterpret_cast<s_smpi_mpi_hindexed_t*>(type);
   int i,j;
-  char* contiguous_hindexed_char = (char*)contiguous_hindexed;
-  char* noncontiguous_hindexed_char = (char*)noncontiguous_hindexed+ type_c->block_indices[0];
+  char* contiguous_hindexed_char = static_cast<char*>(contiguous_hindexed);
+  const char* noncontiguous_hindexed_char = static_cast<const char*>(noncontiguous_hindexed)+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_type->sizeof_substruct == 0)
         memcpy(contiguous_hindexed_char, noncontiguous_hindexed_char, type_c->block_lengths[i] * type_c->size_oldtype);
       else
-        ((s_smpi_subtype_t*)type_c->old_type->substruct)->serialize( noncontiguous_hindexed_char,
+        static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->serialize( noncontiguous_hindexed_char,
                                                                      contiguous_hindexed_char,
                                                                      type_c->block_lengths[i],
                                                                      type_c->old_type->substruct);
 
       contiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
       if (i<type_c->block_count-1)
-        noncontiguous_hindexed_char = (char*)noncontiguous_hindexed + type_c->block_indices[i+1];
+        noncontiguous_hindexed_char = static_cast<const char*>(noncontiguous_hindexed) + type_c->block_indices[i+1];
       else
         noncontiguous_hindexed_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_type);
     }
-    noncontiguous_hindexed=(void*)noncontiguous_hindexed_char;
+    noncontiguous_hindexed=reinterpret_cast<const void*>(noncontiguous_hindexed_char);
   }
 }
 /* Copies contiguous data into noncontiguous memory.
@@ -881,43 +879,42 @@ void serialize_hindexed( const void *noncontiguous_hindexed, void *contiguous_hi
 void unserialize_hindexed( const void *contiguous_hindexed, void *noncontiguous_hindexed, int count, void *type,
                          MPI_Op op)
 {
-  s_smpi_mpi_hindexed_t* type_c = (s_smpi_mpi_hindexed_t*)type;
+  s_smpi_mpi_hindexed_t* type_c = reinterpret_cast<s_smpi_mpi_hindexed_t*>(type);
   int i,j;
 
-  char* contiguous_hindexed_char = (char*)contiguous_hindexed;
-  char* noncontiguous_hindexed_char = (char*)noncontiguous_hindexed+ type_c->block_indices[0];
+  const char* contiguous_hindexed_char = static_cast<const char*>(contiguous_hindexed);
+  char* noncontiguous_hindexed_char = static_cast<char*>(noncontiguous_hindexed)+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_type->sizeof_substruct == 0)
         smpi_op_apply(op, contiguous_hindexed_char, noncontiguous_hindexed_char, &type_c->block_lengths[i],
                             &type_c->old_type);
-        /*memcpy(noncontiguous_hindexed_char,contiguous_hindexed_char,type_c->block_lengths[i]*type_c->size_oldtype);*/
       else
-        ((s_smpi_subtype_t*)type_c->old_type->substruct)->unserialize( contiguous_hindexed_char,
+        static_cast<s_smpi_subtype_t*>(type_c->old_type->substruct)->unserialize( contiguous_hindexed_char,
                                                                        noncontiguous_hindexed_char,
                                                                        type_c->block_lengths[i],
                                                                        type_c->old_type->substruct, op);
 
       contiguous_hindexed_char += type_c->block_lengths[i]*type_c->size_oldtype;
       if (i<type_c->block_count-1)
-        noncontiguous_hindexed_char = (char*)noncontiguous_hindexed + type_c->block_indices[i+1];
+        noncontiguous_hindexed_char = static_cast<char*>(noncontiguous_hindexed) + type_c->block_indices[i+1];
       else
         noncontiguous_hindexed_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_type);
     }
-    noncontiguous_hindexed=(void*)noncontiguous_hindexed_char;
+    noncontiguous_hindexed=reinterpret_cast<void*>(noncontiguous_hindexed_char);
   }
 }
 
 void free_hindexed(MPI_Datatype* type){
   if((*type)->in_use==0){
-    xbt_free(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->block_lengths);
-    xbt_free(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->block_indices);
+    xbt_free(reinterpret_cast<s_smpi_mpi_hindexed_t*>((*type)->substruct)->block_lengths);
+    xbt_free(reinterpret_cast<s_smpi_mpi_hindexed_t*>((*type)->substruct)->block_indices);
   }
-  smpi_datatype_unuse(((s_smpi_mpi_indexed_t *)(*type)->substruct)->old_type);
+  smpi_datatype_unuse(reinterpret_cast<s_smpi_mpi_hindexed_t*>((*type)->substruct)->old_type);
 }
 
 void use_hindexed(MPI_Datatype* type){
-  smpi_datatype_use(((s_smpi_mpi_hindexed_t *)(*type)->substruct)->old_type);
+  smpi_datatype_use(reinterpret_cast<s_smpi_mpi_hindexed_t*>((*type)->substruct)->old_type);
 }
 
 /* Create a Sub type hindexed to be able to serialize and unserialize it the structure s_smpi_mpi_hindexed_t is derived
@@ -961,10 +958,12 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
       return MPI_ERR_ARG;
     size += blocklens[i];
 
-    if(indices[i]+smpi_datatype_lb(old_type)<lb) lb = indices[i]+smpi_datatype_lb(old_type);
-    if(indices[i]+blocklens[i]*smpi_datatype_ub(old_type)>ub) ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_type);
+    if(indices[i]+smpi_datatype_lb(old_type)<lb) 
+      lb = indices[i]+smpi_datatype_lb(old_type);
+    if(indices[i]+blocklens[i]*smpi_datatype_ub(old_type)>ub) 
+      ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_type);
 
-    if ( (i< count -1) && (indices[i]+blocklens[i]*static_cast<int>(smpi_datatype_size(old_type)) != indices[i+1]) )
+    if ( (i< count -1) && (indices[i]+blocklens[i]*(static_cast<int>(smpi_datatype_size(old_type))) != indices[i+1]) )
       contiguous=0;
   }
   if (old_type->sizeof_substruct != 0 || lb!=0)
@@ -995,17 +994,17 @@ int smpi_datatype_hindexed(int count, int* blocklens, MPI_Aint* indices, MPI_Dat
  */
 void serialize_struct( const void *noncontiguous_struct, void *contiguous_struct, int count, void *type)
 {
-  s_smpi_mpi_struct_t* type_c = (s_smpi_mpi_struct_t*)type;
+  s_smpi_mpi_struct_t* type_c = reinterpret_cast<s_smpi_mpi_struct_t*>(type);
   int i,j;
-  char* contiguous_struct_char = (char*)contiguous_struct;
-  char* noncontiguous_struct_char = (char*)noncontiguous_struct+ type_c->block_indices[0];
+  char* contiguous_struct_char = static_cast<char*>(contiguous_struct);
+  const char* noncontiguous_struct_char = static_cast<const char*>(noncontiguous_struct)+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_types[i]->sizeof_substruct == 0)
         memcpy(contiguous_struct_char, noncontiguous_struct_char,
                type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));
       else
-        ((s_smpi_subtype_t*)type_c->old_types[i]->substruct)->serialize( noncontiguous_struct_char,
+        static_cast<s_smpi_subtype_t*>(type_c->old_types[i]->substruct)->serialize( noncontiguous_struct_char,
                                                                          contiguous_struct_char,
                                                                          type_c->block_lengths[i],
                                                                          type_c->old_types[i]->substruct);
@@ -1013,11 +1012,11 @@ void serialize_struct( const void *noncontiguous_struct, void *contiguous_struct
 
       contiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
       if (i<type_c->block_count-1)
-        noncontiguous_struct_char = (char*)noncontiguous_struct + type_c->block_indices[i+1];
+        noncontiguous_struct_char = static_cast<const char*>(noncontiguous_struct) + type_c->block_indices[i+1];
       else //let's hope this is MPI_UB ?
         noncontiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_types[i]);
     }
-    noncontiguous_struct=(void*)noncontiguous_struct_char;
+    noncontiguous_struct=reinterpret_cast<const void*>(noncontiguous_struct_char);
   }
 }
 
@@ -1031,49 +1030,47 @@ void serialize_struct( const void *noncontiguous_struct, void *contiguous_struct
  */
 void unserialize_struct( const void *contiguous_struct, void *noncontiguous_struct, int count, void *type, MPI_Op op)
 {
-  s_smpi_mpi_struct_t* type_c = (s_smpi_mpi_struct_t*)type;
+  s_smpi_mpi_struct_t* type_c = reinterpret_cast<s_smpi_mpi_struct_t*>(type);
   int i,j;
 
-  char* contiguous_struct_char = (char*)contiguous_struct;
-  char* noncontiguous_struct_char = (char*)noncontiguous_struct+ type_c->block_indices[0];
+  const char* contiguous_struct_char = static_cast<const char*>(contiguous_struct);
+  char* noncontiguous_struct_char = static_cast<char*>(noncontiguous_struct)+ type_c->block_indices[0];
   for(j=0; j<count;j++){
     for (i = 0; i < type_c->block_count; i++) {
       if (type_c->old_types[i]->sizeof_substruct == 0)
         smpi_op_apply(op, contiguous_struct_char, noncontiguous_struct_char, &type_c->block_lengths[i],
            & type_c->old_types[i]);
-      /*memcpy(noncontiguous_struct_char,
-               contiguous_struct_char, type_c->block_lengths[i] * smpi_datatype_size(type_c->old_types[i]));*/
       else
-        ((s_smpi_subtype_t*)type_c->old_types[i]->substruct)->unserialize( contiguous_struct_char,
+        static_cast<s_smpi_subtype_t*>(type_c->old_types[i]->substruct)->unserialize( contiguous_struct_char,
                                                                            noncontiguous_struct_char,
                                                                            type_c->block_lengths[i],
                                                                            type_c->old_types[i]->substruct, op);
 
       contiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_size(type_c->old_types[i]);
       if (i<type_c->block_count-1)
-        noncontiguous_struct_char =  (char*)noncontiguous_struct + type_c->block_indices[i+1];
+        noncontiguous_struct_char =  static_cast<char*>(noncontiguous_struct) + type_c->block_indices[i+1];
       else
         noncontiguous_struct_char += type_c->block_lengths[i]*smpi_datatype_get_extent(type_c->old_types[i]);
     }
-    noncontiguous_struct=(void*)noncontiguous_struct_char;
+    noncontiguous_struct=reinterpret_cast<void*>(noncontiguous_struct_char);
   }
 }
 
 void free_struct(MPI_Datatype* type){
   int i=0;
-  for (i = 0; i < ((s_smpi_mpi_struct_t *)(*type)->substruct)->block_count; i++)
-    smpi_datatype_unuse(((s_smpi_mpi_struct_t *)(*type)->substruct)->old_types[i]);
+  for (i = 0; i < reinterpret_cast<s_smpi_mpi_struct_t*>((*type)->substruct)->block_count; i++)
+    smpi_datatype_unuse(reinterpret_cast<s_smpi_mpi_struct_t*>((*type)->substruct)->old_types[i]);
   if((*type)->in_use==0){
-    xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->block_lengths);
-    xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->block_indices);
-    xbt_free(((s_smpi_mpi_struct_t *)(*type)->substruct)->old_types);
+    xbt_free(reinterpret_cast<s_smpi_mpi_struct_t*>((*type)->substruct)->block_lengths);
+    xbt_free(reinterpret_cast<s_smpi_mpi_struct_t*>((*type)->substruct)->block_indices);
+    xbt_free(reinterpret_cast<s_smpi_mpi_struct_t*>((*type)->substruct)->old_types);
   }
 }
 
 void use_struct(MPI_Datatype* type){
   int i=0;
-  for (i = 0; i < ((s_smpi_mpi_struct_t *)(*type)->substruct)->block_count; i++)
-    smpi_datatype_use(((s_smpi_mpi_struct_t *)(*type)->substruct)->old_types[i]);
+  for (i = 0; i < reinterpret_cast<s_smpi_mpi_struct_t*>((*type)->substruct)->block_count; i++)
+    smpi_datatype_use(reinterpret_cast<s_smpi_mpi_struct_t*>((*type)->substruct)->old_types[i]);
 }
 
 /* Create a Sub type struct to be able to serialize and unserialize it the structure s_smpi_mpi_struct_t is derived
@@ -1130,7 +1127,8 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
       forced_ub=1;
     }
 
-    if(!forced_lb && indices[i]+smpi_datatype_lb(old_types[i])<lb) lb = indices[i];
+    if(!forced_lb && indices[i]+smpi_datatype_lb(old_types[i])<lb) 
+      lb = indices[i];
     if(!forced_ub &&  indices[i]+blocklens[i]*smpi_datatype_ub(old_types[i])>ub)
       ub = indices[i]+blocklens[i]*smpi_datatype_ub(old_types[i]);
 
@@ -1138,7 +1136,7 @@ int smpi_datatype_struct(int count, int* blocklens, MPI_Aint* indices, MPI_Datat
       contiguous=0;
   }
 
-  if(!contiguous){
+  if(contiguous==0){
     s_smpi_mpi_struct_t* subtype = smpi_datatype_struct_create( blocklens, indices, count, old_types);
 
     smpi_datatype_create(new_type,  size, lb, ub,sizeof(s_smpi_mpi_struct_t), subtype, DT_FLAG_DATA);
@@ -1185,304 +1183,328 @@ typedef struct s_smpi_mpi_op {
 static void max_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, MAX_OP);
+    APPLY_FUNC(a, b, length, char, MAX_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, MAX_OP);
+    APPLY_FUNC(a, b, length, short, MAX_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, MAX_OP);
+    APPLY_FUNC(a, b, length, int, MAX_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, MAX_OP);
+    APPLY_FUNC(a, b, length, long, MAX_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, MAX_OP);
+    APPLY_FUNC(a, b, length, unsigned short, MAX_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, MAX_OP);
+    APPLY_FUNC(a, b, length, unsigned int, MAX_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, MAX_OP);
+    APPLY_FUNC(a, b, length, unsigned long, MAX_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, MAX_OP);
+    APPLY_FUNC(a, b, length, unsigned char, MAX_OP)
   } else if (*datatype == MPI_FLOAT) {
-    APPLY_FUNC(a, b, length, float, MAX_OP);
+    APPLY_FUNC(a, b, length, float, MAX_OP)
   } else if (*datatype == MPI_DOUBLE) {
-    APPLY_FUNC(a, b, length, double, MAX_OP);
+    APPLY_FUNC(a, b, length, double, MAX_OP)
   } else if (*datatype == MPI_LONG_DOUBLE) {
-    APPLY_FUNC(a, b, length, long double, MAX_OP);
+    APPLY_FUNC(a, b, length, long double, MAX_OP)
+  } else {
+    xbt_die("Failed to apply MAX_OP to type %s", (*datatype)->name);
   }
 }
 
 static void min_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, MIN_OP);
+    APPLY_FUNC(a, b, length, char, MIN_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, MIN_OP);
+    APPLY_FUNC(a, b, length, short, MIN_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, MIN_OP);
+    APPLY_FUNC(a, b, length, int, MIN_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, MIN_OP);
+    APPLY_FUNC(a, b, length, long, MIN_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, MIN_OP);
+    APPLY_FUNC(a, b, length, unsigned short, MIN_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, MIN_OP);
+    APPLY_FUNC(a, b, length, unsigned int, MIN_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, MIN_OP);
+    APPLY_FUNC(a, b, length, unsigned long, MIN_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, MIN_OP);
+    APPLY_FUNC(a, b, length, unsigned char, MIN_OP)
   } else if (*datatype == MPI_FLOAT) {
-    APPLY_FUNC(a, b, length, float, MIN_OP);
+    APPLY_FUNC(a, b, length, float, MIN_OP)
   } else if (*datatype == MPI_DOUBLE) {
-    APPLY_FUNC(a, b, length, double, MIN_OP);
+    APPLY_FUNC(a, b, length, double, MIN_OP)
   } else if (*datatype == MPI_LONG_DOUBLE) {
-    APPLY_FUNC(a, b, length, long double, MIN_OP);
+    APPLY_FUNC(a, b, length, long double, MIN_OP)
+  } else {
+    xbt_die("Failed to apply MIN_OP to type %s", (*datatype)->name);
   }
 }
 
 static void sum_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, SUM_OP);
+    APPLY_FUNC(a, b, length, char, SUM_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, SUM_OP);
+    APPLY_FUNC(a, b, length, short, SUM_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, SUM_OP);
+    APPLY_FUNC(a, b, length, int, SUM_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, SUM_OP);
+    APPLY_FUNC(a, b, length, long, SUM_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, SUM_OP);
+    APPLY_FUNC(a, b, length, unsigned short, SUM_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, SUM_OP);
+    APPLY_FUNC(a, b, length, unsigned int, SUM_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, SUM_OP);
+    APPLY_FUNC(a, b, length, unsigned long, SUM_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, SUM_OP);
+    APPLY_FUNC(a, b, length, unsigned char, SUM_OP)
   } else if (*datatype == MPI_FLOAT) {
-    APPLY_FUNC(a, b, length, float, SUM_OP);
+    APPLY_FUNC(a, b, length, float, SUM_OP)
   } else if (*datatype == MPI_DOUBLE) {
-    APPLY_FUNC(a, b, length, double, SUM_OP);
+    APPLY_FUNC(a, b, length, double, SUM_OP)
   } else if (*datatype == MPI_LONG_DOUBLE) {
-    APPLY_FUNC(a, b, length, long double, SUM_OP);
+    APPLY_FUNC(a, b, length, long double, SUM_OP)
   } else if (*datatype == MPI_C_FLOAT_COMPLEX) {
-    APPLY_FUNC(a, b, length, float _Complex, SUM_OP);
+    APPLY_FUNC(a, b, length, float _Complex, SUM_OP)
   } else if (*datatype == MPI_C_DOUBLE_COMPLEX) {
-    APPLY_FUNC(a, b, length, double _Complex, SUM_OP);
+    APPLY_FUNC(a, b, length, double _Complex, SUM_OP)
   } else if (*datatype == MPI_C_LONG_DOUBLE_COMPLEX) {
-    APPLY_FUNC(a, b, length, long double _Complex, SUM_OP);
+    APPLY_FUNC(a, b, length, long double _Complex, SUM_OP)
+  } else {
+    xbt_die("Failed to apply SUM_OP to type %s", (*datatype)->name);
   }
 }
 
 static void prod_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, PROD_OP);
+    APPLY_FUNC(a, b, length, char, PROD_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, PROD_OP);
+    APPLY_FUNC(a, b, length, short, PROD_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, PROD_OP);
+    APPLY_FUNC(a, b, length, int, PROD_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, PROD_OP);
+    APPLY_FUNC(a, b, length, long, PROD_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, PROD_OP);
+    APPLY_FUNC(a, b, length, unsigned short, PROD_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, PROD_OP);
+    APPLY_FUNC(a, b, length, unsigned int, PROD_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, PROD_OP);
+    APPLY_FUNC(a, b, length, unsigned long, PROD_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, PROD_OP);
+    APPLY_FUNC(a, b, length, unsigned char, PROD_OP)
   } else if (*datatype == MPI_FLOAT) {
-    APPLY_FUNC(a, b, length, float, PROD_OP);
+    APPLY_FUNC(a, b, length, float, PROD_OP)
   } else if (*datatype == MPI_DOUBLE) {
-    APPLY_FUNC(a, b, length, double, PROD_OP);
+    APPLY_FUNC(a, b, length, double, PROD_OP)
   } else if (*datatype == MPI_LONG_DOUBLE) {
-    APPLY_FUNC(a, b, length, long double, PROD_OP);
+    APPLY_FUNC(a, b, length, long double, PROD_OP)
   } else if (*datatype == MPI_C_FLOAT_COMPLEX) {
-    APPLY_FUNC(a, b, length, float _Complex, PROD_OP);
+    APPLY_FUNC(a, b, length, float _Complex, PROD_OP)
   } else if (*datatype == MPI_C_DOUBLE_COMPLEX) {
-    APPLY_FUNC(a, b, length, double _Complex, PROD_OP);
+    APPLY_FUNC(a, b, length, double _Complex, PROD_OP)
   } else if (*datatype == MPI_C_LONG_DOUBLE_COMPLEX) {
-    APPLY_FUNC(a, b, length, long double _Complex, PROD_OP);
+    APPLY_FUNC(a, b, length, long double _Complex, PROD_OP)
+  } else {
+    xbt_die("Failed to apply PROD_OP to type %s", (*datatype)->name);
   }
 }
 
 static void land_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, LAND_OP);
+    APPLY_FUNC(a, b, length, char, LAND_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, LAND_OP);
+    APPLY_FUNC(a, b, length, short, LAND_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, LAND_OP);
+    APPLY_FUNC(a, b, length, int, LAND_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, LAND_OP);
+    APPLY_FUNC(a, b, length, long, LAND_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, LAND_OP);
+    APPLY_FUNC(a, b, length, unsigned short, LAND_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, LAND_OP);
+    APPLY_FUNC(a, b, length, unsigned int, LAND_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, LAND_OP);
+    APPLY_FUNC(a, b, length, unsigned long, LAND_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, LAND_OP);
+    APPLY_FUNC(a, b, length, unsigned char, LAND_OP)
   } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, bool, LAND_OP);
+    APPLY_FUNC(a, b, length, bool, LAND_OP)
+  } else {
+    xbt_die("Failed to apply LAND_OP to type %s", (*datatype)->name);
   }
 }
 
 static void lor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, LOR_OP);
+    APPLY_FUNC(a, b, length, char, LOR_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, LOR_OP);
+    APPLY_FUNC(a, b, length, short, LOR_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, LOR_OP);
+    APPLY_FUNC(a, b, length, int, LOR_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, LOR_OP);
+    APPLY_FUNC(a, b, length, long, LOR_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, LOR_OP);
+    APPLY_FUNC(a, b, length, unsigned short, LOR_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, LOR_OP);
+    APPLY_FUNC(a, b, length, unsigned int, LOR_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, LOR_OP);
+    APPLY_FUNC(a, b, length, unsigned long, LOR_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, LOR_OP);
+    APPLY_FUNC(a, b, length, unsigned char, LOR_OP)
   } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, bool, LOR_OP);
+    APPLY_FUNC(a, b, length, bool, LOR_OP)
+  } else {
+    xbt_die("Failed to apply LOR_OP to type %s", (*datatype)->name);
   }
 }
 
 static void lxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, LXOR_OP);
+    APPLY_FUNC(a, b, length, char, LXOR_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, LXOR_OP);
+    APPLY_FUNC(a, b, length, short, LXOR_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, LXOR_OP);
+    APPLY_FUNC(a, b, length, int, LXOR_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, LXOR_OP);
+    APPLY_FUNC(a, b, length, long, LXOR_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, LXOR_OP);
+    APPLY_FUNC(a, b, length, unsigned short, LXOR_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, LXOR_OP);
+    APPLY_FUNC(a, b, length, unsigned int, LXOR_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, LXOR_OP);
+    APPLY_FUNC(a, b, length, unsigned long, LXOR_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, LXOR_OP);
+    APPLY_FUNC(a, b, length, unsigned char, LXOR_OP)
   } else if (*datatype == MPI_C_BOOL) {
-    APPLY_FUNC(a, b, length, bool, LXOR_OP);
+    APPLY_FUNC(a, b, length, bool, LXOR_OP)
+  } else {
+    xbt_die("Failed to apply LXOR_OP to type %s", (*datatype)->name);
   }
 }
 
 static void band_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, BAND_OP);
+    APPLY_FUNC(a, b, length, char, BAND_OP)
   }else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, BAND_OP);
+    APPLY_FUNC(a, b, length, short, BAND_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, BAND_OP);
+    APPLY_FUNC(a, b, length, int, BAND_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, BAND_OP);
+    APPLY_FUNC(a, b, length, long, BAND_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, BAND_OP);
+    APPLY_FUNC(a, b, length, unsigned short, BAND_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, BAND_OP);
+    APPLY_FUNC(a, b, length, unsigned int, BAND_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, BAND_OP);
+    APPLY_FUNC(a, b, length, unsigned long, BAND_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, BAND_OP);
+    APPLY_FUNC(a, b, length, unsigned char, BAND_OP)
   } else if (*datatype == MPI_BYTE) {
-    APPLY_FUNC(a, b, length, uint8_t, BAND_OP);
+    APPLY_FUNC(a, b, length, uint8_t, BAND_OP)
+  } else {
+    xbt_die("Failed to apply BAND_OP to type %s", (*datatype)->name);
   }
 }
 
 static void bor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, BOR_OP);
+    APPLY_FUNC(a, b, length, char, BOR_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, BOR_OP);
+    APPLY_FUNC(a, b, length, short, BOR_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, BOR_OP);
+    APPLY_FUNC(a, b, length, int, BOR_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, BOR_OP);
+    APPLY_FUNC(a, b, length, long, BOR_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, BOR_OP);
+    APPLY_FUNC(a, b, length, unsigned short, BOR_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, BOR_OP);
+    APPLY_FUNC(a, b, length, unsigned int, BOR_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, BOR_OP);
+    APPLY_FUNC(a, b, length, unsigned long, BOR_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, BOR_OP);
+    APPLY_FUNC(a, b, length, unsigned char, BOR_OP)
   } else if (*datatype == MPI_BYTE) {
-    APPLY_FUNC(a, b, length, uint8_t, BOR_OP);
+    APPLY_FUNC(a, b, length, uint8_t, BOR_OP)
+  } else {
+    xbt_die("Failed to apply BOR_OP to type %s", (*datatype)->name);
   }
 }
 
 static void bxor_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_CHAR) {
-    APPLY_FUNC(a, b, length, char, BXOR_OP);
+    APPLY_FUNC(a, b, length, char, BXOR_OP)
   } else if (*datatype == MPI_SHORT) {
-    APPLY_FUNC(a, b, length, short, BXOR_OP);
+    APPLY_FUNC(a, b, length, short, BXOR_OP)
   } else if (*datatype == MPI_INT) {
-    APPLY_FUNC(a, b, length, int, BXOR_OP);
+    APPLY_FUNC(a, b, length, int, BXOR_OP)
   } else if (*datatype == MPI_LONG) {
-    APPLY_FUNC(a, b, length, long, BXOR_OP);
+    APPLY_FUNC(a, b, length, long, BXOR_OP)
   } else if (*datatype == MPI_UNSIGNED_SHORT) {
-    APPLY_FUNC(a, b, length, unsigned short, BXOR_OP);
+    APPLY_FUNC(a, b, length, unsigned short, BXOR_OP)
   } else if (*datatype == MPI_UNSIGNED) {
-    APPLY_FUNC(a, b, length, unsigned int, BXOR_OP);
+    APPLY_FUNC(a, b, length, unsigned int, BXOR_OP)
   } else if (*datatype == MPI_UNSIGNED_LONG) {
-    APPLY_FUNC(a, b, length, unsigned long, BXOR_OP);
+    APPLY_FUNC(a, b, length, unsigned long, BXOR_OP)
   } else if (*datatype == MPI_UNSIGNED_CHAR) {
-    APPLY_FUNC(a, b, length, unsigned char, BXOR_OP);
+    APPLY_FUNC(a, b, length, unsigned char, BXOR_OP)
   } else if (*datatype == MPI_BYTE) {
-    APPLY_FUNC(a, b, length, uint8_t, BXOR_OP);
+    APPLY_FUNC(a, b, length, uint8_t, BXOR_OP)
+  } else {
+    xbt_die("Failed to apply BXOR_OP to type %s", (*datatype)->name);
   }
 }
 
 static void minloc_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_FLOAT_INT) {
-    APPLY_FUNC(a, b, length, float_int, MINLOC_OP);
+    APPLY_FUNC(a, b, length, float_int, MINLOC_OP)
   } else if (*datatype == MPI_LONG_INT) {
-    APPLY_FUNC(a, b, length, long_int, MINLOC_OP);
+    APPLY_FUNC(a, b, length, long_int, MINLOC_OP)
   } else if (*datatype == MPI_DOUBLE_INT) {
-    APPLY_FUNC(a, b, length, double_int, MINLOC_OP);
+    APPLY_FUNC(a, b, length, double_int, MINLOC_OP)
   } else if (*datatype == MPI_SHORT_INT) {
-    APPLY_FUNC(a, b, length, short_int, MINLOC_OP);
+    APPLY_FUNC(a, b, length, short_int, MINLOC_OP)
   } else if (*datatype == MPI_2LONG) {
-    APPLY_FUNC(a, b, length, long_long, MINLOC_OP);
+    APPLY_FUNC(a, b, length, long_long, MINLOC_OP)
   } else if (*datatype == MPI_2INT) {
-    APPLY_FUNC(a, b, length, int_int, MINLOC_OP);
+    APPLY_FUNC(a, b, length, int_int, MINLOC_OP)
   } else if (*datatype == MPI_LONG_DOUBLE_INT) {
-    APPLY_FUNC(a, b, length, long_double_int, MINLOC_OP);
+    APPLY_FUNC(a, b, length, long_double_int, MINLOC_OP)
   } else if (*datatype == MPI_2FLOAT) {
-    APPLY_FUNC(a, b, length, float_float, MINLOC_OP);
+    APPLY_FUNC(a, b, length, float_float, MINLOC_OP)
   } else if (*datatype == MPI_2DOUBLE) {
-    APPLY_FUNC(a, b, length, double_double, MINLOC_OP);
+    APPLY_FUNC(a, b, length, double_double, MINLOC_OP)
+  } else {
+    xbt_die("Failed to apply MINLOC_OP to type %s", (*datatype)->name);
   }
 }
 
 static void maxloc_func(void *a, void *b, int *length, MPI_Datatype * datatype)
 {
   if (*datatype == MPI_FLOAT_INT) {
-    APPLY_FUNC(a, b, length, float_int, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, float_int, MAXLOC_OP)
   } else if (*datatype == MPI_LONG_INT) {
-    APPLY_FUNC(a, b, length, long_int, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, long_int, MAXLOC_OP)
   } else if (*datatype == MPI_DOUBLE_INT) {
-    APPLY_FUNC(a, b, length, double_int, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, double_int, MAXLOC_OP)
   } else if (*datatype == MPI_SHORT_INT) {
-    APPLY_FUNC(a, b, length, short_int, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, short_int, MAXLOC_OP)
   } else if (*datatype == MPI_2LONG) {
-    APPLY_FUNC(a, b, length, long_long, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, long_long, MAXLOC_OP)
   } else if (*datatype == MPI_2INT) {
-    APPLY_FUNC(a, b, length, int_int, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, int_int, MAXLOC_OP)
   } else if (*datatype == MPI_LONG_DOUBLE_INT) {
-    APPLY_FUNC(a, b, length, long_double_int, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, long_double_int, MAXLOC_OP)
   } else if (*datatype == MPI_2FLOAT) {
-    APPLY_FUNC(a, b, length, float_float, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, float_float, MAXLOC_OP)
   } else if (*datatype == MPI_2DOUBLE) {
-    APPLY_FUNC(a, b, length, double_double, MAXLOC_OP);
+    APPLY_FUNC(a, b, length, double_double, MAXLOC_OP)
+  } else {
+    xbt_die("Failed to apply MAXLOC_OP to type %s", (*datatype)->name);
   }
 }
 
@@ -1528,7 +1550,7 @@ void smpi_op_destroy(MPI_Op op)
   xbt_free(op);
 }
 
-void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
+void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_Datatype * datatype)
 {
   if(op==MPI_OP_NULL)
     return;
@@ -1539,32 +1561,33 @@ void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatyp
   }
 
   if(!smpi_process_get_replaying())
-  op->func(invec, inoutvec, len, datatype);
+    op->func(const_cast<void*>(invec), inoutvec, len, datatype);
 }
 
 int smpi_type_attr_delete(MPI_Datatype type, int keyval){
   smpi_type_key_elem elem =
-    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int)));
-  if(!elem)
+    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  if(elem==NULL)
     return MPI_ERR_ARG;
   if(elem->delete_fn!=MPI_NULL_DELETE_FN){
     void * value;
     int flag;
     if(smpi_type_attr_get(type, keyval, &value, &flag)==MPI_SUCCESS){
       int ret = elem->delete_fn(type, keyval, value, &flag);
-      if(ret!=MPI_SUCCESS) return ret;
+      if(ret!=MPI_SUCCESS) 
+        return ret;
     }
   }  
   if(type->attributes==NULL)
     return MPI_ERR_ARG;
 
-  xbt_dict_remove_ext(type->attributes, (const char*)&keyval, sizeof(int));
+  xbt_dict_remove_ext(type->attributes, reinterpret_cast<const char*>(&keyval), sizeof(int));
   return MPI_SUCCESS;
 }
 
 int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag){
   smpi_type_key_elem elem =
-    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int)));
+    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
   if(!elem)
     return MPI_ERR_ARG;
   xbt_ex_t ex;
@@ -1573,7 +1596,7 @@ int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* fla
     return MPI_SUCCESS;
   }
   TRY {
-    *(void**)attr_value = xbt_dict_get_ext(type->attributes, (const char*)&keyval, sizeof(int));
+    *static_cast<void**>(attr_value) = xbt_dict_get_ext(type->attributes, reinterpret_cast<const char*>(&keyval), sizeof(int));
     *flag=1;
   }
   CATCH(ex) {
@@ -1587,20 +1610,21 @@ int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
   if(!smpi_type_keyvals)
   smpi_type_keyvals = xbt_dict_new();
   smpi_type_key_elem elem =
-     static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)&keyval, sizeof(int)));
-  if(!elem )
+     static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  if(elem==NULL)
     return MPI_ERR_ARG;
   int flag;
   void* value;
   smpi_type_attr_get(type, keyval, &value, &flag);
   if(flag && elem->delete_fn!=MPI_NULL_DELETE_FN){
     int ret = elem->delete_fn(type, keyval, value, &flag);
-    if(ret!=MPI_SUCCESS) return ret;
+    if(ret!=MPI_SUCCESS) 
+      return ret;
   }
   if(type->attributes==NULL)
     type->attributes=xbt_dict_new();
 
-  xbt_dict_set_ext(type->attributes, (const char*)&keyval, sizeof(int), attr_value, NULL);
+  xbt_dict_set_ext(type->attributes, reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, NULL);
   return MPI_SUCCESS;
 }
 
@@ -1615,18 +1639,18 @@ int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
   value->delete_fn=delete_fn;
 
   *keyval = type_keyval_id;
-  xbt_dict_set_ext(smpi_type_keyvals,(const char*)keyval, sizeof(int),(void*)value, NULL);
+  xbt_dict_set_ext(smpi_type_keyvals,reinterpret_cast<const char*>(keyval), sizeof(int),reinterpret_cast<void*>(value), NULL);
   type_keyval_id++;
   return MPI_SUCCESS;
 }
 
 int smpi_type_keyval_free(int* keyval){
   smpi_type_key_elem elem =
-    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, (const char*)keyval, sizeof(int)));
+    static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(keyval), sizeof(int)));
   if(!elem){
     return MPI_ERR_ARG;
   }
-  xbt_dict_remove_ext(smpi_type_keyvals, (const char*)keyval, sizeof(int));
+  xbt_dict_remove_ext(smpi_type_keyvals, reinterpret_cast<const char*>(keyval), sizeof(int));
   xbt_free(elem);
   return MPI_SUCCESS;
 }
@@ -1635,7 +1659,7 @@ int smpi_mpi_pack(void* inbuf, int incount, MPI_Datatype type, void* outbuf, int
   size_t size = smpi_datatype_size(type);
   if (outcount - *position < incount*static_cast<int>(size))
     return MPI_ERR_BUFFER;
-  smpi_datatype_copy(inbuf, incount, type, (char*)outbuf + *position, outcount, MPI_CHAR);
+  smpi_datatype_copy(inbuf, incount, type, static_cast<char*>(outbuf) + *position, outcount, MPI_CHAR);
   *position += incount * size;
   return MPI_SUCCESS;
 }
@@ -1644,7 +1668,7 @@ int smpi_mpi_unpack(void* inbuf, int insize, int* position, void* outbuf, int ou
   int size = static_cast<int>(smpi_datatype_size(type));
   if (outcount*size> insize)
     return MPI_ERR_BUFFER;
-  smpi_datatype_copy((char*)inbuf + *position, insize, MPI_CHAR, outbuf, outcount, type);
+  smpi_datatype_copy(static_cast<char*>(inbuf) + *position, insize, MPI_CHAR, outbuf, outcount, type);
   *position += outcount * size;
   return MPI_SUCCESS;
 }

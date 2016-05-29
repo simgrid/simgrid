@@ -79,15 +79,15 @@ MPI_Topology smpi_topo_create(MPIR_Topo_type kind) {
 void smpi_cart_topo_destroy(MPIR_Cart_Topology cart) {
     if (cart) {
         if(cart->dims) {
-            free(cart->dims);
+            xbt_free(cart->dims);
         }
         if(cart->periodic) {
-            free(cart->periodic);
+            xbt_free(cart->periodic);
         }
         if(cart->position) {
-            free(cart->position);
+            xbt_free(cart->position);
         }
-        free(cart);
+        xbt_free(cart);
     }
 }
 
@@ -132,9 +132,6 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
 
         newCart->topo.cart->nnodes = newSize;
 
-        /* memcpy(newCart->topo.cart->dims, dims, ndims * sizeof(*newCart->topo.cart->dims)); */
-        /* memcpy(newCart->topo.cart->periodic, periods, ndims * sizeof(*newCart->topo.cart->periodic)); */
-
         //  FIXME : code duplication... See smpi_mpi_cart_coords
         nranks = newSize;
         for (i=0; i<ndims; i++) {
@@ -168,7 +165,8 @@ int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm)
     }
     newNDims = 0;
     for (i = 0 ; i < oldNDims ; i++) {
-        if (remain_dims[i]) newNDims++;
+        if (remain_dims[i]) 
+            newNDims++;
     }
   
     if (newNDims > 0) {
@@ -236,7 +234,8 @@ int smpi_mpi_cart_rank(MPI_Comm comm, int* coords, int* rank) {
         } else if (coord <  0) {
             if(topo->topo.cart->periodic[i]) {
                 coord = coord % topo->topo.cart->dims[i];
-                if (coord) coord = topo->topo.cart->dims[i] + coord;
+                if (coord) 
+                    coord = topo->topo.cart->dims[i] + coord;
             } else {
                 *rank = -1;
                 return MPI_ERR_ARG;

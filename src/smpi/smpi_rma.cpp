@@ -93,7 +93,7 @@ void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length){
     return;
   }
   *length = strlen(win->name);
-  strcpy(name, win->name);
+  strncpy(name, win->name, *length+1);
 }
 
 void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group){
@@ -103,12 +103,12 @@ void smpi_mpi_win_get_group(MPI_Win win, MPI_Group* group){
 }
 
 void smpi_mpi_win_set_name(MPI_Win win, char* name){
-  win->name = xbt_strdup(name);;
+  win->name = xbt_strdup(name);
 }
 
 int smpi_mpi_win_fence( int assert,  MPI_Win win){
   XBT_DEBUG("Entering fence");
-  if(!win->opened)
+  if(win->opened==0)
     win->opened=1;
   if(assert != MPI_MODE_NOPRECEDE){
     xbt_barrier_wait(win->bar);
@@ -119,7 +119,8 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
     MPI_Request req;
     // start all requests that have been prepared by another process
     xbt_dynar_foreach(reqs, cpt, req){
-      if (req->flags & PREPARED) smpi_mpi_start(req);
+      if (req->flags & PREPARED) 
+        smpi_mpi_start(req);
     }
 
     MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqs));
@@ -139,12 +140,12 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
 int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win)
 {
-  if(!win->opened)//check that post/start has been done
+  if(win->opened==0)//check that post/start has been done
     return MPI_ERR_WIN;
   //get receiver pointer
   MPI_Win recv_win = win->connected_wins[target_rank];
 
-  void* recv_addr = (void*) ( ((char*)recv_win->base) + target_disp * recv_win->disp_unit);
+  void* recv_addr = static_cast<void*> ( static_cast<char*>(recv_win->base) + target_disp * recv_win->disp_unit);
   XBT_DEBUG("Entering MPI_Put to %d", target_rank);
 
   if(target_rank != smpi_comm_rank(win->comm)){
@@ -174,12 +175,12 @@ int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datat
 int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Win win)
 {
-  if(!win->opened)//check that post/start has been done
+  if(win->opened==0)//check that post/start has been done
     return MPI_ERR_WIN;
   //get sender pointer
   MPI_Win send_win = win->connected_wins[target_rank];
 
-  void* send_addr = (void*)( ((char*)send_win->base) + target_disp * send_win->disp_unit);
+  void* send_addr = static_cast<void*>(static_cast<char*>(send_win->base) + target_disp * send_win->disp_unit);
   XBT_DEBUG("Entering MPI_Get from %d", target_rank);
 
   if(target_rank != smpi_comm_rank(win->comm)){
@@ -215,13 +216,13 @@ int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datat
 int smpi_mpi_accumulate( void *origin_addr, int origin_count, MPI_Datatype origin_datatype, int target_rank,
               MPI_Aint target_disp, int target_count, MPI_Datatype target_datatype, MPI_Op op, MPI_Win win)
 {
-  if(!win->opened)//check that post/start has been done
+  if(win->opened==0)//check that post/start has been done
     return MPI_ERR_WIN;
   //FIXME: local version 
   //get receiver pointer
   MPI_Win recv_win = win->connected_wins[target_rank];
 
-  void* recv_addr = (void*)( ((char*)recv_win->base) + target_disp * recv_win->disp_unit);
+  void* recv_addr = static_cast<void*>(static_cast<char*>(recv_win->base) + target_disp * recv_win->disp_unit);
   XBT_DEBUG("Entering MPI_Accumulate to %d", target_rank);
 
     //prepare send_request
@@ -260,7 +261,6 @@ int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win){
   int size = smpi_group_size(group);
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
-//  for(i=0;i<size;i++){
   while(j!=size){
     int src=smpi_group_index(group,j);
     if(src!=smpi_process_index()){
@@ -313,10 +313,6 @@ int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win){
 int smpi_mpi_win_complete(MPI_Win win){
   if(win->opened==0)
     xbt_die("Complete called on already opened MPI_Win");
-//  xbt_barrier_wait(win->bar);
-  //MPI_Comm comm = smpi_comm_new(win->group, NULL);
-  //mpi_coll_barrier_fun(comm);
-  //smpi_comm_destroy(comm);
 
   XBT_DEBUG("Entering MPI_Win_Complete");
   int i=0,j=0;
@@ -351,7 +347,8 @@ int smpi_mpi_win_complete(MPI_Win win){
   MPI_Request req;
   // start all requests that have been prepared by another process
   xbt_dynar_foreach(reqqs, cpt, req){
-    if (req->flags & PREPARED) smpi_mpi_start(req);
+    if (req->flags & PREPARED) 
+      smpi_mpi_start(req);
   }
 
   MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
@@ -364,17 +361,12 @@ int smpi_mpi_win_complete(MPI_Win win){
 }
 
 int smpi_mpi_win_wait(MPI_Win win){
-//  xbt_barrier_wait(win->bar);
-  //MPI_Comm comm = smpi_comm_new(win->group, NULL);
-  //mpi_coll_barrier_fun(comm);
-  //smpi_comm_destroy(comm);
   //naive, blocking implementation.
   XBT_DEBUG("Entering MPI_Win_Wait");
   int i=0,j=0;
   int size = smpi_group_size(win->group);
   MPI_Request* reqs = xbt_new0(MPI_Request, size);
 
-//  for(i=0;i<size;i++){
   while(j!=size){
     int src=smpi_group_index(win->group,j);
     if(src!=smpi_process_index()){
@@ -401,7 +393,8 @@ int smpi_mpi_win_wait(MPI_Win win){
   MPI_Request req;
   // start all requests that have been prepared by another process
   xbt_dynar_foreach(reqqs, cpt, req){
-    if (req->flags & PREPARED) smpi_mpi_start(req);
+    if (req->flags & PREPARED) 
+      smpi_mpi_start(req);
   }
 
   MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));

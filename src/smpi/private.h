@@ -194,7 +194,7 @@ XBT_PRIVATE void smpi_global_init(void);
 XBT_PRIVATE void smpi_global_destroy(void);
 XBT_PRIVATE double smpi_mpi_wtime(void);
 
-XBT_PRIVATE int is_datatype_valid(MPI_Datatype datatype);
+XBT_PRIVATE bool is_datatype_valid(MPI_Datatype datatype);
 
 XBT_PRIVATE size_t smpi_datatype_size(MPI_Datatype datatype);
 XBT_PRIVATE MPI_Aint smpi_datatype_lb(MPI_Datatype datatype);
@@ -237,7 +237,7 @@ XBT_PRIVATE void smpi_empty_status(MPI_Status * status);
 XBT_PRIVATE MPI_Op smpi_op_new(MPI_User_function * function, int commute);
 XBT_PRIVATE int smpi_op_is_commute(MPI_Op op);
 XBT_PRIVATE void smpi_op_destroy(MPI_Op op);
-XBT_PRIVATE void smpi_op_apply(MPI_Op op, void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
+XBT_PRIVATE void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_Datatype * datatype);
 
 XBT_PRIVATE MPI_Group smpi_group_new(int size);
 XBT_PRIVATE MPI_Group smpi_group_copy(MPI_Group origin);

@@ -39,8 +39,8 @@ typedef struct s_smpi_mpi_communicator {
 
 static int smpi_compare_rankmap(const void *a, const void *b)
 {
-  const int* x = (const int*)a;
-  const int* y = (const int*)b;
+  const int* x = static_cast<const int*>(a);
+  const int* y = static_cast<const int*>(b);
 
   if (x[1] < y[1]) {
     return -1;
@@ -91,25 +91,7 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
   MPI_Group cp=smpi_group_copy(smpi_comm_group(comm));
   (*newcomm) = smpi_comm_new(cp, smpi_comm_topo(comm));
   int ret = MPI_SUCCESS;
-  //todo: faire en sorte que ça fonctionne avec un communicator dupliqué (refaire un init_smp ?)
-  
- /* MPI_Comm tmp=smpi_comm_get_intra_comm(comm);
-  if( tmp != MPI_COMM_NULL)
-    smpi_comm_set_intra_comm((*newcomm), smpi_comm_dup(tmp));
-  tmp=smpi_comm_get_leaders_comm(comm);
-  if( tmp != MPI_COMM_NULL)
-    smpi_comm_set_leaders_comm((*newcomm), smpi_comm_dup(tmp));
-  if(comm->non_uniform_map !=NULL){
-    (*newcomm)->non_uniform_map= 
-      xbt_malloc(smpi_comm_size(comm->leaders_comm)*sizeof(int));
-    memcpy((*newcomm)->non_uniform_map,
-      comm->non_uniform_map,smpi_comm_size(comm->leaders_comm)*sizeof(int) );
-  }
-  if(comm->leaders_map !=NULL){
-    (*newcomm)->leaders_map=xbt_malloc(smpi_comm_size(comm)*sizeof(int));
-    memcpy((*newcomm)->leaders_map, 
-      comm->leaders_map,smpi_comm_size(comm)*sizeof(int) );
-  }*/
+
   if(comm->attributes !=NULL){
       (*newcomm)->attributes=xbt_dict_new();
       xbt_dict_cursor_t cursor = NULL;
@@ -119,8 +101,8 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
       void* value_out;
       xbt_dict_foreach(comm->attributes, cursor, key, value_in){
         smpi_comm_key_elem elem =
-           static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)key, sizeof(int)));
-        if(elem && elem->copy_fn!=MPI_NULL_COPY_FN){
+           static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, reinterpret_cast<const char*>(key), sizeof(int)));
+        if(elem!=NULL && elem->copy_fn!=MPI_NULL_COPY_FN){
           ret = elem->copy_fn(comm, *key, NULL, value_in, &value_out, &flag );
           if(ret!=MPI_SUCCESS){
             smpi_comm_destroy(*newcomm);
@@ -128,7 +110,7 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
             return ret;
           }
           if(flag)
-            xbt_dict_set_ext((*newcomm)->attributes, (const char*)key, sizeof(int),value_out, NULL);
+            xbt_dict_set_ext((*newcomm)->attributes, reinterpret_cast<const char*>(key), sizeof(int),value_out, NULL);
         }
       }
     }
@@ -167,7 +149,7 @@ void smpi_comm_get_name (MPI_Comm comm, char* name, int* len)
   if (comm == MPI_COMM_UNINITIALIZED)
     comm = smpi_process_comm_world();
   if(comm == MPI_COMM_WORLD) {
-    strcpy(name, "WORLD");
+    strncpy(name, "WORLD",5);
     *len = 5;
   } else {
     *len = snprintf(name, MPI_MAX_NAME_STRING, "%p", comm);
@@ -233,7 +215,8 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
   MPI_Group* group_snd;
   MPI_Request* requests;
 
-  group_root = group_out = NULL;
+  group_root = NULL;
+  group_out = NULL;
   group = smpi_comm_group(comm);
   rank = smpi_comm_rank(comm);
   size = smpi_comm_size(comm);
@@ -253,46 +236,46 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
     group_snd = xbt_new(MPI_Group, size);
     rankmap = xbt_new(int, 2 * size);
     for(i = 0; i < size; i++) {
-      if(recvbuf[2 * i] == MPI_UNDEFINED) {
-        continue;
-      }
-      count = 0;
-      for(j = i + 1; j < size; j++)  {
-        if(recvbuf[2 * i] == recvbuf[2 * j]) {
-          recvbuf[2 * j] = MPI_UNDEFINED;
-          rankmap[2 * count] = j;
-          rankmap[2 * count + 1] = recvbuf[2 * j + 1];
-          count++;
+      if(recvbuf[2 * i] != MPI_UNDEFINED) {
+      
+        count = 0;
+        for(j = i + 1; j < size; j++)  {
+          if(recvbuf[2 * i] == recvbuf[2 * j]) {
+            recvbuf[2 * j] = MPI_UNDEFINED;
+            rankmap[2 * count] = j;
+            rankmap[2 * count + 1] = recvbuf[2 * j + 1];
+            count++;
+          }
         }
-      }
-      /* Add self in the group */
-      recvbuf[2 * i] = MPI_UNDEFINED;
-      rankmap[2 * count] = i;
-      rankmap[2 * count + 1] = recvbuf[2 * i + 1];
-      count++;
-      qsort(rankmap, count, 2 * sizeof(int), &smpi_compare_rankmap);
-      group_out = smpi_group_new(count);
-      if(i == 0) {
-        group_root = group_out; /* Save root's group */
-      }
-      for(j = 0; j < count; j++) {
-        index = smpi_group_index(group, rankmap[2 * j]);
-        smpi_group_set_mapping(group_out, index, j);
-      }
-      requests = xbt_new(MPI_Request, count);
-      reqs = 0;
-      for(j = 0; j < count; j++) {
-        if(rankmap[2 * j] != 0) {
-          group_snd[reqs]=smpi_group_copy(group_out);
-          requests[reqs] = smpi_mpi_isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, comm);
-          reqs++;
+        /* Add self in the group */
+        recvbuf[2 * i] = MPI_UNDEFINED;
+        rankmap[2 * count] = i;
+        rankmap[2 * count + 1] = recvbuf[2 * i + 1];
+        count++;
+        qsort(rankmap, count, 2 * sizeof(int), &smpi_compare_rankmap);
+        group_out = smpi_group_new(count);
+        if(i == 0) {
+          group_root = group_out; /* Save root's group */
         }
+        for(j = 0; j < count; j++) {
+          index = smpi_group_index(group, rankmap[2 * j]);
+          smpi_group_set_mapping(group_out, index, j);
+        }
+        requests = xbt_new(MPI_Request, count);
+        reqs = 0;
+        for(j = 0; j < count; j++) {
+          if(rankmap[2 * j] != 0) {
+            group_snd[reqs]=smpi_group_copy(group_out);
+            requests[reqs] = smpi_mpi_isend(&(group_snd[reqs]), 1, MPI_PTR, rankmap[2 * j], system_tag, comm);
+            reqs++;
+          }
+        }
+        if(i != 0) {
+          smpi_group_destroy(group_out);
+        }
+        smpi_mpi_waitall(reqs, requests, MPI_STATUS_IGNORE);
+        xbt_free(requests);
       }
-      if(i != 0) {
-        smpi_group_destroy(group_out);
-      }
-      smpi_mpi_waitall(reqs, requests, MPI_STATUS_IGNORE);
-      xbt_free(requests);
     }
     xbt_free(recvbuf);
     xbt_free(rankmap);
@@ -303,7 +286,7 @@ MPI_Comm smpi_comm_split(MPI_Comm comm, int color, int key)
       smpi_mpi_recv(&group_out, 1, MPI_PTR, 0, system_tag, comm, MPI_STATUS_IGNORE);
     } /* otherwise, exit with group_out == NULL */
   }
-  return group_out ? smpi_comm_new(group_out, NULL) : MPI_COMM_NULL;
+  return group_out!=NULL ? smpi_comm_new(group_out, NULL) : MPI_COMM_NULL;
 }
 
 void smpi_comm_use(MPI_Comm comm){
@@ -321,8 +304,8 @@ void smpi_comm_cleanup_attributes(MPI_Comm comm){
     int flag;
     xbt_dict_foreach(comm->attributes, cursor, key, value){
       smpi_comm_key_elem elem =
-         static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null(smpi_comm_keyvals, (const char*)key));
-      if(elem &&  elem->delete_fn)
+         static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null(smpi_comm_keyvals, reinterpret_cast<const char*>(key)));
+      if(elem!=NULL &&  elem->delete_fn)
         elem->delete_fn(comm, *key, value, &flag);
     }
     xbt_dict_free(&comm->attributes);
@@ -355,10 +338,10 @@ void smpi_comm_unuse(MPI_Comm comm){
 
 static int compare_ints (const void *a, const void *b)
 {
-  const int *da = (const int *) a;
-  const int *db = (const int *) b;
+  const int *da = static_cast<const int *>(a);
+  const int *db = static_cast<const int *>(b);
 
-  return (*da > *db) - (*da < *db);
+  return static_cast<int>(*da > *db) - static_cast<int>(*da < *db);
 }
 
 void smpi_comm_init_smp(MPI_Comm comm){
@@ -384,18 +367,10 @@ void smpi_comm_init_smp(MPI_Comm comm){
   //get the indexes of all processes sharing the same simix host
   xbt_swag_t process_list = SIMIX_host_self()->processes();
   int intra_comm_size = 0;
-  //only one process/node, disable SMP support and return
-//  if(intra_comm_size==1){
-//      smpi_comm_set_intra_comm(comm, MPI_COMM_SELF);
-//      //smpi_comm_set_leaders_comm(comm, comm);
-//      smpi_process_set_comm_intra(MPI_COMM_SELF);
-//      return;
-//  }
   int i =0;
   int min_index=INT_MAX;//the minimum index will be the leader
   smx_process_t process = NULL;
   xbt_swag_foreach(process, process_list) {
-    //is_in_comm=0;
     int index = SIMIX_process_get_PID(process) -1;
 
     if(smpi_group_rank(smpi_comm_group(comm),  index)!=MPI_UNDEFINED){
@@ -411,7 +386,6 @@ void smpi_comm_init_smp(MPI_Comm comm){
   i=0;
   process = NULL;
   xbt_swag_foreach(process, process_list) {
-    //is_in_comm=0;
     int index = SIMIX_process_get_PID(process) -1;
     if(smpi_group_rank(smpi_comm_group(comm),  index)!=MPI_UNDEFINED){
       smpi_group_set_mapping(group_intra, index, i);
@@ -420,14 +394,10 @@ void smpi_comm_init_smp(MPI_Comm comm){
   }
 
   MPI_Comm comm_intra = smpi_comm_new(group_intra, NULL);
-  //MPI_Comm shmem_comm = smpi_process_comm_intra();
-  //int intra_rank = smpi_comm_rank(shmem_comm);
-
-  //if(smpi_process_index()==min_index)
   leader=min_index;
 
-  int * leaders_map= (int*)xbt_malloc0(sizeof(int)*comm_size);
-  int * leader_list= (int*)xbt_malloc0(sizeof(int)*comm_size);
+  int * leaders_map= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
+  int * leader_list= static_cast<int*>(xbt_malloc0(sizeof(int)*comm_size));
   for(i=0; i<comm_size; i++){
       leader_list[i]=-1;
   }
@@ -438,7 +408,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
      smpi_switch_data_segment(smpi_process_index());
    }
 
-  if(!comm->leaders_map){
+  if(comm->leaders_map==NULL){
     comm->leaders_map= leaders_map;
   }else{
     xbt_free(leaders_map);
@@ -452,7 +422,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
             already_done=1;
         }
       }
-      if(!already_done){
+      if(already_done==0){
         leader_list[leader_group_size]=comm->leaders_map[i];
         leader_group_size++;
       }
@@ -471,7 +441,6 @@ void smpi_comm_init_smp(MPI_Comm comm){
     smpi_comm_set_intra_comm(comm, comm_intra);
 
    //create intracommunicator
-   // smpi_comm_set_intra_comm(comm, smpi_comm_split(comm, *(int*)SIMIX_host_self(), comm_rank));
   }else{
     for (i=0; i< leader_group_size;i++)
       smpi_group_set_mapping(leaders_group, leader_list[i], i);
@@ -500,7 +469,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
         break;
       }
     }
-    if(!is_uniform && smpi_comm_is_uniform(comm)){
+    if(is_uniform==0 && smpi_comm_is_uniform(comm)!=0){
         comm->non_uniform_map= non_uniform_map;
     }else{
         xbt_free(non_uniform_map);
@@ -542,28 +511,29 @@ void smpi_comm_init_smp(MPI_Comm comm){
 
 int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
   smpi_comm_key_elem elem =
-     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)&keyval, sizeof(int)));
-  if(!elem)
+     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  if(elem==NULL)
     return MPI_ERR_ARG;
   if(elem->delete_fn!=MPI_NULL_DELETE_FN){
     void * value;
     int flag;
     if(smpi_comm_attr_get(comm, keyval, &value, &flag)==MPI_SUCCESS){
       int ret = elem->delete_fn(comm, keyval, value, &flag);
-      if(ret!=MPI_SUCCESS) return ret;
+      if(ret!=MPI_SUCCESS) 
+        return ret;
     }
   }
   if(comm->attributes==NULL)
     return MPI_ERR_ARG;
 
-  xbt_dict_remove_ext(comm->attributes, (const char*)&keyval, sizeof(int));
+  xbt_dict_remove_ext(comm->attributes, reinterpret_cast<const char*>(&keyval), sizeof(int));
   return MPI_SUCCESS;
 }
 
 int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
   smpi_comm_key_elem elem =
-    static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, (const char*)&keyval, sizeof(int)));
-  if(!elem)
+    static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  if(elem==NULL)
     return MPI_ERR_ARG;
   xbt_ex_t ex;
   if(comm->attributes==NULL){
@@ -571,7 +541,8 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
     return MPI_SUCCESS;
   }
   TRY {
-    *(void**)attr_value = xbt_dict_get_ext(comm->attributes,  (const char*)&keyval, sizeof(int));
+    *static_cast<void**>(attr_value) = xbt_dict_get_ext(comm->attributes, 
+                            reinterpret_cast<const char*>(&keyval), sizeof(int));
     *flag=1;
   } CATCH(ex) {
     *flag=0;
@@ -581,49 +552,49 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
 }
 
 int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value){
-  if(!smpi_comm_keyvals)
-  smpi_comm_keyvals = xbt_dict_new();
+  if(smpi_comm_keyvals==NULL)
+    smpi_comm_keyvals = xbt_dict_new();
   smpi_comm_key_elem elem =
-    static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals,  (const char*)&keyval, sizeof(int)));
-  if(!elem )
+    static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals,  reinterpret_cast<const char*>(&keyval), sizeof(int)));
+  if(elem==NULL)
     return MPI_ERR_ARG;
   int flag;
   void* value;
   smpi_comm_attr_get(comm, keyval, &value, &flag);
-  if(flag && elem->delete_fn!=MPI_NULL_DELETE_FN){
+  if(flag!=0 && elem->delete_fn!=MPI_NULL_DELETE_FN){
     int ret = elem->delete_fn(comm, keyval, value, &flag);
-    if(ret!=MPI_SUCCESS) return ret;
+    if(ret!=MPI_SUCCESS) 
+      return ret;
   }
   if(comm->attributes==NULL)
     comm->attributes=xbt_dict_new();
 
-  xbt_dict_set_ext(comm->attributes,  (const char*)&keyval, sizeof(int), attr_value, NULL);
+  xbt_dict_set_ext(comm->attributes,  reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, NULL);
   return MPI_SUCCESS;
 }
 
 int smpi_comm_keyval_create(MPI_Comm_copy_attr_function* copy_fn, MPI_Comm_delete_attr_function* delete_fn, int* keyval,
                             void* extra_state){
-  if(!smpi_comm_keyvals)
-  smpi_comm_keyvals = xbt_dict_new();
+  if(smpi_comm_keyvals==NULL)
+    smpi_comm_keyvals = xbt_dict_new();
 
-  smpi_comm_key_elem value = (smpi_comm_key_elem) xbt_new0(s_smpi_mpi_comm_key_elem_t,1);
+  smpi_comm_key_elem value = static_cast<smpi_comm_key_elem>(xbt_new0(s_smpi_mpi_comm_key_elem_t,1));
 
   value->copy_fn=copy_fn;
   value->delete_fn=delete_fn;
 
   *keyval = comm_keyval_id;
-  xbt_dict_set_ext(smpi_comm_keyvals, (const char*)keyval, sizeof(int),(void*)value, NULL);
+  xbt_dict_set_ext(smpi_comm_keyvals, reinterpret_cast<const char*>(keyval), sizeof(int),static_cast<void*>(value), NULL);
   comm_keyval_id++;
   return MPI_SUCCESS;
 }
 
 int smpi_comm_keyval_free(int* keyval){
   smpi_comm_key_elem elem =
-     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals,  (const char*)keyval, sizeof(int)));
-  if(!elem){
+     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals,  reinterpret_cast<const char*>(keyval), sizeof(int)));
+  if(elem==NULL)
     return MPI_ERR_ARG;
-  }
-  xbt_dict_remove_ext(smpi_comm_keyvals,  (const char*)keyval, sizeof(int));
+  xbt_dict_remove_ext(smpi_comm_keyvals,  reinterpret_cast<const char*>(keyval), sizeof(int));
   xbt_free(elem);
   return MPI_SUCCESS;
 }

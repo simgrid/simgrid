@@ -155,7 +155,7 @@ static size_t shm_size(int fd) {
   if(fstat(fd, &st) < 0) {
     xbt_die("Could not stat fd %d: %s", fd, strerror(errno));
   }
-  return (size_t)st.st_size;
+  return static_cast<size_t>(st.st_size);
 }
 
 #ifndef WIN32
@@ -164,10 +164,8 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
   char loc[PTR_STRLEN];
   shared_metadata_t meta;
 
-  if(size > shm_size(fd)) {
-    if(ftruncate(fd, (off_t)size) < 0) {
+  if(size > shm_size(fd) && (ftruncate(fd, static_cast<off_t>(size)) < 0)) {
       xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
-    }
   }
 
   mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
@@ -255,7 +253,6 @@ void smpi_bench_end(void)
   double speedup = 1;
   xbt_os_timer_t timer = smpi_process_timer();
   xbt_os_threadtimer_stop(timer);
-//  smpi_switch_data_segment(smpi_process_count());
   if (smpi_process_get_sampling()) {
     XBT_CRITICAL("Cannot do recursive benchmarks.");
     XBT_CRITICAL("Are you trying to make a call to MPI within a SMPI_SAMPLE_ block?");
@@ -304,12 +301,12 @@ static unsigned int private_sleep(double secs)
 
 unsigned int smpi_sleep(unsigned int secs)
 {
-  return private_sleep((double)secs);
+  return private_sleep(static_cast<double>(secs));
 }
 
 int smpi_usleep(useconds_t usecs)
 {
-  return (int)private_sleep((double)usecs / 1000000.0);
+  return static_cast<int>(private_sleep(static_cast<double>(usecs) / 1000000.0));
 }
 
 int smpi_gettimeofday(struct timeval *tv, void* tz)
@@ -318,11 +315,11 @@ int smpi_gettimeofday(struct timeval *tv, void* tz)
   smpi_bench_end();
   now = SIMIX_get_clock();
   if (tv) {
-    tv->tv_sec = (time_t)now;
+    tv->tv_sec = static_cast<time_t>(now);
 #ifdef WIN32
-    tv->tv_usec = (useconds_t)((now - tv->tv_sec) * 1e6);
+    tv->tv_usec = static_cast<useconds_t>((now - tv->tv_sec) * 1e6);
 #else
-    tv->tv_usec = (suseconds_t)((now - tv->tv_sec) * 1e6);
+    tv->tv_usec = static_cast<suseconds_t>((now - tv->tv_sec) * 1e6);
 #endif
   }
   smpi_bench_begin();
@@ -335,7 +332,7 @@ unsigned long long smpi_rastro_resolution (void)
   smpi_bench_end();
   double resolution = (1/sg_surf_precision);
   smpi_bench_begin();
-  return (unsigned long long)resolution;
+  return static_cast<unsigned long long>(resolution);
 }
 
 unsigned long long smpi_rastro_timestamp (void)
@@ -346,7 +343,7 @@ unsigned long long smpi_rastro_timestamp (void)
   unsigned long long sec = (unsigned long long)now;
   unsigned long long pre = (now - sec) * smpi_rastro_resolution();
   smpi_bench_begin();
-  return (unsigned long long)sec * smpi_rastro_resolution() + pre;
+  return static_cast<unsigned long long>(sec) * smpi_rastro_resolution() + pre;
 }
 
 /* ****************************** Functions related to the SMPI_SAMPLE_ macros ************************************/
@@ -390,14 +387,14 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
   smpi_process_set_sampling(1);
 
-  if (!samples)
+  if (samples==NULL)
     samples = xbt_dict_new_homogeneous(free);
 
   data = static_cast<local_data_t *>(xbt_dict_get_or_null(samples, loc));
-  if (!data) {
+  if (data==NULL) {
     xbt_assert(threshold>0 || iters>0,
         "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
-    data = (local_data_t *) xbt_new(local_data_t, 1);
+    data = static_cast<local_data_t *>( xbt_new(local_data_t, 1));
     data->count = 0;
     data->sum = 0.0;
     data->sum_pow2 = 0.0;
@@ -476,10 +473,10 @@ void smpi_sample_3(int global, const char *file, int line)
   sample = xbt_os_timer_elapsed(smpi_process_timer());
   data->sum += sample;
   data->sum_pow2 += sample * sample;
-  n = (double)data->count;
+  n = static_cast<double>(data->count);
   data->mean = data->sum / n;
   data->relstderr = sqrt((data->sum_pow2 / n - data->mean * data->mean) / n) / data->mean;
-  if (!sample_enough_benchs(data)) {
+  if (sample_enough_benchs(data)==0) {
     data->mean = sample; // Still in benching process; We want sample_2 to simulate the exact time of this loop
                          // occurrence before leaving, not the mean over the history
   }
@@ -507,12 +504,10 @@ void *smpi_shared_malloc(size_t size, const char *file, int line)
       snprintf(shmname, 31, "/shmalloc%p", &*data);
       fd = shm_open(shmname, O_RDWR | O_CREAT | O_EXCL, S_IRUSR | S_IWUSR | S_IRGRP | S_IROTH);
       if (fd < 0) {
-        switch(errno) {
-          case EEXIST:
-            xbt_die("Please cleanup /dev/shm/%s", shmname);
-          default:
-            xbt_die("An unhandled error occurred while opening %s. shm_open: %s", shmname, strerror(errno));
-        }
+        if(errno==EEXIST)
+          xbt_die("Please cleanup /dev/shm/%s", shmname);
+        else
+          xbt_die("An unhandled error occurred while opening %s. shm_open: %s", shmname, strerror(errno));
       }
       data->second.fd = fd;
       data->second.count = 1;
@@ -569,7 +564,7 @@ int smpi_shared_known_call(const char* func, const char* input)
   xbt_ex_t ex;
   int known = 0;
 
-  if (!calls) {
+  if (calls==NULL) {
     calls = xbt_dict_new_homogeneous(NULL);
   }
   TRY {
@@ -591,11 +586,11 @@ void* smpi_shared_get_call(const char* func, const char* input) {
    char* loc = bprintf("%s:%s", func, input);
    void* data;
 
-   if(!calls) {
+   if(calls==NULL) {
       calls = xbt_dict_new_homogeneous(NULL);
    }
    data = xbt_dict_get(calls, loc);
-   free(loc);
+   xbt_free(loc);
    return data;
 }
 
@@ -606,7 +601,7 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
       calls = xbt_dict_new_homogeneous(NULL);
    }
    xbt_dict_set(calls, loc, data, NULL);
-   free(loc);
+   xbt_free(loc);
    return data;
 }
 
@@ -671,7 +666,7 @@ void smpi_initialize_global_memory_segments(){
   }
 
   smpi_privatisation_regions =
-    (smpi_privatisation_region_t) malloc(smpi_process_count() * sizeof(struct s_smpi_privatisation_region));
+    static_cast<smpi_privatisation_region_t>( xbt_malloc(smpi_process_count() * sizeof(struct s_smpi_privatisation_region)));
 
   for (int i=0; i< smpi_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside

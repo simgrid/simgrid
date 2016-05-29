@@ -62,8 +62,8 @@ MPI_Group smpi_group_copy(MPI_Group origin)
       }
 
       xbt_dict_foreach(origin->index_to_rank_map, cursor, key, ptr_rank) {
-        int * cp = (int*)xbt_malloc(sizeof(int));
-        *cp=*(int*)ptr_rank;
+        int * cp = static_cast<int*>(xbt_malloc(sizeof(int)));
+        *cp=*reinterpret_cast<int*>(ptr_rank);
         xbt_dict_set(group->index_to_rank_map, key, cp, NULL);
       }
     }
@@ -86,12 +86,12 @@ void smpi_group_set_mapping(MPI_Group group, int index, int rank)
   if (rank < group->size) {
     group->rank_to_index_map[rank] = index;
     if (index!=MPI_UNDEFINED ) {
-      val_rank = (int *) malloc(sizeof(int));
+      val_rank = static_cast<int *>(xbt_malloc(sizeof(int)));
       *val_rank = rank;
 
       char * key = bprintf("%d", index);
       xbt_dict_set(group->index_to_rank_map, key, val_rank, NULL);
-      free(key);
+      xbt_free(key);
     }
   }
 }
