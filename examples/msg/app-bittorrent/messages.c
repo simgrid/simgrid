@@ -94,8 +94,6 @@ int task_message_size(e_message_type type)
     size = MESSAGE_UNCHOKE_SIZE;
     break;
   case MESSAGE_INTERESTED:
-    size = MESSAGE_INTERESTED_SIZE;
-    break;
   case MESSAGE_NOTINTERESTED:
     size = MESSAGE_INTERESTED_SIZE;
     break;

@@ -20,7 +20,7 @@ node_t node_init(unsigned int node_id)
 
   node->id = node_id;
   node->table = routing_table_init(node_id);
-  sprintf(node->mailbox, "%0*x", MAILBOX_NAME_SIZE, node_id);
+  snprintf(node->mailbox,MAILBOX_NAME_SIZE-1, "%d", node_id);
   node->find_node_failed = 0;
   node->find_node_success = 0;
 
@@ -136,11 +136,10 @@ unsigned int get_node_prefix(unsigned int id, unsigned int nb_bits)
   return 0;
 }
 
-/** @brief Gets the mailbox name of a host given its identifier
-  */
+/** @brief Gets the mailbox name of a host given its identifier */
 void get_node_mailbox(unsigned int id, char *mailbox)
 {
-  sprintf(mailbox, "%0*x", MAILBOX_NAME_SIZE, id);
+  snprintf(mailbox,MAILBOX_NAME_SIZE-1, "%d", id);
 }
 
 /** Constructor, build a new contact information. */

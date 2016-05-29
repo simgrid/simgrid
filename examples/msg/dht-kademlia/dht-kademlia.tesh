@@ -4,19 +4,19 @@ p Testing the Kademlia implementation with MSG
 
 ! output sort 19
 $ $SG_TEST_EXENV ${bindir:=.}/dht-kademlia ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/dht-kademlia/dht-kademlia_d.xml "--log=root.fmt:[%10.6r]%e(%02i:%P@%h)%e%m%n"
-> [  0.000000] ( 1:node@node-0.acme.org) Hi, I'm going to create the network with id 00000000
-> [  0.000000] ( 2:node@node-1.acme.org) Hi, I'm going to join the network with id 00000001
-> [  0.000000] ( 3:node@node-2.acme.org) Hi, I'm going to join the network with id 00000003
-> [  0.000000] ( 4:node@node-3.acme.org) Hi, I'm going to join the network with id 00000007
-> [  0.000000] ( 5:node@node-4.acme.org) Hi, I'm going to join the network with id 0000000f
-> [  0.000000] ( 6:node@node-5.acme.org) Hi, I'm going to join the network with id 0000001f
-> [  0.000000] ( 7:node@node-6.acme.org) Hi, I'm going to join the network with id 0000003f
-> [  0.000000] ( 8:node@node-7.acme.org) Hi, I'm going to join the network with id 0000007f
-> [  0.000000] ( 9:node@node-8.acme.org) Hi, I'm going to join the network with id 000000ff
-> [  0.000000] (10:node@node-9.acme.org) Hi, I'm going to join the network with id 000001ff
-> [  0.000000] (11:node@node-10.acme.org) Hi, I'm going to join the network with id 000003ff
-> [  0.000000] (12:node@node-11.acme.org) Hi, I'm going to join the network with id 000007ff
-> [  0.000000] (13:node@node-12.acme.org) Hi, I'm going to join the network with id 00000fff
+> [  0.000000] ( 1:node@node-0.acme.org) Hi, I'm going to create the network with id 0
+> [  0.000000] ( 2:node@node-1.acme.org) Hi, I'm going to join the network with id 1
+> [  0.000000] ( 3:node@node-2.acme.org) Hi, I'm going to join the network with id 3
+> [  0.000000] ( 4:node@node-3.acme.org) Hi, I'm going to join the network with id 7
+> [  0.000000] ( 5:node@node-4.acme.org) Hi, I'm going to join the network with id 15
+> [  0.000000] ( 6:node@node-5.acme.org) Hi, I'm going to join the network with id 31
+> [  0.000000] ( 7:node@node-6.acme.org) Hi, I'm going to join the network with id 63
+> [  0.000000] ( 8:node@node-7.acme.org) Hi, I'm going to join the network with id 127
+> [  0.000000] ( 9:node@node-8.acme.org) Hi, I'm going to join the network with id 255
+> [  0.000000] (10:node@node-9.acme.org) Hi, I'm going to join the network with id 511
+> [  0.000000] (11:node@node-10.acme.org) Hi, I'm going to join the network with id 1023
+> [  0.000000] (12:node@node-11.acme.org) Hi, I'm going to join the network with id 2047
+> [  0.000000] (13:node@node-12.acme.org) Hi, I'm going to join the network with id 4095
 > [780.000000] ( 7:node@node-6.acme.org) 5/5 FIND_NODE have succeeded
 > [780.000000] ( 9:node@node-8.acme.org) 5/5 FIND_NODE have succeeded
 > [780.000000] ( 3:node@node-2.acme.org) 5/5 FIND_NODE have succeeded

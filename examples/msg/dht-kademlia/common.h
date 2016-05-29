@@ -22,7 +22,7 @@
 
 #define random_lookup_interval 100
 
-#define MAILBOX_NAME_SIZE (identifier_size / 4) /* hex encoded */
+#define MAILBOX_NAME_SIZE 16 /* (identifier_size / 4)  (hex encoded) */
 
 #define COMM_SIZE 1
 #define COMP_SIZE 0

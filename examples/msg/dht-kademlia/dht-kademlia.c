@@ -274,8 +274,8 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
   */
 unsigned int ping(node_t node, unsigned int id_to_ping)
 {
-  char mailbox[MAILBOX_NAME_SIZE + 1];
-  sprintf(mailbox, "%0*x", MAILBOX_NAME_SIZE, id_to_ping);
+  char mailbox[MAILBOX_NAME_SIZE];
+  snprintf(mailbox,MAILBOX_NAME_SIZE, "%d", id_to_ping);
 
   unsigned int destination_found = 0;
   double timeout = MSG_get_clock() + ping_timeout;
@@ -342,7 +342,7 @@ void random_lookup(node_t node)
   */
 void send_find_node(node_t node, unsigned int id, unsigned int destination)
 {
-  char mailbox[MAILBOX_NAME_SIZE + 1];
+  char mailbox[MAILBOX_NAME_SIZE];
   /* Gets the mailbox to send to */
   get_node_mailbox(id, mailbox);
   /* Build the task */
