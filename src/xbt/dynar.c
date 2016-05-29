@@ -562,11 +562,29 @@ inline void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor)
 
 /** @brief Sorts a dynar according to the function <tt>compar_fn</tt>
  *
- * \param dynar the dynar to sort
- * \param compar_fn comparison function of type (int (compar_fn*) (void*) (void*)).
+ * This function simply apply the classical qsort(3) function to the data stored in the dynar.
+ * You should thus refer to the libc documentation, or to some online tutorial on how to write
+ * a comparison function. Here is a quick example if you have integers in your dynar:
  *
- * Remark: if the elements stored in the dynar are structures, the compar_fn function has to retrieve the field to sort
- * first.
+ * @verbatim
+ * int cmpfunc (const void * a, const void * b) {
+ *   int intA = *(int*)a;
+ *   int intB = *(int*)b;
+ *   return intA - intB;
+ * }
+ * @endverbatim
+ *
+ * and now to sort a dynar of MSG hosts depending on their speed:
+ * @verbatim
+ * int cmpfunc(const MSG_host_t a, const MSG_host_t b) {
+ *   MSG_host_t hostA = *(MSG_host_t*)a;
+ *   MSG_host_t hostB = *(MSG_host_t*)b;
+ *   return MSG_host_get_speed(hostA) - MSG_host_get_speed(hostB);
+ * }
+ * @endverbatim
+ *
+ * \param dynar the dynar to sort
+ * \param compar_fn comparison function of type (int (compar_fn*) (const void*) (const void*)).
  */
 inline void xbt_dynar_sort(xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn)
 {
