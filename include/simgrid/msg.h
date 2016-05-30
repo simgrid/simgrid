@@ -526,17 +526,17 @@ XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
  *
  */
 
-XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
 
-XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t vm);
 
 
-XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t);
+XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
@@ -545,7 +545,7 @@ XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t ind_pm, const char *name,
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 
-XBT_PUBLIC(void) MSG_vm_start(msg_vm_t);
+XBT_PUBLIC(void) MSG_vm_start(msg_vm_t vm);
 
 /* Shutdown the guest operating system. */
 XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
