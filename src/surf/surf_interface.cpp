@@ -284,9 +284,9 @@ void surf_init(int *argc, char **argv)
   file_lib = xbt_lib_new();
   watched_hosts_lib = xbt_dict_new_homogeneous(NULL);
 
-
   XBT_DEBUG("Add routing levels");
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib, NULL);
+  ROUTING_ASR_LEVEL = xbt_lib_add_level(as_router_lib, nullptr);
 
   XBT_DEBUG("Add SURF levels");
   simgrid::surf::HostImpl::classInit();
