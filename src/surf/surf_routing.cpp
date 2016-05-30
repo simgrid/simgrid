@@ -32,18 +32,18 @@ namespace surf {
  */
 xbt_dict_t host_list = nullptr;
 
-int COORD_HOST_LEVEL=0;         //Coordinates level
+int COORD_HOST_LEVEL = -1;         //Coordinates level
 
-int MSG_FILE_LEVEL;             //Msg file level
+int MSG_FILE_LEVEL = -1;             //Msg file level
 
-int SIMIX_STORAGE_LEVEL;        //Simix storage level
-int MSG_STORAGE_LEVEL;          //Msg storage level
+int SIMIX_STORAGE_LEVEL = -1;        //Simix storage level
+int MSG_STORAGE_LEVEL = -1;          //Msg storage level
 
 xbt_lib_t as_router_lib;
-int ROUTING_ASR_LEVEL;          //Routing level
-int COORD_ASR_LEVEL;            //Coordinates level
-int NS3_ASR_LEVEL;              //host node for ns3
-int ROUTING_PROP_ASR_LEVEL;     //Where the properties are stored
+int ROUTING_ASR_LEVEL = -1;          //Routing level
+int COORD_ASR_LEVEL = -1;            //Coordinates level
+int NS3_ASR_LEVEL = -1;              //host node for ns3
+int ROUTING_PROP_ASR_LEVEL = -1;     //Where the properties are stored
 
 /** @brief Retrieve a netcard from its name
  *

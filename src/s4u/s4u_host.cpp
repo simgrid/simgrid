@@ -20,9 +20,9 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
-int MSG_HOST_LEVEL;
-int SIMIX_HOST_LEVEL;
-int USER_HOST_LEVEL;
+int MSG_HOST_LEVEL = -1;
+int SIMIX_HOST_LEVEL = -1;
+int USER_HOST_LEVEL = -1;
 
 namespace simgrid {
 

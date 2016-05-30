@@ -181,9 +181,9 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
   xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, router->id, ROUTING_ASR_LEVEL),
              "Refusing to create a router named '%s': this name already describes a node.", router->id);
 
-  simgrid::surf::NetCard *netcard =
+  simgrid::surf::NetCard* netcard =
     new simgrid::surf::NetCardImpl(router->id, simgrid::surf::NetCard::Type::Router, current_routing);
-  xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, (void *) netcard);
+  xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, netcard);
   XBT_DEBUG("Having set name '%s' id '%d'", router->id, netcard->id());
 
   if (router->coord && strcmp(router->coord, "")) {

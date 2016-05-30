@@ -13,11 +13,11 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
 
 xbt_lib_t file_lib;
 xbt_lib_t storage_lib;
-int ROUTING_STORAGE_LEVEL;      //Routing for storagelevel
-int ROUTING_STORAGE_HOST_LEVEL;
-int SURF_STORAGE_LEVEL;
+int ROUTING_STORAGE_LEVEL = -1;      //Routing for storagelevel
+int ROUTING_STORAGE_HOST_LEVEL = -1;
+int SURF_STORAGE_LEVEL = -1;
 xbt_lib_t storage_type_lib;
-int ROUTING_STORAGE_TYPE_LEVEL; //Routing for storage_type level
+int ROUTING_STORAGE_TYPE_LEVEL = -1; //Routing for storage_type level
 simgrid::surf::StorageModel *surf_storage_model = NULL;
 
 namespace simgrid {
