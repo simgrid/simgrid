@@ -99,7 +99,8 @@ type_t PJ_type_get_or_null (const char *name, type_t father)
     THROWF (tracing_error, 0, "can't get type with a NULL name or from a NULL father");
   }
 
-  type_t ret = NULL, child;
+  type_t ret = NULL;
+  type_t child;
   char *child_name;
   xbt_dict_cursor_t cursor = NULL;
   xbt_dict_foreach(father->children, cursor, child_name, child) {

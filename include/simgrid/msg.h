@@ -89,7 +89,7 @@ typedef s_xbt_dictelm_t s_msg_file_t;
 extern int MSG_FILE_LEVEL;
 typedef struct simdata_file *simdata_file_t;
 
-typedef struct msg_file_priv  {
+struct msg_file_priv  {
   char *fullpath;
   sg_size_t size;
   char* mount_point;
@@ -99,7 +99,9 @@ typedef struct msg_file_priv  {
   int desc_id;
   void *data;
   simdata_file_t simdata;
-} s_msg_file_priv_t, *msg_file_priv_t;
+};
+typedef struct msg_file_priv s_msg_file_priv_t;
+typedef struct msg_file_priv* msg_file_priv_t;
 
 static inline msg_file_priv_t MSG_file_priv(msg_file_t file){
   return (msg_file_priv_t )xbt_lib_get_level(file, MSG_FILE_LEVEL);
@@ -118,10 +120,12 @@ extern int MSG_STORAGE_LEVEL;
 typedef xbt_dictelm_t msg_storage_t;
 typedef s_xbt_dictelm_t s_msg_storage_t;
 
-typedef struct msg_storage_priv  {
+struct msg_storage_priv  {
   const char *hostname;
   void *data;
-} s_msg_storage_priv_t, *msg_storage_priv_t;
+};
+typedef struct msg_storage_priv  s_msg_storage_priv_t;
+typedef struct msg_storage_priv* msg_storage_priv_t;
 
 static inline msg_storage_priv_t MSG_storage_priv(msg_storage_t storage){
   return (msg_storage_priv_t )xbt_lib_get_level(storage, MSG_STORAGE_LEVEL);

@@ -16,7 +16,7 @@
 
 SG_BEGIN_DECL()
 
-typedef struct s_stack_region{
+struct s_stack_region{
   void *address;
 #if HAVE_UCONTEXT_H
   ucontext_t* context;
@@ -24,7 +24,9 @@ typedef struct s_stack_region{
   size_t size;
   int block;
   int process_index;
-}s_stack_region_t, *stack_region_t;
+};
+typedef struct s_stack_region  s_stack_region_t;
+typedef struct s_stack_region* stack_region_t;
 
 SG_END_DECL()
 

@@ -65,12 +65,15 @@ typedef struct foo {
 */
 typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
 
-typedef struct xbt_swag {
+struct xbt_swag {
   void *head;
   void *tail;
   size_t offset;
   int count;
-} s_xbt_swag_t, *xbt_swag_t;
+};
+typedef struct xbt_swag  s_xbt_swag_t;
+typedef struct xbt_swag* xbt_swag_t;
+
 /**< A typical swag */
 /* @} */
 

@@ -239,10 +239,14 @@ typedef enum {
 XBT_PUBLIC(void) xbt_log_control_set(const char *cs);
 
 /* Forward declarations */
-typedef struct xbt_log_appender_s s_xbt_log_appender_t, *xbt_log_appender_t;
-typedef struct xbt_log_layout_s s_xbt_log_layout_t, *xbt_log_layout_t;
-typedef struct xbt_log_event_s s_xbt_log_event_t, *xbt_log_event_t;
-typedef struct xbt_log_category_s s_xbt_log_category_t, *xbt_log_category_t;
+typedef struct xbt_log_appender_s  s_xbt_log_appender_t;
+typedef struct xbt_log_appender_s* xbt_log_appender_t;
+typedef struct xbt_log_layout_s  s_xbt_log_layout_t;
+typedef struct xbt_log_layout_s* xbt_log_layout_t;
+typedef struct xbt_log_event_s  s_xbt_log_event_t;
+typedef struct xbt_log_event_s* xbt_log_event_t;
+typedef struct xbt_log_category_s  s_xbt_log_category_t;
+typedef struct xbt_log_category_s* xbt_log_category_t;
 
 /* Do NOT access any members of this structure directly. FIXME: move to private? */
 

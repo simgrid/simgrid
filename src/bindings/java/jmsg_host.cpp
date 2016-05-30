@@ -265,7 +265,8 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
   }
 
   xbt_dict_cursor_t cursor=NULL;
-  const char *mount_name, *storage_name;
+  const char* mount_name;
+  const char* storage_name;
 
   xbt_dict_foreach(dict,cursor,mount_name,storage_name) {
     jname = env->NewStringUTF(storage_name);

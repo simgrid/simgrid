@@ -12,11 +12,13 @@ SG_BEGIN_DECL()
 
 /** \brief MPI collective description */
 
-typedef struct mpi_coll_description {
+struct mpi_coll_description {
   const char *name;
   const char *description;
   void *coll;
-} s_mpi_coll_description_t, *mpi_coll_description_t;
+};
+typedef struct mpi_coll_description  s_mpi_coll_description_t;
+typedef struct mpi_coll_description* mpi_coll_description_t;
 
 /** \ingroup MPI gather
  *  \brief The list of all available allgather collectives

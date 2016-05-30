@@ -136,7 +136,6 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 {
   msg_file_priv_t file_priv = MSG_file_priv(fd);
-  sg_size_t write_size, offset;
 
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
@@ -169,8 +168,8 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     }
   }
   /* Write file on local or remote host */
-  offset = simcall_file_tell(file_priv->simdata->smx_file);
-  write_size = simcall_file_write(file_priv->simdata->smx_file, size, attached_host);
+  sg_size_t offset = simcall_file_tell(file_priv->simdata->smx_file);
+  sg_size_t write_size = simcall_file_write(file_priv->simdata->smx_file, size, attached_host);
   file_priv->size = offset+write_size;
 
   return write_size;
@@ -325,14 +324,14 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   /* Find the real host destination where the file will be physically stored */
   xbt_dict_cursor_t cursor = NULL;
-  char *mount_name, *storage_name, *file_mount_name, *host_name_dest;
   msg_storage_t storage_dest = NULL;
   msg_host_t host_dest;
   size_t longest_prefix_length = 0;
 
   xbt_dict_t storage_list = host->mountedStoragesAsDict();
+  char *mount_name, *storage_name;
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
-    file_mount_name = (char *) xbt_malloc ((strlen(mount_name)+1));
+    char* file_mount_name = (char *) xbt_malloc ((strlen(mount_name)+1));
     strncpy(file_mount_name,fullpath,strlen(mount_name)+1);
     file_mount_name[strlen(mount_name)] = '\0';
 
@@ -345,12 +344,12 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   }
   xbt_dict_free(&storage_list);
 
+  char* host_name_dest = nullptr;
   if(longest_prefix_length>0){
     /* Mount point found, retrieve the host the storage is attached to */
     msg_storage_priv_t storage_dest_priv = MSG_storage_priv(storage_dest);
     host_name_dest = (char*)storage_dest_priv->hostname;
     host_dest = MSG_host_by_name(host_name_dest);
-
   }else{
     XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, sg_host_get_name(host));
     return MSG_TASK_CANCELED;

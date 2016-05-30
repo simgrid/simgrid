@@ -125,11 +125,13 @@ typedef struct surf_file *surf_file_t;
 
 /** \brief Resource model description
  */
-typedef struct surf_model_description {
+struct surf_model_description {
   const char *name;
   const char *description;
   void_f_void_t model_init_preparse;
-} s_surf_model_description_t, *surf_model_description_t;
+};
+typedef struct surf_model_description  s_surf_model_description_t;
+typedef struct surf_model_description* surf_model_description_t;
 
 XBT_PUBLIC(int) find_model_description(s_surf_model_description_t * table, const char *name);
 XBT_PUBLIC(void) model_help(const char *category, s_surf_model_description_t * table);

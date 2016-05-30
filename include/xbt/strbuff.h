@@ -18,10 +18,12 @@
 SG_BEGIN_DECL()
 
 /** Buffer code **/
-typedef struct {
+struct xbt_strbuff {
   char *data;
   int used, size;
-} s_xbt_strbuff_t, *xbt_strbuff_t;
+};
+typedef struct xbt_strbuff  s_xbt_strbuff_t;
+typedef struct xbt_strbuff* xbt_strbuff_t;
 
 XBT_PUBLIC(void) xbt_strbuff_empty(xbt_strbuff_t b);
 XBT_PUBLIC(xbt_strbuff_t) xbt_strbuff_new(void);

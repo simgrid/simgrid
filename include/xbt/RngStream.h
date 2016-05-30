@@ -13,7 +13,9 @@
 typedef struct RngStream_InfoState * RngStream;
 
 struct RngStream_InfoState {
-   double Cg[6], Bg[6], Ig[6];
+   double Cg[6];
+   double Bg[6];
+   double Ig[6];
    int Anti;
    int IncPrec;
    char *name;
