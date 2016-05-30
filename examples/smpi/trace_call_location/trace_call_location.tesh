@@ -13,6 +13,6 @@ $ ../../smpi_script/bin/smpirun -trace -trace-file smpi_trace.trace -hostfile ${
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/trace-call-location' to '1'
 
-$ grep --quiet "12 0.000000 2 1 5 .*trace_call_location\.c\" 14$" ${srcdir:=.}/smpi_trace.trace 
+$ grep --quiet "12 0.000000 2 1 5 .*trace_call_location\.c\" 14$" ./smpi_trace.trace 
 
-$ rm -f ${srcdir:=.}/smpi_trace.trace 
+$ rm -f ./smpi_trace.trace 
