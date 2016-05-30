@@ -59,7 +59,7 @@ public:
   simgrid::s4u::As *asByNameOrNull(const char *name);
 
 private:
-  static s4u::Engine *instance_ = nullptr;
+  static s4u::Engine *instance_;
 };
 }} // namespace simgrid::s4u
 
