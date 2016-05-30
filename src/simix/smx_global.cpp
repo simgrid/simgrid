@@ -298,8 +298,10 @@ void SIMIX_clean(void)
 
   /* Let's free maestro now */
   delete simix_global->maestro_process->context;
+  simix_global->maestro_process->context = nullptr;
   xbt_free(simix_global->maestro_process->running_ctx);
-  xbt_free(simix_global->maestro_process);
+  simix_global->maestro_process->running_ctx = nullptr;
+  delete simix_global->maestro_process;
   simix_global->maestro_process = NULL;
 
   /* Restore the default exception setup */
