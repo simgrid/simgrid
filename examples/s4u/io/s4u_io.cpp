@@ -40,18 +40,17 @@ public:
     // Open an non-existing file to create it
     const char *filename = "/home/tmp/data.txt";
     simgrid::s4u::File *file = new simgrid::s4u::File(filename, NULL);
-    sg_size_t write, read, file_size;
 
-    write = file->write(200000);  // Write 200,000 bytes
+    sg_size_t write = file->write(200000);  // Write 200,000 bytes
     XBT_INFO("Create a %llu bytes file named '%s' on /sd1", write, filename);
 
     // check that sizes have changed
     show_info(mounts);
 
     // Now retrieve the size of created file and read it completely
-    file_size = file->size();
+    const sg_size_t file_size = file->size();
     file->seek(0);
-    read = file->read(file_size);
+    const sg_size_t read = file->read(file_size);
     XBT_INFO("Read %llu bytes on %s", read, filename);
 
     // Now write 100,000 bytes in tmp/data.txt
