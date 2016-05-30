@@ -44,7 +44,7 @@ int tracker(int argc, char *argv[])
         //Retrieve the data sent by the peer.
         tracker_task_data_t data = MSG_task_get_data(task_received);
         //Add the peer to our peer list.
-        if (!is_in_list(peers_list, data->peer_id)) {
+        if (is_in_list(peers_list, data->peer_id) == 0) {
           xbt_dynar_push_as(peers_list, int, data->peer_id);
         }
         //Sending peers to the peer
