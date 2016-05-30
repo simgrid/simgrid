@@ -63,7 +63,7 @@ static int receiver(int argc, char *argv[])
     MSG_comm_destroy(res_irecv);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
-    if (!strcmp(MSG_task_get_name(task), "finalize")) {
+    if (strcmp(MSG_task_get_name(task), "finalize") == 0) {
       MSG_task_destroy(task);
       break;
     }

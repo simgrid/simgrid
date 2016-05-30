@@ -37,7 +37,7 @@ static int sender(int argc, char *argv[])
   }
   /* Here we are waiting for the completion of all communications */
 
-  while (!xbt_dynar_is_empty(d)) {
+  while (xbt_dynar_is_empty(d) == 0) {
     xbt_dynar_remove_at(d, MSG_comm_waitany(d), &comm);
     MSG_comm_destroy(comm);
   }

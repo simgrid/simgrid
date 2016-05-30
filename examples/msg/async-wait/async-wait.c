@@ -35,12 +35,12 @@ static int sender(int argc, char *argv[])
     comm = MSG_task_isend(task, mailbox);
     XBT_INFO("Send to receiver-%ld Task_%d", i % receivers_count, i);
 
-    if (sleep_test_time == 0) { /* - "test_time" is set to 0, wait on @ref MSG_comm_wait */
-      MSG_comm_wait(comm, -1);
-    } else {
+    if (sleep_test_time > 0) { /* - "test_time" is set to 0, wait on @ref MSG_comm_wait */
       while (MSG_comm_test(comm) == 0) { /* - Call @ref MSG_comm_test every "test_time" otherwise */
         MSG_process_sleep(sleep_test_time);
       };
+    } else {
+      MSG_comm_wait(comm, -1);
     }
     MSG_comm_destroy(comm);
   }
@@ -51,12 +51,12 @@ static int sender(int argc, char *argv[])
     task = MSG_task_create("finalize", 0, 0, 0);
     comm = MSG_task_isend(task, mailbox);
     XBT_INFO("Send to receiver-%ld finalize", i % receivers_count);
-    if (sleep_test_time == 0) {
-      MSG_comm_wait(comm, -1);
-    } else {
+    if (sleep_test_time > 0) {
       while (MSG_comm_test(comm) == 0) {
         MSG_process_sleep(sleep_test_time);
-      };
+      }
+    } else {
+      MSG_comm_wait(comm, -1);
     }
     MSG_comm_destroy(comm);
   }
@@ -84,18 +84,18 @@ static int receiver(int argc, char *argv[])
     res_irecv = MSG_task_irecv(&(task), mailbox); /* Then it posts asynchronous receives (@ref MSG_task_irecv) and*/
     XBT_INFO("Wait to receive a task");
 
-    if (sleep_test_time == 0) {               /* - if "test_time" is set to 0, wait on @ref MSG_comm_wait */
-      res = MSG_comm_wait(res_irecv, -1);
-      xbt_assert(res == MSG_OK, "MSG_task_get failed");
-    } else {
+    if (sleep_test_time > 0) {               /* - if "test_time" is set to 0, wait on @ref MSG_comm_wait */
       while (MSG_comm_test(res_irecv) == 0) { /* - Call @ref MSG_comm_test every "test_time" otherwise */
         MSG_process_sleep(sleep_test_time);
-      };
+      }
+    } else {
+      res = MSG_comm_wait(res_irecv, -1);
+      xbt_assert(res == MSG_OK, "MSG_task_get failed");
     }
     MSG_comm_destroy(res_irecv);
 
     XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
-    if (!strcmp(MSG_task_get_name(task), "finalize")) { /* If the received task is "finalize", the process ends */
+    if (strcmp(MSG_task_get_name(task), "finalize") == 0) { /* If the received task is "finalize", the process ends */
       MSG_task_destroy(task);
       break;
     }
