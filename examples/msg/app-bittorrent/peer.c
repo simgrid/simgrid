@@ -361,7 +361,7 @@ void handle_message(peer_t peer, msg_task_t task)
          peer->bitfield[message->index] == '0') {
       remote_peer->am_interested = 1;
       send_interested(peer, message->mailbox);
-      if ((remote_peer->choked_download == 0))
+      if (remote_peer->choked_download == 0)
         request_new_piece_to_peer(peer, remote_peer);
     }
     break;
@@ -369,7 +369,7 @@ void handle_message(peer_t peer, msg_task_t task)
     xbt_assert(remote_peer->interested, "WTF !!!");
 
     xbt_assert((message->index >= 0 && message->index < FILE_PIECES), "Wrong request received");
-    if ((remote_peer->choked_upload == 0)) {
+    if (remote_peer->choked_upload == 0) {
       XBT_DEBUG("Received a REQUEST from %s (%s) for %d (%d,%d)", message->mailbox, message->issuer_host_name,
                 message->index, message->block_index, message->block_index + message->block_length);
       if (peer->bitfield[message->index] == '1') {
