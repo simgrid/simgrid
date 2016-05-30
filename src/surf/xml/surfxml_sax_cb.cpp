@@ -951,6 +951,12 @@ void ETag_surfxml_process(void){
   }
 
   sg_platf_new_process(&process);
+
+  for (int i = 0; i != argc; ++i)
+    xbt_free(argv[i]);
+  xbt_free(argv);
+  argv = nullptr;
+
   current_property_set = nullptr;
 }
 
