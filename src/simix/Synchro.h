@@ -5,6 +5,8 @@
 
 #ifndef _SIMIX_SYNCHRO_HPP
 #define _SIMIX_SYNCHRO_HPP
+
+#include <xbt/base.h>
 #include "simgrid/forward.h"
 
 #ifdef __cplusplus
@@ -14,7 +16,7 @@
 namespace simgrid {
 namespace simix {
 
-  class Synchro {
+  XBT_PUBLIC_CLASS Synchro {
   public:
     Synchro();
     virtual ~Synchro();
