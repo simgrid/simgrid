@@ -52,14 +52,14 @@ public:
   
   /** @brief Retrieve the engine singleton */
   static s4u::Engine *instance();
-private:
-  static s4u::Engine *instance_;
 
-public:
   /** @brief Retrieve the root AS, containing all others */
   simgrid::s4u::As *rootAs();
   /** @brief Retrieve the AS of the given name (or nullptr if not found) */
   simgrid::s4u::As *asByNameOrNull(const char *name);
+
+private:
+  static s4u::Engine *instance_ = nullptr;
 };
 }} // namespace simgrid::s4u
 

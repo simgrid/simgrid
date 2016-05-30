@@ -38,18 +38,9 @@ public:
   void wait() override;
   void wait(double timeout) override;
 
-private:
-  double rate_=-1;
-public:
   /** Sets the maximal communication rate (in byte/sec). Must be done before start */
   void setRate(double rate);
 
-private:
-  void *dstBuff_ = NULL;
-  size_t dstBuffSize_ = 0;
-  void *srcBuff_ = NULL;
-  size_t srcBuffSize_ = sizeof(void*);
-public:
   /** Specify the data to send */
   void setSrcData(void * buff);
   /** Specify the size of the data to send */
@@ -65,16 +56,22 @@ public:
   size_t getDstDataSize();
 
 
-private: /* FIXME: expose these elements in the API */
-  int detached_ = 0;
-  int (*matchFunction_)(void *, void *, smx_synchro_t) = NULL;
-  void (*cleanFunction_)(void *) = NULL;
-  void (*copyDataFunction_)(smx_synchro_t, void*, size_t) = NULL;
-
 private:
-  smx_process_t sender_ = NULL;
-  smx_process_t receiver_ = NULL;
-  Mailbox *mailbox_ = NULL;
+  double rate_ = -1;
+  void *dstBuff_ = nullptr;
+  size_t dstBuffSize_ = 0;
+  void *srcBuff_ = nullptr;
+  size_t srcBuffSize_ = sizeof(void*);
+
+  /* FIXME: expose these elements in the API */
+  int detached_ = 0;
+  int (*matchFunction_)(void *, void *, smx_synchro_t) = nullptr;
+  void (*cleanFunction_)(void *) = nullptr;
+  void (*copyDataFunction_)(smx_synchro_t, void*, size_t) = nullptr;
+
+  smx_process_t sender_ = nullptr;
+  smx_process_t receiver_ = nullptr;
+  Mailbox *mailbox_ = nullptr;
 };
 
 }} // namespace simgrid::s4u

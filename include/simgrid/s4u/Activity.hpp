@@ -32,12 +32,7 @@ XBT_PUBLIC_CLASS Activity {
 protected:
   Activity();
   virtual ~Activity();
-  
-private:
-  simgrid::simix::Synchro *pimpl_ = NULL;
 
-private:
-  e_s4u_activity_state_t state_ = inited;
 public:
   /** Starts a previously created activity.
    *
@@ -56,9 +51,6 @@ public:
   /** Retrieve the current state of the activity */
   e_s4u_activity_state_t getState() {return state_;}
 
-private:
-  double remains_ = 0;
-public:
   /** Get the remaining amount of work that this Activity entails. When it's 0, it's done. */
   double getRemains();
   /** Set the [remaining] amount of work that this Activity will entail
@@ -66,13 +58,16 @@ public:
    * It is forbidden to change the amount of work once the Activity is started */
   void setRemains(double remains);
 
-private:
-  void *userData_ = NULL;
-public:
   /** Put some user data onto the Activity */
   void setUserData(void *data) {userData_=data;}
   /** Retrieve the user data of the Activity */
   void *getUserData() { return userData_; }
+
+private:
+  simgrid::simix::Synchro *pimpl_ = nullptr;
+  e_s4u_activity_state_t state_ = inited;
+  double remains_ = 0;
+  void *userData_ = nullptr;
 }; // class
 
 }}; // Namespace simgrid::s4u
