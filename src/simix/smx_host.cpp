@@ -240,7 +240,7 @@ smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
     }
   }
 
-  XBT_DEBUG("Create execute synchro %p: %s", exec, exec->name);
+  XBT_DEBUG("Create execute synchro %p: %s", exec, exec->name.c_str());
 
   return exec;
 }

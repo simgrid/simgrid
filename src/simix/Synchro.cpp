@@ -9,9 +9,9 @@ simgrid::simix::Synchro::Synchro() {
   simcalls = xbt_fifo_new();
 }
 
-simgrid::simix::Synchro::~Synchro() {
+simgrid::simix::Synchro::~Synchro()
+{
   xbt_fifo_free(simcalls);
-  xbt_free(name);
 }
 
 void simgrid::simix::Synchro::ref()

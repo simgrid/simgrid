@@ -26,7 +26,6 @@ static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
   XBT_IN("(%p, %f)",smx_host,timeout);
 
   simgrid::simix::Raw *sync = new simgrid::simix::Raw();
-  sync->name = nullptr;
   sync->sleep = surf_host_sleep(smx_host, timeout);
   sync->sleep->setData(sync);
   XBT_OUT();

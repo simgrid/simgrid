@@ -9,10 +9,11 @@
 
 simgrid::simix::Exec::Exec(const char*name, sg_host_t hostarg)
 {
-  name = xbt_strdup(name);
-  state = SIMIX_RUNNING;
-  host = hostarg;
+  this->name = name;
+  this->state = SIMIX_RUNNING;
+  this->host = hostarg;
 }
+
 simgrid::simix::Exec::~Exec()
 {
   if (surf_exec)

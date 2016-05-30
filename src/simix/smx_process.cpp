@@ -800,8 +800,6 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
 
   simgrid::simix::Sleep *synchro = new simgrid::simix::Sleep();
-  synchro->name = NULL;
-
   synchro->host = host;
   synchro->surf_sleep = surf_host_sleep(host, duration);
   synchro->surf_sleep->setData(synchro);
