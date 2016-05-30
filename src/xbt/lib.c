@@ -6,6 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/asserts.h>
 #include <xbt/sysdep.h>
 #include <xbt/log.h>
 #include <xbt/lib.h>
@@ -53,6 +54,7 @@ int xbt_lib_add_level(xbt_lib_t lib, void_f_pvoid_t free_f)
 void xbt_lib_set(xbt_lib_t lib, const char *key, int level, void *obj)
 {
   XBT_DEBUG("xbt_lib_set key '%s:%d' with object %p", key, level, obj);
+  xbt_assert(level >= 0);
   void **elts = xbt_dict_get_or_null(lib->dict, key);
   if (!elts) {
     elts = xbt_new0(void *, lib->levels);
@@ -68,6 +70,7 @@ void xbt_lib_set(xbt_lib_t lib, const char *key, int level, void *obj)
 
 void xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callback)
 {
+  xbt_assert(level >= 0);
   void **elts = xbt_dict_get_or_null(lib->dict, key);
   if (!elts) {
      XBT_WARN("no key %s", key);
@@ -100,6 +103,7 @@ void xbt_lib_unset(xbt_lib_t lib, const char *key, int level, int invoke_callbac
 
 void *xbt_lib_get_or_null(xbt_lib_t lib, const char *key, int level)
 {
+  xbt_assert(level >= 0);
   void **elts = xbt_dict_get_or_null(lib->dict, key);
   return elts ? elts[level] : NULL;
 }
@@ -109,7 +113,9 @@ xbt_dictelm_t xbt_lib_get_elm_or_null(xbt_lib_t lib, const char *key)
   return xbt_dict_get_elm_or_null(lib->dict, key);
 }
 
-void *xbt_lib_get_level(xbt_dictelm_t elm, int level){
+void *xbt_lib_get_level(xbt_dictelm_t elm, int level)
+{
+  xbt_assert(level >= 0);
   void **elts = elm->content;
   return elts ? elts[level] : NULL;
 }
