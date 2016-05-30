@@ -1,7 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,8 +17,8 @@
  *  This is the list of all existing log categories in SimGrid.
  *  This list is automatically extracted from the source code by the tools/doxygen/xbt_log_extract_hierarchy.pl utility.
  *
- *  You can thus be certain that it is uptodate, but it may somehow lack a final manual touch.
- *  Anyway, nothing's perfect ;)
+ *  It should thus contain every categories that are defined in the SimGrid library. 
+ *  If you want to see the one defined in your code in addition, provide `--help-logs` on the command line of your simulator.
  */
 
 /* XBT_LOG_MAYDAY: define this to replace the logging facilities with basic
