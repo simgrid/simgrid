@@ -13,7 +13,8 @@ class Worker {
 public:
   void operator()() {
     XBT_INFO("Hello s4u, I'm ready to serve");
-    char *msg = (char*)simgrid::s4u::this_actor::recv(*simgrid::s4u::Mailbox::byName("worker"));
+    char *msg = static_cast<char*>(simgrid::s4u::this_actor::recv(
+      *simgrid::s4u::Mailbox::byName("worker")));
     XBT_INFO("I received '%s'",msg);
     XBT_INFO("I'm done. See you.");
   }
