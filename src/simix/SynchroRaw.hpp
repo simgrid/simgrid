@@ -20,7 +20,7 @@ namespace simix {
     void resume() override;
     void post() override;
 
-    surf_action_t sleep;
+    surf_action_t sleep = nullptr;
   };
 
 }} // namespace simgrid::simix

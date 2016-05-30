@@ -34,17 +34,17 @@ namespace simix {
     smx_mailbox_t mbox = nullptr;   /* Rendez-vous where the comm is queued */
 
 #if HAVE_MC
-    smx_mailbox_t mbox_cpy;         /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
+    smx_mailbox_t mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
                                        (comm.mbox set to NULL when the communication is removed from the mailbox
                                        (used as garbage collector)) */
 #endif
     bool detached = false;          /* If detached or not */
 
-    void (*clean_fun)(void*);       /* Function to clean the detached src_buf if something goes wrong */
-    int (*match_fun)(void*,void*,smx_synchro_t);  /* Filter function used by the other side. It is used when
+    void (*clean_fun)(void*) = nullptr; /* Function to clean the detached src_buf if something goes wrong */
+    int (*match_fun)(void*,void*,smx_synchro_t) = nullptr;  /* Filter function used by the other side. It is used when
                                        looking if a given communication matches my needs. For that, myself must match the
                                        expectations of the other side, too. See  */
-    void (*copy_data_fun) (smx_synchro_t, void*, size_t);
+    void (*copy_data_fun) (smx_synchro_t, void*, size_t) =nullptr;
 
     /* Surf action data */
     surf_action_t surf_comm = nullptr;        /* The Surf communication action encapsulated */
@@ -52,18 +52,18 @@ namespace simix {
     surf_action_t dst_timeout = nullptr;      /* Surf's actions to instrument the timeouts */
     smx_process_t src_proc = nullptr;
     smx_process_t dst_proc = nullptr;
-    double rate;
-    double task_size;
+    double rate = 0.0;
+    double task_size = 0.0;
 
     /* Data to be transfered */
     void *src_buff = nullptr;
     void *dst_buff = nullptr;
-    size_t src_buff_size;
-    size_t *dst_buff_size;
-    bool copied = false;          /* whether the data were already copied */
+    size_t src_buff_size = 0;
+    size_t *dst_buff_size = nullptr;
+    bool copied = false;         /* whether the data were already copied */
 
-    void* src_data;                 /* User data associated to communication */
-    void* dst_data;
+    void* src_data = nullptr;    /* User data associated to communication */
+    void* dst_data = nullptr;
   };
 
 }} // namespace simgrid::simix

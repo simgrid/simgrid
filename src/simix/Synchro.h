@@ -22,9 +22,9 @@ namespace simix {
   public:
     Synchro();
     virtual ~Synchro();
-    e_smx_state_t state;               /* State of the synchro */
+    e_smx_state_t state = SIMIX_WAITING; /* State of the synchro */
     std::string name;                  /* synchro name if any */
-    xbt_fifo_t simcalls;               /* List of simcalls waiting for this synchro */
+    xbt_fifo_t simcalls = nullptr;     /* List of simcalls waiting for this synchro */
     char *category = nullptr;          /* For instrumentation */
 
     virtual void suspend()=0;
@@ -34,7 +34,7 @@ namespace simix {
     void ref();
     void unref();
   private:
-    int refcount=1;
+    int refcount = 1;
   };
 }} // namespace simgrid::simix
 #else /* not C++ */

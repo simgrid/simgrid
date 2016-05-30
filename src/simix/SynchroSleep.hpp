@@ -18,8 +18,8 @@ namespace simix {
     void resume() override;
     void post() override;
 
-    sg_host_t host;                /* The host that is sleeping */
-    surf_action_t surf_sleep;       /* The Surf sleeping action encapsulated */
+    sg_host_t host = nullptr;           /* The host that is sleeping */
+    surf_action_t surf_sleep = nullptr; /* The Surf sleeping action encapsulated */
   };
 
 }} // namespace simgrid::simix
