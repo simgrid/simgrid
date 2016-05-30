@@ -36,9 +36,9 @@ public class Tracker extends Process {
     //Retrieve the end time
     deadline = Double.valueOf(args[0]);
     //Building peers array
-    peersList = new ArrayList<Integer>();
+    peersList = new ArrayList<>();
 
-    Msg.info("Tracker launched.");    
+    Msg.info("Tracker launched.");
     while (Msg.getClock() < deadline) {
       if (commReceived == null) {
         commReceived = Task.irecv(Common.TRACKER_MAILBOX);

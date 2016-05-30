@@ -23,7 +23,7 @@ static int master(int argc, char *argv[])
 
   for (i = 0; i < number_of_tasks; i++) {
     char mailbox[256];
-    sprintf(mailbox, "worker-%ld", i % workers_count);
+    snprintf(mailbox, 255, "worker-%ld", i % workers_count);
 
     msg_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size, xbt_new0(double, 1));
     *((double *) task->data) = MSG_get_clock();
@@ -54,22 +54,20 @@ static int master(int argc, char *argv[])
   XBT_INFO("All tasks have been dispatched. Let's tell everybody the computation is over.");
   for (i = 0; i < workers_count; i++) {
     char mailbox[256];
-    sprintf(mailbox, "worker-%ld", i % workers_count);
+    snprintf(mailbox, 255, "worker-%ld", i % workers_count);
     msg_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
     int a = MSG_task_send_with_timeout(task,mailbox,1.0);
-    if (a == MSG_OK)
-      continue;
+    if (a != MSG_OK){
+      MSG_task_destroy(task);
+    }
     if (a == MSG_HOST_FAILURE) {
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      MSG_task_destroy(task);
       return 0;
     } else if (a == MSG_TRANSFER_FAILURE) {
       XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!", mailbox);
-      MSG_task_destroy(task);
     } else if (a == MSG_TIMEOUT) {
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox);
-      MSG_task_destroy(task);
-    } else {
+    } else if (a != MSG_OK){
       XBT_INFO("Hey ?! What's up ? ");
       xbt_die("Unexpected behavior with '%s': %d", mailbox, a);
     }
@@ -86,15 +84,12 @@ static int worker(int argc, char *argv[])
 
   long id= xbt_str_parse_int(argv[1], "Invalid argument %s");
 
-  sprintf(mailbox, "worker-%ld", id);
+  snprintf(mailbox, 79,"worker-%ld", id);
 
   while (1) {
-    int a;
-    double time1, time2;
-
-    time1 = MSG_get_clock();
-    a = MSG_task_receive( &(task), mailbox);
-    time2 = MSG_get_clock();
+    double time1 = MSG_get_clock();
+    int a = MSG_task_receive( &(task), mailbox);
+    double time2 = MSG_get_clock();
     if (a == MSG_OK) {
       XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {

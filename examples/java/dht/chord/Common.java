@@ -18,4 +18,7 @@ public class Common {
   public final static int PERIODIC_FIX_FINGERS_DELAY = 120;
   public final static int PERIODIC_CHECK_PREDECESSOR_DELAY = 120;
   public final static int PERIODIC_LOOKUP_DELAY = 10;
+  private Common() {
+    throw new IllegalAccessError("Utility class");
+  }
 }

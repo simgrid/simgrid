@@ -25,4 +25,7 @@ class Common {
   public static final int MAX_UNCHOKED_PEERS = 4;  /* Number of peers that can be unchocked at a given time */
   public static final int UPDATE_CHOKED_INTERVAL = 30;  /* Interval between each update of the choked peers */
   public static final int MAX_PIECES = 1;  /* Number of pieces the peer asks for simultaneously */
+  private Common() {
+    throw new IllegalAccessError("Utility class");
+  }
 }

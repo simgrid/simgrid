@@ -8,21 +8,21 @@ package app.bittorrent;
 import java.util.Arrays;
 
 public class Connection {
-  public int id;
-  public char bitfield[];
-  public String mailbox;
+  protected int id;
+  protected char bitfield[];
+  protected String mailbox;
   // Indicates if we are interested in something this peer has
-  public boolean amInterested = false;
+  protected boolean amInterested = false;
   // Indicates if the peer is interested in one of our pieces
-  public boolean interested = false;
+  protected boolean interested = false;
   // Indicates if the peer is choked for the current peer
-  public boolean chokedUpload = true;
+  protected boolean chokedUpload = true;
   // Indicates if the peer has choked the current peer
-  public boolean chokedDownload = true;
+  protected boolean chokedDownload = true;
   // Number of messages we have received from the peer
-  public int messagesCount = 0;
-  public double peerSpeed = 0;
-  public double lastUnchoke = 0;
+  protected int messagesCount = 0;
+  protected double peerSpeed = 0;
+  protected double lastUnchoke = 0;
 
   public Connection(int id) {
     this.id = id;

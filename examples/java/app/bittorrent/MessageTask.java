@@ -18,17 +18,17 @@ public class MessageTask extends Task {
     BITFIELD,
     REQUEST,
     PIECE
-  };
+  }
 
-  public Type type;
-  public String issuerHostname;
-  public String mailbox;
-  public int peerId;
-  public char bitfield[];
-  public int index;
-  public int blockIndex;
-  public int blockLength;
-  public boolean stalled;
+  protected Type type;
+  protected String issuerHostname;
+  protected String mailbox;
+  protected int peerId;
+  protected char bitfield[];
+  protected int index;
+  protected int blockIndex;
+  protected int blockLength;
+  protected boolean stalled;
 
   public MessageTask(Type type, String issuerHostname, String mailbox, int peerId) {
     this(type,issuerHostname,mailbox,peerId,-1,false,-1,-1);

@@ -11,9 +11,9 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.NativeException;
 import org.simgrid.msg.HostNotFoundException;
 
-public class Main {
-  public static Mutex mutex;
-  public static Process processToMigrate = null;
+class Main {
+  protected static Mutex mutex;
+  protected static Process processToMigrate = null;
 
   public static void main(String[] args) throws NativeException {
     Msg.init(args);
@@ -34,7 +34,8 @@ public class Main {
         Emigrant emigrant   = new Emigrant("Jacquelin","emigrant");
         emigrant.start();
     } catch (HostNotFoundException e){
-      System.out.println("Create processes failed!");
+      Msg.error("Create processes failed!");
+      e.printStackTrace();
     }
 
     /*  execute the simulation. */

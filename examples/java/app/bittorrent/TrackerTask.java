@@ -14,17 +14,17 @@ public class TrackerTask extends Task {
   public enum Type {
     REQUEST,
     ANSWER
-  };
+  }
 
-  public Type type;
-  public String hostname;
-  public String mailbox;
-  public int peerId;
-  public int uploaded;
-  public int downloaded;
-  public int left;
-  public double interval;
-  public ArrayList<Integer> peers;
+  protected Type type;
+  protected String hostname;
+  protected String mailbox;
+  protected int peerId;
+  protected int uploaded;
+  protected int downloaded;
+  protected int left;
+  protected double interval;
+  protected ArrayList<Integer> peers;
 
   public TrackerTask(String hostname, String mailbox, int peerId) {
     this(hostname, mailbox, peerId, 0, 0, Common.FILE_SIZE);
@@ -39,6 +39,6 @@ public class TrackerTask extends Task {
     this.uploaded = uploaded;
     this.downloaded = downloaded;
     this.left = left;
-    this.peers = new ArrayList<Integer>();
+    this.peers = new ArrayList<>();
   }
 }
