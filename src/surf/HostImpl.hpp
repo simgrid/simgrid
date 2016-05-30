@@ -103,6 +103,7 @@ public:
   ~HostImpl();
 
 public:
+  // Overload the method for covariant return type:
   HostModel *getModel()
   {
     return static_cast<HostModel*>(Resource::getModel());
