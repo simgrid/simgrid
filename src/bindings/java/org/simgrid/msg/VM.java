@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-
+import java.util.Vector;
 
 public class VM extends Host{
 	// Please note that we are not declaring a new bind variable 
@@ -17,7 +17,7 @@ public class VM extends Host{
 	// GetByName is inherited from the super class Host
 
 
-	private static VM[] vms=null; 	  
+	private static Vector<VM> vms= new Vector<>();
 	private Host currentHost; 
 
 	/* Constructors / destructors */
@@ -46,30 +46,19 @@ public class VM extends Host{
 		super.name = name; 
 		this.currentHost = host; 
 		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, migNetSpeed, dpIntensity);
-		VM.addVM(this);
+		vms.add(this);
 	}
 
-	private static void addVM(VM vm){
-		VM[] vmsN=null; 
-		int i=0;
-		if(VM.vms == null)
-			vmsN = new VM[1]; 
-		else
-			vmsN = new VM[vms.length+1]; 
-
-		for (i=0; i<vmsN.length-1 ; i ++){
-			vmsN[i]=vms[i];	
-		} 
-		vmsN[i]=vm;
-		vms=vmsN;
-	}
 	public static VM[] all(){
-		return vms;
+		VM[] allvms = new VM[vms.size()];
+		vms.toArray(allvms);
+		return allvms;
 	}
+
 	public static VM getVMByName(String name){
-		for (int i=0 ; i < vms.length ; i++){
-			if (vms[i].getName().equals(name))
-				return vms[i];		
+		for (VM vm : vms){
+			if (vm.getName().equals(name))
+				return vm;
 		}
 		return null; 
 	}
