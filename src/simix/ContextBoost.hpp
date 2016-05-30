@@ -45,7 +45,7 @@ public:
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process);
   ~BoostContext();
-  void resume();
+  virtual void resume();
 private:
   static void wrapper(int first, ...);
 };

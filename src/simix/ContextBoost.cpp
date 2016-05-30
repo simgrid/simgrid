@@ -31,7 +31,6 @@ public:
     : BoostContext(std::move(code), cleanup_func, process) {}
   void stop() override;
   void suspend() override;
-  void resume();
 };
 
 #if HAVE_THREAD_CONTEXTS
@@ -43,7 +42,7 @@ public:
     : BoostContext(std::move(code), cleanup_func, process) {}
   void stop() override;
   void suspend() override;
-  void resume();
+  void resume() override;
 };
 #endif
 
