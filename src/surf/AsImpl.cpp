@@ -19,7 +19,6 @@ namespace simgrid {
     }
     AsImpl::~AsImpl()
     {
-      delete netcard_;
     }
 
     xbt_dynar_t AsImpl::getOneLinkRoutes() {
