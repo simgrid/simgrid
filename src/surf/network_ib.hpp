@@ -35,7 +35,7 @@ namespace simgrid {
       std::map<IBNode*, int> ActiveCommsDown;
       //number of comms the node is receiving
       int nbActiveCommsDown;
-      IBNode(int id) : id(id),nbActiveCommsDown(0){};
+      explicit IBNode(int id) : id(id),nbActiveCommsDown(0){};
       ~IBNode(){};
     };
 
@@ -45,7 +45,7 @@ namespace simgrid {
       void computeIBfactors(IBNode *root);
     public:
       NetworkIBModel();
-      NetworkIBModel(const char *name);
+      explicit NetworkIBModel(const char *name);
       ~NetworkIBModel();
       void updateIBfactors(NetworkAction *action, IBNode *from, IBNode * to, int remove);
 

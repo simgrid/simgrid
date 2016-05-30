@@ -33,7 +33,7 @@ XBT_PUBLIC_CLASS As {
 protected:
   friend simgrid::surf::AsImpl;
 
-  As(const char *name);
+  explicit As(const char *name);
   virtual ~As();
   
 public:

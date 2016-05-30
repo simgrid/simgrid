@@ -13,7 +13,7 @@ namespace surf {
 
 class XBT_PRIVATE AsRoutedGraph : public AsImpl {
 public:
-  AsRoutedGraph(const char*name);
+  explicit AsRoutedGraph(const char*name);
   ~AsRoutedGraph();
 
   xbt_dynar_t getOneLinkRoutes() override;

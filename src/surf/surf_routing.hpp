@@ -100,7 +100,7 @@ public:
  */
 XBT_PUBLIC_CLASS RoutingPlatf {
 public:
-  RoutingPlatf(Link *loopback);
+  explicit RoutingPlatf(Link *loopback);
   ~RoutingPlatf();
   AsImpl *root_ = nullptr;
   Link *loopback_;

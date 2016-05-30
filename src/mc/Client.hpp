@@ -33,7 +33,7 @@ private:
   static std::unique_ptr<Client> client_;
 public:
   Client();
-  Client(int fd) : active_(true), channel_(fd) {}
+  explicit Client(int fd) : active_(true), channel_(fd) {}
   void handleMessages();
   Channel const& getChannel() const { return channel_; }
   Channel& getChannel() { return channel_; }

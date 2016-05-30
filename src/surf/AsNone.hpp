@@ -14,7 +14,7 @@ namespace surf {
 /** No specific routing. Mainly useful with the constant network model */
 class XBT_PRIVATE AsNone : public AsImpl {
 public:
-  AsNone(const char*name);
+  explicit AsNone(const char*name);
   ~AsNone();
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

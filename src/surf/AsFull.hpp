@@ -15,7 +15,7 @@ namespace surf {
 class XBT_PRIVATE AsFull: public AsRoutedGraph {
 public:
 
-  AsFull(const char*name);
+  explicit AsFull(const char*name);
   void seal() override;
   ~AsFull();
 

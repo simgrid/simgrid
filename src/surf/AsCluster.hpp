@@ -13,7 +13,7 @@ namespace surf {
 
 class XBT_PRIVATE AsCluster: public AsImpl {
 public:
-  AsCluster(const char*name);
+  explicit AsCluster(const char*name);
   ~AsCluster();
 
   virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

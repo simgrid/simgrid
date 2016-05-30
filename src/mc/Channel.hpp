@@ -31,7 +31,7 @@ class Channel {
 public:
 
   Channel() {}
-  Channel(int sock) : socket_(sock) {}
+  explicit Channel(int sock) : socket_(sock) {}
   ~Channel();
 
   // No copy:

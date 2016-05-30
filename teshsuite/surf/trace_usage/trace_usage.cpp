@@ -16,7 +16,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 class DummyTestResource
     : public simgrid::surf::Resource {
 public:
-  DummyTestResource(const char *name) : Resource(nullptr,name) {}
+  explicit DummyTestResource(const char *name) : Resource(nullptr,name) {}
   bool isUsed() override {return false;}
   void apply_event(tmgr_trace_iterator_t it, double value) override {}
 };

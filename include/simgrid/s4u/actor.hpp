@@ -40,7 +40,7 @@ namespace s4u {
  *
  */
 XBT_PUBLIC_CLASS Actor {
-  Actor(smx_process_t smx_proc);
+  explicit Actor(smx_process_t smx_proc);
 public:
   Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
   Actor(const char* name, s4u::Host *host, std::function<void()> code)

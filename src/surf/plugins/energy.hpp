@@ -25,7 +25,7 @@ public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> EXTENSION_ID;
   typedef std::pair<double,double> power_range;
 
-  HostEnergy(simgrid::s4u::Host *ptr);
+  explicit HostEnergy(simgrid::s4u::Host *ptr);
   ~HostEnergy();
 
   double getCurrentWattsValue(double cpu_load);

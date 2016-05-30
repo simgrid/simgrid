@@ -14,7 +14,7 @@ namespace surf {
 /* This derivates from cluster because each host has a private link */
 class XBT_PRIVATE AsVivaldi: public AsCluster {
 public:
-  AsVivaldi(const char *name);
+  explicit AsVivaldi(const char *name);
   ~AsVivaldi() {};
 
   xbt_dynar_t getOneLinkRoutes() override {return NULL;};

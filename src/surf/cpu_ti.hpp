@@ -32,7 +32,7 @@ struct tiTag;
  *********/
 class CpuTiTrace {
 public:
-  CpuTiTrace(tmgr_trace_t speedTrace);
+  explicit CpuTiTrace(tmgr_trace_t speedTrace);
   ~CpuTiTrace();
 
   double integrateSimple(double a, double b);

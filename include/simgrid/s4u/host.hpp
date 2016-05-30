@@ -41,7 +41,7 @@ XBT_PUBLIC_CLASS Host :
   public simgrid::xbt::Extendable<Host> {
 
 private:
-  Host(const char *name);
+  explicit Host(const char *name);
 public: // TODO, make me private
   ~Host();
 public:

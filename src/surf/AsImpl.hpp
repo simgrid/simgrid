@@ -27,7 +27,7 @@ namespace surf {
 XBT_PUBLIC_CLASS AsImpl : public s4u::As {
   friend simgrid::surf::RoutingPlatf;
 protected:
-  AsImpl(const char *name);
+  explicit AsImpl(const char *name);
   ~AsImpl();
   
 public:

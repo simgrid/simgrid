@@ -61,7 +61,7 @@ private:
   std::string name_;
 public:
 
-  ContextFactory(std::string name) : name_(std::move(name)) {}
+  explicit ContextFactory(std::string name) : name_(std::move(name)) {}
   virtual ~ContextFactory();
   virtual Context* create_context(std::function<void()> code,
     void_pfn_smxprocess_t cleanup, smx_process_t process) = 0;
