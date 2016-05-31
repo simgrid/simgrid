@@ -25,7 +25,15 @@ public class Contact implements Comparable<Object> {
 
   @Override
   public boolean equals(Object x) {
-    return x.equals(id) ;
+    return (x == null) ? false : x.equals(id) ;
+  }
+
+  @Override
+  public int hashCode() {
+    int hash = 1;
+    hash = hash * 17 + id;
+    hash = hash * 31 + distance;
+    return hash;
   }
 
   @Override
