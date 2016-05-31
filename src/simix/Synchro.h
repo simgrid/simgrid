@@ -26,7 +26,6 @@ namespace simix {
     e_smx_state_t state = SIMIX_WAITING; /* State of the synchro */
     std::string name;                  /* synchro name if any */
     std::list<smx_simcall_t> simcalls; /* List of simcalls waiting for this synchro */
-    char *category;                    /* For instrumentation */
 
     virtual void suspend()=0;
     virtual void resume()=0;
