@@ -22,7 +22,7 @@ namespace s4u {
 XBT_PUBLIC_CLASS Comm : public Activity {
   Comm() : Activity() {}
 public:
-  virtual ~Comm();
+  ~Comm() override;
 
 public:
   /** Creates (but don't start) an async send to the mailbox #dest */

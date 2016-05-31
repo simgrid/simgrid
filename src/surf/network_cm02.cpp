@@ -166,6 +166,8 @@ NetworkCm02Model::NetworkCm02Model()
   }
 }
 
+NetworkCm02Model::~NetworkCm02Model() {}
+
 Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
     xbt_dict_t properties)
 {
@@ -387,6 +389,16 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
   return action;
 }
 
+bool NetworkCm02Model::next_occuring_event_isIdempotent()
+{
+  return true;
+}
+
+void NetworkCm02Model::gapAppend(double size, const Link* link, NetworkAction* action)
+{
+  // Nothing
+};
+
 /************
  * Resource *
  ************/
@@ -502,9 +514,14 @@ void NetworkCm02Link::updateLatency(double value){
   }
 }
 
+NetworkCm02Link::~NetworkCm02Link() {}
+
 /**********
  * Action *
  **********/
+
+NetworkCm02Action::~NetworkCm02Action() {}
+
 void NetworkCm02Action::updateRemainingLazy(double now)
 {
   double delta = 0.0;
@@ -540,6 +557,11 @@ void NetworkCm02Action::updateRemainingLazy(double now)
   lastUpdate_ = now;
   lastValue_ = lmm_variable_getvalue(getVariable());
 }
+
+void NetworkCm02Link::gapAppend(double size, const Link* link, NetworkAction* action)
+{
+  // Nothing
+};
 
 }
 }

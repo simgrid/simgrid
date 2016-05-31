@@ -237,5 +237,7 @@ CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double sp
   lmm_expand(model->getMaxminSystem(), constraint, getVariable(), 1.0);
 }
 
+CpuCas01Action::~CpuCas01Action() {}
+
 }
 }

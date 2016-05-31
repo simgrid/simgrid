@@ -44,7 +44,7 @@ public:
   BoostContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
           smx_process_t process);
-  ~BoostContext();
+  ~BoostContext() override;
   virtual void resume();
 private:
   static void wrapper(int first, ...);
@@ -57,8 +57,8 @@ public:
   friend BoostParallelContext;
 
   BoostContextFactory();
-  virtual ~BoostContextFactory();
-  virtual Context* create_context(std::function<void()> code,
+  ~BoostContextFactory() override;
+  Context* create_context(std::function<void()> code,
     void_pfn_smxprocess_t, smx_process_t process) override;
   void run_all() override;
 };

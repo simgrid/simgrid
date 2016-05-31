@@ -17,7 +17,7 @@ public:
 
   explicit AsFull(const char*name);
   void seal() override;
-  ~AsFull();
+  ~AsFull() override;
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
   void addRoute(sg_platf_route_cbarg_t route) override;

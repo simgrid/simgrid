@@ -14,9 +14,9 @@ namespace surf {
 class XBT_PRIVATE AsCluster: public AsImpl {
 public:
   explicit AsCluster(const char*name);
-  ~AsCluster();
+  ~AsCluster() override;
 
-  virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
+  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);

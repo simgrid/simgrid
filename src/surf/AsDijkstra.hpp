@@ -35,7 +35,7 @@ public:
   AsDijkstra(const char*name, bool cached);
   void seal() override;
 
-  ~AsDijkstra();
+  ~AsDijkstra() override;
   xbt_node_t routeGraphNewNode(int id, int graph_id);
   graph_node_map_element_t nodeMapSearch(int id);
   void newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route);

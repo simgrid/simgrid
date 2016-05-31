@@ -51,11 +51,7 @@ namespace simgrid {
       NetworkModel() : Model() { }
 
       /** @brief Destructor */
-      ~NetworkModel() {
-        lmm_system_free(maxminSystem_);
-        xbt_heap_free(actionHeap_);
-        delete modifiedSet_;
-      }
+      ~NetworkModel() override;
 
       /**
        * @brief Create a Link
@@ -146,7 +142,7 @@ namespace simgrid {
       /* Link destruction logic */
       /**************************/
         protected:
-      ~Link();
+      ~Link() override;
         public:
       void destroy(); // Must be called instead of the destructor
         private:

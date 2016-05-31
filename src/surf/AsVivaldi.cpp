@@ -47,6 +47,8 @@ namespace surf {
     : AsCluster(name)
   {}
 
+AsVivaldi::~AsVivaldi() {}
+
 void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]", src->name(), src->id(), dst->name(), dst->id());
