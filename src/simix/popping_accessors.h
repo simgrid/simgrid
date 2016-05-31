@@ -1150,6 +1150,13 @@ static inline void simcall_run_kernel__set__code(smx_simcall_t simcall, std::fun
     simgrid::simix::marshal<std::function<void()> const*>(simcall->args[0], arg);
 }
 
+static inline std::function<void()> const* simcall_run_blocking__get__code(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<std::function<void()> const*>(simcall->args[0]);
+}
+static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::function<void()> const* arg) {
+    simgrid::simix::marshal<std::function<void()> const*>(simcall->args[0], arg);
+}
+
 /* The prototype of all simcall handlers, automatically generated for you */
 
 XBT_PRIVATE void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm);

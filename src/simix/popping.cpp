@@ -44,3 +44,16 @@ void SIMIX_run_kernel(std::function<void()> const* code)
 {
   (*code)();
 }
+
+/** Kernel code for run_blocking
+ *
+ * This looks a lot like SIMIX_run_kernel ^^
+ *
+ * However, this `run_blocking` is blocking so the process will not be woken
+ * up until `SIMIX_simcall_answer(simcall)`` is called by the kernel.
+ * This means that `code` is responsible for doing this.
+ */
+void SIMIX_run_blocking(std::function<void()> const* code)
+{
+  (*code)();
+}

@@ -17,13 +17,14 @@
 
 #include <xbt/functional.hpp>
 
+#include <simgrid/simix/blocking_simcall.hpp>
+
 #include "src/mc/mc_replay.h"
 #include "smx_private.h"
 #include "src/mc/mc_forward.hpp"
 #include "xbt/ex.h"
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"
-
 #include "src/simix/SynchroComm.hpp"
 
 #include <simgrid/simix.hpp>
@@ -1093,6 +1094,11 @@ void simcall_run_kernel(std::function<void()> const& code)
   return simcall_BODY_run_kernel(&code);
 }
 
+void simcall_run_blocking(std::function<void()> const& code)
+{
+  return simcall_BODY_run_blocking(&code);
+}
+
 int simcall_mc_random(int min, int max) {
   return simcall_BODY_mc_random(min, max);
 }
@@ -1102,4 +1108,16 @@ int simcall_mc_random(int min, int max) {
 /** @brief returns a printable string representing a simcall */
 const char *SIMIX_simcall_name(e_smx_simcall_t kind) {
   return simcall_names[kind];
+}
+
+namespace simgrid {
+namespace simix {
+
+void unblock(smx_process_t process)
+{
+  xbt_assert(SIMIX_is_maestro());
+  SIMIX_simcall_answer(&process->simcall);
+}
+
+}
 }

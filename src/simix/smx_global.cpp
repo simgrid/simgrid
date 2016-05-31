@@ -50,10 +50,10 @@ static xbt_heap_t simix_timers = nullptr;
 /** @brief Timer datatype */
 typedef struct s_smx_timer {
   double date = 0.0;
-  std::function<void()> callback;
+  std::packaged_task<void()> callback;
 
   s_smx_timer() {}
-  s_smx_timer(double date, std::function<void()> callback)
+  s_smx_timer(double date, std::packaged_task<void()> callback)
     : date(date), callback(std::move(callback)) {}
 } s_smx_timer_t;
 
@@ -474,13 +474,11 @@ void SIMIX_run(void)
        //FIXME: make the timers being real callbacks
        // (i.e. provide dispatchers that read and expand the args)
        timer = (smx_timer_t) xbt_heap_pop(simix_timers);
-       if (timer->callback) {
-         try {
-           timer->callback();
-         }
-         catch(...) {
-           xbt_die("Exception throwed ouf of timer callback");
-         }
+       try {
+         timer->callback();
+       }
+       catch(...) {
+         xbt_die("Exception throwed ouf of timer callback");
        }
        delete timer;
     }
@@ -539,12 +537,13 @@ void SIMIX_run(void)
  */
 smx_timer_t SIMIX_timer_set(double date, void (*function)(void*), void *arg)
 {
-  smx_timer_t timer = new s_smx_timer_t(date, std::bind(function, arg));
+  smx_timer_t timer = new s_smx_timer_t(date,
+    std::packaged_task<void()>(std::bind(function, arg)));
   xbt_heap_push(simix_timers, timer, date);
   return timer;
 }
 
-smx_timer_t SIMIX_timer_set(double date, std::function<void()> callback)
+smx_timer_t SIMIX_timer_set(double date, std::packaged_task<void()> callback)
 {
   smx_timer_t timer = new s_smx_timer_t(date, std::move(callback));
   xbt_heap_push(simix_timers, timer, date);

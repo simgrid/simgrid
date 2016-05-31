@@ -441,4 +441,10 @@ inline static void simcall_BODY_run_kernel(std::function<void()> const* code) {
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) SIMIX_run_kernel(code);
     return simcall<void, std::function<void()> const*>(SIMCALL_RUN_KERNEL, code);
+  }
+  
+inline static void simcall_BODY_run_blocking(std::function<void()> const* code) {
+    /* Go to that function to follow the code flow through the simcall barrier */
+    if (0) SIMIX_run_blocking(code);
+    return simcall<void, std::function<void()> const*>(SIMCALL_RUN_BLOCKING, code);
   }/** @endcond */

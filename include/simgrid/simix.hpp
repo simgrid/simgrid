@@ -9,13 +9,11 @@
 
 #include <cstddef>
 
-#include <exception>
 #include <string>
 #include <utility>
 #include <memory>
 #include <functional>
 #include <future>
-#include <type_traits>
 
 #include <xbt/function_types.h>
 #include <xbt/future.hpp>
@@ -23,14 +21,21 @@
 #include <simgrid/simix.h>
 
 XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
+XBT_PUBLIC(void) simcall_run_blocking(std::function<void()> const& code);
 
 template<class F> inline
 void simcall_run_kernel(F& f)
 {
   simcall_run_kernel(std::function<void()>(std::ref(f)));
 }
+template<class F> inline
+void simcall_run_blocking(F& f)
+{
+  simcall_run_blocking(std::function<void()>(std::ref(f)));
+}
 
 namespace simgrid {
+
 namespace simix {
 
 /** Execute some code in the kernel/maestro
@@ -191,7 +196,13 @@ XBT_PUBLIC(smx_process_t) simcall_process_create(const char *name,
                                           xbt_dict_t properties,
                                           int auto_restart);
 
-XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, std::function<void()> callback);
+XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, std::packaged_task<void()> callback);
+
+template<class F> inline
+XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, F callback)
+{
+  return SIMIX_timer_set(date, std::packaged_task<void()>(std::move(callback)));
+}
 
 template<class R, class T> inline
 XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, R(*callback)(T*), T* arg)

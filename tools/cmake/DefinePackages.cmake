@@ -634,6 +634,8 @@ set(headers_to_install
   include/simgrid/forward.h
   include/simgrid/simix.h
   include/simgrid/simix.hpp
+  include/simgrid/simix/sync.hpp
+  include/simgrid/kernel/future.hpp
   include/simgrid/host.h
   include/simgrid/link.h
   include/simgrid/s4u/forward.hpp

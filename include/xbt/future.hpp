@@ -11,6 +11,9 @@
 
 #include <utility>
 #include <exception>
+#include <stdexcept>
+
+#include <type_traits>
 
 namespace simgrid {
 namespace xbt {
@@ -173,8 +176,16 @@ public:
 
 /** Execute some code and set a promise or result accordingly
  *
+ *  Roughly this does:
+ *
+ *  <pre>
+ *  promise.set_value(code());
+ *  </pre>
+ *
+ *  but it takes care of exceptions and works with void.
+ *
  *  We might need this when working with generic code because
- *  the trivial implementation does not work with void (before C++1z).
+ *  the trivial implementation does not work with `void` (before C++1z).
  *
  *  @param    code  What we want to do
  *  @param  promise Where to want to store the result
@@ -184,7 +195,7 @@ auto fulfillPromise(R& promise, F&& code)
 -> decltype(promise.set_value(code()))
 {
   try {
-    promise.set_value(code());
+    promise.set_value(std::forward<F>(code)());
   }
   catch(...) {
     promise.set_exception(std::current_exception());
@@ -196,12 +207,32 @@ auto fulfillPromise(P& promise, F&& code)
 -> decltype(promise.set_value())
 {
   try {
-    (code)();
+    std::forward<F>(code)();
     promise.set_value();
   }
   catch(...) {
     promise.set_exception(std::current_exception());
   }
+}
+
+/** Set a promise/result from a future/resul
+ *
+ *  Roughly this does:
+ *
+ *  <pre>promise.set_value(future);</pre>
+ *
+ *  but it takes care of exceptions and works with `void`.
+ *
+ *  We might need this when working with generic code because
+ *  the trivial implementation does not work with `void` (before C++1z).
+ *
+ *  @param promise output (a valid future or a result)
+ *  @param future  input (a ready/waitable future or a valid result)
+ */
+template<class P, class F> inline
+void setPromise(P& promise, F&& future)
+{
+  fulfillPromise(promise, [&]{ return std::forward<F>(future).get(); });
 }
 
 }

@@ -116,3 +116,4 @@ int        mc_random(int min, int max);
 void       set_category(smx_synchro_t synchro, const char* category) [[nohandler]];
 
 void       run_kernel(std::function<void()> const* code) [[nohandler]];
+void       run_blocking(std::function<void()> const* code) [[block,nohandler]];

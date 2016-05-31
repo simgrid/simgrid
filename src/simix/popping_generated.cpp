@@ -90,7 +90,8 @@ const char* simcall_names[] = {
   "SIMCALL_ASR_GET_PROPERTIES",
   "SIMCALL_MC_RANDOM",
   "SIMCALL_SET_CATEGORY",
-  "SIMCALL_RUN_KERNEL",};
+  "SIMCALL_RUN_KERNEL",
+  "SIMCALL_RUN_BLOCKING",};
 
 /** @private
  * @brief (in kernel mode) unpack the simcall and activate the handler
@@ -422,6 +423,10 @@ case SIMCALL_SET_CATEGORY:
 case SIMCALL_RUN_KERNEL:
       SIMIX_run_kernel(simgrid::simix::unmarshal<std::function<void()> const*>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
+      break;
+
+case SIMCALL_RUN_BLOCKING:
+      SIMIX_run_blocking(simgrid::simix::unmarshal<std::function<void()> const*>(simcall->args[0]));
       break;
     case NUM_SIMCALLS:
       break;

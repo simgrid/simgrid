@@ -1,0 +1,9 @@
+$ ${bindir:=.}/generic_simcalls --cfg=contexts/stack-size:96 ${srcdir:=.}/examples/platforms/small_platform.xml
+> [Tremblay:master:(0) 0.000000] [test/INFO] Start
+> [0.000000] [test/INFO] kernel
+> [Tremblay:master:(0) 0.000000] [test/INFO] kernel, returned
+> [10.000000] [test/INFO] blocking_simcall with void
+> [Tremblay:master:(0) 10.000000] [test/INFO] blocking_simcall with void, returned
+> [Tremblay:master:(0) 20.000000] [test/INFO] Exception caught: Exception throwed from kernel_defer
+> [30.000000] [test/INFO] blocking_simcall with value
+> [Tremblay:master:(0) 30.000000] [test/INFO] blocking_simcall with value returned with 42
