@@ -62,11 +62,11 @@ public class VM extends Host{
 		}
 		return null; 
 	}
-	@Override
-	public void finalize() {
+	
+	public void destroy() {
 		try {
 			nativeFinalize();
-		} catch (Throwable e) {
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}

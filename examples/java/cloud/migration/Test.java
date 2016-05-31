@@ -143,6 +143,6 @@ public class Test extends Process{
     Main.setEndOfTest();
     Msg.info("Forcefully destroy VMs");
     for (VM vm: vms)
-      vm.finalize();
+      vm.destroy();
   }
 }

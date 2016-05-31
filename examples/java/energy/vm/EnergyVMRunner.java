@@ -73,9 +73,7 @@ public class EnergyVMRunner extends Process {
     Msg.info("Wait another 5 seconds. The tasks stop at some point in between"); 
     waitFor(5); 
 
-    vmHost1.shutdown(); 
-    vmHost3.shutdown(); 
-    vmHost1.finalize(); 
-    vmHost3.finalize(); 
+    vmHost1.destroy(); 
+    vmHost3.destroy(); 
   }
 }

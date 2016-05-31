@@ -79,8 +79,7 @@ public class Master extends Process {
     Msg.info("Let's shut down the simulation and kill everyone.");
 
     for (int i = 0; i < vms.size(); i++) {
-        vms.get(i).shutdown();
-        vms.get(i).finalize();
+      vms.get(i).destroy();
     }
     Msg.info("Master done.");
   }
