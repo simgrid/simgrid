@@ -12,9 +12,7 @@
 #endif
 
 #include <xbt/base.h>
-
-typedef struct s_smx_simcall  s_smx_simcall_t;
-typedef struct s_smx_simcall* smx_simcall_t;
+#include <simgrid/forward.h>
 
 #ifdef __cplusplus
 

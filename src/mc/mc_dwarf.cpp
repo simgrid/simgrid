@@ -7,9 +7,10 @@
 #include <cinttypes>
 #include <cstdint>
 
-#include <algorithm>
 #include <memory>
 #include <utility>
+
+#include <boost/range/algorithm.hpp>
 
 #include <fcntl.h>
 #include <cstdlib>
@@ -934,8 +935,7 @@ static void MC_dwarf_handle_scope_die(simgrid::mc::ObjectInformation* info, Dwar
 
   // We sort them in order to have an (somewhat) efficient by name
   // lookup:
-  std::sort(frame.variables.begin(), frame.variables.end(),
-    MC_compare_variable);
+  boost::range::sort(frame.variables, MC_compare_variable);
 
   // Register it:
   if (klass == simgrid::dwarf::TagClass::Subprogram)
@@ -1252,7 +1252,7 @@ static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
   info->functions_index.shrink_to_fit();
 
   // Sort the array by low_pc:
-  std::sort(info->functions_index.begin(), info->functions_index.end(),
+  boost::range::sort(info->functions_index,
         [](simgrid::mc::FunctionIndexEntry const& a,
           simgrid::mc::FunctionIndexEntry const& b)
         {
@@ -1263,8 +1263,7 @@ static void MC_make_functions_index(simgrid::mc::ObjectInformation* info)
 static void MC_post_process_variables(simgrid::mc::ObjectInformation* info)
 {
   // Someone needs this to be sorted but who?
-  std::sort(info->global_variables.begin(), info->global_variables.end(),
-    MC_compare_variable);
+  boost::range::sort(info->global_variables, MC_compare_variable);
 
   for(simgrid::mc::Variable& variable : info->global_variables)
     if (variable.type_id)

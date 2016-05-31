@@ -60,7 +60,7 @@ double HostCLM03Model::next_occuring_event(double now){
       typeid(surf_network_model).name(), min_by_net,
       typeid(surf_storage_model).name(), min_by_sto);
 
-  double res = std::max(std::max(min_by_cpu, min_by_net), min_by_sto);
+  double res = std::max({min_by_cpu, min_by_net, min_by_sto});
   if (min_by_cpu >= 0.0 && min_by_cpu < res)
     res = min_by_cpu;
   if (min_by_net >= 0.0 && min_by_net < res)

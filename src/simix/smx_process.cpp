@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <boost/range/algorithm.hpp>
+
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
 #include "xbt/sysdep.h"
@@ -465,7 +467,14 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
     } else if (comm != nullptr) {
       xbt_fifo_remove(process->comms, process->waiting_synchro);
       comm->cancel();
-      xbt_fifo_remove(process->waiting_synchro->simcalls, &process->simcall);
+
+      // Remove first occurence of &process->simcall:
+      auto i = boost::range::find(
+        process->waiting_synchro->simcalls,
+        &process->simcall);
+      if (i != process->waiting_synchro->simcalls.end())
+        process->waiting_synchro->simcalls.remove(&process->simcall);
+
       comm->unref();
 
     } else if (sleep != nullptr) {
@@ -590,7 +599,7 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t proces
   if (process != simcall->issuer) {
     SIMIX_simcall_answer(simcall);
   } else {
-    xbt_fifo_push(sync_suspend->simcalls, simcall);
+    sync_suspend->simcalls.push_back(simcall);
     process->waiting_synchro = sync_suspend;
     process->waiting_synchro->suspend();
   }
@@ -742,7 +751,7 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout)
 {
   smx_synchro_t sync = SIMIX_process_join(simcall->issuer, process, timeout);
-  xbt_fifo_push(sync->simcalls, simcall);
+  sync->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
 }
 
@@ -752,8 +761,9 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synch
   if (sleep->surf_sleep) {
     sleep->surf_sleep->cancel();
 
-    smx_simcall_t simcall;
-    while ((simcall = (smx_simcall_t) xbt_fifo_shift(sleep->simcalls))) {
+    while (!sleep->simcalls.empty()) {
+      smx_simcall_t simcall = sleep->simcalls.front();
+      sleep->simcalls.pop_front();
       simcall_process_sleep__set__result(simcall, SIMIX_DONE);
       simcall->issuer->waiting_synchro = NULL;
       if (simcall->issuer->suspended) {
@@ -787,7 +797,7 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
     return;
   }
   smx_synchro_t sync = SIMIX_process_sleep(simcall->issuer, duration);
-  xbt_fifo_push(sync->simcalls, simcall);
+  sync->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
 }
 

@@ -59,6 +59,6 @@ void simgrid::simix::Exec::post()
   }
 
   /* If there are simcalls associated with the synchro, then answer them */
-  if (xbt_fifo_size(simcalls))
+  if (!simcalls.empty())
     SIMIX_execution_finish(this);
 }

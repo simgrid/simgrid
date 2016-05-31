@@ -6,7 +6,7 @@
 
 #include <assert.h>
 
-#include <algorithm>
+#include <boost/range/algorithm.hpp>
 
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
@@ -56,8 +56,8 @@ State::State()
 
 std::size_t State::interleaveSize() const
 {
-  return std::count_if(this->processStates.begin(), this->processStates.end(),
-    [](simgrid::mc::ProcessState const& state) { return state.isToInterleave(); });
+  return boost::range::count_if(this->processStates,
+    [](simgrid::mc::ProcessState const& p) { return p.isToInterleave(); });
 }
 
 Transition State::getTransition() const

@@ -6,9 +6,10 @@
 
 #include <cstring>
 
-#include <algorithm>
 #include <memory>
 #include <list>
+
+#include <boost/range/algorithm.hpp>
 
 #include <unistd.h>
 #include <sys/wait.h>
@@ -124,7 +125,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
     pair->num, pair->automaton_state, pair->atomic_propositions,
     pair->graph_state);
 
-  auto res = std::equal_range(acceptancePairs_.begin(), acceptancePairs_.end(),
+  auto res = boost::range::equal_range(acceptancePairs_,
     new_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
   if (pair->search_cycle) for (auto i = res.first; i != res.second; ++i) {
@@ -245,7 +246,7 @@ int LivenessChecker::insertVisitedPair(std::shared_ptr<VisitedPair> visited_pair
       pair->num, pair->automaton_state, pair->atomic_propositions,
       pair->graph_state);
 
-  auto range = std::equal_range(visitedPairs_.begin(), visitedPairs_.end(),
+  auto range = boost::range::equal_range(visitedPairs_,
     visited_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
   for (auto i = range.first; i != range.second; ++i) {
@@ -277,8 +278,7 @@ void LivenessChecker::purgeVisitedPairs()
 {
   if (_sg_mc_visited != 0 && visitedPairs_.size() > (std::size_t) _sg_mc_visited) {
     // Remove the oldest entry with a linear search:
-    visitedPairs_.erase(std::min_element(
-      visitedPairs_.begin(), visitedPairs_.end(),
+    visitedPairs_.erase(boost::min_element(visitedPairs_,
       [](std::shared_ptr<VisitedPair> const a, std::shared_ptr<VisitedPair> const& b) {
         return a->num < b->num; } ));
   }

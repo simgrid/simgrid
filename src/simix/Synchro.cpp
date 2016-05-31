@@ -5,19 +5,19 @@
 
 #include "src/simix/Synchro.h"
 
-simgrid::simix::Synchro::Synchro() {
-  simcalls = xbt_fifo_new();
+simgrid::simix::Synchro::Synchro()
+{
 }
 
 simgrid::simix::Synchro::~Synchro()
 {
-  xbt_fifo_free(simcalls);
 }
 
 void simgrid::simix::Synchro::ref()
 {
   refcount++;
 }
+
 void simgrid::simix::Synchro::unref()
 {
   xbt_assert(refcount > 0,

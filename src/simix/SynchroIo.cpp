@@ -22,10 +22,7 @@ void simgrid::simix::Io::resume()
 
 void simgrid::simix::Io::post()
 {
-  xbt_fifo_item_t i;
-  smx_simcall_t simcall;
-
-  xbt_fifo_foreach(simcalls,i,simcall,smx_simcall_t) {
+  for (smx_simcall_t simcall : simcalls) {
     switch (simcall->call) {
     case SIMCALL_FILE_OPEN: {
       smx_file_t tmp = xbt_new(s_smx_file_t,1);

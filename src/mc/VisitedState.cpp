@@ -8,7 +8,8 @@
 #include <sys/wait.h>
 
 #include <memory>
-#include <algorithm>
+
+#include <boost/range/algorithm.hpp>
 
 #include <xbt/log.h>
 #include <xbt/sysdep.h>
@@ -62,7 +63,7 @@ void VisitedStates::prune()
 {
   while (states_.size() > (std::size_t) _sg_mc_visited) {
     XBT_DEBUG("Try to remove visited state (maximum number of stored states reached)");
-    auto min_element = std::min_element(states_.begin(), states_.end(),
+    auto min_element = boost::range::min_element(states_,
       [](std::unique_ptr<simgrid::mc::VisitedState>& a, std::unique_ptr<simgrid::mc::VisitedState>& b) {
         return a->num < b->num;
       });
@@ -85,7 +86,7 @@ std::unique_ptr<simgrid::mc::VisitedState> VisitedStates::addVisitedState(
   XBT_DEBUG("Snapshot %p of visited state %d (exploration stack state %d)",
     new_state->system_state.get(), new_state->num, graph_state->num);
 
-  auto range = std::equal_range(states_.begin(), states_.end(),
+  auto range = boost::range::equal_range(states_,
     new_state.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
   if (compare_snpashots)
