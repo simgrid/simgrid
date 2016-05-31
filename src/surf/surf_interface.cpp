@@ -229,8 +229,8 @@ int find_model_description(s_surf_model_description_t * table,
   name_list = xbt_strdup(table[0].name);
   for (i = 1; table[i].name; i++) {
     name_list = (char *) xbt_realloc(name_list, strlen(name_list) + strlen(table[i].name) + 3);
-    strcat(name_list, ", ");
-    strcat(name_list, table[i].name);
+    strncat(name_list, ", ", 2);
+    strncat(name_list, table[i].name, strlen(table[i].name));
   }
   xbt_die("Model '%s' is invalid! Valid models are: %s.", name, name_list);
   return -1;

@@ -151,8 +151,8 @@ int main(int argc, char *argv[]) {
         if (selection[0] == '\\0') {
           strcpy(selection, p);
         } else {
-          strcat(selection, \",\");
-          strcat(selection, p);
+          strncat(selection, \",\",1);
+          strncat(selection, p, 1024);
         }
       } else if (!strcmp(argv[i], \"--verbose\")) {
         verbosity++;
