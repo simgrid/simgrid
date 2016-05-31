@@ -8,6 +8,7 @@ package org.simgrid;
 
 import java.io.FileOutputStream;
 import java.io.InputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.io.File;
 import java.nio.file.Files;
@@ -32,7 +33,7 @@ public final class NativeLib {
 		try {
 			/* Prefer the version of the library bundled into the jar file and use it */
 			loadLib(name);
-		} catch (SimGridLibNotFoundException embeededException) {
+		} catch (LinkageException embeededException) {
 			/* If not found, try to see if we can find a version on disk */
 			try {
 				System.loadLibrary(name);
@@ -83,7 +84,7 @@ public final class NativeLib {
 		return prefix + "/" + os + "/" + arch + "/";
 	}
 	static Path tempDir = null;
-	private static void loadLib (String name) throws SimGridLibNotFoundException {
+	private static void loadLib (String name) throws LinkageException {
 		String Path = NativeLib.getPath();
 
 		String filename=name;
@@ -106,7 +107,7 @@ public final class NativeLib {
 			in =  NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
 		}
 		if (in == null) {
-			throw new SimGridLibNotFoundException("Cannot find library "+name+" in path "+Path+". Sorry, but this jar does not seem to be usable on your machine.");
+			throw new LinkageException("Cannot find library "+name+" in path "+Path+". Sorry, but this jar does not seem to be usable on your machine.");
 		}
 		try {
 			// We must write the lib onto the disk before loading it -- stupid operating systems
@@ -128,8 +129,8 @@ public final class NativeLib {
 			in.close();
 			out.close();
 			System.load(fileOut.getAbsolutePath());
-		} catch (Throwable e) {
-			throw new SimGridLibNotFoundException("Cannot load the bindings to the "+name+" library in path "+getPath(), e);
+		} catch (SecurityException|UnsatisfiedLinkError|IOException e) {
+			throw new LinkageException("Cannot load the bindings to the "+name+" library in path "+getPath(), e);
 		}
 	}
 
@@ -158,13 +159,13 @@ public final class NativeLib {
 	}
 }
 
-class SimGridLibNotFoundException extends Exception {
+class LinkageException extends Exception {
 	private static final long serialVersionUID = 1L;
-	public SimGridLibNotFoundException(String msg) {
+	public LinkageException(String msg) {
 		super(msg);
 	}
 
-	public SimGridLibNotFoundException(String msg, Throwable e) {
+	public LinkageException(String msg, Throwable e) {
 		super(msg,e);
 	}
 }
