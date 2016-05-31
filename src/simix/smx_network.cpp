@@ -603,65 +603,65 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
     if (simcall->issuer->host->isOff()) {
       simcall->issuer->context->iwannadie = 1;
       SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
-    } else
+    } else {
+      switch (synchro->state) {
 
-    switch (synchro->state) {
+      case SIMIX_DONE:
+        XBT_DEBUG("Communication %p complete!", synchro);
+        SIMIX_comm_copy_data(synchro);
+        break;
 
-    case SIMIX_DONE:
-      XBT_DEBUG("Communication %p complete!", synchro);
-      SIMIX_comm_copy_data(synchro);
-      break;
+      case SIMIX_SRC_TIMEOUT:
+        SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Communication timeouted because of sender");
+        break;
 
-    case SIMIX_SRC_TIMEOUT:
-      SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Communication timeouted because of sender");
-      break;
+      case SIMIX_DST_TIMEOUT:
+        SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Communication timeouted because of receiver");
+        break;
 
-    case SIMIX_DST_TIMEOUT:
-      SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Communication timeouted because of receiver");
-      break;
+      case SIMIX_SRC_HOST_FAILURE:
+        if (simcall->issuer == comm->src_proc)
+          simcall->issuer->context->iwannadie = 1;
+  //          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        else
+          SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
+        break;
 
-    case SIMIX_SRC_HOST_FAILURE:
-      if (simcall->issuer == comm->src_proc)
-        simcall->issuer->context->iwannadie = 1;
-//          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
-      else
-        SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
-      break;
+      case SIMIX_DST_HOST_FAILURE:
+        if (simcall->issuer == comm->dst_proc)
+          simcall->issuer->context->iwannadie = 1;
+  //          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
+        else
+          SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
+        break;
 
-    case SIMIX_DST_HOST_FAILURE:
-      if (simcall->issuer == comm->dst_proc)
-        simcall->issuer->context->iwannadie = 1;
-//          SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
-      else
-        SMX_EXCEPTION(simcall->issuer, network_error, 0, "Remote peer failed");
-      break;
+      case SIMIX_LINK_FAILURE:
 
-    case SIMIX_LINK_FAILURE:
+        XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
+                  synchro,
+                  comm->src_proc ? sg_host_get_name(comm->src_proc->host) : NULL,
+                  comm->dst_proc ? sg_host_get_name(comm->dst_proc->host) : NULL,
+                  simcall->issuer->name.c_str(), simcall->issuer, comm->detached);
+        if (comm->src_proc == simcall->issuer) {
+          XBT_DEBUG("I'm source");
+        } else if (comm->dst_proc == simcall->issuer) {
+          XBT_DEBUG("I'm dest");
+        } else {
+          XBT_DEBUG("I'm neither source nor dest");
+        }
+        SMX_EXCEPTION(simcall->issuer, network_error, 0, "Link failure");
+        break;
 
-      XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
-                synchro,
-                comm->src_proc ? sg_host_get_name(comm->src_proc->host) : NULL,
-                comm->dst_proc ? sg_host_get_name(comm->dst_proc->host) : NULL,
-                simcall->issuer->name.c_str(), simcall->issuer, comm->detached);
-      if (comm->src_proc == simcall->issuer) {
-        XBT_DEBUG("I'm source");
-      } else if (comm->dst_proc == simcall->issuer) {
-        XBT_DEBUG("I'm dest");
-      } else {
-        XBT_DEBUG("I'm neither source nor dest");
+      case SIMIX_CANCELED:
+        if (simcall->issuer == comm->dst_proc)
+          SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Communication canceled by the sender");
+        else
+          SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Communication canceled by the receiver");
+        break;
+
+      default:
+        xbt_die("Unexpected synchro state in SIMIX_comm_finish: %d", (int)synchro->state);
       }
-      SMX_EXCEPTION(simcall->issuer, network_error, 0, "Link failure");
-      break;
-
-    case SIMIX_CANCELED:
-      if (simcall->issuer == comm->dst_proc)
-        SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Communication canceled by the sender");
-      else
-        SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Communication canceled by the receiver");
-      break;
-
-    default:
-      xbt_die("Unexpected synchro state in SIMIX_comm_finish: %d", (int)synchro->state);
     }
 
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
