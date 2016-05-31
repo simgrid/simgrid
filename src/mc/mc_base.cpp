@@ -6,8 +6,6 @@
 
 #include <cassert>
 
-#include <algorithm>
-
 #include <simgrid_config.h>
 
 #include <xbt/log.h>
