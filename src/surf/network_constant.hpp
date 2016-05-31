@@ -27,7 +27,7 @@ namespace simgrid {
     class NetworkConstantModel : public NetworkModel {
     public:
       NetworkConstantModel()  : NetworkModel() { };
-      ~NetworkConstantModel() { }
+      ~NetworkConstantModel() override;
 
       Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
       double next_occuring_event(double now) override;
@@ -43,6 +43,7 @@ namespace simgrid {
     class NetworkConstantAction : public NetworkAction {
     public:
       NetworkConstantAction(NetworkConstantModel *model_, double size, double latency);
+      ~NetworkConstantAction();
       double initialLatency_;
     };
 

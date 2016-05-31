@@ -28,7 +28,7 @@ XBT_PUBLIC_CLASS AsImpl : public s4u::As {
   friend simgrid::surf::RoutingPlatf;
 protected:
   explicit AsImpl(const char *name);
-  ~AsImpl();
+  ~AsImpl() override;
   
 public:
   /**

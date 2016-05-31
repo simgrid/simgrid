@@ -30,6 +30,8 @@ simgrid::xbt::signal<void(CpuAction*, Action::State, Action::State)> cpuActionSt
  * Model *
  *********/
 
+CpuModel::~CpuModel() {}
+
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
   CpuAction *action;
@@ -113,6 +115,11 @@ void CpuModel::updateActionsStateFull(double now, double delta)
       action->setState(Action::State::done);
     }
   }
+}
+
+bool CpuModel::next_occuring_event_isIdempotent()
+{
+  return true;
 }
 
 /************

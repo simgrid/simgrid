@@ -102,8 +102,8 @@ public:
 class XBT_PRIVATE AsClusterFatTree : public AsCluster {
 public:
   explicit AsClusterFatTree(const char*name);
-  ~AsClusterFatTree();
-  virtual void getRouteAndLatency(NetCard *src, NetCard *dst,
+  ~AsClusterFatTree() override;
+  void getRouteAndLatency(NetCard *src, NetCard *dst,
                                   sg_platf_route_cbarg_t into,
                                   double *latency) override;
 

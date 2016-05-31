@@ -46,7 +46,7 @@ namespace simgrid {
     public:
       NetworkIBModel();
       explicit NetworkIBModel(const char *name);
-      ~NetworkIBModel();
+      ~NetworkIBModel() override;
       void updateIBfactors(NetworkAction *action, IBNode *from, IBNode * to, int remove);
 
       xbt_dict_t active_nodes;

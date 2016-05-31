@@ -40,6 +40,7 @@ class CpuPlugin;// FIXME:DEADCODE
 XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
   CpuModel() : Model() {};
+  ~CpuModel() override;
 
   /**
    * @brief Create a Cpu
@@ -50,9 +51,9 @@ public:
    */
   virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)=0;
 
-  void updateActionsStateLazy(double now, double delta);
-  void updateActionsStateFull(double now, double delta);
-  bool next_occuring_event_isIdempotent() {return true;}
+  void updateActionsStateLazy(double now, double delta) override;
+  void updateActionsStateFull(double now, double delta) override;
+  bool next_occuring_event_isIdempotent() override;
 };
 
 /************

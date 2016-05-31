@@ -15,7 +15,7 @@ namespace surf {
 class XBT_PRIVATE AsNone : public AsImpl {
 public:
   explicit AsNone(const char*name);
-  ~AsNone();
+  ~AsNone() override;
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;

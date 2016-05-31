@@ -25,7 +25,7 @@ class XBT_PRIVATE CpuCas01Action;
 class CpuCas01Model : public simgrid::surf::CpuModel {
 public:
   CpuCas01Model();
-  ~CpuCas01Model();
+  ~CpuCas01Model() override;
 
   Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core) override;
   double next_occuring_event_full(double now) override;
@@ -39,7 +39,7 @@ public:
 class CpuCas01 : public Cpu {
 public:
   CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core);
-  ~CpuCas01();
+  ~CpuCas01() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;
   CpuAction *execution_start(double size) override;
   CpuAction *sleep(double duration) override;
@@ -61,8 +61,7 @@ class CpuCas01Action: public CpuAction {
 public:
   CpuCas01Action(Model *model, double cost, bool failed, double speed,
                  lmm_constraint_t constraint);
-
-  ~CpuCas01Action() {};
+  ~CpuCas01Action() override;
 };
 
 }

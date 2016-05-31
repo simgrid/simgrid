@@ -100,7 +100,7 @@ public:
 
   /* Host destruction logic */
   /**************************/
-  ~HostImpl();
+  ~HostImpl() override;
 
 public:
   // Overload the method for covariant return type:

@@ -14,7 +14,7 @@ namespace simgrid {
     class XBT_PRIVATE AsClusterTorus:public simgrid::surf::AsCluster {
     public:
       explicit AsClusterTorus(const char*name);
-      virtual ~AsClusterTorus();
+      ~AsClusterTorus() override;
       void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
       void getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t into, double *latency) override;
       void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) override;

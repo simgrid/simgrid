@@ -136,7 +136,7 @@ public:
     : Context(std::move(code), cleanup_func, process)
   {}
 
-  ~AttachContext();
+  ~AttachContext() override;
 
   /** Called by the context when it is ready to give control
    *  to the maestro.
