@@ -30,6 +30,7 @@ public class EnergyVMRunner extends Process {
       try {
         task.execute();
       } catch (HostFailureException | TaskCancelledException e) {
+        Msg.error(e.getMessage());
         e.printStackTrace();
       } 
       Msg.info("This worker is done."); 
@@ -41,10 +42,7 @@ public class EnergyVMRunner extends Process {
   }
 
   @Override
-  public void main(String[] strings) throws MsgException, HostNotFoundException {
-    double startTime = 0;
-    double endTime = 0;
-
+  public void main(String[] strings) throws HostNotFoundException, HostFailureException {
     /* get hosts */
     Host host1 = Host.getByName("MyHost1");
     Host host2 = Host.getByName("MyHost2");

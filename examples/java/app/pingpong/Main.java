@@ -10,7 +10,7 @@ import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.NativeException;
  
 class Main {
-  public static void main(String[] args) throws HostNotFoundException,NativeException{
+  public static void main(String[] args) throws HostNotFoundException, NativeException{
     Msg.init(args);
     if(args.length < 1) {
       Msg.info("Usage   : Main platform_file");

@@ -25,7 +25,7 @@ public class Master extends Process {
 
   public void main(String[] args) throws MsgException {
     int workersCount = Main.hostNB;
-    ArrayList<VM> vms = new ArrayList<VM>();
+    ArrayList<VM> vms = new ArrayList<>();
 
     // Create one VM per host and bind a process inside each one. 
     for (int i = 0; i < workersCount; i++) {
@@ -79,8 +79,8 @@ public class Master extends Process {
     Msg.info("Let's shut down the simulation and kill everyone.");
 
     for (int i = 0; i < vms.size(); i++) {
-      vms.get(i).shutdown();
-      vms.get(i).finalize();
+        vms.get(i).shutdown();
+        vms.get(i).finalize();
     }
     Msg.info("Master done.");
   }
