@@ -343,11 +343,13 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, val
   ((setState_t)(event->data))->container = container;
   ((setState_t)(event->data))->value = value;
 
+#if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
     ((setState_t)(event->data))->filename   = loc->filename;
     ((setState_t)(event->data))->linenumber = loc->linenumber;
   }
+#endif
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 
@@ -368,11 +370,13 @@ void new_pajePushStateWithExtra (double timestamp, container_t container, type_t
   ((pushState_t)(event->data))->value = value;
   ((pushState_t)(event->data))->extra = extra;
 
+#if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
     ((pushState_t)(event->data))->filename   = loc->filename;
     ((pushState_t)(event->data))->linenumber = loc->linenumber;
   }
+#endif
 
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 
