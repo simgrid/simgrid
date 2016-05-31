@@ -38,7 +38,7 @@ static int sender(int argc, char *argv[])
 
   /* Latency */
   time = MSG_get_clock();
-  sprintf(sprintf_buffer_la, "latency task");
+  snprintf(sprintf_buffer_la,64, "latency task");
   task_la = MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL);
   task_la->data = xbt_new(double, 1);
   *(double *) task_la->data = time;
@@ -47,7 +47,7 @@ static int sender(int argc, char *argv[])
 
   /* Bandwidth */
   time = MSG_get_clock();
-  sprintf(sprintf_buffer_bw, "bandwidth task");
+  snprintf(sprintf_buffer_bw,64, "bandwidth task");
   task_bw = MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
   task_bw->data = xbt_new(double, 1);
   *(double *) task_bw->data = time;

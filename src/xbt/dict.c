@@ -982,7 +982,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     /* if (!(j%1000)) { printf("."); fflush(stdout); } */
     key = xbt_malloc(10);
 
-    sprintf(key, "%d", j);
+    snprintf(key,10, "%d", j);
     xbt_dict_set(head, key, key, &free);
   }
   /*xbt_dict_dump(head,(void (*)(void*))&printf); */
@@ -997,7 +997,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     void *data;
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j = 0; j < NB_ELM; j++) {
-      sprintf(key, "%d", j);
+      snprintf(key,10, "%d", j);
       data = xbt_dict_get(head, key);
       xbt_test_assert(!strcmp(key, (char *) data), "with get, key=%s != data=%s", key, (char *) data);
       data = xbt_dict_get_ext(head, key, strlen(key));
@@ -1010,7 +1010,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   key = xbt_malloc(10);
   for (j = 0; j < NB_ELM; j++) {
     /* if (!(j%10000)) printf("."); fflush(stdout); */
-    sprintf(key, "%d", j);
+    snprintf(key,10, "%d", j);
     xbt_dict_remove(head, key);
   }
   free(key);

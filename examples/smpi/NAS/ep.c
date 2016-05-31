@@ -62,7 +62,7 @@ int main(int argc, char **argv) {
      * string (for printing). Have to strip off the decimal point put in there by the floating point print statement
      * (internal file) */
     fprintf(stdout," NAS Parallel Benchmarks 3.2 -- EP Benchmark");
-    sprintf(size,"%lu",(unsigned long)pow(2,m+1));
+    snprintf(size,500,"%lu",(unsigned long)pow(2,m+1));
     //size = size.replace('.', ' ');
     fprintf(stdout," Number of random numbers generated: %s\n",size);
     fprintf(stdout," Number of active processes: %d\n",no_nodes);

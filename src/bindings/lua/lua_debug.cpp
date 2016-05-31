@@ -37,15 +37,15 @@ const char* sglua_tostring(lua_State* L, int index) {
   switch (lua_type(L, index)) {
 
     case LUA_TNIL:
-      sprintf(buff, "nil");
+      snprintf(buff, 4, "nil");
       break;
 
     case LUA_TNUMBER: 
-      sprintf(buff, "%.3f", lua_tonumber(L, index));
+      snprintf(buff, 64, "%.3f", lua_tonumber(L, index));
       break;
 
     case LUA_TBOOLEAN:
-      sprintf(buff, "%s", lua_toboolean(L, index) ? "true" : "false");
+      snprintf(buff, 64, "%s", lua_toboolean(L, index) ? "true" : "false");
       break;
 
     case LUA_TSTRING:
@@ -54,24 +54,24 @@ const char* sglua_tostring(lua_State* L, int index) {
 
     case LUA_TFUNCTION:
       if (lua_iscfunction(L, index)) {
-        sprintf(buff, "C-function");
+        snprintf(buff, 11, "C-function");
       }
       else {
-        sprintf(buff, "function");
+        snprintf(buff, 9, "function");
       }
       break;
 
     case LUA_TTABLE:
-      sprintf(buff, "table(%p)", lua_topointer(L, index));
+      snprintf(buff, 64, "table(%p)", lua_topointer(L, index));
       break;
 
     case LUA_TLIGHTUSERDATA:
     case LUA_TUSERDATA:
-      sprintf(buff, "userdata(%p)", lua_touserdata(L, index));
+      snprintf(buff, 64, "userdata(%p)", lua_touserdata(L, index));
       break;
 
     case LUA_TTHREAD:
-      sprintf(buff, "thread");
+      snprintf(buff, 7, "thread");
       break;
   }
   return buff;
@@ -164,7 +164,7 @@ void sglua_stack_dump(lua_State* L, const char* msg)
 
     p[0] = '\0';
     for (int i = 1; i <= top; i++) {  /* repeat for each level */
-      p += sprintf(p, "%s ", sglua_tostring(L, i));
+      p += snprintf(p, 2048-(p-buff), "%s ", sglua_tostring(L, i));
     }
 
     XBT_DEBUG("%s%s", msg, buff);

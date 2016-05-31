@@ -24,8 +24,8 @@ static int master(int argc, char *argv[])
     char sprintf_buffer[256];
     msg_task_t task = NULL;
 
-    sprintf(mailbox, "slave-%ld", i % slaves_count);
-    sprintf(sprintf_buffer, "Task_%d", i);
+    snprintf(mailbox,256, "slave-%ld", i % slaves_count);
+    snprintf(sprintf_buffer,256, "Task_%d", i);
     task = MSG_task_create(sprintf_buffer, task_comp_size, task_comm_size, NULL);
     if (number_of_tasks < 10000 || i % 10000 == 0)
       XBT_INFO("Sending \"%s\" (of %ld) to mailbox \"%s\"", task->name, number_of_tasks, mailbox);
@@ -37,7 +37,7 @@ static int master(int argc, char *argv[])
   for (i = 0; i < slaves_count; i++) {
     char mailbox[80];
 
-    sprintf(mailbox, "slave-%ld", i % slaves_count);
+    snprintf(mailbox,80, "slave-%ld", i % slaves_count);
     msg_task_t finalize = MSG_task_create("finalize", 0, 0, 0);
     MSG_task_send(finalize, mailbox);
   }
@@ -69,7 +69,8 @@ static int alltoall_mpi(int argc, char *argv[])
 {
   MPI_Init(&argc, &argv);
 
-  int rank, size;
+  int rank;
+  int size;
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Comm_size(MPI_COMM_WORLD, &size);
   XBT_INFO("alltoall for rank %d", rank);
@@ -95,20 +96,17 @@ static int slave(int argc, char *argv[])
   read = sscanf(argv[1], "%d", &id);
   xbt_assert(read, "Invalid argument %s\n", argv[1]);
 
-  sprintf(mailbox, "slave-%d", id);
+  snprintf(mailbox,80, "slave-%d", id);
 
   while (1) {
     res = MSG_task_receive(&(task), mailbox);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
 
-//  XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
-    if (!strcmp(MSG_task_get_name(task), "finalize")) {
+    if (strcmp(MSG_task_get_name(task), "finalize")==0) {
       MSG_task_destroy(task);
       break;
     }
-//    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
     MSG_task_execute(task);
-//    XBT_INFO("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
     task = NULL;
   }

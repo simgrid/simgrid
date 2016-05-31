@@ -416,9 +416,9 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
   p = res;
   xbt_dynar_foreach(dyn, cpt, cursor) {
     if ((int) cpt < dyn_len - 1)
-      p += sprintf(p, "%s%s", cursor, sep);
+      p += snprintf(p,len, "%s%s", cursor, sep);
     else
-      p += sprintf(p, "%s", cursor);
+      p += snprintf(p,len, "%s", cursor);
   }
   return res;
 }
@@ -449,9 +449,9 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
   q = res = xbt_malloc(len);
   for (i=0;strs[i];i++) {
     if (i!=0) { // not first loop
-      q += sprintf(q, "%s%s", sep, strs[i]);
+      q += snprintf(q,len, "%s%s", sep, strs[i]);
     } else {
-      q += sprintf(q,"%s",strs[i]);
+      q += snprintf(q,len, "%s",strs[i]);
     }
   }
   return res;

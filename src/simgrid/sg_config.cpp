@@ -369,11 +369,11 @@ static void describe_model(char *result,
                            const char *description)
 {
   char *p = result +
-    sprintf(result, "%s. Possible values: %s", description,
+    snprintf(result,1024-strlen(result), "%s. Possible values: %s", description,
             model_description[0].name ? model_description[0].name : "n/a");
   for (int i = 1; model_description[i].name; i++)
-    p += sprintf(p, ", %s", model_description[i].name);
-  sprintf(p, ".\n       (use 'help' as a value to see the long description of each %s)", name);
+    p += snprintf(p,1024, ", %s", model_description[i].name);
+  snprintf(p,1024, ".\n       (use 'help' as a value to see the long description of each %s)", name);
 }
 
 /* create the config set, register what should be and parse the command line*/

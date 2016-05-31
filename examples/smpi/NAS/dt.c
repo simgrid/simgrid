@@ -170,7 +170,7 @@ static DGraph *buildSH(const char cls){
   unsigned int i=0,j=0;
   char nm[BLOCK_SIZE];
 
-  snprintf(nm,BLOCK_SIZE -1,"DT_SH.%c",cls);
+  snprintf(nm,BLOCK_SIZE,"DT_SH.%c",cls);
   dg=newDGraph(nm);
 
   while(tmpS>1){
@@ -178,14 +178,14 @@ static DGraph *buildSH(const char cls){
   tmpS>>=1;
   }
   for(i=0;i<numSources;i++){
-  snprintf(nm,BLOCK_SIZE -1,"Source.%d",i);
+  snprintf(nm,BLOCK_SIZE,"Source.%d",i);
   nd=newNode(nm);
   AttachNode(dg,nd);
   }
   for(j=0;j<numOfLayers;j++){
     mask=0x00000001<<j;
     for(i=0;i<numSources;i++){
-      snprintf(nm,BLOCK_SIZE -1,"Comparator.%d",(i+j*firstLayerNode));
+      snprintf(nm,BLOCK_SIZE,"Comparator.%d",(i+j*firstLayerNode));
       nd=newNode(nm);
       AttachNode(dg,nd);
       ndoff=i&(~mask);
@@ -201,7 +201,7 @@ static DGraph *buildSH(const char cls){
   }
   mask=0x00000001<<numOfLayers;
   for(i=0;i<numSources;i++){
-    snprintf(nm,BLOCK_SIZE -1,"Sink.%d",i);
+    snprintf(nm,BLOCK_SIZE,"Sink.%d",i);
     nd=newNode(nm);
     AttachNode(dg,nd);
     ndoff=i&(~mask);
@@ -229,11 +229,11 @@ static DGraph *buildWH(const char cls){
   DGArc *ar=NULL;
   char nm[BLOCK_SIZE];
 
-  sprintf(nm,"DT_WH.%c",cls);
+  snprintf(nm,BLOCK_SIZE,"DT_WH.%c",cls);
   dg=newDGraph(nm);
 
   for(i=0;i<numSources;i++){
-    sprintf(nm,"Sink.%d",i);
+    snprintf(nm,BLOCK_SIZE,"Sink.%d",i);
     nd=newNode(nm);
     AttachNode(dg,nd);
   }
@@ -243,7 +243,7 @@ static DGraph *buildWH(const char cls){
     numLayerNodes=numLayerNodes/maxInDeg;
     if(numLayerNodes*maxInDeg<numPrevLayerNodes)numLayerNodes++;
     for(i=0;i<numLayerNodes;i++){
-      sprintf(nm,"Comparator.%d",totComparators);
+      snprintf(nm,BLOCK_SIZE,"Comparator.%d",totComparators);
       totComparators++;
       nd=newNode(nm);
       id=AttachNode(dg,nd);
@@ -289,11 +289,11 @@ static DGraph *buildBH(const char cls){
   int id=0, sid=0;
   char nm[BLOCK_SIZE];
 
-  sprintf(nm,"DT_BH.%c",cls);
+  snprintf(nm,BLOCK_SIZE,"DT_BH.%c",cls);
   dg=newDGraph(nm);
 
   for(i=0;i<numSources;i++){
-    sprintf(nm,"Source.%d",i);
+    snprintf(nm,BLOCK_SIZE,"Source.%d",i);
     nd=newNode(nm);
     AttachNode(dg,nd);
   }
@@ -301,7 +301,7 @@ static DGraph *buildBH(const char cls){
     numLayerNodes=numLayerNodes/maxInDeg;
     if(numLayerNodes*maxInDeg<numPrevLayerNodes)numLayerNodes++;
     for(i=0;i<numLayerNodes;i++){
-      sprintf(nm,"Comparator.%d",totComparators);
+      snprintf(nm,BLOCK_SIZE,"Comparator.%d",totComparators);
       totComparators++;
       nd=newNode(nm);
       id=AttachNode(dg,nd);

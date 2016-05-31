@@ -44,7 +44,7 @@ static inline const char *transformSocketPtr (ns3::Ptr<ns3::Socket> localSocket)
   static char key[24];
   std::stringstream sstream;
   sstream << localSocket ;
-  sprintf(key,"%s",sstream.str().c_str());
+  snprintf(key,24,"%s",sstream.str().c_str());
 
   return key;
 }

@@ -167,8 +167,9 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
       dst = (SD_task_t)xbt_dict_get_or_null(jobs, dst_name);
 
       if (size > 0) {
-        char *name = (char*)xbt_malloc((strlen(src_name)+strlen(dst_name)+6)*sizeof(char));
-        sprintf(name, "%s->%s", src_name, dst_name);
+        int namesize=(strlen(src_name)+strlen(dst_name)+6);
+        char *name = (char*)xbt_malloc(namesize*sizeof(char*));
+        snprintf(name,namesize, "%s->%s", src_name, dst_name);
         XBT_DEBUG("See <transfer id=%s amount = %.0f>", name, size);
         if (!(task = (SD_task_t)xbt_dict_get_or_null(jobs, name))) {
           if (seq_or_par == sequential)

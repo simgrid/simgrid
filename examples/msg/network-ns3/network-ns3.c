@@ -36,7 +36,8 @@ static int master(int argc, char *argv[])
   /* worker name */
   char *workername = argv[2];
   int id = xbt_str_parse_int(argv[3], "Invalid ID as argument 3: %s");   //unique id to control statistics
-  char *id_alias = bprintf("flow_%d", id);
+  char *id_alias = xbt_malloc(20*sizeof(char));
+  snprintf(id_alias, 20, "flow_%d", id);
   workernames[id] = workername;
   TRACE_category(id_alias);
 
@@ -56,7 +57,7 @@ static int master(int argc, char *argv[])
   timer_start = 1 ;
 
   /* time measurement */
-  sprintf(id_alias, "%d", id);
+  snprintf(id_alias,20,"%d", id);
   start_time = MSG_get_clock();
   MSG_task_send(todo, id_alias);
   end_time = MSG_get_clock();
@@ -101,7 +102,7 @@ static int worker(int argc, char *argv[])
   XBT_DEBUG ("Worker started");
 
   int id = xbt_str_parse_int(argv[1], "Invalid id: %s");
-  sprintf(id_alias, "%d", id);
+  snprintf(id_alias,10, "%d", id);
 
   msg_error_t a = MSG_task_receive(&(task), id_alias);
 

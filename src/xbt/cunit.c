@@ -266,7 +266,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
     suite_title[i++] = '\n';
     suite_title[80] = '\0';
 
-    sprintf(suite_title + 40 - (suite_len + 4) / 2, "[ %s ]", suite->title);
+    snprintf(suite_title + 40 - (suite_len + 4) / 2, 81-(40 - (suite_len + 4)/ 2), "[ %s ]", suite->title);
     suite_title[40 + (suite_len + 5) / 2] = '=';
     if (!suite->enabled)
       snprintf(suite_title + 70, 11, " DISABLED ");

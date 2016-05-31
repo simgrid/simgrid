@@ -170,9 +170,10 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   } else {
     binary_name = xbt_strdup(xbt_binary_name);
   }
-  cmd = curr = xbt_new(char, strlen(ADDR2LINE) + 25 + strlen(binary_name) + 32 * e->used);
+  int strsize=strlen(ADDR2LINE) + 25 + strlen(binary_name) + 32 * e->used;
+  cmd = curr = xbt_new(char, strsize);
 
-  curr += sprintf(curr, "%s -f -e %s ", ADDR2LINE, binary_name);
+  curr += snprintf(curr,strsize, "%s -f -e %s ", ADDR2LINE, binary_name);
   free(binary_name);
 
   addrs = xbt_new(char *, e->used);
@@ -190,7 +191,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
     XBT_DEBUG("Set up a new address: %d, '%s'(%p)", i, addrs[i], addrs[i]);
 
     /* Add it to the command line args */
-    curr += sprintf(curr, "%s ", addrs[i]);
+    curr += snprintf(curr,strsize, "%s ", addrs[i]);
   }
   addr_len = strlen(addrs[0]);
 
@@ -289,7 +290,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       if (p[0] == '[') {
         /* library path not displayed in the map file either... */
         free(p);
-        sprintf(line_func, "??");
+        snprintf(line_func,3, "??");
       } else {
         p2 = strrchr(p, '(');
         if (p2)

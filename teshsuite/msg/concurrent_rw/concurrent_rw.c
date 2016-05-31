@@ -15,7 +15,7 @@ static int host(int argc, char *argv[])
 {
   char name[2048];
   int id = MSG_process_self_PID();
-  sprintf(name,"%s%i", FILENAME1, id);
+  snprintf(name,2048,"%s%i", FILENAME1, id);
   msg_file_t file = MSG_file_open(name, NULL);
   XBT_INFO("process %d is writing!", id);
   MSG_file_write(file, 3000000);

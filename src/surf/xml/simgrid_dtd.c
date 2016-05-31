@@ -10305,11 +10305,11 @@ static int fail(const char* fmt, ...)
     int chars_left, used;
     va_list ap; va_start(ap, fmt);
 #ifdef FLEXML_yylineno
-    used = sprintf(flexml_err_msg,
+    used = snprintf(flexml_err_msg,flexml_max_err_msg_size,
 		   "Invalid XML (XML input line %d, state %d): ",
 		   surf_parse_lineno, YY_START);
 #else
-    used = sprintf(flexml_err_msg,
+    used = snprintf(flexml_err_msg,flexml_max_err_msg_size,
 		   "Invalid XML (state %d): ",
 		   YY_START);
 #endif
