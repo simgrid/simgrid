@@ -10,7 +10,7 @@
     l0| l1| l2|            l7|   l8|   |l9                     |
       |   |   |   ........   |     |   |                       |
       |                                |                       |
-    c-0.me                             c-9.me                  |
+node-0.acme.org                     node-9.acme.org            |
                      __________________________________________|
                  ___|______
                 |          |
@@ -20,7 +20,7 @@
    l10|l11|l12|           l17| l18 |   | l19
       |   |   |   ........   |     |   |
       |                                |
-   c-10.me                             c-19.me -->
+node-10.acme.org               node-19.acme.org -->
 
 <AS id="AS0" routing="Full">
   <cluster id="my_cluster_1" prefix="node-" suffix=".acme.org" radical="0-9" speed="1Gf" 

@@ -1,7 +1,7 @@
 #! ./tesh
 p Test the DAX loader on a small DAX instance
 
-$ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/daxload/smalldax.xml
+$ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../platforms/two_clusters.xml ${srcdir:=.}/daxload/smalldax.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] Ignore file o1 size redefinition from 1000000 to 304
 > [0.000000] [sd_daxparse/WARNING] Ignore file o2 size redefinition from 1000000 to 304
@@ -100,32 +100,32 @@ $ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../pl
 > [0.000000] [sd_task/INFO]     3@task1_o3_end
 > [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
 > [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
-> [84.066238] [test/INFO] ------------------- Produce the trace file---------------------------
-> [84.066238] [test/INFO] Producing the trace of the run into smalldax.trace
+> [84.068138] [test/INFO] ------------------- Produce the trace file---------------------------
+> [84.068138] [test/INFO] Producing the trace of the run into smalldax.trace
 
 $ cat ${srcdir:=.}/daxload/smalldax.trace
-> [0.000000] C1-00 compute 0.000000 # root
-> [0.016300] C1-01 compute 42000000000.000000 # 1@task1
-> [0.016300] C1-02 compute 42000000000.000000 # 2@task2
-> [42.032600] C1-03 compute 42000000000.000000 # 3@task1
-> [0.000000] C1-00 send C1-02 1000000.000000 # root_i2_2@task2
-> [0.016300] C1-02 recv C1-00 1000000.000000 # root_i2_2@task2
-> [42.016300] C1-01 send C1-03 1000000.000000 # 1@task1_o1_3@task1
-> [42.032600] C1-03 recv C1-01 1000000.000000 # 1@task1_o1_3@task1
-> [42.016300] C1-02 send C1-03 1000000.000000 # 2@task2_o2_3@task1
-> [42.032600] C1-03 recv C1-02 1000000.000000 # 2@task2_o2_3@task1
-> [84.032600] C1-03 send C1-00 4167312.000000 # 3@task1_o3_end
-> [84.066238] C1-00 recv C1-03 4167312.000000 # 3@task1_o3_end
-> [0.000000] C1-00 send C1-01 1000000.000000 # root_i1_1@task1
-> [0.016300] C1-01 recv C1-00 1000000.000000 # root_i1_1@task1
-> [84.066238] C1-00 compute 0.000000 # end
+> [0.000000] node-0.acme.org compute 0.000000 # root
+> [0.015600] node-1.acme.org compute 42000000000.000000 # 1@task1
+> [0.016600] node-10.acme.org compute 42000000000.000000 # 2@task2
+> [42.033200] node-11.acme.org compute 42000000000.000000 # 3@task1
+> [0.000000] node-0.acme.org send node-10.acme.org 1000000.000000 # root_i2_2@task2
+> [0.016600] node-10.acme.org recv node-0.acme.org 1000000.000000 # root_i2_2@task2
+> [42.015600] node-1.acme.org send node-11.acme.org 1000000.000000 # 1@task1_o1_3@task1
+> [42.033200] node-11.acme.org recv node-1.acme.org 1000000.000000 # 1@task1_o1_3@task1
+> [42.016600] node-10.acme.org send node-11.acme.org 1000000.000000 # 2@task2_o2_3@task1
+> [42.033200] node-11.acme.org recv node-10.acme.org 1000000.000000 # 2@task2_o2_3@task1
+> [84.033200] node-11.acme.org send node-0.acme.org 4167312.000000 # 3@task1_o3_end
+> [84.068138] node-0.acme.org recv node-11.acme.org 4167312.000000 # 3@task1_o3_end
+> [0.000000] node-0.acme.org send node-1.acme.org 1000000.000000 # root_i1_1@task1
+> [0.015600] node-1.acme.org recv node-0.acme.org 1000000.000000 # root_i1_1@task1
+> [84.068138] node-0.acme.org compute 0.000000 # end
 
 $ cmake -E remove -f ${srcdir:=.}/dax.dot ${srcdir:=.}/daxload/smalldax.trace
 
 p Test the DAX loader with a DAX comprising a cycle.
 
 ! expect return 255
-$ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../platforms/2clusters.xml ${srcdir:=.}/daxload/simple_dax_with_cycle.xml
+$ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../platforms/two_clusters.xml ${srcdir:=.}/daxload/simple_dax_with_cycle.xml
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
 > [0.000000] [sd_daxparse/WARNING] the task 1@task1 is in a cycle

@@ -1027,7 +1027,6 @@ set(CMAKE_SOURCE_FILES
   )
 
 set(PLATFORMS_EXAMPLES
-  examples/platforms/2clusters.xml
   examples/platforms/bypassASroute.xml
   examples/platforms/bypassRoute.xml
   examples/platforms/cloud.xml
@@ -1035,7 +1034,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_no_backbone.xml
-  examples/platforms/clusters_routing_full.xml
   examples/platforms/crosstraffic.xml
   examples/platforms/optorsim/gridpp_grid_2004.conf
   examples/platforms/optorsim/lcg_sept2004_grid.conf
@@ -1088,6 +1086,7 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/three_multicore_hosts.xml
   examples/platforms/torus_cluster.xml
+  examples/platforms/two_clusters.xml
   examples/platforms/two_hosts.xml
   examples/platforms/two_hosts_platform.xml
   examples/platforms/two_hosts_platform_shared.xml
