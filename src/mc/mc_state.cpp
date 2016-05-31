@@ -57,7 +57,7 @@ State::State()
 std::size_t State::interleaveSize() const
 {
   return boost::range::count_if(this->processStates,
-    simgrid::mc::ProcessState::isToInterleave),
+    [](simgrid::mc::ProcessState const& p) { return p.isToInterleave(); });
 }
 
 Transition State::getTransition() const

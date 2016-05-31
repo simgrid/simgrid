@@ -125,7 +125,7 @@ std::shared_ptr<VisitedPair> LivenessChecker::insertAcceptancePair(simgrid::mc::
     pair->num, pair->automaton_state, pair->atomic_propositions,
     pair->graph_state);
 
-  auto res = boost::range::equal_range(acceptancePairs,
+  auto res = boost::range::equal_range(acceptancePairs_,
     new_pair.get(), simgrid::mc::DerefAndCompareByNbProcessesAndUsedHeap());
 
   if (pair->search_cycle) for (auto i = res.first; i != res.second; ++i) {
