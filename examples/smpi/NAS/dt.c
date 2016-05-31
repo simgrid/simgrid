@@ -104,28 +104,8 @@ static int verify(char *bmname,double rnm2){
         fprintf(stderr,"No such benchmark as %s.\n",bmname);
         verified = 0;
       }
-    }else if(class=='C') {
-      if(strstr(bmname,"BH")){
+    }else if(class=='C' || class == 'D') {
         verify_value = 0.0;
-      }else if(strstr(bmname,"WH")){
-        verify_value = 0.0;
-      }else if(strstr(bmname,"SH")){
-        verify_value = 0.0;
-      }else{
-        fprintf(stderr,"No such benchmark as %s.\n",bmname);
-        verified = -1;
-      }
-    }else if(class=='D') {
-      if(strstr(bmname,"BH")){
-        verify_value = 0.0;
-      }else if(strstr(bmname,"WH")){
-        verify_value = 0.0;
-      }else if(strstr(bmname,"SH")){
-        verify_value = 0.0;
-      }else{
-        fprintf(stderr,"No such benchmark as %s.\n",bmname);
-      }
-      verified = -1;
     }else{
       fprintf(stderr,"No such class as %c.\n",class);
     }
@@ -148,26 +128,28 @@ static int verify(char *bmname,double rnm2){
 
 static int ipowMod(int a,long long int n,int md){
   int seed=1,q=a,r=1;
+  int exp = n;
   if(n<0){
     fprintf(stderr,"ipowMod: exponent must be nonnegative exp=%lld\n",n);
-    n=-n; /* temp fix */
+    exp=-n; /* temp fix */
     /*  return 1; */
   }
   if(md<=0){
     fprintf(stderr,"ipowMod: module must be positive mod=%d",md);
     return 1;
   }
-  if(n==0) return 1;
-  while(n>1){
-    int n2 = n/2;
+  if(n==0)
+    return 1;
+  while(exp>1){
+    int n2 = exp/2;
     if (n2*2==n){
       seed = (q*q)%md;
       q=seed;
-      n = n2;
+      exp = n2;
     }else{
       seed = (r*q)%md;
       r=seed;
-      n = n-1;
+      exp = exp -1;
     }
   }
   seed = (r*q)%md;
@@ -177,16 +159,18 @@ static int ipowMod(int a,long long int n,int md){
 static DGraph *buildSH(const char cls){
 /* Nodes of the graph must be topologically sorted to avoid MPI deadlock. */
   DGraph *dg;
-  int numSources=num_sources; /* must be power of 2 */
-  int numOfLayers=0,tmpS=numSources>>1;
+  unsigned int numSources=num_sources; /* must be power of 2 */
+  int numOfLayers=0;
+  unsigned int tmpS=numSources>>1;
   int firstLayerNode=0;
   DGArc *ar=NULL;
   DGNode *nd=NULL;
-  int mask=0x0,ndid=0,ndoff=0;
-  int i=0,j=0;
+  unsigned int mask=0x0;
+  int ndid=0,ndoff=0;
+  unsigned int i=0,j=0;
   char nm[BLOCK_SIZE];
 
-  sprintf(nm,"DT_SH.%c",cls);
+  snprintf(nm,BLOCK_SIZE -1,"DT_SH.%c",cls);
   dg=newDGraph(nm);
 
   while(tmpS>1){
@@ -194,14 +178,14 @@ static DGraph *buildSH(const char cls){
   tmpS>>=1;
   }
   for(i=0;i<numSources;i++){
-  sprintf(nm,"Source.%d",i);
+  snprintf(nm,BLOCK_SIZE -1,"Source.%d",i);
   nd=newNode(nm);
   AttachNode(dg,nd);
   }
   for(j=0;j<numOfLayers;j++){
     mask=0x00000001<<j;
     for(i=0;i<numSources;i++){
-      sprintf(nm,"Comparator.%d",(i+j*firstLayerNode));
+      snprintf(nm,BLOCK_SIZE -1,"Comparator.%d",(i+j*firstLayerNode));
       nd=newNode(nm);
       AttachNode(dg,nd);
       ndoff=i&(~mask);
@@ -217,7 +201,7 @@ static DGraph *buildSH(const char cls){
   }
   mask=0x00000001<<numOfLayers;
   for(i=0;i<numSources;i++){
-    sprintf(nm,"Sink.%d",i);
+    snprintf(nm,BLOCK_SIZE -1,"Sink.%d",i);
     nd=newNode(nm);
     AttachNode(dg,nd);
     ndoff=i&(~mask);
@@ -352,13 +336,6 @@ static Arr *newArr(int len){
   arr->len=len;
   arr->val=(double *)malloc(len*sizeof(double)); //arr->val=(double *)SMPI_SHARED_MALLOC(len*sizeof(double));
   return arr;
-}
-
-static void arrShow(Arr* a){
-  if(!a) fprintf(stderr,"-- NULL array\n");
-  else{
-    fprintf(stderr,"-- length=%d\n",a->len);
-  }
 }
 
 static double CheckVal(Arr *feat){
