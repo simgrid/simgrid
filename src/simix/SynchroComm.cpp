@@ -133,6 +133,6 @@ void simgrid::simix::Comm::post()
   cleanupSurf();
 
   /* if there are simcalls associated with the synchro, then answer them */
-  if (xbt_fifo_size(simcalls))
+  if (!simcalls.empty())
     SIMIX_comm_finish(this);
 }

@@ -68,6 +68,9 @@ typedef struct s_xbt_dictelm *sg_storage_t;
 
 typedef tmgr_Trace *tmgr_trace_t; /**< Opaque structure defining an availability trace */
 
+typedef struct s_smx_simcall s_smx_simcall_t;
+typedef struct s_smx_simcall* smx_simcall_t;
+
 typedef enum {
   SURF_LINK_FULLDUPLEX = 2,
   SURF_LINK_SHARED = 1,

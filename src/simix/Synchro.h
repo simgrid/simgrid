@@ -7,6 +7,7 @@
 #define _SIMIX_SYNCHRO_HPP
 
 #include <string>
+#include <list>
 
 #include <xbt/base.h>
 #include "simgrid/forward.h"
@@ -24,8 +25,8 @@ namespace simix {
     virtual ~Synchro();
     e_smx_state_t state = SIMIX_WAITING; /* State of the synchro */
     std::string name;                  /* synchro name if any */
-    xbt_fifo_t simcalls = nullptr;     /* List of simcalls waiting for this synchro */
-    char *category = nullptr;          /* For instrumentation */
+    std::list<smx_simcall_t> simcalls; /* List of simcalls waiting for this synchro */
+    char *category;                    /* For instrumentation */
 
     virtual void suspend()=0;
     virtual void resume()=0;

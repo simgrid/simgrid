@@ -318,7 +318,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
 
   /* Associate this simcall to the synchro */
-  xbt_fifo_push(synchro->simcalls, simcall);
+  synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 
   /* set surf's synchro */
@@ -335,11 +335,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro
 
 void SIMIX_execution_finish(simgrid::simix::Exec *exec)
 {
-  xbt_fifo_item_t item;
-  smx_simcall_t simcall;
-
-  xbt_fifo_foreach(exec->simcalls, item, simcall, smx_simcall_t) {
-
+  for (smx_simcall_t simcall : exec->simcalls) {
     switch (exec->state) {
 
       case SIMIX_DONE:

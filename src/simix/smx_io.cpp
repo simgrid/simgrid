@@ -54,7 +54,7 @@ void SIMIX_storage_destroy(void *s)
 void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   smx_synchro_t synchro = SIMIX_file_read(fd, size, host);
-  xbt_fifo_push(synchro->simcalls, simcall);
+  synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
@@ -79,7 +79,7 @@ smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   smx_synchro_t synchro = SIMIX_file_write(fd,  size, host);
-  xbt_fifo_push(synchro->simcalls, simcall);
+  synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
@@ -101,7 +101,7 @@ smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
 void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, sg_host_t host)
 {
   smx_synchro_t synchro = SIMIX_file_open(fullpath, host);
-  xbt_fifo_push(synchro->simcalls, simcall);
+  synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
@@ -123,7 +123,7 @@ smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
 void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, sg_host_t host)
 {
   smx_synchro_t synchro = SIMIX_file_close(fd, host);
-  xbt_fifo_push(synchro->simcalls, simcall);
+  synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
@@ -264,10 +264,7 @@ void SIMIX_io_destroy(smx_synchro_t synchro)
 
 void SIMIX_io_finish(smx_synchro_t synchro)
 {
-  xbt_fifo_item_t item;
-  smx_simcall_t simcall;
-
-  xbt_fifo_foreach(synchro->simcalls, item, simcall, smx_simcall_t) {
+  for (smx_simcall_t simcall : synchro->simcalls) {
 
     switch (synchro->state) {
 

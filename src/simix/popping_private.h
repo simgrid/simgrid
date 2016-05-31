@@ -42,13 +42,13 @@ union u_smx_scalar {
 /**
  * \brief Represents a simcall to the kernel.
  */
-typedef struct s_smx_simcall {
+struct s_smx_simcall {
   e_smx_simcall_t call;
   smx_process_t issuer;
   int mc_value;
   union u_smx_scalar args[11];
   union u_smx_scalar result;
-} s_smx_simcall_t, *smx_simcall_t;
+};
 
 #define SIMCALL_SET_MC_VALUE(simcall, value) ((simcall)->mc_value = (value))
 #define SIMCALL_GET_MC_VALUE(simcall) ((simcall)->mc_value)

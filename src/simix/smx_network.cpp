@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <boost/range/algorithm.hpp>
+
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_private.h"
 #include "xbt/log.h"
@@ -384,7 +386,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, dou
   /* Associate this simcall to the wait synchro */
   XBT_DEBUG("simcall_HANDLER_comm_wait, %p", synchro);
 
-  xbt_fifo_push(synchro->simcalls, simcall);
+  synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 
   if (MC_is_active() || MC_record_replay_is_active()) {
@@ -432,7 +434,7 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t synchro)
     simcall_comm_test__set__result(simcall, comm->src_proc && comm->dst_proc);
     if (simcall_comm_test__get__result(simcall)){
       synchro->state = SIMIX_DONE;
-      xbt_fifo_push(synchro->simcalls, simcall);
+      synchro->simcalls.push_back(simcall);
       SIMIX_comm_finish(synchro);
     } else {
       SIMIX_simcall_answer(simcall);
@@ -442,7 +444,7 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t synchro)
 
   simcall_comm_test__set__result(simcall, (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING));
   if (simcall_comm_test__get__result(simcall)) {
-    xbt_fifo_push(synchro->simcalls, simcall);
+    synchro->simcalls.push_back(simcall);
     SIMIX_comm_finish(synchro);
   } else {
     SIMIX_simcall_answer(simcall);
@@ -462,7 +464,7 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
     }else{
       synchro = xbt_dynar_get_as(synchros, idx, smx_synchro_t);
       simcall_comm_testany__set__result(simcall, idx);
-      xbt_fifo_push(synchro->simcalls, simcall);
+      synchro->simcalls.push_back(simcall);
       synchro->state = SIMIX_DONE;
       SIMIX_comm_finish(synchro);
     }
@@ -472,7 +474,7 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
   xbt_dynar_foreach(simcall_comm_testany__get__comms(simcall), cursor,synchro) {
     if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
       simcall_comm_testany__set__result(simcall, cursor);
-      xbt_fifo_push(synchro->simcalls, simcall);
+      synchro->simcalls.push_back(simcall);
       SIMIX_comm_finish(synchro);
       return;
     }
@@ -488,7 +490,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros)
   if (MC_is_active() || MC_record_replay_is_active()){
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     synchro = xbt_dynar_get_as(synchros, idx, smx_synchro_t);
-    xbt_fifo_push(synchro->simcalls, simcall);
+    synchro->simcalls.push_back(simcall);
     simcall_comm_waitany__set__result(simcall, idx);
     synchro->state = SIMIX_DONE;
     SIMIX_comm_finish(synchro);
@@ -497,7 +499,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros)
 
   xbt_dynar_foreach(synchros, cursor, synchro){
     /* associate this simcall to the the synchro */
-    xbt_fifo_push(synchro->simcalls, simcall);
+    synchro->simcalls.push_back(simcall);
 
     /* see if the synchro is already finished */
     if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING){
@@ -513,8 +515,12 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
   unsigned int cursor = 0;
   xbt_dynar_t synchros = simcall_comm_waitany__get__comms(simcall);
 
-  xbt_dynar_foreach(synchros, cursor, synchro)
-    xbt_fifo_remove(synchro->simcalls, simcall);
+  xbt_dynar_foreach(synchros, cursor, synchro) {
+    // Remove the first occurence of simcall:
+    auto i = boost::range::find(synchro->simcalls, simcall);
+    if (i !=  synchro->simcalls.end())
+      synchro->simcalls.erase(i);
+  }
 }
 
 /**
@@ -568,9 +574,10 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
 {
   simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
   unsigned int destroy_count = 0;
-  smx_simcall_t simcall;
 
-  while ((simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls))) {
+  while (!synchro->simcalls.empty()) {
+    smx_simcall_t simcall = synchro->simcalls.front();
+    synchro->simcalls.pop_front();
 
     /* If a waitany simcall is waiting for this synchro to finish, then remove
        it from the other synchros in the waitany list. Afterwards, get the

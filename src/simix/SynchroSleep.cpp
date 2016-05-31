@@ -22,11 +22,11 @@ void simgrid::simix::Sleep::resume()
 
 void simgrid::simix::Sleep::post()
 {
-  smx_simcall_t simcall;
-  e_smx_state_t state;
+  while (!simcalls.empty()) {
+    smx_simcall_t simcall = simcalls.front();
+    simcalls.pop_front();
 
-  while ((simcall = (smx_simcall_t) xbt_fifo_shift(simcalls))) {
-
+    e_smx_state_t state;
     switch (surf_sleep->getState()){
       case simgrid::surf::Action::State::failed:
         simcall->issuer->context->iwannadie = 1;

@@ -66,7 +66,8 @@ void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall)
 void SIMIX_synchro_finish(smx_synchro_t synchro)
 {
   XBT_IN("(%p)",synchro);
-  smx_simcall_t simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls);
+  smx_simcall_t simcall = synchro->simcalls.front();
+  synchro->simcalls.pop_front();
 
   switch (synchro->state) {
 
@@ -128,7 +129,7 @@ void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
     synchro = SIMIX_synchro_wait(process->host, -1);
-    xbt_fifo_push(synchro->simcalls, simcall);
+    synchro->simcalls.push_back(simcall);
     simcall->issuer->waiting_synchro = synchro;
     xbt_swag_insert(simcall->issuer, mutex->sleeping);   
   } else {
@@ -282,7 +283,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
   }
 
   synchro = SIMIX_synchro_wait(issuer->host, timeout);
-  xbt_fifo_unshift(synchro->simcalls, simcall);
+  synchro->simcalls.push_front(simcall);
   issuer->waiting_synchro = synchro;
   xbt_swag_insert(simcall->issuer, cond->sleeping);   
   XBT_OUT();
@@ -446,7 +447,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
   if (sem->value <= 0) {
     synchro = SIMIX_synchro_wait(issuer->host, timeout);
-    xbt_fifo_unshift(synchro->simcalls, simcall);
+    synchro->simcalls.push_front(simcall);
     issuer->waiting_synchro = synchro;
     xbt_swag_insert(issuer, sem->sleeping);
   } else {
