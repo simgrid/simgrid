@@ -20,15 +20,14 @@ static void main_loop(node_t node, double deadline)
 {
   double next_lookup_time = MSG_get_clock() + random_lookup_interval;
   XBT_VERB("Main loop start");
-
   while (MSG_get_clock() < deadline) {
+
     if (node->receive_comm == NULL) {
       node->task_received = NULL;
       node->receive_comm = MSG_task_irecv(&node->task_received, node->mailbox);
     }
-
     if (node->receive_comm) {
-      if (MSG_comm_test(node->receive_comm) == 0) {
+      if (!MSG_comm_test(node->receive_comm)) {
         /* We search for a pseudo random node */
         if (MSG_get_clock() >= next_lookup_time) {
           random_lookup(node);
@@ -43,12 +42,12 @@ static void main_loop(node_t node, double deadline)
         MSG_comm_destroy(node->receive_comm);
         node->receive_comm = NULL;
 
-        if (status == MSG_OK && node->task_received != NULL) {
+        if (status == MSG_OK) {
           xbt_assert((node->task_received != NULL), "We received an incorrect task");
           handle_task(node, node->task_received);
         } else {
-          xbt_die("A problem occurred. Comm ended in status '%d' and there was '%d' received task",
-                  status, node->task_received == NULL ? 0 : 1);
+          xbt_assert((MSG_comm_get_task(node->receive_comm) == NULL), "Comm failed but received a task.");
+          XBT_DEBUG("Nevermind, the communication has failed.");
         }
       }
     } else {
@@ -58,7 +57,7 @@ static void main_loop(node_t node, double deadline)
   }
   //Cleanup the receiving communication.
   if (node->receive_comm != NULL) {
-    if (MSG_comm_test(node->receive_comm) != 0 && MSG_comm_get_status(node->receive_comm) == MSG_OK) {
+    if (MSG_comm_test(node->receive_comm) && MSG_comm_get_status(node->receive_comm) == MSG_OK) {
       task_free(MSG_comm_get_task(node->receive_comm));
     }
     MSG_comm_destroy(node->receive_comm);
@@ -113,8 +112,7 @@ unsigned int join(node_t node, unsigned int id_known)
   answer_t node_list;
   msg_error_t status;
   unsigned int trial = 0;
-  unsigned int i;
-  unsigned int answer_got = 0;
+  unsigned int i, answer_got = 0;
 
   /* Add the guy we know to our routing table and ourselves. */
   node_routing_table_update(node, node->id);
@@ -137,7 +135,8 @@ unsigned int join(node_t node, unsigned int id_known)
           answer_got = 1;
           //retrieve the node list and ping them.
           task_data_t data = MSG_task_get_data(node->task_received);
-          if (data && data->type == TASK_FIND_NODE_ANSWER) {
+          xbt_assert((data != NULL), "Null data received");
+          if (data->type == TASK_FIND_NODE_ANSWER) {
             node_contact_t contact;
             node_list = data->answer;
             xbt_dynar_foreach(node_list->nodes, i, contact) {
@@ -179,13 +178,11 @@ unsigned int join(node_t node, unsigned int id_known)
 unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_in_stats)
 {
   unsigned int i = 0;
-  unsigned int queries;
-  unsigned int answers;
+  unsigned int queries, answers;
   unsigned int destination_found = 0;
   unsigned int nodes_added = 0;
   double time_beginreceive;
-  double timeout;
-  double global_timeout = MSG_get_clock() + find_node_global_timeout;
+  double timeout, global_timeout = MSG_get_clock() + find_node_global_timeout;
   unsigned int steps = 0;
 
   xbt_assert((id_to_find >= 0), "Id supplied incorrect");
@@ -220,9 +217,10 @@ unsigned int find_node(node_t node, unsigned int id_to_find, unsigned int count_
             xbt_assert((node->task_received != NULL), "Invalid task received");
             //Figure out if we received an answer or something else
             task_data_t data = MSG_task_get_data(node->task_received);
+            xbt_assert((data != NULL), "No data in the task");
 
             //Check if what we have received is what we are looking for.
-            if (data && data->type == TASK_FIND_NODE_ANSWER && data->answer->destination_id == id_to_find) {
+            if (data->type == TASK_FIND_NODE_ANSWER && data->answer->destination_id == id_to_find) {
               //Handle the answer
               node_routing_table_update(node, data->sender_id);
               node_contact_t contact;
@@ -298,10 +296,12 @@ unsigned int ping(node_t node, unsigned int id_to_ping)
     task_received = NULL;
     msg_error_t status =
         MSG_task_receive_with_timeout(&task_received, node->mailbox, ping_timeout);
-    if (status == MSG_OK && task_received) {
+    if (status == MSG_OK) {
+      xbt_assert((task_received != NULL), "Invalid task received");
       //Checking if it's what we are waiting for or not.
       task_data_t data = MSG_task_get_data(task_received);
-      if (data && data->type == TASK_PING_ANSWER && id_to_ping == data->sender_id) {
+      xbt_assert((data != NULL), "didn't receive any data...");
+      if (data->type == TASK_PING_ANSWER && id_to_ping == data->sender_id) {
         XBT_VERB("Ping to %s succeeded", mailbox);
         node_routing_table_update(node, data->sender_id);
         destination_found = 1;
@@ -358,8 +358,7 @@ void send_find_node(node_t node, unsigned int id, unsigned int destination)
   */
 unsigned int send_find_node_to_best(node_t node, answer_t node_list)
 {
-  unsigned int i = 0;
-  unsigned int j = 0;
+  unsigned int i = 0, j = 0;
   unsigned int destination = node_list->destination_id;
   node_contact_t node_to_query;
   while (j < kademlia_alpha && i < node_list->size) {
@@ -379,24 +378,23 @@ unsigned int send_find_node_to_best(node_t node, answer_t node_list)
 void handle_task(node_t node, msg_task_t task)
 {
   task_data_t data = MSG_task_get_data(task);
-  if (data) {
-    //Adding/updating the guy to our routing table
-    node_routing_table_update(node, data->sender_id);
-    switch (data->type) {
-    case TASK_FIND_NODE:
-      handle_find_node(node, data);
-      break;
-    case TASK_FIND_NODE_ANSWER:
-      XBT_DEBUG("Received a wrong answer for a FIND_NODE");
-      break;
-    case TASK_PING:
-      handle_ping(node, data);
-      break;
-    default:
-      break;
-    }
-    task_free(task);
+  xbt_assert((data != NULL), "Received NULL data");
+  //Adding/updating the guy to our routing table
+  node_routing_table_update(node, data->sender_id);
+  switch (data->type) {
+  case TASK_FIND_NODE:
+    handle_find_node(node, data);
+    break;
+  case TASK_FIND_NODE_ANSWER:
+    XBT_DEBUG("Received a wrong answer for a FIND_NODE");
+    break;
+  case TASK_PING:
+    handle_ping(node, data);
+    break;
+  default:
+    break;
   }
+  task_free(task);
 }
 
 /** @brief Handles the answer to an incoming "find_node" task */
