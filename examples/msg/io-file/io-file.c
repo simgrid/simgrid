@@ -15,25 +15,32 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(io_file, "Messages specific for this io example");
 static int host(int argc, char *argv[])
 {
   msg_file_t file = NULL;
-  sg_size_t read,write;
+  sg_size_t read;
+  sg_size_t write;
   msg_storage_t st;
   const char* st_name;
 
-  if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
+  switch(MSG_process_self_PID()){
+  case 1:
     file = MSG_file_open(FILENAME1, NULL);
     MSG_file_dump(file);
     st_name = "Disk4";
-  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"1")) {
+    break;
+  case 2 :
     file = MSG_file_open(FILENAME2, NULL);
     st_name = "Disk2";
-  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"2")){
+    break;
+  case 3 :
     file = MSG_file_open(FILENAME3, NULL);
     st_name = "Disk3";
-  } else if(!strcmp(MSG_process_get_name(MSG_process_self()),"3")){
+    break;
+  case 4:
     file = MSG_file_open(FILENAME4, NULL);
     st_name = "Disk1";
+    break;
+  default:
+    xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
   }
-  else xbt_die("FILENAME NOT DEFINED %s",MSG_process_get_name(MSG_process_self()));
 
   const char* filename = MSG_file_get_name(file);
   XBT_INFO("\tOpen file '%s'",filename);
@@ -73,7 +80,7 @@ static int host(int argc, char *argv[])
   XBT_INFO("\tCapacity of the storage element '%s' is stored on: %llu / %llu",
             filename, MSG_storage_get_used_size(st), MSG_storage_get_size(st));
 
-  if(!strcmp(MSG_process_get_name(MSG_process_self()),"0")){
+  if (MSG_process_self_PID() == 1){
     XBT_INFO("\tUnlink file '%s'",MSG_file_get_name(file));
     MSG_file_unlink(file);
   } else {
@@ -91,10 +98,8 @@ int main(int argc, char **argv)
   MSG_function_register("host", host);
   unsigned long nb_hosts = xbt_dynar_length(hosts);
   XBT_INFO("Number of host '%lu'",nb_hosts);
-  for(int i = 0 ; i<nb_hosts; i++){
-    char* name_host = bprintf("%d",i);
-    MSG_process_create( name_host, host, NULL, xbt_dynar_get_as(hosts,i,msg_host_t) );
-    free(name_host);
+  for(int i = 0 ; i < nb_hosts; i++){
+    MSG_process_create("host", host, NULL, xbt_dynar_get_as(hosts,i,msg_host_t));
   }
   xbt_dynar_free(&hosts);
 
