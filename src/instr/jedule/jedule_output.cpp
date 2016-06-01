@@ -71,7 +71,7 @@ static void get_hierarchy_string(jed_simgrid_container_t container, char *outbuf
         } else {
             snprintf(buf, 1024, "%d", number);
         }
-        sntrcat(outbuf, buf, strlen(buf));
+        strncat(outbuf, buf, strlen(buf));
     }
 
     xbt_dynar_free(&hier_list);
