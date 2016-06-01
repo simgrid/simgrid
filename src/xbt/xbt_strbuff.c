@@ -68,7 +68,7 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
     b->size = MAX(minimal_increment + b->used, needed_space);
     b->data = xbt_realloc(b->data, b->size);
   }
-  strcpy(b->data + b->used, toadd);
+  strncpy(b->data + b->used, toadd, b->size-b->used);
   b->used += addlen;
 }
 

@@ -462,7 +462,7 @@ static void apply_selection(char *selection)
       dir[p - sel] = '\0';
       sel = p + 1;
     } else {
-      strcpy(dir, sel);
+      strncpy(dir, sel,1024);
       done = 1;
     }
 
@@ -477,11 +477,11 @@ static void apply_selection(char *selection)
 
     p = strchr(dir, ':');
     if (p) {
-      strcpy(unitname, p + 1);
+      strncpy(unitname, p + 1,512);
       strncpy(suitename, dir, p - dir);
       suitename[p - dir] = '\0';
     } else {
-      strcpy(suitename, dir);
+      strncpy(suitename, dir,512);
       unitname[0] = '\0';
     }
 

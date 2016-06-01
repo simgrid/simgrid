@@ -393,8 +393,8 @@ static void good_example(void)
       cp1 = NULL /*05 give away */ ;
       cp2 = mallocex(TOOBIG);
       cp3 = mallocex(SMALLAMOUNT);
-      strcpy(cp1, "foo");
-      strcpy(cp2, "bar");
+      strncpy(cp1, "foo",3);
+      strncpy(cp2, "bar",3);
     }
     TRY_CLEANUP {               /*04 */
       printf("cp3=%s", cp3 == NULL /*02 */ ? "" : cp3);

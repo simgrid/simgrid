@@ -149,10 +149,10 @@ int main(int argc, char *argv[]) {
       if (!strncmp(argv[i],\"--tests=\",strlen(\"--tests=\"))) {
         char *p=strchr(argv[i],'=')+1;
         if (selection[0] == '\\0') {
-          strcpy(selection, p);
+          strncpy(selection,p,1024);
         } else {
           strncat(selection, \",\",1);
-          strncat(selection, p, 1024);
+          strncat(selection, p, 1023);
         }
       } else if (!strcmp(argv[i], \"--verbose\")) {
         verbosity++;

@@ -210,13 +210,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       line_func[strlen(line_func) - 1] = '\0';
     } else {
       XBT_VERB("Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
-      strcpy(line_func, "???");
+      strncpy(line_func, "???",3);
     }
     if (fgets(line_pos, 1024, pipe)) {
       line_pos[strlen(line_pos) - 1] = '\0';
     } else {
       XBT_VERB("Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
-      strcpy(line_pos, backtrace_syms[i]);
+      strncpy(line_pos, backtrace_syms[i],1024);
     }
 
     if (strcmp("??", line_func) != 0) {
@@ -311,13 +311,13 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
           line_func[strlen(line_func) - 1] = '\0';
         } else {
           XBT_VERB("Cannot read result of subcommand %s", subcmd);
-          strcpy(line_func, "???");
+          strncpy(line_func, "???",3);
         }
         if (fgets(line_pos, 1024, subpipe)) {
           line_pos[strlen(line_pos) - 1] = '\0';
         } else {
           XBT_VERB("Cannot read result of subcommand %s", subcmd);
-          strcpy(line_pos, backtrace_syms[i]);
+          strncpy(line_pos, backtrace_syms[i],1024);
         }
         pclose(subpipe);
         free(subcmd);
