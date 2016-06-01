@@ -14,7 +14,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(strbuff, xbt, "String buffers");
 
 /** @brief Remove any content from the buffer */
-inline void xbt_strbuff_empty(xbt_strbuff_t b)
+inline void xbt_strbuff_clear(xbt_strbuff_t b)
 {
   b->used = 0;
   b->data[0] = '\0';
@@ -26,7 +26,7 @@ xbt_strbuff_t xbt_strbuff_new(void)
   xbt_strbuff_t res = xbt_malloc(sizeof(s_xbt_strbuff_t));
   res->data = xbt_malloc(512);
   res->size = 512;
-  xbt_strbuff_empty(res);
+  xbt_strbuff_clear(res);
   return res;
 }
 
