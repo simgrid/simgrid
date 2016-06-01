@@ -363,50 +363,53 @@ static void _sg_cfg_cb__surf_network_crosstraffic(const char *name)
 }
 
 /* build description line with possible values */
-static void describe_model(char *result,
+static void describe_model(char *result,int resultsize,
                            const s_surf_model_description_t model_description[],
                            const char *name,
                            const char *description)
 {
-  char *p = result +
-    snprintf(result,1024-strlen(result), "%s. Possible values: %s", description,
+  char *p = result;
+  p += snprintf(result,resultsize-1, "%s. Possible values: %s", description,
             model_description[0].name ? model_description[0].name : "n/a");
   for (int i = 1; model_description[i].name; i++)
-    p += snprintf(p,1024, ", %s", model_description[i].name);
-  snprintf(p,1024, ".\n       (use 'help' as a value to see the long description of each %s)", name);
+    p += snprintf(p,resultsize-(p-result)-1, ", %s", model_description[i].name);
+  p += snprintf(p,resultsize-(p-result)-1, ".\n       (use 'help' as a value to see the long description of each %s)", name);
+
+  xbt_assert(p<result+resultsize-1,"Buffer too small to display the model description of %s",name);
 }
 
 /* create the config set, register what should be and parse the command line*/
 void sg_config_init(int *argc, char **argv)
 {
+  int descsize = 1024;
   char description[1024];
 
   /* Create the configuration support */
   if (_sg_cfg_init_status == 0) { /* Only create stuff if not already inited */
 
     /* Plugins configuration */
-    describe_model(description, surf_plugin_description, "plugin", "The plugins");
+    describe_model(description,descsize, surf_plugin_description, "plugin", "The plugins");
     xbt_cfg_register_string("plugin", nullptr, &_sg_cfg_cb__plugin, description);
 
-    describe_model(description, surf_cpu_model_description, "model", "The model to use for the CPU");
+    describe_model(description,descsize, surf_cpu_model_description, "model", "The model to use for the CPU");
     xbt_cfg_register_string("cpu/model", "Cas01", &_sg_cfg_cb__cpu_model, description);
 
-    describe_model(description, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the CPU");
+    describe_model(description,descsize, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the CPU");
     xbt_cfg_register_string("cpu/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
 
-    describe_model(description, surf_storage_model_description, "model", "The model to use for the storage");
+    describe_model(description,descsize, surf_storage_model_description, "model", "The model to use for the storage");
     xbt_cfg_register_string("storage/model", "default", &_sg_cfg_cb__storage_mode, description);
 
-    describe_model(description, surf_network_model_description, "model", "The model to use for the network");
+    describe_model(description,descsize, surf_network_model_description, "model", "The model to use for the network");
     xbt_cfg_register_string("network/model", "LV08", &_sg_cfg_cb__network_model, description);
 
-    describe_model(description, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the network");
+    describe_model(description,descsize, surf_optimization_mode_description, "optimization mode", "The optimization modes to use for the network");
     xbt_cfg_register_string("network/optim", "Lazy", &_sg_cfg_cb__optimization_mode, description);
 
-    describe_model(description, surf_host_model_description, "model", "The model to use for the host");
+    describe_model(description,descsize, surf_host_model_description, "model", "The model to use for the host");
     xbt_cfg_register_string("host/model", "default", &_sg_cfg_cb__host_model, description);
 
-    describe_model(description, surf_vm_model_description, "model", "The model to use for the vm");
+    describe_model(description,descsize, surf_vm_model_description, "model", "The model to use for the vm");
     xbt_cfg_register_string("vm/model", "default", &_sg_cfg_cb__vm_model, description);
 
     simgrid::config::bindFlag(sg_tcp_gamma = 4194304.0,
