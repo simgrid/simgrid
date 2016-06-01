@@ -7,6 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/strbuff.h"
+#include <stdarg.h>
 
 #define minimal_increment 512
 
@@ -73,6 +74,17 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
   }
   strncpy(b->data + b->used, toadd, b->size-b->used);
   b->used += addlen;
+}
+
+/** @brief format some content and push it at the end of the buffer */
+void xbt_strbuff_printf(xbt_strbuff_t b, const char *fmt, ...)
+{
+  va_list ap;
+  va_start(ap, fmt);
+  char *data = bvprintf(fmt, ap);
+  xbt_strbuff_append(b, data);
+  xbt_free(data);
+  va_end(ap);
 }
 
 /** @brief Replaces a set of variables by their values
