@@ -8,6 +8,7 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
+#include "xbt/strbuff.h"
 #include "xbt/mallocator.h"
 #include "maxmin_private.hpp"
 #include <stdlib.h>
@@ -628,26 +629,19 @@ void lmm_print(lmm_system_t sys)
   xbt_swag_t cnst_list = NULL;
   xbt_swag_t var_list = NULL;
   xbt_swag_t elem_list = NULL;
-  char print_buf[1024];
-  char *trace_buf = (char*) xbt_malloc0(sizeof(char));
+  xbt_strbuff_t buf = xbt_strbuff_new();
   double sum = 0.0;
 
   /* Printing Objective */
   var_list = &(sys->variable_set);
-  snprintf(print_buf,11, "MAX-MIN ( ");
-  trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-  strncat(trace_buf, print_buf, strlen(print_buf));
+  xbt_strbuff_append(buf, "MAX-MIN ( ");
   xbt_swag_foreach(_var, var_list) {
-  var = (lmm_variable_t)_var;
-    snprintf(print_buf,1024, "'%d'(%f) ", var->id_int, var->weight);
-    trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-    strncat(trace_buf, print_buf, strlen(print_buf));
+    var = (lmm_variable_t)_var;
+    xbt_strbuff_printf(buf, "'%d'(%f) ", var->id_int, var->weight);
   }
-  snprintf(print_buf,2, ")");
-  trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-  strncat(trace_buf, print_buf, strlen(print_buf));
-  XBT_DEBUG("%20s", trace_buf);
-  trace_buf[0] = '\000';
+  xbt_strbuff_append(buf, ")");
+  XBT_DEBUG("%20s", buf->data);
+  xbt_strbuff_clear(buf);
 
   XBT_DEBUG("Constraints");
   /* Printing Constraints */
@@ -657,18 +651,12 @@ void lmm_print(lmm_system_t sys)
     sum = 0.0;
     //Show  the enabled variables
     elem_list = &(cnst->enabled_element_set);
-    snprintf(print_buf,2, "\t");
-    trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-    strncat(trace_buf, print_buf, strlen(print_buf));
-    snprintf(print_buf,1024, "%s(",(cnst->sharing_policy)?"":"max");
-    trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-    strncat(trace_buf, print_buf, strlen(print_buf));
+    xbt_strbuff_append(buf, "\t");
+    xbt_strbuff_printf(buf, "%s(", (cnst->sharing_policy)?"":"max");
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
-      snprintf(print_buf,1024, "%f.'%d'(%f) %s ", elem->value,
+      xbt_strbuff_printf(buf, "%f.'%d'(%f) %s ", elem->value,
               elem->variable->id_int, elem->variable->value,(cnst->sharing_policy)?"+":",");
-      trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-      strncat(trace_buf, print_buf, strlen(print_buf));
       if(cnst->sharing_policy)
         sum += elem->value * elem->variable->value;
       else 
@@ -678,29 +666,23 @@ void lmm_print(lmm_system_t sys)
     elem_list = &(cnst->disabled_element_set);
     xbt_swag_foreach(_elem, elem_list) {
       elem = (lmm_element_t)_elem;
-      snprintf(print_buf,1024, "%f.'%d'(%f) %s ", elem->value,
+      xbt_strbuff_printf(buf, "%f.'%d'(%f) %s ", elem->value,
               elem->variable->id_int, elem->variable->value,(cnst->sharing_policy)?"+":",");
-      trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-      strncat(trace_buf, print_buf, strlen(print_buf));
       if(cnst->sharing_policy)
         sum += elem->value * elem->variable->value;
       else 
         sum = MAX(sum,elem->value * elem->variable->value);
     }
 
-    snprintf(print_buf,1024, "0) <= %f ('%d')", cnst->bound, cnst->id_int);
-    trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-    strncat(trace_buf, print_buf, strlen(print_buf));
+    xbt_strbuff_printf(buf, "0) <= %f ('%d')", cnst->bound, cnst->id_int);
 
     if (!cnst->sharing_policy) {
-      snprintf(print_buf,1024, " [MAX-Constraint]");
-      trace_buf = (char*) xbt_realloc(trace_buf, strlen(trace_buf) + strlen(print_buf) + 1);
-      strncat(trace_buf, print_buf, strlen(print_buf));
+      xbt_strbuff_printf(buf, " [MAX-Constraint]");
     }
-    XBT_DEBUG("%s", trace_buf);
-    trace_buf[0] = '\000';
-       xbt_assert(!double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision),
-               "Incorrect value (%f is not smaller than %f): %g", sum, cnst->bound, sum - cnst->bound);
+    XBT_DEBUG("%s", buf->data);
+    xbt_strbuff_clear(buf);
+    xbt_assert(!double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision),
+        "Incorrect value (%f is not smaller than %f): %g", sum, cnst->bound, sum - cnst->bound);
        //if(double_positive(sum - cnst->bound, cnst->bound*sg_maxmin_precision))
        //XBT_ERROR("Incorrect value (%f is not smaller than %f): %g",sum, cnst->bound, sum - cnst->bound);
   }
@@ -718,7 +700,7 @@ void lmm_print(lmm_system_t sys)
     }
   }
 
-  free(trace_buf);
+  xbt_strbuff_free(buf);
 }
 
 void lmm_solve(lmm_system_t sys)
