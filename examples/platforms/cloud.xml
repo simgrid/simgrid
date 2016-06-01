@@ -2,7 +2,7 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 <config id="General">
-<prop id="network/coordinates" value="yes"/>
+  <prop id="network/coordinates" value="yes"/>
 </config>
 
 <AS id="AS0" routing="Vivaldi">
