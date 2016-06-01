@@ -50,7 +50,7 @@ static int worker(int argc, char *argv[])
   while (1) {
     MSG_task_receive(&(task), "master_mailbox");
 
-    if (!strcmp(MSG_task_get_name(task), "finalize")) {
+    if (strcmp(MSG_task_get_name(task), "finalize") == 0) {
       MSG_task_destroy(task);
       break;
     }

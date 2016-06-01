@@ -31,21 +31,18 @@ int peer_execute_task(peer_t peer, msg_task_t task)
   message_t msg = MSG_task_get_data(task);
   
   XBT_DEBUG("Peer %s got message of type %d\n", peer->me, msg->type);
-  switch (msg->type) {
-    case MESSAGE_BUILD_CHAIN:
-      peer_init_chain(peer, msg);
-      break;
-    case MESSAGE_SEND_DATA:
-      xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
-      if (peer->next != NULL)
-        peer_forward_msg(peer, msg);
-      peer->pieces++;
-      peer->bytes += msg->data_length;
-      if (peer->pieces >= peer->total_pieces) {
-        XBT_DEBUG("%d pieces receieved", peer->pieces);
-        done = 1;
-      }
-      break;
+  if (msg->type == MESSAGE_BUILD_CHAIN)
+    peer_init_chain(peer, msg);
+  if (msg->type == MESSAGE_SEND_DATA){
+    xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
+    if (peer->next != NULL)
+      peer_forward_msg(peer, msg);
+    peer->pieces++;
+    peer->bytes += msg->data_length;
+    if (peer->pieces >= peer->total_pieces) {
+      XBT_DEBUG("%d pieces receieved", peer->pieces);
+      done = 1;
+    }
   }
 
   MSG_task_execute(task);
@@ -58,14 +55,13 @@ msg_error_t peer_wait_for_message(peer_t peer)
   msg_error_t status;
   msg_comm_t comm = NULL;
   msg_task_t task = NULL;
-  int idx = -1;
   int done = 0;
 
-  while (!done) {
+  while (done == 0) {
     comm = MSG_task_irecv(&task, peer->me);
     queue_pending_connection(comm, peer->pending_recvs);
-
-    if ((idx = MSG_comm_waitany(peer->pending_recvs)) != -1) {
+    int idx = MSG_comm_waitany(peer->pending_recvs);
+    if (idx != -1) {
       comm = xbt_dynar_get_as(peer->pending_recvs, idx, msg_comm_t);
       status = MSG_comm_get_status(comm);
       XBT_DEBUG("peer_wait_for_message: error code = %d", status);
@@ -141,17 +137,16 @@ void peer_print_stats(peer_t p, float elapsed_time)
 /** Peer function  */
 int peer(int argc, char *argv[])
 {
-  float start_time, end_time;
   peer_t p = xbt_new(s_peer_t, 1);
   msg_error_t status;
 
   XBT_DEBUG("peer");
 
   peer_init(p, argc, argv);
-  start_time = MSG_get_clock();
+  float start_time = MSG_get_clock();
   status = peer_wait_for_message(p);
   peer_shutdown(p);
-  end_time = MSG_get_clock();
+  float end_time = MSG_get_clock();
   peer_print_stats(p, end_time - start_time);
   peer_delete(p);
 

@@ -47,12 +47,13 @@ void answer_print(answer_t answer)
   */
 unsigned int answer_merge(answer_t destination, answer_t source)
 {
-  node_contact_t contact, contact_copy;
+  node_contact_t contact;
+  node_contact_t contact_copy;
   unsigned int cpt;
   unsigned int nb_added = 0;
   /* TODO: Check if same destination */
   xbt_dynar_foreach(source->nodes, cpt, contact) {
-    if (!answer_contains(destination, contact->id)) {
+    if (answer_contains(destination, contact->id) == 0) {
       contact_copy = node_contact_copy(contact);
       xbt_dynar_push(destination->nodes, &contact_copy);
       destination->size++;
@@ -109,7 +110,8 @@ void answer_trim(answer_t answer)
 void answer_add_bucket(bucket_t bucket, answer_t answer)
 {
   unsigned int cpt;
-  unsigned int id, distance;
+  unsigned int id;
+  unsigned int distance;
   node_contact_t contact;
   xbt_assert((bucket != NULL), "Provided a NULL bucket");
   xbt_assert((bucket->nodes != NULL), "Provided a bucket which nodes are NULL");

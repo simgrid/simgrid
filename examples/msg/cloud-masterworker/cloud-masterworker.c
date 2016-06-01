@@ -47,14 +47,11 @@ static int worker_fun(int argc, char *argv[])
     msg_task_t task = NULL;
 
     msg_error_t res = MSG_task_receive(&task, mbox);
-    if (res != MSG_OK) {
-      XBT_CRITICAL("MSG_task_get failed");
-      DIE_IMPOSSIBLE;
-    }
+    xbt_assert(res == MSG_OK, "MSG_task_get failed");
 
     XBT_INFO("%s received task(%s) from mailbox(%s)", pr_name, MSG_task_get_name(task), mbox);
 
-    if (!strcmp(MSG_task_get_name(task), "finalize")) {
+    if (strcmp(MSG_task_get_name(task), "finalize") == 0) {
       MSG_task_destroy(task);
       break;
     }
@@ -108,8 +105,7 @@ static int master_fun(int argc, char *argv[])
 
   XBT_INFO("# Suspend all VMs");
   xbt_dynar_foreach(vms, i, vm) {
-    const char *vm_name = MSG_host_get_name(vm);
-    XBT_INFO("suspend %s", vm_name);
+    XBT_INFO("suspend %s", MSG_host_get_name(vm));
     MSG_vm_suspend(vm);
   }
 
@@ -153,7 +149,7 @@ static int master_fun(int argc, char *argv[])
     MSG_vm_migrate(vm, worker_pm1);
   }
 
-  XBT_INFO("# Shutdown the half of worker processes gracefuly. The remaining half will be forcibly killed.");
+  XBT_INFO("# Shutdown the half of worker processes gracefully. The remaining half will be forcibly killed.");
   for (i = 0; i < nb_workers; i++) {
     char mbox[MAXMBOXLEN];
     snprintf(mbox, MAXMBOXLEN, "MBOX:WRK%02d", i);

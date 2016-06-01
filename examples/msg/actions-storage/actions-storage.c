@@ -111,7 +111,7 @@ int main(int argc, char *argv[]) {
   xbt_replay_action_register("read", action_read);
   xbt_replay_action_register("close", action_close);
 
-  if (!opened_files)
+  if (opened_files == NULL)
     opened_files = xbt_dict_new_homogeneous(NULL);
   /* Actually do the simulation using MSG_action_trace_run */
   res = MSG_action_trace_run(argv[3]);  // it's ok to pass a NULL argument here

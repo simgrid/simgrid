@@ -59,14 +59,11 @@ static int worker(int argc, char *argv[])
     int res = MSG_task_receive(&(task), mailbox);
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
 
-//  XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
-    if (!strcmp(MSG_task_get_name(task), "finalize")) {
+    if (strcmp(MSG_task_get_name(task), "finalize") == 0) {
       MSG_task_destroy(task);  /* - Exit if 'finalize' is received */
       break;
     }
-//    XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
     MSG_task_execute(task);    /*  - Otherwise, process the task */
-//    XBT_INFO("\"%s\" done", MSG_task_get_name(task));
     MSG_task_destroy(task);
     task = NULL;
   }

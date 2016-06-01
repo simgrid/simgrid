@@ -17,7 +17,8 @@ static int emigrant(int argc, char *argv[])
     MSG_task_receive(&(task), "master_mailbox");
     destination = (char*)MSG_task_get_data (task);
     MSG_task_destroy (task);
-    if (!destination) break; //there is no destination, die
+    if (destination == NULL)
+      break; //there is no destination, die
     MSG_process_migrate(MSG_process_self(), MSG_host_by_name(destination));
     MSG_process_sleep(2); // I am tired, have to sleep for 2 seconds
     free (destination);
@@ -47,7 +48,7 @@ static int policeman(int argc, char *argv[])
   unsigned int i;
   xbt_dynar_foreach(destinations, i, destination){
     task = MSG_task_create("task", 0, 0, NULL);
-    if (destination){
+    if (destination != NULL){
       MSG_task_set_data(task, xbt_strdup (destination));
     }
     MSG_task_set_category(task, "migration_order");
