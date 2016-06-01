@@ -78,8 +78,7 @@ int main(int argc, char *argv[])
   }
 
   //create a customized viva graph configuration file
-  FILE *fp = NULL;
-  fp = fopen ("viva_graph.plist", "w");
+  FILE *fp = fopen ("viva_graph.plist", "w");
   if (fp == NULL){
     return 1;
   }

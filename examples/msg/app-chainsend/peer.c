@@ -33,7 +33,7 @@ int peer_execute_task(peer_t peer, msg_task_t task)
   XBT_DEBUG("Peer %s got message of type %d\n", peer->me, msg->type);
   if (msg->type == MESSAGE_BUILD_CHAIN)
     peer_init_chain(peer, msg);
-  if (msg->type == MESSAGE_SEND_DATA){
+  else if (msg->type == MESSAGE_SEND_DATA) {
     xbt_assert(peer->init, "peer_execute_task() failed: got msg_type %d before initialization", msg->type);
     if (peer->next != NULL)
       peer_forward_msg(peer, msg);
