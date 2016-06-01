@@ -368,6 +368,7 @@ static void describe_model(char *result,int resultsize,
                            const char *name,
                            const char *description)
 {
+  result[0] = '\0';
   char *p = result;
   p += snprintf(result,resultsize-1, "%s. Possible values: %s", description,
             model_description[0].name ? model_description[0].name : "n/a");
