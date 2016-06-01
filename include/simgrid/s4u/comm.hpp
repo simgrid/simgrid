@@ -25,13 +25,13 @@ public:
   ~Comm() override;
 
 public:
-  /** Creates (but don't start) an async send to the mailbox #dest */
+  /** Creates (but don't start) an async send to the mailbox @p dest */
   static Comm &send_init(Mailbox &dest);
-  /** Creates and start an async send to the mailbox #dest */
+  /** Creates and start an async send to the mailbox @p dest */
   static Comm &send_async(Mailbox &dest, void *data, int simulatedByteAmount);
-    /** Creates (but don't start) an async recv onto the mailbox #from */
+    /** Creates (but don't start) an async recv onto the mailbox @p from */
   static Comm &recv_init(Mailbox &from);
-  /** Creates and start an async recv to the mailbox #from */
+  /** Creates and start an async recv to the mailbox @p from */
   static Comm &recv_async(Mailbox &from, void **data);
 
   void start() override;
