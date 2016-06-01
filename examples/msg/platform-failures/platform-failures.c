@@ -28,25 +28,30 @@ static int master(int argc, char *argv[])
     msg_task_t task = MSG_task_create("Task", task_comp_size, task_comm_size, xbt_new0(double, 1));
     *((double *) task->data) = MSG_get_clock();
 
-    msg_error_t a = MSG_task_send_with_timeout(task,mailbox,10.0);
-
-    if (a == MSG_OK) {
+    switch ( MSG_task_send_with_timeout(task,mailbox,10.0) ) {
+    case MSG_OK:
       XBT_INFO("Send completed");
-    } else if (a == MSG_HOST_FAILURE) {
+      break;
+
+    case MSG_HOST_FAILURE:
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       free(task->data);
       MSG_task_destroy(task);
       return 0;
-    } else if (a == MSG_TRANSFER_FAILURE) {
+
+    case MSG_TRANSFER_FAILURE:
       XBT_INFO("Mmh. Something went wrong with '%s'. Nevermind. Let's keep going!", mailbox);
       free(task->data);
       MSG_task_destroy(task);
-    } else if (a == MSG_TIMEOUT) {
+      break;
+
+    case MSG_TIMEOUT:
       XBT_INFO ("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox);
       free(task->data);
       MSG_task_destroy(task);
-    } else {
-      XBT_INFO("Hey ?! What's up ? ");
+      break;
+
+    default:
       xbt_die( "Unexpected behavior");
     }
   }
@@ -56,20 +61,29 @@ static int master(int argc, char *argv[])
     char mailbox[256];
     snprintf(mailbox, 255, "worker-%ld", i % workers_count);
     msg_task_t task = MSG_task_create("finalize", 0, 0, FINALIZE);
-    int a = MSG_task_send_with_timeout(task,mailbox,1.0);
-    if (a != MSG_OK){
-      MSG_task_destroy(task);
-    }
-    if (a == MSG_HOST_FAILURE) {
+
+    switch (MSG_task_send_with_timeout(task,mailbox,1.0)) {
+    case MSG_HOST_FAILURE:
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-      return 0;
-    } else if (a == MSG_TRANSFER_FAILURE) {
+      MSG_task_destroy(task);
+      break;
+
+    case MSG_TRANSFER_FAILURE:
       XBT_INFO("Mmh. Can't reach '%s'! Nevermind. Let's keep going!", mailbox);
-    } else if (a == MSG_TIMEOUT) {
+      MSG_task_destroy(task);
+      break;
+
+    case MSG_TIMEOUT:
       XBT_INFO("Mmh. Got timeouted while speaking to '%s'. Nevermind. Let's keep going!", mailbox);
-    } else if (a != MSG_OK){
-      XBT_INFO("Hey ?! What's up ? ");
-      xbt_die("Unexpected behavior with '%s': %d", mailbox, a);
+      MSG_task_destroy(task);
+      break;
+
+    case MSG_OK:
+      /* nothing */
+      break;
+
+    default:
+      xbt_die("Unexpected behavior with '%s'", mailbox);
     }
   }
 
@@ -88,9 +102,9 @@ static int worker(int argc, char *argv[])
 
   while (1) {
     double time1 = MSG_get_clock();
-    int a = MSG_task_receive( &(task), mailbox);
+    int retcode = MSG_task_receive( &(task), mailbox);
     double time2 = MSG_get_clock();
-    if (a == MSG_OK) {
+    if (retcode == MSG_OK) {
       XBT_INFO("Received \"%s\"", MSG_task_get_name(task));
       if (MSG_task_get_data(task) == FINALIZE) {
         MSG_task_destroy(task);
@@ -101,15 +115,13 @@ static int worker(int argc, char *argv[])
         time1 = *((double *) task->data);
       XBT_INFO("Communication time : \"%f\"", time2 - time1);
       XBT_INFO("Processing \"%s\"", MSG_task_get_name(task));
-      a = MSG_task_execute(task);
-      if (a == MSG_OK) {
+      retcode = MSG_task_execute(task);
+      if (retcode == MSG_OK) {
         XBT_INFO("\"%s\" done", MSG_task_get_name(task));
-        free(task->data);
         MSG_task_destroy(task);
         task = NULL;
-      } else if (a == MSG_HOST_FAILURE) {
+      } else if (retcode == MSG_HOST_FAILURE) {
         XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
-        free(task->data);
         MSG_task_destroy(task);
         task = NULL;
         return 0;
@@ -117,13 +129,12 @@ static int worker(int argc, char *argv[])
         XBT_INFO("Hey ?! What's up ? ");
         xbt_die("Unexpected behavior");
       }
-    } else if (a == MSG_HOST_FAILURE) {
+    } else if (retcode == MSG_HOST_FAILURE) {
       XBT_INFO("Gloups. The cpu on which I'm running just turned off!. See you!");
       return 0;
-    } else if (a == MSG_TRANSFER_FAILURE) {
+    } else if (retcode == MSG_TRANSFER_FAILURE) {
       XBT_INFO("Mmh. Something went wrong. Nevermind. Let's keep going!");
     } else {
-      XBT_INFO("Hey ?! What's up ? ");
       xbt_die("Unexpected behavior");
     }
   }
