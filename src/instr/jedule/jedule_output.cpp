@@ -15,6 +15,8 @@
 
 #if HAVE_JEDULE
 
+#define STR_BUF_SIZE 1024
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_out, jedule, "Logging specific to Jedule output");
 
 xbt_dynar_t jedule_event_list;
@@ -53,7 +55,7 @@ static void get_hierarchy_list(xbt_dynar_t hier_list, jed_simgrid_container_t co
 }
 
 static void get_hierarchy_string(jed_simgrid_container_t container, char *outbuf) {
-    char buf[1024];
+    char buf[STR_BUF_SIZE];
     xbt_dynar_t hier_list;
     unsigned int iter;
     int number;
@@ -67,11 +69,11 @@ static void get_hierarchy_string(jed_simgrid_container_t container, char *outbuf
 
     xbt_dynar_foreach(hier_list, iter, number) {
         if( iter != length-1 ) {
-            snprintf(buf, 1024, "%d.", number);
+            snprintf(buf, STR_BUF_SIZE, "%d.", number);
         } else {
-            snprintf(buf, 1024, "%d", number);
+            snprintf(buf, STR_BUF_SIZE, "%d", number);
         }
-        strncat(outbuf, buf, strlen(buf));
+        strncat(outbuf, buf, STR_BUF_SIZE-strlen(outbuf));
     }
 
     xbt_dynar_free(&hier_list);
@@ -92,7 +94,7 @@ static void print_resources(jed_simgrid_container_t resource_parent) {
   unsigned int res_nb;
   unsigned int i;
   char *res_name;
-    char resid[1024];
+    char resid[STR_BUF_SIZE];
   xbt_assert( resource_parent->resource_list != NULL );
 
   res_nb = xbt_dynar_length(resource_parent->resource_list);
@@ -151,7 +153,7 @@ static void print_event(jed_event_t event) {
   xbt_dynar_foreach(event->resource_subsets, i, subset) {
     int start = subset->start_idx;
     int end   = subset->start_idx + subset->nres - 1;
-    char resid[1024];
+    char resid[STR_BUF_SIZE];
 
     get_hierarchy_string(subset->parent, resid);
     fprintf(jed_file, "        <select resources=\"");
