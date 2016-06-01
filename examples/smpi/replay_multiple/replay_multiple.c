@@ -50,6 +50,8 @@ int main(int argc, char *argv[]){
     xbt_free(line_char);
   }
 
+  fclose(fp);
+
   MSG_launch_application(argv[3]);
   SMPI_init();
 

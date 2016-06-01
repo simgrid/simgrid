@@ -127,12 +127,13 @@ static int verify(char *bmname,double rnm2){
 }
 
 static int ipowMod(int a,long long int n,int md){
-  int seed=1,q=a,r=1;
+  int seed=1;
+  int q=a;
+  int r=1;
   int exp = n;
   if(n<0){
     fprintf(stderr,"ipowMod: exponent must be nonnegative exp=%lld\n",n);
     exp=-n; /* temp fix */
-    /*  return 1; */
   }
   if(md<=0){
     fprintf(stderr,"ipowMod: module must be positive mod=%d",md);
@@ -160,14 +161,15 @@ static DGraph *buildSH(const char cls){
 /* Nodes of the graph must be topologically sorted to avoid MPI deadlock. */
   DGraph *dg;
   unsigned int numSources=num_sources; /* must be power of 2 */
-  int numOfLayers=0;
+  unsigned int numOfLayers=0;
   unsigned int tmpS=numSources>>1;
   int firstLayerNode=0;
   DGArc *ar=NULL;
   DGNode *nd=NULL;
   unsigned int mask=0x0;
   int ndid=0,ndoff=0;
-  unsigned int i=0,j=0;
+  unsigned int i=0;
+  unsigned int j=0;
   char nm[BLOCK_SIZE];
 
   snprintf(nm,BLOCK_SIZE,"DT_SH.%c",cls);
@@ -241,7 +243,8 @@ static DGraph *buildWH(const char cls){
   numPrevLayerNodes=numLayerNodes;
   while(numLayerNodes>maxInDeg){
     numLayerNodes=numLayerNodes/maxInDeg;
-    if(numLayerNodes*maxInDeg<numPrevLayerNodes)numLayerNodes++;
+    if(numLayerNodes*maxInDeg<numPrevLayerNodes)
+      numLayerNodes++;
     for(i=0;i<numLayerNodes;i++){
       snprintf(nm,BLOCK_SIZE,"Comparator.%d",totComparators);
       totComparators++;
@@ -249,7 +252,8 @@ static DGraph *buildWH(const char cls){
       id=AttachNode(dg,nd);
       for(j=0;j<maxInDeg;j++){
         sid=i*maxInDeg+j;
-        if(sid>=numPrevLayerNodes) break;
+        if(sid>=numPrevLayerNodes)
+          break;
         snd=dg->node[firstLayerNode+sid];
         ar=newArc(dg->node[id],snd);
         AttachArc(dg,ar);
@@ -299,7 +303,8 @@ static DGraph *buildBH(const char cls){
   }
   while(numLayerNodes>maxInDeg){
     numLayerNodes=numLayerNodes/maxInDeg;
-    if(numLayerNodes*maxInDeg<numPrevLayerNodes)numLayerNodes++;
+    if(numLayerNodes*maxInDeg<numPrevLayerNodes)
+      numLayerNodes++;
     for(i=0;i<numLayerNodes;i++){
       snprintf(nm,BLOCK_SIZE,"Comparator.%d",totComparators);
       totComparators++;
@@ -307,7 +312,8 @@ static DGraph *buildBH(const char cls){
       id=AttachNode(dg,nd);
       for(j=0;j<maxInDeg;j++){
         sid=i*maxInDeg+j;
-        if(sid>=numPrevLayerNodes) break;
+        if(sid>=numPrevLayerNodes)
+          break;
         snd=dg->node[firstLayerNode+sid];
         ar=newArc(snd,dg->node[id]);
         AttachArc(dg,ar);
@@ -476,16 +482,18 @@ static int SendResults(DGraph *dg,DGNode *nd,Arr *feat){
   int i=0,tag=0;
   DGArc *ar=NULL;
   DGNode *head=NULL;
-  if(!feat) return 0;
+  if(feat == 0)
+    return 0;
   TRACE_smpi_set_category ("SendResults");
   for(i=0;i<nd->outDegree;i++){
     ar=nd->outArc[i];
-    if(ar->tail!=nd) continue;
-    head=ar->head;
-    tag=ar->id;
-    if(head->address!=nd->address){
-      MPI_Send(&feat->len,1,MPI_INT,head->address,tag,MPI_COMM_WORLD);
-      MPI_Send(feat->val,feat->len,MPI_DOUBLE,head->address,tag,MPI_COMM_WORLD);
+    if(ar->tail ==nd){
+      head=ar->head;
+      tag=ar->id;
+      if(head->address!=nd->address){
+        MPI_Send(&feat->len,1,MPI_INT,head->address,tag,MPI_COMM_WORLD);
+        MPI_Send(feat->val,feat->len,MPI_DOUBLE,head->address,tag,MPI_COMM_WORLD);
+      }
     }
   }
   TRACE_smpi_set_category (NULL);
@@ -503,25 +511,27 @@ static Arr* CombineStreams(DGraph *dg,DGNode *nd){
   if(nd->inDegree==0) return NULL;
   for(i=0;i<nd->inDegree;i++){
     ar=nd->inArc[i];
-    if(ar->head!=nd) continue;
-    tail=ar->tail;
-    if(tail->address!=nd->address){
-      len=0;
-      tag=ar->id;
-      MPI_Recv(&len,1,MPI_INT,tail->address,tag,MPI_COMM_WORLD,&status);
-      feat=newArr(len);
-      MPI_Recv(feat->val,feat->len,MPI_DOUBLE,tail->address,tag,MPI_COMM_WORLD,&status);
-      resfeat=WindowFilter(resfeat,feat,nd->id);
-      free(feat);//SMPI_SHARED_FREE(feat);
-    }else{
-      featp=(Arr *)tail->feat;
-      feat=newArr(featp->len);
-      memcpy(feat->val,featp->val,featp->len*sizeof(double));
-      resfeat=WindowFilter(resfeat,feat,nd->id);
-      free(feat);//SMPI_SHARED_FREE(feat);
+    if(ar->head == nd){
+      tail=ar->tail;
+      if(tail->address!=nd->address){
+        len=0;
+        tag=ar->id;
+        MPI_Recv(&len,1,MPI_INT,tail->address,tag,MPI_COMM_WORLD,&status);
+        feat=newArr(len);
+        MPI_Recv(feat->val,feat->len,MPI_DOUBLE,tail->address,tag,MPI_COMM_WORLD,&status);
+        resfeat=WindowFilter(resfeat,feat,nd->id);
+        free(feat);//SMPI_SHARED_FREE(feat);
+      }else{
+        featp=(Arr *)tail->feat;
+        feat=newArr(featp->len);
+        memcpy(feat->val,featp->val,featp->len*sizeof(double));
+        resfeat=WindowFilter(resfeat,feat,nd->id);
+        free(feat);//SMPI_SHARED_FREE(feat);
+      }
     }
   }
-  for(i=0;i<resfeat->len;i++) resfeat->val[i]=((int)resfeat->val[i])/nd->inDegree;
+  for(i=0;i<resfeat->len;i++)
+    resfeat->val[i]=((int)resfeat->val[i])/nd->inDegree;
   nd->feat=resfeat;
   return nd->feat;
 }
@@ -618,7 +628,7 @@ static int ProcessNodes(DGraph *dg,int me){
 int main(int argc,char **argv ){
   int my_rank,comm_size;
   int i;
-  DGraph *dg=NULL;
+  DGraph *dg = NULL;
   int verified=0, featnum=0;
   double bytes_sent=2.0,tot_time=0.0;
 
@@ -662,12 +672,12 @@ int main(int argc,char **argv ){
     dg=buildSH(class);
   }
 
-  if(timer_on && dg->numNodes+1>timers_tot){
+  if(timer_on != 0 && dg && dg->numNodes+1>timers_tot){
     timer_on=0;
     if(my_rank==0)
     fprintf(stderr,"Not enough timers. Node timeing is off. \n");
   }
-  if(dg->numNodes>comm_size){
+  if(dg && dg->numNodes>comm_size){
     if(my_rank==0){
     fprintf(stderr,"**  The number of MPI processes should not be less than \n");
     fprintf(stderr,"**  the number of nodes in the graph\n");
