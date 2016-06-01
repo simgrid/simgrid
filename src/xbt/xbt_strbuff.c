@@ -12,12 +12,14 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(strbuff, xbt, "String buffers");
 
+/** @brief Remove any content from the buffer */
 inline void xbt_strbuff_empty(xbt_strbuff_t b)
 {
   b->used = 0;
   b->data[0] = '\0';
 }
 
+/** @brief Constructor */
 xbt_strbuff_t xbt_strbuff_new(void)
 {
   xbt_strbuff_t res = xbt_malloc(sizeof(s_xbt_strbuff_t));
@@ -54,6 +56,7 @@ inline void xbt_strbuff_free(xbt_strbuff_t b)
   }
 }
 
+/** @brief Adds some content at the end of the buffer */
 void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
 {
   int addlen;

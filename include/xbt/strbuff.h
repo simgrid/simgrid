@@ -17,7 +17,18 @@
 
 SG_BEGIN_DECL()
 
-/** Buffer code **/
+/** @defgroup xbt_strbuff String buffers 
+ *  @ingroup XBT_adt
+ * 
+ *  This data container is very similar to the Java StringBuffer: 
+ *  that's a string to which you can add content with a lesser performance 
+ *  penalty than if you recreate a new string from scratch. Once done building 
+ *  your string, you must retrieve the content and free its container.
+ * 
+ *  @{
+ */
+
+/** @brief Buffer data container **/
 struct xbt_strbuff {
   char *data;
   int used, size;
@@ -35,5 +46,6 @@ XBT_PUBLIC(void) xbt_strbuff_chomp(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_trim(xbt_strbuff_t b);
 XBT_PUBLIC(void) xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns);
 
+/** @} */
 SG_END_DECL()
 #endif
