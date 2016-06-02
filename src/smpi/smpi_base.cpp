@@ -82,6 +82,8 @@ xbt_dynar_t smpi_ois_values = NULL;
 
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
+static simgrid::config::Flag<double> smpi_init_sleep(
+  "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
 static simgrid::config::Flag<double> smpi_iprobe_sleep(
   "smpi/iprobe", "Minimum time to inject inside a call to MPI_Iprobe", 1e-4);
 static simgrid::config::Flag<double> smpi_test_sleep(
@@ -216,6 +218,11 @@ static double smpi_or(double size)
   XBT_DEBUG("or : %f > %ld return %f", size, fact.factor, current);
 
   return current;
+}
+
+void smpi_mpi_init() {
+  if(smpi_init_sleep > 0) 
+    simcall_process_sleep(smpi_init_sleep);
 }
 
 double smpi_mpi_wtime(){
