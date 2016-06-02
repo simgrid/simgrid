@@ -112,7 +112,7 @@ public final class NativeLib {
 		try {
 			// We must write the lib onto the disk before loading it -- stupid operating systems
 			if (tempDir == null) {
-				tempDir = Files.createTempDirectory("simgrid-java");
+				tempDir = Files.createTempDirectory("simgrid-java-");
 				// don't leak the files on disk, but remove it on JVM shutdown
 				Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(tempDir.toFile())));
 			}
@@ -143,11 +143,13 @@ public final class NativeLib {
 		@Override
 		public void run() {
 			try {
-			    for (File f : dir.listFiles())
-			        f.delete();
-				dir.delete();
+				for (File f : dir.listFiles())
+					if (! f.delete() )
+						System.err.println("Unable to clean temporary file "+f.getAbsolutePath()+" during shutdown.");
+			    if (! dir.delete() )
+					System.err.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");			    	
 			} catch(Exception e) {
-				System.out.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");
+				System.err.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
 				e.printStackTrace();
 			}
 		}    
