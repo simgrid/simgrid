@@ -898,6 +898,13 @@ uses naive version of collective operations). Each collective operation can be m
 The behavior and motivation for this configuration option is identical with \a smpi/test, see
 Section \ref options_model_smpi_test for details.
 
+\subsection options_model_smpi_init smpi/init: Inject constant times for calls to MPI_Init
+
+\b Default value: 0
+
+The behavior for this configuration option is identical with \a smpi/test, see
+Section \ref options_model_smpi_test for details.
+
 \subsection options_model_smpi_ois smpi/ois: Inject constant times for asynchronous send operations
 
 This configuration option works exactly as \a smpi/os, see Section \ref options_model_smpi_os.
@@ -1150,6 +1157,7 @@ silently overflow on other parts of the memory.
 - \c smpi/lat-factor: \ref options_model_smpi_lat_factor
 - \c smpi/IB-penalty-factors: \ref options_model_network_coefs
 - \c smpi/iprobe: \ref options_model_smpi_iprobe
+- \c smpi/init: \ref options_model_smpi_init
 - \c smpi/ois: \ref options_model_smpi_ois
 - \c smpi/or: \ref options_model_smpi_or
 - \c smpi/os: \ref options_model_smpi_os
