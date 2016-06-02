@@ -32,7 +32,7 @@ public class Main {
 
     /* construct the platform and deploy the application */
     Msg.createEnvironment(args[0]);
-    new cloud.migration.Test("host0","Test").start();
+    new cloud.migration.Test("PM0","Test").start();
     Msg.run();
   }
 }

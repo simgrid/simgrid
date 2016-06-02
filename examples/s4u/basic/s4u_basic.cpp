@@ -33,9 +33,9 @@ public:
 
 int main(int argc, char **argv) {
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
-  e->loadPlatform("../../platforms/two_hosts_platform.xml");
-  new simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("host0"), Worker());
-  new simgrid::s4u::Actor("master", simgrid::s4u::Host::by_name("host1"), 0, Master());
+  e->loadPlatform("../../platforms/two_hosts.xml");
+  new simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Tremblay"), Worker());
+  new simgrid::s4u::Actor("master", simgrid::s4u::Host::by_name("Jupiter"), 0, Master());
   e->run();
   return 0;
 }

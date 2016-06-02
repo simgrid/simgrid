@@ -1088,7 +1088,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/torus_cluster.xml
   examples/platforms/two_clusters.xml
   examples/platforms/two_hosts.xml
-  examples/platforms/two_hosts_platform.xml
   examples/platforms/two_hosts_platform_shared.xml
   examples/platforms/two_hosts_platform_with_availability.xml
   examples/platforms/two_hosts_platform_with_availability_included.xml
