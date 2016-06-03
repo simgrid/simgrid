@@ -144,7 +144,7 @@ private:
 };
 
 template<>
-class Result<void> : public Result<nullptr_t>
+class Result<void> : public Result<std::nullptr_t>
 {
 public:
   void set_value()
@@ -153,7 +153,7 @@ public:
   }
   void get()
   {
-    Result<nullptr_t>::get();
+    Result<std::nullptr_t>::get();
   }
 };
 
