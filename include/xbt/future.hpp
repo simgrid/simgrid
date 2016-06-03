@@ -79,7 +79,7 @@ public:
   }
   void reset()
   {
-    switch(status_) {
+    switch (status_) {
       case ResultStatus::invalid:
         break;
       case ResultStatus::value:
@@ -116,7 +116,7 @@ public:
    **/
   T get()
   {
-    switch(status_) {
+    switch (status_) {
       case ResultStatus::invalid:
       default:
         throw std::logic_error("Invalid result");
