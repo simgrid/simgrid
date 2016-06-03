@@ -1211,45 +1211,46 @@ int PMPI_Send(void *buf, int count, MPI_Datatype datatype, int dst, int tag, MPI
 int PMPI_Ssend(void* buf, int count, MPI_Datatype datatype, int dst, int tag, MPI_Comm comm) {
   int retval = 0;
 
-   smpi_bench_end();
+  smpi_bench_end();
 
-   if (comm == MPI_COMM_NULL) {
-     retval = MPI_ERR_COMM;
-   } else if (dst == MPI_PROC_NULL) {
-     retval = MPI_SUCCESS;
-   } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
-     retval = MPI_ERR_RANK;
-   } else if ((count < 0) || (buf==NULL && count > 0)) {
-     retval = MPI_ERR_COUNT;
-   } else if (!is_datatype_valid(datatype)){
-     retval = MPI_ERR_TYPE;
-   } else if(tag<0 && tag !=  MPI_ANY_TAG){
-     retval = MPI_ERR_TAG;
-   } else {
+  if (comm == MPI_COMM_NULL) {
+    retval = MPI_ERR_COMM;
+  } else if (dst == MPI_PROC_NULL) {
+    retval = MPI_SUCCESS;
+  } else if (dst >= smpi_group_size(smpi_comm_group(comm)) || dst <0){
+    retval = MPI_ERR_RANK;
+  } else if ((count < 0) || (buf==NULL && count > 0)) {
+    retval = MPI_ERR_COUNT;
+  } else if (!is_datatype_valid(datatype)){
+    retval = MPI_ERR_TYPE;
+  } else if(tag<0 && tag !=  MPI_ANY_TAG){
+    retval = MPI_ERR_TAG;
+  } else {
+    int rank               = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
+    int dst_traced         = smpi_group_index(smpi_comm_group(comm), dst);
+    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
+    extra->type            = TRACING_SSEND;
+    extra->src             = rank;
+    extra->dst             = dst_traced;
+    int known              = 0;
+    extra->datatype1       = encode_datatype(datatype, &known);
+    int dt_size_send       = 1;
+    if(known == 0) {
+      dt_size_send = smpi_datatype_size(datatype);
+    }
+    extra->send_size = count*dt_size_send;
+    TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
+    TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));
+  
+    smpi_mpi_ssend(buf, count, datatype, dst, tag, comm);
+    retval = MPI_SUCCESS;
+  
+    TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
+  }
 
-   int rank = comm != MPI_COMM_NULL ? smpi_process_index() : -1;
-   int dst_traced = smpi_group_index(smpi_comm_group(comm), dst);
-   instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
-   extra->type = TRACING_SSEND;
-   extra->src = rank;
-   extra->dst = dst_traced;
-   int known=0;
-   extra->datatype1 = encode_datatype(datatype, &known);
-   int dt_size_send = 1;
-   if(known==0)
-     dt_size_send = smpi_datatype_size(datatype);
-   extra->send_size = count*dt_size_send;
-   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
-   TRACE_smpi_send(rank, rank, dst_traced,count*smpi_datatype_size(datatype));
-
-     smpi_mpi_ssend(buf, count, datatype, dst, tag, comm);
-     retval = MPI_SUCCESS;
-
-   TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
-   }
-
-   smpi_bench_begin();
-   return retval;}
+  smpi_bench_begin();
+  return retval;
+}
 
 int PMPI_Sendrecv(void *sendbuf, int sendcount, MPI_Datatype sendtype, int dst, int sendtag, void *recvbuf,
                  int recvcount, MPI_Datatype recvtype, int src, int recvtag, MPI_Comm comm, MPI_Status * status)
