@@ -24,6 +24,12 @@
 
 XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
 
+template<class F> inline
+void simcall_run_kernel(F& f)
+{
+  simcall_run_kernel(std::function<void()>(std::ref(f)));
+}
+
 namespace simgrid {
 namespace simix {
 
