@@ -171,7 +171,14 @@ public:
   }
 };
 
-/** Fulfill a promise by executing a given code */
+/** Execute some code and set a promise or result accordingly
+ *
+ *  We might need this when working with generic code because
+ *  the trivial implementation does not work with void (before C++1z).
+ *
+ *  @param    code  What we want to do
+ *  @param  promise Where to want to store the result
+ */
 template<class R, class F>
 auto fulfillPromise(R& promise, F&& code)
 -> decltype(promise.set_value(code()))
@@ -184,11 +191,6 @@ auto fulfillPromise(R& promise, F&& code)
   }
 }
 
-/** Fulfill a promise by executing a given code
- *
- *  This is a special version for `std::promise<void>` because the default
- *  version does not compile in this case.
- */
 template<class P, class F>
 auto fulfillPromise(P& promise, F&& code)
 -> decltype(promise.set_value())
