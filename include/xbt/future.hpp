@@ -118,6 +118,7 @@ public:
   {
     switch(status_) {
       case ResultStatus::invalid:
+      default:
         throw std::logic_error("Invalid result");
       case ResultStatus::value: {
         T value = std::move(value_);
