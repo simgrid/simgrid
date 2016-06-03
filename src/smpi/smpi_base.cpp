@@ -138,7 +138,7 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 
 static double smpi_os(double size)
 {
-  if (smpi_os_values == NULL) {
+  if (smpi_os_values == nullptr) {
     smpi_os_values = parse_factor(xbt_cfg_get_string("smpi/os"));
     smpi_register_static(smpi_os_values, xbt_dynar_free_voidp);
   }
@@ -167,7 +167,7 @@ static double smpi_os(double size)
 
 static double smpi_ois(double size)
 {
-  if (smpi_ois_values == NULL) {
+  if (smpi_ois_values == nullptr) {
     smpi_ois_values = parse_factor(xbt_cfg_get_string("smpi/ois"));
     smpi_register_static(smpi_ois_values, xbt_dynar_free_voidp);
   }
@@ -194,7 +194,7 @@ static double smpi_ois(double size)
 
 static double smpi_or(double size)
 {
-  if (smpi_or_values == NULL) {
+  if (smpi_or_values == nullptr) {
     smpi_or_values = parse_factor(xbt_cfg_get_string("smpi/or"));
     smpi_register_static(smpi_or_values, xbt_dynar_free_voidp);
   }
@@ -371,11 +371,11 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %p (in case of SSEND)?", mailbox);
       smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
     
-      if(action ==NULL){
+      if(action == nullptr){
         mailbox = smpi_process_mailbox();
         XBT_DEBUG("No, nothing in the small mailbox test the other one : %p", mailbox);
         action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
-        if(action ==NULL){
+        if(action == nullptr){
           XBT_DEBUG("Still nothing, switch back to the small mailbox : %p", mailbox);
           mailbox = smpi_process_mailbox_small();
           }
@@ -387,7 +387,7 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
     smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
     
-      if(action ==NULL){
+      if(action == nullptr){
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
         mailbox = smpi_process_mailbox();
       }else{
@@ -446,7 +446,7 @@ void smpi_mpi_start(MPI_Request request)
       mailbox = smpi_process_remote_mailbox(receiver);
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
       smx_synchro_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
-      if(action ==NULL){
+      if(action == nullptr){
        if ((request->flags & SSEND) == 0){
          mailbox = smpi_process_remote_mailbox_small(receiver);
          XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %p", mailbox);
@@ -454,7 +454,7 @@ void smpi_mpi_start(MPI_Request request)
          mailbox = smpi_process_remote_mailbox_small(receiver);
          XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %p?", mailbox);
          action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
-         if(action ==NULL){
+         if(action == nullptr){
            XBT_DEBUG("No, we are first, send to large mailbox");
            mailbox = smpi_process_remote_mailbox(receiver);
          }
@@ -501,7 +501,7 @@ void smpi_mpi_start(MPI_Request request)
                          request->detached);
     XBT_DEBUG("send simcall posted");
 
-    /* FIXME: detached sends are not traceable (request->action == NULL) */
+    /* FIXME: detached sends are not traceable (request->action == nullptr) */
     if (request->action)
       simcall_set_category(request->action, TRACE_internal_smpi_get_category());
 
@@ -512,7 +512,7 @@ void smpi_mpi_start(MPI_Request request)
 
 void smpi_mpi_startall(int count, MPI_Request * requests)
 {
-  if(requests==NULL) 
+  if(requests== nullptr) 
     return;
 
   for(int i = 0; i < count; i++) {
@@ -862,7 +862,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
       request->action = simcall_comm_iprobe(mailbox, 0, request->src, request->tag, &match_recv, static_cast<void*>(request));
   }
 
-  if (request->action == NULL){
+  if (request->action == nullptr){
     mailbox = smpi_process_mailbox();
     XBT_DEBUG("trying to probe the other mailbox");
     request->action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
