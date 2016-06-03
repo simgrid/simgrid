@@ -24,6 +24,12 @@
 
 XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
 
+template<class F> inline
+void simcall_run_kernel(F& f)
+{
+  simcall_run_kernel(std::function<void()>(std::ref(f)));
+}
+
 namespace simgrid {
 namespace simix {
 
@@ -41,16 +47,16 @@ typename std::result_of<F()>::type kernel(F&& code)
   if (SIMIX_is_maestro())
     return std::forward<F>(code)();
 
-  // If we are in the application, pass the code to the maestro which is
+  // If we are in the application, pass the code to the maestro which
   // executes it for us and reports the result. We use a std::future which
   // conveniently handles the success/failure value for us.
   typedef typename std::result_of<F()>::type R;
-  std::promise<R> promise;
+  simgrid::xbt::Result<R> result;
   simcall_run_kernel([&]{
     xbt_assert(SIMIX_is_maestro(), "Not in maestro");
-    simgrid::xbt::fulfillPromise(promise, std::forward<F>(code));
+    simgrid::xbt::fulfillPromise(result, std::forward<F>(code));
   });
-  return promise.get_future().get();
+  return result.get();
 }
 
 class Context;
