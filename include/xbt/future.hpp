@@ -73,7 +73,7 @@ public:
     return *this;
   }
 
-  bool is_valid()
+  bool is_valid() const
   {
     return status_ != ResultStatus::invalid;
   }
