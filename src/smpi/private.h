@@ -193,6 +193,7 @@ XBT_PRIVATE int smpi_enabled(void);
 XBT_PRIVATE void smpi_global_init(void);
 XBT_PRIVATE void smpi_global_destroy(void);
 XBT_PRIVATE double smpi_mpi_wtime(void);
+XBT_PRIVATE void smpi_mpi_init(void);
 
 XBT_PRIVATE bool is_datatype_valid(MPI_Datatype datatype);
 

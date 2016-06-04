@@ -24,12 +24,12 @@ static void __SD_task_remove_dependencies(SD_task_t task)
 {
   /* we must destroy the dependencies carefuly (with SD_dependency_remove) because each one is stored twice */
   SD_dependency_t dependency;
-  while (!xbt_dynar_is_empty(task->tasks_before)) {
+  while (xbt_dynar_is_empty(task->tasks_before) == 0) {
     xbt_dynar_get_cpy(task->tasks_before, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }
 
-  while (!xbt_dynar_is_empty(task->tasks_after)) {
+  while (xbt_dynar_is_empty(task->tasks_after) == 0) {
     xbt_dynar_get_cpy(task->tasks_after, 0, &dependency);
     SD_task_dependency_remove(dependency->src, dependency->dst);
   }
@@ -43,10 +43,11 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
 
   xbt_free(task->flops_amount);
   xbt_free(task->bytes_amount);
-  task->flops_amount = task->bytes_amount = NULL;
+  task->flops_amount = NULL;
+  task->bytes_amount = NULL;
 }
 
-void* SD_task_new_f(void)
+void* SD_task_new_f()
 {
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
   task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
@@ -57,7 +58,7 @@ void* SD_task_new_f(void)
 
 void SD_task_recycle_f(void *t)
 {
-  SD_task_t task = (SD_task_t) t;
+  SD_task_t task = static_cast<SD_task_t>(t);
 
   /* Reset the content */
   task->kind = SD_TASK_NOT_TYPED;
@@ -87,7 +88,7 @@ void SD_task_recycle_f(void *t)
 
 void SD_task_free_f(void *t)
 {
-  SD_task_t task = (SD_task_t)t;
+  SD_task_t task = static_cast<SD_task_t>(t);
 
   xbt_dynar_free(&task->tasks_before);
   xbt_dynar_free(&task->tasks_after);
@@ -105,7 +106,7 @@ void SD_task_free_f(void *t)
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount)
 {
-  SD_task_t task = (SD_task_t)xbt_mallocator_get(sd_global->task_mallocator);
+  SD_task_t task = static_cast<SD_task_t>(xbt_mallocator_get(sd_global->task_mallocator));
 
   /* general information */
   task->data = data;            /* user data */
@@ -486,7 +487,6 @@ double SD_task_get_alpha(SD_task_t task)
   return task->alpha;
 }
 
-
 /**
  * \brief Returns the remaining amount work to do till the completion of a task
  *
@@ -551,13 +551,13 @@ void SD_task_dump(SD_task_t task)
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
     XBT_INFO("  - alpha: %.2f", task->alpha);
   XBT_INFO("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
-  if (!xbt_dynar_is_empty(task->tasks_before)) {
+  if (xbt_dynar_is_empty(task->tasks_before) == 0) {
     XBT_INFO("  - pre-dependencies:");
     xbt_dynar_foreach(task->tasks_before, counter, dependency) {
       XBT_INFO("    %s", SD_task_get_name(dependency->src));
     }
   }
-  if (!xbt_dynar_is_empty(task->tasks_after)) {
+  if (xbt_dynar_is_empty(task->tasks_after)== 0) {
     XBT_INFO("  - post-dependencies:");
     xbt_dynar_foreach(task->tasks_after, counter, dependency) {
       XBT_INFO("    %s", SD_task_get_name(dependency->dst));
@@ -570,7 +570,7 @@ void SD_task_dotty(SD_task_t task, void *out)
 {
   unsigned int counter;
   SD_dependency_t dependency;
-  FILE *fout = (FILE*)out;
+  FILE *fout = static_cast<FILE*>(out);
   fprintf(fout, "  T%p [label=\"%.20s\"", task, task->name);
   switch (task->kind) {
   case SD_TASK_COMM_E2E:
@@ -604,7 +604,7 @@ void SD_task_dotty(SD_task_t task, void *out)
  */
 void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst)
 {
-  int found = 0;
+  bool found = false;
   SD_dependency_t dependency;
 
   unsigned long length = xbt_dynar_length(src->tasks_after);
@@ -713,7 +713,7 @@ int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
 void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 {
   unsigned long length;
-  int found = 0;
+  bool found = false;
   SD_dependency_t dependency;
 
   /* remove the dependency from src->tasks_after */
@@ -723,7 +723,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
     xbt_dynar_get_cpy(src->tasks_after, i, &dependency);
     if (dependency->dst == dst) {
       xbt_dynar_remove_at(src->tasks_after, i, NULL);
-      found = 1;
+      found = true;
     }
   }
   if (!found)
@@ -732,7 +732,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 
   /* remove the dependency from dst->tasks_before */
   length = xbt_dynar_length(dst->tasks_before);
-  found = 0;
+  found = false;
 
   for (unsigned long i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dst->tasks_before, i, &dependency);
@@ -741,7 +741,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
       __SD_task_dependency_destroy(dependency);
       dst->unsatisfied_dependencies--;
       dst->is_not_ready--;
-      found = 1;
+      found = true;
     }
   }
   /* should never happen... */
@@ -770,7 +770,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
  */
 void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
 {
-  int found = 0;
+  bool found = false;
   SD_dependency_t dependency;
 
   unsigned long length = xbt_dynar_length(src->tasks_after);
@@ -891,7 +891,7 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * workstat
   task->rate = rate;
 
   if (flops_amount) {
-    task->flops_amount = (double*)xbt_realloc(task->flops_amount, sizeof(double) * host_count);
+    task->flops_amount = static_cast<double*>(xbt_realloc(task->flops_amount, sizeof(double) * host_count));
     memcpy(task->flops_amount, flops_amount, sizeof(double) * host_count);
   } else {
     xbt_free(task->flops_amount);
@@ -900,14 +900,14 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * workstat
 
   int communication_nb = host_count * host_count;
   if (bytes_amount) {
-    task->bytes_amount = (double*)xbt_realloc(task->bytes_amount, sizeof(double) * communication_nb);
+    task->bytes_amount = static_cast<double*>(xbt_realloc(task->bytes_amount, sizeof(double) * communication_nb));
     memcpy(task->bytes_amount, bytes_amount, sizeof(double) * communication_nb);
   } else {
     xbt_free(task->bytes_amount);
     task->bytes_amount = NULL;
   }
 
-  task->host_list = (sg_host_t*) xbt_realloc(task->host_list, sizeof(sg_host_t) * host_count);
+  task->host_list =  static_cast<sg_host_t*>(xbt_realloc(task->host_list, sizeof(sg_host_t) * host_count));
   memcpy(task->host_list, workstation_list, sizeof(sg_host_t) * host_count);
 
   SD_task_do_schedule(task);
@@ -1065,6 +1065,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   switch (task->kind) {
   case SD_TASK_COMP_PAR_AMDAHL:
     SD_task_distribute_comp_amdahl(task, count);
+    /* no break */
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMP_SEQ:
     xbt_assert(task->host_count == count, "Got %d locations, but were expecting %d locations", count,task->host_count);

@@ -15,38 +15,38 @@ import org.simgrid.msg.Process;
 // node or on the DST node. 
 public class TestHostOnOff extends Process{
 
-  public static Host host0 = null;
-  public static Host host1 = null;
-  public static Host host2 = null;
+  protected Host host0 = null;
+  protected Host host1 = null;
+  protected Host host2 = null;
 
-  TestHostOnOff(Host host, String name, String[] args) throws NativeException {
-    super(host, name, args);
+  TestHostOnOff(String hostname, String name) throws  HostNotFoundException, NativeException {
+    super(hostname, name);
   }
 
   public void main(String[] strings) throws MsgException {
     /* get hosts 1 and 2*/
     try {
-      host0 = Host.getByName("host0");
-      host1 = Host.getByName("host1");
-      host1 = Host.getByName("host2");
+      host0 = Host.getByName("PM0");
+      host1 = Host.getByName("PM1");
+      host2 = Host.getByName("PM2");
     }catch (HostNotFoundException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
 
     // Robustness on the SRC node
-    //for (int i =0 ; i < 55000 ; i++)
-    //  testVMMigrate(host1, i);
+    for (int i =100 ; i < 55000 ; i+=100)
+     testVMMigrate(host1, i);
 
     // Robustness on the DST node
-    //for (int i =0 ; i < 55000 ; i++)
-    //  testVMMigrate(host2, i);
+    for (int i =0 ; i < 55000 ; i++)
+      testVMMigrate(host2, i);
 
     /* End of Tests */
     Msg.info("Nor more tests, Bye Bye !");
     Main.setEndOfTest();
   }
 
-  public static void testVMMigrate (Host hostToKill, long killAt) throws MsgException {
+  public void testVMMigrate (Host hostToKill, long killAt) throws MsgException {
     Msg.info("**** **** **** ***** ***** Test Migrate with host shutdown ***** ***** **** **** ****");
     Msg.info("Turn on one host, assign a VM on this host, launch a process inside the VM, migrate the VM and "
              + "turn off either the SRC or DST");
@@ -74,9 +74,9 @@ public class TestHostOnOff extends Process{
     String[] args = new String[3];
 
     args[0] = "vm0";
-    args[1] = "host1";
-    args[2] = "host2";
-    new Process(host1, "Migrate-" + new Random().nextDouble(), args) {
+    args[1] = "PM1";
+    args[2] = "PM2";
+    new Process(host1, "Migrate-" + killAt, args) {
       public void main(String[] args) {
         Host destHost = null;
         Host sourceHost = null;
@@ -94,8 +94,8 @@ public class TestHostOnOff extends Process{
               Msg.info("Migrate vm "+args[0]+" to node "+destHost.getName());
               VM.getVMByName(args[0]).migrate(destHost);
             } catch (HostFailureException e) {
-              e.printStackTrace();
               Msg.info("Something occurs during the migration that cannot validate the operation");
+              e.printStackTrace();
             }
           }
         }
@@ -104,10 +104,8 @@ public class TestHostOnOff extends Process{
 
     // Wait killAt ms before killing thehost
     Process.sleep(killAt);
+    Msg.info("The migration process should be stopped and we should catch an exception");
     hostToKill.off();
-    Process.sleep(5);
-    Msg.info("The migration process should be stopped and we should catch an exception\n");
-    Process.sleep(5);
 
     Process.sleep(50000);
     Msg.info("Destroy VMs");
@@ -115,7 +113,7 @@ public class TestHostOnOff extends Process{
     Process.sleep(20000);
   }
 
-  public static void testVMShutdownDestroy () throws HostFailureException {
+  public void testVMShutdownDestroy () throws HostFailureException {
     Msg.info("**** **** **** ***** ***** Test shutdown a VM ***** ***** **** **** ****");
     Msg.info("Turn on host1, assign a VM on host1, launch a process inside the VM, and turn off the vm, " +
         "and check whether you can reallocate the same VM");

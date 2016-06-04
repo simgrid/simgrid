@@ -7,7 +7,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-import java.util.Vector;
+import java.util.ArrayList;
 
 public class VM extends Host{
 	// Please note that we are not declaring a new bind variable 
@@ -17,7 +17,7 @@ public class VM extends Host{
 	// GetByName is inherited from the super class Host
 
 
-	private static Vector<VM> vms= new Vector<>();
+	private static ArrayList<VM> vms= new ArrayList<>();
 	private Host currentHost; 
 
 	/* Constructors / destructors */

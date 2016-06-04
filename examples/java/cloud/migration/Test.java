@@ -27,8 +27,8 @@ public class Test extends Process{
     Host host1 = null;
 
     try {
-      host0 = Host.getByName("host0");
-      host1 = Host.getByName("host1");
+      host0 = Host.getByName("PM0");
+      host1 = Host.getByName("PM1");
     }catch (HostNotFoundException e) {
       e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
     }
@@ -114,31 +114,31 @@ public class Test extends Process{
 
     Msg.info("Round trip of VM1 (load "+load1+"%)");
     vm1.setLoad(load1);
-    Msg.info("     - Launch migration from host 0 to host 1");
+    Msg.info("     - Launch migration from PM0 to PM1");
     startTime = Msg.getClock();
     vm1.migrate(host1);
     endTime = Msg.getClock();
-    Msg.info("     - End of Migration from host 0 to host 1 (duration:"+(endTime-startTime)+")");
-    Msg.info("     - Launch migration from host 1 to host 0");
+    Msg.info("     - End of Migration from PM0 to PM1 (duration:"+(endTime-startTime)+")");
+    Msg.info("     - Launch migration from PM1 to PM0");
     startTime = Msg.getClock();
     vm1.migrate(host0);
     endTime = Msg.getClock();
-    Msg.info("     - End of Migration from host 1 to host 0 (duration:"+(endTime-startTime)+")");
+    Msg.info("     - End of Migration from PM1 to PM0 (duration:"+(endTime-startTime)+")");
 
     Msg.info("");
     Msg.info("");
     Msg.info("Round trip of VM1 (load "+load2+"%)");
     vm1.setLoad(load2);
-    Msg.info("     - Launch migration from host 0 to host 1");
+    Msg.info("     - Launch migration from PM0 to PM1");
     startTime = Msg.getClock();
     vm1.migrate(host1);
     endTime = Msg.getClock();
-    Msg.info("     - End of Migration from host 0 to host 1 (duration:"+(endTime-startTime)+")");
-    Msg.info("     - Launch migration from host 1 to host 0");
+    Msg.info("     - End of Migration from PM0 to PM1 (duration:"+(endTime-startTime)+")");
+    Msg.info("     - Launch migration from PM1 to PM0");
     startTime = Msg.getClock();
     vm1.migrate(host0);
     endTime = Msg.getClock();
-    Msg.info("     - End of Migration from host 1 to host 0 (duration:"+(endTime-startTime)+")");
+    Msg.info("     - End of Migration from PM1 to PM0 (duration:"+(endTime-startTime)+")");
 
     Main.setEndOfTest();
     Msg.info("Forcefully destroy VMs");

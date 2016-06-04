@@ -39,6 +39,9 @@ int PMPI_Init(int *argc, char ***argv)
     TRACE_smpi_collective_out(rank, -1, __FUNCTION__);
     smpi_bench_begin();
   }
+
+  smpi_mpi_init();
+
   return MPI_SUCCESS;
 }
 

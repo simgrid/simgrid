@@ -82,6 +82,8 @@ xbt_dynar_t smpi_ois_values = NULL;
 
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
+static simgrid::config::Flag<double> smpi_init_sleep(
+  "smpi/init", "Time to inject inside a call to MPI_Init", 0.0);
 static simgrid::config::Flag<double> smpi_iprobe_sleep(
   "smpi/iprobe", "Minimum time to inject inside a call to MPI_Iprobe", 1e-4);
 static simgrid::config::Flag<double> smpi_test_sleep(
@@ -216,6 +218,11 @@ static double smpi_or(double size)
   XBT_DEBUG("or : %f > %ld return %f", size, fact.factor, current);
 
   return current;
+}
+
+void smpi_mpi_init() {
+  if(smpi_init_sleep > 0) 
+    simcall_process_sleep(smpi_init_sleep);
 }
 
 double smpi_mpi_wtime(){
@@ -835,7 +842,7 @@ void smpi_mpi_probe(int source, int tag, MPI_Comm comm, MPI_Status* status){
 
 void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* status){
 
-  MPI_Request request =build_request(NULL, 0, MPI_CHAR, source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
+  MPI_Request request = build_request(NULL, 0, MPI_CHAR, source == MPI_ANY_SOURCE ? MPI_ANY_SOURCE :
                  smpi_group_index(smpi_comm_group(comm), source), smpi_comm_rank(comm), tag, comm, PERSISTENT | RECV);
 
   // to avoid deadlock, we have to sleep some time here, or the timer won't advance and we will only do iprobe simcalls
@@ -849,28 +856,29 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
 
   print_request("New iprobe", request);
   // We have to test both mailboxes as we don't know if we will receive one one or another
-  if (xbt_cfg_get_int("smpi/async-small-thresh")>0){
+  if (xbt_cfg_get_int("smpi/async-small-thresh") > 0){
       mailbox = smpi_process_mailbox_small();
-      XBT_DEBUG("trying to probe the perm recv mailbox");
+      XBT_DEBUG("Trying to probe the perm recv mailbox");
       request->action = simcall_comm_iprobe(mailbox, 0, request->src, request->tag, &match_recv, static_cast<void*>(request));
   }
-  if (request->action==NULL){
-  mailbox = smpi_process_mailbox();
-      XBT_DEBUG("trying to probe the other mailbox");
-      request->action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
+
+  if (request->action == NULL){
+    mailbox = smpi_process_mailbox();
+    XBT_DEBUG("trying to probe the other mailbox");
+    request->action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
   }
 
   if (request->action){
     simgrid::simix::Comm *sync_comm = static_cast<simgrid::simix::Comm*>(request->action);
-    MPI_Request req = static_cast<MPI_Request>(sync_comm->src_data);
+    MPI_Request req                 = static_cast<MPI_Request>(sync_comm->src_data);
     *flag = 1;
-    if(status != MPI_STATUS_IGNORE && (req->flags & PREPARED)==0) {
+    if(status != MPI_STATUS_IGNORE && (req->flags & PREPARED) == 0) {
       status->MPI_SOURCE = smpi_group_rank(smpi_comm_group(comm), req->src);
       status->MPI_TAG    = req->tag;
       status->MPI_ERROR  = MPI_SUCCESS;
       status->count      = req->real_size;
     }
-    nsleeps=1;//reset the number of sleeps we will do next time
+    nsleeps = 1;//reset the number of sleeps we will do next time
   }
   else {
     *flag = 0;

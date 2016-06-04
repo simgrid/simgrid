@@ -61,12 +61,12 @@ static void test_pm_pin(void)
   t3.task = MSG_task_create("Task3", 1e16, 0, NULL);
   t4.task = MSG_task_create("Task4", 1e16, 0, NULL);
 
-  MSG_process_create("worker1", worker_main, t1.task, pm1);
-  MSG_process_create("worker2", worker_main, t2.task, pm1);
-  MSG_process_create("worker3", worker_main, t3.task, pm1);
-  MSG_process_create("worker4", worker_main, t4.task, pm1);
+  MSG_process_create("worker1", worker_main, t1.task, pm2);
+  MSG_process_create("worker2", worker_main, t2.task, pm2);
+  MSG_process_create("worker3", worker_main, t3.task, pm2);
+  MSG_process_create("worker4", worker_main, t4.task, pm2);
 
-  XBT_INFO("## 1. start 4 tasks on PM1 (2 cores)");
+  XBT_INFO("## 1. start 4 tasks on PM2 (2 cores)");
   task_data_init_clock(&t1);
   task_data_init_clock(&t2);
   task_data_init_clock(&t3);
@@ -79,10 +79,10 @@ static void test_pm_pin(void)
   task_data_get_clock(&t4);
 
   XBT_INFO("## 2. pin all tasks to CPU0");
-  MSG_task_set_affinity(t1.task, pm1, 0x01);
-  MSG_task_set_affinity(t2.task, pm1, 0x01);
-  MSG_task_set_affinity(t3.task, pm1, 0x01);
-  MSG_task_set_affinity(t4.task, pm1, 0x01);
+  MSG_task_set_affinity(t1.task, pm2, 0x01);
+  MSG_task_set_affinity(t2.task, pm2, 0x01);
+  MSG_task_set_affinity(t3.task, pm2, 0x01);
+  MSG_task_set_affinity(t4.task, pm2, 0x01);
 
   MSG_process_sleep(10);
   task_data_get_clock(&t1);
@@ -91,7 +91,7 @@ static void test_pm_pin(void)
   task_data_get_clock(&t4);
 
   XBT_INFO("## 3. clear the affinity of task4");
-  MSG_task_set_affinity(t4.task, pm1, 0);
+  MSG_task_set_affinity(t4.task, pm2, 0);
 
   MSG_process_sleep(10);
   task_data_get_clock(&t1);
@@ -100,7 +100,7 @@ static void test_pm_pin(void)
   task_data_get_clock(&t4);
 
   XBT_INFO("## 4. clear the affinity of task3");
-  MSG_task_set_affinity(t3.task, pm1, 0);
+  MSG_task_set_affinity(t3.task, pm2, 0);
 
   MSG_process_sleep(10);
   task_data_get_clock(&t1);
@@ -109,7 +109,7 @@ static void test_pm_pin(void)
   task_data_get_clock(&t4);
 
   XBT_INFO("## 5. clear the affinity of task2");
-  MSG_task_set_affinity(t2.task, pm1, 0);
+  MSG_task_set_affinity(t2.task, pm2, 0);
 
   MSG_process_sleep(10);
   task_data_get_clock(&t1);
@@ -120,8 +120,8 @@ static void test_pm_pin(void)
   XBT_INFO("## 6. pin all tasks to CPU0 of another PM (no effect now)");
   MSG_task_set_affinity(t1.task, pm0, 0);
   MSG_task_set_affinity(t2.task, pm0, 0);
-  MSG_task_set_affinity(t3.task, pm2, 0);
-  MSG_task_set_affinity(t4.task, pm2, 0);
+  MSG_task_set_affinity(t3.task, pm1, 0);
+  MSG_task_set_affinity(t4.task, pm1, 0);
 
   MSG_process_sleep(10);
   task_data_get_clock(&t1);
@@ -148,11 +148,11 @@ static void test_vm_pin(void)
   msg_host_t pm2 = xbt_dynar_get_as(hosts_dynar, 2, msg_host_t); // 4 cores
   xbt_dynar_free(&hosts_dynar);
 
-  /* set up VMs on PM2 (4 cores) */
-  msg_vm_t vm0 = MSG_vm_create_core(pm2, "VM0");
-  msg_vm_t vm1 = MSG_vm_create_core(pm2, "VM1");
-  msg_vm_t vm2 = MSG_vm_create_core(pm2, "VM2");
-  msg_vm_t vm3 = MSG_vm_create_core(pm2, "VM3");
+  /* set up VMs on PM1 (4 cores) */
+  msg_vm_t vm0 = MSG_vm_create_core(pm1, "VM0");
+  msg_vm_t vm1 = MSG_vm_create_core(pm1, "VM1");
+  msg_vm_t vm2 = MSG_vm_create_core(pm1, "VM2");
+  msg_vm_t vm3 = MSG_vm_create_core(pm1, "VM3");
 
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
@@ -187,7 +187,7 @@ static void test_vm_pin(void)
   MSG_process_create("worker3", worker_main, t3.task, vm3);
 
   /* start experiments */
-  XBT_INFO("## 1. start 4 VMs on PM2 (4 cores)");
+  XBT_INFO("## 1. start 4 VMs on PM1 (4 cores)");
   task_data_init_clock(&t0);
   task_data_init_clock(&t1);
   task_data_init_clock(&t2);
@@ -199,20 +199,7 @@ static void test_vm_pin(void)
   task_data_get_clock(&t2);
   task_data_get_clock(&t3);
 
-  XBT_INFO("## 2. pin all VMs to CPU0 of PM2");
-  MSG_vm_set_affinity(vm0, pm2, 0x01);
-  MSG_vm_set_affinity(vm1, pm2, 0x01);
-  MSG_vm_set_affinity(vm2, pm2, 0x01);
-  MSG_vm_set_affinity(vm3, pm2, 0x01);
-
-  MSG_process_sleep(10);
-  task_data_get_clock(&t0);
-  task_data_get_clock(&t1);
-  task_data_get_clock(&t2);
-  task_data_get_clock(&t3);
-
-  XBT_INFO("## 3. pin all VMs to CPU0 of PM1 (no effect at now)");
-  /* Because VMs are on PM2, the below operations do not effect computation now. */
+  XBT_INFO("## 2. pin all VMs to CPU0 of PM1");
   MSG_vm_set_affinity(vm0, pm1, 0x01);
   MSG_vm_set_affinity(vm1, pm1, 0x01);
   MSG_vm_set_affinity(vm2, pm1, 0x01);
@@ -224,10 +211,23 @@ static void test_vm_pin(void)
   task_data_get_clock(&t2);
   task_data_get_clock(&t3);
 
-  XBT_INFO("## 4. unpin VM0, and pin VM2 and VM3 to CPU1 of PM2");
-  MSG_vm_set_affinity(vm0, pm2, 0x00);
-  MSG_vm_set_affinity(vm2, pm2, 0x02);
-  MSG_vm_set_affinity(vm3, pm2, 0x02);
+  XBT_INFO("## 3. pin all VMs to CPU0 of PM2(no effect at now)");
+  /* Because VMs are on PM2, the below operations do not effect computation now. */
+  MSG_vm_set_affinity(vm0, pm2, 0x01);
+  MSG_vm_set_affinity(vm1, pm2, 0x01);
+  MSG_vm_set_affinity(vm2, pm2, 0x01);
+  MSG_vm_set_affinity(vm3, pm2, 0x01);
+
+  MSG_process_sleep(10);
+  task_data_get_clock(&t0);
+  task_data_get_clock(&t1);
+  task_data_get_clock(&t2);
+  task_data_get_clock(&t3);
+
+  XBT_INFO("## 4. unpin VM0, and pin VM2 and VM3 to CPU1 of PM1");
+  MSG_vm_set_affinity(vm0, pm1, 0x00);
+  MSG_vm_set_affinity(vm2, pm1, 0x02);
+  MSG_vm_set_affinity(vm3, pm1, 0x02);
 
   MSG_process_sleep(10);
   task_data_get_clock(&t0);
@@ -253,11 +253,11 @@ static void test_vm_pin(void)
   task_data_get_clock(&t2);
   task_data_get_clock(&t3);
 
-  XBT_INFO("## 6. migrate all VMs to PM1 (2 CPU cores, with affinity settings)");
-  MSG_vm_migrate(vm0, pm1);
-  MSG_vm_migrate(vm1, pm1);
-  MSG_vm_migrate(vm2, pm1);
-  MSG_vm_migrate(vm3, pm1);
+  XBT_INFO("## 6. migrate all VMs to PM2 (2 CPU cores, with affinity settings)");
+  MSG_vm_migrate(vm0, pm2);
+  MSG_vm_migrate(vm1, pm2);
+  MSG_vm_migrate(vm2, pm2);
+  MSG_vm_migrate(vm3, pm2);
 
   MSG_process_sleep(10);
   task_data_get_clock(&t0);
@@ -273,10 +273,10 @@ static void test_vm_pin(void)
 
 
   XBT_INFO("## 7. clear affinity settings on PM1");
-  MSG_vm_set_affinity(vm0, pm1, 0);
-  MSG_vm_set_affinity(vm1, pm1, 0);
-  MSG_vm_set_affinity(vm2, pm1, 0);
-  MSG_vm_set_affinity(vm3, pm1, 0);
+  MSG_vm_set_affinity(vm0, pm2, 0);
+  MSG_vm_set_affinity(vm1, pm2, 0);
+  MSG_vm_set_affinity(vm2, pm2, 0);
+  MSG_vm_set_affinity(vm3, pm2, 0);
 
   MSG_process_sleep(10);
   task_data_get_clock(&t0);

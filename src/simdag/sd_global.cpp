@@ -64,8 +64,7 @@ void SD_init(int *argc, char **argv)
  * Do --help on any simgrid binary to see the list of currently existing configuration variables, and
  * see Section @ref options.
  *
- * Example:
- * SD_config("host/model","default");
+ * Example: SD_config("host/model","default");
  */
 void SD_config(const char *key, const char *value){
   xbt_assert(sd_global,"ERROR: Please call SD_init() before using SD_config()");
@@ -153,7 +152,7 @@ xbt_dynar_t SD_simulate(double how_long) {
     /* let's see which tasks are done */
     xbt_dynar_foreach(all_existing_models, iter, model) {
       while ((action = surf_model_extract_done_action_set(model))) {
-        task = (SD_task_t) action->getData();
+        task = static_cast<SD_task_t>(action->getData());
         task->start_time = task->surf_action->getStartTime();
 
         task->finish_time = surf_get_clock();
@@ -163,7 +162,7 @@ xbt_dynar_t SD_simulate(double how_long) {
         task->surf_action = NULL;
 
         /* the state has changed. Add it only if it's the first change */
-        if (!xbt_dynar_member(sd_global->return_set, &task)) {
+        if (xbt_dynar_member(sd_global->return_set, &task) == 0) {
           xbt_dynar_push(sd_global->return_set, &task);
         }
 
@@ -177,14 +176,14 @@ xbt_dynar_t SD_simulate(double how_long) {
           XBT_DEBUG("Released a dependency on %s: %d remain(s). Became schedulable if %d=0",
              SD_task_get_name(dst), dst->unsatisfied_dependencies, dst->is_not_ready);
 
-          if (!(dst->unsatisfied_dependencies)) {
+          if (dst->unsatisfied_dependencies == 0) {
             if (SD_task_get_state(dst) == SD_SCHEDULED)
               SD_task_set_state(dst, SD_RUNNABLE);
             else
               SD_task_set_state(dst, SD_SCHEDULABLE);
           }
 
-          if (SD_task_get_state(dst) == SD_NOT_SCHEDULED && !(dst->is_not_ready)) {
+          if (SD_task_get_state(dst) == SD_NOT_SCHEDULED && dst->is_not_ready == 0) {
             SD_task_set_state(dst, SD_SCHEDULABLE);
           }
 
@@ -199,7 +198,7 @@ xbt_dynar_t SD_simulate(double how_long) {
             XBT_DEBUG("%s is a transfer, %s may be ready now if %d=0",
                SD_task_get_name(dst), SD_task_get_name(comm_dst), comm_dst->is_not_ready);
 
-              if (!(comm_dst->is_not_ready)) {
+              if (comm_dst->is_not_ready == 0) {
                 SD_task_set_state(comm_dst, SD_SCHEDULABLE);
               }
             }
@@ -216,7 +215,7 @@ xbt_dynar_t SD_simulate(double how_long) {
 
       /* let's see which tasks have just failed */
       while ((action = surf_model_extract_failed_action_set(model))) {
-        task = (SD_task_t) action->getData();
+        task = static_cast<SD_task_t>(action->getData());
         task->start_time = task->surf_action->getStartTime();
         task->finish_time = surf_get_clock();
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
@@ -229,15 +228,14 @@ xbt_dynar_t SD_simulate(double how_long) {
     }
   }
 
-  if (!sd_global->watch_point_reached && how_long<0){
-    if (!xbt_dynar_is_empty(sd_global->initial_task_set)) {
-        XBT_WARN("Simulation is finished but %lu tasks are still not done",
-            xbt_dynar_length(sd_global->initial_task_set));
-        static const char* state_names[] =
-          { "SD_NOT_SCHEDULED", "SD_SCHEDULABLE", "SD_SCHEDULED", "SD_RUNNABLE", "SD_RUNNING", "SD_DONE","SD_FAILED" };
-        xbt_dynar_foreach(sd_global->initial_task_set, iter, task){
-          XBT_WARN("%s is in %s state", SD_task_get_name(task), state_names[SD_task_get_state(task)]);
-        }
+  if (!sd_global->watch_point_reached && how_long<0 &&
+      xbt_dynar_is_empty(sd_global->initial_task_set) == 0) {
+    XBT_WARN("Simulation is finished but %lu tasks are still not done",
+             xbt_dynar_length(sd_global->initial_task_set));
+    static const char* state_names[] =
+      { "SD_NOT_SCHEDULED", "SD_SCHEDULABLE", "SD_SCHEDULED", "SD_RUNNABLE", "SD_RUNNING", "SD_DONE","SD_FAILED" };
+    xbt_dynar_foreach(sd_global->initial_task_set, iter, task){
+      XBT_WARN("%s is in %s state", SD_task_get_name(task), state_names[SD_task_get_state(task)]);
     }
   }
 
@@ -249,7 +247,7 @@ xbt_dynar_t SD_simulate(double how_long) {
 }
 
 /** @brief Returns the current clock, in seconds */
-double SD_get_clock(void) {
+double SD_get_clock() {
   return surf_get_clock();
 }
 
@@ -260,7 +258,7 @@ double SD_get_clock(void) {
  *
  * \see SD_init(), SD_task_destroy()
  */
-void SD_exit(void)
+void SD_exit()
 {
   TRACE_surf_resource_utilization_release();
 

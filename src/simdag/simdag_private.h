@@ -20,7 +20,7 @@ SG_BEGIN_DECL()
 typedef struct SD_global {
   xbt_mallocator_t task_mallocator; /* to not remalloc new tasks */
 
-  int watch_point_reached;      /* has a task just reached a watch point? */
+  bool watch_point_reached;      /* has a task just reached a watch point? */
 
   xbt_dynar_t initial_task_set;
   xbt_dynar_t executable_task_set;
