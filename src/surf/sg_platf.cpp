@@ -262,13 +262,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   current_as->parse_specific_arguments(cluster);
 
   if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
-    current_as->nb_links_per_node_++;
-    current_as->has_loopback_ = 1;
+    current_as->linkCountPerNode_++;
+    current_as->hasLoopback_ = 1;
   }
 
   if(cluster->limiter_link!=0){
-    current_as->nb_links_per_node_++;
-    current_as->has_limiter_ = 1;
+    current_as->linkCountPerNode_++;
+    current_as->hasLimiter_ = 1;
   }
 
   std::vector<int> *radicals = explodesRadical(cluster->radical);
@@ -321,10 +321,10 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency   = cluster->loopback_lat;
       link.policy    = SURF_LINK_FATPIPE;
       sg_platf_new_link(&link);
-      info_loop.link_up = info_loop.link_down = Link::byName(tmp_link);
+      info_loop.linkUp = info_loop.linkDown = Link::byName(tmp_link);
       free(tmp_link);
       auto as_cluster = static_cast<AsCluster*>(current_as);
-      xbt_dynar_set(as_cluster->privateLinks_, rankId*as_cluster->nb_links_per_node_, &info_loop);
+      xbt_dynar_set(as_cluster->privateLinks_, rankId*as_cluster->linkCountPerNode_, &info_loop);
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -338,9 +338,9 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency = 0;
       link.policy = SURF_LINK_SHARED;
       sg_platf_new_link(&link);
-      info_lim.link_up = info_lim.link_down = Link::byName(tmp_link);
+      info_lim.linkUp = info_lim.linkDown = Link::byName(tmp_link);
       free(tmp_link);
-      xbt_dynar_set(current_as->privateLinks_, rankId * current_as->nb_links_per_node_ + current_as->has_loopback_ , &info_lim);
+      xbt_dynar_set(current_as->privateLinks_, rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_ , &info_lim);
     }
 
     //call the cluster function that adds the others links
@@ -349,7 +349,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     }
     else {
       current_as->create_links_for_node(cluster, i, rankId,
-          rankId*current_as->nb_links_per_node_ + current_as->has_loopback_ + current_as->has_limiter_ );
+          rankId*current_as->linkCountPerNode_ + current_as->hasLoopback_ + current_as->hasLimiter_ );
     }
     xbt_free(link_id);
     xbt_free(host_id);
@@ -891,11 +891,11 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
       "Only hosts from Cluster and Vivaldi ASes can get an host_link.");
 
   s_surf_parsing_link_up_down_t link_up_down;
-  link_up_down.link_up = Link::byName(hostlink->link_up);
-  link_up_down.link_down = Link::byName(hostlink->link_down);
+  link_up_down.linkUp = Link::byName(hostlink->link_up);
+  link_up_down.linkDown = Link::byName(hostlink->link_down);
 
-  xbt_assert(link_up_down.link_up, "Link '%s' not found!",hostlink->link_up);
-  xbt_assert(link_up_down.link_down, "Link '%s' not found!",hostlink->link_down);
+  xbt_assert(link_up_down.linkUp, "Link '%s' not found!",hostlink->link_up);
+  xbt_assert(link_up_down.linkDown, "Link '%s' not found!",hostlink->link_down);
 
   // If dynar is is greater than netcard id and if the host_link is already defined
   auto as_cluster = static_cast<simgrid::surf::AsCluster*>(current_routing);

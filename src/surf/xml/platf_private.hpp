@@ -251,8 +251,8 @@ XBT_PRIVATE void sg_instr_AS_end(void);
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
 typedef struct s_surf_parsing_link_up_down {
-  Link* link_up;
-  Link* link_down;
+  Link* linkUp;
+  Link* linkDown;
 } s_surf_parsing_link_up_down_t;
 
 

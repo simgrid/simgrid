@@ -63,14 +63,14 @@ namespace simgrid {
         s_surf_parsing_link_up_down_t info;
         if (link.policy == SURF_LINK_FULLDUPLEX) {
           char *tmp_link = bprintf("%s_UP", link_id);
-          info.link_up = Link::byName(tmp_link);
+          info.linkUp = Link::byName(tmp_link);
           free(tmp_link);
           tmp_link = bprintf("%s_DOWN", link_id);
-          info.link_down = Link::byName(tmp_link);
+          info.linkDown = Link::byName(tmp_link);
           free(tmp_link);
         } else {
-          info.link_up = Link::byName(link_id);
-          info.link_down = info.link_up;
+          info.linkUp = Link::byName(link_id);
+          info.linkDown = info.linkUp;
         }
         /*
          * Add the link to its appropriate position;
@@ -102,7 +102,7 @@ namespace simgrid {
           xbt_dynar_set_as(dimensions_, iter, int, tmp);
         }
 
-        nb_links_per_node_ = xbt_dynar_length(dimensions_);
+        linkCountPerNode_ = xbt_dynar_length(dimensions_);
 
       }
       xbt_dynar_free(&dimensions);
@@ -116,12 +116,12 @@ namespace simgrid {
       if (dst->isRouter() || src->isRouter())
         return;
 
-      if ((src->id() == dst->id()) && has_loopback_) {
-        s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
+      if ((src->id() == dst->id()) && hasLoopback_) {
+        s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_, s_surf_parsing_link_up_down_t);
 
-        route->link_list->push_back(info.link_up);
+        route->link_list->push_back(info.linkUp);
         if (lat)
-          *lat += info.link_up->getLatency();
+          *lat += info.linkUp->getLatency();
         return;
       }
 
@@ -170,8 +170,8 @@ namespace simgrid {
                 next_node = (current_node + dim_product);
 
               // HERE: We use *CURRENT* node for calculation (as opposed to next_node)
-              nodeOffset = current_node * (nb_links_per_node_);
-              linkOffset = nodeOffset + has_loopback_ + has_limiter_ + j;
+              nodeOffset = current_node * (linkCountPerNode_);
+              linkOffset = nodeOffset + (hasLoopback_?1:0) + (hasLimiter_?1:0) + j;
               use_lnk_up = true;
               assert(linkOffset >= 0);
             } else {            // Route to the left
@@ -181,8 +181,8 @@ namespace simgrid {
                 next_node = (current_node - dim_product);
 
               // HERE: We use *next* node for calculation (as opposed to current_node!)
-              nodeOffset = next_node * (nb_links_per_node_);
-              linkOffset = nodeOffset + j + has_loopback_ + has_limiter_;
+              nodeOffset = next_node * (linkCountPerNode_);
+              linkOffset = nodeOffset + j + (hasLoopback_?1:0) + (hasLimiter_?1:0) ;
               use_lnk_up = false;
 
               assert(linkOffset >= 0);
@@ -198,21 +198,21 @@ namespace simgrid {
 
         s_surf_parsing_link_up_down_t info;
 
-        if (has_limiter_) {    // limiter for sender
-          info = xbt_dynar_get_as(privateLinks_, nodeOffset + has_loopback_, s_surf_parsing_link_up_down_t);
-          route->link_list->push_back(info.link_up);
+        if (hasLimiter_) {    // limiter for sender
+          info = xbt_dynar_get_as(privateLinks_, nodeOffset + hasLoopback_, s_surf_parsing_link_up_down_t);
+          route->link_list->push_back(info.linkUp);
         }
 
         info = xbt_dynar_get_as(privateLinks_, linkOffset, s_surf_parsing_link_up_down_t);
 
         if (use_lnk_up == false) {
-          route->link_list->push_back(info.link_down);
+          route->link_list->push_back(info.linkDown);
           if (lat)
-            *lat += info.link_down->getLatency();
+            *lat += info.linkDown->getLatency();
         } else {
-          route->link_list->push_back(info.link_up);
+          route->link_list->push_back(info.linkUp);
           if (lat)
-            *lat += info.link_up->getLatency();
+            *lat += info.linkUp->getLatency();
         }
         current_node = next_node;
         next_node = 0;

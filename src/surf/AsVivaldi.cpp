@@ -65,18 +65,18 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   /* Retrieve the private links */
   if ((int)xbt_dynar_length(privateLinks_) > src->id()) {
     s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id(), s_surf_parsing_link_up_down_t);
-    if(info.link_up) {
-      route->link_list->push_back(info.link_up);
+    if(info.linkUp) {
+      route->link_list->push_back(info.linkUp);
       if (lat)
-        *lat += info.link_up->getLatency();
+        *lat += info.linkUp->getLatency();
     }
   }
   if ((int)xbt_dynar_length(privateLinks_)>dst->id()) {
     s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, dst->id(), s_surf_parsing_link_up_down_t);
-    if(info.link_down) {
-      route->link_list->push_back(info.link_down);
+    if(info.linkDown) {
+      route->link_list->push_back(info.linkDown);
       if (lat)
-        *lat += info.link_down->getLatency();
+        *lat += info.linkDown->getLatency();
     }
   }
 

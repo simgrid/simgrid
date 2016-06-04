@@ -92,7 +92,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
 
   /* In case destination is the source, and there is a loopback, let's get
      through it instead of going up to a switch*/
-  if(source->id == destination->id && this->has_loopback_) {
+  if(source->id == destination->id && this->hasLoopback_) {
     into->link_list->push_back(source->loopback);
     if(latency) {
       *latency += source->loopback->getLatency();
@@ -118,7 +118,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
       *latency += currentNode->parents[d]->upLink->getLatency();
     }
 
-    if (this->has_limiter_) {
+    if (this->hasLimiter_) {
       into->link_list->push_back(currentNode->limiterLink);
     }
     currentNode = currentNode->parents[d]->upNode;
@@ -138,7 +138,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
           *latency += currentNode->children[i]->downLink->getLatency();
         }
         currentNode = currentNode->children[i]->downNode;
-        if (this->has_limiter_) {
+        if (this->hasLimiter_) {
           into->link_list->push_back(currentNode->limiterLink);
         }
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id,

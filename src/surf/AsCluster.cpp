@@ -29,25 +29,25 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
   if (! src->isRouter()) {    // No specific link for router
 
-    if((src->id() == dst->id()) && has_loopback_  ){
-      info = xbt_dynar_get_as(privateLinks_, src->id() * nb_links_per_node_, s_surf_parsing_link_up_down_t);
-      route->link_list->push_back(info.link_up);
+    if((src->id() == dst->id()) && hasLoopback_ ){
+      info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_, s_surf_parsing_link_up_down_t);
+      route->link_list->push_back(info.linkUp);
       if (lat)
-        *lat += info.link_up->getLatency();
+        *lat += info.linkUp->getLatency();
       return;
     }
 
 
-    if (has_limiter_){          // limiter for sender
-      info = xbt_dynar_get_as(privateLinks_, src->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
-      route->link_list->push_back((Link*)info.link_up);
+    if (hasLimiter_){          // limiter for sender
+      info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_ + (hasLoopback_?1:0), s_surf_parsing_link_up_down_t);
+      route->link_list->push_back((Link*)info.linkUp);
     }
 
-    info = xbt_dynar_get_as(privateLinks_, src->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
-    if (info.link_up) {         // link up
-      route->link_list->push_back(info.link_up);
+    info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_ + (hasLoopback_?1:0) + (hasLimiter_?1:0), s_surf_parsing_link_up_down_t);
+    if (info.linkUp) {         // link up
+      route->link_list->push_back(info.linkUp);
       if (lat)
-        *lat += info.link_up->getLatency();
+        *lat += info.linkUp->getLatency();
     }
 
   }
@@ -59,16 +59,16 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   }
 
   if (! dst->isRouter()) {    // No specific link for router
-    info = xbt_dynar_get_as(privateLinks_, dst->id() * nb_links_per_node_ + has_loopback_ + has_limiter_, s_surf_parsing_link_up_down_t);
+    info = xbt_dynar_get_as(privateLinks_, dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_, s_surf_parsing_link_up_down_t);
 
-    if (info.link_down) {       // link down
-      route->link_list->push_back(info.link_down);
+    if (info.linkDown) {       // link down
+      route->link_list->push_back(info.linkDown);
       if (lat)
-        *lat += info.link_down->getLatency();
+        *lat += info.linkDown->getLatency();
     }
-    if (has_limiter_){          // limiter for receiver
-        info = xbt_dynar_get_as(privateLinks_, dst->id() * nb_links_per_node_ + has_loopback_, s_surf_parsing_link_up_down_t);
-        route->link_list->push_back(info.link_up);
+    if (hasLimiter_){          // limiter for receiver
+        info = xbt_dynar_get_as(privateLinks_, dst->id() * linkCountPerNode_ + hasLoopback_, s_surf_parsing_link_up_down_t);
+        route->link_list->push_back(info.linkUp);
     }
   }
 }
@@ -103,10 +103,10 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       info = xbt_dynar_get_as(privateLinks_, src->id(), s_surf_parsing_link_up_down_t);
 
-      if (info.link_up) {     // link up
+      if (info.linkUp) {     // link up
 
         const char *link_name = static_cast<simgrid::surf::Resource*>(
-          info.link_up)->getName();
+          info.linkUp)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -118,9 +118,9 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
       }
 
-      if (info.link_down) {    // link down
+      if (info.linkDown) {    // link down
         const char *link_name = static_cast<simgrid::surf::Resource*>(
-          info.link_down)->getName();
+          info.linkDown)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -149,13 +149,14 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
 
   if (link.policy == SURF_LINK_FULLDUPLEX) {
     char *tmp_link = bprintf("%s_UP", link_id);
-    info.link_up = Link::byName(tmp_link);
+    info.linkUp = Link::byName(tmp_link);
     xbt_free(tmp_link);
     tmp_link = bprintf("%s_DOWN", link_id);
-    info.link_down = Link::byName(tmp_link);
+    info.linkDown = Link::byName(tmp_link);
     xbt_free(tmp_link);
   } else {
-    info.link_up = info.link_down = Link::byName(link_id);
+    info.linkUp = Link::byName(link_id);
+    info.linkDown = info.linkUp;
   }
   xbt_dynar_set(privateLinks_, position, &info);
   xbt_free(link_id);
