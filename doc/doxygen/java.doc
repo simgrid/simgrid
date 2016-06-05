@@ -1,32 +1,63 @@
-/*! \page bindings Bindings
+/*! @page MSG_Java Java Binding
 
-\section MSG_Java Java Binding
-Simgrid-java is a java API that let you use [Simgrid](http://simgrid.gforge.inria.fr/)
-MSG and SURF API in your favorite language (java). Without it, you would be forced to
-use C or one of the other bindings provided.
+@tableofcontents
 
-MSG was the first distributed programming environment provided within SimGrid.
-While almost realistic, it remains quite simple. This describes the Java
-bindings to this interface.
+This section describes jMSG, the Java API to Simgrid. This API mimicks 
+@ref MSG_API "MSG", which is a simple yet somehow realistic interface.
+<b>The full [javadoc](javadoc/index.html) is available.</b>
 
-The javadoc is accessible [here](javadoc/index.html)
+Most of the documentation of the @ref MSG_API "MSG API" in C applies
+directly to the Java bindings (any divergence is seen as a bug that we
+should fix). MSG structures are mapped to Java objects as expected,
+and the MSG functions are methods in these objects.
 
-\subsection bindings_binding_Java_jMSG_who Who should use this (and who shouldn't)
-You should use MSG if you want to study some heuristics for a given problem you
-don't really want to implement. SimGrid-java let you use MSG and SURF while coding in
-Java. So if your need is MSG + Java (+ SURF), you're in the right section!
+@section java_install How to install the Java bindings
 
-\subsection SimGrid-java Usage overview
+This is documented in the @ref install_java Section.
 
-To make a long story short, it's a JNI binding for MSG and a SWIG binding for SURF,
-so it implies that:
-- Most of the MSG/SURF and SimGrid documentation about behavioral aspects applies
-  directly to what you are programming.
-- MSG/SURF data structures are mapped to Java objects. So it means that from the
-  syntax point of view, you have to know how those objects are. Fortunately,
-  we have generated the Javadoc for those objects. So take a look at it
+@section java_use How to use the Java bindings
 
-Finally, it implies also that your program can crash for 3 main reasons:
+In most cases, you can use the SimGrid bindings as if it was a Java
+library:
+
+~~~~{.sh}
+$ javac -classpath .:path/to/simgrid.jar your/java/Code.java
+$ java -classpath .:path/to/simgrid.jar your.java.Code
+~~~~
+
+For example:
+~~~~{.sh}
+$ cd examples
+$ java -classpath .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
+~~~~
+
+@subsection java_use_trouble Troubleshooting
+
+Actually, these bindings are not only implemented in Java. They do use
+the C implementation of SimGrid. This should be transparent as this
+library is directly included in the `simgrid.jar` file but things can
+still go wrong is several ways.
+
+** **Error: library simgrid not found**
+
+This means that the JVM fails to load the native library. You should
+try to rebuild the simgrid.jar file as explained above. If it does not
+help, you can try to use an installed version of the library instead
+of the one included in the jar. For that, specify the path to the
+native library in the `LD_LIBRARY_PATH` variable (or in the
+`DYLD_LIBRARY_PATH` on Mac OSX).
+
+~~~~{.sh}
+$ export SIMGRID_ROOT="$HOME/Install/simgrid/" # change it to the path where you installed the SimGrid library
+$ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SIMGRID_ROOT/lib
+~~~~
+
+Add these lines to your `~/.bashrc` file or equivalent to make these
+settings permanent even after a reboot.
+
+** **Other errors**
+
+When using jMSG, your program can crash for 3 main reasons:
 - Your Java part is not good: you'll have a good old java exception thrown,
   and hence you should be able to correct it by yourself.
 - Our java part is not good: you'll also have a java exception thrown, but
@@ -34,70 +65,22 @@ Finally, it implies also that your program can crash for 3 main reasons:
   binding. The other option is that it crashed because you used incorrectly
   the MSG API, so this means also you should have an MSGException. It means
   you should read carefully MSG samples and/or documentation.
-- Something has crashed in the C part. Okay, here comes the tricky thing.
+- Something has crashed in the C part. Okay, here comes the tricky
+  thing. It happens mainly for 2 reasons:
+  - When something goes wrong in your simulation, sometimes the C part stops
+    because you used SimGrid incorrectly, and JNI bindings are not fond of that.
+    It means that you'll have something that looks ugly, but you should be able
+    to identify what's going wrong in your code by carefully reading the whole
+    error message
+  - It may happen that the problem comes directly from SimGrid: in this case,
+    the error should be uglier. In that case, you may submit a bug directly to
+    SimGrid.
 
-C crashes mainly for 2 reasons:
-- When something goes wrong in your simulation, sometimes the C part stops
-  because you used SimGrid incorrectly, and JNI bindings are not fond of that.
-  It means that you'll have something that looks ugly, but you should be able
-  to identify what's going wrong in your code by carefully reading the whole
-  error message
-- It may happen that the problem comes directly from SimGrid: in this case,
-  the error should be uglier. In that case, you may submit a bug directly to
-  SimGrid.
+@section java_coroutines Java bindings on Steroids
 
-\subsection bindings_binding_java_install How to install Simgrid-java
-
-To use java with Simgrid you have to install some dependencies:
-- Java JDK packages, such as `openjdk7` or `sun-java6-jdk` (with `libgcj10-dev` or another
-  version of gcj). For maximal performance and scalability, use a coroutine-enabled JVM (see
-  \ref bindings_binding_java_coroutines).
-
-Then build Simgrid with the Java bindings enabled:
-~~~~{.sh}
-cmake -Denable_java=ON .
-~~~~
-
-If cmake complains that **jni could not be found**, you need to tell it where
-JNI header files are located. the following command should tell you:
-
-~~~~{.sh}
-$ locate jni.h
-/usr/lib/jvm/java-6-openjdk-amd64/include/jni.h
-/usr/lib/jvm/java-7-openjdk-amd64/include/jni.h
-~~~~
-
-If you have several version of jni installed (as in the example
-above), you need to check the version of java that is used by default
-on your machine (using javac -version), and pick the right one. Then
-set the `JAVA_INCLUDE_PATH` environment variable to the right path (note
-that we remove the filename `jni.h` from that path), and relaunch cmake.
-
-~~~~{.sh}
-$ export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-6-openjdk-amd64/include/
-$ cmake .
-~~~~
-
-\subsubsection bindings_binding_java_use How to use Simgrid-java
-
-To execute the examples you need to add the path where you installed
-the generated `libsimgrid-java` and `libsimgrid` libraries
-into the `LD_LIBRARY_PATH`.
-
-Be careful on Mac, this variable is called `DYLD_LIBRARY_PATH` and not
-`LD_LIBRARY_PATH`.
-
-~~~~{.sh}
-$ export SIMGRID_ROOT="$HOME/Install/simgrid/" # change it to the path where you installed the SimGrid library
-$ export LD_LIBRARY_PATH=${LD_LIBRARY_PATH:+$LD_LIBRARY_PATH:}$SIMGRID_ROOT/lib
-$ cd examples
-$ java -classpath .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
-~~~~
-
-If you want to make these settings permanent even after a reboot, you
-need to add the export lines into your `~/.bashrc` file, or equivalent.
-
-\subsubsection bindings_binding_java_coroutines How to use the coroutines context factory
+<b>THIS SECTION IS SOMEWHAT OBSOLETE</b> because building a JVM
+providing coroutines is probably not possible anymore nowadays. If you
+really need performance for your Java simulation, please contact us.
 
 There is two main motivations to use the coroutine variant of SimGrid
 Java bindings: it's about 5 times faster than the default thread-based
@@ -106,7 +89,7 @@ limited by the amount of RAM that you have. The drawbacks are that it
 requires a specific and rather experimental JVM to run, and that this
 context factory itself remains a bit experimental so far.
 
-\subsubsection  bindings_java_coro_install Getting a mlvm JVM
+@subsection  bindings_java_coro_install Getting a mlvm JVM
 
 You need to get a patched JVM from [here](http://ssw.jku.at/General/Staff/LS/coro/)
 (many thanks to Lukas Stadler for this work!).
@@ -194,7 +177,7 @@ ls sources/build/linux-amd64/classes/java/dyn/
 # This should display a bunch of class files. If not, something went wrong, you need to investigate further
 ~~~~
 
-\subsubsection  bindings_java_coro_use Using coroutine contexts
+@subsection  bindings_java_coro_use Using coroutine contexts
 
 SimGrid Java will automatically switch to the coroutine context
 factory if your JVM support it, so you will just need to execute your

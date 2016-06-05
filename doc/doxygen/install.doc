@@ -72,11 +72,12 @@ Recompiling an official archive is not much more complex. SimGrid only uses very
     - Max OS X: with [fink](http://www.finkproject.org/): `fink install boost1.53.nopython`,
       or with homebrew: `brew install boost`
     - Debian / Ubuntu: `apt-get install libboost-dev libboost-context-dev`
-  - Java (if you want to build the Java bindings): Grab a
-    [full JDK](http://www.oracle.com/technetwork/java/javase/downloads)
+  - Java (if you want to build the Java bindings): 
+    - Mac OS X or Windows: Grab a [full JDK](http://www.oracle.com/technetwork/java/javase/downloads)
+    - Debian / Ubuntu: `apt-get install default-jdk`
 
 For platform-specific details, please see  @ref install_cmake_mac,
-@ref install_cmake_windows and @ref install_src_32bits
+@ref install_cmake_windows, @ref install_java and @ref install_src_32bits
 
 @subsection install_src_fetch Getting the Sources
 
@@ -254,6 +255,44 @@ The drawback of MinGW-64 is that the produced DLL are not compatible
 with MS Visual C. <a href="http://clang.llvm.org/docs/MSVCCompatibility.html">clang-cl</a>
 sounds promising to fix this. If you get something working, please
 @ref community_contact "tell us".
+
+@subsubsection install_java Build the Java bindings
+
+Once you have the [full JDK](http://www.oracle.com/technetwork/java/javase/downloads) installed
+(on Debian/Ubuntu, grab the package ```default-jdk``` for that), things should be as simple as:
+
+~~~~{.sh}
+cmake -Denable_java=ON .
+make 
+~~~~
+
+After the compilation, the file ```simgrid.jar``` is produced in the
+root directory. If you only want to build the jarfile and its
+dependencies, type ```make simgrid-java_jar```. It will save you the
+time of building every C examples and other things that you don't need
+for Java.
+
+** **Error: jni could not be found**. Sometimes, the build system fails
+to find the JNI headers. In this case, you need to first locate them as follows:
+
+~~~~{.sh}
+$ locate jni.h
+/usr/lib/jvm/java-7-openjdk-amd64/include/jni.h
+/usr/lib/jvm/java-8-openjdk-amd64/include/jni.h
+~~~~
+
+Then, set the JAVA_INCLUDE_PATH environment variable to the right
+path, and relaunch cmake. If you have several version of jni installed
+(as above), use the right one (check the java version you use with
+```javac -version```).
+
+~~~~{.sh}
+export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include/
+cmake -Denable_java=ON .
+make
+~~~~
+
+Note that the filename ```jni.h``` was removed from the path.
 
 @subsubsection install_src_32bits 32 bits Builds on Multi-arch Linux
 

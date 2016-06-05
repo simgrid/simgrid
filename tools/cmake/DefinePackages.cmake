@@ -789,7 +789,6 @@ set(DOC_SOURCES
 
   doc/doxygen/FAQ.doc
   doc/doxygen/application.doc
-  doc/doxygen/bindings.doc
   doc/doxygen/community.doc
   doc/doxygen/community_contact.doc
   doc/doxygen/community_extend.doc
@@ -808,6 +807,7 @@ set(DOC_SOURCES
   doc/doxygen/inside_release.doc
   doc/doxygen/install.doc
   doc/doxygen/install_yours.doc
+  doc/doxygen/java.doc
   doc/doxygen/tutorial.doc
   doc/doxygen/models.doc
   doc/doxygen/module-msg.doc

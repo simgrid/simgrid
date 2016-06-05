@@ -647,7 +647,7 @@ INPUT                  = doxygen/index.doc \
                            doxygen/install.doc \
 			   doxygen/install_yours.doc \
 			 doxygen/application.doc \
-                           doxygen/bindings.doc \
+                           doxygen/java.doc \
                          doxygen/platform.doc \
 			   doxygen/models.doc \
                            doxygen/ns3.doc \
