@@ -53,13 +53,13 @@ double s4u::Actor::getKillTime() {
   return simcall_process_get_kill_time(pimpl_);
 }
 
-void s4u::Actor::kill(int PID) {
-  msg_process_t process = SIMIX_process_from_PID(PID);
+void s4u::Actor::kill(int pid) {
+  msg_process_t process = SIMIX_process_from_PID(pid);
   if(process != NULL) {
     simcall_process_kill(process);
   } else {
     std::ostringstream oss;
-    oss << "kill: ("<< PID <<") - No such process" << std::endl;
+    oss << "kill: ("<< pid <<") - No such process" << std::endl;
     throw std::runtime_error(oss.str());
   }
 }

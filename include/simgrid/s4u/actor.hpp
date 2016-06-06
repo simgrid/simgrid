@@ -75,7 +75,7 @@ public:
    */
   void kill();
 
-  static void kill(int PID);
+  static void kill(int pid);
   
   // Static methods on all actors:
 
