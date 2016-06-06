@@ -15,7 +15,6 @@ int main(int argc, char **argv)
   unsigned int ctr;
   SD_task_t checkB, checkD;
   xbt_dynar_t changed_tasks;
-  xbt_ex_t ex;
   const int host_count = 2;
   sg_host_t host_list[2];
   double computation_amount[2];
@@ -71,44 +70,40 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, taskD, taskC);
   SD_task_dependency_add(NULL, NULL, taskB, taskC);
 
-  TRY {
+  try {
     SD_task_dependency_add(NULL, NULL, taskA, taskA);   /* shouldn't work and must raise an exception */
     xbt_die("Hey, I can add a dependency between Task A and Task A!");
   }
-  CATCH(ex) {
+  catch (xbt_ex& ex) {
     if (ex.category != arg_error)
-      RETHROW;                  /* this is a serious error */
-    xbt_ex_free(ex);
+      throw;                  /* this is a serious error */
   }
 
-  TRY {
+  try {
     SD_task_dependency_add(NULL, NULL, taskB, taskA);   /* shouldn't work and must raise an exception */
     xbt_die("Oh oh, I can add an already existing dependency!");
   }
-  CATCH(ex) {
+  catch (xbt_ex& ex) {
     if (ex.category != arg_error)
-      RETHROW;
-    xbt_ex_free(ex);
+      throw;
   }
 
-  TRY {
+  try {
     SD_task_dependency_remove(taskA, taskC);    /* shouldn't work and must raise an exception */
     xbt_die("Dude, I can remove an unknown dependency!");
   }
-  CATCH(ex) {
+  catch (xbt_ex& ex) {
     if (ex.category != arg_error)
-      RETHROW;
-    xbt_ex_free(ex);
+      throw;
   }
 
-  TRY {
+  try {
     SD_task_dependency_remove(taskC, taskC);    /* shouldn't work and must raise an exception */
     xbt_die("Wow, I can remove a dependency between Task C and itself!");
   }
-  CATCH(ex) {
+  catch (xbt_ex& ex) {
     if (ex.category != arg_error)
-      RETHROW;
-    xbt_ex_free(ex);
+      throw;
   }
 
   /* if everything is ok, no exception is forwarded or rethrown by main() */

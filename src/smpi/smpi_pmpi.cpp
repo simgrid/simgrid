@@ -3174,13 +3174,12 @@ int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
 }
 
 int PMPI_Info_delete(MPI_Info info, char *key){
-  xbt_ex_t e;
   if (info == nullptr || key==nullptr)
     return MPI_ERR_ARG;
-  TRY {
+  try {
     xbt_dict_remove(info->info_dict, key);
-  }CATCH(e){
-    xbt_ex_free(e);
+  }
+  catch(xbt_ex& e){
     return MPI_ERR_INFO_NOKEY;
   }
   return MPI_SUCCESS;

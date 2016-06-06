@@ -42,7 +42,6 @@ msg_error_t MSG_task_execute(msg_task_t task)
  */
 msg_error_t MSG_parallel_task_execute(msg_task_t task)
 {
-  xbt_ex_t e;
   simdata_task_t simdata = task->simdata;
   simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data();
   e_smx_state_t comp_state;
@@ -50,8 +49,8 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 
   TRACE_msg_task_execute_start(task);
 
-  xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
-             "This task is executed somewhere else. Go fix your code! %d", task->simdata->isused!=nullptr);
+  xbt_assert((!simdata->compute) && !task->simdata->isused,
+             "This task is executed somewhere else. Go fix your code!");
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
@@ -60,11 +59,8 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     return MSG_OK;
   }
 
-  TRY {
-    if (msg_global->debug_multiple_use)
-      MSG_BT(simdata->isused, "Using Backtrace");
-    else
-      simdata->isused = (void*)1;
+  try {
+    simdata->setUsed();
 
     if (simdata->host_nb > 0) {
       simdata->compute = static_cast<simgrid::simix::Exec*>(
@@ -88,14 +84,11 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     comp_state = simcall_execution_wait(simdata->compute);
 
     p_simdata->waiting_action = nullptr;
-
-    if (msg_global->debug_multiple_use && simdata->isused!=0)
-      xbt_ex_free(*(xbt_ex_t*)simdata->isused);
-    simdata->isused = 0;
+    simdata->setNotUsed();
 
     XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
       status = MSG_TASK_CANCELED;
@@ -104,10 +97,10 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       status = MSG_HOST_FAILURE;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
   }
+
   /* action ended, set comm and compute = nullptr, the actions is already destroyed in the main function */
   simdata->flops_amount = 0.0;
   simdata->comm = nullptr;
@@ -126,16 +119,15 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
  */
 msg_error_t MSG_process_sleep(double nb_sec)
 {
-  xbt_ex_t e;
   msg_error_t status = MSG_OK;
   /*msg_process_t proc = MSG_process_self();*/
 
   TRACE_msg_process_sleep_in(MSG_process_self());
 
-  TRY {
+  try {
     simcall_process_sleep(nb_sec);
   }
-  CATCH(e) {
+  catch(xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
       XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, WTF here ?"); 
@@ -148,9 +140,8 @@ msg_error_t MSG_process_sleep(double nb_sec)
       status = MSG_TASK_CANCELED;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
   }
 
   TRACE_msg_process_sleep_out(MSG_process_self());
@@ -246,21 +237,19 @@ msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char 
  */
 msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout, msg_host_t host)
 {
-  xbt_ex_t e;
   msg_error_t ret = MSG_OK;
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  TRY {
+  try {
     ret = MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task, host, timeout);
   }
-  CATCH(e) {
+  catch(xbt_ex& e) {
     switch (e.category) {
     case cancel_error:          /* may be thrown by MSG_mailbox_get_by_alias */
       ret = MSG_HOST_FAILURE;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
   }
   return ret;
 }
@@ -299,24 +288,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   t_simdata = task->simdata;
   t_simdata->sender = process;
   t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
-
-  if (t_simdata->isused != 0) {
-    if (msg_global->debug_multiple_use){
-      XBT_ERROR("This task is already used in there:");
-      xbt_backtrace_display((xbt_ex_t*) t_simdata->isused);
-      XBT_ERROR("And you try to reuse it from here:");
-      xbt_backtrace_display_current();
-    } else {
-      xbt_assert(t_simdata->isused == 0,
-                 "This task is still being used somewhere else. You cannot send it now. Go fix your code!"
-                 "(use --cfg=msg/debug-multiple-use:on to get the backtrace of the other process)");
-    }
-  }
-
-  if (msg_global->debug_multiple_use)
-    MSG_BT(t_simdata->isused, "Using Backtrace");
-  else
-    t_simdata->isused = (void*)1;
+  t_simdata->setUsed();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
@@ -492,20 +464,16 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
  */
 int MSG_comm_test(msg_comm_t comm)
 {
-  xbt_ex_t e;
   int finished = 0;
 
-  TRY {
+  try {
     finished = simcall_comm_test(comm->s_comm);
-
     if (finished && comm->task_received != nullptr) {
       /* I am the receiver */
-      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
-      (*comm->task_received)->simdata->isused = 0;
+      (*comm->task_received)->simdata->setNotUsed();
     }
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
       case network_error:
         comm->status = MSG_TRANSFER_FAILURE;
@@ -516,9 +484,8 @@ int MSG_comm_test(msg_comm_t comm)
         finished = 1;
         break;
       default:
-        RETHROW;
+        throw;
     }
-    xbt_ex_free(e);
   }
 
   return finished;
@@ -533,7 +500,6 @@ int MSG_comm_test(msg_comm_t comm)
  */
 int MSG_comm_testany(xbt_dynar_t comms)
 {
-  xbt_ex_t e;
   int finished_index = -1;
 
   /* create the equivalent dynar with SIMIX objects */
@@ -545,10 +511,10 @@ int MSG_comm_testany(xbt_dynar_t comms)
   }
 
   msg_error_t status = MSG_OK;
-  TRY {
+  try {
     finished_index = simcall_comm_testany(s_comms);
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
       case network_error:
         finished_index = e.value;
@@ -559,9 +525,8 @@ int MSG_comm_testany(xbt_dynar_t comms)
         status = MSG_TIMEOUT;
         break;
       default:
-        RETHROW;
+        throw;
     }
-    xbt_ex_free(e);
   }
   xbt_dynar_free(&s_comms);
 
@@ -572,9 +537,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
 
     if (status == MSG_OK && comm->task_received != nullptr) {
       /* I am the receiver */
-      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
-      (*comm->task_received)->simdata->isused = 0;
+      (*comm->task_received)->simdata->setNotUsed();
     }
   }
 
@@ -601,20 +564,17 @@ void MSG_comm_destroy(msg_comm_t comm)
  */
 msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 {
-  xbt_ex_t e;
-  TRY {
+  try {
     simcall_comm_wait(comm->s_comm, timeout);
 
     if (comm->task_received != nullptr) {
       /* I am the receiver */
-      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
-      (*comm->task_received)->simdata->isused = 0;
+      (*comm->task_received)->simdata->setNotUsed();
     }
 
     /* FIXME: these functions are not traceable */
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
     case network_error:
       comm->status = MSG_TRANSFER_FAILURE;
@@ -623,9 +583,8 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
       comm->status = MSG_TIMEOUT;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
   }
 
   return comm->status;
@@ -654,7 +613,6 @@ void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
  */
 int MSG_comm_waitany(xbt_dynar_t comms)
 {
-  xbt_ex_t e;
   int finished_index = -1;
 
   /* create the equivalent dynar with SIMIX objects */
@@ -666,10 +624,10 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   }
 
   msg_error_t status = MSG_OK;
-  TRY {
+  try {
     finished_index = simcall_comm_waitany(s_comms);
   }
-  CATCH(e) {
+  catch(xbt_ex& e) {
     switch (e.category) {
       case network_error:
         finished_index = e.value;
@@ -680,9 +638,8 @@ int MSG_comm_waitany(xbt_dynar_t comms)
         status = MSG_TIMEOUT;
         break;
       default:
-        RETHROW;
+        throw;
     }
-    xbt_ex_free(e);
   }
 
   xbt_assert(finished_index != -1, "WaitAny returned -1");
@@ -694,9 +651,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   if (comm->task_received != nullptr) {
     /* I am the receiver */
-    if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
-      xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
-    (*comm->task_received)->simdata->isused = 0;
+    (*comm->task_received)->simdata->setNotUsed();
   }
 
   return finished_index;
@@ -811,31 +766,15 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   t_simdata->sender = process;
   t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
 
-  if (t_simdata->isused != 0) {
-    if (msg_global->debug_multiple_use){
-      XBT_ERROR("This task is already used in there:");
-      xbt_backtrace_display((xbt_ex_t*) t_simdata->isused);
-      XBT_ERROR("And you try to reuse it from here:");
-      xbt_backtrace_display_current();
-    } else {
-      xbt_assert(t_simdata->isused == 0,
-                 "This task is still being used somewhere else. You cannot send it now. Go fix your code!"
-                 " (use --cfg=msg/debug-multiple-use:on to get the backtrace of the other process)");
-    }
-  }
+  t_simdata->setUsed();
 
-  if (msg_global->debug_multiple_use)
-    MSG_BT(t_simdata->isused, "Using Backtrace");
-  else
-    t_simdata->isused = (void*)1;
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
   p_simdata->waiting_task = task;
 
-  xbt_ex_t e;
   /* Try to send it by calling SIMIX network layer */
-  TRY {
+  try {
     smx_synchro_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
     comm = simcall_comm_isend(SIMIX_process_self(), mailbox,t_simdata->bytes_amount,
                               t_simdata->rate, task, sizeof(void *), nullptr, nullptr, nullptr, task, 0);
@@ -844,8 +783,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
      t_simdata->comm = static_cast<simgrid::simix::Comm*>(comm);
      simcall_comm_wait(comm, timeout);
   }
-
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
       ret = MSG_HOST_FAILURE;
@@ -857,14 +795,11 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
       ret = MSG_TIMEOUT;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
 
     /* If the send failed, it is not used anymore */
-    if (msg_global->debug_multiple_use && t_simdata->isused!=0)
-      xbt_ex_free(*(xbt_ex_t*)t_simdata->isused);
-    t_simdata->isused = 0;
+    t_simdata->setNotUsed();
   }
 
   p_simdata->waiting_task = nullptr;

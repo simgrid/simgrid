@@ -22,7 +22,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 
 int main(int argc, char**argv)
 {
-  void *heapA;
+  xbt_mheap_t heapA = nullptr;
   void *pointers[TESTSIZE];
   xbt_init(&argc,argv);
 
@@ -46,7 +46,7 @@ int main(int argc, char**argv)
   }
   XBT_INFO("All blocks were correctly allocated. Free every second block");
   for (i = 0; i < TESTSIZE; i+=2) {
-    mfree(heapA,pointers[i]);
+    mfree(heapA, pointers[i]);
   }
   XBT_INFO("Memset every second block to zero (yeah, they are not currently allocated :)");
   for (i = 0; i < TESTSIZE; i+=2) {
@@ -61,15 +61,12 @@ int main(int argc, char**argv)
 
   XBT_INFO("free all blocks (each one twice, to check that double free are correctly catched)");
   for (i = 0; i < TESTSIZE; i++) {
-    xbt_ex_t e;
-    int gotit = 1;
-
+    bool gotit = false;
     mfree(heapA, pointers[i]);
-    TRY {
+    try {
       mfree(heapA, pointers[i]);
-      gotit = 0;
-    } CATCH(e) {
-      xbt_ex_free(e);
+    } catch(xbt_ex& e) {
+      gotit = true;
     }
     if (!gotit)
       xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));
@@ -77,14 +74,11 @@ int main(int argc, char**argv)
 
   XBT_INFO("free again all blocks (to really check that double free are correctly catched)");
   for (i = 0; i < TESTSIZE; i++) {
-    xbt_ex_t e;
-    int gotit = 1;
-
-    TRY {
+    bool gotit = false;
+    try {
       mfree(heapA, pointers[i]);
-      gotit = 0;
-    } CATCH(e) {
-      xbt_ex_free(e);
+    } catch(xbt_ex& e) {
+      gotit = true;
     }
     if (!gotit)
       xbt_die("FAIL: A double-free went undetected (for size:%d)",size_of_block(i));

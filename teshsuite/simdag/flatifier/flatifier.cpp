@@ -40,14 +40,13 @@ static int parse_cmdline(int *timings, char **platformFile, int argc, char **arg
 
 static void create_environment(xbt_os_timer_t parse_time, const char *platformFile)
 {
-  xbt_ex_t e;
-  TRY {
+  try {
     xbt_os_cputimer_start(parse_time);
     SD_create_environment(platformFile);
     xbt_os_cputimer_stop(parse_time);
   }
-  CATCH(e) {
-    xbt_die("Error while loading %s: %s", platformFile, e.msg);
+  catch (std::exception& e) {
+    xbt_die("Error while loading %s: %s", platformFile, e.what());
   }
 }
 

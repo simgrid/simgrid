@@ -215,7 +215,7 @@ set(SMPI_SRC
   src/smpi/colls/reduce-rab.c
   src/smpi/colls/scatter-ompi.c
   src/smpi/colls/scatter-mvapich-two-level.c
-  src/smpi/colls/smpi_automatic_selector.c
+  src/smpi/colls/smpi_automatic_selector.cpp
   src/smpi/colls/smpi_mpich_selector.c
   src/smpi/colls/smpi_intel_mpi_selector.c
   src/smpi/colls/smpi_openmpi_selector.c
@@ -245,12 +245,12 @@ set(XBT_SRC
   src/xbt/automaton/automaton.c
   src/xbt/automaton/automatonparse_promela.c
   src/xbt/config.cpp
-  src/xbt/cunit.c
-  src/xbt/dict.c
+  src/xbt/cunit.cpp
+  src/xbt/dict.cpp
   src/xbt/dict_cursor.c
   src/xbt/dict_elm.c
-  src/xbt/dynar.c
-  src/xbt/ex.c
+  src/xbt/dynar.cpp
+  src/xbt/ex.cpp
   src/xbt/fifo.c
   src/xbt/graph.c
   src/xbt/heap.c
@@ -271,8 +271,8 @@ set(XBT_SRC
   src/xbt/xbt_os_file.c
   src/xbt/xbt_os_synchro.c
   src/xbt/xbt_os_time.c
-  src/xbt/xbt_replay.c
-  src/xbt/xbt_str.c
+  src/xbt/xbt_replay.cpp
+  src/xbt/xbt_str.cpp
   src/xbt/xbt_strbuff.c
   src/xbt/xbt_virtu.c
   src/xbt_modinter.h

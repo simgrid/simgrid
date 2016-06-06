@@ -1,5 +1,5 @@
 /* dict_elm - elements of generic dictionnaries                             */
-/* This file is not to be loaded from anywhere but dict.c                   */
+/* This file is not to be loaded from anywhere but dict.cpp                   */
 
 /* Copyright (c) 2004-2011, 2013-2014. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -17,6 +17,8 @@
 #include "xbt/dynar.h"
 #include "xbt/dict.h"
 #include "xbt/mallocator.h"
+
+SG_BEGIN_DECL()
 
 #define MAX_FILL_PERCENT 80
 
@@ -51,5 +53,7 @@ XBT_PRIVATE xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int 
                               unsigned int hash_code, void *content, void_f_pvoid_t free_f);
 XBT_PRIVATE void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element);
 XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void *data, void_f_pvoid_t free_ctn);
+
+SG_END_DECL()
 
 #endif                          /* _XBT_DICT_PRIVATE_H_ */

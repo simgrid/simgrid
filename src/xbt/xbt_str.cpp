@@ -1,4 +1,4 @@
-/* xbt_str.c - various helping functions to deal with strings               */
+/* xbt_str.cpp - various helping functions to deal with strings               */
 
 /* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -213,7 +213,7 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
     if (*q == '\0')
       done = 1;
 
-    topush = xbt_malloc(q - p + 1);
+    topush = (char*) xbt_malloc(q - p + 1);
     memcpy(topush, p, q - p);
     topush[q - p] = '\0';
     xbt_dynar_push(res, &topush);
@@ -253,14 +253,14 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
     //if substring was not found add the entire string
     if (NULL == q) {
       v = strlen(p);
-      to_push = xbt_malloc(v + 1);
+      to_push = (char*) xbt_malloc(v + 1);
       memcpy(to_push, p, v);
       to_push[v] = '\0';
       xbt_dynar_push(res, &to_push);
       done = 1;
     } else {
       //get the appearance
-      to_push = xbt_malloc(q - p + 1);
+      to_push = (char*) xbt_malloc(q - p + 1);
       memcpy(to_push, p, q - p);
       //add string terminator
       to_push[q - p] = '\0';
@@ -412,7 +412,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
   }
   len += strlen(sep) * dyn_len;
   /* Do the job */
-  res = xbt_malloc(len);
+  res = (char*) xbt_malloc(len);
   p = res;
   xbt_dynar_foreach(dyn, cpt, cursor) {
     if ((int) cpt < dyn_len - 1)
@@ -446,7 +446,7 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
   len += strlen(sep) * amount_strings;
 
   /* Do the job */
-  q = res = xbt_malloc(len);
+  q = res = (char*) xbt_malloc(len);
   for (i=0;strs[i];i++) {
     if (i!=0) { // not first loop
       q += snprintf(q,len, "%s%s", sep, strs[i]);
@@ -570,23 +570,21 @@ XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_sp
 #define test_parse_error(function, name, variable, str)                 \
   do {                                                                  \
     xbt_test_add(name);                                                 \
-    TRY {                                                               \
+    try {                                                               \
       variable = function(str, "Parse error");                          \
       xbt_test_fail("The test '%s' did not detect the problem",name );  \
-    } CATCH(e) {                                                        \
+    } catch(xbt_ex& e) {                                                \
       if (e.category != arg_error) {                                    \
         xbt_test_exception(e);                                          \
-      } else {                                                          \
-        xbt_ex_free(e);                                                 \
       }                                                                 \
     }                                                                   \
   } while (0)
 #define test_parse_ok(function, name, variable, str, value)             \
   do {                                                                  \
     xbt_test_add(name);                                                 \
-    TRY {                                                               \
+    try {                                                               \
       variable = function(str, "Parse error");                          \
-    } CATCH(e) {                                                        \
+    } catch(xbt_ex& e) {                                                \
       xbt_test_exception(e);                                            \
     }                                                                   \
     xbt_test_assert(variable == value, "Fail to parse '%s'", str);      \
@@ -594,7 +592,6 @@ XBT_TEST_UNIT("xbt_str_split_str", test_split_str, "test the function xbt_str_sp
 
 XBT_TEST_UNIT("xbt_str_parse", test_parse, "Test the parsing functions")
 {
-  xbt_ex_t e;
   int rint = -9999;
   test_parse_ok(xbt_str_parse_int, "Parse int", rint, "42", 42);
   test_parse_ok(xbt_str_parse_int, "Parse 0 as an int", rint, "0", 0);

@@ -474,6 +474,7 @@ double Model::next_occuring_event_lazy(double now)
 
 double Model::next_occuring_event_full(double /*now*/) {
   THROW_UNIMPLEMENTED;
+  return 0.0;
 }
 
 double Model::shareResourcesMaxMin(ActionList *running_actions,

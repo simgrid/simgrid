@@ -50,10 +50,9 @@ public:
   simgrid::xbt::string name;
   sg_host_t host = nullptr;     /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
-  xbt_running_ctx_t *running_ctx = nullptr;
 
   // TODO, pack them
-  bool doexception = false;
+  std::exception_ptr exception;
   bool blocked = false;
   bool suspended = false;
   bool auto_restart = false;
@@ -97,7 +96,6 @@ XBT_PRIVATE void SIMIX_process_stop(smx_process_t arg);
 XBT_PRIVATE void SIMIX_process_cleanup(smx_process_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash(void);
 XBT_PRIVATE void SIMIX_process_yield(smx_process_t self);
-XBT_PRIVATE xbt_running_ctx_t *SIMIX_process_get_running_context(void);
 XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
 XBT_PRIVATE void SIMIX_process_change_host(smx_process_t process,
              sg_host_t dest);

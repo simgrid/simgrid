@@ -128,12 +128,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_VM_internalmig(JNIEnv *env, jobject 
 {
   msg_vm_t vm = jvm_get_native(env,jvm);
   msg_host_t host = jhost_get_native(env, jhost);
-  xbt_ex_t e;
-  TRY{
+  try {
     MSG_vm_migrate(vm,host);
-  } CATCH(e){
-     XBT_VERB("CATCH EXCEPTION MIGRATION %s",e.msg);
-     xbt_ex_free(e);
+  }
+  catch(xbt_ex& e){
+     XBT_VERB("CATCH EXCEPTION MIGRATION %s",e.what());
      jxbt_throw_host_failure(env, (char*)"during migration");
   }
 }

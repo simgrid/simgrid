@@ -1,8 +1,16 @@
-foreach(x availability daxload fail typed_tasks io properties throttling scheduling test)
+foreach(x availability daxload fail typed_tasks io properties throttling scheduling)
   add_executable       (sd_${x}     ${x}/sd_${x}.c)
   target_link_libraries(sd_${x}     simgrid)
   set_target_properties(sd_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
   set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/sd_${x}.c)
+  set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/sd_${x}.tesh)
+endforeach()
+
+foreach(x test)
+  add_executable       (sd_${x}     ${x}/sd_${x}.cpp)
+  target_link_libraries(sd_${x}     simgrid)
+  set_target_properties(sd_${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/sd_${x}.cpp)
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/sd_${x}.tesh)
 endforeach()
 

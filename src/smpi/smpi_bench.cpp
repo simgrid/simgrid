@@ -561,23 +561,24 @@ void smpi_shared_free(void *ptr)
 int smpi_shared_known_call(const char* func, const char* input)
 {
   char* loc = bprintf("%s:%s", func, input);
-  xbt_ex_t ex;
   int known = 0;
 
   if (calls==nullptr) {
     calls = xbt_dict_new_homogeneous(nullptr);
   }
-  TRY {
+  try {
     xbt_dict_get(calls, loc); /* Succeed or throw */
     known = 1;
-  }
-  TRY_CLEANUP {
     xbt_free(loc);
   }
-  CATCH(ex) {
+  catch (xbt_ex& ex) {
+    xbt_free(loc);
     if (ex.category != not_found_error)
-      RETHROW;
-    xbt_ex_free(ex);
+      throw;
+  }
+  catch(...) {
+    xbt_free(loc);
+    throw;
   }
   return known;
 }

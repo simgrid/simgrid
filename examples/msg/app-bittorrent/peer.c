@@ -276,15 +276,8 @@ void update_active_peers_set(peer_t peer, connection_t remote_peer)
   if ((remote_peer->interested != 0) && (remote_peer->choked_upload == 0)) {
     //add in the active peers set
     xbt_dict_set_ext(peer->active_peers, (char *) &remote_peer->id, sizeof(int), remote_peer, NULL);
-  } else {
-    //remove
-    xbt_ex_t e;
-    TRY {
-      xbt_dict_remove_ext(peer->active_peers, (char *) &remote_peer->id, sizeof(int));
-    }
-    CATCH(e) {
-      xbt_ex_free(e);
-    }
+  } else if (xbt_dict_get_or_null_ext(peer->active_peers, (char *) &remote_peer->id, sizeof(int))) {
+    xbt_dict_remove_ext(peer->active_peers, (char *) &remote_peer->id, sizeof(int));
   }
 }
 

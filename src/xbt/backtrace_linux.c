@@ -1,5 +1,5 @@
 /* backtrace_linux - backtrace displaying on linux platform                 */
-/* This file is included by ex.c on need (have execinfo.h, popen & addrline)*/
+/* This file is included by ex.cpp on need (have execinfo.h, popen & addrline)*/
 
 /* Copyright (c) 2008-2015. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -11,7 +11,7 @@
 #include <execinfo.h>
 #include <sys/stat.h>
 
-/* This file is to be included in ex.c, so the following headers are not mandatory, but it's to make sure that eclipse see them too */
+/* This file is to be included in ex.cpp, so the following headers are not mandatory, but it's to make sure that eclipse see them too */
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
@@ -43,7 +43,7 @@ struct trace_arg {
 static _Unwind_Reason_Code
 backtrace_helper (struct _Unwind_Context *ctx, void *a)
 {
-  struct trace_arg *arg = a;
+  struct trace_arg *arg = (struct trace_arg *) a;
 
   /* We are first called with address in the __backtrace function.
      Skip it.  */
@@ -71,7 +71,10 @@ int xbt_backtrace_no_malloc(void **array, int size) {
   for(i=0; i < size; i++)
     array[i] = NULL;
 
-  struct trace_arg arg = { .array = array, .size = size, .cnt = -1 };
+  struct trace_arg arg;
+  arg .array = array;
+  arg.size = size;
+  arg.cnt = -1;
 
   if (size >= 1)
     _Unwind_Backtrace(backtrace_helper, &arg);
@@ -85,11 +88,13 @@ int xbt_backtrace_no_malloc(void **array, int size) {
 
 void xbt_backtrace_current(xbt_ex_t * e)
 {
-  e->used = backtrace((void **) e->bt, XBT_BACKTRACE_SIZE);
-  if (e->used == 0) {
+  void* bt[XBT_BACKTRACE_SIZE];
+  std::size_t used = backtrace((void **) bt, XBT_BACKTRACE_SIZE);
+  e->bt.assign(bt, bt + used);
+  if (used == 0) {
     fprintf(stderr, "The backtrace() function failed, which probably means that the memory is exhausted. Here is a crude dump of the exception that I was trying to build:");
     fprintf(stderr, "%s(%d) [%s:%d] %s",
-            e->procname, e->pid, e->file, e->line, e->msg);
+            e->procname.c_str(), e->pid, e->file, e->line, e->what());
     fprintf(stderr, "Bailing out now since there is nothing I can do without a decent amount of memory. Please go fix the memleaks\n");
     exit(1);
   }
@@ -97,8 +102,6 @@ void xbt_backtrace_current(xbt_ex_t * e)
 
 void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly improved/simplifyied with http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
 {
-  int i;
-
   /* to get the backtrace from the libc */
   char **backtrace_syms;
 
@@ -122,24 +125,23 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
 
   xbt_assert(e, "Backtrace not setup yet, cannot set it up for display");
 
-  e->bt_strings = NULL;
+  e->bt_strings.clear();
 
   if (xbt_binary_name == NULL) /* no binary name, nothing to do */
     return;
 
-  if (e->used <= 1)
+  if (e->bt.empty())
     return;
 
   /* ignore first one, which is xbt_backtrace_current() */
-  e->used--;
-  memmove(e->bt, e->bt + 1, (sizeof *e->bt) * e->used);
+  e->bt.erase(e->bt.begin());
 
-  backtrace_syms = backtrace_symbols(e->bt, e->used);
+  backtrace_syms = backtrace_symbols(e->bt.data(), e->bt.size());
 
   /* build the commandline */
   if (stat(xbt_binary_name, &stat_buf)) {
     /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
-    for (i = 0; environ[i]; i++) {
+    for (std::size_t i = 0; environ[i]; i++) {
       if (!strncmp("PATH=", environ[i], 5)) {
         xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
         unsigned int cpt;
@@ -157,10 +159,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
         xbt_dynar_free(&path);
         if (stat(binary_name, &stat_buf)) {
           /* not found */
-          e->used = 1;
-          e->bt_strings = xbt_new(char *, 1);
-
-          e->bt_strings[0] = bprintf("(binary '%s' not found in the PATH)", xbt_binary_name);
+          char* str = bprintf("(binary '%s' not found in the PATH)", xbt_binary_name);
+          e->bt_strings = {  str };
+          free(str);
           free(backtrace_syms);
           return;
         }
@@ -170,17 +171,17 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   } else {
     binary_name = xbt_strdup(xbt_binary_name);
   }
-  int strsize=strlen(ADDR2LINE) + 25 + strlen(binary_name) + 32 * e->used;
+  int strsize = strlen(ADDR2LINE) + 25 + strlen(binary_name) + 32 * e->bt_strings.size();
   cmd = curr = xbt_new(char, strsize);
 
   curr += snprintf(curr,strsize, "%s -f -e %s ", ADDR2LINE, binary_name);
   free(binary_name);
 
-  addrs = xbt_new(char *, e->used);
-  for (i = 0; i < e->used; i++) {
+  addrs = xbt_new(char *, e->bt.size());
+  for (std::size_t i = 0; i < e->bt.size(); i++) {
     char *p;
     /* retrieve this address */
-    XBT_DEBUG("Retrieving address number %d from '%s'", i, backtrace_syms[i]);
+    XBT_DEBUG("Retrieving address number %zd from '%s'", i, backtrace_syms[i]);
     snprintf(buff, 256, "%s", strchr(backtrace_syms[i], '[') + 1);
     p = strchr(buff, ']');
     *p = '\0';
@@ -188,7 +189,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       addrs[i] = xbt_strdup(buff);
     else
       addrs[i] = xbt_strdup("0x0");
-    XBT_DEBUG("Set up a new address: %d, '%s'(%p)", i, addrs[i], addrs[i]);
+    XBT_DEBUG("Set up a new address: %zd, '%s'(%p)", i, addrs[i], addrs[i]);
 
     /* Add it to the command line args */
     curr += snprintf(curr,strsize, "%s ", addrs[i]);
@@ -196,7 +197,7 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
   addr_len = strlen(addrs[0]);
 
   /* parse the output and build a new backtrace */
-  e->bt_strings = xbt_new(char *, e->used);
+  e->bt_strings.resize(e->bt.size());
 
   XBT_VERB("Fire a first command: '%s'", cmd);
   pipe = popen(cmd, "r");
@@ -204,25 +205,26 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
     xbt_die("Cannot fork addr2line to display the backtrace");
   }
 
-  for (i = 0; i < e->used; i++) {
-    XBT_DEBUG("Looking for symbol %d, addr = '%s'", i, addrs[i]);
+  for (std::size_t i = 0; i < e->bt.size(); i++) {
+    XBT_DEBUG("Looking for symbol %zd, addr = '%s'", i, addrs[i]);
     if (fgets(line_func, 1024, pipe)) {
       line_func[strlen(line_func) - 1] = '\0';
     } else {
-      XBT_VERB("Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
+      XBT_VERB("Cannot run fgets to look for symbol %zd, addr %s", i, addrs[i]);
       strncpy(line_func, "???",3);
     }
     if (fgets(line_pos, 1024, pipe)) {
       line_pos[strlen(line_pos) - 1] = '\0';
     } else {
-      XBT_VERB("Cannot run fgets to look for symbol %d, addr %s", i, addrs[i]);
+      XBT_VERB("Cannot run fgets to look for symbol %zd, addr %s", i, addrs[i]);
       strncpy(line_pos, backtrace_syms[i],1024);
     }
 
     if (strcmp("??", line_func) != 0) {
       XBT_DEBUG("Found static symbol %s() at %s", line_func, line_pos);
-      e->bt_strings[i] =
-          bprintf("**   In %s() at %s", line_func, line_pos);
+      char* s = bprintf("**   In %s() at %s", line_func, line_pos);
+      e->bt_strings[i] = s;
+      free(s);
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
       char *maps_name;
@@ -274,7 +276,9 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       if (!found) {
         XBT_VERB("Problem while reading the maps file. Following backtrace will be mangled.");
         XBT_DEBUG("No dynamic. Static symbol: %s", backtrace_syms[i]);
-        e->bt_strings[i] = bprintf("**   In ?? (%s)", backtrace_syms[i]);
+        char* s = bprintf("**   In ?? (%s)", backtrace_syms[i]);
+        e->bt_strings[i] = s;
+        free(s);
         continue;
       }
 
@@ -326,11 +330,15 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
       /* check whether the trick worked */
       if (strcmp("??", line_func)) {
         XBT_DEBUG("Found dynamic symbol %s() at %s", line_func, line_pos);
-        e->bt_strings[i] = bprintf("**   In %s() at %s", line_func, line_pos);
+        char* s = bprintf("**   In %s() at %s", line_func, line_pos);
+        e->bt_strings[i] = s;
+        free(s);
       } else {
         /* damn, nothing to do here. Let's print the raw address */
         XBT_DEBUG("Dynamic symbol not found. Raw address = %s", backtrace_syms[i]);
-        e->bt_strings[i] = bprintf("**   In ?? at %s", backtrace_syms[i]);
+        char* s = bprintf("**   In ?? at %s", backtrace_syms[i]);
+        e->bt_strings[i] = s;
+        free(s);
       }
     }
     free(addrs[i]);
@@ -339,17 +347,17 @@ void xbt_ex_setup_backtrace(xbt_ex_t * e) //FIXME: This code could be greatly im
     if (!strncmp("main", line_func, strlen("main")) ||
         !strncmp("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper"))
         || !strncmp("smx_ctx_sysv_wrapper", line_func, strlen("smx_ctx_sysv_wrapper"))) {
-      int j;
 
-      for (j = i + 1; j < e->used; j++)
+      for (std::size_t j = i + 1; j < e->bt.size(); j++)
         free(addrs[j]);
-      e->used = i + 1;
 
       if (!strncmp
           ("xbt_thread_context_wrapper", line_func, strlen("xbt_thread_context_wrapper"))) {
-        free(e->bt_strings[i]);
-        e->bt_strings[i] = xbt_strdup("**   (in a separate thread)");
+        e->bt_strings.push_back("**   (in a separate thread)");
+      } else {
+        e->bt_strings.push_back("");
       }
+
     }
   }
   pclose(pipe);

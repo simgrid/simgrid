@@ -77,7 +77,7 @@ static xbt_dynar_t get_ready_tasks(xbt_dynar_t dax)
 
 static double finish_on_at(SD_task_t task, sg_host_t host)
 {
-  volatile double result;
+  double result;
   unsigned int i;
   double data_available = 0.;
   double redist_time = 0;

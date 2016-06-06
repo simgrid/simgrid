@@ -5,12 +5,12 @@
 # FILES_CONTAINING_UNITTESTS and have a pleasant day.
 
 set(FILES_CONTAINING_UNITTESTS
-  src/xbt/cunit.c
-  src/xbt/ex.c
-  src/xbt/dynar.c
-  src/xbt/dict.c
+  src/xbt/cunit.cpp
+  src/xbt/ex.cpp
+  src/xbt/dynar.cpp
+  src/xbt/dict.cpp
   src/xbt/swag.c
-  src/xbt/xbt_str.c
+  src/xbt/xbt_str.cpp
   src/xbt/xbt_strbuff.c
   src/xbt/config.cpp
 )

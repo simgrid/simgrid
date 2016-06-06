@@ -7,6 +7,7 @@
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
 
+#include <exception>
 #include <functional>
 
 #include "simgrid/msg.h"
@@ -28,42 +29,47 @@ SG_BEGIN_DECL()
 /**************** datatypes **********************************/
 
 /********************************* Task **************************************/
-#define MSG_BT(ptr, m)                              \
-  do {xbt_ex_t *_xbt_ex_t = xbt_new0(xbt_ex_t, 1); \
-  /* build the exception */                                             \
-  _xbt_ex_t->msg      = (bprintf(m));                                 \
-  _xbt_ex_t->category = (xbt_errcat_t)(0);                   \
-  _xbt_ex_t->value    = (0);                                 \
-  _xbt_ex_t->procname = (char*)xbt_procname();               \
-  _xbt_ex_t->pid      = xbt_getpid();                        \
-  _xbt_ex_t->file     = (char*)__FILE__;                     \
-  _xbt_ex_t->line     = __LINE__;                            \
-  _xbt_ex_t->func     = (char*)__func__;                \
-  _xbt_ex_t->bt_strings = NULL;                              \
-  xbt_backtrace_current(_xbt_ex_t); \
-  ptr = _xbt_ex_t; } while(0)
 
 typedef struct simdata_task {
-  simgrid::simix::Exec *compute;         /* SIMIX modeling of computation */
-  simgrid::simix::Comm *comm;            /* SIMIX modeling of communication */
-  double bytes_amount;    /* Data size */
-  double flops_amount;    /* Computation size */
-  msg_process_t sender;
-  msg_process_t receiver;
-  msg_host_t source;
-  double priority;
-  double bound; /* Capping for CPU resource */
-  double rate;  /* Capping for network resource */
+  ~simdata_task()
+  {
+    if (this->compute)
+      this->compute->unref();
+
+    /* parallel tasks only */
+    xbt_free(this->host_list);
+
+    xbt_dict_free(&this->affinity_mask_db);
+  }
+  void setUsed();
+  void setNotUsed()
+  {
+    this->isused = false;
+  }
+
+  simgrid::simix::Exec *compute = nullptr; /* SIMIX modeling of computation */
+  simgrid::simix::Comm *comm = nullptr;    /* SIMIX modeling of communication */
+  double bytes_amount = 0.0; /* Data size */
+  double flops_amount = 0.0; /* Computation size */
+  msg_process_t sender = nullptr;
+  msg_process_t receiver = nullptr;
+  msg_host_t source = nullptr;
+  double priority = 0.0;
+  double bound = 0.0; /* Capping for CPU resource */
+  double rate = 0.0;  /* Capping for network resource */
 
   /* CPU affinity database of this task */
-  xbt_dict_t affinity_mask_db; /* smx_host_t host => unsigned long mask */
+  xbt_dict_t affinity_mask_db = nullptr; /* smx_host_t host => unsigned long mask */
 
-  void *isused;  /* Indicates whether the task is used in SIMIX currently */
-  int host_nb;                  /* ==0 if sequential task; parallel task if not */
+  bool isused = false;  /* Indicates whether the task is used in SIMIX currently */
+  int host_nb = 0;      /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
-  sg_host_t *host_list;
-  double *flops_parallel_amount;
-  double *bytes_parallel_amount;
+  sg_host_t *host_list = nullptr;
+  double *flops_parallel_amount = nullptr;
+  double *bytes_parallel_amount = nullptr;
+
+private:
+  void reportMultipleUse() const;
 } s_simdata_task_t;
 
 /********************************* File **************************************/
@@ -194,5 +200,15 @@ SG_END_DECL()
 XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(
   const char *name, std::function<void()> code, void *data,
   msg_host_t host, xbt_dict_t properties);
+
+inline void simdata_task::setUsed()
+{
+  if (this->isused)
+    this->reportMultipleUse();
+  if (msg_global->debug_multiple_use) {
+    // TODO, backtrace
+  }
+  this->isused = true;
+}
 
 #endif

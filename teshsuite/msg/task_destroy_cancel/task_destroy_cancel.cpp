@@ -15,7 +15,6 @@ static int master(int argc, char *argv[])
   double timeout = 1;
 
   const char * mailbox = "jupi";
-  xbt_ex_t ex;
 
   msg_task_t task = MSG_task_create("normal", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending task: \"%s\"", task->name);
@@ -34,11 +33,10 @@ static int master(int argc, char *argv[])
   msg_comm_t comm = MSG_task_isend(task, mailbox);
   XBT_INFO("Canceling task \"%s\" during comm", task->name);
   MSG_task_cancel(task);
-  TRY {
+  try {
     MSG_comm_wait(comm, -1);
   }
-  CATCH (ex) {
-    xbt_ex_free(ex);
+  catch (xbt_ex& ex) {;
     MSG_comm_destroy(comm);
   }
   MSG_task_destroy(task);
@@ -47,11 +45,10 @@ static int master(int argc, char *argv[])
   comm = MSG_task_isend(task, mailbox);
   XBT_INFO("Destroying task \"%s\" during comm", task->name);
   MSG_task_destroy(task);
-  TRY {
+  try {
     MSG_comm_wait(comm, -1);
   }
-  CATCH (ex) {
-    xbt_ex_free(ex);
+  catch (xbt_ex& ex) {;
     MSG_comm_destroy(comm);
   }
 
@@ -67,7 +64,7 @@ static int master(int argc, char *argv[])
 
 static int worker_main(int argc, char *argv[])
 {
-  msg_task_t task = MSG_process_get_data(MSG_process_self());
+  msg_task_t task = (msg_task_t) MSG_process_get_data(MSG_process_self());
   msg_error_t res;
   XBT_INFO("Start %s", task->name);
   res = MSG_task_execute(task);

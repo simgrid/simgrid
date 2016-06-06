@@ -74,14 +74,27 @@ JavaContext::JavaContext(std::function<void()> code,
     this->begin = xbt_os_sem_init(0);
     this->end = xbt_os_sem_init(0);
 
-    TRY {
+    try {
        this->thread = xbt_os_thread_create(
          nullptr, JavaContext::wrapper, this, nullptr);
     }
-    CATCH_ANONYMOUS {
-      RETHROWF("Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
-               "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
-               thread_amount);
+    catch (xbt_ex& ex) {
+      char* str = bprintf(
+        "Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
+        "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
+        thread_amount, ex.what());
+      xbt_ex new_exception(str);
+      free(str);
+      new_exception.category = ex.category;
+      new_exception.value = ex.value;
+      new_exception.procname = ex.procname;
+      new_exception.file = ex.file;
+      new_exception.line = ex.line;
+      new_exception.func = ex.func;
+      new_exception.pid = ex.pid;
+      new_exception.bt = ex.bt;
+      new_exception.bt_strings = ex.bt_strings;
+      throw new_exception;
     }
   } else {
     this->thread = nullptr;

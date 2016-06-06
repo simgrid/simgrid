@@ -678,7 +678,7 @@ static int migration_tx_fun(int argc, char *argv[])
   if (!skip_stage1) {
     double clock_prev_send = MSG_get_clock();
 
-    TRY {
+    try {
       /* At stage 1, we do not need timeout. We have to send all the memory pages even though the duration of this
        * transfer exceeds the timeout value. */
       XBT_VERB("Stage 1: Gonna send %llu", ramsize);
@@ -692,7 +692,8 @@ static int migration_tx_fun(int argc, char *argv[])
       } else if (sent > ramsize)
         XBT_CRITICAL("bug");
 
-    } CATCH_ANONYMOUS {
+    }
+    catch (xbt_ex& e) {
       //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release)
       stop_dirty_page_tracking(ms->vm);
@@ -741,11 +742,12 @@ static int migration_tx_fun(int argc, char *argv[])
 
     sg_size_t sent = 0;
     double clock_prev_send = MSG_get_clock();
-    TRY {
+    try {
       XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
       sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed,
                                  mig_timeout);
-    } CATCH_ANONYMOUS {
+    }
+    catch (xbt_ex& e) {
       //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
       // Stop the dirty page tracking an return (there is no memory space to release)
       stop_dirty_page_tracking(ms->vm);
@@ -784,10 +786,11 @@ static int migration_tx_fun(int argc, char *argv[])
   simcall_vm_suspend(ms->vm);
   stop_dirty_page_tracking(ms->vm);
 
-  TRY {
+  try {
     XBT_DEBUG("Stage 3: Gonna send %f", remaining_size);
     send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, (sg_size_t)remaining_size, ms->mbox, 3, 0, mig_speed, -1);
-  } CATCH_ANONYMOUS {
+  }
+  catch(xbt_ex& e) {
     //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
     // Stop the dirty page tracking an return (there is no memory space to release)
     simcall_vm_resume(ms->vm);

@@ -217,10 +217,6 @@ void SIMIX_global_init(int *argc, char **argv)
     // a context object with the current context mestro):
     simgrid::simix::create_maestro(maestro_code);
 
-    /* context exception handlers */
-    __xbt_running_ctx_fetch = &SIMIX_process_get_running_context;
-    __xbt_ex_terminate = &SIMIX_process_exception_terminate;
-
     /* Prepare to display some more info when dying on Ctrl-C pressing */
     signal(SIGINT, inthandler);
 
@@ -299,14 +295,8 @@ void SIMIX_clean(void)
   /* Let's free maestro now */
   delete simix_global->maestro_process->context;
   simix_global->maestro_process->context = nullptr;
-  xbt_free(simix_global->maestro_process->running_ctx);
-  simix_global->maestro_process->running_ctx = nullptr;
   delete simix_global->maestro_process;
   simix_global->maestro_process = nullptr;
-
-  /* Restore the default exception setup */
-  __xbt_running_ctx_fetch = &__xbt_ex_ctx_default;
-  __xbt_ex_terminate = &__xbt_ex_terminate_default;
 
   /* Finish context module and SURF */
   SIMIX_context_mod_exit();
