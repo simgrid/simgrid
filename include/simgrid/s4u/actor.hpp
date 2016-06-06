@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_ACTOR_HPP
 #define SIMGRID_S4U_ACTOR_HPP
 
+#include <stdexcept>
 #include <xbt/base.h>
 #include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
@@ -74,6 +75,8 @@ public:
    */
   void kill();
 
+  static void kill(int PID);
+  
   // Static methods on all actors:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
