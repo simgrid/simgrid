@@ -1,4 +1,4 @@
-/*! @page MSG_Java Java Binding
+/*! @page MSG_Java Java Bindings
 
 @tableofcontents
 
@@ -22,14 +22,20 @@ library:
 
 ~~~~{.sh}
 $ javac -classpath .:path/to/simgrid.jar your/java/Code.java
-$ java -classpath .:path/to/simgrid.jar your.java.Code
+$ java -classpath .:path/to/simgrid.jar your.java.Code the/parameter/to/your/code
 ~~~~
 
 For example:
 ~~~~{.sh}
-$ cd examples
-$ java -classpath .:../simgrid.jar basic/BasicTest platform.xml basic/basicDeployment.xml
+$ cd examples/java
+$ java -classpath ../../simgrid.jar:. .:../../simgrid.jar app.pingpong.Main ../platforms/platform.xml 
 ~~~~
+
+Any SimGrid simulation (java or not) is usually constituted of several
+kind of actors or processes (classes extending @c Msg.Process) that
+are deployed over the hosts of the virtual platform. So, your code
+should declare these actors, plus a Main class in charge of deploying
+your actors on the platform. Please refer to the examples for details.
 
 @subsection java_use_trouble Troubleshooting
 
