@@ -64,7 +64,7 @@ int node(int argc, char **argv)
   /* Initialize the node's data-structures */
   int myid = xbt_str_parse_int(argv[1], "Invalid ID received as first node parameter: %s");
   snprintf(my_mbox, MAILBOX_NAME_SIZE - 1, "%d", myid);
-  sC = xbt_matrix_double_new_zeros(NODE_MATRIX_SIZE, NODE_MATRIX_SIZE);
+  xbt_matrix_t sC = xbt_matrix_double_new_zeros(NODE_MATRIX_SIZE, NODE_MATRIX_SIZE);
 
   if (myid == 0){
     /* Create the matrices to multiply and one to store the result */
@@ -90,7 +90,6 @@ int node(int argc, char **argv)
   for (int k=0; k < GRID_SIZE; k++){
     xbt_matrix_t sA;
     xbt_matrix_t sB;
-    xbt_matrix_t sC;
 
     if(k == myjob->col){
       XBT_VERB("Broadcast sA(%d,%d) to row %d", myjob->row, k, myjob->row);
