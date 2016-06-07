@@ -363,33 +363,37 @@ void smpi_mpi_start(MPI_Request request)
 
     if (async_small_thresh == 0 && (request->flags & RMA) == 0 ) {
       mailbox = smpi_process_mailbox();
-    } else if (((request->flags & RMA) != 0) || static_cast<int>(request->size) < async_small_thresh){
-    //We have to check both mailboxes (because SSEND messages are sent to the large mbox).
-    //begin with the more appropriate one : the small one.
+    } 
+    else if (((request->flags & RMA) != 0) || static_cast<int>(request->size) < async_small_thresh) {
+      //We have to check both mailboxes (because SSEND messages are sent to the large mbox).
+      //begin with the more appropriate one : the small one.
       mailbox = smpi_process_mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %p (in case of SSEND)?", mailbox);
       smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
     
-      if(action == nullptr){
+      if (action == nullptr) {
         mailbox = smpi_process_mailbox();
         XBT_DEBUG("No, nothing in the small mailbox test the other one : %p", mailbox);
         action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
-        if(action == nullptr){
+        if (action == nullptr) {
           XBT_DEBUG("Still nothing, switch back to the small mailbox : %p", mailbox);
           mailbox = smpi_process_mailbox_small();
-          }
-      }else{
+        }
+      }
+      else {
         XBT_DEBUG("yes there was something for us in the large mailbox");
       }
-    }else{
+    }
+    else {
       mailbox = smpi_process_mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
-    smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
+      smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
     
-      if(action == nullptr){
+      if (action == nullptr) {
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
         mailbox = smpi_process_mailbox();
-      }else{
+      }
+      else {
         XBT_DEBUG("yes there was something for us in the small mailbox");
       }
     }
