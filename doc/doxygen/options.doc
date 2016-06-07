@@ -881,7 +881,7 @@ This threshold specifies the size in bytes under which the send will return
 immediately. This is different from the threshold detailed in  \ref options_model_network_asyncsend
 because the message is not effectively sent when the send is posted. SMPI still waits for the
 correspondant receive to be posted to perform the communication operation. This threshold can be set
-by changing the \b smpi/send-is-detached item. The default value is 65536.
+by changing the \b smpi/send-is-detached-thresh item. The default value is 65536.
 
 \subsection options_model_smpi_collectives Simulating MPI collective algorithms
 
