@@ -54,7 +54,9 @@ int node(int argc, char **argv)
 {
   char my_mbox[MAILBOX_NAME_SIZE];
   node_job_t myjob, jobs[GRID_NUM_NODES];
-  xbt_matrix_t A, B, C, sA, sB, sC;
+  xbt_matrix_t A = NULL;
+  xbt_matrix_t B = NULL;
+  xbt_matrix_t C = NULL;
   result_t result;
 
   xbt_assert(argc != 1, "Wrong number of arguments for this node");
@@ -64,7 +66,7 @@ int node(int argc, char **argv)
   snprintf(my_mbox, MAILBOX_NAME_SIZE - 1, "%d", myid);
   sC = xbt_matrix_double_new_zeros(NODE_MATRIX_SIZE, NODE_MATRIX_SIZE);
 
-  if(myid == 0){
+  if (myid == 0){
     /* Create the matrices to multiply and one to store the result */
     A = xbt_matrix_double_new_id(MATRIX_SIZE, MATRIX_SIZE);
     B = xbt_matrix_double_new_seq(MATRIX_SIZE, MATRIX_SIZE);
@@ -80,13 +82,16 @@ int node(int argc, char **argv)
     broadcast_jobs(jobs + 1);
 
   } else {
-    A = B = C = NULL;           /* Avoid warning at compilation */
     myjob = wait_job(myid);
   }
 
   /* Multiplication main-loop */
   XBT_VERB("Start Multiplication's Main-loop");
   for (int k=0; k < GRID_SIZE; k++){
+    xbt_matrix_t sA;
+    xbt_matrix_t sB;
+    xbt_matrix_t sC;
+
     if(k == myjob->col){
       XBT_VERB("Broadcast sA(%d,%d) to row %d", myjob->row, k, myjob->row);
       broadcast_matrix(myjob->A, NEIGHBOURS_COUNT, myjob->nodes_in_row);
@@ -262,7 +267,8 @@ int main(int argc, char *argv[])
 
 static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
 {
-  int row = 0, col = 0;
+  int row = 0;
+  int col = 0;
 
   for (int node = 0; node < GRID_NUM_NODES; node++){
     XBT_VERB("Create job %d", node);
