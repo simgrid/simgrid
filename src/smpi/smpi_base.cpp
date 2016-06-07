@@ -447,19 +447,19 @@ void smpi_mpi_start(MPI_Request request)
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
       smx_synchro_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
       if (action == nullptr) {
-       if ((request->flags & SSEND) == 0){
-         mailbox = smpi_process_remote_mailbox_small(receiver);
-         XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %p", mailbox);
-       } 
-       else {
-         mailbox = smpi_process_remote_mailbox_small(receiver);
-         XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %p?", mailbox);
-         action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
-         if (action == nullptr) {
-           XBT_DEBUG("No, we are first, send to large mailbox");
-           mailbox = smpi_process_remote_mailbox(receiver);
-         }
-       }
+        if ((request->flags & SSEND) == 0){
+          mailbox = smpi_process_remote_mailbox_small(receiver);
+          XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %p", mailbox);
+        } 
+        else {
+          mailbox = smpi_process_remote_mailbox_small(receiver);
+          XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %p?", mailbox);
+          action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
+          if (action == nullptr) {
+            XBT_DEBUG("No, we are first, send to large mailbox");
+            mailbox = smpi_process_remote_mailbox(receiver);
+          }
+        }
       }
       else {
         XBT_DEBUG("Yes there was something for us in the large mailbox");
