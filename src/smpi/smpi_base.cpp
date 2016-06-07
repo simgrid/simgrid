@@ -284,10 +284,9 @@ static MPI_Request build_request(void *buf, int count, MPI_Datatype datatype, in
   request->detached        = 0;
   request->detached_sender = nullptr;
   request->real_src        = 0;
-
-  request->truncated = 0;
-  request->real_size = 0;
-  request->real_tag  = 0;
+  request->truncated       = 0;
+  request->real_size       = 0;
+  request->real_tag        = 0;
   if (flags & PERSISTENT)
     request->refcount = 1;
   else
