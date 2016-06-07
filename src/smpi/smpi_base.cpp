@@ -267,32 +267,32 @@ static MPI_Request build_request(void *buf, int count, MPI_Datatype datatype, in
     }
   }
 
-  request->buf = buf;
+  request->buf      = buf;
   // This part handles the problem of non-contiguous memory (for the unserialisation at the reception)
-  request->old_buf = old_buf;
+  request->old_buf  = old_buf;
   request->old_type = datatype;
 
   request->size = smpi_datatype_size(datatype) * count;
   smpi_datatype_use(datatype);
-  request->src = src;
-  request->dst = dst;
-  request->tag = tag;
+  request->src  = src;
+  request->dst  = dst;
+  request->tag  = tag;
   request->comm = comm;
   smpi_comm_use(request->comm);
-  request->action = NULL;
-  request->flags = flags;
-  request->detached = 0;
+  request->action          = NULL;
+  request->flags           = flags;
+  request->detached        = 0;
   request->detached_sender = NULL;
-  request->real_src = 0;
+  request->real_src        = 0;
 
   request->truncated = 0;
   request->real_size = 0;
-  request->real_tag = 0;
-  if(flags & PERSISTENT)
+  request->real_tag  = 0;
+  if (flags & PERSISTENT)
     request->refcount = 1;
   else
     request->refcount = 0;
-  request->op = MPI_REPLACE;
+  request->op   = MPI_REPLACE;
   request->send = 0;
   request->recv = 0;
 
