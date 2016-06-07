@@ -474,8 +474,8 @@ void smpi_mpi_start(MPI_Request request)
     }
 
     void* buf = request->buf;
-    if ( ((request->flags & SSEND) == 0) && (((request->flags & RMA) != 0) ||
-         (static_cast<int>(request->size) < xbt_cfg_get_int("smpi/send-is-detached-thresh")))) {
+    if ( (request->flags & SSEND) == 0 
+        && ( (request->flags & RMA) != 0 || static_cast<int>(request->size) < xbt_cfg_get_int("smpi/send-is-detached-thresh") ) ) {
       void *oldbuf = NULL;
       request->detached = 1;
       XBT_DEBUG("Send request %p is detached", request);
