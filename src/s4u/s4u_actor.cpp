@@ -29,6 +29,10 @@ s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::funct
 
 s4u::Actor::~Actor() {}
 
+void s4u::Actor::join() {
+  simcall_process_join(pimpl_, -1);
+}
+
 void s4u::Actor::setAutoRestart(bool autorestart) {
   simcall_process_auto_restart_set(pimpl_,autorestart);
 }

@@ -77,6 +77,11 @@ public:
 
   static void kill(int pid);
   
+  /**
+   * Wait for the actor to finish.
+   */ 
+  void join();
+  
   // Static methods on all actors:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
