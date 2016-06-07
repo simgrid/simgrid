@@ -279,10 +279,10 @@ static MPI_Request build_request(void *buf, int count, MPI_Datatype datatype, in
   request->tag  = tag;
   request->comm = comm;
   smpi_comm_use(request->comm);
-  request->action          = NULL;
+  request->action          = nullptr;
   request->flags           = flags;
   request->detached        = 0;
-  request->detached_sender = NULL;
+  request->detached_sender = nullptr;
   request->real_src        = 0;
 
   request->truncated = 0;
@@ -348,7 +348,7 @@ void smpi_mpi_start(MPI_Request request)
 {
   smx_mailbox_t mailbox;
 
-  xbt_assert(!request->action, "Cannot (re-)start unfinished communication");
+  xbt_assert(request->action == nullptr, "Cannot (re-)start unfinished communication");
   request->flags &= ~PREPARED;
   request->flags &= ~FINISHED;
   request->refcount++;
@@ -446,23 +446,26 @@ void smpi_mpi_start(MPI_Request request)
       mailbox = smpi_process_remote_mailbox(receiver);
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
       smx_synchro_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
-      if(action == nullptr){
+      if (action == nullptr) {
        if ((request->flags & SSEND) == 0){
          mailbox = smpi_process_remote_mailbox_small(receiver);
          XBT_DEBUG("No, nothing in the large mailbox, message is to be sent on the small one %p", mailbox);
-       } else{
+       } 
+       else {
          mailbox = smpi_process_remote_mailbox_small(receiver);
          XBT_DEBUG("SSEND : Is there a corresponding recv already posted in the small mailbox %p?", mailbox);
          action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
-         if(action == nullptr){
+         if (action == nullptr) {
            XBT_DEBUG("No, we are first, send to large mailbox");
            mailbox = smpi_process_remote_mailbox(receiver);
          }
        }
-      }else{
+      }
+      else {
         XBT_DEBUG("Yes there was something for us in the large mailbox");
       }
-    }else{
+    }
+    else {
       mailbox = smpi_process_remote_mailbox(receiver);
       XBT_DEBUG("Send request %p is in the large mailbox %p (buf: %p)",mailbox, request,request->buf);
     }
@@ -502,7 +505,7 @@ void smpi_mpi_start(MPI_Request request)
     XBT_DEBUG("send simcall posted");
 
     /* FIXME: detached sends are not traceable (request->action == nullptr) */
-    if (request->action)
+    if (request->action != nullptr)
       simcall_set_category(request->action, TRACE_internal_smpi_get_category());
 
     if (async_small_thresh != 0 || ((request->flags & RMA)!=0))
@@ -868,7 +871,7 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
     request->action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
   }
 
-  if (request->action){
+  if (request->action != nullptr){
     simgrid::simix::Comm *sync_comm = static_cast<simgrid::simix::Comm*>(request->action);
     MPI_Request req                 = static_cast<MPI_Request>(sync_comm->src_data);
     *flag = 1;
