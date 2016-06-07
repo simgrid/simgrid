@@ -76,9 +76,9 @@ typedef struct s_smpi_factor_multival { // FIXME: this should be merged (dedupli
   double values[4];//arbitrary set to 4
 } s_smpi_factor_multival_t;
 
-xbt_dynar_t smpi_os_values = NULL;
-xbt_dynar_t smpi_or_values = NULL;
-xbt_dynar_t smpi_ois_values = NULL;
+xbt_dynar_t smpi_os_values  = nullptr;
+xbt_dynar_t smpi_or_values  = nullptr;
+xbt_dynar_t smpi_ois_values = nullptr;
 
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
