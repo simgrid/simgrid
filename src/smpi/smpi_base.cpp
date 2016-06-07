@@ -348,7 +348,7 @@ void smpi_mpi_start(MPI_Request request)
 {
   smx_mailbox_t mailbox;
 
-  xbt_assert(!request->action, "Cannot (re)start a non-finished communication");
+  xbt_assert(!request->action, "Cannot (re-)start unfinished communication");
   request->flags &= ~PREPARED;
   request->flags &= ~FINISHED;
   request->refcount++;
