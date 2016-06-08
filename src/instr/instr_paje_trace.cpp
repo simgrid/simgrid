@@ -100,7 +100,7 @@ void TRACE_paje_init(void) {
 void TRACE_paje_start(void) {
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
-  if (tracing_file == NULL){
+  if (tracing_file == nullptr){
     THROWF (system_error, 1, "Tracefile %s could not be opened for writing.", filename);
   }
 
@@ -239,7 +239,7 @@ void print_pajePushState(paje_event_t event) {
 
   if (TRACE_display_sizes()) {
     stream << " ";
-    if (static_cast<pushState_t>(event->data)->extra != NULL) {
+    if (static_cast<pushState_t>(event->data)->extra != nullptr) {
       stream << static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->send_size;
     }
     else {
@@ -254,10 +254,10 @@ void print_pajePushState(paje_event_t event) {
 
   print_row();
 
-  if (static_cast<pushState_t>(event->data)->extra != NULL) {
-    if (static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->sendcounts != NULL)
+  if (static_cast<pushState_t>(event->data)->extra != nullptr) {
+    if (static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->sendcounts != nullptr)
       xbt_free(static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->sendcounts);
-    if (static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->recvcounts != NULL)
+    if (static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->recvcounts != nullptr)
       xbt_free(static_cast<instr_extra_data>(static_cast<pushState_t>(event->data)->extra)->recvcounts);
     xbt_free(static_cast<pushState_t>(event->data)->extra);
   }

@@ -10,8 +10,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_values, instr, "Paje tracing event s
 
 val_t PJ_value_new (const char *name, const char *color, type_t father)
 {
-  if (name == NULL || father == NULL){
-    THROWF (tracing_error, 0, "can't create a value with a NULL name (or a NULL father)");
+  if (name == nullptr || father == nullptr){
+    THROWF (tracing_error, 0, "can't create a value with a nullptr name (or a nullptr father)");
   }
 
   val_t ret = xbt_new0(s_val_t, 1);
@@ -23,7 +23,7 @@ val_t PJ_value_new (const char *name, const char *color, type_t father)
   snprintf (str_id, INSTR_DEFAULT_STR_SIZE, "%lld", instr_new_paje_id());
   ret->id = xbt_strdup (str_id);
 
-  xbt_dict_set (father->values, name, ret, NULL);
+  xbt_dict_set (father->values, name, ret, nullptr);
   XBT_DEBUG("new value %s, child of %s", ret->name, ret->father->name);
   new_pajeDefineEntityValue(ret);
   return ret;
@@ -45,14 +45,14 @@ val_t PJ_value_get_or_new (const char *name, const char *color, type_t father)
 
 val_t PJ_value_get (const char *name, type_t father)
 {
-  if (name == NULL || father == NULL){
-    THROWF (tracing_error, 0, "can't get a value with a NULL name (or a NULL father)");
+  if (name == nullptr || father == nullptr){
+    THROWF (tracing_error, 0, "can't get a value with a nullptr name (or a nullptr father)");
   }
 
   if (father->kind == TYPE_VARIABLE)
     THROWF(tracing_error, 0, "variables can't have different values (%s)", father->name);
   val_t ret = (val_t)xbt_dict_get_or_null (father->values, name);
-  if (ret == NULL) {
+  if (ret == nullptr) {
     THROWF(tracing_error, 2, "value with name (%s) not found in father type (%s)", name, father->name);
   }
   return ret;

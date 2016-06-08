@@ -34,9 +34,9 @@ void jedule_log_sd_event(SD_task_t task)
 {
   jed_event_t event;
 
-  xbt_assert(task != NULL);
+  xbt_assert(task != nullptr);
 
-  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), NULL);
+  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), nullptr);
 
   for(int i=0; i<task->host_count; i++) {
     const char *hostname = sg_host_get_name(task->host_list[i]);
@@ -53,7 +53,7 @@ void jedule_log_sd_event(SD_task_t task)
 
 static void create_hierarchy(AS_t current_comp, jed_simgrid_container_t current_container)
 {
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   char *key;
   AS_t elem;
   xbt_dict_t routing_sons = current_comp->children();
@@ -66,7 +66,7 @@ static void create_hierarchy(AS_t current_comp, jed_simgrid_container_t current_
     unsigned int dynar_cursor;
     sg_host_t host_elem;
 
-    hosts = xbt_dynar_new(sizeof(char*), NULL);
+    hosts = xbt_dynar_new(sizeof(char*), nullptr);
 
     xbt_dynar_foreach(table, dynar_cursor, host_elem) {
       xbt_dynar_push_as(hosts, const char*, sg_host_get_name(host_elem));
@@ -114,7 +114,7 @@ void jedule_sd_exit(void)
 {
   if (jedule) {
     jed_free_jedule(jedule);
-    jedule = NULL;
+    jedule = nullptr;
   }
 }
 
@@ -131,7 +131,7 @@ void jedule_sd_dump(const char * filename)
 
     fh = fopen(fname, "w");
 
-    write_jedule_output(fh, jedule, jedule_event_list, NULL);
+    write_jedule_output(fh, jedule, jedule_event_list, nullptr);
 
     fclose(fh);
     free(fname);

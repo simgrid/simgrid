@@ -19,21 +19,21 @@ typedef enum {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_api, instr, "API");
 
-xbt_dict_t created_categories = NULL;
-xbt_dict_t declared_marks = NULL;
-xbt_dict_t user_host_variables = NULL;
-xbt_dict_t user_vm_variables = NULL;
-xbt_dict_t user_link_variables = NULL;
+xbt_dict_t created_categories = nullptr;
+xbt_dict_t declared_marks = nullptr;
+xbt_dict_t user_host_variables = nullptr;
+xbt_dict_t user_vm_variables = nullptr;
+xbt_dict_t user_link_variables = nullptr;
 extern xbt_dict_t trivaNodeTypes;
 extern xbt_dict_t trivaEdgeTypes;
 
 static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
 {
-  if (!TRACE_is_enabled()) return NULL;
-  if (!TRACE_needs_platform()) return NULL;
+  if (!TRACE_is_enabled()) return nullptr;
+  if (!TRACE_needs_platform()) return nullptr;
 
   xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   char *name, *value;
   xbt_dict_foreach(filter, cursor, name, value) {
     xbt_dynar_push_as (ret, char*, xbt_strdup(name));
@@ -58,7 +58,7 @@ static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
  */
 void TRACE_category(const char *category)
 {
-  TRACE_category_with_color (category, NULL);
+  TRACE_category_with_color (category, nullptr);
 }
 
 /** \ingroup TRACE_category
@@ -81,7 +81,7 @@ void TRACE_category_with_color (const char *category, const char *color)
   /* safe switch */
   if (!TRACE_is_enabled()) return;
 
-  if (!(TRACE_categorized() && category != NULL)) return;
+  if (!(TRACE_categorized() && category != nullptr)) return;
 
   /* if platform is not traced, we can't deal with categories */
   if (!TRACE_needs_platform()) return;
@@ -89,7 +89,7 @@ void TRACE_category_with_color (const char *category, const char *color)
   //check if category is already created
   char *created = (char*)xbt_dict_get_or_null(created_categories, category);
   if (created) return;
-  xbt_dict_set (created_categories, category, xbt_strdup("1"), NULL);
+  xbt_dict_set (created_categories, category, xbt_strdup("1"), nullptr);
 
   //define final_color
   char final_color[INSTR_DEFAULT_STR_SIZE];
@@ -123,8 +123,8 @@ void TRACE_category_with_color (const char *category, const char *color)
  */
 xbt_dynar_t TRACE_get_categories (void)
 {
-  if (!TRACE_is_enabled()) return NULL;
-  if (!TRACE_categorized()) return NULL;
+  if (!TRACE_is_enabled()) return nullptr;
+  if (!TRACE_categorized()) return nullptr;
 
   return instr_dict_to_dynar (created_categories);
 }
@@ -147,7 +147,7 @@ void TRACE_declare_mark(const char *mark_type)
   /* if platform is not traced, we don't allow marks */
   if (!TRACE_needs_platform()) return;
 
-  if (!mark_type) THROWF (tracing_error, 1, "mark_type is NULL");
+  if (!mark_type) THROWF (tracing_error, 1, "mark_type is nullptr");
 
   //check if mark_type is already declared
   char *created = (char*)xbt_dict_get_or_null(declared_marks, mark_type);
@@ -157,7 +157,7 @@ void TRACE_declare_mark(const char *mark_type)
 
   XBT_DEBUG("MARK,declare %s", mark_type);
   PJ_type_event_new(mark_type, PJ_type_get_root());
-  xbt_dict_set (declared_marks, mark_type, xbt_strdup("1"), NULL);
+  xbt_dict_set (declared_marks, mark_type, xbt_strdup("1"), nullptr);
 }
 
 /** \ingroup TRACE_mark
@@ -166,7 +166,7 @@ void TRACE_declare_mark(const char *mark_type)
  * This function declares a new colored value for a Paje event type in the trace file that can be used by simulators to
  * declare application-level marks. This function is independent of which API is used in SimGrid. The color needs to be
  * a string with three numbers separated by spaces in the range [0,1].
- * A light-gray color can be specified using "0.7 0.7 0.7" as color. If a NULL color is provided, the color used will
+ * A light-gray color can be specified using "0.7 0.7 0.7" as color. If a nullptr color is provided, the color used will
  * be white ("1 1 1").
  *
  * \param mark_type The name of the new type.
@@ -183,8 +183,8 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   /* if platform is not traced, we don't allow marks */
   if (!TRACE_needs_platform()) return;
 
-  if (!mark_type) THROWF (tracing_error, 1, "mark_type is NULL");
-  if (!mark_value) THROWF (tracing_error, 1, "mark_value is NULL");
+  if (!mark_type) THROWF (tracing_error, 1, "mark_type is nullptr");
+  if (!mark_value) THROWF (tracing_error, 1, "mark_value is nullptr");
 
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
   if (!type){
@@ -203,7 +203,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
  *
  * This function declares a new value for a Paje event type in the trace file that can be used by simulators to declare
  * application-level marks. This function is independent of which API is used in SimGrid. Calling this function is the
- * same as calling \ref TRACE_declare_mark_value_with_color with a NULL color.
+ * same as calling \ref TRACE_declare_mark_value_with_color with a nullptr color.
  *
  * \param mark_type The name of the new type.
  * \param mark_value The name of the new value for this type.
@@ -212,7 +212,7 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
  */
 void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
 {
-  TRACE_declare_mark_value_with_color (mark_type, mark_value, NULL);
+  TRACE_declare_mark_value_with_color (mark_type, mark_value, nullptr);
 }
 
 /**
@@ -237,8 +237,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
   /* if platform is not traced, we don't allow marks */
   if (!TRACE_needs_platform()) return;
 
-  if (!mark_type) THROWF (tracing_error, 1, "mark_type is NULL");
-  if (!mark_value) THROWF (tracing_error, 1, "mark_value is NULL");
+  if (!mark_type) THROWF (tracing_error, 1, "mark_type is nullptr");
+  if (!mark_value) THROWF (tracing_error, 1, "mark_value is nullptr");
 
   //check if mark_type is already declared
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
@@ -260,7 +260,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
  */
 xbt_dynar_t TRACE_get_marks (void)
 {
-  if (!TRACE_is_enabled()) return NULL;
+  if (!TRACE_is_enabled()) return nullptr;
 
   return instr_dict_to_dynar (declared_marks);
 }
@@ -280,7 +280,7 @@ static void instr_user_variable(double time, const char *resource, const char *v
     if (created){//already declared
       return;
     }else{
-      xbt_dict_set (filter, variable, xbt_strdup("1"), NULL);
+      xbt_dict_set (filter, variable, xbt_strdup("1"), nullptr);
     }
   }else{
     if (!created){//not declared, ignore
@@ -332,9 +332,9 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
   if(!dst_elm) xbt_die("Element '%s' not found!",dst);
 
   std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency (src_elm, dst_elm, route,NULL);
+  routing_platf->getRouteAndLatency (src_elm, dst_elm, route,nullptr);
   for (auto link : *route)
-    instr_user_variable (time, link->getName(), variable, father_type, value, what, NULL, user_link_variables);
+    instr_user_variable (time, link->getName(), variable, father_type, value, what, nullptr, user_link_variables);
   delete route;
 }
 
@@ -354,9 +354,9 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
   /* returns 1 if successful, 0 otherwise */
   if (!TRACE_is_enabled()) return 0;
   xbt_graph_t g = instr_routing_platform_graph();
-  if (g == NULL) return 0;
+  if (g == nullptr) return 0;
   instr_routing_platform_graph_export_graphviz (g, filename);
-  xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, NULL);
+  xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, nullptr);
   return 1;
 }
 
@@ -379,7 +379,7 @@ int TRACE_platform_graph_export_graphviz (const char *filename)
  */
 void TRACE_vm_variable_declare (const char *variable)
 {
-  instr_user_variable(0, NULL, variable, "MSG_VM", 0, INSTR_US_DECLARE, NULL, user_vm_variables);
+  instr_user_variable(0, nullptr, variable, "MSG_VM", 0, INSTR_US_DECLARE, nullptr, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -394,7 +394,7 @@ void TRACE_vm_variable_declare (const char *variable)
  */
 void TRACE_vm_variable_declare_with_color (const char *variable, const char *color)
 {
-   instr_user_variable(0, NULL, variable, "MSG_VM", 0, INSTR_US_DECLARE, color, user_vm_variables);
+   instr_user_variable(0, nullptr, variable, "MSG_VM", 0, INSTR_US_DECLARE, color, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -456,7 +456,7 @@ void TRACE_vm_variable_sub (const char *vm, const char *variable, double value)
  */
 void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SET, NULL, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SET, nullptr, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -476,7 +476,7 @@ void TRACE_vm_variable_set_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_ADD, NULL, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_ADD, nullptr, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -496,7 +496,7 @@ void TRACE_vm_variable_add_with_time (double time, const char *vm, const char *v
  */
 void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *variable, double value)
 {
-  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SUB, NULL, user_vm_variables);
+  instr_user_variable(time, vm, variable, "MSG_VM", value, INSTR_US_SUB, nullptr, user_vm_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -526,7 +526,7 @@ xbt_dynar_t TRACE_get_vm_variables (void)
  */
 void TRACE_host_variable_declare (const char *variable)
 {
-  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, NULL, user_host_variables);
+  instr_user_variable(0, nullptr, variable, "HOST", 0, INSTR_US_DECLARE, nullptr, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -541,7 +541,7 @@ void TRACE_host_variable_declare (const char *variable)
  */
 void TRACE_host_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable(0, NULL, variable, "HOST", 0, INSTR_US_DECLARE, color, user_host_variables);
+  instr_user_variable(0, nullptr, variable, "HOST", 0, INSTR_US_DECLARE, color, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -603,7 +603,7 @@ void TRACE_host_variable_sub (const char *host, const char *variable, double val
  */
 void TRACE_host_variable_set_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET, NULL, user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SET, nullptr, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -623,7 +623,7 @@ void TRACE_host_variable_set_with_time (double time, const char *host, const cha
  */
 void TRACE_host_variable_add_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD, NULL, user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_ADD, nullptr, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -643,7 +643,7 @@ void TRACE_host_variable_add_with_time (double time, const char *host, const cha
  */
 void TRACE_host_variable_sub_with_time (double time, const char *host, const char *variable, double value)
 {
-  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, NULL, user_host_variables);
+  instr_user_variable(time, host, variable, "HOST", value, INSTR_US_SUB, nullptr, user_host_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -673,7 +673,7 @@ xbt_dynar_t TRACE_get_host_variables (void)
  */
 void TRACE_link_variable_declare (const char *variable)
 {
-  instr_user_variable (0, NULL, variable, "LINK", 0, INSTR_US_DECLARE, NULL, user_link_variables);
+  instr_user_variable (0, nullptr, variable, "LINK", 0, INSTR_US_DECLARE, nullptr, user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -688,7 +688,7 @@ void TRACE_link_variable_declare (const char *variable)
  */
 void TRACE_link_variable_declare_with_color (const char *variable, const char *color)
 {
-  instr_user_variable (0, NULL, variable, "LINK", 0, INSTR_US_DECLARE, color, user_link_variables);
+  instr_user_variable (0, nullptr, variable, "LINK", 0, INSTR_US_DECLARE, color, user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -750,7 +750,7 @@ void TRACE_link_variable_sub (const char *link, const char *variable, double val
  */
 void TRACE_link_variable_set_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET, NULL, user_link_variables);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SET, nullptr, user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -770,7 +770,7 @@ void TRACE_link_variable_set_with_time (double time, const char *link, const cha
  */
 void TRACE_link_variable_add_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD, NULL, user_link_variables);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_ADD, nullptr, user_link_variables);
 }
 
 /** \ingroup TRACE_user_variables
@@ -790,7 +790,7 @@ void TRACE_link_variable_add_with_time (double time, const char *link, const cha
  */
 void TRACE_link_variable_sub_with_time (double time, const char *link, const char *variable, double value)
 {
-  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB, NULL, user_link_variables);
+  instr_user_variable (time, link, variable, "LINK", value, INSTR_US_SUB, nullptr, user_link_variables);
 }
 
 /* for link variables, but with src and dst used for get_route */
@@ -977,7 +977,7 @@ void TRACE_host_set_state (const char *host, const char *state, const char *valu
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  val_t val = PJ_value_get_or_new (value, NULL, type); /* if user didn't declare a value with a color, use NULL color */
+  val_t val = PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new_pajeSetState(MSG_get_clock(), container, type, val);
 }
 
@@ -996,7 +996,7 @@ void TRACE_host_push_state (const char *host, const char *state, const char *val
 {
   container_t container = PJ_container_get(host);
   type_t type = PJ_type_get (state, container->type);
-  val_t val = PJ_value_get_or_new (value, NULL, type); /* if user didn't declare a value with a color, use NULL color */
+  val_t val = PJ_value_get_or_new (value, nullptr, type); /* if user didn't declare a value with a color, use nullptr color */
   new_pajePushState(MSG_get_clock(), container, type, val);
 }
 

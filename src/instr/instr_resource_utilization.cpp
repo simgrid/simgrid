@@ -30,7 +30,7 @@ static void __TRACE_surf_check_variable_set_to_zero(double now, const char *vari
     container_t container = PJ_container_get (resource);
     type_t type = PJ_type_get (variable, container->type);
     new_pajeSetVariable (now, container, type, 0);
-    xbt_dict_set(platform_variables, key, (char*)"", NULL);
+    xbt_dict_set(platform_variables, key, (char*)"", nullptr);
   }
   xbt_free(key);
 }
@@ -107,7 +107,7 @@ void TRACE_surf_host_set_utilization(const char *resource, const char *category,
 
 void TRACE_surf_resource_utilization_alloc()
 {
-  platform_variables = xbt_dict_new_homogeneous(NULL);
+  platform_variables = xbt_dict_new_homogeneous(nullptr);
 }
 
 void TRACE_surf_resource_utilization_release()

@@ -22,7 +22,7 @@ void jed_event_add_resources(jed_event_t event, xbt_dynar_t host_selection) {
   jed_res_subset_t res_set;
   unsigned int i;
 
-  resource_subset_list = xbt_dynar_new(sizeof(jed_res_subset_t), NULL);
+  resource_subset_list = xbt_dynar_new(sizeof(jed_res_subset_t), nullptr);
 
   jed_simgrid_get_resource_selection_by_hosts(resource_subset_list, host_selection);
   xbt_dynar_foreach(resource_subset_list, i, res_set)  {
@@ -33,18 +33,18 @@ void jed_event_add_resources(jed_event_t event, xbt_dynar_t host_selection) {
 }
 
 void jed_event_add_characteristic(jed_event_t event, char *characteristic) {
-  xbt_assert( characteristic != NULL );
+  xbt_assert( characteristic != nullptr );
   xbt_dynar_push(event->characteristics_list, &characteristic);
 }
 
 void jed_event_add_info(jed_event_t event, char *key, char *value) {
   char *val_cp;
 
-  xbt_assert(key != NULL);
-  xbt_assert(value != NULL);
+  xbt_assert(key != nullptr);
+  xbt_assert(value != nullptr);
 
   val_cp = strdup(value);
-  xbt_dict_set(event->info_hash, key, val_cp, NULL);
+  xbt_dict_set(event->info_hash, key, val_cp, nullptr);
 }
 
 void create_jed_event(jed_event_t *event, char *name, double start_time,
@@ -59,8 +59,8 @@ void create_jed_event(jed_event_t *event, char *name, double start_time,
   (*event)->type = xbt_strdup(type);
 
   (*event)->resource_subsets = xbt_dynar_new(sizeof(jed_res_subset_t), xbt_free_ref);
-  (*event)->characteristics_list = xbt_dynar_new(sizeof(char*), NULL);
-  (*event)->info_hash = xbt_dict_new_homogeneous(NULL);
+  (*event)->characteristics_list = xbt_dynar_new(sizeof(char*), nullptr);
+  (*event)->info_hash = xbt_dict_new_homogeneous(nullptr);
 }
 
 void jed_event_free(jed_event_t event) {

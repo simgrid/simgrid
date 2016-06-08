@@ -24,11 +24,11 @@ xbt_dynar_t jedule_event_list;
 static FILE *jed_file;
 
 static void get_hierarchy_list(xbt_dynar_t hier_list, jed_simgrid_container_t container) {
-  xbt_assert( container != NULL );
+  xbt_assert( container != nullptr );
 
-  if( container->parent != NULL ) {
+  if( container->parent != nullptr ) {
 
-    if( container->parent->container_children == NULL ) {
+    if( container->parent->container_children == nullptr ) {
       // we are in the last level
       get_hierarchy_list(hier_list, container->parent);
     } else {
@@ -62,7 +62,7 @@ static void get_hierarchy_string(jed_simgrid_container_t container, char *outbuf
     unsigned int length;
 
     outbuf[0] = '\0';
-    hier_list = xbt_dynar_new(sizeof(int), NULL);
+    hier_list = xbt_dynar_new(sizeof(int), nullptr);
     get_hierarchy_list(hier_list, container);
 
     length = xbt_dynar_length(hier_list);
@@ -80,10 +80,10 @@ static void get_hierarchy_string(jed_simgrid_container_t container, char *outbuf
 }
 
 static void print_key_value_dict(xbt_dict_t key_value_dict) {
-  xbt_dict_cursor_t cursor=NULL;
+  xbt_dict_cursor_t cursor=nullptr;
   char *key,*data;
 
-  if( key_value_dict != NULL ) {
+  if( key_value_dict != nullptr ) {
     xbt_dict_foreach(key_value_dict,cursor,key,data) {
       fprintf(jed_file, "        <prop key=\"%s\" value=\"%s\" />\n",key,data);
     }
@@ -95,7 +95,7 @@ static void print_resources(jed_simgrid_container_t resource_parent) {
   unsigned int i;
   char *res_name;
   char resid[STR_BUF_SIZE];
-  xbt_assert( resource_parent->resource_list != NULL );
+  xbt_assert( resource_parent->resource_list != nullptr );
 
   res_nb = xbt_dynar_length(resource_parent->resource_list);
 
@@ -115,10 +115,10 @@ static void print_container(jed_simgrid_container_t container) {
   unsigned int i;
   jed_simgrid_container_t child_container;
 
-  xbt_assert( container != NULL );
+  xbt_assert( container != nullptr );
 
   fprintf(jed_file, "    <res name=\"%s\">\n", container->name);
-  if( container->container_children != NULL ) {
+  if( container->container_children != nullptr ) {
     xbt_dynar_foreach(container->container_children, i, child_container) {
       print_container(child_container);
     }
@@ -138,8 +138,8 @@ static void print_event(jed_event_t event) {
   unsigned int i;
   jed_res_subset_t subset;
 
-  xbt_assert( event != NULL );
-  xbt_assert( event->resource_subsets != NULL );
+  xbt_assert( event != nullptr );
+  xbt_assert( event->resource_subsets != nullptr );
 
   fprintf(jed_file, "    <event>\n");
 
@@ -229,7 +229,7 @@ void jedule_cleanup_output() {
 }
 
 void jedule_store_event(jed_event_t event) {
-  xbt_assert(event != NULL);
+  xbt_assert(event != nullptr);
   xbt_dynar_push(jedule_event_list, &event);
 }
 #endif

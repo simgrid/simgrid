@@ -11,7 +11,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");
 
-FILE *tracing_file = NULL;
+FILE *tracing_file = nullptr;
 
 void print_NULL(paje_event_t event){}
 
@@ -26,7 +26,7 @@ s_instr_trace_writer_t active_writer = {
     print_NULL, print_NULL
 };
 
-xbt_dynar_t buffer = NULL;
+xbt_dynar_t buffer = nullptr;
 
 void dump_comment (const char *comment)
 {
@@ -58,7 +58,7 @@ void dump_comment_file (const char *filename)
 
 void TRACE_init()
 {
-  buffer = xbt_dynar_new(sizeof(paje_event_t), NULL);
+  buffer = xbt_dynar_new(sizeof(paje_event_t), nullptr);
 }
 
 void TRACE_finalize()
@@ -80,7 +80,7 @@ void TRACE_paje_dump_buffer (int force)
       event->free (event);
     }
     xbt_dynar_free (&buffer);
-    buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
+    buffer = xbt_dynar_new (sizeof(paje_event_t), nullptr);
   }else{
     paje_event_t event;
     unsigned int cursor;
