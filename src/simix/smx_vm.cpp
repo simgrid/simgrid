@@ -15,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms
 /**
  * @brief Internal function to create a SIMIX host.
  * @param name name of the host to create
- * @param data some user data (may be NULL)
+ * @param data some user data (may be nullptr)
  */
 sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
 {
@@ -50,7 +50,7 @@ static int __can_be_started(sg_host_t vm)
 
   int pm_overcommit = 0;
   long pm_ramsize = host_get_ramsize(pm, &pm_overcommit);
-  long vm_ramsize = host_get_ramsize(vm, NULL);
+  long vm_ramsize = host_get_ramsize(vm, nullptr);
 
   if (!pm_ramsize) {
     /* We assume users do not want to care about ramsize. */
@@ -68,7 +68,7 @@ static int __can_be_started(sg_host_t vm)
     unsigned int cursor = 0;
     sg_host_t another_vm;
     xbt_dynar_foreach(dyn_vms, cursor, another_vm) {
-      long another_vm_ramsize = host_get_ramsize(vm, NULL);
+      long another_vm_ramsize = host_get_ramsize(vm, nullptr);
       total_ramsize_of_vms += another_vm_ramsize;
     }
   }

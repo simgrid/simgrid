@@ -86,7 +86,7 @@ void SIMIX_synchro_finish(smx_synchro_t synchro)
   }
 
   SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
-  simcall->issuer->waiting_synchro = NULL;
+  simcall->issuer->waiting_synchro = nullptr;
   delete synchro;
   SIMIX_simcall_answer(simcall);
   XBT_OUT();
@@ -122,7 +122,7 @@ void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
 {
   XBT_IN("(%p)",simcall);
   /* FIXME: check where to validate the arguments */
-  smx_synchro_t synchro = NULL;
+  smx_synchro_t synchro = nullptr;
   smx_process_t process = simcall->issuer;
 
   if (mutex->locked) {
@@ -192,13 +192,13 @@ void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
     /*process to wake up */
     smx_process_t p = (smx_process_t) xbt_swag_extract(mutex->sleeping);
     delete p->waiting_synchro;
-    p->waiting_synchro = NULL;
+    p->waiting_synchro = nullptr;
     mutex->owner = p;
     SIMIX_simcall_answer(&p->simcall);
   } else {
     /* nobody to wake up */
     mutex->locked = 0;
-    mutex->owner = NULL;
+    mutex->owner = nullptr;
   }
   XBT_OUT();
 }
@@ -234,7 +234,7 @@ smx_cond_t SIMIX_cond_init(void)
   simgrid::simix::Process p;
   smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
-  cond->mutex = NULL;
+  cond->mutex = nullptr;
   XBT_OUT();
   return cond;
 }
@@ -271,13 +271,13 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_process_t issuer, smx_simcall_t simcall)
 {
   XBT_IN("(%p, %p, %f, %p,%p)",cond,mutex,timeout,issuer,simcall);
-  smx_synchro_t synchro = NULL;
+  smx_synchro_t synchro = nullptr;
 
   XBT_DEBUG("Wait condition %p", cond);
 
   /* If there is a mutex unlock it */
   /* FIXME: what happens if the issuer is not the owner of the mutex? */
-  if (mutex != NULL) {
+  if (mutex != nullptr) {
     cond->mutex = mutex;
     SIMIX_mutex_unlock(mutex, issuer);
   }
@@ -299,9 +299,9 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
 void SIMIX_cond_signal(smx_cond_t cond)
 {
   XBT_IN("(%p)",cond);
-  smx_process_t proc = NULL;
-  smx_mutex_t mutex = NULL;
-  smx_simcall_t simcall = NULL;
+  smx_process_t proc = nullptr;
+  smx_mutex_t mutex = nullptr;
+  smx_simcall_t simcall = nullptr;
 
   XBT_DEBUG("Signal condition %p", cond);
 
@@ -311,7 +311,7 @@ void SIMIX_cond_signal(smx_cond_t cond)
 
     /* Destroy waiter's synchronization */
     delete proc->waiting_synchro;
-    proc->waiting_synchro = NULL;
+    proc->waiting_synchro = nullptr;
 
     /* Now transform the cond wait simcall into a mutex lock one */
     simcall = &proc->simcall;
@@ -356,7 +356,7 @@ void SIMIX_cond_destroy(smx_cond_t cond)
   XBT_IN("(%p)",cond);
   XBT_DEBUG("Destroy condition %p", cond);
 
-  if (cond != NULL) {
+  if (cond != nullptr) {
     xbt_assert(xbt_swag_size(cond->sleeping) == 0,
                 "Cannot destroy conditional since someone is still using it");
 
@@ -386,7 +386,7 @@ void SIMIX_sem_destroy(smx_sem_t sem)
 {
   XBT_IN("(%p)",sem);
   XBT_DEBUG("Destroy semaphore %p", sem);
-  if (sem != NULL) {
+  if (sem != nullptr) {
     xbt_assert(xbt_swag_size(sem->sleeping) == 0,
                 "Cannot destroy semaphore since someone is still using it");
     xbt_swag_free(sem->sleeping);
@@ -411,7 +411,7 @@ void SIMIX_sem_release(smx_sem_t sem)
   XBT_DEBUG("Sem release semaphore %p", sem);
   if ((proc = (smx_process_t) xbt_swag_extract(sem->sleeping))) {
     delete proc->waiting_synchro;
-    proc->waiting_synchro = NULL;
+    proc->waiting_synchro = nullptr;
     SIMIX_simcall_answer(&proc->simcall);
   } else if (sem->value < SMX_SEM_NOLIMIT) {
     sem->value++;
@@ -442,7 +442,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
                             smx_simcall_t simcall)
 {
   XBT_IN("(%p, %f, %p, %p)",sem,timeout,issuer,simcall);
-  smx_synchro_t synchro = NULL;
+  smx_synchro_t synchro = nullptr;
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
   if (sem->value <= 0) {

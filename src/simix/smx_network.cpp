@@ -47,10 +47,10 @@ smx_mailbox_t SIMIX_mbox_create(const char *name)
     mbox->name = xbt_strdup(name);
     mbox->comm_queue = new std::deque<smx_synchro_t>();
     mbox->done_comm_queue = nullptr; // Allocated on need only
-    mbox->permanent_receiver=NULL;
+    mbox->permanent_receiver=nullptr;
 
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
-    xbt_dict_set(mailboxes, mbox->name, mbox, NULL);
+    xbt_dict_set(mailboxes, mbox->name, mbox, nullptr);
   }
   return mbox;
 }
@@ -105,7 +105,7 @@ void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t synchro)
 {
   simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
 
-  comm->mbox = NULL;
+  comm->mbox = nullptr;
   for (auto it = mbox->comm_queue->begin(); it != mbox->comm_queue->end(); it++)
     if (*it == comm) {
       mbox->comm_queue->erase(it);
@@ -117,12 +117,12 @@ void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t synchro)
 /**
  *  \brief Checks if there is a communication synchro queued in a deque matching our needs
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
- *  \return The communication synchro if found, NULL otherwise
+ *  \return The communication synchro if found, nullptr otherwise
  */
 static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx_comm_type_t type,
     int (*match_fun)(void *, void *,smx_synchro_t), void *this_user_data, smx_synchro_t my_synchro, bool remove_matching)
 {
-  void* other_user_data = NULL;
+  void* other_user_data = nullptr;
 
   for(auto it = deque->begin(); it != deque->end(); it++){
     smx_synchro_t synchro = *it;
@@ -143,7 +143,7 @@ static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx
 #if HAVE_MC
       comm->mbox_cpy = comm->mbox;
 #endif
-      comm->mbox = NULL;
+      comm->mbox = nullptr;
       return comm;
     }
     XBT_DEBUG("Sorry, communication synchro %p does not match our needs:"
@@ -151,7 +151,7 @@ static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx
               comm, (int)comm->type, (int)type);
   }
   XBT_DEBUG("No matching communication synchro found");
-  return NULL;
+  return nullptr;
 }
 
 /******************************************************************************/
@@ -164,7 +164,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t 
                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),
           void *data, double timeout){
   smx_synchro_t comm = simcall_HANDLER_comm_isend(simcall, src, mbox, task_size, rate,
-                           src_buff, src_buff_size, match_fun, NULL, copy_data_fun,
+                           src_buff, src_buff_size, match_fun, nullptr, copy_data_fun,
                data, 0);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
@@ -195,7 +195,7 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
     other_synchro = this_synchro;
     other_comm = static_cast<simgrid::simix::Comm*>(other_synchro);
 
-    if (mbox->permanent_receiver!=NULL){
+    if (mbox->permanent_receiver!=nullptr){
       //this mailbox is for small messages, which have to be sent right now
       other_synchro->state = SIMIX_READY;
       other_comm->dst_proc=mbox->permanent_receiver;
@@ -222,7 +222,7 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
     other_comm->detached = true;
     other_comm->clean_fun = clean_fun;
   } else {
-    other_comm->clean_fun = NULL;
+    other_comm->clean_fun = nullptr;
   }
 
   /* Setup the communication synchro */
@@ -239,11 +239,11 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     other_comm->state = SIMIX_RUNNING;
-    return (detached ? NULL : other_comm);
+    return (detached ? nullptr : other_comm);
   }
 
   SIMIX_comm_start(other_comm);
-  return (detached ? NULL : other_comm);
+  return (detached ? nullptr : other_comm);
 }
 
 XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox,
@@ -293,7 +293,7 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",other_comm);
         other_comm->state = SIMIX_DONE;
         other_comm->type = SIMIX_COMM_DONE;
-        other_comm->mbox = NULL;
+        other_comm->mbox = nullptr;
       }
       other_comm->unref();
       static_cast<simgrid::simix::Comm*>(this_synchro)->unref();
@@ -363,7 +363,7 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
     this_comm = new simgrid::simix::Comm(SIMIX_COMM_RECEIVE);
     smx_type = SIMIX_COMM_SEND;
   } 
-  smx_synchro_t other_synchro=NULL;
+  smx_synchro_t other_synchro=nullptr;
   if(mbox->permanent_receiver && ! mbox->done_comm_queue->empty()){
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
     other_synchro =
@@ -639,8 +639,8 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
 
         XBT_DEBUG("Link failure in synchro %p between '%s' and '%s': posting an exception to the issuer: %s (%p) detached:%d",
                   synchro,
-                  comm->src_proc ? sg_host_get_name(comm->src_proc->host) : NULL,
-                  comm->dst_proc ? sg_host_get_name(comm->dst_proc->host) : NULL,
+                  comm->src_proc ? sg_host_get_name(comm->src_proc->host) : nullptr,
+                  comm->dst_proc ? sg_host_get_name(comm->dst_proc->host) : nullptr,
                   simcall->issuer->name.c_str(), simcall->issuer, comm->detached);
         if (comm->src_proc == simcall->issuer) {
           XBT_DEBUG("I'm source");
@@ -678,7 +678,7 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       simcall->issuer->context->iwannadie = 1;
     }
 
-    simcall->issuer->waiting_synchro = NULL;
+    simcall->issuer->waiting_synchro = nullptr;
     xbt_fifo_remove(simcall->issuer->comms, synchro);
     if(comm->detached){
       if(simcall->issuer == comm->src_proc){
@@ -726,7 +726,7 @@ void SIMIX_comm_copy_buffer_callback(smx_synchro_t synchro, void* buff, size_t b
   memcpy(comm->dst_buff, buff, buff_size);
   if (comm->detached) { // if this is a detached send, the source buffer was duplicated by SMPI sender to make the original buffer available to the application ASAP
     xbt_free(buff);
-    comm->src_buff = NULL;
+    comm->src_buff = nullptr;
   }
 }
 

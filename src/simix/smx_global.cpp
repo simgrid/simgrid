@@ -44,8 +44,8 @@
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
 
-smx_global_t simix_global = NULL;
-static xbt_heap_t simix_timers = NULL;
+smx_global_t simix_global = nullptr;
+static xbt_heap_t simix_timers = nullptr;
 
 /** @brief Timer datatype */
 typedef struct s_smx_timer {
@@ -57,7 +57,7 @@ typedef struct s_smx_timer {
     : date(date), callback(std::move(callback)) {}
 } s_smx_timer_t;
 
-void (*SMPI_switch_data_segment)(int) = NULL;
+void (*SMPI_switch_data_segment)(int) = nullptr;
 
 int _sg_do_verbose_exit = 1;
 static void inthandler(int ignored)
@@ -127,7 +127,7 @@ static void install_segvhandler(void)
   if (!(old_stack.ss_flags & SS_DISABLE)) {
     XBT_DEBUG("An alternate stack was already installed (sp=%p, size=%zd, flags=%x). Restore it.",
               old_stack.ss_sp, old_stack.ss_size, old_stack.ss_flags);
-    sigaltstack(&old_stack, NULL);
+    sigaltstack(&old_stack, nullptr);
   }
 
   struct sigaction action, old_action;
@@ -143,7 +143,7 @@ static void install_segvhandler(void)
     XBT_DEBUG("A signal handler was already installed for SIGSEGV (%p). Restore it.",
              (old_action.sa_flags & SA_SIGINFO) ?
              (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
-    sigaction(SIGSEGV, &old_action, NULL);
+    sigaction(SIGSEGV, &old_action, nullptr);
   }
 }
 
@@ -157,7 +157,7 @@ double SIMIX_timer_next(void)
 
 static void kill_process(smx_process_t process)
 {
-  SIMIX_process_kill(process, NULL);
+  SIMIX_process_kill(process, nullptr);
 }
 
 static std::function<void()> maestro_code;
@@ -197,13 +197,13 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global = xbt_new0(s_smx_global_t, 1);
 
     simgrid::simix::Process proc;
-    simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), NULL);
-    simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), NULL);
+    simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), nullptr);
+    simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), nullptr);
     simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
 
-    simix_global->maestro_process = NULL;
-    simix_global->registered_functions = xbt_dict_new_homogeneous(NULL);
+    simix_global->maestro_process = nullptr;
+    simix_global->registered_functions = xbt_dict_new_homogeneous(nullptr);
 
     simix_global->create_process_function = &SIMIX_process_create;
     simix_global->kill_process_function = &kill_process;
@@ -239,9 +239,9 @@ void SIMIX_global_init(int *argc, char **argv)
       const char* name = storage->getName();
       // TODO, create sg_storage_by_name
       sg_storage_t s = xbt_lib_get_elm_or_null(storage_lib, name);
-      xbt_assert(s != NULL, "Storage not found for name %s", name);
+      xbt_assert(s != nullptr, "Storage not found for name %s", name);
 
-      SIMIX_storage_create(name, s, NULL);
+      SIMIX_storage_create(name, s, nullptr);
     });
 
     SIMIX_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, SIMIX_storage_destroy);
@@ -283,18 +283,18 @@ void SIMIX_clean(void)
   SIMIX_mailbox_exit();
 
   xbt_heap_free(simix_timers);
-  simix_timers = NULL;
+  simix_timers = nullptr;
   /* Free the remaining data structures */
   xbt_dynar_free(&simix_global->process_to_run);
   xbt_dynar_free(&simix_global->process_that_ran);
   xbt_swag_free(simix_global->process_to_destroy);
   xbt_swag_free(simix_global->process_list);
-  simix_global->process_list = NULL;
-  simix_global->process_to_destroy = NULL;
+  simix_global->process_list = nullptr;
+  simix_global->process_to_destroy = nullptr;
   xbt_dict_free(&(simix_global->registered_functions));
 
   xbt_os_mutex_destroy(simix_global->mutex);
-  simix_global->mutex = NULL;
+  simix_global->mutex = nullptr;
 
   /* Let's free maestro now */
   delete simix_global->maestro_process->context;
@@ -302,7 +302,7 @@ void SIMIX_clean(void)
   xbt_free(simix_global->maestro_process->running_ctx);
   simix_global->maestro_process->running_ctx = nullptr;
   delete simix_global->maestro_process;
-  simix_global->maestro_process = NULL;
+  simix_global->maestro_process = nullptr;
 
   /* Restore the default exception setup */
   __xbt_running_ctx_fetch = &__xbt_ex_ctx_default;
@@ -314,7 +314,7 @@ void SIMIX_clean(void)
   surf_exit();
 
   xbt_free(simix_global);
-  simix_global = NULL;
+  simix_global = nullptr;
 
   return;
 }
@@ -449,7 +449,7 @@ void SIMIX_run(void)
         XBT_DEBUG("Handling process whose action terminated normally");
         while ((action = surf_model_extract_done_action_set(model))) {
           XBT_DEBUG("   Handling Action %p",action);
-          if (action->getData() == NULL)
+          if (action->getData() == nullptr)
             XBT_DEBUG("probably vcpu's action %p, skip", action);
           else
             SIMIX_simcall_exit((smx_synchro_t) action->getData());
@@ -493,7 +493,7 @@ void SIMIX_run(void)
       XBT_DEBUG("Handling process whose action terminated normally");
       while ((action = surf_model_extract_done_action_set(model))) {
         XBT_DEBUG("   Handling Action %p",action);
-        if (action->getData() == NULL)
+        if (action->getData() == nullptr)
           XBT_DEBUG("probably vcpu's action %p, skip", action);
         else
           SIMIX_simcall_exit((smx_synchro_t) action->getData());
@@ -501,7 +501,7 @@ void SIMIX_run(void)
     }
 
     /* Autorestart all process */
-    char *hostname = NULL;
+    char *hostname = nullptr;
     xbt_dynar_foreach(host_that_restart,iter,hostname) {
       XBT_INFO("Restart processes on host: %s",hostname);
       SIMIX_host_autorestart(sg_host_by_name(hostname));
@@ -554,7 +554,7 @@ void SIMIX_timer_remove(smx_timer_t timer) {
   xbt_heap_rm_elm(simix_timers, timer, timer->date);
 }
 
-/** @brief Returns the date at which the timer will trigger (or 0 if NULL timer) */
+/** @brief Returns the date at which the timer will trigger (or 0 if nullptr timer) */
 double SIMIX_timer_get_date(smx_timer_t timer) {
   return timer?timer->date:0;
 }
@@ -603,11 +603,11 @@ void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t
 
 void SIMIX_display_process_status(void)
 {
-  if (simix_global->process_list == NULL) {
+  if (simix_global->process_list == nullptr) {
     return;
   }
 
-  smx_process_t process = NULL;
+  smx_process_t process = nullptr;
   int nbprocess = xbt_swag_size(simix_global->process_list);
 
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
@@ -668,5 +668,5 @@ xbt_dict_t SIMIX_asr_get_properties(const char *name)
 
 int SIMIX_is_maestro()
 {
-  return simix_global==NULL /*SimDag*/|| SIMIX_process_self() == simix_global->maestro_process;
+  return simix_global==nullptr /*SimDag*/|| SIMIX_process_self() == simix_global->maestro_process;
 }

@@ -55,7 +55,7 @@ void simgrid::simix::Exec::post()
 
   if (surf_exec) {
     surf_exec->unref();
-    surf_exec = NULL;
+    surf_exec = nullptr;
   }
 
   /* If there are simcalls associated with the synchro, then answer them */

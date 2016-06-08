@@ -39,7 +39,7 @@ smx_process_t SIMIX_process_self(void)
 {
   smx_context_t self_context = SIMIX_context_self();
 
-  return self_context ? self_context->process() : NULL;
+  return self_context ? self_context->process() : nullptr;
 }
 
 /**
@@ -62,7 +62,7 @@ void SIMIX_process_cleanup(smx_process_t process)
   SIMIX_process_on_exit_runall(process);
 
   /* Unregister from the kill timer if any */
-  if (process->kill_timer != NULL)
+  if (process->kill_timer != nullptr)
       SIMIX_timer_remove(process->kill_timer);
 
   xbt_os_mutex_acquire(simix_global->mutex);
@@ -79,7 +79,7 @@ void SIMIX_process_cleanup(smx_process_t process)
     if (comm->src_proc == process) {
       XBT_DEBUG("Found an unfinished send comm %p (detached = %d), state %d, src = %p, dst = %p",
           comm, comm->detached, (int)comm->state, comm->src_proc, comm->dst_proc);
-      comm->src_proc = NULL;
+      comm->src_proc = nullptr;
 
       /* I'm not supposed to destroy a detached comm from the sender side, */
       if (comm->detached)
@@ -91,9 +91,9 @@ void SIMIX_process_cleanup(smx_process_t process)
     else if (comm->dst_proc == process){
       XBT_DEBUG("Found an unfinished recv comm %p, state %d, src = %p, dst = %p",
           comm, (int)comm->state, comm->src_proc, comm->dst_proc);
-      comm->dst_proc = NULL;
+      comm->dst_proc = nullptr;
 
-      if (comm->detached && comm->src_proc != NULL) {
+      if (comm->detached && comm->src_proc != nullptr) {
         /* the comm will be freed right now, remove it from the sender */
         xbt_fifo_remove(comm->src_proc->comms, comm);
       }
@@ -122,7 +122,7 @@ void SIMIX_process_cleanup(smx_process_t process)
  */
 void SIMIX_process_empty_trash(void)
 {
-  smx_process_t process = NULL;
+  smx_process_t process = nullptr;
 
   while ((process = (smx_process_t) xbt_swag_extract(simix_global->process_to_destroy))) {
     XBT_DEBUG("Getting rid of %p",process);
@@ -146,7 +146,7 @@ namespace simix {
 
 void create_maestro(std::function<void()> code)
 {
-  smx_process_t maestro = NULL;
+  smx_process_t maestro = nullptr;
   /* Create maestro process and intilialize it */
   maestro = new simgrid::simix::Process();
   maestro->pid = simix_process_maxpid++;
@@ -157,7 +157,7 @@ void create_maestro(std::function<void()> code)
   XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
 
   if (!code) {
-    maestro->context = SIMIX_context_new(std::function<void()>(), NULL, maestro);
+    maestro->context = SIMIX_context_new(std::function<void()>(), nullptr, maestro);
   } else {
     if (!simix_global)
       xbt_die("simix is not initialized, please call MSG_init first");
@@ -223,7 +223,7 @@ smx_process_t SIMIX_process_create(
                           int auto_restart,
                           smx_process_t parent_process)
 {
-  smx_process_t process = NULL;
+  smx_process_t process = nullptr;
   sg_host_t host = sg_host_by_name(hostname);
 
   XBT_DEBUG("Start process %s on host '%s'", name, hostname);
@@ -236,7 +236,7 @@ smx_process_t SIMIX_process_create(
   else {
     process = new simgrid::simix::Process();
 
-    xbt_assert(code && host != NULL, "Invalid parameters");
+    xbt_assert(code && host != nullptr, "Invalid parameters");
     /* Process data */
     process->pid = simix_process_maxpid++;
     process->name = simgrid::xbt::string(name);
@@ -247,7 +247,7 @@ smx_process_t SIMIX_process_create(
     /* Initiliaze data segment to default value */
     SIMIX_segment_index_set(process, -1);
 
-     if (parent_process != NULL) {
+     if (parent_process != nullptr) {
        process->ppid = SIMIX_process_get_PID(parent_process);
        /* SMPI process have their own data segment and
           each other inherit from their father */
@@ -338,7 +338,7 @@ smx_process_t SIMIX_process_attach(
   process->ppid = -1;
   /* Initiliaze data segment to default value */
   SIMIX_segment_index_set(process, -1);
-  if (parent_process != NULL) {
+  if (parent_process != nullptr) {
     process->ppid = SIMIX_process_get_PID(parent_process);
    /* SMPI process have their own data segment and
       each other inherit from their father */
@@ -495,7 +495,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
       break;
     } */
 
-    process->waiting_synchro = NULL;
+    process->waiting_synchro = nullptr;
   }
   if(!xbt_dynar_member(simix_global->process_to_run, &(process)) && process != issuer) {
     XBT_DEBUG("Inserting %s in the to_run list", process->name.c_str());
@@ -549,7 +549,7 @@ void SIMIX_process_throw(smx_process_t process, xbt_errcat_t cat, int value, con
       SIMIX_io_destroy(process->waiting_synchro);
     }
   }
-  process->waiting_synchro = NULL;
+  process->waiting_synchro = nullptr;
 
 }
 
@@ -562,7 +562,7 @@ void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid) {
  */
 void SIMIX_process_killall(smx_process_t issuer, int reset_pid)
 {
-  smx_process_t p = NULL;
+  smx_process_t p = nullptr;
 
   while ((p = (smx_process_t) xbt_swag_extract(simix_global->process_list))) {
     if (p != issuer) {
@@ -585,7 +585,7 @@ void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_process_t proce
 void SIMIX_process_change_host(smx_process_t process,
              sg_host_t dest)
 {
-  xbt_assert((process != NULL), "Invalid parameters");
+  xbt_assert((process != nullptr), "Invalid parameters");
   xbt_swag_remove(process, sg_host_simix(process->host)->process_list);
   process->host = dest;
   xbt_swag_insert(process, sg_host_simix(dest)->process_list);
@@ -610,7 +610,7 @@ smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 {
   if (process->suspended) {
     XBT_DEBUG("Process '%s' is already suspended", process->name.c_str());
-    return NULL;
+    return nullptr;
   }
 
   process->suspended = 1;
@@ -622,7 +622,7 @@ smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
       process->waiting_synchro->suspend();
     /* If the other process is not waiting, its suspension is delayed to when the process is rescheduled. */
 
-    return NULL;
+    return nullptr;
   } else {
     /* FIXME: computation size is zero. Is it okay that bound is zero ? */
     return SIMIX_execution_start(process, "suspend", 0.0, 1.0, 0.0, 0);
@@ -667,14 +667,14 @@ int SIMIX_process_count(void)
 }
 
 int SIMIX_process_get_PID(smx_process_t self){
-  if (self == NULL)
+  if (self == nullptr)
     return 0;
   else
     return self->pid;
 }
 
 int SIMIX_process_get_PPID(smx_process_t self){
-  if (self == NULL)
+  if (self == nullptr)
     return 0;
   else
     return self->ppid;
@@ -685,7 +685,7 @@ void* SIMIX_process_self_get_data()
   smx_process_t self = SIMIX_process_self();
 
   if (!self) {
-    return NULL;
+    return nullptr;
   }
   return SIMIX_process_get_data(self);
 }
@@ -717,7 +717,7 @@ sg_host_t SIMIX_process_get_host(smx_process_t process)
 const char* SIMIX_process_self_get_name(void) {
 
   smx_process_t process = SIMIX_process_self();
-  if (process == NULL || process == simix_global->maestro_process)
+  if (process == nullptr || process == simix_global->maestro_process)
     return "maestro";
 
   return SIMIX_process_get_name(process);
@@ -735,7 +735,7 @@ smx_process_t SIMIX_process_get_by_name(const char* name)
     if (proc->name == name)
       return proc;
   }
-  return NULL;
+  return nullptr;
 }
 
 int SIMIX_process_is_suspended(smx_process_t process)
@@ -765,7 +765,7 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synch
       smx_simcall_t simcall = sleep->simcalls.front();
       sleep->simcalls.pop_front();
       simcall_process_sleep__set__result(simcall, SIMIX_DONE);
-      simcall->issuer->waiting_synchro = NULL;
+      simcall->issuer->waiting_synchro = nullptr;
       if (simcall->issuer->suspended) {
         XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
         simcall->issuer->suspended = 0;
@@ -775,7 +775,7 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synch
       }
     }
     sleep->surf_sleep->unref();
-    sleep->surf_sleep = NULL;
+    sleep->surf_sleep = nullptr;
   }
   delete sleep;
   return 0;
@@ -825,7 +825,7 @@ void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
 
   if (sleep->surf_sleep) {
     sleep->surf_sleep->unref();
-    sleep->surf_sleep = NULL;
+    sleep->surf_sleep = nullptr;
   }
 }
 
@@ -849,7 +849,7 @@ void SIMIX_process_yield(smx_process_t self)
 
   if (self->new_host) {
     SIMIX_process_change_host(self, self->new_host);
-    self->new_host = NULL;
+    self->new_host = nullptr;
   }
 
   if (self->context->iwannadie){
@@ -918,13 +918,13 @@ smx_process_t SIMIX_process_from_PID(int PID)
    if (proc->pid == (unsigned long) PID)
     return proc;
   }
-  return NULL;
+  return nullptr;
 }
 
 /** @brief returns a dynar containg all currently existing processes */
 xbt_dynar_t SIMIX_processes_as_dynar(void) {
   smx_process_t proc;
-  xbt_dynar_t res = xbt_dynar_new(sizeof(smx_process_t),NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(smx_process_t),nullptr);
   xbt_swag_foreach(proc, simix_global->process_list) {
     xbt_dynar_push(res,&proc);
   }
@@ -946,7 +946,7 @@ void SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void 
   xbt_assert(process, "current process not found: are you in maestro context ?");
 
   if (!process->on_exit) {
-    process->on_exit = xbt_dynar_new(sizeof(s_smx_process_exit_fun_t), NULL);
+    process->on_exit = xbt_dynar_new(sizeof(s_smx_process_exit_fun_t), nullptr);
   }
 
   s_smx_process_exit_fun_t exit_fun = {fun, data};
@@ -979,7 +979,7 @@ smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer)
   arg.hostname = sg_host_get_name(process->host);
   arg.kill_time = SIMIX_timer_get_date(process->kill_timer);
   arg.data = process->data;
-  arg.properties = NULL;
+  arg.properties = nullptr;
   arg.auto_restart = process->auto_restart;
 
   //kill the old process

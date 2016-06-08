@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)
  * \brief Internal function to create a SIMIX storage.
  * \param name name of the storage to create
  * \param storage the SURF storage to encapsulate
- * \param data some user data (may be NULL)
+ * \param data some user data (may be nullptr)
  */
 smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data)
 {
@@ -42,7 +42,7 @@ void SIMIX_storage_destroy(void *s)
 {
   smx_storage_priv_t storage = (smx_storage_priv_t) s;
 
-  xbt_assert((storage != NULL), "Invalid parameters");
+  xbt_assert((storage != nullptr), "Invalid parameters");
   if (storage->data)
     free(storage->data);
 
@@ -289,7 +289,7 @@ void SIMIX_io_finish(smx_synchro_t synchro)
       simcall->issuer->context->iwannadie = 1;
     }
 
-    simcall->issuer->waiting_synchro = NULL;
+    simcall->issuer->waiting_synchro = nullptr;
     SIMIX_simcall_answer(simcall);
   }
 

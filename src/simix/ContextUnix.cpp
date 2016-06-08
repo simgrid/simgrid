@@ -216,7 +216,7 @@ UContext::UContext(std::function<void()> code,
     this->uc_.uc_stack.ss_size = sg_makecontext_stack_size(smx_context_usable_stack_size);
     simgrid_makecontext(&this->uc_, smx_ctx_sysv_wrapper, this);
   } else {
-    if (process != NULL && sysv_maestro_context == NULL)
+    if (process != nullptr && sysv_maestro_context == nullptr)
       sysv_maestro_context = this;
   }
 
@@ -351,7 +351,7 @@ void ParallelUContext::suspend()
   // Will contain the next soul to run, either simulated or initial minion's one
   ucontext_t* next_stack;
 
-  if (next_work != NULL) {
+  if (next_work != nullptr) {
     // There is a next soul to embody (ie, a next process to resume)
     XBT_DEBUG("Run next process");
     next_context = (ParallelUContext*) next_work->context;

@@ -14,8 +14,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
 simgrid::simix::Comm::Comm(e_smx_comm_type_t _type) {
   state = SIMIX_WAITING;
   this->type = _type;
-  src_data=NULL;
-  dst_data=NULL;
+  src_data=nullptr;
+  dst_data=nullptr;
 
   XBT_DEBUG("Create communicate synchro %p", this);
 }
@@ -31,7 +31,7 @@ simgrid::simix::Comm::~Comm()
      * we have to free the buffer */
     if (clean_fun)
       clean_fun(src_buff);
-    src_buff = NULL;
+    src_buff = nullptr;
   }
 
   if(mbox)
@@ -96,17 +96,17 @@ void simgrid::simix::Comm::cleanupSurf()
 {
   if (surf_comm){
     surf_comm->unref();
-    surf_comm = NULL;
+    surf_comm = nullptr;
   }
 
   if (src_timeout){
     src_timeout->unref();
-    src_timeout = NULL;
+    src_timeout = nullptr;
   }
 
   if (dst_timeout){
     dst_timeout->unref();
-    dst_timeout = NULL;
+    dst_timeout = nullptr;
   }
 }
 

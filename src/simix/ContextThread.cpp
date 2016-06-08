@@ -112,7 +112,7 @@ ThreadContext::ThreadContext(std::function<void()> code,
     /* NOTE: The first argument to xbt_os_thread_create used to be the process *
     * name, but now the name is stored at SIMIX level, so we pass a null  */
     this->thread_ =
-      xbt_os_thread_create(NULL,
+      xbt_os_thread_create(nullptr,
         maestro ? ThreadContext::maestro_wrapper : ThreadContext::wrapper,
         this, this);
     /* wait the starting of the newly created process */
@@ -201,7 +201,7 @@ void ThreadContext::stop()
   // Signal to the maestro that it has finished:
   xbt_os_sem_release(this->end_);
 
-  xbt_os_thread_exit(NULL);
+  xbt_os_thread_exit(nullptr);
 }
 
 void ThreadContext::suspend()

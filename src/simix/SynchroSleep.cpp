@@ -46,7 +46,7 @@ void simgrid::simix::Sleep::post()
       simcall->issuer->context->iwannadie = 1;
     }
     simcall_process_sleep__set__result(simcall, state);
-    simcall->issuer->waiting_synchro = NULL;
+    simcall->issuer->waiting_synchro = nullptr;
     if (simcall->issuer->suspended) {
       XBT_DEBUG("Wait! This process is suspended and can't wake up now.");
       simcall->issuer->suspended = 0;

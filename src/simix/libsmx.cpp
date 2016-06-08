@@ -109,7 +109,7 @@ smx_synchro_t simcall_execution_parallel_start(const char *name,
   /* checking for infinite values */
   for (i = 0 ; i < host_nb ; ++i) {
     xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
-    if (bytes_amount != NULL) {
+    if (bytes_amount != nullptr) {
       for (j = 0 ; j < host_nb ; ++j) {
         xbt_assert(std::isfinite(bytes_amount[i + host_nb * j]),
                    "bytes_amount[%d+%d*%d] is not finite!", i, host_nb, j);
@@ -357,9 +357,9 @@ void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t d
  *
  * The structure and the corresponding thread are created and put in the list of ready processes.
  *
- * \param name a name for the process. It is for user-level information and can be NULL.
+ * \param name a name for the process. It is for user-level information and can be nullptr.
  * \param code the main function of the process
- * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be NULL.
+ * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be nullptr.
  * It can be retrieved with the function \ref simcall_process_get_data.
  * \param hostname name of the host where the new agent is executed.
  * \param kill_time time when the process is killed
@@ -540,7 +540,7 @@ void simcall_process_set_kill_time(smx_process_t process, double kill_time)
     kill_time, process->name.c_str(), sg_host_get_name(process->host));
   process->kill_timer = SIMIX_timer_set(kill_time, [=] {
     simix_global->kill_process_function(process);
-    process->kill_timer=NULL;
+    process->kill_timer=nullptr;
   });
 }
 /**
@@ -675,7 +675,7 @@ smx_mailbox_t simcall_mbox_get_by_name(const char *name)
  *  \ingroup simix_mbox_management
  *  \brief returns the communication at the head of the rendez-vous
  *  \param mbox The rendez-vous point
- *  \return The communication or NULL if empty
+ *  \return The communication or nullptr if empty
  */
 smx_synchro_t simcall_mbox_front(smx_mailbox_t mbox)
 {
@@ -706,11 +706,11 @@ void simcall_comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_siz
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
+    smx_synchro_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
     comm = simcall_comm_isend(sender, mbox, task_size, rate,
-        src_buff, src_buff_size, match_fun, NULL, copy_data_fun, data, 0);
+        src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, 0);
     simcall_comm_wait(comm, timeout);
-    comm = NULL;
+    comm = nullptr;
   }
   else {
     simcall_BODY_comm_send(sender, mbox, task_size, rate, src_buff, src_buff_size,
@@ -753,11 +753,11 @@ void simcall_comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buf
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
+    smx_synchro_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
     comm = simcall_comm_irecv(receiver, mbox, dst_buff, dst_buff_size,
                               match_fun, copy_data_fun, data, rate);
     simcall_comm_wait(comm, timeout);
-    comm = NULL;
+    comm = nullptr;
   }
   else {
     simcall_BODY_comm_recv(receiver, mbox, dst_buff, dst_buff_size,
@@ -836,7 +836,7 @@ void simcall_comm_wait(smx_synchro_t comm, double timeout)
  */
 void simcall_set_category(smx_synchro_t synchro, const char *category)
 {
-  if (category == NULL) {
+  if (category == nullptr) {
     return;
   }
   simcall_BODY_set_category(synchro, category);

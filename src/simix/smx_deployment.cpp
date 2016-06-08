@@ -67,10 +67,10 @@ void SIMIX_launch_application(const char *file)
 void SIMIX_function_register(const char *name, xbt_main_func_t code)
 {
   xbt_assert(simix_global, "SIMIX_global_init has to be called before SIMIX_function_register.");
-  xbt_dict_set(simix_global->registered_functions, name, (void*) code, NULL);
+  xbt_dict_set(simix_global->registered_functions, name, (void*) code, nullptr);
 }
 
-static xbt_main_func_t default_function = NULL;
+static xbt_main_func_t default_function = nullptr;
 /**
  * \brief Registers a #xbt_main_func_t code as default value.
  *
@@ -87,14 +87,14 @@ void SIMIX_function_register_default(xbt_main_func_t code)
 /**
  * \brief Gets a #smx_process_t code from the global table.
  *
- * Gets a code function from the global table. Returns NULL if there are no function registered with the name.
+ * Gets a code function from the global table. Returns nullptr if there are no function registered with the name.
  * This table is then used by #SIMIX_launch_application.
  * \param name the reference name of the function.
- * \return The #smx_process_t or NULL.
+ * \return The #smx_process_t or nullptr.
  */
 xbt_main_func_t SIMIX_get_registered_function(const char *name)
 {
-  xbt_main_func_t res = NULL;
+  xbt_main_func_t res = nullptr;
   xbt_assert(simix_global,
               "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
 
@@ -130,7 +130,7 @@ void SIMIX_process_set_function(const char *process_host,
   xbt_dynar_foreach(arguments, i, arg) {
     process.argv[i + 1] = xbt_strdup(arg);
   }
-  process.argv[process.argc] = NULL;
+  process.argv[process.argc] = nullptr;
 
   xbt_main_func_t parse_code = SIMIX_get_registered_function(process_function);
   xbt_assert(parse_code, "Function '%s' unknown", process_function);

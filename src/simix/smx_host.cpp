@@ -34,7 +34,7 @@ void SIMIX_host_on(sg_host_t h)
 {
   smx_host_priv_t host = sg_host_simix(h);
 
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
 
   if (h->isOff()) {
     simgrid::surf::HostImpl* surf_host = h->extension<simgrid::surf::HostImpl>();
@@ -48,16 +48,16 @@ void SIMIX_host_on(sg_host_t h)
       if (simix_global->create_process_function) {
         simix_global->create_process_function(arg->name.c_str(),
                                               arg->code,
-                                              NULL,
+                                              nullptr,
                                               arg->hostname,
                                               arg->kill_time,
                                               arg->properties,
                                               arg->auto_restart,
-                                              NULL);
+                                              nullptr);
       } else {
         simcall_process_create(arg->name.c_str(),
                                arg->code,
-                               NULL,
+                               nullptr,
                                arg->hostname,
                                arg->kill_time,
                                arg->properties,
@@ -72,7 +72,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
 {
   smx_host_priv_t host = sg_host_simix(h);
 
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
 
   if (h->isOn()) {
     simgrid::surf::HostImpl* surf_host = h->extension<simgrid::surf::HostImpl>();
@@ -80,7 +80,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
-      smx_process_t process = NULL;
+      smx_process_t process = nullptr;
       xbt_swag_foreach(process, host->process_list) {
         SIMIX_process_kill(process, issuer);
         XBT_DEBUG("Killing %s on %s by %s",
@@ -102,13 +102,13 @@ void SIMIX_host_destroy(void *h)
 {
   smx_host_priv_t host = (smx_host_priv_t) h;
 
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
 
   /* Clean Simulator data */
   if (xbt_swag_size(host->process_list) != 0) {
     char *msg = xbt_strdup("Shutting down host, but it's not empty:");
     char *tmp;
-    smx_process_t process = NULL;
+    smx_process_t process = nullptr;
 
     xbt_swag_foreach(process, host->process_list) {
       tmp = bprintf("%s\n\t%s", msg, process->name.c_str());
@@ -130,14 +130,14 @@ void SIMIX_host_destroy(void *h)
 sg_host_t SIMIX_host_self(void)
 {
   smx_process_t process = SIMIX_process_self();
-  return (process == NULL) ? NULL : SIMIX_process_get_host(process);
+  return (process == nullptr) ? nullptr : SIMIX_process_get_host(process);
 }
 
 /* needs to be public and without simcall for exceptions and logging events */
 const char* SIMIX_host_self_get_name(void)
 {
   sg_host_t host = SIMIX_host_self();
-  if (host == NULL || SIMIX_process_self() == simix_global->maestro_process)
+  if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)
     return "";
 
   return sg_host_get_name(host);
@@ -173,7 +173,7 @@ void SIMIX_host_add_auto_restart_process(
   arg->auto_restart = auto_restart;
 
   if( host->isOff() && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_get_name(host))){
-    xbt_dict_set(watched_hosts_lib,sg_host_get_name(host),host,NULL);
+    xbt_dict_set(watched_hosts_lib,sg_host_get_name(host),host,nullptr);
     XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_get_name(host));
   }
   xbt_dynar_push_as(sg_host_simix(host)->auto_restart_processes,smx_process_arg_t,arg);
@@ -193,16 +193,16 @@ void SIMIX_host_autorestart(sg_host_t host)
     if (simix_global->create_process_function) {
       simix_global->create_process_function(arg->name.c_str(),
                                             arg->code,
-                                            NULL,
+                                            nullptr,
                                             arg->hostname,
                                             arg->kill_time,
                                             arg->properties,
                                             arg->auto_restart,
-                                            NULL);
+                                            nullptr);
     } else {
       simcall_process_create(arg->name.c_str(),
                              arg->code,
-                             NULL,
+                             nullptr,
                              arg->hostname,
                              arg->kill_time,
                              arg->properties,
@@ -250,7 +250,7 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name,
     double *flops_amount, double *bytes_amount,
     double amount, double rate){
 
-  sg_host_t *host_list_cpy = NULL;
+  sg_host_t *host_list_cpy = nullptr;
   int i;
 
   /* alloc structures and initialize */
@@ -362,7 +362,7 @@ void SIMIX_execution_finish(simgrid::simix::Exec *exec)
     if (simcall->issuer->host->isOff())
       simcall->issuer->context->iwannadie = 1;
 
-    simcall->issuer->waiting_synchro = NULL;
+    simcall->issuer->waiting_synchro = nullptr;
     simcall_execution_wait__set__result(simcall, exec->state);
     SIMIX_simcall_answer(simcall);
   }

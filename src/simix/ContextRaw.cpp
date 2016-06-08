@@ -406,7 +406,7 @@ void RawContext::suspend_parallel()
   smx_process_t next_work = (smx_process_t) xbt_parmap_next(raw_parmap);
   RawContext* next_context = nullptr;
 
-  if (next_work != NULL) {
+  if (next_work != nullptr) {
     /* there is a next process to resume */
     XBT_DEBUG("Run next process");
     next_context = (RawContext*) next_work->context;
