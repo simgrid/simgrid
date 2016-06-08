@@ -45,7 +45,7 @@ typedef struct s_smpi_mpi_topology {
 } s_smpi_mpi_topology_t;
 
 void smpi_topo_destroy(MPI_Topology topo) {
-    if(topo == NULL) {
+    if(topo == nullptr) {
         return;
     }
     switch (topo->kind) {
@@ -158,9 +158,9 @@ int smpi_mpi_cart_create(MPI_Comm comm_old, int ndims, int dims[], int periods[]
 int smpi_mpi_cart_sub(MPI_Comm comm, const int remain_dims[], MPI_Comm *newcomm) {
     MPI_Topology oldTopo = smpi_comm_topo(comm);
     int oldNDims = oldTopo->topo.cart->ndims;
-    int i, j = 0, newNDims, *newDims = NULL, *newPeriodic = NULL;
+    int i, j = 0, newNDims, *newDims = nullptr, *newPeriodic = nullptr;
   
-    if (remain_dims == NULL && oldNDims != 0) {
+    if (remain_dims == nullptr && oldNDims != 0) {
         return MPI_ERR_ARG;
     }
     newNDims = 0;
@@ -423,7 +423,7 @@ assignnodes(int ndim, int nfactor, int *pfacts, int **pdims)
 
     /* Allocate and initialize the bins */
     bins = (int *) malloc((unsigned) ndim * sizeof(int));
-    if (NULL == bins) {
+    if (nullptr == bins) {
         return MPI_ERR_NO_MEM;
     }
     *pdims = bins;
@@ -476,7 +476,7 @@ static int getfactors(int num, int *nfactors, int **factors) {
 
     if(num  < 2) {
         (*nfactors) = 0;
-        (*factors) = NULL;
+        (*factors) = nullptr;
         return MPI_SUCCESS;
     }
     /* Allocate the array of prime factors which cannot exceed log_2(num) entries */

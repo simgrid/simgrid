@@ -10,7 +10,7 @@
 #include "xbt/log.h"
 #include "xbt/dict.h"
 
-static xbt_dict_t smpi_instances = NULL;
+static xbt_dict_t smpi_instances = nullptr;
 extern int process_count;
 extern int* index_to_process_data;
 
@@ -46,21 +46,21 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 
   process_count+=num_processes;
 
-  if(smpi_instances==NULL){
+  if(smpi_instances==nullptr){
     smpi_instances = xbt_dict_new_homogeneous(xbt_free_f);
   }
 
-  xbt_dict_set(smpi_instances, name, (void*)instance, NULL);
+  xbt_dict_set(smpi_instances, name, (void*)instance, nullptr);
   return;
 }
 
 //get the index of the process in the process_data array
 void smpi_deployment_register_process(const char* instance_id, int rank, int index,MPI_Comm** comm, xbt_bar_t* bar){
 
-  if(smpi_instances==NULL){//no instance registered, we probably used smpirun.
+  if(smpi_instances==nullptr){//no instance registered, we probably used smpirun.
     index_to_process_data[index]=index;
-    *bar = NULL;
-    *comm = NULL;
+    *bar = nullptr;
+    *comm = nullptr;
     return;
   }
 
@@ -70,7 +70,7 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
 
   if(instance->comm_world == MPI_COMM_NULL){
     MPI_Group group = smpi_group_new(instance->size);
-    instance->comm_world = smpi_comm_new(group, NULL);
+    instance->comm_world = smpi_comm_new(group, nullptr);
   }
   instance->present_processes++;
   index_to_process_data[index]=instance->index+rank;
@@ -81,9 +81,9 @@ void smpi_deployment_register_process(const char* instance_id, int rank, int ind
 }
 
 void smpi_deployment_cleanup_instances(){
-  xbt_dict_cursor_t cursor = NULL;
-  s_smpi_mpi_instance_t* instance = NULL;
-  char *name = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
+  s_smpi_mpi_instance_t* instance = nullptr;
+  char *name = nullptr;
   xbt_dict_foreach(smpi_instances, cursor, name, instance) {
     if(instance->comm_world!=MPI_COMM_NULL)
       while (smpi_group_unuse(smpi_comm_group(instance->comm_world)) > 0);

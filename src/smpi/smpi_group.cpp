@@ -17,8 +17,8 @@ typedef struct s_smpi_mpi_group {
 
 static s_smpi_mpi_group_t mpi_MPI_GROUP_EMPTY = {
   0,                            /* size */
-  NULL,                         /* rank_to_index_map */
-  NULL,                         /* index_to_rank_map */
+  nullptr,                         /* rank_to_index_map */
+  nullptr,                         /* index_to_rank_map */
   1,                            /* refcount: start > 0 so that this group never gets freed */
 };
 
@@ -46,7 +46,7 @@ MPI_Group smpi_group_copy(MPI_Group origin)
   MPI_Group group=origin;
   char *key;
   char *ptr_rank;
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   
   int i;
   if(origin != MPI_GROUP_NULL
@@ -64,7 +64,7 @@ MPI_Group smpi_group_copy(MPI_Group origin)
       xbt_dict_foreach(origin->index_to_rank_map, cursor, key, ptr_rank) {
         int * cp = static_cast<int*>(xbt_malloc(sizeof(int)));
         *cp=*reinterpret_cast<int*>(ptr_rank);
-        xbt_dict_set(group->index_to_rank_map, key, cp, NULL);
+        xbt_dict_set(group->index_to_rank_map, key, cp, nullptr);
       }
     }
 
@@ -90,7 +90,7 @@ void smpi_group_set_mapping(MPI_Group group, int index, int rank)
       *val_rank = rank;
 
       char * key = bprintf("%d", index);
-      xbt_dict_set(group->index_to_rank_map, key, val_rank, NULL);
+      xbt_dict_set(group->index_to_rank_map, key, val_rank, nullptr);
       xbt_free(key);
     }
   }
@@ -108,12 +108,12 @@ int smpi_group_index(MPI_Group group, int rank)
 
 int smpi_group_rank(MPI_Group group, int index)
 {
-  int * ptr_rank = NULL;
+  int * ptr_rank = nullptr;
   char * key = bprintf("%d", index);
   ptr_rank = static_cast<int*>(xbt_dict_get_or_null(group->index_to_rank_map, key));
   xbt_free(key);
 
-  if (ptr_rank==NULL)
+  if (ptr_rank==nullptr)
     return MPI_UNDEFINED;
   return *ptr_rank;
 }

@@ -52,16 +52,16 @@ typedef struct s_smpi_process_data {
   smpi_trace_call_location_t* trace_call_loc;
 } s_smpi_process_data_t;
 
-static smpi_process_data_t *process_data = NULL;
+static smpi_process_data_t *process_data = nullptr;
 int process_count = 0;
 int smpi_universe_size = 0;
-int* index_to_process_data = NULL;
+int* index_to_process_data = nullptr;
 extern double smpi_total_benched_time;
 xbt_os_timer_t global_timer;
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
-MPI_Errhandler *MPI_ERRORS_RETURN = NULL;
-MPI_Errhandler *MPI_ERRORS_ARE_FATAL = NULL;
-MPI_Errhandler *MPI_ERRHANDLER_NULL = NULL;
+MPI_Errhandler *MPI_ERRORS_RETURN = nullptr;
+MPI_Errhandler *MPI_ERRORS_ARE_FATAL = nullptr;
+MPI_Errhandler *MPI_ERRHANDLER_NULL = nullptr;
 
 #define MAILBOX_NAME_MAXLEN (5 + sizeof(int) * 2 + 1)
 
@@ -83,14 +83,14 @@ void smpi_process_init(int *argc, char ***argv)
   smpi_process_data_t data;
   smx_process_t proc;
 
-  if (argc != NULL && argv != NULL) {
+  if (argc != nullptr && argv != nullptr) {
     proc = SIMIX_process_self();
     SIMIX_process_set_cleanup_function(proc, MSG_process_cleanup_from_SIMIX);
     char* instance_id = (*argv)[1];
     int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");
     index = smpi_process_index_of_smx_process(proc);
 
-    if(index_to_process_data == NULL){
+    if(index_to_process_data == nullptr){
       index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
     }
 
@@ -106,7 +106,7 @@ void smpi_process_init(int *argc, char ***argv)
     smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world, &temp_bar);
     data              = smpi_process_remote_data(index);
     data->comm_world  = temp_comm_world;
-    if(temp_bar != NULL) 
+    if(temp_bar != nullptr) 
       data->finalization_barrier = temp_bar;
     data->index       = index;
     data->instance_id = instance_id;
@@ -118,8 +118,8 @@ void smpi_process_init(int *argc, char ***argv)
     if (*argc > 3) {
       free((*argv)[1]);
       memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
-      (*argv)[(*argc) - 1] = NULL;
-      (*argv)[(*argc) - 2] = NULL;
+      (*argv)[(*argc) - 1] = nullptr;
+      (*argv)[(*argc) - 2] = nullptr;
     }
     (*argc)-=2;
     data->argc = argc;
@@ -129,7 +129,7 @@ void smpi_process_init(int *argc, char ***argv)
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
   xbt_assert(smpi_process_data(),
-      "smpi_process_data() returned NULL. You probably gave a NULL parameter to MPI_Init. Although it's required by "
+      "smpi_process_data() returned nullptr. You probably gave a nullptr parameter to MPI_Init. Although it's required by "
       "MPI-2, this is currently not supported by SMPI.");
 }
 
@@ -168,7 +168,7 @@ int smpi_process_finalized()
 /** @brief Check if a process is initialized */
 int smpi_process_initialized()
 {
-  if (index_to_process_data == NULL){
+  if (index_to_process_data == nullptr){
     return false;
   } else{
     int index = smpi_process_index();
@@ -249,14 +249,14 @@ int smpi_process_index()
 {
   smpi_process_data_t data = smpi_process_data();
   //return -1 if not initialized
-  return data != NULL ? data->index : MPI_UNDEFINED;
+  return data != nullptr ? data->index : MPI_UNDEFINED;
 }
 
 MPI_Comm smpi_process_comm_world()
 {
   smpi_process_data_t data = smpi_process_data();
   //return MPI_COMM_NULL if not initialized
-  return data != NULL ? *data->comm_world : MPI_COMM_NULL;
+  return data != nullptr ? *data->comm_world : MPI_COMM_NULL;
 }
 
 smx_mailbox_t smpi_process_mailbox()
@@ -318,7 +318,7 @@ MPI_Comm smpi_process_comm_self()
   smpi_process_data_t data = smpi_process_data();
   if(data->comm_self==MPI_COMM_NULL){
     MPI_Group group = smpi_group_new(1);
-    data->comm_self = smpi_comm_new(group, NULL);
+    data->comm_self = smpi_comm_new(group, nullptr);
     smpi_group_set_mapping(group, smpi_process_index(), 0);
   }
 
@@ -385,7 +385,7 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t synchro, void *buff, size_t bu
     xbt_free(buff);
     //It seems that the request is used after the call there this should be free somewhere else but where???
     //xbt_free(comm->comm.src_data);// inside SMPI the request is kept inside the user data and should be free
-    comm->src_buff = NULL;
+    comm->src_buff = nullptr;
   }
 
   if(tmpbuff!=buff)xbt_free(tmpbuff);
@@ -410,7 +410,7 @@ static void smpi_check_options(){
 }
 
 int smpi_enabled() {
-  return process_data != NULL;
+  return process_data != nullptr;
 }
 
 void smpi_global_init()
@@ -454,8 +454,8 @@ void smpi_global_init()
   process_data = xbt_new0(smpi_process_data_t, process_count);
   for (i = 0; i < process_count; i++) {
     process_data[i]                       = xbt_new(s_smpi_process_data_t, 1);
-    process_data[i]->argc                 = NULL;
-    process_data[i]->argv                 = NULL;
+    process_data[i]->argc                 = nullptr;
+    process_data[i]->argv                 = nullptr;
     process_data[i]->mailbox              = simcall_mbox_create(get_mailbox_name(name, i));
     process_data[i]->mailbox_small        = simcall_mbox_create(get_mailbox_name_small(name, i));
     process_data[i]->mailboxes_mutex      = xbt_mutex_init();
@@ -464,10 +464,10 @@ void smpi_global_init()
       MC_ignore_heap(process_data[i]->timer, xbt_os_timer_size());
     process_data[i]->comm_self            = MPI_COMM_NULL;
     process_data[i]->comm_intra           = MPI_COMM_NULL;
-    process_data[i]->comm_world           = NULL;
+    process_data[i]->comm_world           = nullptr;
     process_data[i]->state                = SMPI_UNINITIALIZED;
     process_data[i]->sampling             = 0;
-    process_data[i]->finalization_barrier = NULL;
+    process_data[i]->finalization_barrier = nullptr;
     process_data[i]->return_value         = 0;
 
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
@@ -478,7 +478,7 @@ void smpi_global_init()
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
   if(smpirun){
     group = smpi_group_new(process_count);
-    MPI_COMM_WORLD = smpi_comm_new(group, NULL);
+    MPI_COMM_WORLD = smpi_comm_new(group, nullptr);
     MPI_Attr_put(MPI_COMM_WORLD, MPI_UNIVERSE_SIZE, reinterpret_cast<void *>(process_count));
     xbt_bar_t bar=xbt_barrier_init(process_count);
 
@@ -516,12 +516,12 @@ void smpi_global_destroy()
     xbt_free(process_data[i]);
   }
   xbt_free(process_data);
-  process_data = NULL;
+  process_data = nullptr;
 
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
     smpi_comm_cleanup_smp(MPI_COMM_WORLD);
     smpi_comm_cleanup_attributes(MPI_COMM_WORLD);
-    if(smpi_coll_cleanup_callback!=NULL)
+    if(smpi_coll_cleanup_callback!=nullptr)
       smpi_coll_cleanup_callback();
     xbt_free(MPI_COMM_WORLD);
   }
@@ -645,7 +645,7 @@ static void smpi_init_options(){
     mpi_coll_barrier_fun = reinterpret_cast<int (*)(MPI_Comm comm)>
         (mpi_coll_barrier_description[barrier_id].coll);
 
-    smpi_coll_cleanup_callback=NULL;
+    smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
     smpi_running_power = xbt_cfg_get_double("smpi/running-power");
     smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");
@@ -657,7 +657,7 @@ int smpi_main(int (*realmain) (int argc, char *argv[]), int argc, char *argv[])
 {
   srand(SMPI_RAND_SEED);
 
-  if (getenv("SMPI_PRETEND_CC") != NULL) {
+  if (getenv("SMPI_PRETEND_CC") != nullptr) {
     /* Hack to ensure that smpicc can pretend to be a simple compiler. Particularly handy to pass it to the
      * configuration tools */
     return 0;

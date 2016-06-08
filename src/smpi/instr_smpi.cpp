@@ -55,7 +55,7 @@ static const char *smpi_colors[] ={
     "win_wait",       "1 0.8 0",
     "win_start",       "0.8 0 1",
     "win_complete",       "0.8 1 0",
-    NULL, NULL,
+    nullptr, nullptr,
 };
 
 static char *str_tolower (const char *str)
@@ -70,10 +70,10 @@ static char *str_tolower (const char *str)
 static const char *instr_find_color (const char *state)
 {
   char *target = str_tolower (state);
-  const char *ret = NULL;
+  const char *ret = nullptr;
   unsigned int i = 0;
   const char *current = smpi_colors[i];
-  while ((current != NULL)){
+  while ((current != nullptr)){
     if (strcmp (state, current) == 0 //exact match
         || strstr(target, current) != 0 ){//as substring
          ret = smpi_colors[i+1]; 
@@ -107,9 +107,9 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
     return key;
   }
 
-  if (d == NULL) {
+  if (d == nullptr) {
     d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-    xbt_dict_set(keys, aux, d, NULL);
+    xbt_dict_set(keys, aux, d, nullptr);
   }
 
   //generate the key
@@ -138,17 +138,17 @@ static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
 
   char *s = xbt_dynar_get_as (d, 0, char *);
   snprintf (key, n, "%s", s);
-  xbt_dynar_remove_at (d, 0, NULL);
+  xbt_dynar_remove_at (d, 0, nullptr);
   return key;
 }
 
 static xbt_dict_t process_category;
 
 static void cleanup_extra_data (instr_extra_data extra){
-  if(extra!=NULL){
-    if(extra->sendcounts!=NULL)
+  if(extra!=nullptr){
+    if(extra->sendcounts!=nullptr)
       xbt_free(extra->sendcounts);
-    if(extra->recvcounts!=NULL)
+    if(extra->recvcounts!=nullptr)
       xbt_free(extra->recvcounts);
     xbt_free(extra);
   }
@@ -166,14 +166,14 @@ void TRACE_internal_smpi_set_category (const char *category)
   snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
   if (xbt_dict_get_or_null (process_category, processid))
     xbt_dict_remove (process_category, processid);
-  if (category != NULL)
-    xbt_dict_set (process_category, processid, xbt_strdup(category), NULL);
+  if (category != nullptr)
+    xbt_dict_set (process_category, processid, xbt_strdup(category), nullptr);
 }
 
 const char *TRACE_internal_smpi_get_category (void)
 {
   if (!TRACE_smpi_is_enabled())
-    return NULL;
+    return nullptr;
 
   char processid[INSTR_DEFAULT_STR_SIZE];
   snprintf (processid, INSTR_DEFAULT_STR_SIZE, "%p", SIMIX_process_self());
@@ -206,7 +206,7 @@ void TRACE_smpi_init(int rank)
   }else{
     father = PJ_container_get_root ();
   }
-  xbt_assert(father!=NULL,
+  xbt_assert(father!=nullptr,
       "Could not find a parent for mpi rank %s at function %s", str, __FUNCTION__);
   PJ_container_new(str, INSTR_SMPI, father);
 }
@@ -278,7 +278,7 @@ void TRACE_smpi_computing_in(int rank, instr_extra_data extra)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
-  val_t value = PJ_value_get_or_new ("computing", NULL, type);
+  val_t value = PJ_value_get_or_new ("computing", nullptr, type);
   new_pajePushStateWithExtra  (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
@@ -320,7 +320,7 @@ void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
-  val_t value = PJ_value_get_or_new ("sleeping", NULL, type);
+  val_t value = PJ_value_get_or_new ("sleeping", nullptr, type);
   new_pajePushStateWithExtra  (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 
@@ -347,7 +347,7 @@ void TRACE_smpi_testing_in(int rank, instr_extra_data extra)
   smpi_container(rank, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_STATE", container->type);
-  val_t value = PJ_value_get_or_new ("test", NULL, type);
+  val_t value = PJ_value_get_or_new ("test", nullptr, type);
   new_pajePushStateWithExtra  (SIMIX_get_clock(), container, type, value, static_cast<void*>(extra));
 }
 

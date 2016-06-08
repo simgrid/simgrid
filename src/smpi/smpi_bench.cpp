@@ -71,14 +71,14 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_bench, smpi, "Logging specific to SMPI (ben
 
 #define PTR_STRLEN (2 + 2 * sizeof(void*) + 1)
 
-xbt_dict_t samples = NULL;         /* Allocated on first use */
-xbt_dict_t calls = NULL;           /* Allocated on first use */
+xbt_dict_t samples = nullptr;         /* Allocated on first use */
+xbt_dict_t calls = nullptr;           /* Allocated on first use */
 
 double smpi_cpu_threshold;
 double smpi_running_power;
 
 int smpi_loaded_page = -1;
-char* smpi_start_data_exe = NULL;
+char* smpi_start_data_exe = nullptr;
 int smpi_size_data_exe = 0;
 bool smpi_privatize_global_variables;
 double smpi_total_benched_time = 0;
@@ -168,7 +168,7 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
       xbt_die("Could not truncate fd %d to %zu: %s", fd, size, strerror(errno));
   }
 
-  mem = mmap(NULL, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
+  mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
     xbt_die("Could not map fd %d: %s", fd, strerror(errno));
   }
@@ -387,11 +387,11 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
   smpi_bench_end();     /* Take time from previous, unrelated computation into account */
   smpi_process_set_sampling(1);
 
-  if (samples==NULL)
+  if (samples==nullptr)
     samples = xbt_dict_new_homogeneous(free);
 
   data = static_cast<local_data_t *>(xbt_dict_get_or_null(samples, loc));
-  if (data==NULL) {
+  if (data==nullptr) {
     xbt_assert(threshold>0 || iters>0,
         "You should provide either a positive amount of iterations to bench, or a positive maximal stderr (or both)");
     data = static_cast<local_data_t *>( xbt_new(local_data_t, 1));
@@ -402,7 +402,7 @@ void smpi_sample_1(int global, const char *file, int line, int iters, double thr
     data->threshold = threshold;
     data->benching = 1; // If we have no data, we need at least one
     data->mean = 0;
-    xbt_dict_set(samples, loc, data, NULL);
+    xbt_dict_set(samples, loc, data, nullptr);
     XBT_DEBUG("XXXXX First time ever on benched nest %s.",loc);
   } else {
     if (data->iters != iters || data->threshold != threshold) {
@@ -564,8 +564,8 @@ int smpi_shared_known_call(const char* func, const char* input)
   xbt_ex_t ex;
   int known = 0;
 
-  if (calls==NULL) {
-    calls = xbt_dict_new_homogeneous(NULL);
+  if (calls==nullptr) {
+    calls = xbt_dict_new_homogeneous(nullptr);
   }
   TRY {
     xbt_dict_get(calls, loc); /* Succeed or throw */
@@ -586,8 +586,8 @@ void* smpi_shared_get_call(const char* func, const char* input) {
    char* loc = bprintf("%s:%s", func, input);
    void* data;
 
-   if(calls==NULL) {
-      calls = xbt_dict_new_homogeneous(NULL);
+   if(calls==nullptr) {
+      calls = xbt_dict_new_homogeneous(nullptr);
    }
    data = xbt_dict_get(calls, loc);
    xbt_free(loc);
@@ -598,9 +598,9 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
    char* loc = bprintf("%s:%s", func, input);
 
    if(calls==0) {
-      calls = xbt_dict_new_homogeneous(NULL);
+      calls = xbt_dict_new_homogeneous(nullptr);
    }
-   xbt_dict_set(calls, loc, data, NULL);
+   xbt_dict_set(calls, loc, data, nullptr);
    xbt_free(loc);
    return data;
 }
@@ -670,7 +670,7 @@ void smpi_initialize_global_memory_segments(){
 
   for (int i=0; i< smpi_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside
-      void *address = NULL;
+      void *address = nullptr;
       char path[] = "/dev/shm/my-buffer-XXXXXX";
       int status;
 
@@ -704,7 +704,7 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
         xbt_die("Impossible to set the size of the temporary file for memory mapping");
 
       /* Ask for a free region */
-      address = mmap (NULL, smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
+      address = mmap (nullptr, smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
       if (address == MAP_FAILED)
         xbt_die("Couldn't find a free region for memory mapping");
 

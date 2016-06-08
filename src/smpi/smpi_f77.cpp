@@ -10,13 +10,13 @@
 #include "private.h"
 #include "xbt.h"
 
-static xbt_dict_t comm_lookup = NULL;
-static xbt_dict_t group_lookup = NULL;
-static xbt_dict_t request_lookup = NULL;
-static xbt_dict_t datatype_lookup = NULL;
-static xbt_dict_t op_lookup = NULL;
-static xbt_dict_t win_lookup = NULL;
-static xbt_dict_t info_lookup = NULL;
+static xbt_dict_t comm_lookup = nullptr;
+static xbt_dict_t group_lookup = nullptr;
+static xbt_dict_t request_lookup = nullptr;
+static xbt_dict_t datatype_lookup = nullptr;
+static xbt_dict_t op_lookup = nullptr;
+static xbt_dict_t win_lookup = nullptr;
+static xbt_dict_t info_lookup = nullptr;
 
 static int running_processes = 0;
 
@@ -58,14 +58,14 @@ static char* get_key_id(char* key, int id) {
 }
 
 static void smpi_init_fortran_types(){
-   if(comm_lookup == NULL){
-     comm_lookup = xbt_dict_new_homogeneous(NULL);
+   if(comm_lookup == nullptr){
+     comm_lookup = xbt_dict_new_homogeneous(nullptr);
      smpi_comm_c2f(MPI_COMM_WORLD);
-     group_lookup = xbt_dict_new_homogeneous(NULL);
-     request_lookup = xbt_dict_new_homogeneous(NULL);
-     datatype_lookup = xbt_dict_new_homogeneous(NULL);
-     win_lookup = xbt_dict_new_homogeneous(NULL);
-     info_lookup = xbt_dict_new_homogeneous(NULL);
+     group_lookup = xbt_dict_new_homogeneous(nullptr);
+     request_lookup = xbt_dict_new_homogeneous(nullptr);
+     datatype_lookup = xbt_dict_new_homogeneous(nullptr);
+     win_lookup = xbt_dict_new_homogeneous(nullptr);
+     info_lookup = xbt_dict_new_homogeneous(nullptr);
      smpi_type_c2f(MPI_BYTE);//MPI_BYTE
      smpi_type_c2f(MPI_CHAR);//MPI_CHARACTER
 #if defined(__alpha__) || defined(__sparc64__) || defined(__x86_64__) || defined(__ia64__)
@@ -104,7 +104,7 @@ static void smpi_init_fortran_types(){
      smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_COMPLEX16
      smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_COMPLEX32
      smpi_type_c2f(MPI_DATATYPE_NULL);//MPI_PACKED
-     op_lookup = xbt_dict_new_homogeneous(NULL);
+     op_lookup = xbt_dict_new_homogeneous(nullptr);
      smpi_op_c2f(MPI_MAX);
      smpi_op_c2f(MPI_MIN);
      smpi_op_c2f(MPI_MAXLOC);
@@ -123,7 +123,7 @@ static void smpi_init_fortran_types(){
 int smpi_comm_c2f(MPI_Comm comm) {
   static int comm_id = 0;
   char key[KEY_SIZE];
-  xbt_dict_set(comm_lookup, comm==MPI_COMM_WORLD? get_key(key, comm_id) : get_key_id(key, comm_id), comm, NULL);
+  xbt_dict_set(comm_lookup, comm==MPI_COMM_WORLD? get_key(key, comm_id) : get_key_id(key, comm_id), comm, nullptr);
   comm_id++;
   return comm_id-1;
 }
@@ -139,10 +139,10 @@ MPI_Comm smpi_comm_f2c(int comm) {
     return MPI_COMM_SELF;
   } else if(comm==0){
     return MPI_COMM_WORLD;
-  } else if(comm_lookup != NULL && comm >= 0) {
+  } else if(comm_lookup != nullptr && comm >= 0) {
       char key[KEY_SIZE];
       MPI_Comm tmp =  static_cast<MPI_Comm>(xbt_dict_get_or_null(comm_lookup,get_key_id(key, comm)));
-      return tmp != NULL ? tmp : MPI_COMM_NULL ;
+      return tmp != nullptr ? tmp : MPI_COMM_NULL ;
   } else {
     return MPI_COMM_NULL;
   }
@@ -151,7 +151,7 @@ MPI_Comm smpi_comm_f2c(int comm) {
 int smpi_group_c2f(MPI_Group group) {
   static int group_id = 0;
   char key[KEY_SIZE];
-  xbt_dict_set(group_lookup, get_key(key, group_id), group, NULL);
+  xbt_dict_set(group_lookup, get_key(key, group_id), group, nullptr);
   group_id++;
   return group_id-1;
 }
@@ -160,7 +160,7 @@ MPI_Group smpi_group_f2c(int group) {
   smpi_init_fortran_types();
   if(group == -2) {
     return MPI_GROUP_EMPTY;
-  } else if(group_lookup != NULL && group >= 0) {
+  } else if(group_lookup != nullptr && group >= 0) {
     char key[KEY_SIZE];
     return static_cast<MPI_Group>(xbt_dict_get_or_null(group_lookup, get_key(key, group)));
   } else {
@@ -176,7 +176,7 @@ static void free_group(int group) {
 int smpi_request_c2f(MPI_Request req) {
   static int request_id = 0;
   char key[KEY_SIZE];
-  xbt_dict_set(request_lookup, get_key_id(key, request_id), req, NULL);
+  xbt_dict_set(request_lookup, get_key_id(key, request_id), req, nullptr);
   request_id++;
   return request_id-1;
 }
@@ -198,7 +198,7 @@ static void free_request(int request) {
 int smpi_type_c2f(MPI_Datatype datatype) {
   static int datatype_id = 0;
   char key[KEY_SIZE];
-  xbt_dict_set(datatype_lookup, get_key(key, datatype_id), datatype, NULL);
+  xbt_dict_set(datatype_lookup, get_key(key, datatype_id), datatype, nullptr);
   datatype_id++;
   return datatype_id-1;
 }
@@ -217,7 +217,7 @@ static void free_datatype(int datatype) {
 int smpi_op_c2f(MPI_Op op) {
   static int op_id = 0;
   char key[KEY_SIZE];
-  xbt_dict_set(op_lookup, get_key(key, op_id), op, NULL);
+  xbt_dict_set(op_lookup, get_key(key, op_id), op, nullptr);
   op_id++;
   return op_id-1;
 }
@@ -236,7 +236,7 @@ static void free_op(int op) {
 int smpi_win_c2f(MPI_Win win) {
   static int win_id = 0;
   char key[KEY_SIZE];
-  xbt_dict_set(win_lookup, get_key(key, win_id), win, NULL);
+  xbt_dict_set(win_lookup, get_key(key, win_id), win, nullptr);
   win_id++;
   return win_id-1;
 }
@@ -255,7 +255,7 @@ static void free_win(int win) {
 int smpi_info_c2f(MPI_Info info) {
   static int info_id = 0;
   char key[KEY_SIZE];
-  xbt_dict_set(info_lookup, get_key(key, info_id), info, NULL);
+  xbt_dict_set(info_lookup, get_key(key, info_id), info, nullptr);
   info_id++;
   return info_id-1;
 }
@@ -273,7 +273,7 @@ static void free_info(int info) {
 
 void mpi_init_(int* ierr) {
     smpi_init_fortran_types();
-   *ierr = MPI_Init(NULL, NULL);
+   *ierr = MPI_Init(nullptr, nullptr);
    running_processes++;
 }
 
@@ -842,7 +842,7 @@ void mpi_finalized_ (int * flag, int* ierr){
 
 void mpi_init_thread_ (int* required, int *provided, int* ierr){
   smpi_init_fortran_types();
-  *ierr = MPI_Init_thread(NULL, NULL,*required, provided);
+  *ierr = MPI_Init_thread(nullptr, nullptr,*required, provided);
   running_processes++;
 }
 
@@ -1729,7 +1729,7 @@ void mpi_comm_accept_ ( char *port_name, int* info, int* root, int* comm, int*ne
 void mpi_comm_spawn_ ( char *command, char *argv, int* maxprocs, int* info, int* root, int* comm, int* intercomm,
                        int* array_of_errcodes, int* ierr){
   MPI_Comm tmp;
-  *ierr = MPI_Comm_spawn( command, NULL, *maxprocs, *reinterpret_cast<MPI_Info*>(info), *root, smpi_comm_f2c(*comm), &tmp,
+  *ierr = MPI_Comm_spawn( command, nullptr, *maxprocs, *reinterpret_cast<MPI_Info*>(info), *root, smpi_comm_f2c(*comm), &tmp,
                           array_of_errcodes);
   if(*ierr == MPI_SUCCESS) {
     *intercomm = smpi_comm_c2f(tmp);

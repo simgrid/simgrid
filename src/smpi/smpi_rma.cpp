@@ -11,7 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA o
 
 #define RMA_TAG -1234
 
-xbt_bar_t creation_bar = NULL;
+xbt_bar_t creation_bar = nullptr;
 
 typedef struct s_smpi_mpi_win{
   void* base;
@@ -45,10 +45,10 @@ MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info 
   if(info!=MPI_INFO_NULL)
     info->refcount++;
   win->comm = comm;
-  win->name = NULL;
+  win->name = nullptr;
   win->opened = 0;
   win->group = MPI_GROUP_NULL;
-  win->requests = xbt_dynar_new(sizeof(MPI_Request), NULL);
+  win->requests = xbt_dynar_new(sizeof(MPI_Request), nullptr);
   win->connected_wins = xbt_new0(MPI_Win, comm_size);
   win->connected_wins[rank] = win;
 
@@ -70,7 +70,7 @@ int smpi_mpi_win_free( MPI_Win* win){
   xbt_barrier_wait((*win)->bar);
   xbt_dynar_free(&(*win)->requests);
   xbt_free((*win)->connected_wins);
-  if ((*win)->name != NULL){
+  if ((*win)->name != nullptr){
     xbt_free((*win)->name);
   }
   if((*win)->info!=MPI_INFO_NULL){
@@ -87,9 +87,9 @@ int smpi_mpi_win_free( MPI_Win* win){
 }
 
 void smpi_mpi_win_get_name(MPI_Win win, char* name, int* length){
-  if(win->name==NULL){
+  if(win->name==nullptr){
     *length=0;
-    name=NULL;
+    name=nullptr;
     return;
   }
   *length = strlen(win->name);
@@ -124,7 +124,7 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
     }
 
     MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqs));
-    win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
+    win->requests=xbt_dynar_new(sizeof(MPI_Request), nullptr);
     smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
     xbt_free(treqs);
 
@@ -264,7 +264,7 @@ int smpi_mpi_win_start(MPI_Group group, int assert, MPI_Win win){
   while(j!=size){
     int src=smpi_group_index(group,j);
     if(src!=smpi_process_index()){
-      reqs[i]=smpi_irecv_init(NULL, 0, MPI_CHAR, src,RMA_TAG+4, MPI_COMM_WORLD);
+      reqs[i]=smpi_irecv_init(nullptr, 0, MPI_CHAR, src,RMA_TAG+4, MPI_COMM_WORLD);
       i++;
     }
     j++;
@@ -291,7 +291,7 @@ int smpi_mpi_win_post(MPI_Group group, int assert, MPI_Win win){
   while(j!=size){
     int dst=smpi_group_index(group,j);
     if(dst!=smpi_process_index()){
-      reqs[i]=smpi_mpi_send_init(NULL, 0, MPI_CHAR, dst, RMA_TAG+4, MPI_COMM_WORLD);
+      reqs[i]=smpi_mpi_send_init(nullptr, 0, MPI_CHAR, dst, RMA_TAG+4, MPI_COMM_WORLD);
       i++;
     }
     j++;
@@ -322,7 +322,7 @@ int smpi_mpi_win_complete(MPI_Win win){
   while(j!=size){
     int dst=smpi_group_index(win->group,j);
     if(dst!=smpi_process_index()){
-      reqs[i]=smpi_mpi_send_init(NULL, 0, MPI_CHAR, dst, RMA_TAG+5, MPI_COMM_WORLD);
+      reqs[i]=smpi_mpi_send_init(nullptr, 0, MPI_CHAR, dst, RMA_TAG+5, MPI_COMM_WORLD);
       i++;
     }
     j++;
@@ -352,7 +352,7 @@ int smpi_mpi_win_complete(MPI_Win win){
   }
 
   MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
-  win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
+  win->requests=xbt_dynar_new(sizeof(MPI_Request), nullptr);
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   xbt_free(treqs);
   smpi_group_unuse(win->group);
@@ -370,7 +370,7 @@ int smpi_mpi_win_wait(MPI_Win win){
   while(j!=size){
     int src=smpi_group_index(win->group,j);
     if(src!=smpi_process_index()){
-      reqs[i]=smpi_irecv_init(NULL, 0, MPI_CHAR, src,RMA_TAG+5, MPI_COMM_WORLD);
+      reqs[i]=smpi_irecv_init(nullptr, 0, MPI_CHAR, src,RMA_TAG+5, MPI_COMM_WORLD);
       i++;
     }
     j++;
@@ -398,7 +398,7 @@ int smpi_mpi_win_wait(MPI_Win win){
   }
 
   MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
-  win->requests=xbt_dynar_new(sizeof(MPI_Request), NULL);
+  win->requests=xbt_dynar_new(sizeof(MPI_Request), nullptr);
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
   xbt_free(treqs);
   smpi_group_unuse(win->group);

@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll
 
 s_mpi_coll_description_t mpi_coll_gather_description[] = {
   {"default", "gather default collective", reinterpret_cast<void*>(&smpi_mpi_gather)},
-   COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA), {NULL, NULL, NULL}      /* this array must be NULL terminated */
+   COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 
@@ -27,7 +27,7 @@ s_mpi_coll_description_t mpi_coll_allgather_description[] = {
    "allgather default collective",
    reinterpret_cast<void*>(&smpi_mpi_allgather)},
 COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_allgatherv_description[] = {
@@ -35,7 +35,7 @@ s_mpi_coll_description_t mpi_coll_allgatherv_description[] = {
    "allgatherv default collective",
    reinterpret_cast<void*>(&smpi_mpi_allgatherv)},
 COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_allreduce_description[] = {
@@ -43,7 +43,7 @@ s_mpi_coll_description_t mpi_coll_allreduce_description[] = {
    "allreduce default collective",
    reinterpret_cast<void*>(&smpi_mpi_allreduce)},
 COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_reduce_scatter_description[] = {
@@ -51,7 +51,7 @@ s_mpi_coll_description_t mpi_coll_reduce_scatter_description[] = {
    "reduce_scatter default collective",
    reinterpret_cast<void*>(&smpi_mpi_reduce_scatter)},
 COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_scatter_description[] = {
@@ -59,7 +59,7 @@ s_mpi_coll_description_t mpi_coll_scatter_description[] = {
    "scatter default collective",
    reinterpret_cast<void*>(&smpi_mpi_scatter)},
 COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_barrier_description[] = {
@@ -67,7 +67,7 @@ s_mpi_coll_description_t mpi_coll_barrier_description[] = {
    "barrier default collective",
    reinterpret_cast<void*>(&smpi_mpi_barrier)},
 COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 s_mpi_coll_description_t mpi_coll_alltoall_description[] = {
   {"default",
@@ -80,7 +80,7 @@ COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA),
   {"basic_linear",
    "Alltoall basic linear (SG) collective",
    reinterpret_cast<void*>(&smpi_coll_tuned_alltoall_basic_linear)},
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_alltoallv_description[] = {
@@ -88,7 +88,7 @@ s_mpi_coll_description_t mpi_coll_alltoallv_description[] = {
    "Ompi alltoallv default collective",
    reinterpret_cast<void*>(&smpi_coll_basic_alltoallv)},
 COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_bcast_description[] = {
@@ -96,7 +96,7 @@ s_mpi_coll_description_t mpi_coll_bcast_description[] = {
    "bcast default collective ",
    reinterpret_cast<void*>(&smpi_mpi_bcast)},
 COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_mpi_coll_description_t mpi_coll_reduce_description[] = {
@@ -104,7 +104,7 @@ s_mpi_coll_description_t mpi_coll_reduce_description[] = {
    "reduce default collective",
    reinterpret_cast<void*>(&smpi_mpi_reduce)},
 COLL_REDUCES(COLL_DESCRIPTION, COLL_COMMA),
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 
@@ -122,9 +122,9 @@ void coll_help(const char *category, s_mpi_coll_description_t * table)
 int find_coll_description(s_mpi_coll_description_t * table,
                            char *name, const char *desc)
 {
-  char *name_list = NULL;
+  char *name_list = nullptr;
   int selector_on=0;
-  if (name==NULL || name[0] == '\0') {
+  if (name==nullptr || name[0] == '\0') {
     //no argument provided, use active selector's algorithm
     name=static_cast<char*>(xbt_cfg_get_string("smpi/coll-selector"));
     selector_on=1;

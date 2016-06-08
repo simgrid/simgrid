@@ -17,7 +17,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi, "Logging specific to SMPI (datatype)");
 
-xbt_dict_t smpi_type_keyvals = NULL;
+xbt_dict_t smpi_type_keyvals = nullptr;
 int type_keyval_id=0;//avoid collisions
 
 #define CREATE_MPI_DATATYPE(name, type)               \
@@ -28,8 +28,8 @@ int type_keyval_id=0;//avoid collisions
     0,              /* lb */                          \
     sizeof(type),   /* ub = lb + size */              \
     DT_FLAG_BASIC,  /* flags */                       \
-    NULL,           /* attributes */                  \
-    NULL,           /* pointer on extended struct*/   \
+    nullptr,           /* attributes */                  \
+    nullptr,           /* pointer on extended struct*/   \
     0               /* in_use counter */              \
   };                                                  \
 const MPI_Datatype name = &mpi_##name;
@@ -42,8 +42,8 @@ const MPI_Datatype name = &mpi_##name;
     0,              /* lb */                          \
     0,              /* ub = lb + size */              \
     DT_FLAG_BASIC,  /* flags */                       \
-    NULL,           /* attributes */                  \
-    NULL,           /* pointer on extended struct*/   \
+    nullptr,           /* attributes */                  \
+    nullptr,           /* pointer on extended struct*/   \
     0               /* in_use counter */              \
   };                                                  \
 const MPI_Datatype name = &mpi_##name;
@@ -184,9 +184,9 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
   }
   if(datatype->name)
     (*new_t)->name = xbt_strdup(datatype->name);
-  if(datatype->attributes !=NULL){
+  if(datatype->attributes !=nullptr){
       (*new_t)->attributes=xbt_dict_new();
-      xbt_dict_cursor_t cursor = NULL;
+      xbt_dict_cursor_t cursor = nullptr;
       int *key;
       int flag;
       void* value_in;
@@ -194,8 +194,8 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
       xbt_dict_foreach(datatype->attributes, cursor, key, value_in){
         smpi_type_key_elem elem =
           static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals,  reinterpret_cast<const char*>(key), sizeof(int)));
-        if(elem != NULL && elem->copy_fn!=MPI_NULL_COPY_FN){
-          ret = elem->copy_fn(datatype, *key, NULL, value_in, &value_out, &flag );
+        if(elem != nullptr && elem->copy_fn!=MPI_NULL_COPY_FN){
+          ret = elem->copy_fn(datatype, *key, nullptr, value_in, &value_out, &flag );
           if(ret!=MPI_SUCCESS){
             smpi_datatype_unuse(*new_t);
             *new_t=MPI_DATATYPE_NULL;
@@ -203,7 +203,7 @@ int smpi_datatype_dup(MPI_Datatype datatype, MPI_Datatype* new_t)
             return ret;
           }
           if(flag)
-            xbt_dict_set_ext((*new_t)->attributes, reinterpret_cast<const char*>(key), sizeof(int),value_out, NULL);
+            xbt_dict_set_ext((*new_t)->attributes, reinterpret_cast<const char*>(key), sizeof(int),value_out, nullptr);
         }
       }
     }
@@ -235,7 +235,7 @@ void smpi_datatype_get_name(MPI_Datatype datatype, char* name, int* length){
 }
 
 void smpi_datatype_set_name(MPI_Datatype datatype, char* name){
-  if(datatype->name!=NULL &&  (datatype->flags & DT_FLAG_PREDEFINED) == 0)
+  if(datatype->name!=nullptr &&  (datatype->flags & DT_FLAG_PREDEFINED) == 0)
     xbt_free(datatype->name);
   datatype->name = xbt_strdup(name);
 }
@@ -369,7 +369,7 @@ s_smpi_mpi_vector_t* smpi_datatype_vector_create( int block_stride, int block_le
 void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int sizeof_substruct, void *struct_type,
                           int flags){
   MPI_Datatype new_t= xbt_new(s_smpi_mpi_datatype_t,1);
-  new_t->name = NULL;
+  new_t->name = nullptr;
   new_t->size = size;
   new_t->sizeof_substruct = size>0? sizeof_substruct:0;
   new_t->lb = lb;
@@ -377,7 +377,7 @@ void smpi_datatype_create(MPI_Datatype* new_type, int size,int lb, int ub, int s
   new_t->flags = flags;
   new_t->substruct = struct_type;
   new_t->in_use=1;
-  new_t->attributes=NULL;
+  new_t->attributes=nullptr;
   *new_type = new_t;
 
 #if HAVE_MC
@@ -398,15 +398,15 @@ void smpi_datatype_free(MPI_Datatype* type){
       return;
   }
 
-  if((*type)->attributes !=NULL){
-    xbt_dict_cursor_t cursor = NULL;
+  if((*type)->attributes !=nullptr){
+    xbt_dict_cursor_t cursor = nullptr;
     int* key;
     void * value;
     int flag;
     xbt_dict_foreach((*type)->attributes, cursor, key, value){
       smpi_type_key_elem elem =
           static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(key), sizeof(int)));
-      if(elem!=NULL && elem->delete_fn!=NULL)
+      if(elem!=nullptr && elem->delete_fn!=nullptr)
         elem->delete_fn(*type,*key, value, &flag);
     }
     xbt_dict_free(&(*type)->attributes);
@@ -499,7 +499,7 @@ void use_contiguous(MPI_Datatype* d){
 s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb, int block_count, MPI_Datatype old_type,
                                                   int size_oldtype){
   if(block_count==0)
-    return NULL;
+    return nullptr;
   s_smpi_mpi_contiguous_t *new_t= xbt_new(s_smpi_mpi_contiguous_t,1);
   new_t->base.serialize = &serialize_contiguous;
   new_t->base.unserialize = &unserialize_contiguous;
@@ -551,7 +551,7 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
   }else{
     /* in this situation the data are contignous thus it's not required to serialize and unserialize it*/
     smpi_datatype_create(new_type, count * blocklen * smpi_datatype_size(old_type), 0, ((count -1) * stride + blocklen)*
-                         smpi_datatype_size(old_type), 0, NULL, DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
+                         smpi_datatype_size(old_type), 0, nullptr, DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -676,7 +676,7 @@ int smpi_datatype_hvector(int count, int blocklen, MPI_Aint stride, MPI_Datatype
     retval=MPI_SUCCESS;
   }else{
     smpi_datatype_create(new_type, count * blocklen * smpi_datatype_size(old_type),0,count * blocklen *
-                                             smpi_datatype_size(old_type), 0, NULL, DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
+                                             smpi_datatype_size(old_type), 0, nullptr, DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
     retval=MPI_SUCCESS;
   }
   return retval;
@@ -1567,7 +1567,7 @@ void smpi_op_apply(MPI_Op op, const void *invec, void *inoutvec, int *len, MPI_D
 int smpi_type_attr_delete(MPI_Datatype type, int keyval){
   smpi_type_key_elem elem =
     static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
-  if(elem==NULL)
+  if(elem==nullptr)
     return MPI_ERR_ARG;
   if(elem->delete_fn!=MPI_NULL_DELETE_FN){
     void * value;
@@ -1578,7 +1578,7 @@ int smpi_type_attr_delete(MPI_Datatype type, int keyval){
         return ret;
     }
   }  
-  if(type->attributes==NULL)
+  if(type->attributes==nullptr)
     return MPI_ERR_ARG;
 
   xbt_dict_remove_ext(type->attributes, reinterpret_cast<const char*>(&keyval), sizeof(int));
@@ -1588,10 +1588,10 @@ int smpi_type_attr_delete(MPI_Datatype type, int keyval){
 int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* flag){
   smpi_type_key_elem elem =
     static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
-  if(elem==NULL)
+  if(elem==nullptr)
     return MPI_ERR_ARG;
   xbt_ex_t ex;
-  if(type->attributes==NULL){
+  if(type->attributes==nullptr){
     *flag=0;
     return MPI_SUCCESS;
   }
@@ -1607,11 +1607,11 @@ int smpi_type_attr_get(MPI_Datatype type, int keyval, void* attr_value, int* fla
 }
 
 int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
-  if(smpi_type_keyvals==NULL)
+  if(smpi_type_keyvals==nullptr)
     smpi_type_keyvals = xbt_dict_new();
   smpi_type_key_elem elem =
      static_cast<smpi_type_key_elem>(xbt_dict_get_or_null_ext(smpi_type_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
-  if(elem==NULL)
+  if(elem==nullptr)
     return MPI_ERR_ARG;
   int flag;
   void* value;
@@ -1621,16 +1621,16 @@ int smpi_type_attr_put(MPI_Datatype type, int keyval, void* attr_value){
     if(ret!=MPI_SUCCESS) 
       return ret;
   }
-  if(type->attributes==NULL)
+  if(type->attributes==nullptr)
     type->attributes=xbt_dict_new();
 
-  xbt_dict_set_ext(type->attributes, reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, NULL);
+  xbt_dict_set_ext(type->attributes, reinterpret_cast<const char*>(&keyval), sizeof(int), attr_value, nullptr);
   return MPI_SUCCESS;
 }
 
 int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delete_attr_function* delete_fn, int* keyval,
                             void* extra_state){
-  if(smpi_type_keyvals==NULL)
+  if(smpi_type_keyvals==nullptr)
     smpi_type_keyvals = xbt_dict_new();
 
   smpi_type_key_elem value = (smpi_type_key_elem) xbt_new0(s_smpi_mpi_type_key_elem_t,1);
@@ -1639,7 +1639,7 @@ int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MPI_Type_delet
   value->delete_fn=delete_fn;
 
   *keyval = type_keyval_id;
-  xbt_dict_set_ext(smpi_type_keyvals,reinterpret_cast<const char*>(keyval), sizeof(int),reinterpret_cast<void*>(value), NULL);
+  xbt_dict_set_ext(smpi_type_keyvals,reinterpret_cast<const char*>(keyval), sizeof(int),reinterpret_cast<void*>(value), nullptr);
   type_keyval_id++;
   return MPI_SUCCESS;
 }
