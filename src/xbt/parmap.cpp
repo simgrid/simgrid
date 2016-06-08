@@ -116,7 +116,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
 
   /* Create the pool of worker threads */
   xbt_parmap_thread_data_t data;
-  parmap->workers[0] = NULL;
+  parmap->workers[0] = nullptr;
 #if HAVE_PTHREAD_SETAFFINITY
   int core_bind = 0;
 #endif  
@@ -124,7 +124,7 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
     data = xbt_new0(s_xbt_parmap_thread_data_t, 1);
     data->parmap = parmap;
     data->worker_id = i;
-    parmap->workers[i] = xbt_os_thread_create(NULL, xbt_parmap_worker_main, data, NULL);
+    parmap->workers[i] = xbt_os_thread_create(nullptr, xbt_parmap_worker_main, data, nullptr);
 #if HAVE_PTHREAD_SETAFFINITY
     xbt_os_thread_bind(parmap->workers[i], core_bind); 
     if (core_bind != xbt_os_get_numcores())
@@ -151,7 +151,7 @@ void xbt_parmap_destroy(xbt_parmap_t parmap)
 
   unsigned int i;
   for (i = 1; i < parmap->num_workers; i++)
-    xbt_os_thread_join(parmap->workers[i], NULL);
+    xbt_os_thread_join(parmap->workers[i], nullptr);
 
   xbt_os_cond_destroy(parmap->ready_cond);
   xbt_os_mutex_destroy(parmap->ready_mutex);
@@ -245,7 +245,7 @@ void xbt_parmap_apply(xbt_parmap_t parmap, void_f_pvoid_t fun, xbt_dynar_t data)
  *
  * Worker threads call this function to get more work.
  *
- * \return the next task to process, or NULL if there is no more work
+ * \return the next task to process, or nullptr if there is no more work
  */
 void* xbt_parmap_next(xbt_parmap_t parmap)
 {
@@ -253,7 +253,7 @@ void* xbt_parmap_next(xbt_parmap_t parmap)
   if (index < xbt_dynar_length(parmap->data)) {
     return xbt_dynar_get_as(parmap->data, index, void*);
   }
-  return NULL;
+  return nullptr;
 }
 
 static void xbt_parmap_work(xbt_parmap_t parmap)
@@ -272,7 +272,7 @@ static void *xbt_parmap_worker_main(void *arg)
   xbt_parmap_thread_data_t data = (xbt_parmap_thread_data_t) arg;
   xbt_parmap_t parmap = data->parmap;
   unsigned round = 0;
-  smx_context_t context = SIMIX_context_new(std::function<void()>(), NULL, NULL);
+  smx_context_t context = SIMIX_context_new(std::function<void()>(), nullptr, nullptr);
   SIMIX_context_set_current(context);
 
   XBT_DEBUG("New worker thread created");
@@ -291,7 +291,7 @@ static void *xbt_parmap_worker_main(void *arg)
     } else {
       delete context;
       xbt_free(data);
-      return NULL;
+      return nullptr;
     }
   }
 }
@@ -300,13 +300,13 @@ static void *xbt_parmap_worker_main(void *arg)
 static void futex_wait(unsigned *uaddr, unsigned val)
 {
   XBT_VERB("Waiting on futex %p", uaddr);
-  syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, NULL, NULL, 0);
+  syscall(SYS_futex, uaddr, FUTEX_WAIT_PRIVATE, val, nullptr, nullptr, 0);
 }
 
 static void futex_wake(unsigned *uaddr, unsigned val)
 {
   XBT_VERB("Waking futex %p", uaddr);
-  syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, NULL, NULL, 0);
+  syscall(SYS_futex, uaddr, FUTEX_WAKE_PRIVATE, val, nullptr, nullptr, 0);
 }
 #endif
 

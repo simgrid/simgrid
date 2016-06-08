@@ -34,17 +34,17 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   /* to be returned. */
   char* path = bprintf("/proc/%i/maps", (int) pid);
   FILE *fp = std::fopen(path, "r");
-  if(fp == NULL)
+  if(fp == nullptr)
     std::perror("fopen failed");
   xbt_assert(fp, "Cannot open %s to investigate the memory map of the process.", path);
   free(path);
-  setbuf(fp, NULL);
+  setbuf(fp, nullptr);
 
   std::vector<VmMap> ret;
 
   /* Read one line at the time, parse it and add it to the memory map to be returned */
   ssize_t read; /* Number of bytes readed */
-  char* line = NULL;
+  char* line = nullptr;
   std::size_t n = 0; /* Amount of bytes to read by xbt_getline */
   while ((read = xbt_getline(&line, &n, fp)) != -1) {
 
@@ -58,8 +58,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     lfields[0] = strtok(line, " ");
 
     int i;
-    for (i = 1; i < 6 && lfields[i - 1] != NULL; i++) {
-      lfields[i] = std::strtok(NULL, " ");
+    for (i = 1; i < 6 && lfields[i - 1] != nullptr; i++) {
+      lfields[i] = std::strtok(nullptr, " ");
     }
 
     /* Check to see if we got the expected amount of columns */
@@ -69,7 +69,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
     char *tok = std::strtok(lfields[0], "-");
-    if (tok == NULL)
+    if (tok == nullptr)
       xbt_abort();
 
     VmMap memreg;
@@ -79,8 +79,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (*endptr != '\0')
       xbt_abort();
 
-    tok = std::strtok(NULL, "-");
-    if (tok == NULL)
+    tok = std::strtok(nullptr, "-");
+    if (tok == nullptr)
       xbt_abort();
 
     memreg.end_addr = std::strtoull(tok, &endptr, 16);
@@ -125,7 +125,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Get the device major:minor bytes */
     tok = std::strtok(lfields[3], ":");
-    if (tok == NULL)
+    if (tok == nullptr)
       xbt_abort();
 
     memreg.dev_major = (char) strtoul(tok, &endptr, 16);
@@ -133,8 +133,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (*endptr != '\0')
       xbt_abort();
 
-    tok = std::strtok(NULL, ":");
-    if (tok == NULL)
+    tok = std::strtok(nullptr, ":");
+    if (tok == nullptr)
       xbt_abort();
 
     memreg.dev_minor = (char) std::strtoul(tok, &endptr, 16);

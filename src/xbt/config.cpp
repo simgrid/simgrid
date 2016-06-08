@@ -28,7 +28,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
-XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = NULL;
+XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = nullptr;
 
 namespace simgrid {
 namespace config {
@@ -291,7 +291,7 @@ public:
               name,
               variable->getDescription().c_str(),
               variable->getTypeName(), variable, this);
-    xbt_dict_set(this->options, name, variable, NULL);
+    xbt_dict_set(this->options, name, variable, nullptr);
     variable->update();
     return variable;
   }
@@ -314,7 +314,7 @@ static void xbt_cfgelm_free(void *data)
 
 Config::Config() :
   options(xbt_dict_new_homogeneous(xbt_cfgelm_free)),
-  aliases(xbt_dict_new_homogeneous(NULL))
+  aliases(xbt_dict_new_homogeneous(nullptr))
 {}
 
 Config::~Config()
@@ -352,7 +352,7 @@ void Config::alias(const char* realname, const char* aliasname)
   xbt_assert(this->getDictElement(aliasname) == nullptr, "Alias '%s' already.", aliasname);
   xbt_dictelm_t element = this->getDictElement(realname);
   xbt_assert(element, "Cannot define an alias to the non-existing option '%s'.", realname);
-  xbt_dict_set(this->aliases, aliasname, element, NULL);
+  xbt_dict_set(this->aliases, aliasname, element, nullptr);
 }
 
 /** @brief Dump a config set for debuging purpose
@@ -363,9 +363,9 @@ void Config::alias(const char* realname, const char* aliasname)
 void Config::dump(const char *name, const char *indent)
 {
   xbt_dict_t dict = this->options;
-  xbt_dict_cursor_t cursor = NULL;
-  simgrid::config::ConfigurationElement* variable = NULL;
-  char *key = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
+  simgrid::config::ConfigurationElement* variable = nullptr;
+  char *key = nullptr;
 
   if (name)
     printf("%s>> Dumping of the config set '%s':\n", indent, name);
@@ -389,7 +389,7 @@ void Config::showAliases()
   unsigned int dynar_cursor;
   xbt_dictelm_t dictel;
   char *name;
-  xbt_dynar_t names = xbt_dynar_new(sizeof(char *), NULL);
+  xbt_dynar_t names = xbt_dynar_new(sizeof(char *), nullptr);
 
   xbt_dict_foreach(this->aliases, dict_cursor, name, dictel)
     xbt_dynar_push(names, &name);
@@ -406,7 +406,7 @@ void Config::help()
   unsigned int dynar_cursor;
   simgrid::config::ConfigurationElement* variable;
   char *name;
-  xbt_dynar_t names = xbt_dynar_new(sizeof(char *), NULL);
+  xbt_dynar_t names = xbt_dynar_new(sizeof(char *), nullptr);
 
   xbt_dict_foreach(this->options, dict_cursor, name, variable)
     xbt_dynar_push(names, &name);
@@ -447,7 +447,7 @@ template<class T>
 XBT_PUBLIC(void) declareFlag(const char* name, const char* description,
   T value, std::function<void(const T&)> callback)
 {
-  if (simgrid_config == NULL)
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
   simgrid_config->registerOption<T>(
     name, description, std::move(value), std::move(callback));
@@ -480,21 +480,21 @@ void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
 void xbt_cfg_register_double(const char *name, double default_value,
   xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == NULL)
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
   simgrid_config->registerOption<double>(name, desc, default_value, cb_set);
 }
 
 void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == NULL)
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
   simgrid_config->registerOption<int>(name, desc, default_value, cb_set);
 }
 
 void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == NULL)
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
   simgrid_config->registerOption<std::string>(name, desc,
     default_value ? default_value : "", cb_set);
@@ -502,14 +502,14 @@ void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cf
 
 void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == NULL)
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
   simgrid_config->registerOption<bool>(name, desc, simgrid::config::parseBool(default_value), cb_set);
 }
 
 void xbt_cfg_register_alias(const char *realname, const char *aliasname)
 {
-  if (simgrid_config == NULL)
+  if (simgrid_config == nullptr)
     simgrid_config = xbt_cfg_new();
   simgrid_config->alias(realname, aliasname);
 }
@@ -550,7 +550,7 @@ void xbt_cfg_set_parse(const char *options)
     }
     if (option - name == len) {
       XBT_DEBUG("Boundary=EOL");
-      option = NULL;            /* don't do next iteration */
+      option = nullptr;            /* don't do next iteration */
     } else {
       XBT_DEBUG("Boundary on '%c'. len=%d;option-name=%ld", *option, len, (long) (option - name));
       /* Pass the following blank chars */
@@ -560,7 +560,7 @@ void xbt_cfg_set_parse(const char *options)
         option++;
       }
       if (option - name == len - 1)
-        option = NULL;          /* don't do next iteration */
+        option = nullptr;          /* don't do next iteration */
     }
     XBT_DEBUG("parse now:'%s'; parse later:'%s'", name, option);
 
@@ -791,7 +791,7 @@ double xbt_cfg_get_double(const char *key)
  *
  * Returns the first value from the config set under the given name.
  * If there is more than one value, it will issue a warning.
- * Returns NULL if there is no value.
+ * Returns nullptr if there is no value.
  *
  * \warning the returned value is the actual content of the config set
  */
@@ -835,11 +835,11 @@ XBT_PUBLIC_DATA(xbt_cfg_t) simgrid_config;
 
 static void make_set()
 {
-  simgrid_config = NULL;
+  simgrid_config = nullptr;
   xbt_log_threshold_set(&_XBT_LOGV(xbt_cfg), xbt_log_priority_critical);
-  xbt_cfg_register_int("speed", 0, NULL, "");
-  xbt_cfg_register_string("peername", "", NULL, "");
-  xbt_cfg_register_string("user", "", NULL, "");
+  xbt_cfg_register_int("speed", 0, nullptr, "");
+  xbt_cfg_register_string("peername", "", nullptr, "");
+  xbt_cfg_register_string("user", "", nullptr, "");
 }                               /* end_of_make_set */
 
 XBT_TEST_UNIT("memuse", test_config_memuse, "Alloc and free a config set")
