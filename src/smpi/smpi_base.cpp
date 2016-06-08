@@ -398,13 +398,6 @@ void smpi_mpi_start(MPI_Request request)
       }
     }
 
-    //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
-    double sleeptime = (request->detached != 0) ? smpi_or(request->size) : 0.0;
-    if(sleeptime > 0.0){
-        simcall_process_sleep(sleeptime);
-        XBT_DEBUG("receiving size of %zu : sleep %f ", request->size, smpi_or(request->size));
-    }
-
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
     request->real_size=request->size;
     request->action = simcall_comm_irecv(SIMIX_process_self(), mailbox, request->buf, &request->real_size, &match_recv,
@@ -729,6 +722,14 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   }
 
   if(req->detached_sender!=NULL){
+
+    //integrate pseudo-timing for buffering of small messages, do not bother to execute the simcall if 0
+    double sleeptime = smpi_or(req->real_size);
+    if(sleeptime > 0.0){
+        simcall_process_sleep(sleeptime);
+        XBT_DEBUG("receiving size of %zu : sleep %f ", req->real_size, sleeptime);
+    }
+
     smpi_mpi_request_free(&(req->detached_sender));
   }
   if(req->flags & PERSISTENT)
