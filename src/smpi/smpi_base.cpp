@@ -427,13 +427,13 @@ void smpi_mpi_start(MPI_Request request)
     double sleeptime = 0.0;
     if(request->detached != 0 || ((request->flags & (ISEND|SSEND)) != 0)){// issend should be treated as isend
       //isend and send timings may be different
-      sleeptime = ((request->flags & ISEND) != 0)? smpi_ois(request->size) : smpi_os(request->size);
+      sleeptime = ((request->flags & ISEND) != 0) ? smpi_ois(request->size) : smpi_os(request->size);
     }
 
     if(sleeptime > 0.0){
         simcall_process_sleep(sleeptime);
-        XBT_DEBUG("sending size of %zu : sleep %f ", request->size, smpi_os(request->size));
-    }
+        XBT_DEBUG("sending size of %zu : sleep %f ", request->size, sleeptime);
+    } 
 
     int async_small_thresh = xbt_cfg_get_int("smpi/async-small-thresh");
 
