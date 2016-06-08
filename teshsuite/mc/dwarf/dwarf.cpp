@@ -68,7 +68,7 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
 
   void* frame_base = subprogram->frame_base(*cursor);
   simgrid::dwarf::Location location = simgrid::dwarf::resolve(
-    var->location_list, info, cursor, frame_base, NULL, -1);
+    var->location_list, info, cursor, frame_base, nullptr, -1);
 
   xbt_assert(location.in_memory(),
     "Expected the variable %s of function %s to be in memory",

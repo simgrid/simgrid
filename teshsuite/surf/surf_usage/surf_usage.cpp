@@ -74,7 +74,7 @@ int main(int argc, char **argv)
 
   surf_solve(-1.0);
   do {
-    surf_action_t action = NULL;
+    surf_action_t action = nullptr;
     now = surf_get_clock();
     XBT_INFO("Next Event : %g", now);
     XBT_DEBUG("\t CPU actions");

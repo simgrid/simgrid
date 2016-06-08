@@ -12,7 +12,7 @@ int main(int argc, char **argv)
 {
   /* SD initialization */
   int size;
-  xbt_lib_cursor_t cursor = NULL;
+  xbt_lib_cursor_t cursor = nullptr;
   char *key, *data;
 
   SD_init(&argc, argv);

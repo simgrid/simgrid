@@ -30,7 +30,7 @@ int main(int argc, char **argv)
   tmgr_trace_t trace_B = tmgr_trace_new_from_file("trace_B.txt");
   double next_event_date = -1.0;
   double value = -1.0;
-  simgrid::surf::Resource *resource = NULL;
+  simgrid::surf::Resource *resource = nullptr;
   simgrid::surf::Resource *hostA = new DummyTestResource("Host A");
   simgrid::surf::Resource *hostB = new DummyTestResource("Host B");
 

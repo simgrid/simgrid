@@ -88,15 +88,15 @@ static double diff_lagrange_test_1(double x)
 
 static void test1(method_t method)
 {
-  lmm_system_t Sys = NULL;
-  lmm_constraint_t L1 = NULL;
-  lmm_constraint_t L2 = NULL;
-  lmm_constraint_t L3 = NULL;
+  lmm_system_t Sys = nullptr;
+  lmm_constraint_t L1 = nullptr;
+  lmm_constraint_t L2 = nullptr;
+  lmm_constraint_t L3 = nullptr;
 
-  lmm_variable_t R_1_2_3 = NULL;
-  lmm_variable_t R_1 = NULL;
-  lmm_variable_t R_2 = NULL;
-  lmm_variable_t R_3 = NULL;
+  lmm_variable_t R_1_2_3 = nullptr;
+  lmm_variable_t R_1 = nullptr;
+  lmm_variable_t R_2 = nullptr;
+  lmm_variable_t R_3 = nullptr;
 
   double a = 1.0, b = 10.0;
 
@@ -205,12 +205,12 @@ static void test1(method_t method)
 
 static void test2(method_t method)
 {
-  lmm_system_t Sys = NULL;
-  lmm_constraint_t CPU1 = NULL;
-  lmm_constraint_t CPU2 = NULL;
+  lmm_system_t Sys = nullptr;
+  lmm_constraint_t CPU1 = nullptr;
+  lmm_constraint_t CPU2 = nullptr;
 
-  lmm_variable_t T1 = NULL;
-  lmm_variable_t T2 = NULL;
+  lmm_variable_t T1 = nullptr;
+  lmm_variable_t T2 = nullptr;
 
   if (method == LAGRANGE_VEGAS)
     lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
@@ -258,9 +258,9 @@ static void test3(method_t method)
 
   double **A;
 
-  lmm_system_t Sys = NULL;
-  lmm_constraint_t *tmp_cnst = NULL;
-  lmm_variable_t *tmp_var = NULL;
+  lmm_system_t Sys = nullptr;
+  lmm_constraint_t *tmp_cnst = nullptr;
+  lmm_variable_t *tmp_var = nullptr;
   char **tmp_name;
 
   /*array to add the the constraints of fictitious variables */

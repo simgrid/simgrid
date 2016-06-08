@@ -17,8 +17,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
 int main(int argc, char **argv)
 {
-  sg_host_t hostA = NULL;
-  sg_host_t hostB = NULL;
+  sg_host_t hostA = nullptr;
+  sg_host_t hostB = nullptr;
   double now = -1.0;
   int running;
 
@@ -47,9 +47,9 @@ int main(int argc, char **argv)
 
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {
-    surf_action_t action = NULL;
+    surf_action_t action = nullptr;
     unsigned int iter;
-    surf_model_t model = NULL;
+    surf_model_t model = nullptr;
     running = 0;
 
     now = surf_get_clock();
