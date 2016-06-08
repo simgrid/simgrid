@@ -13,16 +13,16 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(dsend,"the dsend test");
 
 int main(int argc, char *argv[]) {
   int rank;
-  int data=11;
+  int32_t data=11;
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
   MPI_Request r;
   if (rank==1) {
     data=22;
-    MPI_Send(&data,1,MPI_BYTE,(rank+1)%2,666,MPI_COMM_WORLD);
+    MPI_Send(&data,1,MPI_INT32_T,(rank+1)%2,666,MPI_COMM_WORLD);
   } else {
-    MPI_Recv(&data,1,MPI_BYTE,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,NULL);
+    MPI_Recv(&data,1,MPI_INT32_T,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,NULL);
     if (data !=22) {
       printf("rank %d: Damn, data does not match (got %d)\n",rank, data);
     }
@@ -30,10 +30,10 @@ int main(int argc, char *argv[]) {
 
   if (rank==1) {
     data=22;
-    MPI_Isend(&data,1,MPI_BYTE,(rank+1)%2,666,MPI_COMM_WORLD, &r);
+    MPI_Isend(&data,1,MPI_INT32_T,(rank+1)%2,666,MPI_COMM_WORLD, &r);
     MPI_Wait(&r, MPI_STATUS_IGNORE);
   } else {
-    MPI_Irecv(&data,1,MPI_BYTE,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,&r);
+    MPI_Irecv(&data,1,MPI_INT32_T,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,&r);
     MPI_Wait(&r, MPI_STATUS_IGNORE);
     if (data !=22) {
       printf("rank %d: Damn, data does not match (got %d)\n",rank, data);
