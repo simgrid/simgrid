@@ -60,7 +60,7 @@ sg_host_t sg_host_by_name_or_create(const char *name)
 
 xbt_dynar_t sg_hosts_as_dynar(void)
 {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);
 
   xbt_dict_cursor_t cursor = nullptr;
   const char* name = nullptr;
@@ -162,7 +162,7 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
  *
  * \param host a host
  * \param name a property name
- * \return value of a property (or NULL if property not set)
+ * \return value of a property (or nullptr if property not set)
 */
 const char *sg_host_get_property_value(sg_host_t host, const char *name)
 {
@@ -173,7 +173,7 @@ const char *sg_host_get_property_value(sg_host_t host, const char *name)
 void sg_host_dump(sg_host_t host)
 {
   xbt_dict_t props;
-  xbt_dict_cursor_t cursor=NULL;
+  xbt_dict_cursor_t cursor=nullptr;
   char *key,*data;
 
   XBT_INFO("Displaying host %s", sg_host_get_name(host));

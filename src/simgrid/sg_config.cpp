@@ -103,7 +103,7 @@ static void sg_config_cmd_line(int *argc, char **argv)
     }
   }
   if (j < *argc) {
-    argv[j] = NULL;
+    argv[j] = nullptr;
     *argc = j;
   }
   if (shall_exit)
@@ -451,10 +451,10 @@ void sg_config_init(int *argc, char **argv)
         }
       });
 
-    xbt_cfg_register_boolean("cpu/maxmin-selective-update", "no", NULL,
+    xbt_cfg_register_boolean("cpu/maxmin-selective-update", "no", nullptr,
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
     xbt_cfg_register_alias("cpu/maxmin-selective-update","cpu/maxmin_selective_update");
-    xbt_cfg_register_boolean("network/maxmin-selective-update", "no", NULL,
+    xbt_cfg_register_boolean("network/maxmin-selective-update", "no", nullptr,
         "Update the constraint set propagating recursively to others constraints (off by default when optim is set to lazy)");
     xbt_cfg_register_alias("network/maxmin-selective-update","network/maxmin_selective_update");
     /* Replay (this part is enabled even if MC it disabled) */
@@ -544,58 +544,58 @@ void sg_config_init(int *argc, char **argv)
     //For smpi/bw_factor and smpi/lat_factor
     // SMPI model can be used without enable_smpi, so keep this out of the ifdef.
     xbt_cfg_register_string("smpi/bw-factor",
-        "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084", NULL,
+        "65472:0.940694;15424:0.697866;9376:0.58729;5776:1.08739;3484:0.77493;1426:0.608902;732:0.341987;257:0.338112;0:0.812084", nullptr,
         "Bandwidth factors for smpi. Format: 'threshold0:value0;threshold1:value1;...;thresholdN:valueN', meaning if(size >=thresholdN ) return valueN.");
     xbt_cfg_register_alias("smpi/bw-factor","smpi/bw_factor");
 
     xbt_cfg_register_string("smpi/lat-factor",
-        "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467", NULL, "Latency factors for smpi.");
+        "65472:11.6436;15424:3.48845;9376:2.59299;5776:2.18796;3484:1.88101;1426:1.61075;732:1.9503;257:1.95341;0:2.01467", nullptr, "Latency factors for smpi.");
     xbt_cfg_register_alias("smpi/lat-factor","smpi/lat_factor");
     
-    xbt_cfg_register_string("smpi/IB-penalty-factors", "0.965;0.925;1.35", NULL,
+    xbt_cfg_register_string("smpi/IB-penalty-factors", "0.965;0.925;1.35", nullptr,
         "Correction factor to communications using Infiniband model with contention (default value based on Stampede cluster profiling)");
     xbt_cfg_register_alias("smpi/IB-penalty-factors","smpi/IB_penalty_factors");
     
 #if HAVE_SMPI
-    xbt_cfg_register_double("smpi/running-power", 20000.0, NULL, "Power of the host running the simulation (in flop/s). Used to bench the operations.");
+    xbt_cfg_register_double("smpi/running-power", 20000.0, nullptr, "Power of the host running the simulation (in flop/s). Used to bench the operations.");
     xbt_cfg_register_alias("smpi/running-power","smpi/running_power");
 
-    xbt_cfg_register_boolean("smpi/display-timing", "no", NULL, "Whether we should display the timing after simulation.");
+    xbt_cfg_register_boolean("smpi/display-timing", "no", nullptr, "Whether we should display the timing after simulation.");
     xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");
 
-    xbt_cfg_register_boolean("smpi/simulate-computation", "yes", NULL, "Whether the computational part of the simulated application should be simulated.");
+    xbt_cfg_register_boolean("smpi/simulate-computation", "yes", nullptr, "Whether the computational part of the simulated application should be simulated.");
     xbt_cfg_register_alias("smpi/simulate-computation","smpi/simulate_computation");
 
-    xbt_cfg_register_boolean("smpi/use-shared-malloc", "yes", NULL, "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
+    xbt_cfg_register_boolean("smpi/use-shared-malloc", "yes", nullptr, "Whether SMPI_SHARED_MALLOC is enabled. Disable it for debugging purposes.");
     xbt_cfg_register_alias("smpi/use-shared-malloc", "smpi/use_shared_malloc");
 
-    xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, NULL, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
+    xbt_cfg_register_double("smpi/cpu-threshold", 1e-6, nullptr, "Minimal computation time (in seconds) not discarded, or -1 for infinity.");
     xbt_cfg_register_alias("smpi/cpu-threshold", "smpi/cpu_threshold");
 
-    xbt_cfg_register_int("smpi/async-small-thresh", 0, NULL,
+    xbt_cfg_register_int("smpi/async-small-thresh", 0, nullptr,
         "Maximal size of messages that are to be sent asynchronously, without waiting for the receiver");
     xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thresh");
     xbt_cfg_register_alias("smpi/async-small-thresh","smpi/async_small_thres");
 
-    xbt_cfg_register_boolean("smpi/trace-call-location", "no", NULL, "Should filename and linenumber of MPI calls be traced?");
+    xbt_cfg_register_boolean("smpi/trace-call-location", "no", nullptr, "Should filename and linenumber of MPI calls be traced?");
 
-    xbt_cfg_register_int("smpi/send-is-detached-thresh", 65536, NULL,
+    xbt_cfg_register_int("smpi/send-is-detached-thresh", 65536, nullptr,
         "Threshold of message size where MPI_Send stops behaving like MPI_Isend and becomes MPI_Ssend");
     xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thresh");
     xbt_cfg_register_alias("smpi/send-is-detached-thresh","smpi/send_is_detached_thres");
 
-    xbt_cfg_register_boolean("smpi/privatize-global-variables", "no", NULL, "Whether we should privatize global variable at runtime.");
+    xbt_cfg_register_boolean("smpi/privatize-global-variables", "no", nullptr, "Whether we should privatize global variable at runtime.");
     xbt_cfg_register_alias("smpi/privatize-global-variables", "smpi/privatize_global_variables");
 
 #if HAVE_PAPI
-    xbt_cfg_register_string("smpi/papi-events", nullptr, NULL, "This switch enables tracking the specified counters with PAPI");
+    xbt_cfg_register_string("smpi/papi-events", nullptr, nullptr, "This switch enables tracking the specified counters with PAPI");
 #endif
-    xbt_cfg_register_string("smpi/comp-adjustment-file", nullptr, NULL, "A file containing speedups or slowdowns for some parts of the code.");
-    xbt_cfg_register_string("smpi/os", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Send minimum time for small messages)");
-    xbt_cfg_register_string("smpi/ois", "1:0:0:0:0", NULL, "Small messages timings (MPI_Isend minimum time for small messages)");
-    xbt_cfg_register_string("smpi/or", "1:0:0:0:0", NULL,  "Small messages timings (MPI_Recv minimum time for small messages)");
+    xbt_cfg_register_string("smpi/comp-adjustment-file", nullptr, nullptr, "A file containing speedups or slowdowns for some parts of the code.");
+    xbt_cfg_register_string("smpi/os", "1:0:0:0:0", nullptr,  "Small messages timings (MPI_Send minimum time for small messages)");
+    xbt_cfg_register_string("smpi/ois", "1:0:0:0:0", nullptr, "Small messages timings (MPI_Isend minimum time for small messages)");
+    xbt_cfg_register_string("smpi/or", "1:0:0:0:0", nullptr,  "Small messages timings (MPI_Recv minimum time for small messages)");
 
-    xbt_cfg_register_string("smpi/coll-selector", "default", NULL, "Which collective selector to use");
+    xbt_cfg_register_string("smpi/coll-selector", "default", nullptr, "Which collective selector to use");
     xbt_cfg_register_alias("smpi/coll-selector","smpi/coll_selector");
     xbt_cfg_register_string("smpi/gather",        nullptr, &_check_coll_gather, "Which collective to use for gather");
     xbt_cfg_register_string("smpi/allgather",     nullptr, &_check_coll_allgather, "Which collective to use for allgather");
@@ -611,7 +611,7 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("smpi/reduce",        nullptr, &_check_coll_reduce, "Which collective to use for reduce");
 #endif // HAVE_SMPI
 
-    xbt_cfg_register_boolean("exception/cutpath", "no", NULL,
+    xbt_cfg_register_boolean("exception/cutpath", "no", nullptr,
         "Whether to cut all path information from call traces, used e.g. in exceptions.");
 
     xbt_cfg_register_boolean("clean-atexit", "yes", _sg_cfg_cb_clean_atexit,
