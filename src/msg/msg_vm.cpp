@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG AP
  *
  * \param vm a vm
  * \param name a property name
- * \return value of a property (or NULL if property not set)
+ * \return value of a property (or nullptr if property not set)
  */
 const char *MSG_vm_get_property_value(msg_vm_t vm, const char *name)
 {
@@ -38,7 +38,7 @@ const char *MSG_vm_get_property_value(msg_vm_t vm, const char *name)
  */
 xbt_dict_t MSG_vm_get_properties(msg_vm_t vm)
 {
-  xbt_assert((vm != NULL), "Invalid parameters (vm is NULL)");
+  xbt_assert((vm != nullptr), "Invalid parameters (vm is nullptr)");
   return vm->properties();
 }
 
@@ -336,7 +336,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
   int ret = 0;
   for (;;) {
-    msg_task_t task = NULL;
+    msg_task_t task = nullptr;
     ret = MSG_task_recv(&task, ms->mbox);
     {
       if (ret != MSG_OK) {
@@ -400,7 +400,7 @@ static int migration_rx_fun(int argc, char *argv[])
   // Inform the SRC that the migration has been correctly performed
   {
     char *task_name = get_mig_task_name(ms->vm, ms->src_pm, ms->dst_pm, 4);
-    msg_task_t task = MSG_task_create(task_name, 0, 0, NULL);
+    msg_task_t task = MSG_task_create(task_name, 0, 0, nullptr);
     msg_error_t ret = MSG_task_send(task, ms->mbox_ctl);
     // xbt_assert(ret == MSG_OK);
     if(ret == MSG_HOST_FAILURE){
@@ -425,9 +425,9 @@ static void reset_dirty_pages(msg_vm_t vm)
 {
   msg_host_priv_t priv = sg_host_msg(vm);
 
-  char *key = NULL;
-  xbt_dict_cursor_t cursor = NULL;
-  dirty_page_t dp = NULL;
+  char *key = nullptr;
+  xbt_dict_cursor_t cursor = nullptr;
+  dirty_page_t dp = nullptr;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
@@ -467,9 +467,9 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
   msg_host_priv_t priv = sg_host_msg(vm);
   double total = 0;
 
-  char *key = NULL;
-  xbt_dict_cursor_t cursor = NULL;
-  dirty_page_t dp = NULL;
+  char *key = nullptr;
+  xbt_dict_cursor_t cursor = nullptr;
+  dirty_page_t dp = nullptr;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_flops_amount(dp->task);
 
@@ -509,8 +509,8 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
     dp->prev_remaining = remaining;
   }
 
-  xbt_assert(xbt_dict_get_or_null(priv->dp_objs, key) == NULL);
-  xbt_dict_set(priv->dp_objs, key, dp, NULL);
+  xbt_assert(xbt_dict_get_or_null(priv->dp_objs, key) == nullptr);
+  xbt_dict_set(priv->dp_objs, key, dp, nullptr);
   XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, sg_host_get_name(host), remaining, priv->dp_enabled);
 
   xbt_free(key);
@@ -549,7 +549,7 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
 {
   sg_size_t sent = 0;
   char *task_name = get_mig_task_name(vm, src_pm, dst_pm, stage);
-  msg_task_t task = MSG_task_create(task_name, 0, (double)size, NULL);
+  msg_task_t task = MSG_task_create(task_name, 0, (double)size, nullptr);
 
   /* TODO: clean up */
 
@@ -820,13 +820,13 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
  {
  char **argv = xbt_new(char *, 2);
  argv[0] = pr_rx_name;
- argv[1] = NULL;
+ argv[1] = nullptr;
 /*rx_process = */ MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
  }
  {
  char **argv = xbt_new(char *, 2);
  argv[0] = pr_tx_name;
- argv[1] = NULL;
+ argv[1] = nullptr;
 /* tx_process = */MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
  }
 #endif
@@ -834,7 +834,7 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   /* wait until the migration have finished or on error has occurred */
   {
     XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
-    msg_task_t task = NULL;
+    msg_task_t task = nullptr;
     msg_error_t ret = MSG_TIMEOUT;
     while (ret == MSG_TIMEOUT && MSG_host_is_on(dst_pm)) //Wait while you receive the message o
      ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 4);
@@ -1041,7 +1041,7 @@ void MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask)
   if (mask == 0)
     xbt_dict_remove_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm));
   else
-    xbt_dict_set_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm), (void *)(uintptr_t) mask, NULL);
+    xbt_dict_set_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm), (void *)(uintptr_t) mask, nullptr);
 
   msg_host_t pm_now = MSG_vm_get_pm(vm);
   if (pm_now == pm) {

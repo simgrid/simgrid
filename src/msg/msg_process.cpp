@@ -37,10 +37,10 @@ void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc)
   if (smx_proc == SIMIX_process_self()) {
     /* avoid a SIMIX request if this function is called by the process itself */
     msg_proc = (simdata_process_t) SIMIX_process_self_get_data();
-    SIMIX_process_self_set_data(NULL);
+    SIMIX_process_self_set_data(nullptr);
   } else {
     msg_proc = (simdata_process_t) simcall_process_get_data(smx_proc);
-    simcall_process_set_data(smx_proc, NULL);
+    simcall_process_set_data(smx_proc, nullptr);
   }
 
   TRACE_msg_process_destroy(smx_proc->name.c_str(), smx_proc->pid);
@@ -79,7 +79,7 @@ smx_process_t MSG_process_create_from_SIMIX(
  */
 msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
 {
-  return MSG_process_create_with_environment(name, code, data, host, 0, NULL, NULL);
+  return MSG_process_create_with_environment(name, code, data, host, 0, nullptr, nullptr);
 }
 
 /** \ingroup m_process_management
@@ -87,14 +87,14 @@ msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *d
 
  * A constructor for #msg_process_t taking four arguments and returning the corresponding object. The structure (and
  * the corresponding thread) is created, and put in the list of ready process.
- * \param name a name for the object. It is for user-level information and can be NULL.
+ * \param name a name for the object. It is for user-level information and can be nullptr.
  * \param code is a function describing the behavior of the process. It should then only use functions described
  * in \ref m_process_management (to create a new #msg_process_t for example),
    in \ref m_host_management (only the read-only functions i.e. whose name contains the word get),
    in \ref m_task_management (to create or destroy some #msg_task_t for example) and
    in \ref msg_task_usage (to handle file transfers and task processing).
  * \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
- *        can be NULL. It can be retrieved with the function \ref MSG_process_get_data.
+ *        can be nullptr. It can be retrieved with the function \ref MSG_process_get_data.
  * \param host the location where the new process is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code
@@ -105,7 +105,7 @@ msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *d
 msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
                                               int argc, char **argv)
 {
-  return MSG_process_create_with_environment(name, code, data, host, argc, argv, NULL);
+  return MSG_process_create_with_environment(name, code, data, host, argc, argv, nullptr);
 }
 
 /** \ingroup m_process_management
@@ -113,14 +113,14 @@ msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_
 
  * A constructor for #msg_process_t taking four arguments and returning the corresponding object. The structure (and
  * the corresponding thread) is created, and put in the list of ready process.
- * \param name a name for the object. It is for user-level information and can be NULL.
+ * \param name a name for the object. It is for user-level information and can be nullptr.
  * \param code is a function describing the behavior of the process. It should then only use functions described
  * in \ref m_process_management (to create a new #msg_process_t for example),
    in \ref m_host_management (only the read-only functions i.e. whose name contains the word get),
    in \ref m_task_management (to create or destroy some #msg_task_t for example) and
    in \ref msg_task_usage (to handle file transfers and task processing).
  * \param data a pointer to any data one may want to attach to the new object.  It is for user-level information and
- *        can be NULL. It can be retrieved with the function \ref MSG_process_get_data.
+ *        can be nullptr. It can be retrieved with the function \ref MSG_process_get_data.
  * \param host the location where the new process is executed.
  * \param argc first argument passed to \a code
  * \param argv second argument passed to \a code. WARNING, these strings are freed by the SimGrid kernel when the
@@ -146,13 +146,13 @@ msg_process_t MSG_process_create_with_environment(
   const char *name, std::function<void()> code, void *data,
   msg_host_t host, xbt_dict_t properties)
 {
-  xbt_assert(code != NULL && host != NULL, "Invalid parameters: host and code params must not be NULL");
+  xbt_assert(code != nullptr && host != nullptr, "Invalid parameters: host and code params must not be nullptr");
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
   msg_process_t process;
 
   /* Simulator data for MSG */
-  simdata->waiting_action = NULL;
-  simdata->waiting_task = NULL;
+  simdata->waiting_action = nullptr;
+  simdata->waiting_task = nullptr;
   simdata->m_host = host;
   simdata->data = data;
   simdata->last_errno = MSG_OK;
@@ -165,7 +165,7 @@ msg_process_t MSG_process_create_with_environment(
   if (!process) {
     /* Undo everything we have just changed */
     xbt_free(simdata);
-    return NULL;
+    return nullptr;
   }
   else {
     simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
@@ -188,19 +188,19 @@ static int MSG_maestro(int argc, char** argv)
  */
 msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, xbt_dict_t properties)
 {
-  xbt_assert(host != NULL, "Invalid parameters: host and code params must not be NULL");
+  xbt_assert(host != nullptr, "Invalid parameters: host and code params must not be nullptr");
   simdata_process_t simdata = xbt_new0(s_simdata_process_t, 1);
   msg_process_t process;
 
   /* Simulator data for MSG */
-  simdata->waiting_action = NULL;
-  simdata->waiting_task = NULL;
+  simdata->waiting_action = nullptr;
+  simdata->waiting_task = nullptr;
   simdata->m_host = host;
   simdata->data = data;
   simdata->last_errno = MSG_OK;
 
   /* Let's create the process: SIMIX may decide to start it right now, even before returning the flow control to us */
-  process = SIMIX_process_attach(name, simdata, sg_host_get_name(host), properties, NULL);
+  process = SIMIX_process_attach(name, simdata, sg_host_get_name(host), properties, nullptr);
   if (!process)
     xbt_die("Could not attach");
   simcall_process_on_exit(process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,process);
@@ -267,14 +267,14 @@ msg_error_t MSG_process_migrate(msg_process_t process, msg_host_t host)
  */
 void* MSG_process_get_data(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter: first parameter must not be NULL!");
+  xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   /* get from SIMIX the MSG process data, and then the user data */
   simdata_process_t simdata = (simdata_process_t) simcall_process_get_data(process);
   if (simdata)
     return simdata->data;
   else
-    return NULL;
+    return nullptr;
 }
 
 /** \ingroup m_process_management
@@ -284,7 +284,7 @@ void* MSG_process_get_data(msg_process_t process)
  */
 msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 {
-  xbt_assert(process != NULL, "Invalid parameter: first parameter must not be NULL!");
+  xbt_assert(process != nullptr, "Invalid parameter: first parameter must not be nullptr!");
 
   simdata_process_t simdata = (simdata_process_t) simcall_process_get_data(process);
   simdata->data = data;
@@ -294,7 +294,7 @@ msg_error_t MSG_process_set_data(msg_process_t process, void *data)
 
 /** \ingroup m_process_management
  * \brief Sets a cleanup function to be called to free the userdata of a process when a process is destroyed.
- * \param data_cleanup a cleanup function for the userdata of a process, or NULL to call no function
+ * \param data_cleanup a cleanup function for the userdata of a process, or nullptr to call no function
  */
 XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
   msg_global->process_data_cleanup = data_cleanup;
@@ -302,19 +302,19 @@ XBT_PUBLIC(void) MSG_process_set_data_cleanup(void_f_pvoid_t data_cleanup) {
 
 /** \ingroup m_process_management
  * \brief Return the location on which a process is running.
- * \param process a process (NULL means the current one)
+ * \param process a process (nullptr means the current one)
  * \return the msg_host_t corresponding to the location on which \a process is running.
  */
 msg_host_t MSG_process_get_host(msg_process_t process)
 {
   simdata_process_t simdata;
-  if (process == NULL) {
+  if (process == nullptr) {
     simdata = (simdata_process_t) SIMIX_process_self_get_data();
   }
   else {
     simdata = (simdata_process_t) simcall_process_get_data(process);
   }
-  return simdata ? simdata->m_host : NULL;
+  return simdata ? simdata->m_host : nullptr;
 }
 
 /** \ingroup m_process_management
@@ -322,7 +322,7 @@ msg_host_t MSG_process_get_host(msg_process_t process)
  * \brief Return a #msg_process_t given its PID.
  *
  * This function search in the list of all the created msg_process_t for a msg_process_t  whose PID is equal to \a PID.
- * If no host is found, \c NULL is returned.
+ * If no host is found, \c nullptr is returned.
    Note that the PID are uniq in the whole simulation, not only on a given host.
  */
 msg_process_t MSG_process_from_PID(int PID)
@@ -362,7 +362,7 @@ int MSG_process_get_PID(msg_process_t process)
 {
   /* Do not raise an exception here: this function is called by the logs
    * and the exceptions, so it would be called back again and again */
-  if (process == NULL) {
+  if (process == nullptr) {
     return 0;
   }
   return simcall_process_get_PID(process);
@@ -376,7 +376,7 @@ int MSG_process_get_PID(msg_process_t process)
  */
 int MSG_process_get_PPID(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
+  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
   return simcall_process_get_PPID(process);
 }
 
@@ -387,7 +387,7 @@ int MSG_process_get_PPID(msg_process_t process)
  */
 const char *MSG_process_get_name(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
+  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
   return simcall_process_get_name(process);
 }
 
@@ -396,7 +396,7 @@ const char *MSG_process_get_name(msg_process_t process)
  *
  * \param process a process
  * \param name a property name
- * \return value of a property (or NULL if the property is not set)
+ * \return value of a property (or nullptr if the property is not set)
  */
 const char *MSG_process_get_property_value(msg_process_t process, const char *name)
 {
@@ -410,7 +410,7 @@ const char *MSG_process_get_property_value(msg_process_t process, const char *na
  */
 xbt_dict_t MSG_process_get_properties(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
+  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
   return simcall_process_get_properties(process);
 }
 
@@ -451,7 +451,7 @@ msg_process_t MSG_process_self(void)
  */
 msg_error_t MSG_process_suspend(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
+  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
 
   TRACE_msg_process_suspend(process);
   simcall_process_suspend(process);
@@ -465,7 +465,7 @@ msg_error_t MSG_process_suspend(msg_process_t process)
  */
 msg_error_t MSG_process_resume(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
+  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
 
   TRACE_msg_process_resume(process);
   simcall_process_resume(process);
@@ -479,7 +479,7 @@ msg_error_t MSG_process_resume(msg_process_t process)
  */
 int MSG_process_is_suspended(msg_process_t process)
 {
-  xbt_assert(process != NULL, "Invalid parameter: First argument must not be NULL");
+  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
   return simcall_process_is_suspended(process);
 }
 

@@ -12,13 +12,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
 
 void TRACE_msg_set_task_category(msg_task_t task, const char *category)
 {
-  xbt_assert(task->category == NULL, "Task %p(%s) already has a category (%s).",
+  xbt_assert(task->category == nullptr, "Task %p(%s) already has a category (%s).",
       task, task->name, task->category);
 
-  //if user provides a NULL category, task is no longer traced
-  if (category == NULL) {
+  //if user provides a nullptr category, task is no longer traced
+  if (category == nullptr) {
     xbt_free (task->category);
-    task->category = NULL;
+    task->category = nullptr;
     XBT_DEBUG("MSG task %p(%s), category removed", task, task->name);
     return;
   }
@@ -33,7 +33,7 @@ void TRACE_msg_task_create(msg_task_t task)
 {
   static long long counter = 0;
   task->counter = counter++;
-  task->category = NULL;
+  task->category = nullptr;
   
   if(MC_is_active())
     MC_ignore_heap(&(task->counter), sizeof(task->counter));
@@ -78,7 +78,7 @@ void TRACE_msg_task_destroy(msg_task_t task)
 
   //free category
   xbt_free(task->category);
-  task->category = NULL;
+  task->category = nullptr;
   return;
 }
 

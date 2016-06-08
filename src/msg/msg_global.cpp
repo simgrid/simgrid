@@ -16,7 +16,7 @@
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
 
-MSG_Global_t msg_global = NULL;
+MSG_Global_t msg_global = nullptr;
 static void MSG_exit(void);
 
 /********************************* MSG **************************************/
@@ -51,8 +51,8 @@ void MSG_init_nocheck(int *argc, char **argv) {
     SIMIX_global_init(argc, argv);
 
     msg_global->sent_msg = 0;
-    msg_global->task_copy_callback = NULL;
-    msg_global->process_data_cleanup = NULL;
+    msg_global->task_copy_callback = nullptr;
+    msg_global->process_data_cleanup = nullptr;
 
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
@@ -127,13 +127,13 @@ int MSG_process_killall(int reset_PIDs)
 }
 
 static void MSG_exit(void) {
-  if (msg_global==NULL)
+  if (msg_global==nullptr)
     return;
 
   TRACE_surf_resource_utilization_release();
   TRACE_end();
   free(msg_global);
-  msg_global = NULL;
+  msg_global = nullptr;
 }
 
 /** \ingroup msg_simulation

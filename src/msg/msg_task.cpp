@@ -24,13 +24,13 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)")
  * \brief Creates a new #msg_task_t.
  *
  * A constructor for #msg_task_t taking four arguments and returning the corresponding object.
- * \param name a name for the object. It is for user-level information and can be NULL.
+ * \param name a name for the object. It is for user-level information and can be nullptr.
  * \param flop_amount a value of the processing amount (in flop) needed to process this new task.
  * If 0, then it cannot be executed with MSG_task_execute(). This value has to be >=0.
  * \param message_size a value of the amount of data (in bytes) needed to transfer this new task. If 0, then it cannot
  * be transfered with MSG_task_send() and MSG_task_recv(). This value has to be >=0.
  * \param data a pointer to any data may want to attach to the new object.  It is for user-level information and can
- * be NULL. It can be retrieved with the function \ref MSG_task_get_data.
+ * be nullptr. It can be retrieved with the function \ref MSG_task_get_data.
  * \see msg_task_t
  * \return The new corresponding object.
  */
@@ -45,23 +45,23 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
   task->data = data;
 
   /* Simulator Data */
-  simdata->compute = NULL;
-  simdata->comm = NULL;
+  simdata->compute = nullptr;
+  simdata->comm = nullptr;
   simdata->bytes_amount = message_size;
   simdata->flops_amount = flop_amount;
-  simdata->sender = NULL;
-  simdata->receiver = NULL;
-  simdata->source = NULL;
+  simdata->sender = nullptr;
+  simdata->receiver = nullptr;
+  simdata->source = nullptr;
   simdata->priority = 1.0;
   simdata->bound = 0;
-  simdata->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
+  simdata->affinity_mask_db = xbt_dict_new_homogeneous(nullptr);
   simdata->rate = -1.0;
   simdata->isused = 0;
 
   simdata->host_nb = 0;
-  simdata->host_list = NULL;
-  simdata->flops_parallel_amount = NULL;
-  simdata->bytes_parallel_amount = NULL;
+  simdata->host_list = nullptr;
+  simdata->flops_parallel_amount = nullptr;
+  simdata->bytes_parallel_amount = nullptr;
   TRACE_msg_task_create(task);
 
   return task;
@@ -71,14 +71,14 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
  * \brief Creates a new #msg_task_t (a parallel one....).
  *
  * A constructor for #msg_task_t taking six arguments and returning the corresponding object.
- * \param name a name for the object. It is for user-level information and can be NULL.
+ * \param name a name for the object. It is for user-level information and can be nullptr.
  * \param host_nb the number of hosts implied in the parallel task.
  * \param host_list an array of \p host_nb msg_host_t.
  * \param flops_amount an array of \p host_nb doubles.
  *        flops_amount[i] is the total number of operations that have to be performed on host_list[i].
  * \param bytes_amount an array of \p host_nb* \p host_nb doubles.
  * \param data a pointer to any data may want to attach to the new object.
- *             It is for user-level information and can be NULL.
+ *             It is for user-level information and can be nullptr.
  *             It can be retrieved with the function \ref MSG_task_get_data.
  * \see msg_task_t
  * \return The new corresponding object.
@@ -109,7 +109,7 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
  */
 void *MSG_task_get_data(msg_task_t task)
 {
-  xbt_assert((task != NULL), "Invalid parameter");
+  xbt_assert((task != nullptr), "Invalid parameter");
   return (task->data);
 }
 
@@ -120,7 +120,7 @@ void *MSG_task_get_data(msg_task_t task)
  */
 void MSG_task_set_data(msg_task_t task, void *data)
 {
-  xbt_assert((task != NULL), "Invalid parameter");
+  xbt_assert((task != nullptr), "Invalid parameter");
   task->data = data;
 }
 
@@ -196,7 +196,7 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_destroy(msg_task_t task)
 {
-  xbt_assert((task != NULL), "Invalid parameter");
+  xbt_assert((task != nullptr), "Invalid parameter");
 
   if (task->simdata->isused) {
     /* the task is being sent or executed: cancel it first */
@@ -227,7 +227,7 @@ msg_error_t MSG_task_destroy(msg_task_t task)
  */
 msg_error_t MSG_task_cancel(msg_task_t task)
 {
-  xbt_assert((task != NULL), "Cannot cancel a NULL task");
+  xbt_assert((task != nullptr), "Cannot cancel a nullptr task");
 
   if (task->simdata->compute) {
     simcall_execution_cancel(task->simdata->compute);
@@ -294,7 +294,7 @@ double MSG_task_get_remaining_communication(msg_task_t task)
  */
 double MSG_task_get_bytes_amount(msg_task_t task)
 {
-  xbt_assert((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+  xbt_assert((task != nullptr) && (task->simdata != nullptr), "Invalid parameter");
   return task->simdata->bytes_amount;
 }
 
@@ -304,7 +304,7 @@ double MSG_task_get_bytes_amount(msg_task_t task)
  */
 void MSG_task_set_priority(msg_task_t task, double priority)
 {
-  xbt_assert((task != NULL) && (task->simdata != NULL), "Invalid parameter");
+  xbt_assert((task != nullptr) && (task->simdata != nullptr), "Invalid parameter");
   task->simdata->priority = 1 / priority;
   if (task->simdata->compute)
     simcall_execution_set_priority(task->simdata->compute,
@@ -372,10 +372,10 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
     /* 0 means clear */
       /* We need remove_ext() not throwing exception. */
       void *ret = xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(msg_host_t));
-      if (ret != NULL)
+      if (ret != nullptr)
         xbt_dict_remove_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host));
   } else
-    xbt_dict_set_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host), (void *)(uintptr_t) mask, NULL);
+    xbt_dict_set_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host), (void *)(uintptr_t) mask, nullptr);
 
   /* We set affinity data of this task. If the task is being executed, we actually change the affinity setting of the
    * task. Otherwise, this change will be applied when the task is executed. */

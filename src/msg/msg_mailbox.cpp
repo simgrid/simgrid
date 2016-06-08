@@ -18,7 +18,7 @@ msg_mailbox_t MSG_mailbox_new(const char *alias)
 
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
-  return (NULL == simcall_mbox_front(mailbox));
+  return (nullptr == simcall_mbox_front(mailbox));
 }
 
 msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
@@ -26,7 +26,7 @@ msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
   simgrid::simix::Comm* comm = static_cast<simgrid::simix::Comm*>(simcall_mbox_front(mailbox));
 
   if (!comm)
-    return NULL;
+    return nullptr;
 
   return (msg_task_t) comm->src_data;
 }
@@ -107,7 +107,7 @@ msg_error_t MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *
 
   /* Try to receive it by calling SIMIX network layer */
   TRY {
-    simcall_comm_recv(MSG_process_self(), mailbox, task, NULL, NULL, NULL, NULL, timeout, rate);
+    simcall_comm_recv(MSG_process_self(), mailbox, task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
     XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
     if (msg_global->debug_multiple_use && (*task)->simdata->isused!=0)
       xbt_ex_free(*(xbt_ex_t*)(*task)->simdata->isused);

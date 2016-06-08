@@ -31,9 +31,9 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
   priv->dp_updated_by_deleted_tasks = 0;
   priv->is_migrating = 0;
 
-  priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
+  priv->affinity_mask_db = xbt_dict_new_homogeneous(nullptr);
 
-  priv->file_descriptor_table = xbt_dynar_new(sizeof(int), NULL);
+  priv->file_descriptor_table = xbt_dynar_new(sizeof(int), nullptr);
   for (int i=1023; i>=0;i--)
     xbt_dynar_push_as(priv->file_descriptor_table, int, i);
 
@@ -81,7 +81,7 @@ void *MSG_host_get_data(msg_host_t host) {
  */
 msg_host_t MSG_host_self(void)
 {
-  return MSG_process_get_host(NULL);
+  return MSG_process_get_host(nullptr);
 }
 
 /** \ingroup m_host_management
@@ -113,7 +113,7 @@ void MSG_host_off(msg_host_t host)
  */
 void __MSG_host_priv_free(msg_host_priv_t priv)
 {
-  if (priv == NULL)
+  if (priv == nullptr)
     return;
   unsigned int size = xbt_dict_size(priv->dp_objs);
   if (size > 0)
@@ -177,7 +177,7 @@ int MSG_host_get_core_number(msg_host_t host) {
  */
 xbt_swag_t MSG_host_get_process_list(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
   return host->processes();
 }
 
@@ -186,7 +186,7 @@ xbt_swag_t MSG_host_get_process_list(msg_host_t host)
  *
  * \param host a host
  * \param name a property name
- * \return value of a property (or NULL if property not set)
+ * \return value of a property (or nullptr if property not set)
  */
 const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 {
@@ -201,7 +201,7 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
  */
 xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
   return host->properties();
 }
 
@@ -270,7 +270,7 @@ void MSG_host_get_params(msg_host_t host, vm_params_t params)
  * \return Returns the processor speed associated with pstate_index
  */
 double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
   return host->powerPeakAt(pstate_index);
 }
 
@@ -281,7 +281,7 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
  * \return Returns the current processor speed
  */
 double MSG_host_get_current_power_peak(msg_host_t host) {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
   return host->currentPowerPeak();
 }
 
@@ -301,7 +301,7 @@ int MSG_host_get_nb_pstates(msg_host_t host) {
  */
 xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
   return host->mountedStoragesAsDict();
 }
 
@@ -312,7 +312,7 @@ xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
  */
 xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
   return host->attachedStorages();
 }
 
@@ -323,19 +323,19 @@ xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
  */
 xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
-  xbt_dict_t contents = xbt_dict_new_homogeneous(NULL);
+  xbt_assert((host != nullptr), "Invalid parameters");
+  xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
   msg_storage_t storage;
   char* storage_name;
   char* mount_name;
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
 
   xbt_dict_t storage_list = host->mountedStoragesAsDict();
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
     storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);
     xbt_dict_t content = simcall_storage_get_content(storage);
-    xbt_dict_set(contents,mount_name, content,NULL);
+    xbt_dict_set(contents,mount_name, content,nullptr);
   }
   xbt_dict_free(&storage_list);
   return contents;
