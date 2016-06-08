@@ -423,6 +423,29 @@ void smpi_mpi_start(MPI_Request request)
     }
     print_request("New send", request);
 
+    void* buf = request->buf;
+    if ( (request->flags & SSEND) == 0 
+        && ( (request->flags & RMA) != 0 || static_cast<int>(request->size) < xbt_cfg_get_int("smpi/send-is-detached-thresh") ) ) {
+      void *oldbuf = NULL;
+      request->detached = 1;
+      XBT_DEBUG("Send request %p is detached", request);
+      request->refcount++;
+      if(request->old_type->sizeof_substruct == 0){
+        oldbuf = request->buf;
+        if (!smpi_process_get_replaying() && oldbuf != NULL && request->size!=0){
+          if((smpi_privatize_global_variables != 0)
+            && (static_cast<char*>(request->buf) >= smpi_start_data_exe)
+            && (static_cast<char*>(request->buf) < smpi_start_data_exe + smpi_size_data_exe )){
+            XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
+            smpi_switch_data_segment(request->src);
+          }
+          buf = xbt_malloc(request->size);
+          memcpy(buf,oldbuf,request->size);
+          XBT_DEBUG("buf %p copied into %p",oldbuf,buf);
+        }
+      }
+    }
+
     //if we are giving back the control to the user without waiting for completion, we have to inject timings
     double sleeptime = 0.0;
     if(request->detached != 0 || ((request->flags & (ISEND|SSEND)) != 0)){// issend should be treated as isend
@@ -471,29 +494,6 @@ void smpi_mpi_start(MPI_Request request)
     else {
       mailbox = smpi_process_remote_mailbox(receiver);
       XBT_DEBUG("Send request %p is in the large mailbox %p (buf: %p)",mailbox, request,request->buf);
-    }
-
-    void* buf = request->buf;
-    if ( (request->flags & SSEND) == 0 
-        && ( (request->flags & RMA) != 0 || static_cast<int>(request->size) < xbt_cfg_get_int("smpi/send-is-detached-thresh") ) ) {
-      void *oldbuf = NULL;
-      request->detached = 1;
-      XBT_DEBUG("Send request %p is detached", request);
-      request->refcount++;
-      if(request->old_type->sizeof_substruct == 0){
-        oldbuf = request->buf;
-        if (!smpi_process_get_replaying() && oldbuf != NULL && request->size!=0){
-          if((smpi_privatize_global_variables != 0)
-            && (static_cast<char*>(request->buf) >= smpi_start_data_exe)
-            && (static_cast<char*>(request->buf) < smpi_start_data_exe + smpi_size_data_exe )){
-            XBT_DEBUG("Privatization : We are sending from a zone inside global memory. Switch data segment ");
-            smpi_switch_data_segment(request->src);
-          }
-          buf = xbt_malloc(request->size);
-          memcpy(buf,oldbuf,request->size);
-          XBT_DEBUG("buf %p copied into %p",oldbuf,buf);
-        }
-      }
     }
 
     // we make a copy here, as the size is modified by simix, and we may reuse the request in another receive later
