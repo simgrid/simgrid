@@ -414,7 +414,8 @@ void smpi_mpi_start(MPI_Request request)
 
     if (async_small_thresh != 0 || (request->flags & RMA) != 0 )
       xbt_mutex_release(mut);
-  } else {
+  }
+  else { /* the RECV flag was not set, so this is a send */
     int receiver = request->dst;
 
     int rank = request->src;
