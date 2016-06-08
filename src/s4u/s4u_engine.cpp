@@ -82,12 +82,12 @@ static s4u::As *asByNameRecursive(s4u::As *current, const char *name)
   if(!strcmp(current->name(), name))
     return current;
 
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   char *key;
   AS_t elem;
   xbt_dict_foreach(current->children(), cursor, key, elem) {
     simgrid::s4u::As *tmp = asByNameRecursive(elem, name);
-    if (tmp != NULL )
+    if (tmp != nullptr )
         return tmp;
   }
   return nullptr;

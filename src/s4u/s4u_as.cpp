@@ -25,7 +25,7 @@ namespace simgrid {
     }
     As::~As()
     {
-      xbt_dict_cursor_t cursor = NULL;
+      xbt_dict_cursor_t cursor = nullptr;
       char *key;
       AS_t elem;
       xbt_dict_foreach(children_, cursor, key, elem) {
@@ -54,12 +54,12 @@ namespace simgrid {
 
     xbt_dynar_t As::hosts()
     {
-      xbt_dynar_t res =  xbt_dynar_new(sizeof(sg_host_t), NULL);
+      xbt_dynar_t res =  xbt_dynar_new(sizeof(sg_host_t), nullptr);
 
       for (unsigned int index = 0; index < xbt_dynar_length(vertices_); index++) {
         simgrid::surf::NetCard *card = xbt_dynar_get_as(vertices_, index, simgrid::surf::NetCard*);
         simgrid::s4u::Host     *host = simgrid::s4u::Host::by_name_or_null(card->name());
-        if (host!=NULL)
+        if (host!=nullptr)
           xbt_dynar_push(res, &host);
       }
       return res;

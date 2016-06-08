@@ -24,7 +24,7 @@ s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::funct
   // instance will get a fresh (reinitialized) state. Is this what we want?
   this->pimpl_ = simcall_process_create(
     name, std::move(code), nullptr, host->name().c_str(),
-    killTime, NULL, 0);
+    killTime, nullptr, 0);
 }
 
 s4u::Actor::~Actor() {}
@@ -59,7 +59,7 @@ double s4u::Actor::getKillTime() {
 
 void s4u::Actor::kill(int pid) {
   msg_process_t process = SIMIX_process_from_PID(pid);
-  if(process != NULL) {
+  if(process != nullptr) {
     simcall_process_kill(process);
   } else {
     std::ostringstream oss;
@@ -88,12 +88,12 @@ void sleep(double duration) {
 }
 
 e_smx_state_t execute(double flops) {
-  smx_synchro_t s = simcall_execution_start(NULL,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
+  smx_synchro_t s = simcall_execution_start(nullptr,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
   return simcall_execution_wait(s);
 }
 
 void* recv(Mailbox &chan) {
-  void *res = NULL;
+  void *res = nullptr;
   Comm c = Comm::recv_init(chan);
   c.setDstData(&res,sizeof(res));
   c.wait();

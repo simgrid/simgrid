@@ -28,12 +28,12 @@ smx_storage_t Storage::inferior() {
   return pimpl_;
 }
 Storage &Storage::byName(const char*name) {
-  s4u::Storage *res = NULL;
+  s4u::Storage *res = nullptr;
   try {
     res = storages_->at(name);
   } catch (std::out_of_range& e) {
     smx_storage_t inferior = xbt_lib_get_elm_or_null(storage_lib,name);
-    if (inferior == NULL)
+    if (inferior == nullptr)
       xbt_die("Storage %s does not exist. Please only use the storages that are defined in your platform.", name);
 
     res = new Storage(name,inferior);

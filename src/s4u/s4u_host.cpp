@@ -63,14 +63,14 @@ Host* Host::by_name_or_create(const char* name)
   Host* host = by_name_or_null(name);
   if (host == nullptr) {
     host = new Host(name);
-    xbt_dict_set(host_list, name, host, NULL);
+    xbt_dict_set(host_list, name, host, nullptr);
   }
   return host;
 }
 
 Host *Host::current(){
   smx_process_t smx_proc = SIMIX_process_self();
-  if (smx_proc == NULL)
+  if (smx_proc == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
   return SIMIX_process_get_host(smx_proc);
 }
@@ -92,7 +92,7 @@ int Host::pstatesCount() const {
 }
 
 boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
-  if (mounts == NULL) {
+  if (mounts == nullptr) {
     mounts = new boost::unordered_map<std::string, Storage*> ();
 
     xbt_dict_t dict = this->mountedStoragesAsDict();
@@ -117,7 +117,7 @@ xbt_dict_t Host::properties() {
   });
 }
 
-/** Retrieve the property value (or NULL if not set) */
+/** Retrieve the property value (or nullptr if not set) */
 const char*Host::property(const char*key) {
   simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
   return surf_host->getProperty(key);
