@@ -17,16 +17,29 @@ int main(int argc, char *argv[]) {
 
   MPI_Init(&argc, &argv);
   MPI_Comm_rank(MPI_COMM_WORLD, &rank);
-
+  MPI_Request r;
   if (rank==1) {
     data=22;
-    MPI_Send(&data,1,MPI_INT,(rank+1)%2,666,MPI_COMM_WORLD);
+    MPI_Send(&data,1,MPI_BYTE,(rank+1)%2,666,MPI_COMM_WORLD);
   } else {
-    MPI_Recv(&data,1,MPI_INT,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,NULL);
+    MPI_Recv(&data,1,MPI_BYTE,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,NULL);
     if (data !=22) {
       printf("rank %d: Damn, data does not match (got %d)\n",rank, data);
     }
   }
+
+  if (rank==1) {
+    data=22;
+    MPI_Isend(&data,1,MPI_BYTE,(rank+1)%2,666,MPI_COMM_WORLD, &r);
+    MPI_Wait(&r, MPI_STATUS_IGNORE);
+  } else {
+    MPI_Irecv(&data,1,MPI_BYTE,MPI_ANY_SOURCE,666,MPI_COMM_WORLD,&r);
+    MPI_Wait(&r, MPI_STATUS_IGNORE);
+    if (data !=22) {
+      printf("rank %d: Damn, data does not match (got %d)\n",rank, data);
+    }
+  }
+
 
   XBT_INFO("rank %d: data exchanged", rank);
   MPI_Finalize();
