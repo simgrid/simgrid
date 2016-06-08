@@ -37,7 +37,7 @@ int JAVA_STORAGE_LEVEL = -1;
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
-JavaVM *__java_vm = NULL;
+JavaVM *__java_vm = nullptr;
 
 JavaVM *get_java_VM(void)
 {
@@ -48,23 +48,23 @@ JNIEnv *get_current_thread_env(void)
 {
   JNIEnv *env;
 
-  __java_vm->AttachCurrentThread((void **) &env, NULL);
+  __java_vm->AttachCurrentThread((void **) &env, nullptr);
   return env;
 }
 
 void jmsg_throw_status(JNIEnv *env, msg_error_t status) {
   switch (status) {
     case MSG_TIMEOUT:
-        jxbt_throw_time_out_failure(env,NULL);
+        jxbt_throw_time_out_failure(env,nullptr);
     break;
     case MSG_TRANSFER_FAILURE:
-        jxbt_throw_transfer_failure(env,NULL);
+        jxbt_throw_transfer_failure(env,nullptr);
     break;
     case MSG_HOST_FAILURE:
-        jxbt_throw_host_failure(env,NULL);
+        jxbt_throw_host_failure(env,nullptr);
     break;
     case MSG_TASK_CANCELED:
-        jxbt_throw_task_cancelled(env,NULL);
+        jxbt_throw_task_cancelled(env,nullptr);
     break;
     default:
         jxbt_throw_native(env,xbt_strdup("undefined message failed "
@@ -91,7 +91,7 @@ static void __JAVA_storage_priv_free(void *storage)
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, jobjectArray jargs)
 {
-  char **argv = NULL;
+  char **argv = nullptr;
   int index;
   int argc = 0;
   jstring jval;
@@ -123,7 +123,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
     argv[index + 1] = xbt_strdup(tmp);
     env->ReleaseStringUTFChars(jval, tmp);
   }
-  argv[argc] = NULL;
+  argv[argc] = nullptr;
 
   MSG_init(&argc, argv);
 
@@ -184,12 +184,12 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Msg_environmentGetRoutingRoot(JNI
   jobject jas = jas_new_instance(env);
   if (!jas) {
     jxbt_throw_jni(env, "java As instantiation failed");
-    return NULL;
+    return nullptr;
   }
   jas = jas_ref(env, jas);
   if (!jas) {
     jxbt_throw_jni(env, "new global ref allocation failed");
-    return NULL;
+    return nullptr;
   }
   jas_bind(jas, as, env);
 
@@ -282,9 +282,9 @@ static int java_main(int argc, char *argv[])
   jclass class_Process = env->FindClass(argv[0]);
   xbt_str_subst(argv[0],'/','.',0);
   //Retrieve the methodID for the constructor
-  xbt_assert((class_Process != NULL), "Class not found (%s). The deployment file must use the fully qualified class name, including the package. The case is important.", argv[0]);
+  xbt_assert((class_Process != nullptr), "Class not found (%s). The deployment file must use the fully qualified class name, including the package. The case is important.", argv[0]);
   jmethodID constructor_Process = env->GetMethodID(class_Process, "<init>", "(Lorg/simgrid/msg/Host;Ljava/lang/String;[Ljava/lang/String;)V");
-  xbt_assert((constructor_Process != NULL), "Constructor not found for class %s. Is there a (Host, String ,String[]) constructor in your class ?", argv[0]);
+  xbt_assert((constructor_Process != nullptr), "Constructor not found for class %s. Is there a (Host, String ,String[]) constructor in your class ?", argv[0]);
 
   //Retrieve the name of the process.
   jstring jname = env->NewStringUTF(argv[0]);
@@ -297,10 +297,10 @@ static int java_main(int argc, char *argv[])
       env->SetObjectArrayElement(args,i - 1, env->NewStringUTF(argv[i]));
   //Retrieve the host for the process.
   jstring jhostName = env->NewStringUTF(MSG_host_get_name(MSG_host_self()));
-  jobject jhost = Java_org_simgrid_msg_Host_getByName(env, NULL, jhostName);
+  jobject jhost = Java_org_simgrid_msg_Host_getByName(env, nullptr, jhostName);
   //creates the process
   jobject jprocess = env->NewObject(class_Process, constructor_Process, jhost, jname, args);
-  xbt_assert((jprocess != NULL), "Process allocation failed.");
+  xbt_assert((jprocess != nullptr), "Process allocation failed.");
   jprocess = env->NewGlobalRef(jprocess);
   //bind the process to the context
   msg_process_t process = MSG_process_self();

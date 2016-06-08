@@ -8,7 +8,7 @@
 /*
  * This file contains functions that aid users to debug their lua scripts; for instance,
  * tables can be easily output and values are represented in a human-readable way. (For instance,
- * a NULL value becomes the string "nil").
+ * a nullptr value becomes the string "nil").
  *
  */
  /* SimGrid Lua debug functions                                             */
@@ -190,7 +190,7 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
 
   int has_mt = lua_getmetatable(L, ud);
   XBT_DEBUG("Checking the userdata: has metatable ? %d", has_mt);
-  const void* actual_mt = NULL;
+  const void* actual_mt = nullptr;
   if (has_mt) {
     actual_mt = lua_topointer(L, -1);
     lua_pop(L, 1);
@@ -198,8 +198,8 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
   XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
   sglua_stack_dump(L, "my_checkudata: ");
 
-  if (p == NULL || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
-    XBT_ERROR("Error: Userdata is NULL, couldn't find metatable or top of stack does not equal element below it.");
+  if (p == nullptr || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
+    XBT_ERROR("Error: Userdata is nullptr, couldn't find metatable or top of stack does not equal element below it.");
   lua_pop(L, 2);
   return p;
 }

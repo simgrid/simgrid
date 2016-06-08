@@ -50,7 +50,7 @@ void jprocess_join(jobject jprocess, JNIEnv * env)
 {
   msg_process_t process = jprocess_to_native_process(jprocess,env);
   simgrid::java::JavaContext* context = (simgrid::java::JavaContext*) MSG_process_get_smx_ctx(process);
-  xbt_os_thread_join(context->thread,NULL);
+  xbt_os_thread_join(context->thread,nullptr);
 }
 
 msg_process_t jprocess_to_native_process(jobject jprocess, JNIEnv * env)
@@ -115,7 +115,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
   jname = jprocess_get_name(jprocess_arg, env);
   if (!jname) {
     jxbt_throw_null(env,
-            xbt_strdup("Internal error: Process name cannot be NULL"));
+            xbt_strdup("Internal error: Process name cannot be nullptr"));
     return;
   }
 
@@ -151,7 +151,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
             }, jprocess,
             host,
             /*argc, argv, properties*/
-            0, NULL, NULL);
+            0, nullptr, nullptr);
   MSG_process_set_kill_time(process, (double)jkill);
   /* bind the java process instance to the native process */
   jprocess_bind(jprocess, process, env);
@@ -165,7 +165,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
   env->SetIntField(jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
   env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
   /* sets the Host of the process */
-  jobject jhost = Java_org_simgrid_msg_Host_getByName(env,NULL, (jstring)jhostname);
+  jobject jhost = Java_org_simgrid_msg_Host_getByName(env,nullptr, (jstring)jhostname);
 
   env->SetObjectField(jprocess, jprocess_field_Process_host, jhost);
 }
@@ -181,14 +181,14 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_fromPID(JNIEnv * env, jcl
 
   if (!process) {
     jxbt_throw_process_not_found(env, bprintf("PID = %d",(int) PID));
-    return NULL;
+    return nullptr;
   }
 
   jobject jprocess = native_to_java_process(process);
 
   if (!jprocess) {
     jxbt_throw_jni(env, "get process failed");
-    return NULL;
+    return nullptr;
   }
 
   return jprocess;
@@ -199,13 +199,13 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getProperty(JNIEnv *env, 
 
   if (!process) {
     jxbt_throw_notbound(env, "process", jprocess);
-    return NULL;
+    return nullptr;
   }
   const char *name = env->GetStringUTFChars((jstring)jname, 0);
 
   const char *property = MSG_process_get_property_value(process, name);
   if (!property) {
-    return NULL;
+    return nullptr;
   }
 
   jobject jproperty = env->NewStringUTF(property);
@@ -222,7 +222,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Process_getCurrentProcess(JNIEnv 
 
   if (!process) {
     jxbt_throw_jni(env, xbt_strdup("MSG_process_self() failed"));
-    return NULL;
+    return nullptr;
   }
 
   jprocess = native_to_java_process(process);
@@ -327,7 +327,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_sleep(JNIEnv *env, jclass cl
     // is a cancelled_error, see bindings/java/smx_context_java.c, function void smx_ctx_java_stop(smx_context_t context) and src/msg/msg_gos.c
     // function  msg_error_t MSG_process_sleep(double nb_sec)
 
-    jxbt_throw_host_failure(env,NULL);
+    jxbt_throw_host_failure(env,nullptr);
   }
 }
 

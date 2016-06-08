@@ -107,7 +107,7 @@ void* JavaContext::wrapper(void *data)
 
   JNIEnv *env;
   XBT_ATTRIB_UNUSED jint error =
-    __java_vm->AttachCurrentThread((void **) &env, NULL);
+    __java_vm->AttachCurrentThread((void **) &env, nullptr);
   xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
   context->jenv = get_current_thread_env();
   //Wait for the first scheduling round to happen.
@@ -143,7 +143,7 @@ void JavaContext::stop()
     XBT_ATTRIB_UNUSED jint error = __java_vm->DetachCurrentThread();
     xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
     xbt_os_sem_release(this->end);
-    xbt_os_thread_exit(NULL);
+    xbt_os_thread_exit(nullptr);
   }
 }
 

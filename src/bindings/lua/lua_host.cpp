@@ -32,8 +32,8 @@ sg_host_t sglua_check_host(lua_State * L, int index)
   lua_getfield(L, index, HOST_FIELDNAME);
   sg_host_t *pi = (sg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
   lua_pop(L, 1);
-  if (pi == NULL)
-    XBT_ERROR("luaL_checkudata() returned NULL");
+  if (pi == nullptr)
+    XBT_ERROR("luaL_checkudata() returned nullptr");
   sg_host_t ht = *pi;
   if (!ht)
     luaL_error(L, "null Host");
@@ -160,7 +160,7 @@ static const luaL_Reg host_functions[] = {
   {"destroy", l_host_destroy},
   // Bypass XML Methods
   {"set_property", console_host_set_property},
-  {NULL, NULL}
+  {nullptr, nullptr}
 };
 
 /**

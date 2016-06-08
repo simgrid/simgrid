@@ -20,7 +20,7 @@ jclass jxbt_get_class(JNIEnv * env, const char *name)
     char *m = bprintf("Class %s not found", name);
     jxbt_throw_jni(env, m);
     free(m);
-    return NULL;
+    return nullptr;
   }
 
   return cls;
@@ -37,7 +37,7 @@ jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls, const char *name, const cha
   if (!id) {
 
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, NULL);
+    jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, nullptr);
     const char *classname = env->GetStringUTFChars(jclassname, 0);
 
     char *m = bprintf("Cannot find method %s(%s) in %s", name, signature, classname);
@@ -63,7 +63,7 @@ jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls, const char *name, co
 
   if (!id) {
     jmethodID tostr_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, NULL);
+    jstring jclassname = (jstring) env->CallObjectMethod(cls, tostr_id, nullptr);
     const char *classname = env->GetStringUTFChars(jclassname, 0);
 
     char *m = bprintf("Cannot find static method %s(%s) in %s", name, signature, classname);
@@ -134,7 +134,7 @@ jfieldID jxbt_get_jfield(JNIEnv * env, jclass cls, const char *name, const char 
 
   if (!id) {
     jmethodID getname_id = env->GetMethodID(cls, "getName", "()Ljava/lang/String;");
-    jstring jclassname = (jstring) env->CallObjectMethod(cls, getname_id, NULL);
+    jstring jclassname = (jstring) env->CallObjectMethod(cls, getname_id, nullptr);
     const char *classname = env->GetStringUTFChars(jclassname, 0);
     char *m = bprintf("Cannot find field %s %s in %s", signature, name, classname);
 

@@ -15,7 +15,7 @@ RngStream jrngstream_to_native(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = (RngStream)(intptr_t)env->GetLongField(jrngstream, jrngstream_bind);
   if (!rngstream) {
     jxbt_throw_notbound(env, "rngstream", jrngstream);
-    return NULL;
+    return nullptr;
   }
   return rngstream;
 }
@@ -38,7 +38,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_create(JNIEnv *env, jobjec
 JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_nativeFinalize(JNIEnv *env, jobject jrngstream) {
   RngStream rngstream = jrngstream_to_native(env, jrngstream);
   RngStream_DeleteStream(&rngstream);
-  env->SetLongField(jrngstream, jrngstream_bind, (intptr_t)NULL);
+  env->SetLongField(jrngstream, jrngstream_bind, (intptr_t)nullptr);
 }
 
 JNIEXPORT jboolean JNICALL

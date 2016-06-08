@@ -104,7 +104,7 @@ static const luaL_Reg simgrid_functions[] = {
   {"info", info},
   {"critical", critical},
   {"error", error},
-  {NULL, NULL}
+  {nullptr, nullptr}
 };
 
 /* ********************************************************************************* */

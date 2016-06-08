@@ -41,7 +41,7 @@ static const luaL_Reg platf_functions[] = {
     {"router_new", console_add_router},
     {"route_new", console_add_route},
     {"ASroute_new", console_add_ASroute},
-    {NULL, NULL}
+    {nullptr, nullptr}
 };
 
 int console_open(lua_State *L) {
@@ -65,7 +65,7 @@ int console_add_backbone(lua_State *L) {
   memset(&link,0,sizeof(link));
   int type;
 
-  link.properties = NULL;
+  link.properties = nullptr;
 
   lua_ensure(lua_istable(L, -1),"Bad Arguments to create backbone in Lua. Should be a table with named arguments.");
 
@@ -162,7 +162,7 @@ int console_add_host(lua_State *L) {
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'speed' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
-  host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
+  host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
   if (type == LUA_TNUMBER)
     xbt_dynar_push_as(host.speed_per_pstate, double, lua_tointeger(L, -1));
   else // LUA_TSTRING
@@ -376,8 +376,8 @@ int console_add_route(lua_State *L) {
   }
   lua_pop(L,1);
 
-  route.gw_src = NULL;
-  route.gw_dst = NULL;
+  route.gw_src = nullptr;
+  route.gw_dst = nullptr;
 
   sg_platf_new_route(&route);
 
@@ -528,7 +528,7 @@ int console_host_set_property(lua_State *L) {
   sg_host_t host = sg_host_by_name(name);
   lua_ensure(host, "no host '%s' found",name);
   xbt_dict_t props = sg_host_get_properties(host);
-  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),NULL);
+  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),nullptr);
 
   return 0;
 }

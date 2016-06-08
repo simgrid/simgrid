@@ -69,9 +69,9 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
   jobject jhost;                /* global reference to the java host instance returned  */
 
   /* get the C string from the java string */
-  if (jname == NULL) {
+  if (jname == nullptr) {
     jxbt_throw_null(env,bprintf("No host can have a null name"));
-    return NULL;
+    return nullptr;
   }
   const char *name = env->GetStringUTFChars(jname, 0);
   /* get the host by name       (the hosts are created during the grid resolution) */
@@ -80,7 +80,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
   if (!host) {                  /* invalid name */
     jxbt_throw_host_not_found(env, name);
     env->ReleaseStringUTFChars(jname, name);
-    return NULL;
+    return nullptr;
   }
   env->ReleaseStringUTFChars(jname, name);
 
@@ -90,7 +90,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
 
     if (!jhost) {
       jxbt_throw_jni(env, "java host instantiation failed");
-      return NULL;
+      return nullptr;
     }
 
     /* get a global reference to the newly created host */
@@ -98,7 +98,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName(JNIEnv * env, jcla
 
     if (!jhost) {
       jxbt_throw_jni(env, "new global ref allocation failed");
-      return NULL;
+      return nullptr;
     }
     /* Sets the java host name */
     env->SetObjectField(jhost, jhost_field_Host_name, jname);
@@ -126,7 +126,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
 
     if (!jhost) {
       jxbt_throw_jni(env, "java host instantiation failed");
-      return NULL;
+      return nullptr;
     }
 
     /* get a global reference to the newly created host */
@@ -134,7 +134,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
 
     if (!jhost) {
       jxbt_throw_jni(env, "global ref allocation failed");
-      return NULL;
+      return nullptr;
     }
     /* Sets the host name */
     const char *name = MSG_host_get_name(host);
@@ -194,13 +194,13 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getProperty(JNIEnv *env, job
 
   if (!host) {
     jxbt_throw_notbound(env, "host", jhost);
-    return NULL;
+    return nullptr;
   }
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
 
   const char *property = MSG_host_get_property_value(host, name);
   if (!property) {
-    return NULL;
+    return nullptr;
   }
 
   jobject jproperty = env->NewStringUTF(property);
@@ -257,14 +257,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getMountedStorage(JNIEn
   int count = xbt_dict_length(dict);
   jclass cls = env->FindClass("org/simgrid/msg/Storage");
 
-  jtable = env->NewObjectArray((jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
 
   if (!jtable) {
    jxbt_throw_jni(env, "Storages table allocation failed");
-   return NULL;
+   return nullptr;
   }
 
-  xbt_dict_cursor_t cursor=NULL;
+  xbt_dict_cursor_t cursor=nullptr;
   const char* mount_name;
   const char* storage_name;
 
@@ -291,7 +291,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getAttachedStorage(JNIE
   xbt_dynar_t dyn = MSG_host_get_attached_storage_list(host);
   int count = xbt_dynar_length(dyn);
   jclass cls = jxbt_get_class(env, "java/lang/String");
-  jtable = env->NewObjectArray((jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
   int index;
   char *storage_name;
   jstring jstorage_name;
@@ -329,14 +329,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
 
   if (!cls) {
-    return NULL;
+    return nullptr;
   }
 
-  jtable = env->NewObjectArray((jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
-    return NULL;
+    return nullptr;
   }
 
   for (index = 0; index < count; index++) {

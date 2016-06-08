@@ -26,10 +26,10 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
   if (jreceiving == JNI_TRUE) {
     //bind the task object.
     msg_task_t task = MSG_comm_get_task(comm);
-    xbt_assert(task != NULL, "Task is NULL");
+    xbt_assert(task != nullptr, "Task is nullptr");
     jobject jtask_global = (jobject) MSG_task_get_data(task);
     //case where the data has already been retrieved
-    if (jtask_global == NULL) {
+    if (jtask_global == nullptr) {
       return;
     }
 
@@ -39,7 +39,7 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
 
     env->SetObjectField(jcomm, jtask_field_Comm_task, jtask_local);
 
-    MSG_task_set_data(task, NULL);
+    MSG_task_set_data(task, nullptr);
   }
 }
 

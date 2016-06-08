@@ -66,29 +66,29 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
   jclass cls = env->FindClass("org/simgrid/msg/As");
 
   if (!cls) {
-    return NULL;
+    return nullptr;
   }
 
-  jtable = env->NewObjectArray((jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
-    return NULL;
+    return nullptr;
   }
 
-  xbt_dict_cursor_t cursor=NULL;
+  xbt_dict_cursor_t cursor=nullptr;
   char *key;
 
   xbt_dict_foreach(dict,cursor,key,tmp_as) {
     tmp_jas = jas_new_instance(env);
     if (!tmp_jas) {
       jxbt_throw_jni(env, "java As instantiation failed");
-      return NULL;
+      return nullptr;
     }
     tmp_jas = jas_ref(env, tmp_jas);
     if (!tmp_jas) {
       jxbt_throw_jni(env, "new global ref allocation failed");
-      return NULL;
+      return nullptr;
     }
     jas_bind(tmp_jas, tmp_as, env);
 
@@ -103,13 +103,13 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobje
 
   if (!as) {
     jxbt_throw_notbound(env, "as", jas);
-    return NULL;
+    return nullptr;
   }
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
 
   const char *property = MSG_environment_as_get_property_value(as, name);
   if (!property) {
-    return NULL;
+    return nullptr;
   }
 
   jobject jproperty = env->NewStringUTF(property);
@@ -134,14 +134,14 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Host");
 
   if (!cls) {
-    return NULL;
+    return nullptr;
   }
 
-  jtable = env->NewObjectArray((jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
-    return NULL;
+    return nullptr;
   }
 
   for (index = 0; index < count; index++) {
