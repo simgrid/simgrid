@@ -18,7 +18,7 @@
 XBT_LOG_NEW_CATEGORY(sd, "Logging specific to SimDag");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd, "Logging specific to SimDag (kernel)");
 
-SD_global_t sd_global = NULL;
+SD_global_t sd_global = nullptr;
 
 /**
  * \brief Initializes SD internal data
@@ -33,17 +33,17 @@ void SD_init(int *argc, char **argv)
 {
   TRACE_global_init(argc, argv);
 
-  xbt_assert(sd_global == NULL, "SD_init() already called");
+  xbt_assert(sd_global == nullptr, "SD_init() already called");
 
   sd_global = xbt_new(s_SD_global_t, 1);
   sd_global->watch_point_reached = 0;
 
   sd_global->task_mallocator=xbt_mallocator_new(65536, SD_task_new_f, SD_task_free_f, SD_task_recycle_f);
 
-  sd_global->initial_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
-  sd_global->executable_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
-  sd_global->completed_task_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
-  sd_global->return_set = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  sd_global->initial_task_set = xbt_dynar_new(sizeof(SD_task_t), nullptr);
+  sd_global->executable_task_set = xbt_dynar_new(sizeof(SD_task_t), nullptr);
+  sd_global->completed_task_set = xbt_dynar_new(sizeof(SD_task_t), nullptr);
+  sd_global->return_set = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
   surf_init(argc, argv);
 
@@ -140,7 +140,7 @@ xbt_dynar_t SD_simulate(double how_long) {
   double elapsed_time = 0.0;
   while (elapsed_time >= 0.0 && (how_long < 0.0 || 0.00001 < (how_long -total_time)) &&
          !sd_global->watch_point_reached) {
-    surf_model_t model = NULL;
+    surf_model_t model = nullptr;
 
     XBT_DEBUG("Total time: %f", total_time);
 
@@ -159,7 +159,7 @@ xbt_dynar_t SD_simulate(double how_long) {
         XBT_VERB("Task '%s' done", SD_task_get_name(task));
         SD_task_set_state(task, SD_DONE);
         task->surf_action->unref();
-        task->surf_action = NULL;
+        task->surf_action = nullptr;
 
         /* the state has changed. Add it only if it's the first change */
         if (xbt_dynar_member(sd_global->return_set, &task) == 0) {
@@ -221,7 +221,7 @@ xbt_dynar_t SD_simulate(double how_long) {
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         SD_task_set_state(task, SD_FAILED);
         action->unref();
-        task->surf_action = NULL;
+        task->surf_action = nullptr;
 
         xbt_dynar_push(sd_global->return_set, &task);
       }
@@ -273,5 +273,5 @@ void SD_exit()
   xbt_dynar_free_container(&(sd_global->completed_task_set));
   xbt_dynar_free_container(&(sd_global->return_set));
   xbt_free(sd_global);
-  sd_global = NULL;
+  sd_global = nullptr;
 }

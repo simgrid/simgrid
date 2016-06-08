@@ -43,15 +43,15 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
 
   xbt_free(task->flops_amount);
   xbt_free(task->bytes_amount);
-  task->flops_amount = NULL;
-  task->bytes_amount = NULL;
+  task->flops_amount = nullptr;
+  task->bytes_amount = nullptr;
 }
 
 void* SD_task_new_f()
 {
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
-  task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
-  task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), NULL);
+  task->tasks_before = xbt_dynar_new(sizeof(SD_dependency_t), nullptr);
+  task->tasks_after = xbt_dynar_new(sizeof(SD_dependency_t), nullptr);
 
   return task;
 }
@@ -69,7 +69,7 @@ void SD_task_recycle_f(void *t)
 
   task->start_time = -1.0;
   task->finish_time = -1.0;
-  task->surf_action = NULL;
+  task->surf_action = nullptr;
   task->watch_points = 0;
 
   /* dependencies */
@@ -80,9 +80,9 @@ void SD_task_recycle_f(void *t)
 
   /* scheduling parameters */
   task->host_count = 0;
-  task->host_list = NULL;
-  task->flops_amount = NULL;
-  task->bytes_amount = NULL;
+  task->host_list = nullptr;
+  task->flops_amount = nullptr;
+  task->bytes_amount = nullptr;
   task->rate = -1;
 }
 
@@ -98,8 +98,8 @@ void SD_task_free_f(void *t)
 /**
  * \brief Creates a new task.
  *
- * \param name the name of the task (can be \c NULL)
- * \param data the user data you want to associate with the task (can be \c NULL)
+ * \param name the name of the task (can be \c nullptr)
+ * \param data the user data you want to associate with the task (can be \c nullptr)
  * \param amount amount of the task
  * \return the new task
  * \see SD_task_destroy()
@@ -153,8 +153,8 @@ SD_task_t SD_task_create_comm_e2e(const char *name, void *data, double amount)
  *
  * A sequential computation must be scheduled on 1 host, and the amount specified at creation to be run on hosts[0].
  *
- * \param name the name of the task (can be \c NULL)
- * \param data the user data you want to associate with the task (can be \c NULL)
+ * \param name the name of the task (can be \c nullptr)
+ * \param data the user data you want to associate with the task (can be \c nullptr)
  * \param flops_amount amount of compute work to be done by the task
  * \return the new SD_TASK_COMP_SEQ typed task
  */
@@ -176,8 +176,8 @@ SD_task_t SD_task_create_comp_seq(const char *name, void *data, double flops_amo
  * A parallel computation can be scheduled on any number of host.
  * The underlying speedup model is Amdahl's law.
  * To be auto-scheduled, \see SD_task_distribute_comp_amdahl has to be called first.
- * \param name the name of the task (can be \c NULL)
- * \param data the user data you want to associate with the task (can be \c NULL)
+ * \param name the name of the task (can be \c nullptr)
+ * \param data the user data you want to associate with the task (can be \c nullptr)
  * \param flops_amount amount of compute work to be done by the task
  * \param alpha purely serial fraction of the work to be done (in [0.;1.[)
  * \return the new task
@@ -202,15 +202,15 @@ SD_task_t SD_task_create_comp_par_amdahl(const char *name, void *data, double fl
  * A data redistribution can be scheduled on any number of host.
  * The assumed distribution is a 1D block distribution. Each host owns the same share of the \see amount.
  * To be auto-scheduled, \see SD_task_distribute_comm_mxn_1d_block has to be  called first.
- * \param name the name of the task (can be \c NULL)
- * \param data the user data you want to associate with the task (can be \c NULL)
+ * \param name the name of the task (can be \c nullptr)
+ * \param data the user data you want to associate with the task (can be \c nullptr)
  * \param amount amount of data to redistribute by the task
  * \return the new task
  */
 SD_task_t SD_task_create_comm_par_mxn_1d_block(const char *name, void *data, double amount)
 {
   SD_task_t res = SD_task_create(name, data, amount);
-  res->host_list=NULL;
+  res->host_list=nullptr;
   res->kind = SD_TASK_COMM_PAR_MXN_1D_BLOCK;
 
   return res;
@@ -235,12 +235,12 @@ void SD_task_destroy(SD_task_t task)
 
   int idx = xbt_dynar_search_or_negative(sd_global->return_set, &task);
   if (idx >=0) {
-    xbt_dynar_remove_at(sd_global->return_set, idx, NULL);
+    xbt_dynar_remove_at(sd_global->return_set, idx, nullptr);
   }
 
   xbt_free(task->name);
 
-  if (task->surf_action != NULL)
+  if (task->surf_action != nullptr)
     task->surf_action->unref();
 
   xbt_free(task->host_list);
@@ -256,7 +256,7 @@ void SD_task_destroy(SD_task_t task)
  * \brief Returns the user data of a task
  *
  * \param task a task
- * \return the user data associated with this task (can be \c NULL)
+ * \return the user data associated with this task (can be \c nullptr)
  * \see SD_task_set_data()
  */
 void *SD_task_get_data(SD_task_t task)
@@ -267,8 +267,8 @@ void *SD_task_get_data(SD_task_t task)
 /**
  * \brief Sets the user data of a task
  *
- * The new data can be \c NULL. The old data should have been freed first
- * if it was not \c NULL.
+ * The new data can be \c nullptr. The old data should have been freed first
+ * if it was not \c nullptr.
  *
  * \param task a task
  * \param data the new data you want to associate with this task
@@ -325,27 +325,27 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   case SD_SCHEDULABLE:
     if (SD_task_get_state(task) == SD_FAILED){
         xbt_dynar_remove_at(sd_global->completed_task_set,
-            xbt_dynar_search(sd_global->completed_task_set, &task), NULL);
+            xbt_dynar_search(sd_global->completed_task_set, &task), nullptr);
         xbt_dynar_push(sd_global->initial_task_set,&task);
     }
     break;
   case SD_SCHEDULED:
     if (SD_task_get_state(task) == SD_RUNNABLE){
       xbt_dynar_remove_at(sd_global->executable_task_set,
-          xbt_dynar_search(sd_global->executable_task_set, &task), NULL);
+          xbt_dynar_search(sd_global->executable_task_set, &task), nullptr);
       xbt_dynar_push(sd_global->initial_task_set,&task);
     }
     break;
   case SD_RUNNABLE:
     idx = xbt_dynar_search_or_negative(sd_global->initial_task_set, &task);
     if (idx >= 0) {
-      xbt_dynar_remove_at(sd_global->initial_task_set, idx, NULL);
+      xbt_dynar_remove_at(sd_global->initial_task_set, idx, nullptr);
       xbt_dynar_push(sd_global->executable_task_set,&task);
     }
     break;
   case SD_RUNNING:
       xbt_dynar_remove_at(sd_global->executable_task_set,
-         xbt_dynar_search(sd_global->executable_task_set, &task), NULL);
+         xbt_dynar_search(sd_global->executable_task_set, &task), nullptr);
     break;
   case SD_DONE:
     xbt_dynar_push(sd_global->completed_task_set,&task);
@@ -375,7 +375,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
  * \brief Returns the name of a task
  *
  * \param task a task
- * \return the name of this task (can be \c NULL)
+ * \return the name of this task (can be \c nullptr)
  */
 const char *SD_task_get_name(SD_task_t task)
 {
@@ -400,7 +400,7 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
   unsigned int i;
   SD_dependency_t dep;
 
-  xbt_dynar_t parents = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  xbt_dynar_t parents = xbt_dynar_new(sizeof(SD_task_t), nullptr);
   xbt_dynar_foreach(task->tasks_before, i, dep) {
     xbt_dynar_push(parents, &(dep->src));
   }
@@ -417,7 +417,7 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
   unsigned int i;
   SD_dependency_t dep;
 
-  xbt_dynar_t children = xbt_dynar_new(sizeof(SD_task_t), NULL);
+  xbt_dynar_t children = xbt_dynar_new(sizeof(SD_task_t), nullptr);
   xbt_dynar_foreach(task->tasks_after, i, dep) {
     xbt_dynar_push(children, &(dep->dst));
   }
@@ -596,8 +596,8 @@ void SD_task_dotty(SD_task_t task, void *out)
  * \a dst will depend on \a src, ie \a dst will not start before \a src is finished.
  * Their \ref e_SD_task_state_t "state" must be #SD_NOT_SCHEDULED, #SD_SCHEDULED or #SD_RUNNABLE.
  *
- * \param name the name of the new dependency (can be \c NULL)
- * \param data the user data you want to associate with this dependency (can be \c NULL)
+ * \param name the name of the new dependency (can be \c nullptr)
+ * \param data the user data you want to associate with this dependency (can be \c nullptr)
  * \param src the task which must be executed first
  * \param dst the task you want to make depend on \a src
  * \see SD_task_dependency_remove()
@@ -636,7 +636,7 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
 
   dependency = xbt_new(s_SD_dependency_t, 1);
 
-  dependency->name = xbt_strdup(name);  /* xbt_strdup is cleaver enough to deal with NULL args itself */
+  dependency->name = xbt_strdup(name);  /* xbt_strdup is cleaver enough to deal with nullptr args itself */
   dependency->data = data;
   dependency->src = src;
   dependency->dst = dst;
@@ -670,7 +670,7 @@ const char *SD_task_dependency_get_name(SD_task_t src, SD_task_t dst)
     if (dependency->dst == dst)
       return dependency->name;
   }
-  return NULL;
+  return nullptr;
 }
 
 /**
@@ -679,12 +679,12 @@ const char *SD_task_dependency_get_name(SD_task_t src, SD_task_t dst)
  * \param src a task
  * \param dst a task depending on \a src
  *
- * If src is NULL, checks whether dst has any pre-dependency.
- * If dst is NULL, checks whether src has any post-dependency.
+ * If src is nullptr, checks whether dst has any pre-dependency.
+ * If dst is nullptr, checks whether src has any post-dependency.
  */
 int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
 {
-  xbt_assert(src != NULL || dst != NULL, "Invalid parameter: both src and dst are NULL");
+  xbt_assert(src != nullptr || dst != nullptr, "Invalid parameter: both src and dst are nullptr");
 
   if (src) {
     if (dst) {
@@ -722,7 +722,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
   for (unsigned long i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(src->tasks_after, i, &dependency);
     if (dependency->dst == dst) {
-      xbt_dynar_remove_at(src->tasks_after, i, NULL);
+      xbt_dynar_remove_at(src->tasks_after, i, nullptr);
       found = true;
     }
   }
@@ -737,7 +737,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
   for (unsigned long i = 0; i < length && !found; i++) {
     xbt_dynar_get_cpy(dst->tasks_before, i, &dependency);
     if (dependency->src == src) {
-      xbt_dynar_remove_at(dst->tasks_before, i, NULL);
+      xbt_dynar_remove_at(dst->tasks_before, i, nullptr);
       __SD_task_dependency_destroy(dependency);
       dst->unsatisfied_dependencies--;
       dst->is_not_ready--;
@@ -765,7 +765,7 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
  *
  * \param src a task
  * \param dst a task depending on \a src
- * \return the user data associated with this dependency (can be \c NULL)
+ * \return the user data associated with this dependency (can be \c nullptr)
  * \see SD_task_dependency_add()
  */
 void *SD_task_dependency_get_data(SD_task_t src, SD_task_t dst)
@@ -838,10 +838,10 @@ double SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_h
   /* the task execution time is the maximum execution time of the parallel tasks */
   for (int i = 0; i < workstation_nb; i++) {
     double time = 0.0;
-    if (flops_amount != NULL)
+    if (flops_amount != nullptr)
       time = flops_amount[i] / workstation_list[i]->speed();
 
-    if (bytes_amount != NULL)
+    if (bytes_amount != nullptr)
       for (int j = 0; j < workstation_nb; j++) {
         if (bytes_amount[i * workstation_nb + j] !=0 ) {
           time += (SD_route_get_latency(workstation_list[i], workstation_list[j]) +
@@ -895,7 +895,7 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * workstat
     memcpy(task->flops_amount, flops_amount, sizeof(double) * host_count);
   } else {
     xbt_free(task->flops_amount);
-    task->flops_amount = NULL;
+    task->flops_amount = nullptr;
   }
 
   int communication_nb = host_count * host_count;
@@ -904,7 +904,7 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * workstat
     memcpy(task->bytes_amount, bytes_amount, sizeof(double) * communication_nb);
   } else {
     xbt_free(task->bytes_amount);
-    task->bytes_amount = NULL;
+    task->bytes_amount = nullptr;
   }
 
   task->host_list =  static_cast<sg_host_t*>(xbt_realloc(task->host_list, sizeof(sg_host_t) * host_count));
@@ -936,7 +936,7 @@ void SD_task_unschedule(SD_task_t task)
           /* Don't free scheduling data for typed tasks */
     __SD_task_destroy_scheduling_data(task);
     xbt_free(task->host_list);
-    task->host_list=NULL;
+    task->host_list=nullptr;
     task->host_count = 0;
   }
 
@@ -958,7 +958,7 @@ void SD_task_run(SD_task_t task)
 {
   xbt_assert(SD_task_get_state(task) == SD_RUNNABLE, "Task '%s' is not runnable! Task state: %d",
              SD_task_get_name(task), (int)SD_task_get_state(task));
-  xbt_assert(task->host_list != NULL, "Task '%s': workstation_list is NULL!", SD_task_get_name(task));
+  xbt_assert(task->host_list != nullptr, "Task '%s': workstation_list is nullptr!", SD_task_get_name(task));
 
   XBT_DEBUG("Running task '%s'", SD_task_get_name(task));
 
