@@ -35,7 +35,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 
-XBT_PRIVATE xbt_dynar_t mount_list = NULL;
+XBT_PRIVATE xbt_dynar_t mount_list = nullptr;
 
 namespace simgrid {
 namespace surf {
@@ -87,7 +87,7 @@ static std::vector<int> *explodesRadical(const char*radicals){
 
 
 /** The current AS in the parsing */
-static simgrid::surf::AsImpl *current_routing = NULL;
+static simgrid::surf::AsImpl *current_routing = nullptr;
 static simgrid::surf::AsImpl* routing_get_current()
 {
   return current_routing;
@@ -125,7 +125,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
 
   if(mount_list){
     xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
-    mount_list = NULL;
+    mount_list = nullptr;
   }
 
   if (host->coord && strcmp(host->coord, "")) {
@@ -137,7 +137,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
     xbt_assert(xbt_dynar_length(ctn_str)==3,"Coordinates of %s must have 3 dimensions", host->id);
 
-    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
+    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),nullptr);
     xbt_dynar_foreach(ctn_str,cursor, str) {
       double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
       xbt_dynar_push(ctn,&val);
@@ -155,7 +155,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   surf_host_model->createHost(host->id, netcard, cpu)->attach(h);
 
   if (host->properties) {
-    xbt_dict_cursor_t cursor=NULL;
+    xbt_dict_cursor_t cursor=nullptr;
     char *key,*data;
     xbt_dict_foreach(host->properties,cursor,key,data)
       h->setProperty(key,data);
@@ -194,7 +194,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
     /* Pre-parse the host coordinates */
     xbt_dynar_t ctn_str = xbt_str_split_str(router->coord, " ");
     xbt_assert(xbt_dynar_length(ctn_str)==3,"Coordinates of %s must have 3 dimensions", router->id);
-    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),NULL);
+    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),nullptr);
     xbt_dynar_foreach(ctn_str,cursor, str) {
       double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
       xbt_dynar_push(ctn,&val);
@@ -281,8 +281,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
     host.id = host_id;
-    if ((cluster->properties != NULL) && (!xbt_dict_is_empty(cluster->properties))) {
-      xbt_dict_cursor_t cursor=NULL;
+    if ((cluster->properties != nullptr) && (!xbt_dict_is_empty(cluster->properties))) {
+      xbt_dict_cursor_t cursor=nullptr;
       char *key,*data;
       host.properties = xbt_dict_new();
 
@@ -291,7 +291,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       }
     }
 
-    host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
+    host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
     xbt_dynar_push(host.speed_per_pstate,&cluster->speed);
     host.pstate = 0;
     host.core_amount = cluster->core_amount;
@@ -361,7 +361,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   // and it's very useful to connect clusters together
   XBT_DEBUG(" ");
   XBT_DEBUG("<router id=\"%s\"/>", cluster->router_id);
-  char *newid = NULL;
+  char *newid = nullptr;
   s_sg_platf_router_cbarg_t router;
   memset(&router, 0, sizeof(router));
   router.id = cluster->router_id;
@@ -413,7 +413,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     host.pstate           = 0;
     host.core_amount      = 1;
     host.id               = hostname;
-    host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
+    host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
     xbt_dynar_push(host.speed_per_pstate,&cabinet->speed);
     sg_platf_new_host(&host);
     xbt_dynar_free(&host.speed_per_pstate);
@@ -575,13 +575,13 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
   std::function<void()> code = simgrid::xbt::wrapMain(parse_code, process->argc, process->argv);
 
-  smx_process_arg_t arg = NULL;
-  smx_process_t process_created = NULL;
+  smx_process_arg_t arg = nullptr;
+  smx_process_t process_created = nullptr;
 
   arg = new simgrid::simix::ProcessArg();
   arg->name = std::string(process->argv[0]);
   arg->code = code;
-  arg->data = NULL;
+  arg->data = nullptr;
   arg->hostname = sg_host_get_name(host);
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
@@ -595,7 +595,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg = new simgrid::simix::ProcessArg();
     arg->name = std::string(process->argv[0]);
     arg->code = std::move(code);
-    arg->data = NULL;
+    arg->data = nullptr;
     arg->hostname = sg_host_get_name(host);
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
@@ -611,7 +611,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
                                             arg->kill_time,
                                             arg->properties,
                                             arg->auto_restart,
-                                            NULL);
+                                            nullptr);
       delete arg;
     });
   } else {                      // start_time <= SIMIX_get_clock()
@@ -620,12 +620,12 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
     if (simix_global->create_process_function)
       process_created = simix_global->create_process_function(
-          arg->name.c_str(), std::move(code), NULL,
+          arg->name.c_str(), std::move(code), nullptr,
           sg_host_get_name(host), kill_time,
-          current_property_set, auto_restart, NULL);
+          current_property_set, auto_restart, nullptr);
     else
       process_created = simcall_process_create(
-          arg->name.c_str(), std::move(code), NULL, sg_host_get_name(host), kill_time,
+          arg->name.c_str(), std::move(code), nullptr, sg_host_get_name(host), kill_time,
           current_property_set,auto_restart);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
@@ -633,7 +633,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
       return;
     }
   }
-  current_property_set = NULL;
+  current_property_set = nullptr;
 }
 
 void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
@@ -657,7 +657,7 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   memset(&host, 0, sizeof(host));
   host.id = host_id;
 
-  host.speed_per_pstate = xbt_dynar_new(sizeof(double), NULL);
+  host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
   xbt_dynar_push(host.speed_per_pstate,&peer->speed);
   host.pstate = 0;
   host.speed_trace = peer->availability_trace;
@@ -722,10 +722,10 @@ static void surf_config_models_setup()
   const char *vm_model_name;
   int host_id = -1;
   int vm_id = -1;
-  char *network_model_name = NULL;
-  char *cpu_model_name = NULL;
+  char *network_model_name = nullptr;
+  char *cpu_model_name = nullptr;
   int storage_id = -1;
-  char *storage_model_name = NULL;
+  char *storage_model_name = nullptr;
 
   host_model_name    = xbt_cfg_get_string("host/model");
   vm_model_name      = xbt_cfg_get_string("vm/model");
@@ -818,7 +818,7 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 
 
   /* search the routing model */
-  simgrid::surf::AsImpl *new_as = NULL;
+  simgrid::surf::AsImpl *new_as = nullptr;
   switch(AS->routing){
     case A_surfxml_AS_routing_Cluster:        new_as = new simgrid::surf::AsCluster(AS->id);        break;
     case A_surfxml_AS_routing_ClusterTorus:   new_as = new simgrid::surf::AsClusterTorus(AS->id);   break;
@@ -835,9 +835,9 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   /* make a new routing component */
   simgrid::surf::NetCard *netcard = new simgrid::surf::NetCardImpl(new_as->name(), simgrid::surf::NetCard::Type::As, current_routing);
 
-  if (current_routing == NULL && routing_platf->root_ == NULL) { /* it is the first one */
+  if (current_routing == nullptr && routing_platf->root_ == nullptr) { /* it is the first one */
     routing_platf->root_ = new_as;
-  } else if (current_routing != NULL && routing_platf->root_ != NULL) {
+  } else if (current_routing != nullptr && routing_platf->root_ != nullptr) {
 
     xbt_assert(!xbt_dict_get_or_null(current_routing->children(), AS->id),
                "The AS \"%s\" already exists", AS->id);
@@ -847,7 +847,7 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
     if (current_routing->hierarchy_ == simgrid::surf::AsImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::surf::AsImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
-    xbt_dict_set(current_routing->children(), AS->id, (void *) new_as, NULL);
+    xbt_dict_set(current_routing->children(), AS->id, (void *) new_as, nullptr);
   } else {
     THROWF(arg_error, 0, "All defined components must belong to a AS");
   }

@@ -34,8 +34,8 @@ void AsFull::seal() {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
         e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-        e_route->gw_src = NULL;
-        e_route->gw_dst = NULL;
+        e_route->gw_src = nullptr;
+        e_route->gw_dst = nullptr;
         e_route->link_list = new std::vector<Link*>();
         e_route->link_list->push_back(routing_platf->loopback_);
         TO_ROUTE_FULL(i, i) = e_route;
@@ -68,7 +68,7 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
   /* set utils vars */
   size_t table_size = xbt_dynar_length(vertices_);
 
-  sg_platf_route_cbarg_t e_route = NULL;
+  sg_platf_route_cbarg_t e_route = nullptr;
 
   e_route = TO_ROUTE_FULL(src->id(), dst->id());
 

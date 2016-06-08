@@ -18,10 +18,10 @@ PropertyHolder::~PropertyHolder() {
   xbt_dict_free(&properties_);
 }
 
-/** @brief Return the property associated to the provided key (or NULL if not existing) */
+/** @brief Return the property associated to the provided key (or nullptr if not existing) */
 const char *PropertyHolder::getProperty(const char*key) {
-  if (properties_ == NULL)
-    return NULL;
+  if (properties_ == nullptr)
+    return nullptr;
   return (const char*) xbt_dict_get_or_null(properties_,key);
 }
 

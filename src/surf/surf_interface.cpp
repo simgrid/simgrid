@@ -27,12 +27,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
 
 /* model_list_invoke contains only surf_host and surf_vm.
  * The callback functions of cpu_model and network_model will be called from those of these host models. */
-xbt_dynar_t all_existing_models = NULL; /* to destroy models correctly */
-xbt_dynar_t model_list_invoke = NULL;  /* to invoke callbacks */
+xbt_dynar_t all_existing_models = nullptr; /* to destroy models correctly */
+xbt_dynar_t model_list_invoke = nullptr;  /* to invoke callbacks */
 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
-xbt_dynar_t surf_path = NULL;
-xbt_dynar_t host_that_restart = xbt_dynar_new(sizeof(char*), NULL);
+xbt_dynar_t surf_path = nullptr;
+xbt_dynar_t host_that_restart = xbt_dynar_new(sizeof(char*), nullptr);
 xbt_dict_t watched_hosts_lib;
 
 namespace simgrid {
@@ -47,7 +47,7 @@ simgrid::xbt::signal<void(void)> surfExitCallbacks;
 
 s_surf_model_description_t surf_plugin_description[] = {
     {"Energy", "Cpu energy consumption.", sg_energy_plugin_init},
-     {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+     {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
 /* Don't forget to update the option description in smx_config when you change this */
@@ -72,40 +72,40 @@ s_surf_model_description_t surf_network_model_description[] = {
    surf_network_model_init_Reno2},
   {"Vegas", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
    surf_network_model_init_Vegas},
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_surf_model_description_t surf_cpu_model_description[] = {
   {"Cas01", "Simplistic CPU model (time=size/power).", surf_cpu_model_init_Cas01},
-  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
 s_surf_model_description_t surf_host_model_description[] = {
   {"default",   "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)", surf_host_model_init_current_default},
   {"compound",  "Host model that is automatically chosen if you change the network and CPU models", surf_host_model_init_compound},
   {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks", surf_host_model_init_ptask_L07},
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_surf_model_description_t surf_vm_model_description[] = {
   {"default", "Default vm model.", surf_vm_model_init_HL13},
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_surf_model_description_t surf_optimization_mode_description[] = {
-  {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", NULL},
-  {"TI",   "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU model for now).", NULL},
-  {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", NULL},
-  {NULL, NULL, NULL}      /* this array must be NULL terminated */
+  {"Lazy", "Lazy action management (partial invalidation in lmm + heap in action remaining).", nullptr},
+  {"TI",   "Trace integration. Highly optimized mode when using availability traces (only available for the Cas01 CPU model for now).", nullptr},
+  {"Full", "Full update of remaining and variables. Slow but may be useful when debugging.", nullptr},
+  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_surf_model_description_t surf_storage_model_description[] = {
   {"default", "Simplistic storage model.", surf_storage_model_init_default},
-  {NULL, NULL,  NULL}      /* this array must be NULL terminated */
+  {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
 #if HAVE_THREAD_CONTEXTS
-static xbt_parmap_t surf_parmap = NULL; /* parallel map on models */
+static xbt_parmap_t surf_parmap = nullptr; /* parallel map on models */
 #endif
 
 double NOW = 0;
@@ -124,9 +124,9 @@ double surf_get_clock(void)
 FILE *surf_fopen(const char *name, const char *mode)
 {
   unsigned int cpt;
-  char *path_elm = NULL;
+  char *path_elm = nullptr;
   char *buff;
-  FILE *file = NULL;
+  FILE *file = nullptr;
 
   xbt_assert(name);
 
@@ -142,7 +142,7 @@ FILE *surf_fopen(const char *name, const char *mode)
     if (file)
       return file;
   }
-  return NULL;
+  return nullptr;
 }
 
 #ifdef _WIN32
@@ -171,7 +171,7 @@ const char *__surf_get_initial_path(void)
   char root[4] = { 0 };
 
   if (!len)
-    return NULL;
+    return nullptr;
 
   strncpy(root, current_directory, 3);
 
@@ -180,7 +180,7 @@ const char *__surf_get_initial_path(void)
       return disk_drives_letter_table[i];
   }
 
-  return NULL;
+  return nullptr;
 #else
   return "./";
 #endif
@@ -218,7 +218,7 @@ int find_model_description(s_surf_model_description_t * table,
                            const char *name)
 {
   int i;
-  char *name_list = NULL;
+  char *name_list = nullptr;
 
   for (i = 0; table[i].name; i++)
     if (!strcmp(name, table[i].name)) {
@@ -276,16 +276,16 @@ void surf_init(int *argc, char **argv)
     simgrid::s4u::Host::onDestruction(*host);
     delete host;
   });
-  USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(NULL);
+  USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   as_router_lib = xbt_lib_new();
   storage_lib = xbt_lib_new();
   storage_type_lib = xbt_lib_new();
   file_lib = xbt_lib_new();
-  watched_hosts_lib = xbt_dict_new_homogeneous(NULL);
+  watched_hosts_lib = xbt_dict_new_homogeneous(nullptr);
 
   XBT_DEBUG("Add routing levels");
-  ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib, NULL);
+  ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib, nullptr);
   ROUTING_ASR_LEVEL = xbt_lib_add_level(as_router_lib, [](void* p) {
     delete static_cast<simgrid::surf::NetCard*>(p);
   });
@@ -296,9 +296,9 @@ void surf_init(int *argc, char **argv)
 
   xbt_init(argc, argv);
   if (!all_existing_models)
-    all_existing_models = xbt_dynar_new(sizeof(simgrid::surf::Model*), NULL);
+    all_existing_models = xbt_dynar_new(sizeof(simgrid::surf::Model*), nullptr);
   if (!model_list_invoke)
-    model_list_invoke = xbt_dynar_new(sizeof(simgrid::surf::Model*), NULL);
+    model_list_invoke = xbt_dynar_new(sizeof(simgrid::surf::Model*), nullptr);
   if (!future_evt_set)
     future_evt_set = new simgrid::trace_mgr::future_evt_set();
 
@@ -314,7 +314,7 @@ void surf_init(int *argc, char **argv)
 void surf_exit(void)
 {
   unsigned int iter;
-  simgrid::surf::Model *model = NULL;
+  simgrid::surf::Model *model = nullptr;
 
   TRACE_end();                  /* Just in case it was not called by the upper
                                  * layer (or there is no upper layer) */
@@ -364,15 +364,15 @@ namespace simgrid {
 namespace surf {
 
 Model::Model()
-  : maxminSystem_(NULL)
+  : maxminSystem_(nullptr)
 {
   readyActionSet_ = new ActionList();
   runningActionSet_ = new ActionList();
   failedActionSet_ = new ActionList();
   doneActionSet_ = new ActionList();
 
-  modifiedSet_ = NULL;
-  actionHeap_ = NULL;
+  modifiedSet_ = nullptr;
+  actionHeap_ = nullptr;
   updateMechanism_ = UM_UNDEFINED;
   selectiveUpdate_ = 0;
 }
@@ -397,7 +397,7 @@ double Model::next_occuring_event(double now)
 
 double Model::next_occuring_event_lazy(double now)
 {
-  Action *action = NULL;
+  Action *action = nullptr;
   double min = -1;
   double share;
 
@@ -480,7 +480,7 @@ double Model::shareResourcesMaxMin(ActionList *running_actions,
                           lmm_system_t sys,
                           void (*solve) (lmm_system_t))
 {
-  Action *action = NULL;
+  Action *action = nullptr;
   double min = -1;
   double value = -1;
 
@@ -697,7 +697,7 @@ void Action::setState(Action::State state)
     stateSet_ = getModel()->getDoneActionSet();
     break;
   default:
-    stateSet_ = NULL;
+    stateSet_ = nullptr;
     break;
   }
   if (stateSet_)

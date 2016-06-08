@@ -12,7 +12,7 @@
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf, "Logging specific to the SURF cpu module");
 
-void_f_void_t surf_cpu_model_init_preparse = NULL;
+void_f_void_t surf_cpu_model_init_preparse = nullptr;
 
 simgrid::surf::CpuModel *surf_cpu_model_pm;
 simgrid::surf::CpuModel *surf_cpu_model_vm;
@@ -80,7 +80,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 
 void CpuModel::updateActionsStateFull(double now, double delta)
 {
-  CpuAction *action = NULL;
+  CpuAction *action = nullptr;
   ActionList *running_actions = getRunningActionSet();
 
   for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
@@ -126,7 +126,7 @@ bool CpuModel::next_occuring_event_isIdempotent()
  * Resource *
  ************/
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
- : Cpu(model, host, NULL/*constraint*/, speedPerPstate, core)
+ : Cpu(model, host, nullptr/*constraint*/, speedPerPstate, core)
 {
 }
 
@@ -235,13 +235,13 @@ int Cpu::getCore()
 
 void Cpu::setStateTrace(tmgr_trace_t trace)
 {
-  xbt_assert(stateEvent_==NULL,"Cannot set a second state trace to Host %s", host_->name().c_str());
+  xbt_assert(stateEvent_==nullptr,"Cannot set a second state trace to Host %s", host_->name().c_str());
 
   stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
 }
 void Cpu::setSpeedTrace(tmgr_trace_t trace)
 {
-  xbt_assert(speed_.event==NULL,"Cannot set a second speed trace to Host %s", host_->name().c_str());
+  xbt_assert(speed_.event==nullptr,"Cannot set a second speed trace to Host %s", host_->name().c_str());
 
   speed_.event = future_evt_set->add_trace(trace, 0.0, this);
 }

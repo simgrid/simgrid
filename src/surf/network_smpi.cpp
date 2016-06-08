@@ -15,8 +15,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
-xbt_dynar_t smpi_bw_factor = NULL;
-xbt_dynar_t smpi_lat_factor = NULL;
+xbt_dynar_t smpi_bw_factor = nullptr;
+xbt_dynar_t smpi_lat_factor = nullptr;
 
 typedef struct s_smpi_factor *smpi_factor_t;
 typedef struct s_smpi_factor { // FIXME: s_smpi_factor_multival (defined in smpi_base) should be used instead to dedupplicate this code
@@ -24,7 +24,7 @@ typedef struct s_smpi_factor { // FIXME: s_smpi_factor_multival (defined in smpi
   double value;
 } s_smpi_factor_t;
 
-xbt_dict_t gap_lookup = NULL;
+xbt_dict_t gap_lookup = nullptr;
 
 static int factor_cmp(const void *pa, const void *pb)
 {
@@ -35,12 +35,12 @@ static int factor_cmp(const void *pa, const void *pb)
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 {
-  char *value = NULL;
+  char *value = nullptr;
   unsigned int iter = 0;
   s_smpi_factor_t fact;
-  xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = NULL;
+  xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = nullptr;
 
-  smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
+  smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), nullptr);
   radical_elements = xbt_str_split(smpi_coef_string, ";");
   xbt_dynar_foreach(radical_elements, iter, value) {
 
@@ -117,7 +117,7 @@ namespace simgrid {
 
       if (sg_sender_gap > 0.0) {
         if (!gap_lookup) {
-          gap_lookup = xbt_dict_new_homogeneous(NULL);
+          gap_lookup = xbt_dict_new_homogeneous(nullptr);
         }
         fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
         action->senderGap_ = 0.0;
@@ -138,7 +138,7 @@ namespace simgrid {
                                           action->sender.link_name);
     if (!fifo) {
       fifo = xbt_fifo_new();
-      xbt_dict_set(gap_lookup, action->sender.link_name, fifo, NULL);
+      xbt_dict_set(gap_lookup, action->sender.link_name, fifo, nullptr);
     }
     action->sender.fifo_item = xbt_fifo_push(fifo, action);*/
         action->senderSize_ = size;

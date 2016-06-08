@@ -97,7 +97,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, sg_host_t host_PM)
  : VirtualMachine(model, name, host_PM)
 {
   /* Currently, we assume a VM has no storage. */
-  p_storage = NULL;
+  p_storage = nullptr;
 
   /* Currently, a VM uses the network resource of its physical host. In
    * host_lib, this network resource object is referred from two different keys.

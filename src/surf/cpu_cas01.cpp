@@ -58,7 +58,7 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    actionHeap_ = xbt_heap_new(8, NULL);
+    actionHeap_ = xbt_heap_new(8, nullptr);
     xbt_heap_set_update_callback(actionHeap_,  surf_action_lmm_update_index_heap);
     modifiedSet_ = new ActionLmmList();
     maxminSystem_->keep_track = modifiedSet_;
@@ -68,11 +68,11 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 CpuCas01Model::~CpuCas01Model()
 {
   lmm_system_free(maxminSystem_);
-  maxminSystem_ = NULL;
+  maxminSystem_ = nullptr;
   xbt_heap_free(actionHeap_);
   delete modifiedSet_;
 
-  surf_cpu_model_pm = NULL;
+  surf_cpu_model_pm = nullptr;
 
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
@@ -114,8 +114,8 @@ bool CpuCas01::isUsed()
 
 /** @brief take into account changes of speed (either load or max) */
 void CpuCas01::onSpeedChange() {
-  lmm_variable_t var = NULL;
-  lmm_element_t elem = NULL;
+  lmm_variable_t var = nullptr;
+  lmm_element_t elem = nullptr;
 
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
                                 coresAmount_ * speed_.scale * speed_.peak);
@@ -151,8 +151,8 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
       turnOn();
     } else {
       lmm_constraint_t cnst = getConstraint();
-      lmm_variable_t var = NULL;
-      lmm_element_t elem = NULL;
+      lmm_variable_t var = nullptr;
+      lmm_element_t elem = nullptr;
       double date = surf_get_clock();
 
       turnOff();

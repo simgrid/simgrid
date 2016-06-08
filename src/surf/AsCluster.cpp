@@ -79,7 +79,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
   int table_size = xbt_dynar_length(vertices_);
 
   NetCard *src;
-  xbt_node_t current, previous, backboneNode = NULL, routerNode;
+  xbt_node_t current, previous, backboneNode = nullptr, routerNode;
   s_surf_parsing_link_up_down_t info;
 
   xbt_assert(router_,"Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");

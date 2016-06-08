@@ -22,7 +22,7 @@ namespace simgrid {
     }
 
     xbt_dynar_t AsImpl::getOneLinkRoutes() {
-      return NULL;
+      return nullptr;
     }
 
     /** @brief Get the common ancestor and its first childs in each line leading to src and dst */
@@ -46,17 +46,17 @@ namespace simgrid {
       xbt_assert(dst_as, "Host %s must be in an AS", dst->name());
 
       /* (2) find the path to the root routing component */
-      for (AsImpl *current = src_as; current != NULL; current = static_cast<AsImpl*>(current->father())) {
+      for (AsImpl *current = src_as; current != nullptr; current = static_cast<AsImpl*>(current->father())) {
         xbt_assert(index_src < ROUTING_HIERARCHY_MAXDEPTH, "ROUTING_HIERARCHY_MAXDEPTH should be increased for element %s", src->name());
         path_src[index_src++] = current;
       }
-      for (AsImpl *current = dst_as; current != NULL; current = static_cast<AsImpl*>(current->father())) {
+      for (AsImpl *current = dst_as; current != nullptr; current = static_cast<AsImpl*>(current->father())) {
         xbt_assert(index_dst < ROUTING_HIERARCHY_MAXDEPTH,"ROUTING_HIERARCHY_MAXDEPTH should be increased for path_dst");
         path_dst[index_dst++] = current;
       }
 
       /* (3) find the common father.
-       * Before that, index_src and index_dst may be different, they both point to NULL in path_src/path_dst
+       * Before that, index_src and index_dst may be different, they both point to nullptr in path_src/path_dst
        * So we move them down simultaneously as long as they point to the same content.
        */
       do {
@@ -81,7 +81,7 @@ namespace simgrid {
     /* PRECONDITION: this is the common ancestor of src and dst */
     std::vector<surf::Link*> *AsImpl::getBypassRoute(surf::NetCard *src, surf::NetCard *dst)
     {
-      // If never set a bypass route return NULL without any further computations
+      // If never set a bypass route return nullptr without any further computations
       XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
       if (bypassRoutes_.empty())
         return nullptr;
@@ -99,14 +99,14 @@ namespace simgrid {
       /* (2) find the path to the root routing component */
       std::vector<As*> path_src;
       As *current = src->containingAS();
-      while (current != NULL) {
+      while (current != nullptr) {
         path_src.push_back(current);
         current = current->father_;
       }
 
       std::vector<As*> path_dst;
       current = dst->containingAS();
-      while (current != NULL) {
+      while (current != nullptr) {
         path_dst.push_back(current);
         current = current->father_;
       }
@@ -162,7 +162,7 @@ namespace simgrid {
      * \param src the source host
      * \param dst the destination host
      * \param links Where to store the links and the gw information
-     * \param latency If not NULL, the latency of all links will be added in it
+     * \param latency If not nullptr, the latency of all links will be added in it
      */
     void AsImpl::getRouteRecursive(surf::NetCard *src, surf::NetCard *dst,
         /* OUT */ std::vector<surf::Link*> * links, double *latency)
@@ -201,7 +201,7 @@ namespace simgrid {
       route.link_list = new std::vector<surf::Link*>();
 
       common_ancestor->getRouteAndLatency(src_ancestor->netcard_, dst_ancestor->netcard_, &route, latency);
-      xbt_assert((route.gw_src != NULL) && (route.gw_dst != NULL),
+      xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr),
           "bad gateways for route from \"%s\" to \"%s\"", src->name(), dst->name());
 
       /* If source gateway is not our source, we have to recursively find our way up to this point */

@@ -55,7 +55,7 @@ xbt_node_t new_xbt_graph_node(xbt_graph_t graph, const char *name, xbt_dict_t no
     return ret;
 
   ret = xbt_graph_new_node(graph, xbt_strdup(name));
-  xbt_dict_set(nodes, name, ret, NULL);
+  xbt_dict_set(nodes, name, ret, nullptr);
   return ret;
 }
 
@@ -69,14 +69,14 @@ xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt
 
   snprintf(name, len, "%s%s", sn, dn);
   xbt_edge_t ret = (xbt_edge_t) xbt_dict_get_or_null(edges, name);
-  if (ret == NULL) {
+  if (ret == nullptr) {
     snprintf(name, len, "%s%s", dn, sn);
     ret = (xbt_edge_t) xbt_dict_get_or_null(edges, name);
   }
 
-  if (ret == NULL) {
-    ret = xbt_graph_new_edge(graph, s, d, NULL);
-    xbt_dict_set(edges, name, ret, NULL);
+  if (ret == nullptr) {
+    ret = xbt_graph_new_edge(graph, s, d, nullptr);
+    xbt_dict_set(edges, name, ret, nullptr);
   }
   free(name);
   return ret;
@@ -97,7 +97,7 @@ namespace surf {
         route->link_list->clear();
         NetCard *src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
         NetCard *dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
-        this->getRouteAndLatency(src_elm, dst_elm,route, NULL);
+        this->getRouteAndLatency(src_elm, dst_elm,route, nullptr);
 
         if (route->link_list->size() == 1) {
           Link *link = route->link_list->at(0);
@@ -107,7 +107,7 @@ namespace surf {
           else if (hierarchy_ == RoutingMode::recursive)
             onelink = new Onelink(link, route->gw_src, route->gw_dst);
           else
-            onelink = new Onelink(link, NULL, NULL);
+            onelink = new Onelink(link, nullptr, nullptr);
           xbt_dynar_push(ret, &onelink);
         }
       }
@@ -133,7 +133,7 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
       route->link_list = new std::vector<Link*>();
 
-      getRouteAndLatency(my_src, my_dst, route, NULL);
+      getRouteAndLatency(my_src, my_dst, route, nullptr);
 
       XBT_DEBUG ("get_route_and_latency %s -> %s", my_src->name(), my_dst->name());
 
@@ -189,7 +189,7 @@ sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(RoutingMode hierarchy, sg
       "The hierarchy of this AS is neither BASIC nor RECURSIVE, I'm lost here.");
 
   if (hierarchy == RoutingMode::recursive) {
-    xbt_assert(routearg->gw_src && routearg->gw_dst, "NULL is obviously a deficient gateway");
+    xbt_assert(routearg->gw_src && routearg->gw_dst, "nullptr is obviously a deficient gateway");
 
     result->gw_src = routearg->gw_src;
     result->gw_dst = routearg->gw_dst;
@@ -207,8 +207,8 @@ sg_platf_route_cbarg_t AsRoutedGraph::newExtendedRoute(RoutingMode hierarchy, sg
 
 void AsRoutedGraph::getRouteCheckParams(NetCard *src, NetCard *dst)
 {
-  xbt_assert(src,"Cannot find a route from NULL to %s", dst->name());
-  xbt_assert(dst,"Cannot find a route from %s to NULL", src->name());
+  xbt_assert(src,"Cannot find a route from nullptr to %s", dst->name());
+  xbt_assert(dst,"Cannot find a route from %s to nullptr", src->name());
 
   As *src_as = src->containingAS();
   As *dst_as = dst->containingAS();

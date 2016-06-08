@@ -20,7 +20,7 @@ static std::unordered_map<const char *, simgrid::trace_mgr::trace*> trace_list;
 
 simgrid::trace_mgr::trace::trace()
 {
-  event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), NULL);
+  event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), nullptr);
 }
 
 simgrid::trace_mgr::trace::~trace()
@@ -39,7 +39,7 @@ simgrid::trace_mgr::future_evt_set::~future_evt_set()
 tmgr_trace_t tmgr_trace_new_from_string(const char *name, const char *input, double periodicity)
 {
   int linecount = 0;
-  tmgr_event_t last_event = NULL;
+  tmgr_event_t last_event = nullptr;
   unsigned int cpt;
   char *val;
 
@@ -94,7 +94,7 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
   xbt_assert(trace_list.find(filename) == trace_list.end(), "Refusing to define trace %s twice", filename);
 
   FILE *f = surf_fopen(filename, "r");
-  xbt_assert(f != NULL,
+  xbt_assert(f != nullptr,
       "Cannot open file '%s' (path=%s)", filename, xbt_str_join(surf_path, ":"));
 
   char *tstr = xbt_str_from_file(f);
@@ -124,7 +124,7 @@ void tmgr_trace_free(tmgr_trace_t trace)
 /** @brief Registers a new trace into the future event set, and get an iterator over the integrated trace  */
 tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t trace, double start_time, surf::Resource *resource)
 {
-  tmgr_trace_iterator_t trace_iterator = NULL;
+  tmgr_trace_iterator_t trace_iterator = nullptr;
 
   trace_iterator = xbt_new0(s_tmgr_trace_event_t, 1);
   trace_iterator->trace = trace;
@@ -147,17 +147,17 @@ double simgrid::trace_mgr::future_evt_set::next_date() const
     return -1.0;
 }
 
-/** @brief Retrieves the next occurring event, or NULL if none happens before #date */
+/** @brief Retrieves the next occurring event, or nullptr if none happens before #date */
 tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
     double date, double *value, simgrid::surf::Resource **resource)
 {
   double event_date = next_date();
   if (event_date > date)
-    return NULL;
+    return nullptr;
 
   tmgr_trace_iterator_t trace_iterator = (tmgr_trace_iterator_t)xbt_heap_pop(p_heap);
-  if (trace_iterator == NULL)
-    return NULL;
+  if (trace_iterator == nullptr)
+    return nullptr;
 
   tmgr_trace_t trace = trace_iterator->trace;
   *resource = trace_iterator->resource;

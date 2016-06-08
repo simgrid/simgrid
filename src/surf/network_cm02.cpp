@@ -156,10 +156,10 @@ NetworkCm02Model::NetworkCm02Model()
   if (!maxminSystem_)
     maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
-  routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, NULL));
+  routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, nullptr));
 
   if (updateMechanism_ == UM_LAZY) {
-  actionHeap_ = xbt_heap_new(8, NULL);
+  actionHeap_ = xbt_heap_new(8, nullptr);
   xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
   modifiedSet_ = new ActionLmmList();
   maxminSystem_->keep_track = modifiedSet_;
@@ -294,7 +294,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
   int failed = 0;
   double bandwidth_bound;
   double latency = 0.0;
-  std::vector<Link*> * back_route = NULL;
+  std::vector<Link*> * back_route = nullptr;
   int constraints_per_variable = 0;
 
   std::vector<Link*> *route = new std::vector<Link*>();
@@ -312,7 +312,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
 
   if (sg_network_crosstraffic == 1) {
     back_route = new std::vector<Link*>();
-    routing_platf->getRouteAndLatency(dst, src, back_route, NULL);
+    routing_platf->getRouteAndLatency(dst, src, back_route, nullptr);
     for (auto link: *back_route)
       if (link->isOff())
         failed = 1;
@@ -349,7 +349,7 @@ Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, d
   }
 
   constraints_per_variable = route->size();
-  if (back_route != NULL)
+  if (back_route != nullptr)
     constraints_per_variable += back_route->size();
 
   if (action->latency_ > 0) {
@@ -437,8 +437,8 @@ void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
     if (value > 0)
       turnOn();
     else {
-      lmm_variable_t var = NULL;
-      lmm_element_t elem = NULL;
+      lmm_variable_t var = nullptr;
+      lmm_element_t elem = nullptr;
       double now = surf_get_clock();
 
       turnOff();
@@ -473,7 +473,7 @@ void NetworkCm02Link::updateBandwidth(double value) {
     double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (m_bandwidth.peak * m_bandwidth.scale);
 
     lmm_variable_t var;
-    lmm_element_t elem = NULL, nextelem = NULL;
+    lmm_element_t elem = nullptr, nextelem = nullptr;
     int numelem = 0;
     while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
       NetworkCm02Action *action = (NetworkCm02Action*) lmm_variable_id(var);
@@ -486,9 +486,9 @@ void NetworkCm02Link::updateBandwidth(double value) {
 
 void NetworkCm02Link::updateLatency(double value){
   double delta = value - m_latency.peak;
-  lmm_variable_t var = NULL;
-  lmm_element_t elem = NULL;
-  lmm_element_t nextelem = NULL;
+  lmm_variable_t var = nullptr;
+  lmm_element_t elem = nullptr;
+  lmm_element_t nextelem = nullptr;
   int numelem = 0;
 
   m_latency.peak = value;

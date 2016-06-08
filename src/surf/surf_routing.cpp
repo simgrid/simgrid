@@ -52,14 +52,14 @@ int ROUTING_PROP_ASR_LEVEL = -1;     //Where the properties are stored
 simgrid::surf::NetCard *sg_netcard_by_name_or_null(const char *name)
 {
   sg_host_t h = sg_host_by_name(name);
-  simgrid::surf::NetCard *netcard = h==NULL ? NULL: h->pimpl_netcard;
+  simgrid::surf::NetCard *netcard = h==nullptr ? nullptr: h->pimpl_netcard;
   if (!netcard)
     netcard = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
   return netcard;
 }
 
 /* Global vars */
-simgrid::surf::RoutingPlatf *routing_platf = NULL;
+simgrid::surf::RoutingPlatf *routing_platf = nullptr;
 
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
@@ -72,7 +72,7 @@ void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
         "Trace '%s' must have either a content, or point to a file on disk.",trace->id);
     tmgr_trace = tmgr_trace_new_from_string(trace->id, trace->pc_data, trace->periodicity);
   }
-  xbt_dict_set(traces_set_list, trace->id, (void *) tmgr_trace, NULL);
+  xbt_dict_set(traces_set_list, trace->id, (void *) tmgr_trace, nullptr);
 }
 
 namespace simgrid {
@@ -84,10 +84,10 @@ namespace surf {
  * \param src the network_element_t for src host
  * \param dst the network_element_t for dst host
  * \param route where to store the list of links.
- *              If *route=NULL, create a short lived dynar. Else, fill the provided dynar
- * \param latency where to store the latency experienced on the path (or NULL if not interested)
+ *              If *route=nullptr, create a short lived dynar. Else, fill the provided dynar
+ * \param latency where to store the latency experienced on the path (or nullptr if not interested)
  *                It is the caller responsability to initialize latency to 0 (we add to provided route)
- * \pre route!=NULL
+ * \pre route!=nullptr
  *
  * walk through the routing components tree and find a route between hosts
  * by calling each "get_route" function in each routing component.
@@ -110,7 +110,7 @@ static xbt_dynar_t _recursiveGetOneLinkRoutes(surf::AsImpl *as)
 
   //recursing
   char *key;
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   AsImpl *rc_child;
   xbt_dict_foreach(as->children(), cursor, key, rc_child) {
     xbt_dynar_t onelink_child = _recursiveGetOneLinkRoutes(rc_child);
@@ -143,7 +143,7 @@ static void check_disk_attachment()
   void **data;
   simgrid::surf::NetCard *host_elm;
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
+    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
     simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
     host_elm = sg_netcard_by_name_or_null(storage->p_attach);
     if(!host_elm)

@@ -20,15 +20,15 @@ namespace surf {
 AsFloyd::AsFloyd(const char*name)
   : AsRoutedGraph(name)
 {
-  predecessorTable_ = NULL;
-  costTable_ = NULL;
-  linkTable_ = NULL;
+  predecessorTable_ = nullptr;
+  costTable_ = nullptr;
+  linkTable_ = nullptr;
 }
 
 AsFloyd::~AsFloyd(){
   int i, j;
   int table_size = (int)xbt_dynar_length(vertices_);
-  if (linkTable_ == NULL) // Dealing with a parse error in the file?
+  if (linkTable_ == nullptr) // Dealing with a parse error in the file?
     return;
   /* Delete link_table */
   for (i = 0; i < table_size; i++)
@@ -47,7 +47,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
   getRouteCheckParams(src, dst);
 
   /* create a result route */
-  xbt_dynar_t route_stack = xbt_dynar_new(sizeof(sg_platf_route_cbarg_t), NULL);
+  xbt_dynar_t route_stack = xbt_dynar_new(sizeof(sg_platf_route_cbarg_t), nullptr);
   int pred;
   int cur = dst->id();
   do {
@@ -63,11 +63,11 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
     route->gw_dst = xbt_dynar_getfirst_as(route_stack, sg_platf_route_cbarg_t)->gw_dst;
   }
 
-  sg_netcard_t prev_dst_gw = NULL;
+  sg_netcard_t prev_dst_gw = nullptr;
   while (!xbt_dynar_is_empty(route_stack)) {
     sg_platf_route_cbarg_t e_route = xbt_dynar_pop_as(route_stack, sg_platf_route_cbarg_t);
 
-    if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != NULL && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
+    if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
       routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src, route->link_list, lat);
     }
 
@@ -103,7 +103,7 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
       for (int j = 0; j < table_size; j++) {
         TO_FLOYD_COST(i, j) = DBL_MAX;
         TO_FLOYD_PRED(i, j) = -1;
-        TO_FLOYD_LINK(i, j) = NULL;
+        TO_FLOYD_LINK(i, j) = nullptr;
       }
   }
 
@@ -165,7 +165,7 @@ void AsFloyd::seal(){
       for (unsigned int j = 0; j < table_size; j++) {
         TO_FLOYD_COST(i, j) = DBL_MAX;
         TO_FLOYD_PRED(i, j) = -1;
-        TO_FLOYD_LINK(i, j) = NULL;
+        TO_FLOYD_LINK(i, j) = nullptr;
       }
   }
 
@@ -175,8 +175,8 @@ void AsFloyd::seal(){
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
       if (!e_route) {
         e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
-        e_route->gw_src = NULL;
-        e_route->gw_dst = NULL;
+        e_route->gw_src = nullptr;
+        e_route->gw_dst = nullptr;
         e_route->link_list = new std::vector<Link*>();
         e_route->link_list->push_back(routing_platf->loopback_);
         TO_FLOYD_LINK(i, i) = e_route;

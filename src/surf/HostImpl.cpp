@@ -17,7 +17,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf,
                                 "Logging specific to the SURF host module");
 
-simgrid::surf::HostModel *surf_host_model = NULL;
+simgrid::surf::HostModel *surf_host_model = nullptr;
 
 /*************
  * Callbacks *
@@ -78,7 +78,7 @@ Action *HostModel::executeParallelTask(int host_nb,
     double *bytes_amount,
     double rate){
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
-  Action *action =NULL;
+  Action *action =nullptr;
   if ((host_nb == 1)
       && (cost_or_zero(bytes_amount, 0) == 0.0)){
     action = host_list[0]->pimpl_cpu->execution_start(flops_amount[0]);
@@ -174,7 +174,7 @@ void HostImpl::turnOff(){
 
 simgrid::surf::Storage *HostImpl::findStorageOnMountList(const char* mount)
 {
-  simgrid::surf::Storage *st = NULL;
+  simgrid::surf::Storage *st = nullptr;
   s_mount_t mnt;
   unsigned int cursor;
 
@@ -195,12 +195,12 @@ xbt_dict_t HostImpl::getMountedStorageList()
 {
   s_mount_t mnt;
   unsigned int i;
-  xbt_dict_t storage_list = xbt_dict_new_homogeneous(NULL);
-  char *storage_name = NULL;
+  xbt_dict_t storage_list = xbt_dict_new_homogeneous(nullptr);
+  char *storage_name = nullptr;
 
   xbt_dynar_foreach(p_storage,i,mnt){
     storage_name = (char *)static_cast<simgrid::surf::Storage*>(mnt.storage)->getName();
-    xbt_dict_set(storage_list,mnt.name,storage_name,NULL);
+    xbt_dict_set(storage_list,mnt.name,storage_name,nullptr);
   }
   return storage_list;
 }
@@ -210,9 +210,9 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;
-  xbt_dynar_t result = xbt_dynar_new(sizeof(void*), NULL);
+  xbt_dynar_t result = xbt_dynar_new(sizeof(void*), nullptr);
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != NULL) {
+    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
     simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
     if(!strcmp((const char*)storage->p_attach,this->getName())){
       xbt_dynar_push_as(result, void *, (void*)storage->getName());
@@ -224,13 +224,13 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
 
 Action *HostImpl::open(const char* fullpath) {
 
-  simgrid::surf::Storage *st = NULL;
+  simgrid::surf::Storage *st = nullptr;
   s_mount_t mnt;
   unsigned int cursor;
   size_t longest_prefix_length = 0;
-  char *path = NULL;
-  char *file_mount_name = NULL;
-  char *mount_name = NULL;
+  char *path = nullptr;
+  char *file_mount_name = nullptr;
+  char *mount_name = nullptr;
 
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, getName());
   xbt_dynar_foreach(p_storage,cursor,mnt)
@@ -320,7 +320,7 @@ xbt_dynar_t HostImpl::getInfo( surf_file_t fd)
   simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
   sg_size_t *psize = xbt_new(sg_size_t, 1);
   *psize = fd->size;
-  xbt_dynar_t info = xbt_dynar_new(sizeof(void*), NULL);
+  xbt_dynar_t info = xbt_dynar_new(sizeof(void*), nullptr);
   xbt_dynar_push_as(info, sg_size_t *, psize);
   xbt_dynar_push_as(info, void *, fd->mount);
   xbt_dynar_push_as(info, void *, (void *)st->getName());
@@ -366,7 +366,7 @@ int HostImpl::fileMove(surf_file_t fd, const char* fullpath){
       strncpy(path, fullpath+strlen(fd->mount),
               strlen(fullpath)-strlen(fd->mount)+1);
       xbt_dict_set(findStorageOnMountList(fd->mount)->p_content, path,
-                   new_psize,NULL);
+                   new_psize,nullptr);
       XBT_DEBUG("Move file from %s to %s, size '%llu'",fd->name, fullpath, *psize);
       free(path);
       return 0;
@@ -383,7 +383,7 @@ int HostImpl::fileMove(surf_file_t fd, const char* fullpath){
 
 xbt_dynar_t HostImpl::getVms()
 {
-  xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachine*), NULL);
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachine*), nullptr);
 
   /* iterate for all virtual machines */
   for (simgrid::surf::VMModel::vm_list_t::iterator iter =

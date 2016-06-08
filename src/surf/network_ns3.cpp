@@ -80,12 +80,12 @@ static void ns3_add_netcard(simgrid::surf::NetCard* netcard)
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
-  const char *groups = NULL;
+  const char *groups = nullptr;
 
   int start, end, i;
   unsigned int iter;
 
-  xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), nullptr);
 
   char *router_id,*host_id;
 
@@ -227,7 +227,7 @@ namespace surf {
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   ns3_initialize(ns3_tcp_model.get().c_str());
 
-  routing_model_create(NULL);
+  routing_model_create(nullptr);
   simgrid::s4u::Host::onCreation.connect(ns3_add_host);
   simgrid::surf::netcardCreatedCallbacks.connect(ns3_add_netcard);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
@@ -280,7 +280,7 @@ double NetworkNS3Model::next_occuring_event(double now)
 
 void NetworkNS3Model::updateActionsState(double now, double delta)
 {
-  static xbt_dynar_t socket_to_destroy = xbt_dynar_new(sizeof(char*),NULL);
+  static xbt_dynar_t socket_to_destroy = xbt_dynar_new(sizeof(char*),nullptr);
 
   /* If there are no running flows, advance the NS3 simulator and return */
   if (getRunningActionSet()->empty()) {
@@ -291,7 +291,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
     return;
   }
 
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   char *ns3Socket;
   SgFlow *sgFlow;
   xbt_dict_foreach(flowFromSock,cursor,ns3Socket,sgFlow){
@@ -305,7 +305,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
       std::vector<Link*> *route = new std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency (action->src_, action->dst_, route, NULL);
+      routing_platf->getRouteAndLatency (action->src_, action->dst_, route, nullptr);
       for (auto link : *route)
         TRACE_surf_link_set_utilization (link->getName(), action->getCategory(), (data_delta_sent)/delta, now-delta, delta);
       delete route;
@@ -430,7 +430,7 @@ void ns3_create_flow(const char* a,const char *b,double startTime,u_int32_t Tota
 
   ns3::Ptr<ns3::Socket> sock = ns3::Socket::CreateSocket (src_node, ns3::TcpSocketFactory::GetTypeId());
 
-  xbt_dict_set(flowFromSock, transformSocketPtr(sock), new SgFlow(TotalBytes, action), NULL);
+  xbt_dict_set(flowFromSock, transformSocketPtr(sock), new SgFlow(TotalBytes, action), nullptr);
 
   sock->Bind(ns3::InetSocketAddress(port_number));
   XBT_DEBUG("Create flow starting to %fs + %fs = %fs",

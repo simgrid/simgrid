@@ -19,14 +19,14 @@ static void IB_create_host_callback(simgrid::s4u::Host& host){
 
   static int id=0;
   // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
-  if(((NetworkIBModel*)surf_network_model)->active_nodes==NULL)
+  if(((NetworkIBModel*)surf_network_model)->active_nodes==nullptr)
     ((NetworkIBModel*)surf_network_model)->active_nodes=xbt_dict_new();
 
   IBNode* act = new IBNode(id);
 
   id++;
   xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes,
-      host.name().c_str(), act, NULL);
+      host.name().c_str(), act, nullptr);
 
 }
 
@@ -101,7 +101,7 @@ namespace simgrid {
     NetworkIBModel::NetworkIBModel()
     : NetworkSmpiModel() {
       haveGap_=false;
-      active_nodes=NULL;
+      active_nodes=nullptr;
 
       const char* IB_factors_string=xbt_cfg_get_string("smpi/IB-penalty-factors");
       xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
@@ -118,9 +118,9 @@ namespace simgrid {
 
     NetworkIBModel::~NetworkIBModel()
     {
-      xbt_dict_cursor_t cursor = NULL;
-      IBNode* instance = NULL;
-      char *name = NULL;
+      xbt_dict_cursor_t cursor = nullptr;
+      IBNode* instance = nullptr;
+      char *name = nullptr;
       xbt_dict_foreach(active_nodes, cursor, name, instance)
       delete instance;
       xbt_dict_free(&active_nodes);
@@ -196,7 +196,7 @@ namespace simgrid {
         return;
 
       bool* updated=(bool*)xbt_malloc0(xbt_dict_size(active_nodes)*sizeof(bool));
-      ActiveComm* comm=NULL;
+      ActiveComm* comm=nullptr;
       if(remove){
         if(to->ActiveCommsDown[from]==1)
           to->ActiveCommsDown.erase(from);

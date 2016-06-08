@@ -462,8 +462,8 @@ void ETag_surfxml_host(void)    {
 
   XBT_DEBUG("pstate: %s", A_surfxml_host_pstate);
   host.core_amount = surf_parse_get_int(A_surfxml_host_core);
-  host.speed_trace = A_surfxml_host_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_host_availability___file) : NULL;
-  host.state_trace = A_surfxml_host_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_host_state___file) : NULL;
+  host.speed_trace = A_surfxml_host_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_host_availability___file) : nullptr;
+  host.state_trace = A_surfxml_host_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_host_state___file) : nullptr;
   host.pstate      = surf_parse_get_int(A_surfxml_host_pstate);
   host.coord       = A_surfxml_host_coordinates;
 
@@ -598,8 +598,8 @@ void STag_surfxml_peer(void){
   peer.bw_out             = surf_parse_get_bandwidth(A_surfxml_peer_bw___out, "bw_out of peer", peer.id);
   peer.lat                = surf_parse_get_time(A_surfxml_peer_lat, "lat of peer", peer.id);
   peer.coord              = A_surfxml_peer_coordinates;
-  peer.availability_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : NULL;
-  peer.state_trace        = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : NULL;
+  peer.availability_trace = A_surfxml_peer_availability___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_availability___file) : nullptr;
+  peer.state_trace        = A_surfxml_peer_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_peer_state___file) : nullptr;
 
   sg_platf_new_peer(&peer);
 }
@@ -616,10 +616,10 @@ void ETag_surfxml_link(void){
   link.properties          = current_property_set;
   link.id                  = A_surfxml_link_id;
   link.bandwidth           = surf_parse_get_bandwidth(A_surfxml_link_bandwidth, "bandwidth of link", link.id);
-  link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file) : NULL;
+  link.bandwidth_trace     = A_surfxml_link_bandwidth___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_bandwidth___file) : nullptr;
   link.latency             = surf_parse_get_time(A_surfxml_link_latency, "latency of link", link.id);
-  link.latency_trace       = A_surfxml_link_latency___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_latency___file) : NULL;
-  link.state_trace         = A_surfxml_link_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_state___file):NULL;
+  link.latency_trace       = A_surfxml_link_latency___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_latency___file) : nullptr;
+  link.state_trace         = A_surfxml_link_state___file[0] ? tmgr_trace_new_from_file(A_surfxml_link_state___file):nullptr;
 
   switch (A_surfxml_link_sharing___policy) {
   case A_surfxml_link_sharing___policy_SHARED:
@@ -992,7 +992,7 @@ void ETag_surfxml_model___prop(void){}
 
 void surf_parse_open(const char *file)
 {
-  xbt_assert(file, "Cannot parse the NULL file. Bypassing the parser is strongly deprecated nowadays.");
+  xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
 
   if (!surf_input_buffer_stack)
     surf_input_buffer_stack = xbt_dynar_new(sizeof(YY_BUFFER_STATE), nullptr);

@@ -9,7 +9,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
-simgrid::surf::VMModel *surf_vm_model = NULL;
+simgrid::surf::VMModel *surf_vm_model = nullptr;
 
 namespace simgrid {
 namespace surf {
@@ -33,7 +33,7 @@ VMModel::vm_list_t VMModel::ws_vms;
  ************/
 
 VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u::Host *hostPM)
-: HostImpl(model, name, NULL, NULL, NULL)
+: HostImpl(model, name, nullptr, nullptr, nullptr)
 , hostPM_(hostPM)
 {
   VMModel::ws_vms.push_back(*this);

@@ -13,11 +13,11 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
  *********/
 void surf_network_model_init_Constant()
 {
-  xbt_assert(surf_network_model == NULL);
+  xbt_assert(surf_network_model == nullptr);
   surf_network_model = new simgrid::surf::NetworkConstantModel();
   xbt_dynar_push(all_existing_models, &surf_network_model);
 
-  routing_model_create(NULL);
+  routing_model_create(nullptr);
 }
 
 namespace simgrid {
@@ -35,7 +35,7 @@ namespace simgrid {
 
     double NetworkConstantModel::next_occuring_event(double /*now*/)
     {
-      NetworkConstantAction *action = NULL;
+      NetworkConstantAction *action = nullptr;
       double min = -1.0;
 
       ActionList *actionSet = getRunningActionSet();
@@ -51,7 +51,7 @@ namespace simgrid {
 
     void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
     {
-      NetworkConstantAction *action = NULL;
+      NetworkConstantAction *action = nullptr;
       ActionList *actionSet = getRunningActionSet();
       for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
           ; it != itend ; it=itNext) {

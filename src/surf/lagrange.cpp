@@ -44,10 +44,10 @@ static int __check_feasible(xbt_swag_t cnst_list, xbt_swag_t var_list,
                             int warn)
 {
   void *_cnst, *_elem, *_var;
-  xbt_swag_t elem_list = NULL;
-  lmm_element_t elem = NULL;
-  lmm_constraint_t cnst = NULL;
-  lmm_variable_t var = NULL;
+  xbt_swag_t elem_list = nullptr;
+  lmm_element_t elem = nullptr;
+  lmm_constraint_t cnst = nullptr;
+  lmm_variable_t var = nullptr;
 
   double tmp;
 
@@ -128,8 +128,8 @@ static double new_mu(lmm_variable_t var)
 static double dual_objective(xbt_swag_t var_list, xbt_swag_t cnst_list)
 {
   void *_cnst, *_var;
-  lmm_constraint_t cnst = NULL;
-  lmm_variable_t var = NULL;
+  lmm_constraint_t cnst = nullptr;
+  lmm_variable_t var = nullptr;
 
   double obj = 0.0;
 
@@ -178,13 +178,13 @@ void lagrange_solve(lmm_system_t sys)
    * Variables to manipulate the data structure proposed to model the maxmin
    * fairness. See docummentation for more details.
    */
-  xbt_swag_t cnst_list = NULL;
+  xbt_swag_t cnst_list = nullptr;
   void *_cnst;
-  lmm_constraint_t cnst = NULL;
+  lmm_constraint_t cnst = nullptr;
 
-  xbt_swag_t var_list = NULL;
+  xbt_swag_t var_list = nullptr;
   void *_var;
-  lmm_variable_t var = NULL;
+  lmm_variable_t var = nullptr;
 
   /*
    * Auxiliary variables.
@@ -492,9 +492,9 @@ static double partial_diff_lambda(double lambda, void *param_cnst)
 
   int j;
   void *_elem;
-  xbt_swag_t elem_list = NULL;
-  lmm_element_t elem = NULL;
-  lmm_variable_t var = NULL;
+  xbt_swag_t elem_list = nullptr;
+  lmm_element_t elem = nullptr;
+  lmm_variable_t var = nullptr;
   lmm_constraint_t cnst = (lmm_constraint_t) param_cnst;
   double diff = 0.0;
   double sigma_i = 0.0;

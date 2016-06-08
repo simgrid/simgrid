@@ -10,7 +10,7 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 
 static int storage_selective_update = 0;
-static xbt_swag_t storage_running_action_set_that_does_not_need_being_checked = NULL;
+static xbt_swag_t storage_running_action_set_that_does_not_need_being_checked = nullptr;
 
 /*************
  * CallBacks *
@@ -64,7 +64,7 @@ namespace simgrid {
 namespace surf {
 
 StorageN11Model::StorageN11Model() : StorageModel() {
-  Action *action = NULL;
+  Action *action = nullptr;
 
   XBT_DEBUG("surf_storage_model_init_internal");
 
@@ -77,7 +77,7 @@ StorageN11Model::StorageN11Model() : StorageModel() {
 
 StorageN11Model::~StorageN11Model(){
   xbt_swag_free(storage_running_action_set_that_does_not_need_being_checked);
-  storage_running_action_set_that_does_not_need_being_checked = NULL;
+  storage_running_action_set_that_does_not_need_being_checked = nullptr;
 }
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
@@ -112,7 +112,7 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
       Bread);
 
   if(!p_storageList)
-    p_storageList = xbt_dynar_new(sizeof(char *),NULL);
+    p_storageList = xbt_dynar_new(sizeof(char *),nullptr);
   xbt_dynar_push(p_storageList, &storage);
 
   return storage;
@@ -149,7 +149,7 @@ double StorageN11Model::next_occuring_event(double /*now*/)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-  StorageAction *action = NULL;
+  StorageAction *action = nullptr;
 
   ActionList *actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
@@ -188,7 +188,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       sg_size_t *psize = xbt_new(sg_size_t,1);
       *psize = action->p_file->size;
       xbt_dict_t content_dict = action->p_storage->p_content;
-      xbt_dict_set(content_dict, action->p_file->name, psize, NULL);
+      xbt_dict_set(content_dict, action->p_file->name, psize, nullptr);
     }
 
     action->updateRemains(lmm_variable_getvalue(action->getVariable()) * delta);
@@ -243,7 +243,7 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
     psize = xbt_new(sg_size_t,1);
     size = 0;
     *psize = size;
-    xbt_dict_set(p_content, path, psize, NULL);
+    xbt_dict_set(p_content, path, psize, nullptr);
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);

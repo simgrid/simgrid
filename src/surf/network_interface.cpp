@@ -64,7 +64,7 @@ namespace simgrid {
     boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
     Link *Link::byName(const char* name) {
       if (links->find(name) == links->end())
-        return NULL;
+        return nullptr;
       return  links->at(name);
     }
     /** @brief Returns the amount of links in the platform */
@@ -105,7 +105,7 @@ namespace simgrid {
  * Model *
  *********/
 
-simgrid::surf::NetworkModel *surf_network_model = NULL;
+simgrid::surf::NetworkModel *surf_network_model = nullptr;
 
 namespace simgrid {
   namespace surf {
@@ -131,7 +131,7 @@ namespace simgrid {
 
     double NetworkModel::next_occuring_event_full(double now)
     {
-      NetworkAction *action = NULL;
+      NetworkAction *action = nullptr;
       ActionList *runningActions = surf_network_model->getRunningActionSet();
       double minRes;
 
@@ -230,17 +230,17 @@ namespace simgrid {
       }
     }
     void Link::setStateTrace(tmgr_trace_t trace) {
-      xbt_assert(m_stateEvent==NULL,"Cannot set a second state trace to Link %s", getName());
+      xbt_assert(m_stateEvent==nullptr,"Cannot set a second state trace to Link %s", getName());
       m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
     }
     void Link::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(m_bandwidth.event==NULL,"Cannot set a second bandwidth trace to Link %s", getName());
+      xbt_assert(m_bandwidth.event==nullptr,"Cannot set a second bandwidth trace to Link %s", getName());
       m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, this);
     }
     void Link::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(m_latency.event==NULL,"Cannot set a second latency trace to Link %s", getName());
+      xbt_assert(m_latency.event==nullptr,"Cannot set a second latency trace to Link %s", getName());
       m_latency.event = future_evt_set->add_trace(trace, 0.0, this);
     }
 

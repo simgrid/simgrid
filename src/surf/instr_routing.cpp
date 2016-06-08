@@ -15,7 +15,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
-static xbt_dynar_t currentContainer = NULL; /* push and pop, used only in creation */
+static xbt_dynar_t currentContainer = nullptr; /* push and pop, used only in creation */
 
 static const char *instr_node_name (xbt_node_t node)
 {
@@ -31,7 +31,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   if (a1->father == a2->father) return a1->father;
 
   //create an array with all ancestors of a1
-  xbt_dynar_t ancestors_a1 = xbt_dynar_new(sizeof(container_t), NULL);
+  xbt_dynar_t ancestors_a1 = xbt_dynar_new(sizeof(container_t), nullptr);
   container_t p;
   p = a1->father;
   while (p){
@@ -40,7 +40,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   }
 
   //create an array with all ancestors of a2
-  xbt_dynar_t ancestors_a2 = xbt_dynar_new(sizeof(container_t), NULL);
+  xbt_dynar_t ancestors_a2 = xbt_dynar_new(sizeof(container_t), nullptr);
   p = a2->father;
   while (p){
     xbt_dynar_push_as (ancestors_a2, container_t, p);
@@ -48,7 +48,7 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   }
 
   //find the lowest ancestor
-  p = NULL;
+  p = nullptr;
   int i = xbt_dynar_length (ancestors_a1) - 1;
   int j = xbt_dynar_length (ancestors_a2) - 1;
   while (i >= 0 && j >= 0){
@@ -81,7 +81,7 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
     xbt_die ("common father unknown, this is a tracing problem");
   }
 
-  if (filter != NULL){
+  if (filter != nullptr){
     //check if we already register this pair (we only need one direction)
     char aux1[INSTR_DEFAULT_STR_SIZE], aux2[INSTR_DEFAULT_STR_SIZE];
     snprintf (aux1, INSTR_DEFAULT_STR_SIZE, "%s%s", src->name, dst->name);
@@ -96,8 +96,8 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
     }
 
     //ok, not found, register it
-    xbt_dict_set (filter, aux1, xbt_strdup ("1"), NULL);
-    xbt_dict_set (filter, aux2, xbt_strdup ("1"), NULL);
+    xbt_dict_set (filter, aux1, xbt_strdup ("1"), nullptr);
+    xbt_dict_set (filter, aux2, xbt_strdup ("1"), nullptr);
   }
 
   //declare type
@@ -107,12 +107,12 @@ static void linkContainers (container_t src, container_t dst, xbt_dict_t filter)
             src->type->name, src->type->id,
             dst->type->name, dst->type->id);
   type_t link_type = PJ_type_get_or_null (link_typename, father->type);
-  if (link_type == NULL){
+  if (link_type == nullptr){
     link_type = PJ_type_link_new (link_typename, father->type, src->type, dst->type);
   }
 
   //register EDGE types for triva configuration
-  xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), NULL);
+  xbt_dict_set (trivaEdgeTypes, link_type->name, xbt_strdup("1"), nullptr);
 
   //create the link
   static long long counter = 0;
@@ -133,7 +133,7 @@ static void recursiveGraphExtraction (simgrid::s4u::As *as, container_t containe
   }
   XBT_DEBUG ("Graph extraction for routing_component = %s", as->name());
   if (!xbt_dict_is_empty(as->children())){
-    xbt_dict_cursor_t cursor = NULL;
+    xbt_dict_cursor_t cursor = nullptr;
     AS_t rc_son;
     char *child_name;
     //bottom-up recursion
@@ -144,12 +144,12 @@ static void recursiveGraphExtraction (simgrid::s4u::As *as, container_t containe
   }
 
   {
-    xbt_graph_t graph = xbt_graph_new_graph (0, NULL);
-    xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
-    xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
-    xbt_edge_t edge = NULL;
+    xbt_graph_t graph = xbt_graph_new_graph (0, nullptr);
+    xbt_dict_t nodes = xbt_dict_new_homogeneous(nullptr);
+    xbt_dict_t edges = xbt_dict_new_homogeneous(nullptr);
+    xbt_edge_t edge = nullptr;
 
-    xbt_dict_cursor_t cursor = NULL;
+    xbt_dict_cursor_t cursor = nullptr;
     char *edge_name;
 
     static_cast<simgrid::surf::AsImpl*>(as)->getGraph(graph, nodes, edges);
@@ -160,7 +160,7 @@ static void recursiveGraphExtraction (simgrid::s4u::As *as, container_t containe
     }
     xbt_dict_free (&nodes);
     xbt_dict_free (&edges);
-    xbt_graph_free_graph(graph, xbt_free_f, xbt_free_f, NULL);
+    xbt_graph_free_graph(graph, xbt_free_f, xbt_free_f, nullptr);
   }
 }
 
@@ -171,16 +171,16 @@ void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS)
 {
   const char*id = AS->id;
 
-  if (PJ_container_get_root() == NULL){
+  if (PJ_container_get_root() == nullptr){
     PJ_container_alloc ();
     PJ_type_alloc();
-    container_t root = PJ_container_new (id, INSTR_AS, NULL);
+    container_t root = PJ_container_new (id, INSTR_AS, nullptr);
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
       if (!TRACE_smpi_is_grouped()){
         type_t mpi = PJ_type_get_or_null ("MPI", root->type);
-        if (mpi == NULL){
+        if (mpi == nullptr){
           mpi = PJ_type_container_new("MPI", root->type);
           PJ_type_state_new ("MPI_STATE", mpi);
           PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
@@ -189,7 +189,7 @@ void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS)
     }
 
     if (TRACE_needs_platform()){
-      currentContainer = xbt_dynar_new (sizeof(container_t), NULL);
+      currentContainer = xbt_dynar_new (sizeof(container_t), nullptr);
       xbt_dynar_push (currentContainer, &root);
     }
     return;
@@ -228,7 +228,7 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
     xbt_dynar_push_as (links_to_create, char*, strdup(link->id));
   }
 
-  char *link_name = NULL;
+  char *link_name = nullptr;
   unsigned int i;
   xbt_dynar_foreach (links_to_create, i, link_name){
 
@@ -236,19 +236,19 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 
     if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_link())) {
       type_t bandwidth = PJ_type_get_or_null ("bandwidth", container->type);
-      if (bandwidth == NULL){
-        bandwidth = PJ_type_variable_new ("bandwidth", NULL, container->type);
+      if (bandwidth == nullptr){
+        bandwidth = PJ_type_variable_new ("bandwidth", nullptr, container->type);
       }
       type_t latency = PJ_type_get_or_null ("latency", container->type);
-      if (latency == NULL){
-        latency = PJ_type_variable_new ("latency", NULL, container->type);
+      if (latency == nullptr){
+        latency = PJ_type_variable_new ("latency", nullptr, container->type);
       }
       new_pajeSetVariable (0, container, bandwidth, bandwidth_value);
       new_pajeSetVariable (0, container, latency, latency_value);
     }
     if (TRACE_uncategorized()){
       type_t bandwidth_used = PJ_type_get_or_null ("bandwidth_used", container->type);
-      if (bandwidth_used == NULL){
+      if (bandwidth_used == nullptr){
         PJ_type_variable_new ("bandwidth_used", "0.5 0.5 0.5", container->type);
       }
     }
@@ -264,8 +264,8 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_speed())) {
     type_t speed = PJ_type_get_or_null ("power", container->type);
-    if (speed == NULL){
-      speed = PJ_type_variable_new ("power", NULL, container->type);
+    if (speed == nullptr){
+      speed = PJ_type_variable_new ("power", nullptr, container->type);
     }
 
     double current_speed_state;
@@ -274,14 +274,14 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
   }
   if (TRACE_uncategorized()){
     type_t speed_used = PJ_type_get_or_null ("power_used", container->type);
-    if (speed_used == NULL){
+    if (speed_used == nullptr){
       PJ_type_variable_new ("power_used", "0.5 0.5 0.5", container->type);
     }
   }
 
   if (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped()){
     type_t mpi = PJ_type_get_or_null ("MPI", container->type);
-    if (mpi == NULL){
+    if (mpi == nullptr){
       mpi = PJ_type_container_new("MPI", container->type);
       PJ_type_state_new ("MPI_STATE", mpi);
       PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
@@ -290,7 +290,7 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
 
   if (TRACE_msg_process_is_enabled()) {
     type_t msg_process = PJ_type_get_or_null ("MSG_PROCESS", container->type);
-    if (msg_process == NULL){
+    if (msg_process == nullptr){
       msg_process = PJ_type_container_new("MSG_PROCESS", container->type);
       type_t state = PJ_type_state_new ("MSG_PROCESS_STATE", msg_process);
       PJ_value_new ("suspend", "1 0 1", state);
@@ -305,7 +305,7 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
 
   if (TRACE_msg_vm_is_enabled()) {
     type_t msg_vm = PJ_type_get_or_null ("MSG_VM", container->type);
-    if (msg_vm == NULL){
+    if (msg_vm == nullptr){
       msg_vm = PJ_type_container_new("MSG_VM", container->type);
       type_t state = PJ_type_state_new ("MSG_VM_STATE", msg_vm);
       PJ_value_new ("suspend", "1 0 1", state);
@@ -329,7 +329,7 @@ void sg_instr_new_router(sg_platf_router_cbarg_t router)
 static void instr_routing_parse_end_platform ()
 {
   xbt_dynar_free(&currentContainer);
-  currentContainer = NULL;
+  currentContainer = nullptr;
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
   XBT_DEBUG ("Starting graph extraction.");
   recursiveGraphExtraction (simgrid::s4u::Engine::instance()->rootAs(), PJ_container_get_root(), filter);
@@ -369,7 +369,7 @@ static void recursiveNewVariableType (const char *new_typename, const char *colo
     snprintf (tnstr, INSTR_DEFAULT_STR_SIZE, "b%s", new_typename);
     PJ_type_variable_new (tnstr, color, root);
   }
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
@@ -387,7 +387,7 @@ static void recursiveNewUserVariableType (const char *father_type, const char *n
   if (!strcmp (root->name, father_type)){
     PJ_type_variable_new (new_typename, color, root);
   }
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
@@ -405,7 +405,7 @@ static void recursiveNewUserStateType (const char *father_type, const char *new_
   if (!strcmp (root->name, father_type)){
     PJ_type_state_new (new_typename, root);
   }
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
@@ -423,7 +423,7 @@ static void recursiveNewValueForUserStateType (const char *type_name, const char
   if (!strcmp (root->name, type_name)){
     PJ_value_new (value, color, root);
   }
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   type_t child_type;
   char *name;
   xbt_dict_foreach(root->children, cursor, name, child_type) {
@@ -448,7 +448,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
     AS_t as, container_t container)
 {
   if (!xbt_dict_is_empty(as->children())){
-    xbt_dict_cursor_t cursor = NULL;
+    xbt_dict_cursor_t cursor = nullptr;
     AS_t as_child;
     char *child_name;
     //bottom-up recursion
@@ -464,9 +464,9 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
 
 xbt_graph_t instr_routing_platform_graph (void)
 {
-  xbt_graph_t ret = xbt_graph_new_graph (0, NULL);
-  xbt_dict_t nodes = xbt_dict_new_homogeneous(NULL);
-  xbt_dict_t edges = xbt_dict_new_homogeneous(NULL);
+  xbt_graph_t ret = xbt_graph_new_graph (0, nullptr);
+  xbt_dict_t nodes = xbt_dict_new_homogeneous(nullptr);
+  xbt_dict_t edges = xbt_dict_new_homogeneous(nullptr);
   recursiveXBTGraphExtraction (ret, nodes, edges, simgrid::s4u::Engine::instance()->rootAs(), PJ_container_get_root());
   xbt_dict_free (&nodes);
   xbt_dict_free (&edges);
@@ -476,9 +476,9 @@ xbt_graph_t instr_routing_platform_graph (void)
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename)
 {
   unsigned int cursor = 0;
-  xbt_node_t node = NULL;
-  xbt_edge_t edge = NULL;
-  FILE *file = NULL;
+  xbt_node_t node = nullptr;
+  xbt_edge_t edge = nullptr;
+  FILE *file = nullptr;
 
   file = fopen(filename, "w");
   xbt_assert(file, "Failed to open %s \n", filename);

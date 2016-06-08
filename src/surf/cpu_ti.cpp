@@ -397,14 +397,14 @@ CpuTiModel::CpuTiModel() : CpuModel()
 
   modifiedCpu_ = new CpuTiList();
 
-  tiActionHeap_ = xbt_heap_new(8, NULL);
+  tiActionHeap_ = xbt_heap_new(8, nullptr);
   xbt_heap_set_update_callback(tiActionHeap_,
                                cpu_ti_action_update_index_heap);
 }
 
 CpuTiModel::~CpuTiModel()
 {
-  surf_cpu_model_pm = NULL;
+  surf_cpu_model_pm = nullptr;
   delete runningActionSetThatDoesNotNeedBeingChecked_;
   delete modifiedCpu_;
   xbt_heap_free(tiActionHeap_);
@@ -465,7 +465,7 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPs
   xbt_dynar_get_cpy(speedPerPstate, 0, &speed_.peak);
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
-  speedIntegratedTrace_ = new CpuTiTgmr(NULL, 1/*scale*/);
+  speedIntegratedTrace_ = new CpuTiTgmr(nullptr, 1/*scale*/);
 }
 
 CpuTi::~CpuTi()

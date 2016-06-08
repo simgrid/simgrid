@@ -18,7 +18,7 @@ int ROUTING_STORAGE_HOST_LEVEL = -1;
 int SURF_STORAGE_LEVEL = -1;
 xbt_lib_t storage_type_lib;
 int ROUTING_STORAGE_TYPE_LEVEL = -1; //Routing for storage_type level
-simgrid::surf::StorageModel *surf_storage_model = NULL;
+simgrid::surf::StorageModel *surf_storage_model = nullptr;
 
 namespace simgrid {
 namespace surf {
@@ -39,12 +39,12 @@ simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)> storage
 StorageModel::StorageModel()
   : Model()
 {
-  p_storageList = NULL;
+  p_storageList = nullptr;
 }
 
 StorageModel::~StorageModel(){
   lmm_system_free(maxminSystem_);
-  surf_storage_model = NULL;
+  surf_storage_model = nullptr;
   xbt_dynar_free(&p_storageList);
 }
 
@@ -60,7 +60,7 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
  , p_contentType(xbt_strdup(content_type))
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
- , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL))
+ , p_writeActions(xbt_dynar_new(sizeof(Action*),nullptr))
 {
   p_content = parseContent(content_name);
   turnOn();
@@ -75,7 +75,7 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
  , p_contentType(xbt_strdup(content_type))
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
- , p_writeActions(xbt_dynar_new(sizeof(Action*),NULL))
+ , p_writeActions(xbt_dynar_new(sizeof(Action*),nullptr))
 {
   p_content = parseContent(content_name);
   p_attach = xbt_strdup(attach);
@@ -98,14 +98,14 @@ xbt_dict_t Storage::parseContent(const char *filename)
 {
   m_usedSize = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
-    return NULL;
+    return nullptr;
 
   xbt_dict_t parse_content = xbt_dict_new_homogeneous(xbt_free_f);
 
   FILE *file =  surf_fopen(filename, "r");
   xbt_assert(file, "Cannot open file '%s' (path=%s)", filename, xbt_str_join(surf_path, ":"));
 
-  char *line = NULL;
+  char *line = nullptr;
   size_t len = 0;
   ssize_t read;
   char path[1024];
@@ -118,7 +118,7 @@ xbt_dict_t Storage::parseContent(const char *filename)
       m_usedSize += size;
       sg_size_t *psize = xbt_new(sg_size_t, 1);
       *psize = size;
-      xbt_dict_set(parse_content,path,psize,NULL);
+      xbt_dict_set(parse_content,path,psize,nullptr);
     }
   }
   free(line);
@@ -154,13 +154,13 @@ xbt_dict_t Storage::getContent()
 {
   /* For the moment this action has no cost, but in the future we could take in account access latency of the disk */
 
-  xbt_dict_t content_dict = xbt_dict_new_homogeneous(NULL);
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_t content_dict = xbt_dict_new_homogeneous(nullptr);
+  xbt_dict_cursor_t cursor = nullptr;
   char *file;
   sg_size_t *psize;
 
   xbt_dict_foreach(p_content, cursor, file, psize){
-    xbt_dict_set(content_dict,file,psize,NULL);
+    xbt_dict_set(content_dict,file,psize,nullptr);
   }
   return content_dict;
 }
@@ -183,14 +183,14 @@ sg_size_t Storage::getUsedSize(){
 StorageAction::StorageAction(Model *model, double cost, bool failed,
                              Storage *storage, e_surf_action_storage_type_t type)
 : Action(model, cost, failed)
-, m_type(type), p_storage(storage), p_file(NULL){
+, m_type(type), p_storage(storage), p_file(nullptr){
   progress = 0;
 };
 
 StorageAction::StorageAction(Model *model, double cost, bool failed, lmm_variable_t var,
                              Storage *storage, e_surf_action_storage_type_t type)
   : Action(model, cost, failed, var)
-  , m_type(type), p_storage(storage), p_file(NULL){
+  , m_type(type), p_storage(storage), p_file(nullptr){
   progress = 0;
 }
 

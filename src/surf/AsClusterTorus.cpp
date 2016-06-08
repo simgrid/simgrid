@@ -91,7 +91,7 @@ namespace simgrid {
       xbt_dynar_t dimensions = xbt_str_split(cluster->topo_parameters, ",");
 
       if (!xbt_dynar_is_empty(dimensions)) {
-        dimensions_ = xbt_dynar_new(sizeof(int), NULL);
+        dimensions_ = xbt_dynar_new(sizeof(int), nullptr);
         /* We are in a torus cluster
          * Parse attribute dimensions="dim1,dim2,dim3,...,dimN"
          * and safe it in a dynarray.

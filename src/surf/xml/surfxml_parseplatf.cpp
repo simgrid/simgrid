@@ -32,10 +32,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
  */
 
 /* This buffer is used to store the original buffer before substituting it by out own buffer. Useful for the cluster tag */
-static xbt_dynar_t surfxml_bufferstack_stack = NULL;
+static xbt_dynar_t surfxml_bufferstack_stack = nullptr;
 int surfxml_bufferstack_size = 2048;
 
-static char *old_buff = NULL;
+static char *old_buff = nullptr;
 
 XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack_ptr;
 XBT_IMPORT_NO_EXPORT(unsigned int) surfxml_buffer_stack_stack[1024];
@@ -64,12 +64,12 @@ void surfxml_bufferstack_pop(int new_one)
  * Trace related stuff
  */
 
-xbt_dict_t traces_set_list = NULL;
-XBT_PRIVATE xbt_dict_t trace_connect_list_host_avail = NULL;
-XBT_PRIVATE xbt_dict_t trace_connect_list_host_speed = NULL;
-XBT_PRIVATE xbt_dict_t trace_connect_list_link_avail = NULL;
-XBT_PRIVATE xbt_dict_t trace_connect_list_link_bw = NULL;
-XBT_PRIVATE xbt_dict_t trace_connect_list_link_lat = NULL;
+xbt_dict_t traces_set_list = nullptr;
+XBT_PRIVATE xbt_dict_t trace_connect_list_host_avail = nullptr;
+XBT_PRIVATE xbt_dict_t trace_connect_list_host_speed = nullptr;
+XBT_PRIVATE xbt_dict_t trace_connect_list_link_avail = nullptr;
+XBT_PRIVATE xbt_dict_t trace_connect_list_link_bw = nullptr;
+XBT_PRIVATE xbt_dict_t trace_connect_list_link_lat = nullptr;
 
 void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
 {
@@ -82,25 +82,25 @@ void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect)
   case SURF_TRACE_CONNECT_KIND_HOST_AVAIL:
     xbt_dict_set(trace_connect_list_host_avail,
         trace_connect->trace,
-        xbt_strdup(trace_connect->element), NULL);
+        xbt_strdup(trace_connect->element), nullptr);
     break;
   case SURF_TRACE_CONNECT_KIND_SPEED:
     xbt_dict_set(trace_connect_list_host_speed, trace_connect->trace,
-        xbt_strdup(trace_connect->element), NULL);
+        xbt_strdup(trace_connect->element), nullptr);
     break;
   case SURF_TRACE_CONNECT_KIND_LINK_AVAIL:
     xbt_dict_set(trace_connect_list_link_avail,
         trace_connect->trace,
-        xbt_strdup(trace_connect->element), NULL);
+        xbt_strdup(trace_connect->element), nullptr);
     break;
   case SURF_TRACE_CONNECT_KIND_BANDWIDTH:
     xbt_dict_set(trace_connect_list_link_bw,
         trace_connect->trace,
-        xbt_strdup(trace_connect->element), NULL);
+        xbt_strdup(trace_connect->element), nullptr);
     break;
   case SURF_TRACE_CONNECT_KIND_LATENCY:
     xbt_dict_set(trace_connect_list_link_lat, trace_connect->trace,
-        xbt_strdup(trace_connect->element), NULL);
+        xbt_strdup(trace_connect->element), nullptr);
     break;
   default:
   surf_parse_error("Cannot connect trace %s to %s: kind of trace unknown",
@@ -129,7 +129,7 @@ void parse_after_config() {
 void parse_platform_file(const char *file)
 {
 #if HAVE_LUA
-  int is_lua = (file != NULL && strlen(file) > 3 && file[strlen(file)-3] == 'l' && file[strlen(file)-2] == 'u'
+  int is_lua = (file != nullptr && strlen(file) > 3 && file[strlen(file)-3] == 'l' && file[strlen(file)-2] == 'u'
         && file[strlen(file)-1] == 'a');
 #endif
 
@@ -164,7 +164,7 @@ void parse_platform_file(const char *file)
     after_config_done = 0;
     surf_parse_open(file);
 
-    traces_set_list = xbt_dict_new_homogeneous(NULL);
+    traces_set_list = xbt_dict_new_homogeneous(nullptr);
     trace_connect_list_host_avail = xbt_dict_new_homogeneous(free);
     trace_connect_list_host_speed = xbt_dict_new_homogeneous(free);
     trace_connect_list_link_avail = xbt_dict_new_homogeneous(free);
@@ -173,13 +173,13 @@ void parse_platform_file(const char *file)
 
     /* Init my data */
     if (!surfxml_bufferstack_stack)
-      surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), NULL);
+      surfxml_bufferstack_stack = xbt_dynar_new(sizeof(char *), nullptr);
 
     /* Do the actual parsing */
     parse_status = surf_parse();
 
     /* connect all traces relative to hosts */
-    xbt_dict_cursor_t cursor = NULL;
+    xbt_dict_cursor_t cursor = nullptr;
     char *trace_name, *elm;
 
     xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {

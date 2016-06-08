@@ -30,10 +30,10 @@ extern double NOW;
 void surf_presolve(void)
 {
   double next_event_date = -1.0;
-  tmgr_trace_iterator_t event = NULL;
+  tmgr_trace_iterator_t event = nullptr;
   double value = -1.0;
-  simgrid::surf::Resource *resource = NULL;
-  simgrid::surf::Model *model = NULL;
+  simgrid::surf::Resource *resource = nullptr;
+  simgrid::surf::Model *model = nullptr;
   unsigned int iter;
 
   XBT_DEBUG ("Consume all trace events occurring before the starting time.");
@@ -59,9 +59,9 @@ double surf_solve(double max_date)
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
-  simgrid::surf::Resource *resource = NULL;
-  simgrid::surf::Model *model = NULL;
-  tmgr_trace_iterator_t event = NULL;
+  simgrid::surf::Resource *resource = nullptr;
+  simgrid::surf::Model *model = nullptr;
+  tmgr_trace_iterator_t event = nullptr;
   unsigned int iter;
 
   if (max_date > 0.0) {
@@ -76,7 +76,7 @@ double surf_solve(double max_date)
   if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
     time_delta = next_event_phy;
   }
-  if (surf_vm_model != NULL) {
+  if (surf_vm_model != nullptr) {
     XBT_DEBUG("Looking for next event in virtual models");
     double next_event_virt = surf_vm_model->next_occuring_event(NOW);
     if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
@@ -162,7 +162,7 @@ double surf_solve(double max_date)
 
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   if (model->getDoneActionSet()->empty())
-    return NULL;
+    return nullptr;
   surf_action_t res = &model->getDoneActionSet()->front();
   model->getDoneActionSet()->pop_front();
   return res;
@@ -170,7 +170,7 @@ surf_action_t surf_model_extract_done_action_set(surf_model_t model){
 
 surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
   if (model->getFailedActionSet()->empty())
-    return NULL;
+    return nullptr;
   surf_action_t res = &model->getFailedActionSet()->front();
   model->getFailedActionSet()->pop_front();
   return res;

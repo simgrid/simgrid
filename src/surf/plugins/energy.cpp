@@ -102,9 +102,9 @@ HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) :
 {
   initWattsRangeList();
 
-  if (host->properties() != NULL) {
+  if (host->properties() != nullptr) {
     char* off_power_str = (char*)xbt_dict_get_or_null(host->properties(), "watt_off");
-    if (off_power_str != NULL) {
+    if (off_power_str != nullptr) {
       char *msg = bprintf("Invalid value for property watt_off of host %s: %%s",host->name().c_str());
       watts_off = xbt_str_parse_double(off_power_str, msg);
       xbt_free(msg);
@@ -163,11 +163,11 @@ double HostEnergy::getConsumedEnergy()
 
 void HostEnergy::initWattsRangeList()
 {
-  if (host->properties() == NULL)
+  if (host->properties() == nullptr)
     return;
   char* all_power_values_str =
     (char*)xbt_dict_get_or_null(host->properties(), "watt_per_state");
-  if (all_power_values_str == NULL)
+  if (all_power_values_str == nullptr)
     return;
 
   xbt_dynar_t all_power_values = xbt_str_split(all_power_values_str, ",");
@@ -213,7 +213,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
   for(simgrid::surf::Cpu* cpu : action->cpus()) {
     const char *name = cpu->getName();
     sg_host_t sghost = sg_host_by_name(name);
-    if(sghost == NULL)
+    if(sghost == nullptr)
       continue;
     simgrid::surf::HostImpl *host = sghost->extension<simgrid::surf::HostImpl>();
     simgrid::surf::VirtualMachine *vm = dynamic_cast<simgrid::surf::VirtualMachine*>(host);

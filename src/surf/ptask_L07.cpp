@@ -39,7 +39,7 @@ HostL07Model::HostL07Model() : HostModel() {
   surf_network_model = new NetworkL07Model(this,maxminSystem_);
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 
-  routing_model_create(surf_network_model->createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, NULL));
+  routing_model_create(surf_network_model->createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, nullptr));
 }
 
 HostL07Model::~HostL07Model() {
@@ -54,9 +54,9 @@ CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
     maxminSystem_ = sys;
   }
 CpuL07Model::~CpuL07Model() {
-  surf_cpu_model_pm = NULL;
+  surf_cpu_model_pm = nullptr;
   lmm_system_free(maxminSystem_);
-  maxminSystem_ = NULL;
+  maxminSystem_ = nullptr;
 }
 NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   : NetworkModel()
@@ -66,8 +66,8 @@ NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   }
 NetworkL07Model::~NetworkL07Model()
 {
-  surf_network_model = NULL;
-  maxminSystem_ = NULL; // Avoid multi-free
+  surf_network_model = nullptr;
+  maxminSystem_ = nullptr; // Avoid multi-free
 }
 
 
@@ -147,7 +147,7 @@ void HostL07Model::updateActionsState(double /*now*/, double delta) {
       action->setState(Action::State::done);
     } else {
       /* Need to check that none of the model has failed */
-      lmm_constraint_t cnst = NULL;
+      lmm_constraint_t cnst = nullptr;
       int i = 0;
 
       while ((cnst = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i++))) {
@@ -184,8 +184,8 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
     this->p_netcardList->push_back(host_list[i]->pimpl_netcard);
 
   /* Compute the number of affected resources... */
-  if(bytes_amount != NULL) {
-    xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(NULL);
+  if(bytes_amount != nullptr) {
+    xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(nullptr);
 
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
@@ -198,7 +198,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
           latency = MAX(latency, lat);
 
           for (auto link : *route)
-            xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, NULL);
+            xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, nullptr);
           delete route;
         }
       }
@@ -229,7 +229,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
     lmm_expand(model->getMaxminSystem(), host_list[i]->pimpl_cpu->getConstraint(),
         this->getVariable(), flops_amount[i]);
 
-  if(bytes_amount != NULL) {
+  if(bytes_amount != nullptr) {
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
 
@@ -237,7 +237,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
           continue;
         std::vector<Link*> *route = new std::vector<Link*>();
 
-        routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], route, NULL);
+        routing_platf->getRouteAndLatency((*p_netcardList)[i], (*p_netcardList)[j], route, nullptr);
 
         for (auto link : *route)
           lmm_expand_add(model->getMaxminSystem(), link->getConstraint(), this->getVariable(), bytes_amount[i * host_nb + j]);
@@ -314,7 +314,7 @@ Action *CpuL07::execution_start(double size)
   flops_amount[0] = size;
 
   return static_cast<CpuL07Model*>(getModel())->p_hostModel
-    ->executeParallelTask( 1, host_list, flops_amount, NULL, -1);
+    ->executeParallelTask( 1, host_list, flops_amount, nullptr, -1);
 }
 
 Action *CpuL07::sleep(double duration)
@@ -333,8 +333,8 @@ bool CpuL07::isUsed(){
 
 /** @brief take into account changes of speed (either load or max) */
 void CpuL07::onSpeedChange() {
-  lmm_variable_t var = NULL;
-  lmm_element_t elem = NULL;
+  lmm_variable_t var = nullptr;
+  lmm_element_t elem = nullptr;
 
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), speed_.peak * speed_.scale);
     while ((var = lmm_get_var_from_cnst
@@ -403,9 +403,9 @@ void LinkL07::updateBandwidth(double value)
 
 void LinkL07::updateLatency(double value)
 {
-  lmm_variable_t var = NULL;
+  lmm_variable_t var = nullptr;
   L07Action *action;
-  lmm_element_t elem = NULL;
+  lmm_element_t elem = nullptr;
 
   m_latency.peak = value;
   while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
@@ -432,7 +432,7 @@ void L07Action::updateBound()
 
   int hostNb = p_netcardList->size();
 
-  if (p_communicationAmount != NULL) {
+  if (p_communicationAmount != nullptr) {
     for (i = 0; i < hostNb; i++) {
       for (j = 0; j < hostNb; j++) {
 
