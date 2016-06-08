@@ -91,7 +91,7 @@ public:
 
 private:
   simgrid::xbt::string name_ = "noname";
-  boost::unordered_map<std::string, Storage*> *mounts = NULL; // caching
+  boost::unordered_map<std::string, Storage*> *mounts = nullptr; // caching
 
 public:
   // FIXME: these should be protected, but it leads to many errors
