@@ -19,7 +19,7 @@ union alltypes {
   void (*fp) (void);
   char *cp;
 };
-static volatile char *handler_addr = (char *) 0xDEAD;
+static char *handler_addr = (char *) 0xDEAD;
 static ucontext_t uc_handler;
 static ucontext_t uc_main;
 void handler(void)

@@ -44,15 +44,15 @@ void SIMIX_launch_application(const char *file)
   SIMIX_init_application();
 
   surf_parse_open(file);
-  TRY {
+  try {
     parse_status = surf_parse();
     surf_parse_close();
     xbt_assert(!parse_status, "Parse error at %s:%d", file,surf_parse_lineno);
   }
-  CATCH_ANONYMOUS {
+  catch (xbt_ex& e) {
     XBT_ERROR("Unrecoverable error at %s:%d. The full exception stack follows, in case it helps you to diagnose the problem.",
         file, surf_parse_lineno);
-    RETHROW;
+    throw;
   }
 }
 

@@ -605,10 +605,8 @@ on_exception:
 // Exit from the catch blog (and do the correct exceptio cleaning)
 // before attempting to THROWF.
 #define TRANSLATE_EXCEPTIONS(...) \
-  catch(simgrid::config::missing_key_error& e) { goto on_exception; } \
-  catch(...) { goto on_missing_key; } \
-  on_missing_key: THROWF(not_found_error, 0, __VA_ARGS__); \
-  on_exception: THROWF(not_found_error, 0, __VA_ARGS__);
+  catch(simgrid::config::missing_key_error& e) { THROWF(not_found_error, 0, __VA_ARGS__); abort(); } \
+  catch(...) { THROWF(not_found_error, 0, __VA_ARGS__); abort(); }
 
 /** @brief Set the value of a variable, using the string representation of that value
  *
@@ -869,14 +867,11 @@ XBT_TEST_UNIT("use", test_config_use, "Data retrieving tests")
 
   xbt_test_add("Access to a non-existant entry");
   {
-    xbt_ex_t e;
-
-    TRY {
+    try {
       xbt_cfg_set_parse("color:blue");
-    } CATCH(e) {
+    } catch(xbt_ex& e) {
       if (e.category != not_found_error)
         xbt_test_exception(e);
-      xbt_ex_free(e);
     }
   }
   xbt_cfg_free(&simgrid_config);

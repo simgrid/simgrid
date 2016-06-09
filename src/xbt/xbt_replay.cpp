@@ -81,7 +81,7 @@ const char **xbt_replay_reader_get(xbt_replay_reader_t reader)
     xbt_dynar_free(&d);
     return xbt_replay_reader_get(reader); /* Get next line */
   }
-  return xbt_dynar_to_array(d);
+  return (const char**) xbt_dynar_to_array(d);
 }
 
 void xbt_replay_reader_free(xbt_replay_reader_t *reader)
@@ -109,7 +109,7 @@ void xbt_replay_reader_free(xbt_replay_reader_t *reader)
 void xbt_replay_action_register(const char *action_name, action_fun function)
 {
   char* lowername = str_tolower (action_name);
-  xbt_dict_set(xbt_action_funs, lowername, function, NULL);
+  xbt_dict_set(xbt_action_funs, lowername, (void*) function, NULL);
   xbt_free(lowername);
 }
 
@@ -147,18 +147,17 @@ void _xbt_replay_action_exit(void)
 int xbt_replay_action_runner(int argc, char *argv[])
 {
   int i;
-  xbt_ex_t e;
   if (xbt_action_fp) {              // A unique trace file
     char **evt;
     while ((evt = action_get_action(argv[0]))) {
       char* lowername = str_tolower (evt[1]);
       action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername);
       xbt_free(lowername);
-      TRY{
+      try {
         function((const char **)evt);
-      } CATCH(e) {
-        free(evt);
-        xbt_die("Replay error :\n %s", e.msg);
+      }
+      catch(xbt_ex& e) {
+        xbt_die("Replay error :\n %s", e.what());
       }
       for (i=0;evt[i]!= NULL;i++)
         free(evt[i]);
@@ -176,11 +175,11 @@ int xbt_replay_action_runner(int argc, char *argv[])
         char* lowername = str_tolower (evt[1]);
         action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername);
         xbt_free(lowername);
-        TRY{
+        try {
           function(evt);
-        } CATCH(e) {
+        } catch(xbt_ex& e) {
           free(evt);
-          xbt_die("Replay error on line %d of file %s :\n %s" , reader->linenum,reader->filename, e.msg);
+          xbt_die("Replay error on line %d of file %s :\n %s" , reader->linenum,reader->filename, e.what());
         }
       } else {
         XBT_WARN("%s:%d: Ignore trace element not for me", reader->filename, reader->linenum);
@@ -197,7 +196,7 @@ static char **action_get_action(char *name)
   xbt_dynar_t evt = NULL;
   char *evtname = NULL;
 
-  xbt_dynar_t myqueue = xbt_dict_get_or_null(xbt_action_queues, name);
+  xbt_dynar_t myqueue = (xbt_dynar_t) xbt_dict_get_or_null(xbt_action_queues, name);
   if (myqueue == NULL || xbt_dynar_is_empty(myqueue)) {      // nothing stored for me. Read the file further
     if (xbt_action_fp == NULL) {    // File closed now. There's nothing more to read. I'm out of here
       goto todo_done;
@@ -219,11 +218,11 @@ static char **action_get_action(char *name)
       // if it's for me, I'm done
       evtname = xbt_dynar_get_as(evt, 0, char *);
       if (!strcasecmp(name, evtname)) {
-        return xbt_dynar_to_array(evt);
+        return (char**) xbt_dynar_to_array(evt);
       } else {
         // Else, I have to store it for the relevant colleague
         xbt_dynar_t otherqueue =
-            xbt_dict_get_or_null(xbt_action_queues, evtname);
+            (xbt_dynar_t) xbt_dict_get_or_null(xbt_action_queues, evtname);
         if (otherqueue == NULL) {       // Damn. Create the queue of that guy
           otherqueue = xbt_dynar_new(sizeof(xbt_dynar_t), xbt_dynar_free_voidp);
           xbt_dict_set(xbt_action_queues, evtname, otherqueue, NULL);
@@ -235,7 +234,7 @@ static char **action_get_action(char *name)
   } else {
     // Get something from my queue and return it
     xbt_dynar_shift(myqueue, &evt);
-    return xbt_dynar_to_array(evt);
+    return (char**) xbt_dynar_to_array(evt);
   }
 
   // I did all my actions for me in the file (either I closed the file, or a colleague did)

@@ -157,13 +157,13 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
         break;
       case 'b':                 /* backtrace; called %throwable in LOG4J */
       case 'B':         /* short backtrace; called %throwable{short} in LOG4J */
-#if HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
+// TODO, backtrace
+#if 0 && HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
         {
-          xbt_ex_t e;
+          xbt_ex_t e("");
 
           e.used = backtrace((void **) e.bt, XBT_BACKTRACE_SIZE);
           e.bt_strings = NULL;
-          e.msg = NULL;
           xbt_ex_setup_backtrace(&e);
           if (*q == 'B') {
             show_string(e.bt_strings[1] + 8);
@@ -178,7 +178,6 @@ static int xbt_log_layout_format_doit(xbt_log_layout_t l, xbt_log_event_t ev, co
             show_string(buff->data);
             xbt_strbuff_free(buff);
           }
-          xbt_ex_free(e);
         }
 #else
         show_string("(no backtrace on this arch)");

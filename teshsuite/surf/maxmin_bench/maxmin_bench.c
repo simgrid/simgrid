@@ -129,7 +129,7 @@ int main(int argc, char **argv)
   int i;
 
   if(argc<3) {
-    printf("Syntax: <small|medium|big|huge> <count> [test|debug|perf]\n");
+    fprintf(stderr, "Syntax: <small|medium|big|huge> <count> [test|debug|perf]\n");
     return -1;
   }
 
@@ -143,7 +143,7 @@ int main(int argc, char **argv)
   else if(!strcmp(argv[1],"huge"))
       testclass=3;
   else {
-    printf("Unknown class \"%s\", aborting!\n",argv[1]);
+    fprintf(stderr, "Unknown class \"%s\", aborting!\n",argv[1]);
     return -2;
   }
 
@@ -181,7 +181,7 @@ int main(int argc, char **argv)
 
   for(i=0;i<testcount;i++){
     seedx=i+1;
-    printf("Starting %i: (%i)\n",i,myrand()%1000);
+    fprintf(stderr, "Starting %i: (%i)\n",i,myrand()%1000);
     test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,mode);
     acc_date+=date;
     acc_date2+=date*date;
@@ -190,10 +190,11 @@ int main(int argc, char **argv)
   float mean_date= acc_date/(float)testcount;  
   float stdev_date= sqrt(acc_date2/(float)testcount-mean_date*mean_date);
 
-  printf("%ix One shot execution time for a total of %d constraints, "
+  fprintf(stderr,
+         "%ix One shot execution time for a total of %d constraints, "
          "%d variables with %d active constraint each, concurrency in [%i,%i] and max concurrency share %i\n",
          testcount,nb_cnst, nb_var, nb_elem, (1<<pw_base_limit), (1<<pw_base_limit)+(1<<pw_max_limit), max_share);
   if(mode==3)
-    printf("Execution time: %g +- %g  microseconds \n",mean_date, stdev_date);
+    fprintf(stderr, "Execution time: %g +- %g  microseconds \n",mean_date, stdev_date);
   return 0;
 }

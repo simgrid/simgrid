@@ -88,6 +88,9 @@ fi
 mkdir $WORKSPACE/build
 cd $WORKSPACE/build
 
+# This is for Windows:
+PATH="$WORKSPACE/build/lib:$PATH"
+
 if test "$(uname -o)" != "Msys"; then
   echo "XX"
   echo "XX Build the archive out of the tree"

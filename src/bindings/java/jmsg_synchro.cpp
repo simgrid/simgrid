@@ -29,15 +29,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_init(JNIEnv * env, jobject obj
 }
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Mutex_acquire(JNIEnv * env, jobject obj) {
-  xbt_mutex_t mutex;
-
-  mutex = (xbt_mutex_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Mutex_bind);
-  xbt_ex_t e;
-  TRY {
+  xbt_mutex_t mutex = (xbt_mutex_t) (uintptr_t) env->GetLongField(obj, jsyncro_field_Mutex_bind);
+  try {
     xbt_mutex_acquire(mutex);
   }
-  CATCH(e) {
-    xbt_ex_free(e);
+  catch(xbt_ex& e) {
+    // Nothing to do
   }
 }
 

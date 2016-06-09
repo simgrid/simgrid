@@ -162,7 +162,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       // Update the disk usage
       // Update the file size
       // For each action of type write
-      volatile double current_progress =
+      double current_progress =
           delta * lmm_variable_getvalue(action->getVariable());
       long int incr = current_progress;
 

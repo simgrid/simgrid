@@ -84,11 +84,18 @@ XBT_PUBLIC(void) SIMIX_clean(void);
 
 /******************************** Exceptions *********************************/
 /** @brief Ask to the provided simix process to raise the provided exception */
-#define SMX_EXCEPTION(issuer, cat, val, msg)                            \
-  if (1) {                                                              \
-    smx_process_t _smx_throw_issuer = (issuer); /* evaluate only once */\
-    THROW_PREPARE(_smx_throw_issuer->running_ctx, (cat), (val), xbt_strdup(msg)); \
-    _smx_throw_issuer->doexception = 1;                                 \
+#define SMX_EXCEPTION(issuer, cat, val, msg) \
+  if (1) { \
+  smx_process_t _smx_throw_issuer = (issuer); /* evaluate only once */ \
+  xbt_ex e(msg); \
+  e.category = cat; \
+  e.value = val; \
+  e.procname = xbt_procname(); \
+  e.pid = xbt_getpid(); \
+  e.file = __FILE__; \
+  e.line = __LINE__; \
+  e.func = __func__; \
+  _smx_throw_issuer->exception = std::make_exception_ptr(e); \
   } else ((void)0)
 
 /* ******************************** File ************************************ */

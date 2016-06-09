@@ -10,38 +10,24 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example")
 
 static int master(int argc, char *argv[])
 {
-  xbt_ex_t e;
-  TRY {
-    msg_host_t jupiter = MSG_host_by_name("Jupiter");
-    XBT_INFO("Master waiting");
-    MSG_process_sleep(1);
+  msg_host_t jupiter = MSG_host_by_name("Jupiter");
+  XBT_INFO("Master waiting");
+  MSG_process_sleep(1);
 
-    XBT_INFO("Turning off the slave host");
-    MSG_host_off(jupiter);
-    XBT_INFO("Master has finished");
-  }
-  CATCH(e) {
-    xbt_die("Exception caught in the master");
-    return 1;
-  }
+  XBT_INFO("Turning off the slave host");
+  MSG_host_off(jupiter);
+  XBT_INFO("Master has finished");
+
   return 0;
 }
 
 static int slave(int argc, char *argv[])
 {
-  xbt_ex_t e;
-  TRY {
-    XBT_INFO("Slave waiting");
-    // TODO, This should really be MSG_HOST_FAILURE
-    MSG_process_sleep(5);
-    XBT_ERROR("Slave should be off already.");
-    return 1;
-  }
-  CATCH(e) {
-    XBT_ERROR("Exception caught in the slave");
-    return 1;
-  }
-  return 0;
+  XBT_INFO("Slave waiting");
+  // TODO, This should really be MSG_HOST_FAILURE
+  MSG_process_sleep(5);
+  XBT_ERROR("Slave should be off already.");
+  return 1;
 }
 
 int main(int argc, char *argv[])

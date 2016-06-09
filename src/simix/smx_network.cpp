@@ -665,12 +665,22 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
     }
 
     /* if there is an exception during a waitany or a testany, indicate the position of the failed communication */
-    if (simcall->issuer->doexception) {
-      if (simcall->call == SIMCALL_COMM_WAITANY) {
-        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
+    if (simcall->issuer->exception) {
+      // In order to modify the exception we have to rethrow it:
+      try {
+        std::rethrow_exception(simcall->issuer->exception);
       }
-      else if (simcall->call == SIMCALL_COMM_TESTANY) {
-        simcall->issuer->running_ctx->exception.value = xbt_dynar_search(simcall_comm_testany__get__comms(simcall), &synchro);
+      catch(xbt_ex& e) {
+        if (simcall->call == SIMCALL_COMM_WAITANY) {
+          e.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
+        }
+        else if (simcall->call == SIMCALL_COMM_TESTANY) {
+          e.value = xbt_dynar_search(simcall_comm_testany__get__comms(simcall), &synchro);
+        }
+        simcall->issuer->exception = std::make_exception_ptr(e);
+      }
+      catch(...) {
+        // Nothing to do
       }
     }
 

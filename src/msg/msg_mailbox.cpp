@@ -90,7 +90,6 @@ msg_error_t MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t *task, ms
 msg_error_t MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t * task, msg_host_t host, double timeout,
                                              double rate)
 {
-  xbt_ex_t e;
   msg_error_t ret = MSG_OK;
   /* We no longer support getting a task from a specific host */
   if (host)
@@ -106,14 +105,12 @@ msg_error_t MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *
     XBT_WARN("Asked to write the received task in a non empty struct -- proceeding.");
 
   /* Try to receive it by calling SIMIX network layer */
-  TRY {
+  try {
     simcall_comm_recv(MSG_process_self(), mailbox, task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
     XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
-    if (msg_global->debug_multiple_use && (*task)->simdata->isused!=0)
-      xbt_ex_free(*(xbt_ex_t*)(*task)->simdata->isused);
-    (*task)->simdata->isused = 0;
+    (*task)->simdata->setNotUsed();
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
       ret = MSG_HOST_FAILURE;
@@ -128,9 +125,8 @@ msg_error_t MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *
       ret = MSG_HOST_FAILURE;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
   }
 
   if (ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {

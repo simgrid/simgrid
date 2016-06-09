@@ -515,7 +515,7 @@ int smpi_comm_attr_delete(MPI_Comm comm, int keyval){
   if(elem==nullptr)
     return MPI_ERR_ARG;
   if(elem->delete_fn!=MPI_NULL_DELETE_FN){
-    void * value;
+    void* value = nullptr;
     int flag;
     if(smpi_comm_attr_get(comm, keyval, &value, &flag)==MPI_SUCCESS){
       int ret = elem->delete_fn(comm, keyval, value, &flag);
@@ -535,18 +535,17 @@ int smpi_comm_attr_get(MPI_Comm comm, int keyval, void* attr_value, int* flag){
     static_cast<smpi_comm_key_elem>(xbt_dict_get_or_null_ext(smpi_comm_keyvals, reinterpret_cast<const char*>(&keyval), sizeof(int)));
   if(elem==nullptr)
     return MPI_ERR_ARG;
-  xbt_ex_t ex;
   if(comm->attributes==nullptr){
     *flag=0;
     return MPI_SUCCESS;
   }
-  TRY {
+  try {
     *static_cast<void**>(attr_value) = xbt_dict_get_ext(comm->attributes, 
                             reinterpret_cast<const char*>(&keyval), sizeof(int));
     *flag=1;
-  } CATCH(ex) {
+  }
+  catch (xbt_ex& ex) {
     *flag=0;
-    xbt_ex_free(ex);
   }
   return MPI_SUCCESS;
 }
@@ -559,7 +558,7 @@ int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value){
   if(elem==nullptr)
     return MPI_ERR_ARG;
   int flag;
-  void* value;
+  void* value = nullptr;
   smpi_comm_attr_get(comm, keyval, &value, &flag);
   if(flag!=0 && elem->delete_fn!=MPI_NULL_DELETE_FN){
     int ret = elem->delete_fn(comm, keyval, value, &flag);

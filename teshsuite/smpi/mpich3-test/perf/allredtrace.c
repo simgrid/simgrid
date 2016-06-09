@@ -143,7 +143,7 @@ void SetupDelay( double usec )
     /* Should coordinate with the other processes - take the max? */
 }
 
-volatile double delayCounter = 0;
+double delayCounter = 0;
 void Delay( int count )
 {
     int i;

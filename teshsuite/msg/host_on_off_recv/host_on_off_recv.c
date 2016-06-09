@@ -12,57 +12,43 @@ static const char* mailbox = "comm";
 
 static int master(int argc, char *argv[])
 {
-  xbt_ex_t e;
-  TRY {
-    msg_host_t jupiter = MSG_host_by_name("Jupiter");
-    
-    XBT_INFO("Master starting");
-    MSG_process_sleep(0.5);
+  msg_host_t jupiter = MSG_host_by_name("Jupiter");
 
-    msg_comm_t comm = NULL;
-    {
-      msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
-      comm = MSG_task_isend(task, mailbox);
-    }
+  XBT_INFO("Master starting");
+  MSG_process_sleep(0.5);
 
-    MSG_process_sleep(0.5);
-
-    XBT_INFO("Turning off the slave host");
-    MSG_host_off(jupiter);
-
-    if (comm) {
-      MSG_comm_wait(comm, -1);
-      MSG_comm_destroy(comm);
-    }
-    XBT_INFO("Master has finished");
+  msg_comm_t comm = NULL;
+  {
+    msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
+    comm = MSG_task_isend(task, mailbox);
   }
-  CATCH(e) {
-    xbt_die("Exception caught in the master");
-    return 1;
+
+  MSG_process_sleep(0.5);
+
+  XBT_INFO("Turning off the slave host");
+  MSG_host_off(jupiter);
+
+  if (comm) {
+    MSG_comm_wait(comm, -1);
+    MSG_comm_destroy(comm);
   }
+  XBT_INFO("Master has finished");
+
   return 0;
 }
 
 static int slave(int argc, char *argv[])
 {
-  xbt_ex_t e;
-  TRY {
-    XBT_INFO("Slave receiving");
-    msg_task_t task = NULL;
-    msg_error_t error = MSG_task_receive(&(task), mailbox);
-    if (error) {
-      XBT_ERROR("Error while receiving message");
-      return 1;
-    }
+  XBT_INFO("Slave receiving");
+  msg_task_t task = NULL;
+  msg_error_t error = MSG_task_receive(&(task), mailbox);
+  if (error) {
+    XBT_ERROR("Error while receiving message");
+    return 1;
+  }
 
-    XBT_ERROR("Slave should be off already.");
-    return 1;
-  }
-  CATCH(e) {
-    XBT_ERROR("Exception caught in the slave");
-    return 1;
-  }
-  return 0;
+  XBT_ERROR("Slave should be off already.");
+  return 1;
 }
 
 int main(int argc, char *argv[])

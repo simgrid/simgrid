@@ -274,11 +274,11 @@ JNICALL Java_org_simgrid_msg_Process_setAutoRestart (JNIEnv *env, jobject jproce
     return;
   }
 
-  TRY {
+  try {
     MSG_process_auto_restart_set(process,auto_restart);
   }
-  CATCH (e) {
-    xbt_ex_free(e);
+  catch (xbt_ex& e) {
+    // Nothing to do
   }
 }
 
@@ -291,11 +291,11 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_restart (JNIEnv *env, jobjec
     return;
   }
 
-  TRY {
+  try {
     MSG_process_restart(process);
   }
-  CATCH (e) {
-    xbt_ex_free(e);
+  catch (xbt_ex& e) {
+    // Nothing to do
   }
 
 }

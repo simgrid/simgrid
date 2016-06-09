@@ -19,6 +19,20 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)");
 
+void simdata_task::reportMultipleUse() const
+{
+  if (msg_global->debug_multiple_use){
+    XBT_ERROR("This task is already used in there:");
+    // TODO, backtrace
+    XBT_ERROR("<missing backtrace>");
+    XBT_ERROR("And you try to reuse it from here:");
+    xbt_backtrace_display_current();
+  } else {
+    xbt_die("This task is still being used somewhere else. You cannot send it now. Go fix your code!"
+             "(use --cfg=msg/debug-multiple-use:on to get the backtrace of the other process)");
+  }
+}
+
 /********************************* Task **************************************/
 /** \ingroup m_task_management
  * \brief Creates a new #msg_task_t.
@@ -37,7 +51,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_task, msg, "Logging specific to MSG (task)")
 msg_task_t MSG_task_create(const char *name, double flop_amount, double message_size, void *data)
 {
   msg_task_t task = xbt_new(s_msg_task_t, 1);
-  simdata_task_t simdata = xbt_new(s_simdata_task_t, 1);
+  simdata_task_t simdata = new s_simdata_task_t();
   task->simdata = simdata;
 
   /* Task structure */
@@ -206,16 +220,8 @@ msg_error_t MSG_task_destroy(msg_task_t task)
 
   xbt_free(task->name);
 
-  if (task->simdata->compute)
-    task->simdata->compute->unref();
-
-  /* parallel tasks only */
-  xbt_free(task->simdata->host_list);
-
-  xbt_dict_free(&task->simdata->affinity_mask_db);
-
   /* free main structures */
-  xbt_free(task->simdata);
+  delete task->simdata;
   xbt_free(task);
 
   return MSG_OK;
@@ -235,9 +241,7 @@ msg_error_t MSG_task_cancel(msg_task_t task)
   else if (task->simdata->comm) {
     simdata_task_t simdata = task->simdata;
     simcall_comm_cancel(simdata->comm);
-    if (msg_global->debug_multiple_use && simdata->isused!=0)
-      xbt_ex_free(*(xbt_ex_t*)simdata->isused);
-    simdata->isused = 0;
+    simdata->setNotUsed();
   }
   return MSG_OK;
 }

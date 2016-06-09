@@ -8,6 +8,7 @@
 
 #include <string.h>
 #include <stdio.h>
+#include "xbt/dict.h"
 #include "xbt/ex.h"
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
@@ -96,7 +97,7 @@ void xbt_dict_free(xbt_dict_t * dict)
 }
 
 /** Returns the amount of elements in the dict */
-inline unsigned int xbt_dict_size(xbt_dict_t dict)
+unsigned int xbt_dict_size(xbt_dict_t dict)
 {
   return (dict ? (unsigned int) dict->count : (unsigned int) 0);
 }
@@ -104,9 +105,8 @@ inline unsigned int xbt_dict_size(xbt_dict_t dict)
 /* Expend the size of the dict */
 static void xbt_dict_rehash(xbt_dict_t dict)
 {
-  const int oldsize = dict->table_size + 1;
-  int newsize = oldsize * 2;
-  int i;
+  const unsigned oldsize = dict->table_size + 1;
+  unsigned newsize = oldsize * 2;
   xbt_dictelm_t *currcell;
   xbt_dictelm_t *twincell;
   xbt_dictelm_t bucklet;
@@ -118,7 +118,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   dict->table = currcell;
   XBT_DEBUG("REHASH (%d->%d)", oldsize, newsize);
 
-  for (i = 0; i < oldsize; i++, currcell++) {
+  for (unsigned i = 0; i < oldsize; i++, currcell++) {
     if (!*currcell)             /* empty cell */
       continue;
     twincell = currcell + oldsize;
@@ -155,7 +155,7 @@ static void xbt_dict_rehash(xbt_dict_t dict)
  * Set the \a data in the structure under the \a key, which can be any kind of data, as long as its length is provided
  * in \a key_len.
  */
-inline void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data, void_f_pvoid_t free_ctn)
+void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data, void_f_pvoid_t free_ctn)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
 
@@ -201,7 +201,7 @@ inline void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void
  *
  * set the \a data in the structure under the \a key, which is anull terminated string.
  */
-inline void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t free_ctn)
+void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pvoid_t free_ctn)
 {
   xbt_dict_set_ext(dict, key, strlen(key), data, free_ctn);
 }
@@ -216,7 +216,7 @@ inline void xbt_dict_set(xbt_dict_t dict, const char *key, void *data, void_f_pv
  *
  * Search the given \a key. Throws not_found_error when not found.
  */
-inline void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
+void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
@@ -283,7 +283,7 @@ char *xbt_dict_get_elm_key(xbt_dictelm_t elm)
  * Search the given \a key. Throws not_found_error when not found.
  * Check xbt_dict_get_or_null() for a version returning NULL without exception when not found.
  */
-inline void *xbt_dict_get(xbt_dict_t dict, const char *key)
+void *xbt_dict_get(xbt_dict_t dict, const char *key)
 {
   return xbt_dict_get_elm(dict, key)->content;
 }
@@ -298,7 +298,7 @@ inline void *xbt_dict_get(xbt_dict_t dict, const char *key)
  * Search the given \a key. Throws not_found_error when not found.
  * Check xbt_dict_get_or_null() for a version returning NULL without exception when not found.
  */
-inline xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
+xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 {
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
@@ -311,7 +311,7 @@ inline xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 /**
  * \brief like xbt_dict_get(), but returning NULL when not found
  */
-inline void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
+void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 {
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
@@ -324,7 +324,7 @@ inline void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 /**
  * \brief like xbt_dict_get_elm(), but returning NULL when not found
  */
-inline xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
+xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
 {
   unsigned int hash_code = xbt_str_hash(key);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
@@ -343,7 +343,7 @@ inline xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
  *
  * Remove the entry associated with the given \a key (throws not_found)
  */
-inline void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
+void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t previous = NULL;
@@ -379,7 +379,7 @@ inline void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
  *
  * Remove the entry associated with the given \a key
  */
-inline void xbt_dict_remove(xbt_dict_t dict, const char *key)
+void xbt_dict_remove(xbt_dict_t dict, const char *key)
 {
   xbt_dict_remove_ext(dict, key, strlen(key));
 }
@@ -409,7 +409,7 @@ void xbt_dict_reset(xbt_dict_t dict)
  * \brief Return the number of elements in the dict.
  * \param dict a dictionary
  */
-inline int xbt_dict_length(xbt_dict_t dict)
+int xbt_dict_length(xbt_dict_t dict)
 {
   return dict->count;
 }
@@ -417,13 +417,13 @@ inline int xbt_dict_length(xbt_dict_t dict)
 /** @brief function to be used in xbt_dict_dump as long as the stored values are strings */
 void xbt_dict_dump_output_string(void *s)
 {
-  fputs(s, stdout);
+  fputs((char*) s, stdout);
 }
 
 /**
  * \brief test if the dict is empty or not
  */
-inline int xbt_dict_is_empty(xbt_dict_t dict)
+int xbt_dict_is_empty(xbt_dict_t dict)
 {
   return !dict || (xbt_dict_length(dict) == 0);
 }
@@ -572,6 +572,7 @@ void xbt_dict_postexit(void)
 }
 
 #ifdef SIMGRID_TEST
+#include <time.h>
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "src/internal_config.h"
@@ -618,10 +619,8 @@ static void fill(xbt_dict_t * head, int homogeneous)
 
 static void search_ext(xbt_dict_t head, const char *key, const char *data)
 {
-  char *found;
-
   xbt_test_add("Search %s", key);
-  found = xbt_dict_get(head, key);
+  char *found = (char*) xbt_dict_get(head, key);
   xbt_test_log("Found %s", found);
   if (data) {
     xbt_test_assert(found, "data do not match expectations: found NULL while searching for %s", data);
@@ -665,17 +664,15 @@ static void traverse(xbt_dict_t head)
 static void search_not_found(xbt_dict_t head, const char *data)
 {
   int ok = 0;
-  xbt_ex_t e;
-
   xbt_test_add("Search %s (expected not to be found)", data);
 
-  TRY {
-    data = xbt_dict_get(head, data);
+  try {
+    data = (const char*) xbt_dict_get(head, data);
     THROWF(unknown_error, 0, "Found something which shouldn't be there (%s)", data);
-  } CATCH(e) {
+  }
+  catch(xbt_ex& e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
-    xbt_ex_free(e);
     ok = 1;
   }
   xbt_test_assert(ok, "Exception not raised");
@@ -731,12 +728,12 @@ static void basic_test(int homogeneous)
   xbt_test_add("Traversal and search the empty dictionary");
   head = homogeneous ? xbt_dict_new_homogeneous(&free) : xbt_dict_new();
   traverse(head);
-  TRY {
+  try {
     debuged_remove(head, "12346");
-  } CATCH(e) {
+  }
+  catch(xbt_ex& e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
-    xbt_ex_free(e);
   }
   xbt_dict_free(&head);
 
@@ -781,7 +778,7 @@ static void basic_test(int homogeneous)
 
   /* RETRIEVE */
   xbt_test_add("Search 123");
-  data = xbt_dict_get(head, "123");
+  data = (char*) xbt_dict_get(head, "123");
   xbt_test_assert(data);
   xbt_test_assert(!strcmp("123", data));
 
@@ -824,12 +821,12 @@ static void remove_test(int homogeneous)
   fill(&head, homogeneous);
   count(head, 7);
   xbt_test_add("Remove non existing data");
-  TRY {
+  try {
     debuged_remove(head, "Does not exist");
-  } CATCH(e) {
+  }
+  catch(xbt_ex& e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
-    xbt_ex_free(e);
   }
   traverse(head);
 
@@ -849,12 +846,12 @@ static void remove_test(int homogeneous)
   debuged_remove(head, "123456");
   traverse(head);
   count(head, 3);
-  TRY {
+  try {
     debuged_remove(head, "12346");
-  } CATCH(e) {
+  }
+  catch(xbt_ex& e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
-    xbt_ex_free(e);
     traverse(head);
   }
   debuged_remove(head, "1234");
@@ -863,12 +860,12 @@ static void remove_test(int homogeneous)
   traverse(head);
   debuged_remove(head, "123");
   traverse(head);
-  TRY {
+  try {
     debuged_remove(head, "12346");
-  } CATCH(e) {
+  }
+  catch(xbt_ex& e) {
     if (e.category != not_found_error)
       xbt_test_exception(e);
-    xbt_ex_free(e);
   }
   traverse(head);
 
@@ -954,18 +951,18 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j = 0; j < 1000; j++) {
       char *data = NULL;
-      key = xbt_malloc(SIZEOFKEY);
+      key = (char*) xbt_malloc(SIZEOFKEY);
 
       do {
         for (k = 0; k < SIZEOFKEY - 1; k++)
           key[k] = rand() % ('z' - 'a') + 'a';
         key[k] = '\0';
         /*      printf("[%d %s]\n",j,key); */
-        data = xbt_dict_get_or_null(head, key);
+        data = (char*) xbt_dict_get_or_null(head, key);
       } while (data != NULL);
 
       xbt_dict_set(head, key, key, &free);
-      data = xbt_dict_get(head, key);
+      data = (char*) xbt_dict_get(head, key);
       xbt_test_assert(!strcmp(key, data), "Retrieved value (%s) != Injected value (%s)", key, data);
 
       count(head, j + 1);
@@ -980,7 +977,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_add("Fill %d elements, with keys being the number of element", NB_ELM);
   for (j = 0; j < NB_ELM; j++) {
     /* if (!(j%1000)) { printf("."); fflush(stdout); } */
-    key = xbt_malloc(10);
+    key = (char*) xbt_malloc(10);
 
     snprintf(key,10, "%d", j);
     xbt_dict_set(head, key, key, &free);
@@ -992,7 +989,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   xbt_test_log("There is %d elements", i);
 
   xbt_test_add("Search my %d elements 20 times", NB_ELM);
-  key = xbt_malloc(10);
+  key = (char*) xbt_malloc(10);
   for (i = 0; i < 20; i++) {
     void *data;
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
@@ -1007,7 +1004,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
   free(key);
 
   xbt_test_add("Remove my %d elements", NB_ELM);
-  key = xbt_malloc(10);
+  key = (char*) xbt_malloc(10);
   for (j = 0; j < NB_ELM; j++) {
     /* if (!(j%10000)) printf("."); fflush(stdout); */
     snprintf(key,10, "%d", j);
@@ -1029,12 +1026,12 @@ XBT_TEST_UNIT("ext", test_dict_int, "Test dictionnary with int keys")
   int i;
   for (i = 0; i < count; ++i)
     xbt_dict_set_ext(dict, (char*) &i, sizeof(i), (void*) (intptr_t) i, NULL);
-  xbt_test_assert(xbt_dict_size(dict) == count, "Bad number of elements in the dictionnary");
+  xbt_test_assert(xbt_dict_size(dict) == (unsigned) count, "Bad number of elements in the dictionnary");
 
   xbt_test_add("Check elements");
   for (i = 0; i < count; ++i) {
     int res = (int) (intptr_t) xbt_dict_get_ext(dict, (char*) &i, sizeof(i));
-    xbt_test_assert(xbt_dict_size(dict) == count, "Unexpected value at index %i, expected %i but was %i", i, i, res);
+    xbt_test_assert(xbt_dict_size(dict) == (unsigned) count, "Unexpected value at index %i, expected %i but was %i", i, i, res);
   }
 
   xbt_test_add("Free the array");

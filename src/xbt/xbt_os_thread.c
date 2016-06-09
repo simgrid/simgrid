@@ -57,7 +57,6 @@ typedef struct xbt_os_thread_ {
   char *name;
   void *param;
   pvoid_f_pvoid_t start_routine;
-  xbt_running_ctx_t *running_ctx;
   void *extra_data;
 } s_xbt_os_thread_t;
 static xbt_os_thread_t main_thread = NULL;
@@ -75,16 +74,8 @@ static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
 {
   if (thread == main_thread)    /* just killed main thread */
     main_thread = NULL;
-
-  free(thread->running_ctx);
   free(thread->name);
   free(thread);
-}
-
-/* callback: context fetching */
-static xbt_running_ctx_t *_os_thread_get_running_ctx(void)
-{
-  return xbt_os_thread_self()->running_ctx;
 }
 
 /* callback: termination */
@@ -109,16 +100,11 @@ void xbt_os_thread_mod_preinit(void)
   main_thread->name = (char *) "main";
   main_thread->param = NULL;
   main_thread->start_routine = NULL;
-  main_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
   main_thread->extra_data = NULL;
-  XBT_RUNNING_CTX_INITIALIZE(main_thread->running_ctx);
 
   if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
     THROWF(system_error, errcode,
            "Impossible to set the SimGrid identity descriptor to the main thread (pthread_setspecific failed)");
-
-  __xbt_running_ctx_fetch = _os_thread_get_running_ctx;
-  __xbt_ex_terminate = _os_thread_ex_terminate;
 
   pthread_attr_init(&thread_attr);
 
@@ -137,17 +123,12 @@ void xbt_os_thread_mod_postexit(void)
 
   //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
   //     THROWF(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
-  free(main_thread->running_ctx);
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;
 #if !HAVE_SEM_INIT
   xbt_os_mutex_destroy(next_sem_ID_lock);
 #endif
-
-  /* Restore the default exception setup */
-  __xbt_running_ctx_fetch = &__xbt_ex_ctx_default;
-  __xbt_ex_terminate = &__xbt_ex_terminate_default;
 }
 
 /** Calls pthread_atfork() if present, and raise an exception otherwise.
@@ -183,8 +164,6 @@ xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_ro
   res_thread->name = xbt_strdup(name);
   res_thread->start_routine = start_routine;
   res_thread->param = param;
-  res_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
-  XBT_RUNNING_CTX_INITIALIZE(res_thread->running_ctx);
   res_thread->extra_data = extra_data;
   
   int errcode = pthread_create(&(res_thread->t), &thread_attr, wrapper_start_routine, res_thread);

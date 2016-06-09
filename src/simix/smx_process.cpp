@@ -126,17 +126,10 @@ void SIMIX_process_empty_trash(void)
 
   while ((process = (smx_process_t) xbt_swag_extract(simix_global->process_to_destroy))) {
     XBT_DEBUG("Getting rid of %p",process);
-
     delete process->context;
-
-    /* Free the exception allocated at creation time */
-    free(process->running_ctx);
     xbt_dict_free(&process->properties);
-
     xbt_fifo_free(process->comms);
-
     xbt_dynar_free(&process->on_exit);
-
     delete process;
   }
 }
@@ -153,8 +146,6 @@ void create_maestro(std::function<void()> code)
   maestro->ppid = -1;
   maestro->name = "";
   maestro->data = nullptr;
-  maestro->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
-  XBT_RUNNING_CTX_INITIALIZE(maestro->running_ctx);
 
   if (!code) {
     maestro->context = SIMIX_context_new(std::function<void()>(), nullptr, maestro);
@@ -273,13 +264,6 @@ smx_process_t SIMIX_process_create(
       std::move(code),
       simix_global->cleanup_process_function, process);
 
-    process->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
-    XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);
-
-    if(MC_is_active()){
-      MC_ignore_heap(process->running_ctx, sizeof(*process->running_ctx));
-    }
-
     /* Add properties */
     process->properties = properties;
 
@@ -363,13 +347,6 @@ smx_process_t SIMIX_process_attach(
   process->context = simix_global->context_factory->attach(
     simix_global->cleanup_process_function, process);
 
-  process->running_ctx = (xbt_running_ctx_t*) xbt_malloc0(sizeof(xbt_running_ctx_t));
-  XBT_RUNNING_CTX_INITIALIZE(process->running_ctx);
-
-  if(MC_is_active()){
-    MC_ignore_heap(process->running_ctx, sizeof(*process->running_ctx));
-  }
-
   /* Add properties */
   process->properties = properties;
 
@@ -450,7 +427,7 @@ void SIMIX_process_kill(smx_process_t process, smx_process_t issuer) {
   process->context->iwannadie = 1;
   process->blocked = 0;
   process->suspended = 0;
-  process->doexception = 0;
+  process->exception = nullptr;
 
   /* destroy the blocking synchro if any */
   if (process->waiting_synchro) {
@@ -859,30 +836,21 @@ void SIMIX_process_yield(smx_process_t self)
 
   if (self->suspended) {
     XBT_DEBUG("Hey! I'm suspended.");
-    xbt_assert(!self->doexception, "Gasp! This exception may be lost by subsequent calls.");
+    xbt_assert(self->exception != nullptr, "Gasp! This exception may be lost by subsequent calls.");
     self->suspended = 0;
     SIMIX_process_suspend(self, self);
   }
 
-  if (self->doexception) {
+  if (self->exception != nullptr) {
     XBT_DEBUG("Wait, maestro left me an exception");
-    self->doexception = 0;
-    RETHROW;
+    std::exception_ptr exception = std::move(self->exception);
+    self->exception = nullptr;
+    std::rethrow_exception(std::move(exception));
   }
 
   if(SMPI_switch_data_segment && self->segment_index != -1){
     SMPI_switch_data_segment(self->segment_index);
   }
-}
-
-/* callback: context fetching */
-xbt_running_ctx_t *SIMIX_process_get_running_context(void)
-{
-  smx_process_t process = SIMIX_process_self();
-  if (process)
-    return process->running_ctx;
-  else
-    return nullptr;
 }
 
 /* callback: termination */
