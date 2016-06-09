@@ -82,28 +82,26 @@ static double finish_on_at(SD_task_t task, sg_host_t host)
   double data_available = 0.;
   double redist_time = 0;
   double last_data_available;
-  SD_task_t parent, grand_parent;
-  xbt_dynar_t parents, grand_parents;
 
-  sg_host_t *grand_parent_host_list;
-
-  parents = SD_task_get_parents(task);
+  xbt_dynar_t parents = SD_task_get_parents(task);
 
   if (!xbt_dynar_is_empty(parents)) {
     /* compute last_data_available */
+    SD_task_t parent;
     last_data_available = -1.0;
     xbt_dynar_foreach(parents, i, parent) {
       /* normal case */
       if (SD_task_get_kind(parent) == SD_TASK_COMM_E2E) {
-        grand_parents = SD_task_get_parents(parent);
+        xbt_dynar_t grand_parents = SD_task_get_parents(parent);
+        SD_task_t grand_parent;
 
         xbt_assert(xbt_dynar_length(grand_parents) <2, "Error: transfer %s has 2 parents", SD_task_get_name(parent));
-        
+
         xbt_dynar_get_cpy(grand_parents, 0, &grand_parent);
 
-        grand_parent_host_list = SD_task_get_workstation_list(grand_parent);
+        sg_host_t * grand_parent_host_list = SD_task_get_workstation_list(grand_parent);
         /* Estimate the redistribution time from this parent */
-        if (SD_task_get_amount(parent) == 0){
+        if (SD_task_get_amount(parent) <= 1e-6){
           redist_time= 0;
         } else {
           redist_time = SD_route_get_latency(grand_parent_host_list[0], host) +
@@ -136,17 +134,13 @@ static double finish_on_at(SD_task_t task, sg_host_t host)
 
 static sg_host_t SD_task_get_best_host(SD_task_t task)
 {
-  int i;
-  double EFT, min_EFT = -1.0;
   const sg_host_t *hosts = sg_host_list();
   int nhosts = sg_host_count();
-  sg_host_t best_host;
+  sg_host_t best_host = hosts[0];
+  double min_EFT = finish_on_at(task, hosts[0]);
 
-  best_host = hosts[0];
-  min_EFT = finish_on_at(task, hosts[0]);
-
-  for (i = 1; i < nhosts; i++) {
-    EFT = finish_on_at(task, hosts[i]);
+  for (int i = 1; i < nhosts; i++) {
+    double EFT = finish_on_at(task, hosts[i]);
     XBT_DEBUG("%s finishes on %s at %f", SD_task_get_name(task), sg_host_get_name(hosts[i]), EFT);
 
     if (EFT < min_EFT) {
@@ -160,14 +154,11 @@ static sg_host_t SD_task_get_best_host(SD_task_t task)
 int main(int argc, char **argv)
 {
   unsigned int cursor;
-  double finish_time, min_finish_time = -1.0;
-  SD_task_t task, selected_task = NULL, last_scheduled_task;
+  double min_finish_time = -1.0;
+  SD_task_t task, selected_task = NULL;
   xbt_dynar_t ready_tasks;
-  sg_host_t host, selected_host = NULL;
-  int total_nhosts = 0;
-  const sg_host_t *hosts = NULL;
+  sg_host_t selected_host = NULL;
   char * tracefilename = NULL;
-  xbt_dynar_t dax;
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -183,14 +174,14 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   /*  Allocating the host attribute */
-  total_nhosts = sg_host_count();
-  hosts = sg_host_list();
+  int total_nhosts = sg_host_count();
+  const sg_host_t *hosts = sg_host_list();
 
   for (cursor = 0; cursor < total_nhosts; cursor++)
     sg_host_allocate_attribute(hosts[cursor]);
 
   /* load the DAX file */
-  dax = SD_daxload(argv[2]);
+  xbt_dynar_t dax = SD_daxload(argv[2]);
 
   xbt_dynar_foreach(dax, cursor, task) {
     SD_task_watch(task, SD_DONE);
@@ -198,7 +189,7 @@ int main(int argc, char **argv)
 
   /* Schedule the root first */
   xbt_dynar_get_cpy(dax, 0, &task);
-  host = SD_task_get_best_host(task);
+  sg_host_t host = SD_task_get_best_host(task);
   SD_task_schedulel(task, 1, host);
 
   while (!xbt_dynar_is_empty(SD_simulate(-1.0))) {
@@ -216,8 +207,8 @@ int main(int argc, char **argv)
     xbt_dynar_foreach(ready_tasks, cursor, task) {
       XBT_DEBUG("%s is ready", SD_task_get_name(task));
       host = SD_task_get_best_host(task);
-      finish_time = finish_on_at(task, host);
-      if (min_finish_time == -1. || finish_time < min_finish_time) {
+      double finish_time = finish_on_at(task, host);
+      if (min_finish_time < 0 || finish_time < min_finish_time) {
         min_finish_time = finish_time;
         selected_task = task;
         selected_host = host;
@@ -236,7 +227,7 @@ int main(int argc, char **argv)
      * new dependency
     */
 
-    last_scheduled_task = sg_host_get_last_scheduled_task(selected_host);
+    SD_task_t last_scheduled_task = sg_host_get_last_scheduled_task(selected_host);
     if (last_scheduled_task && (SD_task_get_state(last_scheduled_task) != SD_DONE) &&
         (SD_task_get_state(last_scheduled_task) != SD_FAILED) &&
         !SD_task_dependency_exists(sg_host_get_last_scheduled_task(selected_host), selected_task))
