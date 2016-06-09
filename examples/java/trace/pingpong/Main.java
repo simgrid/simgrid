@@ -14,8 +14,8 @@ public class Main  {
   public static void main(String[] args) throws MsgException, NativeException {
     Msg.init(args);
     if(args.length < 1) {
-      Msg.info("Usage   : TracingTest platform_file");
-      Msg.info("example : TracingTest ../platforms/platform.xml");
+      Msg.info("Usage   : Main platform_file");
+      Msg.info("example : Main ../platforms/platform.xml");
       System.exit(1);
     }
 

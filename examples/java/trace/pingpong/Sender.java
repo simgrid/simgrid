@@ -15,8 +15,9 @@ import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.trace.Trace;
 
 public class Sender extends Process {
-  private final double commSizeLat = 1;
-  private final double commSizeBw = 100000000;
+  private static final double commSizeLat = 1;
+  private static final double commSizeBw = 100000000;
+  private static final String PM_STATE = "PM_STATE";
 
   public Sender(String hostname, String name, String[] args) throws HostNotFoundException, NativeException {
     super(hostname,name,args);
@@ -24,22 +25,17 @@ public class Sender extends Process {
 
   public void main(String[] args) throws MsgException {
     Msg.info("hello !"); 
-    Trace.hostPushState (getHost().getName(), "PM_STATE", "sendingPing");
+    Trace.hostPushState (getHost().getName(), PM_STATE, "sendingPing");
 
     int hostCount = args.length;
     Msg.info("host count: " + hostCount);
     String mailboxes[] = new String[hostCount]; 
     double time;
     double computeDuration = 0;
-    PingPongTask ping, pong;
+    PingPongTask ping;
 
     for(int pos = 0; pos < args.length ; pos++) {
-      try {
-        mailboxes[pos] = Host.getByName(args[pos]).getName();
-      } catch (HostNotFoundException e) {
-        Msg.info("Invalid deployment file: " + e.toString());
-        System.exit(1);
-      }
+      mailboxes[pos] = Host.getByName(args[pos]).getName();
     }
 
     for (int pos = 0; pos < hostCount; pos++) { 
@@ -49,15 +45,15 @@ public class Sender extends Process {
       ping.setTime(time);
       ping.send(mailboxes[pos]);
 
-      Trace.hostPushState (getHost().getName(), "PM_STATE", "waitingPong");
-      pong = (PingPongTask)Task.receive(getHost().getName());
+      Trace.hostPushState (getHost().getName(), PM_STATE, "waitingPong");
+      PingPongTask pong = (PingPongTask)Task.receive(getHost().getName());
       double timeGot = Msg.getClock();
       double timeSent = ping.getTime();
-      double communicationTime=0;
+      double communicationTime;
 
       Msg.info("Got at time "+ timeGot);
       Msg.info("Was sent at time "+timeSent);
-      time=timeSent;
+      time = timeSent;
 
       communicationTime=timeGot - time;
       Msg.info("Communication time : " + communicationTime);
@@ -65,11 +61,11 @@ public class Sender extends Process {
       Msg.info(" --- bw "+ commSizeBw/communicationTime + " ----");
 
       /* Pop the last state (going back to sending ping) */  
-      Trace.hostPopState (getHost().getName(), "PM_STATE");
+      Trace.hostPopState (getHost().getName(), PM_STATE);
     }
 
     /* Pop the sendingPong state */  
-    Trace.hostPopState (getHost().getName(), "PM_STATE");
+    Trace.hostPopState (getHost().getName(), PM_STATE);
     Msg.info("goodbye!");
   }
 }
