@@ -37,7 +37,6 @@
 
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
-#include "src/xbt/ex_interface.h"  /* We play crude games with exceptions */
 #include "src/internal_config.h"
 #include "xbt/xbt_os_time.h"       /* Portable time facilities */
 #include "xbt/xbt_os_thread.h"     /* This module */

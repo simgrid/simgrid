@@ -93,7 +93,6 @@ JavaContext::JavaContext(std::function<void()> code,
       new_exception.func = ex.func;
       new_exception.pid = ex.pid;
       new_exception.bt = ex.bt;
-      new_exception.bt_strings = ex.bt_strings;
       throw new_exception;
     }
   } else {

@@ -1,5 +1,3 @@
-/* ex - Exception Handling                                                  */
-
 /* Copyright (c) 2005-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -115,9 +113,7 @@ public:
   const char *file;             /**< Thrown point */
   int line;                     /**< Thrown point */
   const char *func;             /**< Thrown point */
-  /* Backtrace */
-  std::vector<std::string>      bt_strings;
-  std::vector<void*>            bt;
+  std::vector<void*>            bt; /**< Backtrace */
 };
 #endif
 
@@ -148,17 +144,6 @@ XBT_PUBLIC(void) xbt_throw(char* message, xbt_errcat_t errcat, int value, const 
 
 /** @brief The display made by an exception that is not catched */
 XBT_PUBLIC(void) xbt_ex_display(xbt_ex_t * e);
-
-/** @brief Shows a backtrace of the current location */
-XBT_PUBLIC(void) xbt_backtrace_display_current(void);
-/** @brief reimplementation of glibc backtrace based directly on gcc library, without implicit malloc  */
-XBT_PUBLIC(int) xbt_backtrace_no_malloc(void**bt, int size);
-/** @brief Captures a backtrace for further use */
-XBT_PUBLIC(void) xbt_backtrace_current(xbt_ex_t * e);
-/** @brief Display a previously captured backtrace */
-XBT_PUBLIC(void) xbt_backtrace_display(xbt_ex_t * e);
-/** @brief Get current backtrace with libunwind */
-XBT_PUBLIC(int) xbt_libunwind_backtrace(void *bt[XBT_BACKTRACE_SIZE], int size);
 
 SG_END_DECL()
 

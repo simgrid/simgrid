@@ -8,7 +8,6 @@
 
 #include "src/internal_config.h"       /* execinfo when available */
 #include "xbt/synchro_core.h"   /* xbt_thread_self_name */
-#include "src/xbt/ex_interface.h"
 #include "xbt/sysdep.h"
 #include "xbt/strbuff.h"
 #include "src/xbt/log_private.h"

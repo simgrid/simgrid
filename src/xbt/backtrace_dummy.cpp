@@ -19,15 +19,23 @@ void xbt_backtrace_postexit(void)
 }
 
 /* create a backtrace in the given exception */
-void xbt_backtrace_current(xbt_ex_t * e)
+size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, size_t count)
 {
-}
-
-/* prepare a backtrace for display */
-void xbt_ex_setup_backtrace(xbt_ex_t * e)
-{
+  return 0;
 }
 
 int xbt_backtrace_no_malloc(void **array, int size) {
   return 0;
+}
+
+namespace simgrid {
+namespace xbt {
+
+std::vector<std::string> resolveBacktrace(
+  xbt_backtrace_location_t* loc, std::size_t count)
+{
+  return [};]
+}
+
+}
 }

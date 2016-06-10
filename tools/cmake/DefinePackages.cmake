@@ -90,8 +90,8 @@ set(EXTRA_DIST
   src/xbt/automaton/parserPromela.tab.cacc
   src/xbt/automaton/parserPromela.tab.hacc
   src/xbt/automaton/parserPromela.yacc
-  src/xbt/backtrace_dummy.c
-  src/xbt/backtrace_linux.c
+  src/xbt/backtrace_dummy.cpp
+  src/xbt/backtrace_linux.cpp
   src/xbt/dict_private.h
   src/xbt/ex_interface.h
   src/xbt/fifo_private.h
@@ -244,6 +244,7 @@ set(XBT_SRC
   src/xbt/RngStream.c
   src/xbt/automaton/automaton.c
   src/xbt/automaton/automatonparse_promela.c
+  src/xbt/backtrace.cpp
   src/xbt/config.cpp
   src/xbt/cunit.cpp
   src/xbt/dict.cpp
@@ -666,6 +667,7 @@ set(headers_to_install
   include/xbt/dynar.h
   include/xbt/dynar.hpp
   include/xbt/ex.h
+  include/xbt/backtrace.h
   include/xbt/fifo.h
   include/xbt/file.h
   include/xbt/function_types.h

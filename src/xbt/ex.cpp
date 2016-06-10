@@ -47,6 +47,7 @@
 
 #include "src/internal_config.h"           /* execinfo when available */
 #include "xbt/ex.h"
+#include "xbt/backtrace.h"
 #include "xbt/str.h"
 #include "xbt/synchro_core.h"
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
@@ -61,42 +62,25 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");
 xbt_ex::~xbt_ex() {}
 
 /* Change raw libc symbols to file names and line numbers */
-void xbt_ex_setup_backtrace(xbt_ex_t * e);
+void xbt_setup_backtrace(xbt_backtrace_location_t** loc, std::size_t count,
+  char** res);
 
-void xbt_backtrace_display(xbt_ex_t * e)
+void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
 {
-  // TODO, backtrace
-#if 0
-  xbt_ex_setup_backtrace(e);
-
 #ifdef HAVE_BACKTRACE
-  if (e->bt_strings.empty()) {
+  std::vector<std::string> backtrace =
+    simgrid::xbt::resolveBacktrace(loc, count);
+  if (backtrace.empty()) {
     fprintf(stderr, "(backtrace not set)\n");
-  } else {
-    fprintf(stderr, "Backtrace (displayed in process %s):\n", SIMIX_process_self_get_name());
-    for (std::string const& s : e->bt_strings) /* no need to display "xbt_backtrace_display" */
-      fprintf(stderr, "---> %s\n", s.c_str() + 4);
+    return;
   }
-  xbt_ex_free(*e);
+  fprintf(stderr, "Backtrace (displayed in process %s):\n", SIMIX_process_self_get_name());
+  for (std::string const& s : backtrace)
+    fprintf(stderr, "---> %s\n", s.c_str());
 #else
   XBT_ERROR("No backtrace on this arch");
 #endif
-  #endif
 }
-
-/** \brief show the backtrace of the current point (lovely while debuging) */
-void xbt_backtrace_display_current(void)
-{
-  xbt_ex_t e;
-  xbt_backtrace_current(&e);
-  xbt_backtrace_display(&e);
-}
-
-#if HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)
-# include "src/xbt/backtrace_linux.c"
-#else
-# include "src/xbt/backtrace_dummy.c"
-#endif
 
 void xbt_throw(
   char* message, xbt_errcat_t errcat, int value, 
@@ -121,7 +105,7 @@ void xbt_ex_display(xbt_ex_t * e)
   if (e->pid != xbt_getpid())
     thrower = bprintf(" on process %d",e->pid);
 
-  fprintf(stderr, "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
+  std::fprintf(stderr, "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
           "** %s\n"
           "** Thrown by %s()%s\n",
           xbt_binary_name, xbt_getpid(), xbt_ex_catname(e->category), e->value, e->what(),
@@ -134,11 +118,11 @@ void xbt_ex_display(xbt_ex_t * e)
     return; /* Not started yet or already closing. Trying to generate a backtrace would probably fail */
   }
 
-  if (e->bt_strings.empty())
-    xbt_ex_setup_backtrace(e);
+  std::vector<std::string> backtrace = simgrid::xbt::resolveBacktrace(
+    e->bt.data(), e->bt.size());
 
 #ifdef HAVE_BACKTRACE
-  if (!e->bt.empty() && !e->bt_strings.empty()) {
+  if (!backtrace.empty()) {
     /* We have everything to build neat backtraces */
     int cutpath = 0;
     try { // We don't want to have an exception while checking how to deal with the one we already have, do we?
@@ -148,35 +132,31 @@ void xbt_ex_display(xbt_ex_t * e)
       // Nothing to do
     }
 
-    fprintf(stderr, "\n");
-    for (std::string const& s : e->bt_strings) {
+    std::fprintf(stderr, "\n");
+    for (std::string const& s : backtrace) {
 
+      // TODO, move this logic into solveBacktrace
       if (cutpath) {
-        // TODO, backtrace
-        /*
-        char* p = e->bt_strings[i];
+        // TODO, simplify this
+        char* p = xbt_strdup(s.c_str());
         xbt_str_rtrim(p, ":0123456789");
         char* filename = strrchr(p, '/')+1;
         char* end_of_message  = strrchr(p, ' ');
-
         int length = strlen(p)-strlen(end_of_message);
-        char* dest = malloc(length);
-
-        memcpy(dest, &p[0], length);
+        char* dest = (char*) std::malloc(length);
+        std::memcpy(dest, &p[0], length);
         dest[length] = 0;
-
-        fprintf(stderr, "%s %s\n", dest, filename);
-
-        free(dest);
-        */
+        std::fprintf(stderr, "%s %s\n", dest, filename);
+        std::free(dest);
+        std::free(p);
       }
       else {
-        fprintf(stderr, "%s\n", s.c_str());
+        std::fprintf(stderr, "%s\n", s.c_str());
       }
     }
   } else
 #endif
-    fprintf(stderr, "\n"
+    std::fprintf(stderr, "\n"
         "**   In %s() at %s:%d\n"
         "**   (no backtrace available)\n", e->func, e->file, e->line);
 }
