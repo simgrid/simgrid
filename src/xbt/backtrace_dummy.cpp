@@ -34,7 +34,7 @@ namespace xbt {
 std::vector<std::string> resolveBacktrace(
   xbt_backtrace_location_t* loc, std::size_t count)
 {
-  return [};]
+  return std::vector<std::string>();
 }
 
 }
