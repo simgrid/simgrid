@@ -1058,13 +1058,12 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 --cfg=exceptions/cutpath:1
 \endverbatim
 
-<b>This configuration option is an internal option and should normally not be used
-by the user.</b> It is used to remove the path from the backtrace
-shown when an exception is thrown; if we didn't remove this part, the tests
-testing the exception parts of simgrid would fail on most machines, as we are
-currently comparing output. Clearly, the path used on different machines are almost
-guaranteed to be different and hence, the output would
-mismatch, causing the test to fail.
+This configuration option is used to remove the path from the
+backtrace shown when an exception is thrown. This is mainly useful for
+the tests: the full file path makes the tests not reproducible, and
+thus failing as we are currently comparing output. Clearly, the path
+used on different machines are almost guaranteed to be different and
+hence, the output would mismatch, causing the test to fail.
 
 \section options_log Logging Configuration
 
