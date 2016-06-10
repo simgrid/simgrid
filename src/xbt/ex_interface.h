@@ -22,10 +22,6 @@
 namespace simgrid {
 namespace xbt {
 
-/* Change raw libc symbols to file names and line numbers */
-XBT_PUBLIC(std::vector<std::string>) resolveBacktrace(
-  xbt_backtrace_location_t* loc, std::size_t count);
-
 }
 }
 

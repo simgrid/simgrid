@@ -1,7 +1,7 @@
 /* backtrace_linux - backtrace displaying on linux platform                 */
 /* This file is included by ex.cpp on need (have execinfo.h, popen & addrline)*/
 
-/* Copyright (c) 2008-2015. The SimGrid Team.
+/* Copyright (c) 2008-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -19,6 +19,7 @@
 
 /* This file is to be included in ex.cpp, so the following headers are not mandatory, but it's to make sure that eclipse see them too */
 #include <xbt/string.hpp>
+#include <xbt/backtrace.hpp>
 #include "xbt/ex.h"
 #include "src/xbt/ex_interface.h"
 #include "xbt/log.h"
@@ -114,6 +115,9 @@ static std::string get_binary_path()
 {
   struct stat stat_buf;
 
+  if (xbt_binary_name == nullptr)
+    return "";
+
   // We found it, we are happy:
   if (stat(xbt_binary_name, &stat_buf) == 0)
     return xbt_binary_name;
@@ -144,22 +148,27 @@ static std::string get_binary_path()
 //FIXME: This code could be greatly improved/simplifyied with
 //   http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
 std::vector<std::string> resolveBacktrace(
-  xbt_backtrace_location_t* loc, std::size_t count)
+  xbt_backtrace_location_t const* loc, std::size_t count)
 {
   std::vector<std::string> result;
 
-  /* no binary name, nothing to do */
-  if (xbt_binary_name == NULL)
-    return result;
-
   if (count == 0)
     return result;
+
+  if (xbt_binary_name == nullptr)
+    XBT_WARN("XBT not initialized, the backtrace will not be resolved.");
 
   // Drop the first one:
   loc++; count--;
 
   char** backtrace_syms = backtrace_symbols(loc, count);
   std::string binary_name = get_binary_path();
+
+  if (binary_name.empty()) {
+    for (std::size_t i = 0; i < count; i++)
+      result.push_back(simgrid::xbt::string_printf("%p", loc[i]));
+    return std::move(result);
+  }
 
   // Create the system command for add2line:
   std::ostringstream stream;
@@ -209,9 +218,10 @@ std::vector<std::string> resolveBacktrace(
     }
 
     if (strcmp("??", line_func) != 0) {
-      XBT_DEBUG("Found static symbol %s() at %s", line_func, line_pos);
+      auto name = simgrid::xbt::demangle(line_func);
+      XBT_DEBUG("Found static symbol %s at %s", name.get(), line_pos);
       result.push_back(simgrid::xbt::string_printf(
-        "%s() at %s", line_func, line_pos
+        "%s at %s, %p", name.get(), line_pos, loc[i]
       ));
     } else {
       /* Damn. The symbol is in a dynamic library. Let's get wild */
@@ -312,9 +322,10 @@ std::vector<std::string> resolveBacktrace(
 
       /* check whether the trick worked */
       if (strcmp("??", line_func)) {
-        XBT_DEBUG("Found dynamic symbol %s() at %s", line_func, line_pos);
+        auto name = simgrid::xbt::demangle(line_func);
+        XBT_DEBUG("Found dynamic symbol %s at %s", name.get(), line_pos);
         result.push_back(simgrid::xbt::string_printf(
-          "%s() at %s", line_func, line_pos));
+          "%s at %s, %p", name.get(), line_pos, loc[i]));
       } else {
         /* damn, nothing to do here. Let's print the raw address */
         XBT_DEBUG("Dynamic symbol not found. Raw address = %s", backtrace_syms[i]);

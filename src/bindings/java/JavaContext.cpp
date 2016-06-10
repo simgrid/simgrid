@@ -84,16 +84,12 @@ JavaContext::JavaContext(std::function<void()> code,
         "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
         thread_amount, ex.what());
       xbt_ex new_exception(str);
-      free(str);
       new_exception.category = ex.category;
       new_exception.value = ex.value;
-      new_exception.procname = ex.procname;
-      new_exception.file = ex.file;
-      new_exception.line = ex.line;
-      new_exception.func = ex.func;
-      new_exception.pid = ex.pid;
-      new_exception.bt = ex.bt;
-      throw new_exception;
+      new_exception.file = __FILE__;
+      new_exception.line = __LINE__;
+      new_exception.func = __func__;
+      std::throw_with_nested(std::move(new_exception));
     }
   } else {
     this->thread = nullptr;

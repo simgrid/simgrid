@@ -45,9 +45,13 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+#include <xbt/backtrace.hpp>
 #include "src/internal_config.h"           /* execinfo when available */
 #include "xbt/ex.h"
+#include "xbt/log.h"
+#include "xbt/log.hpp"
 #include "xbt/backtrace.h"
+#include "xbt/backtrace.hpp"
 #include "xbt/str.h"
 #include "xbt/synchro_core.h"
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
@@ -56,6 +60,7 @@
 #include "simgrid/sg_config.h"  /* Configuration mechanism of SimGrid */
 
 #include "simgrid/simix.h" /* SIMIX_process_self_get_name() */
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_ex, xbt, "Exception mechanism");
 
@@ -93,72 +98,13 @@ void xbt_throw(
   e.file = file;
   e.line = line;
   e.func = func;
-  e.procname = xbt_procname();
-  e.pid = xbt_getpid();
   throw e;
 }
 
 /** @brief shows an exception content and the associated stack if available */
 void xbt_ex_display(xbt_ex_t * e)
 {
-  char *thrower = NULL;
-  if (e->pid != xbt_getpid())
-    thrower = bprintf(" on process %d",e->pid);
-
-  std::fprintf(stderr, "** SimGrid: UNCAUGHT EXCEPTION received on %s(%d): category: %s; value: %d\n"
-          "** %s\n"
-          "** Thrown by %s()%s\n",
-          xbt_binary_name, xbt_getpid(), xbt_ex_catname(e->category), e->value, e->what(),
-          e->procname.c_str(), thrower ? thrower : " in this process");
-  XBT_CRITICAL("%s", e->what());
-  xbt_free(thrower);
-
-  if (xbt_initialized==0 || smx_cleaned) {
-    fprintf(stderr, "Ouch. SimGrid is not initialized yet, or already closing. No backtrace available.\n");
-    return; /* Not started yet or already closing. Trying to generate a backtrace would probably fail */
-  }
-
-  std::vector<std::string> backtrace = simgrid::xbt::resolveBacktrace(
-    e->bt.data(), e->bt.size());
-
-#ifdef HAVE_BACKTRACE
-  if (!backtrace.empty()) {
-    /* We have everything to build neat backtraces */
-    int cutpath = 0;
-    try { // We don't want to have an exception while checking how to deal with the one we already have, do we?
-      cutpath = xbt_cfg_get_boolean("exception/cutpath");
-    }
-    catch(xbt_ex& e) {
-      // Nothing to do
-    }
-
-    std::fprintf(stderr, "\n");
-    for (std::string const& s : backtrace) {
-
-      // TODO, move this logic into solveBacktrace
-      if (cutpath) {
-        // TODO, simplify this
-        char* p = xbt_strdup(s.c_str());
-        xbt_str_rtrim(p, ":0123456789");
-        char* filename = strrchr(p, '/')+1;
-        char* end_of_message  = strrchr(p, ' ');
-        int length = strlen(p)-strlen(end_of_message);
-        char* dest = (char*) std::malloc(length);
-        std::memcpy(dest, &p[0], length);
-        dest[length] = 0;
-        std::fprintf(stderr, "%s %s\n", dest, filename);
-        std::free(dest);
-        std::free(p);
-      }
-      else {
-        std::fprintf(stderr, "%s\n", s.c_str());
-      }
-    }
-  } else
-#endif
-    std::fprintf(stderr, "\n"
-        "**   In %s() at %s:%d\n"
-        "**   (no backtrace available)\n", e->func, e->file, e->line);
+  simgrid::xbt::logException(xbt_log_priority_critical, "UNCAUGHT EXCEPTION", *e);
 }
 
 /** \brief returns a short name for the given exception category */
