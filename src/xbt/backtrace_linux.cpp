@@ -8,6 +8,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <sstream>
+#include <string>
+#include <vector>
+
+#include <boost/algorithm/string.hpp>
 
 #include <unistd.h>
 #include <execinfo.h>
@@ -105,15 +109,44 @@ size_t xbt_backtrace_current(xbt_backtrace_location_t* loc, std::size_t count)
 namespace simgrid {
 namespace xbt {
 
+/** Find the path of the binary file from the name found in argv */
+static std::string get_binary_path()
+{
+  struct stat stat_buf;
+
+  // We found it, we are happy:
+  if (stat(xbt_binary_name, &stat_buf) == 0)
+    return xbt_binary_name;
+
+  // Not found, look in the PATH:
+  char* path = getenv("PATH");
+  if (path == nullptr)
+    return "";
+  XBT_DEBUG("Looking in the PATH: %s\n", path);
+  std::vector<std::string> path_list;
+  // TODO, on Windows, this is ";"
+  boost::split(path_list, path, boost::is_any_of(":"));
+  for (std::string const& path_item : path_list) {
+    std::string binary_name = simgrid::xbt::string_printf(
+      "%s/%s", path_item.c_str(), xbt_binary_name);
+    bool found = (stat(binary_name.c_str(), &stat_buf) == 0);
+    XBT_DEBUG("Looked in the PATH for the binary. %s %s",
+      found ? "Found" : "Not found",
+      binary_name.c_str());
+    if (found)
+      return binary_name;
+  }
+
+  // Not found at all:
+  return "";
+}
+
 //FIXME: This code could be greatly improved/simplifyied with
 //   http://cairo.sourcearchive.com/documentation/1.9.4/backtrace-symbols_8c-source.html
 std::vector<std::string> resolveBacktrace(
   xbt_backtrace_location_t* loc, std::size_t count)
 {
   std::vector<std::string> result;
-
-  /* To search for the right executable path when not trivial */
-  struct stat stat_buf;
 
   /* no binary name, nothing to do */
   if (xbt_binary_name == NULL)
@@ -126,40 +159,7 @@ std::vector<std::string> resolveBacktrace(
   loc++; count--;
 
   char** backtrace_syms = backtrace_symbols(loc, count);
-
-  // Find the binary name:
-  std::string binary_name;
-  /* build the commandline */
-  if (stat(xbt_binary_name, &stat_buf)) {
-    /* Damn. binary not in current dir. We'll have to dig the PATH to find it */
-    for (std::size_t i = 0; environ[i]; i++) {
-      if (!strncmp("PATH=", environ[i], 5)) {
-        xbt_dynar_t path = xbt_str_split(environ[i] + 5, ":");
-        unsigned int cpt;
-        char *data;
-
-        xbt_dynar_foreach(path, cpt, data) {
-          binary_name = simgrid::xbt::string_printf("%s/%s", data, xbt_binary_name);
-          if (!stat(binary_name.c_str(), &stat_buf)) {
-            /* Found. */
-            XBT_DEBUG("Looked in the PATH for the binary. Found %s", binary_name.c_str());
-            break;
-          }
-        }
-        xbt_dynar_free(&path);
-        if (stat(binary_name.c_str(), &stat_buf)) {
-          /* not found */
-          result =  { simgrid::xbt::string_printf(
-            "(binary '%s' not found in the PATH)", xbt_binary_name) };
-          free(backtrace_syms);
-          return result;
-        }
-        break;
-      }
-    }
-  } else {
-    binary_name = xbt_binary_name;
-  }
+  std::string binary_name = get_binary_path();
 
   // Create the system command for add2line:
   std::ostringstream stream;
@@ -180,7 +180,6 @@ std::vector<std::string> resolveBacktrace(
     /* Add it to the command line args */
     stream << addrs[i] << ' ';
   }
-  binary_name.clear();
   std::string cmd = stream.str();
 
   /* size (in char) of pointers on this arch */
