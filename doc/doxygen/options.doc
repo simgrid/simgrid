@@ -873,6 +873,9 @@ To avoid this, several options are possible :
   To use this runtime automatic switching, the variable \b smpi/privatize-global-variables
   should be set to yes
 
+\warning
+  This configuration option cannot be set in your platform file. You can only
+  pass it as an argument to smpirun.
 
 
 \subsection options_model_smpi_detached Simulating MPI detached send
