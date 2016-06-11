@@ -8,6 +8,7 @@
 
 #include "xbt/ex.h"
 #include "src/xbt_modinter.h"
+#include "src/xbt/ex_interface.h"
 
 /* Module creation/destruction */
 void xbt_backtrace_preinit(void)
