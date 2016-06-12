@@ -15,8 +15,6 @@
 
 namespace simgrid {
 namespace surf {
-  class Link;
-  class NetCard;
   class RoutingPlatf; // FIXME: KILLME
 
 /** @brief Autonomous Systems
