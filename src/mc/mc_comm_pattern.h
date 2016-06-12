@@ -36,7 +36,7 @@ struct PatternCommunicationList {
 SG_BEGIN_DECL()
 
 /**
- *  Type: `xbt_dynar_t<mc_list_comm_pattenr_t>`
+ *  Type: `xbt_dynar_t<mc_list_comm_pattern_t>`
  */
 extern XBT_PRIVATE xbt_dynar_t initial_communications_pattern;
 

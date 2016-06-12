@@ -136,7 +136,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   /* HACK, Horrible hack to find the offset of the id in the simgrid::s4u::Host.
 
      Offsetof is not supported for non-POD types but this should
-     work in pratice for the targets currently supported by the MC
+     work in practice for the targets currently supported by the MC
      as long as we do not add funny features to the Host class
      (such as virtual base).
 

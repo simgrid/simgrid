@@ -24,7 +24,7 @@ namespace mc {
 
 /** Process index used when no process is available
  *
- *  The expected behaviour is that if a process index is needed it will fail.
+ *  The expected behavior is that if a process index is needed it will fail.
  * */
 const int ProcessIndexMissing = -1;
 

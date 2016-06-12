@@ -32,7 +32,7 @@ ObjectInformation::ObjectInformation()
  *
  *  An offset is applied to address found in DWARF:
  *
- *  * for an executable obejct, addresses are virtual address
+ *  * for an executable object, addresses are virtual address
  *    (there is no offset) i.e.
  *    \f$\text{virtual address} = \{dwarf address}\f$;
  *
@@ -66,7 +66,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
    * during the binary search (only at the end) so it is not included
    * in the index entry. We could use parallel arrays as well.
    *
-   * We cannot really use the std:: alogrithm for this.
+   * We cannot really use the std:: algorithm for this.
    * We could use std::binary_search by including the high_pc inside
    * the FunctionIndexEntry.
    */
@@ -87,7 +87,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
     /* At this point, the search is over.
      * Either we have found the correct function or we do not know
      * any function corresponding to this instruction address.
-     * Only at the point do we derefernce the function pointer. */
+     * Only at the point do we dereference the function pointer. */
     else if ((std::uint64_t) ip < base[k].function->range.end())
       return base[k].function;
     else
@@ -153,7 +153,7 @@ void ObjectInformation::remove_global_variable(const char* name)
  *  name.
  *
  *  \param var_name        Name of the local variable (or parameter to ignore)
- *  \param subprogram_name Name of the subprogram fo ignore (nullptr for any)
+ *  \param subprogram_name Name of the subprogram to ignore (nullptr for any)
  *  \param subprogram      (possibly inlined) Subprogram of the scope
  *  \param scope           Current scope
  */

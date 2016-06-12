@@ -13,8 +13,8 @@ namespace mc {
 /** An element in the recorded path
  *
  *  At each decision point, we need to record which process transition
- *  is trigerred and potentially which value is associated with this
- *  transition. The value is used to find which communication is triggerred
+ *  is triggered and potentially which value is associated with this
+ *  transition. The value is used to find which communication is triggered
  *  in things like waitany and for associating a given value of MC_random()
  *  calls.
  */

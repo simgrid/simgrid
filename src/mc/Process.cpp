@@ -241,7 +241,7 @@ Process::~Process()
 
 /** Refresh the information about the process
  *
- *  Do not use direclty, this is used by the getters when appropriate
+ *  Do not use directly, this is used by the getters when appropriate
  *  in order to have fresh data.
  */
 void Process::refresh_heap()
@@ -345,7 +345,7 @@ void Process::init_memory_map_info()
   regfree(&res.so_re);
   regfree(&res.version_re);
 
-  // Resolve time (including accross differents objects):
+  // Resolve time (including across different objects):
   for (auto const& object_info : this->object_infos)
     postProcessObjectInformation(this, object_info.get());
 
@@ -388,14 +388,14 @@ simgrid::mc::Frame* Process::find_function(RemotePtr<void> ip) const
   return info ? info->find_function((void*) ip.address()) : nullptr;
 }
 
-/** Find (one occurence of) the named variable definition
+/** Find (one occurrence of) the named variable definition
  */
 simgrid::mc::Variable* Process::find_variable(const char* name) const
 {
   // First lookup the variable in the executable shared object.
   // A global variable used directly by the executable code from a library
   // is reinstanciated in the executable memory .data/.bss.
-  // We need to look up the variable in the execvutable first.
+  // We need to look up the variable in the executable first.
   if (this->binary_info) {
     std::shared_ptr<simgrid::mc::ObjectInformation> const& info = this->binary_info;
     simgrid::mc::Variable* var = info->find_variable(name);
@@ -479,7 +479,7 @@ const void *Process::read_bytes(void* buffer, std::size_t size,
         mc_model_checker->process().read<s_smpi_privatisation_region_t>(
           remote(remote_smpi_privatisation_regions + process_index));
 
-      // Address translation in the privaization segment:
+      // Address translation in the privatization segment:
       size_t offset = address.address() - (std::uint64_t)info->start_rw;
       address = remote((char*)privatisation_region.address + offset);
     }

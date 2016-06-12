@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <unistd.h>
-#include <string.h> // memcpy, memcp
+#include <string.h> // memcpy, memcmp
 
 #include <sys/mman.h>
 
@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
 namespace simgrid {
 namespace mc {
 
-/** @brief Compte a hash for the given memory page
+/** @brief Compute a hash for the given memory page
  *
  *  The page is used before inserting the page in the page store
  *  in order to find duplicate of this page in the page store.

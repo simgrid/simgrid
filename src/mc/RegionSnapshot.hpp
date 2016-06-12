@@ -103,7 +103,7 @@ public:
  *
  *  * privatized (SMPI global variable privatisation).
  *
- *  This is handled with a variant based approch:
+ *  This is handled with a variant based approach:
  *
  *  * `storage_type` identified the type of storage;
  *

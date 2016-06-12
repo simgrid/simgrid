@@ -519,7 +519,7 @@ int CommunicationDeterminismChecker::main(void)
         std::unique_ptr<simgrid::mc::State>(MC_state_new(++expandedStatesCount_));
 
       /* If comm determinism verification, we cannot stop the exploration if
-         some communications are not finished (at least, data are transfered).
+         some communications are not finished (at least, data are transferred).
          These communications  are incomplete and they cannot be analyzed and
          compared with the initial pattern. */
       bool compare_snapshots = all_communications_are_finished()

@@ -287,7 +287,7 @@ int smpi_datatype_copy(void *sendbuf, int sendcount, MPI_Datatype sendtype,
  *  Copies noncontiguous data into contiguous memory.
  *  @param contiguous_vector - output vector
  *  @param noncontiguous_vector - input vector
- *  @param type - pointer contening :
+ *  @param type - pointer containing :
  *      - stride - stride of between noncontiguous data
  *      - block_length - the width or height of blocked matrix
  *      - count - the number of rows of matrix
@@ -495,7 +495,7 @@ void use_contiguous(MPI_Datatype* d){
 }
 
 /* Create a Sub type contiguous to be able to serialize and unserialize it the structure s_smpi_mpi_contiguous_t is
- * erived from s_smpi_subtype which required the functions unserialize and serialize */
+ * derived from s_smpi_subtype which required the functions unserialize and serialize */
 s_smpi_mpi_contiguous_t* smpi_datatype_contiguous_create( MPI_Aint lb, int block_count, MPI_Datatype old_type,
                                                   int size_oldtype){
   if(block_count==0)
@@ -549,7 +549,7 @@ int smpi_datatype_vector(int count, int blocklen, int stride, MPI_Datatype old_t
                          DT_FLAG_VECTOR);
     retval=MPI_SUCCESS;
   }else{
-    /* in this situation the data are contignous thus it's not required to serialize and unserialize it*/
+    /* in this situation the data are contiguous thus it's not required to serialize and unserialize it*/
     smpi_datatype_create(new_type, count * blocklen * smpi_datatype_size(old_type), 0, ((count -1) * stride + blocklen)*
                          smpi_datatype_size(old_type), 0, nullptr, DT_FLAG_VECTOR|DT_FLAG_CONTIGUOUS);
     retval=MPI_SUCCESS;

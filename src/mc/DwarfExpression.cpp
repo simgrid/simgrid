@@ -80,7 +80,7 @@ void execute(
         break;
       }
 
-      // Push the CFA (Canonical Frame Addresse):
+      // Push the CFA (Canonical Frame Address):
     case DW_OP_call_frame_cfa:
       {
         /* See 6.4 of DWARF4 (http://dwarfstd.org/doc/DWARF4.pdf#page=140):

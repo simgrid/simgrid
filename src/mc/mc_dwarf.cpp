@@ -38,7 +38,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_dwarf, mc, "DWARF processing");
  *
  *  The default for a given language is defined in the DWARF spec.
  *
- *  \param language consant as defined by the DWARf spec
+ *  \param language constant as defined by the DWARf spec
  */
 static uint64_t MC_dwarf_default_lower_bound(int lang);
 
@@ -67,7 +67,7 @@ static uint64_t MC_dwarf_array_element_count(Dwarf_Die * die, Dwarf_Die * unit);
  *  \param info the resulting object fot the library/binary file (output)
  *  \param die  the current DIE
  *  \param unit the DIE of the compile unit of the current DIE
- *  \param frame containg frame if any
+ *  \param frame containing frame if any
  */
 static void MC_dwarf_handle_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
                                 Dwarf_Die * unit, simgrid::mc::Frame* frame,
@@ -79,12 +79,12 @@ static void MC_dwarf_handle_type_die(simgrid::mc::ObjectInformation* info, Dwarf
                                      Dwarf_Die * unit, simgrid::mc::Frame* frame,
                                      const char *ns);
 
-/** \brief Calls MC_dwarf_handle_die on all childrend of the given die
+/** \brief Calls MC_dwarf_handle_die on all children of the given die
  *
  *  \param info the resulting object fot the library/binary file (output)
  *  \param die  the current DIE
  *  \param unit the DIE of the compile unit of the current DIE
- *  \param frame containg frame if any
+ *  \param frame containing frame if any
  */
 static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
                                      Dwarf_Die * unit, simgrid::mc::Frame* frame,
@@ -95,7 +95,7 @@ static void MC_dwarf_handle_children(simgrid::mc::ObjectInformation* info, Dwarf
  *  \param info the resulting object fot the library/binary file (output)
  *  \param die  the current DIE
  *  \param unit the DIE of the compile unit of the current DIE
- *  \param frame containg frame if any
+ *  \param frame containing frame if any
  */
 static void MC_dwarf_handle_variable_die(simgrid::mc::ObjectInformation* info, Dwarf_Die * die,
                                          Dwarf_Die * unit, simgrid::mc::Frame* frame,
@@ -585,7 +585,7 @@ static void MC_dwarf_add_members(simgrid::mc::ObjectInformation* info, Dwarf_Die
       if (boost::algorithm::starts_with(member.name, "__vptr$") ||
         boost::algorithm::starts_with(member.name, "__vptr."))
         member.flags |= simgrid::mc::Member::VIRTUAL_POINTER_FLAG;
-      // A cleaner stolution would be to check against the type:
+      // A cleaner solution would be to check against the type:
       // ---
       // tag: DW_TAG_member
       // name: "_vptr$Foo"
@@ -1393,7 +1393,7 @@ namespace dwarf {
  *
  *  DWARF and libunwind does not use the same convention for numbering the
  *  registers on some architectures. The function makes the necessary
- *  convertion.
+ *  conversion.
  */
 int dwarf_register_to_libunwind(int dwarf_register)
 {
@@ -1401,7 +1401,7 @@ int dwarf_register_to_libunwind(int dwarf_register)
   // It seems for this arch, DWARF and libunwind agree in the numbering:
   return dwarf_register;
 #elif defined(__i386__)
-  // Could't find the authoritative source of information for this.
+  // Couldn't find the authoritative source of information for this.
   // This is inspired from http://source.winehq.org/source/dlls/dbghelp/cpu_i386.c#L517.
   switch (dwarf_register) {
   case 0:

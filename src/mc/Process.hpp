@@ -74,13 +74,13 @@ struct IgnoredHeapRegion {
 
 /** Representation of a process
  *
- *  This class is mixing a lot of different responsabilities and is tied
+ *  This class is mixing a lot of different responsibilities and is tied
  *  to SIMIX. It should probably be split into different classes.
  *
- *  Responsabilities:
+ *  Responsibilities:
  *
  *  - reading from the process memory (`AddressSpace`);
- *  - accessing the system state of the porcess (heap, …);
+ *  - accessing the system state of the process (heap, …);
  *  - storing the SIMIX state of the process;
  *  - privatization;
  *  - communication with the model-checked process;
@@ -318,7 +318,7 @@ public: // Libunwind-data
    */
   unw_addr_space_t unw_addr_space;
 
-  /** Underlying libunwind addres-space
+  /** Underlying libunwind address-space
    *
    *  The `find_proc_info`, `put_unwind_info`, `get_dyn_info_list_addr`
    *  operations of the native MC address space is currently delegated

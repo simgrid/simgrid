@@ -15,7 +15,7 @@
 #include "src/mc/Client.hpp"
 #include "src/mc/ModelChecker.hpp"
 
-/** \file mc_client_api.cpp
+/** @file mc_client_api.cpp
  *
  *  This is the implementation of the API used by the user simulated program to
  *  communicate with the MC (declared in modelchecker.h).
@@ -70,7 +70,7 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
 /** @brief Register a stack in the model checker
  *
  *  The stacks are allocated in the heap. The MC handle them especially
- *  when we analyse/compare the content of the heap so it must be told where
+ *  when we analyze/compare the content of the heap so it must be told where
  *  they are with this function.
  *
  *  @param stack

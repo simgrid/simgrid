@@ -78,7 +78,7 @@ RegionSnapshot dense_region(
   void *start_addr, void* permanent_addr, size_t size)
 {
   // When KSM support is enables, we allocate memory using mmap:
-  // * we don't want to madvise bits of the heap;
+  // * we don't want to advise bits of the heap as mergable;
   // * mmap gives data aligned on page boundaries which is merge friendly.
   simgrid::mc::Buffer data;
   if (_sg_mc_ksm)

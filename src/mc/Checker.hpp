@@ -21,7 +21,7 @@ namespace mc {
 /** A model-checking algorithm
  *
  *  The goal is to move the data/state/configuration of a model-checking
- *  algorihms in subclasses. Implementing this interface will probably
+ *  algorithms in subclasses. Implementing this interface will probably
  *  not be really mandatory, you might be able to write your
  *  model-checking algorithm as plain imperative code instead.
  *

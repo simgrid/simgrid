@@ -7,7 +7,7 @@
 #ifndef SIMGRID_MC_UNW_H
 #define SIMGRID_MC_UNW_H
 
-/** \file
+/** @file
  *  Libunwind implementation for the model-checker
  *
  *  Libunwind provides an pluggable stack unwinding API: the way the current

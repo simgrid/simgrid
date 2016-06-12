@@ -9,7 +9,7 @@
 
 #include <vector>
 
-#include <xbt/misc.h> // xbt_pagesize and friends
+#include <xbt/misc.h> 
 #include <xbt/asserts.h>
 
 #include "src/mc/AddressSpace.hpp"
@@ -22,7 +22,7 @@ namespace mc {
 /** Take a per-page snapshot of a region
  *
  *  @param data            The start of the region (must be at the beginning of a page)
- *  @param pag_count       Number of pages of the region
+ *  @param page_count      Number of pages of the region
  *  @return                Snapshot page numbers of this new snapshot
  */
 ChunkedData::ChunkedData(PageStore& store, AddressSpace& as,
