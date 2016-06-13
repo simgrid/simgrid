@@ -111,7 +111,7 @@ void sg_platf_exit(void) {
 /** @brief Add an "host" to the current AS */
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
-  xbt_assert(! sg_host_by_name(host->id), "Refusing to create a second host named '%s'.", host->id);
+  xbt_assert(sg_host_by_name(host->id) == nullptr, "Refusing to create a second host named '%s'.", host->id);
 
   simgrid::surf::AsImpl* current_routing = routing_get_current();
   if (current_routing->hierarchy_ == simgrid::surf::AsImpl::RoutingMode::unset)
@@ -123,7 +123,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   sg_host_t h = simgrid::s4u::Host::by_name_or_create(host->id);
   h->pimpl_netcard = netcard;
 
-  if(mount_list){
+  if(mount_list) {
     xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
     mount_list = nullptr;
   }
@@ -184,7 +184,7 @@ void sg_platf_new_router(sg_platf_router_cbarg_t router)
   simgrid::surf::NetCard* netcard =
     new simgrid::surf::NetCardImpl(router->id, simgrid::surf::NetCard::Type::Router, current_routing);
   xbt_lib_set(as_router_lib, router->id, ROUTING_ASR_LEVEL, netcard);
-  XBT_DEBUG("Having set name '%s' id '%d'", router->id, netcard->id());
+  XBT_DEBUG("Router '%s' has the id %d", router->id, netcard->id());
 
   if (router->coord && strcmp(router->coord, "")) {
     unsigned int cursor;
@@ -304,8 +304,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
     s_surf_parsing_link_up_down_t info_lim, info_loop;
     // All links are saved in a matrix;
-    // every row describes a single node; every node
-    // may have multiple links.
+    // every row describes a single node; every node may have multiple links.
     // the first column may store a link from x to x if p_has_loopback is set
     // the second column may store a limiter link if p_has_limiter is set
     // other columns are to store one or more link for the node
