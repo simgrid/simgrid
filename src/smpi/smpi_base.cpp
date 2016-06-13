@@ -73,7 +73,7 @@ static int match_send(void* a, void* b,smx_synchro_t ignored) {
 // These are taken from surf/network.c and generalized to have more values for each factor
 typedef struct s_smpi_factor_multival *smpi_os_factor_multival_t;
 typedef struct s_smpi_factor_multival { // FIXME: this should be merged (deduplicated) with s_smpi_factor defined in network_smpi.c
-  long factor;
+  long factor=0;
   std::vector<double> values; /** We allocate arbitrarily 4 elements **/
 } s_smpi_factor_multival_t;
 
@@ -128,22 +128,22 @@ static std::vector<s_smpi_factor_multival_t> parse_factor(const char *smpi_coef_
       char *errmsg;
 
       if (factor_iter == factor_values.begin()) { /* first element */
-        errmsg = bprintf("Invalid factor in chunk #%lu: %%s", smpi_factor.size()+1);
+        errmsg = bprintf("Invalid factor in chunk #%zu: %%s", smpi_factor.size()+1);
         fact.factor = xbt_str_parse_int(factor_iter->c_str(), errmsg);
       }
       else {
-        errmsg = bprintf("Invalid factor value %d in chunk #%lu: %%s", iteration, smpi_factor.size()+1);
+        errmsg = bprintf("Invalid factor value %d in chunk #%zu: %%s", iteration, smpi_factor.size()+1);
         fact.values.push_back(xbt_str_parse_double((*factor_iter).c_str(), errmsg));
       }
       xbt_free(errmsg);
     }
 
     smpi_factor.push_back(fact);
-    XBT_DEBUG("smpi_factor:\t%ld : %lu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
+    XBT_DEBUG("smpi_factor:\t%ld : %zu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
   }
   std::sort(smpi_factor.begin(), smpi_factor.end(), &factor_cmp);
   for (auto& fact : smpi_factor) {
-    XBT_DEBUG("smpi_factor:\t%ld : %lu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
+    XBT_DEBUG("smpi_factor:\t%ld : %zu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
   }
 
   return smpi_factor;
