@@ -325,13 +325,17 @@ int console_add_route(lua_State *L) {
   lua_pushstring(L,"src");
   type = lua_gettable(L,-2);
   lua_ensure(type == LUA_TSTRING, "Attribute 'src' must be specified for any route and must be a string.");
-  route.src = lua_tostring(L, -1);
+  const char *srcName = lua_tostring(L, -1);
+  route.src = sg_netcard_by_name_or_null(srcName);
+  lua_ensure(route.src != nullptr, "Attribute 'src=%s' of route does not name a node.", srcName);
   lua_pop(L,1);
 
   lua_pushstring(L,"dest");
   type = lua_gettable(L,-2);
   lua_ensure(type == LUA_TSTRING, "Attribute 'dest' must be specified for any route and must be a string.");
-  route.dst = lua_tostring(L, -1);
+  const char *dstName = lua_tostring(L, -1);
+  route.dst = sg_netcard_by_name_or_null(dstName);
+  lua_ensure(route.dst != nullptr, "Attribute 'dst=%s' of route does not name a node.", dstName);
   lua_pop(L,1);
 
   lua_pushstring(L,"links");
@@ -390,26 +394,30 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L, "src");
   lua_gettable(L, -2);
-  ASroute.src = lua_tostring(L, -1);
+  const char *srcName = lua_tostring(L, -1);
+  ASroute.src = sg_netcard_by_name_or_null(srcName);
+  lua_ensure(ASroute.src != nullptr, "Attribute 'src=%s' of AS route does not name a node.", srcName);
   lua_pop(L, 1);
 
   lua_pushstring(L, "dst");
   lua_gettable(L, -2);
-  ASroute.dst = lua_tostring(L, -1);
+  const char *dstName = lua_tostring(L, -1);
+  ASroute.dst = sg_netcard_by_name_or_null(dstName);
+  lua_ensure(ASroute.dst != nullptr, "Attribute 'dst=%s' of AS route does not name a node.", dstName);
   lua_pop(L, 1);
 
   lua_pushstring(L, "gw_src");
   lua_gettable(L, -2);
   const char *name = lua_tostring(L, -1);
   ASroute.gw_src = sg_netcard_by_name_or_null(name);
-  lua_ensure(ASroute.gw_src, "Attribute 'gw_src' of AS route does not name a valid machine: %s", name);
+  lua_ensure(ASroute.gw_src, "Attribute 'gw_src=%s' of AS route does not name a valid node", name);
   lua_pop(L, 1);
 
   lua_pushstring(L, "gw_dst");
   lua_gettable(L, -2);
   name = lua_tostring(L, -1);
   ASroute.gw_dst = sg_netcard_by_name_or_null(name);
-  lua_ensure(ASroute.gw_dst, "Attribute 'gw_dst' of AS route does not name a valid machine: %s", name);
+  lua_ensure(ASroute.gw_dst, "Attribute 'gw_dst=%s' of AS route does not name a valid node", name);
   lua_pop(L, 1);
 
   lua_pushstring(L,"links");

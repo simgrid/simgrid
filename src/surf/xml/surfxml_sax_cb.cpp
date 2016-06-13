@@ -724,8 +724,9 @@ void ETag_surfxml_route(void){
   s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
-  route.src       = A_surfxml_route_src;
-  route.dst       = A_surfxml_route_dst;
+
+  route.src       = sg_netcard_by_name_or_null(A_surfxml_route_src); // tested to not be NULL in start tag
+  route.dst       = sg_netcard_by_name_or_null(A_surfxml_route_dst); // tested to not be NULL in start tag
   route.gw_src    = nullptr;
   route.gw_dst    = nullptr;
   route.link_list = new std::vector<Link*>();
@@ -747,18 +748,11 @@ void ETag_surfxml_ASroute(void){
   s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
-  ASroute.src = A_surfxml_ASroute_src;
-  ASroute.dst = A_surfxml_ASroute_dst;
+  ASroute.src    = sg_netcard_by_name_or_null(A_surfxml_ASroute_src); // tested to not be NULL in start tag
+  ASroute.dst    = sg_netcard_by_name_or_null(A_surfxml_ASroute_dst); // tested to not be NULL in start tag
 
-  ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___src);
-  ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___dst);
-
-  if (A_surfxml_ASroute_gw___src && !ASroute.gw_src)
-    surf_parse_error("gw_src=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
-                     A_surfxml_ASroute_gw___src, ASroute.src, ASroute.dst);
-  if (A_surfxml_ASroute_gw___dst && !ASroute.gw_dst)
-    surf_parse_error("gw_dst=\"%s\" not found for ASroute from \"%s\" to \"%s\"",
-                     A_surfxml_ASroute_gw___dst, ASroute.src, ASroute.dst);
+  ASroute.gw_src = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___src); // tested to not be NULL in start tag
+  ASroute.gw_dst = sg_netcard_by_name_or_null(A_surfxml_ASroute_gw___dst); // tested to not be NULL in start tag
 
   ASroute.link_list =  new std::vector<Link*>();
 
@@ -788,8 +782,8 @@ void ETag_surfxml_bypassRoute(void){
   s_sg_platf_route_cbarg_t route;
   memset(&route,0,sizeof(route));
 
-  route.src = A_surfxml_bypassRoute_src;
-  route.dst = A_surfxml_bypassRoute_dst;
+  route.src = sg_netcard_by_name_or_null(A_surfxml_bypassRoute_src); // tested to not be NULL in start tag
+  route.dst = sg_netcard_by_name_or_null(A_surfxml_bypassRoute_dst); // tested to not be NULL in start tag
   route.gw_src = nullptr;
   route.gw_dst = nullptr;
   route.symmetrical = false;
@@ -810,9 +804,9 @@ void ETag_surfxml_bypassASroute(void){
   s_sg_platf_route_cbarg_t ASroute;
   memset(&ASroute,0,sizeof(ASroute));
 
-  ASroute.src         = A_surfxml_bypassASroute_src;
-  ASroute.dst         = A_surfxml_bypassASroute_dst;
-  ASroute.link_list   =  new std::vector<Link*>();
+  ASroute.src         = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_src);
+  ASroute.dst         = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_dst);
+  ASroute.link_list   = new std::vector<Link*>();
   unsigned int cpt;
   char *link_name;
   xbt_dynar_foreach(parsed_link_list, cpt, link_name) {

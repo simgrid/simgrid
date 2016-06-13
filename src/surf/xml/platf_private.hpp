@@ -87,8 +87,8 @@ typedef struct s_sg_platf_peer_cbarg {
 typedef struct s_sg_platf_route_cbarg *sg_platf_route_cbarg_t;
 typedef struct s_sg_platf_route_cbarg {
   bool symmetrical;
-  const char *src;
-  const char *dst;
+  sg_netcard_t src;
+  sg_netcard_t dst;
   sg_netcard_t gw_src;
   sg_netcard_t gw_dst;
   std::vector<Link*> *link_list;

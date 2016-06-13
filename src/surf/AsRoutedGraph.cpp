@@ -221,10 +221,10 @@ void AsRoutedGraph::getRouteCheckParams(NetCard *src, NetCard *dst)
         src->name(), dst->name(),  src_as->name(), dst_as->name(),  name());
 }
 void AsRoutedGraph::addRouteCheckParams(sg_platf_route_cbarg_t route) {
-  const char *srcName = route->src;
-  const char *dstName = route->dst;
-  NetCard *src = sg_netcard_by_name_or_null(srcName);
-  NetCard *dst = sg_netcard_by_name_or_null(dstName);
+  NetCard *src = route->src;
+  NetCard *dst = route->dst;
+  const char *srcName = src->name();
+  const char *dstName = dst->name();
 
   if(!route->gw_dst && !route->gw_src) {
     XBT_DEBUG("Load Route from \"%s\" to \"%s\"", srcName, dstName);

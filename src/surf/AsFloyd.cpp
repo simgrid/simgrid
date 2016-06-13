@@ -87,9 +87,6 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
   /* set the size of table routing */
   int table_size = (int)xbt_dynar_length(vertices_);
 
-  NetCard *src = sg_netcard_by_name_or_null(route->src);
-  NetCard *dst = sg_netcard_by_name_or_null(route->dst);
-
   addRouteCheckParams(route);
 
   if(!linkTable_) {
@@ -109,27 +106,27 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
 
   /* Check that the route does not already exist */
   if (route->gw_dst) // AS route (to adapt the error message, if any)
-    xbt_assert(nullptr == TO_FLOYD_LINK(src->id(), dst->id()),
+    xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
         "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
-        src->name(),route->gw_src->name(),dst->name(),route->gw_dst->name());
+        route->src->name(),route->gw_src->name(),route->dst->name(),route->gw_dst->name());
   else
-    xbt_assert(nullptr == TO_FLOYD_LINK(src->id(), dst->id()),
-        "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src->name(),dst->name());
+    xbt_assert(nullptr == TO_FLOYD_LINK(route->src->id(), route->dst->id()),
+        "The route between %s and %s already exists (Rq: routes are symmetrical by default).", route->src->name(),route->dst->name());
 
-  TO_FLOYD_LINK(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, 1);
-  TO_FLOYD_PRED(src->id(), dst->id()) = src->id();
-  TO_FLOYD_COST(src->id(), dst->id()) = (TO_FLOYD_LINK(src->id(), dst->id()))->link_list->size();
+  TO_FLOYD_LINK(route->src->id(), route->dst->id()) = newExtendedRoute(hierarchy_, route, 1);
+  TO_FLOYD_PRED(route->src->id(), route->dst->id()) = route->src->id();
+  TO_FLOYD_COST(route->src->id(), route->dst->id()) = (TO_FLOYD_LINK(route->src->id(), route->dst->id()))->link_list->size();
 
 
   if (route->symmetrical == true) {
     if (route->gw_dst) // AS route (to adapt the error message, if any)
-      xbt_assert(nullptr == TO_FLOYD_LINK(dst->id(), src->id()),
+      xbt_assert(nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          dst->name(),route->gw_dst->name(),src->name(),route->gw_src->name());
+          route->dst->name(),route->gw_dst->name(),route->src->name(),route->gw_src->name());
     else
-      xbt_assert(nullptr == TO_FLOYD_LINK(dst->id(), src->id()),
+      xbt_assert(nullptr == TO_FLOYD_LINK(route->dst->id(), route->src->id()),
           "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
-          dst->name(),src->name());
+          route->dst->name(),route->src->name());
 
     if(route->gw_dst && route->gw_src) {
       NetCard* gw_tmp = route->gw_src;
@@ -138,14 +135,14 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
     }
 
     if(!route->gw_src && !route->gw_dst)
-      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dst->name(), src->name());
+      XBT_DEBUG("Load Route from \"%s\" to \"%s\"", route->dst->name(), route->src->name());
     else
-      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", dst->name(),
-          route->gw_src->name(), src->name(), route->gw_dst->name());
+      XBT_DEBUG("Load ASroute from \"%s(%s)\" to \"%s(%s)\"", route->dst->name(),
+          route->gw_src->name(), route->src->name(), route->gw_dst->name());
 
-    TO_FLOYD_LINK(dst->id(), src->id()) = newExtendedRoute(hierarchy_, route, 0);
-    TO_FLOYD_PRED(dst->id(), src->id()) = dst->id();
-    TO_FLOYD_COST(dst->id(), src->id()) = (TO_FLOYD_LINK(dst->id(), src->id()))->link_list->size();   /* count of links, old model assume 1 */
+    TO_FLOYD_LINK(route->dst->id(), route->src->id()) = newExtendedRoute(hierarchy_, route, 0);
+    TO_FLOYD_PRED(route->dst->id(), route->src->id()) = route->dst->id();
+    TO_FLOYD_COST(route->dst->id(), route->src->id()) = (TO_FLOYD_LINK(route->dst->id(), route->src->id()))->link_list->size();   /* count of links, old model assume 1 */
   }
 }
 

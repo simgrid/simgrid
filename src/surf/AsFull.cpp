@@ -85,10 +85,10 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
 
 void AsFull::addRoute(sg_platf_route_cbarg_t route)
 {
-  const char *src = route->src;
-  const char *dst = route->dst;
-  NetCard *src_net_elm = sg_netcard_by_name_or_null(src);
-  NetCard *dst_net_elm = sg_netcard_by_name_or_null(dst);
+  NetCard *src_net_elm = route->src;
+  NetCard *dst_net_elm = route->dst;
+  const char *src = src_net_elm->name();
+  const char *dst = dst_net_elm->name();
 
   addRouteCheckParams(route);
 
