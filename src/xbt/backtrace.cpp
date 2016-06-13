@@ -1,9 +1,22 @@
 /* Copyright (c) 2005-2016. The SimGrid Team. All rights reserved.          */
 
-#include <cstddef>
+/* This program is free software; you can redistribute it and/or modify it
+ * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <xbt/log.h>
+#include <cstddef>
+#include <cstdlib>
+
+#include <vector>
+
+// Try to detect and use the C++ intanium ABI for name demangling:
+#ifdef __GXX_ABI_VERSION
+#include <cxxabi.h>
+#endif
+
 #include <xbt/backtrace.h>
+#include <xbt/backtrace.hpp>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
 
 #include "src/internal_config.h"
 
@@ -20,6 +33,37 @@ void xbt_backtrace_display_current(void)
   xbt_backtrace_location_t bt[size];
   size_t used = xbt_backtrace_current(bt, size);
   xbt_backtrace_display(bt, used);
+}
+
+namespace simgrid {
+namespace xbt {
+
+std::unique_ptr<char, void(*)(void*)> demangle(const char* name)
+{
+#ifdef __GXX_ABI_VERSION
+  int status;
+  auto res = std::unique_ptr<char, void(*)(void*)>(
+    abi::__cxa_demangle(name, NULL, NULL, &status),
+    std::free
+  );
+  if (res != nullptr)
+    return res;
+  // We did not manage to resolve this. Probably because this is not a mangled
+  // symbol:
+#endif
+  // Return the symbol:
+  return std::unique_ptr<char, void(*)(void*)>(xbt_strdup(name), std::free);
+}
+
+std::vector<xbt_backtrace_location_t> backtrace()
+{
+  const std::size_t size = 10;
+  xbt_backtrace_location_t loc[size];
+  size_t used = xbt_backtrace_current(loc, size);
+  return std::vector<xbt_backtrace_location_t>(loc, loc + used);
+}
+
+}
 }
 
 #if HAVE_BACKTRACE && HAVE_EXECINFO_H && HAVE_POPEN && defined(ADDR2LINE)

@@ -11,6 +11,7 @@
 
 #include <string>
 #include <cstdarg>
+#include <stdlib.h>
 
 #if HAVE_MC
 

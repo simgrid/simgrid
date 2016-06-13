@@ -252,6 +252,7 @@ set(XBT_SRC
   src/xbt/dict_elm.c
   src/xbt/dynar.cpp
   src/xbt/ex.cpp
+  src/xbt/exception.cpp
   src/xbt/fifo.c
   src/xbt/graph.c
   src/xbt/heap.c
@@ -667,7 +668,9 @@ set(headers_to_install
   include/xbt/dynar.h
   include/xbt/dynar.hpp
   include/xbt/ex.h
+  include/xbt/exception.hpp
   include/xbt/backtrace.h
+  include/xbt/backtrace.hpp
   include/xbt/fifo.h
   include/xbt/file.h
   include/xbt/function_types.h
@@ -678,6 +681,7 @@ set(headers_to_install
   include/xbt/lib.h
   include/xbt/Extendable.hpp
   include/xbt/log.h
+  include/xbt/log.hpp
   include/xbt/mallocator.h
   include/xbt/matrix.h
   include/xbt/memory.hpp

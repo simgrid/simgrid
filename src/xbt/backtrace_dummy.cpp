@@ -10,6 +10,8 @@
 #include "src/xbt_modinter.h"
 #include "src/xbt/ex_interface.h"
 
+#include <xbt/backtrace.hpp>
+
 /* Module creation/destruction */
 void xbt_backtrace_preinit(void)
 {
@@ -33,7 +35,7 @@ namespace simgrid {
 namespace xbt {
 
 std::vector<std::string> resolveBacktrace(
-  xbt_backtrace_location_t* loc, std::size_t count)
+  xbt_backtrace_location_t const* loc, std::size_t count)
 {
   return std::vector<std::string>();
 }

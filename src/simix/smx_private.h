@@ -90,8 +90,6 @@ XBT_PUBLIC(void) SIMIX_clean(void);
   xbt_ex e(msg); \
   e.category = cat; \
   e.value = val; \
-  e.procname = xbt_procname(); \
-  e.pid = xbt_getpid(); \
   e.file = __FILE__; \
   e.line = __LINE__; \
   e.func = __func__; \

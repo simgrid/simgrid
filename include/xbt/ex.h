@@ -49,6 +49,7 @@
 #include <string>
 #include <vector>
 #include <stdexcept>
+#include <xbt/exception.hpp>
 #endif
 
 #include "xbt/base.h"
@@ -99,7 +100,9 @@ typedef enum {
 } xbt_errcat_t;
 
 #ifdef __cplusplus
-XBT_PUBLIC_CLASS xbt_ex : public std::runtime_error {
+XBT_PUBLIC_CLASS xbt_ex :
+  public std::runtime_error,
+  public simgrid::xbt::WithContextException {
 public:
   xbt_ex() : std::runtime_error("") {}
   xbt_ex(const char* message) : std::runtime_error(message) {}
@@ -107,13 +110,9 @@ public:
 
   xbt_errcat_t category;        /**< category like HTTP (what went wrong) */
   int value;                    /**< like errno (why did it went wrong) */
-  /* throw point */
-  std::string procname;         /**< Name of the process who thrown this */
-  int pid;                      /**< PID of the process who thrown this */
   const char *file;             /**< Thrown point */
   int line;                     /**< Thrown point */
   const char *func;             /**< Thrown point */
-  std::vector<void*>            bt; /**< Backtrace */
 };
 #endif
 
