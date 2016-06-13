@@ -18,6 +18,7 @@ defgroup
 dict
 dicts
 dontinclude
+doxygen
 DPOR
 dst
 dynar

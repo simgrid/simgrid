@@ -3,12 +3,12 @@
 
 \tableofcontents
 
-\section simgrid_dev_guide_model How to add a new model in surf?
+\section simgrid_dev_guide_model How to add a new model?
 The figure below shows the architecture of the SURF layer. This layer is composed
 of different kinds of models representing the different systems we want to
 model (i.e., cpu, network, storage, workstation, virtual machine).
 
-A model in simgrid is composed of three classes: Model, Resource and Action
+A model in SimGrid is composed of three classes: Model, Resource and Action
 (\ref SURF_interface "surf_interface.hpp").
 
 \image html surf++.png
@@ -27,7 +27,7 @@ that is defined as follows:
 
 s_surf_model_description_t surf_network_model_description[] = {
 
-\subsection simgrid_dev_guide_model_implem How to add a new model implementation in surf?
+\subsection simgrid_dev_guide_model_implem How to implement a new model?
 
 If you want to create a new implementation of a kind of model you must extend
 the classes of the corresponding interfaces.
@@ -64,7 +64,7 @@ s_surf_model_description_t surf_cpu_model_description[] = {
 };
 ~~~~
 
-\subsection simgrid_dev_guide_model_kind How to add a new kind of model in surf?
+\subsection simgrid_dev_guide_model_kind How to add a new kind of model?
 
 If you want to create a new kind of model, you must create a new interface
 where you extend the classes Model, Resource and Action, and then create an
@@ -120,7 +120,14 @@ s_surf_model_description_t surf_plugin_description[] = {
 
 A simcall is used to go from user mode to kernel mode. There is some
 sort of popping dance involved, as we want to isolate the user
-contextes from their environment (so that they can run in parallel).
+contextes from their environment (so that they can run in parallel and
+so that we can model-check them).
+
+In short, just add a line to src/simix/simcalls.in and run the
+src/simix/simcalls.py script. It will guide you about how to implement
+your simcall. Please keep reading this section (only) if you want to
+understand how it goes.
+
 
 The workflow of a simcall is the following:
 
@@ -162,32 +169,8 @@ generates the following files:
 
 The simcall.in file list all the simcalls in sections. A line starting by "##"
 define a new section which will be replace by a "ifdef" in the generated code.
-There is a simcall by line which follow this format:
-
-~~~~
-Simcall -> Name HasAnswer Res Args
-Name -> [a-z0-9_]+
-Has_Answer -> "True" | "False"
-Res -> "(" Type MaybeCast ")"
-Args -> Args Arg | Arg
-Arg -> "(" Name "," Type MaybeCast ")"
-Type -> "char" | "const char*" | "int" | "long" | "unsigned char" | "unsigned short" | "unsigned int" | "unsigned long" | "float" | "double" | "void*" | "FPtr" | "const void*" | "size_t" | "sg_size_t" | "void" | "void*"
-MaybeCast -> "," Cast | ""
-Cast -> [a-z0-9_* ]+
-~~~~
 
 \section simgrid_dev_guide_tag What is How to add a new tag for xml files?
-Search for expression \"TUTORIAL: New TAG\".
-\verbatim
-user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New TAG"
-0 surf/sg_platf.c                    43 /* TUTORIAL: New TAG*/
-1 surf/sg_platf.c                    89 /* TUTORIAL: New TAG*/
-2 surf/sg_platf.c                   124 /* TUTORIAL: New TAG*/
-3 surf/sg_platf.c                   337 /* TUTORIAL: New TAG*/
-4 surf/surfxml_parse.c              769 /* TUTORIAL: New TAG*/
-5 surf/surf_private.h               205 /* TUTORIAL: New TAG*/
-6 surf/surfxml_parseplatf.c          64 /* TUTORIAL: New TAG*/
-7 surf/surfxml_parseplatf.c          85 /* TUTORIAL: New TAG*/
-8 include/simgrid/platf_interface.h  42 /* TUTORIAL: New TAG*/
-\endverbatim
-*/
+
+You should not do something like that. Please work instead to make XML
+avoidable, ie to make the C++ interface nice and usable.

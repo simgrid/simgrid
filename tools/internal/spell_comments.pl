@@ -31,7 +31,7 @@ die "Call this script from its location or from the SimGrid root directory\n" un
 
 die "Usage: ". ($DICTFILE eq "./spell_dict.txt"? "./":"tools/internal/")."spell_comments.pl "
            ."`find ". ($DICTFILE eq "./spell_dict.txt"? "../../":".")." -name '*.[ch]' -o -name '*.hpp' -o -name '*.cpp' |grep -v umpire|grep -v smpi/mpich3-test|grep -v NAS`\n"
-  unless scalar(@ARGV)>1;
+  unless scalar(@ARGV)>0;
 
 my $total = 0;
 foreach my $file (@ARGV) {
