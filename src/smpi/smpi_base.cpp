@@ -5,6 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <xbt/config.hpp>
+#include <boost/tokenizer.hpp>
+#include <algorithm>
 
 #include "private.h"
 #include "xbt/virtu.h"
@@ -72,13 +74,12 @@ static int match_send(void* a, void* b,smx_synchro_t ignored) {
 typedef struct s_smpi_factor_multival *smpi_os_factor_multival_t;
 typedef struct s_smpi_factor_multival { // FIXME: this should be merged (deduplicated) with s_smpi_factor defined in network_smpi.c
   long factor;
-  int nb_values;
-  double values[4];//arbitrary set to 4
+  std::vector<double> values; /** We allocate arbitrarily 4 elements **/
 } s_smpi_factor_multival_t;
 
-xbt_dynar_t smpi_os_values  = nullptr;
-xbt_dynar_t smpi_or_values  = nullptr;
-xbt_dynar_t smpi_ois_values = nullptr;
+std::vector<s_smpi_factor_multival_t> smpi_os_values;
+std::vector<s_smpi_factor_multival_t> smpi_or_values;
+std::vector<s_smpi_factor_multival_t> smpi_ois_values;
 
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
@@ -89,67 +90,76 @@ static simgrid::config::Flag<double> smpi_iprobe_sleep(
 static simgrid::config::Flag<double> smpi_test_sleep(
   "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
-static int factor_cmp(const void *pa, const void *pb)
+static int factor_cmp(const s_smpi_factor_multival_t& pa, const s_smpi_factor_multival_t& pb)
 {
-  return ((static_cast<const s_smpi_factor_multival_t*>(pa))->factor > (static_cast<const s_smpi_factor_multival_t*>(pb))->factor) ? 1 :
-         ((static_cast<const s_smpi_factor_multival_t*>(pa))->factor < (static_cast<const s_smpi_factor_multival_t*>(pb))->factor) ? -1 : 0;
+  return (pa.factor > pb.factor) ? 1 :
+         (pa.factor < pb.factor) ? -1 : 0;
 }
 
-static xbt_dynar_t parse_factor(const char *smpi_coef_string)
+static std::vector<s_smpi_factor_multival_t> parse_factor(const char *smpi_coef_string)
 {
+  std::vector<s_smpi_factor_multival_t> smpi_factor;
   s_smpi_factor_multival_t fact;
-  char *value                   = nullptr;
-  unsigned int iter             = 0;
-  fact.nb_values                = 0;
-  unsigned int i                = 0;
-  xbt_dynar_t radical_elements2 = nullptr;
 
-  xbt_dynar_t smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_multival_t), nullptr);
-  xbt_dynar_t radical_elements = xbt_str_split(smpi_coef_string, ";");
-  xbt_dynar_foreach(radical_elements, iter, value) {
-    memset(&fact, 0, sizeof(s_smpi_factor_multival_t));
-    radical_elements2 = xbt_str_split(value, ":");
-    if (xbt_dynar_length(radical_elements2) <2 || xbt_dynar_length(radical_elements2) > 5)
+  /** Setup the tokenizer that parses the string **/
+  typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
+  boost::char_separator<char> sep(";");
+  boost::char_separator<char> factor_separator(":");
+  std::string tmp_string(smpi_coef_string);
+  Tokenizer tokens(tmp_string, sep);
+
+  /** 
+   * Iterate over patterns like A:B:C:D;E:F;G:H
+   * These will be broken down into:
+   * A --> B, C, D
+   * E --> F
+   * G --> H
+   */
+  for (Tokenizer::iterator token_iter = tokens.begin();
+         token_iter != tokens.end(); token_iter++) {
+    Tokenizer factor_values(*token_iter, factor_separator);
+
+    if (factor_values.begin() == factor_values.end()) {
       xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
-    for(i =0; i<xbt_dynar_length(radical_elements2);i++ ){
+    }
+    unsigned int iteration = 0;
+    for (Tokenizer::iterator factor_iter = factor_values.begin();
+         factor_iter != factor_values.end(); factor_iter++, iteration++) {
       char *errmsg;
-      if (i==0) {
-        errmsg = bprintf("Invalid factor in chunk #%d: %%s", iter+1);
-        fact.factor = xbt_str_parse_int(xbt_dynar_get_as(radical_elements2, i, char *), errmsg);
-      } else {
-        errmsg = bprintf("Invalid factor value %d in chunk #%d: %%s", i, iter+1);
-        fact.values[fact.nb_values] = xbt_str_parse_double(xbt_dynar_get_as(radical_elements2, i, char *), errmsg);
-        fact.nb_values++;
+
+      if (factor_iter == factor_values.begin()) { /* first element */
+        errmsg = bprintf("Invalid factor in chunk #%lu: %%s", smpi_factor.size()+1);
+        fact.factor = xbt_str_parse_int(factor_iter->c_str(), errmsg);
+      }
+      else {
+        errmsg = bprintf("Invalid factor value %d in chunk #%lu: %%s", iteration, smpi_factor.size()+1);
+        fact.values.push_back(xbt_str_parse_double((*factor_iter).c_str(), errmsg));
       }
       xbt_free(errmsg);
     }
 
-    xbt_dynar_push_as(smpi_factor, s_smpi_factor_multival_t, fact);
-    XBT_DEBUG("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
-    xbt_dynar_free(&radical_elements2);
+    smpi_factor.push_back(fact);
+    XBT_DEBUG("smpi_factor:\t%ld : %lu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
   }
-  xbt_dynar_free(&radical_elements);
-  xbt_dynar_sort(smpi_factor, &factor_cmp);
-  xbt_dynar_foreach(smpi_factor, iter, fact) {
-    XBT_DEBUG("smpi_factor:\t%ld : %d values, first: %f", fact.factor, fact.nb_values ,fact.values[0]);
+  std::sort(smpi_factor.begin(), smpi_factor.end(), &factor_cmp);
+  for (auto& fact : smpi_factor) {
+    XBT_DEBUG("smpi_factor:\t%ld : %lu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
   }
+
   return smpi_factor;
 }
 
 static double smpi_os(double size)
 {
-  if (smpi_os_values == nullptr) {
+  if (smpi_os_values.empty()) {
     smpi_os_values = parse_factor(xbt_cfg_get_string("smpi/os"));
-    smpi_register_static(smpi_os_values, xbt_dynar_free_voidp);
   }
-  unsigned int iter = 0;
-  s_smpi_factor_multival_t fact;
   double current=0.0;
   // Iterate over all the sections that were specified and find the right
   // value. (fact.factor represents the interval sizes; we want to find the
   // section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the dynar we iterate over!
-  xbt_dynar_foreach(smpi_os_values, iter, fact) {
+  for (auto& fact : smpi_os_values) {
     if (size <= fact.factor) { // Values already too large, use the previously
                                // computed value of current!
         XBT_DEBUG("os : %f <= %ld return %f", size, fact.factor, current);
@@ -160,24 +170,21 @@ static double smpi_os(double size)
       current = fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("os : %f > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("Searching for smpi/os: %f is larger than the largest boundary, return %f", size, current);
 
   return current;
 }
 
 static double smpi_ois(double size)
 {
-  if (smpi_ois_values == nullptr) {
+  if (smpi_ois_values.empty()) {
     smpi_ois_values = parse_factor(xbt_cfg_get_string("smpi/ois"));
-    smpi_register_static(smpi_ois_values, xbt_dynar_free_voidp);
   }
-  unsigned int iter = 0;
-  s_smpi_factor_multival_t fact;
   double current=0.0;
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the dynar we iterate over!
-  xbt_dynar_foreach(smpi_ois_values, iter, fact) {
+  for (auto& fact : smpi_ois_values) {
     if (size <= fact.factor) { // Values already too large, use the previously  computed value of current!
         XBT_DEBUG("ois : %f <= %ld return %f", size, fact.factor, current);
       return current;
@@ -187,24 +194,21 @@ static double smpi_ois(double size)
       current = fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("ois : %f > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("Searching for smpi/ois: %f is larger than the largest boundary, return %f", size, current);
 
   return current;
 }
 
 static double smpi_or(double size)
 {
-  if (smpi_or_values == nullptr) {
+  if (smpi_or_values.empty()) {
     smpi_or_values = parse_factor(xbt_cfg_get_string("smpi/or"));
-    smpi_register_static(smpi_or_values, xbt_dynar_free_voidp);
   }
-  unsigned int iter = 0;
-  s_smpi_factor_multival_t fact;
   double current=0.0;
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the dynar we iterate over!
-  xbt_dynar_foreach(smpi_or_values, iter, fact) {
+  for (auto fact : smpi_or_values) {
     if (size <= fact.factor) { // Values already too large, use the previously
                                // computed value of current!
         XBT_DEBUG("or : %f <= %ld return %f", size, fact.factor, current);
@@ -215,7 +219,7 @@ static double smpi_or(double size)
       current=fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("or : %f > %ld return %f", size, fact.factor, current);
+  XBT_DEBUG("smpi_or: %f is larger than largest boundary, return %f", size, current);
 
   return current;
 }
