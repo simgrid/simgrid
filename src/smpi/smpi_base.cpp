@@ -97,11 +97,11 @@ static int factor_cmp(const void *pa, const void *pb)
 
 static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 {
-  char *value = nullptr;
-  unsigned int iter = 0;
   s_smpi_factor_multival_t fact;
-  fact.nb_values=0;
-  unsigned int i=0;
+  char *value                   = nullptr;
+  unsigned int iter             = 0;
+  fact.nb_values                = 0;
+  unsigned int i                = 0;
   xbt_dynar_t radical_elements2 = nullptr;
 
   xbt_dynar_t smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_multival_t), nullptr);
