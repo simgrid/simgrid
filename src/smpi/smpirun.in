@@ -279,7 +279,7 @@ if [ -z "${HOSTFILE}" ] ; then
 	          }
 	        }
 	      } elsif (/<cluster/) {
-	        die ("Unparsable cluster tag. Either provide an hostfile yourself or give the attributes prefix, radical and suffix in that order on the <cluster line");
+            die ("Unparsable cluster tag. smpirun uses a primitive regular expression to parse cluster tags. Either provide a hostfile yourself or give the attributes prefix, radical and suffix IN THAT ORDER and ON THE SAME LINE as the opening tag (<cluster)");
 	      }' ${PLATFORM} >> ${HOSTFILE}
 fi
 UNROLLEDHOSTFILETMP=0

@@ -7,16 +7,51 @@
 #ifndef _SIMIX_SYNCHRO_PRIVATE_H
 #define _SIMIX_SYNCHRO_PRIVATE_H
 
+#include <atomic>
+
 #include "xbt/base.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
 #include "src/simix/popping_private.h"
 
-typedef struct s_smx_mutex {
-  unsigned int locked;
-  smx_process_t owner;
-  xbt_swag_t sleeping;          /* list of sleeping process */
-} s_smx_mutex_t;
+namespace simgrid {
+namespace simix {
+
+class XBT_PUBLIC() Mutex {
+public:
+  Mutex();
+  ~Mutex();
+  Mutex(Mutex const&) = delete;
+  Mutex& operator=(Mutex const&) = delete;
+
+  void lock(smx_process_t issuer);
+  bool try_lock(smx_process_t issuer);
+  void unlock(smx_process_t issuer);
+
+  bool locked = false;
+  smx_process_t owner = nullptr;
+  // List of sleeping processes:
+  xbt_swag_t sleeping = nullptr;
+
+  // boost::intrusive_ptr<Mutex> support:
+  friend void intrusive_ptr_add_ref(Mutex* mutex)
+  {
+    auto previous = ++mutex->refcount_;
+    xbt_assert(previous != 0);
+    (void) previous;
+  }
+  friend void intrusive_ptr_release(Mutex* mutex)
+  {
+    auto count = mutex->refcount_--;
+    if (count == 0)
+      delete mutex;
+  }
+private:
+  std::atomic_int_fast32_t refcount_ { 1 };
+};
+
+}
+}
 
 typedef struct s_smx_cond {
   smx_mutex_t mutex;
@@ -32,10 +67,6 @@ XBT_PRIVATE void SIMIX_post_synchro(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall);
 XBT_PRIVATE void SIMIX_synchro_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_synchro_finish(smx_synchro_t synchro);
-
-XBT_PRIVATE smx_mutex_t SIMIX_mutex_init(void);
-XBT_PRIVATE int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer);
-XBT_PRIVATE void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer);
 
 XBT_PRIVATE smx_cond_t SIMIX_cond_init(void);
 XBT_PRIVATE void SIMIX_cond_broadcast(smx_cond_t cond);
