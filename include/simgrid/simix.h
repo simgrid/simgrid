@@ -32,23 +32,25 @@ namespace simix {
   class Process;
   class Context;
   class ContextFactory;
-
+  class Mutex;
 }
 }
 
 typedef simgrid::simix::Context *smx_context_t;
 typedef simgrid::simix::Process *smx_process_t;
 
+/**
+ * \ingroup simix_synchro_management
+ */
+typedef simgrid::simix::Mutex   *smx_mutex_t;
+
 #else
 
 typedef struct s_smx_context *smx_context_t;
 typedef struct s_smx_process *smx_process_t;
+typedef struct s_smx_mutex   *smx_mutex_t;
 
 #endif
-
-
-
-SG_BEGIN_DECL()
 
 /**************************** Scalar Values **********************************/
 
@@ -83,10 +85,7 @@ typedef enum {
 /** @} */
 
 /* ******************************** Synchro ************************************ */
-/**
- * \ingroup simix_synchro_management
- */
-typedef struct s_smx_mutex *smx_mutex_t;
+
 /**
  * \ingroup simix_synchro_management
  */
@@ -126,6 +125,8 @@ extern int smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
 extern int smx_context_guard_size;
 extern int smx_context_guard_size_was_set;
+
+SG_BEGIN_DECL()
 
 XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_from_PID(int PID);

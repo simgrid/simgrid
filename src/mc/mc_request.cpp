@@ -387,8 +387,8 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     else
       type = "Mutex TRYLOCK";
 
-    s_smx_mutex_t mutex;
-    mc_model_checker->process().read_bytes(&mutex, sizeof(mutex),
+    simgrid::mc::Remote<simgrid::simix::Mutex> mutex;
+    mc_model_checker->process().read_bytes(mutex.getBuffer(), sizeof(mutex),
       remote(
         req->call == SIMCALL_MUTEX_LOCK
         ? simcall_mutex_lock__get__mutex(req)
@@ -396,12 +396,12 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       ));
     s_xbt_swag_t mutex_sleeping;
     mc_model_checker->process().read_bytes(&mutex_sleeping, sizeof(mutex_sleeping),
-      remote(mutex.sleeping));
+      remote(mutex.getBuffer()->sleeping));
 
     args = bprintf("locked = %d, owner = %d, sleeping = %d",
-      mutex.locked,
-      mutex.owner != nullptr ? (int) mc_model_checker->process().resolveProcess(
-        simgrid::mc::remote(mutex.owner))->pid : -1,
+      mutex.getBuffer()->locked,
+      mutex.getBuffer()->owner != nullptr ? (int) mc_model_checker->process().resolveProcess(
+        simgrid::mc::remote(mutex.getBuffer()->owner))->pid : -1,
       mutex_sleeping.count);
     break;
   }

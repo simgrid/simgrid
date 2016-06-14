@@ -162,10 +162,10 @@ bool request_is_enabled(smx_simcall_t req)
   case SIMCALL_MUTEX_LOCK: {
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
 #if HAVE_MC
-    s_smx_mutex_t temp_mutex;
+    simgrid::mc::Remote<simgrid::simix::Mutex> temp_mutex;
     if (mc_model_checker != nullptr) {
-      mc_model_checker->process().read(&temp_mutex, remote(mutex));
-      mutex = &temp_mutex;
+      mc_model_checker->process().read(temp_mutex.getBuffer(), remote(mutex));
+      mutex = temp_mutex.getBuffer();
     }
 #endif
 
