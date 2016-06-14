@@ -23,11 +23,9 @@ void SIMIX_process_set_cleanup_function(
 }
 
 /**
- * \brief creates a new context for a user level process
- * \param code a main function
- * \param argc the number of arguments of the main function
- * \param argv the vector of arguments of the main function
- * \param cleanup_func the function to call when the context stops
+ * @brief creates a new context for a user level process
+ * @param code a main function
+ * @param cleanup_func the function to call when the context stops
  */
 smx_context_t SIMIX_context_new(
   std::function<void()> code,
