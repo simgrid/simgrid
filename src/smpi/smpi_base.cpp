@@ -793,20 +793,20 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status *
       simcall_process_sleep(nsleeps*smpi_test_sleep);
 
     i = simcall_comm_testany(comms); // The i-th element in comms matches!
-    // not MPI_UNDEFINED, as this is a simix return code
-    if (i != -1) {
+    if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
       *index = map[i]; 
       finish_wait(&requests[*index], status);
-      if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags & NON_PERSISTENT))
-      requests[*index] = MPI_REQUEST_NULL;
       flag             = 1;
       nsleeps          = 1;
-    }else{
+      if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags & NON_PERSISTENT)) {
+        requests[*index] = MPI_REQUEST_NULL;
+      }
+    } else {
       nsleeps++;
     }
-  }else{
+  } else {
       //all requests are null or inactive, return true
-      flag=1;
+      flag = 1;
       smpi_empty_status(status);
   }
   xbt_dynar_free(&comms);
