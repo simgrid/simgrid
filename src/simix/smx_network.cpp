@@ -455,6 +455,8 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
 {
   unsigned int cursor;
   smx_synchro_t synchro;
+  // The default result is -1 -- this means, "nothing is ready".
+  // It can be changed below, but only if something matches.
   simcall_comm_testany__set__result(simcall, -1);
 
   if (MC_is_active() || MC_record_replay_is_active()){
