@@ -7,6 +7,8 @@
 #ifndef _SIMIX_SYNCHRO_PRIVATE_H
 #define _SIMIX_SYNCHRO_PRIVATE_H
 
+#include <atomic>
+
 #include "xbt/base.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
@@ -30,6 +32,22 @@ public:
   smx_process_t owner = nullptr;
   // List of sleeping processes:
   xbt_swag_t sleeping = nullptr;
+
+  // boost::intrusive_ptr<Mutex> support:
+  friend void intrusive_ptr_add_ref(Mutex* mutex)
+  {
+    auto previous = ++mutex->refcount_;
+    xbt_assert(previous != 0);
+    (void) previous;
+  }
+  friend void intrusive_ptr_release(Mutex* mutex)
+  {
+    auto count = mutex->refcount_--;
+    if (count == 0)
+      delete mutex;
+  }
+private:
+  std::atomic_int_fast32_t refcount_ { 1 };
 };
 
 }

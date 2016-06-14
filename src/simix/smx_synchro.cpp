@@ -189,7 +189,15 @@ void Mutex::unlock(smx_process_t issuer)
 
 void SIMIX_mutex_destroy(smx_mutex_t mutex)
 {
-  delete mutex;
+  if (mutex != nullptr)
+    intrusive_ptr_release(mutex);
+}
+
+XBT_PUBLIC(smx_mutex_t) SIMIX_mutex_dup(smx_mutex_t mutex)
+{
+  if (mutex != nullptr)
+    intrusive_ptr_add_ref(mutex);
+  return mutex;
 }
 
 smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall)
