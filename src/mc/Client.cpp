@@ -138,7 +138,9 @@ void Client::handleMessages()
         if (s != sizeof(message))
           xbt_die("Unexpected size for SIMCALL_HANDLE");
         memcpy(&message, message_buffer, sizeof(message));
+#if HAVE_SMPI
         smpi_really_switch_data_segment(message.index);
+#endif
       }
       break;
 
