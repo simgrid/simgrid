@@ -29,45 +29,45 @@ class ProcessArg {
 public:
   std::string name;
   std::function<void()> code;
-  void *data = nullptr;
-  const char *hostname = nullptr;
-  double kill_time = 0.0;
-  xbt_dict_t properties  = nullptr;
-  bool auto_restart = false;
+  void *data            = nullptr;
+  const char *hostname  = nullptr;
+  double kill_time      = 0.0;
+  xbt_dict_t properties = nullptr;
+  bool auto_restart     = false;
 };
 
 class Process {
 public:
 
   // TODO, replace with boost intrusive container hooks
-  s_xbt_swag_hookup_t process_hookup = { nullptr, nullptr };   /* simix_global->process_list */
-  s_xbt_swag_hookup_t synchro_hookup = { nullptr, nullptr };   /* {mutex,cond,sem}->sleeping */
+  s_xbt_swag_hookup_t process_hookup   = { nullptr, nullptr };   /* simix_global->process_list */
+  s_xbt_swag_hookup_t synchro_hookup   = { nullptr, nullptr };   /* {mutex,cond,sem}->sleeping */
   s_xbt_swag_hookup_t host_proc_hookup = { nullptr, nullptr }; /* smx_host->process_lis */
-  s_xbt_swag_hookup_t destroy_hookup = { nullptr, nullptr };   /* simix_global->process_to_destroy */
+  s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr };   /* simix_global->process_to_destroy */
 
-  unsigned long pid = 0;
+  unsigned long pid  = 0;
   unsigned long ppid = 0;
   simgrid::xbt::string name;
-  sg_host_t host = nullptr;     /* the host on which the process is running */
+  sg_host_t host        = nullptr;     /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
   // TODO, pack them
   std::exception_ptr exception;
-  bool blocked = false;
-  bool suspended = false;
+  bool blocked      = false;
+  bool suspended    = false;
   bool auto_restart = false;
 
-  sg_host_t new_host = nullptr;     /* if not null, the host on which the process must migrate to */
+  sg_host_t new_host            = nullptr;     /* if not null, the host on which the process must migrate to */
   smx_synchro_t waiting_synchro = nullptr;  /* the current blocking synchro if any */
-  xbt_fifo_t comms = nullptr;       /* the current non-blocking communication synchros */
-  xbt_dict_t properties = nullptr;
+  xbt_fifo_t comms              = nullptr;       /* the current non-blocking communication synchros */
+  xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
-  void *data = nullptr;    /* kept for compatibility, it should be replaced with moddata */
+  void *data          = nullptr;    /* kept for compatibility, it should be replaced with moddata */
   xbt_dynar_t on_exit = nullptr; /* list of functions executed when the process dies */
 
   std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
-  int segment_index = 0;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
+  int segment_index      = 0;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 };
 
 }
