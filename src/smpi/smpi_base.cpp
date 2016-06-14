@@ -802,8 +802,8 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status *
       finish_wait(&requests[*index], status);
       if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags & NON_PERSISTENT))
       requests[*index] = MPI_REQUEST_NULL;
-      flag = 1;
-      nsleeps=1;
+      flag             = 1;
+      nsleeps          = 1;
     }else{
       nsleeps++;
     }
