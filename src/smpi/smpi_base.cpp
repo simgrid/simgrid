@@ -74,7 +74,7 @@ static int match_send(void* a, void* b,smx_synchro_t ignored) {
 typedef struct s_smpi_factor_multival *smpi_os_factor_multival_t;
 typedef struct s_smpi_factor_multival { // FIXME: this should be merged (deduplicated) with s_smpi_factor defined in network_smpi.c
   long factor=0;
-  std::vector<double> values; /** We allocate arbitrarily 4 elements **/
+  std::vector<double> values;
 } s_smpi_factor_multival_t;
 
 std::vector<s_smpi_factor_multival_t> smpi_os_values;
