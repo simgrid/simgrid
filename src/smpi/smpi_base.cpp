@@ -805,8 +805,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status *
       nsleeps++;
     }
   } else {
-      //all requests are null or inactive, return true
-      flag = 1;
+      flag = 0; // all requests are null or inactive, return false
       smpi_empty_status(status);
   }
   xbt_dynar_free(&comms);
