@@ -264,6 +264,18 @@ int smx_cleaned = 0;
 void SIMIX_clean(void)
 {
   if (smx_cleaned) return; // to avoid double cleaning by java and C
+
+#if HAVE_SMPI
+  if (SIMIX_process_count()>0){
+    if(smpi_process_initialized()){
+      xbt_die("Process exited without calling MPI_Finalize - Killing simulation");
+    }else{
+      XBT_WARN("Process called exit when leaving - Skipping cleanups");
+      return;
+    }
+  }
+#endif
+
   smx_cleaned = 1;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
   if (!xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() == 0.0) {
