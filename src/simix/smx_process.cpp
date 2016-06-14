@@ -126,16 +126,20 @@ void SIMIX_process_empty_trash(void)
 
   while ((process = (smx_process_t) xbt_swag_extract(simix_global->process_to_destroy))) {
     XBT_DEBUG("Getting rid of %p",process);
-    delete process->context;
-    xbt_dict_free(&process->properties);
-    xbt_fifo_free(process->comms);
-    xbt_dynar_free(&process->on_exit);
-    delete process;
+    intrusive_ptr_release(process);
   }
 }
 
 namespace simgrid {
 namespace simix {
+
+Process::~Process()
+{
+  delete this->context;
+  xbt_dict_free(&this->properties);
+  xbt_fifo_free(this->comms);
+  xbt_dynar_free(&this->on_exit);
+}
 
 void create_maestro(std::function<void()> code)
 {
