@@ -17,10 +17,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 //Create an actor as a c++ functor
 class Worker {
   simgrid::s4u::Mutex mutex_;
-int *pResults;
+  int *results_;
 public:
   Worker(int  *res, simgrid::s4u::Mutex mutex) :
-    mutex_(std::move(mutex)),  pResults(res) {};
+    mutex_(std::move(mutex)),  results_(res) {};
   // Define the code of the actor
   void operator()() {
     // Do the calculation
@@ -31,7 +31,7 @@ public:
     XBT_INFO("Hello s4u, I'm ready to compute");
 
     // And finaly add it to the results
-    *pResults += 1;
+    *results_ += 1;
     XBT_INFO("I'm done, good bye");
   }
 };
@@ -39,10 +39,10 @@ public:
 // This class is an example of how to use lock_guard with simgrid mutex
 class WorkerLockGuard {
   simgrid::s4u::Mutex mutex_;
-int *pResults;
+int *results_;
 public:
   WorkerLockGuard(int  *res, simgrid::s4u::Mutex mutex) :
-    mutex_(std::move(mutex)),  pResults(res) {};
+    mutex_(std::move(mutex)),  results_(res) {};
   void operator()() {
 
     simgrid::s4u::this_actor::execute(1000);
@@ -53,7 +53,7 @@ public:
     // then you are in a safe zone
     XBT_INFO("Hello s4u, I'm ready to compute");
     // update the results
-    *pResults += 1;
+    *results_ += 1;
     XBT_INFO("I'm done, good bye");
   }
 };
@@ -61,9 +61,8 @@ public:
 class MainActor {
 public:
   void operator()() {
-    int *res = new int;
+    int res = 0;
     simgrid::s4u::Mutex mutex;
-    *res = 0;
     simgrid::s4u::Actor* workers[NB_ACTOR*2];
 
     for (int i = 0; i < NB_ACTOR * 2 ; i++) {
@@ -71,11 +70,11 @@ public:
       if((i % 2) == 0 )
         workers[i] = new simgrid::s4u::Actor("worker",
           simgrid::s4u::Host::by_name("Jupiter"),
-          WorkerLockGuard(res, mutex));
+          WorkerLockGuard(&res, mutex));
       else
         workers[i] = new simgrid::s4u::Actor("worker",
           simgrid::s4u::Host::by_name("Tremblay"),
-          Worker(res,mutex));
+          Worker(&res, mutex));
     }
 
     for (int i = 0; i < NB_ACTOR ; i++) {
@@ -83,7 +82,7 @@ public:
     }
 
     simgrid::s4u::this_actor::sleep(10);
-    XBT_INFO("Results is -> %d", *res);
+    XBT_INFO("Results is -> %d", res);
   }
 };
 
