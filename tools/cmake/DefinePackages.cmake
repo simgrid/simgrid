@@ -819,6 +819,7 @@ set(DOC_SOURCES
   doc/doxygen/tutorial.doc
   doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
+  doc/doxygen/module-s4u.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
   doc/doxygen/module-smpi.doc

@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,32 +14,59 @@
 namespace simgrid {
 namespace s4u {
 
-/** @brief Simulation Agent
+/** @defgroup  s4u_actor Actors: simulation agents
+ *  @addtogroup S4U_API
+ */
+  
+/** @addtogroup s4u_actor
+ * 
+ * @tableofcontents
+ * 
+ * An actor is an independent stream of execution in your distributed application.
  *
- * An actor may be defined as a code executing in a location (host).
- *
- * All actors should be started from the XML deployment file (using the @link{s4u::Engine::loadDeployment()}),
- * even if you can also start new actors directly.
- * Separating the deployment in the XML from the logic in the code is a good habit as it makes your simulation easier
- * to adapt to new settings.
- *
- * The code that you define for a given actor should be placed in the main method that is virtual.
+ * You can think of an actor as a process in your distributed application, or as a thread in a multithreaded program.
+ * This is the only component in SimGrid that actually does something on its own, executing its own code. 
+ * A resource will not get used if you don't schedule activities on them. This is the code of Actors that create and schedule these activities.
+ * 
+ * An actor is located on a (simulated) host, but it can interact
+ * with the whole simulated platform.
+ * 
+ * (back to the @ref s4u_api "S4U documentation")
+ * 
+ * @section s4u_actor_def Defining an Actor
+ * 
+ * The code of an actor (ie, the code that this actor will run when starting) the () operator.
+ * In this code, your actor can use the functions of the simgrid::s4u::this_actor namespace to interact with the world.
+ * 
  * For example, a Worker actor should be declared as follows:
  *
- * \verbatim
+ * \code{.cpp}
  * #include "s4u/actor.hpp"
  * 
  * class Worker {
- *   void operator()() {
+ *   void operator()() { // Two pairs of () because this defines the method called ()
  *     printf("Hello s4u");
- *     return 0;
+ *     simgrid::s4u::this_actor::execute(5*1024*1024); // Get the worker executing a task of 5 MFlops
  *   }
  * };
+ * \endcode
+ * 
+ * @section s4u_actor_new Creating a new instance of your Actor
+ * 
+ * // Then later in your main() function or so:
+ *   ...
+ *   new Actor("worker", host, Worker());
+ *   ...
  *
- * new Actor("worker", host, Worker());
- * \endverbatim
- *
+ * You can start your actors with simple @c new, for example from the @c main function, 
+ * but this is usually considered as a bad habit as it makes it harder to test your application
+ * in differing settings. Instead, you are advised to use an XML deployment file using 
+ * s4u::Engine::loadDeployment() to start your actors.
+ * 
+ *  @{
  */
+   
+/** @brief Simulation Agent (see \ref s4u_actor)*/
 XBT_PUBLIC_CLASS Actor {
   explicit Actor(smx_process_t smx_proc);
 public:
@@ -93,9 +120,8 @@ private:
   smx_process_t pimpl_ = nullptr;
 };
 
+/** @brief Static methods working on the current actor (see @ref s4u_actor) */
 namespace this_actor {
-
-  // Static methods working on the current actor:
 
   /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
   XBT_PUBLIC(void) sleep(double duration);
@@ -117,16 +143,9 @@ namespace this_actor {
 
 };
 
+/** @} */
+
 }} // namespace simgrid::s4u
 
+
 #endif /* SIMGRID_S4U_ACTOR_HPP */
-
-#if 0
-
-public final class Actor {
-  
-  public Actor(String name, Host host, double killTime, Runnable code);
-  // ....
-
-}
-#endif

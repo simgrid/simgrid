@@ -1,5 +1,5 @@
-/*!
-\page inside_extending Extending SimGrid
+/**
+@page inside_extending Extending SimGrid
 
 \tableofcontents
 
@@ -174,3 +174,5 @@ define a new section which will be replace by a "ifdef" in the generated code.
 
 You should not do something like that. Please work instead to make XML
 avoidable, ie to make the C++ interface nice and usable.
+
+*/
