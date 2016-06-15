@@ -10,22 +10,20 @@
 
 #include "simgrid/s4u/mutex.hpp"
 
+namespace simgrid {
+namespace s4u {
 
-using namespace simgrid;
-
-s4u::Mutex::Mutex() {
-    smx_mutex_t smx_mutex = simcall_mutex_init();
-    _mutex = std::shared_ptr<simgrid::simix::Mutex>(smx_mutex, SIMIX_mutex_destroy  );
+void Mutex::lock() {
+  simcall_mutex_lock(mutex_);
 }
 
-void s4u::Mutex::lock() {
-  simcall_mutex_lock(_mutex.get());
+void Mutex::unlock() {
+  simcall_mutex_unlock(mutex_);
 }
 
-void s4u::Mutex::unlock() {
-  simcall_mutex_unlock(_mutex.get());
+bool Mutex::try_lock() {
+  return simcall_mutex_trylock(mutex_);
 }
 
-bool s4u::Mutex::try_lock() {
-  return simcall_mutex_trylock(_mutex.get());
+}
 }

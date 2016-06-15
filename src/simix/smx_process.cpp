@@ -136,9 +136,12 @@ namespace simix {
 Process::~Process()
 {
   delete this->context;
-  xbt_dict_free(&this->properties);
-  xbt_fifo_free(this->comms);
-  xbt_dynar_free(&this->on_exit);
+  if (this->properties)
+    xbt_dict_free(&this->properties);
+  if (this->comms != nullptr)
+    xbt_fifo_free(this->comms);
+  if (this->on_exit)
+    xbt_dynar_free(&this->on_exit);
 }
 
 void create_maestro(std::function<void()> code)

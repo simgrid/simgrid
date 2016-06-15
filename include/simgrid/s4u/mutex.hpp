@@ -6,9 +6,11 @@
 #ifndef SIMGRID_S4U_MUTEX_HPP
 #define SIMGRID_S4U_MUTEX_HPP
 
+#include <utility>
+
+#include <boost/intrusive_ptr.hpp>
 #include <xbt/base.h>
 #include "simgrid/simix.h"
-
 
 namespace simgrid {
 namespace s4u {
@@ -16,20 +18,43 @@ namespace s4u {
 XBT_PUBLIC_CLASS Mutex {
 
 public:
-  Mutex();
-  ~Mutex() {};
+  Mutex() :
+    mutex_(simcall_mutex_init()) {}
+  Mutex(simgrid::simix::Mutex* mutex) : mutex_(SIMIX_mutex_dup(mutex)) {}
+  ~Mutex()
+  {
+    SIMIX_mutex_destroy(mutex_);
+  }
 
-protected:
+  // Copy+move (with the copy-and-swap idiom):
+  Mutex(Mutex const& mutex) : mutex_(SIMIX_mutex_dup(mutex.mutex_)) {}
+  friend void swap(Mutex& first, Mutex& second)
+  {
+    using std::swap;
+    swap(first.mutex_, second.mutex_);
+  }
+  Mutex& operator=(Mutex mutex)
+  {
+    swap(*this, mutex);
+    return *this;
+  }
+  Mutex(Mutex&& mutex) : mutex_(nullptr)
+  {
+    swap(*this, mutex);
+  }
+
+  bool valid() const
+  {
+    return mutex_ != nullptr;
+  }
 
 public:
-
   void lock();
   void unlock();
   bool try_lock();
 
 private:
-  std::shared_ptr<simgrid::simix::Mutex> _mutex;
-
+  simgrid::simix::Mutex* mutex_;
 };
 }} // namespace simgrid::s4u
 
