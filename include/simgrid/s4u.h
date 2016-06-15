@@ -11,6 +11,7 @@
 #include "s4u/engine.hpp"
 #include "s4u/host.hpp"
 
+#include "s4u/mutex.hpp"
 #include "s4u/Activity.hpp"
 #include "s4u/comm.hpp"
 
