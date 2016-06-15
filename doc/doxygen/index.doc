@@ -14,7 +14,7 @@
   - @subpage install
   - @subpage install_yours
 - @subpage application
-  - @subpage s4u_API
+  - @subpage s4u_api
   - @subpage MSG_API
   - @subpage SD_API
   - @subpage SMPI_API

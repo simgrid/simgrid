@@ -14,10 +14,6 @@
 namespace simgrid {
 namespace s4u {
 
-/** @defgroup  s4u_actor Actors: simulation agents
- *  @addtogroup S4U_API
- */
-  
 /** @addtogroup s4u_actor
  * 
  * @tableofcontents
@@ -31,37 +27,90 @@ namespace s4u {
  * An actor is located on a (simulated) host, but it can interact
  * with the whole simulated platform.
  * 
+ * The s4u::Actor API is strongly inspired from the C++11 threads.
+ * The <a href="http://en.cppreference.com/w/cpp/thread">documentation 
+ * of this standard</a> may help to understand the philosophy of the S4U
+ * Actors. 
+ * 
  * (back to the @ref s4u_api "S4U documentation")
  * 
- * @section s4u_actor_def Defining an Actor
+ * @section s4u_actor_def Defining the skeleton of an Actor
  * 
- * The code of an actor (ie, the code that this actor will run when starting) the () operator.
- * In this code, your actor can use the functions of the simgrid::s4u::this_actor namespace to interact with the world.
+ * %As in the <a href="http://en.cppreference.com/w/cpp/thread">C++11
+ * standard</a>, you can declare the code of your actor either as a
+ * pure function or as an object. It is very simple with functions:
  * 
- * For example, a Worker actor should be declared as follows:
- *
- * \code{.cpp}
+ * @code{.cpp}
+ * // Declare the code of your worker
+ * void worker() {
+ *   printf("Hello s4u");
+ *   simgrid::s4u::this_actor::execute(5*1024*1024); // Get the worker executing a task of 5 MFlops
+ * };
+ * 
+ * // From your main or from another actor, create your actor on the host Jupiter
+ * new Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), worker);
+ * @endcode
+ * 
+ * But some people prefer to encapsulate their actors in classes and
+ * objects to save the actor state in a cleanly dedicated location.
+ * The syntax is slightly more complicated, but not much.
+ * 
+ * @code{.cpp}
  * #include "s4u/actor.hpp"
  * 
+ * // Declare the class representing your actors
  * class Worker {
+ * public:
  *   void operator()() { // Two pairs of () because this defines the method called ()
  *     printf("Hello s4u");
  *     simgrid::s4u::this_actor::execute(5*1024*1024); // Get the worker executing a task of 5 MFlops
  *   }
  * };
- * \endcode
  * 
- * @section s4u_actor_new Creating a new instance of your Actor
+ * // From your main or from another actor, create your actor. Note the () after Worker
+ * new Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), Worker());
+ * @endcode
  * 
- * // Then later in your main() function or so:
- *   ...
- *   new Actor("worker", host, Worker());
- *   ...
+ * @section s4u_actor_flesh Fleshing your actor
+ * 
+ * The body of your actor can use the functions of the
+ * simgrid::s4u::this_actor namespace to interact with the world.
+ * This namespace contains the methods to start new activities
+ * (executions, communications, etc), and to get informations about
+ * the currently running thread (its location, etc).
+ * 
+ * Please refer to the @link simgrid::s4u::this_actor full API @endlink.
  *
- * You can start your actors with simple @c new, for example from the @c main function, 
- * but this is usually considered as a bad habit as it makes it harder to test your application
- * in differing settings. Instead, you are advised to use an XML deployment file using 
- * s4u::Engine::loadDeployment() to start your actors.
+ * 
+ * @section s4u_actor_deploy Using a deployment file
+ * 
+ * @warning This is currently not working with S4U. Sorry about that.
+ * 
+ * The best practice is to use an external deployment file as
+ * follows, because it makes it easier to test your application in
+ * differing settings. Load this file with
+ * s4u::Engine::loadDeployment() before the simulation starts. 
+ * Refer to the @ref deployment section for more information.
+ * 
+ * @code{.xml}
+ * <?xml version='1.0'?>
+ * <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+ * <platform version="4">
+ * 
+ *   <!-- Start a process called 'master' on the host called 'Tremblay' -->
+ *   <process host="Tremblay" function="master">
+ *      <!-- Here come the parameter that you want to feed to this instance of master -->
+ *      <argument value="20"/>        <!-- argv[1] -->
+ *      <argument value="50000000"/>  <!-- argv[2] -->
+ *      <argument value="1000000"/>   <!-- argv[3] -->
+ *      <argument value="5"/>         <!-- argv[4] -->
+ *   </process>
+ * 
+ *   <!-- Start a process called 'worker' on the host called 'Jupiter' -->
+ *   <process host="Jupiter" function="worker"/> <!-- Don't provide any parameter ->>
+ * 
+ * </platform>
+ * @endcode
  * 
  *  @{
  */

@@ -17,7 +17,13 @@ Unsurprisingly, the S4U interface matches the concepts presented in
 
   - @ref s4u_actor
 
+  @{
 */
+
+/** @defgroup  s4u_actor Actors: simulation agents */
+
+/** @} */
+
    - \ref msg_simulation
    - \ref m_process_management
    - \ref m_host_management
