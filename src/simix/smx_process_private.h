@@ -7,6 +7,7 @@
 #ifndef _SIMIX_PROCESS_PRIVATE_H
 #define _SIMIX_PROCESS_PRIVATE_H
 
+#include <atomic>
 #include <functional>
 #include <string>
 
@@ -68,6 +69,24 @@ public:
   std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
   int segment_index      = 0;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
+
+  friend void intrusive_ptr_add_ref(Process* process)
+  {
+    auto previous = (process->refcount_)++;
+    xbt_assert(previous != 0);
+    (void) previous;
+  }
+  friend void intrusive_ptr_release(Process* process)
+  {
+    auto count = --(process->refcount_);
+    if (count == 0)
+      delete process;
+  }
+
+  ~Process();
+
+private:
+  std::atomic_int_fast32_t refcount_ { 1 };
 };
 
 }

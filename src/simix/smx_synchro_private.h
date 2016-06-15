@@ -36,13 +36,13 @@ public:
   // boost::intrusive_ptr<Mutex> support:
   friend void intrusive_ptr_add_ref(Mutex* mutex)
   {
-    auto previous = ++mutex->refcount_;
+    auto previous = (mutex->refcount_)++;
     xbt_assert(previous != 0);
     (void) previous;
   }
   friend void intrusive_ptr_release(Mutex* mutex)
   {
-    auto count = mutex->refcount_--;
+    auto count = --(mutex->refcount_);
     if (count == 0)
       delete mutex;
   }
