@@ -608,9 +608,9 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
 
 
 /** Map a given SMPI privatization segment (make a SMPI process active) */
-void smpi_switch_data_segment(int dest){
-  if (smpi_loaded_page==dest)//no need to switch either
-   return;
+void smpi_switch_data_segment(int dest) {
+  if (smpi_loaded_page == dest)//no need to switch, we've already loaded the one we want
+    return;
 
   // So the job:
   smpi_really_switch_data_segment(dest);
