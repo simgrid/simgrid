@@ -40,7 +40,7 @@ foreach (file answer dht-kademlia node routing_table task)
 endforeach()
 
 foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
-         async-waitall async-waitany dht-chord dht-kademlia dht-pastry io-remote platform-properties maestro-set 
+         async-waitall async-waitany dht-chord dht-kademlia io-remote platform-properties maestro-set 
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
@@ -84,7 +84,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actio
 
 foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
           async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
-          cloud-two-tasks dht-chord dht-kademlia platform-failures io-file io-remote io-storage task-priority 
+          cloud-two-tasks dht-chord dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority 
           process-create process-kill process-migration process-suspend platform-properties synchro-semaphore 
           process-startkilltime)
   ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
@@ -114,6 +114,3 @@ ADD_TESH(msg-app-pmm  --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg --set
 if(HAVE_NS3)
   ADD_TESH_FACTORIES(msg-network-ns3 "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_BINARY_DIR}/examples/msg ${CMAKE_HOME_DIRECTORY}/examples/msg/network-ns3/network-ns3.tesh)
 endif()
-
-# This one is not usable:
-# ADD_TESH_FACTORIES(msg-dht-pastry                    "thread;ucontext;raw;boost" --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/msg/dht-pastry --cd ${CMAKE_BINARY_DIR}/examples/msg/dht-pastry dht-pastry.tesh)

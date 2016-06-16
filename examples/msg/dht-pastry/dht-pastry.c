@@ -12,7 +12,7 @@
 /* TODO:                               *
  *  - handle node departure            *
  *  - handle objects on the network    *
- *  - handle neighborood in the update */
+ *  - handle neighborhood in the update */
 
 #define COMM_SIZE 10
 #define COMP_SIZE 0
@@ -180,43 +180,35 @@ static state_t node_get_state(node_t node) {
 
 /* Print the node id */
 static void print_node_id(node_t node) {
-  int i;
-  printf(" id: %i '%08x' ", node->id, node->id);
-  for (i=0;i<LEVELS_COUNT;i++)
-    printf(" %x", domain(node->id, i));
-  printf("\n");
+  XBT_INFO(" Id: %i '%08x' ", node->id, node->id);
 }
 
 /* * Print the node neighborhood set */
 static void print_node_neighborood_set(node_t node) {
-  int i;
-  printf(" Neighborhood:\n");
-  for (i=0; i<NEIGHBORHOOD_SIZE; i++)
-    printf("  %08x\n", node->neighborhood_set[i]);
+  XBT_INFO(" Neighborhood:");
+  for (int i=0; i<NEIGHBORHOOD_SIZE; i++)
+    XBT_INFO("  %08x", node->neighborhood_set[i]);
 }
 
 /* Print the routing table */
 static void print_node_routing_table(node_t node) {
-  printf(" routing table:\n");
+  XBT_INFO(" Routing table:");
   for (int i=0; i<LEVELS_COUNT; i++){
-    printf("  ");
     for (int j=0; j<LEVEL_SIZE; j++)
-      printf("%08x ", node->routing_table[i][j]);
-    printf("\n");
+      XBT_INFO("  %08x ", node->routing_table[i][j]);
   }
 }
 
 /* Print the node namespace set */
 static void print_node_namespace_set(node_t node) {
-  printf(" namespace:\n");
+  XBT_INFO(" Namespace:");
   for (int i=0; i<NAMESPACE_SIZE; i++)
-    printf("  %08x\n", node->namespace_set[i]);
-  printf("\n");
+    XBT_INFO("  %08x", node->namespace_set[i]);
 }
 
 /* Print the node information */
 static void print_node(node_t node) {
-  printf("Node:\n");
+  XBT_INFO("Node:");
   print_node_id(node);
   print_node_neighborood_set(node);
   print_node_routing_table(node);
@@ -331,14 +323,14 @@ static void handle_task(node_t node, msg_task_t task) {
       XBT_DEBUG("Task update %i !!!", node->id);
 
       /* Update namespace ses */
-      printf("Task update from %i !!!\n", task_data->sender_id);
+      XBT_INFO("Task update from %i !!!", task_data->sender_id);
+      XBT_INFO("Node:");
       print_node_id(node);
       print_node_namespace_set(node);
       int curr_namespace_set[NAMESPACE_SIZE];
       int task_namespace_set[NAMESPACE_SIZE+1];
       
-      // Copy the current namedspace
-      // and the task state namespace with state->id in the middle
+      // Copy the current namespace and the task state namespace with state->id in the middle
       i=0;
       for (; i<NAMESPACE_SIZE/2; i++){
         curr_namespace_set[i] = node->namespace_set[i];
@@ -355,18 +347,13 @@ static void handle_task(node_t node, msg_task_t task) {
       max = -1;
       for (i=0; i<=NAMESPACE_SIZE; i++) {
         j = task_namespace_set[i];
-        if (i<NAMESPACE_SIZE)
-          printf("%08x %08x | ", j, curr_namespace_set[i]);
         if (j != -1 && j < node->id) min = i;
         if (j != -1 && max == -1 && j > node->id) max = i;
       }
-      printf("\n");
 
       // add lower elements
       j = NAMESPACE_SIZE/2-1;
       for (i=NAMESPACE_SIZE/2-1; i>=0; i--) {
-        printf("i:%i, j:%i, min:%i, currj:%08x, taskmin:%08x\n", i, j, min, curr_namespace_set[j],
-               task_namespace_set[min]);
         if (min<0) {
           node->namespace_set[i] = curr_namespace_set[j];
           j--;
@@ -385,8 +372,6 @@ static void handle_task(node_t node, msg_task_t task) {
       // add greater elements
       j = NAMESPACE_SIZE/2;
       for (i=NAMESPACE_SIZE/2; i<NAMESPACE_SIZE; i++) {
-        printf("i:%i, j:%i, max:%i, currj:%08x, taskmax:%08x\n", i, j, max, curr_namespace_set[j],
-               task_namespace_set[max]);
         if (min<0 || max>=NAMESPACE_SIZE) {
          node->namespace_set[i] = curr_namespace_set[j];
          j++;
@@ -404,7 +389,6 @@ static void handle_task(node_t node, msg_task_t task) {
           max++;
         }
       }
-      print_node_namespace_set(node);
 
       /* Update routing table */
       for (i=shl(node->id, task_data->state->id); i<LEVELS_COUNT; i++) {
@@ -442,7 +426,6 @@ static int join(node_t node){
 
   return 1;
 }
-
 
 /**
  * \brief Node Function
@@ -531,7 +514,6 @@ static int node(int argc, char *argv[])
       }
 
     }
-    print_node(&node);
   }
   return 1;
 }
