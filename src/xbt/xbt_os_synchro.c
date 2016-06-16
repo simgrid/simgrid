@@ -70,7 +70,7 @@ void xbt_cond_broadcast(xbt_cond_t cond)
 
 void xbt_cond_destroy(xbt_cond_t cond)
 {
-  SIMIX_cond_destroy((smx_cond_t) cond);
+  SIMIX_cond_unref((smx_cond_t) cond);
 }
 
 /***** barrier related functions *****/

@@ -182,7 +182,7 @@ static void action_barrier(const char *const *action)
 
   processes_arrived_sofar--;
   if (processes_arrived_sofar<=0) {
-    SIMIX_cond_destroy(cond);
+    SIMIX_cond_unref(cond);
     SIMIX_mutex_unref(mutex);
     mutex = NULL;
   }
