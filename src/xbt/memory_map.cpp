@@ -27,6 +27,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_memory_map, xbt, "Logging specific to algori
 namespace simgrid {
 namespace xbt {
 
+/**
+ * \todo This function contains many cases that do not allow for a
+ *       recovery. Currently, xbt_abort() is called but we should
+ *       much rather die with the specific reason so that it's easier
+ *       to find out what's going on.
+ */
 XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 {
 #ifdef __linux__
