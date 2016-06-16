@@ -39,7 +39,7 @@ public:
 // This class is an example of how to use lock_guard with simgrid mutex
 class WorkerLockGuard {
   simgrid::s4u::Mutex mutex_;
-int *results_;
+  int *results_;
 public:
   WorkerLockGuard(int  *res, simgrid::s4u::Mutex mutex) :
     mutex_(std::move(mutex)),  results_(res) {};
@@ -63,22 +63,18 @@ public:
   void operator()() {
     int res = 0;
     simgrid::s4u::Mutex mutex;
-    simgrid::s4u::Actor* workers[NB_ACTOR*2];
+    simgrid::s4u::Actor workers[NB_ACTOR*2];
 
     for (int i = 0; i < NB_ACTOR * 2 ; i++) {
       // To create a worker use the static method simgrid::s4u::Actor.
       if((i % 2) == 0 )
-        workers[i] = new simgrid::s4u::Actor("worker",
+        workers[i] = simgrid::s4u::Actor("worker",
           simgrid::s4u::Host::by_name("Jupiter"),
           WorkerLockGuard(&res, mutex));
       else
-        workers[i] = new simgrid::s4u::Actor("worker",
+        workers[i] = simgrid::s4u::Actor("worker",
           simgrid::s4u::Host::by_name("Tremblay"),
           Worker(&res, mutex));
-    }
-
-    for (int i = 0; i < NB_ACTOR ; i++) {
-      delete workers[i];
     }
 
     simgrid::s4u::this_actor::sleep(10);
@@ -90,7 +86,7 @@ public:
 int main(int argc, char **argv) {
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
   e->loadPlatform("../../platforms/two_hosts.xml");
-  new simgrid::s4u::Actor("main", simgrid::s4u::Host::by_name("Tremblay"), 0, MainActor());
+  simgrid::s4u::Actor("main", simgrid::s4u::Host::by_name("Tremblay"), 0, MainActor());
   e->run();
   return 0;
 }

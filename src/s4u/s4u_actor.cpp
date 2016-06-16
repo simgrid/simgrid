@@ -16,18 +16,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 
 using namespace simgrid;
 
-s4u::Actor::Actor(smx_process_t smx_proc) : pimpl_(smx_proc) {}
-
 s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
 {
   // TODO, when autorestart is used, the std::function is copied so the new
   // instance will get a fresh (reinitialized) state. Is this what we want?
-  this->pimpl_ = simcall_process_create(
+  this->pimpl_ = SIMIX_process_ref(simcall_process_create(
     name, std::move(code), nullptr, host->name().c_str(),
-    killTime, nullptr, 0);
+    killTime, nullptr, 0));
 }
-
-s4u::Actor::~Actor() {}
 
 void s4u::Actor::join() {
   simcall_process_join(pimpl_, -1);

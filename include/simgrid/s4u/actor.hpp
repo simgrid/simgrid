@@ -48,7 +48,7 @@ namespace s4u {
  * };
  * 
  * // From your main or from another actor, create your actor on the host Jupiter
- * new Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), worker);
+ * Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), worker);
  * @endcode
  * 
  * But some people prefer to encapsulate their actors in classes and
@@ -68,7 +68,7 @@ namespace s4u {
  * };
  * 
  * // From your main or from another actor, create your actor. Note the () after Worker
- * new Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), Worker());
+ * Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), Worker());
  * @endcode
  * 
  * @section s4u_actor_flesh Fleshing your actor
@@ -117,15 +117,38 @@ namespace s4u {
    
 /** @brief Simulation Agent (see \ref s4u_actor)*/
 XBT_PUBLIC_CLASS Actor {
-  explicit Actor(smx_process_t smx_proc);
 public:
+  Actor() : pimpl_(nullptr) {}
+  Actor(smx_process_t smx_proc) :
+    pimpl_(SIMIX_process_ref(smx_proc)) {}
+  ~Actor()
+  {
+    SIMIX_process_unref(pimpl_);
+  }
+
+  // Copy+move (with the copy-and-swap idiom):
+  Actor(Actor const& actor) : pimpl_(SIMIX_process_ref(actor.pimpl_)) {}
+  friend void swap(Actor& first, Actor& second)
+  {
+    using std::swap;
+    swap(first.pimpl_, second.pimpl_);
+  }
+  Actor& operator=(Actor actor)
+  {
+    swap(*this, actor);
+    return *this;
+  }
+  Actor(Actor&& actor) : pimpl_(nullptr)
+  {
+    swap(*this, actor);
+  }
+
   Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
   Actor(const char* name, s4u::Host *host, std::function<void()> code)
     : Actor(name, host, -1, std::move(code)) {};
   template<class C>
   Actor(const char* name, s4u::Host *host, C code)
     : Actor(name, host, -1, std::function<void()>(std::move(code))) {}
-  ~Actor();
 
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
   //static Actor *byPid(int pid); not implemented
@@ -163,11 +186,6 @@ public:
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
 
-protected:
-  smx_process_t getInferior()
-  {
-    return pimpl_;
-  }
 private:
   smx_process_t pimpl_ = nullptr;
 };
