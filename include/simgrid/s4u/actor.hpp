@@ -32,8 +32,6 @@ namespace s4u {
  * of this standard</a> may help to understand the philosophy of the S4U
  * Actors. 
  * 
- * (back to the @ref s4u_api "S4U documentation")
- * 
  * @section s4u_actor_def Defining the skeleton of an Actor
  * 
  * %As in the <a href="http://en.cppreference.com/w/cpp/thread">C++11
@@ -41,6 +39,8 @@ namespace s4u {
  * pure function or as an object. It is very simple with functions:
  * 
  * @code{.cpp}
+ * #include "s4u/actor.hpp"
+ * 
  * // Declare the code of your worker
  * void worker() {
  *   printf("Hello s4u");
@@ -48,7 +48,8 @@ namespace s4u {
  * };
  * 
  * // From your main or from another actor, create your actor on the host Jupiter
- * Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), worker);
+ * // The following line actually creates a new actor, even if there is no "new". 
+ * Actor("Alice", simgrid::s4u::Host::by_name("Jupiter"), worker);
  * @endcode
  * 
  * But some people prefer to encapsulate their actors in classes and
@@ -68,7 +69,7 @@ namespace s4u {
  * };
  * 
  * // From your main or from another actor, create your actor. Note the () after Worker
- * Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), Worker());
+ * Actor("Bob", simgrid::s4u::Host::by_name("Jupiter"), Worker());
  * @endcode
  * 
  * @section s4u_actor_flesh Fleshing your actor
