@@ -34,9 +34,10 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   /* to be returned. */
   char* path = bprintf("/proc/%i/maps", (int) pid);
   FILE *fp = std::fopen(path, "r");
-  if(fp == nullptr)
+  if (fp == nullptr) {
     std::perror("fopen failed");
-  xbt_assert(fp, "Cannot open %s to investigate the memory map of the process.", path);
+    xbt_die("Cannot open %s to investigate the memory map of the process.", path);
+  }
   free(path);
   setbuf(fp, nullptr);
 
