@@ -4,7 +4,7 @@
 
 $ java -classpath ${classpath:=.} cloud/masterworker/Main ${srcdir:=.}/../platforms/platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Using regular java threads.
-> [  0.000000] (0:maestro@) Start2  hosts
+> [  0.000000] (0:maestro@) Start 2 hosts
 > [  0.000000] (1:Master@Jacquelin) create VM00
 > [  0.000000] (1:Master@Jacquelin) Put Worker WRK00 on VM00
 > [  0.000000] (1:Master@Jacquelin) create VM01

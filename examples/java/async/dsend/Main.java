@@ -12,6 +12,10 @@ import org.simgrid.msg.NativeException;
 import org.simgrid.msg.HostNotFoundException;
 
 class Main {
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws NativeException, HostNotFoundException {
     Msg.init(args);
 

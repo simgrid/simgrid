@@ -11,9 +11,14 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.MsgException;
 
 class Main {
-  public static final double task_comp_size = 10;
-  public static final double task_comm_size = 10;
-  public static final int hostNB = 2 ; 
+  public static final double TASK_COMP_SIZE = 10;
+  public static final double TASK_COMM_SIZE = 10;
+  public static final int NHOSTS = 2 ; 
+
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws MsgException {
     Msg.init(args); 
 
@@ -26,12 +31,12 @@ class Main {
     /* Construct the platform */
     Msg.createEnvironment(args[0]);
     Host[] hosts = Host.all();
-    if (hosts.length < hostNB+1) {
-      Msg.info("I need at least "+ (hostNB+1) +"  hosts in the platform file, but " + args[0] + " contains only "
+    if (hosts.length < NHOSTS+1) {
+      Msg.info("I need at least "+ (NHOSTS+1) +"  hosts in the platform file, but " + args[0] + " contains only "
                + hosts.length + " hosts");
       System.exit(42);
     }
-    Msg.info("Start"+ hostNB +"  hosts");
+    Msg.info("Start "+ NHOSTS +" hosts");
     new Master(hosts[0],"Master",hosts).start();
     /* Execute the simulation */
     Msg.run();

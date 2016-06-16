@@ -13,8 +13,7 @@ import org.simgrid.msg.NativeException;
 import org.simgrid.msg.HostNotFoundException;
 
 public class Sender extends Process {
-  private final double commSizeLat = 1;
-  final double commSizeBw = 100000000;
+  private static final double COMM_SIZE_LAT = 1;
 
   public Sender(String hostname, String name, String[] args) throws HostNotFoundException, NativeException {
     super(hostname,name,args);
@@ -45,7 +44,7 @@ public class Sender extends Process {
 
       Msg.info("sender time: " + time);
 
-      task = new PingPongTask("no name",computeDuration,commSizeLat);
+      task = new PingPongTask("no name",computeDuration,COMM_SIZE_LAT);
       task.setTime(time);
 
       task.send(mailboxes[pos]);

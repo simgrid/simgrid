@@ -24,7 +24,7 @@ public class Master extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-    int workersCount = Main.hostNB;
+    int workersCount = Main.NHOSTS;
     ArrayList<VM> vms = new ArrayList<>();
 
     // Create one VM per host and bind a process inside each one. 
@@ -86,7 +86,7 @@ public class Master extends Process {
 
   public void workBatch(int workersCount) throws MsgException {
     for (int i = 0; i < workersCount; i++) {
-      Task task = new Task("Task0" + i, Main.task_comp_size, Main.task_comm_size);
+      Task task = new Task("Task0" + i, Main.TASK_COMP_SIZE, Main.TASK_COMM_SIZE);
       Msg.info("Sending to WRK0" + i);
       task.send("MBOX:WRK0" + i);
     }

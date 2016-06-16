@@ -10,7 +10,6 @@ import org.simgrid.msg.VM;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.Task;
 import org.simgrid.msg.Process;
-import org.simgrid.msg.MsgException;
 import org.simgrid.msg.HostFailureException;
 import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.TaskCancelledException;

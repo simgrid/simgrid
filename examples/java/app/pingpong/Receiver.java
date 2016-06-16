@@ -13,8 +13,7 @@ import org.simgrid.msg.NativeException;
 import org.simgrid.msg.HostNotFoundException;
 
 public class Receiver extends Process {
-  static final double COMM_SIZE_LAT = 1;
-  static final double COMM_SIZE_BW = 100000000;
+  private static final double COMM_SIZE_BW = 100000000;
   public Receiver(String hostname, String name, String[]args) throws HostNotFoundException, NativeException{
     super(hostname,name,args);
   }
@@ -32,7 +31,7 @@ public class Receiver extends Process {
 
     Msg.info("Got at time "+ timeGot);
     Msg.info("Was sent at time "+timeSent);
-    time=timeSent;
+    time = timeSent;
 
     double communicationTime = timeGot - time;
     Msg.info("Communication time : " + communicationTime);
