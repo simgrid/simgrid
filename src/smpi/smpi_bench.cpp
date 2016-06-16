@@ -646,7 +646,7 @@ void smpi_really_switch_data_segment(int dest) {
 
 int smpi_is_privatisation_file(char* file)
 {
-  return strncmp("/dev/shm/my-buffer-", file, 19) == 0;
+  return strncmp("/dev/shm/my-buffer-", file, std::strlen("/dev/shm/my-buffer-")) == 0;
 }
 
 void smpi_initialize_global_memory_segments(){
