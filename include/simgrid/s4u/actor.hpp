@@ -6,8 +6,16 @@
 #ifndef SIMGRID_S4U_ACTOR_HPP
 #define SIMGRID_S4U_ACTOR_HPP
 
+#include <atomic>
+#include <functional>
+#include <future>
+#include <memory>
 #include <stdexcept>
+#include <type_traits>
+
 #include <xbt/base.h>
+#include <xbt/functional.hpp>
+
 #include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
 
@@ -114,9 +122,39 @@ namespace s4u {
  * 
  *  @{
  */
-   
+
 /** @brief Simulation Agent (see \ref s4u_actor)*/
 XBT_PUBLIC_CLASS Actor {
+private:
+  /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
+  template<class F, class... Args>
+  class Task {
+  public:
+    Task(F&& code, Args&&... args) :
+      code_(std::forward<F>(code)),
+      args_(std::forward<Args>(args)...)
+    {}
+    void operator()()
+    {
+      if (done_.test_and_set())
+        throw std::logic_error("Actor task already executed");
+      simgrid::xbt::apply(std::move(code_), std::move(args_));
+    }
+  private:
+    std::atomic_flag done_ = ATOMIC_FLAG_INIT;
+    F code_;
+    std::tuple<Args...> args_;
+  };
+  /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
+  template<class F, class... Args>
+  static std::function<void()> wrap_task(F f, Args... args)
+  {
+    std::shared_ptr<Task<F, Args...>> task(
+      new Task<F, Args...>(std::move(f), std::move(args)...));
+    return [=] {
+      (*task)();
+    };
+  }
 public:
   Actor() : pimpl_(nullptr) {}
   Actor(smx_process_t smx_proc) :
@@ -143,12 +181,29 @@ public:
     swap(*this, actor);
   }
 
+  /** Create an actor using a function
+   *
+   *  If the actor is restarted, the actor has a fresh copy of the function.
+   */
   Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
+
   Actor(const char* name, s4u::Host *host, std::function<void()> code)
-    : Actor(name, host, -1, std::move(code)) {};
-  template<class C>
-  Actor(const char* name, s4u::Host *host, C code)
-    : Actor(name, host, -1, std::function<void()>(std::move(code))) {}
+    : Actor(name, host, -1.0d, std::move(code)) {};
+
+  /** Create an actor using code
+   *
+   *  Using this constructor, move-only type can be used. The consequence is
+   *  that we cannot copy the value and restart the process in its initial
+   *  state. In order to use auto-restart, an explicit `function` must be passed
+   *  instead.
+   */
+  template<class F, class... Args,
+    // This constructor is enabled only if the call code(args...) is valid:
+    typename = typename std::result_of<F(Args...)>::type
+    >
+  Actor(const char* name, s4u::Host *host, F code, Args... args) :
+    Actor(name, host, wrap_task(std::move(code), std::move(args)...))
+  {}
 
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
   //static Actor *byPid(int pid); not implemented

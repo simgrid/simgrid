@@ -15,6 +15,7 @@
 #include <utility>
 
 #include <xbt/sysdep.h>
+#include <xbt/utility.hpp>
 
 namespace simgrid {
 namespace xbt {
@@ -115,6 +116,41 @@ template<class F> inline
 std::function<void()> wrapMain(F code, int argc, const char*const* argv)
 {
   return wrapMain(std::move(code), args(argc, argv));
+}
+
+namespace bits {
+template <class F, class Tuple, std::size_t... I>
+constexpr auto apply(F&& f, Tuple&& t, simgrid::xbt::index_sequence<I...>)
+  -> decltype(std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...))
+{
+  return std::forward<F>(f)(std::get<I>(std::forward<Tuple>(t))...);
+}
+}
+
+/** Call a functional object with the values in the given tuple (from C++17)
+ *
+ *  @code{.cpp}
+ *  int foo(int a, bool b);
+ *
+ *  auto args = std::make_tuple(1, false);
+ *  int res = apply(foo, args);
+ *  @encode
+ **/
+template <class F, class Tuple>
+constexpr auto apply(F&& f, Tuple&& t)
+  -> decltype(simgrid::xbt::bits::apply(
+    std::forward<F>(f),
+    std::forward<Tuple>(t),
+    simgrid::xbt::make_index_sequence<
+      std::tuple_size<typename std::decay<Tuple>::type>::value
+    >()))
+{
+  return simgrid::xbt::bits::apply(
+    std::forward<F>(f),
+    std::forward<Tuple>(t),
+    simgrid::xbt::make_index_sequence<
+      std::tuple_size<typename std::decay<Tuple>::type>::value
+    >());
 }
 
 }
