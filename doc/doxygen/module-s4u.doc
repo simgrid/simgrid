@@ -1,0 +1,137 @@
+/**
+@defgroup s4u_api  S4U: Next Generation SimGrid API
+@brief Future core API, mixing the full power of SimGrid to the power of C++. 
+
+The S4U API is currently under heavy work, but will eventually
+deprecate the MSG and SimDag APIs. Everything that you can do in
+SimGrid will be possible in S4U. 
+
+@warning <b>S4U is not ready for public use yet</b>. You should not go
+	 that path unless you know what you are doing.  If unsure,
+	 proceed to @ref MSG_API instead.
+
+@section s4u_funct Offered functionalities
+
+Unsurprisingly, the S4U interface matches the concepts presented in 
+@ref starting_components "the introduction":
+
+  - @ref s4u_actor
+
+  @{
+*/
+
+/** @defgroup  s4u_actor Actors: simulation agents */
+
+/** @} */
+
+   - \ref msg_simulation
+   - \ref m_process_management
+   - \ref m_host_management
+   - \ref m_task_management
+   - \ref msg_mailbox_management
+   - @ref msg_file
+   - \ref msg_task_usage
+   - \ref msg_VMs
+   - \ref msg_synchro
+   - \ref msg_trace_driven
+   - \ref MSG_examples
+
+@defgroup msg_simulation   Main MSG simulation Functions
+@ingroup MSG_API
+@brief How to setup and control your simulation.
+
+The basic workflow is the following (check the \ref MSG_examples for
+details).
+
+ -# Initialize the library with #MSG_init
+ -# Create a platform (usually by parsing a file with
+    #MSG_create_environment)
+ -# Register the functions that your processes are supposed to run with
+    #MSG_function_register (and maybe #MSG_function_register_default)
+ -# Launch your processes from a deployment file with #MSG_launch_application
+ -# Run the simulation with #MSG_main
+*
+
+** @defgroup m_process_management Process Management Functions
+ *  @ingroup MSG_API
+ *  @brief This section describes the process structure of MSG
+ *         (#msg_process_t) and the functions for managing it.
+ */
+
+** @defgroup m_host_management Host Management Functions
+ *  @ingroup MSG_API
+ *  @brief Host structure of MSG
+ *
+
+** @defgroup m_task_management Task Management Functions
+ *  @ingroup MSG_API
+ *  @brief Task structure of MSG (#msg_task_t) and associated functions. See
+ *         \ref msg_task_usage to see how to put the tasks in action.
+ *
+
+** @defgroup msg_mailbox_management Mailbox Management Functions
+ *  @ingroup MSG_API
+ *  @brief Mailbox structure of MSG (#msg_mailbox_t) and associated functions.
+ *
+
+** @defgroup msg_task_usage Task Actions
+ *  @ingroup MSG_API
+ *  @brief This section describes the functions that can be used
+ *         by a process to execute, communicate or otherwise handle some task.
+ *
+
+** @defgroup msg_synchro Explicit Synchronization Functions
+ *  @ingroup MSG_API
+ *  @brief Explicit synchronization mechanisms: semaphores (#msg_sem_t) and friends.
+ *
+ * In some situations, these things are very helpful to synchronize processes without message exchanges.
+ *
+
+** @defgroup msg_VMs VMs
+ *  @ingroup MSG_API
+ *  @brief Interface created to mimic IaaS clouds.
+ *
+ *  With it, you can create virtual machines to put your processes
+ *  into, and interact directly with the VMs to manage groups of
+ *  processes.
+ *
+ *  This interface is highly experimental at this point. Testing is
+ *  welcomed, but do not expect too much of it right now. Even the
+ *  interfaces may be changed in future releases of SimGrid (although
+ *  things are expected to stabilize nicely before SimGrid v3.8).
+ *  There is no guaranty on the rest of SimGrid, and there is less
+ *  than that on this part.
+ *
+ *
+
+** @defgroup msg_storage_management Storage Management Functions
+ *  @ingroup MSG_API
+ *  @brief Storage structure of MSG (#msg_storage_t) and associated functions, inspired from POSIX.
+ *
+
+** @defgroup msg_file File Management Functions
+    @ingroup MSG_API
+    @brief MSG files (#msg_file_t) and associated functions, inspired from POSIX.
+*
+
+**
+@defgroup msg_trace_driven Trace-driven simulations
+@ingroup MSG_API
+@brief This section describes the functions allowing to build trace-driven simulations.
+
+This is very handy when you want to test an algorithm or protocol that
+does nothing unless it receives some events from outside. For example,
+a P2P protocol reacts to requests from the user, but does nothing if
+there is no such event.
+
+In such situations, SimGrid allows to write your protocol in your C
+file, and the events to react to in a separate text file. Declare a
+function handling each of the events that you want to accept in your
+trace files, register them using #xbt_replay_action_register in your main,
+and then use #MSG_action_trace_run to launch the simulation. You can
+either have one trace file containing all your events, or a file per
+simulated process.
+
+Check the examples in <b>examples/msg/actions/actions.c</b> for details.
+
+ *

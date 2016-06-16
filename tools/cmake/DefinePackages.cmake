@@ -381,6 +381,7 @@ set(S4U_SRC
   src/s4u/s4u_file.cpp  
   src/s4u/s4u_host.cpp  
   src/s4u/s4u_mailbox.cpp
+  src/s4u/s4u_mutex.cpp
   src/s4u/s4u_storage.cpp
 )
 
@@ -644,6 +645,7 @@ set(headers_to_install
   include/simgrid/s4u/file.hpp  
   include/simgrid/s4u/host.hpp  
   include/simgrid/s4u/mailbox.hpp  
+  include/simgrid/s4u/mutex.hpp
   include/simgrid/s4u/storage.hpp  
   include/simgrid/s4u.h
   include/simgrid/plugins/energy.h
@@ -817,6 +819,7 @@ set(DOC_SOURCES
   doc/doxygen/tutorial.doc
   doc/doxygen/models.doc
   doc/doxygen/module-msg.doc
+  doc/doxygen/module-s4u.doc
   doc/doxygen/module-sd.doc
   doc/doxygen/module-simix.doc
   doc/doxygen/module-smpi.doc

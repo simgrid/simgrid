@@ -32,23 +32,25 @@ namespace simix {
   class Process;
   class Context;
   class ContextFactory;
-
+  class Mutex;
 }
 }
 
 typedef simgrid::simix::Context *smx_context_t;
 typedef simgrid::simix::Process *smx_process_t;
 
+/**
+ * \ingroup simix_synchro_management
+ */
+typedef simgrid::simix::Mutex   *smx_mutex_t;
+
 #else
 
 typedef struct s_smx_context *smx_context_t;
 typedef struct s_smx_process *smx_process_t;
+typedef struct s_smx_mutex   *smx_mutex_t;
 
 #endif
-
-
-
-SG_BEGIN_DECL()
 
 /**************************** Scalar Values **********************************/
 
@@ -83,10 +85,7 @@ typedef enum {
 /** @} */
 
 /* ******************************** Synchro ************************************ */
-/**
- * \ingroup simix_synchro_management
- */
-typedef struct s_smx_mutex *smx_mutex_t;
+
 /**
  * \ingroup simix_synchro_management
  */
@@ -126,6 +125,8 @@ extern int smx_context_stack_size;
 extern int smx_context_stack_size_was_set;
 extern int smx_context_guard_size;
 extern int smx_context_guard_size_was_set;
+
+SG_BEGIN_DECL()
 
 XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_from_PID(int PID);
@@ -213,6 +214,8 @@ XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 
 /********************************* Process ************************************/
+XBT_PUBLIC(smx_process_t) SIMIX_process_ref(smx_process_t process);
+XBT_PUBLIC(void) SIMIX_process_unref(smx_process_t process);
 XBT_PUBLIC(int) SIMIX_process_count(void);
 XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
 XBT_PUBLIC(const char*) SIMIX_process_self_get_name(void);
@@ -373,7 +376,8 @@ XBT_PUBLIC(void) simcall_set_category(smx_synchro_t synchro, const char *categor
 
 /************************** Synchro simcalls **********************************/
 XBT_PUBLIC(smx_mutex_t) simcall_mutex_init(void);
-XBT_PUBLIC(void) SIMIX_mutex_destroy(smx_mutex_t mutex);
+XBT_PUBLIC(smx_mutex_t) SIMIX_mutex_ref(smx_mutex_t mutex);
+XBT_PUBLIC(void) SIMIX_mutex_unref(smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_mutex_lock(smx_mutex_t mutex);
 XBT_PUBLIC(int) simcall_mutex_trylock(smx_mutex_t mutex);
 XBT_PUBLIC(void) simcall_mutex_unlock(smx_mutex_t mutex);

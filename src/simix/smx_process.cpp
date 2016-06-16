@@ -28,6 +28,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_process, simix, "Logging specific to SIMIX
 
 unsigned long simix_process_maxpid = 0;
 
+/** Increase the refcount for this process */
+smx_process_t SIMIX_process_ref(smx_process_t process)
+{
+  if (process != nullptr)
+    intrusive_ptr_add_ref(process);
+  return process;
+}
+
+/** Decrease the refcount for this process */
+void SIMIX_process_unref(smx_process_t process)
+{
+  if (process != nullptr)
+    intrusive_ptr_release(process);
+}
+
 /**
  * \brief Returns the current agent.
  *
@@ -126,16 +141,23 @@ void SIMIX_process_empty_trash(void)
 
   while ((process = (smx_process_t) xbt_swag_extract(simix_global->process_to_destroy))) {
     XBT_DEBUG("Getting rid of %p",process);
-    delete process->context;
-    xbt_dict_free(&process->properties);
-    xbt_fifo_free(process->comms);
-    xbt_dynar_free(&process->on_exit);
-    delete process;
+    intrusive_ptr_release(process);
   }
 }
 
 namespace simgrid {
 namespace simix {
+
+Process::~Process()
+{
+  delete this->context;
+  if (this->properties)
+    xbt_dict_free(&this->properties);
+  if (this->comms != nullptr)
+    xbt_fifo_free(this->comms);
+  if (this->on_exit)
+    xbt_dynar_free(&this->on_exit);
+}
 
 void create_maestro(std::function<void()> code)
 {

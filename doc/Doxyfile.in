@@ -678,6 +678,7 @@ INPUT                  = doxygen/index.doc \
 			 doxygen/module-sd.doc \
 			 doxygen/module-index.doc \
                            doxygen/module-xbt.doc \
+                           doxygen/module-s4u.doc \
                            doxygen/module-surf.doc \
                            doxygen/module-simix.doc \
                            doxygen/module-smpi.doc \

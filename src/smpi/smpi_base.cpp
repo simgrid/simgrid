@@ -74,7 +74,7 @@ static int match_send(void* a, void* b,smx_synchro_t ignored) {
 typedef struct s_smpi_factor_multival *smpi_os_factor_multival_t;
 typedef struct s_smpi_factor_multival { // FIXME: this should be merged (deduplicated) with s_smpi_factor defined in network_smpi.c
   long factor=0;
-  std::vector<double> values; /** We allocate arbitrarily 4 elements **/
+  std::vector<double> values;
 } s_smpi_factor_multival_t;
 
 std::vector<s_smpi_factor_multival_t> smpi_os_values;
@@ -775,44 +775,40 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status *
 {
   xbt_dynar_t comms;
   int i;
-  int* map;
   int flag = 0;
-  int size = 0;
 
   *index = MPI_UNDEFINED;
   comms = xbt_dynar_new(sizeof(smx_synchro_t), nullptr);
-  map = xbt_new(int, count);
+  std::vector<int> map; /** Maps all matching comms back to their location in requests **/
   for(i = 0; i < count; i++) {
     if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->action && !(requests[i]->flags & PREPARED)) {
        xbt_dynar_push(comms, &requests[i]->action);
-       map[size] = i;
-       size++;
+       map.push_back(i);
     }
   }
-  if(size > 0) {
+  if(!map.empty()) {
     //multiplier to the sleeptime, to increase speed of execution, each failed testany will increase it
     static int nsleeps = 1;
     if(smpi_test_sleep > 0) 
       simcall_process_sleep(nsleeps*smpi_test_sleep);
 
-    i = simcall_comm_testany(comms);
-    // not MPI_UNDEFINED, as this is a simix return code
-    if(i != -1) {
-      *index = map[i];
+    i = simcall_comm_testany(comms); // The i-th element in comms matches!
+    if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
+      *index = map[i]; 
       finish_wait(&requests[*index], status);
-      if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags & NON_PERSISTENT))
-      requests[*index] = MPI_REQUEST_NULL;
-      flag = 1;
-      nsleeps=1;
-    }else{
+      flag             = 1;
+      nsleeps          = 1;
+      if (requests[*index] != MPI_REQUEST_NULL && (requests[*index]->flags & NON_PERSISTENT)) {
+        requests[*index] = MPI_REQUEST_NULL;
+      }
+    } else {
       nsleeps++;
     }
-  }else{
+  } else {
       //all requests are null or inactive, return true
-      flag=1;
+      flag = 1;
       smpi_empty_status(status);
   }
-  xbt_free(map);
   xbt_dynar_free(&comms);
 
   return flag;

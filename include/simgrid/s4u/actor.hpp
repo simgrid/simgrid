@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2015. The SimGrid Team. All rights reserved.          */
+/* Copyright (c) 2006-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -14,42 +14,141 @@
 namespace simgrid {
 namespace s4u {
 
-/** @brief Simulation Agent
+/** @addtogroup s4u_actor
+ * 
+ * @tableofcontents
+ * 
+ * An actor is an independent stream of execution in your distributed application.
  *
- * An actor may be defined as a code executing in a location (host).
- *
- * All actors should be started from the XML deployment file (using the @link{s4u::Engine::loadDeployment()}),
- * even if you can also start new actors directly.
- * Separating the deployment in the XML from the logic in the code is a good habit as it makes your simulation easier
- * to adapt to new settings.
- *
- * The code that you define for a given actor should be placed in the main method that is virtual.
- * For example, a Worker actor should be declared as follows:
- *
- * \verbatim
+ * You can think of an actor as a process in your distributed application, or as a thread in a multithreaded program.
+ * This is the only component in SimGrid that actually does something on its own, executing its own code. 
+ * A resource will not get used if you don't schedule activities on them. This is the code of Actors that create and schedule these activities.
+ * 
+ * An actor is located on a (simulated) host, but it can interact
+ * with the whole simulated platform.
+ * 
+ * The s4u::Actor API is strongly inspired from the C++11 threads.
+ * The <a href="http://en.cppreference.com/w/cpp/thread">documentation 
+ * of this standard</a> may help to understand the philosophy of the S4U
+ * Actors. 
+ * 
+ * (back to the @ref s4u_api "S4U documentation")
+ * 
+ * @section s4u_actor_def Defining the skeleton of an Actor
+ * 
+ * %As in the <a href="http://en.cppreference.com/w/cpp/thread">C++11
+ * standard</a>, you can declare the code of your actor either as a
+ * pure function or as an object. It is very simple with functions:
+ * 
+ * @code{.cpp}
+ * // Declare the code of your worker
+ * void worker() {
+ *   printf("Hello s4u");
+ *   simgrid::s4u::this_actor::execute(5*1024*1024); // Get the worker executing a task of 5 MFlops
+ * };
+ * 
+ * // From your main or from another actor, create your actor on the host Jupiter
+ * Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), worker);
+ * @endcode
+ * 
+ * But some people prefer to encapsulate their actors in classes and
+ * objects to save the actor state in a cleanly dedicated location.
+ * The syntax is slightly more complicated, but not much.
+ * 
+ * @code{.cpp}
  * #include "s4u/actor.hpp"
  * 
+ * // Declare the class representing your actors
  * class Worker {
- *   void operator()() {
+ * public:
+ *   void operator()() { // Two pairs of () because this defines the method called ()
  *     printf("Hello s4u");
- *     return 0;
+ *     simgrid::s4u::this_actor::execute(5*1024*1024); // Get the worker executing a task of 5 MFlops
  *   }
  * };
+ * 
+ * // From your main or from another actor, create your actor. Note the () after Worker
+ * Actor("worker", simgrid::s4u::Host::by_name("Jupiter"), Worker());
+ * @endcode
+ * 
+ * @section s4u_actor_flesh Fleshing your actor
+ * 
+ * The body of your actor can use the functions of the
+ * simgrid::s4u::this_actor namespace to interact with the world.
+ * This namespace contains the methods to start new activities
+ * (executions, communications, etc), and to get informations about
+ * the currently running thread (its location, etc).
+ * 
+ * Please refer to the @link simgrid::s4u::this_actor full API @endlink.
  *
- * new Actor("worker", host, Worker());
- * \endverbatim
- *
+ * 
+ * @section s4u_actor_deploy Using a deployment file
+ * 
+ * @warning This is currently not working with S4U. Sorry about that.
+ * 
+ * The best practice is to use an external deployment file as
+ * follows, because it makes it easier to test your application in
+ * differing settings. Load this file with
+ * s4u::Engine::loadDeployment() before the simulation starts. 
+ * Refer to the @ref deployment section for more information.
+ * 
+ * @code{.xml}
+ * <?xml version='1.0'?>
+ * <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+ * <platform version="4">
+ * 
+ *   <!-- Start a process called 'master' on the host called 'Tremblay' -->
+ *   <process host="Tremblay" function="master">
+ *      <!-- Here come the parameter that you want to feed to this instance of master -->
+ *      <argument value="20"/>        <!-- argv[1] -->
+ *      <argument value="50000000"/>  <!-- argv[2] -->
+ *      <argument value="1000000"/>   <!-- argv[3] -->
+ *      <argument value="5"/>         <!-- argv[4] -->
+ *   </process>
+ * 
+ *   <!-- Start a process called 'worker' on the host called 'Jupiter' -->
+ *   <process host="Jupiter" function="worker"/> <!-- Don't provide any parameter ->>
+ * 
+ * </platform>
+ * @endcode
+ * 
+ *  @{
  */
+   
+/** @brief Simulation Agent (see \ref s4u_actor)*/
 XBT_PUBLIC_CLASS Actor {
-  explicit Actor(smx_process_t smx_proc);
 public:
+  Actor() : pimpl_(nullptr) {}
+  Actor(smx_process_t smx_proc) :
+    pimpl_(SIMIX_process_ref(smx_proc)) {}
+  ~Actor()
+  {
+    SIMIX_process_unref(pimpl_);
+  }
+
+  // Copy+move (with the copy-and-swap idiom):
+  Actor(Actor const& actor) : pimpl_(SIMIX_process_ref(actor.pimpl_)) {}
+  friend void swap(Actor& first, Actor& second)
+  {
+    using std::swap;
+    swap(first.pimpl_, second.pimpl_);
+  }
+  Actor& operator=(Actor actor)
+  {
+    swap(*this, actor);
+    return *this;
+  }
+  Actor(Actor&& actor) : pimpl_(nullptr)
+  {
+    swap(*this, actor);
+  }
+
   Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
   Actor(const char* name, s4u::Host *host, std::function<void()> code)
     : Actor(name, host, -1, std::move(code)) {};
   template<class C>
   Actor(const char* name, s4u::Host *host, C code)
     : Actor(name, host, -1, std::function<void()>(std::move(code))) {}
-  ~Actor();
 
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
   //static Actor *byPid(int pid); not implemented
@@ -87,15 +186,12 @@ public:
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
 
-protected:
-  smx_process_t getInferior() {return pimpl_;}
 private:
   smx_process_t pimpl_ = nullptr;
 };
 
+/** @brief Static methods working on the current actor (see @ref s4u_actor) */
 namespace this_actor {
-
-  // Static methods working on the current actor:
 
   /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
   XBT_PUBLIC(void) sleep(double duration);
@@ -117,16 +213,9 @@ namespace this_actor {
 
 };
 
+/** @} */
+
 }} // namespace simgrid::s4u
 
+
 #endif /* SIMGRID_S4U_ACTOR_HPP */
-
-#if 0
-
-public final class Actor {
-  
-  public Actor(String name, Host host, double killTime, Runnable code);
-  // ....
-
-}
-#endif

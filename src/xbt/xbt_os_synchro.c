@@ -39,7 +39,7 @@ void xbt_mutex_release(xbt_mutex_t mutex)
 
 void xbt_mutex_destroy(xbt_mutex_t mutex)
 {
-  SIMIX_mutex_destroy((smx_mutex_t) mutex);
+  SIMIX_mutex_unref((smx_mutex_t) mutex);
 }
 
 /***** condition related functions *****/
