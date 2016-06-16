@@ -20,14 +20,14 @@ XBT_PUBLIC_CLASS Mutex {
 public:
   Mutex() :
     mutex_(simcall_mutex_init()) {}
-  Mutex(simgrid::simix::Mutex* mutex) : mutex_(SIMIX_mutex_dup(mutex)) {}
+  Mutex(simgrid::simix::Mutex* mutex) : mutex_(SIMIX_mutex_ref(mutex)) {}
   ~Mutex()
   {
-    SIMIX_mutex_destroy(mutex_);
+    SIMIX_mutex_unref(mutex_);
   }
 
   // Copy+move (with the copy-and-swap idiom):
-  Mutex(Mutex const& mutex) : mutex_(SIMIX_mutex_dup(mutex.mutex_)) {}
+  Mutex(Mutex const& mutex) : mutex_(SIMIX_mutex_ref(mutex.mutex_)) {}
   friend void swap(Mutex& first, Mutex& second)
   {
     using std::swap;

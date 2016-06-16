@@ -164,7 +164,10 @@ public:
   static void killAll();
 
 protected:
-  smx_process_t getInferior() {return pimpl_;}
+  smx_process_t getInferior()
+  {
+    return pimpl_;
+  }
 private:
   smx_process_t pimpl_ = nullptr;
 };

@@ -187,17 +187,19 @@ void Mutex::unlock(smx_process_t issuer)
 }
 }
 
-void SIMIX_mutex_destroy(smx_mutex_t mutex)
-{
-  if (mutex != nullptr)
-    intrusive_ptr_release(mutex);
-}
-
-XBT_PUBLIC(smx_mutex_t) SIMIX_mutex_dup(smx_mutex_t mutex)
+/** Increase the refcount for this mutex */
+smx_mutex_t SIMIX_mutex_ref(smx_mutex_t mutex)
 {
   if (mutex != nullptr)
     intrusive_ptr_add_ref(mutex);
   return mutex;
+}
+
+/** Decrease the refcount for this mutex */
+void SIMIX_mutex_unref(smx_mutex_t mutex)
+{
+  if (mutex != nullptr)
+    intrusive_ptr_release(mutex);
 }
 
 smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall)
