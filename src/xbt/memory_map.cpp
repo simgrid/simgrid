@@ -65,13 +65,13 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Check to see if we got the expected amount of columns */
     if (i < 6)
-      xbt_abort();
+      xbt_die("The memory map apparently only supplied less than 6 columns. Recovery impossible.");
 
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
     char *tok = std::strtok(lfields[0], "-");
     if (tok == nullptr)
-      xbt_abort();
+      xbt_die("Start and end address of the map are not concatenated by a hyphen (-). Recovery impossible.");
 
     VmMap memreg;
     char *endptr;
