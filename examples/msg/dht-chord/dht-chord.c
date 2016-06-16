@@ -80,11 +80,10 @@ static void print_finger_table(node_t node);
 static void set_finger(node_t node, int finger_index, int id);
 static void set_predecessor(node_t node, int predecessor_id);
 
-// process functions
-static int node(int argc, char *argv[]);
+//// process functions
 static void handle_task(node_t node, msg_task_t task);
 
-// Chord core
+//// Chord core
 static void create(node_t node);
 static int join(node_t node, int known_id);
 static void leave(node_t node);
@@ -97,7 +96,7 @@ static void notify(node_t node, int predecessor_candidate_id);
 static void remote_notify(node_t node, int notify_to, int predecessor_candidate_id);
 static void fix_fingers(node_t node);
 static void check_predecessor(node_t node);
-static void random_lookup(node_t);
+static void random_lookup(node_t node);
 static void quit_notify(node_t node);
 
 /* Global initialization of the Chord simulation. */
@@ -105,7 +104,7 @@ static void chord_initialize(void)
 {
   // compute the powers of 2 once for all
   powers2 = xbt_new(int, nb_bits);
-  int pow = 1;
+  unsigned int pow = 1;
   unsigned i;
   for (i = 0; i < nb_bits; i++) {
     powers2[i] = pow;
@@ -141,13 +140,12 @@ static void chord_exit(void)
 /* Turns an id into an equivalent id in [0, nb_keys). */
 static int normalize(int id)
 {
-  // like id % nb_keys, but works with negatives numbers (and faster)
-  return id & (nb_keys - 1);
+  return id % nb_keys;
 }
 
 /* Returns whether an id belongs to the interval [start, end].
  *
- * The parameters are noramlized to make sure they are between 0 and nb_keys - 1).
+ * The parameters are normalized to make sure they are between 0 and nb_keys - 1).
  * 1 belongs to [62, 3]
  * 1 does not belong to [3, 62]
  * 63 belongs to [62, 3]
@@ -162,20 +160,20 @@ static int normalize(int id)
  */
 static int is_in_interval(int id, int start, int end)
 {
-  id = normalize(id);
-  start = normalize(start);
-  end = normalize(end);
+  int i = normalize(id);
+  int s = normalize(start);
+  int e = normalize(end);
 
   // make sure end >= start and id >= start
-  if (end < start) {
-    end += nb_keys;
+  if (e < s) {
+    e += nb_keys;
   }
 
-  if (id < start) {
-    id += nb_keys;
+  if (i < s) {
+    i += nb_keys;
   }
 
-  return id <= end;
+  return i <= e;
 }
 
 /* Gets the mailbox name of a host given its chord id.
@@ -202,10 +200,9 @@ static void task_free(void* task)
 static void print_finger_table(node_t node)
 {
   if (XBT_LOG_ISENABLED(msg_chord, xbt_log_priority_verbose)) {
-    int i;
     XBT_VERB("My finger table:");
     XBT_VERB("Start | Succ");
-    for (i = 0; i < nb_bits; i++) {
+    for (int i = 0; i < nb_bits; i++) {
       XBT_VERB(" %3d  | %3d", (node->id + powers2[i]) % nb_keys, node->fingers[i].id);
     }
     XBT_VERB("Predecessor: %d", node->pred_id);
@@ -254,9 +251,8 @@ static void set_predecessor(node_t node, int predecessor_id)
  * - the id of a guy I know in the system (except for the first node)
  * - the time to sleep before I join (except for the first node)
  */
-int node(int argc, char *argv[])
+static int node(int argc, char *argv[])
 {
-
   /* Reduce the run size for the MC */
   if(MC_is_active() || MC_record_replay_is_active()){
     periodic_stabilize_delay = 8;
@@ -301,14 +297,8 @@ int node(int argc, char *argv[])
 
   } else {
     int known_id = xbt_str_parse_int(argv[2],"Invalid root ID: %s");
-    //double sleep_time = atof(argv[3]);
     deadline = xbt_str_parse_double(argv[4],"Invalid deadline: %s");
 
-    /*
-    // sleep before starting
-    XBT_DEBUG("Let's sleep during %f", sleep_time);
-    MSG_process_sleep(sleep_time);
-    */
     XBT_DEBUG("Hey! Let's join the system.");
 
     join_success = join(&node, known_id);
@@ -427,12 +417,9 @@ static void handle_task(node_t node, msg_task_t task) {
       task_data->type = TASK_FIND_SUCCESSOR_ANSWER;
       task_data->answer_id = node->fingers[0].id;
       XBT_DEBUG("Sending back a 'Find Successor Answer' to %s (mailbox %s): the successor of %d is %d",
-                task_data->issuer_host_name,
-                task_data->answer_to,
-                task_data->request_id, task_data->answer_id);
+                task_data->issuer_host_name, task_data->answer_to, task_data->request_id, task_data->answer_id);
       MSG_task_dsend(task, task_data->answer_to, task_free);
-    }
-    else {
+    } else {
       // otherwise, forward the request to the closest preceding finger in my table
       int closest = closest_preceding_node(node, task_data->request_id);
       XBT_DEBUG("Forwarding the 'Find Successor' request for id %d to my closest preceding finger %d",
@@ -447,8 +434,7 @@ static void handle_task(node_t node, msg_task_t task) {
     task_data->type = TASK_GET_PREDECESSOR_ANSWER;
     task_data->answer_id = node->pred_id;
     XBT_DEBUG("Sending back a 'Get Predecessor Answer' to %s via mailbox '%s': my predecessor is %d",
-              task_data->issuer_host_name,
-              task_data->answer_to, task_data->answer_id);
+              task_data->issuer_host_name, task_data->answer_to, task_data->answer_id);
     MSG_task_dsend(task, task_data->answer_to, task_free);
     break;
 
@@ -493,8 +479,7 @@ static void handle_task(node_t node, msg_task_t task) {
     XBT_DEBUG("Receiving a 'Predecessor Alive' request from %s", task_data->issuer_host_name);
     task_data->type = TASK_PREDECESSOR_ALIVE_ANSWER;
     XBT_DEBUG("Sending back a 'Predecessor Alive Answer' to %s (mailbox %s)",
-              task_data->issuer_host_name,
-              task_data->answer_to);
+              task_data->issuer_host_name, task_data->answer_to);
     MSG_task_dsend(task, task_data->answer_to, task_free);
     break;
 
@@ -521,11 +506,6 @@ static int join(node_t node, int known_id)
 {
   XBT_INFO("Joining the ring with id %d, knowing node %d", node->id, known_id);
   set_predecessor(node, -1); // no predecessor (yet)
-
-  /*
-  for (int i = 0; i < nb_bits; i++) 
-    set_finger(node, i, known_id);
-  */
 
   int successor_id = remote_find_successor(node, known_id, node->id);
   if (successor_id == -1) {
@@ -559,10 +539,8 @@ static void quit_notify(node_t node)
 
   msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   XBT_DEBUG("Sending a 'PREDECESSOR_LEAVING' to my successor %d",node->fingers[0].id);
-  if (MSG_task_send_with_timeout(task_sent, node->fingers[0].mailbox, timeout)==
-      MSG_TIMEOUT) {
-    XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d",
-        node->fingers[0].id);
+  if (MSG_task_send_with_timeout(task_sent, node->fingers[0].mailbox, timeout)== MSG_TIMEOUT) {
+    XBT_DEBUG("Timeout expired when sending a 'PREDECESSOR_LEAVING' to my successor %d", node->fingers[0].id);
     task_free(task_sent);
   }
 
@@ -577,13 +555,10 @@ static void quit_notify(node_t node)
 
   msg_task_t task_sent_s = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data_s);
   XBT_DEBUG("Sending a 'SUCCESSOR_LEAVING' to my predecessor %d",node->pred_id);
-  if (MSG_task_send_with_timeout(task_sent_s, mailbox, timeout)==
-      MSG_TIMEOUT) {
-    XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d",
-        node->pred_id);
+  if (MSG_task_send_with_timeout(task_sent_s, mailbox, timeout)== MSG_TIMEOUT) {
+    XBT_DEBUG("Timeout expired when sending a 'SUCCESSOR_LEAVING' to my predecessor %d", node->pred_id);
     task_free(task_sent_s);
   }
-
 }
 
 /* Makes the current node find the successor node of an id.
@@ -629,8 +604,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   msg_error_t res = MSG_task_send_with_timeout(task_sent, mailbox, timeout);
 
   if (res != MSG_OK) {
-    XBT_DEBUG("Failed to send the 'Find Successor' request (task %p) to %d for id %d",
-        task_sent, ask_to, id);
+    XBT_DEBUG("Failed to send the 'Find Successor' request (task %p) to %d for id %d", task_sent, ask_to, id);
     task_free(task_sent);
   }
   else {
@@ -782,7 +756,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
  * \param id the id to find
  * \return the closest preceding finger of that id
  */
-int closest_preceding_node(node_t node, int id)
+static int closest_preceding_node(node_t node, int id)
 {
   int i;
   for (i = nb_bits - 1; i >= 0; i--) {
