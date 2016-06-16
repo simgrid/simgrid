@@ -353,44 +353,6 @@ void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t d
 
 /**
  * \ingroup simix_process_management
- * \brief Creates and runs a new SIMIX process.
- *
- * The structure and the corresponding thread are created and put in the list of ready processes.
- *
- * \param name a name for the process. It is for user-level information and can be nullptr.
- * \param code the main function of the process
- * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be nullptr.
- * It can be retrieved with the function \ref simcall_process_get_data.
- * \param hostname name of the host where the new agent is executed.
- * \param kill_time time when the process is killed
- * \param argc first argument passed to \a code
- * \param argv second argument passed to \a code
- * \param properties the properties of the process
- * \param auto_restart either it is autorestarting or not.
- */
-smx_process_t simcall_process_create(const char *name,
-                              xbt_main_func_t code,
-                              void *data,
-                              const char *hostname,
-                              double kill_time,
-                              int argc, char **argv,
-                              xbt_dict_t properties,
-                              int auto_restart)
-{
-  if (name == nullptr)
-    name = "";
-  auto wrapped_code = simgrid::xbt::wrapMain(code, argc, argv);
-  for (int i = 0; i != argc; ++i)
-    xbt_free(argv[i]);
-  xbt_free(argv);
-  smx_process_t res = simcall_process_create(name,
-    std::move(wrapped_code),
-    data, hostname, kill_time, properties, auto_restart);
-  return res;
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Kills a SIMIX process.
  *
  * This function simply kills a  process.
