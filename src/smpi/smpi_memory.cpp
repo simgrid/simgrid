@@ -16,10 +16,9 @@
 #include "../xbt/memory_map.hpp"
 
 #include "private.h"
+#include "private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SMPI");
-
-#define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
 #define PROT_RWX (PROT_READ | PROT_WRITE | PROT_EXEC)
 #define PROT_RW (PROT_READ | PROT_WRITE )

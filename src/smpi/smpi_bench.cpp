@@ -606,7 +606,6 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
    return data;
 }
 
-#define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
 /** Map a given SMPI privatization segment (make a SMPI process active) */
 void smpi_switch_data_segment(int dest){
