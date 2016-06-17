@@ -14,9 +14,9 @@ namespace simgrid {
 
 class XBT_PRIVATE DragonflyRouter {
     public:
-      int group_;
-      int chassis_;
-      int blade_;
+      unsigned int group_;
+      unsigned int chassis_;
+      unsigned int blade_;
       Link** blueLinks_=NULL;
       Link** blackLinks_=NULL;
       Link** greenLinks_=NULL;

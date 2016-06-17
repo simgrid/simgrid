@@ -28,7 +28,7 @@ AsClusterDragonfly::AsClusterDragonfly(const char*name)
 AsClusterDragonfly::~AsClusterDragonfly() {
 
   if(this->routers_!=NULL){
-    int i;
+    unsigned int i;
     for (i=0; i<this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_;i++)
         delete(routers_[i]);
     xbt_free(routers_);
@@ -175,12 +175,12 @@ void AsClusterDragonfly::createLink(char* id, int numlinks, Link** linkup, Link*
 
 void AsClusterDragonfly::generateLinks() {
 
-  unsigned int i, j, k, l,m;
+  unsigned int i, j, k, l;
   static int uniqueId = 0;
   char* id = NULL;
   Link* linkup, *linkdown;
 
-  int numRouters = this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_;
+  unsigned int numRouters = this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_;
 
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX)
     numLinksperLink_=2;
