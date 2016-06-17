@@ -10,6 +10,10 @@ import org.simgrid.msg.Msg;
 import org.simgrid.msg.NativeException;
 
 class Main {
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws NativeException {
     Msg.init(args);
 

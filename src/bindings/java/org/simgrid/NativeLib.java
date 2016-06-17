@@ -16,7 +16,13 @@ import java.nio.file.Path;
 
 public final class NativeLib {
 	/* Statically load the library which contains all native functions used in here */
-	static private boolean isNativeInited = false;
+	private static boolean isNativeInited = false;
+	static Path tempDir = null;
+
+	private NativeLib() {
+		throw new IllegalAccessError("Utility class");
+	}
+
 	public static void nativeInit() {
 		if (isNativeInited)
 			return;
@@ -25,7 +31,7 @@ public final class NativeLib {
 			NativeLib.nativeInit("winpthread-1");
 
 		NativeLib.nativeInit("simgrid");
-		NativeLib.nativeInit("simgrid-java");      
+		NativeLib.nativeInit("simgrid-java");
 		isNativeInited = true;
 	}
 
@@ -38,7 +44,7 @@ public final class NativeLib {
 			try {
 				System.loadLibrary(name);
 			} catch (UnsatisfiedLinkError systemException) {
-				if (! name.equals("boost_context")) { // Ignore when we cannot load boost_context
+				if (! "boost_context".equals(name)) { // Ignore when we cannot load boost_context
 					
 					System.err.println("\nCannot load the bindings to the "+name+" library in path "+getPath());
 					Throwable cause = embeededException.getCause();
@@ -48,7 +54,7 @@ public final class NativeLib {
 						else if (cause.getMessage().matches(".*libboost_context.so.*"))
 							System.err.println("HINT: Try to install the boost-context package (sudo apt-get install libboost-context-dev).");
 						else
-							System.err.println("Try to install the missing dependencies, which name should appear above.");							
+							System.err.println("Try to install the missing dependencies, which name should appear above.");
 					} else {
 						System.err.println("This jar file does not seem to fit your system, and no usable SimGrid installation found on disk.");
 					}
@@ -68,9 +74,9 @@ public final class NativeLib {
 
 		if (arch.matches("^i[3-6]86$"))
 			arch = "x86";
-		else if (arch.equalsIgnoreCase("x86_64"))
+		else if ("x86_64".equalsIgnoreCase(arch))
 			arch = "amd64";
-		else if (arch.equalsIgnoreCase("AMD64"))
+		else if ("AMD64".equalsIgnoreCase(arch))
 			arch = "amd64";
 
 		if (os.toLowerCase().startsWith("win")){
@@ -83,31 +89,31 @@ public final class NativeLib {
 
 		return prefix + "/" + os + "/" + arch + "/";
 	}
-	static Path tempDir = null;
+
 	private static void loadLib (String name) throws LinkageException {
-		String Path = NativeLib.getPath();
+		String path = NativeLib.getPath();
 
 		String filename=name;
-		InputStream in = NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
+		InputStream in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
 
 		if (in == null) {
 			filename = "lib"+name+".so";
-			in = NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
+			in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
 		}
 		if (in == null) {
 			filename = name+".dll";
-			in =  NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
+			in =  NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
 		}
 		if (in == null) {
 			filename = "lib"+name+".dll";
-			in =  NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
+			in =  NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
 		}
 		if (in == null) {
 			filename = "lib"+name+".dylib";
-			in =  NativeLib.class.getClassLoader().getResourceAsStream(Path+filename);
+			in =  NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
 		}
 		if (in == null) {
-			throw new LinkageException("Cannot find library "+name+" in path "+Path+". Sorry, but this jar does not seem to be usable on your machine.");
+			throw new LinkageException("Cannot find library "+name+" in path "+path+". Sorry, but this jar does not seem to be usable on your machine.");
 		}
 		try {
 			// We must write the lib onto the disk before loading it -- stupid operating systems
@@ -121,9 +127,9 @@ public final class NativeLib {
 			/* copy the library in position */  
 			OutputStream out = new FileOutputStream(fileOut);
 			byte[] buffer = new byte[4096]; 
-			int bytes_read; 
-			while ((bytes_read = in.read(buffer)) != -1)     // Read until EOF
-				out.write(buffer, 0, bytes_read); 
+			int bytesRead; 
+			while ((bytesRead = in.read(buffer)) != -1)     // Read until EOF
+				out.write(buffer, 0, bytesRead); 
 
 			/* close all file descriptors, and load that shit */
 			in.close();
@@ -146,13 +152,13 @@ public final class NativeLib {
 				for (File f : dir.listFiles())
 					if (! f.delete() )
 						System.err.println("Unable to clean temporary file "+f.getAbsolutePath()+" during shutdown.");
-			    if (! dir.delete() )
+				if (! dir.delete() )
 					System.err.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");			    	
 			} catch(Exception e) {
 				System.err.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
 				e.printStackTrace();
 			}
-		}    
+		}
 	}
 
 

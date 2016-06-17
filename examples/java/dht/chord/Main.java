@@ -8,7 +8,11 @@ package dht.chord;
 
 import org.simgrid.msg.Msg;
 
-public class Main {
+class Main {
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) {
     Msg.init(args);
     if(args.length < 2) {

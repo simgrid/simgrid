@@ -29,4 +29,7 @@ public class Common {
 
   public final static int MAX_STEPS = 10;
   public final static int JOIN_BUCKETS_QUERIES = 1;
+  private Common() {
+    throw new IllegalAccessError("Utility class");
+  }
 }

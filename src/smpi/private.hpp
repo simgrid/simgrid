@@ -9,6 +9,14 @@
 #include <unordered_map>
 #include "src/instr/instr_smpi.h"
 
+/**
+ * Get the address of the beginning of the memory page where addr is located.
+ * Note that we use an integer division here, so (a/b)*b is not a, unless a%b == 0
+ *
+ * This is used when privatizing.
+ */
+#define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
+
 #ifdef HAVE_PAPI
 typedef 
     std::vector<std::pair</* counter name */std::string, /* counter value */long long>> papi_counter_t;
@@ -24,3 +32,4 @@ XBT_PUBLIC(smpi_trace_call_location_t*) smpi_process_get_call_location(void);
 XBT_PUBLIC(smpi_trace_call_location_t*) smpi_trace_get_call_location();
 }
 #endif
+

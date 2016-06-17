@@ -897,6 +897,10 @@ static void __attribute__((destructor)) __postfini_##name(void) { \
 
 #define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
 
+/** 
+ * This is used for the old privatization method, i.e., on old
+ * machines that do not yet support privatization via mmap
+ */
 #define SMPI_VARINIT_STATIC(name,type)                      \
 static type *name = NULL;                                   \
 if(!name) {                                                 \

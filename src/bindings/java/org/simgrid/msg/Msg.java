@@ -13,19 +13,23 @@ import org.simgrid.NativeLib;
 public final class Msg {
 
 	/** Retrieves the simulation time */
-	public final static native double getClock();
+	public static final native double getClock();
 	/** Issue a debug logging message. */
-	public final static native void debug(String msg);
+	public static final native void debug(String msg);
 	/** Issue a verbose logging message. */
-	public final static native void verb(String msg);
+	public static final native void verb(String msg);
 	/** Issue an information logging message */
-	public final static native void info(String msg);
+	public static final native void info(String msg);
 	/** Issue a warning logging message. */
-	public final static native void warn(String msg);
+	public static final native void warn(String msg);
 	/** Issue an error logging message. */
-	public final static native void error(String msg);
+	public static final native void error(String msg);
 	/** Issue a critical logging message. */
-	public final static native void critical(String s);
+	public static final native void critical(String s);
+
+	private Msg() {
+		throw new IllegalAccessError("Utility class");
+	}
 
 	/*********************************************************************************
 	 * Deployment and initialization related functions                               *
@@ -35,10 +39,10 @@ public final class Msg {
 	 *
 	 * @param args            The arguments of the command line of the simulation.
 	 */
-	public final static native void init(String[]args);
+	public static final native void init(String[]args);
 	
 	/** Tell the kernel that you want to use the energy plugin */
-	public final static native void energyInit();
+	public static final native void energyInit();
 
 	/** Run the MSG simulation.
 	 *
@@ -47,19 +51,15 @@ public final class Msg {
 	 * retrieve the information that you want from the simulation. In particular, retrieving the status 
 	 * of a process or the current date is perfectly ok. 
 	 */
-	public final static native void run() ;
-
-	/** This function is useless nowadays, just stop calling it. */
-	@Deprecated
-	public final static void clean(){}
+	public static final native void run() ;
 
 	/** Create the simulation environment by parsing a platform file. */
-	public final static native void createEnvironment(String platformFile);
+	public static final native void createEnvironment(String platformFile);
 
-	public final static native As environmentGetRoutingRoot();
+	public static final native As environmentGetRoutingRoot();
 
 	/** Starts your processes by parsing a deployment file. */
-	public final static native void deployApplication(String deploymentFile);
+	public static final native void deployApplication(String deploymentFile);
 
 	/** Example launcher. You can use it or provide your own launcher, as you wish
 	 * @param args

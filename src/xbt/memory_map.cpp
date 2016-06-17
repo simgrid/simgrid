@@ -27,6 +27,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_memory_map, xbt, "Logging specific to algori
 namespace simgrid {
 namespace xbt {
 
+/**
+ * \todo This function contains many cases that do not allow for a
+ *       recovery. Currently, xbt_abort() is called but we should
+ *       much rather die with the specific reason so that it's easier
+ *       to find out what's going on.
+ */
 XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 {
 #ifdef __linux__
@@ -34,9 +40,10 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   /* to be returned. */
   char* path = bprintf("/proc/%i/maps", (int) pid);
   FILE *fp = std::fopen(path, "r");
-  if(fp == nullptr)
+  if (fp == nullptr) {
     std::perror("fopen failed");
-  xbt_assert(fp, "Cannot open %s to investigate the memory map of the process.", path);
+    xbt_die("Cannot open %s to investigate the memory map of the process.", path);
+  }
   free(path);
   setbuf(fp, nullptr);
 
@@ -47,13 +54,17 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   char* line = nullptr;
   std::size_t n = 0; /* Amount of bytes to read by xbt_getline */
   while ((read = xbt_getline(&line, &n, fp)) != -1) {
+    /**
+     * The lines that we read have this format: (This is just an example)
+     * 00602000-00603000 rw-p 00002000 00:28 1837264                            <complete-path-to-file>
+     */
 
     //fprintf(stderr,"%s", line);
 
     /* Wipeout the new line character */
     line[read - 1] = '\0';
 
-    /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens/fields */
+    /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens for 6 fields */
     char* lfields[6];
     lfields[0] = strtok(line, " ");
 
@@ -64,13 +75,13 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
 
     /* Check to see if we got the expected amount of columns */
     if (i < 6)
-      xbt_abort();
+      xbt_die("The memory map apparently only supplied less than 6 columns. Recovery impossible.");
 
     /* Ok we are good enough to try to get the info we need */
     /* First get the start and the end address of the map   */
     char *tok = std::strtok(lfields[0], "-");
     if (tok == nullptr)
-      xbt_abort();
+      xbt_die("Start and end address of the map are not concatenated by a hyphen (-). Recovery impossible.");
 
     VmMap memreg;
     char *endptr;
@@ -112,10 +123,14 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (memreg.prot == 0)
       memreg.prot |= PROT_NONE;
 
-    if (lfields[1][4] == 'p')
+    if (lfields[1][3] == 'p')
       memreg.flags |= MAP_PRIVATE;
-    else if (lfields[1][4] == 's')
+    else if (lfields[1][3] == 's')
       memreg.flags |= MAP_SHARED;
+    else {
+      //fprintf(stderr,"%s", line);
+      xbt_die("Flag was neither 'p' (private) nor 's' (shared). This should have never happened! Instead, the permissions column was set to: %s", lfields[1]);
+    }
 
     /* Get the offset value */
     memreg.offset = std::strtoull(lfields[2], &endptr, 16);

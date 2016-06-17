@@ -11,6 +11,10 @@ import org.simgrid.msg.MsgException;
 import org.simgrid.msg.NativeException;
 
 public class Main {
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws NativeException {
     /* initialize the MSG simulation. Must be done before anything else (even logging). */
     Msg.init(args);

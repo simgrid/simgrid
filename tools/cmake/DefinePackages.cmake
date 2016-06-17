@@ -224,7 +224,7 @@ set(SMPI_SRC
   src/smpi/smpi_base.cpp
   src/smpi/smpi_bench.cpp
   src/smpi/smpi_memory.cpp
-  src/smpi/smpi_c99.cpp
+  src/smpi/smpi_static_variables.cpp
   src/smpi/smpi_coll.cpp
   src/smpi/smpi_comm.cpp
   src/smpi/smpi_deployment.cpp
@@ -699,6 +699,7 @@ set(headers_to_install
   include/xbt/synchro_core.h
   include/xbt/sysdep.h
   include/xbt/system_error.hpp
+  include/xbt/utility.hpp
   include/xbt/virtu.h
   include/xbt/xbt_os_thread.h
   include/xbt/xbt_os_time.h

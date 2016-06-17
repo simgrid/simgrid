@@ -230,8 +230,6 @@ void smpi_execute(double duration)
   }
 }
 
-void smpi_switch_data_segment(int dest);
-
 void smpi_bench_begin(void)
 {
   if (smpi_privatize_global_variables) {
@@ -606,12 +604,11 @@ void* smpi_shared_set_call(const char* func, const char* input, void* data) {
    return data;
 }
 
-#define TOPAGE(addr) (void *)(((unsigned long)(addr) / xbt_pagesize) * xbt_pagesize)
 
 /** Map a given SMPI privatization segment (make a SMPI process active) */
-void smpi_switch_data_segment(int dest){
-  if (smpi_loaded_page==dest)//no need to switch either
-   return;
+void smpi_switch_data_segment(int dest) {
+  if (smpi_loaded_page == dest)//no need to switch, we've already loaded the one we want
+    return;
 
   // So the job:
   smpi_really_switch_data_segment(dest);
@@ -646,7 +643,7 @@ void smpi_really_switch_data_segment(int dest) {
 
 int smpi_is_privatisation_file(char* file)
 {
-  return strncmp("/dev/shm/my-buffer-", file, 19) == 0;
+  return strncmp("/dev/shm/my-buffer-", file, std::strlen("/dev/shm/my-buffer-")) == 0;
 }
 
 void smpi_initialize_global_memory_segments(){

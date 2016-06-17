@@ -527,7 +527,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
 
     // We don't handle them.
     // It does not mean we should silently ignore them however.
-    if (strncmp(link, "pipe:", 5) == 0 || strncmp(link, "socket:", 7) == 0)
+    if (strncmp(link, "pipe:", std::strlen("pipe:")) == 0 || strncmp(link, "socket:", std::strlen("socket:")) == 0)
       continue;
 
     // If dot_output enabled, do not handle the corresponding file
@@ -541,7 +541,7 @@ static std::vector<s_fd_infos_t> get_current_fds(pid_t pid)
     }
 
     // This is probably a shared memory used by lttng-ust:
-    if(strncmp("/dev/shm/ust-shm-tmp-", link, 21)==0)
+    if(strncmp("/dev/shm/ust-shm-tmp-", link, std::strlen("/dev/shm/ust-shm-tmp-"))==0)
       continue;
 
     // Add an entry for this FD in the snapshot:

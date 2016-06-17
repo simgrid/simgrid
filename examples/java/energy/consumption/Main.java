@@ -14,6 +14,9 @@ public class Main {
   public static final double task_comp_size = 10;
   public static final double task_comm_size = 10;
   public static final int hostNB = 2 ; 
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
 
   public static void main(String[] args) throws MsgException {  
     Msg.energyInit(); 

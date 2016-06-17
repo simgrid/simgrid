@@ -7,7 +7,7 @@
 package org.simgrid.msg;
 
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * A process may be defined as a code, with some private data, executing 
@@ -53,7 +53,7 @@ public abstract class Process implements Runnable {
 	 * Even if this attribute is public you must never access to it.
 	 * It is used to compute the id of an MSG process.
 	 */
-	public static long nextProcessId = 0;
+	private static long nextProcessId = 0;
 
 	/**
 	 * Even if this attribute is public you must never access to it.
@@ -77,7 +77,7 @@ public abstract class Process implements Runnable {
 	private Host host = null;
 
 	/** The arguments of the method function of the process. */     
-	public Vector<String> args;
+	public ArrayList<String> args;
 
 
 	/**  Default constructor */
@@ -85,7 +85,7 @@ public abstract class Process implements Runnable {
 		this.id = nextProcessId++;
 		this.name = null;
 		this.bind = 0;
-		this.args = new Vector<String>();
+		this.args = new ArrayList<>();
 	}
 
 
@@ -116,7 +116,7 @@ public abstract class Process implements Runnable {
 	 * @throws NativeException
 	 *
 	 */ 
-	public Process(String hostname, String name, String args[]) throws HostNotFoundException, NativeException {
+	public Process(String hostname, String name, String[] args) throws HostNotFoundException, NativeException {
 		this(Host.getByName(hostname), name, args);
 	}
 	/**
@@ -142,15 +142,15 @@ public abstract class Process implements Runnable {
 		this();
 		this.host = host;
 		if (host == null)
-			throw new NullPointerException("Process name cannot be NULL");
+			throw new NullPointerException("Host cannot be NULL");
 		if (name == null)
 			throw new NullPointerException("Process name cannot be NULL");
 		this.name = name;
 
-		this.args = new Vector<String>();
+		this.args = new ArrayList<>();
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
-	}	
+	}
 	/**
 	 * Constructs a new process from a host and his name, the arguments of here method function are
 	 * specified by the parameter args.
@@ -171,12 +171,12 @@ public abstract class Process implements Runnable {
 			throw new NullPointerException("Process name cannot be NULL");
 		this.name = name;
 
-		this.args = new Vector<String>();
+		this.args = new ArrayList<>();
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
 
 		this.startTime = startTime;
-		this.killTime = killTime;		
+		this.killTime = killTime;
 	}
 	/**
 	 * The natively implemented method to create an MSG process.
@@ -305,7 +305,7 @@ public abstract class Process implements Runnable {
 	 * @param millis the length of time to sleep in milliseconds.
 	 * @param nanos additionnal nanoseconds to sleep.
 	 */
-	public native static void sleep(long millis, int nanos) throws HostFailureException;
+	public static native void sleep(long millis, int nanos) throws HostFailureException;
 	/**
 	 * Makes the current process sleep until time seconds have elapsed.
 	 * @param seconds		The time the current process must sleep.
@@ -331,7 +331,7 @@ public abstract class Process implements Runnable {
 
 		try {
 			args = new String[this.args.size()];
-			if (this.args.size() > 0) {
+			if (!this.args.isEmpty()) {
 				this.args.toArray(args);
 			}
 
