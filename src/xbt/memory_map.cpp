@@ -128,8 +128,8 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     else if (lfields[1][3] == 's')
       memreg.flags |= MAP_SHARED;
     else {
-      //fprintf(stderr,"%s", line);
-      xbt_die("Flag was neither 'p' (private) nor 's' (shared). This should have never happened! Instead, the permissions column was set to: %s", lfields[1]);
+      xbt_die("Flag was neither 'p' (private) nor 's' (shared). This should have never happened! Instead, the permissions column was set to: %s\n"
+              "This was the whole line that caused the trouble: %s", lfields[1], line);
     }
 
     /* Get the offset value */
