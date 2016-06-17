@@ -132,7 +132,9 @@ private:
     Task(F&& code, Args&&... args) :
       code_(std::forward<F>(code)),
       args_(std::forward<Args>(args)...)
-    {}
+    {
+      done_.clear();
+    }
     void operator()()
     {
       if (done_.test_and_set())
@@ -140,7 +142,7 @@ private:
       simgrid::xbt::apply(std::move(code_), std::move(args_));
     }
   private:
-    std::atomic_flag done_ = ATOMIC_FLAG_INIT;
+    std::atomic_flag done_;
     F code_;
     std::tuple<Args...> args_;
   };
