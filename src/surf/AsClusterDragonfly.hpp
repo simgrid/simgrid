@@ -36,7 +36,7 @@ class XBT_PRIVATE AsClusterDragonfly:public simgrid::surf::AsCluster {
       void seal() override;
       void generateRouters();
       void generateLinks();
-      void createLink(char* id, Link** linkup, Link** linkdown);
+      void createLink(char* id, int numlinks, Link** linkup, Link** linkdown);
       unsigned int * rankId_to_coords(int rankId);
     private:
       sg_platf_cluster_cbarg_t cluster_;

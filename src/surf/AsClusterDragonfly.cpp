@@ -142,12 +142,12 @@ for(i=0;i<this->numGroups_;i++){
 }
 
 
-void AsClusterDragonfly::createLink(char* id, Link** linkup, Link** linkdown){
+void AsClusterDragonfly::createLink(char* id, int numlinks, Link** linkup, Link** linkdown){
   *linkup=NULL;
   *linkdown=NULL;
   s_sg_platf_link_cbarg_t linkTemplate;
   memset(&linkTemplate, 0, sizeof(linkTemplate));
-  linkTemplate.bandwidth = this->cluster_->bw;
+  linkTemplate.bandwidth = this->cluster_->bw * numlinks;
   linkTemplate.latency = this->cluster_->lat;
   linkTemplate.policy = this->cluster_->sharing_policy; // sthg to do with that ?
   linkTemplate.id = id;
@@ -190,12 +190,12 @@ void AsClusterDragonfly::generateLinks() {
   for(i=0; i<numRouters;i++){
   //allocate structures
     this->routers_[i]->myNodes_=(Link**)xbt_malloc0(numLinksperLink_*this->numNodesPerBlade_*sizeof(Link*));
-    this->routers_[i]->greenLinks_=(Link**)xbt_malloc0(this->numLinksGreen_*this->numBladesPerChassis_*sizeof(Link*));
-    this->routers_[i]->blackLinks_=(Link**)xbt_malloc0(this->numLinksBlack_*this->numChassisPerGroup_*sizeof(Link*));
+    this->routers_[i]->greenLinks_=(Link**)xbt_malloc0(this->numBladesPerChassis_*sizeof(Link*));
+    this->routers_[i]->blackLinks_=(Link**)xbt_malloc0(this->numChassisPerGroup_*sizeof(Link*));
 
     for(j=0; j< numLinksperLink_*this->numNodesPerBlade_; j+=numLinksperLink_){
       id = bprintf("local_link_from_router_%d_to_node_%d_%d", i, j/numLinksperLink_, uniqueId);
-      this->createLink(id, &linkup, &linkdown);
+      this->createLink(id, 1, &linkup, &linkdown);
       if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
         this->routers_[i]->myNodes_[j] = linkup; 
         this->routers_[i]->myNodes_[j+1] = linkdown; 
@@ -211,13 +211,11 @@ void AsClusterDragonfly::generateLinks() {
   for(i=0; i<this->numGroups_*this->numChassisPerGroup_;i++){
     for(j=0; j<this->numBladesPerChassis_;j++){
       for(k=j+1;k<this->numBladesPerChassis_;k++){
-        for(l=0;l<this->numLinksGreen_;l++){
-          id = bprintf("green_link_in_chassis_%d_between_routers_%d_and_%d_%d", i%numChassisPerGroup_, j, k, uniqueId);
-          this->createLink(id, &linkup, &linkdown);
-          this->routers_[i*numBladesPerChassis_+j]->greenLinks_[k*this->numLinksGreen_+l] = linkup;
-          this->routers_[i*numBladesPerChassis_+k]->greenLinks_[j*this->numLinksGreen_+l] = linkdown; 
-          uniqueId++;
-        }
+        id = bprintf("green_link_in_chassis_%d_between_routers_%d_and_%d_%d", i%numChassisPerGroup_, j, k, uniqueId);
+        this->createLink(id, this->numLinksGreen_, &linkup, &linkdown);
+        this->routers_[i*numBladesPerChassis_+j]->greenLinks_[k] = linkup;
+        this->routers_[i*numBladesPerChassis_+k]->greenLinks_[j] = linkdown; 
+        uniqueId++;
       }
     }
   }
@@ -227,35 +225,30 @@ void AsClusterDragonfly::generateLinks() {
     for(j=0; j<this->numChassisPerGroup_;j++){
       for(k=j+1;k<this->numChassisPerGroup_;k++){
         for(l=0;l<this->numBladesPerChassis_;l++){
-          for(m=0;m<this->numLinksBlack_;m++){
-
-            id = bprintf("black_link_in_group_%d_between_chassis_%d_and_%d_blade_%d_%d", i, j, k,l, uniqueId);
-            this->createLink(id, &linkup, &linkdown);
-            this->routers_[i*numBladesPerChassis_*numChassisPerGroup_+j*numBladesPerChassis_+l]->blackLinks_[k*this->numLinksBlack_+m] = linkup;
-            this->routers_[i*numBladesPerChassis_*numChassisPerGroup_+k*numBladesPerChassis_+l]->blackLinks_[j*this->numLinksBlack_+m] = linkdown; 
-            uniqueId++;
-          }
+          id = bprintf("black_link_in_group_%d_between_chassis_%d_and_%d_blade_%d_%d", i, j, k,l, uniqueId);
+          this->createLink(id, this->numLinksBlack_,&linkup, &linkdown);
+          this->routers_[i*numBladesPerChassis_*numChassisPerGroup_+j*numBladesPerChassis_+l]->blackLinks_[k] = linkup;
+          this->routers_[i*numBladesPerChassis_*numChassisPerGroup_+k*numBladesPerChassis_+l]->blackLinks_[j] = linkdown; 
+          uniqueId++;
         }
       }
     }
   }
 
 
-  //Blue links betweeen groups - Not all routers involved, only one per group is linked to others. Let's say router n of each group is linked to group n. FIXME: this limits the number of groups
-
+  //Blue links betweeen groups - Not all routers involved, only one per group is linked to others. Let's say router n of each group is linked to group n. 
+//FIXME: in reality blue links may be attached to several different routers
   for(i=0; i<this->numGroups_;i++){
     for(j=i+1; j<this->numGroups_;j++){
       unsigned int routernumi=i*numBladesPerChassis_*numChassisPerGroup_+j;
       unsigned int routernumj=j*numBladesPerChassis_*numChassisPerGroup_+i;
-      this->routers_[routernumi]->blueLinks_=(Link**)xbt_malloc0(this->numLinksBlue_*sizeof(Link*));
-      this->routers_[routernumj]->blueLinks_=(Link**)xbt_malloc0(this->numLinksBlue_*sizeof(Link*));
-      for(m=0;m<this->numLinksBlue_;m++){
+      this->routers_[routernumi]->blueLinks_=(Link**)xbt_malloc0(sizeof(Link*));
+      this->routers_[routernumj]->blueLinks_=(Link**)xbt_malloc0(sizeof(Link*));
         id = bprintf("blue_link_between_group_%d_and_%d_routers_%d_and_%d_%d", i, j, routernumi,routernumj, uniqueId);
-        this->createLink(id, &linkup, &linkdown);
-        this->routers_[routernumi]->blueLinks_[m] = linkup;
-        this->routers_[routernumj]->blueLinks_[m] = linkdown; 
+        this->createLink(id, this->numLinksBlue_, &linkup, &linkdown);
+        this->routers_[routernumi]->blueLinks_[0] = linkup;
+        this->routers_[routernumj]->blueLinks_[0] = linkdown; 
         uniqueId++;
-      }
     }
   }
 }
@@ -264,6 +257,7 @@ void AsClusterDragonfly::generateLinks() {
 void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t route, double *latency) {
 
   //Minimal routing version.
+  // TODO : non-minimal random one, and adaptive ?
 
   if (dst->isRouter() || src->isRouter())
     return;
@@ -309,17 +303,15 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
       //go to the router of our group connected to this one.
       if(currentRouter->blade_!=targetCoords[0]){
         //go to the nth router in our chassis
-//TODO : randomize used green link
-        route->link_list->push_back(currentRouter->greenLinks_[targetCoords[0]*numLinksGreen_]);
+        route->link_list->push_back(currentRouter->greenLinks_[targetCoords[0]]);
         if(latency) {
-          *latency += currentRouter->greenLinks_[targetCoords[0]*numLinksGreen_]->getLatency();
+          *latency += currentRouter->greenLinks_[targetCoords[0]]->getLatency();
         }
         currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[1] * numBladesPerChassis_+targetCoords[0]];
       }
 
       if(currentRouter->chassis_!=0){
         //go to the first chassis of our group
-//TODO : randomize used black link
         route->link_list->push_back(currentRouter->blackLinks_[0]);
         if(latency) {
           *latency += currentRouter->blackLinks_[0]->getLatency();
@@ -327,7 +319,6 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
         currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[0]];
       }
 
-//TODO : randomize used blue link
       //go to destination group - the only optical hop 
       route->link_list->push_back(currentRouter->blueLinks_[0]);
       if(latency) {
@@ -339,20 +330,18 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
     
     //same group, but same blade ?
     if(targetRouter->blade_ != currentRouter->blade_){
-//TODO : randomize used green link
-      route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]*numLinksGreen_]);
+      route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]]);
       if(latency) {
-        *latency += currentRouter->greenLinks_[targetCoords[2]*numLinksGreen_]->getLatency();
+        *latency += currentRouter->greenLinks_[targetCoords[2]]->getLatency();
       }
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[2]];
     }
 
     //same blade, but same chassis ?
     if(targetRouter->chassis_ != currentRouter->chassis_){
-//TODO : randomize used black link
-      route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]*numLinksBlack_]);
+      route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]]);
       if(latency) {
-        *latency += currentRouter->blackLinks_[targetCoords[1]*numLinksBlack_]->getLatency();
+        *latency += currentRouter->blackLinks_[targetCoords[1]]->getLatency();
       }
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[1]*numBladesPerChassis_+targetCoords[2]];
     }
