@@ -230,8 +230,6 @@ void smpi_execute(double duration)
   }
 }
 
-void smpi_switch_data_segment(int dest);
-
 void smpi_bench_begin(void)
 {
   if (smpi_privatize_global_variables) {
