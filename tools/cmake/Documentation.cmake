@@ -78,11 +78,11 @@ if(DOXYGEN_FOUND)
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
 
-### Fill in the "make sync-gforge" target ###
+### Fill in the "make gforge-gforge" target ###
 
 set(RSYNC_CMD rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --times --omit-dir-times --perms --chmod=a+rX,ug+w,o-w,Dg+s)
 
-add_custom_target(sync-gforge-doc
+add_custom_target(gforge-sync
   COMMAND ssh scm.gforge.inria.fr mkdir -p -m 2775 /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true
 
   COMMAND ${RSYNC_CMD} doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
@@ -91,16 +91,12 @@ add_custom_target(sync-gforge-doc
   doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
 
   COMMAND ${RSYNC_CMD} src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/
+  COMMAND ${RSYNC_CMD} src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
 
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
-add_dependencies(sync-gforge-doc documentation)
+add_dependencies(gforge-sync documentation)
 
-add_custom_target(sync-gforge-dtd
-  COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
-  COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
-  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-  )
 endif() # Doxygen found
 
 if (Java_FOUND)
