@@ -75,6 +75,16 @@ static int master(int argc, char *argv[])
   });
   XBT_INFO("blocking_simcall with value returned with %i", res);
 
+  // Synchronize on a successul Future<int> and get the value:
+  simgrid::simix::Future<int> future = simgrid::simix::asynchronous_simcall([&] {
+    return kernel_defer(50, [] {
+      XBT_INFO("asynchronous_simcall with value");
+      return 43;
+    });
+  });
+  res = future.get();
+  XBT_INFO("asynchronous_simcall with value returned with %i", res);
+
   return 0;
 }
 
