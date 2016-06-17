@@ -10,6 +10,10 @@ import org.simgrid.msg.NativeException;
 
 /* Demonstrates the use of Task.setPriority to change the computation priority of a task */ 
 public class Main {
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws NativeException {
     Msg.init(args);
     if(args.length < 2) {

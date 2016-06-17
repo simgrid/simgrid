@@ -14,6 +14,10 @@ import org.simgrid.msg.MsgException;
 public class Main {
   private static boolean endOfTest = false;
 
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void setEndOfTest(){
     endOfTest=true;
   }

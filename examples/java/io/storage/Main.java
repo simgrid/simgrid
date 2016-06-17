@@ -10,6 +10,10 @@ import org.simgrid.msg.Host;
 import org.simgrid.msg.MsgException;
 
 public class Main {
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws MsgException {
     Msg.init(args);
     if(args.length < 1) {

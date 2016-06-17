@@ -18,22 +18,27 @@ public class Test extends Process{
     super(hostname, name);
   }
 
-  public void main(String[] strings) throws MsgException {
-    double startTime = 0;
-    double endTime = 0;
+  public void doMigration(VM vm, Host src, Host dst) throws HostFailureException{
+    Msg.info("     - Launch migration from "+ src.getName() +" to " + dst.getName());
+    double startTime = Msg.getClock();
+    vm.migrate(dst);
+    double endTime = Msg.getClock();
+    Msg.info("     - End of Migration from "+ src.getName() +" to " + dst.getName()+ " (duration:" +
+             (endTime-startTime)+")");
+  }
 
-    /* get hosts 1 and 2*/
+  public void main(String[] strings) throws MsgException {
     Host host0 = null;
     Host host1 = null;
-
     try {
+    /* get hosts 1 and 2*/
       host0 = Host.getByName("PM0");
       host1 = Host.getByName("PM1");
     }catch (HostNotFoundException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      e.printStackTrace();
     }
 
-    List<VM> vms = new ArrayList<VM>();
+    List<VM> vms = new ArrayList<>();
 
     /* Create VM1 */
     int dpRate = 70;
@@ -47,8 +52,7 @@ public class Test extends Process{
 
     Msg.info("Load of collocated VMs fluctuate between 0 and 90% in order to create a starvation issue and see "
              + "whether it impacts or not the migration time");
-    XVM vm1 = null;
-    vm1 = new XVM(host0, "vm0",
+    XVM vm1 = new XVM(host0, "vm0",
         1, // Nb of vcpu
         2048, // Ramsize,
         125, // Net Bandwidth
@@ -62,7 +66,7 @@ public class Test extends Process{
 
     /* Collocated VMs */
     int collocatedSrc = 6;
-    int vmSrcLoad[] = {
+    int[] vmSrcLoad = {
         80,
         0,
         90,
@@ -71,7 +75,7 @@ public class Test extends Process{
         90,
     };
 
-    XVM tmp = null;
+    XVM tmp;
     for (int i=1 ; i<= collocatedSrc ; i++){
       tmp = new XVM(host0, "vm"+i,
           1, // Nb of vcpu
@@ -88,7 +92,7 @@ public class Test extends Process{
     }
 
     int collocatedDst = 6;
-    int vmDstLoad[] = {
+    int[] vmDstLoad = {
         0,
         40,
         90,
@@ -114,31 +118,14 @@ public class Test extends Process{
 
     Msg.info("Round trip of VM1 (load "+load1+"%)");
     vm1.setLoad(load1);
-    Msg.info("     - Launch migration from PM0 to PM1");
-    startTime = Msg.getClock();
-    vm1.migrate(host1);
-    endTime = Msg.getClock();
-    Msg.info("     - End of Migration from PM0 to PM1 (duration:"+(endTime-startTime)+")");
-    Msg.info("     - Launch migration from PM1 to PM0");
-    startTime = Msg.getClock();
-    vm1.migrate(host0);
-    endTime = Msg.getClock();
-    Msg.info("     - End of Migration from PM1 to PM0 (duration:"+(endTime-startTime)+")");
-
+    doMigration(vm1, host0, host1);
+    doMigration(vm1, host1, host0);
     Msg.info("");
     Msg.info("");
     Msg.info("Round trip of VM1 (load "+load2+"%)");
     vm1.setLoad(load2);
-    Msg.info("     - Launch migration from PM0 to PM1");
-    startTime = Msg.getClock();
-    vm1.migrate(host1);
-    endTime = Msg.getClock();
-    Msg.info("     - End of Migration from PM0 to PM1 (duration:"+(endTime-startTime)+")");
-    Msg.info("     - Launch migration from PM1 to PM0");
-    startTime = Msg.getClock();
-    vm1.migrate(host0);
-    endTime = Msg.getClock();
-    Msg.info("     - End of Migration from PM1 to PM0 (duration:"+(endTime-startTime)+")");
+    doMigration(vm1, host0, host1);
+    doMigration(vm1, host1, host0);
 
     Main.setEndOfTest();
     Msg.info("Forcefully destroy VMs");

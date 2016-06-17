@@ -21,8 +21,6 @@ public class Receiver extends Process {
   public void main(String[] args) throws MsgException {
     Msg.info("hello!");
 
-    double time = Msg.getClock();
-
     Msg.info("try to get a task");
 
     PingPongTask task = (PingPongTask)Task.receive(getHost().getName());
@@ -31,7 +29,7 @@ public class Receiver extends Process {
 
     Msg.info("Got at time "+ timeGot);
     Msg.info("Was sent at time "+timeSent);
-    time = timeSent;
+    double time = timeSent;
 
     double communicationTime = timeGot - time;
     Msg.info("Communication time : " + communicationTime);

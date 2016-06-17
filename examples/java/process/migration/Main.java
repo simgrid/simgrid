@@ -15,6 +15,10 @@ class Main {
   protected static Mutex mutex;
   protected static Process processToMigrate = null;
 
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws NativeException {
     Msg.init(args);
     if(args.length < 1) {

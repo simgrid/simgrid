@@ -9,7 +9,11 @@ package app.bittorrent;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 
-public class Main{
+class Main{
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws MsgException {
     Msg.init(args);
     if(args.length < 2) {

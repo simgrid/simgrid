@@ -25,9 +25,6 @@ public class Receiver extends Process {
   public void main(String[] args) throws MsgException {
     Msg.info("hello!");
     Trace.hostPushState (getHost().getName(), "PM_STATE", "waitingPing");
-    double communicationTime=0;
-
-    double time = Msg.getClock();
 
     /* Wait for the ping */ 
     Msg.info("try to get a task");
@@ -38,9 +35,9 @@ public class Receiver extends Process {
 
     Msg.info("Got at time "+ timeGot);
     Msg.info("Was sent at time "+timeSent);
-    time=timeSent;
+    double time=timeSent;
 
-    communicationTime=timeGot - time;
+    double communicationTime=timeGot - time;
     Msg.info("Communication time : " + communicationTime);
 
     Msg.info(" --- bw "+ commSizeBw/communicationTime + " ----");
