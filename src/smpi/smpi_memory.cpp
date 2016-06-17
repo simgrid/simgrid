@@ -22,7 +22,6 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SM
 
 static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
 static const int PROT_RW  = (PROT_READ | PROT_WRITE );
-static const int PROT_RX  = (PROT_READ | PROT_EXEC );
 
 void smpi_get_executable_global_size(void)
 {
