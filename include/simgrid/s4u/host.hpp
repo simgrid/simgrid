@@ -25,7 +25,7 @@ namespace xbt {
 }
 namespace s4u {
 
-/** @ingroup s4u_host
+/** @ingroup s4u_api
  *
  * @tableofcontents
  *

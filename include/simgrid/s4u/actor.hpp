@@ -14,9 +14,7 @@
 namespace simgrid {
 namespace s4u {
 
-/** @ingroup s4u_actor
- * 
- * @tableofcontents
+/** @ingroup s4u_api
  * 
  * An actor is an independent stream of execution in your distributed application.
  *
@@ -191,7 +189,8 @@ private:
   smx_process_t pimpl_ = nullptr;
 };
 
-/** @brief Static methods working on the current actor (see @ref s4u_actor) */
+/** @ingroup s4u_api
+ *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
 namespace this_actor {
 
   /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
