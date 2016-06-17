@@ -156,7 +156,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 double HostEnergy::getConsumedEnergy()
 {
   if (last_updated < surf_get_clock()) // We need to simcall this as it modifies the environment
-    simgrid::simix::kernel(std::bind(&HostEnergy::update, this));
+    simgrid::simix::kernelImmediate(std::bind(&HostEnergy::update, this));
 
   return total_energy;
 }

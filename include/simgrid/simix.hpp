@@ -21,6 +21,16 @@
 #include <simgrid/simix.h>
 
 XBT_PUBLIC(void) simcall_run_kernel(std::function<void()> const& code);
+
+/** Execute some code in the kernel and block
+ *
+ * run_blocking() is a generic blocking simcall. It is given a callback
+ * which is executed immediately in the SimGrid kernel. The callback is
+ * responsible for setting the suitable logic for waking up the process
+ * when needed.
+ *
+ * @ref simix::kernelSync() is a higher level wrapper for this.
+ */
 XBT_PUBLIC(void) simcall_run_blocking(std::function<void()> const& code);
 
 template<class F> inline
@@ -45,7 +55,7 @@ namespace simix {
  *  of the operation with respect to other simcalls.
  */
 template<class F>
-typename std::result_of<F()>::type kernel(F&& code)
+typename std::result_of<F()>::type kernelImmediate(F&& code)
 {
   // If we are in the maestro, we take the fast path and execute the
   // code directly without simcall mashalling/unmarshalling/dispatch:

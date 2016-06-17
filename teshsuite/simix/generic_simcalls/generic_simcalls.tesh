@@ -2,10 +2,10 @@ $ ${bindir:=.}/generic_simcalls --cfg=contexts/stack-size:96 ${srcdir:=.}/exampl
 > [Tremblay:master:(0) 0.000000] [test/INFO] Start
 > [0.000000] [test/INFO] kernel
 > [Tremblay:master:(0) 0.000000] [test/INFO] kernel, returned
-> [10.000000] [test/INFO] blocking_simcall with void
-> [Tremblay:master:(0) 10.000000] [test/INFO] blocking_simcall with void, returned
+> [10.000000] [test/INFO] kernelSync with void
+> [Tremblay:master:(0) 10.000000] [test/INFO] kernelSync with void, returned
 > [Tremblay:master:(0) 20.000000] [test/INFO] Exception caught: Exception throwed from kernel_defer
-> [30.000000] [test/INFO] blocking_simcall with value
-> [Tremblay:master:(0) 30.000000] [test/INFO] blocking_simcall with value returned with 42
-> [50.000000] [test/INFO] asynchronous_simcall with value
-> [Tremblay:master:(0) 50.000000] [test/INFO] asynchronous_simcall with value returned with 43
+> [30.000000] [test/INFO] kernelSync with value
+> [Tremblay:master:(0) 30.000000] [test/INFO] kernelSync with value returned with 42
+> [50.000000] [test/INFO] kernelAsync with value
+> [Tremblay:master:(0) 50.000000] [test/INFO] kernelAsync with value returned with 43

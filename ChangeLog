@@ -111,7 +111,7 @@ SimGrid (3.13) stable; urgency=low
    include/simgrid/simdag.h
 
  Simix
- * simgrid::simix::kernel() is the closure callback. It ensures that
+ * simgrid::simix::kernelImmediate() is the closure callback. It ensures that
     the lambda or closure passed as a parameter will run in kernel mode.
    All the callback functions should be rewritten to that interface at some point.
 
