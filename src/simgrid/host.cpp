@@ -53,11 +53,6 @@ sg_host_t sg_host_by_name(const char *name)
   return simgrid::s4u::Host::by_name_or_null(name);
 }
 
-sg_host_t sg_host_by_name_or_create(const char *name)
-{
-  return simgrid::s4u::Host::by_name_or_create(name);
-}
-
 xbt_dynar_t sg_hosts_as_dynar(void)
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);

@@ -26,7 +26,6 @@ XBT_PUBLIC(sg_host_t *) sg_host_list(void);
 XBT_PUBLIC(size_t) sg_host_extension_create(void(*deleter)(void*));
 XBT_PUBLIC(void*) sg_host_extension_get(sg_host_t host, size_t rank);
 XBT_PUBLIC(sg_host_t) sg_host_by_name(const char *name);
-XBT_PUBLIC(sg_host_t) sg_host_by_name_or_create(const char *name);
 XBT_PUBLIC(const char*) sg_host_get_name(sg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) sg_hosts_as_dynar(void);
 

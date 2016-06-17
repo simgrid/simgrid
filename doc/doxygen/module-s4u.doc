@@ -16,11 +16,13 @@ Unsurprisingly, the S4U interface matches the concepts presented in
 @ref starting_components "the introduction":
 
   - @ref s4u_actor
+  - @ref s4u_host
 
   @{
 */
 
-/** @defgroup  s4u_actor Actors: simulation agents */
+/** @defgroup s4u_actor Actors: simulation agents */
+/** @defgroup s4u_host  Hosts:  simulated machine on which the actors are located */
 
 /** @} */
 

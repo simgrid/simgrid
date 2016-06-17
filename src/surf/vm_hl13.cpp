@@ -105,7 +105,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, sg_host_t host_PM)
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  sg_host_t host_VM = sg_host_by_name_or_create(name);
+  sg_host_t host_VM = simgrid::s4u::Host::by_name_or_create(name);
   host_VM->pimpl_netcard = host_PM->pimpl_netcard;
 
   p_vm_state = SURF_VM_STATE_CREATED;

@@ -21,21 +21,22 @@
 namespace simgrid {
 
 namespace xbt {
-extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Host>;
+  extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Host>;
 }
-
 namespace s4u {
 
-/** @brief Simulated machine that can host some actors
+/** @ingroup s4u_host
  *
- * It represents some physical resource with computing and networking capabilities.
+ * @tableofcontents
+ *
+ * An host represents some physical resource with computing and networking capabilities.
  *
  * All hosts are automatically created during the call of the method
  * @link{simgrid::s4u::Engine::loadPlatform()}.
  * You cannot create a host yourself.
  *
- * You can retrieve a particular host using @link{simgrid::s4u::Host.byName()},
- * and actors can retrieve the host on which they run using @link{simgrid::s4u::Host.current()}.
+ * You can retrieve a particular host using simgrid::s4u::Host::byName()
+ * and actors can retrieve the host on which they run using simgrid::s4u::Host::current().
  */
 XBT_PUBLIC_CLASS Host :
   public simgrid::xbt::Extendable<Host> {
@@ -44,11 +45,12 @@ private:
   explicit Host(const char *name);
 public: // TODO, make me private
   ~Host();
-public:
-
-  static Host* by_name_or_null(const char* name);
+  /** Do not use this function, it should be private */
   static Host* by_name_or_create(const char* name);
-  /** Retrieves an host from its name. */
+
+  /** Retrieves an host from its name, or return nullptr */
+  static Host* by_name_or_null(const char* name);
+  /** Retrieves an host from its name, or die */
   static s4u::Host *by_name(std::string name);
   /** Retrieves the host on which the current actor is running */
   static s4u::Host *current();

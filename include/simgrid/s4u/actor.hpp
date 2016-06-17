@@ -14,7 +14,7 @@
 namespace simgrid {
 namespace s4u {
 
-/** @addtogroup s4u_actor
+/** @ingroup s4u_actor
  * 
  * @tableofcontents
  * 
