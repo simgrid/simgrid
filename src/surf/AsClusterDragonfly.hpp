@@ -26,6 +26,39 @@ class XBT_PRIVATE DragonflyRouter {
 };
 
 
+/** 
+ * \class AsClusterDragonfly
+ *
+ * \brief Dragonfly representation and routing.
+ *
+ * Generate dragonfly according to the topology asked for, according to:
+ * Cray Cascade: a Scalable HPC System based on a Dragonfly Network
+ * Greg Faanes, Abdulla Bataineh, Duncan Roweth, Tom Court, Edwin Froese,
+ * Bob Alverson, Tim Johnson, Joe Kopnick, Mike Higgins and James Reinhard
+ * Cray Inc, Chippewa Falls, Wisconsin, USA 
+ * or http://www.cray.com/sites/default/files/resources/CrayXCNetwork.pdf
+ *
+ * We use the same denomination for the different levels, with a Green, 
+ * Black and Blue color scheme for the three different levels.
+ * 
+ * Description of the topology has to be given with a string of type :
+ * "3,4;4,3;5,1;2"
+ *
+ * Last part  : "2"   : 2 nodes per blade
+ * Third part : "5,1" : five blades/routers per chassis, with one link between each (green network)
+ * Second part : "4,3" = four chassis per group, with three links between each nth router of each chassis (black network)
+ * First part : "3,4" = three electrical groups, linked in an alltoall 
+ * pattern by 4 links each (blue network)
+ *
+ * LIMITATIONS (for now):
+ *  - Routing is only static and uses minimal routes.
+ *  - When n links are used between two routers/groups, we consider only one link with n times the bandwidth (needs to be validated on a real system)
+ *  - All links have the same characteristics for now
+ *  - Blue links are all attached to routers in the chassis n°0. This limits 
+ *    the number of groups possible to the number of blades in a chassis. This
+ *    is also not realistic, as blue level can use more links than a single
+ *    Aries can handle, thus it should use several routers.
+ */
 class XBT_PRIVATE AsClusterDragonfly:public simgrid::surf::AsCluster {
     public:
       explicit AsClusterDragonfly(const char*name);
