@@ -27,6 +27,7 @@
 #include "src/surf/AsCluster.hpp"
 #include "src/surf/AsClusterTorus.hpp"
 #include "src/surf/AsClusterFatTree.hpp"
+#include "src/surf/AsClusterDragonfly.hpp"
 #include "src/surf/AsDijkstra.hpp"
 #include "src/surf/AsFloyd.hpp"
 #include "src/surf/AsFull.hpp"
@@ -237,6 +238,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   using simgrid::surf::AsCluster;
   using simgrid::surf::AsClusterTorus;
+  using simgrid::surf::AsClusterDragonfly;
   using simgrid::surf::AsClusterFatTree;
 
   int rankId=0;
@@ -249,6 +251,9 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   switch (cluster->topology) {
   case SURF_CLUSTER_TORUS:
     AS.routing = A_surfxml_AS_routing_ClusterTorus;
+    break;
+  case SURF_CLUSTER_DRAGONFLY:
+    AS.routing = A_surfxml_AS_routing_ClusterDragonfly;
     break;
   case SURF_CLUSTER_FAT_TREE:
     AS.routing = A_surfxml_AS_routing_ClusterFatTree;
@@ -821,6 +826,7 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   switch(AS->routing){
     case A_surfxml_AS_routing_Cluster:        new_as = new simgrid::surf::AsCluster(AS->id);        break;
     case A_surfxml_AS_routing_ClusterTorus:   new_as = new simgrid::surf::AsClusterTorus(AS->id);   break;
+    case A_surfxml_AS_routing_ClusterDragonfly:   new_as = new simgrid::surf::AsClusterDragonfly(AS->id);   break;
     case A_surfxml_AS_routing_ClusterFatTree: new_as = new simgrid::surf::AsClusterFatTree(AS->id); break;
     case A_surfxml_AS_routing_Dijkstra:       new_as = new simgrid::surf::AsDijkstra(AS->id, 0);    break;
     case A_surfxml_AS_routing_DijkstraCache:  new_as = new simgrid::surf::AsDijkstra(AS->id, 1);    break;

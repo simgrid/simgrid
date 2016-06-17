@@ -23,6 +23,7 @@ typedef size_t yy_size_t;
 XBT_PUBLIC(sg_netcard_t) sg_netcard_by_name_or_null(const char *name);
 
 typedef enum {
+  SURF_CLUSTER_DRAGONFLY=3,
   SURF_CLUSTER_FAT_TREE=2,
   SURF_CLUSTER_FLAT = 1,
   SURF_CLUSTER_TORUS = 0

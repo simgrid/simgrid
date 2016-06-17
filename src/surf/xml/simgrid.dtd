@@ -85,7 +85,7 @@ To upgrade your files, use the tool simgrid_update_xml
 
 <!ELEMENT AS ((prop*), ((AS|ASroute|include|storage_type|storage|link|backbone|cabinet|router|host|cluster|peer|host_link)*,(route|ASroute|trace|trace_connect|bypassRoute|bypassASroute)*))>
 <!ATTLIST AS id CDATA #REQUIRED>
-<!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree) #REQUIRED>
+<!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
 
 <!ELEMENT storage_type ((model_prop|prop)*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>
@@ -129,7 +129,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
 <!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "FULLDUPLEX">
-<!ATTLIST cluster topology (FLAT|TORUS|FAT_TREE) "FLAT">
+<!ATTLIST cluster topology (FLAT|TORUS|FAT_TREE|DRAGONFLY) "FLAT">
 <!ATTLIST cluster topo_parameters CDATA "">
 <!ATTLIST cluster bb_bw CDATA "">
 <!ATTLIST cluster bb_lat CDATA "0s">

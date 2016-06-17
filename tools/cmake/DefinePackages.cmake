@@ -67,6 +67,7 @@ set(EXTRA_DIST
   src/surf/AsCluster.hpp
   src/surf/AsClusterFatTree.hpp
   src/surf/AsClusterTorus.hpp
+  src/surf/AsClusterDragonfly.hpp
   src/surf/AsDijkstra.hpp
   src/surf/AsFloyd.hpp
   src/surf/AsFull.hpp
@@ -292,6 +293,7 @@ set(SURF_SRC
   src/surf/AsCluster.cpp
   src/surf/AsClusterFatTree.cpp
   src/surf/AsClusterTorus.cpp
+  src/surf/AsClusterDragonfly.cpp
   src/surf/AsDijkstra.cpp
   src/surf/AsFloyd.cpp
   src/surf/AsFull.cpp
