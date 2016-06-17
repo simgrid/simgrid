@@ -58,6 +58,7 @@ private:
 typedef struct s_smx_cond {
   smx_mutex_t mutex;
   xbt_swag_t sleeping;          /* list of sleeping process */
+  std::atomic_int_fast32_t refcount_;
 } s_smx_cond_t;
 
 typedef struct s_smx_sem {
@@ -79,4 +80,6 @@ XBT_PRIVATE void SIMIX_sem_release(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_would_block(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_get_capacity(smx_sem_t sem);
 
+XBT_PRIVATE void intrusive_ptr_release(s_smx_cond_t *cond);
+XBT_PRIVATE void intrusive_ptr_add_ref(s_smx_cond_t *cond);
 #endif

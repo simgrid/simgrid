@@ -240,6 +240,8 @@ smx_cond_t SIMIX_cond_init(void)
   smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->mutex = nullptr;
+  cond->refcount_ = 1;
+  intrusive_ptr_add_ref(cond);
   XBT_OUT();
   return cond;
 }
@@ -356,19 +358,34 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
  * Destroys and frees the condition's memory. 
  * \param cond A condition
  */
-void SIMIX_cond_destroy(smx_cond_t cond)
+void SIMIX_cond_unref(smx_cond_t cond)
 {
   XBT_IN("(%p)",cond);
   XBT_DEBUG("Destroy condition %p", cond);
-
   if (cond != nullptr) {
+    intrusive_ptr_release(cond);
+  }
+  XBT_OUT();
+}
+
+
+void intrusive_ptr_add_ref(s_smx_cond_t *cond)
+{
+  auto previous = (cond->refcount_)++;
+  xbt_assert(previous != 0);
+  (void) previous;
+}
+
+void intrusive_ptr_release(s_smx_cond_t *cond)
+{
+  auto count = --(cond->refcount_);
+  if (count == 0) {
     xbt_assert(xbt_swag_size(cond->sleeping) == 0,
                 "Cannot destroy conditional since someone is still using it");
 
     xbt_swag_free(cond->sleeping);
     xbt_free(cond);
   }
-  XBT_OUT();
 }
 
 /******************************** Semaphores **********************************/
