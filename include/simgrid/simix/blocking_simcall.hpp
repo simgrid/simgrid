@@ -18,6 +18,7 @@
 #include <xbt/future.hpp>
 #include <simgrid/kernel/future.hpp>
 #include <simgrid/simix.h>
+#include <simgrid/simix.hpp>
 
 XBT_PUBLIC(void) simcall_run_blocking(std::function<void()> const& code);
 
@@ -66,6 +67,63 @@ auto blocking_simcall(F code) -> decltype(code().get())
     }
   });
   return result.get();
+}
+
+/** A blocking (`wait()`-based) future for SIMIX processes */
+template <class T>
+class Future {
+public:
+  Future() {}
+  Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}
+
+  bool valid() const { return future_.valid(); }
+  T get()
+  {
+    if (!valid())
+      throw std::future_error(std::future_errc::no_state);
+    smx_process_t self = SIMIX_process_self();
+    simgrid::xbt::Result<T> result;
+    simcall_run_blocking([this, &result, self]{
+      try {
+        // When the kernel future is ready...
+        this->future_.then([this, &result, self](simgrid::kernel::Future<T> value) {
+          // ... wake up the process with the result of the kernel future.
+          simgrid::xbt::setPromise(result, value);
+          simgrid::simix::unblock(self);
+        });
+      }
+      catch (...) {
+        result.set_exception(std::current_exception());
+        simgrid::simix::unblock(self);
+      }
+    });
+    return result.get();
+  }
+  // TODO, wait()
+  // TODO, wait_for()
+  // TODO, wait_until()
+private:
+  // We wrap an event-based kernel future:
+  simgrid::kernel::Future<T> future_;
+};
+
+/** Start some asynchronous work
+ *
+ *  @param code SimGrid kernel code which returns a simgrid::kernel::Future
+ *  @return     User future
+ */
+template<class F>
+auto asynchronous_simcall(F code)
+  -> Future<decltype(code().get())>
+{
+  typedef decltype(code().get()) T;
+
+  // Execute the code in the kernel and get the kernel simcall:
+  simgrid::kernel::Future<T> future =
+    simgrid::simix::kernel(std::move(code));
+
+  // Wrap tyhe kernel simcall in a user simcall:
+  return simgrid::simix::Future<T>(std::move(future));
 }
 
 }

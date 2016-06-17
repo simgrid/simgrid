@@ -7,3 +7,5 @@ $ ${bindir:=.}/generic_simcalls --cfg=contexts/stack-size:96 ${srcdir:=.}/exampl
 > [Tremblay:master:(0) 20.000000] [test/INFO] Exception caught: Exception throwed from kernel_defer
 > [30.000000] [test/INFO] blocking_simcall with value
 > [Tremblay:master:(0) 30.000000] [test/INFO] blocking_simcall with value returned with 42
+> [50.000000] [test/INFO] asynchronous_simcall with value
+> [Tremblay:master:(0) 50.000000] [test/INFO] asynchronous_simcall with value returned with 43
