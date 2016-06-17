@@ -46,18 +46,13 @@ static void master()
 {
   int result = 0;
   simgrid::s4u::Mutex mutex;
-  simgrid::s4u::Actor workers[NB_ACTOR*2];
 
   for (int i = 0; i < NB_ACTOR * 2 ; i++) {
     // To create a worker use the static method simgrid::s4u::Actor.
     if((i % 2) == 0 )
-      workers[i] = simgrid::s4u::Actor("worker",
-        simgrid::s4u::Host::by_name("Jupiter"),
-        workerLockGuard, mutex, std::ref(result));
+      simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Jupiter"),  workerLockGuard, mutex, std::ref(result));
     else
-      workers[i] = simgrid::s4u::Actor("worker",
-        simgrid::s4u::Host::by_name("Tremblay"),
-        worker, mutex, std::ref(result));
+      simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Tremblay"), worker,          mutex, std::ref(result));
   }
 
   simgrid::s4u::this_actor::sleep(10);
