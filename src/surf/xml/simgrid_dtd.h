@@ -106,7 +106,7 @@ XBT_PUBLIC(void) ETag_surfxml_trace___connect(void);
 /* XML application data. */
 typedef int AT_surfxml_AS_id;
 #define AU_surfxml_AS_id NULL
-typedef enum { AU_surfxml_AS_routing, A_surfxml_AS_routing_Full,A_surfxml_AS_routing_Floyd,A_surfxml_AS_routing_Dijkstra,A_surfxml_AS_routing_DijkstraCache,A_surfxml_AS_routing_None,A_surfxml_AS_routing_Vivaldi,A_surfxml_AS_routing_Cluster,A_surfxml_AS_routing_ClusterTorus,A_surfxml_AS_routing_ClusterFatTree } AT_surfxml_AS_routing;
+typedef enum { AU_surfxml_AS_routing, A_surfxml_AS_routing_Full,A_surfxml_AS_routing_Floyd,A_surfxml_AS_routing_Dijkstra,A_surfxml_AS_routing_DijkstraCache,A_surfxml_AS_routing_None,A_surfxml_AS_routing_Vivaldi,A_surfxml_AS_routing_Cluster,A_surfxml_AS_routing_ClusterTorus,A_surfxml_AS_routing_ClusterFatTree,A_surfxml_AS_routing_ClusterDragonfly } AT_surfxml_AS_routing;
 typedef int AT_surfxml_ASroute_dst;
 #define AU_surfxml_ASroute_dst NULL
 typedef int AT_surfxml_ASroute_gw___dst;
@@ -182,7 +182,7 @@ typedef int AT_surfxml_cluster_suffix;
 #define AU_surfxml_cluster_suffix NULL
 typedef int AT_surfxml_cluster_topo___parameters;
 #define AU_surfxml_cluster_topo___parameters NULL
-typedef enum { AU_surfxml_cluster_topology, A_surfxml_cluster_topology_FLAT,A_surfxml_cluster_topology_TORUS,A_surfxml_cluster_topology_FAT___TREE } AT_surfxml_cluster_topology;
+typedef enum { AU_surfxml_cluster_topology, A_surfxml_cluster_topology_FLAT,A_surfxml_cluster_topology_TORUS,A_surfxml_cluster_topology_FAT___TREE,A_surfxml_cluster_topology_DRAGONFLY } AT_surfxml_cluster_topology;
 typedef int AT_surfxml_config_id;
 #define AU_surfxml_config_id NULL
 typedef int AT_surfxml_host_availability___file;
