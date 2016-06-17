@@ -1048,6 +1048,9 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/cluster_and_one_host.xml
   examples/platforms/cluster_prototype.lua
   examples/platforms/cluster_no_backbone.xml
+  examples/platforms/cluster_torus.xml
+  examples/platforms/cluster_fat_tree.xml
+  examples/platforms/cluster_dragonfly.xml
   examples/platforms/crosstraffic.xml
   examples/platforms/optorsim/gridpp_grid_2004.conf
   examples/platforms/optorsim/lcg_sept2004_grid.conf
@@ -1071,7 +1074,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/dogbone.xml
   examples/platforms/energy_platform.xml
   examples/platforms/faulty_host.xml
-  examples/platforms/fat_tree_cluster.xml
   examples/platforms/g5k.xml
   examples/platforms/griffon.xml
   examples/platforms/meta_cluster.xml
@@ -1099,7 +1101,6 @@ set(PLATFORMS_EXAMPLES
   examples/platforms/syscoord/median_meridian.syscoord
   examples/platforms/syscoord/median_p2psim.syscoord
   examples/platforms/three_multicore_hosts.xml
-  examples/platforms/torus_cluster.xml
   examples/platforms/two_clusters.xml
   examples/platforms/two_hosts.xml
   examples/platforms/two_hosts_platform_shared.xml
