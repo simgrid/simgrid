@@ -47,6 +47,7 @@ class XBT_PRIVATE AsClusterDragonfly:public simgrid::surf::AsCluster {
       unsigned int numLinksGreen_ = 0;
       unsigned int numLinksBlack_ = 0;
       unsigned int numLinksBlue_ = 0;
+      unsigned int numLinksperLink_ = 1; //fullduplex -> 2, only for local link
       DragonflyRouter** routers_=NULL;
     };
 

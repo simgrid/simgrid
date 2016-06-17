@@ -182,20 +182,19 @@ void AsClusterDragonfly::generateLinks() {
 
   int numRouters = this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_;
 
-  int numLinksperLink=1;
   if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX)
-    numLinksperLink=2;
+    numLinksperLink_=2;
 
 
   //Links from routers to their local nodes.
   for(i=0; i<numRouters;i++){
   //allocate structures
-    this->routers_[i]->myNodes_=(Link**)xbt_malloc0(numLinksperLink*this->numNodesPerBlade_*sizeof(Link*));
+    this->routers_[i]->myNodes_=(Link**)xbt_malloc0(numLinksperLink_*this->numNodesPerBlade_*sizeof(Link*));
     this->routers_[i]->greenLinks_=(Link**)xbt_malloc0(this->numLinksGreen_*this->numBladesPerChassis_*sizeof(Link*));
     this->routers_[i]->blackLinks_=(Link**)xbt_malloc0(this->numLinksBlack_*this->numChassisPerGroup_*sizeof(Link*));
 
-    for(j=0; j< numLinksperLink*this->numNodesPerBlade_; j+=numLinksperLink){
-      id = bprintf("local_link_from_router_%d_to_node_%d_%d", i, j/2, uniqueId);
+    for(j=0; j< numLinksperLink_*this->numNodesPerBlade_; j+=numLinksperLink_){
+      id = bprintf("local_link_from_router_%d_to_node_%d_%d", i, j/numLinksperLink_, uniqueId);
       this->createLink(id, &linkup, &linkdown);
       if (this->cluster_->sharing_policy == SURF_LINK_FULLDUPLEX) {
         this->routers_[i]->myNodes_[j] = linkup; 
@@ -269,7 +268,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   if (dst->isRouter() || src->isRouter())
     return;
 
-      XBT_VERB("dragonfly_get_route_and_latency from '%s'[%d] to '%s'[%d]",
+  XBT_VERB("dragonfly_get_route_and_latency from '%s'[%d] to '%s'[%d]",
           src->name(), src->id(), dst->name(), dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
@@ -292,9 +291,9 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   DragonflyRouter* currentRouter=myRouter;
 
   //node->router local link
-  route->link_list->push_back(myRouter->myNodes_[myCoords[3]]);
+  route->link_list->push_back(myRouter->myNodes_[myCoords[3]*numLinksperLink_]);
   if(latency) {
-    *latency += myRouter->myNodes_[myCoords[3]]->getLatency();
+    *latency += myRouter->myNodes_[myCoords[3]*numLinksperLink_]->getLatency();
   }
 
   if (hasLimiter_) {    // limiter for sender
@@ -338,27 +337,25 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
     }
 
     
-    //same group, but same chassis ?
-    if(targetRouter->chassis_ != currentRouter->chassis_){
-//TODO : randomize used black link
-      route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]*numLinksBlack_]);
-      if(latency) {
-        *latency += currentRouter->blackLinks_[targetCoords[1]*numLinksBlack_]->getLatency();
-      }
-      currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+currentRouter->chassis_*numBladesPerChassis_+currentRouter->blade_];
-    }
-
-    //same chassis, but same blade ?
+    //same group, but same blade ?
     if(targetRouter->blade_ != currentRouter->blade_){
 //TODO : randomize used green link
       route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]*numLinksGreen_]);
       if(latency) {
         *latency += currentRouter->greenLinks_[targetCoords[2]*numLinksGreen_]->getLatency();
       }
-      currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[1]*numBladesPerChassis_+targetCoords[2]];
-    xbt_assert(currentRouter==targetRouter, "You've got routed into oblivion. Oops");
+      currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[2]];
     }
- 
+
+    //same blade, but same chassis ?
+    if(targetRouter->chassis_ != currentRouter->chassis_){
+//TODO : randomize used black link
+      route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]*numLinksBlack_]);
+      if(latency) {
+        *latency += currentRouter->blackLinks_[targetCoords[1]*numLinksBlack_]->getLatency();
+      }
+      currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[1]*numBladesPerChassis_+targetCoords[2]];
+    }
   }
 
   if (hasLimiter_) {    // limiter for receiver
@@ -368,9 +365,9 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   }
 
   //router->node local link
-  route->link_list->push_back(targetRouter->myNodes_[targetCoords[3]]);
+  route->link_list->push_back(targetRouter->myNodes_[targetCoords[3]*numLinksperLink_+numLinksperLink_-1]);
   if(latency) {
-    *latency += targetRouter->myNodes_[targetCoords[3]]->getLatency();
+    *latency += targetRouter->myNodes_[targetCoords[3]*numLinksperLink_+numLinksperLink_-1]->getLatency();
   }
 
   xbt_free(myCoords);
