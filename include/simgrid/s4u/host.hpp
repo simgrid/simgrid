@@ -70,13 +70,13 @@ public: // TODO, make me private
   bool isOff() { return !isOn(); }
 
   double speed();
-  int core_count();
+  int coresCount();
   xbt_dict_t properties();
   const char*property(const char*key);
   void setProperty(const char*key, const char *value);
   xbt_swag_t processes();
-  double currentPowerPeak();
-  double powerPeakAt(int pstate_index);
+  double getPstateSpeedCurrent();
+  double getPstateSpeed(int pstate_index);
   int pstatesCount() const;
   void setPstate(int pstate_index);
   int pstate();
@@ -96,10 +96,10 @@ private:
   boost::unordered_map<std::string, Storage*> *mounts = nullptr; // caching
 
 public:
-  // FIXME: these should be protected, but it leads to many errors
-  // Use the extensions stuff for this? Go through simgrid::surf::Host?
   // TODO, this could be a unique_ptr
+  /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   surf::Cpu     *pimpl_cpu = nullptr;
+  /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   surf::NetCard *pimpl_netcard = nullptr;
 
 public:
@@ -130,20 +130,6 @@ extern int USER_HOST_LEVEL;
 
 package org.simgrid.msg;
 
-import org.simgrid.msg.Storage;
-
-/*
-Host jacquelin;
-
-try { 
-  jacquelin = Host.getByName("Jacquelin");
-} catch(HostNotFoundException e) {
-  System.err.println(e.toString());
-}
-...
-\endverbatim
- *
- */ 
 public class Host {
   /**
    * This static method returns all of the hosts of the installed platform.
@@ -174,32 +160,6 @@ public class Host {
    */ 
   public native int getLoad();
 
-  /**
-   * This method returns the speed of the processor of a host,
-   * regardless of the current load of the machine.
-   *
-   * @return      The speed of the processor of the host in flops.
-   *
-   */ 
-  public native double getSpeed();
-
-  /**
-   * This method returns the number of core of a host.
-   *
-   * @return      The speed of the processor of the host in flops.
-   *
-   */ 
-  public native double getCoreNumber();
-
-  /**
-   * Returns the value of a given host property (set from the platform file).
-   */
-  public native String getProperty(String name);
-
-  /**
-   * Change the value of a given host property. 
-   */
-  public native void setProperty(String name, String value);
 
   /** This methods returns the list of storages attached to an host
    * @return An array containing all storages (name) attached to the host

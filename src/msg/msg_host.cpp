@@ -166,7 +166,7 @@ double MSG_get_host_speed(msg_host_t host) {
  * \return the number of cores
  */
 int MSG_host_get_core_number(msg_host_t host) {
-  return host->core_count();
+  return host->coresCount();
 }
 
 /** \ingroup m_host_management
@@ -271,7 +271,7 @@ void MSG_host_get_params(msg_host_t host, vm_params_t params)
  */
 double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
   xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
-  return host->powerPeakAt(pstate_index);
+  return host->getPstateSpeed(pstate_index);
 }
 
 /** \ingroup m_host_management
@@ -282,7 +282,7 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
  */
 double MSG_host_get_current_power_peak(msg_host_t host) {
   xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
-  return host->currentPowerPeak();
+  return host->getPstateSpeedCurrent();
 }
 
 /** \ingroup m_host_management

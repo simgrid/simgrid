@@ -20,7 +20,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_dvfs, smpi, "Logging specific to SMPI (expe
  */
 double smpi_get_host_power_peak_at(int pstate_index)
 {
-  return SIMIX_host_self()->powerPeakAt(pstate_index);
+  return SIMIX_host_self()->getPstateSpeed(pstate_index);
 }
 
 /**
@@ -30,7 +30,7 @@ double smpi_get_host_power_peak_at(int pstate_index)
  */
 double smpi_get_host_current_power_peak(void)
 {
-  return SIMIX_host_self()->currentPowerPeak();
+  return SIMIX_host_self()->getPstateSpeedCurrent();
 }
 
 /**

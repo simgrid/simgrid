@@ -176,7 +176,7 @@ Cpu::~Cpu()
   xbt_dynar_free(&speedPerPstate_);
 }
 
-double Cpu::getCurrentPowerPeak()
+double Cpu::getPstateSpeedCurrent()
 {
   return speed_.peak;
 }
@@ -204,7 +204,7 @@ int Cpu::getPState()
   return pstate_;
 }
 
-double Cpu::getPowerPeakAt(int pstate_index)
+double Cpu::getPstateSpeed(int pstate_index)
 {
   xbt_dynar_t plist = speedPerPstate_;
   xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");

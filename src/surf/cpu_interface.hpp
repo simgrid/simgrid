@@ -119,10 +119,9 @@ public:
   /** @brief Get the available speed of the current Cpu */
   virtual double getAvailableSpeed();
 
-  /** @brief Get the current Cpu power peak */
-  virtual double getCurrentPowerPeak();
-
-  virtual double getPowerPeakAt(int pstate_index);
+  /** @brief Get the current Cpu computational speed */
+  virtual double getPstateSpeedCurrent();
+  virtual double getPstateSpeed(int pstate_index);
 
   virtual int getNbPStates();
   virtual void setPState(int pstate_index);
