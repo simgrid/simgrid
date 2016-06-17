@@ -189,7 +189,7 @@ public:
   Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
 
   Actor(const char* name, s4u::Host *host, std::function<void()> code)
-    : Actor(name, host, -1.0d, std::move(code)) {};
+    : Actor(name, host, -1.0, std::move(code)) {};
 
   /** Create an actor using code
    *
