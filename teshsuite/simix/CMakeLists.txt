@@ -18,8 +18,10 @@ foreach (factory raw thread boost ucontext)
 endforeach()
 
 set(teshsuite_src  ${teshsuite_src}                                                                        PARENT_SCOPE)
-set(tesh_files     ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow/stack_overflow.tesh        PARENT_SCOPE)
-set(tesh_files     ${tesh_files}     ${CMAKE_CURRENT_SOURCE_DIR}/generic_simcalls/generic_simcalls.tesh    PARENT_SCOPE)
+set(tesh_files     ${tesh_files}     
+    ${CMAKE_CURRENT_SOURCE_DIR}/stack_overflow/stack_overflow.tesh  
+    ${CMAKE_CURRENT_SOURCE_DIR}/generic_simcalls/generic_simcalls.tesh    
+    PARENT_SCOPE)
 
 IF(HAVE_RAW_CONTEXTS)
   ADD_TESH(tesh-simix-factory-default --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/check_defaults --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/check_defaults factory_raw.tesh)
@@ -32,7 +34,7 @@ ELSE()
 ENDIF()
 
 if (NOT enable_memcheck)
-ADD_TESH_FACTORIES(stack-overflow "thread;ucontext;boost;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack_overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow stack_overflow.tesh)
+ADD_TESH_FACTORIES(stack-overflow   "thread;ucontext;boost;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/stack_overflow --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/stack_overflow stack_overflow.tesh)
 ADD_TESH_FACTORIES(generic-simcalls "thread;ucontext;boost;raw" --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simix/generic_simcalls --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simix/generic_simcalls generic_simcalls.tesh)
 endif()
 
