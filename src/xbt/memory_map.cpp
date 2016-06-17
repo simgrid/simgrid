@@ -54,13 +54,17 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
   char* line = nullptr;
   std::size_t n = 0; /* Amount of bytes to read by xbt_getline */
   while ((read = xbt_getline(&line, &n, fp)) != -1) {
+    /**
+     * The lines that we read have this format: (This is just an example)
+     * 00602000-00603000 rw-p 00002000 00:28 1837264                            <complete-path-to-file>
+     */
 
     //fprintf(stderr,"%s", line);
 
     /* Wipeout the new line character */
     line[read - 1] = '\0';
 
-    /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens/fields */
+    /* Tokenize the line using spaces as delimiters and store each token in lfields array. We expect 5 tokens for 6 fields */
     char* lfields[6];
     lfields[0] = strtok(line, " ");
 
