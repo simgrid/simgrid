@@ -9,6 +9,7 @@
 #include <limits.h>
 #include <stdlib.h>
 #include <sys/types.h>
+
 #ifndef WIN32
 #include <sys/mman.h>
 #include <unistd.h>
@@ -22,6 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_memory, smpi, "Memory layout support for SM
 
 static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
 static const int PROT_RW  = (PROT_READ | PROT_WRITE );
+XBT_ATTRIB_UNUSED static const int PROT_RX  = (PROT_READ | PROT_EXEC );
 
 void smpi_get_executable_global_size(void)
 {
