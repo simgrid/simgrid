@@ -206,7 +206,7 @@ e_smx_state_t simcall_execution_wait(smx_synchro_t execution)
  */
 void* simcall_vm_create(const char *name, sg_host_t phys_host)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_create, name, phys_host));
+  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_create, name, phys_host));
 }
 
 /**
@@ -217,7 +217,7 @@ void* simcall_vm_create(const char *name, sg_host_t phys_host)
  */
 void simcall_vm_start(sg_host_t vm)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_start, vm));
+  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_start, vm));
 }
 
 /**
@@ -229,7 +229,7 @@ void simcall_vm_start(sg_host_t vm)
  */
 int simcall_vm_get_state(sg_host_t vm)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_get_state, vm));
+  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_get_state, vm));
 }
 
 /**
@@ -241,17 +241,17 @@ int simcall_vm_get_state(sg_host_t vm)
  */
 void *simcall_vm_get_pm(sg_host_t vm)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_get_pm, vm));
+  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_get_pm, vm));
 }
 
 void simcall_vm_set_bound(sg_host_t vm, double bound)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_vm_set_bound, vm, bound));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_set_bound, vm, bound));
 }
 
 void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_vm_set_affinity, vm, pm, mask));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_set_affinity, vm, pm, mask));
 }
 
 /**
@@ -263,7 +263,7 @@ void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
  */
 void simcall_vm_migrate(sg_host_t vm, sg_host_t host)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_migrate, vm, host));
+  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_migrate, vm, host));
 }
 
 /**
@@ -329,7 +329,7 @@ void simcall_vm_shutdown(sg_host_t vm)
  */
 void simcall_vm_destroy(sg_host_t vm)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_vm_destroy, vm));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_destroy, vm));
 }
 
 /**
@@ -348,7 +348,7 @@ void simcall_vm_destroy(sg_host_t vm)
  */
 void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
 {
-  simgrid::simix::kernel(std::bind(
+  simgrid::simix::kernelImmediate(std::bind(
     SIMIX_vm_migratefrom_resumeto, vm, src_pm, dst_pm));
 }
 
@@ -441,7 +441,7 @@ void simcall_process_resume(smx_process_t process)
  */
 int simcall_process_count(void)
 {
-  return simgrid::simix::kernel(SIMIX_process_count);
+  return simgrid::simix::kernelImmediate(SIMIX_process_count);
 }
 
 /**
@@ -487,7 +487,7 @@ void* simcall_process_get_data(smx_process_t process)
  */
 void simcall_process_set_data(smx_process_t process, void *data)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_process_set_data, process, data));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_process_set_data, process, data));
 }
 
 /**
@@ -757,7 +757,7 @@ smx_synchro_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag
  */
 void simcall_comm_cancel(smx_synchro_t synchro)
 {
-  simgrid::simix::kernel([synchro]{
+  simgrid::simix::kernelImmediate([synchro]{
     simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
     comm->cancel();
   });

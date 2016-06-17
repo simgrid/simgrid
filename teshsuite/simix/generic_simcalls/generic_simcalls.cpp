@@ -40,22 +40,22 @@ static int master(int argc, char *argv[])
 {
   // Test the simple immediate execution:
   XBT_INFO("Start");
-  simgrid::simix::kernel([] {
+  simgrid::simix::kernelImmediate([] {
     XBT_INFO("kernel");
   });
   XBT_INFO("kernel, returned");
 
   // Synchronize on a successful Future<void>:
-  simgrid::simix::blocking_simcall([&] {
+  simgrid::simix::kernelSync([&] {
     return kernel_defer(10, [] {
-      XBT_INFO("blocking_simcall with void");
+      XBT_INFO("kernelSync with void");
     });
   });
-  XBT_INFO("blocking_simcall with void, returned");
+  XBT_INFO("kernelSync with void, returned");
 
   // Synchronize on a failing Future<void>:
   try {
-    simgrid::simix::blocking_simcall([&] {
+    simgrid::simix::kernelSync([&] {
       return kernel_defer(20, [] {
         throw std::runtime_error("Exception throwed from kernel_defer");
       });
@@ -67,23 +67,23 @@ static int master(int argc, char *argv[])
   }
 
   // Synchronize on a successul Future<int> and get the value:
-  int res = simgrid::simix::blocking_simcall([&] {
+  int res = simgrid::simix::kernelSync([&] {
     return kernel_defer(30, [] {
-      XBT_INFO("blocking_simcall with value");
+      XBT_INFO("kernelSync with value");
       return 42;
     });
   });
-  XBT_INFO("blocking_simcall with value returned with %i", res);
+  XBT_INFO("kernelSync with value returned with %i", res);
 
   // Synchronize on a successul Future<int> and get the value:
-  simgrid::simix::Future<int> future = simgrid::simix::asynchronous_simcall([&] {
+  simgrid::simix::Future<int> future = simgrid::simix::kernelAsync([&] {
     return kernel_defer(50, [] {
-      XBT_INFO("asynchronous_simcall with value");
+      XBT_INFO("kernelAsync with value");
       return 43;
     });
   });
   res = future.get();
-  XBT_INFO("asynchronous_simcall with value returned with %i", res);
+  XBT_INFO("kernelAsync with value returned with %i", res);
 
   return 0;
 }

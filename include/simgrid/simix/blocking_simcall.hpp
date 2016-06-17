@@ -30,21 +30,22 @@ XBT_PUBLIC(void) unblock(smx_process_t process);
 /** Execute some code in kernel mode and wakes up the process when
  *  the result is available.
  *
- *  The code given is executed in SimGrid kernel and expected to return
- *  a `simgrid::kernel::Future`. The current process is resumed whenever
- *  the Future becomes ready and gets the value or exception of the future:
+ * It is given a callback which is executed in the kernel SimGrid and
+ * returns a simgrid::kernel::Future<T>. The kernel blocks the process
+ * until the Future is ready and either the value wrapped in the future
+ * to the process or raises the exception stored in the Future in the process.
  *
- *  This can be used to implement blocking calls in without adding new simcalls.
- *  One downside of this approach is that we don't have any semantic on what
- *  the process is waiting. This might be a problem for the model-checker and
- *  we'll have to device a way to make it work.
+ * This can be used to implement blocking calls without adding new simcalls.
+ * One downside of this approach is that we don't have any semantic on what
+ * the process is waiting. This might be a problem for the model-checker and
+ * we'll have to devise a way to make it work.
  *
- *  @param     code Kernel code returning a `simgrid::kernel::Future<T>`
- *  @return         Value of the kernel future
- *  @exception      Exception from the kernel future
+ * @param     code Kernel code returning a `simgrid::kernel::Future<T>`
+ * @return         Value of the kernel future
+ * @exception      Exception from the kernel future
  */
 template<class F>
-auto blocking_simcall(F code) -> decltype(code().get())
+auto kernelSync(F code) -> decltype(code().get())
 {
   typedef decltype(code().get()) T;
   if (SIMIX_is_maestro())
@@ -113,14 +114,14 @@ private:
  *  @return     User future
  */
 template<class F>
-auto asynchronous_simcall(F code)
+auto kernelAsync(F code)
   -> Future<decltype(code().get())>
 {
   typedef decltype(code().get()) T;
 
   // Execute the code in the kernel and get the kernel simcall:
   simgrid::kernel::Future<T> future =
-    simgrid::simix::kernel(std::move(code));
+    simgrid::simix::kernelImmediate(std::move(code));
 
   // Wrap tyhe kernel simcall in a user simcall:
   return simgrid::simix::Future<T>(std::move(future));

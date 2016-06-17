@@ -1041,7 +1041,7 @@ smx_process_t simcall_process_create(
   if (name == nullptr)
     name = "";
   smx_process_t self = SIMIX_process_self();
-  return simgrid::simix::kernel([&] {
+  return simgrid::simix::kernelImmediate([&] {
     return SIMIX_process_create(name,
           std::move(code), data, hostname,
           kill_time, properties, auto_restart,

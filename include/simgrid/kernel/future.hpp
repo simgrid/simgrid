@@ -235,9 +235,20 @@ public:
   }
 };
 
-/** Result of some (possibly ongoing, asynchronous) operation in the SimGrid kernel
+/** Result of some (probably) asynchronous operation in the SimGrid kernel
  *
- *  As the operation may not be completed yet, the result might be an exception.
+ * @ref simgrid::simix::Future and @ref simgrid::simix::Future provide an
+ * abstration for asynchronous stuff happening in the SimGrid kernel. They
+ * are based on C++1z futures.
+ *
+ * The future represents a value which will be available at some point when this
+ * asynchronous operaiont is finished. Alternatively, if this operations fails,
+ * the result of the operation might be an exception.
+ *
+ *  As the operation is possibly no terminated yet, we cannot get the result
+ *  yet. Moreover, as we cannot block in the SimGrid kernel we cannot wait for
+ *  it. However, we can attach some code/callback/continuation which will be
+ *  executed when the operation terminates.
  *
  *  Example of the API (`simgrid::kernel::createProcess` does not exist):
  *  <pre>
