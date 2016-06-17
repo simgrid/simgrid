@@ -268,18 +268,18 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
   if (dst->isRouter() || src->isRouter())
     return;
-  //TODO:loopback and limiters
+
       XBT_VERB("dragonfly_get_route_and_latency from '%s'[%d] to '%s'[%d]",
           src->name(), src->id(), dst->name(), dst->id());
 
-//      if ((src->id() == dst->id()) && hasLoopback_) {
-//        s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_, s_surf_parsing_link_up_down_t);
+  if ((src->id() == dst->id()) && hasLoopback_) {
+     s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_, s_surf_parsing_link_up_down_t);
 
-//        route->link_list->push_back(info.linkUp);
-//        if (lat)
-//          *lat += info.linkUp->getLatency();
-//        return;
-//      }
+     route->link_list->push_back(info.linkUp);
+     if (latency)
+       *latency += info.linkUp->getLatency();
+     return;
+  }
 
   unsigned int *myCoords, *targetCoords;
   myCoords = rankId_to_coords(src->id());
@@ -297,9 +297,12 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
     *latency += myRouter->myNodes_[myCoords[3]]->getLatency();
   }
 
-if (src->id() == dst->id()){
-return;
-}
+  if (hasLimiter_) {    // limiter for sender
+    s_surf_parsing_link_up_down_t info;
+    info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_ + hasLoopback_, s_surf_parsing_link_up_down_t);
+    route->link_list->push_back(info.linkUp);
+  }
+
   if(targetRouter!=myRouter){
 
     //are we on a different group ?
@@ -358,6 +361,11 @@ return;
  
   }
 
+  if (hasLimiter_) {    // limiter for receiver
+    s_surf_parsing_link_up_down_t info;
+    info = xbt_dynar_get_as(privateLinks_, dst->id() * linkCountPerNode_ + hasLoopback_, s_surf_parsing_link_up_down_t);
+    route->link_list->push_back(info.linkUp);
+  }
 
   //router->node local link
   route->link_list->push_back(targetRouter->myNodes_[targetCoords[3]]);
