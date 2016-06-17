@@ -41,7 +41,7 @@ public:
  *    with a notion of Host extended with another concept (such as mobility).
  * You could completely externalize these data with an associative map Host->EnergyHost.
  *    It would work, provided that you implement this classical feature correctly (and it would induce a little performance penalty).
- * Instead, you should add a new facet to the Host class, that happens to be Facetable.
+ * Instead, you should add a new extension to the Host class, that happens to be Extendable.
  *
  */
 template<class T>
