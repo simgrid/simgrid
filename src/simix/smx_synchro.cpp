@@ -240,7 +240,7 @@ smx_cond_t SIMIX_cond_init(void)
   smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->mutex = nullptr;
-  cond->refcount_ = 1;
+  cond->refcount_ = 0;
   intrusive_ptr_add_ref(cond);
   XBT_OUT();
   return cond;
@@ -372,7 +372,6 @@ void SIMIX_cond_unref(smx_cond_t cond)
 void intrusive_ptr_add_ref(s_smx_cond_t *cond)
 {
   auto previous = (cond->refcount_)++;
-  xbt_assert(previous != 0);
   (void) previous;
 }
 
