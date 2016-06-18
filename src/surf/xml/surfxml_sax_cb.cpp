@@ -511,7 +511,7 @@ void ETag_surfxml_cluster(void){
   if(strcmp(A_surfxml_cluster_bb___lat,""))
     cluster.bb_lat = surf_parse_get_time(A_surfxml_cluster_bb___lat, "bb_lat of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_limiter___link,""))
-    cluster.limiter_link = surf_parse_get_double(A_surfxml_cluster_limiter___link);
+    cluster.limiter_link = surf_parse_get_bandwidth(A_surfxml_cluster_limiter___link, "limiter_link of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_loopback___bw,""))
     cluster.loopback_bw = surf_parse_get_bandwidth(A_surfxml_cluster_loopback___bw, "loopback_bw of cluster", cluster.id);
   if(strcmp(A_surfxml_cluster_loopback___lat,""))
