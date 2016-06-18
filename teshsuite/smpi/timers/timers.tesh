@@ -1,0 +1,10 @@
+p Test timers
+! setenv LD_LIBRARY_PATH=../../lib
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 1 ${bindir:=.}/timers -q --log=smpi_kernel.thres:warning --cfg=smpi/cpu-threshold:-1 --cfg=smpi/running-power:100000
+> [rank 0] -> Tremblay
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu-threshold' to '-1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/running-power' to '100000'
+
