@@ -307,7 +307,7 @@ int smpi_usleep(useconds_t usecs)
   return static_cast<int>(private_sleep(static_cast<double>(usecs) / 1000000.0));
 }
 
-#if _POSIX_TIMERS && _POSIX_C_SOURCE >= 199309L
+#if _POSIX_TIMERS > 0
 int smpi_nanosleep(const struct timespec *tp, struct timespec * t)
 {
   return static_cast<int>(private_sleep(static_cast<double>(tp->tv_sec + tp->tv_nsec / 1000000000.0)));
@@ -331,7 +331,7 @@ int smpi_gettimeofday(struct timeval *tv, void* tz)
   return 0;
 }
 
-#if _POSIX_TIMERS && _POSIX_C_SOURCE >= 199309L
+#if _POSIX_TIMERS > 0
 int smpi_clock_gettime(clockid_t clk_id, struct timespec *tp)
 {
   //there is only one time in SMPI, so clk_id is ignored.
