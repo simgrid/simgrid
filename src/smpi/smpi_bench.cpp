@@ -307,6 +307,13 @@ int smpi_usleep(useconds_t usecs)
   return static_cast<int>(private_sleep(static_cast<double>(usecs) / 1000000.0));
 }
 
+#if _POSIX_TIMERS
+int smpi_nanosleep(struct timespec *tp, void* t)
+{
+  return static_cast<int>(private_sleep(static_cast<double>(tp->tv_sec + tp->tv_nsec / 1000000000.0)));
+}
+#endif
+
 int smpi_gettimeofday(struct timeval *tv, void* tz)
 {
   double now;
@@ -323,6 +330,22 @@ int smpi_gettimeofday(struct timeval *tv, void* tz)
   smpi_bench_begin();
   return 0;
 }
+
+#if _POSIX_TIMERS
+int smpi_clock_gettime(clockid_t clk_id, struct timespec *tp)
+{
+  //there is only one time in SMPI, so clk_id is ignored.
+  double now;
+  smpi_bench_end();
+  now = SIMIX_get_clock();
+  if (tp) {
+    tp->tv_sec = static_cast<time_t>(now);
+    tp->tv_nsec = static_cast<long int>((now - tp->tv_sec) * 1e9);
+  }
+  smpi_bench_begin();
+  return 0;
+}
+#endif
 
 extern double sg_surf_precision;
 unsigned long long smpi_rastro_resolution (void)

@@ -9,6 +9,9 @@
 
 #include <unistd.h>
 #include <sys/time.h>
+#if _POSIX_TIMERS
+#include <time.h>
+#endif
 
 #include <stddef.h>
 #include <xbt/misc.h>
@@ -803,6 +806,11 @@ XBT_PUBLIC(int)  smpi_get_host_pstate(void);
 XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
 
 XBT_PUBLIC(int) smpi_usleep(useconds_t usecs);
+#if _POSIX_TIMERS
+
+XBT_PUBLIC(int) smpi_nanosleep(struct timespec *tp, void* t);
+XBT_PUBLIC(int) smpi_clock_gettime(clockid_t clk_id, struct timespec *tp);
+#endif
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
 XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, void* tz);
 XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);

@@ -10,6 +10,10 @@
 #define SEED 221238
 
 #define sleep(x) smpi_sleep(x)
+#if _POSIX_TIMERS
+#define nanosleep(x,y) smpi_nanosleep(x,NULL)
+#endif
+#define usleep(x) smpi_usleep(x)
 
 #include <smpi/smpi.h>
 #include <xbt/sysdep.h>
@@ -19,7 +23,9 @@
 
 #include <sys/time.h> /* Load it before the define next line to not mess with the system headers */
 #define gettimeofday(x, y) smpi_gettimeofday(x, NULL)
-
+#if _POSIX_TIMERS
+#define clock_gettime(x, y) smpi_clock_gettime(x, y)
+#endif
 #if HAVE_MC
 #undef assert
 #define assert(x) MC_assert(x)
