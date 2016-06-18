@@ -63,7 +63,7 @@ static void ns3_add_host(simgrid::s4u::Host& host)
   host.extension_set(NS3_EXTENSION_ID, ns3host);
 }
 
-static void ns3_add_netcard(simgrid::surf::NetCard* netcard)
+static void ns3_add_netcard(simgrid::routing::NetCard* netcard)
 {
   const char* id = netcard->name();
 

@@ -9,7 +9,7 @@
 #include "src/surf/AsImpl.hpp"
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
 /** No specific routing. Mainly useful with the constant network model */
 class XBT_PRIVATE AsNone : public AsImpl {

@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_ROUTING_GENERIC_HPP_
-#define SURF_ROUTING_GENERIC_HPP_
+#ifndef SIMGRID_ROUTING_GENERIC_HPP_
+#define SIMGRID_ROUTING_GENERIC_HPP_
 
 #include "src/surf/AsImpl.hpp"
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
 class XBT_PRIVATE AsRoutedGraph : public AsImpl {
 public:
@@ -28,4 +28,4 @@ protected:
 }
 }
 
-#endif /* SURF_ROUTING_GENERIC_HPP_ */
+#endif /* SIMGRID_ROUTING_GENERIC_HPP_ */

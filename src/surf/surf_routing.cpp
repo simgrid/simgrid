@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2011, 2013-2015. The SimGrid Team.
+/* Copyright (c) 2009-2011, 2013-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -17,14 +17,14 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
   /* Callbacks */
-  simgrid::xbt::signal<void(simgrid::surf::NetCard*)> netcardCreatedCallbacks;
+  simgrid::xbt::signal<void(simgrid::routing::NetCard*)> netcardCreatedCallbacks;
   simgrid::xbt::signal<void(simgrid::s4u::As*)> asCreatedCallbacks;
 
 
-}} // namespace simgrid::surf
+}} // namespace simgrid::routing
 
 /**
  * @ingroup SURF_build_api
@@ -49,17 +49,17 @@ int ROUTING_PROP_ASR_LEVEL = -1;     //Where the properties are stored
  *
  * Netcards are the thing that connect host or routers to the network
  */
-simgrid::surf::NetCard *sg_netcard_by_name_or_null(const char *name)
+simgrid::routing::NetCard *sg_netcard_by_name_or_null(const char *name)
 {
   sg_host_t h = sg_host_by_name(name);
-  simgrid::surf::NetCard *netcard = h==nullptr ? nullptr: h->pimpl_netcard;
+  simgrid::routing::NetCard *netcard = h==nullptr ? nullptr: h->pimpl_netcard;
   if (!netcard)
-    netcard = (simgrid::surf::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
+    netcard = (simgrid::routing::NetCard*) xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL);
   return netcard;
 }
 
 /* Global vars */
-simgrid::surf::RoutingPlatf *routing_platf = nullptr;
+simgrid::routing::RoutingPlatf *routing_platf = nullptr;
 
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
@@ -76,7 +76,7 @@ void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 }
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
 /**
  * \brief Find a route between hosts
@@ -99,7 +99,7 @@ void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Li
   AsImpl::getRouteRecursive(src, dst, route, latency);
 }
 
-static xbt_dynar_t _recursiveGetOneLinkRoutes(surf::AsImpl *as)
+static xbt_dynar_t _recursiveGetOneLinkRoutes(AsImpl *as)
 {
   xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
 
@@ -130,7 +130,7 @@ xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
 /** @brief create the root AS */
 void routing_model_create(Link *loopback)
 {
-  routing_platf = new simgrid::surf::RoutingPlatf(loopback);
+  routing_platf = new simgrid::routing::RoutingPlatf(loopback);
 }
 
 /* ************************************************************************** */
@@ -141,7 +141,7 @@ static void check_disk_attachment()
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;
-  simgrid::surf::NetCard *host_elm;
+  simgrid::routing::NetCard *host_elm;
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
     simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
@@ -164,11 +164,11 @@ void routing_exit(void) {
   delete routing_platf;
 }
 
-simgrid::surf::RoutingPlatf::RoutingPlatf(simgrid::surf::Link *loopback)
+simgrid::routing::RoutingPlatf::RoutingPlatf(simgrid::surf::Link *loopback)
 : loopback_(loopback)
 {
 }
-simgrid::surf::RoutingPlatf::~RoutingPlatf()
+simgrid::routing::RoutingPlatf::~RoutingPlatf()
 {
   delete root_;
 }

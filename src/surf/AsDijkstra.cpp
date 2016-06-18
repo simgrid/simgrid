@@ -37,7 +37,7 @@ static void graph_edge_data_free(void *e) // FIXME: useless code duplication
 /* Utility functions */
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 void AsDijkstra::seal()
 {
   xbt_node_t node = nullptr;

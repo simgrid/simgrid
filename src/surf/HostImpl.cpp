@@ -31,7 +31,7 @@ simgrid::xbt::Extension<simgrid::s4u::Host, HostImpl> HostImpl::EXTENSION_ID;
 /*********
  * Model *
  *********/
-HostImpl *HostModel::createHost(const char *name, NetCard *netElm, Cpu *cpu){
+HostImpl *HostModel::createHost(const char *name, routing::NetCard *netElm, Cpu *cpu){
   xbt_dynar_t storageList = (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL);
 
   HostImpl *host = new simgrid::surf::HostImpl(surf_host_model, name, storageList, cpu);

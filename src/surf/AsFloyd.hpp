@@ -9,7 +9,7 @@
 #include "src/surf/AsRoutedGraph.hpp"
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
 /** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
 class XBT_PRIVATE AsFloyd: public AsRoutedGraph {

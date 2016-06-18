@@ -23,7 +23,7 @@ void routing_route_free(sg_platf_route_cbarg_t route)
 }
 
 namespace simgrid {
-namespace surf {
+namespace routing {
   
 AsRoutedGraph::AsRoutedGraph(const char*name)
   : AsImpl(name)
@@ -83,7 +83,7 @@ xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt
 }
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
   xbt_dynar_t AsRoutedGraph::getOneLinkRoutes()
   {

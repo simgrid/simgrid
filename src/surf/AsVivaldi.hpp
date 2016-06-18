@@ -9,7 +9,7 @@
 #include "src/surf/AsCluster.hpp"
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
 /* This derivates from cluster because each host has a private link */
 class XBT_PRIVATE AsVivaldi: public AsCluster {

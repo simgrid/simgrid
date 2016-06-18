@@ -9,7 +9,7 @@
 #include "src/surf/AsCluster.hpp"
 
 namespace simgrid {
-  namespace surf {
+  namespace routing {
 
 
 class XBT_PRIVATE DragonflyRouter {
@@ -17,10 +17,10 @@ class XBT_PRIVATE DragonflyRouter {
       unsigned int group_;
       unsigned int chassis_;
       unsigned int blade_;
-      Link** blueLinks_=NULL;
-      Link** blackLinks_=NULL;
-      Link** greenLinks_=NULL;
-      Link** myNodes_=NULL;
+      surf::Link** blueLinks_=NULL;
+      surf::Link** blackLinks_=NULL;
+      surf::Link** greenLinks_=NULL;
+      surf::Link** myNodes_=NULL;
       DragonflyRouter(int i, int j, int k);
       ~DragonflyRouter();
 };
@@ -59,7 +59,8 @@ class XBT_PRIVATE DragonflyRouter {
  *    is also not realistic, as blue level can use more links than a single
  *    Aries can handle, thus it should use several routers.
  */
-class XBT_PRIVATE AsClusterDragonfly:public simgrid::surf::AsCluster {
+class XBT_PRIVATE AsClusterDragonfly
+  : public AsCluster {
     public:
       explicit AsClusterDragonfly(const char*name);
       ~AsClusterDragonfly() override;

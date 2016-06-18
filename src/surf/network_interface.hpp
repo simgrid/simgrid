@@ -77,7 +77,7 @@ namespace simgrid {
        * unlimited.
        * @return The action representing the communication
        */
-      virtual Action *communicate(NetCard *src, NetCard *dst, double size, double rate)=0;
+      virtual Action *communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate)=0;
 
       /** @brief Function pointer to the function to use to solve the lmm_system_t
        *
@@ -163,7 +163,7 @@ namespace simgrid {
 
       /** @brief Callback signal fired when a communication starts
        *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst)` */
-      static simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst)> onCommunicate;
+      static simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::routing::NetCard *src, simgrid::routing::NetCard *dst)> onCommunicate;
 
 
 

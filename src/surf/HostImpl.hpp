@@ -52,7 +52,7 @@ public:
   HostModel() : Model() {}
   ~HostModel() override {}
 
-  HostImpl *createHost(const char *name, NetCard *net, Cpu *cpu);
+  HostImpl *createHost(const char *name, routing::NetCard *net, Cpu *cpu);
 
   virtual void adjustWeightOfDummyCpuActions();
   virtual Action *executeParallelTask(int host_nb, sg_host_t *host_list,

@@ -254,7 +254,7 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t*host_list,
   xbt_free(host_list);
 }
 
-Action *NetworkL07Model::communicate(NetCard *src, NetCard *dst, double size, double rate)
+Action *NetworkL07Model::communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate)
 {
   sg_host_t*host_list = xbt_new0(sg_host_t, 2);
   double *flops_amount = xbt_new0(double, 2);

@@ -9,7 +9,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf");
 
 namespace simgrid {
-namespace surf {
+namespace routing {
   static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst) {
     double src_coord = xbt_dynar_get_as(src, index, double);
     double dst_coord = xbt_dynar_get_as(dst, index, double);

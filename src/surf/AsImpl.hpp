@@ -14,7 +14,7 @@
 #include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 
 namespace simgrid {
-namespace surf {
+namespace routing {
   class RoutingPlatf; // FIXME: KILLME
 
 /** @brief Autonomous Systems
@@ -23,7 +23,7 @@ namespace surf {
  * In SimGrid, there is a hierarchy of ASes, with a unique root AS (that you can retrieve from the s4u::Engine).
  */
 XBT_PUBLIC_CLASS AsImpl : public s4u::As {
-  friend simgrid::surf::RoutingPlatf;
+  friend simgrid::routing::RoutingPlatf;
 protected:
   explicit AsImpl(const char *name);
   ~AsImpl() override;
@@ -53,13 +53,13 @@ public:
    * @param into Container into which the traversed links should be pushed
    * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
    */
-  virtual void getRouteAndLatency(surf::NetCard *src, surf::NetCard *dst, sg_platf_route_cbarg_t into, double *latency)=0;
+  virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency)=0;
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   virtual xbt_dynar_t getOneLinkRoutes();
-  std::vector<surf::Link*> *getBypassRoute(surf::NetCard *src, surf::NetCard *dst);
+  std::vector<surf::Link*> *getBypassRoute(routing::NetCard *src, routing::NetCard *dst);
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
-  static void getRouteRecursive(surf::NetCard *src, surf::NetCard *dst, /* OUT */ std::vector<surf::Link*> * links, double *latency);
+  static void getRouteRecursive(routing::NetCard *src, routing::NetCard *dst, /* OUT */ std::vector<surf::Link*> * links, double *latency);
 
 
   enum class RoutingMode {
@@ -69,7 +69,7 @@ public:
   };
   /* FIXME: protect the following fields once the construction madness is sorted out */
   RoutingMode hierarchy_ = RoutingMode::unset;
-  surf::NetCard *netcard_ = nullptr; // Our representative in the father AS
+  routing::NetCard *netcard_ = nullptr; // Our representative in the father AS
 };
 
 }}; // Namespace simgrid::s4u

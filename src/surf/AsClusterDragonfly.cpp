@@ -14,12 +14,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_dragonfly, surf_route_cluster
 
 
 
-
-
-
-
 namespace simgrid {
-namespace surf {
+namespace routing {
 
 AsClusterDragonfly::AsClusterDragonfly(const char*name)
   : AsCluster(name) {

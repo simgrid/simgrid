@@ -21,9 +21,11 @@ namespace simgrid {
   namespace surf {
     class Resource;
     class Cpu;
-    class NetCard;
     class Link;
   }
+  namespace routing {
+    class NetCard;
+  }	
   namespace trace_mgr {
     class trace;
     class future_evt_set;
@@ -35,7 +37,7 @@ typedef simgrid::s4u::Host simgrid_Host;
 typedef simgrid::s4u::Mailbox simgrid_Mailbox;
 typedef simgrid::simix::Synchro simix_Synchro;
 typedef simgrid::surf::Cpu surf_Cpu;
-typedef simgrid::surf::NetCard surf_NetCard;
+typedef simgrid::routing::NetCard routing_NetCard;
 typedef simgrid::surf::Link Link;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
@@ -47,7 +49,7 @@ typedef struct simgrid_Host simgrid_Host;
 typedef struct simgrid_Mailbox simgrid_Mailbox;
 typedef struct simix_Synchro simix_Synchro;
 typedef struct surf_Cpu surf_Cpu;
-typedef struct surf_NetCard surf_NetCard;
+typedef struct routing_NetCard routing_NetCard;
 typedef struct surf_Resource surf_Resource;
 typedef struct Link Link;
 typedef struct Trace tmgr_Trace;
@@ -60,7 +62,7 @@ typedef simgrid_Mailbox* sg_mbox_t;
 typedef simix_Synchro *smx_synchro_t;
 
 typedef surf_Cpu *surf_cpu_t;
-typedef surf_NetCard *sg_netcard_t;
+typedef routing_NetCard *sg_netcard_t;
 typedef surf_Resource *sg_resource_t;
 
 // Types which are in fact dictelmt:

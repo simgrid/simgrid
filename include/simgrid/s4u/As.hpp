@@ -18,8 +18,10 @@
 namespace simgrid {
 
 namespace surf {
-  class AsImpl;
   class Link;
+}
+namespace routing {
+  class AsImpl;
   class NetCard;
 }
 namespace s4u {
@@ -31,7 +33,7 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS As {
 protected:
-  friend simgrid::surf::AsImpl;
+  friend simgrid::routing::AsImpl;
 
   explicit As(const char *name);
   virtual ~As();
@@ -47,7 +49,7 @@ public:
   As *father_ = nullptr; // FIXME: hide me
 public:
   /* Add content to the AS, at parsing time. It should be sealed afterward. */
-  virtual int addComponent(surf::NetCard *elm); /* A host, a router or an AS, whatever */
+  virtual int addComponent(routing::NetCard *elm); /* A host, a router or an AS, whatever */
   virtual void addRoute(sg_platf_route_cbarg_t route);
   void addBypassRoute(sg_platf_route_cbarg_t e_route);
 

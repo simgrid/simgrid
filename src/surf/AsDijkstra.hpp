@@ -23,7 +23,7 @@ typedef struct route_cache_element {
 } s_route_cache_element_t, *route_cache_element_t;
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
 /***********
  * Classes *

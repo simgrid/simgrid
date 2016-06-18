@@ -9,9 +9,9 @@
 #include "src/surf/AsCluster.hpp"
 
 namespace simgrid {
-  namespace surf {
+  namespace routing {
 
-    class XBT_PRIVATE AsClusterTorus:public simgrid::surf::AsCluster {
+    class XBT_PRIVATE AsClusterTorus : public simgrid::routing::AsCluster {
     public:
       explicit AsClusterTorus(const char*name);
       ~AsClusterTorus() override;

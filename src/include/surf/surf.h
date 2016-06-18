@@ -52,6 +52,8 @@ class NetworkCm02Link;
 class Action;
 class ActionLmm;
 class StorageActionLmm;
+}
+namespace routing {
 class RoutingPlatf;
 }
 }
@@ -70,7 +72,7 @@ typedef simgrid::surf::NetworkCm02Link surf_NetworkCm02Link;
 typedef simgrid::surf::Action surf_Action;
 typedef simgrid::surf::ActionLmm surf_ActionLmm;
 typedef simgrid::surf::StorageActionLmm surf_StorageActionLmm;
-typedef simgrid::surf::RoutingPlatf surf_RoutingPlatf;
+typedef simgrid::routing::RoutingPlatf surf_RoutingPlatf;
 
 #else
 

@@ -11,7 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(AsImpl,surf, "Implementation of S4U autonomous systems");
 
 namespace simgrid {
-  namespace surf {
+  namespace routing {
 
     AsImpl::AsImpl(const char *name)
     : As(name)
@@ -79,7 +79,7 @@ namespace simgrid {
 
 
     /* PRECONDITION: this is the common ancestor of src and dst */
-    std::vector<surf::Link*> *AsImpl::getBypassRoute(surf::NetCard *src, surf::NetCard *dst)
+    std::vector<surf::Link*> *AsImpl::getBypassRoute(routing::NetCard *src, routing::NetCard *dst)
     {
       // If never set a bypass route return nullptr without any further computations
       XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
@@ -164,7 +164,7 @@ namespace simgrid {
      * \param links Where to store the links and the gw information
      * \param latency If not nullptr, the latency of all links will be added in it
      */
-    void AsImpl::getRouteRecursive(surf::NetCard *src, surf::NetCard *dst,
+    void AsImpl::getRouteRecursive(routing::NetCard *src, routing::NetCard *dst,
         /* OUT */ std::vector<surf::Link*> * links, double *latency)
     {
       s_sg_platf_route_cbarg_t route;

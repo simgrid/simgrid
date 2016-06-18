@@ -79,7 +79,7 @@ namespace simgrid {
       }
     }
 
-    Action *NetworkConstantModel::communicate(NetCard *src, NetCard *dst, double size, double rate)
+    Action *NetworkConstantModel::communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate)
     {
       NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
 

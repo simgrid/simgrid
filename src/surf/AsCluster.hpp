@@ -3,13 +3,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SURF_ROUTING_CLUSTER_HPP_
-#define SURF_ROUTING_CLUSTER_HPP_
+#ifndef SIMGRID_ROUTING_CLUSTER_HPP_
+#define SIMGRID_ROUTING_CLUSTER_HPP_
 
 #include "src/surf/AsImpl.hpp"
 
 namespace simgrid {
-namespace surf {
+namespace routing {
 
 class XBT_PRIVATE AsCluster: public AsImpl {
 public:
@@ -36,4 +36,4 @@ public:
 }
 }
 
-#endif /* SURF_ROUTING_CLUSTER_HPP_ */
+#endif /* SIMGRID_ROUTING_CLUSTER_HPP_ */
