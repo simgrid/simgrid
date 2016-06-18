@@ -317,7 +317,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     //add a loopback link
     if(cluster->loopback_bw!=0 || cluster->loopback_lat!=0){
       char *tmp_link = bprintf("%s_loopback", link_id);
-      XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->limiter_link);
+      XBT_DEBUG("<loopback\tid=\"%s\"\tbw=\"%f\"/>", tmp_link, cluster->loopback_bw);
 
       memset(&link, 0, sizeof(link));
       link.id        = tmp_link;
