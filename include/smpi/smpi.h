@@ -806,9 +806,8 @@ XBT_PUBLIC(int)  smpi_get_host_pstate(void);
 XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
 
 XBT_PUBLIC(int) smpi_usleep(useconds_t usecs);
-#if _POSIX_TIMERS
-
-XBT_PUBLIC(int) smpi_nanosleep(struct timespec *tp, void* t);
+#if _POSIX_TIMERS && _POSIX_C_SOURCE >= 199309L
+XBT_PUBLIC(int) smpi_nanosleep(const struct timespec *tp, struct timespec * t);
 XBT_PUBLIC(int) smpi_clock_gettime(clockid_t clk_id, struct timespec *tp);
 #endif
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
