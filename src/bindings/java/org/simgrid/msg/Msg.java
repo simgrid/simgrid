@@ -46,10 +46,8 @@ public final class Msg {
 
 	/** Run the MSG simulation.
 	 *
-	 * The simulation is not cleaned afterward (see  
-	 * {@link #clean()} if you really insist on cleaning the C side), so you can freely 
-	 * retrieve the information that you want from the simulation. In particular, retrieving the status 
-	 * of a process or the current date is perfectly ok. 
+	 * After the simulation, you can freely retrieve the information that you want.. 
+	 * In particular, retrieving the status of a process or the current date is perfectly ok. 
 	 */
 	public static final native void run() ;
 
