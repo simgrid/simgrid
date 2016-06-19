@@ -9,9 +9,6 @@
 
 #define SEED 221238
 
-#define sleep(x) smpi_sleep(x)
-#define usleep(x) smpi_usleep(x)
-
 #include <smpi/smpi.h>
 #include <xbt/sysdep.h>
 #include <xbt/log.h>
@@ -19,6 +16,9 @@
 #include <simgrid/modelchecker.h>
 
 #include <sys/time.h> /* Load it before the define next line to not mess with the system headers */
+
+#define sleep(x) smpi_sleep(x)
+#define usleep(x) smpi_usleep(x)
 #define gettimeofday(x, y) smpi_gettimeofday(x, NULL)
 #if _POSIX_TIMERS > 0
 #define nanosleep(x, y) smpi_nanosleep(x, y)
