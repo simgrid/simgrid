@@ -237,12 +237,9 @@ void sg_platf_new_link(sg_platf_link_cbarg_t link){
 void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 {
   using simgrid::routing::AsCluster;
-  using simgrid::routing::AsClusterTorus;
-  using simgrid::routing::AsClusterFatTree;
-  using simgrid::routing::AsCluster;
-  using simgrid::routing::AsClusterTorus;
   using simgrid::routing::AsClusterDragonfly;
   using simgrid::routing::AsClusterFatTree;
+  using simgrid::routing::AsClusterTorus;
 
   int rankId=0;
 
