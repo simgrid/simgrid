@@ -591,9 +591,9 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("smpi/papi-events", nullptr, nullptr, "This switch enables tracking the specified counters with PAPI");
 #endif
     xbt_cfg_register_string("smpi/comp-adjustment-file", nullptr, nullptr, "A file containing speedups or slowdowns for some parts of the code.");
-    xbt_cfg_register_string("smpi/os", "1:0:0:0:0", nullptr,  "Small messages timings (MPI_Send minimum time for small messages)");
-    xbt_cfg_register_string("smpi/ois", "1:0:0:0:0", nullptr, "Small messages timings (MPI_Isend minimum time for small messages)");
-    xbt_cfg_register_string("smpi/or", "1:0:0:0:0", nullptr,  "Small messages timings (MPI_Recv minimum time for small messages)");
+    xbt_cfg_register_string("smpi/os", "0:0:0:0:0", nullptr,  "Small messages timings (MPI_Send minimum time for small messages)");
+    xbt_cfg_register_string("smpi/ois", "0:0:0:0:0", nullptr, "Small messages timings (MPI_Isend minimum time for small messages)");
+    xbt_cfg_register_string("smpi/or", "0:0:0:0:0", nullptr,  "Small messages timings (MPI_Recv minimum time for small messages)");
 
     xbt_cfg_register_string("smpi/coll-selector", "default", nullptr, "Which collective selector to use");
     xbt_cfg_register_alias("smpi/coll-selector","smpi/coll_selector");

@@ -117,6 +117,7 @@ static std::vector<s_smpi_factor_multival_t> parse_factor(const char *smpi_coef_
    */
   for (Tokenizer::iterator token_iter = tokens.begin();
          token_iter != tokens.end(); token_iter++) {
+XBT_DEBUG("token : %s", token_iter->c_str());
     Tokenizer factor_values(*token_iter, factor_separator);
 
     if (factor_values.begin() == factor_values.end()) {
@@ -154,7 +155,7 @@ static double smpi_os(size_t size)
   if (smpi_os_values.empty()) {
     smpi_os_values = parse_factor(xbt_cfg_get_string("smpi/os"));
   }
-  double current=0.0;
+  double current=smpi_os_values.empty()?0.0:smpi_os_values[0].values[0]+smpi_os_values[0].values[1]*size;
   // Iterate over all the sections that were specified and find the right
   // value. (fact.factor represents the interval sizes; we want to find the
   // section that has fact.factor <= size and no other such fact.factor <= size)
@@ -170,7 +171,7 @@ static double smpi_os(size_t size)
       current = fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("Searching for smpi/os: %zu is larger than the largest boundary, return %f", size, current);
+  XBT_DEBUG("Searching for smpi/os: %zu is larger than the largest boundary, return %.10f", size, current);
 
   return current;
 }
@@ -180,7 +181,7 @@ static double smpi_ois(size_t size)
   if (smpi_ois_values.empty()) {
     smpi_ois_values = parse_factor(xbt_cfg_get_string("smpi/ois"));
   }
-  double current=0.0;
+  double current=smpi_ois_values.empty()?0.0:smpi_ois_values[0].values[0]+smpi_ois_values[0].values[1]*size;
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the dynar we iterate over!
@@ -194,7 +195,7 @@ static double smpi_ois(size_t size)
       current = fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("Searching for smpi/ois: %zu is larger than the largest boundary, return %f", size, current);
+  XBT_DEBUG("Searching for smpi/ois: %zu is larger than the largest boundary, return %.10f", size, current);
 
   return current;
 }
@@ -204,7 +205,8 @@ static double smpi_or(size_t size)
   if (smpi_or_values.empty()) {
     smpi_or_values = parse_factor(xbt_cfg_get_string("smpi/or"));
   }
-  double current=0.0;
+  
+  double current=smpi_or_values.empty()?0.0:smpi_or_values[0].values[0]+smpi_or_values[0].values[1]*size;
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the dynar we iterate over!
@@ -219,7 +221,7 @@ static double smpi_or(size_t size)
       current=fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("smpi_or: %zu is larger than largest boundary, return %f", size, current);
+  XBT_DEBUG("smpi_or: %zu is larger than largest boundary, return %.10f", size, current);
 
   return current;
 }
