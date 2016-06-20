@@ -2,6 +2,10 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <process host="Disney" function="receiver"/>
-  <process host="Jill" function="sender">   <argument value="X"/>  </process>
-  <process host="UNIX" function="sender">   <argument value="Y"/>  </process>
+  <process host="Jill" function="sender">
+    <argument value="X"/>
+  </process>
+  <process host="UNIX" function="sender">
+    <argument value="Y"/>
+  </process>
 </platform>

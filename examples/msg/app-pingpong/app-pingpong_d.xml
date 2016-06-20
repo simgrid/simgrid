@@ -2,6 +2,10 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 <!-- For using with ping_pong, platform_sendrecv.xml -->
-  <process host="Tremblay" function="pinger">  <argument value="Jupiter"/>  </process>
-  <process host="Jupiter"  function="ponger">  <argument value="Tremblay"/> </process>
+  <process host="Tremblay" function="pinger">
+    <argument value="Jupiter"/>
+  </process>
+  <process host="Jupiter"  function="ponger">
+    <argument value="Tremblay"/>
+  </process>
 </platform>
