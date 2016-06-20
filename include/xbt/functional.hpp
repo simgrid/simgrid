@@ -178,7 +178,7 @@ private:
     Impl(F&& code) : code_(std::move(code)) {}
     Impl(F const& code) : code_(code) {}
     ~Impl() override {}
-    R operator()(Args... args)
+    R operator()(Args... args) override
     {
       return code_(std::forward<Args>(args)...);
     }
