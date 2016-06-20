@@ -113,8 +113,10 @@ public:
   }
   void wait()
   {
-    if (!valid())
-      throw std::future_error(std::future_errc::no_state);
+    // The future is ready! We don't have to wait:
+    if (this->is_ready())
+      return;
+    // The future is not ready. We have to delegate to the SimGrid kernel:
     std::exception_ptr exception;
     smx_process_t self = SIMIX_process_self();
     simcall_run_blocking([this, &exception, self]{
