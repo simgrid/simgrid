@@ -2,10 +2,10 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <process host="Jacquelin" function="app.masterworker.Master">
-     <argument value="5"/>     <!-- Amount of tasks to dispatch -->
-     <argument value="50000"/> <!-- Computation size of each task -->
-     <argument value="10"/>    <!-- Communication size of each one -->
-     <argument value="7"/>     <!-- Amount of workers waiting for orders -->
+    <argument value="5"/>     <!-- Amount of tasks to dispatch -->
+    <argument value="50000"/> <!-- Computation size of each task -->
+    <argument value="10"/>    <!-- Communication size of each one -->
+    <argument value="7"/>     <!-- Amount of workers waiting for orders -->
   </process>
 
   <process host="iRMX" function="app.masterworker.Worker">      <argument value="0"/>  <!-- Input mailbox --> </process>

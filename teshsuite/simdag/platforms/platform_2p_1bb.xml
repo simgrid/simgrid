@@ -10,6 +10,8 @@
 
     <link id="link0" bandwidth="2Bps" latency="2.777777777777777777777777778h" sharing_policy="SHARED"/>
 
-    <route src="cpu0" dst="cpu1"><link_ctn id="link0"/></route>
+    <route src="cpu0" dst="cpu1">
+      <link_ctn id="link0"/>
+    </route>
   </AS>
 </platform>

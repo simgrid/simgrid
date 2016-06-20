@@ -1,8 +1,9 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-<AS id="AS0" routing="Full">
-  <cluster id="bob_cluster" prefix="node-" suffix=".acme.org" radical="0-119" speed="1Gf" 
-           bw="125MBps" lat="50us" topology="DRAGONFLY" topo_parameters="3,4;4,3;5,1;2" loopback_bw="100MBps" loopback_lat="0" limiter_link="150MBps"/>
-</AS>
+  <AS id="AS0" routing="Full">
+    <cluster id="bob_cluster" prefix="node-" suffix=".acme.org" radical="0-119" speed="1Gf" 
+             bw="125MBps" lat="50us" topology="DRAGONFLY" topo_parameters="3,4;4,3;5,1;2" 
+             loopback_bw="100MBps" loopback_lat="0" limiter_link="150MBps"/>
+  </AS>
 </platform>

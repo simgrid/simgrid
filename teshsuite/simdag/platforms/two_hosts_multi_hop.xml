@@ -9,6 +9,10 @@
     <link id="link_alice" bandwidth="125MBps" latency="50us"/>
     <link id="switch" bandwidth="125MBps" latency="50us" sharing_policy="FATPIPE"/>
 
-    <route src="bob" dst="alice"><link_ctn id="link_bob"/><link_ctn id="switch"/><link_ctn id="link_alice"/></route>
+    <route src="bob" dst="alice">
+      <link_ctn id="link_bob"/>
+      <link_ctn id="switch"/>
+      <link_ctn id="link_alice"/>
+    </route>
   </AS>
 </platform>

@@ -1,7 +1,9 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-  <config><prop id="path" value="../examples/platforms/"/></config>
+  <config>
+    <prop id="path" value="../examples/platforms/"/>
+  </config>
 
   <AS id="AS0" routing="Full">
     <storage_type id="SATA-II_HDD" size="500GB" model="linear_no_lat"
@@ -36,11 +38,23 @@
     <link id="link5" bandwidth="125MBps" latency="50us"/>
     <link id="link6" bandwidth="125MBps" latency="50us"/>
 
-    <route src="alice" dst="bob"><link_ctn id="link1"/></route>
-    <route src="alice" dst="carl"><link_ctn id="link2"/></route>
-    <route src="alice" dst="dave"><link_ctn id="link3"/></route>
-    <route src="bob" dst="carl"><link_ctn id="link4"/></route>
-    <route src="bob" dst="dave"><link_ctn id="link5"/></route>
-    <route src="carl" dst="dave"><link_ctn id="link6"/></route>
+    <route src="alice" dst="bob">
+      <link_ctn id="link1"/>
+    </route>
+    <route src="alice" dst="carl">
+      <link_ctn id="link2"/>
+    </route>
+    <route src="alice" dst="dave">
+      <link_ctn id="link3"/>
+    </route>
+    <route src="bob" dst="carl">
+      <link_ctn id="link4"/>
+    </route>
+    <route src="bob" dst="dave">
+      <link_ctn id="link5"/>
+    </route>
+    <route src="carl" dst="dave">
+      <link_ctn id="link6"/>
+    </route>
   </AS>
 </platform>
