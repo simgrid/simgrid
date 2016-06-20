@@ -21,8 +21,8 @@
     <route src="Tremblay" dst="Java">
       <link_ctn id="3"/>
     </route>
-    <route src="Ruby" dst="Perl"><
-      link_ctn id="4"/>
+    <route src="Ruby" dst="Perl">
+      <link_ctn id="4"/>
     </route>
   </AS>
 </platform>
