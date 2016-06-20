@@ -25,9 +25,9 @@ public class Main  {
 
     /* construct the platform and deploy the application */
     Msg.createEnvironment(args[0]);
-    new Sender("Jacquelin", "Sender", new String[] {"Boivin", "Marcel"}).start();
+    new Sender("Jacquelin", "Sender", new String[] {"Boivin", "Tremblay"}).start();
     new Receiver ("Boivin", "Receiver", null).start();
-    new Receiver ("Marcel", "Receiver", null).start();
+    new Receiver ("Tremblay", "Receiver", null).start();
 
     /* Initialize some state for the hosts */
     Trace.hostStateDeclare ("PM_STATE"); 

@@ -2,12 +2,12 @@
 
 ! output sort 19
 
-$ java -classpath ${classpath:=.} trace/pingpong/Main ${srcdir:=.}/../platforms/platform.xml --cfg=tracing:yes  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:yes
+$ java -classpath ${classpath:=.} trace/pingpong/Main ${srcdir:=.}/../platforms/small_platform.xml --cfg=tracing:yes  --cfg=tracing/filename:simulation.trace --cfg=tracing/platform:yes
 > [0.000000] [jmsg/INFO] Using regular java threads.
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'simulation.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
-> [4.474401] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [3.817809] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:Receiver:(2) 0.000000] [jmsg/INFO] hello!
 > [Boivin:Receiver:(2) 0.000000] [jmsg/INFO] try to get a task
 > [Boivin:Receiver:(2) 1.048882] [jmsg/INFO] Got at time 1.0488818628325232
@@ -23,17 +23,17 @@ $ java -classpath ${classpath:=.} trace/pingpong/Main ${srcdir:=.}/../platforms/
 > [Jacquelin:Sender:(1) 2.097764] [jmsg/INFO] Communication time : 2.0977637256650463
 > [Jacquelin:Sender:(1) 2.097764] [jmsg/INFO]  --- bw 4.7669810845021345E7 ----
 > [Jacquelin:Sender:(1) 2.097764] [jmsg/INFO] sender time: 2.0977637256650463
-> [Jacquelin:Sender:(1) 4.474401] [jmsg/INFO] Got at time 4.47440072325564
-> [Jacquelin:Sender:(1) 4.474401] [jmsg/INFO] Was sent at time 2.0977637256650463
-> [Jacquelin:Sender:(1) 4.474401] [jmsg/INFO] Communication time : 2.376636997590594
-> [Jacquelin:Sender:(1) 4.474401] [jmsg/INFO]  --- bw 4.2076261583648995E7 ----
-> [Jacquelin:Sender:(1) 4.474401] [jmsg/INFO] goodbye!
-> [Marcel:Receiver:(3) 0.000000] [jmsg/INFO] hello!
-> [Marcel:Receiver:(3) 0.000000] [jmsg/INFO] try to get a task
-> [Marcel:Receiver:(3) 3.057925] [jmsg/INFO] Got at time 3.0579254576553434
-> [Marcel:Receiver:(3) 3.057925] [jmsg/INFO] Was sent at time 2.0977637256650463
-> [Marcel:Receiver:(3) 3.057925] [jmsg/INFO] Communication time : 0.9601617319902971
-> [Marcel:Receiver:(3) 3.057925] [jmsg/INFO]  --- bw 1.0414912057858452E8 ----
-> [Marcel:Receiver:(3) 4.474401] [jmsg/INFO] goodbye!
+> [Jacquelin:Sender:(1) 3.817809] [jmsg/INFO] Got at time 3.8178087458100927
+> [Jacquelin:Sender:(1) 3.817809] [jmsg/INFO] Was sent at time 2.0977637256650463
+> [Jacquelin:Sender:(1) 3.817809] [jmsg/INFO] Communication time : 1.7200450201450463
+> [Jacquelin:Sender:(1) 3.817809] [jmsg/INFO]  --- bw 5.813801315012516E7 ----
+> [Jacquelin:Sender:(1) 3.817809] [jmsg/INFO] goodbye!
+> [Tremblay:Receiver:(3) 0.000000] [jmsg/INFO] hello!
+> [Tremblay:Receiver:(3) 0.000000] [jmsg/INFO] try to get a task
+> [Tremblay:Receiver:(3) 2.957786] [jmsg/INFO] Got at time 2.9577862357375695
+> [Tremblay:Receiver:(3) 2.957786] [jmsg/INFO] Was sent at time 2.0977637256650463
+> [Tremblay:Receiver:(3) 2.957786] [jmsg/INFO] Communication time : 0.8600225100725232
+> [Tremblay:Receiver:(3) 2.957786] [jmsg/INFO]  --- bw 1.1627602630025032E8 ----
+> [Tremblay:Receiver:(3) 3.817809] [jmsg/INFO] goodbye!
 
 $ rm -rf simulation.trace

@@ -118,7 +118,7 @@ static int master_fun(int argc, char *argv[])
   }
 
   XBT_INFO("# Sleep long enough for everyone to be done with previous batch of work");
-  MSG_process_sleep(1000 - MSG_get_clock());
+  MSG_process_sleep(10 - MSG_get_clock());
 
   XBT_INFO("# Add one more process on each VM");
   xbt_dynar_foreach(vms, i, vm) {
@@ -179,7 +179,7 @@ int main(int argc, char *argv[])
   const int nb_workers = 2;
 
   MSG_init(&argc, argv);
-  xbt_assert(argc >1,"Usage: %s example/msg/msg_platform.xml\n", argv[0]);
+  xbt_assert(argc >1,"Usage: %s example/platforms/cluster.xml\n", argv[0]);
 
   /* Load the platform file */
   MSG_create_environment(argv[1]);

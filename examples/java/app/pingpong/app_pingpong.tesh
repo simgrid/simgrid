@@ -2,7 +2,7 @@
 
 ! output sort 19
 
-$ java -classpath ${classpath:=.} app/pingpong/Main ${srcdir:=.}/../platforms/platform.xml
+$ java -classpath ${classpath:=.} app/pingpong/Main ${srcdir:=.}/../platforms/small_platform.xml
 > [0.000000] [jmsg/INFO] Using regular java threads.
 > [1.048882] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
 > [Boivin:Receiver:(2) 0.000000] [jmsg/INFO] hello!

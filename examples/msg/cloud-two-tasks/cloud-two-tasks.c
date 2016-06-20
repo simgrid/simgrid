@@ -56,8 +56,7 @@ static void launch_computation_worker(msg_host_t host)
 static int master_main(int argc, char *argv[])
 {
   xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
-  msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
-  xbt_dynar_free(&hosts_dynar);
+  msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_vm_t vm0;
   vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
@@ -93,13 +92,10 @@ int main(int argc, char *argv[]){
   xbt_assert(argc == 2);
   MSG_create_environment(argv[1]);
 
-  xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
-  launch_master(xbt_dynar_get_as(hosts_dynar, 0, msg_host_t));
-  xbt_dynar_free(&hosts_dynar);
+  launch_master(MSG_host_by_name("Fafard"));
 
   int res = MSG_main();
   XBT_INFO("Bye (simulation time %g)", MSG_get_clock());
-  xbt_dynar_free(&hosts_dynar);
 
   return !(res == MSG_OK);
 }

@@ -52,11 +52,9 @@ static void vm_migrate_async(msg_vm_t vm, msg_host_t dst_pm)
 
 static int master_main(int argc, char *argv[])
 {
-  xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
-  msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
-  msg_host_t pm1 = xbt_dynar_get_as(hosts_dynar, 1, msg_host_t);
-  msg_host_t pm2 = xbt_dynar_get_as(hosts_dynar, 2, msg_host_t);
-  xbt_dynar_free(&hosts_dynar);
+  msg_host_t pm0 = MSG_host_by_name("Fafard");
+  msg_host_t pm1 = MSG_host_by_name("Tremblay");
+  msg_host_t pm2 = MSG_host_by_name("Bourassa");
   msg_vm_t vm0, vm1;
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
@@ -136,9 +134,7 @@ int main(int argc, char *argv[])
   /* load the platform file */
   MSG_create_environment(argv[1]);
 
-  xbt_dynar_t hosts_dynar = MSG_hosts_as_dynar();
-  msg_host_t pm0 = xbt_dynar_get_as(hosts_dynar, 0, msg_host_t);
-  xbt_dynar_free(&hosts_dynar);
+  msg_host_t pm0 =  MSG_host_by_name("Fafard");
   launch_master(pm0);
 
   int res = MSG_main();

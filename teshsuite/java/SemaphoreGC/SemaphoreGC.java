@@ -40,8 +40,7 @@ public class SemaphoreGC {
     }
     Msg.createEnvironment(args[0]);
 
-    Host[] hosts = Host.all();
-    new SemCreator(hosts[0], "SemCreator").start();
+    new SemCreator(Host.getByName("Fafard"), "SemCreator").start();
 
     Msg.run();
   }

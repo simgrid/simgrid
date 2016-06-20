@@ -36,9 +36,7 @@ int main(int argc, char* argv[])
   MSG_init(&argc, argv);
   MSG_create_environment(argv[1]);
 
-  xbt_dynar_t hosts = MSG_hosts_as_dynar();
-  msg_host_t h = xbt_dynar_get_as(hosts,0,msg_host_t);
-  xbt_dynar_free(&hosts);
+  msg_host_t h = MSG_host_by_name("Fafard");
 
   sem = MSG_sem_init(1);
   char** aliceTimes = xbt_new(char*, 9);

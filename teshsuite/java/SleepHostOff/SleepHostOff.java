@@ -32,7 +32,7 @@ class TestRunner extends Process {
   }
 
   public void main(String[] strings) throws MsgException {
-    Host host = Host.all()[1];
+    Host host = Host.getByName("Tremblay");
 
     Msg.info("**** **** **** ***** ***** Test Sleep ***** ***** **** **** ****");
     Msg.info("Test sleep: Create a process on "+host.getName()+" that simply make periodic sleep, turn off "
@@ -60,8 +60,7 @@ public class SleepHostOff {
 
     Msg.createEnvironment(args[0]);
 
-    Host[] hosts = Host.all();
-    new TestRunner(hosts[0], "TestRunner", null).start();
+    new TestRunner(Host.getByName("Fafard"), "TestRunner", null).start();
 
     Msg.run();
   }
