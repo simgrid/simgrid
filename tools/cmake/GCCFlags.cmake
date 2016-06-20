@@ -71,7 +71,7 @@ if(enable_lto) # User wants LTO. Try if we can do that
     #    Please submit a full bug report, with preprocessed source if appropriate.
     # So instead, we push the support forward
 
-    if ( (CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8")
+    if ( (CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8.5")
          AND (LINKER_VERSION VERSION_GREATER "2.22"))
       set(enable_lto ON)
     endif()
