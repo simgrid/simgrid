@@ -73,7 +73,7 @@ static int match_send(void* a, void* b,smx_synchro_t ignored) {
 // These are taken from surf/network.c and generalized to have more values for each factor
 typedef struct s_smpi_factor_multival *smpi_os_factor_multival_t;
 typedef struct s_smpi_factor_multival { // FIXME: this should be merged (deduplicated) with s_smpi_factor defined in network_smpi.c
-  long factor=0;
+  size_t factor=0;
   std::vector<double> values;
 } s_smpi_factor_multival_t;
 
@@ -149,7 +149,7 @@ static std::vector<s_smpi_factor_multival_t> parse_factor(const char *smpi_coef_
   return smpi_factor;
 }
 
-static double smpi_os(double size)
+static double smpi_os(size_t size)
 {
   if (smpi_os_values.empty()) {
     smpi_os_values = parse_factor(xbt_cfg_get_string("smpi/os"));
@@ -162,7 +162,7 @@ static double smpi_os(double size)
   for (auto& fact : smpi_os_values) {
     if (size <= fact.factor) { // Values already too large, use the previously
                                // computed value of current!
-        XBT_DEBUG("os : %f <= %ld return %f", size, fact.factor, current);
+        XBT_DEBUG("os : %zu <= %ld return %.10f", size, fact.factor, current);
       return current;
     }else{
       // If the next section is too large, the current section must be used.
@@ -170,12 +170,12 @@ static double smpi_os(double size)
       current = fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("Searching for smpi/os: %f is larger than the largest boundary, return %f", size, current);
+  XBT_DEBUG("Searching for smpi/os: %zu is larger than the largest boundary, return %f", size, current);
 
   return current;
 }
 
-static double smpi_ois(double size)
+static double smpi_ois(size_t size)
 {
   if (smpi_ois_values.empty()) {
     smpi_ois_values = parse_factor(xbt_cfg_get_string("smpi/ois"));
@@ -186,7 +186,7 @@ static double smpi_ois(double size)
   // Note: parse_factor() (used before) already sorts the dynar we iterate over!
   for (auto& fact : smpi_ois_values) {
     if (size <= fact.factor) { // Values already too large, use the previously  computed value of current!
-        XBT_DEBUG("ois : %f <= %ld return %f", size, fact.factor, current);
+        XBT_DEBUG("ois : %zu <= %ld return %.10f", size, fact.factor, current);
       return current;
     }else{
       // If the next section is too large, the current section must be used.
@@ -194,12 +194,12 @@ static double smpi_ois(double size)
       current = fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("Searching for smpi/ois: %f is larger than the largest boundary, return %f", size, current);
+  XBT_DEBUG("Searching for smpi/ois: %zu is larger than the largest boundary, return %f", size, current);
 
   return current;
 }
 
-static double smpi_or(double size)
+static double smpi_or(size_t size)
 {
   if (smpi_or_values.empty()) {
     smpi_or_values = parse_factor(xbt_cfg_get_string("smpi/or"));
@@ -211,7 +211,7 @@ static double smpi_or(double size)
   for (auto fact : smpi_or_values) {
     if (size <= fact.factor) { // Values already too large, use the previously
                                // computed value of current!
-        XBT_DEBUG("or : %f <= %ld return %f", size, fact.factor, current);
+        XBT_DEBUG("or : %zu <= %ld return %.10f", size, fact.factor, current);
       return current;
     } else {
       // If the next section is too large, the current section must be used.
@@ -219,7 +219,7 @@ static double smpi_or(double size)
       current=fact.values[0]+fact.values[1]*size;
     }
   }
-  XBT_DEBUG("smpi_or: %f is larger than largest boundary, return %f", size, current);
+  XBT_DEBUG("smpi_or: %zu is larger than largest boundary, return %f", size, current);
 
   return current;
 }
