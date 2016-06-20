@@ -138,11 +138,11 @@ XBT_DEBUG("token : %s", token_iter->c_str());
     }
 
     smpi_factor.push_back(fact);
-    XBT_DEBUG("smpi_factor:\t%ld : %zu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
+    XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
   }
   std::sort(smpi_factor.begin(), smpi_factor.end(), &factor_cmp);
   for (auto& fact : smpi_factor) {
-    XBT_DEBUG("smpi_factor:\t%ld : %zu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
+    XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
   }
 
   return smpi_factor;
@@ -161,7 +161,7 @@ static double smpi_os(size_t size)
   for (auto& fact : smpi_os_values) {
     if (size <= fact.factor) { // Values already too large, use the previously
                                // computed value of current!
-        XBT_DEBUG("os : %zu <= %ld return %.10f", size, fact.factor, current);
+        XBT_DEBUG("os : %zu <= %zu return %.10f", size, fact.factor, current);
       return current;
     }else{
       // If the next section is too large, the current section must be used.
@@ -185,7 +185,7 @@ static double smpi_ois(size_t size)
   // Note: parse_factor() (used before) already sorts the dynar we iterate over!
   for (auto& fact : smpi_ois_values) {
     if (size <= fact.factor) { // Values already too large, use the previously  computed value of current!
-        XBT_DEBUG("ois : %zu <= %ld return %.10f", size, fact.factor, current);
+        XBT_DEBUG("ois : %zu <= %zu return %.10f", size, fact.factor, current);
       return current;
     }else{
       // If the next section is too large, the current section must be used.
@@ -212,7 +212,7 @@ static double smpi_or(size_t size)
   for (auto fact : smpi_or_values) {
     if (size <= fact.factor) { // Values already too large, use the previously
                                // computed value of current!
-        XBT_DEBUG("or : %zu <= %ld return %.10f", size, fact.factor, current);
+        XBT_DEBUG("or : %zu <= %zu return %.10f", size, fact.factor, current);
       return current;
     } else {
       // If the next section is too large, the current section must be used.
