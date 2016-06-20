@@ -352,12 +352,13 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
   XBT_OUT();
 }
 
-/**
- * \brief Destroys a condition.
- *
- * Destroys and frees the condition's memory. 
- * \param cond A condition
- */
+smx_cond_t SIMIX_cond_ref(smx_cond_t cond)
+{
+  if (cond != nullptr)
+    intrusive_ptr_add_ref(cond);
+  return cond;
+}
+
 void SIMIX_cond_unref(smx_cond_t cond)
 {
   XBT_IN("(%p)",cond);

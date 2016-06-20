@@ -7,6 +7,8 @@
 
     <link id="link1" bandwidth="125MBps" latency="50us"/>
 
-    <route src="bob" dst="alice"><link_ctn id="link1"/></route>
+    <route src="bob" dst="alice">
+      <link_ctn id="link1"/>
+    </route>
   </AS>
 </platform>

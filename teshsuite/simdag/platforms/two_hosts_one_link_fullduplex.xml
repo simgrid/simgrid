@@ -7,7 +7,11 @@
 
     <link id="link1" bandwidth="125MBps" latency="50us" sharing_policy="FULLDUPLEX"/>
 
-    <route src="alice" dst="bob" symmetrical="NO"><link_ctn id="link1" direction="UP"/></route>
-    <route src="bob" dst="alice" symmetrical="NO"><link_ctn id="link1" direction="DOWN"/></route>
+    <route src="alice" dst="bob" symmetrical="NO">
+      <link_ctn id="link1" direction="UP"/>
+    </route>
+    <route src="bob" dst="alice" symmetrical="NO">
+      <link_ctn id="link1" direction="DOWN"/>
+    </route>
   </AS>
 </platform>

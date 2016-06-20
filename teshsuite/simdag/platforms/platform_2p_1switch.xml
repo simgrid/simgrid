@@ -9,6 +9,10 @@
     <link id="link0" bandwidth="1Bps" latency="500ms" sharing_policy="SHARED"/>
     <link id="link1" bandwidth="1Bps" latency="500ms" sharing_policy="SHARED"/>
 
-    <route src="cpu0" dst="cpu1"><link_ctn id="link0"/><link_ctn id="switch"/><link_ctn id="link1"/></route>
- </AS>
- </platform>
+    <route src="cpu0" dst="cpu1">
+      <link_ctn id="link0"/>
+      <link_ctn id="switch"/>
+      <link_ctn id="link1"/>
+    </route>
+  </AS>
+</platform>

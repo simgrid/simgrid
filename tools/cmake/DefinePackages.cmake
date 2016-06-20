@@ -384,6 +384,7 @@ set(S4U_SRC
   src/s4u/s4u_host.cpp  
   src/s4u/s4u_mailbox.cpp
   src/s4u/s4u_mutex.cpp
+  src/s4u/s4u_conditionVariable.cpp
   src/s4u/s4u_storage.cpp
 )
 
@@ -650,6 +651,7 @@ set(headers_to_install
   include/simgrid/s4u/host.hpp  
   include/simgrid/s4u/mailbox.hpp  
   include/simgrid/s4u/mutex.hpp
+  include/simgrid/s4u/conditionVariable.hpp
   include/simgrid/s4u/storage.hpp  
   include/simgrid/s4u.h
   include/simgrid/plugins/energy.h

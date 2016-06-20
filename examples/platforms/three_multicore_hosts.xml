@@ -8,8 +8,14 @@
 
     <link id="link1" bandwidth="125MBps" latency="100us" />
 
-    <route src="PM0" dst="PM1"><link_ctn id="link1"/></route>
-    <route src="PM0" dst="PM2"><link_ctn id="link1"/></route>
-    <route src="PM1" dst="PM2"><link_ctn id="link1"/></route>
+    <route src="PM0" dst="PM1">
+      <link_ctn id="link1"/>
+    </route>
+    <route src="PM0" dst="PM2">
+      <link_ctn id="link1"/>
+    </route>
+    <route src="PM1" dst="PM2">
+      <link_ctn id="link1"/>
+    </route>
   </AS>
 </platform>

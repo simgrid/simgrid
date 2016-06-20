@@ -10,9 +10,18 @@
     <link id="link2" bandwidth="125MBps" latency="50us"/>
     <link id="link3" bandwidth="125MBps" latency="50us"/>
 
-   <route src="bob" dst="alice" symmetrical="NO"><link_ctn id="link1"/></route>
-   <route src="alice" dst="bob" symmetrical="NO"><link_ctn id="link2"/><link_ctn id="link3"/></route>
-   <route src="bob" dst="trudy"><link_ctn id="link2"/></route>
-   <route src="trudy" dst="alice"><link_ctn id="link3"/></route>
+    <route src="bob" dst="alice" symmetrical="NO">
+      <link_ctn id="link1"/>
+    </route>
+    <route src="alice" dst="bob" symmetrical="NO">
+      <link_ctn id="link2"/>
+      <link_ctn id="link3"/>
+    </route>
+    <route src="bob" dst="trudy">
+      <link_ctn id="link2"/>
+    </route>
+    <route src="trudy" dst="alice">
+      <link_ctn id="link3"/>
+    </route>
   </AS>
 </platform>
