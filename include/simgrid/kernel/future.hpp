@@ -70,6 +70,8 @@ public:
       // executing it later:
       continuation_ = std::move(continuation);
       break;
+    default:
+      DIE_IMPOSSIBLE;
     }
   }
 
@@ -84,8 +86,8 @@ public:
   }
 
 protected:
-  FutureStateBase() {}
-  ~FutureStateBase() {};
+  FutureStateBase() = default;
+  ~FutureStateBase() = default;
 
   /** Set the future as ready and trigger the continuation */
   void set_ready()
@@ -252,7 +254,7 @@ public:
 template<class T>
 class Future {
 public:
-  Future() {}
+  Future() = default;
   Future(std::shared_ptr<FutureState<T>> state): state_(std::move(state)) {}
 
   // Move type:

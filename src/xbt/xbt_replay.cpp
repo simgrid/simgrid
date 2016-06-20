@@ -148,8 +148,11 @@ int xbt_replay_action_runner(int argc, char *argv[])
 {
   int i;
   if (xbt_action_fp) {              // A unique trace file
-    char **evt;
-    while ((evt = action_get_action(argv[0]))) {
+    while (true) {
+      char **evt = action_get_action(argv[0]);
+      if (evt == nullptr)
+	 break;
+
       char* lowername = str_tolower (evt[1]);
       action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername);
       xbt_free(lowername);

@@ -199,7 +199,8 @@ xbt_dynar_t xbt_str_split(const char *s, const char *sep)
   is_sep[0] = 1;                /* End of string is also separator */
 
   /* Do the job */
-  p = q = s;
+  p = s;
+  q = s;
   done = 0;
 
   if (s[0] == '\0')
@@ -234,7 +235,8 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
   int done;
   const char *p, *q;
 
-  p = q = s;
+  p = s;
+  q = s;
   done = 0;
 
   if (s[0] == '\0')
@@ -446,7 +448,8 @@ char *xbt_str_join_array(const char *const *strs, const char *sep)
   len += strlen(sep) * amount_strings;
 
   /* Do the job */
-  q = res = (char*) xbt_malloc(len);
+  res = (char*) xbt_malloc(len);
+  q = res;
   for (i=0;strs[i];i++) {
     if (i!=0) { // not first loop
       q += snprintf(q,len, "%s%s", sep, strs[i]);
