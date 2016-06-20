@@ -71,6 +71,11 @@ auto kernelSync(F code) -> decltype(code().get())
 }
 
 /** A blocking (`wait()`-based) future for SIMIX processes */
+// TODO, .wait_for()
+// TODO, .wait_until()
+// TODO, SharedFuture
+// TODO, simgrid::simix::when_all - wait for all future to be ready (this one is simple!)
+// TODO, simgrid::simix::when_any - wait for any future to be ready
 template <class T>
 class Future {
 public:
@@ -100,9 +105,35 @@ public:
     });
     return result.get();
   }
-  // TODO, wait()
-  // TODO, wait_for()
-  // TODO, wait_until()
+  bool is_ready() const
+  {
+    if (!valid())
+      throw std::future_error(std::future_errc::no_state);
+    return future_.is_ready();
+  }
+  void wait()
+  {
+    // The future is ready! We don't have to wait:
+    if (this->is_ready())
+      return;
+    // The future is not ready. We have to delegate to the SimGrid kernel:
+    std::exception_ptr exception;
+    smx_process_t self = SIMIX_process_self();
+    simcall_run_blocking([this, &exception, self]{
+      try {
+        // When the kernel future is ready...
+        this->future_.then([this, self](simgrid::kernel::Future<T> value) {
+          // ...store it the simix kernel and wake up.
+          this->future_ = std::move(value);
+          simgrid::simix::unblock(self);
+        });
+      }
+      catch (...) {
+        exception = std::current_exception();
+        simgrid::simix::unblock(self);
+      }
+    });
+  }
 private:
   // We wrap an event-based kernel future:
   simgrid::kernel::Future<T> future_;

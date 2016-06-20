@@ -10,6 +10,7 @@
 #include <boost/optional.hpp>
 
 #include <xbt/base.h>
+#include <xbt/functional.hpp>
 
 #include <functional>
 #include <future>
@@ -27,54 +28,11 @@ template<class T> class Promise;
 // Those are implementation details:
 enum class FutureStatus;
 template<class T> class FutureState;
-class FutureContinuation;
-template<class T, class F> class FutureContinuationImpl;
 
 enum class FutureStatus {
   not_ready,
   ready,
   done,
-};
-
-/** A continuation attached to a future to be executed when it is ready */
-XBT_PUBLIC_CLASS FutureContinuation {
-public:
-  FutureContinuation() {}
-
-  // No copy:
-  FutureContinuation(FutureContinuation&) = delete;
-  FutureContinuation& operator=(FutureContinuation&) = delete;
-
-  virtual ~FutureContinuation() {}
-  virtual void operator()() = 0;
-};
-
-/** Default implementation of `FutureContinuation`
- *
- *  @param T   value type of the future
- *  @param F   type of the wrapped code/callback/continuation
- */
-template<class T, class F>
-class FutureContinuationImpl : public FutureContinuation {
-public:
-  FutureContinuationImpl(std::shared_ptr<FutureState<T>> ptr, F callback)
-    : ptr_(std::move(ptr)), callback_(std::move(callback)) {}
-  ~FutureContinuationImpl() override {}
-  void operator()() override
-  {
-    try {
-      callback_(Future<T>(ptr_));
-    }
-    // Those exceptions are lost.
-    // If we want to implement callback chaining, we'll have to catch them and
-    // foward them to the next future.
-    catch (...) {
-      // We could log this.
-    }
-  }
-private:
-  std::shared_ptr<FutureState<T>> ptr_;
-  F callback_;
 };
 
 /** Bases stuff for all @ref simgrid::kernel::FutureState<T> */
@@ -93,7 +51,7 @@ public:
     this->set_ready();
   }
 
-  void set_continuation(std::unique_ptr<FutureContinuation> continuation)
+  void set_continuation(simgrid::xbt::Task<void()> continuation)
   {
     xbt_assert(!continuation_);
     switch (status_) {
@@ -105,7 +63,7 @@ public:
     case FutureStatus::ready:
       // The future is ready, execute the continuation directly.
       // We might execute it from the event loop instead:
-      (*continuation)();
+      continuation();
       break;
     case FutureStatus::not_ready:
       // The future is not ready so we mast keep the continuation for
@@ -138,7 +96,7 @@ protected:
       // We need to do this becase the current implementation of the
       // continuation has a shared_ptr to the FutureState.
       auto continuation = std::move(continuation_);
-      (*continuation)();
+      continuation();
     }
   }
 
@@ -160,7 +118,7 @@ protected:
 private:
   FutureStatus status_ = FutureStatus::not_ready;
   std::exception_ptr exception_;
-  std::unique_ptr<FutureContinuation> continuation_;
+  simgrid::xbt::Task<void()> continuation_;
 };
 
 /** Shared state for future and promises
@@ -303,7 +261,8 @@ public:
   Future(Future&& that) : state_(std::move(that.state_)) {}
   Future& operator=(Future&& that)
   {
-    state_ = std::move(that.stat_);
+    state_ = std::move(that.state_);
+    return *this;
   }
 
   /** Whether the future is valid:.
@@ -345,11 +304,10 @@ public:
   {
     if (state_ == nullptr)
       throw std::future_error(std::future_errc::no_state);
-    std::unique_ptr<FutureContinuation> ptr =
-      std::unique_ptr<FutureContinuation>(
-        new FutureContinuationImpl<T,F>(state_, std::move(continuation)));
-    state_->set_continuation(std::move(ptr));
-    state_ = nullptr;
+    // Give shared-ownership to the continuation:
+    auto state = std::move(state_);
+    state->set_continuation(simgrid::xbt::makeTask(
+      std::move(continuation), state));
   }
 
   /** Get the value from the future
