@@ -6,8 +6,10 @@
 #ifndef SIMGRID_S4U_COND_VARIABLE_HPP
 #define SIMGRID_S4U_COND_VARIABLE_HPP
 
-#include <simgrid/s4u/mutex.hpp>
+#include <utility> // std::swap
 
+#include <simgrid/simix.h>
+#include <simgrid/s4u/mutex.hpp>
 
 namespace simgrid {
 namespace s4u {
