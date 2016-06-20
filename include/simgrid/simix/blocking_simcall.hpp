@@ -100,7 +100,33 @@ public:
     });
     return result.get();
   }
-  // TODO, wait()
+  bool is_ready() const
+  {
+    if (!valid())
+      throw std::future_error(std::future_errc::no_state);
+    return future_.is_ready();
+  }
+  void wait()
+  {
+    if (!valid())
+      throw std::future_error(std::future_errc::no_state);
+    std::exception_ptr exception;
+    smx_process_t self = SIMIX_process_self();
+    simcall_run_blocking([this, &exception, self]{
+      try {
+        // When the kernel future is ready...
+        this->future_.then([this, self](simgrid::kernel::Future<T> value) {
+          // ...store it the simix kernel and wake up.
+          this->future_ = std::move(value);
+          simgrid::simix::unblock(self);
+        });
+      }
+      catch (...) {
+        exception = std::current_exception();
+        simgrid::simix::unblock(self);
+      }
+    });
+  }
   // TODO, wait_for()
   // TODO, wait_until()
 private:

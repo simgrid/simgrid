@@ -85,6 +85,19 @@ static int master(int argc, char *argv[])
   res = future.get();
   XBT_INFO("kernelAsync with value returned with %i", res);
 
+  // Synchronize on a successul Future<int> and get the value:
+  future = simgrid::simix::kernelAsync([&] {
+    return kernel_defer(60, [] {
+      XBT_INFO("kernelAsync with value");
+      return 43;
+    });
+  });
+  XBT_INFO("The future is %s", future.is_ready() ? "ready" : "not ready");
+  future.wait();
+  XBT_INFO("The future is %s", future.is_ready() ? "ready" : "not ready");
+  res = future.get();
+  XBT_INFO("kernelAsync with value returned with %i", res);
+
   return 0;
 }
 

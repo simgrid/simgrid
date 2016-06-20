@@ -261,7 +261,8 @@ public:
   Future(Future&& that) : state_(std::move(that.state_)) {}
   Future& operator=(Future&& that)
   {
-    state_ = std::move(that.stat_);
+    state_ = std::move(that.state_);
+    return *this;
   }
 
   /** Whether the future is valid:.
