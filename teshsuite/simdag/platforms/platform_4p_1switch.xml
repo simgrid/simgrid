@@ -13,11 +13,35 @@
     <link id="link2" bandwidth="1Bps" latency="500ms" sharing_policy="SHARED"/>
     <link id="link3" bandwidth="1Bps" latency="500ms" sharing_policy="SHARED"/>
 
-    <route src="cpu0" dst="cpu1"><link_ctn id="link0"/><link_ctn id="switch"/><link_ctn id="link1"/></route>
-    <route src="cpu0" dst="cpu2"><link_ctn id="link0"/><link_ctn id="switch"/><link_ctn id="link2"/></route>
-    <route src="cpu0" dst="cpu3"><link_ctn id="link0"/><link_ctn id="switch"/><link_ctn id="link3"/></route>
-    <route src="cpu1" dst="cpu2"><link_ctn id="link1"/><link_ctn id="switch"/><link_ctn id="link2"/></route>
-    <route src="cpu1" dst="cpu3"><link_ctn id="link1"/><link_ctn id="switch"/><link_ctn id="link3"/></route>
-    <route src="cpu2" dst="cpu3"><link_ctn id="link2"/><link_ctn id="switch"/><link_ctn id="link3"/></route>
+    <route src="cpu0" dst="cpu1">
+      <link_ctn id="link0"/>
+      <link_ctn id="switch"/>
+      <link_ctn id="link1"/>
+    </route>
+    <route src="cpu0" dst="cpu2">
+      <link_ctn id="link0"/>
+      <link_ctn id="switch"/>
+      <link_ctn id="link2"/>
+    </route>
+    <route src="cpu0" dst="cpu3">
+      <link_ctn id="link0"/>
+      <link_ctn id="switch"/>
+      <link_ctn id="link3"/>
+    </route>
+    <route src="cpu1" dst="cpu2">
+      <link_ctn id="link1"/>
+      <link_ctn id="switch"/>
+      <link_ctn id="link2"/>
+    </route>
+    <route src="cpu1" dst="cpu3">
+      <link_ctn id="link1"/>
+      <link_ctn id="switch"/>
+      <link_ctn id="link3"/>
+    </route>
+    <route src="cpu2" dst="cpu3">
+      <link_ctn id="link2"/>
+      <link_ctn id="switch"/>
+      <link_ctn id="link3"/>
+    </route>
   </AS>
 </platform>

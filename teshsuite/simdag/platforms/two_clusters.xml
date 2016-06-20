@@ -11,7 +11,7 @@
 
     <ASroute src="bob_cluster" dst="alice_cluster" gw_src="bobbob_cluster_router.hamburger.edu" 
              gw_dst="alicealice_cluster_router.crepe.fr">
-       <link_ctn id="backbone"/>
+      <link_ctn id="backbone"/>
     </ASroute>
   </AS>
 </platform>

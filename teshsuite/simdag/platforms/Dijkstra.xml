@@ -28,7 +28,9 @@
     </route>
 
     <route src="NODO01" dst="NODO02" symmetrical="NO">
-      <link_ctn id="10"/><link_ctn id="11"/><link_ctn id="12"/>
+      <link_ctn id="10"/>
+      <link_ctn id="11"/>
+      <link_ctn id="12"/>
     </route>
   </AS>
 </platform>

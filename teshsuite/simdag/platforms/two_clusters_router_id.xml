@@ -10,10 +10,10 @@
     <link id="backbone" bandwidth="1.25GBps" latency="500us"/>  
 
     <ASroute src="bob_cluster" dst="alice_cluster" gw_src="bob_cluster_router" gw_dst="alice_cluster_router">
-       <link_ctn id="backbone"/>
+      <link_ctn id="backbone"/>
     </ASroute>
     <ASroute src="alice_cluster" dst="bob_cluster" gw_src="alice_cluster_router" gw_dst="bob_cluster_router">
-       <link_ctn id="backbone"/>
+      <link_ctn id="backbone"/>
     </ASroute>
   </AS>
 </platform>
