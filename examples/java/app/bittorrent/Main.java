@@ -18,7 +18,7 @@ class Main{
     Msg.init(args);
     if(args.length < 2) {
       Msg.info("Usage   : Bittorrent platform_file deployment_file");
-      Msg.info("example : Bittorrent ../platforms/platform.xml bittorrent.xml");
+      Msg.info("example : Bittorrent ../platforms/cluster.xml bittorrent.xml");
       System.exit(1);
     }
 
@@ -27,6 +27,6 @@ class Main{
     Msg.deployApplication(args[1]);
 
     /*  execute the simulation. */
-        Msg.run();
+    Msg.run();
   }
 }

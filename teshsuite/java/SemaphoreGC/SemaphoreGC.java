@@ -24,7 +24,7 @@ class SemCreator extends Process {
     Msg.info("Creating 50 new Semaphores, yielding and triggering a GC after each");
     for(j = 1; j <= 50; j++) {
       sem = new Semaphore(0);
-      waitFor(10); 
+      waitFor(10);
       System.gc();
     }
     Msg.info("It worked, we survived. The test is passed.");
@@ -32,6 +32,10 @@ class SemCreator extends Process {
 }
 
 public class SemaphoreGC {
+  private SemaphoreGC() {
+    throw new IllegalAccessError("Utility class");
+  }
+
   public static void main(String[] args) throws Exception {
     Msg.init(args);
     if (args.length < 1) {

@@ -12,7 +12,7 @@ public class Bucket {
   private int id;
 
   public Bucket(int id) {
-    this.nodes = new ArrayList<Integer>();
+    this.nodes = new ArrayList<>();
     this.id = id;
   }
 
@@ -46,8 +46,8 @@ public class Bucket {
 
   /* Add the content of the bucket into a answer object. */
   public void addToAnswer(Answer answer, int destination) {
-    for (int id : this.nodes) {
-      answer.getNodes().add(new Contact(id,id ^ destination));
+    for (int nodeId : this.nodes) {
+      answer.getNodes().add(new Contact(nodeId,nodeId ^ destination));
     }
   }
 

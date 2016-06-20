@@ -31,7 +31,7 @@ public class Worker extends Process {
     while(true) {  
       Task task = Task.receive("worker_"+num);
 
-      if (task.getName().equals("finalize")) {
+      if ("finalize".equals(task.getName())) {
         break;
       }
       Msg.info("Received \"" + task.getName() +  "\". Processing it.");
