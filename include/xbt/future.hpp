@@ -20,9 +20,12 @@
 namespace simgrid {
 namespace xbt {
 
-/** A value or an exception
+/** A value or an exception (or nothing)
  *
- *  The API is similar to the one of future and promise.
+ *  This is similar to optional<expected<T>> but it with a Future/Promise
+ *  like API.
+ *
+ *  Also the name it not so great.
  **/
 template<class T>
 class Result {
