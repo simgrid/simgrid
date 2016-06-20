@@ -62,15 +62,17 @@ if(enable_lto) # User wants LTO. Try if we can do that
   if(enable_compile_optimizations
       AND CMAKE_COMPILER_IS_GNUCC
       AND (NOT enable_model-checking))
-    if(WIN32)
-      if (CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8")
-        # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
-        #
-        # We are experiencing assertion failures even with 4.8 on MinGW.
-        # Push the support forward: will see if 4.9 works when we test it.
-        set(enable_lto ON)
-      endif()
-    elseif(LINKER_VERSION STRGREATER "2.22")
+    # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
+    #   We are experiencing assertion failures even with 4.8 on MinGW.
+    #   Push the support forward: will see if 4.9 works when we test it.
+    #
+    # On Linux, we got the following with GCC 4.8.4 on Centos and Ubuntu
+    #    lto1: internal compiler error: in output_die, at dwarf2out.c:8478
+    #    Please submit a full bug report, with preprocessed source if appropriate.
+    # So instead, we push the support forward
+
+    if ( (CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8")
+         AND (LINKER_VERSION VERSION_GREATER "2.22"))
       set(enable_lto ON)
     endif()
   endif()
