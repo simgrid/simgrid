@@ -55,10 +55,12 @@ static void asynchronous_cleanup(void)
   process_globals_t globals = (process_globals_t) MSG_process_get_data(MSG_process_self());
 
   /* Destroy any isend which correspond to completed communications */
-  int found;
   msg_comm_t comm;
-  while ((found = MSG_comm_testany(globals->isends)) != -1) {
-    xbt_dynar_remove_at(globals->isends, found, &comm);
+  while (true) {
+    int pos_found = MSG_comm_testany(globals->isends);
+    if (pos_found == -1) /* none remaining */
+      break;
+    xbt_dynar_remove_at(globals->isends, pos_found, &comm);
     MSG_comm_destroy(comm);
   }
 }
