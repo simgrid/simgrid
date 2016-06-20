@@ -20,7 +20,9 @@
     <host id="Cpu A" speed="10f"/>
     <host id="Cpu B" speed="10f"/>
     <link id="LinkA" bandwidth="10MBps" latency="200ms"/>
-    <route src="Cpu A" dst="Cpu B"><link_ctn id="LinkA"/></route>
+    <route src="Cpu A" dst="Cpu B">
+      <link_ctn id="LinkA"/>
+    </route>
   </AS>
 
   <trace_connect kind="SPEED" trace="A" element="Cpu A"/>

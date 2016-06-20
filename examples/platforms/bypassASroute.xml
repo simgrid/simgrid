@@ -13,13 +13,16 @@
     <link id="link_tmp"  bandwidth="1.25GBps" latency="500us"/>
 
     <ASroute src="my_cluster_1" dst="my_cluster_2" gw_src="my_cluster_1_router" gw_dst="my_cluster_2_router">
-      <link_ctn id="link1"/><link_ctn id="link2"/>
+      <link_ctn id="link1"/>
+      <link_ctn id="link2"/>
     </ASroute>
     <ASroute src="my_cluster_1" dst="my_cluster_3" gw_src="my_cluster_1_router" gw_dst="my_cluster_3_router">
-      <link_ctn id="link1"/><link_ctn id="link3"/>
+      <link_ctn id="link1"/>
+      <link_ctn id="link3"/>
     </ASroute>
     <ASroute src="my_cluster_2" dst="my_cluster_3" gw_src="my_cluster_2_router" gw_dst="my_cluster_3_router">
-      <link_ctn id="link2"/><link_ctn id="link3"/>
+      <link_ctn id="link2"/>
+      <link_ctn id="link3"/>
     </ASroute>
 
     <bypassASroute src="my_cluster_1" dst="my_cluster_2" gw_src="my_cluster_1_router" gw_dst="my_cluster_2_router">

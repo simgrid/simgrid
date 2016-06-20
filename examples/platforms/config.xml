@@ -19,7 +19,9 @@
     <link id="link3" bandwidth="125MBps" latency="50us"/>
 
     <route src="bob" dst="alice">
-      <link_ctn id="link1"/><link_ctn id="link2"/><link_ctn id="link3"/>
+      <link_ctn id="link1"/>
+      <link_ctn id="link2"/>
+      <link_ctn id="link3"/>
     </route>
   </AS>
 </platform>
