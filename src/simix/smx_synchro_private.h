@@ -66,6 +66,8 @@ typedef struct s_smx_sem {
   xbt_swag_t sleeping;          /* list of sleeping process */
 } s_smx_sem_t;
 
+
+
 XBT_PRIVATE void SIMIX_post_synchro(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall);
 XBT_PRIVATE void SIMIX_synchro_destroy(smx_synchro_t synchro);
@@ -74,12 +76,11 @@ XBT_PRIVATE void SIMIX_synchro_finish(smx_synchro_t synchro);
 XBT_PRIVATE smx_cond_t SIMIX_cond_init(void);
 XBT_PRIVATE void SIMIX_cond_broadcast(smx_cond_t cond);
 XBT_PRIVATE void SIMIX_cond_signal(smx_cond_t cond);
+XBT_PRIVATE void intrusive_ptr_add_ref(s_smx_cond_t *cond);
+XBT_PRIVATE void intrusive_ptr_release(s_smx_cond_t *cond);
 
 XBT_PRIVATE XBT_PRIVATE smx_sem_t SIMIX_sem_init(unsigned int value);
 XBT_PRIVATE void SIMIX_sem_release(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_would_block(smx_sem_t sem);
 XBT_PRIVATE int SIMIX_sem_get_capacity(smx_sem_t sem);
-
-XBT_PRIVATE void intrusive_ptr_release(s_smx_cond_t *cond);
-XBT_PRIVATE void intrusive_ptr_add_ref(s_smx_cond_t *cond);
 #endif
