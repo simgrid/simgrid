@@ -71,6 +71,11 @@ auto kernelSync(F code) -> decltype(code().get())
 }
 
 /** A blocking (`wait()`-based) future for SIMIX processes */
+// TODO, .wait_for()
+// TODO, .wait_until()
+// TODO, SharedFuture
+// TODO, simgrid::simix::when_all - wait for all future to be ready (this one is simple!)
+// TODO, simgrid::simix::when_any - wait for any future to be ready
 template <class T>
 class Future {
 public:
@@ -127,8 +132,6 @@ public:
       }
     });
   }
-  // TODO, wait_for()
-  // TODO, wait_until()
 private:
   // We wrap an event-based kernel future:
   simgrid::kernel::Future<T> future_;
