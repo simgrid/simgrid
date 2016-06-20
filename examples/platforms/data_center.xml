@@ -21,38 +21,47 @@
 
       <!-- horiz dist area switch, main dist area switch, entrance room switch, end point for ISP  -->
       <AS id="gw_dataCenter1" routing="Floyd">
-          <!-- equipments-->
-          <router id="gw_dc1_horizdist"/>
-          <router id="gw_dc1_maindist"/>
-          <router id="gw_dc1_entranceroom"/>
+        <!-- equipments-->
+        <router id="gw_dc1_horizdist"/>
+        <router id="gw_dc1_maindist"/>
+        <router id="gw_dc1_entranceroom"/>
 
-          <!-- ISP end point, entering the cloud, so it has coordinates -->
-          <router id="router_dataCenter1" coordinates="25.5 9.4 1.4"/>
+        <!-- ISP end point, entering the cloud, so it has coordinates -->
+        <router id="router_dataCenter1" coordinates="25.5 9.4 1.4"/>
 
-          <!-- links -->
-          <link id="dc1_horizdist_maindist" bandwidth="1.25GBps" latency="100us"/>        
-          <link id="dc1_maindist_entranceroom" bandwidth="1.25GBps" latency="100us"/>  
-          <link id="dc1_entranceroom_ISP" bandwidth="1.25GBps" latency="100us"/> 
+        <!-- links -->
+        <link id="dc1_horizdist_maindist" bandwidth="1.25GBps" latency="100us"/>        
+        <link id="dc1_maindist_entranceroom" bandwidth="1.25GBps" latency="100us"/>  
+        <link id="dc1_entranceroom_ISP" bandwidth="1.25GBps" latency="100us"/> 
 
-          <!-- links to router relationships -->
-          <route src="gw_dc1_horizdist" dst="gw_dc1_maindist"><link_ctn id="dc1_horizdist_maindist"/></route>
-          <route src="gw_dc1_maindist" dst="gw_dc1_entranceroom"><link_ctn id="dc1_maindist_entranceroom"/></route>
-          <route src="gw_dc1_entranceroom" dst="router_dataCenter1"><link_ctn id="dc1_entranceroom_ISP"/></route>
+        <!-- links to router relationships -->
+        <route src="gw_dc1_horizdist" dst="gw_dc1_maindist">
+          <link_ctn id="dc1_horizdist_maindist"/>
+        </route>
+        <route src="gw_dc1_maindist" dst="gw_dc1_entranceroom">
+          <link_ctn id="dc1_maindist_entranceroom"/>
+        </route>
+        <route src="gw_dc1_entranceroom" dst="router_dataCenter1">
+          <link_ctn id="dc1_entranceroom_ISP"/>
+        </route>
       </AS>
 
       <!-- internal routes between cabinets -->
       <ASroute src="cabinet2" dst="cabinet3" gw_src="cb2-cabinet2_router.dc1.acloud.com"
                gw_dst="cb3-cabinet3_router.dc1.acloud.com">
-          <link_ctn id="link_dc1_cb2"/><link_ctn id="link_dc1_cb3"/>
+        <link_ctn id="link_dc1_cb2"/>
+        <link_ctn id="link_dc1_cb3"/>
       </ASroute>
       <ASroute src="cabinet1" dst="cabinet3" gw_src="cb1-cabinet1_router.dc1.acloud.com"
                gw_dst="cb3-cabinet3_router.dc1.acloud.com">
-        <link_ctn id="link_dc1_cb1"/><link_ctn id="link_dc1_cb3"/>
+        <link_ctn id="link_dc1_cb1"/>
+        <link_ctn id="link_dc1_cb3"/>
       </ASroute>
       <ASroute src="cabinet1" dst="cabinet2" gw_src="cb1-cabinet1_router.dc1.acloud.com"
                gw_dst="cb2-cabinet2_router.dc1.acloud.com">
-        <link_ctn id="link_dc1_cb1"/><link_ctn id="link_dc1_cb2"/>
+        <link_ctn id="link_dc1_cb1"/>
+        <link_ctn id="link_dc1_cb2"/>
       </ASroute>
     </AS>
-</AS>
+  </AS>
 </platform>

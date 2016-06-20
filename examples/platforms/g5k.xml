@@ -25,14 +25,22 @@
       <link id="Marseille_Toulouse" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <route src="lille" dst="paris"><link_ctn id="Lille_Paris"/></route>
-      <route src="paris" dst="nancy"><link_ctn id="Paris_Nancy"/></route>
-      <route src="paris" dst="rennes"><link_ctn id="Paris_Rennes"/></route>
-      <route src="paris" dst="lyon"><link_ctn id="Paris_Lyon"/></route>
-      <route src="bordeaux" dst="lyon"><link_ctn id="Bordeaux_Lyon"/></route>
-      <route src="lyon" dst="grenoble"><link_ctn id="Lyon_Grenoble"/></route>
-      <route src="lyon" dst="marseille"><link_ctn id="Lyon_Marseille"/></route>
-      <route src="marseille" dst="sophia"><link_ctn id="Marseille_Sophia"/></route>
-      <route src="marseille" dst="toulouse"><link_ctn id="Marseille_Toulouse"/></route>
+      <route src="paris" dst="nancy">
+        <link_ctn id="Paris_Nancy"/></route>
+      <route src="paris" dst="rennes">
+        <link_ctn id="Paris_Rennes"/></route>
+      <route src="paris" dst="lyon">
+        <link_ctn id="Paris_Lyon"/></route>
+      <route src="bordeaux" dst="lyon">
+        <link_ctn id="Bordeaux_Lyon"/></route>
+      <route src="lyon" dst="grenoble">
+        <link_ctn id="Lyon_Grenoble"/></route>
+      <route src="lyon" dst="marseille">
+        <link_ctn id="Lyon_Marseille"/></route>
+      <route src="marseille" dst="sophia">
+        <link_ctn id="Marseille_Sophia"/></route>
+      <route src="marseille" dst="toulouse">
+        <link_ctn id="Marseille_Toulouse"/></route>
     </AS>
     <AS id="AS_bordeaux" routing="Full">
       <cluster id="AS_bordeplage" prefix="bordeplage-" suffix=".bordeaux.grid5000.fr" radical="1-51" speed="5.2297E9f" bw="1.25E8Bps" lat="1.0E-4s" bb_bw="1.25E9Bps" bb_lat="1.0E-4s"/>
@@ -50,20 +58,20 @@
       <link id="link_gw_bordeaux" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <ASroute src="AS_bordeplage" dst="AS_bordereau" gw_src="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr" gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr">
-          <link_ctn id="link_bordeplage"/><link_ctn id="link_bordereau"/>
+         <link_ctn id="link_bordeplage"/><link_ctn id="link_bordereau"/>
       </ASroute>
       <ASroute src="AS_borderline" dst="AS_bordereau" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr">
-          <link_ctn id="link_borderline"/><link_ctn id="link_bordereau"/>
+        <link_ctn id="link_borderline"/><link_ctn id="link_bordereau"/>
       </ASroute>
       <ASroute src="AS_borderline" dst="AS_bordeplage" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr">
-          <link_ctn id="link_borderline"/><link_ctn id="link_bordeplage"/>
+        <link_ctn id="link_borderline"/><link_ctn id="link_bordeplage"/>
       </ASroute>
 
       <ASroute src="AS_bordereau" dst="gw_AS_bordeaux" gw_src="bordereau-AS_bordereau_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
-          <link_ctn id="link_bordereau"/>
+        <link_ctn id="link_bordereau"/>
       </ASroute>
       <ASroute src="AS_bordeplage" dst="gw_AS_bordeaux" gw_src="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
-          <link_ctn id="link_bordeplage"/>
+        <link_ctn id="link_bordeplage"/>
       </ASroute>
       <ASroute src="AS_borderline" dst="gw_AS_bordeaux" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="gw_bordeaux">
           <link_ctn id="link_borderline"/>
@@ -86,23 +94,26 @@
       <link id="link_gw_grenoble" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <ASroute src="AS_genepi" dst="AS_adonis" gw_src="genepi-AS_genepi_router.grenoble.grid5000.fr" gw_dst="adonis-AS_adonis_router.grenoble.grid5000.fr">
-          <link_ctn id="link_genepi"/><link_ctn id="link_adonis"/>
+        <link_ctn id="link_genepi"/>
+        <link_ctn id="link_adonis"/>
       </ASroute>
       <ASroute src="AS_edel" dst="AS_adonis" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="adonis-AS_adonis_router.grenoble.grid5000.fr">
-          <link_ctn id="link_edel"/><link_ctn id="link_adonis"/>
+        <link_ctn id="link_edel"/>
+        <link_ctn id="link_adonis"/>
       </ASroute>
       <ASroute src="AS_edel" dst="AS_genepi" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="genepi-AS_genepi_router.grenoble.grid5000.fr">
-          <link_ctn id="link_edel"/><link_ctn id="link_genepi"/>
+        <link_ctn id="link_edel"/>
+        <link_ctn id="link_genepi"/>
       </ASroute>
 
       <ASroute src="AS_adonis" dst="gw_AS_grenoble" gw_src="adonis-AS_adonis_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
-          <link_ctn id="link_adonis"/>
+        <link_ctn id="link_adonis"/>
       </ASroute>
       <ASroute src="AS_genepi" dst="gw_AS_grenoble" gw_src="genepi-AS_genepi_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
-          <link_ctn id="link_genepi"/>
+        <link_ctn id="link_genepi"/>
       </ASroute>
       <ASroute src="AS_edel" dst="gw_AS_grenoble" gw_src="edel-AS_edel_router.grenoble.grid5000.fr" gw_dst="gw_grenoble">
-          <link_ctn id="link_edel"/>
+        <link_ctn id="link_edel"/>
       </ASroute>
     </AS>
 
@@ -125,35 +136,41 @@
       <link id="link_gw_lille" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <ASroute src="AS_chirloute" dst="AS_chinqchint" gw_src="chirloute-AS_chirloute_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
-          <link_ctn id="link_chirloute"/><link_ctn id="link_chinqchint"/>
+        <link_ctn id="link_chirloute"/>
+        <link_ctn id="link_chinqchint"/>
       </ASroute>
       <ASroute src="AS_chimint" dst="AS_chinqchint" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
-          <link_ctn id="link_chimint"/><link_ctn id="link_chinqchint"/>
+        <link_ctn id="link_chimint"/>
+        <link_ctn id="link_chinqchint"/>
       </ASroute>
       <ASroute src="AS_chimint" dst="AS_chirloute" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="chirloute-AS_chirloute_router.lille.grid5000.fr">
-          <link_ctn id="link_chimint"/><link_ctn id="link_chirloute"/>
+        <link_ctn id="link_chimint"/><link_ctn id="link_chirloute"/>
       </ASroute>
+ 
       <ASroute src="AS_chicon" dst="AS_chinqchint" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chinqchint-AS_chinqchint_router.lille.grid5000.fr">
-          <link_ctn id="link_chicon"/><link_ctn id="link_chinqchint"/>
+        <link_ctn id="link_chicon"/>
+        <link_ctn id="link_chinqchint"/>
       </ASroute>
       <ASroute src="AS_chicon" dst="AS_chirloute" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chirloute-AS_chirloute_router.lille.grid5000.fr">
-          <link_ctn id="link_chicon"/><link_ctn id="link_chirloute"/>
+        <link_ctn id="link_chicon"/>
+        <link_ctn id="link_chirloute"/>
       </ASroute>
       <ASroute src="AS_chicon" dst="AS_chimint" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="chimint-AS_chimint_router.lille.grid5000.fr">
-          <link_ctn id="link_chicon"/><link_ctn id="link_chimint"/>
+        <link_ctn id="link_chicon"/>
+        <link_ctn id="link_chimint"/>
       </ASroute>
 
       <ASroute src="AS_chinqchint" dst="gw_AS_lille" gw_src="chinqchint-AS_chinqchint_router.lille.grid5000.fr" gw_dst="gw_lille">
-          <link_ctn id="link_chinqchint"/>
+        <link_ctn id="link_chinqchint"/>
       </ASroute>
       <ASroute src="AS_chirloute" dst="gw_AS_lille" gw_src="chirloute-AS_chirloute_router.lille.grid5000.fr" gw_dst="gw_lille">
-          <link_ctn id="link_chirloute"/>
+        <link_ctn id="link_chirloute"/>
       </ASroute>
       <ASroute src="AS_chimint" dst="gw_AS_lille" gw_src="chimint-AS_chimint_router.lille.grid5000.fr" gw_dst="gw_lille">
-          <link_ctn id="link_chimint"/>
+        <link_ctn id="link_chimint"/>
       </ASroute>
       <ASroute src="AS_chicon" dst="gw_AS_lille" gw_src="chicon-AS_chicon_router.lille.grid5000.fr" gw_dst="gw_lille">
-          <link_ctn id="link_chicon"/>
+        <link_ctn id="link_chicon"/>
       </ASroute>
     </AS>
 

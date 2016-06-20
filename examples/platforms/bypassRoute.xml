@@ -30,15 +30,29 @@
       <router id="AS_2_gateway"/>
 
       <!-- routes providing topological information -->  
-      <route src="central_router" dst="AS_2_host1"><link_ctn id="AS_2_link1"/></route>
-      <route src="central_router" dst="AS_2_host2"><link_ctn id="AS_2_link2"/></route>
-      <route src="central_router" dst="AS_2_host3"><link_ctn id="AS_2_link3"/></route>
-      <route src="central_router" dst="AS_2_gateway"><link_ctn id="AS_2_link4"/></route>
+      <route src="central_router" dst="AS_2_host1">
+        <link_ctn id="AS_2_link1"/>
+      </route>
+      <route src="central_router" dst="AS_2_host2">
+        <link_ctn id="AS_2_link2"/>
+      </route>
+      <route src="central_router" dst="AS_2_host3">
+        <link_ctn id="AS_2_link3"/>
+      </route>
+      <route src="central_router" dst="AS_2_gateway">
+        <link_ctn id="AS_2_link4"/>
+      </route>
 
       <!--  longer route -->
-      <route src="bypass_router1" dst="AS_2_host2"><link_ctn id="AS_2_link5"/></route>
-      <route src="bypass_router1" dst="bypass_router2"><link_ctn id="AS_2_link6"/></route>
-      <route src="bypass_router2" dst="AS_2_host1"><link_ctn id="AS_2_link7"/></route>
+      <route src="bypass_router1" dst="AS_2_host2">
+        <link_ctn id="AS_2_link5"/>
+      </route>
+      <route src="bypass_router1" dst="bypass_router2">
+        <link_ctn id="AS_2_link6"/>
+      </route>
+      <route src="bypass_router2" dst="AS_2_host1">
+        <link_ctn id="AS_2_link7"/>
+      </route>
 
       <!-- bypass route -->
       <bypassRoute src="AS_2_host1" dst="AS_2_host2">
