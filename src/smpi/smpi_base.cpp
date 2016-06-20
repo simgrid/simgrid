@@ -90,16 +90,14 @@ static simgrid::config::Flag<double> smpi_iprobe_sleep(
 static simgrid::config::Flag<double> smpi_test_sleep(
   "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
-static int factor_cmp(const s_smpi_factor_multival_t& pa, const s_smpi_factor_multival_t& pb)
+static bool factor_cmp(const s_smpi_factor_multival_t& pa, const s_smpi_factor_multival_t& pb)
 {
-  return (pa.factor > pb.factor) ? 1 :
-         (pa.factor < pb.factor) ? -1 : 0;
+  return (pa.factor < pb.factor);
 }
 
 static std::vector<s_smpi_factor_multival_t> parse_factor(const char *smpi_coef_string)
 {
   std::vector<s_smpi_factor_multival_t> smpi_factor;
-  s_smpi_factor_multival_t fact;
 
   /** Setup the tokenizer that parses the string **/
   typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
@@ -119,7 +117,7 @@ static std::vector<s_smpi_factor_multival_t> parse_factor(const char *smpi_coef_
          token_iter != tokens.end(); token_iter++) {
 XBT_DEBUG("token : %s", token_iter->c_str());
     Tokenizer factor_values(*token_iter, factor_separator);
-
+    s_smpi_factor_multival_t fact;
     if (factor_values.begin() == factor_values.end()) {
       xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
     }
@@ -134,7 +132,7 @@ XBT_DEBUG("token : %s", token_iter->c_str());
       }
       else {
         errmsg = bprintf("Invalid factor value %d in chunk #%zu: %%s", iteration, smpi_factor.size()+1);
-        fact.values.push_back(xbt_str_parse_double((*factor_iter).c_str(), errmsg));
+        fact.values.push_back(xbt_str_parse_double(factor_iter->c_str(), errmsg));
       }
       xbt_free(errmsg);
     }
@@ -206,7 +204,8 @@ static double smpi_or(size_t size)
     smpi_or_values = parse_factor(xbt_cfg_get_string("smpi/or"));
   }
   
-  double current=smpi_or_values.empty()?0.0:smpi_or_values[0].values[0]+smpi_or_values[0].values[1]*size;
+  double current=smpi_or_values.empty()?0.0:smpi_or_values.front().values[0]+smpi_or_values.front().values[1]*size;
+
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
   // Note: parse_factor() (used before) already sorts the dynar we iterate over!
