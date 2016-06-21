@@ -33,7 +33,7 @@ XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = nullptr;
 namespace simgrid {
 namespace config {
 
-missing_key_error::~missing_key_error() noexcept {}
+missing_key_error::~missing_key_error() {}
 
 class Config;
 
