@@ -49,7 +49,14 @@ static int runner(int argc, char *argv[])
   MSG_parallel_task_execute(ptask);
   MSG_task_destroy(ptask);
 
-  XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", MSG_host_get_name(hosts[1]));
+  XBT_INFO("Then, build a parallel task with no computation nor communication (synchro only)");
+  computation_amounts = xbt_new0(double, hosts_count);
+  communication_amounts = xbt_new0(double, hosts_count * hosts_count); /* memset to 0 by xbt_new0 */
+  ptask = MSG_parallel_task_create("parallel sync", hosts_count, hosts, computation_amounts, communication_amounts, NULL);
+  MSG_parallel_task_execute(ptask);
+  MSG_task_destroy(ptask);
+
+   XBT_INFO("Finally, trick the ptask to do a 'remote execution', on host %s", MSG_host_get_name(hosts[1]));
   computation_amounts = xbt_new0(double, 1);
   computation_amounts[0] = 1e9; // 1 Gflop
   msg_host_t *remote = xbt_new(msg_host_t,1);
