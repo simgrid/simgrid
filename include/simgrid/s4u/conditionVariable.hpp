@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_COND_VARIABLE_HPP
 #define SIMGRID_S4U_COND_VARIABLE_HPP
 
+#include <condition_variable>
 #include <mutex>
 #include <utility> // std::swap
 
@@ -52,7 +53,7 @@ public:
   */
   void wait(std::unique_lock<Mutex>& lock);
   // TODO, return std::cv_status
-  void wait_for(std::unique_lock<Mutex>& lock, double duration);
+  std::cv_status wait_for(std::unique_lock<Mutex>& lock, double duration);
   // TODO, wait_until
 
   /** Variant which takes a predice */
@@ -62,9 +63,10 @@ public:
     while (!pred())
       wait(lock);
   }
+
   // TODO, return std::cv_status
   template<class P>
-  void wait_for(std::unique_lock<Mutex>& lock, double duration, P pred)
+  std::cv_status wait_for(std::unique_lock<Mutex>& lock, double duration, P pred)
   {
     while (!pred())
       wait_for(lock, duration);
