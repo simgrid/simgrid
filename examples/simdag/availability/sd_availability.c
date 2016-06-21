@@ -39,10 +39,6 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(sd_avail, "Logging specific to this SimDag example"
 
 int main(int argc, char **argv)
 {
-  unsigned int ctr;
-  SD_task_t task;
-  xbt_dynar_t changed_tasks;
-
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
   const sg_host_t *hosts = sg_host_list();
@@ -79,11 +75,17 @@ int main(int argc, char **argv)
   SD_task_watch(c3, SD_DONE);
   SD_task_watch(t4, SD_DONE);
 
-  while (xbt_dynar_is_empty((changed_tasks = SD_simulate(-1.0))) == 0) {
+  while (1) {
+    xbt_dynar_t changed_tasks = SD_simulate(-1.0);
+    if (xbt_dynar_is_empty(changed_tasks))
+      break;
     XBT_INFO("link1: bw=%.0f, lat=%f", SD_route_get_bandwidth(hosts[0], hosts[1]),
              SD_route_get_latency(hosts[0], hosts[1]));
     XBT_INFO("Jupiter: speed=%.0f", sg_host_speed(hosts[0])* sg_host_get_available_speed(hosts[0]));
     XBT_INFO("Tremblay: speed=%.0f", sg_host_speed(hosts[1])* sg_host_get_available_speed(hosts[1]));
+     
+    unsigned int ctr;
+    SD_task_t task;
     xbt_dynar_foreach(changed_tasks, ctr, task) {
       XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task),
            SD_task_get_start_time(task), SD_task_get_finish_time(task));
