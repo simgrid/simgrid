@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_COND_VARIABLE_HPP
 #define SIMGRID_S4U_COND_VARIABLE_HPP
 
+#include <mutex>
 #include <utility> // std::swap
 
 #include <simgrid/simix.h>
@@ -49,8 +50,8 @@ public:
   /**
   * Wait functions
   */
-  void wait(Mutex *mutex);
-  void wait_for(Mutex *mutex, double time);
+  void wait(std::unique_lock<Mutex>& lock);
+  void wait_for(std::unique_lock<Mutex>& lock, double time);
 
   /**
   * Notify functions

@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <mutex>
+
 #include "simgrid/msg.h"
 #include "simgrid/simix.h"      /* semaphores for the barrier */
 #include <xbt/replay.h>
@@ -172,13 +174,16 @@ static void action_barrier(const char *const *action)
     processes_arrived_sofar = 0;
   }
   ACT_DEBUG("Entering barrier: %s (%d already there)", NAME, processes_arrived_sofar);
-  mutex->lock();
-  if (++processes_arrived_sofar == communicator_size) {
-    cond->notify_all();
-    mutex->unlock();
-  } else {
-    cond->wait(mutex);
-    mutex->unlock();
+
+  {
+    std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
+    if (++processes_arrived_sofar == communicator_size) {
+      // We can notify without the lock:
+      lock.unlock();
+      cond->notify_all();
+    } else {
+      cond->wait(lock);
+    }
   }
 
   ACT_DEBUG("Exiting barrier: %s", NAME);
