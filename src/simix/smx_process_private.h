@@ -54,6 +54,7 @@ public:
 
   // TODO, pack them
   std::exception_ptr exception;
+  bool finished     = false;
   bool blocked      = false;
   bool suspended    = false;
   bool auto_restart = false;

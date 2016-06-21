@@ -76,6 +76,7 @@ void SIMIX_process_cleanup(smx_process_t process)
   XBT_DEBUG("Cleanup process %s (%p), waiting synchro %p",
       process->name.c_str(), process, process->waiting_synchro);
 
+  process->finished = true;
   SIMIX_process_on_exit_runall(process);
 
   /* Unregister from the kill timer if any */
@@ -203,6 +204,7 @@ void SIMIX_maestro_create(void (*code)(void*), void* data)
  * and stops its context.
  */
 void SIMIX_process_stop(smx_process_t arg) {
+  arg->finished = true;
   /* execute the on_exit functions */
   SIMIX_process_on_exit_runall(arg);
   /* Add the process to the list of process to restart, only if the host is down */
@@ -751,6 +753,12 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 
 void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout)
 {
+  if (process->finished) {
+    // The process is already finished, just wake up the process right now:
+    simcall_process_sleep__set__result(simcall, SIMIX_DONE);
+    SIMIX_simcall_answer(simcall);
+    return;
+  }
   smx_synchro_t sync = SIMIX_process_join(simcall->issuer, process, timeout);
   sync->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
