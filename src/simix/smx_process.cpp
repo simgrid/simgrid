@@ -786,13 +786,14 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synch
     sleep->surf_sleep->unref();
     sleep->surf_sleep = nullptr;
   }
-  delete sleep;
+  sleep->unref();
   return 0;
 }
 
 smx_synchro_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout)
 {
   smx_synchro_t res = SIMIX_process_sleep(issuer, timeout);
+  static_cast<simgrid::simix::Synchro*>(res)->ref();
   SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, res);
   return res;
 }
@@ -835,6 +836,7 @@ void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
   if (sleep->surf_sleep) {
     sleep->surf_sleep->unref();
     sleep->surf_sleep = nullptr;
+    sleep->unref();
   }
 }
 
