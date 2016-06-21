@@ -7,6 +7,9 @@
 #ifndef SIMGRID_KERNEL_FUTURE_HPP
 #define SIMGRID_KERNEL_FUTURE_HPP
 
+#include <future>
+#include <type_traits>
+
 #include <boost/optional.hpp>
 
 #include <xbt/base.h>
@@ -34,6 +37,11 @@ enum class FutureStatus {
   ready,
   done,
 };
+
+template<class T>
+struct is_future : public std::integral_constant<bool, false> {};
+template<class T>
+struct is_future<Future<T>> : public std::integral_constant<bool, true> {};
 
 /** Bases stuff for all @ref simgrid::kernel::FutureState<T> */
 class FutureStateBase {
@@ -195,6 +203,24 @@ public:
   }
 };
 
+template<class T>
+void bindPromise(Promise<T> promise, Future<T> future)
+{
+  struct PromiseBinder {
+  public:
+    PromiseBinder(Promise<T> promise) : promise_(std::move(promise)) {}
+    void operator()(Future<T> future)
+    {
+      simgrid::xbt::setPromise(promise_, future);
+    }
+  private:
+    Promise<T> promise_;
+  };
+  future.then_(PromiseBinder(std::move(promise)));
+}
+
+template<class T> Future<T> unwrapFuture(Future<Future<T>> future);
+
 /** Result of some (probably) asynchronous operation in the SimGrid kernel
  *
  * @ref simgrid::simix::Future and @ref simgrid::simix::Future provide an
@@ -291,18 +317,10 @@ public:
 
   /** Attach a continuation to this future
    *
-   *  The future must be valid in order to make this call.
-   *  The continuation is executed when the future becomes ready.
-   *  The future becomes invalid after this call.
-   *
-   *  We don't support future chaining for now (`.then().then()`).
-   *
-   * @param continuation This function is called with a ready future
-   *                     the future is ready
-   * @exception std::future_error no state is associated with the future
+   *  This is like .then() but avoid the creation of a new future.
    */
   template<class F>
-  void then(F continuation)
+  void then_(F continuation)
   {
     if (state_ == nullptr)
       throw std::future_error(std::future_errc::no_state);
@@ -310,6 +328,65 @@ public:
     auto state = std::move(state_);
     state->set_continuation(simgrid::xbt::makeTask(
       std::move(continuation), state));
+  }
+
+  /** Attach a continuation to this future
+   *
+   *  This version never does future unwrapping.
+   */
+  template<class F>
+  auto thenNoUnwrap(F continuation)
+  -> Future<decltype(continuation(std::move(*this)))>
+  {
+    typedef decltype(continuation(std::move(*this))) R;
+    if (state_ == nullptr)
+      throw std::future_error(std::future_errc::no_state);
+    auto state = std::move(state_);
+    // Create a new future...
+    Promise<R> promise;
+    Future<R> future = promise.get_future();
+    // ...and when the current future is ready...
+    state->set_continuation(simgrid::xbt::makeTask(
+      [](Promise<R> promise, std::shared_ptr<FutureState<T>> state, F continuation) {
+        // ...set the new future value by running the continuation.
+        Future<T> future(std::move(state));
+        simgrid::xbt::fulfillPromise(promise,[&]{
+          return continuation(std::move(future));
+        });
+      },
+      std::move(promise), state, std::move(continuation)));
+    return std::move(future);
+  }
+
+  /** Attach a continuation to this future
+   *
+   *  The future must be valid in order to make this call.
+   *  The continuation is executed when the future becomes ready.
+   *  The future becomes invalid after this call.
+   *
+   * @param continuation This function is called with a ready future
+   *                     the future is ready
+   * @exception std::future_error no state is associated with the future
+   */
+  template<class F>
+  auto then(F continuation)
+  -> typename std::enable_if<
+       !is_future<decltype(continuation(std::move(*this)))>::value,
+       Future<decltype(continuation(std::move(*this)))>
+     >::type
+  {
+    return this->thenNoUnwrap(std::move(continuation));
+  }
+
+  /** Attach a continuation to this future (future chaining) */
+  template<class F>
+  auto then(F continuation)
+  -> typename std::enable_if<
+       is_future<decltype(continuation(std::move(*this)))>::value,
+       decltype(continuation(std::move(*this)))
+     >::type
+  {
+    return unwrapFuture(this->thenNoUnwap(std::move(continuation)));
   }
 
   /** Get the value from the future
@@ -336,6 +413,15 @@ public:
 private:
   std::shared_ptr<FutureState<T>> state_;
 };
+
+template<class T>
+Future<T> unwrapFuture(Future<Future<T>> future)
+{
+  Promise<T> promise;
+  Future<T> result = promise.get_future();
+  bindPromise(std::move(promise), std::move(future));
+  return std::move(result);
+}
 
 /** Producer side of a @simgrid::kernel::Future
  *
@@ -376,10 +462,10 @@ public:
   Promise(std::shared_ptr<FutureState<T>> state) : state_(std::move(state)) {}
 
   // Move type
-  Promise(Promise&) = delete;
-  Promise& operator=(Promise&) = delete;
+  Promise(Promise const&) = delete;
+  Promise& operator=(Promise const&) = delete;
   Promise(Promise&& that) :
-    state_(std::move(that.state_)), future_get_(that.future_set)
+    state_(std::move(that.state_)), future_get_(that.future_get_)
   {
     that.future_get_ = false;
   }
@@ -437,8 +523,8 @@ public:
   }
 
   // Move type
-  Promise(Promise&) = delete;
-  Promise& operator=(Promise&) = delete;
+  Promise(Promise const&) = delete;
+  Promise& operator=(Promise const&) = delete;
   Promise(Promise&& that) :
     state_(std::move(that.state_)), future_get_(that.future_get_)
   {

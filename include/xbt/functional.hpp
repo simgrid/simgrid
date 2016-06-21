@@ -206,26 +206,28 @@ public:
 };
 
 template<class F, class... Args>
+class TaskImpl {
+private:
+  F code_;
+  std::tuple<Args...> args_;
+  typedef decltype(simgrid::xbt::apply(std::move(code_), std::move(args_))) result_type;
+public:
+  TaskImpl(F code, std::tuple<Args...> args) :
+    code_(std::move(code)),
+    args_(std::move(args))
+  {}
+  result_type operator()()
+  {
+    return simgrid::xbt::apply(std::move(code_), std::move(args_));
+  }
+};
+
+template<class F, class... Args>
 auto makeTask(F code, Args... args)
 -> Task< decltype(code(std::move(args)...))() >
 {
-  typedef decltype(code(std::move(args)...)) result_type;
-
-  class Impl {
-  private:
-    F code_;
-    std::tuple<Args...> args_;
-  public:
-    Impl(F code, std::tuple<Args...> args) :
-      code_(std::move(code)),
-      args_(std::move(args)) {}
-    result_type operator()()
-    {
-      return simgrid::xbt::apply(std::move(code_), std::move(args_));
-    }
-  };
-
-  return Impl(std::move(code), std::make_tuple(std::move(args)...));
+  TaskImpl<F, Args...> task(std::move(code), std::make_tuple(std::move(args)...));
+  return std::move(task);
 }
 
 }

@@ -18,20 +18,14 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(test, "my log messages");
 
 namespace example {
 
-/** Execute the code in the kernel at some time
- *
- *  @param date  when we should execute the code
- *  @param code  code to execute
- *  @return      future with the result of the call
- */
-template<class F>
-auto kernel_defer(double date, F code) -> simgrid::kernel::Future<decltype(code())>
+/** Create a future which becomes ready when the date is reached */
+static
+simgrid::kernel::Future<void> kernel_wait_until(double date)
 {
-  typedef decltype(code()) T;
-  auto promise = std::make_shared<simgrid::kernel::Promise<T>>();
+  auto promise = std::make_shared<simgrid::kernel::Promise<void>>();
   auto future = promise->get_future();
-  SIMIX_timer_set(date, [promise, code] {
-    simgrid::xbt::fulfillPromise(*promise, std::move(code));
+  SIMIX_timer_set(date, [promise] {
+    promise->set_value();
   });
   return future;
 }
@@ -47,7 +41,8 @@ static int master(int argc, char *argv[])
 
   // Synchronize on a successful Future<void>:
   simgrid::simix::kernelSync([&] {
-    return kernel_defer(10, [] {
+    return kernel_wait_until(10).then([](simgrid::kernel::Future<void> future) {
+      future.get();
       XBT_INFO("kernelSync with void");
     });
   });
@@ -56,7 +51,8 @@ static int master(int argc, char *argv[])
   // Synchronize on a failing Future<void>:
   try {
     simgrid::simix::kernelSync([&] {
-      return kernel_defer(20, [] {
+      return kernel_wait_until(20).then([](simgrid::kernel::Future<void> future) {
+        future.get();
         throw std::runtime_error("Exception throwed from kernel_defer");
       });
     });
@@ -68,7 +64,8 @@ static int master(int argc, char *argv[])
 
   // Synchronize on a successul Future<int> and get the value:
   int res = simgrid::simix::kernelSync([&] {
-    return kernel_defer(30, [] {
+    return kernel_wait_until(30).then([](simgrid::kernel::Future<void> future) {
+      future.get();
       XBT_INFO("kernelSync with value");
       return 42;
     });
@@ -77,7 +74,8 @@ static int master(int argc, char *argv[])
 
   // Synchronize on a successul Future<int> and get the value:
   simgrid::simix::Future<int> future = simgrid::simix::kernelAsync([&] {
-    return kernel_defer(50, [] {
+    return kernel_wait_until(50).then([](simgrid::kernel::Future<void> future) {
+      future.get();
       XBT_INFO("kernelAsync with value");
       return 43;
     });
@@ -87,7 +85,8 @@ static int master(int argc, char *argv[])
 
   // Synchronize on a successul Future<int> and get the value:
   future = simgrid::simix::kernelAsync([&] {
-    return kernel_defer(60, [] {
+    return kernel_wait_until(60).then([](simgrid::kernel::Future<void> future) {
+      future.get();
       XBT_INFO("kernelAsync with value");
       return 43;
     });
