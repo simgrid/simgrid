@@ -51,7 +51,25 @@ public:
   * Wait functions
   */
   void wait(std::unique_lock<Mutex>& lock);
-  void wait_for(std::unique_lock<Mutex>& lock, double time);
+  // TODO, return std::cv_status
+  void wait_for(std::unique_lock<Mutex>& lock, double duration);
+  // TODO, wait_until
+
+  /** Variant which takes a predice */
+  template<class P>
+  void wait(std::unique_lock<Mutex>& lock, P pred)
+  {
+    while (!pred())
+      wait(lock);
+  }
+  // TODO, return std::cv_status
+  template<class P>
+  void wait_for(std::unique_lock<Mutex>& lock, double duration, P pred)
+  {
+    while (!pred())
+      wait(lock, duration);
+  }
+  // TODO,wait_until
 
   /**
   * Notify functions
