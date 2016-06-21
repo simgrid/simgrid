@@ -68,8 +68,8 @@
       <link id="link_gw_bordeaux" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <ASroute src="AS_bordeplage" dst="AS_bordereau" gw_src="bordeplage-AS_bordeplage_router.bordeaux.grid5000.fr" gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr">
-         <link_ctn id="link_bordeplage"/>
-         <link_ctn id="link_bordereau"/>
+        <link_ctn id="link_bordeplage"/>
+        <link_ctn id="link_bordereau"/>
       </ASroute>
       <ASroute src="AS_borderline" dst="AS_bordereau" gw_src="borderline-AS_borderline_router.bordeaux.grid5000.fr" gw_dst="bordereau-AS_bordereau_router.bordeaux.grid5000.fr">
         <link_ctn id="link_borderline"/>
@@ -305,7 +305,7 @@
         <link_ctn id="link_graphene"/>
       </ASroute>
       <ASroute src="AS_griffon" dst="gw_AS_nancy" gw_src="griffon-AS_griffon_router.nancy.grid5000.fr" gw_dst="gw_nancy">
-          <link_ctn id="link_griffon"/>
+        <link_ctn id="link_griffon"/>
       </ASroute>
     </AS>
 
@@ -545,7 +545,8 @@
 
       <ASroute src="AS_netgdx" dst="gw_AS_orsay" gw_src="netgdx-AS_netgdx_router.orsay.grid5000.fr" gw_dst="gw_orsay">
         <link_ctn id="link_netgdx"/>
-      </ASroute><ASroute src="AS_gdx" dst="gw_AS_orsay" gw_src="gdx-AS_gdx_router.orsay.grid5000.fr" gw_dst="gw_orsay">
+      </ASroute>
+      <ASroute src="AS_gdx" dst="gw_AS_orsay" gw_src="gdx-AS_gdx_router.orsay.grid5000.fr" gw_dst="gw_orsay">
         <link_ctn id="link_gdx"/>
       </ASroute>
     </AS>
@@ -583,7 +584,8 @@
       <ASroute src="AS_paramount" dst="AS_paradent" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="paradent-AS_paradent_router.rennes.grid5000.fr">
         <link_ctn id="link_paramount"/>
         <link_ctn id="link_paradent"/>
-      </ASroute><ASroute src="AS_paramount" dst="AS_parapluie" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="parapluie-AS_parapluie_router.rennes.grid5000.fr">
+      </ASroute>
+      <ASroute src="AS_paramount" dst="AS_parapluie" gw_src="paramount-AS_paramount_router.rennes.grid5000.fr" gw_dst="parapluie-AS_parapluie_router.rennes.grid5000.fr">
         <link_ctn id="link_paramount"/>
         <link_ctn id="link_parapluie"/>
       </ASroute>
@@ -622,13 +624,16 @@
       <link id="link_gw_sophia" bandwidth="1.25E9Bps" latency="1.0E-4s"/>
 
       <ASroute src="AS_helios" dst="AS_sol" gw_src="helios-AS_helios_router.sophia.grid5000.fr" gw_dst="sol-AS_sol_router.sophia.grid5000.fr">
-        <link_ctn id="link_helios"/><link_ctn id="link_sol"/>
+        <link_ctn id="link_helios"/>
+        <link_ctn id="link_sol"/>
       </ASroute>
       <ASroute src="AS_suno" dst="AS_sol" gw_src="suno-AS_suno_router.sophia.grid5000.fr" gw_dst="sol-AS_sol_router.sophia.grid5000.fr">
-        <link_ctn id="link_suno"/><link_ctn id="link_sol"/>
+        <link_ctn id="link_suno"/>
+        <link_ctn id="link_sol"/>
       </ASroute>
       <ASroute src="AS_suno" dst="AS_helios" gw_src="suno-AS_suno_router.sophia.grid5000.fr" gw_dst="helios-AS_helios_router.sophia.grid5000.fr">
-        <link_ctn id="link_suno"/><link_ctn id="link_helios"/>
+        <link_ctn id="link_suno"/>
+        <link_ctn id="link_helios"/>
       </ASroute>
 
       <ASroute src="AS_sol" dst="gw_AS_sophia" gw_src="sol-AS_sol_router.sophia.grid5000.fr" gw_dst="gw_sophia">
