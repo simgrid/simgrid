@@ -68,6 +68,13 @@ void s4u::Actor::kill() {
   simcall_process_kill(pimpl_);
 }
 
+simgrid::s4u::Actor s4u::Actor::forPid(int pid)
+{
+  // Should we throw if we did not find it?
+  smx_process_t process = SIMIX_process_from_PID(pid);
+  return simgrid::s4u::Actor(process);
+}
+
 // static stuff:
 
 void s4u::Actor::killAll() {

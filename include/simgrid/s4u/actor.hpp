@@ -231,6 +231,7 @@ public:
   void kill();
 
   static void kill(int pid);
+  static Actor forPid(int pid);
   
   /**
    * Wait for the actor to finish.
@@ -241,6 +242,8 @@ public:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
+
+  bool valid() const { return pimpl_ != nullptr; }
 
 private:
   smx_process_t pimpl_ = nullptr;
