@@ -14,7 +14,8 @@ int nprocs;
 
 int main(int argc, char **argv) {
   double dum[3] = {1.,1.,1.};
-  double x1, x2, sx, sy, tm, an, tt, gc;
+  double x1, x2, sx, sy, tm, an, gc;
+  XBT_ATTRIB_UNUSED double tt;
   double Mops;
   double epsilon=1.0E-8, a = 1220703125., s=271828183.;
   double t1, t2, t3, t4;
