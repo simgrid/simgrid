@@ -65,12 +65,6 @@ public:
   }
 
   // TODO, return std::cv_status
-  template<class P>
-  std::cv_status wait_for(std::unique_lock<Mutex>& lock, double duration, P pred)
-  {
-    while (!pred())
-      wait_for(lock, duration);
-  }
   // TODO,wait_until
 
   /**
