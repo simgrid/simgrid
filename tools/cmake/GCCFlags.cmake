@@ -13,7 +13,7 @@ set(warnCFLAGS "")
 set(optCFLAGS "")
 set(warnCXXFLAGS "")
 
-if(enable_compile_warnings)
+if(enable_compile_warnings AND enable_debug)
   set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
   if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
