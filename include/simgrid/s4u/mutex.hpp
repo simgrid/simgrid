@@ -6,17 +6,18 @@
 #ifndef SIMGRID_S4U_MUTEX_HPP
 #define SIMGRID_S4U_MUTEX_HPP
 
+#include <mutex>
 #include <utility>
 
 #include <boost/intrusive_ptr.hpp>
 #include <xbt/base.h>
 #include "simgrid/simix.h"
-#include <simgrid/s4u/conditionVariable.hpp>
 
 namespace simgrid {
 namespace s4u {
 
 class ConditionVariable;
+
 XBT_PUBLIC_CLASS Mutex {
 friend ConditionVariable;
 public:
@@ -58,6 +59,7 @@ public:
 private:
   simgrid::simix::Mutex* mutex_;
 };
+
 }} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_MUTEX_HPP */

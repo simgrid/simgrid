@@ -1,3 +1,5 @@
+#include <mutex>
+
 #include "simgrid/s4u/conditionVariable.hpp"
 #include "simgrid/simix.h"
 
@@ -14,12 +16,12 @@ s4u::ConditionVariable::~ConditionVariable() {
 /**
  * Wait functions
  */
-void s4u::ConditionVariable::wait(s4u::Mutex *mutex) {
-  simcall_cond_wait(cond_, mutex->mutex_);
+void s4u::ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
+  simcall_cond_wait(cond_, lock.mutex()->mutex_);
 }
   
-void s4u::ConditionVariable::wait_for(s4u::Mutex *mutex, double timeout) {
-  simcall_cond_wait_timeout(cond_, mutex->mutex_, timeout);
+void s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, double timeout) {
+  simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
 }
   
 /**
