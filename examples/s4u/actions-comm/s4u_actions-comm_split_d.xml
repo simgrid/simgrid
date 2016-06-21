@@ -5,6 +5,10 @@
      Launch it like this:
          ./actions-comm ../../platforms/platform.xml actions-comm_split_d.xml  -->
 
-  <process host="Tremblay" function="p0">    <argument value="s4u_actions-comm_split_p0.txt"/>  </process>
-  <process host="Ruby"     function="p1">    <argument value="s4u_actions-comm_split_p1.txt"/>  </process>
+  <process host="Tremblay" function="p0">
+    <argument value="s4u_actions-comm_split_p0.txt"/>
+  </process>
+  <process host="Ruby"     function="p1">
+    <argument value="s4u_actions-comm_split_p1.txt"/>
+  </process>
 </platform>

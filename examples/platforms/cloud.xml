@@ -313,23 +313,28 @@
       </ASroute>
       <ASroute src="AS3_cb1" dst="AS3_cb3" gw_src="cb1-AS3_cb1_router.dc3.acloud.com"
                gw_dst="cb3-AS3_cb3_router.dc3.acloud.com">
-        <link_ctn id="link_dc3_cb1"/><link_ctn id="link_dc3_cb3"/>
+        <link_ctn id="link_dc3_cb1"/>
+        <link_ctn id="link_dc3_cb3"/>
       </ASroute>
       <ASroute src="AS3_cb1" dst="AS3_cb2" gw_src="cb1-AS3_cb1_router.dc3.acloud.com"
                gw_dst="cb2-AS3_cb2_router.dc3.acloud.com">
-        <link_ctn id="link_dc3_cb1"/><link_ctn id="link_dc3_cb2"/>
+        <link_ctn id="link_dc3_cb1"/>
+        <link_ctn id="link_dc3_cb2"/>
       </ASroute>
       <ASroute src="AS3_cb4" dst="AS3_cb3" gw_src="cb4-AS3_cb4_router.dc3.acloud.com"
                gw_dst="cb3-AS3_cb3_router.dc3.acloud.com">
-        <link_ctn id="link_dc3_cb4"/><link_ctn id="link_dc3_cb3"/>
+        <link_ctn id="link_dc3_cb4"/>
+        <link_ctn id="link_dc3_cb3"/>
       </ASroute>
       <ASroute src="AS3_cb4" dst="AS3_cb2" gw_src="cb4-AS3_cb4_router.dc3.acloud.com"
                gw_dst="cb2-AS3_cb2_router.dc3.acloud.com">
-        <link_ctn id="link_dc3_cb4"/><link_ctn id="link_dc3_cb2"/>
+        <link_ctn id="link_dc3_cb4"/>
+        <link_ctn id="link_dc3_cb2"/>
       </ASroute>
       <ASroute src="AS3_cb4" dst="AS3_cb1" gw_src="cb4-AS3_cb4_router.dc3.acloud.com"
                gw_dst="cb1-AS3_cb1_router.dc3.acloud.com">
-        <link_ctn id="link_dc3_cb4"/><link_ctn id="link_dc3_cb1"/>
+        <link_ctn id="link_dc3_cb4"/>
+        <link_ctn id="link_dc3_cb1"/>
       </ASroute>
 
       <!-- routes to exit AS -->

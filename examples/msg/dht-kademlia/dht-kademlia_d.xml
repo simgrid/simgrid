@@ -59,12 +59,12 @@
     <argument value="0x01ff"/>          <!-- known id -->
     <argument value ="780"/>            <!-- deadline -->
   </process>
-   <process host="node-11.acme.org" function="node">
+  <process host="node-11.acme.org" function="node">
     <argument value="0x07ff"/>          <!-- my id -->
     <argument value="0x03ff"/>          <!-- known id -->
     <argument value ="780"/>            <!-- deadline -->
   </process>
-   <process host="node-12.acme.org" function="node">
+  <process host="node-12.acme.org" function="node">
     <argument value="0x0fff"/>          <!-- my id -->
     <argument value="0x0000"/>          <!-- known id -->
     <argument value ="780"/>            <!-- deadline -->

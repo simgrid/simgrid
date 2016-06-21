@@ -2,7 +2,8 @@
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
   <process host="HostA" function="server">
-    <argument value="0"/>  </process>
+    <argument value="0"/>
+  </process>
   <process host="HostB" function="client">
     <argument value="1"/>
   </process>

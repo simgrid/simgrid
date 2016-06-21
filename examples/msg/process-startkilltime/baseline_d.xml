@@ -3,6 +3,6 @@
 <platform version="4">
   <!-- Just sleeps for 10 seconds and quits -->
   <process host="node-0.acme.org" function="sleeper">  
-   <argument value="10"/>
+    <argument value="10"/>
   </process>
 </platform>
