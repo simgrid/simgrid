@@ -672,12 +672,12 @@ int main(int argc,char **argv ){
     dg=buildSH(class);
   }
 
-  if(timer_on != 0 && dg && dg->numNodes+1>timers_tot){
+  if(timer_on != 0 && dg->numNodes+1>timers_tot){
     timer_on=0;
     if(my_rank==0)
     fprintf(stderr,"Not enough timers. Node timeing is off. \n");
   }
-  if(dg && dg->numNodes>comm_size){
+  if(dg->numNodes>comm_size){
     if(my_rank==0){
     fprintf(stderr,"**  The number of MPI processes should not be less than \n");
     fprintf(stderr,"**  the number of nodes in the graph\n");
@@ -687,7 +687,7 @@ int main(int argc,char **argv ){
     MPI_Finalize();
     exit(0);
   }
-  for(i=0;i<dg->numNodes;i++){
+  for(i=0; i<dg->numNodes; i++){
     dg->node[i]->address=i;
   }
   if( my_rank == 0 ){
