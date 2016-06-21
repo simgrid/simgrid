@@ -13,8 +13,8 @@ set(warnCFLAGS "")
 set(optCFLAGS "")
 set(warnCXXFLAGS "")
 
-if(enable_compile_warnings AND enable_debug)
-  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
+if(enable_compile_warnings)
+  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral")
   if(CMAKE_COMPILER_IS_GNUCC)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
@@ -32,6 +32,11 @@ if(enable_compile_warnings AND enable_debug)
 
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
+endif()
+
+# NDEBUG gives a lot of "initialized but unused variables" errors. Don't die anyway.
+if(enable_compile_warnings AND enable_debug)
+  set(warnCFLAGS "${warnCFLAGS} -Werror")
 endif()
 
 # Activate the warnings on #if FOOBAR when FOOBAR has no value
