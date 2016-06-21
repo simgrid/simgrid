@@ -67,7 +67,7 @@ public:
   void wait_for(std::unique_lock<Mutex>& lock, double duration, P pred)
   {
     while (!pred())
-      wait(lock, duration);
+      wait_for(lock, duration);
   }
   // TODO,wait_until
 
