@@ -1,11 +1,11 @@
 <?xml version='1.0'?>
 <!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
-  <process host="Disney" function="receiver"/>
-  <process host="Jill" function="sender">
+  <process host="Tremblay" function="receiver"/>
+  <process host="Boivin" function="sender">
     <argument value="X"/>
   </process>
-  <process host="UNIX" function="sender">
+  <process host="Fafard" function="sender">
     <argument value="Y"/>
   </process>
 </platform>
