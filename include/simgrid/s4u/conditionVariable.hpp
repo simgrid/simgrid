@@ -48,28 +48,36 @@ public:
     return cond_ != nullptr;
   }
   
-  /**
-  * Wait functions
-  */
-  void wait(std::unique_lock<Mutex>& lock);
-  // TODO, return std::cv_status
-  std::cv_status wait_for(std::unique_lock<Mutex>& lock, double duration);
-  // TODO, wait_until
+  //  Wait functions:
 
-  /** Variant which takes a predice */
+  void wait(std::unique_lock<Mutex>& lock);
+  std::cv_status wait_until(std::unique_lock<Mutex>& lock, double timeout_time);
+  std::cv_status wait_for(std::unique_lock<Mutex>& lock, double duration);
+
+  // Variants which takes a predicate:
+
   template<class P>
   void wait(std::unique_lock<Mutex>& lock, P pred)
   {
     while (!pred())
       wait(lock);
   }
+  template<class P>
+  bool wait_until(std::unique_lock<Mutex>& lock, double timeout_time, P pred)
+  {
+    while (!pred())
+      if (this->wait_until(lock, timeout_time) == std::cv_status::timeout)
+        return pred();
+    return true;
+  }
+  template<class P>
+  bool wait_for(std::unique_lock<Mutex>& lock, double duration, P pred)
+  {
+    return this->wait_until(lock, SIMIX_get_clock() + duration, std::move(pred));
+  }
 
-  // TODO, return std::cv_status
-  // TODO,wait_until
+  // Notify functions
 
-  /**
-  * Notify functions
-  */
   void notify();
   void notify_all();
 

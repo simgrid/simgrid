@@ -22,28 +22,42 @@ s4u::ConditionVariable::~ConditionVariable() {
 void s4u::ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
   simcall_cond_wait(cond_, lock.mutex()->mutex_);
 }
-  
+
 std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, double timeout) {
   try {
     simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
     return std::cv_status::timeout;
   }
   catch (xbt_ex& e) {
+
+    // If the exception was a timeout, we have to take the lock again:
     if (e.category == timeout_error) {
-      // We have to take the lock:
       try {
         lock.mutex()->lock();
+        return std::cv_status::timeout;
       }
       catch (...) {
         std::terminate();
       }
-      return std::cv_status::timeout;
     }
+
+    // Another exception: should we reaquire the lock?
     std::terminate();
   }
   catch (...) {
     std::terminate();
   }
+}
+
+std::cv_status s4u::ConditionVariable::wait_until(std::unique_lock<Mutex>& lock, double timeout_time)
+{
+  double now = SIMIX_get_clock();
+  double timeout;
+  if (timeout_time < now)
+    timeout = 0.0;
+  else
+    timeout = timeout_time - now;
+  return this->wait_for(lock, timeout);
 }
   
 /**
