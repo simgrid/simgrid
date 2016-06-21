@@ -18,6 +18,12 @@ namespace s4u {
 
 class Mutex;
 
+/** A condition variable
+ *
+ *  This is based on std::condition_variable and should respect the same
+ *  semantic. But we currently use (only) double for both durations and
+ *  timestamp timeouts.
+ */
 XBT_PUBLIC_CLASS ConditionVariable {
   
 public:
