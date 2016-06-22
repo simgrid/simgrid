@@ -570,14 +570,14 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     msg->data[msg->used-3]='\0';
     xbt_die("%s", msg->data);
   }
-  xbt_main_func_t parse_code = SIMIX_get_registered_function(process->function);
-  xbt_assert(parse_code, "Function '%s' unknown", process->function);
+  simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(process->function);
+  xbt_assert(factory, "Function '%s' unknown", process->function);
 
   double start_time = process->start_time;
   double kill_time  = process->kill_time;
   int auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
 
-  std::function<void()> code = simgrid::xbt::wrapMain(parse_code, process->argc, process->argv);
+  std::function<void()> code = factory(simgrid::xbt::args(process->argc, process->argv));
 
   smx_process_arg_t arg = nullptr;
   smx_process_t process_created = nullptr;
