@@ -63,7 +63,7 @@ std::cv_status s4u::ConditionVariable::wait_until(std::unique_lock<Mutex>& lock,
 /**
  * Notify functions
  */
-void s4u::ConditionVariable::notify() { 
+void s4u::ConditionVariable::notify_one() {
    simcall_cond_signal(cond_);
 }
  
