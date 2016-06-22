@@ -151,3 +151,14 @@ void SIMIX_process_set_function(const char *process_host,
   process.on_failure = SURF_PROCESS_ON_FAILURE_DIE;
   sg_platf_new_process(&process);
 }
+
+namespace simgrid {
+namespace simix {
+
+void registerFunction(const char* name, ActorCodeFactory factory)
+{
+  simix_global->registered_functions[name] = std::move(factory);
+}
+
+}
+}

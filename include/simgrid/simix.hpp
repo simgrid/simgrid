@@ -17,6 +17,7 @@
 
 #include <xbt/function_types.h>
 #include <xbt/future.hpp>
+#include <xbt/functional.hpp>
 
 #include <simgrid/simix.h>
 
@@ -170,6 +171,14 @@ public:
 
 XBT_PUBLIC(void) set_maestro(std::function<void()> code);
 XBT_PUBLIC(void) create_maestro(std::function<void()> code);
+
+// What's executed as SIMIX actor code:
+typedef std::function<void()> ActorCode;
+
+// Create ActorCode based on argv:
+typedef std::function<ActorCode(simgrid::xbt::args args)> ActorCodeFactory;
+
+XBT_PUBLIC(void) registerFunction(const char* name, ActorCodeFactory factory);
 
 }
 }

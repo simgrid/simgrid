@@ -206,6 +206,13 @@ public:
     Actor(name, host, wrap_task(std::move(code), std::move(args)...))
   {}
 
+  // Create actor from function name:
+
+  Actor(const char* name, s4u::Host *host, double killTime, const char* function, simgrid::xbt::args args);
+
+  Actor(const char* name, s4u::Host *host, const char* function, simgrid::xbt::args args) :
+    Actor(name, host, -1.0, function, std::move(args)) {}
+
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
   //static Actor *byPid(int pid); not implemented
 

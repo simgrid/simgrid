@@ -13,6 +13,7 @@
 
 #include <xbt/functional.hpp>
 
+
 #include "src/internal_config.h"
 #include "simgrid/simix.h"
 #include "surf/surf.h"
@@ -66,12 +67,6 @@ typedef struct s_smx_context_factory *smx_context_factory_t;
 
 namespace simgrid {
 namespace simix {
-
-// What's executed as SIMIX actor code:
-typedef std::function<void()> ActorCode;
-
-// Create ActorCode based on argv:
-typedef std::function<ActorCode(simgrid::xbt::args args)> ActorCodeFactory;
 
 class Global {
 public:

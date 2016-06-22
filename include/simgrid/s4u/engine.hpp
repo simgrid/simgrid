@@ -7,6 +7,9 @@
 #define SIMGRID_S4U_ENGINE_HPP
 
 #include <xbt/base.h>
+#include <xbt/functional.hpp>
+
+#include <simgrid/simix.hpp>
 
 #include <simgrid/s4u/forward.hpp>
 
@@ -57,6 +60,27 @@ public:
   simgrid::s4u::As *rootAs();
   /** @brief Retrieve the AS of the given name (or nullptr if not found) */
   simgrid::s4u::As *asByNameOrNull(const char *name);
+
+  template<class F>
+  void registerFunction(const char* name)
+  {
+    simgrid::simix::registerFunction(name, [](simgrid::xbt::args args){
+      return simgrid::simix::ActorCode([args] {
+        F code(std::move(args));
+        code();
+      });
+    });
+  }
+
+  template<class F>
+  void registerFunction(const char* name, F code)
+  {
+    simgrid::simix::registerFunction(name, [code](simgrid::xbt::args args){
+      return simgrid::simix::ActorCode([code,args] {
+        code(std::move(args));
+      });
+    });
+  }
 
 private:
   static s4u::Engine *instance_;
