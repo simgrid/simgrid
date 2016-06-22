@@ -50,7 +50,7 @@ int get_peers_data(peer_t peer);
 void leech_loop(peer_t peer, double deadline);
 void seed_loop(peer_t peer, double deadline);
 
-void peer_init(peer_t, int id, int seed);
+void peer_init(peer_t peer, int id, int seed);
 void peer_free(peer_t peer);
 
 int has_finished(char *bitfield);

@@ -156,7 +156,8 @@ void seed_loop(peer_t peer, double deadline)
  */
 int get_peers_data(peer_t peer)
 {
-  int success = 0, send_success = 0;
+  int success = 0;
+  int send_success = 0;
   double timeout = MSG_get_clock() + GET_PEERS_TIMEOUT;
   //Build the task to send to the tracker
   tracker_task_data_t data = tracker_task_data_new(MSG_host_get_name(MSG_host_self()), peer->mailbox_tracker,
@@ -408,6 +409,8 @@ void handle_message(peer_t peer, msg_task_t task)
   case MESSAGE_CANCEL:
     XBT_DEBUG("The received CANCEL from %s (%s)", message->mailbox, message->issuer_host_name);
     break;
+  default:
+    THROW_IMPOSSIBLE;
   }
   //Update the peer speed.
   if (remote_peer) {
@@ -431,14 +434,7 @@ void request_new_piece_to_peer(peer_t peer, connection_t remote_peer)
 /** remove current_piece from the list of currently downloaded pieces. */
 void remove_current_piece(peer_t peer, connection_t remote_peer, int current_piece)
 {
-  int piece_index = -1, piece;
-  unsigned int i;
-  xbt_dynar_foreach(peer->current_pieces, i, piece) {
-    if (piece == current_piece) {
-      piece_index = i;
-      break;
-    }
-  }
+  int piece_index = xbt_dynar_search_or_negative(peer->current_pieces, &current_piece);
   if (piece_index != -1)
     xbt_dynar_remove_at(peer->current_pieces, piece_index, NULL);
   remote_peer->current_piece = -1;
@@ -735,8 +731,7 @@ int get_first_block(peer_t peer, int piece)
 int is_interested(peer_t peer, connection_t remote_peer)
 {
   xbt_assert(remote_peer->bitfield, "Bitfield not received");
-  int i;
-  for (i = 0; i < FILE_PIECES; i++) {
+  for (int i = 0; i < FILE_PIECES; i++) {
     if (remote_peer->bitfield[i] == '1' && peer->bitfield[i] == '0') {
       return 1;
     }
@@ -748,8 +743,7 @@ int is_interested(peer_t peer, connection_t remote_peer)
 int is_interested_and_free(peer_t peer, connection_t remote_peer)
 {
   xbt_assert(remote_peer->bitfield, "Bitfield not received");
-  int i;
-  for (i = 0; i < FILE_PIECES; i++) {
+  for (int i = 0; i < FILE_PIECES; i++) {
     if (remote_peer->bitfield[i] == '1' && peer->bitfield[i] == '0' &&
         (in_current_pieces(peer, i) == 0)) {
       return 1;
@@ -762,8 +756,7 @@ int is_interested_and_free(peer_t peer, connection_t remote_peer)
 int partially_downloaded_piece(peer_t peer, connection_t remote_peer)
 {
   xbt_assert(remote_peer->bitfield, "Bitfield not received");
-  int i;
-  for (i = 0; i < FILE_PIECES; i++) {
+  for (int i = 0; i < FILE_PIECES; i++) {
     if (remote_peer->bitfield[i] == '1' && peer->bitfield[i] == '0' &&
         (in_current_pieces(peer, i) == 0)) {
       if (get_first_block(peer, i) > 0)
@@ -794,14 +787,7 @@ void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece)
 /** Indicates if a piece is currently being downloaded by the peer. */
 int in_current_pieces(peer_t peer, int piece)
 {
-  unsigned i;
-  int peer_piece;
-  xbt_dynar_foreach(peer->current_pieces, i, peer_piece) {
-    if (peer_piece == piece) {
-      return 1;
-    }
-  }
-  return 0;
+  return xbt_dynar_member(peer->current_pieces, &piece);
 }
 
 /***********************************************************
