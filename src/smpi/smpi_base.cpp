@@ -90,11 +90,6 @@ static simgrid::config::Flag<double> smpi_iprobe_sleep(
 static simgrid::config::Flag<double> smpi_test_sleep(
   "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
-static bool factor_cmp(const s_smpi_factor_multival_t& pa, const s_smpi_factor_multival_t& pb)
-{
-  return (pa.factor < pb.factor);
-}
-
 static std::vector<s_smpi_factor_multival_t> parse_factor(const char *smpi_coef_string)
 {
   std::vector<s_smpi_factor_multival_t> smpi_factor;
@@ -140,7 +135,11 @@ XBT_DEBUG("token : %s", token_iter->c_str());
     smpi_factor.push_back(fact);
     XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
   }
-  std::sort(smpi_factor.begin(), smpi_factor.end(), &factor_cmp);
+  std::sort(smpi_factor.begin(), smpi_factor.end(),
+            [](const s_smpi_factor_multival_t &pa,
+               const s_smpi_factor_multival_t &pb) {
+              return (pa.factor < pb.factor);
+            });
   for (auto& fact : smpi_factor) {
     XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
   }
