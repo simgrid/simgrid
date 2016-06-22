@@ -754,7 +754,7 @@ xbt_dict_t SIMIX_process_get_properties(smx_process_t process)
 void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout)
 {
   if (process->finished) {
-    // The process is already finished, just wake up the process right now:
+    // The joined process is already finished, just wake up the issuer process right away
     simcall_process_sleep__set__result(simcall, SIMIX_DONE);
     SIMIX_simcall_answer(simcall);
     return;
