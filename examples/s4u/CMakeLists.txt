@@ -9,7 +9,10 @@ endforeach()
 
 add_executable       (s4u_basic_function  basic/s4u_basic_function.cpp)
 target_link_libraries(s4u_basic_function  simgrid)
-set_target_properties(s4u_basic_function  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/basic)
+set_target_properties(s4u_basic_function  PROPERTIES RUNTIME_OUTPUT_DIRECTORY
+ ${CMAKE_CURRENT_BINARY_DIR}/basic)
+set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/basic/s4u_basic_function.cpp
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/basic/s4u_basic.h)
 
 set(examples_src  ${examples_src}                                     PARENT_SCOPE)
 set(tesh_files    ${tesh_files}                                       PARENT_SCOPE)
