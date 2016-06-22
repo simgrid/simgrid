@@ -177,7 +177,6 @@ XBT_PUBLIC(void) SIMIX_create_environment(const char *file);
 
 XBT_PUBLIC(void) SIMIX_function_register(const char *name, xbt_main_func_t code);
 XBT_PUBLIC(void) SIMIX_function_register_default(xbt_main_func_t code);
-XBT_PUBLIC(xbt_main_func_t) SIMIX_get_registered_function(const char *name);
 XBT_PUBLIC(void) SIMIX_init_application(void);
 XBT_PUBLIC(void) SIMIX_launch_application(const char *file);
 

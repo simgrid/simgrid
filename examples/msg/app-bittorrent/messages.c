@@ -112,6 +112,8 @@ int task_message_size(e_message_type type)
   case MESSAGE_CANCEL:
     size = MESSAGE_CANCEL_SIZE;
     break;
+  default:
+    THROW_IMPOSSIBLE;
   }
   return size;
 }

@@ -44,7 +44,7 @@
 XBT_LOG_NEW_CATEGORY(simix, "All SIMIX categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_kernel, simix, "Logging specific to SIMIX (kernel)");
 
-smx_global_t simix_global = nullptr;
+std::unique_ptr<simgrid::simix::Global> simix_global;
 static xbt_heap_t simix_timers = nullptr;
 
 /** @brief Timer datatype */
@@ -194,17 +194,14 @@ void SIMIX_global_init(int *argc, char **argv)
 #endif
 
   if (!simix_global) {
-    simix_global = xbt_new0(s_smx_global_t, 1);
+    simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
 
     simgrid::simix::Process proc;
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), nullptr);
     simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), nullptr);
     simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
-
     simix_global->maestro_process = nullptr;
-    simix_global->registered_functions = xbt_dict_new_homogeneous(nullptr);
-
     simix_global->create_process_function = &SIMIX_process_create;
     simix_global->kill_process_function = &kill_process;
     simix_global->cleanup_process_function = &SIMIX_process_cleanup;
@@ -299,7 +296,6 @@ void SIMIX_clean(void)
   xbt_swag_free(simix_global->process_list);
   simix_global->process_list = nullptr;
   simix_global->process_to_destroy = nullptr;
-  xbt_dict_free(&(simix_global->registered_functions));
 
   xbt_os_mutex_destroy(simix_global->mutex);
   simix_global->mutex = nullptr;
@@ -315,9 +311,7 @@ void SIMIX_clean(void)
 
   surf_exit();
 
-  xbt_free(simix_global);
   simix_global = nullptr;
-
   return;
 }
 

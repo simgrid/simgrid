@@ -84,8 +84,11 @@ public:
 
   // Notify functions
 
-  void notify();
+  void notify_one();
   void notify_all();
+
+  XBT_ATTRIB_DEPRECATED("Use notify_one() instead")
+  void notify() { notify_one(); }
 
 private:
   smx_cond_t cond_;

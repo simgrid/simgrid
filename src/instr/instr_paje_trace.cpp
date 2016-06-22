@@ -223,12 +223,12 @@ void print_pajeSetState(paje_event_t event) {
 
   print_default_pajeState_row<setState_t>(event);
   stream << " " << static_cast<setState_t>(event->data)->value->id;
-
+#if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     stream << " \"" << static_cast<setState_t>(event->data)->filename
            << "\" " << static_cast<setState_t>(event->data)->linenumber;
   }
-
+#endif
   print_row();
 }
 
@@ -246,12 +246,12 @@ void print_pajePushState(paje_event_t event) {
       stream << 0;
     }
   }
-
+#if HAVE_SMPI
   if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
     stream << " \"" << static_cast<pushState_t>(event->data)->filename
            << "\" " << static_cast<pushState_t>(event->data)->linenumber;
   }
-
+#endif
   print_row();
 
   if (static_cast<pushState_t>(event->data)->extra != nullptr) {

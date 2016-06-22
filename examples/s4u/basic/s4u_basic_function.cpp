@@ -12,8 +12,11 @@
 int main(int argc, char **argv) {
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
   e->loadPlatform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Tremblay"), Worker());
-  simgrid::s4u::Actor("master", simgrid::s4u::Host::by_name("Jupiter"), Master());
+  e->registerFunction<Worker>("worker");
+  e->registerFunction<Master>("master");
+  simgrid::xbt::args args;
+  simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Tremblay"), "worker", args);
+  simgrid::s4u::Actor("master", simgrid::s4u::Host::by_name("Jupiter"), "master", args);
   e->run();
   return 0;
 }

@@ -197,7 +197,6 @@ XBT_PUBLIC(msg_error_t) MSG_main(void);
 XBT_PUBLIC(void) MSG_function_register(const char *name,
                                        xbt_main_func_t code);
 XBT_PUBLIC(void) MSG_function_register_default(xbt_main_func_t code);
-XBT_PUBLIC(xbt_main_func_t) MSG_get_registered_function(const char *name);
 XBT_PUBLIC(void) MSG_launch_application(const char *file);
 /*Bypass the parser */
 XBT_PUBLIC(void) MSG_set_function(const char *host_id,

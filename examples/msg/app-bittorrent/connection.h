@@ -16,10 +16,10 @@ typedef struct s_connection {
   double peer_speed;
   double last_unchoke;
   int current_piece;
-  int am_interested:1;          //Indicates if we are interested in something the peer has
-  int interested:1;             //Indicates if the peer is interested in one of our pieces
-  int choked_upload:1;          //Indicates if the peer is choked for the current peer
-  int choked_download:1;        //Indicates if the peer has choked the current peer
+  unsigned int am_interested:1;   //Indicates if we are interested in something the peer has
+  unsigned int interested:1;      //Indicates if the peer is interested in one of our pieces
+  unsigned int choked_upload:1;   //Indicates if the peer is choked for the current peer
+  unsigned int choked_download:1; //Indicates if the peer has choked the current peer
 } s_connection_t, *connection_t;
 
 /** @brief Build a new connection object from the peer id.

@@ -8,6 +8,11 @@
 #define _SIMIX_PRIVATE_H
 
 #include <functional>
+#include <memory>
+#include <unordered_map>
+
+#include <xbt/functional.hpp>
+
 
 #include "src/internal_config.h"
 #include "simgrid/simix.h"
@@ -58,26 +63,40 @@ typedef struct s_smx_context_factory *smx_context_factory_t;
 
 #endif
 
+/********************************** Simix Global ******************************/
+
+namespace simgrid {
+namespace simix {
+
+class Global {
+public:
+  smx_context_factory_t context_factory = nullptr;
+  xbt_dynar_t process_to_run = nullptr;
+  xbt_dynar_t process_that_ran = nullptr;
+  xbt_swag_t process_list = nullptr;
+  xbt_swag_t process_to_destroy = nullptr;
+  smx_process_t maestro_process = nullptr;
+
+  // Maps function names to actor code:
+  std::unordered_map<std::string, simgrid::simix::ActorCodeFactory> registered_functions;
+
+  // This might be used when no corresponding function name is registered:
+  simgrid::simix::ActorCodeFactory default_function;
+
+  smx_creation_func_t create_process_function = nullptr;
+  void_pfn_smxprocess_t kill_process_function = nullptr;
+  /** Callback used when killing a SMX_process */
+  void_pfn_smxprocess_t cleanup_process_function = nullptr;
+  xbt_os_mutex_t mutex = nullptr;
+};
+
+}
+}
+
 SG_BEGIN_DECL()
 
-/********************************** Simix Global ******************************/
-typedef struct s_smx_global {
-  smx_context_factory_t context_factory;
-  xbt_dynar_t process_to_run;
-  xbt_dynar_t process_that_ran;
-  xbt_swag_t process_list;
-  xbt_swag_t process_to_destroy;
-  smx_process_t maestro_process;
-  xbt_dict_t registered_functions;
-  smx_creation_func_t create_process_function;
-  void_pfn_smxprocess_t kill_process_function;
-  /** Callback used when killing a SMX_process */
-  void_pfn_smxprocess_t cleanup_process_function;
+XBT_PUBLIC_DATA(std::unique_ptr<simgrid::simix::Global>) simix_global;
 
-  xbt_os_mutex_t mutex;
-} s_smx_global_t, *smx_global_t;
-
-XBT_PUBLIC_DATA(smx_global_t) simix_global;
 extern XBT_PRIVATE unsigned long simix_process_maxpid;
 
 XBT_PUBLIC(void) SIMIX_clean(void);
@@ -154,5 +173,7 @@ XBT_PRIVATE void SIMIX_post_create_environment(void);
 XBT_PRIVATE void SIMIX_process_set_cleanup_function(smx_process_t process, void_pfn_smxprocess_t cleanup);
 
 SG_END_DECL()
+
+XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name);
 
 #endif

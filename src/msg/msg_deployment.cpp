@@ -52,18 +52,6 @@ void MSG_function_register_default(xbt_main_func_t code)
   SIMIX_function_register_default(code);
 }
 
-/** \ingroup msg_simulation
- * \brief Retrieves a registered main function
- *
- * Registers a code function in a global table. 
- * This table is then used by #MSG_launch_application. 
- * \param name the reference name of the function.
- */
-xbt_main_func_t MSG_get_registered_function(const char *name)
-{
-  return SIMIX_get_registered_function(name);
-}
-
 /**
  * \brief register functions bypassing the parser
  */

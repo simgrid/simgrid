@@ -84,7 +84,7 @@ void Process::refresh_simix()
   this->read_variable("simix_global", &simix_global_p, sizeof(simix_global_p));
 
   // simix_global = REMOTE(*simix_global)
-  s_smx_global_t simix_global;
+  union { simgrid::simix::Global simix_global };
   this->read_bytes(&simix_global, sizeof(simix_global),
     remote(simix_global_p));
 

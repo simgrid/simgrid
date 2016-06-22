@@ -47,6 +47,7 @@
 
 # define XBT_ATTRIB_NORETURN __attribute__((__noreturn__))
 # define XBT_ATTRIB_UNUSED  __attribute__((__unused__))
+# define XBT_ATTRIB_DEPRECATED(m)  __attribute__((__deprecated__(m)))
 
 /* Constructor priorities exist since gcc 4.3.  Apparently, they are however not
  * supported on Macs. */

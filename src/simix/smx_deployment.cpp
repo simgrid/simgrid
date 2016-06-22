@@ -56,6 +56,14 @@ void SIMIX_launch_application(const char *file)
   }
 }
 
+// Wrap a main() function into a ActorCodeFactory:
+static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
+{
+  return [code](simgrid::xbt::args args) {
+    return simgrid::xbt::wrapMain(code, std::move(args));
+  };
+}
+
 /**
  * \brief Registers a #xbt_main_func_t code in a global table.
  *
@@ -66,11 +74,11 @@ void SIMIX_launch_application(const char *file)
  */
 void SIMIX_function_register(const char *name, xbt_main_func_t code)
 {
-  xbt_assert(simix_global, "SIMIX_global_init has to be called before SIMIX_function_register.");
-  xbt_dict_set(simix_global->registered_functions, name, (void*) code, nullptr);
+  xbt_assert(simix_global,
+    "SIMIX_global_init has to be called before SIMIX_function_register.");
+  simix_global->registered_functions[name] = toActorCodeFactory(code);
 }
 
-static xbt_main_func_t default_function = nullptr;
 /**
  * \brief Registers a #xbt_main_func_t code as default value.
  *
@@ -80,8 +88,7 @@ static xbt_main_func_t default_function = nullptr;
 void SIMIX_function_register_default(xbt_main_func_t code)
 {
   xbt_assert(simix_global, "SIMIX_global_init has to be called before SIMIX_function_register.");
-
-  default_function = code;
+  simix_global->default_function = toActorCodeFactory(code);
 }
 
 /**
@@ -92,16 +99,17 @@ void SIMIX_function_register_default(xbt_main_func_t code)
  * \param name the reference name of the function.
  * \return The #smx_process_t or nullptr.
  */
-xbt_main_func_t SIMIX_get_registered_function(const char *name)
+simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name)
 {
-  xbt_main_func_t res = nullptr;
   xbt_assert(simix_global,
-              "SIMIX_global_init has to be called before SIMIX_get_registered_function.");
+              "SIMIX_global_init has to be called before SIMIX_get_actor_code_factory.");
 
-  res = (xbt_main_func_t)xbt_dict_get_or_null(simix_global->registered_functions, name);
-  return res ? res : default_function;
+  auto i = simix_global->registered_functions.find(name);
+  if (i == simix_global->registered_functions.end())
+    return simix_global->default_function;
+  else
+    return i->second;
 }
-
 
 /**
  * \brief Bypass the parser, get arguments, and set function to each process
@@ -132,14 +140,25 @@ void SIMIX_process_set_function(const char *process_host,
   }
   process.argv[process.argc] = nullptr;
 
-  xbt_main_func_t parse_code = SIMIX_get_registered_function(process_function);
+  // Check we know how to handle this function name:
+  simgrid::simix::ActorCodeFactory& parse_code = SIMIX_get_actor_code_factory(process_function);
   xbt_assert(parse_code, "Function '%s' unknown", process_function);
-  process.function = process_function;
 
+  process.function = process_function;
   process.host = process_host;
   process.kill_time = process_kill_time;
   process.start_time = process_start_time;
   process.on_failure = SURF_PROCESS_ON_FAILURE_DIE;
-
   sg_platf_new_process(&process);
+}
+
+namespace simgrid {
+namespace simix {
+
+void registerFunction(const char* name, ActorCodeFactory factory)
+{
+  simix_global->registered_functions[name] = std::move(factory);
+}
+
+}
 }
