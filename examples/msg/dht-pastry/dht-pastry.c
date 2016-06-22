@@ -101,6 +101,18 @@ static int shl(int a, int b) {
   return l;
 }
 
+/* Frees the memory used by a task and destroy it */
+static void task_free(void* task)
+{
+  // TODO add a parameter data_free_function to MSG_task_create?
+  if(task != NULL){
+    s_task_data_t* data = (s_task_data_t*)MSG_task_get_data(task);
+    xbt_free(data->state);
+    xbt_free(data);
+    MSG_task_destroy(task);
+  }
+}
+
 /* Get the closest id to the dest in the node namespace_set */
 static int closest_in_namespace_set(node_t node, int dest) {
   int best_dist;
@@ -247,7 +259,10 @@ static void handle_task(node_t node, msg_task_t task) {
         task_data->sender_id = node->id;
         task_data->steps++;
         task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, task_data);
-        MSG_task_send_with_timeout(task_sent, mailbox, timeout);
+        if (MSG_task_send_with_timeout(task_sent, mailbox, timeout)== MSG_TIMEOUT) {
+          XBT_DEBUG("Timeout expired when forwarding join to next %d", next);
+          task_free(task_sent);
+        }
         type = TASK_JOIN_REPLY;
       } 
       
@@ -257,7 +272,10 @@ static void handle_task(node_t node, msg_task_t task) {
       get_mailbox(node->id, req_data->answer_to);
       req_data->state = node_get_state(node);
       task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-      MSG_task_send_with_timeout(task_sent, task_data->answer_to, timeout);
+      if (MSG_task_send_with_timeout(task_sent, task_data->answer_to, timeout)== MSG_TIMEOUT) {
+        XBT_DEBUG("Timeout expired when sending back the current node state to the joining node to %d", node->id);
+        task_free(task_sent);
+      }
       break;
     }
     /* Join reply from all the node touched by the join  */
@@ -313,7 +331,10 @@ static void handle_task(node_t node, msg_task_t task) {
             get_mailbox(node->id, req_data->answer_to);
             req_data->state = node_get_state(node);
             task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
-            MSG_task_send_with_timeout(task_sent, mailbox, timeout);
+            if (MSG_task_send_with_timeout(task_sent, mailbox, timeout)== MSG_TIMEOUT) {
+              XBT_DEBUG("Timeout expired when sending update to %d", j);
+              task_free(task_sent);
+            }
           }
         }
         }
@@ -398,6 +419,7 @@ static void handle_task(node_t node, msg_task_t task) {
         }
       }
   }
+  task_free(task);
 }
 
 /** \brief Initializes the current node as the first one of the system.
@@ -422,7 +444,10 @@ static int join(node_t node){
 
   msg_task_t task_sent = MSG_task_create(NULL, COMP_SIZE, COMM_SIZE, req_data);
   XBT_DEBUG("Trying to join Pastry ring... (with node %s)", mailbox);
-  MSG_task_send_with_timeout(task_sent, mailbox, timeout);
+  if (MSG_task_send_with_timeout(task_sent, mailbox, timeout)== MSG_TIMEOUT) {
+    XBT_DEBUG("Timeout expired when joining ring with node %d", node->known_id);
+    task_free(task_sent);
+  }
 
   return 1;
 }
@@ -514,7 +539,16 @@ static int node(int argc, char *argv[])
       }
 
     }
+  //Cleanup the receiving communication.
+  if (node.comm_receive != NULL) {
+    if (MSG_comm_test(node.comm_receive) && MSG_comm_get_status(node.comm_receive) == MSG_OK) {
+      task_free(MSG_comm_get_task(node.comm_receive));
+    }
+    MSG_comm_destroy(node.comm_receive);
   }
+
+  }
+  xbt_free(node.pending_tasks);
   return 1;
 }
 
