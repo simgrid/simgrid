@@ -122,6 +122,10 @@ void send(Mailbox &chan, void *payload, size_t simulatedSize) {
   c.wait();
 }
 
+int getPid() {
+  return simcall_process_get_PID(SIMIX_process_self());
+}
+
 }
 }
 }
