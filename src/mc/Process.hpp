@@ -109,15 +109,20 @@ public:
   const void* read_bytes(void* buffer, std::size_t size,
     RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const override;
+
   void read_variable(const char* name, void* target, size_t size) const;
-  template<class T>
-  T read_variable(const char *name) const
+  template<class T> void read_variable(const char* name, T* target) const
   {
-    static_assert(std::is_trivial<T>::value, "Cannot read a non-trivial type");
-    T res;
-    read_variable(name, &res, sizeof(T));
+    read_variable(name, target, sizeof(*target));
+  }
+  template<class T>
+  Remote<T> read_variable(const char *name) const
+  {
+    Remote<T> res;
+    read_variable(name, res.getBuffer(), sizeof(T));
     return res;
   }
+
   std::string read_string(RemotePtr<char> address) const;
   std::string read_string(RemotePtr<char> address, std::size_t len) const
   {

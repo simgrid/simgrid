@@ -7,10 +7,75 @@
 #ifndef SIMGRID_MC_REMOTE_PTR_HPP
 #define SIMGRID_MC_REMOTE_PTR_HPP
 
+#include <cstddef>
 #include <cstdint>
+#include <cstring>
+
+#include <stdexcept>
+#include <type_traits>
 
 namespace simgrid {
 namespace mc {
+
+template<class M, class T, class Enable = void>
+struct pointer_to_data_member {};
+template<class M, class T>
+struct pointer_to_data_member<M,T,typename std::enable_if< std::is_union<M>::value || std::is_class<M>::value >::type> {
+  typedef T M::* type;
+};
+
+template<class M, class T>
+using pointer_to_data_member_t = typename pointer_to_data_member<M,T>::type;
+
+/** HACK, A value from another process
+ *
+ *  This represents a value from another process:
+ *
+ *  * constructor/destructor are disabled;
+ *
+ *  * raw memory copy (std::memcpy) is used to copy Remote<T>;
+ *
+ *  * raw memory comparison is used to compare them;
+ *
+ *  * when T is a trivial type, Remote is convertible to a T.
+ *
+ *  We currently only handle the case where the type has the same layout
+ *  in the current process and in the target process: we don't handle
+ *  cross-architecture (such as 32-bit/64-bit access).
+ */
+template<class T>
+union Remote {
+private:
+  T buffer;
+public:
+  Remote() {}
+  ~Remote() {}
+  Remote(T& p)
+  {
+    std::memcpy(&buffer, &p, sizeof(buffer));
+  }
+  Remote(Remote const& that)
+  {
+    std::memcpy(&buffer, &that.buffer, sizeof(buffer));
+  }
+  Remote& operator=(Remote const& that)
+  {
+    std::memcpy(&buffer, &that.buffer, sizeof(buffer));
+    return *this;
+  }
+  T*       getBuffer() { return &buffer; }
+  const T* getBuffer() const { return &buffer; }
+  std::size_t getBufferSize() const { return sizeof(T); }
+  operator T() const {
+    static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
+    return buffer;
+  }
+  void clear()
+  {
+    std::memset(static_cast<void*>(&buffer), 0, sizeof(T));
+  }
+
+};
 
 /** Pointer to a remote address-space (process, snapshot)
  *
@@ -32,12 +97,13 @@ public:
   RemotePtr() : address_(0) {}
   RemotePtr(std::uint64_t address) : address_(address) {}
   RemotePtr(T* address) : address_((std::uintptr_t)address) {}
+  RemotePtr(Remote<T*> p) : RemotePtr(*p.getBuffer()) {}
   std::uint64_t address() const { return address_; }
 
   /** Turn into a local pointer
    *
    (if the remote process is not, in fact, remote) */
-  T* local() { return (T*) address_; }
+  T* local() const { return (T*) address_; }
 
   operator bool() const
   {

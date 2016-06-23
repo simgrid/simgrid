@@ -45,13 +45,14 @@ simgrid::mc::SimixProcessInformation* process_info_cast(smx_process_t p)
  */
 static void MC_process_refresh_simix_process_list(
   simgrid::mc::Process* process,
-  std::vector<simgrid::mc::SimixProcessInformation>& target, xbt_swag_t remote_swag)
+  std::vector<simgrid::mc::SimixProcessInformation>& target,
+  simgrid::mc::RemotePtr<s_xbt_swag_t> remote_swag)
 {
   target.clear();
 
   // swag = REMOTE(*simix_global->process_list)
   s_xbt_swag_t swag;
-  process->read_bytes(&swag, sizeof(swag), remote(remote_swag));
+  process->read_bytes(&swag, sizeof(swag), remote_swag);
 
   // Load each element of the vector from the MCed process:
   int i = 0;
@@ -79,19 +80,27 @@ void Process::refresh_simix()
 
   // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
 
-  // simix_global_p = REMOTE(simix_global);
-  smx_global_t simix_global_p;
-  this->read_variable("simix_global", &simix_global_p, sizeof(simix_global_p));
+  static_assert(std::is_same<
+      std::unique_ptr<simgrid::simix::Global>,
+      decltype(simix_global)
+    >::value, "Unexpected type for simix_global");
+  static_assert(sizeof(simix_global) == sizeof(simgrid::simix::Global*),
+    "Bad size for simix_global");
+
+  // simix_global_p = REMOTE(simix_global.get());
+  RemotePtr<simgrid::simix::Global> simix_global_p =
+    this->read_variable<simgrid::simix::Global*>("simix_global");
 
   // simix_global = REMOTE(*simix_global)
-  union { simgrid::simix::Global simix_global };
-  this->read_bytes(&simix_global, sizeof(simix_global),
-    remote(simix_global_p));
+  Remote<simgrid::simix::Global> simix_global =
+    this->read<simgrid::simix::Global>(simix_global_p);
 
   MC_process_refresh_simix_process_list(
-    this, this->smx_process_infos, simix_global.process_list);
+    this, this->smx_process_infos,
+    remote(simix_global.getBuffer()->process_list));
   MC_process_refresh_simix_process_list(
-    this, this->smx_old_process_infos, simix_global.process_to_destroy);
+    this, this->smx_old_process_infos,
+    remote(simix_global.getBuffer()->process_to_destroy));
 
   this->cache_flags_ |= Process::cache_simix_processes;
 }

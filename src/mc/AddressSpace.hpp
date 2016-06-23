@@ -95,51 +95,6 @@ public:
   static constexpr ReadOptions lazy() { return ReadOptions(1); }
 };
 
-/** HACK, A value from another process
- *
- *  This represents a value from another process:
- *
- *  * constructor/destructor are disabled;
- *
- *  * raw memory copy (std::memcpy) is used to copy Remote<T>;
- *
- *  * raw memory comparison is used to compare them;
- *
- *  * when T is a trivial type, Remote is convertible to a T.
- *
- *  We currently only handle the case where the type has the same layout
- *  in the current process and in the target process: we don't handle
- *  cross-architecture (such as 32-bit/64-bit access).
- */
-template<class T>
-union Remote {
-private:
-  T buffer;
-public:
-  Remote() {}
-  ~Remote() {}
-  Remote(Remote const& that)
-  {
-    std::memcpy(&buffer, &that.buffer, sizeof(buffer));
-  }
-  Remote& operator=(Remote const& that)
-  {
-    std::memcpy(&buffer, &that.buffer, sizeof(buffer));
-    return *this;
-  }
-  T*       getBuffer() { return &buffer; }
-  const T* getBuffer() const { return &buffer; }
-  std::size_t getBufferSize() const { return sizeof(T); }
-  operator T() const {
-    static_assert(std::is_trivial<T>::value, "Cannot convert non trivial type");
-    return buffer;
-  }
-  void clear()
-  {
-    std::memset(static_cast<void*>(&buffer), 0, sizeof(T));
-  }
-};
-
 /** A given state of a given process (abstract base class)
  *
  *  Currently, this might either be:
