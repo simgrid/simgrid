@@ -5,7 +5,7 @@ eval 'exec perl -S $0 ${1+"$@"}'
 # This script updates the simgrid XML file passed as argument (modification in place)
 # It is built to do the conversion incrementally.
 
-# Copyright (c) 2006-2014. The SimGrid Team.
+# Copyright (c) 2006-2016. The SimGrid Team.
 # All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -164,7 +164,7 @@ while (defined($line = <INPUT>)) {
 	$fromversion = 0;
 	print "$filename was using version 0\n";
 	next if !$line =~ /\S/;
-    } elsif ($line =~ s/<platform.*version=["]*([0-9.])["]*>//) {
+    } elsif ($line =~ s/<platform.*version=["']*([0-9.])["']*>//) {
 	$fromversion = $1;
 	if ($fromversion == $toversion) {
 	    die "Input platform file $filename is already conformant to version $fromversion. This should be a no-op.\n";
