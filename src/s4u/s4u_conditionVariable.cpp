@@ -26,7 +26,7 @@ void s4u::ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
 std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, double timeout) {
   try {
     simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
-    return std::cv_status::timeout;
+    return std::cv_status::no_timeout;
   }
   catch (xbt_ex& e) {
 
