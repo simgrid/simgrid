@@ -7,9 +7,9 @@
 package org.simgrid.msg;
 
 public class File {
-	public final int SEEK_SET = 0;
-	public final int SEEK_CUR = 1;
-	public final int SEEK_END = 2;
+	public static final int SEEK_SET = 0;
+	public static final int SEEK_CUR = 1;
+	public static final int SEEK_END = 2;
 	/**
 	 * Represents the bind between the java comm and the
 	 * native C comm. You must never access it, since it is 

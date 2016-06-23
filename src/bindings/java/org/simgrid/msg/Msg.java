@@ -7,8 +7,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-import org.simgrid.NativeLib;
-
 
 public final class Msg {
 
@@ -63,7 +61,7 @@ public final class Msg {
 	 * @param args
 	 * @throws MsgException
 	 */
-	static public void main(String[]args) throws MsgException {
+	public static void main(String[]args) throws MsgException {
 		/* initialize the MSG simulation. Must be done before anything else (even logging). */
 		Msg.init(args);
 

@@ -368,6 +368,6 @@ public abstract class Process implements Runnable {
 	 *
 	 * @return			The count of the running processes
 	 */ 
-	public native static int getCount();
+	public static native int getCount();
 
 }

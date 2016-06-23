@@ -426,9 +426,9 @@ public class Peer extends Process {
     } else {
       //Random optimistic unchoking
       if (round == 0) {
-        int j = 0, i;
+        int j = 0;
         do {
-          i = 0;
+          int i = 0;
           int idChosen = stream.randInt(0,peers.size() - 1);
           for (Connection connection : peers.values()) {
             if (i == idChosen) {
@@ -519,10 +519,9 @@ public class Peer extends Process {
       return;
     }
     for (Integer piece : currentPieces) {
-      //Getting the block to send.  
-      int blockIndex = -1, blockLength = 0;
-      blockIndex = getFirstBlock(piece);      
-      blockLength = Common.PIECES_BLOCKS - blockIndex ;
+      //Getting the block to send.
+      int blockIndex = getFirstBlock(piece);
+      int blockLength = Common.PIECES_BLOCKS - blockIndex ;
       blockLength = blockLength > Common.BLOCKS_REQUESTED ? Common.BLOCKS_REQUESTED : blockLength;    
       if (remotePeer.bitfield[piece] == '1') {
         sendRequest(remotePeer.mailbox, piece, blockIndex, blockLength);

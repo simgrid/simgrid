@@ -6,8 +6,6 @@
 
 package cloud.migration;
 
-import java.util.Random; 
-
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
 

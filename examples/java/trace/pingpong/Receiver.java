@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package trace.pingpong;
-import org.simgrid.msg.Host;
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.NativeException;
@@ -15,8 +14,8 @@ import org.simgrid.msg.Process;
 import org.simgrid.trace.Trace;
 
 public class Receiver extends Process {
-  private  final double commSizeLat = 1;
-  private final double commSizeBw = 100000000;
+  private static final double commSizeLat = 1;
+  private static final double commSizeBw = 100000000;
 
   public Receiver(String hostname, String name, String[]args) throws HostNotFoundException, NativeException{
     super(hostname,name,args);

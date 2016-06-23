@@ -56,7 +56,7 @@ public class Host {
 	protected Host() {
 		this.bind = 0;
 		this.data = null;
-	};
+	}
 
 	@Override
 	public String toString (){
@@ -73,15 +73,15 @@ public class Host {
 	 * @exception		HostNotFoundException if the name of the host is not valid.
 	 *					NativeException if the native version of this method failed.
 	 */ 
-	public native static Host getByName(String name) throws HostNotFoundException, NullPointerException;
+	public static native Host getByName(String name) throws HostNotFoundException, NullPointerException;
 	/** Counts the installed hosts. */ 
-	public native static int getCount();
+	public static native int getCount();
 
 	/** Returns the host of the current process. */ 
-	public native static Host currentHost();
+	public static native Host currentHost();
 
 	/** Returns all hosts of the installed platform. */ 
-	public native static Host[] all();
+	public static native Host[] all();
 
 	/** 
 	 * This static method sets a mailbox to receive in asynchronous mode.

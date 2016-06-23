@@ -10,8 +10,7 @@ public class As {
 
 	private long bind;
 
-	protected As() {
-	};
+	protected As() {}
 
 	@Override
 	public String toString (){

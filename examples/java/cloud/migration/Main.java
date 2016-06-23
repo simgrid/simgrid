@@ -7,8 +7,6 @@
 package cloud.migration;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.MsgException;
 
 public class Main {

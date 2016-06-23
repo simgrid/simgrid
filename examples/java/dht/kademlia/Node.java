@@ -153,12 +153,14 @@ public class Node extends Process {
 
   /* Send a request to find a node in the node's routing table. */
   public boolean findNode(int destination, boolean counts) {
-    int queries, answers;
+    int queries;
+    int answers;
     int nodesAdded = 0;
     boolean destinationFound = false;
     int steps = 0;
     double timeBeginReceive;
-    double timeout, globalTimeout = Msg.getClock() + Common.FIND_NODE_GLOBAL_TIMEOUT;
+    double timeout;
+    double globalTimeout = Msg.getClock() + Common.FIND_NODE_GLOBAL_TIMEOUT;
     //Build a list of the closest nodes we already know.
     Answer nodeList = table.findClosest(destination);
     Msg.verb("Doing a FIND_NODE on " + destination);
