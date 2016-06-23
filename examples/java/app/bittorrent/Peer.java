@@ -365,7 +365,7 @@ public class Peer extends Process {
    * @brief Updates the list of who has a piece from a bitfield
    * @param bitfield bitfield
    */
-  private void updatePiecesCountFromBitfield(char bitfield[]) {
+  private void updatePiecesCountFromBitfield(char[] bitfield) {
     for (int i = 0; i < Common.FILE_PIECES; i++) {
       if (bitfield[i] == '1') {
         piecesCount[i]++;

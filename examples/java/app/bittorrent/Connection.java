@@ -9,7 +9,7 @@ import java.util.Arrays;
 
 public class Connection {
   protected int id;
-  protected char bitfield[];
+  protected char[] bitfield;
   protected String mailbox;
   // Indicates if we are interested in something this peer has
   protected boolean amInterested = false;

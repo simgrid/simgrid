@@ -29,7 +29,7 @@ public class Sender extends Process {
 
     int hostCount = args.length;
     Msg.info("host count: " + hostCount);
-    String mailboxes[] = new String[hostCount]; 
+    String[] mailboxes = new String[hostCount]; 
     double time;
     double computeDuration = 0;
     PingPongTask ping;

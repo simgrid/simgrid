@@ -8,7 +8,6 @@ package cloud.migration;
 import java.util.ArrayList;
 import java.util.List;
 
-
 import org.simgrid.msg.*;
 import org.simgrid.msg.Process;
 

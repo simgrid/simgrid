@@ -24,7 +24,7 @@ public class MessageTask extends Task {
   protected String issuerHostname;
   protected String mailbox;
   protected int peerId;
-  protected char bitfield[];
+  protected char[] bitfield;
   protected int index;
   protected int blockIndex;
   protected int blockLength;

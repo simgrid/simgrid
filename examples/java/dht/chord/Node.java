@@ -22,7 +22,7 @@ public class Node extends Process {
   protected Comm commReceive;
   ///Last time I changed a finger or my predecessor
   protected double lastChangeDate;
-  int fingers[];
+  int[] fingers;
 
   public Node(Host host, String name, String[] args) {
     super(host,name,args);
@@ -36,7 +36,7 @@ public class Node extends Process {
     }
     double initTime = Msg.getClock();
     int i;
-    boolean joinSuccess = false;
+    boolean joinSuccess;
     double deadline;
 
     double nextStabilizeDate = initTime + Common.PERIODIC_STABILIZE_DELAY;
@@ -55,7 +55,7 @@ public class Node extends Process {
 
     //First node
     if (args.length == 2) {
-      deadline = Integer.valueOf(args[1]);
+      deadline = Integer.parseInt(args[1]);
       create();
       joinSuccess = true;
     } else {
@@ -115,13 +115,13 @@ public class Node extends Process {
       Msg.debug("Receiving a 'Find Successor' request from " + fTask.issuerHostName + " for id " + fTask.requestId);
       // is my successor the successor?
       if (isInInterval(fTask.requestId, this.id + 1, fingers[0])) {
-        //Msg.info("Send the request to " + fTask.answerTo + " with answer " + fingers[0]);
+        Msg.debug("Send the request to " + fTask.answerTo + " with answer " + fingers[0]);
         FindSuccessorAnswerTask answer = new FindSuccessorAnswerTask(getHost().getName(), mailbox, fingers[0]);
         answer.dsend(fTask.answerTo);
       } else {
         // otherwise, forward the request to the closest preceding finger in my table
         int closest = closestPrecedingNode(fTask.requestId);
-        //Msg.info("Forward the request to " + closest);
+        Msg.debug("Forward the request to " + closest);
         fTask.dsend(Integer.toString(closest));
       }
     } else if (task instanceof GetPredecessorTask) {
@@ -241,11 +241,11 @@ public class Node extends Process {
   int remoteFindSuccessor(int askTo, int id) {
     int successor = -1;
     boolean stop = false;
-    String mailbox = Integer.toString(askTo);
+    String askToMailbox = Integer.toString(askTo);
     Task sendTask = new FindSuccessorTask(getHost().getName(), this.mailbox, id);
-    Msg.debug("Sending a 'Find Successor' request to " + mailbox + " for id " + id);
+    Msg.debug("Sending a 'Find Successor' request to " + askToMailbox + " for id " + id);
     try {
-      sendTask.send(mailbox, Common.TIMEOUT);
+      sendTask.send(askToMailbox, Common.TIMEOUT);
       do {
         if (commReceive == null) {
           commReceive = Task.irecv(this.mailbox);
@@ -324,10 +324,10 @@ public class Node extends Process {
   void fixFingers() {
     Msg.debug("Fixing fingers");
     int i = this.nextFingerToFix;
-    int id = this.findSuccessor(this.id + (int)Math.pow(2,i)); //FIXME: SLOW
-    if (id != -1) {
-      if (id != fingers[i]) {
-        setFinger(i, id);
+    int successorId = this.findSuccessor(this.id + (int)Math.pow(2,i)); //FIXME: SLOW
+    if (successorId != -1) {
+      if (successorId != fingers[i]) {
+        setFinger(i, successorId);
       }
       nextFingerToFix = (i + 1) % Common.NB_BITS;
     }
@@ -352,8 +352,7 @@ public class Node extends Process {
    * @return the closest preceding finger of that id
    */
   int closestPrecedingNode(int id) {
-    int i;
-    for (i = Common.NB_BITS - 1; i >= 0; i--) {
+    for (int i = Common.NB_BITS - 1; i >= 0; i--) {
       if (isInInterval(fingers[i], this.id + 1, id - 1)) {
         return fingers[i];
       }
@@ -378,18 +377,18 @@ public class Node extends Process {
    * @return a non-zero value if id in in [start, end]
    */
   static boolean isInInterval(int id, int start, int end) {
-    id = normalize(id);
-    start = normalize(start);
-    end = normalize(end);
+    int normId = normalize(id);
+    int normStart = normalize(start);
+    int normEnd = normalize(end);
 
     // make sure end >= start and id >= start
-    if (end < start) {
-      end += Common.NB_KEYS;
+    if (normEnd < normStart) {
+      normEnd += Common.NB_KEYS;
     }
-    if (id < start) {
-      id += Common.NB_KEYS;
+    if (normId < normStart) {
+      normId += Common.NB_KEYS;
     }
-    return (id <= end);
+    return (normId <= normEnd);
   }
 
   /**
