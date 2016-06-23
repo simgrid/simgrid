@@ -19,7 +19,7 @@ if(enable_compile_warnings)
     set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
 
-  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
+  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral")
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
@@ -37,6 +37,7 @@ endif()
 # NDEBUG gives a lot of "initialized but unused variables" errors. Don't die anyway.
 if(enable_compile_warnings AND enable_debug)
   set(warnCFLAGS "${warnCFLAGS} -Werror")
+  set(warnCXXFLAGS "${warnCXXFLAGS} -Werror")
 endif()
 
 # Activate the warnings on #if FOOBAR when FOOBAR has no value
