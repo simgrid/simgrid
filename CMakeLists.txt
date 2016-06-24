@@ -61,7 +61,7 @@ if(APPLE AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "4.6"))
 endif()
 
 ### SMPI vs. Fortran
-if (enable_fortran AND (NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
+if ((NOT DEFINED enable_smpi OR enable_smpi) AND NOT APPLE) # smpi is enabled by default
   # Call enable_language(Fortran) in order to load the build rules for this language, needed by 
   # teshsuite/smpi/mpich-test/.  Use CMAKE_FORCE_Fortran_COMPILER to bypass checks for a working compiler (smpiff 
   # doesn't exist at configure time).
