@@ -7,11 +7,11 @@
 #ifndef XBT_FUNCTIONAL_HPP
 #define XBT_FUNCTIONAL_HPP
 
+#include <cstddef>
 #include <cstdlib>
 
 #include <exception>
 #include <functional>
-#include <future>
 #include <utility>
 #include <tuple>
 

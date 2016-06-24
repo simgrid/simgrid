@@ -8,7 +8,6 @@
 
 #include <atomic>
 #include <functional>
-#include <future>
 #include <memory>
 #include <stdexcept>
 #include <type_traits>

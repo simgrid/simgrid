@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <fstream>
+#include <sstream>
+
 #include "src/surf/AsClusterFatTree.hpp"
 #include "src/surf/network_interface.hpp"
 
@@ -10,10 +13,6 @@
 
 #include <boost/algorithm/string/split.hpp>
 #include <boost/algorithm/string/classification.hpp>
-
-#include <iostream>
-#include <fstream>
-#include <sstream>
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 

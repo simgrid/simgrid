@@ -8,9 +8,7 @@
 #define SIMGRID_MC_COMM_PATTERN_H
 
 #include <cstddef>
-#include <cstring>
 
-#include <string>
 #include <vector>
 
 #include <simgrid_config.h>

@@ -7,13 +7,12 @@
 #ifndef SIMGRID_SIMIX_BLOCKING_SIMCALL_HPP
 #define SIMGRID_SIMIX_BLOCKING_SIMCALL_HPP
 
-#include <iostream>
-
 #include <exception>
+#include <functional>
+#include <future>
+#include <utility>
 
 #include <xbt/sysdep.h>
-
-#include <future>
 
 #include <xbt/future.hpp>
 #include <simgrid/kernel/future.hpp>

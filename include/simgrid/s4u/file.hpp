@@ -6,8 +6,6 @@
 #ifndef SIMGRID_S4U_FILE_HPP
 #define SIMGRID_S4U_FILE_HPP
 
-#include <vector>
-
 #include <xbt/base.h>
 #include <simgrid/simix.h>
 
