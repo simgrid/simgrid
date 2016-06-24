@@ -7,7 +7,7 @@
 #include <math.h>
 #include "simgrid/msg.h"
 
-	XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pastry, "Messages specific for this msg example");
+XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pastry, "Messages specific for this msg example");
 
 /* TODO:                               *
  *  - handle node departure            *

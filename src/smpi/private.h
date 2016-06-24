@@ -180,7 +180,7 @@ XBT_PRIVATE int smpi_process_get_sampling(void);
 XBT_PRIVATE void smpi_process_set_replaying(bool s);
 XBT_PRIVATE bool smpi_process_get_replaying(void);
 
-XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm**, xbt_bar_t*);
+XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm, xbt_bar_t*bar);
 XBT_PRIVATE void smpi_deployment_cleanup_instances(void);
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t buff_size);
@@ -424,8 +424,8 @@ XBT_PRIVATE XBT_PRIVATE int smpi_comm_attr_delete(MPI_Comm comm, int keyval);
 XBT_PRIVATE int smpi_comm_attr_put(MPI_Comm comm, int keyval, void* attr_value);
 
 // f77 wrappers
-void mpi_init_(int*);
-void mpi_finalize_(int*);
+void mpi_init_(int* ierr);
+void mpi_finalize_(int* ierr);
 void mpi_abort_(int* comm, int* errorcode, int* ierr);
 void mpi_comm_rank_(int* comm, int* rank, int* ierr);
 void mpi_comm_size_(int* comm, int* size, int* ierr);

@@ -19,7 +19,7 @@ static int dvfs(int argc, char *argv[])
 {
   double workload = 100E6;
   int new_peak_index=2;
-  msg_host_t host = MSG_host_self();; //MSG_get_host_by_name("MyHost1");
+  msg_host_t host = MSG_host_self();
 
   int nb = MSG_host_get_nb_pstates(host);
   XBT_INFO("Count of Processor states=%d", nb);

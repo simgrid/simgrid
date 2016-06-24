@@ -335,7 +335,7 @@ XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst(lmm_system_t sys, lmm_constrain
  *
  * @return A variable associated to a constraint
  */
-XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/, lmm_constraint_t cnst,
+XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst_safe(lmm_system_t sys, lmm_constraint_t cnst,
                                      lmm_element_t * elem, lmm_element_t * nextelem, int * numelem);
 
 /**

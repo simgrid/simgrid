@@ -38,7 +38,7 @@ static int sender(int argc, char *argv[])
     if (sleep_test_time > 0) { /* - "test_time" is set to 0, wait on @ref MSG_comm_wait */
       while (MSG_comm_test(comm) == 0) { /* - Call @ref MSG_comm_test every "test_time" otherwise */
         MSG_process_sleep(sleep_test_time);
-      };
+      }
     } else {
       MSG_comm_wait(comm, -1);
     }
