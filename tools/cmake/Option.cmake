@@ -53,6 +53,12 @@ option(enable_memcheck "Enable memcheck." off)
 mark_as_advanced(enable_memcheck)
 option(enable_memcheck_xml "Enable memcheck with xml output." off)
 mark_as_advanced(enable_memcheck_xml)
+option(enable_address_sanitizer "Whether address sanitizer is turned on." off)
+mark_as_advanced(enable_address_sanitizer)
+option(enable_thread_sanitizer "Whether thread sanitizer is turned on." off)
+mark_as_advanced(enable_thread_sanitizer)
+option(enable_undefined_sanitizer "Whether undefined sanitizer is turned on." off)
+mark_as_advanced(enable_undefined_sanitizer)
 
 # Cmake, Y U NO hide your garbage??
 ###
