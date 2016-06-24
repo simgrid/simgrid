@@ -8,6 +8,7 @@
 
 #include <simgrid/msg.h>
 #include <simgrid/simix.h>
+#include "simgrid/plugins/energy.h"
 #include <locale.h>
 #include <src/simix/smx_private.h>
 
@@ -39,12 +40,12 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 
 JavaVM *__java_vm = nullptr;
 
-JavaVM *get_java_VM(void)
+JavaVM *get_java_VM()
 {
   return __java_vm;
 }
 
-JNIEnv *get_current_thread_env(void)
+JNIEnv *get_current_thread_env()
 {
   JNIEnv *env;
 
@@ -251,6 +252,10 @@ Java_org_simgrid_msg_Msg_deployApplication(JNIEnv * env, jclass cls, jstring jde
 
 SG_END_DECL()
 
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_energyInit() {
+  sg_energy_plugin_init();
+}
+
 /** Run a Java org.simgrid.msg.Process
  *
  *  If needed, this waits for the process starting time.
@@ -275,7 +280,7 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
 static int java_main(int argc, char *argv[])
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::java::JavaContext* context = (simgrid::java::JavaContext*) SIMIX_context_self();
+  simgrid::java::JavaContext* context = static_cast<simgrid::java::JavaContext*>(SIMIX_context_self());
 
   //Change the "." in class name for "/".
   xbt_str_subst(argv[0],'.','/',0);
@@ -289,11 +294,9 @@ static int java_main(int argc, char *argv[])
   //Retrieve the name of the process.
   jstring jname = env->NewStringUTF(argv[0]);
   //Build the arguments
-  jobjectArray args = (jobjectArray)env->NewObjectArray(argc - 1,
-    env->FindClass("java/lang/String"),
-    env->NewStringUTF(""));
-  int i;
-  for (i = 1; i < argc; i++)
+  jobjectArray args = static_cast<jobjectArray>(env->NewObjectArray(argc - 1, env->FindClass("java/lang/String"),
+                                                                    env->NewStringUTF("")));
+  for (int i = 1; i < argc; i++)
       env->SetObjectArrayElement(args,i - 1, env->NewStringUTF(argv[i]));
   //Retrieve the host for the process.
   jstring jhostName = env->NewStringUTF(MSG_host_get_name(MSG_host_self()));
@@ -307,8 +310,8 @@ static int java_main(int argc, char *argv[])
 
   context->jprocess = jprocess;
   /* sets the PID and the PPID of the process */
-  env->SetIntField(jprocess, jprocess_field_Process_pid,(jint) MSG_process_get_PID(process));
-  env->SetIntField(jprocess, jprocess_field_Process_ppid, (jint) MSG_process_get_PPID(process));
+  env->SetIntField(jprocess, jprocess_field_Process_pid, static_cast<jint>(MSG_process_get_PID(process)));
+  env->SetIntField(jprocess, jprocess_field_Process_ppid, static_cast<jint>(MSG_process_get_PPID(process)));
   jprocess_bind(jprocess, process, env);
 
   run_jprocess(env, context->jprocess);
@@ -322,7 +325,7 @@ namespace java {
 void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::java::JavaContext* context = (simgrid::java::JavaContext*) SIMIX_context_self();
+  simgrid::java::JavaContext* context = static_cast<simgrid::java::JavaContext*>(SIMIX_context_self());
   context->jprocess = jprocess;
   smx_process_t process = SIMIX_process_self();
   jprocess_bind(context->jprocess, process, env);
@@ -335,10 +338,4 @@ void java_main_jprocess(jobject jprocess)
 }
 
 }
-}
-
-#include "simgrid/plugins/energy.h"
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Msg_energyInit(void) {
-  sg_energy_plugin_init();
 }

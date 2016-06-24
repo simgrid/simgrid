@@ -69,7 +69,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getSons(JNIEnv * env, job
     return nullptr;
   }
 
-  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
+  jtable = env->NewObjectArray(static_cast<jsize>(count), cls, nullptr);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
@@ -105,7 +105,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobje
     jxbt_throw_notbound(env, "as", jas);
     return nullptr;
   }
-  const char *name = env->GetStringUTFChars((jstring) jname, 0);
+  const char *name = env->GetStringUTFChars(static_cast<jstring>(jname), 0);
 
   const char *property = MSG_environment_as_get_property_value(as, name);
   if (!property) {
@@ -114,7 +114,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_As_getProperty(JNIEnv *env, jobje
 
   jobject jproperty = env->NewStringUTF(property);
 
-  env->ReleaseStringUTFChars((jstring) jname, name);
+  env->ReleaseStringUTFChars(static_cast<jstring>(jname), name);
 
   return jproperty;
 }
@@ -137,7 +137,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
     return nullptr;
   }
 
-  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
+  jtable = env->NewObjectArray(static_cast<jsize>(count), cls, nullptr);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Hosts table allocation failed");
@@ -147,7 +147,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
   for (index = 0; index < count; index++) {
     host = xbt_dynar_get_as(table,index,msg_host_t);
 
-    jhost = (jobject) host->extension(JAVA_HOST_LEVEL);
+    jhost = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
     if (!jhost) {
       jname = env->NewStringUTF(MSG_host_get_name(host));
 

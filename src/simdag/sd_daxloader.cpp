@@ -8,6 +8,7 @@
 #include "simgrid/simdag.h"
 #include "xbt/misc.h"
 #include "xbt/log.h"
+#include "xbt/str.h"
 #include "xbt/file.h" /* xbt_basename() */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
@@ -20,19 +21,12 @@ extern "C" {
   #undef register
 }
 
-static double dax_parse_double(const char *string)
-{
-  double value;
-  int ret = sscanf(string, "%lg", &value);
-  xbt_assert (ret == 1, "Parse error on line %d: %s is not a double", dax_lineno, string);
-  return value;
-}
-
 /* Ensure that transfer tasks have unique names even though a file is used several times */
 
 void uniq_transfer_task_name(SD_task_t task)
 {
-  SD_task_t child, parent;
+  SD_task_t child;
+  SD_task_t parent;
 
   xbt_dynar_t children = SD_task_get_children(task);
   xbt_dynar_t parents = SD_task_get_parents(task);
@@ -89,7 +83,8 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     next = xbt_dynar_new(sizeof(SD_task_t),nullptr);
     //test if the current iteration is done
     xbt_dynar_foreach(current,count_current,task){
-      if (task == nullptr) continue;
+      if (task == nullptr)
+        continue;
       //push task in next
       task->marked = 1;
       xbt_dynar_foreach(task->tasks_before,count,depbefore){
@@ -117,7 +112,8 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   xbt_dynar_free(&current);
   all_marked = true;
   xbt_dynar_foreach(dag,count,task){
-    if(task->kind == SD_TASK_COMM_E2E) continue;
+    if(task->kind == SD_TASK_COMM_E2E)
+      continue;
     //test if all tasks are marked
     if(task->marked == 0){
       XBT_WARN("the task %s is not marked",task->name);
@@ -130,14 +126,16 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
 
     current = xbt_dynar_new(sizeof(SD_task_t),nullptr);
     xbt_dynar_foreach(dag,count,task){
-      if(task->kind == SD_TASK_COMM_E2E) continue;
+      if(task->kind == SD_TASK_COMM_E2E)
+        continue;
       if(xbt_dynar_is_empty(task->tasks_before)){
         xbt_dynar_push(current, &task);
       }
     }
 
     xbt_dynar_foreach(dag,count,task){
-      if(task->kind == SD_TASK_COMM_E2E) continue;
+      if(task->kind == SD_TASK_COMM_E2E)
+       continue;
       if(xbt_dynar_is_empty(task->tasks_before)){
         task->marked = 1;
         xbt_dynar_push(current, &task);
@@ -148,7 +146,8 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
       next = xbt_dynar_new(sizeof(SD_task_t),nullptr);
       //test if the current iteration is done
       xbt_dynar_foreach(current,count_current,task){
-        if (task == nullptr) continue;
+        if (task == nullptr)
+          continue;
         //push task in next
         task->marked = 1;
         xbt_dynar_foreach(task->tasks_after,count,depafter){
@@ -176,7 +175,8 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     xbt_dynar_free(&current);
     all_marked = true;
     xbt_dynar_foreach(dag,count,task){
-      if(task->kind == SD_TASK_COMM_E2E) continue;
+      if(task->kind == SD_TASK_COMM_E2E)
+        continue;
       //test if all tasks are marked
       if(task->marked == 0){
         XBT_WARN("the task %s is in a cycle",task->name);
@@ -197,7 +197,7 @@ static SD_task_t root_task, end_task;
 
 static void dax_task_free(void *task)
 {
-  SD_task_destroy((SD_task_t)task);
+  SD_task_destroy(static_cast<SD_task_t>(task));
 }
 
 /** @brief loads a DAX file describing a DAG
@@ -240,9 +240,11 @@ xbt_dynar_t SD_daxload(const char *filename)
    */
 
   xbt_dict_foreach(files, cursor, name, file) {
-    unsigned int cpt1, cpt2;
+    unsigned int cpt1;
+    unsigned int cpt2;
     SD_task_t newfile;
-    SD_dependency_t depbefore, depafter;
+    SD_dependency_t depbefore;
+    SD_dependency_t depafter;
     if (xbt_dynar_is_empty(file->tasks_before)) {
       xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
         newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
@@ -283,15 +285,19 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_foreach(result, cpt, file) {
     if (SD_task_get_kind(file) == SD_TASK_COMM_E2E) {
       uniq_transfer_task_name(file);
-    } else if (SD_task_get_kind(file) == SD_TASK_COMP_SEQ){
-      /* If some tasks do not take files as input, connect them to the root, if
-       * they don't produce files, connect them to the end node.
-       */
-      if ((file != root_task) && xbt_dynar_is_empty(file->tasks_before)) {
-        SD_task_dependency_add(nullptr, nullptr, root_task, file);
-      }
-      if ((file != end_task) && xbt_dynar_is_empty(file->tasks_after)) {
-        SD_task_dependency_add(nullptr, nullptr, file, end_task);
+    } else {
+      if (SD_task_get_kind(file) == SD_TASK_COMP_SEQ){
+        /* If some tasks do not take files as input, connect them to the root, if
+         * they don't produce files, connect them to the end node.
+         */
+        if ((file != root_task) && xbt_dynar_is_empty(file->tasks_before)) {
+          SD_task_dependency_add(nullptr, nullptr, root_task, file);
+        }
+        if ((file != end_task) && xbt_dynar_is_empty(file->tasks_after)) {
+          SD_task_dependency_add(nullptr, nullptr, file, end_task);
+        }
+      } else {
+        THROW_IMPOSSIBLE;
       }
     }
   }
@@ -309,20 +315,20 @@ xbt_dynar_t SD_daxload(const char *filename)
   }
 }
 
-void STag_dax__adag(void)
+void STag_dax__adag()
 {
   XBT_ATTRIB_UNUSED double version;
-  version = dax_parse_double(A_dax__adag_version);
+  version = xbt_str_parse_double(A_dax__adag_version, "Parse error: %s is not a double");
 
   xbt_assert(version == 2.1, "Expected version 2.1 in <adag> tag, got %f. Fix the parser or your file", version);
 }
 
-void STag_dax__job(void)
+void STag_dax__job()
 {
-  double runtime = dax_parse_double(A_dax__job_runtime);
+  double runtime = xbt_str_parse_double(A_dax__job_runtime, "Parse error: %s is not a double");
   char *name = bprintf("%s@%s", A_dax__job_id, A_dax__job_name);
   runtime *= 4200000000.;       /* Assume that timings were done on a 4.2GFlops machine. I mean, why not? */
-//  XBT_INFO("See <job id=%s runtime=%s %.0f>",A_dax__job_id,A_dax__job_runtime,runtime);
+  XBT_DEBUG("See <job id=%s runtime=%s %.0f>",A_dax__job_id,A_dax__job_runtime,runtime);
   current_job = SD_task_create_comp_seq(name, nullptr, runtime);
   xbt_dict_set(jobs, A_dax__job_id, current_job, nullptr);
   free(name);
@@ -331,11 +337,11 @@ void STag_dax__job(void)
 
 void STag_dax__uses(void)
 {
-  double size = dax_parse_double(A_dax__uses_size);
+  double size = xbt_str_parse_double(A_dax__uses_size, "Parse error: %s is not a double");
   int is_input = (A_dax__uses_link == A_dax__uses_link_input);
 
-//  XBT_INFO("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
-  SD_task_t file = (SD_task_t)xbt_dict_get_or_null(files, A_dax__uses_file);
+  XBT_DEBUG("See <uses file=%s %s>",A_dax__uses_file,(is_input?"in":"out"));
+  SD_task_t file = static_cast<SD_task_t>(xbt_dict_get_or_null(files, A_dax__uses_file));
   if (file == nullptr) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, nullptr, size);
     xbt_dynar_pop(sd_global->initial_task_set,nullptr);
@@ -356,44 +362,44 @@ void STag_dax__uses(void)
 }
 
 static SD_task_t current_child;
-void STag_dax__child(void)
+void STag_dax__child()
 {
-  current_child = (SD_task_t)xbt_dict_get_or_null(jobs, A_dax__child_ref);
+  current_child = static_cast<SD_task_t>(xbt_dict_get_or_null(jobs, A_dax__child_ref));
   xbt_assert(current_child != nullptr,"Parse error on line %d: Asked to add dependencies to the non-existent %s task",
              dax_lineno, A_dax__child_ref);
 }
 
-void ETag_dax__child(void)
+void ETag_dax__child()
 {
   current_child = nullptr;
 }
 
-void STag_dax__parent(void)
+void STag_dax__parent()
 {
-  SD_task_t parent = (SD_task_t)xbt_dict_get_or_null(jobs, A_dax__parent_ref);
+  SD_task_t parent = static_cast<SD_task_t>(xbt_dict_get_or_null(jobs, A_dax__parent_ref));
   xbt_assert(parent != nullptr, "Parse error on line %d: Asked to add a dependency from %s to %s, but %s does not exist",
              dax_lineno, current_child->name, A_dax__parent_ref, A_dax__parent_ref);
   SD_task_dependency_add(nullptr, nullptr, parent, current_child);
   XBT_DEBUG("Control-flow dependency from %s to %s", current_child->name, parent->name);
 }
 
-void ETag_dax__adag(void)
+void ETag_dax__adag()
 {
-//  XBT_INFO("See </adag>");
+  XBT_DEBUG("See </adag>");
 }
 
 void ETag_dax__job(void)
 {
   current_job = nullptr;
-//  XBT_INFO("See </job>");
+  XBT_DEBUG("See </job>");
 }
 
 void ETag_dax__parent(void)
 {
-//  XBT_INFO("See </parent>");
+  XBT_DEBUG("See </parent>");
 }
 
 void ETag_dax__uses(void)
 {
-//  XBT_INFO("See </uses>");
+  XBT_DEBUG("See </uses>");
 }

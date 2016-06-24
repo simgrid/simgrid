@@ -29,18 +29,15 @@ simgrid::simix::ContextFactory* java_factory()
   return new JavaContextFactory();
 }
 
-JavaContextFactory::JavaContextFactory()
-  : ContextFactory("JavaContextFactory")
+JavaContextFactory::JavaContextFactory(): ContextFactory("JavaContextFactory")
 {
 }
 
-JavaContextFactory::~JavaContextFactory()
-{
-}
+JavaContextFactory::~JavaContextFactory()=default;
 
 JavaContext* JavaContextFactory::self()
 {
-  return (JavaContext*) xbt_os_thread_get_extra_data();
+  return static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
 }
 
 JavaContext* JavaContextFactory::create_context(
@@ -109,13 +106,13 @@ JavaContext::~JavaContext()
 
 void* JavaContext::wrapper(void *data)
 {
-  JavaContext* context = (JavaContext*)data;
+  JavaContext* context = static_cast<JavaContext*>(data);
   xbt_os_thread_set_extra_data(context);
   //Attach the thread to the JVM
 
   JNIEnv *env;
   XBT_ATTRIB_UNUSED jint error =
-    __java_vm->AttachCurrentThread((void **) &env, nullptr);
+    __java_vm->AttachCurrentThread((void **)&env, nullptr);
   xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
   context->jenv = get_current_thread_env();
   //Wait for the first scheduling round to happen.
