@@ -107,12 +107,8 @@ static void xbt_dict_rehash(xbt_dict_t dict)
 {
   const unsigned oldsize = dict->table_size + 1;
   unsigned newsize = oldsize * 2;
-  xbt_dictelm_t *currcell;
-  xbt_dictelm_t *twincell;
-  xbt_dictelm_t bucklet;
-  xbt_dictelm_t *pprev;
 
-  currcell = (xbt_dictelm_t *) xbt_realloc((char *) dict->table, newsize * sizeof(xbt_dictelm_t));
+  xbt_dictelm_t *currcell = (xbt_dictelm_t *) xbt_realloc((char *) dict->table, newsize * sizeof(xbt_dictelm_t));
   memset(&currcell[oldsize], 0, oldsize * sizeof(xbt_dictelm_t));       /* zero second half */
   dict->table_size = --newsize;
   dict->table = currcell;
@@ -121,8 +117,11 @@ static void xbt_dict_rehash(xbt_dict_t dict)
   for (unsigned i = 0; i < oldsize; i++, currcell++) {
     if (!*currcell)             /* empty cell */
       continue;
-    twincell = currcell + oldsize;
-    for (pprev = currcell, bucklet = *currcell; bucklet; bucklet = *pprev) {
+
+    xbt_dictelm_t *twincell = currcell + oldsize;
+    xbt_dictelm_t *pprev = currcell;
+    xbt_dictelm_t bucklet = *currcell;
+    for (; bucklet != nullptr; bucklet = *pprev) {
       /* Since we use "& size" instead of "%size" and since the size was doubled, each bucklet of this cell must either:
          - stay  in  cell i (ie, currcell)
          - go to the cell i+oldsize (ie, twincell) */
