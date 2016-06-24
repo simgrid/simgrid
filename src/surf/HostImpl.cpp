@@ -108,6 +108,8 @@ Action *HostModel::executeParallelTask(int host_nb,
     THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks for more than 2 hosts */
 #undef cost_or_zero
   xbt_free(host_list);
+  if(action==nullptr)
+    xbt_die("This model doesn't support tasks with 0 comm and 0 computation, please use ptak_L07 instead");
   return action;
 }
 
