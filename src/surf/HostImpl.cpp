@@ -109,7 +109,7 @@ Action *HostModel::executeParallelTask(int host_nb,
 #undef cost_or_zero
   xbt_free(host_list);
   if(action==nullptr)
-    xbt_die("This model doesn't support tasks with 0 comm and 0 computation, please use ptak_L07 instead");
+    xbt_die("This model doesn't support tasks with 0 comm and 0 computation, please use ptask_L07 instead");
   return action;
 }
 
