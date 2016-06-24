@@ -173,13 +173,15 @@ static void action_barrier(const char *const *action)
   }
   ACT_DEBUG("Entering barrier: %s (%d already there)", NAME, processes_arrived_sofar);
 
-  std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
-  if (++processes_arrived_sofar == communicator_size) {
-    // We can notify without the lock:
-    lock.unlock();
-    cond->notify_all();
-  } else {
-    cond->wait(lock);
+  {
+    std::unique_lock<simgrid::s4u::Mutex> lock(*mutex);
+    if (++processes_arrived_sofar == communicator_size) {
+      // We can notify without the lock:
+      lock.unlock();
+      cond->notify_all();
+    } else {
+      cond->wait(lock);
+    }
   }
 
   ACT_DEBUG("Exiting barrier: %s", NAME);
