@@ -5,12 +5,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <functional>
-#include <future>
 #include <memory>
 
 #include <signal.h> /* Signal handling */
 #include <stdlib.h>
 #include "src/internal_config.h"
+
+#include <xbt/functional.hpp>
 
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/storage_interface.hpp"
@@ -52,10 +53,10 @@ static xbt_heap_t simix_timers = nullptr;
 /** @brief Timer datatype */
 typedef struct s_smx_timer {
   double date = 0.0;
-  std::packaged_task<void()> callback;
+  simgrid::xbt::Task<void()> callback;
 
   s_smx_timer() {}
-  s_smx_timer(double date, std::packaged_task<void()> callback)
+  s_smx_timer(double date, simgrid::xbt::Task<void()> callback)
     : date(date), callback(std::move(callback)) {}
 } s_smx_timer_t;
 
@@ -531,15 +532,14 @@ void SIMIX_run(void)
  *   \param arg Parameters of the function
  *
  */
-smx_timer_t SIMIX_timer_set(double date, void (*function)(void*), void *arg)
+smx_timer_t SIMIX_timer_set(double date, void (*callback)(void*), void *arg)
 {
-  smx_timer_t timer = new s_smx_timer_t(date,
-    std::packaged_task<void()>(std::bind(function, arg)));
+  smx_timer_t timer = new s_smx_timer_t(date, [=](){ callback(arg); });
   xbt_heap_push(simix_timers, timer, date);
   return timer;
 }
 
-smx_timer_t SIMIX_timer_set(double date, std::packaged_task<void()> callback)
+smx_timer_t SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback)
 {
   smx_timer_t timer = new s_smx_timer_t(date, std::move(callback));
   xbt_heap_push(simix_timers, timer, date);
