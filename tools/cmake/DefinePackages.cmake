@@ -337,6 +337,7 @@ set(SURF_SRC
 
 set(SIMIX_GENERATED_SRC   src/simix/popping_generated.cpp  )
 set(SIMIX_SRC
+  src/kernel/future.cpp
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
   src/simix/Context.cpp

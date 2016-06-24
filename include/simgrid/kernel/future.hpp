@@ -17,6 +17,7 @@
 
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
+#include <xbt/future.hpp>
 
 namespace simgrid {
 namespace kernel {
@@ -47,6 +48,8 @@ public:
   FutureStateBase(FutureStateBase const&) = delete;
   FutureStateBase& operator=(FutureStateBase const&) = delete;
 
+  void schedule(simgrid::xbt::Task<void()>&& job);
+
   void set_exception(std::exception_ptr exception)
   {
     xbt_assert(exception_ == nullptr);
@@ -56,7 +59,7 @@ public:
     this->set_ready();
   }
 
-  void set_continuation(simgrid::xbt::Task<void()> continuation)
+  void set_continuation(simgrid::xbt::Task<void()>&& continuation)
   {
     xbt_assert(!continuation_);
     switch (status_) {
@@ -68,7 +71,7 @@ public:
     case FutureStatus::ready:
       // The future is ready, execute the continuation directly.
       // We might execute it from the event loop instead:
-      continuation();
+      schedule(std::move(continuation));
       break;
     case FutureStatus::not_ready:
       // The future is not ready so we mast keep the continuation for
@@ -103,7 +106,7 @@ protected:
       // We need to do this becase the current implementation of the
       // continuation has a shared_ptr to the FutureState.
       auto continuation = std::move(continuation_);
-      continuation();
+      this->schedule(std::move(continuation));
     }
   }
 

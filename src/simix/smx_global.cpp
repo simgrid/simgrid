@@ -349,6 +349,76 @@ static int process_syscall_color(void *p)
   }
 }
 
+/** Wake up all processes waiting for a Surf action to finish */
+static void SIMIX_wake_processes()
+{
+  unsigned int iter;
+  surf_model_t model;
+  surf_action_t action;
+
+  xbt_dynar_foreach(all_existing_models, iter, model) {
+    XBT_DEBUG("Handling process whose action failed");
+    while ((action = surf_model_extract_failed_action_set(model))) {
+      XBT_DEBUG("   Handling Action %p",action);
+      SIMIX_simcall_exit((smx_synchro_t) action->getData());
+    }
+    XBT_DEBUG("Handling process whose action terminated normally");
+    while ((action = surf_model_extract_done_action_set(model))) {
+      XBT_DEBUG("   Handling Action %p",action);
+      if (action->getData() == nullptr)
+        XBT_DEBUG("probably vcpu's action %p, skip", action);
+      else
+        SIMIX_simcall_exit((smx_synchro_t) action->getData());
+    }
+  }
+}
+
+/** Handle any pending timer */
+static bool SIMIX_execute_timers()
+{
+  bool result = false;
+  while (xbt_heap_size(simix_timers) > 0 && SIMIX_get_clock() >= SIMIX_timer_next()) {
+    result = true;
+     //FIXME: make the timers being real callbacks
+     // (i.e. provide dispatchers that read and expand the args)
+     smx_timer_t timer = (smx_timer_t) xbt_heap_pop(simix_timers);
+     try {
+       timer->callback();
+     }
+     catch(...) {
+       xbt_die("Exception throwed ouf of timer callback");
+     }
+     delete timer;
+  }
+  return result;
+}
+
+/** Execute all the tasks that are queued
+ *
+ *  e.g. `.then()` callbacks of futures.
+ **/
+static bool SIMIX_execute_tasks()
+{
+  xbt_assert(simix_global->tasksTemp.empty());
+
+  if (simix_global->tasks.empty())
+    return false;
+
+  using std::swap;
+  do {
+    // We don't want the callbacks to modify the vector we are iterating over:
+    swap(simix_global->tasks, simix_global->tasksTemp);
+
+    // Execute all the queued tasks:
+    for (auto& task : simix_global->tasksTemp)
+      task();
+
+    simix_global->tasksTemp.clear();
+  } while (!simix_global->tasks.empty());
+
+  return true;
+}
+
 /**
  * \ingroup SIMIX_API
  * \brief Run the main simulation loop.
@@ -362,14 +432,13 @@ void SIMIX_run(void)
 
   double time = 0;
   smx_process_t process;
-  surf_action_t action;
-  smx_timer_t timer;
-  surf_model_t model;
-  unsigned int iter;
 
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%lu",
         xbt_dynar_length(simix_global->process_to_run));
+
+    SIMIX_execute_tasks();
+
     while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
       XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
               xbt_dynar_length(simix_global->process_to_run));
@@ -435,27 +504,18 @@ void SIMIX_run(void)
        *   That would thus be a pure waste of time.
        */
 
+      unsigned int iter;
       xbt_dynar_foreach(simix_global->process_that_ran, iter, process) {
         if (process->simcall.call != SIMCALL_NONE) {
           SIMIX_simcall_handle(&process->simcall, 0);
         }
       }
-      /* Wake up all processes waiting for a Surf action to finish */
-      xbt_dynar_foreach(all_existing_models, iter, model) {
-        XBT_DEBUG("Handling process whose action failed");
-        while ((action = surf_model_extract_failed_action_set(model))) {
-          XBT_DEBUG("   Handling Action %p",action);
-          SIMIX_simcall_exit((smx_synchro_t) action->getData());
-        }
-        XBT_DEBUG("Handling process whose action terminated normally");
-        while ((action = surf_model_extract_done_action_set(model))) {
-          XBT_DEBUG("   Handling Action %p",action);
-          if (action->getData() == nullptr)
-            XBT_DEBUG("probably vcpu's action %p, skip", action);
-          else
-            SIMIX_simcall_exit((smx_synchro_t) action->getData());
-        }
-      }
+
+      SIMIX_execute_tasks();
+      do {
+        SIMIX_wake_processes();
+      } while (SIMIX_execute_tasks());
+
     }
 
     time = SIMIX_timer_next();
@@ -464,43 +524,23 @@ void SIMIX_run(void)
       time = surf_solve(time);
       XBT_DEBUG("Moving time ahead : %g", time);
     }
+
     /* Notify all the hosts that have failed */
     /* FIXME: iterate through the list of failed host and mark each of them */
     /* as failed. On each host, signal all the running processes with host_fail */
 
-    /* Handle any pending timer */
-    while (xbt_heap_size(simix_timers) > 0 && SIMIX_get_clock() >= SIMIX_timer_next()) {
-       //FIXME: make the timers being real callbacks
-       // (i.e. provide dispatchers that read and expand the args)
-       timer = (smx_timer_t) xbt_heap_pop(simix_timers);
-       try {
-         timer->callback();
-       }
-       catch(...) {
-         xbt_die("Exception throwed ouf of timer callback");
-       }
-       delete timer;
-    }
-
-    /* Wake up all processes waiting for a Surf action to finish */
-    xbt_dynar_foreach(all_existing_models, iter, model) {
-      XBT_DEBUG("Handling process whose action failed");
-      while ((action = surf_model_extract_failed_action_set(model))) {
-        XBT_DEBUG("   Handling Action %p",action);
-        SIMIX_simcall_exit((smx_synchro_t) action->getData());
-      }
-      XBT_DEBUG("Handling process whose action terminated normally");
-      while ((action = surf_model_extract_done_action_set(model))) {
-        XBT_DEBUG("   Handling Action %p",action);
-        if (action->getData() == nullptr)
-          XBT_DEBUG("probably vcpu's action %p, skip", action);
-        else
-          SIMIX_simcall_exit((smx_synchro_t) action->getData());
-      }
-    }
+    // Execute timers and tasks until there isn't anything to be done:
+    bool again = false;
+    do {
+      again = SIMIX_execute_timers();
+      if (SIMIX_execute_tasks())
+        again = true;
+      SIMIX_wake_processes();
+    } while (again);
 
     /* Autorestart all process */
     char *hostname = nullptr;
+    unsigned int iter;
     xbt_dynar_foreach(host_that_restart,iter,hostname) {
       XBT_INFO("Restart processes on host: %s",hostname);
       SIMIX_host_autorestart(sg_host_by_name(hostname));
@@ -509,7 +549,6 @@ void SIMIX_run(void)
 
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();
-
 
     XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
 

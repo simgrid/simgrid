@@ -10,9 +10,9 @@
 #include <functional>
 #include <memory>
 #include <unordered_map>
+#include <vector>
 
 #include <xbt/functional.hpp>
-
 
 #include "src/internal_config.h"
 #include "simgrid/simix.h"
@@ -88,6 +88,9 @@ public:
   /** Callback used when killing a SMX_process */
   void_pfn_smxprocess_t cleanup_process_function = nullptr;
   xbt_os_mutex_t mutex = nullptr;
+
+  std::vector<simgrid::xbt::Task<void()>> tasks;
+  std::vector<simgrid::xbt::Task<void()>> tasksTemp;
 };
 
 }
