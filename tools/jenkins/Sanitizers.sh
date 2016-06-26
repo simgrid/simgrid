@@ -64,6 +64,7 @@ fi
 make clean
 
 export TSAN_OPTIONS="memory_limit_mb=1500"
+export UBSAN_OPTIONS="print_stacktrace=1"
 
 ctest -D ExperimentalStart || true
 
