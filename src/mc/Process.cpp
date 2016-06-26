@@ -58,7 +58,9 @@ namespace mc {
 // List of library which memory segments are not considered:
 static const char *const filtered_libraries[] = {
   "ld",
-  "libasan", /* gcc sanitizer */
+  "libasan", /* gcc sanitizers */
+  "libtsan",
+  "libubsan",
   "libbz2",
   "libboost_chrono",
   "libboost_context",
