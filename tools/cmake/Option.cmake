@@ -47,7 +47,7 @@ option(enable_smpi_ISP_testsuite "Whether the test suite from ISP should be buil
 
 # Internal targets used by jenkins
 ###
-option(enable_fortran "Whether fortran is used with SMPI. Turend on by default if gfortran is found." on)
+option(enable_fortran "Whether fortran is used with SMPI. Turned on by default if gfortran is found." on)
 option(enable_coverage "Whether coverage should be enabled." off)
 mark_as_advanced(enable_coverage)
 option(enable_memcheck "Enable memcheck." off)
