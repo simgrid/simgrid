@@ -40,13 +40,14 @@ int main(int argc, char **argv){
 
   /* Schedule them all on all the first host*/
   XBT_INFO("------------------- Schedule tasks ---------------------------");
-  const sg_host_t *hosts = sg_host_list();
+  sg_host_t *hosts = sg_host_list();
   int count = sg_host_count();
   xbt_dynar_foreach(dot, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_PAR_AMDAHL) {
         SD_task_schedulev(task, count, hosts);
     }
   }
+  xbt_free(hosts);
 
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);

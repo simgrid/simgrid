@@ -41,7 +41,7 @@ int main(int argc, char **argv)
 {
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
-  const sg_host_t *hosts = sg_host_list();
+  sg_host_t *hosts = sg_host_list();
 
   SD_task_t t1 = SD_task_create_comp_seq("t1", NULL, 25000000);
   SD_task_t c1 = SD_task_create_comm_e2e("c1", NULL, 125000000);
@@ -94,5 +94,6 @@ int main(int argc, char **argv)
     }
   }
   SD_exit();
+  xbt_free(hosts);
   return 0;
 }

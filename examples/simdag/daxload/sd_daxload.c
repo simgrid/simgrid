@@ -64,18 +64,19 @@ int main(int argc, char **argv)
 
   /* Schedule them all on the first host */
   XBT_INFO("------------------- Schedule tasks ---------------------------");
-  const sg_host_t *ws_list = sg_host_list();
+  sg_host_t *host_list = sg_host_list();
   int hosts_count = sg_host_count();
-  qsort((void *) ws_list, hosts_count, sizeof(sg_host_t), name_compare_hosts);
+  qsort((void *) host_list, hosts_count, sizeof(sg_host_t), name_compare_hosts);
 
   xbt_dynar_foreach(dax, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
       if (!strcmp(SD_task_get_name(task), "end"))
-        SD_task_schedulel(task, 1, ws_list[0]);
+        SD_task_schedulel(task, 1, host_list[0]);
       else
-        SD_task_schedulel(task, 1, ws_list[cursor % hosts_count]);
+        SD_task_schedulel(task, 1, host_list[cursor % hosts_count]);
     }
   }
+  xbt_free(host_list);
 
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);

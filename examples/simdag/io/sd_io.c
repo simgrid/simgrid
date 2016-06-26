@@ -21,16 +21,17 @@ int main(int argc, char **argv)
   /* Set the workstation model to default, as storage is not supported by the ptask_L07 model yet. */
   SD_config("host/model", "default");
   SD_create_environment(argv[1]);
-  const sg_host_t *workstations = sg_host_list();
-  int total_nworkstations = sg_host_count();
+  sg_host_t *hosts = sg_host_list();
+  int total_nhosts = sg_host_count();
 
-  for (ctr=0; ctr<total_nworkstations;ctr++){
-    current_storage_list = sg_host_get_mounted_storage_list(workstations[ctr]);
+  for (ctr=0; ctr<total_nhosts;ctr++){
+    current_storage_list = sg_host_get_mounted_storage_list(hosts[ctr]);
     xbt_dict_foreach(current_storage_list,cursor,mount_name,storage_name)
-      XBT_INFO("Workstation '%s' mounts '%s'", sg_host_get_name(workstations[ctr]), mount_name);
+      XBT_INFO("Workstation '%s' mounts '%s'", sg_host_get_name(hosts[ctr]), mount_name);
     xbt_dict_free(&current_storage_list);
   }
 
   SD_exit();
+  xbt_free(hosts);
   return 0;
 }
