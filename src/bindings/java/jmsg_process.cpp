@@ -147,7 +147,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
               // It would be simplet if we could use a closure.
               jobject jprocess = (jobject) MSG_process_get_data(process);
               simgrid::java::java_main_jprocess(jprocess);
-              return 0;
+              return;
             }, jprocess,
             host,
             /*argc, argv, properties*/

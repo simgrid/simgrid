@@ -217,7 +217,7 @@ void* simcall_vm_create(const char *name, sg_host_t phys_host)
  */
 void simcall_vm_start(sg_host_t vm)
 {
-  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_start, vm));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_start, vm));
 }
 
 /**
@@ -263,7 +263,7 @@ void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
  */
 void simcall_vm_migrate(sg_host_t vm, sg_host_t host)
 {
-  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_migrate, vm, host));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_migrate, vm, host));
 }
 
 /**
