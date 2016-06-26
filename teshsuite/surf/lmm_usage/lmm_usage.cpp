@@ -15,8 +15,8 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
 
-#define PRINT_VAR(var) XBT_DEBUG(#var " = %g",lmm_variable_getvalue(var));
-#define SHOW_EXPR(expr) XBT_DEBUG(#expr " = %g",expr);
+#define PRINT_VAR(var) XBT_DEBUG(#var " = %g",lmm_variable_getvalue(var))
+#define SHOW_EXPR(expr) XBT_DEBUG(#expr " = %g",expr)
 
 /*        ______                 */
 /*  ==l1==  L2  ==L3==           */
