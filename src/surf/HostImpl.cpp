@@ -1,5 +1,4 @@
-/* Copyright (c) 2013-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2013-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -76,7 +75,8 @@ Action *HostModel::executeParallelTask(int host_nb,
     sg_host_t *host_list,
     double *flops_amount,
     double *bytes_amount,
-    double rate){
+    double rate)
+{
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
   Action *action =nullptr;
   if ((host_nb == 1)
@@ -99,17 +99,19 @@ Action *HostModel::executeParallelTask(int host_nb,
         value = cost_or_zero(bytes_amount, i);
       }
     }
-    if (nb == 1){
+    if (nb == 1) {
       action = surf_network_model->communicate(host_list[0]->pimpl_netcard,
-                                           host_list[1]->pimpl_netcard,
-                         value, rate);
+					       host_list[1]->pimpl_netcard,
+					       value, rate);
+    } else if (nb == 0) {
+       xbt_die("Cannot have a communication with no flop to exchange in this model. You should consider using the ptask model");
+    } else {       
+       xbt_die("Cannot have a communication that is not a simple point-to-point in this model. You should consider using the ptask model");
     }
-  } else
-    THROW_UNIMPLEMENTED;      /* This model does not implement parallel tasks for more than 2 hosts */
+  } else 
+    xbt_die("This model only accepts one of the following. You should consider using the ptask model for the other cases.\n - execution with one host only and no communication\n - Self-comms with one host only\n - Communications with two hosts and no computation");
 #undef cost_or_zero
   xbt_free(host_list);
-  if(action==nullptr)
-    xbt_die("This model doesn't support tasks with 0 comm and 0 computation, please use ptask_L07 instead");
   return action;
 }
 
