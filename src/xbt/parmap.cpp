@@ -126,8 +126,8 @@ xbt_parmap_t xbt_parmap_new(unsigned int num_workers, e_xbt_parmap_mode_t mode)
     data->worker_id = i;
     parmap->workers[i] = xbt_os_thread_create(nullptr, xbt_parmap_worker_main, data, nullptr);
 #if HAVE_PTHREAD_SETAFFINITY
-    xbt_os_thread_bind(parmap->workers[i], core_bind); 
-    if (core_bind != xbt_os_get_numcores())
+    xbt_os_thread_bind(parmap->workers[i], core_bind);
+    if (core_bind != xbt_os_get_numcores() - 1)
       core_bind++;
     else
       core_bind = 0; 
