@@ -37,7 +37,7 @@ public:
     code_(std::move(code)),
     args_(std::make_shared<const std::vector<std::string>>(std::move(args)))
   {}
-  int operator()() const
+  void operator()() const
   {
     const int argc = args_->size();
     std::vector<std::string> args = *args_;
@@ -45,7 +45,7 @@ public:
     for (int i = 0; i != argc; ++i)
       argv[i] = args[i].empty() ? const_cast<char*>(""): &args[i].front();
     argv[argc] = nullptr;
-    return code_(argc, argv.get());
+    code_(argc, argv.get());
   }
 };
 
@@ -145,10 +145,16 @@ namespace bits {
   template<class F>
   constexpr bool isUsableDirectlyInTask()
   {
+    // TODO, detect availability std::is_trivially_copyable / workaround
+#if 1
+    // std::is_trivially_copyable is not available before GCC 5.
+    return false;
+#else
     // The only types we can portably store directly in the Task are the
     // trivially copyable ones (we can memcpy) which are small enough to fit:
     return std::is_trivially_copyable<F>::value &&
       sizeof(F) <= sizeof(bits::any_callback);
+#endif
   }
 
 }
@@ -266,6 +272,11 @@ public:
     code.code_.ptr = code.get();
     vtable_ = &vtable;
   }
+
+  // TODO, Task(funcptr)
+  // TODO, Task(funcptr, data)
+  // TODO, Task(method, object)
+  // TODO, Task(stateless lambda)
 
   operator bool() const { return vtable_ != nullptr; }
   bool operator!() const { return vtable_ == nullptr; }
