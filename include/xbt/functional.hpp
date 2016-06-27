@@ -11,6 +11,7 @@
 #include <cstdlib>
 #include <cstring>
 
+#include <array>
 #include <exception>
 #include <functional>
 #include <memory>
@@ -100,17 +101,16 @@ template<class T> class Task;
 
 namespace bits {
 
-  // Something similar exist in C++14:
-  template<class T>
-  constexpr T max(T a, T b)
-  {
-    return (a > b) ? a : b;
-  }
-  template<class T, class... Args>
-  constexpr T max(T a, Args... b)
-  {
-    return max(std::forward<T>(a), max(std::forward<Args>(b)...));
-  }
+  // Compute the maximum size taken by any of the given types:
+  template <class... T> struct max_size;
+  template <>
+  struct max_size<> : public std::integral_constant<std::size_t, 0> {};
+  template <class T>
+  struct max_size<T> : public std::integral_constant<std::size_t, sizeof(T)> {};
+  template <class T, class... U>
+  struct max_size<T, U...> : public std::integral_constant<std::size_t,
+    (sizeof(T) > max_size<U...>::value) ? sizeof(T) : max_size<U...>::value
+  > {};
 
   struct whatever {};
 
@@ -126,11 +126,12 @@ namespace bits {
     void (whatever::* callback)();
     whatever* data;
   };
-  typedef char any_callback[max(
-    sizeof(ptr_callback),
-    sizeof(funcptr_callback),
-    sizeof(member_funcptr_callback)
-    )];
+  constexpr std::size_t any_size = max_size<
+    ptr_callback,
+    funcptr_callback,
+    member_funcptr_callback
+  >::value;
+  typedef std::array<char, any_size> any_callback;
 
   // Union of what we can store in a Task:
   union TaskErasure {
@@ -218,14 +219,14 @@ public:
         } code;
         if (!std::is_empty<F>::value)
           // AFAIU, this is safe as per [basic.types]:
-          std::memcpy(&code.code, &erasure.any, sizeof(code.code));
+          std::memcpy(&code.code, erasure.any.data(), sizeof(code.code));
         code.code(std::forward<Args>(args)...);
       },
       // Destroy:
       nullptr
     };
     if (!std::is_empty<F>::value)
-      std::memcpy(&code_.any, &code, sizeof(code));
+      std::memcpy(code_.any.data(), &code, sizeof(code));
     vtable_ = &vtable;
   }
 
