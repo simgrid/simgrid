@@ -160,11 +160,9 @@ a host can contain more than 1 core.
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | String | The identifier of the host. facilitates referring to this AS.
-power           | yes       | double (must be > 0.0) | Computational power of every core of this host in FLOPS. Must be larger than 0.0.
+speed           | yes       | double (must be > 0.0) | Computational power of every core of this host in FLOPS. Must be larger than 0.0.
 core            | no        | int (Default: 1) | The number of cores of this host. If more than one core is specified, the "power" parameter refers to every core, i.e., the total computational power is no_of_cores*power.<br /> If 6 cores are specified, up to 6 tasks can be executed without sharing the computational power; if more than 6 tasks are executed, computational power will be shared among these tasks. <br /> <b>Warning:</b> Although functional, this model was never scientifically assessed.
-availability    | no        | int    | <b>Specify if the percentage of power available.</b> (What? TODO)
 availability_file| no       | string | (Relative or absolute) filename to use as input; must contain availability traces for this host. The syntax of this file is defined below. <br /> <b>Note:</b> The filename must be specified with your system's format.
-state           | no        | ON\|OFF<br/> (Default: ON) | Is this host running or not?
 state_file      | no        | string |  Same mechanism as availability_file.<br /> <b>Note:</b> The filename must be specified with your system's format.
 coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the AS the host belongs to. More details can be found in the Section \ref pf_P2P_tags.
 pstate     | no        | double (Default: 0.0) | FIXME: Not yet documented.
