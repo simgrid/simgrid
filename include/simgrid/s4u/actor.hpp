@@ -126,31 +126,11 @@ XBT_PUBLIC_CLASS Actor {
 private:
   /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
   template<class F, class... Args>
-  class Task {
-  public:
-    Task(F&& code, Args&&... args) :
-      code_(std::forward<F>(code)),
-      args_(std::forward<Args>(args)...)
-    {
-      done_.clear();
-    }
-    void operator()()
-    {
-      if (done_.test_and_set())
-        throw std::logic_error("Actor task already executed");
-      simgrid::xbt::apply(std::move(code_), std::move(args_));
-    }
-  private:
-    std::atomic_flag done_;
-    F code_;
-    std::tuple<Args...> args_;
-  };
-  /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
-  template<class F, class... Args>
   static std::function<void()> wrap_task(F f, Args... args)
   {
-    std::shared_ptr<Task<F, Args...>> task(
-      new Task<F, Args...>(std::move(f), std::move(args)...));
+    typedef decltype(f(std::move(args)...)) R;
+    auto task = std::make_shared<simgrid::xbt::Task<R()>>(
+      simgrid::xbt::makeTask(std::move(f), std::move(args)...));
     return [=] {
       (*task)();
     };
