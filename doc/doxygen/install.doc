@@ -171,11 +171,10 @@ In addition to the classical cmake configuration variables, SimGrid accepts seve
   @li <b>enable_maintainer_mode</b> (ON/OFF) is only needed if you plan to modify very specific parts of SimGrid
       (e.g., the XML parsers and other related elements). Moreover, this adds an extra dependency on flex and flexml.
 
-  @li <b>enable_mallocators</b> (ON/OFF) has to be disabled when tracking memory issues within SimGrid, or the caching 
-      mechanism used internally will fool the debuggers.
+  @li <b>enable_mallocators</b> (ON/OFF) has to be disabled when tracking memory issues within SimGrid, 
+      or our internal memory caching mechanism will fool the debuggers.
 
-  @li <b>enable_model-checking</b> (ON/OFF) if you actually plan to
-      use the model-checking feature of SimGrid. This execution mode
+  @li <b>enable_model-checking</b> (ON/OFF) This execution gear
       is very usable now, but enabling this option at compile time
       will **hinder simulation speed** even when the model-checker is
       not activated at run time.
