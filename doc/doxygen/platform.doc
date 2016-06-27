@@ -167,6 +167,7 @@ availability_file| no       | string | (Relative or absolute) filename to use as
 state           | no        | ON\|OFF<br/> (Default: ON) | Is this host running or not?
 state_file      | no        | string |  Same mechanism as availability_file.<br /> <b>Note:</b> The filename must be specified with your system's format.
 coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the AS the host belongs to. More details can be found in the Section \ref pf_P2P_tags.
+pstate     | no        | double (Default: 0.0) | FIXME: Not yet documented.
 
 ### Possible children: ###
 
