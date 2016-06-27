@@ -116,8 +116,6 @@ void smpi_process_init(int *argc, char ***argv)
     simdata->data             = data;
 
     if (*argc > 3) {
-      free((*argv)[0]);
-      free((*argv)[1]);
       memmove(&(*argv)[0], &(*argv)[2], sizeof(char *) * (*argc - 2));
       (*argv)[(*argc) - 1] = nullptr;
       (*argv)[(*argc) - 2] = nullptr;

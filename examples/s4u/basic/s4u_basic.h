@@ -12,7 +12,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 class Worker {
 public:
   Worker() {};
-  Worker(simgrid::xbt::args args) {}
+  Worker(std::vector<std::string> args) {}
   void operator()() {
     XBT_INFO("Hello s4u, I'm ready to serve");
     char *msg = static_cast<char*>(simgrid::s4u::this_actor::recv(
@@ -25,7 +25,7 @@ public:
 class Master {
 public:
   Master() {};
-  Master(simgrid::xbt::args args) {}
+  Master(std::vector<std::string> args) {}
   void operator()() {
     const char *msg = "GaBuZoMeu";
     XBT_INFO("Hello s4u, I have something to send");

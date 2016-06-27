@@ -12,8 +12,11 @@
 
 #include <exception>
 #include <functional>
-#include <utility>
+#include <memory>
+#include <string>
 #include <tuple>
+#include <utility>
+#include <vector>
 
 #include <xbt/sysdep.h>
 #include <xbt/utility.hpp>
@@ -21,102 +24,39 @@
 namespace simgrid {
 namespace xbt {
 
-class args {
+template<class F>
+class MainFunction {
 private:
-  int argc_ = 0;
-  char** argv_ = nullptr;
+  F code_;
+  std::shared_ptr<const std::vector<std::string>> args_;
 public:
-
-  // Main constructors
-  args() {}
-
-  void assign(int argc, const char*const* argv)
+  MainFunction(F code, std::vector<std::string> args) :
+    code_(std::move(code)),
+    args_(std::make_shared<const std::vector<std::string>>(std::move(args)))
+  {}
+  int operator()() const
   {
-    clear();
-    char** new_argv = xbt_new(char*,argc + 1);
-    for (int i = 0; i < argc; i++)
-      new_argv[i] = xbt_strdup(argv[i]);
-    new_argv[argc] = nullptr;
-    this->argc_ = argc;
-    this->argv_ = new_argv;
-  }
-  args(int argc, const char*const* argv)
-  {
-    this->assign(argc, argv);
-  }
-
-  char** to_argv() const
-  {
-    const int argc = argc_;
-    char** argv = xbt_new(char*, argc + 1);
-    for (int i=0; i< argc; i++)
-      argv[i] = xbt_strdup(argv_[i]);
+    const int argc = args_->size();
+    std::vector<std::string> args = *args_;
+    std::unique_ptr<char*[]> argv(new char*[argc + 1]);
+    for (int i = 0; i != argc; ++i)
+      argv[i] = args[i].empty() ? const_cast<char*>(""): &args[i].front();
     argv[argc] = nullptr;
-    return argv;
+    return code_(argc, argv.get());
   }
-
-  // Free
-  void clear()
-  {
-    for (int i = 0; i < this->argc_; i++)
-      std::free(this->argv_[i]);
-    std::free(this->argv_);
-    this->argc_ = 0;
-    this->argv_ = nullptr;
-  }
-  ~args() { clear(); }
-
-  // Copy
-  args(args const& that)
-  {
-    this->assign(that.argc(), that.argv());
-  }
-  args& operator=(args const& that)
-  {
-    this->assign(that.argc(), that.argv());
-    return *this;
-  }
-
-  // Move:
-  args(args&& that) : argc_(that.argc_), argv_(that.argv_)
-  {
-    that.argc_ = 0;
-    that.argv_ = nullptr;
-  }
-  args& operator=(args&& that)
-  {
-    this->argc_ = that.argc_;
-    this->argv_ = that.argv_;
-    that.argc_ = 0;
-    that.argv_ = nullptr;
-    return *this;
-  }
-
-  int    argc()            const { return argc_; }
-  char** argv()                  { return argv_; }
-  const char*const* argv() const { return argv_; }
-  char* operator[](std::size_t i) { return argv_[i]; }
 };
 
 template<class F> inline
-std::function<void()> wrapMain(F code, std::shared_ptr<simgrid::xbt::args> args)
+std::function<void()> wrapMain(F code, std::vector<std::string> args)
 {
-  return [=]() {
-    code(args->argc(), args->argv());
-  };
+  return MainFunction<F>(std::move(code), std::move(args));
 }
 
 template<class F> inline
-std::function<void()> wrapMain(F code, simgrid::xbt::args args)
+std::function<void()> wrapMain(F code, int argc, const char*const argv[])
 {
-  return wrapMain(std::move(code),
-    std::unique_ptr<simgrid::xbt::args>(new simgrid::xbt::args(std::move(args))));
-}
-
-template<class F> inline
-std::function<void()> wrapMain(F code, int argc, const char*const* argv)
-{
-  return wrapMain(std::move(code), args(argc, argv));
+  std::vector<std::string> args(argv, argv + argc);
+  return MainFunction<F>(std::move(code), std::move(args));
 }
 
 namespace bits {

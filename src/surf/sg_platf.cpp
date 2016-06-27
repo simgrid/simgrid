@@ -577,7 +577,8 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   double kill_time  = process->kill_time;
   int auto_restart = process->on_failure == SURF_PROCESS_ON_FAILURE_DIE ? 0 : 1;
 
-  std::function<void()> code = factory(simgrid::xbt::args(process->argc, process->argv));
+  std::vector<std::string> args(process->argv, process->argv + process->argc);
+  std::function<void()> code = factory(std::move(args));
 
   smx_process_arg_t arg = nullptr;
   smx_process_t process_created = nullptr;

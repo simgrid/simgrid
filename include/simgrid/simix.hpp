@@ -175,7 +175,7 @@ XBT_PUBLIC(void) create_maestro(std::function<void()> code);
 typedef std::function<void()> ActorCode;
 
 // Create ActorCode based on argv:
-typedef std::function<ActorCode(simgrid::xbt::args args)> ActorCodeFactory;
+typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
 XBT_PUBLIC(void) registerFunction(const char* name, ActorCodeFactory factory);
 
