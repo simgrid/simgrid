@@ -93,6 +93,12 @@ before giving SMPI a spin. Actually, that's very simple even if it's
 the first time you use MPI code: just use smpicc as a compiler (in
 replacement of gcc or your usual compiler), and you're set.
 
+\note 
+    Some configure scripts ("./configure") will test the compiler by 
+    compiling some simple example scripts. To make this work, you 
+    must set the <b>SMPI_PRETEND_CC</b> environment variable to
+    some arbitrary value, for instance "export SMPI_PRETEND_CC=1"
+
 \section SMPI_executing Executing your code on top of the simulator
 
 This is done though the <tt>smpirun</tt> script as follows.
