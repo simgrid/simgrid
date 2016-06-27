@@ -9,6 +9,7 @@
 
 #include <cstddef>
 #include <cstdlib>
+#include <cstring>
 
 #include <exception>
 #include <functional>
@@ -96,6 +97,60 @@ constexpr auto apply(F&& f, Tuple&& t)
 
 template<class T> class Task;
 
+namespace bits {
+
+  // Something similar exist in C++14:
+  template<class T>
+  constexpr T max(T a, T b)
+  {
+    return (a > b) ? a : b;
+  }
+  template<class T, class... Args>
+  constexpr T max(T a, Args... b)
+  {
+    return max(std::forward<T>(a), max(std::forward<Args>(b)...));
+  }
+
+  struct whatever {};
+
+  // What we can store in a Task:
+  typedef void* ptr_callback;
+  struct funcptr_callback {
+    // Placeholder for any function pointer:
+    void(*callback)();
+    void* data;
+  };
+  struct member_funcptr_callback {
+    // Placeholder for any pointer to member function:
+    void (whatever::* callback)();
+    whatever* data;
+  };
+  typedef char any_callback[max(
+    sizeof(ptr_callback),
+    sizeof(funcptr_callback),
+    sizeof(member_funcptr_callback)
+    )];
+
+  // Union of what we can store in a Task:
+  union TaskErasure {
+    ptr_callback ptr;
+    funcptr_callback funcptr;
+    member_funcptr_callback member_funcptr;
+    any_callback any;
+  };
+
+  // Can we copy F in Task (or do we have to use the heap)?
+  template<class F>
+  constexpr bool isUsableDirectlyInTask()
+  {
+    // The only types we can portably store directly in the Task are the
+    // trivially copyable ones (we can memcpy) which are small enough to fit:
+    return std::is_trivially_copyable<F>::value &&
+      sizeof(F) <= sizeof(bits::any_callback);
+  }
+
+}
+
 /** Type-erased run-once task
  *
  *  * Like std::function but callable only once.
@@ -106,42 +161,120 @@ template<class T> class Task;
 template<class R, class... Args>
 class Task<R(Args...)> {
 private:
-  // Type-erasure for the code:
-  class Base {
-  public:
-    virtual ~Base() {}
-    virtual R operator()(Args...) = 0;
+
+  typedef bits::TaskErasure TaskErasure;
+  struct TaskErasureVtable {
+    // Call (and possibly destroy) the function:
+    R (*call)(TaskErasure&, Args...);
+    // Destroy the function:
+    void (*destroy)(TaskErasure&);
   };
-  template<class F>
-  class Impl : public Base {
-  public:
-    Impl(F&& code) : code_(std::move(code)) {}
-    Impl(F const& code) : code_(code) {}
-    ~Impl() override {}
-    R operator()(Args... args) override
-    {
-      return code_(std::forward<Args>(args)...);
-    }
-  private:
-    F code_;
-  };
-  std::unique_ptr<Base> code_;
+
+  TaskErasure code_;
+  const TaskErasureVtable* vtable_ = nullptr;
+
 public:
   Task() {}
   Task(std::nullptr_t) {}
+  ~Task()
+  {
+    if (vtable_ && vtable_->destroy)
+      vtable_->destroy(code_);
+  }
+
+  Task(Task const&) = delete;
+  Task& operator=(Task const&) = delete;
+
+  Task(Task&& that)
+  {
+    std::memcpy(&code_, &that.code_, sizeof(code_));
+    vtable_ = that.vtable_;
+    that.vtable_ = nullptr;
+  }
+  Task& operator=(Task&& that)
+  {
+    if (vtable_ && vtable_->destroy)
+      vtable_->destroy(code_);
+    std::memcpy(&code_, &that.code_, sizeof(code_));
+    vtable_ = that.vtable_;
+    that.vtable_ = nullptr;
+    return *this;
+  }
+
+  template<class F,
+    typename = typename std::enable_if<bits::isUsableDirectlyInTask<F>()>::type>
+  Task(F const& code)
+  {
+    const static TaskErasureVtable vtable {
+      // Call:
+      [](TaskErasure& erasure, Args... args) -> R {
+        // We need to wrap F un a union because F might not have a default
+        // constructor: this is especially the case for lambdas.
+        union no_ctor {
+          no_ctor() {}
+          ~no_ctor() {}
+          F code ;
+        } code;
+        if (!std::is_empty<F>::value)
+          // AFAIU, this is safe as per [basic.types]:
+          std::memcpy(&code.code, &erasure.any, sizeof(code.code));
+        code.code(std::forward<Args>(args)...);
+      },
+      // Destroy:
+      nullptr
+    };
+    if (!std::is_empty<F>::value)
+      std::memcpy(&code_.any, &code, sizeof(code));
+    vtable_ = &vtable;
+  }
+
+  template<class F,
+    typename = typename std::enable_if<!bits::isUsableDirectlyInTask<F>()>::type>
+  Task(F code)
+  {
+    const static TaskErasureVtable vtable {
+      // Call:
+      [](TaskErasure& erasure, Args... args) -> R {
+        // Delete F when we go out of scope:
+        std::unique_ptr<F> code(static_cast<F*>(erasure.ptr));
+        (*code)(std::forward<Args>(args)...);
+      },
+      // Destroy:
+      [](TaskErasure& erasure) {
+        F* code = static_cast<F*>(erasure.ptr);
+        delete code;
+      }
+    };
+    code_.ptr = new F(std::move(code));
+    vtable_ = &vtable;
+  }
 
   template<class F>
-  Task(F&& code) :
-    code_(new Impl<F>(std::forward<F>(code))) {}
-
-  operator bool() const { return code_ != nullptr; }
-  bool operator!() const { return code_ == nullptr; }
-
-  template<class... OtherArgs>
-  R operator()(OtherArgs&&... args)
+  Task(std::reference_wrapper<F> code)
   {
-    std::unique_ptr<Base> code = std::move(code_);
-    return (*code)(std::forward<OtherArgs>(args)...);
+    const static TaskErasureVtable vtable {
+      // Call:
+      [](TaskErasure& erasure, Args... args) -> R {
+        F* code = static_cast<F*>(erasure.ptr);
+        (*code)(std::forward<Args>(args)...);
+      },
+      // Destroy:
+      nullptr
+    };
+    code.code_.ptr = code.get();
+    vtable_ = &vtable;
+  }
+
+  operator bool() const { return vtable_ != nullptr; }
+  bool operator!() const { return vtable_ == nullptr; }
+
+  R operator()(Args... args)
+  {
+    if (!vtable_)
+      throw std::bad_function_call();
+    const TaskErasureVtable* vtable = vtable_;
+    vtable_ = nullptr;
+    return vtable->call(code_, std::forward<Args>(args)...);
   }
 };
 
