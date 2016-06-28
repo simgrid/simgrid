@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <utility>
-#include <vector>
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/simix.hpp"

@@ -46,8 +46,6 @@
 #include <stdlib.h>
 
 #ifdef __cplusplus
-#include <string>
-#include <vector>
 #include <stdexcept>
 #include <xbt/exception.hpp>
 #endif

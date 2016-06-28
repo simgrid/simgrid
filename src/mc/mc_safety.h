@@ -9,7 +9,6 @@
 
 #include <stdint.h>
 
-#include <vector>
 #include <memory>
 
 #include <simgrid_config.h>

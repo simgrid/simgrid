@@ -7,19 +7,16 @@
 #ifndef SIMGRID_KERNEL_FUTURE_HPP
 #define SIMGRID_KERNEL_FUTURE_HPP
 
+#include <functional>
 #include <future>
+#include <memory>
+#include <utility>
 #include <type_traits>
 
 #include <boost/optional.hpp>
 
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
-
-#include <functional>
-#include <future>
-#include <memory>
-#include <utility>
-#include <type_traits>
 
 namespace simgrid {
 namespace kernel {

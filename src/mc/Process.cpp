@@ -55,9 +55,12 @@ namespace mc {
 #define SO_RE "\\.so[\\.0-9]*$"
 #define VERSION_RE "-[\\.0-9-]*$"
 
-// In lexicographic order (but this is currently not used in the code):
+// List of library which memory segments are not considered:
 static const char *const filtered_libraries[] = {
   "ld",
+  "libasan", /* gcc sanitizers */
+  "libtsan",
+  "libubsan",
   "libbz2",
   "libboost_chrono",
   "libboost_context",

@@ -126,11 +126,11 @@ typedef struct s_smpi_mpi_info {
   int refcount;
 } s_smpi_mpi_info_t; 
 
-XBT_PRIVATE void smpi_process_destroy(void);
-XBT_PRIVATE void smpi_process_finalize(void);
-XBT_PRIVATE int smpi_process_finalized(void);
-XBT_PRIVATE int smpi_process_initialized(void);
-XBT_PRIVATE void smpi_process_mark_as_initialized(void);
+XBT_PRIVATE void smpi_process_destroy();
+XBT_PRIVATE void smpi_process_finalize();
+XBT_PRIVATE int smpi_process_finalized();
+XBT_PRIVATE int smpi_process_initialized();
+XBT_PRIVATE void smpi_process_mark_as_initialized();
 
 struct s_smpi_mpi_cart_topology;
 typedef struct s_smpi_mpi_cart_topology *MPIR_Cart_Topology;
@@ -157,31 +157,31 @@ XBT_PRIVATE int smpi_mpi_cart_shift(MPI_Comm comm, int direction, int disp, int 
 XBT_PRIVATE int smpi_mpi_cartdim_get(MPI_Comm comm, int *ndims);
 XBT_PRIVATE int smpi_mpi_dims_create(int nnodes, int ndims, int dims[]);
 
-XBT_PRIVATE smpi_process_data_t smpi_process_data(void);
+XBT_PRIVATE smpi_process_data_t smpi_process_data();
 XBT_PRIVATE smpi_process_data_t smpi_process_remote_data(int index);
 // smpi_process_[set/get]_user_data must be public
 /* XBT_PRIVATE void smpi_process_set_user_data(void *); */
 /* XBT_PRIVATE void* smpi_process_get_user_data(void); */
-XBT_PRIVATE int smpi_process_count(void);
-XBT_PRIVATE MPI_Comm smpi_process_comm_world(void);
-XBT_PRIVATE MPI_Comm smpi_process_get_comm_intra(void);
+XBT_PRIVATE int smpi_process_count();
+XBT_PRIVATE MPI_Comm smpi_process_comm_world();
+XBT_PRIVATE MPI_Comm smpi_process_get_comm_intra();
 XBT_PRIVATE void smpi_process_set_comm_intra(MPI_Comm comm);
-XBT_PRIVATE smx_mailbox_t smpi_process_mailbox(void);
+XBT_PRIVATE smx_mailbox_t smpi_process_mailbox();
 XBT_PRIVATE smx_mailbox_t smpi_process_remote_mailbox(int index);
-XBT_PRIVATE smx_mailbox_t smpi_process_mailbox_small(void);
+XBT_PRIVATE smx_mailbox_t smpi_process_mailbox_small();
 XBT_PRIVATE smx_mailbox_t smpi_process_remote_mailbox_small(int index);
-XBT_PRIVATE xbt_mutex_t smpi_process_mailboxes_mutex(void);
+XBT_PRIVATE xbt_mutex_t smpi_process_mailboxes_mutex();
 XBT_PRIVATE xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index);
-XBT_PRIVATE xbt_os_timer_t smpi_process_timer(void);
-XBT_PRIVATE void smpi_process_simulated_start(void);
-XBT_PRIVATE double smpi_process_simulated_elapsed(void);
+XBT_PRIVATE xbt_os_timer_t smpi_process_timer();
+XBT_PRIVATE void smpi_process_simulated_start();
+XBT_PRIVATE double smpi_process_simulated_elapsed();
 XBT_PRIVATE void smpi_process_set_sampling(int s);
-XBT_PRIVATE int smpi_process_get_sampling(void);
+XBT_PRIVATE int smpi_process_get_sampling();
 XBT_PRIVATE void smpi_process_set_replaying(bool s);
-XBT_PRIVATE bool smpi_process_get_replaying(void);
+XBT_PRIVATE bool smpi_process_get_replaying();
 
 XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm, xbt_bar_t*bar);
-XBT_PRIVATE void smpi_deployment_cleanup_instances(void);
+XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t buff_size);
 
@@ -189,11 +189,11 @@ XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm, void *b
 
 XBT_PRIVATE void print_request(const char *message, MPI_Request request);
 
-XBT_PRIVATE int smpi_enabled(void);
-XBT_PRIVATE void smpi_global_init(void);
-XBT_PRIVATE void smpi_global_destroy(void);
-XBT_PRIVATE double smpi_mpi_wtime(void);
-XBT_PRIVATE void smpi_mpi_init(void);
+XBT_PRIVATE int smpi_enabled();
+XBT_PRIVATE void smpi_global_init();
+XBT_PRIVATE void smpi_global_destroy();
+XBT_PRIVATE double smpi_mpi_wtime();
+XBT_PRIVATE void smpi_mpi_init();
 
 XBT_PRIVATE bool is_datatype_valid(MPI_Datatype datatype);
 
@@ -408,12 +408,12 @@ XBT_PRIVATE void smpi_switch_data_segment(int dest);
 XBT_PRIVATE void smpi_really_switch_data_segment(int dest);
 XBT_PRIVATE int smpi_is_privatisation_file(char* file);
 
-XBT_PRIVATE void smpi_get_executable_global_size(void);
-XBT_PRIVATE void smpi_initialize_global_memory_segments(void);
-XBT_PRIVATE void smpi_destroy_global_memory_segments(void);
-XBT_PRIVATE void smpi_bench_destroy(void);
-XBT_PRIVATE void smpi_bench_begin(void);
-XBT_PRIVATE void smpi_bench_end(void);
+XBT_PRIVATE void smpi_get_executable_global_size();
+XBT_PRIVATE void smpi_initialize_global_memory_segments();
+XBT_PRIVATE void smpi_destroy_global_memory_segments();
+XBT_PRIVATE void smpi_bench_destroy();
+XBT_PRIVATE void smpi_bench_begin();
+XBT_PRIVATE void smpi_bench_end();
 
 XBT_PRIVATE void* smpi_get_tmp_sendbuffer(int size);
 XBT_PRIVATE void* smpi_get_tmp_recvbuffer(int size);
@@ -429,8 +429,8 @@ void mpi_finalize_(int* ierr);
 void mpi_abort_(int* comm, int* errorcode, int* ierr);
 void mpi_comm_rank_(int* comm, int* rank, int* ierr);
 void mpi_comm_size_(int* comm, int* size, int* ierr);
-double mpi_wtime_(void);
-double mpi_wtick_(void);
+double mpi_wtime_();
+double mpi_wtick_();
 void mpi_initialized_(int* flag, int* ierr);
 
 void mpi_comm_dup_(int* comm, int* newcomm, int* ierr);
@@ -681,7 +681,7 @@ void mpi_comm_get_parent_ ( int*parent, int* ierr);
 /********** Tracing **********/
 /* from instr_smpi.c */
 XBT_PRIVATE void TRACE_internal_smpi_set_category (const char *category);
-XBT_PRIVATE const char *TRACE_internal_smpi_get_category (void);
+XBT_PRIVATE const char *TRACE_internal_smpi_get_category ();
 XBT_PRIVATE void TRACE_smpi_collective_in(int rank, int root, const char *operation, instr_extra_data extra);
 XBT_PRIVATE void TRACE_smpi_collective_out(int rank, int root, const char *operation);
 XBT_PRIVATE void TRACE_smpi_computing_init(int rank);
@@ -692,8 +692,8 @@ XBT_PRIVATE void TRACE_smpi_sleeping_out(int rank);
 XBT_PRIVATE void TRACE_smpi_sleeping_in(int rank, instr_extra_data extra);
 XBT_PRIVATE void TRACE_smpi_testing_out(int rank);
 XBT_PRIVATE void TRACE_smpi_testing_in(int rank, instr_extra_data extra);
-XBT_PRIVATE void TRACE_smpi_alloc(void);
-XBT_PRIVATE void TRACE_smpi_release(void);
+XBT_PRIVATE void TRACE_smpi_alloc();
+XBT_PRIVATE void TRACE_smpi_release();
 XBT_PRIVATE void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation,  instr_extra_data extra);
 XBT_PRIVATE void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation);
 XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int size);

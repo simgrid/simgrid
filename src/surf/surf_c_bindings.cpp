@@ -263,11 +263,11 @@ sg_host_t surf_vm_get_pm(sg_host_t vm){
 }
 
 void surf_vm_set_bound(sg_host_t vm, double bound){
-  return get_casted_vm(vm)->setBound(bound);
+  get_casted_vm(vm)->setBound(bound);
 }
 
 void surf_vm_set_affinity(sg_host_t vm, sg_host_t host, unsigned long mask){
-  return get_casted_vm(vm)->setAffinity(host->pimpl_cpu, mask);
+  get_casted_vm(vm)->setAffinity(host->pimpl_cpu, mask);
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){

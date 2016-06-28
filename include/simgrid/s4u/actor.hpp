@@ -8,7 +8,6 @@
 
 #include <atomic>
 #include <functional>
-#include <future>
 #include <memory>
 #include <stdexcept>
 #include <type_traits>
@@ -127,31 +126,11 @@ XBT_PUBLIC_CLASS Actor {
 private:
   /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
   template<class F, class... Args>
-  class Task {
-  public:
-    Task(F&& code, Args&&... args) :
-      code_(std::forward<F>(code)),
-      args_(std::forward<Args>(args)...)
-    {
-      done_.clear();
-    }
-    void operator()()
-    {
-      if (done_.test_and_set())
-        throw std::logic_error("Actor task already executed");
-      simgrid::xbt::apply(std::move(code_), std::move(args_));
-    }
-  private:
-    std::atomic_flag done_;
-    F code_;
-    std::tuple<Args...> args_;
-  };
-  /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
-  template<class F, class... Args>
   static std::function<void()> wrap_task(F f, Args... args)
   {
-    std::shared_ptr<Task<F, Args...>> task(
-      new Task<F, Args...>(std::move(f), std::move(args)...));
+    typedef decltype(f(std::move(args)...)) R;
+    auto task = std::make_shared<simgrid::xbt::Task<R()>>(
+      simgrid::xbt::makeTask(std::move(f), std::move(args)...));
     return [=] {
       (*task)();
     };
@@ -208,10 +187,12 @@ public:
 
   // Create actor from function name:
 
-  Actor(const char* name, s4u::Host *host, double killTime, const char* function, simgrid::xbt::args args);
+  Actor(const char* name, s4u::Host *host, double killTime,
+    const char* function, std::vector<std::string> args);
 
-  Actor(const char* name, s4u::Host *host, const char* function, simgrid::xbt::args args) :
-    Actor(name, host, -1.0, function, std::move(args)) {}
+  Actor(const char* name, s4u::Host *host, const char* function,
+      std::vector<std::string> args)
+    : Actor(name, host, -1.0, function, std::move(args)) {}
 
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
   //static Actor *byPid(int pid); not implemented

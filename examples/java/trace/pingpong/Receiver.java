@@ -14,10 +14,10 @@ import org.simgrid.msg.Process;
 import org.simgrid.trace.Trace;
 
 public class Receiver extends Process {
-  private static final double commSizeLat = 1;
-  private static final double commSizeBw = 100000000;
+  private static final double COMM_SIZE_LAT = 1;
+  private static final double COMM_SIZE_BW = 100000000;
 
-  public Receiver(String hostname, String name, String[]args) throws HostNotFoundException, NativeException{
+  public Receiver(String hostname, String name, String[]args) throws HostNotFoundException, NativeException {
     super(hostname,name,args);
   }
 
@@ -39,12 +39,12 @@ public class Receiver extends Process {
     double communicationTime=timeGot - time;
     Msg.info("Communication time : " + communicationTime);
 
-    Msg.info(" --- bw "+ commSizeBw/communicationTime + " ----");
+    Msg.info(" --- bw "+ COMM_SIZE_BW/communicationTime + " ----");
 
     /* Send the pong */
     Trace.hostPushState (getHost().getName(), "PM_STATE", "sendingPong");
     double computeDuration = 0;
-    PingPongTask pong = new PingPongTask("no name",computeDuration,commSizeLat);
+    PingPongTask pong = new PingPongTask("no name",computeDuration,COMM_SIZE_LAT);
     pong.setTime(time);
     pong.send(ping.getSource().getName());
 

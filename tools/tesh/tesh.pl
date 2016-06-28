@@ -35,6 +35,7 @@ they produce the expected output and return the expected value.
   --cfg arg           : add parameter --cfg=arg to each command line
   --log arg           : add parameter --log=arg to each command line
   --enable-coverage   : ignore output lines starting with "profiling:"
+  --enable-sanitizers : ignore output lines starting with containing warnings
 
 =head1 TEST SUITE FILE SYTAX
 
@@ -239,6 +240,7 @@ BEGIN {
 }
 
 my $enable_coverage        = 0;
+my $enable_sanitizers        = 0;
 my $diff_tool              = 0;
 my $diff_tool_tmp_fh       = 0;
 my $diff_tool_tmp_filename = 0;
@@ -307,6 +309,7 @@ GetOptions(
     'cfg=s' => sub { $opts{'cfg'} .= " --cfg=$_[1]" },
     'log=s' => sub { $opts{'log'} .= " --log=$_[1]" },
     'enable-coverage+' => \$enable_coverage,
+    'enable-sanitizers+' => \$enable_sanitizers,
 );
 
 $tesh_file = pop @ARGV;
@@ -314,6 +317,7 @@ $tesh_name = $tesh_file;
 $tesh_name =~ s|^.*?/([^/]*)$|$1|;
 
 print "Enable coverage\n" if ($enable_coverage);
+print "Enable sanitizers\n" if ($enable_sanitizers);
 
 if ($diff_tool) {
     use File::Temp qw/ tempfile /;
@@ -425,9 +429,11 @@ sub analyze_result {
         chomp $got;
         print $diff_tool_tmp_fh "> $got\n" if ($diff_tool);
 
-        unless ( $enable_coverage and $got =~ /^profiling:/ ) {
+        unless (( $enable_coverage and $got =~ /^profiling:/ ) or
+            ( $enable_sanitizers and $got =~ m/WARNING: ASan doesn't fully support/))
+        {
             push @got, $got;
-        }
+        } 
     }
 
     # How did the child process terminate?

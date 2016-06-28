@@ -60,7 +60,7 @@ int main(int argc, char **argv)
 
   /* Schedule them all on the first workstation */
   XBT_INFO("------------------- Schedule tasks ---------------------------");
-  const sg_host_t *ws_list = sg_host_list();
+  sg_host_t *ws_list = sg_host_list();
 
   int count = sg_host_count();
   xbt_dynar_foreach(dot, cursor, task) {
@@ -71,6 +71,7 @@ int main(int argc, char **argv)
         SD_task_schedulel(task, 1, ws_list[cursor % count]);
     }
   }
+  xbt_free(ws_list);
 
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);

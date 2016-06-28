@@ -1,8 +1,11 @@
-/* Copyright (c) 2007, 2009-2015. The SimGrid Team.
+/* Copyright (c) 2007, 2009-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <string>
+#include <vector>
 
 #include "smx_private.h"
 #include "xbt/sysdep.h"
@@ -59,7 +62,7 @@ void SIMIX_launch_application(const char *file)
 // Wrap a main() function into a ActorCodeFactory:
 static simgrid::simix::ActorCodeFactory toActorCodeFactory(xbt_main_func_t code)
 {
-  return [code](simgrid::xbt::args args) {
+  return [code](std::vector<std::string> args) {
     return simgrid::xbt::wrapMain(code, std::move(args));
   };
 }

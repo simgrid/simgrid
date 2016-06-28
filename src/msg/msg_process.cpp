@@ -132,10 +132,11 @@ msg_process_t MSG_process_create_with_arguments(const char *name, xbt_main_func_
 msg_process_t MSG_process_create_with_environment(const char *name, xbt_main_func_t code, void *data, msg_host_t host,
                                                   int argc, char **argv, xbt_dict_t properties)
 {
+  std::function<void()> function;
+  if (code)
+    function = simgrid::xbt::wrapMain(code, argc, const_cast<const char*const*>(argv));
   msg_process_t res = MSG_process_create_with_environment(name,
-    code ? simgrid::xbt::wrapMain(code, argc, argv) : std::function<void()>(),
-    data, host,
-    properties);
+    std::move(function), data, host, properties);
   for (int i = 0; i != argc; ++i)
     xbt_free(argv[i]);
   xbt_free(argv);

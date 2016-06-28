@@ -64,7 +64,7 @@ public:
   template<class F>
   void registerFunction(const char* name)
   {
-    simgrid::simix::registerFunction(name, [](simgrid::xbt::args args){
+    simgrid::simix::registerFunction(name, [](std::vector<std::string> args){
       return simgrid::simix::ActorCode([args] {
         F code(std::move(args));
         code();
@@ -75,7 +75,7 @@ public:
   template<class F>
   void registerFunction(const char* name, F code)
   {
-    simgrid::simix::registerFunction(name, [code](simgrid::xbt::args args){
+    simgrid::simix::registerFunction(name, [code](std::vector<std::string> args){
       return simgrid::simix::ActorCode([code,args] {
         code(std::move(args));
       });

@@ -19,7 +19,7 @@ int main(int argc, char **argv)
 
   SD_create_environment(argv[1]);
 
-  const sg_host_t *hosts = sg_host_list();
+  sg_host_t *hosts = sg_host_list();
 
   /* creation of some typed tasks and their dependencies */
   /* chain of five tasks, three compute tasks with two data transfers in between */
@@ -69,5 +69,6 @@ int main(int argc, char **argv)
 
   XBT_DEBUG("Tasks destroyed. Exiting SimDag...");
   SD_exit();
+  xbt_free(hosts);
   return 0;
 }

@@ -13,7 +13,6 @@
 #include <utility>
 #include <memory>
 #include <functional>
-#include <future>
 
 #include <xbt/function_types.h>
 #include <xbt/future.hpp>
@@ -176,7 +175,7 @@ XBT_PUBLIC(void) create_maestro(std::function<void()> code);
 typedef std::function<void()> ActorCode;
 
 // Create ActorCode based on argv:
-typedef std::function<ActorCode(simgrid::xbt::args args)> ActorCodeFactory;
+typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory;
 
 XBT_PUBLIC(void) registerFunction(const char* name, ActorCodeFactory factory);
 
@@ -215,12 +214,12 @@ XBT_PUBLIC(smx_process_t) simcall_process_create(const char *name,
                                           xbt_dict_t properties,
                                           int auto_restart);
 
-XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, std::packaged_task<void()> callback);
+XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
 
 template<class F> inline
 XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, F callback)
 {
-  return SIMIX_timer_set(date, std::packaged_task<void()>(std::move(callback)));
+  return SIMIX_timer_set(date, simgrid::xbt::Task<void()>(std::move(callback)));
 }
 
 template<class R, class T> inline

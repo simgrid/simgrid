@@ -3,6 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <string>
+#include <vector>
+
 #include <xbt/sysdep.h>
 
 #include <simgrid/s4u.h>
@@ -14,7 +17,7 @@ int main(int argc, char **argv) {
   e->loadPlatform("../../platforms/two_hosts.xml");
   e->registerFunction<Worker>("worker");
   e->registerFunction<Master>("master");
-  simgrid::xbt::args args;
+  std::vector<std::string> args;
   simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Tremblay"), "worker", args);
   simgrid::s4u::Actor("master", simgrid::s4u::Host::by_name("Jupiter"), "master", args);
   e->run();

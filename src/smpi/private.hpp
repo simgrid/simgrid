@@ -20,15 +20,15 @@
 #ifdef HAVE_PAPI
 typedef 
     std::vector<std::pair</* counter name */std::string, /* counter value */long long>> papi_counter_t;
-XBT_PRIVATE papi_counter_t& smpi_process_counter_data(void);
-XBT_PRIVATE int smpi_process_event_set(void);
+XBT_PRIVATE papi_counter_t& smpi_process_counter_data();
+XBT_PRIVATE int smpi_process_event_set();
 #endif
 
 extern std::unordered_map<std::string, double> location2speedup;
 
 /** @brief Returns the last call location (filename, linenumber). Process-specific. */
 extern "C" {
-XBT_PUBLIC(smpi_trace_call_location_t*) smpi_process_get_call_location(void);
+XBT_PUBLIC(smpi_trace_call_location_t*) smpi_process_get_call_location();
 XBT_PUBLIC(smpi_trace_call_location_t*) smpi_trace_get_call_location();
 }
 #endif

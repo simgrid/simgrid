@@ -7,8 +7,6 @@
 #define SURF_MODEL_H_
 
 #include <xbt.h>
-#include <string>
-#include <vector>
 #include <memory>
 #include <utility>
 

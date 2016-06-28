@@ -585,7 +585,8 @@ void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor)
  */
 void xbt_dynar_sort(xbt_dynar_t dynar, int_f_cpvoid_cpvoid_t compar_fn)
 {
-  qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
+  if (dynar->data != nullptr)
+    qsort(dynar->data, dynar->used, dynar->elmsize, compar_fn);
 }
 
 static int strcmp_voidp(const void *pa, const void *pb) {

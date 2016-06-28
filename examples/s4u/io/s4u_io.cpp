@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <unordered_map>
-#include <vector>
 
 #include "simgrid/s4u.h"
 

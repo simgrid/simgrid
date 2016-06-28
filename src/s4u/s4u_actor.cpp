@@ -27,7 +27,8 @@ s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::funct
     killTime, nullptr, 0));
 }
 
-s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, const char* function, simgrid::xbt::args args)
+s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime,
+  const char* function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   simgrid::simix::ActorCode code = factory(std::move(args));

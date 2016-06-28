@@ -41,12 +41,12 @@ int main(int argc, char **argv)
   XBT_INFO("Computation time for %f flops on %s: %f", comp_amount2, name2, comp_amount2/sg_host_speed(h2));
 
   XBT_INFO("Route between %s and %s:", name1, name2);
-  const SD_link_t *route = SD_route_get_list(h1, h2);
+  SD_link_t *route = SD_route_get_list(h1, h2);
   int route_size = SD_route_get_size(h1, h2);
-  for (int i = 0; i < route_size; i++) {
+  for (int i = 0; i < route_size; i++)
     XBT_INFO("   Link %s: latency = %f, bandwidth = %f", sg_link_name(route[i]), sg_link_latency(route[i]),
              sg_link_bandwidth(route[i]));
-  }
+  xbt_free(route);
   XBT_INFO("Route latency = %f, route bandwidth = %f", SD_route_get_latency(h1, h2), SD_route_get_bandwidth(h1, h2));
   XBT_INFO("Communication time for %f bytes between %s and %s: %f", comm_amount12, name1, name2,
         SD_route_get_latency(h1, h2) + comm_amount12 / SD_route_get_bandwidth(h1, h2));
