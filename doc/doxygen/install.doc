@@ -62,7 +62,10 @@ will appear on the top of the resulting page.
 @subsection install_src_deps Getting the Dependencies
 
 Recompiling an official archive is not much more complex. SimGrid only uses very standard tools:
-  - C compiler, C++ compiler, make and friends.
+  - C compiler, C++ compiler, make and friends. SimGrid is rather
+    demanding on the compiler. We use the C++11 standard, and older
+    compilers tend to fail on us. It seems that g++ 5.0 or higher is
+    required nowadays. 
   - perl (but you may try to go without it)
   - We use cmake to configure our compilation
       ([download page](http://www.cmake.org/cmake/resources/software.html)).
@@ -111,8 +114,8 @@ to do so. First, you can use environment variables. For example, you can change 
 commands before launching cmake:
 
 @verbatim
-export CC=gcc-4.7
-export CXX=g++-4.7
+export CC=gcc-5.1
+export CXX=g++-5.1
 @endverbatim
 
 Note that other variables are available, such as CFLAGS and CXXFLAGS to add options respectively for the C and C++ 
