@@ -60,8 +60,12 @@ if(APPLE AND (CMAKE_C_COMPILER_VERSION VERSION_LESS "4.6"))
   set(HAVE_UCONTEXT_H 0)
 endif()
 
+
+### Setup Options
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
+
 ### SMPI vs. Fortran
-if (NOT DEFINED enable_smpi OR enable_smpi) 
+if ((NOT DEFINED enable_smpi) OR enable_smpi) 
   if(enable_fortran)
     include(FindGFortran)
   else()
@@ -173,8 +177,7 @@ endif()
 
 include_directories(${INCLUDES})
 
-### Setup Options
-include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
+
 
 ### Determine the assembly flavor that we need today
 set(HAVE_RAW_CONTEXTS 0)
