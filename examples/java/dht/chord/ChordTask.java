@@ -10,11 +10,20 @@ import dht.chord.Common;
 import org.simgrid.msg.Task;
 
 public class ChordTask extends Task {
-  public String issuerHostName;
-  public String answerTo;
+  private String issuerHostName;
+  private String answerTo;
   public ChordTask() {
     this(null,null);
   }
+
+  public String getIssuerHostName(){
+    return this.issuerHostName;
+  }
+
+  public String getAnswerTo(){
+    return this.answerTo;
+  }
+
   public ChordTask(String issuerHostName, String answerTo) {
     super(null, Common.COMP_SIZE, Common.COMM_SIZE);
     this.issuerHostName = issuerHostName;
