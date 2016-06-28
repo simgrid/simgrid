@@ -114,11 +114,23 @@ private:
   struct whatever {};
 
   // Union used for storage:
+#if 0
   typedef typename std::aligned_union<0,
     void*,
     std::pair<void(*)(),void*>,
     std::pair<void(whatever::*)(), whatever*>
   >::type TaskUnion;
+#else
+  union TaskUnion {
+    void* ptr;
+    std::pair<void(*)(),void*> funcptr;
+    std::pair<void(whatever::*)(), whatever*> memberptr;
+    char any1[sizeof(std::pair<void(*)(),void*>)];
+    char any2[sizeof(std::pair<void(whatever::*)(), whatever*>)];
+    TaskUnion() {}
+    ~TaskUnion() {}
+  };
+#endif
 
   // Is F suitable for small buffer optimization?
   template<class F>
