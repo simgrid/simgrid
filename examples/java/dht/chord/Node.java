@@ -112,26 +112,27 @@ public class Node extends Process {
   void handleTask(Task task) {
     if (task instanceof FindSuccessorTask) {
       FindSuccessorTask fTask = (FindSuccessorTask)task;
-      Msg.debug("Receiving a 'Find Successor' request from " + fTask.issuerHostName + " for id " + fTask.requestId);
+      Msg.debug("Receiving a 'Find Successor' request from " + fTask.getIssuerHostName() + " for id " + 
+                fTask.getRequestId());
       // is my successor the successor?
-      if (isInInterval(fTask.requestId, this.id + 1, fingers[0])) {
-        Msg.debug("Send the request to " + fTask.answerTo + " with answer " + fingers[0]);
+      if (isInInterval(fTask.getRequestId(), this.id + 1, fingers[0])) {
+        Msg.debug("Send the request to " + fTask.getAnswerTo() + " with answer " + fingers[0]);
         FindSuccessorAnswerTask answer = new FindSuccessorAnswerTask(getHost().getName(), mailbox, fingers[0]);
-        answer.dsend(fTask.answerTo);
+        answer.dsend(fTask.getAnswerTo());
       } else {
         // otherwise, forward the request to the closest preceding finger in my table
-        int closest = closestPrecedingNode(fTask.requestId);
+        int closest = closestPrecedingNode(fTask.getRequestId());
         Msg.debug("Forward the request to " + closest);
         fTask.dsend(Integer.toString(closest));
       }
     } else if (task instanceof GetPredecessorTask) {
       GetPredecessorTask gTask = (GetPredecessorTask)(task);
-      Msg.debug("Receiving a 'Get Predecessor' request from " + gTask.issuerHostName);
+      Msg.debug("Receiving a 'Get Predecessor' request from " + gTask.getIssuerHostName());
       GetPredecessorAnswerTask answer = new GetPredecessorAnswerTask(getHost().getName(), mailbox, predId);
-      answer.dsend(gTask.answerTo);
+      answer.dsend(gTask.getAnswerTo());
     } else if (task instanceof NotifyTask) {
       NotifyTask nTask = (NotifyTask)task;
-      notify(nTask.requestId);
+      notify(nTask.getRequestId());
     } else {
       Msg.debug("Ignoring unexpected task of type:" + task);
     }
@@ -203,7 +204,7 @@ public class Node extends Process {
           commReceive.waitCompletion(Common.TIMEOUT);
           Task taskReceived = commReceive.getTask();
           if (taskReceived instanceof GetPredecessorAnswerTask) {
-            predecessorId = ((GetPredecessorAnswerTask) taskReceived).answerId;
+            predecessorId = ((GetPredecessorAnswerTask) taskReceived).getAnswerId();
             stop = true;
           } else {
             handleTask(taskReceived);
@@ -257,7 +258,7 @@ public class Node extends Process {
             //TODO: Check if this this our answer.
             FindSuccessorAnswerTask fTask = (FindSuccessorAnswerTask) task;
             stop = true;
-            successor = fTask.answerId;
+            successor = fTask.getAnswerId();
           } else {
             handleTask(task);
           }

@@ -7,7 +7,10 @@
 package dht.chord;
 
 public class FindSuccessorAnswerTask extends ChordTask {
-  public int answerId;
+  private int answerId;
+  public int getAnswerId(){
+    return this.answerId;
+  }
 
   public FindSuccessorAnswerTask(String issuerHostname, String answerTo, int answerId) {
     super(issuerHostname,answerTo);

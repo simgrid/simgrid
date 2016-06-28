@@ -50,12 +50,12 @@ public class Peer extends Process {
       Msg.info("Wrong number of arguments");
     }
     if (args.length == 3) {
-      init(Integer.valueOf(args[0]),true);
+      init(Integer.parseInt(args[0]),true);
     } else {
-      init(Integer.valueOf(args[0]),false);
+      init(Integer.parseInt(args[0]),false);
     }
     //Retrieve the deadline
-    deadline = Double.valueOf(args[1]);
+    deadline = Double.parseDouble(args[1]);
     if (deadline < 0) {
       Msg.info("Wrong deadline supplied");
       return;

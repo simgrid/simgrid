@@ -27,7 +27,7 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
     //bind the task object.
     msg_task_t task = MSG_comm_get_task(comm);
     xbt_assert(task != nullptr, "Task is nullptr");
-    jobject jtask_global = (jobject) MSG_task_get_data(task);
+    jobject jtask_global = static_cast<jobject>(MSG_task_get_data(task));
     //case where the data has already been retrieved
     if (jtask_global == nullptr) {
       return;
@@ -111,7 +111,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
   }
 
   msg_error_t status;
-  status = MSG_comm_wait(comm,(double)timeout);
+  status = MSG_comm_wait(comm,static_cast<double>(timeout));
   env->SetBooleanField(jcomm, jcomm_field_Comm_finished, JNI_TRUE);
   if (status == MSG_OK) {
     jcomm_bind_task(env,jcomm);

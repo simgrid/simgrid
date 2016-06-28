@@ -46,7 +46,7 @@ public class Sender extends Process {
       ping.send(mailboxes[pos]);
 
       Trace.hostPushState (getHost().getName(), PM_STATE, "waitingPong");
-      PingPongTask pong = (PingPongTask)Task.receive(getHost().getName());
+      Task.receive(getHost().getName());
       double timeGot = Msg.getClock();
       double timeSent = ping.getTime();
       double communicationTime;

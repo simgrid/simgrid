@@ -18,7 +18,7 @@ public class Sleeper extends Process {
   public void main(String[] args) throws MsgException {
     Msg.info("Hello! I go to sleep.");
     try {
-      waitFor(Integer.valueOf(args[0]).intValue());
+      waitFor(Integer.parseInt(args[0]));
       Msg.info("Done sleeping");
     } catch (MsgException e) {
       Msg.debug("Wait cancelled.");

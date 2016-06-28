@@ -17,11 +17,8 @@ public class Test extends Process {
   }
 
   public void main(String[] args) throws MsgException {  
-    double computationAmount = 1.0;
-    double priority = 1.0;
-
-    computationAmount = Double.valueOf(args[0]);
-    priority = Double.valueOf(args[1]);
+    double computationAmount = Double.parseDouble(args[0]);
+    double priority = Double.parseDouble(args[1]);
 
     Msg.info("Hello! Running a task of size " + computationAmount + " with priority " + priority);
 

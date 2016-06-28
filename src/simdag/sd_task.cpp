@@ -1136,7 +1136,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
           double src_start, src_end, dst_start, dst_end;
           src_nb = before->host_count;
           dst_nb = count;
-          before->host_list = (sg_host_t*) xbt_realloc(before->host_list, (before->host_count+count)*sizeof(sg_host_t));
+          before->host_list = static_cast<sg_host_t*>(xbt_realloc(before->host_list, (before->host_count+count)*sizeof(sg_host_t)));
           for(i=0; i<count; i++)
             before->host_list[before->host_count+i] = task->host_list[i];
 
@@ -1165,8 +1165,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 
           if (SD_task_get_state(before)< SD_SCHEDULED) {
             SD_task_do_schedule(before);
-            XBT_VERB
-              ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
+            XBT_VERB ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
                   SD_task_get_name(before),before->amount, src_nb, dst_nb);
             }
         }
@@ -1187,7 +1186,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
           double src_start, src_end, dst_start, dst_end;
           src_nb = count;
           dst_nb = after->host_count;
-          after->host_list = (sg_host_t*) xbt_realloc(after->host_list, (after->host_count+count)*sizeof(sg_host_t));
+          after->host_list = static_cast<sg_host_t*>(xbt_realloc(after->host_list, (after->host_count+count)*sizeof(sg_host_t)));
           for(i=after->host_count - 1; i>=0; i--)
             after->host_list[count+i] = after->host_list[i];
           for(i=0; i<count; i++)

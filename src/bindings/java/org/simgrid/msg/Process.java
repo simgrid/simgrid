@@ -76,8 +76,8 @@ public abstract class Process implements Runnable {
 	private int ppid = -1;
 	private Host host = null;
 
-	/** The arguments of the method function of the process. */     
-	public ArrayList<String> args;
+	/** The arguments of the method function of the process. */
+	private ArrayList<String> args;
 
 
 	/**  Default constructor */

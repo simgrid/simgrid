@@ -7,7 +7,11 @@
 package dht.chord;
 
 public class NotifyTask extends ChordTask {
-  public int requestId;
+  private int requestId;
+  public int getRequestId(){
+    return this.requestId;
+  }
+
   public NotifyTask(String issuerHostname, String answerTo, int requestId) {
     super(issuerHostname, answerTo);
     this.requestId = requestId;

@@ -16,20 +16,20 @@ static xbt_dict_t allContainers = nullptr;     /* all created containers indexed
 xbt_dict_t trivaNodeTypes = nullptr;     /* all host types defined */
 xbt_dict_t trivaEdgeTypes = nullptr;     /* all link types defined */
 
-long long int instr_new_paje_id (void)
+long long int instr_new_paje_id ()
 {
   static long long int type_id = 0;
   return type_id++;
 }
 
-void PJ_container_alloc (void)
+void PJ_container_alloc ()
 {
   allContainers = xbt_dict_new_homogeneous(nullptr);
   trivaNodeTypes = xbt_dict_new_homogeneous(xbt_free_f);
   trivaEdgeTypes = xbt_dict_new_homogeneous(xbt_free_f);
 }
 
-void PJ_container_release (void)
+void PJ_container_release ()
 {
   xbt_dict_free (&allContainers);
   xbt_dict_free (&trivaNodeTypes);
@@ -49,7 +49,8 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
 
   static long long int container_id = 0;
   char id_str[INSTR_DEFAULT_STR_SIZE];
-  snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", container_id++);
+  snprintf (id_str, INSTR_DEFAULT_STR_SIZE, "%lld", container_id);
+  container_id++;
 
   container_t newContainer = xbt_new0(s_container_t, 1);
   newContainer->name = xbt_strdup (name); // name of the container
@@ -61,15 +62,15 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
   switch (kind){
     case INSTR_HOST:
       newContainer->netcard = sg_host->pimpl_netcard;
-      if(!newContainer->netcard) xbt_die("Element '%s' not found",name);
+      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     case INSTR_ROUTER:
-      newContainer->netcard = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL);
-      if(!newContainer->netcard) xbt_die("Element '%s' not found",name);
+      newContainer->netcard = static_cast<sg_netcard_t>(xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL));
+      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     case INSTR_AS:
-      newContainer->netcard = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL);
-      if(!newContainer->netcard) xbt_die("Element '%s' not found",name);
+      newContainer->netcard = static_cast<sg_netcard_t>(xbt_lib_get_or_null(as_router_lib,name,ROUTING_ASR_LEVEL));
+      xbt_assert(newContainer->netcard, "Element '%s' not found",name);
       break;
     default:
       newContainer->netcard = nullptr;
@@ -101,14 +102,30 @@ container_t PJ_container_new (const char *name, e_container_types kind, containe
     //otherwise, the name is its kind
     char typeNameBuff[INSTR_DEFAULT_STR_SIZE];
     switch (newContainer->kind){
-      case INSTR_HOST:        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "HOST");        break;
-      case INSTR_LINK:        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "LINK");        break;
-      case INSTR_ROUTER:      snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "ROUTER");      break;
-      case INSTR_SMPI:        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MPI");         break;
-      case INSTR_MSG_PROCESS: snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_PROCESS"); break;
-      case INSTR_MSG_VM:      snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_VM"); break;
-      case INSTR_MSG_TASK:    snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_TASK");    break;
-      default: THROWF (tracing_error, 0, "new container kind is unknown."); break;
+      case INSTR_HOST:
+        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "HOST");
+        break;
+      case INSTR_LINK:
+        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "LINK");
+        break;
+      case INSTR_ROUTER:
+        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "ROUTER");
+        break;
+      case INSTR_SMPI:
+        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MPI");
+        break;
+      case INSTR_MSG_PROCESS:
+        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_PROCESS");
+        break;
+      case INSTR_MSG_VM:
+        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_VM");
+        break;
+      case INSTR_MSG_TASK:
+        snprintf (typeNameBuff, INSTR_DEFAULT_STR_SIZE, "MSG_TASK");
+        break;
+      default:
+        THROWF (tracing_error, 0, "new container kind is unknown.");
+        break;
     }
     type_t type = PJ_type_get_or_null (typeNameBuff, newContainer->father->type);
     if (type == nullptr){
@@ -149,7 +166,7 @@ container_t PJ_container_get (const char *name)
 
 container_t PJ_container_get_or_null (const char *name)
 {
-  return (container_t)(name ? xbt_dict_get_or_null(allContainers, name) : nullptr);
+  return static_cast<container_t>(name != nullptr ? xbt_dict_get_or_null(allContainers, name) : nullptr);
 }
 
 container_t PJ_container_get_root ()
