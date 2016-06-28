@@ -109,12 +109,10 @@ public class Node extends Process {
           } else {
             Task task = comm.getTask();
             if (task instanceof FindNodeAnswerTask) {
-              answerGot = true;
               //Retrieve the node list and ping them
               FindNodeAnswerTask answerTask = (FindNodeAnswerTask)task;
               Answer answer = answerTask.getAnswer();
               answerGot = true;
-              //answersGotten++;
               if (answer.getDestinationId() == this.id) {
                 //Ping everyone in the list
                 for (Contact c : answer.getNodes()) {
@@ -155,8 +153,8 @@ public class Node extends Process {
   public boolean findNode(int destination, boolean counts) {
     int queries;
     int answers;
-    int nodesAdded = 0;
-    boolean destinationFound = false;
+    int nodesAdded;
+    boolean destinationFound;
     int steps = 0;
     double timeBeginReceive;
     double timeout;

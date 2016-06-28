@@ -39,7 +39,7 @@ public class Node extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-    String mount = "";
+    String mount;
     String filename;
     switch (number) {
       case 0:
