@@ -34,7 +34,7 @@ public class Tracker extends Process {
     //Build the RngStream object for randomness
     stream = new RngStream("tracker");
     //Retrieve the end time
-    deadline = Double.valueOf(args[0]);
+    deadline = Double.parseDouble(args[0]);
     //Building peers array
     peersList = new ArrayList<>();
 

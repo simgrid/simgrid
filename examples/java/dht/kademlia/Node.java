@@ -33,13 +33,13 @@ public class Node extends Process {
       Msg.info("Wrong argument count.");
       return;
     }
-    this.id = Integer.valueOf(args[0]);
+    this.id = Integer.parseInt(args[0]);
     this.table = new RoutingTable(this.id);
 
     if (args.length == 3) {
-      this.deadline = Integer.valueOf(args[2]).intValue();
+      this.deadline = Integer.parseInt(args[2]);
       Msg.info("Hi, I'm going to join the network with the id " + id + "!");
-      if (joinNetwork(Integer.valueOf(args[1]))) {
+      if (joinNetwork(Integer.parseInt(args[1]))) {
         this.mainLoop();
       }
       else {
@@ -47,7 +47,7 @@ public class Node extends Process {
       }
     }
     else {
-      this.deadline = Integer.valueOf(args[1]).intValue();
+      this.deadline = Integer.parseInt(args[1]);
       Msg.info("Hi, I'm going to create the network with the id " + id + "!");
       table.update(this.id);
       this.mainLoop();

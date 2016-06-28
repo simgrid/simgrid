@@ -20,8 +20,8 @@ public class Test extends Process {
     double computationAmount = 1.0;
     double priority = 1.0;
 
-    computationAmount = Double.valueOf(args[0]);
-    priority = Double.valueOf(args[1]);
+    computationAmount = Double.parseDouble(args[0]);
+    priority = Double.parseDouble(args[1]);
 
     Msg.info("Hello! Running a task of size " + computationAmount + " with priority " + priority);
 
