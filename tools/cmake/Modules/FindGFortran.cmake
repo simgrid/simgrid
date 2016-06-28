@@ -1,13 +1,17 @@
-find_program(GFORTRAN_EXE
-  NAME gfortran
-  PATH_SUFFIXES bin/
-  PATHS
-  /opt
-  /opt/local
-  /opt/csw
-  /sw
-  /usr
+if(DEFINED ENV{FC})
+  set (GFORTRAN_EXE $ENV{FC})
+else()
+  find_program(GFORTRAN_EXE
+    NAME gfortran
+    PATH_SUFFIXES bin/
+    PATHS
+    /opt
+    /opt/local
+    /opt/csw
+    /sw
+    /usr
   )
+endif()
 
 mark_as_advanced(GFORTRAN_EXE)
 
