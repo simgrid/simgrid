@@ -6,11 +6,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cerrno>
+#include <cstring>
+
 #include <utility>
 #include <string>
 
 #include <xbt/config.hpp>
+#include <xbt/log.h>
 #include <xbt/range.hpp>
+#include <xbt/sysdep.h>
 
 #include "src/internal_config.h"
 #include "xbt/log.h"
