@@ -36,7 +36,7 @@ class Simcall(object):
         # libsmx.c  simcall_BODY_
         if self.simcalls_BODY is None:
             f = open('libsmx.cpp')
-            self.simcalls_BODY = set(re.findall('simcall_BODY_(.*?)\(', f.read()))
+            self.simcalls_BODY = set(re.findall(r'simcall_BODY_(.*?)\(', f.read()))
             f.close()
         if self.name not in self.simcalls_BODY:
             print ('# ERROR: No function calling simcall_BODY_%s' % self.name)
@@ -53,7 +53,7 @@ class Simcall(object):
             self.simcalls_PRE = set()
             for fn in glob.glob('smx_*') + glob.glob('../mc/*'):
                 f = open(fn)
-                self.simcalls_PRE |= set(re.findall('simcall_HANDLER_(.*?)\(', f.read()))
+                self.simcalls_PRE |= set(re.findall(r'simcall_HANDLER_(.*?)\(', f.read()))
                 f.close()
         if self.need_handler:
             if self.name not in self.simcalls_PRE:
@@ -174,10 +174,10 @@ def parse(fn):
         assert match, line
         ret, name, args, attrs = match.groups()
         sargs = []
-        if not re.match("^\s*$", args):
+        if not re.match(r"^\s*$", args):
             for arg in re.split(",", args):
                 args = args.strip()
-                match = re.match("^(.*?)\s*?(\S+)$", arg)
+                match = re.match(r"^(.*?)\s*?(\S+)$", arg)
                 t, n = match.groups()
                 t = t.strip()
                 n = n.strip()
