@@ -36,9 +36,9 @@ enum class FutureStatus {
 };
 
 template<class T>
-struct is_future : public std::integral_constant<bool, false> {};
+struct is_future : std::false_type {};
 template<class T>
-struct is_future<Future<T>> : public std::integral_constant<bool, true> {};
+struct is_future<Future<T>> : std::true_type {};
 
 /** Bases stuff for all @ref simgrid::kernel::FutureState<T> */
 class FutureStateBase {
