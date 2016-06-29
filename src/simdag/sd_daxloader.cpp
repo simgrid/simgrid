@@ -285,24 +285,20 @@ xbt_dynar_t SD_daxload(const char *filename)
   xbt_dynar_foreach(result, cpt, file) {
     if (SD_task_get_kind(file) == SD_TASK_COMM_E2E) {
       uniq_transfer_task_name(file);
+    } else if (SD_task_get_kind(file) == SD_TASK_COMP_SEQ){
+      /* If some tasks do not take files as input, connect them to the root
+       * if they don't produce files, connect them to the end node.
+       */
+      if ((file != root_task) && xbt_dynar_is_empty(file->tasks_before))
+	 SD_task_dependency_add(nullptr, nullptr, root_task, file);
+      if ((file != end_task) && xbt_dynar_is_empty(file->tasks_after))
+	 SD_task_dependency_add(nullptr, nullptr, file, end_task);
     } else {
-      if (SD_task_get_kind(file) == SD_TASK_COMP_SEQ){
-        /* If some tasks do not take files as input, connect them to the root, if
-         * they don't produce files, connect them to the end node.
-         */
-        if ((file != root_task) && xbt_dynar_is_empty(file->tasks_before)) {
-          SD_task_dependency_add(nullptr, nullptr, root_task, file);
-        }
-        if ((file != end_task) && xbt_dynar_is_empty(file->tasks_after)) {
-          SD_task_dependency_add(nullptr, nullptr, file, end_task);
-        }
-      } else {
-        THROW_IMPOSSIBLE;
-      }
+       THROW_IMPOSSIBLE;
     }
   }
 
-  if (!acyclic_graph_detail(result)){
+  if (!acyclic_graph_detail(result)) {
     char* base = xbt_basename(filename);
     XBT_ERROR("The DAX described in %s is not a DAG. It contains a cycle.", base);
     free(base);

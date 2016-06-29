@@ -103,7 +103,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
 
   env->GetJavaVM(&__java_vm);
 
-  simgrid::simix::factory_initializer = simgrid::java::java_factory;
+  simgrid::simix::factory_initializer = &simgrid::java::java_factory;
   jthrowable exc = env->ExceptionOccurred();
   if (exc) {
     env->ExceptionClear();
