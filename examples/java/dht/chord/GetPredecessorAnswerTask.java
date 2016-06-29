@@ -9,12 +9,12 @@ package dht.chord;
 public class GetPredecessorAnswerTask extends ChordTask {
   private int answerId;
 
-  public int getAnswerId(){
-    return this.answerId;
-  }
-
   public GetPredecessorAnswerTask(String issuerHostname, String answerTo, int answerId) {
     super(issuerHostname,answerTo);
     this.answerId = answerId;
+  }
+
+  public int getAnswerId(){
+    return this.answerId;
   }
 }

@@ -16,17 +16,17 @@ public class ChordTask extends Task {
     this(null,null);
   }
 
+  public ChordTask(String issuerHostName, String answerTo) {
+	  super(null, Common.COMP_SIZE, Common.COMM_SIZE);
+	  this.issuerHostName = issuerHostName;
+	  this.answerTo = answerTo;
+  }
+
   public String getIssuerHostName(){
     return this.issuerHostName;
   }
 
   public String getAnswerTo(){
     return this.answerTo;
-  }
-
-  public ChordTask(String issuerHostName, String answerTo) {
-    super(null, Common.COMP_SIZE, Common.COMM_SIZE);
-    this.issuerHostName = issuerHostName;
-    this.answerTo = answerTo;
   }
 }

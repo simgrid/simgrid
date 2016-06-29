@@ -9,12 +9,12 @@ package dht.chord;
 public class FindSuccessorTask extends ChordTask {
   private int requestId;
 
-  public int getRequestId(){
-    return this.requestId;
-  }
-
   public FindSuccessorTask(String issuerHostname, String answerTo,  int requestId) {
     super(issuerHostname, answerTo);
     this.requestId = requestId;
+  }
+
+  public int getRequestId(){
+    return this.requestId;
   }
 }
