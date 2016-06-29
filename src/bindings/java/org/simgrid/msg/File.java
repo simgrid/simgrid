@@ -23,10 +23,7 @@ public class File {
 	public File(String path) {
 		open(path);
 	}
-	@Override
-	protected void finalize() {
 
-	}
 	/**
 	 * Opens the file whose name is the string pointed to by path.  
 	 * @param path is the file location on the storage
@@ -35,13 +32,16 @@ public class File {
 	/**
 	 * Read elements of a file. 
 	 * @param size of each element
-	 * @param nMemb is the number of elements of data to write 
+	 * @param nMemb is the number of elements of data to write
+	 * @return the actually read size
 	 */
 	public native long read(long size, long nMemb);
+
 	/**
 	 * Write elements into a file. 
 	 * @param size of each element  
 	 * @param nMemb is the number of elements of data to write 
+	 * @return the actually written size
 	 */
 	public native long write(long size, long nMemb);
 	/**
