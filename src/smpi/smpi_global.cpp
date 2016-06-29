@@ -28,6 +28,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (ke
 #include <boost/tokenizer.hpp>
 #include <boost/algorithm/string.hpp> /* trim_right / trim_left */
 
+#if HAVE_PAPI
+#include "papi.h"
+const char* papi_default_config_name = "default";
+
+struct papi_process_data {
+  papi_counter_t counter_data;
+  int event_set;
+};
+
+#endif
 std::unordered_map<std::string, double> location2speedup;
 
 typedef struct s_smpi_process_data {
@@ -50,6 +60,11 @@ typedef struct s_smpi_process_data {
   xbt_bar_t finalization_barrier;
   int return_value;
   smpi_trace_call_location_t* trace_call_loc;
+#if HAVE_PAPI
+  /** Contains hardware data as read by PAPI **/
+  int papi_event_set;
+  papi_counter_t papi_counter_data;
+#endif
 } s_smpi_process_data_t;
 
 static smpi_process_data_t *process_data = nullptr;
@@ -294,6 +309,20 @@ xbt_mutex_t smpi_process_remote_mailboxes_mutex(int index)
   return data->mailboxes_mutex;
 }
 
+#if HAVE_PAPI
+int smpi_process_papi_event_set(void)
+{
+  smpi_process_data_t data = smpi_process_data();
+  return data->papi_event_set;
+}
+
+papi_counter_t& smpi_process_papi_counters(void)
+{
+  smpi_process_data_t data = smpi_process_data();
+  return data->papi_counter_data;
+}
+#endif
+
 xbt_os_timer_t smpi_process_timer()
 {
   smpi_process_data_t data = smpi_process_data();
@@ -445,14 +474,83 @@ void smpi_global_init()
     }
   }
 
+#if HAVE_PAPI
+  // This map holds for each computation unit (such as "default" or "process1" etc.)
+  // the configuration as given by the user (counter data as a pair of (counter_name, counter_counter))
+  // and the (computed) event_set.
+  std::map</* computation unit name */ std::string, papi_process_data> units2papi_setup;
+
+  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+    if (PAPI_library_init(PAPI_VER_CURRENT) != PAPI_VER_CURRENT)
+      XBT_ERROR("Could not initialize PAPI library; is it correctly installed and linked?"
+                " Expected version is %i",
+                PAPI_VER_CURRENT);
+
+    typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
+    boost::char_separator<char> separator_units(";");
+    std::string str = std::string(xbt_cfg_get_string("smpi/papi-events"));
+    Tokenizer tokens(str, separator_units);
+
+    // Iterate over all the computational units. This could be
+    // processes, hosts, threads, ranks... You name it. I'm not exactly
+    // sure what we will support eventually, so I'll leave it at the
+    // general term "units".
+    for (auto& unit_it : tokens) {
+      boost::char_separator<char> separator_events(":");
+      Tokenizer event_tokens(unit_it, separator_events);
+
+      int event_set = PAPI_NULL;
+      if (PAPI_create_eventset(&event_set) != PAPI_OK) {
+        // TODO: Should this let the whole simulation die?
+        XBT_CRITICAL("Could not create PAPI event set during init.");
+      }
+
+      // NOTE: We cannot use a map here, as we must obey the order of the counters
+      // This is important for PAPI: We need to map the values of counters back
+      // to the event_names (so, when PAPI_read() has finished)!
+      papi_counter_t counters2values;
+
+      // Iterate over all counters that were specified for this specific
+      // unit.
+      // Note that we need to remove the name of the unit
+      // (that could also be the "default" value), which always comes first.
+      // Hence, we start at ++(events.begin())!
+      for (Tokenizer::iterator events_it = ++(event_tokens.begin()); events_it != event_tokens.end(); events_it++) {
+
+        int event_code   = PAPI_NULL;
+        char* event_name = const_cast<char*>((*events_it).c_str());
+        if (PAPI_event_name_to_code(event_name, &event_code) == PAPI_OK) {
+          if (PAPI_add_event(event_set, event_code) != PAPI_OK) {
+            XBT_ERROR("Could not add PAPI event '%s'. Skipping.", event_name);
+            continue;
+          } else {
+            XBT_DEBUG("Successfully added PAPI event '%s' to the event set.", event_name);
+          }
+        } else {
+          XBT_CRITICAL("Could not find PAPI event '%s'. Skipping.", event_name);
+          continue;
+        }
+
+        counters2values.push_back(
+            // We cannot just pass *events_it, as this is of type const basic_string
+            std::make_pair<std::string, long long>(std::string(*events_it), 0));
+      }
+
+      std::string unit_name    = *(event_tokens.begin());
+      papi_process_data config = {.counter_data = std::move(counters2values), .event_set = event_set};
+
+      units2papi_setup.insert(std::make_pair(unit_name, std::move(config)));
+    }
+  }
+#endif
   if (process_count == 0){
     process_count = SIMIX_process_count();
     smpirun=1;
   }
   smpi_universe_size = process_count;
-  process_data = xbt_new0(smpi_process_data_t, process_count);
+  process_data       = new smpi_process_data_t[process_count];
   for (i = 0; i < process_count; i++) {
-    process_data[i]                       = xbt_new(s_smpi_process_data_t, 1);
+    process_data[i]                       = new s_smpi_process_data_t;
     process_data[i]->argc                 = nullptr;
     process_data[i]->argv                 = nullptr;
     process_data[i]->mailbox              = simcall_mbox_create(get_mailbox_name(name, i));
@@ -472,6 +570,23 @@ void smpi_global_init()
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
       process_data[i]->trace_call_loc     = xbt_new(smpi_trace_call_location_t, 1);
     }
+
+#if HAVE_PAPI
+    if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+      // TODO: Implement host/process/thread based counters. This implementation
+      // just always takes the values passed via "default", like this:
+      // "default:COUNTER1:COUNTER2:COUNTER3;".
+      auto it = units2papi_setup.find(papi_default_config_name);
+      if (it != units2papi_setup.end()) {
+        process_data[i]->papi_event_set    = it->second.event_set;
+        process_data[i]->papi_counter_data = it->second.counter_data;
+        XBT_DEBUG("Setting PAPI set for process %i", i);
+      } else {
+        process_data[i]->papi_event_set = PAPI_NULL;
+        XBT_DEBUG("No PAPI set for process %i", i);
+      }
+    }
+#endif
   }
   //if the process was launched through smpirun script we generate a global mpi_comm_world
   //if not, we let MPI_COMM_NULL, and the comm world will be private to each mpi instance
@@ -512,9 +627,9 @@ void smpi_global_destroy()
     if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
       xbt_free(process_data[i]->trace_call_loc);
     }
-    xbt_free(process_data[i]);
+    delete process_data[i];
   }
-  xbt_free(process_data);
+  delete process_data;
   process_data = nullptr;
 
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){

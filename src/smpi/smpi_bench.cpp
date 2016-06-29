@@ -32,6 +32,10 @@
 #include <string.h>
 #include <stdio.h>
 
+#if HAVE_PAPI
+#include <papi.h>
+#endif
+
 #ifndef MAP_ANONYMOUS
 #define MAP_ANONYMOUS MAP_ANON
 #endif
@@ -239,18 +243,54 @@ void smpi_bench_begin(void)
   if (MC_is_active() || MC_record_replay_is_active())
     return;
 
+#if HAVE_PAPI
+  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+    int event_set = smpi_process_papi_event_set();
+    // PAPI_start sets everything to 0! See man(3) PAPI_start
+    if (PAPI_LOW_LEVEL_INITED == PAPI_is_initialized()) {
+      if (PAPI_start(event_set) != PAPI_OK) {
+        // TODO This needs some proper handling.
+        XBT_CRITICAL("Could not start PAPI counters.\n");
+        xbt_die("Error.");
+      }
+    }
+  }
+#endif
   xbt_os_threadtimer_start(smpi_process_timer());
 }
 
 void smpi_bench_end(void)
 {
-
   if (MC_is_active() || MC_record_replay_is_active())
     return;
 
   double speedup = 1;
   xbt_os_timer_t timer = smpi_process_timer();
   xbt_os_threadtimer_stop(timer);
+
+#if HAVE_PAPI
+  /**
+   * An MPI function has been called and now is the right time to update
+   * our PAPI counters for this process.
+   */
+  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
+    papi_counter_t& counter_data        = smpi_process_papi_counters();
+    int event_set                       = smpi_process_papi_event_set();
+    std::vector<long long> event_values = std::vector<long long>(counter_data.size());
+
+    if (PAPI_stop(event_set, &event_values[0]) != PAPI_OK) { // Error
+      XBT_CRITICAL("Could not stop PAPI counters.\n");
+      xbt_die("Error.");
+    } else {
+      for (unsigned int i = 0; i < counter_data.size(); i++) {
+        counter_data[i].second += event_values[i];
+        // XBT_DEBUG("[%i] PAPI: Counter %s: Value is now %lli (got increment by %lli\n", smpi_process_index(),
+        // counter_data[i].first.c_str(), counter_data[i].second, event_values[i]);
+      }
+    }
+  }
+#endif
+
   if (smpi_process_get_sampling()) {
     XBT_CRITICAL("Cannot do recursive benchmarks.");
     XBT_CRITICAL("Are you trying to make a call to MPI within a SMPI_SAMPLE_ block?");
@@ -273,6 +313,20 @@ void smpi_bench_end(void)
   if (xbt_cfg_get_boolean("smpi/simulate-computation")) {
     smpi_execute(xbt_os_timer_elapsed(timer)/speedup);
   }
+
+#if HAVE_PAPI
+  if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0' && TRACE_smpi_is_enabled()) {
+    char container_name[INSTR_DEFAULT_STR_SIZE];
+    smpi_container(smpi_process_index(), container_name, INSTR_DEFAULT_STR_SIZE);
+    container_t container        = PJ_container_get(container_name);
+    papi_counter_t& counter_data = smpi_process_papi_counters();
+
+    for (auto& pair : counter_data) {
+      new_pajeSetVariable(surf_get_clock(), container,
+                          PJ_type_get(/* countername */ pair.first.c_str(), container->type), pair.second);
+    }
+  }
+#endif
 
   smpi_total_benched_time += xbt_os_timer_elapsed(timer);
 }

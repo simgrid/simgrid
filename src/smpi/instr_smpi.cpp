@@ -5,10 +5,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
+#include "private.hpp"
 #include <ctype.h>
-#include <wchar.h>
-#include <stdarg.h>
 #include <simgrid/sg_config.h>
+#include <stdarg.h>
+#include <wchar.h>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_smpi, instr, "Tracing SMPI");
 
@@ -208,7 +209,23 @@ void TRACE_smpi_init(int rank)
   }
   xbt_assert(father!=nullptr,
       "Could not find a parent for mpi rank %s at function %s", str, __FUNCTION__);
-  PJ_container_new(str, INSTR_SMPI, father);
+#if HAVE_PAPI
+  container_t container =
+#endif
+      PJ_container_new(str, INSTR_SMPI, father);
+#if HAVE_PAPI
+  papi_counter_t counters = smpi_process_papi_counters();
+
+  for (auto& it : counters) {
+    /**
+     * Check whether this variable already exists or not. Otherwise, it will be created
+     * multiple times but only the last one would be used...
+     */
+    if (PJ_type_get_or_null(it.first.c_str(), container->type) == nullptr) {
+      PJ_type_variable_new(it.first.c_str(), NULL, container->type);
+    }
+  }
+#endif
 }
 
 void TRACE_smpi_finalize(int rank)
