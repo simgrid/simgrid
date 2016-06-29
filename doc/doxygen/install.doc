@@ -65,7 +65,7 @@ Recompiling an official archive is not much more complex. SimGrid only uses very
   - C compiler, C++ compiler, make and friends. SimGrid is rather
     demanding on the compiler. We use the C++11 standard, and older
     compilers tend to fail on us. It seems that g++ 5.0 or higher is
-    required nowadays. 
+    required nowadays (because of boost).
   - perl (but you may try to go without it)
   - We use cmake to configure our compilation
       ([download page](http://www.cmake.org/cmake/resources/software.html)).
