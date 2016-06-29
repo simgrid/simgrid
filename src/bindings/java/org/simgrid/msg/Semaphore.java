@@ -67,13 +67,8 @@ public class Semaphore {
 
 
 	/** Deletes this semaphore when the GC reclaims it */
-	@Override
-	protected void finalize() {
-		try {
-			nativeFinalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	protected void finalize() throws Throwable {
+		nativeFinalize();
 	}
 	private native void nativeFinalize();
 	/**

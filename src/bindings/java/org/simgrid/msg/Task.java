@@ -167,16 +167,9 @@ public class Task {
 	public native void cancel();
 
 	/** Deletes a task once the garbage collector reclaims it */
-	@Override
-	protected void finalize() {
-		try {
-			// Exceptions in finalizers lead to bad situations:
-			// http://stackoverflow.com/questions/7644556/troubleshooting-a-java-memory-leak-finalization
-			nativeFinalize();
-			bind=0; // to avoid segfaults if the impossible happens yet again making this task surviving its finalize()
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	protected void finalize() throws Throwable{
+		nativeFinalize();
+		bind=0; // to avoid segfaults if the impossible happens yet again making this task surviving its finalize()
 	}
 	protected native void nativeFinalize();
 	/* *                       * *

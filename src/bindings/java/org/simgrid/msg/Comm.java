@@ -33,13 +33,8 @@ public class Comm {
 
 	}
 	/** Destroy the C communication object, when the GC reclaims the java part. */
-	@Override
-	protected void finalize() {
-		try {
-			nativeFinalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	protected void finalize() throws Throwable{
+		nativeFinalize();
 	}
 	protected native void nativeFinalize();
 	/**

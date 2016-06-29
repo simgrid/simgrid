@@ -41,13 +41,9 @@ public class RngStream {
 	 * The natively implemented method to create a C RngStream object.
 	 */
 	private native void create(String name);
-	@Override
-	protected void finalize() {
-		try {
-			nativeFinalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+
+	protected void finalize() throws Throwable{
+		nativeFinalize();
 	}
 	/**
 	 * Release the C RngStream object
