@@ -32,7 +32,7 @@ static double float_random(double max)
 
 static unsigned int int_random(int max)
 {
-  return (u_int32_t) (((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
+  return (uint32_t) (((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
 }
 
 static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
