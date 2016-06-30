@@ -13,13 +13,15 @@ msg_sem_t sem;
 static int peer(int argc, char* argv[]){
   int i = 0; 
   while(i < argc) {
-    double wait_time = xbt_str_parse_double(argv[i++],"Invalid wait time: %s");
+    double wait_time = xbt_str_parse_double(argv[i],"Invalid wait time: %s");
+    i++;
     MSG_process_sleep(wait_time);
     XBT_INFO("Trying to acquire %d", i);
     MSG_sem_acquire(sem);
     XBT_INFO("Acquired %d", i);
 
-    wait_time = xbt_str_parse_double(argv[i++], "Invalid wait time: %s");
+    wait_time = xbt_str_parse_double(argv[i], "Invalid wait time: %s");
+    i++;
     MSG_process_sleep(wait_time);
     XBT_INFO("Releasing %d", i);
     MSG_sem_release(sem);
@@ -40,28 +42,26 @@ int main(int argc, char* argv[])
 
   sem = MSG_sem_init(1);
   char** aliceTimes = xbt_new(char*, 9);
-  int nbAlice = 0;
-  aliceTimes[nbAlice++] = xbt_strdup("0"); 
-  aliceTimes[nbAlice++] = xbt_strdup("1");
-  aliceTimes[nbAlice++] = xbt_strdup("3");
-  aliceTimes[nbAlice++] = xbt_strdup("5");
-  aliceTimes[nbAlice++] = xbt_strdup("1");
-  aliceTimes[nbAlice++] = xbt_strdup("2");
-  aliceTimes[nbAlice++] = xbt_strdup("5");
-  aliceTimes[nbAlice++] = xbt_strdup("0");
-  aliceTimes[nbAlice++] = NULL;
+  aliceTimes[0] = xbt_strdup("0");
+  aliceTimes[1] = xbt_strdup("1");
+  aliceTimes[2] = xbt_strdup("3");
+  aliceTimes[3] = xbt_strdup("5");
+  aliceTimes[4] = xbt_strdup("1");
+  aliceTimes[5] = xbt_strdup("2");
+  aliceTimes[6] = xbt_strdup("5");
+  aliceTimes[7] = xbt_strdup("0");
+  aliceTimes[8] = NULL;
 
   char** bobTimes = xbt_new(char*, 9);
-  int nbBob = 0;
-  bobTimes[nbBob++] = xbt_strdup("0.9"); 
-  bobTimes[nbBob++] = xbt_strdup("1");
-  bobTimes[nbBob++] = xbt_strdup("1");
-  bobTimes[nbBob++] = xbt_strdup("2");
-  bobTimes[nbBob++] = xbt_strdup("2");
-  bobTimes[nbBob++] = xbt_strdup("0");
-  bobTimes[nbBob++] = xbt_strdup("0");
-  bobTimes[nbBob++] = xbt_strdup("5");
-  bobTimes[nbBob++] = NULL;
+  bobTimes[0] = xbt_strdup("0.9");
+  bobTimes[1] = xbt_strdup("1");
+  bobTimes[2] = xbt_strdup("1");
+  bobTimes[3] = xbt_strdup("2");
+  bobTimes[4] = xbt_strdup("2");
+  bobTimes[5] = xbt_strdup("0");
+  bobTimes[6] = xbt_strdup("0");
+  bobTimes[7] = xbt_strdup("5");
+  bobTimes[8] = NULL;
 
   MSG_process_create_with_arguments(xbt_strdup("Alice"), peer, NULL, h, 8, aliceTimes);
   MSG_process_create_with_arguments(xbt_strdup("Bob"), peer, NULL, h, 8, bobTimes);
