@@ -15,7 +15,8 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 static void IB_create_host_callback(simgrid::s4u::Host& host){
-  using namespace simgrid::surf;
+  using simgrid::surf::NetworkIBModel;
+  using simgrid::surf::IBNode;
 
   static int id=0;
   // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
@@ -34,7 +35,9 @@ static void IB_action_state_changed_callback(
     simgrid::surf::NetworkAction *action,
     simgrid::surf::Action::State statein, simgrid::surf::Action::State stateout)
 {
-  using namespace simgrid::surf;
+  using simgrid::surf::NetworkIBModel;
+  using simgrid::surf::IBNode;
+
   if(statein!=simgrid::surf::Action::State::running || stateout!=simgrid::surf::Action::State::done)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];

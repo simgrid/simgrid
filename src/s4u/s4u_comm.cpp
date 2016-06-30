@@ -10,57 +10,59 @@
 #include "simgrid/s4u/comm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm,s4u_activity,"S4U asynchronous communications");
-using namespace simgrid;
 
-s4u::Comm::~Comm() {
+namespace simgrid {
+namespace s4u {
+
+Comm::~Comm() {
 
 }
 
-s4u::Comm &s4u::Comm::send_init(s4u::Mailbox &chan) {
+s4u::Comm &Comm::send_init(s4u::Mailbox &chan) {
   s4u::Comm *res = new s4u::Comm();
   res->sender_ = SIMIX_process_self();
   res->mailbox_ = &chan;
   return *res;
 }
 
-s4u::Comm &s4u::Comm::recv_init(s4u::Mailbox &chan) {
+s4u::Comm &Comm::recv_init(s4u::Mailbox &chan) {
   s4u::Comm *res = new s4u::Comm();
   res->receiver_ = SIMIX_process_self();
   res->mailbox_ = &chan;
   return *res;
 }
 
-void s4u::Comm::setRate(double rate) {
+void Comm::setRate(double rate) {
   xbt_assert(state_==inited);
   rate_ = rate;
 }
 
-void s4u::Comm::setSrcData(void * buff) {
+void Comm::setSrcData(void * buff) {
   xbt_assert(state_==inited);
   xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
 }
-void s4u::Comm::setSrcDataSize(size_t size){
+void Comm::setSrcDataSize(size_t size){
   xbt_assert(state_==inited);
   srcBuffSize_ = size;
 }
-void s4u::Comm::setSrcData(void * buff, size_t size) {
+void Comm::setSrcData(void * buff, size_t size) {
   xbt_assert(state_==inited);
 
   xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
   srcBuffSize_ = size;
 }
-void s4u::Comm::setDstData(void ** buff) {
+void Comm::setDstData(void ** buff) {
   xbt_assert(state_==inited);
   xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dstBuff_ = buff;
 }
-size_t s4u::Comm::getDstDataSize(){
+size_t Comm::getDstDataSize(){
   xbt_assert(state_==finished);
   return dstBuffSize_;
 }
-void s4u::Comm::setDstData(void ** buff, size_t size) {
+void Comm::setDstData(void ** buff, size_t size) {
   xbt_assert(state_==inited);
 
   xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
@@ -68,7 +70,7 @@ void s4u::Comm::setDstData(void ** buff, size_t size) {
   dstBuffSize_ = size;
 }
 
-void s4u::Comm::start() {
+void Comm::start() {
   xbt_assert(state_ == inited);
 
   if (srcBuff_ != nullptr) { // Sender side
@@ -86,7 +88,7 @@ void s4u::Comm::start() {
   }
   state_ = started;
 }
-void s4u::Comm::wait() {
+void Comm::wait() {
   xbt_assert(state_ == started || state_ == inited);
 
   if (state_ == started)
@@ -105,7 +107,7 @@ void s4u::Comm::wait() {
   }
   state_ = finished;
 }
-void s4u::Comm::wait(double timeout) {
+void Comm::wait(double timeout) {
   xbt_assert(state_ == started || state_ == inited);
 
   if (state_ == started) {
@@ -128,7 +130,7 @@ void s4u::Comm::wait(double timeout) {
   state_ = finished;
 }
 
-s4u::Comm &s4u::Comm::send_async(Mailbox &dest, void *data, int simulatedSize) {
+s4u::Comm &Comm::send_async(Mailbox &dest, void *data, int simulatedSize) {
   s4u::Comm &res = s4u::Comm::send_init(dest);
   res.setRemains(simulatedSize);
   res.srcBuff_ = data;
@@ -137,10 +139,12 @@ s4u::Comm &s4u::Comm::send_async(Mailbox &dest, void *data, int simulatedSize) {
   return res;
 }
 
-s4u::Comm &s4u::Comm::recv_async(Mailbox &dest, void **data) {
+s4u::Comm &Comm::recv_async(Mailbox &dest, void **data) {
   s4u::Comm &res = s4u::Comm::recv_init(dest);
   res.setDstData(data);
   res.start();
   return res;
 }
 
+}
+}

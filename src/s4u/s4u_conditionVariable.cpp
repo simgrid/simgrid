@@ -6,20 +6,21 @@
 #include "simgrid/s4u/conditionVariable.hpp"
 #include "simgrid/simix.h"
 
-using namespace simgrid;
+namespace simgrid {
+namespace s4u {
 
-s4u::ConditionVariable::ConditionVariable()  : cond_(simcall_cond_init()){
+ConditionVariable::ConditionVariable()  : cond_(simcall_cond_init()){
     
 }
 
-s4u::ConditionVariable::~ConditionVariable() {
+ConditionVariable::~ConditionVariable() {
   SIMIX_cond_unref(cond_);
 }
 
 /**
  * Wait functions
  */
-void s4u::ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
+void ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
   simcall_cond_wait(cond_, lock.mutex()->mutex_);
 }
 
@@ -49,7 +50,7 @@ std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, d
   }
 }
 
-std::cv_status s4u::ConditionVariable::wait_until(std::unique_lock<Mutex>& lock, double timeout_time)
+std::cv_status ConditionVariable::wait_until(std::unique_lock<Mutex>& lock, double timeout_time)
 {
   double now = SIMIX_get_clock();
   double timeout;
@@ -63,12 +64,13 @@ std::cv_status s4u::ConditionVariable::wait_until(std::unique_lock<Mutex>& lock,
 /**
  * Notify functions
  */
-void s4u::ConditionVariable::notify_one() {
+void ConditionVariable::notify_one() {
    simcall_cond_signal(cond_);
 }
  
-void s4u::ConditionVariable::notify_all() {
+void ConditionVariable::notify_all() {
   simcall_cond_broadcast(cond_);
 }
 
- 
+}
+}

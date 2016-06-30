@@ -104,7 +104,6 @@ void alias(std::initializer_list<const char*> names)
 template<class T>
 void bindFlag(T& value, const char* name, const char* description)
 {
-  using namespace std;
   declareFlag<T>(name, description, value, [&value](T const& val) {
     value = val;
   });

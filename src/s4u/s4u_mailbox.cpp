@@ -13,21 +13,20 @@
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
 
-
-using namespace simgrid;
+namespace simgrid {
+namespace s4u {
 
 boost::unordered_map <std::string, s4u::Mailbox *> *s4u::Mailbox::mailboxes = new boost::unordered_map<std::string, s4u::Mailbox*> ();
 
-
-s4u::Mailbox::Mailbox(const char*name, smx_mailbox_t inferior) {
+Mailbox::Mailbox(const char*name, smx_mailbox_t inferior) {
   pimpl_ = inferior;
   name_ = name;
   mailboxes->insert({name, this});
 }
-const char *s4u::Mailbox::getName() {
+const char *Mailbox::getName() {
   return name_.c_str();
 }
-s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
+Mailbox *Mailbox::byName(const char*name) {
   s4u::Mailbox *res;
   try {
     res = mailboxes->at(name);
@@ -42,22 +41,25 @@ s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
   return res;
 }
 
-bool s4u::Mailbox::empty() {
+bool Mailbox::empty() {
   return nullptr == simcall_mbox_front(pimpl_);
 }
 
-void s4u::Mailbox::setReceiver(smx_process_t process) {
+void Mailbox::setReceiver(smx_process_t process) {
   simcall_mbox_set_receiver(pimpl_, process);
 }
 /** @brief get the receiver (process associated to the mailbox) */
-smx_process_t s4u::Mailbox::receiver() {
+smx_process_t Mailbox::receiver() {
   return pimpl_->permanent_receiver;
+}
+
+}
 }
 
 /*------- C functions -------*/
 
 sg_mbox_t sg_mbox_by_name(const char*name){
-  return s4u::Mailbox::byName(name);
+  return simgrid::s4u::Mailbox::byName(name);
 }
 int sg_mbox_is_empty(sg_mbox_t mbox) {
   return mbox->empty();

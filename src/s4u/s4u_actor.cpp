@@ -16,9 +16,10 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 
-using namespace simgrid;
+namespace simgrid {
+namespace s4u {
 
-s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
+Actor::Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
 {
   // TODO, when autorestart is used, the std::function is copied so the new
   // instance will get a fresh (reinitialized) state. Is this what we want?
@@ -27,7 +28,7 @@ s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime, std::funct
     killTime, nullptr, 0));
 }
 
-s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime,
+Actor::Actor(const char* name, s4u::Host *host, double killTime,
   const char* function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
@@ -37,35 +38,35 @@ s4u::Actor::Actor(const char* name, s4u::Host *host, double killTime,
     killTime, nullptr, 0));
 }
 
-void s4u::Actor::join() {
+void Actor::join() {
   simcall_process_join(pimpl_, -1);
 }
 
-void s4u::Actor::setAutoRestart(bool autorestart) {
+void Actor::setAutoRestart(bool autorestart) {
   simcall_process_auto_restart_set(pimpl_,autorestart);
 }
 
-s4u::Host *s4u::Actor::getHost() {
+s4u::Host *Actor::getHost() {
   return s4u::Host::by_name(sg_host_get_name(simcall_process_get_host(pimpl_)));
 }
 
-const char* s4u::Actor::getName() {
+const char* Actor::getName() {
   return simcall_process_get_name(pimpl_);
 }
 
-int s4u::Actor::getPid(){
+int Actor::getPid(){
   return simcall_process_get_PID(pimpl_);
 }
 
-void s4u::Actor::setKillTime(double time) {
+void Actor::setKillTime(double time) {
   simcall_process_set_kill_time(pimpl_,time);
 }
 
-double s4u::Actor::getKillTime() {
+double Actor::getKillTime() {
   return simcall_process_get_kill_time(pimpl_);
 }
 
-void s4u::Actor::kill(int pid) {
+void Actor::kill(int pid) {
   msg_process_t process = SIMIX_process_from_PID(pid);
   if(process != nullptr) {
     simcall_process_kill(process);
@@ -76,11 +77,11 @@ void s4u::Actor::kill(int pid) {
   }
 }
 
-void s4u::Actor::kill() {
+void Actor::kill() {
   simcall_process_kill(pimpl_);
 }
 
-simgrid::s4u::Actor s4u::Actor::forPid(int pid)
+simgrid::s4u::Actor Actor::forPid(int pid)
 {
   // Should we throw if we did not find it?
   smx_process_t process = SIMIX_process_from_PID(pid);
@@ -89,13 +90,10 @@ simgrid::s4u::Actor s4u::Actor::forPid(int pid)
 
 // static stuff:
 
-void s4u::Actor::killAll() {
+void Actor::killAll() {
   simcall_process_killall(1);
 }
 
-
-namespace simgrid {
-namespace s4u {
 namespace this_actor {
 
 void sleep(double duration) {

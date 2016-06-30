@@ -11,17 +11,21 @@
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_activity,s4u,"S4U activities");
-using namespace simgrid;
 
-s4u::Activity::Activity() {
+namespace simgrid {
+namespace s4u {
+
+Activity::Activity() {
 
 }
-s4u::Activity::~Activity() {
+Activity::~Activity() {
 
 }
 
-void s4u::Activity::setRemains(double remains) {
+void Activity::setRemains(double remains) {
   xbt_assert(state_ == inited, "Cannot change the remaining amount of work once the Activity is started");
   remains_ = remains;
 }
 
+}
+}
