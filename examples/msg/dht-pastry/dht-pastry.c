@@ -85,11 +85,11 @@ static void get_mailbox(int node_id, char* mailbox)
 }
 
 /** Get the specific level of a node id */
-int domain_mask = 0;
+unsigned int domain_mask = 0;
 static int domain(int a, int level) {
   if (domain_mask == 0)
     domain_mask = pow(2, DOMAIN_SIZE) - 1;
-  int shift = (LEVELS_COUNT-level-1)*DOMAIN_SIZE;
+  unsigned int shift = (LEVELS_COUNT-level-1)*DOMAIN_SIZE;
   return (a >> shift) & domain_mask;
 }
 
@@ -115,18 +115,16 @@ static void task_free(void* task)
 
 /* Get the closest id to the dest in the node namespace_set */
 static int closest_in_namespace_set(node_t node, int dest) {
-  int best_dist;
   int res = -1;
-  if ((node->namespace_set[NAMESPACE_SIZE-1] <= dest) & (dest <= node->namespace_set[0])) {
-    best_dist = abs(node->id - dest);
+  if ((node->namespace_set[NAMESPACE_SIZE-1] <= dest) && (dest <= node->namespace_set[0])) {
+    int best_dist = abs(node->id - dest);
     res = node->id;
-    int i, dist;
-    for (i=0; i<NAMESPACE_SIZE; i++) {
+    for (int i=0; i<NAMESPACE_SIZE; i++) {
       if (node->namespace_set[i]!=-1) {
-        dist = abs(node->namespace_set[i] - dest);
+        int dist = abs(node->namespace_set[i] - dest);
         if (dist<best_dist) {
           best_dist = dist;
-          res = node->namespace_set[i];    
+          res = node->namespace_set[i];
         }
       }
     }
@@ -148,9 +146,9 @@ static int routing_next(node_t node, int dest) {
 
   //rare case
   int dist = abs(node->id - dest);
-  int i,j;
+  int i;
   for (i=l; i<LEVELS_COUNT; i++) {
-    for (j=0; j<LEVEL_SIZE; j++) {
+    for (int j=0; j<LEVEL_SIZE; j++) {
       res = node->routing_table[i][j];
       if (res!=-1 && abs(res - dest)<dist)
         return res;
@@ -174,14 +172,14 @@ static int routing_next(node_t node, int dest) {
 
 /* Get the corresponding state of a node */
 static state_t node_get_state(node_t node) {
-  int i,j;
+  int i;
   state_t state = xbt_new0(s_state_t,1);
   state->id = node->id;
   for (i=0; i<NEIGHBORHOOD_SIZE; i++)
     state->neighborhood_set[i] = node->neighborhood_set[i];
 
   for (i=0; i<LEVELS_COUNT; i++)
-    for (j=0; j<LEVEL_SIZE; j++)
+    for (int j=0; j<LEVEL_SIZE; j++)
       state->routing_table[i][j] = node->routing_table[i][j];
 
   for (i=0; i<NAMESPACE_SIZE; i++)
@@ -231,7 +229,11 @@ static void print_node(node_t node) {
 static void handle_task(node_t node, msg_task_t task) {
   XBT_DEBUG("Handling task %p", task);
   char mailbox[MAILBOX_NAME_SIZE];
-  int i, j, min, max, d;
+  int i;
+  int j;
+  int min;
+  int max;
+  int d;
   msg_task_t task_sent;
   task_data_t req_data;
   task_data_t task_data = (task_data_t) MSG_task_get_data(task);
@@ -289,6 +291,7 @@ static void handle_task(node_t node, msg_task_t task) {
       }
       node->namespace_set[NAMESPACE_SIZE/2+j] = task_data->sender_id;
       node->ready += task_data->steps + 1;
+      /* no break */
     case TASK_JOIN_REPLY:
       XBT_DEBUG("Joining Reply");
 
@@ -368,8 +371,10 @@ static void handle_task(node_t node, msg_task_t task) {
       max = -1;
       for (i=0; i<=NAMESPACE_SIZE; i++) {
         j = task_namespace_set[i];
-        if (j != -1 && j < node->id) min = i;
-        if (j != -1 && max == -1 && j > node->id) max = i;
+        if (j != -1 && j < node->id)
+          min = i;
+        if (j != -1 && max == -1 && j > node->id)
+          max = i;
       }
 
       // add lower elements
@@ -380,7 +385,8 @@ static void handle_task(node_t node, msg_task_t task) {
           j--;
         } else if (curr_namespace_set[j] == task_namespace_set[min]) {
           node->namespace_set[i] = curr_namespace_set[j];
-          j--; min--;
+          j--;
+          min--;
         } else if (curr_namespace_set[j] > task_namespace_set[min]) {
           node->namespace_set[i] = curr_namespace_set[j];
           j--;
@@ -401,7 +407,8 @@ static void handle_task(node_t node, msg_task_t task) {
           max++;
         } else if (curr_namespace_set[j] == task_namespace_set[max]) {
           node->namespace_set[i] = curr_namespace_set[j];
-          j++; max++;
+          j++;
+          max++;
         } else if (curr_namespace_set[j] < task_namespace_set[max]) {
           node->namespace_set[i] = curr_namespace_set[j];
           j++;
@@ -418,6 +425,9 @@ static void handle_task(node_t node, msg_task_t task) {
             node->routing_table[i][j] = task_data->state->routing_table[i][j];
         }
       }
+      break;
+    default:
+      THROW_IMPOSSIBLE;
   }
   task_free(task);
 }
@@ -475,10 +485,10 @@ static int node(int argc, char *argv[])
   get_mailbox(node.id, node.mailbox);
   XBT_DEBUG("New node with id %s (%08x)", node.mailbox, node.id);
   
-  int i,j,d;
+  int i;
   for (i=0; i<LEVELS_COUNT; i++){
-    d = domain(node.id, i);
-    for (j=0; j<LEVEL_SIZE; j++)
+    int d = domain(node.id, i);
+    for (int j=0; j<LEVEL_SIZE; j++)
       node.routing_table[i][j] = (d==j) ? node.id : -1;
   }
 
