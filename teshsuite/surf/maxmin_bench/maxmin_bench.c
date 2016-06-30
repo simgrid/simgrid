@@ -30,19 +30,22 @@ static double float_random(double max)
   return ((max * myrand()) / (MYRANDMAX + 1.0));
 }
 
-static int int_random(int max)
+static unsigned int int_random(int max)
 {
-  return (int32_t) (((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
+  return (u_int32_t) (((max * 1.0) * myrand()) / (MYRANDMAX + 1.0));
 }
 
-static void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw_max_limit, float rate_no_limit,
-                 int max_share, int mode)
+static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limit, unsigned int pw_max_limit,
+                 float rate_no_limit, int max_share, int mode)
 {
   lmm_system_t Sys = NULL;
   lmm_constraint_t *cnst = xbt_new0(lmm_constraint_t, nb_cnst);
   lmm_variable_t *var = xbt_new0(lmm_variable_t, nb_var);
   int *used = xbt_new0(int, nb_cnst);
-  int i, j, k,l;
+  int i;
+  int j;
+  int k;
+  int l;
   int concurrency_share;
 
   Sys = lmm_system_new(1);
@@ -112,7 +115,7 @@ static void test(int nb_cnst, int nb_var, int nb_elem, int pw_base_limit, int pw
   free(used);
 }
 
-int TestClasses [][4]=
+unsigned int TestClasses [][4]=
   //Nbcnst Nbvar Baselimit Maxlimit 
   {{  10  ,10    ,1        ,2 }, //small
    {  100 ,100   ,3        ,6 }, //medium
@@ -122,11 +125,10 @@ int TestClasses [][4]=
 
 int main(int argc, char **argv)
 {
-  int nb_cnst, nb_var,nb_elem,pw_base_limit,pw_max_limit,max_share;
   float rate_no_limit=0.2;
-  float acc_date=0,acc_date2=0;
-  int testclass,mode,testcount;
-  int i;
+  float acc_date=0;
+  float acc_date2=0;
+  int testclass;
 
   if(argc<3) {
     fprintf(stderr, "Syntax: <small|medium|big|huge> <count> [test|debug|perf]\n");
@@ -148,10 +150,10 @@ int main(int argc, char **argv)
   }
 
   //How many times?
-  testcount=atoi(argv[2]);
+  int testcount=atoi(argv[2]);
 
   //Show me everything (debug or performance)!
-  mode=0;
+  int mode=0;
   if(argc>=4 && strcmp(argv[3],"test")==0)
     mode=1;
   if(argc>=4 && strcmp(argv[3],"debug")==0)
@@ -166,20 +168,20 @@ int main(int argc, char **argv)
   if(mode==2)
     xbt_log_control_set("surf/maxmin.threshold:DEBUG surf.threshold:DEBUG");
 
-  nb_cnst= TestClasses[testclass][0];
-  nb_var= TestClasses[testclass][1];
-  pw_base_limit= TestClasses[testclass][2];
-  pw_max_limit= TestClasses[testclass][3];
-  max_share=2; //1<<(pw_base_limit/2+1);
+  unsigned int nb_cnst= TestClasses[testclass][0];
+  unsigned int nb_var= TestClasses[testclass][1];
+  unsigned int pw_base_limit= TestClasses[testclass][2];
+  unsigned int pw_max_limit= TestClasses[testclass][3];
+  unsigned int max_share=2; //1<<(pw_base_limit/2+1);
 
   //If you want to test concurrency, you need nb_elem >> 2^pw_base_limit:
-  nb_elem= (1<<pw_base_limit)+(1<<(8*pw_max_limit/10));
+  unsigned int nb_elem= (1<<pw_base_limit)+(1<<(8*pw_max_limit/10));
   //Otherwise, just set it to a constant value (and set rate_no_limit to 1.0):
   //nb_elem=200
 
   xbt_init(&argc, argv);
 
-  for(i=0;i<testcount;i++){
+  for(int i=0;i<testcount;i++){
     seedx=i+1;
     fprintf(stderr, "Starting %i: (%i)\n",i,myrand()%1000);
     test(nb_cnst, nb_var, nb_elem, pw_base_limit, pw_max_limit, rate_no_limit,max_share,mode);
