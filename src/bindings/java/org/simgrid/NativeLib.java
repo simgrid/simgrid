@@ -74,9 +74,7 @@ public final class NativeLib {
 
 		if (arch.matches("^i[3-6]86$"))
 			arch = "x86";
-		else if ("x86_64".equalsIgnoreCase(arch))
-			arch = "amd64";
-		else if ("AMD64".equalsIgnoreCase(arch))
+		else if ("x86_64".equalsIgnoreCase(arch) || "AMD64".equalsIgnoreCase(arch))
 			arch = "amd64";
 
 		if (os.toLowerCase().startsWith("win")){

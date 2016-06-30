@@ -44,8 +44,8 @@ public class Node extends Process {
     double nextCheckPredecessorDate = initTime + Common.PERIODIC_CHECK_PREDECESSOR_DELAY;
     double nextLookupDate = initTime + Common.PERIODIC_LOOKUP_DELAY;
 
-    id = Integer.valueOf(args[0]);
-    mailbox = Integer.toString(id);
+    mailbox = args[0];
+    id = Integer.parseInt(args[0]);
 
     fingers = new int[Common.NB_BITS];
     for (i = 0; i < Common.NB_BITS; i++) {
@@ -61,7 +61,7 @@ public class Node extends Process {
     } else {
       int knownId = Integer.valueOf(args[1]);
       deadline = Integer.valueOf(args[3]);
-      //Msg.info("Hey! Let's join the system with the id " + id + ".");
+      Msg.debug("Hey! Let's join the system with the id " + id + ".");
 
       joinSuccess = join(knownId);
     }
