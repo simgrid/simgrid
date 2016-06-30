@@ -6,6 +6,8 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
+#include <cstddef>
+
 #include <xbt.h>
 #include <memory>
 #include <utility>

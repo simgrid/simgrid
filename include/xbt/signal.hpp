@@ -7,6 +7,7 @@
 #define SIMGRID_XBT_SIGNAL_HPP
 
 #include <functional>
+#include <utility>
 #include <vector>
 
 namespace simgrid {
@@ -26,12 +27,11 @@ namespace xbt {
     typedef std::function<R(P...)> callback_type;
     std::vector<callback_type> handlers_;
   public:
-    template<class U> XBT_ALWAYS_INLINE
+    template<class U>
     void connect(U slot)
     {
       handlers_.push_back(std::move(slot));
     }
-    XBT_ALWAYS_INLINE
     R operator()(P... args) const
     {
       for (auto& handler : handlers_)

@@ -9,7 +9,6 @@
 #include <mutex>
 #include <utility>
 
-#include <boost/intrusive_ptr.hpp>
 #include <xbt/base.h>
 #include "simgrid/simix.h"
 
