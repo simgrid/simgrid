@@ -629,7 +629,7 @@ void smpi_global_destroy()
     }
     delete process_data[i];
   }
-  delete process_data;
+  delete[] process_data;
   process_data = nullptr;
 
   if (MPI_COMM_WORLD != MPI_COMM_UNINITIALIZED){
