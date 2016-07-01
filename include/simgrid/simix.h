@@ -129,17 +129,17 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC(xbt_dynar_t) SIMIX_process_get_runnable();
 XBT_PUBLIC(smx_process_t) SIMIX_process_from_PID(int PID);
-XBT_PUBLIC(xbt_dynar_t) SIMIX_processes_as_dynar();
+XBT_PUBLIC(xbt_dynar_t) SIMIX_processes_as_dynar(void);
 
 /* parallelism */
-XBT_PUBLIC(int) SIMIX_context_is_parallel();
-XBT_PUBLIC(int) SIMIX_context_get_nthreads();
+XBT_PUBLIC(int) SIMIX_context_is_parallel(void);
+XBT_PUBLIC(int) SIMIX_context_get_nthreads(void);
 XBT_PUBLIC(void) SIMIX_context_set_nthreads(int nb_threads);
 XBT_PUBLIC(int) SIMIX_context_get_parallel_threshold();
 XBT_PUBLIC(void) SIMIX_context_set_parallel_threshold(int threshold);
-XBT_PUBLIC(e_xbt_parmap_mode_t) SIMIX_context_get_parallel_mode();
+XBT_PUBLIC(e_xbt_parmap_mode_t) SIMIX_context_get_parallel_mode(void);
 XBT_PUBLIC(void) SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode);
-XBT_PUBLIC(int) SIMIX_is_maestro();
+XBT_PUBLIC(int) SIMIX_is_maestro(void);
 
 
 /********************************** Global ************************************/
@@ -164,7 +164,7 @@ typedef struct s_smx_timer* smx_timer_t;
 
 XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, void (*function)(void*), void *arg);
 XBT_PUBLIC(void) SIMIX_timer_remove(smx_timer_t timer);
-XBT_PUBLIC(double) SIMIX_timer_next();
+XBT_PUBLIC(double) SIMIX_timer_next(void);
 XBT_PUBLIC(double) SIMIX_timer_get_date(smx_timer_t timer);
 
 XBT_PUBLIC(void) SIMIX_display_process_status();
@@ -176,7 +176,7 @@ XBT_PUBLIC(void) SIMIX_create_environment(const char *file);
 
 XBT_PUBLIC(void) SIMIX_function_register(const char *name, xbt_main_func_t code);
 XBT_PUBLIC(void) SIMIX_function_register_default(xbt_main_func_t code);
-XBT_PUBLIC(void) SIMIX_init_application();
+XBT_PUBLIC(void) SIMIX_init_application(void);
 XBT_PUBLIC(void) SIMIX_launch_application(const char *file);
 
 XBT_PUBLIC(void) SIMIX_process_set_function(const char* process_host,
@@ -204,21 +204,21 @@ XBT_PUBLIC(smx_process_t) SIMIX_process_attach(
 XBT_PUBLIC(void) SIMIX_process_detach();
 
 /*********************************** Host *************************************/
-XBT_PUBLIC(sg_host_t) SIMIX_host_self();
-XBT_PUBLIC(const char*) SIMIX_host_self_get_name();
+XBT_PUBLIC(sg_host_t) SIMIX_host_self(void);
+XBT_PUBLIC(const char*) SIMIX_host_self_get_name(void);
 XBT_PUBLIC(void) SIMIX_host_on(sg_host_t host);
 XBT_PUBLIC(void) SIMIX_host_off(sg_host_t host, smx_process_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
-XBT_PUBLIC(void*) SIMIX_host_self_get_data();
+XBT_PUBLIC(void*) SIMIX_host_self_get_data(void);
 
 /********************************* Process ************************************/
 XBT_PUBLIC(smx_process_t) SIMIX_process_ref(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_unref(smx_process_t process);
-XBT_PUBLIC(int) SIMIX_process_count();
-XBT_PUBLIC(smx_process_t) SIMIX_process_self();
-XBT_PUBLIC(const char*) SIMIX_process_self_get_name();
+XBT_PUBLIC(int) SIMIX_process_count(void);
+XBT_PUBLIC(smx_process_t) SIMIX_process_self(void);
+XBT_PUBLIC(const char*) SIMIX_process_self_get_name(void);
 XBT_PUBLIC(void) SIMIX_process_self_set_data(void *data);
-XBT_PUBLIC(void*) SIMIX_process_self_get_data();
+XBT_PUBLIC(void*) SIMIX_process_self_get_data(void);
 XBT_PUBLIC(smx_context_t) SIMIX_process_get_context(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_set_context(smx_process_t p,smx_context_t c);
 XBT_PUBLIC(int) SIMIX_process_has_pending_comms(smx_process_t process);

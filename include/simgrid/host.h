@@ -20,7 +20,7 @@
 
 SG_BEGIN_DECL()
 
-XBT_PUBLIC(size_t) sg_host_count();
+XBT_PUBLIC(size_t) sg_host_count(void);
 XBT_PUBLIC(sg_host_t *) sg_host_list(void);
 
 XBT_PUBLIC(size_t) sg_host_extension_create(void(*deleter)(void*));
