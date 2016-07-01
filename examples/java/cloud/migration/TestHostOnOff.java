@@ -28,7 +28,7 @@ public class TestHostOnOff extends Process{
       host1 = Host.getByName("PM1");
       host2 = Host.getByName("PM2");
     }catch (HostNotFoundException e) {
-      e.printStackTrace();  //To change body of catch statement use File | Settings | File Templates.
+      Msg.error("You are trying to use a non existing node:" + e.getMessage());
     }
 
     // Robustness on the SRC node
@@ -82,19 +82,17 @@ public class TestHostOnOff extends Process{
         try {
           sourceHost = Host.getByName(args[1]);
           destHost = Host.getByName(args[2]);
-        } catch (Exception e) {
+        } catch (HostNotFoundException e) {
+          Msg.error("You are trying to migrate from/to a non existing node: " + e.getMessage());
           e.printStackTrace();
-          System.err.println("You are trying to migrate from/to a non existing node");
         }
-        if (destHost != null) {
-          if (sourceHost.isOn() && destHost.isOn()) {
-            try {
-              Msg.info("Migrate vm "+args[0]+" to node "+destHost.getName());
-              VM.getVMByName(args[0]).migrate(destHost);
-            } catch (HostFailureException e) {
-              Msg.info("Something occurs during the migration that cannot validate the operation");
-              e.printStackTrace();
-            }
+        if (destHost != null && sourceHost.isOn() && destHost.isOn()) {
+          try {
+            Msg.info("Migrate vm "+args[0]+" to node "+destHost.getName());
+            VM.getVMByName(args[0]).migrate(destHost);
+          } catch (HostFailureException e) {
+            Msg.error("Something occurs during the migration that cannot validate the operation: " + e.getMessage());
+            e.printStackTrace();
           }
         }
       }
