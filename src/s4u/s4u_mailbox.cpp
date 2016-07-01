@@ -45,12 +45,12 @@ bool Mailbox::empty() {
   return nullptr == simcall_mbox_front(pimpl_);
 }
 
-void Mailbox::setReceiver(smx_process_t process) {
-  simcall_mbox_set_receiver(pimpl_, process);
+void Mailbox::setReceiver(Actor actor) {
+  simcall_mbox_set_receiver(pimpl_, actor.pimpl_);
 }
 /** @brief get the receiver (process associated to the mailbox) */
-smx_process_t Mailbox::receiver() {
-  return pimpl_->permanent_receiver;
+Actor Mailbox::receiver() {
+  return Actor(pimpl_->permanent_receiver);
 }
 
 }
@@ -68,5 +68,5 @@ void sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process) {
   mbox->setReceiver(process);
 }
 smx_process_t sg_mbox_receiver(sg_mbox_t mbox) {
-  return mbox->receiver();
+  return mbox->receiver().getInferior();
 }

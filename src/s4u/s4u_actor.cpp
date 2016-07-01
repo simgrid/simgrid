@@ -77,6 +77,11 @@ void Actor::kill(int pid) {
   }
 }
 
+smx_process_t Actor::getInferior() {
+  return pimpl_;
+}
+
+
 void Actor::kill() {
   simcall_process_kill(pimpl_);
 }

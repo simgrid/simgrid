@@ -123,6 +123,8 @@ namespace s4u {
 
 /** @brief Simulation Agent (see \ref s4u_actor)*/
 XBT_PUBLIC_CLASS Actor {
+  friend Mailbox;
+
 private:
   /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
   template<class F, class... Args>
@@ -232,7 +234,8 @@ public:
   static void killAll();
 
   bool valid() const { return pimpl_ != nullptr; }
-
+  
+  smx_process_t getInferior();
 private:
   smx_process_t pimpl_ = nullptr;
 };
