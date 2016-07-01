@@ -50,9 +50,9 @@ void xbt_fifo_reset(xbt_fifo_t l)
 {
   xbt_fifo_item_t b, tmp;
 
-  for (b = xbt_fifo_get_first_item(l); b;
-       tmp = b, b = b->next, xbt_fifo_free_item(tmp));
-  l->head = l->tail = NULL;
+  for (b = xbt_fifo_get_first_item(l); b; tmp = b, b = b->next, xbt_fifo_free_item(tmp));
+  l->head = NULL;
+  l->tail = NULL;
 }
 
 /** Push
@@ -82,12 +82,12 @@ xbt_fifo_item_t xbt_fifo_push(xbt_fifo_t l, void *t)
  */
 void *xbt_fifo_pop(xbt_fifo_t l)
 {
-  xbt_fifo_item_t item;
   void *content;
 
   if (l == NULL)
     return NULL;
-  if (!(item = xbt_fifo_pop_item(l)))
+  xbt_fifo_item_t item = xbt_fifo_pop_item(l);
+  if (!item)
     return NULL;
 
   content = item->content;
@@ -121,12 +121,12 @@ xbt_fifo_item_t xbt_fifo_unshift(xbt_fifo_t l, void *t)
  */
 void *xbt_fifo_shift(xbt_fifo_t l)
 {
-  xbt_fifo_item_t item;
   void *content;
 
   if (l == NULL)
     return NULL;
-  if (!(item = xbt_fifo_shift_item(l)))
+  xbt_fifo_item_t item = xbt_fifo_shift_item(l);
+  if (!item)
     return NULL;
 
   content = item->content;
@@ -235,7 +235,7 @@ xbt_fifo_item_t xbt_fifo_shift_item(xbt_fifo_t l)
  * \param l
  * \param t an objet
  *
- * removes the first occurence of \a t from \a l.
+ * removes the first occurrence of \a t from \a l.
  * \warning it will not remove duplicates
  * \return 1 if an item was removed and 0 otherwise.
  */
@@ -245,13 +245,13 @@ int xbt_fifo_remove(xbt_fifo_t l, void *t)
 
   for (current = l->head; current; current = current_next) {
     current_next = current->next;
-    if (current->content != t)
-      continue;
-    /* remove the item */
-    xbt_fifo_remove_item(l, current);
-    xbt_fifo_free_item(current);
-    /* WILL NOT REMOVE DUPLICATES */
-    return 1;
+    if (current->content == t) {
+      /* remove the item */
+      xbt_fifo_remove_item(l, current);
+      xbt_fifo_free_item(current);
+      /* WILL NOT REMOVE DUPLICATES */
+      return 1;
+    }
   }
   return 0;
 }
@@ -260,7 +260,7 @@ int xbt_fifo_remove(xbt_fifo_t l, void *t)
  * \param l
  * \param t an objet
  *
- * removes all occurences of \a t from \a l.
+ * removes all occurrences of \a t from \a l.
  * \return 1 if an item was removed and 0 otherwise.
  */
 int xbt_fifo_remove_all(xbt_fifo_t l, void *t)
@@ -270,12 +270,12 @@ int xbt_fifo_remove_all(xbt_fifo_t l, void *t)
 
   for (current = l->head; current; current = current_next) {
     current_next = current->next;
-    if (current->content != t)
-      continue;
-    /* remove the item */
-    xbt_fifo_remove_item(l, current);
-    xbt_fifo_free_item(current);
-    res = 1;
+    if (current->content == t){
+      /* remove the item */
+      xbt_fifo_remove_item(l, current);
+      xbt_fifo_free_item(current);
+      res = 1;
+    }
   }
   return res;
 }
@@ -284,7 +284,7 @@ int xbt_fifo_remove_all(xbt_fifo_t l, void *t)
  * \param l a list
  * \param current a bucket
  *
- * removes a bucket \a current from the list \a l. This function implicitely
+ * removes a bucket \a current from the list \a l. This function implicitly
  * assumes (and doesn't check!) that this item belongs to this list...
  */
 void xbt_fifo_remove_item(xbt_fifo_t l, xbt_fifo_item_t current)
@@ -294,7 +294,8 @@ void xbt_fifo_remove_item(xbt_fifo_t l, xbt_fifo_item_t current)
     l->head = NULL;
     l->tail = NULL;
     (l->count)--;
-    current->prev = current->next = NULL;
+    current->prev = NULL;
+    current->next = NULL;
     return;
   }
 
@@ -309,7 +310,8 @@ void xbt_fifo_remove_item(xbt_fifo_t l, xbt_fifo_item_t current)
     current->next->prev = current->prev;
   }
   (l->count)--;
-  current->prev = current->next = NULL;
+  current->prev = NULL;
+  current->next = NULL;
 }
 
 /**

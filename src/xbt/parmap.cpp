@@ -258,9 +258,11 @@ void* xbt_parmap_next(xbt_parmap_t parmap)
 
 static void xbt_parmap_work(xbt_parmap_t parmap)
 {
-  unsigned index;
-  while ((index = parmap->index++) < xbt_dynar_length(parmap->data))
+  unsigned int index = parmap->index++;
+  while (index < xbt_dynar_length(parmap->data)){
     parmap->fun(xbt_dynar_get_as(parmap->data, index, void*));
+    index = parmap->index++;
+  }
 }
 
 /**
@@ -269,7 +271,7 @@ static void xbt_parmap_work(xbt_parmap_t parmap)
  */
 static void *xbt_parmap_worker_main(void *arg)
 {
-  xbt_parmap_thread_data_t data = (xbt_parmap_thread_data_t) arg;
+  xbt_parmap_thread_data_t data = static_cast<xbt_parmap_thread_data_t>(arg);
   xbt_parmap_t parmap = data->parmap;
   unsigned round = 0;
   smx_context_t context = SIMIX_context_new(std::function<void()>(), nullptr, nullptr);
@@ -279,7 +281,8 @@ static void *xbt_parmap_worker_main(void *arg)
 
   /* Worker's main loop */
   while (1) {
-    parmap->worker_wait_f(parmap, ++round);
+    round++;
+    parmap->worker_wait_f(parmap, round);
     if (parmap->status == XBT_PARMAP_WORK) {
       XBT_DEBUG("Worker %d got a job", data->worker_id);
 
@@ -337,7 +340,8 @@ static void xbt_parmap_posix_master_wait(xbt_parmap_t parmap)
 static void xbt_parmap_posix_worker_signal(xbt_parmap_t parmap)
 {
   xbt_os_mutex_acquire(parmap->done_mutex);
-  if (++parmap->thread_counter == parmap->num_workers) {
+  parmap->thread_counter++;
+  if (parmap->thread_counter == parmap->num_workers) {
     /* all workers have finished, wake the controller */
     xbt_os_cond_signal(parmap->done_cond);
   }
