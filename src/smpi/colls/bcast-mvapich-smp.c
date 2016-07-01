@@ -297,7 +297,8 @@ int smpi_coll_tuned_bcast_mvapich2_intra_node(void *buffer,
      */
     //if (is_homogeneous) {
         type_size=smpi_datatype_size(datatype);
-    //} /*else {*/
+    //}
+/*    else {*/
 /*        MPIR_Pack_size_impl(1, datatype, &type_size);*/
 /*    }*/
     nbytes = (size_t) (count) * (type_size);

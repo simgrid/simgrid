@@ -270,7 +270,8 @@ void xbt_log_init(int *argc, char **argv)
   int i, j;
   char *opt;
 
-  //    _XBT_LOGV(log).threshold = xbt_log_priority_debug; /* uncomment to set the LOG category to debug directly */
+  /* uncomment to set the LOG category to debug directly */
+  //    _XBT_LOGV(log).threshold = xbt_log_priority_debug;
 
   xbt_log_connect_categories();
 

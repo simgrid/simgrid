@@ -63,8 +63,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
     rank = smpi_comm_rank(comm);
     size = smpi_comm_size(comm);
 
-    /* extract the rank,size information for the intra-node
-     * communicator */
+    /* extract the rank,size information for the intra-node communicator */
     recvtype_extent=smpi_datatype_get_extent(recvtype);
     
     shmem_comm = smpi_comm_get_intra_comm(comm);
@@ -72,8 +71,7 @@ int smpi_coll_tuned_allgather_mvapich2_smp(void *sendbuf,int sendcnt, MPI_Dataty
     local_size = smpi_comm_size(shmem_comm);
 
     if (local_rank == 0) {
-        /* Node leader. Extract the rank, size information for the leader
-         * communicator */
+        /* Node leader. Extract the rank, size information for the leader communicator */
         leader_comm = smpi_comm_get_leaders_comm(comm);
         if(leader_comm==MPI_COMM_NULL){
           leader_comm = MPI_COMM_WORLD;

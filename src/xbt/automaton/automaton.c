@@ -16,7 +16,7 @@ struct xbt_automaton_propositional_symbol{
   /** Additional data for the callback.
       Alternatively it can be used as a pointer to the data. */
   void* data;
-  //** Optional callback used to free the data field */
+  /** Optional callback used to free the data field */
   void (*free_function)(void*);
 };
 

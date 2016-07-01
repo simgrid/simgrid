@@ -1,4 +1,4 @@
-/* synchro_crashtest -- tries to crash the logging mechanism by doing // logs*/
+/* synchro_crashtest -- tries to crash the logging mechanism by doing parallel logs*/
 
 /* Copyright (c) 2007-2014. The SimGrid Team.
  * All rights reserved.                                                     */
