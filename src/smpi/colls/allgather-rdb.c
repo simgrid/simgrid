@@ -17,7 +17,7 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
   MPI_Aint send_chunk, recv_chunk;
 
   // local int variables
-  int i, j, k, dst, rank, num_procs, send_offset, recv_offset, tree_root;
+  unsigned int i, j, k, dst, send_offset, recv_offset, tree_root;
   int dst_tree_root, rank_tree_root, last_recv_count = 0, num_procs_completed;
   int offset, tmp_mask;
   int tag = COLL_TAG_ALLGATHER;
@@ -30,8 +30,8 @@ smpi_coll_tuned_allgather_rdb(void *sbuf, int send_count,
   char *recv_ptr = (char *) rbuf;
 
   // get size of the communicator, followed by rank 
-  num_procs = smpi_comm_size(comm);
-  rank = smpi_comm_rank(comm);
+  unsigned int num_procs = smpi_comm_size(comm);
+  unsigned int rank = smpi_comm_rank(comm);
 
   // get size of single element's type for send buffer and recv buffer
   send_chunk = smpi_datatype_get_extent(send_type);

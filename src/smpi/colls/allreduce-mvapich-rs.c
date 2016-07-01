@@ -20,18 +20,19 @@
  * copyright file COPYRIGHT in the top level MVAPICH2 directory.
  *
  */
- 
- #include "colls_private.h"
- 
- int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
-                             void *recvbuf,
-                             int count,
-                             MPI_Datatype datatype,
-                             MPI_Op op, MPI_Comm comm)
+
+#include "colls_private.h"
+
+int smpi_coll_tuned_allreduce_mvapich2_rs(void *sendbuf,
+                            void *recvbuf,
+                            int count,
+                            MPI_Datatype datatype,
+                            MPI_Op op, MPI_Comm comm)
 {
-    int comm_size, rank;
     int mpi_errno = MPI_SUCCESS;
-    int mask, dst, is_commutative, pof2, newrank = 0, rem, newdst, i,
+    int newrank = 0;
+    unsigned int mask, pof2;
+    int dst, is_commutative, rem, newdst, i,
         send_idx, recv_idx, last_idx, send_cnt, recv_cnt, *cnts, *disps;
     MPI_Aint true_lb, true_extent, extent;
     void *tmp_buf, *tmp_buf_free;
@@ -42,8 +43,8 @@
 
     /* homogeneous */
 
-    comm_size =  smpi_comm_size(comm);
-    rank = smpi_comm_rank(comm);
+    unsigned int comm_size =  smpi_comm_size(comm);
+    unsigned int rank = smpi_comm_rank(comm);
 
     is_commutative = smpi_op_is_commute(op);
 

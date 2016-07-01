@@ -83,16 +83,16 @@ int smpi_coll_tuned_allgatherv_ompi_bruck(void *sbuf, int scount,
                                            MPI_Datatype rdtype,
                                            MPI_Comm comm)
 {
-   int rank, size;
-   int sendto, recvfrom, distance, blockcount, i;
+   int sendto, recvfrom, blockcount, i;
+   unsigned int distance;
    int *new_rcounts = NULL, *new_rdispls = NULL;
    int *new_scounts = NULL, *new_sdispls = NULL;
    ptrdiff_t slb, rlb, sext, rext;
    char *tmpsend = NULL, *tmprecv = NULL;
    MPI_Datatype new_rdtype = MPI_DATATYPE_NULL, new_sdtype = MPI_DATATYPE_NULL;
 
-   size = smpi_comm_size(comm);
-   rank = smpi_comm_rank(comm);
+   unsigned int size = smpi_comm_size(comm);
+   unsigned int rank = smpi_comm_rank(comm);
 
    XBT_DEBUG(
                 "coll:tuned:allgather_ompi_bruck rank %d", rank);
