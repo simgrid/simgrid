@@ -425,7 +425,7 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
 }
 
 /**
- * \brief Returns the amount of workstations involved in a task
+ * \brief Returns the number of workstations involved in a task
  *
  * Only call this on already scheduled tasks!
  * \param task a task
@@ -825,8 +825,9 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
  * \param task the task to evaluate
  * \param workstation_nb number of workstations on which the task would be executed
  * \param workstation_list the workstations on which the task would be executed
- * \param flops_amount computation amount for each workstation
- * \param bytes_amount communication amount between each pair of workstations
+ * \param flops_amount computation amount for each workstation (i.e., an array of workstation_nb doubles)
+ * \param bytes_amount communication amount between each pair of workstations (i.e., a matrix of
+ *        workstation_nb*workstation_nb doubles)
  * \see SD_schedule()
  */
 double SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
@@ -875,10 +876,10 @@ static inline void SD_task_do_schedule(SD_task_t task)
  * Once scheduled, a task is executed as soon as possible in \see SD_simulate, i.e. when its dependencies are satisfied.
  *
  * \param task the task you want to schedule
- * \param host_count number of workstations on which the task will be executed
- * \param workstation_list the workstations on which the task will be executed
- * \param flops_amount computation amount for each workstation
- * \param bytes_amount communication amount between each pair of workstations
+ * \param host_count number of hosts on which the task will be executed
+ * \param workstation_list the hosts on which the task will be executed
+ * \param flops_amount computation amount for each hosts (i.e., an array of host_count doubles)
+ * \param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
  * \param rate task execution speed rate
  * \see SD_task_unschedule()
  */
