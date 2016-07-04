@@ -30,35 +30,21 @@ class Mutex;
  *  timestamp timeouts.
  */
 XBT_PUBLIC_CLASS ConditionVariable {
-  
+private:
+  friend s_smx_cond;
+  smx_cond_t cond_;
+  ConditionVariable(smx_cond_t cond) : cond_(cond) {}
 public:
-  ConditionVariable();
 
-  ConditionVariable(ConditionVariable* cond) : cond_(SIMIX_cond_ref(cond->cond_)) {}
-  ~ConditionVariable();
+  ConditionVariable(ConditionVariable const&) = delete;
+  ConditionVariable& operator=(ConditionVariable const&) = delete;
 
-  // Copy+move (with the copy-and-swap idiom):
-  ConditionVariable(ConditionVariable const& cond) : cond_(SIMIX_cond_ref(cond.cond_)) {}
-  friend void swap(ConditionVariable& first, ConditionVariable& second)
-  {
-    using std::swap;
-    swap(first.cond_, second.cond_);
-  }
-  ConditionVariable& operator=(ConditionVariable cond)
-  {
-    swap(*this, cond);
-    return *this;
-  }
-  ConditionVariable(ConditionVariable&& cond) : cond_(nullptr)
-  {
-    swap(*this, cond);
-  }
+  friend XBT_PUBLIC(void) intrusive_ptr_add_ref(ConditionVariable* cond);
+  friend XBT_PUBLIC(void) intrusive_ptr_release(ConditionVariable* cond);
+  using Ptr = boost::intrusive_ptr<ConditionVariable>;
 
-  bool valid() const
-  {
-    return cond_ != nullptr;
-  }
-  
+  static Ptr createConditionVariable();
+
   //  Wait functions:
 
   void wait(std::unique_lock<Mutex>& lock);
@@ -94,11 +80,10 @@ public:
 
   XBT_ATTRIB_DEPRECATED("Use notify_one() instead")
   void notify() { notify_one(); }
-
-private:
-  smx_cond_t cond_;
-
 };
+
+using ConditionVariablePtr = ConditionVariable::Ptr;
+
 }} // namespace simgrid::s4u
 
 #endif /* SIMGRID_S4U_COND_VARIABLE_HPP */

@@ -238,9 +238,8 @@ smx_cond_t SIMIX_cond_init(void)
 {
   XBT_IN("()");
   simgrid::simix::Process p;
-  smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
+  smx_cond_t cond = new s_smx_cond();
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
-  cond->mutex = nullptr;
   cond->refcount_ = 1;
   XBT_OUT();
   return cond;
@@ -383,9 +382,8 @@ void intrusive_ptr_release(s_smx_cond_t *cond)
   if (count == 0) {
     xbt_assert(xbt_swag_size(cond->sleeping) == 0,
                 "Cannot destroy conditional since someone is still using it");
-
     xbt_swag_free(cond->sleeping);
-    xbt_free(cond);
+    delete cond;
   }
 }
 

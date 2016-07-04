@@ -4,18 +4,17 @@
 #include <xbt/ex.hpp>
 #include <xbt/log.hpp>
 
+#include "src/simix/smx_synchro_private.h"
 #include "simgrid/s4u/conditionVariable.hpp"
 #include "simgrid/simix.h"
 
 namespace simgrid {
 namespace s4u {
 
-ConditionVariable::ConditionVariable()  : cond_(simcall_cond_init()){
-    
-}
-
-ConditionVariable::~ConditionVariable() {
-  SIMIX_cond_unref(cond_);
+ConditionVariablePtr ConditionVariable::createConditionVariable()
+{
+  smx_cond_t cond = simcall_cond_init();
+  return ConditionVariablePtr(&cond->cond_, false);
 }
 
 /**
@@ -71,6 +70,16 @@ void ConditionVariable::notify_one() {
  
 void ConditionVariable::notify_all() {
   simcall_cond_broadcast(cond_);
+}
+
+void intrusive_ptr_add_ref(ConditionVariable* cond)
+{
+  intrusive_ptr_add_ref(cond->cond_);
+}
+
+void intrusive_ptr_release(ConditionVariable* cond)
+{
+  intrusive_ptr_release(cond->cond_);
 }
 
 }

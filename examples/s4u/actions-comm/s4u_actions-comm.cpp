@@ -164,11 +164,11 @@ static void action_wait(const char *const *action)
 static void action_barrier(const char *const *action)
 {
   static simgrid::s4u::MutexPtr mutex = nullptr;
-  static simgrid::s4u::ConditionVariable *cond = NULL;
+  static simgrid::s4u::ConditionVariablePtr cond = nullptr;
   static int processes_arrived_sofar = 0;
   if (mutex == nullptr) {          // first arriving on the barrier
     mutex = simgrid::s4u::Mutex::createMutex();
-    cond = new simgrid::s4u::ConditionVariable();
+    cond = simgrid::s4u::ConditionVariable::createConditionVariable();
     processes_arrived_sofar = 0;
   }
   ACT_DEBUG("Entering barrier: %s (%d already there)", NAME, processes_arrived_sofar);
@@ -188,7 +188,7 @@ static void action_barrier(const char *const *action)
 
   processes_arrived_sofar--;
   if (processes_arrived_sofar<=0) {
-    delete cond;
+    cond = nullptr;
     mutex = nullptr;
   }
 }

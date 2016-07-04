@@ -10,6 +10,7 @@
 #include <atomic>
 
 #include <simgrid/s4u/mutex.hpp>
+#include <simgrid/s4u/conditionVariable.hpp>
 
 #include "xbt/base.h"
 #include "xbt/swag.h"
@@ -62,17 +63,18 @@ private:
 }
 
 typedef struct s_smx_cond {
-  smx_mutex_t mutex;
-  xbt_swag_t sleeping;          /* list of sleeping process */
-  std::atomic_int_fast32_t refcount_;
+  s_smx_cond() : cond_(this) {}
+
+  std::atomic_int_fast32_t refcount_ { 1 };
+  smx_mutex_t mutex = nullptr;
+  xbt_swag_t sleeping = nullptr;  /* list of sleeping process */
+  simgrid::s4u::ConditionVariable cond_;
 } s_smx_cond_t;
 
 typedef struct s_smx_sem {
   unsigned int value;
   xbt_swag_t sleeping;          /* list of sleeping process */
 } s_smx_sem_t;
-
-
 
 XBT_PRIVATE void SIMIX_post_synchro(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall);
