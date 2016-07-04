@@ -16,10 +16,10 @@
 
 /** @brief Rendez-vous point datatype */
 typedef struct s_smx_mailbox {
-  char *name;
-  std::deque<smx_synchro_t> *comm_queue;
+  char *name = nullptr;
+  std::deque<smx_synchro_t> *comm_queue = nullptr;
   boost::intrusive_ptr<simgrid::simix::Process> permanent_receiver; //process which the mailbox is attached to
-  std::deque<smx_synchro_t> *done_comm_queue;//messages already received in the permanent receive mode
+  std::deque<smx_synchro_t> *done_comm_queue = nullptr;//messages already received in the permanent receive mode
 } s_smx_mailbox_t;
 
 XBT_PRIVATE void SIMIX_mailbox_exit(void);
