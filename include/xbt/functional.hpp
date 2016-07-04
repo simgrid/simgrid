@@ -240,7 +240,7 @@ private:
       [](TaskUnion& buffer, Args... args) -> R {
         // Delete F when we go out of scope:
         std::unique_ptr<F> code(*reinterpret_cast<F**>(&buffer));
-        (*code)(std::forward<Args>(args)...);
+        return (*code)(std::forward<Args>(args)...);
       },
       // Destroy:
       [](TaskUnion& buffer) {
