@@ -64,6 +64,7 @@ void smpi_topo_destroy(MPI_Topology topo) {
         return;
         break;
     }
+    xbt_free(topo);
 }
 
 MPI_Topology smpi_topo_create(MPIR_Topo_type kind) {
