@@ -676,6 +676,7 @@ set(headers_to_install
   include/xbt/dynar.h
   include/xbt/dynar.hpp
   include/xbt/ex.h
+  include/xbt/ex.hpp
   include/xbt/exception.hpp
   include/xbt/backtrace.h
   include/xbt/backtrace.hpp

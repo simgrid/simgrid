@@ -10,6 +10,7 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/ex.h"
+#include <xbt/ex.hpp>
 #include "xbt/dynar.h"
 #include <sys/types.h>
 

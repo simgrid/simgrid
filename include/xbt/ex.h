@@ -45,11 +45,6 @@
 
 #include <stdlib.h>
 
-#ifdef __cplusplus
-#include <stdexcept>
-#include <xbt/exception.hpp>
-#endif
-
 #include "xbt/base.h"
 #include "xbt/sysdep.h"
 #include "xbt/misc.h"
@@ -96,23 +91,6 @@ typedef enum {
   io_error,                     /**< disk or file error */
   vm_error                      /**< vm  error */
 } xbt_errcat_t;
-
-#ifdef __cplusplus
-XBT_PUBLIC_CLASS xbt_ex :
-  public std::runtime_error,
-  public simgrid::xbt::WithContextException {
-public:
-  xbt_ex() : std::runtime_error("") {}
-  xbt_ex(const char* message) : std::runtime_error(message) {}
-  ~xbt_ex() override;
-
-  xbt_errcat_t category;        /**< category like HTTP (what went wrong) */
-  int value;                    /**< like errno (why did it went wrong) */
-  const char *file;             /**< Thrown point */
-  int line;                     /**< Thrown point */
-  const char *func;             /**< Thrown point */
-};
-#endif
 
 SG_BEGIN_DECL()
 

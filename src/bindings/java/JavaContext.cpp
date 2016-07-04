@@ -12,10 +12,12 @@
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>
 #include <xbt/ex.h>
+#include <xbt/ex.hpp>
 #include "JavaContext.hpp"
 #include "jxbt_utilities.h"
 #include "xbt/dynar.h"
 #include "../../simix/smx_private.h"
+
 extern JavaVM *__java_vm;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg, "MSG for Java(TM)");

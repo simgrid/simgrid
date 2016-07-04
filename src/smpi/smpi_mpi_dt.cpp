@@ -13,6 +13,7 @@
 #include "smpi_mpi_dt_private.h"
 #include "mc/mc.h"
 #include "xbt/replay.h"
+#include <xbt/ex.hpp>
 #include "simgrid/modelchecker.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_mpi_dt, smpi, "Logging specific to SMPI (datatype)");

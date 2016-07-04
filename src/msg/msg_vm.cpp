@@ -9,6 +9,8 @@
  * 2. use parallel tasks to simulate CPU overhead and remove the experimental code generating micro computation tasks
  */
 
+#include <xbt/ex.hpp>
+
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"

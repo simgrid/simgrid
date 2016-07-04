@@ -7,7 +7,8 @@
 
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
-#include "xbt/log.h"
+#include <xbt/ex.hpp>
+#include <xbt/log.h>
 
 #include "src/simix/SynchroRaw.hpp"
 

@@ -5,6 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "smx_private.h"
+#include <xbt/ex.hpp>
 #include "xbt/sysdep.h"
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"

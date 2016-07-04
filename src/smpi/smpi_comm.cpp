@@ -7,6 +7,7 @@
 #include <stdlib.h>
 
 #include "private.h"
+#include <xbt/ex.hpp>
 #include "xbt/dict.h"
 #include "smpi_mpi_dt_private.h"
 #include "limits.h"

@@ -6,10 +6,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+
 #include <string.h>
 #include <stdio.h>
+
 #include "xbt/dict.h"
 #include "xbt/ex.h"
+#include <xbt/ex.hpp>
 #include "xbt/log.h"
 #include "xbt/mallocator.h"
 #include "src/xbt_modinter.h"
@@ -574,6 +577,7 @@ void xbt_dict_postexit(void)
 #include <time.h>
 #include "xbt.h"
 #include "xbt/ex.h"
+#include <xbt/ex.hpp>
 #include "src/internal_config.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(xbt_dict);

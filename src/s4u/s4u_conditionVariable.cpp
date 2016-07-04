@@ -1,6 +1,7 @@
 #include <exception>
 #include <mutex>
 
+#include <xbt/ex.hpp>
 #include <xbt/log.hpp>
 
 #include "simgrid/s4u/conditionVariable.hpp"

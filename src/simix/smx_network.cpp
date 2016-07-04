@@ -5,6 +5,8 @@
 
 #include <boost/range/algorithm.hpp>
 
+#include <xbt/ex.hpp>
+
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_private.h"
 #include "xbt/log.h"

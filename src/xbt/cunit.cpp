@@ -12,6 +12,7 @@
 #include "src/internal_config.h"
 #include <stdio.h>
 
+#include <xbt/ex.hpp>
 #include "xbt/sysdep.h"         /* bvprintf */
 #include "xbt/cunit.h"
 #include "xbt/dynar.h"

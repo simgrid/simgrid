@@ -14,6 +14,8 @@
 #include <string.h>
 #include <unistd.h>
 
+#include <xbt/ex.hpp>
+
 XBT_LOG_NEW_DEFAULT_CATEGORY(test,"this test");
 
 #define BUFFSIZE 204800

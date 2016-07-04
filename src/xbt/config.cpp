@@ -15,6 +15,7 @@
 #include <typeinfo>
 #include <type_traits>
 
+#include <xbt/ex.hpp>
 #include <xbt/config.h>
 #include <xbt/config.hpp>
 #include "xbt/misc.h"
@@ -822,6 +823,7 @@ int xbt_cfg_get_boolean(const char *key)
 
 #include "xbt.h"
 #include "xbt/ex.h"
+#include <xbt/ex.hpp>
 
 #include <xbt/config.hpp>
 

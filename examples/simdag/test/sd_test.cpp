@@ -6,6 +6,7 @@
 
 #include "simgrid/simdag.h"
 #include "xbt/ex.h"
+#include <xbt/ex.hpp>
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example");

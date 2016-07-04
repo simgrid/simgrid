@@ -48,6 +48,7 @@
 #include <xbt/backtrace.hpp>
 #include "src/internal_config.h"           /* execinfo when available */
 #include "xbt/ex.h"
+#include <xbt/ex.hpp>
 #include "xbt/log.h"
 #include "xbt/log.hpp"
 #include "xbt/backtrace.h"
@@ -146,6 +147,7 @@ const char *xbt_ex_catname(xbt_errcat_t cat)
 #ifdef SIMGRID_TEST
 #include <stdio.h>
 #include "xbt/ex.h"
+#include <xbt/ex.hpp>
 
 XBT_TEST_SUITE("xbt_ex", "Exception Handling");
 

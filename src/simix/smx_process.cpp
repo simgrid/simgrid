@@ -10,6 +10,7 @@
 
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
+#include <xbt/ex.hpp>
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/dict.h"

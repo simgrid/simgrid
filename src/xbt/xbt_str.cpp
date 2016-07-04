@@ -6,6 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/ex.hpp>
 #include "src/internal_config.h"
 #include "xbt/misc.h"
 #include "xbt/sysdep.h"
@@ -516,6 +517,7 @@ double xbt_str_parse_double(const char* str, const char* error_msg)
 }
 
 #ifdef SIMGRID_TEST
+#include <xbt/ex.hpp>
 #include "xbt/str.h"
 
 XBT_TEST_SUITE("xbt_str", "String Handling");

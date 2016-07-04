@@ -12,6 +12,7 @@
 #include "src/internal_config.h"
 #include "private.h"
 #include "private.hpp"
+#include <xbt/ex.hpp>
 #include "xbt/dict.h"
 #include "xbt/sysdep.h"
 #include "xbt/ex.h"
