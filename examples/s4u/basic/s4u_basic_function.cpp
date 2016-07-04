@@ -18,8 +18,8 @@ int main(int argc, char **argv) {
   e->registerFunction<Worker>("worker");
   e->registerFunction<Master>("master");
   std::vector<std::string> args;
-  simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Tremblay"), "worker", args);
-  simgrid::s4u::Actor("master", simgrid::s4u::Host::by_name("Jupiter"), "master", args);
+  simgrid::s4u::Actor::createActor("worker", simgrid::s4u::Host::by_name("Tremblay"), "worker", args);
+  simgrid::s4u::Actor::createActor("master", simgrid::s4u::Host::by_name("Jupiter"), "master", args);
   e->run();
   return 0;
 }

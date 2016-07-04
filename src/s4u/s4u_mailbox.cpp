@@ -7,6 +7,7 @@
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_network_private.h"
+#include "src/simix/smx_process_private.h"
 
 #include "simgrid/s4u/mailbox.hpp"
 
@@ -45,12 +46,13 @@ bool Mailbox::empty() {
   return nullptr == simcall_mbox_front(pimpl_);
 }
 
-void Mailbox::setReceiver(Actor actor) {
-  simcall_mbox_set_receiver(pimpl_, actor.pimpl_);
+void Mailbox::setReceiver(Actor* actor) {
+  simcall_mbox_set_receiver(pimpl_, actor == nullptr ? nullptr : actor->pimpl_);
 }
+
 /** @brief get the receiver (process associated to the mailbox) */
-Actor Mailbox::receiver() {
-  return Actor(pimpl_->permanent_receiver.get());
+Actor& Mailbox::receiver() {
+  return pimpl_->permanent_receiver->actor();
 }
 
 }
@@ -65,7 +67,7 @@ int sg_mbox_is_empty(sg_mbox_t mbox) {
   return mbox->empty();
 }
 void sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process) {
-  mbox->setReceiver(process);
+  mbox->setReceiver(&process->actor());
 }
 smx_process_t sg_mbox_receiver(sg_mbox_t mbox) {
   return mbox->receiver().getInferior();

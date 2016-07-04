@@ -19,24 +19,30 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 namespace simgrid {
 namespace s4u {
 
-Actor::Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
+// ***** Actor creation *****
+
+ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
 {
   // TODO, when autorestart is used, the std::function is copied so the new
   // instance will get a fresh (reinitialized) state. Is this what we want?
-  this->pimpl_ = SIMIX_process_ref(simcall_process_create(
+  smx_process_t process = simcall_process_create(
     name, std::move(code), nullptr, host->name().c_str(),
-    killTime, nullptr, 0));
+    killTime, nullptr, 0);
+  return Ptr(&process->actor());
 }
 
-Actor::Actor(const char* name, s4u::Host *host, double killTime,
+ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime,
   const char* function, std::vector<std::string> args)
 {
   simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
   simgrid::simix::ActorCode code = factory(std::move(args));
-  this->pimpl_ = SIMIX_process_ref(simcall_process_create(
+  smx_process_t process = simcall_process_create(
     name, std::move(code), nullptr, host->name().c_str(),
-    killTime, nullptr, 0));
+    killTime, nullptr, 0);
+  return ActorPtr(&process->actor());
 }
+
+// ***** Actor methods *****
 
 void Actor::join() {
   simcall_process_join(pimpl_, -1);
@@ -81,23 +87,26 @@ smx_process_t Actor::getInferior() {
   return pimpl_;
 }
 
-
 void Actor::kill() {
   simcall_process_kill(pimpl_);
 }
 
-simgrid::s4u::Actor Actor::forPid(int pid)
-{
-  // Should we throw if we did not find it?
-  smx_process_t process = SIMIX_process_from_PID(pid);
-  return simgrid::s4u::Actor(process);
-}
+// ***** Static functions *****
 
-// static stuff:
+ActorPtr Actor::forPid(int pid)
+{
+  smx_process_t process = SIMIX_process_from_PID(pid);
+  if (process != nullptr)
+    return ActorPtr(&process->actor());
+  else
+    return nullptr;
+}
 
 void Actor::killAll() {
   simcall_process_killall(1);
 }
+
+// ***** this_actor *****
 
 namespace this_actor {
 

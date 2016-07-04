@@ -15,6 +15,8 @@
 #include <xbt/string.hpp>
 
 #include <simgrid/simix.hpp>
+#include <simgrid/s4u/actor.hpp>
+
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
@@ -39,6 +41,7 @@ public:
 
 class Process {
 public:
+  Process() : actor_(this) {}
 
   // TODO, replace with boost intrusive container hooks
   s_xbt_swag_hookup_t process_hookup   = { nullptr, nullptr };   /* simix_global->process_list */
@@ -88,8 +91,11 @@ public:
 
   ~Process();
 
+  simgrid::s4u::Actor& actor() { return actor_; }
+
 private:
   std::atomic_int_fast32_t refcount_ { 1 };
+  simgrid::s4u::Actor actor_;
 };
 
 }

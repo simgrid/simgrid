@@ -15,6 +15,8 @@
 #include <utility>
 #include <vector>
 
+#include <boost/intrusive_ptr.hpp>
+
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
 
@@ -127,8 +129,9 @@ namespace s4u {
 /** @brief Simulation Agent (see \ref s4u_actor)*/
 XBT_PUBLIC_CLASS Actor {
   friend Mailbox;
+  friend simgrid::simix::Process;
+  smx_process_t pimpl_ = nullptr;
 
-private:
   /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
   template<class F, class... Args>
   static std::function<void()> wrap_task(F f, Args... args)
@@ -140,40 +143,42 @@ private:
       (*task)();
     };
   }
-public:
-  Actor() : pimpl_(nullptr) {}
-  Actor(smx_process_t smx_proc) :
-    pimpl_(SIMIX_process_ref(smx_proc)) {}
-  ~Actor()
-  {
-    SIMIX_process_unref(pimpl_);
-  }
 
-  // Copy+move (with the copy-and-swap idiom):
-  Actor(Actor const& actor) : pimpl_(SIMIX_process_ref(actor.pimpl_)) {}
-  friend void swap(Actor& first, Actor& second)
+  Actor(smx_process_t pimpl) : pimpl_(pimpl) {}
+
+public:
+
+  // ***** No copy *****
+
+  Actor(Actor const&) = delete;
+  Actor& operator=(Actor const&) = delete;
+
+  // ***** Reference count (delegated to pimpl_) *****
+
+  friend void intrusive_ptr_add_ref(Actor* actor)
   {
-    using std::swap;
-    swap(first.pimpl_, second.pimpl_);
+    xbt_assert(actor != nullptr);
+    SIMIX_process_ref(actor->pimpl_);
   }
-  Actor& operator=(Actor actor)
+  friend void intrusive_ptr_release(Actor* actor)
   {
-    swap(*this, actor);
-    return *this;
+    xbt_assert(actor != nullptr);
+    SIMIX_process_unref(actor->pimpl_);
   }
-  Actor(Actor&& actor) : pimpl_(nullptr)
-  {
-    swap(*this, actor);
-  }
+  using Ptr = boost::intrusive_ptr<Actor>;
+
+  // ***** Actor creation *****
 
   /** Create an actor using a function
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  Actor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
+  static Ptr createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
 
-  Actor(const char* name, s4u::Host *host, std::function<void()> code)
-    : Actor(name, host, -1.0, std::move(code)) {};
+  static Ptr createActor(const char* name, s4u::Host *host, std::function<void()> code)
+  {
+    return createActor(name, host, -1.0, std::move(code));
+  }
 
   /** Create an actor using code
    *
@@ -186,18 +191,23 @@ public:
     // This constructor is enabled only if the call code(args...) is valid:
     typename = typename std::result_of<F(Args...)>::type
     >
-  Actor(const char* name, s4u::Host *host, F code, Args... args) :
-    Actor(name, host, wrap_task(std::move(code), std::move(args)...))
-  {}
+  static Ptr createActor(const char* name, s4u::Host *host, F code, Args... args)
+  {
+    return createActor(name, host, wrap_task(std::move(code), std::move(args)...));
+  }
 
   // Create actor from function name:
 
-  Actor(const char* name, s4u::Host *host, double killTime,
+  static Ptr createActor(const char* name, s4u::Host *host, double killTime,
     const char* function, std::vector<std::string> args);
 
-  Actor(const char* name, s4u::Host *host, const char* function,
+  static Ptr createActor(const char* name, s4u::Host *host, const char* function,
       std::vector<std::string> args)
-    : Actor(name, host, -1.0, function, std::move(args)) {}
+  {
+    return createActor(name, host, -1.0, function, std::move(args));
+  }
+
+  // ***** Methods *****
 
   /** Retrieves the actor that have the given PID (or NULL if not existing) */
   //static Actor *byPid(int pid); not implemented
@@ -224,7 +234,7 @@ public:
   void kill();
 
   static void kill(int pid);
-  static Actor forPid(int pid);
+  static Ptr forPid(int pid);
   
   /**
    * Wait for the actor to finish.
@@ -235,13 +245,11 @@ public:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
-
-  bool valid() const { return pimpl_ != nullptr; }
   
   smx_process_t getInferior();
-private:
-  smx_process_t pimpl_ = nullptr;
 };
+
+using ActorPtr = Actor::Ptr;
 
 /** @ingroup s4u_api
  *  @brief Static methods working on the current actor (see @ref s4u::Actor) */

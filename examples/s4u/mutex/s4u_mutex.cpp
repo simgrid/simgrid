@@ -50,9 +50,9 @@ static void master()
   for (int i = 0; i < NB_ACTOR * 2 ; i++) {
     // To create a worker use the static method simgrid::s4u::Actor.
     if((i % 2) == 0 )
-      simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Jupiter"),  workerLockGuard, mutex, std::ref(result));
+      simgrid::s4u::Actor::createActor("worker", simgrid::s4u::Host::by_name("Jupiter"),  workerLockGuard, mutex, std::ref(result));
     else
-      simgrid::s4u::Actor("worker", simgrid::s4u::Host::by_name("Tremblay"), worker,          mutex, std::ref(result));
+      simgrid::s4u::Actor::createActor("worker", simgrid::s4u::Host::by_name("Tremblay"), worker,          mutex, std::ref(result));
   }
 
   simgrid::s4u::this_actor::sleep(10);
@@ -63,7 +63,7 @@ int main(int argc, char **argv)
 {
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);
   e->loadPlatform("../../platforms/two_hosts.xml");
-  simgrid::s4u::Actor("main", simgrid::s4u::Host::by_name("Tremblay"), master);
+  simgrid::s4u::Actor::createActor("main", simgrid::s4u::Host::by_name("Tremblay"), master);
   e->run();
   return 0;
 }
