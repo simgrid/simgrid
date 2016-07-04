@@ -9,6 +9,8 @@
 
 #include <atomic>
 
+#include <simgrid/s4u/mutex.hpp>
+
 #include "xbt/base.h"
 #include "xbt/swag.h"
 #include "xbt/xbt_os_thread.h"
@@ -48,8 +50,12 @@ public:
     if (count == 0)
       delete mutex;
   }
+
+  simgrid::s4u::Mutex& mutex() { return mutex_; }
+
 private:
   std::atomic_int_fast32_t refcount_ { 1 };
+  simgrid::s4u::Mutex mutex_;
 };
 
 }

@@ -98,7 +98,7 @@ void SIMIX_synchro_finish(smx_synchro_t synchro)
 namespace simgrid {
 namespace simix {
 
-Mutex::Mutex()
+Mutex::Mutex() : mutex_(this)
 {
   XBT_IN("(%p)", this);
   // Useful to initialize sleeping swag:

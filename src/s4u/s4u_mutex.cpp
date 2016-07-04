@@ -6,23 +6,32 @@
 
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
-#include "src/simix/smx_network_private.h"
+#include "src/simix/smx_synchro_private.h"
 
 #include "simgrid/s4u/mutex.hpp"
 
 namespace simgrid {
 namespace s4u {
 
-void Mutex::lock() {
+void Mutex::lock()
+{
   simcall_mutex_lock(mutex_);
 }
 
-void Mutex::unlock() {
+void Mutex::unlock()
+{
   simcall_mutex_unlock(mutex_);
 }
 
-bool Mutex::try_lock() {
+bool Mutex::try_lock()
+{
   return simcall_mutex_trylock(mutex_);
+}
+
+MutexPtr Mutex::createMutex()
+{
+  smx_mutex_t mutex = simcall_mutex_init();
+  return MutexPtr(&mutex->mutex(), false);
 }
 
 }

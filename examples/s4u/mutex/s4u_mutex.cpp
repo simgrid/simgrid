@@ -14,13 +14,13 @@
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
-static void worker(simgrid::s4u::Mutex mutex, int& result)
+static void worker(simgrid::s4u::MutexPtr mutex, int& result)
 {
   // Do the calculation
   simgrid::s4u::this_actor::execute(1000);
 
   // lock the mutex before enter in the critical section
-  std::lock_guard<simgrid::s4u::Mutex> lock(mutex);
+  std::lock_guard<simgrid::s4u::Mutex> lock(*mutex);
   XBT_INFO("Hello s4u, I'm ready to compute");
 
   // And finaly add it to the results
@@ -28,12 +28,12 @@ static void worker(simgrid::s4u::Mutex mutex, int& result)
   XBT_INFO("I'm done, good bye");
 }
 
-static void workerLockGuard(simgrid::s4u::Mutex mutex, int& result)
+static void workerLockGuard(simgrid::s4u::MutexPtr mutex, int& result)
 {
   simgrid::s4u::this_actor::execute(1000);
 
   // Simply use the std::lock_guard like this
-  std::lock_guard<simgrid::s4u::Mutex> lock(mutex);
+  std::lock_guard<simgrid::s4u::Mutex> lock(*mutex);
 
   // then you are in a safe zone
   XBT_INFO("Hello s4u, I'm ready to compute");
@@ -45,7 +45,7 @@ static void workerLockGuard(simgrid::s4u::Mutex mutex, int& result)
 static void master()
 {
   int result = 0;
-  simgrid::s4u::Mutex mutex;
+  simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::createMutex();
 
   for (int i = 0; i < NB_ACTOR * 2 ; i++) {
     // To create a worker use the static method simgrid::s4u::Actor.

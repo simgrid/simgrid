@@ -163,11 +163,11 @@ static void action_wait(const char *const *action)
 /* FIXME: that's a poor man's implementation: we should take the message exchanges into account */
 static void action_barrier(const char *const *action)
 {
-  static simgrid::s4u::Mutex *mutex = NULL;
+  static simgrid::s4u::MutexPtr mutex = nullptr;
   static simgrid::s4u::ConditionVariable *cond = NULL;
   static int processes_arrived_sofar = 0;
-  if (mutex == NULL) {          // first arriving on the barrier
-    mutex = new simgrid::s4u::Mutex();
+  if (mutex == nullptr) {          // first arriving on the barrier
+    mutex = simgrid::s4u::Mutex::createMutex();
     cond = new simgrid::s4u::ConditionVariable();
     processes_arrived_sofar = 0;
   }
@@ -189,8 +189,7 @@ static void action_barrier(const char *const *action)
   processes_arrived_sofar--;
   if (processes_arrived_sofar<=0) {
     delete cond;
-    delete mutex;
-    mutex = NULL;
+    mutex = nullptr;
   }
 }
 

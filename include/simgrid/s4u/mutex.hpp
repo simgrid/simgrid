@@ -21,45 +21,37 @@ class ConditionVariable;
 
 XBT_PUBLIC_CLASS Mutex {
 friend ConditionVariable;
+private:
+  friend simgrid::simix::Mutex;
+  simgrid::simix::Mutex* mutex_;
+  Mutex(simgrid::simix::Mutex* mutex) : mutex_(mutex) {}
 public:
-  Mutex() :
-    mutex_(simcall_mutex_init()) {}
-  Mutex(simgrid::simix::Mutex* mutex) : mutex_(SIMIX_mutex_ref(mutex)) {}
-  ~Mutex()
-  {
-    SIMIX_mutex_unref(mutex_);
-  }
 
-  // Copy+move (with the copy-and-swap idiom):
-  Mutex(Mutex const& mutex) : mutex_(SIMIX_mutex_ref(mutex.mutex_)) {}
-  friend void swap(Mutex& first, Mutex& second)
+  friend void intrusive_ptr_add_ref(Mutex* mutex)
   {
-    using std::swap;
-    swap(first.mutex_, second.mutex_);
+    xbt_assert(mutex);
+    SIMIX_mutex_ref(mutex->mutex_);
   }
-  Mutex& operator=(Mutex mutex)
+  friend void intrusive_ptr_release(Mutex* mutex)
   {
-    swap(*this, mutex);
-    return *this;
+    xbt_assert(mutex);
+    SIMIX_mutex_unref(mutex->mutex_);
   }
-  Mutex(Mutex&& mutex) : mutex_(nullptr)
-  {
-    swap(*this, mutex);
-  }
+  using Ptr = boost::intrusive_ptr<Mutex>;
 
-  bool valid() const
-  {
-    return mutex_ != nullptr;
-  }
+  // No copy:
+  Mutex(Mutex const&) = delete;
+  Mutex& operatori(Mutex const&) = delete;
+
+  static Ptr createMutex();
 
 public:
   void lock();
   void unlock();
   bool try_lock();
-
-private:
-  simgrid::simix::Mutex* mutex_;
 };
+
+using MutexPtr = Mutex::Ptr;
 
 }} // namespace simgrid::s4u
 
