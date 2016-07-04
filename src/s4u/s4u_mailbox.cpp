@@ -17,29 +17,21 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
 namespace simgrid {
 namespace s4u {
 
-boost::unordered_map <std::string, s4u::Mailbox *> *s4u::Mailbox::mailboxes = new boost::unordered_map<std::string, s4u::Mailbox*> ();
-
-Mailbox::Mailbox(const char*name, smx_mailbox_t inferior) {
-  pimpl_ = inferior;
-  name_ = name;
-  mailboxes->insert({name, this});
-}
 const char *Mailbox::getName() {
-  return name_.c_str();
+  return pimpl_->name;
 }
-Mailbox *Mailbox::byName(const char*name) {
-  s4u::Mailbox *res;
-  try {
-    res = mailboxes->at(name);
-  } catch (std::out_of_range& e) {
-    // FIXME: there is a potential race condition here where two actors run Mailbox::byName on a non-existent mailbox
-    // during the same scheduling round. Both will be interrupted in the simcall creating the underlying simix mbox.
-    // Only one simix object will be created, but two S4U objects will be created.
-    // Only one S4U object will be stored in the hashmap and used, and the other one will be leaked.
-    new Mailbox(name,simcall_mbox_create(name));
-    res = mailboxes->at(name); // Use the stored one, even if it's not the one I created myself.
-  }
-  return res;
+
+MailboxPtr Mailbox::byName(const char*name) {
+  // FIXME: there is a race condition here where two actors run Mailbox::byName
+  // on a non-existent mailbox during the same scheduling round. Both will be
+  // interrupted in the simcall creating the underlying simix mbox.
+  // Only one simix object will be created, but two S4U objects will be created.
+  // Only one S4U object will be stored in the hashmap and used, and the other
+  // one will be leaked.
+  smx_mailbox_t mbox = simcall_mbox_get_by_name(name);
+  if (mbox == nullptr)
+    mbox = simcall_mbox_create(name);
+  return MailboxPtr(&mbox->mbox_, true);
 }
 
 bool Mailbox::empty() {
@@ -61,7 +53,7 @@ Actor& Mailbox::receiver() {
 /*------- C functions -------*/
 
 sg_mbox_t sg_mbox_by_name(const char*name){
-  return simgrid::s4u::Mailbox::byName(name);
+  return simgrid::s4u::Mailbox::byName(name).get();
 }
 int sg_mbox_is_empty(sg_mbox_t mbox) {
   return mbox->empty();

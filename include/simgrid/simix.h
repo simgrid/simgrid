@@ -32,22 +32,21 @@ namespace simix {
   class Context;
   class ContextFactory;
   class Mutex;
+  class Mailbox;
 }
 }
 
 typedef simgrid::simix::Context *smx_context_t;
 typedef simgrid::simix::Process *smx_process_t;
-
-/**
- * \ingroup simix_synchro_management
- */
 typedef simgrid::simix::Mutex   *smx_mutex_t;
+typedef simgrid::simix::Mailbox *smx_mailbox_t;
 
 #else
 
 typedef struct s_smx_context *smx_context_t;
 typedef struct s_smx_process *smx_process_t;
 typedef struct s_smx_mutex   *smx_mutex_t;
+typedef struct s_smx_mailbox *smx_mailbox_t;
 
 #endif
 
@@ -110,10 +109,6 @@ typedef enum {
 /** @} */
 
 /******************************* Networking ***********************************/
-/**
- * \ingroup simix_mbox_management
- */
-typedef struct s_smx_mailbox *smx_mailbox_t;
 
 /* Process creation/destruction callbacks */
 typedef void (*void_pfn_smxprocess_t) (smx_process_t);

@@ -45,14 +45,8 @@ smx_mailbox_t SIMIX_mbox_create(const char *name)
   xbt_assert(name, "Mailboxes must have a name");
   /* two processes may have pushed the same mbox_create simcall at the same time */
   smx_mailbox_t mbox = (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name);
-
   if (!mbox) {
-    mbox = new s_smx_mailbox_t();
-    mbox->name = xbt_strdup(name);
-    mbox->comm_queue = new std::deque<smx_synchro_t>();
-    mbox->done_comm_queue = nullptr; // Allocated on need only
-    mbox->permanent_receiver=nullptr;
-
+    mbox = new simgrid::simix::Mailbox(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
     xbt_dict_set(mailboxes, mbox->name, mbox, nullptr);
   }
@@ -63,9 +57,6 @@ void SIMIX_mbox_free(void *data)
 {
   XBT_DEBUG("mbox free %p", data);
   smx_mailbox_t mbox = (smx_mailbox_t) data;
-  xbt_free(mbox->name);
-  delete mbox->comm_queue;
-  delete mbox->done_comm_queue;
   delete mbox;
 }
 
@@ -81,9 +72,7 @@ smx_mailbox_t SIMIX_mbox_get_by_name(const char *name)
  */
 void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
 {
-  mbox->permanent_receiver=process;
-  if (mbox->done_comm_queue == nullptr)
-    mbox->done_comm_queue = new std::deque<smx_synchro_t>();
+  mbox->permanent_receiver = process;
 }
 
 /**
@@ -94,8 +83,7 @@ void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
 static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t synchro)
 {
   simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
-
-  mbox->comm_queue->push_back(comm);
+  mbox->comm_queue.push_back(comm);
   comm->mbox = mbox;
 }
 
@@ -109,9 +97,9 @@ void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t synchro)
   simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
 
   comm->mbox = nullptr;
-  for (auto it = mbox->comm_queue->begin(); it != mbox->comm_queue->end(); it++)
+  for (auto it = mbox->comm_queue.begin(); it != mbox->comm_queue.end(); it++)
     if (*it == comm) {
-      mbox->comm_queue->erase(it);
+      mbox->comm_queue. erase(it);
       return;
     }
   xbt_die("Cannot remove this comm that is not part of the mailbox");
@@ -190,7 +178,7 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
    *
    * If it is not found then push our communication into the rendez-vous point */
   smx_synchro_t other_synchro =
-      _find_matching_comm(mbox->comm_queue, SIMIX_COMM_RECEIVE, match_fun, data, this_synchro, /*remove_matching*/true);
+      _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_RECEIVE, match_fun, data, this_synchro, /*remove_matching*/true);
   simgrid::simix::Comm *other_comm = static_cast<simgrid::simix::Comm*>(other_synchro);
 
 
@@ -203,7 +191,7 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
       other_synchro->state = SIMIX_READY;
       other_comm->dst_proc=mbox->permanent_receiver.get();
       other_comm->ref();
-      mbox->done_comm_queue->push_back(other_synchro);
+      mbox->done_comm_queue.push_back(other_synchro);
       other_comm->mbox=mbox;
       XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", mbox, &(other_comm));
 
@@ -274,16 +262,16 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
     void (*copy_data_fun)(smx_synchro_t, void*, size_t), // used to copy data if not default one
     void *data, double rate)
 {
-  XBT_DEBUG("recv from %p %p", mbox, mbox->comm_queue);
+  XBT_DEBUG("recv from %p %p", mbox, &mbox->comm_queue);
   simgrid::simix::Comm* this_synchro = new simgrid::simix::Comm(SIMIX_COMM_RECEIVE);
 
   smx_synchro_t other_synchro;
   //communication already done, get it inside the fifo of completed comms
-  if (mbox->permanent_receiver && ! mbox->done_comm_queue->empty()) {
+  if (mbox->permanent_receiver != nullptr && ! mbox->done_comm_queue.empty()) {
 
     XBT_DEBUG("We have a comm that has probably already been received, trying to match it, to skip the communication");
     //find a match in the already received fifo
-    other_synchro = _find_matching_comm(mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,/*remove_matching*/true);
+    other_synchro = _find_matching_comm(&mbox->done_comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,/*remove_matching*/true);
     //if not found, assume the receiver came first, register it to the mailbox in the classical way
     if (!other_synchro)  {
       XBT_DEBUG("We have messages in the permanent receive list, but not the one we are looking for, pushing request into fifo");
@@ -308,10 +296,10 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
      * ourself so that the other side also gets a chance of choosing if it wants to match with us.
      *
      * If it is not found then push our communication into the rendez-vous point */
-    other_synchro = _find_matching_comm(mbox->comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,/*remove_matching*/true);
+    other_synchro = _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_SEND, match_fun, data, this_synchro,/*remove_matching*/true);
 
     if (!other_synchro) {
-      XBT_DEBUG("Receive pushed first %zu", mbox->comm_queue->size());
+      XBT_DEBUG("Receive pushed first %zu", mbox->comm_queue.size());
       other_synchro = this_synchro;
       SIMIX_mbox_push(mbox, this_synchro);
     } else {
@@ -356,7 +344,7 @@ smx_synchro_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t m
 smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data)
 {
-  XBT_DEBUG("iprobe from %p %p", mbox, mbox->comm_queue);
+  XBT_DEBUG("iprobe from %p %p", mbox, &mbox->comm_queue);
   simgrid::simix::Comm* this_comm;
   int smx_type;
   if(type == 1){
@@ -367,14 +355,15 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
     smx_type = SIMIX_COMM_SEND;
   } 
   smx_synchro_t other_synchro=nullptr;
-  if(mbox->permanent_receiver && ! mbox->done_comm_queue->empty()){
+  if (mbox->permanent_receiver != nullptr && !mbox->done_comm_queue.empty()) {
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
-    other_synchro =
-        _find_matching_comm(mbox->done_comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
+    other_synchro = _find_matching_comm(&mbox->done_comm_queue,
+      (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
   }
   if (!other_synchro){
     XBT_DEBUG("check if we have more luck in the normal mailbox");
-    other_synchro = _find_matching_comm(mbox->comm_queue, (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
+    other_synchro = _find_matching_comm(&mbox->comm_queue,
+      (e_smx_comm_type_t) smx_type, match_fun, data, this_comm,/*remove_matching*/false);
   }
 
   if(other_synchro)

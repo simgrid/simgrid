@@ -8,19 +8,39 @@
 #define _SIMIX_NETWORK_PRIVATE_H
 
 #include <deque>
-#include <xbt/base.h>
+#include <string>
+
 #include <boost/intrusive_ptr.hpp>
+
+#include <xbt/base.h>
+
+#include <simgrid/s4u/mailbox.hpp>
 
 #include "simgrid/simix.h"
 #include "popping_private.h"
+#include "src/simix/smx_process_private.h"
+
+namespace simgrid {
+namespace simix {
 
 /** @brief Rendez-vous point datatype */
-typedef struct s_smx_mailbox {
-  char *name = nullptr;
-  std::deque<smx_synchro_t> *comm_queue = nullptr;
+
+class Mailbox {
+public:
+  Mailbox(const char* name) : mbox_(this), name(xbt_strdup(name)) {}
+  ~Mailbox() {
+    xbt_free(name);
+  }
+
+  simgrid::s4u::Mailbox mbox_;
+  char* name;
+  std::deque<smx_synchro_t> comm_queue;
   boost::intrusive_ptr<simgrid::simix::Process> permanent_receiver; //process which the mailbox is attached to
-  std::deque<smx_synchro_t> *done_comm_queue = nullptr;//messages already received in the permanent receive mode
-} s_smx_mailbox_t;
+  std::deque<smx_synchro_t> done_comm_queue;//messages already received in the permanent receive mode
+};
+
+}
+}
 
 XBT_PRIVATE void SIMIX_mailbox_exit(void);
 

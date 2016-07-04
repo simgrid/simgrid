@@ -8,7 +8,7 @@
 
 #include <string>
 
-#include <boost/unordered_map.hpp>
+#include <boost/intrusive_ptr.hpp>
 
 #include <xbt/base.h>
 
@@ -27,20 +27,29 @@ namespace s4u {
  */
 XBT_PUBLIC_CLASS Mailbox {
   friend Comm;
+  friend simgrid::s4u::Engine;
+  friend simgrid::simix::Mailbox;
 
-private:
-  Mailbox(const char*name, smx_mailbox_t inferior);
-public:
-  ~Mailbox();
-  
+  smx_mailbox_t pimpl_;
+
+  Mailbox(smx_mailbox_t mbox): pimpl_(mbox) {}
+
 protected:
   smx_mailbox_t getInferior() { return pimpl_; }
 
 public:
+
+  // We don't have to manage the lifetime of mailboxes:
+  friend void intrusive_ptr_add_ref(Mailbox*) {}
+  friend void intrusive_ptr_release(Mailbox*) {}
+  using Ptr = boost::intrusive_ptr<Mailbox>;
+
   /** Get the name of that mailbox */
   const char *getName();
+
   /** Retrieve the mailbox associated to the given string */
-  static Mailbox *byName(const char *name);
+  static Ptr byName(const char *name);
+
   /** Returns whether the mailbox contains queued communications */
   bool empty();
 
@@ -50,15 +59,13 @@ public:
    * This models the real behavior of TCP and MPI communications, amongst other.
    */
   void setReceiver(Actor* process);
+
   /** Return the process declared as permanent receiver, or nullptr if none **/
   Actor& receiver();
-
-private:
-  std::string name_;
-  smx_mailbox_t pimpl_;
-  static boost::unordered_map<std::string, Mailbox *> *mailboxes;
-  friend s4u::Engine;
 };
+
+using MailboxPtr = Mailbox::Ptr;
+
 }} // namespace simgrid::s4u
 
 XBT_PUBLIC(sg_mbox_t) sg_mbox_by_name(const char*name);

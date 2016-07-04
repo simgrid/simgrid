@@ -29,7 +29,6 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-
 /** @brief Thread mutex data type (opaque object)
  *  @hideinitializer
  */

@@ -839,7 +839,8 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
 int MSG_task_listen(const char *alias)
 {
   smx_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
-  return !MSG_mailbox_is_empty(mbox) || (mbox->permanent_receiver && !mbox->done_comm_queue->empty());
+  return !MSG_mailbox_is_empty(mbox) ||
+    (mbox->permanent_receiver && !mbox->done_comm_queue.empty());
 }
 
 /** \ingroup msg_task_usage

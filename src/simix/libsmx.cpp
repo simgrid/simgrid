@@ -642,8 +642,7 @@ smx_mailbox_t simcall_mbox_get_by_name(const char *name)
  */
 smx_synchro_t simcall_mbox_front(smx_mailbox_t mbox)
 {
-
-  return mbox->comm_queue->empty()? nullptr:mbox->comm_queue->front();
+  return mbox->comm_queue.empty() ? nullptr : mbox->comm_queue.front();
 }
 
 void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
