@@ -50,7 +50,7 @@ void Mailbox::setReceiver(Actor actor) {
 }
 /** @brief get the receiver (process associated to the mailbox) */
 Actor Mailbox::receiver() {
-  return Actor(pimpl_->permanent_receiver);
+  return Actor(pimpl_->permanent_receiver.get());
 }
 
 }

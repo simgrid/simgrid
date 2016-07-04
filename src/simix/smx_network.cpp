@@ -198,7 +198,7 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
     if (mbox->permanent_receiver!=nullptr){
       //this mailbox is for small messages, which have to be sent right now
       other_synchro->state = SIMIX_READY;
-      other_comm->dst_proc=mbox->permanent_receiver;
+      other_comm->dst_proc=mbox->permanent_receiver.get();
       other_comm->ref();
       mbox->done_comm_queue->push_back(other_synchro);
       other_comm->mbox=mbox;

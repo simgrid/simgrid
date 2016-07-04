@@ -9,6 +9,7 @@
 
 #include <deque>
 #include <xbt/base.h>
+#include <boost/intrusive_ptr.hpp>
 
 #include "simgrid/simix.h"
 #include "popping_private.h"
@@ -17,7 +18,7 @@
 typedef struct s_smx_mailbox {
   char *name;
   std::deque<smx_synchro_t> *comm_queue;
-  smx_process_t permanent_receiver; //process which the mailbox is attached to
+  boost::intrusive_ptr<simgrid::simix::Process> permanent_receiver; //process which the mailbox is attached to
   std::deque<smx_synchro_t> *done_comm_queue;//messages already received in the permanent receive mode
 } s_smx_mailbox_t;
 
@@ -37,4 +38,3 @@ XBT_PRIVATE smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_
                               int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data);
 
 #endif
-
