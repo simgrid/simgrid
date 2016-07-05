@@ -301,9 +301,13 @@ Use this to add the contents of a file to the top of the trace file as comment.
 \li <b>\c
 tracing/precision
 </b>:
-TODO
+This option determines the precision of timings stored in the trace file. Make sure
+you set \ref options_model_precision to at least the same value as this option! (Traces
+cannot be more accurate than the simulation; they can be less accurate, though.)
+
+The following example will give you a precision of E-10 in the trace file:
 \verbatim
-TODO
+--cfg=tracing/precision:10
 \endverbatim
 
 \li <b>\c
