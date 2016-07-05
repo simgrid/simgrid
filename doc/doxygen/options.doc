@@ -851,6 +851,8 @@ This is the default value:
     This feature currently requires superuser privileges, as registers are queried.
     Only use this feature with code you trust! Call smpirun for instance via
         smpirun -wrapper "sudo " <your-parameters>
+    or run sudo sh -c "echo 0 > /proc/sys/kernel/perf_event_paranoid"
+    In the later case, sudo will not be required.
 
 \note
     This option is only available when SimGrid was compiled with PAPI support.
