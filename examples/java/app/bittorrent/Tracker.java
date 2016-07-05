@@ -1,4 +1,4 @@
-/* Copyright (c) 2006-2014, 2026. The SimGrid Team.
+/* Copyright (c) 2006-2014, 2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -54,7 +54,7 @@ public class Tracker extends Process {
               int nextPeer;
               do {
                 nextPeer = stream.randInt(0, peersList.size() - 1);
-              } while (tTask.peers.contains(nextPeer));
+              } while (tTask.peers.contains(peersList.get(nextPeer)));
               tTask.peers.add(peersList.get(nextPeer));
               nbPeers++;
             }

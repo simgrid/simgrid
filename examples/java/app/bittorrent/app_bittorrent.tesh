@@ -17,8 +17,8 @@ $ java -classpath ${classpath:=.} app/bittorrent/Main ${srcdir:=.}/../platforms/
 > [node-4.acme.org:app.bittorrent.Peer:(5) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 5
 > [node-4.acme.org:app.bittorrent.Peer:(5) 5000.007806] [jmsg/INFO] Here is my current status: 1111111111
 > [node-5.acme.org:app.bittorrent.Peer:(6) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 6
-> [node-5.acme.org:app.bittorrent.Peer:(6) 5000.039030] [jmsg/INFO] Here is my current status: 1111111111
+> [node-5.acme.org:app.bittorrent.Peer:(6) 5000.023418] [jmsg/INFO] Here is my current status: 1111111111
 > [node-6.acme.org:app.bittorrent.Peer:(7) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 7
-> [node-6.acme.org:app.bittorrent.Peer:(7) 5000.031224] [jmsg/INFO] Here is my current status: 1111111111
+> [node-6.acme.org:app.bittorrent.Peer:(7) 5000.046836] [jmsg/INFO] Here is my current status: 1111111111
 > [node-7.acme.org:app.bittorrent.Peer:(8) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 8
-> [node-7.acme.org:app.bittorrent.Peer:(8) 5000.046836] [jmsg/INFO] Here is my current status: 1111111111
+> [node-7.acme.org:app.bittorrent.Peer:(8) 5000.031224] [jmsg/INFO] Here is my current status: 1111111111
