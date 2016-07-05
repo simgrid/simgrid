@@ -55,7 +55,7 @@ do
               -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
               -Denable_jedule=ON -Denable_mallocators=ON -Denable_debug=${builddebug} \
               -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \
-              -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=OFF 
+              -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=OFF \
               -Denable_ns3=$(onoff test "$buildmc" != "ON") -Denable_coverage=OFF $WORKSPACE
         make -j$NUMPROC
         make clean
