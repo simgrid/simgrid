@@ -192,7 +192,7 @@ typedef struct s_sg_platf_AS_cbarg {
   int routing;
 } s_sg_platf_AS_cbarg_t;
 
-#define SG_PLATF_AS_INITIALIZER {NULL,0}
+#define SG_PLATF_AS_INITIALIZER {nullptr,0}
 
 /********** Routing **********/
 void routing_cluster_add_backbone(Link* bb);

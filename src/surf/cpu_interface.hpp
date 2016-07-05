@@ -133,12 +133,12 @@ public:
   int coresAmount_ = 1;
   simgrid::s4u::Host* host_;
 
-  xbt_dynar_t speedPerPstate_ = NULL; /*< List of supported CPU capacities (pstate related) */
+  xbt_dynar_t speedPerPstate_ = nullptr; /*< List of supported CPU capacities (pstate related) */
   int pstate_ = 0;                   /*< Current pstate (index in the speedPeakList)*/
 
   /* Note (hypervisor): */
-  lmm_constraint_t *p_constraintCore=NULL;
-  void **p_constraintCoreId=NULL;
+  lmm_constraint_t *p_constraintCore=nullptr;
+  void **p_constraintCoreId=nullptr;
 
 public:
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */

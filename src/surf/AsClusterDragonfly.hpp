@@ -17,10 +17,10 @@ class XBT_PRIVATE DragonflyRouter {
       unsigned int group_;
       unsigned int chassis_;
       unsigned int blade_;
-      surf::Link** blueLinks_=NULL;
-      surf::Link** blackLinks_=NULL;
-      surf::Link** greenLinks_=NULL;
-      surf::Link** myNodes_=NULL;
+      surf::Link** blueLinks_=nullptr;
+      surf::Link** blackLinks_=nullptr;
+      surf::Link** greenLinks_=nullptr;
+      surf::Link** myNodes_=nullptr;
       DragonflyRouter(int i, int j, int k);
       ~DragonflyRouter();
 };
@@ -82,7 +82,7 @@ class XBT_PRIVATE AsClusterDragonfly
       unsigned int numLinksBlack_ = 0;
       unsigned int numLinksBlue_ = 0;
       unsigned int numLinksperLink_ = 1; //fullduplex -> 2, only for local link
-      DragonflyRouter** routers_=NULL;
+      DragonflyRouter** routers_=nullptr;
     };
 
   }}

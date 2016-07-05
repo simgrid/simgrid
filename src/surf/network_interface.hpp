@@ -192,16 +192,16 @@ namespace simgrid {
       virtual void setBandwidthTrace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load). Trace must contain percentages (value between 0 and 1). */
       virtual void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load). Trace must contain absolute values */
 
-      tmgr_trace_iterator_t m_stateEvent = NULL;
-      s_surf_metric_t m_latency = {1.0,0,NULL};
-      s_surf_metric_t m_bandwidth = {1.0,0,NULL};
+      tmgr_trace_iterator_t m_stateEvent = nullptr;
+      s_surf_metric_t m_latency = {1.0,0,nullptr};
+      s_surf_metric_t m_bandwidth = {1.0,0,nullptr};
 
       /* User data */
         public:
       void *getData()        { return userData;}
       void  setData(void *d) { userData=d;}
         private:
-      void *userData = NULL;
+      void *userData = nullptr;
 
       /* List of all links */
         private:

@@ -18,7 +18,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dyn, xbt, "Dynamic arrays");
 
 static inline void _sanity_check_dynar(xbt_dynar_t dynar)
 {
-  xbt_assert(dynar, "dynar is NULL");
+  xbt_assert(dynar, "dynar is nullptr");
 }
 
 static inline void _sanity_check_idx(int idx)
@@ -84,7 +84,7 @@ void xbt_dynar_dump(xbt_dynar_t dynar)
 /** @brief Constructor
  *
  * \param elmsize size of each element in the dynar
- * \param free_f function to call each time we want to get rid of an element (or NULL if nothing to do).
+ * \param free_f function to call each time we want to get rid of an element (or nullptr if nothing to do).
  *
  * Creates a new dynar. If a free_func is provided, the elements have to be pointer of pointer. That is to say that
  * dynars can contain either base types (int, char, double, etc) or pointer of pointers (struct **).
@@ -96,7 +96,7 @@ xbt_dynar_t xbt_dynar_new(const unsigned long elmsize, void_f_pvoid_t const free
   dynar->size = 0;
   dynar->used = 0;
   dynar->elmsize = elmsize;
-  dynar->data = NULL;
+  dynar->data = nullptr;
   dynar->free_f = free_f;
 
   return dynar;
@@ -115,7 +115,7 @@ void xbt_dynar_free_container(xbt_dynar_t * dynar)
     xbt_dynar_t d = *dynar;
     free(d->data);
     free(d);
-    *dynar = NULL;
+    *dynar = nullptr;
   }
 }
 
@@ -371,7 +371,7 @@ void xbt_dynar_remove_at(xbt_dynar_t const dynar, const int idx, void *const obj
 /** @brief Remove a slice of the dynar, sliding the rest of the values to the left
  *
  * This function removes an n-sized slice that starts at element idx. It is equivalent to xbt_dynar_remove_at with a
- * NULL object argument if n equals to 1.
+ * nullptr object argument if n equals to 1.
  *
  * Each of the removed elements is freed using the free_f function passed at dynar creation.
  */
@@ -555,7 +555,7 @@ void xbt_dynar_map(const xbt_dynar_t dynar, void_f_pvoid_t const op)
  */
 void xbt_dynar_cursor_rm(xbt_dynar_t dynar, unsigned int *const cursor)
 {
-  xbt_dynar_remove_at(dynar, (*cursor)--, NULL);
+  xbt_dynar_remove_at(dynar, (*cursor)--, nullptr);
 }
 
 /** @brief Sorts a dynar according to the function <tt>compar_fn</tt>
@@ -647,7 +647,7 @@ XBT_PUBLIC(void) xbt_dynar_three_way_partition(xbt_dynar_t const dynar, int_f_pv
   xbt_free(tmp);
 }
 
-/** @brief Transform a dynar into a NULL terminated array. 
+/** @brief Transform a dynar into a nullptr terminated array. 
  *
  *  \param dynar the dynar to transform
  *  \return pointer to the first element of the array
@@ -682,7 +682,7 @@ int xbt_dynar_compare(xbt_dynar_t d1, xbt_dynar_t d2, int(*compar)(const void *,
   if((!d1) && (!d2)) return 0;
   if((!d1) || (!d2))
   {
-    XBT_DEBUG("NULL dynar d1=%p d2=%p",d1,d2);
+    XBT_DEBUG("nullptr dynar d1=%p d2=%p",d1,d2);
     xbt_dynar_free(&d2);
     return 1;
   }
@@ -727,7 +727,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   int *iptr;
 
   xbt_test_add("==== Traverse the empty dynar");
-  d = xbt_dynar_new(sizeof(int), NULL);
+  d = xbt_dynar_new(sizeof(int), nullptr);
   xbt_dynar_foreach(d, cursor, i) {
     xbt_die( "Damnit, there is something in the empty dynar");
   }
@@ -738,7 +738,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   xbt_test_add("==== Push %d int, set them again 3 times, traverse them, shift them", NB_ELEM);
   /* Populate_ints [doxygen cruft] */
   /* 1. Populate the dynar */
-  d = xbt_dynar_new(sizeof(int), NULL);
+  d = xbt_dynar_new(sizeof(int), nullptr);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_push_as(d, int, cpt);     /* This is faster (and possible only with scalars) */
     /* xbt_dynar_push(d,&cpt);       This would also work */
@@ -802,7 +802,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add("==== Unshift/pop %d int", NB_ELEM);
-  d = xbt_dynar_new(sizeof(int), NULL);
+  d = xbt_dynar_new(sizeof(int), nullptr);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_unshift(d, &cpt);
     XBT_DEBUG("Push %d, length=%lu", cpt, xbt_dynar_length(d));
@@ -817,7 +817,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add ("==== Push %d int, insert 1000 int in the middle, shift everything", NB_ELEM);
-  d = xbt_dynar_new(sizeof(int), NULL);
+  d = xbt_dynar_new(sizeof(int), nullptr);
   for (cpt = 0; cpt < NB_ELEM; cpt++) {
     xbt_dynar_push_as(d, int, cpt);
     XBT_DEBUG("Push %d, length=%lu", cpt, xbt_dynar_length(d));
@@ -847,7 +847,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
   /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add("==== Push %d int, remove 2000-4000. free the rest", NB_ELEM);
-  d = xbt_dynar_new(sizeof(int), NULL);
+  d = xbt_dynar_new(sizeof(int), nullptr);
   for (cpt = 0; cpt < NB_ELEM; cpt++)
     xbt_dynar_push_as(d, int, cpt);
 
@@ -864,7 +864,7 @@ XBT_TEST_UNIT("int", test_dynar_int, "Dynars of integers")
 /*******************************************************************************/
 XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dynar_remove functions")
 {
-  xbt_dynar_t d = xbt_dynar_new(sizeof(unsigned int), NULL);
+  xbt_dynar_t d = xbt_dynar_new(sizeof(unsigned int), nullptr);
   unsigned int cursor;
   int cpt;
 
@@ -899,7 +899,7 @@ XBT_TEST_UNIT("insert",test_dynar_insert,"Using the xbt_dynar_insert and xbt_dyn
 
   /* ********************* */
   xbt_test_add("==== Insert %d int in reverse order, traverse them, remove them",NB_ELEM);
-  d = xbt_dynar_new(sizeof(int), NULL);
+  d = xbt_dynar_new(sizeof(int), nullptr);
   for (cpt = NB_ELEM-1; cpt >=0; cpt--) {
     xbt_dynar_replace(d, cpt, &cpt);
     xbt_test_log("Push %d, length=%lu", cpt, xbt_dynar_length(d));
@@ -930,7 +930,7 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
   double d1, d2;
 
   xbt_test_add("==== Traverse the empty dynar");
-  d = xbt_dynar_new(sizeof(int), NULL);
+  d = xbt_dynar_new(sizeof(int), nullptr);
   xbt_dynar_foreach(d, cursor, cpt) {
     xbt_test_assert(FALSE, "Damnit, there is something in the empty dynar");
   }
@@ -939,7 +939,7 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
   /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add("==== Push/shift 5000 doubles");
-  d = xbt_dynar_new(sizeof(double), NULL);
+  d = xbt_dynar_new(sizeof(double), nullptr);
   for (cpt = 0; cpt < 5000; cpt++) {
     d1 = (double) cpt;
     xbt_dynar_push(d, &d1);
@@ -958,7 +958,7 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
   /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add("==== Unshift/pop 5000 doubles");
-  d = xbt_dynar_new(sizeof(double), NULL);
+  d = xbt_dynar_new(sizeof(double), nullptr);
   for (cpt = 0; cpt < 5000; cpt++) {
     d1 = (double) cpt;
     xbt_dynar_unshift(d, &d1);
@@ -973,7 +973,7 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
   /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add("==== Push 5000 doubles, insert 1000 doubles in the middle, shift everything");
-  d = xbt_dynar_new(sizeof(double), NULL);
+  d = xbt_dynar_new(sizeof(double), nullptr);
   for (cpt = 0; cpt < 5000; cpt++) {
     d1 = (double) cpt;
     xbt_dynar_push(d, &d1);
@@ -1006,7 +1006,7 @@ XBT_TEST_UNIT("double", test_dynar_double, "Dynars of doubles")
   /* in your code is naturally the way to go outside a regression test */
 
   xbt_test_add("==== Push 5000 double, remove 2000-4000. free the rest");
-  d = xbt_dynar_new(sizeof(double), NULL);
+  d = xbt_dynar_new(sizeof(double), nullptr);
   for (cpt = 0; cpt < 5000; cpt++) {
     d1 = (double) cpt;
     xbt_dynar_push(d, &d1);

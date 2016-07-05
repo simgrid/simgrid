@@ -111,7 +111,7 @@ private:
    * @brief Common initializations for the constructors
    */
   void initialize(simgrid::surf::Model *model, double cost, bool failed,
-                  lmm_variable_t var = NULL);
+                  lmm_variable_t var = nullptr);
 
 public:
   /**
@@ -219,7 +219,7 @@ public:
   /** @brief Get the state set in which the action is */
   ActionList* getStateSet() {return stateSet_;};
 
-  s_xbt_swag_hookup_t stateHookup_ = {NULL,NULL};
+  s_xbt_swag_hookup_t stateHookup_ = {nullptr,nullptr};
 
   simgrid::surf::Model *getModel() {return model_;}
 
@@ -233,11 +233,11 @@ protected:
 
 private:
   double start_; /**< start time  */
-  char *category_ = NULL;            /**< tracing category for categorized resource utilization monitoring */
+  char *category_ = nullptr;            /**< tracing category for categorized resource utilization monitoring */
 
   double    cost_;
   simgrid::surf::Model *model_;
-  void *data_ = NULL; /**< for your convenience */
+  void *data_ = nullptr; /**< for your convenience */
 
   /* LMM */
 public:

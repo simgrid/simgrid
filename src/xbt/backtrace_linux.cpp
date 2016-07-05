@@ -78,7 +78,7 @@ backtrace_helper (struct _Unwind_Context *ctx, void *a)
 int xbt_backtrace_no_malloc(void **array, int size) {
   int i = 0;
   for(i=0; i < size; i++)
-    array[i] = NULL;
+    array[i] = nullptr;
 
   struct trace_arg arg;
   arg .array = array;
@@ -88,9 +88,9 @@ int xbt_backtrace_no_malloc(void **array, int size) {
   if (size >= 1)
     _Unwind_Backtrace(backtrace_helper, &arg);
 
-  /* _Unwind_Backtrace on IA-64 seems to put NULL address above
+  /* _Unwind_Backtrace on IA-64 seems to put nullptr address above
      _start.  Fix it up here.  */
-  if (arg.cnt > 1 && arg.array[arg.cnt - 1] == NULL)
+  if (arg.cnt > 1 && arg.array[arg.cnt - 1] == nullptr)
     --arg.cnt;
   return arg.cnt != -1 ? arg.cnt : 0;
 }
@@ -246,7 +246,7 @@ std::vector<std::string> resolveBacktrace(
       while (!found) {
         long int first, last;
 
-        if (fgets(maps_buff, 512, maps) == NULL)
+        if (fgets(maps_buff, 512, maps) == nullptr)
           break;
         if (i == 0) {
           maps_buff[strlen(maps_buff) - 1] = '\0';
@@ -353,7 +353,7 @@ std::vector<std::string> resolveBacktrace(
 int xbt_libunwind_backtrace(void** bt, int size){
   int i = 0;
   for(i=0; i < size; i++)
-    bt[i] = NULL;
+    bt[i] = nullptr;
 
   i=0;
 

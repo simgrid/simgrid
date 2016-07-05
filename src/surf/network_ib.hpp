@@ -22,7 +22,7 @@ namespace simgrid {
       IBNode* destination;
       NetworkAction *action;
       double init_rate;
-      ActiveComm() : destination(NULL),action(NULL),init_rate(-1){};
+      ActiveComm() : destination(nullptr),action(nullptr),init_rate(-1){};
       ~ActiveComm(){};
     };
 

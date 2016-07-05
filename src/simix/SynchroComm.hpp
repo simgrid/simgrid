@@ -35,7 +35,7 @@ namespace simix {
 
 #if HAVE_MC
     smx_mailbox_t mbox_cpy = nullptr; /* Copy of the rendez-vous where the comm is queued, MC needs it for DPOR
-                                       (comm.mbox set to NULL when the communication is removed from the mailbox
+                                       (comm.mbox set to nullptr when the communication is removed from the mailbox
                                        (used as garbage collector)) */
 #endif
     bool detached = false;          /* If detached or not */

@@ -43,7 +43,7 @@ std::unique_ptr<char, void(*)(void*)> demangle(const char* name)
 #ifdef __GXX_ABI_VERSION
   int status;
   auto res = std::unique_ptr<char, void(*)(void*)>(
-    abi::__cxa_demangle(name, NULL, NULL, &status),
+    abi::__cxa_demangle(name, nullptr, nullptr, &status),
     std::free
   );
   if (res != nullptr)

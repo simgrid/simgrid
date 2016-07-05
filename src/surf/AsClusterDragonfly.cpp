@@ -23,7 +23,7 @@ AsClusterDragonfly::AsClusterDragonfly(const char*name)
 
 AsClusterDragonfly::~AsClusterDragonfly() {
 
-  if(this->routers_!=NULL){
+  if(this->routers_!=nullptr){
     unsigned int i;
     for (i=0; i<this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_;i++)
         delete(routers_[i]);
@@ -109,13 +109,13 @@ DragonflyRouter::DragonflyRouter(int group, int chassis, int blade){
 }
 
 DragonflyRouter::~DragonflyRouter(){
-  if(this->myNodes_!=NULL)
+  if(this->myNodes_!=nullptr)
     xbt_free(myNodes_);
-  if(this->greenLinks_!=NULL)
+  if(this->greenLinks_!=nullptr)
     xbt_free(greenLinks_);
-  if(this->blackLinks_!=NULL)
+  if(this->blackLinks_!=nullptr)
     xbt_free(blackLinks_);
-  if(this->blueLinks_!=NULL)
+  if(this->blueLinks_!=nullptr)
     xbt_free(blueLinks_);
 }
 
@@ -139,8 +139,8 @@ for(i=0;i<this->numGroups_;i++){
 
 
 void AsClusterDragonfly::createLink(char* id, int numlinks, Link** linkup, Link** linkdown){
-  *linkup=NULL;
-  *linkdown=NULL;
+  *linkup=nullptr;
+  *linkdown=nullptr;
   s_sg_platf_link_cbarg_t linkTemplate;
   memset(&linkTemplate, 0, sizeof(linkTemplate));
   linkTemplate.bandwidth = this->cluster_->bw * numlinks;
@@ -173,7 +173,7 @@ void AsClusterDragonfly::generateLinks() {
 
   unsigned int i, j, k, l;
   static int uniqueId = 0;
-  char* id = NULL;
+  char* id = nullptr;
   Link* linkup, *linkdown;
 
   unsigned int numRouters = this->numGroups_*this->numChassisPerGroup_*this->numBladesPerChassis_;

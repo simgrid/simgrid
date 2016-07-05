@@ -16,13 +16,13 @@
 /**  @brief Strip whitespace (or other characters) from the end of a string.
  *
  * Strips the whitespaces from the end of s.
- * By default (when char_list=NULL), these characters get stripped:
+ * By default (when char_list=nullptr), these characters get stripped:
  *
  *  - " "    (ASCII 32  (0x20))  space.
  *  - "\t"    (ASCII 9  (0x09))  tab.
  *  - "\n"    (ASCII 10  (0x0A))  line feed.
  *  - "\r"    (ASCII 13  (0x0D))  carriage return.
- *  - "\0"    (ASCII 0  (0x00))  NULL.
+ *  - "\0"    (ASCII 0  (0x00))  nullptr.
  *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  *
  * @param s The string to strip. Modified in place.
@@ -59,13 +59,13 @@ void xbt_str_rtrim(char *s, const char *char_list)
 /**  @brief Strip whitespace (or other characters) from the beginning of a string.
  *
  * Strips the whitespaces from the begining of s.
- * By default (when char_list=NULL), these characters get stripped:
+ * By default (when char_list=nullptr), these characters get stripped:
  *
  *  - " "    (ASCII 32  (0x20))  space.
  *  - "\t"    (ASCII 9  (0x09))  tab.
  *  - "\n"    (ASCII 10  (0x0A))  line feed.
  *  - "\r"    (ASCII 13  (0x0D))  carriage return.
- *  - "\0"    (ASCII 0  (0x00))  NULL.
+ *  - "\0"    (ASCII 0  (0x00))  nullptr.
  *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  *
  * @param s The string to strip. Modified in place.
@@ -99,13 +99,13 @@ void xbt_str_ltrim(char *s, const char *char_list)
 /**  @brief Strip whitespace (or other characters) from the end and the begining of a string.
  *
  * Strips the whitespaces from both the beginning and the end of s.
- * By default (when char_list=NULL), these characters get stripped:
+ * By default (when char_list=nullptr), these characters get stripped:
  *
  *  - " "    (ASCII 32  (0x20))  space.
  *  - "\t"    (ASCII 9  (0x09))  tab.
  *  - "\n"    (ASCII 10  (0x0A))  line feed.
  *  - "\r"    (ASCII 13  (0x0D))  carriage return.
- *  - "\0"    (ASCII 0  (0x00))  NULL.
+ *  - "\0"    (ASCII 0  (0x00))  nullptr.
  *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  *
  * @param s The string to strip.
@@ -171,13 +171,13 @@ char *xbt_str_varsubst(const char *str, xbt_dict_t patterns)
  * @param s: the string to split
  * @param sep: a string of all chars to consider as separator.
  *
- * By default (with sep=NULL), these characters are used as separator:
+ * By default (with sep=nullptr), these characters are used as separator:
  *
  *  - " "    (ASCII 32  (0x20))  space.
  *  - "\t"    (ASCII 9  (0x09))  tab.
  *  - "\n"    (ASCII 10  (0x0A))  line feed.
  *  - "\r"    (ASCII 13  (0x0D))  carriage return.
- *  - "\0"    (ASCII 0  (0x00))  NULL.
+ *  - "\0"    (ASCII 0  (0x00))  nullptr.
  *  - "\x0B"  (ASCII 11  (0x0B))  vertical tab.
  */
 xbt_dynar_t xbt_str_split(const char *s, const char *sep)
@@ -254,7 +254,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
     //get the start of the first occurence of the substring
     q = strstr(p, sep);
     //if substring was not found add the entire string
-    if (NULL == q) {
+    if (nullptr == q) {
       v = strlen(p);
       to_push = (char*) xbt_malloc(v + 1);
       memcpy(to_push, p, v);
@@ -286,7 +286,7 @@ xbt_dynar_t xbt_str_split_str(const char *s, const char *sep)
  * pushes the address of each chunk in the resulting dynar. Yes, that's uneven. Yes, that's gory. But that's efficient.
  */
 xbt_dynar_t xbt_str_split_quoted_in_place(char *s) {
-  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(char *), nullptr);
   char *beg, *end;              /* pointers around the parsed chunk */
   int in_simple_quote = 0, in_double_quote = 0;
   int done = 0;
@@ -428,7 +428,7 @@ char *xbt_str_join(xbt_dynar_t dyn, const char *sep)
 
 /** @brief Join a set of strings as a single string
  *
- * The parameter must be a NULL-terminated array of chars,
+ * The parameter must be a nullptr-terminated array of chars,
  * just like xbt_dynar_to_array() produces
  */
 char *xbt_str_join_array(const char *const *strs, const char *sep)
@@ -488,7 +488,7 @@ char *xbt_str_from_file(FILE * file)
 long int xbt_str_parse_int(const char* str, const char* error_msg)
 {
   char *endptr;
-  if (str == NULL || str[0] == '\0')
+  if (str == nullptr || str[0] == '\0')
     THROWF(arg_error, 0, error_msg, str);
 
   long int res = strtol(str, &endptr, 10);
@@ -506,7 +506,7 @@ long int xbt_str_parse_int(const char* str, const char* error_msg)
 double xbt_str_parse_double(const char* str, const char* error_msg)
 {
   char *endptr;
-  if (str == NULL || str[0] == '\0')
+  if (str == nullptr || str[0] == '\0')
     THROWF(arg_error, 0, error_msg, str);
 
   double res = strtod(str, &endptr);
@@ -603,7 +603,7 @@ XBT_TEST_UNIT("xbt_str_parse", test_parse, "Test the parsing functions")
   test_parse_ok(xbt_str_parse_int, "Parse -1 as an int", rint, "-1", -1);
 
   test_parse_error(xbt_str_parse_int, "Parse int + noise", rint, "342 cruft");
-  test_parse_error(xbt_str_parse_int, "Parse NULL as an int", rint, NULL);
+  test_parse_error(xbt_str_parse_int, "Parse nullptr as an int", rint, nullptr);
   test_parse_error(xbt_str_parse_int, "Parse '' as an int", rint, "");
   test_parse_error(xbt_str_parse_int, "Parse cruft as an int", rint, "cruft");
 
@@ -614,7 +614,7 @@ XBT_TEST_UNIT("xbt_str_parse", test_parse, "Test the parsing functions")
   test_parse_ok(xbt_str_parse_double, "Parse -1 as a double", rdouble, "-1", -1);
 
   test_parse_error(xbt_str_parse_double, "Parse double + noise", rdouble, "342 cruft");
-  test_parse_error(xbt_str_parse_double, "Parse NULL as a double", rdouble, NULL);
+  test_parse_error(xbt_str_parse_double, "Parse nullptr as a double", rdouble, nullptr);
   test_parse_error(xbt_str_parse_double, "Parse '' as a double", rdouble, "");
   test_parse_error(xbt_str_parse_double, "Parse cruft as a double", rdouble, "cruft");
 }

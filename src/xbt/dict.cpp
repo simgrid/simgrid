@@ -31,7 +31,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same fu
  */
 xbt_dict_t xbt_dict_new(void)
 {
-  xbt_dict_t dict = xbt_dict_new_homogeneous(NULL);
+  xbt_dict_t dict = xbt_dict_new_homogeneous(nullptr);
   dict->homogeneous = 0;
 
   return dict;
@@ -48,7 +48,7 @@ xbt_dict_t xbt_dict_new(void)
  */
 xbt_dict_t xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn)
 {
-  if (dict_elm_mallocator == NULL)
+  if (dict_elm_mallocator == nullptr)
     xbt_dict_preinit();
 
   xbt_dict_t dict;
@@ -79,14 +79,14 @@ void xbt_dict_free(xbt_dict_t * dict)
 
   //  if ( *dict )  xbt_dict_dump_sizes(*dict);
 
-  if (dict != NULL && *dict != NULL) {
+  if (dict != nullptr && *dict != nullptr) {
     table_size = (*dict)->table_size;
     table = (*dict)->table;
     /* Warning: the size of the table is 'table_size+1'...
      * This is because table_size is used as a binary mask in xbt_dict_rehash */
     for (i = 0; (*dict)->count && i <= table_size; i++) {
       current = table[i];
-      while (current != NULL) {
+      while (current != nullptr) {
         previous = current;
         current = current->next;
         xbt_dictelm_free(*dict, previous);
@@ -95,7 +95,7 @@ void xbt_dict_free(xbt_dict_t * dict)
     }
     xbt_free(table);
     xbt_free(*dict);
-    *dict = NULL;
+    *dict = nullptr;
   }
 }
 
@@ -161,22 +161,22 @@ void xbt_dict_set_ext(xbt_dict_t dict, const char *key, int key_len, void *data,
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
 
-  xbt_dictelm_t current, previous = NULL;
+  xbt_dictelm_t current, previous = nullptr;
 
   XBT_CDEBUG(xbt_dict, "ADD %.*s hash = %u, size = %d, & = %u", key_len, key, hash_code,
              dict->table_size, hash_code & dict->table_size);
   current = dict->table[hash_code & dict->table_size];
-  while (current != NULL && (hash_code != current->hash_code || key_len != current->key_len
+  while (current != nullptr && (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
     previous = current;
     current = current->next;
   }
 
-  if (current == NULL) {
+  if (current == nullptr) {
     /* this key doesn't exist yet */
     current = xbt_dictelm_new(dict, key, key_len, hash_code, data, free_ctn);
     dict->count++;
-    if (previous == NULL) {
+    if (previous == nullptr) {
       dict->table[hash_code & dict->table_size] = current;
       dict->fill++;
       if ((dict->fill * 100) / (dict->table_size + 1) > MAX_FILL_PERCENT)
@@ -223,30 +223,30 @@ void *xbt_dict_get_ext(xbt_dict_t dict, const char *key, int key_len)
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  while (current != NULL && (hash_code != current->hash_code || key_len != current->key_len
+  while (current != nullptr && (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
     current = current->next;
   }
 
-  if (current == NULL)
+  if (current == nullptr)
     THROWF(not_found_error, 0, "key %.*s not found", key_len, key);
 
   return current->content;
 }
 
-/** @brief like xbt_dict_get_ext(), but returning NULL when not found */
+/** @brief like xbt_dict_get_ext(), but returning nullptr when not found */
 void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  while (current != NULL && (hash_code != current->hash_code || key_len != current->key_len
+  while (current != nullptr && (hash_code != current->hash_code || key_len != current->key_len
           || memcmp(key, current->key, key_len))) {
     current = current->next;
   }
 
-  if (current == NULL)
-    return NULL;
+  if (current == nullptr)
+    return nullptr;
 
   return current->content;
 }
@@ -254,19 +254,19 @@ void *xbt_dict_get_or_null_ext(xbt_dict_t dict, const char *key, int key_len)
 /**
  * @brief retrieve the key associated to that object. Warning, that's a linear search
  *
- * Returns NULL if the object cannot be found
+ * Returns nullptr if the object cannot be found
  */
 char *xbt_dict_get_key(xbt_dict_t dict, const void *data)
 {
   for (int i = 0; i <= dict->table_size; i++) {
     xbt_dictelm_t current = dict->table[i];
-    while (current != NULL) {
+    while (current != nullptr) {
       if (current->content == data)
         return current->key;
       current = current->next;
     }
   }
-  return NULL;
+  return nullptr;
 }
 
 /** @brief retrieve the key associated to that xbt_dictelm_t. */
@@ -283,7 +283,7 @@ char *xbt_dict_get_elm_key(xbt_dictelm_t elm)
  * \return the data that we are looking for
  *
  * Search the given \a key. Throws not_found_error when not found.
- * Check xbt_dict_get_or_null() for a version returning NULL without exception when not found.
+ * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
  */
 void *xbt_dict_get(xbt_dict_t dict, const char *key)
 {
@@ -298,40 +298,40 @@ void *xbt_dict_get(xbt_dict_t dict, const char *key)
  * \return the s_xbt_dictelm_t that we are looking for
  *
  * Search the given \a key. Throws not_found_error when not found.
- * Check xbt_dict_get_or_null() for a version returning NULL without exception when not found.
+ * Check xbt_dict_get_or_null() for a version returning nullptr without exception when not found.
  */
 xbt_dictelm_t xbt_dict_get_elm(xbt_dict_t dict, const char *key)
 {
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
-  if (current == NULL)
+  if (current == nullptr)
     THROWF(not_found_error, 0, "key %s not found", key);
 
   return current;
 }
 
 /**
- * \brief like xbt_dict_get(), but returning NULL when not found
+ * \brief like xbt_dict_get(), but returning nullptr when not found
  */
 void *xbt_dict_get_or_null(xbt_dict_t dict, const char *key)
 {
   xbt_dictelm_t current = xbt_dict_get_elm_or_null(dict, key);
 
-  if (current == NULL)
-    return NULL;
+  if (current == nullptr)
+    return nullptr;
 
   return current->content;
 }
 
 /**
- * \brief like xbt_dict_get_elm(), but returning NULL when not found
+ * \brief like xbt_dict_get_elm(), but returning nullptr when not found
  */
 xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
 {
   unsigned int hash_code = xbt_str_hash(key);
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  while (current != NULL && (hash_code != current->hash_code || strcmp(key, current->key)))
+  while (current != nullptr && (hash_code != current->hash_code || strcmp(key, current->key)))
     current = current->next;
   return current;
 }
@@ -348,19 +348,19 @@ xbt_dictelm_t xbt_dict_get_elm_or_null(xbt_dict_t dict, const char *key)
 void xbt_dict_remove_ext(xbt_dict_t dict, const char *key, int key_len)
 {
   unsigned int hash_code = xbt_str_hash_ext(key, key_len);
-  xbt_dictelm_t previous = NULL;
+  xbt_dictelm_t previous = nullptr;
   xbt_dictelm_t current = dict->table[hash_code & dict->table_size];
 
-  while (current != NULL && (hash_code != current->hash_code || key_len != current->key_len
+  while (current != nullptr && (hash_code != current->hash_code || key_len != current->key_len
           || strncmp(key, current->key, key_len))) {
     previous = current;         /* save the previous node */
     current = current->next;
   }
 
-  if (current == NULL)
+  if (current == nullptr)
     THROWF(not_found_error, 0, "key %.*s not found", key_len, key);
 
-  if (previous != NULL) {
+  if (previous != nullptr) {
     previous->next = current->next;
   } else {
     dict->table[hash_code & dict->table_size] = current->next;
@@ -393,14 +393,14 @@ void xbt_dict_reset(xbt_dict_t dict)
     return;
 
   for (int i = 0; i <= dict->table_size; i++) {
-    xbt_dictelm_t previous = NULL;
+    xbt_dictelm_t previous = nullptr;
     xbt_dictelm_t current = dict->table[i];
-    while (current != NULL) {
+    while (current != nullptr) {
       previous = current;
       current = current->next;
       xbt_dictelm_free(dict, previous);
     }
-    dict->table[i] = NULL;
+    dict->table[i] = nullptr;
   }
 
   dict->count = 0;
@@ -436,7 +436,7 @@ int xbt_dict_is_empty(xbt_dict_t dict)
  * \param dict the exibitionist
  * \param output a function to dump each data in the tree (check @ref xbt_dict_dump_output_string)
  *
- * Outputs the content of the structure. (for debugging purpose). \a output is a function to output the data. If NULL,
+ * Outputs the content of the structure. (for debugging purpose). \a output is a function to output the data. If nullptr,
  * data won't be displayed.
  */
 void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
@@ -444,14 +444,14 @@ void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
   int i;
   xbt_dictelm_t element;
   printf("Dict %p:\n", dict);
-  if (dict != NULL) {
+  if (dict != nullptr) {
     for (i = 0; i < dict->table_size; i++) {
       element = dict->table[i];
       if (element) {
         printf("[\n");
-        while (element != NULL) {
+        while (element != nullptr) {
           printf(" %s -> '", element->key);
-          if (output != NULL) {
+          if (output != nullptr) {
             output(element->content);
           }
           printf("'\n");
@@ -465,7 +465,7 @@ void xbt_dict_dump(xbt_dict_t dict, void_f_pvoid_t output)
   }
 }
 
-xbt_dynar_t all_sizes = NULL;
+xbt_dynar_t all_sizes = nullptr;
 /** @brief shows some debugging info about the bucklet repartition */
 void xbt_dict_dump_sizes(xbt_dict_t dict)
 {
@@ -478,13 +478,13 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
     printf("\n");
     return;
   }
-  xbt_dynar_t sizes = xbt_dynar_new(sizeof(int), NULL);
+  xbt_dynar_t sizes = xbt_dynar_new(sizeof(int), nullptr);
 
   for (int i = 0; i < dict->table_size; i++) {
     xbt_dictelm_t element = dict->table[i];
     size = 0;
     if (element) {
-      while (element != NULL) {
+      while (element != nullptr) {
         size++;
         element = element->next;
       }
@@ -500,7 +500,7 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
     }
   }
   if (!all_sizes)
-    all_sizes = xbt_dynar_new(sizeof(int), NULL);
+    all_sizes = xbt_dynar_new(sizeof(int), nullptr);
 
   xbt_dynar_foreach(sizes, count, size) {
     /* Copy values of this one into all_sizes */
@@ -532,11 +532,11 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
  */
 void xbt_dict_preinit(void)
 {
-  if (dict_elm_mallocator == NULL)
+  if (dict_elm_mallocator == nullptr)
     dict_elm_mallocator = xbt_mallocator_new(
       256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f,
       dict_elm_mallocator_reset_f);
-  if (dict_het_elm_mallocator == NULL)
+  if (dict_het_elm_mallocator == nullptr)
     dict_het_elm_mallocator = xbt_mallocator_new(
       256, dict_het_elm_mallocator_new_f, dict_het_elm_mallocator_free_f,
       dict_het_elm_mallocator_reset_f);
@@ -548,11 +548,11 @@ void xbt_dict_preinit(void)
  */
 void xbt_dict_postexit(void)
 {
-  if (dict_elm_mallocator != NULL) {
+  if (dict_elm_mallocator != nullptr) {
     xbt_mallocator_free(dict_elm_mallocator);
-    dict_elm_mallocator = NULL;
+    dict_elm_mallocator = nullptr;
     xbt_mallocator_free(dict_het_elm_mallocator);
-    dict_het_elm_mallocator = NULL;
+    dict_het_elm_mallocator = nullptr;
   }
   if (all_sizes) {
     unsigned int count;
@@ -604,7 +604,7 @@ static void debuged_add(xbt_dict_t head, const char *key, void_f_pvoid_t free_f)
 
 static void fill(xbt_dict_t * head, int homogeneous)
 {
-  void_f_pvoid_t free_f = homogeneous ? NULL : &free;
+  void_f_pvoid_t free_f = homogeneous ? nullptr : &free;
 
   xbt_test_add("Fill in the dictionnary");
 
@@ -626,12 +626,12 @@ static void search_ext(xbt_dict_t head, const char *key, const char *data)
   char *found = (char*) xbt_dict_get(head, key);
   xbt_test_log("Found %s", found);
   if (data) {
-    xbt_test_assert(found, "data do not match expectations: found NULL while searching for %s", data);
+    xbt_test_assert(found, "data do not match expectations: found nullptr while searching for %s", data);
     if (found)
       xbt_test_assert(!strcmp(data, found), "data do not match expectations: found %s while searching for %s",
                       found, data);
   } else {
-    xbt_test_assert(!found, "data do not match expectations: found %s while searching for NULL", found);
+    xbt_test_assert(!found, "data do not match expectations: found %s while searching for nullptr", found);
   }
 }
 
@@ -649,7 +649,7 @@ static void debuged_remove(xbt_dict_t head, const char *key)
 
 static void traverse(xbt_dict_t head)
 {
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   char *key;
   char *data;
   int i = 0;
@@ -718,7 +718,7 @@ static void count_check_get_key(xbt_dict_t dict, int length)
 }
 
 xbt_ex_t e;
-xbt_dict_t head = NULL;
+xbt_dict_t head = nullptr;
 char *data;
 
 static void basic_test(int homogeneous)
@@ -740,7 +740,7 @@ static void basic_test(int homogeneous)
   }
   xbt_dict_free(&head);
 
-  free_f = homogeneous ? NULL : &free;
+  free_f = homogeneous ? nullptr : &free;
 
   xbt_test_add("Traverse the full dictionary");
   fill(&head, homogeneous);
@@ -894,17 +894,17 @@ XBT_TEST_UNIT("remove_homogeneous", test_dict_remove_homogeneous, "Removing some
   remove_test(1);
 }
 
-XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
+XBT_TEST_UNIT("nulldata", test_dict_nulldata, "nullptr data management")
 {
   fill(&head, 1);
 
-  xbt_test_add("Store NULL under 'null'");
-  xbt_dict_set(head, "null", NULL, NULL);
-  search_ext(head, "null", NULL);
+  xbt_test_add("Store nullptr under 'null'");
+  xbt_dict_set(head, "null", nullptr, nullptr);
+  search_ext(head, "null", nullptr);
 
   xbt_test_add("Check whether I see it while traversing...");
   {
-    xbt_dict_cursor_t cursor = NULL;
+    xbt_dict_cursor_t cursor = nullptr;
     char *key;
     int found = 0;
 
@@ -918,7 +918,7 @@ XBT_TEST_UNIT("nulldata", test_dict_nulldata, "NULL data management")
       if (!strcmp(key, "null"))
         found = 1;
     }
-    xbt_test_assert(found, "the key 'null', associated to NULL is not found");
+    xbt_test_assert(found, "the key 'null', associated to nullptr is not found");
   }
   xbt_dict_free(&head);
 }
@@ -940,11 +940,11 @@ static int countelems(xbt_dict_t head)
 
 XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
 {
-  xbt_dict_t head = NULL;
+  xbt_dict_t head = nullptr;
   int i, j, k;
   char *key;
 
-  srand((unsigned int) time(NULL));
+  srand((unsigned int) time(nullptr));
 
   for (i = 0; i < 10; i++) {
     xbt_test_add("CRASH test number %d (%d to go)", i + 1, 10 - i - 1);
@@ -953,7 +953,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
     head = xbt_dict_new();
     /* if (i%10) printf("."); else printf("%d",i/10); fflush(stdout); */
     for (j = 0; j < 1000; j++) {
-      char *data = NULL;
+      char *data = nullptr;
       key = (char*) xbt_malloc(SIZEOFKEY);
 
       do {
@@ -962,7 +962,7 @@ XBT_TEST_UNIT("crash", test_dict_crash, "Crash test")
         key[k] = '\0';
         /*      printf("[%d %s]\n",j,key); */
         data = (char*) xbt_dict_get_or_null(head, key);
-      } while (data != NULL);
+      } while (data != nullptr);
 
       xbt_dict_set(head, key, key, &free);
       data = (char*) xbt_dict_get(head, key);
@@ -1028,7 +1028,7 @@ XBT_TEST_UNIT("ext", test_dict_int, "Test dictionnary with int keys")
   xbt_test_add("Insert elements");
   int i;
   for (i = 0; i < count; ++i)
-    xbt_dict_set_ext(dict, (char*) &i, sizeof(i), (void*) (intptr_t) i, NULL);
+    xbt_dict_set_ext(dict, (char*) &i, sizeof(i), (void*) (intptr_t) i, nullptr);
   xbt_test_assert(xbt_dict_size(dict) == (unsigned) count, "Bad number of elements in the dictionnary");
 
   xbt_test_add("Check elements");

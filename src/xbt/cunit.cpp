@@ -18,7 +18,7 @@
 #include "xbt/dynar.h"
 
 /* collection of all suites */
-static xbt_dynar_t _xbt_test_suites = NULL;
+static xbt_dynar_t _xbt_test_suites = nullptr;
 /* global statistics */
 static int _xbt_test_nb_tests = 0;
 static int _xbt_test_test_failed = 0;
@@ -36,7 +36,7 @@ static int _xbt_test_suite_ignore = 0;
 static int _xbt_test_suite_disabled = 0;
 
 /* Context */
-xbt_test_unit_t _xbt_test_current_unit = NULL;
+xbt_test_unit_t _xbt_test_current_unit = nullptr;
 
 /* test suite test log */
 typedef struct s_xbt_test_log {
@@ -50,7 +50,7 @@ static void xbt_test_log_dump(xbt_test_log_t log)
   if (log)
     fprintf(stderr, "      log %p(%s:%d)=%s\n", log, log->file, log->line, log->text);
   else
-    fprintf(stderr, "      log=NULL\n");
+    fprintf(stderr, "      log=nullptr\n");
 }
 
 /* test suite test check */
@@ -74,7 +74,7 @@ static void xbt_test_test_dump(xbt_test_test_t test)
     xbt_dynar_foreach(test->logs, it_log, log)
         xbt_test_log_dump(log);
   } else
-    fprintf(stderr, "    test=NULL\n");
+    fprintf(stderr, "    test=nullptr\n");
 }
 
 /* test suite test unit */
@@ -101,7 +101,7 @@ static void xbt_test_unit_dump(xbt_test_unit_t unit)
       xbt_dynar_foreach(unit->tests, it_test, test)
           xbt_test_test_dump(test);
   } else {
-    fprintf(stderr, "  unit=NULL\n");
+    fprintf(stderr, "  unit=nullptr\n");
   }
 }
 
@@ -122,7 +122,7 @@ static void xbt_test_suite_free(void *s)
 {
   xbt_test_suite_t suite = *(xbt_test_suite_t *) s;
 
-  if (suite == NULL)
+  if (suite == nullptr)
     return;
   xbt_dynar_free(&suite->units);
   free(suite->title);
@@ -191,7 +191,7 @@ xbt_test_suite_t xbt_test_suite_by_name(const char *name, const char *fmt, ...)
   va_start(ap, fmt);
   bufname = bvprintf(fmt, ap);
   va_end(ap);
-  suite = xbt_test_suite_new(name, bufname, NULL);
+  suite = xbt_test_suite_new(name, bufname, nullptr);
   free(bufname);
 
   return suite;
@@ -207,7 +207,7 @@ void xbt_test_suite_dump(xbt_test_suite_t suite)
       xbt_dynar_foreach(suite->units, it_unit, unit)
           xbt_test_unit_dump(unit);
   } else {
-    fprintf(stderr, "TESTSUITE IS NULL!\n");
+    fprintf(stderr, "TESTSUITE IS nullptr!\n");
   }
 }
 
@@ -227,7 +227,7 @@ void xbt_test_suite_push(xbt_test_suite_t suite, const char *name, ts_test_cb_t 
   va_end(ap);
   unit->name = (char *) name;
   unit->func = func;
-  unit->file = NULL;
+  unit->file = nullptr;
   unit->line = 0;
   unit->enabled = 1;
   unit->tests = xbt_dynar_new(sizeof(xbt_test_test_t), xbt_test_test_free);
@@ -250,7 +250,7 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
 
   int first = 1;                /* for result pretty printing */
 
-  if (suite == NULL)
+  if (suite == nullptr)
     return 0;
 
   /* suite title pretty-printing */
@@ -321,14 +321,14 @@ static int xbt_test_suite_run(xbt_test_suite_t suite, int verbosity)
           fprintf(stderr, ".... skip\n");       /* shouldn't happen, but I'm a bit lost with this logic */
         }
         xbt_dynar_foreach(unit->tests, it_test, test) {
-          file = (test->file != NULL ? test->file : unit->file);
+          file = (test->file != nullptr ? test->file : unit->file);
           line = (test->line != 0 ? test->line : unit->line);
           fprintf(stderr, "      %s: %s [%s:%d]\n", (test->ignored ? " SKIP" : (test->expected_failure
                   ? (test-> failed ? "EFAIL" : "EPASS") : (test->failed ? " FAIL" : " PASS"))),test->title, file, line);
 
           if ((test->expected_failure && !test->failed) || (!test->expected_failure && test->failed)) {
             xbt_dynar_foreach(test->logs, it_log, log) {
-              file = (log->file != NULL ? log->file : file);
+              file = (log->file != nullptr ? log->file : file);
               line = (log->line != 0 ? log->line : line);
               fprintf(stderr, "             %s:%d: %s\n", file, line, log->text);
             }
