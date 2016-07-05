@@ -13,6 +13,8 @@
 
 #include <xbt/functional.hpp>
 
+#include <simgrid/s4u/host.hpp>
+
 #include "src/surf/surf_interface.hpp"
 #include "src/surf/storage_interface.hpp"
 #include "src/surf/xml/platf.hpp"

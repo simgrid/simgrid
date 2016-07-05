@@ -7,6 +7,8 @@
 
 #include <xbt/ex.hpp>
 
+#include <simgrid/s4u/host.hpp>
+
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_private.h"
 #include "xbt/log.h"

@@ -6,8 +6,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/str.h"
-#include "xbt/dict.h"
+#include <xbt/str.h>
+#include <xbt/dict.h>
+#include <xbt/dynar.h>
+
+#include <simgrid/s4u/host.hpp>
+
 #include "simgrid/msg.h"
 #include "jmsg_as.h"
 #include "jmsg_host.h"

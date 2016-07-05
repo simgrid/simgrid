@@ -6,13 +6,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/log.h>
+#include <xbt/str.h>
+#include <xbt/sysdep.h>
+
+#include <simgrid/msg.h>
+#include <simgrid/s4u/host.hpp>
+
 #include "jmsg.h"
 #include "jmsg_host.h"
 #include "jmsg_task.h"
 #include "jmsg_process.h"
 #include "jxbt_utilities.h"
-
-#include <simgrid/msg.h>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(jmsg);
 

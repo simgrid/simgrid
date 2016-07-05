@@ -4,10 +4,16 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/host.hpp>
+
+#include <xbt/dict.h>
+#include <xbt/lib.h>
+#include <xbt/log.h>
+
+#include <surf/surf.h>
+#include <surf/surf_routing.h>
+
 #include "src/instr/instr_private.h"
-#include "xbt/lib.h"
-#include "surf/surf.h"
-#include "surf/surf_routing.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_paje_containers, instr, "Paje tracing event system (containers)");
 

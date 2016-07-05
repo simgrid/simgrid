@@ -4,8 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "colls_private.h"
 #include <float.h>
+
+#include <exception>
+
+#include "colls_private.h"
 
 //attempt to do a quick autotuning version of the collective,
 

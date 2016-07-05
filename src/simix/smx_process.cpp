@@ -4,21 +4,28 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <exception>
+#include <functional>
+#include <string>
+#include <utility>
+
 #include <boost/range/algorithm.hpp>
 
 #include <xbt/functional.hpp>
+#include <xbt/ex.hpp>
+#include <xbt/sysdep.h>
+#include <xbt/log.h>
+#include <xbt/dict.h>
+
+#include <simgrid/s4u/host.hpp>
+
+#include <mc/mc.h>
 
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
-#include <xbt/ex.hpp>
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/dict.h"
-#include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "src/mc/Client.hpp"
 #include "src/msg/msg_private.h"
-
 #include "src/simix/SynchroSleep.hpp"
 #include "src/simix/SynchroRaw.hpp"
 #include "src/simix/SynchroIo.hpp"

@@ -4,6 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <vector>
+
+#include <xbt/signal.hpp>
+
+#include <simgrid/s4u/host.hpp>
+
 #include "surf_routing.hpp"
 
 #include "simgrid/sg_config.h"
@@ -11,8 +17,6 @@
 
 #include "src/surf/AsImpl.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
-
-#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
 

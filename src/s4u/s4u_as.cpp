@@ -4,9 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "xbt/log.h"
+#include <xbt/log.h>
 
-#include "simgrid/s4u/As.hpp"
+#include <simgrid/s4u/host.hpp>
+#include <simgrid/s4u/As.hpp>
+
 #include "src/surf/surf_routing.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 

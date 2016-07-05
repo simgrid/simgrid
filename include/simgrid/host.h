@@ -14,10 +14,6 @@
 
 #include <simgrid/forward.h>
 
-#ifdef __cplusplus
-#include <simgrid/s4u/host.hpp>
-#endif
-
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(size_t) sg_host_count(void);

@@ -6,10 +6,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <locale.h>
+
 #include <simgrid/msg.h>
 #include <simgrid/simix.h>
-#include "simgrid/plugins/energy.h"
-#include <locale.h>
+#include <simgrid/plugins/energy.h>
+
+#include <simgrid/s4u/host.hpp>
+
 #include <src/simix/smx_private.h>
 
 #include "jmsg_process.h"

@@ -4,28 +4,41 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdio>
+#include <cstdlib>
+#include <cstring>
+
+#include <xbt/dict.h>
+#include <xbt/lib.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
+#include <xbt/xbt_os_time.h>
+
+#include <simgrid/s4u/host.hpp>
+
+#include <simgrid/simdag.h>
+
 #include "src/surf/network_interface.hpp"
-#include "simgrid/simdag.h"
-#include "xbt/xbt_os_time.h"
+
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(flatifier, "Logging specific to this platform parsing tool");
 
 static int name_compare_hosts(const void *n1, const void *n2)
 {
-  return strcmp(sg_host_get_name(*(sg_host_t *) n1), sg_host_get_name(*(sg_host_t *) n2));
+  return std::strcmp(sg_host_get_name(*(sg_host_t *) n1), sg_host_get_name(*(sg_host_t *) n2));
 }
 
 static int name_compare_links(const void *n1, const void *n2)
 {
-  return strcmp(sg_link_name(*(SD_link_t *) n1),sg_link_name(*(SD_link_t *) n2));
+  return std::strcmp(sg_link_name(*(SD_link_t *) n1),sg_link_name(*(SD_link_t *) n2));
 }
 
 static int parse_cmdline(int *timings, char **platformFile, int argc, char **argv)
 {
   int wrong_option = 0;
   for (int i = 1; i < argc; i++) {
-    if (strlen(argv[i]) > 1 && argv[i][0] == '-' && argv[i][1] == '-') {
-      if (!strcmp(argv[i], "--timings")) {
+    if (std::strlen(argv[i]) > 1 && argv[i][0] == '-' && argv[i][1] == '-') {
+      if (!std::strcmp(argv[i], "--timings")) {
         *timings = 1;
       } else {
           wrong_option = 1;
@@ -80,30 +93,30 @@ int main(int argc, char **argv)
     XBT_INFO("Parsing time: %fs (%zu hosts, %d links)", xbt_os_timer_elapsed(parse_time),
              sg_host_count(), sg_link_count());
   } else {
-    printf("<?xml version='1.0'?>\n");
-    printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");
-    printf("<platform version=\"%d\">\n", version);
-    printf("<AS id=\"AS0\" routing=\"Full\">\n");
+    std::printf("<?xml version='1.0'?>\n");
+    std::printf("<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n");
+    std::printf("<platform version=\"%d\">\n", version);
+    std::printf("<AS id=\"AS0\" routing=\"Full\">\n");
 
     // Hosts
     unsigned int totalHosts = sg_host_count();
     sg_host_t *hosts = sg_host_list();
-    qsort((void *) hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
+    std::qsort((void *) hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
 
     for (i = 0; i < totalHosts; i++) {
-      printf("  <host id=\"%s\" speed=\"%.0f\"", sg_host_get_name(hosts[i]), sg_host_speed(hosts[i]));
+      std::printf("  <host id=\"%s\" speed=\"%.0f\"", sg_host_get_name(hosts[i]), sg_host_speed(hosts[i]));
       props = sg_host_get_properties(hosts[i]);
       if (hosts[i]->coresCount()>1) {
-        printf(" core=\"%d\"", hosts[i]->coresCount());
+        std::printf(" core=\"%d\"", hosts[i]->coresCount());
       }
       if (props && !xbt_dict_is_empty(props)) {
-        printf(">\n");
+        std::printf(">\n");
         xbt_dict_foreach(props, cursor, key, data) {
-          printf("    <prop id=\"%s\" value=\"%s\"/>\n", key, data);
+          std::printf("    <prop id=\"%s\" value=\"%s\"/>\n", key, data);
         }
-        printf("  </host>\n");
+        std::printf("  </host>\n");
       } else {
-        printf("/>\n");
+        std::printf("/>\n");
       }
     }
 
@@ -111,7 +124,7 @@ int main(int argc, char **argv)
     xbt_lib_foreach(as_router_lib, cursor_src, key, value1) {
       value1 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, key, ROUTING_ASR_LEVEL);
       if(value1->isRouter()) {
-        printf("  <router id=\"%s\"/>\n",key);
+        std::printf("  <router id=\"%s\"/>\n",key);
       }
     }
 
@@ -119,17 +132,17 @@ int main(int argc, char **argv)
     unsigned int totalLinks = sg_link_count();
     SD_link_t *links = sg_link_list();
 
-    qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
+    std::qsort((void *) links, totalLinks, sizeof(SD_link_t), name_compare_links);
 
     for (i = 0; i < totalLinks; i++) {
-      printf("  <link id=\"");
+      std::printf("  <link id=\"");
 
-      printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", sg_link_name(links[i]),
+      std::printf("%s\" bandwidth=\"%.0f\" latency=\"%.9f\"", sg_link_name(links[i]),
              sg_link_bandwidth(links[i]), sg_link_latency(links[i]));
       if (sg_link_is_shared(links[i])) {
-        printf("/>\n");
+        std::printf("/>\n");
       } else {
-        printf(" sharing_policy=\"FATPIPE\"/>\n");
+        std::printf(" sharing_policy=\"FATPIPE\"/>\n");
       }
     }
 
@@ -141,23 +154,23 @@ int main(int argc, char **argv)
         value2 = sg_host_by_name(dst)->pimpl_netcard;
         routing_platf->getRouteAndLatency(value1, value2, route,nullptr);
         if (! route->empty()){
-          printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
+          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
           for (auto link: *route)
-            printf("<link_ctn id=\"%s\"/>",link->getName());
-          printf("\n  </route>\n");
+            std::printf("<link_ctn id=\"%s\"/>",link->getName());
+          std::printf("\n  </route>\n");
         }
         delete route;
       }
       xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
         value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
         if(value2->isRouter()){
-          printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
+          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
           std::vector<Link*> *route = new std::vector<Link*>();
           routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route,nullptr);
           for (auto link : *route)
-            printf("<link_ctn id=\"%s\"/>",link->getName());
+            std::printf("<link_ctn id=\"%s\"/>",link->getName());
           delete route;
-          printf("\n  </route>\n");
+          std::printf("\n  </route>\n");
         }
       }
     }
@@ -168,32 +181,32 @@ int main(int argc, char **argv)
         xbt_lib_foreach(as_router_lib, cursor_dst, dst, value2){ //to router
           value2 = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib,dst,ROUTING_ASR_LEVEL);
           if(value2->isRouter()){
-            printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
+            std::printf("  <route src=\"%s\" dst=\"%s\">\n  ", src, dst);
             std::vector<Link*> *route = new std::vector<Link*>();
             routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route,nullptr);
             for(auto link :*route)
-              printf("<link_ctn id=\"%s\"/>",link->getName());
+              std::printf("<link_ctn id=\"%s\"/>",link->getName());
             delete route;
-            printf("\n  </route>\n");
+            std::printf("\n  </route>\n");
           }
         }
         xbt_dict_foreach(host_list, cursor_dst, dst, value2){ //to host
-          printf("  <route src=\"%s\" dst=\"%s\">\n  ",src, dst);
+          std::printf("  <route src=\"%s\" dst=\"%s\">\n  ",src, dst);
           std::vector<Link*> *route = new std::vector<Link*>();
           value2 = sg_host_by_name(dst)->pimpl_netcard;
           routing_platf->getRouteAndLatency((sg_netcard_t)value1,(sg_netcard_t)value2,route, nullptr);
           for(auto link : *route)
-            printf("<link_ctn id=\"%s\"/>",link->getName());
+            std::printf("<link_ctn id=\"%s\"/>",link->getName());
           delete route;
-          printf("\n  </route>\n");
+          std::printf("\n  </route>\n");
         }
       }
     }
 
-    printf("</AS>\n");
-    printf("</platform>\n");
-    free(hosts);
-    free(links);
+    std::printf("</AS>\n");
+    std::printf("</platform>\n");
+    std::free(hosts);
+    std::free(links);
   }
 
   SD_exit();

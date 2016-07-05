@@ -7,9 +7,10 @@
 #ifndef _SURF_SURFXML_PARSE_H
 #define _SURF_SURFXML_PARSE_H
 
-#include "xbt/misc.h"
-#include "xbt/function_types.h"
-#include "xbt/dict.h"
+#include <xbt/dict.h>
+#include <xbt/function_types.h>
+#include <xbt/misc.h>
+#include <xbt/signal.hpp>
 
 SG_BEGIN_DECL()
 

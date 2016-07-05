@@ -11,6 +11,8 @@
 
 #include <xbt/ex.hpp>
 
+#include <simgrid/s4u/host.hpp>
+
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"

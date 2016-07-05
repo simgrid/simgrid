@@ -5,15 +5,18 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdlib.h>
+#include <limits.h>
+
+#include <xbt/dict.h>
+#include <xbt/ex.h>
+#include <xbt/ex.hpp>
+
+#include <simgrid/s4u/host.hpp>
 
 #include "private.h"
-#include <xbt/ex.hpp>
-#include "xbt/dict.h"
 #include "smpi_mpi_dt_private.h"
-#include "limits.h"
 #include "src/simix/smx_private.h"
 #include "colls/colls.h"
-#include "xbt/ex.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_comm, smpi, "Logging specific to SMPI (comm)");
 

@@ -4,13 +4,17 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/ex.hpp>
+#include <xbt/sysdep.h>
+#include <xbt/log.h>
+#include <xbt/dict.h>
+
+#include <simgrid/s4u/host.hpp>
+
+#include <mc/mc.h>
+
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
-#include <xbt/ex.hpp>
-#include "xbt/sysdep.h"
-#include "xbt/log.h"
-#include "xbt/dict.h"
-#include "mc/mc.h"
 
 #include "src/simix/SynchroIo.hpp"
 
