@@ -61,30 +61,30 @@ static bool trace_disable_power;
 static int trace_precision;
 
 static bool trace_configured = false;
-static bool trace_active = false;
+static bool trace_active     = false;
 
 static void TRACE_getopts(void)
 {
-  trace_enabled = xbt_cfg_get_boolean(OPT_TRACING);
-  trace_platform = xbt_cfg_get_boolean(OPT_TRACING_PLATFORM);
-  trace_platform_topology = xbt_cfg_get_boolean(OPT_TRACING_TOPOLOGY);
-  trace_smpi_enabled = xbt_cfg_get_boolean(OPT_TRACING_SMPI);
-  trace_smpi_grouped = xbt_cfg_get_boolean(OPT_TRACING_SMPI_GROUP);
-  trace_smpi_computing = xbt_cfg_get_boolean(OPT_TRACING_SMPI_COMPUTING);
-  trace_smpi_sleeping = xbt_cfg_get_boolean(OPT_TRACING_SMPI_SLEEPING);
-  trace_view_internals = xbt_cfg_get_boolean(OPT_TRACING_SMPI_INTERNALS);
-  trace_categorized = xbt_cfg_get_boolean(OPT_TRACING_CATEGORIZED);
-  trace_uncategorized = xbt_cfg_get_boolean(OPT_TRACING_UNCATEGORIZED);
+  trace_enabled             = xbt_cfg_get_boolean(OPT_TRACING);
+  trace_platform            = xbt_cfg_get_boolean(OPT_TRACING_PLATFORM);
+  trace_platform_topology   = xbt_cfg_get_boolean(OPT_TRACING_TOPOLOGY);
+  trace_smpi_enabled        = xbt_cfg_get_boolean(OPT_TRACING_SMPI);
+  trace_smpi_grouped        = xbt_cfg_get_boolean(OPT_TRACING_SMPI_GROUP);
+  trace_smpi_computing      = xbt_cfg_get_boolean(OPT_TRACING_SMPI_COMPUTING);
+  trace_smpi_sleeping       = xbt_cfg_get_boolean(OPT_TRACING_SMPI_SLEEPING);
+  trace_view_internals      = xbt_cfg_get_boolean(OPT_TRACING_SMPI_INTERNALS);
+  trace_categorized         = xbt_cfg_get_boolean(OPT_TRACING_CATEGORIZED);
+  trace_uncategorized       = xbt_cfg_get_boolean(OPT_TRACING_UNCATEGORIZED);
   trace_msg_process_enabled = xbt_cfg_get_boolean(OPT_TRACING_MSG_PROCESS);
-  trace_msg_vm_enabled = xbt_cfg_get_boolean(OPT_TRACING_MSG_VM);
-  trace_buffer = xbt_cfg_get_boolean(OPT_TRACING_BUFFER);
-  trace_onelink_only = xbt_cfg_get_boolean(OPT_TRACING_ONELINK_ONLY);
-  trace_disable_destroy = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_DESTROY);
-  trace_basic = xbt_cfg_get_boolean(OPT_TRACING_BASIC);
-  trace_display_sizes = xbt_cfg_get_boolean(OPT_TRACING_DISPLAY_SIZES);
-  trace_disable_link = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_LINK);
-  trace_disable_power = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_POWER);
-  trace_precision = xbt_cfg_get_int(OPT_TRACING_PRECISION);
+  trace_msg_vm_enabled      = xbt_cfg_get_boolean(OPT_TRACING_MSG_VM);
+  trace_buffer              = xbt_cfg_get_boolean(OPT_TRACING_BUFFER);
+  trace_onelink_only        = xbt_cfg_get_boolean(OPT_TRACING_ONELINK_ONLY);
+  trace_disable_destroy     = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_DESTROY);
+  trace_basic               = xbt_cfg_get_boolean(OPT_TRACING_BASIC);
+  trace_display_sizes       = xbt_cfg_get_boolean(OPT_TRACING_DISPLAY_SIZES);
+  trace_disable_link        = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_LINK);
+  trace_disable_power       = xbt_cfg_get_boolean(OPT_TRACING_DISABLE_POWER);
+  trace_precision           = xbt_cfg_get_int(OPT_TRACING_PRECISION);
 }
 
 static xbt_dynar_t TRACE_start_functions = nullptr;
