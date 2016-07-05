@@ -7,8 +7,13 @@
 #define SIMGRID_S4U_COND_VARIABLE_HPP
 
 #include <condition_variable>
+#include <future>
 #include <mutex>
 #include <utility> // std::swap
+
+#include <boost/intrusive_ptr.hpp>
+
+#include <xbt/base.h>
 
 #include <simgrid/simix.h>
 #include <simgrid/s4u/mutex.hpp>

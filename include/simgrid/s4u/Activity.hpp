@@ -7,18 +7,17 @@
 #ifndef SIMGRID_S4U_ACTIVITY_HPP
 #define SIMGRID_S4U_ACTIVITY_HPP
 
-#include <stdlib.h>
+#include <cstdlib>
+
 #include <xbt/base.h>
 #include <xbt/misc.h>
 
 #include <simgrid/s4u/forward.hpp>
-#include "simgrid/forward.h"
+#include <simgrid/forward.h>
 
-SG_BEGIN_DECL();
 typedef enum {
   inited, started, finished
 } e_s4u_activity_state_t;
-SG_END_DECL();
 
 namespace simgrid {
 namespace s4u {

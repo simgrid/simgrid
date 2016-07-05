@@ -6,12 +6,15 @@
 #ifndef SIMGRID_S4U_AS_HPP
 #define SIMGRID_S4U_AS_HPP
 
-#include "xbt/base.h"
-#include "xbt/graph.h"
-
-#include "simgrid/s4u/forward.hpp"
-#include <vector>
 #include <map>
+#include <string>
+#include <utility>
+#include <vector>
+
+#include <xbt/base.h>
+#include <xbt/graph.h>
+
+#include <simgrid/s4u/forward.hpp>
 
 #include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 

@@ -10,7 +10,10 @@
 #include <functional>
 #include <memory>
 #include <stdexcept>
+#include <string>
 #include <type_traits>
+#include <utility>
+#include <vector>
 
 #include <xbt/base.h>
 #include <xbt/functional.hpp>

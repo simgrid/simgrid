@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_FILE_HPP
 
 #include <xbt/base.h>
+
 #include <simgrid/simix.h>
 
 namespace simgrid {

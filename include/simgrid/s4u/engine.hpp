@@ -6,6 +6,10 @@
 #ifndef SIMGRID_S4U_ENGINE_HPP
 #define SIMGRID_S4U_ENGINE_HPP
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
 

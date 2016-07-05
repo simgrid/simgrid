@@ -6,12 +6,13 @@
 #ifndef SIMGRID_S4U_MAILBOX_HPP
 #define SIMGRID_S4U_MAILBOX_HPP
 
+#include <string>
+
+#include <boost/unordered_map.hpp>
+
 #include <xbt/base.h>
+
 #include <simgrid/s4u/forward.hpp>
-
-#ifdef __cplusplus
-
-# include <boost/unordered_map.hpp>
 #include <simgrid/s4u/actor.hpp>
 
 namespace simgrid {
@@ -59,8 +60,6 @@ private:
   friend s4u::Engine;
 };
 }} // namespace simgrid::s4u
-
-#endif /* C++ */
 
 XBT_PUBLIC(sg_mbox_t) sg_mbox_by_name(const char*name);
 XBT_PUBLIC(int) sg_mbox_is_empty(sg_mbox_t mbox);

@@ -7,9 +7,13 @@
 #ifndef INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
+#include <string>
+
 #include <boost/unordered_map.hpp>
-#include "xbt/base.h"
-#include "simgrid/simix.h"
+
+#include <xbt/base.h>
+
+#include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {

@@ -6,6 +6,8 @@
 #ifndef SIMGRID_S4U_HOST_HPP
 #define SIMGRID_S4U_HOST_HPP
 
+#include <string>
+
 #include <boost/unordered_map.hpp>
 
 #include <xbt/base.h>
