@@ -17,12 +17,14 @@
 #include "src/msg/msg_private.h"
 #include "src/simix/SynchroComm.hpp"
 
-
-#include <float.h>              /* DBL_MAX */
+#include <float.h> /* DBL_MAX */
+#include <fstream>
+#include <map>
 #include <stdint.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <fstream>
+#include <string>
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 #include <boost/tokenizer.hpp>

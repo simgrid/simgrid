@@ -6,8 +6,9 @@
 #ifndef SMPI_PRIVATE_HPP
 #define SMPI_PRIVATE_HPP
 
-#include <unordered_map>
 #include "src/instr/instr_smpi.h"
+#include <unordered_map>
+#include <vector>
 
 /**
  * Get the address of the beginning of the memory page where addr is located.
