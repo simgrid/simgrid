@@ -844,6 +844,28 @@ This is the default value:
     1. http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
     2. http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
 
+\subsection options_smpi_papi_events smpi/papi-events: Trace hardware counters with PAPI
+
+\warning 
+    This option is experimental and will be subject to change.
+    This feature currently requires superuser privileges, as registers are queried.
+    Only use this feature with code you trust! Call smpirun for instance via
+        smpirun -wrapper "sudo " <your-parameters>
+
+\note
+    This option is only available when SimGrid was compiled with PAPI support.
+
+This option takes the names of PAPI counters and adds their respective values
+to the trace files. (See Section \ref tracing_tracing_options.)
+
+It is planned to make this feature available on a per-process (or per-thread?) basis.
+The first draft, however, just implements a "global" (i.e., for all processes) set
+of counters, the "default" set.
+
+\verbatim
+--cfg=smpi/papi-events:"default:PAPI_L3_LDM:PAPI_L2_LDM"
+\endverbatim
+
 \subsection options_smpi_global smpi/privatize-global-variables: Automatic privatization of global variables
 
 MPI executables are meant to be executed in separated processes, but SMPI is
@@ -1167,6 +1189,7 @@ silently overflow on other parts of the memory.
 - \c smpi/ois: \ref options_model_smpi_ois
 - \c smpi/or: \ref options_model_smpi_or
 - \c smpi/os: \ref options_model_smpi_os
+- \c smpi/papi-events: \ref options_smpi_papi_events
 - \c smpi/privatize-global-variables: \ref options_smpi_global
 - \c smpi/running-power: \ref options_smpi_bench
 - \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
