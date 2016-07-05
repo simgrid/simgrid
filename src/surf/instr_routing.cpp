@@ -178,13 +178,11 @@ void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS)
     PJ_container_set_root (root);
 
     if (TRACE_smpi_is_enabled()) {
-      if (!TRACE_smpi_is_grouped()){
-        type_t mpi = PJ_type_get_or_null ("MPI", root->type);
-        if (mpi == nullptr){
-          mpi = PJ_type_container_new("MPI", root->type);
-          PJ_type_state_new ("MPI_STATE", mpi);
-          PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
-        }
+      type_t mpi = PJ_type_get_or_null ("MPI", root->type);
+      if (mpi == nullptr){
+        mpi = PJ_type_container_new("MPI", root->type);
+        if (!TRACE_smpi_is_grouped()) PJ_type_state_new ("MPI_STATE", mpi);
+        PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
       }
     }
 
@@ -284,7 +282,6 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
     if (mpi == nullptr){
       mpi = PJ_type_container_new("MPI", container->type);
       PJ_type_state_new ("MPI_STATE", mpi);
-      PJ_type_link_new ("MPI_LINK", PJ_type_get_root(), mpi, mpi);
     }
   }
 
