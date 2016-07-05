@@ -48,7 +48,7 @@ public:
   FutureStateBase(FutureStateBase const&) = delete;
   FutureStateBase& operator=(FutureStateBase const&) = delete;
 
-  void schedule(simgrid::xbt::Task<void()>&& job);
+  XBT_PUBLIC(void) schedule(simgrid::xbt::Task<void()>&& job);
 
   void set_exception(std::exception_ptr exception)
   {
