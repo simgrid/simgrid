@@ -32,15 +32,4 @@ xbt_dynar_t forward_indices_list(int size);
 xbt_dynar_t reverse_indices_list(int size);
 xbt_dynar_t random_indices_list(int size);
 
-/* Shuffle */
-/**************************************/
-void xbt_dynar_shuffle_in_place(xbt_dynar_t indices_list);
-
-#define xbt_dynar_swap_elements(d, type, i, j) \
-  type tmp; \
-  tmp = xbt_dynar_get_as(indices_list, (unsigned int)j, type); \
-  xbt_dynar_set_as(indices_list, (unsigned int)j, type, \
-    xbt_dynar_get_as(indices_list, (unsigned int)i, type)); \
-  xbt_dynar_set_as(indices_list, (unsigned int)i, type, tmp);
-
 #endif /* ITERATOR_H */
