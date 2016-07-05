@@ -13,7 +13,7 @@
 
 #include "ns3/ns3_interface.h"
 #include "ns3/ns3_simulator.h"
-#include "src/surf/network_ns3.hpp"
+#include "network_ns3.hpp"
 
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_private.h"
@@ -167,7 +167,7 @@ static void create_ns3_topology(void)
   std::unordered_set<simgrid::surf::LinkNS3*> already_seen = std::unordered_set<simgrid::surf::LinkNS3*>();
 
   XBT_DEBUG("There is %ld one-link routes",onelink_routes->used);
-  simgrid::surf::Onelink *onelink;
+  simgrid::routing::Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
     char *src = onelink->src_->name();
@@ -229,7 +229,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 
   routing_model_create(nullptr);
   simgrid::s4u::Host::onCreation.connect(ns3_add_host);
-  simgrid::surf::netcardCreatedCallbacks.connect(ns3_add_netcard);
+  simgrid::routing::netcardCreatedCallbacks.connect(ns3_add_netcard);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
   simgrid::surf::on_postparse.connect(&create_ns3_topology);
 
@@ -251,7 +251,7 @@ Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double lat
   return new LinkNS3(this, name, properties, bandwidth, latency);
 }
 
-Action *NetworkNS3Model::communicate(NetCard *src, NetCard *dst, double size, double rate)
+Action *NetworkNS3Model::communicate(simgrid::routing::NetCard *src,simgrid::routing::NetCard *dst, double size, double rate)
 {
   return new NetworkNS3Action(this, size, src, dst);
 }
@@ -364,7 +364,7 @@ void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(Model *model, double size, NetCard *src, NetCard *dst)
+NetworkNS3Action::NetworkNS3Action(Model *model, double size, simgrid::routing::NetCard *src, simgrid::routing::NetCard *dst)
 : NetworkAction(model, size, false)
 {
   XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());

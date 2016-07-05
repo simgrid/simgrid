@@ -3,25 +3,25 @@
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+#ifndef NETWORK_NS3_HPP_
+#define NETWORK_NS3_HPP_
+
 
 #include <xbt/base.h>
 
 #include "network_interface.hpp"
 #include "src/surf/ns3/ns3_interface.h"
 
-#ifndef NETWORK_NS3_HPP_
-#define NETWORK_NS3_HPP_
-
 namespace simgrid {
 namespace surf {
 
-class XBT_PRIVATE NetworkNS3Model : public NetworkModel {
+class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
   ~NetworkNS3Model();
   Link* createLink(const char *name, double bandwidth, double latency,
       e_surf_link_sharing_policy_t policy, xbt_dict_t properties) override;
-  Action *communicate(NetCard *src, NetCard *dst, double size, double rate);
+  Action *communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate);
   double next_occuring_event(double now) override;
   bool next_occuring_event_isIdempotent() {return false;}
   void updateActionsState(double now, double delta) override;
@@ -47,7 +47,7 @@ public:
  **********/
 class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
-  NetworkNS3Action(Model *model, double cost, NetCard *src, NetCard *dst);
+  NetworkNS3Action(Model *model, double cost, routing::NetCard *src, routing::NetCard *dst);
 
   bool isSuspended();
   int unref();
@@ -56,8 +56,8 @@ public:
 
 //private:
   double lastSent_ = 0;
-  NetCard *src_;
-  NetCard *dst_;
+  routing::NetCard *src_;
+  routing::NetCard *dst_;
 };
 
 }
