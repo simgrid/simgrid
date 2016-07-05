@@ -17,6 +17,15 @@ do_cleanup() {
   done
 }
 
+# Get an ON/OFF string from a command:
+onoff() {
+  if "$@" > /dev/null ; then
+    echo ON
+  else
+    echo OFF
+  fi
+}
+
 ### Cleanup previous runs
 
 ! [ -z "$WORKSPACE" ] || die "No WORKSPACE"
@@ -46,7 +55,8 @@ do
               -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
               -Denable_jedule=ON -Denable_mallocators=ON -Denable_debug=${builddebug} \
               -Denable_smpi=${buildsmpi} -Denable_smpi_MPICH3_testsuite=${buildsmpi} -Denable_model-checking=${buildmc} \
-              -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=OFF -Denable_coverage=OFF $WORKSPACE
+              -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=OFF 
+              -Denable_ns3=$(onoff test "$buildmc" != "ON") -Denable_coverage=OFF $WORKSPACE
         make -j$NUMPROC
         make clean
       done
