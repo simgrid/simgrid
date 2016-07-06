@@ -61,7 +61,7 @@ typedef struct s_smpi_process_data {
   bool replaying;                /* is the process replaying a trace */
   xbt_bar_t finalization_barrier;
   int return_value;
-  smpi_trace_call_location_t* trace_call_loc;
+  smpi_trace_call_location_t trace_call_loc;
 #if HAVE_PAPI
   /** Contains hardware data as read by PAPI **/
   int papi_event_set;
@@ -258,7 +258,7 @@ int smpi_process_count()
 smpi_trace_call_location_t* smpi_process_get_call_location()
 {
   smpi_process_data_t process_data = smpi_process_data();
-  return process_data->trace_call_loc;
+  return &process_data->trace_call_loc;
 }
 
 int smpi_process_index()
@@ -569,10 +569,6 @@ void smpi_global_init()
     process_data[i]->finalization_barrier = nullptr;
     process_data[i]->return_value         = 0;
 
-    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
-      process_data[i]->trace_call_loc     = xbt_new(smpi_trace_call_location_t, 1);
-    }
-
 #if HAVE_PAPI
     if (xbt_cfg_get_string("smpi/papi-events")[0] != '\0') {
       // TODO: Implement host/process/thread based counters. This implementation
@@ -626,9 +622,6 @@ void smpi_global_destroy()
     }
     xbt_os_timer_free(process_data[i]->timer);
     xbt_mutex_destroy(process_data[i]->mailboxes_mutex);
-    if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
-      xbt_free(process_data[i]->trace_call_loc);
-    }
     delete process_data[i];
   }
   delete[] process_data;
