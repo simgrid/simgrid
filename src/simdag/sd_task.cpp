@@ -22,7 +22,7 @@ static void __SD_task_dependency_destroy(void *dependency)
 /* Remove all dependencies associated with a task. This function is called when the task is destroyed. */
 static void __SD_task_remove_dependencies(SD_task_t task)
 {
-  /* we must destroy the dependencies carefuly (with SD_dependency_remove) because each one is stored twice */
+  /* we must destroy the dependencies carefully (with SD_dependency_remove) because each one is stored twice */
   SD_dependency_t dependency;
   while (xbt_dynar_is_empty(task->tasks_before) == 0) {
     xbt_dynar_get_cpy(task->tasks_before, 0, &dependency);
@@ -63,7 +63,7 @@ void SD_task_recycle_f(void *t)
   /* Reset the content */
   task->kind = SD_TASK_NOT_TYPED;
   task->state= SD_NOT_SCHEDULED;
-  xbt_dynar_push(sd_global->initial_task_set,&task);
+  sd_global->initial_task_set->push_back(task);
 
   task->marked = 0;
 
@@ -319,36 +319,39 @@ e_SD_task_state_t SD_task_get_state(SD_task_t task)
  */
 void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 {
-  int idx;
+  std::vector<SD_task_t>::iterator idx;
   switch (new_state) {
   case SD_NOT_SCHEDULED:
   case SD_SCHEDULABLE:
     if (SD_task_get_state(task) == SD_FAILED){
-        xbt_dynar_remove_at(sd_global->completed_task_set,
-            xbt_dynar_search(sd_global->completed_task_set, &task), nullptr);
-        xbt_dynar_push(sd_global->initial_task_set,&task);
+      sd_global->initial_task_set->push_back(task);
+      sd_global->completed_task_set->erase(std::remove(sd_global->completed_task_set->begin(),
+                                                       sd_global->completed_task_set->end(), task),
+                                                       sd_global->completed_task_set->end());
     }
     break;
   case SD_SCHEDULED:
     if (SD_task_get_state(task) == SD_RUNNABLE){
-      xbt_dynar_remove_at(sd_global->executable_task_set,
-          xbt_dynar_search(sd_global->executable_task_set, &task), nullptr);
-      xbt_dynar_push(sd_global->initial_task_set,&task);
+      sd_global->initial_task_set->push_back(task);
+      sd_global->executable_task_set->erase(std::remove(sd_global->executable_task_set->begin(),
+                                                        sd_global->executable_task_set->end(), task),
+                                                        sd_global->executable_task_set->end());
     }
     break;
   case SD_RUNNABLE:
-    idx = xbt_dynar_search_or_negative(sd_global->initial_task_set, &task);
-    if (idx >= 0) {
-      xbt_dynar_remove_at(sd_global->initial_task_set, idx, nullptr);
-      xbt_dynar_push(sd_global->executable_task_set,&task);
+    idx = std::find(sd_global->initial_task_set->begin(), sd_global->initial_task_set->end(), task);
+    if (idx != sd_global->initial_task_set->end()) {
+      sd_global->executable_task_set->push_back(*idx);
+      sd_global->initial_task_set->erase(idx);
     }
     break;
   case SD_RUNNING:
-      xbt_dynar_remove_at(sd_global->executable_task_set,
-         xbt_dynar_search(sd_global->executable_task_set, &task), nullptr);
+    sd_global->executable_task_set->erase(std::remove(sd_global->executable_task_set->begin(),
+                                                      sd_global->executable_task_set->end(), task),
+                                                      sd_global->executable_task_set->end());
     break;
   case SD_DONE:
-    xbt_dynar_push(sd_global->completed_task_set,&task);
+    sd_global->completed_task_set->push_back(task);
     task->finish_time = task->surf_action->getFinishTime();
     task->remains = 0;
 #if HAVE_JEDULE
@@ -356,7 +359,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 #endif
     break;
   case SD_FAILED:
-    xbt_dynar_push(sd_global->completed_task_set,&task);
+    sd_global->completed_task_set->push_back(task);
     break;
   default:
     xbt_die( "Invalid state");

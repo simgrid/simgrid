@@ -6,7 +6,7 @@
 
 #ifndef SIMDAG_PRIVATE_H
 #define SIMDAG_PRIVATE_H
-
+#include <vector>
 #include "xbt/dynar.h"
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
@@ -22,9 +22,9 @@ typedef struct SD_global {
 
   bool watch_point_reached;      /* has a task just reached a watch point? */
 
-  xbt_dynar_t initial_task_set;
-  xbt_dynar_t executable_task_set;
-  xbt_dynar_t completed_task_set;
+  std::vector<SD_task_t> *initial_task_set;
+  std::vector<SD_task_t> *executable_task_set;
+  std::vector<SD_task_t> *completed_task_set;
 
   xbt_dynar_t return_set;
 

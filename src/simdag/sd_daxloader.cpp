@@ -340,7 +340,7 @@ void STag_dax__uses(void)
   SD_task_t file = static_cast<SD_task_t>(xbt_dict_get_or_null(files, A_dax__uses_file));
   if (file == nullptr) {
     file = SD_task_create_comm_e2e(A_dax__uses_file, nullptr, size);
-    xbt_dynar_pop(sd_global->initial_task_set,nullptr);
+    sd_global->initial_task_set->pop_back();
     xbt_dict_set(files, A_dax__uses_file, file, nullptr);
   } else {
     if (SD_task_get_amount(file) != size) {
