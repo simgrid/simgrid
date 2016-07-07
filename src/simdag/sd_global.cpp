@@ -40,9 +40,9 @@ void SD_init(int *argc, char **argv)
 
   sd_global->task_mallocator=xbt_mallocator_new(65536, SD_task_new_f, SD_task_free_f, SD_task_recycle_f);
 
-  sd_global->initial_task_set = new std::vector<SD_task_t>();
-  sd_global->executable_task_set = new std::vector<SD_task_t>();
-  sd_global->completed_task_set = new std::vector<SD_task_t>();
+  sd_global->initial_tasks = new std::set<SD_task_t>();
+  sd_global->executable_tasks = new std::set<SD_task_t>();
+  sd_global->completed_tasks = new std::set<SD_task_t>();
   sd_global->return_set = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
   surf_init(argc, argv);
@@ -129,8 +129,9 @@ xbt_dynar_t SD_simulate(double how_long) {
   xbt_dynar_reset(sd_global->return_set);
 
   /* explore the runnable tasks */
-  for (unsigned int i =0; i < sd_global->executable_task_set->size(); i++) {
-    task = sd_global->executable_task_set->at(i);
+  for (std::set<SD_task_t>::iterator it=sd_global->executable_tasks->begin();
+       it!=sd_global->executable_tasks->end(); ++it){
+    task = *it;
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
     SD_task_run(task);
     xbt_dynar_push(sd_global->return_set, &task);
@@ -229,13 +230,14 @@ xbt_dynar_t SD_simulate(double how_long) {
     }
   }
 
-  if (!sd_global->watch_point_reached && how_long<0 && !sd_global->initial_task_set->empty()) {
+  if (!sd_global->watch_point_reached && how_long<0 && !sd_global->initial_tasks->empty()) {
     XBT_WARN("Simulation is finished but %lu tasks are still not done",
-             sd_global->initial_task_set->size());
+             sd_global->initial_tasks->size());
     static const char* state_names[] =
       { "SD_NOT_SCHEDULED", "SD_SCHEDULABLE", "SD_SCHEDULED", "SD_RUNNABLE", "SD_RUNNING", "SD_DONE","SD_FAILED" };
-    for (unsigned int i=0; i< sd_global->initial_task_set->size() ; i++){
-      task = sd_global->initial_task_set->at(i);
+    for (std::set<SD_task_t>::iterator it=sd_global->initial_tasks->begin();
+         it!=sd_global->initial_tasks->end(); ++it){
+      task = *it;
       XBT_WARN("%s is in %s state", SD_task_get_name(task), state_names[SD_task_get_state(task)]);
     }
   }
@@ -269,9 +271,9 @@ void SD_exit()
 #endif
 
   xbt_mallocator_free(sd_global->task_mallocator);
-  delete sd_global->initial_task_set;
-  delete sd_global->executable_task_set;
-  delete sd_global->completed_task_set;
+  delete sd_global->initial_tasks;
+  delete sd_global->executable_tasks;
+  delete sd_global->completed_tasks;
   xbt_dynar_free_container(&(sd_global->return_set));
   xbt_free(sd_global);
   sd_global = nullptr;

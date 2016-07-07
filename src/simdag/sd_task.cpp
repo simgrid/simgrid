@@ -63,7 +63,7 @@ void SD_task_recycle_f(void *t)
   /* Reset the content */
   task->kind = SD_TASK_NOT_TYPED;
   task->state= SD_NOT_SCHEDULED;
-  sd_global->initial_task_set->push_back(task);
+  sd_global->initial_tasks->insert(task);
 
   task->marked = 0;
 
@@ -319,39 +319,33 @@ e_SD_task_state_t SD_task_get_state(SD_task_t task)
  */
 void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 {
-  std::vector<SD_task_t>::iterator idx;
+  std::set<SD_task_t>::iterator idx;
   switch (new_state) {
   case SD_NOT_SCHEDULED:
   case SD_SCHEDULABLE:
     if (SD_task_get_state(task) == SD_FAILED){
-      sd_global->initial_task_set->push_back(task);
-      sd_global->completed_task_set->erase(std::remove(sd_global->completed_task_set->begin(),
-                                                       sd_global->completed_task_set->end(), task),
-                                                       sd_global->completed_task_set->end());
+      sd_global->completed_tasks->erase(task);
+      sd_global->initial_tasks->insert(task);
     }
     break;
   case SD_SCHEDULED:
     if (SD_task_get_state(task) == SD_RUNNABLE){
-      sd_global->initial_task_set->push_back(task);
-      sd_global->executable_task_set->erase(std::remove(sd_global->executable_task_set->begin(),
-                                                        sd_global->executable_task_set->end(), task),
-                                                        sd_global->executable_task_set->end());
+      sd_global->executable_tasks->erase(task);
+      sd_global->initial_tasks->insert(task);
     }
     break;
   case SD_RUNNABLE:
-    idx = std::find(sd_global->initial_task_set->begin(), sd_global->initial_task_set->end(), task);
-    if (idx != sd_global->initial_task_set->end()) {
-      sd_global->executable_task_set->push_back(*idx);
-      sd_global->initial_task_set->erase(idx);
+    idx = std::find(sd_global->initial_tasks->begin(), sd_global->initial_tasks->end(), task);
+    if (idx != sd_global->initial_tasks->end()) {
+      sd_global->initial_tasks->erase(idx);
+      sd_global->executable_tasks->insert(*idx);
     }
     break;
   case SD_RUNNING:
-    sd_global->executable_task_set->erase(std::remove(sd_global->executable_task_set->begin(),
-                                                      sd_global->executable_task_set->end(), task),
-                                                      sd_global->executable_task_set->end());
+    sd_global->executable_tasks->erase(task);
     break;
   case SD_DONE:
-    sd_global->completed_task_set->push_back(task);
+    sd_global->completed_tasks->insert(task);
     task->finish_time = task->surf_action->getFinishTime();
     task->remains = 0;
 #if HAVE_JEDULE
@@ -359,7 +353,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 #endif
     break;
   case SD_FAILED:
-    sd_global->completed_task_set->push_back(task);
+    sd_global->completed_tasks->insert(task);
     break;
   default:
     xbt_die( "Invalid state");
