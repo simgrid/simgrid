@@ -135,7 +135,6 @@ xbt_dynar_t SD_simulate(double how_long) {
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
     SD_task_run(task);
     xbt_dynar_push(sd_global->return_set, &task);
-    iter--;
   }
 
   /* main loop */
