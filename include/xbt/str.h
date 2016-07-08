@@ -48,15 +48,15 @@ XBT_PUBLIC(char *) xbt_str_from_file(FILE * file);
 XBT_PUBLIC(long int) xbt_str_parse_int(const char* str, const char* error_msg);
 XBT_PUBLIC(double) xbt_str_parse_double(const char* str, const char* error_msg);
 
-#define DJB2_HASH_FUNCTION
-//#define FNV_HASH_FUNCTION
+#define XBT_DJB2_HASH_FUNCTION
+//#define XBT_FNV_HASH_FUNCTION
 
 /**
  * @brief Returns the hash code of a string.
  */
 static inline unsigned int xbt_str_hash_ext(const char *str, int str_len)
 {
-#ifdef DJB2_HASH_FUNCTION
+#ifdef XBT_DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */
   int c;
   unsigned int hash = 5381;
@@ -65,7 +65,7 @@ static inline unsigned int xbt_str_hash_ext(const char *str, int str_len)
     c = *str++;
     hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
   }
-# elif defined(FNV_HASH_FUNCTION)
+# elif defined(XBT_FNV_HASH_FUNCTION)
   unsigned int hash = 0x811c9dc5;
   unsigned char *bp = (unsigned char *) str;    /* start of buffer */
   unsigned char *be = bp + str_len;     /* beyond end of buffer */
@@ -97,7 +97,7 @@ static inline unsigned int xbt_str_hash_ext(const char *str, int str_len)
  */
 static inline unsigned int xbt_str_hash(const char *str)
 {
-#ifdef DJB2_HASH_FUNCTION
+#ifdef XBT_DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */
   int c;
   unsigned int hash = 5381;
@@ -106,7 +106,7 @@ static inline unsigned int xbt_str_hash(const char *str)
     hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
   }
 
-# elif defined(FNV_HASH_FUNCTION)
+# elif defined(XBT_FNV_HASH_FUNCTION)
   unsigned int hash = 0x811c9dc5;
 
   while (*str) {
