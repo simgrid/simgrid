@@ -129,9 +129,10 @@ xbt_dynar_t SD_simulate(double how_long) {
   xbt_dynar_reset(sd_global->return_set);
 
   /* explore the runnable tasks */
-  for (std::set<SD_task_t>::iterator it=sd_global->executable_tasks->begin();
-       it!=sd_global->executable_tasks->end(); ++it){
+  std::set<SD_task_t>::iterator it=sd_global->executable_tasks->begin();
+  while(it != sd_global->executable_tasks->end()){
     task = *it;
+    it++;
     XBT_VERB("Executing task '%s'", SD_task_get_name(task));
     SD_task_run(task);
     xbt_dynar_push(sd_global->return_set, &task);

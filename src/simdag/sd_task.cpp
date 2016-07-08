@@ -330,15 +330,15 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     break;
   case SD_SCHEDULED:
     if (SD_task_get_state(task) == SD_RUNNABLE){
-      sd_global->executable_tasks->erase(task);
       sd_global->initial_tasks->insert(task);
+      sd_global->executable_tasks->erase(task);
     }
     break;
   case SD_RUNNABLE:
     idx = std::find(sd_global->initial_tasks->begin(), sd_global->initial_tasks->end(), task);
     if (idx != sd_global->initial_tasks->end()) {
-      sd_global->initial_tasks->erase(idx);
       sd_global->executable_tasks->insert(*idx);
+      sd_global->initial_tasks->erase(idx);
     }
     break;
   case SD_RUNNING:
