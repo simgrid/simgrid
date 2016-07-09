@@ -11,13 +11,6 @@
 #include "simgrid_config.h"
 #if !HAVE_UNISTD_H
 #define YY_NO_UNISTD_H /* hello Windows */
-
-#ifdef _MSC_VER
-# include <io.h>
-# include <process.h>
-# define _CRT_SECURE_NO_WARNINGS
-# define _CRT_NONSTDC_NO_WARNINGS
-#endif
 #endif
 
 #include <stdio.h>
