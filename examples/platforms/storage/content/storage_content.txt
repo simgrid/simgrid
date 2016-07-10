@@ -439,7 +439,6 @@
 /include/smpi/mpif.h  4826
 /include/smpi/smpif.h  1139
 /include/smpi/mpi.h  510
-/include/smpi/smpi_cocci.h 3187
 /include/smpi/smpi.h  24101
 /include/xbt/fifo.h  3626
 /include/xbt/dict.h  7459
