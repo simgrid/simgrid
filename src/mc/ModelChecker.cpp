@@ -48,7 +48,6 @@ namespace simgrid {
 namespace mc {
 
 ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
-  hostnames_(xbt_dict_new()),
   page_store_(500),
   process_(std::move(process)),
   parent_snapshot_(nullptr)
@@ -56,22 +55,7 @@ ModelChecker::ModelChecker(std::unique_ptr<Process> process) :
 
 }
 
-ModelChecker::~ModelChecker()
-{
-  xbt_dict_free(&this->hostnames_);
-}
-
-const char* ModelChecker::get_host_name(const char* hostname)
-{
-  // Lookup the host name in the dictionary (or create it):
-  xbt_dictelm_t elt = xbt_dict_get_elm_or_null(this->hostnames_, hostname);
-  if (!elt) {
-    xbt_dict_set(this->hostnames_, hostname, nullptr, nullptr);
-    elt = xbt_dict_get_elm_or_null(this->hostnames_, hostname);
-    assert(elt);
-  }
-  return elt->key;
-}
+ModelChecker::~ModelChecker() {}
 
 void ModelChecker::start()
 {

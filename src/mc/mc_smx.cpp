@@ -172,7 +172,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   char hostname[remote_string.len];
   process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
-  info->hostname = mc_model_checker->get_host_name(hostname);
+  info->hostname = mc_model_checker->get_host_name(hostname).c_str();
   return info->hostname;
 }
 

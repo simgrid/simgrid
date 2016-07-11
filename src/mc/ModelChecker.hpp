@@ -10,10 +10,12 @@
 #include <sys/types.h>
 
 #include <poll.h>
+
 #include <memory>
+#include <set>
+#include <string>
 
 #include <simgrid_config.h>
-#include <xbt/dict.h>
 #include <xbt/base.h>
 #include <sys/types.h>
 
@@ -32,7 +34,7 @@ class ModelChecker {
   struct pollfd fds_[2];
   /** String pool for host names */
   // TODO, use std::set with heterogeneous comparison lookup (C++14)?
-  xbt_dict_t /* <hostname, nullptr> */ hostnames_;
+  std::set<std::string> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_;
   std::unique_ptr<Process> process_;
@@ -54,7 +56,15 @@ public:
   {
     return page_store_;
   }
-  const char* get_host_name(const char* name);
+
+  std::string const& get_host_name(const char* hostname)
+  {
+    return *this->hostnames_.insert(hostname).first;
+  }
+  std::string const& get_host_name(std::string const& hostname)
+  {
+    return *this->hostnames_.insert(hostname).first;
+  }
 
   void start();
   void shutdown();
