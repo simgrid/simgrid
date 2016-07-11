@@ -77,15 +77,4 @@ XBT_PUBLIC(void) xbt_lib_remove(xbt_lib_t lib, const char *key);
 
 SG_END_DECL()
 
-#ifdef __cplusplus
-namespace simgrid {
-namespace xbt {
-  inline void destroy(xbt_lib_t l)
-  {
-    xbt_lib_free(&l);
-  }
-}
-}
-#endif
-
 #endif                          /* _XBT_LIB_H */

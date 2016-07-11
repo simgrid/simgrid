@@ -258,15 +258,4 @@ xbt_dynar_foreach (dyn,cpt,str) {
 /** @} */
 SG_END_DECL()
 
-#ifdef __cplusplus
-namespace simgrid {
-namespace xbt {
-  inline void destroy(xbt_dynar_t s)
-  {
-    xbt_dynar_free(&s);
-  }
-}
-}
-#endif
-
 #endif                          /* _XBT_DYNAR_H */

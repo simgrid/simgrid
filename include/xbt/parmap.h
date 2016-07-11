@@ -48,15 +48,4 @@ XBT_PUBLIC(void*) xbt_parmap_next(xbt_parmap_t parmap);
 
 SG_END_DECL()
 
-#ifdef __cplusplus
-namespace simgrid {
-namespace xbt {
-  inline void destroy(xbt_parmap_t p)
-  {
-    xbt_parmap_destroy(p);
-  }
-}
-}
-#endif
-
 #endif

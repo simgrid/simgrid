@@ -40,14 +40,6 @@ xbt_dynar_t newDeleteDynar()
     [](void* p) { delete *(T**)p; });
 }
 
-/** Dynar of `T*` which `destroy()` its values */
-template<class T> inline
-xbt_dynar_t newDestroyDynar()
-{
-  return xbt_dynar_new(sizeof(T*),
-    [](void* p) { simgrid::xbt::destroy(*(T**)p); });
-}
-
 }
 }
 #endif

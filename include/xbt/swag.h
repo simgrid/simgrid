@@ -193,15 +193,4 @@ static inline void *xbt_swag_getFirst(xbt_swag_t swag)
 
 SG_END_DECL()
 
-#ifdef __cplusplus
-namespace simgrid {
-namespace xbt {
-  inline void destroy(xbt_swag_t s)
-  {
-    xbt_swag_free(s);
-  }
-}
-}
-#endif
-
 #endif                          /* _XBT_SWAG_H */
