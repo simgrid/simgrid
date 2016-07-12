@@ -76,4 +76,67 @@ futures are currently not implemented in our futures however such as
 
 \subsection simgrid_uhood_timer Timers
 
+\section simgrid_uhood_mc Model Checker
+
+The current implementation of the model-checker uses two distinct processes:
+
+ - the SimGrid model-checker (`simgrid-mc`) itself lives in the parent process;
+
+ - it spaws a child process for the SimGrid simulator/mastro and the simulated
+   processes.
+
+They communicate using a `AF_UNIX` `SOCK_DGRAM` socket and exchange messages
+defined in `mc_protocol.h`. The `SIMGRID_MC_SOCKET_FD` environment variable it
+set to the file descriptor of this socket in the child process.
+
+The model-checker analyzes, saves and restores the state of the model-checked
+process using the following techniques:
+
+* the model-checker reads and writes in the model-checked address space;
+
+* the model-cheker `ptrace()`s the model-checked process and is thus able to
+  know the state of the model-checked process if it crashes;
+
+* DWARF debug informations are used to unwind the stack and identify local
+  variables;
+
+* a custom heap is enabled in the model-checked process which allows the model
+  checker to know which chunks are allocated and which are freed.
+
+\subsection simgrid_uhood_mc_address_space Address space
+
+The `AddressSpace` is a base class used for both the model-checked process
+and its snapshots and has methods to read in the corresponding address space:
+
+ - the `Process` class is a subclass representing the model-checked process;
+
+ - the `Snapshot` class is a subclass representing a snapshot of the process.
+
+Additional helper class include:
+
+ - `Remote<T>` is the result of reading a `T` in a remote AddressSpace. For
+    trivial types (int, etc.), it is convertible t o `T`.
+
+ - `RemotePtr<T>` represents the address of an object of type `T` in some
+    remote `AddressSpace` (it could be an alias to `Remote<T*>`).
+
+\subsection simgrid_uhood_mc_address_elf_dwarf ELF and DWARF
+
+ELF is a standard executable file and dynamic libraries file format.
+DWARF is a standard for debug informations. Both are used on GNU/Linux systems
+and exploited by the model-checker to understand the model-checked process:
+
+ - `ObjectInformation` represents the informations about a given ELF module
+   (executable or shared-object);
+
+ - `Frame` represents a subprogram scope (either a subprogram or a scope within
+    the subprogram);
+
+ - `Type` represents a type (`char*`, `int`, `std::string`) and is referenced
+    by variables (global, variables, parameters), functions (return type),
+    and other types (type of a `struct` field, etc.);
+
+ - `LocationList` and `DwarfExpression` are used to describe the location of
+    variables.
+
 */
