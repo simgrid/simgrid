@@ -118,6 +118,9 @@ s_surf_model_description_t surf_plugin_description[] = {
 
 \section simgrid_dev_guide_simcall How to add a new simcall?
 
+First of all you might want to avoid defining a new simcall if possible:
+\ref simgrid_dev_guide_generic_simcall.
+
 A simcall is used to go from user mode to kernel mode. There is some
 sort of popping dance involved, as we want to isolate the user
 contextes from their environment (so that they can run in parallel and
@@ -169,6 +172,82 @@ generates the following files:
 
 The simcall.in file list all the simcalls in sections. A line starting by "##"
 define a new section which will be replace by a "ifdef" in the generated code.
+
+\section simgrid_dev_guide_generic_simcall How to avoid adding a new simcall?
+
+We now have some generic simcalls which can be used to interface with the
+Maestro without creating new simcalls. You might want to use them instead of
+the defining additional simcalls.  The long term goal is to replace most of
+the simcalls with the generic ones.
+
+For simcalls which never block, `kernelImmediate()` can be used. It takes a
+C++ callback executes it in maestro. Any value returned by the callback is
+returned by `kernelImmediate()`. Conversely, if the callback throws an
+exception, this exception is propagated out of `kernelImmediate()`. Executing
+the code in maestro enforces mutual exclusion (no other user process is running)
+and enforce a deterministic order which guarantees the reproducibility of the
+simulation.  This call is particularly useful for implementing mutable calls:
+
+~~~
+void Host::setProperty(const char*key, const char *value){
+  simgrid::simix::kernelImmediate([&] {
+    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
+    surf_host->setProperty(key,value);
+  });
+}
+~~~
+
+If there is no blocking and no mutation involved (getters), you might consider
+avoiding switching to Maestro and reading directly the data you're interested
+in.
+
+For simcalls which might block, `kernelSync()` can be used. It takes a
+C++ callback and executes it immediately in maestro. This C++ callback is
+expected to return a `simgrid::kernel::Future<T>` reprensenting the operation
+in the kernal. When the operations completes, the user process is waken up
+with the result:
+
+~~~
+try {
+  std::vector<char> result = simgrid::simix::kernelSync([&] {
+    // Fictional example, simgrid::kernel::readFile does not exist.
+    simgrid::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
+    return result;
+  });
+  XBT_DEBUG("Finished reading file %s: length %zu", file, result.size());
+}
+catch (std::runtime_error& e) {
+  XBT_ERROR("Could not read file %s", file);
+}
+~~~
+
+Asynchronous blocks can be implemented with `kernelAsync()`. It works
+like `kernelSync()` but does not block. Instead, it returns a
+`simgrid::simix::Future` representing the operation in the process:
+
+~~~
+simgrid::simix::Future<std:vector<char>> result = simgrid::simix::kernelSync([&] {
+  // Fictional example, simgrid::kernel::readFile does not exist.
+  simgrid::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
+  return result;
+};
+
+// Do some work while the operation is pending:
+while (!result.is_ready() && hasWorkToDo())
+  doMoreWork();
+
+// We don't have anything to do, wait for the operation to complete and
+// get its value:
+try {
+  std:vector<char> value = result.get();
+  XBT_DEBUG("Finished reading file %s: length %zu", file, result.size());
+}
+catch (std::runtime_error& e) {
+  XBT_ERROR("Could not read file %s", file);
+}
+~~~
+
+<b>Note:</b> `kernelSync(f)` could be implemented as `kernelAsync(f).get()`.
 
 \section simgrid_dev_guide_tag What is How to add a new tag for xml files?
 
