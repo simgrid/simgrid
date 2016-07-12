@@ -1,9 +1,79 @@
 /*! @page uhood Under the Hood
 
+\tableofcontents
+
 TBD
 
  - Simulation Loop, LMM, sharing -> papers
  - Context Switching, privatization -> papers
  - @subpage inside
+
+\section simgrid_uhood_async Asynchronous operations
+
+\subsection simgrid_uhood_futures Futures
+
+The `simgrid::kernel::Future` class has been added to SimGrid as an abstraction
+to represent asynchronous operations in the SimGrid maestro. Its API is based
+on `std::experimental::future` from the [C++ Extensions for Concurrency Technical
+Specification](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0159r0.html):
+
+ - `simgrid::kernel::Future<T>` represents the result an asynchronous operations
+    in the simulation inside the SimGrid maestro/kernel;
+
+ - `simgrid::kernel::Promise<T>` can be used to set the value of an assocaiated
+   `simgrid::kernel::Future<T>`.
+
+The expected way to work with `simgrid::kernel::Future<T>` is to add a
+completion handler/continuation:
+
+~~~
+// This code is executed in the maestro context, we cannot block for the result
+// to be ready:
+simgrid::kernel::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
+
+// Add a completion handler:
+result.then([file](simgrid::kernel::Future<std::vector<char>> result) {
+  // At this point, the operation is complete and we can safely call .get():
+  xbt_assert(result.is_ready());
+  try {
+    std::vector<char> data = result.get();
+    XBT_DEBUG("Finished reading file %s: length %zu", file.c_str(), data.size());
+  }
+  // If the operation failed, .get() throws an exception:
+  catch (std::runtime_error& e) {
+    XBT_ERROR("Could not read file %s", file.c_str());
+  }
+});
+~~~
+
+The SimGrid kernel cannot block so calling `.get()` or `.wait()` on a
+`simgrid::kernel::Future<T>` which is not ready will deadlock. In practice, the
+simulator detects this and aborts after reporting an error.
+
+In order to generate your own future, you might need to use a
+`simgrid::kernel::Promise<T>`. The promise is a one-way channel which can be
+used to set the result of an associated `simgrid::kernel::Future<T>`
+(with either `.set_value()` or `.set_exception()`):
+
+~~~
+simgrid::kernel::Future<void> kernel_wait_until(double date)
+{
+  auto promise = std::make_shared<simgrid::kernel::Promise<void>>();
+  auto future = promise->get_future();
+  SIMIX_timer_set(date, [promise] {
+    promise->set_value();
+  });
+  return future;
+}
+~~~
+
+Like the experimental futures, we support chaining `.then()` methods with
+automatic future unwrapping.
+You might want to look at some [C++ tutorial on futures](https://www.youtube.com/watch?v=mPxIegd9J3w&list=PLHTh1InhhwT75gykhs7pqcR_uSiG601oh&index=43)
+for more details and examples. Some operations of the proposed experimental
+futures are currently not implemented in our futures however such as
+`.wait_for()`, `.wait_until()`, `shared_future`, `when_any()`.
+
+\subsection simgrid_uhood_timer Timers
 
 */

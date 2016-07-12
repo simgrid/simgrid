@@ -211,11 +211,12 @@ with the result:
 try {
   std::vector<char> result = simgrid::simix::kernelSync([&] {
     // Fictional example, simgrid::kernel::readFile does not exist.
-    simgrid::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
+    simgrid::kernel::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
     return result;
   });
   XBT_DEBUG("Finished reading file %s: length %zu", file, result.size());
 }
+// If the operation failed, kernelSync() throws an exception:
 catch (std::runtime_error& e) {
   XBT_ERROR("Could not read file %s", file);
 }
@@ -228,7 +229,7 @@ like `kernelSync()` but does not block. Instead, it returns a
 ~~~
 simgrid::simix::Future<std:vector<char>> result = simgrid::simix::kernelSync([&] {
   // Fictional example, simgrid::kernel::readFile does not exist.
-  simgrid::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
+  simgrid::kernek::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
   return result;
 };
 
@@ -239,9 +240,10 @@ while (!result.is_ready() && hasWorkToDo())
 // We don't have anything to do, wait for the operation to complete and
 // get its value:
 try {
-  std:vector<char> value = result.get();
-  XBT_DEBUG("Finished reading file %s: length %zu", file, result.size());
+  std:vector<char> data = result.get();
+  XBT_DEBUG("Finished reading file %s: length %zu", file, data.size());
 }
+// If the operation failed, .get() throws an exception:
 catch (std::runtime_error& e) {
   XBT_ERROR("Could not read file %s", file);
 }
