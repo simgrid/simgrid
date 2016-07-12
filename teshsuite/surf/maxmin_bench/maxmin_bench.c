@@ -82,13 +82,13 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
     }
   }
 
-  printf("Starting to solve(%i)\n",myrand()%1000);
+  fprintf(stderr,"Starting to solve(%i)\n",myrand()%1000);
   date = xbt_os_time() * 1000000;
   lmm_solve(Sys);
   date = xbt_os_time() * 1000000 - date;
 
   if(mode==2){
-    printf("Max concurrency:\n");
+    fprintf(stderr,"Max concurrency:\n");
     l=0;
     for (i = 0; i < nb_cnst; i++) {
       j=lmm_constraint_concurrency_maximum_get(cnst[i]);
@@ -96,13 +96,13 @@ static void test(int nb_cnst, int nb_var, int nb_elem, unsigned int pw_base_limi
       xbt_assert(k<0 || j<=k);
       if(j>l)
         l=j;
-      printf("(%i):%i/%i ",i,j,k);
+      fprintf(stderr,"(%i):%i/%i ",i,j,k);
       lmm_constraint_concurrency_maximum_reset(cnst[i]);
       xbt_assert(!lmm_constraint_concurrency_maximum_get(cnst[i]));
       if(i%10==9)
-        printf("\n");
+        fprintf(stderr,"\n");
     }
-    printf("\nTotal maximum concurrency is %i\n",l);
+    fprintf(stderr,"\nTotal maximum concurrency is %i\n",l);
 
     lmm_print(Sys);
   }
