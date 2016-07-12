@@ -15,8 +15,8 @@ $ ${bindir:=.}/io-file ${srcdir:=.}/storage/storage.xml "--log=root.fmt:[%10.6r]
 > 		File Descriptor Id: 0
 > [  0.000000] (1:host@denise) 	Open file '/home/doc/simgrid/examples/platforms/g5k.xml'
 > [  0.000000] (2:host@alice) 	Capacity of the storage element 'c:\Windows\setupact.log' is stored on: 2391537133 / 536870912000
-> [  0.000000] (3:host@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 36946053 / 536870912000
-> [  0.000000] (4:host@bob) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/nancy.xml' is stored on: 36946053 / 536870912000
+> [  0.000000] (3:host@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 36942866 / 536870912000
+> [  0.000000] (4:host@bob) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/nancy.xml' is stored on: 36942866 / 536870912000
 > [  0.000000] (1:host@denise) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k.xml' is stored on: 13221994 / 536870912000
 > [  0.000040] (4:host@bob) 	Have read 4028 from '/home/doc/simgrid/examples/platforms/nancy.xml'
 > [  0.000085] (1:host@denise) 	Have read 17028 from '/home/doc/simgrid/examples/platforms/g5k.xml'
@@ -33,10 +33,10 @@ $ ${bindir:=.}/io-file ${srcdir:=.}/storage/storage.xml "--log=root.fmt:[%10.6r]
 > [  0.002725] (2:host@alice) 	Have read 110000 from 'c:\Windows\setupact.log' (of size 201663)
 > [  0.002725] (2:host@alice) 	Coming back to the beginning of the stream for file 'c:\Windows\setupact.log'
 > [  0.003374] (4:host@bob) 	Have written 100000 in '/home/doc/simgrid/examples/platforms/nancy.xml'. Size now is: 104028
-> [  0.003374] (4:host@bob) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/nancy.xml' is stored on: 37046053 / 536870912000
+> [  0.003374] (4:host@bob) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/nancy.xml' is stored on: 37042866 / 536870912000
 > [  0.003374] (4:host@bob) 	Coming back to the beginning of the stream for file '/home/doc/simgrid/examples/platforms/nancy.xml'
 > [  0.003560] (3:host@carl) 	Have written 100000 in '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'. Size now is: 122645
-> [  0.003560] (3:host@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 37046053 / 536870912000
+> [  0.003560] (3:host@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 37042866 / 536870912000
 > [  0.003560] (3:host@carl) 	Coming back to the beginning of the stream for file '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.004135] (1:host@denise) 	Have written 110000 in '/home/doc/simgrid/examples/platforms/g5k.xml'. Size now is: 110000
 > [  0.004135] (1:host@denise) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k.xml' is stored on: 13314966 / 536870912000
@@ -49,9 +49,9 @@ $ ${bindir:=.}/io-file ${srcdir:=.}/storage/storage.xml "--log=root.fmt:[%10.6r]
 > [  0.004660] (3:host@carl) 	Have read 110000 from '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' (of size 122645)
 > [  0.004660] (3:host@carl) 	Coming back to the beginning of the stream for file '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.008081] (4:host@bob) 	Have written 110000 in '/home/doc/simgrid/examples/platforms/nancy.xml'. Size now is: 110000
-> [  0.008081] (4:host@bob) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/nancy.xml' is stored on: 37052025 / 536870912000
+> [  0.008081] (4:host@bob) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/nancy.xml' is stored on: 37048838 / 536870912000
 > [  0.008081] (4:host@bob) 	Close file '/home/doc/simgrid/examples/platforms/nancy.xml'
 > [  0.008326] (3:host@carl) 	Have written 110000 in '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'. Size now is: 110000
-> [  0.008326] (3:host@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 37033408 / 536870912000
+> [  0.008326] (3:host@carl) 	Capacity of the storage element '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml' is stored on: 37030221 / 536870912000
 > [  0.008326] (3:host@carl) 	Close file '/home/doc/simgrid/examples/platforms/g5k_cabinets.xml'
 > [  0.008326] (0:maestro@) Simulation time 0.00832645
