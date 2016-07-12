@@ -92,13 +92,10 @@ void xbt_throw(
   char* message, xbt_errcat_t errcat, int value, 
   const char* file, int line, const char* func)
 {
-  xbt_ex e(message);
+  xbt_ex e(simgrid::xbt::ThrowPoint(file, line, func), message);
   free(message);
   e.category = errcat;
   e.value = value;
-  e.file = file;
-  e.line = line;
-  e.func = func;
   throw e;
 }
 

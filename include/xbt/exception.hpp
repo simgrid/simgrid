@@ -22,6 +22,15 @@ namespace xbt {
 
 typedef std::vector<xbt_backtrace_location_t> Backtrace;
 
+struct ThrowPoint {
+  ThrowPoint() {}
+  ThrowPoint(const char* file, int line, const char* function) :
+    file(file), line(line), function(function) {}
+  const char* file = nullptr;
+  int line = 0;
+  const char* function = nullptr;
+};
+
 /** A polymorphic mixin class for adding context to an exception */
 XBT_PUBLIC_CLASS WithContextException {
 public:
@@ -35,6 +44,12 @@ public:
     procname_(xbt_procname()),
     pid_(xbt_getpid())
   {}
+  WithContextException(ThrowPoint throwpoint, Backtrace bt) :
+    backtrace_(std::move(bt)),
+    procname_(xbt_procname()),
+    pid_(xbt_getpid()),
+    throwpoint_(throwpoint)
+  {}
   virtual ~WithContextException();
   Backtrace const& backtrace() const
   {
@@ -42,10 +57,12 @@ public:
   }
   int pid() const { return pid_; }
   std::string const& processName() const { return procname_; }
+  ThrowPoint& throwPoint() { return throwpoint_; }
 private:
   Backtrace backtrace_;
   std::string procname_; /**< Name of the process who thrown this */
   int pid_;              /**< PID of the process who thrown this */
+  ThrowPoint throwpoint_;
 };
 
 /** Internal class used to mixin the two classes */
@@ -53,12 +70,17 @@ template<class E>
 class WithContext : public E, public WithContextException
 {
 public:
-  WithContext(E exception)
-    : E(std::move(exception)) {}
-  WithContext(E exception, Backtrace backtrace)
-    : E(std::move(exception)), WithContextException(std::move(backtrace)) {}
-  WithContext(E exception, WithContextException context)
-    : E(std::move(exception)), WithContextException(std::move(context)) {}
+  WithContext(E exception) :
+    E(std::move(exception)) {}
+  WithContext(E exception, ThrowPoint throwpoint, Backtrace backtrace) :
+    E(std::move(exception)),
+    WithContextException(throwpoint, std::move(backtrace)) {}
+  WithContext(E exception, Backtrace backtrace) :
+    E(std::move(exception)),
+    WithContextException(std::move(backtrace)) {}
+  WithContext(E exception, WithContextException context) :
+    E(std::move(exception)),
+    WithContextException(std::move(context)) {}
   ~WithContext() override {}
 };
 
@@ -75,8 +97,24 @@ throwWithContext(
   // Thanks to the default argument, we are taking the backtrace in the caller:
   Backtrace backtrace = simgrid::xbt::backtrace())
 {
- throw WithContext<E>(std::move(exception), std::move(backtrace));
+  throw WithContext<E>(std::move(exception), std::move(backtrace));
 }
+
+template<class E>
+[[noreturn]] inline
+typename std::enable_if< !std::is_base_of<WithContextException,E>::value >::type
+throwWithContext(
+  E exception,
+  ThrowPoint throwpoint,
+  // Thanks to the default argument, we are taking the backtrace in the caller:
+  Backtrace backtrace = simgrid::xbt::backtrace())
+{
+  throw WithContext<E>(std::move(exception), throwpoint, std::move(backtrace));
+}
+
+#define XBT_THROW_POINT ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__)
+#define XBT_THROW(e) \
+  ::simgrid::xbt::throwWithContext(std::move(e), XBT_THROW_POINT)
 
 }
 }

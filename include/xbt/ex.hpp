@@ -48,19 +48,43 @@
 
 #include <xbt/ex.h>
 
+/** (Deprecated) Generic exception
+ *
+ *  An error is defined by a category and a value within that category.
+ *
+ *  This used to be a structure for C exceptions but it has been retrofitted
+ *  as a C++ exception and some of its data has been moved in the
+ *  WithContextException base class. We should deprecate it and replace it
+ *  with either C++ different exceptions or `std::system_error` which already
+ *  provides this (category + error code) logic.
+ */
 struct XBT_PUBLIC() xbt_ex :
   public std::runtime_error,
   public simgrid::xbt::WithContextException {
 public:
-  xbt_ex() : std::runtime_error("") {}
-  xbt_ex(const char* message) : std::runtime_error(message) {}
+
+  xbt_ex() :
+    std::runtime_error("")
+  {}
+
+  /**
+   *
+   * @param throwpoint Throw point (use XBT_THROW_POINT)
+   * @param message    Exception message
+   */
+  xbt_ex(simgrid::xbt::ThrowPoint throwpoint, const char* message) :
+    std::runtime_error(message),
+    simgrid::xbt::WithContextException(throwpoint, simgrid::xbt::backtrace())
+  {}
+
   ~xbt_ex() override;
 
-  xbt_errcat_t category;        /**< category like HTTP (what went wrong) */
-  int value;                    /**< like errno (why did it went wrong) */
-  const char *file;             /**< Thrown point */
-  int line;                     /**< Thrown point */
-  const char *func;             /**< Thrown point */
+  /** Category (what went wrong) */
+  xbt_errcat_t category;
+
+  /** Why did it went wrong */
+  int value;
+
 };
 
 #endif

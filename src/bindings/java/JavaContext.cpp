@@ -82,12 +82,9 @@ JavaContext::JavaContext(std::function<void()> code,
         "Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
         "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
         thread_amount, ex.what());
-      xbt_ex new_exception(str);
+      xbt_ex new_exception(XBT_THROW_POINT, str);
       new_exception.category = ex.category;
       new_exception.value = ex.value;
-      new_exception.file = __FILE__;
-      new_exception.line = __LINE__;
-      new_exception.func = __func__;
       std::throw_with_nested(std::move(new_exception));
     }
   } else {

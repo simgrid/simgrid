@@ -109,12 +109,9 @@ XBT_PUBLIC(void) SIMIX_clean(void);
 #define SMX_EXCEPTION(issuer, cat, val, msg) \
   if (1) { \
   smx_process_t _smx_throw_issuer = (issuer); /* evaluate only once */ \
-  xbt_ex e(msg); \
+  xbt_ex e(XBT_THROW_POINT, msg); \
   e.category = cat; \
   e.value = val; \
-  e.file = __FILE__; \
-  e.line = __LINE__; \
-  e.func = __func__; \
   _smx_throw_issuer->exception = std::make_exception_ptr(e); \
   } else ((void)0)
 
