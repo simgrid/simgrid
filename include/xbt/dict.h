@@ -21,6 +21,8 @@ SG_BEGIN_DECL()
  *  This section describes the API to a dictionary structure that  associates as string to a void* key. It provides the
  *  same functionality than an hash table.
  *
+ *  If you are using C++, you might want to use `std::unordered_map` instead.
+ *
  *  Here is a little example of use:
 
 \verbatim
@@ -33,7 +35,6 @@ SG_BEGIN_DECL()
  sprintf(buff,"another good stuff");
  xbt_dict_set(mydict,"my data", strdup(buff), free); // previous data gets erased (and freed) by second add
 \endverbatim
- *
  */
 
 /** @defgroup XBT_dict_cons Dict constructor and destructor

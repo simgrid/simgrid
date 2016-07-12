@@ -24,6 +24,7 @@ SG_BEGIN_DECL()
  *  It is basically a fifo but with restrictions so that it can be used as a set. Any operation (add, remove, belongs)
  *  is O(1) and no call to malloc/free is done.
  *
+ *  If you are using C++, you might want to use boost::intrusive::set instead.
  */
 /** @defgroup XBT_swag_type Swag types
     @ingroup XBT_swag

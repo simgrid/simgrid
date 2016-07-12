@@ -64,6 +64,8 @@
 
   Here are the basic data containers that every C programmer rewrites one day.
   You won't need to do so yourself, you lucky one, because we did it for you.
+  However, if you are programming in C++ you might want to use C++ containers
+  instead.
 
   @{ */
      /** @defgroup XBT_dynar  Dynar: generic dynamic array */

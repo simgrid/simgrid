@@ -14,9 +14,13 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_fifo
  *  @brief This section describes the API to generic workqueue.
  *
- * These functions provide the same kind of functionality as dynamic arrays but in time O(1).
- * However these functions use malloc/free way too much often.
+ * These functions provide the same kind of functionality as dynamic arrays
+ * but in time O(1). However these functions use malloc/free way too much often.
+ *
+ *  If you are using C++, you might want to used std::list, std::deque or
+ *  std::queue instead.
  */
+ 
 /** @defgroup XBT_fifo_cons Fifo constructor and destructor
  *  @ingroup XBT_fifo
  *
