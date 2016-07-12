@@ -299,8 +299,17 @@ typedef std::string string;
 
 #endif
 
-std::string string_vprintf(const char *fmt, va_list ap);
+/** Create a C++ string from a C-style format
+ *
+ * @ingroup XBT_str
+*/
 std::string string_printf(const char *fmt, ...);
+
+/** Create a C++ string from a C-style format
+ *
+ * @ingroup XBT_str
+*/
+std::string string_vprintf(const char *fmt, va_list ap);
 
 }
 }

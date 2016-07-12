@@ -11,8 +11,10 @@ namespace xbt {
 
 /** Display informations about an exception
  *
- *  We display: the exception type, name, attached backtarces (if any) and
+ *  We display: the exception type, name, attached backtraces (if any) and
  *  the nested exception (if any).
+ *
+ *  @ingroup XBT_ex
  */
 XBT_PUBLIC(void) logException(
   e_xbt_log_priority_t priority,

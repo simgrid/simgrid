@@ -17,11 +17,29 @@
 #include <xbt/misc.h>  // xbt_procname
 #include <xbt/virtu.h> // xbt_getpid
 
+/** @addtogroup XBT_ex
+ *  @brief Exceptions support
+ */
+
 namespace simgrid {
 namespace xbt {
 
+/** A backtrace
+ *
+ *  This is used (among other things) in exceptions to store the associated
+ *  backtrace.
+ *
+ *  @ingroup XBT_ex
+ */
 typedef std::vector<xbt_backtrace_location_t> Backtrace;
 
+/** The location of where an exception has been throwed
+ *
+ *  This is a tuple (__FILE__, __LINE__, __func__) and can be created with
+ *  @ref XBT_THROW_POINT.
+ *
+ *  @ingroup XBT_ex
+ */
 struct ThrowPoint {
   ThrowPoint() {}
   ThrowPoint(const char* file, int line, const char* function) :
@@ -31,7 +49,22 @@ struct ThrowPoint {
   const char* function = nullptr;
 };
 
-/** A polymorphic mixin class for adding context to an exception */
+/** Create a ThrowPoint with (__FILE__, __LINE__, __func__) */
+#define XBT_THROW_POINT ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__)
+
+/** A base class for exceptions with context
+ *
+ *  This is a base class for exceptions which store additional contextual
+ *  infomations about them: backtrace, throw point, simulated process name
+ *  and PID, etc.
+ *
+ *  You are not expected to inherit from it. Instead of you use should
+ *  @ref XBT_THROW an exception which will throw a subclass of your original
+ *  exception with those additional features.
+ * 
+ *  However, you can try `dynamic_cast` an exception to this type in order to
+ *  get contextual information about the exception.
+ */
 XBT_PUBLIC_CLASS WithContextException {
 public:
   WithContextException() :
@@ -65,11 +98,15 @@ private:
   ThrowPoint throwpoint_;
 };
 
-/** Internal class used to mixin the two classes */
+/** Internal class used to mixin an exception E with WithContextException */
 template<class E>
 class WithContext : public E, public WithContextException
 {
 public:
+
+  static_assert(!std::is_base_of<WithContextException,E>::value,
+    "Trying to appli WithContext twice");
+
   WithContext(E exception) :
     E(std::move(exception)) {}
   WithContext(E exception, ThrowPoint throwpoint, Backtrace backtrace) :
@@ -84,37 +121,21 @@ public:
   ~WithContext() override {}
 };
 
-/** Throw a given exception a context
+/** Throw a C++ exception with some context
  *
- *  @param exception exception to throw
- *  @param backtrace backtrace to attach
+ *  @param e Exception to throw
+ *  @ingroup XBT_ex
  */
-template<class E>
-[[noreturn]] inline
-typename std::enable_if< !std::is_base_of<WithContextException,E>::value >::type
-throwWithContext(
-  E exception,
-  // Thanks to the default argument, we are taking the backtrace in the caller:
-  Backtrace backtrace = simgrid::xbt::backtrace())
-{
-  throw WithContext<E>(std::move(exception), std::move(backtrace));
-}
-
-template<class E>
-[[noreturn]] inline
-typename std::enable_if< !std::is_base_of<WithContextException,E>::value >::type
-throwWithContext(
-  E exception,
-  ThrowPoint throwpoint,
-  // Thanks to the default argument, we are taking the backtrace in the caller:
-  Backtrace backtrace = simgrid::xbt::backtrace())
-{
-  throw WithContext<E>(std::move(exception), throwpoint, std::move(backtrace));
-}
-
-#define XBT_THROW_POINT ::simgrid::xbt::ThrowPoint(__FILE__, __LINE__, __func__)
 #define XBT_THROW(e) \
-  ::simgrid::xbt::throwWithContext(std::move(e), XBT_THROW_POINT)
+  throw WithContext<E>(std::move(exception), throwpoint, simgrid::xbt::backtrace())
+
+/** Throw a C++ exception with a context and a nexted exception/cause
+ *
+ *  @param e Exception to throw
+ *  @ingroup XBT_ex
+ */
+#define XBT_THROW_NESTED(e) \
+  std::throw_with_nested(WithContext<E>(std::move(exception), throwpoint, simgrid::xbt::backtrace()))
 
 }
 }

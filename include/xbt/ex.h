@@ -74,7 +74,21 @@
 #endif
 /*-*-* end of debugging stuff *-*-*/
 
-/** @brief different kind of errors */
+/** @addtogroup XBT_ex_c
+ *  @brief Exceptions support (C)
+ *
+ *  Those fonctions are used to throw C++ exceptions from C code. This feature
+ *  should probably be removed in the future because C and exception do not
+ *  exactly play nicely together.
+ */
+
+/** Categories of errors
+ *
+ *  This very similar to std::error_catgory and should probably be replaced
+ *  by this in the future.
+ *
+ *  @ingroup XBT_ex_c
+ */
 typedef enum {
   unknown_error = 0,            /**< unknown error */
   arg_error,                    /**< Invalid argument */
@@ -94,30 +108,52 @@ typedef enum {
 
 SG_BEGIN_DECL()
 
+/** Get the name of a category
+ *  @ingroup XBT_ex_c
+ */
 XBT_PUBLIC(const char *) xbt_ex_catname(xbt_errcat_t cat);
 
 typedef struct xbt_ex xbt_ex_t;
 
-XBT_PUBLIC(void) xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func) XBT_ATTRIB_NORETURN;
+/** Helper function used to throw exceptions in C */
+XBT_PUBLIC(void) _xbt_throw(char* message, xbt_errcat_t errcat, int value, const char* file, int line, const char* func) XBT_ATTRIB_NORETURN;
 
-/** @brief Builds and throws an exception
-    @hideinitializer */
-#define THROW(c, v)             { xbt_throw(NULL, (xbt_errcat_t) c, v, __FILE__, __LINE__, __func__); }
+/** Builds and throws an exception
+ *  @ingroup XBT_ex_c
+ *  @hideinitializer
+ */
+#define THROW(c, v)             { _xbt_throw(NULL, (xbt_errcat_t) c, v, __FILE__, __LINE__, __func__); }
 
-/** @brief Builds and throws an exception with a printf-like formatted message
-    @hideinitializer */
-#define THROWF(c, v, ...)       xbt_throw(bprintf(__VA_ARGS__), (xbt_errcat_t) c, v, __FILE__, __LINE__, __func__)
+/** Builds and throws an exception with a printf-like formatted message
+ *  @ingroup XBT_ex_c
+ *  @hideinitializer
+ */
+#define THROWF(c, v, ...)       _xbt_throw(bprintf(__VA_ARGS__), (xbt_errcat_t) c, v, __FILE__, __LINE__, __func__)
 
+/** Throw an exception because someting impossible happened
+ *  @ingroup XBT_ex_c
+ */
 #define THROW_IMPOSSIBLE \
   THROWF(unknown_error, 0, "The Impossible Did Happen (yet again)")
+
+/** Throw an exception because someting unimplemented stuff has been attempted
+ *  @ingroup XBT_ex_c
+ */
 #define THROW_UNIMPLEMENTED \
   THROWF(unknown_error, 0, "Function %s unimplemented",__func__)
+
+/** Throw an exception because some dead code was reached
+ *  @ingroup XBT_ex_c
+ */
 #define THROW_DEADCODE \
   THROWF(unknown_error, 0, "Function %s was supposed to be DEADCODE, but it's not",__func__)
 
+/** Die because something impossible happened
+ *  @ingroup XBT_ex_c
+ */
 #define DIE_IMPOSSIBLE xbt_die("The Impossible Did Happen (yet again)")
 
-/** @brief The display made by an exception that is not catched */
+/** Display an exception */
 XBT_PUBLIC(void) xbt_ex_display(xbt_ex_t * e);
 
 SG_END_DECL()

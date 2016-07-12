@@ -48,15 +48,18 @@
 
 #include <xbt/ex.h>
 
-/** (Deprecated) Generic exception
+/** A legacy exception
  *
- *  An error is defined by a category and a value within that category.
+ *  It is defined by a category and a value within that category (as well as
+ *  an optional error message).
  *
  *  This used to be a structure for C exceptions but it has been retrofitted
  *  as a C++ exception and some of its data has been moved in the
- *  WithContextException base class. We should deprecate it and replace it
+ *  @ref WithContextException base class. We should deprecate it and replace it
  *  with either C++ different exceptions or `std::system_error` which already
  *  provides this (category + error code) logic.
+ *
+ *  @ingroup XBT_ex_c
  */
 struct XBT_PUBLIC() xbt_ex :
   public std::runtime_error,

@@ -88,7 +88,7 @@ void xbt_backtrace_display(xbt_backtrace_location_t* loc, std::size_t count)
 #endif
 }
 
-void xbt_throw(
+void _xbt_throw(
   char* message, xbt_errcat_t errcat, int value, 
   const char* file, int line, const char* func)
 {
