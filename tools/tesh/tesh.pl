@@ -430,7 +430,8 @@ sub analyze_result {
         print $diff_tool_tmp_fh "> $got\n" if ($diff_tool);
 
         unless (( $enable_coverage and $got =~ /^profiling:/ ) or
-            ( $enable_sanitizers and $got =~ m/WARNING: ASan doesn't fully support/))
+            ( $enable_sanitizers and $got =~ m/WARNING: ASan doesn't fully support/) or
+            ( $got =~ m/Unable to clean temporary file C:/)) # Crude hack to ignore cruft from Java on Windows
         {
             push @got, $got;
         } 
