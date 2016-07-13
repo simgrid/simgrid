@@ -98,10 +98,10 @@ namespace {
 class smpi_source_location {
 public:
   smpi_source_location(const char* filename, int line)
-    : filename(filename), filename_length(strlen(filename)), line(line) {}
+    : filename(xbt_strdup(filename)), filename_length(strlen(filename)), line(line) {}
 
   /** Pointer to a static string containing the file name */
-  const char* filename = nullptr;
+  char* filename = nullptr;
   int filename_length = 0;
   int line = 0;
 
