@@ -175,7 +175,7 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
 
   mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
-    xbt_die("Could not map fd %d: %s", fd, strerror(errno));
+    xbt_die("Could not map fd %d with size %zu: %s", fd, size, strerror(errno));
   }
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;
@@ -568,7 +568,7 @@ void smpi_sample_3(int global, const char *file, int line)
 void *smpi_shared_malloc(size_t size, const char *file, int line)
 {
   void* mem;
-  if (xbt_cfg_get_boolean("smpi/use-shared-malloc")){
+  if (size > 0 && xbt_cfg_get_boolean("smpi/use-shared-malloc")){
     int fd;
     smpi_source_location loc(file, line);
     auto res = allocs.insert(std::make_pair(loc, shared_data_t()));
@@ -613,7 +613,7 @@ void smpi_shared_free(void *ptr)
     snprintf(loc, PTR_STRLEN, "%p", ptr);
     auto meta = allocs_metadata.find(ptr);
     if (meta == allocs_metadata.end()) {
-      XBT_WARN("Cannot free: %p was not shared-allocated by SMPI", ptr);
+      XBT_WARN("Cannot free: %p was not shared-allocated by SMPI - maybe its size was 0?", ptr);
       return;
     }
     shared_data_t* data = &meta->second.data->second;
@@ -621,11 +621,12 @@ void smpi_shared_free(void *ptr)
       XBT_WARN("Unmapping of fd %d failed: %s", data->fd, strerror(errno));
     }
     data->count--;
-    XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
     if (data->count <= 0) {
       close(data->fd);
       allocs.erase(allocs.find(meta->second.data->first));
       XBT_DEBUG("Shared free - with removal - of %p", ptr);
+    }else{
+      XBT_DEBUG("Shared free - no removal - of %p, count = %d", ptr, data->count);
     }
   }else{
     XBT_DEBUG("Classic free of %p", ptr);
