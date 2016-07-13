@@ -26,7 +26,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   s_surf_parsing_link_up_down_t info;
   XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",
             src->name(), src->id(), dst->name(), dst->id());
-
+  xbt_assert(!xbt_dynar_is_empty(privateLinks_), "Cluster routing : no links attached to the source node - did you use host_link tag?");
   if (! src->isRouter()) {    // No specific link for router
 
     if((src->id() == dst->id()) && hasLoopback_ ){
