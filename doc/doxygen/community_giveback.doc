@@ -103,4 +103,75 @@ SimGrid, we'd love helping you gaining visibility by listing it on our
 <a href="http://simgrid.gforge.inria.fr/contrib.html">Contrib
 section</a>. 
 
+@section contributing_todo Enchancements
+
+If you want to want to start working on the SimGrid codebase, here are a few
+ideas of things that could be done to improved the current code (not all of them
+are easy, though):
+
+@subsection contributing_todo_cxxification Migration to C++
+
+The code is being migrated to C++ but a large part is still C (or C++ with
+ idioms). It would be valuable to replace C idioms with C++ ones:
+
+ - replace XBT structures with C++ containers;
+
+ - replace `char*` with `std::string`;
+
+ - use RAII (`std::unique_ptr`, etc.) instead of explicit `malloc/free` or
+   `new/delete`.
+
+@subsection contributing_todo_exceptions Migration to C++
+
+SimGrid used to implement exceptions in C. This has been replaced with C++
+exceptions but some bits of the C exceptions are still remaining:
+
+ - `xbt_ex` was the type of C exceptions. It is now a standard C++ exception.
+    We might want to remove this and use a more idiomatic C++ solution.
+    `std::system_error` might be used for some error categories.
+
+ - The C API currently throws exceptions exceptions. Throwing exceptions out
+   of C API is not very friendly. C code does not expect them, cannot catch
+   them and cannot handle resource management properly with exceptions.
+   We should clearly separate the C++ API and the C API and catch all exceptions
+   before they get ouf of C APIs.
+
+@subsection contributing_todo_futures Additions to the futures
+
+ - Some features are missing in the Maestro future implementation
+  (`simgrid::simix::Future`, `simgrid::simix::Promise`)
+  could be extended to support additional features:
+  `when_any`, `shared_future`, etc.
+
+ - The corresponding feature might then be implemented in the user process
+   futures.
+
+ - We might need to provide the option to cancel a pending operation. This
+   might be achieved by defining some `Action` or `Operation` class with an
+   API compatible with `Future` (and convertiable to it) but with an
+   additional `.cancel()` method.
+
+@subsection contributing_todo_simcalls Simcalls cleanup
+
+ - Remove simcalls by using the generic ones. One issue with this is that we
+   didn't devise a good way to deal with generic simcalls in the model-checker
+   yet.
+
+@subsection contributing_todo_mc Model-checker
+
+ - Find a good solution to handle generic simcalls in the model-checker.
+
+ - Define a clear interface to be used by model-checking algorithms. The
+   `Session` class in intended to expose this interface but it is not a thing
+   yet.
+
+ - Rewrite the different algorithms as implementations of the `Checker` class
+   using the `Session` inteface.
+
+ - Currently a lot of informations the model-checker reads many informations
+   about the model-checked process by `process_vm_readv()`-ing brutally the
+   data structure leading to some horrible code such as walking a swag from
+   another process. It would be nice to have a sane way for the model-checker
+   to expose the relevant information to the model-checker.
+
 */
