@@ -139,7 +139,8 @@ when using SimDag.
   - \b compound: Host model that is automatically chosen if
     you change the network and CPU models
   - \b ptask_L07: Host model somehow similar to Cas01+CM02 but
-    allowing parallel tasks
+    allowing "parallel tasks", that are intended to model the moldable
+    tasks of the grid scheduling literature.
 
 \subsection options_generic_plugin Plugins
 
