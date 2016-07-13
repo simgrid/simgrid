@@ -531,22 +531,6 @@ Both options are needed in order to run the SMPI process under GDB.
 If you don't, you really should use valgrind to debug your code, it's
 almost magic.
 
-\subsubsection faq_trouble_vg_longjmp longjmp madness in valgrind
-
-This is when valgrind starts complaining about longjmp things, just like:
-
-\verbatim ==21434== Conditional jump or move depends on uninitialised value(s)
-==21434==    at 0x420DBE5: longjmp (longjmp.c:33)
-==21434==
-==21434== Use of uninitialised value of size 4
-==21434==    at 0x420DC3A: __longjmp (__longjmp.S:48)
-\endverbatim
-
-This is the sign that you didn't used the exception mechanism well. Most
-probably, you have a <tt>return;</tt> somewhere within a <tt>TRY{}</tt>
-block. This is <b>evil</b>, and you must not do this. Did you read the section
-about \ref XBT_ex??
-
 \subsubsection faq_trouble_vg_libc Valgrind spits tons of errors about backtraces!
 
 It may happen that valgrind, the memory debugger beloved by any decent C
@@ -615,8 +599,6 @@ you're absolutely convinced that it should not, you can ask on the
 list. Just be aware that you'll be severely punished if the mistake is
 on your side... We have plenty of FAQ entries to redact and new
 features to implement for the impenitents! ;)
-
-Using 
 
 \subsection faq_surf_network_latency I get weird timings when I play with the latencies.
 
