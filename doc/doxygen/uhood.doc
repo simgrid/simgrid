@@ -8,6 +8,124 @@ TBD
  - Context Switching, privatization -> papers
  - @subpage inside
 
+\section simgrid_uhood_s4u S4U
+
+S4U classes are designed to be user process interfaces to Maestro resources.
+We provide an uniform interface to them:
+
+* automatic reference count with intrusive smart pointers `simgrid::s4u::FooPtr`
+  (also called `simgrid::s4u::Foo::Ptr`);
+
+* manual reference count with `intrusive_ptr_add_ref(p)`,
+  `intrusive_ptr_release(p)`;
+
+* delegation of the operations to a opaque `pimpl` (which is the Maestro object);
+
+* the Maestro object and the corresponding S4U object have the same lifetime
+  (and share the same reference count).
+
+The ability to manipulate thge objects thought pointers and have the ability
+to use explicite reference count management is useful for creating C wrappers
+to the S4U and should play nicely with other language bindings (such as
+SWIG-based ones).
+
+Some objects currently live for the whole duration of the simulation and do
+not have refertence counts. We still provide dummy `intrusive_ptr_add_ref(p)`,
+`intrusive_ptr_release(p)` and `FooPtr` for consistency.
+
+In many cases, we try to have a API which is consistent with the API or
+corresponding C++ standard classes. For example, the methods of
+`simgrid::s4u::Mutex`. This has different benefits:
+
+ * we use a proven interface with a well defined and documented semantic;
+
+ * the interface is easy to understand and remember for people used to the C++
+   standard interface;
+
+ * we can use some standard C++ algorithms and helper classes with our types
+   (`simgrid::s4u::Mutex` can be used with `std::lock`, `std::unique_lock`,
+   etc.).
+
+Example of `simgris::s4u::Actor`:
+
+~~~
+class Actor {
+  // This is the corresponding maestro object:
+  friend simgrid::simix::Process;
+  simgrid::simix::Process* pimpl_ = nullptr;
+public:
+
+  Actor(simgrid::simix::Process* pimpl) : pimpl_(pimpl) {}
+  Actor(Actor const&) = delete;
+  Actor& operator=(Actor const&) = delete;
+
+  // Reference count is delegated to the S4u object:
+  friend void intrusive_ptr_add_ref(Actor* actor)
+  {
+    xbt_assert(actor != nullptr);
+    SIMIX_process_ref(actor->pimpl_);
+  }
+  friend void intrusive_ptr_release(Actor* actor)
+  {
+    xbt_assert(actor != nullptr);
+    SIMIX_process_unref(actor->pimpl_);
+  }
+  using Ptr = boost::intrusive_ptr<Actor>;
+
+  // Create processes:
+  static Ptr createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
+
+  // [...]
+};
+
+using ActorPtr = Actor::Ptr;
+~~~
+
+It uses the `simgrid::simix::Process` as a opaque pimple:
+
+~~~
+class Process {
+private:
+  std::atomic_int_fast32_t refcount_ { 1 };
+  // The lifetime of the s4u::Actor is bound to the lifetime of the Process:
+  simgrid::s4u::Actor actor_;
+public:
+  Process() : actor_(this) {}
+
+  // Reference count:
+  friend void intrusive_ptr_add_ref(Process* process)
+  {
+    // Atomic operation! Do not split in two instructions!
+    auto previous = (process->refcount_)++;
+    xbt_assert(previous != 0);
+    (void) previous;
+  }
+  friend void intrusive_ptr_release(Process* process)
+  {
+    // Atomic operation! Do not split in two instructions!
+    auto count = --(process->refcount_);
+    if (count == 0)
+      delete process;
+  }
+
+  // [...]
+};
+
+smx_process_t SIMIX_process_ref(smx_process_t process)
+{
+  if (process != nullptr)
+    intrusive_ptr_add_ref(process);
+  return process;
+}
+
+/** Decrease the refcount for this process */
+void SIMIX_process_unref(smx_process_t process)
+{
+  if (process != nullptr)
+    intrusive_ptr_release(process);
+}
+~~~
+
 \section simgrid_uhood_async Asynchronous operations
 
 \subsection simgrid_uhood_futures Futures
