@@ -25,7 +25,7 @@ We provide an uniform interface to them:
   (and share the same reference count).
 
 The ability to manipulate thge objects thought pointers and have the ability
-to use explicite reference count management is useful for creating C wrappers
+to use explicit reference count management is useful for creating C wrappers
 to the S4U and should play nicely with other language bindings (such as
 SWIG-based ones).
 
