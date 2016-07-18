@@ -19,9 +19,9 @@
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/AddressSpace.hpp"
 
-/** @file DwarfExession.hpp
+/** @file DwarfExpression.hpp
  *
- *  Evaluation of DWARF location expressions
+ *  Evaluation of DWARF location expressions.
  */
 
 namespace simgrid {
@@ -30,7 +30,7 @@ namespace dwarf {
 /** A DWARF expression
  *
  *  DWARF defines a simple stack-based VM for evaluating expressions
- *  (such as locations of variables, etc.): A DWARF expressions is
+ *  (such as locations of variables, etc.): a DWARF expressions is
  *  just a sequence of dwarf instructions. We currently directly use
  *  `Dwarf_Op` from `dwarf.h` for dwarf instructions.
  */
@@ -71,6 +71,7 @@ public:
   typedef std::uintptr_t value_type;
   static const std::size_t max_size = 64;
 private:
+  // Values of the stack (the top is stack_[size_ - 1]):
   uintptr_t stack_[max_size];
   size_t size_;
 public:
@@ -103,7 +104,7 @@ public:
   void push(value_type value)
   {
     if (size_ == max_size)
-      throw evaluation_error("Dwarf stack overflow");
+      throw evaluation_error("DWARF stack overflow");
     stack_[size_++] = value;
   }
 
@@ -111,7 +112,7 @@ public:
   value_type pop()
   {
     if (size_ == 0)
-      throw evaluation_error("Stack underflow");
+      throw evaluation_error("DWARF stack underflow");
     return stack_[--size_];
   }
 

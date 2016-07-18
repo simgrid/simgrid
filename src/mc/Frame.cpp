@@ -22,8 +22,8 @@ void* Frame::frame_base(unw_cursor_t& unw_cursor) const
     return location.address();
   else if (location.in_register()) {
     // This is a special case.
-    // The register if not the location of the frame base
-    // (a frame base cannot be located in a register)
+    // The register is not the location of the frame base
+    // (a frame base cannot be located in a register).
     // Instead, DWARF defines this to mean that the register
     // contains the address of the frame base.
     unw_word_t word;
