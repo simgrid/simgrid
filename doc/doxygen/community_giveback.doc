@@ -151,6 +151,9 @@ exceptions but some bits of the C exceptions are still remaining:
    API compatible with `Future` (and convertiable to it) but with an
    additional `.cancel()` method.
 
+ - Currently `.then()` is not available for user futures. We would need to add
+   a basic user event loop in order to queue the pending continuations.
+
 @subsection contributing_todo_simcalls Simcalls cleanup
 
  - Remove simcalls by using the generic ones. One issue with this is that we
