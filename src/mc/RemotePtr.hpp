@@ -17,16 +17,6 @@
 namespace simgrid {
 namespace mc {
 
-template<class M, class T, class Enable = void>
-struct pointer_to_data_member {};
-template<class M, class T>
-struct pointer_to_data_member<M,T,typename std::enable_if< std::is_union<M>::value || std::is_class<M>::value >::type> {
-  typedef T M::* type;
-};
-
-template<class M, class T>
-using pointer_to_data_member_t = typename pointer_to_data_member<M,T>::type;
-
 /** HACK, A value from another process
  *
  *  This represents a value from another process:
