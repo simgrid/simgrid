@@ -43,8 +43,9 @@ void Mailbox::setReceiver(Actor* actor) {
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
-Actor& Mailbox::receiver() {
-  return pimpl_->permanent_receiver->actor();
+ActorPtr Mailbox::receiver() {
+  if(pimpl_->permanent_receiver == nullptr) return ActorPtr();
+  return ActorPtr(&pimpl_->permanent_receiver->actor());
 }
 
 }
@@ -62,5 +63,5 @@ void sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process) {
   mbox->setReceiver(&process->actor());
 }
 smx_process_t sg_mbox_receiver(sg_mbox_t mbox) {
-  return mbox->receiver().getInferior();
+  return mbox->receiver()->getInferior();
 }
