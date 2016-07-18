@@ -37,4 +37,5 @@ installBuildWrapper
 ./build-wrapper-linux-x86/build-wrapper-linux-x86-64 --out-dir bw-outputs "$@"
 
 # and finally execute the actual SonarQube analysis (the SONAR_TOKEN is set from the travis web interface, to not expose it)
+# See https://docs.travis-ci.com/user/sonarqube/ for more info on tokens
 sonar-scanner -Dsonar.host.url=https://nemo.sonarqube.org -Dsonar.login=$SONAR_TOKEN
