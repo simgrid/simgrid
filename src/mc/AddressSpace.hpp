@@ -160,11 +160,10 @@ public:
   /** Read a string of known size */
   std::string read_string(RemotePtr<char> address, std::size_t len) const
   {
-    // TODO, use std::vector with .data() in C++17 to avoid useless copies
-    std::vector<char> buffer(len);
-    buffer[len] = '\0';
-    this->read_bytes(buffer.data(), len, address);
-    return std::string(buffer.data(), buffer.size());
+    std::string res;
+    res.resize(len);
+    this->read_bytes(&res[0], len, address);
+    return res;
   }
 
 };
