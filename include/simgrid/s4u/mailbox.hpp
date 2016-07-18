@@ -61,7 +61,7 @@ public:
   void setReceiver(Actor* process);
 
   /** Return the process declared as permanent receiver, or nullptr if none **/
-  Actor& receiver();
+  ActorPtr receiver();
 };
 
 using MailboxPtr = Mailbox::Ptr;
