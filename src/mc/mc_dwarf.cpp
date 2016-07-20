@@ -1062,22 +1062,21 @@ std::vector<char> get_build_id(Elf* elf)
 
     // Iterate over the notes and find the NT_GNU_BUILD_ID one:
     size_t pos = 0;
-    while (1) {
+    while (pos < data->d_size) {
       GElf_Nhdr nhdr;
+      // Location of the name within Elf_Data:
       size_t name_pos;
       size_t desc_pos;
       pos = gelf_getnote(data, pos, &nhdr, &name_pos, &desc_pos);
-      // A note is identified by a name "GNU" and a integer type within
-      // the namespace defined by this name (here NT_GNU_BUILD_ID):
+      // A build ID note is identified by the pair ("GNU", NT_GNU_BUILD_ID)
+      // (a namespace and a type within this namespace):
       if (nhdr.n_type == NT_GNU_BUILD_ID
           && nhdr.n_namesz == sizeof("GNU")
           && memcmp((char*) data->d_buf + name_pos, "GNU", sizeof("GNU")) == 0) {
-
-        // Found the NT_GNU_BUILD_ID note:
+        XBT_DEBUG("Found GNU/NT_GNU_BUILD_ID note");
         char* start = (char*) data->d_buf + desc_pos;
         char* end = (char*) start + nhdr.n_descsz;
         return std::vector<char>(start, end);
-
       }
     }
 
@@ -1132,18 +1131,25 @@ const char* debug_paths[] = {
  *  This is one of the mechanisms used for
  *  [separate debug files](https://sourceware.org/gdb/onlinedocs/gdb/Separate-Debug-Files.html).
  */
+// Example:
+// /usr/lib/debug/.build-id/0b/dc77f1c29aea2b14ff5acd9a19ab3175ffdeae.debug
 static
 std::string find_by_build_id(std::vector<char> id)
 {
   std::string filename;
+  std::string hex = to_hex(id);
   for (const char* debug_path : debug_paths) {
-    filename = debug_path;
-    filename += ".build-id/" + to_hex(id.data(), 1) + '/'
+    // Example:
+    filename = std::string(debug_path) + ".build-id/"
+      + to_hex(id.data(), 1) + '/'
       + to_hex(id.data() + 1, id.size() - 1) + ".debug";
     XBT_DEBUG("Checking debug file: %s", filename.c_str());
-    if (access(filename.c_str(), F_OK) == 0)
+    if (access(filename.c_str(), F_OK) == 0) {
+      XBT_DEBUG("Found debug file: %s\n", hex.c_str());
       return filename;
+    }
   }
+  XBT_DEBUG("Not debuf info found for build ID %s\n", hex.data());
   return std::string();
 }
 
@@ -1185,8 +1191,15 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
   }
   dwarf_end(dwarf);
 
-  // If there was no DWARF in the file, try to find it in a separate file
-  // with NT_GNU_BUILD_ID:
+  // If there was no DWARF in the file, try to find it in a separate file.
+  // Different methods might be used to store the DWARF informations:
+  //  * GNU NT_GNU_BUILD_ID;
+  //  * .gnu_debuglink.
+  // See https://sourceware.org/gdb/onlinedocs/gdb/Separate-Debug-Files.html
+  // for reference of what we are doing.
+
+  // Try with NT_GNU_BUILD_ID: we find the build ID in the ELF file and then
+  // use this ID to find the file in some known locations in the filesystem.
   std::vector<char> build_id = get_build_id(elf);
   if (!build_id.empty()) {
     elf_end(elf);
@@ -1196,8 +1209,7 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
     std::string debug_file = find_by_build_id(build_id);
     if (debug_file.empty()) {
       std::string hex = to_hex(build_id);
-      xbt_die(
-        "Missing debug info for %s with build-id %s\n"
+      xbt_die("Missing debug info for %s with build-id %s\n"
         "You might want to install the suitable debugging package.\n",
         info->file_name.c_str(), hex.c_str());
     }
@@ -1218,8 +1230,7 @@ void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
     return;
   }
 
-  // TODO, try to find DWARF info using debug-link.
-  // Is this method really used anywhere?
+  // TODO, try to find DWARF info using .gnu_debuglink.
 
   elf_end(elf);
   close(fd);
