@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_ACTOR_HPP
 
 #include <atomic>
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <stdexcept>
@@ -20,6 +21,7 @@
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
 
+#include <simgrid/chrono.hpp>
 #include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
 
@@ -257,6 +259,13 @@ namespace this_actor {
 
   /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
   XBT_PUBLIC(void) sleep(double duration);
+
+  template<class Rep, class Period>
+  inline void sleep(std::chrono::duration<Rep, Period> duration)
+  {
+    auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
+    sleep(seconds.count());
+  }
 
   /** Block the actor, computing the given amount of flops */
   XBT_PUBLIC(e_smx_state_t) execute(double flop);
