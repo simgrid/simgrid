@@ -122,9 +122,9 @@ C idioms). It would be valuable to replace C idioms with C++ ones:
    `malloc/free` or `new/delete`;
 
  - use `std::function` (or template functionoid arguments) instead of function
-   pointers.
+   pointers;
 
-@subsection contributing_todo_exceptions Exceptions
+@subsubsection contributing_todo_exceptions Exceptions
 
 SimGrid used to implement exceptions in C. This has been replaced with C++
 exceptions but some bits of the C exceptions are still remaining:
@@ -141,7 +141,13 @@ exceptions but some bits of the C exceptions are still remaining:
    separate the C++ API and the C API and catch all exceptions before they get
    ouf of C APIs.
 
-@subsection contributing_todo_futures Additions to the futures
+@subsubsection contributing_todo_time Time and duration
+
+Some support for C++11-style time/duration is implemented (see `chrono.hpp`)
+but only available in some (S4U) APIs. It would be nice to add support for
+them in the rest of the C++ code.
+
+@subsubsection contributing_todo_futures Futures
 
  - Some features are missing in the Maestro future implementation
   (`simgrid::kernel::Future`, `simgrid::kernel::Promise`)
@@ -161,7 +167,7 @@ exceptions but some bits of the C exceptions are still remaining:
 
 @subsection contributing_todo_smpi SMPI
 
-@subsubsection contributing_smpi_split_process
+@subsubsection contributing_smpi_split_process Process-based privatization
 
 Currently, all the simulated processes live in the same process as the SimGrid
 simulator. The benefit is that we don't have to do context switches and IPC
@@ -231,6 +237,35 @@ Other solutions for this might include:
    on WebAssembly) in the simualtor process.
 
 @subsection contributing_todo_mc Model-checker
+
+@subsubsection contributing_todo_mc_state_compare Overhaul the state comparison code
+
+The state comparison code is quite complicated. It has very long functions and
+is programmed mostly using C idioms and is difficult to understanda and debug.
+It is in need or an overhaul:
+
+  - cleanup, refactorisation, usage of C++ features.
+
+  - The state comparison code works by infering types of blocks allocated on the
+    heap by following pointers from known roots (global variables, local
+    variables). Usually the first type found for a given block is used even if
+    a better one could be found later. By using a first pass of type inference,
+    on each snapshot before comparing the states, we might use a better type
+    information on the different blocks.
+
+  - We might benefit from adding logic for handling some known types. For
+    example, both `std::string` and `std::vector` have a capacity which might
+    be larger than the current size of the container. We should might ignore
+    the corresponding elements when comparing the states and infering the types.
+
+  - Another difficulty in the state comparison code is the detection of
+    dangling pointers. We cannot easily know if a pointer is dangling and
+    dangling pointers might lead us to choose the wrong type when infering
+    heap blocks. We might mitigate this problem by delaying the reallocation of
+    a freed block until there is no blocks pointing to it anymore using some
+    sort of basic garbage-collector.
+
+@subsubsection contributing_todo_mc_separation Separate the model-checker code from libsimgrid
 
 @subsubsection contributing_todo_mc_mced_interface Interface with the model-checked processes
 
