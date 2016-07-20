@@ -6,6 +6,7 @@
 #ifndef SIMGRID_S4U_COND_VARIABLE_HPP
 #define SIMGRID_S4U_COND_VARIABLE_HPP
 
+#include <chrono>
 #include <condition_variable>
 #include <future>
 #include <mutex>
@@ -51,6 +52,27 @@ public:
   std::cv_status wait_until(std::unique_lock<Mutex>& lock, double timeout_time);
   std::cv_status wait_for(std::unique_lock<Mutex>& lock, double duration);
 
+  /** Wait for a given duraiton
+   *
+   *  This version gives us the ability to do (in C++):
+   *
+   *  <code>
+   *  using namespace std::literals::chrono_literals;
+   *
+   *  cond->wait_for(lock, 1ms);
+   *  cond->wait_for(lock, 1s);
+   *  cond->wait_for(lock, 1min);
+   *  cond->wait_for(lock, 1h);
+   *  </code>
+   */
+  template<class Rep, class Period>
+  std::cv_status wait_for(std::unique_lock<Mutex>& lock, std::chrono::duration<Rep, Period> duration)
+  {
+    typedef std::chrono::duration<double> SecondsDouble;
+    auto seconds = std::chrono::duration_cast<SecondsDouble>(duration);
+    return this->wait_for(lock, duration.count());
+  }
+
   // Variants which takes a predicate:
 
   template<class P>
@@ -71,6 +93,13 @@ public:
   bool wait_for(std::unique_lock<Mutex>& lock, double duration, P pred)
   {
     return this->wait_until(lock, SIMIX_get_clock() + duration, std::move(pred));
+  }
+  template<class Rep, class Period, class P>
+  bool wait_for(std::unique_lock<Mutex>& lock, std::chrono::duration<Rep, Period> duration, P pred)
+  {
+    typedef std::chrono::duration<double> SecondsDouble;
+    auto seconds = std::chrono::duration_cast<SecondsDouble>(duration);
+    return this->wait_for(lock, seconds.count(), pred);
   }
 
   // Notify functions
