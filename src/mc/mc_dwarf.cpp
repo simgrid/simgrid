@@ -1044,6 +1044,9 @@ void read_dwarf_info(simgrid::mc::ObjectInformation* info, Dwarf* dwarf)
 static
 std::vector<char> get_build_id(Elf* elf)
 {
+  // Summary: the GNU build ID is stored in a ("GNU, NT_GNU_BUILD_ID) note
+  // found in a PT_NOTE entry in the program header table.
+
   size_t phnum;
   if (elf_getphdrnum (elf, &phnum) != 0)
     xbt_die("Could not read program headers");
@@ -1150,7 +1153,7 @@ std::string find_by_build_id(std::vector<char> id)
  *  lists of types, variables, functions.
  */
 static
-void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
+void MC_load_dwarf(simgrid::mc::ObjectInformation* info)
 {
   if (elf_version(EV_CURRENT) == EV_NONE)
     xbt_die("libelf initialization error");
@@ -1161,12 +1164,12 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
     xbt_die("Could not open file %s", info->file_name.c_str());
   Elf* elf = elf_begin(fd, ELF_C_READ, nullptr);
   if (elf == nullptr)
-    xbt_die("Not an ELF file 1");
+    xbt_die("Not an ELF file");
   Elf_Kind kind = elf_kind(elf);
   if (kind != ELF_K_ELF)
-    xbt_die("Not an ELF file 2");
+    xbt_die("Not an ELF file");
 
-  // Remember if this is a `ET_EXEC` (fixed location) or `ET_DYN` (relocatable):
+  // Remember if this is a `ET_EXEC` (fixed location) or `ET_DYN`:
   Elf64_Half type = get_type(elf);
   if (type == ET_EXEC)
     info->flags |= simgrid::mc::ObjectInformation::Executable;
@@ -1218,6 +1221,8 @@ void MC_dwarf_get_variables(simgrid::mc::ObjectInformation* info)
   // TODO, try to find DWARF info using debug-link.
   // Is this method really used anywhere?
 
+  elf_end(elf);
+  close(fd);
   xbt_die("Debugging information not found for %s\n"
     "Try recompiling with -g\n",
     info->file_name.c_str());
@@ -1343,7 +1348,7 @@ std::shared_ptr<simgrid::mc::ObjectInformation> createObjectInformation(
     std::make_shared<simgrid::mc::ObjectInformation>();
   result->file_name = name;
   simgrid::mc::find_object_address(maps, result.get());
-  MC_dwarf_get_variables(result.get());
+  MC_load_dwarf(result.get());
   MC_post_process_variables(result.get());
   MC_post_process_types(result.get());
   for (auto& entry : result.get()->subprograms)

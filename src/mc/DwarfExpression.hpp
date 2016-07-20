@@ -30,7 +30,7 @@ namespace dwarf {
 /** A DWARF expression
  *
  *  DWARF defines a simple stack-based VM for evaluating expressions
- *  (such as locations of variables, etc.): a DWARF expressions is
+ *  (such as locations of variables, etc.): a DWARF expression is
  *  just a sequence of dwarf instructions. We currently directly use
  *  `Dwarf_Op` from `dwarf.h` for dwarf instructions.
  */
