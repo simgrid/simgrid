@@ -12,16 +12,16 @@ TBD
 S4U classes are designed to be user process interfaces to Maestro resources.
 We provide an uniform interface to them:
 
-* automatic reference count with intrusive smart pointers `simgrid::s4u::FooPtr`
-  (also called `simgrid::s4u::Foo::Ptr`);
+- automatic reference count with intrusive smart pointers `simgrid::s4u::FooPtr`
+ (also called `simgrid::s4u::Foo::Ptr`);
 
-* manual reference count with `intrusive_ptr_add_ref(p)`,
+- manual reference count with `intrusive_ptr_add_ref(p)`,
   `intrusive_ptr_release(p)` (which is the interface used by
   [`boost::intrusive_ptr`](http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html));
 
-* delegation of the operations to a opaque `pimpl` (which is the Maestro object);
+- delegation of the operations to a opaque `pimpl` (which is the Maestro object);
 
-* the Maestro object and the corresponding S4U object have the same lifetime
+- the Maestro object and the corresponding S4U object have the same lifetime
   (and share the same reference count).
 
 The ability to manipulate thge objects thought pointers and have the ability
@@ -38,18 +38,18 @@ corresponding C++ standard classes. For example, the methods of
 `simgrid::s4u::Mutex` are based on [`std::mutex`](http://en.cppreference.com/w/cpp/thread/mutex).
 This has several benefits:
 
- * we use a proven interface with a well defined and documented semantic;
+ - we use a proven interface with a well defined and documented semantic;
 
- * the interface is easy to understand and remember for people used to the C++
+ - the interface is easy to understand and remember for people used to the C++
    standard interface;
 
- * we can use some standard C++ algorithms and helper classes with our types
+ -  we can use some standard C++ algorithms and helper classes with our types
    (`simgrid::s4u::Mutex` can be used with
    [`std::lock`](http://en.cppreference.com/w/cpp/thread/lock),
    [`std::unique_lock`](http://en.cppreference.com/w/cpp/thread/unique_lock),
    etc.).
 
-Example of `simgris::s4u::Actor`:
+Example of `simgrid::s4u::Actor`:
 
 ~~~
 class Actor {
