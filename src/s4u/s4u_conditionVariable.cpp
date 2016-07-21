@@ -25,6 +25,10 @@ void ConditionVariable::wait(std::unique_lock<Mutex>& lock) {
 }
 
 std::cv_status s4u::ConditionVariable::wait_for(std::unique_lock<Mutex>& lock, double timeout) {
+  // The simcall uses -1 for "any timeout" but we don't want this:
+  if (timeout < 0)
+    timeout = 0.0;
+
   try {
     simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
     return std::cv_status::no_timeout;
