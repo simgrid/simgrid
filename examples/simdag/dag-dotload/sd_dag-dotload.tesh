@@ -10,8 +10,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=
 > [0.000000] [sd_task/INFO]   - amount: 0
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
 > [0.000000] [sd_task/INFO]   - post-dependencies:
-> [0.000000] [sd_task/INFO]     root->5
 > [0.000000] [sd_task/INFO]     0
+> [0.000000] [sd_task/INFO]     root->5
 > [0.000000] [sd_task/INFO] Displaying task 0
 > [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
@@ -63,8 +63,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=
 > [0.000000] [sd_task/INFO]   - amount: 10000000046
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
 > [0.000000] [sd_task/INFO]   - pre-dependencies:
-> [0.000000] [sd_task/INFO]     4->5
 > [0.000000] [sd_task/INFO]     root->5
+> [0.000000] [sd_task/INFO]     4->5
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     6
 > [0.000000] [sd_task/INFO] Displaying task 6
@@ -84,8 +84,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=
 > [0.000000] [sd_task/INFO]   - pre-dependencies:
 > [0.000000] [sd_task/INFO]     6->7
 > [0.000000] [sd_task/INFO]   - post-dependencies:
-> [0.000000] [sd_task/INFO]     7->8
 > [0.000000] [sd_task/INFO]     7->end
+> [0.000000] [sd_task/INFO]     7->8
 > [0.000000] [sd_task/INFO] Displaying task 8
 > [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
@@ -182,8 +182,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=
 > [0.000000] [sd_task/INFO]   - amount: 10000000129
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 2
 > [0.000000] [sd_task/INFO]   - pre-dependencies:
-> [0.000000] [sd_task/INFO]     7->end
 > [0.000000] [sd_task/INFO]     9
+> [0.000000] [sd_task/INFO]     7->end
 > [0.000000] [test/INFO] ------------------- Schedule tasks ---------------------------
 > [0.000000] [test/INFO] ------------------- Run the schedule ---------------------------
 > [110.006082] [test/INFO] ------------------- Produce the trace file---------------------------

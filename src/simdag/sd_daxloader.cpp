@@ -25,58 +25,47 @@ extern "C" {
 
 void uniq_transfer_task_name(SD_task_t task)
 {
-  SD_task_t child;
-  SD_task_t parent;
-
-  xbt_dynar_t children = SD_task_get_children(task);
-  xbt_dynar_t parents = SD_task_get_parents(task);
-
-  xbt_dynar_get_cpy(children, 0, &child);
-  xbt_dynar_get_cpy(parents, 0, &parent);
+  SD_task_t child = *(task->successors->begin());
+  SD_task_t parent = *(task->predecessors->begin());
 
   char *new_name = bprintf("%s_%s_%s", SD_task_get_name(parent), SD_task_get_name(task), SD_task_get_name(child));
 
   SD_task_set_name(task, new_name);
 
-  xbt_dynar_free_container(&children);
-  xbt_dynar_free_container(&parents);
   free(new_name);
 }
 
 static bool children_are_marked(SD_task_t task){
-  SD_dependency_t depafter = nullptr;
-  unsigned int count;
-
-  xbt_dynar_foreach(task->tasks_after,count,depafter){
-    if(depafter->dst->marked == 0)
+  for (std::set<SD_task_t>::iterator it=task->successors->begin(); it!=task->successors->end(); ++it)
+    if ((*it)->marked == 0)
       return false;
-  }
+  for (std::set<SD_task_t>::iterator it=task->outputs->begin(); it!=task->outputs->end(); ++it)
+    if ((*it)->marked == 0)
+      return false;
   return true;
 }
 
 static bool parents_are_marked(SD_task_t task){
-  SD_dependency_t depbefore = nullptr;
-  unsigned int count;
-  xbt_dynar_foreach(task->tasks_before,count,depbefore){
-    if(depbefore->src->marked == 0)
+  for (std::set<SD_task_t>::iterator it=task->predecessors->begin(); it!=task->predecessors->end(); ++it)
+    if ((*it)->marked == 0)
       return false;
-  }
+  for (std::set<SD_task_t>::iterator it=task->inputs->begin(); it!=task->inputs->end(); ++it)
+    if ((*it)->marked == 0)
+      return false;
   return true;
 }
 
 bool acyclic_graph_detail(xbt_dynar_t dag){
   unsigned int count, count_current=0;
   bool all_marked = true;
-  SD_task_t task = nullptr, parent_task = nullptr, child_task = nullptr;
-  SD_dependency_t depbefore = nullptr, depafter = nullptr;
+  SD_task_t task = nullptr;
   xbt_dynar_t next = nullptr, current = xbt_dynar_new(sizeof(SD_task_t),nullptr);
 
   xbt_dynar_foreach(dag,count,task){
     if(task->kind == SD_TASK_COMM_E2E) continue;
     task->marked = 0;
-    if(xbt_dynar_is_empty(task->tasks_after)){
+    if(task->successors->empty() && task->outputs->empty())
       xbt_dynar_push(current, &task);
-    }
   }
   //test if something has to be done for the next iteration
   while(!xbt_dynar_is_empty(current)){
@@ -87,22 +76,16 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
         continue;
       //push task in next
       task->marked = 1;
-      xbt_dynar_foreach(task->tasks_before,count,depbefore){
-        parent_task = depbefore->src;
-        if(parent_task->kind == SD_TASK_COMM_E2E){
-          unsigned int j=0;
-          parent_task->marked = 1;
-          SD_task_t parent_task_2 = nullptr;
-          xbt_dynar_foreach(parent_task->tasks_before,j,depbefore){
-            parent_task_2 = depbefore->src;
-            if(children_are_marked(parent_task_2))
-              xbt_dynar_push(next, &parent_task_2);
-          }
-        } else{
-          if(children_are_marked(parent_task))
-            xbt_dynar_push(next, &parent_task);
-        }
-        parent_task = nullptr;
+      for (std::set<SD_task_t>::iterator it=task->inputs->begin(); it!=task->inputs->end(); ++it){
+        (*it)->marked = 1;
+        // Inputs are communication, hence they can have only one predecessor
+        SD_task_t input_pred = *((*it)->predecessors->begin());
+        if (children_are_marked(input_pred))
+          xbt_dynar_push(next, &input_pred);
+      }
+      for (std::set<SD_task_t>::iterator it=task->predecessors->begin(); it!=task->predecessors->end(); ++it){
+        if (children_are_marked(*it))
+          xbt_dynar_push(next, &(*it));
       }
     }
     xbt_dynar_free(&current);
@@ -128,15 +111,15 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
     xbt_dynar_foreach(dag,count,task){
       if(task->kind == SD_TASK_COMM_E2E)
         continue;
-      if(xbt_dynar_is_empty(task->tasks_before)){
+      if(task->predecessors->empty() && task->inputs->empty()){
         xbt_dynar_push(current, &task);
       }
     }
 
     xbt_dynar_foreach(dag,count,task){
       if(task->kind == SD_TASK_COMM_E2E)
-       continue;
-      if(xbt_dynar_is_empty(task->tasks_before)){
+        continue;
+      if(task->predecessors->empty() && task->inputs->empty()){
         task->marked = 1;
         xbt_dynar_push(current, &task);
       }
@@ -150,37 +133,31 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
           continue;
         //push task in next
         task->marked = 1;
-        xbt_dynar_foreach(task->tasks_after,count,depafter){
-          child_task = depbefore->dst;
-          if(child_task->kind == SD_TASK_COMM_E2E){
-            unsigned int j=0;
-            child_task->marked = 1;
-            SD_task_t child_task_2 = nullptr;
-            xbt_dynar_foreach(child_task->tasks_after,j,depafter){
-              child_task_2 = depbefore->dst;
-              if(parents_are_marked(child_task_2))
-                xbt_dynar_push(next, &child_task_2);
-            }
-          } else{
-            if(parents_are_marked(child_task))
-              xbt_dynar_push(next, &child_task);
-          }
-          child_task = nullptr;
+        for (std::set<SD_task_t>::iterator it=task->outputs->begin(); it!=task->outputs->end(); ++it){
+          (*it)->marked = 1;
+          // outputs are communication, hence they can have only one successor
+          SD_task_t output_succ = *((*it)->successors->begin());
+          if (parents_are_marked(output_succ))
+            xbt_dynar_push(next, &output_succ);
         }
+        for (std::set<SD_task_t>::iterator it=task->predecessors->begin(); it!=task->predecessors->end(); ++it){
+          if (parents_are_marked(*it))
+            xbt_dynar_push(next, &(*it));
+        }
+        xbt_dynar_free(&current);
+        current = next;
+        next = nullptr;
       }
       xbt_dynar_free(&current);
-      current = next;
-      next = nullptr;
-    }
-    xbt_dynar_free(&current);
-    all_marked = true;
-    xbt_dynar_foreach(dag,count,task){
-      if(task->kind == SD_TASK_COMM_E2E)
-        continue;
-      //test if all tasks are marked
-      if(task->marked == 0){
-        XBT_WARN("the task %s is in a cycle",task->name);
-        all_marked = false;
+      all_marked = true;
+      xbt_dynar_foreach(dag,count,task){
+        if(task->kind == SD_TASK_COMM_E2E)
+          continue;
+        //test if all tasks are marked
+        if(task->marked == 0){
+          XBT_WARN("the task %s is in a cycle",task->name);
+          all_marked = false;
+        }
       }
     }
   }
@@ -240,36 +217,31 @@ xbt_dynar_t SD_daxload(const char *filename)
    */
 
   xbt_dict_foreach(files, cursor, name, file) {
-    unsigned int cpt1;
-    unsigned int cpt2;
     SD_task_t newfile;
-    SD_dependency_t depbefore;
-    SD_dependency_t depafter;
-    if (xbt_dynar_is_empty(file->tasks_before)) {
-      xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
+    if (file->predecessors->empty()) {
+      for (std::set<SD_task_t>::iterator it=file->successors->begin(); it!=file->successors->end(); ++it){
         newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
         SD_task_dependency_add(nullptr, nullptr, root_task, newfile);
-        SD_task_dependency_add(nullptr, nullptr, newfile, depafter->dst);
+        SD_task_dependency_add(nullptr, nullptr, newfile, (*it));
         xbt_dynar_push(result, &newfile);
       }
-    } else if (xbt_dynar_is_empty(file->tasks_after)) {
-      xbt_dynar_foreach(file->tasks_before, cpt2, depbefore) {
+    } else if (file->successors->empty()) {
+      for (std::set<SD_task_t>::iterator it=file->predecessors->begin(); it!=file->predecessors->end(); ++it){
         newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
-        SD_task_dependency_add(nullptr, nullptr, depbefore->src, newfile);
+        SD_task_dependency_add(nullptr, nullptr, (*it), newfile);
         SD_task_dependency_add(nullptr, nullptr, newfile, end_task);
         xbt_dynar_push(result, &newfile);
       }
     } else {
-      xbt_dynar_foreach(file->tasks_before, cpt1, depbefore) {
-        xbt_dynar_foreach(file->tasks_after, cpt2, depafter) {
-          if (depbefore->src == depafter->dst) {
-            XBT_WARN
-                ("File %s is produced and consumed by task %s."
-                 "This loop dependency will prevent the execution of the task.", file->name, depbefore->src->name);
+      for (std::set<SD_task_t>::iterator it=file->predecessors->begin(); it!=file->predecessors->end(); ++it){
+        for (std::set<SD_task_t>::iterator it2=file->successors->begin(); it2!=file->successors->end(); ++it2){
+          if (*it == *it2) {
+            XBT_WARN ("File %s is produced and consumed by task %s."
+                      "This loop dependency will prevent the execution of the task.", file->name, (*it)->name);
           }
           newfile = SD_task_create_comm_e2e(file->name, nullptr, file->amount);
-          SD_task_dependency_add(nullptr, nullptr, depbefore->src, newfile);
-          SD_task_dependency_add(nullptr, nullptr, newfile, depafter->dst);
+          SD_task_dependency_add(nullptr, nullptr, (*it), newfile);
+          SD_task_dependency_add(nullptr, nullptr, newfile, (*it2));
           xbt_dynar_push(result, &newfile);
         }
       }
@@ -289,10 +261,10 @@ xbt_dynar_t SD_daxload(const char *filename)
       /* If some tasks do not take files as input, connect them to the root
        * if they don't produce files, connect them to the end node.
        */
-      if ((file != root_task) && xbt_dynar_is_empty(file->tasks_before))
-	 SD_task_dependency_add(nullptr, nullptr, root_task, file);
-      if ((file != end_task) && xbt_dynar_is_empty(file->tasks_after))
-	 SD_task_dependency_add(nullptr, nullptr, file, end_task);
+      if ((file != root_task) && file->inputs->empty())
+        SD_task_dependency_add(nullptr, nullptr, root_task, file);
+      if ((file != end_task) && file->outputs->empty())
+        SD_task_dependency_add(nullptr, nullptr, file, end_task);
     } else {
        THROW_IMPOSSIBLE;
     }
@@ -351,7 +323,7 @@ void STag_dax__uses(void)
     SD_task_dependency_add(nullptr, nullptr, file, current_job);
   } else {
     SD_task_dependency_add(nullptr, nullptr, current_job, file);
-    if (xbt_dynar_length(file->tasks_before) > 1) {
+    if ((file->predecessors->size() + file->inputs->size()) > 1) {
       XBT_WARN("File %s created at more than one location...", file->name);
     }
   }

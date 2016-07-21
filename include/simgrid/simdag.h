@@ -154,8 +154,6 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
  */
 XBT_PUBLIC(void) SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(void) SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(const char *) SD_task_dependency_get_name(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(void *) SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @} */
 

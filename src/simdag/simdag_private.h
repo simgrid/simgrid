@@ -49,10 +49,13 @@ typedef struct SD_task {
   int marked;                   /* used to check if the task DAG has some cycle*/
 
   /* dependencies */
-  xbt_dynar_t tasks_before;
-  xbt_dynar_t tasks_after;
   int unsatisfied_dependencies;
   unsigned int is_not_ready;
+
+  std::set<SD_task_t> *inputs;
+  std::set<SD_task_t> *outputs;
+  std::set<SD_task_t> *predecessors;
+  std::set<SD_task_t> *successors;
 
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
   int host_count;
@@ -64,15 +67,6 @@ typedef struct SD_task {
   long long int counter;        /* task unique identifier for instrumentation */
   char *category;               /* sd task category for instrumentation */
 } s_SD_task_t;
-
-/* Task dependencies */
-typedef struct SD_dependency {
-  char *name;
-  void *data;
-  SD_task_t src;
-  SD_task_t dst;
-  /* src must be finished before dst can start */
-} s_SD_dependency_t, *SD_dependency_t;
 
 /* SimDag private functions */
 XBT_PRIVATE void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);

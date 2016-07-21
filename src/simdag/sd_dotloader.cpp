@@ -194,12 +194,12 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
 
   /* Connect entry tasks to 'root', and exit tasks to 'end'*/
   xbt_dynar_foreach (result, i, task){
-    if (xbt_dynar_is_empty(task->tasks_before) && task != root) {
+    if (task->predecessors->empty() && task->inputs->empty() && task != root) {
       XBT_DEBUG("Task '%s' has no source. Add dependency from 'root'", task->name);
       SD_task_dependency_add(nullptr, nullptr, root, task);
     }
 
-    if (xbt_dynar_is_empty(task->tasks_after) && task != end) {
+    if (task->successors->empty() && task->outputs->empty() && task != end) {
       XBT_DEBUG("Task '%s' has no destination. Add dependency to 'end'", task->name);
       SD_task_dependency_add(nullptr, nullptr, task, end);
     }
