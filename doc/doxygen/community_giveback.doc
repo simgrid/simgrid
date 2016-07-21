@@ -265,6 +265,35 @@ It is in need or an overhaul:
     a freed block until there is no blocks pointing to it anymore using some
     sort of basic garbage-collector.
 
+@subsubsection contributing_todo_state_hashing Hasing the states
+
+In order to speed up the state comparison an idea was to create a hash of the
+state. Only states with the same hash would need to be compared using the
+state comparison algorithm. Some information should not be inclueded in the
+hash in order to avoid considering different states which would otherwise
+would have been considered equal.
+
+The stated could be indexed by their hash. Currently they are indexed
+by the number of processes and the amount of heap currently allocated
+(see `DerefAndCompareByNbProcessesAndUsedHeap`).
+
+Good candidate informations for the state hashing:
+
+ - number of processes;
+
+ - their backtraces (instruction addresses);
+
+ - their current simcall numbers;
+
+ - some simcall arguments (eg. number of elements in a waitany);
+
+ - number of pending communications;
+
+ - etc.
+
+Some basic infrastructure for this is already in the code (see `mc_hash.cpp`)
+but it is currently disabled.
+
 @subsubsection contributing_todo_mc_separation Separate the model-checker code from libsimgrid
 
 @subsubsection contributing_todo_mc_mced_interface Interface with the model-checked processes
