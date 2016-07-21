@@ -945,7 +945,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
       }
     }
     if(size > 0) {
-      i = simcall_comm_waitany(comms);
+      i = simcall_comm_waitany(comms, -1);
 
       // not MPI_UNDEFINED, as this is a simix return code
       if (i != -1) {

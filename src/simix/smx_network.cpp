@@ -476,12 +476,14 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
   SIMIX_simcall_answer(simcall);
 }
 
-void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros)
+void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, double timeout)
 {
   smx_synchro_t synchro;
   unsigned int cursor = 0;
 
   if (MC_is_active() || MC_record_replay_is_active()){
+    if (timeout != -1)
+      xbt_die("Timeout not implemented for waitany in the model-checker"); 
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     synchro = xbt_dynar_get_as(synchros, idx, smx_synchro_t);
     synchro->simcalls.push_back(simcall);
@@ -490,7 +492,17 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros)
     SIMIX_comm_finish(synchro);
     return;
   }
-
+  
+  if (timeout == -1 ){
+    simcall->timer = NULL;
+  } else {
+    simcall->timer = SIMIX_timer_set(timeout, [simcall]() {
+      SIMIX_waitany_remove_simcall_from_actions(simcall);
+      simcall_comm_waitany__set__result(simcall, -1);
+      SIMIX_simcall_answer(simcall);
+    });
+  }
+  
   xbt_dynar_foreach(synchros, cursor, synchro){
     /* associate this simcall to the the synchro */
     synchro->simcalls.push_back(simcall);
@@ -582,6 +594,8 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
       continue; // if process handling comm is killed
     if (simcall->call == SIMCALL_COMM_WAITANY) {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
+      if (simcall->timer) 
+        SIMIX_timer_remove(simcall->timer);
       if (!MC_is_active() && !MC_record_replay_is_active())
         simcall_comm_waitany__set__result(simcall, xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro));
     }

@@ -627,7 +627,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   msg_error_t status = MSG_OK;
   try {
-    finished_index = simcall_comm_waitany(s_comms);
+    finished_index = simcall_comm_waitany(s_comms, -1);
   }
   catch(xbt_ex& e) {
     switch (e.category) {

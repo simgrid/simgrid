@@ -765,9 +765,9 @@ void simcall_comm_cancel(smx_synchro_t synchro)
 /**
  * \ingroup simix_comm_management
  */
-unsigned int simcall_comm_waitany(xbt_dynar_t comms)
+unsigned int simcall_comm_waitany(xbt_dynar_t comms, double timeout)
 {
-  return simcall_BODY_comm_waitany(comms);
+  return simcall_BODY_comm_waitany(comms, timeout);
 }
 
 /**

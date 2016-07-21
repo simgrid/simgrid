@@ -221,10 +221,10 @@ inline static smx_synchro_t simcall_BODY_comm_irecv(smx_process_t receiver, smx_
     return simcall<smx_synchro_t, smx_process_t, smx_mailbox_t, void*, size_t*, simix_match_func_t, simix_copy_data_func_t, void*, double>(SIMCALL_COMM_IRECV, receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
   }
   
-inline static int simcall_BODY_comm_waitany(xbt_dynar_t comms) {
+inline static int simcall_BODY_comm_waitany(xbt_dynar_t comms, double timeout) {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_comm_waitany(&SIMIX_process_self()->simcall, comms);
-    return simcall<int, xbt_dynar_t>(SIMCALL_COMM_WAITANY, comms);
+    if (0) simcall_HANDLER_comm_waitany(&SIMIX_process_self()->simcall, comms, timeout);
+    return simcall<int, xbt_dynar_t, double>(SIMCALL_COMM_WAITANY, comms, timeout);
   }
   
 inline static void simcall_BODY_comm_wait(smx_synchro_t comm, double timeout) {
