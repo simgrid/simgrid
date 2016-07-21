@@ -627,7 +627,7 @@ set(headers_to_install
   include/msg/datatypes.h
   include/simdag/simdag.h
   include/simdag/datatypes.h
-  
+  include/simgrid/chrono.hpp
   include/simgrid/plugins/energy.h
   include/simgrid/instr.h
   include/simgrid/msg.h

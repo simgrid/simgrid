@@ -56,6 +56,8 @@ public:
   /** Retrieve the size of the received data */
   size_t getDstDataSize();
 
+  bool test();
+
 
 private:
   double rate_ = -1;

@@ -48,9 +48,13 @@ void xbt_fifo_free(xbt_fifo_t l)
  */
 void xbt_fifo_reset(xbt_fifo_t l)
 {
-  xbt_fifo_item_t b, tmp;
+  xbt_fifo_item_t b = xbt_fifo_get_first_item(l);
 
-  for (b = xbt_fifo_get_first_item(l); b; tmp = b, b = b->next, xbt_fifo_free_item(tmp));
+  while (b) {
+    xbt_fifo_item_t tmp = b;
+    b = b->next;
+    xbt_fifo_free_item(tmp);
+  }
   l->head = NULL;
   l->tail = NULL;
 }
