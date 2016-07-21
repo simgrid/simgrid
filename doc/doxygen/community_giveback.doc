@@ -265,7 +265,7 @@ It is in need or an overhaul:
     a freed block until there is no blocks pointing to it anymore using some
     sort of basic garbage-collector.
 
-@subsubsection contributing_todo_state_hashing Hasing the states
+@subsubsection contributing_todo_state_hashing Hashing the states
 
 In order to speed up the state comparison an idea was to create a hash of the
 state. Only states with the same hash would need to be compared using the
