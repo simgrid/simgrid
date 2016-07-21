@@ -55,7 +55,7 @@ static void master()
       simgrid::s4u::Actor::createActor("worker", simgrid::s4u::Host::by_name("Tremblay"), worker,          mutex, std::ref(result));
   }
 
-  simgrid::s4u::this_actor::sleep(10);
+  simgrid::s4u::this_actor::sleep_for(10);
   XBT_INFO("Results is -> %d", result);
 }
 

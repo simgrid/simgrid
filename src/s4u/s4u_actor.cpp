@@ -110,8 +110,17 @@ void Actor::killAll() {
 
 namespace this_actor {
 
-void sleep(double duration) {
-  simcall_process_sleep(duration);
+void sleep_for(double duration)
+{
+  if (duration > 0)
+    simcall_process_sleep(duration);
+}
+
+XBT_PUBLIC(void) sleep_until(double timeout)
+{
+  double now = SIMIX_get_clock();
+  if (timeout > now)
+    simcall_process_sleep(timeout - now);
 }
 
 e_smx_state_t execute(double flops) {
