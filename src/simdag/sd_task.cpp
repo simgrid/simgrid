@@ -90,8 +90,7 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
 {
   SD_task_t task = static_cast<SD_task_t>(xbt_mallocator_get(sd_global->task_mallocator));
 
-  /* general information */
-  task->data = data;            /* user data */
+  task->data = data;
   task->name = xbt_strdup(name);
   task->amount = amount;
   task->remains = amount;
@@ -596,51 +595,40 @@ void SD_task_dotty(SD_task_t task, void *out)
  */
 void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst)
 {
-
   if (src == dst)
     THROWF(arg_error, 0, "Cannot add a dependency between task '%s' and itself", SD_task_get_name(src));
 
-  e_SD_task_state_t state = SD_task_get_state(src);
-  if (state == SD_DONE || state == SD_FAILED)
+  if (src->state == SD_DONE || src->state == SD_FAILED)
     THROWF(arg_error, 0, "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, SD_RUNNABLE, or SD_RUNNING",
-           SD_task_get_name(src));
+           src->name);
 
-  state = SD_task_get_state(dst);
-  if (state == SD_DONE || state == SD_FAILED || state == SD_RUNNING)
+  if (dst->state == SD_DONE || dst->state == SD_FAILED || dst->state == SD_RUNNING)
     THROWF(arg_error, 0, "Task '%s' must be SD_NOT_SCHEDULED, SD_SCHEDULABLE, SD_SCHEDULED, or SD_RUNNABLE",
-           SD_task_get_name(dst));
+           dst->name);
 
-  if (src->successors->find(dst) != src->successors->end() ||
-      dst->predecessors->find(src) != dst->predecessors->end() ||
-      dst->inputs->find(src) != dst->inputs->end() ||
-      src->outputs->find(dst) != src->outputs->end())
-    THROWF(arg_error, 0, "A dependency already exists between task '%s' and task '%s'",
-           SD_task_get_name(src), SD_task_get_name(dst));
+  if (dst->inputs->find(src) != dst->inputs->end() || src->outputs->find(dst) != src->outputs->end() ||
+      src->successors->find(dst) != src->successors->end() || dst->predecessors->find(src) != dst->predecessors->end())
+    THROWF(arg_error, 0, "A dependency already exists between task '%s' and task '%s'", src->name, dst->name);
 
-  XBT_DEBUG("SD_task_dependency_add: src = %s, dst = %s", SD_task_get_name(src), SD_task_get_name(dst));
+  XBT_DEBUG("SD_task_dependency_add: src = %s, dst = %s", src->name, dst->name);
 
-  e_SD_task_kind_t src_kind = SD_task_get_kind(src);
-  e_SD_task_kind_t dst_kind = SD_task_get_kind(dst);
-
-  if (src_kind == SD_TASK_COMM_E2E || src_kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
-    if (dst_kind == SD_TASK_COMP_SEQ || dst_kind == SD_TASK_COMP_PAR_AMDAHL){
+  if (src->kind == SD_TASK_COMM_E2E || src->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
+    if (dst->kind == SD_TASK_COMP_SEQ || dst->kind == SD_TASK_COMP_PAR_AMDAHL)
         dst->inputs->insert(src);
-    } else {
+    else
       dst->predecessors->insert(src);
-    }
     src->successors->insert(dst);
   } else {
-    if (dst_kind == SD_TASK_COMM_E2E|| dst_kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
+    if (dst->kind == SD_TASK_COMM_E2E|| dst->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
       src->outputs->insert(dst);
-    } else {
+    else
       src->successors->insert(dst);
-    }
     dst->predecessors->insert(src);
   }
 
   /* if the task was runnable, the task goes back to SD_SCHEDULED because of the new dependency*/
-  if (SD_task_get_state(dst) == SD_RUNNABLE) {
-    XBT_DEBUG("SD_task_dependency_add: %s was runnable and becomes scheduled!", SD_task_get_name(dst));
+  if (dst->state == SD_RUNNABLE) {
+    XBT_DEBUG("SD_task_dependency_add: %s was runnable and becomes scheduled!", dst->name);
     SD_task_set_state(dst, SD_SCHEDULED);
   }
 }
@@ -681,31 +669,26 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 {
   XBT_DEBUG("SD_task_dependency_remove: src = %s, dst = %s", SD_task_get_name(src), SD_task_get_name(dst));
 
-  if (src->successors->find(dst) == src->successors->end() &&
-      src->outputs->find(dst) == src->outputs->end())
+  if (src->successors->find(dst) == src->successors->end() && src->outputs->find(dst) == src->outputs->end())
     THROWF(arg_error, 0, "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'",
-           SD_task_get_name(src), SD_task_get_name(dst), SD_task_get_name(dst), SD_task_get_name(src));
+           src->name, dst->name, dst->name, src->name);
 
-  e_SD_task_kind_t src_kind = SD_task_get_kind(src);
-  e_SD_task_kind_t dst_kind = SD_task_get_kind(dst);
-  if (src_kind == SD_TASK_COMM_E2E || src_kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
-    if (dst_kind == SD_TASK_COMP_SEQ || dst_kind == SD_TASK_COMP_PAR_AMDAHL){
+  if (src->kind == SD_TASK_COMM_E2E || src->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
+    if (dst->kind == SD_TASK_COMP_SEQ || dst->kind == SD_TASK_COMP_PAR_AMDAHL)
       dst->inputs->erase(src);
-    } else {
+    else
       dst->predecessors->erase(src);
-    }
     src->successors->erase(dst);
   } else {
-    if (dst_kind == SD_TASK_COMM_E2E|| dst_kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK){
+    if (dst->kind == SD_TASK_COMM_E2E|| dst->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK)
       src->outputs->erase(dst);
-    } else {
+    else
       src->successors->erase(dst);
-    }
     dst->predecessors->erase(src);
   }
 
   /* if the task was scheduled and dependencies are satisfied, we can make it runnable */
-  if (dst->predecessors->empty() && dst->inputs->empty() && SD_task_get_state(dst) == SD_SCHEDULED)
+  if (dst->predecessors->empty() && dst->inputs->empty() && dst->state == SD_SCHEDULED)
     SD_task_set_state(dst, SD_RUNNABLE);
 }
 
@@ -850,13 +833,10 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * workstat
  */
 void SD_task_unschedule(SD_task_t task)
 {
-  if (task->state != SD_SCHEDULED && task->state != SD_RUNNABLE && task->state != SD_RUNNING &&
-      task->state != SD_FAILED)
-    THROWF(arg_error, 0, "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED",
-           SD_task_get_name(task));
+  if (task->state == SD_NOT_SCHEDULED || task->state == SD_SCHEDULABLE)
+    THROWF(arg_error, 0, "Task %s: the state must be SD_SCHEDULED, SD_RUNNABLE, SD_RUNNING or SD_FAILED", task->name);
 
-  if ((task->state == SD_SCHEDULED || task->state == SD_RUNNABLE)
-      /* if the task is scheduled or runnable */
+  if ((task->state == SD_SCHEDULED || task->state == SD_RUNNABLE) /* if the task is scheduled or runnable */
       && ((task->kind == SD_TASK_COMP_PAR_AMDAHL) || (task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK))) {
           /* Don't free scheduling data for typed tasks */
     __SD_task_destroy_scheduling_data(task);
@@ -881,11 +861,10 @@ void SD_task_unschedule(SD_task_t task)
 /* Runs a task. */
 void SD_task_run(SD_task_t task)
 {
-  xbt_assert(SD_task_get_state(task) == SD_RUNNABLE, "Task '%s' is not runnable! Task state: %d",
-             SD_task_get_name(task), (int)SD_task_get_state(task));
-  xbt_assert(task->host_list != nullptr, "Task '%s': workstation_list is nullptr!", SD_task_get_name(task));
+  xbt_assert(task->state == SD_RUNNABLE, "Task '%s' is not runnable! Task state: %d", task->name, (int) task->state);
+  xbt_assert(task->host_list != nullptr, "Task '%s': workstation_list is nullptr!", task->name);
 
-  XBT_DEBUG("Running task '%s'", SD_task_get_name(task));
+  XBT_VERB("Executing task '%s'", task->name);
 
   /* Copy the elements of the task into the action */
   int host_nb = task->host_count;
@@ -950,18 +929,17 @@ double SD_task_get_finish_time(SD_task_t task)
 void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
 {
   xbt_assert(task->kind == SD_TASK_COMP_PAR_AMDAHL, "Task %s is not a SD_TASK_COMP_PAR_AMDAHL typed task."
-              "Cannot use this function.", SD_task_get_name(task));
+              "Cannot use this function.", task->name);
   task->flops_amount = xbt_new0(double, ws_count);
   task->bytes_amount = xbt_new0(double, ws_count * ws_count);
   xbt_free(task->host_list);
   task->host_count = ws_count;
   task->host_list = xbt_new0(sg_host_t, ws_count);
-  
+
   for(int i=0;i<ws_count;i++){
     task->flops_amount[i] = (task->alpha + (1 - task->alpha)/ws_count) * task->amount;
   }
-} 
-
+}
 
 /** @brief Auto-schedules a task.
  *
@@ -976,7 +954,7 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
  *  - Point to point communication (done)
  *  - Sequential computation       (done)
  *  - group communication (redistribution, several kinds)
- *  - parallel tasks with no internal communication (one kind per speedup    model such as Amdahl)
+ *  - parallel tasks with no internal communication (one kind per speedup  model such as Amdahl)
  *  - idem+ internal communication. Task type not enough since we cannot store comm cost alongside to comp one)
  */
 void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
@@ -1137,7 +1115,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
         if (SD_task_get_state(output)< SD_SCHEDULED) {
           SD_task_do_schedule(output);
           XBT_VERB ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
-              SD_task_get_name(output),output->amount, src_nb, dst_nb);
+              output->name, output->amount, src_nb, dst_nb);
         }
       }
     }

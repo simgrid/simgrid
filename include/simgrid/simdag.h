@@ -58,10 +58,6 @@ typedef enum {
   SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
 
-/** @brief Storage datatype
-    @ingroup SD_storage_api */
-typedef xbt_dictelm_t SD_storage_t;
-
 /************************** Workstation handling ****************************/
 /** @addtogroup SD_host_api
  *
@@ -75,11 +71,8 @@ typedef xbt_dictelm_t SD_storage_t;
  */
 XBT_PUBLIC(SD_link_t *) SD_route_get_list(sg_host_t src, sg_host_t dst);
 XBT_PUBLIC(int) SD_route_get_size(sg_host_t src, sg_host_t dst);
-
 XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src, sg_host_t dst);
 XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src, sg_host_t dst);
-
-XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
 /** @} */
 
 /************************** Task handling ************************************/
@@ -137,9 +130,9 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 /** @brief A constant to use in SD_task_schedule to mean that there is no cost.
  *
- *  For example, create a pure computation task (no comm) like this:
+ *  For example, create a pure computation task (i.e., with no communication) like this:
  *
- *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_TASK_SCHED_NO_COST, my_rate);
+ *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_SCHED_NO_COST, my_rate);
  */
 #define SD_SCHED_NO_COST NULL
 
