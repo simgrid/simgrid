@@ -690,11 +690,17 @@ static inline void simcall_comm_test__set__result(smx_simcall_t simcall, int res
     simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline xbt_dynar_t simcall_comm_testany__get__comms(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<xbt_dynar_t>(simcall->args[0]);
+static inline smx_synchro_t* simcall_comm_testany__get__comms(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_synchro_t*>(simcall->args[0]);
 }
-static inline void simcall_comm_testany__set__comms(smx_simcall_t simcall, xbt_dynar_t arg) {
-    simgrid::simix::marshal<xbt_dynar_t>(simcall->args[0], arg);
+static inline void simcall_comm_testany__set__comms(smx_simcall_t simcall, smx_synchro_t* arg) {
+    simgrid::simix::marshal<smx_synchro_t*>(simcall->args[0], arg);
+}
+static inline size_t simcall_comm_testany__get__count(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<size_t>(simcall->args[1]);
+}
+static inline void simcall_comm_testany__set__count(smx_simcall_t simcall, size_t arg) {
+    simgrid::simix::marshal<size_t>(simcall->args[1], arg);
 }
 static inline int simcall_comm_testany__get__result(smx_simcall_t simcall){
     return simgrid::simix::unmarshal<int>(simcall->result);
@@ -1182,7 +1188,7 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_
 XBT_PRIVATE void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t comms);
 XBT_PRIVATE void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t comm, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t comm);
-XBT_PRIVATE void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t comms);
+XBT_PRIVATE void simcall_HANDLER_comm_testany(smx_simcall_t simcall, smx_synchro_t* comms, size_t count);
 XBT_PRIVATE smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall);
 XBT_PRIVATE void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex);
 XBT_PRIVATE int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex);

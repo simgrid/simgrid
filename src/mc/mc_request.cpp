@@ -375,8 +375,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
       type = "TestAny";
       args =
           bprintf("(%d of %zu)", value + 1,
-                  read_length(mc_model_checker->process(),
-                    simcall_comm_testany__get__comms(req)));
+                    simcall_comm_testany__get__count(req));
     }
     break;
 
@@ -451,12 +450,9 @@ bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
     }
     break;
 
-  case SIMCALL_COMM_TESTANY: {
-    read_element(
-      mc_model_checker->process(), &remote_act,
-      remote(simcall_comm_testany__get__comms(req)),
-      idx, sizeof(remote_act));
-    }
+  case SIMCALL_COMM_TESTANY:
+    remote_act = mc_model_checker->process().read(remote(
+      simcall_comm_testany__get__comms(req) + idx));
     break;
 
   default:
@@ -601,12 +597,12 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
         label = simgrid::xbt::string_printf("[(%lu)%s] TestAny TRUE [%d of %lu]",
                     issuer->pid,
                     MC_smx_process_get_host_name(issuer), value + 1,
-                    xbt_dynar_length(simcall_comm_testany__get__comms(req)));
+                    simcall_comm_testany__get__count(req));
       else
         label = simgrid::xbt::string_printf("[(%lu)] TestAny TRUE [%d of %lu]",
                     issuer->pid,
                     value + 1,
-                    xbt_dynar_length(simcall_comm_testany__get__comms(req)));
+                    simcall_comm_testany__get__count(req));
     }
     break;
 

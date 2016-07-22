@@ -106,8 +106,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
         unsigned start_count = procstate->interleave_count;
         state->transition.argument = -1;
         while (procstate->interleave_count <
-                read_length(mc_model_checker->process(),
-                  remote(simcall_comm_testany__get__comms(&process->simcall))))
+                simcall_comm_testany__get__count(&process->simcall))
           if (simgrid::mc::request_is_enabled_by_idx(&process->simcall,
               procstate->interleave_count++)) {
             state->transition.argument = procstate->interleave_count - 1;
@@ -115,8 +114,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
           }
 
         if (procstate->interleave_count >=
-            read_length(mc_model_checker->process(),
-              remote(simcall_comm_testany__get__comms(&process->simcall))))
+            simcall_comm_testany__get__count(&process->simcall))
           procstate->setDone();
 
         if (state->transition.argument != -1 || start_count == 0)
@@ -191,10 +189,8 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     state->internal_req.issuer = req->issuer;
 
     if (state->transition.argument > 0) {
-      smx_synchro_t remote_comm;
-      read_element(mc_model_checker->process(),
-        &remote_comm, remote(simcall_comm_testany__get__comms(req)),
-        state->transition.argument, sizeof(remote_comm));
+      smx_synchro_t remote_comm = mc_model_checker->process().read(
+        remote(simcall_comm_testany__get__comms(req) + state->transition.argument));
       mc_model_checker->process().read(state->internal_comm, remote(
         static_cast<simgrid::simix::Comm*>(remote_comm)));
     }

@@ -504,17 +504,18 @@ int MSG_comm_testany(xbt_dynar_t comms)
 {
   int finished_index = -1;
 
-  /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_synchro_t), nullptr);
+  /* Create the equivalent array with SIMIX objects: */
+  std::vector<simgrid::simix::Synchro*> s_comms;
+  s_comms.reserve(xbt_dynar_length(comms));
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
-    xbt_dynar_push(s_comms, &comm->s_comm);
+    s_comms.push_back(comm->s_comm);
   }
 
   msg_error_t status = MSG_OK;
   try {
-    finished_index = simcall_comm_testany(s_comms);
+    finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
   }
   catch (xbt_ex& e) {
     switch (e.category) {
@@ -530,7 +531,6 @@ int MSG_comm_testany(xbt_dynar_t comms)
         throw;
     }
   }
-  xbt_dynar_free(&s_comms);
 
   if (finished_index != -1) {
     comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);

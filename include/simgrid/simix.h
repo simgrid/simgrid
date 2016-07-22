@@ -362,7 +362,7 @@ XBT_PUBLIC(void) simcall_comm_cancel(smx_synchro_t comm);
 XBT_PUBLIC(unsigned int) simcall_comm_waitany(xbt_dynar_t comms);
 XBT_PUBLIC(void) simcall_comm_wait(smx_synchro_t comm, double timeout);
 XBT_PUBLIC(int) simcall_comm_test(smx_synchro_t comm);
-XBT_PUBLIC(int) simcall_comm_testany(xbt_dynar_t comms);
+XBT_PUBLIC(int) simcall_comm_testany(smx_synchro_t* comms, size_t count);
 
 /************************** Tracing handling **********************************/
 XBT_PUBLIC(void) simcall_set_category(smx_synchro_t synchro, const char *category);

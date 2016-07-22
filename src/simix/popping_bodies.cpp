@@ -239,10 +239,10 @@ inline static int simcall_BODY_comm_test(smx_synchro_t comm) {
     return simcall<int, smx_synchro_t>(SIMCALL_COMM_TEST, comm);
   }
   
-inline static int simcall_BODY_comm_testany(xbt_dynar_t comms) {
+inline static int simcall_BODY_comm_testany(smx_synchro_t* comms, size_t count) {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_comm_testany(&SIMIX_process_self()->simcall, comms);
-    return simcall<int, xbt_dynar_t>(SIMCALL_COMM_TESTANY, comms);
+    if (0) simcall_HANDLER_comm_testany(&SIMIX_process_self()->simcall, comms, count);
+    return simcall<int, smx_synchro_t*, size_t>(SIMCALL_COMM_TESTANY, comms, count);
   }
   
 inline static smx_mutex_t simcall_BODY_mutex_init() {

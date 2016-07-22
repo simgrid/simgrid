@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <algorithm>
+
 #include <boost/range/algorithm.hpp>
 
 #include <xbt/ex.hpp>
@@ -443,10 +445,9 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t synchro)
   }
 }
 
-void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
+void simcall_HANDLER_comm_testany(
+  smx_simcall_t simcall, simgrid::simix::Synchro* comms[], size_t count)
 {
-  unsigned int cursor;
-  smx_synchro_t synchro;
   // The default result is -1 -- this means, "nothing is ready".
   // It can be changed below, but only if something matches.
   simcall_comm_testany__set__result(simcall, -1);
@@ -456,7 +457,7 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
     }else{
-      synchro = xbt_dynar_get_as(synchros, idx, smx_synchro_t);
+      simgrid::simix::Synchro* synchro = comms[idx];
       simcall_comm_testany__set__result(simcall, idx);
       synchro->simcalls.push_back(simcall);
       synchro->state = SIMIX_DONE;
@@ -465,9 +466,10 @@ void simcall_HANDLER_comm_testany(smx_simcall_t simcall, xbt_dynar_t synchros)
     return;
   }
 
-  xbt_dynar_foreach(simcall_comm_testany__get__comms(simcall), cursor,synchro) {
+  for (std::size_t i = 0; i != count; ++i) {
+    simgrid::simix::Synchro* synchro = comms[i];
     if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
-      simcall_comm_testany__set__result(simcall, cursor);
+      simcall_comm_testany__set__result(simcall, i);
       synchro->simcalls.push_back(simcall);
       SIMIX_comm_finish(synchro);
       return;
@@ -669,7 +671,14 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
           e.value = xbt_dynar_search(simcall_comm_waitany__get__comms(simcall), &synchro);
         }
         else if (simcall->call == SIMCALL_COMM_TESTANY) {
-          e.value = xbt_dynar_search(simcall_comm_testany__get__comms(simcall), &synchro);
+          e.value = -1;
+          auto comms = simcall_comm_testany__get__comms(simcall);
+          auto count = simcall_comm_testany__get__count(simcall);
+          auto element = std::find(comms, comms + count, synchro);
+          if (element == comms + count)
+            e.value = -1;
+          else
+            e.value = element - comms;
         }
         simcall->issuer->exception = std::make_exception_ptr(e);
       }

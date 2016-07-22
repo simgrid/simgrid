@@ -75,7 +75,7 @@ smx_synchro_t comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void* dst_b
 int           comm_waitany(xbt_dynar_t comms) [[block]];
 void          comm_wait(smx_synchro_t comm, double timeout) [[block]];
 int           comm_test(smx_synchro_t comm) [[block]];
-int           comm_testany(xbt_dynar_t comms) [[block]];
+int           comm_testany(smx_synchro_t* comms, size_t count) [[block]];
 
 smx_mutex_t mutex_init();
 void        mutex_lock(smx_mutex_t mutex) [[block]];
