@@ -23,7 +23,7 @@ typedef struct SD_global {
   bool watch_point_reached;      /* has a task just reached a watch point? */
 
   std::set<SD_task_t> *initial_tasks;
-  std::set<SD_task_t> *executable_tasks;
+  std::set<SD_task_t> *runnable_tasks;
   std::set<SD_task_t> *completed_tasks;
 
   xbt_dynar_t return_set;
@@ -69,7 +69,7 @@ XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
 XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
 
 /* Task mallocator functions */
-XBT_PRIVATE void* SD_task_new_f(void);
+XBT_PRIVATE void* SD_task_new_f();
 XBT_PRIVATE void SD_task_recycle_f(void *t);
 XBT_PRIVATE void SD_task_free_f(void *t);
 

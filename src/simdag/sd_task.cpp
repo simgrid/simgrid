@@ -322,22 +322,25 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
   case SD_SCHEDULED:
     if (SD_task_get_state(task) == SD_RUNNABLE){
       sd_global->initial_tasks->insert(task);
-      sd_global->executable_tasks->erase(task);
+      sd_global->runnable_tasks->erase(task);
     }
     break;
   case SD_RUNNABLE:
     idx = sd_global->initial_tasks->find(task);
     if (idx != sd_global->initial_tasks->end()) {
-      sd_global->executable_tasks->insert(*idx);
+      sd_global->runnable_tasks->insert(*idx);
       sd_global->initial_tasks->erase(idx);
     }
     break;
   case SD_RUNNING:
-    sd_global->executable_tasks->erase(task);
+    sd_global->runnable_tasks->erase(task);
     break;
   case SD_DONE:
     sd_global->completed_tasks->insert(task);
+    task->start_time = task->surf_action->getStartTime();
     task->finish_time = task->surf_action->getFinishTime();
+    task->surf_action->unref();
+    task->surf_action = nullptr;
     task->remains = 0;
 #if HAVE_JEDULE
     jedule_log_sd_event(task);
@@ -345,6 +348,10 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     break;
   case SD_FAILED:
     sd_global->completed_tasks->insert(task);
+    task->start_time = task->surf_action->getStartTime();
+    task->finish_time = surf_get_clock();
+    task->surf_action->unref();
+    task->surf_action = nullptr;
     break;
   default:
     xbt_die( "Invalid state");
@@ -354,7 +361,7 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 
   if (task->watch_points & new_state) {
     XBT_VERB("Watch point reached with task '%s'!", SD_task_get_name(task));
-    sd_global->watch_point_reached = 1;
+    sd_global->watch_point_reached = true;
     SD_task_unwatch(task, new_state);   /* remove the watch point */
   }
 }
@@ -903,6 +910,7 @@ void SD_task_run(SD_task_t task)
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   SD_task_set_state(task, SD_RUNNING);
+  xbt_dynar_push(sd_global->return_set, &task);
 }
 
 /**

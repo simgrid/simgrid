@@ -356,18 +356,18 @@ void ETag_dax__adag()
   XBT_DEBUG("See </adag>");
 }
 
-void ETag_dax__job(void)
+void ETag_dax__job()
 {
   current_job = nullptr;
   XBT_DEBUG("See </job>");
 }
 
-void ETag_dax__parent(void)
+void ETag_dax__parent()
 {
   XBT_DEBUG("See </parent>");
 }
 
-void ETag_dax__uses(void)
+void ETag_dax__uses()
 {
   XBT_DEBUG("See </uses>");
 }
