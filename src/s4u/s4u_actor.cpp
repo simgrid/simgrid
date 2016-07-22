@@ -130,14 +130,14 @@ e_smx_state_t execute(double flops) {
 
 void* recv(Mailbox &chan) {
   void *res = nullptr;
-  Comm c = Comm::recv_init(chan);
+  Comm& c = Comm::recv_init(chan);
   c.setDstData(&res,sizeof(res));
   c.wait();
   return res;
 }
 
 void send(Mailbox &chan, void *payload, size_t simulatedSize) {
-  Comm c = Comm::send_init(chan);
+  Comm& c = Comm::send_init(chan);
   c.setRemains(simulatedSize);
   c.setSrcData(payload);
   // c.start() is optional.
