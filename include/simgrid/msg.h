@@ -505,7 +505,7 @@ XBT_PUBLIC(msg_sem_t) MSG_sem_init(int initial_value);
 XBT_PUBLIC(void) MSG_sem_acquire(msg_sem_t sem);
 XBT_PUBLIC(msg_error_t) MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
 XBT_PUBLIC(void) MSG_sem_release(msg_sem_t sem);
-XBT_PUBLIC(void) MSG_sem_get_capacity(msg_sem_t sem);
+XBT_PUBLIC(int) MSG_sem_get_capacity(msg_sem_t sem);
 XBT_PUBLIC(void) MSG_sem_destroy(msg_sem_t sem);
 XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
 
