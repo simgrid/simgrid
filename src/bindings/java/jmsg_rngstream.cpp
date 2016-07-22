@@ -110,7 +110,13 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_RngStream_setSeed(JNIEnv *env, j
   if (!rngstream)
     return JNI_FALSE;
 
-  int result = RngStream_SetSeed(rngstream, (unsigned long*)buffer);
+  // The C API expects unsigned long which are wider than int on LP64.
+  // We need to convert:
+  unsigned long seed[6];
+  for (int i = 0; i != 6; ++i)
+    seed[i] = buffer[i];
+
+  int result = RngStream_SetSeed(rngstream, seed);
 
   return result == -1 ? JNI_FALSE : JNI_TRUE;
 }

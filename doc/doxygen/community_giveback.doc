@@ -147,6 +147,11 @@ Some support for C++11-style time/duration is implemented (see `chrono.hpp`)
 but only available in some (S4U) APIs. It would be nice to add support for
 them in the rest of the C++ code.
 
+A related change would be to avoid using "-1" to mean "forever" at least in S4U
+and in the internal code. For compatibility, MSG should probably keep this
+semantic. We should probably always use separate functions
+(`wait` vs `wait_for`).
+
 @subsubsection contributing_todo_futures Futures
 
  - Some features are missing in the Maestro future implementation

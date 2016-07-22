@@ -36,4 +36,4 @@ $ java -classpath ${classpath:=.} trace/pingpong/Main ${srcdir:=.}/../platforms/
 > [Tremblay:Receiver:(3) 2.957786] [jmsg/INFO]  --- bw 1.1627602630025032E8 ----
 > [Tremblay:Receiver:(3) 3.817809] [jmsg/INFO] goodbye!
 
-!$ rm -rf simulation.trace
+$ rm -rf simulation.trace
