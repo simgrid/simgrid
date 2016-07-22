@@ -52,9 +52,6 @@ void SD_task_recycle_f(void *t)
   task->watch_points = 0;
 
   /* dependencies */
-  task->unsatisfied_dependencies = 0;
-  task->is_not_ready = 0;
-
   task->inputs->clear();
   task->outputs->clear();
   task->predecessors->clear();
@@ -288,7 +285,7 @@ void SD_task_set_data(SD_task_t task, void *data)
 void SD_task_set_rate(SD_task_t task, double rate)
 {
   xbt_assert(task->kind == SD_TASK_COMM_E2E, "The rate can be modified for end-to-end communications only.");
-  if(task->start_time<0) {
+  if(task->state < SD_RUNNING) {
     task->rate = rate;
   } else {
     XBT_WARN("Task %p has started. Changing rate is ineffective.", task);
@@ -313,6 +310,7 @@ e_SD_task_state_t SD_task_get_state(SD_task_t task)
 void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 {
   std::set<SD_task_t>::iterator idx;
+  XBT_DEBUG("Set state of '%s' to %d", task->name, new_state);
   switch (new_state) {
   case SD_NOT_SCHEDULED:
   case SD_SCHEDULABLE:
@@ -531,13 +529,10 @@ void SD_task_dump(SD_task_t task)
     }
   }
 
-  if (task->category)
-    XBT_INFO("  - tracing category: %s", task->category);
-
   XBT_INFO("  - amount: %.0f", SD_task_get_amount(task));
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
     XBT_INFO("  - alpha: %.2f", task->alpha);
-  XBT_INFO("  - Dependencies to satisfy: %d", task->unsatisfied_dependencies);
+  XBT_INFO("  - Dependencies to satisfy: %zu", task->inputs->size()+ task->predecessors->size());
   if ((task->inputs->size()+ task->predecessors->size()) > 0) {
     XBT_INFO("  - pre-dependencies:");
     for (std::set<SD_task_t>::iterator it=task->predecessors->begin(); it!=task->predecessors->end(); ++it)
@@ -636,9 +631,6 @@ void SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task
     dst->predecessors->insert(src);
   }
 
-  dst->unsatisfied_dependencies++;
-  dst->is_not_ready++;
-
   /* if the task was runnable, the task goes back to SD_SCHEDULED because of the new dependency*/
   if (SD_task_get_state(dst) == SD_RUNNABLE) {
     XBT_DEBUG("SD_task_dependency_add: %s was runnable and becomes scheduled!", SD_task_get_name(dst));
@@ -680,19 +672,12 @@ int SD_task_dependency_exists(SD_task_t src, SD_task_t dst)
  */
 void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
 {
-
   XBT_DEBUG("SD_task_dependency_remove: src = %s, dst = %s", SD_task_get_name(src), SD_task_get_name(dst));
 
   if (src->successors->find(dst) == src->successors->end() &&
       src->outputs->find(dst) == src->outputs->end())
     THROWF(arg_error, 0, "No dependency found between task '%s' and '%s': task '%s' is not a successor of task '%s'",
            SD_task_get_name(src), SD_task_get_name(dst), SD_task_get_name(dst), SD_task_get_name(src));
-
-  if (dst->predecessors->find(src) != dst->predecessors->end() ||
-      dst->inputs->find(src) != dst->inputs->end()){
-    dst->unsatisfied_dependencies--;
-    dst->is_not_ready--;
-  }
 
   e_SD_task_kind_t src_kind = SD_task_get_kind(src);
   e_SD_task_kind_t dst_kind = SD_task_get_kind(dst);
@@ -713,15 +698,8 @@ void SD_task_dependency_remove(SD_task_t src, SD_task_t dst)
   }
 
   /* if the task was scheduled and dependencies are satisfied, we can make it runnable */
-  if (dst->unsatisfied_dependencies == 0) {
-    if (SD_task_get_state(dst) == SD_SCHEDULED)
-      SD_task_set_state(dst, SD_RUNNABLE);
-    else
-      SD_task_set_state(dst, SD_SCHEDULABLE);
-  }
-
-  if (dst->is_not_ready == 0)
-    SD_task_set_state(dst, SD_SCHEDULABLE);
+  if (dst->predecessors->empty() && dst->inputs->empty() && SD_task_get_state(dst) == SD_SCHEDULED)
+    SD_task_set_state(dst, SD_RUNNABLE);
 }
 
 /**
@@ -802,7 +780,7 @@ static inline void SD_task_do_schedule(SD_task_t task)
   if (SD_task_get_state(task) > SD_SCHEDULABLE)
     THROWF(arg_error, 0, "Task '%s' has already been scheduled", SD_task_get_name(task));
 
-  if (task->unsatisfied_dependencies == 0)
+  if (task->predecessors->empty() && task->inputs->empty())
     SD_task_set_state(task, SD_RUNNABLE);
   else
     SD_task_set_state(task, SD_SCHEDULED);
@@ -884,7 +862,7 @@ void SD_task_unschedule(SD_task_t task)
     /* the task should become SD_FAILED */
     task->surf_action->cancel();
   else {
-    if (task->unsatisfied_dependencies == 0)
+    if (task->predecessors->empty() && task->inputs->empty())
       SD_task_set_state(task, SD_SCHEDULABLE);
     else
       SD_task_set_state(task, SD_NOT_SCHEDULED);
@@ -922,9 +900,6 @@ void SD_task_run(SD_task_t task)
   task->surf_action->setData(task);
 
   XBT_DEBUG("surf_action = %p", task->surf_action);
-
-  if (task->category)
-    TRACE_surf_action(task->surf_action, task->category);
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   SD_task_set_state(task, SD_RUNNING);

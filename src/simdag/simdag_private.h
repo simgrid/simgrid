@@ -49,9 +49,6 @@ typedef struct SD_task {
   int marked;                   /* used to check if the task DAG has some cycle*/
 
   /* dependencies */
-  int unsatisfied_dependencies;
-  unsigned int is_not_ready;
-
   std::set<SD_task_t> *inputs;
   std::set<SD_task_t> *outputs;
   std::set<SD_task_t> *predecessors;
@@ -63,9 +60,6 @@ typedef struct SD_task {
   double *flops_amount;
   double *bytes_amount;
   double rate;
-
-  long long int counter;        /* task unique identifier for instrumentation */
-  char *category;               /* sd task category for instrumentation */
 } s_SD_task_t;
 
 /* SimDag private functions */

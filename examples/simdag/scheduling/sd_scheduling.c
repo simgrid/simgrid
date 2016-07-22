@@ -92,24 +92,15 @@ static double finish_on_at(SD_task_t task, sg_host_t host)
     xbt_dynar_foreach(parents, i, parent) {
       /* normal case */
       if (SD_task_get_kind(parent) == SD_TASK_COMM_E2E) {
-        xbt_dynar_t grand_parents = SD_task_get_parents(parent);
-        SD_task_t grand_parent;
-
-        xbt_assert(xbt_dynar_length(grand_parents) <2, "Error: transfer %s has 2 parents", SD_task_get_name(parent));
-
-        xbt_dynar_get_cpy(grand_parents, 0, &grand_parent);
-
-        sg_host_t * grand_parent_host_list = SD_task_get_workstation_list(grand_parent);
+        sg_host_t * parent_host= SD_task_get_workstation_list(parent);
         /* Estimate the redistribution time from this parent */
         if (SD_task_get_amount(parent) <= 1e-6){
           redist_time= 0;
         } else {
-          redist_time = SD_route_get_latency(grand_parent_host_list[0], host) +
-                        SD_task_get_amount(parent) / SD_route_get_bandwidth(grand_parent_host_list[0], host);
+          redist_time = SD_route_get_latency(parent_host[0], host) +
+                        SD_task_get_amount(parent) / SD_route_get_bandwidth(parent_host[0], host);
         }
-        data_available = SD_task_get_finish_time(grand_parent) + redist_time;
-
-        xbt_dynar_free_container(&grand_parents);
+        data_available = SD_task_get_start_time(parent) + redist_time;
       }
 
       /* no transfer, control dependency */
@@ -134,7 +125,7 @@ static double finish_on_at(SD_task_t task, sg_host_t host)
 
 static sg_host_t SD_task_get_best_host(SD_task_t task)
 {
-  const sg_host_t *hosts = sg_host_list();
+  sg_host_t *hosts = sg_host_list();
   int nhosts = sg_host_count();
   sg_host_t best_host = hosts[0];
   double min_EFT = finish_on_at(task, hosts[0]);
@@ -148,6 +139,7 @@ static sg_host_t SD_task_get_best_host(SD_task_t task)
       best_host = hosts[i];
     }
   }
+  xbt_free(hosts);
   return best_host;
 }
 
@@ -175,7 +167,7 @@ int main(int argc, char **argv)
 
   /*  Allocating the host attribute */
   int total_nhosts = sg_host_count();
-  const sg_host_t *hosts = sg_host_list();
+  sg_host_t *hosts = sg_host_list();
 
   for (cursor = 0; cursor < total_nhosts; cursor++)
     sg_host_allocate_attribute(hosts[cursor]);
@@ -259,6 +251,7 @@ int main(int argc, char **argv)
   for (cursor = 0; cursor < total_nhosts; cursor++)
     sg_host_free_attribute(hosts[cursor]);
 
+  xbt_free(hosts);
   /* exit */
   SD_exit();
   return 0;

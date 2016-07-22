@@ -170,19 +170,18 @@ xbt_dynar_t SD_simulate(double how_long) {
         /* remove the dependencies after this task */
         for (std::set<SD_task_t>::iterator it=task->successors->begin(); it!=task->successors->end(); ++it){
           dst=*it;
-          dst->unsatisfied_dependencies--;
-          if (dst->is_not_ready > 0)
-            dst->is_not_ready--;
-          XBT_DEBUG("Released a dependency on %s: %d remain(s). Became schedulable if %d=0",
-             SD_task_get_name(dst), dst->unsatisfied_dependencies, dst->is_not_ready);
-          if (dst->unsatisfied_dependencies == 0) {
+          dst->predecessors->erase(task);
+          dst->inputs->erase(task);
+          XBT_DEBUG("Released a dependency on %s: %zu remain(s). Became schedulable if %zu=0",
+             SD_task_get_name(dst), dst->predecessors->size()+dst->inputs->size(), dst->predecessors->size());
+          if (dst->predecessors->empty() && dst->inputs->empty()) {
             if (SD_task_get_state(dst) == SD_SCHEDULED)
               SD_task_set_state(dst, SD_RUNNABLE);
             else
               SD_task_set_state(dst, SD_SCHEDULABLE);
           }
 
-          if (SD_task_get_state(dst) == SD_NOT_SCHEDULED && dst->is_not_ready == 0) {
+          if (SD_task_get_state(dst) == SD_NOT_SCHEDULED && dst->predecessors->empty()){
             SD_task_set_state(dst, SD_SCHEDULABLE);
           }
           if (SD_task_get_state(dst) == SD_RUNNABLE && !sd_global->watch_point_reached) {
@@ -191,25 +190,21 @@ xbt_dynar_t SD_simulate(double how_long) {
             xbt_dynar_push(sd_global->return_set, &dst);
           }
         }
+        task->successors->clear();
 
         for (std::set<SD_task_t>::iterator it=task->outputs->begin(); it!=task->outputs->end(); ++it){
           dst=*it;
-          dst->unsatisfied_dependencies = 0;
-          dst->is_not_ready = 0;
+          dst->start_time = task->finish_time;
+          dst->predecessors->erase(task);
           if (SD_task_get_state(dst) == SD_SCHEDULED)
              SD_task_set_state(dst, SD_RUNNABLE);
           else
              SD_task_set_state(dst, SD_SCHEDULABLE);
           SD_task_t comm_dst = *(dst->successors->begin());
-          if (SD_task_get_state(comm_dst) == SD_NOT_SCHEDULED && comm_dst->is_not_ready > 0) {
-            comm_dst->is_not_ready--;
-
-            XBT_DEBUG("%s is a transfer, %s may be ready now if %d=0",
-                SD_task_get_name(dst), SD_task_get_name(comm_dst), comm_dst->is_not_ready);
-
-            if (comm_dst->is_not_ready == 0) {
-              SD_task_set_state(comm_dst, SD_SCHEDULABLE);
-            }
+          if (SD_task_get_state(comm_dst) == SD_NOT_SCHEDULED && comm_dst->predecessors->empty()){
+            XBT_DEBUG("%s is a transfer, %s may be ready now if %zu=0",
+                SD_task_get_name(dst), SD_task_get_name(comm_dst), comm_dst->predecessors->size());
+            SD_task_set_state(comm_dst, SD_SCHEDULABLE);
           }
           if (SD_task_get_state(dst) == SD_RUNNABLE && !sd_global->watch_point_reached) {
             XBT_VERB("Executing task '%s'", SD_task_get_name(dst));
@@ -217,6 +212,7 @@ xbt_dynar_t SD_simulate(double how_long) {
             xbt_dynar_push(sd_global->return_set, &dst);
           }
         }
+        task->outputs->clear();
       }
 
       /* let's see which tasks have just failed */
