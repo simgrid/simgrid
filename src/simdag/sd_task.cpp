@@ -720,37 +720,32 @@ void SD_task_unwatch(SD_task_t task, e_SD_task_state_t state)
  * now and if it was the only task.
  *
  * \param task the task to evaluate
- * \param workstation_nb number of workstations on which the task would be executed
- * \param workstation_list the workstations on which the task would be executed
- * \param flops_amount computation amount for each workstation (i.e., an array of workstation_nb doubles)
- * \param bytes_amount communication amount between each pair of workstations (i.e., a matrix of
- *        workstation_nb*workstation_nb doubles)
+ * \param host_count number of hosts on which the task would be executed
+ * \param host_list the hosts on which the task would be executed
+ * \param flops_amount computation amount for each host(i.e., an array of host_count doubles)
+ * \param bytes_amount communication amount between each pair of hosts (i.e., a matrix of host_count*host_count doubles)
  * \see SD_schedule()
  */
-double SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+double SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_t *host_list,
                                   const double *flops_amount, const double *bytes_amount)
 {
-  xbt_assert(workstation_nb > 0, "Invalid parameter");
+  xbt_assert(host_count > 0, "Invalid parameter");
   double max_time = 0.0;
 
   /* the task execution time is the maximum execution time of the parallel tasks */
-  for (int i = 0; i < workstation_nb; i++) {
+  for (int i = 0; i < host_count; i++) {
     double time = 0.0;
     if (flops_amount != nullptr)
-      time = flops_amount[i] / workstation_list[i]->speed();
+      time = flops_amount[i] / host_list[i]->speed();
 
     if (bytes_amount != nullptr)
-      for (int j = 0; j < workstation_nb; j++) {
-        if (bytes_amount[i * workstation_nb + j] !=0 ) {
-          time += (SD_route_get_latency(workstation_list[i], workstation_list[j]) +
-                   bytes_amount[i * workstation_nb + j] /
-                   SD_route_get_bandwidth(workstation_list[i], workstation_list[j]));
-        }
-      }
+      for (int j = 0; j < host_count; j++)
+        if (bytes_amount[i * host_count + j] != 0)
+          time += (SD_route_get_latency(host_list[i], host_list[j]) +
+                   bytes_amount[i * host_count + j] / SD_route_get_bandwidth(host_list[i], host_list[j]));
 
-    if (time > max_time) {
+    if (time > max_time)
       max_time = time;
-    }
   }
   return max_time;
 }
@@ -780,7 +775,7 @@ static inline void SD_task_do_schedule(SD_task_t task)
  * \param rate task execution speed rate
  * \see SD_task_unschedule()
  */
-void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * workstation_list,
+void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * host_list,
                       const double *flops_amount, const double *bytes_amount, double rate)
 {
   xbt_assert(host_count > 0, "workstation_nb must be positive");
@@ -806,7 +801,7 @@ void SD_task_schedule(SD_task_t task, int host_count, const sg_host_t * workstat
   }
 
   task->host_list =  static_cast<sg_host_t*>(xbt_realloc(task->host_list, sizeof(sg_host_t) * host_count));
-  memcpy(task->host_list, workstation_list, sizeof(sg_host_t) * host_count);
+  memcpy(task->host_list, host_list, sizeof(sg_host_t) * host_count);
 
   SD_task_do_schedule(task);
 }

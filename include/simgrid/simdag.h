@@ -102,10 +102,10 @@ XBT_PUBLIC(double) SD_task_get_amount(SD_task_t task);
 XBT_PUBLIC(void) SD_task_set_amount(SD_task_t task, double amount);
 XBT_PUBLIC(double) SD_task_get_alpha(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_remaining_amount(SD_task_t task);
-XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_t *host_list,
                                               const double *flops_amount, const double *bytes_amount);
 XBT_PUBLIC(e_SD_task_kind_t) SD_task_get_kind(SD_task_t task);
-XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int host_count, const sg_host_t *host_list,
                                   const double *flops_amount, const double *bytes_amount, double rate);
 XBT_PUBLIC(void) SD_task_unschedule(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_start_time(SD_task_t task);
