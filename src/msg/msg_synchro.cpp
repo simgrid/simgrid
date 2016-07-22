@@ -46,8 +46,8 @@ void MSG_sem_release(msg_sem_t sem) {
   simcall_sem_release(sem);
 }
 
-void MSG_sem_get_capacity(msg_sem_t sem) {
-  simcall_sem_get_capacity(sem);
+int MSG_sem_get_capacity(msg_sem_t sem) {
+  return simcall_sem_get_capacity(sem);
 }
 
 void MSG_sem_destroy(msg_sem_t sem) {
