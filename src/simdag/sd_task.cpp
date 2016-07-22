@@ -310,50 +310,40 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
 {
   std::set<SD_task_t>::iterator idx;
   XBT_DEBUG("Set state of '%s' to %d", task->name, new_state);
-  switch (new_state) {
-  case SD_NOT_SCHEDULED:
-  case SD_SCHEDULABLE:
-    if (SD_task_get_state(task) == SD_FAILED){
-      sd_global->completed_tasks->erase(task);
-      sd_global->initial_tasks->insert(task);
-    }
-    break;
-  case SD_SCHEDULED:
-    if (SD_task_get_state(task) == SD_RUNNABLE){
-      sd_global->initial_tasks->insert(task);
-      sd_global->runnable_tasks->erase(task);
-    }
-    break;
-  case SD_RUNNABLE:
+  if ((new_state == SD_NOT_SCHEDULED || new_state == SD_SCHEDULABLE) && task->state == SD_FAILED){
+    sd_global->completed_tasks->erase(task);
+    sd_global->initial_tasks->insert(task);
+  }
+
+  if (new_state == SD_SCHEDULED && task->state == SD_RUNNABLE){
+    sd_global->initial_tasks->insert(task);
+    sd_global->runnable_tasks->erase(task);
+  }
+
+  if (new_state == SD_RUNNABLE){
     idx = sd_global->initial_tasks->find(task);
     if (idx != sd_global->initial_tasks->end()) {
       sd_global->runnable_tasks->insert(*idx);
       sd_global->initial_tasks->erase(idx);
     }
-    break;
-  case SD_RUNNING:
+  }
+
+  if (new_state == SD_RUNNING)
     sd_global->runnable_tasks->erase(task);
-    break;
-  case SD_DONE:
+
+  if (new_state == SD_DONE || new_state == SD_FAILED){
     sd_global->completed_tasks->insert(task);
     task->start_time = task->surf_action->getStartTime();
-    task->finish_time = task->surf_action->getFinishTime();
-    task->surf_action->unref();
-    task->surf_action = nullptr;
-    task->remains = 0;
+    if (new_state == SD_DONE){
+      task->finish_time = task->surf_action->getFinishTime();
+      task->remains = 0;
 #if HAVE_JEDULE
-    jedule_log_sd_event(task);
+      jedule_log_sd_event(task);
 #endif
-    break;
-  case SD_FAILED:
-    sd_global->completed_tasks->insert(task);
-    task->start_time = task->surf_action->getStartTime();
-    task->finish_time = surf_get_clock();
+    } else
+      task->finish_time = surf_get_clock();
     task->surf_action->unref();
     task->surf_action = nullptr;
-    break;
-  default:
-    xbt_die( "Invalid state");
   }
 
   task->state = new_state;
