@@ -657,6 +657,12 @@ static inline xbt_dynar_t simcall_comm_waitany__get__comms(smx_simcall_t simcall
 static inline void simcall_comm_waitany__set__comms(smx_simcall_t simcall, xbt_dynar_t arg) {
     simgrid::simix::marshal<xbt_dynar_t>(simcall->args[0], arg);
 }
+static inline double simcall_comm_waitany__get__timeout(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<double>(simcall->args[1]);
+}
+static inline void simcall_comm_waitany__set__timeout(smx_simcall_t simcall, double arg) {
+    simgrid::simix::marshal<double>(simcall->args[1], arg);
+}
 static inline int simcall_comm_waitany__get__result(smx_simcall_t simcall){
     return simgrid::simix::unmarshal<int>(simcall->result);
 }
@@ -1185,7 +1191,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t 
 XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
 XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate);
 XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
-XBT_PRIVATE void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t comms);
+XBT_PRIVATE void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t comms, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t comm, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t comm);
 XBT_PRIVATE void simcall_HANDLER_comm_testany(smx_simcall_t simcall, smx_synchro_t* comms, size_t count);

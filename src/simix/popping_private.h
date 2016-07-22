@@ -45,6 +45,7 @@ union u_smx_scalar {
 struct s_smx_simcall {
   e_smx_simcall_t call;
   smx_process_t issuer;
+  smx_timer_t timer;
   int mc_value;
   union u_smx_scalar args[11];
   union u_smx_scalar result;

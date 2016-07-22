@@ -18,6 +18,8 @@ Comm::~Comm() {
 
 }
 
+
+
 s4u::Comm &Comm::send_init(s4u::Mailbox &chan) {
   s4u::Comm *res = new s4u::Comm();
   res->sender_ = SIMIX_process_self();
