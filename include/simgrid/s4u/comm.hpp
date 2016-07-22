@@ -12,9 +12,12 @@
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/forward.hpp>
 #include <simgrid/s4u/mailbox.hpp>
+#include <simgrid/forward.h>
+
 
 namespace simgrid {
 namespace s4u {
+
 
 /** @brief Communication async
  *
@@ -26,6 +29,55 @@ public:
   ~Comm() override;
 
 public:
+  
+  /*! tanke a range of s4u::Comm* (last excluded) and return when one of them is finished. The return value is an iterator on the finished Comms. */
+  template<class I> static
+  I wait_any(I first, I last)
+  {
+    // Map to dynar<Synchro*>:
+    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::simix::Synchro*), NULL);
+    for(I iter = first; iter != last; iter++) {
+      Comm& comm = **iter;
+      if (comm.state_ == inited)
+        comm.start();
+      xbt_assert(comm.state_ == started);
+      xbt_dynar_push_as(comms, simgrid::simix::Synchro*, comm.pimpl_);
+    }
+    // Call the underlying simcall:
+    int idx = simcall_comm_waitany(comms, -1);
+    xbt_dynar_free(&comms);
+    // Not found:
+    if (idx == -1)
+      return last;
+    // Lift the index to the corresponding iterator:
+    auto res = std::next(first, idx);
+    (*res)->state_ = finished;
+    return res;
+  }
+  /*! Same as wait_any, but with a timeout. If wait_any_for return because of the timeout last is returned.*/
+  template<class I> static
+  I wait_any_for(I first, I last, double timeout)
+  {
+    // Map to dynar<Synchro*>:
+    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::simix::Synchro*), NULL);
+    for(I iter = first; iter != last; iter++) {
+      Comm& comm = **iter;
+      if (comm.state_ == inited)
+        comm.start();
+      xbt_assert(comm.state_ == started);
+      xbt_dynar_push_as(comms, simgrid::simix::Synchro*, comm.pimpl_);
+    }
+    // Call the underlying simcall:
+    int idx = simcall_comm_waitany(comms, timeout);
+    xbt_dynar_free(&comms);
+    // Not found:
+    if (idx == -1)
+      return last;
+    // Lift the index to the corresponding iterator:
+    auto res = std::next(first, idx);
+    (*res)->state_ = finished;
+    return res;
+  }
   /** Creates (but don't start) an async send to the mailbox @p dest */
   static Comm &send_init(Mailbox &dest);
   /** Creates and start an async send to the mailbox @p dest */
