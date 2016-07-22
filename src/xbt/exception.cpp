@@ -4,8 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdlib>
+
+#include <atomic>
 #include <exception>
+#include <string>
 #include <typeinfo>
+#include <vector>
 #include <memory>
 #include <mutex>
 
