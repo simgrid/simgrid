@@ -199,17 +199,6 @@ the \b maxmin/precision item (default value: 0.00001). Changing it
 may speedup the simulation by discarding very small actions, at the
 price of a reduced numerical precision.
 
-\subsection options_model_nthreads Parallel threads for model updates
-
-By default, Surf computes the analytical models sequentially to share their
-resources and update their actions. It is possible to run them in parallel,
-using the \b surf/nthreads item (default value: 1). If you use a
-negative or null value, the amount of available cores is automatically
-detected  and used instead.
-
-Depending on the workload of the models and their complexity, you may get a
-speedup or a slowdown because of the synchronization costs of threads.
-
 \subsection options_model_network Configuring the Network model
 
 \subsubsection options_model_network_gamma Maximal TCP window size
