@@ -94,6 +94,9 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   msg_file_priv_t file_priv = MSG_file_priv(fd);
   sg_size_t read_size;
 
+  if (file_priv->size == 0.0) /* Nothing to read, return */
+    return 0.0;
+
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
@@ -108,7 +111,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 
     m_host_list[0] = MSG_host_self();
     m_host_list[1] = attached_host;
-    double flops_amount[] = { 0, 0 };
+    double flops_amount[] = { 0, 0};
     double bytes_amount[] = { 0, 0, (double)read_size, 0 };
 
     msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, flops_amount, bytes_amount,
@@ -138,6 +141,9 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 {
   msg_file_priv_t file_priv = MSG_file_priv(fd);
+
+  if (size == 0.0) /* Nothing to write, return */
+    return 0.0;
 
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
