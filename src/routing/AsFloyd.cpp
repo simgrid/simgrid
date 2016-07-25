@@ -5,7 +5,7 @@
 
 #include "xbt/log.h"
 #include "xbt/dynar.h"
-#include "src/surf/AsFloyd.hpp"
+#include "src/routing/AsFloyd.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");

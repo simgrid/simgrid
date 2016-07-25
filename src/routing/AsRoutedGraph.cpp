@@ -9,7 +9,7 @@
 #include "xbt/dynar.h"
 #include "xbt/graph.h"
 
-#include "src/surf/AsRoutedGraph.hpp"
+#include "src/routing/AsRoutedGraph.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_routing_generic, surf_route, "Generic implementation of the surf routing");

@@ -12,7 +12,7 @@
 
 #include "surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: including this here is pure madness. KILKILKIL XML.
-#include "src/surf/AsImpl.hpp"
+#include "src/routing/AsImpl.hpp"
 
 #include <float.h>
 #include <vector>

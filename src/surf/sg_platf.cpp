@@ -23,16 +23,16 @@
 #include "src/surf/network_interface.hpp"
 #include "surf/surf_routing.h" // FIXME: brain dead public header
 
-#include "src/surf/AsImpl.hpp"
-#include "src/surf/AsCluster.hpp"
-#include "src/surf/AsClusterTorus.hpp"
-#include "src/surf/AsClusterFatTree.hpp"
-#include "src/surf/AsClusterDragonfly.hpp"
-#include "src/surf/AsDijkstra.hpp"
-#include "src/surf/AsFloyd.hpp"
-#include "src/surf/AsFull.hpp"
-#include "src/surf/AsNone.hpp"
-#include "src/surf/AsVivaldi.hpp"
+#include "src/routing/AsImpl.hpp"
+#include "src/routing/AsCluster.hpp"
+#include "src/routing/AsClusterTorus.hpp"
+#include "src/routing/AsClusterFatTree.hpp"
+#include "src/routing/AsClusterDragonfly.hpp"
+#include "src/routing/AsDijkstra.hpp"
+#include "src/routing/AsFloyd.hpp"
+#include "src/routing/AsFull.hpp"
+#include "src/routing/AsNone.hpp"
+#include "src/routing/AsVivaldi.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_parse);
 

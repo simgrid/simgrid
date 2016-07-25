@@ -6,7 +6,7 @@
 #ifndef SURF_ROUTING_NONE_HPP_
 #define SURF_ROUTING_NONE_HPP_
 
-#include "src/surf/AsImpl.hpp"
+#include "src/routing/AsImpl.hpp"
 
 namespace simgrid {
 namespace routing {

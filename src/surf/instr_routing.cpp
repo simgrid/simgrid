@@ -6,7 +6,7 @@
 
 #include "src/instr/instr_private.h"
 
-#include "src/surf/AsImpl.hpp"
+#include "src/routing/AsImpl.hpp"
 #include "simgrid/s4u/engine.hpp"
 #include "surf/surf.h"
 #include "src/surf/xml/platf_private.hpp"
