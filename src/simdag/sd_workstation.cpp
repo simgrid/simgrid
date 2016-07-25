@@ -25,9 +25,10 @@ SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
 
   int cpt=0;
   SD_link_t *list = xbt_new(SD_link_t, route->size());
-  for (auto link : *route)
-    list[cpt++] = link;
-
+  for (auto link : *route){
+    list[cpt] = link;
+    cpt++;
+  }
   delete route;
   return list;
 }
@@ -85,7 +86,7 @@ double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
 
   for (auto link : *route) {
     double bandwidth = sg_link_bandwidth(link);
-    if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
+    if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
       min_bandwidth = bandwidth;
   }
   delete route;

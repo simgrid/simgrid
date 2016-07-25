@@ -62,7 +62,8 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   xbt_dynar_t next = nullptr, current = xbt_dynar_new(sizeof(SD_task_t),nullptr);
 
   xbt_dynar_foreach(dag,count,task){
-    if(task->kind == SD_TASK_COMM_E2E) continue;
+    if(task->kind == SD_TASK_COMM_E2E)
+      continue;
     task->marked = 0;
     if(task->successors->empty() && task->outputs->empty())
       xbt_dynar_push(current, &task);
@@ -170,7 +171,8 @@ static xbt_dynar_t result;
 static xbt_dict_t jobs;
 static xbt_dict_t files;
 static SD_task_t current_job;
-static SD_task_t root_task, end_task;
+static SD_task_t root_task;
+static SD_task_t end_task;
 
 static void dax_task_free(void *task)
 {
@@ -315,7 +317,7 @@ void STag_dax__uses(void)
     sd_global->initial_tasks->erase(file);
     xbt_dict_set(files, A_dax__uses_file, file, nullptr);
   } else {
-    if (SD_task_get_amount(file) != size) {
+    if (file->amount < size || file->amount > size) {
       XBT_WARN("Ignore file %s size redefinition from %.0f to %.0f", A_dax__uses_file, SD_task_get_amount(file), size);
     }
   }

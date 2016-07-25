@@ -109,12 +109,13 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
         if((performer != -1 && order != -1) && performer < (int) sg_host_count()){
           /* required parameters are given and less performers than hosts are required */
           XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'", task->name, performer, order);
-          if(!(computer = (xbt_dynar_t) xbt_dict_get_or_null(computers, char_performer))){
+          computer = static_cast<xbt_dynar_t> (xbt_dict_get_or_null(computers, char_performer));
+          if(computer == nullptr){
             computer = xbt_dynar_new(sizeof(SD_task_t), nullptr);
             xbt_dict_set(computers, char_performer, computer, nullptr);
           }
 
-          if((unsigned int)order < xbt_dynar_length(computer)){
+          if(static_cast<unsigned int>(order) < xbt_dynar_length(computer)){
             SD_task_t *task_test = (SD_task_t *)xbt_dynar_get_ptr(computer,order);
             if(*task_test && *task_test != task){
               /* the user gave the same order to several tasks */
@@ -138,14 +139,16 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
   }
 
   /*Check if 'root' and 'end' nodes have been explicitly declared.  If not, create them. */
-  if (!(root = (SD_task_t)xbt_dict_get_or_null(jobs, "root")))
+  root = static_cast<SD_task_t>(xbt_dict_get_or_null(jobs, "root"));
+  if (root == nullptr)
     root = (seq_or_par == sequential?SD_task_create_comp_seq("root", nullptr, 0):
                                      SD_task_create_comp_par_amdahl("root", nullptr, 0, 0));
 
   SD_task_set_state(root, SD_SCHEDULABLE);   /* by design the root task is always SCHEDULABLE */
   xbt_dynar_insert_at(result, 0, &root);     /* Put it at the beginning of the dynar */
 
-  if (!(end = (SD_task_t)xbt_dict_get_or_null(jobs, "end")))
+  end = static_cast<SD_task_t>(xbt_dict_get_or_null(jobs, "end"));
+  if (end == nullptr)
     end = (seq_or_par == sequential?SD_task_create_comp_seq("end", nullptr, 0):
                                     SD_task_create_comp_par_amdahl("end", nullptr, 0, 0));
 
@@ -161,7 +164,8 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
     xbt_dynar_sort(edges, edge_compare);
 
     xbt_dynar_foreach(edges, i, edge) {
-      char *src_name=agnameof(agtail(edge)), *dst_name=agnameof(aghead(edge));
+      char *src_name=agnameof(agtail(edge));
+      char *dst_name=agnameof(aghead(edge));
       double size = atof(agget(edge, (char *) "size"));
 
       SD_task_t src = static_cast<SD_task_t>(xbt_dict_get_or_null(jobs, src_name));
