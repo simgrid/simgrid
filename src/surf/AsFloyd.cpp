@@ -26,13 +26,12 @@ AsFloyd::AsFloyd(const char*name)
 }
 
 AsFloyd::~AsFloyd(){
-  int i, j;
-  int table_size = (int)xbt_dynar_length(vertices_);
+  int table_size = static_cast<int>(xbt_dynar_length(vertices_));
   if (linkTable_ == nullptr) // Dealing with a parse error in the file?
     return;
   /* Delete link_table */
-  for (i = 0; i < table_size; i++)
-    for (j = 0; j < table_size; j++)
+  for (int i = 0; i < table_size; i++)
+    for (int j = 0; j < table_size; j++)
       routing_route_free(TO_FLOYD_LINK(i, j));
   xbt_free(linkTable_);
 
@@ -85,7 +84,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
 void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
 {
   /* set the size of table routing */
-  int table_size = (int)xbt_dynar_length(vertices_);
+  int table_size = static_cast<int>(xbt_dynar_length(vertices_));
 
   addRouteCheckParams(route);
 
@@ -187,11 +186,9 @@ void AsFloyd::seal(){
     for (unsigned int a = 0; a < table_size; a++) {
       for (unsigned int b = 0; b < table_size; b++) {
         if (TO_FLOYD_COST(a, c) < DBL_MAX && TO_FLOYD_COST(c, b) < DBL_MAX) {
-          if (TO_FLOYD_COST(a, b) == DBL_MAX ||
-              (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) <
-                  TO_FLOYD_COST(a, b))) {
-            TO_FLOYD_COST(a, b) =
-                TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b);
+          if (fabs(TO_FLOYD_COST(a, b) - DBL_MAX) < std::numeric_limits<double>::epsilon() ||
+              (TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b) < TO_FLOYD_COST(a, b))) {
+            TO_FLOYD_COST(a, b) = TO_FLOYD_COST(a, c) + TO_FLOYD_COST(c, b);
             TO_FLOYD_PRED(a, b) = TO_FLOYD_PRED(c, b);
           }
         }
