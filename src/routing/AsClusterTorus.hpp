@@ -6,7 +6,7 @@
 #ifndef SURF_ROUTING_CLUSTER_TORUS_HPP_
 #define SURF_ROUTING_CLUSTER_TORUS_HPP_
 
-#include "src/surf/AsCluster.hpp"
+#include "src/routing/AsCluster.hpp"
 
 namespace simgrid {
   namespace routing {

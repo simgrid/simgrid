@@ -6,7 +6,7 @@
 #include <fstream>
 #include <sstream>
 
-#include "src/surf/AsClusterFatTree.hpp"
+#include "src/routing/AsClusterFatTree.hpp"
 #include "src/surf/network_interface.hpp"
 
 #include "xbt/lib.h"

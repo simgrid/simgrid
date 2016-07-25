@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/AsFull.hpp"
+#include "src/routing/AsFull.hpp"
 #include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");

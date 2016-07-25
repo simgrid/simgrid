@@ -6,7 +6,7 @@
 #ifndef SIMGRID_ROUTING_FULL_HPP_
 #define SIMGRID_ROUTING_FULL_HPP_
 
-#include "src/surf/AsRoutedGraph.hpp"
+#include "src/routing/AsRoutedGraph.hpp"
 
 namespace simgrid {
 namespace routing {

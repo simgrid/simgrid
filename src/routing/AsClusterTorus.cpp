@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/AsClusterTorus.hpp"
+#include "src/routing/AsClusterTorus.hpp"
 #include "src/surf/network_interface.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 

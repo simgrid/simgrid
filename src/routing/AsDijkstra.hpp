@@ -6,7 +6,7 @@
 #ifndef SURF_ROUTING_DIJKSTRA_HPP_
 #define SURF_ROUTING_DIJKSTRA_HPP_
 
-#include "src/surf/AsRoutedGraph.hpp"
+#include "src/routing/AsRoutedGraph.hpp"
 
 typedef struct graph_node_data {
   int id;
