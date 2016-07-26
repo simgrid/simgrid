@@ -4,8 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <xbt/sysdep.h>
-
-#include <simgrid/s4u.h>
+#include <simgrid/s4u.hpp>
 
 #include "s4u_basic.h"
 

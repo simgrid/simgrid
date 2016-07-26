@@ -654,7 +654,7 @@ set(headers_to_install
   include/simgrid/s4u/mutex.hpp
   include/simgrid/s4u/conditionVariable.hpp
   include/simgrid/s4u/storage.hpp  
-  include/simgrid/s4u.h
+  include/simgrid/s4u.hpp
   include/simgrid/plugins/energy.h
   include/smpi/mpi.h
   include/smpi/smpi.h

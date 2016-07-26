@@ -8,7 +8,7 @@
 
 #include <xbt/sysdep.h>
 
-#include "simgrid/s4u.h"
+#include "simgrid/s4u.hpp"
 
 #define NB_ACTOR 2
 

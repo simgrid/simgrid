@@ -8,7 +8,7 @@
 
 #include <xbt/sysdep.h>
 
-#include <simgrid/s4u.h>
+#include <simgrid/s4u.hpp>
 
 #include "s4u_basic.h"
 
