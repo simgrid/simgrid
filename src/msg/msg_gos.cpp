@@ -851,12 +851,13 @@ int MSG_task_listen(const char *alias)
  */
 int MSG_task_listen_from(const char *alias)
 {
-  msg_task_t task;
+  msg_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
+  simgrid::simix::Comm* comm = static_cast<simgrid::simix::Comm*>(simcall_mbox_front(mbox));
 
-  if (nullptr == (task = MSG_mailbox_front(MSG_mailbox_get_by_alias(alias))))
+  if (!comm)
     return -1;
 
-  return MSG_process_get_PID(task->simdata->sender);
+  return MSG_process_get_PID( static_cast<msg_task_t>(comm->src_data)->simdata->sender );
 }
 
 /** \ingroup msg_task_usage
