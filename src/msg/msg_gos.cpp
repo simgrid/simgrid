@@ -282,27 +282,25 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
                                                      void *match_data, void_f_pvoid_t cleanup, int detached)
 {
   simdata_task_t t_simdata = nullptr;
-  msg_process_t process = MSG_process_self();
+  msg_process_t myself = SIMIX_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
   int call_end = TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
-  t_simdata->sender = process;
+  t_simdata->sender = myself;
   t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
   t_simdata->setUsed();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->bytes_amount, t_simdata->rate,
+  smx_synchro_t act = simcall_comm_isend(myself, mailbox, t_simdata->bytes_amount, t_simdata->rate,
                                          task, sizeof(void *), match_fun, cleanup, nullptr, match_data,detached);
-  t_simdata->comm = static_cast<simgrid::simix::Comm*>(act); /* FIXME: is the field t_simdata->comm still useful? */
+  t_simdata->comm = static_cast<simgrid::simix::Comm*>(act);
 
-  msg_comm_t comm;
-  if (detached) {
-    comm = nullptr;
-  } else {
+  msg_comm_t comm = nullptr;
+  if (! detached) {
     comm = xbt_new0(s_msg_comm_t, 1);
     comm->task_sent = task;
     comm->task_received = nullptr;
