@@ -27,12 +27,12 @@ namespace simix {
 
 class Mailbox {
 public:
-  Mailbox(const char* name) : mbox_(this), name(xbt_strdup(name)) {}
+  Mailbox(const char* name) : piface_(this), name(xbt_strdup(name)) {}
   ~Mailbox() {
     xbt_free(name);
   }
 
-  simgrid::s4u::Mailbox mbox_;
+  simgrid::s4u::Mailbox piface_; // Our interface
   char* name;
   std::deque<smx_synchro_t> comm_queue;
   boost::intrusive_ptr<simgrid::simix::Process> permanent_receiver; //process which the mailbox is attached to

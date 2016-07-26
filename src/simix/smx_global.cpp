@@ -357,12 +357,12 @@ static void SIMIX_wake_processes()
   surf_action_t action;
 
   xbt_dynar_foreach(all_existing_models, iter, model) {
-    XBT_DEBUG("Handling process whose action failed");
+    XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = surf_model_extract_failed_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
       SIMIX_simcall_exit((smx_synchro_t) action->getData());
     }
-    XBT_DEBUG("Handling process whose action terminated normally");
+    XBT_DEBUG("Handling the processes whose action terminated normally (if any)");
     while ((action = surf_model_extract_done_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
       if (action->getData() == nullptr)

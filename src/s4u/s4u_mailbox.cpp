@@ -31,7 +31,7 @@ MailboxPtr Mailbox::byName(const char*name) {
   smx_mailbox_t mbox = simcall_mbox_get_by_name(name);
   if (mbox == nullptr)
     mbox = simcall_mbox_create(name);
-  return MailboxPtr(&mbox->mbox_, true);
+  return MailboxPtr(&mbox->piface_, true);
 }
 
 bool Mailbox::empty() {

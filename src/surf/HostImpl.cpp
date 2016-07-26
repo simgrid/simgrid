@@ -151,10 +151,10 @@ HostImpl::~HostImpl()
 
 void HostImpl::attach(simgrid::s4u::Host* host)
 {
-  if (p_host != nullptr)
+  if (piface != nullptr)
     xbt_die("Already attached to host %s", host->name().c_str());
   host->extension_set(this);
-  p_host = host;
+  piface = host;
 }
 
 bool HostImpl::isOn() const {
@@ -166,13 +166,13 @@ bool HostImpl::isOff() const {
 void HostImpl::turnOn(){
   if (isOff()) {
     p_cpu->turnOn();
-    simgrid::s4u::Host::onStateChange(*this->p_host);
+    simgrid::s4u::Host::onStateChange(*this->piface);
   }
 }
 void HostImpl::turnOff(){
   if (isOn()) {
     p_cpu->turnOff();
-    simgrid::s4u::Host::onStateChange(*this->p_host);
+    simgrid::s4u::Host::onStateChange(*this->piface);
   }
 }
 
