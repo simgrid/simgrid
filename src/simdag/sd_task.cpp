@@ -383,10 +383,10 @@ xbt_dynar_t SD_task_get_parents(SD_task_t task)
 {
   xbt_dynar_t parents = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
-  for (std::set<SD_task_t>::iterator it=task->predecessors->begin(); it!=task->predecessors->end(); ++it)
-    xbt_dynar_push(parents, &(*it));
-  for (std::set<SD_task_t>::iterator it=task->inputs->begin(); it!=task->inputs->end(); ++it)
-    xbt_dynar_push(parents, &(*it));
+  for (auto it : *task->predecessors)
+    xbt_dynar_push(parents, &it);
+  for (auto it : *task->inputs)
+    xbt_dynar_push(parents, &it);
 
   return parents;
 }
@@ -400,10 +400,10 @@ xbt_dynar_t SD_task_get_children(SD_task_t task)
 {
   xbt_dynar_t children = xbt_dynar_new(sizeof(SD_task_t), nullptr);
 
-  for (std::set<SD_task_t>::iterator it=task->successors->begin(); it!=task->successors->end(); ++it)
-    xbt_dynar_push(children, &(*it));
-  for (std::set<SD_task_t>::iterator it=task->outputs->begin(); it!=task->outputs->end(); ++it)
-    xbt_dynar_push(children, &(*it));
+  for (auto it : *task->successors)
+    xbt_dynar_push(children, &it);
+  for (auto it : *task->outputs)
+    xbt_dynar_push(children, &it);
 
   return children;
 }
@@ -531,19 +531,19 @@ void SD_task_dump(SD_task_t task)
   XBT_INFO("  - Dependencies to satisfy: %zu", task->inputs->size()+ task->predecessors->size());
   if ((task->inputs->size()+ task->predecessors->size()) > 0) {
     XBT_INFO("  - pre-dependencies:");
-    for (std::set<SD_task_t>::iterator it=task->predecessors->begin(); it!=task->predecessors->end(); ++it)
-      XBT_INFO("    %s", SD_task_get_name(*it));
+    for (auto it : *task->predecessors)
+      XBT_INFO("    %s", SD_task_get_name(it));
 
-    for (std::set<SD_task_t>::iterator it=task->inputs->begin(); it!=task->inputs->end(); ++it)
-      XBT_INFO("    %s", SD_task_get_name(*it));
+    for (auto it: *task->inputs)
+      XBT_INFO("    %s", SD_task_get_name(it));
   }
   if ((task->outputs->size() + task->successors->size()) > 0) {
     XBT_INFO("  - post-dependencies:");
 
-    for (std::set<SD_task_t>::iterator it=task->successors->begin(); it!=task->successors->end(); ++it)
-      XBT_INFO("    %s", SD_task_get_name(*it));
-    for (std::set<SD_task_t>::iterator it=task->outputs->begin(); it!=task->outputs->end(); ++it)
-      XBT_INFO("    %s", SD_task_get_name(*it));
+    for (auto it : *task->successors)
+      XBT_INFO("    %s", SD_task_get_name(it));
+    for (auto it : *task->outputs)
+      XBT_INFO("    %s", SD_task_get_name(it));
   }
 }
 
@@ -565,10 +565,10 @@ void SD_task_dotty(SD_task_t task, void *out)
     xbt_die("Unknown task type!");
   }
   fprintf(fout, "];\n");
-  for (std::set<SD_task_t>::iterator it=task->predecessors->begin(); it!=task->predecessors->end(); ++it)
-    fprintf(fout, " T%p -> T%p;\n", (*it), task);
-  for (std::set<SD_task_t>::iterator it=task->inputs->begin(); it!=task->inputs->end(); ++it)
-    fprintf(fout, " T%p -> T%p;\n", (*it), task);
+  for (auto it : *task->predecessors)
+    fprintf(fout, " T%p -> T%p;\n", it, task);
+  for (auto it : *task->inputs)
+    fprintf(fout, " T%p -> T%p;\n", it, task);
 }
 
 /**
@@ -921,7 +921,7 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
   task->host_count = ws_count;
   task->host_list = xbt_new0(sg_host_t, ws_count);
 
-  for(int i=0;i<ws_count;i++){
+  for (int i=0; i<ws_count; i++){
     task->flops_amount[i] = (task->alpha + (1 - task->alpha)/ws_count) * task->amount;
   }
 }
@@ -944,8 +944,6 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count)
  */
 void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 {
-  int i;
-  int j;
   xbt_assert(task->kind != 0, "Task %s is not typed. Cannot automatically schedule it.", SD_task_get_name(task));
   switch (task->kind) {
   case SD_TASK_COMP_PAR_AMDAHL:
@@ -954,7 +952,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   case SD_TASK_COMM_E2E:
   case SD_TASK_COMP_SEQ:
     xbt_assert(task->host_count == count, "Got %d locations, but were expecting %d locations", count,task->host_count);
-    for (i = 0; i < count; i++)
+    for (int i=0; i<count; i++)
       task->host_list[i] = list[i];
     if (SD_task_get_kind(task)== SD_TASK_COMP_SEQ && !task->flops_amount){
       /*This task has failed and is rescheduled. Reset the flops_amount*/
@@ -977,8 +975,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
     XBT_VERB("Schedule computation task %s on %s. It costs %.f flops", SD_task_get_name(task),
           sg_host_get_name(task->host_list[0]), task->flops_amount[0]);
 
-    for (std::set<SD_task_t>::iterator it=task->inputs->begin(); it!=task->inputs->end(); ++it){
-      SD_task_t input = *it;
+    for (auto input : *task->inputs){
       input->host_list[1] = task->host_list[0];
       if (input->host_list[0] && (SD_task_get_state(input) < SD_SCHEDULED)) {
         SD_task_do_schedule(input);
@@ -987,8 +984,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
       }
     }
 
-    for (std::set<SD_task_t>::iterator it=task->outputs->begin(); it!=task->outputs->end(); ++it){
-      SD_task_t output = *it;
+    for (auto output : *task->outputs){
       output->host_list[0] = task->host_list[0];
       if (output->host_list[1] && (SD_task_get_state(output) < SD_SCHEDULED)) {
         SD_task_do_schedule(output);
@@ -1003,14 +999,13 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
     XBT_VERB("Schedule computation task %s on %d workstations. %.f flops will be distributed following Amdahl's Law",
           SD_task_get_name(task), task->host_count, task->flops_amount[0]);
-    for (std::set<SD_task_t>::iterator it=task->inputs->begin(); it!=task->inputs->end(); ++it){
-      SD_task_t input = *it;
+    for (auto input : *task->inputs){
       if (!input->host_list){
         XBT_VERB("Sender side of Task %s is not scheduled yet", SD_task_get_name(input));
         input->host_list = xbt_new0(sg_host_t, count);
         input->host_count = count;
         XBT_VERB("Fill the workstation list with list of Task '%s'", SD_task_get_name(task));
-        for (i=0;i<count;i++)
+        for (int i=0; i<count; i++)
           input->host_list[i] = task->host_list[i];
       } else {
         XBT_VERB("Build communication matrix for task '%s'", SD_task_get_name(input));
@@ -1019,7 +1014,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
         src_nb = input->host_count;
         dst_nb = count;
         input->host_list = static_cast<sg_host_t*>(xbt_realloc(input->host_list, (input->host_count+count)*sizeof(sg_host_t)));
-        for(i=0; i<count; i++)
+        for (int i=0; i<count; i++)
           input->host_list[input->host_count+i] = task->host_list[i];
 
         input->host_count += count;
@@ -1028,10 +1023,10 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
         input->flops_amount = xbt_new0(double, input->host_count);
         input->bytes_amount = xbt_new0(double, input->host_count* input->host_count);
 
-        for(i=0;i<src_nb;i++){
+        for (int i=0; i<src_nb; i++) {
           src_start = i*input->amount/src_nb;
           src_end = src_start + input->amount/src_nb;
-          for(j=0; j<dst_nb; j++){
+          for (int j=0; j<dst_nb; j++) {
             dst_start = j*input->amount/dst_nb;
             dst_end = dst_start + input->amount/dst_nb;
             XBT_VERB("(%s->%s): (%.2f, %.2f)-> (%.2f, %.2f)", sg_host_get_name(input->host_list[i]),
@@ -1053,24 +1048,22 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
       }
     }
 
-    for (std::set<SD_task_t>::iterator it=task->outputs->begin(); it!=task->outputs->end(); ++it){
-      SD_task_t output = *it;
+    for (auto output : *task->outputs) {
       if (!output->host_list){
         XBT_VERB("Receiver side of Task '%s' is not scheduled yet", SD_task_get_name(output));
         output->host_list = xbt_new0(sg_host_t, count);
         output->host_count = count;
         XBT_VERB("Fill the workstation list with list of Task '%s'", SD_task_get_name(task));
-        for (i=0;i<count;i++)
+        for (int i=0; i<count; i++)
           output->host_list[i] = task->host_list[i];
       } else {
-        int src_nb, dst_nb;
         double src_start, src_end, dst_start, dst_end;
-        src_nb = count;
-        dst_nb = output->host_count;
+        int src_nb = count;
+        int dst_nb = output->host_count;
         output->host_list = static_cast<sg_host_t*>(xbt_realloc(output->host_list, (output->host_count+count)*sizeof(sg_host_t)));
-        for(i=output->host_count - 1; i>=0; i--)
+        for (int i=output->host_count - 1; i>=0; i--)
           output->host_list[count+i] = output->host_list[i];
-        for(i=0; i<count; i++)
+        for (int i=0; i<count; i++)
           output->host_list[i] = task->host_list[i];
 
         output->host_count += count;
@@ -1081,10 +1074,10 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
         output->flops_amount = xbt_new0(double, output->host_count);
         output->bytes_amount = xbt_new0(double, output->host_count* output->host_count);
 
-        for(i=0;i<src_nb;i++){
+        for (int i=0; i<src_nb; i++) {
           src_start = i*output->amount/src_nb;
           src_end = src_start + output->amount/src_nb;
-          for(j=0; j<dst_nb; j++){
+          for (int j=0; j<dst_nb; j++) {
             dst_start = j*output->amount/dst_nb;
             dst_end = dst_start + output->amount/dst_nb;
             XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
@@ -1118,7 +1111,7 @@ void SD_task_schedulel(SD_task_t task, int count, ...)
   va_list ap;
   sg_host_t *list = xbt_new(sg_host_t, count);
   va_start(ap, count);
-  for (int i = 0; i < count; i++) {
+  for (int i=0; i<count; i++) {
     list[i] = va_arg(ap, sg_host_t);
   }
   va_end(ap);
