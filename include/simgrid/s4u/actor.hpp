@@ -248,6 +248,7 @@ public:
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
 
+protected:
   /** Returns the internal implementation of this actor */
   smx_process_t getImpl();
 };

@@ -71,6 +71,5 @@ using MailboxPtr = Mailbox::Ptr;
 XBT_PUBLIC(sg_mbox_t) sg_mbox_by_name(const char*name);
 XBT_PUBLIC(int) sg_mbox_is_empty(sg_mbox_t mbox);
 XBT_PUBLIC(void)sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process);
-XBT_PUBLIC(smx_process_t) sg_mbox_receiver(sg_mbox_t mbox);
 
 #endif /* SIMGRID_S4U_MAILBOX_HPP */
