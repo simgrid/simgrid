@@ -30,6 +30,9 @@
 + src/smpi/BUGS
 + src/smpi/colls/alltoall-bruck\.c
 
++ .clang-format
++ tools/git-hooks/clang-format.pre-commit
+
 + teshsuite/smpi/mpich3-test/f77/attr/.*
 
 + tools/internal/.*
