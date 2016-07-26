@@ -150,39 +150,39 @@ xbt_dynar_t SD_simulate(double how_long) {
           xbt_dynar_push(sd_global->return_set, &task);
 
         /* remove the dependencies after this task */
-        for (std::set<SD_task_t>::iterator succ = task->successors->begin(); succ != task->successors->end(); ++succ){
-          (*succ)->predecessors->erase(task);
-          (*succ)->inputs->erase(task);
-          XBT_DEBUG("Release dependency on %s: %zu remain(s). Becomes schedulable if %zu=0", SD_task_get_name((*succ)),
-              (*succ)->predecessors->size()+(*succ)->inputs->size(), (*succ)->predecessors->size());
+        for (auto succ : *task->successors) {
+          succ->predecessors->erase(task);
+          succ->inputs->erase(task);
+          XBT_DEBUG("Release dependency on %s: %zu remain(s). Becomes schedulable if %zu=0", SD_task_get_name(succ),
+              succ->predecessors->size()+succ->inputs->size(), succ->predecessors->size());
 
-          if (SD_task_get_state((*succ)) == SD_NOT_SCHEDULED && (*succ)->predecessors->empty())
-            SD_task_set_state((*succ), SD_SCHEDULABLE);
+          if (SD_task_get_state(succ) == SD_NOT_SCHEDULED && succ->predecessors->empty())
+            SD_task_set_state(succ, SD_SCHEDULABLE);
 
-          if (SD_task_get_state((*succ)) == SD_SCHEDULED && (*succ)->predecessors->empty() && (*succ)->inputs->empty())
-            SD_task_set_state((*succ), SD_RUNNABLE);
+          if (SD_task_get_state(succ) == SD_SCHEDULED && succ->predecessors->empty() && succ->inputs->empty())
+            SD_task_set_state(succ, SD_RUNNABLE);
 
-          if (SD_task_get_state((*succ)) == SD_RUNNABLE && !sd_global->watch_point_reached)
-            SD_task_run((*succ));
+          if (SD_task_get_state(succ) == SD_RUNNABLE && !sd_global->watch_point_reached)
+            SD_task_run(succ);
         }
         task->successors->clear();
 
-        for (std::set<SD_task_t>::iterator output=task->outputs->begin(); output!=task->outputs->end(); ++output){
-          (*output)->start_time = task->finish_time;
-          (*output)->predecessors->erase(task);
-          if (SD_task_get_state(*output) == SD_SCHEDULED)
-             SD_task_set_state(*output, SD_RUNNABLE);
+        for (auto output : *task->outputs) {
+          output->start_time = task->finish_time;
+          output->predecessors->erase(task);
+          if (SD_task_get_state(output) == SD_SCHEDULED)
+             SD_task_set_state(output, SD_RUNNABLE);
           else
-             SD_task_set_state(*output, SD_SCHEDULABLE);
+             SD_task_set_state(output, SD_SCHEDULABLE);
 
-          SD_task_t comm_dst = *((*output)->successors->begin());
+          SD_task_t comm_dst = *(output->successors->begin());
           if (SD_task_get_state(comm_dst) == SD_NOT_SCHEDULED && comm_dst->predecessors->empty()){
             XBT_DEBUG("%s is a transfer, %s may be ready now if %zu=0",
-                SD_task_get_name(*output), SD_task_get_name(comm_dst), comm_dst->predecessors->size());
+                SD_task_get_name(output), SD_task_get_name(comm_dst), comm_dst->predecessors->size());
             SD_task_set_state(comm_dst, SD_SCHEDULABLE);
           }
-          if (SD_task_get_state(*output) == SD_RUNNABLE && !sd_global->watch_point_reached)
-            SD_task_run(*output);
+          if (SD_task_get_state(output) == SD_RUNNABLE && !sd_global->watch_point_reached)
+            SD_task_run(output);
         }
         task->outputs->clear();
       }
@@ -201,8 +201,8 @@ xbt_dynar_t SD_simulate(double how_long) {
     XBT_WARN("Simulation is finished but %zu tasks are still not done", sd_global->initial_tasks->size());
     static const char* state_names[] =
       { "SD_NOT_SCHEDULED", "SD_SCHEDULABLE", "SD_SCHEDULED", "SD_RUNNABLE", "SD_RUNNING", "SD_DONE","SD_FAILED" };
-    for (std::set<SD_task_t>::iterator t = sd_global->initial_tasks->begin(); t != sd_global->initial_tasks->end(); ++t)
-      XBT_WARN("%s is in %s state", SD_task_get_name(*t), state_names[SD_task_get_state(*t)]);
+    for (auto t : *sd_global->initial_tasks)
+      XBT_WARN("%s is in %s state", SD_task_get_name(t), state_names[SD_task_get_state(t)]);
   }
 
   XBT_DEBUG("elapsed_time = %f, total_time = %f, watch_point_reached = %d",
