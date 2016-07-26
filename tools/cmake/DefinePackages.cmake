@@ -643,9 +643,9 @@ set(headers_to_install
   include/simgrid/host.h
   include/simgrid/link.h
   include/simgrid/s4u/forward.hpp
-  include/simgrid/s4u/actor.hpp
-  include/simgrid/s4u/As.hpp
   include/simgrid/s4u/Activity.hpp
+  include/simgrid/s4u/Actor.hpp
+  include/simgrid/s4u/As.hpp
   include/simgrid/s4u/comm.hpp
   include/simgrid/s4u/engine.hpp  
   include/simgrid/s4u/file.hpp  

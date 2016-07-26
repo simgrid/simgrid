@@ -7,7 +7,7 @@
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
 
-#include "simgrid/s4u/actor.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/comm.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/mailbox.hpp"

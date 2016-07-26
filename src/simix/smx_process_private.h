@@ -15,7 +15,7 @@
 #include <xbt/string.hpp>
 
 #include <simgrid/simix.hpp>
-#include <simgrid/s4u/actor.hpp>
+#include <simgrid/s4u/Actor.hpp>
 
 #include "simgrid/simix.h"
 #include "popping_private.h"

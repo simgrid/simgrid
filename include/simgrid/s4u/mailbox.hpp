@@ -13,7 +13,7 @@
 #include <xbt/base.h>
 
 #include <simgrid/s4u/forward.hpp>
-#include <simgrid/s4u/actor.hpp>
+#include <simgrid/s4u/Actor.hpp>
 
 namespace simgrid {
 namespace s4u {

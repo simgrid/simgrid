@@ -6,7 +6,7 @@
 #ifndef SIMGRID_S4U_S4U_H
 #define SIMGRID_S4U_S4U_H
 
-#include "s4u/actor.hpp"
+#include "s4u/Actor.hpp"
 #include "s4u/mailbox.hpp"
 #include "s4u/engine.hpp"
 #include "s4u/host.hpp"
