@@ -40,7 +40,7 @@ static bool children_are_marked(SD_task_t task){
     if (it->marked == 0)
       return false;
   for (SD_task_t it : *task->outputs)
-    if ((*it)->marked == 0)
+    if (it->marked == 0)
       return false;
   return true;
 }
