@@ -13,11 +13,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mailbox)");
 
-msg_mailbox_t MSG_mailbox_new(const char *alias)
-{
-  return simcall_mbox_create(alias);
-}
-
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
   return (nullptr == simcall_mbox_front(mailbox));
@@ -38,7 +33,7 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
   msg_mailbox_t mailbox = simcall_mbox_get_by_name(alias);
 
   if (!mailbox)
-    mailbox = MSG_mailbox_new(alias);
+    mailbox = simcall_mbox_create(alias);
 
   return mailbox;
 }
