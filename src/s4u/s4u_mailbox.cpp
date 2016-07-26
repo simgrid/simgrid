@@ -63,5 +63,5 @@ void sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process) {
   mbox->setReceiver(&process->actor());
 }
 smx_process_t sg_mbox_receiver(sg_mbox_t mbox) {
-  return mbox->receiver()->getInferior();
+  return mbox->receiver()->getImpl();
 }

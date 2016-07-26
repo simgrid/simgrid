@@ -247,8 +247,9 @@ public:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
-  
-  smx_process_t getInferior();
+
+  /** Returns the internal implementation of this actor */
+  smx_process_t getImpl();
 };
 
 using ActorPtr = Actor::Ptr;

@@ -83,7 +83,7 @@ void Actor::kill(int pid) {
   }
 }
 
-smx_process_t Actor::getInferior() {
+smx_process_t Actor::getImpl() {
   return pimpl_;
 }
 

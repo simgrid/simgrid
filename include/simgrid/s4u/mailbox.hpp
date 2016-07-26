@@ -35,7 +35,7 @@ XBT_PUBLIC_CLASS Mailbox {
   Mailbox(smx_mailbox_t mbox): pimpl_(mbox) {}
 
 protected:
-  smx_mailbox_t getInferior() { return pimpl_; }
+  smx_mailbox_t getImpl() { return pimpl_; }
 
 public:
 
