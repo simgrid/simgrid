@@ -326,9 +326,13 @@ if ($diff_tool) {
 }
 
 if ( $tesh_file =~ m/(.*)\.tesh/ ) {
-    my $dir = qx,pwd,;
-    chomp($dir);
-    print "Test suite '$dir/$tesh_file'\n";
+    my $fullname = $tesh_file;
+    if (not ($fullname =~ m|^/|)) { # not absolute path
+	my $dir = qx,pwd,;
+	chomp($dir);
+	$fullname = "$dir/$fullname"
+    }
+    print "Test suite '$tesh_file'\n";
 } else {
     $tesh_name = "(stdin)";
     print "Test suite from stdin\n";
