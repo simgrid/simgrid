@@ -56,7 +56,7 @@ static double dichotomy(double func(double), double min, double max, double min_
     SHOW_EXPR(max_func);
 
     double middle = (max + min) / 2.0;
-    if ((min == middle) || (max == middle)) {
+    if (fabs(min - middle) < 1e-12 || fabs(max - middle) < 1e-12) {
       break;
     }
     double middle_func = func(middle);
@@ -98,7 +98,10 @@ static void test1(method_t method)
   lmm_variable_t R_2 = nullptr;
   lmm_variable_t R_3 = nullptr;
 
-  double a = 1.0, b = 10.0;
+  double a = 1.0;
+  double b = 10.0;
+  double x ;
+  double max_deviation = 0.0;
 
   if (method == LAGRANGE_VEGAS)
     lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
@@ -106,14 +109,14 @@ static void test1(method_t method)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fpi, func_reno_fpi);
 
   Sys = lmm_system_new(1);
-  L1 = lmm_constraint_new(Sys, (void *) "L1", a);
-  L2 = lmm_constraint_new(Sys, (void *) "L2", b);
-  L3 = lmm_constraint_new(Sys, (void *) "L3", a);
+  L1 = lmm_constraint_new(Sys, static_cast<void *>(const_cast<char*>("L1")), a);
+  L2 = lmm_constraint_new(Sys, static_cast<void *>(const_cast<char*>("L2")), b);
+  L3 = lmm_constraint_new(Sys, static_cast<void *>(const_cast<char*>("L3")), a);
 
-  R_1_2_3 = lmm_variable_new(Sys, (void *) "R 1->2->3", 1.0, -1.0, 3);
-  R_1 = lmm_variable_new(Sys, (void *) "R 1", 1.0, -1.0, 1);
-  R_2 = lmm_variable_new(Sys, (void *) "R 2", 1.0, -1.0, 1);
-  R_3 = lmm_variable_new(Sys, (void *) "R 3", 1.0, -1.0, 1);
+  R_1_2_3 = lmm_variable_new(Sys, static_cast<void *>(const_cast<char*>( "R 1->2->3")), 1.0, -1.0, 3);
+  R_1 = lmm_variable_new(Sys, static_cast<void *>(const_cast<char*>( "R 1")), 1.0, -1.0, 1);
+  R_2 = lmm_variable_new(Sys, static_cast<void *>(const_cast<char*>( "R 2")), 1.0, -1.0, 1);
+  R_3 = lmm_variable_new(Sys, static_cast<void *>(const_cast<char*>( "R 3")), 1.0, -1.0, 1);
 
   lmm_update_variable_weight(Sys, R_1_2_3, 1.0);
   lmm_update_variable_weight(Sys, R_1, 1.0);
@@ -130,65 +133,46 @@ static void test1(method_t method)
 
   if (method == MAXMIN) {
     lmm_solve(Sys);
-  } else if (method == LAGRANGE_VEGAS) {
-    double x = 3 * a / 4 - 3 * b / 8 + sqrt(9 * b * b + 4 * a * a - 4 * a * b) / 8;
-    /* Computed with mupad and D_f=1.0 */
-    double max_deviation = 0.0;
-    if (x > a) {
-      x = a;
-    }
-    if (x < 0) {
-      x = 0;
-    }
-
-    lagrange_solve(Sys);
-
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
-
-    if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
-      XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
-      XBT_WARN("Found x = %1.20f", x);
-      XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x, lmm_variable_getvalue(R_1) - x);
-      XBT_WARN("Deviation from optimal solution (R_2 = %g): %1.20f", b - a + x,
-               lmm_variable_getvalue(R_2) - (b - a + x));
-      XBT_WARN("Deviation from optimal solution (R_3 = %g): %1.20f", x, lmm_variable_getvalue(R_3) - x);
-      XBT_WARN("Deviation from optimal solution (R_1_2_3 = %g): %1.20f", a - x,
-               lmm_variable_getvalue(R_1_2_3) - (a - x));
-    }
-  } else if (method == LAGRANGE_RENO) {
-    double x;
-    double max_deviation = 0.0;
-
-    a_test_1 = a;
-    b_test_1 = b;
-    x = dichotomy(diff_lagrange_test_1, 0, a, 1e-13);
-
-    if (x < 0)
-      x = 0;
-    if (x > a)
-      x = a;
-    lagrange_solve(Sys);
-
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
-    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
-
-    if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
-      XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
-      XBT_WARN("Found x = %1.20f", x);
-      XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x, lmm_variable_getvalue(R_1) - x);
-      XBT_WARN("Deviation from optimal solution (R_2 = %g): %1.20f", b - a + x,
-               lmm_variable_getvalue(R_2) - (b - a + x));
-      XBT_WARN("Deviation from optimal solution (R_3 = %g): %1.20f", x, lmm_variable_getvalue(R_3) - x);
-      XBT_WARN("Deviation from optimal solution (R_1_2_3 = %g): %1.20f", a - x,
-               lmm_variable_getvalue(R_1_2_3) - (a - x));
-    }
   } else {
-    xbt_die( "Invalid method");
+    if (method == LAGRANGE_VEGAS) {
+      x = 3 * a / 4 - 3 * b / 8 + sqrt(9 * b * b + 4 * a * a - 4 * a * b) / 8;
+      /* Computed with mupad and D_f=1.0 */
+      if (x > a) {
+        x = a;
+      }
+      if (x < 0) {
+        x = 0;
+      }
+    } else if (method == LAGRANGE_RENO) {
+      a_test_1 = a;
+      b_test_1 = b;
+      x = dichotomy(diff_lagrange_test_1, 0, a, 1e-13);
+
+      if (x < 0)
+        x = 0;
+      if (x > a)
+        x = a;
+    } else {
+      xbt_die( "Invalid method");
+    }
+
+    lagrange_solve(Sys);
+
+    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1) - x));
+    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_3) - x));
+    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_2) - (b - a + x)));
+    max_deviation = MAX(max_deviation, fabs(lmm_variable_getvalue(R_1_2_3) - (a - x)));
+
+    if (max_deviation > 0.00001) { // Legacy value used in lagrange.c
+      XBT_WARN("Max Deviation from optimal solution : %g", max_deviation);
+      XBT_WARN("Found x = %1.20f", x);
+      XBT_WARN("Deviation from optimal solution (R_1 = %g): %1.20f", x, lmm_variable_getvalue(R_1) - x);
+      XBT_WARN("Deviation from optimal solution (R_2 = %g): %1.20f", b - a + x,
+               lmm_variable_getvalue(R_2) - (b - a + x));
+      XBT_WARN("Deviation from optimal solution (R_3 = %g): %1.20f", x, lmm_variable_getvalue(R_3) - x);
+      XBT_WARN("Deviation from optimal solution (R_1_2_3 = %g): %1.20f", a - x,
+               lmm_variable_getvalue(R_1_2_3) - (a - x));
+    }
   }
 
   PRINT_VAR(R_1_2_3);
@@ -214,15 +198,15 @@ static void test2(method_t method)
 
   if (method == LAGRANGE_VEGAS)
     lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
-  else if (method == LAGRANGE_RENO)
+  if (method == LAGRANGE_RENO)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
 
   Sys = lmm_system_new(1);
-  CPU1 = lmm_constraint_new(Sys, (void *) "CPU1", 200.0);
-  CPU2 = lmm_constraint_new(Sys, (void *) "CPU2", 100.0);
+  CPU1 = lmm_constraint_new(Sys, static_cast<void *>(const_cast<char*>( "CPU1")), 200.0);
+  CPU2 = lmm_constraint_new(Sys, static_cast<void *>(const_cast<char*>( "CPU2")), 100.0);
 
-  T1 = lmm_variable_new(Sys, (void *) "T1", 1.0, -1.0, 1);
-  T2 = lmm_variable_new(Sys, (void *) "T2", 1.0, -1.0, 1);
+  T1 = lmm_variable_new(Sys, static_cast<void *>(const_cast<char*>( "T1")), 1.0, -1.0, 1);
+  T2 = lmm_variable_new(Sys, static_cast<void *>(const_cast<char*>( "T2")), 1.0, -1.0, 1);
 
   lmm_update_variable_weight(Sys, T1, 1.0);
   lmm_update_variable_weight(Sys, T2, 1.0);
@@ -232,9 +216,7 @@ static void test2(method_t method)
 
   if (method == MAXMIN) {
     lmm_solve(Sys);
-  } else if (method == LAGRANGE_VEGAS) {
-    lagrange_solve(Sys);
-  } else if (method == LAGRANGE_RENO) {
+  } else if (method == LAGRANGE_VEGAS || method == LAGRANGE_RENO) {
     lagrange_solve(Sys);
   } else {
     xbt_die("Invalid method");
@@ -280,25 +262,44 @@ static void test3(method_t method)
   }
 
   /*matrix that store the constraints/topology */
-  A[0][1] = A[0][7] =                                1.0;
-  A[1][1] = A[1][7] = A[1][8] =                      1.0;
-  A[2][1] = A[2][8] =                                1.0;
-  A[3][8] =                                          1.0;
-  A[4][0] = A[4][3] = A[4][9] =                      1.0;
-  A[5][0] = A[5][3] = A[5][4] = A[5][9] =            1.0;
-  A[6][0] = A[6][4] = A[6][9] = A[6][10] =           1.0;
-  A[7][2] = A[7][4] = A[7][6] = A[7][9] = A[7][10] = 1.0;
-  A[8][2] = A[8][10] =                               1.0;
-  A[9][5] = A[9][6] = A[9][9] =                      1.0;
-  A[10][11] =                                        1.0;
-  A[11][12] =                                        1.0;
-  A[12][13] =                                        1.0;
-  A[13][14] =                                        1.0;
-  A[14][15] =                                        1.0;
+  A[0][1] = 1.0;
+  A[0][7] = 1.0;
+  A[1][1] = 1.0;
+  A[1][7] = 1.0;
+  A[1][8] = 1.0;
+  A[2][1] = 1.0;
+  A[2][8] = 1.0;
+  A[3][8] = 1.0;
+  A[4][0] = 1.0;
+  A[4][3] = 1.0;
+  A[4][9] = 1.0;
+  A[5][0] = 1.0;
+  A[5][3] = 1.0;
+  A[5][4] = 1.0;
+  A[5][9] = 1.0;
+  A[6][0] = 1.0;
+  A[6][4] = 1.0;
+  A[6][9] = 1.0;
+  A[6][10] = 1.0;
+  A[7][2] = 1.0;
+  A[7][4] = 1.0;
+  A[7][6] = 1.0;
+  A[7][9] = 1.0;
+  A[7][10] = 1.0;
+  A[8][2] = 1.0;
+  A[8][10] = 1.0;
+  A[9][5] = 1.0;
+  A[9][6] = 1.0;
+  A[9][9] = 1.0;
+  A[10][11] = 1.0;
+  A[11][12] = 1.0;
+  A[12][13] = 1.0;
+  A[13][14] = 1.0;
+  A[14][15] = 1.0;
 
   if (method == LAGRANGE_VEGAS)
     lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
-  else if (method == LAGRANGE_RENO)
+  if (method == LAGRANGE_RENO)
     lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
 
   Sys = lmm_system_new(1);
@@ -309,14 +310,14 @@ static void test3(method_t method)
   tmp_cnst = xbt_new0(lmm_constraint_t, 15);
   for (i = 0; i < 15; i++) {
     tmp_name[i] = bprintf("C_%03d", i);
-    tmp_cnst[i] = lmm_constraint_new(Sys, (void *) tmp_name[i], B[i]);
+    tmp_cnst[i] = lmm_constraint_new(Sys, static_cast<void *>(tmp_name[i]), B[i]);
   }
 
   /* Creates the variables */
   tmp_var = xbt_new0(lmm_variable_t, 16);
   for (j = 0; j < 16; j++) {
     tmp_name[i + j] = bprintf("X_%03d", j);
-    tmp_var[j] = lmm_variable_new(Sys, (void *) tmp_name[i + j], 1.0, -1.0, 15);
+    tmp_var[j] = lmm_variable_new(Sys, static_cast<void *>(tmp_name[i + j]), 1.0, -1.0, 15);
     lmm_update_variable_weight(Sys, tmp_var[j], 1.0);
   }
 

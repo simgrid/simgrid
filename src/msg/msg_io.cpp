@@ -94,8 +94,8 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   msg_file_priv_t file_priv = MSG_file_priv(fd);
   sg_size_t read_size;
 
-  if (file_priv->size == 0.0) /* Nothing to read, return */
-    return 0.0;
+  if (file_priv->size == 0) /* Nothing to read, return */
+    return 0;
 
   /* Find the host where the file is physically located and read it */
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
@@ -142,8 +142,8 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 {
   msg_file_priv_t file_priv = MSG_file_priv(fd);
 
-  if (size == 0.0) /* Nothing to write, return */
-    return 0.0;
+  if (size == 0) /* Nothing to write, return */
+    return 0;
 
   /* Find the host where the file is physically located (remote or local)*/
   msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
