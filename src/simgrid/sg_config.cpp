@@ -413,31 +413,36 @@ void sg_config_init(int *argc, char **argv)
     describe_model(description,descsize, surf_vm_model_description, "model", "The model to use for the vm");
     xbt_cfg_register_string("vm/model", "default", &_sg_cfg_cb__vm_model, description);
 
-    simgrid::config::bindFlag(sg_tcp_gamma = 4194304.0,
-      { "network/TCP-gamma", "network/TCP_gamma" },
+    sg_tcp_gamma = 4194304.0;
+    simgrid::config::bindFlag(sg_tcp_gamma, { "network/TCP-gamma", "network/TCP_gamma" },
       "Size of the biggest TCP window (cat /proc/sys/net/ipv4/tcp_[rw]mem for recv/send window; Use the last given value, which is the max window size)");
-    simgrid::config::bindFlag(sg_surf_precision = 0.00001,
-      "surf/precision",
+
+    sg_surf_precision = 0.00001;
+    simgrid::config::bindFlag(sg_surf_precision, "surf/precision",
       "Numerical precision used when updating simulation times (in seconds)");
-    simgrid::config::bindFlag(sg_maxmin_precision = 0.00001,
-      "maxmin/precision",
+
+    sg_maxmin_precision = 0.00001;
+    simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
       "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)");
 
     /* The parameters of network models */
 
     // real default for "network/sender-gap" is set in network_smpi.cpp:
-    simgrid::config::bindFlag(sg_sender_gap = NAN,
-      { "network/sender-gap", "network/sender_gap" },
+    sg_sender_gap = NAN;
+    simgrid::config::bindFlag(sg_sender_gap, { "network/sender-gap", "network/sender_gap" },
       "Minimum gap between two overlapping sends");
-    simgrid::config::bindFlag(sg_latency_factor = 1.0,
-      { "network/latency-factor", "network/latency_factor" },
+
+    sg_latency_factor = 1.0;
+    simgrid::config::bindFlag(sg_latency_factor, { "network/latency-factor", "network/latency_factor" },
       "Correction factor to apply to the provided latency (default value set by network model)");
-    simgrid::config::bindFlag(sg_bandwidth_factor = 1.0,
-      { "network/bandwidth-factor", "network/bandwidth_factor" },
+
+    sg_bandwidth_factor = 1.0;
+    simgrid::config::bindFlag(sg_bandwidth_factor, { "network/bandwidth-factor", "network/bandwidth_factor" },
       "Correction factor to apply to the provided bandwidth (default value set by network model)");
+
     // real default for "network/weight-S" is set in network_*.cpp:
-    simgrid::config::bindFlag(sg_weight_S_parameter = NAN,
-      { "network/weight-S", "network/weight_S" },
+    sg_weight_S_parameter = NAN;
+    simgrid::config::bindFlag(sg_weight_S_parameter, { "network/weight-S", "network/weight_S" },
       "Correction factor to apply to the weight of competing streams (default value set by network model)");
 
     /* Inclusion path */
