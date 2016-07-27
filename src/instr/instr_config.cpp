@@ -63,7 +63,7 @@ static int trace_precision;
 static bool trace_configured = false;
 static bool trace_active     = false;
 
-static void TRACE_getopts(void)
+static void TRACE_getopts()
 {
   trace_enabled             = xbt_cfg_get_boolean(OPT_TRACING);
   trace_platform            = xbt_cfg_get_boolean(OPT_TRACING_PLATFORM);
@@ -214,138 +214,138 @@ int TRACE_end()
   return retval;
 }
 
-bool TRACE_needs_platform (void)
+bool TRACE_needs_platform ()
 {
   return TRACE_msg_process_is_enabled() || TRACE_msg_vm_is_enabled() || TRACE_categorized() ||
          TRACE_uncategorized() || TRACE_platform () || (TRACE_smpi_is_enabled() && TRACE_smpi_is_grouped());
 }
 
-bool TRACE_is_enabled(void)
+bool TRACE_is_enabled()
 {
   return trace_enabled;
 }
 
-bool TRACE_platform(void)
+bool TRACE_platform()
 {
   return trace_platform;
 }
 
-bool TRACE_platform_topology(void)
+bool TRACE_platform_topology()
 {
   return trace_platform_topology;
 }
 
-bool TRACE_is_configured(void)
+bool TRACE_is_configured()
 {
   return trace_configured;
 }
 
-bool TRACE_smpi_is_enabled(void)
+bool TRACE_smpi_is_enabled()
 {
   return (trace_smpi_enabled || TRACE_smpi_is_grouped()) && TRACE_is_enabled();
 }
 
-bool TRACE_smpi_is_grouped(void)
+bool TRACE_smpi_is_grouped()
 {
   return trace_smpi_grouped;
 }
 
-bool TRACE_smpi_is_computing(void)
+bool TRACE_smpi_is_computing()
 {
   return trace_smpi_computing;
 }
 
-bool TRACE_smpi_is_sleeping(void)
+bool TRACE_smpi_is_sleeping()
 {
   return trace_smpi_sleeping;
 }
 
-bool TRACE_smpi_view_internals(void)
+bool TRACE_smpi_view_internals()
 {
   return trace_view_internals;
 }
 
-bool TRACE_categorized (void)
+bool TRACE_categorized ()
 {
   return trace_categorized;
 }
 
-bool TRACE_uncategorized (void)
+bool TRACE_uncategorized ()
 {
   return trace_uncategorized;
 }
 
-bool TRACE_msg_process_is_enabled(void)
+bool TRACE_msg_process_is_enabled()
 {
   return trace_msg_process_enabled && TRACE_is_enabled();
 }
 
-bool TRACE_msg_vm_is_enabled(void)
+bool TRACE_msg_vm_is_enabled()
 {
   return trace_msg_vm_enabled && TRACE_is_enabled();
 }
 
-bool TRACE_disable_link(void)
+bool TRACE_disable_link()
 {
   return trace_disable_link && TRACE_is_enabled();
 }
 
-bool TRACE_disable_speed(void)
+bool TRACE_disable_speed()
 {
   return trace_disable_power && TRACE_is_enabled();
 }
 
-bool TRACE_buffer (void)
+bool TRACE_buffer ()
 {
   return trace_buffer && TRACE_is_enabled();
 }
 
-bool TRACE_onelink_only (void)
+bool TRACE_onelink_only ()
 {
   return trace_onelink_only && TRACE_is_enabled();
 }
 
-bool TRACE_disable_destroy (void)
+bool TRACE_disable_destroy ()
 {
   return trace_disable_destroy && TRACE_is_enabled();
 }
 
-bool TRACE_basic (void)
+bool TRACE_basic ()
 {
   return trace_basic && TRACE_is_enabled();
 }
 
-bool TRACE_display_sizes (void)
+bool TRACE_display_sizes ()
 {
    return trace_display_sizes && trace_smpi_enabled && TRACE_is_enabled();
 }
 
-char *TRACE_get_comment (void)
+char *TRACE_get_comment ()
 {
   return xbt_cfg_get_string(OPT_TRACING_COMMENT);
 }
 
-char *TRACE_get_comment_file (void)
+char *TRACE_get_comment_file ()
 {
   return xbt_cfg_get_string(OPT_TRACING_COMMENT_FILE);
 }
 
-int TRACE_precision (void)
+int TRACE_precision ()
 {
   return xbt_cfg_get_int(OPT_TRACING_PRECISION);
 }
 
-char *TRACE_get_filename(void)
+char *TRACE_get_filename()
 {
   return xbt_cfg_get_string(OPT_TRACING_FILENAME);
 }
 
-char *TRACE_get_viva_uncat_conf (void)
+char *TRACE_get_viva_uncat_conf ()
 {
   return xbt_cfg_get_string(OPT_VIVA_UNCAT_CONF);
 }
 
-char *TRACE_get_viva_cat_conf (void)
+char *TRACE_get_viva_cat_conf ()
 {
   return xbt_cfg_get_string(OPT_VIVA_CAT_CONF);
 }
@@ -353,7 +353,8 @@ char *TRACE_get_viva_cat_conf (void)
 void TRACE_global_init(int *argc, char **argv)
 {
   static int is_initialised = 0;
-  if (is_initialised) return;
+  if (is_initialised)
+    return;
 
   is_initialised = 1;
   /* name of the tracefile */
@@ -409,7 +410,7 @@ static void print_line (const char *option, const char *desc, const char *longde
 
   int len = strlen (str);
   printf ("%s%*.*s %s\n", str, 30-len, 30-len, "", desc);
-  if (!!longdesc && detailed){
+  if (longdesc != nullptr && detailed){
     printf ("%s\n\n", longdesc);
   }
 }
@@ -514,7 +515,7 @@ static void output_types (const char *name, xbt_dynar_t types, FILE *file)
   unsigned int i;
   fprintf (file, "  %s = (", name);
   for (i = xbt_dynar_length(types); i > 0; i--) {
-    char *type = *(char**)xbt_dynar_get_ptr(types, i - 1);
+    char *type = *(static_cast<char**>(xbt_dynar_get_ptr(types, i - 1)));
     fprintf (file, "\"%s\"", type);
     if (i - 1 > 0){
       fprintf (file, ",");
@@ -530,7 +531,7 @@ static void output_categories (const char *name, xbt_dynar_t cats, FILE *file)
   unsigned int i;
   fprintf (file, "    values = (");
   for (i = xbt_dynar_length(cats); i > 0; i--) {
-    char *cat = *(char**)xbt_dynar_get_ptr(cats, i - 1);
+    char *cat = *(static_cast<char**>(xbt_dynar_get_ptr(cats, i - 1)));
     fprintf (file, "\"%s%s\"", name, cat);
     if (i - 1 > 0){
       fprintf (file, ",");
@@ -591,13 +592,15 @@ static void generate_uncat_configuration (const char *output, const char *name, 
   if (output && strlen(output) > 0){
     FILE *file = fopen (output, "w");
     if (file == nullptr){
-      THROWF (system_error, 1, "Unable to open file (%s) for writing %s graph "
-          "configuration (uncategorized).", output, name);
+      THROWF (system_error, 1, "Unable to open file (%s) for writing %s graph configuration (uncategorized).",
+              output, name);
     }
 
-    if (brackets) fprintf (file, "{\n");
+    if (brackets)
+      fprintf (file, "{\n");
     uncat_configuration (file);
-    if (brackets) fprintf (file, "}\n");
+    if (brackets)
+      fprintf (file, "}\n");
     fclose (file);
   }
 }
@@ -624,19 +627,19 @@ static void generate_cat_configuration (const char *output, const char *name, in
   }
 }
 
-void TRACE_generate_viva_uncat_conf (void)
+void TRACE_generate_viva_uncat_conf ()
 {
   generate_uncat_configuration (TRACE_get_viva_uncat_conf (), "viva", 0);
 }
 
-void TRACE_generate_viva_cat_conf (void)
+void TRACE_generate_viva_cat_conf ()
 {
   generate_cat_configuration (TRACE_get_viva_cat_conf(), "viva", 0);
 }
 
 static int previous_trace_state = -1;
 
-void instr_pause_tracing (void)
+void instr_pause_tracing ()
 {
   previous_trace_state = trace_enabled;
   if (!TRACE_is_enabled()){
@@ -648,7 +651,7 @@ void instr_pause_tracing (void)
   XBT_DEBUG ("Tracing is paused.");
 }
 
-void instr_resume_tracing (void)
+void instr_resume_tracing ()
 {
   if (TRACE_is_enabled()){
     XBT_DEBUG ("Tracing is already running while trying to resume, therefore do nothing.");
