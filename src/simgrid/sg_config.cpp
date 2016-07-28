@@ -425,6 +425,10 @@ void sg_config_init(int *argc, char **argv)
     simgrid::config::bindFlag(sg_maxmin_precision, "maxmin/precision",
       "Numerical precision used when computing resource sharing (in ops/sec or bytes/sec)");
 
+    sg_concurrency_limit = 100;
+    simgrid::config::bindFlag(sg_concurrency_limit, "maxmin/concurrency_limit",
+      "Maximum number of concurrent variables in the maxmim system. Also limits the number of processes on each host, at higher level");
+
     /* The parameters of network models */
 
     // real default for "network/sender-gap" is set in network_smpi.cpp:

@@ -124,6 +124,7 @@
 
 XBT_PUBLIC_DATA(double) sg_maxmin_precision;
 XBT_PUBLIC_DATA(double) sg_surf_precision;
+XBT_PUBLIC_DATA(int) sg_concurrency_limit;
  
 static inline void double_update(double *variable, double value, double precision)
 {

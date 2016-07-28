@@ -669,7 +669,7 @@ static int migration_tx_fun(int argc, char *argv[])
   if (ramsize == 0)
     XBT_WARN("migrate a VM, but ramsize is zero");
 
-  if (max_downtime == 0) {
+  if (max_downtime <= 0) {
     XBT_WARN("use the default max_downtime value 30ms");
     max_downtime = 0.03;
   }
