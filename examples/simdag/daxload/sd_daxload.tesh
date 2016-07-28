@@ -12,8 +12,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../pl
 > [0.000000] [sd_task/INFO]   - amount: 0
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
 > [0.000000] [sd_task/INFO]   - post-dependencies:
-> [0.000000] [sd_task/INFO]     root_i2_2@task2
 > [0.000000] [sd_task/INFO]     root_i1_1@task1
+> [0.000000] [sd_task/INFO]     root_i2_2@task2
 > [0.000000] [sd_task/INFO] Displaying task 1@task1
 > [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: sequential computation
@@ -40,10 +40,10 @@ $ $SG_TEST_EXENV ${bindir:=.}/daxload/sd_daxload --log=no_loc ${srcdir:=.}/../pl
 > [0.000000] [sd_task/INFO]   - amount: 42000000000
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 4
 > [0.000000] [sd_task/INFO]   - pre-dependencies:
-> [0.000000] [sd_task/INFO]     1@task1
 > [0.000000] [sd_task/INFO]     2@task2
-> [0.000000] [sd_task/INFO]     1@task1_o1_3@task1
+> [0.000000] [sd_task/INFO]     1@task1
 > [0.000000] [sd_task/INFO]     2@task2_o2_3@task1
+> [0.000000] [sd_task/INFO]     1@task1_o1_3@task1
 > [0.000000] [sd_task/INFO]   - post-dependencies:
 > [0.000000] [sd_task/INFO]     3@task1_o3_end
 > [0.000000] [sd_task/INFO] Displaying task root_i2_2@task2

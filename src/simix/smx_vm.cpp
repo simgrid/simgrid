@@ -147,10 +147,9 @@ void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst
  *
  * @param host the vm host to get_phys_host (a sg_host_t)
  */
-void *SIMIX_vm_get_pm(sg_host_t ind_vm)
+void *SIMIX_vm_get_pm(sg_host_t host)
 {
-  /* jump to vm_ws_get_pm(). this will return the vm name. */
-  return surf_vm_get_pm(ind_vm);
+  return surf_vm_get_pm(host);
 }
 
 /**
@@ -159,10 +158,9 @@ void *SIMIX_vm_get_pm(sg_host_t ind_vm)
  * @param host the vm host (a sg_host_t)
  * @param bound bound (a double)
  */
-void SIMIX_vm_set_bound(sg_host_t ind_vm, double bound)
+void SIMIX_vm_set_bound(sg_host_t host, double bound)
 {
-  /* jump to vm_ws_set_vm_bound(). */
-  surf_vm_set_bound(ind_vm, bound);
+  surf_vm_set_bound(host, bound);
 }
 
 /**
@@ -177,7 +175,6 @@ void SIMIX_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mas
   /* make sure this at the MSG layer. */
   xbt_assert(SIMIX_vm_get_pm(ind_vm) == ind_pm);
 
-  /* jump to vm_ws_set_vm_affinity(). */
   surf_vm_set_affinity(ind_vm, ind_pm, mask);
 }
 

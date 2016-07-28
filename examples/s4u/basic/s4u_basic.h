@@ -5,7 +5,7 @@
 
 #include <xbt/sysdep.h>
 
-#include "simgrid/s4u.h"
+#include <simgrid/s4u.hpp>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 

@@ -1,5 +1,5 @@
 /** 
-@defgroup SMPI_API      SMPI: Semulate real MPI applications
+@defgroup SMPI_API      SMPI: Simulate real MPI applications
 @brief Programming environment for the simulation of MPI applications
     
 This programming environment enables the study of MPI application by

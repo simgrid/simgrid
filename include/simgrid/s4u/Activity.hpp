@@ -33,6 +33,9 @@ protected:
   virtual ~Activity();
 
 public:
+  Activity(Activity const&) = delete;
+  Activity& operator=(Activity const&) = delete;
+
   /** Starts a previously created activity.
    *
    * This function is optional: you can call wait() even if you didn't call start()

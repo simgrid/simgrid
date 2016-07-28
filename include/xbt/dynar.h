@@ -25,7 +25,7 @@ SG_BEGIN_DECL()
   * \ref XBT_dict section). You thus have to provide the function which will be used to free the content at
   * structure creation (of type void_f_ppvoid_t or void_f_pvoid_t).
   *
-  *  If you are using C++, you might want to use `std::vector` instead.
+  * @deprecated If you are using C++, you might want to use `std::vector` instead.
   *
   * \section XBT_dynar_exscal Example with scalar
   * \dontinclude dynar.cpp

@@ -7,7 +7,7 @@
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
 
-#include "simgrid/s4u/actor.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/comm.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/mailbox.hpp"
@@ -83,7 +83,7 @@ void Actor::kill(int pid) {
   }
 }
 
-smx_process_t Actor::getInferior() {
+smx_process_t Actor::getImpl() {
   return pimpl_;
 }
 
@@ -110,8 +110,17 @@ void Actor::killAll() {
 
 namespace this_actor {
 
-void sleep(double duration) {
-  simcall_process_sleep(duration);
+void sleep_for(double duration)
+{
+  if (duration > 0)
+    simcall_process_sleep(duration);
+}
+
+XBT_PUBLIC(void) sleep_until(double timeout)
+{
+  double now = SIMIX_get_clock();
+  if (timeout > now)
+    simcall_process_sleep(timeout - now);
 }
 
 e_smx_state_t execute(double flops) {
@@ -121,14 +130,14 @@ e_smx_state_t execute(double flops) {
 
 void* recv(Mailbox &chan) {
   void *res = nullptr;
-  Comm c = Comm::recv_init(chan);
+  Comm& c = Comm::recv_init(chan);
   c.setDstData(&res,sizeof(res));
   c.wait();
   return res;
 }
 
 void send(Mailbox &chan, void *payload, size_t simulatedSize) {
-  Comm c = Comm::send_init(chan);
+  Comm& c = Comm::send_init(chan);
   c.setRemains(simulatedSize);
   c.setSrcData(payload);
   // c.start() is optional.

@@ -6,7 +6,7 @@
 #ifndef SIMGRID_ROUTING_CLUSTER_FAT_TREE_HPP_
 #define SIMGRID_ROUTING_CLUSTER_FAT_TREE_HPP_
 
-#include "src/surf/AsCluster.hpp"
+#include "src/routing/AsCluster.hpp"
 
 namespace simgrid {
 namespace routing {

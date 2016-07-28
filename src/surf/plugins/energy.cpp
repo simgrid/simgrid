@@ -219,7 +219,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
     if (vm) // If it's a VM, take the corresponding PM
       host = vm->getPm()->extension<simgrid::surf::HostImpl>();
 
-    HostEnergy *host_energy = host->p_host->extension<HostEnergy>();
+    HostEnergy *host_energy = host->piface->extension<HostEnergy>();
 
     if(host_energy->last_updated < surf_get_clock())
       host_energy->update();

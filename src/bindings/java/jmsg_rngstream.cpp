@@ -6,6 +6,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/sysdep.h>
+
 #include "jmsg_rngstream.h"
 #include "jxbt_utilities.h"
 
@@ -43,16 +45,22 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_nativeFinalize(JNIEnv *env
 
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_RngStream_setPackageSeed(JNIEnv *env, jobject jrngstream, jintArray jseed) {
-  jint buffer[6];
 
+  if (jseed == nullptr) {
+    jxbt_throw_null(env, xbt_strdup("seed argument is null"));
+    return JNI_FALSE;
+  }
+
+  jint buffer[6];
   env->GetIntArrayRegion(jseed, 0, 6, buffer);
 
-  RngStream rngstream = jrngstream_to_native(env, jrngstream);
-  if (!rngstream)
-    return JNI_FALSE;
+  // The C API expects unsigned long which are wider than int on LP64.
+  // We need to convert:
+  unsigned long seed[6];
+  for (int i = 0; i != 6; ++i)
+    seed[i] = buffer[i];
 
-  int result = RngStream_SetPackageSeed((unsigned long*)buffer);
-
+  int result = RngStream_SetPackageSeed(seed);
   return result == -1 ? JNI_FALSE : JNI_TRUE;
 }
 
@@ -102,7 +110,13 @@ JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_RngStream_setSeed(JNIEnv *env, j
   if (!rngstream)
     return JNI_FALSE;
 
-  int result = RngStream_SetSeed(rngstream, (unsigned long*)buffer);
+  // The C API expects unsigned long which are wider than int on LP64.
+  // We need to convert:
+  unsigned long seed[6];
+  for (int i = 0; i != 6; ++i)
+    seed[i] = buffer[i];
+
+  int result = RngStream_SetSeed(rngstream, seed);
 
   return result == -1 ? JNI_FALSE : JNI_TRUE;
 }

@@ -137,6 +137,8 @@ static void xbt_postexit(void)
 /** @brief Initialize the xbt mechanisms. */
 void xbt_init(int *argc, char **argv)
 {
+  xbt_set_terminate();
+
   if (xbt_initialized++) {
     XBT_DEBUG("XBT was initialized %d times.", xbt_initialized);
     return;

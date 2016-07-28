@@ -15,7 +15,7 @@
 #include "simgrid/sg_config.h"
 #include "storage_interface.hpp"
 
-#include "src/surf/AsImpl.hpp"
+#include "src/routing/AsImpl.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");
@@ -90,7 +90,7 @@ namespace routing {
  * \param route where to store the list of links.
  *              If *route=nullptr, create a short lived dynar. Else, fill the provided dynar
  * \param latency where to store the latency experienced on the path (or nullptr if not interested)
- *                It is the caller responsability to initialize latency to 0 (we add to provided route)
+ *                It is the caller responsibility to initialize latency to 0 (we add to provided route)
  * \pre route!=nullptr
  *
  * walk through the routing components tree and find a route between hosts

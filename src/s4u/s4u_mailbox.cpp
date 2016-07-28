@@ -31,7 +31,7 @@ MailboxPtr Mailbox::byName(const char*name) {
   smx_mailbox_t mbox = simcall_mbox_get_by_name(name);
   if (mbox == nullptr)
     mbox = simcall_mbox_create(name);
-  return MailboxPtr(&mbox->mbox_, true);
+  return MailboxPtr(&mbox->piface_, true);
 }
 
 bool Mailbox::empty() {
@@ -43,8 +43,9 @@ void Mailbox::setReceiver(Actor* actor) {
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
-Actor& Mailbox::receiver() {
-  return pimpl_->permanent_receiver->actor();
+ActorPtr Mailbox::receiver() {
+  if(pimpl_->permanent_receiver == nullptr) return ActorPtr();
+  return ActorPtr(&pimpl_->permanent_receiver->actor());
 }
 
 }
@@ -60,7 +61,4 @@ int sg_mbox_is_empty(sg_mbox_t mbox) {
 }
 void sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process) {
   mbox->setReceiver(&process->actor());
-}
-smx_process_t sg_mbox_receiver(sg_mbox_t mbox) {
-  return mbox->receiver().getInferior();
 }

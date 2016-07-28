@@ -5,7 +5,7 @@
 
 #include "xbt/log.h"
 
-#include "src/surf/AsImpl.hpp"
+#include "src/routing/AsImpl.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(AsImpl,surf, "Implementation of S4U autonomous systems");

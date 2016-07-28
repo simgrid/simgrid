@@ -773,16 +773,18 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
 
 int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status * status)
 {
-  xbt_dynar_t comms;
+  std::vector<simgrid::simix::Synchro*> comms;
+  comms.reserve(count);
+
   int i;
   int flag = 0;
 
   *index = MPI_UNDEFINED;
-  comms = xbt_dynar_new(sizeof(smx_synchro_t), nullptr);
+
   std::vector<int> map; /** Maps all matching comms back to their location in requests **/
   for(i = 0; i < count; i++) {
     if ((requests[i] != MPI_REQUEST_NULL) && requests[i]->action && !(requests[i]->flags & PREPARED)) {
-       xbt_dynar_push(comms, &requests[i]->action);
+       comms.push_back(requests[i]->action);
        map.push_back(i);
     }
   }
@@ -792,7 +794,7 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status *
     if(smpi_test_sleep > 0) 
       simcall_process_sleep(nsleeps*smpi_test_sleep);
 
-    i = simcall_comm_testany(comms); // The i-th element in comms matches!
+    i = simcall_comm_testany(comms.data(), comms.size()); // The i-th element in comms matches!
     if (i != -1) { // -1 is not MPI_UNDEFINED but a SIMIX return code. (nothing matches)
       *index = map[i]; 
       finish_wait(&requests[*index], status);
@@ -809,7 +811,6 @@ int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status *
       flag = 1;
       smpi_empty_status(status);
   }
-  xbt_dynar_free(&comms);
 
   return flag;
 }
@@ -945,7 +946,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
       }
     }
     if(size > 0) {
-      i = simcall_comm_waitany(comms);
+      i = simcall_comm_waitany(comms, -1);
 
       // not MPI_UNDEFINED, as this is a simix return code
       if (i != -1) {

@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** \file
+/** \file mc_record.h
+ *
  *  This file contains the MC replay/record functionnality.
  *  A MC path may be recorded by using ``-cfg=model-check/record:1`'`.
  *  The path is written in the log output and an be replayed with MC disabled

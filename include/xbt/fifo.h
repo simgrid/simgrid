@@ -17,8 +17,8 @@ SG_BEGIN_DECL()
  * These functions provide the same kind of functionality as dynamic arrays
  * but in time O(1). However these functions use malloc/free way too much often.
  *
- *  If you are using C++, you might want to used std::list, std::deque or
- *  std::queue instead.
+ *  @deprecated If you are using C++, you might want to used `std::list`,
+ *  `std::deque` or `std::queue instead`.
  */
  
 /** @defgroup XBT_fifo_cons Fifo constructor and destructor

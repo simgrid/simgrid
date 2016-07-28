@@ -58,10 +58,6 @@ typedef enum {
   SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
 
-/** @brief Storage datatype
-    @ingroup SD_storage_api */
-typedef xbt_dictelm_t SD_storage_t;
-
 /************************** Workstation handling ****************************/
 /** @addtogroup SD_host_api
  *
@@ -75,11 +71,8 @@ typedef xbt_dictelm_t SD_storage_t;
  */
 XBT_PUBLIC(SD_link_t *) SD_route_get_list(sg_host_t src, sg_host_t dst);
 XBT_PUBLIC(int) SD_route_get_size(sg_host_t src, sg_host_t dst);
-
 XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src, sg_host_t dst);
 XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src, sg_host_t dst);
-
-XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
 /** @} */
 
 /************************** Task handling ************************************/
@@ -109,10 +102,10 @@ XBT_PUBLIC(double) SD_task_get_amount(SD_task_t task);
 XBT_PUBLIC(void) SD_task_set_amount(SD_task_t task, double amount);
 XBT_PUBLIC(double) SD_task_get_alpha(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_remaining_amount(SD_task_t task);
-XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_t *host_list,
                                               const double *flops_amount, const double *bytes_amount);
 XBT_PUBLIC(e_SD_task_kind_t) SD_task_get_kind(SD_task_t task);
-XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int host_count, const sg_host_t *host_list,
                                   const double *flops_amount, const double *bytes_amount, double rate);
 XBT_PUBLIC(void) SD_task_unschedule(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_start_time(SD_task_t task);
@@ -137,9 +130,9 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 /** @brief A constant to use in SD_task_schedule to mean that there is no cost.
  *
- *  For example, create a pure computation task (no comm) like this:
+ *  For example, create a pure computation task (i.e., with no communication) like this:
  *
- *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_TASK_SCHED_NO_COST, my_rate);
+ *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_SCHED_NO_COST, my_rate);
  */
 #define SD_SCHED_NO_COST NULL
 
@@ -154,8 +147,6 @@ XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
  */
 XBT_PUBLIC(void) SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(void) SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(const char *) SD_task_dependency_get_name(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(void *) SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @} */
 

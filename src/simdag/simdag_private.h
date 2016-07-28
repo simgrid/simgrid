@@ -23,7 +23,7 @@ typedef struct SD_global {
   bool watch_point_reached;      /* has a task just reached a watch point? */
 
   std::set<SD_task_t> *initial_tasks;
-  std::set<SD_task_t> *executable_tasks;
+  std::set<SD_task_t> *runnable_tasks;
   std::set<SD_task_t> *completed_tasks;
 
   xbt_dynar_t return_set;
@@ -49,10 +49,10 @@ typedef struct SD_task {
   int marked;                   /* used to check if the task DAG has some cycle*/
 
   /* dependencies */
-  xbt_dynar_t tasks_before;
-  xbt_dynar_t tasks_after;
-  int unsatisfied_dependencies;
-  unsigned int is_not_ready;
+  std::set<SD_task_t> *inputs;
+  std::set<SD_task_t> *outputs;
+  std::set<SD_task_t> *predecessors;
+  std::set<SD_task_t> *successors;
 
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
   int host_count;
@@ -60,19 +60,7 @@ typedef struct SD_task {
   double *flops_amount;
   double *bytes_amount;
   double rate;
-
-  long long int counter;        /* task unique identifier for instrumentation */
-  char *category;               /* sd task category for instrumentation */
 } s_SD_task_t;
-
-/* Task dependencies */
-typedef struct SD_dependency {
-  char *name;
-  void *data;
-  SD_task_t src;
-  SD_task_t dst;
-  /* src must be finished before dst can start */
-} s_SD_dependency_t, *SD_dependency_t;
 
 /* SimDag private functions */
 XBT_PRIVATE void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
@@ -81,7 +69,7 @@ XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
 XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
 
 /* Task mallocator functions */
-XBT_PRIVATE void* SD_task_new_f(void);
+XBT_PRIVATE void* SD_task_new_f();
 XBT_PRIVATE void SD_task_recycle_f(void *t);
 XBT_PRIVATE void SD_task_free_f(void *t);
 

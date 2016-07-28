@@ -359,10 +359,10 @@ XBT_PUBLIC(smx_synchro_t) simcall_comm_iprobe(smx_mailbox_t mbox, int type, int 
 XBT_PUBLIC(void) simcall_comm_cancel(smx_synchro_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */
-XBT_PUBLIC(unsigned int) simcall_comm_waitany(xbt_dynar_t comms);
+XBT_PUBLIC(unsigned int) simcall_comm_waitany(xbt_dynar_t comms, double timeout);
 XBT_PUBLIC(void) simcall_comm_wait(smx_synchro_t comm, double timeout);
 XBT_PUBLIC(int) simcall_comm_test(smx_synchro_t comm);
-XBT_PUBLIC(int) simcall_comm_testany(xbt_dynar_t comms);
+XBT_PUBLIC(int) simcall_comm_testany(smx_synchro_t* comms, size_t count);
 
 /************************** Tracing handling **********************************/
 XBT_PUBLIC(void) simcall_set_category(smx_synchro_t synchro, const char *category);

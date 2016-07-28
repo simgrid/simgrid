@@ -449,13 +449,6 @@ XBT_PUBLIC(void) MSG_task_set_category (msg_task_t task, const char *category);
 XBT_PUBLIC(const char *) MSG_task_get_category (msg_task_t task);
 
 /************************** Mailbox handling ************************************/
-/* @brief MSG_mailbox_new - create a new mailbox.
- * Creates a new mailbox identified by the key specified by the parameter alias and add it in the global dictionary.
- * @param  alias  The alias of the mailbox to create.
- * @return        The newly created mailbox.
- */
-XBT_PUBLIC(msg_mailbox_t) MSG_mailbox_new(const char *alias);
-
 /* @brief MSG_mailbox_get_by_alias - get a mailbox from its alias.
  * Returns the mailbox associated with the key specified by the parameter alias. If the mailbox does not exists,
  * the function creates it.
@@ -505,7 +498,7 @@ XBT_PUBLIC(msg_sem_t) MSG_sem_init(int initial_value);
 XBT_PUBLIC(void) MSG_sem_acquire(msg_sem_t sem);
 XBT_PUBLIC(msg_error_t) MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
 XBT_PUBLIC(void) MSG_sem_release(msg_sem_t sem);
-XBT_PUBLIC(void) MSG_sem_get_capacity(msg_sem_t sem);
+XBT_PUBLIC(int) MSG_sem_get_capacity(msg_sem_t sem);
 XBT_PUBLIC(void) MSG_sem_destroy(msg_sem_t sem);
 XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
 

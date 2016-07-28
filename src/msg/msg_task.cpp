@@ -161,7 +161,7 @@ void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t
 msg_process_t MSG_task_get_sender(msg_task_t task)
 {
   xbt_assert(task, "Invalid parameters");
-  return ((simdata_task_t) task->simdata)->sender;
+  return (static_cast<simdata_task_t> (task->simdata)->sender);
 }
 
 /** \ingroup m_task_management
@@ -172,7 +172,7 @@ msg_process_t MSG_task_get_sender(msg_task_t task)
 msg_host_t MSG_task_get_source(msg_task_t task)
 {
   xbt_assert(task, "Invalid parameters");
-  return ((simdata_task_t) task->simdata)->source;
+  return (static_cast<simdata_task_t> (task->simdata)->source);
 }
 
 /** \ingroup m_task_management
@@ -326,7 +326,7 @@ void MSG_task_set_bound(msg_task_t task, double bound)
   xbt_assert(task, "Invalid parameter");
   xbt_assert(task->simdata, "Invalid parameter");
 
-  if (bound == 0)
+  if (bound < 1e-12) /* close enough to 0 without any floating precision surprise */
     XBT_INFO("bound == 0 means no capping (i.e., unlimited).");
 
   task->simdata->bound = bound;
@@ -390,24 +390,19 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
     return;
   }
 
-  {
-    simgrid::simix::Exec *compute = task->simdata->compute;
-    msg_host_t host_now = compute->host;  // simix_private.h is necessary
-    if (host_now != host) {
-      /* task is not yet executed on this host */
-      XBT_INFO("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(host),
-               MSG_task_get_name(task));
-      return;
-    }
-
-    /* task is being executed on this host. so change the affinity now */
-    {
-      /* check it works. remove me if it works. */
-      xbt_assert((unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db,
-                 (char *) host, sizeof(msg_host_t)) == mask);
-    }
-
-    XBT_INFO("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(host), MSG_task_get_name(task));
-    simcall_execution_set_affinity(task->simdata->compute, host, mask);
+  simgrid::simix::Exec *compute = task->simdata->compute;
+  msg_host_t host_now = compute->host;  // simix_private.h is necessary
+  if (host_now != host) {
+    /* task is not yet executed on this host */
+    XBT_INFO("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(host),
+             MSG_task_get_name(task));
+    return;
   }
+
+  /* task is being executed on this host. so change the affinity now */
+  /* check it works. remove me if it works. */
+  xbt_assert(static_cast<unsigned long>((uintptr_t) xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db,
+             (char*)(host), sizeof(msg_host_t))) == mask);
+  XBT_INFO("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(host), MSG_task_get_name(task));
+  simcall_execution_set_affinity(task->simdata->compute, host, mask);
 }

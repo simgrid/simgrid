@@ -229,7 +229,7 @@ public:
 public:
   xbt_dynar_t p_storage;
   Cpu *p_cpu;
-  simgrid::s4u::Host* p_host = nullptr;
+  simgrid::s4u::Host* piface = nullptr;
 
   /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();
@@ -240,7 +240,7 @@ public:
   void getParams(vm_params_t params);
   /** @brief Sets the params of that VM/PM */
   void setParams(vm_params_t params);
-  simgrid::s4u::Host* getHost() { return p_host; }
+  simgrid::s4u::Host* getHost() { return piface; }
 private:
   s_vm_params_t p_params;
 };

@@ -765,19 +765,19 @@ void simcall_comm_cancel(smx_synchro_t synchro)
 /**
  * \ingroup simix_comm_management
  */
-unsigned int simcall_comm_waitany(xbt_dynar_t comms)
+unsigned int simcall_comm_waitany(xbt_dynar_t comms, double timeout)
 {
-  return simcall_BODY_comm_waitany(comms);
+  return simcall_BODY_comm_waitany(comms, timeout);
 }
 
 /**
  * \ingroup simix_comm_management
  */
-int simcall_comm_testany(xbt_dynar_t comms)
+int simcall_comm_testany(smx_synchro_t* comms, size_t count)
 {
-  if (xbt_dynar_is_empty(comms))
+  if (count == 0)
     return -1;
-  return simcall_BODY_comm_testany(comms);
+  return simcall_BODY_comm_testany(comms, count);
 }
 
 /**

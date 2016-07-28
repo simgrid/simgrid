@@ -22,19 +22,19 @@
 namespace simgrid {
 namespace mc {
 
-/** Process index used when no process is available
+/** Process index used when no process is available (SMPI privatization)
  *
  *  The expected behavior is that if a process index is needed it will fail.
  * */
 const int ProcessIndexMissing = -1;
 
-/** Process index used when we don't care about the process index
+/** Process index used when we don't care about the process index (SMPI privatization)
  * */
 const int ProcessIndexDisabled = -2;
 
-/** Constant used when any process will do.
+/** Constant used when any process will do (SMPI privatization)
  *
- *  This is is index of the first process.
+ *  Note: This is is index of the first process.
  */
 const int ProcessIndexAny = 0;
 
@@ -102,6 +102,10 @@ public:
  *  * the current state of an existing process;
  *
  *  * a snapshot.
+ *
+ *  In order to support SMPI privatization, the can read the memory from the
+ *  context of a given SMPI process: if specified, the code reads data from the
+ *  correct SMPI privatization VMA.
  */
 class AddressSpace {
 private:
@@ -110,12 +114,16 @@ public:
   AddressSpace(Process* process) : process_(process) {}
   virtual ~AddressSpace();
 
+  /** The process of this addres space
+   *
+   *  This is where we can get debug informations, memory layout, etc.
+   */
   simgrid::mc::Process* process() const { return process_; }
 
   /** Read data from the address space
    *
    *  @param buffer        target buffer for the data
-   *  @param size          number of bytes
+   *  @param size          number of bytes to read
    *  @param address       remote source address of the data
    *  @param process_index which process (used for SMPI privatization)
    *  @param options
@@ -137,7 +145,10 @@ public:
     this->read_bytes(buffer.getBuffer(), sizeof(T), ptr, process_index);
   }
 
-  /** Read a given data structure from the address space */
+  /** Read a given data structure from the addres space
+   *
+   *  This version returns by value.
+   */
   template<class T> inline
   Remote<T> read(RemotePtr<T> ptr, int process_index = ProcessIndexMissing) const
   {
@@ -146,13 +157,13 @@ public:
     return res;
   }
 
+  /** Read a string of known size */
   std::string read_string(RemotePtr<char> address, std::size_t len) const
   {
-    // TODO, use std::vector with .data() in C++17 to avoid useless copies
-    std::vector<char> buffer(len);
-    buffer[len] = '\0';
-    this->read_bytes(buffer.data(), len, address);
-    return std::string(buffer.data(), buffer.size());
+    std::string res;
+    res.resize(len);
+    this->read_bytes(&res[0], len, address);
+    return res;
   }
 
 };

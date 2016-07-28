@@ -659,5 +659,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
  */
 #define XBT_HERE(...) XBT_LOG(xbt_log_priority_trace, "-- was here" __VA_ARGS__)
 
+XBT_PUBLIC(void) xbt_set_terminate();
+
 SG_END_DECL()
 #endif                          /* ! _XBT_LOG_H_ */

@@ -282,27 +282,25 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
                                                      void *match_data, void_f_pvoid_t cleanup, int detached)
 {
   simdata_task_t t_simdata = nullptr;
-  msg_process_t process = MSG_process_self();
+  msg_process_t myself = SIMIX_process_self();
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
   int call_end = TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
-  t_simdata->sender = process;
+  t_simdata->sender = myself;
   t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
   t_simdata->setUsed();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->bytes_amount, t_simdata->rate,
+  smx_synchro_t act = simcall_comm_isend(myself, mailbox, t_simdata->bytes_amount, t_simdata->rate,
                                          task, sizeof(void *), match_fun, cleanup, nullptr, match_data,detached);
-  t_simdata->comm = static_cast<simgrid::simix::Comm*>(act); /* FIXME: is the field t_simdata->comm still useful? */
+  t_simdata->comm = static_cast<simgrid::simix::Comm*>(act);
 
-  msg_comm_t comm;
-  if (detached) {
-    comm = nullptr;
-  } else {
+  msg_comm_t comm = nullptr;
+  if (! detached) {
     comm = xbt_new0(s_msg_comm_t, 1);
     comm->task_sent = task;
     comm->task_received = nullptr;
@@ -504,17 +502,18 @@ int MSG_comm_testany(xbt_dynar_t comms)
 {
   int finished_index = -1;
 
-  /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_synchro_t), nullptr);
+  /* Create the equivalent array with SIMIX objects: */
+  std::vector<simgrid::simix::Synchro*> s_comms;
+  s_comms.reserve(xbt_dynar_length(comms));
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
-    xbt_dynar_push(s_comms, &comm->s_comm);
+    s_comms.push_back(comm->s_comm);
   }
 
   msg_error_t status = MSG_OK;
   try {
-    finished_index = simcall_comm_testany(s_comms);
+    finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
   }
   catch (xbt_ex& e) {
     switch (e.category) {
@@ -530,7 +529,6 @@ int MSG_comm_testany(xbt_dynar_t comms)
         throw;
     }
   }
-  xbt_dynar_free(&s_comms);
 
   if (finished_index != -1) {
     comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
@@ -627,7 +625,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
   msg_error_t status = MSG_OK;
   try {
-    finished_index = simcall_comm_waitany(s_comms);
+    finished_index = simcall_comm_waitany(s_comms, -1);
   }
   catch(xbt_ex& e) {
     switch (e.category) {
@@ -853,12 +851,13 @@ int MSG_task_listen(const char *alias)
  */
 int MSG_task_listen_from(const char *alias)
 {
-  msg_task_t task;
+  msg_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
+  simgrid::simix::Comm* comm = static_cast<simgrid::simix::Comm*>(simcall_mbox_front(mbox));
 
-  if (nullptr == (task = MSG_mailbox_front(MSG_mailbox_get_by_alias(alias))))
+  if (!comm)
     return -1;
 
-  return MSG_process_get_PID(task->simdata->sender);
+  return MSG_process_get_PID( static_cast<msg_task_t>(comm->src_data)->simdata->sender );
 }
 
 /** \ingroup msg_task_usage

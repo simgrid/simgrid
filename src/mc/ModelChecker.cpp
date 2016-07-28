@@ -294,10 +294,10 @@ bool ModelChecker::handle_message(char* buffer, ssize_t size)
   return true;
 }
 
-/** Terminate the model-checker aplication */
+/** Terminate the model-checker application */
 void ModelChecker::exit(int status)
 {
-  // TODO, terminate the model checker politely instead of exiting rudel
+  // TODO, terminate the model checker politely instead of exiting rudely
   if (process().running())
     kill(process().pid(), SIGKILL);
   ::exit(status);

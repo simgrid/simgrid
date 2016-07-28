@@ -18,6 +18,8 @@ Comm::~Comm() {
 
 }
 
+
+
 s4u::Comm &Comm::send_init(s4u::Mailbox &chan) {
   s4u::Comm *res = new s4u::Comm();
   res->sender_ = SIMIX_process_self();
@@ -74,12 +76,12 @@ void Comm::start() {
   xbt_assert(state_ == inited);
 
   if (srcBuff_ != nullptr) { // Sender side
-    pimpl_ = simcall_comm_isend(sender_, mailbox_->getInferior(), remains_, rate_,
+    pimpl_ = simcall_comm_isend(sender_, mailbox_->getImpl(), remains_, rate_,
         srcBuff_, srcBuffSize_,
         matchFunction_, cleanFunction_, copyDataFunction_,
         userData_, detached_);
   } else if (dstBuff_ != nullptr) { // Receiver side
-    pimpl_ = simcall_comm_irecv(receiver_, mailbox_->getInferior(), dstBuff_, &dstBuffSize_,
+    pimpl_ = simcall_comm_irecv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
         matchFunction_, copyDataFunction_,
         userData_, rate_);
 
@@ -95,12 +97,12 @@ void Comm::wait() {
     simcall_comm_wait(pimpl_, -1/*timeout*/);
   else {// p_state == inited. Save a simcall and do directly a blocking send/recv
     if (srcBuff_ != nullptr) {
-      simcall_comm_send(sender_, mailbox_->getInferior(), remains_, rate_,
+      simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_,
           srcBuff_, srcBuffSize_,
           matchFunction_, copyDataFunction_,
           userData_, -1 /*timeout*/);
     } else {
-      simcall_comm_recv(receiver_, mailbox_->getInferior(), dstBuff_, &dstBuffSize_,
+      simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
           matchFunction_, copyDataFunction_,
           userData_, -1/*timeout*/, rate_);
     }
@@ -118,12 +120,12 @@ void Comm::wait(double timeout) {
 
   // It's not started yet. Do it in one simcall
   if (srcBuff_ != nullptr) {
-    simcall_comm_send(sender_, mailbox_->getInferior(), remains_, rate_,
+    simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_,
         srcBuff_, srcBuffSize_,
         matchFunction_, copyDataFunction_,
         userData_, timeout);
   } else { // Receiver
-    simcall_comm_recv(receiver_, mailbox_->getInferior(), dstBuff_, &dstBuffSize_,
+    simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
         matchFunction_, copyDataFunction_,
         userData_, timeout, rate_);
   }
@@ -144,6 +146,23 @@ s4u::Comm &Comm::recv_async(Mailbox &dest, void **data) {
   res.setDstData(data);
   res.start();
   return res;
+}
+
+bool Comm::test() {
+  xbt_assert(state_ == inited || state_ == started || state_ == finished);
+  
+  if (state_ == finished) 
+    xbt_die("Don't call test on a finished comm.");
+  
+  if (state_ == inited) {
+    this->start();
+  }
+  
+  if(simcall_comm_test(pimpl_)){
+    state_ = finished;
+    return true;
+  }
+  return false;
 }
 
 }

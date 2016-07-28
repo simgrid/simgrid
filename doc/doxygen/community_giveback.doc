@@ -112,66 +112,234 @@ are easy, though):
 @subsection contributing_todo_cxxification Migration to C++
 
 The code is being migrated to C++ but a large part is still C (or C++ with
- idioms). It would be valuable to replace C idioms with C++ ones:
+C idioms). It would be valuable to replace C idioms with C++ ones:
 
- - replace XBT structures with C++ containers;
+ - replace XBT structures and C dynamic arrays with C++ containers;
 
- - replace `char*` with `std::string`;
+ - replace `char*` strings with `std::string`;
 
- - use RAII (`std::unique_ptr`, etc.) instead of explicit `malloc/free` or
-   `new/delete`.
+ - use exception-safe RAII (`std::unique_ptr`, etc.) instead of explicit
+   `malloc/free` or `new/delete`;
 
-@subsection contributing_todo_exceptions Migration to C++
+ - use `std::function` (or template functionoid arguments) instead of function
+   pointers;
+
+@subsubsection contributing_todo_exceptions Exceptions
 
 SimGrid used to implement exceptions in C. This has been replaced with C++
 exceptions but some bits of the C exceptions are still remaining:
 
  - `xbt_ex` was the type of C exceptions. It is now a standard C++ exception.
-    We might want to remove this and use a more idiomatic C++ solution.
-    `std::system_error` might be used for some error categories.
+    We might want to remove this exception and use a more idiomatic C++
+    solution with dedicated exception classes for different errors.
+    `std::system_error` might be used as well by replacing some `xbt_errcat_t`
+    with custom subclasses of `std::error_category`.
 
- - The C API currently throws exceptions exceptions. Throwing exceptions out
-   of C API is not very friendly. C code does not expect them, cannot catch
-   them and cannot handle resource management properly with exceptions.
-   We should clearly separate the C++ API and the C API and catch all exceptions
-   before they get ouf of C APIs.
+ - The C API currently throws exceptions. Throwing exceptions out of a C API is
+   not very friendly. C code does not expect them, cannot catch them and cannot
+   handle resource management properly in face of exceptions. We should clearly
+   separate the C++ API and the C API and catch all exceptions before they get
+   ouf of C APIs.
 
-@subsection contributing_todo_futures Additions to the futures
+@subsubsection contributing_todo_time Time and duration
+
+Some support for C++11-style time/duration is implemented (see `chrono.hpp`)
+but only available in some (S4U) APIs. It would be nice to add support for
+them in the rest of the C++ code.
+
+A related change would be to avoid using "-1" to mean "forever" at least in S4U
+and in the internal code. For compatibility, MSG should probably keep this
+semantic. We should probably always use separate functions
+(`wait` vs `wait_for`).
+
+@subsubsection contributing_todo_futures Futures
 
  - Some features are missing in the Maestro future implementation
-  (`simgrid::simix::Future`, `simgrid::simix::Promise`)
+  (`simgrid::kernel::Future`, `simgrid::kernel::Promise`)
   could be extended to support additional features:
   `when_any`, `shared_future`, etc.
 
  - The corresponding feature might then be implemented in the user process
-   futures.
+   futures (`simgrid::simix::Future`).
+
+ - Currently `.then()` is not available for user futures. We would need to add
+   a basic user event loop in order to queue the pending continuations.
 
  - We might need to provide the option to cancel a pending operation. This
    might be achieved by defining some `Action` or `Operation` class with an
    API compatible with `Future` (and convertiable to it) but with an
    additional `.cancel()` method.
 
-@subsection contributing_todo_simcalls Simcalls cleanup
+@subsection contributing_todo_smpi SMPI
 
- - Remove simcalls by using the generic ones. One issue with this is that we
-   didn't devise a good way to deal with generic simcalls in the model-checker
-   yet.
+@subsubsection contributing_smpi_split_process Process-based privatization
+
+Currently, all the simulated processes live in the same process as the SimGrid
+simulator. The benefit is that we don't have to do context switches and IPC
+between the simulator and the processes.
+
+The fact that they share the same address space means that one memory corruption
+in one simulated process can propagate to the other ones and the SimGrid
+simulator itself.
+
+Moreover, the current design for SMPI applications is to compile the MPI code
+normally and execute it once per simulated process in the same system process:
+This means that all the existing simulated MPI processes share the same virtual
+address space and share by default sthe same global variables. This is not
+correct as each MPI process is expected to use its own address space and have
+its own global variables. In order to fix, this problem we have an optional
+SMPI privatization feature which creates a instanciation of the executable
+data segment per MPI process and map the correct one (using `mmap`) at each
+context switch.
+
+This approach has many problems:
+
+ 1. It is not completely safe. We only handle SMPI privatization for the global
+    variables in the execute data segment. Shared objects are ignored but some
+    may contain global variables which may need to be privatized:
+
+    - libsimgrid for example must not be privatized because it contains
+      shared state for the simulator;
+
+    - libc must not be privatized for the same reason (but some global variables
+      in the libc may not be privatized);
+
+    - if we use global variables of some shared object in the executable, this
+      global variable will be instanciated in the executable (because of copy
+      relocation) and will be privatized even if it shoud not.
+
+ 2. We cannot execute the MPI processes in parallel. Only one can execute at
+    the same time because only one privatization segment can be mapped at a
+    given time.
+
+In order to fix this, the standard solution is to move each MPI process in its
+system process and use IPC to communicate with the simulator. One concern would
+be the impact on performance and memory consumption:
+
+ - It would introduce a lot of context switches and IPC communications between
+   the MPI processes and the SimGrid simulator. However, currently every context
+   switch needs a `mmap` for SMPI privatization which is costly as well
+   (TLB flush).
+
+ - Instanciating a lot of processes might consume more memory which might be a
+   problem if we want to simulate a lot of MPI processes. Compiling MPI programs
+   as static executables with a lightweight libc might help and we might want to
+   support that. The SMPI processes should probably not embed all the SimGrid
+   simulator and its dependencies, the C++ runtime, etc.
+
+We would need to modify the model-checker as well which currently can only
+manage on model-checked process. For the model-checker we can expect some
+benefits from this approach: if a process did not execute, we know its state
+did not change and we don't need to take its snapshot and compare its state.
+
+Other solutions for this might include:
+
+ - Mapping each MPI process in the process of the simulator but in a different
+   symbol namespace (see `dlmopen`). Each process would have its own separate
+   instanciation and would not share libraries.
+
+ - Instanciate each MPI process in a separate lightweight VM (for example based
+   on WebAssembly) in the simualtor process.
 
 @subsection contributing_todo_mc Model-checker
 
- - Find a good solution to handle generic simcalls in the model-checker.
+@subsubsection contributing_todo_mc_state_compare Overhaul the state comparison code
 
- - Define a clear interface to be used by model-checking algorithms. The
-   `Session` class in intended to expose this interface but it is not a thing
-   yet.
+The state comparison code is quite complicated. It has very long functions and
+is programmed mostly using C idioms and is difficult to understanda and debug.
+It is in need or an overhaul:
 
- - Rewrite the different algorithms as implementations of the `Checker` class
-   using the `Session` inteface.
+  - cleanup, refactorisation, usage of C++ features.
 
- - Currently a lot of informations the model-checker reads many informations
-   about the model-checked process by `process_vm_readv()`-ing brutally the
-   data structure leading to some horrible code such as walking a swag from
-   another process. It would be nice to have a sane way for the model-checker
-   to expose the relevant information to the model-checker.
+  - The state comparison code works by infering types of blocks allocated on the
+    heap by following pointers from known roots (global variables, local
+    variables). Usually the first type found for a given block is used even if
+    a better one could be found later. By using a first pass of type inference,
+    on each snapshot before comparing the states, we might use a better type
+    information on the different blocks.
+
+  - We might benefit from adding logic for handling some known types. For
+    example, both `std::string` and `std::vector` have a capacity which might
+    be larger than the current size of the container. We should might ignore
+    the corresponding elements when comparing the states and infering the types.
+
+  - Another difficulty in the state comparison code is the detection of
+    dangling pointers. We cannot easily know if a pointer is dangling and
+    dangling pointers might lead us to choose the wrong type when infering
+    heap blocks. We might mitigate this problem by delaying the reallocation of
+    a freed block until there is no blocks pointing to it anymore using some
+    sort of basic garbage-collector.
+
+@subsubsection contributing_todo_state_hashing Hashing the states
+
+In order to speed up the state comparison an idea was to create a hash of the
+state. Only states with the same hash would need to be compared using the
+state comparison algorithm. Some information should not be inclueded in the
+hash in order to avoid considering different states which would otherwise
+would have been considered equal.
+
+The stated could be indexed by their hash. Currently they are indexed
+by the number of processes and the amount of heap currently allocated
+(see `DerefAndCompareByNbProcessesAndUsedHeap`).
+
+Good candidate informations for the state hashing:
+
+ - number of processes;
+
+ - their backtraces (instruction addresses);
+
+ - their current simcall numbers;
+
+ - some simcall arguments (eg. number of elements in a waitany);
+
+ - number of pending communications;
+
+ - etc.
+
+Some basic infrastructure for this is already in the code (see `mc_hash.cpp`)
+but it is currently disabled.
+
+@subsubsection contributing_todo_mc_separation Separate the model-checker code from libsimgrid
+
+@subsubsection contributing_todo_mc_mced_interface Interface with the model-checked processes
+
+The model-checker reads many informations about the model-checked process
+by `process_vm_readv()`-ing brutally the data structure of the model-checked
+process leading to some horrible code such as walking a swag from another
+process. It prevents us as well from replacing some XBT data structures with
+standard C++ ones. We need a sane way to expose the relevant informations to
+the model-checker.
+
+@subsubsection contributing_todo_mc_generic_simcalls Generic simcalls
+
+We have introduced some generic simcalls which can be used to execute a
+callback in SimGrid Maestro context. It makes it a lot easier to interface
+the simulated process with the maestro. However, the callbacks for the
+model-checker which cannot decide how it should handle them. We would need a
+solution for this if we want to be able to replace the simcalls the
+model-checker cares about by generic simcalls.
+
+@subsubsection contributing_todo_mc_api Definig an API for writing Model-Checking algorithms
+
+Currently, writing a new model-checking algorithms in SimGridMC is quite
+difficult: the logic of the model-checking algorithm is mixed with a lot of
+low-level concerns about the way the model-checker is implemented. This makes it
+difficult to write new algorithms and difficult to understand, debug and modify
+the existing ones. We need a clean API to express the model-checking algorithms
+in a form which is closer to the text-book/paper description. This API muste
+be exposed in a a language which is more adequate to this task.
+
+Tasks:
+
+  1. Design and implement a clean API for expression model-checking algorithms.
+     A `Session` class currently exists for this but is not feature complete
+     and should probably be rewritten. It should be easy to create bindings
+     for different languages on top of this API.
+
+  2. Create a binding to some better suited, dynamic, scripting language
+     (eg. Lua).
+
+  3. Rewrite the existing model-checking algorithms in this language using the
+     new API.
 
 */

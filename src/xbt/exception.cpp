@@ -4,9 +4,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstdlib>
+
+#include <atomic>
 #include <exception>
+#include <string>
 #include <typeinfo>
+#include <vector>
 #include <memory>
+#include <mutex>
 
 #include <xbt/backtrace.hpp>
 #include <xbt/exception.hpp>
@@ -68,5 +74,66 @@ void logException(
   }
 }
 
+static void showBacktrace(std::vector<xbt_backtrace_location_t>& bt)
+{
+  std::vector<std::string> res = resolveBacktrace(&bt[0], bt.size());
+  XBT_LOG(xbt_log_priority_critical, "Current backtrace:");
+  for (std::string const& s : res)
+    XBT_LOG(xbt_log_priority_critical, "  -> %s", s.c_str());
 }
+
+static std::terminate_handler previous_terminate_handler = nullptr;
+
+static void handler()
+{
+  // Avoid doing crazy things if we get an uncaught exception inside
+  // an uncaught exception
+  static std::atomic_flag lock = ATOMIC_FLAG_INIT;
+  if (lock.test_and_set()) {
+    XBT_ERROR("Multiple uncaught exceptions");
+    std::abort();
+  }
+
+  // Get the current backtrace and exception
+  auto e = std::current_exception();
+  auto bt = backtrace();
+  try {
+    std::rethrow_exception(e);
+  }
+
+  // We manage C++ exception ourselves
+  catch (std::exception& e) {
+    logException(xbt_log_priority_critical, "Uncaught exception", e);
+    showBacktrace(bt);
+    std::abort();
+  }
+
+  // We don't know how to manage other exceptions
+  catch (...) {
+    // If there was another handler let's delegate to it
+    if (previous_terminate_handler)
+      previous_terminate_handler();
+    else {
+      XBT_ERROR("Unknown uncaught exception");
+      showBacktrace(bt);
+      std::abort();
+    }
+  }
+
+}
+
+void installExceptionHandler()
+{
+  static std::once_flag handler_flag;
+  std::call_once(handler_flag, [] {
+    previous_terminate_handler = std::set_terminate(handler);
+  });
+}
+
+}
+}
+
+void xbt_set_terminate()
+{
+  simgrid::xbt::installExceptionHandler();
 }

@@ -20,5 +20,7 @@ XBT_PUBLIC(void) logException(
   e_xbt_log_priority_t priority,
   const char* context, std::exception const& exception);
 
+XBT_PUBLIC(void) installExceptionHandler();
+
 }
 }

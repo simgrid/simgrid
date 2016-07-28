@@ -63,17 +63,17 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/surf/AsImpl.hpp
-  src/surf/AsCluster.hpp
-  src/surf/AsClusterFatTree.hpp
-  src/surf/AsClusterTorus.hpp
-  src/surf/AsClusterDragonfly.hpp
-  src/surf/AsDijkstra.hpp
-  src/surf/AsFloyd.hpp
-  src/surf/AsFull.hpp
-  src/surf/AsRoutedGraph.hpp
-  src/surf/AsNone.hpp
-  src/surf/AsVivaldi.hpp
+  src/routing/AsImpl.hpp
+  src/routing/AsCluster.hpp
+  src/routing/AsClusterFatTree.hpp
+  src/routing/AsClusterTorus.hpp
+  src/routing/AsClusterDragonfly.hpp
+  src/routing/AsDijkstra.hpp
+  src/routing/AsFloyd.hpp
+  src/routing/AsFull.hpp
+  src/routing/AsRoutedGraph.hpp
+  src/routing/AsNone.hpp
+  src/routing/AsVivaldi.hpp
 
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
@@ -289,17 +289,17 @@ set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cc )
 
 set(SURF_SRC
-  src/surf/AsImpl.cpp
-  src/surf/AsCluster.cpp
-  src/surf/AsClusterFatTree.cpp
-  src/surf/AsClusterTorus.cpp
-  src/surf/AsClusterDragonfly.cpp
-  src/surf/AsDijkstra.cpp
-  src/surf/AsFloyd.cpp
-  src/surf/AsFull.cpp
-  src/surf/AsRoutedGraph.cpp
-  src/surf/AsNone.cpp
-  src/surf/AsVivaldi.cpp
+  src/routing/AsImpl.cpp
+  src/routing/AsCluster.cpp
+  src/routing/AsClusterFatTree.cpp
+  src/routing/AsClusterTorus.cpp
+  src/routing/AsClusterDragonfly.cpp
+  src/routing/AsDijkstra.cpp
+  src/routing/AsFloyd.cpp
+  src/routing/AsFull.cpp
+  src/routing/AsRoutedGraph.cpp
+  src/routing/AsNone.cpp
+  src/routing/AsVivaldi.cpp
   
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
@@ -627,7 +627,7 @@ set(headers_to_install
   include/msg/datatypes.h
   include/simdag/simdag.h
   include/simdag/datatypes.h
-  
+  include/simgrid/chrono.hpp
   include/simgrid/plugins/energy.h
   include/simgrid/instr.h
   include/simgrid/msg.h
@@ -643,9 +643,9 @@ set(headers_to_install
   include/simgrid/host.h
   include/simgrid/link.h
   include/simgrid/s4u/forward.hpp
-  include/simgrid/s4u/actor.hpp
-  include/simgrid/s4u/As.hpp
   include/simgrid/s4u/Activity.hpp
+  include/simgrid/s4u/Actor.hpp
+  include/simgrid/s4u/As.hpp
   include/simgrid/s4u/comm.hpp
   include/simgrid/s4u/engine.hpp  
   include/simgrid/s4u/file.hpp  
@@ -654,7 +654,7 @@ set(headers_to_install
   include/simgrid/s4u/mutex.hpp
   include/simgrid/s4u/conditionVariable.hpp
   include/simgrid/s4u/storage.hpp  
-  include/simgrid/s4u.h
+  include/simgrid/s4u.hpp
   include/simgrid/plugins/energy.h
   include/smpi/mpi.h
   include/smpi/smpi.h

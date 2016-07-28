@@ -6,7 +6,7 @@
 #ifndef SIMGRID_ROUTING_CLUSTER_HPP_
 #define SIMGRID_ROUTING_CLUSTER_HPP_
 
-#include "src/surf/AsImpl.hpp"
+#include "src/routing/AsImpl.hpp"
 
 namespace simgrid {
 namespace routing {

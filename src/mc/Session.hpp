@@ -61,15 +61,26 @@ public: // static constructors
 
   /** Create a new session by forking
    *
+   *  This sets up the environment for the model-checked process
+   *  (environoment variables, sockets, etc.).
+   *
    *  The code is expected to `exec` the model-checker program.
    */
   static Session* fork(std::function<void(void)> code);
 
-  /** Create a session using `execv` */
+  /** Spawn a model-checked process
+   *
+   *  @param path full path of the executable
+   *  @param argv arguments for the model-checked process (NULL-terminated)
+   */
   static Session* spawnv(const char *path, char *const argv[]);
 
-  /** Create a session using `execvp` */
-  static Session* spawnvp(const char *path, char *const argv[]);
+  /** Spawn a model-checked process (using PATH)
+   *
+   *  @param file file name of the executable (found using `PATH`)
+   *  @param argv arguments for the model-checked process (NULL-terminated)
+   */
+  static Session* spawnvp(const char *file, char *const argv[]);
 };
 
 // Temporary

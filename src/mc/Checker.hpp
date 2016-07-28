@@ -20,13 +20,16 @@ namespace mc {
 
 /** A model-checking algorithm
  *
- *  The goal is to move the data/state/configuration of a model-checking
- *  algorithms in subclasses. Implementing this interface will probably
- *  not be really mandatory, you might be able to write your
- *  model-checking algorithm as plain imperative code instead.
+ *  This is an abstract base class used to group the data, state, configuration
+ *  of a model-checking algorithm.
  *
- *  It works by manipulating a model-checking Session.
- */
+ *  Implementing this interface will probably not be really mandatory,
+ *  you might be able to write your model-checking algorithm as plain
+ *  imperative code instead.
+ *
+ *  It is expected to interact with the model-checking core through the
+ * `Session` interface (but currently the `Session` interface does not
+ *  have all the necessary features). */
 // abstract
 class Checker {
   Session* session_;
@@ -38,16 +41,23 @@ public:
   Checker& operator=(Checker const&) = delete;
 
   virtual ~Checker();
+
+  /** Main function of this algorithm */
   virtual int run() = 0;
 
-  // Give me your internal state:
+  /* These methods are callbacks called by the model-checking engine
+   * to get and display information about the current state of the
+   * model-checking algorithm: */
 
   /** Show the current trace/stack
    *
-   *  Could this be handled in the Session/ModelChecker instead?
-   */
+   *  Could this be handled in the Session/ModelChecker instead? */
   virtual RecordTrace getRecordTrace();
+
+  /** Generate a textual execution trace of the simulated application */
   virtual std::vector<std::string> getTextualTrace();
+
+  /** Log additional information about the state of the model-checker */
   virtual void logState();
 
 protected:

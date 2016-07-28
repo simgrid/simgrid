@@ -18,8 +18,8 @@ namespace mc {
 
 /** A channel for exchanging messages between model-checker and model-checked
  *
- *  This hides the way the messages are transferred. Currently, they are sent
- *  over a SOCK_DGRAM socket.
+ *  This abstracts away the way the messages are transferred. Currently, they
+ *  are sent over a (connected) `SOCK_DGRAM` socket.
  */
 class Channel {
   int socket_ = -1;

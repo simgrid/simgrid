@@ -254,7 +254,7 @@ case SIMCALL_COMM_IRECV:
       break;
 
 case SIMCALL_COMM_WAITANY:
-      simcall_HANDLER_comm_waitany(simcall, simgrid::simix::unmarshal<xbt_dynar_t>(simcall->args[0]));
+      simcall_HANDLER_comm_waitany(simcall, simgrid::simix::unmarshal<xbt_dynar_t>(simcall->args[0]), simgrid::simix::unmarshal<double>(simcall->args[1]));
       break;
 
 case SIMCALL_COMM_WAIT:
@@ -266,7 +266,7 @@ case SIMCALL_COMM_TEST:
       break;
 
 case SIMCALL_COMM_TESTANY:
-      simcall_HANDLER_comm_testany(simcall, simgrid::simix::unmarshal<xbt_dynar_t>(simcall->args[0]));
+      simcall_HANDLER_comm_testany(simcall, simgrid::simix::unmarshal<smx_synchro_t*>(simcall->args[0]), simgrid::simix::unmarshal<size_t>(simcall->args[1]));
       break;
 
 case SIMCALL_MUTEX_INIT:

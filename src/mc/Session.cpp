@@ -165,10 +165,10 @@ Session* Session::spawnv(const char *path, char *const argv[])
 }
 
 // static
-Session* Session::spawnvp(const char *path, char *const argv[])
+Session* Session::spawnvp(const char *file, char *const argv[])
 {
   return Session::fork([&] {
-    execvp(path, argv);
+    execvp(file, argv);
   });
 }
 

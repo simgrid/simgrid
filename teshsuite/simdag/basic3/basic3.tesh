@@ -1,4 +1,4 @@
-$ ${bindir:=.}/basic3 ../../../examples/platforms/two_hosts_platform_shared.xml "--log=root.fmt:[%10.6r]%e%m%n" --log=sd_kernel.thresh:verbose
+$ ${bindir:=.}/basic3 ../../../examples/platforms/two_hosts_platform_shared.xml "--log=root.fmt:[%10.6r]%e%m%n" --log=sd.thresh:verbose
 > [  0.000000] Switching to the L07 model to handle parallel tasks.
 > [  0.000000] Starting simulation...
 > [  0.000000] Run simulation for -1.000000 seconds

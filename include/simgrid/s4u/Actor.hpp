@@ -7,6 +7,7 @@
 #define SIMGRID_S4U_ACTOR_HPP
 
 #include <atomic>
+#include <chrono>
 #include <functional>
 #include <memory>
 #include <stdexcept>
@@ -20,6 +21,7 @@
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
 
+#include <simgrid/chrono.hpp>
 #include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
 
@@ -245,8 +247,10 @@ public:
 
   /** Ask kindly to all actors to die. Only the issuer will survive. */
   static void killAll();
-  
-  smx_process_t getInferior();
+
+protected:
+  /** Returns the internal implementation of this actor */
+  smx_process_t getImpl();
 };
 
 using ActorPtr = Actor::Ptr;
@@ -256,7 +260,27 @@ using ActorPtr = Actor::Ptr;
 namespace this_actor {
 
   /** Block the actor sleeping for that amount of seconds (may throws hostFailure) */
-  XBT_PUBLIC(void) sleep(double duration);
+  XBT_PUBLIC(void) sleep_for(double duration);
+  XBT_PUBLIC(void) sleep_until(double timeout);
+
+  template<class Rep, class Period>
+  inline void sleep_for(std::chrono::duration<Rep, Period> duration)
+  {
+    auto seconds = std::chrono::duration_cast<SimulationClockDuration>(duration);
+    this_actor::sleep_for(seconds.count());
+  }
+  template<class Duration>
+  inline void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
+  {
+    auto timeout_native = std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
+    this_actor::sleep_until(timeout_native.time_since_epoch().count());
+  }
+
+  XBT_ATTRIB_DEPRECATED("Use sleep_for()")
+  inline void sleep(double duration)
+  {
+    return sleep_for(duration);
+  }
 
   /** Block the actor, computing the given amount of flops */
   XBT_PUBLIC(e_smx_state_t) execute(double flop);

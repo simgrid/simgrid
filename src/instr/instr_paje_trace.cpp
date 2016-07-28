@@ -37,12 +37,11 @@ static void print_row() {
 static void print_timestamp(paje_event_t event) {
   stream << " ";
   /* prevent 0.0000 in the trace - this was the behavior before the transition to c++ */
-  if (event->timestamp == 0) 
+  if (event->timestamp < 1e-12)
     stream << 0;
   else 
     stream << event->timestamp;
 }
-
 
 template<typename T> static void print_default_pajeLink_row(paje_event_t& event) {
   init_stream<T>(event);
@@ -76,7 +75,7 @@ template<typename T> static void print_default_pajeVariable_row(paje_event_t& ev
   print_row();
 }
 
-void TRACE_paje_init(void) {
+void TRACE_paje_init() {
   active_writer.print_DefineContainerType = print_pajeDefineContainerType;
   active_writer.print_DefineVariableType  = print_pajeDefineVariableType;
   active_writer.print_DefineStateType     = print_pajeDefineStateType;
@@ -97,7 +96,7 @@ void TRACE_paje_init(void) {
   active_writer.print_NewEvent            = print_pajeNewEvent;
 }
 
-void TRACE_paje_start(void) {
+void TRACE_paje_start() {
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
   if (tracing_file == nullptr){
@@ -127,7 +126,7 @@ void TRACE_paje_start(void) {
   TRACE_header(TRACE_basic(),TRACE_display_sizes());
 }
 
-void TRACE_paje_end(void) {
+void TRACE_paje_end() {
   fclose(tracing_file);
   char *filename = TRACE_get_filename();
   XBT_DEBUG("Filename %s is closed", filename);

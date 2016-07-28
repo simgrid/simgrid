@@ -199,7 +199,6 @@ examples/simdag/throttling/sd_throttling
 examples/simdag/fail/sd_fail
 examples/simdag/test/sd_test
 examples/simdag/typed_tasks/sd_typed_tasks
-examples/smpi/bcbench/smpi_bcbench
 examples/smpi/energy/f77/sef
 examples/smpi/energy/f90/sef90
 examples/smpi/energy/smpi_energy
@@ -214,7 +213,6 @@ examples/smpi/mc/send_deterministic
 examples/smpi/NAS/dt
 examples/smpi/NAS/ep
 examples/smpi/NAS/is
-examples/smpi/mvmul/smpi_mvmul
 examples/smpi/replay_multiple/replay_multiple
 examples/smpi/replay/one_trace
 examples/smpi/ring_c
@@ -284,6 +282,7 @@ teshsuite/smpi/coll-bcast/coll-bcast
 teshsuite/smpi/coll-barrier/coll-barrier
 teshsuite/smpi/coll-gather/coll-gather
 teshsuite/smpi/macro-sample/macro-sample
+teshsuite/smpi/timers/timers
 teshsuite/smpi/type-hvector/type-hvector
 teshsuite/smpi/type-indexed/type-indexed
 teshsuite/smpi/isp/umpire/abort

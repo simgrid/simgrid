@@ -12,20 +12,20 @@ TBD
 S4U classes are designed to be user process interfaces to Maestro resources.
 We provide an uniform interface to them:
 
-* automatic reference count with intrusive smart pointers `simgrid::s4u::FooPtr`
-  (also called `simgrid::s4u::Foo::Ptr`);
+- automatic reference count with intrusive smart pointers `simgrid::s4u::FooPtr`
+ (also called `simgrid::s4u::Foo::Ptr`);
 
-* manual reference count with `intrusive_ptr_add_ref(p)`,
+- manual reference count with `intrusive_ptr_add_ref(p)`,
   `intrusive_ptr_release(p)` (which is the interface used by
   [`boost::intrusive_ptr`](http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html));
 
-* delegation of the operations to a opaque `pimpl` (which is the Maestro object);
+- delegation of the operations to a opaque `pimpl` (which is the Maestro object);
 
-* the Maestro object and the corresponding S4U object have the same lifetime
+- the Maestro object and the corresponding S4U object have the same lifetime
   (and share the same reference count).
 
 The ability to manipulate thge objects thought pointers and have the ability
-to use explicite reference count management is useful for creating C wrappers
+to use explicit reference count management is useful for creating C wrappers
 to the S4U and should play nicely with other language bindings (such as
 SWIG-based ones).
 
@@ -38,18 +38,18 @@ corresponding C++ standard classes. For example, the methods of
 `simgrid::s4u::Mutex` are based on [`std::mutex`](http://en.cppreference.com/w/cpp/thread/mutex).
 This has several benefits:
 
- * we use a proven interface with a well defined and documented semantic;
+ - we use a proven interface with a well defined and documented semantic;
 
- * the interface is easy to understand and remember for people used to the C++
+ - the interface is easy to understand and remember for people used to the C++
    standard interface;
 
- * we can use some standard C++ algorithms and helper classes with our types
+ -  we can use some standard C++ algorithms and helper classes with our types
    (`simgrid::s4u::Mutex` can be used with
    [`std::lock`](http://en.cppreference.com/w/cpp/thread/lock),
    [`std::unique_lock`](http://en.cppreference.com/w/cpp/thread/unique_lock),
    etc.).
 
-Example of `simgris::s4u::Actor`:
+Example of `simgrid::s4u::Actor`:
 
 ~~~
 class Actor {
@@ -205,7 +205,7 @@ The current implementation of the model-checker uses two distinct processes:
 
  - the SimGrid model-checker (`simgrid-mc`) itself lives in the parent process;
 
- - it spaws a child process for the SimGrid simulator/mastro and the simulated
+ - it spaws a child process for the SimGrid simulator/maestro and the simulated
    processes.
 
 They communicate using a `AF_UNIX` `SOCK_DGRAM` socket and exchange messages
@@ -215,15 +215,15 @@ set to the file descriptor of this socket in the child process.
 The model-checker analyzes, saves and restores the state of the model-checked
 process using the following techniques:
 
-* the model-checker reads and writes in the model-checked address space;
+- the model-checker reads and writes in the model-checked address space;
 
-* the model-cheker `ptrace()`s the model-checked process and is thus able to
+- the model-cheker `ptrace()`s the model-checked process and is thus able to
   know the state of the model-checked process if it crashes;
 
-* DWARF debug informations are used to unwind the stack and identify local
+- DWARF debug informations are used to unwind the stack and identify local
   variables;
 
-* a custom heap is enabled in the model-checked process which allows the model
+- a custom heap is enabled in the model-checked process which allows the model
   checker to know which chunks are allocated and which are freed.
 
 \subsection simgrid_uhood_mc_address_space Address space
