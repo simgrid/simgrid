@@ -472,8 +472,9 @@ XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
  */
 XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 
-/* @brief MSG_mailbox_get_head - get the task at the head of a mailbox.
+/* @brief MSG_mailbox_front - get the task at the head of a mailbox.
  * Returns the task at the head of the mailbox. This function does not remove the task from the mailbox.
+ * @deprecated
  * @param   mailbox  The mailbox concerned by the operation.
  * @return           The task at the head of the mailbox.
  */
