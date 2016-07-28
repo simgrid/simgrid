@@ -60,15 +60,21 @@ int main(int argc, char **argv)
         XBT_DEBUG("\t Running that model");
         running = 1;
       }
-      while ((action = surf_model_extract_failed_action_set((surf_model_t)model))) {
+
+      action = surf_model_extract_failed_action_set(static_cast<surf_model_t>(model));
+      while (action != nullptr) {
         XBT_INFO("   * Done Action");
         XBT_DEBUG("\t * Failed Action: %p", action);
         action->unref();
+        action = surf_model_extract_failed_action_set(static_cast<surf_model_t>(model));
       }
-      while ((action = surf_model_extract_done_action_set((surf_model_t)model))) {
+
+      action = surf_model_extract_done_action_set(static_cast<surf_model_t>(model));
+      while (action != nullptr){
         XBT_INFO("   * Done Action");
         XBT_DEBUG("\t * Done Action: %p", action);
         action->unref();
+        action = surf_model_extract_done_action_set(static_cast<surf_model_t>(model));
       }
     }
   } while (running && surf_solve(-1.0) >= 0.0);
