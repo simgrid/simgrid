@@ -24,6 +24,7 @@ typedef struct s_dyn_light {
 
 double sg_maxmin_precision = 0.00001;
 double sg_surf_precision   = 0.00001;
+int    sg_concurrency_limit= 100;
 
 static void *lmm_variable_mallocator_new_f(void);
 static void lmm_variable_mallocator_free_f(void *var);
@@ -195,8 +196,7 @@ lmm_constraint_t lmm_constraint_new(lmm_system_t sys, void *id, double bound_val
   cnst->bound = bound_value;
   cnst->concurrency_maximum=0;
   cnst->concurrency_current=0;
-  //TODO MARTIN Maybe a configuration item for the default cap concurrency? 
-  cnst->concurrency_limit=100;
+  cnst->concurrency_limit=sg_concurrency_limit;
   cnst->usage = 0;
   cnst->sharing_policy = 1; /* FIXME: don't hardcode the value */
   insert_constraint(sys, cnst);
