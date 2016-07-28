@@ -146,7 +146,7 @@ XBT_PUBLIC_CLASS Actor {
     };
   }
 
-  Actor(smx_process_t pimpl) : pimpl_(pimpl) {}
+  explicit Actor(smx_process_t pimpl) : pimpl_(pimpl) {}
 
 public:
 
