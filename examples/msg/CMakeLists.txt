@@ -83,7 +83,7 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actio
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
 
 foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
-          async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
+          async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-multicore
           cloud-two-tasks dht-chord dht-pastry dht-kademlia platform-failures io-file io-remote io-storage task-priority 
           process-create process-kill process-migration process-suspend platform-properties synchro-semaphore 
           process-startkilltime)
