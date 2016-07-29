@@ -33,7 +33,7 @@ double smpi_get_host_power_peak_at(int pstate_index)
  *
  * \return Returns the current processor speed
  */
-double smpi_get_host_current_power_peak(void)
+double smpi_get_host_current_power_peak()
 {
   return SIMIX_host_self()->getPstateSpeedCurrent();
 }
@@ -41,7 +41,7 @@ double smpi_get_host_current_power_peak(void)
 /**
  * \brief Return the number of pstates defined for the current host
  */
-int smpi_get_host_nb_pstates(void)
+int smpi_get_host_nb_pstates()
 {
   return sg_host_get_nb_pstates(SIMIX_host_self());
 }
@@ -65,7 +65,7 @@ int smpi_get_host_pstate() {
  *
  * \return Returns the consumed energy
  */
-double smpi_get_host_consumed_energy(void) {
+double smpi_get_host_consumed_energy() {
   return sg_host_get_consumed_energy(SIMIX_host_self());
 }
 
@@ -91,14 +91,14 @@ doublereal smpi_get_host_power_peak_at_(integer *pstate_index)
   return (doublereal)smpi_get_host_power_peak_at((int)*pstate_index);
 }
 
-extern "C" XBT_PUBLIC(doublereal) smpi_get_host_current_power_peak_(void);
-doublereal smpi_get_host_current_power_peak_(void)
+extern "C" XBT_PUBLIC(doublereal) smpi_get_host_current_power_peak_();
+doublereal smpi_get_host_current_power_peak_()
 {
   return smpi_get_host_current_power_peak();
 }
 
-extern "C" XBT_PUBLIC(integer) smpi_get_host_nb_pstates_(void);
-integer smpi_get_host_nb_pstates_(void)
+extern "C" XBT_PUBLIC(integer) smpi_get_host_nb_pstates_();
+integer smpi_get_host_nb_pstates_()
 {
   return (integer)smpi_get_host_nb_pstates();
 }
@@ -109,8 +109,8 @@ void smpi_set_host_pstate_(integer *pstate_index)
   smpi_set_host_pstate((int)*pstate_index);
 }
 
-extern "C" XBT_PUBLIC(doublereal) smpi_get_host_consumed_energy_(void);
-doublereal smpi_get_host_consumed_energy_(void)
+extern "C" XBT_PUBLIC(doublereal) smpi_get_host_consumed_energy_();
+doublereal smpi_get_host_consumed_energy_()
 {
   return (doublereal)smpi_get_host_consumed_energy();
 }

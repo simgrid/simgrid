@@ -26,14 +26,14 @@ xbt_dict_t tracing_files = nullptr;
 
 extern s_instr_trace_writer_t active_writer;
 
-void TRACE_TI_init(void)
+void TRACE_TI_init()
 {
   active_writer.print_PushState = print_TIPushState;
   active_writer.print_CreateContainer=print_TICreateContainer;
   active_writer.print_DestroyContainer=print_TIDestroyContainer;
 }
 
-void TRACE_TI_start(void)
+void TRACE_TI_start()
 {
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
@@ -50,7 +50,7 @@ void TRACE_TI_start(void)
   dump_comment_file(TRACE_get_comment_file());
 }
 
-void TRACE_TI_end(void)
+void TRACE_TI_end()
 {
   xbt_dict_free(&tracing_files);
   fclose(tracing_file);
