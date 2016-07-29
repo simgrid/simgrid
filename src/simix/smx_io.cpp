@@ -45,7 +45,7 @@ smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data)
  */
 void SIMIX_storage_destroy(void *s)
 {
-  smx_storage_priv_t storage = (smx_storage_priv_t) s;
+  smx_storage_priv_t storage = static_cast<smx_storage_priv_t>(s);
 
   xbt_assert((storage != nullptr), "Invalid parameters");
   if (storage->data)
@@ -146,7 +146,6 @@ smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
   return synchro;
 }
 
-
 //SIMIX FILE UNLINK
 int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
 {
@@ -155,7 +154,7 @@ int SIMIX_file_unlink(smx_file_t fd, sg_host_t host)
 
   int res = surf_host_unlink(host, fd->surf_file);
   xbt_free(fd);
-  return !!res;
+  return res;
 }
 
 sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd)
@@ -254,10 +253,6 @@ const char* SIMIX_storage_get_host(smx_storage_t storage){
   return surf_storage_get_host(storage);
 }
 
-void SIMIX_post_io(smx_synchro_t synchro)
-{
-}
-
 void SIMIX_io_destroy(smx_synchro_t synchro)
 {
   simgrid::simix::Io *io = static_cast<simgrid::simix::Io*>(synchro);
@@ -270,24 +265,18 @@ void SIMIX_io_destroy(smx_synchro_t synchro)
 void SIMIX_io_finish(smx_synchro_t synchro)
 {
   for (smx_simcall_t simcall : synchro->simcalls) {
-
     switch (synchro->state) {
-
       case SIMIX_DONE:
         /* do nothing, synchro done */
         break;
-
       case SIMIX_FAILED:
         SMX_EXCEPTION(simcall->issuer, io_error, 0, "IO failed");
         break;
-
       case SIMIX_CANCELED:
         SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Canceled");
         break;
-
       default:
-        xbt_die("Internal error in SIMIX_io_finish: unexpected synchro state %d",
-            (int)synchro->state);
+        xbt_die("Internal error in SIMIX_io_finish: unexpected synchro state %d", static_cast<int>(synchro->state));
     }
 
     if (simcall->issuer->host->isOff()) {

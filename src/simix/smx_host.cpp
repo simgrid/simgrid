@@ -101,7 +101,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
  */
 void SIMIX_host_destroy(void *h)
 {
-  smx_host_priv_t host = (smx_host_priv_t) h;
+  smx_host_priv_t host = static_cast<smx_host_priv_t>(h);
 
   xbt_assert((host != nullptr), "Invalid parameters");
 
@@ -146,7 +146,7 @@ const char* SIMIX_host_self_get_name(void)
 
 void _SIMIX_host_free_process_arg(void *data)
 {
-  smx_process_arg_t arg = *(smx_process_arg_t*)data;
+  smx_process_arg_t arg = *(static_cast<smx_process_arg_t*>(data));
   delete arg;
 }
 /**
@@ -192,33 +192,23 @@ void SIMIX_host_autorestart(sg_host_t host)
 
     XBT_DEBUG("Restarting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
     if (simix_global->create_process_function) {
-      simix_global->create_process_function(arg->name.c_str(),
-                                            arg->code,
-                                            nullptr,
-                                            arg->hostname,
-                                            arg->kill_time,
-                                            arg->properties,
-                                            arg->auto_restart,
-                                            nullptr);
+      simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->hostname, arg->kill_time,
+                                            arg->properties, arg->auto_restart, nullptr);
     } else {
-      simcall_process_create(arg->name.c_str(),
-                             arg->code,
-                             nullptr,
-                             arg->hostname,
-                             arg->kill_time,
-                             arg->properties,
+      simcall_process_create(arg->name.c_str(), arg->code, nullptr, arg->hostname, arg->kill_time, arg->properties,
                              arg->auto_restart);
     }
   }
   xbt_dynar_reset(process_list);
 }
 
-smx_synchro_t simcall_HANDLER_execution_start(smx_simcall_t simcall,
-    const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
+smx_synchro_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount,
+                                              double priority, double bound, unsigned long affinity_mask) {
   return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);
 }
-smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
-     double flops_amount, double priority, double bound, unsigned long affinity_mask){
+
+smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name, double flops_amount, double priority,
+                                    double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
   simgrid::simix::Exec *exec = new simgrid::simix::Exec(name, issuer->host);
@@ -230,7 +220,7 @@ smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
     exec->surf_exec->setData(exec);
     exec->surf_exec->setPriority(priority);
 
-    if (bound != 0)
+    if (bound > 0)
       static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
 
     if (affinity_mask != 0) {
@@ -246,26 +236,21 @@ smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name,
   return exec;
 }
 
-smx_synchro_t SIMIX_execution_parallel_start(const char *name,
-    int host_nb, sg_host_t *host_list,
-    double *flops_amount, double *bytes_amount,
-    double amount, double rate){
-
-  sg_host_t *host_list_cpy = nullptr;
-  int i;
+smx_synchro_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_host_t *host_list, double *flops_amount,
+                                             double *bytes_amount, double amount, double rate){
 
   /* alloc structures and initialize */
   simgrid::simix::Exec *exec = new simgrid::simix::Exec(name, nullptr);
 
   /* set surf's synchro */
-  host_list_cpy = xbt_new0(sg_host_t, host_nb);
-  for (i = 0; i < host_nb; i++)
+  sg_host_t *host_list_cpy = xbt_new0(sg_host_t, host_nb);
+  for (int i = 0; i < host_nb; i++)
     host_list_cpy[i] = host_list[i];
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
   simgrid::surf::HostImpl *host = host_list[0]->extension<simgrid::surf::HostImpl>();
   bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host));
-  for (i = 1; i < host_nb; i++) {
+  for (int i = 1; i < host_nb; i++) {
     bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->extension<simgrid::surf::HostImpl>()));
     xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
   }
@@ -374,7 +359,8 @@ void SIMIX_execution_finish(simgrid::simix::Exec *exec)
 
 void SIMIX_set_category(smx_synchro_t synchro, const char *category)
 {
-  if (synchro->state != SIMIX_RUNNING) return;
+  if (synchro->state != SIMIX_RUNNING)
+    return;
 
   simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec *>(synchro);
   if (exec != nullptr) {

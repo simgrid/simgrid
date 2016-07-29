@@ -40,7 +40,6 @@ XBT_PRIVATE sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_sto
 
 XBT_PRIVATE xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage);
 
-XBT_PRIVATE void SIMIX_post_io(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_io_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_io_finish(smx_synchro_t synchro);
 
