@@ -18,7 +18,7 @@
 
 #include <simgrid/simix.h>
 #include <simgrid/chrono.hpp>
-#include <simgrid/s4u/mutex.hpp>
+#include <simgrid/s4u/Mutex.hpp>
 
 namespace simgrid {
 namespace s4u {

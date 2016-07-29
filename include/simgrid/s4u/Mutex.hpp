@@ -41,7 +41,7 @@ public:
 
   // No copy:
   Mutex(Mutex const&) = delete;
-  Mutex& operator(Mutex const&) = delete;
+  Mutex& operator=(Mutex const&) = delete;
 
   static Ptr createMutex();
 

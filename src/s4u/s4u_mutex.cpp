@@ -8,7 +8,7 @@
 #include "src/msg/msg_private.h"
 #include "src/simix/smx_synchro_private.h"
 
-#include "simgrid/s4u/mutex.hpp"
+#include "simgrid/s4u/Mutex.hpp"
 
 namespace simgrid {
 namespace s4u {
