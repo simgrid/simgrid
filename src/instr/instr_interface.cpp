@@ -29,12 +29,15 @@ extern xbt_dict_t trivaEdgeTypes;
 
 static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
 {
-  if (!TRACE_is_enabled()) return nullptr;
-  if (!TRACE_needs_platform()) return nullptr;
+  if (!TRACE_is_enabled())
+    return nullptr;
+  if (!TRACE_needs_platform())
+    return nullptr;
 
   xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
   xbt_dict_cursor_t cursor = nullptr;
-  char *name, *value;
+  char *name;
+  char *value;
   xbt_dict_foreach(filter, cursor, name, value) {
     xbt_dynar_push_as (ret, char*, xbt_strdup(name));
   }
@@ -79,16 +82,20 @@ void TRACE_category(const char *category)
 void TRACE_category_with_color (const char *category, const char *color)
 {
   /* safe switch */
-  if (!TRACE_is_enabled()) return;
+  if (!TRACE_is_enabled())
+    return;
 
-  if (!(TRACE_categorized() && category != nullptr)) return;
+  if (!(TRACE_categorized() && category != nullptr))
+    return;
 
   /* if platform is not traced, we can't deal with categories */
-  if (!TRACE_needs_platform()) return;
+  if (!TRACE_needs_platform())
+    return;
 
   //check if category is already created
-  char *created = (char*)xbt_dict_get_or_null(created_categories, category);
-  if (created) return;
+  char *created = static_cast<char*>(xbt_dict_get_or_null(created_categories, category));
+  if (created)
+    return;
   xbt_dict_set (created_categories, category, xbt_strdup("1"), nullptr);
 
   //define final_color
@@ -121,10 +128,12 @@ void TRACE_category_with_color (const char *category, const char *color)
  *
  *  \see MSG_task_set_category, SD_task_set_category
  */
-xbt_dynar_t TRACE_get_categories (void)
+xbt_dynar_t TRACE_get_categories ()
 {
-  if (!TRACE_is_enabled()) return nullptr;
-  if (!TRACE_categorized()) return nullptr;
+  if (!TRACE_is_enabled())
+    return nullptr;
+  if (!TRACE_categorized())
+    return nullptr;
 
   return instr_dict_to_dynar (created_categories);
 }
@@ -142,15 +151,18 @@ xbt_dynar_t TRACE_get_categories (void)
 void TRACE_declare_mark(const char *mark_type)
 {
   /* safe switch */
-  if (!TRACE_is_enabled()) return;
+  if (!TRACE_is_enabled())
+    return;
 
   /* if platform is not traced, we don't allow marks */
-  if (!TRACE_needs_platform()) return;
+  if (!TRACE_needs_platform())
+    return;
 
-  if (!mark_type) THROWF (tracing_error, 1, "mark_type is nullptr");
+  if (!mark_type)
+    THROWF (tracing_error, 1, "mark_type is nullptr");
 
   //check if mark_type is already declared
-  char *created = (char*)xbt_dict_get_or_null(declared_marks, mark_type);
+  char *created = static_cast<char*>(xbt_dict_get_or_null(declared_marks, mark_type));
   if (created) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is already declared", mark_type);
   }
@@ -178,13 +190,17 @@ void TRACE_declare_mark(const char *mark_type)
 void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mark_value, const char *mark_color)
 {
   /* safe switch */
-  if (!TRACE_is_enabled()) return;
+  if (!TRACE_is_enabled())
+    return;
 
   /* if platform is not traced, we don't allow marks */
-  if (!TRACE_needs_platform()) return;
+  if (!TRACE_needs_platform())
+    return;
 
-  if (!mark_type) THROWF (tracing_error, 1, "mark_type is nullptr");
-  if (!mark_value) THROWF (tracing_error, 1, "mark_value is nullptr");
+  if (!mark_type)
+    THROWF (tracing_error, 1, "mark_type is nullptr");
+  if (!mark_value)
+    THROWF (tracing_error, 1, "mark_value is nullptr");
 
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
   if (!type){
@@ -192,7 +208,8 @@ void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mar
   }
 
   char white[INSTR_DEFAULT_STR_SIZE] = "1.0 1.0 1.0";
-  if (!mark_color) mark_color = white;
+  if (!mark_color)
+    mark_color = white;
 
   XBT_DEBUG("MARK,declare_value %s %s %s", mark_type, mark_value, mark_color);
   PJ_value_new (mark_value, mark_color, type);
@@ -232,13 +249,17 @@ void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
   /* safe switch */
-  if (!TRACE_is_enabled()) return;
+  if (!TRACE_is_enabled())
+    return;
 
   /* if platform is not traced, we don't allow marks */
-  if (!TRACE_needs_platform()) return;
+  if (!TRACE_needs_platform())
+    return;
 
-  if (!mark_type) THROWF (tracing_error, 1, "mark_type is nullptr");
-  if (!mark_value) THROWF (tracing_error, 1, "mark_value is nullptr");
+  if (!mark_type)
+    THROWF (tracing_error, 1, "mark_type is nullptr");
+  if (!mark_value)
+    THROWF (tracing_error, 1, "mark_value is nullptr");
 
   //check if mark_type is already declared
   type_t type = PJ_type_get (mark_type, PJ_type_get_root());
@@ -260,7 +281,8 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
  */
 xbt_dynar_t TRACE_get_marks (void)
 {
-  if (!TRACE_is_enabled()) return nullptr;
+  if (!TRACE_is_enabled())
+    return nullptr;
 
   return instr_dict_to_dynar (declared_marks);
 }
@@ -269,10 +291,12 @@ static void instr_user_variable(double time, const char *resource, const char *v
                          double value, InstrUserVariable what, const char *color, xbt_dict_t filter)
 {
   /* safe switch */
-  if (!TRACE_is_enabled()) return;
+  if (!TRACE_is_enabled())
+    return;
 
   /* if platform is not traced, we don't allow user variables */
-  if (!TRACE_needs_platform()) return;
+  if (!TRACE_needs_platform())
+    return;
 
   //check if variable is already declared
   char *created = (char*)xbt_dict_get_or_null(filter, variable);
@@ -281,44 +305,31 @@ static void instr_user_variable(double time, const char *resource, const char *v
       return;
     }else{
       xbt_dict_set (filter, variable, xbt_strdup("1"), nullptr);
+      instr_new_user_variable_type (father_type, variable, color);
     }
   }else{
     if (!created){//not declared, ignore
       return;
-    }
-  }
-
-  char valuestr[100];
-  snprintf(valuestr, 100, "%g", value);
-
-  switch (what){
-  case INSTR_US_DECLARE:
-    instr_new_user_variable_type (father_type, variable, color);
-    break;
-  case INSTR_US_SET:
-    {
+    } else {
+      char valuestr[100];
+      snprintf(valuestr, 100, "%g", value);
       container_t container = PJ_container_get(resource);
       type_t type = PJ_type_get (variable, container->type);
-      new_pajeSetVariable(time, container, type, value);
+      switch (what){
+      case INSTR_US_SET:
+        new_pajeSetVariable(time, container, type, value);
+        break;
+      case INSTR_US_ADD:
+        new_pajeAddVariable(time, container, type, value);
+        break;
+      case INSTR_US_SUB:
+        new_pajeSubVariable(time, container, type, value);
+        break;
+      default:
+        THROW_IMPOSSIBLE;
+        break;
+      }
     }
-    break;
-  case INSTR_US_ADD:
-    {
-      container_t container = PJ_container_get(resource);
-      type_t type = PJ_type_get (variable, container->type);
-      new_pajeAddVariable(time, container, type, value);
-    }
-    break;
-  case INSTR_US_SUB:
-    {
-      container_t container = PJ_container_get(resource);
-      type_t type = PJ_type_get (variable, container->type);
-      new_pajeSubVariable(time, container, type, value);
-    }
-     break;
-  default:
-    //TODO: launch exception
-    break;
   }
 }
 
@@ -326,10 +337,12 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
                               const char *father_type, double value, InstrUserVariable what)
 {
   sg_netcard_t src_elm = sg_netcard_by_name_or_null(src);
-  if(!src_elm) xbt_die("Element '%s' not found!",src);
+  if(!src_elm)
+    xbt_die("Element '%s' not found!",src);
 
   sg_netcard_t dst_elm = sg_netcard_by_name_or_null(dst);
-  if(!dst_elm) xbt_die("Element '%s' not found!",dst);
+  if(!dst_elm)
+    xbt_die("Element '%s' not found!",dst);
 
   std::vector<Link*> *route = new std::vector<Link*>();
   routing_platf->getRouteAndLatency (src_elm, dst_elm, route,nullptr);
@@ -352,9 +365,11 @@ static void instr_user_srcdst_variable(double time, const char *src, const char 
 int TRACE_platform_graph_export_graphviz (const char *filename)
 {
   /* returns 1 if successful, 0 otherwise */
-  if (!TRACE_is_enabled()) return 0;
+  if (!TRACE_is_enabled())
+    return 0;
   xbt_graph_t g = instr_routing_platform_graph();
-  if (g == nullptr) return 0;
+  if (g == nullptr)
+    return 0;
   instr_routing_platform_graph_export_graphviz (g, filename);
   xbt_graph_free_graph(g, xbt_free_f, xbt_free_f, nullptr);
   return 1;
@@ -1042,7 +1057,7 @@ void TRACE_host_reset_state (const char *host, const char *state)
  *
  *  \return A dynar with the types, must be freed with xbt_dynar_free.
  */
-xbt_dynar_t TRACE_get_node_types (void)
+xbt_dynar_t TRACE_get_node_types ()
 {
   return instr_dict_to_dynar (trivaNodeTypes);
 }
@@ -1055,7 +1070,7 @@ xbt_dynar_t TRACE_get_node_types (void)
  *
  *  \return A dynar with the types, must be freed with xbt_dynar_free.
  */
-xbt_dynar_t TRACE_get_edge_types (void)
+xbt_dynar_t TRACE_get_edge_types ()
 {
   return instr_dict_to_dynar (trivaEdgeTypes);
 }
@@ -1064,7 +1079,7 @@ xbt_dynar_t TRACE_get_edge_types (void)
  *  \brief Pauses all tracing activities.
  *  \see TRACE_resume
  */
-void TRACE_pause (void)
+void TRACE_pause ()
 {
   instr_pause_tracing();
 }
@@ -1073,7 +1088,7 @@ void TRACE_pause (void)
  *  \brief Resumes all tracing activities.
  *  \see TRACE_pause
  */
-void TRACE_resume (void)
+void TRACE_resume ()
 {
   instr_resume_tracing();
 }

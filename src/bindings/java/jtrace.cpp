@@ -187,4 +187,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableAddWithTime (JNI
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkVariableSubWithTime (JNIEnv *, jclass, jdouble, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableAdd (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
 JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSub (JNIEnv *, jclass, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSetWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcdstVariableAddWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jstring, jdouble);
+JNIEXPORT void JNICALL Java_org_simgrid_trace_Trace_linkSrcDstVariableSubWithTime (JNIEnv *env, jclass cls, jdouble, jstring, jstring, jstring, jdouble);
 */
