@@ -25,7 +25,7 @@
 #include "xbt/ex.h"
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"
-#include "src/simix/SynchroComm.hpp"
+#include "src/synchro/SynchroComm.hpp"
 
 #include <simgrid/simix.hpp>
 

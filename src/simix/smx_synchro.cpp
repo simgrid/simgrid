@@ -10,7 +10,7 @@
 #include <xbt/ex.hpp>
 #include <xbt/log.h>
 
-#include "src/simix/SynchroRaw.hpp"
+#include "src/synchro/SynchroRaw.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix,
                                 "SIMIX Synchronization (mutex, semaphores and conditions)");

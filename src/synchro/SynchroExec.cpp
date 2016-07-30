@@ -5,7 +5,7 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "src/simix/SynchroExec.hpp"
+#include "src/synchro/SynchroExec.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_host_private.h"
 

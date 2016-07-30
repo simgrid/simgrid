@@ -7,7 +7,7 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "src/simix/SynchroSleep.hpp"
+#include "src/synchro/SynchroSleep.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/popping_private.h"
 #include "src/simix/smx_process_private.h"

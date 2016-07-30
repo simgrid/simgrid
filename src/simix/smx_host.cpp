@@ -12,8 +12,8 @@
 #include "src/surf/virtual_machine.hpp"
 #include "src/surf/HostImpl.hpp"
 
-#include "src/simix/SynchroExec.hpp"
-#include "src/simix/SynchroComm.hpp"
+#include "src/synchro/SynchroExec.hpp"
+#include "src/synchro/SynchroComm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 

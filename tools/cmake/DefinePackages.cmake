@@ -31,12 +31,12 @@ set(EXTRA_DIST
   src/simix/smx_private.h
   src/simix/smx_process_private.h
   src/simix/smx_synchro_private.h
-  src/simix/Synchro.h
-  src/simix/SynchroComm.hpp
-  src/simix/SynchroExec.hpp
-  src/simix/SynchroIo.hpp
-  src/simix/SynchroSleep.hpp
-  src/simix/SynchroRaw.hpp
+  src/synchro/Synchro.h
+  src/synchro/SynchroComm.hpp
+  src/synchro/SynchroExec.hpp
+  src/synchro/SynchroIo.hpp
+  src/synchro/SynchroSleep.hpp
+  src/synchro/SynchroRaw.hpp
   src/smpi/README
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls.h
@@ -352,12 +352,12 @@ set(SIMIX_SRC
   src/simix/smx_synchro.cpp
   src/simix/smx_vm.cpp
   src/simix/popping.cpp
-  src/simix/Synchro.cpp
-  src/simix/SynchroComm.cpp
-  src/simix/SynchroExec.cpp
-  src/simix/SynchroSleep.cpp
-  src/simix/SynchroRaw.cpp
-  src/simix/SynchroIo.cpp
+  src/synchro/Synchro.cpp
+  src/synchro/SynchroComm.cpp
+  src/synchro/SynchroExec.cpp
+  src/synchro/SynchroSleep.cpp
+  src/synchro/SynchroRaw.cpp
+  src/synchro/SynchroIo.cpp
   
   ${SIMIX_GENERATED_SRC}
   )

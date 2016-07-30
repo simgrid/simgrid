@@ -16,7 +16,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
 
-#include "src/simix/SynchroIo.hpp"
+#include "src/synchro/SynchroIo.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_io, simix, "Logging specific to SIMIX (io)");
 

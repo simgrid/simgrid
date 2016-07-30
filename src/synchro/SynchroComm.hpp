@@ -7,7 +7,7 @@
 #define _SIMIX_SYNCHRO_COMM_HPP
 
 #include "surf/surf.h"
-#include "src/simix/Synchro.h"
+#include "src/synchro/Synchro.h"
 
 typedef enum {
   SIMIX_COMM_SEND,

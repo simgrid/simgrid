@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simix/SynchroComm.hpp"
+#include "src/synchro/SynchroComm.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_network_private.h"
 #include "simgrid/modelchecker.h"

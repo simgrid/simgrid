@@ -25,11 +25,11 @@
 #include "src/mc/mc_replay.h"
 #include "simgrid/sg_config.h"
 
-#include "src/simix/SynchroExec.hpp"
-#include "src/simix/SynchroComm.hpp"
-#include "src/simix/SynchroSleep.hpp"
-#include "src/simix/SynchroIo.hpp"
-#include "src/simix/SynchroRaw.hpp"
+#include "src/synchro/SynchroExec.hpp"
+#include "src/synchro/SynchroComm.hpp"
+#include "src/synchro/SynchroSleep.hpp"
+#include "src/synchro/SynchroIo.hpp"
+#include "src/synchro/SynchroRaw.hpp"
 
 #if HAVE_MC
 #include "src/mc/mc_private.h"

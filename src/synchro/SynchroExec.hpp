@@ -7,7 +7,7 @@
 #define _SIMIX_SYNCHRO_EXEC_HPP
 
 #include "surf/surf.h"
-#include "src/simix/Synchro.h"
+#include "src/synchro/Synchro.h"
 
 namespace simgrid {
 namespace simix {

@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simix/SynchroIo.hpp"
+#include "src/synchro/SynchroIo.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/popping_private.h"
 #include "src/simix/smx_private.h"

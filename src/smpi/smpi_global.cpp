@@ -15,7 +15,7 @@
 #include "simgrid/sg_config.h"
 #include "src/mc/mc_replay.h"
 #include "src/msg/msg_private.h"
-#include "src/simix/SynchroComm.hpp"
+#include "src/synchro/SynchroComm.hpp"
 
 #include <float.h> /* DBL_MAX */
 #include <fstream>

@@ -3,7 +3,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simix/Synchro.h"
+#include "src/synchro/Synchro.h"
 
 simgrid::simix::Synchro::Synchro()
 {
