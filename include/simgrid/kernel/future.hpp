@@ -391,8 +391,6 @@ public:
 
   /** Get the value from the future
    *
-   *  This is expected to be called
-   *
    *  The future must be valid and ready in order to make this call.
    *  @ref std::future blocks when the future is not ready but we are
    *  completely single-threaded so blocking would be a deadlock.

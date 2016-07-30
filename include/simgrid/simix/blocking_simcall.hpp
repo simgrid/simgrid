@@ -26,17 +26,20 @@ namespace simix {
 
 XBT_PUBLIC(void) unblock(smx_process_t process);
 
-/** Execute some code in kernel mode and wakes up the process when
+/** Execute some code in kernel mode and wakes up the actor when
  *  the result is available.
  *
- * It is given a callback which is executed in the kernel SimGrid and
- * returns a simgrid::kernel::Future<T>. The kernel blocks the process
- * until the Future is ready and either the value wrapped in the future
- * to the process or raises the exception stored in the Future in the process.
+ * It is given a callback which is executed in the SimGrid kernel and
+ * returns a `simgrid::kernel::Future<T>`. The kernel blocks the actor
+ * until the Future is ready and:
+ *
+ *  - either returns the value wrapped in the future to the actor;
+ *
+ *  - or raises the exception stored in the future in the actor.
  *
  * This can be used to implement blocking calls without adding new simcalls.
  * One downside of this approach is that we don't have any semantic on what
- * the process is waiting. This might be a problem for the model-checker and
+ * the actor is waiting. This might be a problem for the model-checker and
  * we'll have to devise a way to make it work.
  *
  * @param     code Kernel code returning a `simgrid::kernel::Future<T>`
@@ -141,7 +144,7 @@ private:
 /** Start some asynchronous work
  *
  *  @param code SimGrid kernel code which returns a simgrid::kernel::Future
- *  @return     User future
+ *  @return     Actor future
  */
 template<class F>
 auto kernelAsync(F code)
@@ -149,11 +152,11 @@ auto kernelAsync(F code)
 {
   typedef decltype(code().get()) T;
 
-  // Execute the code in the kernel and get the kernel simcall:
+  // Execute the code in the kernel and get the kernel future:
   simgrid::kernel::Future<T> future =
     simgrid::simix::kernelImmediate(std::move(code));
 
-  // Wrap tyhe kernel simcall in a user simcall:
+  // Wrap the kernel future in a actor future:
   return simgrid::simix::Future<T>(std::move(future));
 }
 

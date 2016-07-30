@@ -20,10 +20,10 @@ namespace xbt {
 
 /** A value or an exception (or nothing)
  *
- *  This is similar to optional<expected<T>> but it with a Future/Promise
+ *  This is similar to `optional<expected<T>>`` but it with a Future/Promise
  *  like API.
  *
- *  Also the name it not so great.
+ *  Also the name is not so great.
  **/
 template<class T>
 class Result {
@@ -118,7 +118,7 @@ public:
 
   /** Extract the value from the future
    *
-   *  After this the value is invalid.
+   *  After this, the value is invalid.
    **/
   T get()
   {
@@ -185,7 +185,7 @@ public:
  *  promise.set_value(code());
  *  </pre>
  *
- *  but it takes care of exceptions and works with void.
+ *  but it takes care of exceptions and works with `void`.
  *
  *  We might need this when working with generic code because
  *  the trivial implementation does not work with `void` (before C++1z).
@@ -218,7 +218,7 @@ auto fulfillPromise(P& promise, F&& code)
   }
 }
 
-/** Set a promise/result from a future/resul
+/** Set a promise/result from a future/result
  *
  *  Roughly this does:
  *
