@@ -96,16 +96,13 @@ static char *get_mailbox_name_small(char *str, int index)
 
 void smpi_process_init(int *argc, char ***argv)
 {
-  int index=-1;
-  smpi_process_data_t data;
-  smx_process_t proc;
 
   if (argc != nullptr && argv != nullptr) {
-    proc = SIMIX_process_self();
+    smx_process_t proc = SIMIX_process_self();
     SIMIX_process_set_cleanup_function(proc, MSG_process_cleanup_from_SIMIX);
     char* instance_id = (*argv)[1];
     int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");
-    index = smpi_process_index_of_smx_process(proc);
+    int index = smpi_process_index_of_smx_process(proc);
 
     if(index_to_process_data == nullptr){
       index_to_process_data=static_cast<int*>(xbt_malloc(SIMIX_process_count()*sizeof(int)));
@@ -121,8 +118,8 @@ void smpi_process_init(int *argc, char ***argv)
     MPI_Comm* temp_comm_world;
     xbt_bar_t temp_bar;
     smpi_deployment_register_process(instance_id, rank, index, &temp_comm_world, &temp_bar);
-    data              = smpi_process_remote_data(index);
-    data->comm_world  = temp_comm_world;
+    smpi_process_data_t data = smpi_process_remote_data(index);
+    data->comm_world         = temp_comm_world;
     if(temp_bar != nullptr) 
       data->finalization_barrier = temp_bar;
     data->index       = index;
@@ -145,8 +142,8 @@ void smpi_process_init(int *argc, char ***argv)
     XBT_DEBUG("<%d> New process in the game: %p", index, proc);
   }
   xbt_assert(smpi_process_data(),
-      "smpi_process_data() returned nullptr. You probably gave a nullptr parameter to MPI_Init. Although it's required by "
-      "MPI-2, this is currently not supported by SMPI.");
+      "smpi_process_data() returned nullptr. You probably gave a nullptr parameter to MPI_Init. "
+      "Although it's required by MPI-2, this is currently not supported by SMPI.");
 }
 
 void smpi_process_destroy()
