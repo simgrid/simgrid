@@ -28,7 +28,7 @@ MailboxPtr Mailbox::byName(const char*name) {
   // Only one simix object will be created, but two S4U objects will be created.
   // Only one S4U object will be stored in the hashmap and used, and the other
   // one will be leaked.
-  smx_mailbox_t mbox = simcall_mbox_get_by_name(name);
+  smx_mailbox_t mbox = SIMIX_mbox_get_by_name(name);
   if (mbox == nullptr)
     mbox = simcall_mbox_create(name);
   return MailboxPtr(&mbox->piface_, true);

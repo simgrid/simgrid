@@ -623,19 +623,6 @@ smx_mailbox_t simcall_mbox_create(const char *name)
 
 /**
  *  \ingroup simix_mbox_management
- *  \brief Returns a rendez-vous point knowing its name
- */
-smx_mailbox_t simcall_mbox_get_by_name(const char *name)
-{
-  /* FIXME: this is a horrible loss of performance, so we hack it out by
-   * skipping the simcall (for now). It works in parallel, it won't work on
-   * distributed but probably we will change MSG for that. */
-
-  return SIMIX_mbox_get_by_name(name);
-}
-
-/**
- *  \ingroup simix_mbox_management
  *  \brief returns the communication at the head of the rendez-vous
  *  \param mbox The rendez-vous point
  *  \return The communication or nullptr if empty

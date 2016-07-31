@@ -320,7 +320,6 @@ XBT_PUBLIC(e_smx_state_t) simcall_process_sleep(double duration);
 /***** Rendez-vous points *****/
 
 XBT_PUBLIC(smx_mailbox_t) simcall_mbox_create(const char *name);
-XBT_PUBLIC(smx_mailbox_t) simcall_mbox_get_by_name(const char *name);
 XBT_PUBLIC(smx_synchro_t) simcall_mbox_front(smx_mailbox_t mbox);
 XBT_PUBLIC(void) simcall_mbox_set_receiver(smx_mailbox_t mbox , smx_process_t process);
 
