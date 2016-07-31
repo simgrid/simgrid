@@ -133,7 +133,6 @@ XBT_PRIVATE int SIMIX_process_get_PID(smx_process_t self);
 XBT_PRIVATE int SIMIX_process_get_PPID(smx_process_t self);
 XBT_PRIVATE void* SIMIX_process_get_data(smx_process_t process);
 XBT_PRIVATE void SIMIX_process_set_data(smx_process_t process, void *data);
-XBT_PRIVATE const char* SIMIX_process_get_name(smx_process_t process);
 XBT_PRIVATE smx_process_t SIMIX_process_get_by_name(const char* name);
 XBT_PRIVATE int SIMIX_process_is_suspended(smx_process_t process);
 XBT_PRIVATE xbt_dict_t SIMIX_process_get_properties(smx_process_t process);

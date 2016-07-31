@@ -432,7 +432,7 @@ case SIMCALL_RUN_BLOCKING:
       break;
     case SIMCALL_NONE:
       THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",
-          SIMIX_process_get_name(simcall->issuer),
+          simcall->issuer->name.c_str(),
           sg_host_get_name(simcall->issuer->host)
           );
       break;

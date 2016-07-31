@@ -66,7 +66,7 @@ s4u::Host *Actor::getHost() {
 }
 
 const char* Actor::getName() {
-  return simcall_process_get_name(pimpl_);
+  return pimpl_->name.c_str();
 }
 
 int Actor::getPid(){

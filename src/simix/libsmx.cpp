@@ -516,19 +516,6 @@ double simcall_process_get_kill_time(smx_process_t process) {
 
 /**
  * \ingroup simix_process_management
- * \brief Return the name of an agent.
- *
- * This functions checks whether \a process is a valid pointer or not and return its name.
- * \param process SIMIX process
- * \return The process name
- */
-const char* simcall_process_get_name(smx_process_t process)
-{
-  return SIMIX_process_get_name(process);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Returns true if the process is suspended .
  *
  * This checks whether a process is suspended or not by inspecting the task on which it was waiting for the completion.

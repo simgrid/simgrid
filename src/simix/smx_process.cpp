@@ -725,11 +725,6 @@ const char* SIMIX_process_self_get_name() {
   if (process == nullptr || process == simix_global->maestro_process)
     return "maestro";
 
-  return SIMIX_process_get_name(process);
-}
-
-const char* SIMIX_process_get_name(smx_process_t process)
-{
   return process->name.c_str();
 }
 

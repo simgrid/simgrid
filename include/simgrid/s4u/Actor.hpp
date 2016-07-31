@@ -233,7 +233,8 @@ public:
   /** Ask the actor to die.
    *
    * It will only notice your request when doing a simcall next time (a communication or similar).
-   * SimGrid sometimes have issues when you kill actors that are currently communicating and such. We are working on it to fix the issues.
+   * SimGrid sometimes have issues when you kill actors that are currently communicating and such.
+   * We are working on it to fix the issues.
    */
   void kill();
 

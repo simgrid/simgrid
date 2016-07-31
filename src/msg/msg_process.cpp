@@ -388,8 +388,7 @@ int MSG_process_get_PPID(msg_process_t process)
  */
 const char *MSG_process_get_name(msg_process_t process)
 {
-  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  return simcall_process_get_name(process);
+  return process->name.c_str();
 }
 
 /** \ingroup m_process_management
