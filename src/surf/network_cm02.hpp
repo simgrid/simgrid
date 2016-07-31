@@ -44,7 +44,7 @@ namespace simgrid {
           xbt_dict_t properties) override;
       void updateActionsStateLazy(double now, double delta) override;
       void updateActionsStateFull(double now, double delta) override;
-      Action *communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate) override;
+      Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
       bool next_occuring_event_isIdempotent() override;
       virtual void gapAppend(double size, const Link* link, NetworkAction* action);
     protected:
@@ -72,7 +72,7 @@ namespace simgrid {
      * Action *
      **********/
     class NetworkCm02Action : public NetworkAction {
-      friend Action *NetworkCm02Model::communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate);
+      friend Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate);
       friend NetworkSmpiModel;
     public:
       NetworkCm02Action(Model *model, double cost, bool failed)

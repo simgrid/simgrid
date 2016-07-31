@@ -59,16 +59,16 @@ namespace simgrid {
       xbt_dynar_t res =  xbt_dynar_new(sizeof(sg_host_t), nullptr);
 
       for (unsigned int index = 0; index < xbt_dynar_length(vertices_); index++) {
-        simgrid::routing::NetCard *card = xbt_dynar_get_as(vertices_, index, simgrid::routing::NetCard*);
-        simgrid::s4u::Host     *host = simgrid::s4u::Host::by_name_or_null(card->name());
+        kernel::routing::NetCard *card = xbt_dynar_get_as(vertices_, index, kernel::routing::NetCard*);
+        s4u::Host                *host = simgrid::s4u::Host::by_name_or_null(card->name());
         if (host!=nullptr)
           xbt_dynar_push(res, &host);
       }
       return res;
     }
 
-    int As::addComponent(routing::NetCard *elm) {
-      xbt_dynar_push_as(vertices_, routing::NetCard*, elm);
+    int As::addComponent(kernel::routing::NetCard *elm) {
+      xbt_dynar_push_as(vertices_, kernel::routing::NetCard*, elm);
       return xbt_dynar_length(vertices_)-1;
     }
 

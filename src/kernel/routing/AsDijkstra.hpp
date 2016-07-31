@@ -23,6 +23,7 @@ typedef struct route_cache_element {
 } s_route_cache_element_t, *route_cache_element_t;
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 /***********
@@ -59,7 +60,6 @@ public:
   xbt_dict_t routeCache_ = nullptr;      /* use in cache mode */
 };
 
-}
-}
+}}} // namespaces
 
 #endif /* SURF_ROUTING_DIJKSTRA_HPP_ */

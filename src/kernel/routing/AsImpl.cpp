@@ -11,6 +11,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(AsImpl,surf, "Implementation of S4U autonomous systems");
 
 namespace simgrid {
+  namespace kernel {
   namespace routing {
 
     AsImpl::AsImpl(const char *name)
@@ -217,5 +218,4 @@ namespace simgrid {
 
     }
 
-  }
-};
+}}} // namespace

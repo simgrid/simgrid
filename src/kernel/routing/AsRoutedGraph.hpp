@@ -9,6 +9,7 @@
 #include "src/kernel/routing/AsImpl.hpp"
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 class XBT_PRIVATE AsRoutedGraph : public AsImpl {
@@ -25,7 +26,6 @@ protected:
   void addRouteCheckParams(sg_platf_route_cbarg_t route);
 };
 
-}
-}
+}}} // namespace
 
 #endif /* SIMGRID_ROUTING_GENERIC_HPP_ */

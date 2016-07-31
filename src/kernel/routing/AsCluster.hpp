@@ -9,6 +9,7 @@
 #include "src/kernel/routing/AsImpl.hpp"
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 class XBT_PRIVATE AsCluster: public AsImpl {
@@ -33,7 +34,6 @@ public:
 
 };
 
-}
-}
+}}} // namespace
 
 #endif /* SIMGRID_ROUTING_CLUSTER_HPP_ */

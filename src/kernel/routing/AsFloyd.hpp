@@ -9,6 +9,7 @@
 #include "src/kernel/routing/AsRoutedGraph.hpp"
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 /** Floyd routing data: slow initialization, fast lookup, lesser memory requirements, shortest path routing only */
@@ -28,7 +29,6 @@ private:
   sg_platf_route_cbarg_t *linkTable_;
 };
 
-}
-}
+}}} // namespaces
 
 #endif /* SURF_ROUTING_FLOYD_HPP_ */

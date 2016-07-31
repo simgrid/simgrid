@@ -37,6 +37,7 @@ static void graph_edge_data_free(void *e) // FIXME: useless code duplication
 /* Utility functions */
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 void AsDijkstra::seal()
 {
@@ -358,5 +359,4 @@ void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
   }
 }
 
-}
-}
+}}} // namespace

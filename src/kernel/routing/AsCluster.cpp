@@ -12,6 +12,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
  * Note that a router is created, easing the interconnexion with the rest of the world. */
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
   AsCluster::AsCluster(const char*name)
     : AsImpl(name)
@@ -162,5 +163,4 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
   xbt_free(link_id);
 }
 
-}
-}
+}}}

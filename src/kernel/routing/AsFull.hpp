@@ -9,6 +9,7 @@
 #include "src/kernel/routing/AsRoutedGraph.hpp"
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 /** Full routing: fast, large memory requirements, fully expressive */
@@ -25,7 +26,6 @@ public:
   sg_platf_route_cbarg_t *routingTable_ = nullptr;
 };
 
-}
-}
+}}} // namespaces
 
 #endif /* SIMGRID_ROUTING_FULL_HPP_ */

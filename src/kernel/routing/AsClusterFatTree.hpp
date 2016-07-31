@@ -9,6 +9,7 @@
 #include "src/kernel/routing/AsCluster.hpp"
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 class XBT_PRIVATE FatTreeLink;
@@ -147,7 +148,6 @@ private:
   bool isInSubTree(FatTreeNode *root, FatTreeNode *node);
 };
 
-}
-}
+}}} // namespaces
 
 #endif

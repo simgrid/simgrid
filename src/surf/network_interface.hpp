@@ -77,7 +77,7 @@ namespace simgrid {
        * unlimited.
        * @return The action representing the communication
        */
-      virtual Action *communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate)=0;
+      virtual Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate)=0;
 
       /** @brief Function pointer to the function to use to solve the lmm_system_t
        *
@@ -151,19 +151,19 @@ namespace simgrid {
         public:
       /** @brief Callback signal fired when a new Link is created.
        *  Signature: void(Link*) */
-      static simgrid::xbt::signal<void(simgrid::surf::Link*)> onCreation;
+      static simgrid::xbt::signal<void(surf::Link*)> onCreation;
 
       /** @brief Callback signal fired when a Link is destroyed.
        *  Signature: void(Link*) */
-      static simgrid::xbt::signal<void(simgrid::surf::Link*)> onDestruction;
+      static simgrid::xbt::signal<void(surf::Link*)> onDestruction;
 
       /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off)
        *  Signature: `void(Link*)` */
-      static simgrid::xbt::signal<void(simgrid::surf::Link*)> onStateChange;
+      static simgrid::xbt::signal<void(surf::Link*)> onStateChange;
 
       /** @brief Callback signal fired when a communication starts
        *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst)` */
-      static simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::routing::NetCard *src, simgrid::routing::NetCard *dst)> onCommunicate;
+      static simgrid::xbt::signal<void(surf::NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> onCommunicate;
 
 
 

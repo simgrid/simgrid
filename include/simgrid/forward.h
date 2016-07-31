@@ -17,7 +17,10 @@ namespace simgrid {
   }
   namespace kernel {
      namespace activity {
-	class Synchro;
+       class Synchro;
+     }
+     namespace routing {
+       class NetCard;
      }
   }
   namespace surf {
@@ -25,9 +28,6 @@ namespace simgrid {
     class Cpu;
     class Link;
   }
-  namespace routing {
-    class NetCard;
-  }	
   namespace trace_mgr {
     class trace;
     class future_evt_set;
@@ -38,8 +38,8 @@ typedef simgrid::s4u::As simgrid_As;
 typedef simgrid::s4u::Host simgrid_Host;
 typedef simgrid::s4u::Mailbox simgrid_Mailbox;
 typedef simgrid::kernel::activity::Synchro simgrid_Synchro;
+typedef simgrid::kernel::routing::NetCard routing_NetCard;
 typedef simgrid::surf::Cpu surf_Cpu;
-typedef simgrid::routing::NetCard routing_NetCard;
 typedef simgrid::surf::Link Link;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;

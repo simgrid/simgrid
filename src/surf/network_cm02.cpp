@@ -289,7 +289,8 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
   }
 }
 
-Action *NetworkCm02Model::communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate)
+Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst,
+    double size, double rate)
 {
   int failed = 0;
   double bandwidth_bound;

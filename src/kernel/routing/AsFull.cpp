@@ -11,6 +11,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_full, surf, "Routing part of surf");
 #define TO_ROUTE_FULL(i,j) routingTable_[(i)+(j)*table_size]
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
   AsFull::AsFull(const char*name)
     : AsRoutedGraph(name)
@@ -129,5 +130,4 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
   }
 }
 
-}
-}
+}}} // namespace

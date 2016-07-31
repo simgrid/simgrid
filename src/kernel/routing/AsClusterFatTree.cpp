@@ -20,6 +20,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_fat_tree, surf, "Routing for fat trees");
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 AsClusterFatTree::AsClusterFatTree(const char*name)
@@ -523,5 +524,4 @@ FatTreeLink::FatTreeLink(sg_platf_cluster_cbarg_t cluster,
   free((void*)linkTemplate.id);
 }
 
-}
-}
+}}} // namespace

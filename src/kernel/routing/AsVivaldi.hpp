@@ -9,6 +9,7 @@
 #include "src/kernel/routing/AsCluster.hpp"
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 /* This derivates from cluster because each host has a private link */
@@ -21,7 +22,6 @@ public:
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
 };
 
-}
-}
+}}} // namespace
 
 #endif /* SURF_ROUTING_VIVALDI_HPP_ */

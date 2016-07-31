@@ -24,6 +24,7 @@ XBT_PRIVATE xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_
 SG_END_DECL()
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
   XBT_PUBLIC_DATA(simgrid::xbt::signal<void(s4u::As*)>) asCreatedCallbacks;
@@ -64,7 +65,7 @@ public:
   {
     if (containingAS != nullptr)
       id_ = containingAS->addComponent(this);
-    simgrid::routing::netcardCreatedCallbacks(this);
+    simgrid::kernel::routing::netcardCreatedCallbacks(this);
   }
   ~NetCardImpl() { xbt_free(name_);};
 
@@ -108,7 +109,6 @@ public:
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
 
-}
-}
+}}}
 
 #endif /* NETWORK_ROUTING_HPP_ */

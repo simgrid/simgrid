@@ -13,6 +13,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster_dragonfly, surf_route_cluster, "Dragonfly Routing part of surf");
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 AsClusterDragonfly::AsClusterDragonfly(const char*name)
@@ -341,5 +342,4 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
   
 }
-  }
-}
+}}} // namespace

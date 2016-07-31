@@ -66,7 +66,7 @@ public:
       e_surf_link_sharing_policy_t policy,
       xbt_dict_t properties) override;
 
-  Action *communicate(routing::NetCard *src, routing::NetCard *dst, double size, double rate) override;
+  Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
   bool next_occuring_event_isIdempotent() override {return true;}
 
   HostL07Model *p_hostModel;
@@ -122,7 +122,7 @@ public:
 
   int unref() override;
 
-  std::vector<routing::NetCard*> * p_netcardList = new std::vector<routing::NetCard*>();
+  std::vector<kernel::routing::NetCard*> * p_netcardList = new std::vector<kernel::routing::NetCard*>();
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;

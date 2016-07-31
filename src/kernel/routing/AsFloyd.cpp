@@ -15,6 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_floyd, surf, "Routing part of surf");
 #define TO_FLOYD_LINK(i,j) (linkTable_)[(i)+(j)*table_size]
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 AsFloyd::AsFloyd(const char*name)
@@ -197,5 +198,4 @@ void AsFloyd::seal(){
   }
 }
 
-}
-}
+}}}

@@ -91,12 +91,12 @@ namespace simgrid {
      * Callbacks *
      *************/
 
-    simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onCreation;
-    simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onDestruction;
-    simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onStateChange;
+    simgrid::xbt::signal<void(Link*)> Link::onCreation;
+    simgrid::xbt::signal<void(Link*)> Link::onDestruction;
+    simgrid::xbt::signal<void(Link*)> Link::onStateChange;
 
-    simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)> networkActionStateChangedCallbacks;
-    simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::routing::NetCard *src, simgrid::routing::NetCard *dst)> Link::onCommunicate;
+    simgrid::xbt::signal<void(NetworkAction*, Action::State, Action::State)> networkActionStateChangedCallbacks;
+    simgrid::xbt::signal<void(NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> Link::onCommunicate;
 
   }
 }

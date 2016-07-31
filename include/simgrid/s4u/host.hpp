@@ -101,7 +101,7 @@ public:
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   surf::Cpu     *pimpl_cpu = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
-  routing::NetCard *pimpl_netcard = nullptr;
+  kernel::routing::NetCard *pimpl_netcard = nullptr;
 
 public:
   /*** Called on each newly created object */

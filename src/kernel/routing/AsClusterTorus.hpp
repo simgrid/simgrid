@@ -9,9 +9,10 @@
 #include "src/kernel/routing/AsCluster.hpp"
 
 namespace simgrid {
-  namespace routing {
+namespace kernel {
+namespace routing {
 
-    class XBT_PRIVATE AsClusterTorus : public simgrid::routing::AsCluster {
+    class XBT_PRIVATE AsClusterTorus : public AsCluster {
     public:
       explicit AsClusterTorus(const char*name);
       ~AsClusterTorus() override;
@@ -22,5 +23,5 @@ namespace simgrid {
       xbt_dynar_t dimensions_ = nullptr;
     };
 
-  }}
+}}}
 #endif

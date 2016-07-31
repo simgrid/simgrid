@@ -14,6 +14,7 @@
 #include "src/surf/xml/platf_private.hpp" // FIXME: kill sg_platf_route_cbarg_t to remove that UGLY include
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
   class RoutingPlatf; // FIXME: KILLME
 
@@ -23,7 +24,7 @@ namespace routing {
  * In SimGrid, there is a hierarchy of ASes, with a unique root AS (that you can retrieve from the s4u::Engine).
  */
 XBT_PUBLIC_CLASS AsImpl : public s4u::As {
-  friend simgrid::routing::RoutingPlatf;
+  friend simgrid::kernel::routing::RoutingPlatf;
 protected:
   explicit AsImpl(const char *name);
   ~AsImpl() override;
@@ -72,6 +73,6 @@ public:
   routing::NetCard *netcard_ = nullptr; // Our representative in the father AS
 };
 
-}}; // Namespace simgrid::s4u
+}}}; // Namespace simgrid::kernel::routing
 
 #endif /* SIMGRID_SURF_AS_HPP */

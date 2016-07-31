@@ -9,7 +9,8 @@
 #include "src/kernel/routing/AsCluster.hpp"
 
 namespace simgrid {
-  namespace routing {
+namespace kernel {
+namespace routing {
 
 
 class XBT_PRIVATE DragonflyRouter {
@@ -85,5 +86,5 @@ class XBT_PRIVATE AsClusterDragonfly
       DragonflyRouter** routers_=nullptr;
     };
 
-  }}
+}}}
 #endif

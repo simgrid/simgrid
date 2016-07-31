@@ -12,6 +12,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_none, surf, "Routing part of surf");
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 AsNone::AsNone(const char*name)
@@ -30,5 +31,4 @@ void AsNone::getGraph(xbt_graph_t /*graph*/, xbt_dict_t /*nodes*/, xbt_dict_t /*
   XBT_ERROR("No routing no graph");
 }
 
-}
-}
+}}}

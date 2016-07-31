@@ -287,7 +287,7 @@ void surf_init(int *argc, char **argv)
   XBT_DEBUG("Add routing levels");
   ROUTING_PROP_ASR_LEVEL = xbt_lib_add_level(as_router_lib, nullptr);
   ROUTING_ASR_LEVEL = xbt_lib_add_level(as_router_lib, [](void* p) {
-    delete static_cast<simgrid::routing::NetCard*>(p);
+    delete static_cast<simgrid::kernel::routing::NetCard*>(p);
   });
 
   XBT_DEBUG("Add SURF levels");

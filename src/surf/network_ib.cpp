@@ -51,7 +51,7 @@ static void IB_action_state_changed_callback(
 
 
 static void IB_action_init_callback(
-    simgrid::surf::NetworkAction *action, simgrid::routing::NetCard *src, simgrid::routing::NetCard *dst)
+    simgrid::surf::NetworkAction *action, simgrid::kernel::routing::NetCard *src, simgrid::kernel::routing::NetCard *dst)
 {
   simgrid::surf::NetworkIBModel* ibModel = (simgrid::surf::NetworkIBModel*)surf_network_model;
 

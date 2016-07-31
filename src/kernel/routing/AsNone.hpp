@@ -9,6 +9,7 @@
 #include "src/kernel/routing/AsImpl.hpp"
 
 namespace simgrid {
+namespace kernel {
 namespace routing {
 
 /** No specific routing. Mainly useful with the constant network model */
@@ -21,7 +22,6 @@ public:
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
 };
 
-}
-}
+}}} // namespace
 
 #endif /* SURF_ROUTING_NONE_HPP_ */

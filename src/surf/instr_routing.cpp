@@ -152,7 +152,7 @@ static void recursiveGraphExtraction (simgrid::s4u::As *as, container_t containe
     xbt_dict_cursor_t cursor = nullptr;
     char *edge_name;
 
-    static_cast<simgrid::routing::AsImpl*>(as)->getGraph(graph, nodes, edges);
+    static_cast<simgrid::kernel::routing::AsImpl*>(as)->getGraph(graph, nodes, edges);
     xbt_dict_foreach(edges,cursor,edge_name,edge) {
         linkContainers(
           PJ_container_get((const char*) edge->src->data),
@@ -456,7 +456,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
     }
   }
 
-  static_cast<simgrid::routing::AsImpl*>(as)->getGraph(graph, nodes, edges);
+  static_cast<simgrid::kernel::routing::AsImpl*>(as)->getGraph(graph, nodes, edges);
 }
 
 xbt_graph_t instr_routing_platform_graph (void)
