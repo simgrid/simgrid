@@ -20,6 +20,7 @@
 
 #include <xbt/base.h>
 #include <xbt/functional.hpp>
+#include <xbt/string.hpp>
 
 #include <simgrid/chrono.hpp>
 #include <simgrid/simix.h>
@@ -217,7 +218,7 @@ public:
   //static Actor *byPid(int pid); not implemented
 
   /** Retrieves the name of that actor */
-  const char* getName();
+  simgrid::xbt::string getName();
   /** Retrieves the host on which that actor is running */
   s4u::Host *getHost();
   /** Retrieves the PID of that actor */

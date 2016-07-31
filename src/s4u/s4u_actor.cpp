@@ -65,8 +65,8 @@ s4u::Host *Actor::getHost() {
   return pimpl_->host;
 }
 
-const char* Actor::getName() {
-  return pimpl_->name.c_str();
+simgrid::xbt::string Actor::getName() {
+  return pimpl_->name;
 }
 
 int Actor::getPid(){
