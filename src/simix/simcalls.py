@@ -330,7 +330,7 @@ if __name__ == '__main__':
         '      THROWF(arg_error,0,"Asked to do the noop syscall on %s@%s",\n')
     fd.write('          SIMIX_process_get_name(simcall->issuer),\n')
     fd.write(
-        '          sg_host_get_name(SIMIX_process_get_host(simcall->issuer))\n')
+        '          sg_host_get_name(simcall->issuer->host)\n')
     fd.write('          );\n')
     fd.write('      break;\n')
     fd.write('\n')

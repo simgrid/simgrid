@@ -516,20 +516,6 @@ double simcall_process_get_kill_time(smx_process_t process) {
 
 /**
  * \ingroup simix_process_management
- * \brief Return the location on which an agent is running.
- *
- * This functions returns the sg_host_t corresponding to the location on which
- * \a process is running.
- * \param process SIMIX process
- * \return SIMIX host
- */
-sg_host_t simcall_process_get_host(smx_process_t process)
-{
-  return SIMIX_process_get_host(process);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Return the name of an agent.
  *
  * This functions checks whether \a process is a valid pointer or not and return its name.

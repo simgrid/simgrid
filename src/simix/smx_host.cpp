@@ -131,7 +131,7 @@ void SIMIX_host_destroy(void *h)
 sg_host_t SIMIX_host_self(void)
 {
   smx_process_t process = SIMIX_process_self();
-  return (process == nullptr) ? nullptr : SIMIX_process_get_host(process);
+  return (process == nullptr) ? nullptr : process->host;
 }
 
 /* needs to be public and without simcall for exceptions and logging events */

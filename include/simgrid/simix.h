@@ -301,7 +301,6 @@ XBT_PUBLIC(int) simcall_process_count(void);
 XBT_PUBLIC(void *) simcall_process_get_data(smx_process_t process);
 XBT_PUBLIC(void) simcall_process_set_data(smx_process_t process, void *data);
 XBT_PUBLIC(void) simcall_process_set_host(smx_process_t process, sg_host_t dest);
-XBT_PUBLIC(sg_host_t) simcall_process_get_host(smx_process_t process);
 XBT_PUBLIC(const char *) simcall_process_get_name(smx_process_t process);
 XBT_PUBLIC(int) simcall_process_get_PID(smx_process_t process);
 XBT_PUBLIC(int) simcall_process_get_PPID(smx_process_t process);

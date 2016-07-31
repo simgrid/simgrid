@@ -62,7 +62,7 @@ void Actor::setAutoRestart(bool autorestart) {
 }
 
 s4u::Host *Actor::getHost() {
-  return simcall_process_get_host(pimpl_);
+  return pimpl_->host;
 }
 
 const char* Actor::getName() {

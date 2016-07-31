@@ -717,11 +717,6 @@ void SIMIX_process_set_data(smx_process_t process, void *data)
   process->data = data;
 }
 
-sg_host_t SIMIX_process_get_host(smx_process_t process)
-{
-  return process->host;
-}
-
 /* needs to be public and without simcall because it is called
    by exceptions and logging events */
 const char* SIMIX_process_self_get_name() {
