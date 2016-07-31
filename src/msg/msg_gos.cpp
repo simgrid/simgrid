@@ -283,6 +283,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   }
   catch (xbt_ex& e) {
     switch (e.category) {
+    case host_error:
     case cancel_error:
       ret = MSG_HOST_FAILURE;
       break;
@@ -291,9 +292,6 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
       break;
     case timeout_error:
       ret = MSG_TIMEOUT;
-      break;
-    case host_error:
-      ret = MSG_HOST_FAILURE;
       break;
     default:
       throw;
