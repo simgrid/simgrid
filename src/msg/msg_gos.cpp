@@ -254,13 +254,56 @@ msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double ti
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
-* #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeout, msg_host_t host,
                                          double rate)
 {
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  return MSG_mailbox_get_task_ext_bounded(simgrid::s4u::Mailbox::byName(alias), task, host, timeout, rate);
+  msg_mailbox_t mailbox = simgrid::s4u::Mailbox::byName(alias);
+  msg_error_t ret = MSG_OK;
+  /* We no longer support getting a task from a specific host */
+  if (host)
+    THROW_UNIMPLEMENTED;
+
+  TRACE_msg_task_get_start();
+  double start_time = MSG_get_clock();
+
+  /* Sanity check */
+  xbt_assert(task, "Null pointer for the task storage");
+
+  if (*task)
+    XBT_WARN("Asked to write the received task in a non empty struct -- proceeding.");
+
+  /* Try to receive it by calling SIMIX network layer */
+  try {
+    simcall_comm_recv(MSG_process_self(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
+    XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->getName());
+    (*task)->simdata->setNotUsed();
+  }
+  catch (xbt_ex& e) {
+    switch (e.category) {
+    case cancel_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    case network_error:
+      ret = MSG_TRANSFER_FAILURE;
+      break;
+    case timeout_error:
+      ret = MSG_TIMEOUT;
+      break;
+    case host_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    default:
+      throw;
+    }
+  }
+
+  if (ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
+    TRACE_msg_task_get_end(start_time, *task);
+  }
+  return ret;
 }
 
 /* Internal function used to factorize code between MSG_task_isend_with_matching() and MSG_task_dsend(). */
