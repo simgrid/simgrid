@@ -242,7 +242,7 @@ msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double ti
   msg_error_t ret = MSG_OK;
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
   try {
-    ret = MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task, host, timeout);
+    ret = MSG_mailbox_get_task_ext(simgrid::s4u::Mailbox::byName(alias), task, host, timeout);
   }
   catch(xbt_ex& e) {
     switch (e.category) {
@@ -273,7 +273,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
                                          double rate)
 {
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  return MSG_mailbox_get_task_ext_bounded(MSG_mailbox_get_by_alias(alias), task, host, timeout, rate);
+  return MSG_mailbox_get_task_ext_bounded(simgrid::s4u::Mailbox::byName(alias), task, host, timeout, rate);
 }
 
 /* Internal function used to factorize code between MSG_task_isend_with_matching() and MSG_task_dsend(). */
@@ -283,7 +283,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
 {
   simdata_task_t t_simdata = nullptr;
   msg_process_t myself = SIMIX_process_self();
-  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
+  msg_mailbox_t mailbox = simgrid::s4u::Mailbox::byName(alias);
   int call_end = TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
@@ -435,7 +435,7 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
  */
 msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rate)
 {
-  msg_mailbox_t mbox = MSG_mailbox_get_by_alias(name);
+  msg_mailbox_t mbox = simgrid::s4u::Mailbox::byName(name);
 
   /* FIXME: these functions are not traceable */
   /* Sanity check */
@@ -757,7 +757,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   simdata_task_t t_simdata = nullptr;
   msg_process_t process = MSG_process_self();
   simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data();
-  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
+  msg_mailbox_t mailbox = simgrid::s4u::Mailbox::byName(alias);
 
   int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
 
@@ -836,8 +836,8 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  */
 int MSG_task_listen(const char *alias)
 {
-  msg_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
-  return !MSG_mailbox_is_empty(mbox) ||
+  msg_mailbox_t mbox = simgrid::s4u::Mailbox::byName(alias);
+  return !mbox->empty() ||
     (mbox->getImpl()->permanent_receiver && !mbox->getImpl()->done_comm_queue.empty());
 }
 
@@ -851,7 +851,7 @@ int MSG_task_listen(const char *alias)
  */
 int MSG_task_listen_from(const char *alias)
 {
-  msg_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
+  msg_mailbox_t mbox = simgrid::s4u::Mailbox::byName(alias);
   simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(mbox->front());
 
   if (!comm)

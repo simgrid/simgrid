@@ -14,11 +14,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mailbox)");
 
-int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
-{
-  return mailbox->empty();
-}
-
 msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
 {
   simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(mailbox->front());
@@ -27,11 +22,6 @@ msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
     return nullptr;
 
   return (msg_task_t) comm->src_data;
-}
-
-msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
-{
-  return simgrid::s4u::Mailbox::byName(alias);
 }
 
 /** \ingroup msg_mailbox_management
@@ -44,7 +34,7 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
  * \param alias The name of the mailbox
  */
 void MSG_mailbox_set_async(const char *alias){
-  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
 
   simcall_mbox_set_receiver(mailbox->getImpl(), SIMIX_process_self());
   XBT_VERB("%s mailbox set to receive eagerly for myself\n",alias);

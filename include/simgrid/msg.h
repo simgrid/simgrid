@@ -449,20 +449,6 @@ XBT_PUBLIC(void) MSG_task_set_category (msg_task_t task, const char *category);
 XBT_PUBLIC(const char *) MSG_task_get_category (msg_task_t task);
 
 /************************** Mailbox handling ************************************/
-/* @brief MSG_mailbox_get_by_alias - get a mailbox from its alias.
- * Returns the mailbox associated with the key specified by the parameter alias. If the mailbox does not exists,
- * the function creates it.
- * @param   alias    The alias of the mailbox to return.
- * @return           The mailbox associated with the alias specified as parameter or a new one if the key doesn't match.
- */
-XBT_PUBLIC(msg_mailbox_t) MSG_mailbox_get_by_alias(const char *alias);
-
-/* @brief MSG_mailbox_is_empty - test if a mailbox is empty.
- * Tests if a mailbox is empty (contains no msg task).
- * @param   mailbox  The mailbox to get test.
- * @return           1 if the mailbox is empty, 0 otherwise.
- */
-XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
 
 /* @brief MSG_mailbox_set_async - set a mailbox as eager
  * Sets the mailbox to a permanent receiver mode. Messages sent to this mailbox will then be sent just after the send
