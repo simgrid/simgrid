@@ -88,5 +88,5 @@ msg_error_t MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *
   if (ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
     TRACE_msg_task_get_end(start_time, *task);
   }
-  MSG_RETURN(ret);
+  return ret;
 }

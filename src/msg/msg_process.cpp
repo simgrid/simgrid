@@ -456,7 +456,7 @@ msg_error_t MSG_process_suspend(msg_process_t process)
 
   TRACE_msg_process_suspend(process);
   simcall_process_suspend(process);
-  MSG_RETURN(MSG_OK);
+  return MSG_OK;
 }
 
 /** \ingroup m_process_management
@@ -470,7 +470,7 @@ msg_error_t MSG_process_resume(msg_process_t process)
 
   TRACE_msg_process_resume(process);
   simcall_process_resume(process);
-  MSG_RETURN(MSG_OK);
+  return MSG_OK;
 }
 
 /** \ingroup m_process_management

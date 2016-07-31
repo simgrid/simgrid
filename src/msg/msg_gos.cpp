@@ -109,7 +109,7 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
   simdata->compute = nullptr;
   TRACE_msg_task_execute_end(task);
 
-  MSG_RETURN(status);
+  return status;
 }
 
 /** \ingroup msg_task_usage
@@ -147,7 +147,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
   }
 
   TRACE_msg_process_sleep_out(MSG_process_self());
-  MSG_RETURN(status);
+  return status;
 }
 
 /** \ingroup msg_task_usage
@@ -239,21 +239,8 @@ msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char 
  */
 msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout, msg_host_t host)
 {
-  msg_error_t ret = MSG_OK;
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  try {
-    ret = MSG_mailbox_get_task_ext_bounded(simgrid::s4u::Mailbox::byName(alias), task, host, timeout, -1.0);
-  }
-  catch(xbt_ex& e) {
-    switch (e.category) {
-    case cancel_error:          /* may be thrown by MSG_mailbox_get_by_alias */
-      ret = MSG_HOST_FAILURE;
-      break;
-    default:
-      throw;
-    }
-  }
-  return ret;
+  return MSG_task_receive_ext_bounded(task, alias, timeout, host, -1.0);
 }
 
 /** \ingroup msg_task_usage
@@ -805,7 +792,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   p_simdata->waiting_task = nullptr;
   if (call_end)
     TRACE_msg_task_put_end();
-  MSG_RETURN(ret);
+  return ret;
 }
 
 /** \ingroup msg_task_usage

@@ -136,9 +136,6 @@ typedef struct MSG_Global {
 XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
 /*************************************************************/
-// FIXME: KILLME
-#  define MSG_RETURN(val) return(val)
-
 XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
 XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);
 XBT_PRIVATE void __MSG_host_priv_free(msg_host_priv_t priv);
