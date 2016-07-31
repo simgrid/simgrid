@@ -11,11 +11,11 @@
 #include "src/mc/mc_private.h"
 #endif
 
-#include "src/synchro/SynchroExec.hpp"
-#include "src/synchro/SynchroComm.hpp"
-#include "src/synchro/SynchroSleep.hpp"
-#include "src/synchro/SynchroRaw.hpp"
-#include "src/synchro/SynchroIo.hpp"
+#include "src/kernel/activity/SynchroExec.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
+#include "src/kernel/activity/SynchroSleep.hpp"
+#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/SynchroIo.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_popping, simix,
                                 "Popping part of SIMIX (transmuting from user request into kernel handlers)");

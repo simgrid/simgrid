@@ -19,7 +19,7 @@
 #include "xbt/dict.h"
 #include "simgrid/s4u/mailbox.hpp"
 
-#include "src/synchro/SynchroComm.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 

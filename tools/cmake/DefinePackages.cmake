@@ -31,12 +31,12 @@ set(EXTRA_DIST
   src/simix/smx_private.h
   src/simix/smx_process_private.h
   src/simix/smx_synchro_private.h
-  src/synchro/Synchro.h
-  src/synchro/SynchroComm.hpp
-  src/synchro/SynchroExec.hpp
-  src/synchro/SynchroIo.hpp
-  src/synchro/SynchroSleep.hpp
-  src/synchro/SynchroRaw.hpp
+  src/kernel/activity/Synchro.h
+  src/kernel/activity/SynchroComm.hpp
+  src/kernel/activity/SynchroExec.hpp
+  src/kernel/activity/SynchroIo.hpp
+  src/kernel/activity/SynchroSleep.hpp
+  src/kernel/activity/SynchroRaw.hpp
   src/smpi/README
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls.h
@@ -63,17 +63,17 @@ set(EXTRA_DIST
   src/surf/xml/simgrid_dtd.c
   src/surf/xml/surfxml_sax_cb.cpp
 
-  src/routing/AsImpl.hpp
-  src/routing/AsCluster.hpp
-  src/routing/AsClusterFatTree.hpp
-  src/routing/AsClusterTorus.hpp
-  src/routing/AsClusterDragonfly.hpp
-  src/routing/AsDijkstra.hpp
-  src/routing/AsFloyd.hpp
-  src/routing/AsFull.hpp
-  src/routing/AsRoutedGraph.hpp
-  src/routing/AsNone.hpp
-  src/routing/AsVivaldi.hpp
+  src/kernel/routing/AsImpl.hpp
+  src/kernel/routing/AsCluster.hpp
+  src/kernel/routing/AsClusterFatTree.hpp
+  src/kernel/routing/AsClusterTorus.hpp
+  src/kernel/routing/AsClusterDragonfly.hpp
+  src/kernel/routing/AsDijkstra.hpp
+  src/kernel/routing/AsFloyd.hpp
+  src/kernel/routing/AsFull.hpp
+  src/kernel/routing/AsRoutedGraph.hpp
+  src/kernel/routing/AsNone.hpp
+  src/kernel/routing/AsVivaldi.hpp
 
   src/surf/storage_interface.hpp
   src/surf/storage_n11.hpp
@@ -289,17 +289,17 @@ set(NS3_SRC  src/surf/network_ns3.cpp
              src/surf/ns3/ns3_simulator.cc )
 
 set(SURF_SRC
-  src/routing/AsImpl.cpp
-  src/routing/AsCluster.cpp
-  src/routing/AsClusterFatTree.cpp
-  src/routing/AsClusterTorus.cpp
-  src/routing/AsClusterDragonfly.cpp
-  src/routing/AsDijkstra.cpp
-  src/routing/AsFloyd.cpp
-  src/routing/AsFull.cpp
-  src/routing/AsRoutedGraph.cpp
-  src/routing/AsNone.cpp
-  src/routing/AsVivaldi.cpp
+  src/kernel/routing/AsImpl.cpp
+  src/kernel/routing/AsCluster.cpp
+  src/kernel/routing/AsClusterFatTree.cpp
+  src/kernel/routing/AsClusterTorus.cpp
+  src/kernel/routing/AsClusterDragonfly.cpp
+  src/kernel/routing/AsDijkstra.cpp
+  src/kernel/routing/AsFloyd.cpp
+  src/kernel/routing/AsFull.cpp
+  src/kernel/routing/AsRoutedGraph.cpp
+  src/kernel/routing/AsNone.cpp
+  src/kernel/routing/AsVivaldi.cpp
   
   src/surf/cpu_cas01.cpp
   src/surf/cpu_interface.cpp
@@ -352,12 +352,12 @@ set(SIMIX_SRC
   src/simix/smx_synchro.cpp
   src/simix/smx_vm.cpp
   src/simix/popping.cpp
-  src/synchro/Synchro.cpp
-  src/synchro/SynchroComm.cpp
-  src/synchro/SynchroExec.cpp
-  src/synchro/SynchroSleep.cpp
-  src/synchro/SynchroRaw.cpp
-  src/synchro/SynchroIo.cpp
+  src/kernel/activity/Synchro.cpp
+  src/kernel/activity/SynchroComm.cpp
+  src/kernel/activity/SynchroExec.cpp
+  src/kernel/activity/SynchroSleep.cpp
+  src/kernel/activity/SynchroRaw.cpp
+  src/kernel/activity/SynchroIo.cpp
   
   ${SIMIX_GENERATED_SRC}
   )

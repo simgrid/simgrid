@@ -26,9 +26,9 @@
 #include "src/mc/mc_replay.h"
 #include "src/mc/Client.hpp"
 #include "src/msg/msg_private.h"
-#include "src/synchro/SynchroSleep.hpp"
-#include "src/synchro/SynchroRaw.hpp"
-#include "src/synchro/SynchroIo.hpp"
+#include "src/kernel/activity/SynchroSleep.hpp"
+#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/SynchroIo.hpp"
 
 #ifdef HAVE_SMPI
 #include "src/smpi/private.h"

@@ -19,7 +19,7 @@
 #include "simgrid/sg_config.h"
 #include "colls/colls.h"
 
-#include "src/synchro/SynchroComm.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
 

@@ -14,7 +14,7 @@
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
-#include "src/synchro/SynchroExec.hpp"
+#include "src/kernel/activity/SynchroExec.hpp"
 
 SG_BEGIN_DECL()
 

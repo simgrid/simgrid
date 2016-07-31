@@ -15,7 +15,7 @@
 #include "simgrid/sg_config.h"
 #include "storage_interface.hpp"
 
-#include "src/routing/AsImpl.hpp"
+#include "src/kernel/routing/AsImpl.hpp"
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route, surf, "Routing part of surf");

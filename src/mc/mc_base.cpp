@@ -20,12 +20,12 @@
 #include "mc/mc.h"
 #include "src/mc/mc_protocol.h"
 
-#include "src/synchro/Synchro.h"
-#include "src/synchro/SynchroIo.hpp"
-#include "src/synchro/SynchroComm.hpp"
-#include "src/synchro/SynchroRaw.hpp"
-#include "src/synchro/SynchroSleep.hpp"
-#include "src/synchro/SynchroExec.hpp"
+#include "src/kernel/activity/Synchro.h"
+#include "src/kernel/activity/SynchroIo.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
+#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/SynchroSleep.hpp"
+#include "src/kernel/activity/SynchroExec.hpp"
 
 #if HAVE_MC
 #include "src/mc/mc_request.h"

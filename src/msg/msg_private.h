@@ -21,8 +21,8 @@
 #include "xbt/config.h"
 #include "src/instr/instr_private.h"
 
-#include "src/synchro/SynchroExec.hpp"
-#include "src/synchro/SynchroComm.hpp"
+#include "src/kernel/activity/SynchroExec.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
 
 SG_BEGIN_DECL()
 
