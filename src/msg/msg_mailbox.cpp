@@ -20,7 +20,7 @@ int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 
 msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
 {
-  simgrid::simix::Comm* comm = static_cast<simgrid::simix::Comm*>(simcall_mbox_front(mailbox));
+  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(simcall_mbox_front(mailbox));
 
   if (!comm)
     return nullptr;

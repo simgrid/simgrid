@@ -17,7 +17,8 @@ typedef enum {
 } e_smx_comm_type_t;
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace activity {
 
   XBT_PUBLIC_CLASS Comm : public Synchro {
     ~Comm() override;
@@ -66,6 +67,6 @@ namespace simix {
     void* dst_data = nullptr;
   };
 
-}} // namespace simgrid::simix
+}}} // namespace simgrid::kernel::activity
 
 #endif

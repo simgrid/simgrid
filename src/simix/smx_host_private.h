@@ -51,7 +51,7 @@ XBT_PRIVATE void SIMIX_execution_set_priority(smx_synchro_t synchro, double prio
 XBT_PRIVATE void SIMIX_execution_set_bound(smx_synchro_t synchro, double bound);
 XBT_PRIVATE void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask);
 
-XBT_PRIVATE void SIMIX_execution_finish(simgrid::simix::Exec *exec);
+XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec);
 
 XBT_PRIVATE void SIMIX_set_category(smx_synchro_t synchro, const char *category);
 

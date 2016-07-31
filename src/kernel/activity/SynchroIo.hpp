@@ -10,7 +10,8 @@
 #include "src/kernel/activity/Synchro.h"
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace activity {
 
   XBT_PUBLIC_CLASS Io : public Synchro {
   public:
@@ -22,6 +23,6 @@ namespace simix {
     surf_action_t surf_io = nullptr;
   };
 
-}} // namespace simgrid::simix
+}}} // namespace simgrid::kernel::activity
 
 #endif

@@ -10,7 +10,8 @@
 #include "src/kernel/activity/Synchro.h"
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace activity {
 
   XBT_PUBLIC_CLASS Exec : public Synchro {
     ~Exec() override;
@@ -25,5 +26,5 @@ namespace simix {
     surf_action_t surf_exec = nullptr; /* The Surf execution action encapsulated */
   };
 
-}} // namespace simgrid::simix
+}}} // namespace simgrid::kernel::activity
 #endif

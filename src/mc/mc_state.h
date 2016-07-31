@@ -136,7 +136,7 @@ struct XBT_PRIVATE State {
   s_smx_simcall_t internal_req;
 
   /* Can be used as a copy of the remote synchro object */
-  simgrid::mc::Remote<simgrid::simix::Comm> internal_comm;
+  simgrid::mc::Remote<simgrid::kernel::activity::Comm> internal_comm;
 
   /** Snapshot of system state (if needed) */
   std::shared_ptr<simgrid::mc::Snapshot> system_state;

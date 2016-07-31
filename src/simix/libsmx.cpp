@@ -757,7 +757,7 @@ smx_synchro_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag
 void simcall_comm_cancel(smx_synchro_t synchro)
 {
   simgrid::simix::kernelImmediate([synchro]{
-    simgrid::simix::Comm *comm = static_cast<simgrid::simix::Comm*>(synchro);
+    simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
     comm->cancel();
   });
 }

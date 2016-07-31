@@ -389,7 +389,7 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t synchro, void *buff, size_t bu
 {
   XBT_DEBUG("Copy the data over");
   void* tmpbuff=buff;
-  simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm*>(synchro);
+  simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm*>(synchro);
 
   if((smpi_privatize_global_variables) && (static_cast<char*>(buff) >= smpi_start_data_exe)
       && (static_cast<char*>(buff) < smpi_start_data_exe + smpi_size_data_exe )

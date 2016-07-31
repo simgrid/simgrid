@@ -14,17 +14,17 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
 
-void simgrid::simix::Sleep::suspend()
+void simgrid::kernel::activity::Sleep::suspend()
 {
   surf_sleep->suspend();
 }
 
-void simgrid::simix::Sleep::resume()
+void simgrid::kernel::activity::Sleep::resume()
 {
   surf_sleep->resume();
 }
 
-void simgrid::simix::Sleep::post()
+void simgrid::kernel::activity::Sleep::post()
 {
   while (!simcalls.empty()) {
     smx_simcall_t simcall = simcalls.front();

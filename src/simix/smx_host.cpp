@@ -211,7 +211,7 @@ smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name, doub
                                     double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
-  simgrid::simix::Exec *exec = new simgrid::simix::Exec(name, issuer->host);
+  simgrid::kernel::activity::Exec *exec = new simgrid::kernel::activity::Exec(name, issuer->host);
 
   /* set surf's action */
   if (!MC_is_active() && !MC_record_replay_is_active()) {
@@ -240,7 +240,7 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_h
                                              double *bytes_amount, double amount, double rate){
 
   /* alloc structures and initialize */
-  simgrid::simix::Exec *exec = new simgrid::simix::Exec(name, nullptr);
+  simgrid::kernel::activity::Exec *exec = new simgrid::kernel::activity::Exec(name, nullptr);
 
   /* set surf's synchro */
   sg_host_t *host_list_cpy = xbt_new0(sg_host_t, host_nb);
@@ -268,7 +268,7 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_h
 void SIMIX_execution_cancel(smx_synchro_t synchro)
 {
   XBT_DEBUG("Cancel synchro %p", synchro);
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
 
   if (exec->surf_exec)
     exec->surf_exec->cancel();
@@ -276,21 +276,21 @@ void SIMIX_execution_cancel(smx_synchro_t synchro)
 
 void SIMIX_execution_set_priority(smx_synchro_t synchro, double priority)
 {
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   if(exec->surf_exec)
     exec->surf_exec->setPriority(priority);
 }
 
 void SIMIX_execution_set_bound(smx_synchro_t synchro, double bound)
 {
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   if(exec->surf_exec)
     static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
 }
 
 void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask)
 {
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   if(exec->surf_exec) {
     /* just a double check to confirm that this host is the host where this task is running. */
     xbt_assert(exec->host == host);
@@ -300,7 +300,7 @@ void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigne
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro)
 {
-  simgrid::simix::Exec *exec = static_cast<simgrid::simix::Exec *>(synchro);
+  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
 
   /* Associate this simcall to the synchro */
@@ -319,7 +319,7 @@ void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro
     SIMIX_execution_finish(exec);
 }
 
-void SIMIX_execution_finish(simgrid::simix::Exec *exec)
+void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec)
 {
   for (smx_simcall_t simcall : exec->simcalls) {
     switch (exec->state) {
@@ -362,13 +362,13 @@ void SIMIX_set_category(smx_synchro_t synchro, const char *category)
   if (synchro->state != SIMIX_RUNNING)
     return;
 
-  simgrid::simix::Exec *exec = dynamic_cast<simgrid::simix::Exec *>(synchro);
+  simgrid::kernel::activity::Exec *exec = dynamic_cast<simgrid::kernel::activity::Exec *>(synchro);
   if (exec != nullptr) {
     exec->surf_exec->setCategory(category);
     return;
   }
 
-  simgrid::simix::Comm *comm = dynamic_cast<simgrid::simix::Comm *>(synchro);
+  simgrid::kernel::activity::Comm *comm = dynamic_cast<simgrid::kernel::activity::Comm *>(synchro);
   if (comm != nullptr) {
     comm->surf_comm->setCategory(category);
     return;

@@ -9,21 +9,21 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_synchro);
 
-simgrid::simix::Raw::~Raw()
+simgrid::kernel::activity::Raw::~Raw()
 {
   sleep->unref();
 }
-void simgrid::simix::Raw::suspend()
+void simgrid::kernel::activity::Raw::suspend()
 {
   /* The suspension of raw synchros is delayed to when the process is rescheduled. */
 }
 
-void simgrid::simix::Raw::resume()
+void simgrid::kernel::activity::Raw::resume()
 {
   /* I cannot resume raw synchros directly. This is delayed to when the process is rescheduled at
    * the end of the synchro. */
 }
-void simgrid::simix::Raw::post()
+void simgrid::kernel::activity::Raw::post()
 {
   XBT_IN("(%p)",this);
   if (sleep->getState() == simgrid::surf::Action::State::failed)

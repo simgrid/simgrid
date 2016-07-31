@@ -5,20 +5,20 @@
 
 #include "src/kernel/activity/Synchro.h"
 
-simgrid::simix::Synchro::Synchro()
+simgrid::kernel::activity::Synchro::Synchro()
 {
 }
 
-simgrid::simix::Synchro::~Synchro()
+simgrid::kernel::activity::Synchro::~Synchro()
 {
 }
 
-void simgrid::simix::Synchro::ref()
+void simgrid::kernel::activity::Synchro::ref()
 {
   refcount++;
 }
 
-void simgrid::simix::Synchro::unref()
+void simgrid::kernel::activity::Synchro::unref()
 {
   xbt_assert(refcount > 0,
       "This synchro has a negative refcount! You can only call test() or wait() once per synchronization.");

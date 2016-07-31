@@ -15,8 +15,10 @@ namespace simgrid {
     class Host;
     class Mailbox;
   }
-  namespace simix {
-    class Synchro;
+  namespace kernel {
+     namespace activity {
+	class Synchro;
+     }
   }
   namespace surf {
     class Resource;
@@ -35,7 +37,7 @@ namespace simgrid {
 typedef simgrid::s4u::As simgrid_As;
 typedef simgrid::s4u::Host simgrid_Host;
 typedef simgrid::s4u::Mailbox simgrid_Mailbox;
-typedef simgrid::simix::Synchro simix_Synchro;
+typedef simgrid::kernel::activity::Synchro simgrid_Synchro;
 typedef simgrid::surf::Cpu surf_Cpu;
 typedef simgrid::routing::NetCard routing_NetCard;
 typedef simgrid::surf::Link Link;
@@ -47,7 +49,7 @@ typedef simgrid::trace_mgr::trace tmgr_Trace;
 typedef struct simgrid_As   simgrid_As;
 typedef struct simgrid_Host simgrid_Host;
 typedef struct simgrid_Mailbox simgrid_Mailbox;
-typedef struct simix_Synchro simix_Synchro;
+typedef struct simgrid_Synchro simgrid_Synchro;
 typedef struct surf_Cpu surf_Cpu;
 typedef struct routing_NetCard routing_NetCard;
 typedef struct surf_Resource surf_Resource;
@@ -59,7 +61,7 @@ typedef simgrid_As *AS_t;
 typedef simgrid_Host* sg_host_t;
 typedef simgrid_Mailbox* sg_mbox_t;
 
-typedef simix_Synchro *smx_synchro_t;
+typedef simgrid_Synchro *smx_synchro_t;
 
 typedef surf_Cpu *surf_cpu_t;
 typedef routing_NetCard *sg_netcard_t;

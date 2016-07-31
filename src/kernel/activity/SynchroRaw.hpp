@@ -10,7 +10,8 @@
 #include "src/kernel/activity/Synchro.h"
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace activity {
 
   /** Used to implement mutexes, semaphores and conditions */
   XBT_PUBLIC_CLASS Raw : public Synchro {
@@ -23,6 +24,6 @@ namespace simix {
     surf_action_t sleep = nullptr;
   };
 
-}} // namespace simgrid::simix
+}}} // namespace simgrid::kernel::activity
 
 #endif

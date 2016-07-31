@@ -773,7 +773,7 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
 
 int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status * status)
 {
-  std::vector<simgrid::simix::Synchro*> comms;
+  std::vector<simgrid::kernel::activity::Synchro*> comms;
   comms.reserve(count);
 
   int i;
@@ -877,8 +877,8 @@ void smpi_mpi_iprobe(int source, int tag, MPI_Comm comm, int* flag, MPI_Status* 
   }
 
   if (request->action != nullptr){
-    simgrid::simix::Comm *sync_comm = static_cast<simgrid::simix::Comm*>(request->action);
-    MPI_Request req                 = static_cast<MPI_Request>(sync_comm->src_data);
+    simgrid::kernel::activity::Comm *sync_comm = static_cast<simgrid::kernel::activity::Comm*>(request->action);
+    MPI_Request req                            = static_cast<MPI_Request>(sync_comm->src_data);
     *flag = 1;
     if(status != MPI_STATUS_IGNORE && (req->flags & PREPARED) == 0) {
       status->MPI_SOURCE = smpi_group_rank(smpi_comm_group(comm), req->src);

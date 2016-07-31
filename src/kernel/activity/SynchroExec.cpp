@@ -9,7 +9,7 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_host_private.h"
 
-simgrid::simix::Exec::Exec(const char*name, sg_host_t hostarg)
+simgrid::kernel::activity::Exec::Exec(const char*name, sg_host_t hostarg)
 {
   if (name)
     this->name = name;
@@ -17,24 +17,24 @@ simgrid::simix::Exec::Exec(const char*name, sg_host_t hostarg)
   this->host = hostarg;
 }
 
-simgrid::simix::Exec::~Exec()
+simgrid::kernel::activity::Exec::~Exec()
 {
   if (surf_exec)
     surf_exec->unref();
 }
-void simgrid::simix::Exec::suspend()
+void simgrid::kernel::activity::Exec::suspend()
 {
   if (surf_exec)
     surf_exec->suspend();
 }
 
-void simgrid::simix::Exec::resume()
+void simgrid::kernel::activity::Exec::resume()
 {
   if (surf_exec)
     surf_exec->resume();
 }
 
-double simgrid::simix::Exec::remains()
+double simgrid::kernel::activity::Exec::remains()
 {
   if (state == SIMIX_RUNNING)
     return surf_exec->getRemains();
@@ -42,7 +42,7 @@ double simgrid::simix::Exec::remains()
   return 0;
 }
 
-void simgrid::simix::Exec::post()
+void simgrid::kernel::activity::Exec::post()
 {
   if (host && host->isOff()) {/* FIMXE: handle resource failure for parallel tasks too */
     /* If the host running the synchro failed, notice it. This way, the asking

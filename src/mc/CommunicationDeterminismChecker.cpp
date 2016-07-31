@@ -95,13 +95,13 @@ static char* print_determinism_result(e_mc_comm_pattern_difference_t diff, int p
 
 static void update_comm_pattern(
   simgrid::mc::PatternCommunication* comm_pattern,
-  simgrid::mc::RemotePtr<simgrid::simix::Comm> comm_addr)
+  simgrid::mc::RemotePtr<simgrid::kernel::activity::Comm> comm_addr)
 {
   // HACK, type punning
-  simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
+  simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
   mc_model_checker->process().read(temp_comm, comm_addr);
-  simgrid::simix::Comm* comm =
-    static_cast<simgrid::simix::Comm*>(temp_comm.getBuffer());
+  simgrid::kernel::activity::Comm* comm =
+    static_cast<simgrid::kernel::activity::Comm*>(temp_comm.getBuffer());
 
   smx_process_t src_proc = mc_model_checker->process().resolveProcess(
     simgrid::mc::remote(comm->src_proc));
@@ -195,11 +195,11 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
     pattern->type = simgrid::mc::PatternCommunicationType::send;
     pattern->comm_addr = simcall_comm_isend__get__result(request);
 
-    simgrid::mc::Remote<simgrid::simix::Comm> temp_synchro;
+    simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_synchro;
     mc_model_checker->process().read(temp_synchro, remote(
-      static_cast<simgrid::simix::Comm*>(pattern->comm_addr)));
-    simgrid::simix::Comm* synchro =
-      static_cast<simgrid::simix::Comm*>(temp_synchro.getBuffer());
+      static_cast<simgrid::kernel::activity::Comm*>(pattern->comm_addr)));
+    simgrid::kernel::activity::Comm* synchro =
+      static_cast<simgrid::kernel::activity::Comm*>(temp_synchro.getBuffer());
 
     char* remote_name = mc_model_checker->process().read<char*>(
       (std::uint64_t)(synchro->mbox ? &synchro->mbox->name : &synchro->mbox_cpy->name));
@@ -244,10 +244,10 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
       &mpi_request, remote((struct s_smpi_mpi_request*)simcall_comm_irecv__get__data(request)));
     pattern->tag = mpi_request.tag;
 
-    simgrid::mc::Remote<simgrid::simix::Comm> temp_comm;
+    simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
     mc_model_checker->process().read(temp_comm, remote(
-      static_cast<simgrid::simix::Comm*>(pattern->comm_addr)));
-    simgrid::simix::Comm* comm = temp_comm.getBuffer();
+      static_cast<simgrid::kernel::activity::Comm*>(pattern->comm_addr)));
+    simgrid::kernel::activity::Comm* comm = temp_comm.getBuffer();
 
     char* remote_name;
     mc_model_checker->process().read(&remote_name,
@@ -269,7 +269,7 @@ void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_sim
 
 
 void CommunicationDeterminismChecker::complete_comm_pattern(
-  xbt_dynar_t list, simgrid::mc::RemotePtr<simgrid::simix::Comm> comm_addr,
+  xbt_dynar_t list, simgrid::mc::RemotePtr<simgrid::kernel::activity::Comm> comm_addr,
   unsigned int issuer, int backtracking)
 {
   simgrid::mc::PatternCommunication* current_comm_pattern;

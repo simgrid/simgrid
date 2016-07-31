@@ -658,19 +658,19 @@ void SIMIX_display_process_status(void)
 
       const char* synchro_description = "unknown";
 
-      if (dynamic_cast<simgrid::simix::Exec*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::Exec*>(process->waiting_synchro) != nullptr)
         synchro_description = "execution";
 
-      if (dynamic_cast<simgrid::simix::Comm*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::Comm*>(process->waiting_synchro) != nullptr)
         synchro_description = "communication";
 
-      if (dynamic_cast<simgrid::simix::Sleep*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::Sleep*>(process->waiting_synchro) != nullptr)
         synchro_description = "sleeping";
 
-      if (dynamic_cast<simgrid::simix::Raw*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::Raw*>(process->waiting_synchro) != nullptr)
         synchro_description = "synchronization";
 
-      if (dynamic_cast<simgrid::simix::Io*>(process->waiting_synchro) != nullptr)
+      if (dynamic_cast<simgrid::kernel::activity::Io*>(process->waiting_synchro) != nullptr)
         synchro_description = "I/O";
 
 

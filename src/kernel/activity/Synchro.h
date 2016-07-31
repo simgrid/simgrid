@@ -17,7 +17,8 @@
 #include <simgrid/simix.hpp>
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace activity {
 
   XBT_PUBLIC_CLASS Synchro {
   public:
@@ -36,7 +37,7 @@ namespace simix {
   private:
     int refcount = 1;
   };
-}} // namespace simgrid::simix
+}}} // namespace simgrid::kernel::activity
 #else /* not C++ */
 
 

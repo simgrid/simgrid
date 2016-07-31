@@ -390,7 +390,7 @@ void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
     return;
   }
 
-  simgrid::simix::Exec *compute = task->simdata->compute;
+  simgrid::kernel::activity::Exec *compute = task->simdata->compute;
   msg_host_t host_now = compute->host;  // simix_private.h is necessary
   if (host_now != host) {
     /* task is not yet executed on this host */

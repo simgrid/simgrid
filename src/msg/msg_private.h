@@ -47,8 +47,8 @@ typedef struct simdata_task {
     this->isused = false;
   }
 
-  simgrid::simix::Exec *compute = nullptr; /* SIMIX modeling of computation */
-  simgrid::simix::Comm *comm = nullptr;    /* SIMIX modeling of communication */
+  simgrid::kernel::activity::Exec *compute = nullptr; /* SIMIX modeling of computation */
+  simgrid::kernel::activity::Comm *comm = nullptr;    /* SIMIX modeling of communication */
   double bytes_amount = 0.0; /* Data size */
   double flops_amount = 0.0; /* Computation size */
   msg_process_t sender = nullptr;

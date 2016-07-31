@@ -11,7 +11,7 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_network);
 
-simgrid::simix::Comm::Comm(e_smx_comm_type_t _type) {
+simgrid::kernel::activity::Comm::Comm(e_smx_comm_type_t _type) {
   state = SIMIX_WAITING;
   this->type = _type;
   src_data=nullptr;
@@ -20,7 +20,7 @@ simgrid::simix::Comm::Comm(e_smx_comm_type_t _type) {
   XBT_DEBUG("Create communicate synchro %p", this);
 }
 
-simgrid::simix::Comm::~Comm()
+simgrid::kernel::activity::Comm::~Comm()
 {
   XBT_DEBUG("Really free communication %p", this);
 
@@ -38,7 +38,7 @@ simgrid::simix::Comm::~Comm()
     SIMIX_mbox_remove(mbox, this);
 
 }
-void simgrid::simix::Comm::suspend()
+void simgrid::kernel::activity::Comm::suspend()
 {
   /* FIXME: shall we suspend also the timeout synchro? */
   if (surf_comm)
@@ -47,7 +47,7 @@ void simgrid::simix::Comm::suspend()
 
 }
 
-void simgrid::simix::Comm::resume()
+void simgrid::kernel::activity::Comm::resume()
 {
   /*FIXME: check what happen with the timeouts */
   if (surf_comm)
@@ -55,7 +55,7 @@ void simgrid::simix::Comm::resume()
   /* in the other case, the synchro were not really suspended yet, see SIMIX_comm_suspend() and SIMIX_comm_start() */
 }
 
-void simgrid::simix::Comm::cancel()
+void simgrid::kernel::activity::Comm::cancel()
 {
   /* if the synchro is a waiting state means that it is still in a mbox */
   /* so remove from it and delete it */
@@ -72,7 +72,7 @@ void simgrid::simix::Comm::cancel()
 }
 
 /**  @brief get the amount remaining from the communication */
-double simgrid::simix::Comm::remains()
+double simgrid::kernel::activity::Comm::remains()
 {
   switch (state) {
 
@@ -92,7 +92,7 @@ double simgrid::simix::Comm::remains()
 }
 
 /** @brief This is part of the cleanup process, probably an internal command */
-void simgrid::simix::Comm::cleanupSurf()
+void simgrid::kernel::activity::Comm::cleanupSurf()
 {
   if (surf_comm){
     surf_comm->unref();
@@ -110,7 +110,7 @@ void simgrid::simix::Comm::cleanupSurf()
   }
 }
 
-void simgrid::simix::Comm::post()
+void simgrid::kernel::activity::Comm::post()
 {
   /* Update synchro state */
   if (src_timeout &&  src_timeout->getState() == simgrid::surf::Action::State::done)

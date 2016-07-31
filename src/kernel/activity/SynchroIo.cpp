@@ -8,19 +8,19 @@
 #include "src/simix/popping_private.h"
 #include "src/simix/smx_private.h"
 
-void simgrid::simix::Io::suspend()
+void simgrid::kernel::activity::Io::suspend()
 {
   if (surf_io)
     surf_io->suspend();
 }
 
-void simgrid::simix::Io::resume()
+void simgrid::kernel::activity::Io::resume()
 {
   if (surf_io)
     surf_io->resume();
 }
 
-void simgrid::simix::Io::post()
+void simgrid::kernel::activity::Io::post()
 {
   for (smx_simcall_t simcall : simcalls) {
     switch (simcall->call) {

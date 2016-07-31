@@ -66,7 +66,7 @@ public:
   void *getUserData() { return userData_; }
 
 private:
-  simgrid::simix::Synchro *pimpl_ = nullptr;
+  simgrid::kernel::activity::Synchro *pimpl_ = nullptr;
   e_s4u_activity_state_t state_ = inited;
   double remains_ = 0;
   void *userData_ = nullptr;
