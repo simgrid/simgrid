@@ -67,7 +67,7 @@ details).
 
 /** @defgroup msg_mailbox_management Mailbox Management Functions
  *  @ingroup MSG_API
- *  @brief Mailbox structure of MSG (#msg_mailbox_t) and associated functions.
+ *  @brief Functions associated to mailboxes.
  */
 
 /** @defgroup msg_task_usage Task Actions

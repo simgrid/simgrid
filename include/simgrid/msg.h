@@ -14,21 +14,7 @@
 
 SG_BEGIN_DECL()
 
-/* ******************************** Mailbox ************************************ */
-
-/** @brief Mailbox datatype
- *  @ingroup msg_task_usage
- *
- * Object representing a communication rendez-vous point, on which
- * the sender finds the receiver it wants to communicate with. As a
- * MSG user, you will only rarely manipulate any of these objects
- * directly, since most of the public interface (such as
- * #MSG_task_send and friends) hide this object behind a string
- * alias. That mean that you don't provide the mailbox on which you
- * want to send your task, but only the name of this mailbox. */
-typedef sg_mbox_t msg_mailbox_t;
-
-/* ******************************** Environment ************************************ */
+/* ************************* Autonomous System ****************************** */
 typedef simgrid_As *msg_as_t;
 
 /* ******************************** Host ************************************ */
