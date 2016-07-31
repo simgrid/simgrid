@@ -70,7 +70,7 @@ simgrid::xbt::string Actor::getName() {
 }
 
 int Actor::getPid(){
-  return simcall_process_get_PID(pimpl_);
+  return pimpl_->pid;
 }
 
 void Actor::setKillTime(double time) {
@@ -154,7 +154,7 @@ void send(Mailbox &chan, void *payload, size_t simulatedSize) {
 }
 
 int getPid() {
-  return simcall_process_get_PID(SIMIX_process_self());
+  return SIMIX_process_self()->pid;
 }
 
 }

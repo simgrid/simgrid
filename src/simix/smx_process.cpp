@@ -273,13 +273,12 @@ smx_process_t SIMIX_process_create(
     /* Initiliaze data segment to default value */
     SIMIX_segment_index_set(process, -1);
 
-     if (parent_process != nullptr) {
-       process->ppid = SIMIX_process_get_PID(parent_process);
-       /* SMPI process have their own data segment and
-          each other inherit from their father */
+    if (parent_process != nullptr) {
+      process->ppid = parent_process->pid;
+      /* SMPI process have their own data segment and each other inherit from their father */
 #if HAVE_SMPI
-       if(smpi_privatize_global_variables){
-         if( parent_process->pid != 0){
+       if( smpi_privatize_global_variables) {
+         if (parent_process->pid != 0) {
            SIMIX_segment_index_set(process, parent_process->segment_index);
          } else {
            SIMIX_segment_index_set(process, process->pid - 1);
@@ -358,12 +357,11 @@ smx_process_t SIMIX_process_attach(
   /* Initiliaze data segment to default value */
   SIMIX_segment_index_set(process, -1);
   if (parent_process != nullptr) {
-    process->ppid = SIMIX_process_get_PID(parent_process);
-   /* SMPI process have their own data segment and
-      each other inherit from their father */
+    process->ppid = parent_process->pid;
+    /* SMPI process have their own data segment and each other inherit from their father */
 #if HAVE_SMPI
-    if(smpi_privatize_global_variables){
-      if(parent_process->pid != 0){
+    if (smpi_privatize_global_variables) {
+      if (parent_process->pid != 0) {
         SIMIX_segment_index_set(process, parent_process->segment_index);
       } else {
         SIMIX_segment_index_set(process, process->pid - 1);
@@ -676,18 +674,12 @@ int SIMIX_process_count()
   return xbt_swag_size(simix_global->process_list);
 }
 
-int SIMIX_process_get_PID(smx_process_t self){
+int SIMIX_process_get_PID(smx_process_t self)
+{
   if (self == nullptr)
     return 0;
   else
     return self->pid;
-}
-
-int SIMIX_process_get_PPID(smx_process_t self){
-  if (self == nullptr)
-    return 0;
-  else
-    return self->ppid;
 }
 
 void* SIMIX_process_self_get_data()

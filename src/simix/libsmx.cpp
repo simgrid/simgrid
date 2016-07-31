@@ -446,28 +446,6 @@ int simcall_process_count(void)
 
 /**
  * \ingroup simix_process_management
- * \brief Return the PID of a #smx_process_t.
- * \param process a SIMIX process
- * \return the PID of this process
- */
-int simcall_process_get_PID(smx_process_t process)
-{
-  return SIMIX_process_get_PID(process);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Return the parent PID of a #smx_process_t.
- * \param process a SIMIX process
- * \return the PID of this process parenrt
- */
-int simcall_process_get_PPID(smx_process_t process)
-{
-  return SIMIX_process_get_PPID(process);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Return the user data of a #smx_process_t.
  * \param process a SIMIX process
  * \return the user data of this process

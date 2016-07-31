@@ -363,10 +363,9 @@ int MSG_process_get_PID(msg_process_t process)
 {
   /* Do not raise an exception here: this function is called by the logs
    * and the exceptions, so it would be called back again and again */
-  if (process == nullptr) {
+  if (process == nullptr)
     return 0;
-  }
-  return simcall_process_get_PID(process);
+  return process->pid;
 }
 
 /** \ingroup m_process_management
@@ -377,8 +376,7 @@ int MSG_process_get_PID(msg_process_t process)
  */
 int MSG_process_get_PPID(msg_process_t process)
 {
-  xbt_assert(process != nullptr, "Invalid parameter: First argument must not be nullptr");
-  return simcall_process_get_PPID(process);
+  return process->ppid;
 }
 
 /** \ingroup m_process_management

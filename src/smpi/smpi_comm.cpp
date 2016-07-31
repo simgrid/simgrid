@@ -375,7 +375,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   int min_index=INT_MAX;//the minimum index will be the leader
   smx_process_t process = nullptr;
   xbt_swag_foreach(process, process_list) {
-    int index = SIMIX_process_get_PID(process) -1;
+    int index = process->pid -1;
 
     if(smpi_group_rank(smpi_comm_group(comm),  index)!=MPI_UNDEFINED){
         intra_comm_size++;
@@ -390,7 +390,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   i=0;
   process = nullptr;
   xbt_swag_foreach(process, process_list) {
-    int index = SIMIX_process_get_PID(process) -1;
+    int index = process->pid -1;
     if(smpi_group_rank(smpi_comm_group(comm),  index)!=MPI_UNDEFINED){
       smpi_group_set_mapping(group_intra, index, i);
       i++;
