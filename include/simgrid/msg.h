@@ -458,16 +458,6 @@ XBT_PUBLIC(const char *) MSG_task_get_category (msg_task_t task);
  */
 XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 
-/* @brief MSG_mailbox_front - get the task at the head of a mailbox.
- * Returns the task at the head of the mailbox. This function does not remove the task from the mailbox.
- * @deprecated
- * @param   mailbox  The mailbox concerned by the operation.
- * @return           The task at the head of the mailbox.
- */
-XBT_PUBLIC(msg_task_t) MSG_mailbox_front(msg_mailbox_t mailbox);
-
-XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task, msg_host_t host,
-                                                 double timeout);
 XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *task, msg_host_t host,
                                                          double timeout, double rate);
 

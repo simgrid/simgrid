@@ -15,7 +15,9 @@ SimGrid (3.14) UNRELEASED; urgency=low
  MSG
  * Remove the functions manipulating mailboxes. Use s4u::Mailbox instead
    - MSG_mailbox_is_empty() -> Mailbox::empty()
-   - MSG_mailbox_get_by_alias -> simgrid::s4u::Mailbox::byName(name)
+   - MSG_mailbox_front() -> Mailbox::front()
+   - MSG_mailbox_get_by_alias() -> simgrid::s4u::Mailbox::byName(name)
+   - MSG_mailbox_get_task_ext() -> MSG_task_receive_ext()
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

@@ -242,7 +242,7 @@ msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double ti
   msg_error_t ret = MSG_OK;
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
   try {
-    ret = MSG_mailbox_get_task_ext(simgrid::s4u::Mailbox::byName(alias), task, host, timeout);
+    ret = MSG_mailbox_get_task_ext_bounded(simgrid::s4u::Mailbox::byName(alias), task, host, timeout, -1.0);
   }
   catch(xbt_ex& e) {
     switch (e.category) {
