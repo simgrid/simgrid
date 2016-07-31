@@ -15,11 +15,11 @@
 
 #include <simgrid_config.h>
 #include "src/simix/smx_private.h"
-#include "src/simix/SynchroIo.hpp"
-#include "src/simix/SynchroComm.hpp"
-#include "src/simix/SynchroRaw.hpp"
-#include "src/simix/SynchroSleep.hpp"
-#include "src/simix/SynchroExec.hpp"
+#include "src/synchro/SynchroIo.hpp"
+#include "src/synchro/SynchroComm.hpp"
+#include "src/synchro/SynchroRaw.hpp"
+#include "src/synchro/SynchroSleep.hpp"
+#include "src/synchro/SynchroExec.hpp"
 #include "src/mc/mc_snapshot.h"
 #include "src/mc/mc_record.h"
 #include "src/mc/Transition.hpp"
