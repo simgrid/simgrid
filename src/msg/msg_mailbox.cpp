@@ -10,17 +10,18 @@
 
 #include "simgrid/msg.h"
 #include "msg_private.h"
+#include "simgrid/s4u/mailbox.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mailbox)");
 
 int MSG_mailbox_is_empty(msg_mailbox_t mailbox)
 {
-  return (nullptr == simcall_mbox_front(mailbox));
+  return mailbox->empty();
 }
 
 msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
 {
-  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(simcall_mbox_front(mailbox));
+  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(simcall_mbox_front(mailbox->getImpl()));
 
   if (!comm)
     return nullptr;
@@ -30,12 +31,7 @@ msg_task_t MSG_mailbox_front(msg_mailbox_t mailbox)
 
 msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 {
-  msg_mailbox_t mailbox = simcall_mbox_get_by_name(alias);
-
-  if (!mailbox)
-    mailbox = simcall_mbox_create(alias);
-
-  return mailbox;
+  return simgrid::s4u::Mailbox::byName(alias);
 }
 
 /** \ingroup msg_mailbox_management
@@ -50,7 +46,7 @@ msg_mailbox_t MSG_mailbox_get_by_alias(const char *alias)
 void MSG_mailbox_set_async(const char *alias){
   msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
 
-  simcall_mbox_set_receiver(mailbox, SIMIX_process_self());
+  simcall_mbox_set_receiver(mailbox->getImpl(), SIMIX_process_self());
   XBT_VERB("%s mailbox set to receive eagerly for myself\n",alias);
 }
 
@@ -103,7 +99,7 @@ msg_error_t MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *
 
   /* Try to receive it by calling SIMIX network layer */
   try {
-    simcall_comm_recv(MSG_process_self(), mailbox, task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
+    simcall_comm_recv(MSG_process_self(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
     XBT_DEBUG("Got task %s from %p",(*task)->name,mailbox);
     (*task)->simdata->setNotUsed();
   }

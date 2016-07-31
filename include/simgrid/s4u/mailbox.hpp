@@ -34,10 +34,8 @@ XBT_PUBLIC_CLASS Mailbox {
 
   Mailbox(smx_mailbox_t mbox): pimpl_(mbox) {}
 
-protected:
-  smx_mailbox_t getImpl() { return pimpl_; }
-
 public:
+  smx_mailbox_t getImpl() { return pimpl_; } // FIXME: make me protected
 
   // We don't have to manage the lifetime of mailboxes:
   friend void intrusive_ptr_add_ref(Mailbox*) {}

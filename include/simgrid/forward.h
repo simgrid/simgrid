@@ -9,6 +9,8 @@
 
 #ifdef __cplusplus
 
+#include <boost/intrusive_ptr.hpp>
+
 namespace simgrid {
   namespace s4u {
     class As;
@@ -36,7 +38,7 @@ namespace simgrid {
 
 typedef simgrid::s4u::As simgrid_As;
 typedef simgrid::s4u::Host simgrid_Host;
-typedef simgrid::s4u::Mailbox simgrid_Mailbox;
+typedef boost::intrusive_ptr<simgrid::s4u::Mailbox> sg_mbox_t;
 typedef simgrid::kernel::activity::Synchro simgrid_Synchro;
 typedef simgrid::kernel::routing::NetCard routing_NetCard;
 typedef simgrid::surf::Cpu surf_Cpu;
@@ -48,7 +50,7 @@ typedef simgrid::trace_mgr::trace tmgr_Trace;
 
 typedef struct simgrid_As   simgrid_As;
 typedef struct simgrid_Host simgrid_Host;
-typedef struct simgrid_Mailbox simgrid_Mailbox;
+typedef struct simgrid_Mailbox *sg_mbox_t;
 typedef struct simgrid_Synchro simgrid_Synchro;
 typedef struct surf_Cpu surf_Cpu;
 typedef struct routing_NetCard routing_NetCard;
@@ -59,7 +61,6 @@ typedef struct Trace tmgr_Trace;
 
 typedef simgrid_As *AS_t;
 typedef simgrid_Host* sg_host_t;
-typedef simgrid_Mailbox* sg_mbox_t;
 
 typedef simgrid_Synchro *smx_synchro_t;
 

@@ -26,7 +26,7 @@ SG_BEGIN_DECL()
  * #MSG_task_send and friends) hide this object behind a string
  * alias. That mean that you don't provide the mailbox on which you
  * want to send your task, but only the name of this mailbox. */
-typedef smx_mailbox_t msg_mailbox_t;
+typedef sg_mbox_t msg_mailbox_t;
 
 /* ******************************** Environment ************************************ */
 typedef simgrid_As *msg_as_t;

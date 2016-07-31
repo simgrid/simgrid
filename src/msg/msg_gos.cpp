@@ -295,7 +295,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_synchro_t act = simcall_comm_isend(myself, mailbox, t_simdata->bytes_amount, t_simdata->rate,
+  smx_synchro_t act = simcall_comm_isend(myself, mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
                                          task, sizeof(void *), match_fun, cleanup, nullptr, match_data,detached);
   t_simdata->comm = static_cast<simgrid::kernel::activity::Comm*>(act);
 
@@ -435,7 +435,7 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
  */
 msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rate)
 {
-  smx_mailbox_t rdv = MSG_mailbox_get_by_alias(name);
+  msg_mailbox_t mbox = MSG_mailbox_get_by_alias(name);
 
   /* FIXME: these functions are not traceable */
   /* Sanity check */
@@ -449,7 +449,7 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
   comm->task_sent = nullptr;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(MSG_process_self(), rdv, task, nullptr, nullptr, nullptr, nullptr, rate);
+  comm->s_comm = simcall_comm_irecv(MSG_process_self(), mbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, rate);
 
   return comm;
 }
@@ -776,7 +776,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Try to send it by calling SIMIX network layer */
   try {
     smx_synchro_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
-    comm = simcall_comm_isend(SIMIX_process_self(), mailbox,t_simdata->bytes_amount,
+    comm = simcall_comm_isend(SIMIX_process_self(), mailbox->getImpl(),t_simdata->bytes_amount,
                               t_simdata->rate, task, sizeof(void *), nullptr, nullptr, nullptr, task, 0);
     if (TRACE_is_enabled())
       simcall_set_category(comm, task->category);
@@ -836,9 +836,9 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  */
 int MSG_task_listen(const char *alias)
 {
-  smx_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
+  msg_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
   return !MSG_mailbox_is_empty(mbox) ||
-    (mbox->permanent_receiver && !mbox->done_comm_queue.empty());
+    (mbox->getImpl()->permanent_receiver && !mbox->getImpl()->done_comm_queue.empty());
 }
 
 /** \ingroup msg_task_usage
@@ -852,7 +852,7 @@ int MSG_task_listen(const char *alias)
 int MSG_task_listen_from(const char *alias)
 {
   msg_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
-  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(simcall_mbox_front(mbox));
+  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(simcall_mbox_front(mbox->getImpl()));
 
   if (!comm)
     return -1;
