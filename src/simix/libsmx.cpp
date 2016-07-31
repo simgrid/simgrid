@@ -621,17 +621,6 @@ smx_mailbox_t simcall_mbox_create(const char *name)
   return simcall_BODY_mbox_create(name);
 }
 
-/**
- *  \ingroup simix_mbox_management
- *  \brief returns the communication at the head of the rendez-vous
- *  \param mbox The rendez-vous point
- *  \return The communication or nullptr if empty
- */
-smx_synchro_t simcall_mbox_front(smx_mailbox_t mbox)
-{
-  return mbox->comm_queue.empty() ? nullptr : mbox->comm_queue.front();
-}
-
 void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
 {
   simcall_BODY_mbox_set_receiver(mbox, process);

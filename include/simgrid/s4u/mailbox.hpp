@@ -30,7 +30,7 @@ XBT_PUBLIC_CLASS Mailbox {
   friend simgrid::s4u::Engine;
   friend simgrid::simix::Mailbox;
 
-  smx_mailbox_t pimpl_;
+  simgrid::simix::Mailbox *pimpl_;
 
   Mailbox(smx_mailbox_t mbox): pimpl_(mbox) {}
 
@@ -50,6 +50,9 @@ public:
 
   /** Returns whether the mailbox contains queued communications */
   bool empty();
+
+  /** Returns the first element in the queue, or nullptr if none is there */
+  smx_synchro_t front();
 
   /** Declare that the specified process is a permanent receiver on that mailbox
    *

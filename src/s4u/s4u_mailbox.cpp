@@ -21,7 +21,8 @@ const char *Mailbox::getName() {
   return pimpl_->name;
 }
 
-MailboxPtr Mailbox::byName(const char*name) {
+MailboxPtr Mailbox::byName(const char*name)
+{
   // FIXME: there is a race condition here where two actors run Mailbox::byName
   // on a non-existent mailbox during the same scheduling round. Both will be
   // interrupted in the simcall creating the underlying simix mbox.
@@ -34,8 +35,14 @@ MailboxPtr Mailbox::byName(const char*name) {
   return MailboxPtr(&mbox->piface_, true);
 }
 
-bool Mailbox::empty() {
-  return nullptr == simcall_mbox_front(pimpl_);
+bool Mailbox::empty()
+{
+  return pimpl_->comm_queue.empty();
+}
+
+smx_synchro_t Mailbox::front()
+{
+  return pimpl_->comm_queue.empty() ? nullptr : pimpl_->comm_queue.front();
 }
 
 void Mailbox::setReceiver(Actor* actor) {

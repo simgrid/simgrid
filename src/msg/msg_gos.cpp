@@ -852,7 +852,7 @@ int MSG_task_listen(const char *alias)
 int MSG_task_listen_from(const char *alias)
 {
   msg_mailbox_t mbox = MSG_mailbox_get_by_alias(alias);
-  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(simcall_mbox_front(mbox->getImpl()));
+  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(mbox->front());
 
   if (!comm)
     return -1;
