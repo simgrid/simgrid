@@ -45,13 +45,14 @@ smx_synchro_t Mailbox::front()
   return pimpl_->comm_queue.empty() ? nullptr : pimpl_->comm_queue.front();
 }
 
-void Mailbox::setReceiver(Actor* actor) {
+void Mailbox::setReceiver(ActorPtr actor) {
   simcall_mbox_set_receiver(pimpl_, actor == nullptr ? nullptr : actor->pimpl_);
 }
 
 /** @brief get the receiver (process associated to the mailbox) */
 ActorPtr Mailbox::receiver() {
-  if(pimpl_->permanent_receiver == nullptr) return ActorPtr();
+  if(pimpl_->permanent_receiver == nullptr)
+    return ActorPtr();
   return ActorPtr(&pimpl_->permanent_receiver->actor());
 }
 

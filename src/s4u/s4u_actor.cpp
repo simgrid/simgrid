@@ -20,6 +20,15 @@ namespace simgrid {
 namespace s4u {
 
 // ***** Actor creation *****
+ActorPtr Actor::self()
+{
+  smx_context_t self_context = SIMIX_context_self();
+  if (self_context == nullptr)
+    return simgrid::s4u::ActorPtr();
+
+  return simgrid::s4u::ActorPtr(&self_context->process()->actor());
+}
+
 
 ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
 {

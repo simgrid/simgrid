@@ -170,6 +170,8 @@ public:
   using Ptr = boost::intrusive_ptr<Actor>;
 
   // ***** Actor creation *****
+  /** Retrieve a reference to myself */
+  static Ptr self();
 
   /** Create an actor using a function
    *

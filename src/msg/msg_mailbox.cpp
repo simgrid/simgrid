@@ -10,6 +10,7 @@
 
 #include "simgrid/msg.h"
 #include "msg_private.h"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/mailbox.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mailbox)");
@@ -25,8 +26,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mail
  */
 void MSG_mailbox_set_async(const char *alias){
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
-
-  simcall_mbox_set_receiver(mailbox->getImpl(), SIMIX_process_self());
+  mailbox->setReceiver(simgrid::s4u::Actor::self());
   XBT_VERB("%s mailbox set to receive eagerly for myself\n",alias);
 }
 

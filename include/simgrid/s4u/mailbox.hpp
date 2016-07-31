@@ -59,7 +59,7 @@ public:
    * It means that the communications sent to this mailbox will start flowing to its host even before he does a recv().
    * This models the real behavior of TCP and MPI communications, amongst other.
    */
-  void setReceiver(Actor* process);
+  void setReceiver(ActorPtr process);
 
   /** Return the process declared as permanent receiver, or nullptr if none **/
   ActorPtr receiver();
