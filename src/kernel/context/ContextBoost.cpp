@@ -21,7 +21,8 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 class BoostSerialContext : public BoostContext {
 public:
@@ -289,5 +290,4 @@ XBT_PRIVATE ContextFactory* boost_factory()
   return new BoostContextFactory();
 }
 
-}
-}
+}}} // namespace

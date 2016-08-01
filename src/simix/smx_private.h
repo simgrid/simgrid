@@ -35,33 +35,7 @@
 
 #include <signal.h>
 #include "src/simix/ActorImpl.hpp"
-
-#ifdef __cplusplus
-
-#include <simgrid/simix.hpp>
-
-namespace simgrid {
-namespace simix {
-
-/* This allows Java to hijack the context factory (Java induces factories of factory :) */
-typedef ContextFactory* (*ContextFactoryInitializer)(void);
-XBT_PUBLIC_DATA(ContextFactoryInitializer) factory_initializer;
-
-XBT_PRIVATE ContextFactory* thread_factory();
-XBT_PRIVATE ContextFactory* sysv_factory();
-XBT_PRIVATE ContextFactory* raw_factory();
-XBT_PRIVATE ContextFactory* boost_factory();
-
-}
-}
-
-typedef simgrid::simix::ContextFactory *smx_context_factory_t;
-
-#else
-
-typedef struct s_smx_context_factory *smx_context_factory_t;
-
-#endif
+#include "src/kernel/context/Context.hpp"
 
 /********************************** Simix Global ******************************/
 
@@ -100,8 +74,6 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC_DATA(std::unique_ptr<simgrid::simix::Global>) simix_global;
 
-extern XBT_PRIVATE unsigned long simix_process_maxpid;
-
 XBT_PUBLIC(void) SIMIX_clean(void);
 
 /******************************** Exceptions *********************************/
@@ -121,59 +93,7 @@ typedef struct s_smx_file {
   void* data;                   /**< @brief user data */
 } s_smx_file_t;
 
-XBT_PRIVATE void SIMIX_context_mod_init(void);
-XBT_PRIVATE void SIMIX_context_mod_exit(void);
-
-XBT_PRIVATE smx_context_t SIMIX_context_new(
-  std::function<void()> code,
-  void_pfn_smxprocess_t cleanup_func,
-  smx_process_t simix_process);
-
-#ifndef WIN32
-XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
-#endif
-
-/* We are using the bottom of the stack to save some information, like the
- * valgrind_stack_id. Define smx_context_usable_stack_size to give the remaining
- * size for the stack. */
-#if HAVE_VALGRIND_H
-# define smx_context_usable_stack_size                                  \
-  (smx_context_stack_size - sizeof(unsigned int)) /* for valgrind_stack_id */
-#else
-# define smx_context_usable_stack_size smx_context_stack_size
-#endif
-
-/** @brief Executes all the processes to run (in parallel if possible). */
-static inline void SIMIX_context_runall(void)
-{
-  if (!xbt_dynar_is_empty(simix_global->process_to_run))
-    simix_global->context_factory->run_all();
-}
-
-/** @brief returns the current running context */
-static inline smx_context_t SIMIX_context_self(void)
-{
-  if (simix_global && simix_global->context_factory)
-    return simix_global->context_factory->self();
-  else
-    return nullptr;
-}
-
-XBT_PRIVATE void *SIMIX_context_stack_new(void);
-XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
-
-XBT_PRIVATE void SIMIX_context_set_current(smx_context_t context);
-XBT_PRIVATE smx_context_t SIMIX_context_get_current(void);
-
-XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
-
-XBT_PRIVATE void SIMIX_post_create_environment(void);
-
-// FIXME, Dirty hack for SMPI+MSG
-XBT_PRIVATE void SIMIX_process_set_cleanup_function(smx_process_t process, void_pfn_smxprocess_t cleanup);
 
 SG_END_DECL()
-
-XBT_PRIVATE simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name);
 
 #endif

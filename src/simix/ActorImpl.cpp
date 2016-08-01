@@ -395,7 +395,7 @@ smx_process_t SIMIX_process_attach(
   /* Tracing the process creation */
   TRACE_msg_process_create(process->name.c_str(), process->pid, process->host);
 
-  auto context = dynamic_cast<simgrid::simix::AttachContext*>(process->context);
+  auto context = dynamic_cast<simgrid::kernel::context::AttachContext*>(process->context);
   if (!context)
     xbt_die("Not a suitable context");
 
@@ -405,7 +405,7 @@ smx_process_t SIMIX_process_attach(
 
 void SIMIX_process_detach()
 {
-  auto context = dynamic_cast<simgrid::simix::AttachContext*>(SIMIX_context_self());
+  auto context = dynamic_cast<simgrid::kernel::context::AttachContext*>(SIMIX_context_self());
   if (!context)
     xbt_die("Not a suitable context");
 
@@ -414,7 +414,7 @@ void SIMIX_process_detach()
   // Let maestro ignore we are still alive:
   // xbt_swag_remove(context->process(), simix_global->process_list);
 
-  // TODDO, Remove from proces list:
+  // TODO, Remove from proces list:
   //   xbt_swag_remove(process, sg_host_simix(host)->process_list);
 
   context->attach_stop();

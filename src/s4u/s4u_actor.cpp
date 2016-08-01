@@ -12,6 +12,7 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/mailbox.hpp"
 
+#include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");

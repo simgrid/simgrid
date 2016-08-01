@@ -17,6 +17,7 @@
 
 #include "simgrid/simix.h"
 
+#include "src/kernel/context/Context.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.h"
 #include "src/mc/mc_replay.h"
@@ -69,7 +70,7 @@ void replay(RecordTrace const& trace)
 
 void replay(const char* path_string)
 {
-  simgrid::mc::processes_time.resize(simix_process_maxpid);
+  simgrid::mc::processes_time.resize(SIMIX_process_get_maxpid());
   simgrid::mc::RecordTrace trace = simgrid::mc::parseRecordTrace(path_string);
   simgrid::mc::replay(trace);
   simgrid::mc::processes_time.clear();

@@ -45,18 +45,18 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_context, simix, "Context switching mechanism");
 
-static std::pair<const char*, simgrid::simix::ContextFactoryInitializer> context_factories[] = {
+static std::pair<const char*, simgrid::kernel::context::ContextFactoryInitializer> context_factories[] = {
 #if HAVE_RAW_CONTEXTS
-  { "raw", &simgrid::simix::raw_factory },
+  { "raw", &simgrid::kernel::context::raw_factory },
 #endif
 #if HAVE_UCONTEXT_CONTEXTS
-  { "ucontext", &simgrid::simix::sysv_factory },
+  { "ucontext", &simgrid::kernel::context::sysv_factory },
 #endif
 #if HAVE_BOOST_CONTEXTS
-  { "boost", &simgrid::simix::boost_factory },
+  { "boost", &simgrid::kernel::context::boost_factory },
 #endif
 #if HAVE_THREAD_CONTEXTS
-  { "thread", &simgrid::simix::thread_factory },
+  { "thread", &simgrid::kernel::context::thread_factory },
 #endif
 };
 
@@ -131,8 +131,8 @@ void SIMIX_context_mod_init(void)
   if (simix_global->context_factory)
     return;
   /* select the context factory to use to create the contexts */
-  if (simgrid::simix::factory_initializer) { // Give Java a chance to hijack the factory mechanism
-    simix_global->context_factory = simgrid::simix::factory_initializer();
+  if (simgrid::kernel::context::factory_initializer) { // Give Java a chance to hijack the factory mechanism
+    simix_global->context_factory = simgrid::kernel::context::factory_initializer();
     return;
   }
   /* use the factory specified by --cfg=contexts/factory:value */

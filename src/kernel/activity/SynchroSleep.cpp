@@ -7,6 +7,7 @@
 
 #include <simgrid/s4u/host.hpp>
 
+#include "src/kernel/context/Context.hpp"
 #include "src/kernel/activity/SynchroSleep.hpp"
 
 #include "src/surf/surf_interface.hpp"

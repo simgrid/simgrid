@@ -15,7 +15,8 @@
 
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 class BoostContext;
 class BoostSerialContext;
@@ -63,7 +64,6 @@ public:
   void run_all() override;
 };
 
-}
-}
+}}} // namespace
 
 #endif

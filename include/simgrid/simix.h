@@ -19,6 +19,12 @@
 #ifdef __cplusplus
 
 namespace simgrid {
+namespace kernel {
+namespace context {
+  class Context;
+  class ContextFactory;
+}}
+
 namespace simix {
 
   /** @brief Process datatype
@@ -29,14 +35,12 @@ namespace simix {
       \see m_process_management
     @{ */
   class ActorImpl;
-  class Context;
-  class ContextFactory;
   class Mutex;
   class Mailbox;
 }
 }
 
-typedef simgrid::simix::Context *smx_context_t;
+typedef simgrid::kernel::context::Context *smx_context_t;
 typedef simgrid::simix::ActorImpl *smx_process_t;
 typedef simgrid::simix::Mutex   *smx_mutex_t;
 typedef simgrid::simix::Mailbox *smx_mailbox_t;

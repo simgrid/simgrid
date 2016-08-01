@@ -23,7 +23,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 // ***** Class definitions
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 class RawContext;
 class RawContextFactory;
@@ -75,20 +76,19 @@ ContextFactory* raw_factory()
   return new RawContextFactory();
 }
 
-}
-}
+}}} // namespace
 
 // ***** Loads of static stuff
 
 #if HAVE_THREAD_CONTEXTS
 static xbt_parmap_t raw_parmap;
-static simgrid::simix::RawContext** raw_workers_context;    /* space to save the worker context in each thread */
+static simgrid::kernel::context::RawContext** raw_workers_context;    /* space to save the worker context in each thread */
 static uintptr_t raw_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t raw_worker_id_key; /* thread-specific storage for the thread id */
 #endif
 static unsigned long raw_process_index = 0;   /* index of the next process to run in the
                                                * list of runnable processes */
-static simgrid::simix::RawContext* raw_maestro_context;
+static simgrid::kernel::context::RawContext* raw_maestro_context;
 
 static bool raw_context_parallel = false;
 
@@ -262,7 +262,8 @@ void raw_swapcontext(raw_stack_t* old, raw_stack_t new_context) {
 // ***** Method definitions
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 RawContextFactory::RawContextFactory()
   : ContextFactory("RawContextFactory")
@@ -471,5 +472,4 @@ void RawContextFactory::run_all_adaptative()
     }
 }
 
-}
-}
+}}}

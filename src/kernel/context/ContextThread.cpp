@@ -21,7 +21,8 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 static xbt_os_sem_t smx_ctx_thread_sem = nullptr;
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 XBT_PRIVATE ContextFactory* thread_factory()
 {
@@ -234,5 +235,4 @@ void ThreadContext::attach_stop()
   xbt_os_thread_set_extra_data(nullptr);
 }
 
-}
-}
+}}} // namespace

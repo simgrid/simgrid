@@ -13,7 +13,8 @@
 
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 class ThreadContext;
 class ThreadContextFactory;
@@ -57,7 +58,6 @@ public:
   ThreadContext* create_maestro(std::function<void()> code, smx_process_t process) override;
 };
 
-}
-}
+}}} // namespace
 
 #endif

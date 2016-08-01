@@ -48,23 +48,23 @@ static void simgrid_makecontext(ucontext_t* ucp, void (*func)(int first, ...), v
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
   class UContext;
   class SerialUContext;
   class ParallelUContext;
   class UContextFactory;
-}
-}
+}}}
 
 #if HAVE_THREAD_CONTEXTS
 static xbt_parmap_t sysv_parmap;
-static simgrid::simix::ParallelUContext** sysv_workers_context;   /* space to save the worker's context in each thread */
+static simgrid::kernel::context::ParallelUContext** sysv_workers_context;   /* space to save the worker's context in each thread */
 static uintptr_t sysv_threads_working;     /* number of threads that have started their work */
 static xbt_os_thread_key_t sysv_worker_id_key; /* thread-specific storage for the thread id */
 #endif
 static unsigned long sysv_process_index = 0;   /* index of the next process to run in the
                                                 * list of runnable processes */
-static simgrid::simix::UContext* sysv_maestro_context;
+static simgrid::kernel::context::UContext* sysv_maestro_context;
 static bool sysv_parallel;
 
 // The name of this function is currently hardcoded in the code (as string).
@@ -72,7 +72,8 @@ static bool sysv_parallel;
 static void smx_ctx_sysv_wrapper(int first, ...);
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 class UContext : public Context {
 protected:
@@ -233,14 +234,13 @@ UContext::~UContext()
   SIMIX_context_stack_delete(this->stack_);
 }
 
-}
-}
+}}} // namespace simgrid::kernel::context
 
 static void smx_ctx_sysv_wrapper(int first, ...)
 {
   // Rebuild the Context* pointer from the integers:
   int ctx_addr[CTX_ADDR_LEN];
-  simgrid::simix::UContext* context;
+  simgrid::kernel::context::UContext* context;
   ctx_addr[0] = first;
   if (CTX_ADDR_LEN > 1) {
     va_list ap;
@@ -249,14 +249,15 @@ static void smx_ctx_sysv_wrapper(int first, ...)
       ctx_addr[i] = va_arg(ap, int);
     va_end(ap);
   }
-  memcpy(&context, ctx_addr, sizeof(simgrid::simix::UContext*));
+  memcpy(&context, ctx_addr, sizeof(simgrid::kernel::context::UContext*));
 
   (*context)();
   context->stop();
 }
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 void SerialUContext::stop()
 {
@@ -376,6 +377,5 @@ void ParallelUContext::suspend()
 #endif
 }
 
-}
-}
+}}} // namespace simgrid::kernel::context
 

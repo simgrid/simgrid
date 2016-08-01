@@ -341,6 +341,7 @@ set(SIMIX_SRC
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
   src/kernel/context/Context.cpp
+  src/kernel/context/Context.hpp
   src/kernel/context/ContextRaw.cpp
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp

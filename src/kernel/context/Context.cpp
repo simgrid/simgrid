@@ -14,6 +14,7 @@
 
 #include "mc/mc.h"
 
+#include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_private.h"
 
 void SIMIX_process_set_cleanup_function(
@@ -39,7 +40,8 @@ smx_context_t SIMIX_context_new(
 }
 
 namespace simgrid {
-namespace simix {
+namespace kernel {
+namespace context {
 
 ContextFactoryInitializer factory_initializer = nullptr;
 
@@ -103,5 +105,21 @@ AttachContext::~AttachContext()
 {
 }
 
+}}}
+
+/** @brief Executes all the processes to run (in parallel if possible). */
+void SIMIX_context_runall(void)
+{
+  if (!xbt_dynar_is_empty(simix_global->process_to_run))
+    simix_global->context_factory->run_all();
 }
+
+/** @brief returns the current running context */
+smx_context_t SIMIX_context_self(void)
+{
+  if (simix_global && simix_global->context_factory)
+    return simix_global->context_factory->self();
+  else
+    return nullptr;
 }
+
