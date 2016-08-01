@@ -44,7 +44,6 @@ namespace kernel {
 namespace context {
 
   class Context;
-  class ContextFactory;
 
   XBT_PUBLIC_CLASS ContextFactory {
   private:

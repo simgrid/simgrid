@@ -103,8 +103,7 @@ AttachContext::~AttachContext()
 /** @brief Executes all the processes to run (in parallel if possible). */
 void SIMIX_context_runall(void)
 {
-  if (!xbt_dynar_is_empty(simix_global->process_to_run))
-    simix_global->context_factory->run_all();
+  simix_global->context_factory->run_all();
 }
 
 /** @brief returns the current running context */

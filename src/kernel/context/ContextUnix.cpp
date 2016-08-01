@@ -186,12 +186,15 @@ void UContextFactory::run_all()
     #endif
   } else {
     // Serial:
-      smx_process_t first_process =
-          xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
-      sysv_process_index = 1;
-      SerialUContext* context =
+    if (xbt_dynar_is_empty(simix_global->process_to_run))
+      return;
+
+    smx_process_t first_process =
+        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+    sysv_process_index = 1;
+    SerialUContext* context =
         static_cast<SerialUContext*>(first_process->context);
-      context->resume();
+    context->resume();
   }
 }
 

@@ -118,6 +118,8 @@ void BoostContextFactory::run_all()
   } else
 #endif
   {
+    if (xbt_dynar_is_empty(simix_global->process_to_run))
+      return;
     smx_process_t first_process =
         xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
     BoostContext::process_index_ = 1;
