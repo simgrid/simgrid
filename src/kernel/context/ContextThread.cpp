@@ -98,7 +98,8 @@ ThreadContext::ThreadContext(std::function<void()> code,
     void_pfn_smxprocess_t cleanup, smx_process_t process, bool maestro)
   : AttachContext(std::move(code), cleanup, process)
 {
-  // We do not need the semaphores when maestro is in main, but we create them anyway for simplicity wrt the case where maestro is externalized
+  // We do not need the semaphores when maestro is in main,
+  // but creating them anyway simplifies things when maestro is externalized
   this->begin_ = xbt_os_sem_init(0);
   this->end_ = xbt_os_sem_init(0);
 

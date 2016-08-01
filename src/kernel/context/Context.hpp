@@ -35,8 +35,6 @@
 #include <signal.h>
 #include "src/simix/ActorImpl.hpp"
 
-#ifdef __cplusplus
-
 #include <simgrid/simix.hpp>
 
 namespace simgrid {
@@ -148,12 +146,6 @@ XBT_PRIVATE ContextFactory* boost_factory();
 }}}
 
 typedef simgrid::kernel::context::ContextFactory *smx_context_factory_t;
-
-#else
-
-typedef struct s_smx_context_factory *smx_context_factory_t;
-
-#endif
 
 SG_BEGIN_DECL()
 

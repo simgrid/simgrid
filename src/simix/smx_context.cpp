@@ -60,8 +60,7 @@ static std::pair<const char*, simgrid::kernel::context::ContextFactoryInitialize
 #endif
 };
 
-static_assert(sizeof(context_factories) != 0,
-  "No context factories are enabled for this build");
+static_assert(sizeof(context_factories) != 0, "No context factories are enabled for this build");
 
 // Create the list of possible contexts:
 static inline
@@ -95,41 +94,19 @@ static int smx_parallel_contexts = 1;
 static int smx_parallel_threshold = 2;
 static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAULT;
 
-static inline
-void invalid_context_factory()
-{
-  XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
-#if HAVE_RAW_CONTEXTS
-  XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
-#else
-  XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
-#endif
-#if HAVE_UCONTEXT_CONTEXTS
-  XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
-#else
-  XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
-#endif
-#if HAVE_BOOST_CONTEXTS
-  XBT_ERROR("  boost: this uses the boost libraries context implementation");
-#else
-  XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you install the libboost-context-dev package?)");
-#endif
-  XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
-  xbt_die("Please use a valid factory.");
-}
-
 /**
  * This function is called by SIMIX_global_init() to initialize the context module.
  */
 void SIMIX_context_mod_init(void)
 {
+  xbt_assert(simix_global->context_factory == nullptr);
+
 #if HAVE_THREAD_CONTEXTS && !HAVE_THREAD_LOCAL_STORAGE
   /* the __thread storage class is not available on this platform:
    * use getspecific/setspecific instead to store the current context in each thread */
   xbt_os_thread_key_create(&smx_current_context_key);
 #endif
-  if (simix_global->context_factory)
-    return;
+
   /* select the context factory to use to create the contexts */
   if (simgrid::kernel::context::factory_initializer) { // Give Java a chance to hijack the factory mechanism
     simix_global->context_factory = simgrid::kernel::context::factory_initializer();
@@ -141,8 +118,27 @@ void SIMIX_context_mod_init(void)
       simix_global->context_factory = factory.second();
       break;
     }
-  if (simix_global->context_factory == nullptr)
-    invalid_context_factory();
+
+  if (simix_global->context_factory == nullptr) {
+    XBT_ERROR("Invalid context factory specified. Valid factories on this machine:");
+#if HAVE_RAW_CONTEXTS
+    XBT_ERROR("  raw: high performance context factory implemented specifically for SimGrid");
+#else
+    XBT_ERROR("  (raw contexts were disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+#if HAVE_UCONTEXT_CONTEXTS
+    XBT_ERROR("  ucontext: classical system V contexts (implemented with makecontext, swapcontext and friends)");
+#else
+    XBT_ERROR("  (ucontext was disabled at compilation time on this machine -- check configure logs for details)");
+#endif
+#if HAVE_BOOST_CONTEXTS
+    XBT_ERROR("  boost: this uses the boost libraries context implementation");
+#else
+    XBT_ERROR("  (boost was disabled at compilation time on this machine -- check configure logs for details. Did you install the libboost-context-dev package?)");
+#endif
+    XBT_ERROR("  thread: slow portability layer using pthreads as provided by gcc");
+    xbt_die("Please use a valid factory.");
+  }
 }
 
 /**
