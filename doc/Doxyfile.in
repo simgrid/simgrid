@@ -662,6 +662,7 @@ INPUT                  = doxygen/index.doc \
                          doxygen/tutorial.doc \
                          doxygen/examples.doc \
  			 doxygen/uhood.doc \
+ 			   doxygen/uhood_switch.doc \
 			   doxygen/inside.doc \
 			     doxygen/inside_doxygen.doc \
 			     doxygen/inside_extending.doc \

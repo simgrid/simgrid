@@ -37,7 +37,7 @@
   - @subpage examples
 - @subpage uhood
   - Simulating Resource Sharing
-  - Context Switching
+  - @subpage uhood_switch
   - @subpage inside
 - @subpage community
   - @subpage community_contact
