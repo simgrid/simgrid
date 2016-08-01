@@ -121,6 +121,7 @@ protected:
     status_ = FutureStatus::done;
     if (exception_) {
       std::exception_ptr exception = std::move(exception_);
+      exception_ = nullptr;
       std::rethrow_exception(std::move(exception));
     }
   }
