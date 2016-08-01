@@ -15,7 +15,7 @@
 #include "xbt/parmap.h"
 #include "xbt/dynar.h"
 
-#include "smx_private.h"
+#include "src/simix/smx_private.h"
 #include "mc/mc.h"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);

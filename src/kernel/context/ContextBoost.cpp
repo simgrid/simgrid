@@ -14,9 +14,9 @@
 #include <xbt/log.h>
 #include <xbt/xbt_os_thread.h>
 
-#include "smx_private.h"
+#include "src/simix/smx_private.h"
 #include "src/internal_config.h"
-#include "src/simix/ContextBoost.hpp"
+#include "src/kernel/context/ContextBoost.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_context);
 

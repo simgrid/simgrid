@@ -340,8 +340,8 @@ set(SIMIX_SRC
   src/kernel/future.cpp
   src/simix/libsmx.cpp
   src/simix/smx_context.cpp
-  src/simix/Context.cpp
-  src/simix/ContextRaw.cpp
+  src/kernel/context/Context.cpp
+  src/kernel/context/ContextRaw.cpp
   src/simix/smx_deployment.cpp
   src/simix/smx_environment.cpp
   src/simix/smx_global.cpp
@@ -366,13 +366,13 @@ set(SIMIX_SRC
 if (HAVE_BOOST_CONTEXTS)
   set(SIMIX_SRC
       ${SIMIX_SRC}
-      src/simix/ContextBoost.hpp
-      src/simix/ContextBoost.cpp)
+      src/kernel/context/ContextBoost.hpp
+      src/kernel/context/ContextBoost.cpp)
 else()
   set(EXTRA_DIST
       ${EXTRA_DIST}
-      src/simix/ContextBoost.hpp
-      src/simix/ContextBoost.cpp)
+      src/kernel/context/ContextBoost.hpp
+      src/kernel/context/ContextBoost.cpp)
 endif()
 
 set(S4U_SRC
@@ -719,11 +719,11 @@ set(source_of_generated_headers
 ### depend of some variables setted upper
 # -->HAVE_THREAD_CONTEXTS HAVE_UCONTEXT_CONTEXTS
 if(${HAVE_THREAD_CONTEXTS}) #pthread
-  set(SURF_SRC   ${SURF_SRC}   src/simix/ContextThread.cpp
-                               src/simix/ContextThread.hpp )
+  set(SURF_SRC   ${SURF_SRC}   src/kernel/context/ContextThread.cpp
+                               src/kernel/context/ContextThread.hpp )
 else() # NOT pthread
-  set(EXTRA_DIST ${EXTRA_DIST} src/simix/ContextThread.cpp
-                               src/simix/ContextThread.hpp )
+  set(EXTRA_DIST ${EXTRA_DIST} src/kernel/context/ContextThread.cpp
+                               src/kernel/context/ContextThread.hpp )
 endif()
 
 if(${HAVE_THREAD_CONTEXTS}) #pthread
@@ -734,9 +734,9 @@ else() # NOT pthread
 endif()
 
 if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
-  set(SURF_SRC    ${SURF_SRC}   src/simix/ContextUnix.cpp)
+  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.cpp)
 else() # NOT ucontext
-  set(EXTRA_DIST  ${EXTRA_DIST} src/simix/ContextUnix.cpp)
+  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.cpp)
 endif()
 
 ### Simgrid Lib sources
@@ -775,8 +775,8 @@ endif()
 if(WIN32)
   set(simgrid_sources
     ${simgrid_sources}
-    src/simix/ContextThread.cpp
-    src/simix/ContextThread.hpp
+    src/kernel/context/ContextThread.cpp
+    src/kernel/context/ContextThread.hpp
     src/xbt/xbt_os_thread.c
     )
 endif()
