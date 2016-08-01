@@ -104,7 +104,7 @@ void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t synchro)
       mbox->comm_queue. erase(it);
       return;
     }
-  xbt_die("Cannot remove this comm that is not part of the mailbox");
+  xbt_die("Cannot remove the comm %p that is not part of the mailbox %s",comm, mbox->name);
 }
 
 /**
@@ -194,7 +194,6 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
       other_comm->dst_proc=mbox->permanent_receiver.get();
       other_comm->ref();
       mbox->done_comm_queue.push_back(other_synchro);
-      other_comm->mbox=mbox;
       XBT_DEBUG("pushing a message into the permanent receive fifo %p, comm %p", mbox, &(other_comm));
 
     }else{
