@@ -79,7 +79,7 @@ void *MSG_host_get_data(msg_host_t host) {
  *
  * \brief Return the location on which the current process is executed.
  */
-msg_host_t MSG_host_self(void)
+msg_host_t MSG_host_self()
 {
   return MSG_process_get_host(nullptr);
 }
@@ -128,7 +128,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
 /** \ingroup m_host_management
  * \brief Return the current number MSG hosts.
  */
-int MSG_get_host_number(void)
+int MSG_get_host_number()
 {
   return xbt_dict_length(host_list);
 }
@@ -138,7 +138,7 @@ int MSG_get_host_number(void)
  * \remark The host order in the returned array is generally different from the host creation/declaration order in the
  *         XML platform (we use a hash table internally)
  */
-xbt_dynar_t MSG_hosts_as_dynar(void) {
+xbt_dynar_t MSG_hosts_as_dynar() {
   return sg_hosts_as_dynar();
 }
 
@@ -190,7 +190,7 @@ xbt_swag_t MSG_host_get_process_list(msg_host_t host)
  */
 const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 {
-  return (const char*) xbt_dict_get_or_null(MSG_host_get_properties(host), name);
+  return static_cast<const char*>(xbt_dict_get_or_null(MSG_host_get_properties(host), name));
 }
 
 /** \ingroup m_host_management
@@ -333,7 +333,7 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
   xbt_dict_t storage_list = host->mountedStoragesAsDict();
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
-    storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);
+    storage = static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib,storage_name));
     xbt_dict_t content = simcall_storage_get_content(storage);
     xbt_dict_set(contents,mount_name, content,nullptr);
   }

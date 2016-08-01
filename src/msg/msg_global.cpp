@@ -19,7 +19,7 @@ XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
 
 MSG_Global_t msg_global = nullptr;
-static void MSG_exit(void);
+static void MSG_exit();
 
 /********************************* MSG **************************************/
 
@@ -77,13 +77,14 @@ void MSG_init_nocheck(int *argc, char **argv) {
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
   MSG_FILE_LEVEL = xbt_lib_add_level(file_lib, (void_f_pvoid_t) __MSG_file_destroy);
-  if(xbt_cfg_get_boolean("clean-atexit")) atexit(MSG_exit);
+  if(xbt_cfg_get_boolean("clean-atexit"))
+    atexit(MSG_exit);
 }
 
 /** \ingroup msg_simulation
  * \brief Launch the MSG simulation
  */
-msg_error_t MSG_main(void)
+msg_error_t MSG_main()
 {
   /* Clean IO before the run */
   fflush(stdout);
@@ -128,7 +129,7 @@ int MSG_process_killall(int reset_PIDs)
 
 }
 
-static void MSG_exit(void) {
+static void MSG_exit() {
   if (msg_global==nullptr)
     return;
 
@@ -141,7 +142,7 @@ static void MSG_exit(void) {
 /** \ingroup msg_simulation
  * \brief A clock (in second).
  */
-double MSG_get_clock(void)
+double MSG_get_clock()
 {
   return SIMIX_get_clock();
 }

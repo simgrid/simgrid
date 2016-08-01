@@ -8,19 +8,19 @@
 #include "xbt/ex.h"
 #include <xbt/ex.hpp>
 #include "xbt/log.h"
+#include <math.h>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example");
 
 int main(int argc, char **argv)
 {
   unsigned int ctr;
-  SD_task_t checkB, checkD;
+  SD_task_t checkB;
+  SD_task_t checkD;
   xbt_dynar_t changed_tasks;
-  const int host_count = 2;
   sg_host_t host_list[2];
   double computation_amount[2];
   double communication_amount[4] = { 0 };
-  double rate = -1.0;
 
   /* initialization of SD */
   SD_init(&argc, argv);
@@ -61,8 +61,8 @@ int main(int argc, char **argv)
   SD_task_t taskD = SD_task_create("Task D", NULL, 60.0);
 
   /* try to attach and retrieve user data to a task */
-  SD_task_set_data(taskA, (void*) &comp_amount1);
-  if (comp_amount1 != (*((double*) SD_task_get_data(taskA))))
+  SD_task_set_data(taskA, static_cast<void*>(&comp_amount1));
+  if (fabs(comp_amount1 - (*(static_cast<double*>(SD_task_get_data(taskA))))) > 1e-12)
       XBT_ERROR("User data was corrupted by a simple set/get");
 
   SD_task_dependency_add(NULL, NULL, taskB, taskA);
@@ -74,8 +74,7 @@ int main(int argc, char **argv)
   try {
     SD_task_dependency_add(NULL, NULL, taskA, taskA);   /* shouldn't work and must raise an exception */
     xbt_die("Hey, I can add a dependency between Task A and Task A!");
-  }
-  catch (xbt_ex& ex) {
+  } catch (xbt_ex& ex) {
     if (ex.category != arg_error)
       throw;                  /* this is a serious error */
   }
@@ -83,8 +82,7 @@ int main(int argc, char **argv)
   try {
     SD_task_dependency_add(NULL, NULL, taskB, taskA);   /* shouldn't work and must raise an exception */
     xbt_die("Oh oh, I can add an already existing dependency!");
-  }
-  catch (xbt_ex& ex) {
+  } catch (xbt_ex& ex) {
     if (ex.category != arg_error)
       throw;
   }
@@ -92,8 +90,7 @@ int main(int argc, char **argv)
   try {
     SD_task_dependency_remove(taskA, taskC);    /* shouldn't work and must raise an exception */
     xbt_die("Dude, I can remove an unknown dependency!");
-  }
-  catch (xbt_ex& ex) {
+  } catch (xbt_ex& ex) {
     if (ex.category != arg_error)
       throw;
   }
@@ -101,8 +98,7 @@ int main(int argc, char **argv)
   try {
     SD_task_dependency_remove(taskC, taskC);    /* shouldn't work and must raise an exception */
     xbt_die("Wow, I can remove a dependency between Task C and itself!");
-  }
-  catch (xbt_ex& ex) {
+  } catch (xbt_ex& ex) {
     if (ex.category != arg_error)
       throw;
   }
@@ -125,13 +121,13 @@ int main(int argc, char **argv)
 
   /* estimated time */
   SD_task_t task = taskD;
-  XBT_INFO("Estimated time for '%s': %f", SD_task_get_name(task), SD_task_get_execution_time(task, host_count,
-           host_list, computation_amount, communication_amount));
+  XBT_INFO("Estimated time for '%s': %f", SD_task_get_name(task), SD_task_get_execution_time(task, 2, host_list,
+           computation_amount, communication_amount));
 
-  SD_task_schedule(taskA, host_count, host_list, computation_amount, communication_amount, rate);
-  SD_task_schedule(taskB, host_count, host_list, computation_amount, communication_amount, rate);
-  SD_task_schedule(taskC, host_count, host_list, computation_amount, communication_amount, rate);
-  SD_task_schedule(taskD, host_count, host_list, computation_amount, communication_amount, rate);
+  SD_task_schedule(taskA, 2, host_list, computation_amount, communication_amount, -1);
+  SD_task_schedule(taskB, 2, host_list, computation_amount, communication_amount, -1);
+  SD_task_schedule(taskC, 2, host_list, computation_amount, communication_amount, -1);
+  SD_task_schedule(taskD, 2, host_list, computation_amount, communication_amount, -1);
 
   changed_tasks = SD_simulate(-1.0);
   xbt_dynar_foreach(changed_tasks, ctr, task) {

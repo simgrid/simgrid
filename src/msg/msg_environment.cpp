@@ -68,10 +68,11 @@ xbt_dict_t MSG_environment_as_get_routing_sons(msg_as_t as) {
 
 const char *MSG_environment_as_get_property_value(msg_as_t as, const char *name)
 {
-  xbt_dict_t dict = (xbt_dict_t) xbt_lib_get_or_null(as_router_lib, MSG_environment_as_get_name(as), ROUTING_PROP_ASR_LEVEL);
+  xbt_dict_t dict = static_cast<xbt_dict_t> (xbt_lib_get_or_null(as_router_lib, MSG_environment_as_get_name(as),
+                                                                 ROUTING_PROP_ASR_LEVEL));
   if (dict==nullptr)
     return nullptr;
-  return (char*) xbt_dict_get_or_null(dict, name);
+  return static_cast<const char*>(xbt_dict_get_or_null(dict, name));
 }
 
 xbt_dynar_t MSG_environment_as_get_hosts(msg_as_t as) {
