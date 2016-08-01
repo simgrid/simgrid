@@ -184,7 +184,7 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 /** @brief Executes all the processes to run (in parallel if possible). */
 XBT_PRIVATE void SIMIX_context_runall(void);
 /** @brief returns the current running context */
-XBT_PRIVATE smx_context_t SIMIX_context_self(void);
+XBT_PUBLIC(smx_context_t) SIMIX_context_self(void); // public because it's used in simgrid-java
 
 XBT_PRIVATE void *SIMIX_context_stack_new(void);
 XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);

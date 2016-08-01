@@ -107,7 +107,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Msg_init(JNIEnv * env, jclass cls, j
 
   env->GetJavaVM(&__java_vm);
 
-  simgrid::simix::factory_initializer = &simgrid::java::java_factory;
+  simgrid::kernel::context::factory_initializer = &simgrid::kernel::context::java_factory;
   jthrowable exc = env->ExceptionOccurred();
   if (exc) {
     env->ExceptionClear();
@@ -284,7 +284,7 @@ static void run_jprocess(JNIEnv *env, jobject jprocess)
 static int java_main(int argc, char *argv[])
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::java::JavaContext* context = static_cast<simgrid::java::JavaContext*>(SIMIX_context_self());
+  simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
 
   //Change the "." in class name for "/".
   xbt_str_subst(argv[0],'.','/',0);
@@ -323,13 +323,14 @@ static int java_main(int argc, char *argv[])
 }
 
 namespace simgrid {
-namespace java {
+namespace kernel {
+namespace context {
 
 /** Run the Java org.simgrid.msg.Process */
 void java_main_jprocess(jobject jprocess)
 {
   JNIEnv *env = get_current_thread_env();
-  simgrid::java::JavaContext* context = static_cast<simgrid::java::JavaContext*>(SIMIX_context_self());
+  simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
   context->jprocess = jprocess;
   smx_process_t process = SIMIX_process_self();
   jprocess_bind(context->jprocess, process, env);
@@ -340,6 +341,4 @@ void java_main_jprocess(jobject jprocess)
   else
     run_jprocess(env, context->jprocess);
 }
-
-}
-}
+}}}

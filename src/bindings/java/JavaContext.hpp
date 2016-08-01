@@ -21,12 +21,13 @@
 #include "jmsg_process.h"
 
 namespace simgrid {
-namespace java {
+namespace kernel {
+namespace context {
 
 class JavaContext;
 class JavacontextFactory;
 
-class JavaContext : public simgrid::simix::Context {
+class JavaContext : public simgrid::kernel::context::Context {
 public:
   // The java process instance bound with the msg process structure:
   jobject jprocess = nullptr;
@@ -50,7 +51,7 @@ private:
   static void* wrapper(void *data);
 };
 
-class JavaContextFactory : public simgrid::simix::ContextFactory {
+class JavaContextFactory : public simgrid::kernel::context::ContextFactory {
 public:
   JavaContextFactory();
   ~JavaContextFactory() override;
@@ -60,10 +61,9 @@ public:
   void run_all() override;
 };
 
-XBT_PRIVATE simgrid::simix::ContextFactory* java_factory();
+XBT_PRIVATE simgrid::kernel::context::ContextFactory* java_factory();
 XBT_PRIVATE void java_main_jprocess(jobject process);
 
-}
-}
+}}} // namespace simgrid::kernel::context
 
 #endif                          /* !_XBT_CONTEXT_JAVA_H */

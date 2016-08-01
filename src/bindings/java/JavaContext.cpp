@@ -23,9 +23,10 @@ extern JavaVM *__java_vm;
 XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg, "MSG for Java(TM)");
 
 namespace simgrid {
-namespace java {
+namespace kernel {
+namespace context {
 
-simgrid::simix::ContextFactory* java_factory()
+ContextFactory* java_factory()
 {
   XBT_INFO("Using regular java threads.");
   return new JavaContextFactory();
@@ -164,5 +165,4 @@ void JavaContext::resume()
   xbt_os_sem_acquire(this->end);
 }
 
-}
-}
+}}} // namespace simgrid::kernel::context

@@ -34,7 +34,7 @@ Java_org_simgrid_msg_Process_exit(JNIEnv *env, jobject jprocess) {
 
 jobject native_to_java_process(msg_process_t process)
 {
-  simgrid::java::JavaContext* context = (simgrid::java::JavaContext*) MSG_process_get_smx_ctx(process);
+  simgrid::kernel::context::JavaContext* context = (simgrid::kernel::context::JavaContext*) MSG_process_get_smx_ctx(process);
   return context->jprocess;
 }
 
@@ -51,7 +51,7 @@ void jprocess_delete_global_ref(jobject jprocess, JNIEnv * env)
 void jprocess_join(jobject jprocess, JNIEnv * env)
 {
   msg_process_t process = jprocess_to_native_process(jprocess,env);
-  simgrid::java::JavaContext* context = (simgrid::java::JavaContext*) MSG_process_get_smx_ctx(process);
+  simgrid::kernel::context::JavaContext* context = (simgrid::kernel::context::JavaContext*) MSG_process_get_smx_ctx(process);
   xbt_os_thread_join(context->thread,nullptr);
 }
 
@@ -148,7 +148,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Process_create(JNIEnv * env, jobject
               // This is the jprocess passed as environment.
               // It would be simplet if we could use a closure.
               jobject jprocess = (jobject) MSG_process_get_data(process);
-              simgrid::java::java_main_jprocess(jprocess);
+              simgrid::kernel::context::java_main_jprocess(jprocess);
               return 0;
             }, jprocess,
             host,
@@ -392,4 +392,4 @@ JNIEXPORT jint JNICALL Java_org_simgrid_msg_Process_getCount(JNIEnv * env, jclas
   return (jint) MSG_process_get_number();
 }
 
-}
+} // extern C
