@@ -197,9 +197,7 @@ void create_maestro(std::function<void()> code)
 }
 }
 
-/**
- * \brief Creates and runs the maestro process
- */
+/** @brief Creates and runs the maestro process */
 void SIMIX_maestro_create(void (*code)(void*), void* data)
 {
   simgrid::simix::create_maestro(std::bind(code, data));
