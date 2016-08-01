@@ -44,15 +44,15 @@ public:
   Process() : actor_(this) {}
 
   // TODO, replace with boost intrusive container hooks
-  s_xbt_swag_hookup_t process_hookup   = { nullptr, nullptr };   /* simix_global->process_list */
-  s_xbt_swag_hookup_t synchro_hookup   = { nullptr, nullptr };   /* {mutex,cond,sem}->sleeping */
+  s_xbt_swag_hookup_t process_hookup   = { nullptr, nullptr }; /* simix_global->process_list */
+  s_xbt_swag_hookup_t synchro_hookup   = { nullptr, nullptr }; /* {mutex,cond,sem}->sleeping */
   s_xbt_swag_hookup_t host_proc_hookup = { nullptr, nullptr }; /* smx_host->process_lis */
-  s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr };   /* simix_global->process_to_destroy */
+  s_xbt_swag_hookup_t destroy_hookup   = { nullptr, nullptr }; /* simix_global->process_to_destroy */
 
   unsigned long pid  = 0;
   unsigned long ppid = 0;
   simgrid::xbt::string name;
-  sg_host_t host        = nullptr;     /* the host on which the process is running */
+  sg_host_t host        = nullptr; /* the host on which the process is running */
   smx_context_t context = nullptr; /* the context (uctx/raw/thread) that executes the user function */
 
   // TODO, pack them
@@ -62,12 +62,12 @@ public:
   bool suspended    = false;
   bool auto_restart = false;
 
-  sg_host_t new_host            = nullptr;     /* if not null, the host on which the process must migrate to */
-  smx_synchro_t waiting_synchro = nullptr;  /* the current blocking synchro if any */
-  xbt_fifo_t comms              = nullptr;       /* the current non-blocking communication synchros */
+  sg_host_t new_host            = nullptr; /* if not null, the host on which the process must migrate to */
+  smx_synchro_t waiting_synchro = nullptr; /* the current blocking synchro if any */
+  xbt_fifo_t comms              = nullptr; /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
-  void *data          = nullptr;    /* kept for compatibility, it should be replaced with moddata */
+  void *data          = nullptr; /* kept for compatibility, it should be replaced with moddata */
   xbt_dynar_t on_exit = nullptr; /* list of functions executed when the process dies */
 
   std::function<void()> code;
@@ -125,8 +125,7 @@ XBT_PRIVATE void SIMIX_process_cleanup(smx_process_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash(void);
 XBT_PRIVATE void SIMIX_process_yield(smx_process_t self);
 XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
-XBT_PRIVATE void SIMIX_process_change_host(smx_process_t process,
-             sg_host_t dest);
+XBT_PRIVATE void SIMIX_process_change_host(smx_process_t process, sg_host_t dest);
 XBT_PRIVATE smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
 XBT_PRIVATE void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
 XBT_PRIVATE int SIMIX_process_get_PID(smx_process_t self);
