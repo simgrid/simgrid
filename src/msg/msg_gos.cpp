@@ -11,8 +11,7 @@
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
-                                "Logging specific to MSG (gos)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 
 /** \ingroup msg_task_usage
  * \brief Executes a task and waits for its termination.
@@ -45,18 +44,17 @@ msg_error_t MSG_task_execute(msg_task_t task)
 msg_error_t MSG_parallel_task_execute(msg_task_t task)
 {
   simdata_task_t simdata = task->simdata;
-  simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data();
+  simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
   TRACE_msg_task_execute_start(task);
 
-  xbt_assert((!simdata->compute) && !task->simdata->isused,
-             "This task is executed somewhere else. Go fix your code!");
+  xbt_assert((!simdata->compute) && !task->simdata->isused, "This task is executed somewhere else. Go fix your code!");
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
-  if (simdata->flops_amount == 0 && !simdata->host_nb) {
+  if (simdata->flops_amount <= 0.0 && !simdata->host_nb) {
     TRACE_msg_task_execute_end(task);
     return MSG_OK;
   }
@@ -72,8 +70,8 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
       unsigned long affinity_mask =
-         (unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host,
-                                                             sizeof(msg_host_t));
+         static_cast<unsigned long>((uintptr_t) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host,
+                                                             sizeof(msg_host_t)));
       XBT_DEBUG("execute %s@%s with affinity(0x%04lx)",
                 MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
 
@@ -122,7 +120,6 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
 msg_error_t MSG_process_sleep(double nb_sec)
 {
   msg_error_t status = MSG_OK;
-  /*msg_process_t proc = MSG_process_self();*/
 
   TRACE_msg_process_sleep_in(MSG_process_self());
 
@@ -317,7 +314,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = myself;
-  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
+  t_simdata->source = (static_cast<simdata_process_t>(SIMIX_process_self_get_data()))->m_host;
   t_simdata->setUsed();
   t_simdata->comm = nullptr;
   msg_global->sent_msg++;
@@ -724,7 +721,7 @@ void MSG_comm_copy_data_from_SIMIX(smx_synchro_t synchro, void* buff, size_t buf
 
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
-    msg_task_t task = (msg_task_t) buff;
+    msg_task_t task = static_cast<msg_task_t>(buff);
     msg_global->task_copy_callback(task, comm->src_proc, comm->dst_proc);
   }
 }
@@ -784,7 +781,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   msg_error_t ret = MSG_OK;
   simdata_task_t t_simdata = nullptr;
   msg_process_t process = MSG_process_self();
-  simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data();
+  simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
 
   int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
@@ -792,7 +789,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
   /* Prepare the task to send */
   t_simdata = task->simdata;
   t_simdata->sender = process;
-  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
+  t_simdata->source = (static_cast<simdata_process_t>(SIMIX_process_self_get_data()))   ->m_host;
 
   t_simdata->setUsed();
 
@@ -932,7 +929,7 @@ const char *MSG_task_get_category (msg_task_t task)
  */
 const char *MSG_as_router_get_property_value(const char* asr, const char *name)
 {
-  return (char*) xbt_dict_get_or_null(MSG_as_router_get_properties(asr), name);
+  return static_cast<char*>(xbt_dict_get_or_null(MSG_as_router_get_properties(asr), name));
 }
 
 /**

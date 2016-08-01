@@ -139,8 +139,8 @@ xbt_dynar_t SD_simulate(double how_long) {
     /* let's see which tasks are done */
     unsigned int iter;
     xbt_dynar_foreach(all_existing_models, iter, model) {
-      surf_action_t action;
-      while ((action = surf_model_extract_done_action_set(model))) {
+      surf_action_t action = surf_model_extract_done_action_set(model);
+      while (action != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->getData());
         XBT_VERB("Task '%s' done", SD_task_get_name(task));
         SD_task_set_state(task, SD_DONE);
@@ -185,14 +185,17 @@ xbt_dynar_t SD_simulate(double how_long) {
             SD_task_run(output);
         }
         task->outputs->clear();
+        action = surf_model_extract_done_action_set(model);
       }
 
       /* let's see which tasks have just failed */
-      while ((action = surf_model_extract_failed_action_set(model))) {
+      action = surf_model_extract_failed_action_set(model);
+      while (action != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->getData());
         XBT_VERB("Task '%s' failed", SD_task_get_name(task));
         SD_task_set_state(task, SD_FAILED);
         xbt_dynar_push(sd_global->return_set, &task);
+        action = surf_model_extract_failed_action_set(model);
       }
     }
   }
