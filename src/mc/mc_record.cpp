@@ -17,11 +17,11 @@
 
 #include "simgrid/simix.h"
 
+#include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.h"
-#include "src/simix/smx_process_private.h"
-
 #include "src/mc/mc_replay.h"
 #include "src/mc/mc_record.h"
+
 #include "src/mc/mc_base.h"
 #include "src/mc/Transition.hpp"
 

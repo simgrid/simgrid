@@ -27,7 +27,7 @@
 #include <sys/time.h>
 #endif
 
-#include "src/simix/smx_process_private.h"
+#include "src/simix/ActorImpl.hpp"
 
 #if HAVE_MC
 #include <libunwind.h>

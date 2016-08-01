@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/simix/ActorImpl.hpp"
 #include "msg_private.h"
-#include "src/simix/smx_process_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_process, instr, "MSG process");
 

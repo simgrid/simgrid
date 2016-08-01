@@ -27,7 +27,6 @@
 #include "xbt/function_types.h"
 #include "src/xbt/ex_interface.h"
 #include "src/instr/instr_private.h"
-#include "smx_process_private.h"
 #include "smx_host_private.h"
 #include "smx_io_private.h"
 #include "smx_network_private.h"
@@ -35,6 +34,7 @@
 #include "smx_synchro_private.h"
 
 #include <signal.h>
+#include "src/simix/ActorImpl.hpp"
 
 #ifdef __cplusplus
 

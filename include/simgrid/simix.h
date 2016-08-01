@@ -28,7 +28,7 @@ namespace simix {
       data</em>, executing in a <em>location</em>.
       \see m_process_management
     @{ */
-  class Process;
+  class ActorImpl;
   class Context;
   class ContextFactory;
   class Mutex;
@@ -37,7 +37,7 @@ namespace simix {
 }
 
 typedef simgrid::simix::Context *smx_context_t;
-typedef simgrid::simix::Process *smx_process_t;
+typedef simgrid::simix::ActorImpl *smx_process_t;
 typedef simgrid::simix::Mutex   *smx_mutex_t;
 typedef simgrid::simix::Mailbox *smx_mailbox_t;
 

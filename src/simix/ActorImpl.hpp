@@ -1,11 +1,10 @@
-/* Copyright (c) 2007-2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _SIMIX_PROCESS_PRIVATE_H
-#define _SIMIX_PROCESS_PRIVATE_H
+#ifndef _SIMIX_ACTORIMPL_H
+#define _SIMIX_ACTORIMPL_H
 
 #include <atomic>
 #include <functional>
@@ -39,9 +38,9 @@ public:
   bool auto_restart     = false;
 };
 
-class Process {
+class ActorImpl {
 public:
-  Process() : actor_(this) {}
+  ActorImpl() : piface_(this) {}
 
   // TODO, replace with boost intrusive container hooks
   s_xbt_swag_hookup_t process_hookup   = { nullptr, nullptr }; /* simix_global->process_list */
@@ -72,16 +71,16 @@ public:
 
   std::function<void()> code;
   smx_timer_t kill_timer = nullptr;
-  int segment_index      = 0;    /*Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
+  int segment_index      = 0; /* Reference to an SMPI process' data segment. Default value is -1 if not in SMPI context*/
 
-  friend void intrusive_ptr_add_ref(Process* process)
+  friend void intrusive_ptr_add_ref(ActorImpl* process)
   {
     // Atomic operation! Do not split in two instructions!
     auto previous = (process->refcount_)++;
     xbt_assert(previous != 0);
     (void) previous;
   }
-  friend void intrusive_ptr_release(Process* process)
+  friend void intrusive_ptr_release(ActorImpl* process)
   {
     // Atomic operation! Do not split in two instructions!
     auto count = --(process->refcount_);
@@ -89,13 +88,13 @@ public:
       delete process;
   }
 
-  ~Process();
+  ~ActorImpl();
 
-  simgrid::s4u::Actor& actor() { return actor_; }
+  simgrid::s4u::Actor& getIface() { return piface_; }
 
 private:
   std::atomic_int_fast32_t refcount_ { 1 };
-  simgrid::s4u::Actor actor_;
+  simgrid::s4u::Actor piface_;
 };
 
 }
@@ -103,7 +102,7 @@ private:
 
 typedef simgrid::simix::ProcessArg *smx_process_arg_t;
 
-typedef simgrid::simix::Process* smx_process_t;
+typedef simgrid::simix::ActorImpl* smx_process_t;
 
 SG_BEGIN_DECL()
 

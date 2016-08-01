@@ -18,7 +18,7 @@
 
 #include "simgrid/simix.h"
 #include "popping_private.h"
-#include "src/simix/smx_process_private.h"
+#include "src/simix/ActorImpl.hpp"
 
 namespace simgrid {
 namespace simix {
@@ -35,7 +35,7 @@ public:
   simgrid::s4u::Mailbox piface_; // Our interface
   char* name;
   std::deque<smx_synchro_t> comm_queue;
-  boost::intrusive_ptr<simgrid::simix::Process> permanent_receiver; //process which the mailbox is attached to
+  boost::intrusive_ptr<simgrid::simix::ActorImpl> permanent_receiver; //process which the mailbox is attached to
   std::deque<smx_synchro_t> done_comm_queue;//messages already received in the permanent receive mode
 };
 

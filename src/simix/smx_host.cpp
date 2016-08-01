@@ -23,7 +23,7 @@ void SIMIX_host_create(sg_host_t host) // FIXME: braindead prototype. Take sg_ho
   smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
 
   /* Host structure */
-  simgrid::simix::Process proc;
+  simgrid::simix::ActorImpl proc;
   smx_host->process_list = xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
 
   /* Update global variables */

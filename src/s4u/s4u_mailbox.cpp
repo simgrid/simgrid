@@ -6,9 +6,8 @@
 
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
+#include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_network_private.h"
-#include "src/simix/smx_process_private.h"
-
 #include "simgrid/s4u/mailbox.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
@@ -53,7 +52,7 @@ void Mailbox::setReceiver(ActorPtr actor) {
 ActorPtr Mailbox::receiver() {
   if(pimpl_->permanent_receiver == nullptr)
     return ActorPtr();
-  return ActorPtr(&pimpl_->permanent_receiver->actor());
+  return ActorPtr(&pimpl_->permanent_receiver->getIface());
 }
 
 }
@@ -68,5 +67,5 @@ int sg_mbox_is_empty(sg_mbox_t mbox) {
   return mbox->empty();
 }
 void sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process) {
-  mbox->setReceiver(&process->actor());
+  mbox->setReceiver(&process->getIface());
 }

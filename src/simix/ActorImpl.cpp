@@ -160,7 +160,7 @@ void SIMIX_process_empty_trash()
 namespace simgrid {
 namespace simix {
 
-Process::~Process()
+ActorImpl::~ActorImpl()
 {
   delete this->context;
   if (this->properties)
@@ -175,7 +175,7 @@ void create_maestro(std::function<void()> code)
 {
   smx_process_t maestro = nullptr;
   /* Create maestro process and intilialize it */
-  maestro = new simgrid::simix::Process();
+  maestro = new simgrid::simix::ActorImpl();
   maestro->pid = simix_process_maxpid++;
   maestro->ppid = -1;
   maestro->name = "";
@@ -260,7 +260,7 @@ smx_process_t SIMIX_process_create(
     return nullptr;
   }
   else {
-    process = new simgrid::simix::Process();
+    process = new simgrid::simix::ActorImpl();
 
     xbt_assert(code && host != nullptr, "Invalid parameters");
     /* Process data */
@@ -345,7 +345,7 @@ smx_process_t SIMIX_process_attach(
     return nullptr;
   }
 
-  smx_process_t process = new simgrid::simix::Process();
+  smx_process_t process = new simgrid::simix::ActorImpl();
   /* Process data */
   process->pid = simix_process_maxpid++;
   process->name = std::string(name);

@@ -201,7 +201,7 @@ void SIMIX_global_init(int *argc, char **argv)
   if (!simix_global) {
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
 
-    simgrid::simix::Process proc;
+    simgrid::simix::ActorImpl proc;
     simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), nullptr);
     simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), nullptr);
     simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));

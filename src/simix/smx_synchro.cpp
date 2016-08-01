@@ -102,7 +102,7 @@ Mutex::Mutex() : mutex_(this)
 {
   XBT_IN("(%p)", this);
   // Useful to initialize sleeping swag:
-  simgrid::simix::Process p;
+  simgrid::simix::ActorImpl p;
   this->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   XBT_OUT();
 }
@@ -237,7 +237,7 @@ void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex)
 smx_cond_t SIMIX_cond_init(void)
 {
   XBT_IN("()");
-  simgrid::simix::Process p;
+  simgrid::simix::ActorImpl p;
   smx_cond_t cond = new s_smx_cond();
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   cond->refcount_ = 1;
@@ -393,7 +393,7 @@ void intrusive_ptr_release(s_smx_cond_t *cond)
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
   XBT_IN("(%u)",value);
-  simgrid::simix::Process p;
+  simgrid::simix::ActorImpl p;
 
   smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
   sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));

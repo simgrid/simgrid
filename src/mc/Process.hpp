@@ -45,8 +45,8 @@ namespace mc {
 class SimixProcessInformation {
 public:
   /** MCed address of the process */
-  RemotePtr<simgrid::simix::Process> address = nullptr;
-  Remote<simgrid::simix::Process> copy;
+  RemotePtr<simgrid::simix::ActorImpl> address = nullptr;
+  Remote<simgrid::simix::ActorImpl> copy;
 
   /** Hostname (owned by `mc_modelchecker->hostnames`) */
   const char* hostname = nullptr;
@@ -224,7 +224,7 @@ public:
 
   /** Get a local description of a remote SIMIX process */
   simgrid::mc::SimixProcessInformation* resolveProcessInfo(
-    simgrid::mc::RemotePtr<simgrid::simix::Process> process)
+    simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> process)
   {
     xbt_assert(mc_model_checker != nullptr);
     if (!process)
@@ -240,7 +240,7 @@ public:
   }
 
   /** Get a local copy of the SIMIX process structure */
-  simgrid::simix::Process* resolveProcess(simgrid::mc::RemotePtr<simgrid::simix::Process> process)
+  simgrid::simix::ActorImpl* resolveProcess(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> process)
   {
     simgrid::mc::SimixProcessInformation* process_info =
       this->resolveProcessInfo(process);

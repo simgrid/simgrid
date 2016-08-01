@@ -26,7 +26,7 @@ ActorPtr Actor::self()
   if (self_context == nullptr)
     return simgrid::s4u::ActorPtr();
 
-  return simgrid::s4u::ActorPtr(&self_context->process()->actor());
+  return simgrid::s4u::ActorPtr(&self_context->process()->getIface());
 }
 
 
@@ -37,7 +37,7 @@ ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime, 
   smx_process_t process = simcall_process_create(
     name, std::move(code), nullptr, host->name().c_str(),
     killTime, nullptr, 0);
-  return Ptr(&process->actor());
+  return Ptr(&process->getIface());
 }
 
 ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime,
@@ -48,7 +48,7 @@ ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime,
   smx_process_t process = simcall_process_create(
     name, std::move(code), nullptr, host->name().c_str(),
     killTime, nullptr, 0);
-  return ActorPtr(&process->actor());
+  return ActorPtr(&process->getIface());
 }
 
 // ***** Actor methods *****
@@ -106,7 +106,7 @@ ActorPtr Actor::forPid(int pid)
 {
   smx_process_t process = SIMIX_process_from_PID(pid);
   if (process != nullptr)
-    return ActorPtr(&process->actor());
+    return ActorPtr(&process->getIface());
   else
     return nullptr;
 }
