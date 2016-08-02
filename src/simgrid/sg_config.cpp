@@ -620,6 +620,14 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_string("smpi/reduce",        nullptr, &_check_coll_reduce, "Which collective to use for reduce");
 #endif // HAVE_SMPI
 
+    /* Storage */
+
+    sg_storage_max_file_descriptors = 1024;
+    simgrid::config::bindFlag(sg_storage_max_file_descriptors, "storage/max_file_descriptors",
+      "Maximum number of concurrently opened files per host. Default is 1024");
+
+    /* Others */
+
     xbt_cfg_register_boolean("exception/cutpath", "no", nullptr,
         "Whether to cut all path information from call traces, used e.g. in exceptions.");
 

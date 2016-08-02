@@ -12,6 +12,8 @@
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
+int sg_storage_max_file_descriptors = 1024;
+
 /** @addtogroup m_host_management
  * (#msg_host_t) and the functions for managing it.
  *  
@@ -34,7 +36,7 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
   priv->affinity_mask_db = xbt_dict_new_homogeneous(nullptr);
 
   priv->file_descriptor_table = xbt_dynar_new(sizeof(int), nullptr);
-  for (int i=1023; i>=0;i--)
+  for (int i=sg_storage_max_file_descriptors-1; i>=0;i--)
     xbt_dynar_push_as(priv->file_descriptor_table, int, i);
 
   sg_host_msg_set(host,priv);
