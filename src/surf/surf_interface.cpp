@@ -246,16 +246,16 @@ void sg_version_check(int lib_version_major,int lib_version_minor,int lib_versio
       fprintf(stderr,
           "FATAL ERROR: Your program was compiled with SimGrid version %d.%d.%d, "
           "and then linked against SimGrid %d.%d.%d. Please fix this.\n",
-              SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,
-        lib_version_major,lib_version_minor,lib_version_patch);
+          lib_version_major,lib_version_minor,lib_version_patch,
+          SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);
       abort();
     }
     if (lib_version_patch != SIMGRID_VERSION_PATCH) {
         fprintf(stderr,
             "Warning: Your program was compiled with SimGrid version %d.%d.%d, "
             "and then linked against SimGrid %d.%d.%d. Proceeding anyway.\n",
-                SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH,
-          lib_version_major,lib_version_minor,lib_version_patch);
+            lib_version_major,lib_version_minor,lib_version_patch,
+            SIMGRID_VERSION_MAJOR,SIMGRID_VERSION_MINOR,SIMGRID_VERSION_PATCH);
     }
 }
 
