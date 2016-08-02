@@ -1,6 +1,6 @@
 /*! @page uhood_switch Process Synchronizations and Context Switching
 
-@section uhood_switch_DES SimGrid as a Discrete Event Simulator
+@section uhood_switch_DES SimGrid as an Operating System
 
 SimGrid is a discrete event simulator of distributed systems: it does
 not simulate the world by small fixed-size steps but determines the
@@ -8,13 +8,27 @@ date of the next event (such as the end of a communication, the end of
 a computation) and jumps to this date.
 
 A number of actors executing user-provided code run on top of the
-simulation kernel[^kernel]. When an actor needs to interact with the simulation
-kernel (eg. to start a communication), it issues a <i>simcall</i>
-(simulation call, an analogy to system calls) to the simulation kernel.
-This freezes the actor until it is woken up by the simulation kernel
-(eg. when the communication is finished).
+simulation kernel. The interactions between these actors and the
+simulation kernel are very similar to the ones between the system
+processes and the Operating System (except that the actors and
+simulation kernel share the same address space in a single OS
+process).
 
-The key ideas here are:
+When an actor needs to interact with the outer world (eg. to start a
+communication), it issues a <i>simcall</i> (simulation call), just
+like a system process issues a <i>syscall</i> to interact with its
+environment through the Operating System. Any <i>simcall</i> freezes
+the actor until it is woken up by the simulation kernel (eg. when the
+communication is finished).
+
+Mimicking the OS behavior may seem over-engineered here, but this is
+mandatory to the model-checker. The simcalls, representing actors'
+actions, are the transitions of the formal system. Verifying the
+system requires to manipulate these transitions explicitly. This also
+allows to run safely the actors in parallel, even if this is less
+commonly used by our users.
+
+So, the key ideas here are:
 
  - The simulator is a discrete event simulator (event-driven).
 
@@ -25,81 +39,100 @@ The key ideas here are:
  - In order to move forward in (simulated) time, the simulation kernel
    needs to know which actions the actors want to do.
 
- - As a consequence, the simulated time can only move forward when all the
-   actors are blocked, waiting on a simcall.
+ - The simulated time will only move forward when all the actors are
+   blocked, waiting on a simcall.
 
- - An actor cannot synchronise with another actor using OS-level primitives
+This leads to some very important consequences:
+
+ - An actor cannot synchronize with another actor using OS-level primitives
    such as `pthread_mutex_lock()` or `std::mutex`. The simulation kernel
    would wait for the actor to issue a simcall and would deadlock. Instead it
-   must use simulation-level synchronisation primitives
+   must use simulation-level synchronization primitives
    (such as `simcall_mutex_lock()`).
 
- - Similarly, it cannot sleep using `std::this_thread::sleep_for()` which waits
-   in the real world but must instead wait in the simulation with
-   `simcall_process_sleep()` which waits in the simulation.
+ - Similarly, an actor cannot sleep using
+   `std::this_thread::sleep_for()` which waits in the real world but
+   must instead wait in the simulation with
+   `simgrid::s4u::Actor::this_actor::sleep_for()` which waits in the
+   simulation.
 
  - The simulation kernel cannot block.
    Only the actors can block (using simulation primitives).
 
-## Futures
+@section uhood_switch_futures Futures and Promises
 
-### What is a future?
+@subsection uhood_switch_futures_what What is a future?
 
-We need a generic way to represent asynchronous operations in the
-simulation kernel. [Futures](https://en.wikipedia.org/wiki/Futures_and_promises)
-are a nice abstraction for this which have been added to a lot languages
-(Java, Python, C++ since C++11, ECMAScript, etc.).
+Futures are a nice classical programming abstraction, present in many
+language.  Wikipedia defines a
+[future](https://en.wikipedia.org/wiki/Futures_and_promises) as an
+object that acts as a proxy for a result that is initially unknown,
+usually because the computation of its value is yet incomplete. This
+concept is thus perfectly adapted to represent in the kernel the
+asynchronous operations corresponding to the actors' simcalls.
 
-A future represents the result of an asynchronous operation. As the operation
-may not be completed yet, its result is not available yet. Two different sort
-of APIs may be available to expose this future result:
 
- * a <b>blocking API</b> where we wait for the result to be available
+Futures can be manipulated using two kind of APIs:
+
+ - a <b>blocking API</b> where we wait for the result to be available
    (`res = f.get()`);
 
- * a <b>continuation-based API</b>[^then] where we say what should be
-   done with the result when the operation completes
-   (`future.then(something_to_do_with_the_result)`).
+ - a <b>continuation-based API</b> where we say what should be done
+   with the result when the operation completes
+   (`future.then(something_to_do_with_the_result)`). This is heavily
+   used in ECMAScript that exhibits the same kind of never-blocking
+   asynchronous model as our discrete event simulator.
 
-C++11 includes a generic class (`std::future<T>`) which implements a blocking API.
-The [continuation-based API](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0159r0.html#futures.unique_future.6)
-is not available in the standard (yet) but is described in the
-[Concurrency Technical
-Specification](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0159r0.html).
+C++11 includes a generic class (`std::future<T>`) which implements a
+blocking API.  The continuation-based API is not available in the
+standard (yet) but is [already
+described](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0159r0.html#futures.unique_future.6)
+in the Concurrency Technical Specification.
+
+`Promise`s are the counterparts of `Future`s: `std::future<T>` is used
+<em>by the consumer</em> of the result. On the other hand,
+`std::promise<T>` is used <em>by the producer</em> of the result. The
+producer calls `promise.set_value(42)` or `promise.set_exception(e)`
+in order to <em>set the result</em> which will be made available to
+the consumer by `future.get()`.
 
 ### Which future do we need?
 
-We might want to use a solution based on `std::future` but our need is slightly
-different from the C++11 futures. C++11 futures are not suitable for usage inside
-the simulation kernel because they are only providing a blocking API
-(`future.get()`) whereas the simulation kernel <em>cannot</em> block.
-Instead, we need a continuation-based API to be used in our event-driven
+The blocking API provided by the standard C++11 futures does not suit
+our needs since the simulation kernel <em>cannot</em> block, and since
+we want to explicitly schedule the actors.  Instead, we need to
+reimplement a continuation-based API to be used in our event-driven
 simulation kernel.
 
-The C++ Concurrency TS describes a continuation-based API.
-Our future are based on this with a few differences[^promise_differences]:
+Our futures are based on the C++ Concurrency Technical Specification
+API, with a few differences:
 
- * The simulation kernel is single-threaded so we do not need thread
-   synchronisation for out futures.
+ - The simulation kernel is single-threaded so we do not need 
+   inter-thread synchronization for our futures.
 
- * As the simulation kernel cannot block, `f.wait()` and its variants are not
-   meaningful in this context.
+ - As the simulation kernel cannot block, `f.wait()` is not meaningful
+   in this context.
 
- * Similarly, `future.get()` does an implicit wait. Calling this method in the
+ - Similarly, `future.get()` does an implicit wait. Calling this method in the
    simulation kernel only makes sense if the future is already ready. If the
    future is not ready, this would deadlock the simulator and an error is
    raised instead.
 
- * We always call the continuations in the simulation loop (and not
-   inside the `future.then()` or `promise.set_value()` calls)[^then_in_loop].
+ - We always call the continuations in the simulation loop (and not
+   inside the `future.then()` or `promise.set_value()` calls). That
+   way, we don't have to fear problems like invariants not being
+   restored when the callbacks are called :fearful: or stack overflows
+   triggered by deeply nested continuations chains :cold_sweat:. The
+   continuations are all called in a nice and predictable place in the
+   simulator with a nice and predictable state :relieved:.
 
-### Implementing `Future`
+ - Some features of the standard (such as shared futures) are not
+   needed in our context, and thus not considered here.
 
-The implementation of future is in `simgrid::kernel::Future` and
-`simgrid::kernel::Promise`[^promise] and is based on the Concurrency
-TS[^sharedfuture]:
+### Implementing `Future` and `Promise`
 
-The future and the associated promise use a shared state defined with:
+The `simgrid::kernel::Future` and `simgrid::kernel::Promise` use a
+shared state defined as follows:
 
 @code{cpp}
 enum class FutureStatus {
@@ -223,7 +256,7 @@ T simgrid::kernel::Future::get()
 }
 
 template<class T>
-T simgrid::kernel::SharedState<T>::get()
+T simgrid::kernel::FutureState<T>::get()
 {
   if (status_ != FutureStatus::ready)
     xbt_die("Deadlock: this future is not ready");
@@ -1066,27 +1099,7 @@ auto makeTask(F code, Args... args)
 @endcode
 
 
-## Notes
-
-[^kernel]:
-
-    The relationship between the SimGrid simulation kernel and the simulated
-    actors is similar to the relationship between an OS kernel and the OS
-    processes: the simulation kernel manages (schedules) the execution of the
-    actors; the actors make requests to the simulation kernel using simcalls.
-    However, both the simulation kernel and the actors currently run in the same
-    OS process (and use same address space).
-
-[^then]:
-
-    This is the kind of futures that are available in ECMAScript which use
-    the same kind of never-blocking asynchronous model as our discrete event
-    simulator.
-
-[^sharedfuture]:
-
-    Currently, we did not implement some features such as shared
-    futures.
+## Notes    
 
 [^getcompared]:
 
@@ -1095,28 +1108,6 @@ auto makeTask(F code, Args... args)
     raises an error if the future is not ready; the method of the actor future
     blocks after having set a continuation to wake the actor when the future
     is ready.
-
-[^promise_differences]:
-
-    (which are related to the fact that we are in a non-blocking single-threaded
-    simulation engine)
-
-[^promise]:
-
-    In the C++ standard library, `std::future<T>` is used <em>by the consumer</em>
-    of the result. On the other hand, `std::promise<T>` is used <em>by the
-    producer</em> of the result. The consumer calls `promise.set_value(42)`
-    or `promise.set_exception(e)` in order to <em>set the result</em> which will
-    be made available to the consumer by `future.get()`.
-
-[^then_in_loop]:
-
-    Calling the continuations from simulation loop means that we don't have
-    to fear problems like invariants not being restored when the callbacks
-    are called :fearful: or stack overflows triggered by deeply nested
-    continuations chains :cold_sweat:. The continuations are all called in a
-    nice and predictable place in the simulator with a nice and predictable
-    state :relieved:.
 
 [^lock]:
 
