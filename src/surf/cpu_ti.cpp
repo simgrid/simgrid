@@ -11,16 +11,15 @@
 #ifndef SURF_MODEL_CPUTI_H_
 #define SURF_MODEL_CPUTI_H_
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu,
-                                "Logging specific to the SURF CPU TRACE INTEGRATION module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_ti, surf_cpu, "Logging specific to the SURF CPU TRACE INTEGRATION module");
 
 namespace simgrid {
 namespace surf {
-  
+
 static inline
 void cpu_ti_action_update_index_heap(void *action, int i)
 {
-  ((simgrid::surf::CpuTiAction*)action)->updateIndexHeap(i);
+  (static_cast<simgrid::surf::CpuTiAction*>(action))->updateIndexHeap(i);
 }
 
 /*********
@@ -34,10 +33,8 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
   double integral = 0;
   double time = 0;
   int i = 0;
-  timePoints_ = (double*) xbt_malloc0(sizeof(double) *
-                  (xbt_dynar_length(speedTrace->event_list) + 1));
-  integral_ = (double*) xbt_malloc0(sizeof(double) *
-                  (xbt_dynar_length(speedTrace->event_list) + 1));
+  timePoints_ = static_cast<double*>(xbt_malloc0(sizeof(double) * (xbt_dynar_length(speedTrace->event_list) + 1)));
+  integral_ =  static_cast<double*>(xbt_malloc0(sizeof(double) * (xbt_dynar_length(speedTrace->event_list) + 1)));
   nbPoints_ = xbt_dynar_length(speedTrace->event_list) + 1;
   xbt_dynar_foreach(speedTrace->event_list, cpt, val) {
     timePoints_[i] = time;
@@ -77,48 +74,36 @@ double CpuTiTgmr::integrate(double a, double b)
   double first_chunk;
   double middle_chunk;
   double last_chunk;
-  int a_index, b_index;
+  int a_index;
+  int b_index;
 
   if ((a < 0.0) || (a > b)) {
-    XBT_CRITICAL
-        ("Error, invalid integration interval [%.2f,%.2f]. You probably have a task executing with negative computation amount. Check your code.",
-         a, b);
-    xbt_abort();
+    xbt_die("Error, invalid integration interval [%.2f,%.2f]. "
+        "You probably have a task executing with negative computation amount. Check your code.", a, b);
   }
-  if (a == b)
+  if (fabs(a -b) < EPSILON)
     return 0.0;
 
   if (type_ == TRACE_FIXED) {
     return ((b - a) * value_);
   }
 
-  if (ceil(a / lastTime_) == a / lastTime_)
-    a_index = 1 + (int) (ceil(a / lastTime_));
+  if (fabs(ceil(a / lastTime_) - a / lastTime_) < EPSILON)
+    a_index = 1 + static_cast<int>(ceil(a / lastTime_));
   else
-    a_index = (int) (ceil(a / lastTime_));
+    a_index = static_cast<int> (ceil(a / lastTime_));
 
-  b_index = (int) (floor(b / lastTime_));
+  b_index = static_cast<int> (floor(b / lastTime_));
 
   if (a_index > b_index) {      /* Same chunk */
-    return trace_->integrateSimple(a - (a_index -
-                                              1) * lastTime_,
-                                         b -
-                                         (b_index) *
-                                         lastTime_);
+    return trace_->integrateSimple(a - (a_index - 1) * lastTime_, b - (b_index) * lastTime_);
   }
 
-  first_chunk = trace_->integrateSimple(a - (a_index -
-                                                   1) *
-                                              lastTime_,
-                                              lastTime_);
+  first_chunk = trace_->integrateSimple(a - (a_index - 1) * lastTime_, lastTime_);
   middle_chunk = (b_index - a_index) * total_;
-  last_chunk = trace_->integrateSimple(0.0,
-                                             b -
-                                             (b_index) *
-                                             lastTime_);
+  last_chunk = trace_->integrateSimple(0.0, b - (b_index) * lastTime_);
 
-  XBT_DEBUG("first_chunk=%.2f  middle_chunk=%.2f  last_chunk=%.2f\n",
-         first_chunk, middle_chunk, last_chunk);
+  XBT_DEBUG("first_chunk=%.2f  middle_chunk=%.2f  last_chunk=%.2f\n", first_chunk, middle_chunk, last_chunk);
 
   return (first_chunk + middle_chunk + last_chunk);
 }
@@ -146,12 +131,11 @@ double CpuTiTrace::integrateSimplePoint(double a)
   ind = binarySearch(timePoints_, a, 0, nbPoints_ - 1);
   integral += integral_[ind];
   XBT_DEBUG("a %f ind %d integral %f ind + 1 %f ind %f time +1 %f time %f",
-       a, ind, integral, integral_[ind + 1], integral_[ind],
-       timePoints_[ind + 1], timePoints_[ind]);
+       a, ind, integral, integral_[ind + 1], integral_[ind], timePoints_[ind + 1], timePoints_[ind]);
   double_update(&a_aux, timePoints_[ind], sg_maxmin_precision*sg_surf_precision);
   if (a_aux > 0)
-    integral +=((integral_[ind + 1] -
-          integral_[ind]) / (timePoints_[ind + 1] - timePoints_[ind])) * (a - timePoints_[ind]);
+    integral += ((integral_[ind + 1] - integral_[ind]) / (timePoints_[ind + 1] - timePoints_[ind])) *
+                (a - timePoints_[ind]);
   XBT_DEBUG("Integral a %f = %f", a, integral);
 
   return integral;
@@ -168,13 +152,7 @@ double CpuTiTrace::integrateSimplePoint(double a)
 */
 double CpuTiTgmr::solve(double a, double amount)
 {
-  int quotient;
-  double reduced_b;
-  double reduced_amount;
-  double reduced_a;
-  double b;
-
-/* Fix very small negative numbers */
+  /* Fix very small negative numbers */
   if ((a < 0.0) && (a > -EPSILON)) {
     a = 0.0;
   }
@@ -182,44 +160,35 @@ double CpuTiTgmr::solve(double a, double amount)
     amount = 0.0;
   }
 
-/* Sanity checks */
+  /* Sanity checks */
   if ((a < 0.0) || (amount < 0.0)) {
-    XBT_CRITICAL
-        ("Error, invalid parameters [a = %.2f, amount = %.2f]. You probably have a task executing with negative computation amount. Check your code.",
-         a, amount);
+    XBT_CRITICAL ("Error, invalid parameters [a = %.2f, amount = %.2f]. "
+        "You probably have a task executing with negative computation amount. Check your code.", a, amount);
     xbt_abort();
   }
 
-/* At this point, a and amount are positive */
-
+  /* At this point, a and amount are positive */
   if (amount < EPSILON)
     return a;
 
-/* Is the trace fixed ? */
+  /* Is the trace fixed ? */
   if (type_ == TRACE_FIXED) {
     return (a + (amount / value_));
   }
 
   XBT_DEBUG("amount %f total %f", amount, total_);
-/* Reduce the problem to one where amount <= trace_total */
-  quotient = (int) (floor(amount / total_));
-  reduced_amount = (total_) * ((amount / total_) -
-                                     floor(amount / total_));
-  reduced_a = a - (lastTime_) * (int) (floor(a / lastTime_));
+  /* Reduce the problem to one where amount <= trace_total */
+  int quotient = static_cast<int>(floor(amount / total_));
+  double reduced_amount = (total_) * ((amount / total_) - floor(amount / total_));
+  double reduced_a = a - (lastTime_) * static_cast<int>(floor(a / lastTime_));
 
-  XBT_DEBUG("Quotient: %d reduced_amount: %f reduced_a: %f", quotient,
-         reduced_amount, reduced_a);
+  XBT_DEBUG("Quotient: %d reduced_amount: %f reduced_a: %f", quotient, reduced_amount, reduced_a);
 
-/* Now solve for new_amount which is <= trace_total */
-/*
-   fprintf(stderr,"reduced_a = %.2f\n",reduced_a);
-   fprintf(stderr,"reduced_amount = %.2f\n",reduced_amount);
- */
-  reduced_b = solveSomewhatSimple(reduced_a, reduced_amount);
+  /* Now solve for new_amount which is <= trace_total */
+  double reduced_b = solveSomewhatSimple(reduced_a, reduced_amount);
 
 /* Re-map to the original b and amount */
-  b = (lastTime_) * (int) (floor(a / lastTime_)) +
-      (quotient * lastTime_) + reduced_b;
+  double b = (lastTime_) * static_cast<int>(floor(a / lastTime_)) + (quotient * lastTime_) + reduced_b;
   return b;
 }
 
@@ -232,14 +201,10 @@ double CpuTiTgmr::solve(double a, double amount)
 */
 double CpuTiTgmr::solveSomewhatSimple(double a, double amount)
 {
-  double amount_till_end;
   double b;
 
   XBT_DEBUG("Solve integral: [%.2f, amount=%.2f]", a, amount);
-  amount_till_end = integrate(a, lastTime_);
-/*
-   fprintf(stderr,"amount_till_end=%.2f\n",amount_till_end);
- */
+  double amount_till_end = integrate(a, lastTime_);
 
   if (amount_till_end > amount) {
     b = trace_->solveSimple(a, amount);
@@ -258,18 +223,11 @@ double CpuTiTgmr::solveSomewhatSimple(double a, double amount)
 */
 double CpuTiTrace::solveSimple(double a, double amount)
 {
-  double integral_a;
-  int ind;
-  double time;
-  integral_a = integrateSimplePoint(a);
-  ind = binarySearch(integral_, integral_a + amount, 0, nbPoints_ - 1);
-  time = timePoints_[ind];
-  time +=
-      (integral_a + amount -
-       integral_[ind]) / ((integral_[ind + 1] -
-                                 integral_[ind]) /
-                                (timePoints_[ind + 1] -
-                                 timePoints_[ind]));
+  double integral_a = integrateSimplePoint(a);
+  int ind = binarySearch(integral_, integral_a + amount, 0, nbPoints_ - 1);
+  double time = timePoints_[ind];
+  time += (integral_a + amount - integral_[ind]) /
+           ((integral_[ind + 1] - integral_[ind]) / (timePoints_[ind + 1] - timePoints_[ind]));
 
   return time;
 }
@@ -283,13 +241,10 @@ double CpuTiTrace::solveSimple(double a, double amount)
 */
 double CpuTiTgmr::getPowerScale(double a)
 {
-  double reduced_a;
-  int point;
   s_tmgr_event_t val;
 
-  reduced_a = a - floor(a / lastTime_) * lastTime_;
-  point = trace_->binarySearch(trace_->timePoints_, reduced_a, 0,
-                                trace_->nbPoints_ - 1);
+  double reduced_a = a - floor(a / lastTime_) * lastTime_;
+  int point = trace_->binarySearch(trace_->timePoints_, reduced_a, 0, trace_->nbPoints_ - 1);
   xbt_dynar_get_cpy(speedTrace_->event_list, point, &val);
   return val.value;
 }
@@ -335,8 +290,7 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
   lastTime_ = total_time;
   total_ = trace_->integrateSimple(0, total_time);
 
-  XBT_DEBUG("Total integral %f, last_time %f ",
-            total_, lastTime_);
+  XBT_DEBUG("Total integral %f, last_time %f ", total_, lastTime_);
 }
 
 /**
@@ -350,14 +304,12 @@ CpuTiTgmr::CpuTiTgmr(tmgr_trace_t speedTrace, double value)
 */
 int CpuTiTrace::binarySearch(double *array, double a, int low, int high)
 {
-  xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than"
-      " high (%d)", low, high);
+  xbt_assert(low < high, "Wrong parameters: low (%d) should be smaller than high (%d)", low, high);
 
   int mid;
   do {
     mid = low + (high - low) / 2;
-    XBT_DEBUG("a %f low %d high %d mid %d value %f", a, low, high, mid,
-        array[mid]);
+    XBT_DEBUG("a %f low %d high %d mid %d value %f", a, low, high, mid, array[mid]);
 
     if (array[mid] > a)
       high = mid;
@@ -398,8 +350,7 @@ CpuTiModel::CpuTiModel() : CpuModel()
   modifiedCpu_ = new CpuTiList();
 
   tiActionHeap_ = xbt_heap_new(8, nullptr);
-  xbt_heap_set_update_callback(tiActionHeap_,
-                               cpu_ti_action_update_index_heap);
+  xbt_heap_set_update_callback(tiActionHeap_, cpu_ti_action_update_index_heap);
 }
 
 CpuTiModel::~CpuTiModel()
@@ -420,8 +371,7 @@ double CpuTiModel::next_occuring_event(double now)
   double min_action_duration = -1;
 
 /* iterates over modified cpus to update share resources */
-  for(CpuTiList::iterator it(modifiedCpu_->begin()), itend(modifiedCpu_->end())
-     ; it != itend ;) {
+  for(CpuTiList::iterator it(modifiedCpu_->begin()), itend(modifiedCpu_->end()) ; it != itend ;) {
     CpuTi *ti = &*it;
     ++it;
     ti->updateActionsFinishTime(now);
@@ -438,9 +388,8 @@ double CpuTiModel::next_occuring_event(double now)
 
 void CpuTiModel::updateActionsState(double now, double /*delta*/)
 {
-  while ((xbt_heap_size(tiActionHeap_) > 0)
-         && (xbt_heap_maxkey(tiActionHeap_) <= now)) {
-    CpuTiAction *action = (CpuTiAction*) xbt_heap_pop(tiActionHeap_);
+  while ((xbt_heap_size(tiActionHeap_) > 0) && (xbt_heap_maxkey(tiActionHeap_) <= now)) {
+    CpuTiAction *action = static_cast<CpuTiAction*>(xbt_heap_pop(tiActionHeap_));
     XBT_DEBUG("Action %p: finish", action);
     action->finish();
     /* set the remains to 0 due to precision problems when updating the remaining amount */
@@ -485,7 +434,7 @@ void CpuTi::setSpeedTrace(tmgr_trace_t trace)
   if (trace && xbt_dynar_length(trace->event_list) > 1) {
     s_tmgr_event_t val;
     xbt_dynar_get_cpy(trace->event_list, xbt_dynar_length(trace->event_list) - 1, &val);
-    if (val.delta == 0)
+    if (val.delta < 1e-12)
       speed_.event = future_evt_set->add_trace(tmgr_empty_trace_new(), 0.0, this);
   }
 }
@@ -525,8 +474,7 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
       double date = surf_get_clock();
 
       /* put all action running on cpu to failed */
-      for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end())
-          ; it != itend ; ++it) {
+      for(ActionTiList::iterator it(actionSet_->begin()), itend(actionSet_->end()); it != itend ; ++it) {
 
         CpuTiAction *action = &*it;
         if (action->getState() == Action::State::running
@@ -535,8 +483,8 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
           action->setFinishTime(date);
           action->setState(Action::State::failed);
           if (action->indexHeap_ >= 0) {
-            CpuTiAction *heap_act = (CpuTiAction*)
-                xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_);
+            CpuTiAction *heap_act =
+                static_cast<CpuTiAction*>(xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_));
             if (heap_act != action)
               DIE_IMPOSSIBLE;
           }
@@ -553,7 +501,9 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
 void CpuTi::updateActionsFinishTime(double now)
 {
   CpuTiAction *action;
-  double sum_priority = 0.0, total_area, min_finish = -1;
+  double sum_priority = 0.0;
+  double total_area;
+  double min_finish = -1;
 
   /* update remaining amount of actions */
   updateRemainingAmount(now);
@@ -580,47 +530,41 @@ void CpuTi::updateActionsFinishTime(double now)
     action = &*it;
     min_finish = -1;
     /* action not running, skip it */
-    if (action->getStateSet() !=
-        surf_cpu_model_pm->getRunningActionSet())
+    if (action->getStateSet() !=  surf_cpu_model_pm->getRunningActionSet())
       continue;
 
     /* verify if the action is really running on cpu */
     if (action->suspended_ == 0 && action->getPriority() > 0) {
       /* total area needed to finish the action. Used in trace integration */
-      total_area =
-          (action->getRemains()) * sum_priority *
-           action->getPriority();
+      total_area = (action->getRemains()) * sum_priority * action->getPriority();
 
       total_area /= speed_.peak;
 
       action->setFinishTime(speedIntegratedTrace_->solve(now, total_area));
       /* verify which event will happen before (max_duration or finish time) */
-      if (action->getMaxDuration() != NO_MAX_DURATION &&
+      if (action->getMaxDuration() > NO_MAX_DURATION &&
           action->getStartTime() + action->getMaxDuration() < action->finishTime_)
         min_finish = action->getStartTime() + action->getMaxDuration();
       else
         min_finish = action->finishTime_;
     } else {
       /* put the max duration time on heap */
-      if (action->getMaxDuration() != NO_MAX_DURATION)
+      if (action->getMaxDuration() > NO_MAX_DURATION)
         min_finish = action->getStartTime() + action->getMaxDuration();
     }
     /* add in action heap */
     XBT_DEBUG("action(%p) index %d", action, action->indexHeap_);
     if (action->indexHeap_ >= 0) {
-      CpuTiAction *heap_act = (CpuTiAction*)
-          xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_);
+      CpuTiAction *heap_act =
+          static_cast<CpuTiAction*>(xbt_heap_remove(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action->indexHeap_));
       if (heap_act != action)
         DIE_IMPOSSIBLE;
     }
-    if (min_finish != NO_MAX_DURATION)
+    if (min_finish > NO_MAX_DURATION)
       xbt_heap_push(static_cast<CpuTiModel*>(getModel())->tiActionHeap_, action, min_finish);
 
-    XBT_DEBUG
-        ("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f",
-         getName(), action, action->getStartTime(),
-         action->finishTime_,
-         action->getMaxDuration());
+    XBT_DEBUG("Update finish time: Cpu(%s) Action: %p, Start Time: %f Finish Time: %f Max duration %f",
+         getName(), action, action->getStartTime(), action->finishTime_, action->getMaxDuration());
   }
   /* remove from modified cpu */
   modified(false);
@@ -813,8 +757,7 @@ void CpuTiAction::setMaxDuration(double duration)
 
 /* add in action heap */
   if (indexHeap_ >= 0) {
-    CpuTiAction *heap_act = (CpuTiAction*)
-        xbt_heap_remove(getModel()->getActionHeap(), indexHeap_);
+    CpuTiAction *heap_act = static_cast<CpuTiAction*>(xbt_heap_remove(getModel()->getActionHeap(), indexHeap_));
     if (heap_act != this)
       DIE_IMPOSSIBLE;
   }
