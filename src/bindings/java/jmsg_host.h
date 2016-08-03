@@ -102,7 +102,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_nativeInit(JNIEnv *env, jclass 
  * Method    getByName
  * Signature  (Ljava/lang/String;)Lsimgrid/msg/Host;
  */
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName (JNIEnv *, jclass, jstring);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_getByName (JNIEnv *env, jclass cls, jstring jname);
 
 /**
  * This function start the host if it is off
@@ -125,28 +125,28 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_off(JNIEnv *env, jobject jhost)
  * Method    currentHost
  * Signature  ()Lsimgrid/msg/Host;
  */
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost (JNIEnv *, jclass);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost (JNIEnv *env, jclass cls);
 
 /*
  * Class    org_simgrid_msg_Host
  * Method    getCount
  * Signature  ()I
  */
-JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount (JNIEnv *, jclass);
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_Host_getCount (JNIEnv *env, jclass cls);
 
 /*
  * Class    org_simgrid_msg_Host
  * Method    getSpeed
  * Signature  ()D
  */
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed (JNIEnv *, jobject);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getSpeed (JNIEnv *env, jobject jhost);
 
 /*
  * Class    org_simgrid_msg_Host
  * Method    getCoreNumber
  * Signature  ()D
  */
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber (JNIEnv *, jobject);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getCoreNumber (JNIEnv *env, jobject jhost);
 
 /*
  * Class        org_simgrid_msg_Host
@@ -167,7 +167,7 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setProperty(JNIEnv *env, jobjec
  * Method    isOn
  * Signature  ()Z
  */
-JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isOn (JNIEnv *, jobject);
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Host_isOn (JNIEnv *env, jobject jhost);
 
 /*
  * Class    org_simgrid_msg_Host
@@ -192,11 +192,11 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_getStorageContent(JNIEn
  * Class org_simgrid_msg_Host
  * Method all
  */
-JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv *, jclass);
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv *env, jclass cls);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Host_setAsyncMailbox(JNIEnv * env, jclass cls_arg, jobject jname);
 
-JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *, jobject);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_Host_getConsumedEnergy (JNIEnv *env, jobject jhost);
 
 SG_END_DECL()
 #endif                          /*!MSG_JHOST_H */

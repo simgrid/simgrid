@@ -55,7 +55,7 @@ msg_storage_t jstorage_get_native(JNIEnv * env, jobject jstorage);
  * Method      nativeInit
  * Signature  ()V
  */
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_nativeInit(JNIEnv*, jclass);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jclass cls);
 
 /**
  * This function returns a global reference to the  java storage instance specified by the parameter jstorage.
@@ -90,28 +90,28 @@ const char *jstorage_get_name(jobject jstorage, JNIEnv * env);
  * Method    getByName
  * Signature  (Ljava/lang/String;)Lsimgrid/msg/Storage;
  */
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv *, jclass, jstring);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv *env, jclass cls, jstring jname);
 
 /*
  * Class    org_simgrid_msg_Storage
  * Method    getSize
  * Signature  ()D
  */
-JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getSize(JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getSize(JNIEnv *env, jobject jstorage);
 
 /*
  * Class    org_simgrid_msg_Storage
  * Method    getFreeSize
  * Signature  ()D
  */
-JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv *env, jobject jstorage);
 
 /*
  * Class    org_simgrid_msg_Storage
  * Method    getUsedSize
  * Signature  ()D
  */
-JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv *env, jobject jstorage);
 
 /*
  * Class        org_simgrid_msg_Storage
@@ -139,7 +139,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobj
  * Class org_simgrid_msg_Storage
  * Method all
  */
-JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv *, jclass);
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv *env, jclass cls);
 
 SG_END_DECL()
 #endif                          /*!MSG_JSTORAGE_H */
