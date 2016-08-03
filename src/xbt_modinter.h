@@ -28,8 +28,8 @@ void xbt_dict_postexit(void);
 void xbt_os_thread_mod_preinit(void);
 void xbt_os_thread_mod_postexit(void);
 
-void *mmalloc_preinit();
-void mmalloc_postexit();
+void *mmalloc_preinit(void);
+void mmalloc_postexit(void);
 
 extern int smx_cleaned;
 extern int xbt_initialized;
