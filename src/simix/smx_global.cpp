@@ -57,9 +57,8 @@ typedef struct s_smx_timer {
   double date = 0.0;
   simgrid::xbt::Task<void()> callback;
 
-  s_smx_timer() {}
-  s_smx_timer(double date, simgrid::xbt::Task<void()> callback)
-    : date(date), callback(std::move(callback)) {}
+  s_smx_timer()=default;
+  s_smx_timer(double date, simgrid::xbt::Task<void()> callback) : date(date), callback(std::move(callback)) {}
 } s_smx_timer_t;
 
 void (*SMPI_switch_data_segment)(int) = nullptr;
@@ -91,8 +90,7 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
             "Try to increase stack size with --cfg=contexts/stack_size (current size is %d KiB).\n",
             smx_context_stack_size / 1024);
     if (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
-      fprintf(stderr,
-              "siginfo = {si_signo = %d, si_errno = %d, si_code = %d, si_addr = %p}\n",
+      fprintf(stderr, "siginfo = {si_signo = %d, si_errno = %d, si_code = %d, si_addr = %p}\n",
               siginfo->si_signo, siginfo->si_errno, siginfo->si_code, siginfo->si_addr);
     }
   } else  if (siginfo->si_signo == SIGSEGV) {
@@ -100,11 +98,9 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
 #if HAVE_SMPI
     if (smpi_enabled() && !smpi_privatize_global_variables) {
 #if HAVE_PRIVATIZATION
-      fprintf(stderr,
-        "Try to enable SMPI variable privatization with --cfg=smpi/privatize-global-variables:yes.\n");
+      fprintf(stderr, "Try to enable SMPI variable privatization with --cfg=smpi/privatize-global-variables:yes.\n");
 #else
-      fprintf(stderr,
-        "Sadly, your system does not support --cfg=smpi/privatize-global-variables:yes (yet).\n");
+      fprintf(stderr, "Sadly, your system does not support --cfg=smpi/privatize-global-variables:yes (yet).\n");
 #endif /* HAVE_PRIVATIZATION */
     }
 #endif /* HAVE_SMPI */
@@ -146,8 +142,7 @@ static void install_segvhandler()
   }
   if ((old_action.sa_flags & SA_SIGINFO) || old_action.sa_handler != SIG_DFL) {
     XBT_DEBUG("A signal handler was already installed for SIGSEGV (%p). Restore it.",
-             (old_action.sa_flags & SA_SIGINFO) ?
-             (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
+             (old_action.sa_flags & SA_SIGINFO) ? (void*)old_action.sa_sigaction : (void*)old_action.sa_handler);
     sigaction(SIGSEGV, &old_action, nullptr);
   }
 }
@@ -265,7 +260,8 @@ int smx_cleaned = 0;
  */
 void SIMIX_clean()
 {
-  if (smx_cleaned) return; // to avoid double cleaning by java and C
+  if (smx_cleaned)
+    return; // to avoid double cleaning by java and C
 
 #if HAVE_SMPI
   if (SIMIX_process_count()>0){
@@ -280,7 +276,7 @@ void SIMIX_clean()
 
   smx_cleaned = 1;
   XBT_DEBUG("SIMIX_clean called. Simulation's over.");
-  if (!xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() == 0.0) {
+  if (!xbt_dynar_is_empty(simix_global->process_to_run) && SIMIX_get_clock() <= 0.0) {
     XBT_CRITICAL("   ");
     XBT_CRITICAL("The time is still 0, and you still have processes ready to run.");
     XBT_CRITICAL("It seems that you forgot to run the simulation that you setup.");
@@ -434,14 +430,12 @@ void SIMIX_run()
   smx_process_t process;
 
   do {
-    XBT_DEBUG("New Schedule Round; size(queue)=%lu",
-        xbt_dynar_length(simix_global->process_to_run));
+    XBT_DEBUG("New Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
 
     SIMIX_execute_tasks();
 
     while (!xbt_dynar_is_empty(simix_global->process_to_run)) {
-      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu",
-              xbt_dynar_length(simix_global->process_to_run));
+      XBT_DEBUG("New Sub-Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
 
       /* Run all processes that are ready to run, possibly in parallel */
       SIMIX_process_runall();
@@ -519,7 +513,7 @@ void SIMIX_run()
     }
 
     time = SIMIX_timer_next();
-    if (time != -1.0 || xbt_swag_size(simix_global->process_list) != 0) {
+    if (time > -1.0 || xbt_swag_size(simix_global->process_list) != 0) {
       XBT_DEBUG("Calling surf_solve");
       time = surf_solve(time);
       XBT_DEBUG("Moving time ahead : %g", time);
@@ -552,7 +546,7 @@ void SIMIX_run()
 
     XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
 
-  } while (time != -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
+  } while (time > -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 
   if (xbt_swag_size(simix_global->process_list) != 0) {
 
@@ -613,13 +607,12 @@ void SIMIX_function_register_process_create(smx_creation_func_t function)
 /**
  * \brief Registers a function to kill a process.
  *
- * This function registers a function to be called when a
- * process is killed. The function has to call the SIMIX_process_kill().
+ * This function registers a function to be called when a process is killed. The function has to call the
+ * SIMIX_process_kill().
  *
  * \param function Kill process function
  */
-void SIMIX_function_register_process_kill(void_pfn_smxprocess_t
-                                                     function)
+void SIMIX_function_register_process_kill(void_pfn_smxprocess_t function)
 {
   simix_global->kill_process_function = function;
 }
@@ -627,13 +620,11 @@ void SIMIX_function_register_process_kill(void_pfn_smxprocess_t
 /**
  * \brief Registers a function to cleanup a process.
  *
- * This function registers a user function to be called when
- * a process ends properly.
+ * This function registers a user function to be called when a process ends properly.
  *
  * \param function cleanup process function
  */
-void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t
-                                                        function)
+void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t function)
 {
   simix_global->cleanup_process_function = function;
 }
@@ -650,8 +641,7 @@ void SIMIX_display_process_status()
 
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);
   /*  List the process and their state */
-  XBT_INFO
-    ("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
+  XBT_INFO("Legend of the following listing: \"Process <pid> (<name>@<host>): <status>\"");
   xbt_swag_foreach(process, simix_global->process_list) {
 
     if (process->waiting_synchro) {
@@ -701,7 +691,7 @@ xbt_dict_t simcall_HANDLER_asr_get_properties(smx_simcall_t simcall, const char 
 }
 xbt_dict_t SIMIX_asr_get_properties(const char *name)
 {
-  return (xbt_dict_t) xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
+  return static_cast<xbt_dict_t>(xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL));
 }
 
 int SIMIX_is_maestro()
