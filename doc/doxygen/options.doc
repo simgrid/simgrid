@@ -312,6 +312,15 @@ corresponding to the ns3::TcpL4Protocol::SocketType configuration item
 in NS3. The only valid values (enforced on the SimGrid side) are
 'NewReno' or 'Reno' or 'Tahoe'.
 
+\subsection options_model_storage Configuring the Storage model
+
+\subsubsection option_model_storage_maxfd Maximum amount of file descriptors per host
+
+Each host maintains a fixed-size array of its file descriptors. You
+can change its size (1024 by default) through the \b
+storage/max_file_descriptors item to either enlarge it if your
+application requires it or to reduce it to save memory space.
+
 \section options_modelchecking Configuring the Model-Checking
 
 To enable the SimGrid model-checking support the program should
@@ -1169,7 +1178,8 @@ silently overflow on other parts of the memory.
 - \c path: \ref options_generic_path
 - \c plugin: \ref options_generic_plugin
 
-- \c surf/nthreads: \ref options_model_nthreads
+- \c storage/max_file_descriptors: \ref option_model_storage_maxfd
+
 - \c surf/precision: \ref options_model_precision
 
 - \c <b>For collective operations of SMPI, please refer to Section \ref options_index_smpi_coll</b>

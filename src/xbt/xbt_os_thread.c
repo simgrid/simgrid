@@ -250,7 +250,7 @@ void xbt_os_thread_exit(int *retval)
   pthread_exit(retval);
 }
 
-xbt_os_thread_t xbt_os_thread_self(void)
+xbt_os_thread_t xbt_os_thread_self(void )
 {
   if (!thread_mod_inited)
     return NULL;

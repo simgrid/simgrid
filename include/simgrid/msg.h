@@ -41,6 +41,8 @@ typedef struct s_msg_host_priv {
   xbt_dynar_t file_descriptor_table;
 } s_msg_host_priv_t;
 
+XBT_PUBLIC_DATA(int) sg_storage_max_file_descriptors;
+
 /* ******************************** Task ************************************ */
 
 typedef struct simdata_task *simdata_task_t;

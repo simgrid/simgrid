@@ -31,7 +31,7 @@ SG_BEGIN_DECL()
  * @{
  */
 /** @brief Kill the program in silence */
-XBT_PUBLIC(void) XBT_ATTRIB_NORETURN xbt_abort();
+XBT_PUBLIC(void) XBT_ATTRIB_NORETURN xbt_abort(void);
 
 /**
  * @brief Kill the program with an error message

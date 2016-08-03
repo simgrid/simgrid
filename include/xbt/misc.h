@@ -23,7 +23,7 @@ XBT_PUBLIC_DATA(int) xbt_pagesize;
 /** Cache the number of bits of addresses inside a given page, log2(xbt_pagesize). */
 XBT_PUBLIC_DATA(int) xbt_pagebits;
 
-XBT_PUBLIC(const char *) xbt_procname();
+XBT_PUBLIC(const char *) xbt_procname(void);
 
 /** Retrieves the version numbers of the used dynamic library (so, DLL or dynlib) , while
     SIMGRID_VERSION_MAJOR and friends give the version numbers of the used header files */

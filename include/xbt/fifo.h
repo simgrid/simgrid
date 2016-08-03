@@ -34,7 +34,7 @@ typedef struct xbt_fifo_item *xbt_fifo_item_t;
 */
 typedef struct xbt_fifo *xbt_fifo_t;
 
-XBT_PUBLIC(xbt_fifo_t) xbt_fifo_new();
+XBT_PUBLIC(xbt_fifo_t) xbt_fifo_new(void);
 XBT_PUBLIC(void) xbt_fifo_free(xbt_fifo_t l);
 XBT_PUBLIC(void) xbt_fifo_reset(xbt_fifo_t l);
 /** @} */
@@ -59,7 +59,7 @@ XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_search_item(xbt_fifo_t f, int_f_pvoid_pvoid
  *  @{
  */
 
-XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_new_item();
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_new_item(void);
 XBT_PUBLIC(void) xbt_fifo_set_item_content(xbt_fifo_item_t i, void *v);
 XBT_PUBLIC(void *) xbt_fifo_get_item_content(xbt_fifo_item_t i);
 XBT_PUBLIC(void) xbt_fifo_free_item(xbt_fifo_item_t i);
@@ -106,7 +106,7 @@ XBT_PUBLIC(xbt_fifo_t) xbt_fifo_copy(xbt_fifo_t l);
 /** @} */
 
 /* Deprecated functions: don't use! */
-XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_newitem();
+XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_newitem(void);
 XBT_PUBLIC(void) xbt_fifo_freeitem(xbt_fifo_item_t l);
 
 XBT_PUBLIC(xbt_fifo_item_t) xbt_fifo_getFirstItem(xbt_fifo_t l);

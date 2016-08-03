@@ -20,7 +20,7 @@ struct xbt_automaton_propositional_symbol{
   void (*free_function)(void*);
 };
 
-xbt_automaton_t xbt_automaton_new(){
+xbt_automaton_t xbt_automaton_new(void){
   xbt_automaton_t automaton = NULL;
   automaton = xbt_new0(struct xbt_automaton, 1);
   automaton->states = xbt_dynar_new(sizeof(xbt_automaton_state_t), xbt_automaton_state_free_voidp);

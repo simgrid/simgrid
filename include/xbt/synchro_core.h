@@ -35,7 +35,7 @@ SG_BEGIN_DECL()
 typedef struct s_smx_mutex_ *xbt_mutex_t;
 
 /** @brief Creates a new mutex variable */
-XBT_PUBLIC(xbt_mutex_t) xbt_mutex_init();
+XBT_PUBLIC(xbt_mutex_t) xbt_mutex_init(void);
 
 /** @brief Blocks onto the given mutex variable */
 XBT_PUBLIC(void) xbt_mutex_acquire(xbt_mutex_t mutex);
@@ -61,7 +61,7 @@ XBT_PUBLIC(void) xbt_mutex_destroy(xbt_mutex_t mutex);
 typedef struct s_smx_cond_ *xbt_cond_t;
 
 /** @brief Creates a condition variable */
-XBT_PUBLIC(xbt_cond_t) xbt_cond_init();
+XBT_PUBLIC(xbt_cond_t) xbt_cond_init(void);
 
 /** @brief Blocks onto the given condition variable */
 XBT_PUBLIC(void) xbt_cond_wait(xbt_cond_t cond, xbt_mutex_t mutex);
