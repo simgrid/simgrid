@@ -105,7 +105,7 @@ public:
   ~RoutingPlatf();
   AsImpl *root_ = nullptr;
   Link *loopback_;
-  xbt_dynar_t getOneLinkRoutes(void);
+  xbt_dynar_t getOneLinkRoutes();
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
 

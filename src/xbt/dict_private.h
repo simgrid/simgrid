@@ -39,12 +39,12 @@ typedef struct s_xbt_dict {
 typedef struct s_xbt_dict_cursor s_xbt_dict_cursor_t;
 
 extern XBT_PRIVATE xbt_mallocator_t dict_elm_mallocator;
-XBT_PRIVATE void * dict_elm_mallocator_new_f(void);
+XBT_PRIVATE void * dict_elm_mallocator_new_f();
 #define dict_elm_mallocator_free_f xbt_free_f
 #define dict_elm_mallocator_reset_f ((void_f_pvoid_t)NULL)
 
 extern XBT_PRIVATE xbt_mallocator_t dict_het_elm_mallocator;
-extern XBT_PRIVATE void * dict_het_elm_mallocator_new_f(void);
+extern XBT_PRIVATE void * dict_het_elm_mallocator_new_f();
 #define dict_het_elm_mallocator_free_f xbt_free_f
 #define dict_het_elm_mallocator_reset_f ((void_f_pvoid_t)NULL)
 

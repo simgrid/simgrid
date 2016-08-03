@@ -24,7 +24,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
  * Model *
  *********/
 
-void surf_host_model_init_current_default(void)
+void surf_host_model_init_current_default()
 {
   surf_host_model = new simgrid::surf::HostCLM03Model();
   xbt_cfg_setdefault_boolean("network/crosstraffic", "yes");

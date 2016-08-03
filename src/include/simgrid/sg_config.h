@@ -14,6 +14,6 @@ XBT_PUBLIC_DATA(int) _sg_cfg_init_status;
 XBT_PUBLIC_DATA(int) _sg_cfg_exit_asap;
 
 XBT_PUBLIC(void) sg_config_init(int *argc, char **argv);
-XBT_PUBLIC(void) sg_config_finalize(void);
+XBT_PUBLIC(void) sg_config_finalize();
 
 SG_END_DECL()

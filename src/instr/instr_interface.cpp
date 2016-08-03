@@ -279,7 +279,7 @@ void TRACE_mark(const char *mark_type, const char *mark_value)
  *
  * \return A dynar with the declared marks, must be freed with xbt_dynar_free.
  */
-xbt_dynar_t TRACE_get_marks (void)
+xbt_dynar_t TRACE_get_marks ()
 {
   if (!TRACE_is_enabled())
     return nullptr;
@@ -522,7 +522,7 @@ void TRACE_vm_variable_sub_with_time (double time, const char *vm, const char *v
  *
  * \return A dynar with the declared host variables, must be freed with xbt_dynar_free.
  */
-xbt_dynar_t TRACE_get_vm_variables (void)
+xbt_dynar_t TRACE_get_vm_variables ()
 {
   return instr_dict_to_dynar (user_vm_variables);
 }
@@ -669,7 +669,7 @@ void TRACE_host_variable_sub_with_time (double time, const char *host, const cha
  *
  * \return A dynar with the declared host variables, must be freed with xbt_dynar_free.
  */
-xbt_dynar_t TRACE_get_host_variables (void)
+xbt_dynar_t TRACE_get_host_variables ()
 {
   return instr_dict_to_dynar (user_host_variables);
 }
@@ -940,7 +940,7 @@ void TRACE_link_srcdst_variable_sub_with_time (double time, const char *src, con
  *
  * \return A dynar with the declared link variables, must be freed with xbt_dynar_free.
  */
-xbt_dynar_t TRACE_get_link_variables (void)
+xbt_dynar_t TRACE_get_link_variables ()
 {
   return instr_dict_to_dynar (user_link_variables);
 }

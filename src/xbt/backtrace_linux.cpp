@@ -35,11 +35,11 @@
 extern char **environ;          /* the environment, as specified by the opengroup */
 
 /* Module creation/destruction: nothing to do on linux */
-void xbt_backtrace_preinit(void)
+void xbt_backtrace_preinit()
 {
 }
 
-void xbt_backtrace_postexit(void)
+void xbt_backtrace_postexit()
 {
 }
 

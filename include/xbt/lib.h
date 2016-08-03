@@ -58,7 +58,7 @@ typedef struct s_xbt_lib* xbt_lib_t;
 
 #define xbt_lib_cursor_t xbt_dict_cursor_t
 
-XBT_PUBLIC(xbt_lib_t) xbt_lib_new(void);
+XBT_PUBLIC(xbt_lib_t) xbt_lib_new();
 XBT_PUBLIC(void) xbt_lib_free(xbt_lib_t * lib);
 XBT_PUBLIC(int) xbt_lib_add_level(xbt_lib_t lib, void_f_pvoid_t free_f);
 XBT_PUBLIC(void) xbt_lib_set(xbt_lib_t lib, const char *name, int level, void *obj);

@@ -29,7 +29,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_dict, xbt, "Dictionaries provide the same fu
  * Creates and initialize a new dictionary with a default hashtable size.
  * The dictionary is heterogeneous: each element can have a different free function.
  */
-xbt_dict_t xbt_dict_new(void)
+xbt_dict_t xbt_dict_new()
 {
   xbt_dict_t dict = xbt_dict_new_homogeneous(nullptr);
   dict->homogeneous = 0;
@@ -530,15 +530,13 @@ void xbt_dict_dump_sizes(xbt_dict_t dict)
  * This is an internal XBT function called during the lib initialization.
  * It can be used several times to recreate the mallocator, for example when you switch to MC mode
  */
-void xbt_dict_preinit(void)
+void xbt_dict_preinit()
 {
   if (dict_elm_mallocator == nullptr)
-    dict_elm_mallocator = xbt_mallocator_new(
-      256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f,
+    dict_elm_mallocator = xbt_mallocator_new(256, dict_elm_mallocator_new_f, dict_elm_mallocator_free_f,
       dict_elm_mallocator_reset_f);
   if (dict_het_elm_mallocator == nullptr)
-    dict_het_elm_mallocator = xbt_mallocator_new(
-      256, dict_het_elm_mallocator_new_f, dict_het_elm_mallocator_free_f,
+    dict_het_elm_mallocator = xbt_mallocator_new(256, dict_het_elm_mallocator_new_f, dict_het_elm_mallocator_free_f,
       dict_het_elm_mallocator_reset_f);
 }
 
@@ -546,7 +544,7 @@ void xbt_dict_preinit(void)
  * Destroy the dict mallocators.
  * This is an internal XBT function during the lib initialization
  */
-void xbt_dict_postexit(void)
+void xbt_dict_postexit()
 {
   if (dict_elm_mallocator != nullptr) {
     xbt_mallocator_free(dict_elm_mallocator);

@@ -179,7 +179,7 @@ XBT_PUBLIC(void) MSG_config(const char *key, const char *value);
   } while (0)
 
 XBT_PUBLIC(void) MSG_init_nocheck(int *argc, char **argv);
-XBT_PUBLIC(msg_error_t) MSG_main(void);
+XBT_PUBLIC(msg_error_t) MSG_main();;
 XBT_PUBLIC(void) MSG_function_register(const char *name,
                                        xbt_main_func_t code);
 XBT_PUBLIC(void) MSG_function_register_default(xbt_main_func_t code);
@@ -189,11 +189,11 @@ XBT_PUBLIC(void) MSG_set_function(const char *host_id,
                                   const char *function_name,
                                   xbt_dynar_t arguments);
 
-XBT_PUBLIC(double) MSG_get_clock(void);
-XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
+XBT_PUBLIC(double) MSG_get_clock();
+XBT_PUBLIC(unsigned long int) MSG_get_sent_msg();
 
 /************************** Environment ***********************************/
-XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root(void);
+XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root();
 XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
 XBT_PUBLIC(msg_as_t) MSG_environment_as_get_by_name(const char * name);
 XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
@@ -226,7 +226,7 @@ XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
 XBT_PUBLIC(const char *)MSG_storage_get_property_value(msg_storage_t storage, const char *name);
-XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
+XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar();
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
@@ -249,7 +249,7 @@ XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 #define MSG_host_get_name(host) sg_host_get_name(host)
 XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
-XBT_PUBLIC(msg_host_t) MSG_host_self(void);
+XBT_PUBLIC(msg_host_t) MSG_host_self();
 XBT_PUBLIC(double) MSG_host_get_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
@@ -265,8 +265,8 @@ XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
 #define MSG_host_get_pstate(h)         sg_host_get_pstate(h)
 #define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate)
-XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
-XBT_PUBLIC(int) MSG_get_host_number(void);
+XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
+XBT_PUBLIC(int) MSG_get_host_number();
 XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, vm_params_t params);
 XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, vm_params_t params);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
@@ -307,7 +307,7 @@ XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
 XBT_PUBLIC(msg_process_t) MSG_process_attach(
   const char *name, void *data,
   msg_host_t host, xbt_dict_t properties);
-XBT_PUBLIC(void) MSG_process_detach(void);
+XBT_PUBLIC(void) MSG_process_detach();
 
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
@@ -322,11 +322,11 @@ XBT_PUBLIC(msg_process_t) MSG_process_from_PID(int PID);
 XBT_PUBLIC(int) MSG_process_get_PID(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_get_PPID(msg_process_t process);
 XBT_PUBLIC(const char *) MSG_process_get_name(msg_process_t process);
-XBT_PUBLIC(int) MSG_process_self_PID(void);
-XBT_PUBLIC(int) MSG_process_self_PPID(void);
-XBT_PUBLIC(msg_process_t) MSG_process_self(void);
-XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar(void);
-XBT_PUBLIC(int) MSG_process_get_number(void);
+XBT_PUBLIC(int) MSG_process_self_PID();
+XBT_PUBLIC(int) MSG_process_self_PPID();
+XBT_PUBLIC(msg_process_t) MSG_process_self();
+XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar();
+XBT_PUBLIC(int) MSG_process_get_number();
 
 XBT_PUBLIC(msg_error_t) MSG_process_set_kill_time(msg_process_t process, double kill_time);
 
@@ -446,8 +446,8 @@ XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 
 /************************** Action handling **********************************/
 XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);
-XBT_PUBLIC(void) MSG_action_init(void);
-XBT_PUBLIC(void) MSG_action_exit(void);
+XBT_PUBLIC(void) MSG_action_init();
+XBT_PUBLIC(void) MSG_action_exit();
 
 /** @brief Opaque type representing a semaphore
  *  @ingroup msg_synchro
@@ -521,7 +521,7 @@ XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
 XBT_PUBLIC(void) MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask);
 
 /* TODO: do we need this? */
-// XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar(void);
+// XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar();
 
 /*
 void* MSG_process_get_property(msg_process_t, char* key)

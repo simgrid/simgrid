@@ -14,12 +14,11 @@
 #include "xbt/dict.h"
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME. There must be a better way than mimicking XML here
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix,
-                                "Logging specific to SIMIX (deployment)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_deployment, simix, "Logging specific to SIMIX (deployment)");
 
 extern int surf_parse_lineno;
 
-void SIMIX_init_application(void)
+void SIMIX_init_application()
 {
   sg_platf_exit();
   sg_platf_init();
@@ -42,8 +41,7 @@ void SIMIX_init_application(void)
 void SIMIX_launch_application(const char *file)
 {
   XBT_ATTRIB_UNUSED int parse_status;
-  xbt_assert(simix_global,
-              "SIMIX_global_init has to be called before SIMIX_launch_application.");
+  xbt_assert(simix_global, "SIMIX_global_init has to be called before SIMIX_launch_application.");
 
   SIMIX_init_application();
 

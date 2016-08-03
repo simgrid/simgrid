@@ -47,7 +47,7 @@ int PMPI_Init(int *argc, char ***argv)
   return MPI_SUCCESS;
 }
 
-int PMPI_Finalize(void)
+int PMPI_Finalize()
 {
   smpi_bench_end();
   int rank = smpi_process_index();
@@ -128,13 +128,13 @@ int PMPI_Abort(MPI_Comm comm, int errorcode)
   return MPI_SUCCESS;
 }
 
-double PMPI_Wtime(void)
+double PMPI_Wtime()
 {
   return smpi_mpi_wtime();
 }
 
 extern double sg_maxmin_precision;
-double PMPI_Wtick(void)
+double PMPI_Wtick()
 {
   return sg_maxmin_precision;
 }

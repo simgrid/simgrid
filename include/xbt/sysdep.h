@@ -31,7 +31,7 @@ SG_BEGIN_DECL()
  * @{
  */
 /** @brief Kill the program in silence */
-XBT_PUBLIC(void) XBT_ATTRIB_NORETURN xbt_abort(void);
+XBT_PUBLIC(void) XBT_ATTRIB_NORETURN xbt_abort();
 
 /**
  * @brief Kill the program with an error message
@@ -71,7 +71,7 @@ static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   return res;
 }
 
-XBT_PUBLIC(void) xbt_backtrace_display_current(void);
+XBT_PUBLIC(void) xbt_backtrace_display_current();
 
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */

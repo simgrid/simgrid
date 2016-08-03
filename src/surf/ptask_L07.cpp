@@ -20,7 +20,7 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt_cfg);
 /**************************************/
 /*** Resource Creation & Destruction **/
 /**************************************/
-void surf_host_model_init_ptask_L07(void)
+void surf_host_model_init_ptask_L07()
 {
   XBT_CINFO(xbt_cfg,"Switching to the L07 model to handle parallel tasks.");
   xbt_assert(!surf_cpu_model_pm, "CPU model type already defined");

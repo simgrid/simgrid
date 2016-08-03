@@ -61,7 +61,7 @@ typedef struct xbt_automaton_propositional_symbol* xbt_automaton_propositional_s
 typedef int (*xbt_automaton_propositional_symbol_callback_type)(void*);
 typedef void (*xbt_automaton_propositional_symbol_free_function_type)(void*);
 
-XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new(void);
+XBT_PUBLIC(xbt_automaton_t) xbt_automaton_new();
 XBT_PUBLIC(void) xbt_automaton_load(xbt_automaton_t automaton, const char *file);
 XBT_PUBLIC(xbt_automaton_state_t) xbt_automaton_state_new(xbt_automaton_t a, int type, char* id);
 XBT_PUBLIC(xbt_automaton_transition_t)

@@ -110,7 +110,7 @@ static xbt_parmap_t surf_parmap = nullptr; /* parallel map on models */
 
 double NOW = 0;
 
-double surf_get_clock(void)
+double surf_get_clock()
 {
   return NOW;
 }
@@ -161,7 +161,7 @@ static const char *disk_drives_letter_table[MAX_DRIVE] = {
  * directory on Unix/Linux platforms.
  */
 
-const char *__surf_get_initial_path(void)
+const char *__surf_get_initial_path()
 {
 
 #ifdef _WIN32
@@ -311,7 +311,7 @@ void surf_init(int *argc, char **argv)
     MC_memory_init();
 }
 
-void surf_exit(void)
+void surf_exit()
 {
   unsigned int iter;
   simgrid::surf::Model *model = nullptr;

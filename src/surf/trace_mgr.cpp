@@ -105,7 +105,7 @@ tmgr_trace_t tmgr_trace_new_from_file(const char *filename)
   return trace;
 }
 
-tmgr_trace_t tmgr_empty_trace_new(void)
+tmgr_trace_t tmgr_empty_trace_new()
 {
   tmgr_trace_t trace = new simgrid::trace_mgr::trace();
   s_tmgr_event_t event;
@@ -179,7 +179,7 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
   return trace_iterator;
 }
 
-void tmgr_finalize(void)
+void tmgr_finalize()
 {
   for (auto kv : trace_list) {
     xbt_free((char*)kv.first);

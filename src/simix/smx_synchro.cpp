@@ -12,8 +12,7 @@
 
 #include "src/kernel/activity/SynchroRaw.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix,
-                                "SIMIX Synchronization (mutex, semaphores and conditions)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 
 static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
 static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
@@ -234,7 +233,7 @@ void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex)
  * It have to be called before the use of the condition.
  * \return A condition
  */
-smx_cond_t SIMIX_cond_init(void)
+smx_cond_t SIMIX_cond_init()
 {
   XBT_IN("()");
   simgrid::simix::ActorImpl p;

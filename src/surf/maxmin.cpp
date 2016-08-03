@@ -26,7 +26,7 @@ double sg_maxmin_precision = 0.00001;
 double sg_surf_precision   = 0.00001;
 int    sg_concurrency_limit= 100;
 
-static void *lmm_variable_mallocator_new_f(void);
+static void *lmm_variable_mallocator_new_f();
 static void lmm_variable_mallocator_free_f(void *var);
 #define lmm_variable_mallocator_reset_f ((void_f_pvoid_t)nullptr)
 static void lmm_update_modified_set(lmm_system_t sys, lmm_constraint_t cnst);
@@ -254,7 +254,7 @@ inline void lmm_constraint_free(lmm_system_t sys,lmm_constraint_t cnst)
   lmm_cnst_free(sys, cnst);
 }
 
-static void *lmm_variable_mallocator_new_f(void)
+static void *lmm_variable_mallocator_new_f()
 {
   lmm_variable_t var = xbt_new(s_lmm_variable_t, 1);
   var->cnsts = nullptr; /* will be created by realloc */

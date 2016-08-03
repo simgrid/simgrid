@@ -37,7 +37,7 @@ public:
   void handleMessages();
   Channel const& getChannel() const { return channel_; }
   Channel& getChannel() { return channel_; }
-  void mainLoop(void);
+  void mainLoop();
   void reportAssertionFailure(const char* description = nullptr);
   void ignoreMemory(void* addr, std::size_t size);
   void ignoreHeap(void* addr, std::size_t size);

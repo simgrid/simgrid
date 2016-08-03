@@ -12,7 +12,7 @@ SG_BEGIN_DECL()
 typedef void* xbt_backtrace_location_t;
 
 /** @brief Shows a backtrace of the current location */
-XBT_PUBLIC(void) xbt_backtrace_display_current(void);
+XBT_PUBLIC(void) xbt_backtrace_display_current();
 
 /** @brief reimplementation of glibc backtrace based directly on gcc library, without implicit malloc  */
 XBT_PUBLIC(int) xbt_backtrace_no_malloc(void**bt, int size);

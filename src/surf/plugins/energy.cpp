@@ -253,7 +253,7 @@ static void onHostDestruction(simgrid::s4u::Host& host) {
  * \brief Enable energy plugin
  * \details Enable energy plugin to get joules consumption of each cpu. You should call this function before #MSG_init().
  */
-void sg_energy_plugin_init(void)
+void sg_energy_plugin_init()
 {
   if (HostEnergy::EXTENSION_ID.valid())
     return;

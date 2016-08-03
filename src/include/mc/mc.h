@@ -62,7 +62,7 @@ XBT_PRIVATE void _mc_cfg_cb_comms_determinism(const char *name);
 XBT_PRIVATE void _mc_cfg_cb_send_determinism(const char *name);
 XBT_PRIVATE void _mc_cfg_cb_termination(const char *name);
 
-XBT_PUBLIC(void) MC_run(void);
+XBT_PUBLIC(void) MC_run();
 XBT_PUBLIC(void) MC_process_clock_add(smx_process_t, double);
 XBT_PUBLIC(double) MC_process_clock_get(smx_process_t);
 XBT_PRIVATE void MC_automaton_load(const char *file);
@@ -77,9 +77,9 @@ XBT_PUBLIC(void) MC_register_stack_area(void *stack, smx_process_t process, ucon
 #endif
 
 /********************************* Memory *************************************/
-XBT_PUBLIC(void) MC_memory_init(void);  /* Initialize the memory subsystem */
-XBT_PUBLIC(void) MC_memory_exit(void);
-XBT_PUBLIC(void) MC_memory_init_server(void);
+XBT_PUBLIC(void) MC_memory_init();  /* Initialize the memory subsystem */
+XBT_PUBLIC(void) MC_memory_exit();
+XBT_PUBLIC(void) MC_memory_init_server();
 
 SG_END_DECL()
 

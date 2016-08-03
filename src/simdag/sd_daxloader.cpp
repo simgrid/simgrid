@@ -305,7 +305,7 @@ void STag_dax__job()
   xbt_dynar_push(result, &current_job);
 }
 
-void STag_dax__uses(void)
+void STag_dax__uses()
 {
   double size = xbt_str_parse_double(A_dax__uses_size, "Parse error: %s is not a double");
   int is_input = (A_dax__uses_link == A_dax__uses_link_input);

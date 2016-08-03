@@ -517,7 +517,7 @@ msg_storage_t MSG_storage_get_by_name(const char *name)
 /** \ingroup msg_storage_management
  * \brief Returns a dynar containing all the storage elements declared at a given point of time
  */
-xbt_dynar_t MSG_storages_as_dynar(void) {
+xbt_dynar_t MSG_storages_as_dynar() {
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;

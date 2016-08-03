@@ -439,7 +439,7 @@ void simcall_process_resume(smx_process_t process)
  *
  * Maestro internal process is not counted, only user code processes are
  */
-int simcall_process_count(void)
+int simcall_process_count()
 {
   return simgrid::simix::kernelImmediate(SIMIX_process_count);
 }
@@ -744,7 +744,7 @@ int simcall_comm_test(smx_synchro_t comm)
  * \ingroup simix_synchro_management
  *
  */
-smx_mutex_t simcall_mutex_init(void)
+smx_mutex_t simcall_mutex_init()
 {
   if(!simix_global) {
     fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
@@ -784,7 +784,7 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
  * \ingroup simix_synchro_management
  *
  */
-smx_cond_t simcall_cond_init(void)
+smx_cond_t simcall_cond_init()
 {
   return simcall_BODY_cond_init();
 }

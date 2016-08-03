@@ -42,13 +42,13 @@ extern "C" {
   void sg_link_data_set(Link *link,void *data) {
     link->setData(data);
   }
-  int sg_link_count(void) {
+  int sg_link_count() {
     return Link::linksCount();
   }
-  Link** sg_link_list(void) {
+  Link** sg_link_list() {
     return Link::linksList();
   }
-  void sg_link_exit(void) {
+  void sg_link_exit() {
     Link::linksExit();
   }
 

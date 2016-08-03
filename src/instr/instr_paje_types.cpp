@@ -78,7 +78,7 @@ static void recursiveDestroyType (type_t type)
   PJ_type_free(type);
 }
 
-void PJ_type_free_all (void)
+void PJ_type_free_all ()
 {
   recursiveDestroyType (PJ_type_get_root());
   rootType = nullptr;

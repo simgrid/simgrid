@@ -646,7 +646,7 @@ void sg_config_init(int *argc, char **argv)
   }
 }
 
-void sg_config_finalize(void)
+void sg_config_finalize()
 {
   if (!_sg_cfg_init_status)
     return;                     /* Not initialized yet. Nothing to do */

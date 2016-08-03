@@ -56,7 +56,7 @@ typedef struct s_xbt_dictelm {
   xbt_dictelm_t next;
 } s_xbt_dictelm_t;
 
-XBT_PUBLIC(xbt_dict_t) xbt_dict_new(void);
+XBT_PUBLIC(xbt_dict_t) xbt_dict_new();
 XBT_PUBLIC(xbt_dict_t) xbt_dict_new_homogeneous(void_f_pvoid_t free_ctn);
 XBT_PUBLIC(void) xbt_dict_free(xbt_dict_t * dict);
 XBT_PUBLIC(unsigned int) xbt_dict_size(xbt_dict_t dict);

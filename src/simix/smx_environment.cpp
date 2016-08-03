@@ -11,8 +11,7 @@
 #include "xbt/xbt_os_time.h"
 #include "xbt/config.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix,
-                                "Logging specific to SIMIX (environment)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_environment, simix, "Logging specific to SIMIX (environment)");
 
 /********************************* SIMIX **************************************/
 
@@ -47,7 +46,7 @@ void SIMIX_create_environment(const char *file)
   XBT_DEBUG("PARSE TIME: %g", (end - start));
 }
 
-void SIMIX_post_create_environment(void)
+void SIMIX_post_create_environment()
 {
   surf_presolve();
 }

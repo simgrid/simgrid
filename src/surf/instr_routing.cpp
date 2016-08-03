@@ -24,7 +24,6 @@ static const char *instr_node_name (xbt_node_t node)
   return str;
 }
 
-
 static container_t lowestCommonAncestor (container_t a1, container_t a2)
 {
   //this is only an optimization (since most of a1 and a2 share the same parent)
@@ -440,7 +439,6 @@ int instr_platform_traced ()
 
 #define GRAPHICATOR_SUPPORT_FUNCTIONS
 
-
 static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges,
     AS_t as, container_t container)
 {
@@ -459,7 +457,7 @@ static void recursiveXBTGraphExtraction (xbt_graph_t graph, xbt_dict_t nodes, xb
   static_cast<simgrid::kernel::routing::AsImpl*>(as)->getGraph(graph, nodes, edges);
 }
 
-xbt_graph_t instr_routing_platform_graph (void)
+xbt_graph_t instr_routing_platform_graph ()
 {
   xbt_graph_t ret = xbt_graph_new_graph (0, nullptr);
   xbt_dict_t nodes = xbt_dict_new_homogeneous(nullptr);

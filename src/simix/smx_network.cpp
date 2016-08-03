@@ -33,7 +33,7 @@ static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx
     int (*match_fun)(void *, void *,smx_synchro_t), void *user_data, smx_synchro_t my_synchro, bool remove_matching);
 static void SIMIX_comm_start(smx_synchro_t synchro);
 
-void SIMIX_mailbox_exit(void)
+void SIMIX_mailbox_exit()
 {
   xbt_dict_free(&mailboxes);
 }

@@ -74,7 +74,7 @@ SG_BEGIN_DECL()
 
 XBT_PUBLIC_DATA(std::unique_ptr<simgrid::simix::Global>) simix_global;
 
-XBT_PUBLIC(void) SIMIX_clean(void);
+XBT_PUBLIC(void) SIMIX_clean();
 
 /******************************** Exceptions *********************************/
 /** @brief Ask to the provided simix process to raise the provided exception */

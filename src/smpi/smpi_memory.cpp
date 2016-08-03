@@ -27,7 +27,7 @@ static const int PROT_RWX = (PROT_READ | PROT_WRITE | PROT_EXEC);
 static const int PROT_RW  = (PROT_READ | PROT_WRITE );
 XBT_ATTRIB_UNUSED static const int PROT_RX  = (PROT_READ | PROT_EXEC );
 
-void smpi_get_executable_global_size(void)
+void smpi_get_executable_global_size()
 {
   char buffer[PATH_MAX];
   char* full_name = realpath(xbt_binary_name, buffer);

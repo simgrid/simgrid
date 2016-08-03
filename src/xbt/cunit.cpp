@@ -620,7 +620,7 @@ int xbt_test_run(char *selection, int verbosity)
   return _xbt_test_unit_failed;
 }
 
-void xbt_test_exit(void)
+void xbt_test_exit()
 {
   xbt_dynar_free(&_xbt_test_suites);
 }
@@ -673,7 +673,7 @@ void xbt_test_exception(xbt_ex_t e)
   _xbt_test_fail(e.throwPoint().file, e.throwPoint().line, "Exception %s raised: %s", xbt_ex_catname(e.category), e.what());
 }
 
-void xbt_test_expect_failure(void)
+void xbt_test_expect_failure()
 {
   xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
       "Cannot expect the failure of a test before declaring it (broken unit: %s)", _xbt_test_current_unit->title);
@@ -681,7 +681,7 @@ void xbt_test_expect_failure(void)
   test->expected_failure = 1;
 }
 
-void xbt_test_skip(void)
+void xbt_test_skip()
 {
   xbt_assert(xbt_dynar_length(_xbt_test_current_unit->tests),
       "Test skipped even before being declared (broken unit: %s)", _xbt_test_current_unit->title);

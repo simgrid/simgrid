@@ -118,7 +118,7 @@ char sigsegv_stack[SIGSTKSZ];   /* alternate stack for SIGSEGV handler */
  * Install signal handler for SIGSEGV.  Check that nobody has already installed
  * its own handler.  For example, the Java VM does this.
  */
-static void install_segvhandler(void)
+static void install_segvhandler()
 {
   stack_t stack, old_stack;
   stack.ss_sp = sigsegv_stack;
@@ -155,7 +155,7 @@ static void install_segvhandler(void)
 #endif /* _WIN32 */
 
 /********************************* SIMIX **************************************/
-double SIMIX_timer_next(void)
+double SIMIX_timer_next()
 {
   return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
 }
@@ -263,7 +263,7 @@ int smx_cleaned = 0;
  *
  * This functions remove the memory used by SIMIX
  */
-void SIMIX_clean(void)
+void SIMIX_clean()
 {
   if (smx_cleaned) return; // to avoid double cleaning by java and C
 
@@ -327,7 +327,7 @@ void SIMIX_clean(void)
  *
  * \return Return the clock.
  */
-double SIMIX_get_clock(void)
+double SIMIX_get_clock()
 {
   if(MC_is_active() || MC_record_replay_is_active()){
     return MC_process_clock_get(SIMIX_process_self());
@@ -423,7 +423,7 @@ static bool SIMIX_execute_tasks()
  * \ingroup SIMIX_API
  * \brief Run the main simulation loop.
  */
-void SIMIX_run(void)
+void SIMIX_run()
 {
   if (MC_record_path) {
     simgrid::mc::replay(MC_record_path);
@@ -639,7 +639,7 @@ void SIMIX_function_register_process_cleanup(void_pfn_smxprocess_t
 }
 
 
-void SIMIX_display_process_status(void)
+void SIMIX_display_process_status()
 {
   if (simix_global->process_list == nullptr) {
     return;

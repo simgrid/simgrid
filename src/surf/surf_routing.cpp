@@ -164,7 +164,7 @@ void routing_register_callbacks()
 }
 
 /** \brief Frees all memory allocated by the routing module */
-void routing_exit(void) {
+void routing_exit() {
   delete routing_platf;
 }
 

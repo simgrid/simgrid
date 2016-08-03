@@ -101,13 +101,13 @@ AttachContext::~AttachContext()
 }}}
 
 /** @brief Executes all the processes to run (in parallel if possible). */
-void SIMIX_context_runall(void)
+void SIMIX_context_runall()
 {
   simix_global->context_factory->run_all();
 }
 
 /** @brief returns the current running context */
-smx_context_t SIMIX_context_self(void)
+smx_context_t SIMIX_context_self()
 {
   if (simix_global && simix_global->context_factory)
     return simix_global->context_factory->self();

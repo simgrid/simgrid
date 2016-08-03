@@ -80,7 +80,7 @@ static void IB_action_init_callback(
 /*  month=june, */
 /*  year={2010} */
 /*  } */
-void surf_network_model_init_IB(void)
+void surf_network_model_init_IB()
 {
   using simgrid::surf::networkActionStateChangedCallbacks;
 

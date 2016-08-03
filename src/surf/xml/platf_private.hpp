@@ -198,11 +198,11 @@ typedef struct s_sg_platf_AS_cbarg {
 void routing_cluster_add_backbone(Link* bb);
 /*** END of the parsing cruft ***/
 
-XBT_PUBLIC(void) sg_platf_begin(void);  // Start a new platform
-XBT_PUBLIC(void) sg_platf_end(void); // Finish the creation of the platform
+XBT_PUBLIC(void) sg_platf_begin();  // Start a new platform
+XBT_PUBLIC(void) sg_platf_end(); // Finish the creation of the platform
 
 XBT_PUBLIC(simgrid::s4u::As*) sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS); // Begin description of new AS
-XBT_PUBLIC(void) sg_platf_new_AS_seal(void);                     // That AS is fully described
+XBT_PUBLIC(void) sg_platf_new_AS_seal();                     // That AS is fully described
 
 XBT_PUBLIC(void) sg_platf_new_host   (sg_platf_host_cbarg_t   host);   // Add an host   to the currently described AS
 XBT_PUBLIC(void) sg_platf_new_hostlink(sg_platf_host_link_cbarg_t h); // Add an host_link to the currently described AS
@@ -225,18 +225,18 @@ XBT_PUBLIC(void) sg_platf_new_process(sg_platf_process_cbarg_t process);
 XBT_PRIVATE void sg_platf_trace_connect(sg_platf_trace_connect_cbarg_t trace_connect);
 
 /* Prototypes of the functions offered by flex */
-XBT_PUBLIC(int) surf_parse_lex(void);
-XBT_PUBLIC(int) surf_parse_get_lineno(void);
-XBT_PUBLIC(FILE *) surf_parse_get_in(void);
-XBT_PUBLIC(FILE *) surf_parse_get_out(void);
-XBT_PUBLIC(yy_size_t) surf_parse_get_leng(void);
-XBT_PUBLIC(char *) surf_parse_get_text(void);
+XBT_PUBLIC(int) surf_parse_lex();
+XBT_PUBLIC(int) surf_parse_get_lineno();
+XBT_PUBLIC(FILE *) surf_parse_get_in();
+XBT_PUBLIC(FILE *) surf_parse_get_out();
+XBT_PUBLIC(yy_size_t) surf_parse_get_leng();
+XBT_PUBLIC(char *) surf_parse_get_text();
 XBT_PUBLIC(void) surf_parse_set_lineno(int line_number);
 XBT_PUBLIC(void) surf_parse_set_in(FILE * in_str);
 XBT_PUBLIC(void) surf_parse_set_out(FILE * out_str);
-XBT_PUBLIC(int) surf_parse_get_debug(void);
+XBT_PUBLIC(int) surf_parse_get_debug();
 XBT_PUBLIC(void) surf_parse_set_debug(int bdebug);
-XBT_PUBLIC(int) surf_parse_lex_destroy(void);
+XBT_PUBLIC(int) surf_parse_lex_destroy();
 
 /* To include files (?) */
 XBT_PRIVATE void surfxml_bufferstack_push(int _new);
@@ -248,14 +248,13 @@ XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
 XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
 XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
 XBT_PRIVATE void sg_instr_new_host(sg_platf_host_cbarg_t host);
-XBT_PRIVATE void sg_instr_AS_end(void);
+XBT_PRIVATE void sg_instr_AS_end();
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
 typedef struct s_surf_parsing_link_up_down {
   Link* linkUp;
   Link* linkDown;
 } s_surf_parsing_link_up_down_t;
-
 
 SG_END_DECL()
 

@@ -48,7 +48,7 @@ static char *str_tolower (const char *str)
   return ret;
 }
 
-int _xbt_replay_is_active(void){
+int _xbt_replay_is_active(){
   return is_replay_active;
 }
 
@@ -118,7 +118,7 @@ void xbt_replay_action_register(const char *action_name, action_fun function)
  *
  * It returns false if it was already done by another process.
  */
-int _xbt_replay_action_init(void)
+int _xbt_replay_action_init()
 {
   if (xbt_action_funs)
     return 0;
@@ -128,7 +128,7 @@ int _xbt_replay_action_init(void)
   return 1;
 }
 
-void _xbt_replay_action_exit(void)
+void _xbt_replay_action_exit()
 {
   xbt_dict_free(&xbt_action_queues);
   xbt_dict_free(&xbt_action_funs);

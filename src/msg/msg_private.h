@@ -150,7 +150,7 @@ XBT_PRIVATE smx_process_t MSG_process_create_from_SIMIX(const char *name,
                                    smx_process_t parent_process);
 XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
 
-XBT_PRIVATE void MSG_post_create_environment(void);
+XBT_PRIVATE void MSG_post_create_environment();
 
 XBT_PRIVATE void MSG_host_add_task(msg_host_t host, msg_task_t task);
 XBT_PRIVATE void MSG_host_del_task(msg_host_t host, msg_task_t task);
@@ -163,9 +163,9 @@ XBT_PRIVATE void TRACE_msg_task_execute_start(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_execute_end(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_destroy(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_get_end(double start_time, msg_task_t task);
-XBT_PRIVATE void TRACE_msg_task_get_start(void);
+XBT_PRIVATE void TRACE_msg_task_get_start();
 XBT_PRIVATE int TRACE_msg_task_put_start(msg_task_t task);    //returns TRUE if the task_put_end must be called
-XBT_PRIVATE void TRACE_msg_task_put_end(void);
+XBT_PRIVATE void TRACE_msg_task_put_end();
 
 /* declaration of instrumentation functions from msg_process_instr.c */
 XBT_PRIVATE char *instr_process_id (msg_process_t proc, char *str, int len);

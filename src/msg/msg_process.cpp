@@ -214,7 +214,7 @@ msg_process_t MSG_process_attach(const char *name, void *data, msg_host_t host, 
  *  Used in the main thread, it waits for the simulation to finish before  returning. When it returns, the other
  *  simulated processes and the maestro are destroyed.
  */
-void MSG_process_detach(void)
+void MSG_process_detach()
 {
   SIMIX_process_detach();
 }
@@ -332,12 +332,12 @@ msg_process_t MSG_process_from_PID(int PID)
 }
 
 /** @brief returns a list of all currently existing processes */
-xbt_dynar_t MSG_processes_as_dynar(void) {
+xbt_dynar_t MSG_processes_as_dynar() {
   return SIMIX_processes_as_dynar();
 }
 
 /** @brief Return the current number MSG processes. */
-int MSG_process_get_number(void)
+int MSG_process_get_number()
 {
   return SIMIX_process_count();
 }
@@ -417,7 +417,7 @@ xbt_dict_t MSG_process_get_properties(msg_process_t process)
  *
  * This function returns the PID of the currently running #msg_process_t.
  */
-int MSG_process_self_PID(void)
+int MSG_process_self_PID()
 {
   return MSG_process_get_PID(MSG_process_self());
 }
@@ -427,7 +427,7 @@ int MSG_process_self_PID(void)
  *
  * This function returns the PID of the parent of the currently running #msg_process_t.
  */
-int MSG_process_self_PPID(void)
+int MSG_process_self_PPID()
 {
   return MSG_process_get_PPID(MSG_process_self());
 }
@@ -437,7 +437,7 @@ int MSG_process_self_PPID(void)
  *
  * This function returns the currently running #msg_process_t.
  */
-msg_process_t MSG_process_self(void)
+msg_process_t MSG_process_self()
 {
   return SIMIX_process_self();
 }

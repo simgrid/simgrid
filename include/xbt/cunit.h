@@ -25,7 +25,7 @@ typedef struct s_xbt_test_suite *xbt_test_suite_t;
 typedef struct s_xbt_test_unit *xbt_test_unit_t;
 
 /* test callback function type */
-typedef void (*ts_test_cb_t) (void);
+typedef void (*ts_test_cb_t) ();
 
 /* test suite operations */
 XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_new(const char *name, const char *fmt, ...);
@@ -53,7 +53,7 @@ XBT_PUBLIC(int) xbt_test_run(char *selection, int verbosity);
 /* Show information about the selection of tests */
 XBT_PUBLIC(void) xbt_test_dump(char *selection);
 /* Cleanup the mess */
-XBT_PUBLIC(void) xbt_test_exit(void);
+XBT_PUBLIC(void) xbt_test_exit();
 
 /** 
  * @addtogroup XBT_cunit
@@ -130,9 +130,9 @@ XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt, ...)
 XBT_PUBLIC(void) xbt_test_exception(xbt_ex_t e);
 
 /** @brief Declare that the lastly started test was expected to fail (and actually failed) */
-XBT_PUBLIC(void) xbt_test_expect_failure(void);
+XBT_PUBLIC(void) xbt_test_expect_failure();
 /** @brief Declare that the lastly started test should be skipped today */
-XBT_PUBLIC(void) xbt_test_skip(void);
+XBT_PUBLIC(void) xbt_test_skip();
 
 /** @} */
 

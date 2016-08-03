@@ -80,7 +80,7 @@ XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t
 XBT_PRIVATE void SIMIX_synchro_destroy(smx_synchro_t synchro);
 XBT_PRIVATE void SIMIX_synchro_finish(smx_synchro_t synchro);
 
-XBT_PRIVATE smx_cond_t SIMIX_cond_init(void);
+XBT_PRIVATE smx_cond_t SIMIX_cond_init();
 XBT_PRIVATE void SIMIX_cond_broadcast(smx_cond_t cond);
 XBT_PRIVATE void SIMIX_cond_signal(smx_cond_t cond);
 XBT_PRIVATE void intrusive_ptr_add_ref(s_smx_cond_t *cond);

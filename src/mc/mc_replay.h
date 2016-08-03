@@ -18,7 +18,7 @@ SG_BEGIN_DECL()
 XBT_PUBLIC_DATA(char*) MC_record_path;
 
 /** Whether the replay mode is enabled */
-static inline int MC_record_replay_is_active(void) {
+static inline int MC_record_replay_is_active() {
   return MC_record_path != 0;
 }
 

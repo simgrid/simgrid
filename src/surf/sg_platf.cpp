@@ -95,11 +95,11 @@ static simgrid::kernel::routing::AsImpl* routing_get_current()
 }
 
 /** Module management function: creates all internal data structures */
-void sg_platf_init(void) {
+void sg_platf_init() {
 }
 
 /** Module management function: frees all internal data structures */
-void sg_platf_exit(void) {
+void sg_platf_exit() {
   simgrid::surf::on_link.disconnect_all_slots();
   simgrid::surf::on_cluster.disconnect_all_slots();
   simgrid::surf::on_postparse.disconnect_all_slots();

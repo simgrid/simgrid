@@ -26,8 +26,8 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_backtrace, xbt, "Backtrace");
 
 }
 
-/** @brief show the backtrace of the current point (lovely while debuging) */
-void xbt_backtrace_display_current(void)
+/** @brief show the backtrace of the current point (lovely while debugging) */
+void xbt_backtrace_display_current()
 {
   const std::size_t size = 10;
   xbt_backtrace_location_t bt[size];
@@ -48,8 +48,7 @@ std::unique_ptr<char, void(*)(void*)> demangle(const char* name)
   );
   if (res != nullptr)
     return res;
-  // We did not manage to resolve this. Probably because this is not a mangled
-  // symbol:
+  // We did not manage to resolve this. Probably because this is not a mangled symbol:
 #endif
   // Return the symbol:
   return std::unique_ptr<char, void(*)(void*)>(xbt_strdup(name), std::free);

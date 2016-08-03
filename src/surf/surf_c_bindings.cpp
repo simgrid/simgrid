@@ -27,7 +27,7 @@ static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t host){
 
 extern double NOW;
 
-void surf_presolve(void)
+void surf_presolve()
 {
   double next_event_date = -1.0;
   tmgr_trace_iterator_t event = nullptr;

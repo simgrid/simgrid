@@ -97,7 +97,7 @@ static e_xbt_parmap_mode_t smx_parallel_synchronization_mode = XBT_PARMAP_DEFAUL
 /**
  * This function is called by SIMIX_global_init() to initialize the context module.
  */
-void SIMIX_context_mod_init(void)
+void SIMIX_context_mod_init()
 {
   xbt_assert(simix_global->context_factory == nullptr);
 
@@ -144,13 +144,13 @@ void SIMIX_context_mod_init(void)
 /**
  * This function is called by SIMIX_clean() to finalize the context module.
  */
-void SIMIX_context_mod_exit(void)
+void SIMIX_context_mod_exit()
 {
   delete simix_global->context_factory;
   simix_global->context_factory = nullptr;
 }
 
-void *SIMIX_context_stack_new(void)
+void *SIMIX_context_stack_new()
 {
   void *stack;
 
@@ -231,7 +231,7 @@ void SIMIX_context_stack_delete(void *stack)
 }
 
 /** @brief Returns whether some parallel threads are used for the user contexts. */
-int SIMIX_context_is_parallel(void) {
+int SIMIX_context_is_parallel() {
   return smx_parallel_contexts > 1;
 }
 
@@ -239,7 +239,7 @@ int SIMIX_context_is_parallel(void) {
  * @brief Returns the number of parallel threads used for the user contexts.
  * \return the number of threads (1 means no parallelism)
  */
-int SIMIX_context_get_nthreads(void) {
+int SIMIX_context_get_nthreads() {
   return smx_parallel_contexts;
 }
 
@@ -273,7 +273,7 @@ void SIMIX_context_set_nthreads(int nb_threads) {
  * \return when the number of user processes ready to run is above
  * this threshold, they are run in parallel
  */
-int SIMIX_context_get_parallel_threshold(void) {
+int SIMIX_context_get_parallel_threshold() {
   return smx_parallel_threshold;
 }
 
@@ -295,7 +295,7 @@ void SIMIX_context_set_parallel_threshold(int threshold) {
  * parallel.
  * \return how threads are synchronized if processes are run in parallel
  */
-e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode(void) {
+e_xbt_parmap_mode_t SIMIX_context_get_parallel_mode() {
   return smx_parallel_synchronization_mode;
 }
 
@@ -312,7 +312,7 @@ void SIMIX_context_set_parallel_mode(e_xbt_parmap_mode_t mode) {
  * \brief Returns the current context of this thread.
  * \return the current context of this thread
  */
-smx_context_t SIMIX_context_get_current(void)
+smx_context_t SIMIX_context_get_current()
 {
   if (SIMIX_context_is_parallel()) {
 #if HAVE_THREAD_LOCAL_STORAGE

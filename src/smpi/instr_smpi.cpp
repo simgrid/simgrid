@@ -171,7 +171,7 @@ void TRACE_internal_smpi_set_category (const char *category)
     xbt_dict_set (process_category, processid, xbt_strdup(category), nullptr);
 }
 
-const char *TRACE_internal_smpi_get_category (void)
+const char *TRACE_internal_smpi_get_category ()
 {
   if (!TRACE_smpi_is_enabled())
     return nullptr;
@@ -187,7 +187,7 @@ void TRACE_smpi_alloc()
   process_category = xbt_dict_new_homogeneous(xbt_free_f);
 }
 
-void TRACE_smpi_release(void)
+void TRACE_smpi_release()
 {
   xbt_dict_free(&keys);
   xbt_dict_free(&process_category);

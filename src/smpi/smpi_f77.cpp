@@ -303,11 +303,11 @@ void mpi_comm_size_(int* comm, int* size, int* ierr) {
    *ierr = MPI_Comm_size(smpi_comm_f2c(*comm), size);
 }
 
-double mpi_wtime_(void) {
+double mpi_wtime_() {
    return MPI_Wtime();
 }
 
-double mpi_wtick_(void) {
+double mpi_wtick_() {
   return MPI_Wtick();
 }
 

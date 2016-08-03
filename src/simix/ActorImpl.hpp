@@ -116,12 +116,12 @@ XBT_PRIVATE smx_process_t SIMIX_process_create(
                           int auto_restart,
                           smx_process_t parent_process);
 
-XBT_PRIVATE void SIMIX_process_runall(void);
+XBT_PRIVATE void SIMIX_process_runall();
 XBT_PRIVATE void SIMIX_process_kill(smx_process_t process, smx_process_t issuer);
 XBT_PRIVATE void SIMIX_process_killall(smx_process_t issuer, int reset_pid);
 XBT_PRIVATE void SIMIX_process_stop(smx_process_t arg);
 XBT_PRIVATE void SIMIX_process_cleanup(smx_process_t arg);
-XBT_PRIVATE void SIMIX_process_empty_trash(void);
+XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_process_t self);
 XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
 XBT_PRIVATE void SIMIX_process_change_host(smx_process_t process, sg_host_t dest);

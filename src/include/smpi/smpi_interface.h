@@ -94,8 +94,8 @@ XBT_PUBLIC_DATA(int (*mpi_coll_barrier_fun)(MPI_Comm comm));
 XBT_PUBLIC(void) coll_help(const char *category, s_mpi_coll_description_t * table);
 XBT_PUBLIC(int) find_coll_description(s_mpi_coll_description_t * table, char *name, const char *desc);
 
-XBT_PUBLIC_DATA(void) (*smpi_coll_cleanup_callback)(void);
-XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2(void);
+XBT_PUBLIC_DATA(void) (*smpi_coll_cleanup_callback)();
+XBT_PUBLIC(void) smpi_coll_cleanup_mvapich2();
 
 SG_END_DECL()
 

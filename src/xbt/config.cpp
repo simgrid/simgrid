@@ -468,7 +468,7 @@ template XBT_PUBLIC(void) declareFlag(const char* name,
 
 // ***** C bindings *****
 
-xbt_cfg_t xbt_cfg_new(void)        { return new simgrid::config::Config(); }
+xbt_cfg_t xbt_cfg_new()        { return new simgrid::config::Config(); }
 void xbt_cfg_free(xbt_cfg_t * cfg) { delete *cfg; }
 
 void xbt_cfg_dump(const char *name, const char *indent, xbt_cfg_t cfg)
@@ -515,8 +515,8 @@ void xbt_cfg_register_alias(const char *realname, const char *aliasname)
   simgrid_config->alias(realname, aliasname);
 }
 
-void xbt_cfg_aliases(void) { simgrid_config->showAliases(); }
-void xbt_cfg_help(void)    { simgrid_config->help(); }
+void xbt_cfg_aliases() { simgrid_config->showAliases(); }
+void xbt_cfg_help()    { simgrid_config->help(); }
 
 /*----[ Setting ]---------------------------------------------------------*/
 

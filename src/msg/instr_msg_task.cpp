@@ -83,7 +83,7 @@ void TRACE_msg_task_destroy(msg_task_t task)
 }
 
 /* MSG_task_get related functions */
-void TRACE_msg_task_get_start(void)
+void TRACE_msg_task_get_start()
 {
   XBT_DEBUG("GET,in");
 
@@ -140,7 +140,7 @@ int TRACE_msg_task_put_start(msg_task_t task)
   return 1;
 }
 
-void TRACE_msg_task_put_end(void)
+void TRACE_msg_task_put_end()
 {
   XBT_DEBUG("PUT,out");
 

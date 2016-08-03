@@ -128,14 +128,14 @@ void SIMIX_host_destroy(void *h)
   return;
 }
 
-sg_host_t SIMIX_host_self(void)
+sg_host_t SIMIX_host_self()
 {
   smx_process_t process = SIMIX_process_self();
   return (process == nullptr) ? nullptr : process->host;
 }
 
 /* needs to be public and without simcall for exceptions and logging events */
-const char* SIMIX_host_self_get_name(void)
+const char* SIMIX_host_self_get_name()
 {
   sg_host_t host = SIMIX_host_self();
   if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)

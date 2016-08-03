@@ -83,9 +83,8 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 /*  month=may, */
 /*  year={2011} */
 /*  } */
-void surf_network_model_init_SMPI(void)
+void surf_network_model_init_SMPI()
 {
-
   if (surf_network_model)
     return;
   surf_network_model = new simgrid::surf::NetworkSmpiModel();

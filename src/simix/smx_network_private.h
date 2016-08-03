@@ -42,7 +42,7 @@ public:
 }
 }
 
-XBT_PRIVATE void SIMIX_mailbox_exit(void);
+XBT_PRIVATE void SIMIX_mailbox_exit();
 
 XBT_PRIVATE smx_mailbox_t SIMIX_mbox_create(const char *name);
 XBT_PRIVATE smx_mailbox_t SIMIX_mbox_get_by_name(const char *name);

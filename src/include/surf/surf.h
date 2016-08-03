@@ -480,14 +480,14 @@ XBT_PUBLIC_DATA(surf_cpu_model_t) surf_cpu_model_vm;
  *
  *  You shouldn't have to call it by yourself.
  */
-XBT_PUBLIC(void) surf_cpu_model_init_Cas01(void);
+XBT_PUBLIC(void) surf_cpu_model_init_Cas01();
 
 /** \ingroup SURF_models
  *  \brief Initializes the CPU model with trace integration [Deprecated]
  *
  *  You shouldn't have to call it by yourself.
  */
-XBT_PUBLIC(void) surf_cpu_model_init_ti(void);
+XBT_PUBLIC(void) surf_cpu_model_init_ti();
 
 /** \ingroup SURF_models
  *  \brief The list of all available optimization modes (both for cpu and networks).
@@ -522,7 +522,7 @@ XBT_PUBLIC_DATA(surf_network_model_t) surf_network_model;
  *
  *  \see surf_host_model_init_SMPI()
  */
-XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
+XBT_PUBLIC(void) surf_network_model_init_SMPI();
 
 /** \ingroup SURF_models
  *  \brief Same as network model 'LagrangeVelho', only with different correction factors.
@@ -532,7 +532,7 @@ XBT_PUBLIC(void) surf_network_model_init_SMPI(void);
  *
  *  \see surf_host_model_init_IB()
  */
-XBT_PUBLIC(void) surf_network_model_init_IB(void);
+XBT_PUBLIC(void) surf_network_model_init_IB();
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model 'LegrandVelho'
@@ -542,7 +542,7 @@ XBT_PUBLIC(void) surf_network_model_init_IB(void);
  *
  *  \see surf_host_model_init_LegrandVelho()
  */
-XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
+XBT_PUBLIC(void) surf_network_model_init_LegrandVelho();
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model 'Constant'
@@ -553,7 +553,7 @@ XBT_PUBLIC(void) surf_network_model_init_LegrandVelho(void);
  *
  *  \see surf_host_model_init_compound()
  */
-XBT_PUBLIC(void) surf_network_model_init_Constant(void);
+XBT_PUBLIC(void) surf_network_model_init_Constant();
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model CM02
@@ -561,7 +561,7 @@ XBT_PUBLIC(void) surf_network_model_init_Constant(void);
  *  You sould call this function by yourself only if you plan using surf_host_model_init_compound.
  *  See comments in the code for more information.
  */
-XBT_PUBLIC(void) surf_network_model_init_CM02(void);
+XBT_PUBLIC(void) surf_network_model_init_CM02();
 
 #if HAVE_NS3
 /** \ingroup SURF_models
@@ -572,7 +572,7 @@ XBT_PUBLIC(void) surf_network_model_init_CM02(void);
  *
  *  \see surf_host_model_init_NS3()
  */
-XBT_PUBLIC(void) surf_network_model_init_NS3(void);
+XBT_PUBLIC(void) surf_network_model_init_NS3();
 #endif
 
 /** \ingroup SURF_models
@@ -586,7 +586,7 @@ XBT_PUBLIC(void) surf_network_model_init_NS3(void);
  *
  *  Call this function only if you plan using surf_host_model_init_compound.
  */
-XBT_PUBLIC(void) surf_network_model_init_Reno(void);
+XBT_PUBLIC(void) surf_network_model_init_Reno();
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model Reno2
@@ -599,7 +599,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno(void);
  *
  *  Call this function only if you plan using surf_host_model_init_compound.
  */
-XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
+XBT_PUBLIC(void) surf_network_model_init_Reno2();
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model Vegas
@@ -612,7 +612,7 @@ XBT_PUBLIC(void) surf_network_model_init_Reno2(void);
  *
  *  Call this function only if you plan using surf_host_model_init_compound.
  */
-XBT_PUBLIC(void) surf_network_model_init_Vegas(void);
+XBT_PUBLIC(void) surf_network_model_init_Vegas();
 
 /** \ingroup SURF_models
  *  \brief The list of all available network model models
@@ -622,7 +622,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_network_model_description[];
 /** \ingroup SURF_models
  *  \brief The storage model
  */
-XBT_PUBLIC(void) surf_storage_model_init_default(void);
+XBT_PUBLIC(void) surf_storage_model_init_default();
 
 /** \ingroup SURF_models
  *  \brief The list of all available storage modes.
@@ -653,7 +653,7 @@ XBT_PUBLIC_DATA(surf_vm_model_t) surf_vm_model;
  *
  *  This function should be called after a cpu_model and a network_model have been set up.
  */
-XBT_PUBLIC(void) surf_host_model_init_compound(void);
+XBT_PUBLIC(void) surf_host_model_init_compound();
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the current best network and cpu models at hand
@@ -663,7 +663,7 @@ XBT_PUBLIC(void) surf_host_model_init_compound(void);
  *  traffic support) and the CPU model with the model Cas01.
  *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  */
-XBT_PUBLIC(void) surf_host_model_init_current_default(void);
+XBT_PUBLIC(void) surf_host_model_init_current_default();
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the model L07
@@ -671,7 +671,7 @@ XBT_PUBLIC(void) surf_host_model_init_current_default(void);
  *  With this model, only parallel tasks can be used. Resource sharing is done by identifying bottlenecks and giving an
  *  equal share of the model to each action.
  */
-XBT_PUBLIC(void) surf_host_model_init_ptask_L07(void);
+XBT_PUBLIC(void) surf_host_model_init_ptask_L07();
 
 /** \ingroup SURF_models
  *  \brief The list of all available host model models
@@ -686,7 +686,7 @@ XBT_PUBLIC_DATA(s_surf_model_description_t) surf_host_model_description[];
  *  traffic support) and the CPU model with the model Cas01.
  *  Such model is subject to modification with warning in the ChangeLog so monitor it!
  */
-XBT_PUBLIC(void) surf_vm_model_init_HL13(void);
+XBT_PUBLIC(void) surf_vm_model_init_HL13();
 
 /** \ingroup SURF_models
  *  \brief The list of all available vm model models
@@ -727,7 +727,7 @@ XBT_PUBLIC(void) surf_init(int *argc, char **argv);     /* initialize common str
  *
  *  This function must be called before the first call to surf_solve()
  */
-XBT_PUBLIC(void) surf_presolve(void);
+XBT_PUBLIC(void) surf_presolve();
 
 /** \ingroup SURF_simulation
  *  \brief Performs a part of the simulation
@@ -746,7 +746,7 @@ XBT_PUBLIC(double) surf_solve(double max_date);
  *
  *  Return the current time in millisecond.
  */
-XBT_PUBLIC(double) surf_get_clock(void);
+XBT_PUBLIC(double) surf_get_clock();
 
 /** \ingroup SURF_simulation
  *  \brief Exit SURF
@@ -755,7 +755,7 @@ XBT_PUBLIC(double) surf_get_clock(void);
  *
  *  \see surf_init()
  */
-XBT_PUBLIC(void) surf_exit(void);
+XBT_PUBLIC(void) surf_exit();
 
 /* Prototypes of the functions that handle the properties */
 XBT_PUBLIC_DATA(xbt_dict_t) current_property_set;// the prop set for the currently parsed element (also used in SIMIX)
@@ -774,22 +774,22 @@ XBT_PUBLIC(xbt_dict_t) get_as_router_properties(const char* name);
  * Returns the initial path. On Windows the initial path is the current directory for the current process in the other
  * case the function returns "./" that represents the current directory on Unix/Linux platforms.
  */
-const char *__surf_get_initial_path(void);
+const char *__surf_get_initial_path();
 
 /********** Tracing **********/
 /* from surf_instr.c */
 void TRACE_surf_action(surf_action_t surf_action, const char *category);
-void TRACE_surf_alloc(void);
-void TRACE_surf_release(void);
+void TRACE_surf_alloc();
+void TRACE_surf_release();
 
 /* instr_routing.c */
-void instr_routing_define_callbacks (void);
+void instr_routing_define_callbacks ();
 void instr_new_variable_type (const char *new_typename, const char *color);
 void instr_new_user_variable_type  (const char *father_type, const char *new_typename, const char *color);
 void instr_new_user_state_type (const char *father_type, const char *new_typename);
 void instr_new_value_for_user_state_type (const char *_typename, const char *value, const char *color);
-int instr_platform_traced (void);
-xbt_graph_t instr_routing_platform_graph (void);
+int instr_platform_traced ();
+xbt_graph_t instr_routing_platform_graph ();
 void instr_routing_platform_graph_export_graphviz (xbt_graph_t g, const char *filename);
 
 SG_END_DECL()

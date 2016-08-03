@@ -135,7 +135,7 @@ namespace context {
   };
 
 /* This allows Java to hijack the context factory (Java induces factories of factory :) */
-typedef ContextFactory* (*ContextFactoryInitializer)(void);
+typedef ContextFactory* (*ContextFactoryInitializer)();
 XBT_PUBLIC_DATA(ContextFactoryInitializer) factory_initializer;
 
 XBT_PRIVATE ContextFactory* thread_factory();
@@ -150,8 +150,8 @@ typedef simgrid::kernel::context::ContextFactory *smx_context_factory_t;
 SG_BEGIN_DECL()
 
 
-XBT_PRIVATE void SIMIX_context_mod_init(void);
-XBT_PRIVATE void SIMIX_context_mod_exit(void);
+XBT_PRIVATE void SIMIX_context_mod_init();
+XBT_PRIVATE void SIMIX_context_mod_exit();
 
 XBT_PRIVATE smx_context_t SIMIX_context_new(
   std::function<void()> code,
@@ -173,19 +173,19 @@ XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);
 #endif
 
 /** @brief Executes all the processes to run (in parallel if possible). */
-XBT_PRIVATE void SIMIX_context_runall(void);
+XBT_PRIVATE void SIMIX_context_runall();
 /** @brief returns the current running context */
-XBT_PUBLIC(smx_context_t) SIMIX_context_self(void); // public because it's used in simgrid-java
+XBT_PUBLIC(smx_context_t) SIMIX_context_self(); // public because it's used in simgrid-java
 
-XBT_PRIVATE void *SIMIX_context_stack_new(void);
+XBT_PRIVATE void *SIMIX_context_stack_new();
 XBT_PRIVATE void SIMIX_context_stack_delete(void *stack);
 
 XBT_PRIVATE void SIMIX_context_set_current(smx_context_t context);
-XBT_PRIVATE smx_context_t SIMIX_context_get_current(void);
+XBT_PRIVATE smx_context_t SIMIX_context_get_current();
 
-XBT_PUBLIC(int) SIMIX_process_get_maxpid(void);
+XBT_PUBLIC(int) SIMIX_process_get_maxpid();
 
-XBT_PRIVATE void SIMIX_post_create_environment(void);
+XBT_PRIVATE void SIMIX_post_create_environment();
 
 SG_END_DECL()
 

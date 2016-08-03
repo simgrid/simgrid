@@ -35,7 +35,7 @@ int sg_network_crosstraffic = 0;
 /*      month = Nov, */
 /*      pdf = {http://hal.inria.fr/hal-00646896/PDF/rr-validity.pdf}, */
 /*  } */
-void surf_network_model_init_LegrandVelho(void)
+void surf_network_model_init_LegrandVelho()
 {
   if (surf_network_model)
     return;
@@ -59,7 +59,7 @@ void surf_network_model_init_LegrandVelho(void)
 /*   month         = {oct}, */
 /*   year          = {2002} */
 /* } */
-void surf_network_model_init_CM02(void)
+void surf_network_model_init_CM02()
 {
 
   if (surf_network_model)
@@ -83,7 +83,7 @@ void surf_network_model_init_CM02(void)
 /*   journal={{IEEE/ACM} Transactions on Networking},                      */
 /*    volume={11}, number={4},                                             */
 /*  }                                                                      */
-void surf_network_model_init_Reno(void)
+void surf_network_model_init_Reno()
 {
   if (surf_network_model)
     return;
@@ -100,7 +100,7 @@ void surf_network_model_init_Reno(void)
 }
 
 
-void surf_network_model_init_Reno2(void)
+void surf_network_model_init_Reno2()
 {
   if (surf_network_model)
     return;
@@ -116,7 +116,7 @@ void surf_network_model_init_Reno2(void)
   xbt_cfg_setdefault_double("network/weight-S",        8775);
 }
 
-void surf_network_model_init_Vegas(void)
+void surf_network_model_init_Vegas()
 {
   if (surf_network_model)
     return;

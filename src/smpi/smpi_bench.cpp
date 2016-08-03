@@ -186,7 +186,7 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
 }
 #endif
 
-void smpi_bench_destroy(void)
+void smpi_bench_destroy()
 {
   allocs.clear();
   allocs_metadata.clear();
@@ -235,7 +235,7 @@ void smpi_execute(double duration)
   }
 }
 
-void smpi_bench_begin(void)
+void smpi_bench_begin()
 {
   if (smpi_privatize_global_variables) {
     smpi_switch_data_segment(smpi_process_index());
@@ -260,7 +260,7 @@ void smpi_bench_begin(void)
   xbt_os_threadtimer_start(smpi_process_timer());
 }
 
-void smpi_bench_end(void)
+void smpi_bench_end()
 {
   if (MC_is_active() || MC_record_replay_is_active())
     return;
@@ -403,7 +403,7 @@ int smpi_clock_gettime(clockid_t clk_id, struct timespec *tp)
 #endif
 
 extern double sg_surf_precision;
-unsigned long long smpi_rastro_resolution (void)
+unsigned long long smpi_rastro_resolution ()
 {
   smpi_bench_end();
   double resolution = (1/sg_surf_precision);
@@ -411,7 +411,7 @@ unsigned long long smpi_rastro_resolution (void)
   return static_cast<unsigned long long>(resolution);
 }
 
-unsigned long long smpi_rastro_timestamp (void)
+unsigned long long smpi_rastro_timestamp ()
 {
   smpi_bench_end();
   double now = SIMIX_get_clock();
