@@ -112,7 +112,6 @@ static int master_main(int argc, char *argv[])
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   msg_host_t pm1 = MSG_host_by_name("Tremblay");
   msg_host_t pm2 = MSG_host_by_name("Bourassa");
-  msg_vm_t vm0, vm1;
 
   XBT_INFO("## Test 1 (started): check computation on normal PMs");
 
@@ -135,7 +134,7 @@ static int master_main(int argc, char *argv[])
   XBT_INFO("## Test 2 (started): check impact of running a task inside a VM (there is no degradation for the moment)");
 
   XBT_INFO("### Put a VM on a PM, and put a task to the VM");
-  vm0 = MSG_vm_create_core(pm0, "VM0");
+  msg_vm_t vm0 = MSG_vm_create_core(pm0, "VM0");
   MSG_vm_start(vm0);
   launch_computation_worker(vm0);
   MSG_process_sleep(2);
@@ -159,7 +158,7 @@ static int master_main(int argc, char *argv[])
 
   XBT_INFO("### Put two VMs on a PM, and put a task to each VM");
   vm0 = MSG_vm_create_core(pm0, "VM0");
-  vm1 = MSG_vm_create_core(pm0, "VM1");
+  msg_vm_t vm1 = MSG_vm_create_core(pm0, "VM1");
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
   launch_computation_worker(vm0);
@@ -237,12 +236,11 @@ static int master_main(int argc, char *argv[])
            " network one");
   XBT_INFO("### Relocate VM0 between PM0 and PM1");
   vm0 = MSG_vm_create_core(pm0, "VM0");
-  {
-    s_vm_params_t params;
-    memset(&params, 0, sizeof(params));
-    params.ramsize = 1L * 1024 * 1024 * 1024; // 1Gbytes
-    MSG_host_set_params(vm0, &params);
-  }
+  s_vm_params_t params;
+  memset(&params, 0, sizeof(params));
+  params.ramsize = 1L * 1024 * 1024 * 1024; // 1Gbytes
+  MSG_host_set_params(vm0, &params);
+
   MSG_vm_start(vm0);
   launch_communication_worker(vm0, pm2);
   MSG_process_sleep(0.01);

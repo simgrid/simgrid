@@ -60,7 +60,6 @@ static int worker_busy_loop_main(int argc, char *argv[])
   return 0;
 }
 
-/* FIXME: */
 #define DOUBLE_MAX 1e11
 
 static void test_dynamic_change(void)
@@ -80,28 +79,26 @@ static void test_dynamic_change(void)
   double task0_remain_prev = MSG_task_get_flops_amount(task0);
   double task1_remain_prev = MSG_task_get_flops_amount(task1);
 
-  {
-    const double cpu_speed = MSG_host_get_speed(pm0);
-    int i = 0;
-    for (i = 0; i < 10; i++) {
-      double new_bound = (cpu_speed / 10) * i;
-      XBT_INFO("set bound of VM1 to %f", new_bound);
-      MSG_vm_set_bound(vm1, new_bound);
-      MSG_process_sleep(100);
+  const double cpu_speed = MSG_host_get_speed(pm0);
+  for (int i = 0; i < 10; i++) {
+    double new_bound = (cpu_speed / 10) * i;
+    XBT_INFO("set bound of VM1 to %f", new_bound);
+    MSG_vm_set_bound(vm1, new_bound);
+    MSG_process_sleep(100);
 
-      double task0_remain_now = MSG_task_get_flops_amount(task0);
-      double task1_remain_now = MSG_task_get_flops_amount(task1);
+    double task0_remain_now = MSG_task_get_flops_amount(task0);
+    double task1_remain_now = MSG_task_get_flops_amount(task1);
 
-      double task0_flops_per_sec = task0_remain_prev - task0_remain_now;
-      double task1_flops_per_sec = task1_remain_prev - task1_remain_now;
+    double task0_flops_per_sec = task0_remain_prev - task0_remain_now;
+    double task1_flops_per_sec = task1_remain_prev - task1_remain_now;
 
-      XBT_INFO("Task0@VM0: %f flops/s", task0_flops_per_sec / 100);
-      XBT_INFO("Task1@VM1: %f flops/s", task1_flops_per_sec / 100);
+    XBT_INFO("Task0@VM0: %f flops/s", task0_flops_per_sec / 100);
+    XBT_INFO("Task1@VM1: %f flops/s", task1_flops_per_sec / 100);
 
-      task0_remain_prev = task0_remain_now;
-      task1_remain_prev = task1_remain_now;
-    }
+    task0_remain_prev = task0_remain_now;
+    task1_remain_prev = task1_remain_now;
   }
+
   MSG_process_sleep(2000); // let the tasks end
 
   MSG_vm_destroy(vm0);

@@ -17,11 +17,8 @@ static int master(int argc, char *argv[])
   XBT_INFO("Master starting");
   MSG_process_sleep(0.5);
 
-  msg_comm_t comm = NULL;
-  {
-    msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
-    comm = MSG_task_isend(task, mailbox);
-  }
+  msg_task_t task = MSG_task_create("COMM", 0, 100000000, NULL);
+  msg_comm_t comm = MSG_task_isend(task, mailbox);
 
   MSG_process_sleep(0.5);
 
