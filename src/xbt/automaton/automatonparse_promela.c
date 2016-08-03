@@ -63,40 +63,39 @@ static void new_transition(char* id, xbt_automaton_exp_label_t label)
 
 static xbt_automaton_exp_label_t new_label(int type, ...){
   xbt_automaton_exp_label_t label = NULL;
+  xbt_automaton_exp_label_t left;
+  xbt_automaton_exp_label_t right;
+  xbt_automaton_exp_label_t exp_not;
+  char *p;
+
   va_list ap;
   va_start(ap,type);
   switch(type){
-  case 0 : {
-    xbt_automaton_exp_label_t left = va_arg(ap, xbt_automaton_exp_label_t);
-    xbt_automaton_exp_label_t right = va_arg(ap, xbt_automaton_exp_label_t);
+  case 0 :
+    left = va_arg(ap, xbt_automaton_exp_label_t);
+    right = va_arg(ap, xbt_automaton_exp_label_t);
     label = xbt_automaton_exp_label_new(type, left, right);
     break;
-  }
-  case 1 : {
-    xbt_automaton_exp_label_t left = va_arg(ap, xbt_automaton_exp_label_t);
-    xbt_automaton_exp_label_t right = va_arg(ap, xbt_automaton_exp_label_t);
+  case 1 :
+    left = va_arg(ap, xbt_automaton_exp_label_t);
+    right = va_arg(ap, xbt_automaton_exp_label_t);
     label = xbt_automaton_exp_label_new(type, left, right);
     break;
-  }
-  case 2 : {
-    xbt_automaton_exp_label_t exp_not = va_arg(ap, xbt_automaton_exp_label_t);
+  case 2 :
+    exp_not = va_arg(ap, xbt_automaton_exp_label_t);
     label = xbt_automaton_exp_label_new(type, exp_not);
     break;
-  }
-  case 3 : {
-    char* p = va_arg(ap, char*);
+  case 3 :
+    p = va_arg(ap, char*);
     label = xbt_automaton_exp_label_new(type, p);
     break;
-  }
-  case 4 : {
+  case 4 :
     label = xbt_automaton_exp_label_new(type);
     break;
-  }
   }
   va_end(ap);
   return label;
 }
-
 
 #include "parserPromela.tab.cacc"
 

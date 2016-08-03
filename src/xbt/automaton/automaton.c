@@ -60,34 +60,33 @@ xbt_automaton_exp_label_t xbt_automaton_exp_label_new(int type, ...){
   xbt_automaton_exp_label_t label = NULL;
   label = xbt_new0(struct xbt_automaton_exp_label, 1);
   label->type = type;
-
+  xbt_automaton_exp_label_t left;
+  xbt_automaton_exp_label_t right;
+  xbt_automaton_exp_label_t exp_not;
+  char *p;
   va_list ap;
   va_start(ap, type);
   switch(type){
-  case 0 : {
-    xbt_automaton_exp_label_t left = va_arg(ap, xbt_automaton_exp_label_t);
-    xbt_automaton_exp_label_t right = va_arg(ap, xbt_automaton_exp_label_t);
+  case 0 :
+    left = va_arg(ap, xbt_automaton_exp_label_t);
+    right = va_arg(ap, xbt_automaton_exp_label_t);
     label->u.or_and.left_exp = left;
     label->u.or_and.right_exp = right;
     break;
-  }
-  case 1 : {
-    xbt_automaton_exp_label_t left = va_arg(ap, xbt_automaton_exp_label_t);
-    xbt_automaton_exp_label_t right = va_arg(ap, xbt_automaton_exp_label_t);
+  case 1 :
+    left = va_arg(ap, xbt_automaton_exp_label_t);
+    right = va_arg(ap, xbt_automaton_exp_label_t);
     label->u.or_and.left_exp = left;
     label->u.or_and.right_exp = right;
     break;
-  }
-  case 2 : {
-    xbt_automaton_exp_label_t exp_not = va_arg(ap, xbt_automaton_exp_label_t);
+  case 2 :
+    exp_not = va_arg(ap, xbt_automaton_exp_label_t);
     label->u.exp_not = exp_not;
     break;
-  }
-  case 3 :{
-    char* p = va_arg(ap, char*);
+  case 3 :
+    p = va_arg(ap, char*);
     label->u.predicat = xbt_strdup(p);
     break;
-  }
   }
   va_end(ap);
   return label;
