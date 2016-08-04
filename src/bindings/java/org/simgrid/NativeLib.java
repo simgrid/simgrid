@@ -93,7 +93,8 @@ public final class NativeLib {
 
 		String filename=name;
 		InputStream in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
-
+		OutputStream out = null;
+		
 		if (in == null) {
 			filename = "lib"+name+".so";
 			in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
@@ -123,18 +124,31 @@ public final class NativeLib {
 			File fileOut = new File(tempDir.toFile().getAbsolutePath() + File.separator + filename);
 
 			/* copy the library in position */  
-			OutputStream out = new FileOutputStream(fileOut);
+			out = new FileOutputStream(fileOut);
 			byte[] buffer = new byte[4096]; 
 			int bytesRead; 
 			while ((bytesRead = in.read(buffer)) != -1)     // Read until EOF
 				out.write(buffer, 0, bytesRead); 
 
-			/* close all file descriptors, and load that shit */
-			in.close();
-			out.close();
+			/* load that shit */
 			System.load(fileOut.getAbsolutePath());
 		} catch (SecurityException|UnsatisfiedLinkError|IOException e) {
 			throw new LinkageException("Cannot load the bindings to the "+name+" library in path "+getPath(), e);
+		} finally {
+			/* Always close all descriptors, no matter success or error */
+			try { 
+				in.close();
+			} catch (IOException e) {
+				/* Too bad. I dont care. */
+			}
+			
+			if (out != null) {
+				try { 
+				out.close();
+				} catch (IOException e) {
+					/* Too bad too. I dont care either. */
+				}
+			}
 		}
 	}
 
