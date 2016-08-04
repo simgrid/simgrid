@@ -912,25 +912,39 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int count)
   }
 }
 
+void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb){
+  xbt_assert(task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK, "Task %s is not a SD_TASK_COMM_PAR_MXN_1D_BLOCK typed task."
+              "Cannot use this function.", task->name);
+  task->bytes_amount = static_cast<double*>(xbt_realloc(task->bytes_amount,
+                                            sizeof(double) * task->allocation->size() * task->allocation->size()));
+  for (int i=0; i<src_nb; i++) {
+    double src_start = i*task->amount/src_nb;
+    double src_end = src_start + task->amount/src_nb;
+    for (int j=0; j<dst_nb; j++) {
+      double dst_start = j*task->amount/dst_nb;
+      double dst_end = dst_start + task->amount/dst_nb;
+      XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
+      task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
+      if ((src_end > dst_start) && (dst_end > src_start)) { /* There is something to send */
+        task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j] = MIN(src_end, dst_end)- MAX(src_start, dst_start);
+        XBT_VERB("==> %.2f", task->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
+      }
+    }
+  }
+}
+
 /** @brief Auto-schedules a task.
  *
  * Auto-scheduling mean that the task can be used with SD_task_schedulev(). This allows to specify the task costs at
  * creation, and decouple them from the scheduling process where you just specify which resource should deliver the
  * mandatory power.
  *
- * To be auto-schedulable, a task must be type and created with one of the specialized creation functions.
- *
- * @todo
- * We should create tasks kind for the following categories:
- *  - Point to point communication (done)
- *  - Sequential computation       (done)
- *  - group communication (redistribution, several kinds)
- *  - parallel tasks with no internal communication (one kind per speedup  model such as Amdahl)
- *  - idem+ internal communication. Task type not enough since we cannot store comm cost alongside to comp one)
+ * To be auto-schedulable, a task must be a typed computation SD_TASK_COMP_SEQ or SD_TASK_COMP_PAR_AMDAHL.
  */
 void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
 {
-  xbt_assert(task->kind != 0, "Task %s is not typed. Cannot automatically schedule it.", SD_task_get_name(task));
+  xbt_assert(task->kind == SD_TASK_COMP_SEQ || task->kind == SD_TASK_COMP_PAR_AMDAHL,
+      "Task %s is not typed. Cannot automatically schedule it.", SD_task_get_name(task));
 
   for(int i =0; i<count; i++)
     task->allocation->push_back(list[i]);
@@ -938,8 +952,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   XBT_VERB("Schedule computation task %s on %zu host(s)", task->name, task->allocation->size());
 
   if (task->kind == SD_TASK_COMP_SEQ) {
-    if (!task->flops_amount){
-      /*This task has failed and is rescheduled. Reset the flops_amount*/
+    if (!task->flops_amount){ /*This task has failed and is rescheduled. Reset the flops_amount*/
       task->flops_amount = xbt_new0(double, 1);
       task->flops_amount[0] = task->remains;
     }
@@ -964,30 +977,8 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
       input->allocation->push_back(task->allocation->at(i));
 
     if (input->allocation->size () > task->allocation->size()) {
-      if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
-        XBT_VERB("Build communication matrix for task '%s'", input->name);
-        xbt_free(input->flops_amount);
-        xbt_free(input->bytes_amount);
-        input->flops_amount = xbt_new0(double, input->allocation->size());
-        input->bytes_amount = xbt_new0(double, input->allocation->size() * input->allocation->size());
-
-        for (int i=0; i<src_nb; i++) {
-          double src_start = i*input->amount/src_nb;
-          double src_end = src_start + input->amount/src_nb;
-          for (int j=0; j<dst_nb; j++) {
-            double dst_start = j*input->amount/dst_nb;
-            double dst_end = dst_start + input->amount/dst_nb;
-            XBT_VERB("(%s->%s): (%.2f, %.2f)-> (%.2f, %.2f)", sg_host_get_name(input->allocation->at(i)),
-                sg_host_get_name(input->allocation->at(src_nb+j)), src_start, src_end, dst_start, dst_end);
-            if ((src_end <= dst_start) || (dst_end <= src_start)) {
-              input->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
-            } else {
-              input->bytes_amount[i*(src_nb+dst_nb)+src_nb+j] = MIN(src_end, dst_end) - MAX(src_start, dst_start);
-            }
-            XBT_VERB("==> %.2f", input->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
-          }
-        }
-      }
+      if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
+        SD_task_build_MxN_1D_block_matrix(input, src_nb, dst_nb);
 
       SD_task_do_schedule(input);
       XBT_VERB ("Auto-Schedule Communication task '%s'. Send %.f bytes from %d hosts to %d hosts.",
@@ -1005,43 +996,20 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
       output->allocation->insert(output->allocation->begin()+i, task->allocation->at(i));
 
     if (output->allocation->size () > task->allocation->size()) {
-      if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
-        XBT_VERB("Build communication matrix for task '%s'", output->name);
-        xbt_free(output->flops_amount);
-        xbt_free(output->bytes_amount);
-
-        output->flops_amount = xbt_new0(double, output->allocation->size());
-        output->bytes_amount = xbt_new0(double, output->allocation->size() * output->allocation->size());
-
-        for (int i=0; i<src_nb; i++) {
-          double src_start = i*output->amount/src_nb;
-          double src_end = src_start + output->amount/src_nb;
-          for (int j=0; j<dst_nb; j++) {
-            double dst_start = j*output->amount/dst_nb;
-            double dst_end = dst_start + output->amount/dst_nb;
-            XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
-            if ((src_end <= dst_start) || (dst_end <= src_start)) {
-              output->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
-            } else {
-              output->bytes_amount[i*(src_nb+dst_nb)+src_nb+j] = MIN(src_end, dst_end)- MAX(src_start, dst_start);
-            }
-            XBT_VERB("==> %.2f", output->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
-          }
-        }
-      }
+      if (task->kind == SD_TASK_COMP_PAR_AMDAHL)
+        SD_task_build_MxN_1D_block_matrix(output, src_nb, dst_nb);
 
       SD_task_do_schedule(output);
       XBT_VERB ("Auto-Schedule Communication task %s. Send %.f bytes from %d hosts to %d hosts.",
-              output->name, output->amount, src_nb, dst_nb);
+                output->name, output->amount, src_nb, dst_nb);
     }
   }
 }
 
-/** @brief autoschedule a task on a list of workstations
+/** @brief autoschedule a task on a list of hosts
  *
- * This function is very similar to SD_task_schedulev(), but takes the list of workstations to schedule onto as
- * separate parameters.
- * It builds a proper vector of workstations and then call SD_task_schedulev()
+ * This function is similar to SD_task_schedulev(), but takes the list of hosts to schedule onto as separate parameters.
+ * It builds a proper vector of hosts and then call SD_task_schedulev()
  */
 void SD_task_schedulel(SD_task_t task, int count, ...)
 {

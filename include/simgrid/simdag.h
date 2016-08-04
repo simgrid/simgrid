@@ -124,6 +124,7 @@ XBT_PUBLIC(SD_task_t) SD_task_create_comm_e2e(const char *name, void *data, doub
 XBT_PUBLIC(SD_task_t) SD_task_create_comm_par_mxn_1d_block(const char *name, void *data, double amount);
 
 XBT_PUBLIC(void) SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count);
+XBT_PUBLIC(void) SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb);
 XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list);
 XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
