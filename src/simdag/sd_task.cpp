@@ -7,8 +7,6 @@
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_interface.hpp"
 #include "src/simdag/simdag_private.h"
-#include "simgrid/simdag.h"
-#include "src/instr/instr_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd, "Logging specific to SimDag (task)");
 
@@ -1079,5 +1077,5 @@ void SD_task_schedulel(SD_task_t task, int count, ...)
 
   va_end(ap);
   SD_task_schedulev(task, count, list);
-  free(list);
+  xbt_free(list);
 }

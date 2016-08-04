@@ -13,6 +13,9 @@
 #include "surf/surf.h"
 #include "xbt/mallocator.h"
 #include <stdbool.h>
+#if HAVE_JEDULE
+#include "simgrid/jedule/jedule_sd_binding.h"
+#endif
 
 SG_BEGIN_DECL()
 
