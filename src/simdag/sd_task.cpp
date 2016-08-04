@@ -43,7 +43,6 @@ void SD_task_recycle_f(void *t)
   sd_global->initial_tasks->insert(task);
 
   task->marked = 0;
-
   task->start_time = -1.0;
   task->finish_time = -1.0;
   task->surf_action = nullptr;
@@ -212,11 +211,6 @@ void SD_task_destroy(SD_task_t task)
 
   if (task->state == SD_SCHEDULED || task->state == SD_RUNNABLE)
     __SD_task_destroy_scheduling_data(task);
-
-  int idx = xbt_dynar_search_or_negative(sd_global->return_set, &task);
-  if (idx >=0) {
-    xbt_dynar_remove_at(sd_global->return_set, idx, nullptr);
-  }
 
   xbt_free(task->name);
 
@@ -841,7 +835,6 @@ void SD_task_run(SD_task_t task)
 
   /* Copy the elements of the task into the action */
   int host_nb = task->allocation->size();
-  XBT_DEBUG("%d", host_nb);
   sg_host_t *hosts = xbt_new(sg_host_t, host_nb);
   int i =0;
   for (auto host: *task->allocation)
@@ -915,8 +908,9 @@ void SD_task_distribute_comp_amdahl(SD_task_t task, int count)
 void SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb){
   xbt_assert(task->kind == SD_TASK_COMM_PAR_MXN_1D_BLOCK, "Task %s is not a SD_TASK_COMM_PAR_MXN_1D_BLOCK typed task."
               "Cannot use this function.", task->name);
-  task->bytes_amount = static_cast<double*>(xbt_realloc(task->bytes_amount,
-                                            sizeof(double) * task->allocation->size() * task->allocation->size()));
+  xbt_free(task->bytes_amount);
+  task->bytes_amount = xbt_new0(double,task->allocation->size() * task->allocation->size());
+
   for (int i=0; i<src_nb; i++) {
     double src_start = i*task->amount/src_nb;
     double src_end = src_start + task->amount/src_nb;
