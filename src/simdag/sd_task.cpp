@@ -64,7 +64,6 @@ void SD_task_recycle_f(void *t)
 void SD_task_free_f(void *t)
 {
   SD_task_t task = static_cast<SD_task_t>(t);
-
   delete task->inputs;
   delete task->outputs;
   delete task->predecessors;
@@ -936,57 +935,37 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   for(int i =0; i<count; i++)
     task->allocation->push_back(list[i]);
 
+  XBT_VERB("Schedule computation task %s on %zu host(s)", task->name, task->allocation->size());
+
   if (task->kind == SD_TASK_COMP_SEQ) {
     if (!task->flops_amount){
       /*This task has failed and is rescheduled. Reset the flops_amount*/
       task->flops_amount = xbt_new0(double, 1);
       task->flops_amount[0] = task->remains;
     }
-    XBT_VERB("Schedule computation task %s on %s. It costs %.f flops", task->name,
-             sg_host_get_name(task->allocation->at(0)), task->flops_amount[0]);
-    SD_task_do_schedule(task);
-
-    /* Iterate over all inputs and outputs to say where I am located (and start them if runnable) */
-    for (auto input : *task->inputs){
-      input->allocation->push_back(task->allocation->front());
-      if (input->allocation->size () == 2) {
-        SD_task_do_schedule(input);
-        XBT_VERB ("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes", SD_task_get_name(input),
-                  sg_host_get_name(input->allocation->at(0)), sg_host_get_name(input->allocation->at(1)),
-                  input->bytes_amount[2]);
-      }
-    }
-
-    for (auto output : *task->outputs){
-      output->allocation->insert(output->allocation->begin(),task->allocation->front());
-      if (output->allocation->size() == 2) {
-        SD_task_do_schedule(output);
-        XBT_VERB ("Auto-Schedule comm task %s between %s -> %s. It costs %.f bytes", SD_task_get_name(output),
-                  sg_host_get_name(output->allocation->at(0)), sg_host_get_name(output->allocation->at(1)),
-                  output->bytes_amount[2]);
-      }
-    }
+    XBT_VERB("It costs %.f flops", task->flops_amount[0]);
   }
 
   if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
     SD_task_distribute_comp_amdahl(task, count);
-    XBT_VERB("Schedule computation task %s on %zu workstations. %.f flops will be distributed following Amdahl's Law",
-             task->name, task->allocation->size(), task->flops_amount[0]);
-    SD_task_do_schedule(task);
+    XBT_VERB("%.f flops will be distributed following Amdahl's Law", task->flops_amount[0]);
+  }
 
-    /* Iterate over all inputs and outputs to say where I am located (and start them if runnable) */
-    for (auto input : *task->inputs){
-      if (input->allocation->empty()){
-        XBT_VERB("Sender side of Task %s is not scheduled yet", input->name);
-        XBT_VERB("Fill the workstation list with list of Task '%s'", task->name);
-        for (int i=0; i<count;i++)
-          input->allocation->push_back(task->allocation->at(i));
-      } else {
+  SD_task_do_schedule(task);
+
+  /* Iterate over all inputs and outputs to say where I am located (and start them if runnable) */
+  for (auto input : *task->inputs){
+    int src_nb = input->allocation->size();
+    int dst_nb = count;
+    if (input->allocation->empty())
+      XBT_VERB("Sender side of '%s' not scheduled. Set receiver side to '%s''s allocation", input->name, task->name);
+
+    for (int i=0; i<count;i++)
+      input->allocation->push_back(task->allocation->at(i));
+
+    if (input->allocation->size () > task->allocation->size()) {
+      if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
         XBT_VERB("Build communication matrix for task '%s'", input->name);
-        int src_nb = input->allocation->size();
-        int dst_nb = count;
-        for (int i=0; i<count;i++)
-          input->allocation->push_back(task->allocation->at(i));
         xbt_free(input->flops_amount);
         xbt_free(input->bytes_amount);
         input->flops_amount = xbt_new0(double, input->allocation->size());
@@ -1008,27 +987,26 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
             XBT_VERB("==> %.2f", input->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
           }
         }
-
-        if (SD_task_get_state(input)< SD_SCHEDULED) {
-          SD_task_do_schedule(input);
-          XBT_VERB ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
-                    input->name,input->amount, src_nb, dst_nb);
-        }
       }
-    }
 
-    for (auto output : *task->outputs) {
-      if (output->allocation->empty()){
-        XBT_VERB("Receiver side of Task '%s' is not scheduled yet", SD_task_get_name(output));
-        XBT_VERB("Fill the workstation list with list of Task '%s'", SD_task_get_name(task));
-        for (int i=0; i<count;i++)
-          output->allocation->push_back(task->allocation->at(i));
-      } else {
-        double src_start, src_end, dst_start, dst_end;
-        int src_nb = count;
-        int dst_nb = output->allocation->size();
-        for (int i=0; i<count;i++)
-          output->allocation->insert(output->allocation->begin()+i, task->allocation->at(i));
+      SD_task_do_schedule(input);
+      XBT_VERB ("Auto-Schedule Communication task '%s'. Send %.f bytes from %d hosts to %d hosts.",
+          input->name,input->amount, src_nb, dst_nb);
+    }
+  }
+
+  for (auto output : *task->outputs){
+    int src_nb = count;
+    int dst_nb = output->allocation->size();
+    if (output->allocation->empty())
+      XBT_VERB("Receiver side of '%s' not scheduled. Set sender side to '%s''s allocation", output->name, task->name);
+
+    for (int i=0; i<count;i++)
+      output->allocation->insert(output->allocation->begin()+i, task->allocation->at(i));
+
+    if (output->allocation->size () > task->allocation->size()) {
+      if (task->kind == SD_TASK_COMP_PAR_AMDAHL) {
+        XBT_VERB("Build communication matrix for task '%s'", output->name);
         xbt_free(output->flops_amount);
         xbt_free(output->bytes_amount);
 
@@ -1036,11 +1014,11 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
         output->bytes_amount = xbt_new0(double, output->allocation->size() * output->allocation->size());
 
         for (int i=0; i<src_nb; i++) {
-          src_start = i*output->amount/src_nb;
-          src_end = src_start + output->amount/src_nb;
+          double src_start = i*output->amount/src_nb;
+          double src_end = src_start + output->amount/src_nb;
           for (int j=0; j<dst_nb; j++) {
-            dst_start = j*output->amount/dst_nb;
-            dst_end = dst_start + output->amount/dst_nb;
+            double dst_start = j*output->amount/dst_nb;
+            double dst_end = dst_start + output->amount/dst_nb;
             XBT_VERB("(%d->%d): (%.2f, %.2f)-> (%.2f, %.2f)", i, j, src_start, src_end, dst_start, dst_end);
             if ((src_end <= dst_start) || (dst_end <= src_start)) {
               output->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]=0.0;
@@ -1050,13 +1028,11 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
             XBT_VERB("==> %.2f", output->bytes_amount[i*(src_nb+dst_nb)+src_nb+j]);
           }
         }
-
-        if (SD_task_get_state(output)< SD_SCHEDULED) {
-          SD_task_do_schedule(output);
-          XBT_VERB ("Auto-Schedule redistribution task %s. Send %.f bytes from %d hosts to %d hosts.",
-              output->name, output->amount, src_nb, dst_nb);
-        }
       }
+
+      SD_task_do_schedule(output);
+      XBT_VERB ("Auto-Schedule Communication task %s. Send %.f bytes from %d hosts to %d hosts.",
+              output->name, output->amount, src_nb, dst_nb);
     }
   }
 }
