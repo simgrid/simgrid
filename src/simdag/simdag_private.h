@@ -7,6 +7,7 @@
 #ifndef SIMDAG_PRIVATE_H
 #define SIMDAG_PRIVATE_H
 #include <set>
+#include <vector>
 #include "xbt/dynar.h"
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
@@ -55,8 +56,7 @@ typedef struct SD_task {
   std::set<SD_task_t> *successors;
 
   /* scheduling parameters (only exist in state SD_SCHEDULED) */
-  int host_count;
-  sg_host_t *host_list;
+  std::vector<sg_host_t> *allocation;
   double *flops_amount;
   double *bytes_amount;
   double rate;
