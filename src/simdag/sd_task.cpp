@@ -22,7 +22,6 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
   task->flops_amount = nullptr;
 }
 
-
 /**
  * \brief Creates a new task.
  *
@@ -34,7 +33,6 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount)
 {
-  //SD_task_t task = static_cast<SD_task_t>(xbt_mallocator_get(sd_global->task_mallocator));
   SD_task_t task = xbt_new0(s_SD_task_t, 1);
   task->kind = SD_TASK_NOT_TYPED;
   task->state= SD_NOT_SCHEDULED;
