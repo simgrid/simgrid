@@ -25,15 +25,14 @@ public class Killer extends Process {
     } catch (MsgException e){
       e.printStackTrace();
       Msg.error("Cannot create the victim process!");
+      return;
     }
     sleep(10000);
     Msg.info("Resume Process");
-    if (poorVictim != null)
-      poorVictim.resume();
+    poorVictim.resume();
     sleep(1000);
     Msg.info("Kill Process");
-    if (poorVictim != null)
-      poorVictim.kill();
+    poorVictim.kill();
 
     Msg.info("Ok, goodbye now.");
   }
