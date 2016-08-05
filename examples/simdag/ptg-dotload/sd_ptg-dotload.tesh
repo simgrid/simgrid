@@ -11,8 +11,8 @@ $ $SG_TEST_EXENV ${bindir:=.}/ptg-dotload/sd_ptg-dotload  ${srcdir:=.}/../platfo
 > [0.000000] [sd_task/INFO]   - alpha: 0.00
 > [0.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
 > [0.000000] [sd_task/INFO]   - post-dependencies:
-> [0.000000] [sd_task/INFO]     root->c2
 > [0.000000] [sd_task/INFO]     root->c1
+> [0.000000] [sd_task/INFO]     root->c2
 > [0.000000] [sd_task/INFO] Displaying task c1
 > [0.000000] [sd_task/INFO]   - state: not scheduled not runnable
 > [0.000000] [sd_task/INFO]   - kind: parallel computation following Amdahl's law

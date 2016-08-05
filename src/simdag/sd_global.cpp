@@ -31,8 +31,6 @@ void SD_init(int *argc, char **argv)
   sd_global = xbt_new(s_SD_global_t, 1);
   sd_global->watch_point_reached = false;
 
-  sd_global->task_mallocator=xbt_mallocator_new(65536, SD_task_new_f, SD_task_free_f, SD_task_recycle_f);
-
   sd_global->initial_tasks = new std::set<SD_task_t>();
   sd_global->runnable_tasks = new std::set<SD_task_t>();
   sd_global->completed_tasks = new std::set<SD_task_t>();
@@ -227,7 +225,6 @@ void SD_exit()
   jedule_sd_exit();
 #endif
 
-  xbt_mallocator_free(sd_global->task_mallocator);
   delete sd_global->initial_tasks;
   delete sd_global->runnable_tasks;
   delete sd_global->completed_tasks;

@@ -22,8 +22,6 @@ SG_BEGIN_DECL()
 /* Global variables */
 
 typedef struct SD_global {
-  xbt_mallocator_t task_mallocator; /* to not remalloc new tasks */
-
   bool watch_point_reached;      /* has a task just reached a watch point? */
 
   std::set<SD_task_t> *initial_tasks;
@@ -70,11 +68,6 @@ XBT_PRIVATE void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 XBT_PRIVATE void SD_task_run(SD_task_t task);
 XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
 XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
-
-/* Task mallocator functions */
-XBT_PRIVATE void* SD_task_new_f();
-XBT_PRIVATE void SD_task_recycle_f(void *t);
-XBT_PRIVATE void SD_task_free_f(void *t);
 
 SG_END_DECL()
 #endif

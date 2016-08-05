@@ -22,53 +22,6 @@ static void __SD_task_destroy_scheduling_data(SD_task_t task)
   task->flops_amount = nullptr;
 }
 
-void* SD_task_new_f()
-{
-  SD_task_t task = xbt_new0(s_SD_task_t, 1);
-
-  task->inputs = new std::set<SD_task_t>();
-  task->outputs = new std::set<SD_task_t>();
-  task->predecessors = new std::set<SD_task_t>();
-  task->successors = new std::set<SD_task_t>();
-  return task;
-}
-
-void SD_task_recycle_f(void *t)
-{
-  SD_task_t task = static_cast<SD_task_t>(t);
-
-  /* Reset the content */
-  task->kind = SD_TASK_NOT_TYPED;
-  task->state= SD_NOT_SCHEDULED;
-  sd_global->initial_tasks->insert(task);
-
-  task->marked = 0;
-  task->start_time = -1.0;
-  task->finish_time = -1.0;
-  task->surf_action = nullptr;
-  task->watch_points = 0;
-
-  /* dependencies */
-  task->inputs->clear();
-  task->outputs->clear();
-  task->predecessors->clear();
-  task->successors->clear();
-
-  /* scheduling parameters */
-  task->flops_amount = nullptr;
-  task->bytes_amount = nullptr;
-  task->rate = -1;
-}
-
-void SD_task_free_f(void *t)
-{
-  SD_task_t task = static_cast<SD_task_t>(t);
-  delete task->inputs;
-  delete task->outputs;
-  delete task->predecessors;
-  delete task->successors;
-  xbt_free(task);
-}
 
 /**
  * \brief Creates a new task.
@@ -81,13 +34,29 @@ void SD_task_free_f(void *t)
  */
 SD_task_t SD_task_create(const char *name, void *data, double amount)
 {
-  SD_task_t task = static_cast<SD_task_t>(xbt_mallocator_get(sd_global->task_mallocator));
+  //SD_task_t task = static_cast<SD_task_t>(xbt_mallocator_get(sd_global->task_mallocator));
+  SD_task_t task = xbt_new0(s_SD_task_t, 1);
+  task->kind = SD_TASK_NOT_TYPED;
+  task->state= SD_NOT_SCHEDULED;
+  sd_global->initial_tasks->insert(task);
+
+  task->marked = 0;
+  task->start_time = -1.0;
+  task->finish_time = -1.0;
+  task->surf_action = nullptr;
+  task->watch_points = 0;
+
+  task->inputs = new std::set<SD_task_t>();
+  task->outputs = new std::set<SD_task_t>();
+  task->predecessors = new std::set<SD_task_t>();
+  task->successors = new std::set<SD_task_t>();
 
   task->data = data;
   task->name = xbt_strdup(name);
   task->amount = amount;
   task->remains = amount;
   task->allocation = new std::vector<sg_host_t>();
+  task->rate = -1;
   return task;
 }
 
@@ -220,8 +189,11 @@ void SD_task_destroy(SD_task_t task)
   delete task->allocation;
   xbt_free(task->bytes_amount);
   xbt_free(task->flops_amount);
-
-  xbt_mallocator_release(sd_global->task_mallocator,task);
+  delete task->inputs;
+  delete task->outputs;
+  delete task->predecessors;
+  delete task->successors;
+  xbt_free(task);
 
   XBT_DEBUG("Task destroyed.");
 }
