@@ -20,6 +20,11 @@ SimGrid (3.14) UNRELEASED; urgency=low
    - MSG_mailbox_get_task_ext() -> MSG_task_receive_ext()
    - MSG_mailbox_get_task_ext_bounded -> MSG_task_receive_ext_bounded
 
+ XML:
+ * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and
+   EiBps, EBps, Eibps, Ebps for bandwidth. 
+   They may become useful to some lucky ones.
+
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.13) stable; urgency=low
