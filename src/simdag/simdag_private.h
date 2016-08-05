@@ -42,7 +42,6 @@ typedef struct SD_task {
   e_SD_task_kind_t kind;
   double amount;
   double alpha;          /* used by typed parallel tasks */
-  double remains;
   double start_time;
   double finish_time;
   surf_action_t surf_action;

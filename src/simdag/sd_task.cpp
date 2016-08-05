@@ -54,7 +54,6 @@ SD_task_t SD_task_create(const char *name, void *data, double amount)
   task->data = data;
   task->name = xbt_strdup(name);
   task->amount = amount;
-  task->remains = amount;
   task->allocation = new std::vector<sg_host_t>();
   task->rate = -1;
   return task;
@@ -292,7 +291,6 @@ void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state)
     task->start_time = task->surf_action->getStartTime();
     if (new_state == SD_DONE){
       task->finish_time = task->surf_action->getFinishTime();
-      task->remains = 0;
 #if HAVE_JEDULE
       jedule_log_sd_event(task);
 #endif
@@ -440,7 +438,7 @@ double SD_task_get_remaining_amount(SD_task_t task)
   if (task->surf_action)
     return task->surf_action->getRemains();
   else
-    return task->remains;
+    return (task->state == SD_DONE) ? 0 : task->amount;
 }
 
 e_SD_task_kind_t SD_task_get_kind(SD_task_t task)
@@ -793,7 +791,6 @@ void SD_task_unschedule(SD_task_t task)
     else
       SD_task_set_state(task, SD_NOT_SCHEDULED);
   }
-  task->remains = task->amount;
   task->start_time = -1.0;
 }
 
@@ -920,7 +917,7 @@ void SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list)
   if (task->kind == SD_TASK_COMP_SEQ) {
     if (!task->flops_amount){ /*This task has failed and is rescheduled. Reset the flops_amount*/
       task->flops_amount = xbt_new0(double, 1);
-      task->flops_amount[0] = task->remains;
+      task->flops_amount[0] = task->amount;
     }
     XBT_VERB("It costs %.f flops", task->flops_amount[0]);
   }
