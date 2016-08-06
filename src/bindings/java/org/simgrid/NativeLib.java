@@ -85,8 +85,15 @@ public final class NativeLib {
 	}
 
 	/** Try to extract the library from the jarfile before loading it */
-	private static boolean loadLibAsStream (String name) throws SecurityException, IOException, UnsatisfiedLinkError {
+	private static boolean loadLibAsStream (String name) throws IOException, UnsatisfiedLinkError {
 		String path = NativeLib.getPath();
+		
+		// We must write the lib onto the disk before loading it -- stupid operating systems
+		if (tempDir == null) {
+			tempDir = Files.createTempDirectory("simgrid-java-");
+			// don't leak the files on disk, but remove it on JVM shutdown
+			Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(tempDir.toFile())));
+		}
 		
 		/* For each possible filename of the given library on all possible OSes, try it */
 		for (String filename : new String[] 
@@ -94,23 +101,16 @@ public final class NativeLib {
 		     "lib"+name+".so",               /* linux */
 		     name+".dll", "lib"+name+".dll", /* windows (pure and mingw) */
 		     "lib"+name+".dylib"             /* mac osx */}) {
-			
-			InputStream in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
-			if (in == null)
-				continue; // Try the next name: no such file found
-			
-			OutputStream out = null;
-			try {
-				// We must write the lib onto the disk before loading it -- stupid operating systems
-				if (tempDir == null) {
-					tempDir = Files.createTempDirectory("simgrid-java-");
-					// don't leak the files on disk, but remove it on JVM shutdown
-					Runtime.getRuntime().addShutdownHook(new Thread(new FileCleaner(tempDir.toFile())));
-				}
-				File fileOut = new File(tempDir.toFile().getAbsolutePath() + File.separator + filename);
+						
+			File fileOut = new File(tempDir.toFile().getAbsolutePath() + File.separator + filename);
+			try ( // Try-with-resources. These stream will be autoclosed when needed.
+				InputStream in = NativeLib.class.getClassLoader().getResourceAsStream(path+filename);
+				OutputStream out = new FileOutputStream(fileOut);
+			) {
+				if (in == null)
+					continue; // Try the next name: no such file found
 				
 				/* copy the library in position */  
-				out = new FileOutputStream(fileOut);
 				byte[] buffer = new byte[4096]; 
 				int bytesRead; 
 				while ((bytesRead = in.read(buffer)) != -1)     // Read until EOF
@@ -122,14 +122,6 @@ public final class NativeLib {
 				/* It loaded! we're good */
 				return true;
 				
-			} finally {
-				/* Always close all descriptors, no matter success or error */
-				try { 
-					in.close();
-					out.close();
-				} catch (IOException e) {
-					/* Too bad. I dont care. */
-				}
 			}
 		}
 		
