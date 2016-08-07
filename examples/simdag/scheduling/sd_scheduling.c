@@ -21,19 +21,6 @@ struct _HostAttribute {
   SD_task_t last_scheduled_task;
 };
 
-static void sg_host_allocate_attribute(sg_host_t host)
-{
-  void *data;
-  data = calloc(1, sizeof(struct _HostAttribute));
-  sg_host_user_set(host, data);
-}
-
-static void sg_host_free_attribute(sg_host_t host)
-{
-  free(sg_host_user(host));
-  sg_host_user_set(host, NULL);
-}
-
 static double sg_host_get_available_at(sg_host_t host)
 {
   HostAttribute attr = (HostAttribute) sg_host_user(host);
@@ -170,7 +157,7 @@ int main(int argc, char **argv)
   sg_host_t *hosts = sg_host_list();
 
   for (cursor = 0; cursor < total_nhosts; cursor++)
-    sg_host_allocate_attribute(hosts[cursor]);
+    sg_host_user_set(hosts[cursor], xbt_new0(struct _HostAttribute, 1));
 
   /* load the DAX file */
   xbt_dynar_t dax = SD_daxload(argv[2]);
@@ -248,8 +235,10 @@ int main(int argc, char **argv)
   }
   xbt_dynar_free_container(&dax);
 
-  for (cursor = 0; cursor < total_nhosts; cursor++)
-    sg_host_free_attribute(hosts[cursor]);
+  for (cursor = 0; cursor < total_nhosts; cursor++) {
+    free(sg_host_user(hosts[cursor]));
+    sg_host_user_set(hosts[cursor], NULL);
+  }
 
   xbt_free(hosts);
   /* exit */
