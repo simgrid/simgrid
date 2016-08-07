@@ -11,6 +11,6 @@
         |                                |
     node-0.acme.org                  node-99.acme.org
   -->
-  <cluster id="acme" prefix="node-" suffix=".acme.org" radical="0-99" speed="1Gf" bw="125MBps" lat="50us"
+  <cluster id="acme" prefix="node-" radical="0-99" suffix=".acme.org" speed="1Gf" bw="125MBps" lat="50us"
            bb_bw="2.25GBps"  bb_lat="500us"/>
 </platform>
