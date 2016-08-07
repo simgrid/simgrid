@@ -3,43 +3,42 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <functional>
-#include <mutex>
+#include <mutex> /* std::mutex and std::lock_guard */
+#include "simgrid/s4u.hpp" /* All of S4U */
 
-#include <xbt/sysdep.h>
-
-#include "simgrid/s4u.hpp"
-
-#define NB_ACTOR 2
+#define NB_ACTOR 6
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_test, "a sample log category");
 
+/* This worker uses a classical mutex */
 static void worker(simgrid::s4u::MutexPtr mutex, int& result)
 {
-  // Do the calculation
-  simgrid::s4u::this_actor::execute(1000);
-
   // lock the mutex before enter in the critical section
-  std::lock_guard<simgrid::s4u::Mutex> lock(*mutex);
-  XBT_INFO("Hello s4u, I'm ready to compute");
+  mutex->lock();
 
+  XBT_INFO("Hello s4u, I'm ready to compute after a regular lock");
   // And finaly add it to the results
   result += 1;
   XBT_INFO("I'm done, good bye");
+
+  // You have to unlock the mutex if you locked it manually.
+  // Beware of exceptions preventing your unlock() from being executed!
+  mutex->unlock();
 }
 
 static void workerLockGuard(simgrid::s4u::MutexPtr mutex, int& result)
 {
-  simgrid::s4u::this_actor::execute(1000);
-
   // Simply use the std::lock_guard like this
+  // It's like a lock() that would do the unlock() automatically when getting out of scope
   std::lock_guard<simgrid::s4u::Mutex> lock(*mutex);
 
   // then you are in a safe zone
-  XBT_INFO("Hello s4u, I'm ready to compute");
+  XBT_INFO("Hello s4u, I'm ready to compute after a lock_guard");
   // update the results
   result += 1;
   XBT_INFO("I'm done, good bye");
+
+  // Nothing specific here: the unlock will be automatic
 }
 
 static void master()
