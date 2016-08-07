@@ -5,13 +5,8 @@
 
 #include "src/kernel/activity/ActivityImpl.hpp"
 
-simgrid::kernel::activity::ActivityImpl::ActivityImpl()
-{
-}
-
-simgrid::kernel::activity::ActivityImpl::~ActivityImpl()
-{
-}
+simgrid::kernel::activity::ActivityImpl::ActivityImpl() = default;
+simgrid::kernel::activity::ActivityImpl::~ActivityImpl() = default;
 
 void simgrid::kernel::activity::ActivityImpl::ref()
 {
