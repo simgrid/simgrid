@@ -51,14 +51,6 @@ static void xbt_preinit(void) _XBT_GNUC_CONSTRUCTOR(200);
 static void xbt_postexit(void);
 
 #ifdef _WIN32
-# undef _XBT_NEED_INIT_PRAGMA
-#endif
-
-#ifdef _XBT_NEED_INIT_PRAGMA
-#pragma init (xbt_preinit)
-#endif
-
-#ifdef _WIN32
 #include <windows.h>
 
 #ifndef __GNUC__

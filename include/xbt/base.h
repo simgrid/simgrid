@@ -58,7 +58,6 @@
 #  define _XBT_GNUC_CONSTRUCTOR(prio) __attribute__((__constructor__))
 #  define _XBT_GNUC_DESTRUCTOR(prio) __attribute__((__destructor__))
 # endif
-# undef _XBT_NEED_INIT_PRAGMA
 
 #if defined(__GNUC__)
 #   define XBT_ALWAYS_INLINE inline __attribute__ ((always_inline))
