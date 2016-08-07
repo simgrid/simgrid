@@ -27,11 +27,11 @@ static void SIMIX_mbox_free(void *data);
 static xbt_dict_t mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
 
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
-static void SIMIX_comm_copy_data(smx_synchro_t comm);
-static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t comm);
-static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx_comm_type_t type,
-    int (*match_fun)(void *, void *,smx_synchro_t), void *user_data, smx_synchro_t my_synchro, bool remove_matching);
-static void SIMIX_comm_start(smx_synchro_t synchro);
+static void SIMIX_comm_copy_data(smx_activity_t comm);
+static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_activity_t comm);
+static smx_activity_t _find_matching_comm(std::deque<smx_activity_t> *deque, e_smx_comm_type_t type,
+    int (*match_fun)(void *, void *,smx_activity_t), void *user_data, smx_activity_t my_synchro, bool remove_matching);
+static void SIMIX_comm_start(smx_activity_t synchro);
 
 void SIMIX_mailbox_exit()
 {
@@ -82,7 +82,7 @@ void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
  *  \param mbox The mailbox
  *  \param synchro The communication synchro
  */
-static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t synchro)
+static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_activity_t synchro)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
   mbox->comm_queue.push_back(comm);
@@ -94,7 +94,7 @@ static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_synchro_t synchro)
  *  \param mbox The rendez-vous point
  *  \param synchro The communication synchro
  */
-void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t synchro)
+void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_activity_t synchro)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
@@ -112,13 +112,13 @@ void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_synchro_t synchro)
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
  *  \return The communication synchro if found, nullptr otherwise
  */
-static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx_comm_type_t type,
-    int (*match_fun)(void *, void *,smx_synchro_t), void *this_user_data, smx_synchro_t my_synchro, bool remove_matching)
+static smx_activity_t _find_matching_comm(std::deque<smx_activity_t> *deque, e_smx_comm_type_t type,
+    int (*match_fun)(void *, void *,smx_activity_t), void *this_user_data, smx_activity_t my_synchro, bool remove_matching)
 {
   void* other_user_data = nullptr;
 
   for(auto it = deque->begin(); it != deque->end(); it++){
-    smx_synchro_t synchro = *it;
+    smx_activity_t synchro = *it;
     simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
     if (comm->type == SIMIX_COMM_SEND) {
@@ -153,21 +153,21 @@ static smx_synchro_t _find_matching_comm(std::deque<smx_synchro_t> *deque, e_smx
 XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_mailbox_t mbox,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
-                                  int (*match_fun)(void *, void *,smx_synchro_t),
-                                  void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                                  int (*match_fun)(void *, void *,smx_activity_t),
+                                  void (*copy_data_fun)(smx_activity_t, void*, size_t),
           void *data, double timeout){
-  smx_synchro_t comm = simcall_HANDLER_comm_isend(simcall, src, mbox, task_size, rate,
+  smx_activity_t comm = simcall_HANDLER_comm_isend(simcall, src, mbox, task_size, rate,
                            src_buff, src_buff_size, match_fun, nullptr, copy_data_fun,
                data, 0);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
-XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src_proc, smx_mailbox_t mbox,
+XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src_proc, smx_mailbox_t mbox,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
-                                  int (*match_fun)(void *, void *,smx_synchro_t),
+                                  int (*match_fun)(void *, void *,smx_activity_t),
                                   void (*clean_fun)(void *), // used to free the synchro in case of problem after a detached send
-                                  void (*copy_data_fun)(smx_synchro_t, void*, size_t),// used to copy data if not default one
+                                  void (*copy_data_fun)(smx_activity_t, void*, size_t),// used to copy data if not default one
                           void *data, int detached)
 {
   XBT_DEBUG("send from %p", mbox);
@@ -179,7 +179,7 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
    * ourself so that the other side also gets a chance of choosing if it wants to match with us.
    *
    * If it is not found then push our communication into the rendez-vous point */
-  smx_synchro_t other_synchro =
+  smx_activity_t other_synchro =
       _find_matching_comm(&mbox->comm_queue, SIMIX_COMM_RECEIVE, match_fun, data, this_synchro, /*remove_matching*/true);
   simgrid::kernel::activity::Comm *other_comm = static_cast<simgrid::kernel::activity::Comm*>(other_synchro);
 
@@ -240,33 +240,33 @@ XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_
 
 XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox,
                          void *dst_buff, size_t *dst_buff_size,
-                         int (*match_fun)(void *, void *, smx_synchro_t),
-                         void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                         int (*match_fun)(void *, void *, smx_activity_t),
+                         void (*copy_data_fun)(smx_activity_t, void*, size_t),
                          void *data, double timeout, double rate)
 {
-  smx_synchro_t comm = SIMIX_comm_irecv(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
+  smx_activity_t comm = SIMIX_comm_irecv(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-XBT_PRIVATE smx_synchro_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox,
+XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox,
     void *dst_buff, size_t *dst_buff_size,
-    int (*match_fun)(void *, void *, smx_synchro_t),
-    void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+    int (*match_fun)(void *, void *, smx_activity_t),
+    void (*copy_data_fun)(smx_activity_t, void*, size_t),
     void *data, double rate)
 {
   return SIMIX_comm_irecv(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
 }
 
-smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
-    int (*match_fun)(void *, void *, smx_synchro_t),
-    void (*copy_data_fun)(smx_synchro_t, void*, size_t), // used to copy data if not default one
+smx_activity_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
+    int (*match_fun)(void *, void *, smx_activity_t),
+    void (*copy_data_fun)(smx_activity_t, void*, size_t), // used to copy data if not default one
     void *data, double rate)
 {
   XBT_DEBUG("recv from %p %p", mbox, &mbox->comm_queue);
   simgrid::kernel::activity::Comm* this_synchro = new simgrid::kernel::activity::Comm(SIMIX_COMM_RECEIVE);
 
-  smx_synchro_t other_synchro;
+  smx_activity_t other_synchro;
   //communication already done, get it inside the fifo of completed comms
   if (mbox->permanent_receiver != nullptr && ! mbox->done_comm_queue.empty()) {
 
@@ -335,15 +335,15 @@ smx_synchro_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void 
   return other_synchro;
 }
 
-smx_synchro_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox,
+smx_activity_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox,
                                    int type, int src, int tag,
-                                   int (*match_fun)(void *, void *, smx_synchro_t),
+                                   int (*match_fun)(void *, void *, smx_activity_t),
                                    void *data){
   return SIMIX_comm_iprobe(simcall->issuer, mbox, type, src, tag, match_fun, data);
 }
 
-smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int type, int src,
-                              int tag, int (*match_fun)(void *, void *, smx_synchro_t), void *data)
+smx_activity_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int type, int src,
+                              int tag, int (*match_fun)(void *, void *, smx_activity_t), void *data)
 {
   XBT_DEBUG("iprobe from %p %p", mbox, &mbox->comm_queue);
   simgrid::kernel::activity::Comm* this_comm;
@@ -355,7 +355,7 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
     this_comm = new simgrid::kernel::activity::Comm(SIMIX_COMM_RECEIVE);
     smx_type = SIMIX_COMM_SEND;
   } 
-  smx_synchro_t other_synchro=nullptr;
+  smx_activity_t other_synchro=nullptr;
   if (mbox->permanent_receiver != nullptr && !mbox->done_comm_queue.empty()) {
     XBT_DEBUG("first check in the permanent recv mailbox, to see if we already got something");
     other_synchro = _find_matching_comm(&mbox->done_comm_queue,
@@ -374,7 +374,7 @@ smx_synchro_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int 
   return other_synchro;
 }
 
-void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, double timeout)
+void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, double timeout)
 {
   /* Associate this simcall to the wait synchro */
   XBT_DEBUG("simcall_HANDLER_comm_wait, %p", synchro);
@@ -419,7 +419,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_synchro_t synchro, dou
   }
 }
 
-void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t synchro)
+void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_activity_t synchro)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
@@ -479,14 +479,14 @@ void simcall_HANDLER_comm_testany(
 
 void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, double timeout)
 {
-  smx_synchro_t synchro;
+  smx_activity_t synchro;
   unsigned int cursor = 0;
 
   if (MC_is_active() || MC_record_replay_is_active()){
     if (timeout != -1)
       xbt_die("Timeout not implemented for waitany in the model-checker"); 
     int idx = SIMCALL_GET_MC_VALUE(simcall);
-    synchro = xbt_dynar_get_as(synchros, idx, smx_synchro_t);
+    synchro = xbt_dynar_get_as(synchros, idx, smx_activity_t);
     synchro->simcalls.push_back(simcall);
     simcall_comm_waitany__set__result(simcall, idx);
     synchro->state = SIMIX_DONE;
@@ -518,7 +518,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
 
 void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
 {
-  smx_synchro_t synchro;
+  smx_activity_t synchro;
   unsigned int cursor = 0;
   xbt_dynar_t synchros = simcall_comm_waitany__get__comms(simcall);
 
@@ -534,7 +534,7 @@ void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall)
  *  \brief Starts the simulation of a communication synchro.
  *  \param synchro the communication synchro
  */
-static inline void SIMIX_comm_start(smx_synchro_t synchro)
+static inline void SIMIX_comm_start(smx_activity_t synchro)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
@@ -577,7 +577,7 @@ static inline void SIMIX_comm_start(smx_synchro_t synchro)
  * \brief Answers the SIMIX simcalls associated to a communication synchro.
  * \param synchro a finished communication synchro
  */
-void SIMIX_comm_finish(smx_synchro_t synchro)
+void SIMIX_comm_finish(smx_activity_t synchro)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
   unsigned int destroy_count = 0;
@@ -731,14 +731,14 @@ void SIMIX_comm_finish(smx_synchro_t synchro)
 /******************************************************************************/
 /*                    SIMIX_comm_copy_data callbacks                       */
 /******************************************************************************/
-static void (*SIMIX_comm_copy_data_callback) (smx_synchro_t, void*, size_t) = &SIMIX_comm_copy_pointer_callback;
+static void (*SIMIX_comm_copy_data_callback) (smx_activity_t, void*, size_t) = &SIMIX_comm_copy_pointer_callback;
 
-void SIMIX_comm_set_copy_data_callback(void (*callback) (smx_synchro_t, void*, size_t))
+void SIMIX_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t))
 {
   SIMIX_comm_copy_data_callback = callback;
 }
 
-void SIMIX_comm_copy_pointer_callback(smx_synchro_t synchro, void* buff, size_t buff_size)
+void SIMIX_comm_copy_pointer_callback(smx_activity_t synchro, void* buff, size_t buff_size)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
@@ -746,7 +746,7 @@ void SIMIX_comm_copy_pointer_callback(smx_synchro_t synchro, void* buff, size_t 
   *(void **) (comm->dst_buff) = buff;
 }
 
-void SIMIX_comm_copy_buffer_callback(smx_synchro_t synchro, void* buff, size_t buff_size)
+void SIMIX_comm_copy_buffer_callback(smx_activity_t synchro, void* buff, size_t buff_size)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
@@ -763,7 +763,7 @@ void SIMIX_comm_copy_buffer_callback(smx_synchro_t synchro, void* buff, size_t b
  *  \brief Copy the communication data from the sender's buffer to the receiver's one
  *  \param comm The communication
  */
-void SIMIX_comm_copy_data(smx_synchro_t synchro)
+void SIMIX_comm_copy_data(smx_activity_t synchro)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 

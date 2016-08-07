@@ -225,14 +225,14 @@ XBT_PUBLIC(void) SIMIX_process_on_exit_runall(smx_process_t process);
 XBT_PUBLIC(void) SIMIX_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data);
 
 /****************************** Communication *********************************/
-XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_synchro_t, void*, size_t));
-XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_synchro_t comm, void* buff, size_t buff_size);
-XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_synchro_t comm, void* buff, size_t buff_size);
+XBT_PUBLIC(void) SIMIX_comm_set_copy_data_callback(void (*callback) (smx_activity_t, void*, size_t));
+XBT_PUBLIC(void) SIMIX_comm_copy_pointer_callback(smx_activity_t comm, void* buff, size_t buff_size);
+XBT_PUBLIC(void) SIMIX_comm_copy_buffer_callback(smx_activity_t comm, void* buff, size_t buff_size);
 
-XBT_PUBLIC(smx_synchro_t) SIMIX_comm_get_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
+XBT_PUBLIC(smx_activity_t) SIMIX_comm_get_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_send_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
 XBT_PUBLIC(int) SIMIX_comm_has_recv_match(smx_mailbox_t mbox, int (*match_fun)(void*, void*), void* data);
-XBT_PUBLIC(void) SIMIX_comm_finish(smx_synchro_t synchro);
+XBT_PUBLIC(void) SIMIX_comm_finish(smx_activity_t synchro);
 
 /******************************************************************************/
 /*                            SIMIX simcalls                                  */
@@ -246,21 +246,21 @@ XBT_PUBLIC(void) simcall_call(smx_process_t process);
 /******************************* Host simcalls ********************************/
 XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
 
-XBT_PUBLIC(smx_synchro_t) simcall_execution_start(const char *name,
+XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
                                                 double flops_amount,
                                                 double priority, double bound, unsigned long affinity_mask);
-XBT_PUBLIC(smx_synchro_t) simcall_execution_parallel_start(const char *name,
+XBT_PUBLIC(smx_activity_t) simcall_execution_parallel_start(const char *name,
                                                      int host_nb,
                                                      sg_host_t *host_list,
                                                      double *flops_amount,
                                                      double *bytes_amount,
                                                      double amount,
                                                      double rate);
-XBT_PUBLIC(void) simcall_execution_cancel(smx_synchro_t execution);
-XBT_PUBLIC(void) simcall_execution_set_priority(smx_synchro_t execution, double priority);
-XBT_PUBLIC(void) simcall_execution_set_bound(smx_synchro_t execution, double bound);
-XBT_PUBLIC(void) simcall_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask);
-XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_synchro_t execution);
+XBT_PUBLIC(void) simcall_execution_cancel(smx_activity_t execution);
+XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double priority);
+XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);
+XBT_PUBLIC(void) simcall_execution_set_affinity(smx_activity_t execution, sg_host_t host, unsigned long mask);
+XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 
 /******************************* VM simcalls ********************************/
 // Create the vm_workstation at the SURF level
@@ -327,43 +327,43 @@ XBT_PUBLIC(void) simcall_mbox_set_receiver(smx_mailbox_t mbox , smx_process_t pr
 XBT_PUBLIC(void) simcall_comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_size,
                                      double rate, void *src_buff,
                                      size_t src_buff_size,
-                                     int (*match_fun)(void *, void *, smx_synchro_t),
-                                     void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                                     int (*match_fun)(void *, void *, smx_activity_t),
+                                     void (*copy_data_fun)(smx_activity_t, void*, size_t),
                                      void *data, double timeout);
 
-XBT_PUBLIC(smx_synchro_t) simcall_comm_isend(smx_process_t sender, smx_mailbox_t mbox,
+XBT_PUBLIC(smx_activity_t) simcall_comm_isend(smx_process_t sender, smx_mailbox_t mbox,
                                               double task_size,
                                               double rate, void *src_buff,
                                               size_t src_buff_size,
-                                              int (*match_fun)(void *, void *, smx_synchro_t),
+                                              int (*match_fun)(void *, void *, smx_activity_t),
                                               void (*clean_fun)(void *),
-                                              void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                                              void (*copy_data_fun)(smx_activity_t, void*, size_t),
                                               void *data, int detached);
 
 XBT_PUBLIC(void) simcall_comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff,
                                    size_t * dst_buff_size,
-                                   int (*match_fun)(void *, void *, smx_synchro_t),
-                                   void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                                   int (*match_fun)(void *, void *, smx_activity_t),
+                                   void (*copy_data_fun)(smx_activity_t, void*, size_t),
                                    void *data, double timeout, double rate);
 
-XBT_PUBLIC(smx_synchro_t) simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff,
+XBT_PUBLIC(smx_activity_t) simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff,
                                             size_t * dst_buff_size,
-                                            int (*match_fun)(void *, void *, smx_synchro_t),
-                                            void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                                            int (*match_fun)(void *, void *, smx_activity_t),
+                                            void (*copy_data_fun)(smx_activity_t, void*, size_t),
                                             void *data, double rate);
 
-XBT_PUBLIC(smx_synchro_t) simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
-                                int (*match_fun)(void *, void *, smx_synchro_t), void *data);
-XBT_PUBLIC(void) simcall_comm_cancel(smx_synchro_t comm);
+XBT_PUBLIC(smx_activity_t) simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
+                                int (*match_fun)(void *, void *, smx_activity_t), void *data);
+XBT_PUBLIC(void) simcall_comm_cancel(smx_activity_t comm);
 
 /* FIXME: waitany is going to be a vararg function, and should take a timeout */
 XBT_PUBLIC(unsigned int) simcall_comm_waitany(xbt_dynar_t comms, double timeout);
-XBT_PUBLIC(void) simcall_comm_wait(smx_synchro_t comm, double timeout);
-XBT_PUBLIC(int) simcall_comm_test(smx_synchro_t comm);
-XBT_PUBLIC(int) simcall_comm_testany(smx_synchro_t* comms, size_t count);
+XBT_PUBLIC(void) simcall_comm_wait(smx_activity_t comm, double timeout);
+XBT_PUBLIC(int) simcall_comm_test(smx_activity_t comm);
+XBT_PUBLIC(int) simcall_comm_testany(smx_activity_t* comms, size_t count);
 
 /************************** Tracing handling **********************************/
-XBT_PUBLIC(void) simcall_set_category(smx_synchro_t synchro, const char *category);
+XBT_PUBLIC(void) simcall_set_category(smx_activity_t synchro, const char *category);
 
 /************************** Synchro simcalls **********************************/
 XBT_PUBLIC(smx_mutex_t) simcall_mutex_init();

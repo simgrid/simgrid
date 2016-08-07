@@ -72,7 +72,7 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
  * \param affinity_mask
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_execution_start(const char *name,
+smx_activity_t simcall_execution_start(const char *name,
                                     double flops_amount,
                                     double priority, double bound, unsigned long affinity_mask)
 {
@@ -98,7 +98,7 @@ smx_synchro_t simcall_execution_start(const char *name,
  * \param rate the SURF action rate
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_execution_parallel_start(const char *name,
+smx_activity_t simcall_execution_parallel_start(const char *name,
                                          int host_nb,
                                          sg_host_t *host_list,
                                          double *flops_amount,
@@ -135,7 +135,7 @@ smx_synchro_t simcall_execution_parallel_start(const char *name,
  * This functions stops the execution. It calls a surf function.
  * \param execution The execution synchro to cancel
  */
-void simcall_execution_cancel(smx_synchro_t execution)
+void simcall_execution_cancel(smx_activity_t execution)
 {
   simcall_BODY_execution_cancel(execution);
 }
@@ -148,7 +148,7 @@ void simcall_execution_cancel(smx_synchro_t execution)
  * \param execution The execution synchro
  * \param priority The new priority
  */
-void simcall_execution_set_priority(smx_synchro_t execution, double priority)
+void simcall_execution_set_priority(smx_activity_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(priority), "priority is not finite!");
@@ -164,7 +164,7 @@ void simcall_execution_set_priority(smx_synchro_t execution, double priority)
  * \param execution The execution synchro
  * \param bound The new bound
  */
-void simcall_execution_set_bound(smx_synchro_t execution, double bound)
+void simcall_execution_set_bound(smx_activity_t execution, double bound)
 {
   simcall_BODY_execution_set_bound(execution, bound);
 }
@@ -178,7 +178,7 @@ void simcall_execution_set_bound(smx_synchro_t execution, double bound)
  * \param host Host
  * \param mask Affinity mask
  */
-void simcall_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask)
+void simcall_execution_set_affinity(smx_activity_t execution, sg_host_t host, unsigned long mask)
 {
   simcall_BODY_execution_set_affinity(execution, host, mask);
 }
@@ -189,7 +189,7 @@ void simcall_execution_set_affinity(smx_synchro_t execution, sg_host_t host, uns
  *
  * \param execution The execution synchro
  */
-e_smx_state_t simcall_execution_wait(smx_synchro_t execution)
+e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 {
   return (e_smx_state_t) simcall_BODY_execution_wait(execution);
 }
@@ -582,8 +582,8 @@ void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
  */
 void simcall_comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
-                         int (*match_fun)(void *, void *, smx_synchro_t),
-                         void (*copy_data_fun)(smx_synchro_t, void*, size_t), void *data,
+                         int (*match_fun)(void *, void *, smx_activity_t),
+                         void (*copy_data_fun)(smx_activity_t, void*, size_t), void *data,
                          double timeout)
 {
   /* checking for infinite values */
@@ -595,7 +595,7 @@ void simcall_comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_siz
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_synchro_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
+    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
     comm = simcall_comm_isend(sender, mbox, task_size, rate,
         src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, 0);
     simcall_comm_wait(comm, timeout);
@@ -610,11 +610,11 @@ void simcall_comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_siz
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate,
+smx_activity_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *, smx_synchro_t),
+                              int (*match_fun)(void *, void *, smx_activity_t),
                               void (*clean_fun)(void *),
-                              void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                              void (*copy_data_fun)(smx_activity_t, void*, size_t),
                               void *data,
                               int detached)
 {
@@ -633,8 +633,8 @@ smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t mbox, doubl
  * \ingroup simix_comm_management
  */
 void simcall_comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t * dst_buff_size,
-                       int (*match_fun)(void *, void *, smx_synchro_t),
-                       void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                       int (*match_fun)(void *, void *, smx_activity_t),
+                       void (*copy_data_fun)(smx_activity_t, void*, size_t),
                        void *data, double timeout, double rate)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
@@ -642,7 +642,7 @@ void simcall_comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buf
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_synchro_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
+    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
     comm = simcall_comm_irecv(receiver, mbox, dst_buff, dst_buff_size,
                               match_fun, copy_data_fun, data, rate);
     simcall_comm_wait(comm, timeout);
@@ -656,9 +656,9 @@ void simcall_comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buf
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
-                                int (*match_fun)(void *, void *, smx_synchro_t),
-                                void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+smx_activity_t simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
+                                int (*match_fun)(void *, void *, smx_activity_t),
+                                void (*copy_data_fun)(smx_activity_t, void*, size_t),
                                 void *data, double rate)
 {
   xbt_assert(mbox, "No rendez-vous point defined for irecv");
@@ -670,8 +670,8 @@ smx_synchro_t simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, voi
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
-                                int (*match_fun)(void *, void *, smx_synchro_t), void *data)
+smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
+                                int (*match_fun)(void *, void *, smx_activity_t), void *data)
 {
   xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
@@ -681,7 +681,7 @@ smx_synchro_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_cancel(smx_synchro_t synchro)
+void simcall_comm_cancel(smx_activity_t synchro)
 {
   simgrid::simix::kernelImmediate([synchro]{
     simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
@@ -700,7 +700,7 @@ unsigned int simcall_comm_waitany(xbt_dynar_t comms, double timeout)
 /**
  * \ingroup simix_comm_management
  */
-int simcall_comm_testany(smx_synchro_t* comms, size_t count)
+int simcall_comm_testany(smx_activity_t* comms, size_t count)
 {
   if (count == 0)
     return -1;
@@ -710,7 +710,7 @@ int simcall_comm_testany(smx_synchro_t* comms, size_t count)
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_wait(smx_synchro_t comm, double timeout)
+void simcall_comm_wait(smx_activity_t comm, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_comm_wait(comm, timeout);
@@ -723,7 +723,7 @@ void simcall_comm_wait(smx_synchro_t comm, double timeout)
  * \param execution The execution synchro
  * \param category The tracing category
  */
-void simcall_set_category(smx_synchro_t synchro, const char *category)
+void simcall_set_category(smx_activity_t synchro, const char *category)
 {
   if (category == nullptr) {
     return;
@@ -735,7 +735,7 @@ void simcall_set_category(smx_synchro_t synchro, const char *category)
  * \ingroup simix_comm_management
  *
  */
-int simcall_comm_test(smx_synchro_t comm)
+int simcall_comm_test(smx_activity_t comm)
 {
   return simcall_BODY_comm_test(comm);
 }

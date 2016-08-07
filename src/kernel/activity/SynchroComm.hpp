@@ -42,10 +42,10 @@ namespace activity {
     bool detached = false;          /* If detached or not */
 
     void (*clean_fun)(void*) = nullptr; /* Function to clean the detached src_buf if something goes wrong */
-    int (*match_fun)(void*,void*,smx_synchro_t) = nullptr;  /* Filter function used by the other side. It is used when
+    int (*match_fun)(void*,void*,smx_activity_t) = nullptr;  /* Filter function used by the other side. It is used when
                                        looking if a given communication matches my needs. For that, myself must match the
                                        expectations of the other side, too. See  */
-    void (*copy_data_fun) (smx_synchro_t, void*, size_t) =nullptr;
+    void (*copy_data_fun) (smx_activity_t, void*, size_t) =nullptr;
 
     /* Surf action data */
     surf_action_t surf_comm = nullptr;        /* The Surf communication action encapsulated */

@@ -94,7 +94,7 @@ void SIMIX_process_cleanup(smx_process_t process)
   xbt_os_mutex_acquire(simix_global->mutex);
 
   /* cancel non-blocking communications */
-  smx_synchro_t synchro = static_cast<smx_synchro_t>(xbt_fifo_pop(process->comms));
+  smx_activity_t synchro = static_cast<smx_activity_t>(xbt_fifo_pop(process->comms));
   while (synchro != nullptr) {
     simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
@@ -128,7 +128,7 @@ void SIMIX_process_cleanup(smx_process_t process)
     } else {
       xbt_die("Communication synchro %p is in my list but I'm not the sender nor the receiver", synchro);
     }
-    synchro = static_cast<smx_synchro_t>(xbt_fifo_pop(process->comms));
+    synchro = static_cast<smx_activity_t>(xbt_fifo_pop(process->comms));
   }
 
   XBT_DEBUG("%p should not be run anymore",process);
@@ -600,7 +600,7 @@ void SIMIX_process_change_host(smx_process_t process, sg_host_t dest)
 
 void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t process)
 {
-  smx_synchro_t sync_suspend = SIMIX_process_suspend(process, simcall->issuer);
+  smx_activity_t sync_suspend = SIMIX_process_suspend(process, simcall->issuer);
 
   if (process != simcall->issuer) {
     SIMIX_simcall_answer(simcall);
@@ -612,7 +612,7 @@ void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t proces
   /* If we are suspending ourselves, then just do not finish the simcall now */
 }
 
-smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
+smx_activity_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer)
 {
   if (process->suspended) {
     XBT_DEBUG("Process '%s' is already suspended", process->name.c_str());
@@ -746,12 +746,12 @@ void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, 
     SIMIX_simcall_answer(simcall);
     return;
   }
-  smx_synchro_t sync = SIMIX_process_join(simcall->issuer, process, timeout);
+  smx_activity_t sync = SIMIX_process_join(simcall->issuer, process, timeout);
   sync->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
 }
 
-static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synchro_t synchro){
+static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_activity_t synchro){
   simgrid::kernel::activity::Sleep *sleep = static_cast<simgrid::kernel::activity::Sleep*>(synchro);
 
   if (sleep->surf_sleep) {
@@ -777,9 +777,9 @@ static int SIMIX_process_join_finish(smx_process_exit_status_t status, smx_synch
   return 0;
 }
 
-smx_synchro_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout)
+smx_activity_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout)
 {
-  smx_synchro_t res = SIMIX_process_sleep(issuer, timeout);
+  smx_activity_t res = SIMIX_process_sleep(issuer, timeout);
   static_cast<simgrid::kernel::activity::ActivityImpl*>(res)->ref();
   SIMIX_process_on_exit(process, (int_f_pvoid_pvoid_t)SIMIX_process_join_finish, res);
   return res;
@@ -793,12 +793,12 @@ void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration)
     SIMIX_simcall_answer(simcall);
     return;
   }
-  smx_synchro_t sync = SIMIX_process_sleep(simcall->issuer, duration);
+  smx_activity_t sync = SIMIX_process_sleep(simcall->issuer, duration);
   sync->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = sync;
 }
 
-smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
+smx_activity_t SIMIX_process_sleep(smx_process_t process, double duration)
 {
   sg_host_t host = process->host;
 
@@ -815,7 +815,7 @@ smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration)
   return synchro;
 }
 
-void SIMIX_process_sleep_destroy(smx_synchro_t synchro)
+void SIMIX_process_sleep_destroy(smx_activity_t synchro)
 {
   XBT_DEBUG("Destroy synchro %p", synchro);
   simgrid::kernel::activity::Sleep *sleep = static_cast<simgrid::kernel::activity::Sleep*>(synchro);

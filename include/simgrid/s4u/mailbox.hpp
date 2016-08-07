@@ -52,7 +52,7 @@ public:
   bool empty();
 
   /** Returns the first element in the queue, or nullptr if none is there */
-  smx_synchro_t front();
+  smx_activity_t front();
 
   /** Declare that the specified process is a permanent receiver on that mailbox
    *

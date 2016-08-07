@@ -173,7 +173,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
   case SIMCALL_COMM_WAITANY: {
     state->internal_req.call = SIMCALL_COMM_WAIT;
     state->internal_req.issuer = req->issuer;
-    smx_synchro_t remote_comm;
+    smx_activity_t remote_comm;
     read_element(mc_model_checker->process(),
       &remote_comm, remote(simcall_comm_waitany__get__comms(req)),
       state->transition.argument, sizeof(remote_comm));
@@ -189,7 +189,7 @@ static inline smx_simcall_t MC_state_get_request_for_process(
     state->internal_req.issuer = req->issuer;
 
     if (state->transition.argument > 0) {
-      smx_synchro_t remote_comm = mc_model_checker->process().read(
+      smx_activity_t remote_comm = mc_model_checker->process().read(
         remote(simcall_comm_testany__get__comms(req) + state->transition.argument));
       mc_model_checker->process().read(state->internal_comm, remote(
         static_cast<simgrid::kernel::activity::Comm*>(remote_comm)));

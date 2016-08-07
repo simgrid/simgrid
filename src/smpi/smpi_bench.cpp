@@ -207,7 +207,7 @@ void smpi_execute_(double *duration)
 }
 
 void smpi_execute_flops(double flops) {
-  smx_synchro_t action;
+  smx_activity_t action;
   XBT_DEBUG("Handle real computation time: %f flops", flops);
   action = simcall_execution_start("computation", flops, 1, 0, 0);
   simcall_set_category (action, TRACE_internal_smpi_get_category());

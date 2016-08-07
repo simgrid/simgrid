@@ -14,7 +14,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 
-static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
+static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
 static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_process_t issuer, smx_simcall_t simcall);
 static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
@@ -22,7 +22,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
 
 /***************************** Raw synchronization *********************************/
 
-static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
+static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
 {
   XBT_IN("(%p, %f)",smx_host,timeout);
 
@@ -64,7 +64,7 @@ void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall)
   XBT_OUT();
 }
 
-void SIMIX_synchro_finish(smx_synchro_t synchro)
+void SIMIX_synchro_finish(smx_activity_t synchro)
 {
   XBT_IN("(%p)",synchro);
   smx_simcall_t simcall = synchro->simcalls.front();
@@ -117,7 +117,7 @@ void Mutex::lock(smx_process_t issuer)
 {
   XBT_IN("(%p; %p)", this, issuer);
   /* FIXME: check where to validate the arguments */
-  smx_synchro_t synchro = nullptr;
+  smx_activity_t synchro = nullptr;
 
   if (this->locked) {
     /* FIXME: check if the host is active ? */
@@ -276,7 +276,7 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
                              smx_process_t issuer, smx_simcall_t simcall)
 {
   XBT_IN("(%p, %p, %f, %p,%p)",cond,mutex,timeout,issuer,simcall);
-  smx_synchro_t synchro = nullptr;
+  smx_activity_t synchro = nullptr;
 
   XBT_DEBUG("Wait condition %p", cond);
 
@@ -462,7 +462,7 @@ static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
                             smx_simcall_t simcall)
 {
   XBT_IN("(%p, %f, %p, %p)",sem,timeout,issuer,simcall);
-  smx_synchro_t synchro = nullptr;
+  smx_activity_t synchro = nullptr;
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
   if (sem->value <= 0) {

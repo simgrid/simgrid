@@ -62,7 +62,7 @@ typedef struct Trace tmgr_Trace;
 typedef simgrid_As *AS_t;
 typedef simgrid_Host* sg_host_t;
 
-typedef kernel_Activity *smx_synchro_t;
+typedef kernel_Activity *smx_activity_t;
 
 typedef surf_Cpu *surf_cpu_t;
 typedef routing_NetCard *sg_netcard_t;

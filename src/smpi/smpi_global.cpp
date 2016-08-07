@@ -382,7 +382,7 @@ void print_request(const char *message, MPI_Request request)
        message, request, request->buf, request->size, request->src, request->dst, request->tag, request->flags);
 }
 
-void smpi_comm_copy_buffer_callback(smx_synchro_t synchro, void *buff, size_t buff_size)
+void smpi_comm_copy_buffer_callback(smx_activity_t synchro, void *buff, size_t buff_size)
 {
   XBT_DEBUG("Copy the data over");
   void* tmpbuff=buff;
@@ -418,7 +418,7 @@ void smpi_comm_copy_buffer_callback(smx_synchro_t synchro, void *buff, size_t bu
   if(tmpbuff!=buff)xbt_free(tmpbuff);
 }
 
-void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t buff_size)
+void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size)
 {
   return;
 }

@@ -119,9 +119,9 @@ private:
 
   /* FIXME: expose these elements in the API */
   int detached_ = 0;
-  int (*matchFunction_)(void *, void *, smx_synchro_t) = nullptr;
+  int (*matchFunction_)(void *, void *, smx_activity_t) = nullptr;
   void (*cleanFunction_)(void *) = nullptr;
-  void (*copyDataFunction_)(smx_synchro_t, void*, size_t) = nullptr;
+  void (*copyDataFunction_)(smx_activity_t, void*, size_t) = nullptr;
 
   smx_process_t sender_ = nullptr;
   smx_process_t receiver_ = nullptr;

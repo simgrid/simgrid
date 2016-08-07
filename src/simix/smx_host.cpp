@@ -202,12 +202,12 @@ void SIMIX_host_autorestart(sg_host_t host)
   xbt_dynar_reset(process_list);
 }
 
-smx_synchro_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount,
+smx_activity_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount,
                                               double priority, double bound, unsigned long affinity_mask) {
   return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);
 }
 
-smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name, double flops_amount, double priority,
+smx_activity_t SIMIX_execution_start(smx_process_t issuer, const char *name, double flops_amount, double priority,
                                     double bound, unsigned long affinity_mask){
 
   /* alloc structures and initialize */
@@ -236,7 +236,7 @@ smx_synchro_t SIMIX_execution_start(smx_process_t issuer, const char *name, doub
   return exec;
 }
 
-smx_synchro_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_host_t *host_list, double *flops_amount,
+smx_activity_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_host_t *host_list, double *flops_amount,
                                              double *bytes_amount, double amount, double rate){
 
   /* alloc structures and initialize */
@@ -265,7 +265,7 @@ smx_synchro_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_h
   return exec;
 }
 
-void SIMIX_execution_cancel(smx_synchro_t synchro)
+void SIMIX_execution_cancel(smx_activity_t synchro)
 {
   XBT_DEBUG("Cancel synchro %p", synchro);
   simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
@@ -274,21 +274,21 @@ void SIMIX_execution_cancel(smx_synchro_t synchro)
     exec->surf_exec->cancel();
 }
 
-void SIMIX_execution_set_priority(smx_synchro_t synchro, double priority)
+void SIMIX_execution_set_priority(smx_activity_t synchro, double priority)
 {
   simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   if(exec->surf_exec)
     exec->surf_exec->setPriority(priority);
 }
 
-void SIMIX_execution_set_bound(smx_synchro_t synchro, double bound)
+void SIMIX_execution_set_bound(smx_activity_t synchro, double bound)
 {
   simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   if(exec->surf_exec)
     static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
 }
 
-void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigned long mask)
+void SIMIX_execution_set_affinity(smx_activity_t synchro, sg_host_t host, unsigned long mask)
 {
   simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   if(exec->surf_exec) {
@@ -298,7 +298,7 @@ void SIMIX_execution_set_affinity(smx_synchro_t synchro, sg_host_t host, unsigne
   }
 }
 
-void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_synchro_t synchro)
+void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchro)
 {
   simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   XBT_DEBUG("Wait for execution of synchro %p, state %d", synchro, (int)synchro->state);
@@ -357,7 +357,7 @@ void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec)
   exec->unref();
 }
 
-void SIMIX_set_category(smx_synchro_t synchro, const char *category)
+void SIMIX_set_category(smx_activity_t synchro, const char *category)
 {
   if (synchro->state != SIMIX_RUNNING)
     return;

@@ -58,12 +58,12 @@ void SIMIX_storage_destroy(void *s)
 //SIMIX FILE READ
 void simcall_HANDLER_file_read(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
 {
-  smx_synchro_t synchro = SIMIX_file_read(fd, size, host);
+  smx_activity_t synchro = SIMIX_file_read(fd, size, host);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
+smx_activity_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   /* check if the host is active */
   if (host->isOff())
@@ -83,12 +83,12 @@ smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host)
 //SIMIX FILE WRITE
 void simcall_HANDLER_file_write(smx_simcall_t simcall, smx_file_t fd, sg_size_t size, sg_host_t host)
 {
-  smx_synchro_t synchro = SIMIX_file_write(fd,  size, host);
+  smx_activity_t synchro = SIMIX_file_write(fd,  size, host);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
+smx_activity_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
 {
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
@@ -105,12 +105,12 @@ smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host)
 //SIMIX FILE OPEN
 void simcall_HANDLER_file_open(smx_simcall_t simcall, const char* fullpath, sg_host_t host)
 {
-  smx_synchro_t synchro = SIMIX_file_open(fullpath, host);
+  smx_activity_t synchro = SIMIX_file_open(fullpath, host);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
+smx_activity_t SIMIX_file_open(const char* fullpath, sg_host_t host)
 {
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
@@ -127,12 +127,12 @@ smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host)
 //SIMIX FILE CLOSE
 void simcall_HANDLER_file_close(smx_simcall_t simcall, smx_file_t fd, sg_host_t host)
 {
-  smx_synchro_t synchro = SIMIX_file_close(fd, host);
+  smx_activity_t synchro = SIMIX_file_close(fd, host);
   synchro->simcalls.push_back(simcall);
   simcall->issuer->waiting_synchro = synchro;
 }
 
-smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
+smx_activity_t SIMIX_file_close(smx_file_t fd, sg_host_t host)
 {
   if (host->isOff())
     THROWF(host_error, 0, "Host %s failed, you cannot call this function", sg_host_get_name(host));
@@ -253,7 +253,7 @@ const char* SIMIX_storage_get_host(smx_storage_t storage){
   return surf_storage_get_host(storage);
 }
 
-void SIMIX_io_destroy(smx_synchro_t synchro)
+void SIMIX_io_destroy(smx_activity_t synchro)
 {
   simgrid::kernel::activity::Io *io = static_cast<simgrid::kernel::activity::Io*>(synchro);
   XBT_DEBUG("Destroy synchro %p", synchro);
@@ -262,7 +262,7 @@ void SIMIX_io_destroy(smx_synchro_t synchro)
   delete io;
 }
 
-void SIMIX_io_finish(smx_synchro_t synchro)
+void SIMIX_io_finish(smx_activity_t synchro)
 {
   for (smx_simcall_t simcall : synchro->simcalls) {
     switch (synchro->state) {

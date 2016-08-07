@@ -39,7 +39,7 @@ bool Mailbox::empty()
   return pimpl_->comm_queue.empty();
 }
 
-smx_synchro_t Mailbox::front()
+smx_activity_t Mailbox::front()
 {
   return pimpl_->comm_queue.empty() ? nullptr : pimpl_->comm_queue.front();
 }

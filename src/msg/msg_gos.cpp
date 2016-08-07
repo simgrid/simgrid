@@ -303,7 +303,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
 
 /* Internal function used to factorize code between MSG_task_isend_with_matching() and MSG_task_dsend(). */
 static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
-                                                     int (*match_fun)(void*,void*, smx_synchro_t),
+                                                     int (*match_fun)(void*,void*, smx_activity_t),
                                                      void *match_data, void_f_pvoid_t cleanup, int detached)
 {
   simdata_task_t t_simdata = nullptr;
@@ -320,7 +320,7 @@ static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *al
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_synchro_t act = simcall_comm_isend(myself, mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
+  smx_activity_t act = simcall_comm_isend(myself, mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
                                          task, sizeof(void *), match_fun, cleanup, nullptr, match_data,detached);
   t_simdata->comm = static_cast<simgrid::kernel::activity::Comm*>(act);
 
@@ -387,7 +387,7 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double max
  * \return the msg_comm_t communication created
  */
 msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
-                                        int (*match_fun)(void*, void*, smx_synchro_t), void *match_data)
+                                        int (*match_fun)(void*, void*, smx_activity_t), void *match_data)
 {
   return MSG_task_isend_internal(task, alias, match_fun, match_data, nullptr, 0);
 }
@@ -641,7 +641,7 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   int finished_index = -1;
 
   /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_synchro_t), nullptr);
+  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_activity_t), nullptr);
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
@@ -713,7 +713,7 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
  * \param buff the data copied
  * \param buff_size size of the buffer
  */
-void MSG_comm_copy_data_from_SIMIX(smx_synchro_t synchro, void* buff, size_t buff_size)
+void MSG_comm_copy_data_from_SIMIX(smx_activity_t synchro, void* buff, size_t buff_size)
 {
   simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
 
@@ -800,7 +800,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
 
   /* Try to send it by calling SIMIX network layer */
   try {
-    smx_synchro_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
+    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
     comm = simcall_comm_isend(SIMIX_process_self(), mailbox->getImpl(),t_simdata->bytes_amount,
                               t_simdata->rate, task, sizeof(void *), nullptr, nullptr, nullptr, task, 0);
     if (TRACE_is_enabled())

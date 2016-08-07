@@ -17,8 +17,8 @@ XBT_PUBLIC_DATA(const char*) simcall_names[]; /* Name of each simcall */
 
 #include "popping_enum.h" /* Definition of e_smx_simcall_t, with one value per simcall */
 
-typedef int (*simix_match_func_t)(void *, void *, smx_synchro_t);
-typedef void (*simix_copy_data_func_t)(smx_synchro_t, void*, size_t);
+typedef int (*simix_match_func_t)(void *, void *, smx_activity_t);
+typedef void (*simix_copy_data_func_t)(smx_activity_t, void*, size_t);
 typedef void (*simix_clean_func_t)(void *);
 typedef void (*FPtr)(void); // Hide the ugliness
 
@@ -58,7 +58,7 @@ struct s_smx_simcall {
 
 XBT_PRIVATE void SIMIX_simcall_answer(smx_simcall_t simcall);
 XBT_PRIVATE void SIMIX_simcall_handle(smx_simcall_t simcall, int value);
-XBT_PRIVATE void SIMIX_simcall_exit(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_simcall_exit(smx_activity_t synchro);
 XBT_PRIVATE const char *SIMIX_simcall_name(e_smx_simcall_t kind);
 XBT_PRIVATE void SIMIX_run_kernel(std::function<void()> const* code);
 XBT_PRIVATE void SIMIX_run_blocking(std::function<void()> const* code);

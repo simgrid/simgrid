@@ -99,7 +99,7 @@ typedef struct s_smpi_mpi_request {
   int truncated;
   size_t real_size;
   MPI_Comm comm;
-  smx_synchro_t action;
+  smx_activity_t action;
   unsigned flags;
   int detached;
   MPI_Request detached_sender;
@@ -183,9 +183,9 @@ XBT_PRIVATE bool smpi_process_get_replaying();
 XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm, xbt_bar_t*bar);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
-XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t buff_size);
+XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
 
-XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(smx_synchro_t comm, void *buff, size_t buff_size);
+XBT_PRIVATE void smpi_comm_null_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
 
 XBT_PRIVATE void print_request(const char *message, MPI_Request request);
 

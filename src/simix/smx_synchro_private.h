@@ -75,10 +75,10 @@ typedef struct s_smx_sem {
   xbt_swag_t sleeping;          /* list of sleeping process */
 } s_smx_sem_t;
 
-XBT_PRIVATE void SIMIX_post_synchro(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_post_synchro(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall);
-XBT_PRIVATE void SIMIX_synchro_destroy(smx_synchro_t synchro);
-XBT_PRIVATE void SIMIX_synchro_finish(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_synchro_destroy(smx_activity_t synchro);
+XBT_PRIVATE void SIMIX_synchro_finish(smx_activity_t synchro);
 
 XBT_PRIVATE smx_cond_t SIMIX_cond_init();
 XBT_PRIVATE void SIMIX_cond_broadcast(smx_cond_t cond);

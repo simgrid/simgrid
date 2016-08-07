@@ -24,10 +24,10 @@ static inline smx_storage_priv_t SIMIX_storage_priv(smx_storage_t storage){
 
 XBT_PRIVATE smx_storage_t SIMIX_storage_create(const char *name, void *storage, void *data);
 XBT_PRIVATE void SIMIX_storage_destroy(void *s);
-XBT_PRIVATE smx_synchro_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host);
-XBT_PRIVATE smx_synchro_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host);
-XBT_PRIVATE smx_synchro_t SIMIX_file_open(const char* fullpath, sg_host_t host);
-XBT_PRIVATE smx_synchro_t SIMIX_file_close(smx_file_t fd, sg_host_t host);
+XBT_PRIVATE smx_activity_t SIMIX_file_read(smx_file_t fd, sg_size_t size, sg_host_t host);
+XBT_PRIVATE smx_activity_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_host_t host);
+XBT_PRIVATE smx_activity_t SIMIX_file_open(const char* fullpath, sg_host_t host);
+XBT_PRIVATE smx_activity_t SIMIX_file_close(smx_file_t fd, sg_host_t host);
 XBT_PRIVATE int SIMIX_file_unlink(smx_file_t fd, sg_host_t host);
 XBT_PRIVATE sg_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd);
 XBT_PRIVATE sg_size_t SIMIX_file_tell(smx_process_t process, smx_file_t fd);
@@ -40,7 +40,7 @@ XBT_PRIVATE sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_sto
 
 XBT_PRIVATE xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage);
 
-XBT_PRIVATE void SIMIX_io_destroy(smx_synchro_t synchro);
-XBT_PRIVATE void SIMIX_io_finish(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_io_destroy(smx_activity_t synchro);
+XBT_PRIVATE void SIMIX_io_finish(smx_activity_t synchro);
 
 #endif

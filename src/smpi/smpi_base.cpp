@@ -23,7 +23,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_base, smpi, "Logging specific to SMPI (base)");
 
-static int match_recv(void* a, void* b, smx_synchro_t ignored) {
+static int match_recv(void* a, void* b, smx_activity_t ignored) {
    MPI_Request ref = static_cast<MPI_Request>(a);
    MPI_Request req = static_cast<MPI_Request>(b);
    XBT_DEBUG("Trying to match a recv of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
@@ -46,7 +46,7 @@ static int match_recv(void* a, void* b, smx_synchro_t ignored) {
   }else return 0;
 }
 
-static int match_send(void* a, void* b,smx_synchro_t ignored) {
+static int match_send(void* a, void* b,smx_activity_t ignored) {
    MPI_Request ref = static_cast<MPI_Request>(a);
    MPI_Request req = static_cast<MPI_Request>(b);
    XBT_DEBUG("Trying to match a send of src %d against %d, tag %d against %d",ref->src,req->src, ref->tag, req->tag);
@@ -373,7 +373,7 @@ void smpi_mpi_start(MPI_Request request)
       //begin with the more appropriate one : the small one.
       mailbox = smpi_process_mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted in the small mailbox %p (in case of SSEND)?", mailbox);
-      smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
+      smx_activity_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, static_cast<void*>(request));
     
       if (action == nullptr) {
         mailbox = smpi_process_mailbox();
@@ -391,7 +391,7 @@ void smpi_mpi_start(MPI_Request request)
     else {
       mailbox = smpi_process_mailbox_small();
       XBT_DEBUG("Is there a corresponding send already posted the small mailbox?");
-      smx_synchro_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
+      smx_activity_t action = simcall_comm_iprobe(mailbox, 0, request->src,request->tag, &match_recv, (void*)request);
     
       if (action == nullptr) {
         XBT_DEBUG("No, nothing in the permanent receive mailbox");
@@ -469,7 +469,7 @@ void smpi_mpi_start(MPI_Request request)
     else if (((request->flags & RMA) != 0) || static_cast<int>(request->size) < async_small_thresh) { // eager mode
       mailbox = smpi_process_remote_mailbox(receiver);
       XBT_DEBUG("Is there a corresponding recv already posted in the large mailbox %p?", mailbox);
-      smx_synchro_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
+      smx_activity_t action = simcall_comm_iprobe(mailbox, 1,request->dst, request->tag, &match_send, static_cast<void*>(request));
       if (action == nullptr) {
         if ((request->flags & SSEND) == 0){
           mailbox = smpi_process_remote_mailbox_small(receiver);
@@ -924,7 +924,7 @@ int smpi_mpi_waitany(int count, MPI_Request requests[], MPI_Status * status)
 
   if(count > 0) {
     // Wait for a request to complete
-    comms = xbt_dynar_new(sizeof(smx_synchro_t), nullptr);
+    comms = xbt_dynar_new(sizeof(smx_activity_t), nullptr);
     map = xbt_new(int, count);
     XBT_DEBUG("Wait for one of %d", count);
     for(i = 0; i < count; i++) {

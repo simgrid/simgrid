@@ -62,7 +62,7 @@ public:
   bool auto_restart = false;
 
   sg_host_t new_host            = nullptr; /* if not null, the host on which the process must migrate to */
-  smx_synchro_t waiting_synchro = nullptr; /* the current blocking synchro if any */
+  smx_activity_t waiting_synchro = nullptr; /* the current blocking synchro if any */
   xbt_fifo_t comms              = nullptr; /* the current non-blocking communication synchros */
   xbt_dict_t properties         = nullptr;
   s_smx_simcall_t simcall;
@@ -125,7 +125,7 @@ XBT_PRIVATE void SIMIX_process_empty_trash();
 XBT_PRIVATE void SIMIX_process_yield(smx_process_t self);
 XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
 XBT_PRIVATE void SIMIX_process_change_host(smx_process_t process, sg_host_t dest);
-XBT_PRIVATE smx_synchro_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
+XBT_PRIVATE smx_activity_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
 XBT_PRIVATE void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
 XBT_PRIVATE int SIMIX_process_get_PID(smx_process_t self);
 XBT_PRIVATE void* SIMIX_process_get_data(smx_process_t process);
@@ -133,10 +133,10 @@ XBT_PRIVATE void SIMIX_process_set_data(smx_process_t process, void *data);
 XBT_PRIVATE smx_process_t SIMIX_process_get_by_name(const char* name);
 XBT_PRIVATE int SIMIX_process_is_suspended(smx_process_t process);
 XBT_PRIVATE xbt_dict_t SIMIX_process_get_properties(smx_process_t process);
-XBT_PRIVATE smx_synchro_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout);
-XBT_PRIVATE smx_synchro_t SIMIX_process_sleep(smx_process_t process, double duration);
+XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout);
+XBT_PRIVATE smx_activity_t SIMIX_process_sleep(smx_process_t process, double duration);
 
-XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_synchro_t synchro);
+XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
 XBT_PRIVATE smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
 

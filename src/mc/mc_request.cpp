@@ -354,7 +354,7 @@ std::string simgrid::mc::request_to_string(smx_simcall_t req, int value, simgrid
     mc_model_checker->process().read_bytes(
       &comms, sizeof(comms), remote(simcall_comm_waitany__get__comms(req)));
     if (!xbt_dynar_is_empty(&comms)) {
-      smx_synchro_t remote_sync;
+      smx_activity_t remote_sync;
       read_element(mc_model_checker->process(),
         &remote_sync, remote(simcall_comm_waitany__get__comms(req)), value,
         sizeof(remote_sync));
@@ -434,7 +434,7 @@ namespace mc {
 
 bool request_is_enabled_by_idx(smx_simcall_t req, unsigned int idx)
 {
-  smx_synchro_t remote_act = nullptr;
+  smx_activity_t remote_act = nullptr;
   switch (req->call) {
 
   case SIMCALL_COMM_WAIT:
@@ -523,7 +523,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
       else
         label = simgrid::xbt::string_printf("[(%lu)] WaitTimeout", issuer->pid);
     } else {
-      smx_synchro_t remote_act = simcall_comm_wait__get__comm(req);
+      smx_activity_t remote_act = simcall_comm_wait__get__comm(req);
       simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
       mc_model_checker->process().read(temp_comm, remote(
         static_cast<simgrid::kernel::activity::Comm*>(remote_act)));
@@ -549,7 +549,7 @@ std::string request_get_dot_output(smx_simcall_t req, int value)
   }
 
   case SIMCALL_COMM_TEST: {
-    smx_synchro_t remote_act = simcall_comm_test__get__comm(req);
+    smx_activity_t remote_act = simcall_comm_test__get__comm(req);
     simgrid::mc::Remote<simgrid::kernel::activity::Comm> temp_comm;
     mc_model_checker->process().read(temp_comm, remote(
       static_cast<simgrid::kernel::activity::Comm*>(remote_act)));

@@ -356,7 +356,7 @@ static void SIMIX_wake_processes()
     XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = surf_model_extract_failed_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);
-      SIMIX_simcall_exit((smx_synchro_t) action->getData());
+      SIMIX_simcall_exit((smx_activity_t) action->getData());
     }
     XBT_DEBUG("Handling the processes whose action terminated normally (if any)");
     while ((action = surf_model_extract_done_action_set(model))) {
@@ -364,7 +364,7 @@ static void SIMIX_wake_processes()
       if (action->getData() == nullptr)
         XBT_DEBUG("probably vcpu's action %p, skip", action);
       else
-        SIMIX_simcall_exit((smx_synchro_t) action->getData());
+        SIMIX_simcall_exit((smx_activity_t) action->getData());
     }
   }
 }

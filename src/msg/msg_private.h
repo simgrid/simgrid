@@ -85,7 +85,7 @@ XBT_PRIVATE void __MSG_host_release_file_descriptor_id(msg_host_t host, int id);
 typedef struct simdata_process {
   msg_host_t m_host;              /* the host on which the process is running */
   msg_host_t put_host;            /* used for debugging purposes */
-  smx_synchro_t waiting_action;
+  smx_activity_t waiting_action;
   msg_task_t waiting_task;
   msg_error_t last_errno;       /* the last value returned by a MSG_function */
 
@@ -103,7 +103,7 @@ typedef struct process_arg {
 } s_process_arg_t, *process_arg_t;
 
 typedef struct msg_comm {
-  smx_synchro_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
+  smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
   msg_task_t task_sent;           /* task sent (NULL for the receiver) */
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
   msg_error_t status;           /* status of the communication once finished */
@@ -148,7 +148,7 @@ XBT_PRIVATE smx_process_t MSG_process_create_from_SIMIX(const char *name,
                                    const char *hostname, double kill_time,
                                    xbt_dict_t properties, int auto_restart,
                                    smx_process_t parent_process);
-XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
+XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_activity_t comm, void* buff, size_t buff_size);
 
 XBT_PRIVATE void MSG_post_create_environment();
 

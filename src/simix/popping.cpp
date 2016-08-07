@@ -35,7 +35,7 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
   }
 }
 
-void SIMIX_simcall_exit(smx_synchro_t synchro)
+void SIMIX_simcall_exit(smx_activity_t synchro)
 {
   synchro->post();
 }
