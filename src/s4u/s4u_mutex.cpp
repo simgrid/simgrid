@@ -13,21 +13,31 @@
 namespace simgrid {
 namespace s4u {
 
+/** @brief Blocks the calling actor until the mutex can be obtained */
 void Mutex::lock()
 {
   simcall_mutex_lock(mutex_);
 }
 
+/** @brief Release the ownership of the mutex, unleashing a blocked actor (if any)
+ *
+ * Will fail if the calling actor does not own the mutex.
+ */
 void Mutex::unlock()
 {
   simcall_mutex_unlock(mutex_);
 }
 
+/** @brief Acquire the mutex if it's free, and return false (without blocking) if not */
 bool Mutex::try_lock()
 {
   return simcall_mutex_trylock(mutex_);
 }
 
+/** @brief Create a new mutex
+ *
+ * See @ref s4u_raii.
+ */
 MutexPtr Mutex::createMutex()
 {
   smx_mutex_t mutex = simcall_mutex_init();

@@ -10,9 +10,31 @@ SimGrid will be possible in S4U.
 	 that path unless you know what you are doing.  If unsure,
 	 proceed to @ref MSG_API instead.
 
-
 Unsurprisingly, the S4U interface matches the concepts presented in 
 @ref starting_components "the introduction". You should read this page
 first, to not get lost in the amount of classes provided here.
 
+@section s4u_raii Memory Management of S4U objects
+
+For sake of simplicity, we use
+[RAII](https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization)
+everywhere in S4U. This is an idiom where resources are automatically
+managed through the context. Provided that you never manipulate
+objects of type Foo directly but always FooPtr references, you will
+never have to explicitely release the resource that you use nor to
+free the memory of unused objects.
+
+Here is a little example:
+
+@code{cpp}
+void myFunc() 
+{
+  simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::createMutex(); // Too bad we cannot use `new` here
+
+  mutex->lock();   // use the mutex as a simple reference
+  //  bla bla
+  mutex->unlock(); 
+  
+} // The mutex will get automatically freed because the only existing reference gets out of scope
+@endcode
 */

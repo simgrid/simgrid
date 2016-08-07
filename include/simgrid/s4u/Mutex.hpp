@@ -28,6 +28,9 @@ class ConditionVariable;
  * Instead, you should use the present class, that is a drop-in replacement of
  * [std::mutex](http://en.cppreference.com/w/cpp/thread/mutex).
  *
+ * As for any S4U object, Mutexes are using the @ref "RAII idiom" s4u_raii for memory management.
+ * Use createMutex() to get a ::MutexPtr to a newly created mutex and only manipulate ::MutexPtr.
+ *
  */
 XBT_PUBLIC_CLASS Mutex {
 friend ConditionVariable;
