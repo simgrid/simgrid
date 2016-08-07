@@ -20,7 +20,7 @@
 #include "mc/mc.h"
 #include "src/mc/mc_protocol.h"
 
-#include "src/kernel/activity/Synchro.h"
+#include "src/kernel/activity/ActivityImpl.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"

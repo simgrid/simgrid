@@ -7,7 +7,7 @@
 #define _SIMIX_SYNCHRO_COMM_HPP
 
 #include "surf/surf.h"
-#include "src/kernel/activity/Synchro.h"
+#include "src/kernel/activity/ActivityImpl.hpp"
 
 typedef enum {
   SIMIX_COMM_SEND,
@@ -20,7 +20,7 @@ namespace simgrid {
 namespace kernel {
 namespace activity {
 
-  XBT_PUBLIC_CLASS Comm : public Synchro {
+  XBT_PUBLIC_CLASS Comm : public ActivityImpl {
     ~Comm() override;
   public:
     explicit Comm(e_smx_comm_type_t type);

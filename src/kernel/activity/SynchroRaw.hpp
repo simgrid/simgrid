@@ -7,14 +7,14 @@
 #define _SIMIX_SYNCHRO_RAW_HPP
 
 #include "surf/surf.h"
-#include "src/kernel/activity/Synchro.h"
+#include "src/kernel/activity/ActivityImpl.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace activity {
 
   /** Used to implement mutexes, semaphores and conditions */
-  XBT_PUBLIC_CLASS Raw : public Synchro {
+  XBT_PUBLIC_CLASS Raw : public ActivityImpl {
   public:
     ~Raw() override;
     void suspend() override;

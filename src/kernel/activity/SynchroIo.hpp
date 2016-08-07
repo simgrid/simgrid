@@ -7,13 +7,13 @@
 #define _SIMIX_SYNCHRO_IO_HPP
 
 #include "surf/surf.h"
-#include "src/kernel/activity/Synchro.h"
+#include "src/kernel/activity/ActivityImpl.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace activity {
 
-  XBT_PUBLIC_CLASS Io : public Synchro {
+  XBT_PUBLIC_CLASS Io : public ActivityImpl {
   public:
     void suspend() override;
     void resume() override;

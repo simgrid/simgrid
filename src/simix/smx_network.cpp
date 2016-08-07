@@ -445,7 +445,7 @@ void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_synchro_t synchro)
 }
 
 void simcall_HANDLER_comm_testany(
-  smx_simcall_t simcall, simgrid::kernel::activity::Synchro* comms[], size_t count)
+  smx_simcall_t simcall, simgrid::kernel::activity::ActivityImpl* comms[], size_t count)
 {
   // The default result is -1 -- this means, "nothing is ready".
   // It can be changed below, but only if something matches.
@@ -456,7 +456,7 @@ void simcall_HANDLER_comm_testany(
     if(idx == -1){
       SIMIX_simcall_answer(simcall);
     }else{
-      simgrid::kernel::activity::Synchro* synchro = comms[idx];
+      simgrid::kernel::activity::ActivityImpl* synchro = comms[idx];
       simcall_comm_testany__set__result(simcall, idx);
       synchro->simcalls.push_back(simcall);
       synchro->state = SIMIX_DONE;
@@ -466,7 +466,7 @@ void simcall_HANDLER_comm_testany(
   }
 
   for (std::size_t i = 0; i != count; ++i) {
-    simgrid::kernel::activity::Synchro* synchro = comms[i];
+    simgrid::kernel::activity::ActivityImpl* synchro = comms[i];
     if (synchro->state != SIMIX_WAITING && synchro->state != SIMIX_RUNNING) {
       simcall_comm_testany__set__result(simcall, i);
       synchro->simcalls.push_back(simcall);

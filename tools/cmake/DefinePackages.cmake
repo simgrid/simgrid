@@ -31,7 +31,7 @@ set(EXTRA_DIST
   src/simix/smx_private.h
   src/simix/ActorImpl.hpp
   src/simix/smx_synchro_private.h
-  src/kernel/activity/Synchro.h
+  src/kernel/activity/ActivityImpl.hpp
   src/kernel/activity/SynchroComm.hpp
   src/kernel/activity/SynchroExec.hpp
   src/kernel/activity/SynchroIo.hpp
@@ -353,7 +353,7 @@ set(SIMIX_SRC
   src/simix/smx_synchro.cpp
   src/simix/smx_vm.cpp
   src/simix/popping.cpp
-  src/kernel/activity/Synchro.cpp
+  src/kernel/activity/ActivityImpl.cpp
   src/kernel/activity/SynchroComm.cpp
   src/kernel/activity/SynchroExec.cpp
   src/kernel/activity/SynchroSleep.cpp

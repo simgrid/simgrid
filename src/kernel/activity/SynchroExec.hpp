@@ -7,13 +7,13 @@
 #define _SIMIX_SYNCHRO_EXEC_HPP
 
 #include "surf/surf.h"
-#include "src/kernel/activity/Synchro.h"
+#include "src/kernel/activity/ActivityImpl.hpp"
 
 namespace simgrid {
 namespace kernel {
 namespace activity {
 
-  XBT_PUBLIC_CLASS Exec : public Synchro {
+  XBT_PUBLIC_CLASS Exec : public ActivityImpl {
     ~Exec() override;
   public:
     Exec(const char*name, sg_host_t host);

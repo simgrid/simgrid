@@ -34,13 +34,13 @@ public:
   I wait_any(I first, I last)
   {
     // Map to dynar<Synchro*>:
-    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::Synchro*), NULL);
+    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), NULL);
     for(I iter = first; iter != last; iter++) {
       Comm& comm = **iter;
       if (comm.state_ == inited)
         comm.start();
       xbt_assert(comm.state_ == started);
-      xbt_dynar_push_as(comms, simgrid::kernel::activity::Synchro*, comm.pimpl_);
+      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, comm.pimpl_);
     }
     // Call the underlying simcall:
     int idx = simcall_comm_waitany(comms, -1);
@@ -58,13 +58,13 @@ public:
   I wait_any_for(I first, I last, double timeout)
   {
     // Map to dynar<Synchro*>:
-    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::Synchro*), NULL);
+    xbt_dynar_t comms = xbt_dynar_new(sizeof(simgrid::kernel::activity::ActivityImpl*), NULL);
     for(I iter = first; iter != last; iter++) {
       Comm& comm = **iter;
       if (comm.state_ == inited)
         comm.start();
       xbt_assert(comm.state_ == started);
-      xbt_dynar_push_as(comms, simgrid::kernel::activity::Synchro*, comm.pimpl_);
+      xbt_dynar_push_as(comms, simgrid::kernel::activity::ActivityImpl*, comm.pimpl_);
     }
     // Call the underlying simcall:
     int idx = simcall_comm_waitany(comms, timeout);

@@ -528,7 +528,7 @@ int MSG_comm_testany(xbt_dynar_t comms)
   int finished_index = -1;
 
   /* Create the equivalent array with SIMIX objects: */
-  std::vector<simgrid::kernel::activity::Synchro*> s_comms;
+  std::vector<simgrid::kernel::activity::ActivityImpl*> s_comms;
   s_comms.reserve(xbt_dynar_length(comms));
   msg_comm_t comm;
   unsigned int cursor;

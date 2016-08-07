@@ -773,7 +773,7 @@ int smpi_mpi_test(MPI_Request * request, MPI_Status * status) {
 
 int smpi_mpi_testany(int count, MPI_Request requests[], int *index, MPI_Status * status)
 {
-  std::vector<simgrid::kernel::activity::Synchro*> comms;
+  std::vector<simgrid::kernel::activity::ActivityImpl*> comms;
   comms.reserve(count);
 
   int i;
