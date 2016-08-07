@@ -19,7 +19,24 @@
 
 namespace simgrid {
 
-/** A C++ compatible TrivialClock working with simulated-time */
+/** @brief A C++ compatible [TrivialClock](http://en.cppreference.com/w/cpp/concept/TrivialClock) working with simulated-time.
+ *
+ * SimGrid uses `double` for representing the simulated time, where *durations* are expressed in seconds
+ * (with *infinite duration* expressed as a negative value) and
+ * *timepoints* are expressed as seconds from the beginning of the simulation.
+ * In contrast, all the C++ APIs use the much more sensible `std::chrono::duration` and`std::chrono::time_point`.
+ *
+ * This class can be used to build `std::chrono` objects that use simulated time,
+ * using #SimulationClockDuration and #SimulationClockTimePoint.
+ *
+ * This means it is possible to use (since C++14):
+ *
+ * @code{cpp}
+ * using namespace std::chrono_literals;
+ * simgrid::s4u::actor::sleep_for(42s);
+ * @endcode
+ *
+ */
 struct SimulationClock {
   using rep        = double;
   using period     = std::ratio<1>;
