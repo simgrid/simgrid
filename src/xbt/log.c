@@ -114,6 +114,7 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(xbt_lib);
   XBT_LOG_CONNECT(xbt_mallocator);
   XBT_LOG_CONNECT(xbt_matrix);
+  XBT_LOG_CONNECT(xbt_memory_map);
   XBT_LOG_CONNECT(xbt_parmap);
   XBT_LOG_CONNECT(xbt_sync);
   XBT_LOG_CONNECT(xbt_sync_os);
@@ -173,8 +174,10 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(mc_comm_pattern);
   XBT_LOG_CONNECT(mc_process);
   XBT_LOG_CONNECT(mc_protocol);
-  XBT_LOG_CONNECT(mc_RegionSnaphot);
+  XBT_LOG_CONNECT(mc_Channel);
   XBT_LOG_CONNECT(mc_ModelChecker);
+  XBT_LOG_CONNECT(mc_RegionSnaphot);
+  XBT_LOG_CONNECT(mc_Session);
   XBT_LOG_CONNECT(mc_state);
 #endif
   XBT_LOG_CONNECT(mc_global);
@@ -193,6 +196,15 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(msg_task);
   XBT_LOG_CONNECT(msg_vm);
 
+  /* s4u */
+  XBT_LOG_CONNECT(s4u);
+  XBT_LOG_CONNECT(s4u_activity);
+  XBT_LOG_CONNECT(s4u_actor);
+  XBT_LOG_CONNECT(s4u_as);
+  XBT_LOG_CONNECT(s4u_channel);
+  XBT_LOG_CONNECT(s4u_comm);
+  XBT_LOG_CONNECT(s4u_file);
+   
   /* sg */
   XBT_LOG_CONNECT(sg_host);
 
@@ -254,6 +266,9 @@ static void xbt_log_connect_categories(void)
   XBT_LOG_CONNECT(surf_vm);
   XBT_LOG_CONNECT(surf_host);
 
+  /* routing */
+  XBT_LOG_CONNECT(AsImpl);
+   
 #endif /* simgrid_EXPORTS */
 }
 

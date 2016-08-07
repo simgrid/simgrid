@@ -422,7 +422,7 @@ Future<T> unwrapFuture(Future<Future<T>> future)
   return std::move(result);
 }
 
-/** Producer side of a @simgrid::kernel::Future
+/** Producer side of a @ref simgrid::kernel::Future
  *
  *  A @ref Promise is connected to some `Future` and can be used to
  *  set its result.

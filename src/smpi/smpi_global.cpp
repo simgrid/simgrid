@@ -691,6 +691,7 @@ static void smpi_init_logs(){
   XBT_LOG_CONNECT(smpi_dvfs);
   XBT_LOG_CONNECT(smpi_group);
   XBT_LOG_CONNECT(smpi_kernel);
+  XBT_LOG_CONNECT(smpi_memory);
   XBT_LOG_CONNECT(smpi_mpi);
   XBT_LOG_CONNECT(smpi_mpi_dt);
   XBT_LOG_CONNECT(smpi_pmpi);

@@ -2,7 +2,7 @@ This file follows the Doxygen syntax to be included in the
 documentation, but it should remain readable directly.
 
 /** 
- @defgroup MSG_examples MSG examples
+ @defgroup msg_examples MSG examples
  @ingroup MSG_API
  @brief Find the MSG example fitting your needs from the extensive set provided in the archive.
 
@@ -38,12 +38,12 @@ documentation, but it should remain readable directly.
    @ref examples/msg/app-masterworker/app-masterworker.c\n
    Another good old example, where one Master process has a bunch of
    task to dispatch to a set of several Worker processes. It is fully
-   commented in @ref MSG_ex_master_worker.
+   commented in @ref msg_ex_master_worker.
 
 @section msg_ex_async Asynchronous communications
 
 In addition to the fully documented example of @ref
-MSG_ex_asynchronous_communications, there are several other examples
+msg_ex_asynchronous_communications, there are several other examples
 shipped in the archive:
   
  - <b>Basic asynchronous communications</b>. 

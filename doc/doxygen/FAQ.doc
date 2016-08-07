@@ -11,7 +11,7 @@ slides</a>, or to these
 <a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
 may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
-MSG_examples. 
+msg_examples. 
 
 If you are stuck at any point and if this FAQ cannot help you, please drop us a
 mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.
@@ -140,7 +140,7 @@ MSG_task_isend() and MSG_task_irecv();
 MSG_comm_test(), MSG_comm_wait(), MSG_comm_waitall() and MSG_comm_waitany();
 MSG_comm_destroy(). 
 
-There is even a specific example section on \ref MSG_ex_asynchronous_communications.
+There is even a specific example section on \ref msg_ex_asynchronous_communications.
 
 \subsubsection faq_MIA_thread_synchronization I need to synchronize my MSG processes
 

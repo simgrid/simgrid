@@ -20,7 +20,7 @@ class Storage;
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.
  *
- * They are located on @link{simgrid::s4u::Storage}, that are accessed from a given @link{simgrid::s4u::Host} through mountpoints.
+ * They are located on @link{simgrid::s4u::Storage} that are accessed from a given @link{simgrid::s4u::Host} through mountpoints.
  * For now, you cannot change the mountpoints programatically, and must declare them from your platform file.
  */
 XBT_PUBLIC_CLASS File {

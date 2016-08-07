@@ -94,6 +94,7 @@ while (my $file=<FILES>) {
     chomp $file;
     parse_file($file); 	
 }
+parse_file("../include/xbt/sysdep.h");	
 close FILES;
 
 # Display the tree, looking for disconnected elems    

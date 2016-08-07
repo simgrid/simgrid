@@ -28,7 +28,7 @@ namespace s4u {
 
 /** @ingroup s4u_api
  *
- * @tableofcontents
+ * @tableofcontents 
  *
  * An host represents some physical resource with computing and networking capabilities.
  *

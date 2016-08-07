@@ -78,7 +78,7 @@ constexpr auto apply(F&& f, Tuple&& t, simgrid::xbt::index_sequence<I...>)
  *
  *  auto args = std::make_tuple(1, false);
  *  int res = apply(foo, args);
- *  @encode
+ *  @endcode
  **/
 template <class F, class Tuple>
 constexpr auto apply(F&& f, Tuple&& t)

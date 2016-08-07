@@ -34,7 +34,7 @@ attributes are mandatory; however, there are some optional attributes to the pro
 
 #### Examples ####
 
-Almost any @ref MSG_examples include a deployment file.
+Almost any @ref msg_examples include a deployment file.
 
 ### The argument tag ###
 

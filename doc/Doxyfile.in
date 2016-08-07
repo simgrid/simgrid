@@ -671,7 +671,6 @@ INPUT                  = doxygen/index.doc \
 			     doxygen/inside_release.doc \
 			 doxygen/community.doc \
                            doxygen/community_contact.doc \
-			   doxygen/community_contributing.doc \
 			   doxygen/community_extend.doc \
                            doxygen/community_giveback.doc \
 			 doxygen/FAQ.doc \
@@ -685,23 +684,28 @@ INPUT                  = doxygen/index.doc \
                            doxygen/module-smpi.doc \
                            doxygen/module-trace.doc \
                          @CMAKE_HOME_DIRECTORY@/doc/doxygen/logcategories.doc \
-                         @CMAKE_HOME_DIRECTORY@/src/instr/ \
                          @CMAKE_HOME_DIRECTORY@/include/ \
                          @CMAKE_HOME_DIRECTORY@/include/xbt \
                          @CMAKE_HOME_DIRECTORY@/include/simgrid \
                          @CMAKE_HOME_DIRECTORY@/include/simgrid/s4u \
                          @CMAKE_HOME_DIRECTORY@/src/include/surf \
-                         @CMAKE_HOME_DIRECTORY@/src/xbt/ \
+                         @CMAKE_HOME_DIRECTORY@/src/msg/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/activity/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/context/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/routing/ \
+                         @CMAKE_HOME_DIRECTORY@/src/instr/ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/plugins/ \
                          @CMAKE_HOME_DIRECTORY@/src/s4u/ \
-                         @CMAKE_HOME_DIRECTORY@/src/msg/ \
                          @CMAKE_HOME_DIRECTORY@/src/smpi/ \
                          @CMAKE_HOME_DIRECTORY@/src/simdag \
                          @CMAKE_HOME_DIRECTORY@/src/simix \
+                         @CMAKE_HOME_DIRECTORY@/src/xbt/ \
                          @CMAKE_BINARY_DIR@/include \
                          @CMAKE_BINARY_DIR@/src \
-                         @CMAKE_HOME_DIRECTORY@/examples/msg/README.doc
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/README.doc \
+                         @CMAKE_HOME_DIRECTORY@/examples/s4u/README.doc
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -725,7 +729,7 @@ FILE_PATTERNS          =
 # should be searched for input files as well. Possible values are YES and NO.
 # If left blank NO is used.
 
-RECURSIVE              = NO
+RECURSIVE              = YES
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
@@ -763,6 +767,7 @@ EXCLUDE_SYMBOLS        =
 
 EXAMPLE_PATH           = ./ \
                          @CMAKE_HOME_DIRECTORY@/src/surf/ \
+                         @CMAKE_HOME_DIRECTORY@/src/surf/xml/ \
                          @CMAKE_HOME_DIRECTORY@/src/xbt/ \
                          @CMAKE_HOME_DIRECTORY@/examples \
                          @CMAKE_HOME_DIRECTORY@/doc/example_lists

@@ -27,7 +27,7 @@ may want to use one of the following:
    - \ref msg_VMs
    - \ref msg_synchro
    - \ref msg_trace_driven
-   - \ref MSG_examples
+   - \ref msg_examples
 
 */ 
 
@@ -36,7 +36,7 @@ may want to use one of the following:
 @ingroup MSG_API
 @brief How to setup and control your simulation.
 
-The basic workflow is the following (check the \ref MSG_examples for
+The basic workflow is the following (check the \ref msg_examples for
 details).
 
  -# Initialize the library with #MSG_init

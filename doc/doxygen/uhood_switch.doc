@@ -1,5 +1,7 @@
 /*! @page uhood_switch Process Synchronizations and Context Switching
 
+@tableofcontents
+
 @section uhood_switch_DES SimGrid as an Operating System
 
 SimGrid is a discrete event simulator of distributed systems: it does
@@ -96,7 +98,7 @@ producer calls `promise.set_value(42)` or `promise.set_exception(e)`
 in order to <em>set the result</em> which will be made available to
 the consumer by `future.get()`.
 
-### Which future do we need?
+@subsection uhood_switch_futures_needs Which future do we need?
 
 The blocking API provided by the standard C++11 futures does not suit
 our needs since the simulation kernel <em>cannot</em> block, and since
@@ -129,7 +131,7 @@ API, with a few differences:
  - Some features of the standard (such as shared futures) are not
    needed in our context, and thus not considered here.
 
-### Implementing `Future` and `Promise`
+@subsection uhood_switch_futures_implem Implementing `Future` and `Promise`
 
 The `simgrid::kernel::Future` and `simgrid::kernel::Promise` use a
 shared state defined as follows:
@@ -272,14 +274,31 @@ T simgrid::kernel::FutureState<T>::get()
 }
 @endcode
 
-## Generic simcalls
+@section uhood_switch_simcalls Implementing the simcalls
 
-### Motivation
+So a simcall is a way for the actor to push a request to the
+simulation kernel and yield the control until the request is
+fulfilled. The performance requirements are very high because
+the actors usually do an inordinate amount of simcalls during the
+simulation. 
 
-Simcalls are not so easy to understand and adding a new one is not so easy
-either. In order to add one simcall, one has to first
-add it to the [list of simcalls](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/simcalls.in)
-which looks like this:
+As for real syscalls, the basic idea is to write the wanted call and
+its arguments in a memory area that is specific to the actor, and
+yield the control to the simulation kernel. Once in kernel mode, the
+simcalls of each demanding actor are evaluated sequentially in a
+strictly reproducible order. This makes the whole simulation
+reproducible.
+
+
+@subsection uhood_switch_simcalls_v2 The historical way
+
+In the very first implementation, everything was written by hand and
+highly optimized, making our software very hard to maintain and
+evolve. We decided to sacrifice some performance for
+maintainability. In a second try (that is still in use in SimGrid
+v3.13), we had a lot of boiler code generated from a python script,
+taking the [list of simcalls](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/simcalls.in)
+as input. It looks like this:
 
 @code{cpp}
 # This looks like C++ but it is a basic IDL-like language
@@ -342,9 +361,9 @@ union u_smx_scalar {
 };
 @endcode
 
-Then one has to call (manually:cry:) a
-[Python script](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/simcalls.py)
-which generates a bunch of C++ files:
+When manually calling the relevant [Python
+script](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/simcalls.py),
+this generates a bunch of C++ files:
 
 * an enum of all the [simcall numbers](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/popping_enum.h#L19);
 
@@ -360,7 +379,7 @@ which generates a bunch of C++ files:
 
 Then one has to write the code of the kernel side handler for the simcall
 and the code of the simcall itself (which calls the code-generated
-marshaling/unmarshaling stuff):sob:.
+marshaling/unmarshaling stuff).
 
 In order to simplify this process, we added two generic simcalls which can be
 used to execute a function in the simulation kernel:
@@ -428,7 +447,7 @@ xbt_dict_t Host::properties() {
 }
 @endcode
 
-### Blocking simcall
+### Blocking simcall {#uhood_switch_v2_blocking}
 
 The second generic simcall (`simcall_run_blocking()`) executes a function in
 the SimGrid simulation kernel immediately but does not wake up the calling actor
@@ -500,12 +519,12 @@ int res = simgrid::simix::kernelSync([&] {
 });
 @endcode
 
-### Asynchronous operations
+### Asynchronous operations {#uhood_switch_v2_async}
 
 We can write the related `kernelAsync()` which wakes up the actor immediately
 and returns a future to the actor. As this future is used in the actor context,
 it is a different future
-(`simgrid::simix::Future` instead of `simgrid::kernel::Furuere`)
+(`simgrid::simix::Future` instead of `simgrid::kernel::Future`)
 which implements a C++11 `std::future` wait-based API:
 
 @code{cpp}
@@ -599,97 +618,6 @@ auto kernelSync(F code) -> decltype(code().get())
 The semantic is equivalent but this form would require two simcalls
 instead of one to do the same job (one in `kernelAsync()` and one in
 `.get()`).
-
-## Representing the simulated time
-
-SimGrid uses `double` for representing the simulated time:
-
-* durations are expressed in seconds;
-
-* timepoints are expressed as seconds from the beginning of the simulation.
-
-In contrast, all the C++ APIs use `std::chrono::duration` and
-`std::chrono::time_point`. They are used in:
-
-* `std::this_thread::wait_for()` and `std::this_thread::wait_until()`;
-
-* `future.wait_for()` and `future.wait_until()`;
-
-* `condvar.wait_for()` and `condvar.wait_until()`.
-
-We can define `future.wait_for(duration)` and `future.wait_until(timepoint)`
-for our futures but for better compatibility with standard C++ code, we might
-want to define versions expecting `std::chrono::duration` and
-`std::chrono::time_point`.
-
-For time points, we need to define a clock (which meets the
-[TrivialClock](http://en.cppreference.com/w/cpp/concept/TrivialClock)
-requirements, see
-[`[time.clock.req]`](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4296.pdf#page=642)
-working in the simulated time in the C++14 standard):
-
-@code{cpp}
-struct SimulationClock {
-  using rep        = double;
-  using period     = std::ratio<1>;
-  using duration   = std::chrono::duration<rep, period>;
-  using time_point = std::chrono::time_point<SimulationClock, duration>;
-  static constexpr bool is_steady = true;
-  static time_point now()
-  {
-    return time_point(duration(SIMIX_get_clock()));
-  }
-};
-@endcode
-
-A time point in the simulation is a time point using this clock:
-
-@code{cpp}
-template<class Duration>
-using SimulationTimePoint =
-  std::chrono::time_point<SimulationClock, Duration>;
-@endcode
-
-This is used for example in `simgrid::s4u::this_actor::sleep_for()` and
-`simgrid::s4u::this_actor::sleep_until()`:
-
-@code{cpp}
-void sleep_for(double duration)
-{
-  if (duration > 0)
-    simcall_process_sleep(duration);
-}
-
-void sleep_until(double timeout)
-{
-  double now = SIMIX_get_clock();
-  if (timeout > now)
-    simcall_process_sleep(timeout - now);
-}
-
-template<class Rep, class Period>
-void sleep_for(std::chrono::duration<Rep, Period> duration)
-{
-  auto seconds =
-    std::chrono::duration_cast<SimulationClockDuration>(duration);
-  this_actor::sleep_for(seconds.count());
-}
-
-template<class Duration>
-void sleep_until(const SimulationTimePoint<Duration>& timeout_time)
-{
-  auto timeout_native =
-    std::chrono::time_point_cast<SimulationClockDuration>(timeout_time);
-  this_actor::sleep_until(timeout_native.time_since_epoch().count());
-}
-@endcode
-
-Which means it is possible to use (since C++14):
-
-@code{cpp}
-using namespace std::chrono_literals;
-simgrid::s4u::actor::sleep_for(42s);
-@endcode
 
 ## Mutexes and condition variables
 
