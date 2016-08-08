@@ -23,7 +23,7 @@ SG_BEGIN_DECL()
   *  
   * For performance concerns, the content of DynArr must be homogeneous (in contrary to dictionnaries -- see the
   * \ref XBT_dict section). You thus have to provide the function which will be used to free the content at
-  * structure creation (of type void_f_ppvoid_t or void_f_pvoid_t).
+  * structure creation (of type void_f_pvoid_t).
   *
   * @deprecated If you are using C++, you might want to use `std::vector` instead.
   *
