@@ -14,6 +14,9 @@
 #include "xbt/log.h"
 #include "simgrid/link.h"
 #include "simgrid/host.h"
+#ifdef __cplusplus
+#include <set>
+#endif
 SG_BEGIN_DECL()
 
 /** @brief Link opaque datatype
@@ -168,7 +171,13 @@ XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
-
+#ifdef __cplusplus
+namespace simgrid {
+namespace sd {
+XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
+}
+}
+#endif
 /** @} */
 
 /* Support some backward compatibility */

@@ -9,15 +9,12 @@
 #include <xbt/ex.hpp>
 #include "xbt/log.h"
 #include <math.h>
+#include <set>
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(sd_test, "Logging specific to this SimDag example");
 
 int main(int argc, char **argv)
 {
-  unsigned int ctr;
-  SD_task_t checkB;
-  SD_task_t checkD;
-  xbt_dynar_t changed_tasks;
   sg_host_t host_list[2];
   double computation_amount[2];
   double communication_amount[4] = { 0 };
@@ -129,16 +126,11 @@ int main(int argc, char **argv)
   SD_task_schedule(taskC, 2, host_list, computation_amount, communication_amount, -1);
   SD_task_schedule(taskD, 2, host_list, computation_amount, communication_amount, -1);
 
-  changed_tasks = SD_simulate(-1.0);
-  xbt_dynar_foreach(changed_tasks, ctr, task) {
+  std::set<SD_task_t> *changed_tasks = simgrid::sd::simulate(-1.0);
+  for (auto task: *changed_tasks){
     XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task),
           SD_task_get_start_time(task), SD_task_get_finish_time(task));
   }
-
-  xbt_dynar_get_cpy(changed_tasks, 0, &checkB);
-  xbt_dynar_get_cpy(changed_tasks, 1, &checkD);
-
-  xbt_assert(checkD == taskD && checkB == taskB, "Unexpected simulation results");
 
   XBT_DEBUG("Destroying tasks...");
   SD_task_destroy(taskA);
