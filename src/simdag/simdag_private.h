@@ -28,8 +28,9 @@ typedef struct SD_global {
   std::set<SD_task_t> *completed_tasks;
 
   xbt_dynar_t return_set;
+} s_SD_global_t;
 
-} s_SD_global_t, *SD_global_t;
+typedef struct SD_global *SD_global_t;
 
 extern XBT_PRIVATE SD_global_t sd_global;
 

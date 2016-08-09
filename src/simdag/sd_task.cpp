@@ -800,8 +800,10 @@ void SD_task_run(SD_task_t task)
   int host_nb = task->allocation->size();
   sg_host_t *hosts = xbt_new(sg_host_t, host_nb);
   int i =0;
-  for (auto host: *task->allocation)
-    hosts[i++] = host;
+  for (auto host: *task->allocation){
+    hosts[i] = host;
+    i++;
+  }
 
   double *flops_amount = xbt_new0(double, host_nb);
   double *bytes_amount = xbt_new0(double, host_nb * host_nb);
