@@ -27,7 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_exception, xbt, "Exceptions");
 namespace simgrid {
 namespace xbt {
 
-WithContextException::~WithContextException() {}
+WithContextException::~WithContextException() = default;
 
 void logException(
   e_xbt_log_priority_t prio,
