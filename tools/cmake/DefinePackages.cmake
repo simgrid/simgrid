@@ -268,7 +268,7 @@ set(XBT_SRC
   src/xbt/xbt_log_appender_file.c
   src/xbt/xbt_log_layout_format.c
   src/xbt/xbt_log_layout_simple.c
-  src/xbt/xbt_main.c
+  src/xbt/xbt_main.cpp
   src/xbt/xbt_matrix.c
   src/xbt/xbt_os_file.c
   src/xbt/xbt_os_synchro.c
