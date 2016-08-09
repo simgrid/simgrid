@@ -22,5 +22,5 @@ $ $SG_TEST_EXENV ./test/sd_test ${srcdir:=.}/../platforms/small_platform.xml
 > [0.000000] [sd_test/INFO] Communication time for 2000000.000000 bytes between Jacquelin and Fafard: 0.842756
 > [0.000000] [sd_test/INFO] Communication time for 3000000.000000 bytes between Fafard and Jacquelin: 1.229846
 > [0.000000] [sd_test/INFO] Estimated time for 'Task D': 1.242953
-> [4.008055] [sd_test/INFO] Task 'Task D' start time: 0.000000, finish time: 2.004027
 > [4.008055] [sd_test/INFO] Task 'Task B' start time: 2.004027, finish time: 4.008055
+> [4.008055] [sd_test/INFO] Task 'Task D' start time: 0.000000, finish time: 2.004027

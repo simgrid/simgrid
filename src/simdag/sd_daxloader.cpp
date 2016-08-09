@@ -4,12 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simdag/simdag_private.h"
 #include "simgrid/simdag.h"
 #include "xbt/misc.h"
 #include "xbt/log.h"
 #include "xbt/str.h"
 #include "xbt/file.h" /* xbt_basename() */
+#include "simdag_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_daxparse, sd, "Parsing DAX files");
 

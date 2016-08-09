@@ -4,35 +4,37 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMDAG_PRIVATE_H
-#define SIMDAG_PRIVATE_H
 #include <set>
 #include <string>
 #include <vector>
-#include "xbt/dynar.h"
 #include "simgrid/simdag.h"
 #include "surf/surf.h"
-#include <stdbool.h>
+
+#ifndef SIMDAG_PRIVATE_HPP
+#define SIMDAG_PRIVATE_HPP
 #if HAVE_JEDULE
 #include "simgrid/jedule/jedule_sd_binding.h"
 #endif
 
-SG_BEGIN_DECL()
-
-/* Global variables */
-
-typedef struct SD_global {
+namespace simgrid{
+namespace sd{
+class Global {
+public:
+  explicit Global();
+  ~Global();
   bool watch_point_reached;      /* has a task just reached a watch point? */
   std::set<SD_task_t> *initial_tasks;
   std::set<SD_task_t> *runnable_tasks;
   std::set<SD_task_t> *completed_tasks;
+  std::set<SD_task_t> *return_set;
+};
 
-  xbt_dynar_t return_set;
-} s_SD_global_t;
+std::set<SD_task_t>* simulate (double how_long);
+}
+}
 
-typedef struct SD_global *SD_global_t;
-
-extern XBT_PRIVATE SD_global_t sd_global;
+SG_BEGIN_DECL()
+extern XBT_PRIVATE simgrid::sd::Global *sd_global;
 
 /* Task */
 typedef struct SD_task {
@@ -68,6 +70,5 @@ XBT_PRIVATE void SD_task_run(SD_task_t task);
 XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
 XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
 XBT_PRIVATE const char *__get_state_name(e_SD_task_state_t state);
-
 SG_END_DECL()
 #endif

@@ -16,12 +16,11 @@
 #include "simgrid/jedule/jedule_output.h"
 
 #include "simgrid/simdag.h"
-#include "src/simdag/simdag_private.h"
-
 #include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
 
 #include <stdio.h>
+#include "../../simdag/simdag_private.hpp"
 
 #if HAVE_JEDULE
 

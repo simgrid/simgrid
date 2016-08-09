@@ -4,8 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simdag/simdag_private.h"
 #include "simgrid/s4u/host.hpp"
+
+#include "simdag_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "surf/surf.h"
 

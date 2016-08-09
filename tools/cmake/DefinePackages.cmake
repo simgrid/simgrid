@@ -17,7 +17,7 @@ set(EXTRA_DIST
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h
-  src/simdag/simdag_private.h
+  src/simdag/simdag_private.hpp
   src/simix/simcalls.in
   src/simix/simcalls.py
   src/simix/popping_private.h

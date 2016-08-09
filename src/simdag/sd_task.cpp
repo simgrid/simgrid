@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "simdag_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/surf_interface.hpp"
-#include "src/simdag/simdag_private.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_task, sd, "Logging specific to SimDag (task)");
 
@@ -821,7 +821,7 @@ void SD_task_run(SD_task_t task)
 
   __SD_task_destroy_scheduling_data(task);      /* now the scheduling data are not useful anymore */
   SD_task_set_state(task, SD_RUNNING);
-  xbt_dynar_push(sd_global->return_set, &task);
+  sd_global->return_set->insert(task);
 }
 
 /**

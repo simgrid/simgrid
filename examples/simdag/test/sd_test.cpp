@@ -135,8 +135,8 @@ int main(int argc, char **argv)
           SD_task_get_start_time(task), SD_task_get_finish_time(task));
   }
 
-  xbt_dynar_get_cpy(changed_tasks, 0, &checkD);
-  xbt_dynar_get_cpy(changed_tasks, 1, &checkB);
+  xbt_dynar_get_cpy(changed_tasks, 0, &checkB);
+  xbt_dynar_get_cpy(changed_tasks, 1, &checkD);
 
   xbt_assert(checkD == taskD && checkB == taskB, "Unexpected simulation results");
 
