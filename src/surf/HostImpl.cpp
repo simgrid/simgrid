@@ -13,8 +13,7 @@
 #include "network_interface.hpp"
 #include "virtual_machine.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf,
-                                "Logging specific to the SURF host module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");
 
 simgrid::surf::HostModel *surf_host_model = nullptr;
 
@@ -100,9 +99,7 @@ Action *HostModel::executeParallelTask(int host_nb,
       }
     }
     if (nb == 1) {
-      action = surf_network_model->communicate(host_list[0]->pimpl_netcard,
-					       host_list[1]->pimpl_netcard,
-					       value, rate);
+      action = surf_network_model->communicate(host_list[0]->pimpl_netcard, host_list[1]->pimpl_netcard, value, rate);
     } else if (nb == 0) {
        xbt_die("Cannot have a communication with no flop to exchange in this model. You should consider using the ptask model");
     } else {       
@@ -183,15 +180,15 @@ simgrid::surf::Storage *HostImpl::findStorageOnMountList(const char* mount)
   unsigned int cursor;
 
   XBT_DEBUG("Search for storage name '%s' on '%s'", mount, getName());
-  xbt_dynar_foreach(p_storage,cursor,mnt)
-  {
+  xbt_dynar_foreach(p_storage,cursor,mnt){
     XBT_DEBUG("See '%s'",mnt.name);
     if(!strcmp(mount,mnt.name)){
       st = static_cast<simgrid::surf::Storage*>(mnt.storage);
       break;
     }
   }
-  if(!st) xbt_die("Can't find mount '%s' for '%s'", mount, getName());
+  if(!st)
+    xbt_die("Can't find mount '%s' for '%s'", mount, getName());
   return st;
 }
 

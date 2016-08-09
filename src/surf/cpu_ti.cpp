@@ -334,10 +334,10 @@ void surf_cpu_model_init_ti()
   xbt_assert(!surf_cpu_model_vm,"CPU model already initialized. This should not happen.");
 
   surf_cpu_model_pm = new simgrid::surf::CpuTiModel();
-  xbt_dynar_push(all_existing_models, &surf_cpu_model_pm);
+  all_existing_models->push_back(surf_cpu_model_pm);
 
   surf_cpu_model_vm = new simgrid::surf::CpuTiModel();
-  xbt_dynar_push(all_existing_models, &surf_cpu_model_vm);
+  all_existing_models->push_back(surf_cpu_model_vm);
 }
 
 namespace simgrid {

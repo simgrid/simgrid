@@ -33,8 +33,6 @@ void surf_presolve()
   tmgr_trace_iterator_t event = nullptr;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
-  simgrid::surf::Model *model = nullptr;
-  unsigned int iter;
 
   XBT_DEBUG ("Consume all trace events occurring before the starting time.");
   while ((next_event_date = future_evt_set->next_date()) != -1.0) {
@@ -49,7 +47,7 @@ void surf_presolve()
   }
 
   XBT_DEBUG ("Set every models in the right state by updating them to 0.");
-  xbt_dynar_foreach(all_existing_models, iter, model)
+  for (auto model : *all_existing_models)
       model->updateActionsState(NOW, 0.0);
 }
 
@@ -60,9 +58,7 @@ double surf_solve(double max_date)
   double model_next_action_end = -1.0;
   double value = -1.0;
   simgrid::surf::Resource *resource = nullptr;
-  simgrid::surf::Model *model = nullptr;
   tmgr_trace_iterator_t event = nullptr;
-  unsigned int iter;
 
   if (max_date > 0.0) {
     xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);
@@ -147,7 +143,7 @@ double surf_solve(double max_date)
   NOW = NOW + time_delta;
 
   // Inform the models of the date change
-  xbt_dynar_foreach(all_existing_models, iter, model) {
+  for (auto model : *all_existing_models) {
     model->updateActionsState(NOW, time_delta);
   }
 

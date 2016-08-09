@@ -48,14 +48,12 @@ int main(int argc, char **argv)
   surf_solve(-1.0);                 /* Takes traces into account. Returns 0.0 */
   do {
     surf_action_t action = nullptr;
-    unsigned int iter;
-    surf_model_t model = nullptr;
     running = 0;
 
     now = surf_get_clock();
     XBT_INFO("Next Event : %g", now);
 
-    xbt_dynar_foreach(all_existing_models, iter, model) {
+    for (auto model: *all_existing_models) {
       if (surf_model_running_action_set_size((surf_model_t)model)) {
         XBT_DEBUG("\t Running that model");
         running = 1;

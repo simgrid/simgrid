@@ -14,8 +14,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_vm);
 void surf_vm_model_init_HL13(){
   if (surf_cpu_model_vm) {
     surf_vm_model = new simgrid::surf::VMHL13Model();
-    simgrid::surf::Model *model = surf_vm_model;
-    xbt_dynar_push(all_existing_models, &model);
+    all_existing_models->push_back(surf_vm_model);
   }
 }
 

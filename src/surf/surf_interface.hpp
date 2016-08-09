@@ -80,7 +80,10 @@ XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
 
 XBT_PRIVATE void surf_action_lmm_update_index_heap(void *action, int i);
 
-XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
+/** \ingroup SURF_models
+ *  \brief List of initialized models
+ */
+XBT_PUBLIC_DATA(std::vector<surf_model_t>*) all_existing_models;
 
 namespace simgrid {
 namespace surf {

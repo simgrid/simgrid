@@ -27,7 +27,7 @@ void surf_host_model_init_ptask_L07()
   xbt_assert(!surf_network_model, "network model type already defined");
 
   surf_host_model = new simgrid::surf::HostL07Model();
-  xbt_dynar_push(all_existing_models, &surf_host_model);
+  all_existing_models->push_back(surf_host_model);
 }
 
 

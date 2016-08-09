@@ -88,7 +88,7 @@ void surf_network_model_init_IB()
     return;
 
   surf_network_model = new simgrid::surf::NetworkIBModel();
-  xbt_dynar_push(all_existing_models, &surf_network_model);
+  all_existing_models->push_back(surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
   Link::onCommunicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);

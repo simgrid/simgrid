@@ -27,7 +27,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (ke
 
 /* model_list_invoke contains only surf_host and surf_vm.
  * The callback functions of cpu_model and network_model will be called from those of these host models. */
-xbt_dynar_t all_existing_models = nullptr; /* to destroy models correctly */
+std::vector<surf_model_t> * all_existing_models = nullptr; /* to destroy models correctly */
 xbt_dynar_t model_list_invoke = nullptr;  /* to invoke callbacks */
 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
@@ -305,7 +305,7 @@ void surf_init(int *argc, char **argv)
 
   xbt_init(argc, argv);
   if (!all_existing_models)
-    all_existing_models = xbt_dynar_new(sizeof(simgrid::surf::Model*), nullptr);
+    all_existing_models = new std::vector<simgrid::surf::Model*>();
   if (!model_list_invoke)
     model_list_invoke = xbt_dynar_new(sizeof(simgrid::surf::Model*), nullptr);
   if (!future_evt_set)
@@ -322,11 +322,7 @@ void surf_init(int *argc, char **argv)
 
 void surf_exit()
 {
-  unsigned int iter;
-  simgrid::surf::Model *model = nullptr;
-
-  TRACE_end();                  /* Just in case it was not called by the upper
-                                 * layer (or there is no upper layer) */
+  TRACE_end();                  /* Just in case it was not called by the upper layer (or there is no upper layer) */
 
   sg_config_finalize();
 
@@ -341,9 +337,9 @@ void surf_exit()
   xbt_lib_free(&file_lib);
   xbt_dict_free(&watched_hosts_lib);
 
-  xbt_dynar_foreach(all_existing_models, iter, model)
+  for (auto model : *all_existing_models)
     delete model;
-  xbt_dynar_free(&all_existing_models);
+  delete all_existing_models;
   xbt_dynar_free(&model_list_invoke);
   routing_exit();
 
