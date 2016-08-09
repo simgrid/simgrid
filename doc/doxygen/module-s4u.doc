@@ -12,7 +12,8 @@ SimGrid will be possible in S4U.
 
 Unsurprisingly, the S4U interface matches the concepts presented in 
 @ref starting_components "the introduction". You should read this page
-first, to not get lost in the amount of classes provided here.
+first, to not get lost in the amount of classes provided here. Or you
+could jump to the \ref s4u_examples directly if you prefer.
 
 @section s4u_raii Memory Management of S4U objects
 
@@ -20,9 +21,10 @@ For sake of simplicity, we use
 [RAII](https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization)
 everywhere in S4U. This is an idiom where resources are automatically
 managed through the context. Provided that you never manipulate
-objects of type Foo directly but always FooPtr references, you will
-never have to explicitely release the resource that you use nor to
-free the memory of unused objects.
+objects of type Foo directly but always FooPtr references (which are
+[boost::intrusive_ptr](http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html)<Foo>),
+you will never have to explicitely release the resource that you use
+nor to free the memory of unused objects.
 
 Here is a little example:
 

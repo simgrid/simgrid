@@ -25,9 +25,10 @@ namespace s4u {
 
 class Mutex;
 
-/** A condition variable
+/** @brief A condition variable
+ *  @ingroup s4u_api
  *
- *  This is based on std::condition_variable and should respect the same
+ *  This is a drop-in replacement of `std::condition_variable` and should respect the same
  *  semantic. But we currently use (only) double for both durations and
  *  timestamp timeouts.
  */
