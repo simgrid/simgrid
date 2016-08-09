@@ -348,11 +348,9 @@ static int process_syscall_color(void *p)
 /** Wake up all processes waiting for a Surf action to finish */
 static void SIMIX_wake_processes()
 {
-  unsigned int iter;
-  surf_model_t model;
   surf_action_t action;
 
-  xbt_dynar_foreach(all_existing_models, iter, model) {
+  for(auto model : *all_existing_models) {
     XBT_DEBUG("Handling the processes whose action failed (if any)");
     while ((action = surf_model_extract_failed_action_set(model))) {
       XBT_DEBUG("   Handling Action %p",action);

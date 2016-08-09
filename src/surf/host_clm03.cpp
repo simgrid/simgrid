@@ -31,7 +31,7 @@ void surf_host_model_init_current_default()
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 
-  xbt_dynar_push(all_existing_models, &surf_host_model);
+  all_existing_models->push_back(surf_host_model);
 }
 
 void surf_host_model_init_compound()
@@ -40,7 +40,7 @@ void surf_host_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
 
   surf_host_model = new simgrid::surf::HostCLM03Model();
-  xbt_dynar_push(all_existing_models, &surf_host_model);
+  all_existing_models->push_back(surf_host_model);
 }
 
 namespace simgrid {

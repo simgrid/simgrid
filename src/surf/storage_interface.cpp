@@ -8,8 +8,7 @@
 #include "surf_private.h"
 #include "xbt/file.h" /* xbt_getline */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf,
-                                "Logging specific to the SURF storage module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_storage, surf, "Logging specific to the SURF storage module");
 
 xbt_lib_t file_lib;
 xbt_lib_t storage_lib;

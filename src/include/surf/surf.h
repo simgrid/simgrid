@@ -370,9 +370,7 @@ XBT_PUBLIC(int) surf_host_file_move(sg_host_t host, surf_file_t fd, const char* 
  *  - SEEK_END: end of the file
  * @return MSG_OK if successful, otherwise MSG_TASK_CANCELED
  */
-XBT_PUBLIC(int) surf_host_file_seek(sg_host_t host,
-                                           surf_file_t fd, sg_offset_t offset,
-                                           int origin);
+XBT_PUBLIC(int) surf_host_file_seek(sg_host_t host, surf_file_t fd, sg_offset_t offset, int origin);
 
 /**
  * @brief Get the content of a storage
@@ -692,11 +690,6 @@ XBT_PUBLIC(void) surf_vm_model_init_HL13();
  *  \brief The list of all available vm model models
  */
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_vm_model_description[];
-
-/** \ingroup SURF_models
- *  \brief List of initialized models
- */
-XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
 
 /** \ingroup SURF_simulation
  *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.

@@ -46,7 +46,6 @@ std::set<SD_task_t>* simulate(double how_long){
   double total_time = 0.0;
   /* main loop */
   while (elapsed_time >= 0 && (how_long < 0 || 0.00001 < (how_long -total_time)) && !sd_global->watch_point_reached) {
-    surf_model_t model = nullptr;
 
     XBT_DEBUG("Total time: %f", total_time);
 
@@ -56,8 +55,7 @@ std::set<SD_task_t>* simulate(double how_long){
       total_time += elapsed_time;
 
     /* let's see which tasks are done */
-    unsigned int iter;
-    xbt_dynar_foreach(all_existing_models, iter, model) {
+    for (auto model : *all_existing_models) {
       surf_action_t action = surf_model_extract_done_action_set(model);
       while (action != nullptr) {
         SD_task_t task = static_cast<SD_task_t>(action->getData());
