@@ -116,6 +116,8 @@ public final class NativeLib {
 				while ((bytesRead = in.read(buffer)) != -1)     // Read until EOF
 					out.write(buffer, 0, bytesRead); 
 				
+				out.close(); // Windows cannot open it twice, so close it first. Shame.
+				
 				/* load that shit */
 				System.load(fileOut.getAbsolutePath());
 				
