@@ -37,7 +37,6 @@ set(EXTRA_DIST
   src/kernel/activity/SynchroIo.hpp
   src/kernel/activity/SynchroSleep.hpp
   src/kernel/activity/SynchroRaw.hpp
-  src/smpi/README
   src/smpi/colls/coll_tuned_topo.h
   src/smpi/colls/colls.h
   src/smpi/colls/colls_private.h
