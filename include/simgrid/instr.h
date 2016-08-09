@@ -12,7 +12,6 @@
 #include "xbt.h"
 #include "xbt/graph.h"
 #include "simgrid/msg.h"
-#include "simgrid/simdag.h"
 
 SG_BEGIN_DECL()
 
