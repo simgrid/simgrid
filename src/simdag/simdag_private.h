@@ -7,6 +7,7 @@
 #ifndef SIMDAG_PRIVATE_H
 #define SIMDAG_PRIVATE_H
 #include <set>
+#include <string>
 #include <vector>
 #include "xbt/dynar.h"
 #include "simgrid/simdag.h"
@@ -22,7 +23,6 @@ SG_BEGIN_DECL()
 
 typedef struct SD_global {
   bool watch_point_reached;      /* has a task just reached a watch point? */
-
   std::set<SD_task_t> *initial_tasks;
   std::set<SD_task_t> *runnable_tasks;
   std::set<SD_task_t> *completed_tasks;
@@ -66,6 +66,7 @@ XBT_PRIVATE void SD_task_set_state(SD_task_t task, e_SD_task_state_t new_state);
 XBT_PRIVATE void SD_task_run(SD_task_t task);
 XBT_PRIVATE bool acyclic_graph_detail(xbt_dynar_t dag);
 XBT_PRIVATE void uniq_transfer_task_name(SD_task_t task);
+XBT_PRIVATE const char *__get_state_name(e_SD_task_state_t state);
 
 SG_END_DECL()
 #endif

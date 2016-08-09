@@ -448,16 +448,12 @@ e_SD_task_kind_t SD_task_get_kind(SD_task_t task)
 void SD_task_dump(SD_task_t task)
 {
   XBT_INFO("Displaying task %s", SD_task_get_name(task));
-  char *statename = bprintf("%s%s%s%s%s%s%s",
-                      (task->state == SD_NOT_SCHEDULED ? " not scheduled" : ""),
-                      (task->state == SD_SCHEDULABLE ? " schedulable" : ""),
-                      (task->state == SD_SCHEDULED ? " scheduled" : ""),
-                      (task->state == SD_RUNNABLE ? " runnable" : " not runnable"),
-                      (task->state == SD_RUNNING ? " running" : ""),
-                      (task->state == SD_DONE ? " done" : ""),
-                      (task->state == SD_FAILED ? " failed" : ""));
-  XBT_INFO("  - state:%s", statename);
-  free(statename);
+  if (task->state == SD_RUNNABLE)
+    XBT_INFO("  - state: runnable");
+  else if (task->state < SD_RUNNABLE)
+    XBT_INFO("  - state: %s not runnable", __get_state_name(task->state));
+  else
+    XBT_INFO("  - state: not runnable %s", __get_state_name(task->state));
 
   if (task->kind != 0) {
     switch (task->kind) {

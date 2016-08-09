@@ -16,6 +16,16 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sd_kernel, sd, "Logging specific to SimDag (kern
 SD_global_t sd_global = nullptr;
 
 /**
+ * \brief helper for pretty printing of task state
+ * \param state the state of a task
+ * \return the equivalent as a readable string
+ */
+const char *__get_state_name(e_SD_task_state_t state){
+  std::string state_names[7] = { "not scheduled", "schedulable", "scheduled", "runnable","running", "done", "failed" };
+  return state_names[(int)log2(state)].data();
+}
+
+/**
  * \brief Initializes SD internal data
  *
  * This function must be called before any other SD function. Then you should call SD_create_environment().
@@ -30,7 +40,6 @@ void SD_init(int *argc, char **argv)
 
   sd_global = xbt_new(s_SD_global_t, 1);
   sd_global->watch_point_reached = false;
-
   sd_global->initial_tasks = new std::set<SD_task_t>();
   sd_global->runnable_tasks = new std::set<SD_task_t>();
   sd_global->completed_tasks = new std::set<SD_task_t>();
@@ -195,10 +204,8 @@ xbt_dynar_t SD_simulate(double how_long) {
 
   if (!sd_global->watch_point_reached && how_long < 0 && !sd_global->initial_tasks->empty()) {
     XBT_WARN("Simulation is finished but %zu tasks are still not done", sd_global->initial_tasks->size());
-    static const char* state_names[] =
-      { "SD_NOT_SCHEDULED", "SD_SCHEDULABLE", "SD_SCHEDULED", "SD_RUNNABLE", "SD_RUNNING", "SD_DONE","SD_FAILED" };
     for (auto t : *sd_global->initial_tasks)
-      XBT_WARN("%s is in %s state", SD_task_get_name(t), state_names[SD_task_get_state(t)]);
+      XBT_WARN("%s is in %s state", SD_task_get_name(t), __get_state_name(SD_task_get_state(t)));
   }
 
   XBT_DEBUG("elapsed_time = %f, total_time = %f, watch_point_reached = %d",
@@ -224,7 +231,6 @@ void SD_exit()
   jedule_sd_cleanup();
   jedule_sd_exit();
 #endif
-
   delete sd_global->initial_tasks;
   delete sd_global->runnable_tasks;
   delete sd_global->completed_tasks;

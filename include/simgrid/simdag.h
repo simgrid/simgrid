@@ -14,7 +14,6 @@
 #include "xbt/log.h"
 #include "simgrid/link.h"
 #include "simgrid/host.h"
-
 SG_BEGIN_DECL()
 
 /** @brief Link opaque datatype
@@ -38,14 +37,14 @@ typedef struct SD_task *SD_task_t;
 /** @brief Task states
     @ingroup SD_task_api */
 typedef enum {
-  SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
-  SD_SCHEDULABLE = 0x0001,   /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
-  SD_SCHEDULED = 0x0002,     /**< @brief A task becomes SD_SCHEDULED when you call function
+  SD_NOT_SCHEDULED = 0x0001,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
+  SD_SCHEDULABLE = 0x0002,   /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
+  SD_SCHEDULED = 0x0004,     /**< @brief A task becomes SD_SCHEDULED when you call function
                                   SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
-  SD_RUNNABLE = 0x0004,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
-  SD_RUNNING = 0x0008,       /**< @brief An SD_RUNNABLE task becomes SD_RUNNING when it is launched. */
-  SD_DONE = 0x0010,          /**< @brief The task is successfully finished. */
-  SD_FAILED = 0x0020         /**< @brief A problem occurred during the execution of the task. */
+  SD_RUNNABLE = 0x0008,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
+  SD_RUNNING = 0x0010,       /**< @brief An SD_RUNNABLE task becomes SD_RUNNING when it is launched. */
+  SD_DONE = 0x0020,          /**< @brief The task is successfully finished. */
+  SD_FAILED = 0x0040         /**< @brief A problem occurred during the execution of the task. */
 } e_SD_task_state_t;
 
 /** @brief Task kinds
@@ -57,6 +56,7 @@ typedef enum {
   SD_TASK_COMP_PAR_AMDAHL = 3, /**< @brief parallel computation (Amdahl's law) */
   SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
+
 
 /************************** Workstation handling ****************************/
 /** @addtogroup SD_host_api
