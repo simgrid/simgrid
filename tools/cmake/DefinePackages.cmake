@@ -848,6 +848,7 @@ set(DOC_SOURCES
   doc/doxygen/scenario.doc
   doc/doxygen/stylesheet.css
   doc/doxygen/uhood.doc
+  doc/doxygen/uhood_switch.doc
 
   doc/manpage/smpicc.1
   doc/manpage/smpicxx.1
