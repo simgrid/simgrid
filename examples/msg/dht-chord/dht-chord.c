@@ -3,16 +3,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/msg.h"
-#include "simgrid/modelchecker.h"
-#include <xbt/RngStream.h>
-#include "src/mc/mc_replay.h" // FIXME: this is an internal header
+#include "dht-chord.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_chord, "Messages specific for this msg example");
-
-#define COMM_SIZE 10
-#define COMP_SIZE 0
-#define MAILBOX_NAME_SIZE 10
 
 static int nb_bits = 24;
 static int nb_keys = 0;
@@ -25,79 +18,9 @@ static int periodic_lookup_delay = 10;
 
 static const double sleep_delay = 4.9999;
 
-/* Finger element. */
-typedef struct s_finger {
-  int id;
-  char mailbox[MAILBOX_NAME_SIZE]; // string representation of the id
-} s_finger_t, *finger_t;
-
-/* Node data. */
-typedef struct s_node {
-  int id;                                 // my id
-  char mailbox[MAILBOX_NAME_SIZE];        // my mailbox name (string representation of the id)
-  s_finger_t *fingers;                    // finger table, of size nb_bits (fingers[0] is my successor)
-  int pred_id;                            // predecessor id
-  char pred_mailbox[MAILBOX_NAME_SIZE];   // predecessor's mailbox name
-  int next_finger_to_fix;                 // index of the next finger to fix in fix_fingers()
-  msg_comm_t comm_receive;                // current communication to receive
-  double last_change_date;                // last time I changed a finger or my predecessor
-  RngStream stream;                       //RngStream for
-} s_node_t, *node_t;
-
-/* Types of tasks exchanged between nodes. */
-typedef enum {
-  TASK_FIND_SUCCESSOR,
-  TASK_FIND_SUCCESSOR_ANSWER,
-  TASK_GET_PREDECESSOR,
-  TASK_GET_PREDECESSOR_ANSWER,
-  TASK_NOTIFY,
-  TASK_SUCCESSOR_LEAVING,
-  TASK_PREDECESSOR_LEAVING,
-  TASK_PREDECESSOR_ALIVE,
-  TASK_PREDECESSOR_ALIVE_ANSWER
-} e_task_type_t;
-
-/* Data attached with the tasks sent and received */
-typedef struct s_task_data {
-  e_task_type_t type;                     // type of task
-  int request_id;                         // id paramater (used by some types of tasks)
-  int request_finger;                     // finger parameter (used by some types of tasks)
-  int answer_id;                          // answer (used by some types of tasks)
-  char answer_to[MAILBOX_NAME_SIZE];      // mailbox to send an answer to (if any)
-  const char* issuer_host_name;           // used for logging
-} s_task_data_t, *task_data_t;
 
 static int *powers2;
 static xbt_dynar_t host_list;
-
-// utility functions
-static void chord_exit(void);
-static int normalize(int id);
-static int is_in_interval(int id, int start, int end);
-static void get_mailbox(int host_id, char* mailbox);
-static void task_free(void* task);
-static void print_finger_table(node_t node);
-static void set_finger(node_t node, int finger_index, int id);
-static void set_predecessor(node_t node, int predecessor_id);
-
-//// process functions
-static void handle_task(node_t node, msg_task_t task);
-
-//// Chord core
-static void create(node_t node);
-static int join(node_t node, int known_id);
-static void leave(node_t node);
-static int find_successor(node_t node, int id);
-static int remote_find_successor(node_t node, int ask_to_id, int id);
-static int remote_get_predecessor(node_t node, int ask_to_id);
-static int closest_preceding_node(node_t node, int id);
-static void stabilize(node_t node);
-static void notify(node_t node, int predecessor_candidate_id);
-static void remote_notify(node_t node, int notify_to, int predecessor_candidate_id);
-static void fix_fingers(node_t node);
-static void check_predecessor(node_t node);
-static void random_lookup(node_t node);
-static void quit_notify(node_t node);
 
 /* Global initialization of the Chord simulation. */
 static void chord_initialize(void)
@@ -251,164 +174,19 @@ static void set_predecessor(node_t node, int predecessor_id)
  * - the id of a guy I know in the system (except for the first node)
  * - the time to sleep before I join (except for the first node)
  */
-static int node(int argc, char *argv[])
-{
-  /* Reduce the run size for the MC */
-  if(MC_is_active() || MC_record_replay_is_active()){
-    periodic_stabilize_delay = 8;
-    periodic_fix_fingers_delay = 8;
-    periodic_check_predecessor_delay = 8;
-  }
-
-  double init_time = MSG_get_clock();
-  msg_task_t task_received = NULL;
-  int i;
-  int join_success = 0;
-  double deadline;
-  double next_stabilize_date = init_time + periodic_stabilize_delay;
-  double next_fix_fingers_date = init_time + periodic_fix_fingers_delay;
-  double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
-  double next_lookup_date = init_time + periodic_lookup_delay;
-
-  int listen = 0;
-  int no_op = 0;
-  int sub_protocol = 0;
-
-  xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
-
-  // initialize my node
-  s_node_t node = {0};
-  node.id = xbt_str_parse_int(argv[1],"Invalid ID: %s");
-  node.stream = (RngStream)MSG_host_get_property_value(MSG_host_self(), "stream");
-  get_mailbox(node.id, node.mailbox);
-  node.next_finger_to_fix = 0;
-  node.fingers = xbt_new0(s_finger_t, nb_bits);
-  node.last_change_date = init_time;
-
-  for (i = 0; i < nb_bits; i++) {
-    node.fingers[i].id = -1;
-    set_finger(&node, i, node.id);
-  }
-
-  if (argc == 3) { // first ring
-    deadline = xbt_str_parse_double(argv[2],"Invalid deadline: %s");
-    create(&node);
-    join_success = 1;
-
-  } else {
-    int known_id = xbt_str_parse_int(argv[2],"Invalid root ID: %s");
-    deadline = xbt_str_parse_double(argv[4],"Invalid deadline: %s");
-
-    XBT_DEBUG("Hey! Let's join the system.");
-
-    join_success = join(&node, known_id);
-  }
-
-  if (join_success) {
-    while (MSG_get_clock() < init_time + deadline
-//      && MSG_get_clock() < node.last_change_date + 1000
-        && MSG_get_clock() < max_simulation_time) {
-
-      if (node.comm_receive == NULL) {
-        task_received = NULL;
-        node.comm_receive = MSG_task_irecv(&task_received, node.mailbox);
-        // FIXME: do not make MSG_task_irecv() calls from several functions
-      }
-
-      //XBT_INFO("Node %d is ring member : %d", node.id, is_ring_member(known_id, node.id) != -1);
-
-      if (!MSG_comm_test(node.comm_receive)) {
-
-        // no task was received: make some periodic calls
-
-        if(MC_is_active() || MC_record_replay_is_active()){
-          if(MC_is_active() && !MC_visited_reduction() && no_op){
-              MC_cut();
-          }
-          if(listen == 0 && (sub_protocol = MC_random(0, 4)) > 0){
-            if(sub_protocol == 1)
-              stabilize(&node);
-            else if(sub_protocol == 2)
-              fix_fingers(&node);
-            else if(sub_protocol == 3)
-              check_predecessor(&node);
-            else
-              random_lookup(&node);
-            listen = 1;
-          }else{
-            MSG_process_sleep(sleep_delay);
-            if(!MC_visited_reduction())
-              no_op = 1;
-          }
-        }else{
-          if (MSG_get_clock() >= next_stabilize_date) {
-            stabilize(&node);
-            next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
-          }else if (MSG_get_clock() >= next_fix_fingers_date) {
-            fix_fingers(&node);
-            next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
-          }else if (MSG_get_clock() >= next_check_predecessor_date) {
-            check_predecessor(&node);
-            next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
-          }else if (MSG_get_clock() >= next_lookup_date) {
-            random_lookup(&node);
-            next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
-          }else {
-            // nothing to do: sleep for a while
-            MSG_process_sleep(sleep_delay);
-          }
-        }
-
-      } else {
-        // a transfer has occurred
-
-        msg_error_t status = MSG_comm_get_status(node.comm_receive);
-
-        if (status != MSG_OK) {
-          XBT_DEBUG("Failed to receive a task. Nevermind.");
-          MSG_comm_destroy(node.comm_receive);
-          node.comm_receive = NULL;
-        }
-        else {
-          // the task was successfully received
-          MSG_comm_destroy(node.comm_receive);
-          node.comm_receive = NULL;
-          handle_task(&node, task_received);
-        }
-      }
-    }
-
-    if (node.comm_receive) {
-      /* handle last task if any */
-      if (MSG_comm_wait(node.comm_receive, 0) == MSG_OK)
-        task_free(task_received);
-      MSG_comm_destroy(node.comm_receive);
-      node.comm_receive = NULL;
-    }
-
-    // leave the ring
-    leave(&node);
-  }
-
-  // stop the simulation
-  xbt_free(node.fingers);
-  return 0;
-}
-
 /* This function is called when the current node receives a task.
  * 
  * \param node the current node
  * \param task the task to handle (don't touch it afterward: it will be destroyed, reused or forwarded)
  */
-static void handle_task(node_t node, msg_task_t task) {
-
+static void handle_task(node_t node, msg_task_t task)
+{
   XBT_DEBUG("Handling task %p", task);
   char mailbox[MAILBOX_NAME_SIZE];
   task_data_t task_data = (task_data_t) MSG_task_get_data(task);
   e_task_type_t type = task_data->type;
 
   switch (type) {
-
   case TASK_FIND_SUCCESSOR:
     XBT_DEBUG("Receiving a 'Find Successor' request from %s for id %d",
               task_data->issuer_host_name, task_data->request_id);
@@ -489,7 +267,7 @@ static void handle_task(node_t node, msg_task_t task) {
 }
 
 /* Initializes the current node as the first one of the system */
-static void create(node_t node)
+void create(node_t node)
 {
   XBT_DEBUG("Create a new Chord ring...");
   set_predecessor(node, -1); // -1 means that I have no predecessor
@@ -502,7 +280,7 @@ static void create(node_t node)
  * \param known_id id of a node already in the ring
  * \return 1 if the join operation succeeded, 0 otherwise
  */
-static int join(node_t node, int known_id)
+int join(node_t node, int known_id)
 {
   XBT_INFO("Joining the ring with id %d, knowing node %d", node->id, known_id);
   set_predecessor(node, -1); // no predecessor (yet)
@@ -520,14 +298,14 @@ static int join(node_t node, int known_id)
 }
 
 /* Makes the current node quit the system */
-static void leave(node_t node)
+void leave(node_t node)
 {
   XBT_DEBUG("Well Guys! I Think it's time for me to quit ;)");
   quit_notify(node);
 }
 
 /* Notifies the successor and the predecessor of the current node before leaving */
-static void quit_notify(node_t node)
+void quit_notify(node_t node)
 {
   char mailbox[MAILBOX_NAME_SIZE];
   //send the PREDECESSOR_LEAVING to our successor
@@ -567,7 +345,7 @@ static void quit_notify(node_t node)
  * \param id the id to find
  * \return the id of the successor node, or -1 if the request failed
  */
-static int find_successor(node_t node, int id)
+int find_successor(node_t node, int id)
 {
   // is my successor the successor?
   if (is_in_interval(id, node->id + 1, node->fingers[0].id)) {
@@ -586,7 +364,7 @@ static int find_successor(node_t node, int id)
  * \param id the id to find
  * \return the id of the successor node, or -1 if the request failed
  */
-static int remote_find_successor(node_t node, int ask_to, int id)
+int remote_find_successor(node_t node, int ask_to, int id)
 {
   int successor = -1;
   int stop = 0;
@@ -606,13 +384,10 @@ static int remote_find_successor(node_t node, int ask_to, int id)
   if (res != MSG_OK) {
     XBT_DEBUG("Failed to send the 'Find Successor' request (task %p) to %d for id %d", task_sent, ask_to, id);
     task_free(task_sent);
-  }
-  else {
-
+  } else {
     // receive the answer
     XBT_DEBUG("Sent a 'Find Successor' request (task %p) to %d for key %d, waiting for the answer",
         task_sent, ask_to, id);
-
     do {
       if (node->comm_receive == NULL) {
         msg_task_t task_received = NULL;
@@ -678,7 +453,7 @@ static int remote_find_successor(node_t node, int ask_to, int id)
  * \return the id of its predecessor node, or -1 if the request failed
  * (or if the node does not know its predecessor)
  */
-static int remote_get_predecessor(node_t node, int ask_to)
+int remote_get_predecessor(node_t node, int ask_to)
 {
   int predecessor_id = -1;
   int stop = 0;
@@ -756,7 +531,7 @@ static int remote_get_predecessor(node_t node, int ask_to)
  * \param id the id to find
  * \return the closest preceding finger of that id
  */
-static int closest_preceding_node(node_t node, int id)
+int closest_preceding_node(node_t node, int id)
 {
   int i;
   for (i = nb_bits - 1; i >= 0; i--) {
@@ -768,7 +543,7 @@ static int closest_preceding_node(node_t node, int id)
 }
 
 /* This function is called periodically. It checks the immediate successor of the current node. */
-static void stabilize(node_t node)
+void stabilize(node_t node)
 {
   XBT_DEBUG("Stabilizing node");
 
@@ -793,7 +568,7 @@ static void stabilize(node_t node)
 }
 
 /* Notifies the current node that its predecessor may have changed. */
-static void notify(node_t node, int predecessor_candidate_id) {
+void notify(node_t node, int predecessor_candidate_id) {
 
   if (node->pred_id == -1
     || is_in_interval(predecessor_candidate_id, node->pred_id + 1, node->id - 1)) {
@@ -807,7 +582,7 @@ static void notify(node_t node, int predecessor_candidate_id) {
 }
 
 /* Notifies a remote node that its predecessor may have changed. */
-static void remote_notify(node_t node, int notify_id, int predecessor_candidate_id) {
+void remote_notify(node_t node, int notify_id, int predecessor_candidate_id) {
 
       task_data_t req_data = xbt_new0(s_task_data_t, 1);
       req_data->type = TASK_NOTIFY;
@@ -823,7 +598,7 @@ static void remote_notify(node_t node, int notify_id, int predecessor_candidate_
     }
 
 /* refreshes the finger table of the current node (called periodically) */
-static void fix_fingers(node_t node) {
+  void fix_fingers(node_t node) {
 
   XBT_DEBUG("Fixing fingers");
   int i = node->next_finger_to_fix;
@@ -839,7 +614,7 @@ static void fix_fingers(node_t node) {
 }
 
 /* checks whether the predecessor has failed (called periodically) */
-static void check_predecessor(node_t node)
+void check_predecessor(node_t node)
 {
   XBT_DEBUG("Checking whether my predecessor is alive");
 
@@ -864,8 +639,7 @@ static void check_predecessor(node_t node)
   if (res != MSG_OK) {
     XBT_DEBUG("Failed to send the 'Predecessor Alive' request (task %p) to %d", task_sent, node->pred_id);
     task_free(task_sent);
-  }else{
-
+  } else {
     // receive the answer
     XBT_DEBUG("Sent 'Predecessor Alive' request (task %p) to %d, waiting for the answer on my mailbox '%s'",
               task_sent, node->pred_id, req_data->answer_to);
@@ -885,7 +659,7 @@ static void check_predecessor(node_t node)
         MSG_comm_destroy(node->comm_receive);
         node->comm_receive = NULL;
         node->pred_id = -1;
-      }else {
+      } else {
         msg_task_t task_received = MSG_comm_get_task(node->comm_receive);
         if (task_received != task_sent) {
           MSG_comm_destroy(node->comm_receive);
@@ -905,54 +679,173 @@ static void check_predecessor(node_t node)
 }
 
 /* Performs a find successor request to a random id */
-static void random_lookup(node_t node)
+void random_lookup(node_t node)
 {
   int random_index = RngStream_RandInt (node->stream, 0, nb_bits - 1);
   int random_id = node->fingers[random_index].id;
   XBT_DEBUG("Making a lookup request for id %d", random_id);
   int res = find_successor(node, random_id);
   XBT_DEBUG("The successor of node %d is %d", random_id, res);
+}
 
+static int node(int argc, char *argv[])
+{
+  /* Reduce the run size for the MC */
+  if(MC_is_active() || MC_record_replay_is_active()){
+    periodic_stabilize_delay = 8;
+    periodic_fix_fingers_delay = 8;
+    periodic_check_predecessor_delay = 8;
+  }
+
+  double init_time = MSG_get_clock();
+  msg_task_t task_received = NULL;
+  int i;
+  int join_success = 0;
+  double deadline;
+  double next_stabilize_date = init_time + periodic_stabilize_delay;
+  double next_fix_fingers_date = init_time + periodic_fix_fingers_delay;
+  double next_check_predecessor_date = init_time + periodic_check_predecessor_delay;
+  double next_lookup_date = init_time + periodic_lookup_delay;
+
+  xbt_assert(argc == 3 || argc == 5, "Wrong number of arguments for this node");
+
+  // initialize my node
+  s_node_t node = {0};
+  node.id = xbt_str_parse_int(argv[1],"Invalid ID: %s");
+  node.stream = (RngStream)MSG_host_get_property_value(MSG_host_self(), "stream");
+  get_mailbox(node.id, node.mailbox);
+  node.next_finger_to_fix = 0;
+  node.fingers = xbt_new0(s_finger_t, nb_bits);
+  node.last_change_date = init_time;
+
+  for (i = 0; i < nb_bits; i++) {
+    node.fingers[i].id = -1;
+    set_finger(&node, i, node.id);
+  }
+
+  if (argc == 3) { // first ring
+    deadline = xbt_str_parse_double(argv[2],"Invalid deadline: %s");
+    create(&node);
+    join_success = 1;
+  } else {
+    int known_id = xbt_str_parse_int(argv[2],"Invalid root ID: %s");
+    deadline = xbt_str_parse_double(argv[4],"Invalid deadline: %s");
+
+    XBT_DEBUG("Hey! Let's join the system.");
+
+    join_success = join(&node, known_id);
+  }
+
+  if (join_success) {
+    double now = MSG_get_clock();
+    while (now < init_time + deadline && now < max_simulation_time) {
+
+      if (node.comm_receive == NULL) {
+        task_received = NULL;
+        node.comm_receive = MSG_task_irecv(&task_received, node.mailbox);
+        // FIXME: do not make MSG_task_irecv() calls from several functions
+      }
+
+      if (!MSG_comm_test(node.comm_receive)) { // no task was received: make some periodic calls
+        if(MC_is_active() || MC_record_replay_is_active()){
+          int listen = 0;
+          int no_op = 0;
+          int sub_protocol = MC_random(0, 4);
+          if(MC_is_active() && !MC_visited_reduction() && no_op)
+            MC_cut();
+          if(listen == 0 && (sub_protocol > 0)){
+            if(sub_protocol == 1)
+              stabilize(&node);
+            else if(sub_protocol == 2)
+              fix_fingers(&node);
+            else if(sub_protocol == 3)
+              check_predecessor(&node);
+            else
+              random_lookup(&node);
+            listen = 1;
+          } else {
+            MSG_process_sleep(sleep_delay);
+            if(!MC_visited_reduction())
+              no_op = 1;
+          }
+        }else{
+          if (now >= next_stabilize_date) {
+            stabilize(&node);
+            next_stabilize_date = MSG_get_clock() + periodic_stabilize_delay;
+          }else if (now >= next_fix_fingers_date) {
+            fix_fingers(&node);
+            next_fix_fingers_date = MSG_get_clock() + periodic_fix_fingers_delay;
+          }else if (now >= next_check_predecessor_date) {
+            check_predecessor(&node);
+            next_check_predecessor_date = MSG_get_clock() + periodic_check_predecessor_delay;
+          }else if (now >= next_lookup_date) {
+            random_lookup(&node);
+            next_lookup_date = MSG_get_clock() + periodic_lookup_delay;
+          }else {
+            // nothing to do: sleep for a while
+            MSG_process_sleep(sleep_delay);
+          }
+        }
+      } else { // a transfer has occurred
+        msg_error_t status = MSG_comm_get_status(node.comm_receive);
+        MSG_comm_destroy(node.comm_receive);
+        node.comm_receive = NULL;
+
+        if (status == MSG_OK)
+          handle_task(&node, task_received);
+        else
+          XBT_DEBUG("Failed to receive a task. Nevermind.");
+      }
+      now = MSG_get_clock();
+    }
+
+    if (node.comm_receive) {
+      /* handle last task if any */
+      if (MSG_comm_wait(node.comm_receive, 0) == MSG_OK)
+        task_free(task_received);
+      MSG_comm_destroy(node.comm_receive);
+      node.comm_receive = NULL;
+    }
+
+    // leave the ring
+    leave(&node);
+  }
+
+  // stop the simulation
+  xbt_free(node.fingers);
+  return 0;
 }
 
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  xbt_assert(argc > 2, 
-       "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
-       "\tExample: %s ../msg_platform.xml chord.xml\n", argv[0], argv[0]);
+  xbt_assert(argc > 2, "Usage: %s [-nb_bits=n] [-timeout=t] platform_file deployment_file\n"
+                       "\tExample: %s ../msg_platform.xml chord.xml\n", argv[0], argv[0]);
 
   char **options = &argv[1];
   while (!strncmp(options[0], "-", 1)) {
-
     int length = strlen("-nb_bits=");
     if (!strncmp(options[0], "-nb_bits=", length) && strlen(options[0]) > length) {
       nb_bits = xbt_str_parse_int(options[0] + length, "Invalid nb_bits parameter: %s");
       XBT_DEBUG("Set nb_bits to %d", nb_bits);
-    }
-    else {
-
+    } else {
       length = strlen("-timeout=");
       if (!strncmp(options[0], "-timeout=", length) && strlen(options[0]) > length) {
         timeout = xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s");
         XBT_DEBUG("Set timeout to %d", timeout);
-      }
-      else {
+      } else {
         xbt_die("Invalid chord option '%s'", options[0]);
       }
     }
     options++;
   }
 
-  const char* platform_file = options[0];
-  const char* application_file = options[1];
-
-  MSG_create_environment(platform_file);
+  MSG_create_environment(options[0]);
 
   chord_initialize();
 
   MSG_function_register("node", node);
-  MSG_launch_application(application_file);
+  MSG_launch_application(options[1]);
 
   msg_error_t res = MSG_main();
   XBT_INFO("Simulated time: %g", MSG_get_clock());

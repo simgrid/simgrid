@@ -56,6 +56,7 @@ set(bin_files    ${bin_files}     ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/gen
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/generate.py
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/generate.py                     PARENT_SCOPE)
 set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-chainsend/chainsend.c
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/dht-chord/dht-chord.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dht-kademlia/common.h
                                   ${CMAKE_CURRENT_SOURCE_DIR}/network-ns3/network-ns3.c                    PARENT_SCOPE)
 set(tesh_files   ${tesh_files}    ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/app-bittorrent.tesh
