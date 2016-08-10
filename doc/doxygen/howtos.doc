@@ -18,6 +18,49 @@ Of course, you should also check the @ref examples page, that shows
 more detailed usage examples. As for the rest of the documentation
 (and of SimGrid, actually), any contribution is welcome.
 
+@section howto_multicore How to model multicore machines
+
+Multicore machines are very complex, and there is many way to model
+them. The default models of SimGrid are coarse grain and capture some
+elements of this reality. Here is how to declare simple multicore hosts:
+
+@code{xml}
+ <host id="mymachine" speed="8Gf" core="4"/>
+@endcode
+
+It declares a 4-cores host called "mymachine", each core computing 8
+GFlops per second. If you put one activity of 8 GFlop on this host, it
+will be computed in 1 second (by default, activities are
+single-threaded and cannot leverage the computing power of more than
+one core). If you put two of them together, they will still be
+computed in one second, and so on up to 4 tasks. If you put 5 tasks,
+they will share the total computing resource, and all tasks will be
+computed at 5/4 = 1.25 second. That's a very simple model, but that's
+all what you will get by default from SimGrid.
+
+@subsection howto_multicore_pinning Pinning tasks to cores
+
+This model does not account for any sort of resource reservation such
+as task pinning (where you manually select on which core each of the
+existing activity should execute). If you want to go that way, the
+best is probably to model you 4-core processor as 4 separte hosts, and
+assigning the activities to cores by migrating them to the declared
+hosts. In some sense, this is takes the whole Network-On-Chip idea
+really seriously.
+
+Some extra complications may arise if you go that way. If you have
+more tasks than cores, you'll have to [schedule your
+tasks](https://en.wikipedia.org/wiki/Scheduling_%28computing%29#Operating_system_process_scheduler_implementations)
+yourself on the cores (so don't do that if you can avoid). Since you
+cannot have more than one network model, you will end up with a TCP
+connexion between your cores. You probably want to work this around in
+your application by never starting any simulated communication between
+your cores. Instead, connect equally all cores to the external
+network.
+
+Modeling a multicore CPU as a set of SimGrid hosts may seem strange
+and unconvincing, but some users achieved very realistic simulations
+of multi-core and GPU machines this way. 
 
 @section howto_bootenergy Modeling machine bootup and shutdown periods
 
