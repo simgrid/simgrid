@@ -42,8 +42,8 @@ jobject jprocess_new_global_ref(jobject jprocess, JNIEnv * env);
  * This function delete a global reference to a java process instance.
  * If the java process is alive the function joins it and stops it before.
  *
- * @param        The global refernce to delete.
- * @param env    The env of the current thread
+ * @param jprocess The global refernce to delete.
+ * @param env      The env of the current thread
  *
  * @see          jprocess_join()
  * @see          jprocess_exit()

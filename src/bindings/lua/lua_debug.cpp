@@ -210,10 +210,10 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
  * This function is a valid lua_Writer that writes into a memory buffer passed
  * as userdata.
  *
- * @param L a lua state
- * @param source some data
- * @param sz number of bytes of data
- * @param user_data the memory buffer to write
+ * @param L        a lua state
+ * @param source   some data
+ * @param size     number of bytes of data
+ * @param userdata the memory buffer to write
  */
 int sglua_memory_writer(lua_State* L, const void* source, size_t size,
     void* userdata) {
