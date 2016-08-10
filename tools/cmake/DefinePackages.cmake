@@ -806,9 +806,6 @@ set(DOC_SOURCES
   doc/doxygen/FAQ.doc
   doc/doxygen/application.doc
   doc/doxygen/community.doc
-  doc/doxygen/community_contact.doc
-  doc/doxygen/community_extend.doc
-  doc/doxygen/community_giveback.doc
   doc/doxygen/deployment.doc
   doc/doxygen/examples.doc
   doc/doxygen/footer.html

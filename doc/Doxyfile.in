@@ -671,9 +671,6 @@ INPUT                  = doxygen/index.doc \
 			     doxygen/inside_tests.doc \
 			     doxygen/inside_release.doc \
 			 doxygen/community.doc \
-                           doxygen/community_contact.doc \
-			   doxygen/community_extend.doc \
-                           doxygen/community_giveback.doc \
 			 doxygen/FAQ.doc \
 			 doxygen/module-msg.doc \
 			 doxygen/module-sd.doc \
