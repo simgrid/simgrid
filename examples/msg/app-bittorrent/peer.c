@@ -480,7 +480,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
       return -1;
     int i;
     int nb_interesting_pieces = 0;
-    int random_piece_index, current_index = 0;
+    int current_index = 0;
     // compute the number of interesting pieces
     for (i = 0; i < FILE_PIECES; i++) {
       if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1') {
@@ -489,7 +489,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     }
     xbt_assert(nb_interesting_pieces != 0, "WTF !!!");
     // get a random interesting piece
-    random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces - 1);
+    int random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces - 1);
     for (i = 0; i < FILE_PIECES; i++) {
       if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1') {
         if (random_piece_index == current_index) {
@@ -506,7 +506,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
   if (peer->pieces < 4 && (is_interested_and_free(peer, remote_peer) != 0)) {
     int i;
     int nb_interesting_pieces = 0;
-    int random_piece_index, current_index = 0;
+    int current_index = 0;
     // compute the number of interesting pieces
     for (i = 0; i < FILE_PIECES; i++) {
       if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1' &&
@@ -516,7 +516,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     }
     xbt_assert(nb_interesting_pieces != 0, "WTF !!!");
     // get a random interesting piece
-    random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces - 1);
+    int random_piece_index = RngStream_RandInt(peer->stream, 0, nb_interesting_pieces - 1);
     for (i = 0; i < FILE_PIECES; i++) {
       if (peer->bitfield[i] == '0' && remote_peer->bitfield[i] == '1' &&
           (in_current_pieces(peer, i) == 0)) {
@@ -533,7 +533,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     int i;
     short min = SHRT_MAX;
     int nb_min_pieces = 0;
-    int random_rarest_index, current_index = 0;
+    int current_index = 0;
     // compute the smallest number of copies of available pieces
     for (i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] < min && peer->bitfield[i] == '0' &&
@@ -551,7 +551,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
     xbt_assert(nb_min_pieces != 0 ||
                (is_interested_and_free(peer, remote_peer)==0), "WTF !!!");
     // get a random rarest piece
-    random_rarest_index = RngStream_RandInt(peer->stream, 0, nb_min_pieces - 1);
+    int random_rarest_index = RngStream_RandInt(peer->stream, 0, nb_min_pieces - 1);
     for (i = 0; i < FILE_PIECES; i++) {
       if (peer->pieces_count[i] == min && peer->bitfield[i] == '0' &&
           remote_peer->bitfield[i] == '1' && (in_current_pieces(peer, i)==0)) {
@@ -562,8 +562,7 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
         current_index++;
       }
     }
-    xbt_assert(piece != -1 ||
-               (is_interested_and_free(peer, remote_peer) == 0), "WTF !!!");
+    xbt_assert(piece != -1 || (is_interested_and_free(peer, remote_peer) == 0), "WTF !!!");
     return piece;
   }
 }
@@ -578,7 +577,8 @@ void update_choked_peers(peer_t peer)
   XBT_DEBUG("(%d) update_choked peers %d active peers", peer->id, xbt_dict_size(peer->active_peers));
   //update the current round
   peer->round = (peer->round + 1) % 3;
-  char *key, *key_choked=NULL;
+  char *key;
+  char *key_choked=NULL;
   connection_t peer_choosed = NULL;
   connection_t peer_choked = NULL;
   //remove a peer from the list
@@ -773,12 +773,11 @@ int partially_downloaded_piece(peer_t peer, connection_t remote_peer)
 void send_request_to_peer(peer_t peer, connection_t remote_peer, int piece)
 {
   remote_peer->current_piece = piece;
-  int block_index, block_length;
   xbt_assert(remote_peer->bitfield, "bitfield not received");
   xbt_assert(remote_peer->bitfield[piece] == '1', "WTF !!!");
-  block_index = get_first_block(peer, piece);
+  int block_index = get_first_block(peer, piece);
   if (block_index != -1) {
-    block_length = PIECES_BLOCKS - block_index;
+    int block_length = PIECES_BLOCKS - block_index;
     block_length = MIN(BLOCKS_REQUESTED, block_length);
     send_request(peer, remote_peer->mailbox, piece, block_index, block_length);
   }

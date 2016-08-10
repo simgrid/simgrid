@@ -34,12 +34,11 @@ typedef struct s_tracker_task_data {
   //Answer data
   int interval;                 //how often the peer should contact the tracker (unused for now)
   xbt_dynar_t peers;            //the peer list the peer has asked for.
-} s_tracker_task_data_t, *tracker_task_data_t;
+} s_tracker_task_data_t;
+typedef s_tracker_task_data_t *tracker_task_data_t;
 
-tracker_task_data_t tracker_task_data_new(const char *issuer_host_name,
-                                          const char *mailbox, int peer_id,
-                                          int uploaded, int downloaded,
-                                          int left);
+tracker_task_data_t tracker_task_data_new(const char *issuer_host_name, const char *mailbox, int peer_id,
+                                          int uploaded, int downloaded, int left);
 void tracker_task_data_free(tracker_task_data_t task);
 
 int is_in_list(xbt_dynar_t peers, int id);

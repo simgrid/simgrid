@@ -41,7 +41,8 @@ typedef struct s_peer {
 
   double begin_receive_time;    //time when the receiving communication has begun, useful for calculating host speed.
 
-} s_peer_t, *peer_t;
+} s_peer_t;
+typedef s_peer_t *peer_t;
 
 /** Peer main function */
 int peer(int argc, char *argv[]);
@@ -65,7 +66,6 @@ void update_interested_after_receive(peer_t peer);
 void update_bitfield_blocks(peer_t peer, int index, int block_index, int block_length);
 int piece_complete(peer_t peer, int index);
 int get_first_block(peer_t peer, int piece);
-
 
 int nb_interested_peers(peer_t peer);
 int is_interested(peer_t peer, connection_t remote_peer);

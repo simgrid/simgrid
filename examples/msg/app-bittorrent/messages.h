@@ -47,7 +47,8 @@ typedef struct s_message {
   int index;
   int block_index;
   int block_length;
-} s_message_t, *message_t;
+} s_message_t;
+typedef s_message_t *message_t;
 
 /** Builds a new value-less message */
 msg_task_t task_message_new(e_message_type type, const char *issuer_host_name, const char *mailbox, int peer_id,
