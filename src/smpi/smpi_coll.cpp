@@ -18,109 +18,62 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_coll, smpi, "Logging specific to SMPI (coll
 
 s_mpi_coll_description_t mpi_coll_gather_description[] = {
   {"default", "gather default collective", reinterpret_cast<void*>(&smpi_mpi_gather)},
-   COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
+   COLL_GATHERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}  /* this array must be nullptr terminated */
 };
 
+s_mpi_coll_description_t mpi_coll_allgather_description[] = { {"default",  "allgather default collective",
+   reinterpret_cast<void*>(&smpi_mpi_allgather)}, COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}};
 
-s_mpi_coll_description_t mpi_coll_allgather_description[] = {
-  {"default",
-   "allgather default collective",
-   reinterpret_cast<void*>(&smpi_mpi_allgather)},
-COLL_ALLGATHERS(COLL_DESCRIPTION, COLL_COMMA),
+s_mpi_coll_description_t mpi_coll_allgatherv_description[] = {{"default", "allgatherv default collective",
+   reinterpret_cast<void*>(&smpi_mpi_allgatherv)}, COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA),
+   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
+};
+
+s_mpi_coll_description_t mpi_coll_allreduce_description[] = { {"default", "allreduce default collective",
+   reinterpret_cast<void*>(&smpi_mpi_allreduce)}, COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
-s_mpi_coll_description_t mpi_coll_allgatherv_description[] = {
-  {"default",
-   "allgatherv default collective",
-   reinterpret_cast<void*>(&smpi_mpi_allgatherv)},
-COLL_ALLGATHERVS(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
+s_mpi_coll_description_t mpi_coll_reduce_scatter_description[] = {{"default", "reduce_scatter default collective",
+    reinterpret_cast<void*>(&smpi_mpi_reduce_scatter)}, COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
+    {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
-s_mpi_coll_description_t mpi_coll_allreduce_description[] = {
-  {"default",
-   "allreduce default collective",
-   reinterpret_cast<void*>(&smpi_mpi_allreduce)},
-COLL_ALLREDUCES(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
+s_mpi_coll_description_t mpi_coll_scatter_description[] = { {"default",  "scatter default collective",
+   reinterpret_cast<void*>(&smpi_mpi_scatter)}, COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}};
 
-s_mpi_coll_description_t mpi_coll_reduce_scatter_description[] = {
-  {"default",
-   "reduce_scatter default collective",
-   reinterpret_cast<void*>(&smpi_mpi_reduce_scatter)},
-COLL_REDUCE_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
+s_mpi_coll_description_t mpi_coll_barrier_description[] = { {"default", "barrier default collective",
+   reinterpret_cast<void*>(&smpi_mpi_barrier)}, COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}};
 
-s_mpi_coll_description_t mpi_coll_scatter_description[] = {
-  {"default",
-   "scatter default collective",
-   reinterpret_cast<void*>(&smpi_mpi_scatter)},
-COLL_SCATTERS(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
-
-s_mpi_coll_description_t mpi_coll_barrier_description[] = {
-  {"default",
-   "barrier default collective",
-   reinterpret_cast<void*>(&smpi_mpi_barrier)},
-COLL_BARRIERS(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
-s_mpi_coll_description_t mpi_coll_alltoall_description[] = {
-  {"default",
-   "Ompi alltoall default collective",
-   reinterpret_cast<void*>(&smpi_coll_tuned_alltoall_ompi2)},
-COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA),
-  {"bruck",
-   "Alltoall Bruck (SG) collective",
+s_mpi_coll_description_t mpi_coll_alltoall_description[] = { {"default", "Ompi alltoall default collective",
+   reinterpret_cast<void*>(&smpi_coll_tuned_alltoall_ompi2)}, COLL_ALLTOALLS(COLL_DESCRIPTION, COLL_COMMA),
+  {"bruck", "Alltoall Bruck (SG) collective",
    reinterpret_cast<void*>(&smpi_coll_tuned_alltoall_bruck)},
-  {"basic_linear",
-   "Alltoall basic linear (SG) collective",
-   reinterpret_cast<void*>(&smpi_coll_tuned_alltoall_basic_linear)},
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
+  {"basic_linear", "Alltoall basic linear (SG) collective",
+   reinterpret_cast<void*>(&smpi_coll_tuned_alltoall_basic_linear)}, {nullptr, nullptr, nullptr}};
+
+s_mpi_coll_description_t mpi_coll_alltoallv_description[] = { {"default", "Ompi alltoallv default collective",
+   reinterpret_cast<void*>(&smpi_coll_basic_alltoallv)}, COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
+   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
-s_mpi_coll_description_t mpi_coll_alltoallv_description[] = {
-  {"default",
-   "Ompi alltoallv default collective",
-   reinterpret_cast<void*>(&smpi_coll_basic_alltoallv)},
-COLL_ALLTOALLVS(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
+s_mpi_coll_description_t mpi_coll_bcast_description[] = { {"default", "bcast default collective ",
+   reinterpret_cast<void*>(&smpi_mpi_bcast)}, COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr}};
 
-s_mpi_coll_description_t mpi_coll_bcast_description[] = {
-  {"default",
-   "bcast default collective ",
-   reinterpret_cast<void*>(&smpi_mpi_bcast)},
-COLL_BCASTS(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
-
-s_mpi_coll_description_t mpi_coll_reduce_description[] = {
-  {"default",
-   "reduce default collective",
-   reinterpret_cast<void*>(&smpi_mpi_reduce)},
-COLL_REDUCES(COLL_DESCRIPTION, COLL_COMMA),
-  {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
-};
+s_mpi_coll_description_t mpi_coll_reduce_description[] = { {"default", "reduce default collective",
+   reinterpret_cast<void*>(&smpi_mpi_reduce)}, COLL_REDUCES(COLL_DESCRIPTION, COLL_COMMA), {nullptr, nullptr, nullptr} };
 
 
 
 /** Displays the long description of all registered models, and quit */
 void coll_help(const char *category, s_mpi_coll_description_t * table)
 {
-  int i;
-  printf("Long description of the %s models accepted by this simulator:\n",
-         category);
-  for (i = 0; table[i].name; i++)
+  printf("Long description of the %s models accepted by this simulator:\n", category);
+  for (int i = 0; table[i].name; i++)
     printf("  %s: %s\n", table[i].name, table[i].description);
 }
 
-int find_coll_description(s_mpi_coll_description_t * table,
-                           char *name, const char *desc)
+int find_coll_description(s_mpi_coll_description_t * table, char *name, const char *desc)
 {
   char *name_list = nullptr;
   int selector_on=0;
@@ -148,8 +101,7 @@ int find_coll_description(s_mpi_coll_description_t * table,
     xbt_die("No collective is valid for '%s'! This is a bug.",name);
   name_list = xbt_strdup(table[0].name);
   for (int i = 1; table[i].name; i++) {
-    name_list = static_cast<char*>(xbt_realloc(name_list,
-                    strlen(name_list) + strlen(table[i].name) + 3));
+    name_list = static_cast<char*>(xbt_realloc(name_list, strlen(name_list) + strlen(table[i].name) + 3));
     strncat(name_list, ", ",2);
     strncat(name_list, table[i].name, strlen(table[i].name));
   }
@@ -172,21 +124,16 @@ void (*smpi_coll_cleanup_callback)();
 
 
 int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount, MPI_Datatype sendtype, void *recvbuf,
-                                   int recvcount, MPI_Datatype recvtype,
-                                   MPI_Comm comm)
+                                   int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
-  int size, sendsize;  
-  size = smpi_comm_size(comm);  
-  sendsize = smpi_datatype_size(sendtype) * sendcount;  
+  int size = smpi_comm_size(comm);
+  int sendsize = smpi_datatype_size(sendtype) * sendcount;
   if (sendsize < 200 && size > 12) {
-    return
-        smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return smpi_coll_tuned_alltoall_bruck(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
   } else if (sendsize < 3000) {
-    return
-        smpi_coll_tuned_alltoall_basic_linear(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return smpi_coll_tuned_alltoall_basic_linear(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
   } else {
-    return
-        smpi_coll_tuned_alltoall_ring(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
+    return smpi_coll_tuned_alltoall_ring(sendbuf, sendcount, sendtype, recvbuf, recvcount, recvtype, comm);
   }
 }
 
@@ -194,33 +141,28 @@ int smpi_coll_tuned_alltoall_ompi2(void *sendbuf, int sendcount, MPI_Datatype se
  * Alltoall Bruck
  *
  * Openmpi calls this routine when the message size sent to each rank < 2000 bytes and size < 12
- * FIXME: uh, check smpi_pmpi again, but this routine is called for > 12, not
- * less...
+ * FIXME: uh, check smpi_pmpi again, but this routine is called for > 12, not less...
  **/
-int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
-                                   MPI_Datatype sendtype, void *recvbuf,
-                                   int recvcount, MPI_Datatype recvtype,
-                                   MPI_Comm comm)
+int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                                   void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
   int system_tag = 777;
-  int i, rank, size, err, count;
+  int i;
+  int count;
   MPI_Aint lb;
   MPI_Aint sendext = 0;
   MPI_Aint recvext = 0;
   MPI_Request *requests;
 
   // FIXME: check implementation
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  int rank = smpi_comm_rank(comm);
+  int size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_bruck() called.", rank);
   smpi_datatype_extent(sendtype, &lb, &sendext);
   smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
-  err =
-      smpi_datatype_copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, 
-                         sendcount, sendtype, 
-                         static_cast<char *>(recvbuf) + rank * recvcount * recvext,
-                         recvcount, recvtype);
+  int err =  smpi_datatype_copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
+                                static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -228,25 +170,21 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
     /* Create all receives that will be posted first */
     for (i = 0; i < size; ++i) {
       if (i != rank) {
-        requests[count] =
-          smpi_irecv_init(static_cast<char *>(recvbuf) + i * recvcount * recvext, recvcount,
-                          recvtype, i, system_tag, comm);
+        requests[count] = smpi_irecv_init(static_cast<char *>(recvbuf) + i * recvcount * recvext, recvcount,
+                                          recvtype, i, system_tag, comm);
       count++;
       }else{
-        XBT_DEBUG("<%d> skip request creation [src = %d, recvcount = %d]",
-               rank, i, recvcount);
+        XBT_DEBUG("<%d> skip request creation [src = %d, recvcount = %d]", rank, i, recvcount);
       }
     }
     /* Now create all sends  */
     for (i = 0; i < size; ++i) {
       if (i != rank) {
-        requests[count] =
-          smpi_isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
-                          sendtype, i, system_tag, comm);
+        requests[count] = smpi_isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
+                                          sendtype, i, system_tag, comm);
       count++;
       }else{
-        XBT_DEBUG("<%d> skip request creation [dst = %d, sendcount = %d]",
-               rank, i, sendcount);
+        XBT_DEBUG("<%d> skip request creation [dst = %d, sendcount = %d]", rank, i, sendcount);
       }
     }
     /* Wait for them all. */
@@ -265,37 +203,32 @@ int smpi_coll_tuned_alltoall_bruck(void *sendbuf, int sendcount,
 /**
  * Alltoall basic_linear (STARMPI:alltoall-simple)
  **/
-int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
-                                          MPI_Datatype sendtype,
-                                          void *recvbuf, int recvcount,
-                                          MPI_Datatype recvtype,
-                                          MPI_Comm comm)
+int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount, MPI_Datatype sendtype,
+                                          void *recvbuf, int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
   int system_tag = 888;
-  int i, rank, size, err, count;
+  int i;
+  int count;
   MPI_Aint lb = 0, sendext = 0, recvext = 0;
   MPI_Request *requests;
 
   /* Initialize. */
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  int rank = smpi_comm_rank(comm);
+  int size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm alltoall_basic_linear() called.", rank);
   smpi_datatype_extent(sendtype, &lb, &sendext);
   smpi_datatype_extent(recvtype, &lb, &recvext);
   /* simple optimization */
-  err = smpi_datatype_copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, 
-                           sendcount, sendtype, 
-                           static_cast<char *>(recvbuf) + rank * recvcount * recvext, 
-                           recvcount, recvtype);
+  int err = smpi_datatype_copy(static_cast<char *>(sendbuf) + rank * sendcount * sendext, sendcount, sendtype,
+                               static_cast<char *>(recvbuf) + rank * recvcount * recvext, recvcount, recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
     /* Post all receives first -- a simple optimization */
     count = 0;
     for (i = (rank + 1) % size; i != rank; i = (i + 1) % size) {
-      requests[count] =
-          smpi_irecv_init(static_cast<char *>(recvbuf) + i * recvcount * recvext, recvcount, 
-                          recvtype, i, system_tag, comm);
+      requests[count] = smpi_irecv_init(static_cast<char *>(recvbuf) + i * recvcount * recvext, recvcount,
+                                        recvtype, i, system_tag, comm);
       count++;
     }
     /* Now post all sends in reverse order
@@ -304,9 +237,8 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
      * TODO: check the previous assertion
      */
     for (i = (rank + size - 1) % size; i != rank; i = (i + size - 1) % size) {
-      requests[count] =
-          smpi_isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
-                          sendtype, i, system_tag, comm);
+      requests[count] = smpi_isend_init(static_cast<char *>(sendbuf) + i * sendcount * sendext, sendcount,
+                                        sendtype, i, system_tag, comm);
       count++;
     }
     /* Wait for them all. */
@@ -322,27 +254,26 @@ int smpi_coll_tuned_alltoall_basic_linear(void *sendbuf, int sendcount,
   return err;
 }
 
-int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
-                              int *senddisps, MPI_Datatype sendtype,
-                              void *recvbuf, int *recvcounts,
-                              int *recvdisps, MPI_Datatype recvtype,
-                              MPI_Comm comm)
+int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts, int *senddisps, MPI_Datatype sendtype,
+                              void *recvbuf, int *recvcounts, int *recvdisps, MPI_Datatype recvtype, MPI_Comm comm)
 {
   int system_tag = 889;
-  int i, rank, size, err, count;
-  MPI_Aint lb = 0, sendext = 0, recvext = 0;
+  int i;
+  int count;
+  MPI_Aint lb = 0;
+  MPI_Aint sendext = 0;
+  MPI_Aint recvext = 0;
   MPI_Request *requests;
 
   /* Initialize. */
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  int rank = smpi_comm_rank(comm);
+  int size = smpi_comm_size(comm);
   XBT_DEBUG("<%d> algorithm basic_alltoallv() called.", rank);
   smpi_datatype_extent(sendtype, &lb, &sendext);
   smpi_datatype_extent(recvtype, &lb, &recvext);
   /* Local copy from self */
-  err =
-      smpi_datatype_copy(static_cast<char *>(sendbuf) + senddisps[rank] * sendext, sendcounts[rank], sendtype,
-                         static_cast<char *>(recvbuf) + recvdisps[rank] * recvext, recvcounts[rank], recvtype);
+  int err = smpi_datatype_copy(static_cast<char *>(sendbuf) + senddisps[rank] * sendext, sendcounts[rank], sendtype,
+                               static_cast<char *>(recvbuf) + recvdisps[rank] * recvext, recvcounts[rank], recvtype);
   if (err == MPI_SUCCESS && size > 1) {
     /* Initiate all send/recv to/from others. */
     requests = xbt_new(MPI_Request, 2 * (size - 1));
@@ -350,9 +281,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
     /* Create all receives that will be posted first */
     for (i = 0; i < size; ++i) {
       if (i != rank && recvcounts[i] != 0) {
-        requests[count] =
-          smpi_irecv_init(static_cast<char *>(recvbuf) + recvdisps[i] * recvext, 
-                          recvcounts[i], recvtype, i, system_tag, comm);
+        requests[count] = smpi_irecv_init(static_cast<char *>(recvbuf) + recvdisps[i] * recvext,
+                                          recvcounts[i], recvtype, i, system_tag, comm);
         count++;
       }else{
         XBT_DEBUG("<%d> skip request creation [src = %d, recvcounts[src] = %d]", rank, i, recvcounts[i]);
@@ -361,9 +291,8 @@ int smpi_coll_basic_alltoallv(void *sendbuf, int *sendcounts,
     /* Now create all sends  */
     for (i = 0; i < size; ++i) {
       if (i != rank && sendcounts[i] != 0) {
-      requests[count] =
-          smpi_isend_init(static_cast<char *>(sendbuf) + senddisps[i] * sendext, 
-                          sendcounts[i], sendtype, i, system_tag, comm);
+      requests[count] = smpi_isend_init(static_cast<char *>(sendbuf) + senddisps[i] * sendext,
+                                        sendcounts[i], sendtype, i, system_tag, comm);
       count++;
       }else{
         XBT_DEBUG("<%d> skip request creation [dst = %d, sendcounts[dst] = %d]", rank, i, sendcounts[i]);

@@ -29,12 +29,11 @@ int main(int argc, char *argv[]){
   FILE* fp = fopen(argv[1], "r");
   if (fp == NULL)
     xbt_die("Cannot open %s", argv[1]);
-  ssize_t read;
-  char   *line = NULL;
+  char *line = NULL;
   size_t n   = 0;
   int instance_size = 0;
   const char* instance_id = NULL;
-  while ((read = xbt_getline(&line, &n, fp)) != -1 ){
+  while (xbt_getline(&line, &n, fp) != -1 ){
     xbt_dynar_t elems = xbt_str_split_quoted_in_place(line);
     if(xbt_dynar_length(elems)<3){
       xbt_die ("Not enough elements in the line");
