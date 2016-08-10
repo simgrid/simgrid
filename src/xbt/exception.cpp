@@ -132,8 +132,3 @@ void installExceptionHandler()
 
 }
 }
-
-void xbt_set_terminate()
-{
-  simgrid::xbt::installExceptionHandler();
-}
