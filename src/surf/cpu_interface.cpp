@@ -152,27 +152,10 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
   }
 
   xbt_assert(model == surf_cpu_model_pm || core==1, "Currently, VM cannot be multicore");
-
-  if (model->getUpdateMechanism() != UM_UNDEFINED) {
-    p_constraintCore = xbt_new(lmm_constraint_t, core);
-    p_constraintCoreId = xbt_new(void*, core);
-
-    for (int i = 0; i < core; i++) {
-      /* just for a unique id, never used as a string. */
-      p_constraintCoreId[i] = bprintf("%s:%i", host->name().c_str(), i);
-      p_constraintCore[i] = lmm_constraint_new(model->getMaxminSystem(), p_constraintCoreId[i], speed_.scale * speed_.peak);
-    }
-  }
 }
 
 Cpu::~Cpu()
 {
-  if (p_constraintCoreId){
-    for (int i = 0; i < coresAmount_; i++)
-      xbt_free(p_constraintCoreId[i]);
-    xbt_free(p_constraintCore);
-  }
-  xbt_free(p_constraintCoreId);
   xbt_dynar_free(&speedPerPstate_);
 }
 
@@ -271,70 +254,6 @@ void CpuAction::updateRemainingLazy(double now)
 
   lastUpdate_ = now;
   lastValue_ = lmm_variable_getvalue(getVariable());
-}
-
-/*
- *
- * This function formulates a constraint problem that pins a given task to
- * particular cores. Currently, it is possible to pin a task to an exactly one
- * specific core. The system links the variable object of the task to the
- * per-core constraint object.
- *
- * But, the taskset command on Linux takes a mask value specifying a CPU
- * affinity setting of a given task. If the mask value is 0x03, the given task
- * will be executed on the first core (CPU0) or the second core (CPU1) on the
- * given PM. The schedular will determine appropriate placements of tasks,
- * considering given CPU affinities and task activities.
- *
- * How should the system formulate constraint problems for an affinity to
- * multiple cores?
- *
- * The cpu argument must be the host where the task is being executed. The
- * action object does not have the information about the location where the
- * action is being executed.
- */
-void CpuAction::setAffinity(Cpu *cpu, unsigned long mask)
-{
-  lmm_variable_t var_obj = getVariable();
-  XBT_IN("(%p,%lx)", this, mask);
-
-  {
-    unsigned long nbits = 0;
-
-    /* FIXME: There is much faster algorithms doing this. */
-    for (int i = 0; i < cpu->coresAmount_; i++) {
-      unsigned long has_affinity = (1UL << i) & mask;
-      if (has_affinity)
-        nbits += 1;
-    }
-
-    xbt_assert(nbits <= 1, "Affinity mask cannot span over multiple cores.");
-  }
-
-  for (int i = 0; i < cpu->coresAmount_; i++) {
-    XBT_DEBUG("clear affinity %p to cpu-%d@%s", this, i,  cpu->getName());
-    lmm_shrink(cpu->getModel()->getMaxminSystem(), cpu->p_constraintCore[i], var_obj);
-
-    unsigned long has_affinity = (1UL << i) & mask;
-    if (has_affinity) {
-      /* This function only accepts an affinity setting on the host where the
-       * task is now running. In future, a task might move to another host.
-       * But, at this moment, this function cannot take an affinity setting on
-       * that future host.
-       *
-       * It might be possible to extend the code to allow this function to
-       * accept affinity settings on a future host. We might be able to assign
-       * zero to elem->value to maintain such inactive affinity settings in the
-       * system. But, this will make the system complex. */
-      XBT_DEBUG("set affinity %p to cpu-%d@%s", this, i, cpu->getName());
-      lmm_expand(cpu->getModel()->getMaxminSystem(), cpu->p_constraintCore[i], var_obj, 1.0);
-    }
-  }
-
-  if (cpu->getModel()->getUpdateMechanism() == UM_LAZY) {
-    /* FIXME (hypervisor): Do we need to do something for the LAZY mode? */
-  }
-  XBT_OUT();
 }
 
 simgrid::xbt::signal<void(simgrid::surf::CpuAction*, Action::State)> CpuAction::onStateChange;

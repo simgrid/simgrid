@@ -37,7 +37,6 @@ typedef struct s_msg_host_priv {
   double     dp_updated_by_deleted_tasks;
   int        is_migrating;
 
-  xbt_dict_t affinity_mask_db;
   xbt_dynar_t file_descriptor_table;
 } s_msg_host_priv_t;
 
@@ -371,7 +370,6 @@ XBT_PUBLIC(msg_error_t) MSG_task_execute(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
-XBT_PUBLIC(void) MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask);
 
 XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
@@ -520,7 +518,6 @@ XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
 
 XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
-XBT_PUBLIC(void) MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask);
 
 /* TODO: do we need this? */
 // XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar();

@@ -69,18 +69,17 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
  * \param flops_amount amount Computation amount (in flops)
  * \param priority computation priority
  * \param bound
- * \param affinity_mask
  * \return A new SIMIX execution synchronization
  */
 smx_activity_t simcall_execution_start(const char *name,
                                     double flops_amount,
-                                    double priority, double bound, unsigned long affinity_mask)
+                                    double priority, double bound)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(std::isfinite(priority), "priority is not finite!");
 
-  return simcall_BODY_execution_start(name, flops_amount, priority, bound, affinity_mask);
+  return simcall_BODY_execution_start(name, flops_amount, priority, bound);
 }
 
 /**
@@ -170,20 +169,6 @@ void simcall_execution_set_bound(smx_activity_t execution, double bound)
 }
 
 /**
- * \ingroup simix_process_management
- * \brief Changes the CPU affinity of an execution synchro.
- *
- * This functions changes the CPU affinity of an execution synchro. See taskset(1) on Linux.
- * \param execution The execution synchro
- * \param host Host
- * \param mask Affinity mask
- */
-void simcall_execution_set_affinity(smx_activity_t execution, sg_host_t host, unsigned long mask)
-{
-  simcall_BODY_execution_set_affinity(execution, host, mask);
-}
-
-/**
  * \ingroup simix_host_management
  * \brief Waits for the completion of an execution synchro and destroy it.
  *
@@ -247,11 +232,6 @@ void *simcall_vm_get_pm(sg_host_t vm)
 void simcall_vm_set_bound(sg_host_t vm, double bound)
 {
   simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_set_bound, vm, bound));
-}
-
-void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
-{
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_set_affinity, vm, pm, mask));
 }
 
 /**
@@ -336,7 +316,6 @@ void simcall_vm_destroy(sg_host_t vm)
  * \ingroup simix_vm_management
  * \brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
  *  The simcall actually invokes the following calls: 
- *     simcall_vm_set_affinity(vm, src_pm, 0); 
  *     simcall_vm_migrate(vm, dst_pm); 
  *     simcall_vm_resume(vm);
  *

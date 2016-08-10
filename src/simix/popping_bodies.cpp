@@ -119,10 +119,10 @@ inline static int simcall_BODY_process_sleep(double duration) {
     return simcall<int, double>(SIMCALL_PROCESS_SLEEP, duration);
   }
   
-inline static smx_activity_t simcall_BODY_execution_start(const char* name, double flops_amount, double priority, double bound, unsigned long affinity_mask) {
+inline static smx_activity_t simcall_BODY_execution_start(const char* name, double flops_amount, double priority, double bound) {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) simcall_HANDLER_execution_start(&SIMIX_process_self()->simcall, name, flops_amount, priority, bound, affinity_mask);
-    return simcall<smx_activity_t, const char*, double, double, double, unsigned long>(SIMCALL_EXECUTION_START, name, flops_amount, priority, bound, affinity_mask);
+    if (0) simcall_HANDLER_execution_start(&SIMIX_process_self()->simcall, name, flops_amount, priority, bound);
+    return simcall<smx_activity_t, const char*, double, double, double>(SIMCALL_EXECUTION_START, name, flops_amount, priority, bound);
   }
   
 inline static smx_activity_t simcall_BODY_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) {
@@ -147,12 +147,6 @@ inline static void simcall_BODY_execution_set_bound(smx_activity_t execution, do
     /* Go to that function to follow the code flow through the simcall barrier */
     if (0) SIMIX_execution_set_bound(execution, bound);
     return simcall<void, smx_activity_t, double>(SIMCALL_EXECUTION_SET_BOUND, execution, bound);
-  }
-  
-inline static void simcall_BODY_execution_set_affinity(smx_activity_t execution, sg_host_t ws, unsigned long mask) {
-    /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_execution_set_affinity(execution, ws, mask);
-    return simcall<void, smx_activity_t, sg_host_t, unsigned long>(SIMCALL_EXECUTION_SET_AFFINITY, execution, ws, mask);
   }
   
 inline static int simcall_BODY_execution_wait(smx_activity_t execution) {

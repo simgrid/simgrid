@@ -134,7 +134,7 @@ XBT_PUBLIC(void) sleep_until(double timeout)
 }
 
 e_smx_state_t execute(double flops) {
-  smx_activity_t s = simcall_execution_start(nullptr,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
+  smx_activity_t s = simcall_execution_start(nullptr,flops,1.0/*priority*/,0./*bound*/);
   return simcall_execution_wait(s);
 }
 

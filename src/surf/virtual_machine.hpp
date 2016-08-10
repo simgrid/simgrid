@@ -77,7 +77,6 @@ public:
   sg_host_t getPm();
 
   virtual void setBound(double bound)=0;
-  virtual void setAffinity(Cpu *cpu, unsigned long mask)=0;
 
   /* The vm object of the lower layer */
   CpuAction *action_;

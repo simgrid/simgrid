@@ -136,10 +136,6 @@ public:
   xbt_dynar_t speedPerPstate_ = nullptr; /*< List of supported CPU capacities (pstate related) */
   int pstate_ = 0;                   /*< Current pstate (index in the speedPeakList)*/
 
-  /* Note (hypervisor): */
-  lmm_constraint_t *p_constraintCore=nullptr;
-  void **p_constraintCoreId=nullptr;
-
 public:
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
   virtual void setSpeedTrace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
@@ -167,9 +163,6 @@ public:
   : Action(model, cost, failed) {} //FIXME:DEADCODE?
   CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {}
-
-  /** @brief Set the affinity of the current CpuAction */
-  virtual void setAffinity(Cpu *cpu, unsigned long mask);
 
   void setState(simgrid::surf::Action::State state) override;
 

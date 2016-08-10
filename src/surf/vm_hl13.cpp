@@ -202,9 +202,5 @@ void VMHL13::setBound(double bound){
  action_->setBound(bound);
 }
 
-void VMHL13::setAffinity(Cpu *cpu, unsigned long mask){
- action_->setAffinity(cpu, mask);
-}
-
 }
 }

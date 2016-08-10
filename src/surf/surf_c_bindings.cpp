@@ -262,10 +262,6 @@ void surf_vm_set_bound(sg_host_t vm, double bound){
   get_casted_vm(vm)->setBound(bound);
 }
 
-void surf_vm_set_affinity(sg_host_t vm, sg_host_t host, unsigned long mask){
-  get_casted_vm(vm)->setAffinity(host->pimpl_cpu, mask);
-}
-
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getContent();
 }

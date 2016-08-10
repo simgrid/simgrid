@@ -248,7 +248,7 @@ XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
 
 XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
                                                 double flops_amount,
-                                                double priority, double bound, unsigned long affinity_mask);
+                                                double priority, double bound);
 XBT_PUBLIC(smx_activity_t) simcall_execution_parallel_start(const char *name,
                                                      int host_nb,
                                                      sg_host_t *host_list,
@@ -259,7 +259,6 @@ XBT_PUBLIC(smx_activity_t) simcall_execution_parallel_start(const char *name,
 XBT_PUBLIC(void) simcall_execution_cancel(smx_activity_t execution);
 XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);
-XBT_PUBLIC(void) simcall_execution_set_affinity(smx_activity_t execution, sg_host_t host, unsigned long mask);
 XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 
 /******************************* VM simcalls ********************************/
@@ -270,7 +269,6 @@ XBT_PUBLIC(void) simcall_vm_start(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_migrate(sg_host_t vm, sg_host_t dst_pm);
 XBT_PUBLIC(void *) simcall_vm_get_pm(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_set_bound(sg_host_t vm, double bound);
-XBT_PUBLIC(void) simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask);
 XBT_PUBLIC(void) simcall_vm_resume(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm);
 XBT_PUBLIC(void) simcall_vm_save(sg_host_t vm);

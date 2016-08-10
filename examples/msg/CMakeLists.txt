@@ -1,7 +1,5 @@
-# disabled test: cloud-multicore. It's built (in the following list), but not tested (below)
-
 foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
-          async-waitany cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple cloud-two-tasks
+          async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm platform-failures 
           io-file io-remote io-storage task-priority process-create process-kill process-migration process-suspend 
           platform-properties maestro-set process-startkilltime synchro-semaphore trace-categories 
@@ -84,8 +82,6 @@ set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/actio
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/kill_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_d.xml
                                   ${CMAKE_CURRENT_SOURCE_DIR}/process-startkilltime/start_kill_d.xml       PARENT_SCOPE)
-
-# Reenable the cloud-multicore test in the following list
 
 foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
           async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 

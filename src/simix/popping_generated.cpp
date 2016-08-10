@@ -42,7 +42,6 @@ const char* simcall_names[] = {
   "SIMCALL_EXECUTION_CANCEL",
   "SIMCALL_EXECUTION_SET_PRIORITY",
   "SIMCALL_EXECUTION_SET_BOUND",
-  "SIMCALL_EXECUTION_SET_AFFINITY",
   "SIMCALL_EXECUTION_WAIT",
   "SIMCALL_PROCESS_ON_EXIT",
   "SIMCALL_PROCESS_AUTO_RESTART_SET",
@@ -172,7 +171,7 @@ case SIMCALL_PROCESS_SLEEP:
       break;
 
 case SIMCALL_EXECUTION_START:
-      simgrid::simix::marshal<smx_activity_t>(simcall->result, simcall_HANDLER_execution_start(simcall, simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<double>(simcall->args[1]), simgrid::simix::unmarshal<double>(simcall->args[2]), simgrid::simix::unmarshal<double>(simcall->args[3]), simgrid::simix::unmarshal<unsigned long>(simcall->args[4])));
+      simgrid::simix::marshal<smx_activity_t>(simcall->result, simcall_HANDLER_execution_start(simcall, simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<double>(simcall->args[1]), simgrid::simix::unmarshal<double>(simcall->args[2]), simgrid::simix::unmarshal<double>(simcall->args[3])));
       SIMIX_simcall_answer(simcall);
       break;
 
@@ -193,11 +192,6 @@ case SIMCALL_EXECUTION_SET_PRIORITY:
 
 case SIMCALL_EXECUTION_SET_BOUND:
       SIMIX_execution_set_bound(simgrid::simix::unmarshal<smx_activity_t>(simcall->args[0]), simgrid::simix::unmarshal<double>(simcall->args[1]));
-      SIMIX_simcall_answer(simcall);
-      break;
-
-case SIMCALL_EXECUTION_SET_AFFINITY:
-      SIMIX_execution_set_affinity(simgrid::simix::unmarshal<smx_activity_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]), simgrid::simix::unmarshal<unsigned long>(simcall->args[2]));
       SIMIX_simcall_answer(simcall);
       break;
 

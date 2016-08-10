@@ -631,7 +631,7 @@ smx_activity_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer
     return nullptr;
   } else {
     /* FIXME: computation size is zero. Is it okay that bound is zero ? */
-    return SIMIX_execution_start(process, "suspend", 0.0, 1.0, 0.0, 0);
+    return SIMIX_execution_start(process, "suspend", 0.0, 1.0, 0.0);
   }
 }
 

@@ -33,8 +33,6 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
   priv->dp_updated_by_deleted_tasks = 0;
   priv->is_migrating = 0;
 
-  priv->affinity_mask_db = xbt_dict_new_homogeneous(nullptr);
-
   priv->file_descriptor_table = xbt_dynar_new(sizeof(int), nullptr);
   for (int i=sg_storage_max_file_descriptors-1; i>=0;i--)
     xbt_dynar_push_as(priv->file_descriptor_table, int, i);
@@ -121,7 +119,6 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
   if (size > 0)
     XBT_WARN("dp_objs: %u pending task?", size);
   xbt_dict_free(&priv->dp_objs);
-  xbt_dict_free(&priv->affinity_mask_db);
   xbt_dynar_free(&priv->file_descriptor_table);
 
   free(priv);

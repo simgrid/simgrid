@@ -1,24 +1,31 @@
 SimGrid (3.14) UNRELEASED; urgency=low
 
+ Documentation
+ * The whole documentation was reworked and reorganized. There is
+   still many room for improvement here, but we're on it.
+
  SMPI
  * Call-location tracing for SMPI.
    You can add the exact location (filename / linenumber) of an MPI call to 
    your trace files and slow down or speed up the simulation between two 
-   consecutive calls by using an adjustment file. (See the documentation.)
+   consecutive calls by using an adjustment file (see the documentation).
 
- * Fixed computation of timings for MPI_Send, MPI_Recv but possibly also others
+ * Fixed computation of timings for MPI_Send, MPI_Recv & possibly also others
    We've found a bug that prevented SMPI to account for MPI_Send, MPI_Recv
    and others (in some cases) in a correct way. That is, the smpi/os, smpi/or
    values were ignored in some cases. The timings of these functions can now
    be significantly different.
 
- MSG
+ Dropped functions and features
  * msg_mailbox_t and associated functions. Use s4u::Mailbox instead.
    - MSG_mailbox_is_empty() -> Mailbox::empty()
    - MSG_mailbox_front() -> Mailbox::front()
    - MSG_mailbox_get_by_alias() -> simgrid::s4u::Mailbox::byName(name)
    - MSG_mailbox_get_task_ext() -> MSG_task_receive_ext()
    - MSG_mailbox_get_task_ext_bounded -> MSG_task_receive_ext_bounded
+ * Task affinity. Its intended behavior (that was very badly tested
+   and probably not really working) was deceiving what most users
+   would have hoped here. 
 
  XML:
  * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and

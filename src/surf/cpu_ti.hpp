@@ -95,7 +95,6 @@ public:
   void setMaxDuration(double duration) override;
   void setPriority(double priority) override;
   double getRemains() override;
-  void setAffinity(Cpu * /*cpu*/, unsigned long /*mask*/) override {};
 
   CpuTi *cpu_;
   int indexHeap_;

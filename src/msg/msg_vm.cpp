@@ -369,12 +369,9 @@ static int migration_rx_fun(int argc, char *argv[])
    msg_vm_t vm = ms->vm;
    msg_host_t src_pm = ms->src_pm;
    msg_host_t dst_pm = ms-> dst_pm;
-   msg_host_priv_t priv = sg_host_msg(vm);
 
 // TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an inconsistent
 //       state. I should check with Takahiro in order to make this portion of code atomic
-//  /* deinstall the current affinity setting for the CPU */
-//  simcall_vm_set_affinity(vm, src_pm, 0);
 //
 //  /* Update the vm location */
 //  simcall_vm_migrate(vm, dst_pm);
@@ -383,15 +380,6 @@ static int migration_rx_fun(int argc, char *argv[])
 //  simcall_vm_resume(vm);
 //
    simcall_vm_migratefrom_resumeto(vm, src_pm, dst_pm); 
-
-  /* install the affinity setting of the VM on the destination pm */
-  {
-
-    unsigned long affinity_mask =
-       (unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(priv->affinity_mask_db, (char *)dst_pm, sizeof(msg_host_t));
-    simcall_vm_set_affinity(vm, dst_pm, affinity_mask);
-    XBT_DEBUG("set affinity(0x%04lx@%s) for %s", affinity_mask, MSG_host_get_name(dst_pm), MSG_host_get_name(vm));
-  }
 
   {
    // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
@@ -1033,27 +1021,4 @@ msg_host_t MSG_vm_get_pm(msg_vm_t vm)
 void MSG_vm_set_bound(msg_vm_t vm, double bound)
 {
   simcall_vm_set_bound(vm, bound);
-}
-
-/** @brief Set the CPU affinity of a given VM.
- *  @ingroup msg_VMs
- *
- * This function changes the CPU affinity of a given VM. Usage is the same as
- * MSG_task_set_affinity(). See the MSG_task_set_affinity() for details.
- */
-void MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask)
-{
-  msg_host_priv_t priv = sg_host_msg(vm);
-
-  if (mask == 0)
-    xbt_dict_remove_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm));
-  else
-    xbt_dict_set_ext(priv->affinity_mask_db, (char *) pm, sizeof(pm), (void *)(uintptr_t) mask, nullptr);
-
-  msg_host_t pm_now = MSG_vm_get_pm(vm);
-  if (pm_now == pm) {
-    XBT_DEBUG("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(pm), MSG_host_get_name(vm));
-    simcall_vm_set_affinity(vm, pm, mask);
-  } else
-    XBT_DEBUG("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(pm), MSG_host_get_name(vm));
 }

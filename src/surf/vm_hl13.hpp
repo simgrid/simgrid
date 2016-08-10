@@ -57,7 +57,6 @@ public:
   void migrate(sg_host_t ind_dst_pm) override;
 
   void setBound(double bound) override;
-  void setAffinity(Cpu *cpu, unsigned long mask) override;
 };
 
 /**********

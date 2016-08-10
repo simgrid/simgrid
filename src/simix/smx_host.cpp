@@ -203,12 +203,12 @@ void SIMIX_host_autorestart(sg_host_t host)
 }
 
 smx_activity_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount,
-                                              double priority, double bound, unsigned long affinity_mask) {
-  return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound,affinity_mask);
+                                              double priority, double bound) {
+  return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound);
 }
 
 smx_activity_t SIMIX_execution_start(smx_process_t issuer, const char *name, double flops_amount, double priority,
-                                    double bound, unsigned long affinity_mask){
+                                    double bound){
 
   /* alloc structures and initialize */
   simgrid::kernel::activity::Exec *exec = new simgrid::kernel::activity::Exec(name, issuer->host);
@@ -222,13 +222,6 @@ smx_activity_t SIMIX_execution_start(smx_process_t issuer, const char *name, dou
 
     if (bound > 0)
       static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
-
-    if (affinity_mask != 0) {
-      /* just a double check to confirm that this host is the host where this task is running. */
-      xbt_assert(exec->host == issuer->host);
-      static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)
-        ->setAffinity(issuer->host->pimpl_cpu, affinity_mask);
-    }
   }
 
   XBT_DEBUG("Create execute synchro %p: %s", exec, exec->name.c_str());
@@ -286,16 +279,6 @@ void SIMIX_execution_set_bound(smx_activity_t synchro, double bound)
   simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
   if(exec->surf_exec)
     static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setBound(bound);
-}
-
-void SIMIX_execution_set_affinity(smx_activity_t synchro, sg_host_t host, unsigned long mask)
-{
-  simgrid::kernel::activity::Exec *exec = static_cast<simgrid::kernel::activity::Exec *>(synchro);
-  if(exec->surf_exec) {
-    /* just a double check to confirm that this host is the host where this task is running. */
-    xbt_assert(exec->host == host);
-    static_cast<simgrid::surf::CpuAction*>(exec->surf_exec)->setAffinity(host->pimpl_cpu, mask);
-  }
 }
 
 void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t synchro)

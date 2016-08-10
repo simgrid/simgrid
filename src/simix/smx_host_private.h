@@ -41,7 +41,7 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
 XBT_PRIVATE void SIMIX_host_restart_processes(sg_host_t host);
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 XBT_PRIVATE smx_activity_t SIMIX_execution_start(smx_process_t issuer, const char *name,
-    double flops_amount, double priority, double bound, unsigned long affinity_mask);
+    double flops_amount, double priority, double bound);
 XBT_PRIVATE smx_activity_t SIMIX_execution_parallel_start(const char *name,
     int host_nb, sg_host_t *host_list,
     double *flops_amount, double *bytes_amount,
@@ -49,7 +49,6 @@ XBT_PRIVATE smx_activity_t SIMIX_execution_parallel_start(const char *name,
 XBT_PRIVATE void SIMIX_execution_cancel(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_execution_set_priority(smx_activity_t synchro, double priority);
 XBT_PRIVATE void SIMIX_execution_set_bound(smx_activity_t synchro, double bound);
-XBT_PRIVATE void SIMIX_execution_set_affinity(smx_activity_t synchro, sg_host_t host, unsigned long mask);
 
 XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec);
 
@@ -80,8 +79,6 @@ XBT_PRIVATE void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm);
 XBT_PRIVATE void *SIMIX_vm_get_pm(sg_host_t ind_vm);
 
 XBT_PRIVATE void SIMIX_vm_set_bound(sg_host_t ind_vm, double bound);
-
-XBT_PRIVATE void SIMIX_vm_set_affinity(sg_host_t ind_vm, sg_host_t ind_pm, unsigned long mask);
 
 XBT_PRIVATE void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm);
 

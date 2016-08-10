@@ -307,16 +307,6 @@ XBT_PUBLIC(sg_host_t) surf_vm_get_pm(sg_host_t resource);
 XBT_PUBLIC(void) surf_vm_set_bound(sg_host_t resource, double bound);
 
 /**
- * @brief [brief description]
- * @details [long description]
- *
- * @param resource [description]
- * @param cpu [description]
- * @param mask [description]
- */
-XBT_PUBLIC(void) surf_vm_set_affinity(sg_host_t resource, sg_host_t cpu, unsigned long mask);
-
-/**
  * @brief Unlink a file descriptor
  *
  * @param host The surf host

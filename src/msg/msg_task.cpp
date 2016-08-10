@@ -68,7 +68,6 @@ msg_task_t MSG_task_create(const char *name, double flop_amount, double message_
   simdata->source = nullptr;
   simdata->priority = 1.0;
   simdata->bound = 0;
-  simdata->affinity_mask_db = xbt_dict_new_homogeneous(nullptr);
   simdata->rate = -1.0;
   simdata->isused = 0;
 
@@ -332,77 +331,4 @@ void MSG_task_set_bound(msg_task_t task, double bound)
   task->simdata->bound = bound;
   if (task->simdata->compute)
     simcall_execution_set_bound(task->simdata->compute, task->simdata->bound);
-}
-
-/** \ingroup m_task_management
- * \brief Changes the CPU affinity of a computation task.
- *
- * When pinning the given task to the first CPU core of the given host, use 0x01 for the mask value. Each bit of the
- * mask value corresponds to each CPU core. See taskset(1) on Linux.
- *
- * \param task a target task
- * \param host the host having a multi-core CPU
- * \param mask the bit mask of a new CPU affinity setting for the task
- *
- * Usage:
- * 0. Define a host with multiple cores.
- *    \<host id="PM0" power="1E8" core="2"/\>
- *
- * 1. Pin a given task to the first CPU core of a host.
- *   MSG_task_set_affinity(task, pm0, 0x01);
- *
- * 2. Pin a given task to the third CPU core of a host. Turn on the third bit of the mask.
- *   MSG_task_set_affinity(task, pm0, 0x04); // 0x04 == 100B
- *
- * 3. Pin a given VM to the first CPU core of a host.
- *   MSG_vm_set_affinity(vm, pm0, 0x01);
- *
- * See examples/msg/cloud/multicore.c for more information.
- *
- * Note:
- * 1. The current code does not allow an affinity of a task to multiple cores.
- *    The mask value 0x03 (i.e., a given task will be executed on the first core or the second core) is not allowed.
- *    The mask value 0x01 or 0x02 works. See cpu_cas01.c for details.
- *
- * 2. It is recommended to first compare simulation results in both the Lazy and Full calculation modes
- *    (using --cfg=cpu/optim:Full or not). Fix cpu_cas01.c if you find wrong results in the Lazy mode.
- */
-void MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask)
-{
-  xbt_assert(task, "Invalid parameter");
-  xbt_assert(task->simdata, "Invalid parameter");
-
-  if (mask == 0) {
-    /* 0 means clear */
-      /* We need remove_ext() not throwing exception. */
-      void *ret = xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(msg_host_t));
-      if (ret != nullptr)
-        xbt_dict_remove_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host));
-  } else
-    xbt_dict_set_ext(task->simdata->affinity_mask_db, (char *) host, sizeof(host), (void *)(uintptr_t) mask, nullptr);
-
-  /* We set affinity data of this task. If the task is being executed, we actually change the affinity setting of the
-   * task. Otherwise, this change will be applied when the task is executed. */
-  if (!task->simdata->compute) {
-    /* task is not yet executed */
-    XBT_INFO("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(host),
-             MSG_task_get_name(task));
-    return;
-  }
-
-  simgrid::kernel::activity::Exec *compute = task->simdata->compute;
-  msg_host_t host_now = compute->host;  // simix_private.h is necessary
-  if (host_now != host) {
-    /* task is not yet executed on this host */
-    XBT_INFO("set affinity(0x%04lx@%s) for %s (not active now)", mask, MSG_host_get_name(host),
-             MSG_task_get_name(task));
-    return;
-  }
-
-  /* task is being executed on this host. so change the affinity now */
-  /* check it works. remove me if it works. */
-  xbt_assert(static_cast<unsigned long>((uintptr_t) xbt_dict_get_or_null_ext(task->simdata->affinity_mask_db,
-             (char*)(host), sizeof(msg_host_t))) == mask);
-  XBT_INFO("set affinity(0x%04lx@%s) for %s", mask, MSG_host_get_name(host), MSG_task_get_name(task));
-  simcall_execution_set_affinity(task->simdata->compute, host, mask);
 }

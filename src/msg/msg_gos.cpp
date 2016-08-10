@@ -69,15 +69,8 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
                                                        1.0, -1.0));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
-      unsigned long affinity_mask =
-         static_cast<unsigned long>((uintptr_t) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host,
-                                                             sizeof(msg_host_t)));
-      XBT_DEBUG("execute %s@%s with affinity(0x%04lx)",
-                MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
-
-          simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(
-              simcall_execution_start(task->name, simdata->flops_amount, simdata->priority,
-                                                 simdata->bound, affinity_mask));
+      simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(
+          simcall_execution_start(task->name, simdata->flops_amount, simdata->priority, simdata->bound));
     }
     simcall_set_category(simdata->compute, task->category);
     p_simdata->waiting_action = simdata->compute;
