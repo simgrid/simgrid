@@ -30,7 +30,7 @@
   - @subpage outcomes_logs
   - @subpage outcomes_vizu
   - @subpage outcomes_MC
-- Use Cases
+- @subpage howto
   - Energy, Clouds
   - Scalability Tweaks
   - @subpage tutorial

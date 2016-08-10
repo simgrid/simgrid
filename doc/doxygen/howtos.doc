@@ -1,0 +1,61 @@
+/** @page howto Use Cases and Howtos
+
+@tableofcontents
+
+There is no perfect model, but only models that are adapted to the
+specific study that you want to do. SimGrid provide several advanced
+mechanisms that you can adapt to model the situation that you are
+interested into, and it is often uneasy to see where to start with.
+
+This page collects several hints and tricks on modeling situations.
+Most probably, the exact situation that you want to model will not be
+described here (unless we already [scooped
+you](http://www.phdcomics.com/comics/archive.php?comicid=789)), but we
+hope you will find some ideas and see how to use the modeling options
+that SimGrid provides.
+
+Of course, you should also check the @ref examples page, that shows
+more detailed usage examples. As for the rest of the documentation
+(and of SimGrid, actually), any contribution is welcome.
+
+
+@section howto_bootenergy Modeling machine bootup and shutdown periods
+
+When a physical host boots up, a lot of things happen. It takes time
+during which the machine is not usable but dissipates energy, and
+programs actually die and restart during a reboot. Since there is many
+ways to model it, SimGrid does not do any modeling choice for you but
+the most obvious ones.
+
+Any actor (or process in MSG) running on an host that is shut down
+will be killed and all its activities (tasks in MSG) will be
+automatically canceled. If killed the actor was marked as
+auto-restartable (with simgrid::s4u::Actor::setAutoRestart() or with
+MSG_process_auto_restart_set()), it will start anew with the same
+parameters when the host boots back up.
+
+By default, shutdowns and bootups are instantaneous. If you want to
+add an extra delay, you have to do that yourself, for example from an
+/controler/ actor that runs on another host. The best way to do so is
+to declare a fictionous pstate where the CPU delivers 0 flop per
+second (so every activity on that host will be frozen when the host is
+in this pstate). When you want to switch the host off, your controler
+switches the host to that specific pstate (with
+simgrid::s4u::Host::setPstate()), waits for the amount of time that
+you decided necessary for your host to shut down, and turns the host
+off (with simgrid::s4u::Host::turnOff()). To boot up, switch the host
+on, go into the specific pstate, wait a while and go to a more regular
+pstate.
+
+To model the energy dissipation, you need to put the right energy
+consumption in your startup/shutdown specific pstate. Remember that
+the energy consumed is equal to the instantaneous consumption
+multiplied by the time in which the host keeps in that state. Do the
+maths, and set the right instantaneous consumption to your pstate, and
+you'll get the whole boot period to consume the amount of energy that
+you want. You may want to have one fictionous pstate for the bootup
+period and another one for the shutdown period.
+
+Of course, this is only one possible way to model these things. YMMV ;)
+
+*/

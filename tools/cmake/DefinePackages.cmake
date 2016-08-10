@@ -814,6 +814,7 @@ set(DOC_SOURCES
   doc/doxygen/footer.html
   doc/doxygen/getting_started.doc
   doc/doxygen/header.html
+  doc/doxygen/howtos.doc
   doc/doxygen/index.doc
   doc/doxygen/inside.doc
   doc/doxygen/inside_tests.doc
