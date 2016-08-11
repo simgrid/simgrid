@@ -21,7 +21,6 @@ typedef struct s_finger {
   char mailbox[MAILBOX_NAME_SIZE]; // string representation of the id
 } s_finger_t;
 
-typedef s_finger_t *finger_t;
 /* Node data. */
 
 typedef struct s_node {

@@ -738,8 +738,9 @@ static int node(int argc, char *argv[])
 
   if (join_success) {
     double now = MSG_get_clock();
+    int listen = 0;
+    int no_op = 0;
     while (now < init_time + deadline && now < max_simulation_time) {
-
       if (node.comm_receive == NULL) {
         task_received = NULL;
         node.comm_receive = MSG_task_irecv(&task_received, node.mailbox);
@@ -748,8 +749,6 @@ static int node(int argc, char *argv[])
 
       if (!MSG_comm_test(node.comm_receive)) { // no task was received: make some periodic calls
         if(MC_is_active() || MC_record_replay_is_active()){
-          int listen = 0;
-          int no_op = 0;
           int sub_protocol = MC_random(0, 4);
           if(MC_is_active() && !MC_visited_reduction() && no_op)
             MC_cut();

@@ -583,7 +583,7 @@ int main(int argc, char *argv[])
         timeout = xbt_str_parse_int(options[0] + length, "Invalid timeout parameter: %s");
         XBT_DEBUG("Set timeout to %d", timeout);
       } else {
-        xbt_die("Invalid chord option '%s'", options[0]);
+        xbt_die("Invalid pastry option '%s'", options[0]);
       }
     }
     options++;
