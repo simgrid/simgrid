@@ -73,6 +73,16 @@ void wait_for_requests(void)
   }
 }
 
+/** @brief returns if there this transition can proceed in a finite amount of time
+ *
+ * It is used in the model-checker to not get into self-deadlock where it would execute a never ending transition.
+ *
+ * Only WAIT operations (on comm, on mutex, etc) can ever return false because they could lock the MC exploration.
+ * Wait operations are OK and return true in only two situations:
+ *  - if the wait will succeed immediately (if both peer of the comm are there already or if the mutex is available)
+ *  - if a timeout is provided, because we can fire the timeout if the transition is not ready without blocking in this transition for ever.
+ *
+ */
 // Called from both MCer and MCed:
 bool request_is_enabled(smx_simcall_t req)
 {
@@ -82,6 +92,11 @@ bool request_is_enabled(smx_simcall_t req)
   switch (req->call) {
   case SIMCALL_NONE:
     return false;
+
+  case SIMCALL_SEM_ACQUIRE:
+    xbt_die("Don't use semaphores in model-checked code, it's not supported yet");
+  case SIMCALL_COND_WAIT:
+    xbt_die("Don't use condition variables in model-checked code, it's not supported yet");
 
   case SIMCALL_COMM_WAIT:
   {
@@ -157,9 +172,6 @@ bool request_is_enabled(smx_simcall_t req)
     }
     return false;
   }
-
-  case SIMCALL_MUTEX_TRYLOCK:
-    return true;
 
   case SIMCALL_MUTEX_LOCK: {
     smx_mutex_t mutex = simcall_mutex_lock__get__mutex(req);
