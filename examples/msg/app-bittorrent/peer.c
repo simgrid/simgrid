@@ -476,8 +476,9 @@ int select_piece_to_download(peer_t peer, connection_t remote_peer)
   // end game mode
   if (xbt_dynar_length(peer->current_pieces) >= (FILE_PIECES - peer->pieces) &&
       (is_interested(peer, remote_peer) != 0)) {
-    if(ENABLE_END_GAME_MODE == 0)
+    # if ENABLE_END_GAME_MODE == 0
       return -1;
+    #endif
     int i;
     int nb_interesting_pieces = 0;
     int current_index = 0;
