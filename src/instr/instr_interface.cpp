@@ -29,9 +29,7 @@ extern xbt_dict_t trivaEdgeTypes;
 
 static xbt_dynar_t instr_dict_to_dynar (xbt_dict_t filter)
 {
-  if (!TRACE_is_enabled())
-    return nullptr;
-  if (!TRACE_needs_platform())
+  if (!TRACE_is_enabled() || !TRACE_needs_platform())
     return nullptr;
 
   xbt_dynar_t ret = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
@@ -81,21 +79,17 @@ void TRACE_category(const char *category)
  */
 void TRACE_category_with_color (const char *category, const char *color)
 {
-  /* safe switch */
-  if (!TRACE_is_enabled())
+  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with categories */
+  if (!TRACE_is_enabled() || !TRACE_needs_platform())
     return;
 
   if (!(TRACE_categorized() && category != nullptr))
     return;
 
-  /* if platform is not traced, we can't deal with categories */
-  if (!TRACE_needs_platform())
+  //check if category is already created
+  if (xbt_dict_get_or_null(created_categories, category) != nullptr)
     return;
 
-  //check if category is already created
-  char *created = static_cast<char*>(xbt_dict_get_or_null(created_categories, category));
-  if (created)
-    return;
   xbt_dict_set (created_categories, category, xbt_strdup("1"), nullptr);
 
   //define final_color
@@ -130,9 +124,7 @@ void TRACE_category_with_color (const char *category, const char *color)
  */
 xbt_dynar_t TRACE_get_categories ()
 {
-  if (!TRACE_is_enabled())
-    return nullptr;
-  if (!TRACE_categorized())
+  if (!TRACE_is_enabled() || !TRACE_categorized())
     return nullptr;
 
   return instr_dict_to_dynar (created_categories);
@@ -150,20 +142,15 @@ xbt_dynar_t TRACE_get_categories ()
  */
 void TRACE_declare_mark(const char *mark_type)
 {
-  /* safe switch */
-  if (!TRACE_is_enabled())
-    return;
-
-  /* if platform is not traced, we don't allow marks */
-  if (!TRACE_needs_platform())
+  /* safe switchs. tracing has to be activated and if platform is not traced, we can't deal with marks */
+  if (!TRACE_is_enabled() || !TRACE_needs_platform())
     return;
 
   if (!mark_type)
     THROWF (tracing_error, 1, "mark_type is nullptr");
 
   //check if mark_type is already declared
-  char *created = static_cast<char*>(xbt_dict_get_or_null(declared_marks, mark_type));
-  if (created) {
+  if (xbt_dict_get_or_null(declared_marks, mark_type) != nullptr) {
     THROWF (tracing_error, 1, "mark_type with name (%s) is already declared", mark_type);
   }
 
@@ -189,12 +176,8 @@ void TRACE_declare_mark(const char *mark_type)
  */
 void TRACE_declare_mark_value_with_color (const char *mark_type, const char *mark_value, const char *mark_color)
 {
-  /* safe switch */
-  if (!TRACE_is_enabled())
-    return;
-
-  /* if platform is not traced, we don't allow marks */
-  if (!TRACE_needs_platform())
+  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
+  if (!TRACE_is_enabled() || !TRACE_needs_platform())
     return;
 
   if (!mark_type)
@@ -248,12 +231,8 @@ void TRACE_declare_mark_value (const char *mark_type, const char *mark_value)
  */
 void TRACE_mark(const char *mark_type, const char *mark_value)
 {
-  /* safe switch */
-  if (!TRACE_is_enabled())
-    return;
-
-  /* if platform is not traced, we don't allow marks */
-  if (!TRACE_needs_platform())
+  /* safe switches. tracing has to be activated and if platform is not traced, we can't deal with marks */
+  if (!TRACE_is_enabled() || !TRACE_needs_platform())
     return;
 
   if (!mark_type)
@@ -290,12 +269,8 @@ xbt_dynar_t TRACE_get_marks ()
 static void instr_user_variable(double time, const char *resource, const char *variable, const char *father_type,
                          double value, InstrUserVariable what, const char *color, xbt_dict_t filter)
 {
-  /* safe switch */
-  if (!TRACE_is_enabled())
-    return;
-
-  /* if platform is not traced, we don't allow user variables */
-  if (!TRACE_needs_platform())
+  /* safe switches. tracing has to be activated and if platform is not traced, we don't allow user variables */
+  if (!TRACE_is_enabled() || !TRACE_needs_platform())
     return;
 
   //check if variable is already declared
