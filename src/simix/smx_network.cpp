@@ -46,7 +46,7 @@ smx_mailbox_t SIMIX_mbox_create(const char *name)
 {
   xbt_assert(name, "Mailboxes must have a name");
   /* two processes may have pushed the same mbox_create simcall at the same time */
-  smx_mailbox_t mbox = (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name);
+  smx_mailbox_t mbox = static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
   if (!mbox) {
     mbox = new simgrid::simix::Mailbox(name);
     XBT_DEBUG("Creating a mailbox at %p with name %s", mbox, name);
@@ -58,13 +58,13 @@ smx_mailbox_t SIMIX_mbox_create(const char *name)
 void SIMIX_mbox_free(void *data)
 {
   XBT_DEBUG("mbox free %p", data);
-  smx_mailbox_t mbox = (smx_mailbox_t) data;
+  smx_mailbox_t mbox = static_cast<smx_mailbox_t>(data);
   delete mbox;
 }
 
 smx_mailbox_t SIMIX_mbox_get_by_name(const char *name)
 {
-  return (smx_mailbox_t) xbt_dict_get_or_null(mailboxes, name);
+  return static_cast<smx_mailbox_t>(xbt_dict_get_or_null(mailboxes, name));
 }
 
 /**
@@ -281,7 +281,7 @@ smx_activity_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void
     } else {
       simgrid::kernel::activity::Comm *other_comm = static_cast<simgrid::kernel::activity::Comm*>(other_synchro);
 
-      if(other_comm->surf_comm && other_comm->remains()==0.0) {
+      if(other_comm->surf_comm && other_comm->remains() < 1e-12) {
         XBT_DEBUG("comm %p has been already sent, and is finished, destroy it",other_comm);
         other_comm->state = SIMIX_DONE;
         other_comm->type = SIMIX_COMM_DONE;
@@ -320,7 +320,7 @@ smx_activity_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void
   other_comm->dst_buff_size = dst_buff_size;
   other_comm->dst_data = data;
 
-  if (rate != -1.0 && (other_comm->rate == -1.0 || rate < other_comm->rate))
+  if (rate > -1.0 && (other_comm->rate < 0.0 || rate < other_comm->rate))
     other_comm->rate = rate;
 
   other_comm->match_fun = match_fun;
@@ -389,7 +389,7 @@ void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t synchro, do
     } else {
       /* If we reached this point, the wait simcall must have a timeout */
       /* Otherwise it shouldn't be enabled and executed by the MC */
-      if (timeout == -1)
+      if (timeout < 0.0)
         THROW_IMPOSSIBLE;
 
       simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
@@ -483,7 +483,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
   unsigned int cursor = 0;
 
   if (MC_is_active() || MC_record_replay_is_active()){
-    if (timeout != -1)
+    if (timeout > 0.0)
       xbt_die("Timeout not implemented for waitany in the model-checker"); 
     int idx = SIMCALL_GET_MC_VALUE(simcall);
     synchro = xbt_dynar_get_as(synchros, idx, smx_activity_t);
@@ -494,7 +494,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
     return;
   }
   
-  if (timeout == -1 ){
+  if (timeout < 0.0){
     simcall->timer = NULL;
   } else {
     simcall->timer = SIMIX_timer_set(timeout, [simcall]() {
