@@ -74,6 +74,10 @@ int Actor::getPid(){
   return pimpl_->pid;
 }
 
+int Actor::getPpid() {
+  return pimpl_->ppid;
+}
+
 void Actor::setKillTime(double time) {
   simcall_process_set_kill_time(pimpl_,time);
 }
@@ -156,6 +160,10 @@ void send(Mailbox &chan, void *payload, size_t simulatedSize) {
 
 int getPid() {
   return SIMIX_process_self()->pid;
+}
+
+int getPpid() {
+  return SIMIX_process_self()->ppid;
 }
 
 }

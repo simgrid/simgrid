@@ -223,6 +223,8 @@ public:
   s4u::Host *getHost();
   /** Retrieves the PID of that actor */
   int getPid();
+  /** Retrieves the PPID of that actor */
+  int getPpid();
 
   /** If set to true, the actor will automatically restart when its host reboots */
   void setAutoRestart(bool autorestart);
@@ -305,6 +307,11 @@ namespace this_actor {
    * Return the PID of the current actor.
    */
   XBT_PUBLIC(int) getPid();
+  
+  /**
+   * Return the PPID of the current actor.
+   */
+  int getPpid();
 
 };
 
