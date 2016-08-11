@@ -14,13 +14,15 @@ class Sleeper extends Process {
     super(host,name,args);
   }
   public void main(String[] args) {
-    while (true) {
+    boolean stillAlive = true;
+    while (stillAlive) {
       Msg.info("I'm not dead");
       try {
         Process.sleep(10);
+        stillAlive = true;
       } catch (HostFailureException e) {
+        stillAlive = false;
         Msg.info("catch HostException: "+e.getLocalizedMessage());
-        break; //Break is needed to finalize the endless loop 
       }
     }
   }

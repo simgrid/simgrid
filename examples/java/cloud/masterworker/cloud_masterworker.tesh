@@ -12,8 +12,8 @@ $ java -classpath ${classpath:=.} cloud/masterworker/Main ${srcdir:=.}/../platfo
 > [  0.000000] (1:Master@Jacquelin) Launched 2 VMs
 > [  0.000000] (1:Master@Jacquelin) Send a first batch of work to everyone
 > [  0.000000] (1:Master@Jacquelin) Sending to WRK00
-> [  0.000000] (2:WRK00@VM00) WRK00 is listenning on MBOX:WRK00
-> [  0.000000] (3:WRK01@VM01) WRK01 is listenning on MBOX:WRK01
+> [  0.000000] (2:WRK00@VM00) WRK00 is listening on MBOX:WRK00
+> [  0.000000] (3:WRK01@VM01) WRK01 is listening on MBOX:WRK01
 > [  0.892161] (1:Master@Jacquelin) Sending to WRK01
 > [  0.892161] (2:WRK00@VM00) Received "Task00". Processing it.
 > [  0.892161] (2:WRK00@VM00) WRK00 executed task (Task00)

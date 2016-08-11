@@ -619,10 +619,12 @@ void update_choked_peers(peer_t peer)
           i++;
         }
         xbt_dict_cursor_free(&cursor);
-        if ((peer_choosed->interested == 0) ||
-            (peer_choosed->choked_upload == 0)) {
+        if (peer_choosed == NULL)
+          THROWF(unknown_error, 0, "A peer should have be selected at this point");
+        else if ((peer_choosed->interested == 0) || (peer_choosed->choked_upload == 0))
           peer_choosed = NULL;
-        }
+        else
+          XBT_DEBUG("Nothing to do, keep going");
         j++;
       } while (peer_choosed == NULL && j < MAXIMUM_PAIRS);
     } else {

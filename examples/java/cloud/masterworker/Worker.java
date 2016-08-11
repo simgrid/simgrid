@@ -20,20 +20,18 @@ public class Worker extends Process {
   }
 
   public void main(String[] args) throws MsgException {
-    Msg.info(this.getName() +" is listenning on MBOX:WRK0"+ number);
+    Msg.info(this.getName() +" is listening on MBOX:WRK0"+ number);
     while(true) {
-      Task task;
+      Task task =null;
       try {
         task = Task.receive("MBOX:WRK0"+number);
+        if (task == null)
+          break;
       } catch (MsgException e) {
         Msg.debug("Received failed. I'm done. See you!");
-        break;
       }
       Msg.info("Received \"" + task.getName() +  "\". Processing it.");
-      try {
-        task.execute();
-      } catch (MsgException e) {
-      }
+      task.execute();
       Msg.info(this.getName() +" executed task (" + task.getName()+")");
     }
   }
