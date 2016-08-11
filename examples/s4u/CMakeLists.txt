@@ -29,7 +29,6 @@ set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/basic/deployment.x
 set(txt_files     ${txt_files}    ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm_split_p0.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm_split_p1.txt
                                   ${CMAKE_CURRENT_SOURCE_DIR}/actions-comm/s4u_actions-comm.txt
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/README
                                   ${CMAKE_CURRENT_SOURCE_DIR}/README.doc                                   PARENT_SCOPE)
 
 foreach(example basic io mutex actions-comm)
