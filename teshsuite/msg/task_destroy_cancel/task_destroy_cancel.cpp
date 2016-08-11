@@ -15,11 +15,9 @@ static int master(int argc, char *argv[])
   double task_comm_size = 1E6;
   double timeout = 1;
 
-  const char * mailbox = "jupi";
-
   msg_task_t task = MSG_task_create("normal", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Sending task: \"%s\"", task->name);
-  MSG_task_send_with_timeout(task, mailbox, timeout);
+  MSG_task_send_with_timeout(task, "worker_mailbox", timeout);
 
   task = MSG_task_create("cancel directly", task_comp_size, task_comm_size, NULL);
   XBT_INFO("Canceling task \"%s\" directly", task->name);
@@ -31,33 +29,33 @@ static int master(int argc, char *argv[])
   MSG_task_destroy(task);
 
   task = MSG_task_create("cancel", task_comp_size, task_comm_size, NULL);
-  msg_comm_t comm = MSG_task_isend(task, mailbox);
+  msg_comm_t comm = MSG_task_isend(task, "worker_mailbox");
   XBT_INFO("Canceling task \"%s\" during comm", task->name);
   MSG_task_cancel(task);
   try {
     MSG_comm_wait(comm, -1);
   }
-  catch (xbt_ex& ex) {;
+  catch (xbt_ex& ex) {
     MSG_comm_destroy(comm);
   }
   MSG_task_destroy(task);
 
   task = MSG_task_create("finalize", task_comp_size, task_comm_size, NULL);
-  comm = MSG_task_isend(task, mailbox);
+  comm = MSG_task_isend(task, "worker_mailbox");
   XBT_INFO("Destroying task \"%s\" during comm", task->name);
   MSG_task_destroy(task);
   try {
     MSG_comm_wait(comm, -1);
   }
-  catch (xbt_ex& ex) {;
+  catch (xbt_ex& ex) {
     MSG_comm_destroy(comm);
   }
 
   task = MSG_task_create("cancel", task_comp_size, task_comm_size, NULL);
-  MSG_task_send_with_timeout(task, mailbox, timeout);
+  MSG_task_send_with_timeout(task, "worker_mailbox", timeout);
 
   task = MSG_task_create("finalize", task_comp_size, task_comm_size, NULL);
-  MSG_task_send_with_timeout(task, mailbox, timeout);
+  MSG_task_send_with_timeout(task, "worker_mailbox", timeout);
 
   XBT_INFO("Goodbye now!");
   return 0;
@@ -74,17 +72,11 @@ static int worker_main(int argc, char *argv[])
   return 0;
 }
 
-static int slave(int argc, char *argv[])
+static int worker(int argc, char *argv[])
 {
-  msg_task_t task;
-  XBT_ATTRIB_UNUSED int res;
-  int id = -1;
-  const char * mailbox = "jupi";
-  double start, end;
- 
   while (1) {
-    task = NULL;
-    res = MSG_task_receive(&(task), mailbox);
+    msg_task_t task = NULL;
+    XBT_ATTRIB_UNUSED int res = MSG_task_receive(&(task), "worker_mailbox");
     xbt_assert(res == MSG_OK, "MSG_task_get failed");
     XBT_INFO("Handling task \"%s\"", MSG_task_get_name(task));
 
@@ -102,15 +94,13 @@ static int slave(int argc, char *argv[])
       continue;
     }
 
-    start = MSG_get_clock();
+    double start = MSG_get_clock();
     MSG_task_execute(task);
-    end = MSG_get_clock();
+    double end = MSG_get_clock();
     XBT_INFO("Task \"%s\" done in %f (amount %f)", MSG_task_get_name(task), end - start,
              MSG_task_get_flops_amount(task));
 
     MSG_task_destroy(task);
-    task = NULL;
-    id--;
   }
   XBT_INFO("I'm done. See you!");
   return 0;
@@ -118,17 +108,15 @@ static int slave(int argc, char *argv[])
 
 int main(int argc, char *argv[])
 {
-  msg_error_t res;
-
   MSG_init(&argc, argv);
   xbt_assert(argc == 2, "Usage: %s platform_file\n\tExample: %s msg_platform.xml\n", argv[0], argv[0]);
 
   MSG_create_environment(argv[1]);
 
   MSG_process_create("master", master, NULL, MSG_get_host_by_name("Tremblay"));
-  MSG_process_create("slave", slave, NULL, MSG_get_host_by_name("Jupiter"));
+  MSG_process_create("worker", worker, NULL, MSG_get_host_by_name("Jupiter"));
 
-  res = MSG_main();
+  msg_error_t res = MSG_main();
 
   XBT_INFO("Simulation time %g", MSG_get_clock());
 
