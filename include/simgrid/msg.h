@@ -71,7 +71,6 @@ typedef msg_host_t msg_vm_t;
 /** @brief Opaque object describing a File in MSG.
  *  @ingroup msg_file */
 typedef xbt_dictelm_t msg_file_t;
-typedef s_xbt_dictelm_t s_msg_file_t;
 
 extern int MSG_FILE_LEVEL;
 typedef struct simdata_file *simdata_file_t;
@@ -87,6 +86,7 @@ struct msg_file_priv  {
   void *data;
   simdata_file_t simdata;
 };
+
 typedef struct msg_file_priv s_msg_file_priv_t;
 typedef struct msg_file_priv* msg_file_priv_t;
 
@@ -105,7 +105,6 @@ extern int MSG_STORAGE_LEVEL;
  *  You should consider this as an opaque object.
  */
 typedef xbt_dictelm_t msg_storage_t;
-typedef s_xbt_dictelm_t s_msg_storage_t;
 
 struct msg_storage_priv  {
   const char *hostname;
