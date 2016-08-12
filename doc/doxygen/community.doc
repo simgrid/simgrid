@@ -5,31 +5,31 @@
 
 SimGrid is a free software, written by a community of people. It
 started as a little software to help ourselves in our own research,
-and as more people put their input in the pot, it turned into
+and as more people put their input into the pot, it turned into
 something that we hope to be valuable to many people. So yes. We hope
 that SimGrid is helping you doing what you want, and that you will
 join our community of happy simgriders.
 
 @section community_contact Contacting the community
 
-There is several locations where you can connect and discuss about
+There are several locations where you can connect and discuss about
 SimGrid. If you have a question, please have a look at the
-documentation and examples first, but if it remains don't hesitate to
-ask to the community. If you do not have a question, just come to us
-and say hello! We love earing how people use SimGrid.
+documentation and examples first, but if some remain don't hesitate to
+ask the community for help. If you do not have a question, just come to us
+and say hello! We love earing about how people use SimGrid.
 
  - For questions or remarks, drop us an email on the 
    <a href="mailto:simgrid-user@lists.gforge.inria.fr">User Mailing list</a> (to subscribe, visit the [webinterface](http://lists.gforge.inria.fr/mailman/listinfo/simgrid-user));
    you can also check out [our archives](http://lists.gforge.inria.fr/pipermail/simgrid-user/).
    We prefer you to <b>not use private emails</b>. SimGrid is an open
    framework, and you never know who have the time and knowledge to
-   answer your question, so please keep on the public mailing list.
+   answer your question, so please keep messages on the public mailing list.
  - Join us on IRC and ask your question directly on the channel \#simgrid at
    \b irc.debian.org. Be warned that even if many people are connected to
-   the chanel, they may not be staring at they IRC windows.
+   the chanel, they may not be staring at their IRC windows.
    So don't be surprised if you don't get an answer in the 
    second, and turn to the mailing lists if nobody seems to be there.
- - Asking your question on Stack Overflow is also a good idea, as this
+ - Asking your question on [StackOverflow](http://stackoverflow.com/questions/tagged/simgrid) is also a good idea, as this
    site is very well indexed. We answer questions there too (don't
    forget to use the SimGrid tag in your question so that we can see
    it), and they remain usable for the next users. 
@@ -37,16 +37,16 @@ and say hello! We love earing how people use SimGrid.
 @section community_giveback Giving back to SimGrid
 
 We are sometimes asked by users how to give back to the project. Here
-are some ideas, but if you have new ones, feel free.
+are some ideas, but if you have new ones, feel free to share them with us.
 
 @subsection contributing_spread Spread the word
 
-There is many ways to help the SimGrid project. The first and most
+There are many ways to help the SimGrid project. The first and most
 natural one is to <b>use it for your research, and say so</b>. Cite
-the SimGrid framework in your paper and discuss of its advantages with
+the SimGrid framework in your papers and discuss of its advantages with
 your colleagues to spread the word. When we ask for new fundings to
 sustain the project, the amount of publications enabled by SimGrid is
-always the first question that we get. The more you use the framework,
+always the first question we get. The more you use the framework,
 the better for us. 
 
 Make sure that your scientific publications using SimGrid actually
@@ -54,21 +54,20 @@ cite the <a href="http://simgrid.gforge.inria.fr/Publications.html">right paper<
 Also make sure that these citations are correctly listed on 
 <a href="http://simgrid.gforge.inria.fr/Usages.html">our list</a>.
 
-Also, <b>help us constituting an active and welcoming user
-community</b>. Get subscribed to the mailing lists, and answer the
-questions that newcommers have if you can. Point them (gentely ;) to
+You can also <b>help us constituting an active and welcoming user
+community</b>. Subscribe to the mailing lists, and answer the
+questions that newscomers have if you can. Point them (gently ;) to
 the relevant part of the documentation on need, and help them becoming
 part of our community too. 
 
-Another easy way to help the project is to add a link to the
-<a href="http://simgrid.gforge.inria.fr">SimGrid homepage</a>
-on your site to <b>improve SimGrid's ranking in the search
-engines</b>. 
+Another easy way to help the project is to add a link to the <a
+href="http://simgrid.gforge.inria.fr">SimGrid homepage</a> on your
+site to <b>improve SimGrid's ranking in search engines</b>.
 
 Finally, if you organize a scientific event where you expect many
-potential users, <b>invite us to give a tutorial on SimGrid</b>. We
+potential users, <b>you can invite us to give a tutorial on SimGrid</b>. We
 found that 45 minutes to one hour is very sharp, but doable. It
-allows to explain the main motivations and outcomes of the project in
+allows us to explain the main motivations and outcomes of the project in
 order to motivate the attendees get more information on SimGrid, and
 eventually improve their scientific habits by using a sound simulation
 framework.  
@@ -83,54 +82,54 @@ don't assume that it's here because we don't care. It survived only
 because nobody told us. We unfortunately cannot endlessly review our
 large code and documentation base. So please, <b>report any issue you
 find</b>, be it a typo in the documentation, a paragraph that needs to
-be reworded, a bug in the code or any other problem. The best way to
-do so is to open a bug on our GitHub's 
+be reworded, a bug in the code, or any other problem. The best way to
+do so is to open an issue on our GitHub's 
 <a href="https://github.com/simgrid/simgrid/issues">Bug Tracker</a> so
 that we don't forget about it (if you want to put some attachment, you
 can use 
 <a https://gforge.inria.fr/tracker/?atid=165&group_id=12&func=browse">this
 other bugtracker</a> instead). 
 
-The worst way to report such issue is to go through private emails.
+The worst way to report such issues is to go through private emails.
 These are unreliable, and we are trying to develop SimGrid openly, so
 private discussions are to be avoided if possible. 
 
 If you can provide a patch fixing the issue you report, that's even
 better. If you cannot, then you need to give us a minimal working
-example (MWE), that is as ready to use solution which reproduces the
-problem that you are experiencing. Your bug will take much more time
+example (MWE), that is a ready to use solution that reproduces the
+problem you face. Your bug will take much more time
 for us to reproduce and fix if you don't give us the MWE, so you want
 to help us helping you to get things efficient.
 
 Of course, a very good way to give back to the SimGrid community is to
-<b>triage and fix the bugs in the BTS</b>. If you
+<b>triage and fix the bugs in the Bug Tracking Systems</b>. If you
 can come up with a patch fixing them, we will be more than happy to
-apply your changes so that the entier community enjoys them.
+apply your changes so that the whole community enjoys them.
 
 @section community_extend Extending SimGrid and its Ecosystem
 
 @subsection contributing_contrib Contributing features and associated tools
 
 If you deeply miss a feature in the framework, you should consider
-implementing it yourself. That's free software, meaning that you are
+implementing it yourself. SimGrid is free software, meaning that you are
 free to help yourself. Of course, we'll do our best to assist you in
 this task, so don't hesitate to contact us with your idea.
 
 You could write a new plugin extending SimGrid in some way, or a
-routing model for another kind of network. But if you write your own
+routing model for another kind of network. But even if you write your own
 platform file, this is probably interesting to other users too, and
 could be included to SimGrid. Modeling accurately a given platform is
 a difficult work, which outcome is very precious to us.
 
 Or maybe you developed an independent tool on top of SimGrid. We'd
-love helping you gaining visibility by listing it on our 
+love helping you gaining visibility by listing it in our 
 <a href="http://simgrid.gforge.inria.fr/contrib.html">Contrib
 section</a>. 
 
 @subsection contributing_todo Possible Enhancements
 
-If you want to want to start working on the SimGrid codebase, here are a few
-ideas of things that could be done to improved the current code (not all of them
+If you want to start working on the SimGrid codebase, here are a few
+ideas of things that could be done to improve the current code (not all of them
 are difficult, do trust yourself ;)
 
 @subsubsection contributing_todo_cxxification Migration to C++
@@ -189,9 +188,9 @@ semantic. We should probably always use separate functions
  - Currently `.then()` is not available for user futures. We would need to add
    a basic user event loop in order to queue the pending continuations.
 
- - We might need to provide the option to cancel a pending operation. This
+ - We might need to provide an option to cancel a pending operation. This
    might be achieved by defining some `Action` or `Operation` class with an
-   API compatible with `Future` (and convertiable to it) but with an
+   API compatible with `Future` (and convertible to it) but with an
    additional `.cancel()` method.
 
 @subsubsection contributing_todo_smpi SMPI
@@ -203,16 +202,16 @@ simulator. The benefit is that we don't have to do context switches and IPC
 between the simulator and the processes.
 
 The fact that they share the same address space means that one memory corruption
-in one simulated process can propagate to the other ones and the SimGrid
+in one simulated process can propagate to the other ones and to the SimGrid
 simulator itself.
 
 Moreover, the current design for SMPI applications is to compile the MPI code
 normally and execute it once per simulated process in the same system process:
 This means that all the existing simulated MPI processes share the same virtual
-address space and share by default sthe same global variables. This is not
+address space and share by default the same global variables. This is not
 correct as each MPI process is expected to use its own address space and have
 its own global variables. In order to fix, this problem we have an optional
-SMPI privatization feature which creates a instanciation of the executable
+SMPI privatization feature which creates an instanciation of the executable
 data segment per MPI process and map the correct one (using `mmap`) at each
 context switch.
 
@@ -237,7 +236,7 @@ This approach has many problems:
     given time.
 
 In order to fix this, the standard solution is to move each MPI process in its
-system process and use IPC to communicate with the simulator. One concern would
+own system process and use IPC to communicate with the simulator. One concern would
 be the impact on performance and memory consumption:
 
  - It would introduce a lot of context switches and IPC communications between
@@ -270,10 +269,10 @@ Other solutions for this might include:
 #### Overhaul the state comparison code
 
 The state comparison code is quite complicated. It has very long functions and
-is programmed mostly using C idioms and is difficult to understanda and debug.
-It is in need or an overhaul:
+is programmed mostly using C idioms and is difficult to understand and debug.
+It is in need of an overhaul:
 
-  - cleanup, refactorisation, usage of C++ features.
+  - cleanup, refactoring, usage of C++ features.
 
   - The state comparison code works by infering types of blocks allocated on the
     heap by following pointers from known roots (global variables, local
@@ -284,7 +283,7 @@ It is in need or an overhaul:
 
   - We might benefit from adding logic for handling some known types. For
     example, both `std::string` and `std::vector` have a capacity which might
-    be larger than the current size of the container. We should might ignore
+    be larger than the current size of the container. We should ignore
     the corresponding elements when comparing the states and infering the types.
 
   - Another difficulty in the state comparison code is the detection of
@@ -302,7 +301,7 @@ state comparison algorithm. Some information should not be inclueded in the
 hash in order to avoid considering different states which would otherwise
 would have been considered equal.
 
-The stated could be indexed by their hash. Currently they are indexed
+The states could be indexed by their hash. Currently they are indexed
 by the number of processes and the amount of heap currently allocated
 (see `DerefAndCompareByNbProcessesAndUsedHeap`).
 
@@ -327,11 +326,11 @@ but it is currently disabled.
 
 #### Interface with the model-checked processes
 
-The model-checker reads many informations about the model-checked process
+The model-checker reads many information about the model-checked process
 by `process_vm_readv()`-ing brutally the data structure of the model-checked
 process leading to some horrible code such as walking a swag from another
 process. It prevents us as well from replacing some XBT data structures with
-standard C++ ones. We need a sane way to expose the relevant informations to
+standard C++ ones. We need a sane way to expose the relevant information to
 the model-checker.
 
 #### Generic simcalls
@@ -348,20 +347,20 @@ model-checker cares about by generic simcalls.
 Currently, writing a new model-checking algorithms in SimGridMC is quite
 difficult: the logic of the model-checking algorithm is mixed with a lot of
 low-level concerns about the way the model-checker is implemented. This makes it
-difficult to write new algorithms and difficult to understand, debug and modify
+difficult to write new algorithms and difficult to understand, debug, and modify
 the existing ones. We need a clean API to express the model-checking algorithms
-in a form which is closer to the text-book/paper description. This API muste
+in a form which is closer to the text-book/paper description. This API must
 be exposed in a a language which is more adequate to this task.
 
 Tasks:
 
-  1. Design and implement a clean API for expression model-checking algorithms.
+  1. Design and implement a clean API to express model-checking algorithms.
      A `Session` class currently exists for this but is not feature complete
      and should probably be rewritten. It should be easy to create bindings
      for different languages on top of this API.
 
   2. Create a binding to some better suited, dynamic, scripting language
-     (eg. Lua).
+     (e.g., Lua).
 
   3. Rewrite the existing model-checking algorithms in this language using the
      new API.
