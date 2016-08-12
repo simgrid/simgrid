@@ -6,7 +6,7 @@
 #include <xbt/sysdep.h>
 #include <simgrid/s4u.hpp>
 
-#include "s4u_basic.h"
+#include "s4u_launching.h"
 
 int main(int argc, char **argv) {
   simgrid::s4u::Engine *e = new simgrid::s4u::Engine(&argc,argv);

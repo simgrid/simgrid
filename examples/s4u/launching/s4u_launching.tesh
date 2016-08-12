@@ -1,20 +1,20 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_basic
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_launching
 > [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to serve
 > [Jupiter:master:(0) 0.000000] [s4u_test/INFO] Hello s4u, I have something to send
 > [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I received 'GaBuZoMeu'
 > [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
 > [Jupiter:master:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_basic_function
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_launching_function
 > [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to serve
 > [Jupiter:master:(0) 0.000000] [s4u_test/INFO] Hello s4u, I have something to send
 > [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I received 'GaBuZoMeu'
 > [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
 > [Jupiter:master:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_basic_deployment deployment.xml
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_launching_deployment deployment.xml
 > [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to serve
 > [Jupiter:master:(0) 0.000000] [s4u_test/INFO] Hello s4u, I have something to send
 > [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I received 'GaBuZoMeu'

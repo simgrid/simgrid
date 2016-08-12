@@ -13,9 +13,10 @@ documentation, but it should remain readable directly.
  @ingroup s4u_api
  @brief Find the S4U example fitting your needs in the archive.
 
-  - @ref s4u_ex_basics
+  - @ref s4u_ex_launching
+  - @ref s4u_ex_synchro
 		    
-@section s4u_ex_basics Basic examples and features
+@section s4u_ex_launching Launching actors to populate your simulation
 
 @section s4u_ex_synchro Inter-Actor Synchronization 
 
