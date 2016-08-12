@@ -13,20 +13,27 @@ documentation, but it should remain readable directly.
  @ingroup s4u_api
  @brief Find the S4U example fitting your needs in the archive.
 
-  - @ref s4u_ex_launching
+  - @ref s4u_ex_basics
   - @ref s4u_ex_synchro
 		    
-@section s4u_ex_launching Launching actors to populate your simulation
+@section s4u_ex_basics Basics of SimGrid simulation
+
+  - <b>Launching actors</b>
+    Shows how to start your actors to populate your simulation\n
+    @ref examples/s4u/launching/s4u_launching.cpp and @ref examples/s4u/launching/deployment.xml
 
 @section s4u_ex_synchro Inter-Actor Synchronization 
 
- - <b>Mutex</b>.
-   @ref examples/s4u/mutex/s4u_mutex.cpp\n
-   Shows how to use simgrid::s4u::Mutex synchronization objects
+ - <b>Mutex.</b>
+   Shows how to use simgrid::s4u::Mutex synchronization objects\n
+   @ref examples/s4u/mutex/s4u_mutex.cpp
 			 
 */
 
 /**
+@example examples/s4u/launching/s4u_launching.cpp
+@example examples/s4u/launching/deployment.xml
+
 @example examples/s4u/mutex/s4u_mutex.cpp
 
 */

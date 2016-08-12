@@ -25,6 +25,7 @@
 #include <simgrid/chrono.hpp>
 #include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
+#include <simgrid/s4u/mailbox.hpp>
 
 namespace simgrid {
 namespace s4u {
@@ -168,19 +169,18 @@ public:
     xbt_assert(actor != nullptr);
     SIMIX_process_unref(actor->pimpl_);
   }
-  using Ptr = boost::intrusive_ptr<Actor>;
 
   // ***** Actor creation *****
   /** Retrieve a reference to myself */
-  static Ptr self();
+  static ActorPtr self();
 
   /** Create an actor using a function
    *
    *  If the actor is restarted, the actor has a fresh copy of the function.
    */
-  static Ptr createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
+  static ActorPtr createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
 
-  static Ptr createActor(const char* name, s4u::Host *host, std::function<void()> code)
+  static ActorPtr createActor(const char* name, s4u::Host *host, std::function<void()> code)
   {
     return createActor(name, host, -1.0, std::move(code));
   }
@@ -196,17 +196,17 @@ public:
     // This constructor is enabled only if the call code(args...) is valid:
     typename = typename std::result_of<F(Args...)>::type
     >
-  static Ptr createActor(const char* name, s4u::Host *host, F code, Args... args)
+  static ActorPtr createActor(const char* name, s4u::Host *host, F code, Args... args)
   {
     return createActor(name, host, wrap_task(std::move(code), std::move(args)...));
   }
 
   // Create actor from function name:
 
-  static Ptr createActor(const char* name, s4u::Host *host, double killTime,
+  static ActorPtr createActor(const char* name, s4u::Host *host, double killTime,
     const char* function, std::vector<std::string> args);
 
-  static Ptr createActor(const char* name, s4u::Host *host, const char* function,
+  static ActorPtr createActor(const char* name, s4u::Host *host, const char* function,
       std::vector<std::string> args)
   {
     return createActor(name, host, -1.0, function, std::move(args));
@@ -242,7 +242,7 @@ public:
   void kill();
 
   static void kill(int pid);
-  static Ptr forPid(int pid);
+  static ActorPtr forPid(int pid);
   
   /**
    * Wait for the actor to finish.
@@ -258,8 +258,6 @@ protected:
   /** Returns the internal implementation of this actor */
   smx_process_t getImpl();
 };
-
-using ActorPtr = Actor::Ptr;
 
 /** @ingroup s4u_api
  *  @brief Static methods working on the current actor (see @ref s4u::Actor) */
@@ -295,13 +293,13 @@ namespace this_actor {
    *
    * See \ref Comm for the full communication API (including non blocking communications).
    */
-  XBT_PUBLIC(void*) recv(Mailbox &chan);
+  XBT_PUBLIC(void*) recv(MailboxPtr chan);
 
   /** Block the actor until it delivers a message of the given simulated size to the given mailbox
    *
    * See \ref Comm for the full communication API (including non blocking communications).
   */
-  XBT_PUBLIC(void) send(Mailbox &chan, void*payload, size_t simulatedSize);
+  XBT_PUBLIC(void) send(MailboxPtr chan, void*payload, size_t simulatedSize);
   
   /**
    * Return the PID of the current actor.

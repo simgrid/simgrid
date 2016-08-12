@@ -1,22 +1,10 @@
 #! ./tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/s4u_launching
-> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to serve
-> [Jupiter:master:(0) 0.000000] [s4u_test/INFO] Hello s4u, I have something to send
-> [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I received 'GaBuZoMeu'
-> [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
-> [Jupiter:master:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
-
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_launching_function
-> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to serve
-> [Jupiter:master:(0) 0.000000] [s4u_test/INFO] Hello s4u, I have something to send
-> [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I received 'GaBuZoMeu'
-> [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
-> [Jupiter:master:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
-
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_launching_deployment deployment.xml
-> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to serve
-> [Jupiter:master:(0) 0.000000] [s4u_test/INFO] Hello s4u, I have something to send
-> [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I received 'GaBuZoMeu'
-> [Tremblay:worker:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
-> [Jupiter:master:(0) 0.001301] [s4u_test/INFO] I'm done. See you.
+> [Tremblay:sender1:(0) 0.000000] [s4u_launching_test/INFO] Hello s4u, I have something to send
+> [Jupiter:sender2:(0) 0.000000] [s4u_launching_test/INFO] Hello s4u, I have something to send
+> [Fafard:receiver:(0) 0.000000] [s4u_launching_test/INFO] Hello s4u, I'm ready to get any message you'd want on mb42
+> [Tremblay:sender1:(0) 0.025709] [s4u_launching_test/INFO] I'm done. See you.
+> [Jupiter:sender2:(0) 0.070434] [s4u_launching_test/INFO] I'm done. See you.
+> [Fafard:receiver:(0) 0.070434] [s4u_launching_test/INFO] I received 'GaBuZoMeu' and 'GloubiBoulga'
+> [Fafard:receiver:(0) 0.070434] [s4u_launching_test/INFO] I'm done. See you.

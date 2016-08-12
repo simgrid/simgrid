@@ -8,8 +8,6 @@
 
 #include <string>
 
-#include <boost/intrusive_ptr.hpp>
-
 #include <xbt/base.h>
 
 #include <simgrid/s4u/forward.hpp>
@@ -40,13 +38,12 @@ public:
   // We don't have to manage the lifetime of mailboxes:
   friend void intrusive_ptr_add_ref(Mailbox*) {}
   friend void intrusive_ptr_release(Mailbox*) {}
-  using Ptr = boost::intrusive_ptr<Mailbox>;
 
   /** Get the name of that mailbox */
   const char *getName();
 
   /** Retrieve the mailbox associated to the given string */
-  static Ptr byName(const char *name);
+  static MailboxPtr byName(const char *name);
 
   /** Returns whether the mailbox contains queued communications */
   bool empty();
@@ -64,8 +61,6 @@ public:
   /** Return the process declared as permanent receiver, or nullptr if none **/
   ActorPtr receiver();
 };
-
-using MailboxPtr = Mailbox::Ptr;
 
 }} // namespace simgrid::s4u
 

@@ -6,14 +6,21 @@
 #ifndef SIMGRID_S4U_FORWARD_HPP
 #define SIMGRID_S4U_FORWARD_HPP
 
+#include <boost/intrusive_ptr.hpp>
+
 namespace simgrid {
 namespace s4u {
+
+class Actor;
+using ActorPtr = boost::intrusive_ptr<Actor>;
 
 class Activity;
 class Comm;
 class Engine;
 class Host;
 class Mailbox;
+using MailboxPtr = boost::intrusive_ptr<Mailbox>;
+
 class Storage;
 
 }

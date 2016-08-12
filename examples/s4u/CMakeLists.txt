@@ -7,20 +7,6 @@ foreach (example io launching mutex actions-comm)
   set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${example}/s4u_${example}.cpp)
 endforeach()
 
-add_executable       (s4u_launching_function  launching/s4u_launching_function.cpp)
-target_link_libraries(s4u_launching_function  simgrid)
-set_target_properties(s4u_launching_function  PROPERTIES RUNTIME_OUTPUT_DIRECTORY
- ${CMAKE_CURRENT_BINARY_DIR}/launching)
-
-add_executable       (s4u_launching_deployment  launching/s4u_launching_deployment.cpp)
-target_link_libraries(s4u_launching_deployment  simgrid)
-set_target_properties(s4u_launching_deployment  PROPERTIES RUNTIME_OUTPUT_DIRECTORY
- ${CMAKE_CURRENT_BINARY_DIR}/launching)
-
-set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/launching/s4u_launching_function.cpp
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/launching/s4u_launching_deployment.cpp
-                                   ${CMAKE_CURRENT_SOURCE_DIR}/launching/s4u_launching.h)
-
 set(examples_src  ${examples_src}                                     PARENT_SCOPE)
 set(tesh_files    ${tesh_files}                                       PARENT_SCOPE)
 set(xml_files     ${xml_files}    ${CMAKE_CURRENT_SOURCE_DIR}/launching/deployment.xml

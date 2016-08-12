@@ -38,7 +38,7 @@ ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime, 
   smx_process_t process = simcall_process_create(
     name, std::move(code), nullptr, host->name().c_str(),
     killTime, nullptr, 0);
-  return Ptr(&process->getIface());
+  return ActorPtr(&process->getIface());
 }
 
 ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime,
@@ -142,7 +142,7 @@ e_smx_state_t execute(double flops) {
   return simcall_execution_wait(s);
 }
 
-void* recv(Mailbox &chan) {
+void* recv(MailboxPtr chan) {
   void *res = nullptr;
   Comm& c = Comm::recv_init(chan);
   c.setDstData(&res,sizeof(res));
@@ -150,7 +150,7 @@ void* recv(Mailbox &chan) {
   return res;
 }
 
-void send(Mailbox &chan, void *payload, size_t simulatedSize) {
+void send(MailboxPtr chan, void *payload, size_t simulatedSize) {
   Comm& c = Comm::send_init(chan);
   c.setRemains(simulatedSize);
   c.setSrcData(payload);

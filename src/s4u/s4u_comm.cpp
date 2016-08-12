@@ -20,17 +20,17 @@ Comm::~Comm() {
 
 
 
-s4u::Comm &Comm::send_init(s4u::Mailbox &chan) {
+s4u::Comm &Comm::send_init(s4u::MailboxPtr chan) {
   s4u::Comm *res = new s4u::Comm();
   res->sender_ = SIMIX_process_self();
-  res->mailbox_ = &chan;
+  res->mailbox_ = chan;
   return *res;
 }
 
-s4u::Comm &Comm::recv_init(s4u::Mailbox &chan) {
+s4u::Comm &Comm::recv_init(s4u::MailboxPtr chan) {
   s4u::Comm *res = new s4u::Comm();
   res->receiver_ = SIMIX_process_self();
-  res->mailbox_ = &chan;
+  res->mailbox_ = chan;
   return *res;
 }
 
@@ -132,7 +132,7 @@ void Comm::wait(double timeout) {
   state_ = finished;
 }
 
-s4u::Comm &Comm::send_async(Mailbox &dest, void *data, int simulatedSize) {
+s4u::Comm &Comm::send_async(MailboxPtr dest, void *data, int simulatedSize) {
   s4u::Comm &res = s4u::Comm::send_init(dest);
   res.setRemains(simulatedSize);
   res.srcBuff_ = data;
@@ -141,7 +141,7 @@ s4u::Comm &Comm::send_async(Mailbox &dest, void *data, int simulatedSize) {
   return res;
 }
 
-s4u::Comm &Comm::recv_async(Mailbox &dest, void **data) {
+s4u::Comm &Comm::recv_async(MailboxPtr dest, void **data) {
   s4u::Comm &res = s4u::Comm::recv_init(dest);
   res.setDstData(data);
   res.start();

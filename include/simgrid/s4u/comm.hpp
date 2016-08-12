@@ -78,13 +78,13 @@ public:
     return res;
   }
   /** Creates (but don't start) an async send to the mailbox @p dest */
-  static Comm &send_init(Mailbox &dest);
+  static Comm &send_init(MailboxPtr dest);
   /** Creates and start an async send to the mailbox @p dest */
-  static Comm &send_async(Mailbox &dest, void *data, int simulatedByteAmount);
+  static Comm &send_async(MailboxPtr dest, void *data, int simulatedByteAmount);
     /** Creates (but don't start) an async recv onto the mailbox @p from */
-  static Comm &recv_init(Mailbox &from);
+  static Comm &recv_init(MailboxPtr from);
   /** Creates and start an async recv to the mailbox @p from */
-  static Comm &recv_async(Mailbox &from, void **data);
+  static Comm &recv_async(MailboxPtr from, void **data);
 
   void start() override;
   void wait() override;
@@ -125,7 +125,7 @@ private:
 
   smx_process_t sender_ = nullptr;
   smx_process_t receiver_ = nullptr;
-  Mailbox *mailbox_ = nullptr;
+  MailboxPtr mailbox_ = nullptr;
 };
 
 }} // namespace simgrid::s4u
