@@ -68,7 +68,7 @@ public:
     /* This constructor is used when we pass parameters to the actor */
     /* as with argc/argv, args[0] is the actor's name, so the first parameter is args[1] */
     if (args.size() > 1)
-      mailbox = simgrid::s4u::Mailbox::byName(args[1].c_str());
+      mailbox = simgrid::s4u::Mailbox::byName(args[1]);
   }
   void operator()() {
     XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->getName());

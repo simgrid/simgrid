@@ -34,6 +34,11 @@ MailboxPtr Mailbox::byName(const char*name)
   return MailboxPtr(&mbox->piface_, true);
 }
 
+MailboxPtr Mailbox::byName(std::string name)
+{
+  return byName(name.c_str());
+}
+
 bool Mailbox::empty()
 {
   return pimpl_->comm_queue.empty();

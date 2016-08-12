@@ -32,18 +32,21 @@ XBT_PUBLIC_CLASS Mailbox {
 
   Mailbox(smx_mailbox_t mbox): pimpl_(mbox) {}
 
-public:
-  smx_mailbox_t getImpl() { return pimpl_; } // FIXME: make me protected
-
   // We don't have to manage the lifetime of mailboxes:
   friend void intrusive_ptr_add_ref(Mailbox*) {}
   friend void intrusive_ptr_release(Mailbox*) {}
+public:
+  smx_mailbox_t getImpl() { return pimpl_; } // FIXME: make me protected
+
 
   /** Get the name of that mailbox */
   const char *getName();
 
-  /** Retrieve the mailbox associated to the given string */
+  /** Retrieve the mailbox associated to the given string (as a C string) */
   static MailboxPtr byName(const char *name);
+
+  /** Retrieve the mailbox associated to the given string (as a C++ string) */
+  static MailboxPtr byName(std::string name);
 
   /** Returns whether the mailbox contains queued communications */
   bool empty();
@@ -53,8 +56,9 @@ public:
 
   /** Declare that the specified process is a permanent receiver on that mailbox
    *
-   * It means that the communications sent to this mailbox will start flowing to its host even before he does a recv().
-   * This models the real behavior of TCP and MPI communications, amongst other.
+   * It means that the communications sent to this mailbox will start flowing to
+   * its host even before he does a recv(). This models the real behavior of TCP
+   * and MPI communications, amongst other.
    */
   void setReceiver(ActorPtr process);
 
