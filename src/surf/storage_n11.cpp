@@ -68,8 +68,7 @@ StorageN11Model::StorageN11Model() : StorageModel() {
 
   XBT_DEBUG("surf_storage_model_init_internal");
 
-  storage_running_action_set_that_does_not_need_being_checked =
-      xbt_swag_new(xbt_swag_offset(*action, stateHookup_));
+  storage_running_action_set_that_does_not_need_being_checked = xbt_swag_new(xbt_swag_offset(*action, stateHookup_));
   if (!maxminSystem_) {
     maxminSystem_ = lmm_system_new(storage_selective_update);
   }
@@ -82,13 +81,11 @@ StorageN11Model::~StorageN11Model(){
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
-    const char* content_name, const char* content_type, xbt_dict_t properties,
-    const char* attach)
+    const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach)
 {
 
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
-      "Storage '%s' declared several times in the platform file",
-      id);
+      "Storage '%s' declared several times in the platform file", id);
 
   storage_type_t storage_type = (storage_type_t) xbt_lib_get_or_null(storage_type_lib, type_id,ROUTING_STORAGE_TYPE_LEVEL);
 
@@ -126,17 +123,14 @@ double StorageN11Model::next_occuring_event(double /*now*/)
   void *_write_action;
   StorageAction *write_action;
 
-  double min_completion = shareResourcesMaxMin(getRunningActionSet(),
-      maxminSystem_, lmm_solve);
+  double min_completion = shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
 
   double rate;
   // Foreach disk
-  xbt_dynar_foreach(p_storageList,i,storage)
-  {
+  xbt_dynar_foreach(p_storageList,i,storage) {
     rate = 0;
     // Foreach write action on disk
-    xbt_dynar_foreach(storage->p_writeActions, j, _write_action)
-    {
+    xbt_dynar_foreach(storage->p_writeActions, j, _write_action) {
       write_action = static_cast<StorageAction*>(_write_action);
       rate += lmm_variable_getvalue(write_action->getVariable());
     }
@@ -166,16 +160,14 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
           delta * lmm_variable_getvalue(action->getVariable());
       long int incr = current_progress;
 
-      XBT_DEBUG("%s:\n\t progress =  %.2f, current_progress = %.2f, "
-          "incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
+      XBT_DEBUG("%s:\n\t progress =  %.2f, current_progress = %.2f, incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
           action->p_file->name,
           action->progress,  current_progress, incr,
           lrint(action->progress + current_progress),
           lrint(action->progress)+ incr);
 
       /* take care of rounding error accumulation */
-      if (lrint(action->progress + current_progress) >
-      lrint(action->progress)+ incr)
+      if (lrint(action->progress + current_progress) > lrint(action->progress)+ incr)
         incr++;
 
       action->progress +=current_progress;
@@ -196,20 +188,14 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
     if (action->getMaxDuration() != NO_MAX_DURATION)
       action->updateMaxDuration(delta);
 
-    if(action->getRemainsNoUpdate() > 0 &&
-        lmm_get_variable_weight(action->getVariable()) > 0 &&
-        action->p_storage->m_usedSize == action->p_storage->m_size)
-    {
+    if(action->getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action->getVariable()) > 0 &&
+        action->p_storage->m_usedSize == action->p_storage->m_size) {
       action->finish();
       action->setState(Action::State::failed);
-    } else if ((action->getRemainsNoUpdate() <= 0) &&
-        (lmm_get_variable_weight(action->getVariable()) > 0))
-    {
+    } else if ((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) {
       action->finish();
       action->setState(Action::State::done);
-    } else if ((action->getMaxDuration() != NO_MAX_DURATION) &&
-        (action->getMaxDuration() <= 0))
-    {
+    } else if ((action->getMaxDuration() != NO_MAX_DURATION) && (action->getMaxDuration() <= 0)) {
       action->finish();
       action->setState(Action::State::done);
     }
@@ -304,8 +290,7 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
 
   StorageAction *action = new StorageN11Action(getModel(), size, isOff(), this, WRITE);
   action->p_file = fd;
-  /* Substract the part of the file that might disappear from the used sized on
-   * the storage element */
+  /* Substract the part of the file that might disappear from the used sized on the storage element */
   m_usedSize -= (fd->size - fd->current_position);
   // If the storage is full before even starting to write
   if(m_usedSize==m_size) {
