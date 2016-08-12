@@ -35,20 +35,20 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_launching_test, "The logging channel used in th
  */
 class Sender {
 public:
-  const char *msg = "GaBuZoMeu";
+  std::string msg = "GaBuZoMeu";
   Sender() {
     /* Constructor used when no parameter is passed to the actor */
   };
   Sender(std::vector<std::string> args) {
     /* This constructor is used when we pass parameters to the actor */
     if (args.size() > 0)
-      msg = args[0].c_str();
+      msg = args[0];
   }
   void operator()() {
     XBT_INFO("Hello s4u, I have something to send");
     simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("mb42");
 
-    simgrid::s4u::this_actor::send(mailbox, xbt_strdup(msg), strlen(msg));
+    simgrid::s4u::this_actor::send(mailbox, xbt_strdup(msg.c_str()), msg.size());
     XBT_INFO("I'm done. See you.");
   }
 };
