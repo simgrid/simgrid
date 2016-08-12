@@ -99,11 +99,11 @@ CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, std::vector<d
 CpuCas01::~CpuCas01()
 {
   if (getModel() == surf_cpu_model_pm)
-    speedPerPstate_->clear();
+    speedPerPstate_.clear();
 }
 
 std::vector<double> * CpuCas01::getSpeedPeakList(){
-  return speedPerPstate_;
+  return &speedPerPstate_;
 }
 
 bool CpuCas01::isUsed()

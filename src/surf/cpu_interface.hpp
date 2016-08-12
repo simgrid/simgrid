@@ -133,8 +133,8 @@ public:
   int coresAmount_ = 1;
   simgrid::s4u::Host* host_;
 
-  std::vector<double> *speedPerPstate_ = nullptr; /*< List of supported CPU capacities (pstate related) */
-  int pstate_ = 0;                   /*< Current pstate (index in the speedPeakList)*/
+  std::vector<double> speedPerPstate_; /*< List of supported CPU capacities (pstate related) */
+  int pstate_ = 0;                     /*< Current pstate (index in the speedPeakList)*/
 
 public:
   virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */

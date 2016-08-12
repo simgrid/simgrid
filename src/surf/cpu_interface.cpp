@@ -144,20 +144,16 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
   xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->name().c_str());
 
   // Copy the power peak array:
-  speedPerPstate_ = new std::vector<double>();
   unsigned long n = speedPerPstate->size();
   for (unsigned long i = 0; i != n; ++i) {
     double value = speedPerPstate->at(i);
-    speedPerPstate_->push_back(value);
+    speedPerPstate_.push_back(value);
   }
 
   xbt_assert(model == surf_cpu_model_pm || core==1, "Currently, VM cannot be multicore");
 }
 
-Cpu::~Cpu()
-{
-  delete speedPerPstate_;
-}
+Cpu::~Cpu() = default;
 
 double Cpu::getPstateSpeedCurrent()
 {
@@ -166,17 +162,16 @@ double Cpu::getPstateSpeedCurrent()
 
 int Cpu::getNbPStates()
 {
-  return speedPerPstate_->size();
+  return speedPerPstate_.size();
 }
 
 void Cpu::setPState(int pstate_index)
 {
-  std::vector<double> *plist = speedPerPstate_;
-  xbt_assert(pstate_index <= static_cast<int>(plist->size()),
+  xbt_assert(pstate_index <= static_cast<int>(speedPerPstate_.size()),
       "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index,
-      static_cast<int>(plist->size()));
+      static_cast<int>(speedPerPstate_.size()));
 
-  double new_peak_speed = plist->at(pstate_index);
+  double new_peak_speed = speedPerPstate_[pstate_index];
   pstate_ = pstate_index;
   speed_.peak = new_peak_speed;
 
@@ -190,10 +185,9 @@ int Cpu::getPState()
 
 double Cpu::getPstateSpeed(int pstate_index)
 {
-  std::vector<double> *plist = speedPerPstate_;
-  xbt_assert((pstate_index <= static_cast<int>(plist->size())), "Invalid parameters (pstate index out of bounds)");
+  xbt_assert((pstate_index <= static_cast<int>(speedPerPstate_.size())), "Invalid parameters (pstate index out of bounds)");
 
-  return plist->at(pstate_index);
+  return speedPerPstate_[pstate_index];
 }
 
 double Cpu::getSpeed(double load)
