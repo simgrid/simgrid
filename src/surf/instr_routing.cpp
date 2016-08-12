@@ -265,8 +265,7 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
       speed = PJ_type_variable_new ("power", nullptr, container->type);
     }
 
-    double current_speed_state;
-    xbt_dynar_get_cpy(host->speed_per_pstate, host->pstate, &current_speed_state);
+    double current_speed_state = host->speed_per_pstate->at(host->pstate);
     new_pajeSetVariable (0, container, speed, current_speed_state);
   }
   if (TRACE_uncategorized()){

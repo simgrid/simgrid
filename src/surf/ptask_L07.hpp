@@ -5,11 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cstdlib>
-
 #include <vector>
-
 #include <xbt/base.h>
-
 #include "src/surf/HostImpl.hpp"
 
 #ifndef HOST_L07_HPP_
@@ -45,8 +42,7 @@ public:
   double next_occuring_event(double now) override;
   void updateActionsState(double now, double delta) override;
   Action *executeParallelTask(int host_nb, sg_host_t *host_list,
-                double *flops_amount, double *bytes_amount,
-                double rate) override;
+                              double *flops_amount, double *bytes_amount, double rate) override;
 };
 
 class CpuL07Model : public CpuModel {
@@ -54,7 +50,7 @@ public:
   CpuL07Model(HostL07Model *hmodel,lmm_system_t sys);
   ~CpuL07Model();
 
-  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPerPstate, int core) override;
+  Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
   HostL07Model *p_hostModel;
 };
 
@@ -78,7 +74,7 @@ public:
 
 class CpuL07 : public Cpu {
 public:
-  CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedList, int core);
+  CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, std::vector<double> * speedPerPstate, int core);
   ~CpuL07();
   bool isUsed() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;
@@ -105,17 +101,10 @@ public:
 class L07Action : public CpuAction {
   friend Action *CpuL07::execution_start(double size);
   friend Action *CpuL07::sleep(double duration);
-  friend Action *HostL07Model::executeParallelTask(int host_nb,
-                                                   sg_host_t*host_list,
-                                                   double *flops_amount,
-                                                   double *bytes_amount,
-                                                   double rate);
+  friend Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t*host_list,
+                                                   double *flops_amount, double *bytes_amount, double rate);
 public:
-  L07Action(Model *model, int host_nb,
-          sg_host_t*host_list,
-          double *flops_amount,
-       double *bytes_amount,
-          double rate);
+  L07Action(Model *model, int host_nb, sg_host_t *host_list, double *flops_amount, double *bytes_amount, double rate);
  ~L07Action();
 
   void updateBound();

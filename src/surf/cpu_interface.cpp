@@ -125,30 +125,30 @@ bool CpuModel::next_occuring_event_isIdempotent()
 /************
  * Resource *
  ************/
-Cpu::Cpu(Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
+Cpu::Cpu(Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
  : Cpu(model, host, nullptr/*constraint*/, speedPerPstate, core)
 {
 }
 
 Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
-    xbt_dynar_t speedPerPstate, int core)
+    std::vector<double> * speedPerPstate, int core)
  : Resource(model, host->name().c_str(), constraint)
  , coresAmount_(core)
  , host_(host)
 {
   xbt_assert(core > 0, "Host %s must have at least one core, not 0.", host->name().c_str());
 
-  speed_.peak = xbt_dynar_get_as(speedPerPstate, 0/*pstate*/, double);
+  speed_.peak = speedPerPstate->front();
   speed_.scale = 1;
   host->pimpl_cpu = this;
   xbt_assert(speed_.scale > 0, "Speed of host %s must be >0", host->name().c_str());
 
   // Copy the power peak array:
-  speedPerPstate_ = xbt_dynar_new(sizeof(double), nullptr);
-  unsigned long n = xbt_dynar_length(speedPerPstate);
+  speedPerPstate_ = new std::vector<double>();
+  unsigned long n = speedPerPstate->size();
   for (unsigned long i = 0; i != n; ++i) {
-    double value = xbt_dynar_get_as(speedPerPstate, i, double);
-    xbt_dynar_push(speedPerPstate_, &value);
+    double value = speedPerPstate->at(i);
+    speedPerPstate_->push_back(value);
   }
 
   xbt_assert(model == surf_cpu_model_pm || core==1, "Currently, VM cannot be multicore");
@@ -156,7 +156,7 @@ Cpu::Cpu(Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
 
 Cpu::~Cpu()
 {
-  xbt_dynar_free(&speedPerPstate_);
+  delete speedPerPstate_;
 }
 
 double Cpu::getPstateSpeedCurrent()
@@ -166,16 +166,17 @@ double Cpu::getPstateSpeedCurrent()
 
 int Cpu::getNbPStates()
 {
-  return xbt_dynar_length(speedPerPstate_);
+  return speedPerPstate_->size();
 }
 
 void Cpu::setPState(int pstate_index)
 {
-  xbt_dynar_t plist = speedPerPstate_;
-  xbt_assert(pstate_index <= (int)xbt_dynar_length(plist),
-      "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index, (int)xbt_dynar_length(plist));
+  std::vector<double> *plist = speedPerPstate_;
+  xbt_assert(pstate_index <= static_cast<int>(plist->size()),
+      "Invalid parameters for CPU %s (pstate %d > length of pstates %d)", getName(), pstate_index,
+      static_cast<int>(plist->size()));
 
-  double new_peak_speed = xbt_dynar_get_as(plist, pstate_index, double);
+  double new_peak_speed = plist->at(pstate_index);
   pstate_ = pstate_index;
   speed_.peak = new_peak_speed;
 
@@ -189,10 +190,10 @@ int Cpu::getPState()
 
 double Cpu::getPstateSpeed(int pstate_index)
 {
-  xbt_dynar_t plist = speedPerPstate_;
-  xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
+  std::vector<double> *plist = speedPerPstate_;
+  xbt_assert((pstate_index <= static_cast<int>(plist->size())), "Invalid parameters (pstate index out of bounds)");
 
-  return xbt_dynar_get_as(plist, pstate_index, double);
+  return plist->at(pstate_index);
 }
 
 double Cpu::getSpeed(double load)

@@ -301,13 +301,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       }
     }
 
-    host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
-    xbt_dynar_push(host.speed_per_pstate,&cluster->speed);
+    host.speed_per_pstate = new std::vector<double>();
+    host.speed_per_pstate->push_back(cluster->speed);
     host.pstate = 0;
     host.core_amount = cluster->core_amount;
     host.coord = "";
     sg_platf_new_host(&host);
-    xbt_dynar_free(&host.speed_per_pstate);
+   // delete host.speed_per_pstate;
     XBT_DEBUG("</host>");
 
     XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id, cluster->bw, cluster->lat);
@@ -422,10 +422,10 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     host.pstate           = 0;
     host.core_amount      = 1;
     host.id               = hostname;
-    host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
-    xbt_dynar_push(host.speed_per_pstate,&cabinet->speed);
+    host.speed_per_pstate = new std::vector<double>();
+    host.speed_per_pstate->push_back(cabinet->speed);
     sg_platf_new_host(&host);
-    xbt_dynar_free(&host.speed_per_pstate);
+    delete host.speed_per_pstate;
 
     s_sg_platf_link_cbarg_t link;
     memset(&link, 0, sizeof(link));
@@ -667,14 +667,14 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   memset(&host, 0, sizeof(host));
   host.id = host_id;
 
-  host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
-  xbt_dynar_push(host.speed_per_pstate,&peer->speed);
+  host.speed_per_pstate = new std::vector<double>();
+  host.speed_per_pstate->push_back(peer->speed);
   host.pstate = 0;
   host.speed_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
   sg_platf_new_host(&host);
-  xbt_dynar_free(&host.speed_per_pstate);
+  delete host.speed_per_pstate;
 
   s_sg_platf_link_cbarg_t link;
   memset(&link, 0, sizeof(link));

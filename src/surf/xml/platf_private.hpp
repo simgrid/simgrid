@@ -42,7 +42,7 @@ typedef enum {
 
 typedef struct {
   const char* id;
-  xbt_dynar_t speed_per_pstate;
+  std::vector<double> *speed_per_pstate;
   int pstate;
   int core_amount;
   tmgr_trace_t speed_trace;

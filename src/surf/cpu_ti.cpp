@@ -361,7 +361,7 @@ CpuTiModel::~CpuTiModel()
   xbt_heap_free(tiActionHeap_);
 }
 
-Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
+Cpu *CpuTiModel::createCpu(simgrid::s4u::Host *host, std::vector<double>* speedPerPstate, int core)
 {
   return new CpuTi(this, host, speedPerPstate, core);
 }
@@ -403,7 +403,7 @@ void CpuTiModel::updateActionsState(double now, double /*delta*/)
 /************
  * Resource *
  ************/
-CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)
+CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
   : Cpu(model, host, speedPerPstate, core)
 {
   xbt_assert(core==1,"Multi-core not handled by this model yet");
@@ -411,7 +411,7 @@ CpuTi::CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPs
 
   actionSet_ = new ActionTiList();
 
-  xbt_dynar_get_cpy(speedPerPstate, 0, &speed_.peak);
+  speed_.peak = speedPerPstate->front();
   XBT_DEBUG("CPU create: peak=%f", speed_.peak);
 
   speedIntegratedTrace_ = new CpuTiTgmr(nullptr, 1/*scale*/);

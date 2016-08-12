@@ -7,7 +7,6 @@
 #include <list>
 
 #include <xbt/base.h>
-#include <xbt/dynar.h>
 #include <xbt/signal.hpp>
 
 #include <simgrid/forward.h>
@@ -49,7 +48,7 @@ public:
    * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core)=0;
+  virtual Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *, int core)=0;
 
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
@@ -75,7 +74,8 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint, xbt_dynar_t speedPerPstate, int core);
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
+      std::vector<double> *speedPerPstate, int core);
 
   /**
    * @brief Cpu constructor
@@ -85,7 +85,7 @@ public:
    * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
    */
-  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core);
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core);
 
   ~Cpu();
 
@@ -133,7 +133,7 @@ public:
   int coresAmount_ = 1;
   simgrid::s4u::Host* host_;
 
-  xbt_dynar_t speedPerPstate_ = nullptr; /*< List of supported CPU capacities (pstate related) */
+  std::vector<double> *speedPerPstate_ = nullptr; /*< List of supported CPU capacities (pstate related) */
   int pstate_ = 0;                   /*< Current pstate (index in the speedPeakList)*/
 
 public:

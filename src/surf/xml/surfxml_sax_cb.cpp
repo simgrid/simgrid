@@ -456,10 +456,10 @@ void ETag_surfxml_host()    {
 
   buf = A_surfxml_host_speed;
   XBT_DEBUG("Buffer: %s", buf);
-  host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
+  host.speed_per_pstate = new std::vector<double>();
   if (strchr(buf, ',') == nullptr){
     double speed = surf_parse_get_speed(A_surfxml_host_speed,"speed of host", host.id);
-    xbt_dynar_push_as(host.speed_per_pstate,double, speed);
+    host.speed_per_pstate->push_back(speed);
   }
   else {
     xbt_dynar_t pstate_list = xbt_str_split(buf, ",");
@@ -468,7 +468,7 @@ void ETag_surfxml_host()    {
     xbt_dynar_foreach(pstate_list, i, speed_str) {
       xbt_str_trim(speed_str, nullptr);
       double speed = surf_parse_get_speed(speed_str,"speed of host", host.id);
-      xbt_dynar_push_as(host.speed_per_pstate, double, speed);
+      host.speed_per_pstate->push_back(speed);
       XBT_DEBUG("Speed value: %f", speed);
     }
     xbt_dynar_free(&pstate_list);
@@ -482,7 +482,7 @@ void ETag_surfxml_host()    {
   host.coord       = A_surfxml_host_coordinates;
 
   sg_platf_new_host(&host);
-  xbt_dynar_free(&host.speed_per_pstate);
+  delete host.speed_per_pstate;
   current_property_set = nullptr;
 }
 

@@ -27,7 +27,7 @@ public:
   CpuCas01Model();
   ~CpuCas01Model() override;
 
-  Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core) override;
+  Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
   double next_occuring_event_full(double now) override;
   ActionList *p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 };
@@ -38,7 +38,7 @@ public:
 
 class CpuCas01 : public Cpu {
 public:
-  CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPerPstate, int core);
+  CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core);
   ~CpuCas01() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;
   CpuAction *execution_start(double size) override;
@@ -46,7 +46,7 @@ public:
 
   bool isUsed() override;
 
-  xbt_dynar_t getSpeedPeakList(); // FIXME: killme to hide our internals
+  std::vector<double> * getSpeedPeakList(); // FIXME: killme to hide our internals
 
 protected:
   void onSpeedChange() override;
@@ -59,8 +59,7 @@ class CpuCas01Action: public CpuAction {
   friend CpuAction *CpuCas01::execution_start(double size);
   friend CpuAction *CpuCas01::sleep(double duration);
 public:
-  CpuCas01Action(Model *model, double cost, bool failed, double speed,
-                 lmm_constraint_t constraint);
+  CpuCas01Action(Model *model, double cost, bool failed, double speed, lmm_constraint_t constraint);
   ~CpuCas01Action() override;
 };
 
