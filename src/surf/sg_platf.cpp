@@ -307,7 +307,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     host.core_amount = cluster->core_amount;
     host.coord = "";
     sg_platf_new_host(&host);
-   // delete host.speed_per_pstate;
     XBT_DEBUG("</host>");
 
     XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id, cluster->bw, cluster->lat);

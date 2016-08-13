@@ -36,10 +36,10 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_launching_test, "The logging channel used in th
 class Sender {
 public:
   std::string msg = "GaBuZoMeu";
-  Sender() {
+  explicit Sender() {
     /* Constructor used when no parameter is passed to the actor */
   };
-  Sender(std::vector<std::string> args) {
+  explicit Sender(std::vector<std::string> args) {
     /* This constructor is used when we pass parameters to the actor */
     if (args.size() > 0)
       msg = args[0];
@@ -63,10 +63,16 @@ class Receiver {
 public:
   simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName("thingy");
 
-  Receiver() {};
-  Receiver(std::vector<std::string> args) {
+  explicit Receiver() = default;
+  explicit Receiver(std::vector<std::string> args) {
     /* This constructor is used when we pass parameters to the actor */
     /* as with argc/argv, args[0] is the actor's name, so the first parameter is args[1] */
+
+    /* FIXME: this is a bug as this does not happen when starting the process directly
+     * We should fix it by not adding the process name as argv[0] from the deployment file,
+     * which is useless anyway since it's always the function name in this setting.
+     * But this will break MSG...
+     */
     if (args.size() > 1)
       mailbox = simgrid::s4u::Mailbox::byName(args[1]);
   }
