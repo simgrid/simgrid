@@ -38,7 +38,6 @@ namespace simgrid {
 
 typedef simgrid::s4u::As simgrid_As;
 typedef simgrid::s4u::Host simgrid_Host;
-typedef boost::intrusive_ptr<simgrid::s4u::Mailbox> sg_mbox_t;
 typedef simgrid::kernel::activity::ActivityImpl kernel_Activity;
 typedef simgrid::kernel::routing::NetCard routing_NetCard;
 typedef simgrid::surf::Cpu surf_Cpu;
@@ -50,7 +49,6 @@ typedef simgrid::trace_mgr::trace tmgr_Trace;
 
 typedef struct simgrid_As   simgrid_As;
 typedef struct simgrid_Host simgrid_Host;
-typedef struct simgrid_Mailbox *sg_mbox_t;
 typedef struct kernel_Activity kernel_Activity;
 typedef struct surf_Cpu surf_Cpu;
 typedef struct routing_NetCard routing_NetCard;

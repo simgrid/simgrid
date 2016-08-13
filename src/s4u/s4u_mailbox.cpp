@@ -62,15 +62,3 @@ ActorPtr Mailbox::receiver() {
 
 }
 }
-
-/*------- C functions -------*/
-
-sg_mbox_t sg_mbox_by_name(const char*name){
-  return simgrid::s4u::Mailbox::byName(name).get();
-}
-int sg_mbox_is_empty(sg_mbox_t mbox) {
-  return mbox->empty();
-}
-void sg_mbox_setReceiver(sg_mbox_t mbox, smx_process_t process) {
-  mbox->setReceiver(&process->getIface());
-}
