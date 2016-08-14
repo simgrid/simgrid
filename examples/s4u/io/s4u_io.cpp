@@ -66,6 +66,7 @@ public:
     // Test attaching some user data to the file
     file->setUserdata(xbt_strdup("777"));
     XBT_INFO("User data attached to the file: %s", (char*)file->userdata());
+    xbt_free(file->userdata());
 
     // Close the file
     delete file;
