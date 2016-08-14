@@ -48,7 +48,7 @@ public:
    * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
    */
-  virtual Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *, int core)=0;
+  virtual Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)=0;
 
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
