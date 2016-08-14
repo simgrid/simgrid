@@ -17,7 +17,7 @@
 #include "mc/mc.h"
 #include "src/mc/mc_replay.h"
 #include "xbt/dict.h"
-#include "simgrid/s4u/mailbox.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/activity/SynchroComm.hpp"
 

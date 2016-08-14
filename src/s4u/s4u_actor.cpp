@@ -10,7 +10,7 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/comm.hpp"
 #include "simgrid/s4u/host.hpp"
-#include "simgrid/s4u/mailbox.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/context/Context.hpp"
 #include "src/simix/smx_private.h"

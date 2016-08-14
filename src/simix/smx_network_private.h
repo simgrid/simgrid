@@ -14,7 +14,7 @@
 
 #include <xbt/base.h>
 
-#include <simgrid/s4u/mailbox.hpp>
+#include <simgrid/s4u/Mailbox.hpp>
 
 #include "simgrid/simix.h"
 #include "popping_private.h"

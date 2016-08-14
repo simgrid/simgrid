@@ -9,7 +9,7 @@
 #include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/comm.hpp"
 #include "simgrid/s4u/host.hpp"
-#include "simgrid/s4u/mailbox.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_file,"S4U files");
 

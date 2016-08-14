@@ -10,7 +10,6 @@
 
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/forward.hpp>
-#include <simgrid/s4u/mailbox.hpp>
 #include <simgrid/forward.h>
 
 

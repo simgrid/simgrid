@@ -25,7 +25,6 @@
 #include <simgrid/chrono.hpp>
 #include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
-#include <simgrid/s4u/mailbox.hpp>
 
 namespace simgrid {
 namespace s4u {

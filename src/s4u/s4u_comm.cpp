@@ -8,6 +8,8 @@
 #include "src/msg/msg_private.h"
 
 #include "simgrid/s4u/comm.hpp"
+#include <simgrid/s4u/Mailbox.hpp>
+
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm,s4u_activity,"S4U asynchronous communications");
 

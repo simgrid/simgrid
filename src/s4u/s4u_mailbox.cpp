@@ -8,7 +8,7 @@
 #include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_network_private.h"
-#include "simgrid/s4u/mailbox.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");

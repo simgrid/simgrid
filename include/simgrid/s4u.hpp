@@ -8,7 +8,7 @@
 
 #include <simgrid/s4u/Activity.hpp>
 #include <simgrid/s4u/Actor.hpp>
-#include <simgrid/s4u/mailbox.hpp>
+#include <simgrid/s4u/Mailbox.hpp>
 #include <simgrid/s4u/engine.hpp>
 #include <simgrid/s4u/host.hpp>
 

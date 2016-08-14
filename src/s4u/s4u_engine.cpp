@@ -9,7 +9,7 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
-#include "simgrid/s4u/mailbox.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
 #include "simgrid/s4u/storage.hpp"
 
 #include "surf/surf.h"               // routing_platf. FIXME:KILLME. SOON
