@@ -92,6 +92,7 @@ int main(int argc, char **argv)
       if (SD_task_get_state(task)==SD_DONE)
         SD_task_destroy(task);
     }
+    xbt_dynar_free(&changed_tasks);
   }
   SD_exit();
   xbt_free(hosts);

@@ -81,7 +81,9 @@ int main(int argc, char **argv)
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);
   XBT_INFO("------------------- Produce the trace file---------------------------");
-  XBT_INFO("Producing the trace of the run into %s", xbt_basename(tracefilename));
+  char * basename = xbt_basename(tracefilename);
+  XBT_INFO("Producing the trace of the run into %s", basename);
+  free(basename);
   FILE *out = fopen(tracefilename, "w");
   xbt_assert(out, "Cannot write to %s", tracefilename);
   free(tracefilename);
