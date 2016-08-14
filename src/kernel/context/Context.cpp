@@ -38,7 +38,7 @@ namespace context {
 
 ContextFactoryInitializer factory_initializer = nullptr;
 
-ContextFactory::~ContextFactory() {}
+ContextFactory::~ContextFactory() = default;
 
 Context* ContextFactory::self()
 {
@@ -79,9 +79,7 @@ Context::Context(std::function<void()> code,
     SIMIX_context_set_current(this);
 }
 
-Context::~Context()
-{
-}
+Context::~Context() = default;
 
 void Context::stop()
 {
@@ -94,9 +92,7 @@ void Context::stop()
   this->iwannadie = true;
 }
 
-AttachContext::~AttachContext()
-{
-}
+AttachContext::~AttachContext() = default;
 
 }}}
 

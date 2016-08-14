@@ -41,8 +41,6 @@ namespace simgrid {
 namespace kernel {
 namespace context {
 
-  class Context;
-
   XBT_PUBLIC_CLASS ContextFactory {
   private:
     std::string name_;

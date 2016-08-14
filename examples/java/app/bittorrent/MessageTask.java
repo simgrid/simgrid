@@ -39,7 +39,7 @@ public class MessageTask extends Task {
   }
 
   // builds a new bitfield message
-  public MessageTask(Type type, String issuerHostname, String mailbox, int peerId, char bitfield[]) {
+  public MessageTask(Type type, String issuerHostname, String mailbox, int peerId, char[] bitfield) {
     this(type,issuerHostname,mailbox,peerId,-1,false,-1,-1);
     this.bitfield = bitfield;
   }
