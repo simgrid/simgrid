@@ -49,7 +49,7 @@ namespace context {
     explicit ContextFactory(std::string name) : name_(std::move(name)) {}
     virtual ~ContextFactory();
     virtual Context* create_context(std::function<void()> code,
-      void_pfn_smxprocess_t cleanup, smx_process_t process) = 0;
+      void_pfn_smxprocess_t cleanup, smx_actor_t process) = 0;
 
     // Optional methods for attaching main() as a context:
 
@@ -57,8 +57,8 @@ namespace context {
      *
      *  This will not work on all implementation of `ContextFactory`.
      */
-    virtual Context* attach(void_pfn_smxprocess_t cleanup_func, smx_process_t process);
-    virtual Context* create_maestro(std::function<void()> code, smx_process_t process);
+    virtual Context* attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
+    virtual Context* create_maestro(std::function<void()> code, smx_actor_t process);
 
     virtual void run_all() = 0;
     virtual Context* self();
@@ -82,22 +82,22 @@ namespace context {
   private:
     std::function<void()> code_;
     void_pfn_smxprocess_t cleanup_func_ = nullptr;
-    smx_process_t process_ = nullptr;
+    smx_actor_t process_ = nullptr;
   public:
     bool iwannadie;
   public:
     Context(std::function<void()> code,
             void_pfn_smxprocess_t cleanup_func,
-            smx_process_t process);
+            smx_actor_t process);
     void operator()()
     {
       code_();
     }
     bool has_code() const
     {
-      return (bool) code_;
+      return static_cast<bool>(code_);
     }
-    smx_process_t process()
+    smx_actor_t process()
     {
       return this->process_;
     }
@@ -117,7 +117,7 @@ namespace context {
 
     AttachContext(std::function<void()> code,
             void_pfn_smxprocess_t cleanup_func,
-            smx_process_t process)
+            smx_actor_t process)
       : Context(std::move(code), cleanup_func, process)
     {}
 
@@ -154,7 +154,7 @@ XBT_PRIVATE void SIMIX_context_mod_exit();
 XBT_PRIVATE smx_context_t SIMIX_context_new(
   std::function<void()> code,
   void_pfn_smxprocess_t cleanup_func,
-  smx_process_t simix_process);
+  smx_actor_t simix_process);
 
 #ifndef WIN32
 XBT_PUBLIC_DATA(char sigsegv_stack[SIGSTKSZ]);

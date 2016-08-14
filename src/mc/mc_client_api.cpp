@@ -78,7 +78,7 @@ void MC_automaton_new_propositional_symbol_pointer(const char *name, int* value)
  *  @param context
  *  @param size    Size of the stack
  */
-void MC_register_stack_area(void *stack, smx_process_t process, ucontext_t* context, size_t size)
+void MC_register_stack_area(void *stack, smx_actor_t process, ucontext_t* context, size_t size)
 {
   xbt_assert(mc_model_checker == nullptr);
   if (!MC_is_active())

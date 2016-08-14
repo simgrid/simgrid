@@ -94,12 +94,12 @@ void SIMIX_function_register_default(xbt_main_func_t code)
 }
 
 /**
- * \brief Gets a #smx_process_t code from the global table.
+ * \brief Gets a #smx_actor_t code from the global table.
  *
  * Gets a code function from the global table. Returns nullptr if there are no function registered with the name.
  * This table is then used by #SIMIX_launch_application.
  * \param name the reference name of the function.
- * \return The #smx_process_t or nullptr.
+ * \return The #smx_actor_t or nullptr.
  */
 simgrid::simix::ActorCodeFactory& SIMIX_get_actor_code_factory(const char *name)
 {

@@ -69,7 +69,7 @@ void SIMIX_host_on(sg_host_t h)
 }
 
 /** @brief Stop the host if it is on */
-void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
+void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
 {
   smx_host_priv_t host = sg_host_simix(h);
 
@@ -81,7 +81,7 @@ void SIMIX_host_off(sg_host_t h, smx_process_t issuer)
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
-      smx_process_t process = nullptr;
+      smx_actor_t process = nullptr;
       xbt_swag_foreach(process, host->process_list) {
         SIMIX_process_kill(process, issuer);
         XBT_DEBUG("Killing %s on %s by %s",
@@ -109,7 +109,7 @@ void SIMIX_host_destroy(void *h)
   if (xbt_swag_size(host->process_list) != 0) {
     char *msg = xbt_strdup("Shutting down host, but it's not empty:");
     char *tmp;
-    smx_process_t process = nullptr;
+    smx_actor_t process = nullptr;
 
     xbt_swag_foreach(process, host->process_list) {
       tmp = bprintf("%s\n\t%s", msg, process->name.c_str());
@@ -130,7 +130,7 @@ void SIMIX_host_destroy(void *h)
 
 sg_host_t SIMIX_host_self()
 {
-  smx_process_t process = SIMIX_process_self();
+  smx_actor_t process = SIMIX_process_self();
   return (process == nullptr) ? nullptr : process->host;
 }
 
@@ -207,7 +207,7 @@ smx_activity_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char
   return SIMIX_execution_start(simcall->issuer, name,flops_amount,priority,bound);
 }
 
-smx_activity_t SIMIX_execution_start(smx_process_t issuer, const char *name, double flops_amount, double priority,
+smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, double flops_amount, double priority,
                                     double bound){
 
   /* alloc structures and initialize */

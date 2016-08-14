@@ -26,12 +26,12 @@ public:
   Mutex(Mutex const&) = delete;
   Mutex& operator=(Mutex const&) = delete;
 
-  void lock(smx_process_t issuer);
-  bool try_lock(smx_process_t issuer);
-  void unlock(smx_process_t issuer);
+  void lock(smx_actor_t issuer);
+  bool try_lock(smx_actor_t issuer);
+  void unlock(smx_actor_t issuer);
 
   bool locked = false;
-  smx_process_t owner = nullptr;
+  smx_actor_t owner = nullptr;
   // List of sleeping processes:
   xbt_swag_t sleeping = nullptr;
 
@@ -76,7 +76,7 @@ typedef struct s_smx_sem {
 } s_smx_sem_t;
 
 XBT_PRIVATE void SIMIX_post_synchro(smx_activity_t synchro);
-XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall);
+XBT_PRIVATE void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall);
 XBT_PRIVATE void SIMIX_synchro_destroy(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_synchro_finish(smx_activity_t synchro);
 

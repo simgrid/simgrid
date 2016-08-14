@@ -102,11 +102,11 @@ private:
 
 typedef simgrid::simix::ProcessArg *smx_process_arg_t;
 
-typedef simgrid::simix::ActorImpl* smx_process_t;
+typedef simgrid::simix::ActorImpl* smx_actor_t;
 
 SG_BEGIN_DECL()
 
-XBT_PRIVATE smx_process_t SIMIX_process_create(
+XBT_PRIVATE smx_actor_t SIMIX_process_create(
                           const char *name,
                           std::function<void()> code,
                           void *data,
@@ -114,33 +114,33 @@ XBT_PRIVATE smx_process_t SIMIX_process_create(
                           double kill_time,
                           xbt_dict_t properties,
                           int auto_restart,
-                          smx_process_t parent_process);
+                          smx_actor_t parent_process);
 
 XBT_PRIVATE void SIMIX_process_runall();
-XBT_PRIVATE void SIMIX_process_kill(smx_process_t process, smx_process_t issuer);
-XBT_PRIVATE void SIMIX_process_killall(smx_process_t issuer, int reset_pid);
-XBT_PRIVATE void SIMIX_process_stop(smx_process_t arg);
-XBT_PRIVATE void SIMIX_process_cleanup(smx_process_t arg);
+XBT_PRIVATE void SIMIX_process_kill(smx_actor_t process, smx_actor_t issuer);
+XBT_PRIVATE void SIMIX_process_killall(smx_actor_t issuer, int reset_pid);
+XBT_PRIVATE void SIMIX_process_stop(smx_actor_t arg);
+XBT_PRIVATE void SIMIX_process_cleanup(smx_actor_t arg);
 XBT_PRIVATE void SIMIX_process_empty_trash();
-XBT_PRIVATE void SIMIX_process_yield(smx_process_t self);
+XBT_PRIVATE void SIMIX_process_yield(smx_actor_t self);
 XBT_PRIVATE void SIMIX_process_exception_terminate(xbt_ex_t * e);
-XBT_PRIVATE void SIMIX_process_change_host(smx_process_t process, sg_host_t dest);
-XBT_PRIVATE smx_activity_t SIMIX_process_suspend(smx_process_t process, smx_process_t issuer);
-XBT_PRIVATE void SIMIX_process_resume(smx_process_t process, smx_process_t issuer);
-XBT_PRIVATE int SIMIX_process_get_PID(smx_process_t self);
-XBT_PRIVATE void* SIMIX_process_get_data(smx_process_t process);
-XBT_PRIVATE void SIMIX_process_set_data(smx_process_t process, void *data);
-XBT_PRIVATE smx_process_t SIMIX_process_get_by_name(const char* name);
-XBT_PRIVATE int SIMIX_process_is_suspended(smx_process_t process);
-XBT_PRIVATE xbt_dict_t SIMIX_process_get_properties(smx_process_t process);
-XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_process_t issuer, smx_process_t process, double timeout);
-XBT_PRIVATE smx_activity_t SIMIX_process_sleep(smx_process_t process, double duration);
+XBT_PRIVATE void SIMIX_process_change_host(smx_actor_t process, sg_host_t dest);
+XBT_PRIVATE smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer);
+XBT_PRIVATE void SIMIX_process_resume(smx_actor_t process, smx_actor_t issuer);
+XBT_PRIVATE int SIMIX_process_get_PID(smx_actor_t self);
+XBT_PRIVATE void* SIMIX_process_get_data(smx_actor_t process);
+XBT_PRIVATE void SIMIX_process_set_data(smx_actor_t process, void *data);
+XBT_PRIVATE smx_actor_t SIMIX_process_get_by_name(const char* name);
+XBT_PRIVATE int SIMIX_process_is_suspended(smx_actor_t process);
+XBT_PRIVATE xbt_dict_t SIMIX_process_get_properties(smx_actor_t process);
+XBT_PRIVATE smx_activity_t SIMIX_process_join(smx_actor_t issuer, smx_actor_t process, double timeout);
+XBT_PRIVATE smx_activity_t SIMIX_process_sleep(smx_actor_t process, double duration);
 
 XBT_PRIVATE void SIMIX_process_sleep_destroy(smx_activity_t synchro);
-XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_process_t process, int auto_restart);
-XBT_PRIVATE smx_process_t SIMIX_process_restart(smx_process_t process, smx_process_t issuer);
+XBT_PRIVATE void SIMIX_process_auto_restart_set(smx_actor_t process, int auto_restart);
+XBT_PRIVATE smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer);
 
-void SIMIX_segment_index_set(smx_process_t process, int segment_index);
+void SIMIX_segment_index_set(smx_actor_t process, int segment_index);
 extern void (*SMPI_switch_data_segment)(int dest);
 
 SG_END_DECL()

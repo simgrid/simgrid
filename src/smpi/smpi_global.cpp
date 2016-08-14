@@ -98,7 +98,7 @@ void smpi_process_init(int *argc, char ***argv)
 {
 
   if (argc != nullptr && argv != nullptr) {
-    smx_process_t proc = SIMIX_process_self();
+    smx_actor_t proc = SIMIX_process_self();
     proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
     char* instance_id = (*argv)[1];
     int rank = xbt_str_parse_int((*argv)[2], "Invalid rank: %s");

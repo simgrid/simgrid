@@ -42,7 +42,7 @@ public:
   friend class JavaContextFactory;
   JavaContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
-          smx_process_t process);
+          smx_actor_t process);
   ~JavaContext() override;
   void stop() override;
   void suspend() override;
@@ -57,7 +57,7 @@ public:
   ~JavaContextFactory() override;
   JavaContext* self() override;
   JavaContext* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t, smx_process_t process) override;
+    void_pfn_smxprocess_t, smx_actor_t process) override;
   void run_all() override;
 };
 

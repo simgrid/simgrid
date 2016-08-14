@@ -25,7 +25,7 @@
 smx_context_t SIMIX_context_new(
   std::function<void()> code,
   void_pfn_smxprocess_t cleanup_func,
-  smx_process_t simix_process)
+  smx_actor_t simix_process)
 {
   xbt_assert(simix_global, "simix is not initialized, please call MSG_init first");
   return simix_global->context_factory->create_context(
@@ -54,20 +54,20 @@ void ContextFactory::declare_context(void* context, std::size_t size)
 #endif
 }
 
-Context* ContextFactory::attach(void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+Context* ContextFactory::attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
 {
   xbt_die("Cannot attach with this ContextFactory.\n"
     "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
-Context* ContextFactory::create_maestro(std::function<void()> code, smx_process_t process)
+Context* ContextFactory::create_maestro(std::function<void()> code, smx_actor_t process)
 {
   xbt_die("Cannot create_maestro with this ContextFactory.\n"
     "Try using --cfg=contexts/factory:thread instead.\n");
 }
 
 Context::Context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+    void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
   : code_(std::move(code)), process_(process), iwannadie(false)
 {
   /* If the user provided a function for the process then use it.

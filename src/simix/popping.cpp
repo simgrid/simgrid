@@ -30,7 +30,7 @@ void SIMIX_simcall_answer(smx_simcall_t simcall)
  *    weird in process scheduling.
  */
 /*    if(!xbt_dynar_member(simix_global->process_to_run, &(simcall->issuer))) */
-    xbt_dynar_push_as(simix_global->process_to_run, smx_process_t, simcall->issuer);
+    xbt_dynar_push_as(simix_global->process_to_run, smx_actor_t, simcall->issuer);
 /*    else DIE_IMPOSSIBLE; */
   }
 }

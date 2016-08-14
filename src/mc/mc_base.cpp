@@ -59,7 +59,7 @@ void wait_for_requests(void)
   xbt_assert(mc_model_checker == nullptr);
 #endif
 
-  smx_process_t process;
+  smx_actor_t process;
   smx_simcall_t req;
   unsigned int iter;
 

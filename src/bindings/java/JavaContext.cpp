@@ -45,7 +45,7 @@ JavaContext* JavaContextFactory::self()
 
 JavaContext* JavaContextFactory::create_context(
   std::function<void()> code,
-  void_pfn_smxprocess_t cleanup, smx_process_t process)
+  void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
   return this->new_context<JavaContext>(std::move(code), cleanup, process);
 }
@@ -53,7 +53,7 @@ JavaContext* JavaContextFactory::create_context(
 void JavaContextFactory::run_all()
 {
   xbt_dynar_t processes = SIMIX_process_get_runnable();
-  smx_process_t process;
+  smx_actor_t process;
   unsigned int cursor;
   xbt_dynar_foreach(processes, cursor, process) {
     static_cast<JavaContext*>(SIMIX_process_get_context(process))->resume();
@@ -62,7 +62,7 @@ void JavaContextFactory::run_all()
 
 JavaContext::JavaContext(std::function<void()> code,
         void_pfn_smxprocess_t cleanup_func,
-        smx_process_t process)
+        smx_actor_t process)
   : Context(std::move(code), cleanup_func, process)
 {
   static int thread_amount=0;

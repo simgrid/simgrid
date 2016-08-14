@@ -24,7 +24,7 @@ public:
   friend ThreadContextFactory;
   ThreadContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
-          smx_process_t process, bool maestro =false);
+          smx_actor_t process, bool maestro =false);
   ~ThreadContext() override;
   void stop() override;
   void suspend() override;
@@ -49,13 +49,13 @@ public:
   ThreadContextFactory();
   ~ThreadContextFactory() override;
   ThreadContext* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup_func,  smx_process_t process) override;
+    void_pfn_smxprocess_t cleanup_func,  smx_actor_t process) override;
   void run_all() override;
   ThreadContext* self() override;
 
   // Optional methods:
-  ThreadContext* attach(void_pfn_smxprocess_t cleanup_func, smx_process_t process) override;
-  ThreadContext* create_maestro(std::function<void()> code, smx_process_t process) override;
+  ThreadContext* attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process) override;
+  ThreadContext* create_maestro(std::function<void()> code, smx_actor_t process) override;
 };
 
 }}} // namespace

@@ -122,8 +122,8 @@ private:
   void (*cleanFunction_)(void *) = nullptr;
   void (*copyDataFunction_)(smx_activity_t, void*, size_t) = nullptr;
 
-  smx_process_t sender_ = nullptr;
-  smx_process_t receiver_ = nullptr;
+  smx_actor_t sender_ = nullptr;
+  smx_actor_t receiver_ = nullptr;
   MailboxPtr mailbox_ = nullptr;
 };
 

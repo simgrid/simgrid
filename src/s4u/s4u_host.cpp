@@ -69,7 +69,7 @@ Host* Host::by_name_or_create(const char* name)
 }
 
 Host *Host::current(){
-  smx_process_t smx_proc = SIMIX_process_self();
+  smx_actor_t smx_proc = SIMIX_process_self();
   if (smx_proc == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
   return smx_proc->host;

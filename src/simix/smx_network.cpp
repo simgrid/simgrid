@@ -72,7 +72,7 @@ smx_mailbox_t SIMIX_mbox_get_by_name(const char *name)
  *  \param mbox The rendez-vous point
  *  \param process The receiving process
  */
-void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_process_t process)
+void SIMIX_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t process)
 {
   mbox->permanent_receiver = process;
 }
@@ -150,7 +150,7 @@ static smx_activity_t _find_matching_comm(std::deque<smx_activity_t> *deque, e_s
 /******************************************************************************/
 /*                          Communication synchros                            */
 /******************************************************************************/
-XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t src, smx_mailbox_t mbox,
+XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t src, smx_mailbox_t mbox,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_activity_t),
@@ -162,7 +162,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t 
   SIMCALL_SET_MC_VALUE(simcall, 0);
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
-XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t src_proc, smx_mailbox_t mbox,
+XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_actor_t src_proc, smx_mailbox_t mbox,
                                   double task_size, double rate,
                                   void *src_buff, size_t src_buff_size,
                                   int (*match_fun)(void *, void *,smx_activity_t),
@@ -238,7 +238,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx
   return (detached ? nullptr : other_comm);
 }
 
-XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox,
+XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox,
                          void *dst_buff, size_t *dst_buff_size,
                          int (*match_fun)(void *, void *, smx_activity_t),
                          void (*copy_data_fun)(smx_activity_t, void*, size_t),
@@ -249,7 +249,7 @@ XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t 
   simcall_HANDLER_comm_wait(simcall, comm, timeout);
 }
 
-XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox,
+XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox,
     void *dst_buff, size_t *dst_buff_size,
     int (*match_fun)(void *, void *, smx_activity_t),
     void (*copy_data_fun)(smx_activity_t, void*, size_t),
@@ -258,7 +258,7 @@ XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx
   return SIMIX_comm_irecv(receiver, mbox, dst_buff, dst_buff_size, match_fun, copy_data_fun, data, rate);
 }
 
-smx_activity_t SIMIX_comm_irecv(smx_process_t dst_proc, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
+smx_activity_t SIMIX_comm_irecv(smx_actor_t dst_proc, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
     int (*match_fun)(void *, void *, smx_activity_t),
     void (*copy_data_fun)(smx_activity_t, void*, size_t), // used to copy data if not default one
     void *data, double rate)
@@ -342,7 +342,7 @@ smx_activity_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t 
   return SIMIX_comm_iprobe(simcall->issuer, mbox, type, src, tag, match_fun, data);
 }
 
-smx_activity_t SIMIX_comm_iprobe(smx_process_t dst_proc, smx_mailbox_t mbox, int type, int src,
+smx_activity_t SIMIX_comm_iprobe(smx_actor_t dst_proc, smx_mailbox_t mbox, int type, int src,
                               int tag, int (*match_fun)(void *, void *, smx_activity_t), void *data)
 {
   XBT_DEBUG("iprobe from %p %p", mbox, &mbox->comm_queue);

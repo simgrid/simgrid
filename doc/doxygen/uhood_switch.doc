@@ -304,14 +304,14 @@ as input. It looks like this:
 # This looks like C++ but it is a basic IDL-like language
 # (one definition per line) parsed by a python script:
 
-void process_kill(smx_process_t process);
+void process_kill(smx_actor_t process);
 void process_killall(int reset_pid);
-void process_cleanup(smx_process_t process) [[nohandler]];
-void process_suspend(smx_process_t process) [[block]];
-void process_resume(smx_process_t process);
-void process_set_host(smx_process_t process, sg_host_t dest);
-int  process_is_suspended(smx_process_t process) [[nohandler]];
-int  process_join(smx_process_t process, double timeout) [[block]];
+void process_cleanup(smx_actor_t process) [[nohandler]];
+void process_suspend(smx_actor_t process) [[block]];
+void process_resume(smx_actor_t process);
+void process_set_host(smx_actor_t process, sg_host_t dest);
+int  process_is_suspended(smx_actor_t process) [[nohandler]];
+int  process_join(smx_actor_t process, double timeout) [[block]];
 int  process_sleep(double duration) [[block]];
 
 smx_mutex_t mutex_init();
@@ -330,7 +330,7 @@ struct s_smx_simcall {
   // Simcall number:
   e_smx_simcall_t call;
   // Issuing actor:
-  smx_process_t issuer;
+  smx_actor_t issuer;
   // Arguments of the simcall:
   union u_smx_scalar args[11];
   // Result of the simcall:
@@ -481,7 +481,7 @@ auto kernelSync(F code) -> decltype(code().get())
   if (SIMIX_is_maestro())
     xbt_die("Can't execute blocking call in kernel mode");
 
-  smx_process_t self = SIMIX_process_self();
+  smx_actor_t self = SIMIX_process_self();
   simgrid::xbt::Result<T> result;
 
   simcall_run_blocking([&result, self, &code]{
@@ -551,7 +551,7 @@ T simgrid::simix::Future<T>::get()
 {
   if (!valid())
     throw std::future_error(std::future_errc::no_state);
-  smx_process_t self = SIMIX_process_self();
+  smx_actor_t self = SIMIX_process_self();
   simgrid::xbt::Result<T> result;
   simcall_run_blocking([this, &result, self]{
     try {

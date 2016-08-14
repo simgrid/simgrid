@@ -49,11 +49,11 @@ static inline void simcall_vm_restore__set__ind_vm(smx_simcall_t simcall, sg_hos
     simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
 }
 
-static inline smx_process_t simcall_process_kill__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_kill__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_kill__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_kill__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 
 static inline int simcall_process_killall__get__reset_pid(smx_simcall_t simcall) {
@@ -63,32 +63,32 @@ static inline void simcall_process_killall__set__reset_pid(smx_simcall_t simcall
     simgrid::simix::marshal<int>(simcall->args[0], arg);
 }
 
-static inline smx_process_t simcall_process_cleanup__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_cleanup__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_cleanup__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
-}
-
-static inline smx_process_t simcall_process_suspend__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
-}
-static inline void simcall_process_suspend__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_cleanup__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 
-static inline smx_process_t simcall_process_resume__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_suspend__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_resume__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_suspend__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 
-static inline smx_process_t simcall_process_set_host__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_resume__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_set_host__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_resume__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
+}
+
+static inline smx_actor_t simcall_process_set_host__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
+}
+static inline void simcall_process_set_host__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline sg_host_t simcall_process_set_host__get__dest(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]);
@@ -97,11 +97,11 @@ static inline void simcall_process_set_host__set__dest(smx_simcall_t simcall, sg
     simgrid::simix::marshal<sg_host_t>(simcall->args[1], arg);
 }
 
-static inline smx_process_t simcall_process_is_suspended__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_is_suspended__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_is_suspended__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_is_suspended__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline int simcall_process_is_suspended__get__result(smx_simcall_t simcall){
     return simgrid::simix::unmarshal<int>(simcall->result);
@@ -110,11 +110,11 @@ static inline void simcall_process_is_suspended__set__result(smx_simcall_t simca
     simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline smx_process_t simcall_process_join__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_join__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_join__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_join__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline double simcall_process_join__get__timeout(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<double>(simcall->args[1]);
@@ -268,11 +268,11 @@ static inline void simcall_execution_wait__set__result(smx_simcall_t simcall, in
     simgrid::simix::marshal<int>(simcall->result, result);
 }
 
-static inline smx_process_t simcall_process_on_exit__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_on_exit__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_on_exit__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_on_exit__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline int_f_pvoid_pvoid_t simcall_process_on_exit__get__fun(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<int_f_pvoid_pvoid_t>(simcall->args[1]);
@@ -287,11 +287,11 @@ static inline void simcall_process_on_exit__set__data(smx_simcall_t simcall, voi
     simgrid::simix::marshal<void*>(simcall->args[2], arg);
 }
 
-static inline smx_process_t simcall_process_auto_restart_set__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_auto_restart_set__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_auto_restart_set__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_auto_restart_set__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline int simcall_process_auto_restart_set__get__auto_restart(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<int>(simcall->args[1]);
@@ -300,17 +300,17 @@ static inline void simcall_process_auto_restart_set__set__auto_restart(smx_simca
     simgrid::simix::marshal<int>(simcall->args[1], arg);
 }
 
-static inline smx_process_t simcall_process_restart__get__process(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_process_restart__get__process(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_process_restart__set__process(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_process_restart__set__process(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
-static inline smx_process_t simcall_process_restart__get__result(smx_simcall_t simcall){
-    return simgrid::simix::unmarshal<smx_process_t>(simcall->result);
+static inline smx_actor_t simcall_process_restart__get__result(smx_simcall_t simcall){
+    return simgrid::simix::unmarshal<smx_actor_t>(simcall->result);
 }
-static inline void simcall_process_restart__set__result(smx_simcall_t simcall, smx_process_t result){
-    simgrid::simix::marshal<smx_process_t>(simcall->result, result);
+static inline void simcall_process_restart__set__result(smx_simcall_t simcall, smx_actor_t result){
+    simgrid::simix::marshal<smx_actor_t>(simcall->result, result);
 }
 
 static inline const char* simcall_mbox_create__get__name(smx_simcall_t simcall) {
@@ -332,11 +332,11 @@ static inline smx_mailbox_t simcall_mbox_set_receiver__get__mbox(smx_simcall_t s
 static inline void simcall_mbox_set_receiver__set__mbox(smx_simcall_t simcall, smx_mailbox_t arg) {
     simgrid::simix::marshal<smx_mailbox_t>(simcall->args[0], arg);
 }
-static inline smx_process_t simcall_mbox_set_receiver__get__receiver(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[1]);
+static inline smx_actor_t simcall_mbox_set_receiver__get__receiver(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[1]);
 }
-static inline void simcall_mbox_set_receiver__set__receiver(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[1], arg);
+static inline void simcall_mbox_set_receiver__set__receiver(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[1], arg);
 }
 
 static inline smx_mailbox_t simcall_comm_iprobe__get__mbox(smx_simcall_t simcall) {
@@ -382,11 +382,11 @@ static inline void simcall_comm_iprobe__set__result(smx_simcall_t simcall, smx_a
     simgrid::simix::marshal<smx_activity_t>(simcall->result, result);
 }
 
-static inline smx_process_t simcall_comm_send__get__sender(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_comm_send__get__sender(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_comm_send__set__sender(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_comm_send__set__sender(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline smx_mailbox_t simcall_comm_send__get__mbox(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]);
@@ -443,11 +443,11 @@ static inline void simcall_comm_send__set__timeout(smx_simcall_t simcall, double
     simgrid::simix::marshal<double>(simcall->args[9], arg);
 }
 
-static inline smx_process_t simcall_comm_isend__get__sender(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_comm_isend__get__sender(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_comm_isend__set__sender(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_comm_isend__set__sender(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline smx_mailbox_t simcall_comm_isend__get__mbox(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]);
@@ -516,11 +516,11 @@ static inline void simcall_comm_isend__set__result(smx_simcall_t simcall, smx_ac
     simgrid::simix::marshal<smx_activity_t>(simcall->result, result);
 }
 
-static inline smx_process_t simcall_comm_recv__get__receiver(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_comm_recv__get__receiver(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_comm_recv__set__receiver(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_comm_recv__set__receiver(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline smx_mailbox_t simcall_comm_recv__get__mbox(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]);
@@ -571,11 +571,11 @@ static inline void simcall_comm_recv__set__rate(smx_simcall_t simcall, double ar
     simgrid::simix::marshal<double>(simcall->args[8], arg);
 }
 
-static inline smx_process_t simcall_comm_irecv__get__receiver(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<smx_process_t>(simcall->args[0]);
+static inline smx_actor_t simcall_comm_irecv__get__receiver(smx_simcall_t simcall) {
+  return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
-static inline void simcall_comm_irecv__set__receiver(smx_simcall_t simcall, smx_process_t arg) {
-    simgrid::simix::marshal<smx_process_t>(simcall->args[0], arg);
+static inline void simcall_comm_irecv__set__receiver(smx_simcall_t simcall, smx_actor_t arg) {
+    simgrid::simix::marshal<smx_actor_t>(simcall->args[0], arg);
 }
 static inline smx_mailbox_t simcall_comm_irecv__get__mbox(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<smx_mailbox_t>(simcall->args[1]);
@@ -1151,21 +1151,21 @@ XBT_PRIVATE void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_
 XBT_PRIVATE void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm);
-XBT_PRIVATE void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_process_t process);
+XBT_PRIVATE void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
-XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_process_t process);
-XBT_PRIVATE void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_process_t process);
-XBT_PRIVATE void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_process_t process, sg_host_t dest);
-XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_process_t process, double timeout);
+XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process);
+XBT_PRIVATE void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_actor_t process);
+XBT_PRIVATE void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_actor_t process, sg_host_t dest);
+XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout);
 XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);
 XBT_PRIVATE smx_activity_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount, double priority, double bound);
 XBT_PRIVATE void simcall_HANDLER_execution_wait(smx_simcall_t simcall, smx_activity_t execution);
-XBT_PRIVATE smx_process_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_process_t process);
+XBT_PRIVATE smx_actor_t simcall_HANDLER_process_restart(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_iprobe(smx_simcall_t simcall, smx_mailbox_t mbox, int type, int src, int tag, simix_match_func_t match_fun, void* data);
-XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);
-XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
-XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate);
-XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
+XBT_PRIVATE void simcall_HANDLER_comm_send(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout);
+XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_isend(smx_simcall_t simcall, smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
+XBT_PRIVATE void simcall_HANDLER_comm_recv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate);
+XBT_PRIVATE smx_activity_t simcall_HANDLER_comm_irecv(smx_simcall_t simcall, smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
 XBT_PRIVATE void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t comms, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_wait(smx_simcall_t simcall, smx_activity_t comm, double timeout);
 XBT_PRIVATE void simcall_HANDLER_comm_test(smx_simcall_t simcall, smx_activity_t comm);

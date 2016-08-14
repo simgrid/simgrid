@@ -40,7 +40,7 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
 
 XBT_PRIVATE void SIMIX_host_restart_processes(sg_host_t host);
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
-XBT_PRIVATE smx_activity_t SIMIX_execution_start(smx_process_t issuer, const char *name,
+XBT_PRIVATE smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name,
     double flops_amount, double priority, double bound);
 XBT_PRIVATE smx_activity_t SIMIX_execution_parallel_start(const char *name,
     int host_nb, sg_host_t *host_list,
@@ -59,17 +59,17 @@ XBT_PRIVATE sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
 
 XBT_PRIVATE void SIMIX_vm_destroy(sg_host_t ind_vm);
 // --
-XBT_PRIVATE void SIMIX_vm_resume(sg_host_t ind_vm, smx_process_t issuer);
+XBT_PRIVATE void SIMIX_vm_resume(sg_host_t ind_vm, smx_actor_t issuer);
 
-XBT_PRIVATE void SIMIX_vm_suspend(sg_host_t ind_vm, smx_process_t issuer);
+XBT_PRIVATE void SIMIX_vm_suspend(sg_host_t ind_vm, smx_actor_t issuer);
 // --
-XBT_PRIVATE void SIMIX_vm_save(sg_host_t ind_vm, smx_process_t issuer);
+XBT_PRIVATE void SIMIX_vm_save(sg_host_t ind_vm, smx_actor_t issuer);
 
-XBT_PRIVATE void SIMIX_vm_restore(sg_host_t ind_vm, smx_process_t issuer);
+XBT_PRIVATE void SIMIX_vm_restore(sg_host_t ind_vm, smx_actor_t issuer);
 // --
 XBT_PRIVATE void SIMIX_vm_start(sg_host_t ind_vm);
 
-XBT_PRIVATE void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_process_t issuer);
+XBT_PRIVATE void SIMIX_vm_shutdown(sg_host_t ind_vm, smx_actor_t issuer);
 // --
 
 XBT_PRIVATE e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm);

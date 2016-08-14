@@ -24,7 +24,7 @@ XBT_PUBLIC(void) simcall_run_blocking(std::function<void()> const& code);
 namespace simgrid {
 namespace simix {
 
-XBT_PUBLIC(void) unblock(smx_process_t process);
+XBT_PUBLIC(void) unblock(smx_actor_t process);
 
 /** Execute some code in kernel mode and wakes up the actor when
  *  the result is available.
@@ -53,7 +53,7 @@ auto kernelSync(F code) -> decltype(code().get())
   if (SIMIX_is_maestro())
     xbt_die("Can't execute blocking call in kernel mode");
 
-  smx_process_t self = SIMIX_process_self();
+  smx_actor_t self = SIMIX_process_self();
   simgrid::xbt::Result<T> result;
 
   simcall_run_blocking([&result, self, &code]{
@@ -89,7 +89,7 @@ public:
   {
     if (!valid())
       throw std::future_error(std::future_errc::no_state);
-    smx_process_t self = SIMIX_process_self();
+    smx_actor_t self = SIMIX_process_self();
     simgrid::xbt::Result<T> result;
     simcall_run_blocking([this, &result, self]{
       try {
@@ -120,7 +120,7 @@ public:
       return;
     // The future is not ready. We have to delegate to the SimGrid kernel:
     std::exception_ptr exception;
-    smx_process_t self = SIMIX_process_self();
+    smx_actor_t self = SIMIX_process_self();
     simcall_run_blocking([this, &exception, self]{
       try {
         // When the kernel future is ready...

@@ -82,14 +82,14 @@ protected:
 public:
   friend UContextFactory;
   UContext(std::function<void()>  code,
-    void_pfn_smxprocess_t cleanup_func, smx_process_t process);
+    void_pfn_smxprocess_t cleanup_func, smx_actor_t process);
   ~UContext() override;
 };
 
 class SerialUContext : public UContext {
 public:
   SerialUContext(std::function<void()>  code,
-      void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+      void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
     : UContext(std::move(code), cleanup_func, process)
   {}
   void stop() override;
@@ -100,7 +100,7 @@ public:
 class ParallelUContext : public UContext {
 public:
   ParallelUContext(std::function<void()>  code,
-      void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+      void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
     : UContext(std::move(code), cleanup_func, process)
   {}
   void stop() override;
@@ -117,7 +117,7 @@ public:
   UContextFactory();
   ~UContextFactory() override;
   Context* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_process_t process) override;
+    void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
   void run_all() override;
 };
 
@@ -176,7 +176,7 @@ void UContextFactory::run_all()
 
       xbt_parmap_apply(sysv_parmap,
         [](void* arg) {
-          smx_process_t process = (smx_process_t) arg;
+          smx_actor_t process = (smx_actor_t) arg;
           ParallelUContext* context = static_cast<ParallelUContext*>(process->context);
           context->resume();
         },
@@ -189,8 +189,8 @@ void UContextFactory::run_all()
     if (xbt_dynar_is_empty(simix_global->process_to_run))
       return;
 
-    smx_process_t first_process =
-        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+    smx_actor_t first_process =
+        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
     sysv_process_index = 1;
     SerialUContext* context =
         static_cast<SerialUContext*>(first_process->context);
@@ -199,7 +199,7 @@ void UContextFactory::run_all()
 }
 
 Context* UContextFactory::create_context(std::function<void()> code,
-  void_pfn_smxprocess_t cleanup, smx_process_t process)
+  void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
   if (sysv_parallel)
     return new_context<ParallelUContext>(std::move(code), cleanup, process);
@@ -208,7 +208,7 @@ Context* UContextFactory::create_context(std::function<void()> code,
 }
 
 UContext::UContext(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+    void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
   : Context(std::move(code), cleanup_func, process)
 {
   /* if the user provided a function for the process then use it, otherwise it is the context for maestro */
@@ -278,7 +278,7 @@ void SerialUContext::suspend()
     /* execute the next process */
     XBT_DEBUG("Run next process");
     next_context = (SerialUContext*) xbt_dynar_get_as(
-        simix_global->process_to_run,i, smx_process_t)->context;
+        simix_global->process_to_run,i, smx_actor_t)->context;
   }
   else {
     /* all processes were run, return to maestro */
@@ -350,7 +350,7 @@ void ParallelUContext::suspend()
 #if HAVE_THREAD_CONTEXTS
   /* determine the next context */
   // Get the next soul to embody now:
-  smx_process_t next_work = (smx_process_t) xbt_parmap_next(sysv_parmap);
+  smx_actor_t next_work = (smx_actor_t) xbt_parmap_next(sysv_parmap);
   ParallelUContext* next_context = nullptr;
   // Will contain the next soul to run, either simulated or initial minion's one
   ucontext_t* next_stack;

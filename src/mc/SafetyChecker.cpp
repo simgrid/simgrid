@@ -216,7 +216,7 @@ int SafetyChecker::backtrack()
       if (req->call == SIMCALL_MUTEX_LOCK || req->call == SIMCALL_MUTEX_TRYLOCK)
         xbt_die("Mutex is currently not supported with DPOR, "
           "use --cfg=model-check/reduction:none");
-      const smx_process_t issuer = MC_smx_simcall_get_issuer(req);
+      const smx_actor_t issuer = MC_smx_simcall_get_issuer(req);
       for (auto i = stack_.rbegin(); i != stack_.rend(); ++i) {
         simgrid::mc::State* prev_state = i->get();
         if (reductionMode_ != simgrid::mc::ReductionMode::none
@@ -251,7 +251,7 @@ int SafetyChecker::backtrack()
 
         } else {
 
-          const smx_process_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
+          const smx_actor_t previous_issuer = MC_smx_simcall_get_issuer(&prev_state->internal_req);
           XBT_DEBUG("Simcall %d, process %lu (state %d) and simcall %d, process %lu (state %d) are independant",
                     req->call, issuer->pid, state->num,
                     prev_state->internal_req.call,

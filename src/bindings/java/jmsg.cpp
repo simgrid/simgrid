@@ -332,7 +332,7 @@ void java_main_jprocess(jobject jprocess)
   JNIEnv *env = get_current_thread_env();
   simgrid::kernel::context::JavaContext* context = static_cast<simgrid::kernel::context::JavaContext*>(SIMIX_context_self());
   context->jprocess = jprocess;
-  smx_process_t process = SIMIX_process_self();
+  smx_actor_t process = SIMIX_process_self();
   jprocess_bind(context->jprocess, process, env);
 
   // Adrien, ugly path, just to bypass creation of context at low levels (i.e such as for the VM migration for instance)

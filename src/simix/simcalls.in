@@ -42,14 +42,14 @@ void vm_shutdown(sg_host_t ind_vm);
 void vm_save(sg_host_t ind_vm);
 void vm_restore(sg_host_t ind_vm);
 
-void process_kill(smx_process_t process);
+void process_kill(smx_actor_t process);
 void process_killall(int reset_pid);
-void process_cleanup(smx_process_t process) [[nohandler]];
-void process_suspend(smx_process_t process) [[block]];
-void process_resume(smx_process_t process);
-void process_set_host(smx_process_t process, sg_host_t dest);
-int  process_is_suspended(smx_process_t process) [[nohandler]];
-int  process_join(smx_process_t process, double timeout) [[block]];
+void process_cleanup(smx_actor_t process) [[nohandler]];
+void process_suspend(smx_actor_t process) [[block]];
+void process_resume(smx_actor_t process);
+void process_set_host(smx_actor_t process, sg_host_t dest);
+int  process_is_suspended(smx_actor_t process) [[nohandler]];
+int  process_join(smx_actor_t process, double timeout) [[block]];
 int  process_sleep(double duration) [[block]];
 
 smx_activity_t execution_start(const char* name, double flops_amount, double priority, double bound);
@@ -59,18 +59,18 @@ void          execution_set_priority(smx_activity_t execution, double priority) 
 void          execution_set_bound(smx_activity_t execution, double bound) [[nohandler]];
 int           execution_wait(smx_activity_t execution) [[block]];
 
-void          process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void* data) [[nohandler]];
-void          process_auto_restart_set(smx_process_t process, int auto_restart) [[nohandler]];
-smx_process_t process_restart(smx_process_t process);
+void          process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void* data) [[nohandler]];
+void          process_auto_restart_set(smx_actor_t process, int auto_restart) [[nohandler]];
+smx_actor_t process_restart(smx_actor_t process);
 
 smx_mailbox_t mbox_create(const char* name) [[nohandler]];
-void          mbox_set_receiver(smx_mailbox_t mbox, smx_process_t receiver) [[nohandler]];
+void          mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t receiver) [[nohandler]];
 
 smx_activity_t comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag, simix_match_func_t match_fun, void* data);
-void          comm_send(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) [[block]];
-smx_activity_t comm_isend(smx_process_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
-void          comm_recv(smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate) [[block]];
-smx_activity_t comm_irecv(smx_process_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
+void          comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout) [[block]];
+smx_activity_t comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate, void* src_buff, size_t src_buff_size, simix_match_func_t match_fun, simix_clean_func_t clean_fun, simix_copy_data_func_t copy_data_fun, void* data, int detached);
+void          comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double timeout, double rate) [[block]];
+smx_activity_t comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void* dst_buff, size_t* dst_buff_size, simix_match_func_t match_fun, simix_copy_data_func_t copy_data_fun, void* data, double rate);
 int           comm_waitany(xbt_dynar_t comms, double timeout) [[block]];
 void          comm_wait(smx_activity_t comm, double timeout) [[block]];
 int           comm_test(smx_activity_t comm) [[block]];

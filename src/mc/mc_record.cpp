@@ -52,7 +52,7 @@ void replay(RecordTrace const& trace)
     XBT_DEBUG("Executing %i$%i", transition.pid, transition.argument);
 
     // Choose a request:
-    smx_process_t process = SIMIX_process_from_PID(transition.pid);
+    smx_actor_t process = SIMIX_process_from_PID(transition.pid);
     if (!process)
       xbt_die("Unexpected process.");
     smx_simcall_t simcall = &(process->simcall);

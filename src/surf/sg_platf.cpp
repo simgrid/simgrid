@@ -582,7 +582,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   std::function<void()> code = factory(std::move(args));
 
   smx_process_arg_t arg = nullptr;
-  smx_process_t process_created = nullptr;
+  smx_actor_t process_created = nullptr;
 
   arg = new simgrid::simix::ProcessArg();
   arg->name = std::string(process->argv[0]);

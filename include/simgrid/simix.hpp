@@ -100,7 +100,7 @@ XBT_PUBLIC(void) registerFunction(const char* name, ActorCodeFactory factory);
  * int argc, char **argv: parameters passed to code
  * xbt_dict_t pros: properties
  */
-typedef smx_process_t (*smx_creation_func_t) (
+typedef smx_actor_t (*smx_creation_func_t) (
                                       /* name */ const char*,
                                       std::function<void()> code,
                                       /* userdata */ void*,
@@ -108,12 +108,12 @@ typedef smx_process_t (*smx_creation_func_t) (
                                       /* kill_time */ double,
                                       /* props */ xbt_dict_t,
                                       /* auto_restart */ int,
-                                      /* parent_process */ smx_process_t);
+                                      /* parent_process */ smx_actor_t);
 
 extern "C"
 XBT_PUBLIC(void) SIMIX_function_register_process_create(smx_creation_func_t function);
 
-XBT_PUBLIC(smx_process_t) simcall_process_create(const char *name,
+XBT_PUBLIC(smx_actor_t) simcall_process_create(const char *name,
                                           std::function<void()> code,
                                           void *data,
                                           const char *hostname,

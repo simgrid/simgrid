@@ -69,7 +69,7 @@ Transition State::getTransition() const
 }
 
 static inline smx_simcall_t MC_state_get_request_for_process(
-  simgrid::mc::State* state, smx_process_t process)
+  simgrid::mc::State* state, smx_actor_t process)
 {
   simgrid::mc::ProcessState* procstate = &state->processStates[process->pid];
   state->transition.pid = -1;

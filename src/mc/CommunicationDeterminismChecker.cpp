@@ -103,9 +103,9 @@ static void update_comm_pattern(
   simgrid::kernel::activity::Comm* comm =
     static_cast<simgrid::kernel::activity::Comm*>(temp_comm.getBuffer());
 
-  smx_process_t src_proc = mc_model_checker->process().resolveProcess(
+  smx_actor_t src_proc = mc_model_checker->process().resolveProcess(
     simgrid::mc::remote(comm->src_proc));
-  smx_process_t dst_proc = mc_model_checker->process().resolveProcess(
+  smx_actor_t dst_proc = mc_model_checker->process().resolveProcess(
     simgrid::mc::remote(comm->dst_proc));
   comm_pattern->src_proc = src_proc->pid;
   comm_pattern->dst_proc = dst_proc->pid;
@@ -178,7 +178,7 @@ void CommunicationDeterminismChecker::deterministic_comm_pattern(
 
 void CommunicationDeterminismChecker::get_comm_pattern(xbt_dynar_t list, smx_simcall_t request, e_mc_call_type_t call_type, int backtracking)
 {
-  const smx_process_t issuer = MC_smx_simcall_get_issuer(request);
+  const smx_actor_t issuer = MC_smx_simcall_get_issuer(request);
   simgrid::mc::PatternCommunicationList* initial_pattern = xbt_dynar_get_as(
     initial_communications_pattern, issuer->pid, simgrid::mc::PatternCommunicationList*);
   xbt_dynar_t incomplete_pattern = xbt_dynar_get_as(
@@ -448,7 +448,7 @@ void CommunicationDeterminismChecker::restoreState()
     /* because we got a copy of the executed request, we have to fetch the
        real one, pointed by the request field of the issuer process */
 
-    const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
+    const smx_actor_t issuer = MC_smx_simcall_get_issuer(saved_req);
     smx_simcall_t req = &issuer->simcall;
 
     /* TODO : handle test and testany simcalls */

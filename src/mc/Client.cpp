@@ -95,7 +95,7 @@ void Client::handleMessages()
       {
         // Check deadlock:
         bool deadlock = false;
-        smx_process_t process;
+        smx_actor_t process;
         if (xbt_swag_size(simix_global->process_list)) {
           deadlock = true;
           xbt_swag_foreach(process, simix_global->process_list)
@@ -123,7 +123,7 @@ void Client::handleMessages()
         if (s != sizeof(message))
           xbt_die("Unexpected size for SIMCALL_HANDLE");
         memcpy(&message, message_buffer, sizeof(message));
-        smx_process_t process = SIMIX_process_from_PID(message.pid);
+        smx_actor_t process = SIMIX_process_from_PID(message.pid);
         if (!process)
           xbt_die("Invalid pid %lu", (unsigned long) message.pid);
         SIMIX_simcall_handle(&process->simcall, message.value);
@@ -228,7 +228,7 @@ void Client::declareSymbol(const char *name, int* value)
     xbt_die("Could send REGISTER_SYMBOL message to model-checker");
 }
 
-void Client::declareStack(void *stack, size_t size, smx_process_t process, ucontext_t* context)
+void Client::declareStack(void *stack, size_t size, smx_actor_t process, ucontext_t* context)
 {
   xbt_mheap_t heap = mmalloc_get_current_heap();
 

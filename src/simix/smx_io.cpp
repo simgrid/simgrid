@@ -162,7 +162,7 @@ sg_size_t simcall_HANDLER_file_get_size(smx_simcall_t simcall, smx_file_t fd)
   return SIMIX_file_get_size(simcall->issuer, fd);
 }
 
-sg_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd)
+sg_size_t SIMIX_file_get_size(smx_actor_t process, smx_file_t fd)
 {
   sg_host_t host = process->host;
   return  surf_host_get_size(host, fd->surf_file);
@@ -173,7 +173,7 @@ sg_size_t simcall_HANDLER_file_tell(smx_simcall_t simcall, smx_file_t fd)
   return SIMIX_file_tell(simcall->issuer, fd);
 }
 
-sg_size_t SIMIX_file_tell(smx_process_t process, smx_file_t fd)
+sg_size_t SIMIX_file_tell(smx_actor_t process, smx_file_t fd)
 {
   sg_host_t host = process->host;
   return  surf_host_file_tell(host, fd->surf_file);
@@ -185,7 +185,7 @@ xbt_dynar_t simcall_HANDLER_file_get_info(smx_simcall_t simcall, smx_file_t fd)
   return SIMIX_file_get_info(simcall->issuer, fd);
 }
 
-xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd)
+xbt_dynar_t SIMIX_file_get_info(smx_actor_t process, smx_file_t fd)
 {
   sg_host_t host = process->host;
   return  surf_host_get_info(host, fd->surf_file);
@@ -196,7 +196,7 @@ int simcall_HANDLER_file_seek(smx_simcall_t simcall, smx_file_t fd, sg_offset_t 
   return SIMIX_file_seek(simcall->issuer, fd, offset, origin);
 }
 
-int SIMIX_file_seek(smx_process_t process, smx_file_t fd, sg_offset_t offset, int origin)
+int SIMIX_file_seek(smx_actor_t process, smx_file_t fd, sg_offset_t offset, int origin)
 {
   sg_host_t host = process->host;
   return  surf_host_file_seek(host, fd->surf_file, offset, origin);
@@ -207,7 +207,7 @@ int simcall_HANDLER_file_move(smx_simcall_t simcall, smx_file_t file, const char
   return SIMIX_file_move(simcall->issuer, file, fullpath);
 }
 
-int SIMIX_file_move(smx_process_t process, smx_file_t file, const char* fullpath)
+int SIMIX_file_move(smx_actor_t process, smx_file_t file, const char* fullpath)
 {
   sg_host_t host = process->host;
   return  surf_host_file_move(host, file->surf_file, fullpath);
@@ -222,7 +222,7 @@ sg_size_t simcall_HANDLER_storage_get_free_size(smx_simcall_t simcall, smx_stora
   return SIMIX_storage_get_free_size(simcall->issuer, storage);
 }
 
-sg_size_t SIMIX_storage_get_free_size(smx_process_t process, smx_storage_t storage)
+sg_size_t SIMIX_storage_get_free_size(smx_actor_t process, smx_storage_t storage)
 {
   return  surf_storage_get_free_size(storage);
 }
@@ -232,7 +232,7 @@ sg_size_t simcall_HANDLER_storage_get_used_size(smx_simcall_t simcall, smx_stora
   return SIMIX_storage_get_used_size(simcall->issuer, storage);
 }
 
-sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_storage_t storage)
+sg_size_t SIMIX_storage_get_used_size(smx_actor_t process, smx_storage_t storage)
 {
   return  surf_storage_get_used_size(storage);
 }

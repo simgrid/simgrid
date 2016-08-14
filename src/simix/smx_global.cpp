@@ -155,7 +155,7 @@ double SIMIX_timer_next()
   return xbt_heap_size(simix_timers) > 0 ? xbt_heap_maxkey(simix_timers) : -1.0;
 }
 
-static void kill_process(smx_process_t process)
+static void kill_process(smx_actor_t process)
 {
   SIMIX_process_kill(process, nullptr);
 }
@@ -197,8 +197,8 @@ void SIMIX_global_init(int *argc, char **argv)
     simix_global = std::unique_ptr<simgrid::simix::Global>(new simgrid::simix::Global());
 
     simgrid::simix::ActorImpl proc;
-    simix_global->process_to_run = xbt_dynar_new(sizeof(smx_process_t), nullptr);
-    simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_process_t), nullptr);
+    simix_global->process_to_run = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
+    simix_global->process_that_ran = xbt_dynar_new(sizeof(smx_actor_t), nullptr);
     simix_global->process_list = xbt_swag_new(xbt_swag_offset(proc, process_hookup));
     simix_global->process_to_destroy = xbt_swag_new(xbt_swag_offset(proc, destroy_hookup));
     simix_global->maestro_process = nullptr;
@@ -334,7 +334,7 @@ double SIMIX_get_clock()
 
 static int process_syscall_color(void *p)
 {
-  switch ((*(smx_process_t *)p)->simcall.call) {
+  switch ((*(smx_actor_t *)p)->simcall.call) {
   case SIMCALL_NONE:
   case SIMCALL_PROCESS_KILL:
     return 2;
@@ -425,7 +425,7 @@ void SIMIX_run()
   }
 
   double time = 0;
-  smx_process_t process;
+  smx_actor_t process;
 
   do {
     XBT_DEBUG("New Schedule Round; size(queue)=%lu", xbt_dynar_length(simix_global->process_to_run));
@@ -634,7 +634,7 @@ void SIMIX_display_process_status()
     return;
   }
 
-  smx_process_t process = nullptr;
+  smx_actor_t process = nullptr;
   int nbprocess = xbt_swag_size(simix_global->process_list);
 
   XBT_INFO("%d processes are still running, waiting for something.", nbprocess);

@@ -28,7 +28,7 @@ class BoostSerialContext : public BoostContext {
 public:
   BoostSerialContext(std::function<void()> code,
       void_pfn_smxprocess_t cleanup_func,
-      smx_process_t process)
+      smx_actor_t process)
     : BoostContext(std::move(code), cleanup_func, process) {}
   void stop() override;
   void suspend() override;
@@ -39,7 +39,7 @@ class BoostParallelContext : public BoostContext {
 public:
   BoostParallelContext(std::function<void()> code,
       void_pfn_smxprocess_t cleanup_func,
-      smx_process_t process)
+      smx_actor_t process)
     : BoostContext(std::move(code), cleanup_func, process) {}
   void stop() override;
   void suspend() override;
@@ -87,7 +87,7 @@ BoostContextFactory::~BoostContextFactory()
 }
 
 smx_context_t BoostContextFactory::create_context(std::function<void()>  code,
-  void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+  void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
 {
   BoostContext* context = nullptr;
   if (BoostContext::parallel_)
@@ -110,7 +110,7 @@ void BoostContextFactory::run_all()
     BoostContext::threads_working_ = 0;
     xbt_parmap_apply(BoostContext::parmap_,
       [](void* arg) {
-        smx_process_t process = static_cast<smx_process_t>(arg);
+        smx_actor_t process = static_cast<smx_actor_t>(arg);
         BoostContext* context  = static_cast<BoostContext*>(process->context);
         return context->resume();
       },
@@ -120,8 +120,8 @@ void BoostContextFactory::run_all()
   {
     if (xbt_dynar_is_empty(simix_global->process_to_run))
       return;
-    smx_process_t first_process =
-        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+    smx_actor_t first_process =
+        xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
     BoostContext::process_index_ = 1;
     /* execute the first process */
     static_cast<BoostContext*>(first_process->context)->resume();
@@ -139,7 +139,7 @@ static void smx_ctx_boost_wrapper(std::intptr_t arg)
 }
 
 BoostContext::BoostContext(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+    void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
   : Context(std::move(code), cleanup_func, process)
 {
 
@@ -204,7 +204,7 @@ void BoostSerialContext::suspend()
     /* execute the next process */
     XBT_DEBUG("Run next process");
     next_context = static_cast<BoostSerialContext*>(xbt_dynar_get_as(
-        simix_global->process_to_run, i, smx_process_t)->context);
+        simix_global->process_to_run, i, smx_actor_t)->context);
   }
   else {
     /* all processes were run, return to maestro */
@@ -234,7 +234,7 @@ void BoostSerialContext::stop()
 
 void BoostParallelContext::suspend()
 {
-  smx_process_t next_work = (smx_process_t) xbt_parmap_next(parmap_);
+  smx_actor_t next_work = (smx_actor_t) xbt_parmap_next(parmap_);
   BoostParallelContext* next_context = nullptr;
 
   if (next_work != nullptr) {

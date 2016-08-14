@@ -133,7 +133,7 @@ namespace s4u {
 XBT_PUBLIC_CLASS Actor {
   friend Mailbox;
   friend simgrid::simix::ActorImpl;
-  smx_process_t pimpl_ = nullptr;
+  smx_actor_t pimpl_ = nullptr;
 
   /** Wrap a (possibly non-copyable) single-use task into a `std::function` */
   template<class F, class... Args>
@@ -147,7 +147,7 @@ XBT_PUBLIC_CLASS Actor {
     };
   }
 
-  explicit Actor(smx_process_t pimpl) : pimpl_(pimpl) {}
+  explicit Actor(smx_actor_t pimpl) : pimpl_(pimpl) {}
 
 public:
 
@@ -255,7 +255,7 @@ public:
 
 protected:
   /** Returns the internal implementation of this actor */
-  smx_process_t getImpl();
+  smx_actor_t getImpl();
 };
 
 /** @ingroup s4u_api

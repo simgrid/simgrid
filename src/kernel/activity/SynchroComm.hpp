@@ -51,8 +51,8 @@ namespace activity {
     surf_action_t surf_comm = nullptr;        /* The Surf communication action encapsulated */
     surf_action_t src_timeout = nullptr;      /* Surf's actions to instrument the timeouts */
     surf_action_t dst_timeout = nullptr;      /* Surf's actions to instrument the timeouts */
-    smx_process_t src_proc = nullptr;
-    smx_process_t dst_proc = nullptr;
+    smx_actor_t src_proc = nullptr;
+    smx_actor_t dst_proc = nullptr;
     double rate = 0.0;
     double task_size = 0.0;
 

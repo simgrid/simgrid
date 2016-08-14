@@ -351,7 +351,7 @@ if __name__ == '__main__':
 template<class R, class... T>
 inline static R simcall(e_smx_simcall_t call, T const&... t)
 {
-  smx_process_t self = SIMIX_process_self();
+  smx_actor_t self = SIMIX_process_self();
   simgrid::simix::marshal(&self->simcall, call, t...);
   if (self != simix_global->maestro_process) {
     XBT_DEBUG("Yield process '%s' on simcall %s (%d)", self->name.c_str(),

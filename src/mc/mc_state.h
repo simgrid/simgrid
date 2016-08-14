@@ -148,7 +148,7 @@ struct XBT_PRIVATE State {
   State();
 
   std::size_t interleaveSize() const;
-  void interleave(smx_process_t process)
+  void interleave(smx_actor_t process)
   {
     this->processStates[process->pid].interleave();
   }

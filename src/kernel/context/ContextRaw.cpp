@@ -43,7 +43,7 @@ public:
   friend class RawContextFactory;
   RawContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
-          smx_process_t process);
+          smx_actor_t process);
   ~RawContext() override;
 public:
   static void wrapper(void* arg);
@@ -62,7 +62,7 @@ public:
   RawContextFactory();
   ~RawContextFactory() override;
   RawContext* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_process_t process) override;
+    void_pfn_smxprocess_t cleanup, smx_actor_t process) override;
   void run_all() override;
 private:
   void run_all_adaptative();
@@ -292,7 +292,7 @@ RawContextFactory::~RawContextFactory()
 }
 
 RawContext* RawContextFactory::create_context(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_process_t process)
+    void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
   return this->new_context<RawContext>(std::move(code),
     cleanup, process);
@@ -306,7 +306,7 @@ void RawContext::wrapper(void* arg)
 }
 
 RawContext::RawContext(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_process_t process)
+    void_pfn_smxprocess_t cleanup, smx_actor_t process)
   : Context(std::move(code), cleanup, process)
 {
    if (has_code()) {
@@ -349,8 +349,8 @@ void RawContextFactory::run_all_serial()
   if (xbt_dynar_is_empty(simix_global->process_to_run))
     return;
 
-  smx_process_t first_process =
-      xbt_dynar_get_as(simix_global->process_to_run, 0, smx_process_t);
+  smx_actor_t first_process =
+      xbt_dynar_get_as(simix_global->process_to_run, 0, smx_actor_t);
   raw_process_index = 1;
   static_cast<RawContext*>(first_process->context)->resume_serial();
 }
@@ -364,7 +364,7 @@ void RawContextFactory::run_all_parallel()
       SIMIX_context_get_nthreads(), SIMIX_context_get_parallel_mode());
   xbt_parmap_apply(raw_parmap,
       [](void* arg) {
-        smx_process_t process = static_cast<smx_process_t>(arg);
+        smx_actor_t process = static_cast<smx_actor_t>(arg);
         RawContext* context = static_cast<RawContext*>(process->context);
         context->resume_parallel();
       },
@@ -392,7 +392,7 @@ void RawContext::suspend_serial()
     /* execute the next process */
     XBT_DEBUG("Run next process");
     next_context = (RawContext*) xbt_dynar_get_as(
-        simix_global->process_to_run, i, smx_process_t)->context;
+        simix_global->process_to_run, i, smx_actor_t)->context;
   }
   else {
     /* all processes were run, return to maestro */
@@ -407,7 +407,7 @@ void RawContext::suspend_parallel()
 {
 #if HAVE_THREAD_CONTEXTS
   /* determine the next context */
-  smx_process_t next_work = (smx_process_t) xbt_parmap_next(raw_parmap);
+  smx_actor_t next_work = (smx_actor_t) xbt_parmap_next(raw_parmap);
   RawContext* next_context = nullptr;
 
   if (next_work != nullptr) {

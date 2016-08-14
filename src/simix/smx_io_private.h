@@ -29,14 +29,14 @@ XBT_PRIVATE smx_activity_t SIMIX_file_write(smx_file_t fd, sg_size_t size, sg_ho
 XBT_PRIVATE smx_activity_t SIMIX_file_open(const char* fullpath, sg_host_t host);
 XBT_PRIVATE smx_activity_t SIMIX_file_close(smx_file_t fd, sg_host_t host);
 XBT_PRIVATE int SIMIX_file_unlink(smx_file_t fd, sg_host_t host);
-XBT_PRIVATE sg_size_t SIMIX_file_get_size(smx_process_t process, smx_file_t fd);
-XBT_PRIVATE sg_size_t SIMIX_file_tell(smx_process_t process, smx_file_t fd);
-XBT_PRIVATE xbt_dynar_t SIMIX_file_get_info(smx_process_t process, smx_file_t fd);
-XBT_PRIVATE int SIMIX_file_seek(smx_process_t process, smx_file_t fd, sg_offset_t offset, int origin);
-XBT_PRIVATE int SIMIX_file_move(smx_process_t process, smx_file_t fd, const char* fullpath);
+XBT_PRIVATE sg_size_t SIMIX_file_get_size(smx_actor_t process, smx_file_t fd);
+XBT_PRIVATE sg_size_t SIMIX_file_tell(smx_actor_t process, smx_file_t fd);
+XBT_PRIVATE xbt_dynar_t SIMIX_file_get_info(smx_actor_t process, smx_file_t fd);
+XBT_PRIVATE int SIMIX_file_seek(smx_actor_t process, smx_file_t fd, sg_offset_t offset, int origin);
+XBT_PRIVATE int SIMIX_file_move(smx_actor_t process, smx_file_t fd, const char* fullpath);
 
-XBT_PRIVATE sg_size_t SIMIX_storage_get_free_size(smx_process_t process, smx_storage_t storage);
-XBT_PRIVATE sg_size_t SIMIX_storage_get_used_size(smx_process_t process, smx_storage_t storage);
+XBT_PRIVATE sg_size_t SIMIX_storage_get_free_size(smx_actor_t process, smx_storage_t storage);
+XBT_PRIVATE sg_size_t SIMIX_storage_get_used_size(smx_actor_t process, smx_storage_t storage);
 
 XBT_PRIVATE xbt_dict_t SIMIX_storage_get_properties(smx_storage_t storage);
 

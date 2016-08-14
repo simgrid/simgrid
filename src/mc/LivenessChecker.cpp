@@ -208,7 +208,7 @@ void LivenessChecker::replay()
       if (saved_req != nullptr) {
         /* because we got a copy of the executed request, we have to fetch the
              real one, pointed by the request field of the issuer process */
-        const smx_process_t issuer = MC_smx_simcall_get_issuer(saved_req);
+        const smx_actor_t issuer = MC_smx_simcall_get_issuer(saved_req);
         req = &issuer->simcall;
 
         /* Debug information */

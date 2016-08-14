@@ -50,7 +50,7 @@ ThreadContextFactory::~ThreadContextFactory()
 
 ThreadContext* ThreadContextFactory::create_context(
     std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_process_t process)
+    void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
   return this->new_context<ThreadContext>(std::move(code), cleanup, process, !code);
 }
@@ -59,7 +59,7 @@ void ThreadContextFactory::run_all()
 {
   if (smx_ctx_thread_sem == nullptr) {
     // Serial execution
-    smx_process_t process;
+    smx_actor_t process;
     unsigned int cursor;
     xbt_dynar_foreach(simix_global->process_to_run, cursor, process) {
       XBT_DEBUG("Handling %p",process);
@@ -70,7 +70,7 @@ void ThreadContextFactory::run_all()
   } else {
     // Parallel execution
     unsigned int index;
-    smx_process_t process;
+    smx_actor_t process;
     xbt_dynar_foreach(simix_global->process_to_run, index, process)
       xbt_os_sem_release(static_cast<ThreadContext*>(process->context)->begin_);
     xbt_dynar_foreach(simix_global->process_to_run, index, process)
@@ -83,19 +83,19 @@ ThreadContext* ThreadContextFactory::self()
   return static_cast<ThreadContext*>(xbt_os_thread_get_extra_data());
 }
 
-ThreadContext* ThreadContextFactory::attach(void_pfn_smxprocess_t cleanup_func, smx_process_t process)
+ThreadContext* ThreadContextFactory::attach(void_pfn_smxprocess_t cleanup_func, smx_actor_t process)
 {
   return this->new_context<ThreadContext>(
     std::function<void()>(), cleanup_func, process, false);
 }
 
-ThreadContext* ThreadContextFactory::create_maestro(std::function<void()> code, smx_process_t process)
+ThreadContext* ThreadContextFactory::create_maestro(std::function<void()> code, smx_actor_t process)
 {
     return this->new_context<ThreadContext>(std::move(code), nullptr, process, true);
 }
 
 ThreadContext::ThreadContext(std::function<void()> code,
-    void_pfn_smxprocess_t cleanup, smx_process_t process, bool maestro)
+    void_pfn_smxprocess_t cleanup, smx_actor_t process, bool maestro)
   : AttachContext(std::move(code), cleanup, process)
 {
   // We do not need the semaphores when maestro is in main,

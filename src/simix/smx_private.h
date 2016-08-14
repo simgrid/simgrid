@@ -49,7 +49,7 @@ public:
   xbt_dynar_t process_that_ran = nullptr;
   xbt_swag_t process_list = nullptr;
   xbt_swag_t process_to_destroy = nullptr;
-  smx_process_t maestro_process = nullptr;
+  smx_actor_t maestro_process = nullptr;
 
   // Maps function names to actor code:
   std::unordered_map<std::string, simgrid::simix::ActorCodeFactory> registered_functions;
@@ -80,7 +80,7 @@ XBT_PUBLIC(void) SIMIX_clean();
 /** @brief Ask to the provided simix process to raise the provided exception */
 #define SMX_EXCEPTION(issuer, cat, val, msg) \
   if (1) { \
-  smx_process_t _smx_throw_issuer = (issuer); /* evaluate only once */ \
+  smx_actor_t _smx_throw_issuer = (issuer); /* evaluate only once */ \
   xbt_ex e(XBT_THROW_POINT, msg); \
   e.category = cat; \
   e.value = val; \

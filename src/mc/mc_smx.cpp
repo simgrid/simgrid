@@ -25,14 +25,14 @@
 
 using simgrid::mc::remote;
 
-/** HACK, Statically "upcast" a s_smx_process_t into a SimixProcessInformation
+/** HACK, Statically "upcast" a s_smx_actor_t into a SimixProcessInformation
  *
  *  This gets 'processInfo' from '&processInfo->copy'. It upcasts in the
  *  sense that we could achieve the same thing by having SimixProcessInformation
- *  inherit from s_smx_process_t but we don't really want to do that.
+ *  inherit from s_smx_actor_t but we don't really want to do that.
  */
 static inline
-simgrid::mc::SimixProcessInformation* process_info_cast(smx_process_t p)
+simgrid::mc::SimixProcessInformation* process_info_cast(smx_actor_t p)
 {
   simgrid::mc::SimixProcessInformation temp;
   std::size_t offset = (char*) temp.copy.getBuffer() - (char*)&temp;
@@ -45,7 +45,7 @@ simgrid::mc::SimixProcessInformation* process_info_cast(smx_process_t p)
 /** Load the remote swag of processes into a vector
  *
  *  @param process     MCed process
- *  @param target      Local vector (to be filled with copies of `s_smx_process_t`)
+ *  @param target      Local vector (to be filled with copies of `s_smx_actor_t`)
  *  @param remote_swag Address of the process SWAG in the remote list
  */
 static void MC_process_refresh_simix_process_list(
@@ -61,7 +61,7 @@ static void MC_process_refresh_simix_process_list(
 
   // Load each element of the vector from the MCed process:
   int i = 0;
-  for (smx_process_t p = (smx_process_t) swag.head; p; ++i) {
+  for (smx_actor_t p = (smx_actor_t) swag.head; p; ++i) {
 
     simgrid::mc::SimixProcessInformation info;
     info.address = p;
@@ -70,7 +70,7 @@ static void MC_process_refresh_simix_process_list(
     target.push_back(std::move(info));
 
     // Lookup next process address:
-    p = (smx_process_t) xbt_swag_getNext(&info.copy, swag.offset);
+    p = (smx_actor_t) xbt_swag_getNext(&info.copy, swag.offset);
   }
   assert(i == swag.count);
 }
@@ -122,11 +122,11 @@ void Process::refresh_simix()
  *  @param process the MCed process
  *  @param req     the simcall (copied in the local process)
  */
-smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
+smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 {
   xbt_assert(mc_model_checker != nullptr);
 
-  // This is the address of the smx_process in the MCed process:
+  // This is the address of the smx_actor in the MCed process:
   auto address = simgrid::mc::remote(req->issuer);
 
   // Lookup by address:
@@ -140,7 +140,7 @@ smx_process_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
   xbt_die("Issuer not found");
 }
 
-const char* MC_smx_process_get_host_name(smx_process_t p)
+const char* MC_smx_process_get_host_name(smx_actor_t p)
 {
   if (mc_model_checker == nullptr)
     return sg_host_get_name(p->host);
@@ -176,7 +176,7 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   return info->hostname;
 }
 
-const char* MC_smx_process_get_name(smx_process_t p)
+const char* MC_smx_process_get_name(smx_actor_t p)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
   if (mc_model_checker == nullptr)

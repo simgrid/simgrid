@@ -373,7 +373,7 @@ void smpi_comm_init_smp(MPI_Comm comm){
   int intra_comm_size = 0;
   int i =0;
   int min_index=INT_MAX;//the minimum index will be the leader
-  smx_process_t process = nullptr;
+  smx_actor_t process = nullptr;
   xbt_swag_foreach(process, process_list) {
     int index = process->pid -1;
 

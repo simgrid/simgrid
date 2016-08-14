@@ -44,7 +44,7 @@ public:
   void unignoreHeap(void* addr, std::size_t size);
   void declareSymbol(const char *name, int* value);
 #if HAVE_UCONTEXT_H
-  void declareStack(void *stack, size_t size, smx_process_t process, ucontext_t* context);
+  void declareStack(void *stack, size_t size, smx_actor_t process, ucontext_t* context);
 #endif
 
   // Singleton :/
