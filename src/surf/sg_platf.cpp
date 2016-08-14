@@ -148,7 +148,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     h->extension_set(COORD_HOST_LEVEL, (void *) ctn);
   }
 
-  simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h, host->speed_per_pstate, host->core_amount);
+  simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h, &host->speed_per_pstate, host->core_amount);
   if (host->state_trace)
     cpu->setStateTrace(host->state_trace);
   if (host->speed_trace)
@@ -301,8 +301,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       }
     }
 
-    host.speed_per_pstate = new std::vector<double>();
-    host.speed_per_pstate->push_back(cluster->speed);
+    host.speed_per_pstate.push_back(cluster->speed);
     host.pstate = 0;
     host.core_amount = cluster->core_amount;
     host.coord = "";
@@ -421,10 +420,8 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
     host.pstate           = 0;
     host.core_amount      = 1;
     host.id               = hostname;
-    host.speed_per_pstate = new std::vector<double>();
-    host.speed_per_pstate->push_back(cabinet->speed);
+    host.speed_per_pstate.push_back(cabinet->speed);
     sg_platf_new_host(&host);
-    delete host.speed_per_pstate;
 
     s_sg_platf_link_cbarg_t link;
     memset(&link, 0, sizeof(link));
@@ -666,14 +663,12 @@ void sg_platf_new_peer(sg_platf_peer_cbarg_t peer)
   memset(&host, 0, sizeof(host));
   host.id = host_id;
 
-  host.speed_per_pstate = new std::vector<double>();
-  host.speed_per_pstate->push_back(peer->speed);
+  host.speed_per_pstate.push_back(peer->speed);
   host.pstate = 0;
   host.speed_trace = peer->availability_trace;
   host.state_trace = peer->state_trace;
   host.core_amount = 1;
   sg_platf_new_host(&host);
-  delete host.speed_per_pstate;
 
   s_sg_platf_link_cbarg_t link;
   memset(&link, 0, sizeof(link));
