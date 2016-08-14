@@ -67,14 +67,23 @@ namespace s4u {
  * cumbersome for your simulations anyway. You probably want something
  * simpler, that turns our to be easy to build with the mailboxes.
  *
- * Many examples in the archive use a sort of yellow page system where
- * the mailbox names are the name of the service (such as "worker",
+ * Many SimGrid examples use a sort of yellow page system where the
+ * mailbox names are the name of the service (such as "worker",
  * "master" or "reducer"). That way, you don't have to know where your
  * peer is located to contact it. You don't even need its name. Its
  * function is enough for that. This also gives you some sort of load
  * balancing for free if more than one actor pulls from the mailbox:
  * the first relevant actor that can deal with the request will handle
  * it.
+ *
+ * @section s4u_mb_matching How are sends and receives matched?
+ *
+ * The matching algorithm is as simple as a first come, first
+ * serve. When a new send arrives, it matches the oldest enqueued
+ * receive. If no receive is currently enqueued, then the incomming
+ * send is enqueued. As you can see, the mailbox cannot contain both
+ * send and receive requests: all enqueued requests must be of the
+ * same sort.
  *
  * @section s4u_mb_receiver Declaring a receiving actor
  *
