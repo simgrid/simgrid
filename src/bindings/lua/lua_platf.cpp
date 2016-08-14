@@ -162,11 +162,10 @@ int console_add_host(lua_State *L) {
   type = lua_gettable(L, -2);
   lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
       "Attribute 'speed' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
-  host.speed_per_pstate = xbt_dynar_new(sizeof(double), nullptr);
   if (type == LUA_TNUMBER)
-    xbt_dynar_push_as(host.speed_per_pstate, double, lua_tointeger(L, -1));
+    host.speed_per_pstate->push_back(lua_tointeger(L, -1));
   else // LUA_TSTRING
-    xbt_dynar_push_as(host.speed_per_pstate, double, surf_parse_get_speed(lua_tostring(L, -1), "speed of host", host.id));
+    host.speed_per_pstate->push_back(surf_parse_get_speed(lua_tostring(L, -1), "speed of host", host.id));
   lua_pop(L, 1);
 
   // get core
@@ -197,7 +196,6 @@ int console_add_host(lua_State *L) {
   lua_pop(L, 1);
 
   sg_platf_new_host(&host);
-  xbt_dynar_free(&host.speed_per_pstate);
 
   return 0;
 }
