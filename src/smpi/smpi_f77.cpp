@@ -600,9 +600,8 @@ void mpi_test_ (int * request, int *flag, MPI_Status * status, int* ierr){
 }
 
 void mpi_testall_ (int* count, int * requests,  int *flag, MPI_Status * statuses, int* ierr){
-  MPI_Request* reqs;
   int i;
-  reqs = xbt_new(MPI_Request, *count);
+  MPI_Request* reqs = xbt_new(MPI_Request, *count);
   for(i = 0; i < *count; i++) {
     reqs[i] = smpi_request_f2c(requests[i]);
   }
@@ -613,6 +612,7 @@ void mpi_testall_ (int* count, int * requests,  int *flag, MPI_Status * statuses
         requests[i]=MPI_FORTRAN_REQUEST_NULL;
     }
   }
+  xbt_free(reqs);
 }
 
 void mpi_get_processor_name_(char *name, int *resultlen, int* ierr){
