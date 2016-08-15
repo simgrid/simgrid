@@ -63,7 +63,7 @@ static void ns3_add_host(simgrid::s4u::Host& host)
   host.extension_set(NS3_EXTENSION_ID, ns3host);
 }
 
-static void ns3_add_netcard(simgrid::routing::NetCard* netcard)
+static void ns3_add_netcard(simgrid::kernel::routing::NetCard* netcard)
 {
   const char* id = netcard->name();
 
@@ -167,7 +167,7 @@ static void create_ns3_topology(void)
   std::unordered_set<simgrid::surf::LinkNS3*> already_seen = std::unordered_set<simgrid::surf::LinkNS3*>();
 
   XBT_DEBUG("There is %ld one-link routes",onelink_routes->used);
-  simgrid::routing::Onelink *onelink;
+  simgrid::kernel::routing::Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
     char *src = onelink->src_->name();
@@ -214,7 +214,7 @@ void surf_network_model_init_NS3()
     return;
 
   surf_network_model = new simgrid::surf::NetworkNS3Model();
-  xbt_dynar_push(all_existing_models, &surf_network_model);
+  all_existing_models->push_back(surf_network_model);
 }
 
 static simgrid::config::Flag<std::string> ns3_tcp_model("ns3/TcpModel",
@@ -229,7 +229,7 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
 
   routing_model_create(nullptr);
   simgrid::s4u::Host::onCreation.connect(ns3_add_host);
-  simgrid::routing::netcardCreatedCallbacks.connect(ns3_add_netcard);
+  simgrid::kernel::routing::netcardCreatedCallbacks.connect(ns3_add_netcard);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
   simgrid::surf::on_postparse.connect(&create_ns3_topology);
 
@@ -251,7 +251,7 @@ Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double lat
   return new LinkNS3(this, name, properties, bandwidth, latency);
 }
 
-Action *NetworkNS3Model::communicate(simgrid::routing::NetCard *src,simgrid::routing::NetCard *dst, double size, double rate)
+Action *NetworkNS3Model::communicate(simgrid::kernel::routing::NetCard *src,simgrid::kernel::routing::NetCard *dst, double size, double rate)
 {
   return new NetworkNS3Action(this, size, src, dst);
 }
@@ -364,7 +364,7 @@ void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(Model *model, double size, simgrid::routing::NetCard *src, simgrid::routing::NetCard *dst)
+NetworkNS3Action::NetworkNS3Action(Model *model, double size, simgrid::kernel::routing::NetCard *src, simgrid::kernel::routing::NetCard *dst)
 : NetworkAction(model, size, false)
 {
   XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());
