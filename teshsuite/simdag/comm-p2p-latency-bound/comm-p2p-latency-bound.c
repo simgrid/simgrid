@@ -29,13 +29,16 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   SD_task_t root = SD_task_create("Root", NULL, 1.0);
-  SD_task_schedule(root, 1, sg_host_list(), no_cost, no_cost, -1.0);
+
+  sg_host_t *hosts = sg_host_list();
+  SD_task_schedule(root, 1, hosts, no_cost, no_cost, -1.0);
 
   for (int i = 0; i < TASK_NUM; i++) {
     task[i] = SD_task_create("Comm", NULL, 1.0);
-    SD_task_schedule(task[i], 2, sg_host_list(), no_cost, communication_amount, -1.0);
+    SD_task_schedule(task[i], 2, hosts, no_cost, communication_amount, -1.0);
     SD_task_dependency_add(NULL, NULL, root, task[i]);
   }
+  xbt_free(hosts);
 
   SD_simulate(-1.0);
 

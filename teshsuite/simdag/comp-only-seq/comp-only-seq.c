@@ -19,7 +19,9 @@ int main(int argc, char **argv)
   SD_create_environment(argv[1]);
 
   SD_task_t task = SD_task_create("seqtask", NULL, 1.0);
-  SD_task_schedule(task, 1, sg_host_list(), comp_cost, comm_amount, -1.0);
+  sg_host_t *hosts = sg_host_list();
+  SD_task_schedule(task, 1, hosts, comp_cost, comm_amount, -1.0);
+  xbt_free(hosts);
 
   SD_simulate(-1.0);
 

@@ -20,21 +20,22 @@ static void scheduleDAX(xbt_dynar_t dax)
   unsigned int cursor;
   SD_task_t task;
 
-  const sg_host_t *ws_list = sg_host_list();
+  sg_host_t *hosts = sg_host_list();
   int totalHosts = sg_host_count();
-  qsort((void *) ws_list, totalHosts, sizeof(sg_host_t), name_compare_hosts);
+  qsort((void *) hosts, totalHosts, sizeof(sg_host_t), name_compare_hosts);
 
   xbt_dynar_foreach(dax, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
       if (!strcmp(SD_task_get_name(task), "end") || !strcmp(SD_task_get_name(task), "root")) {
-        XBT_INFO("Scheduling %s to node: %s", SD_task_get_name(task), sg_host_get_name(ws_list[0]));
-        SD_task_schedulel(task, 1, ws_list[0]);
+        XBT_INFO("Scheduling %s to node: %s", SD_task_get_name(task), sg_host_get_name(hosts[0]));
+        SD_task_schedulel(task, 1, hosts[0]);
       } else {
-        XBT_INFO("Scheduling %s to node: %s", SD_task_get_name(task), sg_host_get_name(ws_list[(cursor) % totalHosts]));
-        SD_task_schedulel(task, 1, ws_list[(cursor) % totalHosts]);
+        XBT_INFO("Scheduling %s to node: %s", SD_task_get_name(task), sg_host_get_name(hosts[(cursor) % totalHosts]));
+        SD_task_schedulel(task, 1, hosts[(cursor) % totalHosts]);
       }
     }
   }
+  xbt_free(hosts);
 }
 
 int main(int argc, char *argv[])

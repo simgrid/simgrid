@@ -32,8 +32,10 @@ int main(int argc, char **argv)
   SD_task_t taskA = SD_task_create("Task A", NULL, 1.0);
   SD_task_t taskB = SD_task_create("Task B", NULL, 1.0);
 
-  SD_task_schedule(taskA, 1, sg_host_list(), comp_cost, comm_cost, -1.0);
-  SD_task_schedule(taskB, 1, sg_host_list(), comp_cost, comm_cost, -1.0);
+  sg_host_t *hosts = sg_host_list();
+  SD_task_schedule(taskA, 1, hosts, comp_cost, comm_cost, -1.0);
+  SD_task_schedule(taskB, 1, hosts, comp_cost, comm_cost, -1.0);
+  xbt_free(hosts);
 
   ret = SD_simulate(-1.0);
   xbt_assert(xbt_dynar_length(ret) == 2, "I was expecting the completion of 2 tasks, but I got %lu instead",

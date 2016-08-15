@@ -60,18 +60,18 @@ int main(int argc, char **argv)
 
   /* Schedule them all on the first workstation */
   XBT_INFO("------------------- Schedule tasks ---------------------------");
-  sg_host_t *ws_list = sg_host_list();
+  sg_host_t *hosts = sg_host_list();
 
   int count = sg_host_count();
   xbt_dynar_foreach(dot, cursor, task) {
     if (SD_task_get_kind(task) == SD_TASK_COMP_SEQ) {
       if (!strcmp(SD_task_get_name(task), "end"))
-        SD_task_schedulel(task, 1, ws_list[0]);
+        SD_task_schedulel(task, 1, hosts[0]);
       else
-        SD_task_schedulel(task, 1, ws_list[cursor % count]);
+        SD_task_schedulel(task, 1, hosts[cursor % count]);
     }
   }
-  xbt_free(ws_list);
+  xbt_free(hosts);
 
   XBT_INFO("------------------- Run the schedule ---------------------------");
   SD_simulate(-1);

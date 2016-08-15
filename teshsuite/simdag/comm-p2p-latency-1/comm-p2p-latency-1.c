@@ -26,7 +26,9 @@ int main(int argc, char **argv)
 
   SD_task_t task = SD_task_create("Comm 1", NULL, 1.0);
 
-  SD_task_schedule(task, 2, sg_host_list(), no_cost, communication_amount, -1.0);
+  sg_host_t *hosts = sg_host_list();
+  SD_task_schedule(task, 2, hosts, no_cost, communication_amount, -1.0);
+  xbt_free(hosts);
 
   SD_simulate(-1.0);
 

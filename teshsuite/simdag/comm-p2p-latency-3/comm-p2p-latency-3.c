@@ -30,9 +30,11 @@ int main(int argc, char **argv)
   SD_task_t task1 = SD_task_create("Comm 1", NULL, 1.0);
   SD_task_t task2 = SD_task_create("Comm 2", NULL, 1.0);
 
-  SD_task_schedule(root, 1, sg_host_list(), no_cost1, no_cost1, -1.0);
-  SD_task_schedule(task1, 2, sg_host_list(), no_cost, communication_amount1, -1.0);
-  SD_task_schedule(task2, 2, sg_host_list(), no_cost, communication_amount2, -1.0);
+  sg_host_t *hosts = sg_host_list();
+  SD_task_schedule(root, 1, hosts, no_cost1, no_cost1, -1.0);
+  SD_task_schedule(task1, 2, hosts, no_cost, communication_amount1, -1.0);
+  SD_task_schedule(task2, 2, hosts, no_cost, communication_amount2, -1.0);
+  xbt_free(hosts);
 
   SD_task_dependency_add(NULL, NULL, root, task1);
   SD_task_dependency_add(NULL, NULL, root, task2);

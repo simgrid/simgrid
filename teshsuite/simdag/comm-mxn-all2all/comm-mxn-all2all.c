@@ -30,7 +30,9 @@ int main(int argc, char **argv)
 
   SD_task_t task = SD_task_create("All2all task", NULL, 1.0);
 
-  SD_task_schedule(task, 4, sg_host_list(), SD_SCHED_NO_COST, communication_amount, -1.0);
+  sg_host_t *hosts = sg_host_list();
+  SD_task_schedule(task, 4, hosts, SD_SCHED_NO_COST, communication_amount, -1.0);
+  xbt_free(hosts);
 
   SD_simulate(-1.0);
 

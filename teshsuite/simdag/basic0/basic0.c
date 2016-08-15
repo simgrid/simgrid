@@ -40,9 +40,11 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, taskInit, taskA);
   SD_task_dependency_add(NULL, NULL, taskInit, taskB);
 
-  SD_task_schedule(taskInit, 1, sg_host_list(), no_cost, no_cost, -1.0);
-  SD_task_schedule(taskA, 2, sg_host_list(), no_cost, communication_amount1, -1.0);
-  SD_task_schedule(taskB, 2, sg_host_list(), no_cost, communication_amount2, -1.0);
+  sg_host_t *hosts = sg_host_list();
+  SD_task_schedule(taskInit, 1, hosts, no_cost, no_cost, -1.0);
+  SD_task_schedule(taskA, 2, hosts, no_cost, communication_amount1, -1.0);
+  SD_task_schedule(taskB, 2, hosts, no_cost, communication_amount2, -1.0);
+  xbt_free(hosts);
 
   /* let's launch the simulation! */
   SD_simulate(-1.0);
