@@ -5,6 +5,9 @@ SimGrid (3.14) UNRELEASED; urgency=low
    still many room for improvement here, but we're on it.
 
  SMPI
+ * Privatization is now activated by default in smpirun
+   You can turn it off with -no-privatize if something goes wrong.
+
  * Call-location tracing for SMPI.
    You can add the exact location (filename / linenumber) of an MPI call to 
    your trace files and slow down or speed up the simulation between two 
