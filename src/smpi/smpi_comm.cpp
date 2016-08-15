@@ -111,6 +111,7 @@ int smpi_comm_dup(MPI_Comm comm, MPI_Comm* newcomm){
           if(ret!=MPI_SUCCESS){
             smpi_comm_destroy(*newcomm);
             *newcomm=MPI_COMM_NULL;
+            xbt_dict_cursor_free(&cursor);
             return ret;
           }
           if(flag)

@@ -25,12 +25,12 @@ int type_keyval_id=0;//avoid collisions
   static s_smpi_mpi_datatype_t mpi_##name = {         \
     (char*) # name,                                   \
     sizeof(type),   /* size */                        \
-    0,              /*was 1 sizeof_substruct*/             \
+    0,              /*was 1 sizeof_substruct*/        \
     0,              /* lb */                          \
     sizeof(type),   /* ub = lb + size */              \
     DT_FLAG_BASIC,  /* flags */                       \
-    nullptr,           /* attributes */                  \
-    nullptr,           /* pointer on extended struct*/   \
+    nullptr,        /* attributes */                  \
+    nullptr,        /* pointer on extended struct*/   \
     0               /* in_use counter */              \
   };                                                  \
 const MPI_Datatype name = &mpi_##name;
@@ -39,12 +39,12 @@ const MPI_Datatype name = &mpi_##name;
   static s_smpi_mpi_datatype_t mpi_##name = {         \
     (char*) # name,                                   \
     0,              /* size */                        \
-    0,              /* was 1 sizeof_substruct*/            \
+    0,              /* was 1 sizeof_substruct*/       \
     0,              /* lb */                          \
     0,              /* ub = lb + size */              \
     DT_FLAG_BASIC,  /* flags */                       \
-    nullptr,           /* attributes */                  \
-    nullptr,           /* pointer on extended struct*/   \
+    nullptr,        /* attributes */                  \
+    nullptr,        /* pointer on extended struct*/   \
     0               /* in_use counter */              \
   };                                                  \
 const MPI_Datatype name = &mpi_##name;
@@ -930,8 +930,7 @@ s_smpi_mpi_hindexed_t* smpi_datatype_hindexed_create( int* block_lengths, MPI_Ai
   new_t->base.subtype_use = &use_hindexed;
   new_t->block_lengths= xbt_new(int, block_count);
   new_t->block_indices= xbt_new(MPI_Aint, block_count);
-  int i;
-  for(i=0;i<block_count;i++){
+  for(int i=0;i<block_count;i++){
     new_t->block_lengths[i]=block_lengths[i];
     new_t->block_indices[i]=block_indices[i];
   }
