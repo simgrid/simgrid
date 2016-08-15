@@ -74,6 +74,8 @@ int process_count = 0;
 int smpi_universe_size = 0;
 int* index_to_process_data = nullptr;
 extern double smpi_total_benched_time;
+extern xbt_dict_t smpi_type_keyvals;
+extern xbt_dict_t smpi_comm_keyvals;
 xbt_os_timer_t global_timer;
 MPI_Comm MPI_COMM_WORLD = MPI_COMM_UNINITIALIZED;
 MPI_Errhandler *MPI_ERRORS_RETURN = nullptr;
@@ -639,6 +641,10 @@ void smpi_global_destroy()
   }
 
   xbt_free(index_to_process_data);
+  if(smpi_type_keyvals!=nullptr) 
+    xbt_dict_free(&smpi_type_keyvals);
+  if(smpi_comm_keyvals!=nullptr) 
+    xbt_dict_free(&smpi_comm_keyvals);
   if(smpi_privatize_global_variables)
     smpi_destroy_global_memory_segments();
   smpi_free_static();
