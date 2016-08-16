@@ -143,7 +143,7 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
 
     if (value > 0) {
       if(isOff())
-        xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
+        host_that_restart.push_back(getName());
       turnOn();
     } else {
       lmm_constraint_t cnst = getConstraint();

@@ -17,6 +17,7 @@
 #include "virtual_machine.hpp"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 #include "simgrid/s4u/engine.hpp"
+#include <vector>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_kernel, surf, "Logging specific to SURF (kernel)");
@@ -32,7 +33,7 @@ xbt_dynar_t model_list_invoke = nullptr;  /* to invoke callbacks */
 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 xbt_dynar_t surf_path = nullptr;
-xbt_dynar_t host_that_restart = xbt_dynar_new(sizeof(char*), nullptr);
+std::vector<std::string> host_that_restart;
 xbt_dict_t watched_hosts_lib;
 
 namespace simgrid {
@@ -326,7 +327,6 @@ void surf_exit()
 
   sg_config_finalize();
 
-  xbt_dynar_free(&host_that_restart);
   xbt_dynar_free(&surf_path);
 
   xbt_dict_free(&host_list);

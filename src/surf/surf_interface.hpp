@@ -40,6 +40,11 @@ extern XBT_PRIVATE xbt_dynar_t surf_path;
 extern "C" {
 XBT_PUBLIC(double) surf_get_clock(void);
 }
+/** \ingroup SURF_simulation
+ *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
+ */
+XBT_PUBLIC_DATA(std::vector<std::string>) host_that_restart;
+
 
 extern XBT_PRIVATE double sg_sender_gap;
 

@@ -531,13 +531,11 @@ void SIMIX_run()
     } while (again);
 
     /* Autorestart all process */
-    char *hostname = nullptr;
-    unsigned int iter;
-    xbt_dynar_foreach(host_that_restart,iter,hostname) {
-      XBT_INFO("Restart processes on host: %s",hostname);
-      SIMIX_host_autorestart(sg_host_by_name(hostname));
+    for (auto hostname: host_that_restart) {
+      XBT_INFO("Restart processes on host: %s", hostname.c_str());
+      SIMIX_host_autorestart(sg_host_by_name(hostname.c_str()));
     }
-    xbt_dynar_reset(host_that_restart);
+    host_that_restart.clear();
 
     /* Clean processes to destroy */
     SIMIX_process_empty_trash();

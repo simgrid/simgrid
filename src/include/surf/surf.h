@@ -682,11 +682,6 @@ XBT_PUBLIC(void) surf_vm_model_init_HL13();
 XBT_PUBLIC_DATA(s_surf_model_description_t) surf_vm_model_description[];
 
 /** \ingroup SURF_simulation
- *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
- */
-XBT_PUBLIC_DATA(xbt_dynar_t) host_that_restart;
-
-/** \ingroup SURF_simulation
  *  \brief List of hosts for which one want to be notified if they ever restart.
  */
 XBT_PUBLIC_DATA(xbt_dict_t) watched_hosts_lib;
