@@ -4,6 +4,9 @@
 ! expect return 0
 ! output sort
 $ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench medium 5 test
+> [0.000000]: [surf_kernel/DEBUG] Add SURF levels
+> [0.000000]: [surf_kernel/DEBUG] Add routing levels
+> [0.000000]: [surf_kernel/DEBUG] Create all Libs
 > [0.000000]: [surf_maxmin/DEBUG] Setting selective_update_active flag to 1
 > [0.000000]: [surf_maxmin/DEBUG] Active constraints : 100
 > [0.000000]: [surf_maxmin/DEBUG] Constraint '98' usage: 13.060939 remaining: 3.166833 concurrency: 7<=8<=10

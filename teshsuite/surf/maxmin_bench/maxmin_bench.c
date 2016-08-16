@@ -6,6 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/include/surf/surf.h"
 #include "surf/maxmin.h"
 #include "xbt/module.h"
 #include "xbt/xbt_os_time.h"
@@ -179,7 +180,7 @@ int main(int argc, char **argv)
   //Otherwise, just set it to a constant value (and set rate_no_limit to 1.0):
   //nb_elem=200
 
-  xbt_init(&argc, argv);
+  surf_init(&argc, argv);
 
   for(int i=0;i<testcount;i++){
     seedx=i+1;
@@ -198,5 +199,7 @@ int main(int argc, char **argv)
          testcount,nb_cnst, nb_var, nb_elem, (1<<pw_base_limit), (1<<pw_base_limit)+(1<<pw_max_limit), max_share);
   if(mode==3)
     fprintf(stderr, "Execution time: %g +- %g  microseconds \n",mean_date, stdev_date);
+   
+  surf_exit();
   return 0;
 }
