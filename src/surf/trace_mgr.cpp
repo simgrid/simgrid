@@ -18,18 +18,9 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_trace, surf, "Surf trace management");
 
 static std::unordered_map<const char *, simgrid::trace_mgr::trace*> trace_list;
 
-simgrid::trace_mgr::trace::trace()
-{
-  event_list = xbt_dynar_new(sizeof(s_tmgr_event_t), nullptr);
-}
-
-simgrid::trace_mgr::trace::~trace()
-{
-  xbt_dynar_free(&event_list);
-}
-simgrid::trace_mgr::future_evt_set::future_evt_set()
-{
-}
+simgrid::trace_mgr::trace::trace()=default;
+simgrid::trace_mgr::trace::~trace()=default;
+simgrid::trace_mgr::future_evt_set::future_evt_set()=default;
 
 simgrid::trace_mgr::future_evt_set::~future_evt_set()
 {
@@ -73,11 +64,11 @@ tmgr_trace_t tmgr_trace_new_from_string(const char *name, const char *input, dou
         s_tmgr_event_t first_event;
         first_event.delta=event.delta;
         first_event.value=-1.0;
-        xbt_dynar_push(trace->event_list, &first_event);
+        trace->event_list.push_back(first_event);
       }
     }
-    xbt_dynar_push(trace->event_list, &event);
-    last_event = (tmgr_event_t)xbt_dynar_get_ptr(trace->event_list, xbt_dynar_length(trace->event_list) - 1);
+    trace->event_list.push_back(event);
+    last_event = &(trace->event_list.back());
   }
   if (last_event)
     last_event->delta = periodicity;
@@ -111,7 +102,7 @@ tmgr_trace_t tmgr_empty_trace_new()
   s_tmgr_event_t event;
   event.delta = 0.0;
   event.value = 0.0;
-  xbt_dynar_push(trace->event_list, &event);
+  trace->event_list.push_back(event);
 
   return trace;
 }
@@ -131,7 +122,7 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::add_trace(tmgr_trace_t
   trace_iterator->idx = 0;
   trace_iterator->resource = resource;
 
-  xbt_assert((trace_iterator->idx < xbt_dynar_length(trace->event_list)), "Your trace should have at least one event!");
+  xbt_assert((trace_iterator->idx < trace->event_list.size()), "Your trace should have at least one event!");
 
   xbt_heap_push(p_heap, trace_iterator, start_time);
 
@@ -162,11 +153,11 @@ tmgr_trace_iterator_t simgrid::trace_mgr::future_evt_set::pop_leq(
   tmgr_trace_t trace = trace_iterator->trace;
   *resource = trace_iterator->resource;
 
-  tmgr_event_t event = (tmgr_event_t)xbt_dynar_get_ptr(trace->event_list, trace_iterator->idx);
+  tmgr_event_t event = &(trace->event_list.at(trace_iterator->idx));
 
   *value = event->value;
 
-  if (trace_iterator->idx < xbt_dynar_length(trace->event_list) - 1) {
+  if (trace_iterator->idx < trace->event_list.size() - 1) {
     xbt_heap_push(p_heap, trace_iterator, event_date + event->delta);
     trace_iterator->idx++;
   } else if (event->delta > 0) {        /* Last element, checking for periodicity */

@@ -9,9 +9,9 @@
 
 #include "xbt/heap.h"
 #include "simgrid/forward.h"
+#include <vector>
 
 SG_BEGIN_DECL()
-#include "xbt/heap.h"
 
 typedef struct tmgr_event {
   double delta;
@@ -73,7 +73,7 @@ public:
   trace();
   virtual ~trace();
 //private:
-  xbt_dynar_t event_list;
+  std::vector<s_tmgr_event_t> event_list;
 };
 
 /** @brief Future Event Set (collection of iterators over the traces)
