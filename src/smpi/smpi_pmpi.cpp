@@ -3120,7 +3120,7 @@ int PMPI_Info_create( MPI_Info *info){
   if (info == nullptr)
     return MPI_ERR_ARG;
   *info = xbt_new(s_smpi_mpi_info_t, 1);
-  (*info)->info_dict= xbt_dict_new_homogeneous(nullptr);
+  (*info)->info_dict= xbt_dict_new_homogeneous(xbt_free_f);
   (*info)->refcount=1;
   return MPI_SUCCESS;
 }
@@ -3129,7 +3129,7 @@ int PMPI_Info_set( MPI_Info info, char *key, char *value){
   if (info == nullptr || key == nullptr || value == nullptr)
     return MPI_ERR_ARG;
 
-  xbt_dict_set(info->info_dict, key, (void*)value, nullptr);
+  xbt_dict_set(info->info_dict, key, xbt_strdup(value), nullptr);
   return MPI_SUCCESS;
 }
 
@@ -3164,13 +3164,13 @@ int PMPI_Info_dup(MPI_Info info, MPI_Info *newinfo){
   if (info == nullptr || newinfo==nullptr)
     return MPI_ERR_ARG;
   *newinfo = xbt_new(s_smpi_mpi_info_t, 1);
-  (*newinfo)->info_dict= xbt_dict_new_homogeneous(nullptr);
+  (*newinfo)->info_dict= xbt_dict_new_homogeneous(xbt_free_f);
   (*newinfo)->refcount=1;
   xbt_dict_cursor_t cursor = nullptr;
   int *key;
   void* data;
   xbt_dict_foreach(info->info_dict,cursor,key,data){
-    xbt_dict_set((*newinfo)->info_dict, reinterpret_cast<char*>(key), data, nullptr);
+    xbt_dict_set((*newinfo)->info_dict, reinterpret_cast<char*>(key), xbt_strdup(reinterpret_cast<char*>(data)), nullptr);
   }
   return MPI_SUCCESS;
 }

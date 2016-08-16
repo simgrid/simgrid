@@ -782,6 +782,7 @@ void mpi_info_set_( int *info, char *key, char *value, int* ierr, unsigned int k
 
   *ierr =  MPI_Info_set( smpi_info_f2c(*info), tkey, tvalue);
   xbt_free(tkey);
+  xbt_free(tvalue);
 }
 
 void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, int* ierr, unsigned int keylen ){
@@ -810,12 +811,6 @@ void mpi_info_get_ (int* info,char *key,int* valuelen, char *value, int *flag, i
 
 void mpi_info_free_(int* info, int* ierr){
   MPI_Info tmp = smpi_info_f2c(*info);
-  const char* key;
-  char* val;
-  xbt_dict_cursor_t cursor;
-  xbt_dict_foreach(tmp->info_dict,cursor,key,val) {
-    xbt_free(val);
-  }
   *ierr =  MPI_Info_free(&tmp);
   if(*ierr == MPI_SUCCESS) {
     free_info(*info);
