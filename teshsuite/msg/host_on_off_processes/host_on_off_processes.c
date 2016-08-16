@@ -103,7 +103,7 @@ static int test_launcher(int argc, char *argv[])
     argvF[0] = xbt_strdup("process_daemon");
     MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, jupiter, 1, argvF);
     MSG_process_sleep(10);
-    XBT_INFO("  Test 2 does not crash, WTF ?!(number of Process : %d, it should be 1)", MSG_process_get_number());
+    XBT_INFO("  Test 2 does not crash as it should (number of Process : %d, it should be 1)", MSG_process_get_number());
     XBT_INFO("  Ok so let's turn on/off the node to see whether the process is correctly bound to Jupiter");
     MSG_host_on(jupiter);
     XBT_INFO("  Turn off");

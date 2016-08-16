@@ -122,7 +122,7 @@ msg_error_t MSG_process_sleep(double nb_sec)
   catch(xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
-      XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, WTF here ?"); 
+      XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, I'm lost."); 
       // adsein: MSG_TASK_CANCELED is assigned when someone kills the process that made the sleep, this is not
       // correct. For instance, when the node is turned off, the error should be MSG_HOST_FAILURE, which is by the way
       // and according to the JAVA document, the only exception that can be triggered by MSG_Process_sleep call.

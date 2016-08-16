@@ -16,7 +16,7 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO] Test 2:
 > [Tremblay:test_launcher:(1) 0.000000] [msg_test/INFO]   Turn off Jupiter
 > [0.000000] [simix_process/WARNING] Cannot launch process 'process_daemon' on failed host 'Jupiter'
-> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Test 2 does not crash, WTF ?!(number of Process : 1, it should be 1)
+> [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Test 2 does not crash as it should (number of Process : 1, it should be 1)
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Ok so let's turn on/off the node to see whether the process is correctly bound to Jupiter
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Turn off
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   sleep
