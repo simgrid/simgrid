@@ -32,8 +32,8 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
   double time = 0;
   int i = 0;
   nbPoints_ = speedTrace->event_list.size() + 1;
-  timePoints_ = static_cast<double*>(xbt_malloc0(sizeof(double) * nbPoints_));
-  integral_ =  static_cast<double*>(xbt_malloc0(sizeof(double) * nbPoints_));
+  timePoints_ = new double[nbPoints_];
+  integral_ =  new double[nbPoints_];
   for (auto val : speedTrace->event_list) {
     timePoints_[i] = time;
     integral_[i] = integral;
@@ -47,8 +47,8 @@ CpuTiTrace::CpuTiTrace(tmgr_trace_t speedTrace)
 
 CpuTiTrace::~CpuTiTrace()
 {
-  xbt_free(timePoints_);
-  xbt_free(integral_);
+  delete [] timePoints_;
+  delete [] integral_;
 }
 
 CpuTiTgmr::~CpuTiTgmr()
@@ -459,7 +459,7 @@ void CpuTi::apply_event(tmgr_trace_iterator_t event, double value)
   } else if (event == stateEvent_) {
     if (value > 0) {
       if(isOff())
-        host_that_restart.push_back(getName());
+        host_that_restart.push_back(getHost());
       turnOn();
     } else {
       turnOff();

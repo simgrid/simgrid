@@ -143,7 +143,7 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
 
     if (value > 0) {
       if(isOff())
-        host_that_restart.push_back(getName());
+        host_that_restart.push_back(getHost());
       turnOn();
     } else {
       lmm_constraint_t cnst = getConstraint();

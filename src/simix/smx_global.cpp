@@ -531,9 +531,9 @@ void SIMIX_run()
     } while (again);
 
     /* Autorestart all process */
-    for (auto hostname: host_that_restart) {
-      XBT_INFO("Restart processes on host: %s", hostname.c_str());
-      SIMIX_host_autorestart(sg_host_by_name(hostname.c_str()));
+    for (auto host: host_that_restart) {
+      XBT_INFO("Restart processes on host: %s", sg_host_get_name(host));
+      SIMIX_host_autorestart(host);
     }
     host_that_restart.clear();
 
