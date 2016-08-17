@@ -1,56 +1,462 @@
 /** 
 @defgroup SMPI_API      SMPI: Simulate real MPI applications
 @brief Programming environment for the simulation of MPI applications
-    
+
+@tableofcontents
+
+[TOC]
+
 This programming environment enables the study of MPI application by
 emulating them on top of the SimGrid simulator. This is particularly
 interesting to study existing MPI applications within the comfort of
 the simulator. The motivation for this work is detailed in the
 reference article (available at http://hal.inria.fr/inria-00527150).
 
-Our goal is to enable the study of *unmodified* MPI applications,
-although we are not quite there yet (see @ref SMPI_what). In
-addition, you can modify your code to speed up your studies or
-otherwise increase their scalability (see @ref SMPI_adapting).
 
-\section SMPI_who Who should use SMPI (and who shouldn't)
+Our goal is to enable the study of **unmodified MPI applications**,
+and even if some constructs and features are still missing, we
+consider SMPI to be stable and usable in production.  For **further
+scalability**, you may modify your code to speed up your studies or
+save memory space.  Improved **simulation accuracy** requires some
+specific care from you.
 
-SMPI is now considered as stable and you can use it in production. You
-may probably want to read the scientific publications that detail the
-models used and their limits, but this should not be absolutely
-necessary. If you already fluently write and use MPI applications,
-SMPI should sound very familiar to you. Use smpicc instead of mpicc,
-and smpirun instead of mpirun (see below for more details).
+ - @ref SMPI_use
+   - @ref SMPI_use_compile
+   - @ref SMPI_use_exec
+   - @ref SMPI_use_colls
+     - @ref SMPI_use_colls_algos
+     - @ref SMPI_use_colls_tracing
+ - @ref SMPI_what
+   - @ref SMPI_what_coverage
+   - @ref SMPI_what_globals
+ - @ref SMPI_adapting
+   - @ref SMPI_adapting_size
+   - @ref SMPI_adapting_speed
+ - @ref SMPI_accuracy
 
-Of course, if you don't know what MPI is, the documentation of SMPI
-will seem a bit terse to you. You should pick up a good MPI tutorial
-on the Internet (or a course in your favorite university) and come
-back to SMPI once you know a bit more about MPI. Alternatively, you
-may want to turn to the other SimGrid interfaces such as the 
-\ref MSG_API environment, or the \ref SD_API one.
 
-\section SMPI_what What can run within SMPI?
+@section SMPI_use Using SMPI
+
+If you're absolutely new to MPI, you should first take our online
+[SMPI CourseWare](https://simgrid.github.io/SMPI_CourseWare/), and/or
+take a MPI course in your favorite university.  If you already know
+MPI, SMPI should sound very familiar to you: Use smpicc instead of
+mpicc, and smpirun instead of mpirun, and you're almost set.  Once you
+get a virtual platform description (see @ref platform), you're good to
+go.
+
+@subsection SMPI_use_compile Compiling your code
+
+For that, simply use <tt>smpicc</tt> as a compiler just
+like you use mpicc with other MPI implementations. This script
+replaces your usual compiler (gcc, clang, whatever) and adds the right
+compilation flags along the way.
+
+This may badly interact with some building infrastructure. Your
+<tt>./configure</tt> may fail, reporting that the compiler is not
+functional. If this happens, define the <tt>SMPI_PRETEND_CC</tt>
+environment variable before running the configuration. Do not define
+it when using SMPI!
+
+@verbatim
+SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
+make
+@endverbatim
+
+@subsection SMPI_use_exec Executing your code on the simulator
+
+Use the <tt>smpirun</tt> script as follows for that:
+
+@verbatim
+smpirun -hostfile my_hostfile.txt -platform my_platform.xml ./program -blah
+@endverbatim
+
+ - <tt>my_hostfile.txt</tt> is a classical MPI hostfile (that is, this
+   file lists the machines on which the processes must be dispatched, one
+   per line)
+ - <tt>my_platform.xml</tt> is a classical SimGrid platform file. Of
+   course, the hosts of the hostfile must exist in the provided
+   platform.
+ - <tt>./program</tt> is the MPI program to simulate, that you
+   compiled with <tt>smpicc</tt>
+ - <tt>-blah</tt> is a command-line parameter passed to this program.
+
+<tt>smpirun</tt> accepts other parameters, such as <tt>-np</tt> if you
+don't want to use all the hosts defined in the hostfile, <tt>-map</tt>
+to display on which host each rank gets mapped of <tt>-trace</tt> to
+activate the tracing during the simulation. You can get the full list
+by running
+
+@verbatim
+smpirun -help
+@endverbatim
+
+@subsection SMPI_use_colls Simulating collective operations
+
+MPI collective operations are crucial to the performance of MPI
+applications and must be carefully optimized according to many
+parameters. Every existing implementation provides several algorithms
+for each collective operation, and selects by default the best suited
+one, depending on the sizes sent, the number of nodes, the
+communicator, or the communication library being used.  These
+decisions are based on empirical results and theoretical complexity
+estimation, and are very different between MPI implementations. In
+most cases, the users can also manually tune the algorithm used for
+each collective operation.
+
+SMPI can simulate the behavior of several MPI implementations:
+OpenMPI, MPICH,
+<a href="http://star-mpi.sourceforge.net/">STAR-MPI</a>, and
+MVAPICH2. For that, it provides 115 collective algorithms and several
+selector algorithms, that were collected directly in the source code
+of the targeted MPI implementations.
+
+You can switch the automatic selector through the
+\c smpi/coll_selector configuration item. Possible values:
+
+ - <b>ompi</b>: default selection logic of OpenMPI (version 1.7)
+ - <b>mpich</b>: default selection logic of MPICH (version 3.0.4)
+ - <b>mvapich2</b>: selection logic of MVAPICH2 (version 1.9) tuned
+   on the Stampede cluster   
+ - <b>impi</b>: preliminary version of an Intel MPI selector (version
+   4.1.3, also tuned for the Stampede cluster). Due the closed source
+   nature of Intel MPI, some of the algorithms described in the
+   documentation are not available, and are replaced by mvapich ones.   
+ - <b>default</b>: legacy algorithms used in the earlier days of
+   SimGrid. Do not use for serious perform performance studies.
+
+
+@subsubsection SMPI_use_colls_algos Available algorithms
+
+You can also pick the algorithm used for each collective with the
+corresponding configuration item. For example, to use the pairwise
+alltoall algorithm, one should add \c --cfg=smpi/alltoall:pair to the
+line. This will override the selector (if any) for this algorithm.
+It means that the selected algorithm will be used 
+
+Warning: Some collective may require specific conditions to be
+executed correctly (for instance having a communicator with a power of
+two number of nodes only), which are currently not enforced by
+Simgrid. Some crashes can be expected while trying these algorithms
+with unusual sizes/parameters
+
+#### MPI_Alltoall
+
+Most of these are best described in <a href="http://www.cs.arizona.edu/~dkl/research/papers/ics06.pdf">STAR-MPI</a>
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the alltoall operations
+ - mpich: use mpich selector for the alltoall operations
+ - mvapich2: use mvapich2 selector for the alltoall operations
+ - impi: use intel mpi selector for the alltoall operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - 2dmesh: organizes the nodes as a two dimensional mesh, and perform allgather 
+   along the dimensions
+ - 3dmesh: adds a third dimension to the previous algorithm
+ - rdb: recursive doubling : extends the mesh to a nth dimension, each one 
+   containing two nodes
+ - pair: pairwise exchange, only works for power of 2 procs, size-1 steps,
+   each process sends and receives from the same process at each step
+ - pair_light_barrier: same, with small barriers between steps to avoid
+   contention
+ - pair_mpi_barrier: same, with MPI_Barrier used
+ - pair_one_barrier: only one barrier at the beginning
+ - ring: size-1 steps, at each step a process send to process (n+i)%size, and receives from (n-i)%size
+ - ring_light_barrier: same, with small barriers between some phases to avoid contention
+ - ring_mpi_barrier: same, with MPI_Barrier used
+ - ring_one_barrier: only one barrier at the beginning
+ - basic_linear: posts all receives and all sends,
+starts the communications, and waits for all communication to finish
+ - mvapich2_scatter_dest: isend/irecv with scattered destinations, posting only a few messages at the same time
+
+#### MPI_Alltoallv
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the alltoallv operations
+ - mpich: use mpich selector for the alltoallv operations
+ - mvapich2: use mvapich2 selector for the alltoallv operations
+ - impi: use intel mpi selector for the alltoallv operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - bruck: same as alltoall
+ - pair: same as alltoall
+ - pair_light_barrier: same as alltoall
+ - pair_mpi_barrier: same as alltoall
+ - pair_one_barrier: same as alltoall
+ - ring: same as alltoall
+ - ring_light_barrier: same as alltoall
+ - ring_mpi_barrier: same as alltoall
+ - ring_one_barrier: same as alltoall
+ - ompi_basic_linear: same as alltoall
+
+#### MPI_Gather
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the gather operations
+ - mpich: use mpich selector for the gather operations
+ - mvapich2: use mvapich2 selector for the gather operations
+ - impi: use intel mpi selector for the gather operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+which will iterate over all implemented versions and output the best
+ - ompi_basic_linear: basic linear algorithm from openmpi, each process sends to the root
+ - ompi_binomial: binomial tree algorithm
+ - ompi_linear_sync: same as basic linear, but with a synchronization at the
+ beginning and message cut into two segments.
+ - mvapich2_two_level: SMP-aware version from MVAPICH. Gather first intra-node (defaults to mpich's gather), and then exchange with only one process/node. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
+
+#### MPI_Barrier
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the barrier operations
+ - mpich: use mpich selector for the barrier operations
+ - mvapich2: use mvapich2 selector for the barrier operations
+ - impi: use intel mpi selector for the barrier operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - ompi_basic_linear: all processes send to root
+ - ompi_two_procs: special case for two processes
+ - ompi_bruck: nsteps = sqrt(size), at each step, exchange data with rank-2^k and rank+2^k
+ - ompi_recursivedoubling: recursive doubling algorithm
+ - ompi_tree: recursive doubling type algorithm, with tree structure
+ - ompi_doublering: double ring algorithm
+ - mvapich2_pair: pairwise algorithm
+
+#### MPI_Scatter
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the scatter operations
+ - mpich: use mpich selector for the scatter operations
+ - mvapich2: use mvapich2 selector for the scatter operations
+ - impi: use intel mpi selector for the scatter operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - ompi_basic_linear: basic linear scatter 
+ - ompi_binomial: binomial tree scatter
+ - mvapich2_two_level_direct: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a basic linear inter node stage. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. 
+ - mvapich2_two_level_binomial: SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a binomial phase. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
+
+#### MPI_Reduce
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the reduce operations
+ - mpich: use mpich selector for the reduce operations
+ - mvapich2: use mvapich2 selector for the reduce operations
+ - impi: use intel mpi selector for the reduce operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - arrival_pattern_aware: root exchanges with the first process to arrive
+ - binomial: uses a binomial tree
+ - flat_tree: uses a flat tree
+ - NTSL: Non-topology-specific pipelined linear-bcast function 
+   0->1, 1->2 ,2->3, ....., ->last node: in a pipeline fashion, with segments
+ of 8192 bytes
+ - scatter_gather: scatter then gather
+ - ompi_chain: openmpi reduce algorithms are built on the same basis, but the
+ topology is generated differently for each flavor
+chain = chain with spacing of size/2, and segment size of 64KB 
+ - ompi_pipeline: same with pipeline (chain with spacing of 1), segment size 
+depends on the communicator size and the message size
+ - ompi_binary: same with binary tree, segment size of 32KB
+ - ompi_in_order_binary: same with binary tree, enforcing order on the 
+operations
+ - ompi_binomial: same with binomial algo (redundant with default binomial 
+one in most cases)
+ - ompi_basic_linear: basic algorithm, each process sends to root
+ - mvapich2_knomial: k-nomial algorithm. Default factor is 4 (mvapich2 selector adapts it through tuning)
+ - mvapich2_two_level: SMP-aware reduce, with default set to mpich both for intra and inter communicators. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
+ - rab: <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a>'s reduce algorithm 
+
+#### MPI_Allreduce
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the allreduce operations
+ - mpich: use mpich selector for the allreduce operations
+ - mvapich2: use mvapich2 selector for the allreduce operations
+ - impi: use intel mpi selector for the allreduce operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - lr: logical ring reduce-scatter then logical ring allgather
+ - rab1: variations of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: reduce_scatter then allgather
+ - rab2: variations of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: alltoall then allgather
+ - rab_rsag: variation of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm: recursive doubling 
+reduce_scatter then recursive doubling allgather 
+ - rdb: recursive doubling
+ - smp_binomial: binomial tree with smp: binomial intra 
+SMP reduce, inter reduce, inter broadcast then intra broadcast
+ - smp_binomial_pipeline: same with segment size = 4096 bytes
+ - smp_rdb: intra: binomial allreduce, inter: Recursive 
+doubling allreduce, intra: binomial broadcast
+ - smp_rsag: intra: binomial allreduce, inter: reduce-scatter, 
+inter:allgather, intra: binomial broadcast
+ - smp_rsag_lr: intra: binomial allreduce, inter: logical ring 
+reduce-scatter, logical ring inter:allgather, intra: binomial broadcast
+ - smp_rsag_rab: intra: binomial allreduce, inter: rab
+reduce-scatter, rab inter:allgather, intra: binomial broadcast
+ - redbcast: reduce then broadcast, using default or tuned algorithms if specified
+ - ompi_ring_segmented: ring algorithm used by OpenMPI
+ - mvapich2_rs: rdb for small messages, reduce-scatter then allgather else
+ - mvapich2_two_level: SMP-aware algorithm, with mpich as intra algoritm, and rdb as inter (Change this behavior by using mvapich2 selector to use tuned values)
+ - rab: default <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> implementation
+
+#### MPI_Reduce_scatter
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the reduce_scatter operations
+ - mpich: use mpich selector for the reduce_scatter operations
+ - mvapich2: use mvapich2 selector for the reduce_scatter operations
+ - impi: use intel mpi selector for the reduce_scatter operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - ompi_basic_recursivehalving: recursive halving version from OpenMPI
+ - ompi_ring: ring version from OpenMPI
+ - mpich_pair: pairwise exchange version from MPICH
+ - mpich_rdb: recursive doubling version from MPICH
+ - mpich_noncomm: only works for power of 2 procs, recursive doubling for noncommutative ops
+
+
+#### MPI_Allgather
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the allgather operations
+ - mpich: use mpich selector for the allgather operations
+ - mvapich2: use mvapich2 selector for the allgather operations
+ - impi: use intel mpi selector for the allgather operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - 2dmesh: see alltoall
+ - 3dmesh: see alltoall
+ - bruck: Described by Bruck et.al. in <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949">
+Efficient algorithms for all-to-all communications in multiport message-passing systems</a> 
+ - GB: Gather - Broadcast (uses tuned version if specified)
+ - loosely_lr: Logical Ring with grouping by core (hardcoded, default 
+processes/node: 4)
+ - NTSLR: Non Topology Specific Logical Ring
+ - NTSLR_NB: Non Topology Specific Logical Ring, Non Blocking operations
+ - pair: see alltoall
+ - rdb: see alltoall
+ - rhv: only power of 2 number of processes
+ - ring: see alltoall
+ - SMP_NTS: gather to root of each SMP, then every root of each SMP node 
+post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, 
+using logical ring algorithm (hardcoded, default processes/SMP: 8)
+ - smp_simple: gather to root of each SMP, then every root of each SMP node 
+post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, 
+using simple algorithm (hardcoded, default processes/SMP: 8)
+ - spreading_simple: from node i, order of communications is i -> i + 1, i ->
+ i + 2, ..., i -> (i + p -1) % P
+ - ompi_neighborexchange: Neighbor Exchange algorithm for allgather. 
+Described by Chen et.al. in  <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=1592302">Performance Evaluation of Allgather Algorithms on Terascale Linux Cluster with Fast Ethernet</a>
+ - mvapich2_smp: SMP aware algorithm, performing intra-node gather, inter-node allgather with one process/node, and bcast intra-node
+
+
+####_Allgatherv
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the allgatherv operations
+ - mpich: use mpich selector for the allgatherv operations
+ - mvapich2: use mvapich2 selector for the allgatherv operations
+ - impi: use intel mpi selector for the allgatherv operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - GB: Gatherv - Broadcast (uses tuned version if specified, but only for 
+Bcast, gatherv is not tuned)
+ - pair: see alltoall
+ - ring: see alltoall
+ - ompi_neighborexchange: see allgather
+ - ompi_bruck: see allgather
+ - mpich_rdb: recursive doubling algorithm from MPICH
+ - mpich_ring: ring algorithm from MPICh - performs differently from the  one from STAR-MPI
+
+#### MPI_Bcast
+
+ - default: naive one, by default
+ - ompi: use openmpi selector for the bcast operations
+ - mpich: use mpich selector for the bcast operations
+ - mvapich2: use mvapich2 selector for the bcast operations
+ - impi: use intel mpi selector for the bcast operations
+ - automatic (experimental): use an automatic self-benchmarking algorithm 
+ - arrival_pattern_aware: root exchanges with the first process to arrive
+ - arrival_pattern_aware_wait: same with slight variation
+ - binomial_tree: binomial tree exchange
+ - flattree: flat tree exchange
+ - flattree_pipeline: flat tree exchange, message split into 8192 bytes pieces
+ - NTSB: Non-topology-specific pipelined binary tree with 8192 bytes pieces
+ - NTSL: Non-topology-specific pipelined linear with 8192 bytes pieces
+ - NTSL_Isend: Non-topology-specific pipelined linear with 8192 bytes pieces, asynchronous communications
+ - scatter_LR_allgather: scatter followed by logical ring allgather
+ - scatter_rdb_allgather: scatter followed by recursive doubling allgather
+ - arrival_scatter: arrival pattern aware scatter-allgather
+ - SMP_binary: binary tree algorithm with 8 cores/SMP
+ - SMP_binomial: binomial tree algorithm with 8 cores/SMP
+ - SMP_linear: linear algorithm with 8 cores/SMP
+ - ompi_split_bintree: binary tree algorithm from OpenMPI, with message split in 8192 bytes pieces
+ - ompi_pipeline: pipeline algorithm from OpenMPI, with message split in 128KB pieces
+ - mvapich2_inter_node: Inter node default mvapich worker 
+ - mvapich2_intra_node: Intra node default mvapich worker
+ - mvapich2_knomial_intra_node:  k-nomial intra node default mvapich worker. default factor is 4.
+
+#### Automatic evaluation 
+
+(Warning: This is experimental and may be removed or crash easily)
+
+An automatic version is available for each collective (or even as a selector). This specific 
+version will loop over all other implemented algorithm for this particular collective, and apply 
+them while benchmarking the time taken for each process. It will then output the quickest for 
+each process, and the global quickest. This is still unstable, and a few algorithms which need 
+specific number of nodes may crash.
+
+#### Adding an algorithm
+
+To add a new algorithm, one should check in the src/smpi/colls folder how other algorithms 
+are coded. Using plain MPI code inside Simgrid can't be done, so algorithms have to be 
+changed to use smpi version of the calls instead (MPI_Send will become smpi_mpi_send). Some functions may have different signatures than their MPI counterpart, please check the other algorithms or contact us using <a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel">SimGrid developers mailing list</a>.
+
+Example: adding a "pair" version of the Alltoall collective.
+
+ - Implement it in a file called alltoall-pair.c in the src/smpi/colls folder. This file should include colls_private.h.
+
+ - The name of the new algorithm function should be smpi_coll_tuned_alltoall_pair, with the same signature as MPI_Alltoall.
+
+ - Once the adaptation to SMPI code is done, add a reference to the file ("src/smpi/colls/alltoall-pair.c") in the SMPI_SRC part of the DefinePackages.cmake file inside buildtools/cmake, to allow the file to be built and distributed.
+
+ - To register the new version of the algorithm, simply add a line to the corresponding macro in src/smpi/colls/cools.h ( add a "COLL_APPLY(action, COLL_ALLTOALL_SIG, pair)" to the COLL_ALLTOALLS macro ). The algorithm should now be compiled and be selected when using --cfg=smpi/alltoall:pair at runtime.
+
+ - To add a test for the algorithm inside Simgrid's test suite, juste add the new algorithm name in the ALLTOALL_COLL list found inside teshsuite/smpi/CMakeLists.txt . When running ctest, a test for the new algorithm should be generated and executed. If it does not pass, please check your code or contact us.
+
+ - Please submit your patch for inclusion in SMPI, for example through a pull request on GitHub or directly per email.
+
+@subsubsection SMPI_use_colls_tracing Tracing of internal communications
+
+By default, the collective operations are traced as a unique operation
+because tracing all point-to-point communications composing them could
+result in overloaded, hard to interpret traces. If you want to debug
+and compare collective algorithms, you should set the
+\c tracing/smpi/internals configuration item to 1 instead of 0.
+
+Here are examples of two alltoall collective algorithms runs on 16 nodes, 
+the first one with a ring algorithm, the second with a pairwise one:
+
+@htmlonly
+<a href="smpi_simgrid_alltoall_ring_16.png" border=0><img src="smpi_simgrid_alltoall_ring_16.png" width="30%" border=0 align="center"></a>
+<a href="smpi_simgrid_alltoall_pair_16.png" border=0><img src="smpi_simgrid_alltoall_pair_16.png" width="30%" border=0 align="center"></a>
+<br/>
+@endhtmlonly
+
+@section SMPI_what What can run within SMPI?
 
 You can run unmodified MPI applications (both C and Fortran) within
-SMPI, provided that you only use MPI calls that we implemented in
-MPI. Global variables should be handled correctly on Linux systems.
+SMPI, provided that you only use MPI calls that we implemented. Global
+variables should be handled correctly on Linux systems.
 
-\subsection SMPI_what_coverage MPI coverage of SMPI
+@subsection SMPI_what_coverage MPI coverage of SMPI
 
 Our coverage of the interface is very decent, but still incomplete;
-Given the size of the MPI standard, it may well be that we never
-implement absolutely all existing primitives. One sided communications
-and I/O primitives are not targeted for now. Our current state is
-still very decent: we pass most of the MPICH coverage tests.
+Given the size of the MPI standard, we may well never manage to 
+implement absolutely all existing primitives. Currently, we have a
+very sparse support for one-sided communications, and almost none for
+I/O primitives. But our coverage is still very decent: we pass a very
+large amount of the MPICH coverage tests.
 
 The full list of not yet implemented functions is documented in the
-file <tt>include/smpi/smpi.h</tt> of the archive, between two lines
-containing the <tt>FIXME</tt> marker. If you really need a missing
-feature, please get in touch with us: we can guide you though the
-SimGrid code to help you implementing it, and we'd glad to integrate
-it in the main project afterward if you contribute them back.
+file @ref include/smpi/smpi.h, between two lines containing the
+<tt>FIXME</tt> marker. If you really need a missing feature, please
+get in touch with us: we can guide you though the SimGrid code to help
+you implementing it, and we'd glad to integrate it in the main project
+afterward if you contribute them back.
 
-\subsection SMPI_what_globals Global variables
+@subsection SMPI_what_globals Global variables
 
 Concerning the globals, the problem comes from the fact that usually,
 MPI processes run as real UNIX processes while they are all folded
@@ -69,61 +475,20 @@ available at http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf
 (note that this article does not deal with SMPI but with a concurrent
 solution called AMPI that suffers of the same issue). 
 
-A method using dynamic switching of the .data and .bss segments of an
-ELF executable has been introduced in SimGrid 3.11. By using the <tt>smpi/
-privatize_global_variableles</tt> option to yes, SMPI will duplicate
-the segments containing the global variables and when needed, will map 
-the right one in memory. This needs ELF executables and mmap on the system
-(Linux and recent BSDs should be compatible). %As no copy is involved, 
-performance should not be altered (but memory occupation will be higher).
+SimGrid can duplicate and dynamically switch the .data and .bss
+segments of the ELF process when switching the MPI ranks, allowing
+each ranks to have its own copy of the global variables. This feature
+is expected to work correctly on Linux and BSD, so smpirun activates
+it by default. %As no copy is involved, performance should not be
+altered (but memory occupation will be higher).
 
-This solution actually works really good for a good number of MPI 
-applications. Its main limitation is that if the application loads dynamic 
-libraries, their global variables won't be privatized. This can be avoided 
-by linking statically with these libraries (but NOT with libsimgrid, as we 
-need SimGrid's own global varibles).
+If you want to turn it off, pass \c -no-privatize to smpirun. This may
+be necessary if your application uses dynamic libraries as the global
+variables of these libraries will not be privatized. You can fix this
+by linking statically with these libraries (but NOT with libsimgrid,
+as we need SimGrid's own global variables).
 
-
-\section SMPI_compiling Compiling your code
-
-This is very simply done with the <tt>smpicc</tt> script. If you
-already compiled any MPI code before, you already know how to use it.
-If not, you should try to get your MPI code running on top of MPI
-before giving SMPI a spin. Actually, that's very simple even if it's
-the first time you use MPI code: just use smpicc as a compiler (in
-replacement of gcc or your usual compiler), and you're set.
-
-\note 
-    Some configure scripts ("./configure") will test the compiler by 
-    compiling some simple example scripts. To make this work, you 
-    must set the <b>SMPI_PRETEND_CC</b> environment variable to
-    some arbitrary value, for instance "export SMPI_PRETEND_CC=1"
-
-\section SMPI_executing Executing your code on top of the simulator
-
-This is done though the <tt>smpirun</tt> script as follows.
-<tt>my_hostfile.txt</tt> is a classical MPI hostfile (that is, this
-file lists the machines on which the processes must be dispatched, one
-per line)  <tt>my_platform.xml</tt> is a classical SimGrid platform
-file. Of course, the hosts of the hostfile must exist in the provided
-platform. <tt>./program</tt> is the MPI program that you want to
-simulate (must be compiled by <tt>smpicc</tt>) while <tt>-arg</tt> is
-a command-line parameter passed to this program.
-
-\verbatim
-smpirun -hostfile my_hostfile.txt -platform my_platform.xml ./program -arg
-\endverbatim
-
-smpirun accepts other parameters, such as <tt>-np</tt> if you don't
-want to use all the hosts defined in the hostfile, <tt>-map</tt> to
-display on which host each rank gets mapped of <tt>-trace</tt> to
-activate the tracing during the simulation. You can get the full list
-by running
-\verbatim
-smpirun -help
-\endverbatim
-
-\section SMPI_adapting Adapting your MPI code to the use of SMPI
+@section SMPI_adapting Adapting your MPI code for further scalability
 
 As detailed in the reference article (available at
 http://hal.inria.fr/inria-00527150), you may want to adapt your code
@@ -132,7 +497,7 @@ hinder the result quality (or even prevent the app to run) if used
 wrongly. We assume that if you want to simulate an HPC application,
 you know what you are doing. Don't prove us wrong!
 
-\section SMPI_adapting_size Reducing your memory footprint
+@subsection SMPI_adapting_size Reducing your memory footprint
 
 If you get short on memory (the whole app is executed on a single node when
 simulated), you should have a look at the SMPI_SHARED_MALLOC and
@@ -158,7 +523,7 @@ SMPI_SHARED_MALLOC macro in this case, sorry.
 This feature is demoed by the example file
 <tt>examples/smpi/NAS/DT-folding/dt.c</tt>
 
-\section SMPI_adapting_speed Toward faster simulations
+@subsection SMPI_adapting_speed Toward faster simulations
 
 If your application is too slow, try using SMPI_SAMPLE_LOCAL,
 SMPI_SAMPLE_GLOBAL and friends to indicate which computation loops can
@@ -172,349 +537,11 @@ time of your loop iteration are not stable.
 This feature is demoed by the example file 
 <tt>examples/smpi/NAS/EP-sampling/ep.c</tt>
 
+@section SMPI_accuracy Ensuring accurate simulations
 
-\section SMPI_collective_algorithms Simulating collective operations
-
-MPI collective operations can be implemented very differently from one library 
-to another. Actually, all existing libraries implement several algorithms 
-for each collective operation, and by default select at runtime which one 
-should be used for the current operation, depending on the sizes sent, the number
- of nodes, the communicator, or the communication library being used. These 
-decisions are based on empirical results and theoretical complexity estimation, 
-but they can sometimes be suboptimal. Manual selection is possible in these cases, 
-to allow the user to tune the library and use the better collective if the 
-default one is not good enough.
-
-SMPI tries to apply the same logic, regrouping algorithms from OpenMPI, MPICH 
-libraries, StarMPI (<a href="http://star-mpi.sourceforge.net/">STAR-MPI</a>), and MVAPICH2 libraries.
-This collection of more than 115 algorithms allows a simple and effective
- comparison of their behavior and performance, making SMPI a tool of choice for the
-development of such algorithms.
-
-\subsection Tracing_internals Tracing of internal communications
-
-For each collective, default tracing only outputs global data. 
-Internal communication operations are not traced to avoid outputting too much data
-to the trace. To debug and compare algorithm, this can be changed with the item 
-\b tracing/smpi/internals , which has 0 for default value.
-Here are examples of two alltoall collective algorithms runs on 16 nodes, 
-the first one with a ring algorithm, the second with a pairwise one :
-
-\htmlonly
-<a href="smpi_simgrid_alltoall_ring_16.png" border=0><img src="smpi_simgrid_alltoall_ring_16.png" width="30%" border=0 align="center"></a>
-<a href="smpi_simgrid_alltoall_pair_16.png" border=0><img src="smpi_simgrid_alltoall_pair_16.png" width="30%" border=0 align="center"></a>
-<br/>
-\endhtmlonly
-
-\subsection Selectors
-
-The default selection logic implemented by default in OpenMPI (version 1.7) 
-and MPICH (version 3.0.4) has been replicated and can be used by setting the
-\b smpi/coll_selector item to either ompi or mpich. A selector based on the selection logic of MVAPICH2 (version 1.9) tuned on the Stampede cluster as also been implemented, as well as a preliminary version of an Intel MPI selector (version 4.1.3, also tuned for the Stampede cluster). Due the closed source nature of Intel MPI, some of the algorithms described in the documentation are not available, and are replaced by mvapich ones.
-
-Values for option \b smpi/coll_selector are :
- - ompi
- - mpich
- - mvapich2
- - impi
- - default
-
-The code and details for each 
-selector can be found in the <tt>src/smpi/colls/smpi_(openmpi/mpich/mvapich2/impi)_selector.c</tt> file.
-As this is still in development, we do not insure that all algorithms are correctly
- replicated and that they will behave exactly as the real ones. If you notice a difference,
-please contact <a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel">SimGrid developers mailing list</a>
-
-The default selector uses the legacy algorithms used in versions of SimGrid
- previous to the 3.10. they should not be used to perform performance study and 
-may be removed in the future, a different selector being used by default.
-
-\subsection algos Available algorithms
-
-For each one of the listed algorithms, several versions are available,
- either coming from STAR-MPI, MPICH or OpenMPI implementations. Details can be
- found in the code or in <a href="http://www.cs.arizona.edu/~dkl/research/papers/ics06.pdf">STAR-MPI</a> for STAR-MPI algorithms.
-
-Each collective can be selected using the corresponding configuration item. For example, to use the pairwise alltoall algorithm, one should add \b --cfg=smpi/alltoall:pair to the line. This will override the selector (for this algorithm only) if provided, allowing better flexibility.
-
-Warning: Some collective may require specific conditions to be executed correctly (for instance having a communicator with a power of two number of nodes only), which are currently not enforced by Simgrid. Some crashes can be expected while trying these algorithms with unusual sizes/parameters
-
-\subsubsection MPI_Alltoall
-
-Most of these are best described in <a href="http://www.cs.arizona.edu/~dkl/research/papers/ics06.pdf">STAR-MPI</a>
-
- - default : naive one, by default
- - ompi : use openmpi selector for the alltoall operations
- - mpich : use mpich selector for the alltoall operations
- - mvapich2 : use mvapich2 selector for the alltoall operations
- - impi : use intel mpi selector for the alltoall operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - 2dmesh : organizes the nodes as a two dimensional mesh, and perform allgather 
-along the dimensions
- - 3dmesh : adds a third dimension to the previous algorithm
- - rdb : recursive doubling : extends the mesh to a nth dimension, each one 
-containing two nodes
- - pair : pairwise exchange, only works for power of 2 procs, size-1 steps,
-each process sends and receives from the same process at each step
- - pair_light_barrier : same, with small barriers between steps to avoid contention
- - pair_mpi_barrier : same, with MPI_Barrier used
- - pair_one_barrier : only one barrier at the beginning
- - ring : size-1 steps, at each step a process send to process (n+i)%size, and receives from (n-i)%size
- - ring_light_barrier : same, with small barriers between some phases to avoid contention
- - ring_mpi_barrier : same, with MPI_Barrier used
- - ring_one_barrier : only one barrier at the beginning
- - basic_linear : posts all receives and all sends,
-starts the communications, and waits for all communication to finish
- - mvapich2_scatter_dest : isend/irecv with scattered destinations, posting only a few messages at the same time
-
-\subsubsection MPI_Alltoallv
-
- - default : naive one, by default
- - ompi : use openmpi selector for the alltoallv operations
- - mpich : use mpich selector for the alltoallv operations
- - mvapich2 : use mvapich2 selector for the alltoallv operations
- - impi : use intel mpi selector for the alltoallv operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - bruck : same as alltoall
- - pair : same as alltoall
- - pair_light_barrier : same as alltoall
- - pair_mpi_barrier : same as alltoall
- - pair_one_barrier : same as alltoall
- - ring : same as alltoall
- - ring_light_barrier : same as alltoall
- - ring_mpi_barrier : same as alltoall
- - ring_one_barrier : same as alltoall
- - ompi_basic_linear : same as alltoall
-
-
-\subsubsection MPI_Gather
-
- - default : naive one, by default
- - ompi : use openmpi selector for the gather operations
- - mpich : use mpich selector for the gather operations
- - mvapich2 : use mvapich2 selector for the gather operations
- - impi : use intel mpi selector for the gather operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
-which will iterate over all implemented versions and output the best
- - ompi_basic_linear : basic linear algorithm from openmpi, each process sends to the root
- - ompi_binomial : binomial tree algorithm
- - ompi_linear_sync : same as basic linear, but with a synchronization at the
- beginning and message cut into two segments.
- - mvapich2_two_level : SMP-aware version from MVAPICH. Gather first intra-node (defaults to mpich's gather), and then exchange with only one process/node. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
-
-\subsubsection MPI_Barrier
- - default : naive one, by default
- - ompi : use openmpi selector for the barrier operations
- - mpich : use mpich selector for the barrier operations
- - mvapich2 : use mvapich2 selector for the barrier operations
- - impi : use intel mpi selector for the barrier operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - ompi_basic_linear : all processes send to root
- - ompi_two_procs : special case for two processes
- - ompi_bruck : nsteps = sqrt(size), at each step, exchange data with rank-2^k and rank+2^k
- - ompi_recursivedoubling : recursive doubling algorithm
- - ompi_tree : recursive doubling type algorithm, with tree structure
- - ompi_doublering : double ring algorithm
- - mvapich2_pair : pairwise algorithm
-
-
-\subsubsection MPI_Scatter
- - default : naive one, by default
- - ompi : use openmpi selector for the scatter operations
- - mpich : use mpich selector for the scatter operations
- - mvapich2 : use mvapich2 selector for the scatter operations
- - impi : use intel mpi selector for the scatter operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - ompi_basic_linear : basic linear scatter 
- - ompi_binomial : binomial tree scatter
- - mvapich2_two_level_direct : SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a basic linear inter node stage. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster. 
- - mvapich2_two_level_binomial : SMP aware algorithm, with an intra-node stage (default set to mpich selector), and then a binomial phase. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
-
-
-
-\subsubsection MPI_Reduce
- - default : naive one, by default
- - ompi : use openmpi selector for the reduce operations
- - mpich : use mpich selector for the reduce operations
- - mvapich2 : use mvapich2 selector for the reduce operations
- - impi : use intel mpi selector for the reduce operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - arrival_pattern_aware : root exchanges with the first process to arrive
- - binomial : uses a binomial tree
- - flat_tree : uses a flat tree
- - NTSL : Non-topology-specific pipelined linear-bcast function 
-   0->1, 1->2 ,2->3, ....., ->last node : in a pipeline fashion, with segments
- of 8192 bytes
- - scatter_gather : scatter then gather
- - ompi_chain : openmpi reduce algorithms are built on the same basis, but the
- topology is generated differently for each flavor
-chain = chain with spacing of size/2, and segment size of 64KB 
- - ompi_pipeline : same with pipeline (chain with spacing of 1), segment size 
-depends on the communicator size and the message size
- - ompi_binary : same with binary tree, segment size of 32KB
- - ompi_in_order_binary : same with binary tree, enforcing order on the 
-operations
- - ompi_binomial : same with binomial algo (redundant with default binomial 
-one in most cases)
- - ompi_basic_linear : basic algorithm, each process sends to root
- - mvapich2_knomial : k-nomial algorithm. Default factor is 4 (mvapich2 selector adapts it through tuning)
- - mvapich2_two_level : SMP-aware reduce, with default set to mpich both for intra and inter communicators. Use mvapich2 selector to change these to tuned algorithms for Stampede cluster.
- - rab : <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a>'s reduce algorithm 
-
-\subsubsection MPI_Allreduce
- - default : naive one, by default
- - ompi : use openmpi selector for the allreduce operations
- - mpich : use mpich selector for the allreduce operations
- - mvapich2 : use mvapich2 selector for the allreduce operations
- - impi : use intel mpi selector for the allreduce operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - lr : logical ring reduce-scatter then logical ring allgather
- - rab1 : variations of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm : reduce_scatter then allgather
- - rab2 : variations of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm : alltoall then allgather
- - rab_rsag : variation of the  <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> algorithm : recursive doubling 
-reduce_scatter then recursive doubling allgather 
- - rdb : recursive doubling
- - smp_binomial : binomial tree with smp : binomial intra 
-SMP reduce, inter reduce, inter broadcast then intra broadcast
- - smp_binomial_pipeline : same with segment size = 4096 bytes
- - smp_rdb : intra : binomial allreduce, inter : Recursive 
-doubling allreduce, intra : binomial broadcast
- - smp_rsag : intra : binomial allreduce, inter : reduce-scatter, 
-inter:allgather, intra : binomial broadcast
- - smp_rsag_lr : intra : binomial allreduce, inter : logical ring 
-reduce-scatter, logical ring inter:allgather, intra : binomial broadcast
- - smp_rsag_rab : intra : binomial allreduce, inter : rab
-reduce-scatter, rab inter:allgather, intra : binomial broadcast
- - redbcast : reduce then broadcast, using default or tuned algorithms if specified
- - ompi_ring_segmented : ring algorithm used by OpenMPI
- - mvapich2_rs : rdb for small messages, reduce-scatter then allgather else
- - mvapich2_two_level : SMP-aware algorithm, with mpich as intra algoritm, and rdb as inter (Change this behavior by using mvapich2 selector to use tuned values)
- - rab : default <a href="https://fs.hlrs.de/projects/par/mpi//myreduce.html">Rabenseifner</a> implementation
-
-\subsubsection MPI_Reduce_scatter
- - default : naive one, by default
- - ompi : use openmpi selector for the reduce_scatter operations
- - mpich : use mpich selector for the reduce_scatter operations
- - mvapich2 : use mvapich2 selector for the reduce_scatter operations
- - impi : use intel mpi selector for the reduce_scatter operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - ompi_basic_recursivehalving : recursive halving version from OpenMPI
- - ompi_ring : ring version from OpenMPI
- - mpich_pair : pairwise exchange version from MPICH
- - mpich_rdb : recursive doubling version from MPICH
- - mpich_noncomm : only works for power of 2 procs, recursive doubling for noncommutative ops
-
-
-\subsubsection MPI_Allgather
-
- - default : naive one, by default
- - ompi : use openmpi selector for the allgather operations
- - mpich : use mpich selector for the allgather operations
- - mvapich2 : use mvapich2 selector for the allgather operations
- - impi : use intel mpi selector for the allgather operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - 2dmesh : see alltoall
- - 3dmesh : see alltoall
- - bruck : Described by Bruck et.al. in <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?arnumber=642949">
-Efficient algorithms for all-to-all communications in multiport message-passing systems</a> 
- - GB : Gather - Broadcast (uses tuned version if specified)
- - loosely_lr : Logical Ring with grouping by core (hardcoded, default 
-processes/node: 4)
- - NTSLR : Non Topology Specific Logical Ring
- - NTSLR_NB : Non Topology Specific Logical Ring, Non Blocking operations
- - pair : see alltoall
- - rdb : see alltoall
- - rhv : only power of 2 number of processes
- - ring : see alltoall
- - SMP_NTS : gather to root of each SMP, then every root of each SMP node 
-post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, 
-using logical ring algorithm (hardcoded, default processes/SMP: 8)
- - smp_simple : gather to root of each SMP, then every root of each SMP node 
-post INTER-SMP Sendrecv, then do INTRA-SMP Bcast for each receiving message, 
-using simple algorithm (hardcoded, default processes/SMP: 8)
- - spreading_simple : from node i, order of communications is i -> i + 1, i ->
- i + 2, ..., i -> (i + p -1) % P
- - ompi_neighborexchange : Neighbor Exchange algorithm for allgather. 
-Described by Chen et.al. in  <a href="http://ieeexplore.ieee.org/xpl/articleDetails.jsp?tp=&arnumber=1592302">Performance Evaluation of Allgather Algorithms on Terascale Linux Cluster with Fast Ethernet</a>
- - mvapich2_smp : SMP aware algorithm, performing intra-node gather, inter-node allgather with one process/node, and bcast intra-node
-
-
-\subsubsection MPI_Allgatherv
- - default : naive one, by default
- - ompi : use openmpi selector for the allgatherv operations
- - mpich : use mpich selector for the allgatherv operations
- - mvapich2 : use mvapich2 selector for the allgatherv operations
- - impi : use intel mpi selector for the allgatherv operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - GB : Gatherv - Broadcast (uses tuned version if specified, but only for 
-Bcast, gatherv is not tuned)
- - pair : see alltoall
- - ring : see alltoall
- - ompi_neighborexchange : see allgather
- - ompi_bruck : see allgather
- - mpich_rdb : recursive doubling algorithm from MPICH
- - mpich_ring : ring algorithm from MPICh - performs differently from the 
-one from STAR-MPI
-
-\subsubsection MPI_Bcast
- - default : naive one, by default
- - ompi : use openmpi selector for the bcast operations
- - mpich : use mpich selector for the bcast operations
- - mvapich2 : use mvapich2 selector for the bcast operations
- - impi : use intel mpi selector for the bcast operations
- - automatic (experimental) : use an automatic self-benchmarking algorithm 
- - arrival_pattern_aware : root exchanges with the first process to arrive
- - arrival_pattern_aware_wait : same with slight variation
- - binomial_tree : binomial tree exchange
- - flattree : flat tree exchange
- - flattree_pipeline : flat tree exchange, message split into 8192 bytes pieces
- - NTSB : Non-topology-specific pipelined binary tree with 8192 bytes pieces
- - NTSL : Non-topology-specific pipelined linear with 8192 bytes pieces
- - NTSL_Isend : Non-topology-specific pipelined linear with 8192 bytes pieces, asynchronous communications
- - scatter_LR_allgather : scatter followed by logical ring allgather
- - scatter_rdb_allgather : scatter followed by recursive doubling allgather
- - arrival_scatter : arrival pattern aware scatter-allgather
- - SMP_binary : binary tree algorithm with 8 cores/SMP
- - SMP_binomial : binomial tree algorithm with 8 cores/SMP
- - SMP_linear : linear algorithm with 8 cores/SMP
- - ompi_split_bintree : binary tree algorithm from OpenMPI, with message split in 8192 bytes pieces
- - ompi_pipeline : pipeline algorithm from OpenMPI, with message split in 128KB pieces
- - mvapich2_inter_node : Inter node default mvapich worker 
- - mvapich2_intra_node : Intra node default mvapich worker
- - mvapich2_knomial_intra_node :  k-nomial intra node default mvapich worker. default factor is 4.
-
-\subsection auto Automatic evaluation 
-
-(Warning : This is experimental and may be removed or crash easily)
-
-An automatic version is available for each collective (or even as a selector). This specific 
-version will loop over all other implemented algorithm for this particular collective, and apply 
-them while benchmarking the time taken for each process. It will then output the quickest for 
-each process, and the global quickest. This is still unstable, and a few algorithms which need 
-specific number of nodes may crash.
-
-
-\subsection add Add an algorithm
-
-To add a new algorithm, one should check in the src/smpi/colls folder how other algorithms 
-are coded. Using plain MPI code inside Simgrid can't be done, so algorithms have to be 
-changed to use smpi version of the calls instead (MPI_Send will become smpi_mpi_send). Some functions may have different signatures than their MPI counterpart, please check the other algorithms or contact us using <a href="http://lists.gforge.inria.fr/mailman/listinfo/simgrid-devel">SimGrid developers mailing list</a>.
-
-Example: adding a "pair" version of the Alltoall collective.
-
- - Implement it in a file called alltoall-pair.c in the src/smpi/colls folder. This file should include colls_private.h.
-
- - The name of the new algorithm function should be smpi_coll_tuned_alltoall_pair, with the same signature as MPI_Alltoall.
-
- - Once the adaptation to SMPI code is done, add a reference to the file ("src/smpi/colls/alltoall-pair.c") in the SMPI_SRC part of the DefinePackages.cmake file inside buildtools/cmake, to allow the file to be built and distributed.
-
- - To register the new version of the algorithm, simply add a line to the corresponding macro in src/smpi/colls/cools.h ( add a "COLL_APPLY(action, COLL_ALLTOALL_SIG, pair)" to the COLL_ALLTOALLS macro ). The algorithm should now be compiled and be selected when using --cfg=smpi/alltoall:pair at runtime.
-
- - To add a test for the algorithm inside Simgrid's test suite, juste add the new algorithm name in the ALLTOALL_COLL list found inside teshsuite/smpi/CMakeLists.txt . When running ctest, a test for the new algorithm should be generated and executed. If it does not pass, please check your code or contact us.
-
- - Feel free to push this new algorithm to the SMPI repository using Git.
-
-
-
+TBD
 
 */
+
+
+/** @example include/smpi/smpi.h */
