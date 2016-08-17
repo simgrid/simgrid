@@ -110,6 +110,7 @@ void Comm::wait() {
     }
   }
   state_ = finished;
+  delete this;
 }
 void Comm::wait(double timeout) {
   xbt_assert(state_ == started || state_ == inited);
@@ -132,6 +133,7 @@ void Comm::wait(double timeout) {
         userData_, timeout, rate_);
   }
   state_ = finished;
+  delete this;
 }
 
 s4u::Comm &Comm::send_async(MailboxPtr dest, void *data, int simulatedSize) {
@@ -162,6 +164,7 @@ bool Comm::test() {
   
   if(simcall_comm_test(pimpl_)){
     state_ = finished;
+    delete this;
     return true;
   }
   return false;
