@@ -237,7 +237,7 @@ StorageAction *StorageN11::close(surf_file_t fd)
 {
   XBT_DEBUG("\tClose file '%s' size '%llu'", fd->name, fd->size);
   // unref write actions from storage
-  for (std::vector<StorageAction*>::const_iterator it = p_writeActions.cbegin(); it != p_writeActions.cend();) {
+  for (std::vector<StorageAction*>::iterator it = p_writeActions.begin(); it != p_writeActions.end();) {
     StorageAction *write_action = *it;
     if ((write_action->p_file) == fd) {
       write_action->unref();
