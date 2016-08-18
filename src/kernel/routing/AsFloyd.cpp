@@ -27,7 +27,7 @@ AsFloyd::AsFloyd(const char*name)
 }
 
 AsFloyd::~AsFloyd(){
-  int table_size = static_cast<int>(xbt_dynar_length(vertices_));
+  int table_size = static_cast<int>(vertices_.size());
   if (linkTable_ == nullptr) // Dealing with a parse error in the file?
     return;
   /* Delete link_table */
@@ -42,7 +42,7 @@ AsFloyd::~AsFloyd(){
 
 void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
-  size_t table_size = xbt_dynar_length(vertices_);
+  size_t table_size = vertices_.size();
 
   getRouteCheckParams(src, dst);
 
@@ -85,7 +85,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
 void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
 {
   /* set the size of table routing */
-  int table_size = static_cast<int>(xbt_dynar_length(vertices_));
+  int table_size = static_cast<int>(vertices_.size());
 
   addRouteCheckParams(route);
 
@@ -147,9 +147,8 @@ void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
 }
 
 void AsFloyd::seal(){
-
   /* set the size of table routing */
-  size_t table_size = xbt_dynar_length(vertices_);
+  size_t table_size = vertices_.size();
 
   if(!linkTable_) {
     /* Create Cost, Predecessor and Link tables */

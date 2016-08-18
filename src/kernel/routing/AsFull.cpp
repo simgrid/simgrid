@@ -23,7 +23,7 @@ void AsFull::seal() {
   sg_platf_route_cbarg_t e_route;
 
   /* set utils vars */
-  int table_size = (int)xbt_dynar_length(vertices_);
+  int table_size = static_cast<int>(vertices_.size());
 
   /* Create table if necessary */
   if (!routingTable_)
@@ -47,11 +47,10 @@ void AsFull::seal() {
 
 AsFull::~AsFull(){
   if (routingTable_) {
-    int table_size = (int)xbt_dynar_length(vertices_);
-    int i, j;
+    int table_size = static_cast<int>(vertices_.size());
     /* Delete routing table */
-    for (i = 0; i < table_size; i++)
-      for (j = 0; j < table_size; j++) {
+    for (int i = 0; i < table_size; i++)
+      for (int j = 0; j < table_size; j++) {
         if (TO_ROUTE_FULL(i,j)){
           delete TO_ROUTE_FULL(i,j)->link_list;
           xbt_free(TO_ROUTE_FULL(i,j));
@@ -67,7 +66,7 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
       src->name(), src->id(), dst->name(), dst->id());
 
   /* set utils vars */
-  size_t table_size = xbt_dynar_length(vertices_);
+  size_t table_size = vertices_.size();
 
   sg_platf_route_cbarg_t e_route = nullptr;
 
@@ -93,7 +92,7 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
 
   addRouteCheckParams(route);
 
-  size_t table_size = xbt_dynar_length(vertices_);
+  size_t table_size = vertices_.size();
 
   if (!routingTable_)
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);

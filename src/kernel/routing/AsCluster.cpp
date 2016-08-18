@@ -76,10 +76,6 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
 void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
-  int isrc;
-  int table_size = xbt_dynar_length(vertices_);
-
-  NetCard *src;
   xbt_node_t current, previous, backboneNode = nullptr, routerNode;
   s_surf_parsing_link_up_down_t info;
 
@@ -96,18 +92,14 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
     new_xbt_graph_edge(graph, routerNode, backboneNode, edges);
   }
 
-  for (isrc = 0; isrc < table_size; isrc++) {
-    src = xbt_dynar_get_as(vertices_, isrc, NetCard*);
-
+  for (auto src: vertices_){
     if (! src->isRouter()) {
       previous = new_xbt_graph_node(graph, src->name(), nodes);
 
       info = xbt_dynar_get_as(privateLinks_, src->id(), s_surf_parsing_link_up_down_t);
 
       if (info.linkUp) {     // link up
-
-        const char *link_name = static_cast<simgrid::surf::Resource*>(
-          info.linkUp)->getName();
+        const char *link_name = static_cast<simgrid::surf::Resource*>(info.linkUp)->getName();
         current = new_xbt_graph_node(graph, link_name, nodes);
         new_xbt_graph_edge(graph, previous, current, edges);
 
@@ -116,7 +108,6 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
         } else {
           new_xbt_graph_edge(graph, current, routerNode, edges);
         }
-
       }
 
       if (info.linkDown) {    // link down
@@ -132,7 +123,6 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
         }
       }
     }
-
   }
 }
 

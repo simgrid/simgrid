@@ -31,10 +31,7 @@ AsRoutedGraph::AsRoutedGraph(const char*name)
 {
 }
 
-AsRoutedGraph::~AsRoutedGraph()
-{
-}
-
+AsRoutedGraph::~AsRoutedGraph()=default;
 
 }}} // namespace simgrid::kernel::routing
 
@@ -66,7 +63,6 @@ xbt_edge_t new_xbt_graph_edge(xbt_graph_t graph, xbt_node_t s, xbt_node_t d, xbt
   int len = strlen(sn) + strlen(dn) + 1;
   char *name = (char *) xbt_malloc(len * sizeof(char));
 
-
   snprintf(name, len, "%s%s", sn, dn);
   xbt_edge_t ret = (xbt_edge_t) xbt_dict_get_or_null(edges, name);
   if (ret == nullptr) {
@@ -92,12 +88,12 @@ namespace routing {
     sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
     route->link_list = new std::vector<Link*>();
 
-    int table_size = (int)xbt_dynar_length(vertices_);
+    int table_size = static_cast<int>(vertices_.size());
     for(int src=0; src < table_size; src++) {
       for(int dst=0; dst< table_size; dst++) {
         route->link_list->clear();
-        NetCard *src_elm = xbt_dynar_get_as(vertices_, src, NetCard*);
-        NetCard *dst_elm = xbt_dynar_get_as(vertices_, dst, NetCard*);
+        NetCard *src_elm = vertices_.at(src);
+        NetCard *dst_elm = vertices_.at(dst);
         this->getRouteAndLatency(src_elm, dst_elm,route, nullptr);
 
         if (route->link_list->size() == 1) {
@@ -118,18 +114,10 @@ namespace routing {
 
 void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
-  int src, dst;
-  int table_size = xbt_dynar_length(vertices_);
-
-
-  for (src = 0; src < table_size; src++) {
-    NetCard *my_src =
-        xbt_dynar_get_as(vertices_, src, NetCard*);
-    for (dst = 0; dst < table_size; dst++) {
-      if (src == dst)
+  for (auto my_src: vertices_){
+    for (auto my_dst: vertices_){
+      if (my_src == my_dst)
         continue;
-      NetCard *my_dst =
-          xbt_dynar_get_as(vertices_, dst, NetCard*);
 
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
       route->link_list = new std::vector<Link*>();
@@ -174,7 +162,6 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
     }
   }
 }
-
 
 /* ************************************************************************** */
 /* ************************* GENERIC AUX FUNCTIONS ************************** */
