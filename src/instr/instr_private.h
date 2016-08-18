@@ -240,8 +240,6 @@ extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
 XBT_PRIVATE void TRACE_header(int basic, int size);
 
 /* from paje.c */
-XBT_PRIVATE void TRACE_init();
-XBT_PRIVATE void TRACE_finalize();
 XBT_PRIVATE void TRACE_paje_init();
 XBT_PRIVATE void TRACE_paje_start();
 XBT_PRIVATE void TRACE_paje_end();

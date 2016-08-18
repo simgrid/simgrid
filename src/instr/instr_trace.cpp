@@ -26,7 +26,7 @@ s_instr_trace_writer_t active_writer = {
     print_NULL, print_NULL
 };
 
-xbt_dynar_t buffer = nullptr;
+std::vector<paje_event_t> buffer;
 
 void dump_comment (const char *comment)
 {
@@ -56,16 +56,6 @@ void dump_comment_file (const char *filename)
   fclose(file);
 }
 
-void TRACE_init()
-{
-  buffer = xbt_dynar_new(sizeof(paje_event_t), nullptr);
-}
-
-void TRACE_finalize()
-{
-  xbt_dynar_free(&buffer);
-}
-
 double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
 void TRACE_paje_dump_buffer (int force)
@@ -73,26 +63,22 @@ void TRACE_paje_dump_buffer (int force)
   if (!TRACE_is_enabled()) return;
   XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   if (force){
-    paje_event_t event;
-    unsigned int i;
-    xbt_dynar_foreach(buffer, i, event){
+    for (auto event :buffer){
       event->print (event);
       event->free (event);
     }
-    xbt_dynar_free (&buffer);
-    buffer = xbt_dynar_new (sizeof(paje_event_t), nullptr);
+    buffer.clear();
   }else{
-    paje_event_t event;
-    unsigned int cursor;
-    xbt_dynar_foreach(buffer, cursor, event) {
+    std::vector<paje_event_t>::iterator i = buffer.begin();
+    for (auto event :buffer){
       double head_timestamp = event->timestamp;
-      if (head_timestamp > TRACE_last_timestamp_to_dump){
+      if (head_timestamp > TRACE_last_timestamp_to_dump)
         break;
-      }
       event->print (event);
       event->free (event);
+      ++i;
     }
-    xbt_dynar_remove_n_at(buffer, cursor, 0);
+    buffer.erase(buffer.begin(), i);
   }
   XBT_DEBUG("%s: ends", __FUNCTION__);
 }
@@ -107,19 +93,19 @@ static void insert_into_buffer (paje_event_t tbi)
   }
 
   XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%lu)",
-      __FUNCTION__, (int)tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
-
-  unsigned int i;
-  for (i = xbt_dynar_length(buffer); i > 0; i--) {
-    paje_event_t e1 = *(paje_event_t*)xbt_dynar_get_ptr(buffer, i - 1);
+      __FUNCTION__, (int)tbi->event_type, tbi->timestamp, buffer.size());
+  std::vector<paje_event_t>::reverse_iterator i;
+  for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
+    paje_event_t e1 = *i;
     if (e1->timestamp <= tbi->timestamp)
       break;
   }
-  xbt_dynar_insert_at(buffer, i, &tbi);
-  if (i == 0)
+  buffer.insert(i.base(), tbi);
+  if (i == buffer.rend())
     XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
   else
-    XBT_DEBUG("%s: inserted at%s %u", __FUNCTION__, (i == xbt_dynar_length(buffer) - 1 ? " end, pos =" : ""), i);
+    XBT_DEBUG("%s: inserted at%s %ld", __FUNCTION__, (i == buffer.rbegin()) ? " end" :"pos =",
+        std::distance(buffer.rend(),i));
 }
 
 static void free_paje_event (paje_event_t event)
