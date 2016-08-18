@@ -88,14 +88,12 @@ struct unit_scale {
 
 /* Note: field `unit' for the last element of parameter `units' should be nullptr. */
 static double surf_parse_get_value_with_unit(const char *string, const struct unit_scale *units,
-    const char *entity_kind, const char *name,
-    const char *error_msg, const char *default_unit)
+    const char *entity_kind, const char *name, const char *error_msg, const char *default_unit)
 {
   char* ptr;
-  double res;
   int i;
   errno = 0;
-  res   = strtod(string, &ptr);
+  double res   = strtod(string, &ptr);
   if (errno == ERANGE)
     surf_parse_error("value out of range: %s", string);
   if (ptr == string)
@@ -107,8 +105,8 @@ static double surf_parse_get_value_with_unit(const char *string, const struct un
     XBT_WARN("Deprecated unit-less value '%s' for %s %s. %s",string, entity_kind, name, error_msg);
     ptr = (char*)default_unit;
   }
-  for (i = 0; units[i].unit != nullptr && strcmp(ptr, units[i].unit) != 0; i++) {
-  }
+  for (i = 0; units[i].unit != nullptr && strcmp(ptr, units[i].unit) != 0; i++);
+
   if (units[i].unit != nullptr)
     res *= units[i].scale;
   else
@@ -967,23 +965,21 @@ void STag_surfxml_model___prop(){
   xbt_dict_set(current_model_property_set, A_surfxml_model___prop_id, xbt_strdup(A_surfxml_model___prop_value), nullptr);
 }
 
-/* nothing to do in those functions */
-void ETag_surfxml_prop(){}
-void STag_surfxml_random(){}
-void ETag_surfxml_random(){}
-void ETag_surfxml_trace___connect(){}
+void ETag_surfxml_prop(){/* Nothing to do */}
+void STag_surfxml_random(){/* Nothing to do */}
+void ETag_surfxml_random(){/* Nothing to do */}
+void ETag_surfxml_trace___connect(){/* Nothing to do */}
 void STag_surfxml_trace(){parse_after_config();}
-void ETag_surfxml_router(){}
-void ETag_surfxml_host___link(){}
-void ETag_surfxml_cabinet(){}
-void ETag_surfxml_peer(){}
-void STag_surfxml_backbone(){}
-void ETag_surfxml_link___ctn(){}
-void ETag_surfxml_argument(){}
-void ETag_surfxml_model___prop(){}
+void ETag_surfxml_router(){/*Nothing to do*/}
+void ETag_surfxml_host___link(){/* Nothing to do */}
+void ETag_surfxml_cabinet(){/* Nothing to do */}
+void ETag_surfxml_peer(){/* Nothing to do */}
+void STag_surfxml_backbone(){/* Nothing to do */}
+void ETag_surfxml_link___ctn(){/* Nothing to do */}
+void ETag_surfxml_argument(){/* Nothing to do */}
+void ETag_surfxml_model___prop(){/* Nothing to do */}
 
 /* Open and Close parse file */
-
 void surf_parse_open(const char *file)
 {
   xbt_assert(file, "Cannot parse the nullptr file. Bypassing the parser is strongly deprecated nowadays.");
@@ -1029,20 +1025,17 @@ void surf_parse_close()
 }
 
 /* Call the lexer to parse the currently opened file. This pointer to function enables bypassing of the parser */
-
 static int _surf_parse() {
   return surf_parse_lex();
 }
+
 int_f_void_t surf_parse = _surf_parse;
 
-
-/* Prop tag functions */
-
-/**
+/* Prop tag functions
+ *
  * With XML parser
  */
 xbt_dict_t get_as_router_properties(const char* name)
 {
   return (xbt_dict_t)xbt_lib_get_or_null(as_router_lib, name, ROUTING_PROP_ASR_LEVEL);
 }
-
