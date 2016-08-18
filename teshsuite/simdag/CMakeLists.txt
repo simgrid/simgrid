@@ -1,4 +1,4 @@
-foreach(x availability basic0 basic1 basic2 basic3 basic4 basic5 basic6 basic-link-test basic-parsing-test
+foreach(x availability basic0 basic1 basic3 basic4 basic5 basic6 basic-link-test basic-parsing-test
           comm-mxn-all2all comm-mxn-independent comm-mxn-scatter comm-p2p-latency-1 
           comm-p2p-latency-2 comm-p2p-latency-3 comm-p2p-latency-bound comp-only-par comp-only-seq incomplete)
   add_executable       (${x}  ${x}/${x}.c)
@@ -70,7 +70,7 @@ set(txt_files     ${txt_files}      ${CMAKE_CURRENT_SOURCE_DIR}/platforms/carol.
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link.fail
                                     ${CMAKE_CURRENT_SOURCE_DIR}/platforms/link.lat                         PARENT_SCOPE)
 
-foreach(x availability basic0 basic1 basic2 basic3 basic4 basic5 basic6 basic-link-test basic-parsing-test
+foreach(x availability basic0 basic1 basic3 basic4 basic5 basic6 basic-link-test basic-parsing-test
           comm-mxn-all2all comm-mxn-independent comm-mxn-scatter comm-p2p-latency-1 flatifier is-router
           comm-p2p-latency-2 comm-p2p-latency-3 comm-p2p-latency-bound comp-only-par comp-only-seq incomplete)
   ADD_TESH(tesh-simdag-${x} --setenv bindir=${CMAKE_BINARY_DIR}/teshsuite/simdag/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY} --cd ${CMAKE_HOME_DIRECTORY}/teshsuite/simdag/${x} ${x}.tesh)

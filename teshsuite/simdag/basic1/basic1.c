@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/simdag.h"
-#include "xbt/log.h"
+#include "xbt/str.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic1, sd, "SimDag test basic1");
 
@@ -21,16 +21,15 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(basic1, sd, "SimDag test basic1");
  */
 int main(int argc, char **argv)
 {
-  /* scheduling parameters */
-  double communication_amount1 = 1e9;
-  double communication_amount2 = 1e9;
-  double no_cost = 0.0;
 
   /* initialization of SD */
   SD_init(&argc, argv);
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
+  /* scheduling parameters */
+  double communication_amount1 = xbt_str_parse_double(argv[2], "Invalid communication size: %s");
+  double communication_amount2 = xbt_str_parse_double(argv[3], "Invalid communication size: %s");
 
   /* creation of the tasks and their dependencies */
   SD_task_t taskInit = SD_task_create("Init", NULL, 1.0);
@@ -41,9 +40,9 @@ int main(int argc, char **argv)
   SD_task_dependency_add(NULL, NULL, taskInit, taskB);
 
   sg_host_t *hosts = sg_host_list();
-  SD_task_schedule(taskInit, 1, hosts, &no_cost, &no_cost, -1.0);
-  SD_task_schedule(taskA, 1, &hosts[0], &no_cost, &communication_amount1, -1.0);
-  SD_task_schedule(taskB, 1, &hosts[1], &no_cost, &communication_amount2, -1.0);
+  SD_task_schedule(taskInit, 1, hosts, SD_SCHED_NO_COST, SD_SCHED_NO_COST, -1.0);
+  SD_task_schedule(taskA, 1, &hosts[0], SD_SCHED_NO_COST, &communication_amount1, -1.0);
+  SD_task_schedule(taskB, 1, &hosts[1], SD_SCHED_NO_COST, &communication_amount2, -1.0);
   xbt_free(hosts);
 
   /* let's launch the simulation! */
