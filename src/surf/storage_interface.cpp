@@ -35,16 +35,13 @@ simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)> storage
  * Model *
  *********/
 
-StorageModel::StorageModel()
-  : Model()
+StorageModel::StorageModel(): Model()
 {
-  p_storageList = nullptr;
 }
 
 StorageModel::~StorageModel(){
   lmm_system_free(maxminSystem_);
   surf_storage_model = nullptr;
-  xbt_dynar_free(&p_storageList);
 }
 
 /************
@@ -59,7 +56,7 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
  , p_contentType(xbt_strdup(content_type))
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
- , p_writeActions(xbt_dynar_new(sizeof(Action*),nullptr))
+ , p_writeActions(std::vector<StorageAction*>())
 {
   p_content = parseContent(content_name);
   turnOn();
@@ -74,7 +71,7 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
  , p_contentType(xbt_strdup(content_type))
  , m_size(size), m_usedSize(0)
  , p_typeId(xbt_strdup(type_id))
- , p_writeActions(xbt_dynar_new(sizeof(Action*),nullptr))
+ , p_writeActions(std::vector<StorageAction*>())
 {
   p_content = parseContent(content_name);
   p_attach = xbt_strdup(attach);
@@ -87,7 +84,6 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
 Storage::~Storage(){
   storageDestructedCallbacks(this);
   xbt_dict_free(&p_content);
-  xbt_dynar_free(&p_writeActions);
   free(p_typeId);
   free(p_contentType);
   free(p_attach);

@@ -74,16 +74,13 @@ public:
    * @param attach [description]
    * @return The created Storage
    */
-  virtual Storage *createStorage(const char* id,
-                                    const char* type_id,
-                                    const char* content_name,
-                                    const char* content_type,
-                                    xbt_dict_t properties,
-                                    const char *attach) = 0;
+  virtual Storage *createStorage(const char* id, const char* type_id,
+                                 const char* content_name, const char* content_type,
+                                 xbt_dict_t properties, const char *attach) = 0;
 
   bool next_occuring_event_isIdempotent() {return true;}
 
-  xbt_dynar_t p_storageList;
+  std::vector<Storage*> p_storageList;
 };
 
 /************
@@ -217,7 +214,7 @@ public:
 
   xbt_dict_t parseContent(const char *filename);
 
-  xbt_dynar_t p_writeActions;
+  std::vector<StorageAction*> p_writeActions;
 
   lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
   lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
@@ -300,6 +297,5 @@ typedef struct surf_file {
   sg_size_t size;
   sg_size_t current_position;
 } s_surf_file_t;
-
 
 #endif /* STORAGE_INTERFACE_HPP_ */

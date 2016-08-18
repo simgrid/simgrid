@@ -103,14 +103,9 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
   XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tproperties '%p'\n\t\tBread '%f'\n",
-      id,
-      type_id,
-      properties,
-      Bread);
+      id, type_id, properties, Bread);
 
-  if(!p_storageList)
-    p_storageList = xbt_dynar_new(sizeof(char *),nullptr);
-  xbt_dynar_push(p_storageList, &storage);
+  p_storageList.push_back(storage);
 
   return storage;
 }
@@ -118,20 +113,15 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
 double StorageN11Model::next_occuring_event(double /*now*/)
 {
   XBT_DEBUG("storage_share_resources");
-  unsigned int i, j;
-  Storage *storage;
-  void *_write_action;
-  StorageAction *write_action;
 
   double min_completion = shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
 
   double rate;
   // Foreach disk
-  xbt_dynar_foreach(p_storageList,i,storage) {
+  for(auto storage: p_storageList) {
     rate = 0;
     // Foreach write action on disk
-    xbt_dynar_foreach(storage->p_writeActions, j, _write_action) {
-      write_action = static_cast<StorageAction*>(_write_action);
+    for (auto write_action: storage->p_writeActions) {
       rate += lmm_variable_getvalue(write_action->getVariable());
     }
     if(rate > 0)
@@ -151,8 +141,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
     ++itNext;
     action = static_cast<StorageAction*>(&*it);
 
-    if(action->m_type == WRITE)
-    {
+    if(action->m_type == WRITE){
       // Update the disk usage
       // Update the file size
       // For each action of type write
@@ -246,17 +235,15 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
 
 StorageAction *StorageN11::close(surf_file_t fd)
 {
-  char *filename = fd->name;
-  XBT_DEBUG("\tClose file '%s' size '%llu'", filename, fd->size);
+  XBT_DEBUG("\tClose file '%s' size '%llu'", fd->name, fd->size);
   // unref write actions from storage
-  void *_write_action;
-  StorageAction *write_action;
-  unsigned int i;
-  xbt_dynar_foreach(p_writeActions, i, _write_action) {
-    write_action = static_cast<StorageAction*>(_write_action);
+  for (auto it = p_writeActions.cbegin(); it != p_writeActions.cend();) {
+    StorageAction *write_action = *it;
     if ((write_action->p_file) == fd) {
-      xbt_dynar_cursor_rm(p_writeActions, &i);
       write_action->unref();
+      it = p_writeActions.erase(it);
+    } else {
+      ++it;
     }
   }
   free(fd->name);
@@ -317,16 +304,14 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
   case STAT:
     break;
   case READ:
-    lmm_expand(model->getMaxminSystem(), storage->p_constraintRead,
-        getVariable(), 1.0);
+    lmm_expand(model->getMaxminSystem(), storage->p_constraintRead, getVariable(), 1.0);
     break;
   case WRITE:
-    lmm_expand(model->getMaxminSystem(), storage->p_constraintWrite,
-        getVariable(), 1.0);
+    lmm_expand(model->getMaxminSystem(), storage->p_constraintWrite, getVariable(), 1.0);
 
     //TODO there is something annoying with what's below. Have to sort it out...
     //    Action *action = this;
-    //    xbt_dynar_push(storage->p_writeActions, &action);
+    //    storage->p_writeActions->push_back(action);
     //    ref();
     break;
   }
