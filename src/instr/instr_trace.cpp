@@ -92,7 +92,7 @@ static void insert_into_buffer (paje_event_t tbi)
     return;
   }
 
-  XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%lu)",
+  XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%zu)",
       __FUNCTION__, (int)tbi->event_type, tbi->timestamp, buffer.size());
   std::vector<paje_event_t>::reverse_iterator i;
   for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
@@ -104,7 +104,7 @@ static void insert_into_buffer (paje_event_t tbi)
   if (i == buffer.rend())
     XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
   else
-    XBT_DEBUG("%s: inserted at%s %ld", __FUNCTION__, (i == buffer.rbegin()) ? " end" :"pos =",
+    XBT_DEBUG("%s: inserted at%s %zd", __FUNCTION__, (i == buffer.rbegin()) ? " end" :"pos =",
         std::distance(buffer.rend(),i));
 }
 
