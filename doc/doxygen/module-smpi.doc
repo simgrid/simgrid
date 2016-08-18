@@ -49,10 +49,10 @@ go.
 
 For that, simply use <tt>smpicc</tt> as a compiler just
 like you use mpicc with other MPI implementations. This script
-replaces your usual compiler (gcc, clang, whatever) and adds the right
+still calls your default compiler (gcc, clang, ...) and adds the right
 compilation flags along the way.
 
-This may badly interact with some building infrastructure. Your
+Alas, some building infrastructures cannot cope with that and your
 <tt>./configure</tt> may fail, reporting that the compiler is not
 functional. If this happens, define the <tt>SMPI_PRETEND_CC</tt>
 environment variable before running the configuration. Do not define
@@ -62,6 +62,12 @@ it when using SMPI!
 SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
 make
 @endverbatim
+
+\warn
+  Again, make sure that SMPI_PRETEND_CC is not set when you actually 
+  compile your application. It is just a work-around for some configure-scripts
+  and replaces some internals by "return 0;". Your simulation will not
+  work with this variable set!
 
 @subsection SMPI_use_exec Executing your code on the simulator
 
