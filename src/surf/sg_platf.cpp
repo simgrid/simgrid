@@ -332,13 +332,10 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       info_loop.linkUp = Link::byName(tmp_link);
       info_loop.linkDown = Link::byName(tmp_link);
       free(tmp_link);
+
       auto as_cluster = static_cast<AsCluster*>(current_as);
-      if (rankId*as_cluster->linkCountPerNode_ >= as_cluster->privateLinks_.size()) {
-        s_surf_parsing_link_up_down_t dummy;
-        dummy.linkUp = nullptr;
-        dummy.linkDown = nullptr;
-        as_cluster->privateLinks_.resize(rankId*as_cluster->linkCountPerNode_,dummy);
-      }
+      if (rankId*as_cluster->linkCountPerNode_ >= as_cluster->privateLinks_.size())
+        as_cluster->privateLinks_.resize(rankId*as_cluster->linkCountPerNode_,{nullptr, nullptr});
       as_cluster->privateLinks_.insert(as_cluster->privateLinks_.begin() + rankId*as_cluster->linkCountPerNode_,
                                        info_loop);
     }
@@ -915,12 +912,9 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   auto as_cluster = static_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
   if (as_cluster->privateLinks_.size() > netcard->id()){
     if (as_cluster->privateLinks_.at(netcard->id()).linkUp != nullptr)
-    surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
+      surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
   } else {
-    s_surf_parsing_link_up_down_t dummy;
-    dummy.linkUp = nullptr;
-    dummy.linkDown = nullptr;
-    as_cluster->privateLinks_.resize(netcard->id(), dummy);
+    as_cluster->privateLinks_.resize(netcard->id(), {nullptr, nullptr});
   }
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name(), netcard->id());
   as_cluster->privateLinks_.insert(as_cluster->privateLinks_.begin() + netcard->id(), link_up_down);
