@@ -6,6 +6,8 @@
 #ifndef SIMGRID_ROUTING_CLUSTER_HPP_
 #define SIMGRID_ROUTING_CLUSTER_HPP_
 
+#include <unordered_map>
+
 #include "src/kernel/routing/AsImpl.hpp"
 
 namespace simgrid {
@@ -23,7 +25,8 @@ public:
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
   virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
 
-  std::vector<s_surf_parsing_link_up_down_t> privateLinks_;
+  /* We use a map instead of a std::vector here because that's a sparse vector. Some values may not exist */
+  std::unordered_map<unsigned int, s_surf_parsing_link_up_down_t> privateLinks_;
 
   Link* backbone_ = nullptr;
   void *loopback_ = nullptr;

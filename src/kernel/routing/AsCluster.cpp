@@ -146,7 +146,7 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
     info.linkUp = Link::byName(link_id);
     info.linkDown = info.linkUp;
   }
-  privateLinks_.insert(privateLinks_.begin()+position, info);
+  privateLinks_.insert({position, info});
   xbt_free(link_id);
 }
 

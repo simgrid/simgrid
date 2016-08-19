@@ -78,7 +78,7 @@ namespace simgrid {
          * note that position rankId*(xbt_dynar_length(dimensions)+has_loopack?+has_limiter?)
          * holds the link "rankId->rankId"
          */
-        privateLinks_.insert(privateLinks_.begin() + position + j, info);
+        privateLinks_.insert({position + j, info});
         dim_product *= current_dimension;
         xbt_free(link_id);
       }

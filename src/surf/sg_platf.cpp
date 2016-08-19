@@ -334,10 +334,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       free(tmp_link);
 
       auto as_cluster = static_cast<AsCluster*>(current_as);
-      if (rankId*as_cluster->linkCountPerNode_ >= as_cluster->privateLinks_.size())
-        as_cluster->privateLinks_.resize(rankId*as_cluster->linkCountPerNode_,{nullptr, nullptr});
-      as_cluster->privateLinks_.insert(as_cluster->privateLinks_.begin() + rankId*as_cluster->linkCountPerNode_,
-                                       info_loop);
+      as_cluster->privateLinks_.insert({rankId*as_cluster->linkCountPerNode_, info_loop});
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -353,13 +350,13 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       sg_platf_new_link(&link);
       info_lim.linkUp = info_lim.linkDown = Link::byName(tmp_link);
       free(tmp_link);
-      current_as->privateLinks_.insert(current_as->privateLinks_.begin() + rankId * current_as->linkCountPerNode_ +
-                                       current_as->hasLoopback_ , info_lim);
+      current_as->privateLinks_.insert(
+          {rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_ , info_lim});
     }
 
     //call the cluster function that adds the others links
     if (cluster->topology == SURF_CLUSTER_FAT_TREE) {
-      ((AsClusterFatTree*) current_as)->addProcessingNode(i);
+      static_cast<AsClusterFatTree*>(current_as)->addProcessingNode(i);
     }
     else {
       current_as->create_links_for_node(cluster, i, rankId,
@@ -908,14 +905,11 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   xbt_assert(link_up_down.linkUp, "Link '%s' not found!",hostlink->link_up);
   xbt_assert(link_up_down.linkDown, "Link '%s' not found!",hostlink->link_down);
 
-  // If dynar is is greater than netcard id and if the host_link is already defined
   auto as_cluster = static_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
-  if (as_cluster->privateLinks_.size() > netcard->id()){
-    if (as_cluster->privateLinks_.at(netcard->id()).linkUp != nullptr)
-      surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
-  } else {
-    as_cluster->privateLinks_.resize(netcard->id(), {nullptr, nullptr});
-  }
+
+  if (as_cluster->privateLinks_.find(netcard->id()) != as_cluster->privateLinks_.end())
+    surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
+
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name(), netcard->id());
-  as_cluster->privateLinks_.insert(as_cluster->privateLinks_.begin() + netcard->id(), link_up_down);
+  as_cluster->privateLinks_.insert({netcard->id(), link_up_down});
 }
