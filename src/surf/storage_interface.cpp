@@ -53,12 +53,12 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
                  sg_size_t size)
  : Resource(model, name)
  , PropertyHolder(props)
- , p_contentType(xbt_strdup(content_type))
- , m_size(size), m_usedSize(0)
- , p_typeId(xbt_strdup(type_id))
- , p_writeActions(std::vector<StorageAction*>())
+ , contentType_(xbt_strdup(content_type))
+ , size_(size), usedSize_(0)
+ , typeId_(xbt_strdup(type_id))
+ , writeActions_(std::vector<StorageAction*>())
 {
-  p_content = parseContent(content_name);
+  content_ = parseContent(content_name);
   turnOn();
 }
 
@@ -68,30 +68,30 @@ Storage::Storage(Model *model, const char *name, xbt_dict_t props,
                  const char *content_type, sg_size_t size, const char *attach)
  : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
  , PropertyHolder(props)
- , p_contentType(xbt_strdup(content_type))
- , m_size(size), m_usedSize(0)
- , p_typeId(xbt_strdup(type_id))
- , p_writeActions(std::vector<StorageAction*>())
+ , contentType_(xbt_strdup(content_type))
+ , size_(size), usedSize_(0)
+ , typeId_(xbt_strdup(type_id))
+ , writeActions_(std::vector<StorageAction*>())
 {
-  p_content = parseContent(content_name);
-  p_attach = xbt_strdup(attach);
+  content_ = parseContent(content_name);
+  attach_ = xbt_strdup(attach);
   turnOn();
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
-  p_constraintRead  = lmm_constraint_new(maxminSystem, this, bread);
-  p_constraintWrite = lmm_constraint_new(maxminSystem, this, bwrite);
+  constraintRead_  = lmm_constraint_new(maxminSystem, this, bread);
+  constraintWrite_ = lmm_constraint_new(maxminSystem, this, bwrite);
 }
 
 Storage::~Storage(){
   storageDestructedCallbacks(this);
-  xbt_dict_free(&p_content);
-  free(p_typeId);
-  free(p_contentType);
-  free(p_attach);
+  xbt_dict_free(&content_);
+  free(typeId_);
+  free(contentType_);
+  free(attach_);
 }
 
 xbt_dict_t Storage::parseContent(const char *filename)
 {
-  m_usedSize = 0;
+  usedSize_ = 0;
   if ((!filename) || (strcmp(filename, "") == 0))
     return nullptr;
 
@@ -110,7 +110,7 @@ xbt_dict_t Storage::parseContent(const char *filename)
     if (read){
       xbt_assert(sscanf(line,"%s %llu", path, &size) == 2, "Parse error in %s: %s",filename,line);
 
-      m_usedSize += size;
+      usedSize_ += size;
       sg_size_t *psize = xbt_new(sg_size_t, 1);
       *psize = size;
       xbt_dict_set(parse_content,path,psize,nullptr);
@@ -154,22 +154,22 @@ xbt_dict_t Storage::getContent()
   char *file;
   sg_size_t *psize;
 
-  xbt_dict_foreach(p_content, cursor, file, psize){
+  xbt_dict_foreach(content_, cursor, file, psize){
     xbt_dict_set(content_dict,file,psize,nullptr);
   }
   return content_dict;
 }
 
 sg_size_t Storage::getSize(){
-  return m_size;
+  return size_;
 }
 
 sg_size_t Storage::getFreeSize(){
-  return m_size - m_usedSize;
+  return size_ - usedSize_;
 }
 
 sg_size_t Storage::getUsedSize(){
-  return m_usedSize;
+  return usedSize_;
 }
 
 /**********

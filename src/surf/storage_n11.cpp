@@ -121,11 +121,11 @@ double StorageN11Model::next_occuring_event(double /*now*/)
   for(auto storage: p_storageList) {
     rate = 0;
     // Foreach write action on disk
-    for (auto write_action: storage->p_writeActions) {
+    for (auto write_action: storage->writeActions_) {
       rate += lmm_variable_getvalue(write_action->getVariable());
     }
     if(rate > 0)
-      min_completion = MIN(min_completion, (storage->m_size-storage->m_usedSize)/rate);
+      min_completion = MIN(min_completion, (storage->size_-storage->usedSize_)/rate);
   }
 
   return min_completion;
@@ -161,14 +161,14 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
 
       action->progress +=current_progress;
 
-      action->p_storage->m_usedSize += incr; // disk usage
+      action->p_storage->usedSize_ += incr; // disk usage
       action->p_file->current_position+= incr; // current_position
       //  which becomes the new file size
       action->p_file->size = action->p_file->current_position ;
 
       sg_size_t *psize = xbt_new(sg_size_t,1);
       *psize = action->p_file->size;
-      xbt_dict_t content_dict = action->p_storage->p_content;
+      xbt_dict_t content_dict = action->p_storage->content_;
       xbt_dict_set(content_dict, action->p_file->name, psize, nullptr);
     }
 
@@ -178,7 +178,7 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       action->updateMaxDuration(delta);
 
     if(action->getRemainsNoUpdate() > 0 && lmm_get_variable_weight(action->getVariable()) > 0 &&
-        action->p_storage->m_usedSize == action->p_storage->m_size) {
+        action->p_storage->usedSize_ == action->p_storage->size_) {
       action->finish();
       action->setState(Action::State::failed);
     } else if ((action->getRemainsNoUpdate() <= 0) && (lmm_get_variable_weight(action->getVariable()) > 0)) {
@@ -210,7 +210,7 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
   XBT_DEBUG("\tOpen file '%s'",path);
 
   sg_size_t size, *psize;
-  psize = (sg_size_t*) xbt_dict_get_or_null(p_content, path);
+  psize = (sg_size_t*) xbt_dict_get_or_null(content_, path);
   // if file does not exist create an empty file
   if(psize)
     size = *psize;
@@ -218,7 +218,7 @@ StorageAction *StorageN11::open(const char* mount, const char* path)
     psize = xbt_new(sg_size_t,1);
     size = 0;
     *psize = size;
-    xbt_dict_set(p_content, path, psize, nullptr);
+    xbt_dict_set(content_, path, psize, nullptr);
     XBT_DEBUG("File '%s' was not found, file created.",path);
   }
   surf_file_t file = xbt_new0(s_surf_file_t,1);
@@ -237,11 +237,11 @@ StorageAction *StorageN11::close(surf_file_t fd)
 {
   XBT_DEBUG("\tClose file '%s' size '%llu'", fd->name, fd->size);
   // unref write actions from storage
-  for (std::vector<StorageAction*>::iterator it = p_writeActions.begin(); it != p_writeActions.end();) {
+  for (std::vector<StorageAction*>::iterator it = writeActions_.begin(); it != writeActions_.end();) {
     StorageAction *write_action = *it;
     if ((write_action->p_file) == fd) {
       write_action->unref();
-      it = p_writeActions.erase(it);
+      it = writeActions_.erase(it);
     } else {
       ++it;
     }
@@ -278,9 +278,9 @@ StorageAction *StorageN11::write(surf_file_t fd, sg_size_t size)
   StorageAction *action = new StorageN11Action(getModel(), size, isOff(), this, WRITE);
   action->p_file = fd;
   /* Substract the part of the file that might disappear from the used sized on the storage element */
-  m_usedSize -= (fd->size - fd->current_position);
+  usedSize_ -= (fd->size - fd->current_position);
   // If the storage is full before even starting to write
-  if(m_usedSize==m_size) {
+  if(usedSize_==size_) {
     action->setState(Action::State::failed);
   }
   return action;
@@ -304,10 +304,10 @@ StorageN11Action::StorageN11Action(Model *model, double cost, bool failed, Stora
   case STAT:
     break;
   case READ:
-    lmm_expand(model->getMaxminSystem(), storage->p_constraintRead, getVariable(), 1.0);
+    lmm_expand(model->getMaxminSystem(), storage->constraintRead_, getVariable(), 1.0);
     break;
   case WRITE:
-    lmm_expand(model->getMaxminSystem(), storage->p_constraintWrite, getVariable(), 1.0);
+    lmm_expand(model->getMaxminSystem(), storage->constraintWrite_, getVariable(), 1.0);
 
     //TODO there is something annoying with what's below. Have to sort it out...
     //    Action *action = this;

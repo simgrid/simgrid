@@ -114,15 +114,6 @@ public:
    * @param model StorageModel associated to this Storage
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
-   * @param maxminSystem [description]
-   * @param bread [description]
-   * @param bwrite [description]
-   * @param bconnection [description]
-   * @param type_id [description]
-   * @param content_name [description]
-   * @param content_type [description]
-   * @param size [description]
-   * @param attach [description]
    */
   Storage(Model *model, const char *name, xbt_dict_t props,
           lmm_system_t maxminSystem, double bread, double bwrite,
@@ -140,12 +131,12 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  xbt_dict_t p_content;
-  char* p_contentType;
-  sg_size_t m_size;
-  sg_size_t m_usedSize;
-  char * p_typeId;
-  char* p_attach; //FIXME: this is the name of the host. Use the host directly
+  xbt_dict_t content_;
+  char* contentType_;
+  sg_size_t size_;
+  sg_size_t usedSize_;
+  char * typeId_;
+  char* attach_; //FIXME: this is the name of the host. Use the host directly
 
   /**
    * @brief Open a file
@@ -214,10 +205,10 @@ public:
 
   xbt_dict_t parseContent(const char *filename);
 
-  std::vector<StorageAction*> p_writeActions;
+  std::vector<StorageAction*> writeActions_;
 
-  lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
-  lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
+  lmm_constraint_t constraintWrite_;    /* Constraint for maximum write bandwidth*/
+  lmm_constraint_t constraintRead_;     /* Constraint for maximum write bandwidth*/
 };
 
 /**********

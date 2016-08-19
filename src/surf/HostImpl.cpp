@@ -215,7 +215,7 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
   xbt_lib_foreach(storage_lib, cursor, key, data) {
     if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
     simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-    if(!strcmp((const char*)storage->p_attach,this->getName())){
+    if(!strcmp((const char*)storage->attach_,this->getName())){
       xbt_dynar_push_as(result, void *, (void*)storage->getName());
     }
   }
@@ -293,16 +293,16 @@ int HostImpl::unlink(surf_file_t fd) {
 
     simgrid::surf::Storage *st = findStorageOnMountList(fd->mount);
     /* Check if the file is on this storage */
-    if (!xbt_dict_get_or_null(st->p_content, fd->name)){
+    if (!xbt_dict_get_or_null(st->content_, fd->name)){
       XBT_WARN("File %s is not on disk %s. Impossible to unlink", fd->name,
           st->getName());
       return -1;
     } else {
       XBT_DEBUG("UNLINK %s on disk '%s'",fd->name, st->getName());
-      st->m_usedSize -= fd->size;
+      st->usedSize_ -= fd->size;
 
       // Remove the file from storage
-      xbt_dict_remove(st->p_content, fd->name);
+      xbt_dict_remove(st->content_, fd->name);
 
       xbt_free(fd->name);
       xbt_free(fd->mount);
@@ -325,8 +325,8 @@ xbt_dynar_t HostImpl::getInfo( surf_file_t fd)
   xbt_dynar_push_as(info, sg_size_t *, psize);
   xbt_dynar_push_as(info, void *, fd->mount);
   xbt_dynar_push_as(info, void *, (void *)st->getName());
-  xbt_dynar_push_as(info, void *, st->p_typeId);
-  xbt_dynar_push_as(info, void *, st->p_contentType);
+  xbt_dynar_push_as(info, void *, st->typeId_);
+  xbt_dynar_push_as(info, void *, st->contentType_);
 
   return info;
 }
@@ -357,16 +357,16 @@ int HostImpl::fileMove(surf_file_t fd, const char* fullpath){
   if(!strncmp((const char*)fd->mount, fullpath, strlen(fd->mount))) {
     sg_size_t *psize, *new_psize;
     psize = (sg_size_t*)
-        xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->p_content,
+        xbt_dict_get_or_null(findStorageOnMountList(fd->mount)->content_,
                              fd->name);
     new_psize = xbt_new(sg_size_t, 1);
     *new_psize = *psize;
     if (psize){// src file exists
-      xbt_dict_remove(findStorageOnMountList(fd->mount)->p_content, fd->name);
+      xbt_dict_remove(findStorageOnMountList(fd->mount)->content_, fd->name);
       char *path = (char *) xbt_malloc ((strlen(fullpath)-strlen(fd->mount)+1));
       strncpy(path, fullpath+strlen(fd->mount),
               strlen(fullpath)-strlen(fd->mount)+1);
-      xbt_dict_set(findStorageOnMountList(fd->mount)->p_content, path,
+      xbt_dict_set(findStorageOnMountList(fd->mount)->content_, path,
                    new_psize,nullptr);
       XBT_DEBUG("Move file from %s to %s, size '%llu'",fd->name, fullpath, *psize);
       free(path);
