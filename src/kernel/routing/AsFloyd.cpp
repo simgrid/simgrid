@@ -49,7 +49,7 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
   /* create a result route */
   xbt_dynar_t route_stack = xbt_dynar_new(sizeof(sg_platf_route_cbarg_t), nullptr);
   int pred;
-  int cur = dst->id();
+  unsigned int cur = dst->id();
   do {
     pred = TO_FLOYD_PRED(src->id(), cur);
     if (pred == -1)

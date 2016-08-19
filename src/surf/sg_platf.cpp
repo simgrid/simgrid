@@ -333,7 +333,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       info_loop.linkDown = Link::byName(tmp_link);
       free(tmp_link);
       auto as_cluster = static_cast<AsCluster*>(current_as);
-      if (rankId*as_cluster->linkCountPerNode_ >= static_cast<int>(as_cluster->privateLinks_.size())){
+      if (rankId*as_cluster->linkCountPerNode_ >= as_cluster->privateLinks_.size()) {
         s_surf_parsing_link_up_down_t dummy;
         dummy.linkUp = nullptr;
         dummy.linkDown = nullptr;
@@ -913,7 +913,7 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
 
   // If dynar is is greater than netcard id and if the host_link is already defined
   auto as_cluster = static_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
-  if(static_cast<int>(as_cluster->privateLinks_.size()) > netcard->id()){
+  if (as_cluster->privateLinks_.size() > netcard->id()){
     if (as_cluster->privateLinks_.at(netcard->id()).linkUp != nullptr)
     surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
   } else {

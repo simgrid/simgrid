@@ -30,7 +30,7 @@ public:
   NetCard *router_ = nullptr;
   bool hasLimiter_  = false;
   bool hasLoopback_ = false;
-  int linkCountPerNode_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
+  unsigned int linkCountPerNode_ = 1; /* may be 1 (if only a private link), 2 or 3 (if limiter and loopback) */
 
 };
 

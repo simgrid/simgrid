@@ -132,8 +132,8 @@ namespace simgrid {
        * TODO Change to dynamic assignment
        */
       unsigned int j, cur_dim, dim_product = 1;
-      int current_node = src->id();
-      int unsigned next_node = 0;
+      unsigned int current_node = src->id();
+      unsigned int next_node = 0;
       /*
        * Arrays that hold the coordinates of the current node and
        * the target; comparing the values at the i-th position of

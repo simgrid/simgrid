@@ -45,7 +45,7 @@ class RoutingPlatf;
 class NetCard {
 public:
   virtual ~NetCard(){};
-  virtual int id()=0; // Our rank in the vertices_ array of our containing AS.
+  virtual unsigned int id()=0; // Our rank in the vertices_ array of our containing AS.
   virtual char *name()=0;
   virtual AsImpl *containingAS()=0; // This is the AS in which I am
   virtual bool isAS()=0;
@@ -69,7 +69,7 @@ public:
   }
   ~NetCardImpl() { xbt_free(name_);};
 
-  int id()           override {return id_;}
+  unsigned int id()  override {return id_;}
   char *name()       override {return name_;}
   AsImpl *containingAS() override {return containingAS_;}
 
@@ -78,7 +78,7 @@ public:
   bool isRouter()    override {return componentType_ == Type::Router;}
 
 private:
-  int id_ = -1;
+  unsigned int id_;
   char *name_;
   NetCard::Type componentType_;
   AsImpl *containingAS_;
