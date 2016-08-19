@@ -740,6 +740,7 @@ void ETag_surfxml_route(){
   for (auto link_name: parsed_link_list) {
     simgrid::surf::Link *link = Link::byName(link_name);
     route.link_list->push_back(link);
+    xbt_free(link_name);
   }
   parsed_link_list.clear();
 
@@ -762,6 +763,7 @@ void ETag_surfxml_ASroute(){
   for (auto link_name: parsed_link_list) {
     simgrid::surf::Link *link = Link::byName(link_name);
     ASroute.link_list->push_back(link);
+    xbt_free(link_name);
   }
   parsed_link_list.clear();
 
@@ -793,6 +795,7 @@ void ETag_surfxml_bypassRoute(){
   for (auto link_name: parsed_link_list) {
     simgrid::surf::Link *link = Link::byName(link_name);
     route.link_list->push_back(link);
+    xbt_free(link_name);
   }
   parsed_link_list.clear();
 
@@ -809,6 +812,7 @@ void ETag_surfxml_bypassASroute(){
   for (auto link_name: parsed_link_list) {
     simgrid::surf::Link *link = Link::byName(link_name);
     ASroute.link_list->push_back(link);
+    xbt_free(link_name);
   }
   parsed_link_list.clear();
 
