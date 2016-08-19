@@ -67,7 +67,7 @@ namespace simgrid {
 
     int As::addComponent(kernel::routing::NetCard *elm) {
       vertices_.push_back(elm);
-      return vertices_.size()-1; //FIXME -1 ?
+      return vertices_.size()-1; // The rank of the newly created object
     }
 
     void As::addRoute(sg_platf_route_cbarg_t /*route*/){
