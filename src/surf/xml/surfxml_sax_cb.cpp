@@ -28,7 +28,7 @@ int ETag_surfxml_include_state();
 
 char* surf_parsed_filename = nullptr; // to locate parse error messages
 
-std::vector<char*> parsed_link_list;   /* temporary store of current list link of a route */
+std::vector<simgrid::surf::Link *> parsed_link_list;   /* temporary store of current list link of a route */
 /*
  * Helping functions
  */
@@ -656,23 +656,29 @@ void ETag_surfxml_link(){
 
 void STag_surfxml_link___ctn(){
 
-  char *link_id;
+  simgrid::surf::Link *link;
+  char *link_name=nullptr;
   switch (A_surfxml_link___ctn_direction) {
   case AU_surfxml_link___ctn_direction:
   case A_surfxml_link___ctn_direction_NONE:
-    link_id = xbt_strdup(A_surfxml_link___ctn_id);
+    link = Link::byName(A_surfxml_link___ctn_id);
     break;
   case A_surfxml_link___ctn_direction_UP:
-    link_id = bprintf("%s_UP", A_surfxml_link___ctn_id);
+    link_name = bprintf("%s_UP", A_surfxml_link___ctn_id);
+    link = Link::byName(link_name);
     break;
   case A_surfxml_link___ctn_direction_DOWN:
-    link_id = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
+    link_name = bprintf("%s_DOWN", A_surfxml_link___ctn_id);
+    link = Link::byName(link_name);
     break;
   }
+  xbt_free(link_name); // no-op if it's already nullptr
 
-  // FIXME we should push the surf link object but it doesn't work because of model rulebased
-  // Rule-based routing doesnt' exist anymore, does it?
-  parsed_link_list.push_back(link_id);
+  surf_parse_assert(link!=nullptr,"No such link: '%s'%s", A_surfxml_link___ctn_id,
+      A_surfxml_link___ctn_direction==A_surfxml_link___ctn_direction_UP?" (upward)":
+          ( A_surfxml_link___ctn_direction==A_surfxml_link___ctn_direction_DOWN?" (downward)":
+              ""));
+  parsed_link_list.push_back(link);
 }
 
 void ETag_surfxml_backbone(){
@@ -737,11 +743,8 @@ void ETag_surfxml_route(){
   route.link_list = new std::vector<Link*>();
   route.symmetrical = (A_surfxml_route_symmetrical == A_surfxml_route_symmetrical_YES);
 
-  for (auto link_name: parsed_link_list) {
-    simgrid::surf::Link *link = Link::byName(link_name);
+  for (auto link: parsed_link_list)
     route.link_list->push_back(link);
-    xbt_free(link_name);
-  }
   parsed_link_list.clear();
 
   sg_platf_new_route(&route);
@@ -760,11 +763,8 @@ void ETag_surfxml_ASroute(){
 
   ASroute.link_list =  new std::vector<Link*>();
 
-  for (auto link_name: parsed_link_list) {
-    simgrid::surf::Link *link = Link::byName(link_name);
+  for (auto link: parsed_link_list)
     ASroute.link_list->push_back(link);
-    xbt_free(link_name);
-  }
   parsed_link_list.clear();
 
   switch (A_surfxml_ASroute_symmetrical) {
@@ -792,11 +792,8 @@ void ETag_surfxml_bypassRoute(){
   route.symmetrical = false;
   route.link_list =  new std::vector<Link*>();
 
-  for (auto link_name: parsed_link_list) {
-    simgrid::surf::Link *link = Link::byName(link_name);
+  for (auto link: parsed_link_list)
     route.link_list->push_back(link);
-    xbt_free(link_name);
-  }
   parsed_link_list.clear();
 
   sg_platf_new_bypassRoute(&route);
@@ -809,11 +806,8 @@ void ETag_surfxml_bypassASroute(){
   ASroute.src         = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_src);
   ASroute.dst         = sg_netcard_by_name_or_null(A_surfxml_bypassASroute_dst);
   ASroute.link_list   = new std::vector<Link*>();
-  for (auto link_name: parsed_link_list) {
-    simgrid::surf::Link *link = Link::byName(link_name);
+  for (auto link: parsed_link_list)
     ASroute.link_list->push_back(link);
-    xbt_free(link_name);
-  }
   parsed_link_list.clear();
 
   ASroute.symmetrical = false;
