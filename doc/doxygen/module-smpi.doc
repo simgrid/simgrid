@@ -49,10 +49,10 @@ go.
 
 For that, simply use <tt>smpicc</tt> as a compiler just
 like you use mpicc with other MPI implementations. This script
-replaces your usual compiler (gcc, clang, whatever) and adds the right
+still calls your default compiler (gcc, clang, ...) and adds the right
 compilation flags along the way.
 
-This may badly interact with some building infrastructure. Your
+Alas, some building infrastructures cannot cope with that and your
 <tt>./configure</tt> may fail, reporting that the compiler is not
 functional. If this happens, define the <tt>SMPI_PRETEND_CC</tt>
 environment variable before running the configuration. Do not define
@@ -62,6 +62,12 @@ it when using SMPI!
 SMPI_PRETEND_CC=1 ./configure # here come the configure parameters
 make
 @endverbatim
+
+\warn
+  Again, make sure that SMPI_PRETEND_CC is not set when you actually 
+  compile your application. It is just a work-around for some configure-scripts
+  and replaces some internals by "return 0;". Your simulation will not
+  work with this variable set!
 
 @subsection SMPI_use_exec Executing your code on the simulator
 
@@ -472,7 +478,7 @@ in production. This issue, as well as several potential solutions, is
 discussed in this article: "Automatic Handling of Global Variables for
 Multi-threaded MPI Programs",
 available at http://charm.cs.illinois.edu/newPapers/11-23/paper.pdf
-(note that this article does not deal with SMPI but with a concurrent
+(note that this article does not deal with SMPI but with a competing
 solution called AMPI that suffers of the same issue). 
 
 SimGrid can duplicate and dynamically switch the .data and .bss
@@ -539,7 +545,43 @@ This feature is demoed by the example file
 
 @section SMPI_accuracy Ensuring accurate simulations
 
-TBD
+Out of the box, SimGrid may give you fairly accurate results, but
+there is a plenty of factors that could go wrong and make your results
+inaccurate or even plainly wrong. Actually, you can only get accurate
+results of a nicely built model, including both the system hardware
+and your application. Such models are hard to pass over and reuse in
+other settings, because elements that are not relevant to an
+application (say, the latency of point-to-point communications,
+collective operation implementation details or CPU-network
+interaction) may be irrelevant to another application. The dream of
+the perfect model, encompassing every aspects is only a chimera, as
+the only perfect model of the reality is the reality. If you go for
+simulation, then you have to ignore some irrelevant aspects of the
+reality, but which aspects are irrelevant is actually
+application-dependent...
+
+The only way to assess whether your settings provide accurate results
+is to double-check these results. If possible, you should first run
+the same experiment in simulation and in real life, gathering as much
+information as you can. Try to understand the discrepancies in the
+results that you observe between both settings (visualization can be
+precious for that). Then, try to modify your model (of the platform,
+of the collective operations) to reduce the most preeminent differences.
+
+If the discrepancies come from the computing time, try adapting the \c
+smpi/running-power: reduce it if your simulation runs faster than in
+reality. If the error come from the communication, then you need to
+fiddle with your platform file.
+
+Be inventive in your modeling. Don't be afraid if the names given by
+SimGrid does not match the real names: we got very good results by
+modeling multicore/GPU machines with a set of separate hosts
+interconnected with very fast networks (but don't trust your model
+because it has the right names in the right place either).
+
+Finally, you may want to check [this
+article](https://hal.inria.fr/hal-00907887) on the classical pitfalls
+in modeling distributed systems.
 
 */
 

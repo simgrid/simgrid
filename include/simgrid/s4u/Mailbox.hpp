@@ -110,7 +110,7 @@ XBT_PUBLIC_CLASS Mailbox {
 
   simgrid::simix::Mailbox *pimpl_;
 
-  Mailbox(smx_mailbox_t mbox): pimpl_(mbox) {}
+  explicit Mailbox(smx_mailbox_t mbox): pimpl_(mbox) {}
 
   /** private function to manage the mailboxes' lifetime (see @ref s4u_raii) */
   friend void intrusive_ptr_add_ref(Mailbox*) {}
