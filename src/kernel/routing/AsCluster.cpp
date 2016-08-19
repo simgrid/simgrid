@@ -17,21 +17,18 @@ namespace routing {
   AsCluster::AsCluster(const char*name)
     : AsImpl(name)
   {}
-  AsCluster::~AsCluster()
-  {
-    xbt_dynar_free(&privateLinks_);
-  }
+  AsCluster::~AsCluster()=default;
 
 void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
   XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",
             src->name(), src->id(), dst->name(), dst->id());
-  xbt_assert(!xbt_dynar_is_empty(privateLinks_), "Cluster routing : no links attached to the source node - did you use host_link tag?");
+  xbt_assert(!privateLinks_.empty(), "Cluster routing : no links attached to the source node - did you use host_link tag?");
   if (! src->isRouter()) {    // No specific link for router
 
     if((src->id() == dst->id()) && hasLoopback_ ){
-      info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_, s_surf_parsing_link_up_down_t);
+      info = privateLinks_.at(src->id() * linkCountPerNode_);
       route->link_list->push_back(info.linkUp);
       if (lat)
         *lat += info.linkUp->getLatency();
@@ -40,11 +37,11 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
 
     if (hasLimiter_){          // limiter for sender
-      info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_ + (hasLoopback_?1:0), s_surf_parsing_link_up_down_t);
+      info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_?1:0));
       route->link_list->push_back((Link*)info.linkUp);
     }
 
-    info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_ + (hasLoopback_?1:0) + (hasLimiter_?1:0), s_surf_parsing_link_up_down_t);
+    info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_?1:0) + (hasLimiter_?1:0));
     if (info.linkUp) {         // link up
       route->link_list->push_back(info.linkUp);
       if (lat)
@@ -60,7 +57,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   }
 
   if (! dst->isRouter()) {    // No specific link for router
-    info = xbt_dynar_get_as(privateLinks_, dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_, s_surf_parsing_link_up_down_t);
+    info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
 
     if (info.linkDown) {       // link down
       route->link_list->push_back(info.linkDown);
@@ -68,7 +65,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
         *lat += info.linkDown->getLatency();
     }
     if (hasLimiter_){          // limiter for receiver
-        info = xbt_dynar_get_as(privateLinks_, dst->id() * linkCountPerNode_ + hasLoopback_, s_surf_parsing_link_up_down_t);
+        info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
         route->link_list->push_back(info.linkUp);
     }
   }
@@ -96,7 +93,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
     if (! src->isRouter()) {
       previous = new_xbt_graph_node(graph, src->name(), nodes);
 
-      info = xbt_dynar_get_as(privateLinks_, src->id(), s_surf_parsing_link_up_down_t);
+      info = privateLinks_.at(src->id());
 
       if (info.linkUp) {     // link up
         const char *link_name = static_cast<simgrid::surf::Resource*>(info.linkUp)->getName();
@@ -149,7 +146,7 @@ void AsCluster::create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, 
     info.linkUp = Link::byName(link_id);
     info.linkDown = info.linkUp;
   }
-  xbt_dynar_set(privateLinks_, position, &info);
+  privateLinks_.insert(privateLinks_.begin()+position, info);
   xbt_free(link_id);
 }
 

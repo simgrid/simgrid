@@ -245,7 +245,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   XBT_VERB("dragonfly_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name(), src->id(), dst->name(), dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
-     s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_, s_surf_parsing_link_up_down_t);
+     s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
 
      route->link_list->push_back(info.linkUp);
      if (latency)
@@ -270,7 +270,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
   if (hasLimiter_) {    // limiter for sender
     s_surf_parsing_link_up_down_t info;
-    info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_ + hasLoopback_, s_surf_parsing_link_up_down_t);
+    info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
     route->link_list->push_back(info.linkUp);
   }
 
@@ -327,7 +327,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
   if (hasLimiter_) {    // limiter for receiver
     s_surf_parsing_link_up_down_t info;
-    info = xbt_dynar_get_as(privateLinks_, dst->id() * linkCountPerNode_ + hasLoopback_, s_surf_parsing_link_up_down_t);
+    info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
     route->link_list->push_back(info.linkUp);
   }
 

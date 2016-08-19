@@ -61,7 +61,7 @@ public:
 protected:
   char *name_ = nullptr;
   xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr); // sub-ASes
-  std::vector<kernel::routing::NetCard*>vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
+  std::vector<kernel::routing::NetCard*> vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
   std::map<std::pair<std::string, std::string>, std::vector<surf::Link*>*> bypassRoutes_; // srcName x dstName -> route
 

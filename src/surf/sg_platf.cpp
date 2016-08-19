@@ -310,7 +310,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
 
     XBT_DEBUG("<link\tid=\"%s\"\tbw=\"%f\"\tlat=\"%f\"/>", link_id, cluster->bw, cluster->lat);
 
-    s_surf_parsing_link_up_down_t info_lim, info_loop;
+    s_surf_parsing_link_up_down_t info_lim;
+    s_surf_parsing_link_up_down_t info_loop;
     // All links are saved in a matrix;
     // every row describes a single node; every node may have multiple links.
     // the first column may store a link from x to x if p_has_loopback is set
@@ -328,10 +329,18 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       link.latency   = cluster->loopback_lat;
       link.policy    = SURF_LINK_FATPIPE;
       sg_platf_new_link(&link);
-      info_loop.linkUp = info_loop.linkDown = Link::byName(tmp_link);
+      info_loop.linkUp = Link::byName(tmp_link);
+      info_loop.linkDown = Link::byName(tmp_link);
       free(tmp_link);
       auto as_cluster = static_cast<AsCluster*>(current_as);
-      xbt_dynar_set(as_cluster->privateLinks_, rankId*as_cluster->linkCountPerNode_, &info_loop);
+      if (rankId*as_cluster->linkCountPerNode_ >= static_cast<int>(as_cluster->privateLinks_.size())){
+        s_surf_parsing_link_up_down_t dummy;
+        dummy.linkUp = nullptr;
+        dummy.linkDown = nullptr;
+        as_cluster->privateLinks_.resize(rankId*as_cluster->linkCountPerNode_,dummy);
+      }
+      as_cluster->privateLinks_.insert(as_cluster->privateLinks_.begin() + rankId*as_cluster->linkCountPerNode_,
+                                       info_loop);
     }
 
     //add a limiter link (shared link to account for maximal bandwidth of the node)
@@ -347,7 +356,8 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
       sg_platf_new_link(&link);
       info_lim.linkUp = info_lim.linkDown = Link::byName(tmp_link);
       free(tmp_link);
-      xbt_dynar_set(current_as->privateLinks_, rankId * current_as->linkCountPerNode_ + current_as->hasLoopback_ , &info_lim);
+      current_as->privateLinks_.insert(current_as->privateLinks_.begin() + rankId * current_as->linkCountPerNode_ +
+                                       current_as->hasLoopback_ , info_lim);
     }
 
     //call the cluster function that adds the others links
@@ -903,10 +913,15 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
 
   // If dynar is is greater than netcard id and if the host_link is already defined
   auto as_cluster = static_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
-  if((int)xbt_dynar_length(as_cluster->privateLinks_) > netcard->id() &&
-      xbt_dynar_get_as(as_cluster->privateLinks_, netcard->id(), void*))
-  surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
-
+  if(static_cast<int>(as_cluster->privateLinks_.size()) > netcard->id()){
+    if (as_cluster->privateLinks_.at(netcard->id()).linkUp != nullptr)
+    surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
+  } else {
+    s_surf_parsing_link_up_down_t dummy;
+    dummy.linkUp = nullptr;
+    dummy.linkDown = nullptr;
+    as_cluster->privateLinks_.resize(netcard->id(), dummy);
+  }
   XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name(), netcard->id());
-  xbt_dynar_set_as(as_cluster->privateLinks_, netcard->id(), s_surf_parsing_link_up_down_t, link_up_down);
+  as_cluster->privateLinks_.insert(as_cluster->privateLinks_.begin() + netcard->id(), link_up_down);
 }

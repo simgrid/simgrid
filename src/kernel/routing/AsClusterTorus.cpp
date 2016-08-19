@@ -78,7 +78,7 @@ namespace simgrid {
          * note that position rankId*(xbt_dynar_length(dimensions)+has_loopack?+has_limiter?)
          * holds the link "rankId->rankId"
          */
-        xbt_dynar_set(privateLinks_, position + j, &info);
+        privateLinks_.insert(privateLinks_.begin() + position + j, info);
         dim_product *= current_dimension;
         xbt_free(link_id);
       }
@@ -118,7 +118,7 @@ namespace simgrid {
         return;
 
       if ((src->id() == dst->id()) && hasLoopback_) {
-        s_surf_parsing_link_up_down_t info = xbt_dynar_get_as(privateLinks_, src->id() * linkCountPerNode_, s_surf_parsing_link_up_down_t);
+        s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
 
         route->link_list->push_back(info.linkUp);
         if (lat)
@@ -200,11 +200,11 @@ namespace simgrid {
         s_surf_parsing_link_up_down_t info;
 
         if (hasLimiter_) {    // limiter for sender
-          info = xbt_dynar_get_as(privateLinks_, nodeOffset + hasLoopback_, s_surf_parsing_link_up_down_t);
+          info = privateLinks_.at(nodeOffset + hasLoopback_);
           route->link_list->push_back(info.linkUp);
         }
 
-        info = xbt_dynar_get_as(privateLinks_, linkOffset, s_surf_parsing_link_up_down_t);
+        info = privateLinks_.at(linkOffset);
 
         if (use_lnk_up == false) {
           route->link_list->push_back(info.linkDown);

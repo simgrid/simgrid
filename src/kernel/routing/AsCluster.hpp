@@ -23,7 +23,7 @@ public:
   virtual void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position);
   virtual void parse_specific_arguments(sg_platf_cluster_cbarg_t cluster) {}
 
-  xbt_dynar_t privateLinks_ = xbt_dynar_new(sizeof(s_surf_parsing_link_up_down_t),nullptr);
+  std::vector<s_surf_parsing_link_up_down_t> privateLinks_;
 
   Link* backbone_ = nullptr;
   void *loopback_ = nullptr;
