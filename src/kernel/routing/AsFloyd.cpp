@@ -4,7 +4,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
-#include "xbt/dynar.h"
 #include "src/kernel/routing/AsFloyd.hpp"
 #include "src/surf/network_interface.hpp"
 
@@ -47,26 +46,26 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
   getRouteCheckParams(src, dst);
 
   /* create a result route */
-  xbt_dynar_t route_stack = xbt_dynar_new(sizeof(sg_platf_route_cbarg_t), nullptr);
+  std::vector<sg_platf_route_cbarg_t> route_stack;
   int pred;
   unsigned int cur = dst->id();
   do {
     pred = TO_FLOYD_PRED(src->id(), cur);
     if (pred == -1)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name(), dst->name());
-    xbt_dynar_push_as(route_stack, sg_platf_route_cbarg_t, TO_FLOYD_LINK(pred, cur));
+    route_stack.push_back(TO_FLOYD_LINK(pred, cur));
     cur = pred;
   } while (cur != src->id());
 
   if (hierarchy_ == RoutingMode::recursive) {
-    route->gw_src = xbt_dynar_getlast_as(route_stack, sg_platf_route_cbarg_t)->gw_src;
-    route->gw_dst = xbt_dynar_getfirst_as(route_stack, sg_platf_route_cbarg_t)->gw_dst;
+    route->gw_src = route_stack.back()->gw_src;
+    route->gw_dst = route_stack.front()->gw_dst;
   }
 
   sg_netcard_t prev_dst_gw = nullptr;
-  while (!xbt_dynar_is_empty(route_stack)) {
-    sg_platf_route_cbarg_t e_route = xbt_dynar_pop_as(route_stack, sg_platf_route_cbarg_t);
-
+  while (!route_stack.empty()) {
+    sg_platf_route_cbarg_t e_route = route_stack.back();
+    route_stack.pop_back();
     if (hierarchy_ == RoutingMode::recursive && prev_dst_gw != nullptr && strcmp(prev_dst_gw->name(), e_route->gw_src->name())) {
       routing_platf->getRouteAndLatency(prev_dst_gw, e_route->gw_src, route->link_list, lat);
     }
@@ -79,7 +78,6 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
 
     prev_dst_gw = e_route->gw_dst;
   }
-  xbt_dynar_free(&route_stack);
 }
 
 void AsFloyd::addRoute(sg_platf_route_cbarg_t route)
