@@ -64,11 +64,7 @@ public class VM extends Host{
 	}
 	
 	public void destroy() {
-		try {
-			nativeFinalize();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
+		nativeFinalize();
 	}
 	private native void nativeFinalize();
 
