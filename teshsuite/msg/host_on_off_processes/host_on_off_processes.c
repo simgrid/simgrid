@@ -13,10 +13,9 @@ int tasks_done = 0;
 
 static int process_daemon(int argc, char *argv[])
 {
-  msg_task_t task = NULL;
   XBT_INFO("  Start daemon on %s (%f)",  MSG_host_get_name(MSG_host_self()), MSG_get_host_speed(MSG_host_self()));
   for(;;){
-    task = MSG_task_create("daemon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
+    msg_task_t task = MSG_task_create("daemon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
     XBT_INFO("  Execute daemon");
     MSG_task_execute(task);
     MSG_task_destroy(task);
@@ -72,8 +71,6 @@ static int test_launcher(int argc, char *argv[])
 {
   int test = 0;
   char **argvF;
-  argvF = xbt_new(char*, 2);
-  argvF[0] = xbt_strdup("process_daemon");
   msg_host_t jupiter = MSG_host_by_name("Jupiter");
 
   test = 1;
