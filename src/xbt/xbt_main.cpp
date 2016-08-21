@@ -8,7 +8,7 @@
 
 #define XBT_LOG_LOCALLY_DEFINE_XBT_CHANNEL /* MSVC don't want it to be declared extern in headers and local here */
 
-
+#include <math.h>
 #include "xbt/misc.h"
 #include "simgrid_config.h"
 #include "xbt/sysdep.h"
@@ -88,11 +88,7 @@ static void xbt_preinit(void) {
   #error Cannot get page size.
 #endif
 
-  xbt_pagebits = 0;
-  int x = xbt_pagesize;
-  while(x >>= 1) {
-    ++xbt_pagebits;
-  }
+  xbt_pagebits = log2(xbt_pagesize);
 
 #ifdef _TWO_DIGIT_EXPONENT
   /* Even printf behaves differently on Windows... */
