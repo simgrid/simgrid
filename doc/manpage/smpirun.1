@@ -36,6 +36,12 @@ Display the machine on which each process rank is mapped.
 \fB\-np\fR <numprocs>
 Use that amount of processes. By default, there is the same number of processes as there are of hosts in the hostfile.
 .TP
+\fB\-no-privatize\fR
+Disable the globals privatization, that is activated by default.
+This should only be necessary if you use dynamic libraries, but you
+should probably link statically instead of disabling this. Do not link
+statically against SimGrid, only the others.
+.TP
 \fB\-trace\fR
 Equivalent to \fB–cfg\fR=\fItracing\fR:\fIyes\fR \fB–cfg\fR=\fItracing/smpi\fR:\fIyes\fR, activate the trace mechanism if available.
 .TP
