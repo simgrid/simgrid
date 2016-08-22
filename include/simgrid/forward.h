@@ -25,6 +25,9 @@ namespace simgrid {
        class NetCard;
      }
   }
+  namespace simix {
+    class Host;
+  }
   namespace surf {
     class Resource;
     class Cpu;
@@ -45,6 +48,9 @@ typedef simgrid::surf::Link Link;
 typedef simgrid::surf::Resource surf_Resource;
 typedef simgrid::trace_mgr::trace tmgr_Trace;
 
+typedef simgrid::simix::Host *smx_host_priv_t;
+
+
 #else
 
 typedef struct simgrid_As   simgrid_As;
@@ -55,6 +61,8 @@ typedef struct routing_NetCard routing_NetCard;
 typedef struct surf_Resource surf_Resource;
 typedef struct Link Link;
 typedef struct Trace tmgr_Trace;
+
+typedef struct simix_Host *smx_host_priv_t;
 #endif
 
 typedef simgrid_As *AS_t;

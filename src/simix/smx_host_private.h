@@ -19,11 +19,19 @@
 SG_BEGIN_DECL()
 
 /** @brief Host datatype from SIMIX POV */
-typedef struct s_smx_host_priv {
-  xbt_swag_t process_list;
-  xbt_dynar_t auto_restart_processes;
-  xbt_dynar_t boot_processes;
-} s_smx_host_priv_t;
+namespace simgrid {
+  namespace simix {
+    class Host {
+    public:
+      explicit Host();
+
+      xbt_swag_t process_list;
+      xbt_dynar_t auto_restart_processes = nullptr;
+      xbt_dynar_t boot_processes = nullptr;
+    };
+  }
+}
+typedef simgrid::simix::Host s_smx_host_priv_t;
 
 XBT_PRIVATE void _SIMIX_host_free_process_arg(void *);
 XBT_PRIVATE void SIMIX_host_create(sg_host_t host);

@@ -17,17 +17,20 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
+namespace simgrid {
+  namespace simix {
+    Host::Host()
+    {
+      simgrid::simix::ActorImpl act;
+      process_list = xbt_swag_new(xbt_swag_offset(act, host_proc_hookup));
+    }
+  }
+}
+
 /** @brief Internal function to create a SIMIX host. */
-void SIMIX_host_create(sg_host_t host) // FIXME: braindead prototype. Take sg_host as parameter
+void SIMIX_host_create(sg_host_t host)
 {
-  smx_host_priv_t smx_host = xbt_new0(s_smx_host_priv_t, 1);
-
-  /* Host structure */
-  simgrid::simix::ActorImpl proc;
-  smx_host->process_list = xbt_swag_new(xbt_swag_offset(proc, host_proc_hookup));
-
-  /* Update global variables */
-  sg_host_simix_set(host, smx_host);
+  sg_host_simix_set(host, new simgrid::simix::Host());
 }
 
 /** @brief Start the host if it is off */
