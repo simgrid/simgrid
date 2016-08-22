@@ -6,31 +6,31 @@ SimGrid is a framework to simulate distributed computer systems.
 
 It can be used to either assess abstract algorithms, or to profile and
 debug real distributed applications.  SimGrid enables studies in the
-domains of (data-)Grids, Clusters, IaaS Clouds, High Performance
-Computing, Volunteer Computing and Peer-to-Peer.
+domains of (data-)Grids, IaaS Clouds, Clusters, High Performance
+Computing, Volunteer Computing and Peer-to-Peer systems.
 
-Technically speaking, SimGrid is a library. It is not a graphical 
-interface nor a command-line simulator running user scripts. You
-interact with SimGrid by writting programs with the exposed functions
-to build your own simulator.
+Technically speaking, SimGrid is a library. It is neither a graphical
+interface nor a command-line simulator running user scripts. The
+interaction with SimGrid is done by writing programs with the exposed
+functions to build your own simulator.
 
-SimGrid have many features, many options and many possibilities. The
+SimGrid offers many features, many options and many possibilities. The
 documentation aims at smoothing the learning curve. But nothing's
 perfect, and this documentation is really no exception here. Please
-help us improving it by reporting the issues that you see and
+help us improving it by reporting any issue that you see and
 proposing the content that is still missing.
 
-SimGrid is a Free Software distributed under the LGPL licence. It
-means that you are welcome to use it as you wish, or even to modify
-and distribute your version (as long as your version is as free as
-ours). It also means that SimGrid is developed by a vivid community of
-users and developers. We hope that you will come and join us!
+SimGrid is a Free Software distributed under the LGPL licence. You are
+thus welcome to use it as you wish, or even to modify and distribute
+your version (as long as your version is as free as ours). It also
+means that SimGrid is developed by a vivid community of users and
+developers. We hope that you will come and join us!
 
 SimGrid is the result of over 15 years of research from several
-groups, both in France and in the USA. It benefited of many fundings
+groups, both in France and in the USA. It benefited of many funding
 from various research instances, including the ANR, Inria, CNRS,
 University of Lorraine, University of Hawai'i at Manoa, ENS Rennes and
-many others. Many thanks to our generous donators!
+many others. Many thanks to our generous sponsors!
 
 @section starting_components Typical Study based on SimGrid
 
