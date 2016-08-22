@@ -1,7 +1,7 @@
 #! ./tesh
 
 $ $SG_TEST_EXENV ${bindir:=.}/app-token-ring ${srcdir:=.}/routing_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Number of host '6'
+> [  0.000000] (0:maestro@) Number of hosts '6'
 > [  0.000000] (1:0@host1) Host "0" send 'Token' to Host "1"
 > [  0.017354] (2:1@host2) Host "1" received "Token"
 > [  0.017354] (2:1@host2) Host "1" send 'Token' to Host "2"
@@ -18,7 +18,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/app-token-ring ${srcdir:=.}/routing_cluster.xml "-
 
 $ $SG_TEST_EXENV ${bindir:=.}/app-token-ring ${srcdir:=.}/two_peers.xml --cfg=network/coordinates:yes "--log=root.fmt:[%12.6r]%e(%i:%P@%h)%e%m%n"
 > [    0.000000] (0:maestro@) Configuration change: Set 'network/coordinates' to 'yes'
-> [    0.000000] (0:maestro@) Number of host '2'
+> [    0.000000] (0:maestro@) Number of hosts '2'
 > [    0.000000] (1:0@peer_100030591) Host "0" send 'Token' to Host "1"
 > [    0.637910] (2:1@peer_100036570) Host "1" received "Token"
 > [    0.637910] (2:1@peer_100036570) Host "1" send 'Token' to Host "0"
@@ -26,7 +26,7 @@ $ $SG_TEST_EXENV ${bindir:=.}/app-token-ring ${srcdir:=.}/two_peers.xml --cfg=ne
 > [    1.275820] (0:maestro@) Simulation time 1.27582
 
 $ $SG_TEST_EXENV ${bindir:=.}/app-token-ring ${srcdir:=.}/meta_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Number of host '60'
+> [  0.000000] (0:maestro@) Number of hosts '60'
 > [  0.000000] (1:0@host-2.cluster1) Host "0" send 'Token' to Host "1"
 > [  0.030364] (2:1@host-2.cluster2) Host "1" received "Token"
 > [  0.030364] (2:1@host-2.cluster2) Host "1" send 'Token' to Host "2"
