@@ -34,6 +34,9 @@ SimGrid (3.14) UNRELEASED; urgency=low
  * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and
    EiBps, EBps, Eibps, Ebps for bandwidth. 
    They may become useful to some lucky ones.
+   
+ Java:
+ * app_tokenring: new example, very similar to the MSG Token Ring
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
