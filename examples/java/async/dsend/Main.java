@@ -6,6 +6,12 @@
 
 package async.dsend;
 
+/** This example demonstrates the use of the Task.dsend() method.
+ * 
+ *  This way, the sender can be detached from the communication: it is not blocked as with Task.send() 
+ *  and has nothing to do at the end as with Task.isend() where it must do a Comm.wait().
+ */
+
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
 import org.simgrid.msg.NativeException;
@@ -13,20 +19,20 @@ import org.simgrid.msg.HostNotFoundException;
 
 class Main {
   private Main() {
+	/* This is just to ensure that nobody creates an instance of this singleton */
     throw new IllegalAccessError("Utility class");
   }
 
   public static void main(String[] args) throws NativeException, HostNotFoundException {
     Msg.init(args);
 
-    if (args.length < 1) {
-    Msg.info("Usage   : Main platform_file");
-    Msg.info("example : Main ../platforms/small_platform.xml");
-    System.exit(1);
-  }
+    String platform = "../platforms/small_platform.xml";
+    if (args.length >= 1) {
+    	platform = args[0]; // Override the default value if passed on the command line
+    }
 
     /* construct the platform and deploy the application */
-    Msg.createEnvironment(args[0]);
+    Msg.createEnvironment(platform);
     Host[] hosts = Host.all();
     new Sender(hosts[0],"Sender").start();
     for (int i=1; i < hosts.length; i++){

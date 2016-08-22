@@ -32,10 +32,10 @@ public class Sender extends Process {
     }
 
     Msg.info("All tasks have been (asynchronously) dispatched."+
-             " Let's sleep for 10s so that nobody gets a message from a terminated process.");
+             " Let's sleep for 20s so that nobody gets a message from a terminated process.");
 
     waitFor(20);
 
-    Msg.info("Goodbye now!");
+    Msg.info("Done sleeping. Goodbye now!");
   }
 }
