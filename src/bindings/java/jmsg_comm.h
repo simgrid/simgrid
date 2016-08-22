@@ -23,6 +23,8 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, job
 JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm);
 
 JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls, jobjectArray comms, jdouble timeout);
+//JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jobject jcomm, jarray comms);
 
 SG_END_DECL()
 #endif /* MSG_JCOMM_H */

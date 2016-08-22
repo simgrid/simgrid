@@ -120,3 +120,31 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
     jmsg_throw_status(env,status);
   }
 }
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls, jobjectArray jcomms, jdouble timeout)
+{
+  int count = env->GetArrayLength(jcomms);
+  msg_comm_t* comms = xbt_new(msg_comm_t, count);
+
+  for (int i=0; i < count; i++) {
+     jobject jcomm = env->GetObjectArrayElement(jcomms, i);
+     if (env->ExceptionOccurred())
+        break;
+
+     comms[i] = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
+     if (!comms[i]) {
+       jxbt_throw_native(env,bprintf("comm at rank %d is null",i));
+       return;
+     }
+
+     env->DeleteLocalRef(jcomm); // reduce the load on the garbage collector: we don't need that object anymore
+  }
+  MSG_comm_waitall(comms, count, static_cast<double>(timeout));
+  xbt_free(comms);
+}
+/*
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jobject jcomm, jarray comms)
+{
+
+}
+*/
