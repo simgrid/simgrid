@@ -38,6 +38,7 @@ SimGrid (3.14) UNRELEASED; urgency=low
  Java:
  * New function: msg.Comm.waitAll()
  * ex/app_tokenring: new example, very similar to the MSG Token Ring
+ * ex/async_waitAll: new example, on asynchronous communications
 
  -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 

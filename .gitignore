@@ -975,6 +975,7 @@ examples/java/app/masterworker/java_app_masterworker_compiled
 examples/java/app/pingpong/java_app_pingpong_compiled
 examples/java/app/tokenring/java_app_tokenring_compiled
 examples/java/async/dsend/java_async_dsend_compiled
+examples/java/async/waitAll/java_async_waitAll_compiled
 examples/java/dht/chord/java_dht_chord_compiled
 examples/java/dht/kademlia/java_dht_kademlia_compiled
 examples/java/cloud/masterworker/java_cloud_masterworker_compiled
