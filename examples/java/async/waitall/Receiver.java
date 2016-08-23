@@ -27,7 +27,7 @@ public class Receiver extends Process {
     	comm.waitCompletion();
     } catch (TimeoutException e) {
     	Msg.info("Timeout while waiting for my task");
-    	return; // Stop this process
+    	throw e; // Stop this process
     }
     Msg.info("I got my task, good bye.");
   }
