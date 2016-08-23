@@ -72,12 +72,22 @@ Recompiling an official archive is not much more complex. SimGrid only uses very
       You need cmake version 2.8.8 or higher. You may want to use ccmake
       for a graphical interface over cmake.
   - boost:
+    - Debian / Ubuntu: `apt-get install libboost-dev libboost-context-dev`
     - Max OS X: with [fink](http://www.finkproject.org/): `fink install boost1.53.nopython`,
       or with homebrew: `brew install boost`
-    - Debian / Ubuntu: `apt-get install libboost-dev libboost-context-dev`
   - Java (if you want to build the Java bindings): 
-    - Mac OS X or Windows: Grab a [full JDK](http://www.oracle.com/technetwork/java/javase/downloads)
     - Debian / Ubuntu: `apt-get install default-jdk`
+    - Mac OS X or Windows: Grab a [full JDK](http://www.oracle.com/technetwork/java/javase/downloads)
+  - Lua (if you want to build with lua enabled):
+    - Debian / Ubuntu: `apt-get install liblua5.3-dev lua5.3`
+    - Windows: choco install lua53
+    - From the source: you need to patch the sources to build dynamic libraries 
+      - [Download lua 5.3](http://www.lua.org/download.html). SimGrid
+        won't work with lua 5.2 as lua breaks the compatibility.
+      - Open the archive: `tar xvfz lua-5.3.*.tar.gz`
+      - Enter the directory: `cd lua-5.3*`
+      - Patch the sources: `patch -p1 < /path/to/simgrid/...../tools/lualib.patch`
+      - Build and install lua: `make linux && sudo make install`
 
 For platform-specific details, please see  @ref install_cmake_mac,
 @ref install_cmake_windows, @ref install_java and @ref install_src_32bits
@@ -162,7 +172,7 @@ In addition to the classical cmake configuration variables, SimGrid accepts seve
       Jedule external tool.
 
   @li <b>enable_lua</b> (ON/OFF) to enjoy the lua bindings to the
-      SimGrid internals.
+      SimGrid internals (this require the liblua5.3-dev and lua-5.3 packages or equivalent).
 
   @li <b>enable_lib_in_jar</b> (ON/OFF) to make sure that the native
       java bindings are bundled in the jar file.
