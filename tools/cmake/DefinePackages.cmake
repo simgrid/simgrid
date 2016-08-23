@@ -914,8 +914,6 @@ set(txt_files
   AUTHORS
   COPYING
   README
-  README.java
-  README.lua
   ChangeLog
   INSTALL
   LICENSE-LGPL-2.1

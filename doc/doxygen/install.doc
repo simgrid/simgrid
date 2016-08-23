@@ -76,7 +76,7 @@ Recompiling an official archive is not much more complex. SimGrid only uses very
     - Max OS X: with [fink](http://www.finkproject.org/): `fink install boost1.53.nopython`,
       or with homebrew: `brew install boost`
   - Java (if you want to build the Java bindings): 
-    - Debian / Ubuntu: `apt-get install default-jdk`
+    - Debian / Ubuntu: `apt-get install default-jdk libgcj16-dev`
     - Mac OS X or Windows: Grab a [full JDK](http://www.oracle.com/technetwork/java/javase/downloads)
   - Lua (if you want to build with lua enabled):
     - Debian / Ubuntu: `apt-get install liblua5.3-dev lua5.3`
