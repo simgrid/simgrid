@@ -21,6 +21,7 @@ public class RelayRunner extends Process {
 	}
 
 	/* This is the function executed by this kind of processes */
+	@Override
 	public void main(String[] args) throws MsgException {
 		// In this example, the processes are given numerical names: "0", "1", "2", and so on 
 		int rank = Integer.parseInt(this.getName());
@@ -45,7 +46,7 @@ public class RelayRunner extends Process {
 			
 		    Msg.info("Host '"+rank+"' received '"+token.getName()+"'");
 
-		    String mailbox = ""+(rank+1); // Java idiomatic to get the String version of rank+1
+		    String mailbox = Integer.toString(rank+1);
 		    if (rank+1 == Host.getCount()) {
 		    	/* The last process has no right neighbor, so it sends the token back to rank 0 */
 		    	mailbox = "0";

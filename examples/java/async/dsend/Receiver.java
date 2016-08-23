@@ -18,6 +18,7 @@ public class Receiver extends Process {
     super(host,name);
   }
 
+  @Override
   public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
     Msg.info("Receiving on '"+ getHost().getName() + "'");
     Task.receive(getHost().getName());

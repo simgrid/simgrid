@@ -26,7 +26,7 @@ class Main {
 		
 		Host[] hosts = Host.all();
 		for (int rank = 0; rank < hosts.length; rank++) {
-			Process proc = new RelayRunner(hosts[rank], ""+rank,  null);
+			Process proc = new RelayRunner(hosts[rank], Integer.toString(rank),  null);
 			proc.start();
 		}
 		Msg.info("Number of hosts '"+hosts.length+"'");
