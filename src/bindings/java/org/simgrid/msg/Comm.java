@@ -55,13 +55,13 @@ public class Comm {
 	public native void waitCompletion(double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 
 	/** Wait all of the communications */
-	public native static void waitAll(Comm[] comms, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
+	public static native void waitAll(Comm[] comms, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 	/** Wait all of the communications, with no maximal delay */
 	public static void waitAll(Comm[] comms) throws TransferFailureException, HostFailureException, TimeoutException {
 		waitAll(comms, -1.);
 	}
 	/** Wait any of the communications, and return the rank of the terminating comm */
-	//public native int waitAny(Comm[] comms);
+	public static native void waitAny(Comm[] comms) throws TransferFailureException, HostFailureException, TimeoutException;
 	/**
 	 * Returns the task associated with the communication.
 	 * if the communication isn't finished yet, will return null.

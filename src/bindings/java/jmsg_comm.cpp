@@ -121,12 +121,12 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, job
   }
 }
 
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls, jobjectArray jcomms, jdouble timeout)
+static msg_comm_t* jarray_to_commArray(JNIEnv *env, jobjectArray jcomms, /* OUT */ int *count)
 {
-  int count = env->GetArrayLength(jcomms);
-  msg_comm_t* comms = xbt_new(msg_comm_t, count);
+  *count = env->GetArrayLength(jcomms);
+  msg_comm_t* comms = xbt_new(msg_comm_t, *count);
 
-  for (int i=0; i < count; i++) {
+  for (int i=0; i < *count; i++) {
      jobject jcomm = env->GetObjectArrayElement(jcomms, i);
      if (env->ExceptionOccurred())
         break;
@@ -134,17 +134,36 @@ JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls
      comms[i] = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
      if (!comms[i]) {
        jxbt_throw_native(env,bprintf("comm at rank %d is null",i));
-       return;
+       return nullptr;
      }
 
      env->DeleteLocalRef(jcomm); // reduce the load on the garbage collector: we don't need that object anymore
   }
+  return comms;
+}
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls, jobjectArray jcomms, jdouble timeout)
+{
+  int count;
+  msg_comm_t* comms = jarray_to_commArray(env, jcomms, &count);
+  if (!comms)
+    return;
+
   MSG_comm_waitall(comms, count, static_cast<double>(timeout));
   xbt_free(comms);
 }
-/*
-JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jobject jcomm, jarray comms)
+JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls, jobjectArray jcomms)
 {
+  int count;
+  msg_comm_t* comms = jarray_to_commArray(env, jcomms, &count);
+  if (!comms)
+    return -1;
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(msg_comm_t),nullptr);
+  for (int i=0; i<count; i++) {
+    xbt_dynar_push(dyn, &(comms[i]));
+  }
 
+  int rank = MSG_comm_waitany(dyn);
+  xbt_free(comms);
+  xbt_dynar_free(&dyn);
+  return rank;
 }
-*/
