@@ -3,9 +3,9 @@
 <platform version="4">
 
   <!-- This a weird deployment file: we only start one actor from here and the others from the main().
-    --
-    -- This is only for the example, but don't do that at home.
-    -- Instead, you want to start all your actors from the deployment file.
+    -
+    -  This is only for the example, but don't do that at home.
+    -  Instead, you want to start all your actors from the deployment file.
     -->
    
   <process host="Fafard" function="receiver">
