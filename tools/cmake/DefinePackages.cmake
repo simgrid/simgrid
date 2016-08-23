@@ -115,6 +115,9 @@ set(EXTRA_DIST
   teshsuite/lua/lua_platforms.tesh
   examples/smpi/mc/only_send_deterministic.tesh
   examples/smpi/mc/non_deterministic.tesh
+  
+  examples/java/.classpath
+  examples/java/.project
   )
 
 set(SMPI_SRC
