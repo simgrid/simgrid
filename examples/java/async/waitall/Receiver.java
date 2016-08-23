@@ -19,6 +19,7 @@ public class Receiver extends Process {
     super(host,name);
   }
 
+  @Override
   public void main(String[] args) throws TransferFailureException, HostFailureException, TimeoutException {
     Comm comm = Task.irecv(getHost().getName());
     Msg.info("I started receiving on '"+ getHost().getName() +". Wait 0.1 second, and block on the communication.");

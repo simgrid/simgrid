@@ -10,13 +10,12 @@ import org.simgrid.msg.Process;
 import org.simgrid.msg.MsgException;
 import org.simgrid.msg.NativeException;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 
 public class RelayRunner extends Process {
 
 	private static final int TASK_COMM_SIZE = 1000000; /* The token is 1MB long*/
 
-	public RelayRunner(Host host, String name, String[]args) throws HostNotFoundException, NativeException{
+	public RelayRunner(Host host, String name, String[]args) throws NativeException {
 		super(host,name,args);
 	}
 

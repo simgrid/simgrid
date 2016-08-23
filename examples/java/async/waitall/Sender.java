@@ -18,6 +18,7 @@ public class Sender extends Process {
     super(host,name);
   }
 
+  @Override
   public void main(String[] args) throws MsgException {
     double taskComputeSize =0;
     double taskCommunicateSize = 5000000;

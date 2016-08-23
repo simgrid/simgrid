@@ -20,15 +20,14 @@ package async.waitall;
 
 import org.simgrid.msg.Msg;
 import org.simgrid.msg.Host;
-import org.simgrid.msg.NativeException;
-import org.simgrid.msg.HostNotFoundException;
+import org.simgrid.msg.MsgException;
 
 class Main {
   private Main() {
     throw new IllegalAccessError("Utility class");
   }
 
-  public static void main(String[] args) throws NativeException, HostNotFoundException {
+  public static void main(String[] args) throws MsgException {
     Msg.init(args);
 
     String platform = "../platforms/small_platform.xml";
