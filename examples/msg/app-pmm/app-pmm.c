@@ -243,7 +243,10 @@ int main(int argc, char *argv[])
   xbt_os_timer_t timer = xbt_os_timer_new();
 
   MSG_init(&argc, argv);
-  MSG_create_environment(argv[1]);
+  const char *platform = "../../platforms/cluster.xml";
+  if (argc > 1)
+     platform = argv[1];
+  MSG_create_environment(platform);
 
   MSG_function_register("node", node);
   for(int i = 0 ; i< 9; i++) {
@@ -259,7 +262,7 @@ int main(int argc, char *argv[])
   xbt_os_cputimer_start(timer);
   msg_error_t res = MSG_main();
   xbt_os_cputimer_stop(timer);
-  XBT_CRITICAL("Simulated time: %g", MSG_get_clock());
+  XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   return res != MSG_OK;
 }

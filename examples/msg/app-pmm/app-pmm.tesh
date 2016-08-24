@@ -95,4 +95,4 @@ $ ./app-pmm/app-pmm --log=msg_pmm.thres:verbose --log=no_loc ${srcdir:=.}/../pla
 > [node-2.acme.org:node:(3) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
 > [node-5.acme.org:node:(6) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
 > [node-7.acme.org:node:(8) 0.046847] [msg_pmm/VERBOSE] Multiplication done. Send the sub-result.
-> [0.054659] [msg_pmm/CRITICAL] Simulated time: 0.0546594
+> [0.054659] [msg_pmm/INFO] Simulated time: 0.0546594
