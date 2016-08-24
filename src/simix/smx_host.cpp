@@ -127,8 +127,7 @@ void SIMIX_host_destroy(void *h)
   xbt_swag_free(host->process_list);
 
   /* Clean host structure */
-  free(host);
-  return;
+  delete host;
 }
 
 sg_host_t SIMIX_host_self()
