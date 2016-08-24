@@ -240,8 +240,6 @@ static void task_cleanup(void *arg){
 
 int main(int argc, char *argv[])
 {
-  xbt_os_timer_t timer = xbt_os_timer_new();
-
   MSG_init(&argc, argv);
   const char *platform = "../../platforms/cluster.xml";
   if (argc > 1)
@@ -259,9 +257,7 @@ int main(int argc, char *argv[])
     xbt_free(hostname);
   }
 
-  xbt_os_cputimer_start(timer);
   msg_error_t res = MSG_main();
-  xbt_os_cputimer_stop(timer);
   XBT_INFO("Simulated time: %g", MSG_get_clock());
 
   return res != MSG_OK;
