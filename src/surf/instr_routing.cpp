@@ -15,7 +15,7 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_routing, instr, "Tracing platform hierarchy");
 
 static int platform_created = 0;            /* indicate whether the platform file has been traced */
-static xbt_dynar_t currentContainer = nullptr; /* push and pop, used only in creation */
+static std::vector<container_t> currentContainer; /* push and pop, used only in creation */
 
 static const char *instr_node_name (xbt_node_t node)
 {
@@ -30,29 +30,29 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
   if (a1->father == a2->father) return a1->father;
 
   //create an array with all ancestors of a1
-  xbt_dynar_t ancestors_a1 = xbt_dynar_new(sizeof(container_t), nullptr);
+  std::vector<container_t> ancestors_a1;
   container_t p;
   p = a1->father;
   while (p){
-    xbt_dynar_push_as (ancestors_a1, container_t, p);
+    ancestors_a1.push_back(p);
     p = p->father;
   }
 
   //create an array with all ancestors of a2
-  xbt_dynar_t ancestors_a2 = xbt_dynar_new(sizeof(container_t), nullptr);
+  std::vector<container_t> ancestors_a2;
   p = a2->father;
   while (p){
-    xbt_dynar_push_as (ancestors_a2, container_t, p);
+    ancestors_a2.push_back(p);
     p = p->father;
   }
 
   //find the lowest ancestor
   p = nullptr;
-  int i = xbt_dynar_length (ancestors_a1) - 1;
-  int j = xbt_dynar_length (ancestors_a2) - 1;
+  int i = ancestors_a1.size() - 1;
+  int j = ancestors_a2.size() - 1;
   while (i >= 0 && j >= 0){
-    container_t a1p = *(container_t*)xbt_dynar_get_ptr (ancestors_a1, i);
-    container_t a2p = *(container_t*)xbt_dynar_get_ptr (ancestors_a2, j);
+    container_t a1p = ancestors_a1.at(i);
+    container_t a2p = ancestors_a2.at(j);
     if (a1p == a2p){
       p = a1p;
     }else{
@@ -61,8 +61,6 @@ static container_t lowestCommonAncestor (container_t a1, container_t a2)
     i--;
     j--;
   }
-  xbt_dynar_free (&ancestors_a1);
-  xbt_dynar_free (&ancestors_a2);
   return p;
 }
 
@@ -186,50 +184,45 @@ void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS)
     }
 
     if (TRACE_needs_platform()){
-      currentContainer = xbt_dynar_new (sizeof(container_t), nullptr);
-      xbt_dynar_push (currentContainer, &root);
+      currentContainer.push_back(root);
     }
     return;
   }
 
   if (TRACE_needs_platform()){
-    container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+    container_t father = currentContainer.back();
     container_t container = PJ_container_new (id, INSTR_AS, father);
-    xbt_dynar_push (currentContainer, &container);
+    currentContainer.push_back(container);
   }
 }
 
 void sg_instr_AS_end()
 {
   if (TRACE_needs_platform()){
-    xbt_dynar_pop_ptr (currentContainer);
+    currentContainer.pop_back();
   }
 }
 
 static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
 {
-  container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  container_t father = currentContainer.back();
 
   double bandwidth_value = link->bandwidth;
   double latency_value = link->latency;
-  xbt_dynar_t links_to_create = xbt_dynar_new (sizeof(char*), &xbt_free_ref);
+  std::vector<std::string> links_to_create;
 
   if (link->policy == SURF_LINK_FULLDUPLEX){
-    char *up = bprintf("%s_UP", link->id);
-    char *down = bprintf("%s_DOWN", link->id);
-    xbt_dynar_push_as (links_to_create, char*, xbt_strdup(up));
-    xbt_dynar_push_as (links_to_create, char*, xbt_strdup(down));
-    free (up);
-    free (down);
+    std::string id (link->id);
+    std::string up = id + "_UP";
+    std::string down = id + "_DOWN";
+    links_to_create.push_back(up);
+    links_to_create.push_back(down);
   }else{
-    xbt_dynar_push_as (links_to_create, char*, strdup(link->id));
+    links_to_create.push_back(link->id);
   }
 
-  char *link_name = nullptr;
-  unsigned int i;
-  xbt_dynar_foreach (links_to_create, i, link_name){
-
-    container_t container = PJ_container_new (link_name, INSTR_LINK, father);
+  for (auto link_name: links_to_create){
+    container_t container = PJ_container_new (link_name.c_str(), INSTR_LINK, father);
 
     if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_link())) {
       type_t bandwidth = PJ_type_get_or_null ("bandwidth", container->type);
@@ -250,13 +243,11 @@ static void instr_routing_parse_start_link (sg_platf_link_cbarg_t link)
       }
     }
   }
-
-  xbt_dynar_free (&links_to_create);
 }
 
 void sg_instr_new_host(sg_platf_host_cbarg_t host)
 {
-  container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  container_t father = currentContainer.back();
   container_t container = PJ_container_new (host->id, INSTR_HOST, father);
 
   if ((TRACE_categorized() || TRACE_uncategorized() || TRACE_platform()) && (! TRACE_disable_speed())) {
@@ -317,14 +308,13 @@ void sg_instr_new_host(sg_platf_host_cbarg_t host)
 
 void sg_instr_new_router(sg_platf_router_cbarg_t router)
 {
-  container_t father = *(container_t*)xbt_dynar_get_ptr(currentContainer, xbt_dynar_length(currentContainer)-1);
+  container_t father = currentContainer.back();
   PJ_container_new (router->id, INSTR_ROUTER, father);
 }
 
 static void instr_routing_parse_end_platform ()
 {
-  xbt_dynar_free(&currentContainer);
-  currentContainer = nullptr;
+  currentContainer.clear();
   xbt_dict_t filter = xbt_dict_new_homogeneous(xbt_free_f);
   XBT_DEBUG ("Starting graph extraction.");
   recursiveGraphExtraction (simgrid::s4u::Engine::instance()->rootAs(), PJ_container_get_root(), filter);
