@@ -30,6 +30,9 @@
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_cfg, xbt, "configuration support");
 
 XBT_EXPORT_NO_IMPORT(xbt_cfg_t) simgrid_config = nullptr;
+extern "C" {
+  XBT_PUBLIC(void) sg_config_finalize();
+}
 
 namespace simgrid {
 namespace config {
@@ -448,8 +451,10 @@ template<class T>
 XBT_PUBLIC(void) declareFlag(const char* name, const char* description,
   T value, std::function<void(const T&)> callback)
 {
-  if (simgrid_config == nullptr)
+  if (simgrid_config == nullptr) {
     simgrid_config = xbt_cfg_new();
+    atexit(sg_config_finalize);
+  }
   simgrid_config->registerOption<T>(
     name, description, std::move(value), std::move(callback));
 }
@@ -488,30 +493,38 @@ void xbt_cfg_register_double(const char *name, double default_value,
 
 void xbt_cfg_register_int(const char *name, int default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == nullptr)
+  if (simgrid_config == nullptr) {
     simgrid_config = xbt_cfg_new();
+    atexit(&sg_config_finalize);
+  }
   simgrid_config->registerOption<int>(name, desc, default_value, cb_set);
 }
 
 void xbt_cfg_register_string(const char *name, const char *default_value, xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == nullptr)
+  if (simgrid_config == nullptr) {
     simgrid_config = xbt_cfg_new();
+    atexit(sg_config_finalize);
+  }
   simgrid_config->registerOption<std::string>(name, desc,
     default_value ? default_value : "", cb_set);
 }
 
 void xbt_cfg_register_boolean(const char *name, const char*default_value,xbt_cfg_cb_t cb_set, const char *desc)
 {
-  if (simgrid_config == nullptr)
+  if (simgrid_config == nullptr) {
     simgrid_config = xbt_cfg_new();
+    atexit(sg_config_finalize);
+  }
   simgrid_config->registerOption<bool>(name, desc, simgrid::config::parseBool(default_value), cb_set);
 }
 
 void xbt_cfg_register_alias(const char *realname, const char *aliasname)
 {
-  if (simgrid_config == nullptr)
+  if (simgrid_config == nullptr) {
     simgrid_config = xbt_cfg_new();
+    atexit(sg_config_finalize);
+  }
   simgrid_config->alias(realname, aliasname);
 }
 

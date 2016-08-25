@@ -325,8 +325,6 @@ void surf_exit()
 {
   TRACE_end();                  /* Just in case it was not called by the upper layer (or there is no upper layer) */
 
-  sg_config_finalize();
-
   xbt_dynar_free(&surf_path);
 
   xbt_dict_free(&host_list);

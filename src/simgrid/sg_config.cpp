@@ -382,8 +382,8 @@ static void describe_model(char *result,int resultsize,
 /* create the config set, register what should be and parse the command line*/
 void sg_config_init(int *argc, char **argv)
 {
-  int descsize = 1024;
-  char description[1024];
+  const int descsize = 1024;
+  char description[descsize];
 
   /* Create the configuration support */
   if (_sg_cfg_init_status == 0) { /* Only create stuff if not already inited */
