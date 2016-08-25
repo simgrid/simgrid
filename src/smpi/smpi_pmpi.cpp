@@ -1520,12 +1520,13 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
       TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
     }
     TRACE_smpi_ptp_out(rank_traced, src_traced, dst_traced, __FUNCTION__);
-    xbt_free(srcs);
-    xbt_free(dsts);
-    xbt_free(recvs);
-    xbt_free(comms);
-
   }
+  xbt_free(srcs);
+  xbt_free(dsts);
+  xbt_free(recvs);
+  xbt_free(comms);
+
+
   smpi_bench_begin();
   return MPI_SUCCESS;
 }
