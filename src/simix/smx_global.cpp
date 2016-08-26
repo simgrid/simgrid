@@ -165,7 +165,7 @@ static std::function<void()> maestro_code;
 namespace simgrid {
 namespace simix {
 
-simgrid::xbt::signal<void(void)> onDeadlock;
+simgrid::xbt::signal<void()> onDeadlock;
 
 XBT_PUBLIC(void) set_maestro(std::function<void()> code)
 {
