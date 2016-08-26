@@ -119,9 +119,6 @@ Action *HostModel::executeParallelTask(int host_nb,
 
 void HostImpl::classInit()
 {
-  if (!EXTENSION_ID.valid()) {
-    EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::surf::HostImpl>();
-  }
 }
 
 HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dynar_t storage, Cpu *cpu)
@@ -129,6 +126,8 @@ HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dynar_
  , PropertyHolder(nullptr)
  , p_storage(storage), p_cpu(cpu)
 {
+  if (!EXTENSION_ID.valid())
+    EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::surf::HostImpl>();
   p_params.ramsize = 0;
 }
 
