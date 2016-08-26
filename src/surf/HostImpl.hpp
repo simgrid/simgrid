@@ -75,7 +75,6 @@ public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostImpl> EXTENSION_ID;
 
 public:
-  static void classInit(); // must be called before the first use of that class
   /**
    * @brief Host constructor
    *

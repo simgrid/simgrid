@@ -301,7 +301,6 @@ void surf_init(int *argc, char **argv)
   });
 
   XBT_DEBUG("Add SURF levels");
-  simgrid::surf::HostImpl::classInit();
   SURF_STORAGE_LEVEL = xbt_lib_add_level(storage_lib,surf_storage_free);
 
   xbt_init(argc, argv);

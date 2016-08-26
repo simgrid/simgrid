@@ -115,12 +115,6 @@ Action *HostModel::executeParallelTask(int host_nb,
 /************
  * Resource *
  ************/
-
-
-void HostImpl::classInit()
-{
-}
-
 HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name)
  , PropertyHolder(nullptr)
