@@ -165,6 +165,8 @@ static std::function<void()> maestro_code;
 namespace simgrid {
 namespace simix {
 
+simgrid::xbt::signal<void(void)> onDeadlock;
+
 XBT_PUBLIC(void) set_maestro(std::function<void()> code)
 {
   maestro_code = std::move(code);
@@ -542,11 +544,15 @@ void SIMIX_run()
 
     XBT_DEBUG("### time %f, empty %d", time, xbt_dynar_is_empty(simix_global->process_to_run));
 
+    if (xbt_dynar_is_empty(simix_global->process_to_run) &&
+        xbt_swag_size(simix_global->process_list) != 0)
+    simgrid::simix::onDeadlock();
+
   } while (time > -1.0 || !xbt_dynar_is_empty(simix_global->process_to_run));
 
   if (xbt_swag_size(simix_global->process_list) != 0) {
 
-  TRACE_end();
+    TRACE_end();
 
     XBT_CRITICAL("Oops ! Deadlock or code not perfectly clean.");
     SIMIX_display_process_status();

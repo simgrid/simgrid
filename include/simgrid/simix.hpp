@@ -17,6 +17,7 @@
 #include <xbt/function_types.h>
 #include <xbt/future.hpp>
 #include <xbt/functional.hpp>
+#include <xbt/signal.hpp>
 
 #include <simgrid/simix.h>
 
@@ -86,6 +87,11 @@ typedef std::function<ActorCode(std::vector<std::string> args)> ActorCodeFactory
 
 XBT_PUBLIC(void) registerFunction(const char* name, ActorCodeFactory factory);
 
+/** These functions will be called when we detect a deadlock: any remaining process is locked on an action
+ *
+ * If these functions manage to unlock some of the processes, then the deadlock will be avoided.
+ */
+extern simgrid::xbt::signal<void(void)> onDeadlock;
 }
 }
 
