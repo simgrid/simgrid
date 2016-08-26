@@ -196,6 +196,8 @@ void *xbt_mallocator_get(xbt_mallocator_t m)
  */
 void xbt_mallocator_release(xbt_mallocator_t m, void *object)
 {
+  if (m == NULL) // The mallocators are already destroyed. Bail out ASAP.
+     return;
   if (m->objects != NULL) { // Go for it
     lock_acquire(m);
     if (m->current_size < m->max_size) {
