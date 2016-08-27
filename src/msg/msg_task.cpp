@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -101,7 +100,6 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
 {
   msg_task_t task = MSG_task_create(name, 0, 0, data);
   simdata_task_t simdata = task->simdata;
-  int i;
 
   /* Simulator Data specific to parallel tasks */
   simdata->host_nb = host_nb;
@@ -109,7 +107,7 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
   simdata->flops_parallel_amount = flops_amount;
   simdata->bytes_parallel_amount = bytes_amount;
 
-  for (i = 0; i < host_nb; i++)
+  for (int i = 0; i < host_nb; i++)
     simdata->host_list[i] = host_list[i];
 
   return task;
@@ -122,7 +120,6 @@ msg_task_t MSG_parallel_task_create(const char *name, int host_nb, const msg_hos
  */
 void *MSG_task_get_data(msg_task_t task)
 {
-  xbt_assert((task != nullptr), "Invalid parameter");
   return (task->data);
 }
 
@@ -133,7 +130,6 @@ void *MSG_task_get_data(msg_task_t task)
  */
 void MSG_task_set_data(msg_task_t task, void *data)
 {
-  xbt_assert((task != nullptr), "Invalid parameter");
   task->data = data;
 }
 
@@ -159,8 +155,7 @@ void MSG_task_set_copy_callback(void (*callback) (msg_task_t task, msg_process_t
  */
 msg_process_t MSG_task_get_sender(msg_task_t task)
 {
-  xbt_assert(task, "Invalid parameters");
-  return (static_cast<simdata_task_t> (task->simdata)->sender);
+  return task->simdata->sender;
 }
 
 /** \ingroup m_task_management
@@ -170,8 +165,7 @@ msg_process_t MSG_task_get_sender(msg_task_t task)
  */
 msg_host_t MSG_task_get_source(msg_task_t task)
 {
-  xbt_assert(task, "Invalid parameters");
-  return (static_cast<simdata_task_t> (task->simdata)->source);
+  return task->simdata->source;
 }
 
 /** \ingroup m_task_management
@@ -181,7 +175,6 @@ msg_host_t MSG_task_get_source(msg_task_t task)
  */
 const char *MSG_task_get_name(msg_task_t task)
 {
-  xbt_assert(task, "Invalid parameters");
   return task->name;
 }
 
@@ -192,7 +185,6 @@ const char *MSG_task_get_name(msg_task_t task)
  */
 void MSG_task_set_name(msg_task_t task, const char *name)
 {
-  xbt_assert(task, "Invalid parameters");
   task->name = xbt_strdup(name);
 }
 
@@ -209,8 +201,6 @@ void MSG_task_set_name(msg_task_t task, const char *name)
  */
 msg_error_t MSG_task_destroy(msg_task_t task)
 {
-  xbt_assert((task != nullptr), "Invalid parameter");
-
   if (task->simdata->isused) {
     /* the task is being sent or executed: cancel it first */
     MSG_task_cancel(task);
@@ -307,11 +297,9 @@ double MSG_task_get_bytes_amount(msg_task_t task)
  */
 void MSG_task_set_priority(msg_task_t task, double priority)
 {
-  xbt_assert((task != nullptr) && (task->simdata != nullptr), "Invalid parameter");
   task->simdata->priority = 1 / priority;
   if (task->simdata->compute)
-    simcall_execution_set_priority(task->simdata->compute,
-        task->simdata->priority);
+    simcall_execution_set_priority(task->simdata->compute, task->simdata->priority);
 }
 
 /** \ingroup m_task_management
@@ -322,9 +310,6 @@ void MSG_task_set_priority(msg_task_t task, double priority)
  */
 void MSG_task_set_bound(msg_task_t task, double bound)
 {
-  xbt_assert(task, "Invalid parameter");
-  xbt_assert(task->simdata, "Invalid parameter");
-
   if (bound < 1e-12) /* close enough to 0 without any floating precision surprise */
     XBT_INFO("bound == 0 means no capping (i.e., unlimited).");
 
