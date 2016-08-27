@@ -270,8 +270,10 @@ int main(int argc, char *argv[])
   MSG_init(&argc, argv);
 
   /* load the platform file */
-  xbt_assert(argc == 2);
-  MSG_create_environment(argv[1]);
+  const char* platform = "../../platforms/small_platform.xml";
+  if (argc == 2)
+     platform = argv[1];
+  MSG_create_environment(platform);
 
   msg_host_t pm0 = MSG_host_by_name("Fafard");
   launch_master(pm0);
