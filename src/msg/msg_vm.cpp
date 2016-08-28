@@ -205,7 +205,7 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 
   /* Note: ind_vm and vm_workstation point to the same elm object. */
   /* Ask the SIMIX layer to create the surf vm resource */
-  sg_host_t ind_vm_workstation =  (sg_host_t) simcall_vm_create(name, ind_pm);
+  sg_host_t ind_vm_workstation = simcall_vm_create(name, ind_pm);
 
   msg_vm_t ind_vm = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
 

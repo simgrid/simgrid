@@ -189,7 +189,7 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
  *
  * \return The host object of the VM
  */
-void* simcall_vm_create(const char *name, sg_host_t phys_host)
+sg_host_t simcall_vm_create(const char *name, sg_host_t phys_host)
 {
   return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_create, name, phys_host));
 }
