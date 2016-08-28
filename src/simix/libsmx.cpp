@@ -26,6 +26,8 @@
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"
 #include "src/kernel/activity/SynchroComm.hpp"
+#include "src/surf/virtual_machine.hpp"
+
 
 #include <simgrid/simix.hpp>
 
@@ -191,7 +193,13 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
  */
 sg_host_t simcall_vm_create(const char *name, sg_host_t phys_host)
 {
-  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_create, name, phys_host));
+  return simgrid::simix::kernelImmediate([&] {
+    surf_vm_model->createVM(name, phys_host);
+    sg_host_t host = sg_host_by_name(name);
+    SIMIX_host_create(host);
+
+    return host;
+  });
 }
 
 /**

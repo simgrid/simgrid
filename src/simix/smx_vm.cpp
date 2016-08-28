@@ -10,22 +10,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX Virtual Machines");
 
-/* **** create a VM **** */
-
-/**
- * @brief Internal function to create a SIMIX host.
- * @param name name of the host to create
- */
-sg_host_t SIMIX_vm_create(const char *name, sg_host_t phys_host)
-{
-  surf_vm_model->createVM(name, phys_host);
-  sg_host_t host = sg_host_by_name(name);
-  SIMIX_host_create(host);
-
-  return host;
-}
-
-
 /* works for VMs and PMs */
 static long host_get_ramsize(sg_host_t vm, int *overcommit)
 {

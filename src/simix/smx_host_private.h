@@ -66,8 +66,6 @@ XBT_PRIVATE void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec);
 XBT_PRIVATE void SIMIX_set_category(smx_activity_t synchro, const char *category);
 
 /* vm related stuff */
-XBT_PRIVATE sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host);
-
 XBT_PRIVATE void SIMIX_vm_destroy(sg_host_t ind_vm);
 // --
 XBT_PRIVATE void SIMIX_vm_resume(sg_host_t ind_vm, smx_actor_t issuer);
