@@ -254,13 +254,6 @@ XBT_PUBLIC(sg_size_t) surf_host_get_free_size(sg_host_t resource, const char* na
  */
 XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* name);
 
-/**
- * @brief Destroy a VM
- *
- * @param resource The surf vm
- */
-XBT_PUBLIC(void) surf_vm_destroy(sg_host_t resource);
-
 /** @brief Suspend a VM */
 XBT_PUBLIC(void) surf_vm_suspend(sg_host_t resource);
 

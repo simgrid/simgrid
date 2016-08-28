@@ -229,11 +229,6 @@ int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return get_casted_host(host)->fileMove(fd, fullpath);
 }
 
-void surf_vm_destroy(sg_host_t vm){ // FIXME:DEADCODE
-  vm->pimpl_cpu = nullptr;
-  vm->pimpl_netcard = nullptr;
-}
-
 void surf_vm_suspend(sg_host_t vm){
   get_casted_vm(vm)->suspend();
 }

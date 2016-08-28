@@ -338,14 +338,12 @@ void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm)
 void SIMIX_vm_destroy(sg_host_t vm)
 {
   /* this code basically performs a similar thing like SIMIX_host_destroy() */
-
-  const char *hostname = sg_host_get_name(vm);
-
-  XBT_DEBUG("destroy %s", hostname);
+  XBT_DEBUG("destroy %s", sg_host_get_name(vm));
 
   /* this will call the registered callback function, i.e., SIMIX_host_destroy().  */
   sg_host_simix_destroy(vm);
 
-  /* jump to vm_ws_destroy(). The surf level resource will be freed. */
-  surf_vm_destroy(vm);
+  /* Don't free these things twice: they are the ones of my physical host */
+  vm->pimpl_cpu = nullptr;
+  vm->pimpl_netcard = nullptr;
 }
