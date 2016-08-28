@@ -63,21 +63,21 @@ static int __can_be_started(sg_host_t vm)
   return 1;
 }
 
-void SIMIX_vm_start(sg_host_t ind_vm)
+void SIMIX_vm_start(sg_host_t vm)
 {
-  if (__can_be_started(ind_vm))
+  if (__can_be_started(vm))
     static_cast<simgrid::surf::VirtualMachine*>(
-      ind_vm->extension<simgrid::surf::HostImpl>()
+      vm->extension<simgrid::surf::HostImpl>()
     )->setState(SURF_VM_STATE_RUNNING);
   else
-    THROWF(vm_error, 0, "The VM %s cannot be started", sg_host_get_name(ind_vm));
+    THROWF(vm_error, 0, "The VM %s cannot be started", vm->name().c_str());
 }
 
 
-e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm)
+e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t vm)
 {
   return static_cast<simgrid::surf::VirtualMachine*>(
-    ind_vm->extension<simgrid::surf::HostImpl>()
+    vm->extension<simgrid::surf::HostImpl>()
   )->getState();
 }
 
@@ -86,13 +86,13 @@ e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm)
  *
  * @param host the vm host to migrate (a sg_host_t)
  */
-void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm)
+void SIMIX_vm_migrate(sg_host_t vm, sg_host_t dst_pm)
 {
   /* precopy migration makes the VM temporally paused */
-  xbt_assert(SIMIX_vm_get_state(ind_vm) == SURF_VM_STATE_SUSPENDED);
+  xbt_assert(SIMIX_vm_get_state(vm) == SURF_VM_STATE_SUSPENDED);
 
   /* jump to vm_ws_xigrate(). this will update the vm location. */
-  surf_vm_migrate(ind_vm, ind_dst_pm);
+  surf_vm_migrate(vm, dst_pm);
 }
 
 /**
