@@ -89,7 +89,7 @@ static std::vector<int> *explodesRadical(const char*radicals){
 
 /** The current AS in the parsing */
 static simgrid::kernel::routing::AsImpl *current_routing = nullptr;
-static simgrid::kernel::routing::AsImpl* routing_get_current()
+static simgrid::kernel::routing::AsImpl *routing_get_current()
 {
   return current_routing;
 }

@@ -33,17 +33,17 @@ class XBT_PRIVATE VirtualMachine;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMCreatedCallbacks;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmCreation;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMDestructedCallbacks;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmDestruction;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMStateChangedCallbacks;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmStateChange;
 
 /************
  * Resource *

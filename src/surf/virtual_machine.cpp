@@ -20,9 +20,9 @@ namespace surf {
  * Callbacks *
  *************/
 
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMCreatedCallbacks;
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMDestructedCallbacks;
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMStateChangedCallbacks;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmCreation;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmDestruction;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmStateChange;
 
 /*********
  * Model *
@@ -48,7 +48,7 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u:
  */
 VirtualMachine::~VirtualMachine()
 {
-  VMDestructedCallbacks(this);
+  onVmDestruction(this);
   VMModel::ws_vms.erase(VMModel::vm_list_t::s_iterator_to(*this));
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED int ret = action_->unref();
@@ -65,13 +65,13 @@ void VirtualMachine::setState(e_surf_vm_state_t state) {
 void VirtualMachine::turnOn() {
   if (isOff()) {
     Resource::turnOn();
-    VMStateChangedCallbacks(this);
+    onVmStateChange(this);
   }
 }
 void VirtualMachine::turnOff() {
   if (isOn()) {
     Resource::turnOff();
-    VMStateChangedCallbacks(this);
+    onVmStateChange(this);
   }
 }
 

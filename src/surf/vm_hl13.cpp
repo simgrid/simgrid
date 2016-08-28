@@ -31,7 +31,7 @@ void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 s4u::Host *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 {
   VirtualMachine* vm = new VMHL13(this, name, host_PM);
-  VMCreatedCallbacks(vm);
+  onVmCreation(vm);
   return vm->piface;
 }
 
