@@ -91,14 +91,15 @@ void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
 }
 
 // ========== Simix layer =============
+#include "src/simix/smx_host_private.h"
 smx_host_priv_t sg_host_simix(sg_host_t host){
-  return (smx_host_priv_t) host->extension(SIMIX_HOST_LEVEL);
+  return host->extension<simgrid::simix::Host>();
 }
 void sg_host_simix_set(sg_host_t host, smx_host_priv_t smx_host) {
-  host->extension_set(SIMIX_HOST_LEVEL, smx_host);
+  host->extension_set<simgrid::simix::Host>(smx_host);
 }
 void sg_host_simix_destroy(sg_host_t host) {
-  host->extension_set(SIMIX_HOST_LEVEL, nullptr);
+  host->extension_set<simgrid::simix::Host>(nullptr);
 }
 
 // ========= storage related functions ============

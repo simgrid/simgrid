@@ -10,6 +10,7 @@
 #include <functional>
 
 #include <xbt/base.h>
+#include <xbt/Extendable.hpp>
 
 #include "simgrid/simix.h"
 #include "popping_private.h"
@@ -23,7 +24,10 @@ namespace simgrid {
   namespace simix {
     class Host {
     public:
+      static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
+
       explicit Host();
+      virtual ~Host();
 
       xbt_swag_t process_list;
       xbt_dynar_t auto_restart_processes = nullptr;
@@ -35,7 +39,6 @@ typedef simgrid::simix::Host s_smx_host_priv_t;
 
 XBT_PRIVATE void _SIMIX_host_free_process_arg(void *);
 XBT_PRIVATE void SIMIX_host_create(sg_host_t host);
-XBT_PRIVATE void SIMIX_host_destroy(void *host);
 
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
                                          const char *name,

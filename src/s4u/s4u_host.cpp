@@ -21,7 +21,6 @@
 #include "simgrid/s4u/storage.hpp"
 
 int MSG_HOST_LEVEL = -1;
-int SIMIX_HOST_LEVEL = -1;
 int USER_HOST_LEVEL = -1;
 
 namespace simgrid {
@@ -133,7 +132,7 @@ void Host::setProperty(const char*key, const char *value){
 xbt_swag_t Host::processes()
 {
   return simgrid::simix::kernelImmediate([&]() {
-    return ((smx_host_priv_t)this->extension(SIMIX_HOST_LEVEL))->process_list;
+    return this->extension<simgrid::simix::Host>()->process_list;
   });
 }
 

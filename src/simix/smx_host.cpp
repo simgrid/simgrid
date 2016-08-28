@@ -19,10 +19,36 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_host, simix, "SIMIX hosts");
 
 namespace simgrid {
   namespace simix {
+    simgrid::xbt::Extension<simgrid::s4u::Host, Host> Host::EXTENSION_ID;
+
     Host::Host()
     {
+      if (!EXTENSION_ID.valid())
+        EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::simix::Host>();
+
       simgrid::simix::ActorImpl act;
       process_list = xbt_swag_new(xbt_swag_offset(act, host_proc_hookup));
+    }
+
+    Host::~Host()
+    {
+      /* Clean Simulator data */
+      if (xbt_swag_size(process_list) != 0) {
+        char *msg = xbt_strdup("Shutting down host, but it's not empty:");
+        char *tmp;
+        smx_actor_t process = nullptr;
+
+        xbt_swag_foreach(process, process_list) {
+          tmp = bprintf("%s\n\t%s", msg, process->name.c_str());
+          free(msg);
+          msg = tmp;
+        }
+        SIMIX_display_process_status();
+        THROWF(arg_error, 0, "%s", msg);
+      }
+      xbt_dynar_free(&auto_restart_processes);
+      xbt_dynar_free(&boot_processes);
+      xbt_swag_free(process_list);
     }
   }
 }
@@ -95,39 +121,6 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
   } else {
     XBT_INFO("Host %s is already off", h->name().c_str());
   }
-}
-
-/**
- * \brief Internal function to destroy a SIMIX host.
- *
- * \param h the host to destroy (a sg_host_t)
- */
-void SIMIX_host_destroy(void *h)
-{
-  smx_host_priv_t host = static_cast<smx_host_priv_t>(h);
-
-  xbt_assert((host != nullptr), "Invalid parameters");
-
-  /* Clean Simulator data */
-  if (xbt_swag_size(host->process_list) != 0) {
-    char *msg = xbt_strdup("Shutting down host, but it's not empty:");
-    char *tmp;
-    smx_actor_t process = nullptr;
-
-    xbt_swag_foreach(process, host->process_list) {
-      tmp = bprintf("%s\n\t%s", msg, process->name.c_str());
-      free(msg);
-      msg = tmp;
-    }
-    SIMIX_display_process_status();
-    THROWF(arg_error, 0, "%s", msg);
-  }
-  xbt_dynar_free(&host->auto_restart_processes);
-  xbt_dynar_free(&host->boot_processes);
-  xbt_swag_free(host->process_list);
-
-  /* Clean host structure */
-  delete host;
 }
 
 sg_host_t SIMIX_host_self()
