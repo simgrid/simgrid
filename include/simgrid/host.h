@@ -37,7 +37,6 @@ XBT_PUBLIC(void) sg_host_msg_set(sg_host_t host, msg_host_priv_t priv);
 
 // ========== Simix layer =============
 XBT_PUBLIC(smx_host_priv_t) sg_host_simix(sg_host_t host);
-XBT_PUBLIC(void) sg_host_simix_set(sg_host_t host, smx_host_priv_t priv);
 
 // ========= storage related functions ============
 XBT_PUBLIC(xbt_dict_t) sg_host_get_mounted_storage_list(sg_host_t host);

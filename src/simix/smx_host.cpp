@@ -53,12 +53,6 @@ namespace simgrid {
   }
 }
 
-/** @brief Internal function to create a SIMIX host. */
-void SIMIX_host_create(sg_host_t host)
-{
-  sg_host_simix_set(host, new simgrid::simix::Host());
-}
-
 /** @brief Start the host if it is off */
 void SIMIX_host_on(sg_host_t h)
 {

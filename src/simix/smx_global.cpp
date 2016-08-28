@@ -226,7 +226,7 @@ void SIMIX_global_init(int *argc, char **argv)
     sg_platf_init();
     simgrid::surf::on_postparse.connect(SIMIX_post_create_environment);
     simgrid::s4u::Host::onCreation.connect([](simgrid::s4u::Host& host) {
-      SIMIX_host_create(&host);
+      host.extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
     });
 
     simgrid::surf::storageCreatedCallbacks.connect([](simgrid::surf::Storage* storage) {
