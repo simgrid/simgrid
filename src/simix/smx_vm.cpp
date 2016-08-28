@@ -114,7 +114,7 @@ void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst
  
   /* Resume the VM */
   smx_actor_t self = SIMIX_process_self(); 
-  SIMIX_vm_resume(vm, self->simcall.issuer);
+  SIMIX_vm_resume(vm, self);
 } 
 
 /**
