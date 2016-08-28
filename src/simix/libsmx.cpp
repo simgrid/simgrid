@@ -193,7 +193,7 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
  */
 sg_host_t simcall_vm_create(const char *name, sg_host_t phys_host)
 {
-  return simgrid::simix::kernelImmediate([&] {
+  return simgrid::simix::kernelImmediate([&name, &phys_host] {
     sg_host_t host = surf_vm_model->createVM(name, phys_host);
     SIMIX_host_create(host);
 
