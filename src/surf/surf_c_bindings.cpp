@@ -176,10 +176,6 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-void surf_vm_model_create(const char *name, sg_host_t ind_phys_host){
-  surf_vm_model->createVM(name, ind_phys_host);
-}
-
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate){
   return model->communicate(src->pimpl_netcard, dst->pimpl_netcard, size, rate);
 }

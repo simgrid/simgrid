@@ -192,9 +192,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/** @brief Create a new VM on the specified host */
-XBT_PUBLIC(void) surf_vm_model_create(const char *name, sg_host_t host_PM);
-
 /** @brief Create a communication between two hosts
  *
  * @param model The model which handle the communication

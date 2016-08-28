@@ -8,24 +8,19 @@
 #include "src/surf/virtual_machine.hpp"
 #include "src/surf/HostImpl.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX (vms)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX Virtual Machines");
 
 /* **** create a VM **** */
 
 /**
  * @brief Internal function to create a SIMIX host.
  * @param name name of the host to create
- * @param data some user data (may be nullptr)
  */
-sg_host_t SIMIX_vm_create(const char *name, sg_host_t ind_phys_host)
+sg_host_t SIMIX_vm_create(const char *name, sg_host_t phys_host)
 {
-  /* Create surf associated resource */
-  surf_vm_model_create(name, ind_phys_host);
+  surf_vm_model->createVM(name, phys_host);
   sg_host_t host = sg_host_by_name(name);
   SIMIX_host_create(host);
-
-  /* We will be able to register the VM to its physical host, so that we can promptly
-   * retrieve the list VMs on the physical host. */
 
   return host;
 }
