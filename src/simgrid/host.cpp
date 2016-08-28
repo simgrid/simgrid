@@ -98,9 +98,6 @@ smx_host_priv_t sg_host_simix(sg_host_t host){
 void sg_host_simix_set(sg_host_t host, smx_host_priv_t smx_host) {
   host->extension_set<simgrid::simix::Host>(smx_host);
 }
-void sg_host_simix_destroy(sg_host_t host) {
-  host->extension_set<simgrid::simix::Host>(nullptr);
-}
 
 // ========= storage related functions ============
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
