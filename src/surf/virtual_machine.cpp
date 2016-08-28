@@ -28,7 +28,7 @@ simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmStateChange;
  * Model *
  *********/
 
-VMModel::vm_list_t VMModel::ws_vms;
+std::deque<VirtualMachine*> VirtualMachine::allVms_;
 
 /************
  * Resource *
@@ -38,7 +38,7 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u:
 : HostImpl(model, name, nullptr, nullptr, nullptr)
 , hostPM_(hostPM)
 {
-  VMModel::ws_vms.push_back(*this);
+  allVms_.push_back(this);
   piface = simgrid::s4u::Host::by_name_or_create(name);
   piface->extension_set<simgrid::surf::HostImpl>(this);
 }
@@ -49,7 +49,8 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u:
 VirtualMachine::~VirtualMachine()
 {
   onVmDestruction(this);
-  VMModel::ws_vms.erase(VMModel::vm_list_t::s_iterator_to(*this));
+  allVms_.erase( find(allVms_.begin(), allVms_.end(), this) );
+
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED int ret = action_->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");

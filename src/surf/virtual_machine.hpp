@@ -4,6 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <deque>
 #include <boost/intrusive/list.hpp>
 
 #include <xbt/base.h>
@@ -89,11 +90,10 @@ public:
 
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
+  static std::deque<VirtualMachine*> allVms_;
+
 protected:
   e_surf_vm_state_t p_vm_state = SURF_VM_STATE_CREATED;
-
-public:
-  boost::intrusive::list_member_hook<> vm_hook;
 };
 
 /*********
@@ -116,11 +116,6 @@ public:
    */
   virtual s4u::Host *createVM(const char *name, sg_host_t host_PM)=0;
   void adjustWeightOfDummyCpuActions() {};
-
-  typedef boost::intrusive::member_hook<
-    VirtualMachine, boost::intrusive::list_member_hook<>, &VirtualMachine::vm_hook> VmOptions;
-  typedef boost::intrusive::list<VirtualMachine, VmOptions, boost::intrusive::constant_time_size<false> > vm_list_t;
-  static vm_list_t ws_vms;
 };
 
 }

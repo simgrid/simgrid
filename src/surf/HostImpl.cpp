@@ -44,11 +44,8 @@ HostImpl *HostModel::createHost(const char *name, kernel::routing::NetCard *netE
 void HostModel::adjustWeightOfDummyCpuActions()
 {
   /* iterate for all virtual machines */
-  for (VMModel::vm_list_t::iterator iter =
-         VMModel::ws_vms.begin();
-       iter !=  VMModel::ws_vms.end(); ++iter) {
+  for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
 
-    VirtualMachine *ws_vm = &*iter;
     Cpu *cpu = ws_vm->p_cpu;
 
     int is_active = lmm_constraint_used(cpu->getModel()->getMaxminSystem(), cpu->getConstraint());
@@ -379,13 +376,8 @@ xbt_dynar_t HostImpl::getVms()
 {
   xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachine*), nullptr);
 
-  /* iterate for all virtual machines */
-  for (simgrid::surf::VMModel::vm_list_t::iterator iter =
-         simgrid::surf::VMModel::ws_vms.begin();
-       iter !=  simgrid::surf::VMModel::ws_vms.end(); ++iter) {
-
-    simgrid::surf::VirtualMachine *ws_vm = &*iter;
-    if (this == ws_vm->getPm()->extension(simgrid::surf::HostImpl::EXTENSION_ID))
+  for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
+    if (this == ws_vm->getPm()->extension<simgrid::surf::HostImpl>())
       xbt_dynar_push(dyn, &ws_vm);
   }
 

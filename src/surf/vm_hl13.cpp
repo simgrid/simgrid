@@ -67,8 +67,7 @@ double VMHL13Model::next_occuring_event(double now)
    **/
 
   /* iterate for all virtual machines */
-  for (VMModel::vm_list_t::iterator iter = VMModel::ws_vms.begin(); iter !=  VMModel::ws_vms.end(); ++iter) {
-    VirtualMachine *ws_vm = &*iter;
+  for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
     Cpu *cpu = ws_vm->p_cpu;
     xbt_assert(cpu, "cpu-less host");
 
