@@ -33,7 +33,7 @@ public:
   VMHL13Model();
   ~VMHL13Model(){};
 
-  VirtualMachine *createVM(const char *name, sg_host_t host_PM) override;
+  s4u::Host *createVM(const char *name, sg_host_t host_PM) override;
   double next_occuring_event(double now) override;
   void adjustWeightOfDummyCpuActions() override {};
   void updateActionsState(double /*now*/, double /*delta*/) override;

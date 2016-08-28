@@ -39,7 +39,8 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u:
 , hostPM_(hostPM)
 {
   VMModel::ws_vms.push_back(*this);
-  simgrid::s4u::Host::by_name_or_create(name)->extension_set<simgrid::surf::HostImpl>(this);
+  piface = simgrid::s4u::Host::by_name_or_create(name);
+  piface->extension_set<simgrid::surf::HostImpl>(this);
 }
 
 /*

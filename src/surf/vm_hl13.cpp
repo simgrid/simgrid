@@ -28,11 +28,11 @@ VMHL13Model::VMHL13Model() : VMModel() {}
 
 void VMHL13Model::updateActionsState(double /*now*/, double /*delta*/) {}
 
-VirtualMachine *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
+s4u::Host *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 {
   VirtualMachine* vm = new VMHL13(this, name, host_PM);
   VMCreatedCallbacks(vm);
-  return vm;
+  return vm->piface;
 }
 
 /* In the real world, processes on the guest operating system will be somewhat degraded due to virtualization overhead.

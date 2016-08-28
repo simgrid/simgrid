@@ -114,7 +114,7 @@ public:
    * @param name The name of the new VM
    * @param host_PM The real machine hosting the VM
    */
-  virtual VirtualMachine *createVM(const char *name, sg_host_t host_PM)=0;
+  virtual s4u::Host *createVM(const char *name, sg_host_t host_PM)=0;
   void adjustWeightOfDummyCpuActions() {};
 
   typedef boost::intrusive::member_hook<
