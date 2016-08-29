@@ -60,16 +60,16 @@ public:
   ~VirtualMachine();
 
   /** @brief Suspend the VM */
-  virtual void suspend()=0;
+  virtual void suspend();
 
   /** @brief Resume the VM */
-  virtual void resume()=0;
+  virtual void resume();
 
   /** @brief Save the VM (Not yet implemented) */
-  virtual void save()=0;
+  virtual void save();
 
   /** @brief Restore the VM (Not yet implemented) */
-  virtual void restore()=0;
+  virtual void restore();
 
   /** @brief Migrate the VM to the destination host */
   virtual void migrate(sg_host_t dest_PM)=0;

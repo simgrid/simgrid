@@ -75,6 +75,35 @@ void VirtualMachine::turnOff() {
     onVmStateChange(this);
   }
 }
+void VirtualMachine::suspend()
+{
+  action_->suspend();
+  vmState_ = SURF_VM_STATE_SUSPENDED;
+}
+
+void VirtualMachine::resume()
+{
+  action_->resume();
+  vmState_ = SURF_VM_STATE_RUNNING;
+}
+
+void VirtualMachine::save()
+{
+  vmState_ = SURF_VM_STATE_SAVING;
+
+  /* FIXME: do something here */
+  action_->suspend();
+  vmState_ = SURF_VM_STATE_SAVED;
+}
+
+void VirtualMachine::restore()
+{
+  vmState_ = SURF_VM_STATE_RESTORING;
+
+  /* FIXME: do something here */
+  action_->resume();
+  vmState_ = SURF_VM_STATE_RUNNING;
+}
 
 /** @brief returns the physical machine on which the VM is running **/
 sg_host_t VirtualMachine::getPm() {

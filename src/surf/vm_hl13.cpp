@@ -127,35 +127,6 @@ VMHL13::~VMHL13() {
   delete cpu_;
 }
 
-void VMHL13::suspend()
-{
-  action_->suspend();
-  vmState_ = SURF_VM_STATE_SUSPENDED;
-}
-
-void VMHL13::resume()
-{
-  action_->resume();
-  vmState_ = SURF_VM_STATE_RUNNING;
-}
-
-void VMHL13::save()
-{
-  vmState_ = SURF_VM_STATE_SAVING;
-
-  /* FIXME: do something here */
-  action_->suspend();
-  vmState_ = SURF_VM_STATE_SAVED;
-}
-
-void VMHL13::restore()
-{
-  vmState_ = SURF_VM_STATE_RESTORING;
-
-  /* FIXME: do something here */
-  action_->resume();
-  vmState_ = SURF_VM_STATE_RUNNING;
-}
 
 /* Update the physical host of the given VM */
 void VMHL13::migrate(sg_host_t host_dest)

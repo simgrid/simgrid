@@ -48,14 +48,7 @@ public:
   VMHL13(VMModel *model, const char* name, sg_host_t host_PM);
   ~VMHL13();
 
-  void suspend() override;
-  void resume() override;
-
-  void save() override;
-  void restore() override;
-
   void migrate(sg_host_t ind_dst_pm) override;
-
   void setBound(double bound) override;
 };
 
