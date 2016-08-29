@@ -430,10 +430,10 @@ static void smpi_check_options(){
 
    xbt_assert(xbt_cfg_get_int("smpi/async-small-thresh") <= xbt_cfg_get_int("smpi/send-is-detached-thresh"));
 
-   if (xbt_cfg_is_default_value("smpi/running-power")) {
+   if (xbt_cfg_is_default_value("smpi/host-speed")) {
      XBT_INFO("You did not set the power of the host running the simulation.  "
               "The timings will certainly not be accurate.  "
-              "Use the option \"--cfg=smpi/running-power:<flops>\" to set its value."
+              "Use the option \"--cfg=smpi/host-speed:<flops>\" to set its value."
               "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
    }
 
@@ -763,7 +763,7 @@ static void smpi_init_options(){
 
     smpi_coll_cleanup_callback=nullptr;
     smpi_cpu_threshold = xbt_cfg_get_double("smpi/cpu-threshold");
-    smpi_running_power = xbt_cfg_get_double("smpi/running-power");
+    smpi_host_speed = xbt_cfg_get_double("smpi/host-speed");
     smpi_privatize_global_variables = xbt_cfg_get_boolean("smpi/privatize-global-variables");
     if (smpi_cpu_threshold < 0)
       smpi_cpu_threshold = DBL_MAX;

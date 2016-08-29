@@ -80,7 +80,7 @@ xbt_dict_t samples = nullptr;         /* Allocated on first use */
 xbt_dict_t calls = nullptr;           /* Allocated on first use */
 
 double smpi_cpu_threshold;
-double smpi_running_power;
+double smpi_host_speed;
 
 int smpi_loaded_page = -1;
 char* smpi_start_data_exe = nullptr;
@@ -219,7 +219,7 @@ void smpi_execute(double duration)
 {
   if (duration >= smpi_cpu_threshold) {
     XBT_DEBUG("Sleep for %g to handle real computation time", duration);
-    double flops = duration * smpi_running_power;
+    double flops = duration * smpi_host_speed;
     int rank = smpi_process_index();
     instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
     extra->type=TRACING_COMPUTING;

@@ -566,8 +566,9 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_alias("smpi/IB-penalty-factors","smpi/IB_penalty_factors");
     
 #if HAVE_SMPI
-    xbt_cfg_register_double("smpi/running-power", 20000.0, nullptr, "Power of the host running the simulation (in flop/s). Used to bench the operations.");
-    xbt_cfg_register_alias("smpi/running-power","smpi/running_power");
+    xbt_cfg_register_double("smpi/host-speed", 20000.0, nullptr, "Speed of the host running the simulation (in flop/s). Used to bench the operations.");
+    xbt_cfg_register_alias("smpi/host-speed","smpi/running_power");
+    xbt_cfg_register_alias("smpi/host-speed","smpi/running-power");
 
     xbt_cfg_register_boolean("smpi/display-timing", "no", nullptr, "Whether we should display the timing after simulation.");
     xbt_cfg_register_alias("smpi/display-timing", "smpi/display_timing");

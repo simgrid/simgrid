@@ -569,7 +569,7 @@ precious for that). Then, try to modify your model (of the platform,
 of the collective operations) to reduce the most preeminent differences.
 
 If the discrepancies come from the computing time, try adapting the \c
-smpi/running-power: reduce it if your simulation runs faster than in
+smpi/host-speed: reduce it if your simulation runs faster than in
 reality. If the error come from the communication, then you need to
 fiddle with your platform file.
 

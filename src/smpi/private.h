@@ -399,7 +399,7 @@ XBT_PRIVATE int smpi_type_keyval_create(MPI_Type_copy_attr_function* copy_fn, MP
 XBT_PRIVATE int smpi_type_keyval_free(int* keyval);
 // utilities
 extern XBT_PRIVATE double smpi_cpu_threshold;
-extern XBT_PRIVATE double smpi_running_power;
+extern XBT_PRIVATE double smpi_host_speed;
 extern XBT_PRIVATE bool smpi_privatize_global_variables;
 extern XBT_PRIVATE char* smpi_start_data_exe; //start of the data+bss segment of the executable
 extern XBT_PRIVATE int smpi_size_data_exe; //size of the data+bss segment of the executable
