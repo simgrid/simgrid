@@ -70,12 +70,12 @@ void HostEnergy::update()
   double start_time = this->last_updated;
   double finish_time = surf_get_clock();
   double cpu_load;
-  if (surf_host->p_cpu->speed_.peak <= 0)
+  if (surf_host->cpu_->speed_.peak <= 0)
     // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
     cpu_load = 1;
   else
-    cpu_load = lmm_constraint_get_usage(surf_host->p_cpu->getConstraint()) / surf_host->p_cpu->speed_.peak;
+    cpu_load = lmm_constraint_get_usage(surf_host->cpu_->getConstraint()) / surf_host->cpu_->speed_.peak;
 
   if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not mores
     cpu_load = 1;
@@ -94,7 +94,7 @@ void HostEnergy::update()
   this->last_updated = finish_time;
 
   XBT_DEBUG("[update_energy of %s] period=[%.2f-%.2f]; current power peak=%.0E flop/s; consumption change: %.2f J -> %.2f J",
-      surf_host->getName(), start_time, finish_time, surf_host->p_cpu->speed_.peak, previous_energy, energy_this_step);
+      surf_host->getName(), start_time, finish_time, surf_host->cpu_->speed_.peak, previous_energy, energy_this_step);
 }
 
 HostEnergy::HostEnergy(simgrid::s4u::Host *ptr) : host(ptr), last_updated(surf_get_clock())
@@ -210,7 +210,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
     if (vm) // If it's a VM, take the corresponding PM
       host = vm->getPm()->extension<simgrid::surf::HostImpl>();
 
-    HostEnergy *host_energy = host->piface->extension<HostEnergy>();
+    HostEnergy *host_energy = host->piface_->extension<HostEnergy>();
 
     if(host_energy->last_updated < surf_get_clock())
       host_energy->update();

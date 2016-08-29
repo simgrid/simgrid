@@ -33,7 +33,7 @@ HostImpl *HostModel::createHost(const char *name, kernel::routing::NetCard *netE
   xbt_dynar_t storageList = (xbt_dynar_t)xbt_lib_get_or_null(storage_lib, name, ROUTING_STORAGE_HOST_LEVEL);
 
   HostImpl *host = new simgrid::surf::HostImpl(surf_host_model, name, storageList, cpu);
-  XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->p_storage));
+  XBT_DEBUG("Create host %s with %ld mounted disks", name, xbt_dynar_length(host->storage_));
   return host;
 }
 
@@ -46,7 +46,7 @@ void HostModel::adjustWeightOfDummyCpuActions()
   /* iterate for all virtual machines */
   for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
 
-    Cpu *cpu = ws_vm->p_cpu;
+    Cpu *cpu = ws_vm->cpu_;
 
     int is_active = lmm_constraint_used(cpu->getModel()->getMaxminSystem(), cpu->getConstraint());
 
@@ -115,20 +115,20 @@ Action *HostModel::executeParallelTask(int host_nb,
 HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name)
  , PropertyHolder(nullptr)
- , p_storage(storage), p_cpu(cpu)
+ , storage_(storage), cpu_(cpu)
 {
   if (!EXTENSION_ID.valid())
     EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::surf::HostImpl>();
-  p_params.ramsize = 0;
+  params_.ramsize = 0;
 }
 
 HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, lmm_constraint_t constraint,
                  xbt_dynar_t storage, Cpu *cpu)
  : Resource(model, name, constraint)
  , PropertyHolder(nullptr)
- , p_storage(storage), p_cpu(cpu)
+ , storage_(storage), cpu_(cpu)
 {
-  p_params.ramsize = 0;
+  params_.ramsize = 0;
 }
 
 /** @brief use destroy() instead of this destructor */
@@ -138,28 +138,28 @@ HostImpl::~HostImpl()
 
 void HostImpl::attach(simgrid::s4u::Host* host)
 {
-  if (piface != nullptr)
+  if (piface_ != nullptr)
     xbt_die("Already attached to host %s", host->name().c_str());
   host->extension_set(this);
-  piface = host;
+  piface_ = host;
 }
 
 bool HostImpl::isOn() const {
-  return p_cpu->isOn();
+  return cpu_->isOn();
 }
 bool HostImpl::isOff() const {
-  return p_cpu->isOff();
+  return cpu_->isOff();
 }
 void HostImpl::turnOn(){
   if (isOff()) {
-    p_cpu->turnOn();
-    simgrid::s4u::Host::onStateChange(*this->piface);
+    cpu_->turnOn();
+    simgrid::s4u::Host::onStateChange(*this->piface_);
   }
 }
 void HostImpl::turnOff(){
   if (isOn()) {
-    p_cpu->turnOff();
-    simgrid::s4u::Host::onStateChange(*this->piface);
+    cpu_->turnOff();
+    simgrid::s4u::Host::onStateChange(*this->piface_);
   }
 }
 
@@ -170,7 +170,7 @@ simgrid::surf::Storage *HostImpl::findStorageOnMountList(const char* mount)
   unsigned int cursor;
 
   XBT_DEBUG("Search for storage name '%s' on '%s'", mount, getName());
-  xbt_dynar_foreach(p_storage,cursor,mnt){
+  xbt_dynar_foreach(storage_,cursor,mnt){
     XBT_DEBUG("See '%s'",mnt.name);
     if(!strcmp(mount,mnt.name)){
       st = static_cast<simgrid::surf::Storage*>(mnt.storage);
@@ -189,7 +189,7 @@ xbt_dict_t HostImpl::getMountedStorageList()
   xbt_dict_t storage_list = xbt_dict_new_homogeneous(nullptr);
   char *storage_name = nullptr;
 
-  xbt_dynar_foreach(p_storage,i,mnt){
+  xbt_dynar_foreach(storage_,i,mnt){
     storage_name = (char *)static_cast<simgrid::surf::Storage*>(mnt.storage)->getName();
     xbt_dict_set(storage_list,mnt.name,storage_name,nullptr);
   }
@@ -224,7 +224,7 @@ Action *HostImpl::open(const char* fullpath) {
   char *mount_name = nullptr;
 
   XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, getName());
-  xbt_dynar_foreach(p_storage,cursor,mnt)
+  xbt_dynar_foreach(storage_,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
     file_mount_name = (char *) xbt_malloc ((strlen(mnt.name)+1));
@@ -386,13 +386,13 @@ xbt_dynar_t HostImpl::getVms()
 
 void HostImpl::getParams(vm_params_t params)
 {
-  *params = p_params;
+  *params = params_;
 }
 
 void HostImpl::setParams(vm_params_t params)
 {
   /* may check something here. */
-  p_params = *params;
+  params_ = *params;
 }
 
 }}

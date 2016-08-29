@@ -39,8 +39,8 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u:
 , hostPM_(hostPM)
 {
   allVms_.push_back(this);
-  piface = simgrid::s4u::Host::by_name_or_create(name);
-  piface->extension_set<simgrid::surf::HostImpl>(this);
+  piface_ = simgrid::s4u::Host::by_name_or_create(name);
+  piface_->extension_set<simgrid::surf::HostImpl>(this);
 }
 
 /*
@@ -57,11 +57,11 @@ VirtualMachine::~VirtualMachine()
 }
 
 e_surf_vm_state_t VirtualMachine::getState() {
-  return p_vm_state;
+  return vmState_;
 }
 
 void VirtualMachine::setState(e_surf_vm_state_t state) {
-  p_vm_state = state;
+  vmState_ = state;
 }
 void VirtualMachine::turnOn() {
   if (isOff()) {

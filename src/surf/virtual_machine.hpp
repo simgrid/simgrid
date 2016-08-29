@@ -93,7 +93,7 @@ public:
   static std::deque<VirtualMachine*> allVms_;
 
 protected:
-  e_surf_vm_state_t p_vm_state = SURF_VM_STATE_CREATED;
+  e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
 };
 
 /*********

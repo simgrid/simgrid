@@ -32,7 +32,7 @@ s4u::Host *VMHL13Model::createVM(const char *name, sg_host_t host_PM)
 {
   VirtualMachine* vm = new VMHL13(this, name, host_PM);
   onVmCreation(vm);
-  return vm->piface;
+  return vm->piface_;
 }
 
 /* In the real world, processes on the guest operating system will be somewhat degraded due to virtualization overhead.
@@ -68,7 +68,7 @@ double VMHL13Model::next_occuring_event(double now)
 
   /* iterate for all virtual machines */
   for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
-    Cpu *cpu = ws_vm->p_cpu;
+    Cpu *cpu = ws_vm->cpu_;
     xbt_assert(cpu, "cpu-less host");
 
     double solved_value = ws_vm->action_->getVariable()->value;
@@ -95,7 +95,7 @@ VMHL13::VMHL13(VMModel *model, const char* name, sg_host_t host_PM)
  : VirtualMachine(model, name, host_PM)
 {
   /* Currently, we assume a VM has no storage. */
-  p_storage = nullptr;
+  storage_ = nullptr;
 
   /* Currently, a VM uses the network resource of its physical host. In
    * host_lib, this network resource object is referred from two different keys.
@@ -106,55 +106,55 @@ VMHL13::VMHL13(VMModel *model, const char* name, sg_host_t host_PM)
   sg_host_t host_VM = simgrid::s4u::Host::by_name_or_create(name);
   host_VM->pimpl_netcard = host_PM->pimpl_netcard;
 
-  p_vm_state = SURF_VM_STATE_CREATED;
+  vmState_ = SURF_VM_STATE_CREATED;
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01 *sub_cpu = static_cast<CpuCas01*>(host_PM->pimpl_cpu);
+  CpuCas01 *sub_cpu = dynamic_cast<CpuCas01*>(host_PM->pimpl_cpu);
 
-  p_cpu = surf_cpu_model_vm->createCpu(host_VM, // the machine hosting the VM
+  cpu_ = surf_cpu_model_vm->createCpu(host_VM, // the machine hosting the VM
       sub_cpu->getSpeedPeakList(), 1 /*cores*/);
   if (sub_cpu->getPState() != 0)
-    p_cpu->setPState(sub_cpu->getPState());
+    cpu_->setPState(sub_cpu->getPState());
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   action_ = sub_cpu->execution_start(0);
 
-  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", name, hostPM_->name().c_str(), xbt_dynar_length(p_storage));
+  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", name, hostPM_->name().c_str(), xbt_dynar_length(storage_));
 }
 VMHL13::~VMHL13() {
-  delete p_cpu;
+  delete cpu_;
 }
 
 void VMHL13::suspend()
 {
   action_->suspend();
-  p_vm_state = SURF_VM_STATE_SUSPENDED;
+  vmState_ = SURF_VM_STATE_SUSPENDED;
 }
 
 void VMHL13::resume()
 {
   action_->resume();
-  p_vm_state = SURF_VM_STATE_RUNNING;
+  vmState_ = SURF_VM_STATE_RUNNING;
 }
 
 void VMHL13::save()
 {
-  p_vm_state = SURF_VM_STATE_SAVING;
+  vmState_ = SURF_VM_STATE_SAVING;
 
   /* FIXME: do something here */
   action_->suspend();
-  p_vm_state = SURF_VM_STATE_SAVED;
+  vmState_ = SURF_VM_STATE_SAVED;
 }
 
 void VMHL13::restore()
 {
-  p_vm_state = SURF_VM_STATE_RESTORING;
+  vmState_ = SURF_VM_STATE_RESTORING;
 
   /* FIXME: do something here */
   action_->resume();
-  p_vm_state = SURF_VM_STATE_RUNNING;
+  vmState_ = SURF_VM_STATE_RUNNING;
 }
 
 /* Update the physical host of the given VM */

@@ -226,9 +226,9 @@ public:
     {THROW_IMPOSSIBLE;} // FIXME: Host should not be a Resource
 
 public:
-  xbt_dynar_t p_storage;
-  Cpu *p_cpu;
-  simgrid::s4u::Host* piface = nullptr;
+  xbt_dynar_t storage_;
+  Cpu *cpu_;
+  simgrid::s4u::Host* piface_ = nullptr;
 
   /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();
@@ -239,9 +239,9 @@ public:
   void getParams(vm_params_t params);
   /** @brief Sets the params of that VM/PM */
   void setParams(vm_params_t params);
-  simgrid::s4u::Host* getHost() { return piface; }
+  simgrid::s4u::Host* getHost() { return piface_; }
 private:
-  s_vm_params_t p_params;
+  s_vm_params_t params_;
 };
 
 }
