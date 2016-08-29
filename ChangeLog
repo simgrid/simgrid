@@ -19,6 +19,8 @@ SimGrid (3.14) UNRELEASED; urgency=low
    values were ignored in some cases. The timings of these functions can now
    be significantly different.
 
+ * smpi/cpu-threshold:-1 should become smpi/simulate-computation:no
+
  Dropped functions and features
  * msg_mailbox_t and associated functions. Use s4u::Mailbox instead.
    - MSG_mailbox_is_empty() -> Mailbox::empty()

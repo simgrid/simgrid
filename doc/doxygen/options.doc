@@ -735,7 +735,6 @@ impacts badly the simulation performance. It specifies a threshold (in
 seconds) below which the execution chunks are not reported to the
 simulation kernel (default value: 1e-6).
 
-
 \note
     The option smpi/cpu-threshold ignores any computation time spent
     below this threshold. SMPI does not consider the \a amount of these
@@ -743,7 +742,7 @@ simulation kernel (default value: 1e-6).
     value that is too low, you may end up with unreliable simulation
     results.
 
- In some cases, however, one may wish to disable simulation of
+In some cases, however, one may wish to disable simulation of
 application computation. This is the case when SMPI is used not to
 simulate an MPI applications, but instead an MPI code that performs
 "live replay" of another MPI app (e.g., ScalaTrace's replay tool,
@@ -756,14 +755,18 @@ be simulated using SMPI by calling internal smpi_execute*() functions.
 
 To disable the benchmarking/simulation of computation in the simulated
 application, the variable \b smpi/simulate-computation should be set to no.
-Equivalently, setting \b smpi/cpu-threshold to -1 also ignores all
-computation.
 
 \note
     This option just ignores the timings in your simulation; it still executes
     the computations itself. If you want to stop SMPI from doing that,
-    you should check the SMPI_SAMPLE macros, documented in the chapter
+    you should check the SMPI_SAMPLE macros, documented in the section
     \ref SMPI_adapting_speed.
+
+Solution                           | Computations actually executed? | Computations simulated ?
+---------------------------------- | ------------------------------- | ------------------------
+--cfg=smpi/simulate-computation:no | Yes                             | No, never
+--cfg=smpi/cpu-threshold:42        | Yes, in all cases               | Only if it lasts more than 42 seconds
+SMPI_SAMPLE() macro                | Only once per loop nest (see @ref SMPI_adapting_speed "documentation") | Always
 
 \subsection options_model_smpi_adj_file smpi/comp-adjustment-file: Slow-down or speed-up parts of your code.
 

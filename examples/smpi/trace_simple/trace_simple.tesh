@@ -39,7 +39,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-grouped -trace-file smpi_trace.tra
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
 
 p Testing generation of viva configuration files
-$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=smpi/cpu-threshold:-1 -np 3 ./trace_simple/smpi_trace_simple --log=smpi_kernel.thres:warning
+$ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file smpi_trace.trace -hostfile ${srcdir:=.}/hostfile -platform ${srcdir:=.}/../platforms/small_platform.xml --cfg=path:${srcdir:=.}/../msg --cfg=smpi/simulate-computation:no -np 3 ./trace_simple/smpi_trace_simple --log=smpi_kernel.thres:warning
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'smpi_trace.trace'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/smpi' to 'yes'
@@ -50,7 +50,7 @@ $ ../../smpi_script/bin/smpirun -trace -trace-resource -trace-viva -trace-file s
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'surf/precision' to '1e-9'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'SMPI'
 > [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/TCP-gamma' to '4194304'
-> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/cpu-threshold' to '-1'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'smpi/simulate-computation' to 'no'
 > [0.003952] [instr_config/INFO] No categories declared, ignoring generation of viva graph configuration
 
 p Testing with parameters but without activating them with the safe switch (-trace)

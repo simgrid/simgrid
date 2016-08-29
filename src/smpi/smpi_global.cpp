@@ -436,6 +436,10 @@ static void smpi_check_options(){
               "Use the option \"--cfg=smpi/running-power:<flops>\" to set its value."
               "Check http://simgrid.org/simgrid/latest/doc/options.html#options_smpi_bench for more information.");
    }
+
+   xbt_assert(xbt_cfg_get_double("smpi/cpu-threshold") >=0,
+       "The 'smpi/cpu-threshold' option cannot have negative values [anymore]. If you want to discard "
+       "the simulation of any computation, please use 'smpi/simulate-computation:no' instead.");
 }
 
 int smpi_enabled() {

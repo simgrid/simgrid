@@ -76,6 +76,14 @@ You can change many simulation parameter on the command line by passing
 A full list of existing parameters and their meaning can be found at
 http://simgrid.gforge.inria.fr/simgrid/latest/doc/options.html 
 
+Here are some options commonly used with SMPI:
+.TP
+\fB--cfg=smpi/cpu-threshold:XXX\fR
+Only simulate computation chunks that last more than XXX seconds.
+.TP
+\fB--cfg=smpi/simulate-computation:no\fR
+Disable the simulation of all computation chunks (that are still executed on the host machine).
+
 .SH AUTHORS
 The SimGrid team (simgrid-devel@lists.gforge.inria.fr)
 .SH COPYRIGHT AND LICENCE
