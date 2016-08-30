@@ -90,8 +90,6 @@ void VirtualMachine::resume()
 void VirtualMachine::save()
 {
   vmState_ = SURF_VM_STATE_SAVING;
-
-  /* FIXME: do something here */
   action_->suspend();
   vmState_ = SURF_VM_STATE_SAVED;
 }
@@ -99,8 +97,6 @@ void VirtualMachine::save()
 void VirtualMachine::restore()
 {
   vmState_ = SURF_VM_STATE_RESTORING;
-
-  /* FIXME: do something here */
   action_->resume();
   vmState_ = SURF_VM_STATE_RUNNING;
 }

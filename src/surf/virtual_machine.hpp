@@ -80,7 +80,7 @@ public:
   virtual void setBound(double bound)=0;
 
   /* The vm object of the lower layer */
-  CpuAction *action_;
+  CpuAction *action_ = nullptr;
 protected:
   simgrid::s4u::Host *hostPM_;
 
