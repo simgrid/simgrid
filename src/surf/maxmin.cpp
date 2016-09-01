@@ -1220,25 +1220,28 @@ static void lmm_remove_all_modified_set(lmm_system_t sys)
 }
 
 /**
- *  Returns total resource load
+ *  Returns resource load (in flop per second, or byte per second, or similar)
  *
+ *  If the resource is shared (the default case), the load is sum of
+ *  resource usage made by every variables located on this resource.
+ *
+ * If the resource is not shared (ie in FATPIPE mode), then the the
+ * load is the max (not the sum) of all resource usages located on this resource.
+ * .
  * \param cnst the lmm_constraint_t associated to the resource
- *
- * This is dead code, but we may use it later for debug/trace.
  */
 double lmm_constraint_get_usage(lmm_constraint_t cnst) {
    double usage = 0.0;
    xbt_swag_t elem_list = &(cnst->enabled_element_set);
    void *_elem;
-   lmm_element_t elem = nullptr;
 
    xbt_swag_foreach(_elem, elem_list) {
-   elem = (lmm_element_t)_elem;
-     if ((elem->value > 0)) {
+     lmm_element_t elem = (lmm_element_t)_elem;
+     if (elem->value > 0) {
        if (cnst->sharing_policy)
          usage += elem->value * elem->variable->value;
        else if (usage < elem->value * elem->variable->value)
-         usage = elem->value * elem->variable->value;
+         usage = std::max(usage, elem->value * elem->variable->value);
      }
    }
   return usage;

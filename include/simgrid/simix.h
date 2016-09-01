@@ -205,7 +205,6 @@ XBT_PUBLIC(void) SIMIX_process_detach();
 /*********************************** Host *************************************/
 XBT_PUBLIC(sg_host_t) SIMIX_host_self();
 XBT_PUBLIC(const char*) SIMIX_host_self_get_name();
-XBT_PUBLIC(void) SIMIX_host_on(sg_host_t host);
 XBT_PUBLIC(void) SIMIX_host_off(sg_host_t host, smx_actor_t issuer);
 XBT_PUBLIC(void) SIMIX_host_self_set_data(void *data);
 XBT_PUBLIC(void*) SIMIX_host_self_get_data();

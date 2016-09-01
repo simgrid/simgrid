@@ -32,6 +32,8 @@ namespace simgrid {
       xbt_swag_t process_list;
       xbt_dynar_t auto_restart_processes = nullptr;
       xbt_dynar_t boot_processes = nullptr;
+
+      void turnOn();
     };
   }
 }

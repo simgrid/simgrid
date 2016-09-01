@@ -75,11 +75,18 @@ Host *Host::current(){
 }
 
 void Host::turnOn() {
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_host_on, this));
+  if (isOff()) {
+    simgrid::simix::kernelImmediate([&]{
+      this->extension<simgrid::simix::Host>()->turnOn();
+      this->extension<simgrid::surf::HostImpl>()->turnOn();
+    });
+  }
 }
 
 void Host::turnOff() {
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_host_off, this, SIMIX_process_self()));
+  if (isOn()) {
+    simgrid::simix::kernelImmediate(std::bind(SIMIX_host_off, this, SIMIX_process_self()));
+  }
 }
 
 bool Host::isOn() {
