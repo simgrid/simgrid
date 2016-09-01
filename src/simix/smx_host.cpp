@@ -50,46 +50,40 @@ namespace simgrid {
       xbt_dynar_free(&boot_processes);
       xbt_swag_free(process_list);
     }
-  }
-}
 
-/** @brief Start the host if it is off */
-void SIMIX_host_on(sg_host_t h)
-{
-  smx_host_priv_t host = sg_host_simix(h);
-
-  xbt_assert((host != nullptr), "Invalid parameters");
-
-  if (h->isOff()) {
-    simgrid::surf::HostImpl* surf_host = h->extension<simgrid::surf::HostImpl>();
-    surf_host->turnOn();
-
-    unsigned int cpt;
-    smx_process_arg_t arg;
-    xbt_dynar_foreach(host->boot_processes,cpt,arg) {
-      XBT_DEBUG("Booting Process %s(%s) right now",
-        arg->name.c_str(), arg->hostname);
-      if (simix_global->create_process_function) {
-        simix_global->create_process_function(arg->name.c_str(),
-                                              arg->code,
-                                              nullptr,
-                                              arg->hostname,
-                                              arg->kill_time,
-                                              arg->properties,
-                                              arg->auto_restart,
-                                              nullptr);
-      } else {
-        simcall_process_create(arg->name.c_str(),
-                               arg->code,
-                               nullptr,
-                               arg->hostname,
-                               arg->kill_time,
-                               arg->properties,
-                               arg->auto_restart);
+    /** Re-starts all the actors that are marked as restartable.
+     *
+     * Weird things will happen if you turn on an host that is already on. S4U is fool-proof, not this.
+     */
+    void Host::turnOn()
+    {
+      unsigned int cpt;
+      smx_process_arg_t arg;
+      xbt_dynar_foreach(boot_processes,cpt,arg) {
+        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
+        // FIXME: factorize this code by registering the simcall as default function
+        if (simix_global->create_process_function) {
+          simix_global->create_process_function(arg->name.c_str(),
+                                                arg->code,
+                                                nullptr,
+                                                arg->hostname,
+                                                arg->kill_time,
+                                                arg->properties,
+                                                arg->auto_restart,
+                                                nullptr);
+        } else {
+          simcall_process_create(arg->name.c_str(),
+                                 arg->code,
+                                 nullptr,
+                                 arg->hostname,
+                                 arg->kill_time,
+                                 arg->properties,
+                                 arg->auto_restart);
+        }
       }
     }
-  }
-}
+
+}} // namespaces
 
 /** @brief Stop the host if it is on */
 void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)

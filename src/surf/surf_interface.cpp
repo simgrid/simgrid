@@ -33,7 +33,7 @@ xbt_dynar_t model_list_invoke = nullptr;  /* to invoke callbacks */
 
 simgrid::trace_mgr::future_evt_set *future_evt_set = nullptr;
 xbt_dynar_t surf_path = nullptr;
-std::vector<sg_host_t> host_that_restart;
+std::vector<simgrid::s4u::Host*> host_that_restart;
 xbt_dict_t watched_hosts_lib;
 
 namespace simgrid {
