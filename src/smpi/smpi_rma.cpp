@@ -6,6 +6,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
+#include <vector>
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_rma, smpi, "Logging specific to SMPI (RMA operations)");
 
@@ -20,7 +21,7 @@ typedef struct s_smpi_mpi_win{
   MPI_Comm comm;
   MPI_Info info;
   int assert;
-  xbt_dynar_t requests;
+  std::vector<MPI_Request> *requests;
   xbt_bar_t bar;
   MPI_Win* connected_wins;
   char* name;
@@ -48,7 +49,7 @@ MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info 
   win->name = nullptr;
   win->opened = 0;
   win->group = MPI_GROUP_NULL;
-  win->requests = xbt_dynar_new(sizeof(MPI_Request), nullptr);
+  win->requests = new std::vector<MPI_Request>();
   win->connected_wins = xbt_new0(MPI_Win, comm_size);
   win->connected_wins[rank] = win;
 
@@ -68,7 +69,7 @@ MPI_Win smpi_mpi_win_create( void *base, MPI_Aint size, int disp_unit, MPI_Info 
 int smpi_mpi_win_free( MPI_Win* win){
   //As per the standard, perform a barrier to ensure every async comm is finished
   xbt_barrier_wait((*win)->bar);
-  xbt_dynar_free(&(*win)->requests);
+  delete (*win)->requests;
   xbt_free((*win)->connected_wins);
   if ((*win)->name != nullptr){
     xbt_free((*win)->name);
@@ -113,21 +114,16 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
   if(assert != MPI_MODE_NOPRECEDE){
     xbt_barrier_wait(win->bar);
 
-    xbt_dynar_t reqs = win->requests;
-    int size = xbt_dynar_length(reqs);
-    unsigned int cpt=0;
-    MPI_Request req;
+    std::vector<MPI_Request> *reqs = win->requests;
+    int size = static_cast<int>(reqs->size());
     // start all requests that have been prepared by another process
-    xbt_dynar_foreach(reqs, cpt, req){
+    for(auto req: *reqs){
       if (req->flags & PREPARED) 
         smpi_mpi_start(req);
     }
 
-    MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqs));
-    win->requests=xbt_dynar_new(sizeof(MPI_Request), nullptr);
+    MPI_Request* treqs = &(*reqs)[0];
     smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
-    xbt_free(treqs);
-
   }
   win->assert = assert;
 
@@ -158,13 +154,13 @@ int smpi_mpi_put( void *origin_addr, int origin_count, MPI_Datatype origin_datat
         smpi_group_index(smpi_comm_group(win->comm),target_rank), RMA_TAG+1, recv_win->comm, MPI_OP_NULL);
 
     //push request to receiver's win
-    xbt_dynar_push_as(recv_win->requests, MPI_Request, rreq);
+    recv_win->requests->push_back(rreq);
 
     //start send
     smpi_mpi_start(sreq);
 
     //push request to sender's win
-    xbt_dynar_push_as(win->requests, MPI_Request, sreq);
+    win->requests->push_back(sreq);
   }else{
     smpi_datatype_copy(origin_addr, origin_count, origin_datatype, recv_addr, target_count, target_datatype);
   }
@@ -198,13 +194,13 @@ int smpi_mpi_get( void *origin_addr, int origin_count, MPI_Datatype origin_datat
     smpi_mpi_start(sreq);
 
     //push request to receiver's win
-    xbt_dynar_push_as(send_win->requests, MPI_Request, sreq);
+    send_win->requests->push_back(sreq);
 
     //start recv
     smpi_mpi_start(rreq);
 
     //push request to sender's win
-    xbt_dynar_push_as(win->requests, MPI_Request, rreq);
+    win->requests->push_back(rreq);
   }else{
     smpi_datatype_copy(send_addr, target_count, target_datatype, origin_addr, origin_count, origin_datatype);
   }
@@ -233,12 +229,12 @@ int smpi_mpi_accumulate( void *origin_addr, int origin_count, MPI_Datatype origi
     MPI_Request rreq = smpi_rma_recv_init(recv_addr, target_count, target_datatype,
         smpi_process_index(), smpi_group_index(smpi_comm_group(win->comm),target_rank), RMA_TAG+3, recv_win->comm, op);
     //push request to receiver's win
-    xbt_dynar_push_as(recv_win->requests, MPI_Request, rreq);
+    recv_win->requests->push_back(rreq);
     //start send
     smpi_mpi_start(sreq);
 
     //push request to sender's win
-    xbt_dynar_push_as(win->requests, MPI_Request, sreq);
+    win->requests->push_back(sreq);
 
   return MPI_SUCCESS;
 }
@@ -339,22 +335,19 @@ int smpi_mpi_win_complete(MPI_Win win){
 
   //now we can finish RMA calls
 
-  xbt_dynar_t reqqs = win->requests;
-  size = xbt_dynar_length(reqqs);
+  std::vector<MPI_Request> *reqqs = win->requests;
+  size = static_cast<int>(reqqs->size());
 
   XBT_DEBUG("Win_complete - Finishing %d RMA calls", size);
-  unsigned int cpt=0;
-  MPI_Request req;
   // start all requests that have been prepared by another process
-  xbt_dynar_foreach(reqqs, cpt, req){
+  for (auto req: *reqqs){
     if (req->flags & PREPARED) 
       smpi_mpi_start(req);
   }
 
-  MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
-  win->requests=xbt_dynar_new(sizeof(MPI_Request), nullptr);
+  MPI_Request* treqs = &(*reqqs)[0];
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
-  xbt_free(treqs);
+  delete reqqs;
   smpi_group_unuse(win->group);
   win->opened--; //we're closed for business !
   return MPI_SUCCESS;
@@ -384,23 +377,20 @@ int smpi_mpi_win_wait(MPI_Win win){
   }
   xbt_free(reqs);
 
-  xbt_dynar_t reqqs = win->requests;
-  size = xbt_dynar_length(reqqs);
+  std::vector<MPI_Request> *reqqs = win->requests;
+  size = static_cast<int>(reqqs->size());
 
   XBT_DEBUG("Win_complete - Finishing %d RMA calls", size);
 
-  unsigned int cpt=0;
-  MPI_Request req;
   // start all requests that have been prepared by another process
-  xbt_dynar_foreach(reqqs, cpt, req){
+  for(auto req: *reqqs){
     if (req->flags & PREPARED) 
       smpi_mpi_start(req);
   }
 
-  MPI_Request* treqs = static_cast<MPI_Request*>(xbt_dynar_to_array(reqqs));
-  win->requests=xbt_dynar_new(sizeof(MPI_Request), nullptr);
+  MPI_Request* treqs = &(*reqqs)[0];
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
-  xbt_free(treqs);
+  delete reqqs;
   smpi_group_unuse(win->group);
   win->opened--; //we're opened for business !
   return MPI_SUCCESS;
