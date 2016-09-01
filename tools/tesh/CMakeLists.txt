@@ -1,11 +1,6 @@
-configure_file("${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.pl"
+configure_file("${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.py"
   "${CMAKE_BINARY_DIR}/bin/tesh" @ONLY IMMEDIATE)
 
-    file(COPY        ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/Diff.pm
-         DESTINATION ${CMAKE_BINARY_DIR}/bin
-         FILE_PERMISSIONS OWNER_EXECUTE OWNER_WRITE OWNER_READ GROUP_EXECUTE GROUP_READ)
-    file(COPY        ${CMAKE_HOME_DIRECTORY}/tools/cmake/scripts/IPC
-         DESTINATION ${CMAKE_BINARY_DIR}/bin)
 
 foreach(x setenv set-output-ignore set-output-sort set-return set-timeout background basic bg-basic bg-set-signal
           catch-return catch-signal catch-timeout catch-wrong-output cd IO-bigsize IO-broken-pipe IO-orders)
@@ -16,4 +11,4 @@ foreach(x setenv set-output-ignore set-output-sort set-return set-timeout backgr
 endforeach()
 
 set(tesh_files ${tesh_files}                                                                               PARENT_SCOPE)
-set(bin_files  ${bin_files}  ${CMAKE_CURRENT_SOURCE_DIR}/tesh.pl ${CMAKE_CURRENT_SOURCE_DIR}/generate_tesh PARENT_SCOPE)
+set(bin_files  ${bin_files}  ${CMAKE_CURRENT_SOURCE_DIR}/tesh.py ${CMAKE_CURRENT_SOURCE_DIR}/generate_tesh PARENT_SCOPE)

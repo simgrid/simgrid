@@ -6,7 +6,7 @@ IF(enable_smpi AND NOT WIN32)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun)
 ENDIF()
 
-SET(TESH_COMMAND ${PERL_EXECUTABLE} ${CMAKE_BINARY_DIR}/bin/tesh)
+SET(TESH_COMMAND ${CMAKE_BINARY_DIR}/bin/tesh)
 IF(CMAKE_HOST_WIN32)
   SET(TESH_OPTION ${TESH_OPTION} --timeout 50)
 ENDIF()
