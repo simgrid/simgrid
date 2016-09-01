@@ -48,7 +48,7 @@ In this example, the idle consumption is 95 Watts, 93 Watts and 90 Watts in each
 are at 200 Watts, 170 Watts, and 150 Watts respectively.
 
 To change the pstate of a given CPU, use the following functions:
-#MSG_host_get_nb_pstates(), simgrid#s4u#Host#set_pstate(), #MSG_host_get_power_peak_at().
+#MSG_host_get_nb_pstates(), simgrid#s4u#Host#setPstate(), #MSG_host_get_power_peak_at().
 
 To simulate the energy-related elements, first call the simgrid#energy#sg_energy_plugin_init() before your #MSG_init(),
 and then use the following function to retrieve the consumption of a given host: MSG_host_get_consumed_energy().
