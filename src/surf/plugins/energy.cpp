@@ -77,8 +77,15 @@ void HostEnergy::update()
   else
     cpu_load = lmm_constraint_get_usage(surf_host->cpu_->getConstraint()) / surf_host->cpu_->speed_.peak;
 
-  if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not mores
+  if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
     cpu_load = 1;
+  /* The problem with this model is that the load is always 0 or 1, never something less.
+   * Another possibility could be to model the total energy as
+   *
+   *   X/(X+Y)*W_idle + Y/(X+Y)*W_burn
+   *
+   * where X is the amount of ideling cores, and Y the amount of computing cores.
+   */
 
   double previous_energy = this->total_energy;
 
