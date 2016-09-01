@@ -115,7 +115,7 @@ public:
    * @param host_PM The real machine hosting the VM
    */
   s4u::Host *createVM(const char *name, sg_host_t host_PM);
-  void adjustWeightOfDummyCpuActions() {};
+  void adjustWeightOfDummyCpuActions() override {};
 
   double next_occuring_event(double now) override;
   void updateActionsState(double /*now*/, double /*delta*/) override {};
