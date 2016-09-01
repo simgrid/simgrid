@@ -1,4 +1,3 @@
-
 /* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -118,7 +117,7 @@ int smpi_mpi_win_fence( int assert,  MPI_Win win){
     int size = static_cast<int>(reqs->size());
     // start all requests that have been prepared by another process
     for(auto req: *reqs){
-      if (req->flags & PREPARED) 
+      if (req && (req->flags & PREPARED))
         smpi_mpi_start(req);
     }
 
@@ -341,13 +340,13 @@ int smpi_mpi_win_complete(MPI_Win win){
   XBT_DEBUG("Win_complete - Finishing %d RMA calls", size);
   // start all requests that have been prepared by another process
   for (auto req: *reqqs){
-    if (req->flags & PREPARED) 
+    if (req && (req->flags & PREPARED))
       smpi_mpi_start(req);
   }
 
   MPI_Request* treqs = &(*reqqs)[0];
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
-  delete reqqs;
+  reqqs->clear();
   smpi_group_unuse(win->group);
   win->opened--; //we're closed for business !
   return MPI_SUCCESS;
@@ -384,13 +383,13 @@ int smpi_mpi_win_wait(MPI_Win win){
 
   // start all requests that have been prepared by another process
   for(auto req: *reqqs){
-    if (req->flags & PREPARED) 
+    if (req && (req->flags & PREPARED))
       smpi_mpi_start(req);
   }
 
   MPI_Request* treqs = &(*reqqs)[0];
   smpi_mpi_waitall(size,treqs,MPI_STATUSES_IGNORE);
-  delete reqqs;
+  reqqs->clear();
   smpi_group_unuse(win->group);
   win->opened--; //we're opened for business !
   return MPI_SUCCESS;
