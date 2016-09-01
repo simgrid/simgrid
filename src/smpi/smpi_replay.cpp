@@ -8,6 +8,8 @@
 #include <stdio.h>
 #include <xbt.h>
 #include <xbt/replay.h>
+#include <unordered_map>
+#include <vector>
 
 #define KEY_SIZE (sizeof(int) * 2 + 1)
 
@@ -15,7 +17,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_replay,smpi,"Trace Replay with SMPI");
 
 int communicator_size = 0;
 static int active_processes = 0;
-xbt_dict_t reqq = nullptr;
+std::unordered_map<int,std::vector<MPI_Request>*> reqq;
 
 MPI_Datatype MPI_DEFAULT_TYPE;
 MPI_Datatype MPI_CURRENT_TYPE;
@@ -33,20 +35,14 @@ static void log_timed_action (const char *const *action, double clock){
   }
 }
 
-static xbt_dynar_t get_reqq_self()
+static std::vector<MPI_Request>* get_reqq_self()
 {
-   char * key = bprintf("%d", smpi_process_index());
-   xbt_dynar_t dynar_mpi_request = static_cast<xbt_dynar_t>(xbt_dict_get(reqq, key));
-   xbt_free(key);
- 
-   return dynar_mpi_request;
+  return reqq.at(smpi_process_index());
 }
 
-static void set_reqq_self(xbt_dynar_t mpi_request)
+static void set_reqq_self(std::vector<MPI_Request> *mpi_request)
 {
-   char * key = bprintf("%d", smpi_process_index());
-   xbt_dict_set(reqq, key, mpi_request, free);
-   xbt_free(key);
+   reqq.insert({smpi_process_index(), mpi_request});
 }
 
 //allocate a single buffer for all sends, growing it if needed
@@ -173,11 +169,7 @@ static void action_init(const char *const *action)
   /*initialize the number of active processes */
   active_processes = smpi_process_count();
 
-  if (reqq==nullptr) {
-    reqq = xbt_dict_new();
-  }
-
-  set_reqq_self(xbt_dynar_new(sizeof(MPI_Request),&xbt_free_ref));
+  set_reqq_self(new std::vector<MPI_Request>);
 }
 
 static void action_finalize(const char *const *action)
@@ -288,7 +280,7 @@ static void action_Isend(const char *const *action)
   TRACE_smpi_ptp_out(rank, rank, dst_traced, __FUNCTION__);
   request->send = 1;
 
-  xbt_dynar_push(get_reqq_self(),&request);
+  get_reqq_self()->push_back(request);
 
   log_timed_action (action, clock);
 }
@@ -365,7 +357,7 @@ static void action_Irecv(const char *const *action)
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   request->recv = 1;
-  xbt_dynar_push(get_reqq_self(),&request);
+  get_reqq_self()->push_back(request);
 
   log_timed_action (action, clock);
 }
@@ -373,11 +365,11 @@ static void action_Irecv(const char *const *action)
 static void action_test(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0)
   double clock = smpi_process_simulated_elapsed();
-  MPI_Request request;
   MPI_Status status;
   int flag = true;
 
-  request = xbt_dynar_pop_as(get_reqq_self(),MPI_Request);
+  MPI_Request request = get_reqq_self()->back();
+  get_reqq_self()->pop_back();
   //if request is null here, this may mean that a previous test has succeeded 
   //Different times in traced application and replayed version may lead to this 
   //In this case, ignore the extra calls.
@@ -390,8 +382,8 @@ static void action_test(const char *const *action){
     flag = smpi_mpi_test(&request, &status);
 
     XBT_DEBUG("MPI_Test result: %d", flag);
-    /* push back request in dynar to be caught by a subsequent wait. if the test did succeed, the request is now nullptr.*/
-    xbt_dynar_push_as(get_reqq_self(),MPI_Request, request);
+    /* push back request in vector to be caught by a subsequent wait. if the test did succeed, the request is now nullptr.*/
+    get_reqq_self()->push_back(request);
 
     TRACE_smpi_testing_out(rank);
   }
@@ -401,13 +393,12 @@ static void action_test(const char *const *action){
 static void action_wait(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0)
   double clock = smpi_process_simulated_elapsed();
-  MPI_Request request;
   MPI_Status status;
 
-  xbt_assert(xbt_dynar_length(get_reqq_self()),
-      "action wait not preceded by any irecv or isend: %s",
+  xbt_assert(get_reqq_self()->size(), "action wait not preceded by any irecv or isend: %s",
       xbt_str_join_array(action," "));
-  request = xbt_dynar_pop_as(get_reqq_self(),MPI_Request);
+  MPI_Request request = get_reqq_self()->back();
+  get_reqq_self()->pop_back();
 
   if (request==nullptr){
     /* Assume that the trace is well formed, meaning the comm might have been caught by a MPI_test. Then just return.*/
@@ -435,68 +426,25 @@ static void action_wait(const char *const *action){
 static void action_waitall(const char *const *action){
   CHECK_ACTION_PARAMS(action, 0, 0)
   double clock = smpi_process_simulated_elapsed();
-  int count_requests=0;
-  unsigned int i=0;
-
-  count_requests=xbt_dynar_length(get_reqq_self());
+  unsigned int count_requests=get_reqq_self()->size();
 
   if (count_requests>0) {
-    MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
 
-    /*  The reqq is an array of dynars. Its index corresponds to the rank.
-     Thus each rank saves its own requests to the array request. */
-    xbt_dynar_foreach(get_reqq_self(),i,requests[i]); 
-
-   //save information from requests
-   xbt_dynar_t srcs = xbt_dynar_new(sizeof(int), nullptr);
-   xbt_dynar_t dsts = xbt_dynar_new(sizeof(int), nullptr);
-   xbt_dynar_t recvs = xbt_dynar_new(sizeof(int), nullptr);
-   for (i = 0; static_cast<int>(i) < count_requests; i++) {
-    if(requests[i]){
-      int *asrc = xbt_new(int, 1);
-      int *adst = xbt_new(int, 1);
-      int *arecv = xbt_new(int, 1);
-      *asrc = requests[i]->src;
-      *adst = requests[i]->dst;
-      *arecv = requests[i]->recv;
-      xbt_dynar_insert_at(srcs, i, asrc);
-      xbt_dynar_insert_at(dsts, i, adst);
-      xbt_dynar_insert_at(recvs, i, arecv);
-      xbt_free(asrc);
-      xbt_free(adst);
-      xbt_free(arecv);
-    }else {
-      int *t = xbt_new(int, 1);
-      xbt_dynar_insert_at(srcs, i, t);
-      xbt_dynar_insert_at(dsts, i, t);
-      xbt_dynar_insert_at(recvs, i, t);
-      xbt_free(t);
-    }
-   }
    int rank_traced = smpi_process_index();
    instr_extra_data extra = xbt_new0(s_instr_extra_data_t,1);
    extra->type = TRACING_WAITALL;
    extra->send_size=count_requests;
    TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
 
-   smpi_mpi_waitall(count_requests, requests, status);
+   smpi_mpi_waitall(count_requests, &(*get_reqq_self())[0], status);
 
-   for (i = 0; static_cast<int>(i) < count_requests; i++) {
-    int src_traced, dst_traced, is_wait_for_receive;
-    xbt_dynar_get_cpy(srcs, i, &src_traced);
-    xbt_dynar_get_cpy(dsts, i, &dst_traced);
-    xbt_dynar_get_cpy(recvs, i, &is_wait_for_receive);
-    if (is_wait_for_receive) {
-      TRACE_smpi_recv(rank_traced, src_traced, dst_traced);
-    }
+   for (auto req : *(get_reqq_self())){
+     if (req && req->recv)
+       TRACE_smpi_recv(rank_traced, req->src, req->dst);
    }
    TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
-   //clean-up of dynars
-   xbt_dynar_free(&srcs);
-   xbt_dynar_free(&dsts);
-   xbt_dynar_free(&recvs);
-   set_reqq_self(xbt_dynar_new(sizeof(MPI_Request),&xbt_free_ref));
+   set_reqq_self(new std::vector<MPI_Request>);
   }
   log_timed_action (action, clock);
 }
@@ -1047,14 +995,17 @@ void smpi_replay_run(int *argc, char***argv){
   /* and now, finalize everything */
   double sim_time= 1.;
   /* One active process will stop. Decrease the counter*/
-  XBT_DEBUG("There are %lu elements in reqq[*]", xbt_dynar_length(get_reqq_self()));
-  if (xbt_dynar_is_empty(get_reqq_self())==0){
-    int count_requests=xbt_dynar_length(get_reqq_self());
+  XBT_DEBUG("There are %zu elements in reqq[*]", get_reqq_self()->size());
+  if (!get_reqq_self()->empty()){
+    unsigned int count_requests=get_reqq_self()->size();
     MPI_Request requests[count_requests];
     MPI_Status status[count_requests];
-    unsigned int i;
+    unsigned int i=0;
 
-    xbt_dynar_foreach(get_reqq_self(),i,requests[i]);
+    for (auto req: *get_reqq_self()){
+      requests[i] = req;
+      i++;
+    }
     smpi_mpi_waitall(count_requests, requests, status);
     active_processes--;
   } else {
@@ -1069,8 +1020,6 @@ void smpi_replay_run(int *argc, char***argv){
     _xbt_replay_action_exit();
     xbt_free(sendbuffer);
     xbt_free(recvbuffer);
-    xbt_dict_free(&reqq); //not need, data have been freed ???
-    reqq = nullptr;
   }
 
   instr_extra_data extra_fin = xbt_new0(s_instr_extra_data_t,1);
