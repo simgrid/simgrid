@@ -158,7 +158,7 @@ expected output.
 
 =item output sort
 
-The output is sorted before comparison (see next section).
+The output and the expected output are sorted before comparison (see next section).
 
 =back
 

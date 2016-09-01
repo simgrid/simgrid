@@ -11,13 +11,18 @@ All rights reserved.
 This program is free software; you can redistribute it and/or modify it
 under the terms of the license (GNU LGPL) which comes with this package.
 
-#TODO: <glesserd> emptty: does "! output display" also disable the comparaison with the output ?  yes
 
-#TODO: child of child of child printf => tester dans rsg...
+#TODO: child of child of child that printfs. Does it work?
+#TODO: a child die after its parent. What happen?
 
 #TODO: regular expression in output
+#ex: >> Time taken: [0-9]+s
 #TODO: linked regular expression in output
-
+#ex:
+# >> Bytes sent: ([0-9]+)
+# >> Bytes recv: \1
+# then, even better:
+# ! expect (\1 > 500)
 
 """
 
