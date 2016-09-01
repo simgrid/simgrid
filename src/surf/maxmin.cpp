@@ -1241,7 +1241,7 @@ double lmm_constraint_get_usage(lmm_constraint_t cnst) {
        if (cnst->sharing_policy)
          usage += elem->value * elem->variable->value;
        else if (usage < elem->value * elem->variable->value)
-         usage = max(usage, elem->value * elem->variable->value);
+         usage = std::max(usage, elem->value * elem->variable->value);
      }
    }
   return usage;
