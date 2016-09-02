@@ -134,12 +134,12 @@ namespace simgrid {
       double current=1.0;
       for (auto fact: smpi_bw_factor) {
         if (size <= fact.factor) {
-          XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
+          XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
           return current;
         }else
           current=fact.values.front();
       }
-      XBT_DEBUG("%f > %ld return %f", size, smpi_bw_factor.back().factor, current);
+      XBT_DEBUG("%f > %zu return %f", size, smpi_bw_factor.back().factor, current);
 
       return current;
     }
@@ -152,12 +152,12 @@ namespace simgrid {
       double current=1.0;
       for (auto fact: smpi_lat_factor) {
         if (size <= fact.factor) {
-          XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
+          XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
           return current;
         }else
           current=fact.values.front();
       }
-      XBT_DEBUG("%f > %ld return %f", size, smpi_lat_factor.back().factor, current);
+      XBT_DEBUG("%f > %zu return %f", size, smpi_lat_factor.back().factor, current);
 
       return current;
     }
