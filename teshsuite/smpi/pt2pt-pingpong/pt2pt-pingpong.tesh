@@ -3,6 +3,11 @@ p Test pingpong
 ! output sort
 $ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
+>
+>
+>
+>
+>
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
 > == pivot=2 : pingpong [2] <--> [3]
