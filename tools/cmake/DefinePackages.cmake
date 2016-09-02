@@ -854,8 +854,7 @@ set(DOC_SOURCES
   doc/manpage/smpif90.1
   doc/manpage/smpiff.1
   doc/manpage/smpirun.1
-
-  tools/tesh/tesh.pod
+  doc/manpage/tesh.pod
 
   doc/msg-tuto-src/deployment0.xml
   doc/msg-tuto-src/deployment1.xml
