@@ -6,147 +6,91 @@
 
 #include "simgrid/msg.h"
 
-/** @addtogroup MSG_examples
- *
- *  - <b>sendrecv/sendrecv.c: Ping-pong example</b>. It's hard to think of a simpler example. The tesh files laying in
- *    the directory are instructive concerning the way to pass options to the simulators (as described in \ref options).
- */
-
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-double task_comm_size_lat = 1;
-double task_comm_size_bw = 10e8;
+#define _GNU_SOURCE         /* See feature_test_macros(7) */
+#include <unistd.h>
+#include <sys/syscall.h>
+#include <sys/types.h> /* pid_t */
+
+pid_t root_pid;
+
+static void ensure_root_tid() {
+  pid_t my_pid = syscall(SYS_gettid);
+  xbt_assert(my_pid == root_pid, bprintf("I was supposed to be the main thread but %d != %d", my_pid, root_pid));
+  XBT_INFO("I am the main thread, as expected");
+}
+static void ensure_other_tid() {
+  pid_t my_pid = syscall(SYS_gettid);
+  xbt_assert(my_pid != root_pid, "I was NOT supposed to be the main thread");
+  XBT_INFO("I am not the main thread, as expected");
+}
+
+/** @addtogroup MSG_examples
+ *
+ *  - <b>maestro-set/maestro-set.c: Switch the system thread hosting our maestro</b>. 
+ *    That's a very advanced example in which we move the maestro thread to another process.
+ *    Not many users need it (maybe only one, actually), but this example is also a regression test.
+ */
+
 
 static int sender(int argc, char *argv[])
 {
-  msg_host_t host = NULL;
-  double time;
-  msg_task_t task_la = NULL;
-  msg_task_t task_bw = NULL;
-  char sprintf_buffer_la[64];
-  char sprintf_buffer_bw[64];
+  ensure_root_tid();
 
-  XBT_INFO("sender");
-  XBT_INFO("host = %s", argv[1]);
-
-  host = MSG_host_by_name(argv[1]);
-
-  if (host == NULL) {
-    XBT_INFO("Unknown host %s. Stopping Now! ", argv[1]);
-    abort();
-  }
-
-  /* Latency */
-  time = MSG_get_clock();
-  snprintf(sprintf_buffer_la,64, "latency task");
-  task_la = MSG_task_create(sprintf_buffer_la, 0.0, task_comm_size_lat, NULL);
-  task_la->data = xbt_new(double, 1);
-  *(double *) task_la->data = time;
-  XBT_INFO("task_la->data = %e", *((double *) task_la->data));
-  MSG_task_send(task_la, argv[1]);
-
-  /* Bandwidth */
-  time = MSG_get_clock();
-  snprintf(sprintf_buffer_bw,64, "bandwidth task");
-  task_bw = MSG_task_create(sprintf_buffer_bw, 0.0, task_comm_size_bw, NULL);
-  task_bw->data = xbt_new(double, 1);
-  *(double *) task_bw->data = time;
-  XBT_INFO("task_bw->data = %e", *((double *) task_bw->data));
-  MSG_task_send(task_bw, argv[1]);
+  msg_task_t task_la = MSG_task_create("Some task", 0.0, 10e8, NULL);
+  MSG_task_send(task_la, "some mailbox");
 
   return 0;
 }
 
 static int receiver(int argc, char *argv[])
 {
+  ensure_other_tid();
+
   msg_task_t task_la = NULL;
-  msg_task_t task_bw = NULL;
-
-  XBT_INFO("receiver");
-
-  /* Get Latency */
-  int a = MSG_task_receive(&task_la,MSG_host_get_name(MSG_host_self()));
-  xbt_assert(a == MSG_OK, "Unexpected behavior");
-
-  double time1 = MSG_get_clock();
-  double sender_time = *((double *) (task_la->data));
-  double time = sender_time;
-  double communication_time = time1 - time;
-  XBT_INFO("Task received : %s", task_la->name);
-  xbt_free(task_la->data);
+  xbt_assert(MSG_task_receive(&task_la,"some mailbox") == MSG_OK);
+  XBT_INFO("Task received");
   MSG_task_destroy(task_la);
-  XBT_INFO("Communic. time %e", communication_time);
-  XBT_INFO("--- la %f ----", communication_time);
-
-  /* Get Bandwidth */
-  a = MSG_task_receive(&task_bw,MSG_host_get_name(MSG_host_self()));
-  xbt_assert(a == MSG_OK, "Unexpected behavior");
-  time1 = MSG_get_clock();
-  sender_time = *((double *) (task_bw->data));
-  time = sender_time;
-  communication_time = time1 - time;
-  XBT_INFO("Task received : %s", task_bw->name);
-  xbt_free(task_bw->data);
-  MSG_task_destroy(task_bw);
-  XBT_INFO("Communic. time %e", communication_time);
-  XBT_INFO("--- bw %f ----", task_comm_size_bw / communication_time);
 
   return 0;
 }
 
-struct application {
-  const char* platform_file;
-  const char* application_file;
-};
-
-/** Test function */
-static msg_error_t test_all(struct application* app)
-{
-  msg_error_t res = MSG_OK;
-
-  MSG_create_environment(app->platform_file);
-
-  /* Become one of the simulated process.
-   *
-   * This must be done after the creation of the platform because we are depending attaching to a host.*/
-  MSG_process_attach("sender", NULL, MSG_host_by_name("Tremblay"), NULL);
-
-  MSG_function_register("receiver", receiver);
-
-  MSG_launch_application(app->application_file);
-
-  // Execute the sender code:
-  const char* argv[3] = { "sender", "Jupiter", NULL };
-  sender(2, (char**) argv);
-
-  MSG_process_detach();
-  return res;
-}                               /* end_of_test_all */
-
 static void maestro(void* data)
 {
+  ensure_other_tid();
+  MSG_process_create("receiver",&receiver,NULL,MSG_host_by_name("Jupiter"));
   MSG_main();
 }
 
 /** Main function */
 int main(int argc, char *argv[])
 {
-  msg_error_t res = MSG_OK;
+  root_pid = syscall(SYS_gettid);
 
-  struct application app;
-  app.platform_file = argv[1];
-  app.application_file = argv[2];
-
-  SIMIX_set_maestro(maestro, &app);
+  SIMIX_set_maestro(maestro, NULL);
   MSG_init(&argc, argv);
 
-  if (argc != 3) {
-    XBT_CRITICAL("Usage: %s platform_file deployment_file\n", argv[0]);
-    xbt_die("example: %s msg_platform.xml msg_deployment.xml\n",argv[0]);
+  if (argc != 2) {
+    XBT_CRITICAL("Usage: %s platform_file\n", argv[0]);
+    xbt_die("example: %s msg_platform.xml\n",argv[0]);
   }
 
-  res = test_all(&app);
+  MSG_create_environment(argv[1]);
 
-  XBT_INFO("Total simulation time: %e", MSG_get_clock());
-  return res != MSG_OK;
+  /* Become one of the simulated process.
+   *
+   * This must be done after the creation of the platform because we are depending attaching to a host.*/
+  MSG_process_attach("sender", NULL, MSG_host_by_name("Tremblay"), NULL);
+  ensure_root_tid();
+
+  // Execute the sender code:
+  const char* subargv[3] = { "sender", "Jupiter", NULL };
+  sender(2, (char**) subargv);
+
+  MSG_process_detach(); // Become root thread again
+  XBT_INFO("Detached");
+  ensure_root_tid();
+
+  return 0;
 }
