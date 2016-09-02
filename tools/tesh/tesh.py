@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#! @PYTHON_EXECUTABLE@
 # -*- coding: utf-8 -*-
 """
 
