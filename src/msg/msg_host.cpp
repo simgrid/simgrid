@@ -33,9 +33,8 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
   priv->dp_updated_by_deleted_tasks = 0;
   priv->is_migrating = 0;
 
-  priv->file_descriptor_table = xbt_dynar_new(sizeof(int), nullptr);
-  for (int i=sg_storage_max_file_descriptors-1; i>=0;i--)
-    xbt_dynar_push_as(priv->file_descriptor_table, int, i);
+  priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
+  std::iota (priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
 
   sg_host_msg_set(host,priv);
 
@@ -119,8 +118,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
   if (size > 0)
     XBT_WARN("dp_objs: %u pending task?", size);
   xbt_dict_free(&priv->dp_objs);
-  xbt_dynar_free(&priv->file_descriptor_table);
-
+  delete priv->file_descriptor_table;
   free(priv);
 }
 
@@ -156,7 +154,6 @@ double MSG_get_host_speed(msg_host_t host) {
   XBT_WARN("MSG_get_host_speed is deprecated: use MSG_host_get_speed");
   return MSG_host_get_speed(host);
 }
-
 
 /** \ingroup m_host_management
  * \brief Return the number of cores.
@@ -342,11 +339,13 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 
 int __MSG_host_get_file_descriptor_id(msg_host_t host){
   msg_host_priv_t priv = sg_host_msg(host);
-  xbt_assert(!xbt_dynar_is_empty(priv->file_descriptor_table), "Too much files are opened! Some have to be closed.");
-  return xbt_dynar_pop_as(priv->file_descriptor_table, int);
+  xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
+  int desc = priv->file_descriptor_table->back();
+  priv->file_descriptor_table->pop_back();
+  return desc;
 }
 
 void __MSG_host_release_file_descriptor_id(msg_host_t host, int id){
   msg_host_priv_t priv = sg_host_msg(host);
-  xbt_dynar_push_as(priv->file_descriptor_table, int, id);
+  priv->file_descriptor_table->push_back(id);
 }

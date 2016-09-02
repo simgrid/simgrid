@@ -31,17 +31,8 @@ typedef simgrid_As *msg_as_t;
  */
 typedef sg_host_t msg_host_t;
 
-typedef struct s_msg_host_priv {
-  int        dp_enabled;
-  xbt_dict_t dp_objs;
-  double     dp_updated_by_deleted_tasks;
-  int        is_migrating;
-
-  xbt_dynar_t file_descriptor_table;
-} s_msg_host_priv_t;
 
 XBT_PUBLIC_DATA(int) sg_storage_max_file_descriptors;
-
 /* ******************************** Task ************************************ */
 
 typedef struct simdata_task *simdata_task_t;
