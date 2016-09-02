@@ -6,6 +6,7 @@ $ cmake -E remove_directory temp_testdir-catch-signal
 $ mkdir temp_testdir-catch-signal
 
 $ cd temp_testdir-catch-signal
+
 < kill 'SEGV', $$;
 $ mkfile segfault.pl
 
@@ -14,13 +15,12 @@ p Check that we notice when SEGV is raised
 $ perl segfault.pl
 
 p Check that we return the expected return value on SEGV
-! expect return 15
+! expect return 11
 < $ perl segfault.pl
-$ perl ${bindir:=.}/tesh
+$ ${bindir:=.}/tesh
 > Test suite from stdin
 > [(stdin):1] perl segfault.pl
 > Test suite `(stdin)': NOK (<(stdin):1> got signal SIGSEGV)
-> <(stdin):1> No output so far.
 
 $ cd ..
 $ cmake -E remove_directory temp_testdir-catch-signal
