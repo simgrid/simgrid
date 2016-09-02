@@ -4,6 +4,9 @@ SimGrid (3.14) UNRELEASED; urgency=low
  * The whole documentation was reworked and reorganized. There is
    still many room for improvement here, but we're on it.
 
+ Infrastructure
+ * We now need python3 for our testing infrastructure.
+
  SMPI
  * Privatization is now activated by default in smpirun
    You can turn it off with -no-privatize if something goes wrong.
