@@ -24,6 +24,17 @@ under the terms of the license (GNU LGPL) which comes with this package.
 # then, even better:
 # ! expect (\1 > 500)
 
+# TODO: If the output is sorted, we should report it to the users. Corresponding perl chunk
+# print "WARNING: Both the observed output and expected output were sorted as requested.\n";
+# print "WARNING: Output were only sorted using the $sort_prefix first chars.\n"
+#    if ( $sort_prefix > 0 );
+# print "WARNING: Use <! output sort 19> to sort by simulated date and process ID only.\n";
+#    
+# print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
+# map {print "> $_\n"} @{$cmd{'unsorted got'}};
+# print "--------------->8----  End of the unprocessed observed output.\n";
+
+
 """
 
 
