@@ -5,24 +5,18 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cstddef>
-
 #include <algorithm>
 
 #include <xbt/log.h>
 
 #include "network_smpi.hpp"
 #include "simgrid/sg_config.h"
+#include "smpi/smpi_utils.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
-xbt_dynar_t smpi_bw_factor = nullptr;
-xbt_dynar_t smpi_lat_factor = nullptr;
-
-typedef struct s_smpi_factor *smpi_factor_t;
-typedef struct s_smpi_factor { // FIXME: s_smpi_factor_multival (defined in smpi_base) should be used instead to dedupplicate this code
-  long factor;
-  double value;
-} s_smpi_factor_t;
+std::vector<s_smpi_factor_t> smpi_bw_factor;
+std::vector<s_smpi_factor_t> smpi_lat_factor;
 
 xbt_dict_t gap_lookup = nullptr;
 
@@ -33,40 +27,6 @@ static int factor_cmp(const void *pa, const void *pb)
 }
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
-static xbt_dynar_t parse_factor(const char *smpi_coef_string)
-{
-  char *value = nullptr;
-  unsigned int iter = 0;
-  s_smpi_factor_t fact;
-  xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = nullptr;
-
-  smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), nullptr);
-  radical_elements = xbt_str_split(smpi_coef_string, ";");
-  xbt_dynar_foreach(radical_elements, iter, value) {
-
-    radical_elements2 = xbt_str_split(value, ":");
-    surf_parse_assert(xbt_dynar_length(radical_elements2) == 2,
-        "Malformed radical '%s' for smpi factor. I was expecting something like 'a:b'", value);
-
-    char *errmsg = bprintf("Invalid factor in chunk #%d: %%s", iter+1);
-    fact.factor = xbt_str_parse_int(xbt_dynar_get_as(radical_elements2, 0, char *), errmsg);
-    xbt_free(errmsg);
-    fact.value = xbt_str_parse_double(xbt_dynar_get_as(radical_elements2, 1, char *), errmsg);
-    errmsg = bprintf("Invalid factor value in chunk #%d: %%s", iter+1);
-    xbt_free(errmsg);
-
-    xbt_dynar_push_as(smpi_factor, s_smpi_factor_t, fact);
-    XBT_DEBUG("smpi_factor:\t%ld : %f", fact.factor, fact.value);
-    xbt_dynar_free(&radical_elements2);
-  }
-  xbt_dynar_free(&radical_elements);
-  xbt_dynar_sort(smpi_factor, &factor_cmp);
-  xbt_dynar_foreach(smpi_factor, iter, fact) {
-    XBT_DEBUG("ordered smpi_factor:\t%ld : %f", fact.factor, fact.value);
-
-  }
-  return smpi_factor;
-}
 
 /*********
  * Model *
@@ -104,8 +64,6 @@ namespace simgrid {
 
     NetworkSmpiModel::~NetworkSmpiModel(){
       xbt_dict_free(&gap_lookup);
-      xbt_dynar_free(&smpi_bw_factor);
-      xbt_dynar_free(&smpi_lat_factor);
     }
 
     void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)
@@ -170,40 +128,36 @@ namespace simgrid {
 
     double NetworkSmpiModel::bandwidthFactor(double size)
     {
-      if (!smpi_bw_factor)
+      if (smpi_bw_factor.empty())
         smpi_bw_factor = parse_factor(xbt_cfg_get_string("smpi/bw-factor"));
 
-      unsigned int iter = 0;
-      s_smpi_factor_t fact;
       double current=1.0;
-      xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
+      for (auto fact: smpi_bw_factor) {
         if (size <= fact.factor) {
           XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
           return current;
         }else
-          current=fact.value;
+          current=fact.values.front();
       }
-      XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
+      XBT_DEBUG("%f > %ld return %f", size, smpi_bw_factor.back().factor, current);
 
       return current;
     }
 
     double NetworkSmpiModel::latencyFactor(double size)
     {
-      if (!smpi_lat_factor)
+      if (smpi_lat_factor.empty())
         smpi_lat_factor = parse_factor(xbt_cfg_get_string("smpi/lat-factor"));
 
-      unsigned int iter = 0;
-      s_smpi_factor_t fact;
       double current=1.0;
-      xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
+      for (auto fact: smpi_lat_factor) {
         if (size <= fact.factor) {
           XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
           return current;
         }else
-          current=fact.value;
+          current=fact.values.front();
       }
-      XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
+      XBT_DEBUG("%f > %ld return %f", size, smpi_lat_factor.back().factor, current);
 
       return current;
     }

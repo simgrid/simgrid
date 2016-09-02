@@ -10,6 +10,7 @@ set(EXTRA_DIST
   src/mc/mc_record.h
   src/include/simgrid/sg_config.h
   src/include/smpi/smpi_interface.h
+  src/include/smpi/smpi_utils.hpp
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/surf.h
@@ -239,6 +240,7 @@ set(SMPI_SRC
   src/smpi/smpi_replay.cpp
   src/smpi/smpi_rma.cpp
   src/smpi/smpi_topo.cpp
+  src/smpi/smpi_utils.cpp
   src/smpi/smpi_f77.cpp
   )
 

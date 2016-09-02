@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <xbt/config.hpp>
-#include <boost/tokenizer.hpp>
 #include <algorithm>
 
 #include "private.h"
@@ -17,6 +16,7 @@
 #include "src/simix/smx_private.h"
 #include "surf/surf.h"
 #include "simgrid/sg_config.h"
+#include "smpi/smpi_utils.hpp"
 #include "colls/colls.h"
 
 #include "src/kernel/activity/SynchroComm.hpp"
@@ -69,17 +69,9 @@ static int match_send(void* a, void* b,smx_activity_t ignored) {
    } else return 0;
 }
 
-// Methods used to parse and store the values for timing injections in smpi
-// These are taken from surf/network.c and generalized to have more values for each factor
-typedef struct s_smpi_factor_multival *smpi_os_factor_multival_t;
-typedef struct s_smpi_factor_multival { // FIXME: this should be merged (deduplicated) with s_smpi_factor defined in network_smpi.c
-  size_t factor=0;
-  std::vector<double> values;
-} s_smpi_factor_multival_t;
-
-std::vector<s_smpi_factor_multival_t> smpi_os_values;
-std::vector<s_smpi_factor_multival_t> smpi_or_values;
-std::vector<s_smpi_factor_multival_t> smpi_ois_values;
+std::vector<s_smpi_factor_t> smpi_os_values;
+std::vector<s_smpi_factor_t> smpi_or_values;
+std::vector<s_smpi_factor_t> smpi_ois_values;
 
 static simgrid::config::Flag<double> smpi_wtime_sleep(
   "smpi/wtime", "Minimum time to inject inside a call to MPI_Wtime", 0.0);
@@ -90,62 +82,6 @@ static simgrid::config::Flag<double> smpi_iprobe_sleep(
 static simgrid::config::Flag<double> smpi_test_sleep(
   "smpi/test", "Minimum time to inject inside a call to MPI_Test", 1e-4);
 
-static std::vector<s_smpi_factor_multival_t> parse_factor(const char *smpi_coef_string)
-{
-  std::vector<s_smpi_factor_multival_t> smpi_factor;
-
-  /** Setup the tokenizer that parses the string **/
-  typedef boost::tokenizer<boost::char_separator<char>> Tokenizer;
-  boost::char_separator<char> sep(";");
-  boost::char_separator<char> factor_separator(":");
-  std::string tmp_string(smpi_coef_string);
-  Tokenizer tokens(tmp_string, sep);
-
-  /** 
-   * Iterate over patterns like A:B:C:D;E:F;G:H
-   * These will be broken down into:
-   * A --> B, C, D
-   * E --> F
-   * G --> H
-   */
-  for (Tokenizer::iterator token_iter = tokens.begin();
-         token_iter != tokens.end(); token_iter++) {
-XBT_DEBUG("token : %s", token_iter->c_str());
-    Tokenizer factor_values(*token_iter, factor_separator);
-    s_smpi_factor_multival_t fact;
-    if (factor_values.begin() == factor_values.end()) {
-      xbt_die("Malformed radical for smpi factor: '%s'", smpi_coef_string);
-    }
-    unsigned int iteration = 0;
-    for (Tokenizer::iterator factor_iter = factor_values.begin();
-         factor_iter != factor_values.end(); factor_iter++, iteration++) {
-      char *errmsg;
-
-      if (factor_iter == factor_values.begin()) { /* first element */
-        errmsg = bprintf("Invalid factor in chunk #%zu: %%s", smpi_factor.size()+1);
-        fact.factor = xbt_str_parse_int(factor_iter->c_str(), errmsg);
-      }
-      else {
-        errmsg = bprintf("Invalid factor value %d in chunk #%zu: %%s", iteration, smpi_factor.size()+1);
-        fact.values.push_back(xbt_str_parse_double(factor_iter->c_str(), errmsg));
-      }
-      xbt_free(errmsg);
-    }
-
-    smpi_factor.push_back(fact);
-    XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size(), fact.values[0]);
-  }
-  std::sort(smpi_factor.begin(), smpi_factor.end(),
-            [](const s_smpi_factor_multival_t &pa,
-               const s_smpi_factor_multival_t &pb) {
-              return (pa.factor < pb.factor);
-            });
-  for (auto& fact : smpi_factor) {
-    XBT_DEBUG("smpi_factor:\t%zu : %zu values, first: %f", fact.factor, smpi_factor.size() ,fact.values[0]);
-  }
-
-  return smpi_factor;
-}
 
 static double smpi_os(size_t size)
 {
