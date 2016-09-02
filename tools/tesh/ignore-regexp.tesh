@@ -1,0 +1,5 @@
+
+! ignore .*0x[0-9A-F]+\.
+$  printf 'word\nMemory address: 0x42AA42.\nanotherword\n'
+> word
+> anotherword
