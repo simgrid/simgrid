@@ -972,12 +972,8 @@ smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer) {
   SIMIX_process_kill(process, issuer);
 
   //start the new process
-  if (simix_global->create_process_function)
-    return simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.hostname,
-        arg.kill_time, arg.properties, arg.auto_restart, nullptr);
-  else
-    return simcall_process_create(arg.name.c_str(), std::move(arg.code), arg.data, arg.hostname, arg.kill_time,
-      arg.properties, arg.auto_restart);
+  return simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.hostname,
+      arg.kill_time, arg.properties, arg.auto_restart, nullptr);
 }
 
 void SIMIX_segment_index_set(smx_actor_t proc, int index){

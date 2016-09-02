@@ -628,15 +628,10 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     XBT_DEBUG("Starting Process %s(%s) right now",
       arg->name.c_str(), sg_host_get_name(host));
 
-    if (simix_global->create_process_function)
-      process_created = simix_global->create_process_function(
-          arg->name.c_str(), std::move(code), nullptr,
-          sg_host_get_name(host), kill_time,
-          current_property_set, auto_restart, nullptr);
-    else
-      process_created = simcall_process_create(
-          arg->name.c_str(), std::move(code), nullptr, sg_host_get_name(host), kill_time,
-          current_property_set,auto_restart);
+    process_created = simix_global->create_process_function(
+        arg->name.c_str(), std::move(code), nullptr,
+        sg_host_get_name(host), kill_time,
+        current_property_set, auto_restart, nullptr);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
     if (!process_created) {
