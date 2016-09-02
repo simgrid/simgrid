@@ -17,7 +17,7 @@ pid_t root_pid;
 
 static void ensure_root_tid() {
   pid_t my_pid = syscall(SYS_gettid);
-  xbt_assert(my_pid == root_pid, bprintf("I was supposed to be the main thread but %d != %d", my_pid, root_pid));
+  xbt_assert(my_pid == root_pid, "I was supposed to be the main thread but %d != %d", my_pid, root_pid);
   XBT_INFO("I am the main thread, as expected");
 }
 static void ensure_other_tid() {
