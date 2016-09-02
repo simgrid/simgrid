@@ -308,10 +308,10 @@ static void action_recv(const char *const *action) {
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, src_traced, rank, __FUNCTION__, extra);
 
-  //unknow size from the receiver pov
+  //unknown size from the receiver point of view
   if(size<=0.0){
-      smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
-      size=status.count;
+    smpi_mpi_probe(from, 0, MPI_COMM_WORLD, &status);
+    size=status.count;
   }
 
   smpi_mpi_recv(nullptr, size, MPI_CURRENT_TYPE, from, 0, MPI_COMM_WORLD, &status);
@@ -444,7 +444,6 @@ static void action_waitall(const char *const *action){
        TRACE_smpi_recv(rank_traced, req->src, req->dst);
    }
    TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
-   set_reqq_self(new std::vector<MPI_Request>);
   }
   log_timed_action (action, clock);
 }
@@ -876,7 +875,6 @@ static void action_allToAllv(const char *const *action) {
 
   int comm_size = smpi_comm_size(MPI_COMM_WORLD);
   CHECK_ACTION_PARAMS(action, 2*comm_size+2, 2)
-  int send_buf_size=0,recv_buf_size=0,i=0;
   int *sendcounts = xbt_new0(int, comm_size);  
   int *recvcounts = xbt_new0(int, comm_size);  
   int *senddisps = xbt_new0(int, comm_size);  
@@ -884,8 +882,8 @@ static void action_allToAllv(const char *const *action) {
 
   MPI_Datatype MPI_CURRENT_TYPE2;
 
-  send_buf_size=parse_double(action[2]);
-  recv_buf_size=parse_double(action[3+comm_size]);
+  int send_buf_size=parse_double(action[2]);
+  int recv_buf_size=parse_double(action[3+comm_size]);
   if(action[4+2*comm_size] && action[5+2*comm_size]) {
     MPI_CURRENT_TYPE=decode_datatype(action[4+2*comm_size]);
     MPI_CURRENT_TYPE2=decode_datatype(action[5+2*comm_size]);
@@ -898,7 +896,7 @@ static void action_allToAllv(const char *const *action) {
   void *sendbuf = smpi_get_tmp_sendbuffer(send_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE));
   void *recvbuf  = smpi_get_tmp_recvbuffer(recv_buf_size* smpi_datatype_size(MPI_CURRENT_TYPE2));
 
-  for(i=0;i<comm_size;i++) {
+  for(int i=0;i<comm_size;i++) {
     sendcounts[i] = atoi(action[i+3]);
     recvcounts[i] = atoi(action[i+4+comm_size]);
   }
@@ -910,7 +908,7 @@ static void action_allToAllv(const char *const *action) {
   extra->sendcounts= xbt_new(int, comm_size);
   extra->num_processes = comm_size;
 
-  for(i=0; i< comm_size; i++){//copy data to avoid bad free
+  for(int i=0; i< comm_size; i++){//copy data to avoid bad free
     extra->send_size += sendcounts[i];
     extra->sendcounts[i] = sendcounts[i];
     extra->recv_size += recvcounts[i];

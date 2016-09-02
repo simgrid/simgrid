@@ -91,9 +91,8 @@ int find_coll_description(s_mpi_coll_description_t * table, char *name, const ch
 
   if(selector_on){
     // collective seems not handled by the active selector, try with default one
-    name=const_cast<char*>("default");
     for (int i = 0; table[i].name; i++)
-      if (!strcmp(name, table[i].name)) {
+      if (!strcmp("default", table[i].name)) {
         return i;
     }
   }

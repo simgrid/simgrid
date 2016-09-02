@@ -156,7 +156,7 @@ static double smpi_os(size_t size)
   // Iterate over all the sections that were specified and find the right
   // value. (fact.factor represents the interval sizes; we want to find the
   // section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the dynar we iterate over!
+  // Note: parse_factor() (used before) already sorts the vector we iterate over!
   for (auto& fact : smpi_os_values) {
     if (size <= fact.factor) { // Values already too large, use the previously
                                // computed value of current!
@@ -181,7 +181,7 @@ static double smpi_ois(size_t size)
   double current=smpi_ois_values.empty()?0.0:smpi_ois_values[0].values[0]+smpi_ois_values[0].values[1]*size;
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the dynar we iterate over!
+  // Note: parse_factor() (used before) already sorts the vector we iterate over!
   for (auto& fact : smpi_ois_values) {
     if (size <= fact.factor) { // Values already too large, use the previously  computed value of current!
         XBT_DEBUG("ois : %zu <= %zu return %.10f", size, fact.factor, current);
@@ -207,10 +207,9 @@ static double smpi_or(size_t size)
 
   // Iterate over all the sections that were specified and find the right value. (fact.factor represents the interval
   // sizes; we want to find the section that has fact.factor <= size and no other such fact.factor <= size)
-  // Note: parse_factor() (used before) already sorts the dynar we iterate over!
+  // Note: parse_factor() (used before) already sorts the vector we iterate over!
   for (auto fact : smpi_or_values) {
-    if (size <= fact.factor) { // Values already too large, use the previously
-                               // computed value of current!
+    if (size <= fact.factor) { // Values already too large, use the previously computed value of current!
         XBT_DEBUG("or : %zu <= %zu return %.10f", size, fact.factor, current);
       return current;
     } else {
@@ -231,9 +230,7 @@ void smpi_mpi_init() {
 
 double smpi_mpi_wtime(){
   double time;
-  if (smpi_process_initialized() != 0 && 
-      smpi_process_finalized() == 0 && 
-      smpi_process_get_sampling() == 0) {
+  if (smpi_process_initialized() != 0 && smpi_process_finalized() == 0 && smpi_process_get_sampling() == 0) {
     smpi_bench_end();
     time = SIMIX_get_clock();
     // to avoid deadlocks if used as a break condition, such as
@@ -820,8 +817,7 @@ int smpi_mpi_testall(int count, MPI_Request requests[], MPI_Status status[])
   MPI_Status stat;
   MPI_Status *pstat = status == MPI_STATUSES_IGNORE ? MPI_STATUS_IGNORE : &stat;
   int flag=1;
-  int i;
-  for(i=0; i<count; i++){
+  for(int i=0; i<count; i++){
     if (requests[i] != MPI_REQUEST_NULL && !(requests[i]->flags & PREPARED)) {
       if (smpi_mpi_test(&requests[i], pstat)!=1){
         flag=0;
@@ -1242,12 +1238,13 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                       void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_SCATTER;
-  int rank, size, dst, index;
-  MPI_Aint lb = 0, sendext = 0;
+  int dst;
+  MPI_Aint lb = 0;
+  MPI_Aint sendext = 0;
   MPI_Request *requests;
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  int rank = smpi_comm_rank(comm);
+  int size = smpi_comm_size(comm);
   if(rank != root) {
     // Recv buffer from root
     smpi_mpi_recv(recvbuf, recvcount, recvtype, root, system_tag, comm, MPI_STATUS_IGNORE);
@@ -1260,7 +1257,7 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     }
     // Send buffers to receivers
     requests = xbt_new(MPI_Request, size - 1);
-    index = 0;
+    int index = 0;
     for(dst = 0; dst < size; dst++) {
       if(dst != root) {
         requests[index] = smpi_isend_init(static_cast<char *>(sendbuf) + dst * sendcount * sendext, sendcount, sendtype, dst,
@@ -1282,12 +1279,13 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype
                        MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_SCATTERV;
-  int rank, size, dst, index;
-  MPI_Aint lb = 0, sendext = 0;
+  int dst;
+  MPI_Aint lb = 0;
+  MPI_Aint sendext = 0;
   MPI_Request *requests;
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  int rank = smpi_comm_rank(comm);
+  int size = smpi_comm_size(comm);
   if(rank != root) {
     // Recv buffer from root
     smpi_mpi_recv(recvbuf, recvcount, recvtype, root, system_tag, comm, MPI_STATUS_IGNORE);
@@ -1300,7 +1298,7 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype
     }
     // Send buffers to receivers
     requests = xbt_new(MPI_Request, size - 1);
-    index = 0;
+    int index = 0;
     for(dst = 0; dst < size; dst++) {
       if(dst != root) {
         requests[index] = smpi_isend_init(static_cast<char *>(sendbuf) + displs[dst] * sendext, sendcounts[dst],
@@ -1322,16 +1320,16 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
                      MPI_Comm comm)
 {
   int system_tag = COLL_TAG_REDUCE;
-  int rank, size, src, index;
-  MPI_Aint lb = 0, dataext = 0;
+  int src, index;
+  MPI_Aint lb = 0;
+  MPI_Aint dataext = 0;
   MPI_Request *requests;
   void **tmpbufs;
 
   char* sendtmpbuf = static_cast<char *>(sendbuf);
 
-
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  int rank = smpi_comm_rank(comm);
+  int size = smpi_comm_size(comm);
   //non commutative case, use a working algo from openmpi
   if(!smpi_op_is_commute(op)){
     smpi_coll_tuned_reduce_ompi_basic_linear(sendtmpbuf, recvbuf, count, datatype, op, root, comm);
@@ -1400,13 +1398,13 @@ void smpi_mpi_allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype da
 void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int system_tag = -888;
-  int rank, size, other, index;
+  int other, index;
   MPI_Aint lb = 0, dataext = 0;
   MPI_Request *requests;
   void **tmpbufs;
 
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  int rank = smpi_comm_rank(comm);
+  int size = smpi_comm_size(comm);
 
   smpi_datatype_extent(datatype, &lb, &dataext);
 
@@ -1462,13 +1460,13 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int system_tag = -888;
-  int rank, size, other, index;
+  int other, index;
   MPI_Aint lb = 0, dataext = 0;
   MPI_Request *requests;
   void **tmpbufs;
   int recvbuf_is_empty=1;
-  rank = smpi_comm_rank(comm);
-  size = smpi_comm_size(comm);
+  int rank = smpi_comm_rank(comm);
+  int size = smpi_comm_size(comm);
 
   smpi_datatype_extent(datatype, &lb, &dataext);
 
@@ -1478,13 +1476,11 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   index = 0;
   for(other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
-    requests[index] =
-      smpi_irecv_init(tmpbufs[index], count, datatype, other, system_tag, comm);
+    requests[index] = smpi_irecv_init(tmpbufs[index], count, datatype, other, system_tag, comm);
     index++;
   }
   for(other = rank + 1; other < size; other++) {
-    requests[index] =
-      smpi_isend_init(sendbuf, count, datatype, other, system_tag, comm);
+    requests[index] = smpi_isend_init(sendbuf, count, datatype, other, system_tag, comm);
     index++;
   }
   // Wait for completion of all comms.
@@ -1499,9 +1495,9 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
         if(recvbuf_is_empty){
           smpi_datatype_copy(tmpbufs[index], count, datatype, recvbuf, count, datatype);
           recvbuf_is_empty=0;
-        }else
-        // #Request is below rank: it's a irecv
-        smpi_op_apply(op, tmpbufs[index], recvbuf, &count, &datatype);
+        } else
+          // #Request is below rank: it's a irecv
+          smpi_op_apply(op, tmpbufs[index], recvbuf, &count, &datatype);
       }
     }
   }else{
@@ -1512,7 +1508,8 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
           if(recvbuf_is_empty){
             smpi_datatype_copy(tmpbufs[other], count, datatype, recvbuf, count, datatype);
             recvbuf_is_empty=0;
-          }else smpi_op_apply(op, tmpbufs[other], recvbuf, &count, &datatype);
+          } else
+            smpi_op_apply(op, tmpbufs[other], recvbuf, &count, &datatype);
       }
     }
   }
