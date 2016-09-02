@@ -9,6 +9,7 @@
 #include "xbt/log.h"
 #include "simgrid/simix.h"
 #include <simgrid/s4u/host.hpp>
+#include <numeric>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
