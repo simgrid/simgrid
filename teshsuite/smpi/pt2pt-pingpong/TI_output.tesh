@@ -6,6 +6,11 @@ p generate a trace with pingpong, and replay itself, then check that output trac
 ! setenv LD_LIBRARY_PATH=../../lib
 ! output sort
 $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=smpi/simulate-computation:no -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
+>
+>
+>
+>
+>
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
@@ -112,6 +117,11 @@ p Same test, but only using one output file for all processes
 p generate a trace with pingpong, and replay itself, then check that output trace of the second run is the same as in the first (once sorted)
 ! output sort
 $ ${bindir:=.}/../../../bin/smpirun -trace-ti --cfg=tracing/filename:out_in_ti.txt --cfg=tracing/smpi/format/ti-one-file:yes -map -hostfile ../hostfile -platform ../../../examples/platforms/small_platform.xml -np 4 ${bindir:=.}/pt2pt-pingpong -q --log=smpi_kernel.thres:warning
+>
+>
+>
+>
+>
 >     *** Ping-pong test (MPI_Send/MPI_Recv) ***
 > == pivot=0 : pingpong [0] <--> [1]
 > == pivot=1 : pingpong [1] <--> [2]
