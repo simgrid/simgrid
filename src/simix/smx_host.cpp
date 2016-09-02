@@ -61,25 +61,14 @@ namespace simgrid {
       smx_process_arg_t arg;
       xbt_dynar_foreach(boot_processes,cpt,arg) {
         XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
-        // FIXME: factorize this code by registering the simcall as default function
-        if (simix_global->create_process_function) {
-          simix_global->create_process_function(arg->name.c_str(),
-                                                arg->code,
-                                                nullptr,
-                                                arg->hostname,
-                                                arg->kill_time,
-                                                arg->properties,
-                                                arg->auto_restart,
-                                                nullptr);
-        } else {
-          simcall_process_create(arg->name.c_str(),
-                                 arg->code,
-                                 nullptr,
-                                 arg->hostname,
-                                 arg->kill_time,
-                                 arg->properties,
-                                 arg->auto_restart);
-        }
+        simix_global->create_process_function(arg->name.c_str(),
+            arg->code,
+            nullptr,
+            arg->hostname,
+            arg->kill_time,
+            arg->properties,
+            arg->auto_restart,
+            nullptr);
       }
     }
 
@@ -174,13 +163,8 @@ void SIMIX_host_autorestart(sg_host_t host)
   xbt_dynar_foreach (process_list, cpt, arg) {
 
     XBT_DEBUG("Restarting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
-    if (simix_global->create_process_function) {
-      simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->hostname, arg->kill_time,
-                                            arg->properties, arg->auto_restart, nullptr);
-    } else {
-      simcall_process_create(arg->name.c_str(), arg->code, nullptr, arg->hostname, arg->kill_time, arg->properties,
-                             arg->auto_restart);
-    }
+    simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->hostname, arg->kill_time,
+        arg->properties, arg->auto_restart, nullptr);
   }
   xbt_dynar_reset(process_list);
 }
