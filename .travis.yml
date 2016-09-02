@@ -7,7 +7,6 @@
 #
 sudo: required
 dist: trusty
-python: "3.4"
 language: cpp
 compiler:
    - gcc
