@@ -19,8 +19,8 @@ typedef struct s_smpi_factor{
   std::vector<double> values;
 } s_smpi_factor_t;
 
-XBT_PUBLIC(std::vector<s_smpi_factor_t>) parse_factor(const char *smpi_coef_string);
-
 SG_END_DECL()
+
+XBT_PUBLIC(std::vector<s_smpi_factor_t>) parse_factor(const char *smpi_coef_string);
 
 #endif
