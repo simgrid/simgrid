@@ -10,9 +10,7 @@ set(FLEX_MIN_PATCH 39)
 
 # the rest should only be changed if you understand what you're doing
 if(enable_maintainer_mode AND NOT WIN32)
-  find_program(PYTHON_EXE NAMES python)
-  mark_as_advanced(PYTHON_EXE)
-  if (PYTHON_EXE)
+  if (PYTHON_EXECUTABLE)
     add_custom_command(
       OUTPUT
       ${CMAKE_HOME_DIRECTORY}/src/simix/popping_generated.cpp
@@ -25,7 +23,7 @@ if(enable_maintainer_mode AND NOT WIN32)
       ${CMAKE_HOME_DIRECTORY}/src/simix/simcalls.in
 
       COMMENT "Generating simcalls source files"
-      COMMAND ${PYTHON_EXE} simcalls.py
+      COMMAND ${PYTHON_EXECUTABLE} simcalls.py
       WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/src/simix/
       )
 

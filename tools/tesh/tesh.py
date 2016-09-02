@@ -5,7 +5,7 @@
 tesh -- testing shell
 ========================
 
-Copyright (c) 2012-2015. The SimGrid Team.
+Copyright (c) 2012-2016. The SimGrid Team.
 All rights reserved.
 
 This program is free software; you can redistribute it and/or modify it
@@ -13,7 +13,7 @@ under the terms of the license (GNU LGPL) which comes with this package.
 
 
 #TODO: child of child of child that printfs. Does it work?
-#TODO: a child die after its parent. What happen?
+#TODO: a child dies after its parent. What happen?
 
 #TODO: regular expression in output
 #ex: >> Time taken: [0-9]+s

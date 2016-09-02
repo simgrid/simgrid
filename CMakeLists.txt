@@ -140,6 +140,12 @@ if(NOT PERL_FOUND)
   message(FATAL_ERROR "Please install Perl to compile SimGrid.")
 endif()
 
+# tesh.py needs python 3 (or the module python-subprocess32 on python2.8+)
+set(PythonInterp_FIND_VERSION 3)
+set(PythonInterp_FIND_VERSION_COUNT 1)
+set(PythonInterp_FIND_VERSION_MAJOR 3)
+include(FindPythonInterp)
+
 if (APPLE)
   set(CMAKE_INSTALL_RPATH "${CMAKE_INSTALL_PREFIX}/lib")
   set(CMAKE_INSTALL_RPATH_USE_LINK_PATH TRUE)
