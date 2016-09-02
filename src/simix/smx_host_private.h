@@ -50,7 +50,6 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
                                          xbt_dict_t properties,
                                          int auto_restart);
 
-XBT_PRIVATE void SIMIX_host_restart_processes(sg_host_t host);
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 XBT_PRIVATE smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name,
     double flops_amount, double priority, double bound);
