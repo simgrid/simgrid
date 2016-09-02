@@ -45,6 +45,7 @@ addons:
 
 # Still need sudo for update-alternatives
 script:
+   - sudo pip install subprocess32 # needed by tesh
    - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . 
    # run make in the sonar wrapper && run the tests only if the build suceeded
    - ./tools/internal/travis-sonarqube.sh make VERBOSE=1 && ctest --output-on-failure --timeout 100
