@@ -145,7 +145,7 @@ set(PythonInterp_FIND_VERSION 3)
 set(PythonInterp_FIND_VERSION_COUNT 1)
 set(PythonInterp_FIND_VERSION_MAJOR 3)
 include(FindPythonInterp)
-if(NOT PYTHON_EXECUTABLE)
+if(NOT PYTHON_FOUND)
   message(FATAL_ERROR "Please install Python (version 3 or higher).")
 endif()
 
