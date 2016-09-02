@@ -14,7 +14,6 @@
 #include "src/simix/smx_private.h"
 #include "simgrid/sg_config.h"
 #include "src/mc/mc_replay.h"
-#include "src/msg/msg_private.h"
 #include "src/kernel/activity/SynchroComm.hpp"
 
 #include <float.h> /* DBL_MAX */
@@ -25,6 +24,7 @@
 #include <stdlib.h>
 #include <string>
 #include <vector>
+#include "../msg/msg_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_kernel, smpi, "Logging specific to SMPI (kernel)");
 #include <boost/tokenizer.hpp>

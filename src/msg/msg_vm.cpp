@@ -13,10 +13,10 @@
 
 #include <simgrid/s4u/host.hpp>
 
-#include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "simgrid/host.h"
+#include "msg_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
 

@@ -13,12 +13,12 @@
 #include "simgrid/simix.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "xbt/log.h"
-#include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.h"
 #include "src/surf/cpu_interface.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
+#include "../msg/msg_private.hpp"
 
 int MSG_HOST_LEVEL = -1;
 int USER_HOST_LEVEL = -1;
