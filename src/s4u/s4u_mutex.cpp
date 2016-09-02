@@ -5,10 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
+#include "src/msg/msg_private.h"
 #include "src/simix/smx_synchro_private.h"
 
 #include "simgrid/s4u/Mutex.hpp"
-#include "../msg/msg_private.hpp"
 
 namespace simgrid {
 namespace s4u {

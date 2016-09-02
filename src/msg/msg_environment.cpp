@@ -4,12 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
 #include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
-#include "msg_private.hpp"
 
 #if HAVE_LUA
 #include <lua.h>

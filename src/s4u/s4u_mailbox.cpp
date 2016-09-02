@@ -5,8 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/log.h"
-
-#include "../msg/msg_private.hpp"
+#include "src/msg/msg_private.h"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_network_private.h"
 #include "simgrid/s4u/Mailbox.hpp"

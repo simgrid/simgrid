@@ -4,11 +4,11 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "src/msg/msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "simgrid/simix.h"
 #include <simgrid/s4u/host.hpp>
-#include "msg_private.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 

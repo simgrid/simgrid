@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "msg_private.hpp"
+#include "msg_private.h"
 
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg_vm, instr, "MSG VM");

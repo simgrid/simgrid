@@ -6,8 +6,8 @@
 
 #include <simgrid/s4u/host.hpp>
 
+#include "msg_private.h"
 #include "xbt/log.h"
-#include "msg_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 

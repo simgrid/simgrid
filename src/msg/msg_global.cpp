@@ -8,11 +8,10 @@
 
 #include "simgrid/msg.h"
 #include "instr/instr_interface.h"
+#include "msg_private.h"
 #include "mc/mc.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-
-#include "msg_private.hpp"
 #include "simgrid/sg_config.h" /* Configuration mechanism of SimGrid */
 #include "src/surf/xml/platf_private.hpp" // FIXME: KILLME by removing MSG_post_create_environment()
 

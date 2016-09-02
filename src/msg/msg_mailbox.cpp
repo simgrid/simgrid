@@ -9,9 +9,8 @@
 #include <xbt/ex.hpp>
 
 #include "simgrid/msg.h"
+#include "msg_private.h"
 #include "simgrid/s4u/Actor.hpp"
-
-#include "msg_private.hpp"
 #include "simgrid/s4u/Mailbox.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_mailbox, msg, "Logging specific to MSG (mailbox)");

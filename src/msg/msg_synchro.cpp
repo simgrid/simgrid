@@ -6,10 +6,10 @@
 
 #include <xbt/ex.hpp>
 
+#include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/synchro_core.h"
 #include "xbt/log.h"
-#include "msg_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (synchro)");
 

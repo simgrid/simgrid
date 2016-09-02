@@ -6,11 +6,10 @@
 
 #include <functional>
 
+#include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/functional.hpp"
-
-#include "msg_private.hpp"
 #include "src/simix/ActorImpl.hpp"
 #include "src/simix/smx_private.h"
 

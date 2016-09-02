@@ -4,9 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
-#include "msg_private.hpp"
 
 /** \ingroup msg_simulation
  * \brief An application deployer.

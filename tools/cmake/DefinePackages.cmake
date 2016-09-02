@@ -14,7 +14,7 @@ set(EXTRA_DIST
   src/include/surf/datatypes.h
   src/include/surf/maxmin.h
   src/include/surf/surf.h
-  src/msg/msg_private.hpp
+  src/msg/msg_private.h
   src/simdag/dax.dtd
   src/simdag/dax_dtd.c
   src/simdag/dax_dtd.h

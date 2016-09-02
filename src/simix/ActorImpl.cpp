@@ -20,12 +20,12 @@
 #include <simgrid/s4u/host.hpp>
 
 #include <mc/mc.h>
-#include "../msg/msg_private.hpp"
 
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
 #include "src/mc/mc_replay.h"
 #include "src/mc/Client.hpp"
+#include "src/msg/msg_private.h"
 #include "src/kernel/activity/SynchroSleep.hpp"
 #include "src/kernel/activity/SynchroRaw.hpp"
 #include "src/kernel/activity/SynchroIo.hpp"

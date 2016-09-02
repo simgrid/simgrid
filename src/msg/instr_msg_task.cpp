@@ -5,8 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
+#include "msg_private.h"
 #include "mc/mc.h"
-#include "msg_private.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY (instr_msg, instr, "MSG");
 
