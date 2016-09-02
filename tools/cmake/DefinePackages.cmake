@@ -1010,14 +1010,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Modules/FindSimGrid.cmake
   tools/cmake/Modules/FindValgrind.cmake
   tools/cmake/Option.cmake
-  tools/cmake/scripts/IPC/Run.pm
-  tools/cmake/scripts/IPC/Run/Debug.pm
-  tools/cmake/scripts/IPC/Run/IO.pm
-  tools/cmake/scripts/IPC/Run/Timer.pm
-  tools/cmake/scripts/IPC/Run/Win32Helper.pm
-  tools/cmake/scripts/IPC/Run/Win32IO.pm
-  tools/cmake/scripts/IPC/Run/Win32Pump.pm
-  tools/cmake/scripts/Diff.pm
   tools/cmake/scripts/my_valgrind.pl
   tools/cmake/scripts/update_tesh.pl
   tools/cmake/UnitTesting.cmake

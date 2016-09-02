@@ -21,8 +21,6 @@ install:
 # Strawberry perl is the one to work with gcc
 - choco install --limit-output strawberryperl -version 5.20.1.1
 - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
-- cpanm --notest --quiet Win32API::File
-- cpanm --notest --quiet IPC::Run
 # Lua 
 #- choco install lua53
 # Basic dependencies: gcc and Cmake (must be placed before Perl in the path)
