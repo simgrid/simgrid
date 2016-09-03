@@ -4,12 +4,14 @@ $ mkdir temp_testdir_background
 $ cd temp_testdir_background
 
 < use strict; 
-< sleep(2);
+< sleep(1);
 < open (FILE, "<tmp_fich") || die "Cannot open tmp_fich: $!\n";
 < 
 < while (<FILE>) {
 <   print;
 < }
+< close(FILE);
+< unlink("tmp_fich");
 < exit 0;
 <
 $ mkfile delayed_cat.pl
@@ -22,4 +24,3 @@ $ mkfile tmp_fich
 
 $ sleep 2
 $ cd ..
-$ cmake -E remove_directory temp_testdir_background
