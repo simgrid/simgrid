@@ -50,7 +50,7 @@ foreach (file answer dht-kademlia node routing_table task)
 endforeach()
 
 foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
-         async-waitall async-waitany dht-chord dht-kademlia io-remote platform-properties maestro-set 
+         async-waitall async-waitany dht-chord dht-kademlia io-remote platform-properties
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()
