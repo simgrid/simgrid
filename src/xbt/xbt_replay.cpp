@@ -147,12 +147,11 @@ void _xbt_replay_action_exit()
  */
 int xbt_replay_action_runner(int argc, char *argv[])
 {
-  int i;
   if (xbt_action_fp) {              // A unique trace file
     while (true) {
       char **evt = action_get_action(argv[0]);
       if (evt == nullptr)
-	 break;
+        break;
 
       char* lowername = str_tolower (evt[1]);
       action_fun function = (action_fun)xbt_dict_get(xbt_action_funs, lowername);
@@ -163,7 +162,7 @@ int xbt_replay_action_runner(int argc, char *argv[])
       catch(xbt_ex& e) {
         xbt_die("Replay error :\n %s", e.what());
       }
-      for (i=0;evt[i]!= nullptr;i++)
+      for (int i=0;evt[i]!= nullptr;i++)
         free(evt[i]);
       free(evt);
     }
