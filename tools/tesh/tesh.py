@@ -222,6 +222,7 @@ class Cmd(object):
         if file is None:
             fatal_error("Unable to create file "+filename)
         file.write("\n".join(self.input_pipe))
+        file.write("\n")
         file.close()
 
     def _cmd_cd(self, argline):
