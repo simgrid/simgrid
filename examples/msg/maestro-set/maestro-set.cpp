@@ -1,37 +1,37 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+/** @addtogroup MSG_examples
+ *
+ *  - <b>maestro-set/maestro-set.cpp: Switch the system thread hosting our maestro</b>. 
+ *    That's a very advanced example in which we move the maestro thread to another process.
+ *    Not many users need it (maybe only one, actually), but this example is also a regression test.
+ * 
+ *    This example is in C++ because we use C++11 threads to ensure that the feature is working as
+ *    expected. You can still use that feature from a C code.
+ */
 
 #include "simgrid/msg.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(msg_test, "Messages specific for this msg example");
 
-#define _GNU_SOURCE         /* See feature_test_macros(7) */
-#include <unistd.h>
-#include <sys/syscall.h>
-#include <sys/types.h> /* pid_t */
+#include <thread>
 
-pid_t root_pid;
+std::thread::id root_id;
 
 static void ensure_root_tid() {
-  pid_t my_pid = syscall(SYS_gettid);
-  xbt_assert(my_pid == root_pid, "I was supposed to be the main thread but %d != %d", my_pid, root_pid);
+  std::thread::id this_id = std::this_thread::get_id();
+  xbt_assert(root_id == this_id, "I was supposed to be the main thread");
   XBT_INFO("I am the main thread, as expected");
 }
 static void ensure_other_tid() {
-  pid_t my_pid = syscall(SYS_gettid);
-  xbt_assert(my_pid != root_pid, "I was NOT supposed to be the main thread");
+  std::thread::id this_id = std::this_thread::get_id();
+  xbt_assert(this_id != root_id, "I was NOT supposed to be the main thread");
   XBT_INFO("I am not the main thread, as expected");
 }
 
-/** @addtogroup MSG_examples
- *
- *  - <b>maestro-set/maestro-set.c: Switch the system thread hosting our maestro</b>. 
- *    That's a very advanced example in which we move the maestro thread to another process.
- *    Not many users need it (maybe only one, actually), but this example is also a regression test.
- */
 
 
 static int sender(int argc, char *argv[])
@@ -66,7 +66,7 @@ static void maestro(void* data)
 /** Main function */
 int main(int argc, char *argv[])
 {
-  root_pid = syscall(SYS_gettid);
+  root_id = std::this_thread::get_id();
 
   SIMIX_set_maestro(maestro, NULL);
   MSG_init(&argc, argv);
