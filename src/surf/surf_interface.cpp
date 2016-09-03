@@ -76,6 +76,15 @@ s_surf_model_description_t surf_network_model_description[] = {
   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
+#if ! HAVE_SMPI
+void surf_network_model_init_SMPI() {
+  xbt_die("Please activate SMPI support in cmake to use the SMPI network model.");
+}
+void surf_network_model_init_IB() {
+  xbt_die("Please activate SMPI support in cmake to use the IB network model.");
+}
+#endif
+
 s_surf_model_description_t surf_cpu_model_description[] = {
   {"Cas01", "Simplistic CPU model (time=size/power).", surf_cpu_model_init_Cas01},
   {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
