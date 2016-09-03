@@ -541,7 +541,6 @@ XBT_PUBLIC(void) surf_network_model_init_Constant();
  */
 XBT_PUBLIC(void) surf_network_model_init_CM02();
 
-#if HAVE_NS3
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model NS3
  *
@@ -551,7 +550,6 @@ XBT_PUBLIC(void) surf_network_model_init_CM02();
  *  \see surf_host_model_init_NS3()
  */
 XBT_PUBLIC(void) surf_network_model_init_NS3();
-#endif
 
 /** \ingroup SURF_models
  *  \brief Initializes the platform with the network model Reno
