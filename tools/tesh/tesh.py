@@ -287,6 +287,9 @@ class Cmd(object):
         
         print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
         
+        if TeshState().wrapper is not None:
+            self.timeout *= 20
+        
         args = shlex.split(self.args)
         #print (args)
         try:
