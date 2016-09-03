@@ -162,6 +162,7 @@ class TeshState(Singleton):
         self.threads = []
         self.args_suffix = ""
         self.ignore_regexps_common = []
+        self.wrapper = None
     
     def add_thread(self, thread):
         self.threads.append(thread)
@@ -283,13 +284,14 @@ class Cmd(object):
             if lock is not None: lock.release()
             return
         
-        self.args = TeshState().wrapper + self.args + TeshState().args_suffix
-        
-        print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
-        
         if TeshState().wrapper is not None:
             self.timeout *= 20
+            self.args = TeshState().wrapper + self.args
+            
+        self.args += TeshState().args_suffix
         
+        print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
+                
         args = shlex.split(self.args)
         #print (args)
         try:
