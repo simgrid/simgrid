@@ -48,11 +48,8 @@ import argparse
 if sys.version_info[0] == 3:
     import subprocess
     import _thread
-elif sys.version_info[0] < 3:
-    import subprocess32 as subprocess
-    import thread as _thread
 else:
-    raise "This program has not been made to exist this long"
+    raise "This program is expected to run with Python3 only"
 
 
 
@@ -174,9 +171,6 @@ class TeshState(Singleton):
             t.acquire()
             t.release()
 
-
-
-
 #Command line object
 class Cmd(object):
     def __init__(self):
@@ -289,7 +283,7 @@ class Cmd(object):
             if lock is not None: lock.release()
             return
         
-        self.args += TeshState().args_suffix
+        self.args = TeshState().wrapper + self.args + TeshState().args_suffix
         
         print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
         
@@ -365,12 +359,6 @@ class Cmd(object):
 
 
 
-
-
-
-
-
-
 ##############
 #
 # Main
@@ -389,6 +377,7 @@ if __name__ == '__main__':
     group1.add_argument('--cfg', metavar='arg', help='add parameter --cfg=arg to each command line')
     group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
     group1.add_argument('--enable-coverage', action='store_true', help='ignore output lines starting with "profiling:"')
+    group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
 
     try:
         options = parser.parse_args()
@@ -417,7 +406,9 @@ if __name__ == '__main__':
         TeshState().args_suffix += " --cfg="+options.cfg
     if options.log is not None:
         TeshState().args_suffix += " --log="+options.log
-    
+
+    if options.wrapper is not None:
+        TeshState().wrapper = options.wrapper
     
     #cmd holds the current command line
     # tech commands will add some parameters to it
@@ -508,8 +499,3 @@ if __name__ == '__main__':
         print("Test suite from stdin OK")
     else:
         print("Test suite `"+f.filename+"' OK")
-
-
-
-
-

@@ -1,7 +1,6 @@
 #!/usr/bin/env perl
 
-# Copyright (c) 2012-2014. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2012-2016. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -13,7 +12,7 @@ my @argv = ("valgrind");
 my $count = 0;
 
 while (defined(my $arg = shift)) {
-    #print "arg($count)$arg\n";
+#    print "arg($count)$arg\n";
     if ($arg =~ m!/smpirun$!) {
         @argv = ( $arg, "-wrapper", "@argv" );
     } elsif ($arg eq "--cd") {
@@ -27,8 +26,8 @@ while (defined(my $arg = shift)) {
     $count++;
 }
 
-#print "COMMAND : $bin $option $cd $path\n";
-#print "cd $path\n";
-#print "valgrind --trace-children=yes --leak-check=full --show-reachable=yes --track-origins=yes --read-var-info=no $bin $option\n";
-#print "@argv\n\n";
+# print "COMMAND:";
+# map { print "$_ " } @argv;
+# print "\n";
+
 system @argv;
