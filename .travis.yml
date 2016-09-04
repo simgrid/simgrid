@@ -5,7 +5,7 @@
 #   apt-get libns3-dev ns3
 #
 #
-sudo: required
+#sudo: required
 dist: trusty
 language: cpp
 compiler:
@@ -43,8 +43,9 @@ addons:
 #   - cd ..
 #   - ls -lR $TRAVIS_BUILD_DIR/LuaInstall
 
-# Still need sudo for update-alternatives
 script:
+   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew update         ; fi
+   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then brew install python3; fi
    - cmake -Denable_documentation=OFF -Denable_coverage=OFF -Denable_java=ON -Denable_model-checking=OFF -Denable_lua=OFF -Denable_compile_optimizations=OFF -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_compile_warnings=ON . 
    # run make in the sonar wrapper && run the tests only if the build suceeded
    - ./tools/internal/travis-sonarqube.sh make VERBOSE=1 && ctest --output-on-failure --timeout 100

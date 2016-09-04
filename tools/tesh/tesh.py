@@ -24,6 +24,17 @@ under the terms of the license (GNU LGPL) which comes with this package.
 # then, even better:
 # ! expect (\1 > 500)
 
+# TODO: If the output is sorted, we should report it to the users. Corresponding perl chunk
+# print "WARNING: Both the observed output and expected output were sorted as requested.\n";
+# print "WARNING: Output were only sorted using the $sort_prefix first chars.\n"
+#    if ( $sort_prefix > 0 );
+# print "WARNING: Use <! output sort 19> to sort by simulated date and process ID only.\n";
+#    
+# print "----8<---------------  Begin of unprocessed observed output (as it should appear in file):\n";
+# map {print "> $_\n"} @{$cmd{'unsorted got'}};
+# print "--------------->8----  End of the unprocessed observed output.\n";
+
+
 """
 
 
@@ -37,11 +48,8 @@ import argparse
 if sys.version_info[0] == 3:
     import subprocess
     import _thread
-elif sys.version_info[0] < 3:
-    import subprocess32 as subprocess
-    import thread as _thread
 else:
-    raise "This program has not been made to exist this long"
+    raise "This program is expected to run with Python3 only"
 
 
 
@@ -154,6 +162,7 @@ class TeshState(Singleton):
         self.threads = []
         self.args_suffix = ""
         self.ignore_regexps_common = []
+        self.wrapper = None
     
     def add_thread(self, thread):
         self.threads.append(thread)
@@ -162,9 +171,6 @@ class TeshState(Singleton):
         for t in self.threads:
             t.acquire()
             t.release()
-
-
-
 
 #Command line object
 class Cmd(object):
@@ -216,6 +222,7 @@ class Cmd(object):
         if file is None:
             fatal_error("Unable to create file "+filename)
         file.write("\n".join(self.input_pipe))
+        file.write("\n")
         file.close()
 
     def _cmd_cd(self, argline):
@@ -278,10 +285,14 @@ class Cmd(object):
             if lock is not None: lock.release()
             return
         
+        if TeshState().wrapper is not None:
+            self.timeout *= 20
+            self.args = TeshState().wrapper + self.args
+            
         self.args += TeshState().args_suffix
         
         print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
-        
+                
         args = shlex.split(self.args)
         #print (args)
         try:
@@ -354,12 +365,6 @@ class Cmd(object):
 
 
 
-
-
-
-
-
-
 ##############
 #
 # Main
@@ -378,6 +383,7 @@ if __name__ == '__main__':
     group1.add_argument('--cfg', metavar='arg', help='add parameter --cfg=arg to each command line')
     group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
     group1.add_argument('--enable-coverage', action='store_true', help='ignore output lines starting with "profiling:"')
+    group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
 
     try:
         options = parser.parse_args()
@@ -406,7 +412,9 @@ if __name__ == '__main__':
         TeshState().args_suffix += " --cfg="+options.cfg
     if options.log is not None:
         TeshState().args_suffix += " --log="+options.log
-    
+
+    if options.wrapper is not None:
+        TeshState().wrapper = options.wrapper
     
     #cmd holds the current command line
     # tech commands will add some parameters to it
@@ -497,8 +505,3 @@ if __name__ == '__main__':
         print("Test suite from stdin OK")
     else:
         print("Test suite `"+f.filename+"' OK")
-
-
-
-
-

@@ -50,6 +50,7 @@ int main(int argc, char **argv)
       XBT_INFO("Task '%s' start time: %f, finish time: %f", SD_task_get_name(task), SD_task_get_start_time(task),
                SD_task_get_finish_time(task));
     }
+    xbt_dynar_free(&changed_tasks);
 
     /* let throttle the communication for taskD if its parent is SD_DONE */
     /* the bandwidth is 1.25e8, the data size is 1e7, and we want to throttle the bandwidth by a factor 2.

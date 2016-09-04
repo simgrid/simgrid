@@ -1,14 +1,24 @@
+# C examples
 foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
           async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple cloud-two-tasks
           dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm platform-failures 
           io-file io-remote io-storage task-priority process-create process-kill process-migration process-suspend 
-          platform-properties maestro-set process-startkilltime synchro-semaphore trace-categories 
+          platform-properties process-startkilltime synchro-semaphore trace-categories 
           trace-route-user-variables trace-link-user-variables trace-masterworker trace-platform 
           trace-process-migration trace-host-user-variables)
   add_executable       (${x}     ${x}/${x}.c)
   target_link_libraries(${x}     simgrid)
   set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
   set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+  set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
+endforeach()
+
+# CPP examples
+foreach(x maestro-set)
+  add_executable       (${x}     ${x}/${x}.cpp)
+  target_link_libraries(${x}     simgrid)
+  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
   set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
 endforeach()
 
@@ -40,7 +50,7 @@ foreach (file answer dht-kademlia node routing_table task)
 endforeach()
 
 foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
-         async-waitall async-waitany dht-chord dht-kademlia io-remote platform-properties maestro-set 
+         async-waitall async-waitany dht-chord dht-kademlia io-remote platform-properties
          task-priority)
   set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
 endforeach()

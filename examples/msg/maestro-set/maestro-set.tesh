@@ -1,16 +1,10 @@
 #! ./tesh
 
-! output sort 19
-$ $SG_TEST_EXENV maestro-set/maestro-set$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/maestro-set/maestro-set_d.xml  "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (1:sender@Tremblay) sender
-> [  0.000000] (1:sender@Tremblay) host = Jupiter
-> [  0.000000] (1:sender@Tremblay) task_la->data = 0.000000e+00
-> [  0.000000] (2:receiver@Jupiter) receiver
-> [  0.001462] (2:receiver@Jupiter) Task received : latency task
-> [  0.001462] (2:receiver@Jupiter) Communic. time 1.461656e-03
-> [  0.001462] (2:receiver@Jupiter) --- la 0.001462 ----
-> [  0.001462] (1:sender@Tremblay) task_bw->data = 1.461656e-03
-> [138.703988] (0:maestro@) Total simulation time: 1.387040e+02
-> [138.703988] (2:receiver@Jupiter) Task received : bandwidth task
-> [138.703988] (2:receiver@Jupiter) Communic. time 1.387025e+02
-> [138.703988] (2:receiver@Jupiter) --- bw 7209674.030423 ----
+$ $SG_TEST_EXENV maestro-set/maestro-set$EXEEXT ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) I am not the main thread, as expected
+> [  0.000000] (2:receiver@Jupiter) I am not the main thread, as expected
+> [  0.000000] (1:sender@Tremblay) I am the main thread, as expected
+> [  0.000000] (1:sender@Tremblay) I am the main thread, as expected
+> [150.159342] (2:receiver@Jupiter) Task received
+> [150.159342] (0:maestro@) Detached
+> [150.159342] (0:maestro@) I am the main thread, as expected

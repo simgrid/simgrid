@@ -1,25 +1,23 @@
 
-$ cmake -E remove_directory temp_testdir_background
-$ mkdir temp_testdir_background
-$ cd temp_testdir_background
+$ cmake -E remove bgtesh.pl bgtesh.data
 
 < use strict; 
-< sleep(2);
-< open (FILE, "<tmp_fich") || die "Cannot open tmp_fich: $!\n";
+< sleep(1);
+< open (FILE, "<bgtesh.data") || die "Cannot open bgtesh.data: $!\n";
 < 
 < while (<FILE>) {
 <   print;
 < }
+< close(FILE);
 < exit 0;
 <
-$ mkfile delayed_cat.pl
+$ mkfile bgtesh.pl
 
-& perl delayed_cat.pl
+& perl bgtesh.pl
 > TOTO
 
 < TOTO
-$ mkfile tmp_fich
+$ mkfile bgtesh.data
 
 $ sleep 2
-$ cd ..
-$ cmake -E remove_directory temp_testdir_background
+$ cmake -E remove bgtesh.pl bgtesh.data

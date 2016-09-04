@@ -64,9 +64,7 @@ s_surf_model_description_t surf_network_model_description[] = {
    surf_network_model_init_IB},
   {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
    surf_network_model_init_CM02},
-#if HAVE_NS3
   {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", surf_network_model_init_NS3},
-#endif
   {"Reno",  "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
    surf_network_model_init_Reno},
   {"Reno2", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
@@ -75,6 +73,20 @@ s_surf_model_description_t surf_network_model_description[] = {
    surf_network_model_init_Vegas},
   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
+
+#if ! HAVE_SMPI
+void surf_network_model_init_SMPI() {
+  xbt_die("Please activate SMPI support in cmake to use the SMPI network model.");
+}
+void surf_network_model_init_IB() {
+  xbt_die("Please activate SMPI support in cmake to use the IB network model.");
+}
+#endif
+#if !HAVE_NS3
+void surf_network_model_init_NS3() {
+  xbt_die("Please activate NS3 support in cmake and install the dependencies to use the NS3 network model.");
+}
+#endif
 
 s_surf_model_description_t surf_cpu_model_description[] = {
   {"Cas01", "Simplistic CPU model (time=size/power).", surf_cpu_model_init_Cas01},

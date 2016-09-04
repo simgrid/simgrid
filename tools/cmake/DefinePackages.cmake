@@ -242,6 +242,9 @@ set(SMPI_SRC
   src/smpi/smpi_topo.cpp
   src/smpi/smpi_utils.cpp
   src/smpi/smpi_f77.cpp
+  
+  src/surf/network_smpi.cpp
+  src/surf/network_ib.cpp
   )
 
 set(XBT_SRC
@@ -315,8 +318,6 @@ set(SURF_SRC
   src/surf/network_cm02.cpp
   src/surf/network_constant.cpp
   src/surf/network_interface.cpp
-  src/surf/network_smpi.cpp
-  src/surf/network_ib.cpp
   src/surf/plugins/energy.cpp
   src/surf/PropertyHolder.cpp
   src/surf/sg_platf.cpp
