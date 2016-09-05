@@ -5,6 +5,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "instr/instr_interface.h"
 #include "simgrid/simix.h"
 #include "mc/mc.h"
 #include "simgrid/s4u/As.hpp"
@@ -27,6 +28,7 @@ Engine::Engine(int *argc, char **argv) {
   xbt_assert(s4u::Engine::instance_ == nullptr, "It is currently forbidden to create more than one instance of s4u::Engine");
   s4u::Engine::instance_ = this;
 
+  TRACE_global_init(argc, argv);
   SIMIX_global_init(argc, argv);
 }
 
