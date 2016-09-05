@@ -22,7 +22,8 @@ they produce the expected output and return the expected value.
   --setenv var=value  : set a specific environment variable
   --cfg arg           : add parameter --cfg=arg to each command line
   --log arg           : add parameter --log=arg to each command line
-  --enable-coverage   : ignore output lines starting with "profiling:"
+  --ignore-jenkins    : ignore all cruft generated on SimGrid
+                        continous integration servers
 
 
 =head1 TEST SUITE FILE SYTAX
