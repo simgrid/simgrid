@@ -288,7 +288,9 @@ class Cmd(object):
         if TeshState().wrapper is not None:
             self.timeout *= 20
             self.args = TeshState().wrapper + self.args
-            
+        elif re.match(".*smpirun.*", self.args) is not None:
+            self.args = "sh " + self.args 
+
         self.args += TeshState().args_suffix
         
         print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
