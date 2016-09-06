@@ -221,28 +221,26 @@ void VirtualMachine::migrate(sg_host_t host_dest)
    hostPM_ = host_dest;
 
    /* Update vcpu's action for the new pm */
-   {
-     /* create a cpu action bound to the pm model at the destination. */
-     CpuAction *new_cpu_action = static_cast<CpuAction*>(host_dest->pimpl_cpu->execution_start(0));
+   /* create a cpu action bound to the pm model at the destination. */
+   CpuAction *new_cpu_action = static_cast<CpuAction*>(host_dest->pimpl_cpu->execution_start(0));
 
-     Action::State state = action_->getState();
-     if (state != Action::State::done)
-       XBT_CRITICAL("FIXME: may need a proper handling, %d", static_cast<int>(state));
-     if (action_->getRemainsNoUpdate() > 0)
-       XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->getRemainsNoUpdate());
+   Action::State state = action_->getState();
+   if (state != Action::State::done)
+     XBT_CRITICAL("FIXME: may need a proper handling, %d", static_cast<int>(state));
+   if (action_->getRemainsNoUpdate() > 0)
+     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->getRemainsNoUpdate());
 
-     /* keep the bound value of the cpu action of the VM. */
-     double old_bound = action_->getBound();
-     if (old_bound != 0) {
-       XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
-       new_cpu_action->setBound(old_bound);
-     }
-
-     XBT_ATTRIB_UNUSED int ret = action_->unref();
-     xbt_assert(ret == 1, "Bug: some resource still remains");
-
-     action_ = new_cpu_action;
+   /* keep the bound value of the cpu action of the VM. */
+   double old_bound = action_->getBound();
+   if (old_bound != 0) {
+     XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
+     new_cpu_action->setBound(old_bound);
    }
+
+   XBT_ATTRIB_UNUSED int ret = action_->unref();
+   xbt_assert(ret == 1, "Bug: some resource still remains");
+
+   action_ = new_cpu_action;
 
    XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
 }

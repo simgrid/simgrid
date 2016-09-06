@@ -288,7 +288,9 @@ class Cmd(object):
         if TeshState().wrapper is not None:
             self.timeout *= 20
             self.args = TeshState().wrapper + self.args
-            
+        elif re.match(".*smpirun.*", self.args) is not None:
+            self.args = "sh " + self.args 
+
         self.args += TeshState().args_suffix
         
         print("["+FileReader().filename+":"+str(self.linenumber)+"] "+self.args)
@@ -382,7 +384,7 @@ if __name__ == '__main__':
     group1.add_argument('--setenv', metavar='var=value', action='append', help='set a specific environment variable')
     group1.add_argument('--cfg', metavar='arg', help='add parameter --cfg=arg to each command line')
     group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
-    group1.add_argument('--enable-coverage', action='store_true', help='ignore output lines starting with "profiling:"')
+    group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
 
     try:
@@ -392,10 +394,13 @@ if __name__ == '__main__':
 
     if options.cd is not None:
         os.chdir(options.cd)
-
-    if options.enable_coverage:
-        print("Enable coverage")
-        TeshState().ignore_regexps_common = [re.compile("^profiling:")]
+    
+    if options.ignore_jenkins:
+        print("Ignore all cruft seen on SimGrid's continous integration servers")
+        TeshState().ignore_regexps_common = [
+           re.compile("^profiling:"),
+           re.compile("WARNING: ASan doesn't fully support"),
+           re.compile("Unable to clean temporary file C:")]
     
     if options.teshfile is None:
         f = FileReader(None)

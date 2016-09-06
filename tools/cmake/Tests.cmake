@@ -6,10 +6,8 @@ IF(enable_smpi AND NOT WIN32)
   execute_process(COMMAND chmod a=rwx ${CMAKE_BINARY_DIR}/bin/smpirun)
 ENDIF()
 
-SET(TESH_COMMAND ${CMAKE_BINARY_DIR}/bin/tesh)
-IF(CMAKE_HOST_WIN32)
-  SET(TESH_OPTION ${TESH_OPTION} --timeout 50)
-ENDIF()
+SET(TESH_OPTION "--ignore-jenkins")
+SET(TESH_COMMAND "${PYTHON_EXECUTABLE}" ${CMAKE_BINARY_DIR}/bin/tesh)
 
 IF(enable_memcheck)
   INCLUDE(FindValgrind)
