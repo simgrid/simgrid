@@ -11,15 +11,16 @@
 #include "surf/surf.h"
 
 #include "simgrid/jedule/jedule_sd_binding.h"
-#include "simgrid/jedule/jedule_events.h"
-#include "simgrid/jedule/jedule_platform.h"
-#include "simgrid/jedule/jedule_output.h"
-
 #include "simgrid/simdag.h"
 #include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
 
 #include <stdio.h>
+#include "simgrid/forward.h"
+
+#include "simgrid/jedule/jedule_events.hpp"
+#include "simgrid/jedule/jedule_output.hpp"
+#include "simgrid/jedule/jedule_platform.hpp"
 #include "../../simdag/simdag_private.hpp"
 
 #if HAVE_JEDULE
@@ -27,76 +28,29 @@
 XBT_LOG_NEW_CATEGORY(jedule, "Logging specific to Jedule");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_sd, jedule, "Logging specific to Jedule SD binding");
 
-jedule_t jedule;
+jedule_t my_jedule;
 
 void jedule_log_sd_event(SD_task_t task)
 {
-  jed_event_t event;
-
   xbt_assert(task != nullptr);
 
-  xbt_dynar_t host_list = xbt_dynar_new(sizeof(char*), nullptr);
-
-  for(auto host: *task->allocation){
-    const char *hostname = sg_host_get_name(host);
-    xbt_dynar_push(host_list, &hostname);
-  }
-
-  create_jed_event(&event, (char*)SD_task_get_name(task), task->start_time, task->finish_time,"SD");
-
-  jed_event_add_resources(event, host_list);
+  jed_event_t event =
+      new simgrid::jedule::Event(std::string(SD_task_get_name(task)), task->start_time, task->finish_time,"SD");
+  event->addResources(task->allocation);
   jedule_store_event(event);
-
-  xbt_dynar_free(&host_list);
-}
-
-static void create_hierarchy(AS_t current_comp, jed_simgrid_container_t current_container)
-{
-  xbt_dict_cursor_t cursor = nullptr;
-  char *key;
-  AS_t elem;
-  xbt_dict_t routing_sons = current_comp->children();
-
-  if (xbt_dict_is_empty(routing_sons)) {
-    // I am no AS
-    // add hosts to jedule platform
-    xbt_dynar_t table = current_comp->hosts();
-    xbt_dynar_t hosts;
-    unsigned int dynar_cursor;
-    sg_host_t host_elem;
-
-    hosts = xbt_dynar_new(sizeof(char*), nullptr);
-
-    xbt_dynar_foreach(table, dynar_cursor, host_elem) {
-      xbt_dynar_push_as(hosts, const char*, sg_host_get_name(host_elem));
-    }
-
-    jed_simgrid_add_resources(current_container, hosts);
-    xbt_dynar_free(&hosts);
-    xbt_dynar_free(&table);
-  } else {
-    xbt_dict_foreach(routing_sons, cursor, key, elem) {
-      jed_simgrid_container_t child_container;
-      jed_simgrid_create_container(&child_container, elem->name());
-      jed_simgrid_add_container(current_container, child_container);
-      XBT_DEBUG("name : %s\n", elem->name());
-      create_hierarchy(elem, child_container);
-    }
-  }
 }
 
 void jedule_setup_platform()
 {
-  jed_create_jedule(&jedule);
+  jed_create_jedule(&my_jedule);
 
   AS_t root_comp = simgrid::s4u::Engine::instance()->rootAs();
   XBT_DEBUG("root name %s\n", root_comp->name());
 
-  jed_simgrid_container_t root_container;
-  jed_simgrid_create_container(&root_container, root_comp->name());
-  jedule->root_container = root_container;
+  jed_container_t root_container = new simgrid::jedule::Container(std::string(root_comp->name()));
+  my_jedule->root_container = root_container;
 
-  create_hierarchy(root_comp, root_container);
+  root_container->createHierarchy(root_comp);
 }
 
 void jedule_sd_cleanup()
@@ -111,15 +65,15 @@ void jedule_sd_init()
 
 void jedule_sd_exit(void)
 {
-  if (jedule) {
-    jed_free_jedule(jedule);
-    jedule = nullptr;
+  if (my_jedule) {
+    jed_free_jedule(my_jedule);
+    my_jedule = nullptr;
   }
 }
 
 void jedule_sd_dump(const char * filename)
 {
-  if (jedule) {
+  if (my_jedule) {
     char *fname;
     FILE *fh;
     if (!filename) {
@@ -130,7 +84,7 @@ void jedule_sd_dump(const char * filename)
 
     fh = fopen(fname, "w");
 
-    write_jedule_output(fh, jedule, jedule_event_list, nullptr);
+    write_jedule_output(fh, my_jedule, jedule_event_list, nullptr);
 
     fclose(fh);
     free(fname);

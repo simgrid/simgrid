@@ -524,9 +524,9 @@ set(TRACING_SRC
   )
 
 set(JEDULE_SRC
-  include/simgrid/jedule/jedule_events.h
-  include/simgrid/jedule/jedule_output.h
-  include/simgrid/jedule/jedule_platform.h
+  include/simgrid/jedule/jedule_events.hpp
+  include/simgrid/jedule/jedule_output.hpp
+  include/simgrid/jedule/jedule_platform.hpp
   include/simgrid/jedule/jedule_sd_binding.h
   src/instr/jedule/jedule_events.cpp
   src/instr/jedule/jedule_output.cpp

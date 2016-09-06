@@ -37,7 +37,8 @@ set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag_wi
                                   ${CMAKE_CURRENT_SOURCE_DIR}/dag-dotload/dag.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/ptg-dotload/ptg.dot
                                   ${CMAKE_CURRENT_SOURCE_DIR}/schedule-dotload/dag_with_bad_schedule.dot
-                                  ${CMAKE_CURRENT_SOURCE_DIR}/schedule-dotload/dag_with_good_schedule.dot  PARENT_SCOPE)
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/schedule-dotload/dag_with_good_schedule.dot
+                                  ${CMAKE_CURRENT_SOURCE_DIR}/scheduling/expected_output.jed               PARENT_SCOPE)
 
 foreach(x availability daxload fail typed_tasks properties throttling scheduling test)
   ADD_TESH(simdag-${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/simdag --cd ${CMAKE_BINARY_DIR}/examples/simdag ${CMAKE_HOME_DIRECTORY}/examples/simdag/${x}/sd_${x}.tesh)
