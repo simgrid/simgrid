@@ -47,30 +47,30 @@ simgrid::xbt::signal<void(void)> surfExitCallbacks;
 #include <simgrid/plugins/energy.h> // FIXME: this plugin should not be linked to the core
 
 s_surf_model_description_t surf_plugin_description[] = {
-    {"Energy", "Cpu energy consumption.", sg_energy_plugin_init},
+    {"Energy", "Cpu energy consumption.", &sg_energy_plugin_init},
      {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
 /* Don't forget to update the option description in smx_config when you change this */
 s_surf_model_description_t surf_network_model_description[] = {
   {"LV08", "Realistic network analytic model (slow-start modeled by multiplying latency by 10.4, bandwidth by .92; bottleneck sharing uses a payload of S=8775 for evaluating RTT). ",
-   surf_network_model_init_LegrandVelho},
+   &surf_network_model_init_LegrandVelho},
   {"Constant",
    "Simplistic network model where all communication take a constant time (one second). This model provides the lowest realism, but is (marginally) faster.",
-   surf_network_model_init_Constant},
+   &surf_network_model_init_Constant},
   {"SMPI", "Realistic network model specifically tailored for HPC settings (accurate modeling of slow start with correction factors on three intervals: < 1KiB, < 64 KiB, >= 64 KiB)",
-   surf_network_model_init_SMPI},
+   &surf_network_model_init_SMPI},
   {"IB", "Realistic network model specifically tailored for HPC settings, with Infiniband contention model",
-   surf_network_model_init_IB},
+   &surf_network_model_init_IB},
   {"CM02", "Legacy network analytic model (Very similar to LV08, but without corrective factors. The timings of small messages are thus poorly modeled).",
-   surf_network_model_init_CM02},
-  {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", surf_network_model_init_NS3},
+   &surf_network_model_init_CM02},
+  {"NS3", "Network pseudo-model using the NS3 tcp model instead of an analytic model", &surf_network_model_init_NS3},
   {"Reno",  "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   surf_network_model_init_Reno},
+   &surf_network_model_init_Reno},
   {"Reno2", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   surf_network_model_init_Reno2},
+   &surf_network_model_init_Reno2},
   {"Vegas", "Model from Steven H. Low using lagrange_solve instead of lmm_solve (experts only; check the code for more info).",
-   surf_network_model_init_Vegas},
+   &surf_network_model_init_Vegas},
   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
@@ -89,19 +89,19 @@ void surf_network_model_init_NS3() {
 #endif
 
 s_surf_model_description_t surf_cpu_model_description[] = {
-  {"Cas01", "Simplistic CPU model (time=size/power).", surf_cpu_model_init_Cas01},
+  {"Cas01", "Simplistic CPU model (time=size/power).", &surf_cpu_model_init_Cas01},
   {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
 s_surf_model_description_t surf_host_model_description[] = {
-  {"default",   "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)", surf_host_model_init_current_default},
-  {"compound",  "Host model that is automatically chosen if you change the network and CPU models", surf_host_model_init_compound},
-  {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks", surf_host_model_init_ptask_L07},
+  {"default",   "Default host model. Currently, CPU:Cas01 and network:LV08 (with cross traffic enabled)", &surf_host_model_init_current_default},
+  {"compound",  "Host model that is automatically chosen if you change the network and CPU models", &surf_host_model_init_compound},
+  {"ptask_L07", "Host model somehow similar to Cas01+CM02 but allowing parallel tasks", &surf_host_model_init_ptask_L07},
   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
 s_surf_model_description_t surf_vm_model_description[] = {
-  {"default", "Default vm model.", surf_vm_model_init_HL13},
+  {"default", "Default vm model.", &surf_vm_model_init_HL13},
   {nullptr, nullptr, nullptr}      /* this array must be nullptr terminated */
 };
 
@@ -113,7 +113,7 @@ s_surf_model_description_t surf_optimization_mode_description[] = {
 };
 
 s_surf_model_description_t surf_storage_model_description[] = {
-  {"default", "Simplistic storage model.", surf_storage_model_init_default},
+  {"default", "Simplistic storage model.", &surf_storage_model_init_default},
   {nullptr, nullptr,  nullptr}      /* this array must be nullptr terminated */
 };
 
