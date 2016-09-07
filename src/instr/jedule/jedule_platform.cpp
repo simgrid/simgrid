@@ -169,7 +169,6 @@ void Container::print(FILE* jed_file) {
   fprintf(jed_file, "    </res>\n");
 }
 
-
 }
 }
 
@@ -203,9 +202,6 @@ static void add_subset_to(xbt_dynar_t subset_list, int start, int end, jed_conta
 static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_container_t parent) {
   unsigned int iter;
   char *host_name;
-  xbt_dynar_t id_list;
-  int *id_ar;
-  int nb_ids;
   int id;
 
   // get ids for each host
@@ -218,7 +214,7 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_c
   xbt_assert( hostgroup != nullptr );
   xbt_assert( parent != nullptr );
 
-  id_list = xbt_dynar_new(sizeof(int), nullptr);
+  xbt_dynar_t id_list = xbt_dynar_new(sizeof(int), nullptr);
 
   xbt_dynar_foreach(hostgroup, iter, host_name) {
     jed_container_t parent;
@@ -227,18 +223,16 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_c
     id = parent->name2id.at(host_name);
     xbt_dynar_push(id_list, &id);
   }
-  nb_ids = xbt_dynar_length(id_list);
+  int nb_ids = xbt_dynar_length(id_list);
   xbt_dynar_sort(id_list, &compare_ids);
 
-  id_ar = static_cast<int*>(xbt_dynar_to_array(id_list));
+  int *id_ar = static_cast<int*>(xbt_dynar_to_array(id_list));
 
   if( nb_ids > 0 ) {
     int start = 0;
-    int pos;
-    int i;
 
-    pos = start;
-    for(i=0; i<nb_ids; i++) {
+    int pos = start;
+    for(int i=0; i<nb_ids; i++) {
       if( id_ar[i] - id_ar[pos] > 1 ) {
         add_subset_to( subset_list, id_ar[start], id_ar[pos], parent );
         start = i;
@@ -251,7 +245,6 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_c
           add_subset_to( subset_list, id_ar[start], id_ar[i], parent );
         }
       }
-
       pos = i;
     }
   }
@@ -288,8 +281,6 @@ void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list, std::v
     add_subsets_to(subset_list, elm.second, parent);
     xbt_dynar_free_container(&elm.second);
   }
-
-
 }
 
 void jedule_add_meta_info(jedule_t jedule, char *key, char *value) {

@@ -20,8 +20,7 @@ extern xbt_dynar_t jedule_event_list;
 void jedule_init_output(void);
 void jedule_cleanup_output(void);
 void jedule_store_event(jed_event_t event);
-void write_jedule_output(FILE *file, jedule_t jedule, xbt_dynar_t event_list, xbt_dict_t meta_info_dict);
-void print_key_value_dict(FILE *file, std::unordered_map<char*, char*> key_value_dict);
+void write_jedule_output(FILE *file, jedule_t jedule, xbt_dynar_t event_list);
 
 SG_END_DECL()
 #endif

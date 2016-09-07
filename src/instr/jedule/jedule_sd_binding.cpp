@@ -75,19 +75,18 @@ void jedule_sd_dump(const char * filename)
 {
   if (my_jedule) {
     char *fname;
-    FILE *fh;
     if (!filename) {
       fname = bprintf("%s.jed", xbt_binary_name);
     } else {
       fname = xbt_strdup(filename);
     }
 
-    fh = fopen(fname, "w");
+    FILE *fh = fopen(fname, "w");
 
-    write_jedule_output(fh, my_jedule, jedule_event_list, nullptr);
+    write_jedule_output(fh, my_jedule, jedule_event_list);
 
     fclose(fh);
-    free(fname);
+    xbt_free(fname);
   }
 }
 #endif

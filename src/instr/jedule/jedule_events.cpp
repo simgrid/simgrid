@@ -55,21 +55,17 @@ void Event::print(FILE *jed_file){
   fprintf(jed_file, "      <prop key=\"start\" value=\"%g\" />\n", this->start_time);
   fprintf(jed_file, "      <prop key=\"end\" value=\"%g\" />\n", this->end_time);
   fprintf(jed_file, "      <prop key=\"type\" value=\"%s\" />\n", this->type.c_str());
-  fprintf(jed_file, "      <res_util>\n");
 
   xbt_assert(!this->resource_subsets.empty());
+  fprintf(jed_file, "      <res_util>\n");
   for (auto subset: this->resource_subsets) {
-    int start = subset->start_idx;
-    int end   = subset->start_idx + subset->nres - 1;
-
-    std::string resid = subset->parent->getHierarchyAsString();
     fprintf(jed_file, "        <select resources=\"");
-    fprintf(jed_file, "%s", resid.c_str());
-    fprintf(jed_file, ".[%d-%d]", start, end);
+    fprintf(jed_file, "%s", subset->parent->getHierarchyAsString().c_str());
+    fprintf(jed_file, ".[%d-%d]", subset->start_idx, subset->start_idx + subset->nres - 1);
     fprintf(jed_file, "\" />\n");
   }
-
   fprintf(jed_file, "      </res_util>\n");
+
   if (!this->characteristics_list.empty()){
     fprintf(jed_file, "      <characteristics>\n");
     for (auto ch: this->characteristics_list)
@@ -79,7 +75,8 @@ void Event::print(FILE *jed_file){
 
   if (!this->info_map.empty()){
     fprintf(jed_file, "      <info>\n");
-    print_key_value_dict(jed_file, this->info_map);
+    for (auto elm: this->info_map)
+      fprintf(jed_file, "        <prop key=\"%s\" value=\"%s\" />\n",elm.first,elm.second);
     fprintf(jed_file, "      </info>\n");
   }
 
