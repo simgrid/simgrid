@@ -22,14 +22,14 @@ namespace jedule{
 XBT_PUBLIC_CLASS Container {
 public:
   Container(std::string name);
-  ~Container()=default;
+  virtual ~Container()=default;
 private:
   int last_id;
-  int is_lowest;
+  int is_lowest = 0;
 public:
   std::string name;
   std::unordered_map<const char*, int> name2id;
-  Container *parent;
+  Container *parent = nullptr;
   std::vector<Container*> children;
   std::vector<sg_host_t> resource_list;
   void addChild(Container* child);
@@ -46,6 +46,7 @@ public:
 SG_BEGIN_DECL()
 typedef simgrid::jedule::Container * jed_container_t;
 
+/* FIXME: jedule_container should be objectified too */
 /** selection of a subset of resources from the original set */
 struct jed_res_subset {
   jed_container_t parent;
@@ -54,6 +55,8 @@ struct jed_res_subset {
 };
 
 typedef struct jed_res_subset s_jed_res_subset_t, *jed_res_subset_t;
+
+/* FIXME: jedule should be objectified too */
 
 typedef struct jedule_struct {
   jed_container_t root_container;

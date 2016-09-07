@@ -16,6 +16,7 @@
 namespace simgrid{
 namespace jedule{
 
+  /* FIXME: this should could maybe be merged into the destructor? */
 void Event::deleteEvent(){
   while (!this->resource_subsets.empty()){
     xbt_free(this->resource_subsets.back());

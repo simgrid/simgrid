@@ -21,7 +21,7 @@ namespace jedule{
 
 XBT_PUBLIC_CLASS Event{
   private:
-    ~Event()=default;
+    virtual ~Event()=default;
   public:
     Event(std::string name, double start_time, double end_time, std::string type)
       : name(name), start_time(start_time), end_time(end_time), type(type){}

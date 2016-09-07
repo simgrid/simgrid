@@ -16,8 +16,6 @@
 
 #if HAVE_JEDULE
 
-#define STR_BUF_SIZE 1024
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(jed_out, jedule, "Logging specific to Jedule output");
 
 xbt_dynar_t jedule_event_list;

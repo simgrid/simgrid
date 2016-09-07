@@ -28,9 +28,6 @@ namespace jedule {
 Container::Container(std::string name)
 : name(name) {
 
-  this->is_lowest = 0;
-  this->parent = nullptr;
-
   xbt_dict_set(container_name2container, this->name.c_str(), this, nullptr);
 }
 
@@ -136,12 +133,10 @@ std::string Container::getHierarchyAsString(){
 }
 
 void Container::printResources(FILE * jed_file){
-  unsigned int res_nb;
   unsigned int i=0;
   xbt_assert(!this->resource_list.empty());
 
-  res_nb = this->resource_list.size();
-
+  unsigned int res_nb = this->resource_list.size();
   std::string resid = this->getHierarchyAsString();
 
   fprintf(jed_file, "      <rset id=\"%s\" nb=\"%u\" names=\"", resid.c_str(), res_nb);
@@ -176,6 +171,7 @@ static int compare_ids(const void *num1, const void *num2) {
   return *((int*) num1) - *((int*) num2);
 }
 
+/* FIXME: That should be the destructor, shouldnt it? */
 static void jed_free_container(jed_container_t container) {
   if(!container->children.empty()) {
     for (auto child: container->children){
