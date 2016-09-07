@@ -497,7 +497,7 @@ void simcall_HANDLER_comm_waitany(smx_simcall_t simcall, xbt_dynar_t synchros, d
   if (timeout < 0.0){
     simcall->timer = NULL;
   } else {
-    simcall->timer = SIMIX_timer_set(timeout, [simcall]() {
+    simcall->timer = SIMIX_timer_set(SIMIX_get_clock() + timeout, [simcall]() {
       SIMIX_waitany_remove_simcall_from_actions(simcall);
       simcall_comm_waitany__set__result(simcall, -1);
       SIMIX_simcall_answer(simcall);
