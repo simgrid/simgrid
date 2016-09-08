@@ -399,7 +399,7 @@ if __name__ == '__main__':
         print("Ignore all cruft seen on SimGrid's continous integration servers")
         TeshState().ignore_regexps_common = [
            re.compile("^profiling:"),
-           re.compile("WARNING: ASan doesn't fully support"),
+           re.compile(".*WARNING: ASan doesn\'t fully support"),
            re.compile("Unable to clean temporary file C:")]
     
     if options.teshfile is None:
