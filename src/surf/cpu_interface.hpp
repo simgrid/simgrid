@@ -106,7 +106,7 @@ public:
   virtual simgrid::surf::Action *sleep(double duration)=0;
 
   /** @brief Get the amount of cores */
-  virtual int getCore();
+  virtual int getCoreCount();
 
   /** @brief Get the speed, accounting for the trace load and provided process load instead of the real current one */
   virtual double getSpeed(double load);
