@@ -87,7 +87,7 @@ static void segvhandler(int signum, siginfo_t *siginfo, void *context)
             "in third-party libraries.  Failing hardware can sometimes generate such errors\n"
             "too.\n"
             "Finally, if nothing of the above applies, this can result from a stack overflow.\n"
-            "Try to increase stack size with --cfg=contexts/stack_size (current size is %d KiB).\n",
+            "Try to increase stack size with --cfg=contexts/stack-size (current size is %d KiB).\n",
             smx_context_stack_size / 1024);
     if (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
       fprintf(stderr, "siginfo = {si_signo = %d, si_errno = %d, si_code = %d, si_addr = %p}\n",
