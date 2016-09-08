@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2014. The SimGrid Team.
+/* Copyright (c) 2010-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,9 +6,6 @@
 
 #include "simgrid/jedule/jedule_events.hpp"
 #include "simgrid/jedule/jedule.hpp"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string>
 
 #include "xbt/asserts.h"
 

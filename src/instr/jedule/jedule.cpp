@@ -1,14 +1,8 @@
-/* Copyright (c) 2010-2014. The SimGrid Team.
+/* Copyright (c) 2010-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include "simgrid/host.h"
-
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
 
 #include "xbt/asserts.h"
 #include "simgrid/jedule/jedule.hpp"
@@ -32,14 +26,8 @@ void Jedule::addMetaInfo(char *key, char *value) {
   this->meta_info.insert({key, value});
 }
 
-void Jedule::cleanupOutput() {
-  for (auto evt: this->event_set)
-    delete evt;
-  this->event_set.clear();
-}
 void Jedule::writeOutput(FILE *file) {
   if (!this->event_set.empty()){
-
     fprintf(file, "<jedule>\n");
 
     if (!this->meta_info.empty()){

@@ -13,9 +13,7 @@
 #if HAVE_JEDULE
 SG_BEGIN_DECL()
 XBT_PUBLIC(void) jedule_log_sd_event(SD_task_t task);
-XBT_PUBLIC(void) jedule_setup_platform(void);
 XBT_PUBLIC(void) jedule_sd_init(void);
-XBT_PUBLIC(void) jedule_sd_cleanup(void);
 XBT_PUBLIC(void) jedule_sd_exit(void);
 XBT_PUBLIC(void) jedule_sd_dump(const char* filename);
 SG_END_DECL()

@@ -162,10 +162,6 @@ void SD_init(int *argc, char **argv)
 
   xbt_cfg_setdefault_string("host/model", "ptask_L07");
 
-#if HAVE_JEDULE
-  jedule_sd_init();
-#endif
-
   if (_sg_cfg_exit_asap) {
     SD_exit();
     exit(0);
@@ -207,7 +203,7 @@ void SD_create_environment(const char *platform_file)
 
   XBT_DEBUG("Host number: %zu, link number: %d", sg_host_count(), sg_link_count());
 #if HAVE_JEDULE
-  jedule_setup_platform();
+  jedule_sd_init();
 #endif
   XBT_VERB("Starting simulation...");
   surf_presolve();            /* Takes traces into account */
@@ -249,7 +245,6 @@ double SD_get_clock() {
 void SD_exit()
 {
 #if HAVE_JEDULE
-  jedule_sd_cleanup();
   jedule_sd_exit();
 #endif
   delete sd_global;

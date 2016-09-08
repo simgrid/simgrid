@@ -1,25 +1,16 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/asserts.h"
-
-#include "src/surf/surf_private.h"
-#include "surf/surf.h"
-
 #include "simgrid/jedule/jedule_sd_binding.h"
-#include "simgrid/simdag.h"
-#include "simgrid/s4u/As.hpp"
-#include "simgrid/s4u/engine.hpp"
-
-#include <stdio.h>
 #include "simgrid/forward.h"
 
+#include "simgrid/s4u/As.hpp"
+#include "simgrid/s4u/engine.hpp"
 #include "simgrid/jedule/jedule.hpp"
-#include "simgrid/jedule/jedule_events.hpp"
-#include "simgrid/jedule/jedule_platform.hpp"
 #include "../../simdag/simdag_private.hpp"
 
 #if HAVE_JEDULE
@@ -33,13 +24,13 @@ void jedule_log_sd_event(SD_task_t task)
 {
   xbt_assert(task != nullptr);
 
-  jed_event_t event =
-      new simgrid::jedule::Event(std::string(SD_task_get_name(task)), task->start_time, task->finish_time,"SD");
+  jed_event_t event = new simgrid::jedule::Event(std::string(SD_task_get_name(task)),
+                                                 SD_task_get_start_time(task), SD_task_get_finish_time(task), "SD");
   event->addResources(task->allocation);
   my_jedule->event_set.push_back(event);
 }
 
-void jedule_setup_platform()
+void jedule_sd_init()
 {
   AS_t root_comp = simgrid::s4u::Engine::instance()->rootAs();
   XBT_DEBUG("root name %s\n", root_comp->name());
@@ -49,15 +40,6 @@ void jedule_setup_platform()
   jed_container_t root_container = new simgrid::jedule::Container(std::string(root_comp->name()));
   root_container->createHierarchy(root_comp);
   my_jedule->root_container = root_container;
-}
-
-void jedule_sd_cleanup()
-{
-  my_jedule->cleanupOutput();
-}
-
-void jedule_sd_init()
-{
 }
 
 void jedule_sd_exit(void)

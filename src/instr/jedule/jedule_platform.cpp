@@ -1,4 +1,4 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,15 +7,9 @@
 #include "simgrid/jedule/jedule.hpp"
 #include "simgrid/jedule/jedule_platform.hpp"
 #include "simgrid/s4u/As.hpp"
-#include "simgrid/host.h"
 
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
-#include "xbt/str.h"
-#include <string>
-
-#include <stdlib.h>
-#include <stdio.h>
 
 #if HAVE_JEDULE
 
@@ -28,11 +22,9 @@ Container::Container(std::string name)
 }
 
 Container::~Container(){
-  if(!this->children.empty()) {
-    for (auto child: this->children){
+  if(!this->children.empty())
+    for (auto child: this->children)
       delete child;
-    }
-  }
 }
 
 void Container::addChild(jed_container_t child){
@@ -189,9 +181,7 @@ static void add_subset_to(xbt_dynar_t subset_list, int start, int end, jed_conta
   xbt_dynar_push(subset_list, &subset);
 }
 
-static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_container_t parent) {
-  unsigned int iter;
-  char *host_name;
+static void add_subsets_to(xbt_dynar_t subset_list, std::vector<const char*> hostgroup, jed_container_t parent) {
   int id;
 
   // get ids for each host
@@ -200,15 +190,13 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_c
   // create subset for each id group
 
   xbt_assert( subset_list != nullptr );
-  xbt_assert( hostgroup != nullptr );
   xbt_assert( parent != nullptr );
 
   xbt_dynar_t id_list = xbt_dynar_new(sizeof(int), nullptr);
 
-  xbt_dynar_foreach(hostgroup, iter, host_name) {
-    jed_container_t parent;
+  for (auto host_name : hostgroup) {
     xbt_assert( host_name != nullptr );
-    parent = (jed_container_t)host2_simgrid_parent_container.at(host_name);
+    jed_container_t parent = host2_simgrid_parent_container.at(host_name);
     id = parent->name2id.at(host_name);
     xbt_dynar_push(id_list, &id);
   }
@@ -242,35 +230,27 @@ static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_c
 }
 
 void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list, std::vector<sg_host_t> *host_list) {
-  std::unordered_map<const char*, xbt_dynar_t> parent2hostgroup;  // group hosts by parent
-
   xbt_assert( host_list != nullptr );
-
   // for each host name
   //  find parent container
   //  group by parent container
-
+  std::unordered_map<const char*, std::vector<const char*>> parent2hostgroup;
   for (auto host: *host_list) {
     const char *host_name = sg_host_get_name(host);
-    jed_container_t parent = (jed_container_t)host2_simgrid_parent_container.at(host_name);
+    jed_container_t parent = host2_simgrid_parent_container.at(host_name);
     xbt_assert( parent != nullptr );
 
     auto host_group = parent2hostgroup.find(parent->name.c_str());
-    if (host_group == parent2hostgroup.end()){
-      xbt_dynar_t group = xbt_dynar_new(sizeof(char*), nullptr);
-      xbt_dynar_push(group, &host_name);
-      parent2hostgroup.insert({parent->name.c_str(), group});
-    } else {
-      xbt_dynar_push(host_group->second, &host_name);
-    }
+    if (host_group == parent2hostgroup.end())
+      parent2hostgroup.insert({parent->name.c_str(), std::vector<const char*>(1,host_name)});
+    else
+      host_group->second.push_back(host_name);
   }
 
   for (auto elm: parent2hostgroup) {
-    jed_container_t parent = (jed_container_t)container_name2container.at(elm.first);
+    jed_container_t parent = container_name2container.at(elm.first);
     add_subsets_to(subset_list, elm.second, parent);
-    xbt_dynar_free_container(&elm.second);
   }
 }
-
 
 #endif
