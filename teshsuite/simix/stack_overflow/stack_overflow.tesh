@@ -7,4 +7,4 @@ $ ${bindir:=.}/stack_overflow --cfg=contexts/stack-size:96 ${srcdir:=.}/examples
 > in third-party libraries.  Failing hardware can sometimes generate such errors
 > too.
 > Finally, if nothing of the above applies, this can result from a stack overflow.
-> Try to increase stack size with --cfg=contexts/stack_size (current size is 96 KiB).
+> Try to increase stack size with --cfg=contexts/stack-size (current size is 96 KiB).
