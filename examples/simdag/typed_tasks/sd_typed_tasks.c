@@ -70,7 +70,7 @@ int main(int argc, char **argv)
 
   xbt_dynar_foreach(changed_tasks, ctr, task)
     SD_task_destroy(task);
-  xbt_free(changed_tasks);
+  xbt_dynar_free_container(&changed_tasks);
 
   xbt_free(hosts);
   SD_exit();
