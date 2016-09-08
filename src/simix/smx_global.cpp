@@ -80,14 +80,13 @@ static void inthandler(int ignored)
 static void segvhandler(int signum, siginfo_t *siginfo, void *context)
 {
   if (siginfo->si_signo == SIGSEGV && siginfo->si_code == SEGV_ACCERR) {
-    fprintf(stderr,
-            "Access violation detected.\n"
-            "This can result from a programming error in your code or, although less likely,\n"
-            "from a bug in SimGrid itself.  This can also be the sign of a bug in the OS or\n"
-            "in third-party libraries.  Failing hardware can sometimes generate such errors\n"
-            "too.\n"
-            "Finally, if nothing of the above applies, this can result from a stack overflow.\n"
-            "Try to increase stack size with --cfg=contexts/stack-size (current size is %d KiB).\n",
+    fprintf(stderr, "Access violation detected.\n"
+                    "This can result from a programming error in your code or, although less likely,\n"
+                    "from a bug in SimGrid itself.  This can also be the sign of a bug in the OS or\n"
+                    "in third-party libraries.  Failing hardware can sometimes generate such errors\n"
+                    "too.\n"
+                    "Finally, if nothing of the above applies, this can result from a stack overflow.\n"
+                    "Try to increase stack size with --cfg=contexts/stack-size (current size is %d KiB).\n",
             smx_context_stack_size / 1024);
     if (XBT_LOG_ISENABLED(simix_kernel, xbt_log_priority_debug)) {
       fprintf(stderr, "siginfo = {si_signo = %d, si_errno = %d, si_code = %d, si_addr = %p}\n",
