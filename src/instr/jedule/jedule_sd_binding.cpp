@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "xbt/asserts.h"
-#include "xbt/dynar.h"
 
 #include "src/surf/surf_private.h"
 #include "surf/surf.h"
@@ -18,8 +17,8 @@
 #include <stdio.h>
 #include "simgrid/forward.h"
 
+#include "simgrid/jedule/jedule.hpp"
 #include "simgrid/jedule/jedule_events.hpp"
-#include "simgrid/jedule/jedule_output.hpp"
 #include "simgrid/jedule/jedule_platform.hpp"
 #include "../../simdag/simdag_private.hpp"
 
@@ -37,38 +36,33 @@ void jedule_log_sd_event(SD_task_t task)
   jed_event_t event =
       new simgrid::jedule::Event(std::string(SD_task_get_name(task)), task->start_time, task->finish_time,"SD");
   event->addResources(task->allocation);
-  jedule_store_event(event);
+  my_jedule->event_set.push_back(event);
 }
 
 void jedule_setup_platform()
 {
-  jed_create_jedule(&my_jedule);
-
   AS_t root_comp = simgrid::s4u::Engine::instance()->rootAs();
   XBT_DEBUG("root name %s\n", root_comp->name());
 
-  jed_container_t root_container = new simgrid::jedule::Container(std::string(root_comp->name()));
-  my_jedule->root_container = root_container;
+  my_jedule = new simgrid::jedule::Jedule();
 
+  jed_container_t root_container = new simgrid::jedule::Container(std::string(root_comp->name()));
   root_container->createHierarchy(root_comp);
+  my_jedule->root_container = root_container;
 }
 
 void jedule_sd_cleanup()
 {
-  jedule_cleanup_output();
+  my_jedule->cleanupOutput();
 }
 
 void jedule_sd_init()
 {
-  jedule_init_output();
 }
 
 void jedule_sd_exit(void)
 {
-  if (my_jedule) {
-    jed_free_jedule(my_jedule);
-    my_jedule = nullptr;
-  }
+  delete my_jedule;
 }
 
 void jedule_sd_dump(const char * filename)
@@ -83,7 +77,7 @@ void jedule_sd_dump(const char * filename)
 
     FILE *fh = fopen(fname, "w");
 
-    write_jedule_output(fh, my_jedule, jedule_event_list);
+    my_jedule->writeOutput(fh);
 
     fclose(fh);
     xbt_free(fname);

@@ -10,7 +10,6 @@
 #include "simgrid_config.h"
 #include "simgrid/forward.h"
 #include "xbt/dynar.h"
-#include "xbt/dict.h"
 #include <unordered_map>
 #include <vector>
 #include <string>
@@ -22,7 +21,7 @@ namespace jedule{
 XBT_PUBLIC_CLASS Container {
 public:
   Container(std::string name);
-  virtual ~Container()=default;
+  virtual ~Container();
 private:
   int last_id;
   int is_lowest = 0;
@@ -55,19 +54,6 @@ struct jed_res_subset {
 };
 
 typedef struct jed_res_subset s_jed_res_subset_t, *jed_res_subset_t;
-
-/* FIXME: jedule should be objectified too */
-
-typedef struct jedule_struct {
-  jed_container_t root_container;
-  std::unordered_map<char*, char*> jedule_meta_info;
-} s_jedule_t;
-
-typedef s_jedule_t *jedule_t;
-
-void jed_create_jedule(jedule_t *jedule);
-void jed_free_jedule(jedule_t jedule);
-void jedule_add_meta_info(jedule_t jedule, char *key, char *value);
 
 /**
  * it is assumed that the host_names in the entire system are unique that means that we don't need parent references

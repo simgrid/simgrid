@@ -151,7 +151,6 @@ static void xbt_log_connect_categories(void)
   /* jedule */
 #if HAVE_JEDULE
   XBT_LOG_CONNECT(jedule);
-  XBT_LOG_CONNECT(jed_out);
   XBT_LOG_CONNECT(jed_sd);
 #endif
 

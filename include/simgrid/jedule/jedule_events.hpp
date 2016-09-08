@@ -20,12 +20,10 @@ namespace simgrid {
 namespace jedule{
 
 XBT_PUBLIC_CLASS Event{
-  private:
-    virtual ~Event()=default;
   public:
     Event(std::string name, double start_time, double end_time, std::string type)
       : name(name), start_time(start_time), end_time(end_time), type(type){}
-    void deleteEvent();
+    ~Event();
     void addCharacteristic(char *characteristic);
     void addResources(std::vector<sg_host_t> *host_selection);
     void addInfo(char *key, char *value);

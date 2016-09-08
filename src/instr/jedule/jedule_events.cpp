@@ -5,7 +5,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/jedule/jedule_events.hpp"
-#include "simgrid/jedule/jedule_output.hpp"
+#include "simgrid/jedule/jedule.hpp"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string>
@@ -16,13 +16,11 @@
 namespace simgrid{
 namespace jedule{
 
-  /* FIXME: this should could maybe be merged into the destructor? */
-void Event::deleteEvent(){
+Event::~Event(){
   while (!this->resource_subsets.empty()){
     xbt_free(this->resource_subsets.back());
     this->resource_subsets.pop_back();
   }
-  delete this;
 }
 
 void Event::addResources(std::vector<sg_host_t> *host_selection) {
