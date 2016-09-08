@@ -22,7 +22,7 @@ int main(int argc, char **argv)
 
   /* creation of the environment */
   SD_create_environment(argv[1]);
-  const SD_link_t *links = sg_link_list();
+  SD_link_t *links = sg_link_list();
   int count = sg_link_count();
   XBT_INFO("Link count: %d", count);
   qsort((void *)links, count, sizeof(SD_link_t), cmp_link);
@@ -33,7 +33,7 @@ int main(int argc, char **argv)
     sg_link_data_set(links[i], (void*) user_data);
     xbt_assert(!strcmp(user_data, (const char*)sg_link_data(links[i])),"User data was corrupted.");
   }
-
+  xbt_free(links);
   SD_exit();
   return 0;
 }
