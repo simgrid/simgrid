@@ -21,8 +21,7 @@ namespace jedule{
 
 XBT_PUBLIC_CLASS Event{
   public:
-    Event(std::string name, double start_time, double end_time, std::string type)
-      : name(name), start_time(start_time), end_time(end_time), type(type){}
+    Event(std::string name, double start_time, double end_time, std::string type);
     ~Event();
     void addCharacteristic(char *characteristic);
     void addResources(std::vector<sg_host_t> *host_selection);
@@ -34,7 +33,7 @@ XBT_PUBLIC_CLASS Event{
     double start_time;
     double end_time;
     std::string type;
-    std::vector<jed_res_subset_t> resource_subsets;
+    std::vector<jed_subset_t> *resource_subsets;
     std::vector<char*> characteristics_list; /* just a list of names (strings) */
     std::unordered_map<char*, char*> info_map;     /* key/value pairs */
 };

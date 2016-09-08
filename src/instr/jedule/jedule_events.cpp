@@ -5,7 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "simgrid/jedule/jedule_events.hpp"
+#include "simgrid/jedule/jedule_platform.hpp"
 #include "simgrid/jedule/jedule.hpp"
+#include "simgrid/s4u/As.hpp"
 
 #include "xbt/asserts.h"
 
@@ -13,29 +15,28 @@
 namespace simgrid{
 namespace jedule{
 
-Event::~Event(){
-  while (!this->resource_subsets.empty()){
-    xbt_free(this->resource_subsets.back());
-    this->resource_subsets.pop_back();
+Event::Event(std::string name, double start_time, double end_time, std::string type)
+  : name(name), start_time(start_time), end_time(end_time), type(type)
+{
+  this->resource_subsets = new std::vector<jed_subset_t>();
+}
+
+Event::~Event()
+{
+  if (!this->resource_subsets->empty()){
+    for (auto subset: *this->resource_subsets)
+      delete subset;
+    delete this->resource_subsets;
   }
 }
 
-void Event::addResources(std::vector<sg_host_t> *host_selection) {
-  xbt_dynar_t resource_subset_list;
-  jed_res_subset_t res_set;
-  unsigned int i;
-
-  resource_subset_list = xbt_dynar_new(sizeof(jed_res_subset_t), nullptr);
-
-  jed_simgrid_get_resource_selection_by_hosts(resource_subset_list, host_selection);
-  xbt_dynar_foreach(resource_subset_list, i, res_set)  {
-    this->resource_subsets.push_back(res_set);
-  }
-
-  xbt_dynar_free_container(&resource_subset_list);
+void Event::addResources(std::vector<sg_host_t> *host_selection)
+{
+  get_resource_selection_by_hosts(this->resource_subsets, host_selection);
 }
 
-void Event::addCharacteristic(char *characteristic) {
+void Event::addCharacteristic(char *characteristic)
+{
   xbt_assert( characteristic != nullptr );
   this->characteristics_list.push_back(characteristic);
 }
@@ -45,19 +46,20 @@ void Event::addInfo(char* key, char *value) {
   this->info_map.insert({key, value});
 }
 
-void Event::print(FILE *jed_file){
+void Event::print(FILE *jed_file)
+{
   fprintf(jed_file, "    <event>\n");
   fprintf(jed_file, "      <prop key=\"name\" value=\"%s\" />\n", this->name.c_str());
   fprintf(jed_file, "      <prop key=\"start\" value=\"%g\" />\n", this->start_time);
   fprintf(jed_file, "      <prop key=\"end\" value=\"%g\" />\n", this->end_time);
   fprintf(jed_file, "      <prop key=\"type\" value=\"%s\" />\n", this->type.c_str());
 
-  xbt_assert(!this->resource_subsets.empty());
+  xbt_assert(!this->resource_subsets->  empty());
   fprintf(jed_file, "      <res_util>\n");
-  for (auto subset: this->resource_subsets) {
+  for (auto subset: *this->resource_subsets) {
     fprintf(jed_file, "        <select resources=\"");
     fprintf(jed_file, "%s", subset->parent->getHierarchyAsString().c_str());
-    fprintf(jed_file, ".[%d-%d]", subset->start_idx, subset->start_idx + subset->nres - 1);
+    fprintf(jed_file, ".[%d-%d]", subset->start_idx, subset->start_idx + subset->nres-1);
     fprintf(jed_file, "\" />\n");
   }
   fprintf(jed_file, "      </res_util>\n");

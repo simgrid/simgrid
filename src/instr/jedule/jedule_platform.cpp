@@ -10,31 +10,41 @@
 
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
+#include <algorithm>
 
 #if HAVE_JEDULE
 
 namespace simgrid {
 namespace jedule {
+Subset::Subset(int start_idx, int end_idx, Container* parent)
+: start_idx(start_idx), parent(parent)
+{
+  nres=end_idx-start_idx+1;
+}
 
-Container::Container(std::string name)
-: name(name) {
+
+Container::Container(std::string name): name(name)
+{
   container_name2container.insert({this->name, this});
 }
 
-Container::~Container(){
+Container::~Container()
+{
   if(!this->children.empty())
     for (auto child: this->children)
       delete child;
 }
 
-void Container::addChild(jed_container_t child){
+void Container::addChild(jed_container_t child)
+{
   xbt_assert(this != nullptr);
   xbt_assert(child != nullptr);
   this->children.push_back(child);
   child->parent = this;
 }
 
-void Container::addResources(std::vector<sg_host_t> hosts){
+void Container::addResources(std::vector<sg_host_t> hosts)
+{
   this->is_lowest = 1;
   this->children.clear();
   this->last_id = 0;
@@ -50,7 +60,8 @@ void Container::addResources(std::vector<sg_host_t> hosts){
   }
 }
 
-void Container::createHierarchy(AS_t from_as){
+void Container::createHierarchy(AS_t from_as)
+{
   xbt_dict_cursor_t cursor = nullptr;
   char *key;
   AS_t elem;
@@ -79,7 +90,8 @@ void Container::createHierarchy(AS_t from_as){
   }
 }
 
-std::vector<int> Container::getHierarchy() {
+std::vector<int> Container::getHierarchy()
+{
   xbt_assert( this!= nullptr );
 
   if(this->parent != nullptr ) {
@@ -111,7 +123,8 @@ std::vector<int> Container::getHierarchy() {
   }
 }
 
-std::string Container::getHierarchyAsString(){
+std::string Container::getHierarchyAsString()
+{
   std::string output("");
 
   std::vector<int> heir_list = this->getHierarchy();
@@ -128,7 +141,8 @@ std::string Container::getHierarchyAsString(){
   return output;
 }
 
-void Container::printResources(FILE * jed_file){
+void Container::printResources(FILE * jed_file)
+{
   unsigned int i=0;
   xbt_assert(!this->resource_list.empty());
 
@@ -147,7 +161,8 @@ void Container::printResources(FILE * jed_file){
   fprintf(jed_file, "\" />\n");
 }
 
-void Container::print(FILE* jed_file) {
+void Container::print(FILE* jed_file)
+{
   xbt_assert( this != nullptr );
   fprintf(jed_file, "    <res name=\"%s\">\n", this->name.c_str());
   if( !this->children.empty()){
@@ -163,73 +178,50 @@ void Container::print(FILE* jed_file) {
 }
 }
 
-static int compare_ids(const void *num1, const void *num2) {
-  return *((int*) num1) - *((int*) num2);
-}
-
-static void add_subset_to(xbt_dynar_t subset_list, int start, int end, jed_container_t parent) {
-  jed_res_subset_t subset;
-
-  xbt_assert( subset_list != nullptr );
-  xbt_assert( parent != nullptr );
-
-  subset = xbt_new0(s_jed_res_subset_t,1);
-  subset->start_idx = start;
-  subset->nres      = end-start+1;
-  subset->parent    = parent;
-
-  xbt_dynar_push(subset_list, &subset);
-}
-
-static void add_subsets_to(xbt_dynar_t subset_list, std::vector<const char*> hostgroup, jed_container_t parent) {
-  int id;
-
+static void add_subsets_to(std::vector<jed_subset_t> *subset_list, std::vector<const char*> hostgroup, jed_container_t parent)
+{
   // get ids for each host
   // sort ids
   // compact ids
   // create subset for each id group
 
-  xbt_assert( subset_list != nullptr );
   xbt_assert( parent != nullptr );
 
-  xbt_dynar_t id_list = xbt_dynar_new(sizeof(int), nullptr);
+  std::vector<unsigned int> id_list;
 
   for (auto host_name : hostgroup) {
     xbt_assert( host_name != nullptr );
     jed_container_t parent = host2_simgrid_parent_container.at(host_name);
-    id = parent->name2id.at(host_name);
-    xbt_dynar_push(id_list, &id);
+    unsigned int id = parent->name2id.at(host_name);
+    id_list.push_back(id);
   }
-  int nb_ids = xbt_dynar_length(id_list);
-  xbt_dynar_sort(id_list, &compare_ids);
-
-  int *id_ar = static_cast<int*>(xbt_dynar_to_array(id_list));
+  unsigned int nb_ids = id_list.size();
+  std::sort(id_list.begin(), id_list.end());
 
   if( nb_ids > 0 ) {
     int start = 0;
-
     int pos = start;
-    for(int i=0; i<nb_ids; i++) {
-      if( id_ar[i] - id_ar[pos] > 1 ) {
-        add_subset_to( subset_list, id_ar[start], id_ar[pos], parent );
+    for(unsigned int i=0; i<nb_ids; i++) {
+      if( id_list[i] - id_list[pos] > 1 ) {
+        subset_list->push_back(new simgrid::jedule::Subset(id_list[start], id_list[pos], parent));
         start = i;
 
         if( i == nb_ids-1 ) {
-          add_subset_to( subset_list, id_ar[i], id_ar[i], parent );
+         subset_list->push_back(new simgrid::jedule::Subset(id_list[i], id_list[i], parent));
         }
       } else {
         if( i == nb_ids-1 ) {
-          add_subset_to( subset_list, id_ar[start], id_ar[i], parent );
+          subset_list->push_back(new simgrid::jedule::Subset(id_list[start], id_list[i], parent));
         }
       }
       pos = i;
     }
   }
 
-  xbt_free(id_ar);
 }
 
-void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list, std::vector<sg_host_t> *host_list) {
+void get_resource_selection_by_hosts(std::vector<jed_subset_t> *subset_list, std::vector<sg_host_t> *host_list)
+{
   xbt_assert( host_list != nullptr );
   // for each host name
   //  find parent container

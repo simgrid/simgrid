@@ -13,7 +13,6 @@
 #include <unordered_map>
 #include <vector>
 #include <string>
-
 #if HAVE_JEDULE
 
 namespace simgrid {
@@ -27,7 +26,7 @@ private:
   int is_lowest = 0;
 public:
   std::string name;
-  std::unordered_map<const char*, int> name2id;
+  std::unordered_map<const char*, unsigned int> name2id;
   Container *parent = nullptr;
   std::vector<Container*> children;
   std::vector<sg_host_t> resource_list;
@@ -40,38 +39,21 @@ public:
   void printResources(FILE *file);
 };
 
+XBT_PUBLIC_CLASS Subset {
+public:
+  Subset(int s, int n, Container* p);
+  virtual ~Subset()=default;
+  int start_idx; // start idx in resource_list of container
+  int nres;      // number of resources spanning starting at start_idx
+  Container *parent;
+};
+
 }
 }
 SG_BEGIN_DECL()
 typedef simgrid::jedule::Container * jed_container_t;
-
-/* FIXME: jedule_container should be objectified too */
-/** selection of a subset of resources from the original set */
-struct jed_res_subset {
-  jed_container_t parent;
-  int start_idx; // start idx in resource_list of container
-  int nres;      // number of resources spanning starting at start_idx
-};
-
-typedef struct jed_res_subset s_jed_res_subset_t, *jed_res_subset_t;
-
-/**
- * it is assumed that the host_names in the entire system are unique that means that we don't need parent references
- *
- * subset_list must be allocated
- * host_names is the list of host_names associated with an event
- */
-void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list, std::vector<sg_host_t>* host_list);
-
-/*
-  global:
-      hash host_id -> container
-  container:
-      hash host_id -> jed_host_id
-      list <- [ jed_host_ids ]
-      list <- sort( list )
-      list_chunks <- chunk( list )   -> [ 1, 3-5, 7-9 ]
-*/
+typedef simgrid::jedule::Subset * jed_subset_t;
+void get_resource_selection_by_hosts(std::vector<jed_subset_t>* subset_list, std::vector<sg_host_t> *host_list);
 
 SG_END_DECL()
 
