@@ -123,10 +123,14 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     if (memreg.prot == 0)
       memreg.prot |= PROT_NONE;
 
-    if (lfields[1][3] == 'p')
+    if (lfields[1][3] == 'p') {
       memreg.flags |= MAP_PRIVATE;
-    else
+    } else {
       memreg.flags |= MAP_SHARED;
+      if (lfields[1][3] != 's')
+	XBT_WARN("The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken win-ubuntu systems.\nFull line: %s\n"
+		 lfields[1], line);
+    }
 
     /* Get the offset value */
     memreg.offset = std::strtoull(lfields[2], &endptr, 16);
