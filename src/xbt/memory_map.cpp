@@ -128,7 +128,7 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     } else {
       memreg.flags |= MAP_SHARED;
       if (lfields[1][3] != 's')
-	XBT_WARN("The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken win-ubuntu systems.\nFull line: %s\n"
+	XBT_WARN("The protection is neither 'p' (private) nor 's' (shared) but '%s'. Let's assume shared, as on b0rken win-ubuntu systems.\nFull line: %s\n",
 		 lfields[1], line);
     }
 
