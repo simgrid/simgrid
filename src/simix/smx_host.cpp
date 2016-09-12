@@ -46,7 +46,9 @@ namespace simgrid {
         SIMIX_display_process_status();
         THROWF(arg_error, 0, "%s", msg);
       }
-      xbt_dynar_free(&auto_restart_processes);
+      for (auto arg : auto_restart_processes)
+        delete arg;
+      auto_restart_processes.clear();
       xbt_dynar_free(&boot_processes);
       xbt_swag_free(process_list);
     }
@@ -133,9 +135,6 @@ void SIMIX_host_add_auto_restart_process(
   void* data, const char *hostname, double kill_time,
   xbt_dict_t properties, int auto_restart)
 {
-  if (!sg_host_simix(host)->auto_restart_processes) {
-    sg_host_simix(host)->auto_restart_processes = xbt_dynar_new(sizeof(smx_process_arg_t),_SIMIX_host_free_process_arg);
-  }
   smx_process_arg_t arg = new simgrid::simix::ProcessArg();
   arg->name = name;
   arg->code = std::move(code);
@@ -149,24 +148,22 @@ void SIMIX_host_add_auto_restart_process(
     xbt_dict_set(watched_hosts_lib,sg_host_get_name(host),host,nullptr);
     XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_get_name(host));
   }
-  xbt_dynar_push_as(sg_host_simix(host)->auto_restart_processes,smx_process_arg_t,arg);
+  sg_host_simix(host)->auto_restart_processes.push_back(arg);
 }
 /** @brief Restart the list of processes that have been registered to the host */
 void SIMIX_host_autorestart(sg_host_t host)
 {
-  unsigned int cpt;
-  smx_process_arg_t arg;
-  xbt_dynar_t process_list = sg_host_simix(host)->auto_restart_processes;
-  if (!process_list)
+  std::vector<simgrid::simix::ProcessArg*> process_list = sg_host_simix(host)->auto_restart_processes;
+  if (process_list.empty())
     return;
 
-  xbt_dynar_foreach (process_list, cpt, arg) {
+  for (auto arg : process_list) {
 
     XBT_DEBUG("Restarting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
     simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->hostname, arg->kill_time,
         arg->properties, arg->auto_restart, nullptr);
   }
-  xbt_dynar_reset(process_list);
+  process_list.clear();
 }
 
 smx_activity_t simcall_HANDLER_execution_start(smx_simcall_t simcall, const char* name, double flops_amount,

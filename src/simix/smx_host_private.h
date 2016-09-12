@@ -7,6 +7,7 @@
 #ifndef _SIMIX_HOST_PRIVATE_H
 #define _SIMIX_HOST_PRIVATE_H
 
+#include <vector>
 #include <functional>
 
 #include <xbt/base.h>
@@ -17,11 +18,11 @@
 
 #include "src/kernel/activity/SynchroExec.hpp"
 
-SG_BEGIN_DECL()
-
 /** @brief Host datatype from SIMIX POV */
 namespace simgrid {
   namespace simix {
+    class ProcessArg;
+
     class Host {
     public:
       static simgrid::xbt::Extension<simgrid::s4u::Host, Host> EXTENSION_ID;
@@ -30,7 +31,7 @@ namespace simgrid {
       virtual ~Host();
 
       xbt_swag_t process_list;
-      xbt_dynar_t auto_restart_processes = nullptr;
+      std::vector<ProcessArg*> auto_restart_processes;
       xbt_dynar_t boot_processes = nullptr;
 
       void turnOn();
@@ -39,6 +40,7 @@ namespace simgrid {
 }
 typedef simgrid::simix::Host s_smx_host_priv_t;
 
+SG_BEGIN_DECL()
 XBT_PRIVATE void _SIMIX_host_free_process_arg(void *);
 
 XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
