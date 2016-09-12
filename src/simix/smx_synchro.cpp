@@ -163,6 +163,8 @@ bool Mutex::try_lock(smx_actor_t issuer)
 void Mutex::unlock(smx_actor_t issuer)
 {
   XBT_IN("(%p, %p)", this, issuer);
+  if(!this->locked)
+    THROWF(mismatch_error, 0, "Cannot release that mutex: it was not locked.");
 
   /* If the mutex is not owned by the issuer, that's not good */
   if (issuer != this->owner)
