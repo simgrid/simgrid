@@ -32,15 +32,15 @@ several pages, as follows:
 \section ug_overview Overview of the toolkit components
 
 
-\subsection ug_overview_envs Programmation environments layer
+\subsection ug_overview_envs Programing environments layer
 
-SimGrid provides several programmation environments built on top of a unique
-simulation kernel. Each environment targets a specific audiance and
+SimGrid provides several programming environments built on top of a unique
+simulation kernel. Each environment targets a specific audience and
 constitutes a different paradigm. To choose which of them you want to use,
 you have to think about what you want to do and what would be the result of
 your work.
 
- - If you want to study a theoritical problem and compare several
+ - If you want to study a theoretical problem and compare several
    heuristics, you probably want to try <b>\ref MSG_API</b> (yet another
    historical name). It was designed exactly to that extend and should allow
    you to build easily rather realistic multi-agents simulation. Yet,
@@ -48,8 +48,8 @@ your work.
    technical issues of real platforms are masked here. Check the \ref
    MSG_API section for more information.
 
- - If you want to study the behaviour of a MPI application using emulation
-   technics, you should have a look at the <b>\ref SMPI_API</b> (Simulated
+ - If you want to study the behavior of a MPI application using emulation,
+   you should have a look at the <b>\ref SMPI_API</b> (Simulated
    MPI) programming environment. Unfortunately, this work is still underway.
    Check the \ref SMPI_API section for more information.
 
@@ -61,18 +61,18 @@ developers mailing list</a>, though.
 
 \subsection ug_overview_kernel Simulation kernel layer
 
-The core functionnalities to simulate a virtual platform are provided by a
+The core functionalities to simulate a virtual platform are provided by a
 module called <b>\ref SURF_API</b>.  It is
 very low-level and is not intended to be used as such by end-users. Instead,
 it serve as a basis for the higher level layer.
 
 SURF main features are a fast max-min linear solver and the ability to
 change transparently the model used to describe the platform. This greatly
-eases the comparison of the several models existing in the litterature.
+eases the comparison of the several models existing in the literature.
 
 See the \ref SURF_API section for more details.
 
-\subsection ug_overview_fondation Base layer
+\subsection ug_overview_fundation Base layer
 
 The base of the whole toolkit is constituted by the <b>\ref XBT_API
 (eXtended Bundle of Tools)</b>.
@@ -80,12 +80,12 @@ The base of the whole toolkit is constituted by the <b>\ref XBT_API
 It is a portable library providing some grounding features such as \ref
 XBT_log, \ref XBT_ex and \ref XBT_config.
 
-XBT also encompass the following convenient C datastructures:
+XBT also encompass the following convenient C data structures:
 \ref XBT_dynar, \ref XBT_fifo, \ref XBT_dict, \ref XBT_heap, \ref XBT_set and
 \ref XBT_swag. The code is being migrated in C++ so you should probably want
 to use standard C++ containers instead of them if possible.
 
-It contains some C++ polyfills and utilies as well.
+It contains some C++ polyfills and utilities as well.
 
 See the \ref XBT_API section for more details.
 
