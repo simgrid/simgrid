@@ -32,7 +32,7 @@ namespace simgrid {
 
       xbt_swag_t process_list;
       std::vector<ProcessArg*> auto_restart_processes;
-      xbt_dynar_t boot_processes = nullptr;
+      std::vector<ProcessArg*> boot_processes;
 
       void turnOn();
     };

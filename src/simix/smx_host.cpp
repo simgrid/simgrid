@@ -49,7 +49,9 @@ namespace simgrid {
       for (auto arg : auto_restart_processes)
         delete arg;
       auto_restart_processes.clear();
-      xbt_dynar_free(&boot_processes);
+      for (auto arg : boot_processes)
+        delete arg;
+      boot_processes.clear();
       xbt_swag_free(process_list);
     }
 
@@ -59,9 +61,7 @@ namespace simgrid {
      */
     void Host::turnOn()
     {
-      unsigned int cpt;
-      smx_process_arg_t arg;
-      xbt_dynar_foreach(boot_processes,cpt,arg) {
+      for (auto arg : boot_processes) {
         XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
         simix_global->create_process_function(arg->name.c_str(),
             arg->code,
