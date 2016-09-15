@@ -20,6 +20,8 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
+xbt_dict_t host_list = nullptr; // FIXME: make it a static field of Host
+
 int MSG_HOST_LEVEL = -1;
 int USER_HOST_LEVEL = -1;
 
@@ -55,6 +57,12 @@ Host *Host::by_name(std::string name) {
 }
 Host* Host::by_name_or_null(const char* name)
 {
+  if (host_list == nullptr)
+    host_list = xbt_dict_new_homogeneous([](void*p) {
+      simgrid::s4u::Host* host = static_cast<simgrid::s4u::Host*>(p);
+      simgrid::s4u::Host::onDestruction(*host);
+      delete host;
+    });
   return (Host*) xbt_dict_get_or_null(host_list, name);
 }
 Host* Host::by_name_or_create(const char* name)

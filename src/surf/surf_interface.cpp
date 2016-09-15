@@ -289,15 +289,10 @@ void sg_version(int *ver_major,int *ver_minor,int *ver_patch) {
 
 void surf_init(int *argc, char **argv)
 {
-  if (host_list != nullptr) // Already initialized
+  if (USER_HOST_LEVEL != -1) // Already initialized
     return;
 
   XBT_DEBUG("Create all Libs");
-  host_list = xbt_dict_new_homogeneous([](void*p) {
-    simgrid::s4u::Host* host = static_cast<simgrid::s4u::Host*>(p);
-    simgrid::s4u::Host::onDestruction(*host);
-    delete host;
-  });
   USER_HOST_LEVEL = simgrid::s4u::Host::extension_create(nullptr);
 
   as_router_lib = xbt_lib_new();
@@ -338,7 +333,7 @@ void surf_exit()
 
   xbt_dynar_free(&surf_path);
 
-  xbt_dict_free(&host_list);
+  sg_host_exit();
   xbt_lib_free(&as_router_lib);
   xbt_lib_free(&storage_lib);
   sg_link_exit();

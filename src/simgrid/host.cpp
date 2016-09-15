@@ -14,6 +14,13 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
+extern xbt_dict_t host_list; // FIXME:killme don't dupplicate the content of s4u::Host this way
+
+void sg_host_exit()
+{
+  xbt_dict_free(&host_list);
+}
+
 size_t sg_host_count()
 {
   return xbt_dict_length(host_list);
