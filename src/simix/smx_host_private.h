@@ -47,7 +47,6 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
                                          const char *name,
                                          std::function<void()> code,
                                          void *data,
-                                         const char *hostname,
                                          double kill_time,
                                          xbt_dict_t properties,
                                          int auto_restart);

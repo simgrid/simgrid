@@ -218,7 +218,6 @@ void SIMIX_process_stop(smx_actor_t arg) {
   if (arg->auto_restart && arg->host->isOff()) {
     SIMIX_host_add_auto_restart_process(arg->host, arg->name.c_str(),
                                         arg->code, arg->data,
-                                        sg_host_get_name(arg->host),
                                         SIMIX_timer_get_date(arg->kill_timer),
                                         arg->properties,
                                         arg->auto_restart);
@@ -241,20 +240,18 @@ smx_actor_t SIMIX_process_create(
                           const char *name,
                           std::function<void()> code,
                           void *data,
-                          const char *hostname,
+                          sg_host_t host,
                           double kill_time,
                           xbt_dict_t properties,
                           int auto_restart,
                           smx_actor_t parent_process)
 {
   smx_actor_t process = nullptr;
-  sg_host_t host = sg_host_by_name(hostname);
 
-  XBT_DEBUG("Start process %s on host '%s'", name, hostname);
+  XBT_DEBUG("Start process %s on host '%s'", name, host->name().c_str());
 
   if (host->isOff()) {
-    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name,
-          hostname);
+    XBT_WARN("Cannot launch process '%s' on failed host '%s'", name, host->name().c_str());
     return nullptr;
   }
   else {
@@ -962,7 +959,7 @@ smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer) {
   simgrid::simix::ProcessArg arg;
   arg.name = process->name;
   arg.code = process->code;
-  arg.hostname = sg_host_get_name(process->host);
+  arg.host = process->host;
   arg.kill_time = SIMIX_timer_get_date(process->kill_timer);
   arg.data = process->data;
   arg.properties = nullptr;
@@ -972,7 +969,7 @@ smx_actor_t SIMIX_process_restart(smx_actor_t process, smx_actor_t issuer) {
   SIMIX_process_kill(process, issuer);
 
   //start the new process
-  return simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.hostname,
+  return simix_global->create_process_function(arg.name.c_str(), std::move(arg.code), arg.data, arg.host,
       arg.kill_time, arg.properties, arg.auto_restart, nullptr);
 }
 
@@ -1000,7 +997,7 @@ void SIMIX_segment_index_set(smx_actor_t proc, int index){
 smx_actor_t simcall_process_create(const char *name,
                               xbt_main_func_t code,
                               void *data,
-                              const char *hostname,
+                              sg_host_t host,
                               double kill_time,
                               int argc, char **argv,
                               xbt_dict_t properties,
@@ -1014,19 +1011,19 @@ smx_actor_t simcall_process_create(const char *name,
   xbt_free(argv);
   smx_actor_t res = simcall_process_create(name,
     std::move(wrapped_code),
-    data, hostname, kill_time, properties, auto_restart);
+    data, host, kill_time, properties, auto_restart);
   return res;
 }
 
 smx_actor_t simcall_process_create(
   const char *name, std::function<void()> code, void *data,
-  const char *hostname, double kill_time,
+  sg_host_t host, double kill_time,
   xbt_dict_t properties, int auto_restart)
 {
   if (name == nullptr)
     name = "";
   smx_actor_t self = SIMIX_process_self();
   return simgrid::simix::kernelImmediate([&] {
-    return SIMIX_process_create(name, std::move(code), data, hostname, kill_time, properties, auto_restart, self);
+    return SIMIX_process_create(name, std::move(code), data, host, kill_time, properties, auto_restart, self);
   });
 }

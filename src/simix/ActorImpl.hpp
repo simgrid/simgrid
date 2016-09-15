@@ -32,7 +32,7 @@ public:
   std::string name;
   std::function<void()> code;
   void *data            = nullptr;
-  const char *hostname  = nullptr;
+  sg_host_t host        = nullptr;
   double kill_time      = 0.0;
   xbt_dict_t properties = nullptr;
   bool auto_restart     = false;
@@ -110,7 +110,7 @@ XBT_PRIVATE smx_actor_t SIMIX_process_create(
                           const char *name,
                           std::function<void()> code,
                           void *data,
-                          const char *hostname,
+                          sg_host_t host,
                           double kill_time,
                           xbt_dict_t properties,
                           int auto_restart,

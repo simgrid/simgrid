@@ -62,11 +62,11 @@ namespace simgrid {
     void Host::turnOn()
     {
       for (auto arg : boot_processes) {
-        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
+        XBT_DEBUG("Booting Process %s(%s) right now", arg->name.c_str(), arg->host->name().c_str());
         simix_global->create_process_function(arg->name.c_str(),
             arg->code,
             nullptr,
-            arg->hostname,
+            arg->host,
             arg->kill_time,
             arg->properties,
             arg->auto_restart,
@@ -132,14 +132,13 @@ void _SIMIX_host_free_process_arg(void *data)
  */
 void SIMIX_host_add_auto_restart_process(
   sg_host_t host, const char *name, std::function<void()> code,
-  void* data, const char *hostname, double kill_time,
-  xbt_dict_t properties, int auto_restart)
+  void* data, double kill_time, xbt_dict_t properties, int auto_restart)
 {
   smx_process_arg_t arg = new simgrid::simix::ProcessArg();
   arg->name = name;
   arg->code = std::move(code);
   arg->data = data;
-  arg->hostname = hostname;
+  arg->host = host;
   arg->kill_time = kill_time;
   arg->properties = properties;
   arg->auto_restart = auto_restart;
@@ -159,8 +158,8 @@ void SIMIX_host_autorestart(sg_host_t host)
 
   for (auto arg : process_list) {
 
-    XBT_DEBUG("Restarting Process %s(%s) right now", arg->name.c_str(), arg->hostname);
-    simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->hostname, arg->kill_time,
+    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->name().c_str());
+    simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host, arg->kill_time,
         arg->properties, arg->auto_restart, nullptr);
   }
   process_list.clear();

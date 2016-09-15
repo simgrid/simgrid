@@ -592,7 +592,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
   arg->name = std::string(process->argv[0]);
   arg->code = code;
   arg->data = nullptr;
-  arg->hostname = sg_host_get_name(host);
+  arg->host = host;
   arg->kill_time = kill_time;
   arg->properties = current_property_set;
 
@@ -604,18 +604,18 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
     arg->name = std::string(process->argv[0]);
     arg->code = std::move(code);
     arg->data = nullptr;
-    arg->hostname = sg_host_get_name(host);
+    arg->host = host;
     arg->kill_time = kill_time;
     arg->properties = current_property_set;
 
-    XBT_DEBUG("Process %s(%s) will be started at time %f",
-      arg->name.c_str(), arg->hostname, start_time);
+    XBT_DEBUG("Process %s@%s will be started at time %f",
+      arg->name.c_str(), arg->host->name().c_str(), start_time);
     SIMIX_timer_set(start_time, [=]() {
       simix_global->create_process_function(
                                             arg->name.c_str(),
                                             std::move(arg->code),
                                             arg->data,
-                                            arg->hostname,
+                                            arg->host,
                                             arg->kill_time,
                                             arg->properties,
                                             arg->auto_restart,
@@ -628,7 +628,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
 
     process_created = simix_global->create_process_function(
         arg->name.c_str(), std::move(code), nullptr,
-        sg_host_get_name(host), kill_time,
+        host, kill_time,
         current_property_set, auto_restart, nullptr);
 
     /* verify if process has been created (won't be the case if the host is currently dead, but that's fine) */
