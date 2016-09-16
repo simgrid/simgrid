@@ -217,7 +217,6 @@ $ rm -f ${srcdir:=.}/dag-dotload/dag.trace ${srcdir:=.}/dot.dot
 $ $SG_TEST_EXENV ${bindir:=.}/dag-dotload/sd_dag-dotload --log=no_loc ${srcdir:=.}/../platforms/two_clusters.xml ${srcdir:=.}/dag-dotload/dag_with_cycle.dot
 > [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
 > [0.000000] [sd_daxparse/WARNING] the task root is not marked
-> [0.000000] [sd_daxparse/WARNING] the task 0 is in a cycle
 > [0.000000] [sd_daxparse/WARNING] the task 1 is in a cycle
 > [0.000000] [sd_daxparse/WARNING] the task 2 is in a cycle
 > [0.000000] [sd_daxparse/WARNING] the task 3 is in a cycle

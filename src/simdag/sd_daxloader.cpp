@@ -56,109 +56,85 @@ static bool parents_are_marked(SD_task_t task){
 }
 
 bool acyclic_graph_detail(xbt_dynar_t dag){
-  unsigned int count, count_current=0;
+  unsigned int count;
   bool all_marked = true;
   SD_task_t task = nullptr;
-  xbt_dynar_t next = nullptr, current = xbt_dynar_new(sizeof(SD_task_t),nullptr);
-
+  std::vector<SD_task_t> current;
   xbt_dynar_foreach(dag,count,task){
-    if(task->kind == SD_TASK_COMM_E2E)
-      continue;
-    task->marked = 0;
-    if(task->successors->empty() && task->outputs->empty())
-      xbt_dynar_push(current, &task);
+    if(task->kind != SD_TASK_COMM_E2E){
+      task->marked = 0;
+      if(task->successors->empty() && task->outputs->empty())
+        current.push_back(task);
+    }
   }
-  //test if something has to be done for the next iteration
-  while(!xbt_dynar_is_empty(current)){
-    next = xbt_dynar_new(sizeof(SD_task_t),nullptr);
-    //test if the current iteration is done
-    xbt_dynar_foreach(current,count_current,task){
-      if (task == nullptr)
-        continue;
-      //push task in next
-      task->marked = 1;
-      for (SD_task_t it : *task->inputs){
-        it->marked = 1;
+  while(!current.empty()){
+    std::vector<SD_task_t> next;
+    for (auto t: current){
+      //Mark task
+      t->marked = 1;
+      for (SD_task_t input : *t->inputs){
+        input->marked=1;
         // Inputs are communication, hence they can have only one predecessor
-        SD_task_t input_pred = *(it->predecessors->begin());
+        SD_task_t input_pred = *(input->predecessors->begin());
         if (children_are_marked(input_pred))
-          xbt_dynar_push(next, &input_pred);
+          next.push_back(input_pred);
       }
-      for (SD_task_t it : *task->predecessors) {
-        if (children_are_marked(it))
-          xbt_dynar_push(next, &it);
+      for (SD_task_t pred : *t->predecessors) {
+        if (children_are_marked(pred))
+          next.push_back(pred);
       }
     }
-    xbt_dynar_free(&current);
+    current.clear();
     current = next;
-    next = nullptr;
   }
-  xbt_dynar_free(&current);
+
   all_marked = true;
+  //test if all tasks are marked
   xbt_dynar_foreach(dag,count,task){
-    if(task->kind == SD_TASK_COMM_E2E)
-      continue;
-    //test if all tasks are marked
-    if(task->marked == 0){
+    if(task->kind != SD_TASK_COMM_E2E && task->marked == 0){
       XBT_WARN("the task %s is not marked",task->name);
       all_marked = false;
       break;
     }
   }
+
   if(!all_marked){
     XBT_VERB("there is at least one cycle in your task graph");
-
-    current = xbt_dynar_new(sizeof(SD_task_t),nullptr);
     xbt_dynar_foreach(dag,count,task){
-      if(task->kind == SD_TASK_COMM_E2E)
-        continue;
-      if(task->predecessors->empty() && task->inputs->empty()){
-        xbt_dynar_push(current, &task);
-      }
-    }
-
-    xbt_dynar_foreach(dag,count,task){
-      if(task->kind == SD_TASK_COMM_E2E)
-        continue;
-      if(task->predecessors->empty() && task->inputs->empty()){
-        task->marked = 1;
-        xbt_dynar_push(current, &task);
+      if(task->kind != SD_TASK_COMM_E2E) {
+        if(task->predecessors->empty() && task->inputs->empty()){
+          task->marked = 1;
+          current.push_back(task);
+        }
       }
     }
     //test if something has to be done for the next iteration
-    while(!xbt_dynar_is_empty(current)){
-      next = xbt_dynar_new(sizeof(SD_task_t),nullptr);
+    while(!current.empty()){
+      std::vector<SD_task_t> next;
       //test if the current iteration is done
-      xbt_dynar_foreach(current,count_current,task){
-        if (task == nullptr)
-          continue;
-        //push task in next
-        task->marked = 1;
-        for (SD_task_t it : *task->outputs) {
-          it->marked = 1;
+      for (auto t: current){
+        t->marked = 1;
+        for (SD_task_t output : *t->outputs) {
+          output->marked = 1;
           // outputs are communication, hence they can have only one successor
-          SD_task_t output_succ = *(it->successors->begin());
+          SD_task_t output_succ = *(output->successors->begin());
           if (parents_are_marked(output_succ))
-            xbt_dynar_push(next, &output_succ);
+            next.push_back(output_succ);
         }
-        for (SD_task_t it : *task->predecessors) {
-          if (parents_are_marked(it))
-            xbt_dynar_push(next, &it);
+        for (SD_task_t succ : *t->successors) {
+          if (parents_are_marked(succ))
+            next.push_back(succ);
         }
-        xbt_dynar_free(&current);
+        current.clear();
         current = next;
-        next = nullptr;
       }
-      xbt_dynar_free(&current);
-      all_marked = true;
-      xbt_dynar_foreach(dag,count,task){
-        if(task->kind == SD_TASK_COMM_E2E)
-          continue;
-        //test if all tasks are marked
-        if(task->marked == 0){
-          XBT_WARN("the task %s is in a cycle",task->name);
-          all_marked = false;
-        }
+    }
+
+    all_marked = true;
+    xbt_dynar_foreach(dag,count,task){
+      if(task->kind != SD_TASK_COMM_E2E && task->marked == 0){
+        XBT_WARN("the task %s is in a cycle",task->name);
+        all_marked = false;
       }
     }
   }
