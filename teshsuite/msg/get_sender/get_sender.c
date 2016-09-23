@@ -36,10 +36,9 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);
 
-  MSG_function_register("send", &sender_fun);
-  MSG_function_register("receive", &receiver_fun);
-  MSG_launch_application(argv[2]);
-  res = MSG_main();
+  MSG_process_create("send", sender_fun, NULL, MSG_get_host_by_name("Tremblay"));
+  MSG_process_create("receive", receiver_fun, NULL, MSG_get_host_by_name("Tremblay"));
 
+  res = MSG_main();
   return res != MSG_OK;
 }

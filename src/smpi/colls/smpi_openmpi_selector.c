@@ -237,10 +237,11 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
     const double b2 =  9.7128;
     const double a3 =  0.0422 / 1024.0; /* [1/B] */
     const double b3 =  1.1614;
-    //const double a4 =  0.0033 / 1024.0; /* [1/B] */
+    //const double a4 =  0.0033 / 1024.0;  [1/B]
     //const double b4 =  1.6761;
 
-    //const int max_requests = 0; /* no limit on # of outstanding requests */
+    /* no limit on # of outstanding requests */
+    //const int max_requests = 0;
 
     communicator_size = smpi_comm_size(comm);
 
@@ -285,13 +286,13 @@ int smpi_coll_tuned_reduce_ompi( void *sendbuf, void *recvbuf,
         return smpi_coll_tuned_reduce_ompi_binary( sendbuf, recvbuf, count, datatype, op, root,
                                                     comm/*, module, segsize, max_requests*/);
     }
-    /*if (communicator_size > (a4 * message_size + b4)) {
+//    if (communicator_size > (a4 * message_size + b4)) {
         // Pipeline_32K 
-        segsize = 32*1024;
-    } else {
+//        segsize = 32*1024;
+//    } else {
         // Pipeline_64K 
-        segsize = 64*1024;
-    }*/
+//        segsize = 64*1024;
+//    }
     return smpi_coll_tuned_reduce_ompi_pipeline (sendbuf, recvbuf, count, datatype, op, root, comm/*, module, 
                                                   segsize, max_requests*/);
 

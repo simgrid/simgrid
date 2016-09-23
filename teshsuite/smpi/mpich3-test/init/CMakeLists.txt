@@ -8,41 +8,21 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 
   include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
-
-#  add_executable(attrself attrself.c)
-  add_executable(exitst1 exitst1.c)
-  add_executable(exitst2 exitst2.c)
-#  add_executable(exitst3 exitst3.c)
-  add_executable(finalized finalized.c)
-  add_executable(initstat initstat.c)
-  add_executable(library_version library_version.c)
-#  add_executable(timeout timeout.c)
-  add_executable(version version.c)
-
-#  target_link_libraries(attrself simgrid mtest_c)
-  target_link_libraries(exitst1 simgrid mtest_c)
-  target_link_libraries(exitst2 simgrid mtest_c)
-#  target_link_libraries(exitst3 simgrid mtest_c)
-  target_link_libraries(finalized simgrid mtest_c)
-  target_link_libraries(initstat simgrid mtest_c)
-  target_link_libraries(library_version simgrid mtest_c)
-#  target_link_libraries(timeout simgrid mtest_c)
-  target_link_libraries(version simgrid mtest_c)
+  foreach(file exitst1 exitst2 finalized initstat library_version version)
+    # not compiled files: attrself exitst3 timeout
+    add_executable(${file} ${file}.c)
+    target_link_libraries(${file} simgrid mtest_c)
+  endforeach()
 endif()
 
-set(examples_src
-  ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/attrself.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/exitst1.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/exitst2.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/exitst3.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/finalized.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/initstat.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/library_version.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/timeout.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/version.c 
-  PARENT_SCOPE)
-set(txt_files
-  ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE)
+if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
+  ADD_TEST(test-smpi-mpich3-init-raw       ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/init ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/init -tests=testlist -execarg=--cfg=contexts/factory:raw)
+  SET_TESTS_PROPERTIES(test-smpi-mpich3-init-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+endif()
+
+foreach(file attrself exitst1 exitst2 exitst3 finalized initstat library_version timeout version)
+  set(examples_src ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
+endforeach()
+
+set(examples_src ${examples_src}                                         PARENT_SCOPE)
+set(txt_files    ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/testlist   PARENT_SCOPE)

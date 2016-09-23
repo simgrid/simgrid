@@ -1,5 +1,0 @@
-$ java -classpath ${classpath:=.} semaphore.SemaphoreGC ${srcdir:=.}/../../examples/platforms/small_platform.xml "--log=root.fmt:[%10.4r]%e(%i:%P@%h)%e%m%n"
-> [    0.0000] (0:maestro@) Using regular java threads.
-> [    0.0000] (1:SemCreator@Fafard) Creating 50 new Semaphores, yielding and triggering a GC after each
-> [  500.0000] (1:SemCreator@Fafard) It worked, we survived. The test is passed.
-> [  500.0000] (0:maestro@) MSG_main finished; Cleaning up the simulation...

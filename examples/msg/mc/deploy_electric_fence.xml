@@ -6,7 +6,7 @@
   </process>
   <process host="HostB" function="client">
     <argument value="1"/>
-  </process>  
+    </process>
   <process host="HostC" function="client">
     <argument value="2"/>
   </process>

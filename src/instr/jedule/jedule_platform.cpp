@@ -1,228 +1,248 @@
-/* Copyright (c) 2010-2015. The SimGrid Team.
+/* Copyright (c) 2010-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "simgrid/jedule/jedule_platform.h"
+#include "simgrid/jedule/jedule.hpp"
+#include "simgrid/jedule/jedule_platform.hpp"
+#include "simgrid/s4u/As.hpp"
 
 #include "xbt/asserts.h"
 #include "xbt/dynar.h"
-#include "xbt/str.h"
+#include <algorithm>
 
-#include <stdlib.h>
-#include <string.h>
+#if HAVE_JEDULE
 
-#ifdef HAVE_JEDULE
-
-static xbt_dict_t host2_simgrid_parent_container;
-static xbt_dict_t container_name2container;
-
-static int compare_ids(const void *num1, const void *num2) {
-  return *((int*) num1) - *((int*) num2);
-}
-
-static void jed_free_container(jed_simgrid_container_t container) {
-  xbt_dict_free(&container->name2id);
-  xbt_dynar_free(&container->resource_list);
-
-  if( container->container_children != NULL ) {
-    unsigned int iter;
-    jed_simgrid_container_t child_container;
-    xbt_dynar_foreach(container->container_children, iter, child_container) {
-      jed_free_container(child_container);
-    }
-    xbt_dynar_free(&container->container_children);
-  }
-  xbt_free(container->name);
-  xbt_free(container);
-}
-
-void jed_simgrid_create_container(jed_simgrid_container_t *container, const char *name)
+namespace simgrid {
+namespace jedule {
+Subset::Subset(int start_idx, int end_idx, Container* parent)
+: start_idx(start_idx), parent(parent)
 {
-  xbt_assert( name != NULL );
-
-  *container = xbt_new0(s_jed_simgrid_container_t,1);
-  (*container)->name = xbt_strdup(name);
-  (*container)->is_lowest = 0;
-  (*container)->container_children = xbt_dynar_new(sizeof(jed_simgrid_container_t), NULL);
-  (*container)->parent = NULL;
-
-  xbt_dict_set(container_name2container, (*container)->name, *container, NULL);
+  nres=end_idx-start_idx+1;
 }
 
-void jed_simgrid_add_container(jed_simgrid_container_t parent, jed_simgrid_container_t child) {
-  xbt_assert(parent != NULL);
-  xbt_assert(child != NULL);
-  xbt_dynar_push(parent->container_children, &child);
-  child->parent = parent;
+
+Container::Container(std::string name): name(name)
+{
+  container_name2container.insert({this->name, this});
 }
 
-void jed_simgrid_add_resources(jed_simgrid_container_t parent, xbt_dynar_t host_names) {
-  unsigned int iter;
-  char *host_name;
-  char *buf;
+Container::~Container()
+{
+  if(!this->children.empty())
+    for (auto child: this->children)
+      delete child;
+}
 
-  parent->is_lowest = 1;
-  xbt_dynar_free(&parent->container_children);
-  parent->container_children = NULL;
-  parent->name2id = xbt_dict_new_homogeneous(xbt_free_f);
-  parent->last_id = 0;
-  parent->resource_list = xbt_dynar_new(sizeof(char *), NULL);
+void Container::addChild(jed_container_t child)
+{
+  xbt_assert(this != nullptr);
+  xbt_assert(child != nullptr);
+  this->children.push_back(child);
+  child->parent = this;
+}
 
-  xbt_dynar_sort_strings(host_names);
+void Container::addResources(std::vector<sg_host_t> hosts)
+{
+  this->is_lowest = 1;
+  this->children.clear();
+  this->last_id = 0;
 
-  xbt_dynar_foreach(host_names, iter, host_name) {
-    buf = bprintf("%d", parent->last_id);
-    (parent->last_id)++;
-    xbt_dict_set(parent->name2id, host_name, buf, NULL);
-    xbt_dict_set(host2_simgrid_parent_container, host_name, parent, NULL);
-    xbt_dynar_push(parent->resource_list, &host_name);
+  //FIXME do we need to sort?: xbt_dynar_sort_strings(host_names);
+
+  for (auto host : hosts) {
+    const char *host_name = sg_host_get_name(host);
+    this->name2id.insert({host_name, this->last_id});
+    (this->last_id)++;
+    host2_simgrid_parent_container.insert({host_name, this});
+    this->resource_list.push_back(host);
   }
 }
 
-static void add_subset_to(xbt_dynar_t subset_list, int start, int end, jed_simgrid_container_t parent) {
-  jed_res_subset_t subset;
+void Container::createHierarchy(AS_t from_as)
+{
+  xbt_dict_cursor_t cursor = nullptr;
+  char *key;
+  AS_t elem;
+  xbt_dict_t routing_sons = from_as->children();
 
-  xbt_assert( subset_list != NULL );
-  xbt_assert( parent != NULL );
+  if (xbt_dict_is_empty(routing_sons)) {
+    // I am no AS
+    // add hosts to jedule platform
+    xbt_dynar_t table = from_as->hosts();
+    unsigned int dynar_cursor;
+    sg_host_t host;
 
-  subset = xbt_new0(s_jed_res_subset_t,1);
-  subset->start_idx = start;
-  subset->nres      = end-start+1;
-  subset->parent    = parent;
+    std::vector<sg_host_t> hosts;
 
-  xbt_dynar_push(subset_list, &subset);
+    xbt_dynar_foreach(table, dynar_cursor, host) {
+      hosts.push_back(host);
+    }
+    this->addResources(hosts);
+    xbt_dynar_free(&table);
+  } else {
+    xbt_dict_foreach(routing_sons, cursor, key, elem) {
+      jed_container_t child_container = new simgrid::jedule::Container(std::string(elem->name()));
+      this->addChild(child_container);
+      child_container->createHierarchy(elem);
+    }
+  }
 }
 
-static void add_subsets_to(xbt_dynar_t subset_list, xbt_dynar_t hostgroup, jed_simgrid_container_t parent) {
-  unsigned int iter;
-  char *host_name;
-  xbt_dynar_t id_list;
-  int *id_ar;
-  int nb_ids;
-  char *id_str;
+std::vector<int> Container::getHierarchy()
+{
+  xbt_assert( this!= nullptr );
 
+  if(this->parent != nullptr ) {
+
+    if(!this->parent->children.empty()) {
+      // we are in the last level
+      return this->parent->getHierarchy();
+    } else {
+      unsigned int i =0;
+      int child_nb = -1;
+
+      for (auto child : this->parent->children) {
+        if( child == this) {
+          child_nb = i;
+          break;
+        }
+        i++;
+      }
+
+      xbt_assert( child_nb > - 1);
+      std::vector<int> heir_list = this->parent->getHierarchy();
+      heir_list.insert(heir_list.begin(), child_nb);
+      return heir_list;
+    }
+  } else {
+    int top_level = 0;
+    std::vector<int> heir_list = {top_level};
+    return heir_list;
+  }
+}
+
+std::string Container::getHierarchyAsString()
+{
+  std::string output("");
+
+  std::vector<int> heir_list = this->getHierarchy();
+
+  unsigned int length = heir_list.size();
+  unsigned int i = 0;
+  for (auto id : heir_list) {
+    output += std::to_string(id);
+    if( i != length-1 ) {
+      output += ".";
+    }
+  }
+
+  return output;
+}
+
+void Container::printResources(FILE * jed_file)
+{
+  unsigned int i=0;
+  xbt_assert(!this->resource_list.empty());
+
+  unsigned int res_nb = this->resource_list.size();
+  std::string resid = this->getHierarchyAsString();
+
+  fprintf(jed_file, "      <rset id=\"%s\" nb=\"%u\" names=\"", resid.c_str(), res_nb);
+  for (auto res: this->resource_list) {
+    const char * res_name = sg_host_get_name(res);
+    fprintf(jed_file, "%s", res_name);
+    if( i != res_nb-1 ) {
+      fprintf(jed_file, "|");
+    }
+    i++;
+  }
+  fprintf(jed_file, "\" />\n");
+}
+
+void Container::print(FILE* jed_file)
+{
+  xbt_assert( this != nullptr );
+  fprintf(jed_file, "    <res name=\"%s\">\n", this->name.c_str());
+  if( !this->children.empty()){
+    for (auto child: this->children) {
+      child->print(jed_file);
+    }
+  } else {
+    this->printResources(jed_file);
+  }
+  fprintf(jed_file, "    </res>\n");
+}
+
+}
+}
+
+static void add_subsets_to(std::vector<jed_subset_t> *subset_list, std::vector<const char*> hostgroup, jed_container_t parent)
+{
   // get ids for each host
   // sort ids
   // compact ids
   // create subset for each id group
 
-  xbt_assert( host2_simgrid_parent_container != NULL );
-  xbt_assert( subset_list != NULL );
-  xbt_assert( hostgroup != NULL );
-  xbt_assert( parent != NULL );
+  xbt_assert( parent != nullptr );
 
-  id_list = xbt_dynar_new(sizeof(char *), NULL);
+  std::vector<unsigned int> id_list;
 
-  xbt_dynar_foreach(hostgroup, iter, host_name) {
-    jed_simgrid_container_t parent;
-    xbt_assert( host_name != NULL );
-    parent = (jed_simgrid_container_t)xbt_dict_get(host2_simgrid_parent_container, host_name);
-    id_str = (char*)xbt_dict_get(parent->name2id, host_name);
-    xbt_dynar_push(id_list, &id_str);
+  for (auto host_name : hostgroup) {
+    xbt_assert( host_name != nullptr );
+    jed_container_t parent = host2_simgrid_parent_container.at(host_name);
+    unsigned int id = parent->name2id.at(host_name);
+    id_list.push_back(id);
   }
-
-  nb_ids = xbt_dynar_length(id_list);
-  id_ar = xbt_new0(int,nb_ids);
-  xbt_dynar_foreach(id_list, iter, id_str) {
-    id_ar[iter] = xbt_str_parse_int(id_str, "Parse error: not a number: %s");
-  }
-
-  qsort (id_ar, nb_ids, sizeof(int), &compare_ids);
+  unsigned int nb_ids = id_list.size();
+  std::sort(id_list.begin(), id_list.end());
 
   if( nb_ids > 0 ) {
     int start = 0;
-    int pos;
-    int i;
-
-    pos = start;
-    for(i=0; i<nb_ids; i++) {
-      if( id_ar[i] - id_ar[pos] > 1 ) {
-        add_subset_to( subset_list, id_ar[start], id_ar[pos], parent );
+    int pos = start;
+    for(unsigned int i=0; i<nb_ids; i++) {
+      if( id_list[i] - id_list[pos] > 1 ) {
+        subset_list->push_back(new simgrid::jedule::Subset(id_list[start], id_list[pos], parent));
         start = i;
 
         if( i == nb_ids-1 ) {
-          add_subset_to( subset_list, id_ar[i], id_ar[i], parent );
+         subset_list->push_back(new simgrid::jedule::Subset(id_list[i], id_list[i], parent));
         }
       } else {
         if( i == nb_ids-1 ) {
-          add_subset_to( subset_list, id_ar[start], id_ar[i], parent );
+          subset_list->push_back(new simgrid::jedule::Subset(id_list[start], id_list[i], parent));
         }
       }
-
       pos = i;
     }
   }
 
-  free(id_ar);
-  xbt_dynar_free(&id_list);
 }
 
-void jed_simgrid_get_resource_selection_by_hosts(xbt_dynar_t subset_list, xbt_dynar_t host_names) {
-  char *host_name;
-  unsigned int iter;
-  xbt_dict_t parent2hostgroup;  // group hosts by parent
-
-  parent2hostgroup = xbt_dict_new_homogeneous(NULL);
-
-  xbt_assert( host_names != NULL );
-
+void get_resource_selection_by_hosts(std::vector<jed_subset_t> *subset_list, std::vector<sg_host_t> *host_list)
+{
+  xbt_assert( host_list != nullptr );
   // for each host name
   //  find parent container
   //  group by parent container
+  std::unordered_map<const char*, std::vector<const char*>> parent2hostgroup;
+  for (auto host: *host_list) {
+    const char *host_name = sg_host_get_name(host);
+    jed_container_t parent = host2_simgrid_parent_container.at(host_name);
+    xbt_assert( parent != nullptr );
 
-  xbt_dynar_foreach(host_names, iter, host_name) {
-    jed_simgrid_container_t parent = (jed_simgrid_container_t)xbt_dict_get(host2_simgrid_parent_container, host_name);
-    xbt_assert( parent != NULL );
-
-    xbt_dynar_t hostgroup = (xbt_dynar_t)xbt_dict_get_or_null (parent2hostgroup, parent->name);
-    if( hostgroup == NULL ) {
-      hostgroup = xbt_dynar_new(sizeof(char*), NULL);
-      xbt_dict_set(parent2hostgroup, parent->name, hostgroup, NULL);
-    }
-
-    xbt_dynar_push(hostgroup, &host_name);
+    auto host_group = parent2hostgroup.find(parent->name.c_str());
+    if (host_group == parent2hostgroup.end())
+      parent2hostgroup.insert({parent->name.c_str(), std::vector<const char*>(1,host_name)});
+    else
+      host_group->second.push_back(host_name);
   }
 
-  xbt_dict_cursor_t cursor=NULL;
-  char *parent_name;
-  xbt_dynar_t hostgroup;
-  jed_simgrid_container_t parent;
-
-  xbt_dict_foreach(parent2hostgroup,cursor,parent_name,hostgroup) {
-    parent = (jed_simgrid_container_t)xbt_dict_get(container_name2container, parent_name);
-    add_subsets_to(subset_list, hostgroup, parent);
+  for (auto elm: parent2hostgroup) {
+    jed_container_t parent = container_name2container.at(elm.first);
+    add_subsets_to(subset_list, elm.second, parent);
   }
-  xbt_dynar_free(&hostgroup);
-
-  xbt_dict_free(&parent2hostgroup);
 }
 
-void jedule_add_meta_info(jedule_t jedule, char *key, char *value) {
-  char *val_cp;
-
-  xbt_assert(key != NULL);
-  xbt_assert(value != NULL);
-
-  val_cp = xbt_strdup(value);
-  xbt_dict_set(jedule->jedule_meta_info, key, val_cp, NULL);
-}
-
-void jed_create_jedule(jedule_t *jedule) {
-  *jedule = xbt_new0(s_jedule_t,1);
-  host2_simgrid_parent_container = xbt_dict_new_homogeneous(NULL);
-  container_name2container       = xbt_dict_new_homogeneous(NULL);
-  (*jedule)->jedule_meta_info    = xbt_dict_new_homogeneous(NULL);
-}
-
-void jed_free_jedule(jedule_t jedule) {
-  jed_free_container(jedule->root_container);
-
-  xbt_dict_free(&jedule->jedule_meta_info);
-  xbt_free(jedule);
-
-  xbt_dict_free(&host2_simgrid_parent_container);
-  xbt_dict_free(&container_name2container);
-}
 #endif

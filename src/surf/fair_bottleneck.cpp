@@ -18,13 +18,13 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 void bottleneck_solve(lmm_system_t sys)
 {
   void *_var, *_var_next, *_cnst, *_cnst_next, *_elem;
-  lmm_variable_t var = NULL;
-  lmm_constraint_t cnst = NULL;
+  lmm_variable_t var = nullptr;
+  lmm_constraint_t cnst = nullptr;
   s_lmm_constraint_t s_cnst;
-  lmm_element_t elem = NULL;
-  xbt_swag_t cnst_list = NULL;
-  xbt_swag_t var_list = NULL;
-  xbt_swag_t elem_list = NULL;
+  lmm_element_t elem = nullptr;
+  xbt_swag_t cnst_list = nullptr;
+  xbt_swag_t var_list = nullptr;
+  xbt_swag_t elem_list = nullptr;
   int i;
 
   static s_xbt_swag_t cnst_to_update;

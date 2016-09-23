@@ -7,12 +7,12 @@
 #include <sys/types.h>
 #include <sys/uio.h>
 
+#include <fcntl.h>
 #include <libunwind.h>
 #include <libunwind-ptrace.h>
 
+#include "src/mc/Process.hpp"
 #include "src/mc/mc_unw.h"
-
-extern "C" {
 
 /** \file
  *  Libunwind namespace implementation using process_vm_readv.
@@ -22,9 +22,9 @@ extern "C" {
 
 /** Partial structure of libunwind-ptrace context in order to get the PID
  *
- *  The context type for libunwind-race is an opaque type. We need to get the
- *  PID which is the first field. This is a hack which might break if the
- *  libunwind-ptrace structure changes.
+ *  HACK, The context type for libunwind-race is an opaque type.
+ *  We need to get the PID which is the first field. This is a hack
+ *  which might break if the libunwind-ptrace structure changes.
  */
 struct _UPT_info {
   pid_t pid;
@@ -51,7 +51,7 @@ static int access_mem(const unw_addr_space_t as,
   pid_t pid = _UPT_getpid(arg);
   size_t size = sizeof(unw_word_t);
 
-#ifdef HAVE_PROCESS_VM_READV
+#if HAVE_PROCESS_VM_READV
   // process_vm_read implementation.
   // This is only available since Linux 3.2.
 
@@ -100,16 +100,42 @@ static int access_mem(const unw_addr_space_t as,
   return _UPT_access_mem(as, addr, valp, write, arg);
 }
 
-unw_accessors_t mc_unw_vmread_accessors =
-  {
-    &_UPT_find_proc_info,
-    &_UPT_put_unwind_info,
-    &_UPT_get_dyn_info_list_addr,
-    &access_mem,
-    &_UPT_access_reg,
-    &_UPT_access_fpreg,
-    &_UPT_resume,
-    &_UPT_get_proc_name
-  };
+namespace simgrid {
+namespace unw {
 
+/** Virtual table for our `libunwind-process_vm_readv` implementation.
+ *
+ *  This implementation reuse most the code of `libunwind-ptrace` but
+ *  does not use ptrace() to read the target process memory by
+ *  `process_vm_readv()` or `/dev/${pid}/mem` if possible.
+ *
+ *  Does not support any MC-specific behaviour (privatisation, snapshots)
+ *  and `ucontext_t`.
+ *
+ *  It works with `void*` contexts allocated with `_UPT_create(pid)`.
+ */
+// TODO, we could get rid of this if we properly stop the model-checked
+// process before reading the memory.
+static unw_accessors_t accessors = {
+  &_UPT_find_proc_info,
+  &_UPT_put_unwind_info,
+  &_UPT_get_dyn_info_list_addr,
+  &access_mem,
+  &_UPT_access_reg,
+  &_UPT_access_fpreg,
+  &_UPT_resume,
+  &_UPT_get_proc_name
+};
+
+unw_addr_space_t create_addr_space()
+{
+  return unw_create_addr_space(&accessors, __BYTE_ORDER);
+}
+
+void* create_context(unw_addr_space_t as, pid_t pid)
+{
+  return _UPT_create(pid);
+}
+
+}
 }

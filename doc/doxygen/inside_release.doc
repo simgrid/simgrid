@@ -9,18 +9,16 @@ Please apply the following checklist before releasing.
 
 - Sources
   - The version number is correctly marked in CMakeList.txt, in macros
-    SIMGRID_VERSION_MAJOR and friends. Please also update the
-    comments right before these macros so that we keep a track of the
-    version numbers that were used.
+    SIMGRID_VERSION_MAJOR and friends. 
   - The "make distcheck" target works (testing that every files needed
     to build and install are included in the archive)
 - Tests
   - All tests pass on a reasonable amount of platforms (typically,
-    everything on cdash)
+    everything on ci)
   - You also tested to build and install the content of the source
     archive on a reasonable amount of platforms (typically, 2 or 3).
 - ChangeLog file
-  - Every changes are documented
+  - All changes are documented
   - The release date is indicated below the changes
   - The release is marked as stable above the changes
   - The release dub name matches the one given in NEWS file
@@ -50,54 +48,19 @@ $ cmake ..
 $ make dist
 \endverbatim
 
-\subsection inside_release_c_win32 Binary distribution under Win32
-
-You have to install nsis tool first. Download it 
-<a href="http://nsis.sourceforge.net/Download">here</a>.
-
-Then be sure having wget.exe in your path to get the online documentation. You can download it 
-<a href="http://users.ugent.be/~bpuype/wget/">here</a>.
-
-You can finally make the win installer.
-\verbatim
-$ cd simgrid
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make nsis
-\endverbatim
-
 \subsection inside_release_c_postchecks Check list after releasing
 
-- Tag the git repository (don't forget to push the tags to the main
-  repo)
+- Tag the git repository (don't forget to push the tags to the main repo)
 - Push the archive files on gforge
 - Rebuild and resynchronize the website so that the file gets visible
   from our download page (see @ref inside_doxygen_website).
-- Update the link ff-scm-v4-prod:/home/groups/simgrid/htdocs/simgrid/latest
+- Update the link scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/latest
 - Announce the release
  - Mail the simgrid-user mailing list
     - the NEWS chunk in the mail;
     - the ChangeLog chunk as attachment
  - Also mail some other lists (G5K users), with only the NEWS chunk
    and the link to the download section
-
-\section inside_release_bindings Releasing the bindings
-
-Please apply the above checklists before and after releasing the bindings.
-
-Then, clean your git repository and build the archive. It will give
-you an archive file in the build dir:
-'SimGrid-Ruby-${inside_release_version}.tar.gz'. 
-
-\verbatim
-$ cd simgrid-ruby
-$ git reset --hard master
-$ git clean -dfx
-$ mkdir build
-$ cd build
-$ cmake ..
-$ make dist
-\endverbatim
+ - Post a news on gforge
 
 */

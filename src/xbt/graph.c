@@ -18,10 +18,7 @@
 #include <errno.h>
 #include <stdlib.h>
 
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_graph, xbt, "Graph");
-
-
 
 /** @brief Constructor
  *  @return a new graph
@@ -131,9 +128,7 @@ void xbt_graph_edge_set_data(xbt_edge_t edge, void *data)
  *
  * Free the graph structure.
  */
-void xbt_graph_free_graph(xbt_graph_t g,
-                          void_f_pvoid_t node_free_function,
-                          void_f_pvoid_t edge_free_function,
+void xbt_graph_free_graph(xbt_graph_t g, void_f_pvoid_t node_free_function, void_f_pvoid_t edge_free_function,
                           void_f_pvoid_t graph_free_function)
 {
   unsigned int cursor;
@@ -160,7 +155,6 @@ void xbt_graph_free_graph(xbt_graph_t g,
     graph_free_function(g->data);
   free(g);
 }
-
 
 /** @brief Retrieve the graph's nodes as a dynar */
 xbt_dynar_t xbt_graph_get_nodes(xbt_graph_t g)
@@ -209,16 +203,13 @@ double xbt_graph_edge_get_length(xbt_edge_t edge)
  *
  * From wikipedia:
  *
- * The Floyd–Warshall algorithm takes as input an adjacency matrix
- * representation of a weighted, directed graph (V, E). The weight of a
- * path between two vertices is the sum of the weights of the edges along
- * that path. The edges E of the graph may have negative weights, but the
- * graph must not have any negative weight cycles. The algorithm computes,
- * for each pair of vertices, the minimum weight among all paths between
- * the two vertices. The running time complexity is Θ(|V|3).
+ * The Floyd–Warshall algorithm takes as input an adjacency matrix representation of a weighted, directed graph (V, E).
+ * The weight of a path between two vertices is the sum of the weights of the edges along that path. The edges E of the
+ * graph may have negative weights, but the graph must not have any negative weight cycles. The algorithm computes, for
+ * each pair of vertices, the minimum weight among all paths between the two vertices. The running time complexity is
+ * Θ(|V|3).
  */
-void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
-                         xbt_node_t * p)
+void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d, xbt_node_t * p)
 {
   unsigned long i, j, k;
   unsigned long n;
@@ -230,7 +221,6 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
   for (i = 0; i < n * n; i++) {
     d[i] = adj[i];
   }
-
 
   for (i = 0; i < n; i++) {
     for (j = 0; j < n; j++) {
@@ -257,8 +247,7 @@ void xbt_floyd_algorithm(xbt_graph_t g, double *adj, double *d,
 }
 
 /** @brief Export the given graph in the GraphViz formatting for visualization */
-void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
-                               const char *(node_name) (xbt_node_t),
+void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename, const char *(node_name) (xbt_node_t),
                                const char *(edge_name) (xbt_edge_t))
 {
   unsigned int cursor = 0;
@@ -278,8 +267,7 @@ void xbt_graph_export_graphviz(xbt_graph_t g, const char *filename,
   fprintf(file, "  graph [overlap=scale]\n");
 
   fprintf(file, "  node [shape=box, style=filled]\n");
-  fprintf(file,
-          "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
+  fprintf(file, "  node [width=.3, height=.3, style=filled, color=skyblue]\n\n");
 
   xbt_dynar_foreach(g->nodes, cursor, node) {
     if (node_name){

@@ -1,7 +1,0 @@
-
-p latency bounded by large latency link
-! output sort
-
-$ simdag/network/p2p/test_latency_bound ${srcdir:=.}/simdag/network/p2p/platform_2p_1bb.xml --cfg=path:${srcdir} --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> 10001.5

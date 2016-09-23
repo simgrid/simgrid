@@ -7,7 +7,7 @@
 package org.simgrid.msg;
 
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * A process may be defined as a code, with some private data, executing 
@@ -47,15 +47,13 @@ public abstract class Process implements Runnable {
 	 * access to it. It is set automatically during the build of the object.
 	 */
 	private long bind;
-	/**
-	 * Indicates if the process is started
-	 */
+	/** Indicates if the process is started */
 	boolean started;
 	/**
 	 * Even if this attribute is public you must never access to it.
 	 * It is used to compute the id of an MSG process.
 	 */
-	public static long nextProcessId = 0;
+	private static long nextProcessId = 0;
 
 	/**
 	 * Even if this attribute is public you must never access to it.
@@ -66,8 +64,7 @@ public abstract class Process implements Runnable {
 
 	/** Time at which the process should be created  */
 	protected double startTime = 0;
-	/** Time at which th
-	 * Kill time of the process
+	/** Time at which the process should be killed.
 	 * 
 	 * Set at creation, and used internally by SimGrid
 	 */
@@ -79,18 +76,16 @@ public abstract class Process implements Runnable {
 	private int ppid = -1;
 	private Host host = null;
 
-	/** The arguments of the method function of the process. */     
-	public Vector<String> args;
+	/** The arguments of the method function of the process. */
+	private ArrayList<String> args;
 
 
-	/**
-	 * Default constructor
-	 */
+	/**  Default constructor */
 	protected Process() {
 		this.id = nextProcessId++;
 		this.name = null;
 		this.bind = 0;
-		this.args = new Vector<String>();
+		this.args = new ArrayList<>();
 	}
 
 
@@ -121,7 +116,7 @@ public abstract class Process implements Runnable {
 	 * @throws NativeException
 	 *
 	 */ 
-	public Process(String hostname, String name, String args[]) throws HostNotFoundException, NativeException {
+	public Process(String hostname, String name, String[] args) throws HostNotFoundException, NativeException {
 		this(Host.getByName(hostname), name, args);
 	}
 	/**
@@ -147,15 +142,15 @@ public abstract class Process implements Runnable {
 		this();
 		this.host = host;
 		if (host == null)
-			throw new NullPointerException("Process name cannot be NULL");
+			throw new NullPointerException("Host cannot be NULL");
 		if (name == null)
 			throw new NullPointerException("Process name cannot be NULL");
 		this.name = name;
 
-		this.args = new Vector<String>();
+		this.args = new ArrayList<>();
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
-	}	
+	}
 	/**
 	 * Constructs a new process from a host and his name, the arguments of here method function are
 	 * specified by the parameter args.
@@ -168,20 +163,9 @@ public abstract class Process implements Runnable {
 	 *
 	 */
 	public Process(Host host, String name, String[]args, double startTime, double killTime) {
-		this();
-		this.host = host;
-		if (host == null)
-			throw new NullPointerException("Process name cannot be NULL");
-		if (name == null)
-			throw new NullPointerException("Process name cannot be NULL");
-		this.name = name;
-
-		this.args = new Vector<String>();
-		if (null != args)
-			this.args.addAll(Arrays.asList(args));
-
+		this(host, name, args);
 		this.startTime = startTime;
-		this.killTime = killTime;		
+		this.killTime = killTime;
 	}
 	/**
 	 * The natively implemented method to create an MSG process.
@@ -310,7 +294,7 @@ public abstract class Process implements Runnable {
 	 * @param millis the length of time to sleep in milliseconds.
 	 * @param nanos additionnal nanoseconds to sleep.
 	 */
-	public native static void sleep(long millis, int nanos) throws HostFailureException;
+	public static native void sleep(long millis, int nanos) throws HostFailureException;
 	/**
 	 * Makes the current process sleep until time seconds have elapsed.
 	 * @param seconds		The time the current process must sleep.
@@ -328,17 +312,15 @@ public abstract class Process implements Runnable {
 		}
 	}
 
-	/**
-	 * This method runs the process. Il calls the method function that you must overwrite.
-	 */
+	/** This method runs the process. Il calls the method function that you must overwrite. */
+	@Override
 	public void run() {
 
 		String[] args = null;      /* do not fill it before the signal or this.args will be empty */
-		//waitSignal(); /* wait for other people to fill the process in */
 
 		try {
 			args = new String[this.args.size()];
-			if (this.args.size() > 0) {
+			if (!this.args.isEmpty()) {
 				this.args.toArray(args);
 			}
 
@@ -361,7 +343,7 @@ public abstract class Process implements Runnable {
 	 */
 	public abstract void main(String[]args) throws MsgException;
 
-	public native void exit();    
+	public native void exit();
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */
@@ -375,6 +357,6 @@ public abstract class Process implements Runnable {
 	 *
 	 * @return			The count of the running processes
 	 */ 
-	public native static int getCount();
+	public static native int getCount();
 
 }

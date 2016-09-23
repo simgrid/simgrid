@@ -1,0 +1,310 @@
+This file follows the Doxygen syntax to be included in the
+documentation, but it should remain readable directly.
+
+/** 
+ @defgroup msg_examples MSG examples
+ @ingroup MSG_API
+ @brief Find the MSG example fitting your needs from the extensive set provided in the archive.
+
+  - @ref msg_ex_basics
+  - @ref msg_ex_async
+  - @ref msg_ex_process
+  - @ref msg_ex_tracing
+    - @ref msg_ex_tracing_user_variables
+  - @ref msg_ex_models
+    - @ref msg_ex_ns3
+    - @ref msg_ex_io
+  - @ref msg_ex_actions
+  - @ref msg_ex_apps
+  - @ref msg_ex_misc
+		    
+@section msg_ex_basics Basic examples and features
+
+ - <b>Ping Pong</b>: @ref examples/msg/app-pingpong/app-pingpong.c\n
+   It's hard to think of a simpler example: it is just sending one
+   message back and forth.  
+   The tesh file laying in the directory show how to start the
+   simulator binary, enlighting how to pass options to the simulators
+   (as detailed in Section \ref options). 
+
+ - <b>Token Ring</b>.
+   @ref examples/msg/app-token-ring/app-token-ring.c\n
+   Classical communication pattern, where a token is exchanged
+   along a ring to reach every participant. 
+   The tesh file laying in the directory shows how to run the same
+   example on different virtual platforms.
+
+ - <b>Master Workers</b>.
+   @ref examples/msg/app-masterworker/app-masterworker.c\n
+   Another good old example, where one Master process has a bunch of
+   task to dispatch to a set of several Worker processes. It is fully
+   commented in @ref msg_ex_master_worker.
+
+@section msg_ex_async Asynchronous communications
+
+In addition to the fully documented example of @ref
+msg_ex_asynchronous_communications, there are several other examples
+shipped in the archive:
+  
+ - <b>Basic asynchronous communications</b>. 
+   @ref examples/msg/async-wait/async-wait.c \n
+   Illustrates how to have non-blocking communications, that are
+   communications running in the background leaving the process free
+   to do something else during their completion. The main functions
+   involved are @ref MSG_task_isend, @ref MSG_task_irecv, and @ref
+   MSG_comm_wait.
+ 
+ - <b>Waiting for all communications in a set</b>.
+   @ref examples/msg/async-waitall/async-waitall.c\n
+   The @ref MSG_comm_waitall function is useful when you want to block
+   until all activities in a given set have completed.
+   
+ - <b>Waiting for the first completed communication in a set</b>.
+   @ref examples/msg/async-waitany/async-waitany.c\n
+   The @ref MSG_comm_waitany function is useful when you want to block
+   until one activity of the set completes, no matter which terminates
+   first.
+
+@section msg_ex_process Acting on Processes
+
+  - <b>Creating processes</b>. 
+    @ref examples/msg/process-create/process-create.c \n
+    Most processes are started from the deployment XML file, but they
+    can also be used with the @ref MSG_process_create() function.
+
+  - <b>Suspend and Resume processes</b>.
+    @ref examples/msg/process-suspend/process-suspend.c \n
+    Processes can be suspended and resumed during their executions
+    thanks to the @ref MSG_process_suspend and @ref MSG_process_resume functions.
+
+  - <b>Kill processes</b>.
+    @ref examples/msg/process-kill/process-kill.c \n
+    Processes can forcefully stop other processes with the @ref MSG_process_kill function.
+     
+  - <b>Migrating processes</b>.
+    @ref examples/msg/process-migration/process-migration.c \n
+    Processes can move or be moved from a host to another with the @ref MSG_process_migrate function.
+    
+  - <b>Controling the process life cycle from the XML</b>.
+    @ref examples/msg/process-startkilltime/process-startkilltime.c \n
+    You can specify a start time and a kill time in the deployment
+    file. See all *_d.xml files in this directory.
+
+@section msg_ex_tracing Tracing and visualization features
+
+Tracing can be activated by various configuration options which
+are illustrated in these example. See also the 
+@ref tracing_tracing_options "full list of options related to tracing".
+
+It is interesting to run the process-create example with the following
+options to see the task executions:
+
+  - <b>Platform tracing</b>.
+    @ref examples/msg/trace-platform/trace-platform.c \n
+    This program is a toy example just loading the platform, so that
+    you can play with the platform visualization. Recommanded options:
+    @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes
+    @endverbatim
+
+  - <b>Setting Categories</b>.
+    @ref examples/msg/trace-categories/trace-categories.c \n
+    This example declares several tracing categories
+    to that are used to classify its tasks. When the program is executed,
+    the tracing mechanism registers the resource utilization of hosts
+    and links according to these categories. Recommanded options:
+    @verbatim --cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:viva_cat.plist --cfg=viva/uncategorized:viva_uncat.plist
+    @endverbatim
+    
+  - <b>Master Workers tracing</b>.
+    @ref examples/msg/trace-masterworker/trace-masterworker.c \n
+    This is an augmented version of our basic master/worker example
+    using several tracing features. It traces resource usage, sorted
+    out in several categories; Trace marks and user variables are also
+    used. Recommanded options:
+    @verbatim --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=viva/categorized:viva_cat.plist --cfg=viva/uncategorized:viva_uncat.plist
+    @endverbatim
+    
+  - <b>Process migration tracing</b>.
+    @ref examples/msg/trace-process-migration/trace-process-migration.c \n
+    This version is enhanced so that the process migrations can be
+    displayed as arrows in a Gantt-chart visualization. Recommanded
+    options to that extend:
+    @verbatim -cfg=tracing:yes --cfg=tracing/msg/process:yes
+    @endverbatim     
+
+TODO: These tracing examples should be integrated in the examples to
+not duplicate the C files. A full command line to see the result in
+the right tool (viva/vite/FrameSoc) should be given along with some
+screenshots.
+
+@subsection msg_ex_tracing_user_variables Tracing user variables
+
+You can also attach your own variables to a any resource described in
+the platform file. The following examples illustrate this feature.
+They have to be run with the following options:
+@verbatim --cfg=tracing:yes --cfg=tracing/platform:yes
+@endverbatim
+
+  - <b>Attaching variables to Hosts</b>.
+    @ref examples/msg/trace-host-user-variables/trace-host-user-variables.c 
+
+  - <b>Attaching variables to Links</b>.
+    @ref examples/msg/trace-link-user-variables/trace-link-user-variables.c \n
+    The tricky part is that you have to know the name of the link you
+    want to enhance with a variable.
+
+  - <b>Attaching variables to network Routes</b>
+    @ref examples/msg/trace-route-user-variables/trace-route-user-variables.c \n
+    It is often easier to update a given variable for all links of a
+    given network path (identified by its source and destination
+    hosts) instead of knowing the name of each specific link.
+
+@section msg_ex_models Models-related examples
+
+@subsection msg_ex_ns3 NS3 as a SimGrid Network Model
+
+This example demonstrates how to use the bindings to the Network
+Simulator, as explained in @ref pls_ns3. The most
+interesting is probably not the C files since they are unchanged from
+the other simulations, but the associated files, such as the platform
+file to see how to declare a platform to be used with the ns-3 bindings
+of SimGrid and the tesh file to see how to actually start a simulation
+in these settings.
+  
+  - @ref examples/msg/network-ns3/network-ns3.c. Simple ping-pong using
+    ns-3 instead of the SimGrid network models.
+
+TODO: merge the C files
+
+TODO: show the XML files instead if it's what is interesting. On a "XML example files" page that does not exist yet.
+
+@subsection msg_ex_io Simulating disks and files
+
+The examples of this section demonstrate how to interact with the
+simulated storages.
+
+  - <b>Basic example</b>.
+    @ref examples/msg/io-storage/io-storage.c \n
+    All main storage and file functions are demoed.
+    
+  - <b>File Management</b>. @ref examples/msg/io-file/io-file.c \n
+    This example illustrates the use of operations on file
+    (@ref MSG_file_open, @ref MSG_file_read, @ref MSG_file_write,
+    or @ref MSG_file_close).
+    
+  - <b>Remote I/O</b>. @ref examples/msg/io-remote/io-remote.c \n
+    I/O operations can also be done in a remote, i.e. when the
+    accessed disk is not mounted on the caller's host.
+
+@section msg_ex_actions Following Workload Traces
+
+This section details how to run trace-driven simulations. It is very
+handy when you want to test an algorithm or protocol that only react
+to external events. For example, many P2P protocols react to user
+requests, but do nothing if there is no such event.
+
+In such situations, you should write your protocol in C, and separate
+the workload that you want to play onto your protocol in a separate
+text file. Declare a function handling each type of the events in your
+trace, register them using @ref xbt_replay_action_register in your
+main, and then use @ref MSG_action_trace_run to launch the simulation.
+
+Then, you can either have one trace file containing all your events,
+or a file per simulated process: the former may be easier to work
+with, but the second is more efficient on very large traces. Check
+also the tesh files in the example directories for details.
+
+  - <b>Communication replay</b>.
+    @ref examples/msg/actions-comm/actions-comm.c \n
+    Presents a set of event handlers reproducing classical communication
+    primitives (synchronous and asynchronous send/receive, broadcast,
+    barrier, etc).
+
+  - <b>I/O replay</b>.
+    @ref examples/msg/actions-storage/actions-storage.c \n
+    Presents a set of event handlers reproducing classical I/O
+    primitives (open, read, write, close, etc).
+
+@section msg_ex_apps Examples of Full Applications
+ 
+  - <b>Parallel Matrix Multiplication</b>.
+    @ref examples/msg/app-pmm/app-pmm.c \n
+    This little application multiplies two matrices in parallel. Each
+    of the 9 processes computes a sub-block of the result, with the
+    sub-blocks of the input matrices exchanged between the processes. \n
+    This is a classical assignment in MPI lectures, here implemented
+    in MSG.
+
+  - <b>Chord P2P protocol</b>.
+    @ref examples/msg/dht-chord/dht-chord.c \n
+    This example implements the well known Chord protocol,
+    constituting a fully working non-trivial example. This 
+    implementation is also very efficient, as demonstrated in 
+    http://hal.inria.fr/inria-00602216/
+
+@section msg_ex_misc Miscellaneous
+
+ - <b>Task priorities</b>.
+   @ref examples/msg/task-priority/task-priority.c \n
+   Demonstrates the use of @ref MSG_task_set_priority to change the
+   computation priority of  a given task.
+
+ - <b>User-defined properties</b>.
+   @ref examples/msg/platform-properties/platform-properties.c \n
+   Attaching arbitrary information to host, processes and
+   such, and retrieving them with @ref MSG_host_get_properties,
+   @ref MSG_host_get_property_value, @ref MSG_process_get_properties, and 
+   @ref MSG_process_get_property_value. Also make sure to read the
+   platform and deployment XML files to see how to declare these data.
+ 
+TODO: Document the many other examples that we have 
+*/
+
+As a human, you can stop reading at this point. The rest is garbage:
+
+Every example must be listed in the following, but it's not possible
+to move this content upper as each @example directive seems to eat
+everything until the next */ marker (and the content is placed at the
+top of the example file). 
+
+
+/**
+@example examples/msg/app-pingpong/app-pingpong.c        
+@example examples/msg/app-token-ring/app-token-ring.c    
+@example examples/msg/app-masterworker/app-masterworker.c
+
+@example examples/msg/async-wait/async-wait.c
+@example examples/msg/async-waitall/async-waitall.c
+@example examples/msg/async-waitany/async-waitany.c
+
+@example examples/msg/process-create/process-create.c
+@example examples/msg/process-suspend/process-suspend.c
+@example examples/msg/process-kill/process-kill.c
+@example examples/msg/process-migration/process-migration.c
+@example examples/msg/process-startkilltime/process-startkilltime.c
+
+@example examples/msg/trace-platform/trace-platform.c
+@example examples/msg/trace-categories/trace-categories.c
+@example examples/msg/trace-masterworker/trace-masterworker.c
+@example examples/msg/trace-process-migration/trace-process-migration.c
+@example examples/msg/trace-host-user-variables/trace-host-user-variables.c
+@example examples/msg/trace-link-user-variables/trace-link-user-variables.c
+@example examples/msg/trace-route-user-variables/trace-route-user-variables.c
+
+@example examples/msg/network-ns3/network-ns3.c
+
+@example examples/msg/io-storage/io-storage.c
+@example examples/msg/io-file/io-file.c
+@example examples/msg/io-remote/io-remote.c
+
+@example examples/msg/actions-comm/actions-comm.c
+@example examples/msg/actions-storage/actions-storage.c
+
+@example examples/msg/app-pmm/app-pmm.c
+@example examples/msg/dht-chord/dht-chord.c
+
+@example examples/msg/task-priority/task-priority.c
+@example examples/msg/platform-properties/platform-properties.c
+			 
+*/
+

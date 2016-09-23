@@ -1,29 +1,27 @@
-/*! \page deployment Deploy the simulation
-
-\section dep_over Overview
+/*! @page deployment Deploy the simulation
 
 When you want to simulate the behavior of your code with SimGrid, you need
 to tell SimGrid exactly what code (that you wrote) is supposed to be run by which host - so you need to assign
-processes/functions to hosts. The hosts in question here are the hosts of your platform model; see Section \ref platform for details on how to set one up.
+processes/functions to hosts. The hosts in question here are the hosts of your platform model; see Section @ref platform for details on how to set one up.
 
-This assignment of the form \c code -> \c host is what the deployment file is all about, which will
+This assignment of the form @c code -> @c host is what the deployment file is all about, which will
 be discussed briefly here.
 
-\note 
+@note 
     You can bypass the deployment file by hardcoding it in your user code, at least when you're using
     MSG.
 
-The deployment file looks just like a \ref platform "platform" file, except that in
-this case, only two different tags are used: \c process and \c argument, whereas
+The deployment file looks just like a @ref platform "platform" file, except that in
+this case, only two different tags are used: @c process and @c argument, whereas
 the latter is just used to supply additional configuration options to the process; the
-order in which the \c argument tags are given is important and depends on the application.
+order in which the @c argument tags are given is important and depends on the application.
 
 ### The process tag ###
 
 #### Attribute list ####
 
-%As already written above, the \c process tag is the tag that defines which host
-executes which function (from your application). Hence, the \c host and \c function
+%As already written above, the @c process tag is the tag that defines which host
+executes which function (from your application). Hence, the @c host and @c function
 attributes are mandatory; however, there are some optional attributes to the process tag. Here is a list of all attributes of this tag:
 
 | Attribute name  | Mandatory | Values                 | Description                                                                                                               |
@@ -34,16 +32,13 @@ attributes are mandatory; however, there are some optional attributes to the pro
 | kill_time       | no        | int (Default: -1.0)    | The simulated time when this function will end to be computed. By default, it stops only when it's done.                  |
 | on_failure      | no        | DIE\|RESTART (Default: "DIE")   | What should be done when the process fails.                  |
 
-#### An example ####
+#### Examples ####
 
-A complete example including a \ref MSG_ext_ms_application "deployment file" can be found 
-in the Section \ref MSG_ex_basics "MSG basics".
-
-See also files such as \c examples/msg/masterslave/deployment_masterslave.xml.
+Almost any @ref msg_examples include a deployment file.
 
 ### The argument tag ###
 
-This tag must always be contained by a \c process tag - it doesn't make sense
+This tag must always be contained by a @c process tag - it doesn't make sense
 without it.
 
 The way this works is that the order of arguments must be pre-defined <i>by the user</i>:
@@ -56,12 +51,5 @@ executed by this process) in the order you declare them.
 | Attribute name  | Mandatory | Values                 | Description                                                                                                               |
 | --------------- | --------- | ---------------------- | -----------                                                                                                               |
 | value           | yes       | String                 | Contains the value for this parameter |
-
-#### An example ####
-
-A complete example including a \ref MSG_ext_ms_application "deployment file" can be found 
-in the Section \ref MSG_ex_basics "MSG basics".
-
-See also files such as \c examples/msg/masterslave/deployment_masterslave.xml.
 
 */

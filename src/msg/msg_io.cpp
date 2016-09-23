@@ -4,13 +4,14 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/host.hpp>
+
 #include "msg_private.h"
 #include "xbt/log.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_io, msg, "Logging specific to MSG (io)");
 
-/** @addtogroup msg_file_management
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Files" --> \endhtmlonly
+/** @addtogroup msg_file
  * (#msg_file_t) and the functions for managing it.
  *
  *  \see #msg_file_t
@@ -33,7 +34,7 @@ void __MSG_file_get_info(msg_file_t fd){
   xbt_dynar_free_container(&info);
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  *
  * \brief Set the user data of a #msg_file_t.
  *
@@ -46,7 +47,7 @@ msg_error_t MSG_file_set_data(msg_file_t fd, void *data)
   return MSG_OK;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  *
  * \brief Return the user data of a #msg_file_t.
  *
@@ -58,7 +59,7 @@ void *MSG_file_get_data(msg_file_t fd)
   return priv->data;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Display information related to a file descriptor
  *
  * \param fd is a the file descriptor
@@ -81,7 +82,7 @@ void MSG_file_dump (msg_file_t fd){
            priv->content_type, priv->desc_id);
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Read a file (local or remote)
  *
  * \param size of the file to read
@@ -93,8 +94,11 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   msg_file_priv_t file_priv = MSG_file_priv(fd);
   sg_size_t read_size;
 
+  if (file_priv->size == 0) /* Nothing to read, return */
+    return 0;
+
   /* Find the host where the file is physically located and read it */
-  msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
+  msg_storage_t storage_src = static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId));
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   read_size = simcall_file_read(file_priv->simdata->smx_file, size, attached_host);
@@ -102,19 +106,19 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   if(strcmp(storage_priv_src->hostname, MSG_host_get_name(MSG_host_self()))){
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, read_size);
-    msg_host_t *m_host_list = NULL;
-    m_host_list = (msg_host_t*) calloc(2, sizeof(msg_host_t));
+    msg_host_t *m_host_list = nullptr;
+    m_host_list = xbt_new0(msg_host_t, 2);
 
     m_host_list[0] = MSG_host_self();
     m_host_list[1] = attached_host;
-    double flops_amount[] = { 0, 0 };
-    double bytes_amount[] = { 0, 0, (double)read_size, 0 };
+    double flops_amount[] = { 0, 0};
+    double bytes_amount[] = { 0, 0, static_cast<double>(read_size), 0 };
 
     msg_task_t task = MSG_parallel_task_create("file transfer for read", 2, m_host_list, flops_amount, bytes_amount,
-                      NULL);
+                      nullptr);
     msg_error_t transfer = MSG_parallel_task_execute(task);
     MSG_task_destroy(task);
-    free(m_host_list);
+    xbt_free(m_host_list);
     if(transfer != MSG_OK){
       if (transfer == MSG_HOST_FAILURE)
         XBT_WARN("Transfer error, %s remote host just turned off!", MSG_host_get_name(attached_host));
@@ -127,7 +131,7 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
   return read_size;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Write into a file (local or remote)
  *
  * \param size of the file to write
@@ -137,26 +141,28 @@ sg_size_t MSG_file_read(msg_file_t fd, sg_size_t size)
 sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
 {
   msg_file_priv_t file_priv = MSG_file_priv(fd);
-  sg_size_t write_size, offset;
+
+  if (size == 0) /* Nothing to write, return */
+    return 0;
 
   /* Find the host where the file is physically located (remote or local)*/
-  msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
+  msg_storage_t storage_src = static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId));
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
 
   if(strcmp(storage_priv_src->hostname, MSG_host_get_name(MSG_host_self()))){
     /* the file is hosted on a remote host, initiate a communication between src and dest hosts for data transfer */
     XBT_DEBUG("File is on %s remote host, initiate data transfer of %llu bytes.", storage_priv_src->hostname, size);
-    msg_host_t *m_host_list = NULL;
-    m_host_list = (msg_host_t*) calloc(2, sizeof(msg_host_t));
+    msg_host_t *m_host_list = nullptr;
+    m_host_list = xbt_new0(msg_host_t, 2);
 
     m_host_list[0] = MSG_host_self();
     m_host_list[1] = attached_host;
     double flops_amount[] = { 0, 0 };
-    double bytes_amount[] = { 0, (double)size, 0, 0 };
+    double bytes_amount[] = { 0, static_cast<double>(size), 0, 0 };
 
     msg_task_t task = MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount,
-                                               NULL);
+                                               nullptr);
     msg_error_t transfer = MSG_parallel_task_execute(task);
     MSG_task_destroy(task);
     free(m_host_list);
@@ -170,14 +176,14 @@ sg_size_t MSG_file_write(msg_file_t fd, sg_size_t size)
     }
   }
   /* Write file on local or remote host */
-  offset = simcall_file_tell(file_priv->simdata->smx_file);
-  write_size = simcall_file_write(file_priv->simdata->smx_file, size, attached_host);
+  sg_size_t offset = simcall_file_tell(file_priv->simdata->smx_file);
+  sg_size_t write_size = simcall_file_write(file_priv->simdata->smx_file, size, attached_host);
   file_priv->size = offset+write_size;
 
   return write_size;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Opens the file whose name is the string pointed to by path
  *
  * \param fullpath is the file location on the storage
@@ -198,14 +204,14 @@ msg_file_t MSG_file_open(const char* fullpath, void* data)
   name = bprintf("%s:%s:%d", priv->fullpath, MSG_host_get_name(MSG_host_self()), priv->desc_id);
 
   xbt_lib_set(file_lib, name, MSG_FILE_LEVEL, priv);
-  msg_file_t fd = (msg_file_t) xbt_lib_get_elm_or_null(file_lib, name);
+  msg_file_t fd = static_cast<msg_file_t>(xbt_lib_get_elm_or_null(file_lib, name));
   __MSG_file_get_info(fd);
   xbt_free(name);
 
   return fd;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Close the file
  *
  * \param fd is the file to close
@@ -226,7 +232,7 @@ int MSG_file_close(msg_file_t fd)
   return res;
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Unlink the file pointed by fd
  *
  * \param fd is the file descriptor (#msg_file_t)
@@ -236,15 +242,14 @@ msg_error_t MSG_file_unlink(msg_file_t fd)
 {
   msg_file_priv_t file_priv = MSG_file_priv(fd);
   /* Find the host where the file is physically located (remote or local)*/
-  msg_storage_t storage_src =
-      (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
+  msg_storage_t storage_src = static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId));
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   int res = simcall_file_unlink(file_priv->simdata->smx_file, attached_host);
-  return (msg_error_t) res;
+  return static_cast<msg_error_t>(res);
 }
 
-/** \ingroup msg_file_management
+/** \ingroup msg_file
  * \brief Return the size of a file
  *
  * \param fd is the file descriptor (#msg_file_t)
@@ -256,7 +261,7 @@ sg_size_t MSG_file_get_size(msg_file_t fd){
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Set the file position indicator in the msg_file_t by adding offset bytes
  * to the position specified by origin (either SEEK_SET, SEEK_CUR, or SEEK_END).
  *
@@ -270,11 +275,11 @@ sg_size_t MSG_file_get_size(msg_file_t fd){
 msg_error_t MSG_file_seek(msg_file_t fd, sg_offset_t offset, int origin)
 {
   msg_file_priv_t priv = MSG_file_priv(fd);
-  return (msg_error_t) simcall_file_seek(priv->simdata->smx_file, offset, origin);
+  return static_cast<msg_error_t>(simcall_file_seek(priv->simdata->smx_file, offset, origin));
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Returns the current value of the position indicator of the file
  *
  * \param fd : file object that identifies the stream
@@ -288,24 +293,24 @@ sg_size_t MSG_file_tell(msg_file_t fd)
 }
 
 const char *MSG_file_get_name(msg_file_t fd) {
-  xbt_assert((fd != NULL), "Invalid parameters");
+  xbt_assert((fd != nullptr), "Invalid parameters");
   msg_file_priv_t priv = MSG_file_priv(fd);
   return priv->fullpath;
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Move a file to another location on the *same mount point*.
  *
  */
 msg_error_t MSG_file_move (msg_file_t fd, const char* fullpath)
 {
   msg_file_priv_t priv = MSG_file_priv(fd);
-  return (msg_error_t) simcall_file_move(priv->simdata->smx_file, fullpath);
+  return static_cast<msg_error_t>(simcall_file_move(priv->simdata->smx_file, fullpath));
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Copy a file to another location on a remote host.
  * \param file : the file to move
  * \param host : the remote host where the file has to be copied
@@ -318,22 +323,23 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
   sg_size_t read_size;
 
   /* Find the host where the file is physically located and read it */
-  msg_storage_t storage_src =(msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId);
+  msg_storage_t storage_src = static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib, file_priv->storageId));
   msg_storage_priv_t storage_priv_src = MSG_storage_priv(storage_src);
   msg_host_t attached_host = MSG_host_by_name(storage_priv_src->hostname);
   MSG_file_seek(file, 0, SEEK_SET);
   read_size = simcall_file_read(file_priv->simdata->smx_file, file_priv->size, attached_host);
 
   /* Find the real host destination where the file will be physically stored */
-  xbt_dict_cursor_t cursor = NULL;
-  char *mount_name, *storage_name, *file_mount_name, *host_name_dest;
-  msg_storage_t storage_dest = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
+  msg_storage_t storage_dest = nullptr;
   msg_host_t host_dest;
   size_t longest_prefix_length = 0;
 
   xbt_dict_t storage_list = host->mountedStoragesAsDict();
+  char *mount_name;
+  char *storage_name;
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
-    file_mount_name = (char *) xbt_malloc ((strlen(mount_name)+1));
+    char* file_mount_name = static_cast<char *>(xbt_malloc ((strlen(mount_name)+1)));
     strncpy(file_mount_name,fullpath,strlen(mount_name)+1);
     file_mount_name[strlen(mount_name)] = '\0';
 
@@ -342,16 +348,16 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
       longest_prefix_length = strlen(mount_name);
       storage_dest = (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib, storage_name);
     }
-    free(file_mount_name);
+    xbt_free(file_mount_name);
   }
   xbt_dict_free(&storage_list);
 
+  char* host_name_dest = nullptr;
   if(longest_prefix_length>0){
     /* Mount point found, retrieve the host the storage is attached to */
     msg_storage_priv_t storage_dest_priv = MSG_storage_priv(storage_dest);
     host_name_dest = (char*)storage_dest_priv->hostname;
     host_dest = MSG_host_by_name(host_name_dest);
-
   }else{
     XBT_WARN("Can't find mount point for '%s' on destination host '%s'", fullpath, sg_host_get_name(host));
     return MSG_TASK_CANCELED;
@@ -359,26 +365,26 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 
   XBT_DEBUG("Initiate data transfer of %llu bytes between %s and %s.", read_size, storage_priv_src->hostname,
             host_name_dest);
-  msg_host_t *m_host_list = NULL;
-  m_host_list = (msg_host_t*) calloc(2, sizeof(msg_host_t));
+  msg_host_t *m_host_list = nullptr;
+  m_host_list = xbt_new0(msg_host_t, 2);
 
   m_host_list[0] = attached_host;
   m_host_list[1] = host_dest;
   double flops_amount[] = { 0, 0 };
-  double bytes_amount[] = { 0, (double)read_size, 0, 0 };
+  double bytes_amount[] = { 0, static_cast<double>(read_size), 0, 0 };
 
   msg_task_t task =
-      MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, NULL);
+      MSG_parallel_task_create("file transfer for write", 2, m_host_list, flops_amount, bytes_amount, nullptr);
   msg_error_t transfer = MSG_parallel_task_execute(task);
   MSG_task_destroy(task);
-  free(m_host_list);
+  xbt_free(m_host_list);
   if(transfer != MSG_OK){
     if (transfer == MSG_HOST_FAILURE)
       XBT_WARN("Transfer error, %s remote host just turned off!", host_name_dest);
     if (transfer == MSG_TASK_CANCELED)
       XBT_WARN("Transfer error, task has been canceled!");
 
-    return (msg_error_t) -1;
+    return transfer;
   }
 
   /* Create file on remote host, write it and close it */
@@ -389,7 +395,7 @@ msg_error_t MSG_file_rcopy (msg_file_t file, msg_host_t host, const char* fullpa
 }
 
 /**
- * \ingroup msg_file_management
+ * \ingroup msg_file
  * \brief Move a file to another location on a remote host.
  * \param file : the file to move
  * \param host : the remote host where the file has to be moved
@@ -414,7 +420,6 @@ void __MSG_file_destroy(msg_file_priv_t file) {
 
 /********************************* Storage **************************************/
 /** @addtogroup msg_storage_management
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Storages" --> \endhtmlonly
  * (#msg_storage_t) and the functions for managing it.
  */
 
@@ -442,7 +447,7 @@ void __MSG_storage_destroy(msg_storage_priv_t storage) {
  * This functions checks whether a storage is a valid pointer or not and return its name.
  */
 const char *MSG_storage_get_name(msg_storage_t storage) {
-  xbt_assert((storage != NULL), "Invalid parameters");
+  xbt_assert((storage != nullptr), "Invalid parameters");
   return SIMIX_storage_get_name(storage);
 }
 
@@ -471,7 +476,7 @@ sg_size_t MSG_storage_get_used_size(msg_storage_t storage){
  */
 xbt_dict_t MSG_storage_get_properties(msg_storage_t storage)
 {
-  xbt_assert((storage != NULL), "Invalid parameters (storage is NULL)");
+  xbt_assert((storage != nullptr), "Invalid parameters (storage is nullptr)");
   return (simcall_storage_get_properties(storage));
 }
 
@@ -492,11 +497,11 @@ void MSG_storage_set_property_value(msg_storage_t storage, const char *name, cha
  *
  * \param storage a storage
  * \param name a property name
- * \return value of a property (or NULL if property not set)
+ * \return value of a property (or nullptr if property not set)
  */
 const char *MSG_storage_get_property_value(msg_storage_t storage, const char *name)
 {
-  return (char*) xbt_dict_get_or_null(MSG_storage_get_properties(storage), name);
+  return static_cast<char*>(xbt_dict_get_or_null(MSG_storage_get_properties(storage), name));
 }
 
 /** \ingroup msg_storage_management
@@ -506,20 +511,20 @@ const char *MSG_storage_get_property_value(msg_storage_t storage, const char *na
  */
 msg_storage_t MSG_storage_get_by_name(const char *name)
 {
-  return (msg_storage_t) xbt_lib_get_elm_or_null(storage_lib,name);
+  return static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib,name));
 }
 
 /** \ingroup msg_storage_management
  * \brief Returns a dynar containing all the storage elements declared at a given point of time
  */
-xbt_dynar_t MSG_storages_as_dynar(void) {
+xbt_dynar_t MSG_storages_as_dynar() {
   xbt_lib_cursor_t cursor;
   char *key;
   void **data;
-  xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(msg_storage_t),nullptr);
 
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), MSG_STORAGE_LEVEL) != NULL) {
+    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), MSG_STORAGE_LEVEL) != nullptr) {
       xbt_dictelm_t elm = xbt_dict_cursor_get_elm(cursor);
       xbt_dynar_push(res, &elm);
     }
@@ -547,7 +552,7 @@ msg_error_t MSG_storage_set_data(msg_storage_t storage, void *data)
  */
 void *MSG_storage_get_data(msg_storage_t storage)
 {
-  xbt_assert((storage != NULL), "Invalid parameters");
+  xbt_assert((storage != nullptr), "Invalid parameters");
   msg_storage_priv_t priv = MSG_storage_priv(storage);
   return priv->data;
 }
@@ -581,7 +586,7 @@ sg_size_t MSG_storage_get_size(msg_storage_t storage)
  * This functions checks whether a storage is a valid pointer or not and return its name.
  */
 const char *MSG_storage_get_host(msg_storage_t storage) {
-  xbt_assert((storage != NULL), "Invalid parameters");
+  xbt_assert((storage != nullptr), "Invalid parameters");
   msg_storage_priv_t priv = MSG_storage_priv(storage);
   return priv->hostname;
 }

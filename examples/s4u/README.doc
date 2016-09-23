@@ -1,0 +1,39 @@
+S4U (Simgrid for you) is the next interface of SimGrid, expected to be released with SimGrid 4.0.
+
+Even if it's in a very preliminary state so far, you are welcome to
+try it and report any interface glitches that you see. Be however
+warned that the interface will be modified until its final release. 
+You will have to adapt your code on the way.
+
+This file follows the Doxygen syntax to be included in the
+documentation, but it should remain readable directly.
+
+/** 
+ @defgroup s4u_examples S4U examples
+ @ingroup s4u_api
+ @brief Find the S4U example fitting your needs in the archive.
+
+  - @ref s4u_ex_basics
+  - @ref s4u_ex_synchro
+		    
+@section s4u_ex_basics Basics of SimGrid simulation
+
+  - <b>Launching actors</b>
+    Shows how to start your actors to populate your simulation\n
+    @ref examples/s4u/launching/s4u_launching.cpp and @ref examples/s4u/launching/deployment.xml
+
+@section s4u_ex_synchro Inter-Actor Synchronization 
+
+ - <b>Mutex.</b>
+   Shows how to use simgrid::s4u::Mutex synchronization objects\n
+   @ref examples/s4u/mutex/s4u_mutex.cpp
+			 
+*/
+
+/**
+@example examples/s4u/launching/s4u_launching.cpp
+@example examples/s4u/launching/deployment.xml
+
+@example examples/s4u/mutex/s4u_mutex.cpp
+
+*/

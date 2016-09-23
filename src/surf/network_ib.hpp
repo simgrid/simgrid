@@ -22,7 +22,7 @@ namespace simgrid {
       IBNode* destination;
       NetworkAction *action;
       double init_rate;
-      ActiveComm() : destination(NULL),action(NULL),init_rate(-1){};
+      ActiveComm() : destination(nullptr),action(nullptr),init_rate(-1){};
       ~ActiveComm(){};
     };
 
@@ -35,7 +35,7 @@ namespace simgrid {
       std::map<IBNode*, int> ActiveCommsDown;
       //number of comms the node is receiving
       int nbActiveCommsDown;
-      IBNode(int id) : id(id),nbActiveCommsDown(0){};
+      explicit IBNode(int id) : id(id),nbActiveCommsDown(0){};
       ~IBNode(){};
     };
 
@@ -45,8 +45,8 @@ namespace simgrid {
       void computeIBfactors(IBNode *root);
     public:
       NetworkIBModel();
-      NetworkIBModel(const char *name);
-      ~NetworkIBModel();
+      explicit NetworkIBModel(const char *name);
+      ~NetworkIBModel() override;
       void updateIBfactors(NetworkAction *action, IBNode *from, IBNode * to, int remove);
 
       xbt_dict_t active_nodes;

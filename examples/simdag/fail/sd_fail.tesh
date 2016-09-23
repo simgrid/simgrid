@@ -1,0 +1,36 @@
+#! ./tesh
+
+p Test of the management of failed tasks simdag
+
+$ $SG_TEST_EXENV ${bindir:=.}/fail/sd_fail ${srcdir:=.}/../platforms/faulty_host.xml
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [0.000000] [sd_fail/INFO] First test: COMP_SEQ task
+> [0.000000] [sd_fail/INFO] Schedule task 'Poor task' on 'Faulty Host'
+> [10.000000] [sd_task/INFO] Displaying task Poor task
+> [10.000000] [sd_task/INFO]   - state: not runnable failed
+> [10.000000] [sd_task/INFO]   - kind: sequential computation
+> [10.000000] [sd_task/INFO]   - amount: 20000000000
+> [10.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [10.000000] [sd_fail/INFO] Task 'Poor task' has failed. 20000000000 flops remain to be done
+> [10.000000] [sd_fail/INFO] let's unschedule task 'Poor task' and reschedule it on the 'Safe Host'
+> [10.000000] [sd_fail/INFO] Run the simulation again
+> [50.000000] [sd_task/INFO] Displaying task Poor task
+> [50.000000] [sd_task/INFO]   - state: not runnable done
+> [50.000000] [sd_task/INFO]   - kind: sequential computation
+> [50.000000] [sd_task/INFO]   - amount: 20000000000
+> [50.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [50.000000] [sd_fail/INFO] Task 'Poor task' start time: 10.000000, finish time: 50.000000
+> [50.000000] [sd_fail/INFO] Second test: NON TYPED task
+> [50.000000] [sd_fail/INFO] Schedule task 'Poor parallel task' on 'Faulty Host'
+> [60.000000] [sd_task/INFO] Displaying task Poor parallel task
+> [60.000000] [sd_task/INFO]   - state: not runnable failed
+> [60.000000] [sd_task/INFO]   - amount: 20000000000
+> [60.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [60.000000] [sd_fail/INFO] Task 'Poor parallel task' has failed. 20000000000 flops remain to be done
+> [60.000000] [sd_fail/INFO] let's unschedule task 'Poor parallel task' and reschedule it on the 'Safe Host'
+> [60.000000] [sd_fail/INFO] Run the simulation again
+> [100.000000] [sd_task/INFO] Displaying task Poor parallel task
+> [100.000000] [sd_task/INFO]   - state: not runnable done
+> [100.000000] [sd_task/INFO]   - amount: 20000000000
+> [100.000000] [sd_task/INFO]   - Dependencies to satisfy: 0
+> [100.000000] [sd_fail/INFO] Task 'Poor parallel task' start time: 60.000000, finish time: 100.000000

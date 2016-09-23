@@ -1,0 +1,12 @@
+#! tesh
+$ java -classpath ${classpath:=.} process/startkilltime/Main ${srcdir:=.}/../platforms/cluster.xml ${srcdir:=.}/process/startkilltime/startkilltime.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [node-0.acme.org:process.startkilltime.Sleeper:(1) 0.000000] [jmsg/INFO] Hello! I go to sleep.
+> [node-1.acme.org:process.startkilltime.Sleeper:(2) 1.000000] [jmsg/INFO] Hello! I go to sleep.
+> [node-2.acme.org:process.startkilltime.Sleeper:(3) 2.000000] [jmsg/INFO] Hello! I go to sleep.
+> [node-3.acme.org:process.startkilltime.Sleeper:(4) 3.000000] [jmsg/INFO] Hello! I go to sleep.
+> [node-4.acme.org:process.startkilltime.Sleeper:(5) 4.000000] [jmsg/INFO] Hello! I go to sleep.
+> [node-5.acme.org:process.startkilltime.Sleeper:(6) 5.000000] [jmsg/INFO] Hello! I go to sleep.
+> [node-2.acme.org:process.startkilltime.Sleeper:(3) 6.000000] [jmsg/INFO] Done sleeping
+> [node-3.acme.org:process.startkilltime.Sleeper:(4) 7.000000] [jmsg/INFO] Done sleeping
+> [10.000000] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...

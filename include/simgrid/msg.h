@@ -14,21 +14,7 @@
 
 SG_BEGIN_DECL()
 
-/* ******************************** Mailbox ************************************ */
-
-/** @brief Mailbox datatype
- *  @ingroup msg_task_usage
- *
- * Object representing a communication rendez-vous point, on which
- * the sender finds the receiver it wants to communicate with. As a
- * MSG user, you will only rarely manipulate any of these objects
- * directly, since most of the public interface (such as
- * #MSG_task_send and friends) hide this object behind a string
- * alias. That mean that you don't provide the mailbox on which you
- * want to send your task, but only the name of this mailbox. */
-typedef struct s_smx_rvpoint *msg_mailbox_t;
-
-/* ******************************** Environment ************************************ */
+/* ************************* Autonomous System ****************************** */
 typedef simgrid_As *msg_as_t;
 
 /* ******************************** Host ************************************ */
@@ -45,16 +31,8 @@ typedef simgrid_As *msg_as_t;
  */
 typedef sg_host_t msg_host_t;
 
-typedef struct s_msg_host_priv {
-  int        dp_enabled;
-  xbt_dict_t dp_objs;
-  double     dp_updated_by_deleted_tasks;
-  int        is_migrating;
 
-  xbt_dict_t affinity_mask_db;
-  xbt_dynar_t file_descriptor_table;
-} s_msg_host_priv_t;
-
+XBT_PUBLIC_DATA(int) sg_storage_max_file_descriptors;
 /* ******************************** Task ************************************ */
 
 typedef struct simdata_task *simdata_task_t;
@@ -79,20 +57,16 @@ typedef struct msg_task *msg_task_t;
 /* ******************************** VM ************************************* */
 typedef msg_host_t msg_vm_t;
 
-/** ******************************** File ************************************ */
+/* ******************************** File ************************************ */
 
-/** @brief File datatype.
-*  @ingroup msg_file_management
-*
-*  You should consider this as an opaque object.
-*/
+/** @brief Opaque object describing a File in MSG.
+ *  @ingroup msg_file */
 typedef xbt_dictelm_t msg_file_t;
-typedef s_xbt_dictelm_t s_msg_file_t;
 
 extern int MSG_FILE_LEVEL;
 typedef struct simdata_file *simdata_file_t;
 
-typedef struct msg_file_priv  {
+struct msg_file_priv  {
   char *fullpath;
   sg_size_t size;
   char* mount_point;
@@ -102,7 +76,10 @@ typedef struct msg_file_priv  {
   int desc_id;
   void *data;
   simdata_file_t simdata;
-} s_msg_file_priv_t, *msg_file_priv_t;
+};
+
+typedef struct msg_file_priv s_msg_file_priv_t;
+typedef struct msg_file_priv* msg_file_priv_t;
 
 static inline msg_file_priv_t MSG_file_priv(msg_file_t file){
   return (msg_file_priv_t )xbt_lib_get_level(file, MSG_FILE_LEVEL);
@@ -119,36 +96,17 @@ extern int MSG_STORAGE_LEVEL;
  *  You should consider this as an opaque object.
  */
 typedef xbt_dictelm_t msg_storage_t;
-typedef s_xbt_dictelm_t s_msg_storage_t;
 
-typedef struct msg_storage_priv  {
+struct msg_storage_priv  {
   const char *hostname;
   void *data;
-} s_msg_storage_priv_t, *msg_storage_priv_t;
+};
+typedef struct msg_storage_priv  s_msg_storage_priv_t;
+typedef struct msg_storage_priv* msg_storage_priv_t;
 
 static inline msg_storage_priv_t MSG_storage_priv(msg_storage_t storage){
   return (msg_storage_priv_t )xbt_lib_get_level(storage, MSG_STORAGE_LEVEL);
 }
-
-/*************** Begin GPU ***************/
-typedef struct simdata_gpu_task *simdata_gpu_task_t;
-
-typedef struct msg_gpu_task {
-  char *name;                   /**< @brief task name if any */
-  simdata_gpu_task_t simdata;       /**< @brief simulator data */
-  long long int counter;        /* task unique identifier for instrumentation */
-  char *category;               /* task category for instrumentation */
-} s_msg_gpu_task_t;
-
-/** @brief GPU task datatype.
-    @ingroup m_task_management
-
-    A <em>task</em> may then be defined by a <em>computing
-    amount</em>, a <em>dispatch latency</em> and a <em>collect latency</em>.
-    \see m_task_management
-*/
-typedef struct msg_gpu_task *msg_gpu_task_t;
-/*************** End GPU ***************/
 
 /**
  * \brief @brief Communication action.
@@ -175,7 +133,7 @@ typedef struct msg_comm *msg_comm_t;
     structure, but always use the provided API to interact with
     processes.
  */
-typedef struct s_smx_process *msg_process_t;
+typedef smx_actor_t msg_process_t;
 
 /** @brief Return code of most MSG functions
     @ingroup msg_simulation
@@ -212,22 +170,21 @@ XBT_PUBLIC(void) MSG_config(const char *key, const char *value);
   } while (0)
 
 XBT_PUBLIC(void) MSG_init_nocheck(int *argc, char **argv);
-XBT_PUBLIC(msg_error_t) MSG_main(void);
+XBT_PUBLIC(msg_error_t) MSG_main();;
 XBT_PUBLIC(void) MSG_function_register(const char *name,
                                        xbt_main_func_t code);
 XBT_PUBLIC(void) MSG_function_register_default(xbt_main_func_t code);
-XBT_PUBLIC(xbt_main_func_t) MSG_get_registered_function(const char *name);
 XBT_PUBLIC(void) MSG_launch_application(const char *file);
 /*Bypass the parser */
 XBT_PUBLIC(void) MSG_set_function(const char *host_id,
                                   const char *function_name,
                                   xbt_dynar_t arguments);
 
-XBT_PUBLIC(double) MSG_get_clock(void);
-XBT_PUBLIC(unsigned long int) MSG_get_sent_msg(void);
+XBT_PUBLIC(double) MSG_get_clock();
+XBT_PUBLIC(unsigned long int) MSG_get_sent_msg();
 
 /************************** Environment ***********************************/
-XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root(void);
+XBT_PUBLIC(msg_as_t) MSG_environment_get_routing_root();
 XBT_PUBLIC(const char *) MSG_environment_as_get_name(msg_as_t as);
 XBT_PUBLIC(msg_as_t) MSG_environment_as_get_by_name(const char * name);
 XBT_PUBLIC(xbt_dict_t) MSG_environment_as_get_routing_sons(msg_as_t as);
@@ -260,7 +217,7 @@ XBT_PUBLIC(msg_storage_t) MSG_storage_get_by_name(const char *name);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_properties(msg_storage_t storage);
 XBT_PUBLIC(void) MSG_storage_set_property_value(msg_storage_t storage, const char *name, char *value,void_f_pvoid_t free_ctn);
 XBT_PUBLIC(const char *)MSG_storage_get_property_value(msg_storage_t storage, const char *name);
-XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar(void);
+XBT_PUBLIC(xbt_dynar_t) MSG_storages_as_dynar();
 XBT_PUBLIC(msg_error_t) MSG_storage_set_data(msg_storage_t host, void *data);
 XBT_PUBLIC(void *) MSG_storage_get_data(msg_storage_t storage);
 XBT_PUBLIC(xbt_dict_t) MSG_storage_get_content(msg_storage_t storage);
@@ -283,20 +240,24 @@ XBT_PUBLIC(void *) MSG_host_get_data(msg_host_t host);
 #define MSG_host_get_name(host) sg_host_get_name(host)
 XBT_PUBLIC(void) MSG_host_on(msg_host_t host);
 XBT_PUBLIC(void) MSG_host_off(msg_host_t host);
-XBT_PUBLIC(msg_host_t) MSG_host_self(void);
-XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
+XBT_PUBLIC(msg_host_t) MSG_host_self();
+XBT_PUBLIC(double) MSG_host_get_speed(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_get_core_number(msg_host_t h);
 XBT_PUBLIC(xbt_swag_t) MSG_host_get_process_list(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_on(msg_host_t h);
 XBT_PUBLIC(int) MSG_host_is_off(msg_host_t h);
+
+// deprecated
+XBT_PUBLIC(double) MSG_get_host_speed(msg_host_t h);
+
 
 XBT_PUBLIC(double) MSG_host_get_power_peak_at(msg_host_t h, int pstate);
 XBT_PUBLIC(double) MSG_host_get_current_power_peak(msg_host_t h);
 XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
 #define MSG_host_get_pstate(h)         sg_host_get_pstate(h)
 #define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate)
-XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar(void);
-XBT_PUBLIC(int) MSG_get_host_number(void);
+XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
+XBT_PUBLIC(int) MSG_get_host_number();
 XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, vm_params_t params);
 XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, vm_params_t params);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
@@ -337,7 +298,7 @@ XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(const char
 XBT_PUBLIC(msg_process_t) MSG_process_attach(
   const char *name, void *data,
   msg_host_t host, xbt_dict_t properties);
-XBT_PUBLIC(void) MSG_process_detach(void);
+XBT_PUBLIC(void) MSG_process_detach();
 
 XBT_PUBLIC(void) MSG_process_kill(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_killall(int reset_PIDs);
@@ -352,11 +313,11 @@ XBT_PUBLIC(msg_process_t) MSG_process_from_PID(int PID);
 XBT_PUBLIC(int) MSG_process_get_PID(msg_process_t process);
 XBT_PUBLIC(int) MSG_process_get_PPID(msg_process_t process);
 XBT_PUBLIC(const char *) MSG_process_get_name(msg_process_t process);
-XBT_PUBLIC(int) MSG_process_self_PID(void);
-XBT_PUBLIC(int) MSG_process_self_PPID(void);
-XBT_PUBLIC(msg_process_t) MSG_process_self(void);
-XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar(void);
-XBT_PUBLIC(int) MSG_process_get_number(void);
+XBT_PUBLIC(int) MSG_process_self_PID();
+XBT_PUBLIC(int) MSG_process_self_PPID();
+XBT_PUBLIC(msg_process_t) MSG_process_self();
+XBT_PUBLIC(xbt_dynar_t) MSG_processes_as_dynar();
+XBT_PUBLIC(int) MSG_process_get_number();
 
 XBT_PUBLIC(msg_error_t) MSG_process_set_kill_time(msg_process_t process, double kill_time);
 
@@ -378,10 +339,6 @@ XBT_PUBLIC(msg_process_t) MSG_process_restart(msg_process_t process);
 XBT_PUBLIC(msg_task_t) MSG_task_create(const char *name,
                                      double flops_amount,
                                      double bytes_amount, void *data);
-XBT_PUBLIC(msg_gpu_task_t) MSG_gpu_task_create(const char *name,
-                                     double flops_amount,
-                                     double dispatch_latency,
-                                     double collect_latency);
 XBT_PUBLIC(msg_task_t) MSG_parallel_task_create(const char *name,
                                               int host_nb,
                                               const msg_host_t * host_list,
@@ -403,7 +360,6 @@ XBT_PUBLIC(msg_error_t) MSG_task_execute(msg_task_t task);
 XBT_PUBLIC(msg_error_t) MSG_parallel_task_execute(msg_task_t task);
 XBT_PUBLIC(void) MSG_task_set_priority(msg_task_t task, double priority);
 XBT_PUBLIC(void) MSG_task_set_bound(msg_task_t task, double bound);
-XBT_PUBLIC(void) MSG_task_set_affinity(msg_task_t task, msg_host_t host, unsigned long mask);
 
 XBT_PUBLIC(msg_error_t) MSG_process_join(msg_process_t process, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_process_sleep(double nb_sec);
@@ -444,7 +400,7 @@ XBT_PUBLIC(msg_error_t) MSG_task_receive_bounded(msg_task_t * task, const char *
 XBT_PUBLIC(msg_comm_t) MSG_task_isend(msg_task_t task, const char *alias);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate);
 XBT_PUBLIC(msg_comm_t) MSG_task_isend_with_matching(msg_task_t task, const char *alias,
-    int (*match_fun)(void*,void*, smx_synchro_t), void *match_data);
+    int (*match_fun)(void*,void*, smx_activity_t), void *match_data);
 
 XBT_PUBLIC(void) MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup);
 XBT_PUBLIC(void) MSG_task_dsend_bounded(msg_task_t task, const char *alias, void_f_pvoid_t cleanup, double maxrate);
@@ -460,7 +416,6 @@ XBT_PUBLIC(msg_task_t) MSG_comm_get_task(msg_comm_t comm);
 XBT_PUBLIC(msg_error_t) MSG_comm_get_status(msg_comm_t comm);
 
 XBT_PUBLIC(int) MSG_task_listen(const char *alias);
-XBT_PUBLIC(int) MSG_task_listen_from_host(const char *alias, msg_host_t host);
 XBT_PUBLIC(msg_error_t) MSG_task_send_with_timeout(msg_task_t task, const char *alias, double timeout);
 XBT_PUBLIC(msg_error_t) MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias, double timeout, double maxrate);
 XBT_PUBLIC(msg_error_t) MSG_task_send(msg_task_t task, const char *alias);
@@ -470,27 +425,6 @@ XBT_PUBLIC(void) MSG_task_set_category (msg_task_t task, const char *category);
 XBT_PUBLIC(const char *) MSG_task_get_category (msg_task_t task);
 
 /************************** Mailbox handling ************************************/
-/* @brief MSG_mailbox_new - create a new mailbox.
- * Creates a new mailbox identified by the key specified by the parameter alias and add it in the global dictionary.
- * @param  alias  The alias of the mailbox to create.
- * @return        The newly created mailbox.
- */
-XBT_PUBLIC(msg_mailbox_t) MSG_mailbox_new(const char *alias);
-
-/* @brief MSG_mailbox_get_by_alias - get a mailbox from its alias.
- * Returns the mailbox associated with the key specified by the parameter alias. If the mailbox does not exists,
- * the function creates it.
- * @param   alias    The alias of the mailbox to return.
- * @return           The mailbox associated with the alias specified as parameter or a new one if the key doesn't match.
- */
-XBT_PUBLIC(msg_mailbox_t) MSG_mailbox_get_by_alias(const char *alias);
-
-/* @brief MSG_mailbox_is_empty - test if a mailbox is empty.
- * Tests if a mailbox is empty (contains no msg task).
- * @param   mailbox  The mailbox to get test.
- * @return           1 if the mailbox is empty, 0 otherwise.
- */
-XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
 
 /* @brief MSG_mailbox_set_async - set a mailbox as eager
  * Sets the mailbox to a permanent receiver mode. Messages sent to this mailbox will then be sent just after the send
@@ -500,32 +434,10 @@ XBT_PUBLIC(int) MSG_mailbox_is_empty(msg_mailbox_t mailbox);
  */
 XBT_PUBLIC(void) MSG_mailbox_set_async(const char *alias);
 
-/* @brief MSG_mailbox_get_head - get the task at the head of a mailbox.
- * Returns the task at the head of the mailbox. This function does not remove the task from the mailbox.
- * @param   mailbox  The mailbox concerned by the operation.
- * @return           The task at the head of the mailbox.
- */
-XBT_PUBLIC(msg_task_t) MSG_mailbox_get_head(msg_mailbox_t mailbox);
-
-/* @brief MSG_mailbox_get_count_host_waiting_tasks
- * Return the number of tasks waiting to be received in a mailbox and sent by a host.
- * @param  mailbox  The mailbox concerned by the operation.
- * @param  host     The host containing the processes that sended the tasks.
- * @return          The number of tasks in the mailbox specified by the parameter mailbox and sended by all the
- *                  processes located on the host specified by the parameter host.
- */
-XBT_PUBLIC(int) MSG_mailbox_get_count_host_waiting_tasks(msg_mailbox_t mailbox, msg_host_t host);
-XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext(msg_mailbox_t mailbox, msg_task_t * task, msg_host_t host,
-                                                 double timeout);
-XBT_PUBLIC(msg_error_t) MSG_mailbox_get_task_ext_bounded(msg_mailbox_t mailbox, msg_task_t *task, msg_host_t host,
-                                                         double timeout, double rate);
-XBT_PUBLIC(msg_error_t) MSG_mailbox_put_with_timeout(msg_mailbox_t mailbox, msg_task_t task, double timeout);
-
-
 /************************** Action handling **********************************/
 XBT_PUBLIC(msg_error_t) MSG_action_trace_run(char *path);
-XBT_PUBLIC(void) MSG_action_init(void);
-XBT_PUBLIC(void) MSG_action_exit(void);
+XBT_PUBLIC(void) MSG_action_init();
+XBT_PUBLIC(void) MSG_action_exit();
 
 /** @brief Opaque type representing a semaphore
  *  @ingroup msg_synchro
@@ -536,7 +448,7 @@ XBT_PUBLIC(msg_sem_t) MSG_sem_init(int initial_value);
 XBT_PUBLIC(void) MSG_sem_acquire(msg_sem_t sem);
 XBT_PUBLIC(msg_error_t) MSG_sem_acquire_timeout(msg_sem_t sem, double timeout);
 XBT_PUBLIC(void) MSG_sem_release(msg_sem_t sem);
-XBT_PUBLIC(void) MSG_sem_get_capacity(msg_sem_t sem);
+XBT_PUBLIC(int) MSG_sem_get_capacity(msg_sem_t sem);
 XBT_PUBLIC(void) MSG_sem_destroy(msg_sem_t sem);
 XBT_PUBLIC(int) MSG_sem_would_block(msg_sem_t sem);
 
@@ -560,17 +472,17 @@ XBT_PUBLIC(int) MSG_barrier_wait(msg_bar_t bar);
  *
  */
 
-XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_created(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_running(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_migrating(msg_vm_t vm);
 
-XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t);
-XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t);
+XBT_PUBLIC(int) MSG_vm_is_suspended(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_saving(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_saved(msg_vm_t vm);
+XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t vm);
 
 
-XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t);
+XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);
@@ -579,7 +491,7 @@ XBT_PUBLIC(msg_vm_t) MSG_vm_create(msg_host_t ind_pm, const char *name,
 
 XBT_PUBLIC(void) MSG_vm_destroy(msg_vm_t vm);
 
-XBT_PUBLIC(void) MSG_vm_start(msg_vm_t);
+XBT_PUBLIC(void) MSG_vm_start(msg_vm_t vm);
 
 /* Shutdown the guest operating system. */
 XBT_PUBLIC(void) MSG_vm_shutdown(msg_vm_t vm);
@@ -596,10 +508,9 @@ XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
 
 XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
-XBT_PUBLIC(void) MSG_vm_set_affinity(msg_vm_t vm, msg_host_t pm, unsigned long mask);
 
 /* TODO: do we need this? */
-// XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar(void);
+// XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar();
 
 /*
 void* MSG_process_get_property(msg_process_t, char* key)
@@ -627,6 +538,11 @@ xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
 XBT_PUBLIC(smx_context_t) MSG_process_get_smx_ctx(msg_process_t process);
+
+
+/* Functions renamed in 3.14 */
+#define MSG_mailbox_get_head(m) MSG_mailbox_front(m)
+
 
 SG_END_DECL()
 #endif

@@ -35,8 +35,6 @@ XBT_PUBLIC(void) sg_version_check(int lib_version_major,int lib_version_minor,in
 /** Contains all the parameters we got from the command line */
 XBT_PUBLIC_DATA(xbt_dynar_t) sg_cmdline;
 
-#define XBT_BACKTRACE_SIZE 10   /* FIXME: better place? Do document */
-
 /* snprintf related functions */
 /** @addtogroup XBT_str
   * @{ */

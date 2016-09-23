@@ -29,8 +29,7 @@ msg_storage_t jstorage_get_native(JNIEnv * env, jobject jstorage) {
   return (msg_storage_t) (uintptr_t) env->GetLongField(jstorage, jstorage_field_Storage_bind);
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jclass cls) {
   jclass class_Storage = env->FindClass("org/simgrid/msg/Storage");
   jstorage_method_Storage_constructor = env->GetMethodID(class_Storage, "<init>", "()V");
   jstorage_field_Storage_bind = jxbt_get_jfield(env,class_Storage, "bind", "J");
@@ -57,16 +56,14 @@ const char *jstorage_get_name(jobject jstorage, JNIEnv * env) {
   return MSG_storage_get_name(storage);
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls,
-                                         jstring jname) {
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls, jstring jname) {
   msg_storage_t storage;
   jobject jstorage;
 
   /* get the C string from the java string */
-  if (jname == NULL) {
+  if (jname == nullptr) {
     jxbt_throw_null(env,bprintf("No host can have a null name"));
-    return NULL;
+    return nullptr;
   }
   const char *name = env->GetStringUTFChars(jname, 0);
   storage = MSG_storage_get_by_name(name);
@@ -74,7 +71,7 @@ Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls,
   if (!storage) {                  /* invalid name */
     jxbt_throw_storage_not_found(env, name);
     env->ReleaseStringUTFChars(jname, name);
-    return NULL;
+    return nullptr;
   }
   env->ReleaseStringUTFChars(jname, name);
 
@@ -85,7 +82,7 @@ Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls,
 
     if (!jstorage) {
       jxbt_throw_jni(env, "java storage instantiation failed");
-      return NULL;
+      return nullptr;
     }
 
     /* get a global reference to the newly created storage */
@@ -93,7 +90,7 @@ Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls,
 
     if (!jstorage) {
       jxbt_throw_jni(env, "new global ref allocation failed");
-      return NULL;
+      return nullptr;
     }
     /* Sets the java storage name */
     env->SetObjectField(jstorage, jstorage_field_Storage_name, jname);
@@ -110,9 +107,7 @@ Java_org_simgrid_msg_Storage_getByName(JNIEnv * env, jclass cls,
   return (jobject) xbt_lib_get_level(storage, JAVA_STORAGE_LEVEL);
 }
 
-
-JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_Storage_getSize(JNIEnv * env,jobject jstorage) {
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getSize(JNIEnv * env,jobject jstorage) {
   msg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (!storage) {
@@ -123,8 +118,7 @@ Java_org_simgrid_msg_Storage_getSize(JNIEnv * env,jobject jstorage) {
   return (jlong) MSG_storage_get_size(storage);
 }
 
-JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv * env,jobject jstorage) {
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv * env,jobject jstorage) {
   msg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (!storage) {
@@ -135,8 +129,7 @@ Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv * env,jobject jstorage) {
   return (jlong) MSG_storage_get_free_size(storage);
 }
 
-JNIEXPORT jlong JNICALL
-Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv * env,jobject jstorage) {
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv * env,jobject jstorage) {
   msg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (!storage) {
@@ -147,19 +140,18 @@ Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv * env,jobject jstorage) {
   return (jlong) MSG_storage_get_used_size(storage);
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, jobject jstorage, jobject jname) {
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, jobject jstorage, jobject jname) {
   msg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (!storage) {
     jxbt_throw_notbound(env, "storage", jstorage);
-    return NULL;
+    return nullptr;
   }
   const char *name = env->GetStringUTFChars((jstring) jname, 0);
 
   const char *property = MSG_storage_get_property_value(storage, name);
   if (!property) {
-    return NULL;
+    return nullptr;
   }
   jobject jproperty = env->NewStringUTF(property);
 
@@ -187,25 +179,23 @@ Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject 
 
 }
 
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobject jstorage) {
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobject jstorage) {
   msg_storage_t storage = jstorage_get_native(env, jstorage);
 
   if (!storage) {
     jxbt_throw_notbound(env, "storage", jstorage);
-    return NULL;
+    return nullptr;
   }
   const char *host_name = MSG_storage_get_host(storage);
   if (!host_name) {
-    return NULL;
+    return nullptr;
   }
   jobject jhost_name = env->NewStringUTF(host_name);
 
   return jhost_name;
 }
 
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_Storage_all(JNIEnv * env, jclass cls_arg)
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv * env, jclass cls_arg)
 {
   int index;
   jobjectArray jtable;
@@ -219,14 +209,14 @@ Java_org_simgrid_msg_Storage_all(JNIEnv * env, jclass cls_arg)
   jclass cls = jxbt_get_class(env, "org/simgrid/msg/Storage");
 
   if (!cls) {
-    return NULL;
+    return nullptr;
   }
 
-  jtable = env->NewObjectArray((jsize) count, cls, NULL);
+  jtable = env->NewObjectArray((jsize) count, cls, nullptr);
 
   if (!jtable) {
     jxbt_throw_jni(env, "Storages table allocation failed");
-    return NULL;
+    return nullptr;
   }
 
   for (index = 0; index < count; index++) {

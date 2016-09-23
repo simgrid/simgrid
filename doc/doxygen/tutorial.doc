@@ -156,7 +156,7 @@ sudo apt-get install vite
 The corresponding archive with all source files can be obtained
 [here](http://simgrid.gforge.inria.fr/tutorials/msg-tuto/msg-tuto.tgz),
 while the simgrid archive contains
-[several platform files](https://github.com/mquinson/simgrid/tree/master/examples/platforms)
+[several platform files](https://github.com/simgrid/simgrid/tree/master/examples/platforms)
 (click on the "Raw" button of files you want to download from GitHub).
 
 ~~~~{.sh}

@@ -4,7 +4,6 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <algorithm>
 #include <utility>
 
 #include "network_ib.hpp"
@@ -16,27 +15,30 @@
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 static void IB_create_host_callback(simgrid::s4u::Host& host){
-  using namespace simgrid::surf;
+  using simgrid::surf::NetworkIBModel;
+  using simgrid::surf::IBNode;
 
   static int id=0;
   // pour t->id -> rajouter une nouvelle struct dans le dict, pour stocker les comms actives
-  if(((NetworkIBModel*)surf_network_model)->active_nodes==NULL)
+  if(((NetworkIBModel*)surf_network_model)->active_nodes==nullptr)
     ((NetworkIBModel*)surf_network_model)->active_nodes=xbt_dict_new();
 
   IBNode* act = new IBNode(id);
 
   id++;
   xbt_dict_set(((NetworkIBModel*)surf_network_model)->active_nodes,
-      host.name().c_str(), act, NULL);
+      host.name().c_str(), act, nullptr);
 
 }
 
 static void IB_action_state_changed_callback(
     simgrid::surf::NetworkAction *action,
-    e_surf_action_state_t statein, e_surf_action_state_t stateout)
+    simgrid::surf::Action::State statein, simgrid::surf::Action::State stateout)
 {
-  using namespace simgrid::surf;
-  if(statein!=SURF_ACTION_RUNNING|| stateout!=SURF_ACTION_DONE)
+  using simgrid::surf::NetworkIBModel;
+  using simgrid::surf::IBNode;
+
+  if(statein!=simgrid::surf::Action::State::running || stateout!=simgrid::surf::Action::State::done)
     return;
   std::pair<IBNode*,IBNode*> pair = ((NetworkIBModel*)surf_network_model)->active_comms[action];
   XBT_DEBUG("IB callback - action %p finished", action);
@@ -49,29 +51,19 @@ static void IB_action_state_changed_callback(
 
 
 static void IB_action_init_callback(
-    simgrid::surf::NetworkAction *action, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst,
-    double size, double rate)
+    simgrid::surf::NetworkAction *action, simgrid::kernel::routing::NetCard *src, simgrid::kernel::routing::NetCard *dst)
 {
-  using namespace simgrid::surf;
-  if(((NetworkIBModel*)surf_network_model)->active_nodes==NULL)
-    xbt_die("IB comm added, without any node connected !");
+  simgrid::surf::NetworkIBModel* ibModel = (simgrid::surf::NetworkIBModel*)surf_network_model;
 
-  IBNode* act_src= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, src->name());
-  if(act_src==NULL)
-    xbt_die("could not find src node active comms !");
-  //act_src->rate=rate;
+  simgrid::surf::IBNode* act_src= (simgrid::surf::IBNode*) xbt_dict_get_or_null(ibModel->active_nodes, src->name());
+  xbt_assert(act_src, "could not find src node active comms !");
 
-  IBNode* act_dst= (IBNode*) xbt_dict_get_or_null(((NetworkIBModel*)surf_network_model)->active_nodes, dst->name());
-  if(act_dst==NULL)
-    xbt_die("could not find dst node active comms !");  
-  // act_dst->rate=rate;
+  simgrid::surf::IBNode* act_dst= (simgrid::surf::IBNode*) xbt_dict_get_or_null(ibModel->active_nodes, dst->name());
+  xbt_assert(act_dst, "could not find dst node active comms !");
 
-  ((NetworkIBModel*)surf_network_model)->active_comms[action]=std::make_pair(act_src, act_dst);
-  //post the action in the second dist, to retrieve in the other callback
-  XBT_DEBUG("IB callback - action %p init", action);
+  ibModel->active_comms[action]=std::make_pair(act_src, act_dst);
 
-  ((NetworkIBModel*)surf_network_model)->updateIBfactors(action, act_src, act_dst, 0);
-
+  ibModel->updateIBfactors(action, act_src, act_dst, 0);
 }
 
 /*********
@@ -88,21 +80,19 @@ static void IB_action_init_callback(
 /*  month=june, */
 /*  year={2010} */
 /*  } */
-void surf_network_model_init_IB(void)
+void surf_network_model_init_IB()
 {
   using simgrid::surf::networkActionStateChangedCallbacks;
-  using simgrid::surf::networkCommunicateCallbacks;
 
   if (surf_network_model)
     return;
 
-  simgrid::surf::on_link.connect(netlink_parse_init);
   surf_network_model = new simgrid::surf::NetworkIBModel();
-  xbt_dynar_push(all_existing_models, &surf_network_model);
+  all_existing_models->push_back(surf_network_model);
   networkActionStateChangedCallbacks.connect(IB_action_state_changed_callback);
-  networkCommunicateCallbacks.connect(IB_action_init_callback);
+  Link::onCommunicate.connect(IB_action_init_callback);
   simgrid::s4u::Host::onCreation.connect(IB_create_host_callback);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
+  xbt_cfg_setdefault_double("network/weight-S", 8775);
 
 }
 
@@ -113,27 +103,27 @@ namespace simgrid {
 
     NetworkIBModel::NetworkIBModel()
     : NetworkSmpiModel() {
-      m_haveGap=false;
-      active_nodes=NULL;
+      haveGap_=false;
+      active_nodes=nullptr;
 
-      const char* IB_factors_string=sg_cfg_get_string("smpi/IB_penalty_factors");
+      const char* IB_factors_string=xbt_cfg_get_string("smpi/IB-penalty-factors");
       xbt_dynar_t radical_elements = xbt_str_split(IB_factors_string, ";");
 
       surf_parse_assert(xbt_dynar_length(radical_elements)==3,
-          "smpi/IB_penalty_factors should be provided and contain 3 elements, semi-colon separated : for example 0.965;0.925;1.35");
+          "smpi/IB-penalty-factors should be provided and contain 3 elements, semi-colon separated. Example: 0.965;0.925;1.35");
 
-      Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB_penalty_factors is not numerical: %s");
-      Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB_penalty_factors is not numerical: %s");
-      ys = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 2, char *), "Third part of smpi/IB_penalty_factors is not numerical: %s");
+      Be = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 0, char *), "First part of smpi/IB-penalty-factors is not numerical: %s");
+      Bs = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 1, char *), "Second part of smpi/IB-penalty-factors is not numerical: %s");
+      ys = xbt_str_parse_double(xbt_dynar_get_as(radical_elements, 2, char *), "Third part of smpi/IB-penalty-factors is not numerical: %s");
 
       xbt_dynar_free(&radical_elements);
     }
 
     NetworkIBModel::~NetworkIBModel()
     {
-      xbt_dict_cursor_t cursor = NULL;
-      IBNode* instance = NULL;
-      char *name = NULL;
+      xbt_dict_cursor_t cursor = nullptr;
+      IBNode* instance = nullptr;
+      char *name = nullptr;
       xbt_dict_foreach(active_nodes, cursor, name, instance)
       delete instance;
       xbt_dict_free(&active_nodes);
@@ -178,7 +168,7 @@ namespace simgrid {
 
         if (!double_equals(penalized_bw, rate_before_update, sg_surf_precision)){
           XBT_DEBUG("%d->%d action %p penalty updated : bw now %f, before %f , initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->action->getBound(), (*it)->init_rate );
-          lmm_update_variable_bound(p_maxminSystem, (*it)->action->getVariable(), penalized_bw);
+          lmm_update_variable_bound(maxminSystem_, (*it)->action->getVariable(), penalized_bw);
         }else{
           XBT_DEBUG("%d->%d action %p penalty not updated : bw %f, initial rate %f", root->id,(*it)->destination->id,(*it)->action,penalized_bw, (*it)->init_rate );
         }
@@ -209,7 +199,7 @@ namespace simgrid {
         return;
 
       bool* updated=(bool*)xbt_malloc0(xbt_dict_size(active_nodes)*sizeof(bool));
-      ActiveComm* comm=NULL;
+      ActiveComm* comm=nullptr;
       if(remove){
         if(to->ActiveCommsDown[from]==1)
           to->ActiveCommsDown.erase(from);

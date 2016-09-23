@@ -1,7 +1,6 @@
 #! /bin/sh
 
-# Copyright (c) 2007-2015. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2007-2016, The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
@@ -24,7 +23,9 @@ NETWORK_BANDWIDTH="${DEFAULT_NETWORK_BANDWIDTH}"
 NETWORK_LATENCY="${DEFAULT_NETWORK_LATENCY}"
 SPEED="${DEFAULT_SPEED}"
 
-SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP_gamma:4194304"
+PRIVATIZE="--cfg=smpi/privatize-global-variables:yes"
+
+SIMOPTS="--cfg=surf/precision:1e-9 --cfg=network/model:SMPI --cfg=network/TCP-gamma:4194304"
 
 #usage to print the way this script should be called
 usage () {
@@ -36,6 +37,7 @@ Options:
   -map                       # display the machine on which each process rank is mapped
   -np <numprocs>             # use that amount of processes from the hostfile.
                              # By default, all processes of the hostfile are used.
+  -no-privatize              # Disable the globals privatization, that is activated by default
   -trace-ti                  # activate time independant tracing (for replay, default in smpi_simgrid.txt)
   -trace                     # activate tracing (Paje, default in smpi_simgrid.trace)
   -trace-comment <comment>   # put a comment on the top of the trace file
@@ -159,6 +161,10 @@ while true; do
             EXTOPT="$2"
             shift 2
             ;;
+	"-no-privatize")
+	    PRIVATIZE=""
+	    shift 1
+	    ;;
         "-map")
 	    MAPOPT="true"
             shift 1
@@ -279,7 +285,7 @@ if [ -z "${HOSTFILE}" ] ; then
 	          }
 	        }
 	      } elsif (/<cluster/) {
-	        die ("Unparsable cluster tag. Either provide an hostfile yourself or give the attributes prefix, radical and suffix in that order on the <cluster line");
+            die ("Unparsable cluster tag. smpirun uses a primitive regular expression to parse cluster tags. Either provide a hostfile yourself or give the attributes prefix, radical and suffix IN THAT ORDER and ON THE SAME LINE as the opening tag (<cluster)");
 	      }' ${PLATFORM} >> ${HOSTFILE}
 fi
 UNROLLEDHOSTFILETMP=0
@@ -457,7 +463,7 @@ if [ -n "${TRACE_ACTIVE}" ]; then
     fi
 
     if [ -n "${TRACE_COMMENT_FILE}" ]; then
-        TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment_file:${TRACE_COMMENT_FILE}"
+        TRACEOPTIONS="${TRACEOPTIONS} --cfg=tracing/comment-file:${TRACE_COMMENT_FILE}"
     fi
 
     if [ -n "${TRACE_GROUPED}" ]; then
@@ -476,7 +482,7 @@ fi
 
 export SMPI_GLOBAL_SIZE=${NUMPROCS}
 if [ -n "${KEEP}" ] ; then
-    echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PLATFORMTMP} ${APPLICATIONTMP}
+    echo ${EXEC} ${TRACEOPTIONS} ${SIMOPTS} ${PRIVATIZE} ${PLATFORMTMP} ${APPLICATIONTMP}
     if [ ${HOSTFILETMP} = 1 ] ; then
         echo "Generated hostfile ${HOSTFILE} kept."
     fi

@@ -7,18 +7,25 @@
 #ifndef INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 #define INCLUDE_SIMGRID_S4U_STORAGE_HPP_
 
+#include <string>
+
 #include <boost/unordered_map.hpp>
-#include "xbt/base.h"
-#include "simgrid/simix.h"
+
+#include <xbt/base.h>
+
+#include <simgrid/simix.h>
 #include <simgrid/s4u/forward.hpp>
 
 namespace simgrid {
 namespace s4u {
 
 XBT_PUBLIC_CLASS Storage {
+  friend s4u::Engine;
+
 private:
   Storage(std::string name, smx_storage_t inferior);
   virtual ~Storage();
+
 public:
   /** Retrieve a Storage by its name. It must exist in the platform file */
   static Storage &byName(const char* name);
@@ -39,18 +46,17 @@ XBT_PUBLIC(const char *) MSG_storage_get_host(msg_storage_t storage);
    */
 protected:
   smx_storage_t inferior();
-private:
-  static boost::unordered_map<std::string, Storage *> *storages_;
-  std::string name_;
-  smx_storage_t inferior_;
-
 
 public:
   void setUserdata(void *data) {userdata_ = data;}
   void *userdata() {return userdata_;}
+  
 private:
-  void *userdata_ = NULL;
+  static boost::unordered_map<std::string, Storage *> *storages_;
 
+  std::string name_;
+  smx_storage_t pimpl_ = nullptr;
+  void *userdata_ = nullptr;
 };
 
 } /* namespace s4u */

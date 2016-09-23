@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <boost/intrusive/list.hpp>
+
 #include <xbt/base.h>
 
 #include "src/surf/cpu_interface.hpp"
@@ -32,7 +34,7 @@ struct tiTag;
  *********/
 class CpuTiTrace {
 public:
-  CpuTiTrace(tmgr_trace_t speedTrace);
+  explicit CpuTiTrace(tmgr_trace_t speedTrace);
   ~CpuTiTrace();
 
   double integrateSimple(double a, double b);
@@ -84,7 +86,7 @@ class CpuTiAction: public CpuAction {
 public:
   CpuTiAction(CpuTiModel *model, double cost, bool failed, CpuTi *cpu);
 
-  void setState(e_surf_action_state_t state) override;
+  void setState(simgrid::surf::Action::State state) override;
   int unref() override;
   void cancel() override;
   void updateIndexHeap(int i);
@@ -93,7 +95,6 @@ public:
   void setMaxDuration(double duration) override;
   void setPriority(double priority) override;
   double getRemains() override;
-  void setAffinity(Cpu * /*cpu*/, unsigned long /*mask*/) override {};
 
   CpuTi *cpu_;
   int indexHeap_;
@@ -110,12 +111,10 @@ typedef boost::intrusive::list<CpuTiAction, ActionTiListOptions > ActionTiList;
  ************/
 class CpuTi : public Cpu {
 public:
-  CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-        tmgr_trace_t speedTrace, int core,
-        tmgr_trace_t stateTrace) ;
-  ~CpuTi();
+  CpuTi(CpuTiModel *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core);
+  ~CpuTi() override;
 
-  void set_speed_trace(tmgr_trace_t trace) override;
+  void setSpeedTrace(tmgr_trace_t trace) override;
 
   void apply_event(tmgr_trace_iterator_t event, double value) override;
   void updateActionsFinishTime(double now);
@@ -128,10 +127,10 @@ public:
 
   void modified(bool modified);
 
-  CpuTiTgmr *availTrace_;       /*< Structure with data needed to integrate trace file */
-  ActionTiList *actionSet_;        /*< set with all actions running on cpu */
-  double sumPriority_;          /*< the sum of actions' priority that are running on cpu */
-  double lastUpdate_ = 0;       /*< last update of actions' remaining amount done */
+  CpuTiTgmr *speedIntegratedTrace_ = nullptr;/*< Structure with data needed to integrate trace file */
+  ActionTiList *actionSet_ = nullptr;        /*< set with all actions running on cpu */
+  double sumPriority_ = 0; /*< the sum of actions' priority that are running on cpu */
+  double lastUpdate_ = 0;  /*< last update of actions' remaining amount done */
 
   double currentFrequency_;
 
@@ -148,9 +147,8 @@ typedef boost::intrusive::list<CpuTi, CpuTiListOptions> CpuTiList;
 class CpuTiModel : public CpuModel {
 public:
   CpuTiModel();
-  ~CpuTiModel();
-  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPeak,
-      tmgr_trace_t speedTrace, int core, tmgr_trace_t state_trace) override;
+  ~CpuTiModel() override;
+  Cpu *createCpu(simgrid::s4u::Host *host,  std::vector<double>* speedPerPstate, int core) override;
   double next_occuring_event(double now) override;
   void updateActionsState(double now, double delta) override;
 

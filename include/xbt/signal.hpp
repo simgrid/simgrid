@@ -6,51 +6,42 @@
 #ifndef SIMGRID_XBT_SIGNAL_HPP
 #define SIMGRID_XBT_SIGNAL_HPP
 
-#ifdef SIMGRID_HAVE_LIBSIG
-#include <sigc++/sigc++.h>
-#else
-#include <boost/signals2.hpp>
-#endif
+#include <functional>
+#include <utility>
+#include <vector>
 
 namespace simgrid {
 namespace xbt {
 
-#ifdef SIMGRID_HAVE_LIBSIG
+  template<class S> class signal;
 
-  // Wraps sigc++ signals with the interface of boost::signals2:
-  template<class T> class signal;
+  /** A signal/slot mechanism
+  *
+  *  S is expected to be the function signature of the signal.
+  *  I'm not sure we need a return value (it is currently ignored).
+  *  If we don't we might use `signal<P1, P2, ...>` instead.
+  */
   template<class R, class... P>
   class signal<R(P...)> {
   private:
-    sigc::signal<R, P...> sig_;
+    typedef std::function<R(P...)> callback_type;
+    std::vector<callback_type> handlers_;
   public:
-    template<class U> XBT_ALWAYS_INLINE
-    void connect(U&& slot)
+    template<class U>
+    void connect(U slot)
     {
-      sig_.connect(std::forward<U>(slot));
+      handlers_.push_back(std::move(slot));
     }
-    template<class Res, class... Args> XBT_ALWAYS_INLINE
-    void connect(Res(*slot)(Args...))
+    R operator()(P... args) const
     {
-      sig_.connect(sigc::ptr_fun(slot));
-    }
-    template<class... Args> XBT_ALWAYS_INLINE
-    R operator()(Args&&... args) const
-    {
-      return sig_.emit(std::forward<Args>(args)...);
+      for (auto& handler : handlers_)
+        handler(args...);
     }
     void disconnect_all_slots()
     {
-      sig_.clear();
+      handlers_.clear();
     }
   };
-
-#else
-
-  template<class T>
-  using signal = ::boost::signals2::signal<T>;
-
-#endif
 
 }
 }

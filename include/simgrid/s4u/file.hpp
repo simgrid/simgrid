@@ -6,10 +6,8 @@
 #ifndef SIMGRID_S4U_FILE_HPP
 #define SIMGRID_S4U_FILE_HPP
 
-#include <boost/unordered_map.hpp>
-#include <vector>
-
 #include <xbt/base.h>
+
 #include <simgrid/simix.h>
 
 namespace simgrid {
@@ -22,21 +20,17 @@ class Storage;
  *
  * Used to simulate the time it takes to access to a file, but does not really store any information.
  *
- * They are located on @link{simgrid::s4u::Storage}, that are accessed from a given @link{simgrid::s4u::Host} through mountpoints.
+ * They are located on @link{simgrid::s4u::Storage} that are accessed from a given @link{simgrid::s4u::Host} through mountpoints.
  * For now, you cannot change the mountpoints programatically, and must declare them from your platform file.
  */
 XBT_PUBLIC_CLASS File {
 public:
   File(const char *fullpath, void* userdata);
   ~File();
-private:
-  smx_file_t inferior_;
-  const char *path_;
 
-public:
   /** Retrieves the path to the file */
   const char *path() { return path_;}
-public:
+
   /** Simulates a read action. Returns the size of data actually read
    *
    *  FIXME: reading from a remotely mounted disk is not implemented yet.
@@ -54,10 +48,7 @@ public:
   void setUserdata(void *data) {userdata_ = data;}
   /** Retrieves the previously stored data */
   void* userdata() {return userdata_;}
-private:
-  void *userdata_=NULL;
 
-public:
   /** Retrieve the datasize */
   sg_size_t size();
 
@@ -80,6 +71,10 @@ public:
   XBT_PUBLIC(msg_error_t) MSG_file_rmove(msg_file_t fd, msg_host_t host, const char* fullpath);
   */
 
+private:
+  smx_file_t pimpl_ = nullptr;
+  const char *path_ = nullptr;
+  void *userdata_ = nullptr;
 };
 
 }} // namespace simgrid::s4u

@@ -1,0 +1,3 @@
+#! ./tesh
+
+$ ${bindir:=.}/centralized_mutex

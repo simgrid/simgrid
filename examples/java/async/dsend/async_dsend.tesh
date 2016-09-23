@@ -1,0 +1,27 @@
+#! tesh
+
+! timeout 30
+$ java -classpath ${classpath:=.} async/dsend/Main ${srcdir:=.}/../platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Using regular java threads.
+> [  0.000000] (1:Sender@Jacquelin) Hello! Got 6 receivers to contact
+> [  0.000000] (1:Sender@Jacquelin) Sending "Task_1" to "Fafard"
+> [  0.000000] (2:Receiver@Fafard) Receiving on 'Fafard'
+> [  0.000000] (3:Receiver@Tremblay) Receiving on 'Tremblay'
+> [  0.000000] (4:Receiver@Bourassa) Receiving on 'Bourassa'
+> [  0.000000] (5:Receiver@Jupiter) Receiving on 'Jupiter'
+> [  0.000000] (6:Receiver@Boivin) Receiving on 'Boivin'
+> [  0.000000] (7:Receiver@Ginette) Receiving on 'Ginette'
+> [  0.000000] (1:Sender@Jacquelin) Sending "Task_2" to "Tremblay"
+> [  0.000000] (1:Sender@Jacquelin) Sending "Task_3" to "Bourassa"
+> [  0.000000] (1:Sender@Jacquelin) Sending "Task_4" to "Jupiter"
+> [  0.000000] (1:Sender@Jacquelin) Sending "Task_5" to "Boivin"
+> [  0.000000] (1:Sender@Jacquelin) Sending "Task_6" to "Ginette"
+> [  0.000000] (1:Sender@Jacquelin) All tasks have been (asynchronously) dispatched. Let's sleep for 20s so that nobody gets a message from a terminated process.
+> [  6.801793] (4:Receiver@Bourassa) Received a task. I'm done. See you!
+> [  6.801793] (5:Receiver@Jupiter) Received a task. I'm done. See you!
+> [  6.801793] (7:Receiver@Ginette) Received a task. I'm done. See you!
+> [ 11.931226] (3:Receiver@Tremblay) Received a task. I'm done. See you!
+> [ 12.364875] (2:Receiver@Fafard) Received a task. I'm done. See you!
+> [ 12.575806] (6:Receiver@Boivin) Received a task. I'm done. See you!
+> [ 20.000000] (1:Sender@Jacquelin) Done sleeping. Goodbye now!
+> [ 20.000000] (0:maestro@) MSG_main finished; Cleaning up the simulation...

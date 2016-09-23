@@ -1,6 +1,0 @@
-$ ./host_on_off_wait ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/host_on_off_d.xml
-> [Tremblay:master:(1) 0.000000] [msg_test/INFO] Master waiting
-> [Jupiter:slave:(2) 0.000000] [msg_test/INFO] Slave waiting
-> [Tremblay:master:(1) 1.000000] [msg_test/INFO] Turning off the slave host
-> [Tremblay:master:(1) 1.000000] [msg_test/INFO] Master has finished
-> [1.000000] [msg_test/INFO] Simulation time 1

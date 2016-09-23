@@ -1,48 +1,38 @@
-/*! \page platform %Model the underlying platform
+/*! \page platform Describing the virtual platform
 
 @tableofcontents
 
 In order to run any simulation, SimGrid must be provided with three things:
-something to run (i.e., your code), a description of the platform on which you
-want to simulate your application and lastly information about the deployment
-process: Which process should be deployed to which processor/core?
+something to run (i.e., your code), a description of the platform on which you want to simulate your application, and 
+information about the deployment of the application: Which process should be executed onto which processor/core?
 
-For the last two items, there are essentially two possible ways you can provide
+For the last two items, there are essentially three possible ways you can provide
 this information as an input:
-\li You can program, if you're using MSG, some of MSG's platform and
-    deployment functions (\ref msg_simulation). If you want to use this,
-    check the particular documentation. (You can also check the section
-    \ref pf_flexml_bypassing, however, this documentation is deprecated;
-    there is a new, but undocumented, way to do it properly).
-\li You can use two XML files: one contains the platform description while
-    the other contains the deployment instructions. The platform description
-    can also be in Lua format.
+\li You can program, if you're using MSG, some of the platform and
+    deployment functions. If you choose to follow this approach, check the dedicated documentation
+    (\ref msg_simulation).
+\li You can use two XML files: one for the platform description and the other for the deployment. 
+\li You can program the description of your platform  in Lua format.
 
-For more information on SimGrid's deployment features, please refer to
-the \ref deployment documentation.
+For more information on SimGrid's deployment features, please refer to the \ref deployment section.
 
-The platform description may be intricate. This documentation is all
-about how to write this file: The basic concepts are introduced. Furthermore,
-advanced options are explained. Additionally, some hints and tips on how to
-write a good platform description are given.
+The platform description may be intricate. This documentation is all about how to write this file. First, the basic 
+concepts are introduced. Then, advanced options are explained. Finally, some hints and tips on how to write a better 
+platform description are given.
 
 \section pf_overview Some words about XML and DTD
 
-We chose to use XML not only because it's extensible but also because many
-tools (and plugins for existing tools) are available that facilitate editing and
-validating XML files. Furthermore, libraries that parse XML are often already
+We opted for XML not only because it is extensible but also because many tools (and plugins for existing tools) are 
+available that facilitate editing and validating XML files. Furthermore, libraries that parse XML are often already
 available and very well tested.
 
-The XML checking is done based on the Document Type Definition (DTD) file,
-available at
-<a href="http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd</a>.
+The XML checking is done based on the [simgrid.dtd](http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd) Document Type 
+Definition (DTD) file.
 
 If you read the DTD, you should notice the following:
-\li The platform tags contain a version attribute; the current version is 4.
-    This property might be used in the future to provide backwards
-    compatibility.
-\li The DTD contains definitions for the two files used by SimGrid (i.e.,
-    platform description and deployment).
+\li The platform tag has a version attribute. The current version is <b>4</b>. This attribute might be used in the 
+    provide backward compatibility.
+\li The DTD contains definitions for both the platform description and deployment files used by SimGrid.
 
 \section pf_basics Basic concepts
 
@@ -147,8 +137,8 @@ routing         | yes       | Full\| Floyd\| Dijkstra\| DijkstraCache\| None\| V
 <b>Example:</b>
 \code
 <AS id="AS0" routing="Full">
-   <host id="host1" power="1000000000"/>
-   <host id="host2" power="1000000000"/>
+   <host id="host1" speed="1000000000"/>
+   <host id="host2" speed="1000000000"/>
    <link id="link1" bandwidth="125000000" latency="0.000100"/>
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
 </AS>
@@ -170,13 +160,12 @@ a host can contain more than 1 core.
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | String | The identifier of the host. facilitates referring to this AS.
-power           | yes       | double (must be > 0.0) | Computational power of every core of this host in FLOPS. Must be larger than 0.0.
-core            | no        | int (Default: 1) | The number of cores of this host. If more than one core is specified, the "power" parameter refers to every core, i.e., the total computational power is no_of_cores*power.<br /> If 6 cores are specified, up to 6 tasks can be executed without sharing the computational power; if more than 6 tasks are executed, computational power will be shared among these tasks. <br /> <b>Warning:</b> Although functional, this model was never scientifically assessed.
-availability    | no        | int    | <b>Specify if the percentage of power available.</b> (What? TODO)
+speed           | yes       | double (must be > 0.0) | Computational power of every core of this host in FLOPS. Must be larger than 0.0.
+core            | no        | int (Default: 1) | The number of cores of this host. If more than one core is specified, the "speed" parameter refers to every core, i.e., the total computational power is no_of_cores*speed.<br /> If 6 cores are specified, up to 6 tasks can be executed without sharing the computational power; if more than 6 tasks are executed, computational power will be shared among these tasks. <br /> <b>Warning:</b> Although functional, this model was never scientifically assessed.
 availability_file| no       | string | (Relative or absolute) filename to use as input; must contain availability traces for this host. The syntax of this file is defined below. <br /> <b>Note:</b> The filename must be specified with your system's format.
-state           | no        | ON\|OFF<br/> (Default: ON) | Is this host running or not?
 state_file      | no        | string |  Same mechanism as availability_file.<br /> <b>Note:</b> The filename must be specified with your system's format.
 coordinates     | no        | string | Must be provided when choosing the Vivaldi, coordinate-based routing model for the AS the host belongs to. More details can be found in the Section \ref pf_P2P_tags.
+pstate     | no        | double (Default: 0.0) | FIXME: Not yet documented.
 
 ### Possible children: ###
 
@@ -188,8 +177,8 @@ Tag name        | Description | Documentation
 ### Example ###
 
 \verbatim
-   <host id="host1" power="1000000000"/>
-   <host id="host2" power="1000000000">
+   <host id="host1" speed="1000000000"/>
+   <host id="host2" speed="1000000000">
      	<prop id="color" value="blue"/>
      	<prop id="rendershape" value="square"/>
    </host>
@@ -207,7 +196,7 @@ and a separate text file whose syntax is exemplified below.
 
 \verbatim
 <platform version="4">
-  <host id="bob" power="500Gf" availability_file="bob.trace" />
+  <host id="bob" speed="500Gf" availability_file="bob.trace" />
 </platform>
 \endverbatim
 
@@ -242,7 +231,7 @@ It is also possible to specify whether the host is up or down by setting the
 
 \verbatim
 <platform version="4">
-   <host id="bob" power="500Gf" state="ON" />
+   <host id="bob" speed="500Gf" state="ON" />
 </platform>
 \endverbatim
 
@@ -268,14 +257,14 @@ of such a file is presented below.
 
 ~~~{.py}
   PERIODICITY 10.0
-  1.0 -1.0
-  2.0 1.0
+  1.0 0
+  2.0 1
 ~~~
 
-A negative value means <b>down</b> (i.e., OFF) while a positive one means <b>up and
-  running</b> (i.e., ON). From time 0.0 to time 1.0, the host is on. At time 1.0, it is
-turned off and at time 2.0, it is turned on again until time 12 (2.0 plus the
-periodicity 10.0). It will be turned on again at time 13.0 until time 23.0, and
+A zero value means <b>down</b> (i.e., OFF) while a positive one means <b>up and
+  running</b> (i.e., ON). From time 0.0 to time 1.0, the host is on as usual. At time 1.0, it is
+turned off and at time 2.0, it is turned on again until time 12 (2 plus the
+periodicity 10). It will be turned off again at time 13.0 until time 23.0, and
 so on.
 
 
@@ -331,7 +320,7 @@ id              | yes       | string | The identifier of the cluster. Facilitate
 prefix          | yes       | string | Each node of the cluster has to have a name. This name will be prefixed with this prefix.
 suffix          | yes       | string | Each node of the cluster will be suffixed with this suffix
 radical         | yes       | string | Regexp used to generate cluster nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
-power           | yes       | int    | Same as the ``power`` attribute of the ``\<host\>`` tag.
+speed           | yes       | int    | Same as the ``speed`` attribute of the ``\<host\>`` tag.
 core            | no        | int (default: 1) | Same as the ``core`` attribute of the ``\<host\>`` tag.
 bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
 lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See <b>link</b> section for syntax/details.
@@ -340,14 +329,11 @@ bb_bw           | no        | int    | Bandwidth for backbone (if any). See <b>l
 bb_lat          | no        | int    | Latency for backbone (if any). See <b>link</b> section for syntax/details. If bb_lat and bb_bw (see above) attributes are omitted, no backbone is created (alternative cluster architecture <b>described before</b>).
 bb_sharing_policy | no      | string | Sharing policy for the backbone (if any). See <b>link</b> section for syntax/details.
 limiter_link      | no        | int    | Bandwidth for limiter link (if any). This adds a specific link for each node, to set the maximum bandwidth reached when communicating in both directions at the same time. In theory this value should be 2*bw for fullduplex links, but in reality this might be less. This value will depend heavily on the communication model, and on the cluster's hardware, so no default value can be set, this has to be measured. More details can be obtained in <a href="https://hal.inria.fr/hal-00919507/"> "Toward Better Simulation of MPI Applications on Ethernet/TCP Networks"</a>
-availability_file | no      | string | Allows you to use a file as input for availability. Similar to <b>hosts</b> attribute.
-state_file        | no      | string | Allows you to use a file as input for states.  Similar to <b>hosts</b> attribute.
 loopback_bw       | no      | int    | Bandwidth for loopback (if any). See <b>link</b> section for syntax/details. If loopback_bw and loopback_lat (see below) attributes are omitted, no loopback link is created and all intra-node communication will use the main network link of the node. Loopback link is a \ref pf_sharing_policy_fatpipe "\b FATPIPE".
 loopback_lat      | no      | int    | Latency for loopback (if any). See <b>link</b> section for syntax/details. See loopback_bw for more info.
-topology          | no      | FLAT\|TORUS\|FAT_TREE (default: FLAT) | Network topology to use. SimGrid currently supports FLAT (with or without backbone, as described before), <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS </a> and FAT_TREE attributes for this tag.
-topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. For fat trees, refer to \ref simgrid::surf::AsClusterFatTree "AsClusterFatTree documentation".
+topology          | no      | FLAT\|TORUS\|FAT_TREE\|DRAGONFLY (default: FLAT) | Network topology to use. SimGrid currently supports FLAT (with or without backbone, as described before), <a href="http://en.wikipedia.org/wiki/Torus_interconnect">TORUS </a>, FAT_TREE, and DRAGONFLY attributes for this tag.
+topo_parameters   | no      | string | Specific parameters to pass for the topology defined in the topology tag. For torus networks, comma-separated list of the number of nodes in each dimension of the torus. For fat trees, refer to \ref simgrid::kernel::routing::AsClusterFatTree "AsClusterFatTree documentation". For dragonfly, refer to \ref simgrid::kernel::routing::AsClusterDragonfly "AsClusterDragonfly documentation".
 
-TODO
 
 the router name is defined as the resulting String in the following
 java line of code:
@@ -363,10 +349,10 @@ Consider the following two (and independent) uses of the ``cluster`` tag:
 
 \verbatim
 <cluster id="my_cluster_1" prefix="" suffix="" radical="0-262144"
-         power="1e9" bw="125e6" lat="5E-5"/>
+         speed="1e9" bw="125e6" lat="5E-5"/>
 
 <cluster id="my_cluster_2" prefix="c-" suffix=".me" radical="0-99"
-         power="1e9" bw="125e6" lat="5E-5"
+         speed="1e9" bw="125e6" lat="5E-5"
          bb_bw="2.25e9" bb_lat="5E-4"/>
 \endverbatim
 
@@ -400,7 +386,7 @@ id              | yes       | string | The identifier of the cabinet. Facilitate
 prefix          | yes       | string | Each node of the cabinet has to have a name. This name will be prefixed with this prefix.
 suffix          | yes       | string | Each node of the cabinet will be suffixed with this suffix
 radical         | yes       | string | Regexp used to generate cabinet nodes name. Syntax: "10-20" will give you 11 machines numbered from 10 to 20, "10-20;2" will give you 12 machines, one with the number 2, others numbered as before. The produced number is concatenated between prefix and suffix to form machine names.
-power           | yes       | int    | Same as the ``power`` attribute of the \ref pf_host "&lt;host&gt;" tag.
+speed           | yes       | int    | Same as the ``speed`` attribute of the \ref pf_host "&lt;host&gt;" tag.
 bw              | yes       | int    | Bandwidth for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
 lat             | yes       | int    | Latency for the links between nodes and backbone (if any). See the \ref pf_link "link section" for syntax/details.
 
@@ -417,11 +403,11 @@ shows how to use the cabinet tag.
 \verbatim
   <AS  id="my_cluster1"  routing="Cluster">
     <cabinet id="cabinet1" prefix="host-" suffix=".cluster1"
-      power="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="1-10"/>
     <cabinet id="cabinet2" prefix="host-" suffix=".cluster1"
-      power="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="11-20"/>
     <cabinet id="cabinet3" prefix="host-" suffix=".cluster1"
-      power="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
+      speed="1Gf" bw="125MBps" lat="100us" radical="21-30"/>
 
     <backbone id="backbone1" bandwidth="2.25GBps" latency="500us"/>
   </AS>
@@ -456,7 +442,7 @@ and values. These are:
 Attribute name  | Mandatory | Values | Description
 --------------- | --------- | ------ | -----------
 id              | yes       | string | The identifier of the peer. Facilitates referring to this peer.
-power           | yes       | int    | See the description of the ``host`` tag for this attribute
+speed           | yes       | int    | See the description of the ``host`` tag for this attribute
 bw_in           | yes       | int    | Bandwidth downstream
 bw_out          | yes       | int    | Bandwidth upstream
 lat             | yes       | double | Latency for both up- and downstream, in seconds.
@@ -469,7 +455,7 @@ Internally, SimGrid transforms any ``\<peer/\>`` construct such as
 \verbatim
 <peer id="FOO"
   coordinates="12.8 14.4 6.4"
-  power="1.5Gf"
+  speed="1.5Gf"
   bw_in="2.25GBps"
   bw_out="2.25GBps"
   lat="500us" />
@@ -479,7 +465,7 @@ is completely equivalent to the following declaration:
 
 \verbatim
 <AS id="as_FOO" routing="Cluster">
-   <host id="peer_FOO" power="1.5Gf"/>
+   <host id="peer_FOO" speed="1.5Gf"/>
    <link id="link_FOO_UP" bandwidth="2.25GBps" latency="500us"/>
    <link id="link_FOO_DOWN" bandwidth="2.25GBps" latency="500us"/>
    <router id="router_FOO" coordinates="25.5 9.4 1.4"/>
@@ -706,8 +692,8 @@ id              | yes       | string | Name of the link that is supposed to act 
   is just some doc valuable only at the time of writing.
   This section describes the storage management under SimGrid ; nowadays
   it's only usable with MSG. It relies basically on linux-like concepts.
-  You also may want to have a look to its corresponding section in \ref
-  msg_file_management ; access functions are organized as a POSIX-like
+  You also may want to have a look to its corresponding section in 
+  @ref msg_file ; access functions are organized as a POSIX-like
   interface.
 
 \subsubsection pf_sto_conc Storage - Main Concepts
@@ -898,11 +884,11 @@ Here is a simple example, taken from the file ``examples/platform/storage.xml``:
              content="content/small_content.txt"
              content_type="txt_unix" attach="denise"/>
 
-    <host id="alice" power="1Gf">
+    <host id="alice" speed="1Gf">
       <mount storageId="Disk2" name="c:"/>
     </host>
 
-    <host id="denise" power="1Gf">
+    <host id="denise" speed="1Gf">
       <mount storageId="Disk2" name="c:"/>
       <mount storageId="Disk4" name="/home"/>
     </host>
@@ -927,17 +913,6 @@ required.
 ###### Example files #####
 
 \verbinclude example_filelist_xmltag_mount
-
-\anchor pf_storage_entity_mstorage
-#### &lt;mstorage&gt; ####
-\note
-    This is currently unused.
-
-<b>mstorage</b> attributes :
-\li <b>typeId (mandatory)</b>: the id of the <b>storage</b> that must
-    be mounted on that computer.
-\li <b>name (mandatory)</b>: the name that will be the logical
-    reference to this disk (the mount point).
 
 \subsubsection pf_storage_example_files Example files
 
@@ -1075,11 +1050,11 @@ Floyd example:
 <AS  id="AS0"  routing="Floyd">
 
   <cluster id="my_cluster_1" prefix="c-" suffix=""
-           radical="0-1" power="1000000000" bw="125000000" lat="5E-5"
+           radical="0-1" speed="1000000000" bw="125000000" lat="5E-5"
            router_id="router1"/>
 
   <AS id="AS1" routing="None">
-    <host id="host1" power="1000000000"/>
+    <host id="host1" speed="1000000000"/>
   </AS>
 
   <link id="link1" bandwidth="100000" latency="0.01"/>
@@ -1113,12 +1088,12 @@ routing model (the path is given relative to SimGrid's source directory)
 
 \verbinclude example_filelist_routing_dijkstra
 
-Dijsktra example :
+Dijkstra example :
 \verbatim
- <AS id="AS_2" routing="Dijsktra">
-     <host id="AS_2_host1" power="1000000000"/>
-     <host id="AS_2_host2" power="1000000000"/>
-     <host id="AS_2_host3" power="1000000000"/>
+ <AS id="AS_2" routing="Dijkstra">
+     <host id="AS_2_host1" speed="1000000000"/>
+     <host id="AS_2_host2" speed="1000000000"/>
+     <host id="AS_2_host3" speed="1000000000"/>
      <link id="AS_2_link1" bandwidth="1250000000" latency="5E-4"/>
      <link id="AS_2_link2" bandwidth="1250000000" latency="5E-4"/>
      <link id="AS_2_link3" bandwidth="1250000000" latency="5E-4"/>
@@ -1136,10 +1111,10 @@ Dijsktra example :
 \anchor pf_routing_model_dijkstracache
 ### DijkstraCache ###
 
-DijsktraCache example:
+DijkstraCache example:
 \verbatim
-<AS id="AS_2" routing="DijsktraCache">
-     <host id="AS_2_host1" power="1000000000"/>
+<AS id="AS_2" routing="DijkstraCache">
+     <host id="AS_2_host1" speed="1000000000"/>
      ...
 (platform unchanged compared to upper example)
 \endverbatim
@@ -1166,8 +1141,8 @@ if there are no example files listed here, this is likely to be correct.
 Full example :
 \verbatim
 <AS  id="AS0"  routing="Full">
-   <host id="host1" power="1000000000"/>
-   <host id="host2" power="1000000000"/>
+   <host id="host1" speed="1000000000"/>
+   <host id="host2" speed="1000000000"/>
    <link id="link1" bandwidth="125000000" latency="0.000100"/>
    <route src="host1" dst="host2"><link_ctn id="link1"/></route>
  </AS>
@@ -1301,7 +1276,7 @@ can only occur as a child of \ref pf_routing_tag_route "&lt;route/&gt;"
 | Attribute name  | Mandatory | Values | Description                                                   |
 | --------------- | --------- | ------ | -----------                                                   |
 | id              | yes       | String | The identifier of the link that should be added to the route. |
-| direction       | maybe     | UP\|DOWN | If the link referenced by \c id has been declared as \ref pf_sharing_policy_fullduplex "FULLDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use FULLDUPLEX, this attribute has no effect.
+| direction       | maybe     | UP\|DOWN | If the link referenced by \c id has been declared as \ref pf_sharing_policy_fullduplex "FULLDUPLEX", this indicates which direction the route traverses through this link: UP or DOWN. If you don't use FULLDUPLEX, do not use this attribute or SimGrid will not find the right link.
 
 #### Example Files ####
 
@@ -1330,12 +1305,12 @@ This is mainly useful when you're in the \ref pf_routing_model_full "Full routin
 \verbatim
 <AS  id="AS0"  routing="Full">
   <cluster id="my_cluster_1" prefix="c-" suffix=".me"
-  		radical="0-149"	power="1000000000"    bw="125000000"     lat="5E-5"
+  		radical="0-149" speed="1000000000" bw="125000000" lat="5E-5"
         bb_bw="2250000000" bb_lat="5E-4"/>
 
   <cluster id="my_cluster_2" prefix="c-" suffix=".me"
- 	    radical="150-299" power="1000000000"	bw="125000000"	lat="5E-5"
- 	    bb_bw="2250000000" bb_lat="5E-4"/>
+    radical="150-299" speed="1000000000" bw="125000000" lat="5E-5"
+    bb_bw="2250000000" bb_lat="5E-4"/>
 
      <link id="backbone" bandwidth="1250000000" latency="5E-4"/>
 
@@ -1493,9 +1468,9 @@ then have to define some <b>route</b> to gives some topological
 information to SimGrid. Here is a file doing it all :
 
 \verbatim
-<AS  id="AS_Big"  routing="Dijsktra">
+<AS  id="AS_Big"  routing="Dijkstra">
   <AS id="AS_1" routing="Full">
-     <host id="AS_1_host1" power="1000000000"/>
+     <host id="AS_1_host1" speed="1000000000"/>
      <link id="AS_1_link" bandwidth="1250000000" latency="5E-4"/>
      <router id="AS_1_gateway"/>
      <route src="AS_1_host1" dst="AS_1_gateway">
@@ -1503,9 +1478,9 @@ information to SimGrid. Here is a file doing it all :
      </route>
   </AS>
   <AS id="AS_2" routing="Floyd">
-     <host id="AS_2_host1" power="1000000000"/>
-     <host id="AS_2_host2" power="1000000000"/>
-     <host id="AS_2_host3" power="1000000000"/>
+     <host id="AS_2_host1" speed="1000000000"/>
+     <host id="AS_2_host2" speed="1000000000"/>
+     <host id="AS_2_host3" speed="1000000000"/>
      <link id="AS_2_link1" bandwidth="1250000000" latency="5E-4"/>
      <link id="AS_2_link2" bandwidth="1250000000" latency="5E-4"/>
      <link id="AS_2_link3" bandwidth="1250000000" latency="5E-4"/>
@@ -1530,10 +1505,8 @@ information to SimGrid. Here is a file doing it all :
 
 \section pf_other_tags Tags not (directly) describing the platform
 
-There are 3 tags, that you can use inside a \<platform\> tag that are
-not describing the platform:
-\li \ref pf_random "random": it allows you to define random generators you want to use
-    for your simulation.
+The following tags can be used inside a \<platform\> tag even if they are not
+directly describing the platform:
 \li \ref pf_config "config": it allows you to pass some configuration stuff like, for
     example, the network model and so on. It follows the
 \li \ref pf_include "include": allows you to include another file into the current one.
@@ -1568,35 +1541,37 @@ Tag name        | Description | Documentation
 	<prop id="host/model" value="compound"></prop>
 	<prop id="network/model" value="SMPI"></prop>
 	<prop id="path" value="~/"></prop>
-	<prop id="smpi/bw_factor" value="65472:0.940694;15424:0.697866;9376:0.58729"></prop>
+	<prop id="smpi/bw-factor" value="65472:0.940694;15424:0.697866;9376:0.58729"></prop>
 </config>
 
 <AS  id="AS0"  routing="Full">
 ...
 \endverbatim
 
-
-\subsection pf_random random
-
-<b>This has not yet been implemented.</b>
-
 \subsection pf_include include
 
-The \c include tag allows you to import other platforms into your
+Even if it can be used in other contexts, this tag was originally created
+to be used with \ref pf_trace. The idea was to have a file describing the
+platform, and another file attaching traces of a given period to the platform.
+
+The drawback is that the file chuncks that will be included do not
+constitute valid XML files. This may explain why this feature was never really
+used in practice (as far as we know). Other mechanisms, such as the ability to load
+several platform files one after the other, could be considered in the future.
+
+In the meanwhile, the \c include tag allows you to import other platforms into your
 local file. This is done with the intention to help people
 combine their different AS and provide new platforms. Those files
 should contain XML that consists of 
 \ref pf_include "include", \ref pf_cluster "cluster", \ref pf_peer "peer", \ref pf_As "AS", \ref pf_trace "trace", \ref pf_trace "tags".
 
-\note
-    Due to some obscure technical reasons, you have to open
-    and close the tag in order to make it work.
+Do not forget to close the tag to make it work, or you will end up with an invalid XML file.
 
 #### Attributes ####
 
 | Attribute name  | Mandatory | Values                  | Description                                                                                                  |
 | --------------- | --------- | ----------------------  | -----------                                                                                                  |
-| file            | yes       | String                  | Filename of the path you want to include with either relative or absolute path. Syntax is defined by your OS |
+| file            | yes       | String                  | Filename of the path you want to include with either relative or absolute path. |
 
 
 #### Example ####
@@ -1607,7 +1582,7 @@ each of them will then be usable.
 
 \verbatim
 <?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid.dtd">
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
 <platform version="4">
 	<AS id="main" routing="Full">
 		<include file="clusterA.xml"></include>
@@ -1631,7 +1606,7 @@ entity.
 
 \verbatim
 <AS  id="AS0"  routing="Full">
-  <host id="bob" power="1000000000"/>
+  <host id="bob" speed="1000000000"/>
 </AS>
 <trace id="myTrace" file="bob.trace" periodicity="1.0"/>
 <trace_connect trace="myTrace" element="bob" kind="POWER"/>
@@ -1671,13 +1646,29 @@ Here is an example  of trace when no file name is provided:
 | trace           | yes       | String                 | Identifier of the referenced trace (specified of the trace's \c id attribute)                     |
 | element         | yes       | String                 | The identifier of the referenced entity as given by its \c id attribute                           |
 
-\section pf_hints Hints and tips, or how to write a platform efficiently
+\section pf_hints Hints, tips and frequently requested features
 
 Now you should know at least the syntax and be able to create a
 platform by your own. However, after having ourselves wrote some platforms, there
 are some best practices you should pay attention to in order to
 produce good platform and some choices you can make in order to have
 faster simulations. Here's some hints and tips, then.
+
+@subsection Finding the platform example that you need
+
+Most platform files that we ship are in the @c examples/platforms
+folder. The good old @c grep tool can find the examples you need when
+wondering on a specific XML tag. Here is an example session searching
+for @ref pf_trace "trace_connect":
+
+@verbatim
+% cd examples/platforms
+% grep -R -i -n --include="*.xml" "trace_connect" .
+./two_hosts_platform_with_availability_included.xml:26:<trace_connect kind="SPEED" trace="A" element="Cpu A"/>
+./two_hosts_platform_with_availability_included.xml:27:<trace_connect kind="HOST_AVAIL" trace="A_failure" element="Cpu A"/>
+./two_hosts_platform_with_availability_included.xml:28:<trace_connect kind="SPEED" trace="B" element="Cpu B"/>
+./two_hosts.xml:17:  <trace_connect trace="Tremblay_power" element="Tremblay" kind="SPEED"/>
+@endverbatim
 
 \subsection pf_as_h AS Hierarchy
 The AS design allows SimGrid to go fast, because computing route is
@@ -1702,8 +1693,8 @@ non-intuitive schema ... Something like that :
 <AS id="exitAS_4"  routing="Full">
 	<router id="router_4"/>
 </AS>
-<cluster id="cl_4_1" prefix="c_4_1-" suffix="" radical="1-20" power="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000" bb_lat="5E-4"/>
-<cluster id="cl_4_2" prefix="c_4_2-" suffix="" radical="1-20" power="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000" bb_lat="5E-4"/>
+<cluster id="cl_4_1" prefix="c_4_1-" suffix="" radical="1-20" speed="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000" bb_lat="5E-4"/>
+<cluster id="cl_4_2" prefix="c_4_2-" suffix="" radical="1-20" speed="1000000000" bw="125000000" lat="5E-5" bb_bw="2250000000" bb_lat="5E-4"/>
 <link id="4_1" bandwidth="2250000000" latency="5E-5"/>
 <link id="4_2" bandwidth="2250000000" latency="5E-5"/>
 <link id="bb_4" bandwidth="2250000000" latency="5E-4"/>
@@ -1757,17 +1748,24 @@ complicated in using it, here is an example of it:
 	<prop id="network/coordinates" value="yes"></prop>
 </config>
  <AS  id="AS0"  routing="Vivaldi">
-	<host id="100030591" coordinates="25.5 9.4 1.4" power="1.5Gf" />
-	<host id="100036570" coordinates="-12.7 -9.9 2.1" power="7.3Gf" />
+	<host id="100030591" coordinates="25.5 9.4 1.4" speed="1.5Gf" />
+	<host id="100036570" coordinates="-12.7 -9.9 2.1" speed="7.3Gf" />
 	...
-	<host id="100429957" coordinates="17.5 6.7 18.8" power="8.3Gf" />
+	<host id="100429957" coordinates="17.5 6.7 18.8" speed="8.3Gf" />
 	</AS>
 </platform>
 \endverbatim
 
-Coordinates are then used to calculate latency between two hosts by
-calculating the euclidean distance between the two hosts coordinates.
-The results express the latency in ms.
+Coordinates are then used to calculate latency (in microseconds)
+between two hosts by calculating the distance between the two hosts
+coordinates with the following formula: distance( (x1, y1, z1), (x2,
+y2, z2) ) = euclidian( (x1,y1), (x2,y2) ) + abs(z1) + abs(z2)
+
+In other words, we take the euclidian distance on the two first
+dimensions, and then add the absolute values found on the third
+dimension. This may seem strange, but it was found to allow better
+approximations of the latency matrices (see the paper describing
+Vivaldi).
 
 Note that the previous example defines a routing directly between hosts but it could be also used to define a routing between AS.
 That is for example what is commonly done when using peers (see Section \ref pf_peer).
@@ -1777,12 +1775,12 @@ That is for example what is commonly done when using peers (see Section \ref pf_
 <platform version="4">
 
 <config id="General">
-	<prop id="network/coordinates" value="yes"></prop>
+ <prop id="network/coordinates" value="yes"></prop>
 </config>
  <AS  id="AS0"  routing="Vivaldi">
-   <peer id="peer-0" coordinates="173.0 96.8 0.1" power="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us"/>
-   <peer id="peer-1" coordinates="247.0 57.3 0.6" power="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
-   <peer id="peer-2" coordinates="243.4 58.8 1.4" power="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
+   <peer id="peer-0" coordinates="173.0 96.8 0.1" speed="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us"/>
+   <peer id="peer-1" coordinates="247.0 57.3 0.6" speed="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
+   <peer id="peer-2" coordinates="243.4 58.8 1.4" speed="730Mf" bw_in="13.38MBps" bw_out="1.024MBps" lat="500us" />
 </AS>
 </platform>
 \endverbatim
@@ -1820,19 +1818,42 @@ characteristics (lookup : time to resolve a route):
 \li <b>Cluster</b>: Cluster routing, specific to cluster tag, should
     not be used.
 
-\subsection pf_switch I want to describe a switch but there is no switch tag !
+\subsection pf_switch I want to describe a switch but there is no switch tag!
 
-Actually we did not include switch tag, ok. But when you're trying to
-simulate a switch, the only major impact it has when you're using
-fluid model (and SimGrid uses fluid model unless you activate 
-ns-3 or constant network mode) is the impact of the upper limit of
-the switch motherboard speed that will eventually be reached if you're
-using intensively your switch. So, the switch impact is similar to a
-link one. That's why we are used to describe a switch using a link tag
-(as a link is not an edge by a hyperedge, you can connect more than 2
-other links to it).
+Actually we did not include switch tag. But when you're trying to
+simulate a switch, assuming 
+fluid bandwidth models are used (which SimGrid uses by default unless 
+ns-3 or constant network models are activated), the limiting factor is
+switch backplane bandwidth. So, essentially, at least from
+the simulation perspective, a switch is similar to a
+link: some device that is traversed by flows and with some latency and
+so,e maximum bandwidth. Thus, you can simply simulate a switch as a
+link. Many links
+can be connected to this "switch", which is then included in routes just
+as a normal link.
 
-\subsection pf_platform_multipath How to express multipath routing in platform files?
+
+\subsection pf_multicabinets I want to describe multi-cabinets clusters!
+
+You have several possibilities, as usual when modeling things. If your
+cabinets are homogeneous and the intercabinet network negligible for
+your study, you should just create a larger cluster with all hosts at
+the same layer. 
+
+In the rare case where your hosts are not homogeneous between the
+cabinets, you can create your cluster completely manually. For that,
+create an As using the Cluster routing, and then use one
+&lt;cabinet&gt; for each cabinet. This cabinet tag can only be used an
+As using the Cluster routing schema, and creating 
+
+Be warned that creating a cluster manually from the XML with
+&lt;cabinet&gt;, &lt;backbone&gt; and friends is rather tedious. The
+easiest way to retrieve some control of your model without diving into
+the &lt;cluster&gt; internals is certainly to create one separate
+&lt;cluster&gt; per cabinet and interconnect them together. This is
+what we did in the G5K example platform for the Graphen cluster.
+
+\subsection pf_platform_multipath I want to express multipath routing in platform files!
 
 It is unfortunately impossible to express the fact that there is more
 than one routing path between two given hosts. Let's consider the

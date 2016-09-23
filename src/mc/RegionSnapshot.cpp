@@ -14,12 +14,8 @@
 #include "src/mc/ChunkedData.hpp"
 #include "src/mc/RegionSnapshot.hpp"
 
-extern "C" {
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_RegionSnaphot, mc,
                                 "Logging specific to region snapshots");
-
-}
 
 namespace simgrid {
 namespace mc {
@@ -82,7 +78,7 @@ RegionSnapshot dense_region(
   void *start_addr, void* permanent_addr, size_t size)
 {
   // When KSM support is enables, we allocate memory using mmap:
-  // * we don't want to madvise bits of the heap;
+  // * we don't want to advise bits of the heap as mergable;
   // * mmap gives data aligned on page boundaries which is merge friendly.
   simgrid::mc::Buffer data;
   if (_sg_mc_ksm)
@@ -105,7 +101,7 @@ RegionSnapshot dense_region(
 
   XBT_DEBUG("New region : type : %s, data : %p (real addr %p), size : %zu",
             to_cstr(region_type), region.flat_data().get(), permanent_addr, size);
-  return std::move(region);
+  return region;
 }
 
 /** @brief Take a snapshot of a given region
@@ -116,51 +112,33 @@ RegionSnapshot dense_region(
  * @param size         Size of the data*
  */
 RegionSnapshot region(
-  RegionType type, void *start_addr, void* permanent_addr, size_t size,
-  RegionSnapshot const* ref_region)
+  RegionType type, void *start_addr, void* permanent_addr, size_t size)
 {
-  if (_sg_mc_sparse_checkpoint) {
-    return sparse_region(type, start_addr, permanent_addr, size, ref_region);
-  } else  {
+  if (_sg_mc_sparse_checkpoint)
+    return sparse_region(type, start_addr, permanent_addr, size);
+  else
     return dense_region(type, start_addr, permanent_addr, size);
-  }
 }
 
 RegionSnapshot sparse_region(RegionType region_type,
-  void *start_addr, void* permanent_addr, size_t size,
-  RegionSnapshot const* ref_region)
+  void *start_addr, void* permanent_addr, size_t size)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
   assert(process != nullptr);
-
-  bool use_soft_dirty = _sg_mc_sparse_checkpoint && _sg_mc_soft_dirty
-    && ref_region != nullptr
-    && ref_region->storage_type() == simgrid::mc::StorageType::Chunked;
 
   xbt_assert((((uintptr_t)start_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
   xbt_assert((((uintptr_t)permanent_addr) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
-  size_t page_count = mc_page_count(size);
-
-  std::vector<std::uint64_t> pagemap;
-  const size_t* ref_page_numbers = nullptr;
-  if (use_soft_dirty) {
-    pagemap.resize(page_count);
-    process->read_pagemap(pagemap.data(),
-      mc_page_number(nullptr, permanent_addr), page_count);
-    ref_page_numbers = ref_region->page_data().pagenos();
-  }
+  size_t page_count = simgrid::mc::mmu::chunkCount(size);
 
   simgrid::mc::ChunkedData page_data(
-    mc_model_checker->page_store(), *process, permanent_addr, page_count,
-    ref_page_numbers,
-    use_soft_dirty ? pagemap.data() : nullptr);
+    mc_model_checker->page_store(), *process, permanent_addr, page_count);
 
   simgrid::mc::RegionSnapshot region(
     region_type, start_addr, permanent_addr, size);
   region.page_data(std::move(page_data));
-  return std::move(region);
+  return region;
 }
   
 }

@@ -15,18 +15,19 @@
 #include <simgrid/simix.h>
 #include <xbt/xbt_os_thread.h>
 
-#include "src/simix/smx_private.hpp"
+#include "src/simix/smx_private.h"
 
 #include "jmsg.h"
 #include "jmsg_process.h"
 
 namespace simgrid {
-namespace java {
+namespace kernel {
+namespace context {
 
 class JavaContext;
 class JavacontextFactory;
 
-class JavaContext : public simgrid::simix::Context {
+class JavaContext : public simgrid::kernel::context::Context {
 public:
   // The java process instance bound with the msg process structure:
   jobject jprocess = nullptr;
@@ -41,7 +42,7 @@ public:
   friend class JavaContextFactory;
   JavaContext(std::function<void()> code,
           void_pfn_smxprocess_t cleanup_func,
-          smx_process_t process);
+          smx_actor_t process);
   ~JavaContext() override;
   void stop() override;
   void suspend() override;
@@ -50,20 +51,19 @@ private:
   static void* wrapper(void *data);
 };
 
-class JavaContextFactory : public simgrid::simix::ContextFactory {
+class JavaContextFactory : public simgrid::kernel::context::ContextFactory {
 public:
   JavaContextFactory();
   ~JavaContextFactory() override;
   JavaContext* self() override;
   JavaContext* create_context(std::function<void()> code,
-    void_pfn_smxprocess_t, smx_process_t process) override;
+    void_pfn_smxprocess_t, smx_actor_t process) override;
   void run_all() override;
 };
 
-XBT_PRIVATE simgrid::simix::ContextFactory* java_factory();
+XBT_PRIVATE simgrid::kernel::context::ContextFactory* java_factory();
 XBT_PRIVATE void java_main_jprocess(jobject process);
 
-}
-}
+}}} // namespace simgrid::kernel::context
 
 #endif                          /* !_XBT_CONTEXT_JAVA_H */

@@ -17,23 +17,24 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
   MPI_Datatype recvtype,
   MPI_Comm comm)
 {
-  int        comm_size, rank, j, i;
+  int  j, i;
   MPI_Status status;
   MPI_Aint  recvtype_extent, recvtype_true_extent, recvtype_true_lb;
   int curr_cnt, dst, total_count;
   void *tmp_buf, *tmp_buf_rl;
-  int mask, dst_tree_root, my_tree_root, position,
+  unsigned int mask, dst_tree_root, my_tree_root, position,
     send_offset, recv_offset, last_recv_cnt=0, nprocs_completed, k,
     offset, tmp_mask, tree_root;
 
-  comm_size = smpi_comm_size(comm);
-  rank = smpi_comm_rank(comm);
+  unsigned int comm_size = smpi_comm_size(comm);
+  unsigned int rank = smpi_comm_rank(comm);
 
   total_count = 0;
   for (i=0; i<comm_size; i++)
     total_count += recvcounts[i];
 
-  if (total_count == 0) return MPI_ERR_COUNT;
+  if (total_count == 0)
+    return MPI_ERR_COUNT;
 
   recvtype_extent=smpi_datatype_get_extent( recvtype);
 
@@ -42,14 +43,15 @@ int smpi_coll_tuned_allgatherv_mpich_rdb (
 
   smpi_datatype_extent(recvtype, &recvtype_true_lb, &recvtype_true_extent);
 
-  tmp_buf_rl= (void*)smpi_get_tmp_sendbuffer(total_count*(max(recvtype_true_extent,recvtype_extent)));
+  tmp_buf_rl= (void*)smpi_get_tmp_sendbuffer(total_count*(MAX(recvtype_true_extent,recvtype_extent)));
 
   /* adjust for potential negative lower bound in datatype */
   tmp_buf = (void *)((char*)tmp_buf_rl - recvtype_true_lb);
 
   /* copy local data into right location in tmp_buf */
   position = 0;
-  for (i=0; i<rank; i++) position += recvcounts[i];
+  for (i=0; i<rank; i++)
+    position += recvcounts[i];
   if (sendbuf != MPI_IN_PLACE)
   {
     smpi_datatype_copy(sendbuf, sendcount, sendtype,

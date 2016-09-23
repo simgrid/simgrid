@@ -6,13 +6,12 @@
 #ifndef SURF_MODEL_H_
 #define SURF_MODEL_H_
 
+#include <cstddef>
+
 #include <xbt.h>
-#include <string>
-#include <vector>
 #include <memory>
 #include <utility>
 
-#include <boost/function.hpp>
 #include <boost/intrusive/list.hpp>
 
 #include <xbt/signal.hpp>
@@ -41,6 +40,11 @@ extern XBT_PRIVATE xbt_dynar_t surf_path;
 extern "C" {
 XBT_PUBLIC(double) surf_get_clock(void);
 }
+/** \ingroup SURF_simulation
+ *  \brief List of hosts that have just restarted and whose autorestart process should be restarted.
+ */
+XBT_PUBLIC_DATA(std::vector<sg_host_t>) host_that_restart;
+
 
 extern XBT_PRIVATE double sg_sender_gap;
 
@@ -81,7 +85,10 @@ XBT_PUBLIC_DATA(xbt_dict_t) traces_set_list;
 
 XBT_PRIVATE void surf_action_lmm_update_index_heap(void *action, int i);
 
-XBT_PUBLIC_DATA(xbt_dynar_t) all_existing_models;
+/** \ingroup SURF_models
+ *  \brief List of initialized models
+ */
+XBT_PUBLIC_DATA(std::vector<surf_model_t>*) all_existing_models;
 
 namespace simgrid {
 namespace surf {
@@ -97,12 +104,22 @@ public:
   typedef boost::intrusive::member_hook<
     Action, boost::intrusive::list_member_hook<>, &Action::action_hook> ActionOptions;
   typedef boost::intrusive::list<Action, ActionOptions> ActionList;
+
+  enum class State {
+    ready = 0,        /**< Ready        */
+    running,          /**< Running      */
+    failed,           /**< Task Failure */
+    done,             /**< Completed    */
+    to_free,          /**< Action to free in next cleanup */
+    not_in_the_system /**< Not in the system anymore. Why did you ask ? */
+  };
+
 private:
   /**
    * @brief Common initializations for the constructors
    */
   void initialize(simgrid::surf::Model *model, double cost, bool failed,
-                  lmm_variable_t var = NULL);
+                  lmm_variable_t var = nullptr);
 
 public:
   /**
@@ -130,10 +147,10 @@ public:
   /** @brief Mark that the action is now finished */
   void finish();
 
-  /** @brief Get the [state](\ref e_surf_action_state_t) of the current Action */
-  e_surf_action_state_t getState(); /**< get the state*/
-  /** @brief Set the [state](\ref e_surf_action_state_t) of the current Action */
-  virtual void setState(e_surf_action_state_t state);
+  /** @brief Get the [state](\ref simgrid::surf::Action::State) of the current Action */
+  Action::State getState(); /**< get the state*/
+  /** @brief Set the [state](\ref simgrid::surf::Action::State) of the current Action */
+  virtual void setState(Action::State state);
 
   /** @brief Get the bound of the current Action */
   double getBound();
@@ -146,32 +163,32 @@ public:
   double getFinishTime();
 
   /** @brief Get the user data associated to the current action */
-  void *getData() {return p_data;}
+  void *getData() {return data_;}
   /** @brief Set the user data associated to the current action */
   void setData(void* data);
 
   /** @brief Get the cost of the current action */
-  double getCost() {return m_cost;}
+  double getCost() {return cost_;}
   /** @brief Set the cost of the current action */
-  void setCost(double cost) {m_cost = cost;}
+  void setCost(double cost) {cost_ = cost;}
 
   /** @brief Update the maximum duration of the current action
    *  @param delta Amount to remove from the MaxDuration */
-  void updateMaxDuration(double delta) {double_update(&m_maxDuration, delta,sg_surf_precision);}
+  void updateMaxDuration(double delta) {double_update(&maxDuration_, delta,sg_surf_precision);}
 
   /** @brief Update the remaining time of the current action
    *  @param delta Amount to remove from the remaining time */
-  void updateRemains(double delta) {double_update(&m_remains, delta, sg_maxmin_precision*sg_surf_precision);}
+  void updateRemains(double delta) {double_update(&remains_, delta, sg_maxmin_precision*sg_surf_precision);}
 
   /** @brief Set the remaining time of the current action */
-  void setRemains(double value) {m_remains = value;}
+  void setRemains(double value) {remains_ = value;}
   /** @brief Get the remaining time of the current action after updating the resource */
   virtual double getRemains();
   /** @brief Get the remaining time of the current action without updating the resource */
   double getRemainsNoUpdate();
 
   /** @brief Set the finish time of the current action */
-  void setFinishTime(double value) {m_finish = value;}
+  void setFinishTime(double value) {finishTime_ = value;}
 
   /**@brief Add a reference to the current action (refcounting) */
   void ref();
@@ -193,45 +210,42 @@ public:
   virtual bool isSuspended();
 
   /** @brief Get the maximum duration of the current action */
-  double getMaxDuration() {return m_maxDuration;}
+  double getMaxDuration() {return maxDuration_;}
   /** @brief Set the maximum duration of the current Action */
   virtual void setMaxDuration(double duration);
 
   /** @brief Get the tracing category associated to the current action */
-  char *getCategory() {return p_category;}
+  char *getCategory() {return category_;}
   /** @brief Set the tracing category of the current Action */
   void setCategory(const char *category);
 
   /** @brief Get the priority of the current Action */
-  double getPriority() {return m_priority;};
+  double getPriority() {return priority_;};
   /** @brief Set the priority of the current Action */
   virtual void setPriority(double priority);
 
   /** @brief Get the state set in which the action is */
-  ActionList* getStateSet() {return p_stateSet;};
+  ActionList* getStateSet() {return stateSet_;};
 
-  s_xbt_swag_hookup_t p_stateHookup = {NULL,NULL};
+  s_xbt_swag_hookup_t stateHookup_ = {nullptr,nullptr};
 
-  simgrid::surf::Model *getModel() {return p_model;}
+  simgrid::surf::Model *getModel() {return model_;}
 
 protected:
-  ActionList* p_stateSet;
-  double m_priority = 1.0; /**< priority (1.0 by default) */
-  int    m_refcount = 1;
-  double m_remains; /**< How much of that cost remains to be done in the currently running task */
-  double m_maxDuration = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
-  double m_finish = -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
+  ActionList* stateSet_;
+  double priority_ = 1.0; /**< priority (1.0 by default) */
+  int    refcount_ = 1;
+  double remains_; /**< How much of that cost remains to be done in the currently running task */
+  double maxDuration_ = NO_MAX_DURATION; /*< max_duration (may fluctuate until the task is completed) */
+  double finishTime_ = -1; /**< finish time : this is modified during the run and fluctuates until the task is completed */
 
 private:
-  double m_start; /**< start time  */
-  char *p_category = NULL;            /**< tracing category for categorized resource utilization monitoring */
+  double start_; /**< start time  */
+  char *category_ = nullptr;            /**< tracing category for categorized resource utilization monitoring */
 
-  #ifdef HAVE_LATENCY_BOUND_TRACKING
-  int m_latencyLimited;               /**< Set to 1 if is limited by latency, 0 otherwise */
-  #endif
-  double    m_cost;
-  simgrid::surf::Model *p_model;
-  void *p_data = NULL; /**< for your convenience */
+  double    cost_;
+  simgrid::surf::Model *model_;
+  void *data_ = nullptr; /**< for your convenience */
 
   /* LMM */
 public:
@@ -240,20 +254,20 @@ public:
   void heapRemove(xbt_heap_t heap);
   void heapUpdate(xbt_heap_t heap, double key, enum heap_action_type hat);
   void updateIndexHeap(int i);
-  lmm_variable_t getVariable() {return p_variable;}
-  double getLastUpdate() {return m_lastUpdate;}
-  void refreshLastUpdate() {m_lastUpdate = surf_get_clock();}
-  enum heap_action_type getHat() {return m_hat;}
+  lmm_variable_t getVariable() {return variable_;}
+  double getLastUpdate() {return lastUpdate_;}
+  void refreshLastUpdate() {lastUpdate_ = surf_get_clock();}
+  enum heap_action_type getHat() {return hat_;}
   bool is_linked() {return action_lmm_hook.is_linked();}
   void gapRemove();
 
 protected:
-  lmm_variable_t p_variable;
-  double m_lastValue = 0;
-  double m_lastUpdate = 0;
-  int m_suspended = 0;
-  int m_indexHeap;
-  enum heap_action_type m_hat = NOTSET;
+  lmm_variable_t variable_ = nullptr;
+  double lastValue_ = 0;
+  double lastUpdate_ = 0;
+  int suspended_ = 0;
+  int indexHeap_;
+  enum heap_action_type hat_ = NOTSET;
 };
 
 typedef Action::ActionList ActionList;
@@ -277,31 +291,31 @@ public:
   virtual ~Model();
 
   /** @brief Get the set of [actions](@ref Action) in *ready* state */
-  virtual ActionList* getReadyActionSet() {return p_readyActionSet;}
+  virtual ActionList* getReadyActionSet() {return readyActionSet_;}
 
   /** @brief Get the set of [actions](@ref Action) in *running* state */
-  virtual ActionList* getRunningActionSet() {return p_runningActionSet;}
+  virtual ActionList* getRunningActionSet() {return runningActionSet_;}
 
   /** @brief Get the set of [actions](@ref Action) in *failed* state */
-  virtual ActionList* getFailedActionSet() {return p_failedActionSet;}
+  virtual ActionList* getFailedActionSet() {return failedActionSet_;}
 
   /** @brief Get the set of [actions](@ref Action) in *done* state */
-  virtual ActionList* getDoneActionSet() {return p_doneActionSet;}
+  virtual ActionList* getDoneActionSet() {return doneActionSet_;}
 
   /** @brief Get the set of modified [actions](@ref Action) */
-  virtual ActionLmmListPtr getModifiedSet() {return p_modifiedSet;}
+  virtual ActionLmmListPtr getModifiedSet() {return modifiedSet_;}
 
   /** @brief Get the maxmin system of the current Model */
-  lmm_system_t getMaxminSystem() {return p_maxminSystem;}
+  lmm_system_t getMaxminSystem() {return maxminSystem_;}
 
   /**
    * @brief Get the update mechanism of the current Model
    * @see e_UM_t
    */
-  e_UM_t getUpdateMechanism() {return p_updateMechanism;}
+  e_UM_t getUpdateMechanism() {return updateMechanism_;}
 
   /** @brief Get Action heap */
-  xbt_heap_t getActionHeap() {return p_actionHeap;}
+  xbt_heap_t getActionHeap() {return actionHeap_;}
 
   /**
    * @brief Share the resources between the actions
@@ -333,17 +347,17 @@ public:
   virtual bool next_occuring_event_isIdempotent()=0;
 
 protected:
-  ActionLmmListPtr p_modifiedSet;
-  lmm_system_t p_maxminSystem = nullptr;
-  e_UM_t p_updateMechanism = UM_UNDEFINED;
-  int m_selectiveUpdate;
-  xbt_heap_t p_actionHeap;
+  ActionLmmListPtr modifiedSet_;
+  lmm_system_t maxminSystem_ = nullptr;
+  e_UM_t updateMechanism_ = UM_UNDEFINED;
+  int selectiveUpdate_;
+  xbt_heap_t actionHeap_;
 
 private:
-  ActionList* p_readyActionSet; /**< Actions in state SURF_ACTION_READY */
-  ActionList* p_runningActionSet; /**< Actions in state SURF_ACTION_RUNNING */
-  ActionList* p_failedActionSet; /**< Actions in state SURF_ACTION_FAILED */
-  ActionList* p_doneActionSet; /**< Actions in state SURF_ACTION_DONE */
+  ActionList* readyActionSet_; /**< Actions in state SURF_ACTION_READY */
+  ActionList* runningActionSet_; /**< Actions in state SURF_ACTION_RUNNING */
+  ActionList* failedActionSet_; /**< Actions in state SURF_ACTION_FAILED */
+  ActionList* doneActionSet_; /**< Actions in state SURF_ACTION_DONE */
 };
 
 }
@@ -367,7 +381,7 @@ namespace surf {
 
 /** @ingroup SURF_interface
  * @brief SURF resource interface class
- * @details A resource represent an element of a component (e.g.: a link for the network)
+ * @details This is the ancestor class of every resources in SimGrid, such as links, CPU or storage
  */
 XBT_PUBLIC_CLASS Resource {
 public:
@@ -388,27 +402,18 @@ public:
    */
   Resource(Model *model, const char *name, lmm_constraint_t constraint);
 
-  Resource(Model *model, const char *name, lmm_constraint_t constraint, int initiallyOn);
-
-  /**
-   * @brief Resource constructor
-   *
-   * @param model Model associated to this Resource
-   * @param name The name of the Resource
-   * @param initiallyOn the initial state of the Resource
-   */
-  Resource(Model *model, const char *name, int initiallyOn);
-
   virtual ~Resource();
 
   /** @brief Get the Model of the current Resource */
-  Model *getModel();
+  Model *getModel() const;
 
   /** @brief Get the name of the current Resource */
-  const char *getName();
+  const char *getName() const;
+
+  bool operator==(const Resource &other) const;
 
   /**
-   * @brief Apply an event of external load event to that storage
+   * @brief Apply an event of external load event to that resource
    *
    * @param event What happened
    * @param value [TODO]
@@ -419,27 +424,38 @@ public:
   virtual bool isUsed()=0;
 
   /** @brief Check if the current Resource is active */
-  virtual bool isOn();
+  virtual bool isOn() const;
   /** @brief Check if the current Resource is shut down */
-  virtual bool isOff();
+  virtual bool isOff() const;
   /** @brief Turn on the current Resource */
   virtual void turnOn();
   /** @brief Turn off the current Resource */
   virtual void turnOff();
 
 private:
-  const char *p_name;
-  Model *p_model;
-  bool m_isOn;
+  const char *name_;
+  Model *model_;
+  bool isOn_ = true;
 
 public: /* LMM */
-  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component */
-  lmm_constraint_t getConstraint();
+  /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
+  lmm_constraint_t getConstraint() const;
 protected:
-  lmm_constraint_t p_constraint = nullptr;
+  lmm_constraint_t constraint_ = nullptr;
 };
 
 }
+}
+
+namespace std {
+  template <>
+  struct hash<simgrid::surf::Resource>
+  {
+    std::size_t operator()(const simgrid::surf::Resource& r) const
+    {
+      return (std::size_t) xbt_str_hash(r.getName());
+    }
+  };
 }
 
 #endif /* SURF_MODEL_H_ */

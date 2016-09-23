@@ -13,32 +13,37 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
  *********/
 void surf_network_model_init_Constant()
 {
-  xbt_assert(surf_network_model == NULL);
+  xbt_assert(surf_network_model == nullptr);
   surf_network_model = new simgrid::surf::NetworkConstantModel();
-  xbt_dynar_push(all_existing_models, &surf_network_model);
+  all_existing_models->push_back(surf_network_model);
 
-  routing_model_create(NULL);
-
-  simgrid::surf::on_link.connect([](sg_platf_link_cbarg_t link){
-    xbt_die("There is no link in the Constant network model. "
-        "Please remove any link from your platform (and switch to routing='None')");
-  });
+  routing_model_create(nullptr);
 }
 
 namespace simgrid {
   namespace surf {
 
+    NetworkConstantModel::~NetworkConstantModel() {}
+
+    Link* NetworkConstantModel::createLink(const char *name, double bw, double lat, e_surf_link_sharing_policy_t policy,
+        xbt_dict_t properties) {
+
+      xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
+          "Please remove any link from your platform (and switch to routing='None')", name);
+      return nullptr;
+    }
+
     double NetworkConstantModel::next_occuring_event(double /*now*/)
     {
-      NetworkConstantAction *action = NULL;
+      NetworkConstantAction *action = nullptr;
       double min = -1.0;
 
       ActionList *actionSet = getRunningActionSet();
       for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
           ; it != itend ; ++it) {
         action = static_cast<NetworkConstantAction*>(&*it);
-        if (action->m_latency > 0 && (min < 0 || action->m_latency < min))
-          min = action->m_latency;
+        if (action->latency_ > 0 && (min < 0 || action->latency_ < min))
+          min = action->latency_;
       }
 
       return min;
@@ -46,68 +51,57 @@ namespace simgrid {
 
     void NetworkConstantModel::updateActionsState(double /*now*/, double delta)
     {
-      NetworkConstantAction *action = NULL;
+      NetworkConstantAction *action = nullptr;
       ActionList *actionSet = getRunningActionSet();
       for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
           ; it != itend ; it=itNext) {
         ++itNext;
         action = static_cast<NetworkConstantAction*>(&*it);
-        if (action->m_latency > 0) {
-          if (action->m_latency > delta) {
-            double_update(&(action->m_latency), delta, sg_surf_precision);
+        if (action->latency_ > 0) {
+          if (action->latency_ > delta) {
+            double_update(&(action->latency_), delta, sg_surf_precision);
           } else {
-            action->m_latency = 0.0;
+            action->latency_ = 0.0;
           }
         }
-        action->updateRemains(action->getCost() * delta / action->m_latInit);
+        action->updateRemains(action->getCost() * delta / action->initialLatency_);
         if (action->getMaxDuration() != NO_MAX_DURATION)
           action->updateMaxDuration(delta);
 
         if (action->getRemainsNoUpdate() <= 0) {
           action->finish();
-          action->setState(SURF_ACTION_DONE);
+          action->setState(Action::State::done);
         } else if ((action->getMaxDuration() != NO_MAX_DURATION)
             && (action->getMaxDuration() <= 0)) {
           action->finish();
-          action->setState(SURF_ACTION_DONE);
+          action->setState(Action::State::done);
         }
       }
     }
 
-    Action *NetworkConstantModel::communicate(NetCard *src, NetCard *dst,
-        double size, double rate)
+    Action *NetworkConstantModel::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate)
     {
-      char *src_name = src->name();
-      char *dst_name = dst->name();
-
-      XBT_IN("(%s,%s,%g,%g)", src_name, dst_name, size, rate);
       NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
-      XBT_OUT();
 
-      networkCommunicateCallbacks(action, src, dst, size, rate);
+      Link::onCommunicate(action, src, dst);
       return action;
     }
 
     /**********
      * Action *
      **********/
-
-    int NetworkConstantAction::unref()
+    NetworkConstantAction::NetworkConstantAction(NetworkConstantModel *model_, double size, double latency)
+    : NetworkAction(model_, size, false)
+    , initialLatency_(latency)
     {
-      m_refcount--;
-      if (!m_refcount) {
-        if (action_hook.is_linked())
-          p_stateSet->erase(p_stateSet->iterator_to(*this));
-        delete this;
-        return 1;
+      latency_ = latency;
+      if (latency_ <= 0.0) {
+        stateSet_ = getModel()->getDoneActionSet();
+        stateSet_->push_back(*this);
       }
-      return 0;
-    }
+    };
 
-    void NetworkConstantAction::cancel()
-    {
-      return;
-    }
+    NetworkConstantAction::~NetworkConstantAction() {}
 
   }
 }

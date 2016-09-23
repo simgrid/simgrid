@@ -48,9 +48,9 @@ XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::Storage*, int, int)>) s
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
- * @details Callback functions have the following signature: `void(StorageAction *action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)`
  */
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageAction*, e_surf_action_state_t, e_surf_action_state_t)>) storageActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -74,16 +74,13 @@ public:
    * @param attach [description]
    * @return The created Storage
    */
-  virtual Storage *createStorage(const char* id,
-                                    const char* type_id,
-                                    const char* content_name,
-                                    const char* content_type,
-                                    xbt_dict_t properties,
-                                    const char *attach) = 0;
+  virtual Storage *createStorage(const char* id, const char* type_id,
+                                 const char* content_name, const char* content_type,
+                                 xbt_dict_t properties, const char *attach) = 0;
 
   bool next_occuring_event_isIdempotent() {return true;}
 
-  xbt_dynar_t p_storageList;
+  std::vector<Storage*> p_storageList;
 };
 
 /************
@@ -117,15 +114,6 @@ public:
    * @param model StorageModel associated to this Storage
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
-   * @param maxminSystem [description]
-   * @param bread [description]
-   * @param bwrite [description]
-   * @param bconnection [description]
-   * @param type_id [description]
-   * @param content_name [description]
-   * @param content_type [description]
-   * @param size [description]
-   * @param attach [description]
    */
   Storage(Model *model, const char *name, xbt_dict_t props,
           lmm_system_t maxminSystem, double bread, double bwrite,
@@ -143,12 +131,12 @@ public:
   void turnOn() override;
   void turnOff() override;
 
-  xbt_dict_t p_content;
-  char* p_contentType;
-  sg_size_t m_size;
-  sg_size_t m_usedSize;
-  char * p_typeId;
-  char* p_attach; //FIXME: this is the name of the host. Use the host directly
+  xbt_dict_t content_;
+  char* contentType_;
+  sg_size_t size_;
+  sg_size_t usedSize_;
+  char * typeId_;
+  char* attach_; //FIXME: this is the name of the host. Use the host directly
 
   /**
    * @brief Open a file
@@ -217,10 +205,10 @@ public:
 
   xbt_dict_t parseContent(const char *filename);
 
-  xbt_dynar_t p_writeActions;
+  std::vector<StorageAction*> writeActions_;
 
-  lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
-  lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
+  lmm_constraint_t constraintWrite_;    /* Constraint for maximum write bandwidth*/
+  lmm_constraint_t constraintRead_;     /* Constraint for maximum write bandwidth*/
 };
 
 /**********
@@ -268,7 +256,7 @@ public:
   StorageAction(Model *model, double cost, bool failed, lmm_variable_t var,
       Storage *storage, e_surf_action_storage_type_t type);
 
-  void setState(e_surf_action_state_t state);
+  void setState(simgrid::surf::Action::State state) override;
 
   e_surf_action_storage_type_t m_type;
   Storage *p_storage;
@@ -300,6 +288,5 @@ typedef struct surf_file {
   sg_size_t size;
   sg_size_t current_position;
 } s_surf_file_t;
-
 
 #endif /* STORAGE_INTERFACE_HPP_ */

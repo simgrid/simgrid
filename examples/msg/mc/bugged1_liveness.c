@@ -18,7 +18,6 @@
 
 #include "simgrid/msg.h"
 #include "mc/mc.h"
-#include "xbt/automaton.h"
 #include "bugged1_liveness.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
@@ -37,7 +36,7 @@ static void garbage_stack(void) {
 }
 #endif
 
-int coordinator(int argc, char *argv[])
+static int coordinator(int argc, char *argv[])
 {
   int CS_used = 0;   
   msg_task_t task = NULL, answer = NULL; 
@@ -61,7 +60,7 @@ int coordinator(int argc, char *argv[])
           answer = NULL;
         }
       }
-    } else {      
+    } else {
       if (!xbt_dynar_is_empty(requests)) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
         xbt_dynar_shift(requests, &req);
@@ -81,11 +80,10 @@ int coordinator(int argc, char *argv[])
     kind = NULL;
     req = NULL;
   }
- 
   return 0;
 }
 
-int client(int argc, char *argv[])
+static int client(int argc, char *argv[])
 {
   int my_pid = MSG_process_get_PID(MSG_process_self());
 
@@ -125,7 +123,7 @@ int client(int argc, char *argv[])
     release = NULL;
 
     MSG_process_sleep(my_pid);
-    
+
     if(strcmp(my_mailbox, "1") == 0){
       cs=0;
       r=0;
@@ -133,7 +131,6 @@ int client(int argc, char *argv[])
     }
     
   }
-
   return 0;
 }
 
@@ -141,7 +138,7 @@ static int raw_client(int argc, char *argv[])
 {
 #ifdef GARBAGE_STACK
   // At this point the stack of the callee (client) is probably filled with
-  // zeros and unitialized variables will contain 0. This call will place
+  // zeros and uninitialized variables will contain 0. This call will place
   // random byes in the stack of the callee:
   garbage_stack();
 #endif
@@ -151,19 +148,15 @@ static int raw_client(int argc, char *argv[])
 int main(int argc, char *argv[])
 {
   MSG_init(&argc, argv);
-  char **options = &argv[1];
 
   MC_automaton_new_propositional_symbol_pointer("r", &r);
   MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
-  const char* platform_file = options[0];
-  const char* application_file = options[1];
-
-  MSG_create_environment(platform_file);
+  MSG_create_environment(argv[1]);
 
   MSG_function_register("coordinator", coordinator);
   MSG_function_register("client", raw_client);
-  MSG_launch_application(application_file);
+  MSG_launch_application(argv[2]);
 
   MSG_main();
 

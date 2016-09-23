@@ -12,48 +12,28 @@
 #include <jni.h>
 #include <stdint.h>
 
-/* *********** */
-/* JNI GETTERS */
-/* *********** */
-
 SG_BEGIN_DECL()
 
 /* Search a class and throw an exception if not found */
 jclass jxbt_get_class(JNIEnv * env, const char *name);
 
-/* Search a method in a class and throw an exception if not found
-   (it's ok to to pass a NULL class: it's a noop) */
-jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls,
-                           const char *name, const char *signature);
+/* Search a method in a class and throw an exception if not found(it's ok to to pass a NULL class: it's a noop) */
+jmethodID jxbt_get_jmethod(JNIEnv * env, jclass cls, const char *name, const char *signature);
 
 /* Like the jxbt_get_class() but get a static method */
-jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls,
-                                  const char *name, const char *signature);
+jmethodID jxbt_get_static_jmethod(JNIEnv * env, jclass cls, const char *name, const char *signature);
 
-/* Search a field in a class and throw an exception if not found
-   (it's ok to to pass a NULL class: it's a noop) */
-jfieldID jxbt_get_jfield(JNIEnv * env, jclass cls,
-                         const char *name, const char *signature);
+/* Search a field in a class and throw an exception if not found (it's ok to to pass a NULL class: it's a noop) */
+jfieldID jxbt_get_jfield(JNIEnv * env, jclass cls, const char *name, const char *signature);
 
-
-/* Search a method in a class and throw an exception if not found
-   (it's ok to to pass a NULL class: it's a noop) */
-jmethodID jxbt_get_smethod(JNIEnv * env, const char *classname,
-                           const char *name, const char *signature);
+/* Search a method in a class and throw an exception if not found (it's ok to to pass a NULL class: it's a noop) */
+jmethodID jxbt_get_smethod(JNIEnv * env, const char *classname, const char *name, const char *signature);
 
 /* Like the jxbt_get_smethod() but get a static method */
-jmethodID jxbt_get_static_smethod(JNIEnv * env, const char *classname,
-                                  const char *name, const char *signature);
+jmethodID jxbt_get_static_smethod(JNIEnv * env, const char *classname, const char *name, const char *signature);
 
-/* Search a field in a class and throw an exception if not found
-   (it's ok to to pass a NULL class: it's a noop) */
-jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname,
-                         const char *name, const char *signature);
-
-
-/* ***************** */
-/* EXCEPTION RAISING */
-/* ***************** */
+/* Search a field in a class and throw an exception if not found (it's ok to to pass a NULL class: it's a noop) */
+jfieldID jxbt_get_sfield(JNIEnv * env, const char *classname, const char *name, const char *signature);
 
 #define jxbt_check_res(fun, res, allowed_exceptions, detail) do {\
     if (res != MSG_OK && (res | allowed_exceptions)) { \
@@ -74,10 +54,8 @@ void jxbt_throw_by_name(JNIEnv * env, const char *name, char *msg);
 void jxbt_throw_jni(JNIEnv * env, const char *msg);
 /** Thrown when using an object not bound to a native one where it should, or reverse (kinda JNI issue) */
 void jxbt_throw_notbound(JNIEnv * env, const char *kind, void *pointer);
-
 /** Thrown on error in native MSG code */
 void jxbt_throw_native(JNIEnv * env, char *msg);
-
 /** Thrown if NULL gets used */
 void jxbt_throw_null(JNIEnv * env, char *msg);
 
@@ -97,6 +75,7 @@ void jxbt_throw_time_out_failure(JNIEnv * env, char *details);
 void jxbt_throw_task_cancelled(JNIEnv * env, char *details);
 /** Thrown when looking for a storage from name does not lead to anything */
 void jxbt_throw_storage_not_found(JNIEnv * env, const char *invalid_name);
-#endif                          /* ! JXBT_UTILITY_H */
 
 SG_END_DECL()
+#endif                          /* ! JXBT_UTILITY_H */
+

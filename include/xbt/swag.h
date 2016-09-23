@@ -24,6 +24,8 @@ SG_BEGIN_DECL()
  *  It is basically a fifo but with restrictions so that it can be used as a set. Any operation (add, remove, belongs)
  *  is O(1) and no call to malloc/free is done.
  *
+ *  @deprecated If you are using C++, you might want to use
+ *  `boost::intrusive::set` instead.
  */
 /** @defgroup XBT_swag_type Swag types
     @ingroup XBT_swag
@@ -65,12 +67,15 @@ typedef struct foo {
 */
 typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
 
-typedef struct xbt_swag {
+struct xbt_swag {
   void *head;
   void *tail;
   size_t offset;
   int count;
-} s_xbt_swag_t, *xbt_swag_t;
+};
+typedef struct xbt_swag  s_xbt_swag_t;
+typedef struct xbt_swag* xbt_swag_t;
+
 /**< A typical swag */
 /* @} */
 
@@ -110,7 +115,7 @@ XBT_PUBLIC(int) xbt_swag_size(xbt_swag_t swag);
 #define xbt_swag_getNext(obj, offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->next)
 #define xbt_swag_belongs(obj, swag) (xbt_swag_getNext((obj), (swag)->offset) || (swag)->tail == (obj))
 
-static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
+static inline void *xbt_swag_getFirst(xbt_swag_t swag)
 {
   return (swag->head);
 }
@@ -189,4 +194,5 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
 /* @} */
 
 SG_END_DECL()
+
 #endif                          /* _XBT_SWAG_H */

@@ -5,11 +5,13 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "src/instr/instr_private.h"
+#include "src/instr/instr_smpi.h"
+#include "src/smpi/private.hpp"
 #include "xbt/virtu.h" /* sg_cmdline */
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_trace, instr, "tracing event system");
 
-FILE *tracing_file = NULL;
+FILE *tracing_file = nullptr;
 
 void print_NULL(paje_event_t event){}
 
@@ -24,7 +26,7 @@ s_instr_trace_writer_t active_writer = {
     print_NULL, print_NULL
 };
 
-xbt_dynar_t buffer = NULL;
+std::vector<paje_event_t> buffer;
 
 void dump_comment (const char *comment)
 {
@@ -54,16 +56,6 @@ void dump_comment_file (const char *filename)
   fclose(file);
 }
 
-void TRACE_init()
-{
-  buffer = xbt_dynar_new(sizeof(paje_event_t), NULL);
-}
-
-void TRACE_finalize()
-{
-  xbt_dynar_free(&buffer);
-}
-
 double TRACE_last_timestamp_to_dump = 0;
 //dumps the trace file until the timestamp TRACE_last_timestamp_to_dump
 void TRACE_paje_dump_buffer (int force)
@@ -71,26 +63,22 @@ void TRACE_paje_dump_buffer (int force)
   if (!TRACE_is_enabled()) return;
   XBT_DEBUG("%s: dump until %f. starts", __FUNCTION__, TRACE_last_timestamp_to_dump);
   if (force){
-    paje_event_t event;
-    unsigned int i;
-    xbt_dynar_foreach(buffer, i, event){
+    for (auto event :buffer){
       event->print (event);
       event->free (event);
     }
-    xbt_dynar_free (&buffer);
-    buffer = xbt_dynar_new (sizeof(paje_event_t), NULL);
+    buffer.clear();
   }else{
-    paje_event_t event;
-    unsigned int cursor;
-    xbt_dynar_foreach(buffer, cursor, event) {
+    std::vector<paje_event_t>::iterator i = buffer.begin();
+    for (auto event :buffer){
       double head_timestamp = event->timestamp;
-      if (head_timestamp > TRACE_last_timestamp_to_dump){
+      if (head_timestamp > TRACE_last_timestamp_to_dump)
         break;
-      }
       event->print (event);
       event->free (event);
+      ++i;
     }
-    xbt_dynar_remove_n_at(buffer, cursor, 0);
+    buffer.erase(buffer.begin(), i);
   }
   XBT_DEBUG("%s: ends", __FUNCTION__);
 }
@@ -104,20 +92,20 @@ static void insert_into_buffer (paje_event_t tbi)
     return;
   }
 
-  XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%lu)",
-      __FUNCTION__, (int)tbi->event_type, tbi->timestamp, xbt_dynar_length(buffer));
-
-  unsigned int i;
-  for (i = xbt_dynar_length(buffer); i > 0; i--) {
-    paje_event_t e1 = *(paje_event_t*)xbt_dynar_get_ptr(buffer, i - 1);
+  XBT_DEBUG("%s: insert event_type=%d, timestamp=%f, buffersize=%zu)",
+      __FUNCTION__, (int)tbi->event_type, tbi->timestamp, buffer.size());
+  std::vector<paje_event_t>::reverse_iterator i;
+  for (i = buffer.rbegin(); i != buffer.rend(); ++i) {
+    paje_event_t e1 = *i;
     if (e1->timestamp <= tbi->timestamp)
       break;
   }
-  xbt_dynar_insert_at(buffer, i, &tbi);
-  if (i == 0)
+  buffer.insert(i.base(), tbi);
+  if (i == buffer.rend())
     XBT_DEBUG("%s: inserted at beginning", __FUNCTION__);
   else
-    XBT_DEBUG("%s: inserted at%s %u", __FUNCTION__, (i == xbt_dynar_length(buffer) - 1 ? " end, pos =" : ""), i);
+    XBT_DEBUG("%s: inserted at%s %zd", __FUNCTION__, (i == buffer.rbegin()) ? " end" :"pos =",
+        std::distance(buffer.rend(),i));
 }
 
 static void free_paje_event (paje_event_t event)
@@ -341,6 +329,14 @@ void new_pajeSetState (double timestamp, container_t container, type_t type, val
   ((setState_t)(event->data))->container = container;
   ((setState_t)(event->data))->value = value;
 
+#if HAVE_SMPI
+  if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+    smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
+    ((setState_t)(event->data))->filename   = loc->filename;
+    ((setState_t)(event->data))->linenumber = loc->linenumber;
+  }
+#endif
+
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 
   insert_into_buffer (event);
@@ -360,6 +356,14 @@ void new_pajePushStateWithExtra (double timestamp, container_t container, type_t
   ((pushState_t)(event->data))->value = value;
   ((pushState_t)(event->data))->extra = extra;
 
+#if HAVE_SMPI
+  if (xbt_cfg_get_boolean("smpi/trace-call-location")) {
+    smpi_trace_call_location_t* loc = smpi_trace_get_call_location();
+    ((pushState_t)(event->data))->filename   = loc->filename;
+    ((pushState_t)(event->data))->linenumber = loc->linenumber;
+  }
+#endif
+
   XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
 
   insert_into_buffer (event);
@@ -368,18 +372,7 @@ void new_pajePushStateWithExtra (double timestamp, container_t container, type_t
 
 void new_pajePushState (double timestamp, container_t container, type_t type, val_t value)
 {
-  paje_event_t event = xbt_new0(s_paje_event_t, 1);
-  event->event_type = PAJE_PushState;
-  event->timestamp = timestamp;
-  event->print = active_writer.print_PushState;
-  event->free = free_paje_event;
-  event->data = xbt_new0(s_pushState_t, 1);
-  ((pushState_t)(event->data))->type = type;
-  ((pushState_t)(event->data))->container = container;
-  ((pushState_t)(event->data))->value = value;
-  XBT_DEBUG("%s: event_type=%d, timestamp=%f", __FUNCTION__, (int)event->event_type, event->timestamp);
-
-  insert_into_buffer (event);
+  new_pajePushStateWithExtra(timestamp, container, type, value, nullptr);
 }
 
 void new_pajePopState (double timestamp, container_t container, type_t type)

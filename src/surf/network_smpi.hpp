@@ -24,16 +24,5 @@ namespace simgrid {
       double bandwidthConstraint(double rate, double bound, double size);
       void communicateCallBack() {};
     };
-
-
-    /************
-     * Resource *
-     ************/
-
-
-    /**********
-     * Action *
-     **********/
-
   }
 }

@@ -10,6 +10,7 @@
 #include "surf/surf.h"
 #include "surf/maxmin.h"
 #include "src/surf/trace_mgr.hpp"
+#include <stdio.h>
 
 #define NO_MAX_DURATION -1.0
 
@@ -48,13 +49,13 @@ XBT_PRIVATE int __surf_is_absolute_file_path(const char *file_path);
 extern XBT_PRIVATE simgrid::trace_mgr::future_evt_set *future_evt_set;
 
 
-XBT_PUBLIC(void) routing_exit(void);
-XBT_PUBLIC(void) storage_register_callbacks(void);
+XBT_PUBLIC(void) routing_exit();
+XBT_PUBLIC(void) storage_register_callbacks();
 
 XBT_PUBLIC(void) routing_register_callbacks(void);
 
 XBT_PUBLIC(void) generic_get_graph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges, AS_t rc);
-XBT_PRIVATE void parse_after_config(void);
+XBT_PRIVATE void parse_after_config();
 
 /********** Tracing **********/
 /* from surf_instr.c */

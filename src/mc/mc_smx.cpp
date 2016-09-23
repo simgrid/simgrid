@@ -5,112 +5,112 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cassert>
+#include <cstddef>
 #include <cstdlib>
 
+#include <memory>
+#include <type_traits>
+#include <utility>
+#include <vector>
+
 #include <xbt/log.h>
-#include <xbt/dynar.h>
 #include <xbt/str.h>
 #include <xbt/swag.h>
 
-#include "src/simix/smx_private.h"
+#include <simgrid/s4u/host.hpp>
 
+#include "src/simix/smx_private.h"
 #include "src/mc/mc_smx.h"
 #include "src/mc/ModelChecker.hpp"
 
 using simgrid::mc::remote;
 
-extern "C" {
-
-static
-void MC_smx_process_info_clear(mc_smx_process_info_t p)
-{
-  p->hostname = nullptr;
-  std::free(p->name);
-  p->name = nullptr;
-}
-
-xbt_dynar_t MC_smx_process_info_list_new(void)
-{
-  return xbt_dynar_new(
-    sizeof(s_mc_smx_process_info_t),
-    ( void_f_pvoid_t) &MC_smx_process_info_clear);
-}
-
+/** HACK, Statically "upcast" a s_smx_actor_t into a SimixProcessInformation
+ *
+ *  This gets 'processInfo' from '&processInfo->copy'. It upcasts in the
+ *  sense that we could achieve the same thing by having SimixProcessInformation
+ *  inherit from s_smx_actor_t but we don't really want to do that.
+ */
 static inline
-bool is_in_dynar(smx_process_t p, xbt_dynar_t dynar)
+simgrid::mc::SimixProcessInformation* process_info_cast(smx_actor_t p)
 {
-  return (uintptr_t) p >= (uintptr_t) dynar->data
-    && (uintptr_t) p < ((uintptr_t) dynar->data + dynar->used * dynar->elmsize);
-}
+  simgrid::mc::SimixProcessInformation temp;
+  std::size_t offset = (char*) temp.copy.getBuffer() - (char*)&temp;
 
-static inline
-mc_smx_process_info_t MC_smx_process_get_info(smx_process_t p)
-{
-  assert(is_in_dynar(p, mc_model_checker->process().smx_process_infos)
-    || is_in_dynar(p, mc_model_checker->process().smx_old_process_infos));
-  mc_smx_process_info_t process_info =
-    (mc_smx_process_info_t)
-      ((char*) p - offsetof(s_mc_smx_process_info_t, copy));
+  simgrid::mc::SimixProcessInformation* process_info =
+    (simgrid::mc::SimixProcessInformation*) ((char*) p - offset);
   return process_info;
 }
 
-/** Load the remote swag of processes into a dynar
+/** Load the remote swag of processes into a vector
  *
  *  @param process     MCed process
- *  @param target      Local dynar (to be filled with copies of `s_smx_process_t`)
+ *  @param target      Local vector (to be filled with copies of `s_smx_actor_t`)
  *  @param remote_swag Address of the process SWAG in the remote list
  */
 static void MC_process_refresh_simix_process_list(
   simgrid::mc::Process* process,
-  xbt_dynar_t target, xbt_swag_t remote_swag)
+  std::vector<simgrid::mc::SimixProcessInformation>& target,
+  simgrid::mc::RemotePtr<s_xbt_swag_t> remote_swag)
 {
+  target.clear();
+
   // swag = REMOTE(*simix_global->process_list)
   s_xbt_swag_t swag;
-  process->read_bytes(&swag, sizeof(swag), remote(remote_swag));
+  process->read_bytes(&swag, sizeof(swag), remote_swag);
 
-  smx_process_t p;
-  xbt_dynar_reset(target);
-
-  // Load each element of the dynar from the MCed process:
+  // Load each element of the vector from the MCed process:
   int i = 0;
-  for (p = (smx_process_t) swag.head; p; ++i) {
+  for (smx_actor_t p = (smx_actor_t) swag.head; p; ++i) {
 
-    s_mc_smx_process_info_t info;
+    simgrid::mc::SimixProcessInformation info;
     info.address = p;
-    info.name = nullptr;
     info.hostname = nullptr;
     process->read_bytes(&info.copy, sizeof(info.copy), remote(p));
-    xbt_dynar_push(target, &info);
+    target.push_back(std::move(info));
 
     // Lookup next process address:
-    p = (smx_process_t) xbt_swag_getNext(&info.copy, swag.offset);
+    p = (smx_actor_t) xbt_swag_getNext(&info.copy, swag.offset);
   }
   assert(i == swag.count);
 }
 
-void MC_process_smx_refresh(simgrid::mc::Process* process)
+namespace simgrid {
+namespace mc {
+
+void Process::refresh_simix()
 {
-  xbt_assert(mc_mode == MC_MODE_SERVER);
-  if (process->cache_flags & MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES)
+  if (this->cache_flags_ & Process::cache_simix_processes)
     return;
 
   // TODO, avoid to reload `&simix_global`, `simix_global`, `*simix_global`
 
-  // simix_global_p = REMOTE(simix_global);
-  smx_global_t simix_global_p;
-  process->read_variable("simix_global", &simix_global_p, sizeof(simix_global_p));
+  static_assert(std::is_same<
+      std::unique_ptr<simgrid::simix::Global>,
+      decltype(simix_global)
+    >::value, "Unexpected type for simix_global");
+  static_assert(sizeof(simix_global) == sizeof(simgrid::simix::Global*),
+    "Bad size for simix_global");
+
+  // simix_global_p = REMOTE(simix_global.get());
+  RemotePtr<simgrid::simix::Global> simix_global_p =
+    this->read_variable<simgrid::simix::Global*>("simix_global");
 
   // simix_global = REMOTE(*simix_global)
-  s_smx_global_t simix_global;
-  process->read_bytes(&simix_global, sizeof(simix_global),
-    remote(simix_global_p));
+  Remote<simgrid::simix::Global> simix_global =
+    this->read<simgrid::simix::Global>(simix_global_p);
 
   MC_process_refresh_simix_process_list(
-    process, process->smx_process_infos, simix_global.process_list);
+    this, this->smx_process_infos,
+    remote(simix_global.getBuffer()->process_list));
   MC_process_refresh_simix_process_list(
-    process, process->smx_old_process_infos, simix_global.process_to_destroy);
+    this, this->smx_old_process_infos,
+    remote(simix_global.getBuffer()->process_to_destroy));
 
-  process->cache_flags |= MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES;
+  this->cache_flags_ |= Process::cache_simix_processes;
+}
+
+}
 }
 
 /** Get the issuer of a simcall (`req->issuer`)
@@ -122,71 +122,35 @@ void MC_process_smx_refresh(simgrid::mc::Process* process)
  *  @param process the MCed process
  *  @param req     the simcall (copied in the local process)
  */
-smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req)
+smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 {
-  if (mc_mode == MC_MODE_CLIENT)
-    return req->issuer;
+  xbt_assert(mc_model_checker != nullptr);
 
-  MC_process_smx_refresh(&mc_model_checker->process());
-
-  // This is the address of the smx_process in the MCed process:
-  void* address = req->issuer;
-
-  unsigned i;
-  mc_smx_process_info_t p;
+  // This is the address of the smx_actor in the MCed process:
+  auto address = simgrid::mc::remote(req->issuer);
 
   // Lookup by address:
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, i, p)
-    if (p->address == address)
-      return &p->copy;
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_old_process_infos, i, p)
-    if (p->address == address)
-      return &p->copy;
+  for (auto& p : mc_model_checker->process().simix_processes())
+    if (p.address == address)
+      return p.copy.getBuffer();
+  for (auto& p : mc_model_checker->process().old_simix_processes())
+    if (p.address == address)
+      return p.copy.getBuffer();
 
   xbt_die("Issuer not found");
 }
 
-smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address)
+const char* MC_smx_process_get_host_name(smx_actor_t p)
 {
-  if (!process_remote_address)
-    return nullptr;
-  if (mc_mode == MC_MODE_CLIENT)
-    return process_remote_address;
-
-  mc_smx_process_info_t process_info = MC_smx_resolve_process_info(process_remote_address);
-  if (process_info)
-    return &process_info->copy;
-  else
-    return nullptr;
-}
-
-mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address)
-{
-  if (mc_mode == MC_MODE_CLIENT)
-    xbt_die("No process_info for local process is not enabled.");
-
-  unsigned index;
-  mc_smx_process_info_t process_info;
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_process_infos, index, process_info)
-    if (process_info->address == process_remote_address)
-      return process_info;
-  xbt_dynar_foreach_ptr(mc_model_checker->process().smx_old_process_infos, index, process_info)
-    if (process_info->address == process_remote_address)
-      return process_info;
-  xbt_die("Process info not found");
-}
-
-const char* MC_smx_process_get_host_name(smx_process_t p)
-{
-  if (mc_mode == MC_MODE_CLIENT)
+  if (mc_model_checker == nullptr)
     return sg_host_get_name(p->host);
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 
-  /* Horrible hack to find the offset of the id in the simgrid::s4u::Host.
+  /* HACK, Horrible hack to find the offset of the id in the simgrid::s4u::Host.
 
      Offsetof is not supported for non-POD types but this should
-     work in pratice for the targets currently supported by the MC
+     work in practice for the targets currently supported by the MC
      as long as we do not add funny features to the Host class
      (such as virtual base).
 
@@ -202,43 +166,39 @@ const char* MC_smx_process_get_host_name(smx_process_t p)
   const size_t offset = (char*) &foo.host.name() - (char*) &foo.host;
 
   // Read the simgrid::xbt::string in the MCed process:
-  mc_smx_process_info_t info = MC_smx_process_get_info(p);
-  simgrid::xbt::string_data remote_string;
+  simgrid::mc::SimixProcessInformation* info = process_info_cast(p);
   auto remote_string_address = remote(
     (simgrid::xbt::string_data*) ((char*) p->host + offset));
-  process->read_bytes(&remote_string, sizeof(remote_string), remote_string_address);
+  simgrid::xbt::string_data remote_string = process->read(remote_string_address);
   char hostname[remote_string.len];
   process->read_bytes(hostname, remote_string.len + 1, remote(remote_string.data));
-  info->hostname = mc_model_checker->get_host_name(hostname);
+  info->hostname = mc_model_checker->get_host_name(hostname).c_str();
   return info->hostname;
 }
 
-const char* MC_smx_process_get_name(smx_process_t p)
+const char* MC_smx_process_get_name(smx_actor_t p)
 {
   simgrid::mc::Process* process = &mc_model_checker->process();
-  if (mc_mode == MC_MODE_CLIENT)
-    return p->name;
-  if (!p->name)
-    return nullptr;
+  if (mc_model_checker == nullptr)
+    return p->name.c_str();
 
-  mc_smx_process_info_t info = MC_smx_process_get_info(p);
-  if (!info->name) {
-    info->name = process->read_string(p->name);
+  simgrid::mc::SimixProcessInformation* info = process_info_cast(p);
+  if (info->name.empty()) {
+    simgrid::xbt::string_data string_data = (simgrid::xbt::string_data&)p->name;
+    info->name = process->read_string(remote(string_data.data), string_data.len);
   }
-  return info->name;
+  return info->name.c_str();
 }
 
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
 int MC_smpi_process_count(void)
 {
-  if (mc_mode == MC_MODE_CLIENT)
+  if (mc_model_checker == nullptr)
     return smpi_process_count();
-  else {
-    int res;
-    mc_model_checker->process().read_variable("process_count",
-      &res, sizeof(res));
-    return res;
-  }
+  int res;
+  mc_model_checker->process().read_variable("process_count",
+    &res, sizeof(res));
+  return res;
 }
 #endif
 
@@ -248,6 +208,4 @@ unsigned long MC_smx_get_maxpid(void)
   mc_model_checker->process().read_variable("simix_process_maxpid",
     &maxpid, sizeof(maxpid));
   return maxpid;
-}
-
 }

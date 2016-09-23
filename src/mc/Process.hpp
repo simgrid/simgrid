@@ -13,21 +13,17 @@
 #include <type_traits>
 #include <vector>
 #include <memory>
-
-#include <boost/range/iterator_range.hpp>
+#include <string>
 
 #include <sys/types.h>
 
 #include <simgrid_config.h>
 
 #include <xbt/base.h>
-#include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
 #include <xbt/mmalloc.h>
 
-#ifdef HAVE_MC
 #include "src/xbt/mmalloc/mmprivate.h"
-#endif
+#include "src/mc/Channel.hpp"
 
 #include <simgrid/simix.h>
 #include "src/simix/popping_private.h"
@@ -37,30 +33,32 @@
 
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_base.h"
+#include "src/mc/RemotePtr.hpp"
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/mc_protocol.h"
 #include "src/mc/ObjectInformation.hpp"
 
-// Those flags are used to track down which cached information
-// is still up to date and which information needs to be updated.
-typedef int mc_process_cache_flags_t;
-#define MC_PROCESS_CACHE_FLAG_NONE 0
-#define MC_PROCESS_CACHE_FLAG_HEAP 1
-#define MC_PROCESS_CACHE_FLAG_MALLOC_INFO 2
-#define MC_PROCESS_CACHE_FLAG_SIMIX_PROCESSES 4
-
-struct s_mc_smx_process_info {
-  /** MCed address of the process */
-  void* address;
-  /** (Flat) Copy of the process data structure */
-  struct s_smx_process copy;
-  /** Hostname (owned by `mc_modelchecker->hostnames`) */
-  const char* hostname;
-  char* name;
-};
 
 namespace simgrid {
 namespace mc {
+
+class SimixProcessInformation {
+public:
+  /** MCed address of the process */
+  RemotePtr<simgrid::simix::ActorImpl> address = nullptr;
+  Remote<simgrid::simix::ActorImpl> copy;
+
+  /** Hostname (owned by `mc_modelchecker->hostnames`) */
+  const char* hostname = nullptr;
+  std::string name;
+
+  void clear()
+  {
+    name.clear();
+    address = nullptr;
+    hostname = nullptr;
+  }
+};
 
 struct IgnoredRegion {
   std::uint64_t addr;
@@ -75,8 +73,28 @@ struct IgnoredHeapRegion {
 };
 
 /** Representation of a process
+ *
+ *  This class is mixing a lot of different responsibilities and is tied
+ *  to SIMIX. It should probably be split into different classes.
+ *
+ *  Responsibilities:
+ *
+ *  - reading from the process memory (`AddressSpace`);
+ *  - accessing the system state of the process (heap, …);
+ *  - storing the SIMIX state of the process;
+ *  - privatization;
+ *  - communication with the model-checked process;
+ *  - stack unwinding;
+ *  - etc.
  */
 class Process final : public AddressSpace {
+private:
+  // Those flags are used to track down which cached information
+  // is still up to date and which information needs to be updated.
+  static constexpr int cache_none = 0;
+  static constexpr int cache_heap = 1;
+  static constexpr int cache_malloc = 2;
+  static constexpr int cache_simix_processes = 4;
 public:
   Process(pid_t pid, int sockfd);
   ~Process();
@@ -91,16 +109,25 @@ public:
   const void* read_bytes(void* buffer, std::size_t size,
     RemotePtr<void> address, int process_index = ProcessIndexAny,
     ReadOptions options = ReadOptions::none()) const override;
+
   void read_variable(const char* name, void* target, size_t size) const;
-  template<class T>
-  T read_variable(const char *name) const
+  template<class T> void read_variable(const char* name, T* target) const
   {
-    static_assert(std::is_trivial<T>::value, "Cannot read a non-trivial type");
-    T res;
-    read_variable(name, &res, sizeof(T));
+    read_variable(name, target, sizeof(*target));
+  }
+  template<class T>
+  Remote<T> read_variable(const char *name) const
+  {
+    Remote<T> res;
+    read_variable(name, res.getBuffer(), sizeof(T));
     return res;
   }
-  char* read_string(RemotePtr<void> address) const;
+
+  std::string read_string(RemotePtr<char> address) const;
+  std::string read_string(RemotePtr<char> address, std::size_t len) const
+  {
+    return AddressSpace::read_string(address, len);
+  }
 
   // Write memory:
   void write_bytes(const void* buffer, size_t len, RemotePtr<void> address);
@@ -116,16 +143,24 @@ public:
   // Heap access:
   xbt_mheap_t get_heap()
   {
-    if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_HEAP))
+    if (!(this->cache_flags_ & Process::cache_heap))
       this->refresh_heap();
     return this->heap.get();
   }
   malloc_info* get_malloc_info()
   {
-    if (!(this->cache_flags & MC_PROCESS_CACHE_FLAG_MALLOC_INFO))
+    if (!(this->cache_flags_ & Process::cache_malloc))
       this->refresh_malloc_info();
     return this->heap_info.data();
   }
+  
+  void clear_cache()
+  {
+    this->cache_flags_ = Process::cache_none;
+  }
+
+  Channel const& getChannel() const { return channel_; }
+  Channel& getChannel() { return channel_; }
 
   std::vector<IgnoredRegion> const& ignored_regions() const
   {
@@ -149,28 +184,6 @@ public:
   {
     running_ = false;
   }
-
-  template<class M>
-  typename std::enable_if< std::is_class<M>::value && std::is_trivial<M>::value, int >::type
-  send_message(M const& m)
-  {
-    return MC_protocol_send(this->socket_, &m, sizeof(M));
-  }
-
-  int send_message(e_mc_message_type message_id)
-  {
-    return MC_protocol_send_simple_message(this->socket_, message_id);
-  }
-
-  template<class M>
-  typename std::enable_if< std::is_class<M>::value && std::is_trivial<M>::value, ssize_t >::type
-  receive_message(M& m)
-  {
-    return MC_receive_message(this->socket_, &m, sizeof(M), 0);
-  }
-
-  void reset_soft_dirty();
-  void read_pagemap(uint64_t* pagemap, size_t start_page, size_t page_count);
 
   bool privatized(ObjectInformation const& info) const
   {
@@ -206,24 +219,53 @@ public:
   void unignore_heap(void *address, size_t size);
 
   void ignore_local_variable(const char *var_name, const char *frame_name);
-  int socket() { return socket_; }
-  simgrid::xbt::DynarRange<s_mc_smx_process_info> simix_processes();
+  std::vector<simgrid::mc::SimixProcessInformation>& simix_processes();
+  std::vector<simgrid::mc::SimixProcessInformation>& old_simix_processes();
+
+  /** Get a local description of a remote SIMIX process */
+  simgrid::mc::SimixProcessInformation* resolveProcessInfo(
+    simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> process)
+  {
+    xbt_assert(mc_model_checker != nullptr);
+    if (!process)
+      return nullptr;
+    this->refresh_simix();
+    for (auto& process_info : this->smx_process_infos)
+      if (process_info.address == process)
+        return &process_info;
+    for (auto& process_info : this->smx_old_process_infos)
+      if (process_info.address == process)
+        return &process_info;
+    return nullptr;
+  }
+
+  /** Get a local copy of the SIMIX process structure */
+  simgrid::simix::ActorImpl* resolveProcess(simgrid::mc::RemotePtr<simgrid::simix::ActorImpl> process)
+  {
+    simgrid::mc::SimixProcessInformation* process_info =
+      this->resolveProcessInfo(process);
+    if (process_info)
+      return process_info->copy.getBuffer();
+    else
+      return nullptr;
+  }
+
+  void dumpStack();
 
 private:
   void init_memory_map_info();
   void refresh_heap();
   void refresh_malloc_info();
+  void refresh_simix();
 
 private:
   pid_t pid_ = -1;
-  int socket_ = -1;
+  Channel channel_;
   bool running_ = false;
   std::vector<simgrid::xbt::VmMap> memory_map_;
   RemotePtr<void> maestro_stack_start_, maestro_stack_end_;
   int memory_file = -1;
   std::vector<IgnoredRegion> ignored_regions_;
-  int clear_refs_fd_ = -1;
-  int pagemap_fd_ = -1;
   bool privatized_ = false;
   std::vector<s_stack_region_t> stack_areas_;
   std::vector<IgnoredHeapRegion> ignored_heap_;
@@ -239,17 +281,19 @@ public: // Copies of MCed SMX data structures
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_process_infos = nullptr;
+  std::vector<SimixProcessInformation> smx_process_infos;
 
   /** Copy of `simix_global->process_to_destroy`
    *
    *  See mc_smx.c.
    */
-  xbt_dynar_t smx_old_process_infos = nullptr;
+  std::vector<SimixProcessInformation> smx_old_process_infos;
 
+private:
   /** State of the cache (which variables are up to date) */
-  mc_process_cache_flags_t cache_flags = MC_PROCESS_CACHE_FLAG_NONE;
+  int cache_flags_ = Process::cache_none;
 
+public:
   /** Address of the heap structure in the MCed process. */
   void* heap_address;
 
@@ -273,13 +317,13 @@ public: // Libunwind-data
 
   /** Full-featured MC-aware libunwind address space for the process
    *
-   *  This address space is using a mc_unw_context_t
+   *  This address space is using a simgrid::mc::UnwindContext*
    *  (with simgrid::mc::Process* / simgrid::mc::AddressSpace*
    *  and unw_context_t).
    */
   unw_addr_space_t unw_addr_space;
 
-  /** Underlying libunwind addres-space
+  /** Underlying libunwind address-space
    *
    *  The `find_proc_info`, `put_unwind_info`, `get_dyn_info_list_addr`
    *  operations of the native MC address space is currently delegated

@@ -32,6 +32,14 @@ DynarRange<T> range(xbt_dynar_t dynar)
     (T*) ((char*) dynar->data + dynar->used * dynar->elmsize));
 }
 
+/** Dynar of `T*` which `delete` its values */
+template<class T> inline
+xbt_dynar_t newDeleteDynar()
+{
+  return xbt_dynar_new(sizeof(T*),
+    [](void* p) { delete *(T**)p; });
+}
+
 }
 }
 #endif

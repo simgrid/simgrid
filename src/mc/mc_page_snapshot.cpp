@@ -35,7 +35,7 @@ void mc_restore_page_snapshot_region(simgrid::mc::Process* process,
 {
   for (size_t i = 0; i != pages_copy.page_count(); ++i) {
     // Otherwise, copy the page:
-    void* target_page = mc_page_from_number(start_addr, i);
+    void* target_page = (void*) simgrid::mc::mmu::join(i, (std::uintptr_t) start_addr);
     const void* source_page = pages_copy.page(i);
     process->write_bytes(source_page, xbt_pagesize, remote(target_page));
   }
@@ -47,7 +47,7 @@ void mc_region_restore_sparse(simgrid::mc::Process* process, mc_mem_region_t reg
 {
   xbt_assert(((reg->permanent_address().address()) & (xbt_pagesize-1)) == 0,
     "Not at the beginning of a page");
-  xbt_assert(mc_page_count(reg->size()) == reg->page_data().page_count());
+  xbt_assert(simgrid::mc::mmu::chunkCount(reg->size()) == reg->page_data().page_count());
   mc_restore_page_snapshot_region(process,
     (void*) reg->permanent_address().address(), reg->page_data());
 }

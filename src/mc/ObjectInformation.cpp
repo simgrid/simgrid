@@ -15,38 +15,26 @@
 namespace simgrid {
 namespace mc {
 
-ObjectInformation::ObjectInformation()
-{
-  this->flags = 0;
-  this->start = nullptr;
-  this->end = nullptr;
-  this->start_exec = nullptr;
-  this->end_exec = nullptr;
-  this->start_rw = nullptr;
-  this->end_rw = nullptr;
-  this->start_ro = nullptr;
-  this->end_ro = nullptr;
-}
+ObjectInformation::ObjectInformation() {}
 
-/** Find the DWARF offset for this ELF object
+/* For an executable object, addresses are virtual address
+ * (there is no offset) i.e.
+ * \f$\text{virtual address} = \{dwarf address}\f$;
  *
- *  An offset is applied to address found in DWARF:
- *
- *  * for an executable obejct, addresses are virtual address
- *    (there is no offset) i.e.
- *    \f$\text{virtual address} = \{dwarf address}\f$;
- *
- *  * for a shared object, the addreses are offset from the begining
- *    of the shared object (the base address of the mapped shared
- *    object must be used as offset
- *    i.e. \f$\text{virtual address} = \text{shared object base address}
+ * For a shared object, the addreses are offset from the begining
+ * of the shared object (the base address of the mapped shared
+ * object must be used as offset
+ * i.e. \f$\text{virtual address} = \text{shared object base address}
  *             + \text{dwarf address}\f$.
  */
 void *ObjectInformation::base_address() const
 {
+  // For an executable (more precisely for a ET_EXEC) the base it 0:
   if (this->executable())
     return nullptr;
 
+  // For an a shared-object (ET_DYN, including position-independant executables)
+  // the base address is its lowest address:
   void *result = this->start_exec;
   if (this->start_rw != nullptr && result > (void *) this->start_rw)
     result = this->start_rw;
@@ -55,7 +43,6 @@ void *ObjectInformation::base_address() const
   return result;
 }
 
-/* Find a function by instruction pointer */
 simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
 {
   /* This is implemented by binary search on a sorted array.
@@ -66,7 +53,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
    * during the binary search (only at the end) so it is not included
    * in the index entry. We could use parallel arrays as well.
    *
-   * We cannot really use the std:: alogrithm for this.
+   * We cannot really use the std:: algorithm for this.
    * We could use std::binary_search by including the high_pc inside
    * the FunctionIndexEntry.
    */
@@ -87,7 +74,7 @@ simgrid::mc::Frame* ObjectInformation::find_function(const void *ip) const
     /* At this point, the search is over.
      * Either we have found the correct function or we do not know
      * any function corresponding to this instruction address.
-     * Only at the point do we derefernce the function pointer. */
+     * Only at the point do we dereference the function pointer. */
     else if ((std::uint64_t) ip < base[k].function->range.end())
       return base[k].function;
     else
@@ -146,16 +133,16 @@ void ObjectInformation::remove_global_variable(const char* name)
   }
 }
 
-/** \brief Ignore a local variable in a scope
+/** Ignore a local variable in a scope
  *
  *  Ignore all instances of variables with a given name in
  *  any (possibly inlined) subprogram with a given namespaced
  *  name.
  *
- *  \param var_name        Name of the local variable (or parameter to ignore)
- *  \param subprogram_name Name of the subprogram fo ignore (nullptr for any)
- *  \param subprogram      (possibly inlined) Subprogram of the scope
- *  \param scope           Current scope
+ *  @param var_name        Name of the local variable to ignore
+ *  @param subprogram_name Name of the subprogram to ignore (nullptr for any)
+ *  @param subprogram      (possibly inlined) Subprogram of the scope current scope
+ *  @param scope           Current scope
  */
 static void remove_local_variable(simgrid::mc::Frame& scope,
                             const char *var_name,

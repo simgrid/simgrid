@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/host.hpp>
+
 #include "simgrid/msg.h"
 #include "instr/instr_interface.h"
 #include "msg_private.h"
@@ -16,14 +18,14 @@
 XBT_LOG_NEW_CATEGORY(msg, "All MSG categories");
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_kernel, msg, "Logging specific to MSG (kernel)");
 
-MSG_Global_t msg_global = NULL;
-static void MSG_exit(void);
+MSG_Global_t msg_global = nullptr;
+static void MSG_exit();
 
 /********************************* MSG **************************************/
 
-static void _sg_cfg_cb_msg_debug_multiple_use(const char *name, int pos)
+static void _sg_cfg_cb_msg_debug_multiple_use(const char *name)
 {
-  msg_global->debug_multiple_use = xbt_cfg_get_boolean(_sg_cfg_set, name);
+  msg_global->debug_multiple_use = xbt_cfg_get_boolean(name);
 }
 
 static void MSG_host_create_(sg_host_t host)
@@ -45,16 +47,14 @@ void MSG_init_nocheck(int *argc, char **argv) {
 
     msg_global = xbt_new0(s_MSG_Global_t, 1);
 
-    xbt_cfg_register(&_sg_cfg_set, "msg/debug_multiple_use",
-                     "Print backtraces of both processes when there is a conflict of multiple use of a task",
-                     xbt_cfgelm_boolean, 1, 1, _sg_cfg_cb_msg_debug_multiple_use);
-    xbt_cfg_setdefault_boolean(_sg_cfg_set, "msg/debug_multiple_use", "no");
+    xbt_cfg_register_boolean("msg/debug-multiple-use", "no", _sg_cfg_cb_msg_debug_multiple_use,
+        "Print backtraces of both processes when there is a conflict of multiple use of a task");
 
     SIMIX_global_init(argc, argv);
 
     msg_global->sent_msg = 0;
-    msg_global->task_copy_callback = NULL;
-    msg_global->process_data_cleanup = NULL;
+    msg_global->task_copy_callback = nullptr;
+    msg_global->process_data_cleanup = nullptr;
 
     SIMIX_function_register_process_create(MSG_process_create_from_SIMIX);
     SIMIX_function_register_process_cleanup(MSG_process_cleanup_from_SIMIX);
@@ -77,13 +77,14 @@ void MSG_init_nocheck(int *argc, char **argv) {
   XBT_DEBUG("ADD MSG LEVELS");
   MSG_STORAGE_LEVEL = xbt_lib_add_level(storage_lib, (void_f_pvoid_t) __MSG_storage_destroy);
   MSG_FILE_LEVEL = xbt_lib_add_level(file_lib, (void_f_pvoid_t) __MSG_file_destroy);
-  if(sg_cfg_get_boolean("clean_atexit")) atexit(MSG_exit);
+  if(xbt_cfg_get_boolean("clean-atexit"))
+    atexit(MSG_exit);
 }
 
 /** \ingroup msg_simulation
  * \brief Launch the MSG simulation
  */
-msg_error_t MSG_main(void)
+msg_error_t MSG_main()
 {
   /* Clean IO before the run */
   fflush(stdout);
@@ -107,7 +108,7 @@ msg_error_t MSG_main(void)
  */
 void MSG_config(const char *key, const char *value){
   xbt_assert(msg_global,"ERROR: Please call MSG_init() before using MSG_config()");
-  xbt_cfg_set_as_string(_sg_cfg_set, key, value);
+  xbt_cfg_set_as_string(key, value);
 }
 
 /** \ingroup msg_simulation
@@ -128,20 +129,20 @@ int MSG_process_killall(int reset_PIDs)
 
 }
 
-static void MSG_exit(void) {
-  if (msg_global==NULL)
+static void MSG_exit() {
+  if (msg_global==nullptr)
     return;
 
   TRACE_surf_resource_utilization_release();
   TRACE_end();
   free(msg_global);
-  msg_global = NULL;
+  msg_global = nullptr;
 }
 
 /** \ingroup msg_simulation
  * \brief A clock (in second).
  */
-double MSG_get_clock(void)
+double MSG_get_clock()
 {
   return SIMIX_get_clock();
 }

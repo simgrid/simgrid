@@ -13,6 +13,8 @@
 #ifndef _XBT_THREAD_H
 #define _XBT_THREAD_H
 
+#include <simgrid/simix.h>
+
 #include "xbt/misc.h"           /* SG_BEGIN_DECL */
 #include "xbt/function_types.h"
 
@@ -27,11 +29,10 @@ SG_BEGIN_DECL()
  *  @{
  */
 
-
 /** @brief Thread mutex data type (opaque object)
  *  @hideinitializer
  */
-typedef struct s_xbt_mutex_ *xbt_mutex_t;
+typedef struct s_smx_mutex_ *xbt_mutex_t;
 
 /** @brief Creates a new mutex variable */
 XBT_PUBLIC(xbt_mutex_t) xbt_mutex_init(void);
@@ -57,7 +58,7 @@ XBT_PUBLIC(void) xbt_mutex_destroy(xbt_mutex_t mutex);
 /** @brief Thread condition data type (opaque object)
  *  @hideinitializer
  */
-typedef struct s_xbt_cond_ *xbt_cond_t;
+typedef struct s_smx_cond_ *xbt_cond_t;
 
 /** @brief Creates a condition variable */
 XBT_PUBLIC(xbt_cond_t) xbt_cond_init(void);

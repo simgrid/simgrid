@@ -13,16 +13,10 @@
 #include "xbt/synchro_core.h"
 
 #include "simgrid/simix.h"        /* used implementation */
-#include "../simix/smx_private.h" /* FIXME */
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt,
-                                "Synchronization mechanism");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync, xbt, "Synchronization mechanism");
 
 /****** mutex related functions ******/
-struct s_xbt_mutex_ {
-  s_smx_mutex_t mutex;
-};
-
 xbt_mutex_t xbt_mutex_init(void)
 {
   return (xbt_mutex_t) simcall_mutex_init();
@@ -45,14 +39,10 @@ void xbt_mutex_release(xbt_mutex_t mutex)
 
 void xbt_mutex_destroy(xbt_mutex_t mutex)
 {
-  SIMIX_mutex_destroy((smx_mutex_t) mutex);
+  SIMIX_mutex_unref((smx_mutex_t) mutex);
 }
 
 /***** condition related functions *****/
-struct s_xbt_cond_ {
-  s_smx_cond_t cond;
-};
-
 xbt_cond_t xbt_cond_init(void)
 {
   return (xbt_cond_t) simcall_cond_init();
@@ -80,7 +70,7 @@ void xbt_cond_broadcast(xbt_cond_t cond)
 
 void xbt_cond_destroy(xbt_cond_t cond)
 {
-  SIMIX_cond_destroy((smx_cond_t) cond);
+  SIMIX_cond_unref((smx_cond_t) cond);
 }
 
 /***** barrier related functions *****/
@@ -101,7 +91,6 @@ xbt_bar_t xbt_barrier_init(unsigned int count)
   return bar;
 }
 
-
 int xbt_barrier_wait(xbt_bar_t bar)
 {
    int ret=0;
@@ -115,7 +104,6 @@ int xbt_barrier_wait(xbt_bar_t bar)
      xbt_cond_wait(bar->cond, bar->mutex);
      xbt_mutex_release(bar->mutex);
    }
-
    return ret;
 }
 
@@ -125,4 +113,3 @@ void xbt_barrier_destroy(xbt_bar_t bar)
    xbt_cond_destroy(bar->cond);
    xbt_free(bar);
 }
-

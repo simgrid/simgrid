@@ -24,14 +24,14 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
  * Model *
  *********/
 
-void surf_host_model_init_current_default(void)
+void surf_host_model_init_current_default()
 {
   surf_host_model = new simgrid::surf::HostCLM03Model();
-  xbt_cfg_setdefault_boolean(_sg_cfg_set, "network/crosstraffic", "yes");
+  xbt_cfg_setdefault_boolean("network/crosstraffic", "yes");
   surf_cpu_model_init_Cas01();
   surf_network_model_init_LegrandVelho();
 
-  xbt_dynar_push(all_existing_models, &surf_host_model);
+  all_existing_models->push_back(surf_host_model);
 }
 
 void surf_host_model_init_compound()
@@ -40,11 +40,13 @@ void surf_host_model_init_compound()
   xbt_assert(surf_network_model, "No network model defined yet!");
 
   surf_host_model = new simgrid::surf::HostCLM03Model();
-  xbt_dynar_push(all_existing_models, &surf_host_model);
+  all_existing_models->push_back(surf_host_model);
 }
 
 namespace simgrid {
 namespace surf {
+
+HostCLM03Model::~HostCLM03Model() {}
 
 double HostCLM03Model::next_occuring_event(double now){
   adjustWeightOfDummyCpuActions();
@@ -58,7 +60,7 @@ double HostCLM03Model::next_occuring_event(double now){
       typeid(surf_network_model).name(), min_by_net,
       typeid(surf_storage_model).name(), min_by_sto);
 
-  double res = std::max(std::max(min_by_cpu, min_by_net), min_by_sto);
+  double res = std::max({min_by_cpu, min_by_net, min_by_sto});
   if (min_by_cpu >= 0.0 && min_by_cpu < res)
     res = min_by_cpu;
   if (min_by_net >= 0.0 && min_by_net < res)

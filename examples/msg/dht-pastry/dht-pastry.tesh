@@ -1,0 +1,176 @@
+#! ./tesh
+
+p Testing the Pastry implementation with MSG (use the deployment file for chord in ../dht-chord)
+
+$ $SG_TEST_EXENV ${bindir:=.}/dht-pastry$EXEEXT -nb_bits=6 ${srcdir:=.}/cluster.xml ${srcdir:=.}/../msg/dht-chord/dht-chord_d.xml --log=msg_pastry.thres:verbose "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [ 25.007806] (1:node@node-0.acme.org) Task update from 366680 !!!
+> [ 25.007806] (1:node@node-0.acme.org) Node:
+> [ 25.007806] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [ 25.007806] (1:node@node-0.acme.org)  Namespace:
+> [ 25.007806] (1:node@node-0.acme.org)   ffffffff
+> [ 25.007806] (1:node@node-0.acme.org)   ffffffff
+> [ 25.007806] (1:node@node-0.acme.org)   ffffffff
+> [ 25.007806] (1:node@node-0.acme.org)   ffffffff
+> [ 25.007806] (1:node@node-0.acme.org)   ffffffff
+> [ 25.007806] (1:node@node-0.acme.org)   ffffffff
+> [ 40.015612] (1:node@node-0.acme.org) Task update from 533744 !!!
+> [ 40.015612] (1:node@node-0.acme.org) Node:
+> [ 40.015612] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [ 40.015612] (1:node@node-0.acme.org)  Namespace:
+> [ 40.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 40.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 40.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 40.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 40.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 40.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 40.023418] (2:node@node-1.acme.org) Task update from 533744 !!!
+> [ 40.023418] (2:node@node-1.acme.org) Node:
+> [ 40.023418] (2:node@node-1.acme.org)  Id: 366680 '00059858' 
+> [ 40.023418] (2:node@node-1.acme.org)  Namespace:
+> [ 40.023418] (2:node@node-1.acme.org)   ffffffff
+> [ 40.023418] (2:node@node-1.acme.org)   ffffffff
+> [ 40.023418] (2:node@node-1.acme.org)   0000002a
+> [ 40.023418] (2:node@node-1.acme.org)   ffffffff
+> [ 40.023418] (2:node@node-1.acme.org)   ffffffff
+> [ 40.023418] (2:node@node-1.acme.org)   ffffffff
+> [ 45.015612] (1:node@node-0.acme.org) Task update from 1319738 !!!
+> [ 45.015612] (1:node@node-0.acme.org) Node:
+> [ 45.015612] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [ 45.015612] (1:node@node-0.acme.org)  Namespace:
+> [ 45.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 45.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 45.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 45.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 45.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 45.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 55.015612] (1:node@node-0.acme.org) Task update from 16509405 !!!
+> [ 55.015612] (1:node@node-0.acme.org) Node:
+> [ 55.015612] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [ 55.015612] (1:node@node-0.acme.org)  Namespace:
+> [ 55.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 55.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 55.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 55.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 55.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 55.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 55.031224] (2:node@node-1.acme.org) Task update from 16509405 !!!
+> [ 55.031224] (2:node@node-1.acme.org) Node:
+> [ 55.031224] (2:node@node-1.acme.org)  Id: 366680 '00059858' 
+> [ 55.031224] (2:node@node-1.acme.org)  Namespace:
+> [ 55.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 55.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 55.031224] (2:node@node-1.acme.org)   0000002a
+> [ 55.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 55.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 55.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 60.015612] (1:node@node-0.acme.org) Task update from 10874876 !!!
+> [ 60.015612] (1:node@node-0.acme.org) Node:
+> [ 60.015612] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [ 60.015612] (1:node@node-0.acme.org)  Namespace:
+> [ 60.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 60.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 60.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 60.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 60.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 60.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 60.031224] (2:node@node-1.acme.org) Task update from 10874876 !!!
+> [ 60.031224] (2:node@node-1.acme.org) Node:
+> [ 60.031224] (2:node@node-1.acme.org)  Id: 366680 '00059858' 
+> [ 60.031224] (2:node@node-1.acme.org)  Namespace:
+> [ 60.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 60.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 60.031224] (2:node@node-1.acme.org)   0000002a
+> [ 60.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 60.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 60.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 60.039030] (3:node@node-2.acme.org) Task update from 10874876 !!!
+> [ 60.039030] (3:node@node-2.acme.org) Node:
+> [ 60.039030] (3:node@node-2.acme.org)  Id: 533744 '000824f0' 
+> [ 60.039030] (3:node@node-2.acme.org)  Namespace:
+> [ 60.039030] (3:node@node-2.acme.org)   ffffffff
+> [ 60.039030] (3:node@node-2.acme.org)   0000002a
+> [ 60.039030] (3:node@node-2.acme.org)   00059858
+> [ 60.039030] (3:node@node-2.acme.org)   ffffffff
+> [ 60.039030] (3:node@node-2.acme.org)   ffffffff
+> [ 60.039030] (3:node@node-2.acme.org)   ffffffff
+> [ 65.031224] (4:node@node-3.acme.org) Task update from 16728096 !!!
+> [ 65.031224] (4:node@node-3.acme.org) Node:
+> [ 65.031224] (4:node@node-3.acme.org)  Id: 1319738 '0014233a' 
+> [ 65.031224] (4:node@node-3.acme.org)  Namespace:
+> [ 65.031224] (4:node@node-3.acme.org)   ffffffff
+> [ 65.031224] (4:node@node-3.acme.org)   ffffffff
+> [ 65.031224] (4:node@node-3.acme.org)   0000002a
+> [ 65.031224] (4:node@node-3.acme.org)   ffffffff
+> [ 65.031224] (4:node@node-3.acme.org)   ffffffff
+> [ 65.031224] (4:node@node-3.acme.org)   ffffffff
+> [ 70.015612] (1:node@node-0.acme.org) Task update from 16728096 !!!
+> [ 70.015612] (1:node@node-0.acme.org) Node:
+> [ 70.015612] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [ 70.015612] (1:node@node-0.acme.org)  Namespace:
+> [ 70.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 70.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 70.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 70.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 70.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 70.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 75.031224] (2:node@node-1.acme.org) Task update from 10004760 !!!
+> [ 75.031224] (2:node@node-1.acme.org) Node:
+> [ 75.031224] (2:node@node-1.acme.org)  Id: 366680 '00059858' 
+> [ 75.031224] (2:node@node-1.acme.org)  Namespace:
+> [ 75.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 75.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 75.031224] (2:node@node-1.acme.org)   0000002a
+> [ 75.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 75.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 75.031224] (2:node@node-1.acme.org)   ffffffff
+> [ 75.054642] (5:node@node-4.acme.org) Task update from 10004760 !!!
+> [ 75.054642] (5:node@node-4.acme.org) Node:
+> [ 75.054642] (5:node@node-4.acme.org)  Id: 16509405 '00fbe9dd' 
+> [ 75.054642] (5:node@node-4.acme.org)  Namespace:
+> [ 75.054642] (5:node@node-4.acme.org)   ffffffff
+> [ 75.054642] (5:node@node-4.acme.org)   0000002a
+> [ 75.054642] (5:node@node-4.acme.org)   00059858
+> [ 75.054642] (5:node@node-4.acme.org)   ffffffff
+> [ 75.054642] (5:node@node-4.acme.org)   ffffffff
+> [ 75.054642] (5:node@node-4.acme.org)   ffffffff
+> [ 80.015612] (1:node@node-0.acme.org) Task update from 10004760 !!!
+> [ 80.015612] (1:node@node-0.acme.org) Node:
+> [ 80.015612] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [ 80.015612] (1:node@node-0.acme.org)  Namespace:
+> [ 80.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 80.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 80.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 80.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 80.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 80.015612] (1:node@node-0.acme.org)   ffffffff
+> [ 95.023418] (1:node@node-0.acme.org) Task update from 6518808 !!!
+> [ 95.023418] (1:node@node-0.acme.org) Node:
+> [ 95.023418] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [ 95.023418] (1:node@node-0.acme.org)  Namespace:
+> [ 95.023418] (1:node@node-0.acme.org)   ffffffff
+> [ 95.023418] (1:node@node-0.acme.org)   ffffffff
+> [ 95.023418] (1:node@node-0.acme.org)   ffffffff
+> [ 95.023418] (1:node@node-0.acme.org)   ffffffff
+> [ 95.023418] (1:node@node-0.acme.org)   ffffffff
+> [ 95.023418] (1:node@node-0.acme.org)   ffffffff
+> [100.023418] (1:node@node-0.acme.org) Task update from 2015253 !!!
+> [100.023418] (1:node@node-0.acme.org) Node:
+> [100.023418] (1:node@node-0.acme.org)  Id: 42 '0000002a' 
+> [100.023418] (1:node@node-0.acme.org)  Namespace:
+> [100.023418] (1:node@node-0.acme.org)   ffffffff
+> [100.023418] (1:node@node-0.acme.org)   ffffffff
+> [100.023418] (1:node@node-0.acme.org)   ffffffff
+> [100.023418] (1:node@node-0.acme.org)   ffffffff
+> [100.023418] (1:node@node-0.acme.org)   ffffffff
+> [100.023418] (1:node@node-0.acme.org)   ffffffff
+> [100.039030] (4:node@node-3.acme.org) Task update from 2015253 !!!
+> [100.039030] (4:node@node-3.acme.org) Node:
+> [100.039030] (4:node@node-3.acme.org)  Id: 1319738 '0014233a' 
+> [100.039030] (4:node@node-3.acme.org)  Namespace:
+> [100.039030] (4:node@node-3.acme.org)   ffffffff
+> [100.039030] (4:node@node-3.acme.org)   ffffffff
+> [100.039030] (4:node@node-3.acme.org)   0000002a
+> [100.039030] (4:node@node-3.acme.org)   ffffffff
+> [100.039030] (4:node@node-3.acme.org)   ffffffff
+> [100.039030] (4:node@node-3.acme.org)   ffffffff
+> [1000.054642] (0:maestro@) Simulated time: 1000.05

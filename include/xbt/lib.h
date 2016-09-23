@@ -48,11 +48,13 @@ SG_BEGIN_DECL()
  *  xbt_lib_set(foo_lib, id, AUTH_FOO_LEVEL, auth);
  *  </pre>
  */
-typedef struct s_xbt_lib {
+struct s_xbt_lib {
   xbt_dict_t dict;
   int levels;
   void_f_pvoid_t *free_f;       /* This is actually a table */
-} s_xbt_lib_t, *xbt_lib_t;
+};
+typedef struct s_xbt_lib  s_xbt_lib_t;
+typedef struct s_xbt_lib* xbt_lib_t;
 
 #define xbt_lib_cursor_t xbt_dict_cursor_t
 
@@ -74,4 +76,5 @@ XBT_PUBLIC(void) xbt_lib_remove(xbt_lib_t lib, const char *key);
   xbt_dict_foreach((lib)->dict, cursor, key, data)
 
 SG_END_DECL()
+
 #endif                          /* _XBT_LIB_H */

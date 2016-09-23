@@ -6,7 +6,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* This is partially inspirated from the OSSP ts (Test Suite Library)       */
+/* This is partially inspired from the OSSP ts (Test Suite Library)         */
 
 #ifndef _XBT_CUNIT_H_
 #define _XBT_CUNIT_H_
@@ -25,7 +25,7 @@ typedef struct s_xbt_test_suite *xbt_test_suite_t;
 typedef struct s_xbt_test_unit *xbt_test_unit_t;
 
 /* test callback function type */
-typedef void (*ts_test_cb_t) (void);
+typedef void (*ts_test_cb_t) ();
 
 /* test suite operations */
 XBT_PUBLIC(xbt_test_suite_t) xbt_test_suite_new(const char *name, const char *fmt, ...);
@@ -53,7 +53,7 @@ XBT_PUBLIC(int) xbt_test_run(char *selection, int verbosity);
 /* Show information about the selection of tests */
 XBT_PUBLIC(void) xbt_test_dump(char *selection);
 /* Cleanup the mess */
-XBT_PUBLIC(void) xbt_test_exit(void);
+XBT_PUBLIC(void) xbt_test_exit();
 
 /** 
  * @addtogroup XBT_cunit
@@ -70,7 +70,7 @@ XBT_PUBLIC(void) xbt_test_exit(void);
  *
  * @{ 
  */
-/** @brief Provide informations about the suite declared in this file
+/** @brief Provide information about the suite declared in this file
  *  @hideinitializer
  * 
  * Actually, this macro is only used by the script extracting the test units, but that should be transparent for you.
@@ -118,10 +118,8 @@ XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt, ...)
 #define xbt_test_assert(...)    _XBT_IF_ONE_ARG(_xbt_test_assert_ARG1,  \
                                                 _xbt_test_assert_ARGN,  \
                                                 __VA_ARGS__)(__VA_ARGS__)
-#define _xbt_test_assert_ARG1(cond)      _xbt_test_assert_CHECK(cond,   \
-                                                                "%s", #cond)
-#define _xbt_test_assert_ARGN(cond, ...) _xbt_test_assert_CHECK(cond,   \
-                                                                __VA_ARGS__)
+#define _xbt_test_assert_ARG1(cond)      _xbt_test_assert_CHECK(cond, "%s", #cond)
+#define _xbt_test_assert_ARGN(cond, ...) _xbt_test_assert_CHECK(cond, __VA_ARGS__)
 #define _xbt_test_assert_CHECK(cond, ...)                       \
   do { if (!(cond)) xbt_test_fail(__VA_ARGS__); } while (0)
 /** @brief Report some details to help debugging when the test fails (shown only on failure)
@@ -132,9 +130,9 @@ XBT_PUBLIC(void) _xbt_test_log(const char *file, int line, const char *fmt, ...)
 XBT_PUBLIC(void) xbt_test_exception(xbt_ex_t e);
 
 /** @brief Declare that the lastly started test was expected to fail (and actually failed) */
-XBT_PUBLIC(void) xbt_test_expect_failure(void);
-/** @brief Declare that the lastly started test should be skiped today */
-XBT_PUBLIC(void) xbt_test_skip(void);
+XBT_PUBLIC(void) xbt_test_expect_failure();
+/** @brief Declare that the lastly started test should be skipped today */
+XBT_PUBLIC(void) xbt_test_skip();
 
 /** @} */
 

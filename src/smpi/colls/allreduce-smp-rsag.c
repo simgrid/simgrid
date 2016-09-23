@@ -134,64 +134,60 @@ int smpi_coll_tuned_allreduce_smp_rsag(void *send_buf, void *recv_buf,
 
 
 
-  /*
      // INTER_binomial_reduce
 
      // only root node for each SMP
-     if (intra_rank == 0) {
-
-     mask = 1;
-     while (mask < inter_comm_size) {
-     if ((mask & inter_rank) == 0) {
-     src = (inter_rank | mask) * num_core;
-     if (src < comm_size) {
-     smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
-     (* uop) (tmp_buf, recv_buf, &count, &dtype);
+//     if (intra_rank == 0) {
+//
+//     mask = 1;
+//     while (mask < inter_comm_size) {
+//     if ((mask & inter_rank) == 0) {
+//     src = (inter_rank | mask) * num_core;
+//     if (src < comm_size) {
+//     smpi_mpi_recv(tmp_buf, count, dtype, src, tag, comm, &status);
+//     (* uop) (tmp_buf, recv_buf, &count, &dtype);
      //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
-     }
-     }
-     else {
-     dst = (inter_rank & (~mask)) * num_core;
-     smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
+//     }
+//     }
+//     else {
+//     dst = (inter_rank & (~mask)) * num_core;
+//     smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
      //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
-     break;
-     }
-     mask <<=1;
-     }
-     }
-   */
+//     break;
+//     }
+//     mask <<=1;
+//     }
+//     }
 
-  /*
      // INTER_binomial_bcast
 
 
-     if (intra_rank == 0) {
-     mask = 1;
-     while (mask < inter_comm_size) {
-     if (inter_rank & mask) {
-     src = (inter_rank - mask) * num_core;
+//     if (intra_rank == 0) {
+//     mask = 1;
+//     while (mask < inter_comm_size) {
+//     if (inter_rank & mask) {
+//     src = (inter_rank - mask) * num_core;
      //printf("Node %d recv from node %d when mask is %d\n", rank, src, mask);
-     smpi_mpi_recv(recv_buf, count, dtype, src, tag, comm, &status);
-     break;
-     }
-     mask <<= 1;
-     }
-
-     mask >>= 1;
+//     smpi_mpi_recv(recv_buf, count, dtype, src, tag, comm, &status);
+//     break;
+//     }
+//     mask <<= 1;
+//     }
+//
+//     mask >>= 1;
      //printf("My rank = %d my mask = %d\n", rank,mask);
 
-     while (mask > 0) {
-     if (inter_rank < inter_comm_size) {
-     dst = (inter_rank + mask) * num_core;
-     if (dst < comm_size) {
+//     while (mask > 0) {
+//     if (inter_rank < inter_comm_size) {
+//     dst = (inter_rank + mask) * num_core;
+//     if (dst < comm_size) {
      //printf("Node %d send to node %d when mask is %d\n", rank, dst, mask);
-     smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
-     }
-     }
-     mask >>= 1;
-     }
-     }
-   */
+//     smpi_mpi_send(recv_buf, count, dtype, dst, tag, comm);
+//     }
+//     }
+//     mask >>= 1;
+//     }
+//     }
 
 
   // INTRA_binomial_bcast
@@ -223,7 +219,6 @@ int smpi_coll_tuned_allreduce_smp_rsag(void *send_buf, void *recv_buf,
     }
     mask >>= 1;
   }
-
 
   smpi_free_tmp_buffer(tmp_buf);
   return MPI_SUCCESS;

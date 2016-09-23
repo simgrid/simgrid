@@ -1,20 +1,24 @@
 .TH smpirun 1
 .SH NAME
-smpirun \- Allow the configuration and the execution of MPI programs with simgrid and SMPI
+smpirun \- Exectute MPI programs in the SimGrid simulator
 .SH SYNOPSIS
-smpirun [\fIOPTIONS\fR]… \fB\-platform\fR <platform.xml> \fB\-hostfile\fR <hostfile> program [\fIPROGRAM-OPTIONS\fR]…
+smpirun [\fISMPI OPTIONS\fR]… \fB\-platform\fR <platform.xml> \fB\-hostfile\fR <hostfile> program [\fISIMULATION OPTIONS\fR] [\fIPROGRAM OPTIONS\fR]
 .SH DESCRIPTION
-smpirun provides an easy way to run programs linked to simgrid and using SMPI. It sets some default values, and generate a deployment file using the mandatory arguments \fB-platform\fR and \fB-hostfile\fR.
+smpirun car run MPI programs that were compiled with smpicc on top of
+the simulator. Basically, it generates a deployment files from the
+provided hostfile (if needed), and launches the simulation with the right
+arguments. It is intended to be easy to use to regular MPI users.
+.SH MANDATORY PARAMETERS
 .TP
 \fB\-platform\fR <platform.xml>
 XML file describing the platform on which we want to deploy the program 
 .TP
 \fB\-hostfile\fR, \fB\-machinefile\fR <hostfile>
 Hostfile listing all the machines in use
-.SH OPTIONS
-.SS Configuration options
-The configuration of the simulation can be tweaked using \fB--cfg\fR=\fIparameter\fR:\fIvalue\fR. Refer to http://simgrid.gforge.inria.fr/simgrid/latest/doc/options.html to know what are the different possibilities.
-.SS Other options
+.SH SMPI OPTIONS
+The smpirun itself accepts some optionnal parameters, that are not to
+be mixed with the configuration options described in the next section.
+
 .TP
 \fB\-help\fR
 Print the usage and a résumé of the available options
@@ -36,8 +40,14 @@ Display the machine on which each process rank is mapped.
 \fB\-np\fR <numprocs>
 Use that amount of processes. By default, there is the same number of processes as there are of hosts in the hostfile.
 .TP
+\fB\-no-privatize\fR
+Disable the globals privatization, that is activated by default.
+This should only be necessary if you use dynamic libraries, but you
+should probably link statically instead of disabling this. Do not link
+statically against SimGrid, only the others.
+.TP
 \fB\-trace\fR
-Equivalent to \fB–cfg\fR=\fItracing\fR:\fIyes\fR \fB–cfg\fR=\fItracing/smpi\fR:\fIyes\fR, activate the trace mecanism if available.
+Activate the trace mechanism if available (equivalent to \fB--cfg\fR=\fItracing\fR:\fIyes\fR \fB--cfg\fR=\fItracing/smpi\fR:\fIyes\fR)
 .TP
 \fB\-trace-ti\fR
 Activate time independant tracing.
@@ -59,12 +69,28 @@ Generate configuration for Viva's GraphView.
 .TP
 \fB\-trace-file\fR <tracefile>
 Name of the tracefile
+
+.SH SIMULATION OPTIONS
+You can change many simulation parameter on the command line by passing
+\fB--cfg\fR=\fIparameter\fR:\fIvalue\fR after the program name. 
+A full list of existing parameters and their meaning can be found at
+http://simgrid.gforge.inria.fr/simgrid/latest/doc/options.html 
+
+Here are some options commonly used with SMPI:
+.TP
+\fB--cfg=smpi/cpu-threshold:XXX\fR
+Only simulate computation chunks that last more than XXX seconds.
+.TP
+\fB--cfg=smpi/simulate-computation:no\fR
+Disable the simulation of all computation chunks (that are still executed on the host machine).
+
 .SH AUTHORS
 The SimGrid team (simgrid-devel@lists.gforge.inria.fr)
 .SH COPYRIGHT AND LICENCE
-Copyright (c) 2014. The SimGrid Team. All rights reserved.
+Copyright (c) 2014-2016. The SimGrid Team. All rights reserved.
 
-This program is free software; you may redistribute it and/or modify it under the terms of GNU LGPL (v2.1) license.
+This program is free software; you may redistribute it and/or modify
+it under the terms of GNU LGPL (v2.1) license. 
 .SH SEE ALSO
 .B smpicc\fR(1)
 .B smpicxx\fR(1)

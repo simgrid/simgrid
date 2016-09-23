@@ -8,144 +8,167 @@
 #include "src/msg/msg_private.h"
 
 #include "simgrid/s4u/comm.hpp"
+#include <simgrid/s4u/Mailbox.hpp>
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm,s4u_async,"S4U asynchronous communications");
-using namespace simgrid;
 
-s4u::Comm::~Comm() {
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_comm,s4u_activity,"S4U asynchronous communications");
+
+namespace simgrid {
+namespace s4u {
+
+Comm::~Comm() {
 
 }
 
-s4u::Comm &s4u::Comm::send_init(s4u::Actor *sender, s4u::Mailbox &chan) {
-  s4u::Comm *res = new s4u::Comm();
-  res->sender_ = sender;
-  res->mailbox_ = &chan;
 
+
+s4u::Comm &Comm::send_init(s4u::MailboxPtr chan) {
+  s4u::Comm *res = new s4u::Comm();
+  res->sender_ = SIMIX_process_self();
+  res->mailbox_ = chan;
   return *res;
 }
-s4u::Comm &s4u::Comm::recv_init(s4u::Actor *receiver, s4u::Mailbox &chan) {
-  s4u::Comm *res = new s4u::Comm();
-  res->receiver_ = receiver;
-  res->mailbox_ = &chan;
 
+s4u::Comm &Comm::recv_init(s4u::MailboxPtr chan) {
+  s4u::Comm *res = new s4u::Comm();
+  res->receiver_ = SIMIX_process_self();
+  res->mailbox_ = chan;
   return *res;
 }
 
-void s4u::Comm::setRate(double rate) {
-  xbt_assert(p_state==inited);
+void Comm::setRate(double rate) {
+  xbt_assert(state_==inited);
   rate_ = rate;
 }
 
-void s4u::Comm::setSrcData(void * buff) {
-  xbt_assert(p_state==inited);
-  xbt_assert(dstBuff_ == NULL, "Cannot set the src and dst buffers at the same time");
+void Comm::setSrcData(void * buff) {
+  xbt_assert(state_==inited);
+  xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
 }
-void s4u::Comm::setSrcDataSize(size_t size){
-  xbt_assert(p_state==inited);
+void Comm::setSrcDataSize(size_t size){
+  xbt_assert(state_==inited);
   srcBuffSize_ = size;
 }
-void s4u::Comm::setSrcData(void * buff, size_t size) {
-  xbt_assert(p_state==inited);
+void Comm::setSrcData(void * buff, size_t size) {
+  xbt_assert(state_==inited);
 
-  xbt_assert(dstBuff_ == NULL, "Cannot set the src and dst buffers at the same time");
+  xbt_assert(dstBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   srcBuff_ = buff;
   srcBuffSize_ = size;
 }
-void s4u::Comm::setDstData(void ** buff) {
-  xbt_assert(p_state==inited);
-  xbt_assert(srcBuff_ == NULL, "Cannot set the src and dst buffers at the same time");
+void Comm::setDstData(void ** buff) {
+  xbt_assert(state_==inited);
+  xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dstBuff_ = buff;
 }
-size_t s4u::Comm::getDstDataSize(){
-  xbt_assert(p_state==finished);
+size_t Comm::getDstDataSize(){
+  xbt_assert(state_==finished);
   return dstBuffSize_;
 }
-void s4u::Comm::setDstData(void ** buff, size_t size) {
-  xbt_assert(p_state==inited);
+void Comm::setDstData(void ** buff, size_t size) {
+  xbt_assert(state_==inited);
 
-  xbt_assert(srcBuff_ == NULL, "Cannot set the src and dst buffers at the same time");
+  xbt_assert(srcBuff_ == nullptr, "Cannot set the src and dst buffers at the same time");
   dstBuff_ = buff;
   dstBuffSize_ = size;
 }
 
-void s4u::Comm::start() {
-  xbt_assert(p_state == inited);
+void Comm::start() {
+  xbt_assert(state_ == inited);
 
-  if (srcBuff_ != NULL) { // Sender side
-    p_inferior = simcall_comm_isend(sender_->getInferior(), mailbox_->getInferior(), p_remains, rate_,
+  if (srcBuff_ != nullptr) { // Sender side
+    pimpl_ = simcall_comm_isend(sender_, mailbox_->getImpl(), remains_, rate_,
         srcBuff_, srcBuffSize_,
         matchFunction_, cleanFunction_, copyDataFunction_,
-        p_userData, detached_);
-  } else if (dstBuff_ != NULL) { // Receiver side
-    p_inferior = simcall_comm_irecv(receiver_->getInferior(), mailbox_->getInferior(), dstBuff_, &dstBuffSize_,
+        userData_, detached_);
+  } else if (dstBuff_ != nullptr) { // Receiver side
+    pimpl_ = simcall_comm_irecv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
         matchFunction_, copyDataFunction_,
-        p_userData, rate_);
+        userData_, rate_);
 
   } else {
     xbt_die("Cannot start a communication before specifying whether we are the sender or the receiver");
   }
-  p_state = started;
+  state_ = started;
 }
-void s4u::Comm::wait() {
-  xbt_assert(p_state == started || p_state == inited);
+void Comm::wait() {
+  xbt_assert(state_ == started || state_ == inited);
 
-  if (p_state == started)
-    simcall_comm_wait(p_inferior, -1/*timeout*/);
+  if (state_ == started)
+    simcall_comm_wait(pimpl_, -1/*timeout*/);
   else {// p_state == inited. Save a simcall and do directly a blocking send/recv
-    if (srcBuff_ != NULL) {
-      simcall_comm_send(sender_->getInferior(), mailbox_->getInferior(), p_remains, rate_,
+    if (srcBuff_ != nullptr) {
+      simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_,
           srcBuff_, srcBuffSize_,
           matchFunction_, copyDataFunction_,
-          p_userData, -1 /*timeout*/);
+          userData_, -1 /*timeout*/);
     } else {
-      simcall_comm_recv(receiver_->getInferior(), mailbox_->getInferior(), dstBuff_, &dstBuffSize_,
+      simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
           matchFunction_, copyDataFunction_,
-          p_userData, -1/*timeout*/, rate_);
+          userData_, -1/*timeout*/, rate_);
     }
   }
-  p_state = finished;
+  state_ = finished;
+  delete this;
 }
-void s4u::Comm::wait(double timeout) {
-  xbt_assert(p_state == started || p_state == inited);
+void Comm::wait(double timeout) {
+  xbt_assert(state_ == started || state_ == inited);
 
-  if (p_state == started) {
-    simcall_comm_wait(p_inferior, timeout);
-    p_state = finished;
+  if (state_ == started) {
+    simcall_comm_wait(pimpl_, timeout);
+    state_ = finished;
     return;
   }
 
   // It's not started yet. Do it in one simcall
-  if (srcBuff_ != NULL) {
-    simcall_comm_send(sender_->getInferior(), mailbox_->getInferior(), p_remains, rate_,
+  if (srcBuff_ != nullptr) {
+    simcall_comm_send(sender_, mailbox_->getImpl(), remains_, rate_,
         srcBuff_, srcBuffSize_,
         matchFunction_, copyDataFunction_,
-        p_userData, timeout);
+        userData_, timeout);
   } else { // Receiver
-    simcall_comm_recv(receiver_->getInferior(), mailbox_->getInferior(), dstBuff_, &dstBuffSize_,
+    simcall_comm_recv(receiver_, mailbox_->getImpl(), dstBuff_, &dstBuffSize_,
         matchFunction_, copyDataFunction_,
-        p_userData, timeout, rate_);
+        userData_, timeout, rate_);
   }
-  p_state = finished;
+  state_ = finished;
+  delete this;
 }
 
-s4u::Comm &s4u::Comm::send_async(s4u::Actor *sender, Mailbox &dest, void *data, int simulatedSize) {
-  s4u::Comm &res = s4u::Comm::send_init(sender, dest);
-
+s4u::Comm &Comm::send_async(MailboxPtr dest, void *data, int simulatedSize) {
+  s4u::Comm &res = s4u::Comm::send_init(dest);
   res.setRemains(simulatedSize);
   res.srcBuff_ = data;
   res.srcBuffSize_ = sizeof(void*);
-
   res.start();
   return res;
 }
 
-s4u::Comm &s4u::Comm::recv_async(s4u::Actor *receiver, Mailbox &dest, void **data) {
-  s4u::Comm &res = s4u::Comm::recv_init(receiver, dest);
-
+s4u::Comm &Comm::recv_async(MailboxPtr dest, void **data) {
+  s4u::Comm &res = s4u::Comm::recv_init(dest);
   res.setDstData(data);
-
   res.start();
   return res;
 }
 
+bool Comm::test() {
+  xbt_assert(state_ == inited || state_ == started || state_ == finished);
+  
+  if (state_ == finished) 
+    xbt_die("Don't call test on a finished comm.");
+  
+  if (state_ == inited) {
+    this->start();
+  }
+  
+  if(simcall_comm_test(pimpl_)){
+    state_ = finished;
+    delete this;
+    return true;
+  }
+  return false;
+}
+
+}
+}

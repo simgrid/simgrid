@@ -12,7 +12,7 @@ extern "C" {
 #include <lauxlib.h>
 }
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua bindings (host module)");
+XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua Host module");
 
 #define HOST_MODULE_NAME "simgrid.host"
 #define HOST_FIELDNAME   "__simgrid_host"
@@ -20,11 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua bindings (host module)");
 /*                                simgrid.host API                                   */
 /* ********************************************************************************* */
 
-/**
- * \brief Ensures that a value in the stack is a host and returns it.
- *
- * This function is called from C and helps to verify that a specific
- * userdatum on the stack is in fact a sg_host_t.
+/** @brief Ensures that the pointed stack value is an host userdatum and returns it.
  *
  * \param L a Lua state
  * \param index an index in the Lua stack
@@ -32,16 +28,15 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(lua_host, "Lua bindings (host module)");
  */
 sg_host_t sglua_check_host(lua_State * L, int index)
 {
-  sg_host_t *pi, ht;
   luaL_checktype(L, index, LUA_TTABLE);
   lua_getfield(L, index, HOST_FIELDNAME);
-  pi = (sg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
-  if (pi == NULL)
-    XBT_ERROR("luaL_checkudata() returned NULL");
-  ht = *pi;
+  sg_host_t *pi = (sg_host_t *) luaL_checkudata(L, lua_gettop(L), HOST_MODULE_NAME);
+  lua_pop(L, 1);
+  if (pi == nullptr)
+    XBT_ERROR("luaL_checkudata() returned nullptr");
+  sg_host_t ht = *pi;
   if (!ht)
     luaL_error(L, "null Host");
-  lua_pop(L, 1);
   return ht;
 }
 
@@ -57,21 +52,18 @@ sg_host_t sglua_check_host(lua_State * L, int index)
 static int l_host_get_by_name(lua_State * L)
 {
   const char *name = luaL_checkstring(L, 1);
-  XBT_DEBUG("Getting host by name...");
+  lua_remove(L, 1); /* remove the args from the stack */
+
   sg_host_t host = sg_host_by_name(name);
-  if (!host) {
-    XBT_ERROR("sg_get_host_by_name failed, requested hostname: %s", name);
-  }
+  lua_ensure(host, "No host name '%s' found.", name);
+
   lua_newtable(L);                        /* table */
-  sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t));
-                                          /* table userdatum */
+  sg_host_t *lua_host = (sg_host_t *) lua_newuserdata(L, sizeof(sg_host_t)); /* table userdatum */
   *lua_host = host;
   luaL_getmetatable(L, HOST_MODULE_NAME); /* table userdatum metatable */
   lua_setmetatable(L, -2);                /* table userdatum */
-  lua_setfield(L, -2, HOST_FIELDNAME);  /* table -- put the userdata as field of the table */
+  lua_setfield(L, -2, HOST_FIELDNAME);    /* table -- put the userdata as field of the table */
 
-  /* remove the args from the stack */
-  lua_remove(L, 1);
   return 1;
 }
 
@@ -168,7 +160,7 @@ static const luaL_Reg host_functions[] = {
   {"destroy", l_host_destroy},
   // Bypass XML Methods
   {"set_property", console_host_set_property},
-  {NULL, NULL}
+  {nullptr, nullptr}
 };
 
 /**

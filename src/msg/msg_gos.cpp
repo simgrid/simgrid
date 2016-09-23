@@ -3,14 +3,15 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/ex.hpp>
+
 #include "src/simix/smx_private.h" /* MSG_task_listen looks inside the rdv directly. Not clean. */
 #include "msg_private.h"
 #include "mc/mc.h"
 #include "xbt/log.h"
 #include "xbt/sysdep.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg,
-                                "Logging specific to MSG (gos)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_gos, msg, "Logging specific to MSG (gos)");
 
 /** \ingroup msg_task_usage
  * \brief Executes a task and waits for its termination.
@@ -42,58 +43,45 @@ msg_error_t MSG_task_execute(msg_task_t task)
  */
 msg_error_t MSG_parallel_task_execute(msg_task_t task)
 {
-  xbt_ex_t e;
   simdata_task_t simdata = task->simdata;
-  simdata_process_t p_simdata = (simdata_process_t) SIMIX_process_self_get_data();
+  simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
   e_smx_state_t comp_state;
   msg_error_t status = MSG_OK;
 
   TRACE_msg_task_execute_start(task);
 
-  xbt_assert((!simdata->compute) && (task->simdata->isused == 0),
-             "This task is executed somewhere else. Go fix your code! %d", task->simdata->isused!=NULL);
+  xbt_assert((!simdata->compute) && !task->simdata->isused, "This task is executed somewhere else. Go fix your code!");
 
   XBT_DEBUG("Computing on %s", MSG_process_get_name(MSG_process_self()));
 
-  if (simdata->flops_amount == 0 && !simdata->host_nb) {
+  if (simdata->flops_amount <= 0.0 && !simdata->host_nb) {
     TRACE_msg_task_execute_end(task);
     return MSG_OK;
   }
 
-  TRY {
-    if (msg_global->debug_multiple_use)
-      MSG_BT(simdata->isused, "Using Backtrace");
-    else
-      simdata->isused = (void*)1;
+  try {
+    simdata->setUsed();
 
     if (simdata->host_nb > 0) {
-      simdata->compute = simcall_execution_parallel_start(task->name, simdata->host_nb,simdata->host_list,
+      simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(
+          simcall_execution_parallel_start(task->name, simdata->host_nb,simdata->host_list,
                                                        simdata->flops_parallel_amount, simdata->bytes_parallel_amount,
-                                                       1.0, -1.0);
+                                                       1.0, -1.0));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
-      unsigned long affinity_mask =
-         (unsigned long)(uintptr_t) xbt_dict_get_or_null_ext(simdata->affinity_mask_db, (char *) p_simdata->m_host,
-                                                             sizeof(msg_host_t));
-      XBT_DEBUG("execute %s@%s with affinity(0x%04lx)",
-                MSG_task_get_name(task), MSG_host_get_name(p_simdata->m_host), affinity_mask);
-
-      simdata->compute = simcall_execution_start(task->name, simdata->flops_amount, simdata->priority,
-                                                 simdata->bound, affinity_mask);
+      simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(
+          simcall_execution_start(task->name, simdata->flops_amount, simdata->priority, simdata->bound));
     }
     simcall_set_category(simdata->compute, task->category);
     p_simdata->waiting_action = simdata->compute;
     comp_state = simcall_execution_wait(simdata->compute);
 
-    p_simdata->waiting_action = NULL;
-
-    if (msg_global->debug_multiple_use && simdata->isused!=0)
-      xbt_ex_free(*(xbt_ex_t*)simdata->isused);
-    simdata->isused = 0;
+    p_simdata->waiting_action = nullptr;
+    simdata->setNotUsed();
 
     XBT_DEBUG("Execution task '%s' finished in state %d", task->name, (int)comp_state);
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
       status = MSG_TASK_CANCELED;
@@ -102,17 +90,17 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       status = MSG_HOST_FAILURE;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
   }
-  /* action ended, set comm and compute = NULL, the actions is already destroyed in the main function */
+
+  /* action ended, set comm and compute = nullptr, the actions is already destroyed in the main function */
   simdata->flops_amount = 0.0;
-  simdata->comm = NULL;
-  simdata->compute = NULL;
+  simdata->comm = nullptr;
+  simdata->compute = nullptr;
   TRACE_msg_task_execute_end(task);
 
-  MSG_RETURN(status);
+  return status;
 }
 
 /** \ingroup msg_task_usage
@@ -124,19 +112,17 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
  */
 msg_error_t MSG_process_sleep(double nb_sec)
 {
-  xbt_ex_t e;
   msg_error_t status = MSG_OK;
-  /*msg_process_t proc = MSG_process_self();*/
 
   TRACE_msg_process_sleep_in(MSG_process_self());
 
-  TRY {
+  try {
     simcall_process_sleep(nb_sec);
   }
-  CATCH(e) {
+  catch(xbt_ex& e) {
     switch (e.category) {
     case cancel_error:
-      XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, WTF here ?"); 
+      XBT_DEBUG("According to the JAVA API, a sleep call should only deal with HostFailureException, I'm lost."); 
       // adsein: MSG_TASK_CANCELED is assigned when someone kills the process that made the sleep, this is not
       // correct. For instance, when the node is turned off, the error should be MSG_HOST_FAILURE, which is by the way
       // and according to the JAVA document, the only exception that can be triggered by MSG_Process_sleep call.
@@ -146,13 +132,12 @@ msg_error_t MSG_process_sleep(double nb_sec)
       status = MSG_TASK_CANCELED;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
   }
 
   TRACE_msg_process_sleep_out(MSG_process_self());
-  MSG_RETURN(status);
+  return status;
 }
 
 /** \ingroup msg_task_usage
@@ -206,7 +191,7 @@ msg_error_t MSG_task_receive_bounded(msg_task_t * task, const char *alias, doubl
  */
 msg_error_t MSG_task_receive_with_timeout(msg_task_t * task, const char *alias, double timeout)
 {
-  return MSG_task_receive_ext(task, alias, timeout, NULL);
+  return MSG_task_receive_ext(task, alias, timeout, nullptr);
 }
 
 /** \ingroup msg_task_usage
@@ -223,7 +208,7 @@ msg_error_t MSG_task_receive_with_timeout(msg_task_t * task, const char *alias, 
  */
 msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char *alias, double timeout,double rate)
 {
-  return MSG_task_receive_ext_bounded(task, alias, timeout, NULL, rate);
+  return MSG_task_receive_ext_bounded(task, alias, timeout, nullptr, rate);
 }
 
 /** \ingroup msg_task_usage
@@ -244,23 +229,8 @@ msg_error_t MSG_task_receive_with_timeout_bounded(msg_task_t * task, const char 
  */
 msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double timeout, msg_host_t host)
 {
-  xbt_ex_t e;
-  msg_error_t ret = MSG_OK;
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  TRY {
-    ret = MSG_mailbox_get_task_ext(MSG_mailbox_get_by_alias(alias), task, host, timeout);
-  }
-  CATCH(e) {
-    switch (e.category) {
-    case cancel_error:          /* may be thrown by MSG_mailbox_get_by_alias */
-      ret = MSG_HOST_FAILURE;
-      break;
-    default:
-      RETHROW;
-    }
-    xbt_ex_free(e);
-  }
-  return ret;
+  return MSG_task_receive_ext_bounded(task, alias, timeout, host, -1.0);
 }
 
 /** \ingroup msg_task_usage
@@ -274,62 +244,84 @@ msg_error_t MSG_task_receive_ext(msg_task_t * task, const char *alias, double ti
  *
  * \return Returns
  * #MSG_OK if the task was successfully received,
-* #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
+ * #MSG_HOST_FAILURE, or #MSG_TRANSFER_FAILURE, or #MSG_TIMEOUT otherwise.
  */
 msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, double timeout, msg_host_t host,
                                          double rate)
 {
   XBT_DEBUG("MSG_task_receive_ext: Trying to receive a message on mailbox '%s'", alias);
-  return MSG_mailbox_get_task_ext_bounded(MSG_mailbox_get_by_alias(alias), task, host, timeout, rate);
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
+  msg_error_t ret = MSG_OK;
+  /* We no longer support getting a task from a specific host */
+  if (host)
+    THROW_UNIMPLEMENTED;
+
+  TRACE_msg_task_get_start();
+  double start_time = MSG_get_clock();
+
+  /* Sanity check */
+  xbt_assert(task, "Null pointer for the task storage");
+
+  if (*task)
+    XBT_WARN("Asked to write the received task in a non empty struct -- proceeding.");
+
+  /* Try to receive it by calling SIMIX network layer */
+  try {
+    simcall_comm_recv(MSG_process_self(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
+    XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->getName());
+    (*task)->simdata->setNotUsed();
+  }
+  catch (xbt_ex& e) {
+    switch (e.category) {
+    case host_error:
+    case cancel_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    case network_error:
+      ret = MSG_TRANSFER_FAILURE;
+      break;
+    case timeout_error:
+      ret = MSG_TIMEOUT;
+      break;
+    default:
+      throw;
+    }
+  }
+
+  if (ret != MSG_HOST_FAILURE && ret != MSG_TRANSFER_FAILURE && ret != MSG_TIMEOUT) {
+    TRACE_msg_task_get_end(start_time, *task);
+  }
+  return ret;
 }
 
 /* Internal function used to factorize code between MSG_task_isend_with_matching() and MSG_task_dsend(). */
-static XBT_INLINE msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
-                                                     int (*match_fun)(void*,void*, smx_synchro_t),
+static inline msg_comm_t MSG_task_isend_internal(msg_task_t task, const char *alias,
+                                                     int (*match_fun)(void*,void*, smx_activity_t),
                                                      void *match_data, void_f_pvoid_t cleanup, int detached)
 {
-  simdata_task_t t_simdata = NULL;
-  msg_process_t process = MSG_process_self();
-  msg_mailbox_t mailbox = MSG_mailbox_get_by_alias(alias);
+  simdata_task_t t_simdata = nullptr;
+  msg_process_t myself = SIMIX_process_self();
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
   int call_end = TRACE_msg_task_put_start(task);
 
   /* Prepare the task to send */
   t_simdata = task->simdata;
-  t_simdata->sender = process;
-  t_simdata->source = ((simdata_process_t) SIMIX_process_self_get_data())->m_host;
-
-  if (t_simdata->isused != 0) {
-    if (msg_global->debug_multiple_use){
-      XBT_ERROR("This task is already used in there:");
-      xbt_backtrace_display((xbt_ex_t*) t_simdata->isused);
-      XBT_ERROR("And you try to reuse it from here:");
-      xbt_backtrace_display_current();
-    } else {
-      xbt_assert(t_simdata->isused == 0,
-                 "This task is still being used somewhere else. You cannot send it now. Go fix your code!"
-                 "(use --cfg=msg/debug_multiple_use:on to get the backtrace of the other process)");
-    }
-  }
-
-  if (msg_global->debug_multiple_use)
-    MSG_BT(t_simdata->isused, "Using Backtrace");
-  else
-    t_simdata->isused = (void*)1;
-  t_simdata->comm = NULL;
+  t_simdata->sender = myself;
+  t_simdata->source = (static_cast<simdata_process_t>(SIMIX_process_self_get_data()))->m_host;
+  t_simdata->setUsed();
+  t_simdata->comm = nullptr;
   msg_global->sent_msg++;
 
   /* Send it by calling SIMIX network layer */
-  smx_synchro_t act = simcall_comm_isend(SIMIX_process_self(), mailbox, t_simdata->bytes_amount, t_simdata->rate,
-                                         task, sizeof(void *), match_fun, cleanup, NULL, match_data,detached);
-  t_simdata->comm = act; /* FIXME: is the field t_simdata->comm still useful? */
+  smx_activity_t act = simcall_comm_isend(myself, mailbox->getImpl(), t_simdata->bytes_amount, t_simdata->rate,
+                                         task, sizeof(void *), match_fun, cleanup, nullptr, match_data,detached);
+  t_simdata->comm = static_cast<simgrid::kernel::activity::Comm*>(act);
 
-  msg_comm_t comm;
-  if (detached) {
-    comm = NULL;
-  } else {
+  msg_comm_t comm = nullptr;
+  if (! detached) {
     comm = xbt_new0(s_msg_comm_t, 1);
     comm->task_sent = task;
-    comm->task_received = NULL;
+    comm->task_received = nullptr;
     comm->status = MSG_OK;
     comm->s_comm = act;
   }
@@ -353,7 +345,7 @@ static XBT_INLINE msg_comm_t MSG_task_isend_internal(msg_task_t task, const char
  */
 msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 {
-  return MSG_task_isend_internal(task, alias, NULL, NULL, NULL, 0);
+  return MSG_task_isend_internal(task, alias, nullptr, nullptr, nullptr, 0);
 }
 
 /** \ingroup msg_task_usage
@@ -370,7 +362,7 @@ msg_comm_t MSG_task_isend(msg_task_t task, const char *alias)
 msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double maxrate)
 {
   task->simdata->rate = maxrate;
-  return MSG_task_isend_internal(task, alias, NULL, NULL, NULL, 0);
+  return MSG_task_isend_internal(task, alias, nullptr, nullptr, nullptr, 0);
 }
 
 /** \ingroup msg_task_usage
@@ -388,9 +380,9 @@ msg_comm_t MSG_task_isend_bounded(msg_task_t task, const char *alias, double max
  * \return the msg_comm_t communication created
  */
 msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
-                                        int (*match_fun)(void*, void*, smx_synchro_t), void *match_data)
+                                        int (*match_fun)(void*, void*, smx_activity_t), void *match_data)
 {
-  return MSG_task_isend_internal(task, alias, match_fun, match_data, NULL, 0);
+  return MSG_task_isend_internal(task, alias, match_fun, match_data, nullptr, 0);
 }
 
 /** \ingroup msg_task_usage
@@ -406,11 +398,11 @@ msg_comm_t MSG_task_isend_with_matching(msg_task_t task, const char *alias,
  * \param task a #msg_task_t to send on another location.
  * \param alias name of the mailbox to sent the task to
  * \param cleanup a function to destroy the task if the communication fails, e.g. MSG_task_destroy
- * (if NULL, no function will be called)
+ * (if nullptr, no function will be called)
  */
 void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
 {
-  MSG_task_isend_internal(task, alias, NULL, NULL, cleanup, 1);
+  MSG_task_isend_internal(task, alias, nullptr, nullptr, cleanup, 1);
 }
 
 /** \ingroup msg_task_usage
@@ -427,7 +419,7 @@ void MSG_task_dsend(msg_task_t task, const char *alias, void_f_pvoid_t cleanup)
  * \param alias name of the mailbox to sent the task to
  * \param cleanup a function to destroy the task if the
  * communication fails, e.g. MSG_task_destroy
- * (if NULL, no function will be called)
+ * (if nullptr, no function will be called)
  * \param maxrate the maximum communication rate for sending this task
  *
  */
@@ -461,7 +453,7 @@ msg_comm_t MSG_task_irecv(msg_task_t *task, const char *name)
  */
 msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rate)
 {
-  smx_mailbox_t rdv = MSG_mailbox_get_by_alias(name);
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(name);
 
   /* FIXME: these functions are not traceable */
   /* Sanity check */
@@ -472,10 +464,10 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
 
   /* Try to receive it by calling SIMIX network layer */
   msg_comm_t comm = xbt_new0(s_msg_comm_t, 1);
-  comm->task_sent = NULL;
+  comm->task_sent = nullptr;
   comm->task_received = task;
   comm->status = MSG_OK;
-  comm->s_comm = simcall_comm_irecv(MSG_process_self(), rdv, task, NULL, NULL, NULL, NULL, rate);
+  comm->s_comm = simcall_comm_irecv(MSG_process_self(), mbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, rate);
 
   return comm;
 }
@@ -490,20 +482,16 @@ msg_comm_t MSG_task_irecv_bounded(msg_task_t *task, const char *name, double rat
  */
 int MSG_comm_test(msg_comm_t comm)
 {
-  xbt_ex_t e;
   int finished = 0;
 
-  TRY {
+  try {
     finished = simcall_comm_test(comm->s_comm);
-
-    if (finished && comm->task_received != NULL) {
+    if (finished && comm->task_received != nullptr) {
       /* I am the receiver */
-      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
-      (*comm->task_received)->simdata->isused = 0;
+      (*comm->task_received)->simdata->setNotUsed();
     }
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
       case network_error:
         comm->status = MSG_TRANSFER_FAILURE;
@@ -514,9 +502,8 @@ int MSG_comm_test(msg_comm_t comm)
         finished = 1;
         break;
       default:
-        RETHROW;
+        throw;
     }
-    xbt_ex_free(e);
   }
 
   return finished;
@@ -531,22 +518,22 @@ int MSG_comm_test(msg_comm_t comm)
  */
 int MSG_comm_testany(xbt_dynar_t comms)
 {
-  xbt_ex_t e;
   int finished_index = -1;
 
-  /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_synchro_t), NULL);
+  /* Create the equivalent array with SIMIX objects: */
+  std::vector<simgrid::kernel::activity::ActivityImpl*> s_comms;
+  s_comms.reserve(xbt_dynar_length(comms));
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
-    xbt_dynar_push(s_comms, &comm->s_comm);
+    s_comms.push_back(comm->s_comm);
   }
 
   msg_error_t status = MSG_OK;
-  TRY {
-    finished_index = simcall_comm_testany(s_comms);
+  try {
+    finished_index = simcall_comm_testany(s_comms.data(), s_comms.size());
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
       case network_error:
         finished_index = e.value;
@@ -557,22 +544,18 @@ int MSG_comm_testany(xbt_dynar_t comms)
         status = MSG_TIMEOUT;
         break;
       default:
-        RETHROW;
+        throw;
     }
-    xbt_ex_free(e);
   }
-  xbt_dynar_free(&s_comms);
 
   if (finished_index != -1) {
     comm = xbt_dynar_get_as(comms, finished_index, msg_comm_t);
     /* the communication is finished */
     comm->status = status;
 
-    if (status == MSG_OK && comm->task_received != NULL) {
+    if (status == MSG_OK && comm->task_received != nullptr) {
       /* I am the receiver */
-      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
-      (*comm->task_received)->simdata->isused = 0;
+      (*comm->task_received)->simdata->setNotUsed();
     }
   }
 
@@ -599,20 +582,17 @@ void MSG_comm_destroy(msg_comm_t comm)
  */
 msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
 {
-  xbt_ex_t e;
-  TRY {
+  try {
     simcall_comm_wait(comm->s_comm, timeout);
 
-    if (comm->task_received != NULL) {
+    if (comm->task_received != nullptr) {
       /* I am the receiver */
-      if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
-        xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
-      (*comm->task_received)->simdata->isused = 0;
+      (*comm->task_received)->simdata->setNotUsed();
     }
 
     /* FIXME: these functions are not traceable */
   }
-  CATCH(e) {
+  catch (xbt_ex& e) {
     switch (e.category) {
     case network_error:
       comm->status = MSG_TRANSFER_FAILURE;
@@ -621,9 +601,8 @@ msg_error_t MSG_comm_wait(msg_comm_t comm, double timeout)
       comm->status = MSG_TIMEOUT;
       break;
     default:
-      RETHROW;
+      throw;
     }
-    xbt_ex_free(e);
   }
 
   return comm->status;
@@ -652,11 +631,10 @@ void MSG_comm_waitall(msg_comm_t * comm, int nb_elem, double timeout)
  */
 int MSG_comm_waitany(xbt_dynar_t comms)
 {
-  xbt_ex_t e;
   int finished_index = -1;
 
   /* create the equivalent dynar with SIMIX objects */
-  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_synchro_t), NULL);
+  xbt_dynar_t s_comms = xbt_dynar_new(sizeof(smx_activity_t), nullptr);
   msg_comm_t comm;
   unsigned int cursor;
   xbt_dynar_foreach(comms, cursor, comm) {
@@ -664,10 +642,10 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   }
 
   msg_error_t status = MSG_OK;
-  TRY {
-    finished_index = simcall_comm_waitany(s_comms);
+  try {
+    finished_index = simcall_comm_waitany(s_comms, -1);
   }
-  CATCH(e) {
+  catch(xbt_ex& e) {
     switch (e.category) {
       case network_error:
         finished_index = e.value;
@@ -678,9 +656,8 @@ int MSG_comm_waitany(xbt_dynar_t comms)
         status = MSG_TIMEOUT;
         break;
       default:
-        RETHROW;
+        throw;
     }
-    xbt_ex_free(e);
   }
 
   xbt_assert(finished_index != -1, "WaitAny returned -1");
@@ -690,11 +667,9 @@ int MSG_comm_waitany(xbt_dynar_t comms)
   /* the communication is finished */
   comm->status = status;
 
-  if (comm->task_received != NULL) {
+  if (comm->task_received != nullptr) {
     /* I am the receiver */
-    if (msg_global->debug_multiple_use && (*comm->task_received)->simdata->isused!=0)
-      xbt_ex_free(*(xbt_ex_t*)(*comm->task_received)->simdata->isused);
-    (*comm->task_received)->simdata->isused = 0;
+    (*comm->task_received)->simdata->setNotUsed();
   }
 
   return finished_index;
@@ -702,9 +677,9 @@ int MSG_comm_waitany(xbt_dynar_t comms)
 
 /**
  * \ingroup msg_task_usage
- * \brief Returns the error (if any) that occured during a finished communication.
+ * \brief Returns the error (if any) that occurred during a finished communication.
  * \param comm a finished communication
- * \return the status of the communication, or #MSG_OK if no error occured
+ * \return the status of the communication, or #MSG_OK if no error occurred
  * during the communication
  */
 msg_error_t MSG_comm_get_status(msg_comm_t comm) {
@@ -731,14 +706,16 @@ msg_task_t MSG_comm_get_task(msg_comm_t comm)
  * \param buff the data copied
  * \param buff_size size of the buffer
  */
-void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size) {
-  // copy the task
+void MSG_comm_copy_data_from_SIMIX(smx_activity_t synchro, void* buff, size_t buff_size)
+{
+  simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
+
   SIMIX_comm_copy_pointer_callback(comm, buff, buff_size);
 
   // notify the user callback if any
   if (msg_global->task_copy_callback) {
-    msg_task_t task = (msg_task_t) buff;
-    msg_global->task_copy_callback(task, simcall_comm_get_src_proc(comm), simcall_comm_get_dst_proc(comm));
+    msg_task_t task = static_cast<msg_task_t>(buff);
+    msg_global->task_copy_callback(task, comm->src_proc, comm->dst_proc);
   }
 }
 
@@ -794,7 +771,59 @@ msg_error_t MSG_task_send_bounded(msg_task_t task, const char *alias, double max
  */
 msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, double timeout)
 {
-  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias), task, timeout);
+  msg_error_t ret = MSG_OK;
+  simdata_task_t t_simdata = nullptr;
+  msg_process_t process = MSG_process_self();
+  simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
+  simgrid::s4u::MailboxPtr mailbox = simgrid::s4u::Mailbox::byName(alias);
+
+  int call_end = TRACE_msg_task_put_start(task);    //must be after CHECK_HOST()
+
+  /* Prepare the task to send */
+  t_simdata = task->simdata;
+  t_simdata->sender = process;
+  t_simdata->source = (static_cast<simdata_process_t>(SIMIX_process_self_get_data()))   ->m_host;
+
+  t_simdata->setUsed();
+
+  t_simdata->comm = nullptr;
+  msg_global->sent_msg++;
+
+  p_simdata->waiting_task = task;
+
+  /* Try to send it by calling SIMIX network layer */
+  try {
+    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simix call  */
+    comm = simcall_comm_isend(SIMIX_process_self(), mailbox->getImpl(),t_simdata->bytes_amount,
+                              t_simdata->rate, task, sizeof(void *), nullptr, nullptr, nullptr, task, 0);
+    if (TRACE_is_enabled())
+      simcall_set_category(comm, task->category);
+     t_simdata->comm = static_cast<simgrid::kernel::activity::Comm*>(comm);
+     simcall_comm_wait(comm, timeout);
+  }
+  catch (xbt_ex& e) {
+    switch (e.category) {
+    case cancel_error:
+      ret = MSG_HOST_FAILURE;
+      break;
+    case network_error:
+      ret = MSG_TRANSFER_FAILURE;
+      break;
+    case timeout_error:
+      ret = MSG_TIMEOUT;
+      break;
+    default:
+      throw;
+    }
+
+    /* If the send failed, it is not used anymore */
+    t_simdata->setNotUsed();
+  }
+
+  p_simdata->waiting_task = nullptr;
+  if (call_end)
+    TRACE_msg_task_put_end();
+  return ret;
 }
 
 /** \ingroup msg_task_usage
@@ -813,7 +842,7 @@ msg_error_t MSG_task_send_with_timeout(msg_task_t task, const char *alias, doubl
 msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alias, double timeout, double maxrate)
 {
   task->simdata->rate = maxrate;
-  return MSG_mailbox_put_with_timeout(MSG_mailbox_get_by_alias(alias), task, timeout);
+  return MSG_task_send_with_timeout(task, alias, timeout);
 }
 
 /** \ingroup msg_task_usage
@@ -825,22 +854,9 @@ msg_error_t MSG_task_send_with_timeout_bounded(msg_task_t task, const char *alia
  */
 int MSG_task_listen(const char *alias)
 {
-  smx_mailbox_t rdv = MSG_mailbox_get_by_alias(alias);
-  return !MSG_mailbox_is_empty(rdv) || (rdv->permanent_receiver && xbt_fifo_size(rdv->done_comm_fifo)!=0);
-}
-
-/** \ingroup msg_task_usage
- * \brief Check the number of communication actions of a given host pending in a mailbox.
- *
- * \param alias the name of the mailbox to be considered
- * \param host the host to check for communication
- *
- * \return Returns the number of pending communication actions of the host in the given mailbox, 0 if there is no
- *         pending communication actions.
- */
-int MSG_task_listen_from_host(const char *alias, msg_host_t host)
-{
-  return MSG_mailbox_get_count_host_waiting_tasks(MSG_mailbox_get_by_alias(alias), host);
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(alias);
+  return !mbox->empty() ||
+    (mbox->getImpl()->permanent_receiver && !mbox->getImpl()->done_comm_queue.empty());
 }
 
 /** \ingroup msg_task_usage
@@ -853,12 +869,13 @@ int MSG_task_listen_from_host(const char *alias, msg_host_t host)
  */
 int MSG_task_listen_from(const char *alias)
 {
-  msg_task_t task;
+  simgrid::s4u::MailboxPtr mbox = simgrid::s4u::Mailbox::byName(alias);
+  simgrid::kernel::activity::Comm* comm = static_cast<simgrid::kernel::activity::Comm*>(mbox->front());
 
-  if (NULL == (task = MSG_mailbox_get_head(MSG_mailbox_get_by_alias(alias))))
+  if (!comm)
     return -1;
 
-  return MSG_process_get_PID(task->simdata->sender);
+  return MSG_process_get_PID( static_cast<msg_task_t>(comm->src_data)->simdata->sender );
 }
 
 /** \ingroup msg_task_usage
@@ -869,7 +886,7 @@ int MSG_task_listen_from(const char *alias)
  * parameter category must contain a category that was previously declared with the function #TRACE_category
  * (or with #TRACE_category_with_color).
  *
- * See \ref tracing for details on how to trace the (categorized) resource utilization.
+ * See \ref outcomes_vizu for details on how to trace the (categorized) resource utilization.
  *
  * \param task the task that is going to be categorized
  * \param category the name of the category to be associated to the task
@@ -889,7 +906,7 @@ void MSG_task_set_category (msg_task_t task, const char *category)
  *
  * \see MSG_task_set_category
  *
- * \return Returns the name of the tracing category of the given task, NULL otherwise
+ * \return Returns the name of the tracing category of the given task, nullptr otherwise
  */
 const char *MSG_task_get_category (msg_task_t task)
 {
@@ -901,11 +918,11 @@ const char *MSG_task_get_category (msg_task_t task)
  *
  * \param asr the name of a router or AS
  * \param name a property name
- * \return value of a property (or NULL if property not set)
+ * \return value of a property (or nullptr if property not set)
  */
 const char *MSG_as_router_get_property_value(const char* asr, const char *name)
 {
-  return (char*) xbt_dict_get_or_null(MSG_as_router_get_properties(asr), name);
+  return static_cast<char*>(xbt_dict_get_or_null(MSG_as_router_get_properties(asr), name));
 }
 
 /**

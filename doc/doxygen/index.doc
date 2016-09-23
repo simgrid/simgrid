@@ -11,25 +11,39 @@
 @endhtmlonly
 
 - @subpage getting_started
-  - @ref install
-  - @ref help
-- @subpage tutorial
-  - @subpage platform
-  - @subpage options
+  - @subpage install
+  - @subpage install_yours
+- @subpage application
+  - @subpage s4u_api
+  - @subpage MSG_API
+  - @subpage SD_API
+  - @subpage SMPI_API
+  - @subpage MSG_Java
+- @subpage platform
+  - @subpage models
+  - @subpage platform_lua
+  - @subpage pls_ns3
+- @subpage scenario
   - @subpage deployment
+  - @subpage options
+- @subpage outcomes
+  - @subpage outcomes_logs
+  - @subpage outcomes_vizu
+  - @subpage outcomes_MC
+- @subpage howto
+  - Energy, Clouds
+  - Scalability Tweaks
+  - @subpage tutorial
   - @subpage examples
-- @subpage advanced
-  - @ref bindings
-  - @ref pls
-  - @ref tracing
+- @subpage uhood
+  - Simulating Resource Sharing
+  - @subpage uhood_switch
+  - @subpage inside
+- @subpage community
+  - @subpage community_contact
+  - @subpage community_giveback
+  - @subpage community_extend
 - @subpage FAQ
-- @subpage inside
-  - @ref inside_tests
-  - @ref inside_doxygen
-  - @ref inside_extending
-  - @ref inside_cmake
-  - @ref inside_release
-- @subpage contributing
 
 @htmlonly
 </td><td width="50%" align="center">

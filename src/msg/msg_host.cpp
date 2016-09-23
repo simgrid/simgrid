@@ -9,11 +9,13 @@
 #include "xbt/log.h"
 #include "simgrid/simix.h"
 #include <simgrid/s4u/host.hpp>
+#include <numeric>
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(msg);
 
+int sg_storage_max_file_descriptors = 1024;
+
 /** @addtogroup m_host_management
- * \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Hosts" --> \endhtmlonly
  * (#msg_host_t) and the functions for managing it.
  *  
  *  A <em>location</em> (or <em>host</em>) is any possible place where  a process may run. Thus it may be represented
@@ -32,11 +34,8 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
   priv->dp_updated_by_deleted_tasks = 0;
   priv->is_migrating = 0;
 
-  priv->affinity_mask_db = xbt_dict_new_homogeneous(NULL);
-
-  priv->file_descriptor_table = xbt_dynar_new(sizeof(int), NULL);
-  for (int i=1023; i>=0;i--)
-    xbt_dynar_push_as(priv->file_descriptor_table, int, i);
+  priv->file_descriptor_table = new std::vector<int>(sg_storage_max_file_descriptors);
+  std::iota (priv->file_descriptor_table->rbegin(), priv->file_descriptor_table->rend(), 0); // Fill with ..., 1, 0.
 
   sg_host_msg_set(host,priv);
 
@@ -80,9 +79,9 @@ void *MSG_host_get_data(msg_host_t host) {
  *
  * \brief Return the location on which the current process is executed.
  */
-msg_host_t MSG_host_self(void)
+msg_host_t MSG_host_self()
 {
-  return MSG_process_get_host(NULL);
+  return MSG_process_get_host(nullptr);
 }
 
 /** \ingroup m_host_management
@@ -114,22 +113,20 @@ void MSG_host_off(msg_host_t host)
  */
 void __MSG_host_priv_free(msg_host_priv_t priv)
 {
-  if (priv == NULL)
+  if (priv == nullptr)
     return;
   unsigned int size = xbt_dict_size(priv->dp_objs);
   if (size > 0)
     XBT_WARN("dp_objs: %u pending task?", size);
   xbt_dict_free(&priv->dp_objs);
-  xbt_dict_free(&priv->affinity_mask_db);
-  xbt_dynar_free(&priv->file_descriptor_table);
-
+  delete priv->file_descriptor_table;
   free(priv);
 }
 
 /** \ingroup m_host_management
  * \brief Return the current number MSG hosts.
  */
-int MSG_get_host_number(void)
+int MSG_get_host_number()
 {
   return xbt_dict_length(host_list);
 }
@@ -139,15 +136,24 @@ int MSG_get_host_number(void)
  * \remark The host order in the returned array is generally different from the host creation/declaration order in the
  *         XML platform (we use a hash table internally)
  */
-xbt_dynar_t MSG_hosts_as_dynar(void) {
+xbt_dynar_t MSG_hosts_as_dynar() {
   return sg_hosts_as_dynar();
 }
 
 /** \ingroup m_host_management
  * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
  */
-double MSG_get_host_speed(msg_host_t host) {
+double MSG_host_get_speed(msg_host_t host) {
   return host->speed();
+}
+
+/** \ingroup m_host_management
+ * \brief Return the speed of the processor (in flop/s), regardless of the current load on the machine.
+ * Deprecated: use MSG_host_get_speed
+ */
+double MSG_get_host_speed(msg_host_t host) {
+  XBT_WARN("MSG_get_host_speed is deprecated: use MSG_host_get_speed");
+  return MSG_host_get_speed(host);
 }
 
 /** \ingroup m_host_management
@@ -157,7 +163,7 @@ double MSG_get_host_speed(msg_host_t host) {
  * \return the number of cores
  */
 int MSG_host_get_core_number(msg_host_t host) {
-  return host->core_count();
+  return host->coresCount();
 }
 
 /** \ingroup m_host_management
@@ -168,7 +174,7 @@ int MSG_host_get_core_number(msg_host_t host) {
  */
 xbt_swag_t MSG_host_get_process_list(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
   return host->processes();
 }
 
@@ -177,11 +183,11 @@ xbt_swag_t MSG_host_get_process_list(msg_host_t host)
  *
  * \param host a host
  * \param name a property name
- * \return value of a property (or NULL if property not set)
+ * \return value of a property (or nullptr if property not set)
  */
 const char *MSG_host_get_property_value(msg_host_t host, const char *name)
 {
-  return (const char*) xbt_dict_get_or_null(MSG_host_get_properties(host), name);
+  return static_cast<const char*>(xbt_dict_get_or_null(MSG_host_get_properties(host), name));
 }
 
 /** \ingroup m_host_management
@@ -192,7 +198,7 @@ const char *MSG_host_get_property_value(msg_host_t host, const char *name)
  */
 xbt_dict_t MSG_host_get_properties(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
+  xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
   return host->properties();
 }
 
@@ -218,8 +224,7 @@ void MSG_host_set_property_value(msg_host_t host, const char *name, char *value,
  */
 int MSG_host_is_on(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-  return sg_host_is_on(host);
+  return host->isOn();
 }
 
 /** @ingroup m_host_management
@@ -229,8 +234,7 @@ int MSG_host_is_on(msg_host_t host)
  */
 int MSG_host_is_off(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-  return !(sg_host_is_on(host));
+  return host->isOff();
 }
 
 /** \ingroup m_host_management
@@ -263,8 +267,8 @@ void MSG_host_get_params(msg_host_t host, vm_params_t params)
  * \return Returns the processor speed associated with pstate_index
  */
 double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-  return host->powerPeakAt(pstate_index);
+  xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
+  return host->getPstateSpeed(pstate_index);
 }
 
 /** \ingroup m_host_management
@@ -274,8 +278,8 @@ double MSG_host_get_power_peak_at(msg_host_t host, int pstate_index) {
  * \return Returns the current processor speed
  */
 double MSG_host_get_current_power_peak(msg_host_t host) {
-  xbt_assert((host != NULL), "Invalid parameters (host is NULL)");
-  return host->currentPowerPeak();
+  xbt_assert((host != nullptr), "Invalid parameters (host is nullptr)");
+  return host->getPstateSpeedCurrent();
 }
 
 /** \ingroup m_host_management
@@ -294,7 +298,7 @@ int MSG_host_get_nb_pstates(msg_host_t host) {
  */
 xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
   return host->mountedStoragesAsDict();
 }
 
@@ -305,7 +309,7 @@ xbt_dict_t MSG_host_get_mounted_storage_list(msg_host_t host)
  */
 xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
+  xbt_assert((host != nullptr), "Invalid parameters");
   return host->attachedStorages();
 }
 
@@ -316,19 +320,19 @@ xbt_dynar_t MSG_host_get_attached_storage_list(msg_host_t host)
  */
 xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 {
-  xbt_assert((host != NULL), "Invalid parameters");
-  xbt_dict_t contents = xbt_dict_new_homogeneous(NULL);
+  xbt_assert((host != nullptr), "Invalid parameters");
+  xbt_dict_t contents = xbt_dict_new_homogeneous(nullptr);
   msg_storage_t storage;
   char* storage_name;
   char* mount_name;
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
 
   xbt_dict_t storage_list = host->mountedStoragesAsDict();
 
   xbt_dict_foreach(storage_list,cursor,mount_name,storage_name){
-    storage = (msg_storage_t)xbt_lib_get_elm_or_null(storage_lib,storage_name);
+    storage = static_cast<msg_storage_t>(xbt_lib_get_elm_or_null(storage_lib,storage_name));
     xbt_dict_t content = simcall_storage_get_content(storage);
-    xbt_dict_set(contents,mount_name, content,NULL);
+    xbt_dict_set(contents,mount_name, content,nullptr);
   }
   xbt_dict_free(&storage_list);
   return contents;
@@ -336,11 +340,13 @@ xbt_dict_t MSG_host_get_storage_content(msg_host_t host)
 
 int __MSG_host_get_file_descriptor_id(msg_host_t host){
   msg_host_priv_t priv = sg_host_msg(host);
-  xbt_assert(!xbt_dynar_is_empty(priv->file_descriptor_table), "Too much files are opened! Some have to be closed.");
-  return xbt_dynar_pop_as(priv->file_descriptor_table, int);
+  xbt_assert(!priv->file_descriptor_table->empty(), "Too much files are opened! Some have to be closed.");
+  int desc = priv->file_descriptor_table->back();
+  priv->file_descriptor_table->pop_back();
+  return desc;
 }
 
 void __MSG_host_release_file_descriptor_id(msg_host_t host, int id){
   msg_host_priv_t priv = sg_host_msg(host);
-  xbt_dynar_push_as(priv->file_descriptor_table, int, id);
+  priv->file_descriptor_table->push_back(id);
 }

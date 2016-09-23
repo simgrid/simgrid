@@ -7,6 +7,9 @@
 #ifndef METASIMGRID_PRIVATE_H
 #define METASIMGRID_PRIVATE_H
 
+#include <exception>
+#include <functional>
+
 #include "simgrid/msg.h"
 #include "simgrid/simix.h"
 #include "src/include/surf/surf.h"
@@ -17,47 +20,59 @@
 #include "xbt/dict.h"
 #include "xbt/config.h"
 #include "src/instr/instr_private.h"
+
+#include "src/kernel/activity/SynchroExec.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
+
 SG_BEGIN_DECL()
 
 /**************** datatypes **********************************/
+/********************************* Host **************************************/
+typedef struct s_msg_host_priv {
+  int        dp_enabled;
+  xbt_dict_t dp_objs;
+  double     dp_updated_by_deleted_tasks;
+  int        is_migrating;
 
+  std::vector<int> *file_descriptor_table;
+} s_msg_host_priv_t;
 /********************************* Task **************************************/
-#define MSG_BT(ptr, m)                              \
-  do {xbt_ex_t *_xbt_ex_t = xbt_new0(xbt_ex_t, 1); \
-  /* build the exception */                                             \
-  _xbt_ex_t->msg      = (bprintf(m));                                 \
-  _xbt_ex_t->category = (xbt_errcat_t)(0);                   \
-  _xbt_ex_t->value    = (0);                                 \
-  _xbt_ex_t->procname = (char*)xbt_procname();               \
-  _xbt_ex_t->pid      = xbt_getpid();                        \
-  _xbt_ex_t->file     = (char*)__FILE__;                     \
-  _xbt_ex_t->line     = __LINE__;                            \
-  _xbt_ex_t->func     = (char*)_XBT_FUNCTION;                \
-  _xbt_ex_t->bt_strings = NULL;                              \
-  xbt_backtrace_current(_xbt_ex_t); \
-  ptr = _xbt_ex_t; } while(0)
 
 typedef struct simdata_task {
-  smx_synchro_t compute;         /* SIMIX modeling of computation */
-  smx_synchro_t comm;            /* SIMIX modeling of communication */
-  double bytes_amount;    /* Data size */
-  double flops_amount;    /* Computation size */
-  msg_process_t sender;
-  msg_process_t receiver;
-  msg_host_t source;
-  double priority;
-  double bound; /* Capping for CPU resource */
-  double rate;  /* Capping for network resource */
+  ~simdata_task()
+  {
+    if (this->compute)
+      this->compute->unref();
 
-  /* CPU affinity database of this task */
-  xbt_dict_t affinity_mask_db; /* smx_host_t host => unsigned long mask */
+    /* parallel tasks only */
+    xbt_free(this->host_list);
+  }
+  void setUsed();
+  void setNotUsed()
+  {
+    this->isused = false;
+  }
 
-  void *isused;  /* Indicates whether the task is used in SIMIX currently */
-  int host_nb;                  /* ==0 if sequential task; parallel task if not */
+  simgrid::kernel::activity::Exec *compute = nullptr; /* SIMIX modeling of computation */
+  simgrid::kernel::activity::Comm *comm = nullptr;    /* SIMIX modeling of communication */
+  double bytes_amount = 0.0; /* Data size */
+  double flops_amount = 0.0; /* Computation size */
+  msg_process_t sender = nullptr;
+  msg_process_t receiver = nullptr;
+  msg_host_t source = nullptr;
+  double priority = 0.0;
+  double bound = 0.0; /* Capping for CPU resource */
+  double rate = 0.0;  /* Capping for network resource */
+
+  bool isused = false;  /* Indicates whether the task is used in SIMIX currently */
+  int host_nb = 0;      /* ==0 if sequential task; parallel task if not */
   /*******  Parallel Tasks Only !!!! *******/
-  sg_host_t *host_list;
-  double *flops_parallel_amount;
-  double *bytes_parallel_amount;
+  sg_host_t *host_list = nullptr;
+  double *flops_parallel_amount = nullptr;
+  double *bytes_parallel_amount = nullptr;
+
+private:
+  void reportMultipleUse() const;
 } s_simdata_task_t;
 
 /********************************* File **************************************/
@@ -68,24 +83,13 @@ typedef struct simdata_file {
 XBT_PRIVATE int __MSG_host_get_file_descriptor_id(msg_host_t host);
 XBT_PRIVATE void __MSG_host_release_file_descriptor_id(msg_host_t host, int id);
 
-/*************** Begin GPU ***************/
-typedef struct simdata_gpu_task {
-  double flops_amount;    /* Computation size */
-  double dispatch_latency;
-  double collect_latency;
-  int isused;  /* Indicates whether the task is used in SIMIX currently */
-} s_simdata_gpu_task_t;
-/*************** End GPU ***************/
-
 /******************************* Process *************************************/
 
 typedef struct simdata_process {
   msg_host_t m_host;              /* the host on which the process is running */
   msg_host_t put_host;            /* used for debugging purposes */
-  smx_synchro_t waiting_action;
+  smx_activity_t waiting_action;
   msg_task_t waiting_task;
-  char **argv;                  /* arguments table if any */
-  int argc;                     /* arguments number if any */
   msg_error_t last_errno;       /* the last value returned by a MSG_function */
 
   void* data;                   /* user data */
@@ -102,7 +106,7 @@ typedef struct process_arg {
 } s_process_arg_t, *process_arg_t;
 
 typedef struct msg_comm {
-  smx_synchro_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
+  smx_activity_t s_comm;          /* SIMIX communication object encapsulated (the same for both processes) */
   msg_task_t task_sent;           /* task sent (NULL for the receiver) */
   msg_task_t *task_received;      /* where the task will be received (NULL for the sender) */
   msg_error_t status;           /* status of the communication once finished */
@@ -135,33 +139,24 @@ typedef struct MSG_Global {
 XBT_PUBLIC_DATA(MSG_Global_t) msg_global;
 
 /*************************************************************/
-// FIXME: KILLME
-#  define MSG_RETURN(val) return(val)
-
 XBT_PRIVATE msg_host_t __MSG_host_create(sg_host_t host);
 XBT_PRIVATE msg_storage_t __MSG_storage_create(smx_storage_t storage);
 XBT_PRIVATE void __MSG_host_priv_free(msg_host_priv_t priv);
 XBT_PRIVATE void __MSG_storage_destroy(msg_storage_priv_t host);
 XBT_PRIVATE void __MSG_file_destroy(msg_file_priv_t host);
 
-XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_process_t smx_proc);
-XBT_PRIVATE smx_process_t MSG_process_create_from_SIMIX(const char *name,
-                                   xbt_main_func_t code, void *data,
-                                   const char *hostname, double kill_time,
-                                   int argc, char **argv,
+XBT_PRIVATE void MSG_process_cleanup_from_SIMIX(smx_actor_t smx_proc);
+XBT_PRIVATE smx_actor_t MSG_process_create_from_SIMIX(const char *name,
+                                   std::function<void()> code, void *data,
+                                   sg_host_t host, double kill_time,
                                    xbt_dict_t properties, int auto_restart,
-                                   smx_process_t parent_process);
-XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_synchro_t comm, void* buff, size_t buff_size);
+                                   smx_actor_t parent_process);
+XBT_PRIVATE void MSG_comm_copy_data_from_SIMIX(smx_activity_t comm, void* buff, size_t buff_size);
 
-XBT_PRIVATE void MSG_post_create_environment(void);
+XBT_PRIVATE void MSG_post_create_environment();
 
 XBT_PRIVATE void MSG_host_add_task(msg_host_t host, msg_task_t task);
 XBT_PRIVATE void MSG_host_del_task(msg_host_t host, msg_task_t task);
-/* @brief MSG_mailbox_free - release a mailbox from the memory.
- * Releases a mailbox from the memory but does not remove it from the dictionary.
- * @param   mailbox  The mailbox to release.
- */
-XBT_PRIVATE void MSG_mailbox_free(void *mailbox);
 
 /********** Tracing **********/
 /* declaration of instrumentation functions from msg_task_instr.c */
@@ -171,9 +166,9 @@ XBT_PRIVATE void TRACE_msg_task_execute_start(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_execute_end(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_destroy(msg_task_t task);
 XBT_PRIVATE void TRACE_msg_task_get_end(double start_time, msg_task_t task);
-XBT_PRIVATE void TRACE_msg_task_get_start(void);
+XBT_PRIVATE void TRACE_msg_task_get_start();
 XBT_PRIVATE int TRACE_msg_task_put_start(msg_task_t task);    //returns TRUE if the task_put_end must be called
-XBT_PRIVATE void TRACE_msg_task_put_end(void);
+XBT_PRIVATE void TRACE_msg_task_put_end();
 
 /* declaration of instrumentation functions from msg_process_instr.c */
 XBT_PRIVATE char *instr_process_id (msg_process_t proc, char *str, int len);
@@ -201,4 +196,19 @@ XBT_PRIVATE void TRACE_msg_vm_restore(msg_vm_t vm);
 XBT_PRIVATE void TRACE_msg_vm_end(msg_vm_t vm);
 
 SG_END_DECL()
+
+XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(
+  const char *name, std::function<void()> code, void *data,
+  msg_host_t host, xbt_dict_t properties);
+
+inline void simdata_task::setUsed()
+{
+  if (this->isused)
+    this->reportMultipleUse();
+  if (msg_global->debug_multiple_use) {
+    // TODO, backtrace
+  }
+  this->isused = true;
+}
+
 #endif

@@ -46,7 +46,7 @@ static const char *parmap_mode_name(e_xbt_parmap_mode_t mode)
 static int parmap_skip_mode(e_xbt_parmap_mode_t mode)
 {
   switch (mode) {
-#ifndef HAVE_FUTEX_H
+#if !HAVE_FUTEX_H
   case XBT_PARMAP_FUTEX:
     printf("not available\n");
     return 1;
@@ -78,11 +78,10 @@ static void fun_big_comp(void *arg)
 
 static void array_new(unsigned **a, xbt_dynar_t *data)
 {
-  int i;
   *a = xbt_malloc(ARRAY_SIZE * sizeof **a);
   *data = xbt_dynar_new(sizeof *a, NULL);
   xbt_dynar_shrink(*data, ARRAY_SIZE);
-  for (i = 0 ; i < ARRAY_SIZE ; i++) {
+  for (int i = 0 ; i < ARRAY_SIZE ; i++) {
     (*a)[i] = i;
     xbt_dynar_push_as(*data, void*, &(*a)[i]);
   }
@@ -93,8 +92,7 @@ static void bench_parmap_full(int nthreads, e_xbt_parmap_mode_t mode)
   unsigned *a;
   xbt_dynar_t data;
   xbt_parmap_t parmap;
-  int i;
-  double start_time, elapsed_time;
+  double elapsed_time;
 
   printf("** mode = %-15s ", parmap_mode_name(mode));
   fflush(stdout);
@@ -104,8 +102,8 @@ static void bench_parmap_full(int nthreads, e_xbt_parmap_mode_t mode)
 
   array_new(&a, &data);
 
-  i = 0;
-  start_time = xbt_os_time();
+  int i = 0;
+  double start_time = xbt_os_time();
   do {
     parmap = xbt_parmap_new(nthreads, mode);
     xbt_parmap_apply(parmap, fun_to_apply, data);
@@ -124,7 +122,7 @@ static void bench_parmap_apply(int nthreads, e_xbt_parmap_mode_t mode)
 {
   unsigned *a;
   xbt_dynar_t data;
-  double start_time, elapsed_time;
+  double elapsed_time;
 
   printf("** mode = %-15s ", parmap_mode_name(mode));
   fflush(stdout);
@@ -136,7 +134,7 @@ static void bench_parmap_apply(int nthreads, e_xbt_parmap_mode_t mode)
 
   xbt_parmap_t parmap = xbt_parmap_new(nthreads, mode);
   int i = 0;
-  start_time = xbt_os_time();
+  double start_time = xbt_os_time();
   do {
     xbt_parmap_apply(parmap, fun_to_apply, data);
     elapsed_time = xbt_os_time() - start_time;
@@ -144,8 +142,7 @@ static void bench_parmap_apply(int nthreads, e_xbt_parmap_mode_t mode)
   } while (elapsed_time < TIMEOUT);
   xbt_parmap_destroy(parmap);
 
-  printf("ran %d times in %g seconds (%g/s)\n",
-         i, elapsed_time, i / elapsed_time);
+  printf("ran %d times in %g seconds (%g/s)\n", i, elapsed_time, i / elapsed_time);
 
   xbt_dynar_free(&data);
   xbt_free(a);

@@ -27,11 +27,12 @@
    not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "src/internal_config.h"
 #include <sys/types.h>
 #include <fcntl.h>              /* After sys/types.h, at least for dpx/2.  */
 #include <sys/stat.h>
 #include <string.h>
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>             /* Prototypes for lseek */
 #endif
 #include "mmprivate.h"
@@ -359,7 +360,7 @@ void mmalloc_postexit(void)
 size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo)
 {
   int bytes = 0;
-  for (size_t i=0; i<=heaplimit; ++i){
+  for (size_t i=0; i < heaplimit; ++i){
     if (heapinfo[i].type == MMALLOC_TYPE_UNFRAGMENTED){
       if (heapinfo[i].busy_block.busy_size > 0)
         bytes += heapinfo[i].busy_block.busy_size;

@@ -10,8 +10,6 @@
 #include <stddef.h>
 
 #include <xbt/base.h>
-#include <xbt/dynar.h>
-#include <xbt/dynar.hpp>
 #include <xbt/log.h>
 
 #include <simgrid/simix.h>
@@ -43,12 +41,6 @@
 
 SG_BEGIN_DECL()
 
-typedef struct s_mc_smx_process_info s_mc_smx_process_info_t, *mc_smx_process_info_t;
-
-XBT_PRIVATE xbt_dynar_t MC_smx_process_info_list_new(void);
-
-XBT_PRIVATE void MC_process_smx_refresh(simgrid::mc::Process* process);
-
 /** Get the issuer of  a simcall (`req->issuer`)
  *
  *  In split-process mode, it does the black magic necessary to get an address
@@ -58,21 +50,12 @@ XBT_PRIVATE void MC_process_smx_refresh(simgrid::mc::Process* process);
  *  @param process the MCed process
  *  @param req     the simcall (copied in the local process)
  */
-XBT_PRIVATE smx_process_t MC_smx_simcall_get_issuer(smx_simcall_t req);
+XBT_PRIVATE smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req);
 
-XBT_PRIVATE const char* MC_smx_process_get_name(smx_process_t p);
-XBT_PRIVATE const char* MC_smx_process_get_host_name(smx_process_t p);
+XBT_PRIVATE const char* MC_smx_process_get_name(smx_actor_t p);
+XBT_PRIVATE const char* MC_smx_process_get_host_name(smx_actor_t p);
 
 XBT_PRIVATE int MC_smpi_process_count(void);
-
-
-/* ***** Resolve (local/MCer structure from remote/MCed addresses) ***** */
-
-/** Get a local copy of the process from the process remote address */
-XBT_PRIVATE smx_process_t MC_smx_resolve_process(smx_process_t process_remote_address);
-
-/** Get the process info structure from the process remote address */
-XBT_PRIVATE mc_smx_process_info_t MC_smx_resolve_process_info(smx_process_t process_remote_address);
 
 XBT_PRIVATE unsigned long MC_smx_get_maxpid(void);
 

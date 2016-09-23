@@ -16,10 +16,6 @@
 #include <stdarg.h>             /* va_* */
 #include <stdio.h>  /* FILE */
 
-#ifdef _MSC_VER
-#define strcasecmp _stricmp
-#endif
-
 SG_BEGIN_DECL()
 
 /** @addtogroup XBT_str
@@ -44,26 +40,23 @@ XBT_PUBLIC(xbt_dynar_t) xbt_str_split_str(const char *s, const char *sep);
 XBT_PUBLIC(char *) xbt_str_join(xbt_dynar_t dynar, const char *sep);
 XBT_PUBLIC(char *) xbt_str_join_array(const char *const *strs, const char *sep);
 
-/* */
 XBT_PUBLIC(void) xbt_str_subst(char *str, char from, char to, int amount);
 XBT_PUBLIC(char *) xbt_str_varsubst(const char *str, xbt_dict_t patterns);
 
-/* */
 XBT_PUBLIC(char *) xbt_str_from_file(FILE * file);
 
 XBT_PUBLIC(long int) xbt_str_parse_int(const char* str, const char* error_msg);
 XBT_PUBLIC(double) xbt_str_parse_double(const char* str, const char* error_msg);
 
-#define DJB2_HASH_FUNCTION
-//#define FNV_HASH_FUNCTION
+#define XBT_DJB2_HASH_FUNCTION
+//#define XBT_FNV_HASH_FUNCTION
 
 /**
  * @brief Returns the hash code of a string.
  */
-static XBT_INLINE unsigned int xbt_str_hash_ext(const char *str, int str_len)
+static inline unsigned int xbt_str_hash_ext(const char *str, int str_len)
 {
-
-#ifdef DJB2_HASH_FUNCTION
+#ifdef XBT_DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */
   int c;
   unsigned int hash = 5381;
@@ -72,7 +65,7 @@ static XBT_INLINE unsigned int xbt_str_hash_ext(const char *str, int str_len)
     c = *str++;
     hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
   }
-# elif defined(FNV_HASH_FUNCTION)
+# elif defined(XBT_FNV_HASH_FUNCTION)
   unsigned int hash = 0x811c9dc5;
   unsigned char *bp = (unsigned char *) str;    /* start of buffer */
   unsigned char *be = bp + str_len;     /* beyond end of buffer */
@@ -102,9 +95,9 @@ static XBT_INLINE unsigned int xbt_str_hash_ext(const char *str, int str_len)
 /**
  * @brief Returns the hash code of a string.
  */
-static XBT_INLINE unsigned int xbt_str_hash(const char *str)
+static inline unsigned int xbt_str_hash(const char *str)
 {
-#ifdef DJB2_HASH_FUNCTION
+#ifdef XBT_DJB2_HASH_FUNCTION
   /* fast implementation of djb2 algorithm */
   int c;
   unsigned int hash = 5381;
@@ -113,14 +106,12 @@ static XBT_INLINE unsigned int xbt_str_hash(const char *str)
     hash = ((hash << 5) + hash) + c;    /* hash * 33 + c */
   }
 
-# elif defined(FNV_HASH_FUNCTION)
+# elif defined(XBT_FNV_HASH_FUNCTION)
   unsigned int hash = 0x811c9dc5;
 
   while (*str) {
     /* multiply by the 32 bit FNV magic prime mod 2^32 */
-    hash +=
-        (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) +
-        (hash << 24);
+    hash += (hash << 1) + (hash << 4) + (hash << 7) + (hash << 8) + (hash << 24);
 
     /* xor the bottom with the current byte */
     hash ^= (unsigned int) *str++;
@@ -138,6 +129,5 @@ static XBT_INLINE unsigned int xbt_str_hash(const char *str)
 }
 
 /**@}*/
-
 SG_END_DECL()
 #endif                          /* XBT_STR_H */

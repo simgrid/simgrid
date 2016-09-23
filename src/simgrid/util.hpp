@@ -7,8 +7,6 @@
 #ifndef SIMGRID_UTIL_HTPP
 #define SIMGRID_UTIL_HTPP
 
-#include <algorithm>
-
 #include <xbt/base.h>
 
 namespace simgrid {

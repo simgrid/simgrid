@@ -11,7 +11,7 @@ static int iterate = 10;
 static int growsdown(int *x)
 {
   int y = (x > &y);
-   
+
   if (--iterate > 0)
     y = growsdown(&y);
 

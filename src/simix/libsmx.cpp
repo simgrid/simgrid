@@ -15,13 +15,19 @@
 
 #include <functional>
 
+#include <xbt/functional.hpp>
+
+#include <simgrid/simix/blocking_simcall.hpp>
+
 #include "src/mc/mc_replay.h"
 #include "smx_private.h"
-#include "src/mc/mc_forward.h"
+#include "src/mc/mc_forward.hpp"
 #include "xbt/ex.h"
 #include "mc/mc.h"
 #include "src/simix/smx_host_private.h"
-#include "src/simix/smx_private.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
+#include "src/surf/virtual_machine.hpp"
+
 
 #include <simgrid/simix.hpp>
 
@@ -29,10 +35,10 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix);
 
 #include "popping_bodies.cpp"
 
-void simcall_call(smx_process_t process)
+void simcall_call(smx_actor_t process)
 {
   if (process != simix_global->maestro_process) {
-    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", process->name,
+    XBT_DEBUG("Yield process '%s' on simcall %s (%d)", process->name.c_str(),
               SIMIX_simcall_name(process->simcall.call), (int)process->simcall.call);
     SIMIX_process_yield(process);
   } else {
@@ -40,57 +46,7 @@ void simcall_call(smx_process_t process)
   }
 }
 
-// ***** Host simcalls
-// Those functions are replaced by methods on the Host object.
-
-/** \ingroup simix_host_management
- * \deprecated */
-xbt_swag_t simcall_host_get_process_list(sg_host_t host)
-{
-  return host->processes();
-}
-
-/** \ingroup simix_host_management
- * \deprecated */
-double simcall_host_get_current_power_peak(sg_host_t host)
-{
-  return host->currentPowerPeak();
-}
-
-/** \ingroup simix_host_management
- * \deprecated */
-double simcall_host_get_power_peak_at(sg_host_t host, int pstate_index)
-{
-  return host->powerPeakAt(pstate_index);
-}
-
-/** \deprecated */
-void simcall_host_get_params(sg_host_t vm, vm_params_t params)
-{
-  vm->parameters(params);
-}
-
-/** \deprecated */
-void simcall_host_set_params(sg_host_t vm, vm_params_t params)
-{
-  vm->setParameters(params);
-}
-
-/** \ingroup simix_storage_management
- *  \deprecated */
-xbt_dict_t simcall_host_get_mounted_storage_list(sg_host_t host)
-{
-  return host->mountedStoragesAsDict();
-}
-
-/** \ingroup simix_storage_management
- *  \deprecated */
-xbt_dynar_t simcall_host_get_attached_storage_list(sg_host_t host)
-{
-  return host->attachedStorages();
-}
-
-// ***** Other simcalls
+// ***** AS simcalls
 
 /**
  * \ingroup simix_host_management
@@ -115,18 +71,17 @@ xbt_dict_t simcall_asr_get_properties(const char *name)
  * \param flops_amount amount Computation amount (in flops)
  * \param priority computation priority
  * \param bound
- * \param affinity_mask
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_execution_start(const char *name,
+smx_activity_t simcall_execution_start(const char *name,
                                     double flops_amount,
-                                    double priority, double bound, unsigned long affinity_mask)
+                                    double priority, double bound)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(flops_amount), "flops_amount is not finite!");
   xbt_assert(std::isfinite(priority), "priority is not finite!");
 
-  return simcall_BODY_execution_start(name, flops_amount, priority, bound, affinity_mask);
+  return simcall_BODY_execution_start(name, flops_amount, priority, bound);
 }
 
 /**
@@ -144,7 +99,7 @@ smx_synchro_t simcall_execution_start(const char *name,
  * \param rate the SURF action rate
  * \return A new SIMIX execution synchronization
  */
-smx_synchro_t simcall_execution_parallel_start(const char *name,
+smx_activity_t simcall_execution_parallel_start(const char *name,
                                          int host_nb,
                                          sg_host_t *host_list,
                                          double *flops_amount,
@@ -156,7 +111,7 @@ smx_synchro_t simcall_execution_parallel_start(const char *name,
   /* checking for infinite values */
   for (i = 0 ; i < host_nb ; ++i) {
     xbt_assert(std::isfinite(flops_amount[i]), "flops_amount[%d] is not finite!", i);
-    if (bytes_amount != NULL) {
+    if (bytes_amount != nullptr) {
       for (j = 0 ; j < host_nb ; ++j) {
         xbt_assert(std::isfinite(bytes_amount[i + host_nb * j]),
                    "bytes_amount[%d+%d*%d] is not finite!", i, host_nb, j);
@@ -176,50 +131,14 @@ smx_synchro_t simcall_execution_parallel_start(const char *name,
 
 /**
  * \ingroup simix_process_management
- * \brief Destroys an execution synchro.
- *
- * Destroys a synchro, freeing its memory. This function cannot be called if there are a conditional waiting for it.
- * \param execution The execution synchro to destroy
- */
-void simcall_execution_destroy(smx_synchro_t execution)
-{
-  simcall_BODY_execution_destroy(execution);
-}
-
-/**
- * \ingroup simix_process_management
  * \brief Cancels an execution synchro.
  *
  * This functions stops the execution. It calls a surf function.
  * \param execution The execution synchro to cancel
  */
-void simcall_execution_cancel(smx_synchro_t execution)
+void simcall_execution_cancel(smx_activity_t execution)
 {
   simcall_BODY_execution_cancel(execution);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Returns how much of an execution synchro remains to be done.
- *
- * \param execution The execution synchro
- * \return The remaining amount
- */
-double simcall_execution_get_remains(smx_synchro_t execution)
-{
-  return simcall_BODY_execution_get_remains(execution);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Returns the state of an execution synchro.
- *
- * \param execution The execution synchro
- * \return The state
- */
-e_smx_state_t simcall_execution_get_state(smx_synchro_t execution)
-{
-  return simcall_BODY_execution_get_state(execution);
 }
 
 /**
@@ -230,7 +149,7 @@ e_smx_state_t simcall_execution_get_state(smx_synchro_t execution)
  * \param execution The execution synchro
  * \param priority The new priority
  */
-void simcall_execution_set_priority(smx_synchro_t execution, double priority)
+void simcall_execution_set_priority(smx_activity_t execution, double priority)
 {
   /* checking for infinite values */
   xbt_assert(std::isfinite(priority), "priority is not finite!");
@@ -246,23 +165,9 @@ void simcall_execution_set_priority(smx_synchro_t execution, double priority)
  * \param execution The execution synchro
  * \param bound The new bound
  */
-void simcall_execution_set_bound(smx_synchro_t execution, double bound)
+void simcall_execution_set_bound(smx_activity_t execution, double bound)
 {
   simcall_BODY_execution_set_bound(execution, bound);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Changes the CPU affinity of an execution synchro.
- *
- * This functions changes the CPU affinity of an execution synchro. See taskset(1) on Linux.
- * \param execution The execution synchro
- * \param host Host
- * \param mask Affinity mask
- */
-void simcall_execution_set_affinity(smx_synchro_t execution, sg_host_t host, unsigned long mask)
-{
-  simcall_BODY_execution_set_affinity(execution, host, mask);
 }
 
 /**
@@ -271,7 +176,7 @@ void simcall_execution_set_affinity(smx_synchro_t execution, sg_host_t host, uns
  *
  * \param execution The execution synchro
  */
-e_smx_state_t simcall_execution_wait(smx_synchro_t execution)
+e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 {
   return (e_smx_state_t) simcall_BODY_execution_wait(execution);
 }
@@ -286,9 +191,14 @@ e_smx_state_t simcall_execution_wait(smx_synchro_t execution)
  *
  * \return The host object of the VM
  */
-void* simcall_vm_create(const char *name, sg_host_t phys_host)
+sg_host_t simcall_vm_create(const char *name, sg_host_t phys_host)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_create, name, phys_host));
+  return simgrid::simix::kernelImmediate([&name, &phys_host] {
+    sg_host_t host = surf_vm_model->createVM(name, phys_host);
+    host->extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
+
+    return host;
+  });
 }
 
 /**
@@ -299,7 +209,7 @@ void* simcall_vm_create(const char *name, sg_host_t phys_host)
  */
 void simcall_vm_start(sg_host_t vm)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_start, vm));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_start, vm));
 }
 
 /**
@@ -311,7 +221,7 @@ void simcall_vm_start(sg_host_t vm)
  */
 int simcall_vm_get_state(sg_host_t vm)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_get_state, vm));
+  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_get_state, vm));
 }
 
 /**
@@ -323,17 +233,12 @@ int simcall_vm_get_state(sg_host_t vm)
  */
 void *simcall_vm_get_pm(sg_host_t vm)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_get_pm, vm));
+  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_get_pm, vm));
 }
 
 void simcall_vm_set_bound(sg_host_t vm, double bound)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_vm_set_bound, vm, bound));
-}
-
-void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
-{
-  simgrid::simix::kernel(std::bind(SIMIX_vm_set_affinity, vm, pm, mask));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_set_bound, vm, bound));
 }
 
 /**
@@ -345,7 +250,7 @@ void simcall_vm_set_affinity(sg_host_t vm, sg_host_t pm, unsigned long mask)
  */
 void simcall_vm_migrate(sg_host_t vm, sg_host_t host)
 {
-  return simgrid::simix::kernel(std::bind(SIMIX_vm_migrate, vm, host));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_migrate, vm, host));
 }
 
 /**
@@ -411,14 +316,13 @@ void simcall_vm_shutdown(sg_host_t vm)
  */
 void simcall_vm_destroy(sg_host_t vm)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_vm_destroy, vm));
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_destroy, vm));
 }
 
 /**
  * \ingroup simix_vm_management
  * \brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
  *  The simcall actually invokes the following calls: 
- *     simcall_vm_set_affinity(vm, src_pm, 0); 
  *     simcall_vm_migrate(vm, dst_pm); 
  *     simcall_vm_resume(vm);
  *
@@ -430,39 +334,8 @@ void simcall_vm_destroy(sg_host_t vm)
  */
 void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
 {
-  simgrid::simix::kernel(std::bind(
+  simgrid::simix::kernelImmediate(std::bind(
     SIMIX_vm_migratefrom_resumeto, vm, src_pm, dst_pm));
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Creates and runs a new SIMIX process.
- *
- * The structure and the corresponding thread are created and put in the list of ready processes.
- *
- * \param name a name for the process. It is for user-level information and can be NULL.
- * \param code the main function of the process
- * \param data a pointer to any data one may want to attach to the new object. It is for user-level information and can be NULL.
- * It can be retrieved with the function \ref simcall_process_get_data.
- * \param hostname name of the host where the new agent is executed.
- * \param kill_time time when the process is killed
- * \param argc first argument passed to \a code
- * \param argv second argument passed to \a code
- * \param properties the properties of the process
- * \param auto_restart either it is autorestarting or not.
- */
-smx_process_t simcall_process_create(const char *name,
-                              xbt_main_func_t code,
-                              void *data,
-                              const char *hostname,
-                              double kill_time,
-                              int argc, char **argv,
-                              xbt_dict_t properties,
-                              int auto_restart)
-{
-  return (smx_process_t) simcall_BODY_process_create(name, code, data, hostname,
-                              kill_time, argc, argv, properties,
-                              auto_restart);
 }
 
 /**
@@ -473,7 +346,7 @@ smx_process_t simcall_process_create(const char *name,
  *
  * \param process poor victim
  */
-void simcall_process_kill(smx_process_t process)
+void simcall_process_kill(smx_actor_t process)
 {
   simcall_BODY_process_kill(process);
 }
@@ -492,7 +365,7 @@ void simcall_process_killall(int reset_pid)
  * \brief Cleans up a SIMIX process.
  * \param process poor victim (must have already been killed)
  */
-void simcall_process_cleanup(smx_process_t process)
+void simcall_process_cleanup(smx_actor_t process)
 {
   simcall_BODY_process_cleanup(process);
 }
@@ -506,12 +379,12 @@ void simcall_process_cleanup(smx_process_t process)
  * \param process the process to migrate
  * \param dest name of the new host
  */
-void simcall_process_set_host(smx_process_t process, sg_host_t dest)
+void simcall_process_set_host(smx_actor_t process, sg_host_t dest)
 {
   simcall_BODY_process_set_host(process, dest);
 }
 
-void simcall_process_join(smx_process_t process, double timeout)
+void simcall_process_join(smx_actor_t process, double timeout)
 {
   simcall_BODY_process_join(process, timeout);
 }
@@ -525,7 +398,7 @@ void simcall_process_join(smx_process_t process, double timeout)
  *
  * \param process a SIMIX process
  */
-void simcall_process_suspend(smx_process_t process)
+void simcall_process_suspend(smx_actor_t process)
 {
   xbt_assert(process, "Invalid parameters");
 
@@ -541,7 +414,7 @@ void simcall_process_suspend(smx_process_t process)
  *
  * \param process a SIMIX process
  */
-void simcall_process_resume(smx_process_t process)
+void simcall_process_resume(smx_actor_t process)
 {
   simcall_BODY_process_resume(process);
 }
@@ -552,110 +425,57 @@ void simcall_process_resume(smx_process_t process)
  *
  * Maestro internal process is not counted, only user code processes are
  */
-int simcall_process_count(void)
+int simcall_process_count()
 {
-  return simgrid::simix::kernel(SIMIX_process_count);
+  return simgrid::simix::kernelImmediate(SIMIX_process_count);
 }
 
 /**
  * \ingroup simix_process_management
- * \brief Return the PID of a #smx_process_t.
- * \param process a SIMIX process
- * \return the PID of this process
- */
-int simcall_process_get_PID(smx_process_t process)
-{
-  return SIMIX_process_get_PID(process);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Return the parent PID of a #smx_process_t.
- * \param process a SIMIX process
- * \return the PID of this process parenrt
- */
-int simcall_process_get_PPID(smx_process_t process)
-{
-  return SIMIX_process_get_PPID(process);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Return the user data of a #smx_process_t.
+ * \brief Return the user data of a #smx_actor_t.
  * \param process a SIMIX process
  * \return the user data of this process
  */
-void* simcall_process_get_data(smx_process_t process)
+void* simcall_process_get_data(smx_actor_t process)
 {
   return SIMIX_process_get_data(process);
 }
 
 /**
  * \ingroup simix_process_management
- * \brief Set the user data of a #smx_process_t.
+ * \brief Set the user data of a #smx_actor_t.
  *
  * This functions sets the user data associated to \a process.
  * \param process SIMIX process
  * \param data User data
  */
-void simcall_process_set_data(smx_process_t process, void *data)
+void simcall_process_set_data(smx_actor_t process, void *data)
 {
-  simgrid::simix::kernel(std::bind(SIMIX_process_set_data, process, data));
-}
-
-static void kill_process(void* arg)
-{
-  simix_global->kill_process_function((smx_process_t) arg);
+  simgrid::simix::kernelImmediate(std::bind(SIMIX_process_set_data, process, data));
 }
 
 /**
  * \ingroup simix_process_management
  * \brief Set the kill time of a process.
  */
-void simcall_process_set_kill_time(smx_process_t process, double kill_time)
+void simcall_process_set_kill_time(smx_actor_t process, double kill_time)
 {
 
-  if (kill_time > SIMIX_get_clock()) {
-    if (simix_global->kill_process_function) {
-      XBT_DEBUG("Set kill time %f for process %s(%s)",kill_time, process->name,
-          sg_host_get_name(process->host));
-      process->kill_timer = SIMIX_timer_set(kill_time, kill_process, process);
-    }
-  }
+  if (kill_time <= SIMIX_get_clock() || simix_global->kill_process_function == nullptr)
+    return;
+  XBT_DEBUG("Set kill time %f for process %s(%s)",
+    kill_time, process->name.c_str(), sg_host_get_name(process->host));
+  process->kill_timer = SIMIX_timer_set(kill_time, [=] {
+    simix_global->kill_process_function(process);
+    process->kill_timer=nullptr;
+  });
 }
 /**
  * \ingroup simix_process_management
  * \brief Get the kill time of a process (or 0 if unset).
  */
-double simcall_process_get_kill_time(smx_process_t process) {
+double simcall_process_get_kill_time(smx_actor_t process) {
   return SIMIX_timer_get_date(process->kill_timer);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Return the location on which an agent is running.
- *
- * This functions returns the sg_host_t corresponding to the location on which
- * \a process is running.
- * \param process SIMIX process
- * \return SIMIX host
- */
-sg_host_t simcall_process_get_host(smx_process_t process)
-{
-  return SIMIX_process_get_host(process);
-}
-
-/**
- * \ingroup simix_process_management
- * \brief Return the name of an agent.
- *
- * This functions checks whether \a process is a valid pointer or not and return its name.
- * \param process SIMIX process
- * \return The process name
- */
-const char* simcall_process_get_name(smx_process_t process)
-{
-  return SIMIX_process_get_name(process);
 }
 
 /**
@@ -666,7 +486,7 @@ const char* simcall_process_get_name(smx_process_t process)
  * \param process SIMIX process
  * \return 1, if the process is suspended, else 0.
  */
-int simcall_process_is_suspended(smx_process_t process)
+int simcall_process_is_suspended(smx_actor_t process)
 {
   return simcall_BODY_process_is_suspended(process);
 }
@@ -677,7 +497,7 @@ int simcall_process_is_suspended(smx_process_t process)
  *
  * This functions returns the properties associated with this process
  */
-xbt_dict_t simcall_process_get_properties(smx_process_t process)
+xbt_dict_t simcall_process_get_properties(smx_actor_t process)
 {
   return SIMIX_process_get_properties(process);
 }
@@ -686,7 +506,7 @@ xbt_dict_t simcall_process_get_properties(smx_process_t process)
  * \brief Add an on_exit function
  * Add an on_exit function which will be executed when the process exits/is killed.
  */
-XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_pvoid_t fun, void *data)
+XBT_PUBLIC(void) simcall_process_on_exit(smx_actor_t process, int_f_pvoid_pvoid_t fun, void *data)
 {
   simcall_BODY_process_on_exit(process, fun, data);
 }
@@ -696,7 +516,7 @@ XBT_PUBLIC(void) simcall_process_on_exit(smx_process_t process, int_f_pvoid_pvoi
  * Will restart the process when the host comes back up if auto_restart is set to 1.
  */
 
-XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int auto_restart)
+XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_actor_t process, int auto_restart)
 {
   simcall_BODY_process_auto_restart_set(process, auto_restart);
 }
@@ -705,9 +525,9 @@ XBT_PUBLIC(void) simcall_process_auto_restart_set(smx_process_t process, int aut
  * \ingroup simix_process_management
  * \brief Restarts the process, killing it and starting it again from scratch.
  */
-XBT_PUBLIC(smx_process_t) simcall_process_restart(smx_process_t process)
+XBT_PUBLIC(smx_actor_t) simcall_process_restart(smx_actor_t process)
 {
-  return (smx_process_t) simcall_BODY_process_restart(process);
+  return (smx_actor_t) simcall_BODY_process_restart(process);
 }
 /**
  * \ingroup simix_process_management
@@ -728,82 +548,28 @@ e_smx_state_t simcall_process_sleep(double duration)
 }
 
 /**
- *  \ingroup simix_rdv_management
+ *  \ingroup simix_mbox_management
  *  \brief Creates a new rendez-vous point
  *  \param name The name of the rendez-vous point
  *  \return The created rendez-vous point
  */
-smx_mailbox_t simcall_rdv_create(const char *name)
+smx_mailbox_t simcall_mbox_create(const char *name)
 {
-  return simcall_BODY_rdv_create(name);
+  return simcall_BODY_mbox_create(name);
 }
 
-
-/**
- *  \ingroup simix_rdv_management
- *  \brief Destroy a rendez-vous point
- *  \param rdv The rendez-vous point to destroy
- */
-void simcall_rdv_destroy(smx_mailbox_t rdv)
+void simcall_mbox_set_receiver(smx_mailbox_t mbox, smx_actor_t process)
 {
-  simcall_BODY_rdv_destroy(rdv);
-}
-/**
- *  \ingroup simix_rdv_management
- *  \brief Returns a rendez-vous point knowing its name
- */
-smx_mailbox_t simcall_rdv_get_by_name(const char *name)
-{
-  xbt_assert(name != NULL, "Invalid parameter for simcall_rdv_get_by_name (name is NULL)");
-
-  /* FIXME: this is a horrible loss of performance, so we hack it out by
-   * skipping the simcall (for now). It works in parallel, it won't work on
-   * distributed but probably we will change MSG for that. */
-
-  return SIMIX_rdv_get_by_name(name);
-}
-
-/**
- *  \ingroup simix_rdv_management
- *  \brief Counts the number of communication synchros of a given host pending
- *         on a rendez-vous point.
- *  \param rdv The rendez-vous point
- *  \param host The host to be counted
- *  \return The number of comm synchros pending in the rdv
- */
-int simcall_rdv_comm_count_by_host(smx_mailbox_t rdv, sg_host_t host)
-{
-  return simcall_BODY_rdv_comm_count_by_host(rdv, host);
-}
-
-/**
- *  \ingroup simix_rdv_management
- *  \brief returns the communication at the head of the rendez-vous
- *  \param rdv The rendez-vous point
- *  \return The communication or NULL if empty
- */
-smx_synchro_t simcall_rdv_get_head(smx_mailbox_t rdv)
-{
-  return simcall_BODY_rdv_get_head(rdv);
-}
-
-void simcall_rdv_set_receiver(smx_mailbox_t rdv, smx_process_t process)
-{
-  simcall_BODY_rdv_set_receiver(rdv, process);
-}
-
-smx_process_t simcall_rdv_get_receiver(smx_mailbox_t rdv)
-{
-  return simcall_BODY_rdv_get_receiver(rdv);
+  simcall_BODY_mbox_set_receiver(mbox, process);
 }
 
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate,
+void simcall_comm_send(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate,
                          void *src_buff, size_t src_buff_size,
-                         int (*match_fun)(void *, void *, smx_synchro_t),
-                         void (*copy_data_fun)(smx_synchro_t, void*, size_t), void *data,
+                         int (*match_fun)(void *, void *, smx_activity_t),
+                         void (*copy_data_fun)(smx_activity_t, void*, size_t), void *data,
                          double timeout)
 {
   /* checking for infinite values */
@@ -811,18 +577,18 @@ void simcall_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size
   xbt_assert(std::isfinite(rate), "rate is not finite!");
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
 
-  xbt_assert(rdv, "No rendez-vous point defined for send");
+  xbt_assert(mbox, "No rendez-vous point defined for send");
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
-    comm = simcall_comm_isend(sender, rdv, task_size, rate,
-        src_buff, src_buff_size, match_fun, NULL, copy_data_fun, data, 0);
+    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
+    comm = simcall_comm_isend(sender, mbox, task_size, rate,
+        src_buff, src_buff_size, match_fun, nullptr, copy_data_fun, data, 0);
     simcall_comm_wait(comm, timeout);
-    comm = NULL;
+    comm = nullptr;
   }
   else {
-    simcall_BODY_comm_send(sender, rdv, task_size, rate, src_buff, src_buff_size,
+    simcall_BODY_comm_send(sender, mbox, task_size, rate, src_buff, src_buff_size,
                          match_fun, copy_data_fun, data, timeout);
   }
 }
@@ -830,11 +596,11 @@ void simcall_comm_send(smx_process_t sender, smx_mailbox_t rdv, double task_size
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t rdv, double task_size, double rate,
+smx_activity_t simcall_comm_isend(smx_actor_t sender, smx_mailbox_t mbox, double task_size, double rate,
                               void *src_buff, size_t src_buff_size,
-                              int (*match_fun)(void *, void *, smx_synchro_t),
+                              int (*match_fun)(void *, void *, smx_activity_t),
                               void (*clean_fun)(void *),
-                              void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+                              void (*copy_data_fun)(smx_activity_t, void*, size_t),
                               void *data,
                               int detached)
 {
@@ -842,9 +608,9 @@ smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t rdv, double
   xbt_assert(std::isfinite(task_size), "task_size is not finite!");
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  xbt_assert(rdv, "No rendez-vous point defined for isend");
+  xbt_assert(mbox, "No rendez-vous point defined for isend");
 
-  return simcall_BODY_comm_isend(sender, rdv, task_size, rate, src_buff,
+  return simcall_BODY_comm_isend(sender, mbox, task_size, rate, src_buff,
                                  src_buff_size, match_fun,
                                  clean_fun, copy_data_fun, data, detached);
 }
@@ -852,82 +618,85 @@ smx_synchro_t simcall_comm_isend(smx_process_t sender, smx_mailbox_t rdv, double
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_recv(smx_process_t receiver, smx_mailbox_t rdv, void *dst_buff, size_t * dst_buff_size,
-                       int (*match_fun)(void *, void *, smx_synchro_t),
-                       void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+void simcall_comm_recv(smx_actor_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t * dst_buff_size,
+                       int (*match_fun)(void *, void *, smx_activity_t),
+                       void (*copy_data_fun)(smx_activity_t, void*, size_t),
                        void *data, double timeout, double rate)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
-  xbt_assert(rdv, "No rendez-vous point defined for recv");
+  xbt_assert(mbox, "No rendez-vous point defined for recv");
 
   if (MC_is_active() || MC_record_replay_is_active()) {
     /* the model-checker wants two separate simcalls */
-    smx_synchro_t comm = NULL; /* MC needs the comm to be set to NULL during the simcall */
-    comm = simcall_comm_irecv(receiver, rdv, dst_buff, dst_buff_size,
+    smx_activity_t comm = nullptr; /* MC needs the comm to be set to nullptr during the simcall */
+    comm = simcall_comm_irecv(receiver, mbox, dst_buff, dst_buff_size,
                               match_fun, copy_data_fun, data, rate);
     simcall_comm_wait(comm, timeout);
-    comm = NULL;
+    comm = nullptr;
   }
   else {
-    simcall_BODY_comm_recv(receiver, rdv, dst_buff, dst_buff_size,
+    simcall_BODY_comm_recv(receiver, mbox, dst_buff, dst_buff_size,
                            match_fun, copy_data_fun, data, timeout, rate);
   }
 }
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_irecv(smx_process_t receiver, smx_mailbox_t rdv, void *dst_buff, size_t *dst_buff_size,
-                                int (*match_fun)(void *, void *, smx_synchro_t),
-                                void (*copy_data_fun)(smx_synchro_t, void*, size_t),
+smx_activity_t simcall_comm_irecv(smx_actor_t receiver, smx_mailbox_t mbox, void *dst_buff, size_t *dst_buff_size,
+                                int (*match_fun)(void *, void *, smx_activity_t),
+                                void (*copy_data_fun)(smx_activity_t, void*, size_t),
                                 void *data, double rate)
 {
-  xbt_assert(rdv, "No rendez-vous point defined for irecv");
+  xbt_assert(mbox, "No rendez-vous point defined for irecv");
 
-  return simcall_BODY_comm_irecv(receiver, rdv, dst_buff, dst_buff_size,
+  return simcall_BODY_comm_irecv(receiver, mbox, dst_buff, dst_buff_size,
                                  match_fun, copy_data_fun, data, rate);
 }
 
 /**
  * \ingroup simix_comm_management
  */
-smx_synchro_t simcall_comm_iprobe(smx_mailbox_t rdv, int type, int src, int tag,
-                                int (*match_fun)(void *, void *, smx_synchro_t), void *data)
+smx_activity_t simcall_comm_iprobe(smx_mailbox_t mbox, int type, int src, int tag,
+                                int (*match_fun)(void *, void *, smx_activity_t), void *data)
 {
-  xbt_assert(rdv, "No rendez-vous point defined for iprobe");
+  xbt_assert(mbox, "No rendez-vous point defined for iprobe");
 
-  return simcall_BODY_comm_iprobe(rdv, type, src, tag, match_fun, data);
+  return simcall_BODY_comm_iprobe(mbox, type, src, tag, match_fun, data);
 }
 
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_cancel(smx_synchro_t comm)
+void simcall_comm_cancel(smx_activity_t synchro)
 {
-  simcall_BODY_comm_cancel(comm);
+  simgrid::simix::kernelImmediate([synchro]{
+    simgrid::kernel::activity::Comm *comm = static_cast<simgrid::kernel::activity::Comm*>(synchro);
+    comm->cancel();
+  });
 }
 
 /**
  * \ingroup simix_comm_management
  */
-unsigned int simcall_comm_waitany(xbt_dynar_t comms)
+unsigned int simcall_comm_waitany(xbt_dynar_t comms, double timeout)
 {
-  return simcall_BODY_comm_waitany(comms);
+  return simcall_BODY_comm_waitany(comms, timeout);
 }
 
 /**
  * \ingroup simix_comm_management
  */
-int simcall_comm_testany(xbt_dynar_t comms)
+int simcall_comm_testany(smx_activity_t* comms, size_t count)
 {
-  if (xbt_dynar_is_empty(comms))
+  if (count == 0)
     return -1;
-  return simcall_BODY_comm_testany(comms);
+  return simcall_BODY_comm_testany(comms, count);
 }
 
 /**
  * \ingroup simix_comm_management
  */
-void simcall_comm_wait(smx_synchro_t comm, double timeout)
+void simcall_comm_wait(smx_activity_t comm, double timeout)
 {
   xbt_assert(std::isfinite(timeout), "timeout is not finite!");
   simcall_BODY_comm_wait(comm, timeout);
@@ -940,9 +709,9 @@ void simcall_comm_wait(smx_synchro_t comm, double timeout)
  * \param execution The execution synchro
  * \param category The tracing category
  */
-void simcall_set_category(smx_synchro_t synchro, const char *category)
+void simcall_set_category(smx_activity_t synchro, const char *category)
 {
-  if (category == NULL) {
+  if (category == nullptr) {
     return;
   }
   simcall_BODY_set_category(synchro, category);
@@ -952,77 +721,16 @@ void simcall_set_category(smx_synchro_t synchro, const char *category)
  * \ingroup simix_comm_management
  *
  */
-int simcall_comm_test(smx_synchro_t comm)
+int simcall_comm_test(smx_activity_t comm)
 {
   return simcall_BODY_comm_test(comm);
 }
 
 /**
- * \ingroup simix_comm_management
- *
- */
-double simcall_comm_get_remains(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_remains(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
-e_smx_state_t simcall_comm_get_state(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_state(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
-void *simcall_comm_get_src_data(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_src_data(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
-void *simcall_comm_get_dst_data(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_dst_data(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
-smx_process_t simcall_comm_get_src_proc(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_src_proc(comm);
-}
-
-/**
- * \ingroup simix_comm_management
- *
- */
-smx_process_t simcall_comm_get_dst_proc(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_get_dst_proc(comm);
-}
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-int simcall_comm_is_latency_bounded(smx_synchro_t comm)
-{
-  return simcall_BODY_comm_is_latency_bounded(comm);
-}
-#endif
-
-/**
  * \ingroup simix_synchro_management
  *
  */
-smx_mutex_t simcall_mutex_init(void)
+smx_mutex_t simcall_mutex_init()
 {
   if(!simix_global) {
     fprintf(stderr,"You must run MSG_init before using MSG\n"); // We can't use xbt_die since we may get there before the initialization
@@ -1062,7 +770,7 @@ void simcall_mutex_unlock(smx_mutex_t mutex)
  * \ingroup simix_synchro_management
  *
  */
-smx_cond_t simcall_cond_init(void)
+smx_cond_t simcall_cond_init()
 {
   return simcall_BODY_cond_init();
 }
@@ -1295,20 +1003,13 @@ xbt_dict_t simcall_storage_get_content(smx_storage_t storage)
 
 void simcall_run_kernel(std::function<void()> const& code)
 {
-  return simcall_BODY_run_kernel((void*) &code);
+  simcall_BODY_run_kernel(&code);
 }
 
-#ifdef HAVE_MC
-
-void *simcall_mc_snapshot(void) {
-  return simcall_BODY_mc_snapshot();
+void simcall_run_blocking(std::function<void()> const& code)
+{
+  simcall_BODY_run_blocking(&code);
 }
-
-int simcall_mc_compare_snapshots(void *s1, void *s2) {
-  return simcall_BODY_mc_compare_snapshots((simgrid::mc::Snapshot*)s1, (simgrid::mc::Snapshot*)s2);
-}
-
-#endif /* HAVE_MC */
 
 int simcall_mc_random(int min, int max) {
   return simcall_BODY_mc_random(min, max);
@@ -1319,4 +1020,16 @@ int simcall_mc_random(int min, int max) {
 /** @brief returns a printable string representing a simcall */
 const char *SIMIX_simcall_name(e_smx_simcall_t kind) {
   return simcall_names[kind];
+}
+
+namespace simgrid {
+namespace simix {
+
+void unblock(smx_actor_t process)
+{
+  xbt_assert(SIMIX_is_maestro());
+  SIMIX_simcall_answer(&process->simcall);
+}
+
+}
 }

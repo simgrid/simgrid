@@ -7,7 +7,6 @@
 #include "src/surf/HostImpl.hpp"
 #include "surf_interface.hpp"
 #include "network_interface.hpp"
-#include "surf_routing_cluster.hpp"
 #include "src/instr/instr_private.h"
 #include "plugins/energy.hpp"
 #include "virtual_machine.hpp"
@@ -28,14 +27,12 @@ static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t host){
 
 extern double NOW;
 
-void surf_presolve(void)
+void surf_presolve()
 {
   double next_event_date = -1.0;
-  tmgr_trace_iterator_t event = NULL;
+  tmgr_trace_iterator_t event = nullptr;
   double value = -1.0;
-  simgrid::surf::Resource *resource = NULL;
-  simgrid::surf::Model *model = NULL;
-  unsigned int iter;
+  simgrid::surf::Resource *resource = nullptr;
 
   XBT_DEBUG ("Consume all trace events occurring before the starting time.");
   while ((next_event_date = future_evt_set->next_date()) != -1.0) {
@@ -50,7 +47,7 @@ void surf_presolve(void)
   }
 
   XBT_DEBUG ("Set every models in the right state by updating them to 0.");
-  xbt_dynar_foreach(all_existing_models, iter, model)
+  for (auto model : *all_existing_models)
       model->updateActionsState(NOW, 0.0);
 }
 
@@ -60,10 +57,8 @@ double surf_solve(double max_date)
   double next_event_date = -1.0;
   double model_next_action_end = -1.0;
   double value = -1.0;
-  simgrid::surf::Resource *resource = NULL;
-  simgrid::surf::Model *model = NULL;
-  tmgr_trace_iterator_t event = NULL;
-  unsigned int iter;
+  simgrid::surf::Resource *resource = nullptr;
+  tmgr_trace_iterator_t event = nullptr;
 
   if (max_date > 0.0) {
     xbt_assert(max_date > NOW,"You asked to simulate up to %f, but that's in the past already", max_date);
@@ -77,7 +72,7 @@ double surf_solve(double max_date)
   if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
     time_delta = next_event_phy;
   }
-  if (surf_vm_model != NULL) {
+  if (surf_vm_model != nullptr) {
     XBT_DEBUG("Looking for next event in virtual models");
     double next_event_virt = surf_vm_model->next_occuring_event(NOW);
     if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
@@ -148,7 +143,7 @@ double surf_solve(double max_date)
   NOW = NOW + time_delta;
 
   // Inform the models of the date change
-  xbt_dynar_foreach(all_existing_models, iter, model) {
+  for (auto model : *all_existing_models) {
     model->updateActionsState(NOW, time_delta);
   }
 
@@ -163,7 +158,7 @@ double surf_solve(double max_date)
 
 surf_action_t surf_model_extract_done_action_set(surf_model_t model){
   if (model->getDoneActionSet()->empty())
-  return NULL;
+    return nullptr;
   surf_action_t res = &model->getDoneActionSet()->front();
   model->getDoneActionSet()->pop_front();
   return res;
@@ -171,7 +166,7 @@ surf_action_t surf_model_extract_done_action_set(surf_model_t model){
 
 surf_action_t surf_model_extract_failed_action_set(surf_model_t model){
   if (model->getFailedActionSet()->empty())
-  return NULL;
+    return nullptr;
   surf_action_t res = &model->getFailedActionSet()->front();
   model->getFailedActionSet()->pop_front();
   return res;
@@ -181,25 +176,12 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-void surf_vm_model_create(const char *name, sg_host_t ind_phys_host){
-  surf_vm_model->createVM(name, ind_phys_host);
-}
-
 surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate){
   return model->communicate(src->pimpl_netcard, dst->pimpl_netcard, size, rate);
 }
 
-const char *surf_resource_name(surf_cpp_resource_t resource){
-  return resource->getName();
-}
-
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
   return host->pimpl_cpu->sleep(duration);
-}
-
-
-double surf_host_get_available_speed(sg_host_t host){
-  return host->pimpl_cpu->getAvailableSpeed();
 }
 
 surf_action_t surf_host_open(sg_host_t host, const char* fullpath){
@@ -243,11 +225,6 @@ int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return get_casted_host(host)->fileMove(fd, fullpath);
 }
 
-void surf_vm_destroy(sg_host_t vm){ // FIXME:DEADCODE
-  vm->pimpl_cpu = nullptr;
-  vm->pimpl_netcard = nullptr;
-}
-
 void surf_vm_suspend(sg_host_t vm){
   get_casted_vm(vm)->suspend();
 }
@@ -273,11 +250,7 @@ sg_host_t surf_vm_get_pm(sg_host_t vm){
 }
 
 void surf_vm_set_bound(sg_host_t vm, double bound){
-  return get_casted_vm(vm)->setBound(bound);
-}
-
-void surf_vm_set_affinity(sg_host_t vm, sg_host_t host, unsigned long mask){
-  return get_casted_vm(vm)->setAffinity(host->pimpl_cpu, mask);
+  get_casted_vm(vm)->setBound(bound);
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
@@ -301,18 +274,12 @@ xbt_dict_t surf_storage_get_properties(surf_resource_t resource){
 }
 
 const char* surf_storage_get_host(surf_resource_t resource){
-  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->p_attach;
+  return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->attach_;
 }
 
 void surf_cpu_action_set_bound(surf_action_t action, double bound) {
   static_cast<simgrid::surf::CpuAction*>(action)->setBound(bound);
 }
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-double surf_network_action_get_latency_limited(surf_action_t action) {
-  return static_cast<simgrid::surf::NetworkAction*>(action)->getLatencyLimited();
-}
-#endif
 
 surf_file_t surf_storage_action_get_file(surf_action_t action){
   return static_cast<simgrid::surf::StorageAction*>(action)->p_file;

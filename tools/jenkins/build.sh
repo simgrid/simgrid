@@ -88,6 +88,9 @@ fi
 mkdir $WORKSPACE/build
 cd $WORKSPACE/build
 
+# This is for Windows:
+PATH="$WORKSPACE/build/lib:$PATH"
+
 if test "$(uname -o)" != "Msys"; then
   echo "XX"
   echo "XX Build the archive out of the tree"
@@ -100,9 +103,12 @@ if test "$(uname -o)" != "Msys"; then
   echo "XX"
   echo "XX Open the resulting archive"
   echo "XX"
-  tar xzf `cat VERSION`.tar.gz
+  gunzip `cat VERSION`.tar.gz
+  tar xf `cat VERSION`.tar
   cd `cat VERSION`
-  SRCFOLDER="."
+  mkdir build
+  cd build
+  SRCFOLDER=".."
 else
 #for windows we don't make dist, but we still want to build out of source
   SRCFOLDER=$WORKSPACE
@@ -121,15 +127,14 @@ cmake -G"$GENERATOR"\
   -Denable_mallocators=$(onoff test "$build_mode" != "DynamicAnalysis") \
   -Denable_memcheck=$(onoff test "$build_mode" = "DynamicAnalysis") \
   -Denable_compile_warnings=$(onoff test "$GENERATOR" != "MSYS Makefiles") -Denable_smpi=ON \
-  -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF \
-  -Denable_tracing=ON -Denable_java=ON -Denable_lua=OFF $SRCFOLDER
+  -Denable_jedule=OFF -Denable_java=ON -Denable_lua=OFF $SRCFOLDER
 #  -Denable_lua=$(onoff test "$build_mode" != "DynamicAnalysis") \
 
 make -j$NUMBER_OF_PROCESSORS VERBOSE=1
 
 if test "$(uname -o)" != "Msys"; then
   cd $WORKSPACE/build
-  cd `cat VERSION`
+  cd `cat VERSION`/build
 fi
 
 TRES=0

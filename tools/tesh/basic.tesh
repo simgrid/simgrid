@@ -13,7 +13,7 @@ $ cat tmp_fich
 ! output ignore
 < $ cat tmp_fich
 < > TUTU TOTO
-$ perl ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh 
 
 $ rm tmp_fich
 
@@ -77,14 +77,14 @@ $ sed 's/_/ /'
 < < _x
 < $ sed 's/_/ /'
 < > x
-$ perl ${bindir:=.}/tesh
+$ ${bindir:=.}/tesh
 
 ! expect return 2
 ! output ignore
 < < x
 < $ cat
 < >  x
-$ perl ${bindir:=.}/tesh
+$ ${bindir:=.}/tesh
 
 p * trailing spaces...
 < x_
@@ -96,14 +96,14 @@ $ sed 's/_/ /'
 < < x_
 < $ sed 's/_/ /'
 < > x
-$ perl ${bindir:=.}/tesh
+$ ${bindir:=.}/tesh
 
 ! expect return 2
 ! output ignore
 < < x
 < $ cat
 < > x 
-$ perl ${bindir:=.}/tesh
+$ ${bindir:=.}/tesh
 
 p * empty lines...
 < a
@@ -122,7 +122,7 @@ $ cat
 < $ cat
 < > a
 < > c
-$ perl ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh 
 
 ! expect return 2
 ! output ignore
@@ -132,7 +132,7 @@ $ perl ${bindir:=.}/tesh
 < > a
 < >
 < > c
-$ perl ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh 
 
 <
 < b
@@ -150,7 +150,7 @@ $ cat
 < $ cat
 < > b
 < > c
-$ perl ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh 
 
 ! expect return 2
 ! output ignore
@@ -160,4 +160,4 @@ $ perl ${bindir:=.}/tesh
 < >
 < > b
 < > c
-$ perl ${bindir:=.}/tesh 
+$ ${bindir:=.}/tesh 

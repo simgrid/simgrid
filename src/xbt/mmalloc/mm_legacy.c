@@ -50,7 +50,8 @@ xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap)
   return heap;
 }
 
-#ifdef MMALLOC_WANT_OVERRIDE_LEGACY
+/* Override the malloc-like functions if MC is activated at compile time */
+#if HAVE_MC
 
 /* ***** Temporary allocator
  *
@@ -255,4 +256,4 @@ void free(void *p)
   mfree(mdp, p);
   UNLOCK(mdp);
 }
-#endif /* WANT_MALLOC_OVERRIDE */
+#endif /* HAVE_MC */

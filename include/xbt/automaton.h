@@ -114,4 +114,5 @@ XBT_PUBLIC(void) xbt_automaton_propositional_symbol_free_voidp(void *ps);
 XBT_PUBLIC(void) xbt_automaton_free(xbt_automaton_t a);
 
 SG_END_DECL()
+
 #endif

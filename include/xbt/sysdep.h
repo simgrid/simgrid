@@ -17,11 +17,11 @@
 
 #include "simgrid_config.h"
 
-SG_BEGIN_DECL()
-
 #include <string.h>
 #include <stdlib.h>
 #include <stdarg.h>             /* va_list */
+
+SG_BEGIN_DECL()
 
 /* They live in asserts.h, but need to be declared before this module.
    double declaration to cut dependency cycle */
@@ -60,10 +60,6 @@ XBT_LOG_EXTERNAL_CATEGORY(xbt);
  *  @{
  */
 
-#if defined(_MSC_VER) && !defined(strdup)
-#  define strdup _strdup /* POSIX name is not ANSI complient blabla */
-#endif
-
 /** @brief Like strdup, but xbt_die() on error */
 static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   char *res = NULL;
@@ -75,7 +71,7 @@ static XBT_ALWAYS_INLINE char *xbt_strdup(const char *s) {
   return res;
 }
 
-XBT_PUBLIC(void) xbt_backtrace_display_current(void);
+XBT_PUBLIC(void) xbt_backtrace_display_current();
 
 /** @brief Like malloc, but xbt_die() on error
     @hideinitializer */

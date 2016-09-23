@@ -1,0 +1,9 @@
+This is a somehow basic master/workers example.
+
+There is 2 kind of processes:
+ * Master: creates some tasks, and dispatches them to its workers
+ * Worker: get tasks from the master and run them
+
+At the end of the execution:
+ - the master sends a Task whose name is "finalize" to every known worker to stop them
+ - On reception of such tasks workers stop.

@@ -12,19 +12,27 @@ To upgrade your files, use the tool simgrid_update_xml
    
    - In <host> and <link>, attributes availability and state are gone.
      It was redundent with state and availability traces, and with peak values.
+     
+   - In <cluster>, cannot set the availability nor state traces. 
+     This was too complex and unused.
 
    - The DOCTYPE points to the right URL (this file):
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
+     
+   - Kill <gpu>. Was not doing anything.
 
-   - A warning is emited for unit-less values (they are still accepted).
+   - A warning is emitted for unit-less values (they are still accepted).
 
      - speed. Default: 'f' or 'flops'. Also defined:
         'Yf',         'Zf',         'Ef',       'Pf',        'Tf',        'Gf',        'Mf',        'kf'
         'yottaflops', 'zettaflops', 'exaflops', 'petaflops', 'teraflops', 'gigaflops', 'megaflops', 'kiloflops'
 
-     - bandwidth. Default: 'Bps' bytes per second (or 'bps' for bits but 1 Bps = 8 bps)
-       Also defined in bytes: 'TiBps', 'GiBps', 'MiBps', 'KiBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
-       And the same in bits:  'Tibps', 'Gibps', 'Mibps', 'Kibps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+     - bandwidth. Default: 'Bps' bytes per second
+       In bytes and powers of 2  (1 KiBps = 1024 Bps): 'EiBps', 'PiBps', 'TiBps', 'GiBps', 'MiBps', 'KiBps'
+       In bits  and powers of 2  (1 Bps = 8 bps)     : 'Eibps', 'Pibps', 'Tibps', 'Gibps', 'Mibps', 'Kibps'
+       In bytes and powers of 10 (1 KBps = 1000 Bps) : 'EBps', 'PBps', 'TBps', 'GBps', 'MBps', 'kBps', 'Bps'
+       In bits  and powers of 10                     : 'Ebps', 'Pbps', 'Tbps', 'Gbps', 'Mbps', 'kbps', 'bps'
+       (Exa and Peta notations were introduced in SimGrid v3.14)
 
      - latency. Default: 's' second. Also defined:
        'w' week, 'd' day, 'h' hour, 'm' minute, 'ms' millisecond, 'us' microsecond, 'ns' nanosecond, 'ps' picosecond
@@ -78,9 +86,9 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST trace_connect trace CDATA #REQUIRED>
 <!ATTLIST trace_connect element CDATA #REQUIRED>
 
-<!ELEMENT AS ((prop*), ((AS|ASroute|include|storage_type|storage|link|backbone|cabinet|router|host|gpu|cluster|peer|host_link)*,(route|ASroute|trace|trace_connect|bypassRoute|bypassASroute)*))>
+<!ELEMENT AS ((prop*), ((AS|ASroute|include|storage_type|storage|link|backbone|cabinet|router|host|cluster|peer|host_link)*,(route|ASroute|trace|trace_connect|bypassRoute|bypassASroute)*))>
 <!ATTLIST AS id CDATA #REQUIRED>
-<!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree) #REQUIRED>
+<!ATTLIST AS routing (Full|Floyd|Dijkstra|DijkstraCache|None|Vivaldi|Cluster|ClusterTorus|ClusterFatTree|ClusterDragonfly) #REQUIRED>
 
 <!ELEMENT storage_type ((model_prop|prop)*)>
 <!ATTLIST storage_type id       CDATA #REQUIRED>
@@ -93,11 +101,7 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST mount storageId CDATA #REQUIRED>
 <!ATTLIST mount name CDATA #REQUIRED>
 
-<!ELEMENT mstorage EMPTY>
-<!ATTLIST mstorage typeId CDATA #REQUIRED>
-<!ATTLIST mstorage name CDATA #REQUIRED>
-
-<!ELEMENT host (prop|mount|mstorage)*>
+<!ELEMENT host (prop|mount)*>
 <!ATTLIST host id CDATA #REQUIRED>
 <!ATTLIST host speed CDATA #REQUIRED>
 <!ATTLIST host core  CDATA "1">
@@ -112,9 +116,6 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST storage content  CDATA "">
 <!ATTLIST storage content_type  CDATA "txt_unix">
 <!ATTLIST storage attach CDATA #REQUIRED>
-
-<!ELEMENT gpu EMPTY>
-<!ATTLIST gpu name CDATA #REQUIRED>
 
 <!ELEMENT host_link EMPTY>
 <!ATTLIST host_link id CDATA #REQUIRED>
@@ -131,13 +132,11 @@ To upgrade your files, use the tool simgrid_update_xml
 <!ATTLIST cluster bw CDATA #REQUIRED>
 <!ATTLIST cluster lat CDATA #REQUIRED>
 <!ATTLIST cluster sharing_policy (SHARED|FULLDUPLEX|FATPIPE) "FULLDUPLEX">
-<!ATTLIST cluster topology (FLAT|TORUS|FAT_TREE) "FLAT">
+<!ATTLIST cluster topology (FLAT|TORUS|FAT_TREE|DRAGONFLY) "FLAT">
 <!ATTLIST cluster topo_parameters CDATA "">
 <!ATTLIST cluster bb_bw CDATA "">
 <!ATTLIST cluster bb_lat CDATA "0s">
 <!ATTLIST cluster bb_sharing_policy (SHARED|FATPIPE) "SHARED">
-<!ATTLIST cluster availability_file CDATA "">
-<!ATTLIST cluster state_file CDATA "">
 <!ATTLIST cluster router_id CDATA "">
 <!ATTLIST cluster limiter_link CDATA "">
 <!ATTLIST cluster loopback_bw CDATA "">

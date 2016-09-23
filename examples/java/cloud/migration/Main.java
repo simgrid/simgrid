@@ -7,12 +7,14 @@
 package cloud.migration;
 
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
-import org.simgrid.msg.NativeException;
+import org.simgrid.msg.MsgException;
 
 public class Main {
   private static boolean endOfTest = false;
+
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
 
   public static void setEndOfTest(){
     endOfTest=true;
@@ -22,18 +24,17 @@ public class Main {
     return endOfTest;
   }
 
-  public static void main(String[] args) throws NativeException {
+  public static void main(String[] args) throws MsgException {
     Msg.init(args);
 
-    if (args.length < 2) {
-      Msg.info("Usage  : Main platform_file.xml dployment_file.xml");
+    if (args.length < 1) {
+      Msg.info("Usage  : Main platform_file.xml");
       System.exit(1);
     }
 
     /* construct the platform and deploy the application */
     Msg.createEnvironment(args[0]);
-    Msg.deployApplication(args[1]);
-
+    new cloud.migration.Test("PM0","Test").start();
     Msg.run();
   }
 }

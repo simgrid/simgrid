@@ -11,25 +11,40 @@
 
 set(warnCFLAGS "")
 set(optCFLAGS "")
-
-
+set(warnCXXFLAGS "")
 
 if(enable_compile_warnings)
-  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-prototypes -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror ")
+  set(warnCFLAGS "-fno-common -Wall -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral")
   if(CMAKE_COMPILER_IS_GNUCC)
-    set(warnCFLAGS "${warnCFLAGS}-Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs")
+    set(warnCFLAGS "${warnCFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
 
-  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral -Werror")
+  set(warnCXXFLAGS "${warnCFLAGS} -Wall -Wextra -Wunused -Wmissing-declarations -Wpointer-arith -Wchar-subscripts -Wcomment  -Wformat -Wwrite-strings -Wno-unused-function -Wno-unused-parameter -Wno-strict-aliasing -Wno-format-nonliteral")
   if(CMAKE_COMPILER_IS_GNUCXX)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs")
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
   if (CMAKE_CXX_COMPILER_ID MATCHES "Clang") # don't care about class that become struct
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wno-mismatched-tags")
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags")
   endif()
+
+  # the one specific to C but refused by C++
+  set(warnCFLAGS "${warnCFLAGS} -Wmissing-prototypes") 
 
   set(CMAKE_Fortran_FLAGS "${CMAKE_Fortran_FLAGS} -Wall")
   set(CMAKE_JAVA_COMPILE_FLAGS "-Xlint")
+endif()
+
+# NDEBUG gives a lot of "initialized but unused variables" errors. Don't die anyway.
+if(enable_compile_warnings AND enable_debug)
+  set(warnCFLAGS "${warnCFLAGS} -Werror")
+  set(warnCXXFLAGS "${warnCXXFLAGS} -Werror")
+endif()
+
+# Activate the warnings on #if FOOBAR when FOOBAR has no value
+# It breaks on FreeBSD within Boost headers, so activate this only in Pure Hardcore debug mode.
+if(enable_maintainer_mode)
+  set(warnCFLAGS "${warnCFLAGS} -Wundef")
+  set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wundef")
 endif()
 
 # Se the optimisation flags
@@ -53,15 +68,17 @@ if(enable_lto) # User wants LTO. Try if we can do that
   if(enable_compile_optimizations
       AND CMAKE_COMPILER_IS_GNUCC
       AND (NOT enable_model-checking))
-    if(WIN32)
-      if (CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8")
-        # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
-        #
-        # We are experiencing assertion failures even with 4.8 on MinGW.
-        # Push the support forward: will see if 4.9 works when we test it.
-        set(enable_lto ON)
-      endif()
-    elseif(LINKER_VERSION STRGREATER "2.22")
+    # On windows, we need 4.8 or higher to enable lto because of http://gcc.gnu.org/bugzilla/show_bug.cgi?id=50293
+    #   We are experiencing assertion failures even with 4.8 on MinGW.
+    #   Push the support forward: will see if 4.9 works when we test it.
+    #
+    # On Linux, we got the following with GCC 4.8.4 on Centos and Ubuntu
+    #    lto1: internal compiler error: in output_die, at dwarf2out.c:8478
+    #    Please submit a full bug report, with preprocessed source if appropriate.
+    # So instead, we push the support forward
+
+    if ( (CMAKE_C_COMPILER_VERSION VERSION_GREATER "4.8.5")
+         AND (LINKER_VERSION VERSION_GREATER "2.22"))
       set(enable_lto ON)
     endif()
   endif()
@@ -103,14 +120,11 @@ if(enable_model-checking AND enable_compile_optimizations)
       src/xbt/mmalloc/mm.c
       src/xbt/log.c src/xbt/xbt_log_appender_file.c
       src/xbt/xbt_log_layout_format.c src/xbt/xbt_log_layout_simple.c
-      src/xbt/dict.c src/xbt/dict_elm.c src/xbt/dict_multi.c src/xbt/dict_cursor.c
-      src/xbt/set.c 
-      src/xbt/dynar.c src/xbt/fifo.c src/xbt/heap.c src/xbt/swag.c
+      src/xbt/dict.cpp src/xbt/dict_elm.c src/xbt/dict_cursor.c
+      src/xbt/dynar.cpp src/xbt/fifo.c src/xbt/heap.c src/xbt/swag.c
       src/xbt/str.c src/xbt/strbuff.c src/xbt/snprintf.c
       src/xbt/queue.c
       src/xbt/xbt_os_time.c src/xbt/xbt_os_thread.c
-      src/xbt/sha.c
-      src/xbt/matrix.c
       src/xbt/backtrace_linux.c
       ${MC_SRC_BASE} ${MC_SRC})
       set (mcCFLAGS "-O3  -funroll-loops -fno-strict-aliasing")
@@ -126,8 +140,8 @@ if(NOT enable_debug)
   set(CMAKE_CXX_FLAGS "-DNDEBUG ${CMAKE_CXX_FLAGS}")
 endif()
 
-set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   ${optCFLAGS} ${warnCFLAGS}")
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} ${optCFLAGS}")
+set(CMAKE_C_FLAGS   "${warnCFLAGS} ${CMAKE_C_FLAGS}   ${optCFLAGS}")
+set(CMAKE_CXX_FLAGS "${warnCXXFLAGS} ${CMAKE_CXX_FLAGS} ${optCFLAGS}")
 
 # Try to make Mac a bit more complient to open source standards
 if(CMAKE_SYSTEM_NAME MATCHES "Darwin")
@@ -147,6 +161,25 @@ if(enable_coverage)
     set(TESH_OPTION --enable-coverage)
     add_definitions(-fprofile-arcs -ftest-coverage)
   endif()
+endif()
+
+if(enable_address_sanitizer)
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -fsanitize=address")
+    set(TESH_OPTION --enable-sanitizers)
+endif()
+
+if(enable_thread_sanitizer)
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fsanitize=thread -fno-omit-frame-pointer")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=thread -fno-omit-frame-pointer")
+    set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -fsanitize=thread")
+endif()
+
+if(enable_undefined_sanitizer)
+    set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS} -fsanitize=undefined -fno-omit-frame-pointer")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=undefined -fno-omit-frame-pointer")
+    set(CMAKE_C_LINK_FLAGS "${CMAKE_C_LINK_FLAGS} -fsanitize=undefined")
 endif()
 
 if(NOT $ENV{CFLAGS} STREQUAL "")

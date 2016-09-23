@@ -1,3 +1,26 @@
+                    _               _____  _ _____
+__   _____ _ __ ___(_) ___  _ __   |___ / / |___ /
+\ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | |_ \
+ \ V /  __/ |  \__ \ | (_) | | | |  ___) || |___) |
+  \_/ \___|_|  |___/_|\___/|_| |_| |____(_)_|____/
+                Apr 27 2016
+
+The Half Release, a.k.a. the Zealous Easter Trim.
+
+ * Half of the lines of code are gone.
+   - v3.12: 286k lines; v3.13: 142k lines (+ comments)
+   - Experimental untested unused "features" removed
+   - We rewrote several parts in C++ instead of C
+
+ * Introducing v4 of the XML platform format
+   - Many long-due cleanups (details in the Changelog)
+
+ * MSG examples fully reorganized (in C and Java)
+
+ * The S4U interface is rising, toward SimGrid 4
+   - All host manipulations now done in S4U
+   - SimDag was mostly rewritten on top of S4U
+   - MSG & SimDag interfaces mostly unchanged
                     _               _____  _ ____
 __   _____ _ __ ___(_) ___  _ __   |___ / / |___ \
 \ \ / / _ \ '__/ __| |/ _ \| '_ \    |_ \ | | __) |

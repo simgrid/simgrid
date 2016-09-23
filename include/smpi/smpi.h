@@ -7,18 +7,15 @@
 #ifndef SMPI_H
 #define SMPI_H
 
-#include <simgrid_config.h>
-#ifdef HAVE_UNISTD_H
 #include <unistd.h>
-#endif
-#ifdef HAVE_SYS_TIME_H
 #include <sys/time.h>
+#if _POSIX_TIMERS
+#include <time.h>
 #endif
 
 #include <stddef.h>
 #include <xbt/misc.h>
 #include <xbt/function_types.h>
-
 
 #ifdef _WIN32
 #define MPI_CALL(type,name,args) \
@@ -185,6 +182,22 @@ SG_BEGIN_DECL()
 #define MPI_ARGVS_NULL (char ***)0
 #define MPI_LOCK_EXCLUSIVE           1
 #define MPI_LOCK_SHARED              2
+
+#define MPI_MODE_RDONLY              2
+#define MPI_MODE_RDWR                8
+#define MPI_MODE_WRONLY              4
+#define MPI_MODE_CREATE              1
+#define MPI_MODE_EXCL               64
+#define MPI_MODE_DELETE_ON_CLOSE    16
+#define MPI_MODE_UNIQUE_OPEN        32
+#define MPI_MODE_APPEND            128
+#define MPI_MODE_SEQUENTIAL        256
+#define MPI_FILE_NULL ((MPI_File) 0)
+#define MPI_DISPLACEMENT_CURRENT   -54278278
+#define MPI_SEEK_SET            600
+#define MPI_SEEK_CUR            602
+#define MPI_SEEK_END            604
+#define MPI_MAX_DATAREP_STRING  128
 
 // FIXME : used nowhere...
 typedef enum MPIR_Combiner_enum{
@@ -732,33 +745,89 @@ MPI_CALL(XBT_PUBLIC(int),  MPI_Win_test,(MPI_Win win, int *flag));
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_unlock,(int rank, MPI_Win win));
 MPI_CALL(XBT_PUBLIC(int),  MPI_Win_wait,(MPI_Win win));
 
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_errhandler , (MPI_File file, MPI_Errhandler *errhandler));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_errhandler, (MPI_File file, MPI_Errhandler errhandler));
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_open,(MPI_Comm comm, const char *filename, int amode, MPI_Info info, MPI_File *fh));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_close,(MPI_File *fh));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_delete,(const char *filename, MPI_Info info));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_size,(MPI_File fh, MPI_Offset size));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_size,(MPI_File fh, MPI_Offset *size));
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_view,(MPI_File fh, MPI_Offset disp, MPI_Datatype etype, MPI_Datatype filetype,
+                      const char *datarep, MPI_Info info));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_view,(MPI_File fh, MPI_Offset *disp, MPI_Datatype *etype, MPI_Datatype *filetype,
+                      char *datarep));
+
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_at,(MPI_File fh, MPI_Offset offset, void *buf, int count, MPI_Datatype datatype,
+                     MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_at_all,(MPI_File fh, MPI_Offset offset, void * buf, int count,
+                         MPI_Datatype datatype, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_at,(MPI_File fh, MPI_Offset offset, const void * buf, int count,
+                      MPI_Datatype datatype, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_at_all,(MPI_File fh, MPI_Offset offset, const void *buf, int count,
+                          MPI_Datatype datatype, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_set_atomicity,(MPI_File fh, int flag));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_get_atomicity,(MPI_File fh, int *flag));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_sync,(MPI_File fh));
+
+MPI_CALL(XBT_PUBLIC(int), MPI_File_read_at_all_begin,(MPI_File fh, MPI_Offset offset, void *buf, int count,
+                               MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int), MPI_File_read_at_all_end,(MPI_File fh, void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int), MPI_File_write_at_all_begin,(MPI_File fh, MPI_Offset offset, const void *buf, int count,MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_at_all_end,(MPI_File fh, const void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_all_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_all_end,(MPI_File fh, void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_all_begin,(MPI_File fh, const void *buf, int count, MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_all_end,(MPI_File fh, const void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_ordered_begin,(MPI_File fh, void *buf, int count, MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_read_ordered_end,(MPI_File fh, void *buf, MPI_Status *status));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_ordered_begin,(MPI_File fh, const void *buf, int count, MPI_Datatype datatype));
+MPI_CALL(XBT_PUBLIC(int),  MPI_File_write_ordered_end,(MPI_File fh, const void *buf, MPI_Status *status));
+
 //FIXME: End of all the not yet implemented stuff
 
 // smpi functions
-XBT_PUBLIC(int) smpi_global_size(void);
-XBT_PUBLIC(MPI_Comm) smpi_process_comm_self(void);
-XBT_PUBLIC(void*) smpi_process_get_user_data(void);
+XBT_PUBLIC(int) smpi_global_size();
+XBT_PUBLIC(MPI_Comm) smpi_process_comm_self();
+XBT_PUBLIC(void*) smpi_process_get_user_data();
 XBT_PUBLIC(void) smpi_process_set_user_data(void *);
 
 XBT_PUBLIC(void) smpi_execute_flops(double flops);
 XBT_PUBLIC(void) smpi_execute(double duration);
 
 XBT_PUBLIC(double) smpi_get_host_power_peak_at(int pstate_index);
-XBT_PUBLIC(double) smpi_get_host_current_power_peak(void);
-XBT_PUBLIC(int) smpi_get_host_nb_pstates(void);
+XBT_PUBLIC(double) smpi_get_host_current_power_peak();
+XBT_PUBLIC(int) smpi_get_host_nb_pstates();
 XBT_PUBLIC(void) smpi_set_host_pstate(int pstate_index);
-XBT_PUBLIC(int)  smpi_get_host_pstate(void);
+XBT_PUBLIC(int)  smpi_get_host_pstate();
 
-XBT_PUBLIC(double) smpi_get_host_consumed_energy(void);
+XBT_PUBLIC(double) smpi_get_host_consumed_energy();
 
 XBT_PUBLIC(int) smpi_usleep(useconds_t usecs);
+#if _POSIX_TIMERS > 0
+XBT_PUBLIC(int) smpi_nanosleep(const struct timespec *tp, struct timespec * t);
+XBT_PUBLIC(int) smpi_clock_gettime(clockid_t clk_id, struct timespec *tp);
+#endif
 XBT_PUBLIC(unsigned int) smpi_sleep(unsigned int secs);
 XBT_PUBLIC(int) smpi_gettimeofday(struct timeval *tv, void* tz);
-XBT_PUBLIC(unsigned long long) smpi_rastro_resolution (void);
-XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp (void);
+XBT_PUBLIC(unsigned long long) smpi_rastro_resolution ();
+XBT_PUBLIC(unsigned long long) smpi_rastro_timestamp ();
 XBT_PUBLIC(void) smpi_sample_1(int global, const char *file, int line, int iters, double threshold);
 XBT_PUBLIC(int) smpi_sample_2(int global, const char *file, int line);
 XBT_PUBLIC(void) smpi_sample_3(int global, const char *file, int line);
+
+/** 
+ * Functions for call location tracing. These functions will be
+ * called from the user's application! (With the __FILE__ and __LINE__ values
+ * passed as parameters.)
+ */
+XBT_PUBLIC(void) smpi_trace_set_call_location(const char *file, int line);
+/** Fortran binding **/
+XBT_PUBLIC(void) smpi_trace_set_call_location_(const char *file, int* line);
+/** Fortran binding + -fsecond-underscore **/
+XBT_PUBLIC(void) smpi_trace_set_call_location__(const char *file, int* line);
 
 #define SMPI_SAMPLE_LOCAL(iters,thres) for(smpi_sample_1(0, __FILE__, __LINE__, iters, thres); \
                                            smpi_sample_2(0, __FILE__, __LINE__);      \
@@ -787,22 +856,22 @@ XBT_PUBLIC(void*) smpi_shared_set_call(const char* func, const char* input, void
 /* Fortran specific stuff */
 
 XBT_PUBLIC(int) __attribute__((weak)) smpi_simulated_main_(int argc, char** argv);
-XBT_PUBLIC(int) __attribute__((weak)) MAIN__(void);
+XBT_PUBLIC(int) __attribute__((weak)) MAIN__();
 XBT_PUBLIC(int) smpi_main(int (*realmain) (int argc, char *argv[]),int argc, char *argv[]);
-XBT_PUBLIC(void) __attribute__((weak)) user_main_(void);
-XBT_PUBLIC(int) smpi_process_index(void);
+XBT_PUBLIC(void) __attribute__((weak)) user_main_();
+XBT_PUBLIC(int) smpi_process_index();
 XBT_PUBLIC(void) smpi_process_init(int *argc, char ***argv);
 
 /* Trace replay specific stuff */
 XBT_PUBLIC(void) smpi_replay_run(int *argc, char***argv);
 
 XBT_PUBLIC(void) SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_processes);
-XBT_PUBLIC(void) SMPI_init(void);
-XBT_PUBLIC(void) SMPI_finalize(void);
+XBT_PUBLIC(void) SMPI_init();
+XBT_PUBLIC(void) SMPI_finalize();
 
 /* Manual global privatization fallback */
 XBT_PUBLIC(void) smpi_register_static(void* arg, void_f_pvoid_t free_fn);
-XBT_PUBLIC(void) smpi_free_static(void);
+XBT_PUBLIC(void) smpi_free_static();
 
 #define SMPI_VARINIT_GLOBAL(name,type)                          \
 type *name = NULL;                                              \
@@ -835,6 +904,10 @@ static void __attribute__((destructor)) __postfini_##name(void) { \
 
 #define SMPI_VARGET_GLOBAL(name) name[smpi_process_index()]
 
+/** 
+ * This is used for the old privatization method, i.e., on old
+ * machines that do not yet support privatization via mmap
+ */
 #define SMPI_VARINIT_STATIC(name,type)                      \
 static type *name = NULL;                                   \
 if(!name) {                                                 \
@@ -856,6 +929,7 @@ if(!name) {                                         \
 }
 
 #define SMPI_VARGET_STATIC(name) name[smpi_process_index()]
+
 
 SG_END_DECL()
 #endif

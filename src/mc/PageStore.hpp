@@ -24,9 +24,9 @@ namespace mc {
 /** @brief Storage for snapshot memory pages
  *
  * The first (lower) layer of the per-page snapshot mechanism is a page
- * store: it's responsibility is to store immutable shareable
- * reference-counted memory pages independently of the snapshoting
- * logic. Snapshot management and representation, soft-dirty tracking is
+ * store: its responsibility is to store immutable shareable
+ * reference-counted memory pages independently of the snapshotting
+ * logic. Snapshot management and representation is
  * handled to an higher layer. READMORE
  *
  * Data structure:
@@ -174,7 +174,7 @@ void PageStore::ref_page(size_t pageno)
 inline __attribute__((always_inline))
 const void* PageStore::get_page(std::size_t pageno) const
 {
-  return mc_page_from_number(this->memory_, pageno);
+  return (void*) simgrid::mc::mmu::join(pageno, (std::uintptr_t) this->memory_);
 }
 
 inline __attribute__((always_inline))

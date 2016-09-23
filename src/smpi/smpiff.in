@@ -30,10 +30,15 @@ trap 'cleanup' EXIT
 filter_and_compile() {
     list_add TMPFILES "${TMPFILE}"
     #replace "program main_name by subroutine user\_main (and the end clause as well)"
-    sed 's/[[:space:]]\{6\}[[:space:]]*\(end \)\{0,1\}program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /gI;s/[[:space:]]*use[[:space:]]*mpi/\include \"mpif\.h\" /gI' "${ARG}" > "${TMPFILE}"
+    if [ $TRACE_CALL_LOCATION -gt 0 ]; then
+      echo "#include \"@includedir@/smpi/smpi_extended_traces_fortran.h\"" > ${TMPFILE}
+    echo "#line 1 \"${ARG}\"" >> ${TMPFILE}
+    fi
+    sed 's/[[:space:]]\{6\}[[:space:]]*\(end \)\{0,1\}program[[:space:]]*\([a-zA-Z0-9\-\_]*\)/      \1subroutine user_main /gI;s/[[:space:]]*use[[:space:]]*mpi/\include \"mpif\.h\" /gI' "${ARG}" >> "${TMPFILE}"
     SRCFILE="${TMPFILE}"
     list_add CMDLINE "${SRCFILE}"
 }
+TRACE_CALL_LOCATION=0
 NEEDS_OUTPUT=1
 
 list_set CMDLINE "${F77}"
@@ -67,6 +72,12 @@ while [ $# -gt 0 ]; do
             ;;
         '-compiler-version' | '--compiler-version')
             ${F77} --version
+            ;;
+        '-trace-call-location')
+            TRACE_CALL_LOCATION=1
+            # This should be list_add FFLAGS but it's not possible
+            # anymore: FFLAGS was already moved into CMDLINE above.
+            list_add_not_empty CMDLINE "-ffixed-line-length-none" "-cpp"
             ;;
         -o)
             NEEDS_OUTPUT=0

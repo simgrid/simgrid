@@ -7,10 +7,11 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <stdio.h>
+#include <math.h>
 #include <xbt/xbt_os_time.h>
 
 #include "xbt/heap.h"
-#include "xbt/sysdep.h"         /* calloc, printf */
+#include "xbt/sysdep.h"
 
 #define MAX_TEST 1000000
 
@@ -21,9 +22,9 @@ static int compare_double(const void *a, const void *b)
 
   if (pa > pb)
     return 1;
-  if (pa == pb)
-    return 0;
-  return -1;
+  if (pa < pb)
+    return -1;
+  return 0;
 }
 
 static void test_reset_heap(xbt_heap_t * heap, int size)
@@ -50,8 +51,7 @@ static void test_heap_validity(int size)
   qsort(tab, size, sizeof(double), compare_double);
 
   for (i = 0; i < size; i++) {
-    /*     printf("%g" " ", xbt_heap_maxkey(heap)); */
-    if (xbt_heap_maxkey(heap) != tab[i]) {
+    if (fabs(xbt_heap_maxkey(heap) - tab[i]) > 1e-9) {
       fprintf(stderr, "Problem !\n");
       exit(1);
     }

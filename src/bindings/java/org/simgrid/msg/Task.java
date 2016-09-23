@@ -167,16 +167,9 @@ public class Task {
 	public native void cancel();
 
 	/** Deletes a task once the garbage collector reclaims it */
-	@Override
-	protected void finalize() {
-		try {
-			// Exceptions in finalizers lead to bad situations:
-			// http://stackoverflow.com/questions/7644556/troubleshooting-a-java-memory-leak-finalization
-			nativeFinalize();
-			bind=0; // to avoid segfaults if the impossible happens yet again making this task surviving its finalize()
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	protected void finalize() throws Throwable{
+		nativeFinalize();
+		bind=0; // to avoid segfaults if the impossible happens yet again making this task surviving its finalize()
 	}
 	protected native void nativeFinalize();
 	/* *                       * *
@@ -259,12 +252,14 @@ public class Task {
 	/**
 	 * Starts listening for receiving a task from an asynchronous communication
 	 * @param mailbox
+	 * @return a Comm handler
 	 */
 	public static native Comm irecv(String mailbox);
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name
 	 *
 	 * @param mailbox
+	 * @return a Task
 	 */
 
 	public static Task receive(String mailbox) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -276,6 +271,7 @@ public class Task {
 	 *
 	 * @param mailbox
 	 * @param timeout
+	 * @return a Task
 	 */
 	public static Task receive(String mailbox, double timeout) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return receive(mailbox, timeout, null);
@@ -286,6 +282,7 @@ public class Task {
 	 *
 	 * @param mailbox
 	 * @param host
+	 * @return a Task
 	 */
 
 	public static Task receive(String mailbox, Host host) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -298,18 +295,21 @@ public class Task {
 	 * @param mailbox
 	 * @param timeout 
 	 * @param host
+	 * @return a Task
 	 */
-	public native static Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException;
+	public static native Task receive(String mailbox, double timeout, Host host) throws TransferFailureException, HostFailureException, TimeoutException;
 
 	/**
 	 * Starts listening for receiving a task from an asynchronous communication with a capped rate
 	 * @param mailbox
+	 * @return a Comm handler
 	 */
 	public static native Comm irecvBounded(String mailbox, double rate);
 	/**
 	 * Retrieves next task from the mailbox identified by the specified name with a capped rate
 	 *
 	 * @param mailbox
+	 * @return a Task
 	 */
 
 	public static Task receiveBounded(String mailbox, double rate) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -321,6 +321,7 @@ public class Task {
 	 *
 	 * @param mailbox
 	 * @param timeout
+	 * @return a Task
 	 */
 	public static Task receiveBounded(String mailbox, double timeout, double rate) throws  TransferFailureException, HostFailureException, TimeoutException {
 		return receiveBounded(mailbox, timeout, null, rate);
@@ -331,6 +332,7 @@ public class Task {
 	 *
 	 * @param mailbox
 	 * @param host
+	 * @return a Task
 	 */
 
 	public static Task receiveBounded(String mailbox, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException {
@@ -344,24 +346,20 @@ public class Task {
 	 * @param mailbox
 	 * @param timeout 
 	 * @param host
+	 * @return a Task
 	 */
-	public native static Task receiveBounded(String mailbox, double timeout, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException;
+	public static native Task receiveBounded(String mailbox, double timeout, Host host, double rate) throws TransferFailureException, HostFailureException, TimeoutException;
 
 
 
 	/**
 	 * Tests whether there is a pending communication on the mailbox identified by the specified alias, and who sent it
 	 */
-	public native static int listenFrom(String mailbox);
+	public static native int listenFrom(String mailbox);
 	/**
 	 * Listen whether there is a task waiting (either for a send or a recv) on the mailbox identified by the specified alias
 	 */
-	public native static boolean listen(String mailbox);
-
-	/**
-	 * Counts the number of tasks waiting to be received on the \a mailbox identified by the specified alia and sended by the specified \a host.
-	 */
-	public native static int listenFromHost(String alias, Host host);
+	public static native boolean listen(String mailbox);
 
 	/**
 	 * Class initializer, to initialize various JNI stuff

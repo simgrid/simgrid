@@ -4,8 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/simdag/simdag_private.h"
 #include "simgrid/s4u/host.hpp"
+
+#include "simdag_private.hpp"
 #include "src/surf/HostImpl.hpp"
 #include "surf/surf.h"
 
@@ -21,13 +22,14 @@
 SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
 {
   std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, NULL);
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, nullptr);
 
   int cpt=0;
   SD_link_t *list = xbt_new(SD_link_t, route->size());
-  for (auto link : *route)
-    list[cpt++] = link;
-
+  for (auto link : *route){
+    list[cpt] = link;
+    cpt++;
+  }
   delete route;
   return list;
 }
@@ -43,7 +45,7 @@ SD_link_t *SD_route_get_list(sg_host_t src, sg_host_t dst)
 int SD_route_get_size(sg_host_t src, sg_host_t dst)
 {
   std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, NULL);
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, nullptr);
   int size = route->size();
   delete route;
   return size;
@@ -81,11 +83,11 @@ double SD_route_get_bandwidth(sg_host_t src, sg_host_t dst)
   double min_bandwidth = -1.0;
 
   std::vector<Link*> *route = new std::vector<Link*>();
-  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, NULL);
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, nullptr);
 
   for (auto link : *route) {
     double bandwidth = sg_link_bandwidth(link);
-    if (bandwidth < min_bandwidth || min_bandwidth == -1.0)
+    if (bandwidth < min_bandwidth || min_bandwidth < 0.0)
       min_bandwidth = bandwidth;
   }
   delete route;

@@ -23,10 +23,12 @@ SG_BEGIN_DECL()
   *  
   * For performance concerns, the content of DynArr must be homogeneous (in contrary to dictionnaries -- see the
   * \ref XBT_dict section). You thus have to provide the function which will be used to free the content at
-  * structure creation (of type void_f_ppvoid_t or void_f_pvoid_t).
+  * structure creation (of type void_f_pvoid_t).
+  *
+  * @deprecated If you are using C++, you might want to use `std::vector` instead.
   *
   * \section XBT_dynar_exscal Example with scalar
-  * \dontinclude dynar.c
+  * \dontinclude dynar.cpp
   *
   * \skip Vars_decl
   * \skip dyn
@@ -203,7 +205,7 @@ typedef struct xbt_dynar_s {
   void_f_pvoid_t free_f;
 } s_xbt_dynar_t;
 
-static XBT_INLINE int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int idx, void *const dst)
+static inline int _xbt_dynar_cursor_get(const xbt_dynar_t dynar, unsigned int idx, void *const dst)
 {
   if (!dynar) /* iterating over a NULL dynar is a no-op */
     return FALSE;
@@ -256,6 +258,6 @@ xbt_dynar_foreach (dyn,cpt,str) {
             (_cursor)++         )
 #endif
 /** @} */
-
 SG_END_DECL()
+
 #endif                          /* _XBT_DYNAR_H */

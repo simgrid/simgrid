@@ -6,37 +6,59 @@
 
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
-
-#include "simgrid/s4u/mailbox.hpp"
+#include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_network_private.h"
+#include "simgrid/s4u/Mailbox.hpp"
 
 XBT_LOG_EXTERNAL_CATEGORY(s4u);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(s4u_channel,s4u,"S4U Communication Mailboxes");
 
+namespace simgrid {
+namespace s4u {
 
-using namespace simgrid;
-
-boost::unordered_map <std::string, s4u::Mailbox *> *s4u::Mailbox::mailboxes = new boost::unordered_map<std::string, s4u::Mailbox*> ();
-
-
-s4u::Mailbox::Mailbox(const char*name, smx_mailbox_t inferior) {
-  inferior_ = inferior;
-  name_ = name;
-  mailboxes->insert({name, this});
+const char *Mailbox::getName() {
+  return pimpl_->name;
 }
-const char *s4u::Mailbox::getName() {
-  return name_.c_str();
+
+MailboxPtr Mailbox::byName(const char*name)
+{
+  // FIXME: there is a race condition here where two actors run Mailbox::byName
+  // on a non-existent mailbox during the same scheduling round. Both will be
+  // interrupted in the simcall creating the underlying simix mbox.
+  // Only one simix object will be created, but two S4U objects will be created.
+  // Only one S4U object will be stored in the hashmap and used, and the other
+  // one will be leaked.
+  smx_mailbox_t mbox = SIMIX_mbox_get_by_name(name);
+  if (mbox == nullptr)
+    mbox = simcall_mbox_create(name);
+  return MailboxPtr(&mbox->piface_, true);
 }
-s4u::Mailbox *s4u::Mailbox::byName(const char*name) {
-  s4u::Mailbox *res;
-  try {
-    res = mailboxes->at(name);
-  } catch (std::out_of_range& e) {
-    // FIXME: there is a potential race condition here where two actors run Mailbox::byName on a non-existent mailbox
-    // during the same scheduling round. Both will be interrupted in the simcall creating the underlying simix rdv.
-    // Only one simix object will be created, but two S4U objects will be created.
-    // Only one S4U object will be stored in the hashmap and used, and the other one will be leaked.
-    new Mailbox(name,simcall_rdv_create(name));
-    res = mailboxes->at(name); // Use the stored one, even if it's not the one I created myself.
-  }
-  return res;
+
+MailboxPtr Mailbox::byName(std::string name)
+{
+  return byName(name.c_str());
+}
+
+bool Mailbox::empty()
+{
+  return pimpl_->comm_queue.empty();
+}
+
+smx_activity_t Mailbox::front()
+{
+  return pimpl_->comm_queue.empty() ? nullptr : pimpl_->comm_queue.front();
+}
+
+void Mailbox::setReceiver(ActorPtr actor) {
+  simcall_mbox_set_receiver(pimpl_, actor == nullptr ? nullptr : actor->pimpl_);
+}
+
+/** @brief get the receiver (process associated to the mailbox) */
+ActorPtr Mailbox::receiver() {
+  if(pimpl_->permanent_receiver == nullptr)
+    return ActorPtr();
+  return ActorPtr(&pimpl_->permanent_receiver->getIface());
+}
+
+}
 }

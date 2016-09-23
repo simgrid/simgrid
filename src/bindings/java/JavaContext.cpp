@@ -12,40 +12,40 @@
 #include <xbt/function_types.h>
 #include <simgrid/simix.h>
 #include <xbt/ex.h>
+#include <xbt/ex.hpp>
 #include "JavaContext.hpp"
 #include "jxbt_utilities.h"
 #include "xbt/dynar.h"
 #include "../../simix/smx_private.h"
+
 extern JavaVM *__java_vm;
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(jmsg, "MSG for Java(TM)");
 
 namespace simgrid {
-namespace java {
+namespace kernel {
+namespace context {
 
-simgrid::simix::ContextFactory* java_factory()
+ContextFactory* java_factory()
 {
   XBT_INFO("Using regular java threads.");
   return new JavaContextFactory();
 }
 
-JavaContextFactory::JavaContextFactory()
-  : ContextFactory("JavaContextFactory")
+JavaContextFactory::JavaContextFactory(): ContextFactory("JavaContextFactory")
 {
 }
 
-JavaContextFactory::~JavaContextFactory()
-{
-}
+JavaContextFactory::~JavaContextFactory()=default;
 
 JavaContext* JavaContextFactory::self()
 {
-  return (JavaContext*) xbt_os_thread_get_extra_data();
+  return static_cast<JavaContext*>(xbt_os_thread_get_extra_data());
 }
 
 JavaContext* JavaContextFactory::create_context(
   std::function<void()> code,
-  void_pfn_smxprocess_t cleanup, smx_process_t process)
+  void_pfn_smxprocess_t cleanup, smx_actor_t process)
 {
   return this->new_context<JavaContext>(std::move(code), cleanup, process);
 }
@@ -53,37 +53,40 @@ JavaContext* JavaContextFactory::create_context(
 void JavaContextFactory::run_all()
 {
   xbt_dynar_t processes = SIMIX_process_get_runnable();
-  smx_process_t process;
+  smx_actor_t process;
   unsigned int cursor;
   xbt_dynar_foreach(processes, cursor, process) {
     static_cast<JavaContext*>(SIMIX_process_get_context(process))->resume();
   }
 }
 
-
 JavaContext::JavaContext(std::function<void()> code,
         void_pfn_smxprocess_t cleanup_func,
-        smx_process_t process)
+        smx_actor_t process)
   : Context(std::move(code), cleanup_func, process)
 {
   static int thread_amount=0;
   thread_amount++;
 
-  /* If the user provided a function for the process then use it
-     otherwise is the context for maestro */
+  /* If the user provided a function for the process then use it otherwise is the context for maestro */
   if (has_code()) {
     this->jprocess = nullptr;
     this->begin = xbt_os_sem_init(0);
     this->end = xbt_os_sem_init(0);
 
-    TRY {
+    try {
        this->thread = xbt_os_thread_create(
          nullptr, JavaContext::wrapper, this, nullptr);
     }
-    CATCH_ANONYMOUS {
-      RETHROWF("Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
-               "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
-               thread_amount);
+    catch (xbt_ex& ex) {
+      char* str = bprintf(
+        "Failed to create context #%d. You may want to switch to Java coroutines to increase your limits (error: %s)."
+        "See the Install section of simgrid-java documentation (in doc/install.html) for more on coroutines.",
+        thread_amount, ex.what());
+      xbt_ex new_exception(XBT_THROW_POINT, str);
+      new_exception.category = ex.category;
+      new_exception.value = ex.value;
+      std::throw_with_nested(std::move(new_exception));
     }
   } else {
     this->thread = nullptr;
@@ -103,13 +106,13 @@ JavaContext::~JavaContext()
 
 void* JavaContext::wrapper(void *data)
 {
-  JavaContext* context = (JavaContext*)data;
+  JavaContext* context = static_cast<JavaContext*>(data);
   xbt_os_thread_set_extra_data(context);
   //Attach the thread to the JVM
 
   JNIEnv *env;
   XBT_ATTRIB_UNUSED jint error =
-    __java_vm->AttachCurrentThread((void **) &env, NULL);
+    __java_vm->AttachCurrentThread((void **)&env, nullptr);
   xbt_assert((error == JNI_OK), "The thread could not be attached to the JVM");
   context->jenv = get_current_thread_env();
   //Wait for the first scheduling round to happen.
@@ -134,7 +137,7 @@ void JavaContext::stop()
    // jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError", bprintf("Process %s killed :) (file smx_context_java.c)", MSG_process_get_name( (msg_process_t)context) ));
     jxbt_throw_by_name(env, "org/simgrid/msg/ProcessKilledError",
       bprintf("Process %s killed :) (file JavaContext.cpp)",
-      simcall_process_get_name((smx_process_t) SIMIX_context_get_process(this))) );
+          this->process()->name.c_str() ));
     XBT_DEBUG("Trigger a cancel error at the C level");
     THROWF(cancel_error, 0, "process cancelled");
   } else {
@@ -145,7 +148,7 @@ void JavaContext::stop()
     XBT_ATTRIB_UNUSED jint error = __java_vm->DetachCurrentThread();
     xbt_assert((error == JNI_OK), "The thread couldn't be detached.");
     xbt_os_sem_release(this->end);
-    xbt_os_thread_exit(NULL);
+    xbt_os_thread_exit(nullptr);
   }
 }
 
@@ -162,5 +165,4 @@ void JavaContext::resume()
   xbt_os_sem_acquire(this->end);
 }
 
-}
-}
+}}} // namespace simgrid::kernel::context

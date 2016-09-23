@@ -1,0 +1,42 @@
+/**
+@defgroup s4u_api  S4U: Next Generation SimGrid API
+@brief Future core API, mixing the full power of SimGrid to the power of C++. 
+
+The S4U API is currently under heavy work, but will eventually
+deprecate the MSG and SimDag APIs. Everything that you can do in
+SimGrid will be possible in S4U. 
+
+@warning <b>S4U is not ready for public use yet</b>. You should not go
+	 that path unless you know what you are doing.  If unsure,
+	 proceed to @ref MSG_API instead.
+
+Unsurprisingly, the S4U interface matches the concepts presented in 
+@ref starting_components "the introduction". You should read this page
+first, to not get lost in the amount of classes provided here. Or you
+could jump to the \ref s4u_examples directly if you prefer.
+
+@section s4u_raii Memory Management of S4U objects
+
+For sake of simplicity, we use
+[RAII](https://en.wikipedia.org/wiki/Resource_Acquisition_Is_Initialization)
+everywhere in S4U. This is an idiom where resources are automatically
+managed through the context. Provided that you never manipulate
+objects of type Foo directly but always FooPtr references (which are
+[boost::intrusive_ptr](http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html)<Foo>),
+you will never have to explicitely release the resource that you use
+nor to free the memory of unused objects.
+
+Here is a little example:
+
+@code{cpp}
+void myFunc() 
+{
+  simgrid::s4u::MutexPtr mutex = simgrid::s4u::Mutex::createMutex(); // Too bad we cannot use `new` here
+
+  mutex->lock();   // use the mutex as a simple reference
+  //  bla bla
+  mutex->unlock(); 
+  
+} // The mutex will get automatically freed because the only existing reference gets out of scope
+@endcode
+*/

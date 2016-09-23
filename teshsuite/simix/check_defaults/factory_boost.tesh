@@ -1,0 +1,2 @@
+$ ${bindir:=.}/check_defaults
+> [simix_context/VERBOSE] Using Boost contexts. Welcome to the 21th century.

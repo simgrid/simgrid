@@ -39,17 +39,14 @@ mc_mem_region_t mc_get_snapshot_region(
       continue;
 
     if (region->storage_type() == simgrid::mc::StorageType::Privatized) {
-#ifdef HAVE_SMPI
+#if HAVE_SMPI
       // Use the current process index of the snapshot:
-      if (process_index == simgrid::mc::ProcessIndexDisabled) {
+      if (process_index == simgrid::mc::ProcessIndexDisabled)
         process_index = snapshot->privatization_index;
-      }
-      if (process_index < 0) {
+      if (process_index < 0)
         xbt_die("Missing process index");
-      }
-      if (process_index >= (int) region->privatized_data().size()) {
+      if (process_index >= (int) region->privatized_data().size())
         xbt_die("Invalid process index");
-      }
       simgrid::mc::RegionSnapshot& priv_region = region->privatized_data()[process_index];
       xbt_assert(priv_region.contain(simgrid::mc::remote(addr)));
       return &priv_region;
@@ -77,19 +74,23 @@ const void* MC_region_read_fragmented(mc_mem_region_t region, void* target, cons
   // Last byte of the memory area:
   void* end = (char*) addr + size - 1;
 
+  // TODO, we assume the chunks are aligned to natural chunk boundaries.
+  // We should remove this assumption.
+
   // Page of the last byte of the memory area:
-  size_t page_end = mc_page_number(nullptr, end);
+  size_t page_end = simgrid::mc::mmu::split((std::uintptr_t) end).first;
 
   void* dest = target;
 
-  if (dest==nullptr) {
+  if (dest==nullptr)
     xbt_die("Missing destination buffer for fragmented memory access");
-  }
 
   // Read each page:
-  while (mc_page_number(nullptr, addr) != page_end) {
+  while (simgrid::mc::mmu::split((std::uintptr_t) addr).first != page_end) {
     void* snapshot_addr = mc_translate_address_region_chunked((uintptr_t) addr, region);
-    void* next_page = mc_page_from_number(nullptr, mc_page_number(NULL, addr) + 1);
+    void* next_page = (void*) simgrid::mc::mmu::join(
+      simgrid::mc::mmu::split((std::uintptr_t) addr).first + 1,
+      0);
     size_t readable = (char*) next_page - (char*) addr;
     memcpy(dest, snapshot_addr, readable);
     addr = (char*) addr + readable;
@@ -127,11 +128,10 @@ int MC_snapshot_region_memcmp(
   const void* buffer1 = MC_region_read(region1, buffer1a, addr1, size);
   const void* buffer2 = MC_region_read(region2, buffer2a, addr2, size);
   int res;
-  if (buffer1 == buffer2) {
+  if (buffer1 == buffer2)
     res = 0;
-  } else {
+  else
     res = memcmp(buffer1, buffer2, size);
-  }
   if (!stack_alloc) {
     free(buffer1a);
     free(buffer2a);
@@ -148,8 +148,8 @@ int MC_snapshot_region_memcmp(
  * @return same as memcmp
  * */
 int MC_snapshot_memcmp(
-  const void* addr1, mc_snapshot_t snapshot1,
-  const void* addr2, mc_snapshot_t snapshot2, int process_index, size_t size)
+  const void* addr1, simgrid::mc::Snapshot* snapshot1,
+  const void* addr2, simgrid::mc::Snapshot* snapshot2, int process_index, size_t size)
 {
   mc_mem_region_t region1 = mc_get_snapshot_region(addr1, snapshot1, process_index);
   mc_mem_region_t region2 = mc_get_snapshot_region(addr2, snapshot2, process_index);
@@ -253,12 +253,12 @@ static void test_snapshot(bool sparse_checkpoint) {
     // Init memory and take snapshots:
     init_memory(source, byte_size);
     simgrid::mc::RegionSnapshot region0 = simgrid::mc::sparse_region(
-      simgrid::mc::RegionType::Unknown, source, source, byte_size, nullptr);
+      simgrid::mc::RegionType::Unknown, source, source, byte_size);
     for(int i=0; i<n; i+=2) {
       init_memory((char*) source + i*xbt_pagesize, xbt_pagesize);
     }
     simgrid::mc::RegionSnapshot region = simgrid::mc::sparse_region(
-      simgrid::mc::RegionType::Unknown, source, source, byte_size, nullptr);
+      simgrid::mc::RegionType::Unknown, source, source, byte_size);
 
     void* destination = mmap(nullptr, byte_size, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS, -1, 0);
     xbt_assert(source!=MAP_FAILED, "Could not allocate destination memory");
@@ -293,7 +293,7 @@ static void test_snapshot(bool sparse_checkpoint) {
       xbt_test_add("Read pointer for %i page(s)", n);
       memcpy(source, &mc_model_checker, sizeof(void*));
       simgrid::mc::RegionSnapshot region2 = simgrid::mc::sparse_region(
-        simgrid::mc::RegionType::Unknown, source, source, byte_size, nullptr);
+        simgrid::mc::RegionType::Unknown, source, source, byte_size);
       xbt_test_assert(MC_region_read_pointer(&region2, source) == mc_model_checker,
         "Mismtach in MC_region_read_pointer()");
     }

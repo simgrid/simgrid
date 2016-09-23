@@ -4,6 +4,9 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <deque>
+#include <boost/intrusive/list.hpp>
+
 #include <xbt/base.h>
 
 #include "src/surf/HostImpl.hpp"
@@ -31,17 +34,17 @@ class XBT_PRIVATE VirtualMachine;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMCreatedCallbacks;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmCreation;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMDestructedCallbacks;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmDestruction;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VMStateChangedCallbacks;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmStateChange;
 
 /************
  * Resource *
@@ -53,57 +56,44 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> VM
  */
 class VirtualMachine : public HostImpl {
 public:
-  /**
-   * @brief Constructor
-   *
-   * @param model VMModel associated to this VM
-   * @param name The name of the VM
-   * @param props Dictionary of properties associated to this VM
-   * @param host The host
-   */
-  VirtualMachine(simgrid::surf::HostModel *model, const char *name, xbt_dict_t props,
-            simgrid::s4u::Host *host);
-
-  /** @brief Destructor */
+  VirtualMachine(simgrid::surf::HostModel *model, const char *name, simgrid::s4u::Host *host);
   ~VirtualMachine();
 
   /** @brief Suspend the VM */
-  virtual void suspend()=0;
+  virtual void suspend();
 
   /** @brief Resume the VM */
-  virtual void resume()=0;
+  virtual void resume();
 
   /** @brief Save the VM (Not yet implemented) */
-  virtual void save()=0;
+  virtual void save();
 
   /** @brief Restore the VM (Not yet implemented) */
-  virtual void restore()=0;
+  virtual void restore();
 
   /** @brief Migrate the VM to the destination host */
-  virtual void migrate(sg_host_t dest_PM)=0;
+  virtual void migrate(sg_host_t dest_PM);
 
   /** @brief Get the physical machine hosting the VM */
   sg_host_t getPm();
 
-  virtual void setBound(double bound)=0;
-  virtual void setAffinity(Cpu *cpu, unsigned long mask)=0;
+  virtual void setBound(double bound);
 
   /* The vm object of the lower layer */
-  CpuAction *p_action;
-  simgrid::s4u::Host *p_hostPM;
+  CpuAction *action_ = nullptr;
+protected:
+  simgrid::s4u::Host *hostPM_;
 
+public:
   void turnOn() override;
   void turnOff() override;
 
-public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
+  static std::deque<VirtualMachine*> allVms_;
+
 protected:
-  e_surf_vm_state_t p_vm_state = SURF_VM_STATE_CREATED;
-
-
-public:
-  boost::intrusive::list_member_hook<> vm_hook;
+  e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
 };
 
 /*********
@@ -115,23 +105,21 @@ public:
  */
 class VMModel : public HostModel {
 public:
-  VMModel() :HostModel(){}
-  ~VMModel(){};
+  VMModel() :HostModel() {}
+  ~VMModel() = default;
 
   /**
    * @brief Create a new VM
    *
    * @param name The name of the new VM
    * @param host_PM The real machine hosting the VM
-   *
    */
-  virtual VirtualMachine *createVM(const char *name, sg_host_t host_PM)=0;
-  void adjustWeightOfDummyCpuActions() {};
+  s4u::Host *createVM(const char *name, sg_host_t host_PM);
+  void adjustWeightOfDummyCpuActions() override {};
 
-  typedef boost::intrusive::member_hook<
-    VirtualMachine, boost::intrusive::list_member_hook<>, &VirtualMachine::vm_hook> VmOptions;
-  typedef boost::intrusive::list<VirtualMachine, VmOptions, boost::intrusive::constant_time_size<false> > vm_list_t;
-  static vm_list_t ws_vms;
+  double next_occuring_event(double now) override;
+  void updateActionsState(double /*now*/, double /*delta*/) override {};
+
 };
 
 }

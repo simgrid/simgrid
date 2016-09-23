@@ -6,7 +6,14 @@
 #ifndef SIMGRID_S4U_ENGINE_HPP
 #define SIMGRID_S4U_ENGINE_HPP
 
+#include <string>
+#include <utility>
+#include <vector>
+
 #include <xbt/base.h>
+#include <xbt/functional.hpp>
+
+#include <simgrid/simix.hpp>
 
 #include <simgrid/s4u/forward.hpp>
 
@@ -20,6 +27,9 @@ XBT_PUBLIC_CLASS Engine {
 public:
   /** Constructor, taking the command line parameters of your main function */
   Engine(int *argc, char **argv);
+
+  /** Finalize the default engine and all its dependencies */
+  static void shutdown();
 
   /** @brief Load a platform file describing the environment
    *
@@ -49,14 +59,35 @@ public:
   
   /** @brief Retrieve the engine singleton */
   static s4u::Engine *instance();
-private:
-  static s4u::Engine *instance_;
 
-public:
   /** @brief Retrieve the root AS, containing all others */
   simgrid::s4u::As *rootAs();
   /** @brief Retrieve the AS of the given name (or nullptr if not found) */
   simgrid::s4u::As *asByNameOrNull(const char *name);
+
+  template<class F>
+  void registerFunction(const char* name)
+  {
+    simgrid::simix::registerFunction(name, [](std::vector<std::string> args){
+      return simgrid::simix::ActorCode([args] {
+        F code(std::move(args));
+        code();
+      });
+    });
+  }
+
+  template<class F>
+  void registerFunction(const char* name, F code)
+  {
+    simgrid::simix::registerFunction(name, [code](std::vector<std::string> args){
+      return simgrid::simix::ActorCode([code,args] {
+        code(std::move(args));
+      });
+    });
+  }
+
+private:
+  static s4u::Engine *instance_;
 };
 }} // namespace simgrid::s4u
 

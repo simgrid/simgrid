@@ -9,14 +9,12 @@
 
 #include <vector>
 
-#include <xbt/misc.h> // xbt_pagesize and friends
+#include <xbt/misc.h> 
 #include <xbt/asserts.h>
 
 #include "src/mc/AddressSpace.hpp"
 #include "src/mc/ChunkedData.hpp"
-
-#define SOFT_DIRTY_BIT_NUMBER 55
-#define SOFT_DIRTY (((uint64_t)1) << SOFT_DIRTY_BIT_NUMBER)
+#include "src/mc/PageStore.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -24,12 +22,11 @@ namespace mc {
 /** Take a per-page snapshot of a region
  *
  *  @param data            The start of the region (must be at the beginning of a page)
- *  @param pag_count       Number of pages of the region
+ *  @param page_count      Number of pages of the region
  *  @return                Snapshot page numbers of this new snapshot
  */
 ChunkedData::ChunkedData(PageStore& store, AddressSpace& as,
-    RemotePtr<void> addr, std::size_t page_count,
-    const std::size_t* ref_page_numbers, const std::uint64_t* pagemap)
+    RemotePtr<void> addr, std::size_t page_count)
 {
   store_ = &store;
   this->pagenos_.resize(page_count);
@@ -37,15 +34,9 @@ ChunkedData::ChunkedData(PageStore& store, AddressSpace& as,
 
   for (size_t i = 0; i != page_count; ++i) {
 
-    // We don't have to compare soft-clean pages:
-    if (ref_page_numbers && pagemap && !(pagemap[i] & SOFT_DIRTY)) {
-      pagenos_[i] = ref_page_numbers[i];
-      store_->ref_page(ref_page_numbers[i]);
-      continue;
-    }
-
-      RemotePtr<void> page = remote(addr.address() + (i << xbt_pagebits));
-      xbt_assert(mc_page_offset((void*)page.address())==0,
+      RemotePtr<void> page = remote((void*)
+        simgrid::mc::mmu::join(i, addr.address()));
+      xbt_assert(simgrid::mc::mmu::split(page.address()).second == 0,
         "Not at the beginning of a page");
 
         /* Adding another copy (and a syscall) will probably slow things a lot.

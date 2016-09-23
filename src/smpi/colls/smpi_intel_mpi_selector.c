@@ -8,9 +8,7 @@
 
 #include "colls_private.h"
 
-
 // This selector is based on information gathered on the Stampede cluster, with Intel MPI 4.1.3.049, and from the intel reference manual. The data was gathered launching runs with 1,2,4,8,16 processes per node.
-
 
 #define INTEL_MAX_NB_THRESHOLDS  32
 #define INTEL_MAX_NB_NUMPROCS  12
@@ -46,8 +44,7 @@ MPI_Allreduce
 7 - Shumilin's ring algorithm 
 8 - Ring algorithm
 
-
-//as Shumilin's ring algorithm is unknown, default to ring'
+  as Shumilin's ring algorithm is unknown, default to ring'
 */
 
 

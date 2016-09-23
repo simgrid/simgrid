@@ -1,8 +1,6 @@
-This directory contains some tools that we use to build and maintain
-SimGrid itself. I doubt that any of them are useful out of that
-context, but you are welcome to dig and inspect everything you want.
+This directory contains some tools that we use to build and maintain SimGrid itself. I doubt that any of them are useful
+out of that context, but you are welcome to dig and inspect everything you want.
 
-They are not included in the archive and are thus not mandatory to use
-SimGrid.
+They are not included in the archive and are thus not mandatory to use SimGrid.
 
 These little codes are under the same licence than SimGrid itself.

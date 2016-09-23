@@ -9,12 +9,12 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_surf, instr, "Tracing Surf");
 
-void TRACE_surf_alloc(void)
+void TRACE_surf_alloc()
 {
   TRACE_surf_resource_utilization_alloc();
 }
 
-void TRACE_surf_release(void)
+void TRACE_surf_release()
 {
   TRACE_surf_resource_utilization_release();
 }

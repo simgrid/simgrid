@@ -7,101 +7,163 @@
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
 
-#include "simgrid/s4u/actor.hpp"
+#include "simgrid/s4u/Actor.hpp"
 #include "simgrid/s4u/comm.hpp"
 #include "simgrid/s4u/host.hpp"
-#include "simgrid/s4u/mailbox.hpp"
+#include "simgrid/s4u/Mailbox.hpp"
+
+#include "src/kernel/context/Context.hpp"
+#include "src/simix/smx_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_actor,"S4U actors");
 
-/* C main function of a actor, running this->main */
-static int s4u_actor_runner(int argc, char **argv)
+namespace simgrid {
+namespace s4u {
+
+// ***** Actor creation *****
+ActorPtr Actor::self()
 {
-  simgrid::s4u::Actor *actor = (simgrid::s4u::Actor*) SIMIX_process_self_get_data();
-  int res = actor->main(argc,argv);
-  return res;
+  smx_context_t self_context = SIMIX_context_self();
+  if (self_context == nullptr)
+    return simgrid::s4u::ActorPtr();
+
+  return simgrid::s4u::ActorPtr(&self_context->process()->getIface());
 }
 
 
-
-using namespace simgrid;
-
-s4u::Actor::Actor(smx_process_t smx_proc) {
-  p_smx_process = smx_proc;
-}
-s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv)
-    : s4u::Actor::Actor(name,host, argc,argv, -1) {
-}
-s4u::Actor::Actor(const char *name, s4u::Host *host, int argc, char **argv, double killTime) {
-  p_smx_process = simcall_process_create(name, s4u_actor_runner, this, host->name().c_str(), killTime, argc, argv, NULL/*properties*/,0);
-
-  xbt_assert(p_smx_process,"Cannot create the actor");
-//  TRACE_msg_process_create(procname, simcall_process_get_PID(p_smx_process), host->getInferior());
-//  simcall_process_on_exit(p_smx_process,(int_f_pvoid_pvoid_t)TRACE_msg_process_kill,p_smx_process);
-}
-
-int s4u::Actor::main(int argc, char **argv) {
-  fprintf(stderr,"Error: You should override the method main(int, char**) in Actor class %s\n",getName());
-  return 0;
-}
-s4u::Actor *s4u::Actor::current()
+ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code)
 {
-  smx_process_t smx_proc = SIMIX_process_self();
-  simgrid::s4u::Actor* res = (simgrid::s4u::Actor*) SIMIX_process_self_get_data();
-  if (res == NULL) // The smx_process was not created by S4U (but by deployment?). Embed it in a S4U object
-    res = new Actor(smx_proc);
-  return res;
+  // TODO, when autorestart is used, the std::function is copied so the new
+  // instance will get a fresh (reinitialized) state. Is this what we want?
+  smx_actor_t process = simcall_process_create(
+    name, std::move(code), nullptr, host, killTime, nullptr, 0);
+  return ActorPtr(&process->getIface());
 }
 
-void s4u::Actor::setAutoRestart(bool autorestart) {
-  simcall_process_auto_restart_set(p_smx_process,autorestart);
+ActorPtr Actor::createActor(const char* name, s4u::Host *host, double killTime,
+  const char* function, std::vector<std::string> args)
+{
+  simgrid::simix::ActorCodeFactory& factory = SIMIX_get_actor_code_factory(function);
+  simgrid::simix::ActorCode code = factory(std::move(args));
+  smx_actor_t process = simcall_process_create(
+    name, std::move(code), nullptr, host, killTime, nullptr, 0);
+  return ActorPtr(&process->getIface());
 }
 
-s4u::Host *s4u::Actor::getHost() {
-  return s4u::Host::by_name(sg_host_get_name(simcall_process_get_host(p_smx_process)));
-}
-const char* s4u::Actor::getName() {
-  return simcall_process_get_name(p_smx_process);
-}
-int s4u::Actor::getPid(){
-  return simcall_process_get_PID(p_smx_process);
+// ***** Actor methods *****
+
+void Actor::join() {
+  simcall_process_join(pimpl_, -1);
 }
 
-void s4u::Actor::setKillTime(double time) {
-  simcall_process_set_kill_time(p_smx_process,time);
+void Actor::setAutoRestart(bool autorestart) {
+  simcall_process_auto_restart_set(pimpl_,autorestart);
 }
-double s4u::Actor::getKillTime() {
-  return simcall_process_get_kill_time(p_smx_process);
+
+s4u::Host *Actor::getHost() {
+  return pimpl_->host;
 }
-void s4u::Actor::killAll() {
+
+simgrid::xbt::string Actor::getName() {
+  return pimpl_->name;
+}
+
+int Actor::getPid(){
+  return pimpl_->pid;
+}
+
+int Actor::getPpid() {
+  return pimpl_->ppid;
+}
+
+void Actor::setKillTime(double time) {
+  simcall_process_set_kill_time(pimpl_,time);
+}
+
+double Actor::getKillTime() {
+  return simcall_process_get_kill_time(pimpl_);
+}
+
+void Actor::kill(int pid) {
+  msg_process_t process = SIMIX_process_from_PID(pid);
+  if(process != nullptr) {
+    simcall_process_kill(process);
+  } else {
+    std::ostringstream oss;
+    oss << "kill: ("<< pid <<") - No such process" << std::endl;
+    throw std::runtime_error(oss.str());
+  }
+}
+
+smx_actor_t Actor::getImpl() {
+  return pimpl_;
+}
+
+void Actor::kill() {
+  simcall_process_kill(pimpl_);
+}
+
+// ***** Static functions *****
+
+ActorPtr Actor::forPid(int pid)
+{
+  smx_actor_t process = SIMIX_process_from_PID(pid);
+  if (process != nullptr)
+    return ActorPtr(&process->getIface());
+  else
+    return nullptr;
+}
+
+void Actor::killAll() {
   simcall_process_killall(1);
 }
-void s4u::Actor::kill() {
-  simcall_process_kill(p_smx_process);
+
+// ***** this_actor *****
+
+namespace this_actor {
+
+void sleep_for(double duration)
+{
+  if (duration > 0)
+    simcall_process_sleep(duration);
 }
 
-void s4u::Actor::sleep(double duration) {
-  simcall_process_sleep(duration);
+XBT_PUBLIC(void) sleep_until(double timeout)
+{
+  double now = SIMIX_get_clock();
+  if (timeout > now)
+    simcall_process_sleep(timeout - now);
 }
 
-e_smx_state_t s4u::Actor::execute(double flops) {
-  smx_synchro_t s = simcall_execution_start(NULL,flops,1.0/*priority*/,0./*bound*/, 0L/*affinity*/);
+e_smx_state_t execute(double flops) {
+  smx_activity_t s = simcall_execution_start(nullptr,flops,1.0/*priority*/,0./*bound*/);
   return simcall_execution_wait(s);
 }
 
-void *s4u::Actor::recv(Mailbox &chan) {
-  void *res=NULL;
-
-  Comm c = Comm::recv_init(this, chan);
+void* recv(MailboxPtr chan) {
+  void *res = nullptr;
+  Comm& c = Comm::recv_init(chan);
   c.setDstData(&res,sizeof(res));
   c.wait();
-
-    return res;
+  return res;
 }
-void s4u::Actor::send(Mailbox &chan, void *payload, size_t simulatedSize) {
-  Comm c = Comm::send_init(this,chan);
+
+void send(MailboxPtr chan, void *payload, size_t simulatedSize) {
+  Comm& c = Comm::send_init(chan);
   c.setRemains(simulatedSize);
   c.setSrcData(payload);
   // c.start() is optional.
   c.wait();
+}
+
+int getPid() {
+  return SIMIX_process_self()->pid;
+}
+
+int getPpid() {
+  return SIMIX_process_self()->ppid;
+}
+
+}
+}
 }

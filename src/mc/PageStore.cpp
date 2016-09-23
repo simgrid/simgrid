@@ -5,17 +5,17 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <unistd.h>
-#include <string.h> // memcpy, memcp
+#include <string.h> // memcpy, memcmp
 
 #include <sys/mman.h>
 
-#include <xbt.h>
+#include <xbt/base.h>
+#include <xbt/log.h>
+#include <xbt/sysdep.h>
 
 #include "src/mc/PageStore.hpp"
 
 #include "src/mc/mc_mmu.h"
-
-extern "C" {
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
                                 "Logging specific to mc_page_snapshot");
@@ -23,7 +23,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_page_snapshot, mc,
 namespace simgrid {
 namespace mc {
 
-/** @brief Compte a hash for the given memory page
+/** @brief Compute a hash for the given memory page
  *
  *  The page is used before inserting the page in the page store
  *  in order to find duplicate of this page in the page store.
@@ -39,9 +39,8 @@ PageStore::hash_type mc_hash_page(const void* data)
 
   // This djb2:
   std::uint64_t hash = 5381;
-  for (std::size_t i = 0; i != n; ++i) {
+  for (std::size_t i = 0; i != n; ++i)
     hash = ((hash << 5) + hash) + values[i];
-  }
   return hash;
 }
 
@@ -54,9 +53,8 @@ PageStore::PageStore(size_t size) :
   // by relocating it somewhere else in the virtual memory
   // space:
   void* memory = ::mmap(nullptr, size << xbt_pagebits, PROT_READ|PROT_WRITE, MAP_PRIVATE|MAP_ANONYMOUS|MAP_POPULATE, -1, 0);
-  if (memory == MAP_FAILED) {
+  if (memory == MAP_FAILED)
     xbt_die("Could not mmap initial snapshot pages.");
-  }
 
   this->top_index_ = 0;
   this->capacity_ = size;
@@ -77,9 +75,8 @@ void PageStore::resize(std::size_t size)
   // Expand the memory region by moving it into another
   // virtual memory address if necessary:
   void* new_memory = mremap(this->memory_, old_bytesize, new_bytesize, MREMAP_MAYMOVE);
-  if (new_memory == MAP_FAILED) {
+  if (new_memory == MAP_FAILED)
     xbt_die("Could not mremap snapshot pages.");
-  }
 
   this->capacity_ = size;
   this->memory_ = new_memory;
@@ -95,10 +92,9 @@ std::size_t PageStore::alloc_page()
   if (this->free_pages_.empty()) {
 
     // Expand the region:
-    if (this->top_index_ == this->capacity_) {
+    if (this->top_index_ == this->capacity_)
       // All the pages are allocated, we need add more pages:
       this->resize(2 * this->capacity_);
-    }
 
     // Use a page from the top:
     return this->top_index_++;
@@ -234,5 +230,3 @@ XBT_TEST_UNIT("base", test_mc_page_store, "Test adding/removing pages in the sto
 }
 
 #endif /* SIMGRID_TEST */
-
-}

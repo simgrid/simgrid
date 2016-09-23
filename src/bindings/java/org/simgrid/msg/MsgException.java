@@ -8,32 +8,16 @@
 
 package org.simgrid.msg;
 
-/**
- * This exception is an abstract class grouping all MSG-related exceptions
- *
- *  <!--
- *    DOXYGEN_NAVBAR_CHILD "HostNotFoundException"=classsimgrid_1_1msg_1_1HostNotFoundException.html
- *    DOXYGEN_NAVBAR_CHILD "JniException"=classsimgrid_1_1msg_1_1JniException.html
- *    DOXYGEN_NAVBAR_CHILD "NativeException"=classsimgrid_1_1msg_1_1NativeException.html
- *    DOXYGEN_NAVBAR_CHILD "ProcessNotFoundException"=classsimgrid_1_1msg_1_1ProcessNotFoundException.html
- *  -->
- */
+/** This exception is an abstract class grouping all MSG-related exceptions */
 public abstract class MsgException extends Exception {
 	private static final long serialVersionUID = 1L;
 
-	/**
-	 * Constructs an <code>MsgException</code> without a 
-	 * detail message. 
-	 */
+	/** Constructs an <code>MsgException</code> without a detail message. */
 	public MsgException() {
 		super();
 	}
-	/**
-	 * Constructs an <code>MsgException</code> with a detail message. 
-	 *
-	 * @param   s   the detail message.
-	 */ 
-	public MsgException(String s) {
-		super(s);
+	/** Constructs an <code>MsgException</code> with a detail message. */ 
+	public MsgException(String msg) {
+		super(msg);
 	}
 }
