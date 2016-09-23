@@ -79,6 +79,7 @@ namespace simgrid {
       : NetworkAction(model, cost, failed) {};
       ~NetworkCm02Action() override;
       void updateRemainingLazy(double now) override;
+      double oldVariableValue_;
     protected:
       double senderGap_;
     };

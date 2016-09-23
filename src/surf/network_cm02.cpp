@@ -10,7 +10,7 @@
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
-
+#include "src/xbt/heap_private.h"
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
 double sg_sender_gap = 0.0;
@@ -176,7 +176,15 @@ Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double la
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
-  NetworkCm02Action *action;
+   NetworkCm02Action *action;
+
+   for(int i=0; i<xbt_heap_size(actionHeap_);i++){
+      //This  line is bad, but there is apparently no way to cycle through the heap without modifying it
+      action = static_cast<NetworkCm02Action*> ((actionHeap_->items[i]).content);
+      //Update old variable value (dirty fix for variable changes)
+      action->oldVariableValue_=lmm_variable_getvalue(action->getVariable());
+   }
+
   while ((xbt_heap_size(actionHeap_) > 0)
          && (double_equals(xbt_heap_maxkey(actionHeap_), now, sg_surf_precision))) {
     action = static_cast<NetworkCm02Action*> (xbt_heap_pop(actionHeap_));
@@ -197,6 +205,9 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
                                         now - action->getLastUpdate());
       }
     }
+
+    //Update old variable value (dirty fix for variable changes)
+    action->oldVariableValue_=lmm_variable_getvalue(action->getVariable());
 
     // if I am wearing a latency hat
     if (action->getHat() == LATENCY) {
@@ -259,8 +270,8 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
                                             lmm_get_cnst_weight_from_var(maxminSystem_,
                                                 action->getVariable(),
                                                 i)),
-                                        action->getLastUpdate(),
-                                        now - action->getLastUpdate());
+                                        now-delta,
+                                        delta);
         }
       }
       if (!lmm_get_number_of_cnst_from_var (maxminSystem_, action->getVariable())) {
@@ -554,6 +565,29 @@ void NetworkCm02Action::updateRemainingLazy(double now)
     setState(Action::State::done);
     heapRemove(getModel()->getActionHeap());
   }
+
+  //Need to update the trace before changing lastUpdate
+  //(And this makes sense because the value of the variable will change soon)
+  if (TRACE_is_enabled()) {
+    lmm_system_t maxminSystem=getModel()->getMaxminSystem();
+    int n = lmm_get_number_of_cnst_from_var(maxminSystem, getVariable());
+
+    for (int i = 0; i < n; i++){
+        lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem, getVariable(), i);
+        NetworkCm02Link *link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
+        TRACE_surf_link_set_utilization(link->getName(),
+                                        getCategory(),
+                                        (oldVariableValue_*
+                                            lmm_get_cnst_weight_from_var(maxminSystem,
+                                                getVariable(),
+                                                i)),
+                                        lastUpdate_,
+                                        delta);
+    }
+  }
+
+  //Update old variable value (dirty fix for variable changes)
+  oldVariableValue_=lmm_variable_getvalue(getVariable());
 
   lastUpdate_ = now;
   lastValue_ = lmm_variable_getvalue(getVariable());

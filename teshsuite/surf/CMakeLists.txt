@@ -7,7 +7,7 @@ foreach(x lmm_usage surf_usage surf_usage2 trace_usage)
   set(teshsuite_src ${teshsuite_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.cpp)
 endforeach()
 
-add_executable       (maxmin_bench maxmin_bench/maxmin_bench.c)
+add_executable       (maxmin_bench maxmin_bench/maxmin_bench.cpp)
 target_link_libraries(maxmin_bench simgrid)
 set_target_properties(maxmin_bench PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/maxmin_bench)
 
