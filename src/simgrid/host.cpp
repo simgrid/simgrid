@@ -12,8 +12,6 @@
 #include "src/surf/HostImpl.hpp"
 #include "surf/surf.h" // routing_get_network_element_type FIXME:killme
 
-#include "src/simix/smx_private.hpp"
-
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
 size_t sg_host_count()
@@ -30,7 +28,7 @@ size_t sg_host_count()
  * internally).
  * \see sg_host_count()
  */
-sg_host_t *sg_host_list(void) {
+sg_host_t *sg_host_list() {
   xbt_assert(sg_host_count() > 0, "There is no host!");
   return (sg_host_t*)xbt_dynar_to_array(sg_hosts_as_dynar());
 }
@@ -55,14 +53,9 @@ sg_host_t sg_host_by_name(const char *name)
   return simgrid::s4u::Host::by_name_or_null(name);
 }
 
-sg_host_t sg_host_by_name_or_create(const char *name)
+xbt_dynar_t sg_hosts_as_dynar()
 {
-  return simgrid::s4u::Host::by_name_or_create(name);
-}
-
-xbt_dynar_t sg_hosts_as_dynar(void)
-{
-  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),NULL);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);
 
   xbt_dict_cursor_t cursor = nullptr;
   const char* name = nullptr;
@@ -98,14 +91,9 @@ void sg_host_msg_set(sg_host_t host, msg_host_priv_t smx_host) {
 }
 
 // ========== Simix layer =============
+#include "src/simix/smx_host_private.h"
 smx_host_priv_t sg_host_simix(sg_host_t host){
-  return (smx_host_priv_t) host->extension(SIMIX_HOST_LEVEL);
-}
-void sg_host_simix_set(sg_host_t host, smx_host_priv_t smx_host) {
-  host->extension_set(SIMIX_HOST_LEVEL, smx_host);
-}
-void sg_host_simix_destroy(sg_host_t host) {
-  host->extension_set(SIMIX_HOST_LEVEL, nullptr);
+  return host->extension<simgrid::simix::Host>();
 }
 
 // ========= storage related functions ============
@@ -120,28 +108,15 @@ xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
 
 // =========== user-level functions ===============
 // ================================================
-
-/** @brief Returns the total speed of a host
- */
+/** @brief Returns the total speed of a host */
 double sg_host_speed(sg_host_t host)
 {
   return host->speed();
 }
 
-double sg_host_get_available_speed(sg_host_t host){
-  return surf_host_get_available_speed(host);
-}
-/** @brief Returns the number of cores of a host
-*/
-int sg_host_core_count(sg_host_t host) {
-  return host->core_count();
-}
-
-/** @brief Returns the state of a host.
- *  @return 1 if the host is active or 0 if it has crashed.
- */
-int sg_host_is_on(sg_host_t host) {
-  return host->isOn();
+double sg_host_get_available_speed(sg_host_t host)
+{
+  return host->pimpl_cpu->getAvailableSpeed();
 }
 
 /** @brief Returns the number of power states for a host.
@@ -177,22 +152,22 @@ xbt_dict_t sg_host_get_properties(sg_host_t host) {
  *
  * \param host a host
  * \param name a property name
- * \return value of a property (or NULL if property not set)
+ * \return value of a property (or nullptr if property not set)
 */
 const char *sg_host_get_property_value(sg_host_t host, const char *name)
 {
   return (const char*) xbt_dict_get_or_null(sg_host_get_properties(host), name);
 }
 
-/** @brief Displays debugging informations about a host */
+/** @brief Displays debugging information about a host */
 void sg_host_dump(sg_host_t host)
 {
   xbt_dict_t props;
-  xbt_dict_cursor_t cursor=NULL;
+  xbt_dict_cursor_t cursor=nullptr;
   char *key,*data;
 
   XBT_INFO("Displaying host %s", sg_host_get_name(host));
-  XBT_INFO("  - speed: %.0f", sg_host_speed(host));
+  XBT_INFO("  - speed: %.0f", host->speed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
   props = sg_host_get_properties(host);
 

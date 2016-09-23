@@ -175,6 +175,8 @@ typedef struct s_setState {
   container_t container;
   type_t type;
   val_t value;
+  const char* filename;
+  int linenumber;
 }s_setState_t;
 
 typedef struct s_pushState *pushState_t;
@@ -183,6 +185,8 @@ typedef struct s_pushState {
   type_t type;
   val_t value;
   int size;
+  const char* filename;
+  int linenumber;
   void* extra;
 }s_pushState_t;
 
@@ -236,11 +240,9 @@ extern XBT_PRIVATE double TRACE_last_timestamp_to_dump;
 XBT_PRIVATE void TRACE_header(int basic, int size);
 
 /* from paje.c */
-XBT_PRIVATE void TRACE_init(void);
-XBT_PRIVATE void TRACE_finalize(void);
-XBT_PRIVATE void TRACE_paje_init(void);
-XBT_PRIVATE void TRACE_paje_start(void);
-XBT_PRIVATE void TRACE_paje_end(void);
+XBT_PRIVATE void TRACE_paje_init();
+XBT_PRIVATE void TRACE_paje_start();
+XBT_PRIVATE void TRACE_paje_end();
 XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
 XBT_PUBLIC(void) new_pajeDefineContainerType(type_t type);
 XBT_PUBLIC(void) new_pajeDefineVariableType(type_t type);
@@ -268,66 +270,66 @@ XBT_PUBLIC(void) new_pajeEndLink (double timestamp, container_t container, type_
 XBT_PUBLIC(void) new_pajeNewEvent (double timestamp, container_t container, type_t type, val_t value);
 
 /* from instr_config.c */
-XBT_PRIVATE int TRACE_needs_platform (void);
-XBT_PRIVATE int TRACE_is_enabled(void);
-XBT_PRIVATE int TRACE_platform(void);
-XBT_PRIVATE int TRACE_platform_topology(void);
-XBT_PRIVATE int TRACE_is_configured(void);
-XBT_PRIVATE int TRACE_categorized (void);
-XBT_PRIVATE int TRACE_uncategorized (void);
-XBT_PRIVATE int TRACE_msg_process_is_enabled(void);
-XBT_PRIVATE int TRACE_msg_vm_is_enabled(void);
-XBT_PRIVATE int TRACE_buffer (void);
-XBT_PRIVATE int TRACE_disable_link(void);
-XBT_PRIVATE int TRACE_disable_speed(void);
-XBT_PRIVATE int TRACE_onelink_only (void);
-XBT_PRIVATE int TRACE_disable_destroy (void);
-XBT_PRIVATE int TRACE_basic (void);
-XBT_PRIVATE int TRACE_display_sizes (void);
-XBT_PRIVATE char *TRACE_get_comment (void);
-XBT_PRIVATE char *TRACE_get_comment_file (void);
-XBT_PRIVATE int TRACE_precision (void);
-XBT_PRIVATE char *TRACE_get_filename(void);
-XBT_PRIVATE char *TRACE_get_viva_uncat_conf (void);
-XBT_PRIVATE char *TRACE_get_viva_cat_conf (void);
-XBT_PRIVATE void TRACE_generate_viva_uncat_conf (void);
-XBT_PRIVATE void TRACE_generate_viva_cat_conf (void);
-XBT_PRIVATE void instr_pause_tracing (void);
-XBT_PRIVATE void instr_resume_tracing (void);
+XBT_PRIVATE bool TRACE_needs_platform ();
+XBT_PRIVATE bool TRACE_is_enabled();
+XBT_PRIVATE bool TRACE_platform();
+XBT_PRIVATE bool TRACE_platform_topology();
+XBT_PRIVATE bool TRACE_is_configured();
+XBT_PRIVATE bool TRACE_categorized ();
+XBT_PRIVATE bool TRACE_uncategorized ();
+XBT_PRIVATE bool TRACE_msg_process_is_enabled();
+XBT_PRIVATE bool TRACE_msg_vm_is_enabled();
+XBT_PRIVATE bool TRACE_buffer ();
+XBT_PRIVATE bool TRACE_disable_link();
+XBT_PRIVATE bool TRACE_disable_speed();
+XBT_PRIVATE bool TRACE_onelink_only ();
+XBT_PRIVATE bool TRACE_disable_destroy ();
+XBT_PRIVATE bool TRACE_basic ();
+XBT_PRIVATE bool TRACE_display_sizes ();
+XBT_PRIVATE char *TRACE_get_comment ();
+XBT_PRIVATE char *TRACE_get_comment_file ();
+XBT_PRIVATE int TRACE_precision ();
+XBT_PRIVATE char *TRACE_get_filename();
+XBT_PRIVATE char *TRACE_get_viva_uncat_conf ();
+XBT_PRIVATE char *TRACE_get_viva_cat_conf ();
+XBT_PRIVATE void TRACE_generate_viva_uncat_conf ();
+XBT_PRIVATE void TRACE_generate_viva_cat_conf ();
+XBT_PRIVATE void instr_pause_tracing ();
+XBT_PRIVATE void instr_resume_tracing ();
 
 /* Public functions used in SMPI */
-XBT_PUBLIC(int) TRACE_smpi_is_enabled(void);
-XBT_PUBLIC(int) TRACE_smpi_is_grouped(void);
-XBT_PUBLIC(int) TRACE_smpi_is_computing(void);
-XBT_PUBLIC(int) TRACE_smpi_is_sleeping(void);
-XBT_PUBLIC(int) TRACE_smpi_view_internals(void);
+XBT_PUBLIC(bool) TRACE_smpi_is_enabled();
+XBT_PUBLIC(bool) TRACE_smpi_is_grouped();
+XBT_PUBLIC(bool) TRACE_smpi_is_computing();
+XBT_PUBLIC(bool) TRACE_smpi_is_sleeping();
+XBT_PUBLIC(bool) TRACE_smpi_view_internals();
 
 /* from resource_utilization.c */
 XBT_PRIVATE void TRACE_surf_host_set_utilization(const char *resource, const char *category, double value, double now,
                                      double delta);
 XBT_PRIVATE void TRACE_surf_link_set_utilization(const char *resource,const char *category, double value, double now,
                                      double delta);
-XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc(void);
+XBT_PUBLIC(void) TRACE_surf_resource_utilization_alloc();
 
 /* instr_paje.c */
 extern XBT_PRIVATE xbt_dict_t trivaNodeTypes;
 extern XBT_PRIVATE xbt_dict_t trivaEdgeTypes;
-XBT_PRIVATE long long int instr_new_paje_id (void);
-XBT_PRIVATE void PJ_container_alloc (void);
-XBT_PRIVATE void PJ_container_release (void);
+XBT_PRIVATE long long int instr_new_paje_id ();
+XBT_PRIVATE void PJ_container_alloc ();
+XBT_PRIVATE void PJ_container_release ();
 XBT_PUBLIC(container_t) PJ_container_new (const char *name, e_container_types kind, container_t father);
 XBT_PUBLIC(container_t) PJ_container_get (const char *name);
 XBT_PUBLIC(container_t) PJ_container_get_or_null (const char *name);
-XBT_PUBLIC(container_t) PJ_container_get_root (void);
+XBT_PUBLIC(container_t) PJ_container_get_root ();
 XBT_PUBLIC(void) PJ_container_set_root (container_t root);
 XBT_PUBLIC(void) PJ_container_free (container_t container);
 XBT_PUBLIC(void) PJ_container_free_all (void);
 XBT_PUBLIC(void) PJ_container_remove_from_parent (container_t container);
 
 /* instr_paje_types.c */
-XBT_PRIVATE void PJ_type_alloc (void);
-XBT_PRIVATE void PJ_type_release (void);
-XBT_PUBLIC(type_t)  PJ_type_get_root (void);
+XBT_PRIVATE void PJ_type_alloc ();
+XBT_PRIVATE void PJ_type_release ();
+XBT_PUBLIC(type_t)  PJ_type_get_root ();
 XBT_PRIVATE type_t PJ_type_container_new (const char *name, type_t father);
 XBT_PRIVATE type_t PJ_type_event_new (const char *name, type_t father);
 type_t PJ_type_link_new (const char *name, type_t father, type_t source, type_t dest);
@@ -335,7 +337,7 @@ XBT_PRIVATE XBT_PRIVATE type_t PJ_type_variable_new (const char *name, const cha
 XBT_PRIVATE type_t PJ_type_state_new (const char *name, type_t father);
 XBT_PUBLIC(type_t)  PJ_type_get (const char *name, const type_t father);
 XBT_PUBLIC(type_t)  PJ_type_get_or_null (const char *name, type_t father);
-void PJ_type_free_all (void);
+void PJ_type_free_all ();
 XBT_PRIVATE XBT_PRIVATE void PJ_type_free (type_t type);
 
 /* instr_paje_values.c */
@@ -366,9 +368,9 @@ XBT_PRIVATE void print_pajeNewEvent (paje_event_t event);
 XBT_PRIVATE void print_TIPushState(paje_event_t event);
 XBT_PRIVATE void print_TICreateContainer(paje_event_t event);
 XBT_PRIVATE void print_TIDestroyContainer(paje_event_t event);
-XBT_PRIVATE void TRACE_TI_start(void);
-XBT_PRIVATE void TRACE_TI_end(void);
-XBT_PRIVATE void TRACE_TI_init(void);
+XBT_PRIVATE void TRACE_TI_start();
+XBT_PRIVATE void TRACE_TI_end();
+XBT_PRIVATE void TRACE_TI_init();
 
 XBT_PRIVATE void print_NULL (paje_event_t event);
 XBT_PRIVATE void TRACE_paje_dump_buffer (int force);
@@ -452,9 +454,5 @@ typedef struct s_instr_extra_data {
 } s_instr_extra_data_t;
 
 SG_END_DECL()
-
-#ifdef HAVE_JEDULE
-#include "simgrid/jedule/jedule_sd_binding.h"
-#endif
 
 #endif /* INSTR_PRIVATE_H_ */

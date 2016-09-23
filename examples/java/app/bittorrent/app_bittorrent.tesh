@@ -1,0 +1,24 @@
+#! tesh
+
+! output sort 19
+! timeout 15
+
+$ java -classpath ${classpath:=.} app/bittorrent/Main ${srcdir:=.}/../platforms/cluster.xml ${srcdir:=.}/app/bittorrent/bittorrent.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [5000.046836] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...
+> [node-0.acme.org:app.bittorrent.Tracker:(1) 0.000000] [jmsg/INFO] Tracker launched.
+> [node-0.acme.org:app.bittorrent.Tracker:(1) 3000.000000] [jmsg/INFO] Tracker is leaving
+> [node-1.acme.org:app.bittorrent.Peer:(2) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 2
+> [node-1.acme.org:app.bittorrent.Peer:(2) 5000.007806] [jmsg/INFO] Here is my current status: 1111111111
+> [node-2.acme.org:app.bittorrent.Peer:(3) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 3
+> [node-2.acme.org:app.bittorrent.Peer:(3) 5000.023418] [jmsg/INFO] Here is my current status: 1111111111
+> [node-3.acme.org:app.bittorrent.Peer:(4) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 4
+> [node-3.acme.org:app.bittorrent.Peer:(4) 5000.023418] [jmsg/INFO] Here is my current status: 1111111111
+> [node-4.acme.org:app.bittorrent.Peer:(5) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 5
+> [node-4.acme.org:app.bittorrent.Peer:(5) 5000.007806] [jmsg/INFO] Here is my current status: 1111111111
+> [node-5.acme.org:app.bittorrent.Peer:(6) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 6
+> [node-5.acme.org:app.bittorrent.Peer:(6) 5000.023418] [jmsg/INFO] Here is my current status: 1111111111
+> [node-6.acme.org:app.bittorrent.Peer:(7) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 7
+> [node-6.acme.org:app.bittorrent.Peer:(7) 5000.046836] [jmsg/INFO] Here is my current status: 1111111111
+> [node-7.acme.org:app.bittorrent.Peer:(8) 0.000000] [jmsg/INFO] Hi, I'm joining the network with id 8
+> [node-7.acme.org:app.bittorrent.Peer:(8) 5000.031224] [jmsg/INFO] Here is my current status: 1111111111

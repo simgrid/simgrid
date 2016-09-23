@@ -1,4 +1,4 @@
-/* ../../../smpi_script/bin/smpirun -hostfile hostfile_send_deterministic -platform ../../platforms/cluster.xml -np 3 --cfg=smpi/send_is_detached_thresh:0 gdb\ --args\ ./send_deterministic */
+/* ../../../smpi_script/bin/smpirun -hostfile hostfile_send_deterministic -platform ../../platforms/cluster.xml -np 3 --cfg=smpi/send-is-detached-thresh:0 gdb\ --args\ ./send_deterministic */
 
 /* Copyright (c) 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -9,7 +9,6 @@
 #include <stdio.h>
 #include <mpi.h>
 #include <simgrid/modelchecker.h>
-
 
 int main(int argc, char **argv)
 {
@@ -38,7 +37,6 @@ int main(int argc, char **argv)
       MPI_Recv(&recv_buff, 1, MPI_INT, MPI_ANY_SOURCE, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
       //printf("Message received from %d\n", recv_buff);
     }
-
   }else{
     MPI_Send(&rank, 1, MPI_INT, 0, 42, MPI_COMM_WORLD);
     //printf("Sent %d to rank 0\n", rank);

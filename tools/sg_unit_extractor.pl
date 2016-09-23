@@ -5,10 +5,6 @@
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
-
-
-use strict;
-
 use strict;
 use Getopt::Long qw(GetOptions);
 
@@ -153,10 +149,10 @@ int main(int argc, char *argv[]) {
       if (!strncmp(argv[i],\"--tests=\",strlen(\"--tests=\"))) {
         char *p=strchr(argv[i],'=')+1;
         if (selection[0] == '\\0') {
-          strcpy(selection, p);
+          strncpy(selection,p,1024);
         } else {
-          strcat(selection, \",\");
-          strcat(selection, p);
+          strncat(selection, \",\",1);
+          strncat(selection, p, 1023);
         }
       } else if (!strcmp(argv[i], \"--verbose\")) {
         verbosity++;

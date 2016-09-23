@@ -26,7 +26,7 @@ void MSG_action_exit()
 /** \ingroup msg_trace_driven
  * \brief A trace loader
  *
- *  If path!=NULL, load a trace file containing actions, and execute them.
+ *  If path!=nullptr, load a trace file containing actions, and execute them.
  *  Else, assume that each process gets the path in its deployment file
  */
 msg_error_t MSG_action_trace_run(char *path)
@@ -36,10 +36,10 @@ msg_error_t MSG_action_trace_run(char *path)
   xbt_dynar_t todo;
   xbt_dict_cursor_t cursor;
 
-  xbt_action_fp=NULL;
+  xbt_action_fp=nullptr;
   if (path) {
     xbt_action_fp = fopen(path, "r");
-    xbt_assert(xbt_action_fp != NULL, "Cannot open %s: %s", path, strerror(errno));
+    xbt_assert(xbt_action_fp != nullptr, "Cannot open %s: %s", path, strerror(errno));
   }
   res = MSG_main();
 
@@ -55,7 +55,7 @@ msg_error_t MSG_action_trace_run(char *path)
   if (path)
     fclose(xbt_action_fp);
   xbt_dict_free(&xbt_action_queues);
-  xbt_action_queues = xbt_dict_new_homogeneous(NULL);
+  xbt_action_queues = xbt_dict_new_homogeneous(nullptr);
 
   return res;
 }

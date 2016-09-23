@@ -13,10 +13,9 @@ int tasks_done = 0;
 
 static int process_daemon(int argc, char *argv[])
 {
-  msg_task_t task = NULL;
   XBT_INFO("  Start daemon on %s (%f)",  MSG_host_get_name(MSG_host_self()), MSG_get_host_speed(MSG_host_self()));
   for(;;){
-    task = MSG_task_create("daemon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
+    msg_task_t task = MSG_task_create("daemon", MSG_get_host_speed(MSG_host_self()), 0, NULL);
     XBT_INFO("  Execute daemon");
     MSG_task_execute(task);
     MSG_task_destroy(task);
@@ -39,8 +38,7 @@ static int process_sleep(int argc, char *argv[])
 static int commTX(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  char mailbox[80];
-  sprintf(mailbox, "comm");
+  const char * mailbox = "comm";
   XBT_INFO("  Start TX");
   task = MSG_task_create("COMM", 0, 100000000, NULL);
   MSG_task_isend(task, mailbox);
@@ -53,8 +51,7 @@ static int commTX(int argc, char *argv[])
 static int commRX(int argc, char *argv[])
 {
   msg_task_t task = NULL;
-  char mailbox[80];
-  sprintf(mailbox, "comm");
+  const char * mailbox = "comm";
   XBT_INFO("  Start RX");
   msg_error_t error = MSG_task_receive(&(task), mailbox);
   if (error==MSG_OK) {
@@ -74,8 +71,6 @@ static int test_launcher(int argc, char *argv[])
 {
   int test = 0;
   char **argvF;
-  argvF = xbt_new(char*, 2);
-  argvF[0] = xbt_strdup("process_daemon");
   msg_host_t jupiter = MSG_host_by_name("Jupiter");
 
   test = 1;
@@ -105,7 +100,7 @@ static int test_launcher(int argc, char *argv[])
     argvF[0] = xbt_strdup("process_daemon");
     MSG_process_create_with_arguments("process_daemon", process_daemon, NULL, jupiter, 1, argvF);
     MSG_process_sleep(10);
-    XBT_INFO("  Test 2 does not crash, WTF ?!(number of Process : %d, it should be 1)", MSG_process_get_number());
+    XBT_INFO("  Test 2 does not crash as it should (number of Process : %d, it should be 1)", MSG_process_get_number());
     XBT_INFO("  Ok so let's turn on/off the node to see whether the process is correctly bound to Jupiter");
     MSG_host_on(jupiter);
     XBT_INFO("  Turn off");
@@ -217,12 +212,11 @@ int main(int argc, char *argv[])
   msg_error_t res;
 
   MSG_init(&argc, argv);
-  xbt_assert(argc > 3,"Usage: %s platform_file deployment_file test_number\n"
-            "\tExample: %s msg_platform.xml msg_deployment.xml 1\n", argv[0], argv[0]);
+  xbt_assert(argc == 3,"Usage: %s platform_file test_number\n\tExample: %s msg_platform.xml 1\n", argv[0], argv[0]);
 
   unsigned int iter;
   char *groups;
-  xbt_dynar_t s_tests = xbt_str_split(argv[3], ",");
+  xbt_dynar_t s_tests = xbt_str_split(argv[2], ",");
   int tmp_test = 0;
   tests = xbt_dynar_new(sizeof(int), NULL);
   xbt_dynar_foreach(s_tests, iter, groups) {
@@ -233,11 +227,7 @@ int main(int argc, char *argv[])
 
   MSG_create_environment(argv[1]);
 
-  MSG_function_register("test_launcher", test_launcher);
-  MSG_function_register("process_daemon", process_daemon);
-  MSG_function_register("process_sleep", process_sleep);
-
-  MSG_launch_application(argv[2]);
+  MSG_process_create("test_launcher", test_launcher, NULL, MSG_get_host_by_name("Tremblay"));
 
   res = MSG_main();
 

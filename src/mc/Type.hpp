@@ -17,7 +17,7 @@
 
 #include <dwarf.h>
 
-#include "src/mc/mc_forward.h"
+#include "src/mc/mc_forward.hpp"
 #include "src/mc/LocationList.hpp"
 
 namespace simgrid {
@@ -29,10 +29,14 @@ namespace mc {
  */
 class Member {
 public:
+  typedef int flags_type;
+  static constexpr flags_type INHERITANCE_FLAG = 1;
+  static constexpr flags_type VIRTUAL_POINTER_FLAG = 2;
+
   Member() {}
 
   /** Whether this member represent some inherited part of the object */
-  bool inheritance = false;
+  flags_type flags = 0;
 
   /** Name of the member (if any) */
   std::string name;
@@ -44,6 +48,15 @@ public:
 
   unsigned type_id = 0;
   simgrid::mc::Type* type = nullptr;
+
+  bool isInheritance() const
+  {
+    return this->flags & INHERITANCE_FLAG;
+  }
+  bool isVirtualPointer() const
+  {
+    return this->flags & VIRTUAL_POINTER_FLAG;
+  }
 
   /** Whether the member is at a fixed offset from the base address */
   bool has_offset_location() const

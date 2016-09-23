@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/ex.hpp>
+
 #include "msg_private.h"
 #include "xbt/sysdep.h"
 #include "xbt/synchro_core.h"
@@ -28,17 +30,13 @@ void MSG_sem_acquire(msg_sem_t sem) {
 
 /** @brief locks on a semaphore object up until the provided timeout expires */
 msg_error_t MSG_sem_acquire_timeout(msg_sem_t sem, double timeout) {
-  xbt_ex_t e;
   msg_error_t res = MSG_OK;
-  TRY {
+  try {
     simcall_sem_acquire_timeout(sem,timeout);
-  } CATCH(e) {
-    if (e.category == timeout_error) {
-      res = MSG_TIMEOUT;
-      xbt_ex_free(e);
-    } else {
-      RETHROW;
-    }
+  } catch(xbt_ex& e) {
+    if (e.category == timeout_error)
+      return MSG_TIMEOUT;
+    throw;
   }
   return res;
 }
@@ -48,8 +46,8 @@ void MSG_sem_release(msg_sem_t sem) {
   simcall_sem_release(sem);
 }
 
-void MSG_sem_get_capacity(msg_sem_t sem) {
-  simcall_sem_get_capacity(sem);
+int MSG_sem_get_capacity(msg_sem_t sem) {
+  return simcall_sem_get_capacity(sem);
 }
 
 void MSG_sem_destroy(msg_sem_t sem) {

@@ -14,7 +14,6 @@
 #include <mc/mc.h>
 
 #include "mc/datatypes.h"
-#include "src/mc/mc_object_info.h"
 #include "src/mc/mc_private.h"
 
 #include "src/mc/Process.hpp"
@@ -69,7 +68,7 @@ static void test_local_variable(simgrid::mc::ObjectInformation* info, const char
 
   void* frame_base = subprogram->frame_base(*cursor);
   simgrid::dwarf::Location location = simgrid::dwarf::resolve(
-    var->location_list, info, cursor, frame_base, NULL, -1);
+    var->location_list, info, cursor, frame_base, nullptr, -1);
 
   xbt_assert(location.in_memory(),
     "Expected the variable %s of function %s to be in memory",

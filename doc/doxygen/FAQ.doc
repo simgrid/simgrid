@@ -11,7 +11,7 @@ slides</a>, or to these
 <a href="http://graal.ens-lyon.fr/~alegrand/articles/Simgrid-Introduction.pdf">"obsolete" slides</a>)
 may give you some insights on what SimGrid can help you to do and what
 are its limitations. Then you definitely should read the \ref
-MSG_examples. 
+msg_examples. 
 
 If you are stuck at any point and if this FAQ cannot help you, please drop us a
 mail to the user mailing list: <simgrid-user@lists.gforge.inria.fr>.
@@ -135,19 +135,12 @@ you still don't see how to do it, please come back to us...
 
 \subsubsection faq_MIA_asynchronous I want to do asynchronous communications in MSG
 
-In the past (version <= 3.4), there was no function to perform asynchronous communications.
-It could easily be implemented by creating new process when needed though. Since version 3.5,
-we have introduced the following functions:
- - MSG_task_isend()
- - MSG_task_irecv()
- - MSG_comm_test()
- - MSG_comm_wait()
- - MSG_comm_waitall()
- - MSG_comm_waitany()
- - MSG_comm_destroy()
+You are probably looking for the following functions:
+MSG_task_isend() and MSG_task_irecv(); 
+MSG_comm_test(), MSG_comm_wait(), MSG_comm_waitall() and MSG_comm_waitany();
+MSG_comm_destroy(). 
 
-We refer you to the description of these functions for more details on their usage as well
-as to the example section on \ref MSG_ex_asynchronous_communications.
+There is even a specific example section on \ref msg_ex_asynchronous_communications.
 
 \subsubsection faq_MIA_thread_synchronization I need to synchronize my MSG processes
 
@@ -477,7 +470,7 @@ do so.
 
 \subsubsection faq_trouble_err_logcat "gcc: _simgrid_this_log_category_does_not_exist__??? undeclared (first use in this function)"
 
-This is because you are using the log mecanism, but you didn't created
+This is because you are using the log mechanism, but you didn't created
 any default category in this file. You should refer to \ref XBT_log
 for all the details, but you simply forgot to call one of
 XBT_LOG_NEW_DEFAULT_CATEGORY() or XBT_LOG_NEW_DEFAULT_SUBCATEGORY().
@@ -496,53 +489,6 @@ come after <tt>-lsimgrid</tt> on this command line.
 
 \subsection faq_trouble_errors Runtime error messages
 
-\subsubsection faq_flexml_limit "surf_parse_lex: Assertion `next limit' failed."
-
-This is because your platform file is too big for the parser.
-
-Actually, the message comes directly from FleXML, the technology on top of
-which the parser is built. FleXML has the bad idea of fetching the whole
-document in memory before parsing it. And moreover, the memory buffer size
-must be determined at compilation time.
-
-We use a value which seems big enough for our need without bloating the
-simulators footprints. But of course your mileage may vary. In this case,
-just edit src/surf/surfxml.l modify the definition of
-FLEXML_BUFFERSTACKSIZE. E.g.
-
-\verbatim
-#define FLEXML_BUFFERSTACKSIZE 1000000000
-\endverbatim
-
-Then recompile and everything should be fine, provided that your version of
-Flex is recent enough (>= 2.5.31). If not the compilation process should
-warn you.
-
-A while ago, we worked on FleXML to reduce a bit its memory consumption, but
-these issues remain. There is two things we should do:
-
-  - use a dynamic buffer instead of a static one so that the only limit
-    becomes your memory, not a stupid constant fixed at compilation time
-    (maybe not so difficult).
-  - change the parser so that it does not need to get the whole file in
-    memory before parsing
-    (seems quite difficult, but I'm a complete newbe wrt flex stuff).
-
-These are changes to FleXML itself, not SimGrid. But since we kinda hijacked
-the development of FleXML, I can grant you that any patches would be really
-welcome and quickly integrated.
-
-<b>Update:</b> A new version of FleXML (1.7) was released. Most of the work
-was done by William Dowling, who use it in his own work. The good point is
-that it now use a dynamic buffer, and that the memory usage was greatly
-improved. The downside is that William also changed some things internally,
-and it breaks the hack we devised to bypass the parser, as explained in
-\ref pf_flexml_bypassing. Indeed, this is not a classical usage of the
-parser, and Will didn't imagine that we may have used (and even documented)
-such a crude usage of FleXML. So, we now have to repair the bypassing
-functionality to use the latest FleXML version and fix the memory usage in
-SimGrid.
-
 \subsubsection faq_trouble_errors_big_fat_warning I'm told that my XML files are too old.
 
 The format of the XML platform description files is sometimes
@@ -553,9 +499,9 @@ descriptions to allow more compact descriptions.
 
 That is why the XML files are versionned using the 'version' attribute
 of the root tag. Currently, it should read:
-\verbatim
-  <platform version="2">
-\endverbatim
+@verbatim
+  <platform version="4">
+@endverbatim
 
 If your files are too old, you can use the simgrid_update_xml.pl
 script which can be found in the tools directory of the archive.
@@ -577,22 +523,6 @@ Both options are needed in order to run the SMPI process under GDB.
 
 If you don't, you really should use valgrind to debug your code, it's
 almost magic.
-
-\subsubsection faq_trouble_vg_longjmp longjmp madness in valgrind
-
-This is when valgrind starts complaining about longjmp things, just like:
-
-\verbatim ==21434== Conditional jump or move depends on uninitialised value(s)
-==21434==    at 0x420DBE5: longjmp (longjmp.c:33)
-==21434==
-==21434== Use of uninitialised value of size 4
-==21434==    at 0x420DC3A: __longjmp (__longjmp.S:48)
-\endverbatim
-
-This is the sign that you didn't used the exception mecanism well. Most
-probably, you have a <tt>return;</tt> somewhere within a <tt>TRY{}</tt>
-block. This is <b>evil</b>, and you must not do this. Did you read the section
-about \ref XBT_ex??
 
 \subsubsection faq_trouble_vg_libc Valgrind spits tons of errors about backtraces!
 
@@ -653,7 +583,7 @@ will run only one half of the true SimGrid potential.
 
 Unfortunately, we cannot debug every code written in SimGrid.  We
 furthermore believe that the framework provides ways enough
-information to debug such informations yourself. If the textual output
+information to debug such information yourself. If the textual output
 is not enough, Make sure to check the \ref faq_visualization FAQ entry to see
 how to get a graphical one.
 
@@ -662,8 +592,6 @@ you're absolutely convinced that it should not, you can ask on the
 list. Just be aware that you'll be severely punished if the mistake is
 on your side... We have plenty of FAQ entries to redact and new
 features to implement for the impenitents! ;)
-
-Using 
 
 \subsection faq_surf_network_latency I get weird timings when I play with the latencies.
 
@@ -728,106 +656,3 @@ specific at all, but it's full of good advices).
 \author Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 */
-
-******************************************************************
-*              OLD CRUFT NOT USED ANYMORE                        *
-******************************************************************
-
-
-subsection faq_crosscompile Cross-compiling a Windows DLL of SimGrid from linux
-
-At the moment, we do not distribute Windows pre-compiled version of SimGrid
-because the support for this platform is still experimental. We know that
-some parts of the GRAS environment do not work, and we think that the others
-environments (MSG and SD) have good chances to work, but we didn't test
-ourselves. This section explains how we generate the SimGrid DLL so that you
-can build it for yourself. First of all, you need to have a version more
-recent than 3.1 (ie, a SVN version as time of writting).
-
-In order to cross-compile the package to windows from linux, you need to
-install mingw32 (minimalist gnu win32). On Debian, you can do so by
-installing the packages mingw32 (compiler), mingw32-binutils (linker and
-so), mingw32-runtime.
-
-You can use the VPATH support of configure to compile at the same time for
-linux and windows without dupplicating the source nor cleaning the tree
-between each. Just run bootstrap (if you use the SVN) to run the autotools.
-Then, create a linux and a win directories. Then, type:
-\verbatim  cd linux; ../configure --srcdir=.. <usual configure flags>; make; cd ..
-cd win;  ../configure --srcdir=.. --host=i586-mingw32msvc <flags>; make; cd ..
-\endverbatim
-The trick to VPATH builds is to call configure from another directory,
-passing it an extra --srcdir argument to tell it where all the sources are.
-It will understand you want to use VPATH. Then, the trick to cross-compile
-is simply to add a --host argument specifying the target you want to build
-for. The i586-mingw32msvc string is what you have to pass to use the mingw32
-environment as distributed in Debian.
-
-After that, you can run all make targets from both directories, and test
-easily that what you change for one arch does not break the other one.
-
-It is possible that this VPATH build thing breaks from time to time in the
-SVN since it's quite fragile, but it's granted to work in any released
-version. If you experience problems, drop us a mail.
-
-Another possible source of issue is that at the moment, building the
-examples request to use the gras_stub_generator tool, which is a compiled
-program, not a script. In cross-compilation, you need to cross-execute with
-wine for example, which is not really pleasant. We are working on this, but
-in the meanwhile, simply don't build the examples in cross-compilation
-(<tt>cd src</tt> before running make).
-
-Program (cross-)compiled with mingw32 do request an extra DLL at run-time to be
-usable. For example, if you want to test your build with wine, you should do
-the following to put this library where wine looks for DLLs.
-\verbatim
-cp /usr/share/doc/mingw32-runtime/mingwm10.dll.gz ~/.wine/c/windows/system/
-gunzip ~/.wine/c/windows/system/mingwm10.dll.gz
-\endverbatim
-
-The DLL is built in src/.libs, and installed in the <i>prefix</i>/bin directory
-when you run make install.
-
-If you want to use it in a native project on windows, you need to use
-simgrid.dll and mingwm10.dll. For each DLL, you need to build .def file
-under linux (listing the defined symbols), and convert it into a .lib file
-under windows (specifying this in a way that windows compilers like). To
-generate the def files, run (under linux):
-\verbatim echo "LIBRARY libsimgrid-0.dll" > simgrid.def
-echo EXPORTS >> simgrid.def
-nm libsimgrid-0.dll | grep ' T _' | sed 's/.* T _//' >> simgrid.def
-nm libsimgrid-0.dll | grep ' D _' | sed 's/.* D _//' | sed 's/$/ DATA/' >> simgrid.def
-
-echo "LIBRARY mingwm10.dll" > mingwm10.def
-echo EXPORTS >> mingwm10.def
-nm mingwm10.dll | grep ' T _' | sed 's/.* T _//' >> mingwm10.def
-nm mingwm10.dll | grep ' D _' | sed 's/.* D _//' | sed 's/$/ DATA/' >> mingwm10.def
-\endverbatim
-
-To create the import .lib files, use the <tt>lib</tt> windows tool (from
-MSVC) the following way to produce simgrid.lib and mingwm10.lib
-\verbatim lib /def:simgrid.def
-lib /def:mingwm10.def
-\endverbatim
-
-If you happen to use Borland C Builder, the right command line is the
-following (note that you don't need any file.def to get this working).
-\verbatim implib simgrid.lib libsimgrid-0.dll
-implib mingwm10.lib mingwm10.dll
-\endverbatim
-
-Then, set the following parameters in Visual C++ 2005:
-Linker -> Input -> Additional dependencies = simgrid.lib mingwm10.lib
-
-Just in case you wonder how to generate a DLL from libtool in another
-project, we added -no-undefined to any lib*_la_LDFLAGS variables so that
-libtool accepts to generate a dynamic library under windows. Then, to make
-it true, we pass any dependencies (such as -lws2 under windows or -lpthread
-on need) on the linking line. Passing such deps is a good idea anyway so
-that they get noted in the library itself, avoiding the users to know about
-our dependencies and put them manually on their compilation line. Then we
-added the AC_LIBTOOL_WIN32_DLL macro just before AC_PROG_LIBTOOL in the
-configure.ac. It means that we exported any symbols which need to be.
-Nowadays, functions get automatically exported, so we don't need to load our
-header files with tons of __declspec(dllexport) cruft. We only need to do so
-for data, but there is no public data in SimGrid so we are good.

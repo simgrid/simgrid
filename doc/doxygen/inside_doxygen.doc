@@ -3,7 +3,7 @@
 
 \tableofcontents
 
-We use doxygen for our documentation. This tool is sometimes anoying
+We use doxygen for our documentation. This tool is sometimes annoying
 but that's the best we've found so far. Remember, we all bitch about
 doxygen, but at the end of the day, it kinda delivers what we need. So
 stop bitching about the doc or the tools, and start improving the
@@ -12,7 +12,7 @@ documentation text itself.
 Good documentation is rare and there is not much project of which we
 can get inspiration. The best exception I know is TikZ and
 latex-beamer. I'd be so happy if SimGrid documentation could follow
-the organisation (and reach half the quality) of the TikZ one. But
+the organization (and reach half the quality) of the TikZ one. But
 anyway. As they say: Documentation is like sex; when it's not good
 it's still better than nothing and when it's good it's very very good.
 
@@ -25,23 +25,23 @@ possible.
 \subsection inside_doxygen_module_create Declaring the module to doxygen
 
 First declare your sub-module in the corresponding
-(project)/doc/doxygen/module-(englobingmodule).doc Two edits are
+(project)/doc/doxygen/module-(enclosing module).doc Two edits are
 needed in this file: 
 
-@li Most of the englobing modules (xbt, msg, sd, etc) have a manually
+@li Most of the enclosing modules (xbt, msg, sd, etc) have a manually
     maintained table of contents as content of the module main page,
     at the top of the corresponding file. You want to add a reference to
-    your submodule there. For that, simply add something like the
+    your sub-module there. For that, simply add something like the
     following. The dash (-) will help building item lists. The ref
     command requests for a link to your module, that is identified
-    with the word after that (here, I used xbt_cunit as a submodule
+    with the word after that (here, I used xbt_cunit as a sub-module
     identifier.
 @verbatim
  - @ref XBT_cunit
 @endverbatim
 
 @li Create your module below in the file as follows. the first world
-after the defgroup keyword must be the submodule identifier you used
+after the defgroup keyword must be the sub-module identifier you used
 above.
 @verbatim
      /** @defgroup XBT_cunit Unit testing support */
@@ -72,7 +72,7 @@ to add something like this near the top.
 Any informative stuff is welcomed in the module introduction, on top.
 This includes examples that the users can copy/paste to fit their
 needs. If your module is too large to be nicely documented on one
-unique page, you may want to split its documentation in submodules.
+unique page, you may want to split its documentation in sub-modules.
 See dynar.h for an example of how to do so. 
 
 Make sure to only include the public declarations of your module. For
@@ -97,7 +97,7 @@ parameter (but something like "dynar: the provided dynar" is not
 considered as an informative documentation and can be omitted), and
 give any information you feel useful to the user. In particular, add
 links to any other location of the documentation that could provide
-interesting additional informations.
+interesting additional information.
 
 \section inside_doxygen_page Adding a new page to the user guide
 
@@ -119,11 +119,11 @@ something like the following:
 
 @tableofcontents
 
-blabla bla
+blah blah blah
 
 @section <short_name_of_section> <title>
 
-bliblublo
+blah blah blah
 
 @subsection <short_name_of_subsection> <title>
 

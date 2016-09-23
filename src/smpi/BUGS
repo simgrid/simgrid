@@ -6,26 +6,3 @@ ________________________________________________________________________________
   since smpicc substitutes smpi_simulated_main for the user main() declaration.
    
 ___________________________________________________________________________________________
-* MPI_Alltoallv()
-  samedi 1 août 2009, 10:12:08 (UTC+0200) - genaud
-
-  pass the test 'alltoallv.c' (from mpich2) for many number of processors but shows a segfault 
-  after TEST COMPLETE.
-
-  Program received signal SIGSEGV, Segmentation fault.
-  SIMIX_mutex_lock (mutex=0x657475) at simix/smx_synchro.c:49
-  49    if (mutex->refcount) {
-  (gdb) bt
-  #0  SIMIX_mutex_lock (mutex=0x657475) at simix/smx_synchro.c:49
-  #1  0xb7fc0cb0 in SIMIX_cond_wait (cond=0x9f5eba0, mutex=0x9f5eb78) at simix/smx_synchro.c:196
-  #2  0xb7f473a0 in smpi_sender (argc=0, argv=0x0) at smpi/smpi_sender.c:85
-  #3  0xb7fb8f71 in smx_ctx_sysv_wrapper () at simix/smx_context_sysv.c:247
-  #4  0xb7e032bb in makecontext () from /lib/tls/i686/cmov/libc.so.6
-  #5  0x00000000 in ?? ()
-  (gdb) quit
-
-
-  as soon as to -np > 8 using the plaform/hosts : 
-  ./smpirun -np 9 -platform ../../examples/msg/small_platform.xml -hostfile ../../examples/smpi/hostfile ./alltoallv
-
-___________________________________________________________________________________________

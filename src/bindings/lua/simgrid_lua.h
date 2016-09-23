@@ -25,7 +25,7 @@ int console_add_router(lua_State* L);
 int console_add_route(lua_State*);
 int console_add_ASroute(lua_State*);
 int console_AS_open(lua_State*);
-int console_AS_close(lua_State *L);
+int console_AS_seal(lua_State *L);
 int console_set_function(lua_State*);
 int console_host_set_property(lua_State*);
 }

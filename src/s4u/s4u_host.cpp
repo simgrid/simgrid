@@ -14,15 +14,14 @@
 #include "src/surf/HostImpl.hpp"
 #include "xbt/log.h"
 #include "src/msg/msg_private.h"
-#include "src/simix/smx_process_private.h"
-#include "src/simix/smx_private.hpp"
+#include "src/simix/ActorImpl.hpp"
+#include "src/simix/smx_private.h"
 #include "src/surf/cpu_interface.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
-int MSG_HOST_LEVEL;
-int SIMIX_HOST_LEVEL;
-int USER_HOST_LEVEL;
+int MSG_HOST_LEVEL = -1;
+int USER_HOST_LEVEL = -1;
 
 namespace simgrid {
 
@@ -43,6 +42,7 @@ Host::Host(const char* name)
 
 Host::~Host() {
   delete pimpl_cpu;
+  delete pimpl_netcard;
   delete mounts;
 }
 
@@ -62,24 +62,31 @@ Host* Host::by_name_or_create(const char* name)
   Host* host = by_name_or_null(name);
   if (host == nullptr) {
     host = new Host(name);
-    xbt_dict_set(host_list, name, host, NULL);
+    xbt_dict_set(host_list, name, host, nullptr);
   }
   return host;
 }
 
 Host *Host::current(){
-  smx_process_t smx_proc = SIMIX_process_self();
-  if (smx_proc == NULL)
+  smx_actor_t smx_proc = SIMIX_process_self();
+  if (smx_proc == nullptr)
     xbt_die("Cannot call Host::current() from the maestro context");
-  return SIMIX_process_get_host(smx_proc);
+  return smx_proc->host;
 }
 
 void Host::turnOn() {
-  simgrid::simix::kernel(std::bind(SIMIX_host_on, this));
+  if (isOff()) {
+    simgrid::simix::kernelImmediate([&]{
+      this->extension<simgrid::simix::Host>()->turnOn();
+      this->extension<simgrid::surf::HostImpl>()->turnOn();
+    });
+  }
 }
 
 void Host::turnOff() {
-  simgrid::simix::kernel(std::bind(SIMIX_host_off, this, SIMIX_process_self()));
+  if (isOn()) {
+    simgrid::simix::kernelImmediate(std::bind(SIMIX_host_off, this, SIMIX_process_self()));
+  }
 }
 
 bool Host::isOn() {
@@ -91,7 +98,7 @@ int Host::pstatesCount() const {
 }
 
 boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
-  if (mounts == NULL) {
+  if (mounts == nullptr) {
     mounts = new boost::unordered_map<std::string, Storage*> ();
 
     xbt_dict_t dict = this->mountedStoragesAsDict();
@@ -110,33 +117,45 @@ boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
 
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
-  return simgrid::simix::kernel([&] {
+  return simgrid::simix::kernelImmediate([&] {
     simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
     return surf_host->getProperties();
+  });
+}
+
+/** Retrieve the property value (or nullptr if not set) */
+const char*Host::property(const char*key) {
+  simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
+  return surf_host->getProperty(key);
+}
+void Host::setProperty(const char*key, const char *value){
+  simgrid::simix::kernelImmediate([&] {
+    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
+    surf_host->setProperty(key,value);
   });
 }
 
 /** Get the processes attached to the host */
 xbt_swag_t Host::processes()
 {
-  return simgrid::simix::kernel([&]() {
-    return ((smx_host_priv_t)this->extension(SIMIX_HOST_LEVEL))->process_list;
+  return simgrid::simix::kernelImmediate([&]() {
+    return this->extension<simgrid::simix::Host>()->process_list;
   });
 }
 
 /** Get the peak power of a host */
-double Host::currentPowerPeak()
+double Host::getPstateSpeedCurrent()
 {
-  return simgrid::simix::kernel([&] {
-    return this->pimpl_cpu->getCurrentPowerPeak();
+  return simgrid::simix::kernelImmediate([&] {
+    return this->pimpl_cpu->getPstateSpeedCurrent();
   });
 }
 
 /** Get one power peak (in flops/s) of a host at a given pstate */
-double Host::powerPeakAt(int pstate_index)
+double Host::getPstateSpeed(int pstate_index)
 {
-  return simgrid::simix::kernel([&] {
-    return this->pimpl_cpu->getPowerPeakAt(pstate_index);
+  return simgrid::simix::kernelImmediate([&] {
+    return this->pimpl_cpu->getPstateSpeed(pstate_index);
   });
 }
 
@@ -145,14 +164,14 @@ double Host::speed() {
   return pimpl_cpu->getSpeed(1.0);
 }
 /** @brief Returns the number of core of the processor. */
-int Host::core_count() {
-  return pimpl_cpu->getCore();
+int Host::coresCount() {
+  return pimpl_cpu->getCoreCount();
 }
 
 /** @brief Set the pstate at which the host should run */
 void Host::setPstate(int pstate_index)
 {
-  simgrid::simix::kernel(std::bind(
+  simgrid::simix::kernelImmediate(std::bind(
       &simgrid::surf::Cpu::setPState, pimpl_cpu, pstate_index
   ));
 }
@@ -164,14 +183,14 @@ int Host::pstate()
 
 void Host::parameters(vm_params_t params)
 {
-  simgrid::simix::kernel([&]() {
+  simgrid::simix::kernelImmediate([&]() {
     this->extension<simgrid::surf::HostImpl>()->getParams(params);
   });
 }
 
 void Host::setParameters(vm_params_t params)
 {
-  simgrid::simix::kernel([&]() {
+  simgrid::simix::kernelImmediate([&]() {
     this->extension<simgrid::surf::HostImpl>()->setParams(params);
   });
 }
@@ -183,7 +202,7 @@ void Host::setParameters(vm_params_t params)
  */
 xbt_dict_t Host::mountedStoragesAsDict()
 {
-  return simgrid::simix::kernel([&] {
+  return simgrid::simix::kernelImmediate([&] {
     return this->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
   });
 }
@@ -195,7 +214,7 @@ xbt_dict_t Host::mountedStoragesAsDict()
  */
 xbt_dynar_t Host::attachedStorages()
 {
-  return simgrid::simix::kernel([&] {
+  return simgrid::simix::kernelImmediate([&] {
     return this->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
   });
 }

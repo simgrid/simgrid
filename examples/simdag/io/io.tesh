@@ -1,8 +1,0 @@
-#! ./tesh
-
-$ ${bindir:=.}/io/sd_io ${srcdir:=.}/examples/platforms/storage/storage.xml 
-> [0.000000] [sd_io/INFO] Workstation 'denise' mounts 'c:'
-> [0.000000] [sd_io/INFO] Workstation 'denise' mounts '/home'
-> [0.000000] [sd_io/INFO] Workstation 'alice' mounts 'c:'
-> [0.000000] [sd_io/INFO] Workstation 'carl' mounts '/home'
-> [0.000000] [sd_io/INFO] Workstation 'bob' mounts '/home'

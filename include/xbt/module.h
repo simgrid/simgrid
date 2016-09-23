@@ -14,7 +14,6 @@
 SG_BEGIN_DECL()
 
 XBT_PUBLIC(void) xbt_init(int *argc, char **argv);
-XBT_PUBLIC(void) xbt_exit(void);
 
 SG_END_DECL()
 

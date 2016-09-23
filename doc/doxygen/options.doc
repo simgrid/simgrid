@@ -117,11 +117,10 @@ described in
     lmm_solve (experts only; check the code for more info).
 
 If you compiled SimGrid accordingly, you can use packet-level network
-simulators as network models (see \ref pls). In that case, you have
+simulators as network models (see \ref pls_ns3). In that case, you have
 two extra models, described below, and some \ref options_pls "specific
 additional configuration flags".
-  - \b NS3: Network pseudo-model using the NS3 tcp model instead of an
-    analytic model
+  - \b NS3: Network pseudo-model using the NS3 tcp model
 
 Concerning the CPU, we have only one model for now:
   - \b Cas01: Simplistic CPU model (time=size/power)
@@ -140,7 +139,8 @@ when using SimDag.
   - \b compound: Host model that is automatically chosen if
     you change the network and CPU models
   - \b ptask_L07: Host model somehow similar to Cas01+CM02 but
-    allowing parallel tasks
+    allowing "parallel tasks", that are intended to model the moldable
+    tasks of the grid scheduling literature.
 
 \subsection options_generic_plugin Plugins
 
@@ -176,16 +176,16 @@ configurations.
       now).
     - \b Full: Full update of remaining and variables. Slow but may be
       useful when debugging.
-  - items \b network/maxmin_selective_update and
-    \b cpu/maxmin_selective_update: configure whether the underlying
+  - items \b network/maxmin-selective-update and
+    \b cpu/maxmin-selective-update: configure whether the underlying
     should be lazily updated or not. It should have no impact on the
     computed timings, but should speed up the computation.
 
-It is still possible to disable the \c maxmin_selective_update feature
+It is still possible to disable the \c maxmin-selective-update feature
 because it can reveal counter-productive in very specific scenarios
 where the interaction level is high. In particular, if all your
 communication share a given backbone link, you should disable it:
-without \c maxmin_selective_update, every communications are updated
+without \c maxmin-selective-update, every communications are updated
 at each step through a simple loop over them. With that feature
 enabled, every communications will still get updated in this case
 (because of the dependency induced by the backbone), but through a
@@ -199,16 +199,10 @@ the \b maxmin/precision item (default value: 0.00001). Changing it
 may speedup the simulation by discarding very small actions, at the
 price of a reduced numerical precision.
 
-\subsection options_model_nthreads Parallel threads for model updates
+\subsection options_concurrency_limit Concurrency limit
 
-By default, Surf computes the analytical models sequentially to share their
-resources and update their actions. It is possible to run them in parallel,
-using the \b surf/nthreads item (default value: 1). If you use a
-negative or null value, the amount of available cores is automatically
-detected  and used instead.
-
-Depending on the workload of the models and their complexity, you may get a
-speedup or a slowdown because of the synchronization costs of threads.
+The maximum number of variables in a system can be tuned through
+the \b maxmin/concurrency_limit item (default value: 100). Setting a higher value can lift some limitations, such as the number of concurrent processes running on a single host.
 
 \subsection options_model_network Configuring the Network model
 
@@ -216,7 +210,7 @@ speedup or a slowdown because of the synchronization costs of threads.
 
 The analytical models need to know the maximal TCP window size to take
 the TCP congestion mechanism into account. This is set to 20000 by
-default, but can be changed using the \b network/TCP_gamma item.
+default, but can be changed using the \b network/TCP-gamma item.
 
 On linux, this value can be retrieved using the following
 commands. Both give a set of values, and you should use the last one,
@@ -247,7 +241,7 @@ InfiniBand network behavior can be modeled through 3 parameters, as explained in
 These factors can be changed through the following option:
 
 \verbatim
-smpi/IB_penalty_factors:"βe;βs;γs"
+smpi/IB-penalty-factors:"βe;βs;γs"
 \endverbatim
 
 By default SMPI uses factors computed on the Stampede Supercomputer at TACC, with optimal
@@ -284,7 +278,7 @@ initialization are done in the simulator.
 (this configuration item is experimental and may change or disapear)
 
 It is possible to specify a timing gap between consecutive emission on
-the same network card through the \b network/sender_gap item. This
+the same network card through the \b network/sender-gap item. This
 is still under investigation as of writting, and the default value is
 to wait 10 microseconds (1e-5 seconds) between emissions.
 
@@ -295,7 +289,7 @@ to wait 10 microseconds (1e-5 seconds) between emissions.
 It is possible to specify that messages below a certain size will be sent
 as soon as the call to MPI_Send is issued, without waiting for the
 correspondant receive. This threshold can be configured through the
-\b smpi/async_small_thresh item. The default value is 0. This behavior can also be
+\b smpi/async-small-thresh item. The default value is 0. This behavior can also be
 manually set for MSG mailboxes, by setting the receiving mode of the mailbox
 with a call to \ref MSG_mailbox_set_async . For MSG, all messages sent to this
 mailbox will have this behavior, so consider using two mailboxes if needed.
@@ -317,6 +311,15 @@ When using NS3, the only existing item is \b ns3/TcpModel,
 corresponding to the ns3::TcpL4Protocol::SocketType configuration item
 in NS3. The only valid values (enforced on the SimGrid side) are
 'NewReno' or 'Reno' or 'Tahoe'.
+
+\subsection options_model_storage Configuring the Storage model
+
+\subsubsection option_model_storage_maxfd Maximum amount of file descriptors per host
+
+Each host maintains a fixed-size array of its file descriptors. You
+can change its size (1024 by default) through the \b
+storage/max_file_descriptors item to either enlarge it if your
+application requires it or to reduce it to save memory space.
 
 \section options_modelchecking Configuring the Model-Checking
 
@@ -402,9 +405,9 @@ This only works in safety mode.
 
 This options is disabled by default.
 
-\subsection options_modelchecking_dot_output model-check/dot_output, Dot output
+\subsection options_modelchecking_dot_output model-check/dot-output, Dot output
 
-If set, the \b model-check/dot_output configuration item is the name of a file
+If set, the \b model-check/dot-output configuration item is the name of a file
 in which to write a dot file of the path leading the found property (safety or
 liveness violation) as well as the cycle for liveness properties. This dot file
 can then fed to the graphviz dot tool to generate an corresponding graphical
@@ -412,7 +415,7 @@ representation.
 
 \subsection options_modelchecking_max_depth model-check/max_depth, Depth limit
 
-The \b model-checker/max_depth can set the maximum depth of the exploration
+The \b model-checker/max-depth can set the maximum depth of the exploration
 graph of the model-checker. If this limit is reached, a logging message is
 sent and the results might not be exact.
 
@@ -426,8 +429,8 @@ set to \b yes, the model-checker will explore timeouts of `wait` operations.
 
 \subsection options_modelchecking_comm_determinism Communication determinism
 
-The \b model-check/communications_determinism and
-\b model-check/send_determinism items can be used to select the communication
+The \b model-check/communications-determinism and
+\b model-check/send-determinism items can be used to select the communication
 determinism mode of the model-checker which checks determinism properties of
 the communications of an application.
 
@@ -439,7 +442,7 @@ reach GiB ou Tib of memory. However, for many workloads, the memory does not
 change much between different snapshots and taking a complete copy of each
 snapshot is a waste of memory.
 
-The \b model-check/sparse_checkpoint option item can be set to \b yes in order
+The \b model-check/sparse-checkpoint option item can be set to \b yes in order
 to avoid making a complete copy of each snapshot: instead, each snapshot will be
 decomposed in blocks which will be stored separately.
 If multiple snapshots share the same block (or if the same block
@@ -465,7 +468,7 @@ really meaningful: you should expect the contribution of the memory
 consumption of the snapshots to be \f$ \mbox{number of processes}
 \times \mbox{stack size} \times \mbox{number of states} \f$.
 
-The \b model-check/sparse_checkpoint can be used to reduce the memory
+The \b model-check/sparse-checkpoint can be used to reduce the memory
 consumption by trying to share memory between the different snapshots.
 
 When compiled against the model checker, the stacks are not
@@ -553,7 +556,7 @@ to the most effient:
    pthreads or windows native threads)
  - \b ucontext: fast factory using System V contexts (or a portability
    layer of our own on top of Windows fibers)
- - \b raw: amazingly fast factory using a context switching mecanism
+ - \b raw: amazingly fast factory using a context switching mechanism
    of our own, directly implemented in assembly (only available for x86
    and amd64 platforms for now)
  - \b boost: This uses the [context implementation](http://www.boost.org/doc/libs/1_59_0/libs/context/doc/html/index.html)
@@ -577,7 +580,7 @@ rather disturbing: this leads to stack overflow (overwriting other
 stacks), leading to segfaults with corrupted stack traces.
 
 If you want to push the scalability limits of your code, you might
-want to reduce the \b contexts/stack_size item. Its default value
+want to reduce the \b contexts/stack-size item. Its default value
 is 8192 (in KiB), while our Chord simulation works with stacks as small
 as 16 KiB, for example. For the thread factory, the default value
 is the one of the system, if it is too large/small, it has to be set
@@ -612,7 +615,7 @@ the amount of cores auto-detected).
 Even if you asked several worker threads using the previous option,
 you can request to start the parallel execution (and pay the
 associated synchronization costs) only if the potential parallelism is
-large enough. For that, set the \b contexts/parallel_threshold
+large enough. For that, set the \b contexts/parallel-threshold
 item to the minimal amount of user contexts needed to start the
 parallel execution. In any given simulation round, if that amount is
 not reached, the contexts will be run sequentially directly by the
@@ -636,7 +639,7 @@ which value is either:
 
 \section options_tracing Configuring the tracing subsystem
 
-The \ref tracing "tracing subsystem" can be configured in several
+The \ref outcomes_vizu "tracing subsystem" can be configured in several
 different ways depending on the nature of the simulator (MSG, SimDag,
 SMPI) and the kind of traces that need to be obtained. See the \ref
 tracing_tracing_options "Tracing Configuration Options subsection" to
@@ -683,7 +686,7 @@ reproduce an experiment. You have two ways to do that:
 
 - Add the contents of a textual file on top of the trace file as comment:
 \verbatim
---cfg=tracing/comment_file:my_file_with_additional_information.txt
+--cfg=tracing/comment-file:my_file_with_additional_information.txt
 \endverbatim
 
 Please, use these two parameters (for comments) to make reproducible
@@ -702,7 +705,7 @@ doing. This option shows a backtrace of the other process.
 Enable this option by adding
 
 \verbatim
---cfg=msg/debug_multiple_use:on
+--cfg=msg/debug-multiple-use:on
 \endverbatim
 
 \section options_smpi Configuring SMPI
@@ -720,27 +723,26 @@ say that if you have a large computation between a \c MPI_Recv() and a
 code, and create an execution task within the simulator to take this
 into account. For that, the actual duration is measured on the host
 machine and then scaled to the power of the corresponding simulated
-machine. The variable \b smpi/running_power allows to specify the
-computational power of the host machine (in flop/s) to use when
+machine. The variable \b smpi/host-speed allows to specify the
+computational speed of the host machine (in flop/s) to use when
 scaling the execution times. It defaults to 20000, but you really want
 to update it to get accurate simulation results.
 
 When the code is constituted of numerous consecutive MPI calls, the
 previous mechanism feeds the simulation kernel with numerous tiny
-computations. The \b smpi/cpu_threshold item becomes handy when this
+computations. The \b smpi/cpu-threshold item becomes handy when this
 impacts badly the simulation performance. It specifies a threshold (in
 seconds) below which the execution chunks are not reported to the
 simulation kernel (default value: 1e-6).
 
-
 \note
-    The option smpi/cpu_threshold ignores any computation time spent
+    The option smpi/cpu-threshold ignores any computation time spent
     below this threshold. SMPI does not consider the \a amount of these
     computations; there is no offset for this. Hence, by using a
     value that is too low, you may end up with unreliable simulation
     results.
 
- In some cases, however, one may wish to disable simulation of
+In some cases, however, one may wish to disable simulation of
 application computation. This is the case when SMPI is used not to
 simulate an MPI applications, but instead an MPI code that performs
 "live replay" of another MPI app (e.g., ScalaTrace's replay tool,
@@ -752,17 +754,48 @@ being replayed/simulated. At the moment, these computation events can
 be simulated using SMPI by calling internal smpi_execute*() functions.
 
 To disable the benchmarking/simulation of computation in the simulated
-application, the variable \b smpi/simulate_computation should be set to no.
-Equivalently, setting \b smpi/cpu_threshold to -1 also ignores all
-computation.
+application, the variable \b smpi/simulate-computation should be set to no.
 
 \note
     This option just ignores the timings in your simulation; it still executes
     the computations itself. If you want to stop SMPI from doing that,
-    you should check the SMPI_SAMPLE macros, documented in the chapter
+    you should check the SMPI_SAMPLE macros, documented in the section
     \ref SMPI_adapting_speed.
 
-\subsection options_model_smpi_bw_factor smpi/bw_factor: Bandwidth factors
+Solution                           | Computations actually executed? | Computations simulated ?
+---------------------------------- | ------------------------------- | ------------------------
+--cfg=smpi/simulate-computation:no | Yes                             | No, never
+--cfg=smpi/cpu-threshold:42        | Yes, in all cases               | Only if it lasts more than 42 seconds
+SMPI_SAMPLE() macro                | Only once per loop nest (see @ref SMPI_adapting_speed "documentation") | Always
+
+\subsection options_model_smpi_adj_file smpi/comp-adjustment-file: Slow-down or speed-up parts of your code.
+
+This option allows you to pass a file that contains two columns: The first column
+defines the section that will be subject to a speedup; the second column is the speedup.
+
+For instance:
+
+\verbatim
+"start:stop","ratio"
+"exchange_1.f:30:exchange_1.f:130",1.18244559422142
+\endverbatim
+
+The first line is the header - you must include it.
+The following line means that the code between two consecutive MPI calls on
+line 30 in exchange_1.f and line 130 in exchange_1.f should receive a speedup
+of 1.18244559422142. The value for the second column is therefore a speedup, if it is
+larger than 1 and a slow-down if it is smaller than 1. Nothing will be changed if it is
+equal to 1.
+
+Of course, you can set any arbitrary filenames you want (so the start and end don't have to be
+in the same file), but be aware that this mechanism only supports @em consecutive calls!
+
+\note
+    Please note that you must pass the \b -trace-call-location flag to smpicc
+    or smpiff, respectively! This flag activates some macro definitions in our
+    mpi.h / mpi.f files that help with obtaining the call location.
+
+\subsection options_model_smpi_bw_factor smpi/bw-factor: Bandwidth factors
 
 The possible throughput of network links is often dependent on the
 message sizes, as protocols may adapt to different message sizes. With
@@ -784,7 +817,7 @@ Here, MAX_BANDWIDTH denotes the bandwidth of the link.
     1. http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
     2. http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
 
-\subsection options_smpi_timing smpi/display_timing: Reporting simulation time
+\subsection options_smpi_timing smpi/display-timing: Reporting simulation time
 
 \b Default: 0 (false)
 
@@ -792,17 +825,17 @@ Most of the time, you run MPI code with SMPI to compute the time it
 would take to run it on a platform. But since the
 code is run through the \c smpirun script, you don't have any control
 on the launcher code, making it difficult to report the simulated time
-when the simulation ends. If you set the \b smpi/display_timing item
+when the simulation ends. If you set the \b smpi/display-timing item
 to 1, \c smpirun will display this information when the simulation ends. \verbatim
 Simulation time: 1e3 seconds.
 \endverbatim
 
-\subsection options_model_smpi_lat_factor smpi/lat_factor: Latency factors
+\subsection options_model_smpi_lat_factor smpi/lat-factor: Latency factors
 
 The motivation and syntax for this option is identical to the motivation/syntax
-of smpi/bw_factor, see \ref options_model_smpi_bw_factor for details.
+of smpi/bw-factor, see \ref options_model_smpi_bw_factor for details.
 
-There is an important difference, though: While smpi/bw_factor \a reduces the
+There is an important difference, though: While smpi/bw-factor \a reduces the
 actual bandwidth (i.e., values between 0 and 1 are valid), latency factors
 increase the latency, i.e., values larger than or equal to 1 are valid here.
 
@@ -818,7 +851,31 @@ This is the default value:
     1. http://simgrid.gforge.inria.fr/contrib/smpi-calibration-doc.html
     2. http://simgrid.gforge.inria.fr/contrib/smpi-saturation-doc.html
 
-\subsection options_smpi_global smpi/privatize_global_variables: Automatic privatization of global variables
+\subsection options_smpi_papi_events smpi/papi-events: Trace hardware counters with PAPI
+
+\warning 
+    This option is experimental and will be subject to change.
+    This feature currently requires superuser privileges, as registers are queried.
+    Only use this feature with code you trust! Call smpirun for instance via
+        smpirun -wrapper "sudo " <your-parameters>
+    or run sudo sh -c "echo 0 > /proc/sys/kernel/perf_event_paranoid"
+    In the later case, sudo will not be required.
+
+\note
+    This option is only available when SimGrid was compiled with PAPI support.
+
+This option takes the names of PAPI counters and adds their respective values
+to the trace files. (See Section \ref tracing_tracing_options.)
+
+It is planned to make this feature available on a per-process (or per-thread?) basis.
+The first draft, however, just implements a "global" (i.e., for all processes) set
+of counters, the "default" set.
+
+\verbatim
+--cfg=smpi/papi-events:"default:PAPI_L3_LDM:PAPI_L2_LDM"
+\endverbatim
+
+\subsection options_smpi_global smpi/privatize-global-variables: Automatic privatization of global variables
 
 MPI executables are meant to be executed in separated processes, but SMPI is
 executed in only one process. Global variables from executables will be placed
@@ -844,9 +901,12 @@ To avoid this, several options are possible :
   linking is advised (but not with the simgrid library, to avoid replicating
   its own global variables).
 
-  To use this runtime automatic switching, the variable \b smpi/privatize_global_variables
+  To use this runtime automatic switching, the variable \b smpi/privatize-global-variables
   should be set to yes
 
+\warning
+  This configuration option cannot be set in your platform file. You can only
+  pass it as an argument to smpirun.
 
 
 \subsection options_model_smpi_detached Simulating MPI detached send
@@ -855,12 +915,12 @@ This threshold specifies the size in bytes under which the send will return
 immediately. This is different from the threshold detailed in  \ref options_model_network_asyncsend
 because the message is not effectively sent when the send is posted. SMPI still waits for the
 correspondant receive to be posted to perform the communication operation. This threshold can be set
-by changing the \b smpi/send_is_detached item. The default value is 65536.
+by changing the \b smpi/send-is-detached-thresh item. The default value is 65536.
 
 \subsection options_model_smpi_collectives Simulating MPI collective algorithms
 
 SMPI implements more than 100 different algorithms for MPI collective communication, to accurately
-simulate the behavior of most of the existing MPI libraries. The \b smpi/coll_selector item can be used
+simulate the behavior of most of the existing MPI libraries. The \b smpi/coll-selector item can be used
  to use the decision logic of either OpenMPI or MPICH libraries (values: ompi or mpich, by default SMPI
 uses naive version of collective operations). Each collective operation can be manually selected with a
 \b smpi/collective_name:algo_name. Available algorithms are listed in \ref SMPI_collective_algorithms .
@@ -870,6 +930,13 @@ uses naive version of collective operations). Each collective operation can be m
 \b Default value: 0.0001
 
 The behavior and motivation for this configuration option is identical with \a smpi/test, see
+Section \ref options_model_smpi_test for details.
+
+\subsection options_model_smpi_init smpi/init: Inject constant times for calls to MPI_Init
+
+\b Default value: 0
+
+The behavior for this configuration option is identical with \a smpi/test, see
 Section \ref options_model_smpi_test for details.
 
 \subsection options_model_smpi_ois smpi/ois: Inject constant times for asynchronous send operations
@@ -955,7 +1022,7 @@ Here is an example:
     to sleep increases linearly with the number of previously failed testk.
 
 
-\subsection options_model_smpi_use_shared_malloc smpi/use_shared_malloc: Use shared memory
+\subsection options_model_smpi_use_shared_malloc smpi/use-shared-malloc: Factorize malloc()s
 
 \b Default: 1
 
@@ -994,7 +1061,7 @@ option to force a call to MPI_Wtime to advance the time as well.
 The C / C++ standard contains a function called \b [atexit](http://www.cplusplus.com/reference/cstdlib/atexit/).
 atexit registers callbacks, which are called just before the program terminates.
 
-By setting the configuration option clean_atexit to 1 (true), a callback
+By setting the configuration option clean-atexit to 1 (true), a callback
 is registered and will clean up some variables and terminate/cleanup the tracing.
 
 TODO: Add when this should be used.
@@ -1018,13 +1085,16 @@ when \b verbose-exit is set to 0 (it is to 1 by default).
 
 \subsection options_exception_cutpath Truncate local path from exception backtrace
 
-<b>This configuration option is an internal option and should normally not be used
-by the user.</b> It is used to remove the path from the backtrace
-shown when an exception is thrown; if we didn't remove this part, the tests
-testing the exception parts of simgrid would fail on most machines, as we are
-currently comparing output. Clearly, the path used on different machines are almost
-guaranteed to be different and hence, the output would
-mismatch, causing the test to fail.
+\verbatim
+--cfg=exceptions/cutpath:1
+\endverbatim
+
+This configuration option is used to remove the path from the
+backtrace shown when an exception is thrown. This is mainly useful for
+the tests: the full file path makes the tests not reproducible, and
+thus failing as we are currently comparing output. Clearly, the path
+used on different machines are almost guaranteed to be different and
+hence, the output would mismatch, causing the test to fail.
 
 \section options_log Logging Configuration
 
@@ -1043,9 +1113,9 @@ tasks. If it is not possible you might use ucontext instead.
 A stack guard page is usually used which prevents the stack from
 overflowing on other parts of the memory. However this might have a
 performance impact if a huge number of processes is created.  The
-option \b contexts:guard_size is the number of stack guard pages
+option \b contexts:guard-size is the number of stack guard pages
 used. By setting it to 0, no guard pages will be used: in this case,
-you should avoid using small stacks (\b stack_size) as the stack will
+you should avoid using small stacks (\b stack-size) as the stack will
 silently overflow on other parts of the memory.
 
 \section options_index Index of all existing configuration options
@@ -1059,16 +1129,16 @@ silently overflow on other parts of the memory.
   \b Please \b note: You can also pass the command-line option "--help" and
      "--help-cfg" to an executable that uses simgrid.
 
-- \c clean_atexit: \ref options_generic_clean_atexit
+- \c clean-atexit: \ref options_generic_clean_atexit
 
 - \c contexts/factory: \ref options_virt_factory
-- \c contexts/guard_size: \ref options_virt_parallel
+- \c contexts/guard-size: \ref options_virt_parallel
 - \c contexts/nthreads: \ref options_virt_parallel
 - \c contexts/parallel_threshold: \ref options_virt_parallel
-- \c contexts/stack_size: \ref options_virt_stacksize
+- \c contexts/stack-size: \ref options_virt_stacksize
 - \c contexts/synchro: \ref options_virt_parallel
 
-- \c cpu/maxmin_selective_update: \ref options_model_optim
+- \c cpu/maxmin-selective-update: \ref options_model_optim
 - \c cpu/model: \ref options_model_select
 - \c cpu/optim: \ref options_model_optim
 
@@ -1078,61 +1148,64 @@ silently overflow on other parts of the memory.
 
 - \c maxmin/precision: \ref options_model_precision
 
-- \c msg/debug_multiple_use: \ref options_msg_debug_multiple_use
+- \c msg/debug-multiple-use: \ref options_msg_debug_multiple_use
 
 - \c model-check: \ref options_modelchecking
 - \c model-check/checkpoint: \ref options_modelchecking_steps
-- \c model-check/communications_determinism: \ref options_modelchecking_comm_determinism
-- \c model-check/send_determinism: \ref options_modelchecking_comm_determinism
-- \c model-check/dot_output: \ref options_modelchecking_dot_output
+- \c model-check/communications-determinism: \ref options_modelchecking_comm_determinism
+- \c model-check/dot-output: \ref options_modelchecking_dot_output
 - \c model-check/hash: \ref options_modelchecking_hash
 - \c model-check/property: \ref options_modelchecking_liveness
-- \c model-check/max_depth: \ref options_modelchecking_max_depth
+- \c model-check/max-depth: \ref options_modelchecking_max_depth
 - \c model-check/record: \ref options_modelchecking_recordreplay
 - \c model-check/reduction: \ref options_modelchecking_reduction
 - \c model-check/replay: \ref options_modelchecking_recordreplay
-- \c model-check/send_determinism: \ref options_modelchecking_sparse_checkpoint
-- \c model-check/sparse_checkpoint: \ref options_modelchecking_sparse_checkpoint
+- \c model-check/send-determinism: \ref options_modelchecking_comm_determinism
+- \c model-check/sparse-checkpoint: \ref options_modelchecking_sparse_checkpoint
 - \c model-check/termination: \ref options_modelchecking_termination
 - \c model-check/timeout: \ref options_modelchecking_timeout
 - \c model-check/visited: \ref options_modelchecking_visited
 
-- \c network/bandwidth_factor: \ref options_model_network_coefs
+- \c network/bandwidth-factor: \ref options_model_network_coefs
 - \c network/coordinates: \ref options_model_network_coord
 - \c network/crosstraffic: \ref options_model_network_crosstraffic
-- \c network/latency_factor: \ref options_model_network_coefs
-- \c network/maxmin_selective_update: \ref options_model_optim
+- \c network/latency-factor: \ref options_model_network_coefs
+- \c network/maxmin-selective-update: \ref options_model_optim
 - \c network/model: \ref options_model_select
 - \c network/optim: \ref options_model_optim
 - \c network/sender_gap: \ref options_model_network_sendergap
-- \c network/TCP_gamma: \ref options_model_network_gamma
-- \c network/weight_S: \ref options_model_network_coefs
+- \c network/TCP-gamma: \ref options_model_network_gamma
+- \c network/weight-S: \ref options_model_network_coefs
 
 - \c ns3/TcpModel: \ref options_pls
 - \c path: \ref options_generic_path
 - \c plugin: \ref options_generic_plugin
 
-- \c surf/nthreads: \ref options_model_nthreads
+- \c storage/max_file_descriptors: \ref option_model_storage_maxfd
+
 - \c surf/precision: \ref options_model_precision
 
 - \c <b>For collective operations of SMPI, please refer to Section \ref options_index_smpi_coll</b>
-- \c smpi/async_small_thresh: \ref options_model_network_asyncsend
-- \c smpi/bw_factor: \ref options_model_smpi_bw_factor
-- \c smpi/coll_selector: \ref options_model_smpi_collectives
-- \c smpi/cpu_threshold: \ref options_smpi_bench
-- \c smpi/display_timing: \ref options_smpi_timing
-- \c smpi/lat_factor: \ref options_model_smpi_lat_factor
-- \c smpi/IB_penalty_factors: \ref options_model_network_coefs
+- \c smpi/async-small-thresh: \ref options_model_network_asyncsend
+- \c smpi/bw-factor: \ref options_model_smpi_bw_factor
+- \c smpi/coll-selector: \ref options_model_smpi_collectives
+- \c smpi/comp-adjustment-file: \ref options_model_smpi_adj_file
+- \c smpi/cpu-threshold: \ref options_smpi_bench
+- \c smpi/display-timing: \ref options_smpi_timing
+- \c smpi/host-speed: \ref options_smpi_bench
+- \c smpi/IB-penalty-factors: \ref options_model_network_coefs
 - \c smpi/iprobe: \ref options_model_smpi_iprobe
+- \c smpi/init: \ref options_model_smpi_init
+- \c smpi/lat-factor: \ref options_model_smpi_lat_factor
 - \c smpi/ois: \ref options_model_smpi_ois
 - \c smpi/or: \ref options_model_smpi_or
 - \c smpi/os: \ref options_model_smpi_os
-- \c smpi/privatize_global_variables: \ref options_smpi_global
-- \c smpi/running_power: \ref options_smpi_bench
-- \c smpi/send_is_detached_thresh: \ref options_model_smpi_detached
-- \c smpi/simulate_computation: \ref options_smpi_bench
+- \c smpi/papi-events: \ref options_smpi_papi_events
+- \c smpi/privatize-global-variables: \ref options_smpi_global
+- \c smpi/send-is-detached-thresh: \ref options_model_smpi_detached
+- \c smpi/simulate-computation: \ref options_smpi_bench
 - \c smpi/test: \ref options_model_smpi_test
-- \c smpi/use_shared_malloc: \ref options_model_smpi_use_shared_malloc
+- \c smpi/use-shared-malloc: \ref options_model_smpi_use_shared_malloc
 - \c smpi/wtime: \ref options_model_smpi_wtime
 
 - \c <b>Tracing configuration options can be found in Section \ref tracing_tracing_options</b>.

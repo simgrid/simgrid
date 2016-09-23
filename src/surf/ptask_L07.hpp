@@ -5,11 +5,8 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include <cstdlib>
-
 #include <vector>
-
 #include <xbt/base.h>
-
 #include "src/surf/HostImpl.hpp"
 
 #ifndef HOST_L07_HPP_
@@ -45,8 +42,7 @@ public:
   double next_occuring_event(double now) override;
   void updateActionsState(double now, double delta) override;
   Action *executeParallelTask(int host_nb, sg_host_t *host_list,
-                double *flops_amount, double *bytes_amount,
-                double rate) override;
+                              double *flops_amount, double *bytes_amount, double rate) override;
 };
 
 class CpuL07Model : public CpuModel {
@@ -54,9 +50,7 @@ public:
   CpuL07Model(HostL07Model *hmodel,lmm_system_t sys);
   ~CpuL07Model();
 
-  Cpu *createCpu(simgrid::s4u::Host *host,  xbt_dynar_t speedPeakList,
-                          tmgr_trace_t speedTrace, int core,
-                          tmgr_trace_t state_trace) override;
+  Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
   HostL07Model *p_hostModel;
 };
 
@@ -64,16 +58,11 @@ class NetworkL07Model : public NetworkModel {
 public:
   NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys);
   ~NetworkL07Model();
-  Link* createLink(const char *name,
-      double bw_initial,
-      tmgr_trace_t bw_trace,
-      double lat_initial,
-      tmgr_trace_t lat_trace,
-      tmgr_trace_t state_trace,
+  Link* createLink(const char *name, double bandwidth, double latency,
       e_surf_link_sharing_policy_t policy,
       xbt_dict_t properties) override;
 
-  Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
+  Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
   bool next_occuring_event_isIdempotent() override {return true;}
 
   HostL07Model *p_hostModel;
@@ -85,8 +74,7 @@ public:
 
 class CpuL07 : public Cpu {
 public:
-  CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, xbt_dynar_t speedPeakList,
-     tmgr_trace_t power_trace, int core, tmgr_trace_t state_trace);
+  CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, std::vector<double> * speedPerPstate, int core);
   ~CpuL07();
   bool isUsed() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;
@@ -99,12 +87,7 @@ protected:
 class LinkL07 : public Link {
 public:
   LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props,
-      double bw_initial,
-          tmgr_trace_t bw_trace,
-          double lat_initial,
-          tmgr_trace_t lat_trace,
-          tmgr_trace_t state_trace,
-          e_surf_link_sharing_policy_t policy);
+      double bandwidth, double latency, e_surf_link_sharing_policy_t policy);
   ~LinkL07(){ };
   bool isUsed() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;
@@ -118,24 +101,17 @@ public:
 class L07Action : public CpuAction {
   friend Action *CpuL07::execution_start(double size);
   friend Action *CpuL07::sleep(double duration);
-  friend Action *HostL07Model::executeParallelTask(int host_nb,
-                                                   sg_host_t*host_list,
-                                                   double *flops_amount,
-                                                   double *bytes_amount,
-                                                   double rate);
+  friend Action *HostL07Model::executeParallelTask(int host_nb, sg_host_t*host_list,
+                                                   double *flops_amount, double *bytes_amount, double rate);
 public:
-  L07Action(Model *model, int host_nb,
-          sg_host_t*host_list,
-          double *flops_amount,
-       double *bytes_amount,
-          double rate);
+  L07Action(Model *model, int host_nb, sg_host_t *host_list, double *flops_amount, double *bytes_amount, double rate);
  ~L07Action();
 
   void updateBound();
 
   int unref() override;
 
-  std::vector<NetCard*> * p_netcardList = new std::vector<NetCard*>();
+  std::vector<kernel::routing::NetCard*> * p_netcardList = new std::vector<kernel::routing::NetCard*>();
   double *p_computationAmount;
   double *p_communicationAmount;
   double m_latency;

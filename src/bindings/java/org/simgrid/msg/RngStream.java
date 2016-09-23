@@ -41,13 +41,9 @@ public class RngStream {
 	 * The natively implemented method to create a C RngStream object.
 	 */
 	private native void create(String name);
-	@Override
-	protected void finalize() {
-		try {
-			nativeFinalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+
+	protected void finalize() throws Throwable{
+		nativeFinalize();
 	}
 	/**
 	 * Release the C RngStream object
@@ -61,7 +57,7 @@ public class RngStream {
 	 * must all be less than m1 = 4294967087, and not all 0; and the last 3 values must all be less
 	 * than m2 = 4294944443, and not all 0. Returns false for invalid seeds, and true otherwise.
 	 */
-	public static native boolean setPackageSeed(int seed[]);
+	public static native boolean setPackageSeed(int[] seed);
 	/**
 	 * Reinitializes the stream g to its initial state: Cg and Bg are set to Ig .
 	 */
@@ -87,7 +83,7 @@ public class RngStream {
 	 * the initial seeds of the streams are no longer spaced Z values apart. We discourage the use of
 	 * this procedure. Returns false for invalid seeds, and true otherwise.
 	 */
-	public native boolean setSeed(int seed[]);
+	public native boolean setSeed(int[] seed);
 	/**
 	 * Advances the state of the stream by k values, without modifying the states of other streams (as
 	 * in RngStream_SetSeed), nor the values of Bg and Ig associated with this stream. If e &gt; 0, then

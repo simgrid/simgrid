@@ -39,20 +39,16 @@ namespace simgrid {
     class NetworkCm02Model : public NetworkModel {
     public:
       NetworkCm02Model();
-      ~NetworkCm02Model() { }
-      Link* createLink(const char *name,
-          double bw_initial, tmgr_trace_t bw_trace,
-          double lat_initial, tmgr_trace_t lat_trace,
-          tmgr_trace_t state_trace,
-          e_surf_link_sharing_policy_t policy,
+      ~NetworkCm02Model();
+      Link* createLink(const char *name, double bandwidth,  double latency, e_surf_link_sharing_policy_t policy,
           xbt_dict_t properties) override;
       void updateActionsStateLazy(double now, double delta) override;
       void updateActionsStateFull(double now, double delta) override;
-      Action *communicate(NetCard *src, NetCard *dst, double size, double rate) override;
-      bool next_occuring_event_isIdempotent() override {return true;}
-      virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
+      Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
+      bool next_occuring_event_isIdempotent() override;
+      virtual void gapAppend(double size, const Link* link, NetworkAction* action);
     protected:
-      bool m_haveGap = false;
+      bool haveGap_ = false;
     };
 
     /************
@@ -62,17 +58,13 @@ namespace simgrid {
     class NetworkCm02Link : public Link {
     public:
       NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
-          lmm_system_t system,
-          double constraint_value,
-          tmgr_trace_t state_trace,
-          double bw_peak, tmgr_trace_t bw_trace,
-          double lat_initial, tmgr_trace_t lat_trace,
-          e_surf_link_sharing_policy_t policy);
-
+          double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
+          lmm_system_t system);
+      ~NetworkCm02Link() override;
       void apply_event(tmgr_trace_iterator_t event, double value) override;
       void updateBandwidth(double value) override;
       void updateLatency(double value) override;
-      virtual void gapAppend(double /*size*/, const Link* /*link*/, NetworkAction * /*action*/) {};
+      virtual void gapAppend(double size, const Link* link, NetworkAction* action);
     };
 
 
@@ -80,15 +72,15 @@ namespace simgrid {
      * Action *
      **********/
     class NetworkCm02Action : public NetworkAction {
-      friend Action *NetworkCm02Model::communicate(NetCard *src, NetCard *dst, double size, double rate);
+      friend Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate);
       friend NetworkSmpiModel;
-
     public:
       NetworkCm02Action(Model *model, double cost, bool failed)
-    : NetworkAction(model, cost, failed) {};
-      void updateRemainingLazy(double now);
+      : NetworkAction(model, cost, failed) {};
+      ~NetworkCm02Action() override;
+      void updateRemainingLazy(double now) override;
     protected:
-      double m_senderGap;
+      double senderGap_;
     };
 
   }

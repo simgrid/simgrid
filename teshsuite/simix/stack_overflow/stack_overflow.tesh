@@ -1,5 +1,5 @@
 ! expect signal SIGSEGV
-$ ${bindir:=.}/stack_overflow --cfg=contexts/stack_size:96 stack_overflow_platform.xml stack_overflow.xml
+$ ${bindir:=.}/stack_overflow --cfg=contexts/stack-size:96 ${srcdir:=.}/examples/platforms/small_platform.xml
 > [Tremblay:master:(0) 0.000000] [test/INFO] Launching our nice bugged recursive function...
 > Access violation detected.
 > This can result from a programming error in your code or, although less likely,
@@ -7,4 +7,4 @@ $ ${bindir:=.}/stack_overflow --cfg=contexts/stack_size:96 stack_overflow_platfo
 > in third-party libraries.  Failing hardware can sometimes generate such errors
 > too.
 > Finally, if nothing of the above applies, this can result from a stack overflow.
-> Try to increase stack size with --cfg=contexts/stack_size (current size is 96 KiB).
+> Try to increase stack size with --cfg=contexts/stack-size (current size is 96 KiB).

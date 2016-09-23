@@ -1,19 +1,79 @@
-SimGrid (3.13) UNRELEASED; urgency=low
+SimGrid (3.14) UNRELEASED; urgency=low
 
- The Easter Trim Release.
+ Documentation
+ * The whole documentation was reworked and reorganized. There is
+   still many room for improvement here, but we're on it.
 
- Backwards Compatibility breaks
-   - Some command line options were renamed for consistency sake:
-     - model-check/sparse-checkpoint -> model-check/sparse_checkpoint
-     - smpi/async_small_thres        -> smpi/async_small_thresh
-     - smpi/send_is_detached_thres   -> smpi/send_is_detached_thresh 
+ Infrastructure
+ * We now need python3 for our testing infrastructure.
 
+ SMPI
+ * Privatization is now activated by default in smpirun
+   You can turn it off with -no-privatize if something goes wrong.
+
+ * Call-location tracing for SMPI.
+   You can add the exact location (filename / linenumber) of an MPI call to 
+   your trace files and slow down or speed up the simulation between two 
+   consecutive calls by using an adjustment file (see the documentation).
+
+ * Fixed computation of timings for MPI_Send, MPI_Recv & possibly also others
+   We've found a bug that prevented SMPI to account for MPI_Send, MPI_Recv
+   and others (in some cases) in a correct way. That is, the smpi/os, smpi/or
+   values were ignored in some cases. The timings of these functions can now
+   be significantly different.
+
+ * smpi/cpu-threshold:-1 should become smpi/simulate-computation:no
+   smpi/running-power    is renamed to smpi/host-speed
+
+ Dropped functions and features
+ * msg_mailbox_t and associated functions. Use s4u::Mailbox instead.
+   - MSG_mailbox_is_empty() -> Mailbox::empty()
+   - MSG_mailbox_front() -> Mailbox::front()
+   - MSG_mailbox_get_by_alias() -> simgrid::s4u::Mailbox::byName(name)
+   - MSG_mailbox_get_task_ext() -> MSG_task_receive_ext()
+   - MSG_mailbox_get_task_ext_bounded -> MSG_task_receive_ext_bounded
+ * Task affinity. Its intended behavior (that was very badly tested
+   and probably not really working) was deceiving what most users
+   would have hoped here. 
+
+ XML:
+ * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and
+   EiBps, EBps, Eibps, Ebps for bandwidth. 
+   They may become useful to some lucky ones.
+   
+ Java:
+ * New functions: msg.Comm.waitAll() and msg.Comm.waitAny()
+ * ex/app_tokenring: new example, very similar to the MSG Token Ring
+ * ex/async_waitAll: new example, on asynchronous communications
+
+ -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
+SimGrid (3.13) stable; urgency=low
+
+ The Half Release, a.k.a. the Zealous Easter Trim.
+ 
+ - We removed half of the lines, that were mostly experimental cruft.
+   v3.12 lasted 286000 lines of code, v3.13 is only 142000 lines
+   (not counting blanks and comments -- according to openhub.net)
+ - The internals are now compiled in C++ (and will soon be clean C++)
+ - We removed 75 klines of XML, 12 klines of Java, 5 klines of cmake, 
+   59 klines of C, etc. We added only 29 klines of C++ in replacement.
+   
+ * Backwards Compatibility breaks
    - Removed Lua simulation bindings (switch to C or Java for that).
      Lua can still be used to describe platforms
    - Removed Java kernel plug-ins.
      Will be reintroduced after the ongoing major internals reorg.
+   - In MSG
+      - the following functions were removed.
+        They were too specific and should be reimplemented in a generic
+        way, with filter function.
+          - MSG_task_listen_from_host
+          - MSG_mailbox_get_count_host_waiting_tasks
+          - MSG_mailbox_put_with_timeout was removed. 
+            Please use MSG_task_send_with_timeout instead.
    - In SimDag 
-      - the SD_application_reinit function was removed. It was a noop for a while. 
+      - the SD_application_reinit function was removed. It has been a noop for a while. 
       - The ACCESS_MODE of SD_workstation has been removed. This feature was not really usable and should soon be 
         replaced by a more flexible mechanism.
       - The following functions thus do not exist anymore
@@ -23,6 +83,23 @@ SimGrid (3.13) UNRELEASED; urgency=low
       - Basic estimation functions have been removed but can easily be replaced
         - SD_route_get_communication_time => SG_route_get_latency() + amount / SD_route_get_bandwidth()
         - SD_workstation_get_computation_time => amount / sg_host_speed()
+   - In Java
+      - VM.setBound(int load) is now VM.setBound(double bound) to meet the MSG semantics. 
+        Use VM.getSpeed()*load/100 for the legacy behavior.
+   - In CMake
+      - option enable_tracing was removed. It was not doing anything for a while.
+   - In the ModelChecker:
+      - the model-checker now ptraces the model-checked process which means
+        you cannot use a debugger on the latter anymore (we might make this
+        optional in the feature);
+      - removed soft-dirty page tracking;
+      - remove model-checked side snapshot management,
+        MC_snapshot() and MC_compare_snapshot();
+      - keep the MC_cut() function as a stub (it was not really working
+        in the previous release).
+
+ Options:
+ * All options are consistently in kebab-case. Old names are kept as alias.
 
  XML platforms:
  * Switch to platform v4 format.
@@ -31,6 +108,9 @@ SimGrid (3.13) UNRELEASED; urgency=low
    - In <trace_connect>, attribute kind="POWER" is now kind="SPEED".
    - In <host> and <link>, attributes availability and state are gone.
      It was redundent with state and availability traces, and with peak values.
+   - In <cluster>, attributes availability_file and state_file are gone.
+     It was too complex and unused.
+   - Kill <gpu>. Was not doing anything.
    - The DOCTYPE points to the right URL:
      http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd
      (the file at this address now documents the changelog since its v1)
@@ -53,6 +133,7 @@ SimGrid (3.13) UNRELEASED; urgency=low
    MSG_host_* and SD_workstation_* are #define to the sg_host_* ones
 
  MSG
+ * The examples were completely reorganized (in C and Java), for your browsing pleasure.
  * Kill all deprecated functions (the ones you had when declaring MSG_DEPRECATED). 
    They were deprecated since a few years, and probably did not even compile anymore.
 
@@ -64,16 +145,18 @@ SimGrid (3.13) UNRELEASED; urgency=low
    include/simgrid/simdag.h
 
  Simix
- * simgrid::simix::kernel() is the closure callback. It ensures that
+ * simgrid::simix::kernelImmediate() is the closure callback. It ensures that
     the lambda or closure passed as a parameter will run in kernel mode.
-   Every callbacks should be rewritten to that interface at some point.
-   
+   All the callback functions should be rewritten to that interface at some point.
+
  Surf
  * Reorganizing and cleaning the internals all around the place.
 
  SMPI
  * Remove old default barrier/bcast buggy algorithms (see #18407)
  * Various bug fixes to handle more codes
+ * Remove the need for the --foreground option of smpirun (it is still
+   accepted for backward compatibility).
 
  XBT
  * Kill the setset data container: MC don't use it anymore.
@@ -85,9 +168,17 @@ SimGrid (3.13) UNRELEASED; urgency=low
  * New functions:
    - xbt_dynar_sort_strings(), when the content is char*
    - xbt_str_parse_int / xbt_str_parse_double, wrapping strtol/strtod
-     They throw exceptions on invalid input.
+     They throw exceptions on invalid input;
+ * C++ support for declaring CLI flags (simgrid::config::Flag);
+ * class for abstracting different signal backends (simgrid::xbt::signal).
+   with no external dependencies (we need very simple signals).
+
+ MC
+ * refactoring and cleanup of the code;
+ * ongoing process to cleanly separate the model-checking algorithms
+   from the code model-checking support.
  
- -- $date Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+ -- Wed Apr 27 21:00:53 CEST 2016 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.12) stable; urgency=low
 
@@ -648,6 +739,30 @@ SimGrid (3.8) stable; urgency=low
 
  -- Thu Oct 25 17:30:06 CEST 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
+SimGrid-java (3.8.1) stable; urgency=low
+
+ * New module: org.simgrid.trace.Trace (SimGrid trace bindings)
+   Warning: all methods are visible, but only some of them are
+   implemented so far. Check the source (src/jtrace.c)
+   for further information.
+ * New module: org.simgrid.msg.File (SimGrid File management functions)
+ * New Module: org.simgrid.msg.VM (SimGrid interface to mimick IAAS clouds)
+ * Change the meaning of Process.restart: now restart the process from
+   the begining, like MSG_process_restart in C.
+ * Add Process.setAutoRestart: handling of process restart when failed
+   host comes back.
+ * Add Process.getProperty, Host.getProperty, Host.getProperty: allows
+   you to retrieve the properties of the processes/hosts
+ * Deprecate Msg.clean(): you can just forget about it now.
+ * New function Process.getCount(), that only works when compiling
+   with the not yet released version 3.9 of the C library.
+
+ * New context factory based on Coroutines. It mandates a modified JVM
+   but then, the simulations run about five times faster, and there is
+   no limit to the amount of processes (beside of the available memory).
+
+ -- 2012-12-04 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 SimGrid (3.7.1) stable; urgency=low
 
  MSG:
@@ -678,6 +793,38 @@ SimGrid (3.7.1) stable; urgency=low
  feature, any help would be really welcome.
 
  -- Thu Jun 7 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
+
+SimGrid-java (3.7.1) stable; urgency=low
+
+ The "Java aint got to be bloated and slow" release
+
+ Major cleanups:
+ * Various internal cleanups and performance improvement
+   Simulations are expected to run up to twice faster or so
+ * Make Process.kill(process) an instance method, not a static one
+ * User processes are not java.lang.Thread subclasses.
+   This breaks the compatibility (sorry), but previous API was
+   brain-dead, making it impossible to have non-trivial
+   initializations in the process constructor.
+ * Require a full constructor per Process sub-class.
+   Kinda breaks the compatibility (sorry), but this allows a much more
+   efficient way to launch the processes at simulation startup.
+ * Do not embeed our version of semaphores, java 1.5 can be considered
+   as sufficiently prevalent for us to not dupplicate its features.
+ * Lot of bug fixes
+
+ Extend the API:
+ * Add examples for almost every part of the API
+   We spotted and fixed a lot of bugs in the process
+
+ * New module: asynchronous communication API
+ * New function: Process.sleep()
+   It takes milliseconds as argument, just as java.lang.Thread.sleep()
+ * New module: org.simgrid.msg.Mutex (SimGrid mutexes)
+ * New module: org.simgrid.msg.RngStream (RngStreams random generators)
+
+ -- 2012-06-12 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.7) stable; urgency=low
 
@@ -790,7 +937,7 @@ SimGrid (3.7) stable; urgency=low
   XBT:
   * Logs:
     - Add new runtime parameters --help-logs and --help-log-categories
-      to display informations about supported logging parameters and
+      to display information about supported logging parameters and
       categories.
     - Old deprecated parameters --{gras,surf,msg,simix,xbt}-log=...
       don't exists anymore.
@@ -823,6 +970,7 @@ SimGrid (3.7) stable; urgency=low
       Not enabling it at runtime is not enough, disable it in cmake.
 
  -- Tue May 15 11:30:19 UTC 2012 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
 
 SimGrid (3.6.2) stable; urgency=low
 
@@ -878,6 +1026,13 @@ SimGrid (3.6.1) stable; urgency=low
  * New macro: CATCH_ANONYMOUS, which is like CATCH(e) but without argument.
 
  -- Mon Jun 27 13:59:03 CEST 2011 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
+
+SimGrid-java (3.6) unstable; urgency=low
+
+ * Initial release.
+ * Split of every thing from simgrid v3.5 into a separate package.
+
+ -- 2011-10-05 Da SimGrid team <simgrid-devel@lists.gforge.inria.fr>
 
 SimGrid (3.6) stable; urgency=medium
 
@@ -1456,7 +1611,7 @@ SimGrid (3.3.4) stable; urgency=low
 
  SIMIX:
  * New SIMIX network module. Provides:
-   - Mailbox: rendez-vous mecanism to find with who you want to speak
+   - Mailbox: rendez-vous mechanism to find with who you want to speak
    - Synchronous send/recv: easier and hopefully faster since the
      logic is handled in the maestro process directly now
    - Asynchronous send/recv: you dreamt of it? It's here now
@@ -1931,12 +2086,12 @@ SimGrid (3.2) stable; urgency=high
      (just like the main() function)
 
   GRAS new features and improvements:
-  * New module mecanism where user code can use per process globals [Mt]
+  * New module mechanism where user code can use per process globals [Mt]
     This is similar to gras_userdata_*() functions, but for libraries. It
       factorize some code developped over and over in the examples and AMOK.
     It has still to be documented and used (only amok/peermanagement is
       converted for now).
-  * Fix a vicious bug in the TCP buffering mecanism which leaded to message
+  * Fix a vicious bug in the TCP buffering mechanism which leaded to message
     loss when they were small enough to fit into the buffer and sent quickly
     enough so that they can all get received in one shoot.
   * gras_datadesc_by_name and gras_msgtype_by_name: now raise an exception
@@ -1974,7 +2129,7 @@ SimGrid (3.2) stable; urgency=high
 
   XBT:
   * When running manually src/testall, you select specific units [Mt]
-    testall is the result of our cunit mecanism, and should replace all
+    testall is the result of our cunit mechanism, and should replace all
     the scripty thingy around since bash don't run easily on billware.
 
   * A mallocator system has been added. [Christophe Thiery]
@@ -2001,7 +2156,7 @@ SimGrid (3.2) stable; urgency=high
          . Lesson 3: Passing arguments to the processes (in SG)
          . Lesson 4: Attaching callbacks to messages
          . Lesson 5: Using globals in processes
-         . Lesson 6: Logging informations properly
+         . Lesson 6: Logging information properly
          . Lesson 7: Using internal timers
          . Lesson 8: Handling errors through exceptions
          . Lesson 9: Exchanging simple data
@@ -2060,7 +2215,7 @@ SimGrid (3.1) stable; urgency=high
     is up or down. [AL]
 
   GRAS:
-  * New! a real RPC mecanism, as it ought to be since too long. [MQ]
+  * New! a real RPC mechanism, as it ought to be since too long. [MQ]
       Exception occurring on server-side are propagated back to client (!).
 
     API CHANGE: the callback changed their prototype. Change:
@@ -2192,7 +2347,7 @@ SimGrid (3.0.1) stable; urgency=low
      - Don't use it for receive since we send data sizes and data on the
        same stream, so we wouldn't be able to chain large amount of chunks
        before having to flush the stuff to read the size.
-  * Rework the transport plugin mecanism to simplify it and reduce the
+  * Rework the transport plugin mechanism to simplify it and reduce the
     amount of pointer dereferencement when searching for the right function
     to use.
 
@@ -2223,7 +2378,7 @@ SimGrid (2.96) unstable; urgency=low
 
   XBT:
   * New! Exception handling with setjmp or such (code from OSSP ex) [MQ]
-    This deprecates the xbt_error_t mecanisms.
+    This deprecates the xbt_error_t mechanisms.
     It modifies (simplifies) all XBT and GRAS API.
     MSG API keeps unchanged (exceptions raised by XBT are catched from
      within MSG and masked with existing error handling facilities)
@@ -2349,7 +2504,7 @@ SimGrid (2.94) unstable; urgency=low
   * Add xbt_os_time(). As the rest of xbt/portability, this is not public
     for users. Instead, each programming environment (GRAS, MSG,...) use it
     when needed to provide such a feature to users.
-    Don't shortcut the mecanism or you will also shortcut the virtualization
+    Don't shortcut the mechanism or you will also shortcut the virtualization
     you need on the simulator.
 
   >>>Martin<<<
@@ -2372,7 +2527,7 @@ SimGrid (2.94) unstable; urgency=low
   * Rename gras_get_my_fqdn to gras_os_myname and implement it in the simulator
     RL would imply a DNS resolver, which is *hard* to do in a portable way
     (and therefore delayed).
-  * Implement a real timer mecanism and use it in timing macros. This allows
+  * Implement a real timer mechanism and use it in timing macros. This allows
     to avoid rounding errors and get a 0.000005 sec precision in timing
     macros. While I was at it, various cleanups:
      - allow to declare more than one timed section per file (fix a stupid bug)
@@ -2802,7 +2957,7 @@ SimGrid (2.90) unstable; urgency=low
 
 2004-07-13 Martin Quinson
   version 0.1
-  - No major issue in previous version => change versionning schema
+  - No major issue in previous version => change versioning schema
   - Re-enable little64 convertion test now that Abdou kindly regenerated the
     corresponding dataset.
 

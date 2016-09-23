@@ -1,77 +1,86 @@
-/* Copyright (c) 2010-2014. The SimGrid Team.
+/* Copyright (c) 2010-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
+#include "simgrid/jedule/jedule_events.hpp"
+#include "simgrid/jedule/jedule_platform.hpp"
+#include "simgrid/jedule/jedule.hpp"
+#include "simgrid/s4u/As.hpp"
 
-#include "xbt/dict.h"
-#include "xbt/dynar.h"
 #include "xbt/asserts.h"
 
-#include "simgrid/jedule/jedule_events.h"
-#include "simgrid/jedule/jedule_platform.h"
+#if HAVE_JEDULE
+namespace simgrid{
+namespace jedule{
 
-#ifdef HAVE_JEDULE
+Event::Event(std::string name, double start_time, double end_time, std::string type)
+  : name(name), start_time(start_time), end_time(end_time), type(type)
+{
+  this->resource_subsets = new std::vector<jed_subset_t>();
+}
 
-void jed_event_add_resources(jed_event_t event, xbt_dynar_t host_selection) {
-  xbt_dynar_t resource_subset_list;
-  jed_res_subset_t res_set;
-  unsigned int i;
+Event::~Event()
+{
+  if (!this->resource_subsets->empty()){
+    for (auto subset: *this->resource_subsets)
+      delete subset;
+    delete this->resource_subsets;
+  }
+}
 
-  resource_subset_list = xbt_dynar_new(sizeof(jed_res_subset_t), NULL);
+void Event::addResources(std::vector<sg_host_t> *host_selection)
+{
+  get_resource_selection_by_hosts(this->resource_subsets, host_selection);
+}
 
-  jed_simgrid_get_resource_selection_by_hosts(resource_subset_list, host_selection);
-  xbt_dynar_foreach(resource_subset_list, i, res_set)  {
-    xbt_dynar_push(event->resource_subsets, &res_set);
+void Event::addCharacteristic(char *characteristic)
+{
+  xbt_assert( characteristic != nullptr );
+  this->characteristics_list.push_back(characteristic);
+}
+
+void Event::addInfo(char* key, char *value) {
+  xbt_assert((key != nullptr) && value != nullptr);
+  this->info_map.insert({key, value});
+}
+
+void Event::print(FILE *jed_file)
+{
+  fprintf(jed_file, "    <event>\n");
+  fprintf(jed_file, "      <prop key=\"name\" value=\"%s\" />\n", this->name.c_str());
+  fprintf(jed_file, "      <prop key=\"start\" value=\"%g\" />\n", this->start_time);
+  fprintf(jed_file, "      <prop key=\"end\" value=\"%g\" />\n", this->end_time);
+  fprintf(jed_file, "      <prop key=\"type\" value=\"%s\" />\n", this->type.c_str());
+
+  xbt_assert(!this->resource_subsets->  empty());
+  fprintf(jed_file, "      <res_util>\n");
+  for (auto subset: *this->resource_subsets) {
+    fprintf(jed_file, "        <select resources=\"");
+    fprintf(jed_file, "%s", subset->parent->getHierarchyAsString().c_str());
+    fprintf(jed_file, ".[%d-%d]", subset->start_idx, subset->start_idx + subset->nres-1);
+    fprintf(jed_file, "\" />\n");
+  }
+  fprintf(jed_file, "      </res_util>\n");
+
+  if (!this->characteristics_list.empty()){
+    fprintf(jed_file, "      <characteristics>\n");
+    for (auto ch: this->characteristics_list)
+      fprintf(jed_file, "          <characteristic name=\"%s\" />\n", ch);
+    fprintf(jed_file, "      </characteristics>\n");
   }
 
-  xbt_dynar_free(&resource_subset_list);
+  if (!this->info_map.empty()){
+    fprintf(jed_file, "      <info>\n");
+    for (auto elm: this->info_map)
+      fprintf(jed_file, "        <prop key=\"%s\" value=\"%s\" />\n",elm.first,elm.second);
+    fprintf(jed_file, "      </info>\n");
+  }
+
+  fprintf(jed_file, "    </event>\n");
 }
 
-void jed_event_add_characteristic(jed_event_t event, char *characteristic) {
-  xbt_assert( characteristic != NULL );
-  xbt_dynar_push(event->characteristics_list, &characteristic);
 }
-
-void jed_event_add_info(jed_event_t event, char *key, char *value) {
-  char *val_cp;
-
-  xbt_assert(key != NULL);
-  xbt_assert(value != NULL);
-
-  val_cp = strdup(value);
-  xbt_dict_set(event->info_hash, key, val_cp, NULL);
-}
-
-void create_jed_event(jed_event_t *event, char *name, double start_time,
-    double end_time, const char *type) {
-
-  *event = xbt_new0(s_jed_event_t,1);
-  (*event)->name = xbt_strdup(name);
-
-  (*event)->start_time = start_time;
-  (*event)->end_time = end_time;
-
-  (*event)->type = xbt_strdup(type);
-
-  (*event)->resource_subsets = xbt_dynar_new(sizeof(jed_res_subset_t), xbt_free_ref);
-  (*event)->characteristics_list = xbt_dynar_new(sizeof(char*), NULL);
-  (*event)->info_hash = xbt_dict_new_homogeneous(NULL);
-}
-
-void jed_event_free(jed_event_t event) {
-  free(event->name);
-  free(event->type);
-
-  xbt_dynar_free(&event->resource_subsets);
-
-  xbt_dynar_free(&event->characteristics_list);
-  xbt_dict_free(&event->info_hash);
-
-  free(event);
 }
 #endif

@@ -242,7 +242,7 @@ int MTestReturnValue( int errors )
  * from the tests.
  * MTestSleep( seconds )
  */
-#ifdef HAVE_WINDOWS_H
+#ifdef _WIN32
 #include <windows.h>
 void MTestSleep( int sec )
 {
@@ -546,14 +546,13 @@ static void *MTestTypeIndexedInitRecv( MTestDatatype *mtype )
 
 static void *MTestTypeIndexedFree( MTestDatatype *mtype )
 {
-    if (mtype->buf) {
-	free( mtype->buf );
+    if (mtype->buf) 
+      free( mtype->buf );
 	free( mtype->displs );
 	free( mtype->index );
 	mtype->buf    = 0;
 	mtype->displs = 0;
 	mtype->index  = 0;
-    }
     return 0;
 }
 

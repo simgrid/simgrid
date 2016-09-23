@@ -7,65 +7,158 @@
 #ifndef SIMGRID_MC_STATE_H
 #define SIMGRID_MC_STATE_H
 
+#include <list>
+#include <memory>
+
 #include <xbt/base.h>
 #include <xbt/dynar.h>
 
 #include <simgrid_config.h>
 #include "src/simix/smx_private.h"
+#include "src/kernel/activity/SynchroIo.hpp"
+#include "src/kernel/activity/SynchroComm.hpp"
+#include "src/kernel/activity/SynchroRaw.hpp"
+#include "src/kernel/activity/SynchroSleep.hpp"
+#include "src/kernel/activity/SynchroExec.hpp"
 #include "src/mc/mc_snapshot.h"
+#include "src/mc/mc_record.h"
+#include "src/mc/Transition.hpp"
 
-SG_BEGIN_DECL()
+namespace simgrid {
+namespace mc {
 
-extern XBT_PRIVATE mc_global_t initial_global_state;
+enum class PatternCommunicationType {
+  none = 0,
+  send = 1,
+  receive = 2,
+};
 
-/* Possible exploration status of a process in a state */
-typedef enum {
-  MC_NOT_INTERLEAVE=0,      /* Do not interleave (do not execute) */
-  MC_INTERLEAVE,            /* Interleave the process (one or more request) */
-  MC_MORE_INTERLEAVE,       /* Interleave twice the process (for mc_random simcall) */
-  MC_DONE                   /* Already interleaved */
-} e_mc_process_state_t;
+struct PatternCommunication {
+  int num = 0;
+  smx_activity_t comm_addr;
+  PatternCommunicationType type = PatternCommunicationType::send;
+  unsigned long src_proc = 0;
+  unsigned long dst_proc = 0;
+  const char *src_host = nullptr;
+  const char *dst_host = nullptr;
+  std::string rdv;
+  std::vector<char> data;
+  int tag = 0;
+  int index = 0;
+
+  PatternCommunication()
+  {
+    std::memset(&comm_addr, 0, sizeof(comm_addr));
+  }
+
+  PatternCommunication dup() const
+  {
+    simgrid::mc::PatternCommunication res;
+    // num?
+    res.comm_addr = this->comm_addr;
+    res.type = this->type;
+    // src_proc?
+    // dst_proc?
+    res.dst_proc = this->dst_proc;
+    res.dst_host = this->dst_host;
+    res.rdv = this->rdv;
+    res.data = this->data;
+    // tag?
+    res.index = this->index;
+    return res;
+  }
+
+};
 
 /* On every state, each process has an entry of the following type */
-typedef struct mc_procstate{
-  e_mc_process_state_t state;       /* Exploration control information */
-  unsigned int interleave_count;    /* Number of times that the process was
-                                       interleaved */
-} s_mc_procstate_t, *mc_procstate_t;
+class ProcessState {
+  /* Possible exploration status of a process in a state */
+  enum class InterleavingType {
+    /** We do not have to execute this process transitions */
+    disabled = 0,
+    /** We still have to execute (some of) this process transitions */
+    interleave,
+    /** We have already executed this process transitions */
+    done,
+  };
 
-/* An exploration state.
- *
- *  The `executed_state` is sometimes transformed into another `internal_req`.
- *  For example WAITANY is transformes into a WAIT and TESTANY into TEST.
- *  See `MC_state_set_executed_request()`.
+  /** Exploration control information */
+  InterleavingType state = InterleavingType::disabled;
+public:
+
+  /** Number of times that the process was interleaved */
+  // TODO, make this private
+  unsigned int interleave_count = 0;
+
+  bool isDisabled() const
+  {
+    return this->state == InterleavingType::disabled;
+  }
+  bool isDone() const
+  {
+    return this->state == InterleavingType::done;
+  }
+  bool isToInterleave() const
+  {
+    return this->state == InterleavingType::interleave;
+  }
+  void interleave()
+  {
+    this->state = InterleavingType::interleave;
+    this->interleave_count = 0;
+  }
+  void setDone()
+  {
+    this->state = InterleavingType::done;
+  }
+};
+
+/* A node in the exploration graph (kind-of)
  */
-typedef struct XBT_PRIVATE mc_state {
-  unsigned long max_pid;            /* Maximum pid at state's creation time */
-  mc_procstate_t proc_status;       /* State's exploration status by process */
-  s_smx_synchro_t internal_comm;     /* To be referenced by the internal_req */
-  s_smx_simcall_t internal_req;         /* Internal translation of request */
-  s_smx_simcall_t executed_req;         /* The executed request of the state */
-  int req_num;                      /* The request number (in the case of a
-                                       multi-request like waitany ) */
-  mc_snapshot_t system_state;      /* Snapshot of system state */
-  int num;
-  int in_visited_states;
-  // comm determinism verification (xbt_dynar_t<xbt_dynar_t<mc_comm_pattern_t>):
-  xbt_dynar_t incomplete_comm_pattern;
-  xbt_dynar_t index_comm; // comm determinism verification
-} s_mc_state_t, *mc_state_t;
+struct XBT_PRIVATE State {
 
-XBT_PRIVATE mc_state_t MC_state_new(void);
-XBT_PRIVATE void MC_state_delete(mc_state_t state, int free_snapshot);
-XBT_PRIVATE void MC_state_interleave_process(mc_state_t state, smx_process_t process);
-XBT_PRIVATE unsigned int MC_state_interleave_size(mc_state_t state);
-XBT_PRIVATE int MC_state_process_is_done(mc_state_t state, smx_process_t process);
-XBT_PRIVATE void MC_state_set_executed_request(mc_state_t state, smx_simcall_t req, int value);
-XBT_PRIVATE smx_simcall_t MC_state_get_executed_request(mc_state_t state, int *value);
-XBT_PRIVATE smx_simcall_t MC_state_get_internal_request(mc_state_t state);
-XBT_PRIVATE smx_simcall_t MC_state_get_request(mc_state_t state, int *value);
-XBT_PRIVATE void MC_state_remove_interleave_process(mc_state_t state, smx_process_t process);
+  /** Sequential state number (used for debugging) */
+  int num = 0;
 
-SG_END_DECL()
+  /** State's exploration status by process */
+  std::vector<ProcessState> processStates;
+
+  Transition transition;
+
+  /** The simcall which was executed */
+  s_smx_simcall_t executed_req;
+
+  /* Internal translation of the simcall
+   *
+   * SIMCALL_COMM_TESTANY is translated to a SIMCALL_COMM_TEST
+   * and SIMCALL_COMM_WAITANY to a SIMCALL_COMM_WAIT.  
+   */
+  s_smx_simcall_t internal_req;
+
+  /* Can be used as a copy of the remote synchro object */
+  simgrid::mc::Remote<simgrid::kernel::activity::Comm> internal_comm;
+
+  /** Snapshot of system state (if needed) */
+  std::shared_ptr<simgrid::mc::Snapshot> system_state;
+
+  // For CommunicationDeterminismChecker
+  std::vector<std::vector<simgrid::mc::PatternCommunication>> incomplete_comm_pattern;
+  std::vector<unsigned> communicationIndices;
+
+  State();
+
+  std::size_t interleaveSize() const;
+  void interleave(smx_actor_t process)
+  {
+    this->processStates[process->pid].interleave();
+  }
+  Transition getTransition() const;
+};
+
+}
+}
+
+XBT_PRIVATE simgrid::mc::State* MC_state_new(unsigned long state_number);
+XBT_PRIVATE smx_simcall_t MC_state_get_request(simgrid::mc::State* state);
 
 #endif

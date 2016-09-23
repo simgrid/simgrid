@@ -57,7 +57,6 @@ unset(lua_version_str)
 # Check that we have a sufficient version of Lua
 if(LUA_VERSION_MAJOR EQUAL 5 AND LUA_VERSION_MINOR EQUAL 3)
   set(HAVE_LUA 1)
-    
   include_directories(${LUA_INCLUDE_DIR})
 else()
   message(FATAL_ERROR "Error: Lua version 5.3 is required, but version ${LUA_VERSION_MAJOR}.${LUA_VERSION_MINOR} found instead.")

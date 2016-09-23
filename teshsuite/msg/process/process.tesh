@@ -1,5 +1,5 @@
 
-$ ./process ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/process_d.xml
+$ ./process ${srcdir:=.}/../../../examples/platforms/small_platform.xml
 > [Tremblay:slave:(2) 0.500000] [msg_test/INFO] Slave started (PID:2, PPID:0)
 > [Tremblay:slave:(2) 0.500000] [msg_test/INFO] Plop i am not suspended
 > [Tremblay:master:(1) 1.000000] [msg_test/INFO] Process(pid=1, ppid=0, name=master)

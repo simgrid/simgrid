@@ -136,7 +136,7 @@ typedef struct lmm_system {
     xbt_swag_remove(cnst, &sys->modified_constraint_set); } while (0)
 
 /** @ingroup SURF_lmm
- * @brief Print informations about a lmm system
+ * @brief Print information about a lmm system
  * 
  * @param sys A lmm system
  */

@@ -5,7 +5,7 @@ eval 'exec perl -S $0 ${1+"$@"}'
 # This script updates the simgrid XML file passed as argument (modification in place)
 # It is built to do the conversion incrementally.
 
-# Copyright (c) 2006-2014. The SimGrid Team.
+# Copyright (c) 2006-2016. The SimGrid Team.
 # All rights reserved.
 #
 # This program is free software; you can redistribute it and/or modify it
@@ -41,7 +41,7 @@ changes in each version.
 
 =item 
 
-The version attribute of platform were added to allow file versionning.
+The version attribute of platform were added to allow file versioning.
 
 =item
 
@@ -144,15 +144,12 @@ use strict;
 my $fromversion=-1;
 my $toversion=4;
 
-my($output_string);
-
-my $filename = $ARGV[0] or die "simgrid_update_xml.pl <platform.xml>\n";
+my $filename = $ARGV[0] or die "Usage: simgrid_update_xml.pl file_to_convert.xml\nPlease provide an XML to convert as a parameter.\n";
 open INPUT, "$filename" or die "Cannot open input file $filename: $!\n";
 
-$output_string = "<?xml version='1.0'?>\n".
+my $output_string = "<?xml version='1.0'?>\n".
     "<!DOCTYPE platform SYSTEM \"http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd\">\n".
     "<platform version=\"$toversion\">\n";
-
 
 my($AS_opened)=0;
 
@@ -167,7 +164,7 @@ while (defined($line = <INPUT>)) {
 	$fromversion = 0;
 	print "$filename was using version 0\n";
 	next if !$line =~ /\S/;
-    } elsif ($line =~ s/<platform.*version=["]*([0-9.])["]*>//) {
+    } elsif ($line =~ s/<platform.*version=["']*([0-9.])["']*>//) {
 	$fromversion = $1;
 	if ($fromversion == $toversion) {
 	    die "Input platform file $filename is already conformant to version $fromversion. This should be a no-op.\n";

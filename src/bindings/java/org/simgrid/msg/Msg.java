@@ -7,97 +7,61 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-import org.simgrid.NativeLib;
-
 
 public final class Msg {
 
-	/** Retrieve the simulation time
-	 * @return The simulation time.
-	 */
-	public final static native double getClock();
-	/**
-	 * Issue a debug logging message.
-	 * @param s message to log.
-	 */
-	public final static native void debug(String s);
-	/**
-	 * Issue an verbose logging message.
-	 * @param s message to log.
-	 */
-	public final static native void verb(String s);
+	/** Retrieves the simulation time */
+	public static final native double getClock();
+	/** Issue a debug logging message. */
+	public static final native void debug(String msg);
+	/** Issue a verbose logging message. */
+	public static final native void verb(String msg);
+	/** Issue an information logging message */
+	public static final native void info(String msg);
+	/** Issue a warning logging message. */
+	public static final native void warn(String msg);
+	/** Issue an error logging message. */
+	public static final native void error(String msg);
+	/** Issue a critical logging message. */
+	public static final native void critical(String s);
 
-	/** Issue an information logging message
-	 * @param s
-	 */
-	public final static native void info(String s);
-	/**
-	 * Issue an warning logging message.
-	 * @param s message to log.
-	 */
-	public final static native void warn(String s);
-	/**
-	 * Issue an error logging message.
-	 * @param s message to log.
-	 */
-	public final static native void error(String s);
-	/**
-	 * Issue an critical logging message.
-	 * @param s message to log.
-	 */
-	public final static native void critical(String s);
+	private Msg() {
+		throw new IllegalAccessError("Utility class");
+	}
 
 	/*********************************************************************************
 	 * Deployment and initialization related functions                               *
 	 *********************************************************************************/
 
-	/**
-	 * The natively implemented method to initialize a MSG simulation.
+	/** Initialize a MSG simulation.
 	 *
 	 * @param args            The arguments of the command line of the simulation.
 	 */
-	public final static native void init(String[]args);
+	public static final native void init(String[]args);
 	
 	/** Tell the kernel that you want to use the energy plugin */
-	public final static native void energyInit();
+	public static final native void energyInit();
 
-	/**
-	 * Run the MSG simulation.
+	/** Run the MSG simulation.
 	 *
-	 * The simulation is not cleaned afterward (see  
-	 * {@link #clean()} if you really insist on cleaning the C side), so you can freely 
-	 * retrieve the informations that you want from the simulation. In particular, retrieving the status 
-	 * of a process or the current date is perfectly ok. 
+	 * After the simulation, you can freely retrieve the information that you want.. 
+	 * In particular, retrieving the status of a process or the current date is perfectly ok. 
 	 */
-	public final static native void run() ;
+	public static final native void run() ;
 
-	/** This function is useless nowadays, just stop calling it. */
-	@Deprecated
-	public final static void clean(){}
+	/** Create the simulation environment by parsing a platform file. */
+	public static final native void createEnvironment(String platformFile);
 
-	/**
-	 * The native implemented method to create the environment of the simulation.
-	 *
-	 * @param platformFile    The XML file which contains the description of the environment of the simulation
-	 *
-	 */
-	public final static native void createEnvironment(String platformFile);
+	public static final native As environmentGetRoutingRoot();
 
-	public final static native As environmentGetRoutingRoot();
-
-	/**
-	 * The method to deploy the simulation.
-	 *
-	 *
-	 * @param deploymentFile
-	 */
-	public final static native void deployApplication(String deploymentFile);
+	/** Starts your processes by parsing a deployment file. */
+	public static final native void deployApplication(String deploymentFile);
 
 	/** Example launcher. You can use it or provide your own launcher, as you wish
 	 * @param args
 	 * @throws MsgException
 	 */
-	static public void main(String[]args) throws MsgException {
+	public static void main(String[]args) throws MsgException {
 		/* initialize the MSG simulation. Must be done before anything else (even logging). */
 		Msg.init(args);
 

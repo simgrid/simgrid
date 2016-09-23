@@ -1,0 +1,54 @@
+p Test Broadcast with more processes than hosts
+! setenv LD_LIBRARY_PATH=../../lib
+! output sort
+
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-bcast --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+> [rank 0] -> Tremblay
+> [rank 1] -> Tremblay
+> [rank 2] -> Tremblay
+> [rank 3] -> Tremblay
+> [rank 4] -> Jupiter
+> [rank 5] -> Jupiter
+> [rank 6] -> Jupiter
+> [rank 7] -> Jupiter
+> [rank 8] -> Fafard
+> [rank 9] -> Fafard
+> [rank 10] -> Fafard
+> [rank 11] -> Fafard
+> [rank 12] -> Ginette
+> [rank 13] -> Ginette
+> [rank 14] -> Ginette
+> [rank 15] -> Ginette
+> [0] number of values equals to 17: 2048
+> [0] number of values equals to 17: 4096
+> [10] number of values equals to 17: 2048
+> [10] number of values equals to 17: 4096
+> [11] number of values equals to 17: 2048
+> [11] number of values equals to 17: 4096
+> [12] number of values equals to 17: 2048
+> [12] number of values equals to 17: 4096
+> [13] number of values equals to 17: 2048
+> [13] number of values equals to 17: 4096
+> [14] number of values equals to 17: 2048
+> [14] number of values equals to 17: 4096
+> [15] number of values equals to 17: 2048
+> [15] number of values equals to 17: 4096
+> [1] number of values equals to 17: 2048
+> [1] number of values equals to 17: 4096
+> [2] number of values equals to 17: 2048
+> [2] number of values equals to 17: 4096
+> [3] number of values equals to 17: 2048
+> [3] number of values equals to 17: 4096
+> [4] number of values equals to 17: 2048
+> [4] number of values equals to 17: 4096
+> [5] number of values equals to 17: 2048
+> [5] number of values equals to 17: 4096
+> [6] number of values equals to 17: 2048
+> [6] number of values equals to 17: 4096
+> [7] number of values equals to 17: 2048
+> [7] number of values equals to 17: 4096
+> [8] number of values equals to 17: 2048
+> [8] number of values equals to 17: 4096
+> [9] number of values equals to 17: 2048
+> [9] number of values equals to 17: 4096
+

@@ -1,0 +1,30 @@
+#! ./tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/surf_usage2  ${srcdir:=.}/../../../examples/platforms/two_hosts_platform_with_availability.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'network/model' to 'CM02'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'cpu/model' to 'Cas01'
+> [0.000000] [surf_test/INFO] Next Event : 0
+> [0.000000] [surf_test/INFO]    * Done Action
+> [0.200000] [surf_test/INFO] Next Event : 0.2
+> [0.200016] [surf_test/INFO] Next Event : 0.200016
+> [0.200016] [surf_test/INFO]    * Done Action
+> [7.320000] [surf_test/INFO] Next Event : 7.32
+> [7.320000] [surf_test/INFO]    * Done Action
+> [10.000000] [surf_test/INFO] Next Event : 10
+> [20.000000] [surf_test/INFO] Next Event : 20
+> [30.000000] [surf_test/INFO] Next Event : 30
+> [40.000000] [surf_test/INFO] Next Event : 40
+> [50.000000] [surf_test/INFO] Next Event : 50
+> [60.000000] [surf_test/INFO] Next Event : 60
+> [70.000000] [surf_test/INFO] Next Event : 70
+> [80.000000] [surf_test/INFO] Next Event : 80
+> [90.000000] [surf_test/INFO] Next Event : 90
+> [100.000000] [surf_test/INFO] Next Event : 100
+> [110.000000] [surf_test/INFO] Next Event : 110
+> [120.000000] [surf_test/INFO] Next Event : 120
+> [130.000000] [surf_test/INFO] Next Event : 130
+> [140.000000] [surf_test/INFO] Next Event : 140
+> [150.000000] [surf_test/INFO] Next Event : 150
+> [157.500000] [surf_test/INFO] Next Event : 157.5
+> [157.500000] [surf_test/INFO]    * Done Action
+> [157.500000] [surf_test/INFO] Simulation Terminated

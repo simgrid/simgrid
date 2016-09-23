@@ -13,8 +13,8 @@
 SG_BEGIN_DECL()
 
 /* Modules definitions */
-void xbt_backtrace_preinit(void);
-void xbt_backtrace_postexit(void);
+void xbt_backtrace_preinit();
+void xbt_backtrace_postexit();
 
 void xbt_log_preinit(void);
 void xbt_log_init(int *argc, char **argv);
@@ -34,7 +34,5 @@ void mmalloc_postexit(void);
 extern int smx_cleaned;
 extern int xbt_initialized;
 
-
 SG_END_DECL()
-
 #endif                          /* XBT_MODINTER_H */

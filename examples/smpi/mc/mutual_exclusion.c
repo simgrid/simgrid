@@ -13,13 +13,12 @@
 #define RELEASE_TAG 2
 
 int main(int argc, char **argv){
-
   int err, size, rank;
   int recv_buff;
   MPI_Status status;
   int CS_used = 0;
   xbt_dynar_t requests = xbt_dynar_new(sizeof(int), NULL);
-  
+
   /* Initialize MPI */
   err = MPI_Init(&argc, &argv);
   if(err !=  MPI_SUCCESS){
@@ -48,8 +47,7 @@ int main(int argc, char **argv){
         }
       }else{
         if(!xbt_dynar_is_empty(requests)){
-          printf("CS release. Grant to queued requests (queue size: %lu)",
-              xbt_dynar_length(requests));
+          printf("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
           xbt_dynar_shift(requests, &recv_buff);
           MPI_Send(&rank, 1, MPI_INT, recv_buff, GRANT_TAG, MPI_COMM_WORLD);
           CS_used = 1;
@@ -63,12 +61,11 @@ int main(int argc, char **argv){
     while(1){
       printf("%d asks the request.\n", rank);
       MPI_Send(&rank, 1, MPI_INT, 0, REQUEST_TAG, MPI_COMM_WORLD);
-    
+
       MPI_Recv(&recv_buff, 1, MPI_INT, 0, MPI_ANY_TAG, MPI_COMM_WORLD, &status);
-    
+
       printf("%d got the answer. Release it.\n", rank);
       MPI_Send(&rank, 1, MPI_INT, 0, RELEASE_TAG, MPI_COMM_WORLD);
-    
     }
   }
 

@@ -1,0 +1,34 @@
+#! ./tesh
+
+p Test of the management of availability traces with simdag
+
+$ $SG_TEST_EXENV ${bindir:=.}/availability/sd_availability ${srcdir:=.}/../platforms/two_hosts.xml
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [1.000000] [sd_avail/INFO] link1: bw=125000000, lat=0.000100
+> [1.000000] [sd_avail/INFO] Jupiter: speed=12500000
+> [1.000000] [sd_avail/INFO] Tremblay: speed=12500000
+> [1.000000] [sd_avail/INFO] Task 't1' start time: 0.000000, finish time: 1.000000
+> [2.000200] [sd_avail/INFO] link1: bw=62500000, lat=0.000100
+> [2.000200] [sd_avail/INFO] Jupiter: speed=12500000
+> [2.000200] [sd_avail/INFO] Tremblay: speed=25000000
+> [2.000200] [sd_avail/INFO] Task 'c1' start time: 1.000000, finish time: 2.000200
+> [3.000200] [sd_avail/INFO] link1: bw=62500000, lat=0.000100
+> [3.000200] [sd_avail/INFO] Jupiter: speed=12500000
+> [3.000200] [sd_avail/INFO] Tremblay: speed=25000000
+> [3.000200] [sd_avail/INFO] Task 't2' start time: 2.000200, finish time: 3.000200
+> [4.000600] [sd_avail/INFO] link1: bw=31250000, lat=0.000100
+> [4.000600] [sd_avail/INFO] Jupiter: speed=25000000
+> [4.000600] [sd_avail/INFO] Tremblay: speed=25000000
+> [4.000600] [sd_avail/INFO] Task 'c2' start time: 3.000200, finish time: 4.000600
+> [5.000600] [sd_avail/INFO] link1: bw=31250000, lat=0.000100
+> [5.000600] [sd_avail/INFO] Jupiter: speed=25000000
+> [5.000600] [sd_avail/INFO] Tremblay: speed=25000000
+> [5.000600] [sd_avail/INFO] Task 't3' start time: 4.000600, finish time: 5.000600
+> [6.000700] [sd_avail/INFO] link1: bw=31250000, lat=0.000100
+> [6.000700] [sd_avail/INFO] Jupiter: speed=25000000
+> [6.000700] [sd_avail/INFO] Tremblay: speed=25000000
+> [6.000700] [sd_avail/INFO] Task 'c3' start time: 5.000600, finish time: 6.000700
+> [7.000700] [sd_avail/INFO] link1: bw=31250000, lat=0.000100
+> [7.000700] [sd_avail/INFO] Jupiter: speed=25000000
+> [7.000700] [sd_avail/INFO] Tremblay: speed=25000000
+> [7.000700] [sd_avail/INFO] Task 't4' start time: 6.000700, finish time: 7.000700

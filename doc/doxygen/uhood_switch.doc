@@ -1,0 +1,977 @@
+/*! @page uhood_switch Process Synchronizations and Context Switching
+
+@tableofcontents
+
+@section uhood_switch_DES SimGrid as an Operating System
+
+SimGrid is a discrete event simulator of distributed systems: it does
+not simulate the world by small fixed-size steps but determines the
+date of the next event (such as the end of a communication, the end of
+a computation) and jumps to this date.
+
+A number of actors executing user-provided code run on top of the
+simulation kernel. The interactions between these actors and the
+simulation kernel are very similar to the ones between the system
+processes and the Operating System (except that the actors and
+simulation kernel share the same address space in a single OS
+process).
+
+When an actor needs to interact with the outer world (eg. to start a
+communication), it issues a <i>simcall</i> (simulation call), just
+like a system process issues a <i>syscall</i> to interact with its
+environment through the Operating System. Any <i>simcall</i> freezes
+the actor until it is woken up by the simulation kernel (eg. when the
+communication is finished).
+
+Mimicking the OS behavior may seem over-engineered here, but this is
+mandatory to the model-checker. The simcalls, representing actors'
+actions, are the transitions of the formal system. Verifying the
+system requires to manipulate these transitions explicitly. This also
+allows to run safely the actors in parallel, even if this is less
+commonly used by our users.
+
+So, the key ideas here are:
+
+ - The simulator is a discrete event simulator (event-driven).
+
+ - An actor can issue a blocking simcall and will be suspended until
+   it is woken up by the simulation kernel (when the operation is
+   completed).
+
+ - In order to move forward in (simulated) time, the simulation kernel
+   needs to know which actions the actors want to do.
+
+ - The simulated time will only move forward when all the actors are
+   blocked, waiting on a simcall.
+
+This leads to some very important consequences:
+
+ - An actor cannot synchronize with another actor using OS-level primitives
+   such as `pthread_mutex_lock()` or `std::mutex`. The simulation kernel
+   would wait for the actor to issue a simcall and would deadlock. Instead it
+   must use simulation-level synchronization primitives
+   (such as `simcall_mutex_lock()`).
+
+ - Similarly, an actor cannot sleep using
+   `std::this_thread::sleep_for()` which waits in the real world but
+   must instead wait in the simulation with
+   `simgrid::s4u::Actor::this_actor::sleep_for()` which waits in the
+   simulation.
+
+ - The simulation kernel cannot block.
+   Only the actors can block (using simulation primitives).
+
+@section uhood_switch_futures Futures and Promises
+
+@subsection uhood_switch_futures_what What is a future?
+
+Futures are a nice classical programming abstraction, present in many
+language.  Wikipedia defines a
+[future](https://en.wikipedia.org/wiki/Futures_and_promises) as an
+object that acts as a proxy for a result that is initially unknown,
+usually because the computation of its value is yet incomplete. This
+concept is thus perfectly adapted to represent in the kernel the
+asynchronous operations corresponding to the actors' simcalls.
+
+
+Futures can be manipulated using two kind of APIs:
+
+ - a <b>blocking API</b> where we wait for the result to be available
+   (`res = f.get()`);
+
+ - a <b>continuation-based API</b> where we say what should be done
+   with the result when the operation completes
+   (`future.then(something_to_do_with_the_result)`). This is heavily
+   used in ECMAScript that exhibits the same kind of never-blocking
+   asynchronous model as our discrete event simulator.
+
+C++11 includes a generic class (`std::future<T>`) which implements a
+blocking API.  The continuation-based API is not available in the
+standard (yet) but is [already
+described](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0159r0.html#futures.unique_future.6)
+in the Concurrency Technical Specification.
+
+`Promise`s are the counterparts of `Future`s: `std::future<T>` is used
+<em>by the consumer</em> of the result. On the other hand,
+`std::promise<T>` is used <em>by the producer</em> of the result. The
+producer calls `promise.set_value(42)` or `promise.set_exception(e)`
+in order to <em>set the result</em> which will be made available to
+the consumer by `future.get()`.
+
+@subsection uhood_switch_futures_needs Which future do we need?
+
+The blocking API provided by the standard C++11 futures does not suit
+our needs since the simulation kernel <em>cannot</em> block, and since
+we want to explicitly schedule the actors.  Instead, we need to
+reimplement a continuation-based API to be used in our event-driven
+simulation kernel.
+
+Our futures are based on the C++ Concurrency Technical Specification
+API, with a few differences:
+
+ - The simulation kernel is single-threaded so we do not need 
+   inter-thread synchronization for our futures.
+
+ - As the simulation kernel cannot block, `f.wait()` is not meaningful
+   in this context.
+
+ - Similarly, `future.get()` does an implicit wait. Calling this method in the
+   simulation kernel only makes sense if the future is already ready. If the
+   future is not ready, this would deadlock the simulator and an error is
+   raised instead.
+
+ - We always call the continuations in the simulation loop (and not
+   inside the `future.then()` or `promise.set_value()` calls). That
+   way, we don't have to fear problems like invariants not being
+   restored when the callbacks are called :fearful: or stack overflows
+   triggered by deeply nested continuations chains :cold_sweat:. The
+   continuations are all called in a nice and predictable place in the
+   simulator with a nice and predictable state :relieved:.
+
+ - Some features of the standard (such as shared futures) are not
+   needed in our context, and thus not considered here.
+
+@subsection uhood_switch_futures_implem Implementing `Future` and `Promise`
+
+The `simgrid::kernel::Future` and `simgrid::kernel::Promise` use a
+shared state defined as follows:
+
+@code{cpp}
+enum class FutureStatus {
+  not_ready,
+  ready,
+  done,
+};
+
+class FutureStateBase : private boost::noncopyable {
+public:
+  void schedule(simgrid::xbt::Task<void()>&& job);
+  void set_exception(std::exception_ptr exception);
+  void set_continuation(simgrid::xbt::Task<void()>&& continuation);
+  FutureStatus get_status() const;
+  bool is_ready() const;
+  // [...]
+private:
+  FutureStatus status_ = FutureStatus::not_ready;
+  std::exception_ptr exception_;
+  simgrid::xbt::Task<void()> continuation_;
+};
+
+template<class T>
+class FutureState : public FutureStateBase {
+public:
+  void set_value(T value);
+  T get();
+private:
+  boost::optional<T> value_;
+};
+
+template<class T>
+class FutureState<T&> : public FutureStateBase {
+  // ...
+};
+template<>
+class FutureState<void> : public FutureStateBase {
+  // ...
+};
+@endcode
+
+Both `Future` and `Promise` have a reference to the shared state:
+
+@code{cpp}
+template<class T>
+class Future {
+  // [...]
+private:
+  std::shared_ptr<FutureState<T>> state_;
+};
+
+template<class T>
+class Promise {
+  // [...]
+private:
+  std::shared_ptr<FutureState<T>> state_;
+  bool future_get_ = false;
+};
+@endcode
+
+The crux of `future.then()` is:
+
+@code{cpp}
+template<class T>
+template<class F>
+auto simgrid::kernel::Future<T>::thenNoUnwrap(F continuation)
+-> Future<decltype(continuation(std::move(*this)))>
+{
+  typedef decltype(continuation(std::move(*this))) R;
+
+  if (state_ == nullptr)
+    throw std::future_error(std::future_errc::no_state);
+
+  auto state = std::move(state_);
+  // Create a new future...
+  Promise<R> promise;
+  Future<R> future = promise.get_future();
+  // ...and when the current future is ready...
+  state->set_continuation(simgrid::xbt::makeTask(
+    [](Promise<R> promise, std::shared_ptr<FutureState<T>> state,
+         F continuation) {
+      // ...set the new future value by running the continuation.
+      Future<T> future(std::move(state));
+      simgrid::xbt::fulfillPromise(promise,[&]{
+        return continuation(std::move(future));
+      });
+    },
+    std::move(promise), state, std::move(continuation)));
+  return std::move(future);
+}
+@endcode
+
+We added a (much simpler) `future.then_()` method which does not
+create a new future:
+
+@code{cpp}
+template<class T>
+template<class F>
+void simgrid::kernel::Future<T>::then_(F continuation)
+{
+  if (state_ == nullptr)
+    throw std::future_error(std::future_errc::no_state);
+  // Give shared-ownership to the continuation:
+  auto state = std::move(state_);
+  state->set_continuation(simgrid::xbt::makeTask(
+    std::move(continuation), state));
+}
+@endcode
+
+The `.get()` delegates to the shared state. As we mentioned previously, an
+error is raised if the future is not ready:
+
+@code{cpp}
+template<class T>
+T simgrid::kernel::Future::get()
+{
+  if (state_ == nullptr)
+    throw std::future_error(std::future_errc::no_state);
+  std::shared_ptr<FutureState<T>> state = std::move(state_);
+  return state->get();
+}
+
+template<class T>
+T simgrid::kernel::FutureState<T>::get()
+{
+  if (status_ != FutureStatus::ready)
+    xbt_die("Deadlock: this future is not ready");
+  status_ = FutureStatus::done;
+  if (exception_) {
+    std::exception_ptr exception = std::move(exception_);
+    std::rethrow_exception(std::move(exception));
+  }
+  xbt_assert(this->value_);
+  auto result = std::move(this->value_.get());
+  this->value_ = boost::optional<T>();
+  return std::move(result);
+}
+@endcode
+
+@section uhood_switch_simcalls Implementing the simcalls
+
+So a simcall is a way for the actor to push a request to the
+simulation kernel and yield the control until the request is
+fulfilled. The performance requirements are very high because
+the actors usually do an inordinate amount of simcalls during the
+simulation. 
+
+As for real syscalls, the basic idea is to write the wanted call and
+its arguments in a memory area that is specific to the actor, and
+yield the control to the simulation kernel. Once in kernel mode, the
+simcalls of each demanding actor are evaluated sequentially in a
+strictly reproducible order. This makes the whole simulation
+reproducible.
+
+
+@subsection uhood_switch_simcalls_v2 The historical way
+
+In the very first implementation, everything was written by hand and
+highly optimized, making our software very hard to maintain and
+evolve. We decided to sacrifice some performance for
+maintainability. In a second try (that is still in use in SimGrid
+v3.13), we had a lot of boiler code generated from a python script,
+taking the [list of simcalls](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/simcalls.in)
+as input. It looks like this:
+
+@code{cpp}
+# This looks like C++ but it is a basic IDL-like language
+# (one definition per line) parsed by a python script:
+
+void process_kill(smx_actor_t process);
+void process_killall(int reset_pid);
+void process_cleanup(smx_actor_t process) [[nohandler]];
+void process_suspend(smx_actor_t process) [[block]];
+void process_resume(smx_actor_t process);
+void process_set_host(smx_actor_t process, sg_host_t dest);
+int  process_is_suspended(smx_actor_t process) [[nohandler]];
+int  process_join(smx_actor_t process, double timeout) [[block]];
+int  process_sleep(double duration) [[block]];
+
+smx_mutex_t mutex_init();
+void        mutex_lock(smx_mutex_t mutex) [[block]];
+int         mutex_trylock(smx_mutex_t mutex);
+void        mutex_unlock(smx_mutex_t mutex);
+
+[...]
+@endcode
+
+At runtime, a simcall is represented by a structure containing a simcall
+number and its arguments (among some other things):
+
+@code{cpp}
+struct s_smx_simcall {
+  // Simcall number:
+  e_smx_simcall_t call;
+  // Issuing actor:
+  smx_actor_t issuer;
+  // Arguments of the simcall:
+  union u_smx_scalar args[11];
+  // Result of the simcall:
+  union u_smx_scalar result;
+  // Some additional stuff:
+  smx_timer_t timer;
+  int mc_value;
+};
+@endcode
+
+with the a scalar union type:
+
+@code{cpp}
+union u_smx_scalar {
+  char            c;
+  short           s;
+  int             i;
+  long            l;
+  long long       ll;
+  unsigned char   uc;
+  unsigned short  us;
+  unsigned int    ui;
+  unsigned long   ul;
+  unsigned long long ull;
+  double          d;
+  void*           dp;
+  FPtr            fp;
+};
+@endcode
+
+When manually calling the relevant [Python
+script](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/simcalls.py),
+this generates a bunch of C++ files:
+
+* an enum of all the [simcall numbers](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/popping_enum.h#L19);
+
+* [user-side wrappers](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/popping_bodies.cpp)
+  responsible for wrapping the parameters in the `struct s_smx_simcall`;
+  and wrapping out the result;
+
+* [accessors](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/popping_accessors.h)
+   to get/set values of of `struct s_smx_simcall`;
+
+* a simulation-kernel-side [big switch](https://github.com/simgrid/simgrid/blob/4ae2fd01d8cc55bf83654e29f294335e3cb1f022/src/simix/popping_generated.cpp#L106)
+  handling all the simcall numbers.
+
+Then one has to write the code of the kernel side handler for the simcall
+and the code of the simcall itself (which calls the code-generated
+marshaling/unmarshaling stuff).
+
+In order to simplify this process, we added two generic simcalls which can be
+used to execute a function in the simulation kernel:
+
+@code{cpp}
+# This one should really be called run_immediate:
+void run_kernel(std::function<void()> const* code) [[nohandler]];
+void run_blocking(std::function<void()> const* code) [[block,nohandler]];
+@endcode
+
+### Immediate simcall
+
+The first one (`simcall_run_kernel()`) executes a function in the simulation
+kernel context and returns immediately (without blocking the actor):
+
+@code{cpp}
+void simcall_run_kernel(std::function<void()> const& code)
+{
+  simcall_BODY_run_kernel(&code);
+}
+
+template<class F> inline
+void simcall_run_kernel(F& f)
+{
+  simcall_run_kernel(std::function<void()>(std::ref(f)));
+}
+@endcode
+
+On top of this, we add a wrapper which can be used to return a value of any
+type and properly handles exceptions:
+
+@code{cpp}
+template<class F>
+typename std::result_of<F()>::type kernelImmediate(F&& code)
+{
+  // If we are in the simulation kernel, we take the fast path and
+  // execute the code directly without simcall
+  // marshalling/unmarshalling/dispatch:
+  if (SIMIX_is_maestro())
+    return std::forward<F>(code)();
+
+  // If we are in the application, pass the code to the simulation
+  // kernel which executes it for us and reports the result:
+  typedef typename std::result_of<F()>::type R;
+  simgrid::xbt::Result<R> result;
+  simcall_run_kernel([&]{
+    xbt_assert(SIMIX_is_maestro(), "Not in maestro");
+    simgrid::xbt::fulfillPromise(result, std::forward<F>(code));
+  });
+  return result.get();
+}
+@endcode
+
+where [`Result<R>`](#result) can store either a `R` or an exception.
+
+Example of usage:
+
+@code{cpp}
+xbt_dict_t Host::properties() {
+  return simgrid::simix::kernelImmediate([&] {
+    simgrid::surf::HostImpl* surf_host =
+      this->extension<simgrid::surf::HostImpl>();
+    return surf_host->getProperties();
+  });
+}
+@endcode
+
+### Blocking simcall {#uhood_switch_v2_blocking}
+
+The second generic simcall (`simcall_run_blocking()`) executes a function in
+the SimGrid simulation kernel immediately but does not wake up the calling actor
+immediately:
+
+@code{cpp}
+void simcall_run_blocking(std::function<void()> const& code);
+
+template<class F>
+void simcall_run_blocking(F& f)
+{
+  simcall_run_blocking(std::function<void()>(std::ref(f)));
+}
+@endcode
+
+The `f` function is expected to setup some callbacks in the simulation
+kernel which will wake up the actor (with
+`simgrid::simix::unblock(actor)`) when the operation is completed.
+
+This is wrapped in a higher-level primitive as well. The
+`kernelSync()` function expects a function-object which is executed
+immediately in the simulation kernel and returns a `Future<T>`.  The
+simulator blocks the actor and resumes it when the `Future<T>` becomes
+ready with its result:
+
+@code{cpp}
+template<class F>
+auto kernelSync(F code) -> decltype(code().get())
+{
+  typedef decltype(code().get()) T;
+  if (SIMIX_is_maestro())
+    xbt_die("Can't execute blocking call in kernel mode");
+
+  smx_actor_t self = SIMIX_process_self();
+  simgrid::xbt::Result<T> result;
+
+  simcall_run_blocking([&result, self, &code]{
+    try {
+      auto future = code();
+      future.then_([&result, self](simgrid::kernel::Future<T> value) {
+        // Propagate the result from the future
+        // to the simgrid::xbt::Result:
+        simgrid::xbt::setPromise(result, value);
+        simgrid::simix::unblock(self);
+      });
+    }
+    catch (...) {
+      // The code failed immediately. We can wake up the actor
+      // immediately with the exception:
+      result.set_exception(std::current_exception());
+      simgrid::simix::unblock(self);
+    }
+  });
+
+  // Get the result of the operation (which might be an exception):
+  return result.get();
+}
+@endcode
+
+A contrived example of this would be:
+
+@code{cpp}
+int res = simgrid::simix::kernelSync([&] {
+  return kernel_wait_until(30).then(
+    [](simgrid::kernel::Future<void> future) {
+      return 42;
+    }
+  );
+});
+@endcode
+
+### Asynchronous operations {#uhood_switch_v2_async}
+
+We can write the related `kernelAsync()` which wakes up the actor immediately
+and returns a future to the actor. As this future is used in the actor context,
+it is a different future
+(`simgrid::simix::Future` instead of `simgrid::kernel::Future`)
+which implements a C++11 `std::future` wait-based API:
+
+@code{cpp}
+template <class T>
+class Future {
+public:
+  Future() {}
+  Future(simgrid::kernel::Future<T> future) : future_(std::move(future)) {}
+  bool valid() const { return future_.valid(); }
+  T get();
+  bool is_ready() const;
+  void wait();
+private:
+  // We wrap an event-based kernel future:
+  simgrid::kernel::Future<T> future_;
+};
+@endcode
+
+The `future.get()` method is implemented as[^getcompared]:
+
+@code{cpp}
+template<class T>
+T simgrid::simix::Future<T>::get()
+{
+  if (!valid())
+    throw std::future_error(std::future_errc::no_state);
+  smx_actor_t self = SIMIX_process_self();
+  simgrid::xbt::Result<T> result;
+  simcall_run_blocking([this, &result, self]{
+    try {
+      // When the kernel future is ready...
+      this->future_.then_(
+        [this, &result, self](simgrid::kernel::Future<T> value) {
+          // ... wake up the process with the result of the kernel future.
+          simgrid::xbt::setPromise(result, value);
+          simgrid::simix::unblock(self);
+      });
+    }
+    catch (...) {
+      result.set_exception(std::current_exception());
+      simgrid::simix::unblock(self);
+    }
+  });
+  return result.get();
+}
+@endcode
+
+`kernelAsync()` simply :wink: calls `kernelImmediate()` and wraps the
+`simgrid::kernel::Future` into a `simgrid::simix::Future`:
+
+@code{cpp}
+template<class F>
+auto kernelAsync(F code)
+  -> Future<decltype(code().get())>
+{
+  typedef decltype(code().get()) T;
+
+  // Execute the code in the simulation kernel and get the kernel future:
+  simgrid::kernel::Future<T> future =
+    simgrid::simix::kernelImmediate(std::move(code));
+
+  // Wrap the kernel future in a user future:
+  return simgrid::simix::Future<T>(std::move(future));
+}
+@endcode
+
+A contrived example of this would be:
+
+@code{cpp}
+simgrid::simix::Future<int> future = simgrid::simix::kernelSync([&] {
+  return kernel_wait_until(30).then(
+    [](simgrid::kernel::Future<void> future) {
+      return 42;
+    }
+  );
+});
+do_some_stuff();
+int res = future.get();
+@endcode
+
+`kernelSync()` could be rewritten as:
+
+@code{cpp}
+template<class F>
+auto kernelSync(F code) -> decltype(code().get())
+{
+  return kernelAsync(std::move(code)).get();
+}
+@endcode
+
+The semantic is equivalent but this form would require two simcalls
+instead of one to do the same job (one in `kernelAsync()` and one in
+`.get()`).
+
+## Mutexes and condition variables
+
+### Condition Variables
+
+Similarly SimGrid already had simulation-level condition variables
+which can be exposed using the same API as `std::condition_variable`:
+
+@code{cpp}
+class ConditionVariable {
+private:
+  friend s_smx_cond;
+  smx_cond_t cond_;
+  ConditionVariable(smx_cond_t cond) : cond_(cond) {}
+public:
+
+  ConditionVariable(ConditionVariable const&) = delete;
+  ConditionVariable& operator=(ConditionVariable const&) = delete;
+
+  friend void intrusive_ptr_add_ref(ConditionVariable* cond);
+  friend void intrusive_ptr_release(ConditionVariable* cond);
+  using Ptr = boost::intrusive_ptr<ConditionVariable>;
+  static Ptr createConditionVariable();
+
+  void wait(std::unique_lock<Mutex>& lock);
+  template<class P>
+  void wait(std::unique_lock<Mutex>& lock, P pred);
+
+  // Wait functions taking a plain double as time:
+
+  std::cv_status wait_until(std::unique_lock<Mutex>& lock,
+    double timeout_time);
+  std::cv_status wait_for(
+    std::unique_lock<Mutex>& lock, double duration);
+  template<class P>
+  bool wait_until(std::unique_lock<Mutex>& lock,
+    double timeout_time, P pred);
+  template<class P>
+  bool wait_for(std::unique_lock<Mutex>& lock,
+    double duration, P pred);
+
+  // Wait functions taking a std::chrono time:
+
+  template<class Rep, class Period, class P>
+  bool wait_for(std::unique_lock<Mutex>& lock,
+    std::chrono::duration<Rep, Period> duration, P pred);
+  template<class Rep, class Period>
+  std::cv_status wait_for(std::unique_lock<Mutex>& lock,
+    std::chrono::duration<Rep, Period> duration);
+  template<class Duration>
+  std::cv_status wait_until(std::unique_lock<Mutex>& lock,
+    const SimulationTimePoint<Duration>& timeout_time);
+  template<class Duration, class P>
+  bool wait_until(std::unique_lock<Mutex>& lock,
+    const SimulationTimePoint<Duration>& timeout_time, P pred);
+
+  // Notify:
+
+  void notify_one();
+  void notify_all();
+  
+};
+@endcode
+
+We currently accept both `double` (for simplicity and consistency with
+the current codebase) and `std::chrono` types (for compatibility with
+C++ code) as durations and timepoints. One important thing to notice here is
+that `cond.wait_for()` and `cond.wait_until()` work in the simulated time,
+not in the real time.
+
+The simple `cond.wait()` and `cond.wait_for()` delegate to
+pre-existing simcalls:
+
+@code{cpp}
+void ConditionVariable::wait(std::unique_lock<Mutex>& lock)
+{
+  simcall_cond_wait(cond_, lock.mutex()->mutex_);
+}
+
+std::cv_status ConditionVariable::wait_for(
+  std::unique_lock<Mutex>& lock, double timeout)
+{
+  // The simcall uses -1 for "any timeout" but we don't want this:
+  if (timeout < 0)
+    timeout = 0.0;
+
+  try {
+    simcall_cond_wait_timeout(cond_, lock.mutex()->mutex_, timeout);
+    return std::cv_status::no_timeout;
+  }
+  catch (xbt_ex& e) {
+
+    // If the exception was a timeout, we have to take the lock again:
+    if (e.category == timeout_error) {
+      try {
+        lock.mutex()->lock();
+        return std::cv_status::timeout;
+      }
+      catch (...) {
+        std::terminate();
+      }
+    }
+
+    std::terminate();
+  }
+  catch (...) {
+    std::terminate();
+  }
+}
+@endcode
+
+Other methods are simple wrappers around those two:
+
+@code{cpp}
+template<class P>
+void ConditionVariable::wait(std::unique_lock<Mutex>& lock, P pred)
+{
+  while (!pred())
+    wait(lock);
+}
+
+template<class P>
+bool ConditionVariable::wait_until(std::unique_lock<Mutex>& lock,
+  double timeout_time, P pred)
+{
+  while (!pred())
+    if (this->wait_until(lock, timeout_time) == std::cv_status::timeout)
+      return pred();
+  return true;
+}
+
+template<class P>
+bool ConditionVariable::wait_for(std::unique_lock<Mutex>& lock,
+  double duration, P pred)
+{
+  return this->wait_until(lock,
+    SIMIX_get_clock() + duration, std::move(pred));
+}
+@endcode
+
+
+## Conclusion
+
+We wrote two future implementations based on the `std::future` API:
+
+* the first one is a non-blocking event-based (`future.then(stuff)`)
+  future used inside our (non-blocking event-based) simulation kernel;
+
+* the second one is a wait-based (`future.get()`) future used in the actors
+  which waits using a simcall.
+
+These futures are used to implement `kernelSync()` and `kernelAsync()` which
+expose asynchronous operations in the simulation kernel to the actors.
+
+In addition, we wrote variations of some other C++ standard library
+classes (`SimulationClock`, `Mutex`, `ConditionVariable`) which work in
+the simulation:
+  
+  * using simulated time;
+
+  * using simcalls for synchronisation.
+
+Reusing the same API as the C++ standard library is very useful because:
+
+  * we use a proven API with a clearly defined semantic;
+
+  * people already familiar with those API can use our own easily;
+
+  * users can rely on documentation, examples and tutorials made by other
+    people;
+
+  * we can reuse generic code with our types (`std::unique_lock`,
+   `std::lock_guard`, etc.).
+
+This type of approach might be useful for other libraries which define
+their own contexts. An example of this is
+[Mordor](https://github.com/mozy/mordor), a I/O library using fibers
+(cooperative scheduling): it implements cooperative/fiber
+[mutex](https://github.com/mozy/mordor/blob/4803b6343aee531bfc3588ffc26a0d0fdf14b274/mordor/fibersynchronization.h#L70),
+[recursive
+mutex](https://github.com/mozy/mordor/blob/4803b6343aee531bfc3588ffc26a0d0fdf14b274/mordor/fibersynchronization.h#L105)
+which are compatible with the
+[`BasicLockable`](http://en.cppreference.com/w/cpp/concept/BasicLockable)
+requirements (see
+[`[thread.req.lockable.basic]`]((http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4296.pdf#page=1175))
+in the C++14 standard).
+
+## Appendix: useful helpers
+
+### `Result`
+
+Result is like a mix of `std::future` and `std::promise` in a
+single-object without shared-state and synchronisation:
+
+@code{cpp}
+template<class T>
+class Result {
+  enum class ResultStatus {
+    invalid,
+    value,
+    exception,
+  };
+public:
+  Result();
+  ~Result();
+  Result(Result const& that);
+  Result& operator=(Result const& that);
+  Result(Result&& that);
+  Result& operator=(Result&& that);
+  bool is_valid() const;
+  void reset();
+  void set_exception(std::exception_ptr e);
+  void set_value(T&& value);
+  void set_value(T const& value);
+  T get();
+private:
+  ResultStatus status_ = ResultStatus::invalid;
+  union {
+    T value_;
+    std::exception_ptr exception_;
+  };
+};
+@endcode~
+
+### Promise helpers
+
+Those helper are useful for dealing with generic future-based code:
+
+@code{cpp}
+template<class R, class F>
+auto fulfillPromise(R& promise, F&& code)
+-> decltype(promise.set_value(code()))
+{
+  try {
+    promise.set_value(std::forward<F>(code)());
+  }
+  catch(...) {
+    promise.set_exception(std::current_exception());
+  }
+}
+
+template<class P, class F>
+auto fulfillPromise(P& promise, F&& code)
+-> decltype(promise.set_value())
+{
+  try {
+    std::forward<F>(code)();
+    promise.set_value();
+  }
+  catch(...) {
+    promise.set_exception(std::current_exception());
+  }
+}
+
+template<class P, class F>
+void setPromise(P& promise, F&& future)
+{
+  fulfillPromise(promise, [&]{ return std::forward<F>(future).get(); });
+}
+@endcode
+
+### Task
+
+`Task<R(F...)>` is a type-erased callable object similar to
+`std::function<R(F...)>` but works for move-only types. It is similar to
+`std::package_task<R(F...)>` but does not wrap the result in a `std::future<R>`
+(it is not <i>packaged</i>).
+
+|               |`std::function` |`std::packaged_task`|`simgrid::xbt::Task`
+|---------------|----------------|--------------------|--------------------------
+|Copyable       | Yes            | No                 | No
+|Movable        | Yes            | Yes                | Yes
+|Call           | `const`        | non-`const`        | non-`const`
+|Callable       | multiple times | once               | once
+|Sets a promise | No             | Yes                | No
+
+It could be implemented as:
+
+@code{cpp}
+template<class T>
+class Task {
+private:
+  std::packaged_task<T> task_;
+public:
+
+  template<class F>
+  void Task(F f) :
+    task_(std::forward<F>(f))
+  {}
+
+  template<class... ArgTypes>
+  auto operator()(ArgTypes... args)
+  -> decltype(task_.get_future().get())
+  {
+    task_(std::forward<ArgTypes)(args)...);
+    return task_.get_future().get();
+  }
+
+};
+@endcode
+
+but we don't need a shared-state.
+
+This is useful in order to bind move-only type arguments:
+
+@code{cpp}
+template<class F, class... Args>
+class TaskImpl {
+private:
+  F code_;
+  std::tuple<Args...> args_;
+  typedef decltype(simgrid::xbt::apply(
+    std::move(code_), std::move(args_))) result_type;
+public:
+  TaskImpl(F code, std::tuple<Args...> args) :
+    code_(std::move(code)),
+    args_(std::move(args))
+  {}
+  result_type operator()()
+  {
+    // simgrid::xbt::apply is C++17 std::apply:
+    return simgrid::xbt::apply(std::move(code_), std::move(args_));
+  }
+};
+
+template<class F, class... Args>
+auto makeTask(F code, Args... args)
+-> Task< decltype(code(std::move(args)...))() >
+{
+  TaskImpl<F, Args...> task(
+    std::move(code), std::make_tuple(std::move(args)...));
+  return std::move(task);
+}
+@endcode
+
+
+## Notes    
+
+[^getcompared]:
+
+    You might want to compare this method with `simgrid::kernel::Future::get()`
+    we showed previously: the method of the kernel future does not block and
+    raises an error if the future is not ready; the method of the actor future
+    blocks after having set a continuation to wake the actor when the future
+    is ready.
+
+[^lock]:
+
+    `std::lock()` might kinda work too but it may not be such as good idea to
+    use it as it may use a [<q>deadlock avoidance algorithm such as
+    try-and-back-off</q>](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2014/n4296.pdf#page=1199).
+    A backoff would probably uselessly wait in real time instead of simulated
+    time. The deadlock avoidance algorithm might as well add non-determinism
+    in the simulation which we would like to avoid.
+    `std::try_lock()` should be safe to use though.
+
+*/

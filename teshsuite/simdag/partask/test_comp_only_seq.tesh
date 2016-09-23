@@ -1,7 +1,0 @@
-
-p seq task comp only, no comm
-
-! output sort
-$ simdag/partask/test_comp_only_seq ${srcdir:=.}/simdag/partask/platform_2p_1sl.xml --cfg=path:${srcdir} --log=sd_kernel.thres=warning "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
-> 1

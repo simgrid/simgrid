@@ -1,0 +1,13 @@
+/**
+@page scenario Describing the experimental scenario
+
+TBD
+
+Main concepts:
+
+ - Deployment file
+ - Availability and state profiles
+ - Reproducible random number generation
+ - Command line options, in particular on the model switching
+
+*/

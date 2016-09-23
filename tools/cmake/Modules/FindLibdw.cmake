@@ -12,7 +12,6 @@ find_library(PATH_LIBDW_LIB
   /sw
   /usr)
 
-
 find_path(PATH_LIBDW_H "elfutils/libdw.h"
   HINTS
   $ENV{SIMGRID_LIBDW_LIBRARY_PATH}
@@ -46,7 +45,6 @@ if(PATH_LIBDW_LIB AND PATH_LIBDW_H)
 
   include_directories(${PATH_LIBDW_H})
   link_directories(${PATH_LIBDW_LIB})
-
 else()
   message(FATAL_ERROR "Please either install the libdw-dev package (or equivalent) or turn off the model-checking option of SimGrid.")
 endif()

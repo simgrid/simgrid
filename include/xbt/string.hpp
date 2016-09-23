@@ -4,22 +4,31 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef SIMGRIC_XBT_STRING_HPP
-#define SIMGRIC_XBT_STRING_HPP
+#ifndef SIMGRID_XBT_STRING_HPP
+#define SIMGRID_XBT_STRING_HPP
 
-#ifdef HAVE_MC
+#include <simgrid_config.h>
+
+#include <string>
+#include <cstdarg>
+#include <stdlib.h>
+
+#if HAVE_MC
 
 #include <stdexcept>
 #include <cstddef>
 #include <cstdlib>
 #include <cstring>
-#include <string>
 #include <iterator>
 
 #include <xbt/sysdep.h>
 
+#endif
+
 namespace simgrid {
 namespace xbt {
+
+#if HAVE_MC
 
 /** POD structure representation of a string
  */
@@ -28,9 +37,9 @@ struct string_data {
   std::size_t len;
 };
 
-/** A std::string with well-known representation
+/** A std::string-like with well-known representation
  *
- *  This is a (incomplete) drop-in replacement for `std::string`.
+ *  HACK, this is a (incomplete) replacement for `std::string`.
  *  It has a fixed POD representation (`simgrid::xbt::string_data`)
  *  which can be used to easily read the string content from another
  *  process.
@@ -80,10 +89,8 @@ public:
       string_data::data[string_data::len] = '\0';
     }
   }
-  string() : string (nullptr, 0) {}
-  string(const char* s)
-    : string(s, s == nullptr ? 0 : strlen(s))
-  {}
+  string() : string (const_cast<char*>(&NUL), 0) {}
+  string(const char* s) : string(s, strlen(s)) {}
   string(string const& s) : string(s.c_str(), s.size()) {}
   string(string&& s)
   {
@@ -97,15 +104,15 @@ public:
   // Assign
   void assign(const char* s, size_t size)
   {
-    if (string_data::data != &NUL)
+    if (string_data::data != &NUL) {
       std::free(string_data::data);
-    if (size == 0) {
-      string_data::len = 0;
       string_data::data = nullptr;
-    } else {
+      string_data::len = 0;
+    }
+    if (size != 0) {
       string_data::len = size;
       string_data::data = (char*) std::malloc(string_data::len + 1);
-      memcpy(string_data::data, s, string_data::len);
+      std::memcpy(string_data::data, s, string_data::len);
       string_data::data[string_data::len] = '\0';
     }
   }
@@ -113,15 +120,15 @@ public:
   // Copy
   string& operator=(const char* s)
   {
-    assign(s, s == nullptr ? 0 : std::strlen(s));
+    assign(s, std::strlen(s));
     return *this;
   }
-  string& operator=(string& s)
+  string& operator=(string const& s)
   {
     assign(s.c_str(), s.size());
     return *this;
   }
-  string& operator=(std::string& s)
+  string& operator=(std::string const& s)
   {
     assign(s.c_str(), s.size());
     return *this;
@@ -177,74 +184,81 @@ public:
   void clear()
   {
     string_data::len = 0;
-    string_data::data = (char*) &NUL;
+    string_data::data = const_cast<char*>(&NUL);
   }
 
-  // Compare
-  int compare(string const& that) const
+  bool equals(const char* data, std::size_t len) const
   {
-    size_t n = std::min(this->size(), that.size());
-    int res = memcmp(this->c_str(), that.c_str(), n);
+    return this->size() == len
+      && std::memcmp(this->c_str(), data, len) == 0;
+  }
+
+  bool operator==(string const& that) const
+  {
+    return this->equals(that.c_str(), that.size());
+  }
+  bool operator==(std::string const& that) const
+  {
+    return this->equals(that.c_str(), that.size());
+  }
+  bool operator==(const char* that) const
+  {
+    return this->equals(that, std::strlen(that));
+  }
+
+  template<class X>
+  bool operator!=(X const& that) const
+  {
+    return !((*this) == that);
+  }
+
+  // Compare:
+  int compare(const char* data, std::size_t len) const
+  {
+    size_t n = std::min(this->size(), len);
+    int res = memcmp(this->c_str(), data, n);
     if (res != 0)
       return res;
-    else if (this->size() == that.size())
+    else if (this->size() == len)
       return 0;
-    else if (this->size() < that.size())
+    else if (this->size() < len)
       return -1;
     else
       return 1;
   }
-  bool operator==(string const& that) const
+  int compare(string const& that) const
   {
-    return this->size() == that.size()
-      && std::memcmp(this->c_str(), that.c_str(), this->size()) == 0;
+    return this->compare(that.c_str(), that.size());
   }
-  bool operator!=(string const& that) const
+  int compare(std::string const& that) const
   {
-    return !(*this == that);
+    return this->compare(that.c_str(), that.size());
   }
-  bool operator<(string const& that) const
+  int compare(const char* that) const
   {
-    return compare(that) < 0;
-  }
-  bool operator<=(string const& that) const
-  {
-    return compare(that) <= 0;
-  }
-  bool operator>(string const& that) const
-  {
-    return compare(that) > 0;
-  }
-  bool operator>=(string const& that) const
-  {
-    return compare(that) >= 0;
+    return this->compare(that, std::strlen(that));
   }
 
-  // Compare with std::string
-  bool operator==(std::string const& that) const
+  // Define < <= >= > in term of compare():
+  template<class X>
+  bool operator<(X const& that) const
   {
-    return this->size() == that.size()
-      && std::memcmp(this->c_str(), that.c_str(), this->size()) == 0;
+    return this->compare(that) < 0;
   }
-  bool operator!=(std::string const& that) const
+  template<class X>
+  bool operator<=(X const& that) const
   {
-    return !(*this == that);
+    return this->compare(that) <= 0;
   }
-  bool operator<(std::string const& that) const
+  template<class X>
+  bool operator>(X const& that) const
   {
-    return compare(that) < 0;
+    return this->compare(that) > 0;
   }
-  bool operator<=(std::string const& that) const
+  template<class X>
+  bool operator>=(X const& that) const
   {
-    return compare(that) <= 0;
-  }
-  bool operator>(std::string const& that) const
-  {
-    return compare(that) > 0;
-  }
-  bool operator>=(std::string const& that) const
-  {
-    return compare(that) >= 0;
+    return this->compare(that) >= 0;
   }
 };
 
@@ -279,21 +293,25 @@ bool operator>=(std::string const& a, string const& b)
   return b <= a;
 }
 
-}
-}
-
 #else
-
-#include <string>
-
-namespace simgrid {
-namespace xbt {
 
 typedef std::string string;
 
-}
-}
-
 #endif
+
+/** Create a C++ string from a C-style format
+ *
+ * @ingroup XBT_str
+*/
+std::string string_printf(const char *fmt, ...);
+
+/** Create a C++ string from a C-style format
+ *
+ * @ingroup XBT_str
+*/
+std::string string_vprintf(const char *fmt, va_list ap);
+
+}
+}
 
 #endif

@@ -22,22 +22,22 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(instr_TI_trace, instr_trace, "tracing event syst
 extern FILE *tracing_file;
 double prefix=0.0;
 
-xbt_dict_t tracing_files = NULL;
+xbt_dict_t tracing_files = nullptr;
 
 extern s_instr_trace_writer_t active_writer;
 
-void TRACE_TI_init(void)
+void TRACE_TI_init()
 {
   active_writer.print_PushState = print_TIPushState;
   active_writer.print_CreateContainer=print_TICreateContainer;
   active_writer.print_DestroyContainer=print_TIDestroyContainer;
 }
 
-void TRACE_TI_start(void)
+void TRACE_TI_start()
 {
   char *filename = TRACE_get_filename();
   tracing_file = fopen(filename, "w");
-  if (tracing_file == NULL) {
+  if (tracing_file == nullptr) {
     THROWF(system_error, 1, "Tracefile %s could not be opened for writing.", filename);
   }
 
@@ -50,7 +50,7 @@ void TRACE_TI_start(void)
   dump_comment_file(TRACE_get_comment_file());
 }
 
-void TRACE_TI_end(void)
+void TRACE_TI_end()
 {
   xbt_dict_free(&tracing_files);
   fclose(tracing_file);
@@ -61,15 +61,15 @@ void TRACE_TI_end(void)
 void print_TICreateContainer(paje_event_t event)
 {
   //if we are in the mode with only one file
-  static FILE *temp = NULL;
+  static FILE *temp = nullptr;
 
-  if (tracing_files == NULL) {
-    tracing_files = xbt_dict_new_homogeneous(NULL);
+  if (tracing_files == nullptr) {
+    tracing_files = xbt_dict_new_homogeneous(nullptr);
     //generate unique run id with time
     prefix = xbt_os_time();
   }
 
-  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file") || temp == NULL) {
+  if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file") || temp == nullptr) {
     char *folder_name = bprintf("%s_files", TRACE_get_filename());
     char *filename = bprintf("%s/%f_%s.txt", folder_name, prefix, ((createContainer_t) event->data)->container->name);
 #ifdef WIN32
@@ -78,20 +78,19 @@ void print_TICreateContainer(paje_event_t event)
     mkdir(folder_name, S_IRWXU | S_IRWXG | S_IRWXO);
 #endif
     temp = fopen(filename, "w");
-    if (temp == NULL)
-      xbt_die("Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
+    xbt_assert(temp, "Tracefile %s could not be opened for writing: %s", filename, strerror(errno));
     fprintf(tracing_file, "%s\n", filename);
 
     xbt_free(folder_name);
     xbt_free(filename);
   }
 
-  xbt_dict_set(tracing_files, ((createContainer_t) event->data)->container->name, (void *) temp, NULL);
+  xbt_dict_set(tracing_files, ((createContainer_t) event->data)->container->name, (void *) temp, nullptr);
 }
 
 void print_TIDestroyContainer(paje_event_t event)
 {
-  if (!xbt_cfg_get_boolean(_sg_cfg_set, "tracing/smpi/format/ti_one_file")|| xbt_dict_length(tracing_files) == 1) {
+  if (!xbt_cfg_get_boolean("tracing/smpi/format/ti-one-file")|| xbt_dict_length(tracing_files) == 1) {
     FILE* f = (FILE*)xbt_dict_get_or_null(tracing_files, ((destroyContainer_t) event->data)->container->name);
     fclose(f);
   }
@@ -102,14 +101,14 @@ void print_TIPushState(paje_event_t event)
 {
   int i;
 
-  //char* function=NULL;
-  if (((pushState_t) event->data)->extra == NULL)
+  //char* function=nullptr;
+  if (((pushState_t) event->data)->extra == nullptr)
     return;
   instr_extra_data extra = (instr_extra_data) (((pushState_t) event->data)->extra);
 
-  char *process_id = NULL;
+  char *process_id = nullptr;
   //FIXME: dirty extract "rank-" from the name, as we want the bare process id here
-  if (strstr(((pushState_t) event->data)->container->name, "rank-") == NULL)
+  if (strstr(((pushState_t) event->data)->container->name, "rank-") == nullptr)
     process_id = xbt_strdup(((pushState_t) event->data)->container->name);
   else
     process_id = xbt_strdup(((pushState_t) event->data)->container->name + 5);
@@ -221,9 +220,9 @@ void print_TIPushState(paje_event_t event)
     break;
   }
 
-  if (extra->recvcounts != NULL)
+  if (extra->recvcounts != nullptr)
     xbt_free(extra->recvcounts);
-  if (extra->sendcounts != NULL)
+  if (extra->sendcounts != nullptr)
     xbt_free(extra->sendcounts);
   xbt_free(process_id);
   xbt_free(extra);

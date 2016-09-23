@@ -12,9 +12,12 @@
 
 /* Copyright 1996, 2000 Free Software Foundation  */
 
-#ifdef HAVE_UNISTD_H
+#define _GNU_SOURCE
+#include "src/internal_config.h"
+#if HAVE_UNISTD_H
 #include <unistd.h>             /* Prototypes for lseek, sbrk (maybe) */
 #endif
+
 #include "mfree.c"
 #include "mmalloc.c"
 #include "mrealloc.c"

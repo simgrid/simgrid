@@ -17,7 +17,7 @@
 #include <xbt/base.h>
 #include <xbt/misc.h>
 
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
 #include "xbt/ex.h"
@@ -114,19 +114,6 @@ struct mstats
   size_t chunks_free;    /* Chunks in the free list. */
   size_t bytes_free;    /* Byte total of chunks in the free list. */
 };
-
-typedef struct s_heap_area{
-  int valid;
-  int block;
-  int fragment;
-}s_heap_area_t, *heap_area_t;
-
-typedef struct s_heap_area_pair{
-  int block1;
-  int fragment1;
-  int block2;
-  int fragment2;
-}s_heap_area_pair_t, *heap_area_pair_t;
 
 #define MMALLOC_TYPE_HEAPINFO (-2)
 #define MMALLOC_TYPE_FREE (-1)
@@ -308,7 +295,7 @@ XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, ssize_t size);
 #define LOCK(mdp) pthread_mutex_lock(&mdp->mutex)
 #define UNLOCK(mdp) pthread_mutex_unlock(&mdp->mutex)
 
-static XBT_INLINE void  mmalloc_paranoia(struct mdesc *mdp){
+static inline void  mmalloc_paranoia(struct mdesc *mdp){
 
   /* nothing to fear for no */
 

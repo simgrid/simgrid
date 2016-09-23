@@ -238,7 +238,8 @@ int smpi_coll_tuned_bcast_mvapich2_knomial_intra_node(void *buffer,
             mask /= mv2_intra_node_knomial_factor;
         }
     }
-
+    xbt_free(reqarray);
+    xbt_free(starray);
     return mpi_errno;
 }
 
@@ -296,7 +297,8 @@ int smpi_coll_tuned_bcast_mvapich2_intra_node(void *buffer,
      */
     //if (is_homogeneous) {
         type_size=smpi_datatype_size(datatype);
-    //} /*else {*/
+    //}
+/*    else {*/
 /*        MPIR_Pack_size_impl(1, datatype, &type_size);*/
 /*    }*/
     nbytes = (size_t) (count) * (type_size);

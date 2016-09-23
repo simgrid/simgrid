@@ -14,16 +14,24 @@
 #include <vector>
 
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/AddressSpace.hpp"
 #include "src/mc/PageStore.hpp"
 
 namespace simgrid {
 namespace mc {
 
-/** A byte-string represented as a sequence of chunks from a PageStor */
+/** A byte-string represented as a sequence of chunks from a PageStore
+ *
+ *  In order to save memory when taking memory snapshots, a given byte-string
+ *  is split in fixed-size chunks. Identical chunks (either from the same
+ *  snapshot or more probably from different snpashots) share the same memory
+ *  storage.
+ *
+ *  Thus a chunked is represented as a sequence of indices of each chunk.
+ */
 class ChunkedData {
+  /** This is where we store the chunks */
   PageStore* store_ = nullptr;
-  /** Indices of the chunks */
+  /** Indices of the chunks in the `PageStore` */
   std::vector<std::size_t> pagenos_;
 public:
 
@@ -73,18 +81,23 @@ public:
     return *this;
   }
 
+  /** How many pages are used */
   std::size_t page_count()          const { return pagenos_.size(); }
+
+  /** Get a chunk index */
   std::size_t pageno(std::size_t i) const { return pagenos_[i]; }
+
+  /** Get a view of the chunk indices */
   const std::size_t* pagenos()      const { return pagenos_.data(); }
 
+  /** Get a a pointer to a chunk */
   const void* page(std::size_t i) const
   {
     return store_->get_page(pagenos_[i]);
   }
 
   ChunkedData(PageStore& store, AddressSpace& as,
-    RemotePtr<void> addr, std::size_t page_count,
-    const std::size_t* ref_page_numbers, const std::uint64_t* pagemap);
+    RemotePtr<void> addr, std::size_t page_count);
 };
 
 }

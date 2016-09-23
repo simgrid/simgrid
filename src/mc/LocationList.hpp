@@ -20,18 +20,18 @@
 
 #include "src/mc/mc_base.h"
 #include "src/mc/mc_forward.hpp"
-#include "src/mc/AddressSpace.hpp"
 #include "src/mc/DwarfExpression.hpp"
 
 namespace simgrid {
 namespace dwarf {
 
-/** \brief A DWARF expression with optional validity contraints */
+/** A DWARF expression with optional validity constraints */
 class LocationListEntry {
 public:
   typedef simgrid::xbt::Range<std::uint64_t> range_type;
 private:
   DwarfExpression expression_;
+  // By default, the expression is always valid:
   range_type range_ = {0, UINT64_MAX};
 public:
   LocationListEntry() {}

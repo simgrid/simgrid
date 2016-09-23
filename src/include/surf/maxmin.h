@@ -7,7 +7,7 @@
 #ifndef _SURF_MAXMIN_H
 #define _SURF_MAXMIN_H
 
-#include "src/portable.h"
+#include "src/internal_config.h"
 #include "xbt/misc.h"
 #include "xbt/asserts.h"
 #include "surf/datatypes.h"
@@ -124,8 +124,9 @@
 
 XBT_PUBLIC_DATA(double) sg_maxmin_precision;
 XBT_PUBLIC_DATA(double) sg_surf_precision;
+XBT_PUBLIC_DATA(int) sg_concurrency_limit;
  
-static XBT_INLINE void double_update(double *variable, double value, double precision)
+static inline void double_update(double *variable, double value, double precision)
 {
   //printf("Updating %g -= %g +- %g\n",*variable,value,precision);
   //xbt_assert(value==0  || value>precision);
@@ -137,12 +138,12 @@ static XBT_INLINE void double_update(double *variable, double value, double prec
     *variable = 0.0;
 }
 
-static XBT_INLINE int double_positive(double value, double precision)
+static inline int double_positive(double value, double precision)
 {
   return (value > precision);
 }
 
-static XBT_INLINE int double_equals(double value1, double value2, double precision)
+static inline int double_equals(double value1, double value2, double precision)
 {
   return (fabs(value1 - value2) < precision);
 }
@@ -335,7 +336,7 @@ XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst(lmm_system_t sys, lmm_constrain
  *
  * @return A variable associated to a constraint
  */
-XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst_safe(lmm_system_t /*sys*/, lmm_constraint_t cnst,
+XBT_PUBLIC(lmm_variable_t) lmm_get_var_from_cnst_safe(lmm_system_t sys, lmm_constraint_t cnst,
                                      lmm_element_t * elem, lmm_element_t * nextelem, int * numelem);
 
 /**
@@ -353,10 +354,6 @@ XBT_PUBLIC(lmm_constraint_t) lmm_get_first_active_constraint(lmm_system_t sys);
  * @return The next active constraint
  */
 XBT_PUBLIC(lmm_constraint_t) lmm_get_next_active_constraint(lmm_system_t sys, lmm_constraint_t cnst);
-
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-XBT_PUBLIC(int) lmm_is_variable_limited_by_latency(lmm_variable_t var);
-#endif
 
 /**
  * @brief Get the data associated to a constraint

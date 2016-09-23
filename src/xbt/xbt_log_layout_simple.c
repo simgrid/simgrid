@@ -13,7 +13,7 @@
 #include "simgrid/simix.h"      /* SIMIX_host_self_get_name */
 #include "surf/surf.h"
 #include <stdio.h>
-#include "src/portable.h"
+#include "src/internal_config.h"
 
 extern const char *xbt_log_priority_names[8];
 extern int xbt_log_no_loc;
@@ -26,9 +26,7 @@ static double simple_begin_of_time = -1;
   } else                                                                \
     return 0
 
-static int xbt_log_layout_simple_doit(xbt_log_layout_t l,
-                                      xbt_log_event_t ev,
-                                      const char *fmt)
+static int xbt_log_layout_simple_doit(xbt_log_layout_t l, xbt_log_event_t ev, const char *fmt)
 {
   char *p = ev->buffer;
   int rem_size = ev->buffer_size;
@@ -41,31 +39,26 @@ static int xbt_log_layout_simple_doit(xbt_log_layout_t l,
   /* Display the proc info if available */
   procname = xbt_procname();
   if (procname && strcmp(procname,"maestro")) {
-    len = snprintf(p, rem_size, "%s:%s:(%d) ",
-                   SIMIX_host_self_get_name(), procname, xbt_getpid());
+    len = snprintf(p, rem_size, "%s:%s:(%d) ", SIMIX_host_self_get_name(), procname, xbt_getpid());
     check_overflow(len);
   }
   else if (!procname)  {
-  len = snprintf(p, rem_size, "%s::(%d) ",
-                 SIMIX_host_self_get_name(), xbt_getpid());
+  len = snprintf(p, rem_size, "%s::(%d) ", SIMIX_host_self_get_name(), xbt_getpid());
   check_overflow(len);
   }
 
   /* Display the date */
-  len = snprintf(p, rem_size, "%f] ",
-                 surf_get_clock() - simple_begin_of_time);
+  len = snprintf(p, rem_size, "%f] ", surf_get_clock() - simple_begin_of_time);
   check_overflow(len);
 
   /* Display file position if not INFO */
   if (ev->priority != xbt_log_priority_info && !xbt_log_no_loc) {
-    len = snprintf(p, rem_size, "%s:%d: ",
-                   ev->fileName, ev->lineNum);
+    len = snprintf(p, rem_size, "%s:%d: ", ev->fileName, ev->lineNum);
     check_overflow(len);
   }
 
   /* Display category name */
-  len = snprintf(p, rem_size, "[%s/%s] ",
-                 ev->cat->name, xbt_log_priority_names[ev->priority]);
+  len = snprintf(p, rem_size, "[%s/%s] ", ev->cat->name, xbt_log_priority_names[ev->priority]);
   check_overflow(len);
 
   /* Display user-provided message */

@@ -1,0 +1,24 @@
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-migration ${srcdir:=.}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:master_@Fafard) Test: Migrate a VM with 1000 Mbytes RAM
+> [  0.000000] (3:__pr_mig_tx:VM0(Fafard-Tremblay)@Fafard) use the default max_downtime value 30ms
+> [132.740093] (0:maestro@) FIXME: may need a proper handling, 1
+> [132.765801] (1:master_@Fafard) VM0 migrated: Fafard->Tremblay in 132.766 s
+> [132.765801] (1:master_@Fafard) Test: Migrate a VM with 100 Mbytes RAM
+> [132.765801] (5:__pr_mig_tx:VM0(Fafard-Tremblay)@Fafard) use the default max_downtime value 30ms
+> [146.086085] (0:maestro@) FIXME: may need a proper handling, 1
+> [146.111793] (1:master_@Fafard) VM0 migrated: Fafard->Tremblay in 13.346 s
+> [146.111793] (1:master_@Fafard) Test: Migrate two VMs at once from PM0 to PM1
+> [146.111793] (9:__pr_mig_tx:VM0(Fafard-Tremblay)@Fafard) use the default max_downtime value 30ms
+> [146.111793] (11:__pr_mig_tx:VM1(Fafard-Tremblay)@Fafard) use the default max_downtime value 30ms
+> [411.540563] (0:maestro@) FIXME: may need a proper handling, 1
+> [411.540563] (0:maestro@) FIXME: may need a proper handling, 1
+> [411.566271] (7:mig_wrk@Fafard) VM1 migrated: Fafard->Tremblay in 265.454 s
+> [411.566271] (6:mig_wrk@Fafard) VM0 migrated: Fafard->Tremblay in 265.454 s
+> [10146.111793] (1:master_@Fafard) Test: Migrate two VMs at once to different PMs
+> [10146.111793] (15:__pr_mig_tx:VM0(Fafard-Tremblay)@Fafard) use the default max_downtime value 30ms
+> [10146.111793] (17:__pr_mig_tx:VM1(Fafard-Bourassa)@Fafard) use the default max_downtime value 30ms
+> [10362.613818] (0:maestro@) FIXME: may need a proper handling, 1
+> [10362.620589] (13:mig_wrk@Fafard) VM1 migrated: Fafard->Bourassa in 216.509 s
+> [10411.521626] (0:maestro@) FIXME: may need a proper handling, 1
+> [10411.547334] (12:mig_wrk@Fafard) VM0 migrated: Fafard->Tremblay in 265.436 s
+> [20146.111793] (0:maestro@) Bye (simulation time 20146.1)

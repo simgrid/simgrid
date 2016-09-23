@@ -14,47 +14,44 @@
 #include "xbt/log.h"
 #include "simgrid/link.h"
 #include "simgrid/host.h"
-
+#ifdef __cplusplus
+#include <set>
+#endif
 SG_BEGIN_DECL()
 
-/** @brief Link datatype
-    @ingroup SD_datatypes_management
+/** @brief Link opaque datatype
+    @ingroup SD_link_api
 
     A link is a network node represented as a <em>name</em>, a <em>bandwidth</em> and a <em>latency</em>.
-    A route is a list of links between two workstations.
-
-    @see SD_link_management */
+    A route is a list of links between two hosts.
+ */
 typedef Link *SD_link_t;
 
-/** @brief Task datatype
-    @ingroup SD_datatypes_management
+/** @brief Task opaque datatype
+    @ingroup SD_task_api
 
     A task is some <em>computing amount</em> that can be executed in parallel on several hosts.
     A task may depend on other tasks, which means that the task cannot start until the other tasks are done.
     Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
 
-    @see SD_task_management */
+    */
 typedef struct SD_task *SD_task_t;
 
 /** @brief Task states
-    @ingroup SD_datatypes_management
-
-    @see SD_task_management */
+    @ingroup SD_task_api */
 typedef enum {
-  SD_NOT_SCHEDULED = 0,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
-  SD_SCHEDULABLE = 0x0001,   /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
-  SD_SCHEDULED = 0x0002,     /**< @brief A task becomes SD_SCHEDULED when you call function
+  SD_NOT_SCHEDULED = 0x0001,      /**< @brief Initial state (not valid for SD_watch and SD_unwatch). */
+  SD_SCHEDULABLE = 0x0002,   /**< @brief A task becomes SD_SCHEDULABLE as soon as its dependencies are satisfied */
+  SD_SCHEDULED = 0x0004,     /**< @brief A task becomes SD_SCHEDULED when you call function
                                   SD_task_schedule. SD_simulate will execute it when it becomes SD_RUNNABLE. */
-  SD_RUNNABLE = 0x0004,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
-  SD_RUNNING = 0x0008,       /**< @brief An SD_RUNNABLE task becomes SD_RUNNING when it is launched. */
-  SD_DONE = 0x0010,          /**< @brief The task is successfully finished. */
-  SD_FAILED = 0x0020         /**< @brief A problem occurred during the execution of the task. */
+  SD_RUNNABLE = 0x0008,      /**< @brief A scheduled task becomes runnable is SD_simulate as soon as its dependencies are satisfied. */
+  SD_RUNNING = 0x0010,       /**< @brief An SD_RUNNABLE task becomes SD_RUNNING when it is launched. */
+  SD_DONE = 0x0020,          /**< @brief The task is successfully finished. */
+  SD_FAILED = 0x0040         /**< @brief A problem occurred during the execution of the task. */
 } e_SD_task_state_t;
 
 /** @brief Task kinds
-    @ingroup SD_datatypes_management
-
-    @see SD_task_management */
+    @ingroup SD_task_api */
 typedef enum {
   SD_TASK_NOT_TYPED = 0,      /**< @brief no specified type */
   SD_TASK_COMM_E2E = 1,       /**< @brief end to end communication */
@@ -63,37 +60,26 @@ typedef enum {
   SD_TASK_COMM_PAR_MXN_1D_BLOCK = 4 /**< @brief MxN data redistribution (1D Block distribution) */
 } e_SD_task_kind_t;
 
-/** @brief Storage datatype
-    @ingroup SD_datatypes_management
-
-    @see SD_storage_management */
-typedef xbt_dictelm_t SD_storage_t;
 
 /************************** Workstation handling ****************************/
-/** @defgroup sg_host_management Hosts
- *  @brief Functions for managing the Hosts
- *
- *  This section describes the functions for managing the hosts.
+/** @addtogroup SD_host_api
  *
  *  A host is a place where a task can be executed.
  *  A host is represented as a <em>physical resource with computing capabilities</em> and has a <em>name</em>.
  *
- *  The hosts are created when you call the function SD_create_environment.
+ *  The hosts are created from the description file when you call the function SD_create_environment.
  *
  *  @see sg_host_t
  *  @{
  */
 XBT_PUBLIC(SD_link_t *) SD_route_get_list(sg_host_t src, sg_host_t dst);
 XBT_PUBLIC(int) SD_route_get_size(sg_host_t src, sg_host_t dst);
-
 XBT_PUBLIC(double) SD_route_get_latency(sg_host_t src, sg_host_t dst);
 XBT_PUBLIC(double) SD_route_get_bandwidth(sg_host_t src, sg_host_t dst);
-
-XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
 /** @} */
 
 /************************** Task handling ************************************/
-/** @defgroup SD_task_management Tasks
+/** @defgroup SD_task_api Tasks
  *  @brief Functions for managing the tasks
  *
  *  This section describes the functions for managing the tasks.
@@ -102,7 +88,7 @@ XBT_PUBLIC(const char*) SD_storage_get_host(SD_storage_t storage);
  *  A task may depend on other tasks, which means that the task cannot start until the other tasks are done.
  *  Each task has a <em>\ref e_SD_task_state_t "state"</em> indicating whether the task is scheduled, running, done, ...
  *
- *  @see SD_task_t, SD_task_dependency_management
+ *  @see SD_task_t, @see SD_task_dependency_api
  *  @{
  */
 XBT_PUBLIC(SD_task_t) SD_task_create(const char *name, void *data, double amount);
@@ -119,10 +105,10 @@ XBT_PUBLIC(double) SD_task_get_amount(SD_task_t task);
 XBT_PUBLIC(void) SD_task_set_amount(SD_task_t task, double amount);
 XBT_PUBLIC(double) SD_task_get_alpha(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_remaining_amount(SD_task_t task);
-XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+XBT_PUBLIC(double) SD_task_get_execution_time(SD_task_t task, int host_count, const sg_host_t *host_list,
                                               const double *flops_amount, const double *bytes_amount);
 XBT_PUBLIC(e_SD_task_kind_t) SD_task_get_kind(SD_task_t task);
-XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int workstation_nb, const sg_host_t *workstation_list,
+XBT_PUBLIC(void) SD_task_schedule(SD_task_t task, int host_count, const sg_host_t *host_list,
                                   const double *flops_amount, const double *bytes_amount, double rate);
 XBT_PUBLIC(void) SD_task_unschedule(SD_task_t task);
 XBT_PUBLIC(double) SD_task_get_start_time(SD_task_t task);
@@ -141,38 +127,35 @@ XBT_PUBLIC(SD_task_t) SD_task_create_comm_e2e(const char *name, void *data, doub
 XBT_PUBLIC(SD_task_t) SD_task_create_comm_par_mxn_1d_block(const char *name, void *data, double amount);
 
 XBT_PUBLIC(void) SD_task_distribute_comp_amdahl(SD_task_t task, int ws_count);
+XBT_PUBLIC(void) SD_task_build_MxN_1D_block_matrix(SD_task_t task, int src_nb, int dst_nb);
 XBT_PUBLIC(void) SD_task_schedulev(SD_task_t task, int count, const sg_host_t * list);
 XBT_PUBLIC(void) SD_task_schedulel(SD_task_t task, int count, ...);
 
 
 /** @brief A constant to use in SD_task_schedule to mean that there is no cost.
  *
- *  For example, create a pure computation task (no comm) like this:
+ *  For example, create a pure computation task (i.e., with no communication) like this:
  *
- *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_TASK_SCHED_NO_COST, my_rate);
+ *  SD_task_schedule(task, my_host_count, my_host_list, my_flops_amount, SD_SCHED_NO_COST, my_rate);
  */
 #define SD_SCHED_NO_COST NULL
 
 /** @} */
 
-/** @defgroup SD_task_dependency_management Tasks dependencies
- *  @brief Functions for managing the task dependencies
- *
+/** @addtogroup SD_task_dependency_api 
+ * 
  *  This section describes the functions for managing the dependencies between the tasks.
  *
- *  @see SD_task_management
+ *  @see SD_task_api
  *  @{
  */
 XBT_PUBLIC(void) SD_task_dependency_add(const char *name, void *data, SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(void) SD_task_dependency_remove(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(const char *) SD_task_dependency_get_name(SD_task_t src, SD_task_t dst);
-XBT_PUBLIC(void *) SD_task_dependency_get_data(SD_task_t src, SD_task_t dst);
 XBT_PUBLIC(int) SD_task_dependency_exists(SD_task_t src, SD_task_t dst);
 /** @} */
 
 /************************** Global *******************************************/
-/** @defgroup SD_simulation Simulation
- *  @brief Functions for creating the environment and launching the simulation
+/** @addtogroup SD_simulation Simulation
  *
  *  This section describes the functions for initializing SimDag, launching the simulation and exiting SimDag.
  *
@@ -182,13 +165,19 @@ XBT_PUBLIC(void) SD_init(int *argc, char **argv);
 XBT_PUBLIC(void) SD_config(const char *key, const char *value);
 XBT_PUBLIC(void) SD_create_environment(const char *platform_file);
 XBT_PUBLIC(xbt_dynar_t) SD_simulate(double how_long);
-XBT_PUBLIC(double) SD_get_clock(void);
-XBT_PUBLIC(void) SD_exit(void);
+XBT_PUBLIC(double) SD_get_clock();
+XBT_PUBLIC(void) SD_exit();
 XBT_PUBLIC(xbt_dynar_t) SD_daxload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_dotload_with_sched(const char *filename);
 XBT_PUBLIC(xbt_dynar_t) SD_PTG_dotload(const char *filename);
-
+#ifdef __cplusplus
+namespace simgrid {
+namespace sd {
+XBT_PUBLIC(std::set<SD_task_t>*) simulate(double how_long);
+}
+}
+#endif
 /** @} */
 
 /* Support some backward compatibility */

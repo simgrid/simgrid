@@ -9,7 +9,7 @@
 
 #include <simgrid/forward.h>
 
-typedef struct vm_params {
+struct vm_params {
   int ncpus;
   sg_size_t ramsize;
   int overcommit;
@@ -26,6 +26,8 @@ typedef struct vm_params {
 
   /* set migration speed */
   double mig_speed;
-} s_vm_params_t, *vm_params_t;
+};
+typedef struct vm_params  s_vm_params_t;
+typedef struct vm_params* vm_params_t;
 
 #endif /* SIMGRID_DATATYPES_H_ */

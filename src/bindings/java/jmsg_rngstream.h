@@ -15,42 +15,30 @@ SG_BEGIN_DECL()
 
 RngStream jrngstream_to_native(JNIEnv *env, jobject jrngstream);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_nativeInit(JNIEnv *env, jclass cls);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_nativeInit(JNIEnv *env, jclass cls);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_create(JNIEnv *env, jobject jrngstream, jstring name);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_create(JNIEnv *env, jobject jrngstream, jstring name);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_nativeFinalize(JNIEnv *env, jobject jrngstream);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_nativeFinalize(JNIEnv *env, jobject jrngstream);
 
 JNIEXPORT jboolean JNICALL
 Java_org_simgrid_msg_RngStream_setPackageSeed(JNIEnv *env, jobject jrngstream, jintArray seed);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_resetStart(JNIEnv *env, jobject jrngstream);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetStart(JNIEnv *env, jobject jrngstream);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_resetStartSubstream(JNIEnv *env, jobject jrngstream);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetStartSubstream(JNIEnv *env, jobject jrngstream);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_resetNextSubstream(JNIEnv *env, jobject jrngstream);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_resetNextSubstream(JNIEnv *env, jobject jrngstream);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_setAntithetic(JNIEnv *env, jobject jrngstream, jboolean ja);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_setAntithetic(JNIEnv *env, jobject jrngstream, jboolean ja);
 
-JNIEXPORT jboolean JNICALL
-Java_org_simgrid_msg_RngStream_setSeed(JNIEnv *env, jobject jrngstream, jintArray jseed);
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_RngStream_setSeed(JNIEnv *env, jobject jrngstream, jintArray jseed);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_RngStream_advanceState(JNIEnv *env, jobject jrngstream, jint e, jint g);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_RngStream_advanceState(JNIEnv *env, jobject jrngstream, jint e, jint g);
 
-JNIEXPORT jdouble JNICALL
-Java_org_simgrid_msg_RngStream_randU01(JNIEnv *env, jobject jrngstream);
+JNIEXPORT jdouble JNICALL Java_org_simgrid_msg_RngStream_randU01(JNIEnv *env, jobject jrngstream);
 
-JNIEXPORT jint JNICALL
-Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobject jrngstream, jint i, jint j);
+JNIEXPORT jint JNICALL Java_org_simgrid_msg_RngStream_randInt(JNIEnv *env, jobject jrngstream, jint i, jint j);
 
 SG_END_DECL()
-
 #endif                          /* MSG_RNGSTREAM_H */

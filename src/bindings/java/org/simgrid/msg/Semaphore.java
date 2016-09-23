@@ -34,6 +34,7 @@ public class Semaphore {
 	/** Locks on the semaphore object until the provided timeout expires
 	 * @exception TimeoutException if the timeout expired before 
 	 *            the semaphore could be acquired.
+	 * @param timeout the duration of the lock
 	 */
 	public native void acquire(double timeout) throws TimeoutException;
 	/** Locks on the semaphore object with no timeout
@@ -42,8 +43,8 @@ public class Semaphore {
 		try {
 			acquire(-1);
 		} catch (TimeoutException e) {
-			// This should not happen.
-			assert(false);
+			e.printStackTrace(); // This should not happen.
+			assert false ;
 		}
 	}
 	/** Releases the semaphore object
@@ -66,13 +67,8 @@ public class Semaphore {
 
 
 	/** Deletes this semaphore when the GC reclaims it */
-	@Override
-	protected void finalize() {
-		try {
-			nativeFinalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	protected void finalize() throws Throwable {
+		nativeFinalize();
 	}
 	private native void nativeFinalize();
 	/**

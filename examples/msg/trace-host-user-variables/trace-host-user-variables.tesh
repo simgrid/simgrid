@@ -1,0 +1,22 @@
+#! ./tesh
+
+p Tracing user variables for hosts
+$ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT --cfg=tracing:yes  --cfg=tracing/platform:yes ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/app-masterworker/app-masterworker_d.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/platform' to 'yes'
+> [0.004078] [msg_test/INFO] Declared host variables:
+> [0.004078] [msg_test/INFO] HDD_capacity
+> [0.004078] [msg_test/INFO] HDD_utilization
+> [0.004078] [msg_test/INFO] Declared link variables:
+> [0.004078] [msg_test/INFO] Node types in the trace:
+> [0.004078] [msg_test/INFO] LINK
+> [0.004078] [msg_test/INFO] HOST
+> [0.004078] [msg_test/INFO] Node types in the trace:
+> [0.004078] [msg_test/INFO] 0-LINK3-LINK3
+> [0.004078] [msg_test/INFO] 0-HOST1-LINK3
+> [0.004078] [msg_test/INFO] 0-LINK3-HOST1
+
+$ rm -f viva_graph.plist
+
+p Not tracing user variables
+$ $SG_TEST_EXENV ${bindir:=.}/trace-host-user-variables$EXEEXT ${srcdir:=.}/small_platform.xml ${srcdir:=.}/../msg/app-masterworker/app-masterworker_d.xml

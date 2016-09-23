@@ -1,4 +1,4 @@
-/*  xbt/asserts.h -- assertion mecanism                                     */
+/*  xbt/asserts.h -- assertion mechanism                                    */
 
 /* Copyright (c) 2005-2007, 2009-2014. The SimGrid Team.
  * All rights reserved.                                                     */

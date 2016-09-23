@@ -1,3 +1,0 @@
-! output sort
-$ ${bindir:=.}/simdag/platforms/basic_parsing_test --cfg=path:simdag/platforms one_host_trace_file.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
-> [  0.000000] (0:maestro@) Configuration change: Set 'path' to 'simdag/platforms'

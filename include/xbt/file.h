@@ -18,8 +18,8 @@
 
 SG_BEGIN_DECL()
 
-/** @addtogroup XBT_file
- *  @brief File manipulation functions
+/** @defgroup XBT_file File manipulation functions
+ *  @ingroup XBT_misc
  *
  * This module redefine some quite classical functions such as xbt_getline() or xbt_dirname() for the platforms
  * lacking them.

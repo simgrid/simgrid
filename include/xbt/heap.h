@@ -15,6 +15,9 @@ SG_BEGIN_DECL()
 /** @addtogroup XBT_heap
  *  @brief This section describes the API to generic heap with O(log(n)) access.
  *
+ *  @deprecated If you are using C++ you might want to use `std::priority_queue`
+ *  instead.
+ *
  *  @{
  */
 /* @brief heap datatype */
@@ -36,4 +39,5 @@ XBT_PUBLIC(void ) xbt_heap_update(xbt_heap_t H, int i, double key);
 
 /* @} */
 SG_END_DECL()
+
 #endif                          /* _XBT_HEAP_H */

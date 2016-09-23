@@ -97,6 +97,8 @@ int main(int argc, char *argv[])
             MPI_Win_fence(0, win);
         }
         MPI_Win_free(&win);
+        free(A);
+        free(A_data);
     }
     MPI_Comm_free(&CommDeuce);
     MTest_Finalize(errs);

@@ -1,7 +1,6 @@
 /* log - a generic logging facility in the spirit of log4j                  */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -18,13 +17,12 @@
  *  This is the list of all existing log categories in SimGrid.
  *  This list is automatically extracted from the source code by the tools/doxygen/xbt_log_extract_hierarchy.pl utility.
  *
- *  You can thus be certain that it is uptodate, but it may somehow lack a final manual touch.
- *  Anyway, nothing's perfect ;)
+ *  It should thus contain every categories that are defined in the SimGrid library. 
+ *  If you want to see the one defined in your code in addition, provide `--help-logs` on the command line of your simulator.
  */
 
 /* XBT_LOG_MAYDAY: define this to replace the logging facilities with basic
-   printf function. Useful to debug the logging facilities themselves */
-#undef XBT_LOG_MAYDAY
+   printf function. Useful to debug the logging facilities themselves, or to not make source analysis tools mad */
 //#define XBT_LOG_MAYDAY
 
 #ifndef _XBT_LOG_H_
@@ -239,10 +237,14 @@ typedef enum {
 XBT_PUBLIC(void) xbt_log_control_set(const char *cs);
 
 /* Forward declarations */
-typedef struct xbt_log_appender_s s_xbt_log_appender_t, *xbt_log_appender_t;
-typedef struct xbt_log_layout_s s_xbt_log_layout_t, *xbt_log_layout_t;
-typedef struct xbt_log_event_s s_xbt_log_event_t, *xbt_log_event_t;
-typedef struct xbt_log_category_s s_xbt_log_category_t, *xbt_log_category_t;
+typedef struct xbt_log_appender_s  s_xbt_log_appender_t;
+typedef struct xbt_log_appender_s* xbt_log_appender_t;
+typedef struct xbt_log_layout_s  s_xbt_log_layout_t;
+typedef struct xbt_log_layout_s* xbt_log_layout_t;
+typedef struct xbt_log_event_s  s_xbt_log_event_t;
+typedef struct xbt_log_event_s* xbt_log_event_t;
+typedef struct xbt_log_category_s  s_xbt_log_category_t;
+typedef struct xbt_log_category_s* xbt_log_category_t;
 
 /* Do NOT access any members of this structure directly. FIXME: move to private? */
 
@@ -397,7 +399,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
       _log_ev.cat = &(category);                                        \
       _log_ev.priority = (prio);                                        \
       _log_ev.fileName = __FILE__;                                      \
-      _log_ev.functionName = _XBT_FUNCTION;                             \
+      _log_ev.functionName = __func__;                             \
       _log_ev.lineNum = __LINE__;                                       \
       _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
     }                                                                   \
@@ -410,7 +412,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
       _log_ev.cat = _simgrid_log_category__default;                     \
       _log_ev.priority = (prio);                                        \
       _log_ev.fileName = __FILE__;                                      \
-      _log_ev.functionName = _XBT_FUNCTION;                             \
+      _log_ev.functionName = __func__;                             \
       _log_ev.lineNum = __LINE__;                                       \
       _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
     }                                                                   \
@@ -430,7 +432,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = &(_XBT_LOGV(categ));                                \
           _log_ev.priority = xbt_log_priority_debug;                        \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -447,7 +449,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = &(_XBT_LOGV(categ));                                \
           _log_ev.priority = xbt_log_priority_verbose;                      \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -464,7 +466,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = &(_XBT_LOGV(categ));                                \
           _log_ev.priority = xbt_log_priority_info;                         \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -482,7 +484,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = &(_XBT_LOGV(categ));                                \
           _log_ev.priority = xbt_log_priority_warning;                      \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -500,7 +502,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = &(_XBT_LOGV(categ));                                \
           _log_ev.priority = xbt_log_priority_error;                        \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -517,7 +519,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = &(_XBT_LOGV(categ));                                \
           _log_ev.priority = xbt_log_priority_critical;                     \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -536,7 +538,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = _simgrid_log_category__default;                     \
           _log_ev.priority = xbt_log_priority_debug;                        \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                              \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -554,7 +556,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = _simgrid_log_category__default;                     \
           _log_ev.priority = xbt_log_priority_verbose;                      \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -572,7 +574,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = _simgrid_log_category__default;                     \
           _log_ev.priority = xbt_log_priority_info;                         \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -590,7 +592,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = _simgrid_log_category__default;                     \
           _log_ev.priority = xbt_log_priority_warning;                      \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -608,7 +610,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = _simgrid_log_category__default;                     \
           _log_ev.priority = xbt_log_priority_error;                        \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -626,7 +628,7 @@ extern xbt_log_layout_t xbt_log_default_layout;
           _log_ev.cat = _simgrid_log_category__default;                     \
           _log_ev.priority = xbt_log_priority_critical;                     \
           _log_ev.fileName = __FILE__;                                      \
-          _log_ev.functionName = _XBT_FUNCTION;                             \
+          _log_ev.functionName = __func__;                             \
           _log_ev.lineNum = __LINE__;                                       \
           _xbt_log_event_log(&_log_ev, __VA_ARGS__);                        \
         }                                                                   \
@@ -635,9 +637,9 @@ extern xbt_log_layout_t xbt_log_default_layout;
 #define _XBT_IN_OUT(...) \
   _XBT_IF_ONE_ARG(_XBT_IN_OUT_ARG1, _XBT_IN_OUT_ARGN, __VA_ARGS__)(__VA_ARGS__)
 #define _XBT_IN_OUT_ARG1(fmt) \
-  XBT_LOG(xbt_log_priority_trace, fmt, _XBT_FUNCTION)
+  XBT_LOG(xbt_log_priority_trace, fmt, __func__)
 #define _XBT_IN_OUT_ARGN(fmt, ...) \
-  XBT_LOG(xbt_log_priority_trace, fmt, _XBT_FUNCTION, __VA_ARGS__)
+  XBT_LOG(xbt_log_priority_trace, fmt, __func__, __VA_ARGS__)
 
 /** @ingroup XBT_log
  *  @hideinitializer

@@ -25,7 +25,7 @@ public final class Trace {
 	 * @param variable
 	 * @param color
 	 */
-	public final static native	void hostVariableDeclareWithColor (String variable, String color);
+	public final static native void hostVariableDeclareWithColor (String variable, String color);
 
 
 	/**
@@ -35,7 +35,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void hostVariableAdd (String host, String variable, double value);
+	public final static native void hostVariableAdd (String host, String variable, double value);
 
 	/**
 	 * Subtract a value from a variable of a host. 
@@ -44,7 +44,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void hostVariableSub (String host, String variable, double value);
+	public final static native void hostVariableSub (String host, String variable, double value);
 
 	/**
 	 * Set the value of a variable of a host at a given timestamp. 
@@ -54,7 +54,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void hostVariableSetWithTime (double time, String host, String variable, double value);
+	public final static native void hostVariableSetWithTime (double time, String host, String variable, double value);
 
 	/**
 	 * 	Add a value to a variable of a host at a given timestamp. 
@@ -64,7 +64,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void hostVariableAddWithTime (double time, String host, String variable, double value);
+	public final static native void hostVariableAddWithTime (double time, String host, String variable, double value);
 
 	/**
 	 * Subtract a value from a variable of a host at a given timestamp.  
@@ -74,7 +74,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void hostVariableSubWithTime (double time, String host, String variable, double value);
+	public final static native void hostVariableSubWithTime (double time, String host, String variable, double value);
 
 	/**
 	 *  Get declared user host variables. 
@@ -87,14 +87,14 @@ public final class Trace {
 	 *  
 	 * @param variable
 	 */
-	public final static native	void linkVariableDeclare (String variable);
+	public final static native void linkVariableDeclare (String variable);
 
 	/**
 	 * Declare a new user variable associated to links with a color. 
 	 * @param variable
 	 * @param color
 	 */
-	public final static native	void linkVariableDeclareWithColor (String variable, String color);
+	public final static native void linkVariableDeclareWithColor (String variable, String color);
 
 	/**
 	 *  Set the value of a variable of a link. 
@@ -103,7 +103,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkVariableSet (String link, String variable, double value);
+	public final static native void linkVariableSet (String link, String variable, double value);
 
 	/**
 	 * Add a value to a variable of a link. 
@@ -112,7 +112,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkVariableAdd (String link, String variable, double value);
+	public final static native void linkVariableAdd (String link, String variable, double value);
 
 	/**
 	 * Subtract a value from a variable of a link. 
@@ -121,7 +121,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkVariableSub (String link, String variable, double value);
+	public final static native void linkVariableSub (String link, String variable, double value);
 
 	/**
 	 *  Set the value of a variable of a link at a given timestamp. 
@@ -131,7 +131,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkVariableSetWithTime (double time, String link, String variable, double value);
+	public final static native void linkVariableSetWithTime (double time, String link, String variable, double value);
 
 	/**
 	 * Add a value to a variable of a link at a given timestamp.
@@ -141,7 +141,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkVariableAddWithTime (double time, String link, String variable, double value);
+	public final static native void linkVariableAddWithTime (double time, String link, String variable, double value);
 
 
 	/**
@@ -152,7 +152,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkVariableSubWithTime (double time, String link, String variable, double value);
+	public final static native void linkVariableSubWithTime (double time, String link, String variable, double value);
 
 	/**
 	 * Set the value of the variable present in the links connecting source and destination. 
@@ -162,7 +162,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkSrcDstVariableSet (String src, String dst, String variable, double value);
+	public final static native void linkSrcDstVariableSet (String src, String dst, String variable, double value);
 
 	/**
 	 * Add a value to the variable present in the links connecting source and destination. 
@@ -172,7 +172,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkSrcDstVariableAdd (String src, String dst, String variable, double value);
+	public final static native void linkSrcDstVariableAdd (String src, String dst, String variable, double value);
 
 	/**
 	 * Subtract a value from the variable present in the links connecting source and destination. 
@@ -182,7 +182,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkSrcDstVariableSub (String src, String dst, String variable, double value);
+	public final static native void linkSrcDstVariableSub (String src, String dst, String variable, double value);
 
 	/**
 	 *  Set the value of the variable present in the links connecting source and destination at a given timestamp. 
@@ -193,7 +193,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkSrcDstVariableSetWithTime (double time, String src, String dst, String variable, double value);
+	public final static native void linkSrcDstVariableSetWithTime (double time, String src, String dst, String variable, double value);
 
 	/**
 	 * Add a value to the variable present in the links connecting source and destination at a given timestamp. 
@@ -204,7 +204,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkSrcdstVariableAddWithTime (double time, String src, String dst, String variable, double value);
+	public final static native void linkSrcdstVariableAddWithTime (double time, String src, String dst, String variable, double value);
 
 	/**
 	 * Subtract a value from the variable present in the links connecting source and destination at a given timestamp. 
@@ -215,7 +215,7 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void linkSrcDstVariableSubWithTime (double time, String src, String dst, String variable, double value);
+	public final static native void linkSrcDstVariableSubWithTime (double time, String src, String dst, String variable, double value);
 
 	/**
 	 *  Get declared user link variables.  
@@ -279,7 +279,7 @@ public final class Trace {
 	 * 
 	 * @param variable
 	 */
-	public final static native	void hostVariableDeclare (String variable);
+	public final static native void hostVariableDeclare (String variable);
 
 
 	/**
@@ -289,14 +289,14 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void hostVariableSet (String host, String variable, double value);
+	public final static native void hostVariableSet (String host, String variable, double value);
 
 	/**
 	 * Declare a new user variable associated to VMs. 
 	 * 
 	 * @param variable
 	 */
-	public final static native	void vmVariableDeclare (String variable);
+	public final static native void vmVariableDeclare (String variable);
 
 
 	/**
@@ -306,5 +306,5 @@ public final class Trace {
 	 * @param variable
 	 * @param value
 	 */
-	public final static native	void vmVariableSet (String vm, String variable, double value);
+	public final static native void vmVariableSet (String vm, String variable, double value);
 }

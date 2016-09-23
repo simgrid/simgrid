@@ -20,9 +20,9 @@ do_cleanup() {
 
 ### Check the node installation
 
-for pkg in xsltproc valgrind gcovr
+for pkg in valgrind pcregrep
 do
-   if dpkg -l |grep -q $pkg 
+   if command -v $pkg
    then 
       echo "$pkg is installed. Good."
    else 
@@ -42,41 +42,28 @@ do
   mkdir "$d" || die "Could not create $d"
 done
 
+NUMPROC="$(nproc)" || NUMPROC=1
+
 cd $WORKSPACE/build
 
 ### Proceed with the tests
 ctest -D ExperimentalStart || true
 
-cmake -Denable_documentation=OFF -Denable_lua=OFF -Denable_tracing=ON \
+cmake -Denable_documentation=OFF -Denable_lua=OFF  \
       -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
-      -Denable_latency_bound_tracking=OFF -Denable_jedule=OFF -Denable_mallocators=OFF \
-      -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=OFF -Denable_model-checking=OFF \
+      -Denable_jedule=OFF -Denable_mallocators=OFF \
+      -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=OFF \
       -Denable_memcheck_xml=ON $WORKSPACE
 
-ctest -D ExperimentalBuild -V
-ctest -D ExperimentalMemCheck || true
+
+make -j$NUMPROC
+ctest -D ExperimentalTest -j$NUMPROC || true
 
 cd $WORKSPACE/build
 if [ -f Testing/TAG ] ; then
-   find . -iname "*.memcheck" -exec mv {} $WORKSPACE/memcheck \;
-   mv Testing/`head -n 1 < Testing/TAG`/DynamicAnalysis.xml  $WORKSPACE
+   find $WORKSPACE -iname "*.memcheck" -exec mv {} $WORKSPACE/memcheck \;
+   #remove all "empty" files
+   pcregrep -r -l -M "status\>\n\n\<errorcounts" $WORKSPACE/memcheck/* | xargs rm -f
+   mv Testing/`head -n 1 < Testing/TAG`/Test.xml  $WORKSPACE/DynamicAnalysis.xml
 fi
 
-make clean
-ctest -D ExperimentalStart || true
-
-cmake -Denable_documentation=OFF -Denable_lua=ON -Denable_java=ON -Denable_tracing=ON \
-      -Denable_compile_optimizations=OFF -Denable_compile_warnings=ON \
-      -Denable_latency_bound_tracking=ON -Denable_jedule=ON -Denable_mallocators=ON \
-      -Denable_smpi=ON -Denable_smpi_MPICH3_testsuite=ON -Denable_model-checking=ON \
-      -Denable_memcheck=OFF -Denable_memcheck_xml=OFF -Denable_smpi_ISP_testsuite=ON -Denable_coverage=ON $WORKSPACE
-
-ctest -D ExperimentalBuild -V
-ctest -D ExperimentalTest -E liveness || true
-ctest -D ExperimentalCoverage || true
-
-if [ -f Testing/TAG ] ; then
-   gcovr -r .. --xml-pretty -e teshsuite.* -u -o $WORKSPACE/xml_coverage.xml
-   xsltproc $WORKSPACE/tools/jenkins/ctest2junit.xsl Testing/`head -n 1 < Testing/TAG`/Test.xml > CTestResults_memcheck.xml
-   mv CTestResults_memcheck.xml $WORKSPACE
-fi

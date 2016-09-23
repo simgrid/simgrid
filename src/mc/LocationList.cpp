@@ -112,7 +112,7 @@ LocationList location_list(
     locations.push_back({ DwarfExpression(ops, ops+len), range });
   }
 
-  return std::move(locations);
+  return locations;
 }
 
 

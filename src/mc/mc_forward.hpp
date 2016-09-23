@@ -4,7 +4,7 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/** \file mc_forward.hpp
+/** @file mc_forward.hpp
  *
  *  Forward definitions for MC types
  */
@@ -26,11 +26,13 @@ class Member;
 class Type;
 class Variable;
 class Frame;
+class SimixProcessInformation;
+
+class Session;
+class Checker;
 
 }
 }
-
-struct s_mc_smx_process_info;
 
 // TODO, try to get rid of the global ModelChecker variable
 extern simgrid::mc::ModelChecker* mc_model_checker;

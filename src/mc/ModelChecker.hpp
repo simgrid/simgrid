@@ -10,10 +10,12 @@
 #include <sys/types.h>
 
 #include <poll.h>
+
 #include <memory>
+#include <set>
+#include <string>
 
 #include <simgrid_config.h>
-#include <xbt/dict.h>
 #include <xbt/base.h>
 #include <sys/types.h>
 
@@ -21,6 +23,7 @@
 #include "src/mc/Process.hpp"
 #include "src/mc/PageStore.hpp"
 #include "src/mc/mc_protocol.h"
+#include "src/mc/Transition.hpp"
 
 namespace simgrid {
 namespace mc {
@@ -30,13 +33,14 @@ namespace mc {
 class ModelChecker {
   struct pollfd fds_[2];
   /** String pool for host names */
-  // TODO, use std::unordered_set with heterogeneous comparison lookup (C++14)
-  xbt_dict_t /* <hostname, nullptr> */ hostnames_;
+  // TODO, use std::set with heterogeneous comparison lookup (C++14)?
+  std::set<std::string> hostnames_;
   // This is the parent snapshot of the current state:
   PageStore page_store_;
   std::unique_ptr<Process> process_;
+  Checker* checker_ = nullptr;
 public:
-  mc_snapshot_t parent_snapshot_;
+  std::shared_ptr<simgrid::mc::Snapshot> parent_snapshot_;
 
 public:
   ModelChecker(ModelChecker const&) = delete;
@@ -52,11 +56,14 @@ public:
   {
     return page_store_;
   }
-  const char* get_host_name(const char* name);
 
-  bool is_important_snapshot(Snapshot const& snapshot) const
+  std::string const& get_host_name(const char* hostname)
   {
-    return &snapshot == this->parent_snapshot_;
+    return *this->hostnames_.insert(hostname).first;
+  }
+  std::string const& get_host_name(std::string const& hostname)
+  {
+    return *this->hostnames_.insert(hostname).first;
   }
 
   void start();
@@ -65,12 +72,18 @@ public:
   void loop();
   bool handle_events();
   void wait_client(simgrid::mc::Process& process);
-  void simcall_handle(simgrid::mc::Process& process, unsigned long pid, int value);
+  void handle_simcall(Transition const& transition);
   void wait_for_requests()
   {
     mc_model_checker->wait_client(mc_model_checker->process());
   }
   void exit(int status);
+
+  bool checkDeadlock();
+
+  Checker* getChecker() const { return checker_; }
+  void setChecker(Checker* checker) { checker_ = checker; }
+
 private:
   void setup_ignore();
   bool handle_message(char* buffer, ssize_t size);
@@ -78,6 +91,9 @@ private:
   void handle_waitpid();
   void on_signal(const struct signalfd_siginfo* info);
 
+public:
+  unsigned long visited_states = 0;
+  unsigned long executed_transitions = 0;
 };
 
 }

@@ -1,0 +1,213 @@
+$ $SG_TEST_EXENV ${bindir:=.}/cloud-capping ${srcdir:=.}/small_platform.xml --log=no_loc "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:master_@Fafard) # 1. Put a single task on a PM. 
+> [  0.000000] (1:master_@Fafard) ### Test: with/without MSG_task_set_bound
+> [  0.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard
+> [ 10.000000] (2:worker0@Fafard) not bound => duration 10.000000 (76296000.000000 flops/s)
+> [1000.000000] (1:master_@Fafard) ### Test: 50% for Task1@Fafard
+> [1020.000000] (3:worker0@Fafard) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [2000.000000] (1:master_@Fafard) ### Test: 33% for Task1@Fafard
+> [2030.000000] (4:worker0@Fafard) bound to 25432000.000000 => duration 30.000000 (25432000.000000 flops/s)
+> [3000.000000] (1:master_@Fafard) ### Test: zero for Task1@Fafard (i.e., unlimited)
+> [3000.000000] (5:worker0@Fafard) bound == 0 means no capping (i.e., unlimited).
+> [3010.000000] (5:worker0@Fafard) bound to 0.000000 => duration 10.000000 (76296000.000000 flops/s)
+> [4000.000000] (1:master_@Fafard) ### Test: 200% for Task1@Fafard (i.e., meaningless)
+> [4010.000000] (6:worker0@Fafard) bound to 152592000.000000 => duration 10.000000 (76296000.000000 flops/s)
+> [5000.000000] (1:master_@Fafard)  
+> [5000.000000] (1:master_@Fafard) # 2. Put two tasks on a PM.
+> [5000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, no bound for Task2@Fafard
+> [5020.000000] (8:worker1@Fafard) not bound => duration 20.000000 (38148000.000000 flops/s)
+> [5020.000000] (7:worker0@Fafard) not bound => duration 20.000000 (38148000.000000 flops/s)
+> [6000.000000] (1:master_@Fafard) ### Test: 0 for Task1@Fafard, 0 for Task2@Fafard (i.e., unlimited)
+> [6000.000000] (9:worker0@Fafard) bound == 0 means no capping (i.e., unlimited).
+> [6000.000000] (10:worker1@Fafard) bound == 0 means no capping (i.e., unlimited).
+> [6020.000000] (10:worker1@Fafard) bound to 0.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [6020.000000] (9:worker0@Fafard) bound to 0.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [7000.000000] (1:master_@Fafard) ### Test: 50% for Task1@Fafard, 50% for Task2@Fafard
+> [7020.000000] (12:worker1@Fafard) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [7020.000000] (11:worker0@Fafard) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [8000.000000] (1:master_@Fafard) ### Test: 25% for Task1@Fafard, 25% for Task2@Fafard
+> [8040.000000] (14:worker1@Fafard) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [8040.000000] (13:worker0@Fafard) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [9000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 100% for Task2@Fafard
+> [9020.000000] (16:worker1@Fafard) bound to 76296000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [9020.000000] (15:worker0@Fafard) bound to 57222000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [10000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, 25% for Task2@Fafard
+> [10013.333333] (17:worker0@Fafard) not bound => duration 13.333333 (57221999.999997 flops/s)
+> [10040.000000] (18:worker1@Fafard) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [11000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 25% for Task2@Fafard
+> [11013.333333] (19:worker0@Fafard) bound to 57222000.000000 => duration 13.333333 (57221999.999997 flops/s)
+> [11040.000000] (20:worker1@Fafard) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [12000.000000] (1:master_@Fafard)  
+> [12000.000000] (1:master_@Fafard) # 3. Put a single task on a VM. 
+> [12000.000000] (1:master_@Fafard) ### Test: with/without MSG_task_set_bound
+> [12000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0
+> [12010.000000] (21:worker0@VM0) not bound => duration 10.000000 (76296000.000000 flops/s)
+> [13000.000000] (1:master_@Fafard) ### Test: 50% for Task1@VM0
+> [13020.000000] (22:worker0@VM0) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [14000.000000] (1:master_@Fafard) ### Test: 33% for Task1@VM0
+> [14030.000000] (23:worker0@VM0) bound to 25432000.000000 => duration 30.000000 (25432000.000000 flops/s)
+> [15000.000000] (1:master_@Fafard) ### Test: zero for Task1@VM0 (i.e., unlimited)
+> [15000.000000] (24:worker0@VM0) bound == 0 means no capping (i.e., unlimited).
+> [15010.000000] (24:worker0@VM0) bound to 0.000000 => duration 10.000000 (76296000.000000 flops/s)
+> [16000.000000] (1:master_@Fafard) ### Test: 200% for Task1@VM0 (i.e., meaningless)
+> [16010.000000] (25:worker0@VM0) bound to 152592000.000000 => duration 10.000000 (76296000.000000 flops/s)
+> [17000.000000] (1:master_@Fafard)  
+> [17000.000000] (1:master_@Fafard) # 4. Put two tasks on a VM.
+> [17000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0, no bound for Task2@VM0
+> [17020.000000] (27:worker1@VM0) not bound => duration 20.000000 (38148000.000000 flops/s)
+> [17020.000000] (26:worker0@VM0) not bound => duration 20.000000 (38148000.000000 flops/s)
+> [18000.000000] (1:master_@Fafard) ### Test: 0 for Task1@VM0, 0 for Task2@VM0 (i.e., unlimited)
+> [18000.000000] (28:worker0@VM0) bound == 0 means no capping (i.e., unlimited).
+> [18000.000000] (29:worker1@VM0) bound == 0 means no capping (i.e., unlimited).
+> [18020.000000] (29:worker1@VM0) bound to 0.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [18020.000000] (28:worker0@VM0) bound to 0.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [19000.000000] (1:master_@Fafard) ### Test: 50% for Task1@VM0, 50% for Task2@VM0
+> [19020.000000] (31:worker1@VM0) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [19020.000000] (30:worker0@VM0) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [20000.000000] (1:master_@Fafard) ### Test: 25% for Task1@VM0, 25% for Task2@VM0
+> [20040.000000] (33:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [20040.000000] (32:worker0@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [21000.000000] (1:master_@Fafard) ### Test: 75% for Task1@VM0, 100% for Task2@VM0
+> [21020.000000] (35:worker1@VM0) bound to 76296000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [21020.000000] (34:worker0@VM0) bound to 57222000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [22000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0, 25% for Task2@VM0
+> [22013.333333] (36:worker0@VM0) not bound => duration 13.333333 (57222000.000005 flops/s)
+> [22040.000000] (37:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [23000.000000] (1:master_@Fafard) ### Test: 75% for Task1@VM0, 25% for Task2@VM0
+> [23013.333333] (38:worker0@VM0) bound to 57222000.000000 => duration 13.333333 (57222000.000005 flops/s)
+> [23040.000000] (39:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [24000.000000] (1:master_@Fafard)  
+> [24000.000000] (1:master_@Fafard) # 6. Put a task on a PM and a task on a VM.
+> [24000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, no bound for Task2@VM0
+> [24020.000000] (40:worker0@Fafard) not bound => duration 20.000000 (38148000.000000 flops/s)
+> [24020.000000] (41:worker1@VM0) not bound => duration 20.000000 (38148000.000000 flops/s)
+> [25000.000000] (1:master_@Fafard) ### Test: 0 for Task1@Fafard, 0 for Task2@VM0 (i.e., unlimited)
+> [25000.000000] (42:worker0@Fafard) bound == 0 means no capping (i.e., unlimited).
+> [25000.000000] (43:worker1@VM0) bound == 0 means no capping (i.e., unlimited).
+> [25020.000000] (42:worker0@Fafard) bound to 0.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [25020.000000] (43:worker1@VM0) bound to 0.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [26000.000000] (1:master_@Fafard) ### Test: 50% for Task1@Fafard, 50% for Task2@VM0
+> [26020.000000] (44:worker0@Fafard) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [26020.000000] (45:worker1@VM0) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [27000.000000] (1:master_@Fafard) ### Test: 25% for Task1@Fafard, 25% for Task2@VM0
+> [27040.000000] (46:worker0@Fafard) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [27040.000000] (47:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [28000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 100% for Task2@VM0
+> [28020.000000] (48:worker0@Fafard) bound to 57222000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [28020.000000] (49:worker1@VM0) bound to 76296000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [29000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, 25% for Task2@VM0
+> [29020.000000] (50:worker0@Fafard) not bound => duration 20.000000 (38148000.000000 flops/s)
+> [29040.000000] (51:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [30000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 25% for Task2@VM0
+> [30020.000000] (52:worker0@Fafard) bound to 57222000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [30040.000000] (53:worker1@VM0) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [31000.000000] (1:master_@Fafard)  
+> [31000.000000] (1:master_@Fafard) # 7. Put a single task on the VM capped by 10%.
+> [31000.000000] (1:master_@Fafard) ### Test: with/without MSG_task_set_bound
+> [31000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0
+> [31100.000000] (54:worker0@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)
+> [32000.000000] (1:master_@Fafard) ### Test: 50% for Task1@VM0
+> [32100.000000] (55:worker0@VM0) bound to 38148000.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [33000.000000] (1:master_@Fafard) ### Test: 33% for Task1@VM0
+> [33100.000000] (56:worker0@VM0) bound to 25432000.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [34000.000000] (1:master_@Fafard) ### Test: zero for Task1@VM0 (i.e., unlimited)
+> [34000.000000] (57:worker0@VM0) bound == 0 means no capping (i.e., unlimited).
+> [34100.000000] (57:worker0@VM0) bound to 0.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [35000.000000] (1:master_@Fafard) ### Test: 200% for Task1@VM0 (i.e., meaningless)
+> [35100.000000] (58:worker0@VM0) bound to 152592000.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [36000.000000] (1:master_@Fafard)  
+> [36000.000000] (1:master_@Fafard) # 8. Put two tasks on the VM capped by 10%.
+> [36000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0, no bound for Task2@VM0
+> [36200.000000] (60:worker1@VM0) not bound => duration 200.000000 (3814800.000000 flops/s)
+> [36200.000000] (59:worker0@VM0) not bound => duration 200.000000 (3814800.000000 flops/s)
+> [37000.000000] (1:master_@Fafard) ### Test: 0 for Task1@VM0, 0 for Task2@VM0 (i.e., unlimited)
+> [37000.000000] (61:worker0@VM0) bound == 0 means no capping (i.e., unlimited).
+> [37000.000000] (62:worker1@VM0) bound == 0 means no capping (i.e., unlimited).
+> [37200.000000] (62:worker1@VM0) bound to 0.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [37200.000000] (61:worker0@VM0) bound to 0.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [38000.000000] (1:master_@Fafard) ### Test: 50% for Task1@VM0, 50% for Task2@VM0
+> [38200.000000] (64:worker1@VM0) bound to 38148000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [38200.000000] (63:worker0@VM0) bound to 38148000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [39000.000000] (1:master_@Fafard) ### Test: 25% for Task1@VM0, 25% for Task2@VM0
+> [39200.000000] (66:worker1@VM0) bound to 19074000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [39200.000000] (65:worker0@VM0) bound to 19074000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [40000.000000] (1:master_@Fafard) ### Test: 75% for Task1@VM0, 100% for Task2@VM0
+> [40200.000000] (68:worker1@VM0) bound to 76296000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [40200.000000] (67:worker0@VM0) bound to 57222000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [41000.000000] (1:master_@Fafard) ### Test: no bound for Task1@VM0, 25% for Task2@VM0
+> [41200.000000] (70:worker1@VM0) bound to 19074000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [41200.000000] (69:worker0@VM0) not bound => duration 200.000000 (3814800.000000 flops/s)
+> [42000.000000] (1:master_@Fafard) ### Test: 75% for Task1@VM0, 25% for Task2@VM0
+> [42200.000000] (72:worker1@VM0) bound to 19074000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [42200.000000] (71:worker0@VM0) bound to 57222000.000000 => duration 200.000000 (3814800.000000 flops/s)
+> [43000.000000] (1:master_@Fafard)  
+> [43000.000000] (1:master_@Fafard) # 9. Put a task on a PM and a task on the VM capped by 10%.
+> [43000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, no bound for Task2@VM0
+> [43011.111111] (73:worker0@Fafard) not bound => duration 11.111111 (68666400.000010 flops/s)
+> [43100.000000] (74:worker1@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)
+> [44000.000000] (1:master_@Fafard) ### Test: 0 for Task1@Fafard, 0 for Task2@VM0 (i.e., unlimited)
+> [44000.000000] (75:worker0@Fafard) bound == 0 means no capping (i.e., unlimited).
+> [44000.000000] (76:worker1@VM0) bound == 0 means no capping (i.e., unlimited).
+> [44011.111111] (75:worker0@Fafard) bound to 0.000000 => duration 11.111111 (68666400.000010 flops/s)
+> [44100.000000] (76:worker1@VM0) bound to 0.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [45000.000000] (1:master_@Fafard) ### Test: 50% for Task1@Fafard, 50% for Task2@VM0
+> [45020.000000] (77:worker0@Fafard) bound to 38148000.000000 => duration 20.000000 (38148000.000000 flops/s)
+> [45100.000000] (78:worker1@VM0) bound to 38148000.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [46000.000000] (1:master_@Fafard) ### Test: 25% for Task1@Fafard, 25% for Task2@VM0
+> [46040.000000] (79:worker0@Fafard) bound to 19074000.000000 => duration 40.000000 (19074000.000000 flops/s)
+> [46100.000000] (80:worker1@VM0) bound to 19074000.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [47000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 100% for Task2@VM0
+> [47013.333333] (81:worker0@Fafard) bound to 57222000.000000 => duration 13.333333 (57221999.999990 flops/s)
+> [47100.000000] (82:worker1@VM0) bound to 76296000.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [48000.000000] (1:master_@Fafard) ### Test: no bound for Task1@Fafard, 25% for Task2@VM0
+> [48011.111111] (83:worker0@Fafard) not bound => duration 11.111111 (68666400.000010 flops/s)
+> [48100.000000] (84:worker1@VM0) bound to 19074000.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [49000.000000] (1:master_@Fafard) ### Test: 75% for Task1@Fafard, 25% for Task2@VM0
+> [49013.333333] (85:worker0@Fafard) bound to 57222000.000000 => duration 13.333333 (57221999.999990 flops/s)
+> [49100.000000] (86:worker1@VM0) bound to 19074000.000000 => duration 100.000000 (7629600.000000 flops/s)
+> [50000.000000] (1:master_@Fafard)  
+> [50000.000000] (1:master_@Fafard) # 10. Test migration
+> [50000.000000] (1:master_@Fafard) # 10. (a) Put a task on a VM without any bound.
+> [50010.000000] (87:worker0@VM0) not bound => duration 10.000000 (76296000.000000 flops/s)
+> [51000.000000] (1:master_@Fafard)  
+> [51000.000000] (1:master_@Fafard) # 10. (b) set 10% bound to the VM, and then put a task on the VM.
+> [51100.000000] (88:worker0@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)
+> [52000.000000] (1:master_@Fafard)  
+> [52000.000000] (1:master_@Fafard) # 10. (c) migrate
+> [52000.000000] (90:__pr_mig_tx:VM0(Fafard-Fafard)@Fafard) use the default max_downtime value 30ms
+> [52002.070722] (1:master_@Fafard)  
+> [52002.070722] (1:master_@Fafard) # 10. (d) Put a task again on the VM.
+> [52102.070722] (91:worker0@VM0) not bound => duration 100.000000 (7629600.000000 flops/s)
+> [53002.070722] (1:master_@Fafard)  
+> [53002.070722] (1:master_@Fafard) # 11. Change a bound dynamically.
+> [53002.070722] (1:master_@Fafard) set bound of VM1 to 0.000000
+> [53102.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
+> [53102.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
+> [53102.070722] (1:master_@Fafard) set bound of VM1 to 7629600.000000
+> [53202.070722] (1:master_@Fafard) Task0@VM0: 68666400.000000 flops/s
+> [53202.070722] (1:master_@Fafard) Task1@VM1: 7629600.000000 flops/s
+> [53202.070722] (1:master_@Fafard) set bound of VM1 to 15259200.000000
+> [53302.070722] (1:master_@Fafard) Task0@VM0: 61036800.000000 flops/s
+> [53302.070722] (1:master_@Fafard) Task1@VM1: 15259200.000000 flops/s
+> [53302.070722] (1:master_@Fafard) set bound of VM1 to 22888800.000000
+> [53402.070722] (1:master_@Fafard) Task0@VM0: 53407200.000000 flops/s
+> [53402.070722] (1:master_@Fafard) Task1@VM1: 22888800.000000 flops/s
+> [53402.070722] (1:master_@Fafard) set bound of VM1 to 30518400.000000
+> [53502.070722] (1:master_@Fafard) Task0@VM0: 45777600.000000 flops/s
+> [53502.070722] (1:master_@Fafard) Task1@VM1: 30518400.000000 flops/s
+> [53502.070722] (1:master_@Fafard) set bound of VM1 to 38148000.000000
+> [53602.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
+> [53602.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
+> [53602.070722] (1:master_@Fafard) set bound of VM1 to 45777600.000000
+> [53702.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
+> [53702.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
+> [53702.070722] (1:master_@Fafard) set bound of VM1 to 53407200.000000
+> [53802.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
+> [53802.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
+> [53802.070722] (1:master_@Fafard) set bound of VM1 to 61036800.000000
+> [53902.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
+> [53902.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
+> [53902.070722] (1:master_@Fafard) set bound of VM1 to 68666400.000000
+> [54002.070722] (1:master_@Fafard) Task0@VM0: 38148000.000000 flops/s
+> [54002.070722] (1:master_@Fafard) Task1@VM1: 38148000.000000 flops/s
+> [56002.070722] (0:maestro@) Bye (simulation time 56002.1)

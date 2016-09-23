@@ -1,0 +1,26 @@
+#! ./tesh
+
+$ ${bindir:=.}/basic-link-test ../platforms/one_cluster.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+> [  0.000000] (0:maestro@) Link count: 12
+> [  0.000000] (0:maestro@) __loopback__: latency = 0.00002, bandwidth = 498000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_backbone: latency = 0.00050, bandwidth = 2250000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_0_DOWN: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_0_UP: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_2_DOWN: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_2_UP: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_3_DOWN: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_3_UP: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_4_DOWN: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_4_UP: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_6_DOWN: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) bob_cluster_link_6_UP: latency = 0.00005, bandwidth = 125000000.000000
+
+$ ${bindir:=.}/basic-link-test ../platforms/link_attributes.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
+> [  0.000000] (0:maestro@) Link count: 5
+> [  0.000000] (0:maestro@) __loopback__: latency = 0.00002, bandwidth = 498000000.000000
+> [  0.000000] (0:maestro@) link1: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) link2: latency = 0.00005, bandwidth = 125000000.000000
+> [  0.000000] (0:maestro@) link3: latency = 0.00010, bandwidth = 80000000.000000
+> [  0.000000] (0:maestro@) link4: latency = 0.00010, bandwidth = 80000000.000000

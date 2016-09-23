@@ -56,6 +56,10 @@ if(HAVE_LUA)
   SET(SIMGRID_DEP "${SIMGRID_DEP} ${LUA_LIBRARY} -ldl")
 endif()
 
+if(HAVE_PAPI)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lpapi")
+endif()
+
 if(HAVE_GRAPHVIZ)
   if(HAVE_CGRAPH_LIB)
     SET(SIMGRID_DEP "${SIMGRID_DEP} -lcgraph")
@@ -64,11 +68,6 @@ if(HAVE_GRAPHVIZ)
       SET(SIMGRID_DEP "${SIMGRID_DEP} -lagraph -lcdt")
     endif()
   endif()
-endif()
-
-if(SIMGRID_HAVE_LIBSIG)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lsigc-2.0")
-  add_definitions(-DLIBSIGC)
 endif()
 
 if(HAVE_MC)
@@ -88,8 +87,8 @@ if(HAVE_MC)
   endif()
 endif()
 
-if(MMALLOC_WANT_OVERRIDE_LEGACY AND HAVE_GNU_LD)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
+if(HAVE_MC AND HAVE_GNU_LD)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl")
 endif()
 
 if(HAVE_NS3)
@@ -99,10 +98,6 @@ endif()
 if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 endif()
-
-if(HAVE_BACKTRACE_IN_LIBEXECINFO)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lexecinfo")
-endif(HAVE_BACKTRACE_IN_LIBEXECINFO)
 
 # Compute the dependencies of SMPI
 ##################################
@@ -114,6 +109,9 @@ target_link_libraries(simgrid 	${SIMGRID_DEP})
 
 # Dependencies from maintainer mode
 ###################################
+if(enable_maintainer_mode)
+  add_dependencies(simgrid smpi_generated_headers_call_location_tracing)
+endif()
 if(enable_maintainer_mode AND PYTHON_EXE)
   add_dependencies(simgrid simcalls_generated_src)
 endif()

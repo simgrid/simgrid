@@ -143,7 +143,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
         
         if [ $NUMPROCSMINE != $(echo "$line"|cut -d' ' -f3) ];
         then
-          echo "declared num of processes for instance $instance : ${array[2]} is not the same as the one in the replay files : $NUMPROCSMINE. Please check consistency of these information"
+          echo "declared num of processes for instance $instance : $(echo "$line"|cut -d' ' -f3) is not the same as the one in the replay files : $NUMPROCSMINE. Please check consistency of these information"
           exit 1
         fi
         
@@ -198,7 +198,7 @@ if [ -n "${DESCRIPTIONFILE}" ] && [ -f "${DESCRIPTIONFILE}" ]; then
     IFS=$IFS_OLD
     IFS_OLD=
 else
-    printf "File not found: %s\n", "${APP_TRACES[0]:-\${APP_TRACES[0]\}}" >&2
+    printf "File not found: %s\n", ${DESCRIPTIONFILE} >&2
     exit 1
 fi
 

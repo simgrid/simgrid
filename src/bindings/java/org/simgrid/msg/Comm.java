@@ -11,13 +11,9 @@ package org.simgrid.msg;
  * between processes.
  */
 public class Comm {
-	/**
-	 * Indicates if the communication is a receiving communication
-	 */
+	/** Indicates if the communication is a receiving communication */
 	protected boolean receiving;
-	/**
-	 * Indicates if the communication is finished
-	 */
+	/** Indicates if the communication is finished */
 	protected boolean finished = false;
 	/**
 	 * Represents the bind between the java comm and the
@@ -25,13 +21,9 @@ public class Comm {
 	 * automatically set.
 	 */
 	private long bind = 0;
-	/**
-	 * Represents the bind for the task object pointer. Don't touch it.
-	 */
+	/** Represents the bind for the task object pointer. Don't touch it. */
 	private long taskBind = 0;
-	/**
-	 * Task associated with the comm. Beware, it can be null 
-	 */
+	/** Task associated with the comm. Beware, it can be null */
 	protected Task task = null;
 	/**
 	 * Protected constructor, used by Comm factories
@@ -41,13 +33,8 @@ public class Comm {
 
 	}
 	/** Destroy the C communication object, when the GC reclaims the java part. */
-	@Override
-	protected void finalize() {
-		try {
-			nativeFinalize();
-		} catch (Throwable e) {
-			e.printStackTrace();
-		}
+	protected void finalize() throws Throwable{
+		nativeFinalize();
 	}
 	protected native void nativeFinalize();
 	/**
@@ -67,6 +54,14 @@ public class Comm {
 	 */
 	public native void waitCompletion(double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
 
+	/** Wait all of the communications */
+	public static native void waitAll(Comm[] comms, double timeout) throws TransferFailureException, HostFailureException, TimeoutException;
+	/** Wait all of the communications, with no maximal delay */
+	public static void waitAll(Comm[] comms) throws TransferFailureException, HostFailureException, TimeoutException {
+		waitAll(comms, -1.);
+	}
+	/** Wait any of the communications, and return the rank of the terminating comm */
+	public static native void waitAny(Comm[] comms) throws TransferFailureException, HostFailureException, TimeoutException;
 	/**
 	 * Returns the task associated with the communication.
 	 * if the communication isn't finished yet, will return null.
@@ -75,9 +70,7 @@ public class Comm {
 		return task;
 	}
 
-	/**
-	 * Class initializer, to initialize various JNI stuff
-	 */
+	/** Class initializer, to initialize various JNI stuff */
 	public static native void nativeInit();
 	static {
 		org.simgrid.NativeLib.nativeInit();

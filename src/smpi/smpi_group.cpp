@@ -6,8 +6,7 @@
 
 #include "private.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi,
-                                "Logging specific to SMPI (group)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(smpi_group, smpi, "Logging specific to SMPI (group)");
 
 typedef struct s_smpi_mpi_group {
   int size;
@@ -18,8 +17,8 @@ typedef struct s_smpi_mpi_group {
 
 static s_smpi_mpi_group_t mpi_MPI_GROUP_EMPTY = {
   0,                            /* size */
-  NULL,                         /* rank_to_index_map */
-  NULL,                         /* index_to_rank_map */
+  nullptr,                         /* rank_to_index_map */
+  nullptr,                         /* index_to_rank_map */
   1,                            /* refcount: start > 0 so that this group never gets freed */
 };
 
@@ -47,12 +46,10 @@ MPI_Group smpi_group_copy(MPI_Group origin)
   MPI_Group group=origin;
   char *key;
   char *ptr_rank;
-  xbt_dict_cursor_t cursor = NULL;
+  xbt_dict_cursor_t cursor = nullptr;
   
   int i;
-  if(origin!= smpi_comm_group(MPI_COMM_WORLD)
-            && origin != MPI_GROUP_NULL
-            && origin != smpi_comm_group(MPI_COMM_SELF)
+  if(origin != MPI_GROUP_NULL
             && origin != MPI_GROUP_EMPTY)
     {
       group = xbt_new(s_smpi_mpi_group_t, 1);
@@ -65,19 +62,19 @@ MPI_Group smpi_group_copy(MPI_Group origin)
       }
 
       xbt_dict_foreach(origin->index_to_rank_map, cursor, key, ptr_rank) {
-        xbt_dict_set(group->index_to_rank_map, key, ptr_rank, NULL);
+        int * cp = static_cast<int*>(xbt_malloc(sizeof(int)));
+        *cp=*reinterpret_cast<int*>(ptr_rank);
+        xbt_dict_set(group->index_to_rank_map, key, cp, nullptr);
       }
     }
 
   return group;
 }
 
-
 void smpi_group_destroy(MPI_Group group)
 {
   if(group!= smpi_comm_group(MPI_COMM_WORLD)
           && group != MPI_GROUP_NULL
-          && group != smpi_comm_group(MPI_COMM_SELF)
           && group != MPI_GROUP_EMPTY)
   smpi_group_unuse(group);
 }
@@ -89,12 +86,12 @@ void smpi_group_set_mapping(MPI_Group group, int index, int rank)
   if (rank < group->size) {
     group->rank_to_index_map[rank] = index;
     if (index!=MPI_UNDEFINED ) {
-      val_rank = (int *) malloc(sizeof(int));
+      val_rank = static_cast<int *>(xbt_malloc(sizeof(int)));
       *val_rank = rank;
 
       char * key = bprintf("%d", index);
-      xbt_dict_set(group->index_to_rank_map, key, val_rank, NULL);
-      free(key);
+      xbt_dict_set(group->index_to_rank_map, key, val_rank, nullptr);
+      xbt_free(key);
     }
   }
 }
@@ -111,12 +108,12 @@ int smpi_group_index(MPI_Group group, int rank)
 
 int smpi_group_rank(MPI_Group group, int index)
 {
-  int * ptr_rank = NULL;
+  int * ptr_rank = nullptr;
   char * key = bprintf("%d", index);
   ptr_rank = static_cast<int*>(xbt_dict_get_or_null(group->index_to_rank_map, key));
   xbt_free(key);
 
-  if (!ptr_rank)
+  if (ptr_rank==nullptr)
     return MPI_UNDEFINED;
   return *ptr_rank;
 }
@@ -137,7 +134,6 @@ int smpi_group_unuse(MPI_Group group)
     return 0;
   }
   return group->refcount;
-
 }
 
 int smpi_group_size(MPI_Group group)

@@ -8,10 +8,10 @@
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 
-#include "simgrid/s4u/as.hpp"
+#include "simgrid/s4u/As.hpp"
 #include "simgrid/s4u/engine.hpp"
 
-#ifdef HAVE_LUA
+#if HAVE_LUA
 #include <lua.h>
 #include <lauxlib.h>
 #include <lualib.h>
@@ -38,7 +38,7 @@ void MSG_create_environment(const char *file)
   SIMIX_create_environment(file);
 }
 
-void MSG_post_create_environment(void) {
+void MSG_post_create_environment() {
   xbt_lib_cursor_t cursor;
   void **data;
   char *name;
@@ -68,10 +68,11 @@ xbt_dict_t MSG_environment_as_get_routing_sons(msg_as_t as) {
 
 const char *MSG_environment_as_get_property_value(msg_as_t as, const char *name)
 {
-  xbt_dict_t dict = (xbt_dict_t) xbt_lib_get_or_null(as_router_lib, MSG_environment_as_get_name(as), ROUTING_PROP_ASR_LEVEL);
-  if (dict==NULL)
-    return NULL;
-  return (char*) xbt_dict_get_or_null(dict, name);
+  xbt_dict_t dict = static_cast<xbt_dict_t> (xbt_lib_get_or_null(as_router_lib, MSG_environment_as_get_name(as),
+                                                                 ROUTING_PROP_ASR_LEVEL));
+  if (dict==nullptr)
+    return nullptr;
+  return static_cast<const char*>(xbt_dict_get_or_null(dict, name));
 }
 
 xbt_dynar_t MSG_environment_as_get_hosts(msg_as_t as) {

@@ -32,9 +32,12 @@ set(umpire_tests_passing
   sendrecv-deadlock
   send-recv-ok
   irecv-isend-ok
-  irecv-isend-ok2
   lost-request-waitall
  ) # Passing (no deadlock) tests
+
+set(umpire_tests_passing_broken
+  irecv-isend-ok2
+  )
 
 # These are supposed to deadlock but ISP does not find deadlock
 # and we don't either. What should be test here?
@@ -47,17 +50,9 @@ set(umpire_tests_missed_deadlock
 
 set(umpire_tests_deadlock
   any_src-can-deadlock10
-  any_src-can-deadlock10_mod
-  any_src-can-deadlock11
   any_src-can-deadlock4
-  any_src-can-deadlock4_mod
   any_src-can-deadlock5
-  any_src-can-deadlock5_mod
   any_src-can-deadlock6
-  any_src-can-deadlock6_mod
-  any_src-can-deadlock7
-  any_src-can-deadlock8
-  any_src-can-deadlock9
   any_src-waitall-deadlock
   any_src-waitall-deadlock2
   any_src-waitall-deadlock3
@@ -71,22 +66,33 @@ set(umpire_tests_deadlock
   basic-deadlock-comm_split
   bcast-deadlock
   collective-misorder
-  collective-misorder2
   collective-misorder-allreduce
-  comm-bcast-deadlock
-  comm-deadlock
   complex-deadlock
-  dropped-req
   finalize-deadlock
   irecv-deadlock
   waitall-deadlock
   waitany-deadlock
   wait-deadlock
  ) # failing (deadlocking) tests
+
+# Compile but run those tests:
+set(umpire_tests_deadlock_broken
+  any_src-can-deadlock10_mod
+  any_src-can-deadlock4_mod
+  any_src-can-deadlock5_mod
+  any_src-can-deadlock6_mod
+  any_src-can-deadlock7
+  any_src-can-deadlock8
+  any_src-can-deadlock9
+  any_src-can-deadlock11
+  collective-misorder2
+  comm-bcast-deadlock
+  dropped-req
+  comm-deadlock
+)
  
 set(umpire_tests_problematic
   deadlock-config # No deadlock detected by ISP unless MPI_Send blocking activated
-
  ) # problematic tests
  
  # These files are not listed on http://formalverification.cs.utah.edu/ISP_Tests/
@@ -181,7 +187,11 @@ foreach(file ${umpire_src_other})
   set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file})
 endforeach()
 
-foreach(file ${umpire_tests_passing} ${umpire_tests_deadlock} ${umpire_tests_missed_deadlock} ${umpire_tests_problematic}  ) 
+foreach(file
+    ${umpire_tests_passing}  ${umpire_tests_passing_broken}
+    ${umpire_tests_deadlock} ${umpire_tests_deadlock_broken} ${umpire_tests_missed_deadlock}
+    ${umpire_tests_problematic}
+    ${umpire_tests_ignored} )
   set(sources ${sources} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
 endforeach()
 set(txt_files ${txt_files} ${sources} PARENT_SCOPE)
@@ -208,14 +218,14 @@ if(enable_smpi AND enable_model-checking AND enable_smpi_ISP_testsuite)
   foreach (test ${umpire_tests_passing})
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30")
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display" APPEND)
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
+    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/host-speed:1e9 --cfg=smpi/coll_selector:mpich \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
   endforeach()
 
   foreach (test ${umpire_tests_deadlock} ${umpire_tests_problematic} )
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! timeout 30"     )
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! expect return 3" APPEND)
     write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "! output display"  APPEND)
-    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/running_power:1e9 --cfg=smpi/coll_selector:mpich \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
+    write_file(${CMAKE_CURRENT_BINARY_DIR}/${test}.tesh "\$ \${bindir:=.}/../../../../bin/smpirun -wrapper \"\${bindir:=.}/../../../../bin/simgrid-mc\" -hostfile ../../hostfile -platform ../../../../examples/platforms/small_platform.xml --log=xbt_cfg.thresh:warning -np 3 --cfg=smpi/host-speed:1e9 --cfg=smpi/coll_selector:mpich \${bindir:=.}/${test} --log=smpi_coll.thresh:error" APPEND)
   endforeach()
 endif()
 

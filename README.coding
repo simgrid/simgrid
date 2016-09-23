@@ -107,12 +107,6 @@ INTEGERS
 PRINTF pointer difference (FIXME: advertise %td instead?)
  printf ("diff = %ld\n", (long) (pointer2 - pointer1));
 
-INLINE functions
- The definition of a inline function must be visible when it is used.
- As such, an inline function should be defined (an not only declared)
- in header file (.h) with attributes 'static XBT_INLINE'.  It should
- not be defined in source file (.c).
-
 **
 ** Commenting the source: doxygen
 **

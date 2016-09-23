@@ -10,7 +10,7 @@
 #define __XBT_VIRTU_H__
 
 #include "xbt/misc.h"
-#include "xbt/sysdep.h"
+#include "xbt/base.h"
 #include "xbt/function_types.h"
 #include "xbt/dynar.h"
 

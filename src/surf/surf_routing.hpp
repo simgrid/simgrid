@@ -12,10 +12,10 @@
 
 #include "surf_interface.hpp"
 #include "src/surf/xml/platf_private.hpp" // FIXME: including this here is pure madness. KILKILKIL XML.
-#include <float.h>
+#include "src/kernel/routing/AsImpl.hpp"
 
+#include <float.h>
 #include <vector>
-#include <map>
 
 SG_BEGIN_DECL()
 XBT_PUBLIC(void) routing_model_create(Link *loopback);
@@ -24,13 +24,16 @@ XBT_PRIVATE xbt_edge_t new_xbt_graph_edge (xbt_graph_t graph, xbt_node_t s, xbt_
 SG_END_DECL()
 
 namespace simgrid {
-namespace surf {
+namespace kernel {
+namespace routing {
+
+  XBT_PUBLIC_DATA(simgrid::xbt::signal<void(s4u::As*)>) asCreatedCallbacks;
+  XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) netcardCreatedCallbacks;
 
 /***********
  * Classes *
  ***********/
 
-class XBT_PRIVATE RoutingModelDescription;
 class XBT_PRIVATE Onelink;
 class RoutingPlatf;
 
@@ -42,38 +45,43 @@ class RoutingPlatf;
 class NetCard {
 public:
   virtual ~NetCard(){};
-  virtual int id()=0; // Our rank in the vertices_ array of our containing AS.
-  virtual void setId(int id)=0;
+  virtual unsigned int id()=0; // Our rank in the vertices_ array of our containing AS.
   virtual char *name()=0;
-  virtual s4u::As *containingAS()=0; // This is the AS in which I am
+  virtual AsImpl *containingAS()=0; // This is the AS in which I am
   virtual bool isAS()=0;
   virtual bool isHost()=0;
   virtual bool isRouter()=0;
+  enum class Type {
+    Host, Router, As
+  };
 };
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(const char *name, e_surf_network_element_type_t componentType, s4u::As *as)
+  NetCardImpl(const char *name, NetCard::Type componentType, AsImpl *containingAS)
   : name_(xbt_strdup(name)),
     componentType_(componentType),
-    containingAS_(as)
-  {}
+    containingAS_(containingAS)
+  {
+    if (containingAS != nullptr)
+      id_ = containingAS->addComponent(this);
+    simgrid::kernel::routing::netcardCreatedCallbacks(this);
+  }
   ~NetCardImpl() { xbt_free(name_);};
 
-  int id()           override {return id_;}
-  void setId(int id) override {id_ = id;}
+  unsigned int id()  override {return id_;}
   char *name()       override {return name_;}
-  s4u::As *containingAS() override {return containingAS_;}
+  AsImpl *containingAS() override {return containingAS_;}
 
-  bool isAS()        override {return componentType_ == SURF_NETWORK_ELEMENT_AS;}
-  bool isHost()      override {return componentType_ == SURF_NETWORK_ELEMENT_HOST;}
-  bool isRouter()    override {return componentType_ == SURF_NETWORK_ELEMENT_ROUTER;}
+  bool isAS()        override {return componentType_ == Type::As;}
+  bool isHost()      override {return componentType_ == Type::Host;}
+  bool isRouter()    override {return componentType_ == Type::Router;}
 
 private:
-  int id_ = -1;
+  unsigned int id_;
   char *name_;
-  e_surf_network_element_type_t componentType_;
-  s4u::As *containingAS_;
+  NetCard::Type componentType_;
+  AsImpl *containingAS_;
 };
 
 /** @ingroup SURF_routing_interface
@@ -93,22 +101,14 @@ public:
  */
 XBT_PUBLIC_CLASS RoutingPlatf {
 public:
-  RoutingPlatf(Link *loopback);
+  explicit RoutingPlatf(Link *loopback);
   ~RoutingPlatf();
-  s4u::As *root_ = nullptr;
+  AsImpl *root_ = nullptr;
   Link *loopback_;
-  xbt_dynar_t getOneLinkRoutes(void);
+  xbt_dynar_t getOneLinkRoutes();
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
 
-/*************
- * Callbacks *
- *************/
-
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(NetCard*)>) netcardCreatedCallbacks;
-XBT_PUBLIC_DATA(simgrid::xbt::signal<void(s4u::As*)>) asCreatedCallbacks;
-
-}
-}
+}}}
 
 #endif /* NETWORK_ROUTING_HPP_ */

@@ -1,5 +1,3 @@
-/* The standard CSS for doxygen */
-
 body, table, div, p, dl {
 	font: 400 14px/19px Roboto,sans-serif;
 }
@@ -210,7 +208,6 @@ div.line.glow {
 	box-shadow: 0 0 10px cyan;
 }
 
-
 span.lineno {
 	padding-right: 4px;
 	text-align: right;
@@ -292,10 +289,6 @@ p.formulaDsp {
 	text-align: center;
 }
 
-img.formulaDsp {
-
-}
-
 img.formulaInl {
 	vertical-align: middle;
 }
@@ -375,25 +368,6 @@ blockquote {
 }
 
 /* @end */
-
-/*
-.search {
-	color: #003399;
-	font-weight: bold;
-}
-
-form.search {
-	margin-bottom: 0px;
-	margin-top: 0px;
-}
-
-input.search {
-	font-size: 75%;
-	color: #000080;
-	font-weight: normal;
-	background-color: #e8eef2;
-}
-*/
 
 td.tiny {
 	font-size: 75%;
@@ -551,7 +525,6 @@ table.memberdecls {
         -webkit-box-shadow: 5px 5px 5px rgba(0, 0, 0, 0.15);
         -webkit-border-top-right-radius: 4px;
         -webkit-border-top-left-radius: 4px;
-
 }
 
 .memdoc, dl.reflist dd {
@@ -659,9 +632,6 @@ span.mlabel {
         font-size: 7pt;
 	white-space: nowrap;
 }
-
-
-
 /* @end */
 
 /* these are for tree view when not used as main index */
@@ -812,7 +782,6 @@ table.fieldtable {
         border-bottom: 1px solid #A8B8D9;
 }
 
-
 .tabsearch {
 	top: 0px;
 	left: 10px;
@@ -876,7 +845,6 @@ table.fieldtable {
         font-size: 8pt;
 }
 
-
 div.summary
 {
 	float: right;
@@ -886,7 +854,7 @@ div.summary
 	text-align: right;
 }
 
-div.summary a
+div.summary a, div.ingroups a
 {
 	white-space: nowrap;
 }
@@ -896,11 +864,6 @@ div.ingroups
 	font-size: 8pt;
 	width: 50%;
 	text-align: left;
-}
-
-div.ingroups a
-{
-	white-space: nowrap;
 }
 
 div.header
@@ -922,7 +885,6 @@ dl
         padding: 0 0 0 10px;
 }
 
-/* dl.note, dl.warning, dl.attention, dl.pre, dl.post, dl.invariant, dl.deprecated, dl.todo, dl.test, dl.bug */
 dl.section
 {
 	margin-left: 0px;
@@ -989,59 +951,7 @@ dl.section dd {
 	margin-bottom: 6px;
 }
 
-
-#projectlogo
-{
-	text-align: center;
-	vertical-align: bottom;
-	border-collapse: separate;
-}
-
-#projectlogo img
-{
-	border: 0px none;
-}
-
-#projectname
-{
-	font: 300% Tahoma, Arial,sans-serif;
-	margin: 0px;
-	padding: 2px 0px;
-}
-
-#projectbrief
-{
-	font: 120% Tahoma, Arial,sans-serif;
-	margin: 0px;
-	padding: 0px;
-}
-
-#projectnumber
-{
-	font: 50% Tahoma, Arial,sans-serif;
-	margin: 0px;
-	padding: 0px;
-}
-
-#titlearea
-{
-	padding: 0px;
-	margin: 0px;
-	width: 100%;
-	border-bottom: 1px solid #5373B4;
-}
-
-.image
-{
-        text-align: center;
-}
-
-.dotgraph
-{
-        text-align: center;
-}
-
-.mscgraph
+.image, .dotgraph, .mscgraph
 {
         text-align: center;
 }
@@ -1164,4 +1074,3 @@ tr.heading h2 {
     display:inline;
   }
 }
-

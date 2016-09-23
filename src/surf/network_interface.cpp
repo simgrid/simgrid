@@ -12,8 +12,7 @@
 #ifndef NETWORK_INTERFACE_CPP_
 #define NETWORK_INTERFACE_CPP_
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
-    "Logging specific to the SURF network module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf, "Logging specific to the SURF network module");
 
 /*********
  * C API *
@@ -43,13 +42,13 @@ extern "C" {
   void sg_link_data_set(Link *link,void *data) {
     link->setData(data);
   }
-  int sg_link_count(void) {
+  int sg_link_count() {
     return Link::linksCount();
   }
-  Link** sg_link_list(void) {
+  Link** sg_link_list() {
     return Link::linksList();
   }
-  void sg_link_exit(void) {
+  void sg_link_exit() {
     Link::linksExit();
   }
 
@@ -64,12 +63,9 @@ namespace simgrid {
 
     boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
     Link *Link::byName(const char* name) {
-      Link * res = NULL;
-      try {
-        res = links->at(name);
-      } catch (std::out_of_range& e) {}
-
-      return res;
+      if (links->find(name) == links->end())
+        return nullptr;
+      return  links->at(name);
     }
     /** @brief Returns the amount of links in the platform */
     int Link::linksCount() {
@@ -95,42 +91,13 @@ namespace simgrid {
      * Callbacks *
      *************/
 
-    simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onCreation;
-    simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onDestruction;
-    simgrid::xbt::signal<void(simgrid::surf::Link*)> Link::onStateChange;
+    simgrid::xbt::signal<void(Link*)> Link::onCreation;
+    simgrid::xbt::signal<void(Link*)> Link::onDestruction;
+    simgrid::xbt::signal<void(Link*)> Link::onStateChange;
 
-    simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)> networkActionStateChangedCallbacks;
-    simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)> networkCommunicateCallbacks;
+    simgrid::xbt::signal<void(NetworkAction*, Action::State, Action::State)> networkActionStateChangedCallbacks;
+    simgrid::xbt::signal<void(NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> Link::onCommunicate;
 
-  }
-}
-
-void netlink_parse_init(sg_platf_link_cbarg_t link){
-  if (link->policy == SURF_LINK_FULLDUPLEX) {
-    char *link_id;
-    link_id = bprintf("%s_UP", link->id);
-    surf_network_model->createLink(link_id,
-        link->bandwidth,
-        link->bandwidth_trace,
-        link->latency,
-        link->latency_trace,
-        link->state_trace, link->policy, link->properties);
-    xbt_free(link_id);
-    link_id = bprintf("%s_DOWN", link->id);
-    surf_network_model->createLink(link_id,
-        link->bandwidth,
-        link->bandwidth_trace,
-        link->latency,
-        link->latency_trace,
-        link->state_trace, link->policy, link->properties);
-    xbt_free(link_id);
-  } else {
-    surf_network_model->createLink(link->id,
-        link->bandwidth,
-        link->bandwidth_trace,
-        link->latency,
-        link->latency_trace,
-        link->state_trace, link->policy, link->properties);
   }
 }
 
@@ -138,10 +105,17 @@ void netlink_parse_init(sg_platf_link_cbarg_t link){
  * Model *
  *********/
 
-simgrid::surf::NetworkModel *surf_network_model = NULL;
+simgrid::surf::NetworkModel *surf_network_model = nullptr;
 
 namespace simgrid {
   namespace surf {
+
+    NetworkModel::~NetworkModel()
+    {
+      lmm_system_free(maxminSystem_);
+      xbt_heap_free(actionHeap_);
+      delete modifiedSet_;
+    }
 
     double NetworkModel::latencyFactor(double /*size*/) {
       return sg_latency_factor;
@@ -157,24 +131,17 @@ namespace simgrid {
 
     double NetworkModel::next_occuring_event_full(double now)
     {
-      NetworkAction *action = NULL;
+      NetworkAction *action = nullptr;
       ActionList *runningActions = surf_network_model->getRunningActionSet();
       double minRes;
 
-      minRes = shareResourcesMaxMin(runningActions, surf_network_model->p_maxminSystem, surf_network_model->f_networkSolve);
+      minRes = shareResourcesMaxMin(runningActions, surf_network_model->maxminSystem_, surf_network_model->f_networkSolve);
 
       for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
           ; it != itend ; ++it) {
         action = static_cast<NetworkAction*>(&*it);
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-        if (lmm_is_variable_limited_by_latency(action->getVariable())) {
-          action->m_latencyLimited = 1;
-        } else {
-          action->m_latencyLimited = 0;
-        }
-#endif
-        if (action->m_latency > 0) {
-          minRes = (minRes < 0) ? action->m_latency : std::min(minRes, action->m_latency);
+        if (action->latency_ > 0) {
+          minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
         }
       }
 
@@ -198,16 +165,15 @@ namespace simgrid {
       XBT_DEBUG("Create link '%s'",name);
     }
 
-    Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
-        lmm_constraint_t constraint,
-        tmgr_trace_t state_trace)
+    Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
     : Resource(model, name, constraint),
       PropertyHolder(props)
     {
+      if (strcmp(name,"__loopback__"))
+        xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
+
       m_latency.scale = 1;
       m_bandwidth.scale = 1;
-      if (state_trace)
-        m_stateEvent = future_evt_set->add_trace(state_trace, 0.0, this);
 
       links->insert({name, this});
       XBT_DEBUG("Create link '%s'",name);
@@ -263,22 +229,18 @@ namespace simgrid {
         onStateChange(this);
       }
     }
-    void Link::set_state_trace(tmgr_trace_t trace)
-    {
-      xbt_assert(m_stateEvent==NULL,"Cannot set a second state trace to Link %s", getName());
-
+    void Link::setStateTrace(tmgr_trace_t trace) {
+      xbt_assert(m_stateEvent==nullptr,"Cannot set a second state trace to Link %s", getName());
       m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
     }
-    void Link::set_bandwidth_trace(tmgr_trace_t trace)
+    void Link::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(m_bandwidth.event==NULL,"Cannot set a second bandwidth trace to Link %s", getName());
-
+      xbt_assert(m_bandwidth.event==nullptr,"Cannot set a second bandwidth trace to Link %s", getName());
       m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, this);
     }
-    void Link::set_latency_trace(tmgr_trace_t trace)
+    void Link::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(m_latency.event==NULL,"Cannot set a second latency trace to Link %s", getName());
-
+      xbt_assert(m_latency.event==nullptr,"Cannot set a second latency trace to Link %s", getName());
       m_latency.event = future_evt_set->add_trace(trace, 0.0, this);
     }
 
@@ -287,8 +249,8 @@ namespace simgrid {
      * Action *
      **********/
 
-    void NetworkAction::setState(e_surf_action_state_t state){
-      e_surf_action_state_t old = getState();
+    void NetworkAction::setState(Action::State state){
+      Action::State old = getState();
       Action::setState(state);
       networkActionStateChangedCallbacks(this, old, state);
     }

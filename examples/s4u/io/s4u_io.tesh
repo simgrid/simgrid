@@ -1,6 +1,6 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/s4u_io_test
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_io
 > [denise:host:(0) 0.000000] [s4u_test/INFO] Storage info on denise:
 > [denise:host:(0) 0.000000] [s4u_test/INFO]     Disk4 (/home) Used: 13221994; Free: 536857690006; Total: 536870912000.
 > [denise:host:(0) 0.000000] [s4u_test/INFO]     Disk2 (c:) Used: 2391537133; Free: 534479374867; Total: 536870912000.

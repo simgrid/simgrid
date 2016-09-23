@@ -1,6 +1,0 @@
-<?xml version='1.0'?>
-<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
-<platform version="4">
-  <process host="Tremblay" function="master"/>
-  <process host="Tremblay" function="slave"/>
-</platform>

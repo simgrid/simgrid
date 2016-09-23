@@ -4,8 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <list>
+
+#include <xbt/base.h>
+#include <xbt/signal.hpp>
+
+#include <simgrid/forward.h>
+#include <simgrid/s4u/host.hpp>
+
+#include "surf/datatypes.h"
 #include "surf_interface.hpp"
 #include "maxmin_private.hpp"
+#include "trace_mgr.hpp"
 
 #ifndef SURF_CPU_INTERFACE_HPP_
 #define SURF_CPU_INTERFACE_HPP_
@@ -20,16 +30,7 @@ namespace surf {
 class CpuModel;
 class Cpu;
 class CpuAction;
-class CpuPlugin;
-
-/*************
- * Callbacks *
- *************/
-XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
-
-/*********
- * Model *
- *********/
+class CpuPlugin;// FIXME:DEADCODE
 
  /** @ingroup SURF_cpu_interface
  * @brief SURF cpu model interface class
@@ -38,23 +39,20 @@ XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
   CpuModel() : Model() {};
+  ~CpuModel() override;
 
   /**
    * @brief Create a Cpu
    *
    * @param host The host that will have this CPU
-   * @param speedPeak The peak spead (max speed in Flops when no external load comes from a trace)
-   * @param speedTrace Trace variations
+   * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
-   * @param state_trace [TODO]
    */
-  virtual Cpu *createCpu(simgrid::s4u::Host *host, xbt_dynar_t speedPeak,
-                          tmgr_trace_t speedTrace, int core,
-                          tmgr_trace_t state_trace)=0;
+  virtual Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)=0;
 
-  void updateActionsStateLazy(double now, double delta);
-  void updateActionsStateFull(double now, double delta);
-  bool next_occuring_event_isIdempotent() {return true;}
+  void updateActionsStateLazy(double now, double delta) override;
+  void updateActionsStateFull(double now, double delta) override;
+  bool next_occuring_event_isIdempotent() override;
 };
 
 /************
@@ -73,24 +71,21 @@ public:
    * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-   * @param speedPeakList [TODO]
+   * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
-   * @param speedPeak The speed peak of this Cpu in flops (max speed)
    */
-  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
-    lmm_constraint_t constraint, xbt_dynar_t speedPeakList, int core, double speedPeak);
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
+      std::vector<double> *speedPerPstate, int core);
 
   /**
    * @brief Cpu constructor
    *
    * @param model The CpuModel associated to this Cpu
    * @param host The host in which this Cpu should be plugged
-   * @param speedPeakList [TODO]
+   * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
-   * @param speedPeak The speed peak of this Cpu in flops (max speed)
    */
-  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host,
-      xbt_dynar_t speedPeakList, int core, double speedPeak);
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core);
 
   ~Cpu();
 
@@ -111,7 +106,7 @@ public:
   virtual simgrid::surf::Action *sleep(double duration)=0;
 
   /** @brief Get the amount of cores */
-  virtual int getCore();
+  virtual int getCoreCount();
 
   /** @brief Get the speed, accounting for the trace load and provided process load instead of the real current one */
   virtual double getSpeed(double load);
@@ -124,34 +119,29 @@ public:
   /** @brief Get the available speed of the current Cpu */
   virtual double getAvailableSpeed();
 
-  /** @brief Get the current Cpu power peak */
-  virtual double getCurrentPowerPeak();
-
-  virtual double getPowerPeakAt(int pstate_index);
+  /** @brief Get the current Cpu computational speed */
+  virtual double getPstateSpeedCurrent();
+  virtual double getPstateSpeed(int pstate_index);
 
   virtual int getNbPStates();
   virtual void setPState(int pstate_index);
   virtual int  getPState();
 
-  simgrid::s4u::Host* getHost() { return m_host; }
+  simgrid::s4u::Host* getHost() { return host_; }
 
 public:
-  int m_core = 1;                /* Amount of cores */
-  simgrid::s4u::Host* m_host;
+  int coresAmount_ = 1;
+  simgrid::s4u::Host* host_;
 
-  xbt_dynar_t p_speedPeakList = NULL; /*< List of supported CPU capacities (pstate related) */
-  int m_pstate = 0;                   /*< Current pstate (index in the speedPeakList)*/
-
-  /* Note (hypervisor): */
-  lmm_constraint_t *p_constraintCore=NULL;
-  void **p_constraintCoreId=NULL;
+  std::vector<double> speedPerPstate_; /*< List of supported CPU capacities (pstate related) */
+  int pstate_ = 0;                     /*< Current pstate (index in the speedPeakList)*/
 
 public:
-  virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
-  virtual void set_speed_trace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
+  virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
+  virtual void setSpeedTrace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
 
-  tmgr_trace_iterator_t p_stateEvent = nullptr;
-  s_surf_metric_t p_speed = {1.0, 0, nullptr};
+  tmgr_trace_iterator_t stateEvent_ = nullptr;
+  s_surf_metric_t speed_ = {1.0, 0, nullptr};
 };
 
 /**********
@@ -159,35 +149,25 @@ public:
  **********/
 
  /** @ingroup SURF_cpu_interface
- * @brief SURF Cpu action interface class
- * @details A CpuAction represent the execution of code on a Cpu
+ * @brief A CpuAction represents the execution of code on one or several Cpus
  */
 XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
 friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
-/** @brief Callbacks handler which emit the callbacks after CpuAction State changed *
- * @details Callback functions have the following signature: `void(CpuAction *action, e_surf_action_state_t previous)`
- */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, e_surf_action_state_t)> onStateChange;
-
-  /** @brief CpuAction constructor */
-  CpuAction(simgrid::surf::Model *model, double cost, bool failed)
-    : Action(model, cost, failed) {} //FIXME:DEADCODE?
-
-  /** @brief CpuAction constructor */
-  CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
-    : Action(model, cost, failed, var) {}
-
-  /**
-   * @brief Set the affinity of the current CpuAction
-   * @details [TODO]
+  /** @brief Callbacks handler which emit the callbacks after CpuAction State changed *
+   * @details Callback functions have the following signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
    */
-  virtual void setAffinity(Cpu *cpu, unsigned long mask);
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
 
-  void setState(e_surf_action_state_t state);
+  CpuAction(simgrid::surf::Model *model, double cost, bool failed)
+  : Action(model, cost, failed) {} //FIXME:DEADCODE?
+  CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
+  : Action(model, cost, failed, var) {}
 
-  void updateRemainingLazy(double now);
+  void setState(simgrid::surf::Action::State state) override;
 
+  void updateRemainingLazy(double now) override;
+  std::list<Cpu*> cpus();
 };
 
 }

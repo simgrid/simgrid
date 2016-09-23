@@ -22,7 +22,8 @@ extern "C" {
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(lua_platf, "Lua bindings (platform module)");
 
-#define PLATF_MODULE_NAME "simgrid.platf"
+#define PLATF_MODULE_NAME "simgrid.engine"
+#define AS_FIELDNAME   "__simgrid_as"
 
 /* ********************************************************************************* */
 /*                               simgrid.platf API                                   */
@@ -32,7 +33,7 @@ static const luaL_Reg platf_functions[] = {
     {"open", console_open},
     {"close", console_close},
     {"AS_open", console_AS_open},
-    {"AS_close", console_AS_close},
+    {"AS_seal", console_AS_seal},
     {"backbone_new", console_add_backbone},
     {"host_link_new", console_add_host___link},
     {"host_new", console_add_host},
@@ -40,7 +41,7 @@ static const luaL_Reg platf_functions[] = {
     {"router_new", console_add_router},
     {"route_new", console_add_route},
     {"ASroute_new", console_add_ASroute},
-    {NULL, NULL}
+    {nullptr, nullptr}
 };
 
 int console_open(lua_State *L) {
@@ -64,35 +65,27 @@ int console_add_backbone(lua_State *L) {
   memset(&link,0,sizeof(link));
   int type;
 
-  link.properties = NULL;
+  link.properties = nullptr;
 
-  if (!lua_istable(L, -1)) {
-    XBT_ERROR
-        ("Bad Arguments to create backbone in Lua. Should be a table with named arguments.");
-    return -1;
-  }
+  lua_ensure(lua_istable(L, -1),"Bad Arguments to create backbone in Lua. Should be a table with named arguments.");
 
   lua_pushstring(L, "id");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING) {
-    XBT_ERROR("Attribute 'id' must be specified for backbone and must be a string.");
-  }
+  lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for backbone and must be a string.");
   link.id = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   lua_pushstring(L, "bandwidth");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'bandwidth' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  }
+  lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
+      "Attribute 'bandwidth' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
   link.bandwidth = surf_parse_get_bandwidth(lua_tostring(L, -1),"bandwidth of backbone",link.id);
   lua_pop(L, 1);
 
   lua_pushstring(L, "lat");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'lat' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
-  }
+  lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
+      "Attribute 'lat' must be specified for backbone and must either be a string (in the right format; see docs) or a number.");
   link.latency = surf_parse_get_time(lua_tostring(L, -1),"latency of backbone",link.id);
   lua_pop(L, 1);
 
@@ -114,43 +107,35 @@ int console_add_backbone(lua_State *L) {
 }
 
 int console_add_host___link(lua_State *L) {
-  s_sg_platf_host_link_cbarg_t netcard;
-  memset(&netcard,0,sizeof(netcard));
+  s_sg_platf_host_link_cbarg_t hostlink;
+  memset(&hostlink,0,sizeof(hostlink));
   int type;
 
-  // we get values from the table passed as argument
-  if (!lua_istable(L, -1)) {
-    XBT_ERROR
-        ("Bad Arguments to create host_link in Lua. Should be a table with named arguments.");
-    return -1;
-  }
+  lua_ensure(lua_istable(L, -1),
+      "Bad Arguments to create host_link in Lua. Should be a table with named arguments.");
 
   lua_pushstring(L, "id");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING) {
-    XBT_ERROR("Attribute 'id' must be specified for any host_link and must be a string.");
-  }
-  netcard.id = lua_tostring(L, -1);
+  lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for any host_link and must be a string.");
+  hostlink.id = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   lua_pushstring(L, "up");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'up' must be specified for host_link and must either be a string or a number.");
-  }
-  netcard.link_up = lua_tostring(L, -1);
+  lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
+      "Attribute 'up' must be specified for host_link and must either be a string or a number.");
+  hostlink.link_up = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   lua_pushstring(L, "down");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'down' must be specified for host_link and must either be a string or a number.");
-  }
-  netcard.link_down = lua_tostring(L, -1);
+  lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
+      "Attribute 'down' must be specified for host_link and must either be a string or a number.");
+  hostlink.link_down = lua_tostring(L, -1);
   lua_pop(L, 1);
 
-  XBT_DEBUG("Create a host_link for host %s", netcard.id);
-  sg_platf_new_hostlink(&netcard);
+  XBT_DEBUG("Create a host_link for host %s", hostlink.id);
+  sg_platf_new_hostlink(&hostlink);
 
   return 0;
 }
@@ -161,40 +146,35 @@ int console_add_host(lua_State *L) {
   int type;
 
   // we get values from the table passed as argument
-  if (!lua_istable(L, -1)) {
-    XBT_ERROR("Bad Arguments to create host. Should be a table with named arguments");
-    return -1;
-  }
+  lua_ensure(lua_istable(L, -1),
+      "Bad Arguments to create host. Should be a table with named arguments");
 
   // get Id Value
   lua_pushstring(L, "id");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING) {
-    XBT_ERROR("Attribute 'id' must be specified for any host and must be a string.");
-  }
+  lua_ensure(type == LUA_TSTRING,
+      "Attribute 'id' must be specified for any host and must be a string.");
   host.id = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   // get power value
   lua_pushstring(L, "speed");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'speed' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
-  }
-  host.speed_peak = xbt_dynar_new(sizeof(double), NULL);
+  lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
+      "Attribute 'speed' must be specified for host and must either be a string (in the correct format; check documentation) or a number.");
   if (type == LUA_TNUMBER)
-    xbt_dynar_push_as(host.speed_peak, double, lua_tointeger(L, -1));
+    host.speed_per_pstate.push_back(lua_tointeger(L, -1));
   else // LUA_TSTRING
-    xbt_dynar_push_as(host.speed_peak, double, surf_parse_get_speed(lua_tostring(L, -1), "speed of host", host.id));
+    host.speed_per_pstate.push_back(surf_parse_get_speed(lua_tostring(L, -1), "speed of host", host.id));
   lua_pop(L, 1);
 
   // get core
   lua_pushstring(L, "core");
   lua_gettable(L, -2);
-  if(!lua_isnumber(L,-1)) {
+  if(!lua_isnumber(L,-1))
       host.core_amount = 1;// Default value
-  }
-  else host.core_amount = lua_tonumber(L, -1);
+  else
+    host.core_amount = lua_tonumber(L, -1);
   if (host.core_amount == 0)
     host.core_amount = 1;
   lua_pop(L, 1);
@@ -202,17 +182,20 @@ int console_add_host(lua_State *L) {
   //get power_trace
   lua_pushstring(L, "availability_file");
   lua_gettable(L, -2);
-  host.speed_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  const char *filename = lua_tostring(L, -1);
+  if (filename)
+    host.speed_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   //get trace state
   lua_pushstring(L, "state_file");
   lua_gettable(L, -2);
-  host.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  filename = lua_tostring(L, -1);
+    if (filename)
+      host.state_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   sg_platf_new_host(&host);
-  xbt_dynar_free(&host.speed_peak);
 
   return 0;
 }
@@ -224,26 +207,21 @@ int  console_add_link(lua_State *L) {
   int type;
   const char* policy;
 
-  if (! lua_istable(L, -1)) {
-    XBT_ERROR("Bad Arguments to create link, Should be a table with named arguments");
-    return -1;
-  }
+  lua_ensure(lua_istable(L, -1), "Bad Arguments to create link, Should be a table with named arguments");
 
   // get Id Value
   lua_pushstring(L, "id");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'id' must be specified for any link and must be a string.");
-  }
+  lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
+      "Attribute 'id' must be specified for any link and must be a string.");
   link.id = lua_tostring(L, -1);
   lua_pop(L, 1);
 
   // get bandwidth value
   lua_pushstring(L, "bandwidth");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'bandwidth' must be specified for any link and must either be either a string (in the right format; see docs) or a number.");
-  }
+  lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
+      "Attribute 'bandwidth' must be specified for any link and must either be either a string (in the right format; see docs) or a number.");
   if (type == LUA_TNUMBER)
     link.bandwidth = lua_tonumber(L, -1);
   else // LUA_TSTRING
@@ -253,9 +231,8 @@ int  console_add_link(lua_State *L) {
   //get latency value
   lua_pushstring(L, "lat");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING && type != LUA_TNUMBER) {
-    XBT_ERROR("Attribute 'lat' must be specified for any link and must either be a string (in the right format; see docs) or a number.");
-  }
+  lua_ensure(type == LUA_TSTRING || type == LUA_TNUMBER,
+      "Attribute 'lat' must be specified for any link and must either be a string (in the right format; see docs) or a number.");
   if (type == LUA_TNUMBER)
     link.latency = lua_tonumber(L, -1);
   else // LUA_TSTRING
@@ -267,19 +244,25 @@ int  console_add_link(lua_State *L) {
   //get bandwidth_trace value
   lua_pushstring(L, "bandwidth_file");
   lua_gettable(L, -2);
-  link.bandwidth_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  const char *filename = lua_tostring(L, -1);
+  if (filename)
+    link.bandwidth_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   //get latency_trace value
   lua_pushstring(L, "latency_file");
   lua_gettable(L, -2);
-  link.latency_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  filename = lua_tostring(L, -1);
+  if (filename)
+    link.latency_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   //get state_trace value
   lua_pushstring(L, "state_file");
   lua_gettable(L, -2);
-  link.state_trace = tmgr_trace_new_from_file(lua_tostring(L, -1));
+  filename = lua_tostring(L, -1);
+  if (filename)
+    link.state_trace = tmgr_trace_new_from_file(filename);
   lua_pop(L, 1);
 
   //get policy value
@@ -307,16 +290,12 @@ int console_add_router(lua_State* L) {
   memset(&router,0,sizeof(router));
   int type;
 
-  if (! lua_istable(L, -1)) {
-    XBT_ERROR("Bad Arguments to create router, Should be a table with named arguments");
-    return -1;
-  }
+  lua_ensure(lua_istable(L, -1),
+      "Bad Arguments to create router, Should be a table with named arguments");
 
   lua_pushstring(L, "id");
   type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING) {
-    XBT_ERROR("Attribute 'id' must be specified for any link and must be a string.");
-  }
+  lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for any link and must be a string.");
   router.id = lua_tostring(L, -1);
   lua_pop(L,1);
 
@@ -339,32 +318,28 @@ int console_add_route(lua_State *L) {
   /* allocating memory for the buffer, I think 2kB should be enough */
   surfxml_bufferstack = xbt_new0(char, surfxml_bufferstack_size);
 
-  if (! lua_istable(L, -1)) {
-    XBT_ERROR("Bad Arguments to add a route. Should be a table with named arguments");
-    return -1;
-  }
+  lua_ensure(lua_istable(L, -1), "Bad Arguments to add a route. Should be a table with named arguments");
 
   lua_pushstring(L,"src");
   type = lua_gettable(L,-2);
-  if (type != LUA_TSTRING) {
-    XBT_ERROR("Attribute 'src' must be specified for any route and must be a string.");
-  }
-  route.src = lua_tostring(L, -1);
+  lua_ensure(type == LUA_TSTRING, "Attribute 'src' must be specified for any route and must be a string.");
+  const char *srcName = lua_tostring(L, -1);
+  route.src = sg_netcard_by_name_or_null(srcName);
+  lua_ensure(route.src != nullptr, "Attribute 'src=%s' of route does not name a node.", srcName);
   lua_pop(L,1);
 
   lua_pushstring(L,"dest");
   type = lua_gettable(L,-2);
-  if (type != LUA_TSTRING) {
-    XBT_ERROR("Attribute 'dest' must be specified for any route and must be a string.");
-  }
-  route.dst = lua_tostring(L, -1);
+  lua_ensure(type == LUA_TSTRING, "Attribute 'dest' must be specified for any route and must be a string.");
+  const char *dstName = lua_tostring(L, -1);
+  route.dst = sg_netcard_by_name_or_null(dstName);
+  lua_ensure(route.dst != nullptr, "Attribute 'dst=%s' of route does not name a node.", dstName);
   lua_pop(L,1);
 
   lua_pushstring(L,"links");
   type = lua_gettable(L,-2);
-  if (type != LUA_TSTRING) {
-    XBT_ERROR("Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
-  }
+  lua_ensure(type == LUA_TSTRING,
+      "Attribute 'links' must be specified for any route and must be a string (different links separated by commas or single spaces.");
   route.link_list = new std::vector<Link*>();
   xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
   if (xbt_dynar_is_empty(names)) {
@@ -393,19 +368,18 @@ int console_add_route(lua_State *L) {
   lua_gettable(L,-2);
   if (lua_isstring(L, -1)) {
     const char* value = lua_tostring(L, -1);
-    if (strcmp("YES", value) == 0) {
-      route.symmetrical = TRUE;
-    }
+    if (strcmp("YES", value) == 0)
+      route.symmetrical = true;
     else
-      route.symmetrical = FALSE;
+      route.symmetrical = false;
   }
   else {
-    route.symmetrical = TRUE;
+    route.symmetrical = true;
   }
   lua_pop(L,1);
 
-  route.gw_src = NULL;
-  route.gw_dst = NULL;
+  route.gw_src = nullptr;
+  route.gw_dst = nullptr;
 
   sg_platf_new_route(&route);
 
@@ -418,32 +392,30 @@ int console_add_ASroute(lua_State *L) {
 
   lua_pushstring(L, "src");
   lua_gettable(L, -2);
-  ASroute.src = lua_tostring(L, -1);
+  const char *srcName = lua_tostring(L, -1);
+  ASroute.src = sg_netcard_by_name_or_null(srcName);
+  lua_ensure(ASroute.src != nullptr, "Attribute 'src=%s' of AS route does not name a node.", srcName);
   lua_pop(L, 1);
 
   lua_pushstring(L, "dst");
   lua_gettable(L, -2);
-  ASroute.dst = lua_tostring(L, -1);
+  const char *dstName = lua_tostring(L, -1);
+  ASroute.dst = sg_netcard_by_name_or_null(dstName);
+  lua_ensure(ASroute.dst != nullptr, "Attribute 'dst=%s' of AS route does not name a node.", dstName);
   lua_pop(L, 1);
 
   lua_pushstring(L, "gw_src");
   lua_gettable(L, -2);
   const char *name = lua_tostring(L, -1);
   ASroute.gw_src = sg_netcard_by_name_or_null(name);
-  if (ASroute.gw_src == NULL) {
-    XBT_ERROR("Attribute 'gw_src' of AS route does not name a valid machine: %s", name);
-    return -1;
-  }
+  lua_ensure(ASroute.gw_src, "Attribute 'gw_src=%s' of AS route does not name a valid node", name);
   lua_pop(L, 1);
 
   lua_pushstring(L, "gw_dst");
   lua_gettable(L, -2);
   name = lua_tostring(L, -1);
   ASroute.gw_dst = sg_netcard_by_name_or_null(name);
-  if (ASroute.gw_dst == NULL) {
-    XBT_ERROR("Attribute 'gw_dst' of AS route does not name a valid machine: %s", name);
-    return -1;
-  }
+  lua_ensure(ASroute.gw_dst, "Attribute 'gw_dst=%s' of AS route does not name a valid node", name);
   lua_pop(L, 1);
 
   lua_pushstring(L,"links");
@@ -451,7 +423,7 @@ int console_add_ASroute(lua_State *L) {
   ASroute.link_list = new std::vector<Link*>();
   xbt_dynar_t names = xbt_str_split(lua_tostring(L, -1), ", \t\r\n");
   if (xbt_dynar_is_empty(names)) {
-    /* unique name */
+    /* unique name with no comma */
     ASroute.link_list->push_back(Link::byName(lua_tostring(L, -1)));
   } else {
     // Several names separated by , \t\r\n
@@ -471,12 +443,12 @@ int console_add_ASroute(lua_State *L) {
   if (lua_isstring(L, -1)) {
     const char* value = lua_tostring(L, -1);
     if (strcmp("YES", value) == 0)
-      ASroute.symmetrical = TRUE;
+      ASroute.symmetrical = true;
     else
-      ASroute.symmetrical = FALSE;
+      ASroute.symmetrical = false;
   }
   else {
-    ASroute.symmetrical = TRUE;
+    ASroute.symmetrical = true;
   }
   lua_pop(L,1);
 
@@ -492,16 +464,11 @@ int console_AS_open(lua_State *L) {
 
  XBT_DEBUG("Opening AS");
 
- if (! lua_istable(L, 1)) {
-   XBT_ERROR("Bad Arguments to AS_open, Should be a table with named arguments");
-   return -1;
- }
+ lua_ensure(lua_istable(L, 1), "Bad Arguments to AS_open, Should be a table with named arguments");
 
  lua_pushstring(L, "id");
  type = lua_gettable(L, -2);
-  if (type != LUA_TSTRING) {
-    XBT_ERROR("Attribute 'id' must be specified for any AS and must be a string.");
-  }
+ lua_ensure(type == LUA_TSTRING, "Attribute 'id' must be specified for any AS and must be a string.");
  id = lua_tostring(L, -1);
  lua_pop(L, 1);
 
@@ -520,17 +487,24 @@ int console_AS_open(lua_State *L) {
  else if(!strcmp(mode,"none")) mode_int = A_surfxml_AS_routing_None;
  else xbt_die("Don't have the model name '%s'",mode);
 
- s_sg_platf_AS_cbarg_t AS = SG_PLATF_AS_INITIALIZER;
+ s_sg_platf_AS_cbarg_t AS;
  AS.id = id;
  AS.routing = mode_int;
+ simgrid::s4u::As *new_as = sg_platf_new_AS_begin(&AS);
 
- sg_platf_new_AS_begin(&AS);
+ /* Build a Lua representation of the new AS on the stack */
+ lua_newtable(L);
+ simgrid::s4u::As **lua_as = (simgrid::s4u::As **) lua_newuserdata(L, sizeof(simgrid::s4u::As *)); /* table userdatum */
+ *lua_as = new_as;
+ luaL_getmetatable(L, PLATF_MODULE_NAME); /* table userdatum metatable */
+ lua_setmetatable(L, -2);                 /* table userdatum */
+ lua_setfield(L, -2, AS_FIELDNAME);       /* table -- put the userdata as field of the table */
 
- return 0;
+ return 1;
 }
-int console_AS_close(lua_State *L) {
-  XBT_DEBUG("Closing AS");
-  sg_platf_new_AS_end();
+int console_AS_seal(lua_State *L) {
+  XBT_DEBUG("Sealing AS");
+  sg_platf_new_AS_seal();
   return 0;
 }
 
@@ -538,11 +512,7 @@ int console_host_set_property(lua_State *L) {
   const char* name ="";
   const char* prop_id = "";
   const char* prop_value = "";
-  if (!lua_istable(L, -1)) {
-    XBT_ERROR("Bad Arguments to create link, Should be a table with named arguments");
-    return -1;
-  }
-
+  lua_ensure(lua_istable(L, -1), "Bad Arguments to create link, Should be a table with named arguments");
 
   // get Host id
   lua_pushstring(L, "host");
@@ -562,12 +532,9 @@ int console_host_set_property(lua_State *L) {
   lua_pop(L, 1);
 
   sg_host_t host = sg_host_by_name(name);
-  if (!host) {
-    XBT_ERROR("no host '%s' found",name);
-    return -1;
-  }
+  lua_ensure(host, "no host '%s' found",name);
   xbt_dict_t props = sg_host_get_properties(host);
-  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),NULL);
+  xbt_dict_set(props,prop_id,xbt_strdup(prop_value),nullptr);
 
   return 0;
 }
@@ -580,38 +547,7 @@ void sglua_register_platf_functions(lua_State* L)
 {
   lua_getglobal(L, "simgrid");     /* simgrid */
   luaL_newlib(L, platf_functions); /* simgrid simgrid.platf */
-  lua_setfield(L, -2, "platf");    /* simgrid */
+  lua_setfield(L, -2, "engine");   /* simgrid */
 
   lua_pop(L, 1);                   /* -- */
 }
-
-//void sglua_register_routing_constants(lua_State* L)
-//{
-//  lua_getglobal(L, "simgrid");     /* simgrid */
-//  lua_newtable(L);                 /* simgrid simgrid.routing */
-//
-//  lua_pushstring(L, "Cluster");    /* simgrid simgrid.routing Cluster */
-//  lua_setfield(L, -2, "CLUSTER");     /* simgrid simgrid.routing */
-//
-//  lua_pushstring(L, "Dijkstra");    /* simgrid simgrid.routing Dijkstra */
-//  lua_setfield(L, -2, "DIJKSTRA");     /* simgrid simgrid.routing */
-//
-//  lua_pushstring(L, "DijkstraCache");    /* simgrid simgrid.routing DijkstraCache */
-//  lua_setfield(L, -2, "DIJKSTRA_CACHE");     /* simgrid simgrid.routing */
-//
-//  lua_pushstring(L, "Floyd");    /* simgrid simgrid.routing Floyd */
-//  lua_setfield(L, -2, "FLOYD");     /* simgrid simgrid.routing */
-//
-//  lua_pushstring(L, "Full");       /* simgrid simgrid.routing Full */
-//  lua_setfield(L, -2, "FULL");     /* simgrid simgrid.routing */
-//
-//  lua_pushstring(L, "None");    /* simgrid simgrid.routing None */
-//  lua_setfield(L, -2, "NONE");     /* simgrid simgrid.routing */
-//
-//  lua_pushstring(L, "Vivaldi");    /* simgrid simgrid.routing Vivaldi */
-//  lua_setfield(L, -2, "FULL");     /* simgrid simgrid.routing */
-//
-//  lua_setfield(L, -2, "routing");  /* simgrid */
-//
-//  lua_pop(L, 1);                   /* -- */
-//}

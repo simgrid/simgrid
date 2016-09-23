@@ -1,5 +1,5 @@
 
-$ ./process_join$EXEEXT ${srcdir:=.}/../../../examples/platforms/small_platform.xml ${srcdir:=.}/process_join_d.xml
+$ ./process_join$EXEEXT ${srcdir:=.}/../../../examples/platforms/small_platform.xml
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Start slave
 > [Tremblay:slave from master:(2) 0.000000] [msg_test/INFO] Slave started
 > [Tremblay:master:(1) 0.000000] [msg_test/INFO] Join the slave (timeout 2)

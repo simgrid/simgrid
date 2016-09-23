@@ -6,8 +6,9 @@
 #ifndef SIMGRID_S4U_HOST_HPP
 #define SIMGRID_S4U_HOST_HPP
 
+#include <string>
+
 #include <boost/unordered_map.hpp>
-#include <vector>
 
 #include <xbt/base.h>
 #include <xbt/string.hpp>
@@ -21,34 +22,36 @@
 namespace simgrid {
 
 namespace xbt {
-extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Host>;
+  extern template class XBT_PUBLIC() Extendable<simgrid::s4u::Host>;
 }
-
 namespace s4u {
 
-/** @brief Simulated machine that can host some actors
+/** @ingroup s4u_api
  *
- * It represents some physical resource with computing and networking capabilities.
+ * @tableofcontents 
+ *
+ * An host represents some physical resource with computing and networking capabilities.
  *
  * All hosts are automatically created during the call of the method
  * @link{simgrid::s4u::Engine::loadPlatform()}.
  * You cannot create a host yourself.
  *
- * You can retrieve a particular host using @link{simgrid::s4u::Host.byName()},
- * and actors can retrieve the host on which they run using @link{simgrid::s4u::Host.current()}.
+ * You can retrieve a particular host using simgrid::s4u::Host::byName()
+ * and actors can retrieve the host on which they run using simgrid::s4u::Host::current().
  */
 XBT_PUBLIC_CLASS Host :
   public simgrid::xbt::Extendable<Host> {
 
 private:
-  Host(const char *name);
+  explicit Host(const char *name);
 public: // TODO, make me private
   ~Host();
-public:
-
-  static Host* by_name_or_null(const char* name);
+  /** Do not use this function, it should be private */
   static Host* by_name_or_create(const char* name);
-  /** Retrieves an host from its name. */
+
+  /** Retrieves an host from its name, or return nullptr */
+  static Host* by_name_or_null(const char* name);
+  /** Retrieves an host from its name, or die */
   static s4u::Host *by_name(std::string name);
   /** Retrieves the host on which the current actor is running */
   static s4u::Host *current();
@@ -68,11 +71,13 @@ public:
   bool isOff() { return !isOn(); }
 
   double speed();
-  int core_count();
+  int coresCount();
   xbt_dict_t properties();
+  const char*property(const char*key);
+  void setProperty(const char*key, const char *value);
   xbt_swag_t processes();
-  double currentPowerPeak();
-  double powerPeakAt(int pstate_index);
+  double getPstateSpeedCurrent();
+  double getPstateSpeed(int pstate_index);
   int pstatesCount() const;
   void setPstate(int pstate_index);
   int pstate();
@@ -81,7 +86,7 @@ public:
   xbt_dict_t mountedStoragesAsDict(); // HACK
   xbt_dynar_t attachedStorages();
 
-  /** Get an associative list [mount point]->[Storage] off all local mount points.
+  /** Get an associative list [mount point]->[Storage] of all local mount points.
    *
    *  This is defined in the platform file, and cannot be modified programatically (yet).
    */
@@ -89,14 +94,14 @@ public:
 
 private:
   simgrid::xbt::string name_ = "noname";
-  boost::unordered_map<std::string, Storage*> *mounts = NULL; // caching
+  boost::unordered_map<std::string, Storage*> *mounts = nullptr; // caching
 
 public:
-  // FIXME: these should be protected, but it leads to many errors
-  // Use the extensions stuff for this? Go through simgrid::surf::Host?
   // TODO, this could be a unique_ptr
+  /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   surf::Cpu     *pimpl_cpu = nullptr;
-  surf::NetCard *pimpl_netcard = nullptr;
+  /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
+  kernel::routing::NetCard *pimpl_netcard = nullptr;
 
 public:
   /*** Called on each newly created object */
@@ -110,7 +115,6 @@ public:
 }} // namespace simgrid::s4u
 
 extern int MSG_HOST_LEVEL;
-extern int SIMIX_HOST_LEVEL;
 extern int USER_HOST_LEVEL;
 
 #endif /* SIMGRID_S4U_HOST_HPP */
@@ -126,20 +130,6 @@ extern int USER_HOST_LEVEL;
 
 package org.simgrid.msg;
 
-import org.simgrid.msg.Storage;
-
-/*
-Host jacquelin;
-
-try { 
-  jacquelin = Host.getByName("Jacquelin");
-} catch(HostNotFoundException e) {
-  System.err.println(e.toString());
-}
-...
-\endverbatim
- *
- */ 
 public class Host {
   /**
    * This static method returns all of the hosts of the installed platform.
@@ -164,38 +154,12 @@ public class Host {
 
   /**
    * This method returns the number of tasks currently running on a host.
-   * The external load (comming from an availability trace) is not taken in account.
+   * The external load (coming from an availability trace) is not taken in account.
    *
    * @return      The number of tasks currently running on a host.
    */ 
   public native int getLoad();
 
-  /**
-   * This method returns the speed of the processor of a host,
-   * regardless of the current load of the machine.
-   *
-   * @return      The speed of the processor of the host in flops.
-   *
-   */ 
-  public native double getSpeed();
-
-  /**
-   * This method returns the number of core of a host.
-   *
-   * @return      The speed of the processor of the host in flops.
-   *
-   */ 
-  public native double getCoreNumber();
-
-  /**
-   * Returns the value of a given host property (set from the platform file).
-   */
-  public native String getProperty(String name);
-
-  /**
-   * Change the value of a given host property. 
-   */
-  public native void setProperty(String name, String value);
 
   /** This methods returns the list of storages attached to an host
    * @return An array containing all storages (name) attached to the host

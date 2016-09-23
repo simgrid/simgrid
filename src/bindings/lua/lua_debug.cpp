@@ -8,7 +8,7 @@
 /*
  * This file contains functions that aid users to debug their lua scripts; for instance,
  * tables can be easily output and values are represented in a human-readable way. (For instance,
- * a NULL value becomes the string "nil").
+ * a nullptr value becomes the string "nil").
  *
  */
  /* SimGrid Lua debug functions                                             */
@@ -37,15 +37,15 @@ const char* sglua_tostring(lua_State* L, int index) {
   switch (lua_type(L, index)) {
 
     case LUA_TNIL:
-      sprintf(buff, "nil");
+      snprintf(buff, 4, "nil");
       break;
 
     case LUA_TNUMBER: 
-      sprintf(buff, "%.3f", lua_tonumber(L, index));
+      snprintf(buff, 64, "%.3f", lua_tonumber(L, index));
       break;
 
     case LUA_TBOOLEAN:
-      sprintf(buff, "%s", lua_toboolean(L, index) ? "true" : "false");
+      snprintf(buff, 64, "%s", lua_toboolean(L, index) ? "true" : "false");
       break;
 
     case LUA_TSTRING:
@@ -54,24 +54,24 @@ const char* sglua_tostring(lua_State* L, int index) {
 
     case LUA_TFUNCTION:
       if (lua_iscfunction(L, index)) {
-        sprintf(buff, "C-function");
+        snprintf(buff, 11, "C-function");
       }
       else {
-        sprintf(buff, "function");
+        snprintf(buff, 9, "function");
       }
       break;
 
     case LUA_TTABLE:
-      sprintf(buff, "table(%p)", lua_topointer(L, index));
+      snprintf(buff, 64, "table(%p)", lua_topointer(L, index));
       break;
 
     case LUA_TLIGHTUSERDATA:
     case LUA_TUSERDATA:
-      sprintf(buff, "userdata(%p)", lua_touserdata(L, index));
+      snprintf(buff, 64, "userdata(%p)", lua_touserdata(L, index));
       break;
 
     case LUA_TTHREAD:
-      sprintf(buff, "thread");
+      snprintf(buff, 7, "thread");
       break;
   }
   return buff;
@@ -164,7 +164,7 @@ void sglua_stack_dump(lua_State* L, const char* msg)
 
     p[0] = '\0';
     for (int i = 1; i <= top; i++) {  /* repeat for each level */
-      p += sprintf(p, "%s ", sglua_tostring(L, i));
+      p += snprintf(p, 2048-(p-buff), "%s ", sglua_tostring(L, i));
     }
 
     XBT_DEBUG("%s%s", msg, buff);
@@ -190,7 +190,7 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
 
   int has_mt = lua_getmetatable(L, ud);
   XBT_DEBUG("Checking the userdata: has metatable ? %d", has_mt);
-  const void* actual_mt = NULL;
+  const void* actual_mt = nullptr;
   if (has_mt) {
     actual_mt = lua_topointer(L, -1);
     lua_pop(L, 1);
@@ -198,8 +198,8 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
   XBT_DEBUG("Checking the task's metatable: expected %p, found %p", correct_mt, actual_mt);
   sglua_stack_dump(L, "my_checkudata: ");
 
-  if (p == NULL || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
-    XBT_ERROR("Error: Userdata is NULL, couldn't find metatable or top of stack does not equal element below it.");
+  if (p == nullptr || !lua_getmetatable(L, ud) || !lua_rawequal(L, -1, -2))
+    XBT_ERROR("Error: Userdata is nullptr, couldn't find metatable or top of stack does not equal element below it.");
   lua_pop(L, 2);
   return p;
 }
@@ -210,10 +210,10 @@ void* sglua_checkudata_debug(lua_State* L, int ud, const char* tname)
  * This function is a valid lua_Writer that writes into a memory buffer passed
  * as userdata.
  *
- * @param L a lua state
- * @param source some data
- * @param sz number of bytes of data
- * @param user_data the memory buffer to write
+ * @param L        a lua state
+ * @param source   some data
+ * @param size     number of bytes of data
+ * @param userdata the memory buffer to write
  */
 int sglua_memory_writer(lua_State* L, const void* source, size_t size,
     void* userdata) {

@@ -7,9 +7,7 @@
 ###
 ###  This file is not loaded on windows
 
-
 #### Generate the html documentation
-
 if (enable_documentation)
   find_package(Doxygen REQUIRED)
 else()
@@ -18,9 +16,7 @@ endif()
 
 find_path(FIG2DEV_PATH  NAMES fig2dev  PATHS NO_DEFAULT_PATHS)
 
-
 if(DOXYGEN_FOUND)
-
   ADD_CUSTOM_TARGET(documentation 
     COMMENT "Generating the SimGrid documentation..."
     DEPENDS ${DOC_SOURCES} ${DOC_FIGS} ${source_doxygen}
@@ -31,10 +27,9 @@ if(DOXYGEN_FOUND)
 
   message(STATUS "Doxygen version: ${DOXYGEN_VERSION}")
 
-  # This is a workaround for older cmake versions
-  # (such as 2.8.7 on Ubuntu 12.04). These cmake versions do not provide the
-  # DOXYGEN_VERSION variable and hence, building the documentation will always
-  # fail. This code is the same as used in the cmake library, version 3.
+  # This is a workaround for older cmake versions (such as 2.8.7 on Ubuntu 12.04). These cmake versions do not provide 
+  # the DOXYGEN_VERSION variable and hence, building the documentation will always  fail. This code is the same as used
+  # in the cmake library, version 3.
   if(DOXYGEN_EXECUTABLE)
     execute_process(COMMAND ${DOXYGEN_EXECUTABLE} "--version" OUTPUT_VARIABLE DOXYGEN_VERSION OUTPUT_STRIP_TRAILING_WHITESPACE)
   endif()
@@ -44,7 +39,6 @@ if(DOXYGEN_FOUND)
         COMMAND ${CMAKE_COMMAND} -E echo "Doxygen must be at least version 1.8 to generate documentation. Version found: ${DOXYGEN_VERSION}"
       COMMAND false
     )
-
     add_dependencies(documentation error_doxygen)
   endif()
 
@@ -53,25 +47,17 @@ if(DOXYGEN_FOUND)
   foreach(file ${DOC_FIGS})
     string(REPLACE ".fig" ".png" tmp_file ${file})
     string(REPLACE "${CMAKE_HOME_DIRECTORY}/doc/shared/fig/" "${CMAKE_HOME_DIRECTORY}/doc/html/" tmp_file ${tmp_file})
-    ADD_CUSTOM_COMMAND(TARGET documentation
-      COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file}
-      )
+    ADD_CUSTOM_COMMAND(TARGET documentation  COMMAND ${FIG2DEV_PATH}/fig2dev -Lpng -S 4 ${file} ${tmp_file})
   endforeach()
 
   foreach(file ${DOC_IMG})
-    ADD_CUSTOM_COMMAND(
-      TARGET documentation
-      COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/
-    )
+    ADD_CUSTOM_COMMAND(TARGET documentation COMMAND ${CMAKE_COMMAND} -E copy ${file} ${CMAKE_HOME_DIRECTORY}/doc/html/)
   endforeach()
 
   ADD_CUSTOM_COMMAND(TARGET documentation
     COMMAND ${FIG2DEV_PATH}/fig2dev -Lmap ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig | perl -pe 's/imagemap/simgrid_modules/g'| perl -pe 's/<IMG/<IMG style=border:0px/g' | ${CMAKE_HOME_DIRECTORY}/tools/doxygen/fig2dev_postprocessor.pl > ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     COMMAND pwd
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
-    COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     COMMAND ${CMAKE_COMMAND} -E echo "XX Generate the index files"
-    COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/index_create.pl simgrid.tag index-API.doc
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/xbt_log_extract_hierarchy.pl > ${CMAKE_HOME_DIRECTORY}/doc/doxygen/logcategories.doc
     COMMAND ${CMAKE_COMMAND} -E echo "XX Generate list of files in examples/ for routing models"
@@ -86,21 +72,17 @@ if(DOXYGEN_FOUND)
     COMMAND ${CMAKE_COMMAND} -E echo "XX Generate list of files in examples/ for XML tags"
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh '<mount ' > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_xmltag_mount
     COMMAND ${CMAKE_HOME_DIRECTORY}/tools/doxygen/list_routing_models_examples.sh '<link_ctn ' > ${CMAKE_HOME_DIRECTORY}/doc/example_lists/example_filelist_xmltag_linkctn
-    COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen again"
+    COMMAND ${CMAKE_COMMAND} -E echo "XX Run doxygen"
     COMMAND ${DOXYGEN_EXECUTABLE} Doxyfile
     COMMAND ${CMAKE_COMMAND} -E remove ${CMAKE_HOME_DIRECTORY}/doc/simgrid_modules.map
     WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc
     )
 
-
-
-#############################################
-### Fill in the "make sync-gforge" target ###
-#############################################
+### Fill in the "make gforge-gforge" target ###
 
 set(RSYNC_CMD rsync --verbose --cvs-exclude --compress --delete --delete-excluded --rsh=ssh --ignore-times --recursive --links --times --omit-dir-times --perms --chmod=a+rX,ug+w,o-w,Dg+s)
 
-add_custom_target(sync-gforge-doc
+add_custom_target(gforge-sync
   COMMAND ssh scm.gforge.inria.fr mkdir -p -m 2775 /home/groups/simgrid/htdocs/simgrid/${release_version}/ || true
 
   COMMAND ${RSYNC_CMD} doc/html/ scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/doc/ || true
@@ -109,19 +91,13 @@ add_custom_target(sync-gforge-doc
   doc/webcruft/simgrid_logo_2011_small.png scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/
 
   COMMAND ${RSYNC_CMD} src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/
+  COMMAND ${RSYNC_CMD} src/surf/xml/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
 
   WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
   )
-add_dependencies(sync-gforge-doc documentation)
-
-add_custom_target(sync-gforge-dtd
-  COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid/${release_version}/simgrid.dtd
-  COMMAND ${RSYNC_CMD} src/surf/simgrid.dtd scm.gforge.inria.fr:/home/groups/simgrid/htdocs/simgrid.dtd
-  WORKING_DIRECTORY "${CMAKE_HOME_DIRECTORY}"
-  )
+add_dependencies(gforge-sync documentation)
 
 endif() # Doxygen found
-
 
 if (Java_FOUND)
   find_path(JAVADOC_PATH  NAMES javadoc   PATHS NO_DEFAULT_PATHS)
@@ -142,7 +118,7 @@ endif()
 add_custom_target(manpages ALL
   COMMAND ${CMAKE_COMMAND} -E make_directory ${MANPAGE_DIR}
   COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/simgrid_update_xml.pl > ${MANPAGE_DIR}/simgrid_update_xml.1
-  COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/tools/tesh/tesh.pl > ${MANPAGE_DIR}/tesh.1
+  COMMAND pod2man ${CMAKE_HOME_DIRECTORY}/doc/manpage/tesh.pod > ${MANPAGE_DIR}/tesh.1
   COMMENT "Generating manpages"
   )
 install(FILES
@@ -154,4 +130,3 @@ install(FILES
   ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpiff.1
   ${CMAKE_HOME_DIRECTORY}/doc/manpage/smpirun.1
   DESTINATION $ENV{DESTDIR}${CMAKE_INSTALL_PREFIX}/share/man/man1)
-

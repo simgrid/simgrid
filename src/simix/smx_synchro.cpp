@@ -1,3 +1,4 @@
+
 /* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -6,37 +7,33 @@
 
 #include "src/surf/surf_interface.hpp"
 #include "smx_private.h"
-#include "xbt/log.h"
+#include <xbt/ex.hpp>
+#include <xbt/log.h>
 
+#include "src/kernel/activity/SynchroRaw.hpp"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix,
-                                "SIMIX Synchronization (mutex, semaphores and conditions)");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_synchro, simix, "SIMIX Synchronization (mutex, semaphores and conditions)");
 
-static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
-static void SIMIX_synchro_finish(smx_synchro_t synchro);
+static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout);
 static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
-                             smx_process_t issuer, smx_simcall_t simcall);
-static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
+                             smx_actor_t issuer, smx_simcall_t simcall);
+static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
                             smx_simcall_t simcall);
 
 /***************************** Raw synchronization *********************************/
 
-static smx_synchro_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
+static smx_activity_t SIMIX_synchro_wait(sg_host_t smx_host, double timeout)
 {
   XBT_IN("(%p, %f)",smx_host,timeout);
 
-  smx_synchro_t sync;
-  sync = (smx_synchro_t) xbt_mallocator_get(simix_global->synchro_mallocator);
-  sync->type = SIMIX_SYNC_SYNCHRO;
-  sync->name = xbt_strdup("synchro");
-  sync->synchro.sleep = surf_host_sleep(smx_host, timeout);
-
-  sync->synchro.sleep->setData(sync);
+  simgrid::kernel::activity::Raw *sync = new simgrid::kernel::activity::Raw();
+  sync->sleep = surf_host_sleep(smx_host, timeout);
+  sync->sleep->setData(sync);
   XBT_OUT();
   return sync;
 }
 
-void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall)
+void SIMIX_synchro_stop_waiting(smx_actor_t process, smx_simcall_t simcall)
 {
   XBT_IN("(%p, %p)",process,simcall);
   switch (simcall->call) {
@@ -67,34 +64,11 @@ void SIMIX_synchro_stop_waiting(smx_process_t process, smx_simcall_t simcall)
   XBT_OUT();
 }
 
-void SIMIX_synchro_destroy(smx_synchro_t synchro)
+void SIMIX_synchro_finish(smx_activity_t synchro)
 {
   XBT_IN("(%p)",synchro);
-  XBT_DEBUG("Destroying synchro %p", synchro);
-  xbt_assert(synchro->type == SIMIX_SYNC_SYNCHRO);
-  synchro->synchro.sleep->unref();
-  xbt_free(synchro->name);
-  xbt_mallocator_release(simix_global->synchro_mallocator, synchro);
-  XBT_OUT();
-}
-
-void SIMIX_post_synchro(smx_synchro_t synchro)
-{
-  XBT_IN("(%p)",synchro);
-  xbt_assert(synchro->type == SIMIX_SYNC_SYNCHRO);
-  if (synchro->synchro.sleep->getState() == SURF_ACTION_FAILED)
-    synchro->state = SIMIX_FAILED;
-  else if(synchro->synchro.sleep->getState() == SURF_ACTION_DONE)
-    synchro->state = SIMIX_SRC_TIMEOUT;
-
-  SIMIX_synchro_finish(synchro);  
-  XBT_OUT();
-}
-
-static void SIMIX_synchro_finish(smx_synchro_t synchro)
-{
-  XBT_IN("(%p)",synchro);
-  smx_simcall_t simcall = (smx_simcall_t) xbt_fifo_shift(synchro->simcalls);
+  smx_simcall_t simcall = synchro->simcalls.front();
+  synchro->simcalls.pop_front();
 
   switch (synchro->state) {
 
@@ -113,137 +87,143 @@ static void SIMIX_synchro_finish(smx_synchro_t synchro)
   }
 
   SIMIX_synchro_stop_waiting(simcall->issuer, simcall);
-  simcall->issuer->waiting_synchro = NULL;
-  SIMIX_synchro_destroy(synchro);
+  simcall->issuer->waiting_synchro = nullptr;
+  delete synchro;
   SIMIX_simcall_answer(simcall);
   XBT_OUT();
 }
 /*********************************** Mutex ************************************/
 
-smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall){
-  return SIMIX_mutex_init();
-}
-/**
- * \brief Initialize a mutex.
- *
- * Allocs and creates the data for the mutex.
- * \return A mutex
- */
-smx_mutex_t SIMIX_mutex_init(void)
-{
-  XBT_IN("()");
-  s_smx_process_t p;            /* useful to initialize sleeping swag */
+namespace simgrid {
+namespace simix {
 
-  smx_mutex_t mutex = xbt_new0(s_smx_mutex_t, 1);
-  mutex->locked = 0;
-  mutex->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
+Mutex::Mutex() : mutex_(this)
+{
+  XBT_IN("(%p)", this);
+  // Useful to initialize sleeping swag:
+  simgrid::simix::ActorImpl p;
+  this->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
   XBT_OUT();
-  return mutex;
 }
 
-/**
- * \brief Handles a mutex lock simcall.
- * \param simcall the simcall
- */
-void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
+Mutex::~Mutex()
 {
-  XBT_IN("(%p)",simcall);
-  /* FIXME: check where to validate the arguments */
-  smx_synchro_t synchro = NULL;
-  smx_process_t process = simcall->issuer;
+  XBT_IN("(%p)", this);
+  xbt_swag_free(this->sleeping);
+  XBT_OUT();
+}
 
-  if (mutex->locked) {
+void Mutex::lock(smx_actor_t issuer)
+{
+  XBT_IN("(%p; %p)", this, issuer);
+  /* FIXME: check where to validate the arguments */
+  smx_activity_t synchro = nullptr;
+
+  if (this->locked) {
     /* FIXME: check if the host is active ? */
     /* Somebody using the mutex, use a synchronization to get host failures */
-    synchro = SIMIX_synchro_wait(process->host, -1);
-    xbt_fifo_push(synchro->simcalls, simcall);
-    simcall->issuer->waiting_synchro = synchro;
-    xbt_swag_insert(simcall->issuer, mutex->sleeping);   
+    synchro = SIMIX_synchro_wait(issuer->host, -1);
+    synchro->simcalls.push_back(&issuer->simcall);
+    issuer->waiting_synchro = synchro;
+    xbt_swag_insert(issuer, this->sleeping);
   } else {
     /* mutex free */
-    mutex->locked = 1;
-    mutex->owner = simcall->issuer;
-    SIMIX_simcall_answer(simcall);
+    this->locked = true;
+    this->owner = issuer;
+    SIMIX_simcall_answer(&issuer->simcall);
   }
   XBT_OUT();
 }
 
-int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex){
-  return SIMIX_mutex_trylock(mutex, simcall->issuer);
-}
-/**
- * \brief Tries to lock a mutex.
+/** Tries to lock the mutex for a process
  *
- * Tries to lock a mutex, return 1 if the mutex is unlocked, else 0.
- * This function does not block and wait for the mutex to be unlocked.
- * \param mutex The mutex
- * \param issuer The process that tries to acquire the mutex
- * \return 1 - mutex free, 0 - mutex used
+ * \param  issuer  the process that tries to acquire the mutex
+ * \return whether we managed to lock the mutex
  */
-int SIMIX_mutex_trylock(smx_mutex_t mutex, smx_process_t issuer)
+bool Mutex::try_lock(smx_actor_t issuer)
 {
-  XBT_IN("(%p, %p)",mutex,issuer);
-  if (mutex->locked){
+  XBT_IN("(%p, %p)", this, issuer);
+  if (this->locked) {
     XBT_OUT();
-    return 0;
+    return false;
   }
 
-  mutex->locked = 1;
-  mutex->owner = issuer;
+  this->locked = true;
+  this->owner = issuer;
   XBT_OUT();
-  return 1;
+  return true;
 }
 
-void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex){
-   SIMIX_mutex_unlock(mutex, simcall->issuer);
-}
-/**
- * \brief Unlocks a mutex.
+/** Unlock a mutex for a process
  *
  * Unlocks the mutex and gives it to a process waiting for it. 
  * If the unlocker is not the owner of the mutex nothing happens.
  * If there are no process waiting, it sets the mutex as free.
- * \param mutex The mutex
- * \param issuer The process trying to unlock the mutex
  */
-void SIMIX_mutex_unlock(smx_mutex_t mutex, smx_process_t issuer)
+void Mutex::unlock(smx_actor_t issuer)
 {
-  XBT_IN("(%p, %p)",mutex,issuer);
+  XBT_IN("(%p, %p)", this, issuer);
+  if(!this->locked)
+    THROWF(mismatch_error, 0, "Cannot release that mutex: it was not locked.");
 
   /* If the mutex is not owned by the issuer, that's not good */
-  if (issuer != mutex->owner)
-    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%d), not by you.",
-        SIMIX_process_get_name(mutex->owner),SIMIX_process_get_PID(mutex->owner));
+  if (issuer != this->owner)
+    THROWF(mismatch_error, 0, "Cannot release that mutex: it was locked by %s (pid:%ld), not by you.",
+        this->owner->name.c_str(),this->owner->pid);
 
-  if (xbt_swag_size(mutex->sleeping) > 0) {
+  if (xbt_swag_size(this->sleeping) > 0) {
     /*process to wake up */
-    smx_process_t p = (smx_process_t) xbt_swag_extract(mutex->sleeping);
-    SIMIX_synchro_destroy(p->waiting_synchro);
-    p->waiting_synchro = NULL;
-    mutex->owner = p;
+    smx_actor_t p = (smx_actor_t) xbt_swag_extract(this->sleeping);
+    delete p->waiting_synchro;
+    p->waiting_synchro = nullptr;
+    this->owner = p;
     SIMIX_simcall_answer(&p->simcall);
   } else {
     /* nobody to wake up */
-    mutex->locked = 0;
-    mutex->owner = NULL;
+    this->locked = false;
+    this->owner = nullptr;
   }
   XBT_OUT();
 }
 
-/**
- * \brief Destroys a mutex.
- *
- * Destroys and frees the mutex's memory. 
- * \param mutex A mutex
- */
-void SIMIX_mutex_destroy(smx_mutex_t mutex)
+}
+}
+
+/** Increase the refcount for this mutex */
+smx_mutex_t SIMIX_mutex_ref(smx_mutex_t mutex)
 {
-  XBT_IN("(%p)",mutex);
-  if (mutex){
-    xbt_swag_free(mutex->sleeping);
-    xbt_free(mutex);
-  }
-  XBT_OUT();
+  if (mutex != nullptr)
+    intrusive_ptr_add_ref(mutex);
+  return mutex;
+}
+
+/** Decrease the refcount for this mutex */
+void SIMIX_mutex_unref(smx_mutex_t mutex)
+{
+  if (mutex != nullptr)
+    intrusive_ptr_release(mutex);
+}
+
+smx_mutex_t simcall_HANDLER_mutex_init(smx_simcall_t simcall)
+{
+  return new simgrid::simix::Mutex();
+}
+
+// Simcall handlers:
+
+void simcall_HANDLER_mutex_lock(smx_simcall_t simcall, smx_mutex_t mutex)
+{
+  mutex->lock(simcall->issuer);
+}
+
+int simcall_HANDLER_mutex_trylock(smx_simcall_t simcall, smx_mutex_t mutex)
+{
+  return mutex->try_lock(simcall->issuer);
+}
+
+void simcall_HANDLER_mutex_unlock(smx_simcall_t simcall, smx_mutex_t mutex)
+{
+  mutex->unlock(simcall->issuer);
 }
 
 /********************************* Condition **********************************/
@@ -255,13 +235,13 @@ void SIMIX_mutex_destroy(smx_mutex_t mutex)
  * It have to be called before the use of the condition.
  * \return A condition
  */
-smx_cond_t SIMIX_cond_init(void)
+smx_cond_t SIMIX_cond_init()
 {
   XBT_IN("()");
-  s_smx_process_t p;
-  smx_cond_t cond = xbt_new0(s_smx_cond_t, 1);
+  simgrid::simix::ActorImpl p;
+  smx_cond_t cond = new s_smx_cond();
   cond->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
-  cond->mutex = NULL;
+  cond->refcount_ = 1;
   XBT_OUT();
   return cond;
 }
@@ -273,7 +253,7 @@ smx_cond_t SIMIX_cond_init(void)
 void simcall_HANDLER_cond_wait(smx_simcall_t simcall, smx_cond_t cond, smx_mutex_t mutex)
 {
   XBT_IN("(%p)",simcall);
-  smx_process_t issuer = simcall->issuer;
+  smx_actor_t issuer = simcall->issuer;
 
   _SIMIX_cond_wait(cond, mutex, -1, issuer, simcall);
   XBT_OUT();
@@ -287,7 +267,7 @@ void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond,
                      smx_mutex_t mutex, double timeout)
 {
   XBT_IN("(%p)",simcall);
-  smx_process_t issuer = simcall->issuer;
+  smx_actor_t issuer = simcall->issuer;
 
   _SIMIX_cond_wait(cond, mutex, timeout, issuer, simcall);
   XBT_OUT();
@@ -295,22 +275,22 @@ void simcall_HANDLER_cond_wait_timeout(smx_simcall_t simcall, smx_cond_t cond,
 
 
 static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
-                             smx_process_t issuer, smx_simcall_t simcall)
+                             smx_actor_t issuer, smx_simcall_t simcall)
 {
   XBT_IN("(%p, %p, %f, %p,%p)",cond,mutex,timeout,issuer,simcall);
-  smx_synchro_t synchro = NULL;
+  smx_activity_t synchro = nullptr;
 
   XBT_DEBUG("Wait condition %p", cond);
 
   /* If there is a mutex unlock it */
   /* FIXME: what happens if the issuer is not the owner of the mutex? */
-  if (mutex != NULL) {
+  if (mutex != nullptr) {
     cond->mutex = mutex;
-    SIMIX_mutex_unlock(mutex, issuer);
+    mutex->unlock(issuer);
   }
 
   synchro = SIMIX_synchro_wait(issuer->host, timeout);
-  xbt_fifo_unshift(synchro->simcalls, simcall);
+  synchro->simcalls.push_front(simcall);
   issuer->waiting_synchro = synchro;
   xbt_swag_insert(simcall->issuer, cond->sleeping);   
   XBT_OUT();
@@ -326,19 +306,19 @@ static void _SIMIX_cond_wait(smx_cond_t cond, smx_mutex_t mutex, double timeout,
 void SIMIX_cond_signal(smx_cond_t cond)
 {
   XBT_IN("(%p)",cond);
-  smx_process_t proc = NULL;
-  smx_mutex_t mutex = NULL;
-  smx_simcall_t simcall = NULL;
+  smx_actor_t proc = nullptr;
+  smx_mutex_t mutex = nullptr;
+  smx_simcall_t simcall = nullptr;
 
   XBT_DEBUG("Signal condition %p", cond);
 
   /* If there are processes waiting for the condition choose one and try 
      to make it acquire the mutex */
-  if ((proc = (smx_process_t) xbt_swag_extract(cond->sleeping))) {
+  if ((proc = (smx_actor_t) xbt_swag_extract(cond->sleeping))) {
 
     /* Destroy waiter's synchronization */
-    SIMIX_synchro_destroy(proc->waiting_synchro);
-    proc->waiting_synchro = NULL;
+    delete proc->waiting_synchro;
+    proc->waiting_synchro = nullptr;
 
     /* Now transform the cond wait simcall into a mutex lock one */
     simcall = &proc->simcall;
@@ -372,25 +352,40 @@ void SIMIX_cond_broadcast(smx_cond_t cond)
   XBT_OUT();
 }
 
-/**
- * \brief Destroys a condition.
- *
- * Destroys and frees the condition's memory. 
- * \param cond A condition
- */
-void SIMIX_cond_destroy(smx_cond_t cond)
+smx_cond_t SIMIX_cond_ref(smx_cond_t cond)
+{
+  if (cond != nullptr)
+    intrusive_ptr_add_ref(cond);
+  return cond;
+}
+
+void SIMIX_cond_unref(smx_cond_t cond)
 {
   XBT_IN("(%p)",cond);
   XBT_DEBUG("Destroy condition %p", cond);
-
-  if (cond != NULL) {
-    xbt_assert(xbt_swag_size(cond->sleeping) == 0,
-                "Cannot destroy conditional since someone is still using it");
-
-    xbt_swag_free(cond->sleeping);
-    xbt_free(cond);
+  if (cond != nullptr) {
+    intrusive_ptr_release(cond);
   }
   XBT_OUT();
+}
+
+
+void intrusive_ptr_add_ref(s_smx_cond_t *cond)
+{
+  auto previous = (cond->refcount_)++;
+  xbt_assert(previous != 0);
+  (void) previous;
+}
+
+void intrusive_ptr_release(s_smx_cond_t *cond)
+{
+  auto count = --(cond->refcount_);
+  if (count == 0) {
+    xbt_assert(xbt_swag_size(cond->sleeping) == 0,
+                "Cannot destroy conditional since someone is still using it");
+    xbt_swag_free(cond->sleeping);
+    delete cond;
+  }
 }
 
 /******************************** Semaphores **********************************/
@@ -399,7 +394,7 @@ void SIMIX_cond_destroy(smx_cond_t cond)
 smx_sem_t SIMIX_sem_init(unsigned int value)
 {
   XBT_IN("(%u)",value);
-  s_smx_process_t p;
+  simgrid::simix::ActorImpl p;
 
   smx_sem_t sem = xbt_new0(s_smx_sem_t, 1);
   sem->sleeping = xbt_swag_new(xbt_swag_offset(p, synchro_hookup));
@@ -413,7 +408,7 @@ void SIMIX_sem_destroy(smx_sem_t sem)
 {
   XBT_IN("(%p)",sem);
   XBT_DEBUG("Destroy semaphore %p", sem);
-  if (sem != NULL) {
+  if (sem != nullptr) {
     xbt_assert(xbt_swag_size(sem->sleeping) == 0,
                 "Cannot destroy semaphore since someone is still using it");
     xbt_swag_free(sem->sleeping);
@@ -433,12 +428,12 @@ void simcall_HANDLER_sem_release(smx_simcall_t simcall, smx_sem_t sem){
 void SIMIX_sem_release(smx_sem_t sem)
 {
   XBT_IN("(%p)",sem);
-  smx_process_t proc;
+  smx_actor_t proc;
 
   XBT_DEBUG("Sem release semaphore %p", sem);
-  if ((proc = (smx_process_t) xbt_swag_extract(sem->sleeping))) {
-    SIMIX_synchro_destroy(proc->waiting_synchro);
-    proc->waiting_synchro = NULL;
+  if ((proc = (smx_actor_t) xbt_swag_extract(sem->sleeping))) {
+    delete proc->waiting_synchro;
+    proc->waiting_synchro = nullptr;
     SIMIX_simcall_answer(&proc->simcall);
   } else if (sem->value < SMX_SEM_NOLIMIT) {
     sem->value++;
@@ -465,16 +460,16 @@ int SIMIX_sem_get_capacity(smx_sem_t sem)
   return sem->value;
 }
 
-static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_process_t issuer,
+static void _SIMIX_sem_wait(smx_sem_t sem, double timeout, smx_actor_t issuer,
                             smx_simcall_t simcall)
 {
   XBT_IN("(%p, %f, %p, %p)",sem,timeout,issuer,simcall);
-  smx_synchro_t synchro = NULL;
+  smx_activity_t synchro = nullptr;
 
   XBT_DEBUG("Wait semaphore %p (timeout:%f)", sem, timeout);
   if (sem->value <= 0) {
     synchro = SIMIX_synchro_wait(issuer->host, timeout);
-    xbt_fifo_unshift(synchro->simcalls, simcall);
+    synchro->simcalls.push_front(simcall);
     issuer->waiting_synchro = synchro;
     xbt_swag_insert(issuer, sem->sleeping);
   } else {

@@ -82,12 +82,10 @@
 /doc/simgrid/examples/smpi/compute2.c  628
 /doc/simgrid/examples/smpi/sendrecv.c  1652
 /doc/simgrid/examples/smpi/allreduce.c  2135
-/doc/simgrid/examples/smpi/mvmul.c  7069
 /doc/simgrid/examples/smpi/alltoallv.c  4441
 /doc/simgrid/examples/smpi/smpi_traced.c  8529
 /doc/simgrid/examples/smpi/compute3.c  816
 /doc/simgrid/examples/smpi/reduce.c  3545
-/doc/simgrid/examples/smpi/bcbench.c  2466
 /doc/simgrid/examples/smpi/ttest01.c  1273
 /doc/simgrid/examples/smpi/compute.c  622
 /doc/simgrid/examples/smpi/barrier.c  766
@@ -439,7 +437,6 @@
 /include/smpi/mpif.h  4826
 /include/smpi/smpif.h  1139
 /include/smpi/mpi.h  510
-/include/smpi/smpi_cocci.h 3187
 /include/smpi/smpi.h  24101
 /include/xbt/fifo.h  3626
 /include/xbt/dict.h  7459

@@ -2,10 +2,9 @@
 # This suite builds and uses a program returning 1.
 # tesh must detect this condition and report the issue.
 
-! expect return 41
+! expect return 2
 < $ perl -e "exit 1"
-$ perl ${bindir:=.}/tesh
+$ ${bindir:=.}/tesh
 > Test suite from stdin
 > [(stdin):1] perl -e "exit 1"
 > Test suite `(stdin)': NOK (<(stdin):1> returned code 1)
-> <(stdin):1> No output so far.

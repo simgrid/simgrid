@@ -52,14 +52,11 @@ public:
   HostModel() : Model() {}
   ~HostModel() override {}
 
-  HostImpl *createHost(const char *name, NetCard *net, Cpu *cpu, xbt_dict_t props);
+  HostImpl *createHost(const char *name, kernel::routing::NetCard *net, Cpu *cpu);
 
   virtual void adjustWeightOfDummyCpuActions();
-  virtual Action *executeParallelTask(int host_nb,
-      sg_host_t *host_list,
-      double *flops_amount,
-      double *bytes_amount,
-      double rate);
+  virtual Action *executeParallelTask(int host_nb, sg_host_t *host_list,
+      double *flops_amount, double *bytes_amount, double rate);
 
   bool next_occuring_event_isIdempotent() override {return true;}
 };
@@ -78,45 +75,42 @@ public:
   static simgrid::xbt::Extension<simgrid::s4u::Host, HostImpl> EXTENSION_ID;
 
 public:
-  static void classInit(); // must be called before the first use of that class
   /**
    * @brief Host constructor
    *
    * @param model HostModel associated to this Host
    * @param name The name of the Host
-   * @param props Dictionary of properties associated to this Host
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  HostImpl(HostModel *model, const char *name, xbt_dict_t props,
-          xbt_dynar_t storage, Cpu *cpu);
+  HostImpl(HostModel *model, const char *name, xbt_dynar_t storage, Cpu *cpu);
 
   /**
    * @brief Host constructor
    *
    * @param model HostModel associated to this Host
    * @param name The name of the Host
-   * @param props Dictionary of properties associated to this Host
    * @param constraint The lmm constraint associated to this Host if it is part of a LMM component
    * @param storage The Storage associated to this Host
    * @param cpu The Cpu associated to this Host
    */
-  HostImpl(HostModel *model, const char *name, xbt_dict_t props,
+  HostImpl(HostModel *model, const char *name,
       lmm_constraint_t constraint, xbt_dynar_t storage, Cpu *cpu);
 
   /* Host destruction logic */
   /**************************/
-  ~HostImpl();
+  ~HostImpl() override;
 
 public:
+  // Overload the method for covariant return type:
   HostModel *getModel()
   {
     return static_cast<HostModel*>(Resource::getModel());
   }
   void attach(simgrid::s4u::Host* host);
 
-  bool isOn() override;
-  bool isOff() override;
+  bool isOn() const override;
+  bool isOff() const override;
   void turnOn() override;
   void turnOff() override;
 
@@ -181,7 +175,7 @@ public:
   virtual Action *write(surf_file_t fd, sg_size_t size);
 
   /**
-   * @brief Get the informations of a file descriptor
+   * @brief Get the information of a file descriptor
    * @details The returned xbt_dynar_t contains:
    *  - the size of the file,
    *  - the mount point,
@@ -190,7 +184,7 @@ public:
    *  - the storage content type
    *
    * @param fd The file descriptor
-   * @return An xbt_dynar_t with the file informations
+   * @return An xbt_dynar_t with the file information
    */
   virtual xbt_dynar_t getInfo(surf_file_t fd);
 
@@ -232,9 +226,9 @@ public:
     {THROW_IMPOSSIBLE;} // FIXME: Host should not be a Resource
 
 public:
-  xbt_dynar_t p_storage;
-  Cpu *p_cpu;
-  simgrid::s4u::Host* p_host = nullptr;
+  xbt_dynar_t storage_;
+  Cpu *cpu_;
+  simgrid::s4u::Host* piface_ = nullptr;
 
   /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();
@@ -245,9 +239,9 @@ public:
   void getParams(vm_params_t params);
   /** @brief Sets the params of that VM/PM */
   void setParams(vm_params_t params);
-  simgrid::s4u::Host* getHost() { return p_host; }
+  simgrid::s4u::Host* getHost() { return piface_; }
 private:
-  s_vm_params_t p_params;
+  s_vm_params_t params_;
 };
 
 }

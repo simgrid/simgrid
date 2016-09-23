@@ -16,69 +16,57 @@ SG_BEGIN_DECL()
 /**
  * This function returns a new java storage instance.
  *
- * @param env      The environment of the current thread
+ * @param env   The environment of the current thread
  *
- * @return        A new java storage object.
+ * @return      A new java storage object.
  *
- * @exception      If the class Storage is not found the function throws
- *            the ClassNotFoundException. If the constructor of
- *            this class is not found the function throws the exception
- *            NotSuchMethodException.
+ * @exception   If the class Storage is not found the function throws the ClassNotFoundException. If the constructor of
+ *              this class is not found the function throws the exception NotSuchMethodException.
  */
 jobject jstorage_new_instance(JNIEnv * env);
 
 /**
  * This function associated a native storage to a java storage instance.
  *
- * @param jstorage      The java storage instance.
- * @param storage      The native storage to bind.
+ * @param jstorage The java storage instance.
+ * @param storage  The native storage to bind.
  * @param env      The environment of the current thread
  *
- * @exception      If the class Storage is not found the function throws
- *            the ClassNotFoundException. If the field bind of
- *            this class is not found the function throws the exception
- *            NotSuchFieldException.
+ * @exception      If the class Storage is not found the function throws the ClassNotFoundException. If the field bind
+ *                 of this class is not found the function throws the exception NotSuchFieldException.
  */
 void jstorage_bind(jobject jstorage, msg_storage_t storage, JNIEnv * env);
-
 
 /**
  * This function returns a native storage from a java storage instance.
  *
- * @param jstorage      The java storage object from which get the native storage.
- * @param env      The environment of the current thread
+ * @param jstorage  The java storage object from which get the native storage.
+ * @param env       The environment of the current thread
  *
- * @return        The function returns the native storage associated to the
- *            java storage object.
+ * @return          The function returns the native storage associated to the java storage object.
  *
- * @exception      If the class Storage is not found the function throws
- *            the ClassNotFoundException. If the field bind of
- *            this class is not found the function throws the exception
- *            NotSuchFieldException.
+ * @exception       If the class Storage is not found the function throws the ClassNotFoundException. If the field bind
+ *                  of this class is not found the function throws the exception NotSuchFieldException.
  */
 msg_storage_t jstorage_get_native(JNIEnv * env, jobject jstorage);
-
 
 /**
  * Class      org_simgrid_msg_Storage
  * Method      nativeInit
  * Signature  ()V
  */
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Storage_nativeInit(JNIEnv*, jclass);
-
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Storage_nativeInit(JNIEnv *env, jclass cls);
 
 /**
- * This function returns a global reference to the  java storage instance
- * specified by the parameter jstorage.
+ * This function returns a global reference to the  java storage instance specified by the parameter jstorage.
  *
- * @param jstorage      The original java storage instance.
- * @param env      The environment of the current thread
+ * @param jstorage   The original java storage instance.
+ * @param env        The environment of the current thread
  *
- * @return        The global reference to the original java storage
- *            instance.
+ * @return           The global reference to the original java storage instance.
  */
 jobject jstorage_ref(JNIEnv * env, jobject jstorage);
+
 /**
  * This function delete a global reference to a java storage instance.
  *
@@ -102,36 +90,36 @@ const char *jstorage_get_name(jobject jstorage, JNIEnv * env);
  * Method    getByName
  * Signature  (Ljava/lang/String;)Lsimgrid/msg/Storage;
  */
-JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv *, jclass, jstring);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getByName(JNIEnv *env, jclass cls, jstring jname);
 
 /*
  * Class    org_simgrid_msg_Storage
  * Method    getSize
  * Signature  ()D
  */
-JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getSize(JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getSize(JNIEnv *env, jobject jstorage);
 
 /*
  * Class    org_simgrid_msg_Storage
  * Method    getFreeSize
  * Signature  ()D
  */
-JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getFreeSize(JNIEnv *env, jobject jstorage);
 
 /*
  * Class    org_simgrid_msg_Storage
  * Method    getUsedSize
  * Signature  ()D
  */
-JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv *, jobject);
+JNIEXPORT jlong JNICALL Java_org_simgrid_msg_Storage_getUsedSize(JNIEnv *env, jobject jstorage);
 
 /*
  * Class        org_simgrid_msg_Storage
  * Method       getProperty
  * Signature    (Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, jobject jstorage, jobject jname);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getProperty(JNIEnv *env, jobject jstorage, jobject jname);
+
 /*
  * Class        org_simgrid_msg_Storage
  * Method       setProperty
@@ -145,16 +133,13 @@ Java_org_simgrid_msg_Storage_setProperty(JNIEnv *env, jobject jstorage, jobject 
  * Method       getHost
  * Signature    (Ljava/lang/String;Ljava/lang/String;)Ljava/lang/String;
  */
-JNIEXPORT jobject JNICALL
-Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobject jstorage);
+JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Storage_getHost(JNIEnv * env,jobject jstorage);
 
 /**
  * Class org_simgrid_msg_Storage
  * Method all
  */
-JNIEXPORT jobjectArray JNICALL
-Java_org_simgrid_msg_Storage_all(JNIEnv *, jclass);
+JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Storage_all(JNIEnv *env, jclass cls);
 
 SG_END_DECL()
-
 #endif                          /*!MSG_JSTORAGE_H */

@@ -26,10 +26,10 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
   if (jreceiving == JNI_TRUE) {
     //bind the task object.
     msg_task_t task = MSG_comm_get_task(comm);
-    xbt_assert(task != NULL, "Task is NULL");
-    jobject jtask_global = (jobject) MSG_task_get_data(task);
+    xbt_assert(task != nullptr, "Task is nullptr");
+    jobject jtask_global = static_cast<jobject>(MSG_task_get_data(task));
     //case where the data has already been retrieved
-    if (jtask_global == NULL) {
+    if (jtask_global == nullptr) {
       return;
     }
 
@@ -39,13 +39,11 @@ void jcomm_bind_task(JNIEnv *env, jobject jcomm) {
 
     env->SetObjectField(jcomm, jtask_field_Comm_task, jtask_local);
 
-    MSG_task_set_data(task, NULL);
+    MSG_task_set_data(task, nullptr);
   }
-
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
   jclass jfield_class_Comm = env->FindClass("org/simgrid/msg/Comm");
   if (!jfield_class_Comm) {
     jxbt_throw_native(env,bprintf("Can't find the org/simgrid/msg/Comm class."));
@@ -56,13 +54,13 @@ Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls) {
   jcomm_field_Comm_receiving = jxbt_get_jfield(env, jfield_class_Comm, "receiving", "Z");
   jtask_field_Comm_task = jxbt_get_jfield(env, jfield_class_Comm, "task", "Lorg/simgrid/msg/Task;");
   jcomm_field_Comm_finished = jxbt_get_jfield(env, jfield_class_Comm, "finished", "Z");
-  if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task || !jcomm_field_Comm_finished) {
+  if (!jcomm_field_Comm_bind || !jcomm_field_Comm_taskBind || !jcomm_field_Comm_receiving || !jtask_field_Comm_task ||
+      !jcomm_field_Comm_finished) {
     jxbt_throw_native(env,bprintf("Can't find some fields in Java class."));
   }
 }
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
   msg_comm_t comm;
   msg_task_t *task_received;
 
@@ -73,8 +71,7 @@ Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm) {
   MSG_comm_destroy(comm);
 }
 
-JNIEXPORT jboolean JNICALL
-Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
   msg_comm_t comm;
   comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
 
@@ -100,8 +97,8 @@ Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm) {
   }
   return JNI_FALSE;
 }
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
+
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout) {
   msg_comm_t comm = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
   if (!comm) {
     jxbt_throw_native(env,bprintf("comm is null"));
@@ -114,14 +111,59 @@ Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble tim
   }
 
   msg_error_t status;
-  status = MSG_comm_wait(comm,(double)timeout);
+  status = MSG_comm_wait(comm,static_cast<double>(timeout));
   env->SetBooleanField(jcomm, jcomm_field_Comm_finished, JNI_TRUE);
   if (status == MSG_OK) {
     jcomm_bind_task(env,jcomm);
     return;
-  }
-  else {
+  } else {
     jmsg_throw_status(env,status);
   }
+}
 
+static msg_comm_t* jarray_to_commArray(JNIEnv *env, jobjectArray jcomms, /* OUT */ int *count)
+{
+  *count = env->GetArrayLength(jcomms);
+  msg_comm_t* comms = xbt_new(msg_comm_t, *count);
+
+  for (int i=0; i < *count; i++) {
+     jobject jcomm = env->GetObjectArrayElement(jcomms, i);
+     if (env->ExceptionOccurred())
+        break;
+
+     comms[i] = (msg_comm_t) (uintptr_t) env->GetLongField(jcomm, jcomm_field_Comm_bind);
+     if (!comms[i]) {
+       jxbt_throw_native(env,bprintf("comm at rank %d is null",i));
+       return nullptr;
+     }
+
+     env->DeleteLocalRef(jcomm); // reduce the load on the garbage collector: we don't need that object anymore
+  }
+  return comms;
+}
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls, jobjectArray jcomms, jdouble timeout)
+{
+  int count;
+  msg_comm_t* comms = jarray_to_commArray(env, jcomms, &count);
+  if (!comms)
+    return;
+
+  MSG_comm_waitall(comms, count, static_cast<double>(timeout));
+  xbt_free(comms);
+}
+JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls, jobjectArray jcomms)
+{
+  int count;
+  msg_comm_t* comms = jarray_to_commArray(env, jcomms, &count);
+  if (!comms)
+    return -1;
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(msg_comm_t),nullptr);
+  for (int i=0; i<count; i++) {
+    xbt_dynar_push(dyn, &(comms[i]));
+  }
+
+  int rank = MSG_comm_waitany(dyn);
+  xbt_free(comms);
+  xbt_dynar_free(&dyn);
+  return rank;
 }

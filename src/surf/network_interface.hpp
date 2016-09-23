@@ -26,30 +26,14 @@
 namespace simgrid {
   namespace surf {
 
-    class NetworkModel;
     class NetworkAction;
 
-    /*************
-     * Callbacks *
-     *************/
-
-
     /** @brief Callback signal fired when the state of a NetworkAction changes
-     *  Signature: `void(NetworkAction *action, e_surf_action_state_t old, e_surf_action_state_t current)` */
-    XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, e_surf_action_state_t, e_surf_action_state_t)>) networkActionStateChangedCallbacks;
-
-    /** @brief Callback signal fired when a NetworkAction is created (when a communication starts)
-     *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst, double size, double rate)` */
-    XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::NetCard *src, simgrid::surf::NetCard *dst, double size, double rate)>) networkCommunicateCallbacks;
+     *  Signature: `void(NetworkAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)` */
+    XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::NetworkAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) networkActionStateChangedCallbacks;
 
   }
 }
-
-/*********
- * Tools *
- *********/
-XBT_PUBLIC(void) netlink_parse_init(sg_platf_link_cbarg_t link);
-
 /*********
  * Model *
  *********/
@@ -67,41 +51,24 @@ namespace simgrid {
       NetworkModel() : Model() { }
 
       /** @brief Destructor */
-      ~NetworkModel() {
-        if (p_maxminSystem)
-          lmm_system_free(p_maxminSystem);
-        if (p_actionHeap)
-          xbt_heap_free(p_actionHeap);
-        if (p_modifiedSet)
-          delete p_modifiedSet;
-      }
+      ~NetworkModel() override;
 
       /**
        * @brief Create a Link
        *
        * @param name The name of the Link
-       * @param bw_initial The initial bandwidth of the Link in bytes per second
-       * @param bw_trace The trace associated to the Link bandwidth
-       * @param lat_initial The initial latency of the Link in seconds
-       * @param lat_trace The trace associated to the Link latency
-       * @param state_trace The trace associated to the Link (state)[e_surf_resource_state_t]
+       * @param bandwidth The initial bandwidth of the Link in bytes per second
+       * @param latency The initial latency of the Link in seconds
        * @param policy The sharing policy of the Link
-       * @param properties Dictionary of properties associated to this Resource
-       * @return The created Link
+       * @param props Dictionary of properties associated to this Link
        */
-      virtual Link* createLink(const char *name,
-          double bw_initial,
-          tmgr_trace_t bw_trace,
-          double lat_initial,
-          tmgr_trace_t lat_trace,
-          tmgr_trace_t state_trace,
-          e_surf_link_sharing_policy_t policy,
-          xbt_dict_t properties)=0;
+      virtual Link* createLink(const char *name, double bandwidth, double latency,
+          e_surf_link_sharing_policy_t policy, xbt_dict_t properties)=0;
 
       /**
        * @brief Create a communication between two hosts.
        * @details It makes calls to the routing part, and execute the communication
-       * between the two end points.
+       *          between the two end points.
        *
        * @param src The source of the communication
        * @param dst The destination of the communication
@@ -110,8 +77,7 @@ namespace simgrid {
        * unlimited.
        * @return The action representing the communication
        */
-      virtual Action *communicate(NetCard *src, NetCard *dst,
-          double size, double rate)=0;
+      virtual Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate)=0;
 
       /** @brief Function pointer to the function to use to solve the lmm_system_t
        *
@@ -161,38 +127,22 @@ namespace simgrid {
      ************/
     /** @ingroup SURF_network_interface
      * @brief SURF network link interface class
-     * @details A Link represents the link between two [hosts](\ref Host)
+     * @details A Link represents the link between two [hosts](\ref simgrid::surf::HostImpl)
      */
     class Link :
         public simgrid::surf::Resource,
         public simgrid::surf::PropertyHolder {
         public:
-      /**
-       * @brief Link constructor
-       *
-       * @param model The NetworkModel associated to this Link
-       * @param name The name of the Link
-       * @param props Dictionary of properties associated to this Link
-       */
-      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props);
 
-      /**
-       * @brief Link constructor
-       *
-       * @param model The NetworkModel associated to this Link
-       * @param name The name of the Link
-       * @param props Dictionary of properties associated to this Link
-       * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
-       * @param state_trace [TODO]
-       */
-      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props,
-          lmm_constraint_t constraint,
-          tmgr_trace_t state_trace);
+      /** @brief Constructor of non-LMM links */
+      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props);
+      /** @brief Constructor of LMM links */
+      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
 
       /* Link destruction logic */
       /**************************/
         protected:
-      ~Link();
+      ~Link() override;
         public:
       void destroy(); // Must be called instead of the destructor
         private:
@@ -201,15 +151,20 @@ namespace simgrid {
         public:
       /** @brief Callback signal fired when a new Link is created.
        *  Signature: void(Link*) */
-      static simgrid::xbt::signal<void(simgrid::surf::Link*)> onCreation;
+      static simgrid::xbt::signal<void(surf::Link*)> onCreation;
 
       /** @brief Callback signal fired when a Link is destroyed.
        *  Signature: void(Link*) */
-      static simgrid::xbt::signal<void(simgrid::surf::Link*)> onDestruction;
+      static simgrid::xbt::signal<void(surf::Link*)> onDestruction;
 
       /** @brief Callback signal fired when the state of a Link changes (when it is turned on or off)
        *  Signature: `void(Link*)` */
-      static simgrid::xbt::signal<void(simgrid::surf::Link*)> onStateChange;
+      static simgrid::xbt::signal<void(surf::Link*)> onStateChange;
+
+      /** @brief Callback signal fired when a communication starts
+       *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst)` */
+      static simgrid::xbt::signal<void(surf::NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> onCommunicate;
+
 
 
       /** @brief Get the bandwidth in bytes per second of current Link */
@@ -233,20 +188,20 @@ namespace simgrid {
       void turnOn() override;
       void turnOff() override;
 
-      virtual void set_state_trace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
-      virtual void set_bandwidth_trace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load). Trace must contain percentages (value between 0 and 1). */
-      virtual void set_latency_trace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load). Trace must contain absolute values */
+      virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values. */
+      virtual void setBandwidthTrace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load). Trace must contain percentages (value between 0 and 1). */
+      virtual void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load). Trace must contain absolute values */
 
-      tmgr_trace_iterator_t m_stateEvent = NULL;
-      s_surf_metric_t m_latency = {1.0,0,NULL};
-      s_surf_metric_t m_bandwidth = {1.0,0,NULL};
+      tmgr_trace_iterator_t m_stateEvent = nullptr;
+      s_surf_metric_t m_latency = {1.0,0,nullptr};
+      s_surf_metric_t m_bandwidth = {1.0,0,nullptr};
 
       /* User data */
         public:
       void *getData()        { return userData;}
       void  setData(void *d) { userData=d;}
         private:
-      void *userData = NULL;
+      void *userData = nullptr;
 
       /* List of all links */
         private:
@@ -263,7 +218,7 @@ namespace simgrid {
      **********/
     /** @ingroup SURF_network_interface
      * @brief SURF network action interface class
-     * @details A NetworkAction represents a communication between two [hosts](\ref Host)
+     * @details A NetworkAction represents a communication between two [hosts](\ref HostImpl)
      */
     class NetworkAction : public simgrid::surf::Action {
     public:
@@ -288,30 +243,16 @@ namespace simgrid {
       NetworkAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
       : simgrid::surf::Action(model, cost, failed, var) {};
 
-      void setState(e_surf_action_state_t state);
+      void setState(simgrid::surf::Action::State state) override;
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-      /**
-       * @brief Check if the action is limited by latency.
-       *
-       * @return 1 if action is limited by latency, 0 otherwise
-       */
-      virtual int getLatencyLimited() {return m_latencyLimited;}
-#endif
-
-      double m_latency;
-      double m_latCurrent;
-      double m_weight;
-      double m_rate;
-      const char* p_senderLinkName;
-      double m_senderSize;
-      xbt_fifo_item_t p_senderFifoItem;
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-      int m_latencyLimited;
-#endif
-
+      double latency_;
+      double latCurrent_;
+      double weight_;
+      double rate_;
+      const char* senderLinkName_;
+      double senderSize_;
+      xbt_fifo_item_t senderFifoItem_;
     };
-
   }
 }
 

@@ -20,7 +20,7 @@
  *
  * Usage : xbt_swag_new(&obj.setA-&obj);
  */
-XBT_INLINE xbt_swag_t xbt_swag_new(size_t offset)
+inline xbt_swag_t xbt_swag_new(size_t offset)
 {
   xbt_swag_t swag = xbt_new0(s_xbt_swag_t, 1);
 
@@ -32,10 +32,10 @@ XBT_INLINE xbt_swag_t xbt_swag_new(size_t offset)
 /**
  * \param swag poor victim
  *
- * kilkil a swag but not it's content. If you do not understand why
- * xbt_swag_free should not free its content, don't use swags.
+ * kilkil a swag but not it's content. If you do not understand why xbt_swag_free should not free its content,
+ * don't use swags.
  */
-XBT_INLINE void xbt_swag_free(xbt_swag_t swag)
+inline void xbt_swag_free(xbt_swag_t swag)
 {
   free(swag);
 }
@@ -47,7 +47,7 @@ XBT_INLINE void xbt_swag_free(xbt_swag_t swag)
  *
  * Usage : xbt_swag_init(swag,&obj.setA-&obj);
  */
-XBT_INLINE void xbt_swag_init(xbt_swag_t swag, size_t offset)
+inline void xbt_swag_init(xbt_swag_t swag, size_t offset)
 {
   swag->tail = NULL;
   swag->head = NULL;
@@ -59,10 +59,10 @@ XBT_INLINE void xbt_swag_init(xbt_swag_t swag, size_t offset)
  * \param obj the objet to insert in the swag
  * \param swag a swag
  *
- * insert (at the head... you probably had a very good reason to do
- * that, I hope you know what you're doing) \a obj in \a swag
+ * insert (at the head... you probably had a very good reason to do that, I hope you know what you're doing) \a obj in
+ * \a swag
  */
-XBT_INLINE void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
+inline void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
 {
   xbt_assert(!xbt_swag_belongs(obj, swag) || swag->tail,
       "This object belongs to an empty swag! Did you correctly initialize the object's hookup?");
@@ -72,8 +72,7 @@ XBT_INLINE void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
     swag->head = obj;
     swag->tail = obj;
     swag->count++;
-  }
-  else if (obj != swag->head && !xbt_swag_getPrev(obj, swag->offset)) {
+  } else if (obj != swag->head && !xbt_swag_getPrev(obj, swag->offset)) {
     xbt_swag_getNext(obj, swag->offset) = swag->head;
     xbt_swag_getPrev(swag->head, swag->offset) = obj;
     swag->head = obj;
@@ -85,10 +84,10 @@ XBT_INLINE void xbt_swag_insert_at_head(void *obj, xbt_swag_t swag)
  * \param obj the objet to insert in the swag
  * \param swag a swag
  *
- * insert (at the tail... you probably had a very good reason to do
- * that, I hope you know what you're doing) \a obj in \a swag
+ * insert (at the tail... you probably had a very good reason to do that, I hope you know what you're doing) \a obj in
+ * \a swag
  */
-XBT_INLINE void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
+inline void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
 {
   xbt_assert(!xbt_swag_belongs(obj, swag) || swag->tail,
       "This object belongs to an empty swag! Did you correctly initialize the object's hookup?");
@@ -98,8 +97,7 @@ XBT_INLINE void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
     swag->head = obj;
     swag->tail = obj;
     swag->count++;
-  }
-  else if (obj != swag->tail && !xbt_swag_getNext(obj, swag->offset)) {
+  } else if (obj != swag->tail && !xbt_swag_getNext(obj, swag->offset)) {
     xbt_swag_getPrev(obj, swag->offset) = swag->tail;
     xbt_swag_getNext(swag->tail, swag->offset) = obj;
     swag->tail = obj;
@@ -114,7 +112,7 @@ XBT_INLINE void xbt_swag_insert_at_tail(void *obj, xbt_swag_t swag)
  *
  * removes \a obj from \a swag
  */
-XBT_INLINE void *xbt_swag_remove(void *obj, xbt_swag_t swag)
+inline void *xbt_swag_remove(void *obj, xbt_swag_t swag)
 {
   if (!obj)
     return NULL;
@@ -129,19 +127,16 @@ XBT_INLINE void *xbt_swag_remove(void *obj, xbt_swag_t swag)
     if (next) {
       xbt_swag_getPrev(next, offset) = prev;
       xbt_swag_getNext(obj, offset) = NULL;
-    }
-    else {
+    } else {
       swag->tail = prev;
     }
     swag->count--;
-  }
-  else if (next) {
+  } else if (next) {
     xbt_swag_getPrev(next, offset) = NULL;
     xbt_swag_getNext(obj, offset) = NULL;
     swag->head = next;
     swag->count--;
-  }
-  else if (obj == swag->head) {
+  } else if (obj == swag->head) {
     swag->head = swag->tail = NULL;
     swag->count--;
   }
@@ -177,11 +172,10 @@ void *xbt_swag_extract(xbt_swag_t swag)
  * \param swag a swag
  * \return the number of objects in \a swag
  */
-XBT_INLINE int xbt_swag_size(xbt_swag_t swag)
+inline int xbt_swag_size(xbt_swag_t swag)
 {
   return (swag->count);
 }
-
 
 #ifdef SIMGRID_TEST
 
@@ -206,8 +200,7 @@ XBT_TEST_UNIT("basic", test_swag_basic, "Basic usage")
   obj2->name = "Obj 2";
 
   xbt_test_add("Basic usage");
-  xbt_test_log("%p %p %ld\n", obj1, &(obj1->setB),
-                (long) ((char *) &(obj1->setB) - (char *) obj1));
+  xbt_test_log("%p %p %ld\n", obj1, &(obj1->setB), (long) ((char *) &(obj1->setB) - (char *) obj1));
 
   setA = xbt_swag_new(xbt_swag_offset(*obj1, setA));
   setB = xbt_swag_new(xbt_swag_offset(*obj1, setB));
@@ -247,5 +240,4 @@ XBT_TEST_UNIT("basic", test_swag_basic, "Basic usage")
   xbt_free(obj1);
   xbt_free(obj2);
 }
-
 #endif                          /* SIMGRID_TEST */

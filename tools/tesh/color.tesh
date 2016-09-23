@@ -1,0 +1,17 @@
+
+
+! output display
+$ printf "I \033[0;31mlove\033[0m tesh\n"
+> I love tesh
+
+! output display
+$ echo -e "\e[1;4mBold and Underlined\e[0m"
+> Bold and Underlined
+
+! output display
+$ echo -e "Default \e[94mLight blue\e[0m"
+> Default Light blue
+
+! output display
+$ echo -e "\e[38;5;82mHello \e[38;5;198mWorld\e[0m"
+> Hello World
