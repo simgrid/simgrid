@@ -13,19 +13,21 @@ init:
 
 environment:
   global:
-    BOOST_ROOT: c:\Libraries\boost_1_59_0
-    BOOST_LIBRARYDIR: c:\Libraries\boost_1_59_0\stage\lib
+    BOOST_ROOT: C:\Libraries\boost_1_60_0
     TESH_ARGS: C:/projects/simgrid/bin/tesh --setenv srcdir=C:/projects/simgrid/examples/java --setenv classpath=C:/projects/simgrid/examples/java;C:/projects/simgrid/teshsuite/java;C:/projects/simgrid/simgrid.jar --cd C:/projects/simgrid/examples/java
 
 install:
 # Strawberry perl is the one to work with gcc
-- choco install --limit-output strawberryperl -version 5.20.1.1
+- choco install --limit-output strawberryperl --version 5.20.1.1
 - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
 # Lua 
 #- choco install lua53
-# Basic dependencies: gcc and Cmake (must be placed before Perl in the path)
+# We need python v3
+- SET PATH=C:\Python35-x64;%PATH% # We need python v3
+# Appveyor does not provide a 64bits mingw-w64, only a 32 bits (must be placed before Perl in the path)
+- choco install --limit-output mingw
 - SET PATH=C:\tools\mingw64\bin;%PATH%
-- choco install --limit-output mingw cmake
+# Work around a bug on appveyor where the default sh is not the one I expect
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 
 build_script:
@@ -80,3 +82,7 @@ artifacts:
 # https://github.com/openvswitch/ovs/blob/master/appveyor.yml
 
 # https://github.com/behdad/harfbuzz/pull/112/files
+
+cache:
+  # cache downloads
+  - C:\Users\appveyor\AppData\Local\Temp\chocolatey
