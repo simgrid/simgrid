@@ -2,6 +2,9 @@
 #
 # Build logs: https://ci.appveyor.com/project/simgrid/simgrid
 
+# Documentation: https://www.appveyor.com/docs/
+#                https://www.appveyor.com/docs/installed-software/
+
 os: Visual Studio 2015
 version: "{build}"
 clone_depth: 1
@@ -17,32 +20,25 @@ environment:
     TESH_ARGS: C:/projects/simgrid/bin/tesh --setenv srcdir=C:/projects/simgrid/examples/java --setenv classpath=C:/projects/simgrid/examples/java;C:/projects/simgrid/teshsuite/java;C:/projects/simgrid/simgrid.jar --cd C:/projects/simgrid/examples/java
 
 install:
-# Strawberry perl is the one to work with gcc
+# Strawberry perl is the one to work with gcc; AppVeyor provides ActiveState perl, which is the one to work with visual.
 - choco install --limit-output strawberryperl --version 5.20.1.1
 - SET PATH=C:\strawberry\c\bin;C:\strawberry\perl\site\bin;C:\strawberry\perl\bin;%PATH%
 # Lua 
 #- choco install lua53
 # We need python v3
 - SET PATH=C:\Python35-x64;%PATH% # We need python v3
-# Appveyor does not provide a 64bits mingw-w64, only a 32 bits (must be placed before Perl in the path)
+# Appveyor does not provide a 64bits mingw-w64, only a 32 bits
 - choco install --limit-output mingw
-- SET PATH=C:\tools\mingw64\bin;%PATH%
+- SET PATH=C:\tools\mingw64\bin;%PATH% # Our mingw must be placed before Perl in the path
 # Work around a bug on appveyor where the default sh is not the one I expect
 - rename "C:\Program Files\Git\usr\bin\sh.exe" "sh-ignored.exe"
 
 build_script:
-- SET CFLAGS=-Wno-deprecated-declarations   # ignore C:/Libraries/boost_1_59_0/boost/smart_ptr/shared_ptr.hpp:461:22: warning: 'template<class> class std::auto_ptr' is deprecated [-Wdeprecated-declarations]
-- SET CPPFLAGS=-Wno-deprecated-declarations # ignore issues within boost
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
 - C:\tools\mingw64\bin\mingw32-make.exe VERBOSE=1
 - cd C:/projects/simgrid/examples/java && java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml || true
 
-# I cant use the cmake test because of the following error:
-#   Test project C:/projects/simgrid
-#        Start   1: mc-replay-random-bug
-#   ^CTerminate batch job (Y/N)?
-# How dafuq am I supposed to press N on appveyor?? I tried closing stdin, in vain
-#- bash -c "cd C:/projects/simgrid; exec 0<&-; ctest --output-on-failure" < nul || true
+- ctest --output-on-failure
 
 #test_script:
 # find  examples/java -name '*tesh'|sed 's|^|- perl %TESH_ARGS% C:/projects/simgrid/|' |sort
@@ -72,17 +68,6 @@ artifacts:
 
 # notifications:
 # - irc: "irc.debian.org#simgrid" # Not implemented by AppVeyor yet :(
-# Some source of inspiration:
 
-# https://github.com/sympy/symengine/blob/master/appveyor.yml <- MS, mingw & mingw64
 
-# https://github.com/dartsim/dart/blob/master/appveyor.yml
-# https://github.com/osmcode/libosmium/blob/master/appveyor.yml
-# https://github.com/polysquare/cmake-unit/blob/master/appveyor.yml
-# https://github.com/openvswitch/ovs/blob/master/appveyor.yml
 
-# https://github.com/behdad/harfbuzz/pull/112/files
-
-cache:
-  # cache downloads
-  - C:\Users\appveyor\AppData\Local\Temp\chocolatey
