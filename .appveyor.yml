@@ -36,31 +36,29 @@ install:
 build_script:
 - cmake -G "MinGW Makefiles" -Denable_lua=OFF -Denable_java=ON -Denable_smpi=OFF -Denable_mallocators=OFF -Denable_lto=OFF .
 - C:\tools\mingw64\bin\mingw32-make.exe VERBOSE=1
-- cd C:/projects/simgrid/examples/java && java -classpath ".;../../simgrid.jar" masterslave.Masterslave ../platforms/platform.xml masterslave/masterslaveDeployment.xml || true
-
 - ctest --output-on-failure
 
-#test_script:
-# find  examples/java -name '*tesh'|sed 's|^|- perl %TESH_ARGS% C:/projects/simgrid/|' |sort
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/bittorrent/app_bittorrent.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/centralizedmutex/app_centralizedmutex.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/masterworker/app_masterworker.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/pingpong/app_pingpong.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/async/dsend/async_dsend.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/masterworker/cloud_masterworker.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/migration/cloud_migration.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/dht/chord/dht_chord.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/dht/kademlia/dht_kademlia.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/energy/consumption/energy_consumption.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/energy/vm/energy_vm.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/io/file/io_file.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/io/storage/io_storage.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/kill/process_kill.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/migration/process_migration.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/startkilltime/process_startkilltime.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/suspend/process_suspend.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/task/priority/task_priority.tesh
-- perl %TESH_ARGS% C:/projects/simgrid/examples/java/trace/pingpong/trace_pingpong.tesh
+##test_script:
+## find  examples/java -name '*tesh'|sed 's|^|- perl %TESH_ARGS% C:/projects/simgrid/|' |sort
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/bittorrent/app_bittorrent.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/centralizedmutex/app_centralizedmutex.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/masterworker/app_masterworker.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/app/pingpong/app_pingpong.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/async/dsend/async_dsend.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/masterworker/cloud_masterworker.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/cloud/migration/cloud_migration.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/dht/chord/dht_chord.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/dht/kademlia/dht_kademlia.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/energy/consumption/energy_consumption.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/energy/vm/energy_vm.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/io/file/io_file.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/io/storage/io_storage.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/kill/process_kill.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/migration/process_migration.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/startkilltime/process_startkilltime.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/process/suspend/process_suspend.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/task/priority/task_priority.tesh
+#- perl %TESH_ARGS% C:/projects/simgrid/examples/java/trace/pingpong/trace_pingpong.tesh
 
 artifacts:
 - path: simgrid.jar
