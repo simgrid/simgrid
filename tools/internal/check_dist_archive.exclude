@@ -15,7 +15,7 @@
 + \.travis.yml
 + sonar-project.properties
 + \.editorconfig
-+ appveyor.yml
++ \.appveyor.yml
 + COPYRIGHT.template
 + README\.(coding|git)
 + mk_win-dist.sh
