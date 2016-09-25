@@ -165,11 +165,11 @@ public final class NativeLib {
 			try {
 				for (File f : dir.listFiles())
 					if (! f.delete() )
-						System.err.println("Unable to clean temporary file "+f.getAbsolutePath()+" during shutdown.");
+						System.out.println("Unable to clean temporary file "+f.getAbsolutePath()+" during shutdown.");
 				if (! dir.delete() )
-					System.err.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");			    	
+					System.out.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown.");			    	
 			} catch(Exception e) {
-				System.err.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
+				System.out.println("Unable to clean temporary file "+dir.getAbsolutePath()+" during shutdown: "+e.getCause());
 				e.printStackTrace();
 			}
 		}
