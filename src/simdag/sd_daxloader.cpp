@@ -87,11 +87,9 @@ bool acyclic_graph_detail(xbt_dynar_t dag){
   if(!all_marked){
     XBT_VERB("there is at least one cycle in your task graph");
     xbt_dynar_foreach(dag,count,task){
-      if(task->kind != SD_TASK_COMM_E2E) {
-        if(task->predecessors->empty() && task->inputs->empty()){
-          task->marked = 1;
-          current.push_back(task);
-        }
+      if(task->kind != SD_TASK_COMM_E2E && task->predecessors->empty() && task->inputs->empty()){
+	task->marked = 1;
+	current.push_back(task);
       }
     }
     //test if something has to be done for the next iteration
