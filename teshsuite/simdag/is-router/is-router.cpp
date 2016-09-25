@@ -12,7 +12,7 @@
 int main(int argc, char **argv)
 {
   /* SD initialization */
-  char *key, *data;
+  char *key;
 
   SD_init(&argc, argv);
   SD_create_environment(argv[1]);
@@ -23,15 +23,16 @@ int main(int argc, char **argv)
   printf("Host number: %zu, link number: %d, elmts number: %d\n", sg_host_count(), sg_link_count(), size);
 
   int it;
-  xbt_dynar_foreach(hosts, it, data) {
-    sg_host_t host = (sg_host_t)data;
+  sg_host_t host;
+  xbt_dynar_foreach(hosts, it, host) {
     simgrid::kernel::routing::NetCard * nc = host->pimpl_netcard;
     printf("   - Seen: \"%s\". Type: %s\n", host->name().c_str(), nc->isRouter() ? "router" : (nc->isAS()?"AS":"host"));
   }
   xbt_dynar_free(&hosts);
 
   xbt_lib_cursor_t cursor = nullptr;
-  xbt_lib_foreach(as_router_lib, cursor, key, data) {
+  void *ignored;
+  xbt_lib_foreach(as_router_lib, cursor, key, ignored) {
     simgrid::kernel::routing::NetCard * nc = sg_netcard_by_name_or_null(key);
     printf("   - Seen: \"%s\". Type: %s\n", key, nc->isRouter() ? "router" : (nc->isAS()?"AS":"host"));
   }
