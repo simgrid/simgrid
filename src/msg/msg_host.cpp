@@ -128,7 +128,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
  */
 int MSG_get_host_number()
 {
-  return xbt_dict_length(host_list);
+  return sg_host_count();
 }
 
 /** \ingroup m_host_management

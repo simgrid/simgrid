@@ -130,13 +130,13 @@ XBT_PUBLIC(smx_actor_t) simcall_process_create(const char *name,
 XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, simgrid::xbt::Task<void()> callback);
 
 template<class F> inline
-XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, F callback)
+smx_timer_t SIMIX_timer_set(double date, F callback)
 {
   return SIMIX_timer_set(date, simgrid::xbt::Task<void()>(std::move(callback)));
 }
 
 template<class R, class T> inline
-XBT_PUBLIC(smx_timer_t) SIMIX_timer_set(double date, R(*callback)(T*), T* arg)
+smx_timer_t SIMIX_timer_set(double date, R(*callback)(T*), T* arg)
 {
   return SIMIX_timer_set(date, [=](){ callback(arg); });
 }

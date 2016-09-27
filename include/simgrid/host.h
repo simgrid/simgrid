@@ -16,6 +16,8 @@
 
 SG_BEGIN_DECL()
 
+XBT_PUBLIC(void) sg_host_exit();
+
 XBT_PUBLIC(size_t) sg_host_count();
 XBT_PUBLIC(sg_host_t *) sg_host_list();
 

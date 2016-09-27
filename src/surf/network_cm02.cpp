@@ -187,7 +187,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 
   while ((xbt_heap_size(actionHeap_) > 0)
          && (double_equals(xbt_heap_maxkey(actionHeap_), now, sg_surf_precision))) {
-    action = static_cast<NetworkCm02Action*> (xbt_heap_pop(actionHeap_));
+    NetworkCm02Action *action = static_cast<NetworkCm02Action*> (xbt_heap_pop(actionHeap_));
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       int n = lmm_get_number_of_cnst_from_var(maxminSystem_, action->getVariable());

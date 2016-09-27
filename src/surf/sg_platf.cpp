@@ -570,6 +570,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
         msg->used -= 3;
 
         xbt_strbuff_append(msg," ...(list truncated)......");// That will be shortened by 3 chars when existing the loop
+        break;
       }
     }
     msg->data[msg->used-3]='\0';

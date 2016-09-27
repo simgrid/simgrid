@@ -995,10 +995,8 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                      void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_GATHER;
-  int src, index;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
-  MPI_Request *requests;
 
   int rank = smpi_comm_rank(comm);
   int size = smpi_comm_size(comm);
@@ -1011,9 +1009,9 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     smpi_datatype_copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + root * recvcount * recvext,
                        recvcount, recvtype);
     // Receive buffers from senders
-    requests = xbt_new(MPI_Request, size - 1);
-    index = 0;
-    for(src = 0; src < size; src++) {
+    MPI_Request *requests = xbt_new(MPI_Request, size - 1);
+    int index = 0;
+    for (int src = 0; src < size; src++) {
       if(src != root) {
         requests[index] = smpi_irecv_init(static_cast<char*>(recvbuf) + src * recvcount * recvext, recvcount, recvtype,
                                           src, system_tag, comm);
@@ -1023,7 +1021,7 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // Wait for completion of irecv's.
     smpi_mpi_startall(size - 1, requests);
     smpi_mpi_waitall(size - 1, requests, MPI_STATUS_IGNORE);
-    for(src = 0; src < size-1; src++) {
+    for (int src = 0; src < size-1; src++) {
       smpi_mpi_request_free(&requests[src]);
     }
     xbt_free(requests);
@@ -1033,20 +1031,17 @@ void smpi_mpi_gather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
 void smpi_mpi_reduce_scatter(void *sendbuf, void *recvbuf, int *recvcounts, MPI_Datatype datatype, MPI_Op op,
                              MPI_Comm comm)
 {
-  int i;
-  int *displs;
   int rank = smpi_comm_rank(comm);
-  void *tmpbuf;
 
   /* arbitrarily choose root as rank 0 */
   int size = smpi_comm_size(comm);
   int count = 0;
-  displs = xbt_new(int, size);
-  for (i = 0; i < size; i++) {
+  int *displs = xbt_new(int, size);
+  for (int i = 0; i < size; i++) {
     displs[i] = count;
     count += recvcounts[i];
   }
-  tmpbuf=static_cast<void*>(smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype)));
+  void *tmpbuf = static_cast<void*>(smpi_get_tmp_sendbuffer(count*smpi_datatype_get_extent(datatype)));
 
   mpi_coll_reduce_fun(sendbuf, tmpbuf, count, datatype, op, 0, comm);
   smpi_mpi_scatterv(tmpbuf, recvcounts, displs, datatype, recvbuf, recvcounts[rank], datatype, 0, comm);
@@ -1058,14 +1053,12 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void 
                       MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_GATHERV;
-  int src, index;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
-  MPI_Request *requests;
 
   int rank = smpi_comm_rank(comm);
   int size = smpi_comm_size(comm);
-  if(rank != root) {
+  if (rank != root) {
     // Send buffer to root
     smpi_mpi_send(sendbuf, sendcount, sendtype, root, system_tag, comm);
   } else {
@@ -1074,9 +1067,9 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void 
     smpi_datatype_copy(sendbuf, sendcount, sendtype, static_cast<char*>(recvbuf) + displs[root] * recvext,
                        recvcounts[root], recvtype);
     // Receive buffers from senders
-    requests = xbt_new(MPI_Request, size - 1);
-    index = 0;
-    for(src = 0; src < size; src++) {
+    MPI_Request *requests = xbt_new(MPI_Request, size - 1);
+    int index = 0;
+    for (int src = 0; src < size; src++) {
       if(src != root) {
         requests[index] = smpi_irecv_init(static_cast<char*>(recvbuf) + displs[src] * recvext,
                           recvcounts[src], recvtype, src, system_tag, comm);
@@ -1086,7 +1079,7 @@ void smpi_mpi_gatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, void 
     // Wait for completion of irecv's.
     smpi_mpi_startall(size - 1, requests);
     smpi_mpi_waitall(size - 1, requests, MPI_STATUS_IGNORE);
-    for(src = 0; src < size-1; src++) {
+    for (int src = 0; src < size-1; src++) {
       smpi_mpi_request_free(&requests[src]);
     }
     xbt_free(requests);
@@ -1097,7 +1090,6 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                         void *recvbuf,int recvcount, MPI_Datatype recvtype, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_ALLGATHER;
-  int other, index;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
   MPI_Request *requests;
@@ -1111,8 +1103,8 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                      recvtype);
   // Send/Recv buffers to/from others;
   requests = xbt_new(MPI_Request, 2 * (size - 1));
-  index = 0;
-  for(other = 0; other < size; other++) {
+  int index = 0;
+  for (int other = 0; other < size; other++) {
     if(other != rank) {
       requests[index] = smpi_isend_init(sendbuf, sendcount, sendtype, other, system_tag,comm);
       index++;
@@ -1124,7 +1116,7 @@ void smpi_mpi_allgather(void *sendbuf, int sendcount, MPI_Datatype sendtype,
   // Wait for completion of all comms.
   smpi_mpi_startall(2 * (size - 1), requests);
   smpi_mpi_waitall(2 * (size - 1), requests, MPI_STATUS_IGNORE);
-  for(other = 0; other < 2*(size-1); other++) {
+  for (int other = 0; other < 2*(size-1); other++) {
     smpi_mpi_request_free(&requests[other]);
   }
   xbt_free(requests);
@@ -1134,10 +1126,8 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, vo
                          int *recvcounts, int *displs, MPI_Datatype recvtype, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_ALLGATHERV;
-  int other, index;
   MPI_Aint lb = 0;
   MPI_Aint recvext = 0;
-  MPI_Request *requests;
 
   int rank = smpi_comm_rank(comm);
   int size = smpi_comm_size(comm);
@@ -1146,9 +1136,9 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, vo
   smpi_datatype_copy(sendbuf, sendcount, sendtype,
                      static_cast<char *>(recvbuf) + displs[rank] * recvext,recvcounts[rank], recvtype);
   // Send buffers to others;
-  requests = xbt_new(MPI_Request, 2 * (size - 1));
-  index = 0;
-  for(other = 0; other < size; other++) {
+  MPI_Request *requests = xbt_new(MPI_Request, 2 * (size - 1));
+  int index = 0;
+  for (int other = 0; other < size; other++) {
     if(other != rank) {
       requests[index] =
         smpi_isend_init(sendbuf, sendcount, sendtype, other, system_tag, comm);
@@ -1161,7 +1151,7 @@ void smpi_mpi_allgatherv(void *sendbuf, int sendcount, MPI_Datatype sendtype, vo
   // Wait for completion of all comms.
   smpi_mpi_startall(2 * (size - 1), requests);
   smpi_mpi_waitall(2 * (size - 1), requests, MPI_STATUS_IGNORE);
-  for(other = 0; other < 2*(size-1); other++) {
+  for (int other = 0; other < 2*(size-1); other++) {
     smpi_mpi_request_free(&requests[other]);
   }
   xbt_free(requests);
@@ -1171,7 +1161,6 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
                       void *recvbuf, int recvcount, MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_SCATTER;
-  int dst;
   MPI_Aint lb = 0;
   MPI_Aint sendext = 0;
   MPI_Request *requests;
@@ -1191,7 +1180,7 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // Send buffers to receivers
     requests = xbt_new(MPI_Request, size - 1);
     int index = 0;
-    for(dst = 0; dst < size; dst++) {
+    for(int dst = 0; dst < size; dst++) {
       if(dst != root) {
         requests[index] = smpi_isend_init(static_cast<char *>(sendbuf) + dst * sendcount * sendext, sendcount, sendtype,
                                           dst, system_tag, comm);
@@ -1201,7 +1190,7 @@ void smpi_mpi_scatter(void *sendbuf, int sendcount, MPI_Datatype sendtype,
     // Wait for completion of isend's.
     smpi_mpi_startall(size - 1, requests);
     smpi_mpi_waitall(size - 1, requests, MPI_STATUS_IGNORE);
-    for(dst = 0; dst < size-1; dst++) {
+    for (int dst = 0; dst < size-1; dst++) {
       smpi_mpi_request_free(&requests[dst]);
     }
     xbt_free(requests);
@@ -1212,10 +1201,8 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype
                        MPI_Datatype recvtype, int root, MPI_Comm comm)
 {
   int system_tag = COLL_TAG_SCATTERV;
-  int dst;
   MPI_Aint lb = 0;
   MPI_Aint sendext = 0;
-  MPI_Request *requests;
 
   int rank = smpi_comm_rank(comm);
   int size = smpi_comm_size(comm);
@@ -1230,10 +1217,10 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype
                        sendtype, recvbuf, recvcount, recvtype);
     }
     // Send buffers to receivers
-    requests = xbt_new(MPI_Request, size - 1);
+    MPI_Request *requests = xbt_new(MPI_Request, size - 1);
     int index = 0;
-    for(dst = 0; dst < size; dst++) {
-      if(dst != root) {
+    for (int dst = 0; dst < size; dst++) {
+      if (dst != root) {
         requests[index] = smpi_isend_init(static_cast<char *>(sendbuf) + displs[dst] * sendext, sendcounts[dst],
                             sendtype, dst, system_tag, comm);
         index++;
@@ -1242,7 +1229,7 @@ void smpi_mpi_scatterv(void *sendbuf, int *sendcounts, int *displs, MPI_Datatype
     // Wait for completion of isend's.
     smpi_mpi_startall(size - 1, requests);
     smpi_mpi_waitall(size - 1, requests, MPI_STATUS_IGNORE);
-    for(dst = 0; dst < size-1; dst++) {
+    for (int dst = 0; dst < size-1; dst++) {
       smpi_mpi_request_free(&requests[dst]);
     }
     xbt_free(requests);
@@ -1253,11 +1240,8 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
                      MPI_Comm comm)
 {
   int system_tag = COLL_TAG_REDUCE;
-  int src, index;
   MPI_Aint lb = 0;
   MPI_Aint dataext = 0;
-  MPI_Request *requests;
-  void **tmpbufs;
 
   char* sendtmpbuf = static_cast<char *>(sendbuf);
 
@@ -1283,11 +1267,11 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
     if (sendtmpbuf != nullptr && recvbuf != nullptr)
       smpi_datatype_copy(sendtmpbuf, count, datatype, recvbuf, count, datatype);
     // Receive buffers from senders
-    requests = xbt_new(MPI_Request, size - 1);
-    tmpbufs = xbt_new(void *, size - 1);
-    index = 0;
-    for(src = 0; src < size; src++) {
-      if(src != root) {
+    MPI_Request *requests = xbt_new(MPI_Request, size - 1);
+    void **tmpbufs = xbt_new(void *, size - 1);
+    int index = 0;
+    for (int src = 0; src < size; src++) {
+      if (src != root) {
          if (!smpi_process_get_replaying())
           tmpbufs[index] = xbt_malloc(count * dataext);
          else
@@ -1299,7 +1283,7 @@ void smpi_mpi_reduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
     }
     // Wait for completion of irecv's.
     smpi_mpi_startall(size - 1, requests);
-    for(src = 0; src < size - 1; src++) {
+    for (int src = 0; src < size - 1; src++) {
       index = smpi_mpi_waitany(size - 1, requests, MPI_STATUS_IGNORE);
       XBT_DEBUG("finished waiting any request with index %d", index);
       if(index == MPI_UNDEFINED) {
@@ -1331,10 +1315,7 @@ void smpi_mpi_allreduce(void *sendbuf, void *recvbuf, int count, MPI_Datatype da
 void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int system_tag = -888;
-  int other, index;
   MPI_Aint lb = 0, dataext = 0;
-  MPI_Request *requests;
-  void **tmpbufs;
 
   int rank = smpi_comm_rank(comm);
   int size = smpi_comm_size(comm);
@@ -1345,15 +1326,15 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
   smpi_datatype_copy(sendbuf, count, datatype, recvbuf, count, datatype);
 
   // Send/Recv buffers to/from others;
-  requests = xbt_new(MPI_Request, size - 1);
-  tmpbufs = xbt_new(void *, rank);
-  index = 0;
-  for(other = 0; other < rank; other++) {
+  MPI_Request *requests = xbt_new(MPI_Request, size - 1);
+  void **tmpbufs = xbt_new(void *, rank);
+  int index = 0;
+  for (int other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
     requests[index] = smpi_irecv_init(tmpbufs[index], count, datatype, other, system_tag, comm);
     index++;
   }
-  for(other = rank + 1; other < size; other++) {
+  for (int other = rank + 1; other < size; other++) {
     requests[index] = smpi_isend_init(sendbuf, count, datatype, other, system_tag, comm);
     index++;
   }
@@ -1361,7 +1342,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
   smpi_mpi_startall(size - 1, requests);
 
   if(smpi_op_is_commute(op)){
-    for(other = 0; other < size - 1; other++) {
+    for (int other = 0; other < size - 1; other++) {
       index = smpi_mpi_waitany(size - 1, requests, MPI_STATUS_IGNORE);
       if(index == MPI_UNDEFINED) {
         break;
@@ -1373,7 +1354,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
     }
   }else{
     //non commutative case, wait in order
-    for(other = 0; other < size - 1; other++) {
+    for (int other = 0; other < size - 1; other++) {
       smpi_mpi_wait(&(requests[other]), MPI_STATUS_IGNORE);
       if(index < rank) {
         smpi_op_apply(op, tmpbufs[other], recvbuf, &count, &datatype);
@@ -1393,10 +1374,7 @@ void smpi_mpi_scan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatyp
 void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datatype, MPI_Op op, MPI_Comm comm)
 {
   int system_tag = -888;
-  int other, index;
   MPI_Aint lb = 0, dataext = 0;
-  MPI_Request *requests;
-  void **tmpbufs;
   int recvbuf_is_empty=1;
   int rank = smpi_comm_rank(comm);
   int size = smpi_comm_size(comm);
@@ -1404,22 +1382,22 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
   smpi_datatype_extent(datatype, &lb, &dataext);
 
   // Send/Recv buffers to/from others;
-  requests = xbt_new(MPI_Request, size - 1);
-  tmpbufs = xbt_new(void *, rank);
-  index = 0;
-  for(other = 0; other < rank; other++) {
+  MPI_Request *requests = xbt_new(MPI_Request, size - 1);
+  void **tmpbufs = xbt_new(void *, rank);
+  int index = 0;
+  for (int other = 0; other < rank; other++) {
     tmpbufs[index] = smpi_get_tmp_sendbuffer(count * dataext);
     requests[index] = smpi_irecv_init(tmpbufs[index], count, datatype, other, system_tag, comm);
     index++;
   }
-  for(other = rank + 1; other < size; other++) {
+  for (int other = rank + 1; other < size; other++) {
     requests[index] = smpi_isend_init(sendbuf, count, datatype, other, system_tag, comm);
     index++;
   }
   // Wait for completion of all comms.
   smpi_mpi_startall(size - 1, requests);
   if(smpi_op_is_commute(op)){
-    for(other = 0; other < size - 1; other++) {
+    for (int other = 0; other < size - 1; other++) {
       index = smpi_mpi_waitany(size - 1, requests, MPI_STATUS_IGNORE);
       if(index == MPI_UNDEFINED) {
         break;
@@ -1435,7 +1413,7 @@ void smpi_mpi_exscan(void *sendbuf, void *recvbuf, int count, MPI_Datatype datat
     }
   }else{
     //non commutative case, wait in order
-    for(other = 0; other < size - 1; other++) {
+    for (int other = 0; other < size - 1; other++) {
       smpi_mpi_wait(&(requests[other]), MPI_STATUS_IGNORE);
       if(index < rank) {
           if(recvbuf_is_empty){
