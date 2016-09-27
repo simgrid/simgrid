@@ -34,7 +34,6 @@ namespace routing {
  * @ingroup SURF_build_api
  * @brief A library containing all known hosts
  */
-xbt_dict_t host_list = nullptr;
 
 int COORD_HOST_LEVEL = -1;         //Coordinates level
 

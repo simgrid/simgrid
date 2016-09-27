@@ -131,18 +131,14 @@ namespace simgrid {
 
     double NetworkModel::next_occuring_event_full(double now)
     {
-      NetworkAction *action = nullptr;
       ActionList *runningActions = surf_network_model->getRunningActionSet();
-      double minRes;
-
-      minRes = shareResourcesMaxMin(runningActions, surf_network_model->maxminSystem_, surf_network_model->f_networkSolve);
+      double minRes = shareResourcesMaxMin(runningActions, surf_network_model->maxminSystem_, surf_network_model->f_networkSolve);
 
       for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
           ; it != itend ; ++it) {
-        action = static_cast<NetworkAction*>(&*it);
-        if (action->latency_ > 0) {
+        NetworkAction *action = static_cast<NetworkAction*>(&*it);
+        if (action->latency_ > 0)
           minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
-        }
       }
 
       XBT_DEBUG("Min of share resources %f", minRes);
