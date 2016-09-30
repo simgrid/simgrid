@@ -108,7 +108,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
 
         if((performer != -1 && order != -1) && performer < (int) sg_host_count()){
           /* required parameters are given and less performers than hosts are required */
-          XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'", task->name.c_str(), performer, order);
+          XBT_DEBUG ("Task '%s' is scheduled on workstation '%d' in position '%d'", task->name, performer, order);
           computer = static_cast<xbt_dynar_t> (xbt_dict_get_or_null(computers, char_performer));
           if(computer == nullptr){
             computer = xbt_dynar_new(sizeof(SD_task_t), nullptr);
@@ -121,7 +121,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
               /* the user gave the same order to several tasks */
               schedule_success = false;
               XBT_VERB("Task '%s' wants to start on performer '%s' at the same position '%s' as task '%s'",
-                       (*task_test)->name.c_str(), char_performer, char_order, task->name.c_str());
+                       (*task_test)->name, char_performer, char_order, task->name);
               continue;
             }
           }
@@ -130,7 +130,7 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
         } else {
           /* one of required parameters is not given */
           schedule_success = false;
-          XBT_VERB("The schedule is ignored, task '%s' can not be scheduled on %d hosts", task->name.c_str(), performer);
+          XBT_VERB("The schedule is ignored, task '%s' can not be scheduled on %d hosts", task->name, performer);
         }
       }
     } else {
@@ -195,18 +195,18 @@ xbt_dynar_t SD_dotload_generic(const char * filename, seq_par_t seq_or_par, bool
   }
   xbt_dynar_free(&edges);
 
-  XBT_DEBUG("All tasks have been created, put %s at the end of the dynar", end->name.c_str());
+  XBT_DEBUG("All tasks have been created, put %s at the end of the dynar", end->name);
   xbt_dynar_push(result, &end);
 
   /* Connect entry tasks to 'root', and exit tasks to 'end'*/
   xbt_dynar_foreach (result, i, task){
     if (task->predecessors->empty() && task->inputs->empty() && task != root) {
-      XBT_DEBUG("Task '%s' has no source. Add dependency from 'root'", task->name.c_str());
+      XBT_DEBUG("Task '%s' has no source. Add dependency from 'root'", task->name);
       SD_task_dependency_add(nullptr, nullptr, root, task);
     }
 
     if (task->successors->empty() && task->outputs->empty() && task != end) {
-      XBT_DEBUG("Task '%s' has no destination. Add dependency to 'end'", task->name.c_str());
+      XBT_DEBUG("Task '%s' has no destination. Add dependency to 'end'", task->name);
       SD_task_dependency_add(nullptr, nullptr, task, end);
     }
   }
