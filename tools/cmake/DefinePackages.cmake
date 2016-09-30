@@ -419,15 +419,11 @@ set(MSG_SRC
 
 set(SIMDAG_SRC
   src/simdag/sd_daxloader.cpp
+  src/simdag/sd_dotloader.cpp
   src/simdag/sd_global.cpp
   src/simdag/sd_task.cpp
   src/simdag/sd_workstation.cpp
   )
-if(HAVE_GRAPHVIZ)
-  set(SIMDAG_SRC    ${SIMDAG_SRC} src/simdag/sd_dotloader.cpp)
-else()
-  set(EXTRA_DIST    ${EXTRA_DIST} src/simdag/sd_dotloader.cpp)
-endif()
 
 set(BINDINGS_SRC
   src/bindings/lua/lua_private.h
