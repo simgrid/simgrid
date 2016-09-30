@@ -173,11 +173,7 @@ void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
 
 CpuAction *CpuCas01::execution_start(double size)
 {
-  XBT_IN("(%s,%g)", getName(), size);
-  CpuCas01Action *action = new CpuCas01Action(getModel(), size, isOff(), speed_.scale * speed_.peak, getConstraint());
-
-  XBT_OUT();
-  return action;
+  return new CpuCas01Action(getModel(), size, isOff(), speed_.scale * speed_.peak, getConstraint());
 }
 
 CpuAction *CpuCas01::sleep(double duration)
