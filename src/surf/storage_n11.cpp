@@ -114,7 +114,7 @@ double StorageN11Model::next_occuring_event(double /*now*/)
 {
   XBT_DEBUG("storage_share_resources");
 
-  double min_completion = shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
+  double min_completion = shareResourcesMaxMin(getRunningActionSet(), maxminSystem_);
 
   // Foreach disk
   for(auto storage: p_storageList) {

@@ -132,7 +132,7 @@ namespace simgrid {
     double NetworkModel::next_occuring_event_full(double now)
     {
       ActionList *runningActions = surf_network_model->getRunningActionSet();
-      double minRes = shareResourcesMaxMin(runningActions, maxminSystem_, f_networkSolve);
+      double minRes = shareResourcesMaxMin(runningActions, maxminSystem_);
 
       for(auto it(runningActions->begin()), itend(runningActions->end()); it != itend ; ++it) {
         NetworkAction *action = static_cast<NetworkAction*>(&*it);

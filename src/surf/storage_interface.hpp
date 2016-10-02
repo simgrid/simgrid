@@ -64,16 +64,6 @@ public:
   StorageModel();
   ~StorageModel();
 
-  /** @brief Create a Storage
-   *
-   * @param id [description]
-   * @param type_id [description]
-   * @param content_name [description]
-   * @param content_type [description]
-   * @param properties [description]
-   * @param attach [description]
-   * @return The created Storage
-   */
   virtual Storage *createStorage(const char* id, const char* type_id,
                                  const char* content_name, const char* content_type,
                                  xbt_dict_t properties, const char *attach) = 0;

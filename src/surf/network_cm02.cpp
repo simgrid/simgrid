@@ -88,11 +88,10 @@ void surf_network_model_init_Reno()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model();
+  surf_network_model = new simgrid::surf::NetworkCm02Model(lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 
   lmm_set_default_protocol_function(func_reno_f, func_reno_fp, func_reno_fpi);
-  surf_network_model->f_networkSolve = lagrange_solve;
 
   xbt_cfg_setdefault_double("network/latency-factor",     10.4);
   xbt_cfg_setdefault_double("network/bandwidth-factor",    0.92);
@@ -105,11 +104,10 @@ void surf_network_model_init_Reno2()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model();
+  surf_network_model = new simgrid::surf::NetworkCm02Model(lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 
   lmm_set_default_protocol_function(func_reno2_f, func_reno2_fp, func_reno2_fpi);
-  surf_network_model->f_networkSolve = lagrange_solve;
 
   xbt_cfg_setdefault_double("network/latency-factor",    10.4);
   xbt_cfg_setdefault_double("network/bandwidth-factor",   0.92);
@@ -121,11 +119,10 @@ void surf_network_model_init_Vegas()
   if (surf_network_model)
     return;
 
-  surf_network_model = new simgrid::surf::NetworkCm02Model();
+  surf_network_model = new simgrid::surf::NetworkCm02Model(lagrange_solve);
   all_existing_models->push_back(surf_network_model);
 
   lmm_set_default_protocol_function(func_vegas_f, func_vegas_fp, func_vegas_fpi);
-  surf_network_model->f_networkSolve = lagrange_solve;
 
   xbt_cfg_setdefault_double("network/latency-factor",    10.4);
   xbt_cfg_setdefault_double("network/bandwidth-factor",   0.92);
@@ -165,6 +162,12 @@ NetworkCm02Model::NetworkCm02Model()
     maxminSystem_->keep_track = modifiedSet_;
   }
 }
+NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self))
+  : NetworkCm02Model()
+{
+  maxminSystem_->solve_fun = specificSolveFun;
+}
+
 
 NetworkCm02Model::~NetworkCm02Model() {}
 

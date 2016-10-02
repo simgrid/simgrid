@@ -267,7 +267,7 @@ double NetworkNS3Model::next_occuring_event(double now)
   else
     do {
       ns3_simulator(now);
-      time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();//FIXME: use now instead ?
+      time_to_next_flow_completion = ns3::Simulator::Now().GetSeconds() - surf_get_clock();
     } while(double_equals(time_to_next_flow_completion, 0, sg_surf_precision));
 
   XBT_DEBUG("min       : %f", now);

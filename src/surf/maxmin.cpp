@@ -102,6 +102,8 @@ lmm_system_t lmm_system_new(int selective_update)
                                               lmm_variable_mallocator_free_f,
                                               lmm_variable_mallocator_reset_f);
 
+  l->solve_fun = &lmm_solve;
+
   return l;
 }
 

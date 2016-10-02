@@ -107,11 +107,6 @@ void CpuModel::updateActionsStateFull(double now, double delta)
   }
 }
 
-bool CpuModel::next_occuring_event_isIdempotent()
-{
-  return true;
-}
-
 /************
  * Resource *
  ************/

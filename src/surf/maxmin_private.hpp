@@ -121,6 +121,8 @@ typedef struct lmm_system {
   simgrid::surf::ActionLmmListPtr keep_track;
 
   xbt_mallocator_t variable_mallocator;
+
+  void (*solve_fun)(lmm_system_t self);
 } s_lmm_system_t;
 
 #define extract_variable(sys) xbt_swag_extract(&(sys->variable_set))

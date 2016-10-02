@@ -36,6 +36,7 @@ namespace surf {
 
 HostL07Model::HostL07Model() : HostModel() {
   maxminSystem_ = lmm_system_new(1);
+  maxminSystem_->solve_fun = &bottleneck_solve;
   surf_network_model = new NetworkL07Model(this,maxminSystem_);
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 
@@ -74,7 +75,7 @@ NetworkL07Model::~NetworkL07Model()
 double HostL07Model::next_occuring_event(double /*now*/)
 {
   ActionList *runningActions = getRunningActionSet();
-  double min = shareResourcesMaxMin(runningActions, maxminSystem_, bottleneck_solve);
+  double min = shareResourcesMaxMin(runningActions, maxminSystem_);
 
   for (auto it(runningActions->begin()), itend(runningActions->end()); it != itend ; ++it) {
     L07Action *action = static_cast<L07Action*>(&*it);

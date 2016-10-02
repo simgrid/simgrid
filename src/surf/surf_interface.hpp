@@ -281,7 +281,7 @@ typedef ActionLmmList* ActionLmmListPtr;
  * Helper functions *
  ********************/
 
-double shareResourcesMaxMin(ActionList* runningActions, lmm_system_t sys, void (*solve) (lmm_system_t));
+double shareResourcesMaxMin(ActionList* runningActions, lmm_system_t sys);
 
 
 /*********
