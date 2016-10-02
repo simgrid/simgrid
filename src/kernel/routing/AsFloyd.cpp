@@ -3,6 +3,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <limits>
+
 #include "xbt/log.h"
 #include "src/kernel/routing/AsFloyd.hpp"
 #include "src/surf/network_interface.hpp"
@@ -26,9 +28,9 @@ AsFloyd::AsFloyd(const char*name)
 }
 
 AsFloyd::~AsFloyd(){
-  int table_size = static_cast<int>(vertices_.size());
   if (linkTable_ == nullptr) // Dealing with a parse error in the file?
     return;
+  int table_size = vertices_.size();
   /* Delete link_table */
   for (int i = 0; i < table_size; i++)
     for (int j = 0; j < table_size; j++)

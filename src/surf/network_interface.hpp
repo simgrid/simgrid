@@ -9,7 +9,7 @@
 
 #include <xbt/base.h>
 
-#include <boost/unordered_map.hpp>
+#include <unordered_map>
 
 #include "xbt/fifo.h"
 #include "xbt/dict.h"
@@ -203,9 +203,9 @@ namespace simgrid {
         private:
       void *userData = nullptr;
 
-      /* List of all links */
+      /* List of all links. FIXME: should move to the Engine */
         private:
-      static boost::unordered_map<std::string, Link *> *links;
+      static std::unordered_map<std::string, Link *> *links;
         public:
       static Link *byName(const char* name);
       static int linksCount();

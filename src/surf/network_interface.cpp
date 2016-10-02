@@ -61,7 +61,7 @@ extern "C" {
 namespace simgrid {
   namespace surf {
 
-    boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
+    std::unordered_map<std::string,Link *> *Link::links = new std::unordered_map<std::string,Link *>();
     Link *Link::byName(const char* name) {
       if (links->find(name) == links->end())
         return nullptr;
