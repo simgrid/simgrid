@@ -61,12 +61,10 @@ namespace simgrid {
 namespace surf {
 
 StorageN11Model::StorageN11Model() : StorageModel() {
-  XBT_DEBUG("surf_storage_model_init_internal");
-  maxminSystem_ = lmm_system_new(false /*lazy?*/);
+  maxminSystem_ = lmm_system_new(true /* lazy update */);
 }
 
-StorageN11Model::~StorageN11Model(){
-}
+StorageN11Model::~StorageN11Model() = default;
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 Storage *StorageN11Model::createStorage(const char* id, const char* type_id,

@@ -49,12 +49,9 @@ public:
   StorageAction *open(const char* mount, const char* path);
   StorageAction *close(surf_file_t fd);
   StorageAction *ls(const char *path);
-  StorageAction *read(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param  *??
+  StorageAction *read(surf_file_t fd, sg_size_t size); //FIXME:why we have a useless param  *??
   StorageAction *write(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param  *??
   void rename(const char *src, const char *dest);
-
-  lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
-  lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
 };
 
 /**********
