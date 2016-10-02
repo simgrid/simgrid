@@ -74,7 +74,7 @@ inline void lmm_increase_concurrency(lmm_element_t elem) {
              "Concurrency limit overflow!");
 }
 
-lmm_system_t lmm_system_new(int selective_update)
+lmm_system_t lmm_system_new(bool selective_update)
 {
   lmm_system_t l = nullptr;
   s_lmm_variable_t var;

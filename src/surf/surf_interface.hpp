@@ -348,7 +348,7 @@ protected:
   ActionLmmListPtr modifiedSet_;
   lmm_system_t maxminSystem_ = nullptr;
   e_UM_t updateMechanism_ = UM_UNDEFINED;
-  int selectiveUpdate_;
+  bool selectiveUpdate_;
   xbt_heap_t actionHeap_;
 
 private:

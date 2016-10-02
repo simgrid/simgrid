@@ -38,16 +38,15 @@ namespace surf {
 CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 {
   char *optim = xbt_cfg_get_string("cpu/optim");
-  int select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
+  bool select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
   if (!strcmp(optim, "Full")) {
     updateMechanism_ = UM_FULL;
     selectiveUpdate_ = select;
   } else if (!strcmp(optim, "Lazy")) {
     updateMechanism_ = UM_LAZY;
-    selectiveUpdate_ = 1;
-    xbt_assert((select == 1)
-               || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
+    selectiveUpdate_ = true;
+    xbt_assert(select || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);

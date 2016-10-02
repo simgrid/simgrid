@@ -136,16 +136,16 @@ NetworkCm02Model::NetworkCm02Model()
   :NetworkModel()
 {
   char *optim = xbt_cfg_get_string("network/optim");
-  int select = xbt_cfg_get_boolean("network/maxmin-selective-update");
+  bool select = xbt_cfg_get_boolean("network/maxmin-selective-update");
 
   if (!strcmp(optim, "Full")) {
     updateMechanism_ = UM_FULL;
     selectiveUpdate_ = select;
   } else if (!strcmp(optim, "Lazy")) {
     updateMechanism_ = UM_LAZY;
-    selectiveUpdate_ = 1;
-    xbt_assert((select == 1) || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
-               "You cannot disable selective update while using the lazy update mechanism!");
+    selectiveUpdate_ = true;
+    xbt_assert(select || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
+               "You cannot disable selective update when using the lazy update mechanism");
   } else {
     xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim);
   }
