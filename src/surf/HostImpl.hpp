@@ -50,15 +50,12 @@ namespace surf {
 class HostModel : public Model {
 public:
   HostModel() : Model() {}
-  ~HostModel() override {}
 
   HostImpl *createHost(const char *name, kernel::routing::NetCard *net, Cpu *cpu);
 
   virtual void adjustWeightOfDummyCpuActions();
   virtual Action *executeParallelTask(int host_nb, sg_host_t *host_list,
       double *flops_amount, double *bytes_amount, double rate);
-
-  bool next_occuring_event_isIdempotent() override {return true;}
 };
 
 /************

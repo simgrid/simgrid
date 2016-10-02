@@ -51,7 +51,6 @@ public:
 
   void updateActionsStateLazy(double now, double delta) override;
   void updateActionsStateFull(double now, double delta) override;
-  bool next_occuring_event_isIdempotent() {return true;};
 };
 
 /************

@@ -87,7 +87,7 @@ double surf_solve(double max_date)
     next_event_date = future_evt_set->next_date();
     XBT_DEBUG("Next TRACE event: %f", next_event_date);
 
-    if(! surf_network_model->next_occuring_event_isIdempotent()){ // NS3, I see you
+    if(! surf_network_model->nextOccuringEventIsIdempotent()){ // NS3, I see you
       if (next_event_date!=-1.0 && time_delta!=-1.0) {
         time_delta = MIN(next_event_date - NOW, time_delta);
       } else {

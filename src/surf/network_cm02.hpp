@@ -46,7 +46,6 @@ namespace simgrid {
       void updateActionsStateLazy(double now, double delta) override;
       void updateActionsStateFull(double now, double delta) override;
       Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
-      bool next_occuring_event_isIdempotent() override;
       virtual void gapAppend(double size, const Link* link, NetworkAction* action);
     protected:
       bool haveGap_ = false;

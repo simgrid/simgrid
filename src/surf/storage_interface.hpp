@@ -68,8 +68,6 @@ public:
                                  const char* content_name, const char* content_type,
                                  xbt_dict_t properties, const char *attach) = 0;
 
-  bool next_occuring_event_isIdempotent() {return true;}
-
   std::vector<Storage*> p_storageList;
 };
 

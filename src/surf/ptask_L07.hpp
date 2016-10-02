@@ -63,7 +63,6 @@ public:
       xbt_dict_t properties) override;
 
   Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
-  bool next_occuring_event_isIdempotent() override {return true;}
 
   HostL07Model *hostModel_;
 };

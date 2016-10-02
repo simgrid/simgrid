@@ -52,7 +52,7 @@ double HostCLM03Model::nextOccuringEvent(double now){
   adjustWeightOfDummyCpuActions();
 
   double min_by_cpu = surf_cpu_model_pm->nextOccuringEvent(now);
-  double min_by_net = surf_network_model->next_occuring_event_isIdempotent() ? surf_network_model->nextOccuringEvent(now) : -1;
+  double min_by_net = surf_network_model->nextOccuringEventIsIdempotent() ? surf_network_model->nextOccuringEvent(now) : -1;
   double min_by_sto = surf_storage_model->nextOccuringEvent(now);
 
   XBT_DEBUG("model %p, %s min_by_cpu %f, %s min_by_net %f, %s min_by_sto %f",

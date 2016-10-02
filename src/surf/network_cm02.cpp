@@ -386,11 +386,6 @@ Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::rou
   return action;
 }
 
-bool NetworkCm02Model::next_occuring_event_isIdempotent()
-{
-  return true;
-}
-
 void NetworkCm02Model::gapAppend(double size, const Link* link, NetworkAction* action)
 {
   // Nothing
