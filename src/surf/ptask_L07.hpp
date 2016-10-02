@@ -51,7 +51,7 @@ public:
   ~CpuL07Model();
 
   Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core) override;
-  HostL07Model *p_hostModel;
+  HostL07Model *hostModel_;
 };
 
 class NetworkL07Model : public NetworkModel {
@@ -65,7 +65,7 @@ public:
   Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
   bool next_occuring_event_isIdempotent() override {return true;}
 
-  HostL07Model *p_hostModel;
+  HostL07Model *hostModel_;
 };
 
 /************
@@ -111,11 +111,11 @@ public:
 
   int unref() override;
 
-  std::vector<kernel::routing::NetCard*> * p_netcardList = new std::vector<kernel::routing::NetCard*>();
-  double *p_computationAmount;
-  double *p_communicationAmount;
-  double m_latency;
-  double m_rate;
+  std::vector<kernel::routing::NetCard*> * netcardList_ = new std::vector<kernel::routing::NetCard*>();
+  double *computationAmount_;
+  double *communicationAmount_;
+  double latency_;
+  double rate_;
 };
 
 }
