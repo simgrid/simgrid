@@ -9,8 +9,6 @@
 #include <math.h> /*ceil*/
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_storage);
 
-static xbt_swag_t storage_running_action_set_that_does_not_need_being_checked = nullptr;
-
 /*************
  * CallBacks *
  *************/
@@ -63,17 +61,11 @@ namespace simgrid {
 namespace surf {
 
 StorageN11Model::StorageN11Model() : StorageModel() {
-  Action *action = nullptr;
-
   XBT_DEBUG("surf_storage_model_init_internal");
-
-  storage_running_action_set_that_does_not_need_being_checked = xbt_swag_new(xbt_swag_offset(*action, stateHookup_));
   maxminSystem_ = lmm_system_new(false /*lazy?*/);
 }
 
 StorageN11Model::~StorageN11Model(){
-  xbt_swag_free(storage_running_action_set_that_does_not_need_being_checked);
-  storage_running_action_set_that_does_not_need_being_checked = nullptr;
 }
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
