@@ -73,25 +73,17 @@ NetworkL07Model::~NetworkL07Model()
 
 double HostL07Model::next_occuring_event(double /*now*/)
 {
-  L07Action *action;
+  ActionList *runningActions = getRunningActionSet();
+  double min = shareResourcesMaxMin(runningActions, maxminSystem_, bottleneck_solve);
 
-  ActionList *running_actions = getRunningActionSet();
-  double min = shareResourcesMaxMin(running_actions, maxminSystem_, bottleneck_solve);
-
-  for(ActionList::iterator it(running_actions->begin()), itend(running_actions->end()); it != itend ; ++it) {
-    action = static_cast<L07Action*>(&*it);
-    if (action->m_latency > 0) {
-      if (min < 0) {
-        min = action->m_latency;
-        XBT_DEBUG("Updating min (value) with %p (start %f): %f", action, action->getStartTime(), min);
-      } else if (action->m_latency < min) {
-        min = action->m_latency;
-        XBT_DEBUG("Updating min (latency) with %p (start %f): %f", action, action->getStartTime(), min);
-      }
+  for (auto it(runningActions->begin()), itend(runningActions->end()); it != itend ; ++it) {
+    L07Action *action = static_cast<L07Action*>(&*it);
+    if (action->m_latency > 0 && (min < 0 || action->m_latency < min)) {
+      min = action->m_latency;
+      XBT_DEBUG("Updating min with %p (start %f): %f", action, action->getStartTime(), min);
     }
   }
-
-  XBT_DEBUG("min value : %f", min);
+  XBT_DEBUG("min value: %f", min);
 
   return min;
 }
