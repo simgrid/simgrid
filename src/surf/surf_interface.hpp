@@ -323,9 +323,9 @@ public:
    * @param now The current time of the simulation
    * @return The delta of time till the next action will finish
    */
-  virtual double next_occuring_event(double now);
-  virtual double next_occuring_event_lazy(double now);
-  virtual double next_occuring_event_full(double now);
+  virtual double nextOccuringEvent(double now);
+  virtual double nextOccuringEventLazy(double now);
+  virtual double nextOccuringEventFull(double now);
 
   /**
    * @brief Update action to the current time

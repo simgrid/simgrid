@@ -393,18 +393,18 @@ Model::~Model(){
   delete doneActionSet_;
 }
 
-double Model::next_occuring_event(double now)
+double Model::nextOccuringEvent(double now)
 {
   //FIXME: set the good function once and for all
   if (updateMechanism_ == UM_LAZY)
-    return next_occuring_event_lazy(now);
+    return nextOccuringEventLazy(now);
   else if (updateMechanism_ == UM_FULL)
-    return next_occuring_event_full(now);
+    return nextOccuringEventFull(now);
   else
     xbt_die("Invalid cpu update mechanism!");
 }
 
-double Model::next_occuring_event_lazy(double now)
+double Model::nextOccuringEventLazy(double now)
 {
   XBT_DEBUG("Before share resources, the size of modified actions set is %zd", modifiedSet_->size());
   lmm_solve(maxminSystem_);
@@ -471,7 +471,7 @@ double Model::next_occuring_event_lazy(double now)
   }
 }
 
-double Model::next_occuring_event_full(double /*now*/) {
+double Model::nextOccuringEventFull(double /*now*/) {
   maxminSystem_->solve_fun(maxminSystem_);
 
   double min = -1;

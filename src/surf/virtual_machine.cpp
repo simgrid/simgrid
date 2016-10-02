@@ -50,7 +50,7 @@ s4u::Host *VMModel::createVM(const char *name, sg_host_t host_PM)
 // const double virt_overhead = 0.95;
 const double virt_overhead = 1;
 
-double VMModel::next_occuring_event(double now)
+double VMModel::nextOccuringEvent(double now)
 {
   /* TODO: update action's cost with the total cost of processes on the VM. */
 
@@ -95,7 +95,7 @@ double VMModel::next_occuring_event(double now)
   adjustWeightOfDummyCpuActions();
 
   /* 3. Ready. Get the next occuring event */
-  return surf_cpu_model_vm->next_occuring_event(now);
+  return surf_cpu_model_vm->nextOccuringEvent(now);
 }
 
 

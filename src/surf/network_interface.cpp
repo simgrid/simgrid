@@ -129,9 +129,9 @@ namespace simgrid {
       return rate;
     }
 
-    double NetworkModel::next_occuring_event_full(double now)
+    double NetworkModel::nextOccuringEventFull(double now)
     {
-      double minRes = Model::next_occuring_event_full(now);
+      double minRes = Model::nextOccuringEventFull(now);
 
       for(auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; it++) {
         NetworkAction *action = static_cast<NetworkAction*>(&*it);

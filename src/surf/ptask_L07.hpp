@@ -39,7 +39,7 @@ public:
   HostL07Model();
   ~HostL07Model();
 
-  double next_occuring_event(double now) override;
+  double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
   Action *executeParallelTask(int host_nb, sg_host_t *host_list,
                               double *flops_amount, double *bytes_amount, double rate) override;

@@ -30,7 +30,7 @@ namespace simgrid {
       ~NetworkConstantModel() override;
 
       Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
-      double next_occuring_event(double now) override;
+      double nextOccuringEvent(double now) override;
       bool next_occuring_event_isIdempotent() override {return true;}
       void updateActionsState(double now, double delta) override;
 

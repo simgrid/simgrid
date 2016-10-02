@@ -110,9 +110,9 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
   return storage;
 }
 
-double StorageN11Model::next_occuring_event(double now)
+double StorageN11Model::nextOccuringEvent(double now)
 {
-  double min_completion = StorageModel::next_occuring_event_full(now);
+  double min_completion = StorageModel::nextOccuringEventFull(now);
 
   for(auto storage: p_storageList) {
     double rate = 0;

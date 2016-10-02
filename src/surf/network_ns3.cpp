@@ -256,7 +256,7 @@ Action *NetworkNS3Model::communicate(simgrid::kernel::routing::NetCard *src,simg
   return new NetworkNS3Action(this, size, src, dst);
 }
 
-double NetworkNS3Model::next_occuring_event(double now)
+double NetworkNS3Model::nextOccuringEvent(double now)
 {
   double time_to_next_flow_completion;
   XBT_DEBUG("ns3_next_occuring_event");

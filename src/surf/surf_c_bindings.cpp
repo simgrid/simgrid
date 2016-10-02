@@ -68,13 +68,13 @@ double surf_solve(double max_date)
 
   /* Physical models MUST be resolved first */
   XBT_DEBUG("Looking for next event in physical models");
-  double next_event_phy = surf_host_model->next_occuring_event(NOW);
+  double next_event_phy = surf_host_model->nextOccuringEvent(NOW);
   if ((time_delta < 0.0 || next_event_phy < time_delta) && next_event_phy >= 0.0) {
     time_delta = next_event_phy;
   }
   if (surf_vm_model != nullptr) {
     XBT_DEBUG("Looking for next event in virtual models");
-    double next_event_virt = surf_vm_model->next_occuring_event(NOW);
+    double next_event_virt = surf_vm_model->nextOccuringEvent(NOW);
     if ((time_delta < 0.0 || next_event_virt < time_delta) && next_event_virt >= 0.0)
       time_delta = next_event_virt;
   }
@@ -96,7 +96,7 @@ double surf_solve(double max_date)
 
       XBT_DEBUG("Run the NS3 network at most %fs", time_delta);
       // run until min or next flow
-      model_next_action_end = surf_network_model->next_occuring_event(time_delta);
+      model_next_action_end = surf_network_model->nextOccuringEvent(time_delta);
 
       XBT_DEBUG("Min for network : %f", model_next_action_end);
       if(model_next_action_end>=0.0)

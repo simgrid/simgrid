@@ -33,7 +33,7 @@ namespace simgrid {
       return nullptr;
     }
 
-    double NetworkConstantModel::next_occuring_event(double /*now*/)
+    double NetworkConstantModel::nextOccuringEvent(double /*now*/)
     {
       double min = -1.0;
 

@@ -22,7 +22,7 @@ public:
   Link* createLink(const char *name, double bandwidth, double latency,
       e_surf_link_sharing_policy_t policy, xbt_dict_t properties) override;
   Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate);
-  double next_occuring_event(double now) override;
+  double nextOccuringEvent(double now) override;
   bool next_occuring_event_isIdempotent() {return false;}
   void updateActionsState(double now, double delta) override;
 };
