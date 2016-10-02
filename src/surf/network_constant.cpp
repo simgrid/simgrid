@@ -35,13 +35,11 @@ namespace simgrid {
 
     double NetworkConstantModel::next_occuring_event(double /*now*/)
     {
-      NetworkConstantAction *action = nullptr;
       double min = -1.0;
 
       ActionList *actionSet = getRunningActionSet();
-      for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
-          ; it != itend ; ++it) {
-        action = static_cast<NetworkConstantAction*>(&*it);
+      for(auto it(actionSet->begin()), itend(actionSet->end()) ; it != itend ; ++it) {
+        NetworkConstantAction *action = static_cast<NetworkConstantAction*>(&*it);
         if (action->latency_ > 0 && (min < 0 || action->latency_ < min))
           min = action->latency_;
       }

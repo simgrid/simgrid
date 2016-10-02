@@ -116,10 +116,9 @@ double StorageN11Model::next_occuring_event(double /*now*/)
 
   double min_completion = shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
 
-  double rate;
   // Foreach disk
   for(auto storage: p_storageList) {
-    rate = 0;
+    double rate = 0;
     // Foreach write action on disk
     for (auto write_action: storage->writeActions_) {
       rate += lmm_variable_getvalue(write_action->getVariable());

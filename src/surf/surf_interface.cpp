@@ -472,8 +472,7 @@ double Model::next_occuring_event_lazy(double now)
 }
 
 double Model::next_occuring_event_full(double /*now*/) {
-  THROW_UNIMPLEMENTED;
-  return 0.0;
+  return shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
 }
 
 double shareResourcesMaxMin(ActionList *runningActions, lmm_system_t sys, void (*solve) (lmm_system_t))

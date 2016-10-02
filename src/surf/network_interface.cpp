@@ -132,10 +132,9 @@ namespace simgrid {
     double NetworkModel::next_occuring_event_full(double now)
     {
       ActionList *runningActions = surf_network_model->getRunningActionSet();
-      double minRes = shareResourcesMaxMin(runningActions, surf_network_model->maxminSystem_, surf_network_model->f_networkSolve);
+      double minRes = shareResourcesMaxMin(runningActions, maxminSystem_, f_networkSolve);
 
-      for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
-          ; it != itend ; ++it) {
+      for(auto it(runningActions->begin()), itend(runningActions->end()); it != itend ; ++it) {
         NetworkAction *action = static_cast<NetworkAction*>(&*it);
         if (action->latency_ > 0)
           minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
