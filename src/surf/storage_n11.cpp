@@ -68,8 +68,7 @@ StorageN11Model::StorageN11Model() : StorageModel() {
   XBT_DEBUG("surf_storage_model_init_internal");
 
   storage_running_action_set_that_does_not_need_being_checked = xbt_swag_new(xbt_swag_offset(*action, stateHookup_));
-  if (!maxminSystem_)
-    maxminSystem_ = lmm_system_new(false /*lazy?*/);
+  maxminSystem_ = lmm_system_new(false /*lazy?*/);
 }
 
 StorageN11Model::~StorageN11Model(){

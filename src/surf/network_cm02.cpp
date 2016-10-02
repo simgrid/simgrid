@@ -150,8 +150,7 @@ NetworkCm02Model::NetworkCm02Model()
     xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim);
   }
 
-  if (!maxminSystem_)
-    maxminSystem_ = lmm_system_new(selectiveUpdate_);
+  maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, nullptr));
 
