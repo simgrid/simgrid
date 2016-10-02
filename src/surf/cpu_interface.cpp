@@ -30,14 +30,13 @@ simgrid::xbt::signal<void(CpuAction*, Action::State, Action::State)> cpuActionSt
  * Model *
  *********/
 
-CpuModel::~CpuModel() {}
+CpuModel::~CpuModel() = default;
 
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
-  CpuAction *action;
   while ((xbt_heap_size(getActionHeap()) > 0)
          && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
-    action = static_cast<CpuAction*>(xbt_heap_pop(getActionHeap()));
+    CpuAction *action = static_cast<CpuAction*>(xbt_heap_pop(getActionHeap()));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
       Cpu *cpu = static_cast<Cpu*>(lmm_constraint_id(lmm_get_cnst_from_var(getMaxminSystem(), action->getVariable(), 0)));
@@ -62,7 +61,7 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     ActionList *actionSet = getRunningActionSet();
     for(ActionList::iterator it(actionSet->begin()), itend(actionSet->end())
        ; it != itend ; ++it) {
-      action = static_cast<CpuAction*>(&*it);
+      CpuAction *action = static_cast<CpuAction*>(&*it);
         if (smaller < 0) {
           smaller = action->getLastUpdate();
           continue;
@@ -75,7 +74,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
       TRACE_last_timestamp_to_dump = smaller;
     }
   }
-  return;
 }
 
 void CpuModel::updateActionsStateFull(double now, double delta)

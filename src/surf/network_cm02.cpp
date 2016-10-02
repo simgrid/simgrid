@@ -148,9 +148,9 @@ NetworkCm02Model::NetworkCm02Model()
     updateMechanism_ = UM_LAZY;
     selectiveUpdate_ = 1;
     xbt_assert((select == 1) || (xbt_cfg_is_default_value("network/maxmin-selective-update")),
-               "Disabling selective update while using the lazy update mechanism is dumb!");
+               "You cannot disable selective update while using the lazy update mechanism!");
   } else {
-    xbt_die("Unsupported optimization (%s) for this model", optim);
+    xbt_die("Unsupported optimization (%s) for this model. Accepted: Full, Lazy.", optim);
   }
 
   if (!maxminSystem_)
@@ -159,10 +159,10 @@ NetworkCm02Model::NetworkCm02Model()
   routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, nullptr));
 
   if (updateMechanism_ == UM_LAZY) {
-  actionHeap_ = xbt_heap_new(8, nullptr);
-  xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
-  modifiedSet_ = new ActionLmmList();
-  maxminSystem_->keep_track = modifiedSet_;
+    actionHeap_ = xbt_heap_new(8, nullptr);
+    xbt_heap_set_update_callback(actionHeap_, surf_action_lmm_update_index_heap);
+    modifiedSet_ = new ActionLmmList();
+    maxminSystem_->keep_track = modifiedSet_;
   }
 }
 
@@ -178,6 +178,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 {
   while ((xbt_heap_size(actionHeap_) > 0)
          && (double_equals(xbt_heap_maxkey(actionHeap_), now, sg_surf_precision))) {
+
     NetworkCm02Action *action = static_cast<NetworkCm02Action*> (xbt_heap_pop(actionHeap_));
     XBT_DEBUG("Something happened to action %p", action);
     if (TRACE_is_enabled()) {
@@ -186,14 +187,10 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       for (int i = 0; i < n; i++){
         lmm_constraint_t constraint = lmm_get_cnst_from_var(maxminSystem_, action->getVariable(), i);
         NetworkCm02Link *link = static_cast<NetworkCm02Link*>(lmm_constraint_id(constraint));
-        TRACE_surf_link_set_utilization(link->getName(),
-                                        action->getCategory(),
-                                        (lmm_variable_getvalue(action->getVariable())*
-                                            lmm_get_cnst_weight_from_var(maxminSystem_,
-                                                action->getVariable(),
-                                                i)),
-                                        action->getLastUpdate(),
-                                        now - action->getLastUpdate());
+        double value = lmm_variable_getvalue(action->getVariable())*
+            lmm_get_cnst_weight_from_var(maxminSystem_, action->getVariable(), i);
+        TRACE_surf_link_set_utilization(link->getName(), action->getCategory(), value,
+           action->getLastUpdate(), now - action->getLastUpdate());
       }
     }
 
@@ -205,8 +202,7 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
       action->refreshLastUpdate();
 
         // if I am wearing a max_duration or normal hat
-    } else if (action->getHat() == MAX_DURATION ||
-        action->getHat() == NORMAL) {
+    } else if (action->getHat() == MAX_DURATION || action->getHat() == NORMAL) {
         // no need to communicate anymore
         // assume that flows that reached max_duration have remaining of 0
       XBT_DEBUG("Action %p finished", action);
@@ -224,14 +220,13 @@ void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
 
 void NetworkCm02Model::updateActionsStateFull(double now, double delta)
 {
-  NetworkCm02Action *action;
   ActionList *running_actions = getRunningActionSet();
 
   for(ActionList::iterator it(running_actions->begin()), itNext=it, itend(running_actions->end())
      ; it != itend ; it=itNext) {
-  ++itNext;
+    ++itNext;
 
-    action = static_cast<NetworkCm02Action*> (&*it);
+    NetworkCm02Action *action = static_cast<NetworkCm02Action*> (&*it);
     XBT_DEBUG("Something happened to action %p", action);
       double deltap = delta;
       if (action->latency_ > 0) {

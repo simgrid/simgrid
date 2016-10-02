@@ -133,20 +133,19 @@ double StorageN11Model::next_occuring_event(double /*now*/)
 
 void StorageN11Model::updateActionsState(double /*now*/, double delta)
 {
-  StorageAction *action = nullptr;
 
   ActionList *actionSet = getRunningActionSet();
   for(ActionList::iterator it(actionSet->begin()), itNext=it, itend(actionSet->end())
       ; it != itend ; it=itNext) {
     ++itNext;
-    action = static_cast<StorageAction*>(&*it);
+
+    StorageAction *action = static_cast<StorageAction*>(&*it);
 
     if(action->m_type == WRITE){
       // Update the disk usage
       // Update the file size
       // For each action of type write
-      double current_progress =
-          delta * lmm_variable_getvalue(action->getVariable());
+      double current_progress = delta * lmm_variable_getvalue(action->getVariable());
       long int incr = current_progress;
 
       XBT_DEBUG("%s:\n\t progress =  %.2f, current_progress = %.2f, incr = %ld, lrint(1) = %ld, lrint(2) = %ld",
@@ -187,7 +186,6 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
       action->setState(Action::State::done);
     }
   }
-  return;
 }
 
 /************
@@ -334,7 +332,6 @@ int StorageN11Action::unref()
 void StorageN11Action::cancel()
 {
   setState(Action::State::failed);
-  return;
 }
 
 void StorageN11Action::suspend()

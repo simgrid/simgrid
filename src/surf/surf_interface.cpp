@@ -406,22 +406,12 @@ double Model::next_occuring_event(double now)
 
 double Model::next_occuring_event_lazy(double now)
 {
-  Action *action = nullptr;
-  double min = -1;
-  double share;
-
-  XBT_DEBUG
-      ("Before share resources, the size of modified actions set is %zd",
-       modifiedSet_->size());
-
+  XBT_DEBUG("Before share resources, the size of modified actions set is %zd", modifiedSet_->size());
   lmm_solve(maxminSystem_);
-
-  XBT_DEBUG
-      ("After share resources, The size of modified actions set is %zd",
-       modifiedSet_->size());
+  XBT_DEBUG("After share resources, The size of modified actions set is %zd", modifiedSet_->size());
 
   while(!modifiedSet_->empty()) {
-    action = &(modifiedSet_->front());
+    Action *action = &(modifiedSet_->front());
     modifiedSet_->pop_front();
     int max_dur_flag = 0;
 
@@ -434,8 +424,8 @@ double Model::next_occuring_event_lazy(double now)
 
     action->updateRemainingLazy(now);
 
-    min = -1;
-    share = lmm_variable_getvalue(action->getVariable());
+    double min = -1;
+    double share = lmm_variable_getvalue(action->getVariable());
 
     if (share > 0) {
       double time_to_completion;
@@ -471,14 +461,14 @@ double Model::next_occuring_event_lazy(double now)
   }
 
   //hereafter must have already the min value for this resource model
-  if (xbt_heap_size(actionHeap_) > 0)
-    min = xbt_heap_maxkey(actionHeap_) - now;
-  else
-    min = -1;
-
-  XBT_DEBUG("The minimum with the HEAP %f", min);
-
-  return min;
+  if (xbt_heap_size(actionHeap_) > 0) {
+    double min = xbt_heap_maxkey(actionHeap_) - now;
+    XBT_DEBUG("minimum with the HEAP %f", min);
+    return min;
+  } else {
+    XBT_DEBUG("The HEAP is empty, thus returning -1");
+    return -1;
+  }
 }
 
 double Model::next_occuring_event_full(double /*now*/) {

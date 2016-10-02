@@ -30,7 +30,6 @@ namespace surf {
 class CpuModel;
 class Cpu;
 class CpuAction;
-class CpuPlugin;// FIXME:DEADCODE
 
  /** @ingroup SURF_cpu_interface
  * @brief SURF cpu model interface class
@@ -154,13 +153,17 @@ public:
 XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
 friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
-  /** @brief Callbacks handler which emit the callbacks after CpuAction State changed *
-   * @details Callback functions have the following signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
-   */
-  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
+/** @brief Signal emitted when the action state changes (ready/running/done, etc)
+ *  Signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
+ */
+static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
+/** @brief Signal emitted when the action share changes (amount of flops it gets)
+ *  Signature: `void(CpuAction *action)`
+ */
+static simgrid::xbt::signal<void(simgrid::surf::CpuAction*)> onShareChange;
 
   CpuAction(simgrid::surf::Model *model, double cost, bool failed)
-  : Action(model, cost, failed) {} //FIXME:DEADCODE?
+  : Action(model, cost, failed) {}
   CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
   : Action(model, cost, failed, var) {}
 
