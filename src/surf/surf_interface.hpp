@@ -277,6 +277,13 @@ typedef boost::intrusive::member_hook<
 typedef boost::intrusive::list<Action, ActionLmmOptions> ActionLmmList;
 typedef ActionLmmList* ActionLmmListPtr;
 
+/********************
+ * Helper functions *
+ ********************/
+
+double shareResourcesMaxMin(ActionList* runningActions, lmm_system_t sys, void (*solve) (lmm_system_t));
+
+
 /*********
  * Model *
  *********/
@@ -326,8 +333,6 @@ public:
   virtual double next_occuring_event(double now);
   virtual double next_occuring_event_lazy(double now);
   virtual double next_occuring_event_full(double now);
-  double shareResourcesMaxMin(ActionList* running_actions,
-      lmm_system_t sys, void (*solve) (lmm_system_t));
 
   /**
    * @brief Update action to the current time

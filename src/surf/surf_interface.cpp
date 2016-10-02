@@ -476,9 +476,7 @@ double Model::next_occuring_event_full(double /*now*/) {
   return 0.0;
 }
 
-double Model::shareResourcesMaxMin(ActionList *runningActions,
-                          lmm_system_t sys,
-                          void (*solve) (lmm_system_t))
+double shareResourcesMaxMin(ActionList *runningActions, lmm_system_t sys, void (*solve) (lmm_system_t))
 {
   solve(sys);
 

@@ -84,7 +84,7 @@ Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, std::vector<double> *spe
 
 double CpuCas01Model::next_occuring_event_full(double /*now*/)
 {
-  return Model::shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
+  return shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
 }
 
 /************
