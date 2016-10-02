@@ -277,13 +277,6 @@ typedef boost::intrusive::member_hook<
 typedef boost::intrusive::list<Action, ActionLmmOptions> ActionLmmList;
 typedef ActionLmmList* ActionLmmListPtr;
 
-/********************
- * Helper functions *
- ********************/
-
-double shareResourcesMaxMin(ActionList* runningActions, lmm_system_t sys);
-
-
 /*********
  * Model *
  *********/

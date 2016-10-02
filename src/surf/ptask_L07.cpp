@@ -72,12 +72,10 @@ NetworkL07Model::~NetworkL07Model()
 }
 
 
-double HostL07Model::next_occuring_event(double /*now*/)
+double HostL07Model::next_occuring_event(double now)
 {
-  ActionList *runningActions = getRunningActionSet();
-  double min = shareResourcesMaxMin(runningActions, maxminSystem_);
-
-  for (auto it(runningActions->begin()), itend(runningActions->end()); it != itend ; ++it) {
+  double min = HostModel::next_occuring_event_full(now);
+  for (auto it(getRunningActionSet()->begin()), itend(getRunningActionSet()->end()); it != itend ; ++it) {
     L07Action *action = static_cast<L07Action*>(&*it);
     if (action->m_latency > 0 && (min < 0 || action->m_latency < min)) {
       min = action->m_latency;

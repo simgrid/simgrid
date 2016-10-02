@@ -110,16 +110,13 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
   return storage;
 }
 
-double StorageN11Model::next_occuring_event(double /*now*/)
+double StorageN11Model::next_occuring_event(double now)
 {
-  XBT_DEBUG("storage_share_resources");
+  double min_completion = StorageModel::next_occuring_event_full(now);
 
-  double min_completion = shareResourcesMaxMin(getRunningActionSet(), maxminSystem_);
-
-  // Foreach disk
   for(auto storage: p_storageList) {
     double rate = 0;
-    // Foreach write action on disk
+    // Foreach write action on that disk
     for (auto write_action: storage->writeActions_) {
       rate += lmm_variable_getvalue(write_action->getVariable());
     }
