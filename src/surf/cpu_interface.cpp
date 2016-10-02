@@ -20,22 +20,15 @@ simgrid::surf::CpuModel *surf_cpu_model_vm;
 namespace simgrid {
 namespace surf {
 
-/*************
- * Callbacks *
- *************/
-
-simgrid::xbt::signal<void(CpuAction*, Action::State, Action::State)> cpuActionStateChangedCallbacks;
-
 /*********
  * Model *
  *********/
-
-CpuModel::~CpuModel() = default;
 
 void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
 {
   while ((xbt_heap_size(getActionHeap()) > 0)
          && (double_equals(xbt_heap_maxkey(getActionHeap()), now, sg_surf_precision))) {
+
     CpuAction *action = static_cast<CpuAction*>(xbt_heap_pop(getActionHeap()));
     XBT_CDEBUG(surf_kernel, "Something happened to action %p", action);
     if (TRACE_is_enabled()) {
@@ -52,7 +45,6 @@ void CpuModel::updateActionsStateLazy(double now, double /*delta*/)
     /* set the remains to 0 due to precision problems when updating the remaining amount */
     action->setRemains(0);
     action->setState(Action::State::done);
-    action->heapRemove(getActionHeap()); //FIXME: strange call since action was already popped
   }
   if (TRACE_is_enabled()) {
     //defining the last timestamp that we can safely dump to trace file
