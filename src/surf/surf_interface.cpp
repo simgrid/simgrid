@@ -476,52 +476,27 @@ double Model::next_occuring_event_full(double /*now*/) {
   return 0.0;
 }
 
-double Model::shareResourcesMaxMin(ActionList *running_actions,
+double Model::shareResourcesMaxMin(ActionList *runningActions,
                           lmm_system_t sys,
                           void (*solve) (lmm_system_t))
 {
-  Action *action = nullptr;
-  double min = -1;
-  double value = -1;
-
   solve(sys);
 
-  ActionList::iterator it(running_actions->begin()), itend(running_actions->end());
-  for(; it != itend ; ++it) {
-    action = &*it;
-    value = lmm_variable_getvalue(action->getVariable());
-    if ((value > 0) || (action->getMaxDuration() >= 0))
-      break;
-  }
-
-  if (!action)
-    return -1.0;
-
-  if (value > 0) {
-    if (action->getRemains() > 0)
-      min = action->getRemainsNoUpdate() / value;
-    else
-      min = 0.0;
-    if ((action->getMaxDuration() >= 0) && (action->getMaxDuration() < min))
-      min = action->getMaxDuration();
-  } else
-    min = action->getMaxDuration();
-
-
-  for (++it; it != itend; ++it) {
-  action = &*it;
-    value = lmm_variable_getvalue(action->getVariable());
+  double min = -1;
+  for(auto it(runningActions->begin()), itend(runningActions->end()); it != itend ; ++it) {
+    Action *action = &*it;
+    double value = lmm_variable_getvalue(action->getVariable());
     if (value > 0) {
       if (action->getRemains() > 0)
         value = action->getRemainsNoUpdate() / value;
       else
         value = 0.0;
-      if (value < min) {
+      if (min < 0 || value < min) {
         min = value;
         XBT_DEBUG("Updating min (value) with %p: %f", action, min);
       }
     }
-    if ((action->getMaxDuration() >= 0) && (action->getMaxDuration() < min)) {
+    if ((action->getMaxDuration() >= 0) && (min<0 || action->getMaxDuration() < min)) {
       min = action->getMaxDuration();
       XBT_DEBUG("Updating min (duration) with %p: %f", action, min);
     }
@@ -534,11 +509,11 @@ double Model::shareResourcesMaxMin(ActionList *running_actions,
 void Model::updateActionsState(double now, double delta)
 {
   if (updateMechanism_ == UM_FULL)
-  updateActionsStateFull(now, delta);
+    updateActionsStateFull(now, delta);
   else if (updateMechanism_ == UM_LAZY)
-  updateActionsStateLazy(now, delta);
+    updateActionsStateLazy(now, delta);
   else
-  xbt_die("Invalid cpu update mechanism!");
+    xbt_die("Invalid cpu update mechanism!");
 }
 
 void Model::updateActionsStateLazy(double /*now*/, double /*delta*/)
