@@ -10,13 +10,15 @@
 
    Contributed by Fred Fish at Cygnus Support.   fnf@cygnus.com */
 
-#ifdef HAVE_UNISTD_H
+#include "src/internal_config.h"
+#if HAVE_UNISTD_H
 #include <unistd.h>             /* Prototypes for lseek */
 #endif
 #include <stdio.h>
 #include <fcntl.h>
 #include <sys/mman.h>
 #include <sys/wait.h>
+#include <errno.h>
 
 #include "mmprivate.h"
 
@@ -122,7 +124,7 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
       if (mapto == MAP_FAILED) {
         char buff[1024];
         fprintf(stderr,"Internal error: mmap returned MAP_FAILED! error: %s\n",strerror(errno));
-        sprintf(buff,"cat /proc/%d/maps",getpid());
+        snprintf(buff,1024,"cat /proc/%d/maps",getpid());
         int status = system(buff);
         if (status == -1 || !(WIFEXITED(status) && WEXITSTATUS(status) == 0))
           fprintf(stderr, "Something went wrong when trying to %s\n", buff);

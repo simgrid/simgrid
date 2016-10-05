@@ -5,9 +5,9 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
- 
+
 import java.util.Arrays;
-import java.util.Vector;
+import java.util.ArrayList;
 
 /**
  * A process may be defined as a code, with some private data, executing 
@@ -47,61 +47,45 @@ public abstract class Process implements Runnable {
 	 * access to it. It is set automatically during the build of the object.
 	 */
 	private long bind;
-	/**
-	 * Indicates if the process is started
-	 */
+	/** Indicates if the process is started */
 	boolean started;
 	/**
 	 * Even if this attribute is public you must never access to it.
 	 * It is used to compute the id of an MSG process.
 	 */
-	public static long nextProcessId = 0;
-	
+	private static long nextProcessId = 0;
+
 	/**
 	 * Even if this attribute is public you must never access to it.
 	 * It is compute automatically during the creation of the object. 
 	 * The native functions use this identifier to synchronize the process.
 	 */
-	public long id;
-	
-	/**
-	 * Start time of the process
-	 */
-	public double startTime = 0;
-	/**
-	 * Kill time of the process
-	 */
-	public double killTime = -1;
-	
-	/**
-	 * The name of the process.							
-	 */
-	protected String name;
-	/**
-	  * The PID of the process
-	  */
-	protected int pid = -1;
-	/**
-	 * The PPID of the process 
-	 */
-	protected int ppid = -1;
-	/**
-	 * The host of the process
-	 */
-	protected Host host = null;
+	private long id;
 
-	/** The arguments of the method function of the process. */     
-	public Vector<String> args;
-
-	
-	/**
-	 * Default constructor
+	/** Time at which the process should be created  */
+	protected double startTime = 0;
+	/** Time at which the process should be killed.
+	 * 
+	 * Set at creation, and used internally by SimGrid
 	 */
+	private double killTime = -1;
+
+	private String name;
+	
+	private int pid = -1;
+	private int ppid = -1;
+	private Host host = null;
+
+	/** The arguments of the method function of the process. */
+	private ArrayList<String> args;
+
+
+	/**  Default constructor */
 	protected Process() {
 		this.id = nextProcessId++;
 		this.name = null;
 		this.bind = 0;
-		this.args = new Vector<String>();
+		this.args = new ArrayList<>();
 	}
 
 
@@ -128,11 +112,11 @@ public abstract class Process implements Runnable {
 	 * @param args			The arguments of the main function of the process.
 	 *
 	 * @exception			HostNotFoundException  if no host with this name exists.
-     *                      NativeException
-     * @throws NativeException
+	 *                      NativeException
+	 * @throws NativeException
 	 *
 	 */ 
-	public Process(String hostname, String name, String args[]) throws HostNotFoundException, NativeException {
+	public Process(String hostname, String name, String[] args) throws HostNotFoundException, NativeException {
 		this(Host.getByName(hostname), name, args);
 	}
 	/**
@@ -157,14 +141,16 @@ public abstract class Process implements Runnable {
 	public Process(Host host, String name, String[]args) {
 		this();
 		this.host = host;
+		if (host == null)
+			throw new NullPointerException("Host cannot be NULL");
 		if (name == null)
 			throw new NullPointerException("Process name cannot be NULL");
 		this.name = name;
 
-		this.args = new Vector<String>();
+		this.args = new ArrayList<>();
 		if (null != args)
 			this.args.addAll(Arrays.asList(args));
-	}	
+	}
 	/**
 	 * Constructs a new process from a host and his name, the arguments of here method function are
 	 * specified by the parameter args.
@@ -177,18 +163,9 @@ public abstract class Process implements Runnable {
 	 *
 	 */
 	public Process(Host host, String name, String[]args, double startTime, double killTime) {
-		this();
-		this.host = host;
-		if (name == null)
-			throw new NullPointerException("Process name cannot be NULL");
-		this.name = name;
-
-		this.args = new Vector<String>();
-		if (null != args)
-			this.args.addAll(Arrays.asList(args));
-				
+		this(host, name, args);
 		this.startTime = startTime;
-		this.killTime = killTime;		
+		this.killTime = killTime;
 	}
 	/**
 	 * The natively implemented method to create an MSG process.
@@ -207,49 +184,36 @@ public abstract class Process implements Runnable {
 	 */ 
 	public static native int killAll(int resetPID);
 
-	/**
-	 * This method kill a process.
+	/** Simply kills the receiving process.
 	 *
+	 * SimGrid sometimes have issues when you kill processes that are currently communicating and such. We are working on it to fix the issues.
 	 */
 	public native void kill();
-	/**
-	 * Suspends the process by suspending the task on which it was
-	 * waiting for the completion.
-	 */
+	
+	/** Suspends the process. See {@link #resume()} to resume it afterward */
 	public native void suspend();
-	/**
-	 * Suspends the process by suspending the task on which it was
-	 * waiting for the completion.
-	 * DEPRECATED: use suspend instead.
+	/** Resume a process that was suspended by {@link #suspend()}. */
+	public native void resume();	
+	/** Tests if a process is suspended.
+	 *
+	 * @see #suspend()
+	 * @see #resume()
 	 */
-	@Deprecated
-	public void pause() {
-		suspend();
-	}
+	public native boolean isSuspended();
+	
 	/**
-	 * Sets the "auto-restart" flag of the process.
+	 * Specify whether the process should restart when its host restarts after a failure
+	 * 
+	 * A process naturally stops when its host stops. It starts again only if autoRestart is set to true.
+	 * Otherwise, it just disappears when the host stops.
 	 */
 	public native void setAutoRestart(boolean autoRestart);
-	/**
-	 * Restarts the process from the beginning
-	 */
+	/** Restarts the process from the beginning */
 	public native void restart();
-	/**
-	 * Resumes a suspended process by resuming the task on which it was
-	 * waiting for the completion.
-	 */
-	public native void resume();	
-	/**
-	 * Tests if a process is suspended.
-	 *
-	 * @return				The method returns true if the process is suspended.
-	 *						Otherwise the method returns false.
-	 */ 
-	public native boolean isSuspended();
 	/**
 	 * Returns the name of the process
 	 */
-	public String msgName() {
+	public String getName() {
 		return this.name;
 	}
 	/**
@@ -291,20 +255,20 @@ public abstract class Process implements Runnable {
 	 * Returns the value of a given process property. 
 	 */
 	public native String getProperty(String name);
-	
+
 	/**
 	 * Set the kill time of the process
 	 * @param killTime the time when the process is killed
 	 */
 	public native void setKillTime(double killTime);
-	
+
 	/**
 	 * This static method returns the currently running process.
 	 *
 	 * @return				The current process.
 	 *
 	 */ 
-	public static native Process currentProcess();
+	public static native Process getCurrentProcess();
 	/**
 	 * Migrates a process to another host.
 	 *
@@ -324,50 +288,39 @@ public abstract class Process implements Runnable {
 	/**
 	 * Makes the current process sleep until millis milliseconds and nanos nanoseconds 
 	 * have elapsed.
-	 * You should note that unlike "waitFor" which takes seconds, this method takes milliseconds and nanoseconds.
+	 * Unlike {@link #waitFor(double)} which takes seconds, this method takes 
+	 * milliseconds and nanoseconds.
 	 * Overloads Thread.sleep.
 	 * @param millis the length of time to sleep in milliseconds.
 	 * @param nanos additionnal nanoseconds to sleep.
 	 */
-	public native static void sleep(long millis, int nanos) throws HostFailureException;
+	public static native void sleep(long millis, int nanos) throws HostFailureException;
 	/**
 	 * Makes the current process sleep until time seconds have elapsed.
 	 * @param seconds		The time the current process must sleep.
 	 */ 
 	public native void waitFor(double seconds) throws HostFailureException;    
 	/**
-     *
-     */
-    public void showArgs() {
-		Msg.info("[" + this.name + "/" + this.getHost().getName() + "] argc=" +
-				this.args.size());
-		for (int i = 0; i < this.args.size(); i++)
-			Msg.info("[" + this.msgName() + "/" + this.getHost().getName() +
-					"] args[" + i + "]=" + this.args.get(i));
-	}
-    /**
-     * This method actually creates and run the process.
-     * It is a noop if the process is already launched.
-     * @throws HostNotFoundException
-     */
-    public final void start() throws HostNotFoundException {
-    	if (!started) {
-    		started = true;
-    		create(host.getName());
-    	}
-    }
-    
-	/**
-	 * This method runs the process. Il calls the method function that you must overwrite.
+	 * This method actually creates and run the process.
+	 * It is a noop if the process is already launched.
+	 * @throws HostNotFoundException
 	 */
+	public final void start() throws HostNotFoundException {
+		if (!started) {
+			started = true;
+			create(host.getName());
+		}
+	}
+
+	/** This method runs the process. Il calls the method function that you must overwrite. */
+	@Override
 	public void run() {
 
 		String[] args = null;      /* do not fill it before the signal or this.args will be empty */
-		//waitSignal(); /* wait for other people to fill the process in */
 
 		try {
 			args = new String[this.args.size()];
-			if (this.args.size() > 0) {
+			if (!this.args.isEmpty()) {
 				this.args.toArray(args);
 			}
 
@@ -377,26 +330,26 @@ public abstract class Process implements Runnable {
 			Msg.info("Unexpected behavior. Stopping now");
 			System.exit(1);
 		}
-		 catch(ProcessKilledError pk) {
+		catch(ProcessKilledError pk) {
 		}	
 		exit();
 	}
 
 	/**
 	 * The main function of the process (to implement).
-     *
-     * @param args
-     * @throws MsgException
-     */
+	 *
+	 * @param args
+	 * @throws MsgException
+	 */
 	public abstract void main(String[]args) throws MsgException;
 
-	public native void exit();    
+	public native void exit();
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */
-	public static native void nativeInit();
+	private static native void nativeInit();
 	static {
-		Msg.nativeInit();
+		org.simgrid.NativeLib.nativeInit();
 		nativeInit();
 	}
 	/**
@@ -404,6 +357,6 @@ public abstract class Process implements Runnable {
 	 *
 	 * @return			The count of the running processes
 	 */ 
-	public native static int getCount();
+	public static native int getCount();
 
 }

@@ -5,58 +5,77 @@
 # father), so we do the test a bunch of times.
 #
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 01
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 02
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 03
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 04
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 05
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 06
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 07
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 08
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 09
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 10
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 11
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 12
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 13
+$ cmake -E echo
 
-< blablablablablablablablablablablablablablablablablablablabla
->
-$ echo
+< blablablablablablablablablablablablablablablablablablablabla 14
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 15
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 16
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 17
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 18
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 19
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 20
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 21
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 22
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 23
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 24
+$ cmake -E echo
+
+< blablablablablablablablablablablablablablablablablablablabla 25
+$ cmake -E echo

@@ -1,3 +1,63 @@
 #! ./tesh
 
-$ $SG_TEST_EXENV ${bindir:=.}/trace_usage --cfg=path:../../examples/platforms/trace/
+$ $SG_TEST_EXENV ${bindir:=.}/trace_usage --cfg=path:../../../examples/platforms/trace/
+> [0.000000] [surf_test/INFO] 0:
+> [0.000000] [surf_test/INFO]    Host B: 1
+> [0.000000] [surf_test/INFO] 1:
+> [0.000000] [surf_test/INFO]    Host A: 1
+> [0.000000] [surf_test/INFO] 10:
+> [0.000000] [surf_test/INFO]    Host B: 0.8
+> [0.000000] [surf_test/INFO] 12:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 20:
+> [0.000000] [surf_test/INFO]    Host B: 0.4
+> [0.000000] [surf_test/INFO] 21:
+> [0.000000] [surf_test/INFO]    Host A: 0.9
+> [0.000000] [surf_test/INFO] 22:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 30:
+> [0.000000] [surf_test/INFO]    Host B: 0.8
+> [0.000000] [surf_test/INFO] 31:
+> [0.000000] [surf_test/INFO]    Host A: 0.9
+> [0.000000] [surf_test/INFO] 32:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 40:
+> [0.000000] [surf_test/INFO]    Host B: 0.4
+> [0.000000] [surf_test/INFO] 41:
+> [0.000000] [surf_test/INFO]    Host A: 0.9
+> [0.000000] [surf_test/INFO] 42:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 50:
+> [0.000000] [surf_test/INFO]    Host B: 0.8
+> [0.000000] [surf_test/INFO] 51:
+> [0.000000] [surf_test/INFO]    Host A: 0.9
+> [0.000000] [surf_test/INFO] 52:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 60:
+> [0.000000] [surf_test/INFO]    Host B: 0.4
+> [0.000000] [surf_test/INFO] 61:
+> [0.000000] [surf_test/INFO]    Host A: 0.9
+> [0.000000] [surf_test/INFO] 62:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 70:
+> [0.000000] [surf_test/INFO]    Host B: 0.8
+> [0.000000] [surf_test/INFO] 71:
+> [0.000000] [surf_test/INFO]    Host A: 0.9
+> [0.000000] [surf_test/INFO] 72:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 80:
+> [0.000000] [surf_test/INFO]    Host B: 0.4
+> [0.000000] [surf_test/INFO] 81:
+> [0.000000] [surf_test/INFO]    Host A: 0.9
+> [0.000000] [surf_test/INFO] 82:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 90:
+> [0.000000] [surf_test/INFO]    Host B: 0.8
+> [0.000000] [surf_test/INFO] 91:
+> [0.000000] [surf_test/INFO]    Host A: 0.9
+> [0.000000] [surf_test/INFO] 92:
+> [0.000000] [surf_test/INFO]    Host A: 0.5
+> [0.000000] [surf_test/INFO] 100:
+> [0.000000] [surf_test/INFO]    Host B: 0.4
+> [0.000000] [surf_test/INFO] 101:
+> [0.000000] [surf_test/INFO]    Host A: 0.9

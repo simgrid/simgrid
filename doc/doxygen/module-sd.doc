@@ -1,29 +1,34 @@
-/** @addtogroup SD_API
+/** 
+@defgroup SD_API      SimDag: Simulate DAG algorithms
+@brief Programming environment for DAG applications
 
-  \section SD_func Offered functionnalities
-   - \ref SD_datatypes_management
-   - \ref SD_workstation_management
-   - \ref SD_link_management
-   - \ref SD_task_management
-   - \ref SD_task_dependency_management
-   - \ref SD_simulation
+SimDag provides functionnalities to simulate parallel task scheduling
+arranged in DAGs (Direct Acyclic Graphs). Only centralized algorithms
+can be expressed with SimDag; consider using @ref MSG_API "MSG" for
+distributed algorithms). 
 
+SimDag is the oldest interface in SimGrid, even if it was temporarly
+removed when the new superfast kernel was added in SimGrid v3.0.
+
+  @{
+  
+    @defgroup SD_host_api Hosts
+    @brief Host management
+
+    @defgroup SD_link_api Links
+    @brief Link management
+
+    @defgroup SD_task_api Tasks
+    @brief Task management
+
+    @defgroup SD_task_dependency_api Tasks dependencies
+    @brief Functions to specify the dependencies between tasks
+
+    @defgroup SD_storage_api Storages
+    @brief Storage management
+    
+    @defgroup SD_simulation Simulation
+    @brief Functions to create the environment and launch the simulation
+  @}
 */
 
-/** @defgroup SD_datatypes_management SD Data Types
-    @ingroup SD_API
-    @brief This section describes the different datatypes provided by SD.
- */
-/** @addtogroup SD_datatypes_management
-    \htmlonly <!-- DOXYGEN_NAVBAR_LABEL="Data types" --> \endhtmlonly
-*/
-/**     \addtogroup SD_workstation_management
-        \ingroup SD_API  */
-/**     \addtogroup SD_link_management
-        \ingroup SD_API  */
-/**     \addtogroup SD_task_management
-        \ingroup SD_API  */
-/**     \addtogroup SD_task_dependency_management
-        \ingroup SD_API  */
-/**     \addtogroup SD_simulation
-        \ingroup SD_API  */

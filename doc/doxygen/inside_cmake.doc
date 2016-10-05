@@ -1,256 +1,137 @@
 /*! 
-@page inside_cmake Modifying the cmake files
+@page inside_cmake Adding source files or examples
 
 \tableofcontents
 
-\section inside_cmake_intro Generalities on Cmake
-
-\subsection inside_cmake_what What is Cmake?
-
-CMake is a family of tools designed to build, test and package
-software. CMake is used to control the software compilation process
-using simple platform and compiler independent configuration files.
-CMake generates native makefiles and workspaces that can be used in
-the compiler environment of your choice. For more information see
-official web site <a href="http://www.cmake.org/">here</a>.
-
-\subsection inside_cmake_why Why cmake?
-
-CMake permits to developers to compile projects on different
-platforms. Then many tools are embedded like ctest for making test, a
-link to cdash for vizualise results but also test coverage and bug
-reports.
+SimGrid uses CMake which is a family of tools designed to build, test, and package software. CMake is used to control the software 
+compilation process using simple platform- and compiler-independent configuration files. CMake generates native 
+makefiles and workspaces that can be used in the compiler environment of your choice. For more information see
+the <a href="http://www.cmake.org/">official CMake web site</a>.
 
 \section inside_cmake_addsrc How to add source files?
 
-If you want modified, add or delete source files from a library you have to edit <project/directory>/buildtools/Cmake/DefinePackages.cmake.
-Chose the section you are interested in and modify it.
+If you want to rename, add, or delete source file(s) in the SimGrid distribution, you have to edit the 
+$SIMGRID_INSTALL_PATH/tools/cmake/DefinePackages.cmake configuration file. Files are organized in sections, then find 
+the section you are interested in and modify it. For instance, a new S4U source file will have to be listed in:
 
 \verbatim
-set(SMPI_SRC
-  src/smpi/smpi_base.c
-  src/smpi/smpi_bench.c
-  src/smpi/smpi_c99.c
-  src/smpi/smpi_coll.c
-  src/smpi/smpi_comm.c
-  src/smpi/smpi_global.c
-  src/smpi/smpi_group.c
-  src/smpi/smpi_mpi.c
-  src/smpi/smpi_mpi_dt.c
-  src/smpi/smpi_pmpi.c
-  src/smpi/smpi_replay.c
-  )
+set(S4U_SRC
+  src/s4u/s4u_actor.cpp
+  src/s4u/s4u_as.cpp
+  src/s4u/s4u_activity.cpp
+  src/s4u/s4u_comm.cpp
+  src/s4u/s4u_engine.cpp  
+  src/s4u/s4u_file.cpp  
+  src/s4u/s4u_host.cpp  
+  src/s4u/s4u_mailbox.cpp
+  src/s4u/s4u_storage.cpp
+)
 \endverbatim
 
-If your source is always added to the library, you are set. But if
-it's optional, you must ensure that it gets added to the source
-distribution when not compiled in, or it may well be missing if the
-archive is built without the option activating your source. This is
-done by adding the files to the EXTRA_DIST list, as in the following
-example:
+If sources file always have to be included into the library, you are all set. However, ther inclusion may depend on 
+specific compiling options. For instance, if Boost contexts are not available, you don't want to compile the 
+src/simix/ContextBoost.* files but still add them to the source distribution. This is done by adding those files to the
+ EXTRA_DIST list, as follows:
 
 \verbatim
-### If fortran is installed compile source other-whise source is only copied in the dist 
-if(SMPI_FORTRAN)
-  set(SMPI_SRC
-    ${SMPI_SRC}
-    src/smpi/smpi_f77.c
-    )
+if (HAVE_BOOST_CONTEXTS)
+  set(SIMIX_SRC   ${SIMIX_SRC}  src/simix/ContextBoost.hpp
+                                src/simix/ContextBoost.cpp)
 else()
-  set(EXTRA_DIST
-    ${EXTRA_DIST}
-    src/smpi/smpi_f77.c
-  )
+  set(EXTRA_DIST  ${EXTRA_DIST} src/simix/ContextBoost.hpp
+                                src/simix/ContextBoost.cpp)
 endif()
 \endverbatim
 
-Don't forget to run the "make distcheck" target after any modification
-to the cmake files: it checks whether all necessary files are present
-in the distribution.
+Once you're done, you must run "make distcheck" to ensure that you did not forget to add any file to the distributed 
+archives. This ensures that everything was commited correctly, so you have to first commit before running 
+"make distcheck". If you forgot something, you want to "git commit --amend". But never amend a commit that you already 
+pushed to public repositories! Do a second commit in that case.
 
-\section cmake_dev_guide_ex How to add examples?
+\section inside_cmake_examples How to add an example?
 
-First of all, are you sure that you want to create an example, or is
-it merely a new test case? The examples located in examples/ must be
-interesting to the users. It is expected that the users will take one
-of these examples and start editing it to make it fit their needs. If
-what you are about to write is merly a test, exercising a specific
-part of the tool suite but not really interesting to the users, then
-you want to add it to the teshsuite/ directory. 
+The first rule is that the content of examples/ must be interesting to the users. It is expected that the users will 
+take one of these examples and start editing it to make it fit their needs. So, it should be self-contained, 
+informative, and should use only the public APIs.
 
-Actually, the examples are also used as regresion tests by adding tesh
-files and registering them to the testing infrastructure (for that,
-don't forget to add a tesh file and follow the instructions of 
-section \ref inside_cmake_addtest). The main difference is that
-examples must be interesting to the users in addition.
+To ensure that all examples actually work as expected, every example is also used as an integration test (see 
+@ref inside_tests), but you should still strive to keep the code under examples/ as informative as possible for the 
+users. In particular, torture test cases should be placed in teshsuite/, not examples/, so that the users don't stumble
+upon them by error.
 
-In both cases, you have to create a CMakeList.txt in the chosen source
-directory. It must specify where to create the executable, the source
-list, dependencies and the name of the binary.
+To add a new example, the first thing is to find the right place to add it. The examples/ directory is organized as 
+follows:
+ - examples/java/ for examples using the Java bindings to the MSG API. This directory contains packages (app, async, 
+   cloud, ...) which in turn contain individual examples. If your new example fits in an existing package, add it here,
+   or create a new package otherwise. 
+ - examples/msg/ for examples using the MSG API. Here the naming convention is package-example (e.g., app-masterworker).
+   Again, please try to fit to an existing package before creating a new one.
+ - examples/platforms/ only contains platforms descriptions in the XML format (see @ref platform for details)
+ - examples/s4u/ for examples using the emerging S4U API
+ - examples/simdag/ for examples using the SimDag API
+ - examples/smpi/ or examples using the SMPI API
+
+In each of these directories, there is a CMakeLists.txt file that has to be edited to include the new examples. For 
+instance, examples/msg/CMakeLists.txt starts with a loop over all the (currently) existing tests in which we
+ - compile and link the source file (which has to be named as the directory
+ - add the source and tesh files to the distribution.
 
 \verbatim
-cmake_minimum_required(VERSION 2.6)
-
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-
-add_executable(Hello Hello.c)
-
-### Add definitions for compile
-target_link_libraries(Hello simgrid)
-
-### You have to put all new files in the apropriated section 
-### If they are not there, they can't be on the dist package. 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
-set(examples_src
-  ${examples_src}
-  ${CMAKE_CURRENT_SOURCE_DIR}/Hello.c
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-  PARENT_SCOPE
-  )
+foreach(x actions-comm actions-storage app-masterworker app-pingpong app-pmm app-token-ring async-wait async-waitall 
+          async-waitany cloud-capping cloud-masterworker cloud-migration cloud-multicore cloud-simple 
+          cloud-two-tasks dht-chord dht-pastry energy-consumption energy-onoff energy-pstate energy-ptask energy-vm
+          platform-failures io-file io-remote io-storage task-priority process-create process-kill process-migration 
+          process-suspend platform-properties maestro-set process-startkilltime synchro-semaphore trace-categories 
+          trace-link-srcdst-user-variables trace-link-user-variables trace-masterworker trace-platform 
+          trace-process-migration trace-user-variables)
+  add_executable       (${x}     ${x}/${x}.c)
+  target_link_libraries(${x}     simgrid)
+  set_target_properties(${x}  PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/${x})
+  set(examples_src ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.c)
+  set(tesh_files   ${tesh_files}   ${CMAKE_CURRENT_SOURCE_DIR}/${x}/${x}.tesh)
+endforeach()
 \endverbatim
 
-Then, you have to follow these steps:
-\li Add the following line to <project/directory>/buildtools/Cmake/MakeExe.cmake:
+Some more complex examples may require more than one source file. If it is the case for your example, you will find 
+inspiration in the following example
+
 \verbatim
-add_subdirectory(${CMAKE_HOME_DIRECTORY}/<path_where_is_CMakeList.txt>)
+add_executable       (bittorrent app-bittorrent/bittorrent.c app-bittorrent/messages.c app-bittorrent/peer.c app-bittorrent/tracker.c app-bittorrent/connection.c)
+target_link_libraries(bittorrent simgrid)
+set_target_properties(bittorrent PROPERTIES RUNTIME_OUTPUT_DIRECTORY ${CMAKE_CURRENT_BINARY_DIR}/app-bittorrent)
+foreach (file bittorrent connection messages peer tracker)
+  set(examples_src  ${examples_src}  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.c  ${CMAKE_CURRENT_SOURCE_DIR}/app-bittorrent/${file}.h)
+endforeach()
 \endverbatim
 
-\li Add your CMakeLists.txt to CMAKE_SOURCE_FILES in <project/directory>/buildtools/Cmake/DefinePackages.cmake:
+If your example require a deployment file (see @ref deployment for details), name it as the source file adding "_d.xml".
+Then add the name of your example to this foreach loop.
+
 \verbatim
-set(CMAKE_SOURCE_FILES
-  CMakeLists.txt
-  ....
-  <path_to_your_CMakeList.txt>
-  )
+foreach (file actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong async-wait
+         async-waitall async-waitany dht-chord dht-kademlia dht-pastry io-remote platform-properties maestro-set 
+         task-priority)
+  set(xml_files    ${xml_files}     ${CMAKE_CURRENT_SOURCE_DIR}/${file}/${file}_d.xml)
+endforeach()
 \endverbatim
 
-\li if you add tesh files (and you should), please refer to the
-following section to register them to the testing infrastructure.
-
-Once you're done, you should check with "make distcheck" that you did
-not forget to add any file to the distributed archives.
-
-\section inside_cmake_addtest How to add tests?
-
-\subsection inside_cmake_addtest_unit Unit testing in SimGrid
-
-If you want to test a specific function or set of functions, you need
-a unit test. Edit
-<project/directory>/buildtools/Cmake/UnitTesting.cmake to add your
-source file to the TEST_CFILES list, and add the corresponding unit
-file to the TEST_UNITS list. For example, if your file is toto.c,
-your unit file will be toto_unit.c. The full path to your file must be
-provided, but the unit file will always be in src/ directly.
-
-Then, you want to actually add your tests in the source file. All the
-tests must be protected by "#ifdef SIMGRID_TEST" so that they don't
-get included in the regular build. Then, you want to add a test suite
-that will contain a bunch of tests (in Junit, that would be a test
-unit) with the macro #XBT_TEST_SUITE, and populate it with a bunch of
-actual tests with the macro #XBT_TEST_UNIT (sorry for the mischosen
-names if you are used to junit). Just look at the dynar example (or
-any other) to see how it works in practice. Do not hesitate to stress
-test your code this way, but make sure that it runs reasonably fast,
-or nobody will run "ctest" before commiting code.
-
-If you are interested in the mechanic turning this into an actual
-test, check the <project/directory>/tools/sg_unit_extractor.pl script.
-
-To actually run your tests once you're done, run "make testall", that
-builds the binary containing all our unit tests and run it. This
-binary allows you to chose which suite you want to test:
+If your example includes extra source, text, XML, or tesh files, add them to the existing lists. Finally, register your 
+example to the testing infrastructure. See \ref inside_tests_add_integration for more details.
 
 \verbatim
-$ testall --help # revise how it goes if you forgot
-$ testall --dump-only # learn about all existing test suites
-$ testall --tests=-all # run no test at all
-$ testall --tests=-all,+foo # run only the foo test suite.
-$ testall --tests=-all,+foo:bar # run only the bar test from the foo suite.
-$ testall --tests=-foo:bar # run all tests but the bar test from the foo suite.
+foreach(x actions-comm actions-storage app-bittorrent app-chainsend app-masterworker app-pingpong app-token-ring
+          async-wait async-waitall async-waitany cloud-capping cloud-masterworker cloud-migration cloud-simple 
+          cloud-two-tasks dht-chord dht-kademlia platform-failures io-file io-remote io-storage task-priority 
+          process-kill process-migration process-suspend platform-properties synchro-semaphore process-startkilltime)
+  ADD_TESH_FACTORIES(msg-${x} "thread;ucontext;raw;boost" --setenv bindir=${CMAKE_BINARY_DIR}/examples/msg/${x} --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/platforms --cd ${CMAKE_HOME_DIRECTORY}/examples/msg/${x} ${x}.tesh)
+endforeach()
 \endverbatim
 
-\subsection inside_cmake_addtest_integration Integration testing in SimGrid
+Note that the structure of the CMakeLists.txt file may vary from one directory to another, but there are enough existing
+examples to find one that can be adapted to your own example.
 
-If you want to test a full binary (such as an example), then you
-probably want to use the tesh binary that ensures that the output
-produced by a command perfectly matches the expected output. In
-particular, this is very precious to ensure that no change modifies
-the timings computed by the models without notice. 
-
-The first step is to write a tesh file for your test, containing the
-command to run, the provided input (if any, but almost no SimGrid test
-provide such an input) and the expected output. Check the tesh man
-page for more details. 
-
-Tesh is sometimes annoying as you have to ensure that the expected
-output will always be exactly the same. In particular, your should not
-output machine dependent informations, nor memory adresses as they
-would change on each run. Several steps can be used here, such as the
-obfucation of the memory adresses unless the verbose logs are
-displayed (using the #XBT_LOG_ISENABLED() macro), or the modification
-of the log formats to hide the timings when they depend on the host
-machine.
-
-Then you have to request cmake to run your test when "ctest" is
-launched. For that, you have to modify source
-<project/directory>/buildtools/Cmake/AddTests.cmake. Make sure to pick
-a wise name for your test. It is often useful to check a category of
-tests together. The only way to do so in ctest is to use the -R
-argument that specifies a regular expression that the test names must
-match. For example, you can run all MSG test with "ctest -R msg" That
-explains the importance of the test names.
-
-Once the name is chosen, create a new test by adding a line similar to
-the following (assuming that you use tesh as expected).
-
-\verbatim
-#  ADD_TEST(test-name ${CMAKE_BINARY_DIR}/bin/tesh <options> <tesh-file>)
-#  option --setenv bindir set the directory containing the binary
-#         --setenv srcdir set the directory containing the source file
-#         --cd set the working directory
-ADD_TEST(my-test-name ${CMAKE_BINARY_DIR}/bin/tesh 
-         --setenv bindir=${CMAKE_BINARY_DIR}/examples/my-test/
-         --setenv srcdir=${CMAKE_HOME_DIRECTORY}/examples/my-test/
-         --cd ${CMAKE_HOME_DIRECTORY}/examples/my-test/
-         ${CMAKE_HOME_DIRECTORY}/examples/msg/io/io.tesh
-)
-\endverbatim             
-
-If you prefer to not use tesh for some reasons, prefer the following
-form:
-
-\verbatim
-# ADD_TEST(NAME <name>]
-#          [WORKING_DIRECTORY dir]
-#          COMMAND <command> [arg1 [arg2 ...]])
-ADD_TEST(NAME my-test-name 
-         WORKING_DIRECTORY  ${CMAKE_BINARY_DIR}/examples/my-test/
-         COMMAND Hello
-)
-\endverbatim 
-
-As usual, you must run "make distcheck" after modifying the cmake files,
-to ensure that you did not forget any files in the distributed archive.
-
-\subsection inside_cmake_addtest_perf Performance testing in SimGrid
-
-We are currently in the process of adding an infrastructure for
-performance regression testing, but this is not related to cmake
-anyhow. They are thus documented elsewhere, in Section \ref
-inside_autotests_perf
-
+Once you're done, you must run "make distcheck" to ensure that you did not forget to add any file to the distributed 
+archives. This ensures that everything was commited correctly, so you have to first commit before running 
+"make distcheck". If you forgot something, you want to "git commit --amend". But never amend a commit that you already 
+pushed to public repositories! Do a second commit in that case.
 */

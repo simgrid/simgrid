@@ -1,5 +1,5 @@
 /* dict_elm - elements of generic dictionnaries                             */
-/* This file is not to be loaded from anywhere but dict.c                   */
+/* This file is not to be loaded from anywhere but dict.cpp                   */
 
 /* Copyright (c) 2004-2011, 2013-2014. The SimGrid Team.
  * All rights reserved.                                                     */
@@ -10,6 +10,7 @@
 #ifndef _XBT_DICT_PRIVATE_H__
 #define _XBT_DICT_PRIVATE_H__
 
+#include "xbt/base.h"
 #include "xbt/sysdep.h"
 #include "xbt/log.h"
 #include "xbt/ex.h"
@@ -17,8 +18,9 @@
 #include "xbt/dict.h"
 #include "xbt/mallocator.h"
 
-#define MAX_FILL_PERCENT 80
+SG_BEGIN_DECL()
 
+#define MAX_FILL_PERCENT 80
 
 typedef struct s_xbt_het_dictelm {
   s_xbt_dictelm_t element;
@@ -36,22 +38,22 @@ typedef struct s_xbt_dict {
 
 typedef struct s_xbt_dict_cursor s_xbt_dict_cursor_t;
 
-extern xbt_mallocator_t dict_elm_mallocator;
-extern void *dict_elm_mallocator_new_f(void);
+extern XBT_PRIVATE xbt_mallocator_t dict_elm_mallocator;
+XBT_PRIVATE void * dict_elm_mallocator_new_f(void);
 #define dict_elm_mallocator_free_f xbt_free_f
 #define dict_elm_mallocator_reset_f ((void_f_pvoid_t)NULL)
 
-extern xbt_mallocator_t dict_het_elm_mallocator;
-extern void *dict_het_elm_mallocator_new_f(void);
+extern XBT_PRIVATE xbt_mallocator_t dict_het_elm_mallocator;
+extern XBT_PRIVATE void * dict_het_elm_mallocator_new_f(void);
 #define dict_het_elm_mallocator_free_f xbt_free_f
 #define dict_het_elm_mallocator_reset_f ((void_f_pvoid_t)NULL)
 
 /*####[ Function prototypes ]################################################*/
-xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
-                              unsigned int hash_code, void *content,
-                              void_f_pvoid_t free_f);
-void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element);
-void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element,
-                          void *data, void_f_pvoid_t free_ctn);
+XBT_PRIVATE xbt_dictelm_t xbt_dictelm_new(xbt_dict_t dict, const char *key, int key_len,
+                              unsigned int hash_code, void *content, void_f_pvoid_t free_f);
+XBT_PRIVATE void xbt_dictelm_free(xbt_dict_t dict, xbt_dictelm_t element);
+XBT_PRIVATE void xbt_dictelm_set_data(xbt_dict_t dict, xbt_dictelm_t element, void *data, void_f_pvoid_t free_ctn);
+
+SG_END_DECL()
 
 #endif                          /* _XBT_DICT_PRIVATE_H_ */

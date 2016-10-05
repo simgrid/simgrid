@@ -1,0 +1,17 @@
+p Test compute and bench
+! output sort
+! timeout 45
+$ ${bindir:=.}/../../../bin/smpirun -hostfile ../hostfile -platform ../../../examples/platforms/small_platform_with_routers.xml -np 3 --log=root.thres:warning ${bindir:=.}/macro-sample quiet --log=smpi_kernel.thres:warning
+> (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)
+> (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)
+> (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)
+> (0) Run the first computation. It's globally benched, and I want no more than 4 benchmarks (thres<0)
+> (1) [rank:0] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> (1) [rank:0] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> (1) [rank:1] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> (1) [rank:1] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> (1) [rank:2] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> (1) [rank:2] Run the first (locally benched) computation. It's locally benched, and I want the standard error to go below 0.1 second (count is not >0)
+> (2) [rank:0] Done.
+> (2) [rank:1] Done.
+> (2) [rank:2] Done.

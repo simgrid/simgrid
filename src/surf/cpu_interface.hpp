@@ -1,11 +1,21 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <list>
+
+#include <xbt/base.h>
+#include <xbt/signal.hpp>
+
+#include <simgrid/forward.h>
+#include <simgrid/s4u/host.hpp>
+
+#include "surf/datatypes.h"
 #include "surf_interface.hpp"
 #include "maxmin_private.hpp"
+#include "trace_mgr.hpp"
 
 #ifndef SURF_CPU_INTERFACE_HPP_
 #define SURF_CPU_INTERFACE_HPP_
@@ -13,54 +23,14 @@
 /***********
  * Classes *
  ***********/
+
+namespace simgrid {
+namespace surf {
+
 class CpuModel;
-typedef CpuModel *CpuModelPtr;
-
 class Cpu;
-typedef Cpu *CpuPtr;
-
 class CpuAction;
-typedef CpuAction *CpuActionPtr;
-
-class CpuPlugin;
-typedef CpuPlugin *CpuPluginPtr;
-
-/*************
- * Callbacks *
- *************/
-XBT_PUBLIC(CpuPtr) getActionCpu(CpuActionPtr action);
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu creation *
- * @details Callback functions have the following signature: `void(CpuPtr)`
- */
-XBT_PUBLIC_DATA( surf_callback(void, CpuPtr)) cpuCreatedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu destruction *
- * @details Callback functions have the following signature: `void(CpuPtr)`
- */
-XBT_PUBLIC_DATA( surf_callback(void, CpuPtr)) cpuDestructedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after Cpu State changed *
- * @details Callback functions have the following signature: `void(CpuActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
- */
-XBT_PUBLIC_DATA( surf_callback(void, CpuPtr, e_surf_resource_state_t, e_surf_resource_state_t)) cpuStateChangedCallbacks;
-
-/** @ingroup SURF_callbacks
- * @brief Callbacks handler which emit the callbacks after CpuAction State changed *
- * @details Callback functions have the following signature: `void(CpuActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
- */
-XBT_PUBLIC_DATA( surf_callback(void, CpuActionPtr, e_surf_action_state_t, e_surf_action_state_t)) cpuActionStateChangedCallbacks;
-
-XBT_PUBLIC(void) cpu_parse_init(sg_platf_host_cbarg_t host);
-
-XBT_PUBLIC(void) cpu_add_traces();
-
-/*********
- * Model *
- *********/
+class CpuPlugin;// FIXME:DEADCODE
 
  /** @ingroup SURF_cpu_interface
  * @brief SURF cpu model interface class
@@ -68,35 +38,21 @@ XBT_PUBLIC(void) cpu_add_traces();
  */
 XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
-  /**
-   * @brief CpuModel constructor
-   *
-   * @param name The name of the model
-   */
-  CpuModel(const char *name) : Model(name) {};
+  CpuModel() : Model() {};
+  ~CpuModel() override;
 
   /**
    * @brief Create a Cpu
    *
-   * @param name The name of the Cpu
-   * @param power_peak The power peak of this Cpu
-   * @param pstate [TODO]
-   * @param power_scale The power scale of this Cpu
-   * @param power_trace [TODO]
+   * @param host The host that will have this CPU
+   * @param speedPerPstate Processor speed (in Flops) of each pstate. This ignores any potential external load coming from a trace.
    * @param core The number of core of this Cpu
-   * @param state_initial [TODO]
-   * @param state_trace [TODO]
-   * @param cpu_properties Dictionary of properties associated to this Cpu
    */
-  virtual CpuPtr createCpu(const char *name, xbt_dynar_t power_peak,
-                      int pstate, double power_scale,
-                          tmgr_trace_t power_trace, int core,
-                          e_surf_resource_state_t state_initial,
-                          tmgr_trace_t state_trace,
-                          xbt_dict_t cpu_properties)=0;
+  virtual Cpu *createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)=0;
 
-  void updateActionsStateLazy(double now, double delta);
-  void updateActionsStateFull(double now, double delta);
+  void updateActionsStateLazy(double now, double delta) override;
+  void updateActionsStateFull(double now, double delta) override;
+  bool next_occuring_event_isIdempotent() override;
 };
 
 /************
@@ -105,45 +61,32 @@ public:
 
 /** @ingroup SURF_cpu_interface
 * @brief SURF cpu resource interface class
-* @details A Cpu represent a cpu associated to a workstation
+* @details A Cpu represent a cpu associated to a host
 */
-XBT_PUBLIC_CLASS Cpu : public Resource {
+XBT_PUBLIC_CLASS Cpu : public simgrid::surf::Resource {
 public:
   /**
    * @brief Cpu constructor
-   */
-  Cpu();
-
-  /**
-   * @brief Cpu constructor
    *
    * @param model The CpuModel associated to this Cpu
-   * @param name The name of the Cpu
-   * @param props Dictionary of properties associated to this Cpu
+   * @param host The host in which this Cpu should be plugged
    * @param constraint The lmm constraint associated to this Cpu if it is part of a LMM component
+   * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
-   * @param powerPeak The power peak of this Cpu
-   * @param powerScale The power scale of this Cpu
    */
-  Cpu(ModelPtr model, const char *name, xbt_dict_t props,
-	  lmm_constraint_t constraint, int core, double powerPeak, double powerScale);
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, lmm_constraint_t constraint,
+      std::vector<double> *speedPerPstate, int core);
 
   /**
    * @brief Cpu constructor
    *
    * @param model The CpuModel associated to this Cpu
-   * @param name The name of the Cpu
-   * @param props Dictionary of properties associated to this Cpu
+   * @param host The host in which this Cpu should be plugged
+   * @param speedPerPstate Processor speed (in flop per second) for each pstate
    * @param core The number of core of this Cpu
-   * @param powerPeak The power peak of this Cpu in [TODO]
-   * @param powerScale The power scale of this Cpu in [TODO]
    */
-  Cpu(ModelPtr model, const char *name, xbt_dict_t props,
-	  int core, double powerPeak, double powerScale);
+  Cpu(simgrid::surf::Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core);
 
-  /**
-   * @brief Cpu destructor
-   */
   ~Cpu();
 
   /**
@@ -152,7 +95,7 @@ public:
    * @param size The value of the processing amount (in flop) needed to process
    * @return The CpuAction corresponding to the processing
    */
-  virtual CpuActionPtr execute(double size)=0;
+  virtual simgrid::surf::Action *execution_start(double size)=0;
 
   /**
    * @brief Make a process sleep for duration (in seconds)
@@ -160,57 +103,45 @@ public:
    * @param duration The number of seconds to sleep
    * @return The CpuAction corresponding to the sleeping
    */
-  virtual CpuActionPtr sleep(double duration)=0;
+  virtual simgrid::surf::Action *sleep(double duration)=0;
 
-  /**
-   * @brief Get the number of cores of the current Cpu
-   *
-   * @return The number of cores of the current Cpu
-   */
-  virtual int getCore();
+  /** @brief Get the amount of cores */
+  virtual int getCoreCount();
 
-  /**
-   * @brief Get the speed of the current Cpu
-   * @details [TODO] load * m_powerPeak
-   *
-   * @param load [TODO]
-   *
-   * @return The speed of the current Cpu
-   */
+  /** @brief Get the speed, accounting for the trace load and provided process load instead of the real current one */
   virtual double getSpeed(double load);
 
-  /**
-   * @brief Get the available speed of the current Cpu
-   * @details [TODO]
-   *
-   * @return The available speed of the current Cpu
-   */
+protected:
+  /** @brief Take speed changes (either load or max) into account */
+  virtual void onSpeedChange();
+
+public:
+  /** @brief Get the available speed of the current Cpu */
   virtual double getAvailableSpeed();
 
-  /**
-   * @brief Get the current Cpu power peak
-   *
-   * @return The current Cpu power peak
-   */
-  virtual double getCurrentPowerPeak();
+  /** @brief Get the current Cpu computational speed */
+  virtual double getPstateSpeedCurrent();
+  virtual double getPstateSpeed(int pstate_index);
 
+  virtual int getNbPStates();
+  virtual void setPState(int pstate_index);
+  virtual int  getPState();
 
-  virtual double getPowerPeakAt(int pstate_index)=0;
+  simgrid::s4u::Host* getHost() { return host_; }
 
-  virtual int getNbPstates()=0;
+public:
+  int coresAmount_ = 1;
+  simgrid::s4u::Host* host_;
 
-  virtual void setPowerPeakAt(int pstate_index)=0;
+  std::vector<double> speedPerPstate_; /*< List of supported CPU capacities (pstate related) */
+  int pstate_ = 0;                     /*< Current pstate (index in the speedPeakList)*/
 
-  void setState(e_surf_resource_state_t state);
+public:
+  virtual void setStateTrace(tmgr_trace_t trace); /*< setup the trace file with states events (ON or OFF). Trace must contain boolean values (0 or 1). */
+  virtual void setSpeedTrace(tmgr_trace_t trace); /*< setup the trace file with availability events (peak speed changes due to external load). Trace must contain relative values (ratio between 0 and 1) */
 
-  void addTraces(void);
-  int m_core;
-  double m_powerPeak;            /*< CPU power peak */
-  double m_powerScale;           /*< Percentage of CPU disponible */
-
-  /* Note (hypervisor): */
-  lmm_constraint_t *p_constraintCore;
-  void **p_constraintCoreId;
+  tmgr_trace_iterator_t stateEvent_ = nullptr;
+  s_surf_metric_t speed_ = {1.0, 0, nullptr};
 };
 
 /**********
@@ -218,46 +149,28 @@ public:
  **********/
 
  /** @ingroup SURF_cpu_interface
- * @brief SURF Cpu action interface class
- * @details A CpuAction represent the execution of code on a Cpu
+ * @brief A CpuAction represents the execution of code on one or several Cpus
  */
-XBT_PUBLIC_CLASS CpuAction : public Action {
-friend CpuPtr getActionCpu(CpuActionPtr action);
+XBT_PUBLIC_CLASS CpuAction : public simgrid::surf::Action {
+friend XBT_PUBLIC(Cpu*) getActionCpu(CpuAction *action);
 public:
-  /**
-   * @brief CpuAction constructor
-   *
-   * @param model The CpuModel associated to this CpuAction
-   * @param cost [TODO]
-   * @param failed [TODO]
+  /** @brief Callbacks handler which emit the callbacks after CpuAction State changed *
+   * @details Callback functions have the following signature: `void(CpuAction *action, simgrid::surf::Action::State previous)`
    */
-  CpuAction(ModelPtr model, double cost, bool failed)
-    : Action(model, cost, failed) {} //FIXME:REMOVE
+  static simgrid::xbt::signal<void(simgrid::surf::CpuAction*, simgrid::surf::Action::State)> onStateChange;
 
-  /**
-   * @brief CpuAction constructor
-   *
-   * @param model The CpuModel associated to this CpuAction
-   * @param cost [TODO]
-   * @param failed [TODO]
-   * @param var The lmm variable associated to this CpuAction if it is part of a LMM component
-   */
-  CpuAction(ModelPtr model, double cost, bool failed, lmm_variable_t var)
-    : Action(model, cost, failed, var) {}
+  CpuAction(simgrid::surf::Model *model, double cost, bool failed)
+  : Action(model, cost, failed) {} //FIXME:DEADCODE?
+  CpuAction(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
+  : Action(model, cost, failed, var) {}
 
-  /**
-   * @brief Set the affinity of the current CpuAction
-   * @details [TODO]
-   *
-   * @param cpu [TODO]
-   * @param mask [TODO]
-   */
-  virtual void setAffinity(CpuPtr cpu, unsigned long mask);
+  void setState(simgrid::surf::Action::State state) override;
 
-  void setState(e_surf_action_state_t state);
-
-  void updateRemainingLazy(double now);
-
+  void updateRemainingLazy(double now) override;
+  std::list<Cpu*> cpus();
 };
+
+}
+}
 
 #endif /* SURF_CPU_INTERFACE_HPP_ */

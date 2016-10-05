@@ -3,13 +3,18 @@
 **
 ******************************************************
 
-There is at least 4 sub-projects in the tree:
+There is at least 5 sub-projects in the tree:
 
  - XBT: eXtended Bundle of Tools (low-level toolbox: logging, datatypes).
  - SURF: a SimUlation aRtiFact. This is the simulation kernel.
  - MSG:  originally MetaSimGrid, MSG is a simple distributed application
          simulator.
- - SMPI: Simulated MPI, to run MPI application using emulation technics.
+ - SMPI: Simulated MPI, to run MPI application using emulation technics;
+ - MC: model-checker;
+ - SIMIX: basix interface for simulated processes. This layer defines simcalls
+   (simulation calls) exposed to the simulated processes by the SIMIX "kernel".
+   This interface is used to implement the MSG, SMPI layers.
+ - SIMDAG;
 
 They are all in the same tree because they are complementary tools and
 having all of them in the same package makes the installation easier
@@ -41,11 +46,11 @@ The tree is not split on projects, but on file finality:
 Most files use the Kernighan & Ritchie coding style with 2 spaces of
 indentation. The indent program can help you to stick to it:
 
-indent -kr -l80 -nut -i2 -lps -npcs -br -brs -ce -cdw -bbo -npsl <myfile>
+indent -kr -l120 -nut -i2 -lps -npcs -br -brs -ce -cdw -bbo -npsl <myfile>
 
-The script ./tools/indent runs indent with the appropriate options.
+The script ./tools/internal/indent runs indent with the appropriate options.
 
-FIXME: this list of arguments is still to be discussed, maybe
+If you use Eclipse, please import the settings in ./tools/internal/eclipse-formating.xml
 
 **
 ** Type naming standard
@@ -101,12 +106,6 @@ INTEGERS
 
 PRINTF pointer difference (FIXME: advertise %td instead?)
  printf ("diff = %ld\n", (long) (pointer2 - pointer1));
-
-INLINE functions
- The definition of a inline function must be visible when it is used.
- As such, an inline function should be defined (an not only declared)
- in header file (.h) with attributes 'static XBT_INLINE'.  It should
- not be defined in source file (.c).
 
 **
 ** Commenting the source: doxygen

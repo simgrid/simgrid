@@ -6,37 +6,35 @@
 
 package cloud.migration;
 
-import org.simgrid.msg.Host;
-import org.simgrid.msg.HostNotFoundException;
 import org.simgrid.msg.Msg;
-import org.simgrid.msg.NativeException;
+import org.simgrid.msg.MsgException;
 
 public class Main {
-    private static boolean endOfTest = false;
+  private static boolean endOfTest = false;
 
-    public static void setEndOfTest(){
-        endOfTest=true;
+  private Main() {
+    throw new IllegalAccessError("Utility class");
+  }
+
+  public static void setEndOfTest(){
+    endOfTest=true;
+  }
+
+  public static boolean isEndOfTest(){
+    return endOfTest;
+  }
+
+  public static void main(String[] args) throws MsgException {
+    Msg.init(args);
+
+    if (args.length < 1) {
+      Msg.info("Usage  : Main platform_file.xml");
+      System.exit(1);
     }
 
-    public static boolean isEndOfTest(){
-        return endOfTest;
-    }
-
-    public static void main(String[] args) throws NativeException {
-       /* Init. internal values */
-        Msg.init(args);
-
-        if (args.length < 2) {
-            Msg.info("Usage  : Main platform_file.xml dployment_file.xml");
-            System.exit(1);
-        }
-
-       /* construct the platform and deploy the application */
-        Msg.createEnvironment(args[0]);
-        Msg.deployApplication(args[1]);
-
-        Msg.run();
-
-
-    }
+    /* construct the platform and deploy the application */
+    Msg.createEnvironment(args[0]);
+    new cloud.migration.Test("PM0","Test").start();
+    Msg.run();
+  }
 }

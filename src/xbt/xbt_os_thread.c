@@ -1,45 +1,51 @@
 /* xbt_os_thread -- portability layer over the pthread API                  */
 /* Used in RL to get win/lin portability, and in SG when CONTEXT_THREAD     */
-/* in SG, when using CONTEXT_UCONTEXT, xbt_os_thread_stub is used instead   */
+/* in SG, when using HAVE_UCONTEXT_CONTEXTS, xbt_os_thread_stub is used instead   */
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "internal_config.h"
-#include "xbt/sysdep.h"
-#include "xbt/ex.h"
-#include "xbt/ex_interface.h"   /* We play crude games with exceptions */
-#include "portable.h"
-#include "xbt/xbt_os_time.h"    /* Portable time facilities */
-#include "xbt/xbt_os_thread.h"  /* This module */
-#include "xbt_modinter.h"       /* Initialization/finalization of this module */
-
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt,
-                                "Synchronization mechanism (OS-level)");
-
-/* ********************************* PTHREAD IMPLEMENTATION ************************************ */
-#ifdef HAVE_PTHREAD_H
-
-#include <limits.h>
-#include <semaphore.h>
-
-#ifdef CORE_BINDING
+#include "src/internal_config.h"
+#if HAVE_PTHREAD_SETAFFINITY
 #define _GNU_SOURCE
 #include <sched.h>
 #endif
 
-#ifdef HAVE_MUTEX_TIMEDLOCK
-/* redefine the function header since we fail to get this from system headers on amd (at least) */
-int pthread_mutex_timedlock(pthread_mutex_t * mutex,
-                            const struct timespec *abs_timeout);
+#include <pthread.h>
+
+#if defined(__FreeBSD__)
+#include "pthread_np.h"
+#define cpu_set_t cpuset_t
 #endif
 
+#include <limits.h>
+#include <semaphore.h>
+#include <errno.h>
+
+#if defined(_WIN32)
+#include <windows.h>
+#elif defined(__MACH__) && defined(__APPLE__)
+#include <stdint.h>
+#include <sys/types.h>
+#include <sys/sysctl.h>
+#else
+#include <unistd.h>
+#endif
+
+#include "xbt/sysdep.h"
+#include "xbt/ex.h"
+#include "src/internal_config.h"
+#include "xbt/xbt_os_time.h"       /* Portable time facilities */
+#include "xbt/xbt_os_thread.h"     /* This module */
+#include "src/xbt_modinter.h"      /* Initialization/finalization of this module */
+
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS-level)");
 
 /* use named sempahore when sem_init() does not work */
-#ifndef HAVE_SEM_INIT
+#if !HAVE_SEM_INIT
 static int next_sem_ID = 0;
 static xbt_os_mutex_t next_sem_ID_lock;
 #endif
@@ -50,7 +56,6 @@ typedef struct xbt_os_thread_ {
   char *name;
   void *param;
   pvoid_f_pvoid_t start_routine;
-  xbt_running_ctx_t *running_ctx;
   void *extra_data;
 } s_xbt_os_thread_t;
 static xbt_os_thread_t main_thread = NULL;
@@ -68,16 +73,8 @@ static void xbt_os_thread_free_thread_data(xbt_os_thread_t thread)
 {
   if (thread == main_thread)    /* just killed main thread */
     main_thread = NULL;
-
-  free(thread->running_ctx);
   free(thread->name);
   free(thread);
-}
-
-/* callback: context fetching */
-static xbt_running_ctx_t *_os_thread_get_running_ctx(void)
-{
-  return xbt_os_thread_self()->running_ctx;
 }
 
 /* callback: termination */
@@ -90,37 +87,31 @@ static void _os_thread_ex_terminate(xbt_ex_t * e)
 
 void xbt_os_thread_mod_preinit(void)
 {
-  int errcode;
-
   if (thread_mod_inited)
     return;
 
-  if ((errcode = pthread_key_create(&xbt_self_thread_key, NULL)))
-    THROWF(system_error, errcode,
-           "pthread_key_create failed for xbt_self_thread_key");
+  int errcode = pthread_key_create(&xbt_self_thread_key, NULL);
+  xbt_assert(errcode == 0, "pthread_key_create failed for xbt_self_thread_key");
   
   main_thread = xbt_new(s_xbt_os_thread_t, 1);
+  main_thread->name = NULL;
+  main_thread->detached = 0;
   main_thread->name = (char *) "main";
-  main_thread->start_routine = NULL;
   main_thread->param = NULL;
-  main_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
-  XBT_RUNNING_CTX_INITIALIZE(main_thread->running_ctx);
+  main_thread->start_routine = NULL;
+  main_thread->extra_data = NULL;
 
   if ((errcode = pthread_setspecific(xbt_self_thread_key, main_thread)))
     THROWF(system_error, errcode,
-           "pthread_setspecific failed for xbt_self_thread_key");
-  
-  __xbt_running_ctx_fetch = _os_thread_get_running_ctx;
-  __xbt_ex_terminate = _os_thread_ex_terminate;
+           "Impossible to set the SimGrid identity descriptor to the main thread (pthread_setspecific failed)");
 
   pthread_attr_init(&thread_attr);
 
   thread_mod_inited = 1;
 
-#ifndef HAVE_SEM_INIT
+#if !HAVE_SEM_INIT
   next_sem_ID_lock = xbt_os_mutex_init();
 #endif
-
 }
 
 void xbt_os_thread_mod_postexit(void)
@@ -131,38 +122,33 @@ void xbt_os_thread_mod_postexit(void)
 
   //   if ((errcode=pthread_key_delete(xbt_self_thread_key)))
   //     THROWF(system_error,errcode,"pthread_key_delete failed for xbt_self_thread_key");
-  free(main_thread->running_ctx);
   free(main_thread);
   main_thread = NULL;
   thread_mod_inited = 0;
-#ifndef HAVE_SEM_INIT
+#if !HAVE_SEM_INIT
   xbt_os_mutex_destroy(next_sem_ID_lock);
 #endif
-
-  /* Restore the default exception setup */
-  __xbt_running_ctx_fetch = &__xbt_ex_ctx_default;
-  __xbt_ex_terminate = &__xbt_ex_terminate_default;
 }
 
+/** Calls pthread_atfork() if present, and raise an exception otherwise.
+ *
+ * The only known user of this wrapper is mmalloc_preinit(), but it is absolutely mandatory there:
+ * when used with tesh, mmalloc *must* be mutex protected and resistant to forks.
+ * This functionality is the only way to get it working (by ensuring that the mutex is consistently released on forks)
+ */
+
 /* this function is critical to tesh+mmalloc, don't mess with it */
-int xbt_os_thread_atfork(void (*prepare)(void),
-                         void (*parent)(void), void (*child)(void))
+int xbt_os_thread_atfork(void (*prepare)(void), void (*parent)(void), void (*child)(void))
 {
-#ifdef WIN32
-  THROW_UNIMPLEMENTED; //pthread_atfork is not implemented in pthread.h on windows
-#else
   return pthread_atfork(prepare, parent, child);
-#endif
 }
 
 static void *wrapper_start_routine(void *s)
 {
   xbt_os_thread_t t = s;
-  int errcode;
 
-  if ((errcode = pthread_setspecific(xbt_self_thread_key, t)))
-    THROWF(system_error, errcode,
-           "pthread_setspecific failed for xbt_self_thread_key");
+  int errcode = pthread_setspecific(xbt_self_thread_key, t);
+  xbt_assert(errcode == 0, "pthread_setspecific failed for xbt_self_thread_key");
 
   void *res = t->start_routine(t->param);
   if (t->detached)
@@ -170,45 +156,36 @@ static void *wrapper_start_routine(void *s)
   return res;
 }
 
-
-xbt_os_thread_t xbt_os_thread_create(const char *name,
-                                     pvoid_f_pvoid_t start_routine,
-                                     void *param,
-                                     void *extra_data)
+xbt_os_thread_t xbt_os_thread_create(const char *name,  pvoid_f_pvoid_t start_routine, void *param, void *extra_data)
 {
-  int errcode;
-
   xbt_os_thread_t res_thread = xbt_new(s_xbt_os_thread_t, 1);
   res_thread->detached = 0;
   res_thread->name = xbt_strdup(name);
   res_thread->start_routine = start_routine;
   res_thread->param = param;
-  res_thread->running_ctx = xbt_new(xbt_running_ctx_t, 1);
-  XBT_RUNNING_CTX_INITIALIZE(res_thread->running_ctx);
   res_thread->extra_data = extra_data;
   
-  if ((errcode = pthread_create(&(res_thread->t), &thread_attr,
-                                wrapper_start_routine, res_thread)))
-    THROWF(system_error, errcode,
-           "pthread_create failed: %s", strerror(errcode));
-
-
+  int errcode = pthread_create(&(res_thread->t), &thread_attr, wrapper_start_routine, res_thread);
+  xbt_assert(errcode == 0, "pthread_create failed: %s", strerror(errcode));
 
   return res_thread;
 }
 
-
-#ifdef CORE_BINDING
+/** Bind the thread to the given core, if possible.
+ *
+ * If pthread_setaffinity_np is not usable on that (non-gnu) platform, this function does nothing.
+ */
 int xbt_os_thread_bind(xbt_os_thread_t thread, int cpu){
-  pthread_t pthread = thread->t;
   int errcode = 0;
+#if HAVE_PTHREAD_SETAFFINITY
+  pthread_t pthread = thread->t;
   cpu_set_t cpuset;
   CPU_ZERO(&cpuset);
   CPU_SET(cpu, &cpuset);
   errcode = pthread_setaffinity_np(pthread, sizeof(cpu_set_t), &cpuset);
+#endif
   return errcode;
 }
-#endif
 
 void xbt_os_thread_setstacksize(int stack_size)
 {
@@ -219,23 +196,18 @@ void xbt_os_thread_setstacksize(int stack_size)
 #endif
     0
   };
-  size_t sz;
-  int res;
-  int i;
 
-  if (stack_size < 0)
-    xbt_die("stack size %d is negative, maybe it exceeds MAX_INT?", stack_size);
+  xbt_assert(stack_size >= 0, "stack size %d is negative, maybe it exceeds MAX_INT?", stack_size);
 
-  sz = stack_size;
-  res = pthread_attr_setstacksize(&thread_attr, sz);
+  size_t sz = stack_size;
+  int res = pthread_attr_setstacksize(&thread_attr, sz);
 
-  for (i = 0; res == EINVAL && alignment[i] > 0; i++) {
+  for (int i = 0; res == EINVAL && alignment[i] > 0; i++) {
     /* Invalid size, try again with next multiple of alignment[i]. */
     size_t rem = sz % alignment[i];
     if (rem != 0 || sz == 0) {
       size_t sz2 = sz - rem + alignment[i];
-      XBT_DEBUG("pthread_attr_setstacksize failed for %zd, try again with %zd",
-                sz, sz2);
+      XBT_DEBUG("pthread_attr_setstacksize failed for %zd, try again with %zd", sz, sz2);
       sz = sz2;
       res = pthread_attr_setstacksize(&thread_attr, sz);
     }
@@ -259,11 +231,6 @@ void xbt_os_thread_setguardsize(int guard_size)
 #endif
 }
 
-const char *xbt_os_thread_name(xbt_os_thread_t t)
-{
-  return t->name;
-}
-
 const char *xbt_os_thread_self_name(void)
 {
   xbt_os_thread_t me = xbt_os_thread_self();
@@ -272,12 +239,9 @@ const char *xbt_os_thread_self_name(void)
 
 void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
 {
+  int errcode = pthread_join(thread->t, thread_return);
 
-  int errcode;
-
-  if ((errcode = pthread_join(thread->t, thread_return)))
-    THROWF(system_error, errcode, "pthread_join failed: %s",
-           strerror(errcode));
+  xbt_assert(errcode==0, "pthread_join failed: %s", strerror(errcode));
   xbt_os_thread_free_thread_data(thread);
 }
 
@@ -286,33 +250,28 @@ void xbt_os_thread_exit(int *retval)
   pthread_exit(retval);
 }
 
-xbt_os_thread_t xbt_os_thread_self(void)
+xbt_os_thread_t xbt_os_thread_self(void )
 {
-  xbt_os_thread_t res;
-
   if (!thread_mod_inited)
     return NULL;
 
-  res = pthread_getspecific(xbt_self_thread_key);
-
-  return res;
+  return pthread_getspecific(xbt_self_thread_key);
 }
 
-void xbt_os_thread_key_create(xbt_os_thread_key_t* key) {
-
-  int errcode;
-  if ((errcode = pthread_key_create(key, NULL)))
-    THROWF(system_error, errcode, "pthread_key_create failed");
+void xbt_os_thread_key_create(xbt_os_thread_key_t* key)
+{
+  int errcode = pthread_key_create(key, NULL);
+  xbt_assert(errcode==0 , "pthread_key_create failed");
 }
 
-void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value) {
-
-  int errcode;
-  if ((errcode = pthread_setspecific(key, value)))
-    THROWF(system_error, errcode, "pthread_setspecific failed");
+void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value)
+{
+  int errcode = pthread_setspecific(key, value);
+  xbt_assert(errcode==0, "pthread_setspecific failed");
 }
 
-void* xbt_os_thread_get_specific(xbt_os_thread_key_t key) {
+void* xbt_os_thread_get_specific(xbt_os_thread_key_t key)
+{
   return pthread_getspecific(key);
 }
 
@@ -335,7 +294,6 @@ void xbt_os_thread_cancel(xbt_os_thread_t t)
 
 /****** mutex related functions ******/
 typedef struct xbt_os_mutex_ {
-  /* KEEP IT IN SYNC WITH xbt_thread.c */
   pthread_mutex_t m;
 } s_xbt_os_mutex_t;
 
@@ -344,204 +302,82 @@ typedef struct xbt_os_mutex_ {
 
 xbt_os_mutex_t xbt_os_mutex_init(void)
 {
-  xbt_os_mutex_t res = xbt_new(s_xbt_os_mutex_t, 1);
-  int errcode;
+  pthread_mutexattr_t Attr;
+  pthread_mutexattr_init(&Attr);
+  pthread_mutexattr_settype(&Attr, PTHREAD_MUTEX_RECURSIVE);
 
-  if ((errcode = pthread_mutex_init(&(res->m), NULL)))
-    THROWF(system_error, errcode, "pthread_mutex_init() failed: %s",
-           strerror(errcode));
+  xbt_os_mutex_t res = xbt_new(s_xbt_os_mutex_t, 1);
+  int errcode = pthread_mutex_init(&(res->m), &Attr);
+  xbt_assert(errcode==0, "pthread_mutex_init() failed: %s", strerror(errcode));
 
   return res;
 }
 
 void xbt_os_mutex_acquire(xbt_os_mutex_t mutex)
 {
-  int errcode;
-
-  if ((errcode = pthread_mutex_lock(&(mutex->m))))
-    THROWF(system_error, errcode, "pthread_mutex_lock(%p) failed: %s",
-           mutex, strerror(errcode));
-}
-
-
-void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
-{
-  int errcode;
-
-  if (delay < 0) {
-    xbt_os_mutex_acquire(mutex);
-
-  } else if (delay == 0) {
-    errcode = pthread_mutex_trylock(&(mutex->m));
-
-    switch (errcode) {
-    case 0:
-      return;
-    case ETIMEDOUT:
-      THROWF(timeout_error, 0, "mutex %p not ready", mutex);
-    default:
-      THROWF(system_error, errcode,
-             "xbt_os_mutex_timedacquire(%p) failed: %s", mutex,
-             strerror(errcode));
-    }
-
-
-  } else {
-
-#ifdef HAVE_MUTEX_TIMEDLOCK
-    struct timespec ts_end;
-    double end = delay + xbt_os_time();
-
-    ts_end.tv_sec = (time_t) floor(end);
-    ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    XBT_DEBUG("pthread_mutex_timedlock(%p,%p)", &(mutex->m), &ts_end);
-
-    errcode = pthread_mutex_timedlock(&(mutex->m), &ts_end);
-
-#else                           /* Well, let's reimplement it since those lazy libc dudes didn't */
-    double start = xbt_os_time();
-    do {
-      errcode = pthread_mutex_trylock(&(mutex->m));
-      if (errcode == EBUSY)
-        xbt_os_thread_yield();
-    } while (errcode == EBUSY && xbt_os_time() - start < delay);
-
-    if (errcode == EBUSY)
-      errcode = ETIMEDOUT;
-
-#endif                          /* HAVE_MUTEX_TIMEDLOCK */
-
-    switch (errcode) {
-    case 0:
-      return;
-
-    case ETIMEDOUT:
-      THROWF(timeout_error, delay,
-             "mutex %p wasn't signaled before timeout (%f)", mutex, delay);
-
-    default:
-      THROWF(system_error, errcode,
-             "pthread_mutex_timedlock(%p,%f) failed: %s", mutex, delay,
-             strerror(errcode));
-    }
-  }
+  int errcode = pthread_mutex_lock(&(mutex->m));
+  xbt_assert(errcode==0, "pthread_mutex_lock(%p) failed: %s", mutex, strerror(errcode));
 }
 
 void xbt_os_mutex_release(xbt_os_mutex_t mutex)
 {
-  int errcode;
-
-  if ((errcode = pthread_mutex_unlock(&(mutex->m))))
-    THROWF(system_error, errcode, "pthread_mutex_unlock(%p) failed: %s",
-           mutex, strerror(errcode));
+  int errcode = pthread_mutex_unlock(&(mutex->m));
+  xbt_assert(errcode==0, "pthread_mutex_unlock(%p) failed: %s", mutex, strerror(errcode));
 }
 
 void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
 {
-  int errcode;
-
   if (!mutex)
     return;
 
-  if ((errcode = pthread_mutex_destroy(&(mutex->m))))
-    THROWF(system_error, errcode, "pthread_mutex_destroy(%p) failed: %s",
-           mutex, strerror(errcode));
+  int errcode = pthread_mutex_destroy(&(mutex->m));
+  xbt_assert(errcode == 0, "pthread_mutex_destroy(%p) failed: %s", mutex, strerror(errcode));
   free(mutex);
 }
 
 /***** condition related functions *****/
 typedef struct xbt_os_cond_ {
-  /* KEEP IT IN SYNC WITH xbt_thread.c */
   pthread_cond_t c;
 } s_xbt_os_cond_t;
 
 xbt_os_cond_t xbt_os_cond_init(void)
 {
   xbt_os_cond_t res = xbt_new(s_xbt_os_cond_t, 1);
-  int errcode;
-  if ((errcode = pthread_cond_init(&(res->c), NULL)))
-    THROWF(system_error, errcode, "pthread_cond_init() failed: %s",
-           strerror(errcode));
-
+  int errcode = pthread_cond_init(&(res->c), NULL);
+  xbt_assert(errcode==0, "pthread_cond_init() failed: %s", strerror(errcode));
   return res;
 }
 
 void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
 {
-  int errcode;
-  if ((errcode = pthread_cond_wait(&(cond->c), &(mutex->m))))
-    THROWF(system_error, errcode, "pthread_cond_wait(%p,%p) failed: %s",
-           cond, mutex, strerror(errcode));
-}
-
-
-void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
-                           double delay)
-{
-  int errcode;
-  struct timespec ts_end;
-  double end = delay + xbt_os_time();
-
-  if (delay < 0) {
-    xbt_os_cond_wait(cond, mutex);
-  } else {
-    ts_end.tv_sec = (time_t) floor(end);
-    ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    XBT_DEBUG("pthread_cond_timedwait(%p,%p,%p)", &(cond->c), &(mutex->m),
-           &ts_end);
-    switch ((errcode =
-             pthread_cond_timedwait(&(cond->c), &(mutex->m), &ts_end))) {
-    case 0:
-      return;
-    case ETIMEDOUT:
-      THROWF(timeout_error, errcode,
-             "condition %p (mutex %p) wasn't signaled before timeout (%f)",
-             cond, mutex, delay);
-    default:
-      THROWF(system_error, errcode,
-             "pthread_cond_timedwait(%p,%p,%f) failed: %s", cond, mutex,
-             delay, strerror(errcode));
-    }
-  }
+  int errcode = pthread_cond_wait(&(cond->c), &(mutex->m));
+  xbt_assert(errcode==0, "pthread_cond_wait(%p,%p) failed: %s", cond, mutex, strerror(errcode));
 }
 
 void xbt_os_cond_signal(xbt_os_cond_t cond)
 {
-  int errcode;
-  if ((errcode = pthread_cond_signal(&(cond->c))))
-    THROWF(system_error, errcode, "pthread_cond_signal(%p) failed: %s",
-           cond, strerror(errcode));
+  int errcode = pthread_cond_signal(&(cond->c));
+  xbt_assert(errcode==0, "pthread_cond_signal(%p) failed: %s", cond, strerror(errcode));
 }
 
 void xbt_os_cond_broadcast(xbt_os_cond_t cond)
 {
-  int errcode;
-  if ((errcode = pthread_cond_broadcast(&(cond->c))))
-    THROWF(system_error, errcode, "pthread_cond_broadcast(%p) failed: %s",
-           cond, strerror(errcode));
+  int errcode = pthread_cond_broadcast(&(cond->c));
+  xbt_assert(errcode==0, "pthread_cond_broadcast(%p) failed: %s", cond, strerror(errcode));
 }
 
 void xbt_os_cond_destroy(xbt_os_cond_t cond)
 {
-  int errcode;
-
   if (!cond)
     return;
 
-  if ((errcode = pthread_cond_destroy(&(cond->c))))
-    THROWF(system_error, errcode, "pthread_cond_destroy(%p) failed: %s",
-           cond, strerror(errcode));
+  int errcode = pthread_cond_destroy(&(cond->c));
+  xbt_assert(errcode==0, "pthread_cond_destroy(%p) failed: %s", cond, strerror(errcode));
   free(cond);
 }
 
-void *xbt_os_thread_getparam(void)
-{
-  xbt_os_thread_t t = xbt_os_thread_self();
-  return t ? t->param : NULL;
-}
-
 typedef struct xbt_os_sem_ {
-#ifndef HAVE_SEM_INIT
+#if !HAVE_SEM_INIT
   char *name;
 #endif
   sem_t s;
@@ -560,7 +396,7 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
    * Any attempt to use it leads to ENOSYS (function not implemented).
    * If such a prehistoric system is detected, do the job with sem_open instead
    */
-#ifdef HAVE_SEM_INIT
+#if HAVE_SEM_INIT
   if (sem_init(&(res->s), 0, value) != 0)
     THROWF(system_error, errno, "sem_init() failed: %s", strerror(errno));
   res->ps = &(res->s);
@@ -577,7 +413,7 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
     res->name[13] = '\0';
     res->ps = sem_open(res->name, O_CREAT, 0644, value);
   }
-  if ((res->ps == (sem_t *) SEM_FAILED))
+  if (res->ps == (sem_t *) SEM_FAILED)
     THROWF(system_error, errno, "sem_open() failed: %s", strerror(errno));
 
   /* Remove the name from the semaphore namespace: we never join on it */
@@ -592,663 +428,35 @@ xbt_os_sem_t xbt_os_sem_init(unsigned int value)
 
 void xbt_os_sem_acquire(xbt_os_sem_t sem)
 {
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot acquire of the NULL semaphore");
   if (sem_wait(sem->ps) < 0)
     THROWF(system_error, errno, "sem_wait() failed: %s", strerror(errno));
 }
 
-void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double delay)
-{
-  int errcode;
-
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot acquire of the NULL semaphore");
-
-  if (delay < 0) {
-    xbt_os_sem_acquire(sem);
-  } else if (delay == 0) {
-    errcode = sem_trywait(sem->ps);
-
-    switch (errcode) {
-    case 0:
-      return;
-    case ETIMEDOUT:
-      THROWF(timeout_error, 0, "semaphore %p not ready", sem);
-    default:
-      THROWF(system_error, errcode,
-             "xbt_os_sem_timedacquire(%p) failed: %s", sem,
-             strerror(errcode));
-    }
-
-  } else {
-#ifdef HAVE_SEM_WAIT
-    struct timespec ts_end;
-    double end = delay + xbt_os_time();
-
-    ts_end.tv_sec = (time_t) floor(end);
-    ts_end.tv_nsec = (long) ((end - ts_end.tv_sec) * 1000000000);
-    XBT_DEBUG("sem_timedwait(%p,%p)", sem->ps, &ts_end);
-    errcode = sem_timedwait(sem->s, &ts_end);
-
-#else                           /* Okay, reimplement this function then */
-    double start = xbt_os_time();
-    do {
-      errcode = sem_trywait(sem->ps);
-      if (errcode == EBUSY)
-        xbt_os_thread_yield();
-    } while (errcode == EBUSY && xbt_os_time() - start < delay);
-
-    if (errcode == EBUSY)
-      errcode = ETIMEDOUT;
-#endif
-
-    switch (errcode) {
-    case 0:
-      return;
-
-    case ETIMEDOUT:
-      THROWF(timeout_error, delay,
-             "semaphore %p wasn't signaled before timeout (%f)", sem,
-             delay);
-
-    default:
-      THROWF(system_error, errcode, "sem_timedwait(%p,%f) failed: %s", sem,
-             delay, strerror(errcode));
-    }
-  }
-}
-
 void xbt_os_sem_release(xbt_os_sem_t sem)
 {
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot release of the NULL semaphore");
-
   if (sem_post(sem->ps) < 0)
     THROWF(system_error, errno, "sem_post() failed: %s", strerror(errno));
 }
 
 void xbt_os_sem_destroy(xbt_os_sem_t sem)
 {
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot destroy the NULL sempahore");
-
-#ifdef HAVE_SEM_INIT
+#if HAVE_SEM_INIT
   if (sem_destroy(sem->ps) < 0)
-    THROWF(system_error, errno, "sem_destroy() failed: %s",
-           strerror(errno));
+    THROWF(system_error, errno, "sem_destroy() failed: %s", strerror(errno));
 #else
   if (sem_close(sem->ps) < 0)
     THROWF(system_error, errno, "sem_close() failed: %s", strerror(errno));
   xbt_free(sem->name);
-
 #endif
   xbt_free(sem);
 }
 
 void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
 {
-  if (!sem)
-    THROWF(arg_error, EINVAL,
-           "Cannot get the value of the NULL semaphore");
-
   if (sem_getvalue(&(sem->s), svalue) < 0)
     THROWF(system_error, errno, "sem_getvalue() failed: %s",
            strerror(errno));
 }
-
-/* ********************************* WINDOWS IMPLEMENTATION ************************************ */
-
-#elif defined(_XBT_WIN32)
-
-#include <math.h>
-
-typedef struct xbt_os_thread_ {
-  char *name;
-  HANDLE handle;                /* the win thread handle        */
-  unsigned long id;             /* the win thread id            */
-  pvoid_f_pvoid_t start_routine;
-  void *param;
-  void *extra_data;
-} s_xbt_os_thread_t;
-
-/* so we can specify the size of the stack of the threads */
-#ifndef STACK_SIZE_PARAM_IS_A_RESERVATION
-#define STACK_SIZE_PARAM_IS_A_RESERVATION 0x00010000
-#endif
-
-/* the default size of the stack of the threads (in bytes)*/
-#define XBT_DEFAULT_THREAD_STACK_SIZE  4096
-static int stack_size=0;
-/* key to the TLS containing the xbt_os_thread_t structure */
-static unsigned long xbt_self_thread_key;
-
-void xbt_os_thread_mod_preinit(void)
-{
-  xbt_self_thread_key = TlsAlloc();
-}
-
-void xbt_os_thread_mod_postexit(void)
-{
-
-  if (!TlsFree(xbt_self_thread_key))
-    THROWF(system_error, (int) GetLastError(),
-           "TlsFree() failed to cleanup the thread submodule");
-}
-
-int xbt_os_thread_atfork(void (*prepare)(void),
-                         void (*parent)(void), void (*child)(void))
-{
-  return 0;
-}
-
-static DWORD WINAPI wrapper_start_routine(void *s)
-{
-  xbt_os_thread_t t = (xbt_os_thread_t) s;
-  DWORD *rv;
-
-  if (!TlsSetValue(xbt_self_thread_key, t))
-    THROWF(system_error, (int) GetLastError(),
-           "TlsSetValue of data describing the created thread failed");
-
-  rv = (DWORD *) ((t->start_routine) (t->param));
-
-  return rv ? *rv : 0;
-
-}
-
-
-xbt_os_thread_t xbt_os_thread_create(const char *name,
-                                     pvoid_f_pvoid_t start_routine,
-                                     void *param,
-                                     void *extra_data)
-{
-
-  xbt_os_thread_t t = xbt_new(s_xbt_os_thread_t, 1);
-
-  t->name = xbt_strdup(name);
-  t->start_routine = start_routine;
-  t->param = param;
-  t->extra_data = extra_data;
-  t->handle = CreateThread(NULL, stack_size==0 ? XBT_DEFAULT_THREAD_STACK_SIZE : stack_size,
-                           (LPTHREAD_START_ROUTINE) wrapper_start_routine,
-                           t, STACK_SIZE_PARAM_IS_A_RESERVATION, &(t->id));
-
-  if (!t->handle) {
-    xbt_free(t);
-    THROWF(system_error, (int) GetLastError(), "CreateThread failed");
-  }
-
-  return t;
-}
-
-void xbt_os_thread_setstacksize(int size)
-{
-  stack_size = size;
-}
-
-void xbt_os_thread_setguardsize(int size)
-{
-  XBT_WARN("xbt_os_thread_setguardsize is not implemented (%d)", size);
-}
-
-const char *xbt_os_thread_name(xbt_os_thread_t t)
-{
-  return t->name;
-}
-
-const char *xbt_os_thread_self_name(void)
-{
-  xbt_os_thread_t t = xbt_os_thread_self();
-  return t ? t->name : "main";
-}
-
-void xbt_os_thread_join(xbt_os_thread_t thread, void **thread_return)
-{
-
-  if (WAIT_OBJECT_0 != WaitForSingleObject(thread->handle, INFINITE))
-    THROWF(system_error, (int) GetLastError(),
-           "WaitForSingleObject failed");
-
-  if (thread_return) {
-
-    if (!GetExitCodeThread(thread->handle, (DWORD *) (*thread_return)))
-      THROWF(system_error, (int) GetLastError(),
-             "GetExitCodeThread failed");
-  }
-
-  CloseHandle(thread->handle);
-
-  free(thread->name);
-
-  free(thread);
-}
-
-void xbt_os_thread_exit(int *retval)
-{
-  if (retval)
-    ExitThread(*retval);
-  else
-    ExitThread(0);
-}
-
-void xbt_os_thread_key_create(xbt_os_thread_key_t* key) {
-
-  *key = TlsAlloc();
-}
-
-void xbt_os_thread_set_specific(xbt_os_thread_key_t key, void* value) {
-
-  if (!TlsSetValue(key, value))
-    THROWF(system_error, (int) GetLastError(), "TlsSetValue() failed");
-}
-
-void* xbt_os_thread_get_specific(xbt_os_thread_key_t key) {
-  return TlsGetValue(key);
-}
-
-void xbt_os_thread_detach(xbt_os_thread_t thread)
-{
-  THROW_UNIMPLEMENTED;
-}
-
-
-xbt_os_thread_t xbt_os_thread_self(void)
-{
-  return TlsGetValue(xbt_self_thread_key);
-}
-
-void *xbt_os_thread_getparam(void)
-{
-  xbt_os_thread_t t = xbt_os_thread_self();
-  return t->param;
-}
-
-
-void xbt_os_thread_yield(void)
-{
-  Sleep(0);
-}
-
-void xbt_os_thread_cancel(xbt_os_thread_t t)
-{
-  if (!TerminateThread(t->handle, 0))
-    THROWF(system_error, (int) GetLastError(), "TerminateThread failed");
-}
-
-/****** mutex related functions ******/
-typedef struct xbt_os_mutex_ {
-  /* KEEP IT IN SYNC WITH xbt_thread.c */
-  CRITICAL_SECTION lock;
-} s_xbt_os_mutex_t;
-
-xbt_os_mutex_t xbt_os_mutex_init(void)
-{
-  xbt_os_mutex_t res = xbt_new(s_xbt_os_mutex_t, 1);
-
-  /* initialize the critical section object */
-  InitializeCriticalSection(&(res->lock));
-
-  return res;
-}
-
-void xbt_os_mutex_acquire(xbt_os_mutex_t mutex)
-{
-  EnterCriticalSection(&mutex->lock);
-}
-
-void xbt_os_mutex_timedacquire(xbt_os_mutex_t mutex, double delay)
-{
-  THROW_UNIMPLEMENTED;
-}
-
-void xbt_os_mutex_release(xbt_os_mutex_t mutex)
-{
-
-  LeaveCriticalSection(&mutex->lock);
-
-}
-
-void xbt_os_mutex_destroy(xbt_os_mutex_t mutex)
-{
-
-  if (!mutex)
-    return;
-
-  DeleteCriticalSection(&mutex->lock);
-  free(mutex);
-}
-
-/***** condition related functions *****/
-enum {                          /* KEEP IT IN SYNC WITH xbt_thread.c */
-  SIGNAL = 0,
-  BROADCAST = 1,
-  MAX_EVENTS = 2
-};
-
-typedef struct xbt_os_cond_ {
-  /* KEEP IT IN SYNC WITH xbt_thread.c */
-  HANDLE events[MAX_EVENTS];
-
-  unsigned int waiters_count;   /* the number of waiters                        */
-  CRITICAL_SECTION waiters_count_lock;  /* protect access to waiters_count  */
-} s_xbt_os_cond_t;
-
-xbt_os_cond_t xbt_os_cond_init(void)
-{
-
-  xbt_os_cond_t res = xbt_new0(s_xbt_os_cond_t, 1);
-
-  memset(&res->waiters_count_lock, 0, sizeof(CRITICAL_SECTION));
-
-  /* initialize the critical section object */
-  InitializeCriticalSection(&res->waiters_count_lock);
-
-  res->waiters_count = 0;
-
-  /* Create an auto-reset event */
-  res->events[SIGNAL] = CreateEvent(NULL, FALSE, FALSE, NULL);
-
-  if (!res->events[SIGNAL]) {
-    DeleteCriticalSection(&res->waiters_count_lock);
-    free(res);
-    THROWF(system_error, 0, "CreateEvent failed for the signals");
-  }
-
-  /* Create a manual-reset event. */
-  res->events[BROADCAST] = CreateEvent(NULL, TRUE, FALSE, NULL);
-
-  if (!res->events[BROADCAST]) {
-
-    DeleteCriticalSection(&res->waiters_count_lock);
-    CloseHandle(res->events[SIGNAL]);
-    free(res);
-    THROWF(system_error, 0, "CreateEvent failed for the broadcasts");
-  }
-
-  return res;
-}
-
-void xbt_os_cond_wait(xbt_os_cond_t cond, xbt_os_mutex_t mutex)
-{
-
-  unsigned long wait_result;
-  int is_last_waiter;
-
-  /* lock the threads counter and increment it */
-  EnterCriticalSection(&cond->waiters_count_lock);
-  cond->waiters_count++;
-  LeaveCriticalSection(&cond->waiters_count_lock);
-
-  /* unlock the mutex associate with the condition */
-  LeaveCriticalSection(&mutex->lock);
-
-  /* wait for a signal (broadcast or no) */
-  wait_result = WaitForMultipleObjects(2, cond->events, FALSE, INFINITE);
-
-  if (wait_result == WAIT_FAILED)
-    THROWF(system_error, 0,
-           "WaitForMultipleObjects failed, so we cannot wait on the condition");
-
-  /* we have a signal lock the condition */
-  EnterCriticalSection(&cond->waiters_count_lock);
-  cond->waiters_count--;
-
-  /* it's the last waiter or it's a broadcast ? */
-  is_last_waiter = ((wait_result == WAIT_OBJECT_0 + BROADCAST - 1)
-                    && (cond->waiters_count == 0));
-
-  LeaveCriticalSection(&cond->waiters_count_lock);
-
-  /* yes it's the last waiter or it's a broadcast
-   * only reset the manual event (the automatic event is reset in the WaitForMultipleObjects() function
-   * by the system.
-   */
-  if (is_last_waiter)
-    if (!ResetEvent(cond->events[BROADCAST]))
-      THROWF(system_error, 0, "ResetEvent failed");
-
-  /* relock the mutex associated with the condition in accordance with the posix thread specification */
-  EnterCriticalSection(&mutex->lock);
-}
-
-void xbt_os_cond_timedwait(xbt_os_cond_t cond, xbt_os_mutex_t mutex,
-                           double delay)
-{
-
-  unsigned long wait_result = WAIT_TIMEOUT;
-  int is_last_waiter;
-  unsigned long end = (unsigned long) (delay * 1000);
-
-
-  if (delay < 0) {
-    xbt_os_cond_wait(cond, mutex);
-  } else {
-    XBT_DEBUG("xbt_cond_timedwait(%p,%p,%lu)", &(cond->events),
-           &(mutex->lock), end);
-
-    /* lock the threads counter and increment it */
-    EnterCriticalSection(&cond->waiters_count_lock);
-    cond->waiters_count++;
-    LeaveCriticalSection(&cond->waiters_count_lock);
-
-    /* unlock the mutex associate with the condition */
-    LeaveCriticalSection(&mutex->lock);
-    /* wait for a signal (broadcast or no) */
-
-    wait_result = WaitForMultipleObjects(2, cond->events, FALSE, end);
-
-    switch (wait_result) {
-    case WAIT_TIMEOUT:
-      THROWF(timeout_error, GetLastError(),
-             "condition %p (mutex %p) wasn't signaled before timeout (%f)",
-             cond, mutex, delay);
-    case WAIT_FAILED:
-      THROWF(system_error, GetLastError(),
-             "WaitForMultipleObjects failed, so we cannot wait on the condition");
-    }
-
-    /* we have a signal lock the condition */
-    EnterCriticalSection(&cond->waiters_count_lock);
-    cond->waiters_count--;
-
-    /* it's the last waiter or it's a broadcast ? */
-    is_last_waiter = ((wait_result == WAIT_OBJECT_0 + BROADCAST - 1)
-                      && (cond->waiters_count == 0));
-
-    LeaveCriticalSection(&cond->waiters_count_lock);
-
-    /* yes it's the last waiter or it's a broadcast
-     * only reset the manual event (the automatic event is reset in the WaitForMultipleObjects() function
-     * by the system.
-     */
-    if (is_last_waiter)
-      if (!ResetEvent(cond->events[BROADCAST]))
-        THROWF(system_error, 0, "ResetEvent failed");
-
-    /* relock the mutex associated with the condition in accordance with the posix thread specification */
-    EnterCriticalSection(&mutex->lock);
-  }
-  /*THROW_UNIMPLEMENTED; */
-}
-
-void xbt_os_cond_signal(xbt_os_cond_t cond)
-{
-  int have_waiters;
-
-  EnterCriticalSection(&cond->waiters_count_lock);
-  have_waiters = cond->waiters_count > 0;
-  LeaveCriticalSection(&cond->waiters_count_lock);
-
-  if (have_waiters)
-    if (!SetEvent(cond->events[SIGNAL]))
-      THROWF(system_error, 0, "SetEvent failed");
-
-  xbt_os_thread_yield();
-}
-
-void xbt_os_cond_broadcast(xbt_os_cond_t cond)
-{
-  int have_waiters;
-
-  EnterCriticalSection(&cond->waiters_count_lock);
-  have_waiters = cond->waiters_count > 0;
-  LeaveCriticalSection(&cond->waiters_count_lock);
-
-  if (have_waiters)
-    SetEvent(cond->events[BROADCAST]);
-}
-
-void xbt_os_cond_destroy(xbt_os_cond_t cond)
-{
-  int error = 0;
-
-  if (!cond)
-    return;
-
-  if (!CloseHandle(cond->events[SIGNAL]))
-    error = 1;
-
-  if (!CloseHandle(cond->events[BROADCAST]))
-    error = 1;
-
-  DeleteCriticalSection(&cond->waiters_count_lock);
-
-  xbt_free(cond);
-
-  if (error)
-    THROWF(system_error, 0, "Error while destroying the condition");
-}
-
-typedef struct xbt_os_sem_ {
-  HANDLE h;
-  unsigned int value;
-  CRITICAL_SECTION value_lock;  /* protect access to value of the semaphore  */
-} s_xbt_os_sem_t;
-
-#ifndef INT_MAX
-# define INT_MAX 32767          /* let's be safe by underestimating this value: this is for 16bits only */
-#endif
-
-xbt_os_sem_t xbt_os_sem_init(unsigned int value)
-{
-  xbt_os_sem_t res;
-
-  if (value > INT_MAX)
-    THROWF(arg_error, value,
-           "Semaphore initial value too big: %ud cannot be stored as a signed int",
-           value);
-
-  res = (xbt_os_sem_t) xbt_new0(s_xbt_os_sem_t, 1);
-
-  if (!(res->h = CreateSemaphore(NULL, value, (long) INT_MAX, NULL))) {
-    THROWF(system_error, GetLastError(), "CreateSemaphore() failed: %s",
-           strerror(GetLastError()));
-    return NULL;
-  }
-
-  res->value = value;
-
-  InitializeCriticalSection(&(res->value_lock));
-
-  return res;
-}
-
-void xbt_os_sem_acquire(xbt_os_sem_t sem)
-{
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot acquire the NULL semaphore");
-
-  /* wait failure */
-  if (WAIT_OBJECT_0 != WaitForSingleObject(sem->h, INFINITE))
-    THROWF(system_error, GetLastError(),
-           "WaitForSingleObject() failed: %s", strerror(GetLastError()));
-  EnterCriticalSection(&(sem->value_lock));
-  sem->value--;
-  LeaveCriticalSection(&(sem->value_lock));
-}
-
-void xbt_os_sem_timedacquire(xbt_os_sem_t sem, double timeout)
-{
-  long seconds;
-  long milliseconds;
-  double end = timeout + xbt_os_time();
-
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot acquire the NULL semaphore");
-
-  if (timeout < 0) {
-    xbt_os_sem_acquire(sem);
-  } else {                      /* timeout can be zero <-> try acquire ) */
-
-
-    seconds = (long) floor(end);
-    milliseconds = (long) ((end - seconds) * 1000);
-    milliseconds += (seconds * 1000);
-
-    switch (WaitForSingleObject(sem->h, milliseconds)) {
-    case WAIT_OBJECT_0:
-      EnterCriticalSection(&(sem->value_lock));
-      sem->value--;
-      LeaveCriticalSection(&(sem->value_lock));
-      return;
-
-    case WAIT_TIMEOUT:
-      THROWF(timeout_error, GetLastError(),
-             "semaphore %p wasn't signaled before timeout (%f)", sem,
-             timeout);
-      return;
-
-    default:
-      THROWF(system_error, GetLastError(),
-             "WaitForSingleObject(%p,%f) failed: %s", sem, timeout,
-             strerror(GetLastError()));
-    }
-  }
-}
-
-void xbt_os_sem_release(xbt_os_sem_t sem)
-{
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot release the NULL semaphore");
-
-  if (!ReleaseSemaphore(sem->h, 1, NULL))
-    THROWF(system_error, GetLastError(), "ReleaseSemaphore() failed: %s",
-           strerror(GetLastError()));
-  EnterCriticalSection(&(sem->value_lock));
-  sem->value++;
-  LeaveCriticalSection(&(sem->value_lock));
-}
-
-void xbt_os_sem_destroy(xbt_os_sem_t sem)
-{
-  if (!sem)
-    THROWF(arg_error, EINVAL, "Cannot destroy the NULL semaphore");
-
-  if (!CloseHandle(sem->h))
-    THROWF(system_error, GetLastError(), "CloseHandle() failed: %s",
-           strerror(GetLastError()));
-
-  DeleteCriticalSection(&(sem->value_lock));
-
-  xbt_free(sem);
-
-}
-
-void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
-{
-  if (!sem)
-    THROWF(arg_error, EINVAL,
-           "Cannot get the value of the NULL semaphore");
-
-  EnterCriticalSection(&(sem->value_lock));
-  *svalue = sem->value;
-  LeaveCriticalSection(&(sem->value_lock));
-}
-
-
-#endif
-
 
 /** @brief Returns the amount of cores on the current host */
 int xbt_os_get_numcores(void) {
@@ -1256,7 +464,7 @@ int xbt_os_get_numcores(void) {
     SYSTEM_INFO sysinfo;
     GetSystemInfo(&sysinfo);
     return sysinfo.dwNumberOfProcessors;
-#elif MACOS
+#elif defined(__APPLE__) && defined(__MACH__)
     int nm[2];
     size_t len = 4;
     uint32_t count;
@@ -1275,14 +483,6 @@ int xbt_os_get_numcores(void) {
 #endif
 }
 
-
-/***** reentrant mutexes *****/
-typedef struct xbt_os_rmutex_ {
-  xbt_os_mutex_t mutex;
-  xbt_os_thread_t owner;
-  int count;
-} s_xbt_os_rmutex_t;
-
 void xbt_os_thread_set_extra_data(void *data)
 {
   xbt_os_thread_self()->extra_data = data;
@@ -1290,55 +490,6 @@ void xbt_os_thread_set_extra_data(void *data)
 
 void *xbt_os_thread_get_extra_data(void)
 {
-  xbt_os_thread_t self = xbt_os_thread_self();
-  return self? self->extra_data : NULL;
-}
-
-xbt_os_rmutex_t xbt_os_rmutex_init(void)
-{
-  xbt_os_rmutex_t rmutex = xbt_new0(struct xbt_os_rmutex_, 1);
-  rmutex->mutex = xbt_os_mutex_init();
-  rmutex->owner = NULL;
-  rmutex->count = 0;
-  return rmutex;
-}
-
-void xbt_os_rmutex_acquire(xbt_os_rmutex_t rmutex)
-{
-  xbt_os_thread_t self = xbt_os_thread_self();
-
-  if (self == NULL) {
-    /* the thread module is not initialized yet */
-    rmutex->owner = NULL;
-    return;
-  }
-
-  if (self != rmutex->owner) {
-    xbt_os_mutex_acquire(rmutex->mutex);
-    rmutex->owner = self;
-    rmutex->count = 1;
-  } else {
-    rmutex->count++;
- }
-}
-
-void xbt_os_rmutex_release(xbt_os_rmutex_t rmutex)
-{
-  if (rmutex->owner == NULL) {
-    /* the thread module was not initialized */
-    return;
-  }
-
-  xbt_assert(rmutex->owner == xbt_os_thread_self());
-
-  if (--rmutex->count == 0) {
-    rmutex->owner = NULL;
-    xbt_os_mutex_release(rmutex->mutex);
-  }
-}
-
-void xbt_os_rmutex_destroy(xbt_os_rmutex_t rmutex)
-{
-  xbt_os_mutex_destroy(rmutex->mutex);
-  xbt_free(rmutex);
+  xbt_os_thread_t thread = xbt_os_thread_self();
+  return thread ? thread->extra_data : NULL;
 }

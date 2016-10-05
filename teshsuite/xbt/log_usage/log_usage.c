@@ -1,24 +1,15 @@
 /* log_usage - A test of normal usage of the log facilities                 */
 
-/* Copyright (c) 2004-2007, 2009-2014. The SimGrid Team.
+/* Copyright (c) 2004-2007, 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifdef __BORLANDC__
-#pragma hdrstop
-#endif
-
 #include "xbt.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top,
-                                "Logging specific to this test");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(test, top, "Logging specific to this test");
 XBT_LOG_NEW_CATEGORY(top, "Useless test channel");
-
-#ifdef __BORLANDC__
-#pragma argsused
-#endif
 
 static void dolog(const char *settings)
 {
@@ -29,7 +20,6 @@ static void dolog(const char *settings)
   XBT_CDEBUG(top, "val=%d%s", 3, "!");
   XBT_CRITICAL("false alarm%s%s%s%s%s%s", "", "", "", "", "", "!");
 }
-
 
 int main(int argc, char **argv)
 {

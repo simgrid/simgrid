@@ -1,0 +1,6 @@
+$ ./listen_async ${srcdir:=.}/../../../examples/platforms/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:test@Tremblay) Task listen works on regular mailboxes
+> [  0.000195] (1:test@Tremblay) Data successfully received from regular mailbox
+> [  0.000195] (1:test@Tremblay) Task listen works on asynchronous mailboxes
+> [  0.000195] (1:test@Tremblay) Data successfully received from asynchronous mailbox
+> [  0.000195] (0:maestro@) Variable 3 still in system when freing it: this may be a bug

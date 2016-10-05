@@ -1,0 +1,14 @@
+#! tesh
+
+! output sort 19
+
+$ java -classpath ${classpath:=.} app/centralizedmutex/Main ${srcdir:=.}/../platforms/small_platform.xml ${srcdir:=.}/app/centralizedmutex/centralizedmutex.xml
+> [0.000000] [jmsg/INFO] Using regular java threads.
+> [Jupiter:app.centralizedmutex.Node:(2) 0.000000] [jmsg/INFO] Send a request to the coordinator
+> [Fafard:app.centralizedmutex.Node:(3) 0.000000] [jmsg/INFO] Send a request to the coordinator
+> [Tremblay:app.centralizedmutex.Coordinator:(1) 0.019014] [jmsg/INFO] Got a request from app.centralizedmutex.Node. Queue empty: grant it
+> [Jupiter:app.centralizedmutex.Node:(2) 0.019014] [jmsg/INFO] Wait for a grant from the coordinator
+> [Fafard:app.centralizedmutex.Node:(3) 0.063737] [jmsg/INFO] Wait for a grant from the coordinator
+> [Tremblay:app.centralizedmutex.Coordinator:(1) 0.063737] [jmsg/INFO] Got a request from app.centralizedmutex.Node. Queue empty: grant it
+> [Tremblay:app.centralizedmutex.Coordinator:(1) 0.134167] [jmsg/INFO] we should shutdown the simulation now
+> [0.134167] [jmsg/INFO] MSG_main finished; Cleaning up the simulation...

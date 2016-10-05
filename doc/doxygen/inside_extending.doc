@@ -1,29 +1,33 @@
-/*!
-\page inside_extending Extending SimGrid
+/**
+@page inside_extending Extending SimGrid
 
 \tableofcontents
 
-\section simgrid_dev_guide_model How to add a new model in surf?
-The figure below show the architecture of the SURF layer. This layer is composed
-of different kind of models representing the differents systems we want to
-modelize (i.e.cpu, network, storage, workstation, virtual machine).
+\section simgrid_dev_guide_model How to add a new model?
+The figure below shows the architecture of the SURF layer. This layer is composed
+of different kinds of models representing the different systems we want to
+model (i.e., cpu, network, storage, workstation, virtual machine).
 
-A model in simgrid is composed of three classes: Model, Resource and Action
-(surf_interface.hpp).
+A model in SimGrid is composed of three classes: Model, Resource and Action
+(\ref SURF_interface "surf_interface.hpp").
 
 \image html surf++.png
 \image latex surf++.pdf "surf++" width=\textwidth
 
 Actually there are five kind of models: CpuModel, NetworkModel, WorkstationModel,
 WorkstationVMModel and StorageModel. For each kind of model, there is an
-interface (e.g.: cpu_interface.hpp) and some implementations (e.g.: cpu_cas01.hpp,
+interface (e.g.: \ref SURF_cpu_interface "cpu_interface.hpp") and some implementations (e.g.: cpu_cas01.hpp,
 cpu_ti.hpp).
 
-init function:
-void surf_cpu_model_init_Cas01()
+The CPU model Cas01, for instance, is initialized by the function
+    void surf_cpu_model_init_Cas01()
+
+The different network models that are offered by simgrid are stored in the array
+that is defined as follows:
+
 s_surf_model_description_t surf_network_model_description[] = {
 
-\subsection simgrid_dev_guide_model_implem How to add a new model implementation in surf?
+\subsection simgrid_dev_guide_model_implem How to implement a new model?
 
 If you want to create a new implementation of a kind of model you must extend
 the classes of the corresponding interfaces.
@@ -40,8 +44,7 @@ void surf_cpu_model_init_plop()
 
   surf_cpu_model_pm = new CpuPlopModel();
 
-  sg_platf_host_add_cb(cpu_parse_init);
-  sg_platf_postparse_add_cb(cpu_add_traces);
+  simgrid::surf::on_postparse.connect(cpu_add_traces);
 
   xbt_dynar_push(model_list, &surf_cpu_model_pm);
 }
@@ -61,7 +64,7 @@ s_surf_model_description_t surf_cpu_model_description[] = {
 };
 ~~~~
 
-\subsection simgrid_dev_guide_model_kind How to add a new kind of model in surf?
+\subsection simgrid_dev_guide_model_kind How to add a new kind of model?
 
 If you want to create a new kind of model, you must create a new interface
 where you extend the classes Model, Resource and Action, and then create an
@@ -92,12 +95,9 @@ static void MyNetworkCommunicationCallback(NetworkActionPtr cpu,
 }
 
 void sg_my_network_plugin_init() {
-  surf_callback_connect(networkLinkCreatedCallbacks,
-                        MyNetworkLinkCreatedCallback);
-  surf_callback_connect(networkLinkDestructedCallbacks,
-                        MyNetworkLinkDestructedCallback);
-  surf_callback_connect(networkCommunicationCallbacks,
-                        MyNetworkCommunicationCallback);
+  networkLinkCreatedCallbacks.connect(MyNetworkLinkCreatedCallback);
+  networkLinkDestructedCallbacks.connect(MyNetworkLinkDestructedCallback);
+  networkCommunicationCallbacks.connect(MyNetworkCommunicationCallback);
 }
 ~~~~
 
@@ -118,9 +118,19 @@ s_surf_model_description_t surf_plugin_description[] = {
 
 \section simgrid_dev_guide_simcall How to add a new simcall?
 
+First of all you might want to avoid defining a new simcall if possible:
+\ref simgrid_dev_guide_generic_simcall.
+
 A simcall is used to go from user mode to kernel mode. There is some
 sort of popping dance involved, as we want to isolate the user
-contextes from their environment (so that they can run in parallel).
+contextes from their environment (so that they can run in parallel and
+so that we can model-check them).
+
+In short, just add a line to src/simix/simcalls.in and run the
+src/simix/simcalls.py script. It will guide you about how to implement
+your simcall. Please keep reading this section (only) if you want to
+understand how it goes.
+
 
 The workflow of a simcall is the following:
 
@@ -152,42 +162,98 @@ generates the following files:
 
 - smx_popping_accessors.h:
   Helper functions to get and set simcall arguments and results
-- smx_popping_bodies.c:
+- smx_popping_bodies.cpp:
   The BODY function of each simcall
 - smx_popping_enum.c:
   Definition of type `enum e_smx_simcall_t` (one value per existing simcall)
-- smx_popping_generated.c:
+- smx_popping_generated.cpp:
   Definitions of `simcall_names[]` (debug name of each simcall), and
   SIMIX_simcall_enter() that deals with the simcall from within the kernel
 
 The simcall.in file list all the simcalls in sections. A line starting by "##"
 define a new section which will be replace by a "ifdef" in the generated code.
-There is a simcall by line which follow this format:
 
-~~~~
-Simcall -> Name HasAnswer Res Args
-Name -> [a-z0-9_]+
-Has_Answer -> "True" | "False"
-Res -> "(" Type MaybeCast ")"
-Args -> Args Arg | Arg
-Arg -> "(" Name "," Type MaybeCast ")"
-Type -> "char" | "const char*" | "int" | "long" | "unsigned char" | "unsigned short" | "unsigned int" | "unsigned long" | "float" | "double" | "void*" | "FPtr" | "const void*" | "size_t" | "sg_size_t" | "void" | "void*"
-MaybeCast -> "," Cast | ""
-Cast -> [a-z0-9_* ]+
-~~~~
+\section simgrid_dev_guide_generic_simcall How to avoid adding a new simcall?
+
+We now have some generic simcalls which can be used to interface with the
+Maestro without creating new simcalls. You might want to use them instead of
+the defining additional simcalls.  The long term goal is to replace most of
+the simcalls with the generic ones.
+
+For simcalls which never block, `kernelImmediate()` can be used. It takes a
+C++ callback executes it in maestro. Any value returned by the callback is
+returned by `kernelImmediate()`. Conversely, if the callback throws an
+exception, this exception is propagated out of `kernelImmediate()`. Executing
+the code in maestro enforces mutual exclusion (no other user process is running)
+and enforce a deterministic order which guarantees the reproducibility of the
+simulation.  This call is particularly useful for implementing mutable calls:
+
+~~~
+void Host::setProperty(const char*key, const char *value){
+  simgrid::simix::kernelImmediate([&] {
+    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
+    surf_host->setProperty(key,value);
+  });
+}
+~~~
+
+If there is no blocking and no mutation involved (getters), you might consider
+avoiding switching to Maestro and reading directly the data you're interested
+in.
+
+For simcalls which might block, `kernelSync()` can be used. It takes a
+C++ callback and executes it immediately in maestro. This C++ callback is
+expected to return a `simgrid::kernel::Future<T>` reprensenting the operation
+in the kernal. When the operations completes, the user process is waken up
+with the result:
+
+~~~
+try {
+  std::vector<char> result = simgrid::simix::kernelSync([&] {
+    // Fictional example, simgrid::kernel::readFile does not exist.
+    simgrid::kernel::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
+    return result;
+  });
+  XBT_DEBUG("Finished reading file %s: length %zu", file, result.size());
+}
+// If the operation failed, kernelSync() throws an exception:
+catch (std::runtime_error& e) {
+  XBT_ERROR("Could not read file %s", file);
+}
+~~~
+
+Asynchronous blocks can be implemented with `kernelAsync()`. It works
+like `kernelSync()` but does not block. Instead, it returns a
+`simgrid::simix::Future` representing the operation in the process:
+
+~~~
+simgrid::simix::Future<std:vector<char>> result = simgrid::simix::kernelSync([&] {
+  // Fictional example, simgrid::kernel::readFile does not exist.
+  simgrid::kernek::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
+  return result;
+};
+
+// Do some work while the operation is pending:
+while (!result.is_ready() && hasWorkToDo())
+  doMoreWork();
+
+// We don't have anything to do, wait for the operation to complete and
+// get its value:
+try {
+  std:vector<char> data = result.get();
+  XBT_DEBUG("Finished reading file %s: length %zu", file, data.size());
+}
+// If the operation failed, .get() throws an exception:
+catch (std::runtime_error& e) {
+  XBT_ERROR("Could not read file %s", file);
+}
+~~~
+
+<b>Note:</b> `kernelSync(f)` could be implemented as `kernelAsync(f).get()`.
 
 \section simgrid_dev_guide_tag What is How to add a new tag for xml files?
-Search for expression \"TUTORIAL: New TAG\".
-\verbatim
-user@caraja:~/workspace/simgrid/src$ cg "TUTORIAL: New TAG"
-0 surf/sg_platf.c                    43 /* TUTORIAL: New TAG*/
-1 surf/sg_platf.c                    89 /* TUTORIAL: New TAG*/
-2 surf/sg_platf.c                   124 /* TUTORIAL: New TAG*/
-3 surf/sg_platf.c                   337 /* TUTORIAL: New TAG*/
-4 surf/surfxml_parse.c              769 /* TUTORIAL: New TAG*/
-5 surf/surf_private.h               205 /* TUTORIAL: New TAG*/
-6 surf/surfxml_parseplatf.c          64 /* TUTORIAL: New TAG*/
-7 surf/surfxml_parseplatf.c          85 /* TUTORIAL: New TAG*/
-8 include/simgrid/platf_interface.h  42 /* TUTORIAL: New TAG*/
-\endverbatim
+
+You should not do something like that. Please work instead to make XML
+avoidable, ie to make the C++ interface nice and usable.
+
 */

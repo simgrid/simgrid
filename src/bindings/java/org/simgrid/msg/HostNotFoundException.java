@@ -1,5 +1,3 @@
-/* This exception is raised when looking for a non-existing host. */
-
 /* Copyright (c) 2006-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -8,9 +6,7 @@
 
 package org.simgrid.msg;
 
-/**
- * This exception is raised when looking for a non-existing host.
- */
+/** This exception is raised when looking for a non-existing host. */
 public class HostNotFoundException extends MsgException {
 	private static final long serialVersionUID = 1L;
 
@@ -18,11 +14,7 @@ public class HostNotFoundException extends MsgException {
 	public HostNotFoundException() {
 		super();
 	}
-	/**
-	 * Constructs an <code>HostNotFoundException</code> with a detail message. 
-	 *
-	 * @param   s   the detail message.
-	 */
+	/** Constructs an <code>HostNotFoundException</code> with a detail message. */
 	public HostNotFoundException(String s) {
 		super(s);
 	}

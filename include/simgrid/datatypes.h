@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,7 +7,9 @@
 #ifndef SIMGRID_DATATYPES_H_
 #define SIMGRID_DATATYPES_H_
 
-typedef struct ws_params {
+#include <simgrid/forward.h>
+
+struct vm_params {
   int ncpus;
   sg_size_t ramsize;
   int overcommit;
@@ -22,11 +24,10 @@ typedef struct ws_params {
   double dp_rate;
   double dp_cap; /* bytes per 1 flop execution */
 
-  double xfer_cpu_overhead;
-  double dpt_cpu_overhead;
-
   /* set migration speed */
   double mig_speed;
-} s_ws_params_t, *ws_params_t;
+};
+typedef struct vm_params  s_vm_params_t;
+typedef struct vm_params* vm_params_t;
 
 #endif /* SIMGRID_DATATYPES_H_ */

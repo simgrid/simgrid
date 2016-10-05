@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
@@ -8,15 +6,14 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
     set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
   endif()
 
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
   add_executable(allgather2 allgather2.c)
   add_executable(allgather3 allgather3.c)
   add_executable(allgatherv2 allgatherv2.c)
   add_executable(allgatherv3 allgatherv3.c)
-  if(HAVE_MMAP)
+  if(HAVE_PRIVATIZATION)
     add_executable(allgatherv4 allgatherv4.c)
   else()
     add_executable(allgatherv4 allgatherv4_manual.c)
@@ -199,18 +196,34 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #  target_link_libraries(uoplong  simgrid mtest_c)
 
   set_target_properties(allred PROPERTIES COMPILE_FLAGS "-O0" LINK_FLAGS "-O0")
+
+  if(HAVE_THREAD_CONTEXTS)
+    ADD_TEST(test-smpi-mpich3-coll-thread      ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:thread -execarg=--cfg=smpi/privatize-global-variables:${HAVE_PRIVATIZATION})
+    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-thread    PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+  else()
+    if(HAVE_RAW_CONTEXTS)
+    ADD_TEST(test-smpi-mpich3-coll-raw      ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/privatize-global-variables:${HAVE_PRIVATIZATION})
+    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+    endif()
+  endif()
+  if(HAVE_UCONTEXT_CONTEXTS)
+    ADD_TEST(test-smpi-mpich3-coll-ompi-ucontext ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:ucontext -execarg=--cfg=smpi/coll_selector:ompi -execarg=--cfg=smpi/privatize-global-variables:${HAVE_PRIVATIZATION} -execarg=--cfg=smpi/bcast:binomial_tree)
+    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-ompi-ucontext PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+  else()
+    if(HAVE_RAW_CONTEXTS)
+      ADD_TEST(test-smpi-mpich3-coll-ompi-raw ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll_selector:ompi -execarg=--cfg=smpi/privatize-global-variables:${HAVE_PRIVATIZATION} -execarg=--cfg=smpi/bcast:binomial_tree)
+    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-ompi-raw PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+    endif()
+  endif()
+  if(HAVE_RAW_CONTEXTS)
+    ADD_TEST(test-smpi-mpich3-coll-mpich-raw ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll_selector:mpich -execarg=--cfg=smpi/privatize-global-variables:${HAVE_PRIVATIZATION})
+    ADD_TEST(test-smpi-mpich3-coll-mvapich2-raw ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll_selector:mvapich2 -execarg=--cfg=smpi/privatize-global-variables:${HAVE_PRIVATIZATION})
+    ADD_TEST(test-smpi-mpich3-coll-impi-raw ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/coll ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/coll -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/coll_selector:impi -execarg=--cfg=smpi/privatize-global-variables:${HAVE_PRIVATIZATION})
+    SET_TESTS_PROPERTIES(test-smpi-mpich3-coll-mpich-raw test-smpi-mpich3-coll-mpich-raw test-smpi-mpich3-coll-mvapich2-raw test-smpi-mpich3-coll-impi-raw  PROPERTIES PASS_REGULAR_EXPRESSION "tests passed!")
+  endif()
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
-set(examples_src
-  ${examples_src}
+set(examples_src  ${examples_src}
  ${CMAKE_CURRENT_SOURCE_DIR}/allgather2.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgather3.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/allgatherv2.c 
@@ -302,14 +315,5 @@ set(examples_src
  ${CMAKE_CURRENT_SOURCE_DIR}/scattern.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/scatterv.c 
  ${CMAKE_CURRENT_SOURCE_DIR}/uoplong.c 
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
+set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/testlist  PARENT_SCOPE)

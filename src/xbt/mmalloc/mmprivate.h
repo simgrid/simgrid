@@ -1,6 +1,6 @@
 /* Declarations for `mmalloc' and friends. */
 
-/* Copyright (c) 2010-2014. The SimGrid Team.
+/* Copyright (c) 2010-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -14,13 +14,17 @@
 #ifndef __MMPRIVATE_H
 #define __MMPRIVATE_H 1
 
-#include "portable.h"
+#include <xbt/base.h>
+#include <xbt/misc.h>
+
+#include "src/internal_config.h"
 #include "xbt/xbt_os_thread.h"
 #include "xbt/mmalloc.h"
 #include "xbt/ex.h"
 #include "xbt/dynar.h"
 #include "xbt/swag.h"
-#include <semaphore.h>
+
+#include <pthread.h>
 #include <stdint.h>
 
 #ifdef HAVE_LIMITS_H
@@ -93,6 +97,8 @@
 
 #define ADDRESS(B) ((void*) (((ADDR2UINT(B)) - 1) * BLOCKSIZE + (char*) mdp -> heapbase))
 
+SG_BEGIN_DECL()
+
 /* Doubly linked lists of free fragments.  */
 struct list {
   struct list *next;
@@ -108,19 +114,6 @@ struct mstats
   size_t chunks_free;    /* Chunks in the free list. */
   size_t bytes_free;    /* Byte total of chunks in the free list. */
 };
-
-typedef struct s_heap_area{
-  int valid;
-  int block;
-  int fragment;
-}s_heap_area_t, *heap_area_t;
-
-typedef struct s_heap_area_pair{
-  int block1;
-  int fragment1;
-  int block2;
-  int fragment2;
-}s_heap_area_pair_t, *heap_area_pair_t;
 
 #define MMALLOC_TYPE_HEAPINFO (-2)
 #define MMALLOC_TYPE_FREE (-1)
@@ -190,8 +183,8 @@ typedef struct {
  * */
 struct mdesc {
 
-  /** @brief Semaphore locking the access to the heap */
-  sem_t sem;
+  /** @brief Mutex locking the access to the heap */
+  pthread_mutex_t mutex;
 
   /** @brief Number of processes that attached the heap */
   unsigned int refcount;
@@ -285,7 +278,7 @@ struct mdesc {
 
 /* A default malloc descriptor for the single sbrk() managed region. */
 
-XBT_PUBLIC( struct mdesc ) *__mmalloc_default_mdp;
+XBT_PUBLIC_DATA( struct mdesc ) *__mmalloc_default_mdp;
 
 /* Remap a mmalloc region that was previously mapped. */
 
@@ -293,16 +286,16 @@ XBT_PUBLIC( void *)__mmalloc_remap_core(xbt_mheap_t mdp);
 
 XBT_PUBLIC( void *)mmorecore(struct mdesc *mdp, ssize_t size);
 
-/* Thread-safety (if the sem is already created)
+/** Thread-safety (if the mutex is already created)
  *
  * This is mandatory in the case where the user runs a parallel simulation
  * in a model-checking enabled tree. Without this protection, our malloc
  * implementation will not like multi-threading AT ALL.
  */
-#define LOCK(mdp) sem_wait(&mdp->sem)
-#define UNLOCK(mdp) sem_post(&mdp->sem)
+#define LOCK(mdp) pthread_mutex_lock(&mdp->mutex)
+#define UNLOCK(mdp) pthread_mutex_unlock(&mdp->mutex)
 
-static XBT_INLINE void  mmalloc_paranoia(struct mdesc *mdp){
+static inline void  mmalloc_paranoia(struct mdesc *mdp){
 
   /* nothing to fear for no */
 
@@ -318,6 +311,15 @@ static inline int mmalloc_get_increment(malloc_info* heapinfo) {
   }
 }
 
-void mmcheck(xbt_mheap_t heap);
+XBT_PRIVATE void mmcheck(xbt_mheap_t heap);
+
+XBT_PRIVATE int malloc_use_mmalloc(void);
+
+XBT_PRIVATE int mmalloc_exec_using_mm(int argc, const char** argv);
+XBT_PRIVATE void mmalloc_ensure_using_mm(int argc, const char** argv);
+
+XBT_PRIVATE size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo);
+
+SG_END_DECL()
 
 #endif                          /* __MMPRIVATE_H */

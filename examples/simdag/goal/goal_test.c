@@ -5,18 +5,14 @@
  * to the GOAL formalism beside of this.
  */
 
-/* Copyright (c) 2011-2014. The SimGrid Team.
+/* Copyright (c) 2011-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdlib.h>
 #include <stdio.h>
-#include "simdag/simdag.h"
-#include "xbt/log.h"
-#include "xbt/ex.h"
-#include <string.h>
+#include "simgrid/simdag.h"
 #include "xbt/xbt_os_time.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(goal, "The GOAL loader into SimDag");
@@ -25,8 +21,7 @@ typedef struct {
   int i, j, k;
 } s_bcast_task_t,*bcast_task_t;
 
-
-const SD_workstation_t* ws_list;
+const sg_host_t* ws_list;
 int count = 0;
 
 xbt_dynar_t reclaimed;
@@ -55,7 +50,6 @@ static void send_one(int from, int to) {
   SD_task_watch(task,SD_DONE);
 }
 
-
 int main(int argc, char **argv) {
   xbt_os_timer_t timer = xbt_os_timer_new();
 
@@ -68,12 +62,12 @@ int main(int argc, char **argv) {
     SD_create_environment("../../platforms/One_cluster_no_backbone.xml");
   }
 
-  ws_list = SD_workstation_get_list();
+  ws_list = sg_host_list();
   reclaimed = xbt_dynar_new(sizeof(bcast_task_t),xbt_free_ref);
   xbt_dynar_t done = NULL;
 
   xbt_os_cputimer_start(timer);
-  send_one(0,SD_workstation_get_number());
+  send_one(0,sg_host_count());
   do {
     if (done != NULL && !xbt_dynar_is_empty(done)) {
       unsigned int cursor;

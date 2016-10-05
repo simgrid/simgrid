@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2014. The SimGrid Team.
+/* Copyright (c) 2009-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -7,13 +7,7 @@
 #include <stdio.h>
 #include "smpi/smpi.h"
 
-int main(int argc, char *argv[])
-{
-  smpi_replay_init(&argc, &argv);
-
-  /* Actually do the simulation using smpi_action_trace_run */
-  smpi_action_trace_run(NULL);
-  smpi_replay_finalize();
-
+int main(int argc, char *argv[]) {
+  smpi_replay_run(&argc, &argv);
   return 0;
 }

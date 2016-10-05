@@ -1,4 +1,4 @@
-#!/usr/bin/perl
+#!/usr/bin/env perl
 
 # Copyright (c) 2005, 2007, 2010, 2014. The SimGrid Team.
 # All rights reserved.
@@ -24,7 +24,6 @@ $col_underline  = "\033[04m";
 $col_blink      = "\033[05m";
 
 # Customize colors here...
-#
 $col_default = $col_ltgray;
 my (@coltab) = (
     $col_green,                    $col_yellow,
@@ -39,7 +38,6 @@ my (@coltab) = (
 my %pid;
 
 # Get options
-#
 while (($_ = $ARGV[0]) =~ /^-/) {
     shift;
     if (/-location/i) {

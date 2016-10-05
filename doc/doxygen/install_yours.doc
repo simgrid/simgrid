@@ -1,0 +1,142 @@
+/*! @page install_yours Setup your own project
+
+@tableofcontents
+
+It is not advised to modify the simgrid source code directly, as it
+will make it difficult to upgrade to the next version of SimGrid.
+Instead, you should create your own working directory somewhere on
+your disk (say `/home/joe/MyFirstScheduler/`), and write your code in
+there. 
+
+Then, you should find a solution to get your code compiled and linked
+to the SimGrid library as needed. This page helps you to do so with
+several tools: 
+@ref install_yours_cmake "CMake" and
+@ref install_yours_makefile "Makefile."
+If you configure your project with a tool that is not listed here,
+we'd be glad to hear how you've done that to extend this
+documentation.
+
+@section install_yours_cmake Building your project with CMake
+
+Here is a `CMakeLists.txt` that you can use as a starting point for
+your project. It builds two simulators from a given set of source files.
+
+@verbatim
+project(MyFirstScheduler)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
+
+set(SIMULATOR_SOURCES main.c other.c util.c)
+add_executable(my_simulator ${SIMULATOR_SOURCES})
+target_link_libraries(my_simulator simgrid)
+
+set(OTHER_SOURCES blah.c bar.c foo.h)
+add_executable(other_xp ${OTHER_SOURCES})
+target_link_libraries(other_xp simgrid)
+@endverbatim
+
+@section install_yours_makefile Building your project with Makefile
+
+Here is a Makefile that will work if your project is composed of three
+C files named @c util.h, @c util.c and @c mysimulator.c. You should
+take it as a starting point, and adapt it to your code. There is a
+plenty of documentation and tutorial on Makefile if the file's
+comments are not enough for you.
+
+@verbatim
+# The first rule of a Makefile is the default target. It will be built when make is called with no parameter
+# Here, we want to build the binary 'mysimulator'
+all: mysimulator
+
+# This second rule lists the dependencies of the mysimulator binary
+# How this dependencies are linked is described in an implicit rule below
+mysimulator: mysimulator.o util.o
+
+# These third give the dependencies of the each source file
+mysimulator.o: mysimulator.c util.h # list every .h that you use
+util.o: util.c util.h
+
+# Some configuration
+SIMGRID_INSTALL_PATH = /opt/simgrid # Where you installed simgrid
+CC = gcc                            # Your compiler
+WARNING = -Wshadow -Wcast-align -Waggregate-return -Wmissing-prototypes \
+          -Wmissing-declarations -Wstrict-prototypes -Wmissing-prototypes \
+          -Wmissing-declarations -Wmissing-noreturn -Wredundant-decls \
+          -Wnested-externs -Wpointer-arith -Wwrite-strings -finline-functions
+
+# CFLAGS = -g -O0 $(WARNINGS) # Use this line to make debugging easier
+CFLAGS = -g -O2 $(WARNINGS) # Use this line to get better performance
+
+# No change should be mandated past that line
+#############################################
+# The following are implicit rules, used by default to actually build
+# the targets for which you listed the dependencies above.
+
+# The blanks before the $(CC) must be a Tab char, not spaces
+%: %.o
+	$(CC) -L$(SIMGRID_INSTALL_PATH)/lib/    $(CFLAGS) $^ -lsimgrid -o $@
+%.o: %.c
+	$(CC) -I$(SIMGRID_INSTALL_PATH)/include $(CFLAGS) -c -o $@ $<
+
+clean:
+	rm -f *.o *~
+.PHONY: clean
+@endverbatim
+
+@section install_yours_javaexamples Building the Java examples in Eclipse
+
+If you want to build our Java examples in Eclipse, get the whole
+source code and open the archive on your disk. In Eclipse, select
+the menu "File / Import", and then in the wizard "General / Existing
+Project into Workspace". On the Next page, select the directory
+"examples/java" that you can find in the SimGrid source tree as a root
+directory and finish the creation.
+
+The file \c simgrid.jar must be in the root directory of the SimGrid
+tree. That's where it is built by default, but if you don't want to
+compile it yourself, just grab that file from the SimGrid website and
+copy it in here.
+
+Please note that once you better understand SimGrid, you should not
+modify the examples directly but instead create your own project in
+eclipse. This will make it easier to upgrade to another version of
+SimGrid.
+
+@section install_yours_trouble Troubleshooting your project setup
+
+@subsection install_yours_trouble_libpath Many undefined references
+
+Sometimes, the following error message (or similar) will be produced.
+@verbatim
+masterworker.c:209: undefined reference to `sg_version_check'
+masterworker.c:209: undefined reference to `MSG_init_nocheck'
+(and many other undefined references)
+@endverbatim
+
+It means that the system does not manage to find simgrid when it tries
+to execute your programs. Specify where to search with the
+<tt>LD_LIBRARY_PATH</tt> variable. Try running the following command
+before executing your code. If it helps, you should add this line to
+your ~/.bashrc so that it gets executed each time you log into your
+computer.
+
+@verbatim
+export LD_LIBRARY_PATH=/opt/simgrid/lib
+@endverbatim
+
+@subsection install_yours_trouble_oldlib Only a few undefined references
+
+Sometimes, the compilation only spits very few "undefined reference"
+errors. A possible cause is that the system selected an old version of
+the SimGrid library somewhere on your disk. 
+
+Under Linux, you can find which version was used with the following
+command that will display the full path to every used dynamic library.
+Once you've found the obsolete copy of SimGrid, just erase it and
+relaunch your program.
+@verbatim ldd yoursimulator
+@endverbatim
+
+
+*/

@@ -12,6 +12,7 @@
 #include <xbt/misc.h>
 #include <xbt/sysdep.h>
 #include <xbt/str.h>
+#include <xbt/file.h>
 #include <xbt/function_types.h>
 
 #include <xbt/asserts.h>
@@ -22,13 +23,10 @@
 
 #include <xbt/dynar.h>
 #include <xbt/dict.h>
-#include <xbt/set.h>
 #include <xbt/swag.h>
 #include <xbt/heap.h>
-#include <xbt/queue.h>
 #include <xbt/parmap.h>
 
-#include <xbt/peer.h>
 #include <xbt/config.h>
 #include <xbt/cunit.h>
 

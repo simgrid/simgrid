@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 if(enable_smpi AND enable_smpi_MPICH3_testsuite)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
@@ -8,73 +6,25 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite)
     set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
   endif()
 
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
-
-  add_executable(commcreatep commcreatep.c)
-#  add_executable(dtpack dtpack.c)
-#  add_executable(indexperf indexperf.c)
-#  add_executable(manyrma manyrma.c)
-#  add_executable(nestvec2 nestvec2.c)
-#  add_executable(nestvec nestvec.c)
-  add_executable(non_zero_root non_zero_root.c)
-  add_executable(sendrecvl sendrecvl.c)
-  add_executable(timer timer.c)
-  add_executable(transp-datatype transp-datatype.c)
-  add_executable(twovec twovec.c)
-
-
-  target_link_libraries(commcreatep simgrid mtest_c)
-#  target_link_libraries(dtpack simgrid mtest_c)
-#  target_link_libraries(indexperf simgrid mtest_c)
-#  target_link_libraries(manyrma simgrid mtest_c)
-#  target_link_libraries(nestvec2 simgrid mtest_c)
-#  target_link_libraries(nestvec simgrid mtest_c)
-  target_link_libraries(non_zero_root simgrid mtest_c)
-  target_link_libraries(sendrecvl simgrid mtest_c)
-  target_link_libraries(timer simgrid mtest_c)
-  target_link_libraries(transp-datatype simgrid mtest_c)
-  target_link_libraries(twovec simgrid mtest_c)
-
-
-
-
+  foreach(file commcreatep non_zero_root sendrecvl timer transp-datatype twovec)
+    #not compiled files  dtpack indexperf manyrma nestvec2 nestvec
+    add_executable(${file} ${file}.c)
+    target_link_libraries(${file} simgrid mtest_c)
+  endforeach()
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
-set(examples_src
-  ${examples_src}
- ${CMAKE_CURRENT_SOURCE_DIR}/allredtrace.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/commcreatep.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/dtpack.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/indexperf.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/manyrma.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/nestvec2.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/nestvec.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/non_zero_root.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/sendrecvl.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/timer.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/transp-datatype.c 
- ${CMAKE_CURRENT_SOURCE_DIR}/twovec.c 
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
-set(txt_files
-  ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/README
-  ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+if (enable_smpi_MPICH3_testsuite AND HAVE_RAW_CONTEXTS)
+  ADD_TEST(test-smpi-mpich3-perf-raw       ${CMAKE_COMMAND} -E chdir ${CMAKE_BINARY_DIR}/teshsuite/smpi/mpich3-test/perf ${PERL_EXECUTABLE} ${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/runtests ${TESH_OPTION} -mpiexec=${CMAKE_BINARY_DIR}/smpi_script/bin/smpirun -srcdir=${CMAKE_HOME_DIRECTORY}/teshsuite/smpi/mpich3-test/perf -tests=testlist -execarg=--cfg=contexts/factory:raw -execarg=--cfg=smpi/running-power:-1)
+endif()
+
+foreach(file allredtrace commcreatep non_zero_root sendrecvl timer transp-datatype twovec dtpack indexperf manyrma 
+        nestvec2 nestvec)
+  set(examples_src  ${examples_src} ${CMAKE_CURRENT_SOURCE_DIR}/${file}.c)
+endforeach()
+
+set(examples_src  ${examples_src}                                        PARENT_SCOPE)
+set(txt_files     ${txt_files}     ${CMAKE_CURRENT_SOURCE_DIR}/README 
+                                   ${CMAKE_CURRENT_SOURCE_DIR}/testlist  PARENT_SCOPE)

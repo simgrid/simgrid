@@ -180,6 +180,8 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
                                   root, comm);
         }
         /* We are done */
+        if(tmp_buf!=NULL) 
+          smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
         goto fn_exit;
     }
     
@@ -233,6 +235,7 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
                                       intra_node_root, shmem_comm);
         }
     } else { 
+        smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
         tmp_buf = in_buf; 
     } 
 
@@ -286,14 +289,22 @@ int smpi_coll_tuned_reduce_mvapich2_two_level( void *sendbuf,
             smpi_mpi_send(tmp_buf, count, datatype, root,
                                      COLL_TAG_REDUCE+1, comm);
         }
-
         if ((local_rank != 0) && (root == my_rank)) {
             smpi_mpi_recv(recvbuf, count, datatype,
                                      leader_of_root,
                                      COLL_TAG_REDUCE+1, comm,
                                      MPI_STATUS_IGNORE);
         }
+      smpi_free_tmp_buffer((void *) ((char *) tmp_buf + true_lb));
+
+      if (leader_comm_rank == leader_root) {
+        if (my_rank != root || (my_rank == root && tmp_buf == recvbuf)) { 
+          smpi_free_tmp_buffer(in_buf);
+        }
+      }
     }
+
+
 
   fn_exit:
     return mpi_errno;

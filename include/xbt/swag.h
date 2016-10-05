@@ -1,12 +1,11 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* Warning, this module is done to be efficient and performs tons of
-   cast and dirty things. So avoid using it unless you really know
-   what you are doing. */
+/* Warning, this module is done to be efficient and performs tons of cast and dirty things. So avoid using it unless
+ * you really know what you are doing. */
 
 #ifndef _XBT_SWAG_H
 #define _XBT_SWAG_H
@@ -20,21 +19,20 @@ SG_BEGIN_DECL()
  * @addtogroup XBT_swag
  * @brief a O(1) set based on linked lists
  * 
- *  Warning, this module is done to be efficient and performs tons of
- *  cast and dirty things. So make sure you know what you are doing while using it.
- *  It is basically a fifo but with restrictions so that
- *  it can be used as a set. Any operation (add, remove, belongs) is O(1) and
- *  no call to malloc/free is done.
+ *  Warning, this module is done to be efficient and performs tons of cast and dirty things. So make sure you know what
+ *  you are doing while using it.
+ *  It is basically a fifo but with restrictions so that it can be used as a set. Any operation (add, remove, belongs)
+ *  is O(1) and no call to malloc/free is done.
  *
+ *  @deprecated If you are using C++, you might want to use
+ *  `boost::intrusive::set` instead.
  */
 /** @defgroup XBT_swag_type Swag types
     @ingroup XBT_swag
 
     Specific set. 
 
-
-    These typedefs are public so that the compiler can
-    do his job but believe me, you don't want to try to play with 
+    These typedefs are public so that the compiler can do his job but believe me, you don't want to try to play with
     those structs directly. Use them as an abstract datatype.
 */
 /* @{ */
@@ -44,8 +42,7 @@ typedef struct xbt_swag_hookup {
 } s_xbt_swag_hookup_t;
 /**< This type should be added to a type that is to be used in a swag. 
  *
- *  Whenever a new object with this struct is created, all fields have
- *  to be set to NULL 
+ *  Whenever a new object with this struct is created, all fields have to be set to NULL
  *
  * Here is an example like that :
 
@@ -70,13 +67,15 @@ typedef struct foo {
 */
 typedef s_xbt_swag_hookup_t *xbt_swag_hookup_t;
 
-
-typedef struct xbt_swag {
+struct xbt_swag {
   void *head;
   void *tail;
   size_t offset;
   int count;
-} s_xbt_swag_t, *xbt_swag_t;
+};
+typedef struct xbt_swag  s_xbt_swag_t;
+typedef struct xbt_swag* xbt_swag_t;
+
 /**< A typical swag */
 /* @} */
 
@@ -116,11 +115,10 @@ XBT_PUBLIC(int) xbt_swag_size(xbt_swag_t swag);
 #define xbt_swag_getNext(obj, offset) (((xbt_swag_hookup_t)(((char *) (obj)) + (offset)))->next)
 #define xbt_swag_belongs(obj, swag) (xbt_swag_getNext((obj), (swag)->offset) || (swag)->tail == (obj))
 
-static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
+static inline void *xbt_swag_getFirst(xbt_swag_t swag)
 {
   return (swag->head);
 }
-
 
 /**
  * \brief Offset computation
@@ -129,9 +127,8 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
  * \return the offset of \a field in <tt>struct</tt> something.
  * @hideinitializer
  *
- * It is very similar to offsetof except that is done at runtime and that 
- * you have to declare a variable. Why defining such a macro then ? 
- * Because it is portable...
+ * It is very similar to offsetof except that is done at runtime and that you have to declare a variable. Why defining
+ * such a macro then ? Because it is portable...
  */
 #define xbt_swag_offset(var,field) ((char *)&( (var).field ) - (char *)&(var))
 /* @} */
@@ -149,11 +146,17 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
   *  @param swag what to iterate over
   *  @warning you cannot modify the \a swag while using this loop
   *  @hideinitializer */
+#ifndef __cplusplus
 #define xbt_swag_foreach(obj,swag)                            \
    for((obj)=xbt_swag_getFirst((swag));                       \
        (obj)!=NULL;                                           \
        (obj)=xbt_swag_getNext((obj),(swag)->offset))
-
+#else
+#define xbt_swag_foreach(obj,swag)                            \
+   for((obj)=(decltype(obj)) xbt_swag_getFirst((swag));         \
+       (obj)!=NULL;                                           \
+       (obj)=(decltype(obj)) xbt_swag_getNext((obj),(swag)->offset))
+#endif
 /**
  * @brief A safe swag iterator 
  * @param obj the indice of the loop
@@ -162,18 +165,34 @@ static XBT_INLINE void *xbt_swag_getFirst(xbt_swag_t swag)
  * @hideinitializer
 
     You can safely modify the \a swag while using this loop. 
-    Well, safely... Err. You can remove \a obj without having any 
-    trouble at least.  */
+    Well, safely... Err. You can remove \a obj without having any trouble at least.  */
+
+#ifndef __cplusplus
 
 #define xbt_swag_foreach_safe(obj,obj_next,swag)                  \
    for((obj)=xbt_swag_getFirst((swag)),                           \
        ((obj)?(obj_next=xbt_swag_getNext((obj),(swag)->offset)):  \
-           (obj_next=NULL));                                \
+           (obj_next=NULL));                                      \
        (obj)!=NULL;                                               \
        (obj)=obj_next,                                            \
        ((obj)?(obj_next=xbt_swag_getNext((obj),(swag)->offset)):  \
                  (obj_next=NULL))     )
+
+#else
+
+#define xbt_swag_foreach_safe(obj,obj_next,swag)                  \
+   for((obj) = (decltype(obj)) xbt_swag_getFirst((swag)),         \
+       ((obj)?(obj_next = (decltype(obj)) xbt_swag_getNext((obj),(swag)->offset)):  \
+           (obj_next=NULL));                                      \
+       (obj) != NULL;                                             \
+       (obj) = obj_next,                           \
+       ((obj)?(obj_next = (decltype(obj)) xbt_swag_getNext((obj),(swag)->offset)):  \
+                 (obj_next=NULL))     )
+
+#endif
+
 /* @} */
 
 SG_END_DECL()
+
 #endif                          /* _XBT_SWAG_H */

@@ -18,13 +18,13 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_maxmin);
 void bottleneck_solve(lmm_system_t sys)
 {
   void *_var, *_var_next, *_cnst, *_cnst_next, *_elem;
-  lmm_variable_t var = NULL;
-  lmm_constraint_t cnst = NULL;
+  lmm_variable_t var = nullptr;
+  lmm_constraint_t cnst = nullptr;
   s_lmm_constraint_t s_cnst;
-  lmm_element_t elem = NULL;
-  xbt_swag_t cnst_list = NULL;
-  xbt_swag_t var_list = NULL;
-  xbt_swag_t elem_list = NULL;
+  lmm_element_t elem = nullptr;
+  xbt_swag_t cnst_list = nullptr;
+  xbt_swag_t var_list = nullptr;
+  xbt_swag_t elem_list = nullptr;
   int i;
 
   static s_xbt_swag_t cnst_to_update;
@@ -39,7 +39,7 @@ void bottleneck_solve(lmm_system_t sys)
   var_list = &(sys->variable_set);
   XBT_DEBUG("Variable set : %d", xbt_swag_size(var_list));
   xbt_swag_foreach(_var, var_list) {
-	var = (lmm_variable_t)_var;
+  var = (lmm_variable_t)_var;
     int nb = 0;
     var->value = 0.0;
     XBT_DEBUG("Handling variable %p", var);
@@ -65,12 +65,12 @@ void bottleneck_solve(lmm_system_t sys)
   cnst_list = &(sys->active_constraint_set);
   XBT_DEBUG("Active constraints : %d", xbt_swag_size(cnst_list));
   xbt_swag_foreach(_cnst, cnst_list) {
-	cnst = (lmm_constraint_t)_cnst;
+  cnst = (lmm_constraint_t)_cnst;
     xbt_swag_insert(cnst, &(sys->saturated_constraint_set));
   }
   cnst_list = &(sys->saturated_constraint_set);
   xbt_swag_foreach(_cnst, cnst_list) {
-	cnst = (lmm_constraint_t)_cnst;
+  cnst = (lmm_constraint_t)_cnst;
     cnst->remaining = cnst->bound;
     cnst->usage = 0.0;
   }
@@ -91,18 +91,17 @@ void bottleneck_solve(lmm_system_t sys)
       cnst = (lmm_constraint_t)_cnst;
       int nb = 0;
       XBT_DEBUG("Processing cnst %p ", cnst);
-      elem_list = &(cnst->element_set);
+      elem_list = &(cnst->enabled_element_set);
       cnst->usage = 0.0;
       xbt_swag_foreach(_elem, elem_list) {
-    	elem = (lmm_element_t)_elem;
-        if (elem->variable->weight <= 0)
-          break;
+      elem = (lmm_element_t)_elem;
+        xbt_assert(elem->variable->weight > 0);
         if ((elem->value > 0)
             && xbt_swag_belongs(elem->variable, var_list))
           nb++;
       }
       XBT_DEBUG("\tThere are %d variables", nb);
-      if (nb > 0 && !cnst->shared)
+      if (nb > 0 && !cnst->sharing_policy)
         nb = 1;
       if (!nb) {
         cnst->remaining = 0.0;
@@ -136,12 +135,11 @@ void bottleneck_solve(lmm_system_t sys)
     xbt_swag_foreach_safe(_cnst, _cnst_next, cnst_list) {
       cnst = (lmm_constraint_t)_cnst;
       XBT_DEBUG("Updating cnst %p ", cnst);
-      elem_list = &(cnst->element_set);
+      elem_list = &(cnst->enabled_element_set);
       xbt_swag_foreach(_elem, elem_list) {
         elem = (lmm_element_t)_elem;
-        if (elem->variable->weight <= 0)
-          break;
-        if (cnst->shared) {
+        xbt_assert(elem->variable->weight > 0);
+        if (cnst->sharing_policy) {
           XBT_DEBUG("\tUpdate constraint %p (%g) with variable %p by %g",
                  cnst, cnst->remaining, elem->variable,
                  elem->variable->mu);
@@ -154,7 +152,7 @@ void bottleneck_solve(lmm_system_t sys)
           cnst->usage = MIN(cnst->usage, elem->value * elem->variable->mu);
         }
       }
-      if (!cnst->shared) {
+      if (!cnst->sharing_policy) {
         XBT_DEBUG("\tUpdate constraint %p (%g) by %g",
                cnst, cnst->remaining, cnst->usage);
 

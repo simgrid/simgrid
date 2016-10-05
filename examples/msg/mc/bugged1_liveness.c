@@ -1,4 +1,4 @@
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -10,9 +10,14 @@
 /* LTL property checked : G(r->F(cs)); (r=request of CS, cs=CS ok)            */
 /******************************************************************************/
 
-#include "msg/msg.h"
+#ifdef GARBAGE_STACK
+#include <sys/stat.h>
+#include <fcntl.h>
+#include <unistd.h>
+#endif
+
+#include "simgrid/msg.h"
 #include "mc/mc.h"
-#include "xbt/automaton.h"
 #include "bugged1_liveness.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
@@ -20,18 +25,19 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(bugged1_liveness, "my log messages");
 int r=0; 
 int cs=0;
 
-int predR(){
-  return r;
+#ifdef GARBAGE_STACK
+/** Do not use a clean stack */
+static void garbage_stack(void) {
+  const size_t size = 256;
+  int fd = open("/dev/urandom", O_RDONLY);
+  char foo[size];
+  read(fd, foo, size);
+  close(fd);
 }
+#endif
 
-int predCS(){
-  return cs;
-}
-
-
-int coordinator(int argc, char *argv[])
+static int coordinator(int argc, char *argv[])
 {
-
   int CS_used = 0;   
   msg_task_t task = NULL, answer = NULL; 
   xbt_dynar_t requests = xbt_dynar_new(sizeof(char *), NULL);
@@ -54,7 +60,7 @@ int coordinator(int argc, char *argv[])
           answer = NULL;
         }
       }
-    } else {      
+    } else {
       if (!xbt_dynar_is_empty(requests)) {
         XBT_INFO("CS release. Grant to queued requests (queue size: %lu)", xbt_dynar_length(requests));
         xbt_dynar_shift(requests, &req);
@@ -74,17 +80,16 @@ int coordinator(int argc, char *argv[])
     kind = NULL;
     req = NULL;
   }
- 
   return 0;
 }
 
-int client(int argc, char *argv[])
+static int client(int argc, char *argv[])
 {
   int my_pid = MSG_process_get_PID(MSG_process_self());
 
   char *my_mailbox = xbt_strdup(argv[1]);
   msg_task_t grant = NULL, release = NULL;
-    
+
   while(1){
     XBT_INFO("Ask the request");
     MSG_task_send(MSG_task_create("request", 0, 1000, my_mailbox), "coordinator");
@@ -118,7 +123,7 @@ int client(int argc, char *argv[])
     release = NULL;
 
     MSG_process_sleep(my_pid);
-    
+
     if(strcmp(my_mailbox, "1") == 0){
       cs=0;
       r=0;
@@ -126,28 +131,33 @@ int client(int argc, char *argv[])
     }
     
   }
-
   return 0;
+}
+
+static int raw_client(int argc, char *argv[])
+{
+#ifdef GARBAGE_STACK
+  // At this point the stack of the callee (client) is probably filled with
+  // zeros and uninitialized variables will contain 0. This call will place
+  // random byes in the stack of the callee:
+  garbage_stack();
+#endif
+  return client(argc, argv);
 }
 
 int main(int argc, char *argv[])
 {
-
   MSG_init(&argc, argv);
 
-  char **options = &argv[1];
+  MC_automaton_new_propositional_symbol_pointer("r", &r);
+  MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
-  MSG_config("model-check/property","promela_bugged1_liveness");
-  MC_automaton_new_propositional_symbol("r", &predR);
-  MC_automaton_new_propositional_symbol("cs", &predCS);
+  MSG_create_environment(argv[1]);
 
-  const char* platform_file = options[0];
-  const char* application_file = options[1];
-  
-  MSG_create_environment(platform_file);
   MSG_function_register("coordinator", coordinator);
-  MSG_function_register("client", client);
-  MSG_launch_application(application_file);
+  MSG_function_register("client", raw_client);
+  MSG_launch_application(argv[2]);
+
   MSG_main();
 
   return 0;

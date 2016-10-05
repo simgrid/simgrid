@@ -1,27 +1,4 @@
-set(tesh_files
-  ${tesh_files}
-
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
-set(examples_src
-  ${examples_src}
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
-  PARENT_SCOPE
-  )
-
-#set(stdo_std_smpi
-#  ${CMAKE_CURRENT_SOURCE_DIR}/topol/cartmap.std
-#  ${CMAKE_CURRENT_SOURCE_DIR}/topol/graphtest.std
-#  ${CMAKE_CURRENT_SOURCE_DIR}/topol/cartf.std
-#)
+set(bin_files  ${bin_files}  ${CMAKE_CURRENT_SOURCE_DIR}/generate_report  PARENT_SCOPE)
 
 if("${CMAKE_BINARY_DIR}" STREQUAL "${CMAKE_HOME_DIRECTORY}")
 else()
@@ -33,24 +10,20 @@ else()
     endforeach()
 endif()
 
-set(txt_files
-  ${txt_files}
-  ${CMAKE_CURRENT_SOURCE_DIR}/README
-  ${CMAKE_CURRENT_SOURCE_DIR}/runtests
-  ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
-  ${CMAKE_CURRENT_SOURCE_DIR}/checktests
-  ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
-  ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/util/dtypes.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_manual.c
-  ${CMAKE_CURRENT_SOURCE_DIR}/f77/testlist
-  ${CMAKE_CURRENT_SOURCE_DIR}/f90/testlist
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/dtypes.h
-  ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h
-  PARENT_SCOPE)
-
+set(txt_files  ${txt_files}  ${CMAKE_CURRENT_SOURCE_DIR}/README
+                             ${CMAKE_CURRENT_SOURCE_DIR}/runtests
+                             ${CMAKE_CURRENT_SOURCE_DIR}/testlist
+                             ${CMAKE_CURRENT_SOURCE_DIR}/hostfile
+                             ${CMAKE_CURRENT_SOURCE_DIR}/checktests
+                             ${CMAKE_CURRENT_SOURCE_DIR}/generate_report
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/dtypes.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/util/mtest_manual.c
+                             ${CMAKE_CURRENT_SOURCE_DIR}/f77/testlist
+                             ${CMAKE_CURRENT_SOURCE_DIR}/f90/testlist
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitestconf.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/dtypes.h
+                             ${CMAKE_CURRENT_SOURCE_DIR}/include/mpitest.h                            PARENT_SCOPE)
 
 #build only once files used in each test (C version compiled here at root, F77 is in f77/util, and F90 in F90/util)
 
@@ -60,13 +33,12 @@ else()
   set(CMAKE_C_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpicc")
 endif()
 
-set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
 include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
 include_directories("${CMAKE_CURRENT_SOURCE_DIR}/include/")
 
 if(enable_smpi AND enable_smpi_MPICH3_testsuite)
 #C version - use automatic privatization if mmap is supported, manual through SMPI macros if not
-  if(HAVE_MMAP)
+  if(HAVE_PRIVATIZATION)
     add_library(mtest_c STATIC util/mtest.c)
   else()
     add_library(mtest_c STATIC util/mtest_manual.c)

@@ -1,3 +1,6 @@
+# This data was retrieved from the OptorSim configuration files. 
+# Use the generate_peer_platform.pl script to turn it into a SimGrid platform file.
+#
 0 173.0 96.8 h 0.1 
 1 247.0 57.3 h 0.6 
 2 243.4 58.8 h 1.4 

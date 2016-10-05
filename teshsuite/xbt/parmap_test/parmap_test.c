@@ -10,7 +10,7 @@
 #include "xbt.h"
 #include "xbt/ex.h"
 #include "xbt/xbt_os_time.h"
-#include "internal_config.h"
+#include "src/internal_config.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(parmap_test, "Test for parmap");
 
@@ -47,8 +47,7 @@ static int test_parmap_basic(e_xbt_parmap_mode_t mode)
     for (i = 0; i < len; i++) {
       unsigned expected = (1U << num) * (i + 1) - 1;
       if (a[i] != expected) {
-        XBT_CRITICAL("with %u threads, a[%u]: expected %u, got %u",
-                     num_workers, i, expected, a[i]);
+        XBT_CRITICAL("with %u threads, a[%u]: expected %u, got %u", num_workers, i, expected, a[i]);
         ret = 1;
         break;
       }
@@ -121,7 +120,7 @@ int main(int argc, char** argv)
   XBT_INFO("Basic testing posix");
   status += test_parmap_basic(XBT_PARMAP_POSIX);
   XBT_INFO("Basic testing futex");
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
   status += test_parmap_basic(XBT_PARMAP_FUTEX);
 #endif
   XBT_INFO("Basic testing busy wait");
@@ -130,7 +129,7 @@ int main(int argc, char** argv)
   XBT_INFO("Extended testing posix");
   status += test_parmap_extended(XBT_PARMAP_POSIX);
   XBT_INFO("Extended testing futex");
-#ifdef HAVE_FUTEX_H
+#if HAVE_FUTEX_H
   status += test_parmap_extended(XBT_PARMAP_FUTEX);
 #endif
   XBT_INFO("Extended testing busy wait");

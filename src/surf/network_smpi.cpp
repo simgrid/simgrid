@@ -1,61 +1,32 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <cstddef>
+#include <algorithm>
+
+#include <xbt/log.h>
+
 #include "network_smpi.hpp"
 #include "simgrid/sg_config.h"
+#include "smpi/smpi_utils.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_network);
 
-xbt_dynar_t smpi_bw_factor = NULL;
-xbt_dynar_t smpi_lat_factor = NULL;
+std::vector<s_smpi_factor_t> smpi_bw_factor;
+std::vector<s_smpi_factor_t> smpi_lat_factor;
 
-typedef struct s_smpi_factor *smpi_factor_t;
-typedef struct s_smpi_factor {
-  long factor;
-  double value;
-} s_smpi_factor_t;
-
-xbt_dict_t gap_lookup = NULL;
+xbt_dict_t gap_lookup = nullptr;
 
 static int factor_cmp(const void *pa, const void *pb)
 {
- return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor) ? 1 :
-         (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
+  return (((s_smpi_factor_t*)pa)->factor > ((s_smpi_factor_t*)pb)->factor) ? 1 :
+      (((s_smpi_factor_t*)pa)->factor < ((s_smpi_factor_t*)pb)->factor) ? -1 : 0;
 }
 
-
-static xbt_dynar_t parse_factor(const char *smpi_coef_string)
-{
-  char *value = NULL;
-  unsigned int iter = 0;
-  s_smpi_factor_t fact;
-  xbt_dynar_t smpi_factor, radical_elements, radical_elements2 = NULL;
-
-  smpi_factor = xbt_dynar_new(sizeof(s_smpi_factor_t), NULL);
-  radical_elements = xbt_str_split(smpi_coef_string, ";");
-  xbt_dynar_foreach(radical_elements, iter, value) {
-
-    radical_elements2 = xbt_str_split(value, ":");
-    if (xbt_dynar_length(radical_elements2) != 2)
-      surf_parse_error("Malformed radical for smpi factor!");
-    fact.factor = atol(xbt_dynar_get_as(radical_elements2, 0, char *));
-    fact.value = atof(xbt_dynar_get_as(radical_elements2, 1, char *));
-    xbt_dynar_push_as(smpi_factor, s_smpi_factor_t, fact);
-    XBT_DEBUG("smpi_factor:\t%ld : %f", fact.factor, fact.value);
-    xbt_dynar_free(&radical_elements2);
-  }
-  xbt_dynar_free(&radical_elements);
-  iter=0;
-  xbt_dynar_sort(smpi_factor, &factor_cmp);
-  xbt_dynar_foreach(smpi_factor, iter, fact) {
-    XBT_DEBUG("ordered smpi_factor:\t%ld : %f", fact.factor, fact.value);
-
-  }
-  return smpi_factor;
-}
+#include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 
 /*********
  * Model *
@@ -72,152 +43,139 @@ static xbt_dynar_t parse_factor(const char *smpi_coef_string)
 /*  month=may, */
 /*  year={2011} */
 /*  } */
-void surf_network_model_init_SMPI(void)
+void surf_network_model_init_SMPI()
 {
-
   if (surf_network_model)
     return;
-  surf_network_model = new NetworkSmpiModel();
-  net_define_callbacks();
-  xbt_dynar_push(model_list, &surf_network_model);
+  surf_network_model = new simgrid::surf::NetworkSmpiModel();
+  all_existing_models->push_back(surf_network_model);
 
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/sender_gap", 10e-6);
-  xbt_cfg_setdefault_double(_sg_cfg_set, "network/weight_S", 8775);
+  xbt_cfg_setdefault_double("network/sender-gap", 10e-6);
+  xbt_cfg_setdefault_double("network/weight-S", 8775);
 }
 
-NetworkSmpiModel::NetworkSmpiModel()
- : NetworkCm02Model() {
-	m_haveGap=true;
-}
+namespace simgrid {
+  namespace surf {
 
-NetworkSmpiModel::~NetworkSmpiModel(){
-  if (gap_lookup) {
-    xbt_dict_free(&gap_lookup);
-  }
-  if (smpi_bw_factor) {
-    xbt_dynar_free(&smpi_bw_factor);
-    smpi_bw_factor = NULL;
-  }
-  if (smpi_lat_factor) {
-    xbt_dynar_free(&smpi_lat_factor);
-    smpi_lat_factor = NULL;
-  }
-}
-
-void NetworkSmpiModel::gapAppend(double size, const NetworkLinkPtr link, NetworkActionPtr action)
-{
-  const char *src = link->getName();
-  xbt_fifo_t fifo;
-  //surf_action_network_CM02_t last_action;
-  //double bw;
-
-  if (sg_sender_gap > 0.0) {
-    if (!gap_lookup) {
-      gap_lookup = xbt_dict_new_homogeneous(NULL);
+    NetworkSmpiModel::NetworkSmpiModel()
+    : NetworkCm02Model() {
+      haveGap_=true;
     }
-    fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
-    action->m_senderGap = 0.0;
-    if (fifo && xbt_fifo_size(fifo) > 0) {
-      /* Compute gap from last send */
-      /*last_action =
+
+    NetworkSmpiModel::~NetworkSmpiModel(){
+      xbt_dict_free(&gap_lookup);
+    }
+
+    void NetworkSmpiModel::gapAppend(double size, Link* link, NetworkAction *act)
+    {
+      const char *src = link->getName();
+      xbt_fifo_t fifo;
+      NetworkCm02Action *action= static_cast<NetworkCm02Action*>(act);
+
+      if (sg_sender_gap > 0.0) {
+        if (!gap_lookup) {
+          gap_lookup = xbt_dict_new_homogeneous(nullptr);
+        }
+        fifo = (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup, src);
+        action->senderGap_ = 0.0;
+        if (fifo && xbt_fifo_size(fifo) > 0) {
+          /* Compute gap from last send */
+          /*last_action =
           (surf_action_network_CM02_t)
           xbt_fifo_get_item_content(xbt_fifo_get_last_item(fifo));*/
-     // bw = net_get_link_bandwidth(link);
-      action->m_senderGap = sg_sender_gap;
-        /*  max(sg_sender_gap,last_action->sender.size / bw);*/
-      action->m_latency += action->m_senderGap;
-    }
-    /* Append action as last send */
-    /*action->sender.link_name = link->lmm_resource.generic_resource.name;
+          // bw = net_get_link_bandwidth(link);
+          action->senderGap_ = sg_sender_gap;
+          /*  max(sg_sender_gap,last_action->sender.size / bw);*/
+          action->latency_ += action->senderGap_;
+        }
+        /* Append action as last send */
+        /*action->sender.link_name = link->lmm_resource.generic_resource.name;
     fifo =
         (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
                                           action->sender.link_name);
     if (!fifo) {
       fifo = xbt_fifo_new();
-      xbt_dict_set(gap_lookup, action->sender.link_name, fifo, NULL);
+      xbt_dict_set(gap_lookup, action->sender.link_name, fifo, nullptr);
     }
     action->sender.fifo_item = xbt_fifo_push(fifo, action);*/
-    action->m_senderSize = size;
-  }
-}
-
-void NetworkSmpiModel::gapRemove(ActionPtr lmm_action)
-{
-  xbt_fifo_t fifo;
-  size_t size;
-  NetworkCm02ActionPtr action = static_cast<NetworkCm02ActionPtr>(lmm_action);
-
-  if (sg_sender_gap > 0.0 && action->p_senderLinkName
-      && action->p_senderFifoItem) {
-    fifo =
-        (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
-                                          action->p_senderLinkName);
-    xbt_fifo_remove_item(fifo, action->p_senderFifoItem);
-    size = xbt_fifo_size(fifo);
-    if (size == 0) {
-      xbt_fifo_free(fifo);
-      xbt_dict_remove(gap_lookup, action->p_senderLinkName);
-      size = xbt_dict_length(gap_lookup);
-      if (size == 0) {
-        xbt_dict_free(&gap_lookup);
+        action->senderSize_ = size;
       }
     }
-  }
-}
 
-double NetworkSmpiModel::bandwidthFactor(double size)
-{
-  if (!smpi_bw_factor)
-    smpi_bw_factor =
-        parse_factor(sg_cfg_get_string("smpi/bw_factor"));
+    void NetworkSmpiModel::gapRemove(Action *lmm_action)
+    {
+      xbt_fifo_t fifo;
+      size_t size;
+      NetworkCm02Action *action = static_cast<NetworkCm02Action*>(lmm_action);
 
-  unsigned int iter = 0;
-  s_smpi_factor_t fact;
-  double current=1.0;
-  xbt_dynar_foreach(smpi_bw_factor, iter, fact) {
-    if (size <= fact.factor) {
-      XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
+      if (sg_sender_gap > 0.0 && action->senderLinkName_
+          && action->senderFifoItem_) {
+        fifo =
+            (xbt_fifo_t) xbt_dict_get_or_null(gap_lookup,
+                action->senderLinkName_);
+        xbt_fifo_remove_item(fifo, action->senderFifoItem_);
+        size = xbt_fifo_size(fifo);
+        if (size == 0) {
+          xbt_fifo_free(fifo);
+          xbt_dict_remove(gap_lookup, action->senderLinkName_);
+          size = xbt_dict_length(gap_lookup);
+          if (size == 0) {
+            xbt_dict_free(&gap_lookup);
+          }
+        }
+      }
+    }
+
+    double NetworkSmpiModel::bandwidthFactor(double size)
+    {
+      if (smpi_bw_factor.empty())
+        smpi_bw_factor = parse_factor(xbt_cfg_get_string("smpi/bw-factor"));
+
+      double current=1.0;
+      for (auto fact: smpi_bw_factor) {
+        if (size <= fact.factor) {
+          XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
+          return current;
+        }else
+          current=fact.values.front();
+      }
+      XBT_DEBUG("%f > %zu return %f", size, smpi_bw_factor.back().factor, current);
+
       return current;
-    }else
-      current=fact.value;
-  }
-  XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
+    }
 
-  return current;
-}
+    double NetworkSmpiModel::latencyFactor(double size)
+    {
+      if (smpi_lat_factor.empty())
+        smpi_lat_factor = parse_factor(xbt_cfg_get_string("smpi/lat-factor"));
 
-double NetworkSmpiModel::latencyFactor(double size)
-{
-  if (!smpi_lat_factor)
-    smpi_lat_factor =
-        parse_factor(sg_cfg_get_string("smpi/lat_factor"));
+      double current=1.0;
+      for (auto fact: smpi_lat_factor) {
+        if (size <= fact.factor) {
+          XBT_DEBUG("%f <= %zu return %f", size, fact.factor, current);
+          return current;
+        }else
+          current=fact.values.front();
+      }
+      XBT_DEBUG("%f > %zu return %f", size, smpi_lat_factor.back().factor, current);
 
-  unsigned int iter = 0;
-  s_smpi_factor_t fact;
-  double current=1.0;
-  xbt_dynar_foreach(smpi_lat_factor, iter, fact) {
-    if (size <= fact.factor) {
-      XBT_DEBUG("%f <= %ld return %f", size, fact.factor, current);
       return current;
-    }else
-      current=fact.value;
+    }
+
+    double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double size)
+    {
+      return rate < 0 ? bound : std::min(bound, rate * bandwidthFactor(size));
+    }
+
+    /************
+     * Resource *
+     ************/
+
+
+
+    /**********
+     * Action *
+     **********/
+
   }
-  XBT_DEBUG("%f > %ld return %f", size, fact.factor, current);
-
-  return current;
 }
-
-double NetworkSmpiModel::bandwidthConstraint(double rate, double bound, double size)
-{
-  return rate < 0 ? bound : min(bound, rate * bandwidthFactor(size));
-}
-
-/************
- * Resource *
- ************/
-
-
-
-/**********
- * Action *
- **********/

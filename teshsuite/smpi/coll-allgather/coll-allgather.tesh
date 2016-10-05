@@ -1,0 +1,55 @@
+# Smpi Alltoall collectives tests
+! setenv LD_LIBRARY_PATH=../../lib
+! output sort
+
+p Test all to all
+$ ${bindir:=.}/../../../bin/smpirun -map -hostfile ../hostfile_coll -platform ../../../examples/platforms/small_platform.xml -np 16 --log=xbt_cfg.thres:critical ${bindir:=.}/coll-allgather --log=smpi_kernel.thres:warning --log=smpi_coll.thres:error
+> [rank 0] -> Tremblay
+> [rank 1] -> Tremblay
+> [rank 2] -> Tremblay
+> [rank 3] -> Tremblay
+> [rank 4] -> Jupiter
+> [rank 5] -> Jupiter
+> [rank 6] -> Jupiter
+> [rank 7] -> Jupiter
+> [rank 8] -> Fafard
+> [rank 9] -> Fafard
+> [rank 10] -> Fafard
+> [rank 11] -> Fafard
+> [rank 12] -> Ginette
+> [rank 13] -> Ginette
+> [rank 14] -> Ginette
+> [rank 15] -> Ginette
+> [0] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [1] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [2] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [3] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [4] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [5] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [6] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [7] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [8] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [9] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [10] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [11] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [12] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [13] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [14] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [15] rcvbuf=[0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20 21 22 23 24 25 26 27 28 29 30 31 ]
+> [0] sndbuf=[0 1 ]
+> [1] sndbuf=[2 3 ]
+> [2] sndbuf=[4 5 ]
+> [3] sndbuf=[6 7 ]
+> [4] sndbuf=[8 9 ]
+> [5] sndbuf=[10 11 ]
+> [6] sndbuf=[12 13 ]
+> [7] sndbuf=[14 15 ]
+> [8] sndbuf=[16 17 ]
+> [9] sndbuf=[18 19 ]
+> [10] sndbuf=[20 21 ]
+> [11] sndbuf=[22 23 ]
+> [12] sndbuf=[24 25 ]
+> [13] sndbuf=[26 27 ]
+> [14] sndbuf=[28 29 ]
+> [15] sndbuf=[30 31 ]
+

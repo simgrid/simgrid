@@ -2,35 +2,103 @@
 
 p This tests whether TESH correctly sorts command output
 
-$ ${bindir:=.}/tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n' set-output-sort-1.tesh
-> Enable coverage
-> Test suite `set-output-sort-1'
-> [set-output-sort-1:1] Test sorting and filtering of output
-> [set-output-sort-1:3] true
-> [set-output-sort-1:6] true
-> [set-output-sort-1:8] printf 'profiling: foo\\n'
-> [set-output-sort-1:10] printf 'profiling: foo'
-> [set-output-sort-1:13] printf 'profiling: foo\\n'
-> [set-output-sort-1:16] printf 'profiling: foo'
-> [set-output-sort-1:18] printf 'a\\nb\\nc\\nd\\n'
-> [set-output-sort-1:24] printf 'a\\nb\\nc\\nd'
-> [set-output-sort-1:31] printf 'c\\nd\\nb\\na\\n'
-> [set-output-sort-1:38] printf 'c\\nd\\nb\\na'
-> [set-output-sort-1:44] printf 'a\\nprofiling: foo\\nprofiling: bar\\nb\\nc\\nd\\nprofiling: baz\\n'
-> [set-output-sort-1:50] printf 'a\\nprofiling: foo\\nprofiling: bar\\nb\\nc\\nd\\nprofiling: baz'
-> [set-output-sort-1:57] printf 'c\\nprofiling: foo\\nprofiling: bar\\nd\\nb\\na\\nprofiling: baz\\n'
-> [set-output-sort-1:64] printf 'c\\nprofiling: foo\\nprofiling: bar\\nd\\nb\\na\\nprofiling: baz'
-> Test suite `set-output-sort-1' OK
+< p Test sorting and filtering of output
+< 
+< $ true
+< 
+< ! output sort
+< $ true
+< 
+< $ printf 'profiling: foo\n'
+< 
+< $ printf 'profiling: foo'
+< 
+< ! output sort
+< $ printf 'profiling: foo\n'
+< 
+< ! output sort
+< $ printf 'profiling: foo'
+< 
+< $ printf 'a\nb\nc\nd\n'
+< > a
+< > b
+< > c
+< > d
+< 
+< $ printf 'a\nb\nc\nd'
+< > a
+< > b
+< > c
+< > d
+< 
+< ! output sort
+< $ printf 'c\nd\nb\na\n'
+< > a
+< > b
+< > c
+< > d
+< 
+< ! output sort
+< $ printf 'c\nd\nb\na'
+< > a
+< > b
+< > c
+< > d
+< 
+< $ printf 'a\nprofiling: foo\nprofiling: bar\nb\nc\nd\nprofiling: baz\n'
+< > a
+< > b
+< > c
+< > d
+< 
+< $ printf 'a\nprofiling: foo\nprofiling: bar\nb\nc\nd\nprofiling: baz'
+< > a
+< > b
+< > c
+< > d
+< 
+< ! output sort
+< $ printf 'c\nprofiling: foo\nprofiling: bar\nd\nb\na\nprofiling: baz\n'
+< > a
+< > b
+< > c
+< > d
+< 
+< ! output sort
+< $ printf 'c\nprofiling: foo\nprofiling: bar\nd\nb\na\nprofiling: baz'
+< > a
+< > b
+< > c
+< > d
+$ ${bindir:=.}/tesh --ignore-jenkins
+> Ignore all cruft seen on SimGrid's continous integration servers
+> Test suite from stdin
+> [(stdin):1] Test sorting and filtering of output
+> [(stdin):3] true
+> [(stdin):6] true
+> [(stdin):8] printf 'profiling: foo\n'
+> [(stdin):10] printf 'profiling: foo'
+> [(stdin):13] printf 'profiling: foo\n'
+> [(stdin):16] printf 'profiling: foo'
+> [(stdin):18] printf 'a\nb\nc\nd\n'
+> [(stdin):24] printf 'a\nb\nc\nd'
+> [(stdin):31] printf 'c\nd\nb\na\n'
+> [(stdin):38] printf 'c\nd\nb\na'
+> [(stdin):44] printf 'a\nprofiling: foo\nprofiling: bar\nb\nc\nd\nprofiling: baz\n'
+> [(stdin):50] printf 'a\nprofiling: foo\nprofiling: bar\nb\nc\nd\nprofiling: baz'
+> [(stdin):57] printf 'c\nprofiling: foo\nprofiling: bar\nd\nb\na\nprofiling: baz\n'
+> [(stdin):64] printf 'c\nprofiling: foo\nprofiling: bar\nd\nb\na\nprofiling: baz'
+> Test suite from stdin OK
 
-p Check the default prefix length (19) for "output sort"
-! output sort
+p Check the Right Prefix Length (19) for "output sort"
+! output sort 19
 < 12345678901234567 B line
 < 12345678901234567 A line
 $ cat
 > 12345678901234567 A line
 > 12345678901234567 B line
 
-! output sort
+! output sort 19
 < 123456789012345678 B line
 < 123456789012345678 A line
 $ cat
@@ -39,13 +107,13 @@ $ cat
 
 ! expect return 2
 ! output ignore
-< ! output sort
+< ! output sort 19
 < < 123456789012345678 B line
 < < 123456789012345678 A line
 < $ cat
 < > 123456789012345678 A line
 < > 123456789012345678 B line
-$ ${bindir:=.}/tesh --enable-coverage
+$ ${bindir:=.}/tesh 
 
 p Check user-defined prefix length for "output sort"
 ! output sort 5
@@ -70,4 +138,4 @@ $ cat
 < $ cat
 < > 000 A line
 < > 000 B line
-$ ${bindir:=.}/tesh --enable-coverage
+$ ${bindir:=.}/tesh

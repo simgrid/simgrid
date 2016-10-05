@@ -16,29 +16,23 @@ public class Storage {
 	 * access to it.
 	 */ 
 	private long bind;
-	
-	/**
-	 * Storage name
-	 */
+
+	/** Storage name */
 	protected String name;
 
-	/**
-	 * User data.
-	 */ 
+	/** User data. */ 
 	private Object data;
-    /**
-     *
-     */
-    protected Storage() {
+	protected Storage() {
 		this.bind = 0;
 		this.data = null;
-	};
-	
+	}
+
+	@Override
 	public String toString (){
 		return this.name; 
-		
+
 	}
-	
+
 	/**
 	 * This static method gets a storage instance associated with a native
 	 * storage of your platform. This is the best way to get a java storage object.
@@ -46,11 +40,11 @@ public class Storage {
 	 * @param name		The name of the storage to get.
 	 *
 	 * @return		The storage object with the given name.
-     * @exception		StorageNotFoundException if the name of the storage is not valid.
-	 *					NativeException if the native version of this method failed.
+	 * @exception		StorageNotFoundException if the name of the storage is not valid.
+	 * @exception		NativeException if the native version of this method failed.
 	 */ 
-	public native static Storage getByName(String name) 
-	throws HostNotFoundException, NullPointerException;
+	public static native Storage getByName(String name) 
+			throws HostNotFoundException, NullPointerException, NativeException, StorageNotFoundException;
 
 	/**
 	 * This method returns the name of a storage.
@@ -60,7 +54,7 @@ public class Storage {
 	public String getName() {
 		return name;
 	}
-	
+
 	/**
 	 * This method returns the size (in bytes) of a storage element.
 	 *
@@ -76,7 +70,7 @@ public class Storage {
 	 *
 	 */ 
 	public native long getFreeSize();
-	
+
 	/**
 	 * This method returns the used size (in bytes) of a storage element.
 	 *
@@ -84,18 +78,18 @@ public class Storage {
 	 *
 	 */ 
 	public native long getUsedSize();
-	
+
 	/**
 	 * Returns the value of a given storage property. 
 	 */
 	public native String getProperty(String name);
-	
+
 	/**
 	 * Change the value of a given storage property. 
 	 */
 	public native void setProperty(String name, String value);
-	
-	
+
+
 	/** 
 	 *
 	 * Returns the host name the storage is attached to
@@ -103,15 +97,15 @@ public class Storage {
 	 * @return	the host name the storage is attached to
 	 */
 	public native String getHost();
-	
+
 	/**
 	 * This static method returns all of the storages of the installed platform.
 	 *
 	 * @return			An array containing all the storages installed.
 	 *
 	 */ 
-	public native static Storage[] all();
-	
+	public static native Storage[] all();
+
 	/**
 	 * Class initializer, to initialize various JNI stuff
 	 */
@@ -119,5 +113,5 @@ public class Storage {
 	static {
 		nativeInit();
 	}		
-	
+
 }

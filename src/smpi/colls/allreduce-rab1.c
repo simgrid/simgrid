@@ -14,13 +14,14 @@ int smpi_coll_tuned_allreduce_rab1(void *sbuff, void *rbuff,
 {
   MPI_Status status;
   MPI_Aint extent;
-  int tag = COLL_TAG_ALLREDUCE, rank, nprocs, send_size, newcnt, share;
-  int pof2 = 1, mask, send_idx, recv_idx, dst, send_cnt, recv_cnt;
+  int tag = COLL_TAG_ALLREDUCE, send_size, newcnt, share;
+  unsigned int pof2 = 1, mask;
+  int send_idx, recv_idx, dst, send_cnt, recv_cnt;
 
   void *recv, *tmp_buf;
 
-  rank = smpi_comm_rank(comm);
-  nprocs = smpi_comm_size(comm);
+  unsigned int rank = smpi_comm_rank(comm);
+  unsigned int nprocs = smpi_comm_size(comm);
 
   if((nprocs&(nprocs-1)))
     THROWF(arg_error,0, "allreduce rab1 algorithm can't be used with non power of two number of processes ! ");

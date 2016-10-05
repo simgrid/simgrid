@@ -1,0 +1,1117 @@
+### define source packages
+
+set(EXTRA_DIST
+  src/bindings/java/MANIFEST.in
+  src/include/instr/instr_interface.h
+  src/include/mc/datatypes.h
+  src/include/mc/mc.h
+  src/mc/mc_mmu.h
+  src/mc/PageStore.hpp
+  src/mc/mc_record.h
+  src/include/simgrid/sg_config.h
+  src/include/smpi/smpi_interface.h
+  src/include/smpi/smpi_utils.hpp
+  src/include/surf/datatypes.h
+  src/include/surf/maxmin.h
+  src/include/surf/surf.h
+  src/msg/msg_private.h
+  src/simdag/dax.dtd
+  src/simdag/dax_dtd.c
+  src/simdag/dax_dtd.h
+  src/simdag/simdag_private.hpp
+  src/simix/simcalls.in
+  src/simix/simcalls.py
+  src/simix/popping_private.h
+  src/simix/popping_bodies.cpp
+  src/simix/popping_generated.cpp
+  src/simix/popping_enum.h
+  src/simix/popping_accessors.h
+  src/simix/smx_host_private.h
+  src/simix/smx_io_private.h
+  src/simix/smx_network_private.h
+  src/simix/smx_private.h
+  src/simix/ActorImpl.hpp
+  src/simix/smx_synchro_private.h
+  src/kernel/activity/ActivityImpl.hpp
+  src/kernel/activity/SynchroComm.hpp
+  src/kernel/activity/SynchroExec.hpp
+  src/kernel/activity/SynchroIo.hpp
+  src/kernel/activity/SynchroSleep.hpp
+  src/kernel/activity/SynchroRaw.hpp
+  src/smpi/colls/coll_tuned_topo.h
+  src/smpi/colls/colls.h
+  src/smpi/colls/colls_private.h
+  src/smpi/colls/smpi_mvapich2_selector_stampede.h
+  src/smpi/private.h
+  src/smpi/private.hpp
+  src/smpi/smpi_mpi_dt_private.h
+  src/surf/cpu_cas01.hpp
+  src/surf/cpu_interface.hpp
+  src/surf/cpu_ti.hpp
+  src/surf/maxmin_private.hpp
+  src/surf/network_cm02.hpp
+  src/surf/network_constant.hpp
+  src/surf/network_interface.hpp
+  src/surf/network_ns3.hpp
+  src/surf/network_smpi.hpp
+  src/surf/network_ib.hpp
+  src/surf/ns3/ns3_interface.h
+  src/surf/ns3/ns3_simulator.h
+  src/surf/plugins/energy.hpp
+  src/surf/xml/simgrid.dtd
+  src/surf/xml/simgrid_dtd.h
+  src/surf/xml/simgrid_dtd.c
+  src/surf/xml/surfxml_sax_cb.cpp
+
+  src/kernel/routing/AsImpl.hpp
+  src/kernel/routing/AsCluster.hpp
+  src/kernel/routing/AsClusterFatTree.hpp
+  src/kernel/routing/AsClusterTorus.hpp
+  src/kernel/routing/AsClusterDragonfly.hpp
+  src/kernel/routing/AsDijkstra.hpp
+  src/kernel/routing/AsFloyd.hpp
+  src/kernel/routing/AsFull.hpp
+  src/kernel/routing/AsRoutedGraph.hpp
+  src/kernel/routing/AsNone.hpp
+  src/kernel/routing/AsVivaldi.hpp
+
+  src/surf/storage_interface.hpp
+  src/surf/storage_n11.hpp
+  src/surf/surf_interface.hpp
+  src/surf/surf_private.h
+  src/surf/surf_routing.hpp
+  src/surf/PropertyHolder.hpp
+  src/surf/virtual_machine.hpp
+  src/surf/host_clm03.hpp
+  src/surf/HostImpl.hpp
+  src/surf/ptask_L07.hpp
+  src/xbt/automaton/automaton_lexer.yy.c
+  src/xbt/automaton/parserPromela.lex
+  src/xbt/automaton/parserPromela.tab.cacc
+  src/xbt/automaton/parserPromela.tab.hacc
+  src/xbt/automaton/parserPromela.yacc
+  src/xbt/backtrace_dummy.cpp
+  src/xbt/backtrace_linux.cpp
+  src/xbt/dict_private.h
+  src/xbt/ex_interface.h
+  src/xbt/fifo_private.h
+  src/xbt/graph_private.h
+  src/xbt/heap_private.h
+  src/xbt/log_private.h
+  src/xbt/mallocator_private.h
+
+  src/xbt/mmalloc/mfree.c
+  src/xbt/mmalloc/mm.c
+  src/xbt/mmalloc/mm_legacy.c
+  src/xbt/mmalloc/mm_module.c
+  src/xbt/mmalloc/mmalloc.c
+  src/xbt/mmalloc/mmalloc.info
+  src/xbt/mmalloc/mmalloc.texi
+  src/xbt/mmalloc/mmorecore.c
+  src/xbt/mmalloc/mmprivate.h
+  src/xbt/mmalloc/mrealloc.c
+  tools/tesh/generate_tesh
+  tools/lualib.patch
+  teshsuite/lua/lua_platforms.tesh
+  examples/smpi/mc/only_send_deterministic.tesh
+  examples/smpi/mc/non_deterministic.tesh
+  
+  examples/java/.classpath
+  examples/java/.project
+  )
+
+set(SMPI_SRC
+  src/smpi/colls/allgather-2dmesh.c
+  src/smpi/colls/allgather-3dmesh.c
+  src/smpi/colls/allgather-GB.c
+  src/smpi/colls/allgather-NTSLR-NB.c
+  src/smpi/colls/allgather-NTSLR.c
+  src/smpi/colls/allgather-SMP-NTS.c
+  src/smpi/colls/allgather-bruck.c
+  src/smpi/colls/allgather-loosely-lr.c
+  src/smpi/colls/allgather-ompi-neighborexchange.c
+  src/smpi/colls/allgather-pair.c
+  src/smpi/colls/allgather-mvapich-smp.c
+  src/smpi/colls/allgather-rdb.c
+  src/smpi/colls/allgather-rhv.c
+  src/smpi/colls/allgather-ring.c
+  src/smpi/colls/allgather-smp-simple.c
+  src/smpi/colls/allgather-spreading-simple.c
+  src/smpi/colls/allgatherv-GB.c
+  src/smpi/colls/allgatherv-mpich-rdb.c
+  src/smpi/colls/allgatherv-mpich-ring.c
+  src/smpi/colls/allgatherv-ompi-bruck.c
+  src/smpi/colls/allgatherv-ompi-neighborexchange.c
+  src/smpi/colls/allgatherv-pair.c
+  src/smpi/colls/allgatherv-ring.c
+  src/smpi/colls/allreduce-lr.c
+  src/smpi/colls/allreduce-ompi-ring-segmented.c
+  src/smpi/colls/allreduce-rab-rdb.c
+  src/smpi/colls/allreduce-rab1.c
+  src/smpi/colls/allreduce-rab2.c
+  src/smpi/colls/allreduce-rdb.c
+  src/smpi/colls/allreduce-redbcast.c
+  src/smpi/colls/allreduce-smp-binomial-pipeline.c
+  src/smpi/colls/allreduce-smp-binomial.c
+  src/smpi/colls/allreduce-smp-rdb.c
+  src/smpi/colls/allreduce-smp-rsag-lr.c
+  src/smpi/colls/allreduce-smp-rsag-rab.c
+  src/smpi/colls/allreduce-smp-rsag.c
+  src/smpi/colls/allreduce-mvapich-rs.c
+  src/smpi/colls/allreduce-mvapich-two-level.c
+  src/smpi/colls/alltoall-2dmesh.c
+  src/smpi/colls/alltoall-3dmesh.c
+#  src/smpi/colls/alltoall-bruck.c
+  src/smpi/colls/alltoall-pair-light-barrier.c
+  src/smpi/colls/alltoall-pair-mpi-barrier.c
+  src/smpi/colls/alltoall-pair-one-barrier.c
+  src/smpi/colls/alltoall-pair.c
+  src/smpi/colls/alltoall-rdb.c
+  src/smpi/colls/alltoall-ring-light-barrier.c
+  src/smpi/colls/alltoall-ring-mpi-barrier.c
+  src/smpi/colls/alltoall-ring-one-barrier.c
+  src/smpi/colls/alltoall-ring.c
+  src/smpi/colls/alltoall-mvapich-scatter-dest.c
+  src/smpi/colls/alltoallv-bruck.c
+  src/smpi/colls/alltoallv-ompi-basic-linear.c
+  src/smpi/colls/alltoallv-pair-light-barrier.c
+  src/smpi/colls/alltoallv-pair-mpi-barrier.c
+  src/smpi/colls/alltoallv-pair-one-barrier.c
+  src/smpi/colls/alltoallv-pair.c
+  src/smpi/colls/alltoallv-ring-light-barrier.c
+  src/smpi/colls/alltoallv-ring-mpi-barrier.c
+  src/smpi/colls/alltoallv-ring-one-barrier.c
+  src/smpi/colls/alltoallv-ring.c
+  src/smpi/colls/barrier-ompi.c
+  src/smpi/colls/barrier-mvapich2-pair.c
+  src/smpi/colls/bcast-NTSB.c
+  src/smpi/colls/bcast-NTSL-Isend.c
+  src/smpi/colls/bcast-NTSL.c
+  src/smpi/colls/bcast-SMP-binary.c
+  src/smpi/colls/bcast-SMP-binomial.c
+  src/smpi/colls/bcast-SMP-linear.c
+  src/smpi/colls/bcast-arrival-pattern-aware-wait.c
+  src/smpi/colls/bcast-arrival-pattern-aware.c
+  src/smpi/colls/bcast-arrival-scatter.c
+  src/smpi/colls/bcast-binomial-tree.c
+  src/smpi/colls/bcast-flattree-pipeline.c
+  src/smpi/colls/bcast-flattree.c
+  src/smpi/colls/bcast-ompi-pipeline.c
+  src/smpi/colls/bcast-ompi-split-bintree.c
+  src/smpi/colls/bcast-mvapich-smp.c
+  src/smpi/colls/bcast-scatter-LR-allgather.c
+  src/smpi/colls/bcast-scatter-rdb-allgather.c
+  src/smpi/colls/coll_tuned_topo.c
+  src/smpi/colls/colls_global.c
+  src/smpi/colls/gather-ompi.c
+  src/smpi/colls/gather-mvapich.c
+  src/smpi/colls/reduce-NTSL.c
+  src/smpi/colls/reduce-arrival-pattern-aware.c
+  src/smpi/colls/reduce-binomial.c
+  src/smpi/colls/reduce-flat-tree.c
+  src/smpi/colls/reduce-ompi.c
+  src/smpi/colls/reduce-scatter-gather.c
+  src/smpi/colls/reduce_scatter-mpich.c
+  src/smpi/colls/reduce_scatter-ompi.c
+  src/smpi/colls/reduce-mvapich-knomial.c
+  src/smpi/colls/reduce-mvapich-two-level.c
+  src/smpi/colls/reduce-rab.c
+  src/smpi/colls/scatter-ompi.c
+  src/smpi/colls/scatter-mvapich-two-level.c
+  src/smpi/colls/smpi_automatic_selector.cpp
+  src/smpi/colls/smpi_mpich_selector.c
+  src/smpi/colls/smpi_intel_mpi_selector.c
+  src/smpi/colls/smpi_openmpi_selector.c
+  src/smpi/colls/smpi_mvapich2_selector.c
+  src/smpi/instr_smpi.cpp
+  src/smpi/smpi_base.cpp
+  src/smpi/smpi_bench.cpp
+  src/smpi/smpi_memory.cpp
+  src/smpi/smpi_static_variables.cpp
+  src/smpi/smpi_coll.cpp
+  src/smpi/smpi_comm.cpp
+  src/smpi/smpi_deployment.cpp
+  src/smpi/smpi_dvfs.cpp
+  src/smpi/smpi_global.cpp
+  src/smpi/smpi_group.cpp
+  src/smpi/smpi_mpi.cpp
+  src/smpi/smpi_mpi_dt.cpp
+  src/smpi/smpi_pmpi.cpp
+  src/smpi/smpi_replay.cpp
+  src/smpi/smpi_rma.cpp
+  src/smpi/smpi_topo.cpp
+  src/smpi/smpi_utils.cpp
+  src/smpi/smpi_f77.cpp
+  
+  src/surf/network_smpi.cpp
+  src/surf/network_ib.cpp
+  )
+
+set(XBT_SRC
+  src/xbt/RngStream.c
+  src/xbt/automaton/automaton.c
+  src/xbt/automaton/automatonparse_promela.c
+  src/xbt/backtrace.cpp
+  src/xbt/config.cpp
+  src/xbt/cunit.cpp
+  src/xbt/dict.cpp
+  src/xbt/dict_cursor.c
+  src/xbt/dict_elm.c
+  src/xbt/dynar.cpp
+  src/xbt/ex.cpp
+  src/xbt/exception.cpp
+  src/xbt/fifo.c
+  src/xbt/graph.c
+  src/xbt/heap.c
+  src/xbt/lib.c
+  src/xbt/log.c
+  src/xbt/mallocator.c
+  src/xbt/memory_map.cpp
+  src/xbt/memory_map.hpp
+  src/xbt/parmap.cpp
+  src/xbt/snprintf.c
+  src/xbt/string.cpp
+  src/xbt/swag.c
+  src/xbt/xbt_log_appender_file.c
+  src/xbt/xbt_log_layout_format.c
+  src/xbt/xbt_log_layout_simple.c
+  src/xbt/xbt_main.cpp
+  src/xbt/xbt_matrix.c
+  src/xbt/xbt_os_file.c
+  src/xbt/xbt_os_synchro.c
+  src/xbt/xbt_os_time.c
+  src/xbt/xbt_replay.cpp
+  src/xbt/xbt_str.cpp
+  src/xbt/xbt_strbuff.c
+  src/xbt/xbt_virtu.c
+  src/xbt_modinter.h
+  )
+
+if(HAVE_MMALLOC)
+  set(XBT_SRC ${XBT_SRC}  src/xbt/mmalloc/mm.c )
+endif()
+
+set(NS3_SRC  src/surf/network_ns3.cpp
+             src/surf/ns3/ns3_simulator.cc )
+
+set(SURF_SRC
+  src/kernel/routing/AsImpl.cpp
+  src/kernel/routing/AsCluster.cpp
+  src/kernel/routing/AsClusterFatTree.cpp
+  src/kernel/routing/AsClusterTorus.cpp
+  src/kernel/routing/AsClusterDragonfly.cpp
+  src/kernel/routing/AsDijkstra.cpp
+  src/kernel/routing/AsFloyd.cpp
+  src/kernel/routing/AsFull.cpp
+  src/kernel/routing/AsRoutedGraph.cpp
+  src/kernel/routing/AsNone.cpp
+  src/kernel/routing/AsVivaldi.cpp
+  
+  src/surf/cpu_cas01.cpp
+  src/surf/cpu_interface.cpp
+  src/surf/cpu_ti.cpp
+  src/surf/fair_bottleneck.cpp
+  src/surf/instr_routing.cpp
+  src/surf/instr_surf.cpp
+  src/surf/lagrange.cpp
+  src/surf/maxmin.cpp
+  src/surf/network_cm02.cpp
+  src/surf/network_constant.cpp
+  src/surf/network_interface.cpp
+  src/surf/plugins/energy.cpp
+  src/surf/PropertyHolder.cpp
+  src/surf/sg_platf.cpp
+  src/surf/storage_interface.cpp
+  src/surf/storage_n11.cpp
+  src/surf/surf_c_bindings.cpp
+  src/surf/surf_interface.cpp
+  src/surf/surf_routing.cpp
+  src/surf/xml/platf.hpp
+  src/surf/xml/platf_private.hpp
+  src/surf/xml/surfxml_sax_cb.cpp
+  src/surf/xml/surfxml_parseplatf.cpp
+  src/surf/trace_mgr.hpp
+  src/surf/trace_mgr.cpp
+  src/surf/virtual_machine.cpp
+  src/surf/host_clm03.cpp
+  src/surf/HostImpl.cpp
+  src/surf/ptask_L07.cpp
+  )
+
+set(SIMIX_GENERATED_SRC   src/simix/popping_generated.cpp  )
+set(SIMIX_SRC
+  src/kernel/future.cpp
+  src/simix/libsmx.cpp
+  src/simix/smx_context.cpp
+  src/kernel/context/Context.cpp
+  src/kernel/context/Context.hpp
+  src/kernel/context/ContextRaw.cpp
+  src/simix/smx_deployment.cpp
+  src/simix/smx_environment.cpp
+  src/simix/smx_global.cpp
+  src/simix/smx_host.cpp
+  src/simix/smx_io.cpp
+  src/simix/smx_network.cpp
+  src/simix/ActorImpl.cpp
+  src/simix/smx_synchro.cpp
+  src/simix/smx_vm.cpp
+  src/simix/popping.cpp
+  src/kernel/activity/ActivityImpl.cpp
+  src/kernel/activity/SynchroComm.cpp
+  src/kernel/activity/SynchroExec.cpp
+  src/kernel/activity/SynchroSleep.cpp
+  src/kernel/activity/SynchroRaw.cpp
+  src/kernel/activity/SynchroIo.cpp
+  
+  ${SIMIX_GENERATED_SRC}
+  )
+
+# Boost context may not be available
+if (HAVE_BOOST_CONTEXTS)
+  set(SIMIX_SRC
+      ${SIMIX_SRC}
+      src/kernel/context/ContextBoost.hpp
+      src/kernel/context/ContextBoost.cpp)
+else()
+  set(EXTRA_DIST
+      ${EXTRA_DIST}
+      src/kernel/context/ContextBoost.hpp
+      src/kernel/context/ContextBoost.cpp)
+endif()
+
+set(S4U_SRC
+  src/s4u/s4u_actor.cpp
+  src/s4u/s4u_as.cpp
+  src/s4u/s4u_activity.cpp
+  src/s4u/s4u_comm.cpp
+  src/s4u/s4u_engine.cpp  
+  src/s4u/s4u_file.cpp  
+  src/s4u/s4u_host.cpp  
+  src/s4u/s4u_mailbox.cpp
+  src/s4u/s4u_mutex.cpp
+  src/s4u/s4u_conditionVariable.cpp
+  src/s4u/s4u_storage.cpp
+)
+
+set(SIMGRID_SRC
+  src/simgrid/sg_config.cpp
+  src/simgrid/host.cpp
+  src/simgrid/util.hpp
+  )
+
+set(MSG_SRC
+  src/msg/instr_msg_process.cpp
+  src/msg/instr_msg_task.cpp
+  src/msg/instr_msg_vm.cpp
+  src/msg/msg_actions.cpp
+  src/msg/msg_deployment.cpp
+  src/msg/msg_environment.cpp
+  src/msg/msg_global.cpp
+  src/msg/msg_gos.cpp
+  src/msg/msg_host.cpp
+  src/msg/msg_io.cpp
+  src/msg/msg_mailbox.cpp
+  src/msg/msg_process.cpp
+  src/msg/msg_synchro.cpp
+  src/msg/msg_task.cpp
+  src/msg/msg_vm.cpp
+  )
+
+set(SIMDAG_SRC
+  src/simdag/sd_daxloader.cpp
+  src/simdag/sd_global.cpp
+  src/simdag/sd_task.cpp
+  src/simdag/sd_workstation.cpp
+  )
+if(HAVE_GRAPHVIZ)
+  set(SIMDAG_SRC    ${SIMDAG_SRC} src/simdag/sd_dotloader.cpp)
+else()
+  set(EXTRA_DIST    ${EXTRA_DIST} src/simdag/sd_dotloader.cpp)
+endif()
+
+set(BINDINGS_SRC
+  src/bindings/lua/lua_private.h
+  src/bindings/lua/lua_utils.h
+  src/bindings/lua/simgrid_lua.h
+  )
+
+set(JMSG_C_SRC
+  src/bindings/java/jmsg.cpp
+  src/bindings/java/jmsg.h
+  src/bindings/java/jmsg_as.cpp
+  src/bindings/java/jmsg_as.h
+  src/bindings/java/jmsg_comm.cpp
+  src/bindings/java/jmsg_comm.h
+  src/bindings/java/jmsg_file.cpp
+  src/bindings/java/jmsg_file.h
+  src/bindings/java/jmsg_host.cpp
+  src/bindings/java/jmsg_host.h
+  src/bindings/java/jmsg_process.cpp
+  src/bindings/java/jmsg_process.h
+  src/bindings/java/jmsg_rngstream.cpp
+  src/bindings/java/jmsg_rngstream.h
+  src/bindings/java/jmsg_synchro.cpp
+  src/bindings/java/jmsg_synchro.h
+  src/bindings/java/jmsg_task.cpp
+  src/bindings/java/jmsg_task.h
+  src/bindings/java/jmsg_vm.cpp
+  src/bindings/java/jmsg_vm.h
+  src/bindings/java/jxbt_utilities.cpp
+  src/bindings/java/jxbt_utilities.h
+  src/bindings/java/JavaContext.cpp
+  src/bindings/java/JavaContext.hpp
+  src/bindings/java/jmsg_storage.cpp
+  src/bindings/java/jmsg_storage.h
+)
+
+set(JMSG_JAVA_SRC
+  src/bindings/java/org/simgrid/NativeLib.java
+  src/bindings/java/org/simgrid/msg/As.java
+  src/bindings/java/org/simgrid/msg/Comm.java
+  src/bindings/java/org/simgrid/msg/File.java
+  src/bindings/java/org/simgrid/msg/Host.java
+  src/bindings/java/org/simgrid/msg/HostFailureException.java
+  src/bindings/java/org/simgrid/msg/HostNotFoundException.java
+  src/bindings/java/org/simgrid/msg/JniException.java
+  src/bindings/java/org/simgrid/msg/Msg.java
+  src/bindings/java/org/simgrid/msg/MsgException.java
+  src/bindings/java/org/simgrid/msg/Mutex.java
+  src/bindings/java/org/simgrid/msg/NativeException.java
+  src/bindings/java/org/simgrid/msg/Process.java
+  src/bindings/java/org/simgrid/msg/ProcessKilledError.java
+  src/bindings/java/org/simgrid/msg/ProcessNotFoundException.java
+  src/bindings/java/org/simgrid/msg/RngStream.java
+  src/bindings/java/org/simgrid/msg/Semaphore.java
+  src/bindings/java/org/simgrid/msg/Storage.java
+  src/bindings/java/org/simgrid/msg/StorageNotFoundException.java
+  src/bindings/java/org/simgrid/msg/Task.java
+  src/bindings/java/org/simgrid/msg/TaskCancelledException.java
+  src/bindings/java/org/simgrid/msg/TimeoutException.java
+  src/bindings/java/org/simgrid/msg/TransferFailureException.java
+  src/bindings/java/org/simgrid/msg/VM.java
+)
+
+set(JTRACE_C_SRC
+  src/bindings/java/jtrace.cpp
+  src/bindings/java/jtrace.h
+)
+
+set(JTRACE_JAVA_SRC src/bindings/java/org/simgrid/trace/Trace.java)
+
+list(APPEND JMSG_C_SRC ${JTRACE_C_SRC})
+list(APPEND JMSG_JAVA_SRC ${JTRACE_JAVA_SRC})
+
+set(LUA_SRC
+  src/bindings/lua/lua_host.cpp
+  src/bindings/lua/lua_platf.cpp
+  src/bindings/lua/lua_debug.cpp
+  src/bindings/lua/simgrid_lua.cpp
+  )
+
+set(TRACING_SRC
+  src/instr/instr_TI_trace.cpp
+  src/instr/instr_config.cpp
+  src/instr/instr_interface.cpp
+  src/instr/instr_paje_containers.cpp
+  src/instr/instr_paje_header.cpp
+  src/instr/instr_paje_trace.cpp
+  src/instr/instr_paje_types.cpp
+  src/instr/instr_paje_values.cpp
+  src/instr/instr_private.h
+  src/instr/instr_smpi.h
+  src/instr/instr_resource_utilization.cpp
+  src/instr/instr_trace.cpp
+  )
+
+set(JEDULE_SRC
+  include/simgrid/jedule/jedule_events.hpp
+  include/simgrid/jedule/jedule.hpp
+  include/simgrid/jedule/jedule_platform.hpp
+  include/simgrid/jedule/jedule_sd_binding.h
+  src/instr/jedule/jedule_events.cpp
+  src/instr/jedule/jedule.cpp
+  src/instr/jedule/jedule_platform.cpp
+  src/instr/jedule/jedule_sd_binding.cpp
+  )
+
+set(MC_SRC_BASE
+  src/mc/mc_base.cpp
+  src/mc/mc_base.h
+  src/mc/mc_record.h
+  src/mc/mc_replay.h
+  src/mc/mc_record.cpp
+  src/mc/mc_config.cpp
+  src/mc/mc_global.cpp
+  )
+
+set(MC_SRC
+  src/mc/RemotePtr.hpp
+  src/mc/AddressSpace.hpp
+  src/mc/AddressSpace.cpp
+  src/mc/Channel.cpp
+  src/mc/Channel.hpp
+  src/mc/Checker.cpp
+  src/mc/Checker.hpp
+  src/mc/Client.cpp
+  src/mc/Client.hpp
+  src/mc/CommunicationDeterminismChecker.cpp
+  src/mc/CommunicationDeterminismChecker.hpp
+  src/mc/Frame.hpp
+  src/mc/Frame.cpp
+  src/mc/ModelChecker.hpp
+  src/mc/ModelChecker.cpp
+  src/mc/ObjectInformation.hpp
+  src/mc/ObjectInformation.cpp
+  src/mc/PageStore.hpp
+  src/mc/PageStore.cpp
+  src/mc/SafetyChecker.cpp
+  src/mc/SafetyChecker.hpp
+  src/mc/ChunkedData.hpp
+  src/mc/ChunkedData.cpp
+  src/mc/RegionSnapshot.cpp
+  src/mc/RegionSnapshot.hpp
+  src/mc/Type.hpp
+  src/mc/Variable.cpp
+  src/mc/Variable.hpp
+  src/mc/mc_forward.hpp
+  src/mc/Process.hpp
+  src/mc/Process.cpp
+  src/mc/Session.cpp
+  src/mc/Session.hpp
+  src/mc/mc_unw.h
+  src/mc/mc_unw.cpp
+  src/mc/mc_unw_vmread.cpp
+  src/mc/mc_checkpoint.cpp
+  src/mc/mc_snapshot.h
+  src/mc/mc_snapshot.cpp
+  src/mc/mc_page_snapshot.cpp
+  src/mc/mc_comm_pattern.h
+  src/mc/mc_comm_pattern.cpp
+  src/mc/compare.cpp
+  src/mc/mc_dwarf.hpp
+  src/mc/mc_dwarf.cpp
+  src/mc/mc_dwarf_attrnames.cpp
+  src/mc/DwarfExpression.hpp
+  src/mc/DwarfExpression.cpp
+  src/mc/mc_dwarf_tagnames.cpp
+  src/mc/mc_hash.hpp
+  src/mc/mc_hash.cpp
+  src/mc/mc_ignore.h
+  src/mc/mc_mmalloc.h
+  src/mc/LivenessChecker.hpp
+  src/mc/LocationList.hpp
+  src/mc/LocationList.cpp
+  src/mc/LivenessChecker.cpp
+  src/mc/mc_record.cpp
+  src/mc/mc_member.cpp
+  src/mc/mc_memory.cpp
+  src/mc/mc_private.h
+  src/mc/mc_request.h
+  src/mc/mc_request.cpp
+  src/mc/mc_safety.h
+  src/mc/mc_state.h
+  src/mc/mc_state.cpp
+  src/mc/VisitedState.cpp
+  src/mc/VisitedState.hpp
+  src/mc/mc_client_api.cpp
+  src/mc/mc_protocol.h
+  src/mc/mc_protocol.cpp
+  src/mc/mc_smx.h
+  src/mc/mc_smx.cpp
+  src/mc/mc_xbt.hpp
+  src/mc/mc_xbt.cpp
+  src/mc/mc_exit.h
+  src/mc/Transition.hpp
+  )
+
+set(MC_SIMGRID_MC_SRC  src/mc/simgrid_mc.cpp)
+
+set(headers_to_install
+  include/msg/msg.h
+  include/msg/datatypes.h
+  include/simdag/simdag.h
+  include/simdag/datatypes.h
+  include/simgrid/chrono.hpp
+  include/simgrid/plugins/energy.h
+  include/simgrid/instr.h
+  include/simgrid/msg.h
+  include/simgrid/simdag.h
+  include/simgrid/datatypes.h
+  include/simgrid/modelchecker.h
+  include/simgrid/forward.h
+  include/simgrid/simix.h
+  include/simgrid/simix.hpp
+  include/simgrid/simix/blocking_simcall.hpp
+  include/simgrid/kernel/future.hpp
+  include/simgrid/host.h
+  include/simgrid/link.h
+  include/simgrid/s4u/forward.hpp
+  include/simgrid/s4u/Activity.hpp
+  include/simgrid/s4u/Actor.hpp
+  include/simgrid/s4u/As.hpp
+  include/simgrid/s4u/comm.hpp
+  include/simgrid/s4u/engine.hpp  
+  include/simgrid/s4u/file.hpp  
+  include/simgrid/s4u/host.hpp  
+  include/simgrid/s4u/Mailbox.hpp
+  include/simgrid/s4u/Mutex.hpp
+  include/simgrid/s4u/conditionVariable.hpp
+  include/simgrid/s4u/storage.hpp  
+  include/simgrid/s4u.hpp
+  include/simgrid/plugins/energy.h
+  include/smpi/mpi.h
+  include/smpi/smpi.h
+  include/smpi/smpi_main.h
+  include/smpi/smpi_extended_traces.h
+  include/smpi/smpi_extended_traces_fortran.h
+  include/surf/surf_routing.h
+  include/xbt.h
+  include/xbt/RngStream.h
+  include/xbt/asserts.h
+  include/xbt/automaton.h
+  include/xbt/automaton.hpp
+  include/xbt/base.h
+  include/xbt/config.h
+  include/xbt/config.hpp
+  include/xbt/cunit.h
+  include/xbt/dict.h
+  include/xbt/string.hpp
+  include/xbt/signal.hpp
+  include/xbt/dynar.h
+  include/xbt/dynar.hpp
+  include/xbt/ex.h
+  include/xbt/ex.hpp
+  include/xbt/exception.hpp
+  include/xbt/backtrace.h
+  include/xbt/backtrace.hpp
+  include/xbt/fifo.h
+  include/xbt/file.h
+  include/xbt/function_types.h
+  include/xbt/functional.hpp
+  include/xbt/future.hpp
+  include/xbt/graph.h
+  include/xbt/heap.h
+  include/xbt/lib.h
+  include/xbt/Extendable.hpp
+  include/xbt/log.h
+  include/xbt/log.hpp
+  include/xbt/mallocator.h
+  include/xbt/matrix.h
+  include/xbt/memory.hpp
+  include/xbt/misc.h
+  include/xbt/mmalloc.h
+  include/xbt/module.h
+  include/xbt/parmap.h
+  include/xbt/range.hpp
+  include/xbt/replay.h
+  include/xbt/str.h
+  include/xbt/strbuff.h
+  include/xbt/swag.h
+  include/xbt/synchro_core.h
+  include/xbt/sysdep.h
+  include/xbt/system_error.hpp
+  include/xbt/utility.hpp
+  include/xbt/virtu.h
+  include/xbt/xbt_os_thread.h
+  include/xbt/xbt_os_time.h
+  )
+set(source_of_generated_headers
+  include/simgrid_config.h.in
+  include/smpi/mpif.h.in)
+
+### depend of some variables setted upper
+# -->HAVE_THREAD_CONTEXTS HAVE_UCONTEXT_CONTEXTS
+if(${HAVE_THREAD_CONTEXTS}) #pthread
+  set(SURF_SRC   ${SURF_SRC}   src/kernel/context/ContextThread.cpp
+                               src/kernel/context/ContextThread.hpp )
+else() # NOT pthread
+  set(EXTRA_DIST ${EXTRA_DIST} src/kernel/context/ContextThread.cpp
+                               src/kernel/context/ContextThread.hpp )
+endif()
+
+if(${HAVE_THREAD_CONTEXTS}) #pthread
+  set(SURF_SRC    ${SURF_SRC}   src/xbt/xbt_os_thread.c)
+else() # NOT pthread
+  set(EXTRA_DIST  ${EXTRA_DIST} src/xbt/xbt_os_thread.c
+    )
+endif()
+
+if(${HAVE_UCONTEXT_CONTEXTS}) #ucontext
+  set(SURF_SRC    ${SURF_SRC}   src/kernel/context/ContextUnix.cpp)
+else() # NOT ucontext
+  set(EXTRA_DIST  ${EXTRA_DIST} src/kernel/context/ContextUnix.cpp)
+endif()
+
+### Simgrid Lib sources
+set(simgrid_sources
+  ${BINDINGS_SRC}
+  ${MC_SRC_BASE}
+  ${MSG_SRC}
+  ${S4U_SRC}
+  ${SIMDAG_SRC}
+  ${SIMGRID_SRC}
+  ${SIMIX_SRC}
+  ${SURF_SRC}
+  ${TRACING_SRC}
+  ${XBT_SRC}
+  )
+
+if(${HAVE_JEDULE})  
+  set(simgrid_sources  ${simgrid_sources}  ${JEDULE_SRC})
+else()
+  set(EXTRA_DIST       ${EXTRA_DIST}       ${JEDULE_SRC})
+endif()
+
+if(enable_smpi)
+  set(simgrid_sources  ${simgrid_sources}  ${SMPI_SRC})
+endif()
+
+if(HAVE_MC)
+  set(simgrid_sources  ${simgrid_sources}  ${MC_SRC})
+endif()
+
+if(HAVE_NS3)
+  set(simgrid_sources  ${simgrid_sources}  ${NS3_SRC})
+endif()
+
+# WINDOWS
+if(WIN32)
+  set(simgrid_sources
+    ${simgrid_sources}
+    src/kernel/context/ContextThread.cpp
+    src/kernel/context/ContextThread.hpp
+    src/xbt/xbt_os_thread.c
+    )
+endif()
+
+if(HAVE_LUA)
+  set(simgrid_sources  ${simgrid_sources}  ${LUA_SRC})
+else()
+  set(EXTRA_DIST       ${EXTRA_DIST}       ${LUA_SRC})
+endif()
+
+set(DOC_SOURCES
+  doc/Doxyfile.in
+  doc/Layout.xml
+  doc/sg_thread_model.fig
+  doc/simix.fig
+  doc/surf_nutshell.fig
+  doc/surf++.png
+  doc/surf++.pdf
+  doc/surf++.graphml
+  doc/surf++.uml
+  doc/triva-graph_configuration.png
+  doc/triva-graph_configuration.svg
+  doc/triva-graph_visualization.png
+  doc/triva-graph_visualization.svg
+  doc/triva-time_interval.png
+  doc/triva-time_interval.svg
+
+  doc/doxygen/FAQ.doc
+  doc/doxygen/application.doc
+  doc/doxygen/community.doc
+  doc/doxygen/deployment.doc
+  doc/doxygen/examples.doc
+  doc/doxygen/footer.html
+  doc/doxygen/getting_started.doc
+  doc/doxygen/header.html
+  doc/doxygen/howtos.doc
+  doc/doxygen/index.doc
+  doc/doxygen/inside.doc
+  doc/doxygen/inside_tests.doc
+  doc/doxygen/inside_cmake.doc
+  doc/doxygen/inside_doxygen.doc
+  doc/doxygen/inside_extending.doc
+  doc/doxygen/inside_release.doc
+  doc/doxygen/install.doc
+  doc/doxygen/install_yours.doc
+  doc/doxygen/java.doc
+  doc/doxygen/tutorial.doc
+  doc/doxygen/models.doc
+  doc/doxygen/module-msg.doc
+  doc/doxygen/module-s4u.doc
+  doc/doxygen/module-sd.doc
+  doc/doxygen/module-simix.doc
+  doc/doxygen/module-smpi.doc
+  doc/doxygen/module-surf.doc
+  doc/doxygen/module-trace.doc
+  doc/doxygen/module-xbt.doc
+  doc/doxygen/module-index.doc
+  doc/doxygen/ns3.doc
+  doc/doxygen/options.doc
+  doc/doxygen/outcomes.doc  
+  doc/doxygen/outcomes_logs.doc  
+  doc/doxygen/outcomes_MC.doc  
+  doc/doxygen/outcomes_vizu.doc  
+  doc/doxygen/platform.doc
+  doc/doxygen/platform_lua.doc
+  doc/doxygen/scenario.doc
+  doc/doxygen/stylesheet.css
+  doc/doxygen/uhood.doc
+  doc/doxygen/uhood_switch.doc
+
+  doc/manpage/smpicc.1
+  doc/manpage/smpicxx.1
+  doc/manpage/smpif90.1
+  doc/manpage/smpiff.1
+  doc/manpage/smpirun.1
+  doc/manpage/tesh.pod
+
+  doc/msg-tuto-src/deployment0.xml
+  doc/msg-tuto-src/deployment1.xml
+  doc/msg-tuto-src/deployment2.xml
+  doc/msg-tuto-src/deployment3.xml
+  doc/msg-tuto-src/deployment_general.xml
+  doc/msg-tuto-src/masterworker0.c
+  doc/msg-tuto-src/masterworker1.c
+  doc/msg-tuto-src/masterworker2.c
+  doc/msg-tuto-src/masterworker3.c
+  doc/msg-tuto-src/masterworker4.c
+
+  CITATION.bib
+  )
+
+set(DOC_FIGS
+  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules.fig
+  ${CMAKE_HOME_DIRECTORY}/doc/shared/fig/simgrid_modules2.fig
+  )
+
+set(DOC_TOOLS
+  tools/doxygen/fig2dev_postprocessor.pl
+  tools/doxygen/xbt_log_extract_hierarchy.pl
+  tools/doxygen/list_routing_models_examples.sh
+  )
+
+# these files get copied automatically to the html documentation
+set(DOC_IMG
+  ${CMAKE_HOME_DIRECTORY}/doc/sc3-description.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/AS_hierarchy.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot.jpg
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/Paje_MSG_screenshot_thn.jpg
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.gif
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.icns
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/SGicon.ico
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/awstats_logo3.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/output.goal.pdf
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/poster_thumbnail.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/storage_sample_scenario.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.gif
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_2011_small.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win.bmp
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/simgrid_logo_win_2011.bmp
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_pair_16.png
+  ${CMAKE_HOME_DIRECTORY}/doc/webcruft/smpi_simgrid_alltoall_ring_16.png
+  )
+
+set(bin_files
+  ${bin_files}
+  src/smpi/smpicc.in
+  src/smpi/smpicxx.in
+  src/smpi/smpiff.in
+  src/smpi/smpif90.in
+  src/smpi/smpirun.in
+  src/smpi/smpitools.sh
+  )
+
+set(txt_files
+  ${txt_files}
+  AUTHORS
+  COPYING
+  README
+  ChangeLog
+  INSTALL
+  LICENSE-LGPL-2.1
+  NEWS
+  TODO
+  )
+
+# The list of cmake build directories is constructed from the following list. 
+# Add your CMakeLists file here to see your subdir built.
+set(CMAKEFILES_TXT
+  examples/java/CMakeLists.txt
+  examples/msg/CMakeLists.txt
+    examples/msg/mc/CMakeLists.txt
+  examples/s4u/CMakeLists.txt
+  examples/simdag/CMakeLists.txt
+  examples/smpi/CMakeLists.txt
+    examples/smpi/NAS/CMakeLists.txt
+    examples/smpi/smpi_msg_masterslave/CMakeLists.txt
+    examples/smpi/replay_multiple/CMakeLists.txt
+    examples/smpi/energy/f77/CMakeLists.txt
+    examples/smpi/energy/f90/CMakeLists.txt
+
+  teshsuite/java/CMakeLists.txt
+  teshsuite/mc/CMakeLists.txt
+  teshsuite/msg/CMakeLists.txt
+  teshsuite/simdag/CMakeLists.txt
+  teshsuite/simix/CMakeLists.txt
+  teshsuite/smpi/CMakeLists.txt
+  teshsuite/surf/CMakeLists.txt
+  teshsuite/xbt/CMakeLists.txt
+  
+  teshsuite/smpi/isp/umpire/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/comm/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/datatype/CMakeLists.txt
+#  teshsuite/smpi/mpich3-test/f77/attr/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/info/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/comm/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/ext/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/util/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/topo/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f77/rma/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/coll/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/datatype/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/info/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/util/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/f90/rma/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/group/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/info/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/init/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/pt2pt/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/topo/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/rma/CMakeLists.txt
+  teshsuite/smpi/mpich3-test/perf/CMakeLists.txt
+  
+  tools/CMakeLists.txt
+  tools/graphicator/CMakeLists.txt
+  tools/tesh/CMakeLists.txt
+  )
+
+set(CMAKE_SOURCE_FILES
+  CMakeLists.txt
+  tools/cmake/Tests.cmake
+  tools/cmake/CTestConfig.cmake
+  tools/cmake/CTestCustom.cmake
+  tools/cmake/DefinePackages.cmake
+  tools/cmake/Distrib.cmake
+  tools/cmake/GCCFlags.cmake
+  tools/cmake/Documentation.cmake
+  tools/cmake/MaintainerMode.cmake
+  tools/cmake/Java.cmake
+  tools/cmake/MakeLib.cmake
+  tools/cmake/MakeLibWin.cmake
+  tools/cmake/Modules/FindGFortran.cmake
+  tools/cmake/Modules/FindGraphviz.cmake
+  tools/cmake/Modules/FindLibdw.cmake
+  tools/cmake/Modules/FindLibunwind.cmake
+  tools/cmake/Modules/FindLuaSimgrid.cmake
+  tools/cmake/Modules/FindNS3.cmake
+  tools/cmake/Modules/FindPAPI.cmake
+  tools/cmake/Modules/FindRngStream.cmake
+  tools/cmake/Modules/FindSimGrid.cmake
+  tools/cmake/Modules/FindValgrind.cmake
+  tools/cmake/Option.cmake
+  tools/cmake/scripts/my_valgrind.pl
+  tools/cmake/scripts/update_tesh.pl
+  tools/cmake/UnitTesting.cmake
+  tools/cmake/src/internal_config.h.in
+  tools/cmake/test_prog/prog_gnu_dynlinker.c
+  tools/cmake/test_prog/prog_makecontext.c
+  tools/cmake/test_prog/prog_mutex_timedlock.c
+  tools/cmake/test_prog/prog_sem_init.c
+  tools/cmake/test_prog/prog_sem_open.c
+  tools/cmake/test_prog/prog_sem_timedwait.c
+  tools/cmake/test_prog/prog_snprintf.c
+  tools/cmake/test_prog/prog_stackgrowth.c
+  tools/cmake/test_prog/prog_stacksetup.c
+  tools/cmake/test_prog/prog_thread_storage.c
+  tools/cmake/test_prog/prog_vsnprintf.c
+  tools/cmake/cross-mingw.cmake
+  tools/smpi/generate_smpi_defines.pl
+  tools/stack-cleaner/as
+  tools/stack-cleaner/cc
+  tools/stack-cleaner/c++
+  tools/stack-cleaner/fortran
+  tools/stack-cleaner/clean-stack-filter
+  tools/stack-cleaner/compiler-wrapper
+  tools/stack-cleaner/README
+  )
+
+set(PLATFORMS_EXAMPLES
+  examples/platforms/bypassASroute.xml
+  examples/platforms/bypassRoute.xml
+  examples/platforms/cloud.xml
+  examples/platforms/cluster.xml
+  examples/platforms/cluster_and_one_host.xml
+  examples/platforms/cluster_prototype.lua
+  examples/platforms/cluster_no_backbone.xml
+  examples/platforms/cluster_torus.xml
+  examples/platforms/cluster_fat_tree.xml
+  examples/platforms/cluster_dragonfly.xml
+  examples/platforms/crosstraffic.xml
+  examples/platforms/optorsim/gridpp_grid_2004.conf
+  examples/platforms/optorsim/lcg_sept2004_grid.conf
+  examples/platforms/optorsim/transform_optorsim_platform.pl
+  examples/platforms/config.xml
+  examples/platforms/config_tracing.xml
+  examples/platforms/trace/bourassa_state.trace
+  examples/platforms/trace/fafard_state.trace
+  examples/platforms/trace/faulty_host.trace
+  examples/platforms/trace/ginette_state.trace
+  examples/platforms/trace/jupiter_speed.trace
+  examples/platforms/trace/jupiter_state.trace
+  examples/platforms/trace/link1_avail.trace
+  examples/platforms/trace/link3_state.trace
+  examples/platforms/trace/link4_state.trace
+  examples/platforms/trace/linkBandwidth7.bw
+  examples/platforms/trace/trace_A_failure.txt
+  examples/platforms/trace/trace_A.txt
+  examples/platforms/trace/trace_B.txt
+  examples/platforms/data_center.xml
+  examples/platforms/dogbone.xml
+  examples/platforms/energy_platform.xml
+  examples/platforms/faulty_host.xml
+  examples/platforms/g5k.xml
+  examples/platforms/griffon.xml
+  examples/platforms/meta_cluster.xml
+  examples/platforms/multicore_machine.xml
+  examples/platforms/onelink.xml
+  examples/platforms/prop.xml
+  examples/platforms/routing_cluster.xml
+  examples/platforms/routing_cluster.lua
+  examples/platforms/routing_none.xml
+  examples/platforms/simulacrum_7_hosts.xml
+  examples/platforms/storage/content/small_content.txt
+  examples/platforms/storage/content/storage_content.txt
+  examples/platforms/storage/content/win_storage_content.txt
+  examples/platforms/storage/remote_io.xml
+  examples/platforms/storage/storage.xml
+  examples/platforms/small_platform.xml
+  examples/platforms/small_platform.lua
+  examples/platforms/small_platform_fatpipe.xml
+  examples/platforms/small_platform_one_link_routes.xml
+  examples/platforms/small_platform_with_failures.xml
+  examples/platforms/small_platform_with_routers.xml
+  examples/platforms/syscoord/generate_peer_platform.pl
+  examples/platforms/syscoord/median_harvard.syscoord
+  examples/platforms/syscoord/median_meridian.syscoord
+  examples/platforms/syscoord/median_p2psim.syscoord
+  examples/platforms/three_multicore_hosts.xml
+  examples/platforms/two_clusters.xml
+  examples/platforms/two_hosts.xml
+  examples/platforms/two_hosts_platform_shared.xml
+  examples/platforms/two_hosts_platform_with_availability.xml
+  examples/platforms/two_hosts_platform_with_availability_included.xml
+  examples/platforms/two_peers.xml
+  examples/platforms/vivaldi.xml
+  )
+
+set(generated_src_files
+  src/xbt/automaton/automaton_lexer.yy.c
+  src/xbt/automaton/parserPromela.tab.cacc
+  src/xbt/automaton/parserPromela.tab.hacc
+  )
+
+foreach(file ${generated_src_files})
+  set_source_files_properties(${file} PROPERTIES GENERATED true)
+endforeach(file ${generated_src_files})

@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<adag xmlns="http://pegasus.isi.edu/schema/DAX" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+      xsi:schemaLocation="http://pegasus.isi.edu/schema/DAX http://pegasus.isi.edu/schema/dax-2.1.xsd" 
+      version="2.1" count="1" index="0" name="smalldax" jobCount="4" fileCount="0" childCount="2">
+  <job id="1" namespace="SG" name="task1" version="1.0" runtime="10">
+    <uses file="i1" link="input" register="true" transfer="true" optional="false" type="data" size="1000000"/>
+    <uses file="o1" link="output" register="true" transfer="true" optional="false" type="data" size="1000000"/>
+  </job>
+  <job id="2" namespace="SG" name="task2" version="1.0" runtime="10">
+    <uses file="i2" link="input" register="true" transfer="true" optional="false" type="data" size="1000000"/>
+  </job>
+  <job id="3" namespace="SG" name="task3" version="1.0" runtime="10">
+    <uses file="o1" link="input" register="true" transfer="true" optional="false" type="data" size="1000000"/>
+    <uses file="o3" link="output" register="true" transfer="true" optional="false" type="data" size="1000000"/>
+  </job>
+  <child ref="3">
+    <parent ref="2"/>
+  </child>
+  <!-- add a cycle on purpose. It won't be a DAG anymore -->
+  <child ref="1">
+    <parent ref="3"/>
+  </child>
+</adag>    

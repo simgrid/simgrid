@@ -130,7 +130,8 @@ int smpi_coll_tuned_alltoall_mvapich2_scatter_dest(
         }
     }
     /* --END ERROR HANDLING-- */
-    
+    xbt_free(starray);
+    xbt_free(reqarray);
     return (mpi_errno);
     
 }

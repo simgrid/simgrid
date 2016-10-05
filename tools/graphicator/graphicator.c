@@ -1,40 +1,24 @@
-/* Copyright (c) 2008-2014. The SimGrid Team.
+/* Copyright (c) 2008-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef _XBT_WIN32
-#include <unistd.h>
-#endif
-
-#include "msg/msg.h"
+#include "simgrid/msg.h"
 #include "xbt/graph.h"
 
-XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator,
-                             "Graphicator Logging System");
+XBT_LOG_NEW_DEFAULT_CATEGORY(graphicator, "Graphicator Logging System");
 
 int main(int argc, char **argv)
 {
   XBT_LOG_CONNECT(graphicator);
-#ifdef HAVE_TRACING
   MSG_init(&argc, argv);
 
-  if (argc < 3){
-    XBT_INFO("Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
-    return 1;
-  }
-  char *platformFile = argv[1];
-  char *graphvizFile = argv[2];
+  xbt_assert(argc == 3, "Usage: %s <platform_file.xml> <graphviz_file.dot>", argv[0]);
 
-  MSG_create_environment(platformFile);
+  MSG_create_environment(argv[1]);
+  int status = TRACE_platform_graph_export_graphviz (argv[2]);
 
-  int status = TRACE_platform_graph_export_graphviz (graphvizFile);
-  if (status == 0){
-    XBT_INFO ("%s expects --cfg=tracing:yes --cfg=tracing/platform:yes", argv[0]);
-  }
-#else
-  XBT_INFO ("works only if simgrid was compiled with tracing enabled.");
-#endif
+  xbt_assert(status != 0, "%s expects --cfg=tracing:yes --cfg=tracing/platform:yes", argv[0]);
   return 0;
 }

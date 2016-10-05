@@ -7,7 +7,6 @@
 #include "mpi.h"
 #include "mpitestconf.h"
 #include "mpitest.h"
-#include "smpi_cocci.h"
 #if defined(HAVE_STDIO_H) || defined(STDC_HEADERS)
 #include <stdio.h>
 #endif

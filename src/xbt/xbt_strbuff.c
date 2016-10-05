@@ -1,38 +1,32 @@
 /* strbuff -- string buffers                                                */
 
-/* Copyright (c) 2007-2014. The SimGrid Team.
+/* Copyright (c) 2007-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-/* specific to Borland Compiler */
-#ifdef __BORLANDDC__
-#pragma hdrstop
-#endif
-
 #include "xbt/strbuff.h"
+#include <stdarg.h>
 
 #define minimal_increment 512
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(strbuff, xbt, "String buffers");
 
-/**
-** Buffer code
-**/
-
-XBT_INLINE void xbt_strbuff_empty(xbt_strbuff_t b)
+/** @brief Remove any content from the buffer */
+inline void xbt_strbuff_clear(xbt_strbuff_t b)
 {
   b->used = 0;
   b->data[0] = '\0';
 }
 
+/** @brief Constructor */
 xbt_strbuff_t xbt_strbuff_new(void)
 {
   xbt_strbuff_t res = xbt_malloc(sizeof(s_xbt_strbuff_t));
   res->data = xbt_malloc(512);
   res->size = 512;
-  xbt_strbuff_empty(res);
+  xbt_strbuff_clear(res);
   return res;
 }
 
@@ -40,7 +34,7 @@ xbt_strbuff_t xbt_strbuff_new(void)
  *
  * Beware, the ctn is copied, you want to free it afterward, anyhow
  */
-XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
+inline xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 {
   xbt_strbuff_t res = xbt_malloc(sizeof(s_xbt_strbuff_t));
   res->data = xbt_strdup(ctn);
@@ -49,13 +43,13 @@ XBT_INLINE xbt_strbuff_t xbt_strbuff_new_from(const char *ctn)
 }
 
 /** @brief frees only the container without touching to the contained string */
-XBT_INLINE void xbt_strbuff_free_container(xbt_strbuff_t b)
+inline void xbt_strbuff_free_container(xbt_strbuff_t b)
 {
   free(b);
 }
 
 /** @brief frees the buffer and its content */
-XBT_INLINE void xbt_strbuff_free(xbt_strbuff_t b)
+inline void xbt_strbuff_free(xbt_strbuff_t b)
 {
   if (b) {
     free(b->data);
@@ -63,13 +57,13 @@ XBT_INLINE void xbt_strbuff_free(xbt_strbuff_t b)
   }
 }
 
+/** @brief Adds some content at the end of the buffer */
 void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
 {
   int addlen;
   int needed_space;
 
-  if (!b)
-    THROWF(arg_error, 0, "Asked to append stuff to NULL buffer");
+  xbt_assert(b, "Asked to append stuff to NULL buffer");
 
   addlen = strlen(toadd);
   needed_space = b->used + addlen + 1;
@@ -78,22 +72,19 @@ void xbt_strbuff_append(xbt_strbuff_t b, const char *toadd)
     b->size = MAX(minimal_increment + b->used, needed_space);
     b->data = xbt_realloc(b->data, b->size);
   }
-  strcpy(b->data + b->used, toadd);
+  strncpy(b->data + b->used, toadd, b->size-b->used);
   b->used += addlen;
 }
 
-XBT_INLINE void xbt_strbuff_chomp(xbt_strbuff_t b)
+/** @brief format some content and push it at the end of the buffer */
+void xbt_strbuff_printf(xbt_strbuff_t b, const char *fmt, ...)
 {
-  while (b->used && b->data[b->used - 1] == '\n') {
-    b->used--;
-    b->data[b->used] = '\0';
-  }
-}
-
-XBT_INLINE void xbt_strbuff_trim(xbt_strbuff_t b)
-{
-  xbt_str_trim(b->data, " ");
-  b->used = strlen(b->data);
+  va_list ap;
+  va_start(ap, fmt);
+  char *data = bvprintf(fmt, ap);
+  xbt_strbuff_append(b, data);
+  xbt_free(data);
+  va_end(ap);
 }
 
 /** @brief Replaces a set of variables by their values
@@ -105,14 +96,12 @@ XBT_INLINE void xbt_strbuff_trim(xbt_strbuff_t b)
  *
  * If the variable name contains spaces, use the brace version (ie, ${toto tutu})
  *
- * You can provide a default value to use if the variable is not set in the dict by using
- * '${var:=default}' or '${var:-default}'. These two forms are equivalent, even if they
- * shouldn't to respect the shell standard (:= form should set the value in the dict,
- * but does not) (BUG).
+ * You can provide a default value to use if the variable is not set in the dict by using  '${var:=default}' or
+ * '${var:-default}'. These two forms are equivalent, even if they shouldn't to respect the shell standard (:= form
+ * should set the value in the dict, but does not) (BUG).
  */
 void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 {
-
   char *end;                    /* pointers around the parsed chunk */
   int in_simple_quote = 0, in_double_quote = 0;
   int done = 0;
@@ -126,10 +115,8 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
     case '\\':
       /* Protected char; pass the protection */
       end++;
-      if (*end == '\0')
-        THROWF(arg_error, 0, "String ends with \\");
+      xbt_assert(*end != '\0', "String ends with \\");
       break;
-
     case '\'':
       if (!in_double_quote) {
         /* simple quote not protected by double ones, note it */
@@ -142,7 +129,6 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
         in_double_quote = !in_double_quote;
       }
       break;
-
     case '$':
       if (!in_simple_quote) {
         /* Go for the substitution. First search the variable name */
@@ -151,7 +137,6 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
         char *value, *default_value = NULL;
         int val_len;
         beg_subst = end;
-
 
         if (*(++end) == '{') {
           /* the variable name is enclosed in braces. */
@@ -166,55 +151,35 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
               char *p = end_var + 1;
               while (*p != '\0' && *p != '}')
                 p++;
-              if (*p == '\0')
-                THROWF(arg_error, 0,
-                       "Variable default value not terminated ('}' missing)");
+              xbt_assert (*p != '\0', "Variable default value not terminated ('}' missing)");
 
               default_value = xbt_malloc(p - end_var - 1);
               memcpy(default_value, end_var + 2, p - end_var - 2);
               default_value[p - end_var - 2] = '\0';
 
               end_subst = p + 1;        /* eat '}' */
-
               break;
             }
             end_var++;
           }
-          if (*end_var == '\0')
-            THROWF(arg_error, 0,
-                   "Variable name not terminated ('}' missing)");
+          xbt_assert(*end_var != '\0', "Variable name not terminated ('}' missing)");
 
           if (!end_subst)       /* already set if there's a default value */
             end_subst = end_var + 1;    /* also kill the } in the name */
 
-          if (end_var == beg_var)
-            THROWF(arg_error, 0, "Variable name empty (${} is not valid)");
-
-
+          xbt_assert(end_var != beg_var, "Variable name empty (${} is not valid)");
         } else {
           /* name given directly */
           beg_var = end;
           end_var = beg_var;
-          while (*end_var != '\0' && *end_var != ' ' && *end_var != '\t'
-                 && *end_var != '\n')
+          while (*end_var != '\0' && *end_var != ' ' && *end_var != '\t' && *end_var != '\n')
             end_var++;
           end_subst = end_var;
-          if (end_var == beg_var)
-            THROWF(arg_error, 0, "Variable name empty ($ is not valid)");
+          xbt_assert (end_var != beg_var, "Variable name empty ($ is not valid)");
         }
-/*        XBT_DEBUG("var='%.*s'; subst='%.*s'; End_var = '%s'",
-            end_var-beg_var,beg_var,
-            end_subst-beg_subst,beg_subst,
-            end_var);*/
 
         /* ok, we now have the variable name. Search the dictionary for the substituted value */
-        value =
-            xbt_dict_get_or_null_ext(patterns, beg_var, end_var - beg_var);
-/*        XBT_DEBUG("Deal with '%s'",b->data);
-        XBT_DEBUG("Search for %.*s, found %s (default value = %s)\n",
-            end_var-beg_var,beg_var,
-            (value?value:"(no value)"),
-            (default_value?default_value:"(no value)"));*/
+        value = xbt_dict_get_or_null_ext(patterns, beg_var, end_var - beg_var);
 
         if (value)
           value = xbt_strdup(value);
@@ -225,19 +190,11 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 
         /* En route for the actual substitution */
         val_len = strlen(value);
-//        XBT_DEBUG("val_len = %d, key_len=%d",val_len,end_subst-beg_subst);
         if (val_len <= end_subst - beg_subst) {
           /* enough room to do the substitute in place */
-//          XBT_DEBUG("Substitute key name by its value: ie '%.*s' by '%.*s'",end_subst-beg_subst,beg_subst,val_len,value);
           memmove(beg_subst, value, val_len);   /* substitute */
-//          XBT_DEBUG("String is now: '%s'",b->data);
-/*          XBT_DEBUG("Move end of string closer (%d chars moved) :\n-'%.*s%.*s'\n+'%.*s%s'",
-              b->used - (end_subst - b->data) + 1,
-              beg_subst-b->data,b->data,
-              b->used-(end_subst-b->data)+1,beg_subst+val_len,
-              beg_subst-b->data,b->data,
-              end_subst);*/
-          memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 1); /* move the end of the string closer */
+          /* move the end of the string closer */
+          memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 1);
 //          XBT_DEBUG("String is now: '%s'",b->data);
           end = beg_subst + val_len;    /* update the currently explored char in the overall loop */
 //          XBT_DEBUG("end of substituted section is now '%s'",end);
@@ -245,16 +202,14 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 //          XBT_DEBUG("Used:%d end:%d ending char:%d",b->used,end-b->data,*end);
         } else {
           /* we have to extend the data area */
-          int tooshort =
-              val_len - (end_subst - beg_subst) + 1 /*don't forget \0 */ ;
+          int tooshort = val_len - (end_subst - beg_subst) + 1 /* don't forget \0 */ ;
           int newused = b->used + tooshort;
           end += tooshort;      /* update the pointer of the overall loop */
-//          XBT_DEBUG("Too short (by %d chars; %d chars left in area)",val_len- (end_subst-beg_subst), b->size - b->used);
+//          XBT_DEBUG("Too short (by %d chars; %d chars left in area)",val_len-(end_subst-beg_subst),b->size - b->used);
           if (newused > b->size) {
-            /* We have to realloc the data area before (because b->size is too small). We have to update our pointers, too */
-            char *newdata = xbt_realloc(b->data,
-                                    b->used + MAX(minimal_increment,
-                                                  tooshort));
+            /* We have to realloc the data area before (because b->size is too small).
+             * We have to update our pointers, too */
+            char *newdata = xbt_realloc(b->data, b->used + MAX(minimal_increment, tooshort));
             int offset = newdata - b->data;
             b->data = newdata;
             b->size = b->used + MAX(minimal_increment, tooshort);
@@ -262,21 +217,20 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
             beg_subst += offset;
             end_subst += offset;
           }
-          memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 1); /* move the end of the string a bit further */
+          /* move the end of the string a bit further */
+          memmove(beg_subst + val_len, end_subst, b->used - (end_subst - b->data) + 1);
           memmove(beg_subst, value, val_len);   /* substitute */
           b->used = newused;
 //          XBT_DEBUG("String is now: %s",b->data);
         }
         free(value);
-
         free(default_value);
-
         end--;                  /* compensate the next end++ */
       }
       break;
-
     case '\0':
       done = 1;
+      break;
     }
     end++;
   }
@@ -285,7 +239,8 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
 #ifdef SIMGRID_TEST
 #include "xbt/strbuff.h"
 
-/* buffstr have 512 chars by default. Adding 1000 chars like this will force a resize, allowing us to test that b->used and b->size are consistent */
+/* buffstr have 512 chars by default. Adding 1000 chars like this will force a resize, allowing us to test that
+ * b->used and b->size are consistent */
 #define force_resize \
   "1.........1.........2.........3.........4.........5.........6.........7.........8.........9........." \
   "2.........1.........2.........3.........4.........5.........6.........7.........8.........9........." \
@@ -298,8 +253,7 @@ void xbt_strbuff_varsubst(xbt_strbuff_t b, xbt_dict_t patterns)
   "9.........1.........2.........3.........4.........5.........6.........7.........8.........9........." \
   "0.........1.........2.........3.........4.........5.........6.........7.........8.........9........."
 
-static void mytest(const char *input, const char *patterns,
-                   const char *expected)
+static void mytest(const char *input, const char *patterns, const char *expected)
 {
   xbt_dynar_t dyn_patterns;     /* splited string */
   xbt_dict_t p;                 /* patterns */
@@ -322,8 +276,7 @@ static void mytest(const char *input, const char *patterns,
   xbt_strbuff_append(sb, input);
   xbt_strbuff_varsubst(sb, p);
   xbt_dict_free(&p);
-  xbt_test_assert(!strcmp(sb->data, expected),
-                   "Input (%s) with patterns (%s) leads to (%s) instead of (%s)",
+  xbt_test_assert(!strcmp(sb->data, expected), "Input (%s) with patterns (%s) leads to (%s) instead of (%s)",
                    input, patterns, sb->data, expected);
   xbt_strbuff_free(sb);
 }
@@ -398,8 +351,7 @@ XBT_TEST_UNIT("xbt_strbuff_substitute", test_strbuff_substitute, "test the funct
   xbt_test_add("Value much longer, no braces, data before and after");
   mytest("toto $t tata", "t=" force_resize, "toto " force_resize " tata");
   xbt_test_add("Value much longer, braces, data before and after");
-  mytest("toto ${t} tata", "t=" force_resize,
-         "toto " force_resize " tata");
+  mytest("toto ${t} tata", "t=" force_resize, "toto " force_resize " tata");
 
   xbt_test_add("Escaped $");
   mytest("\\$tutu", "tutu=t", "\\$tutu");
@@ -417,7 +369,5 @@ XBT_TEST_UNIT("xbt_strbuff_substitute", test_strbuff_substitute, "test the funct
   mytest("${t:-toto}", "", "toto");
   xbt_test_add("Useless default value (variable already defined)");
   mytest("${t:-toto}", "t=TRUC", "TRUC");
-
 }
-
 #endif                          /* SIMGRID_TEST */

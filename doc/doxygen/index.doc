@@ -1,5 +1,5 @@
 /*!  
-@mainpage SimGrid Documentation
+@mainpage SimGrid User Documentation
 
 @image html simgrid_logo_2011.png  "Versatile Simulation of Distributed Systems, for Grids, Clouds, P2P and HPC systems"
 @image latex simgrid_logo_2011.png "Versatile Simulation of Distributed Systems, for Grids, Clouds, P2P and HPC systems"
@@ -11,19 +11,38 @@
 @endhtmlonly
 
 - @subpage getting_started
-- @subpage introduction
-- @subpage install
-- @subpage use
-  - @ref platform
-  - @ref deployment
-  - @ref tracing
-  - @ref options
-  - @ref help
-- @subpage advanced
-  - @ref bindings
-  - @ref pls
-  - @ref contributing
-  - @ref internals
+  - @subpage install
+  - @subpage install_yours
+- @subpage application
+  - @subpage s4u_api
+  - @subpage MSG_API
+  - @subpage SD_API
+  - @subpage SMPI_API
+  - @subpage MSG_Java
+- @subpage platform
+  - @subpage models
+  - @subpage platform_lua
+  - @subpage pls_ns3
+- @subpage scenario
+  - @subpage deployment
+  - @subpage options
+- @subpage outcomes
+  - @subpage outcomes_logs
+  - @subpage outcomes_vizu
+  - @subpage outcomes_MC
+- @subpage howto
+  - Energy, Clouds
+  - Scalability Tweaks
+  - @subpage tutorial
+  - @subpage examples
+- @subpage uhood
+  - Simulating Resource Sharing
+  - @subpage uhood_switch
+  - @subpage inside
+- @subpage community
+  - @subpage community_contact
+  - @subpage community_giveback
+  - @subpage community_extend
 - @subpage FAQ
 
 @htmlonly

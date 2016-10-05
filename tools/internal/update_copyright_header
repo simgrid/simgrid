@@ -1,0 +1,140 @@
+#!/bin/bash
+
+# Copyright (c) 2014. The SimGrid Team.
+# All rights reserved.
+
+# This program is free software; you can redistribute it and/or modify it
+# under the terms of the license (GNU LGPL) which comes with this package.
+
+if [ "$1" = "-t" ]; then
+    template=$2
+    shift 2
+else
+    template=$(git rev-parse --show-toplevel)/COPYRIGHT.template
+fi
+
+if [ $# -eq 0 ]; then
+    cat >&2 <<EOF
+Usage: $0 [-t COPYRIGHT.template] files...
+EOF
+    exit 1
+fi
+
+if [ ! -r "$template" ]; then
+    printf 'File not found: %s\n' "$template" >&2
+    exit 1
+fi
+
+printf 'Using template: %s\n' "$template"
+
+get_dates() {
+    local file=$1
+    local date
+    sed -n '/Copyright.*SimGrid/{
+              s/.*(c) \([[:digit:], -]*\).*/\1/
+              s/[, ]\+/\n/g
+              p
+            }' "$file" \
+    | while read date; do
+        case "$date" in
+            "")
+                ;;
+            *-*)
+                seq ${date/-/ }
+                ;;
+            *)
+                echo $date
+                ;;
+        esac
+    done
+    git log --format=%ad "$file" | cut -d\  -f5 | uniq
+}
+
+format_dates() {
+    local first
+    local last
+    local next
+    read first
+    last=$first
+    while read next; do
+        if [ $next -eq $((last + 1)) ]; then
+            last=$next
+        else
+            if [ $first -eq $last ]; then
+                printf '%d, ' $first
+            else
+                printf '%d-%d, ' $first $last
+            fi
+            first=$next
+            last=$first
+        fi
+    done
+    if [ $first -eq $last ]; then
+        printf '%d\n' $first
+    else
+        printf '%d-%d\n' $first $last
+    fi
+}
+
+tmp_head=$(mktemp)
+tmp_copy=$(mktemp)
+tmp_foot=$(mktemp)
+trap "rm -f \"$tmp_head\" \"$tmp_copy\" \"$tmp_foot\"" EXIT
+
+for file; do
+    echo "########## $file ##########"
+
+    if [ ! -f "$file" ]; then
+        echo "!!! skip"
+        continue
+    fi
+
+    if grep -q "Copyright.*SimGrid" $file ; then 
+        if head -n 1 "$file" | grep -q '^#!'; then
+            script=1
+        else
+            script=0
+        fi
+
+        ### 1. create new template
+        dates=$(get_dates "$file" | sort -u | format_dates)
+        sed "s/(c) [[:digit:], -]*\./(c) $dates./" "$template" > "$tmp_copy"
+        printf '\n' >> "$tmp_copy"
+
+        # fix comments for scripts
+        if [ $script = 1 ]; then
+            sed -i 's!^..!#!;s! *\*/!!' "$tmp_copy"
+        fi
+
+        ### 2. copy file body
+        if grep -q 'Copyright.*SimGrid' "$file"; then
+            sed '/Copyright.*SimGrid/,$d' "$file" > "$tmp_head"
+            sed -i '${\!^/\* *$!d}' "$tmp_head"
+            sed '1,/the terms of the license/d' "$file" > "$tmp_foot"
+        elif [ $script = 1 ]; then
+            head -n 1 "$file" > "$tmp_head"
+            tail -n +2  "$file" > "$tmp_foot"
+            printf '\n' >> "$tmp_head"
+        else
+            :> "$tmp_head"
+            cp "$file" "$tmp_foot"
+        fi
+        sed -i '1{\!^ *\*/!d};/[^[:space:]]/,$!d' "$tmp_foot"
+
+        ### 3. concatenate new template and file body into $file
+#        cat "$tmp_head"
+#        cat "$tmp_copy"
+#        cat "$tmp_foot"
+        cat "$tmp_head" "$tmp_copy" "$tmp_foot" > $file
+    else
+        echo "Pass: there is no SimGrid Copyright header."
+    fi ; # 
+done
+
+cat <<EOF
+
+All files processed.
+
+*** DO NOT FORGET TO DOUBLE CHECK CHANGES BEFORE DOING ANY COMMIT! ***
+
+EOF

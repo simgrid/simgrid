@@ -131,7 +131,7 @@ FULL_PATH_NAMES        = YES
 # If left blank the directory from which doxygen is run is used as the
 # path to strip.
 
-STRIP_FROM_PATH        = @top_srcdir@
+STRIP_FROM_PATH        = @CMAKE_HOME_DIRECTORY@
 
 # The STRIP_FROM_INC_PATH tag can be used to strip a user-defined part of
 # the path mentioned in the documentation of a class, which tells
@@ -154,7 +154,7 @@ SHORT_NAMES            = NO
 # comments will behave just like regular Qt-style comments
 # (thus requiring an explicit @brief command for a brief description.)
 
-JAVADOC_AUTOBRIEF      = NO
+JAVADOC_AUTOBRIEF      = YES
 
 # If the QT_AUTOBRIEF tag is set to YES then Doxygen will
 # interpret the first line (until the first dot) of a Qt-style
@@ -210,7 +210,7 @@ TCL_SUBST              =
 # For instance, some of the names that are used will be different. The list
 # of all members will be omitted, etc.
 
-OPTIMIZE_OUTPUT_FOR_C  = YES
+OPTIMIZE_OUTPUT_FOR_C  = NO
 
 # Set the OPTIMIZE_OUTPUT_JAVA tag to YES if your project consists of Java
 # sources only. Doxygen will then generate output that is more tailored for
@@ -342,7 +342,7 @@ LOOKUP_CACHE_SIZE      = 0
 # Private class members and static file members will be hidden unless
 # the EXTRACT_PRIVATE and EXTRACT_STATIC tags are set to YES
 
-EXTRACT_ALL            = NO
+EXTRACT_ALL            = YES
 
 # If the EXTRACT_PRIVATE tag is set to YES all private members of a class
 # will be included in the documentation.
@@ -385,7 +385,7 @@ EXTRACT_ANON_NSPACES   = NO
 # various overviews, but no documentation section is generated.
 # This option has no effect if EXTRACT_ALL is enabled.
 
-HIDE_UNDOC_MEMBERS     = YES
+HIDE_UNDOC_MEMBERS     = NO
 
 # If the HIDE_UNDOC_CLASSES tag is set to YES, Doxygen will hide all
 # undocumented classes that are normally visible in the class hierarchy.
@@ -399,7 +399,7 @@ HIDE_UNDOC_CLASSES     = YES
 # If set to NO (the default) these declarations will be included in the
 # documentation.
 
-HIDE_FRIEND_COMPOUNDS  = NO
+HIDE_FRIEND_COMPOUNDS  = YES
 
 # If the HIDE_IN_BODY_DOCS tag is set to YES, Doxygen will hide any
 # documentation blocks found inside the body of a function.
@@ -616,7 +616,7 @@ WARN_IF_DOC_ERROR      = YES
 # wrong or incomplete parameter documentation, but not about the absence of
 # documentation.
 
-WARN_NO_PARAMDOC       = YES
+WARN_NO_PARAMDOC       = NO
 
 # The WARN_FORMAT tag determines the format of the warning messages that
 # doxygen can produce. The string should contain the $file, $line, and $text
@@ -644,82 +644,66 @@ WARN_LOGFILE           =
 
 INPUT                  = doxygen/index.doc \
                          doxygen/getting_started.doc \
-                         doxygen/introduction.doc \
-                         doxygen/install.doc \
-                         doxygen/use.doc \   
-                           doxygen/platform.doc \
+                           doxygen/install.doc \
+			   doxygen/install_yours.doc \
+			 doxygen/application.doc \
+                           doxygen/java.doc \
+                         doxygen/platform.doc \
+			   doxygen/models.doc \
+                           doxygen/ns3.doc \
+			   doxygen/platform_lua.doc \
+			 doxygen/scenario.doc \
                            doxygen/deployment.doc \
                            doxygen/options.doc \
-                           doxygen/help.doc \
- 			 doxygen/advanced.doc \
-                           doxygen/pls.doc \
-                           doxygen/bindings.doc \
-			   doxygen/internals.doc \
+			 doxygen/outcomes.doc \
+			   doxygen/outcomes_logs.doc \
+			   doxygen/outcomes_vizu.doc \
+			   doxygen/outcomes_MC.doc \
+                         doxygen/tutorial.doc \
+                         doxygen/examples.doc \
+			 doxygen/howtos.doc \
+ 			 doxygen/uhood.doc \
+ 			   doxygen/uhood_switch.doc \
+			   doxygen/inside.doc \
 			     doxygen/inside_doxygen.doc \
 			     doxygen/inside_extending.doc \
 			     doxygen/inside_cmake.doc \
-			     doxygen/inside_autotests.doc \
+			     doxygen/inside_tests.doc \
 			     doxygen/inside_release.doc \
-			   doxygen/contributing.doc \
-                         doxygen/tracing.doc \
+			 doxygen/community.doc \
 			 doxygen/FAQ.doc \
-			 doxygen/modules.doc \
+			 doxygen/module-msg.doc \
+			 doxygen/module-sd.doc \
+			 doxygen/module-index.doc \
                            doxygen/module-xbt.doc \
-                           doxygen/module-msg.doc \
-                           doxygen/module-sd.doc \
+                           doxygen/module-s4u.doc \
                            doxygen/module-surf.doc \
                            doxygen/module-simix.doc \
                            doxygen/module-smpi.doc \
                            doxygen/module-trace.doc \
-                           index-API.doc \
-                         @top_srcdir@/doc/doxygen/logcategories.doc \
-                         @top_srcdir@/src/instr/ \
-                         @bindir@/include \
-                         @top_srcdir@/include/ \
-                         @top_srcdir@/include/msg \
-                         @top_srcdir@/include/xbt \
-                         @top_srcdir@/include/simdag \
-                         @top_srcdir@/include/simgrid \
-                         @top_srcdir@/src/include/surf \
-                         @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/src/surf/ \
-                         @top_srcdir@/src/surf/plugins/ \
-                         @top_srcdir@/src/msg/ \
-                         @top_srcdir@/src/simdag \
-                         @top_srcdir@/src/simix \
-                         @bindir@/src
-
-
-###################################################
-##  PLEASE DON'T MESS WITH THE ORDER OF EXAMPLES ## (unless you know what you are doing, of course)
-###################################################
-
-INPUT +=                 @top_srcdir@/examples/msg/sendrecv/sendrecv.c \
-                         @top_srcdir@/examples/msg/masterslave/masterslave_forwarder.c \
-                         @top_srcdir@/examples/msg/migration \
-                         @top_srcdir@/examples/msg/suspend \
-                         @top_srcdir@/examples/msg/properties \
-                         @top_srcdir@/examples/msg/parallel_task \
-                         @top_srcdir@/examples/msg/priority \
-                         @top_srcdir@/examples/msg/icomms/peer.c \
-                         @top_srcdir@/examples/msg/icomms/peer2.c \
-                         @top_srcdir@/examples/msg/icomms/peer3.c \
-                         @top_srcdir@/examples/msg/tracing/simple.c \
-                         @top_srcdir@/examples/msg/tracing/ms.c \
-                         @top_srcdir@/examples/msg/tracing/categories.c \
-                         @top_srcdir@/examples/msg/tracing/procmig.c \
-                         @top_srcdir@/examples/msg/tracing/trace_platform.c \
-                         @top_srcdir@/examples/msg/tracing/user_variables.c \
-                         @top_srcdir@/examples/msg/tracing/link_user_variables.c \
-                         @top_srcdir@/examples/msg/tracing/link_srcdst_user_variables.c \
-                         @top_srcdir@/examples/msg/ns3 \
-                         @top_srcdir@/examples/msg/gtnets \
-                         @top_srcdir@/examples/msg/io \
-                         @top_srcdir@/examples/msg/gpu \
-                         @top_srcdir@/examples/msg/actions \
-                         @top_srcdir@/examples/msg/token_ring \
-                         @top_srcdir@/examples/msg/pmm \
-                         @top_srcdir@/examples/msg/chord
+                         @CMAKE_HOME_DIRECTORY@/doc/doxygen/logcategories.doc \
+                         @CMAKE_HOME_DIRECTORY@/include/ \
+                         @CMAKE_HOME_DIRECTORY@/include/xbt \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid \
+                         @CMAKE_HOME_DIRECTORY@/include/simgrid/s4u \
+                         @CMAKE_HOME_DIRECTORY@/src/include/surf \
+                         @CMAKE_HOME_DIRECTORY@/src/msg/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/activity/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/context/ \
+                         @CMAKE_HOME_DIRECTORY@/src/kernel/routing/ \
+                         @CMAKE_HOME_DIRECTORY@/src/instr/ \
+                         @CMAKE_HOME_DIRECTORY@/src/surf/ \
+                         @CMAKE_HOME_DIRECTORY@/src/surf/plugins/ \
+                         @CMAKE_HOME_DIRECTORY@/src/s4u/ \
+                         @CMAKE_HOME_DIRECTORY@/src/smpi/ \
+                         @CMAKE_HOME_DIRECTORY@/src/simdag \
+                         @CMAKE_HOME_DIRECTORY@/src/simix \
+                         @CMAKE_HOME_DIRECTORY@/src/xbt/ \
+                         @CMAKE_BINARY_DIR@/include \
+                         @CMAKE_BINARY_DIR@/src \
+                         @CMAKE_HOME_DIRECTORY@/examples/msg/README.doc \
+                         @CMAKE_HOME_DIRECTORY@/examples/s4u/README.doc
 
 # This tag can be used to specify the character encoding of the source files
 # that doxygen parses. Internally doxygen uses the UTF-8 encoding, which is
@@ -743,7 +727,7 @@ FILE_PATTERNS          =
 # should be searched for input files as well. Possible values are YES and NO.
 # If left blank NO is used.
 
-RECURSIVE              = NO
+RECURSIVE              = YES
 
 # The EXCLUDE tag can be used to specify files and/or directories that should be
 # excluded from the INPUT source files. This way you can easily exclude a
@@ -780,9 +764,11 @@ EXCLUDE_SYMBOLS        =
 # the \include command).
 
 EXAMPLE_PATH           = ./ \
-                         @top_srcdir@/src/surf/ \
-                         @top_srcdir@/src/xbt/ \
-                         @top_srcdir@/examples
+                         @CMAKE_HOME_DIRECTORY@/src/surf/ \
+                         @CMAKE_HOME_DIRECTORY@/src/surf/xml/ \
+                         @CMAKE_HOME_DIRECTORY@/src/xbt/ \
+                         @CMAKE_HOME_DIRECTORY@/examples \
+                         @CMAKE_HOME_DIRECTORY@/doc/example_lists
 
 # If the value of the EXAMPLE_PATH tag contains directories, you can use the
 # EXAMPLE_PATTERNS tag to specify one or more wildcard pattern (like *.cpp
@@ -802,8 +788,8 @@ EXAMPLE_RECURSIVE      = YES
 # directories that contain image that are included in the documentation (see
 # the \image command).
 
-IMAGE_PATH             = @top_srcdir@/doc \
-                         @top_srcdir@/doc/webcruft
+IMAGE_PATH             = @CMAKE_HOME_DIRECTORY@/doc \
+                         @CMAKE_HOME_DIRECTORY@/doc/webcruft
 
 # The INPUT_FILTER tag can be used to specify a program that doxygen should
 # invoke to filter for each input file. Doxygen will invoke the filter program
@@ -1007,7 +993,7 @@ HTML_COLORSTYLE_GAMMA  = 80
 # page will contain the date and time when the page was generated. Setting
 # this to NO can help when comparing the output of multiple runs.
 
-HTML_TIMESTAMP         = YES
+HTML_TIMESTAMP         = NO
 
 # If the HTML_DYNAMIC_SECTIONS tag is set to YES then the generated HTML
 # documentation will contain sections that can be hidden and shown after the
@@ -1238,7 +1224,7 @@ FORMULA_TRANSPARENT    = YES
 # output. When enabled you may also need to install MathJax separately and
 # configure the path to it using the MATHJAX_RELPATH option.
 
-USE_MATHJAX            = NO
+USE_MATHJAX            = YES
 
 # When MathJax is enabled you need to specify the location relative to the
 # HTML output directory using the MATHJAX_RELPATH option. The destination
@@ -1250,7 +1236,7 @@ USE_MATHJAX            = NO
 # However, it is strongly recommended to install a local
 # copy of MathJax from http://www.mathjax.org before deployment.
 
-MATHJAX_RELPATH        = http://www.mathjax.org/mathjax
+MATHJAX_RELPATH        = https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-AMS_HTML
 
 # The MATHJAX_EXTENSIONS tag can be used to specify one or MathJax extension
 # names that should be enabled during MathJax rendering.
@@ -1284,97 +1270,7 @@ SERVER_BASED_SEARCH    = NO
 # If the GENERATE_LATEX tag is set to YES (the default) Doxygen will
 # generate Latex output.
 
-GENERATE_LATEX         = YES
-
-# The LATEX_OUTPUT tag is used to specify where the LaTeX docs will be put.
-# If a relative path is entered the value of OUTPUT_DIRECTORY will be
-# put in front of it. If left blank `latex' will be used as the default path.
-
-LATEX_OUTPUT           = latex
-
-# The LATEX_CMD_NAME tag can be used to specify the LaTeX command name to be
-# invoked. If left blank `latex' will be used as the default command name.
-# Note that when enabling USE_PDFLATEX this option is only used for
-# generating bitmaps for formulas in the HTML output, but not in the
-# Makefile that is written to the output directory.
-
-LATEX_CMD_NAME         = latex
-
-# The MAKEINDEX_CMD_NAME tag can be used to specify the command name to
-# generate index for LaTeX. If left blank `makeindex' will be used as the
-# default command name.
-
-MAKEINDEX_CMD_NAME     = makeindex
-
-# If the COMPACT_LATEX tag is set to YES Doxygen generates more compact
-# LaTeX documents. This may be useful for small projects and may help to
-# save some trees in general.
-
-COMPACT_LATEX          = YES
-
-# The PAPER_TYPE tag can be used to set the paper type that is used
-# by the printer. Possible values are: a4, letter, legal and
-# executive. If left blank a4wide will be used.
-
-PAPER_TYPE             = a4wide
-
-# The EXTRA_PACKAGES tag can be to specify one or more names of LaTeX
-# packages that should be included in the LaTeX output.
-
-EXTRA_PACKAGES         = pdfpages
-
-# The LATEX_HEADER tag can be used to specify a personal LaTeX header for
-# the generated latex document. The header should contain everything until
-# the first chapter. If it is left blank doxygen will generate a
-# standard header. Notice: only use this tag if you know what you are doing!
-
-LATEX_HEADER           =
-
-# The LATEX_FOOTER tag can be used to specify a personal LaTeX footer for
-# the generated latex document. The footer should contain everything after
-# the last chapter. If it is left blank doxygen will generate a
-# standard footer. Notice: only use this tag if you know what you are doing!
-
-LATEX_FOOTER           =
-
-# If the PDF_HYPERLINKS tag is set to YES, the LaTeX that is generated
-# is prepared for conversion to pdf (using ps2pdf). The pdf file will
-# contain links (just like the HTML output) instead of page references
-# This makes the output suitable for online browsing using a pdf viewer.
-
-PDF_HYPERLINKS         = YES
-
-# If the USE_PDFLATEX tag is set to YES, pdflatex will be used instead of
-# plain latex in the generated Makefile. Set this option to YES to get a
-# higher quality PDF documentation.
-
-USE_PDFLATEX           = YES
-
-# If the LATEX_BATCHMODE tag is set to YES, doxygen will add the \\batchmode.
-# command to the generated LaTeX files. This will instruct LaTeX to keep
-# running if errors occur, instead of asking the user for help.
-# This option is also used when generating formulas in HTML.
-
-LATEX_BATCHMODE        = NO
-
-# If LATEX_HIDE_INDICES is set to YES then doxygen will not
-# include the index chapters (such as File Index, Compound Index, etc.)
-# in the output.
-
-LATEX_HIDE_INDICES     = YES
-
-# If LATEX_SOURCE_CODE is set to YES then doxygen will include
-# source code with syntax highlighting in the LaTeX output.
-# Note that which sources are shown also depends on other settings
-# such as SOURCE_BROWSER.
-
-LATEX_SOURCE_CODE      = NO
-
-# The LATEX_BIB_STYLE tag can be used to specify the style to use for the
-# bibliography, e.g. plainnat, or ieeetr. The default style is "plain". See
-# http://en.wikipedia.org/wiki/BibTeX for more info.
-
-LATEX_BIB_STYLE        = plain
+GENERATE_LATEX         = NO
 
 #---------------------------------------------------------------------------
 # configuration options related to the RTF output
@@ -1552,16 +1448,13 @@ INCLUDE_FILE_PATTERNS  =
 # undefined via #undef or recursively expanded use the := operator
 # instead of the = operator.
 
-PREDEFINED             = DOXYGEN \
-                         DOXYGEN_SKIP_IT \
-                         XBT_PUBLIC(type)="extern type" \
+PREDEFINED             = XBT_PUBLIC(type)="extern type" \
                          XBT_EXPORT_NO_IMPORT(type)=type \
                          XBT_IMPORT_NO_EXPORT(type)=type \
                          XBT_PUBLIC_DATA(type)="extern type" \
                          XBT_PUBLIC_CLASS=class \
                          XBT_INLINE= \
-                         HAVE_TRACING \
-                         MSG_USE_DEPRECATED
+			 XBT_PRIVATE=
 
 # If the MACRO_EXPANSION and EXPAND_ONLY_PREDEF tags are set to YES then
 # this tag can be used to specify a list of macro names that should be expanded.

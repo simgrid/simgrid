@@ -1,4 +1,4 @@
-/* Copyright (c) 2009-2011, 2013-2014. The SimGrid Team.
+/* Copyright (c) 2009-2011, 2013-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -6,63 +6,48 @@
 
 #include "cpu_cas01.hpp"
 #include "cpu_ti.hpp"
-#include "plugins/energy.hpp"
 #include "maxmin_private.hpp"
 #include "simgrid/sg_config.h"
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu,
-                                "Logging specific to the SURF CPU IMPROVED module");
-
-/*************
- * CallBacks *
- *************/
-
-static void cpu_define_callbacks()
-{
-  sg_platf_host_add_cb(cpu_parse_init);
-  sg_platf_postparse_add_cb(cpu_add_traces);
-}
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu_cas, surf_cpu, "Logging specific to the SURF CPU IMPROVED module");
 
 /*********
  * Model *
  *********/
 void surf_cpu_model_init_Cas01()
 {
-  char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
-
   xbt_assert(!surf_cpu_model_pm);
   xbt_assert(!surf_cpu_model_vm);
 
+  char *optim = xbt_cfg_get_string("cpu/optim");
   if (!strcmp(optim, "TI")) {
     surf_cpu_model_init_ti();
     return;
   }
 
-  surf_cpu_model_pm = new CpuCas01Model();
-  surf_cpu_model_vm  = new CpuCas01Model();
+  surf_cpu_model_pm = new simgrid::surf::CpuCas01Model();
+  all_existing_models->push_back(surf_cpu_model_pm);
 
-  cpu_define_callbacks();
-  ModelPtr model_pm = surf_cpu_model_pm;
-  ModelPtr model_vm = surf_cpu_model_vm;
-  xbt_dynar_push(model_list, &model_pm);
-  xbt_dynar_push(model_list, &model_vm);
+  surf_cpu_model_vm  = new simgrid::surf::CpuCas01Model();
+  all_existing_models->push_back(surf_cpu_model_vm);
 }
 
-CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
+namespace simgrid {
+namespace surf {
+
+CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
 {
-  char *optim = xbt_cfg_get_string(_sg_cfg_set, "cpu/optim");
-  int select = xbt_cfg_get_boolean(_sg_cfg_set, "cpu/maxmin_selective_update");
+  char *optim = xbt_cfg_get_string("cpu/optim");
+  int select = xbt_cfg_get_boolean("cpu/maxmin-selective-update");
 
   if (!strcmp(optim, "Full")) {
-    p_updateMechanism = UM_FULL;
-    m_selectiveUpdate = select;
+    updateMechanism_ = UM_FULL;
+    selectiveUpdate_ = select;
   } else if (!strcmp(optim, "Lazy")) {
-    p_updateMechanism = UM_LAZY;
-    m_selectiveUpdate = 1;
+    updateMechanism_ = UM_LAZY;
+    selectiveUpdate_ = 1;
     xbt_assert((select == 1)
-               ||
-               (xbt_cfg_is_default_value
-                (_sg_cfg_set, "cpu/maxmin_selective_update")),
+               || (xbt_cfg_is_default_value("cpu/maxmin-selective-update")),
                "Disabling selective update while using the lazy update mechanism is dumb!");
   } else {
     xbt_die("Unsupported optimization (%s) for this model", optim);
@@ -70,147 +55,55 @@ CpuCas01Model::CpuCas01Model() : CpuModel("cpu")
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
 
-  if (getUpdateMechanism() == UM_LAZY) {
-	shareResources = &CpuCas01Model::shareResourcesLazy;
-	updateActionsState = &CpuCas01Model::updateActionsStateLazy;
-
-  } else if (getUpdateMechanism() == UM_FULL) {
-	shareResources = &CpuCas01Model::shareResourcesFull;
-	updateActionsState = &CpuCas01Model::updateActionsStateFull;
-  } else
-    xbt_die("Invalid cpu update mechanism!");
-
-  if (!p_maxminSystem) {
-    p_maxminSystem = lmm_system_new(m_selectiveUpdate);
-  }
+  maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
-    p_actionHeap = xbt_heap_new(8, NULL);
-    xbt_heap_set_update_callback(p_actionHeap,  surf_action_lmm_update_index_heap);
-    p_modifiedSet = new ActionLmmList();
-    p_maxminSystem->keep_track = p_modifiedSet;
+    actionHeap_ = xbt_heap_new(8, nullptr);
+    xbt_heap_set_update_callback(actionHeap_,  surf_action_lmm_update_index_heap);
+    modifiedSet_ = new ActionLmmList();
+    maxminSystem_->keep_track = modifiedSet_;
   }
 }
 
 CpuCas01Model::~CpuCas01Model()
 {
-  lmm_system_free(p_maxminSystem);
-  p_maxminSystem = NULL;
+  lmm_system_free(maxminSystem_);
+  maxminSystem_ = nullptr;
+  xbt_heap_free(actionHeap_);
+  delete modifiedSet_;
 
-  if (p_actionHeap)
-    xbt_heap_free(p_actionHeap);
-  delete p_modifiedSet;
-
-  surf_cpu_model_pm = NULL;
+  surf_cpu_model_pm = nullptr;
 
   delete p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
 }
 
-CpuPtr CpuCas01Model::createCpu(const char *name, xbt_dynar_t power_peak,
-		                  int pstate, double power_scale,
-                          tmgr_trace_t power_trace, int core,
-                          e_surf_resource_state_t state_initial,
-                          tmgr_trace_t state_trace,
-                          xbt_dict_t cpu_properties)
+Cpu *CpuCas01Model::createCpu(simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
 {
-  CpuPtr cpu = NULL;
-  xbt_assert(!surf_cpu_resource_priv(surf_cpu_resource_by_name(name)),
-             "Host '%s' declared several times in the platform file",
-             name);
-  xbt_assert(xbt_dynar_getfirst_as(power_peak, double) > 0.0,
-      "Power has to be >0.0");
-  xbt_assert(core > 0, "Invalid number of cores %d", core);
-
-  cpu = new CpuCas01(this, name, power_peak, pstate, power_scale, power_trace, core, state_initial, state_trace, cpu_properties);
-  xbt_lib_set(host_lib, name, SURF_CPU_LEVEL, cpu);
-
-  return cpu;
+  return new CpuCas01(this, host, speedPerPstate, core);
 }
 
-double CpuCas01Model::shareResourcesFull(double /*now*/)
+double CpuCas01Model::next_occuring_event_full(double /*now*/)
 {
-  return Model::shareResourcesMaxMin(getRunningActionSet(),
-                             p_maxminSystem, lmm_solve);
-}
-
-void CpuCas01Model::addTraces()
-{
-  xbt_dict_cursor_t cursor = NULL;
-  char *trace_name, *elm;
-  static int called = 0;
-  if (called)
-    return;
-  called = 1;
-
-  /* connect all traces relative to hosts */
-  xbt_dict_foreach(trace_connect_list_host_avail, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01Ptr host = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
-
-    xbt_assert(host, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    host->setStateEvent(tmgr_history_add_trace(history, trace, 0.0, 0, host));
-  }
-
-  xbt_dict_foreach(trace_connect_list_power, cursor, trace_name, elm) {
-    tmgr_trace_t trace = (tmgr_trace_t) xbt_dict_get_or_null(traces_set_list, trace_name);
-    CpuCas01Ptr host = static_cast<CpuCas01Ptr>(surf_cpu_resource_priv(surf_cpu_resource_by_name(elm)));
-
-    xbt_assert(host, "Host %s undefined", elm);
-    xbt_assert(trace, "Trace %s undefined", trace_name);
-
-    host->setPowerEvent(tmgr_history_add_trace(history, trace, 0.0, 0, host));
-  }
+  return Model::shareResourcesMaxMin(getRunningActionSet(), maxminSystem_, lmm_solve);
 }
 
 /************
  * Resource *
  ************/
-CpuCas01::CpuCas01(CpuCas01ModelPtr model, const char *name, xbt_dynar_t powerPeak,
-                         int pstate, double powerScale, tmgr_trace_t powerTrace, int core,
-                         e_surf_resource_state_t stateInitial, tmgr_trace_t stateTrace,
-                         xbt_dict_t properties)
-: Cpu(model, name, properties,
-	  lmm_constraint_new(model->getMaxminSystem(), this, core * powerScale * xbt_dynar_get_as(powerPeak, pstate, double)),
-	  core, xbt_dynar_get_as(powerPeak, pstate, double), powerScale) {
-  p_powerEvent = NULL;
-  p_powerPeakList = powerPeak;
-  m_pstate = pstate;
-
-  XBT_DEBUG("CPU create: peak=%f, pstate=%d", m_powerPeak, m_pstate);
-
-  m_core = core;
-  setState(stateInitial);
-  if (powerTrace)
-    p_powerEvent = tmgr_history_add_trace(history, powerTrace, 0.0, 0, this);
-
-  if (stateTrace)
-    p_stateEvent = tmgr_history_add_trace(history, stateTrace, 0.0, 0, this);
+CpuCas01::CpuCas01(CpuCas01Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
+: Cpu(model, host, lmm_constraint_new(model->getMaxminSystem(), this, core * speedPerPstate->front()),
+    speedPerPstate, core)
+{
 }
 
-CpuCas01::~CpuCas01(){
+CpuCas01::~CpuCas01()
+{
   if (getModel() == surf_cpu_model_pm)
-    xbt_dynar_free(&p_powerPeakList);
+    speedPerPstate_.clear();
 }
 
-void CpuCas01::setStateEvent(tmgr_trace_event_t stateEvent)
-{
-  p_stateEvent = stateEvent;
-}
-
-void CpuCas01::setPowerEvent(tmgr_trace_event_t powerEvent)
-{
-  p_powerEvent = powerEvent;
-}
-
-xbt_dynar_t CpuCas01::getPowerPeakList(){
-  return p_powerPeakList;
-}
-
-int CpuCas01::getPState()
-{
-  return m_pstate;
+std::vector<double> * CpuCas01::getSpeedPeakList(){
+  return &speedPerPstate_;
 }
 
 bool CpuCas01::isUsed()
@@ -218,107 +111,98 @@ bool CpuCas01::isUsed()
   return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
 }
 
-void CpuCas01::updateState(tmgr_trace_event_t event_type, double value, double date)
-{
-  lmm_variable_t var = NULL;
-  lmm_element_t elem = NULL;
+/** @brief take into account changes of speed (either load or max) */
+void CpuCas01::onSpeedChange() {
+  lmm_variable_t var = nullptr;
+  lmm_element_t elem = nullptr;
 
-  if (event_type == p_powerEvent) {
-	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
-	xbt_assert(m_core == 1, "FIXME: add power scaling code also for constraint_core[i]");
-
-    m_powerScale = value;
     lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
-                                m_core * m_powerScale *
-                                m_powerPeak);
-#ifdef HAVE_TRACING
-    TRACE_surf_host_set_power(date, getName(),
-                              m_core * m_powerScale *
-                              m_powerPeak);
-#endif
-    while ((var = lmm_get_var_from_cnst
-            (getModel()->getMaxminSystem(), getConstraint(), &elem))) {
-      CpuCas01ActionPtr action = static_cast<CpuCas01ActionPtr>(lmm_variable_id(var));
+                                coresAmount_ * speed_.scale * speed_.peak);
+    while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
+      CpuCas01Action *action = static_cast<CpuCas01Action*>(lmm_variable_id(var));
 
-      lmm_update_variable_bound(getModel()->getMaxminSystem(),
-                                action->getVariable(),
-                                m_powerScale * m_powerPeak);
+      lmm_update_variable_bound(getModel()->getMaxminSystem(), action->getVariable(), speed_.scale * speed_.peak);
     }
-    if (tmgr_trace_event_free(event_type))
-      p_powerEvent = NULL;
-  } else if (event_type == p_stateEvent) {
-	/* TODO (Hypervisor): do the same thing for constraint_core[i] */
-    xbt_assert(m_core == 1, "FIXME: add state change code also for constraint_core[i]");
+
+  Cpu::onSpeedChange();
+}
+
+void CpuCas01::apply_event(tmgr_trace_iterator_t event, double value)
+{
+  if (event == speed_.event) {
+    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
+    xbt_assert(coresAmount_ == 1, "FIXME: add speed scaling code also for constraint_core[i]");
+
+    speed_.scale = value;
+    onSpeedChange();
+
+    tmgr_trace_event_unref(&speed_.event);
+  } else if (event == stateEvent_) {
+    /* TODO (Hypervisor): do the same thing for constraint_core[i] */
+    xbt_assert(coresAmount_ == 1, "FIXME: add state change code also for constraint_core[i]");
 
     if (value > 0) {
-      if(getState() == SURF_RESOURCE_OFF)
-        xbt_dynar_push_as(host_that_restart, char*, (char *)getName());
-      setState(SURF_RESOURCE_ON);
+      if(isOff())
+        host_that_restart.push_back(getHost());
+      turnOn();
     } else {
       lmm_constraint_t cnst = getConstraint();
+      lmm_variable_t var = nullptr;
+      lmm_element_t elem = nullptr;
+      double date = surf_get_clock();
 
-      setState(SURF_RESOURCE_OFF);
+      turnOff();
 
       while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), cnst, &elem))) {
-        ActionPtr action = static_cast<ActionPtr>(lmm_variable_id(var));
+        Action *action = static_cast<Action*>(lmm_variable_id(var));
 
-        if (action->getState() == SURF_ACTION_RUNNING ||
-            action->getState() == SURF_ACTION_READY ||
-            action->getState() == SURF_ACTION_NOT_IN_THE_SYSTEM) {
+        if (action->getState() == Action::State::running ||
+            action->getState() == Action::State::ready ||
+            action->getState() == Action::State::not_in_the_system) {
           action->setFinishTime(date);
-          action->setState(SURF_ACTION_FAILED);
+          action->setState(Action::State::failed);
         }
       }
     }
-    if (tmgr_trace_event_free(event_type))
-      p_stateEvent = NULL;
-  } else {
-    XBT_CRITICAL("Unknown event ! \n");
-    xbt_abort();
-  }
+    tmgr_trace_event_unref(&stateEvent_);
 
-  return;
+  } else {
+    xbt_die("Unknown event!\n");
+  }
 }
 
-CpuActionPtr CpuCas01::execute(double size)
+CpuAction *CpuCas01::execution_start(double size)
 {
-
   XBT_IN("(%s,%g)", getName(), size);
-  CpuCas01ActionPtr action = new CpuCas01Action(getModel(), size, getState() != SURF_RESOURCE_ON,
-		                                              m_powerScale * m_powerPeak, getConstraint());
+  CpuCas01Action *action = new CpuCas01Action(getModel(), size, isOff(), speed_.scale * speed_.peak, getConstraint());
 
   XBT_OUT();
   return action;
 }
 
-CpuActionPtr CpuCas01::sleep(double duration)
+CpuAction *CpuCas01::sleep(double duration)
 {
   if (duration > 0)
     duration = MAX(duration, sg_surf_precision);
 
   XBT_IN("(%s,%g)", getName(), duration);
-  CpuCas01ActionPtr action = new CpuCas01Action(getModel(), 1.0, getState() != SURF_RESOURCE_ON,
-                                                      m_powerScale * m_powerPeak, getConstraint());
-
+  CpuCas01Action *action = new CpuCas01Action(getModel(), 1.0, isOff(), speed_.scale * speed_.peak, getConstraint());
 
   // FIXME: sleep variables should not consume 1.0 in lmm_expand
-  action->m_maxDuration = duration;
-  action->m_suspended = 2;
+  action->maxDuration_ = duration;
+  action->suspended_ = 2;
   if (duration == NO_MAX_DURATION) {
-    /* Move to the *end* of the corresponding action set. This convention
-       is used to speed up update_resource_state  */
-	action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
-    action->p_stateSet = static_cast<CpuCas01ModelPtr>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
+    /* Move to the *end* of the corresponding action set. This convention is used to speed up update_resource_state */
+    action->getStateSet()->erase(action->getStateSet()->iterator_to(*action));
+    action->stateSet_ = static_cast<CpuCas01Model*>(getModel())->p_cpuRunningActionSetThatDoesNotNeedBeingChecked;
     action->getStateSet()->push_back(*action);
   }
 
-  lmm_update_variable_weight(getModel()->getMaxminSystem(),
-                             action->getVariable(), 0.0);
+  lmm_update_variable_weight(getModel()->getMaxminSystem(), action->getVariable(), 0.0);
   if (getModel()->getUpdateMechanism() == UM_LAZY) {     // remove action from the heap
     action->heapRemove(getModel()->getActionHeap());
-    // this is necessary for a variable with weight 0 since such
-    // variables are ignored in lmm and we need to set its max_duration
-    // correctly at the next call to share_resources
+    // this is necessary for a variable with weight 0 since such variables are ignored in lmm and we need to set its
+    // max_duration correctly at the next call to share_resources
     getModel()->getModifiedSet()->push_front(*action);
   }
 
@@ -326,48 +210,22 @@ CpuActionPtr CpuCas01::sleep(double duration)
   return action;
 }
 
-double CpuCas01::getCurrentPowerPeak()
-{
-  return m_powerPeak;
-}
-
-double CpuCas01::getPowerPeakAt(int pstate_index)
-{
-  xbt_dynar_t plist = p_powerPeakList;
-  xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
-
-  return xbt_dynar_get_as(plist, pstate_index, double);
-}
-
-int CpuCas01::getNbPstates()
-{
-  return xbt_dynar_length(p_powerPeakList);
-}
-
-void CpuCas01::setPowerPeakAt(int pstate_index)
-{
-  xbt_dynar_t plist = p_powerPeakList;
-  xbt_assert((pstate_index <= (int)xbt_dynar_length(plist)), "Invalid parameters (pstate index out of bounds)");
-
-  double new_power_peak = xbt_dynar_get_as(plist, pstate_index, double);
-  m_pstate = pstate_index;
-  m_powerPeak = new_power_peak;
-}
-
 /**********
  * Action *
  **********/
 
-CpuCas01Action::CpuCas01Action(ModelPtr model, double cost, bool failed, double power, lmm_constraint_t constraint)
- : CpuAction(model, cost, failed,
-		     lmm_variable_new(model->getMaxminSystem(), this,
-		     1.0, power, 1))
+CpuCas01Action::CpuCas01Action(Model *model, double cost, bool failed, double speed, lmm_constraint_t constraint)
+ : CpuAction(model, cost, failed, lmm_variable_new(model->getMaxminSystem(), this, 1.0, speed, 1))
 {
-  m_suspended = 0;
   if (model->getUpdateMechanism() == UM_LAZY) {
-    m_indexHeap = -1;
-    m_lastUpdate = surf_get_clock();
-    m_lastValue = 0.0;
+    indexHeap_ = -1;
+    lastUpdate_ = surf_get_clock();
+    lastValue_ = 0.0;
   }
   lmm_expand(model->getMaxminSystem(), constraint, getVariable(), 1.0);
+}
+
+CpuCas01Action::~CpuCas01Action()=default;
+
+}
 }

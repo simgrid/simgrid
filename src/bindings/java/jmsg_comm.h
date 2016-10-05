@@ -1,6 +1,6 @@
 /* Functions related to the java comm instances                             */
 
-/* Copyright (c) 2012-2014. The SimGrid Team.
+/* Copyright (c) 2012-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -9,22 +9,22 @@
 #ifndef MSG_JCOMM_H
 #define MSG_JCOMM_H
 #include <jni.h>
-#include <msg/msg.h>
-/**
- * This function binds the task associated with the communication to
- * the java communication object.
- */
+#include <simgrid/msg.h>
+
+SG_BEGIN_DECL()
+
+/** This function binds the task associated with the communication to the java communication object. */
 void jcomm_bind_task(JNIEnv *env, jobject jcomm);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeInit(JNIEnv *env, jclass cls);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_destroy(JNIEnv *env, jobject jcomm);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_nativeFinalize(JNIEnv *env, jobject jcomm);
 
-JNIEXPORT jboolean JNICALL
-Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm);
+JNIEXPORT jboolean JNICALL Java_org_simgrid_msg_Comm_test(JNIEnv *env, jobject jcomm);
 
-JNIEXPORT void JNICALL
-Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitCompletion(JNIEnv *env, jobject jcomm, jdouble timeout);
+JNIEXPORT void JNICALL Java_org_simgrid_msg_Comm_waitAll(JNIEnv *env, jclass cls, jobjectArray jcomms, jdouble timeout);
+JNIEXPORT int JNICALL Java_org_simgrid_msg_Comm_waitAny(JNIEnv *env, jclass cls, jobjectArray jcomms);
+
+SG_END_DECL()
 #endif /* MSG_JCOMM_H */

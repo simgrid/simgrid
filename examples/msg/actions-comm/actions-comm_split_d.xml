@@ -1,0 +1,14 @@
+<?xml version='1.0'?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+<!-- Example file of how to use trace replay, with actions split in separate files, one per process.
+     Launch it like this:
+         ./actions-comm ../../platforms/platform.xml actions-comm_split_d.xml  -->
+
+  <process host="Tremblay" function="p0">
+    <argument value="actions-comm_split_p0.txt"/>
+  </process>
+  <process host="Ruby"   function="p1">
+    <argument value="actions-comm_split_p1.txt"/>
+  </process>
+</platform>

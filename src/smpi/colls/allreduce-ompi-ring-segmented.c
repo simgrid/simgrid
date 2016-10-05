@@ -135,7 +135,7 @@
  *
  */
  
- #define COLL_TUNED_COMPUTED_SEGCOUNT(SEGSIZE, TYPELNG, SEGCOUNT)        \
+#define COLL_TUNED_COMPUTED_SEGCOUNT(SEGSIZE, TYPELNG, SEGCOUNT)        \
     if( ((SEGSIZE) >= (TYPELNG)) &&                                     \
         ((SEGSIZE) < ((TYPELNG) * (SEGCOUNT))) ) {                      \
         size_t residual;                                                \
@@ -152,8 +152,8 @@
     if (0 != SPLIT_INDEX) {                                                  \
         EARLY_BLOCK_COUNT = EARLY_BLOCK_COUNT + 1;                           \
     }                                                                        \
- 
- #include "colls_private.h"
+
+#include "colls_private.h"
 int 
 smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
                                                MPI_Datatype dtype,
@@ -162,11 +162,12 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
 {
    int ret = MPI_SUCCESS;
    int line;
-   int rank, size, k, recv_from, send_to;
+   int k, recv_from, send_to;
    int early_blockcount, late_blockcount, split_rank; 
    int segcount, max_segcount;
    int num_phases, phase;
-   int block_count, inbi;
+   int block_count;
+   unsigned int inbi;
    size_t typelng;
    char *tmpsend = NULL, *tmprecv = NULL;
    char *inbuf[2] = {NULL, NULL};
@@ -174,8 +175,8 @@ smpi_coll_tuned_allreduce_ompi_ring_segmented(void *sbuf, void *rbuf, int count,
    ptrdiff_t block_offset, max_real_segsize;
    MPI_Request reqs[2] = {NULL, NULL};
    const size_t segsize = 1 << 20; /* 1 MB */
-   size = smpi_comm_size(comm);
-   rank = smpi_comm_rank(comm);
+   unsigned int size = smpi_comm_size(comm);
+   unsigned int rank = smpi_comm_rank(comm);
 
    XBT_DEBUG("coll:tuned:allreduce_intra_ring_segmented rank %d, count %d", rank, count);
 

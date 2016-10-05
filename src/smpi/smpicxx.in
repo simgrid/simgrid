@@ -1,12 +1,13 @@
 #! /bin/sh
 
-# Copyright (c) 2014. The SimGrid Team.
+# Copyright (c) 2014-2015. The SimGrid Team.
 # All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
 
 SIMGRID_VERSION="@SIMGRID_VERSION_STRING@"
+SIMGRID_GITHASH="@SIMGRID_GITHASH@"
 
 CXX=@CMAKE_CXX_COMPILER@
 
@@ -44,6 +45,10 @@ while [ $# -gt 0 ]; do
             ;;
         '-version' | '--version')
             printf '%b\n' "$SIMGRID_VERSION"
+            exit 0
+            ;;
+        "-git-version" | "--git-version")
+            printf '%b\n' "$SIMGRID_GITHASH"
             exit 0
             ;;
         '-compiler-version' | '--compiler-version')

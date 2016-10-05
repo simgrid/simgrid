@@ -1,34 +1,28 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <xbt/base.h>
+#include <xbt/signal.hpp>
+
 #include "surf_interface.hpp"
+#include "src/surf/PropertyHolder.hpp"
 
 #ifndef STORAGE_INTERFACE_HPP_
 #define STORAGE_INTERFACE_HPP_
 
-extern xbt_dynar_t mount_list;
+namespace simgrid {
+namespace surf {
 
 /***********
  * Classes *
  ***********/
 
 class StorageModel;
-typedef StorageModel *StorageModelPtr;
-
 class Storage;
-typedef Storage *StoragePtr;
-
-class Storage;
-typedef Storage *StoragePtr;
-
 class StorageAction;
-typedef StorageAction *StorageActionPtr;
-
-class StorageAction;
-typedef StorageAction *StorageActionPtr;
 
 /*************
  * Callbacks *
@@ -36,27 +30,27 @@ typedef StorageAction *StorageActionPtr;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage creation *
- * @details Callback functions have the following signature: `void(StoragePtr)`
+ * @details Callback functions have the following signature: `void(Storage*)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StoragePtr)) storageCreatedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::Storage*)>) storageCreatedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage destruction *
  * @details Callback functions have the following signature: `void(StoragePtr)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StoragePtr)) storageDestructedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::Storage*)>) storageDestructedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after Storage State changed *
- * @details Callback functions have the following signature: `void(StorageActionPtr action, e_surf_resource_state_t old, e_surf_resource_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageAction *action, int previouslyOn, int currentlyOn)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StoragePtr, e_surf_resource_state_t, e_surf_resource_state_t)) storageStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::Storage*, int, int)>) storageStateChangedCallbacks;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks handler which emit the callbacks after StorageAction State changed *
- * @details Callback functions have the following signature: `void(StorageActionPtr action, e_surf_action_state_t old, e_surf_action_state_t current)`
+ * @details Callback functions have the following signature: `void(StorageAction *action, simgrid::surf::Action::State old, simgrid::surf::Action::State current)`
  */
-XBT_PUBLIC_DATA(surf_callback(void, StorageActionPtr, e_surf_action_state_t, e_surf_action_state_t)) storageActionStateChangedCallbacks;
+XBT_PUBLIC_DATA(simgrid::xbt::signal<void(simgrid::surf::StorageAction*, simgrid::surf::Action::State, simgrid::surf::Action::State)>) storageActionStateChangedCallbacks;
 
 /*********
  * Model *
@@ -67,18 +61,10 @@ XBT_PUBLIC_DATA(surf_callback(void, StorageActionPtr, e_surf_action_state_t, e_s
  */
 class StorageModel : public Model {
 public:
-  /**
-   * @brief The storage model constructor
-   */
   StorageModel();
-
-  /**
-   * @brief The Storange model destructor
-   */
   ~StorageModel();
 
-  /**
-   * @brief Create a Storage
+  /** @brief Create a Storage
    *
    * @param id [description]
    * @param type_id [description]
@@ -88,14 +74,13 @@ public:
    * @param attach [description]
    * @return The created Storage
    */
-  virtual StoragePtr createStorage(const char* id,
-                                    const char* type_id,
-                                    const char* content_name,
-                                    const char* content_type,
-                                    xbt_dict_t properties,
-                                    const char *attach) = 0;
+  virtual Storage *createStorage(const char* id, const char* type_id,
+                                 const char* content_name, const char* content_type,
+                                 xbt_dict_t properties, const char *attach) = 0;
 
-  xbt_dynar_t p_storageList;
+  bool next_occuring_event_isIdempotent() {return true;}
+
+  std::vector<Storage*> p_storageList;
 };
 
 /************
@@ -105,7 +90,8 @@ public:
  * @brief SURF storage interface class
  * @details A Storage represent a storage unit (e.g.: hard drive, usb key)
  */
-class Storage : public Resource {
+class Storage : public simgrid::surf::Resource,
+        public simgrid::surf::PropertyHolder {
 public:
   /**
    * @brief Storage constructor
@@ -118,8 +104,8 @@ public:
    * @param content_type [description]
    * @param size [description]
    */
-  Storage(ModelPtr model, const char *name, xbt_dict_t props,
-          const char* type_id, char *content_name, char *content_type,
+  Storage(Model *model, const char *name, xbt_dict_t props,
+          const char* type_id, const char *content_name, const char *content_type,
           sg_size_t size);
 
   /**
@@ -128,51 +114,29 @@ public:
    * @param model StorageModel associated to this Storage
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
-   * @param maxminSystem [description]
-   * @param bread [description]
-   * @param bwrite [description]
-   * @param bconnection [description]
-   * @param type_id [description]
-   * @param content_name [description]
-   * @param content_type [description]
-   * @param size [description]
-   * @param attach [description]
    */
-  Storage(ModelPtr model, const char *name, xbt_dict_t props,
+  Storage(Model *model, const char *name, xbt_dict_t props,
           lmm_system_t maxminSystem, double bread, double bwrite,
           double bconnection,
-          const char* type_id, char *content_name, char *content_type,
-          sg_size_t size, char *attach);
+          const char* type_id, const char *content_name, const char *content_type,
+          sg_size_t size, const char *attach);
 
-  /**
-   * @brief Storage destructor
-   */
   ~Storage();
 
-  /**
-   * @brief Check if the Storage is used
-   *
-   * @return true if the current Storage is used, false otherwise
-   */
-  bool isUsed();
+  /** @brief Check if the Storage is used (if an action currently uses its resources) */
+  bool isUsed() override;
 
-  /**
-   * @brief Update the state of the current Storage
-   *
-   * @param event_type [description]
-   * @param value [description]
-   * @param date [description]
-   */
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
+  void apply_event(tmgr_trace_iterator_t event, double value) override;
 
-  void setState(e_surf_resource_state_t state);
+  void turnOn() override;
+  void turnOff() override;
 
-  xbt_dict_t p_content;
-  char* p_contentType;
-  sg_size_t m_size;
-  sg_size_t m_usedSize;
-  char * p_typeId;
-  char* p_attach;
+  xbt_dict_t content_;
+  char* contentType_;
+  sg_size_t size_;
+  sg_size_t usedSize_;
+  char * typeId_;
+  char* attach_; //FIXME: this is the name of the host. Use the host directly
 
   /**
    * @brief Open a file
@@ -182,7 +146,7 @@ public:
    *
    * @return The StorageAction corresponding to the opening
    */
-  virtual StorageActionPtr open(const char* mount, const char* path)=0;
+  virtual StorageAction *open(const char* mount, const char* path)=0;
 
   /**
    * @brief Close a file
@@ -190,7 +154,7 @@ public:
    * @param fd The file descriptor to close
    * @return The StorageAction corresponding to the closing
    */
-  virtual StorageActionPtr close(surf_file_t fd)=0;
+  virtual StorageAction *close(surf_file_t fd)=0;
 
   /**
    * @brief Read a file
@@ -199,7 +163,7 @@ public:
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
    */
-  virtual StorageActionPtr read(surf_file_t fd, sg_size_t size)=0;
+  virtual StorageAction *read(surf_file_t fd, sg_size_t size)=0;
 
   /**
    * @brief Write a file
@@ -208,7 +172,7 @@ public:
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
    */
-  virtual StorageActionPtr write(surf_file_t fd, sg_size_t size)=0;
+  virtual StorageAction *write(surf_file_t fd, sg_size_t size)=0;
 
   /**
    * @brief Get the content of the current Storage
@@ -239,12 +203,12 @@ public:
   virtual sg_size_t getUsedSize();
 
 
-  xbt_dict_t parseContent(char *filename);
+  xbt_dict_t parseContent(const char *filename);
 
-  xbt_dynar_t p_writeActions;
+  std::vector<StorageAction*> writeActions_;
 
-  lmm_constraint_t p_constraintWrite;    /* Constraint for maximum write bandwidth*/
-  lmm_constraint_t p_constraintRead;     /* Constraint for maximum write bandwidth*/
+  lmm_constraint_t constraintWrite_;    /* Constraint for maximum write bandwidth*/
+  lmm_constraint_t constraintRead_;     /* Constraint for maximum write bandwidth*/
 };
 
 /**********
@@ -276,7 +240,7 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(ModelPtr model, double cost, bool failed, StoragePtr storage,
+  StorageAction(Model *model, double cost, bool failed, Storage *storage,
       e_surf_action_storage_type_t type);
 
     /**
@@ -289,16 +253,19 @@ public:
    * @param storage The Storage associated to this StorageAction
    * @param type [description]
    */
-  StorageAction(ModelPtr model, double cost, bool failed, lmm_variable_t var,
-      StoragePtr storage, e_surf_action_storage_type_t type);
+  StorageAction(Model *model, double cost, bool failed, lmm_variable_t var,
+      Storage *storage, e_surf_action_storage_type_t type);
 
-  void setState(e_surf_action_state_t state);
+  void setState(simgrid::surf::Action::State state) override;
 
   e_surf_action_storage_type_t m_type;
-  StoragePtr p_storage;
+  Storage *p_storage;
   surf_file_t p_file;
   double progress;
 };
+
+}
+}
 
 typedef struct s_storage_type {
   char *model;
@@ -321,6 +288,5 @@ typedef struct surf_file {
   sg_size_t size;
   sg_size_t current_position;
 } s_surf_file_t;
-
 
 #endif /* STORAGE_INTERFACE_HPP_ */

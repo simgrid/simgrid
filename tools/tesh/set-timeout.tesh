@@ -5,3 +5,6 @@
 
 ! timeout 10
 $ sleep 6
+
+! timeout no
+$ sleep 1

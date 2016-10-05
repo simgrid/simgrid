@@ -1,8 +1,10 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
+
+#include <algorithm>
 
 #include "network_interface.hpp"
 #include "simgrid/sg_config.h"
@@ -10,163 +12,246 @@
 #ifndef NETWORK_INTERFACE_CPP_
 #define NETWORK_INTERFACE_CPP_
 
-XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf,
-                                "Logging specific to the SURF network module");
+XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_network, surf, "Logging specific to the SURF network module");
 
-/*************
- * Callbacks *
- *************/
+/*********
+ * C API *
+ *********/
 
-surf_callback(void, NetworkLinkPtr) networkLinkCreatedCallbacks;
-surf_callback(void, NetworkLinkPtr) networkLinkDestructedCallbacks;
-surf_callback(void, NetworkLinkPtr, e_surf_resource_state_t, e_surf_resource_state_t) networkLinkStateChangedCallbacks;
-surf_callback(void, NetworkActionPtr, e_surf_action_state_t, e_surf_action_state_t) networkActionStateChangedCallbacks;
-surf_callback(void, NetworkActionPtr, RoutingEdgePtr src, RoutingEdgePtr dst, double size, double rate) networkCommunicateCallbacks;
+extern "C" {
 
-void netlink_parse_init(sg_platf_link_cbarg_t link){
-  if (link->policy == SURF_LINK_FULLDUPLEX) {
-    char *link_id;
-    link_id = bprintf("%s_UP", link->id);
-    surf_network_model->createNetworkLink(link_id,
-                      link->bandwidth,
-                      link->bandwidth_trace,
-                      link->latency,
-                      link->latency_trace,
-                      link->state,
-                      link->state_trace, link->policy, link->properties);
-    xbt_free(link_id);
-    link_id = bprintf("%s_DOWN", link->id);
-    surf_network_model->createNetworkLink(link_id,
-                      link->bandwidth,
-                      link->bandwidth_trace,
-                      link->latency,
-                      link->latency_trace,
-                      link->state,
-                      link->state_trace, link->policy, link->properties);
-    xbt_free(link_id);
-  } else {
-  surf_network_model->createNetworkLink(link->id,
-                      link->bandwidth,
-                      link->bandwidth_trace,
-                      link->latency,
-                      link->latency_trace,
-                      link->state,
-                      link->state_trace, link->policy, link->properties);
+  const char* sg_link_name(Link *link) {
+    return link->getName();
   }
+  Link * sg_link_by_name(const char* name) {
+    return Link::byName(name);
+  }
+
+  int sg_link_is_shared(Link *link){
+    return link->sharingPolicy();
+  }
+  double sg_link_bandwidth(Link *link){
+    return link->getBandwidth();
+  }
+  double sg_link_latency(Link *link){
+    return link->getLatency();
+  }
+  void* sg_link_data(Link *link) {
+    return link->getData();
+  }
+  void sg_link_data_set(Link *link,void *data) {
+    link->setData(data);
+  }
+  int sg_link_count() {
+    return Link::linksCount();
+  }
+  Link** sg_link_list() {
+    return Link::linksList();
+  }
+  void sg_link_exit() {
+    Link::linksExit();
+  }
+
 }
 
-void net_add_traces(){
-  surf_network_model->addTraces();
+/*****************
+ * List of links *
+ *****************/
+
+namespace simgrid {
+  namespace surf {
+
+    boost::unordered_map<std::string,Link *> *Link::links = new boost::unordered_map<std::string,Link *>();
+    Link *Link::byName(const char* name) {
+      if (links->find(name) == links->end())
+        return nullptr;
+      return  links->at(name);
+    }
+    /** @brief Returns the amount of links in the platform */
+    int Link::linksCount() {
+      return links->size();
+    }
+    /** @brief Returns a list of all existing links */
+    Link **Link::linksList() {
+      Link **res = xbt_new(Link*, (int)links->size());
+      int i=0;
+      for (auto kv : *links) {
+        res[i++] = kv.second;
+      }
+      return res;
+    }
+    /** @brief destructor of the static data */
+    void Link::linksExit() {
+      for (auto kv : *links)
+        (kv.second)->destroy();
+      delete links;
+    }
+
+    /*************
+     * Callbacks *
+     *************/
+
+    simgrid::xbt::signal<void(Link*)> Link::onCreation;
+    simgrid::xbt::signal<void(Link*)> Link::onDestruction;
+    simgrid::xbt::signal<void(Link*)> Link::onStateChange;
+
+    simgrid::xbt::signal<void(NetworkAction*, Action::State, Action::State)> networkActionStateChangedCallbacks;
+    simgrid::xbt::signal<void(NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> Link::onCommunicate;
+
+  }
 }
 
 /*********
  * Model *
  *********/
 
-NetworkModelPtr surf_network_model = NULL;
+simgrid::surf::NetworkModel *surf_network_model = nullptr;
 
-double NetworkModel::latencyFactor(double /*size*/) {
-  return sg_latency_factor;
-}
+namespace simgrid {
+  namespace surf {
 
-double NetworkModel::bandwidthFactor(double /*size*/) {
-  return sg_bandwidth_factor;
-}
-
-double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /*size*/) {
-  return rate;
-}
-
-double NetworkModel::shareResourcesFull(double now)
-{
-  NetworkActionPtr action = NULL;
-  ActionListPtr runningActions = surf_network_model->getRunningActionSet();
-  double minRes;
-
-  minRes = shareResourcesMaxMin(runningActions, surf_network_model->p_maxminSystem, surf_network_model->f_networkSolve);
-
-  for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
-       ; it != itend ; ++it) {
-      action = static_cast<NetworkActionPtr>(&*it);
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-    if (lmm_is_variable_limited_by_latency(action->getVariable())) {
-      action->m_latencyLimited = 1;
-    } else {
-      action->m_latencyLimited = 0;
+    NetworkModel::~NetworkModel()
+    {
+      lmm_system_free(maxminSystem_);
+      xbt_heap_free(actionHeap_);
+      delete modifiedSet_;
     }
-#endif
-    if (action->m_latency > 0) {
-      minRes = (minRes < 0) ? action->m_latency : min(minRes, action->m_latency);
+
+    double NetworkModel::latencyFactor(double /*size*/) {
+      return sg_latency_factor;
     }
+
+    double NetworkModel::bandwidthFactor(double /*size*/) {
+      return sg_bandwidth_factor;
+    }
+
+    double NetworkModel::bandwidthConstraint(double rate, double /*bound*/, double /*size*/) {
+      return rate;
+    }
+
+    double NetworkModel::next_occuring_event_full(double now)
+    {
+      ActionList *runningActions = surf_network_model->getRunningActionSet();
+      double minRes = shareResourcesMaxMin(runningActions, surf_network_model->maxminSystem_, surf_network_model->f_networkSolve);
+
+      for(ActionList::iterator it(runningActions->begin()), itend(runningActions->end())
+          ; it != itend ; ++it) {
+        NetworkAction *action = static_cast<NetworkAction*>(&*it);
+        if (action->latency_ > 0)
+          minRes = (minRes < 0) ? action->latency_ : std::min(minRes, action->latency_);
+      }
+
+      XBT_DEBUG("Min of share resources %f", minRes);
+
+      return minRes;
+    }
+
+    /************
+     * Resource *
+     ************/
+
+    Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props)
+    : Resource(model, name),
+      PropertyHolder(props)
+    {
+      links->insert({name, this});
+
+      m_latency.scale = 1;
+      m_bandwidth.scale = 1;
+      XBT_DEBUG("Create link '%s'",name);
+    }
+
+    Link::Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint)
+    : Resource(model, name, constraint),
+      PropertyHolder(props)
+    {
+      if (strcmp(name,"__loopback__"))
+        xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
+
+      m_latency.scale = 1;
+      m_bandwidth.scale = 1;
+
+      links->insert({name, this});
+      XBT_DEBUG("Create link '%s'",name);
+
+    }
+
+    /** @brief use destroy() instead of this destructor */
+    Link::~Link() {
+      xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
+    }
+    /** @brief Fire the require callbacks and destroy the object
+     *
+     * Don't delete directly an Link, call l->destroy() instead.
+     */
+    void Link::destroy()
+    {
+      if (!currentlyDestroying_) {
+        currentlyDestroying_ = true;
+        onDestruction(this);
+        delete this;
+      }
+    }
+
+    bool Link::isUsed()
+    {
+      return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
+    }
+
+    double Link::getLatency()
+    {
+      return m_latency.peak * m_latency.scale;
+    }
+
+    double Link::getBandwidth()
+    {
+      return m_bandwidth.peak * m_bandwidth.scale;
+    }
+
+    int Link::sharingPolicy()
+    {
+      return lmm_constraint_sharing_policy(getConstraint());
+    }
+
+    void Link::turnOn(){
+      if (isOff()) {
+        Resource::turnOn();
+        onStateChange(this);
+      }
+    }
+    void Link::turnOff(){
+      if (isOn()) {
+        Resource::turnOff();
+        onStateChange(this);
+      }
+    }
+    void Link::setStateTrace(tmgr_trace_t trace) {
+      xbt_assert(m_stateEvent==nullptr,"Cannot set a second state trace to Link %s", getName());
+      m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
+    }
+    void Link::setBandwidthTrace(tmgr_trace_t trace)
+    {
+      xbt_assert(m_bandwidth.event==nullptr,"Cannot set a second bandwidth trace to Link %s", getName());
+      m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, this);
+    }
+    void Link::setLatencyTrace(tmgr_trace_t trace)
+    {
+      xbt_assert(m_latency.event==nullptr,"Cannot set a second latency trace to Link %s", getName());
+      m_latency.event = future_evt_set->add_trace(trace, 0.0, this);
+    }
+
+
+    /**********
+     * Action *
+     **********/
+
+    void NetworkAction::setState(Action::State state){
+      Action::State old = getState();
+      Action::setState(state);
+      networkActionStateChangedCallbacks(this, old, state);
+    }
+
   }
-
-  XBT_DEBUG("Min of share resources %f", minRes);
-
-  return minRes;
-}
-
-/************
- * Resource *
- ************/
-
-NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props)
-: Resource(model, name, props)
-, p_latEvent(NULL)
-{
-  surf_callback_emit(networkLinkCreatedCallbacks, this);
-}
-
-NetworkLink::NetworkLink(NetworkModelPtr model, const char *name, xbt_dict_t props,
-		                 lmm_constraint_t constraint,
-	                     tmgr_history_t history,
-	                     tmgr_trace_t state_trace)
-: Resource(model, name, props, constraint),
-  p_latEvent(NULL)
-{
-  surf_callback_emit(networkLinkCreatedCallbacks, this);
-  if (state_trace)
-    p_stateEvent = tmgr_history_add_trace(history, state_trace, 0.0, 0, this);
-}
-
-NetworkLink::~NetworkLink()
-{
-  surf_callback_emit(networkLinkDestructedCallbacks, this);
-}
-
-bool NetworkLink::isUsed()
-{
-  return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
-}
-
-double NetworkLink::getLatency()
-{
-  return m_latCurrent;
-}
-
-double NetworkLink::getBandwidth()
-{
-  return p_power.peak * p_power.scale;
-}
-
-bool NetworkLink::isShared()
-{
-  return lmm_constraint_is_shared(getConstraint());
-}
-
-void NetworkLink::setState(e_surf_resource_state_t state){
-  e_surf_resource_state_t old = Resource::getState();
-  Resource::setState(state);
-  surf_callback_emit(networkLinkStateChangedCallbacks, this, old, state);
-}
-
-/**********
- * Action *
- **********/
-
-void NetworkAction::setState(e_surf_action_state_t state){
-  e_surf_action_state_t old = getState();
-  Action::setState(state);
-  surf_callback_emit(networkActionStateChangedCallbacks, this, old, state);
 }
 
 #endif /* NETWORK_INTERFACE_CPP_ */

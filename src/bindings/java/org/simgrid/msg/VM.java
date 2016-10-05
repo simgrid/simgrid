@@ -7,23 +7,21 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 package org.simgrid.msg;
-
-import org.simgrid.msg.Host;
-import org.simgrid.msg.Process;
+import java.util.ArrayList;
 
 public class VM extends Host{
 	// Please note that we are not declaring a new bind variable 
 	//(the bind variable has been inherited from the super class Host)
-	
+
 	/* Static functions */ 
 	// GetByName is inherited from the super class Host
-	
 
-	 private static VM[] vms=null; 	  
-    private Host currentHost; 
+
+	private static ArrayList<VM> vms= new ArrayList<>();
+	private Host currentHost; 
 
 	/* Constructors / destructors */
-    /**
+	/**
 	 * Create a `basic' VM (i.e. 1 core, 1GB of RAM, other values are not taken into account).
 	 */
 	public VM(Host host, String name) {
@@ -48,46 +46,37 @@ public class VM extends Host{
 		super.name = name; 
 		this.currentHost = host; 
 		create(host, name, nCore, ramSize, netCap, diskPath, diskSize, migNetSpeed, dpIntensity);
-		VM.addVM(this);
+		vms.add(this);
 	}
 
-	private static void addVM(VM vm){
-		VM[] vmsN=null; 
-	  	int i=0;
-		if(VM.vms == null)
-			vmsN = new VM[1]; 
-		else
-			vmsN = new VM[vms.length+1]; 
-		
-		for (i=0; i<vmsN.length-1 ; i ++){
-			vmsN[i]=vms[i];	
-		} 
-		vmsN[i]=vm;
-		vms=vmsN;
+	public static VM[] all(){
+		VM[] allvms = new VM[vms.size()];
+		vms.toArray(allvms);
+		return allvms;
 	}
-   public static VM[] all(){
-		return vms;
-	}
+
 	public static VM getVMByName(String name){
-		for (int i=0 ; i < vms.length ; i++){
-			  if (vms[i].getName().equals(name))
-					return vms[i];		
+		for (VM vm : vms){
+			if (vm.getName().equals(name))
+				return vm;
 		}
 		return null; 
 	}
-	protected void finalize() {
-		destroy();
-	}
 	
+	public void destroy() {
+		nativeFinalize();
+	}
+	private native void nativeFinalize();
+
 
 	/* JNI / Native code */
 
 	/* get/set property methods are inherited from the Host class. */
-	
+
 	/** Returns whether the given VM is currently suspended
 	 */	
 	public native int isCreated();
-	
+
 	/** Returns whether the given VM is currently running
 	 */
 	public native int isRunning();
@@ -95,15 +84,15 @@ public class VM extends Host{
 	/** Returns whether the given VM is currently running
 	 */
 	public native int isMigrating();
-	
+
 	/** Returns whether the given VM is currently suspended
 	 */	
 	public native int isSuspended();
-		
+
 	/** Returns whether the given VM is currently saving
 	 */
 	public native int isSaving();
-	
+
 	/** Returns whether the given VM is currently saved
 	 */
 	public native int isSaved();
@@ -111,7 +100,7 @@ public class VM extends Host{
 	/** Returns whether the given VM is currently restoring its state
 	 */
 	public native boolean isRestoring();
-	
+
 	/**
 	 * Natively implemented method create the VM.
 	 * @param nCore number of core
@@ -123,34 +112,34 @@ public class VM extends Host{
 	 * @param dpIntensity (dirty page intensity, a percentage of migNetSpeed [0-100],  if you don't know put zero ;))
 	 */
 	private native void create(Host host, String name, int nCore, int ramSize, 
-			 int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity);
+			int netCap, String diskPath, int diskSize, int migNetSpeed, int dpIntensity);
 
 
 	/**
-	 * Bound the VM to a certain % of its vcpu capability (e.g. 75% of vm.getSpeed())
-	 * @param load percentage (between [0,100]
+	 * Set a CPU bound for a given VM.
+	 * @param bound in flops/s
 	 */
-	public native void setBound(int load);
+	public native void setBound(double bound);
 
 	/**
 	 * start the VM
 	 */
 	public native void start();
 
-	
+
 	/**
 	 * Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
 	 * No extra delay occurs. If you want to simulate this too, you want to use a MSG_process_sleep() or something
 	 */
 	public native void shutdown();
-	
+
 	/**  
 	 * Invoke native migration routine
-	*/
+	 */
 	public native void internalmig(Host destination) throws Exception; // TODO add throws DoubleMigrationException (i.e. when you call migrate on a VM that is already migrating);
 
 
-	
+
 	/** Change the host on which all processes are running
 	 * (pre-copy is implemented)
 	 */	
@@ -158,13 +147,13 @@ public class VM extends Host{
 		try {
 			this.internalmig(destination);
 		} catch (Exception e){
-		  Msg.info("an exception occurs during the migration of VM "+this.getName());
+		  Msg.info("Migration of VM "+this.getName()+" to "+destination.getName()+" is impossible ("+e.getMessage()+")");
 		  throw new HostFailureException();
 		}
 		// If the migration correcly returned, then we should change the currentHost value. 
 		this.currentHost = destination; 
 	}
-	
+
 	/** Immediately suspend the execution of all processes within the given VM
 	 *
 	 * No suspension cost occurs. If you want to simulate this too, you want to
@@ -172,7 +161,7 @@ public class VM extends Host{
 	 * of VM suspend to you.
 	 */	
 	public native void suspend();
-	
+
 	/** Immediately resumes the execution of all processes within the given VM
 	 *
 	 * No resume cost occurs. If you want to simulate this too, you want to
@@ -180,7 +169,7 @@ public class VM extends Host{
 	 * of VM resume to you.
 	 */
 	public native void resume();
-	
+
 	/** Immediately suspend the execution of all processes within the given VM 
 	 *  and save its state on the persistent HDD
 	 *  Not yet implemented (for the moment it behaves like suspend)
@@ -189,7 +178,7 @@ public class VM extends Host{
 	 *  of VM suspend to you.
 	 */	
 	public native void save();
-	
+
 	/** Immediately resumes the execution of all processes previously saved 
 	 * within the given VM
 	 *  Not yet implemented (for the moment it behaves like resume)
@@ -199,14 +188,7 @@ public class VM extends Host{
 	 * of VM resume to you.
 	 */
 	public native void restore();
-	
 
-	/**
-	 * Destroy the VM
-	 */
-	public native void destroy();
-
-	
 
 	/**
 	 * Class initializer, to initialize various JNI stuff

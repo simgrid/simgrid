@@ -1,33 +1,50 @@
-/* Copyright (c) 2014. The SimGrid Team.
+/* energy.hpp: internal interface to the energy plugin                      */
+
+/* Copyright (c) 2014-2016. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "../cpu_interface.hpp"
-#include <map>
+#include <xbt/base.h>
 
-#ifndef CALLBACK_HPP_
-#define CALLBACK_HPP_
+#include <utility>
 
-class CpuEnergy;
-typedef CpuEnergy *CpuEnergyPtr;
+#include "src/surf/HostImpl.hpp"
 
-extern std::map<CpuPtr, CpuEnergyPtr> *surf_energy;
+#ifndef ENERGY_CALLBACK_HPP_
+#define ENERGY_CALLBACK_HPP_
 
-class CpuEnergy {
+namespace simgrid {
+namespace energy {
+
+class XBT_PRIVATE HostEnergy;
+
+class HostEnergy {
 public:
-  CpuEnergy(CpuPtr ptr);
-  ~CpuEnergy();
+  static simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> EXTENSION_ID;
+  typedef std::pair<double,double> power_range;
+
+  explicit HostEnergy(simgrid::s4u::Host *ptr);
+  ~HostEnergy();
 
   double getCurrentWattsValue(double cpu_load);
   double getConsumedEnergy();
-  xbt_dynar_t getWattsRangeList();
+  double getWattMinAt(int pstate);
+  double getWattMaxAt(int pstate);
+  void update();
 
-  xbt_dynar_t power_range_watts_list;		/*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
-  double total_energy;					/*< Total energy consumed by the host */
-  double last_updated;					/*< Timestamp of the last energy update event*/
-  CpuPtr cpu;
+private:
+  void initWattsRangeList();
+  simgrid::s4u::Host *host = nullptr;
+  std::vector<power_range> power_range_watts_list;   /*< List of (min_power,max_power) pairs corresponding to each cpu pstate */
+public:
+  double watts_off = 0.0; /*< Consumption when the machine is turned off (shutdown) */
+  double total_energy = 0.0; /*< Total energy consumed by the host */
+  double last_updated;       /*< Timestamp of the last energy update event*/
 };
 
-#endif /* CALLBACK_HPP_ */
+}
+}
+
+#endif /* ENERGY_CALLBACK_HPP_ */

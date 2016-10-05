@@ -72,15 +72,15 @@ smpi_coll_tuned_allgatherv_pair(void *send_buff, int send_count,
 {
 
   MPI_Aint extent;
-  int i, src, dst, rank, num_procs;
+  unsigned int i, src, dst;
   int tag = COLL_TAG_ALLGATHERV;
   MPI_Status status;
 
   char *send_ptr = (char *) send_buff;
   char *recv_ptr = (char *) recv_buff;
 
-  rank = smpi_comm_rank(comm);
-  num_procs = smpi_comm_size(comm);
+  unsigned int rank = smpi_comm_rank(comm);
+  unsigned int num_procs = smpi_comm_size(comm);
 
   if((num_procs&(num_procs-1)))
     THROWF(arg_error,0, "allgatherv pair algorithm can't be used with non power of two number of processes ! ");

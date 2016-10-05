@@ -1,12 +1,9 @@
-#! /usr/bin/perl
+#! /usr/bin/env perl
 
-# Copyright (c) 2005-2012, 2014. The SimGrid Team.
-# All rights reserved.
+# Copyright (c) 2005-2012, 2014. The SimGrid Team. All rights reserved.
 
 # This program is free software; you can redistribute it and/or modify it
 # under the terms of the license (GNU LGPL) which comes with this package.
-
-use strict;
 
 use strict;
 use Getopt::Long qw(GetOptions);
@@ -16,11 +13,12 @@ my $progname="sg_unit_extractor";
 
 sub usage($) {
     my $ret;
-    print "USAGE: $progname [--root=part/to/cut] [--path=where/to/search NOT WORKING] [--outdir=where/to/generate/files] infile [infile+]\n";
+    print "USAGE: $progname [--root=part/to/cut] [--outdir=where/to/generate/files] infile [infile+]\n\n";
+    print "This program is in charge of extracting the unit tests out of the SimGrid source code.\n";
+    print "See http://simgrid.gforge.inria.fr/doc/latest/inside_tests.html for more details.\n";
     exit $ret;
 }
 
-my $path=undef;
 my $outdir=undef;
 my $root;
 my $help;
@@ -29,7 +27,6 @@ Getopt::Long::config('permute','no_getopt_compat', 'no_auto_abbrev');
 GetOptions(
         'help|h'                => sub {usage(0)},
         'root=s' =>\$root,
-        'path=s' =>\$path,
         'outdir=s' =>\$outdir) or usage(1);
 
 usage(1) if (scalar @ARGV == 0);
@@ -152,10 +149,10 @@ int main(int argc, char *argv[]) {
       if (!strncmp(argv[i],\"--tests=\",strlen(\"--tests=\"))) {
         char *p=strchr(argv[i],'=')+1;
         if (selection[0] == '\\0') {
-          strcpy(selection, p);
+          strncpy(selection,p,1024);
         } else {
-          strcat(selection, \",\");
-          strcat(selection, p);
+          strncat(selection, \",\",1);
+          strncat(selection, p, 1023);
         }
       } else if (!strcmp(argv[i], \"--verbose\")) {
         verbosity++;

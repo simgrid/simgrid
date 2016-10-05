@@ -3,11 +3,11 @@
 
 /* Copyright: Rolf Rabenseifner, 1997
  *            Computing Center University of Stuttgart
- *            rabenseifner@rus.uni-stuttgart.de 
+ *            rabenseifner@rus.uni-stuttgart.de
  *
- * The usage of this software is free, 
+ * The usage of this software is free,
  * but this header must not be removed.
- */ 
+ */
 
 #include "colls_private.h"
 #include <stdio.h>
@@ -301,7 +301,7 @@ Benchmark results on CRAY T3E
    MPI:      /opt/ctl/mpt/1.1.0.3
    datatype: MPI_DOUBLE
    Ldb[][] = {{ 896,1728, 576, 736},{ 448,1280, 512, 512}}
-   env: export MPI_BUFFER_MAX=4099 
+   env: export MPI_BUFFER_MAX=4099
    compiled with: cc -c -O3 -h restrict=f
 
    old = binary tree protocol of the vendor
@@ -413,8 +413,8 @@ typedef enum {MPIM_SHORT, MPIM_INT, MPIM_LONG, MPIM_UNSIGNED_SHORT,
               MPIM_UNSIGNED, MPIM_UNSIGNED_LONG, MPIM_FLOAT,
               MPIM_DOUBLE, MPIM_BYTE} MPIM_Datatype;
 
-typedef enum {MPIM_MAX, MPIM_MIN, MPIM_SUM, MPIM_PROD, 
-              MPIM_LAND, MPIM_BAND, MPIM_LOR, MPIM_BOR, 
+typedef enum {MPIM_MAX, MPIM_MIN, MPIM_SUM, MPIM_PROD,
+              MPIM_LAND, MPIM_BAND, MPIM_LOR, MPIM_BOR,
               MPIM_LXOR, MPIM_BXOR} MPIM_Op;
 #define MPI_I_DO_OP_C_INTEGER(MPI_I_do_op_TYPE,TYPE)                   \
 static void MPI_I_do_op_TYPE(TYPE* b1,TYPE* b2,TYPE* rslt, int cnt,MPIM_Op op)\
@@ -505,8 +505,8 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
   MPI_Status status;
   size_t scrlng;
   int new_prot;
-  MPIM_Datatype datatype = MPIM_INT; MPIM_Op op = MPIM_MAX; 
-  
+  MPIM_Datatype datatype = MPIM_INT; MPIM_Op op = MPIM_MAX;
+
   if     (mpi_datatype==MPI_SHORT         ) datatype=MPIM_SHORT;
   else if(mpi_datatype==MPI_INT           ) datatype=MPIM_INT;
   else if(mpi_datatype==MPI_LONG          ) datatype=MPIM_LONG;
@@ -516,7 +516,7 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
   else if(mpi_datatype==MPI_FLOAT         ) datatype=MPIM_FLOAT;
   else if(mpi_datatype==MPI_DOUBLE        ) datatype=MPIM_DOUBLE;
   else if(mpi_datatype==MPI_BYTE          ) datatype=MPIM_BYTE;
- 
+
   if     (mpi_op==MPI_MAX     ) op=MPIM_MAX;
   else if(mpi_op==MPI_MIN     ) op=MPIM_MIN;
   else if(mpi_op==MPI_SUM     ) op=MPIM_SUM;
@@ -531,10 +531,10 @@ static int MPI_I_anyReduce(void* Sendbuf, void* Recvbuf, int count, MPI_Datatype
   new_prot = 0;
   MPI_Comm_size(comm, &size);
   if (size > 1) /*otherwise no balancing_protocol*/
-  { register int ss;
+  { int ss;
     if      (size==2) ss=0;
     else if (size==3) ss=1;
-    else { register int s = size; while (!(s & 1)) s = s >> 1;
+    else { int s = size; while (!(s & 1)) s = s >> 1;
            if (s==1) /* size == power of 2 */ ss = 2;
            else      /* size != power of 2 */ ss = 3; }
     switch(op) {

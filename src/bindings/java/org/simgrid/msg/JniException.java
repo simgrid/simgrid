@@ -16,20 +16,14 @@ public class JniException extends RuntimeException {
 	private static final long serialVersionUID = 1L;
 
 
-	/**
-	 * Constructs an <code>JniException</code> without a 
-	 * detail message. 
-	 */
+	/** Constructs an <code>JniException</code> without a detail message. */
 	public JniException() {
 		super();
 	}
-	/**
-	 * Constructs an <code>JniException</code> with a detail message. 
-	 *
-	 * @param   s   the detail message.
-	 */ public JniException(String s) {
+	/** Constructs an <code>JniException</code> with a detail message. */ 
+	public JniException(String s) {
 		 super(s);
-	 }
+	}
 	public JniException(String string, Exception e) {
 		super(string,e);
 	}

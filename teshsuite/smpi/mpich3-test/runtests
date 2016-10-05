@@ -1,4 +1,4 @@
-#! /usr/bin/perl
+#! /usr/bin/env perl
 # -*- Mode: perl; -*-
 #
 # This script is the beginnings of a script to run a sequence of test
@@ -72,6 +72,9 @@ $testCount = 0;          # Used with batchRun to count tests.
 $batrundir = ".";        # Set to the directory into which to run the examples
 
 $execarg="";
+$wrapparg="";
+
+$enabled_privatization = 1; # disable tests that need SMPI privatization to run
 # TAP (Test Anything Protocol) output
 my $tapoutput = 0;
 my $tapfile = '';
@@ -154,7 +157,7 @@ foreach $_ (@ARGV) {
     elsif (/--?maxnp=(.*)/) { $np_max = $1; }
     elsif (/--?tests=(.*)/) { $listfiles = $1; }
     elsif (/--?srcdir=(.*)/) { $srcdir = $1;
-	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_coll --log=root.thr:critical --cfg=smpi/running_power:1e9  --cfg=smpi/async_small_thres:65536"; }
+	$mpiexec="$mpiexec  -platform ${srcdir}/../../../../examples/platforms/small_platform_with_routers.xml -hostfile ${srcdir}/../../hostfile_coll --log=root.thr:critical --cfg=smpi/running-power:1e9  --cfg=smpi/async-small-thresh:65536"; }
     elsif (/--?verbose/) { $verbose = 1; }
     elsif (/--?showprogress/) { $showProgress = 1; }
     elsif (/--?debug/) { $debug = 1; }
@@ -162,6 +165,13 @@ foreach $_ (@ARGV) {
     elsif (/--?batchdir=(.*)/) { $batrundir = $1; }
     elsif (/--?timeoutarg=(.*)/) { $timeoutArgPattern = $1; }
     elsif (/--?execarg=(.*)/) { $execarg = "$execarg $1"; }
+    elsif (/--?privatization=(.*)/) { 
+print STDERR "privatization called\n";
+$enabled_privatization = $1; }
+    elsif (/VALGRIND_COMMAND=(.*)/) { 
+        $valgrind = $1; }
+    elsif (/VALGRIND_OPTIONS=(.*)/) {
+         $wrapparg = "-wrapper \"$valgrind $1\""; }
     elsif (/--?xmlfile=(.*)/) {
 	$xmlfile   = $1;
 	if (! ($xmlfile =~ /^\//)) {
@@ -206,14 +216,6 @@ foreach $_ (@ARGV) {
         print TAPOUT "# date ${date}\n";
         # we do not know at this point how many tests will be run, so do
         # not print a test plan line like "1..450" until the very end
-    }
-    else {
-	print STDERR "Unrecognized argument $_\n";
-	print STDERR "runtests [-tests=testfile] [-np=nprocesses] \
-        [-maxnp=max-nprocesses] [-srcdir=location-of-tests] \
-        [-xmlfile=filename ] [-noxmlclose] \
-        [-verbose] [-showprogress] [-debug] [-batch]\n";
-	exit(1);
     }
 }
 
@@ -366,6 +368,7 @@ sub RunList {
 	my $requiresMPIX   = "";
 	my $progEnv    = "";
 	my $mpiVersion = "";
+        my $needs_privatization = 0;
         my $xfail = "";
 	if ($#args >= 1) { $np = $args[1]; }
 	# Process the key=value arguments
@@ -394,6 +397,9 @@ sub RunList {
 		elsif ($key eq "mpiversion") {
 		    $mpiVersion = $value;
 		}
+		elsif ($key eq "needs_privatization") {
+		    $needs_privatization = $value;
+		}
 		elsif ($key eq "strict") {
 		    $requiresStrict = $value
 		}
@@ -414,6 +420,13 @@ sub RunList {
 
 	# skip empty lines
 	if ($programname eq "") { next; }
+
+	#if privatization is disabled, and if the test needs it, ignore it
+	if ($needs_privatization == 1 &&
+		$enabled_privatization != 1) {
+                SkippedTest($programname, $np, $workdir, "requires SMPI privatization");
+	        next; 
+	}
 
 	if ($np eq "") { $np = $np_default; }
 	if ($np_max > 0 && $np > $np_max) { $np = $np_max; }
@@ -602,7 +615,7 @@ sub RunMPIProgram {
 	&$InitForTest();
     }
     print STDOUT "Env includes $progEnv\n" if $verbose;
-    print STDOUT "$mpiexec $mpiexecArgs $np_arg $np $program_wrapper ./$programname $progArgs\n" if $verbose;
+    print STDOUT "$mpiexec $wrapparg $mpiexecArgs $np_arg $np $program_wrapper ./$programname $progArgs\n" if $verbose;
     print STDOUT "." if $showProgress;
     # Save and restore the environment if necessary before running mpiexec.
     if ($progEnv ne "") {
@@ -616,7 +629,7 @@ sub RunMPIProgram {
 	    }
 	}
     }
-    open ( MPIOUT, "$mpiexec $np_arg $np $mpiexecArgs $program_wrapper ./$programname $progArgs 2>&1 |" ) ||
+    open ( MPIOUT, "$mpiexec $wrapparg $np_arg $np $mpiexecArgs $program_wrapper ./$programname $progArgs 2>&1 |" ) ||
 	die "Could not run ./$programname\n";
     if ($progEnv ne "") {
 	%ENV = %saveEnv;
@@ -627,7 +640,7 @@ sub RunMPIProgram {
     }
     else {
 	if ($verbose) {
-	    $inline = "$mpiexec $np_arg $np $program_wrapper ./$programname\n";
+	    $inline = "$mpiexec $wrapparg $np_arg $np $program_wrapper ./$programname\n";
 	}
 	else {
 	    $inline = "";

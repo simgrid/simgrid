@@ -1,104 +1,66 @@
-/* Copyright (c) 2004-2014. The SimGrid Team.
+/* Copyright (c) 2004-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include "network_interface.hpp"
-#include "surf/ns3/ns3_interface.h"
-
 #ifndef NETWORK_NS3_HPP_
 #define NETWORK_NS3_HPP_
 
-/***********
- * Classes *
- ***********/
-class NetworkNS3Model;
-typedef NetworkNS3Model *NetworkNS3ModelPtr;
 
-class NetworkNS3Link;
-typedef NetworkNS3Link *NetworkNS3LinkPtr;
+#include <xbt/base.h>
 
-class NetworkNS3Action;
-typedef NetworkNS3Action *NetworkNS3ActionPtr;
+#include "network_interface.hpp"
+#include "src/surf/ns3/ns3_interface.h"
 
-/*********
- * Tools *
- *********/
-
-void net_define_callbacks(void);
-
-/*********
- * Model *
- *********/
+namespace simgrid {
+namespace surf {
 
 class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
-
   ~NetworkNS3Model();
-  NetworkLinkPtr createNetworkLink(const char *name,
-  	                                 double bw_initial,
-  	                                 tmgr_trace_t bw_trace,
-  	                                 double lat_initial,
-  	                                 tmgr_trace_t lat_trace,
-  	                                 e_surf_resource_state_t state_initial,
-  	                                 tmgr_trace_t state_trace,
-  	                                 e_surf_link_sharing_policy_t policy,
-  	                                 xbt_dict_t properties);
-  xbt_dynar_t getRoute(RoutingEdgePtr src, RoutingEdgePtr dst);
-  ActionPtr communicate(RoutingEdgePtr src, RoutingEdgePtr dst,
-		                           double size, double rate);
-  double shareResources(double now);
-  void updateActionsState(double now, double delta);
-  void addTraces(){DIE_IMPOSSIBLE;}
+  Link* createLink(const char *name, double bandwidth, double latency,
+      e_surf_link_sharing_policy_t policy, xbt_dict_t properties) override;
+  Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate);
+  double next_occuring_event(double now) override;
+  bool next_occuring_event_isIdempotent() {return false;}
+  void updateActionsState(double now, double delta) override;
 };
 
 /************
  * Resource *
  ************/
-class NetworkNS3Link : public NetworkLink {
+class LinkNS3 : public Link {
 public:
-  NetworkNS3Link(NetworkNS3ModelPtr model, const char *name, xbt_dict_t props,
-  		         double bw_initial, double lat_initial);
-  ~NetworkNS3Link();
+  LinkNS3(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency);
+  ~LinkNS3();
 
-  void updateState(tmgr_trace_event_t event_type, double value, double date);
-  double getLatency(){THROW_UNIMPLEMENTED;}
-  double getBandwidth(){THROW_UNIMPLEMENTED;}
-  void updateBandwidth(double value, double date=surf_get_clock()){THROW_UNIMPLEMENTED;}
-  void updateLatency(double value, double date=surf_get_clock()){THROW_UNIMPLEMENTED;}
-
-//private:
- char *p_id;
- char *p_lat;
- char *p_bdw;
- int m_created;
+  void apply_event(tmgr_trace_iterator_t event, double value) override;
+  void updateBandwidth(double value) override {THROW_UNIMPLEMENTED;}
+  void updateLatency(double value) override {THROW_UNIMPLEMENTED;}
+  void setBandwidthTrace(tmgr_trace_t trace) override;
+  void setLatencyTrace(tmgr_trace_t trace) override;
 };
 
 /**********
  * Action *
  **********/
-class NetworkNS3Action : public NetworkAction {
+class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
-  NetworkNS3Action(ModelPtr model, double cost, bool failed);
+  NetworkNS3Action(Model *model, double cost, kernel::routing::NetCard *src, kernel::routing::NetCard *dst);
 
-#ifdef HAVE_LATENCY_BOUND_TRACKING
-  int getLatencyLimited();
-#endif
-
-bool isSuspended();
-int unref();
-void suspend();
-void resume();
+  bool isSuspended();
+  int unref();
+  void suspend();
+  void resume();
 
 //private:
-#ifdef HAVE_TRACING
-  double m_lastSent;
-  RoutingEdgePtr p_srcElm;
-  RoutingEdgePtr p_dstElm;
-#endif //HAVE_TRACING
+  double lastSent_ = 0;
+  kernel::routing::NetCard *src_;
+  kernel::routing::NetCard *dst_;
 };
 
+}
+}
 
 #endif /* NETWORK_NS3_HPP_ */

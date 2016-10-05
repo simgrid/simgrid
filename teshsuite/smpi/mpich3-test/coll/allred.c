@@ -10,7 +10,6 @@
 
 #include "mpi.h"
 #include "mpitest.h"
-#include "smpi_cocci.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>

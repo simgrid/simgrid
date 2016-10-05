@@ -1,60 +1,241 @@
-************************************************
-* Installation information specific to SimGrid *
-************************************************
+This page summarizes how to compile SimGrid. The full Install
+documentation is available in doc/html/install.html or online at
 
-The main source of information on how to compile SimGrid is the project
-documentation available in doc/install.html or online on our website
-http://simgrid.gforge.inria.fr/ . This INSTALL file contains mainly generic
-information on how to compile SimGrid or any project using cmake.
+              http://simgrid.gforge.inria.fr/
 
-Quick way to compile
-====================
+Getting the Dependencies
+------------------------
+SimGrid only uses very standard tools:
+ - C compiler, C++ compiler, make and friends.
+ - perl (but you may try to go without it)
+ - cmake (version 2.8.8 or higher). You may want to use ccmake for a graphical interface over cmake.
+ - boost:
+   - Max OS X: with fink: fink install boost1.53.nopython, or with homebrew: brew install boost
+   - Debian / Ubuntu: apt-get install libboost-dev libboost-context-dev
+ - Java (if you want to build the Java bindings):
+   - Mac OS X or Windows: Grab a full JDK
+   - Debian / Ubuntu: apt-get install default-jdk
 
-In short, the way to compile SimGrid depends on whether you are compiling a
-tar.gz archive or directly from the Git.
+Build Configuration
+-------------------
+Note that compile-time options are very different from run-time options.
 
-(1) configure SimGrid (both in Git and archives)
-$ cmake <all options> ./
+The default configuration should be fine for most usages, but if you
+need to change something, there are several ways to do so. First, you
+can use environment variables. For example, you can change the
+compilers used by issuing these commands before launching cmake:
 
-Main options are:
-  -DCMAKE_INSTALL_PREFIX=<path>: specify where to install SimGrid
-  -Denable_maintainer_mode=on/off: get the maintainer files regenerated
-                                   automatically
-  -Denable_compile_optimizations=on/off: compile or not with optimizations
-  -Denable_java=on/off: enable or not the Java bindings
-  -Denable_scala=on/off: enable or not the Scala bindings
-  -Denable_lua=on/off: enable or not the lua bindings
-  -Denable_smpi=on/off: enable or not smpi
-  -Denable_model-checking=on/off: enable or not the model-checker
-See below for other configure options which are common to any project,
-not only SimGrid related.
+  export CC=gcc-4.7
+  export CXX=g++-4.7
 
-(2) Compile it
-$ make
+Note that other variables are available, such as CFLAGS and CXXFLAGS
+to add options respectively for the C and C++ compilers.
 
-(3) Test it (optional)
-$ make check
-$ ctest
+Another way to do so is to use the -D argument of cmake as follows. Note that the ending dot is mandatory (see Out of Tree Compilation).
 
-(4) Install it
-$ make install
+  cmake -DCC=clang -DCXX=clang++ .
+  
+Finally, you can use the ccmake graphical interface to change these settings.
 
+  ccmake .
 
-Dependencies
-============
-SimGrid archives do not have any firm dependencies.
+Existing compilation options
+----------------------------
 
-If you want to compile, you must have installed perl and cmake version 2.6 or
-above.
+ CMAKE_INSTALL_PREFIX (path)
+   Where to install SimGrid (/opt/simgrid, /usr/local, or elsewhere).
+ enable_compile_optimizations (ON/OFF)    
+   Request the compiler to produce efficient code. You want to
+   activate it, unless you plan to debug SimGrid itself. Indeed,
+   efficient code may be appear mangled to debuggers.
+ enable_compile_warnings (ON/OFF) 
+   Request the compiler to issue error messages whenever the source
+   code is not perfectly clean. If you are a SimGrid developer, you
+   have to activate this option to enforce the code quality. As a
+   regular user, this option will bring you nothing.
+ enable_debug (ON/OFF)
+   Disable this option toto discard all log messages of gravity debug
+   or below at compile time. The resulting code is faster than if you
+   discarding these messages at runtime. However, it obviously becomes
+   impossible to get any debug info from SimGrid if something goes
+   wrong.   
+ enable_documentation (ON/OFF) 
+   Generate the documentation pages.
+ enable_java (ON/OFF) 
+   To enjoy the java bindings of SimGrid.
+ enable_jedule (ON/OFF) 
+   To get SimDag producing execution traces that can then be
+   visualized with the Jedule external tool. 
+ enable_lua (ON/OFF) 
+   To enjoy the lua bindings to the SimGrid internals.
+ enable_lib_in_jar (ON/OFF) 
+   Bundle the native java bindings in the jar file.
+ enable_lto (ON/OFF) 
+   Enable the Link Time Optimization of the C compiler. This feature
+   really speeds up the produced code, but it is fragile with some
+   versions of GCC. 
+ enable_maintainer_mode (ON/OFF) 
+   Only needed if you plan to modify very specific parts of SimGrid
+   (e.g., the XML parsers and other related elements). Moreover, this 
+   adds an extra dependency on flex and flexml.   
+ enable_mallocators (ON/OFF) 
+   Disabled this when tracking memory issues within SimGrid, or our
+   internal memory caching mechanism will fool the debuggers.
+ enable_model-checking (ON/OFF) 
+   This execution gear is very usable now, but enabling this option at
+   compile time will hinder simulation speed even when the
+   model-checker is not activated at run time. 
+ enable_ns3 (ON/OFF) 
+   Allow to use ns-3 as a SimGrid network model.
+ enable_smpi (ON/OFF) 
+   Allow to run MPI code on top of SimGrid.
+ enable_smpi_ISP_testsuite (ON/OFF) 
+   Add many extra tests for the model-checker module.
+ enable_smpi_MPICH3_testsuite (ON/OFF) 
+   Add many extra tests for the MPI module.
+   
+Reset the build configuration
+-----------------------------
 
-If you want to compile the java bindings, you have to have a java compiler, and
-the jni.h header file (available from the JDK).
+To empty the cmake cache (either when you add a new library or when
+things go seriously wrong), simply delete your CMakeCache.txt. You may
+also want to directly edit this file in some circumstances.
 
-If you want to compile the lua bindings, you have to have lua5.1 executable and
-liblua5.1-dev.
+Out of Tree Compilation
+-----------------------
 
-If you want to compile smpi, you should install a fortran compiler to use
- Fortran code. Only gfortran has been tested for now.
+By default, the files produced during the compilation are placed in
+the source directory. It is however often better to put them all in a
+separate directory: cleaning the tree becomes as easy as removing this
+directory, and you can have several such directories to test several
+parameter sets or architectures. For that, go to the directory where
+the files should be produced, and invoke cmake (or ccmake) with the
+full path to the SimGrid source as last argument.
 
-If you want to compile the GTNetS backend, you have to have a patched version of
-GTNetS installed. The patch lives in the contrib section of the Git.
+  mkdir build
+  cd build
+  cmake [options] ..
+  make
+
+Mac OS X Builds
+---------------
+SimGrid compiles like a charm with clang (version 3.0 or higher) on Mac OS X:
+
+  cmake -DCMAKE_C_COMPILER=/path/to/clang -DCMAKE_CXX_COMPILER=/path/to/clang++ .
+  make
+  
+With the XCode version of clang 4.1, you may get the following error message: 
+CMake Error: Parse error in cache file build_dir/CMakeCache.txt. Offending entry: /SDKs/MacOSX10.8.sdk
+
+In that case, edit the CMakeCache.txt file directly, so that the
+CMAKE_OSX_SYSROOT is similar to the following. Don't worry about the
+warning that the "-pthread" argument is not used, if it appears.
+CMAKE_OSX_SYSROOT:PATH=/Applications/XCode.app/Contents/Developer/Platforms/MacOSX.platform/Developer
+
+In the El Capitan version of Max OS X, Apple decided that users don't
+need no /usr/include directory anymore. If you are hit by this pure
+madness, just run the following command to restore that classical UNIX
+directory: xcode-select -install
+
+Windows Builds
+--------------
+
+Building SimGrid on Windows may be something of an adventure: We only
+manage to do so ourselves with MinGW-64, ActiveState Perl and msys
+git). Have a look at out configuration scripts in appveyor.yml, but
+don't expect too much from us: we are really not fluent with Windows.
+Actually your help is welcome. 
+
+The drawback of MinGW-64 is that the produced DLL are not compatible
+with MS Visual C. clang-cl sounds promising to fix this. If you get
+something working, please tell us.
+
+Build the Java bindings
+-----------------------
+
+Once you have the full JDK installed (on Debian/Ubuntu, grab the
+package default-jdk for that), things should be as simple as:
+
+    cmake -Denable_java=ON .    
+    make 
+    
+After the compilation, the file simgrid.jar is produced in the root
+directory. If you only want to build the jarfile and its dependencies,
+type make simgrid-java_jar. It will save you the time of building
+every C examples and other things that you don't need for Java.
+
+Sometimes, the build system fails to find the JNI headers:
+ Error: jni could not be found. 
+
+In this case, you need to first locate them as follows:
+    $ locate jni.h    
+    /usr/lib/jvm/java-7-openjdk-amd64/include/jni.h    
+    /usr/lib/jvm/java-8-openjdk-amd64/include/jni.h
+
+Then, set the JAVA_INCLUDE_PATH environment variable to the right
+path, and relaunch cmake. If you have several version of jni installed
+(as above), use the right one (check the java version you use with
+javac -version).
+
+    export JAVA_INCLUDE_PATH=/usr/lib/jvm/java-8-openjdk-amd64/include/   
+    cmake -Denable_java=ON .    
+    make
+    
+Note that the filename jni.h was removed from the path.
+
+32 bits Builds on Multi-arch Linux
+----------------------------------
+
+On a multiarch x86_64 Linux, it should be possible to compile a 32 bit version of SimGrid with something like:
+CFLAGS=-m32 \
+CXXFLAGS=-m32 \
+PKG_CONFIG_LIBDIR=/usr/lib/i386-linux-gnu/pkgconfig/ \
+cmake . \
+-DCMAKE_SYSTEM_PROCESSOR=i386 \
+-DCMAKE_Fortran_COMPILER=/some/path/to/i686-linux-gnu-gfortran \
+-DGFORTRAN_EXE=/some/path/to/i686-linux-gnu-gfortran \
+-DCMAKE_Fortran_FLAGS=-m32
+If needed, implement i686-linux-gnu-gfortran as a script:
+#!/bin/sh
+exec gfortran -m32 "$@"
+
+Existing Compilation Targets
+----------------------------
+In most cases, compiling and installing SimGrid is enough:
+  make
+  make install # try "sudo make install" if you don't have the permission to write
+  
+In addition, several compilation targets are provided in SimGrid. If
+your system is well configured, the full list of targets is available
+for completion when using the Tab key. Note that some of the existing
+targets are not really for public consumption so don't worry if some
+stuff doesn't work for you.
+
+make simgrid                    Build only the SimGrid library and not any example
+make app-masterworker           Build only this example (works for any example)
+make clean                      Clean the results of a previous compilation
+make install                    Install the project (doc/ bin/ lib/ include/)
+make uninstall                  Uninstall the project (doc/ bin/ lib/ include/)
+make dist                       Build a distribution archive (tgz)
+make distcheck                  Check the dist (make + make dist + tests on the distribution)
+make documentation              Create SimGrid documentation
+
+If you want to see what is really happening, try adding VERBOSE=1 to your compilation requests:
+
+  make VERBOSE=1
+  
+Testing your build
+------------------
+
+Once everything is built, you may want to test the result. SimGrid
+comes with an extensive set of regression tests (as described in the
+insider manual). The tests are run with ctest, that comes with CMake.
+We run them every commit and the results are on our Jenkins.
+
+ctest                     # Launch all tests
+ctest -R msg              # Launch only the tests which name match the string "msg"
+ctest -j4                 # Launch all tests in parallel, at most 4 at the same time
+ctest --verbose           # Display all details on what's going on
+ctest --output-on-failure # Only get verbose for the tests that fail
+ctest -R msg- -j5 --output-on-failure # You changed MSG and want to check that you didn't break anything, huh?
+                                      # That's fine, I do so all the time myself.

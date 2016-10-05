@@ -1,0 +1,2807 @@
+#! ./tesh
+
+p Tracing processes
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${srcdir:=.}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
+
+$ tail -n +3 procmig.trace
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 HOST
+> 6 0 1 1 0 "Tremblay"
+> 0 2 1 MSG_PROCESS
+> 2 3 2 MSG_PROCESS_STATE
+> 5 4 3 suspend "1 0 1"
+> 5 5 3 sleep "1 1 0"
+> 5 6 3 receive "1 0 0"
+> 5 7 3 send "0 0 1"
+> 5 8 3 task_execute "0 1 1"
+> 4 9 0 2 2 MSG_PROCESS_LINK
+> 4 10 0 2 2 MSG_PROCESS_TASK_LINK
+> 6 0 2 1 0 "Jupiter"
+> 6 0 3 1 0 "Fafard"
+> 6 0 4 1 0 "Ginette"
+> 6 0 5 1 0 "Bourassa"
+> 6 0 6 1 0 "Jacquelin"
+> 6 0 7 1 0 "Boivin"
+> 0 11 0 LINK
+> 6 0 8 11 0 "6"
+> 6 0 9 11 0 "3"
+> 6 0 10 11 0 "7"
+> 6 0 11 11 0 "9"
+> 6 0 12 11 0 "2"
+> 6 0 13 11 0 "8"
+> 6 0 14 11 0 "1"
+> 6 0 15 11 0 "4"
+> 6 0 16 11 0 "0"
+> 6 0 17 11 0 "5"
+> 6 0 18 11 0 "145"
+> 6 0 19 11 0 "10"
+> 6 0 20 11 0 "11"
+> 6 0 21 11 0 "16"
+> 6 0 22 11 0 "17"
+> 6 0 23 11 0 "44"
+> 6 0 24 11 0 "47"
+> 6 0 25 11 0 "54"
+> 6 0 26 11 0 "56"
+> 6 0 27 11 0 "59"
+> 6 0 28 11 0 "78"
+> 6 0 29 11 0 "79"
+> 6 0 30 11 0 "80"
+> 6 0 31 11 0 "loopback"
+> 4 12 0 11 11 0-LINK11-LINK11
+> 4 13 0 1 11 0-HOST1-LINK11
+> 4 14 0 11 1 0-LINK11-HOST1
+> 15 0 12 0 topology 19 0
+> 16 0 12 0 topology 20 0
+> 15 0 12 0 topology 15 1
+> 16 0 12 0 topology 9 1
+> 15 0 12 0 topology 27 2
+> 16 0 12 0 topology 18 2
+> 15 0 13 0 topology 5 3
+> 16 0 13 0 topology 24 3
+> 15 0 12 0 topology 8 4
+> 16 0 12 0 topology 10 4
+> 15 0 12 0 topology 21 5
+> 16 0 12 0 topology 22 5
+> 15 0 13 0 topology 1 6
+> 16 0 13 0 topology 9 6
+> 15 0 12 0 topology 23 7
+> 16 0 12 0 topology 24 7
+> 15 0 13 0 topology 1 8
+> 16 0 13 0 topology 15 8
+> 15 0 13 0 topology 1 9
+> 16 0 13 0 topology 11 9
+> 15 0 12 0 topology 26 10
+> 16 0 12 0 topology 27 10
+> 15 0 13 0 topology 5 11
+> 16 0 13 0 topology 18 11
+> 15 0 14 0 topology 11 12
+> 16 0 14 0 topology 2 12
+> 15 0 12 0 topology 28 13
+> 16 0 12 0 topology 29 13
+> 15 0 12 0 topology 12 14
+> 16 0 12 0 topology 16 14
+> 15 0 12 0 topology 9 15
+> 16 0 12 0 topology 16 15
+> 15 0 12 0 topology 14 16
+> 16 0 12 0 topology 13 16
+> 15 0 12 0 topology 29 17
+> 16 0 12 0 topology 11 17
+> 15 0 13 0 topology 3 18
+> 16 0 13 0 topology 30 18
+> 15 0 12 0 topology 11 19
+> 16 0 12 0 topology 15 19
+> 15 0 13 0 topology 2 20
+> 16 0 13 0 topology 24 20
+> 15 0 14 0 topology 18 21
+> 16 0 14 0 topology 6 21
+> 15 0 14 0 topology 10 22
+> 16 0 14 0 topology 5 22
+> 15 0 12 0 topology 8 23
+> 16 0 12 0 topology 19 23
+> 15 0 12 0 topology 12 24
+> 16 0 12 0 topology 25 24
+> 15 0 13 0 topology 4 25
+> 16 0 13 0 topology 24 25
+> 15 0 12 0 topology 16 26
+> 16 0 12 0 topology 14 26
+> 15 0 14 0 topology 17 27
+> 16 0 14 0 topology 4 27
+> 15 0 12 0 topology 12 28
+> 16 0 12 0 topology 17 28
+> 15 0 12 0 topology 9 29
+> 16 0 12 0 topology 17 29
+> 15 0 12 0 topology 21 30
+> 16 0 12 0 topology 19 30
+> 15 0 12 0 topology 22 31
+> 16 0 12 0 topology 25 31
+> 15 0 14 0 topology 24 32
+> 16 0 14 0 topology 7 32
+> 15 0 13 0 topology 3 33
+> 16 0 13 0 topology 28 33
+> 15 0 12 0 topology 25 34
+> 16 0 12 0 topology 26 34
+> 15 0 12 0 topology 8 35
+> 16 0 12 0 topology 20 35
+> 15 0 14 0 topology 13 36
+> 16 0 14 0 topology 3 36
+> 15 0 13 0 topology 2 37
+> 16 0 13 0 topology 18 37
+> 15 0 12 0 topology 9 38
+> 16 0 12 0 topology 12 38
+> 15 0 12 0 topology 14 39
+> 16 0 12 0 topology 8 39
+> 15 0 12 0 topology 20 40
+> 16 0 12 0 topology 23 40
+> 15 0 13 0 topology 4 41
+> 16 0 13 0 topology 18 41
+> 15 0 12 0 topology 13 42
+> 16 0 12 0 topology 8 42
+> 15 0 12 0 topology 11 43
+> 16 0 12 0 topology 8 43
+> 15 0 12 0 topology 16 44
+> 16 0 12 0 topology 21 44
+> 15 0 12 0 topology 30 45
+> 16 0 12 0 topology 28 45
+> 6 0 32 2 3 "emigrant-1"
+> 6 0 33 2 1 "policeman-2"
+> 12 0 3 32 5
+> 12 0 3 33 7
+> 15 0 10 0 SR 33 p0
+> 13 2.000000 3 32
+> 12 2.000000 3 32 6
+> 13 2.025708 3 33
+> 12 2.025708 3 33 7
+> 15 2.025708 10 0 SR 33 p1
+> 13 2.025708 3 32
+> 16 2.025708 10 0 SR 32 p0
+> 15 2.025708 9 0 M 32 0
+> 7 2.025708 2 32
+> 6 2.025708 34 2 1 "emigrant-1"
+> 16 2.025708 9 0 M 34 0
+> 12 2.025708 3 34 5
+> 13 4.025708 3 34
+> 12 4.025708 3 34 6
+> 13 4.025903 3 33
+> 12 4.025903 3 33 7
+> 15 4.025903 10 0 SR 33 p2
+> 13 4.025903 3 34
+> 16 4.025903 10 0 SR 34 p1
+> 15 4.025903 9 0 M 34 1
+> 7 4.025903 2 34
+> 6 4.025903 35 2 2 "emigrant-1"
+> 16 4.025903 9 0 M 35 1
+> 12 4.025903 3 35 5
+> 13 6.025903 3 35
+> 12 6.025903 3 35 6
+> 13 6.044918 3 33
+> 12 6.044918 3 33 7
+> 15 6.044918 10 0 SR 33 p3
+> 13 6.044918 3 35
+> 16 6.044918 10 0 SR 35 p2
+> 15 6.044918 9 0 M 35 2
+> 7 6.044918 2 35
+> 6 6.044918 36 2 3 "emigrant-1"
+> 16 6.044918 9 0 M 36 2
+> 12 6.044918 3 36 5
+> 13 8.044918 3 36
+> 12 8.044918 3 36 6
+> 13 8.070626 3 33
+> 12 8.070626 3 33 7
+> 15 8.070626 10 0 SR 33 p4
+> 13 8.070626 3 36
+> 16 8.070626 10 0 SR 36 p3
+> 15 8.070626 9 0 M 36 3
+> 7 8.070626 2 36
+> 6 8.070626 37 2 4 "emigrant-1"
+> 16 8.070626 9 0 M 37 3
+> 12 8.070626 3 37 5
+> 13 10.070626 3 37
+> 12 10.070626 3 37 6
+> 13 10.087178 3 33
+> 12 10.087178 3 33 7
+> 15 10.087178 10 0 SR 33 p5
+> 13 10.087178 3 37
+> 16 10.087178 10 0 SR 37 p4
+> 15 10.087178 9 0 M 37 4
+> 7 10.087178 2 37
+> 6 10.087178 38 2 5 "emigrant-1"
+> 16 10.087178 9 0 M 38 4
+> 12 10.087178 3 38 5
+> 13 12.087178 3 38
+> 12 12.087178 3 38 6
+> 13 12.112617 3 33
+> 12 12.112617 3 33 7
+> 15 12.112617 10 0 SR 33 p6
+> 13 12.112617 3 38
+> 16 12.112617 10 0 SR 38 p5
+> 15 12.112617 9 0 M 38 5
+> 7 12.112617 2 38
+> 6 12.112617 39 2 3 "emigrant-1"
+> 16 12.112617 9 0 M 39 5
+> 12 12.112617 3 39 5
+> 13 14.112617 3 39
+> 12 14.112617 3 39 6
+> 13 14.138325 3 33
+> 12 14.138325 3 33 7
+> 15 14.138325 10 0 SR 33 p7
+> 13 14.138325 3 39
+> 16 14.138325 10 0 SR 39 p6
+> 15 14.138325 9 0 M 39 6
+> 7 14.138325 2 39
+> 6 14.138325 40 2 1 "emigrant-1"
+> 16 14.138325 9 0 M 40 6
+> 12 14.138325 3 40 5
+> 13 16.138325 3 40
+> 12 16.138325 3 40 6
+> 13 16.138521 3 33
+> 12 16.138521 3 33 7
+> 15 16.138521 10 0 SR 33 p8
+> 13 16.138521 3 40
+> 16 16.138521 10 0 SR 40 p7
+> 15 16.138521 9 0 M 40 7
+> 7 16.138521 2 40
+> 6 16.138521 41 2 4 "emigrant-1"
+> 16 16.138521 9 0 M 41 7
+> 12 16.138521 3 41 5
+> 13 18.138521 3 41
+> 12 18.138521 3 41 6
+> 13 18.155073 3 33
+> 7 18.155073 2 33
+> 13 18.155073 3 41
+> 16 18.155073 10 0 SR 41 p8
+> 7 18.155073 2 41
+> 7 18.155073 1 6
+> 7 18.155073 1 3
+> 7 18.155073 11 28
+> 7 18.155073 11 29
+> 7 18.155073 11 23
+> 7 18.155073 11 30
+> 7 18.155073 11 24
+> 7 18.155073 11 18
+> 7 18.155073 1 1
+> 7 18.155073 11 19
+> 7 18.155073 11 20
+> 7 18.155073 11 21
+> 7 18.155073 11 22
+> 7 18.155073 11 25
+> 7 18.155073 11 26
+> 7 18.155073 11 31
+> 7 18.155073 11 27
+> 7 18.155073 11 16
+> 7 18.155073 11 14
+> 7 18.155073 11 12
+> 7 18.155073 11 9
+> 7 18.155073 11 15
+> 7 18.155073 11 17
+> 7 18.155073 11 8
+> 7 18.155073 11 10
+> 7 18.155073 11 13
+> 7 18.155073 11 11
+> 7 18.155073 1 5
+> 7 18.155073 1 2
+> 7 18.155073 1 7
+> 7 18.155073 1 4
+
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=tracing/buffer:yes --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${srcdir:=.}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
+
+$ tail -n +3 procmig.trace
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 HOST
+> 6 0 1 1 0 "Tremblay"
+> 1 2 1 power "1 1 1"
+> 1 3 1 power_used "0.5 0.5 0.5"
+> 0 4 1 MSG_PROCESS
+> 2 5 4 MSG_PROCESS_STATE
+> 5 6 5 suspend "1 0 1"
+> 5 7 5 sleep "1 1 0"
+> 5 8 5 receive "1 0 0"
+> 5 9 5 send "0 0 1"
+> 5 10 5 task_execute "0 1 1"
+> 4 11 0 4 4 MSG_PROCESS_LINK
+> 4 12 0 4 4 MSG_PROCESS_TASK_LINK
+> 6 0 2 1 0 "Jupiter"
+> 6 0 3 1 0 "Fafard"
+> 6 0 4 1 0 "Ginette"
+> 6 0 5 1 0 "Bourassa"
+> 6 0 6 1 0 "Jacquelin"
+> 6 0 7 1 0 "Boivin"
+> 0 13 0 LINK
+> 6 0 8 13 0 "6"
+> 1 14 13 bandwidth "1 1 1"
+> 1 15 13 latency "1 1 1"
+> 1 16 13 bandwidth_used "0.5 0.5 0.5"
+> 6 0 9 13 0 "3"
+> 6 0 10 13 0 "7"
+> 6 0 11 13 0 "9"
+> 6 0 12 13 0 "2"
+> 6 0 13 13 0 "8"
+> 6 0 14 13 0 "1"
+> 6 0 15 13 0 "4"
+> 6 0 16 13 0 "0"
+> 6 0 17 13 0 "5"
+> 6 0 18 13 0 "145"
+> 6 0 19 13 0 "10"
+> 6 0 20 13 0 "11"
+> 6 0 21 13 0 "16"
+> 6 0 22 13 0 "17"
+> 6 0 23 13 0 "44"
+> 6 0 24 13 0 "47"
+> 6 0 25 13 0 "54"
+> 6 0 26 13 0 "56"
+> 6 0 27 13 0 "59"
+> 6 0 28 13 0 "78"
+> 6 0 29 13 0 "79"
+> 6 0 30 13 0 "80"
+> 6 0 31 13 0 "loopback"
+> 4 17 0 13 13 0-LINK13-LINK13
+> 4 18 0 1 13 0-HOST1-LINK13
+> 4 19 0 13 1 0-LINK13-HOST1
+> 8 0 2 1 98095000.000000
+> 8 0 2 2 76296000.000000
+> 8 0 2 3 76296000.000000
+> 8 0 2 4 48492000.000000
+> 8 0 2 5 48492000.000000
+> 8 0 2 6 137333000.000000
+> 8 0 2 7 98095000.000000
+> 8 0 14 8 41279125.000000
+> 8 0 15 8 0.000060
+> 8 0 14 9 34285625.000000
+> 8 0 15 9 0.000514
+> 8 0 14 10 11618875.000000
+> 8 0 15 10 0.000190
+> 8 0 14 11 7209750.000000
+> 8 0 15 11 0.001462
+> 8 0 14 12 118682500.000000
+> 8 0 15 12 0.000137
+> 8 0 14 13 8158000.000000
+> 8 0 15 13 0.000271
+> 8 0 14 14 34285625.000000
+> 8 0 15 14 0.000514
+> 8 0 14 15 10099625.000000
+> 8 0 15 15 0.000480
+> 8 0 14 16 41279125.000000
+> 8 0 15 16 0.000060
+> 8 0 14 17 27946250.000000
+> 8 0 15 17 0.000278
+> 8 0 14 18 2583375.000000
+> 8 0 15 18 0.000410
+> 8 0 14 19 34285625.000000
+> 8 0 15 19 0.000514
+> 8 0 14 20 118682500.000000
+> 8 0 15 20 0.000137
+> 8 0 14 21 34285625.000000
+> 8 0 15 21 0.000514
+> 8 0 14 22 118682500.000000
+> 8 0 15 22 0.000137
+> 8 0 14 23 10314625.000000
+> 8 0 15 23 0.006933
+> 8 0 14 24 10314625.000000
+> 8 0 15 24 0.006933
+> 8 0 14 25 15376875.000000
+> 8 0 15 25 0.035083
+> 8 0 14 26 21414750.000000
+> 8 0 15 26 0.029589
+> 8 0 14 27 11845375.000000
+> 8 0 15 27 0.000371
+> 8 0 14 28 27946250.000000
+> 8 0 15 28 0.000278
+> 8 0 14 29 8427250.000000
+> 8 0 15 29 0.000156
+> 8 0 14 30 15376875.000000
+> 8 0 15 30 0.035083
+> 8 0 14 31 498000000.000000
+> 8 0 15 31 0.000015
+> 15 0 17 0 topology 19 0
+> 16 0 17 0 topology 20 0
+> 15 0 17 0 topology 15 1
+> 16 0 17 0 topology 9 1
+> 15 0 17 0 topology 27 2
+> 16 0 17 0 topology 18 2
+> 15 0 18 0 topology 5 3
+> 16 0 18 0 topology 24 3
+> 15 0 17 0 topology 8 4
+> 16 0 17 0 topology 10 4
+> 15 0 17 0 topology 21 5
+> 16 0 17 0 topology 22 5
+> 15 0 18 0 topology 1 6
+> 16 0 18 0 topology 9 6
+> 15 0 17 0 topology 23 7
+> 16 0 17 0 topology 24 7
+> 15 0 18 0 topology 1 8
+> 16 0 18 0 topology 15 8
+> 15 0 18 0 topology 1 9
+> 16 0 18 0 topology 11 9
+> 15 0 17 0 topology 26 10
+> 16 0 17 0 topology 27 10
+> 15 0 18 0 topology 5 11
+> 16 0 18 0 topology 18 11
+> 15 0 19 0 topology 11 12
+> 16 0 19 0 topology 2 12
+> 15 0 17 0 topology 28 13
+> 16 0 17 0 topology 29 13
+> 15 0 17 0 topology 12 14
+> 16 0 17 0 topology 16 14
+> 15 0 17 0 topology 9 15
+> 16 0 17 0 topology 16 15
+> 15 0 17 0 topology 14 16
+> 16 0 17 0 topology 13 16
+> 15 0 17 0 topology 29 17
+> 16 0 17 0 topology 11 17
+> 15 0 18 0 topology 3 18
+> 16 0 18 0 topology 30 18
+> 15 0 17 0 topology 11 19
+> 16 0 17 0 topology 15 19
+> 15 0 18 0 topology 2 20
+> 16 0 18 0 topology 24 20
+> 15 0 19 0 topology 18 21
+> 16 0 19 0 topology 6 21
+> 15 0 19 0 topology 10 22
+> 16 0 19 0 topology 5 22
+> 15 0 17 0 topology 8 23
+> 16 0 17 0 topology 19 23
+> 15 0 17 0 topology 12 24
+> 16 0 17 0 topology 25 24
+> 15 0 18 0 topology 4 25
+> 16 0 18 0 topology 24 25
+> 15 0 17 0 topology 16 26
+> 16 0 17 0 topology 14 26
+> 15 0 19 0 topology 17 27
+> 16 0 19 0 topology 4 27
+> 15 0 17 0 topology 12 28
+> 16 0 17 0 topology 17 28
+> 15 0 17 0 topology 9 29
+> 16 0 17 0 topology 17 29
+> 15 0 17 0 topology 21 30
+> 16 0 17 0 topology 19 30
+> 15 0 17 0 topology 22 31
+> 16 0 17 0 topology 25 31
+> 15 0 19 0 topology 24 32
+> 16 0 19 0 topology 7 32
+> 15 0 18 0 topology 3 33
+> 16 0 18 0 topology 28 33
+> 15 0 17 0 topology 25 34
+> 16 0 17 0 topology 26 34
+> 15 0 17 0 topology 8 35
+> 16 0 17 0 topology 20 35
+> 15 0 19 0 topology 13 36
+> 16 0 19 0 topology 3 36
+> 15 0 18 0 topology 2 37
+> 16 0 18 0 topology 18 37
+> 15 0 17 0 topology 9 38
+> 16 0 17 0 topology 12 38
+> 15 0 17 0 topology 14 39
+> 16 0 17 0 topology 8 39
+> 15 0 17 0 topology 20 40
+> 16 0 17 0 topology 23 40
+> 15 0 18 0 topology 4 41
+> 16 0 18 0 topology 18 41
+> 15 0 17 0 topology 13 42
+> 16 0 17 0 topology 8 42
+> 15 0 17 0 topology 11 43
+> 16 0 17 0 topology 8 43
+> 15 0 17 0 topology 16 44
+> 16 0 17 0 topology 21 44
+> 15 0 17 0 topology 30 45
+> 16 0 17 0 topology 28 45
+> 1 20 13 bmigration_order "0.800026 0.545312 0.857926"
+> 1 21 1 pmigration_order "0.800026 0.545312 0.857926"
+> 6 0 32 4 3 "emigrant-1"
+> 6 0 33 4 1 "policeman-2"
+> 12 0 5 32 7
+> 12 0 5 33 9
+> 15 0 12 0 SR 33 p0
+> 13 2.000000 5 32
+> 12 2.000000 5 32 8
+> 8 2.025708 16 15 0.000000
+> 9 2.025708 16 15 7536438.095238
+> 10 2.025708 16 15 7536438.095238
+> 8 2.025708 16 9 0.000000
+> 9 2.025708 16 9 7536438.095238
+> 10 2.025708 16 9 7536438.095238
+> 8 2.025708 16 12 0.000000
+> 9 2.025708 16 12 7536438.095238
+> 10 2.025708 16 12 7536438.095238
+> 8 2.025708 16 16 0.000000
+> 9 2.025708 16 16 7536438.095238
+> 10 2.025708 16 16 7536438.095238
+> 8 2.025708 16 14 0.000000
+> 9 2.025708 16 14 7536438.095238
+> 10 2.025708 16 14 7536438.095238
+> 8 2.025708 16 13 0.000000
+> 9 2.025708 16 13 7536438.095238
+> 10 2.025708 16 13 7536438.095238
+> 9 2.025708 16 13 376821.904762
+> 10 2.025708 16 13 376821.904762
+> 9 2.025708 16 14 376821.904762
+> 10 2.025708 16 14 376821.904762
+> 9 2.025708 16 16 376821.904762
+> 10 2.025708 16 16 376821.904762
+> 9 2.025708 16 12 376821.904762
+> 10 2.025708 16 12 376821.904762
+> 9 2.025708 16 9 376821.904762
+> 10 2.025708 16 9 376821.904762
+> 9 2.025708 16 15 376821.904762
+> 10 2.025708 16 15 376821.904762
+> 13 2.025708 5 33
+> 12 2.025708 5 33 9
+> 15 2.025708 12 0 SR 33 p1
+> 13 2.025708 5 32
+> 16 2.025708 12 0 SR 32 p0
+> 15 2.025708 11 0 M 32 0
+> 7 2.025708 4 32
+> 6 2.025708 34 4 1 "emigrant-1"
+> 16 2.025708 11 0 M 34 0
+> 12 2.025708 5 34 7
+> 13 4.025708 5 34
+> 12 4.025708 5 34 8
+> 8 4.025903 16 31 0.000000
+> 9 4.025903 16 31 483060000.000000
+> 10 4.025903 16 31 483060000.000000
+> 9 4.025903 16 31 24153000.000000
+> 10 4.025903 16 31 24153000.000000
+> 13 4.025903 5 33
+> 12 4.025903 5 33 9
+> 15 4.025903 12 0 SR 33 p2
+> 13 4.025903 5 34
+> 16 4.025903 12 0 SR 34 p1
+> 15 4.025903 11 0 M 34 1
+> 7 4.025903 4 34
+> 6 4.025903 35 4 2 "emigrant-1"
+> 16 4.025903 11 0 M 35 1
+> 12 4.025903 5 35 7
+> 13 6.025903 5 35
+> 12 6.025903 5 35 8
+> 8 6.044918 16 11 0.000000
+> 9 6.044918 16 11 6660435.714286
+> 10 6.044918 16 11 6660435.714286
+> 9 6.044918 16 11 333021.785714
+> 10 6.044918 16 11 333021.785714
+> 13 6.044918 5 33
+> 12 6.044918 5 33 9
+> 15 6.044918 12 0 SR 33 p3
+> 13 6.044918 5 35
+> 16 6.044918 12 0 SR 35 p2
+> 15 6.044918 11 0 M 35 2
+> 7 6.044918 4 35
+> 6 6.044918 36 4 3 "emigrant-1"
+> 16 6.044918 11 0 M 36 2
+> 12 6.044918 5 36 7
+> 13 8.044918 5 36
+> 12 8.044918 5 36 8
+> 9 8.070626 16 15 7536438.095238
+> 10 8.070626 16 15 7536438.095238
+> 9 8.070626 16 9 7536438.095238
+> 10 8.070626 16 9 7536438.095238
+> 9 8.070626 16 12 7536438.095238
+> 10 8.070626 16 12 7536438.095238
+> 9 8.070626 16 16 7536438.095238
+> 10 8.070626 16 16 7536438.095238
+> 9 8.070626 16 14 7536438.095238
+> 10 8.070626 16 14 7536438.095238
+> 9 8.070626 16 13 7536438.095238
+> 10 8.070626 16 13 7536438.095238
+> 9 8.070626 16 13 376821.904762
+> 10 8.070626 16 13 376821.904762
+> 9 8.070626 16 14 376821.904762
+> 10 8.070626 16 14 376821.904762
+> 9 8.070626 16 16 376821.904762
+> 10 8.070626 16 16 376821.904762
+> 9 8.070626 16 12 376821.904762
+> 10 8.070626 16 12 376821.904762
+> 9 8.070626 16 9 376821.904762
+> 10 8.070626 16 9 376821.904762
+> 9 8.070626 16 15 376821.904762
+> 10 8.070626 16 15 376821.904762
+> 13 8.070626 5 33
+> 12 8.070626 5 33 9
+> 15 8.070626 12 0 SR 33 p4
+> 13 8.070626 5 36
+> 16 8.070626 12 0 SR 36 p3
+> 15 8.070626 11 0 M 36 3
+> 7 8.070626 4 36
+> 6 8.070626 37 4 4 "emigrant-1"
+> 16 8.070626 11 0 M 37 3
+> 12 8.070626 5 37 7
+> 13 10.070626 5 37
+> 12 10.070626 5 37 8
+> 9 10.087178 16 15 9330129.761905
+> 10 10.087178 16 15 9330129.761905
+> 9 10.087178 16 9 9330129.761905
+> 10 10.087178 16 9 9330129.761905
+> 8 10.087178 16 17 0.000000
+> 9 10.087178 16 17 9330129.761905
+> 10 10.087178 16 17 9330129.761905
+> 9 10.087178 16 17 466506.488095
+> 10 10.087178 16 17 466506.488095
+> 9 10.087178 16 9 466506.488095
+> 10 10.087178 16 9 466506.488095
+> 9 10.087178 16 15 466506.488095
+> 10 10.087178 16 15 466506.488095
+> 13 10.087178 5 33
+> 12 10.087178 5 33 9
+> 15 10.087178 12 0 SR 33 p5
+> 13 10.087178 5 37
+> 16 10.087178 12 0 SR 37 p4
+> 15 10.087178 11 0 M 37 4
+> 7 10.087178 4 37
+> 6 10.087178 38 4 5 "emigrant-1"
+> 16 10.087178 11 0 M 38 4
+> 12 10.087178 5 38 7
+> 13 12.087178 5 38
+> 12 12.087178 5 38 8
+> 9 12.112617 16 15 9330129.761905
+> 10 12.112617 16 15 9330129.761905
+> 9 12.112617 16 9 9330129.761905
+> 10 12.112617 16 9 9330129.761905
+> 9 12.112617 16 12 9330129.761905
+> 10 12.112617 16 12 9330129.761905
+> 9 12.112617 16 16 9330129.761905
+> 10 12.112617 16 16 9330129.761905
+> 9 12.112617 16 14 9330129.761905
+> 10 12.112617 16 14 9330129.761905
+> 8 12.112617 16 8 0.000000
+> 9 12.112617 16 8 9330129.761905
+> 10 12.112617 16 8 9330129.761905
+> 8 12.112617 16 10 0.000000
+> 9 12.112617 16 10 9330129.761905
+> 10 12.112617 16 10 9330129.761905
+> 9 12.112617 16 10 466506.488095
+> 10 12.112617 16 10 466506.488095
+> 9 12.112617 16 8 466506.488095
+> 10 12.112617 16 8 466506.488095
+> 9 12.112617 16 14 466506.488095
+> 10 12.112617 16 14 466506.488095
+> 9 12.112617 16 16 466506.488095
+> 10 12.112617 16 16 466506.488095
+> 9 12.112617 16 12 466506.488095
+> 10 12.112617 16 12 466506.488095
+> 9 12.112617 16 9 466506.488095
+> 10 12.112617 16 9 466506.488095
+> 9 12.112617 16 15 466506.488095
+> 10 12.112617 16 15 466506.488095
+> 13 12.112617 5 33
+> 12 12.112617 5 33 9
+> 15 12.112617 12 0 SR 33 p6
+> 13 12.112617 5 38
+> 16 12.112617 12 0 SR 38 p5
+> 15 12.112617 11 0 M 38 5
+> 7 12.112617 4 38
+> 6 12.112617 39 4 3 "emigrant-1"
+> 16 12.112617 11 0 M 39 5
+> 12 12.112617 5 39 7
+> 13 14.112617 5 39
+> 12 14.112617 5 39 8
+> 9 14.138325 16 15 7536438.095238
+> 10 14.138325 16 15 7536438.095238
+> 9 14.138325 16 9 7536438.095238
+> 10 14.138325 16 9 7536438.095238
+> 9 14.138325 16 12 7536438.095238
+> 10 14.138325 16 12 7536438.095238
+> 9 14.138325 16 16 7536438.095238
+> 10 14.138325 16 16 7536438.095238
+> 9 14.138325 16 14 7536438.095238
+> 10 14.138325 16 14 7536438.095238
+> 9 14.138325 16 13 7536438.095238
+> 10 14.138325 16 13 7536438.095238
+> 9 14.138325 16 13 376821.904762
+> 10 14.138325 16 13 376821.904762
+> 9 14.138325 16 14 376821.904762
+> 10 14.138325 16 14 376821.904762
+> 9 14.138325 16 16 376821.904762
+> 10 14.138325 16 16 376821.904762
+> 9 14.138325 16 12 376821.904762
+> 10 14.138325 16 12 376821.904762
+> 9 14.138325 16 9 376821.904762
+> 10 14.138325 16 9 376821.904762
+> 9 14.138325 16 15 376821.904762
+> 10 14.138325 16 15 376821.904762
+> 13 14.138325 5 33
+> 12 14.138325 5 33 9
+> 15 14.138325 12 0 SR 33 p7
+> 13 14.138325 5 39
+> 16 14.138325 12 0 SR 39 p6
+> 15 14.138325 11 0 M 39 6
+> 7 14.138325 4 39
+> 6 14.138325 40 4 1 "emigrant-1"
+> 16 14.138325 11 0 M 40 6
+> 12 14.138325 5 40 7
+> 13 16.138325 5 40
+> 12 16.138325 5 40 8
+> 9 16.138521 16 31 483060000.000000
+> 10 16.138521 16 31 483060000.000000
+> 9 16.138521 16 31 24153000.000000
+> 10 16.138521 16 31 24153000.000000
+> 13 16.138521 5 33
+> 12 16.138521 5 33 9
+> 15 16.138521 12 0 SR 33 p8
+> 13 16.138521 5 40
+> 16 16.138521 12 0 SR 40 p7
+> 15 16.138521 11 0 M 40 7
+> 7 16.138521 4 40
+> 6 16.138521 41 4 4 "emigrant-1"
+> 16 16.138521 11 0 M 41 7
+> 12 16.138521 5 41 7
+> 13 18.138521 5 41
+> 12 18.138521 5 41 8
+> 9 18.155073 16 15 9330129.761905
+> 10 18.155073 16 15 9330129.761905
+> 9 18.155073 16 9 9330129.761905
+> 10 18.155073 16 9 9330129.761905
+> 9 18.155073 16 17 9330129.761905
+> 10 18.155073 16 17 9330129.761905
+> 9 18.155073 16 17 466506.488095
+> 10 18.155073 16 17 466506.488095
+> 9 18.155073 16 9 466506.488095
+> 10 18.155073 16 9 466506.488095
+> 9 18.155073 16 15 466506.488095
+> 10 18.155073 16 15 466506.488095
+> 13 18.155073 5 33
+> 7 18.155073 4 33
+> 13 18.155073 5 41
+> 16 18.155073 12 0 SR 41 p8
+> 7 18.155073 4 41
+> 7 18.155073 1 6
+> 7 18.155073 1 3
+> 7 18.155073 13 28
+> 7 18.155073 13 29
+> 7 18.155073 13 23
+> 7 18.155073 13 30
+> 7 18.155073 13 24
+> 7 18.155073 13 18
+> 7 18.155073 1 1
+> 7 18.155073 13 19
+> 7 18.155073 13 20
+> 7 18.155073 13 21
+> 7 18.155073 13 22
+> 7 18.155073 13 25
+> 7 18.155073 13 26
+> 7 18.155073 13 31
+> 7 18.155073 13 27
+> 7 18.155073 13 16
+> 7 18.155073 13 14
+> 7 18.155073 13 12
+> 7 18.155073 13 9
+> 7 18.155073 13 15
+> 7 18.155073 13 17
+> 7 18.155073 13 8
+> 7 18.155073 13 10
+> 7 18.155073 13 13
+> 7 18.155073 13 11
+> 7 18.155073 1 5
+> 7 18.155073 1 2
+> 7 18.155073 1 7
+> 7 18.155073 1 4
+
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing/categorized:yes --cfg=tracing/uncategorized:yes --cfg=tracing/buffer:no --cfg=tracing/filename:procmig.trace --cfg=tracing/msg/process:yes ${srcdir:=.}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/buffer' to 'no'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/filename' to 'procmig.trace'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
+
+$ tail -n +3 procmig.trace
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 HOST
+> 6 0 1 1 0 "Tremblay"
+> 1 2 1 power "1 1 1"
+> 1 3 1 power_used "0.5 0.5 0.5"
+> 0 4 1 MSG_PROCESS
+> 2 5 4 MSG_PROCESS_STATE
+> 5 6 5 suspend "1 0 1"
+> 5 7 5 sleep "1 1 0"
+> 5 8 5 receive "1 0 0"
+> 5 9 5 send "0 0 1"
+> 5 10 5 task_execute "0 1 1"
+> 4 11 0 4 4 MSG_PROCESS_LINK
+> 4 12 0 4 4 MSG_PROCESS_TASK_LINK
+> 6 0 2 1 0 "Jupiter"
+> 6 0 3 1 0 "Fafard"
+> 6 0 4 1 0 "Ginette"
+> 6 0 5 1 0 "Bourassa"
+> 6 0 6 1 0 "Jacquelin"
+> 6 0 7 1 0 "Boivin"
+> 0 13 0 LINK
+> 6 0 8 13 0 "6"
+> 1 14 13 bandwidth "1 1 1"
+> 1 15 13 latency "1 1 1"
+> 1 16 13 bandwidth_used "0.5 0.5 0.5"
+> 6 0 9 13 0 "3"
+> 6 0 10 13 0 "7"
+> 6 0 11 13 0 "9"
+> 6 0 12 13 0 "2"
+> 6 0 13 13 0 "8"
+> 6 0 14 13 0 "1"
+> 6 0 15 13 0 "4"
+> 6 0 16 13 0 "0"
+> 6 0 17 13 0 "5"
+> 6 0 18 13 0 "145"
+> 6 0 19 13 0 "10"
+> 6 0 20 13 0 "11"
+> 6 0 21 13 0 "16"
+> 6 0 22 13 0 "17"
+> 6 0 23 13 0 "44"
+> 6 0 24 13 0 "47"
+> 6 0 25 13 0 "54"
+> 6 0 26 13 0 "56"
+> 6 0 27 13 0 "59"
+> 6 0 28 13 0 "78"
+> 6 0 29 13 0 "79"
+> 6 0 30 13 0 "80"
+> 6 0 31 13 0 "loopback"
+> 4 17 0 13 13 0-LINK13-LINK13
+> 4 18 0 1 13 0-HOST1-LINK13
+> 4 19 0 13 1 0-LINK13-HOST1
+> 8 0 2 1 98095000.000000
+> 8 0 2 2 76296000.000000
+> 8 0 2 3 76296000.000000
+> 8 0 2 4 48492000.000000
+> 8 0 2 5 48492000.000000
+> 8 0 2 6 137333000.000000
+> 8 0 2 7 98095000.000000
+> 8 0 14 8 41279125.000000
+> 8 0 15 8 0.000060
+> 8 0 14 9 34285625.000000
+> 8 0 15 9 0.000514
+> 8 0 14 10 11618875.000000
+> 8 0 15 10 0.000190
+> 8 0 14 11 7209750.000000
+> 8 0 15 11 0.001462
+> 8 0 14 12 118682500.000000
+> 8 0 15 12 0.000137
+> 8 0 14 13 8158000.000000
+> 8 0 15 13 0.000271
+> 8 0 14 14 34285625.000000
+> 8 0 15 14 0.000514
+> 8 0 14 15 10099625.000000
+> 8 0 15 15 0.000480
+> 8 0 14 16 41279125.000000
+> 8 0 15 16 0.000060
+> 8 0 14 17 27946250.000000
+> 8 0 15 17 0.000278
+> 8 0 14 18 2583375.000000
+> 8 0 15 18 0.000410
+> 8 0 14 19 34285625.000000
+> 8 0 15 19 0.000514
+> 8 0 14 20 118682500.000000
+> 8 0 15 20 0.000137
+> 8 0 14 21 34285625.000000
+> 8 0 15 21 0.000514
+> 8 0 14 22 118682500.000000
+> 8 0 15 22 0.000137
+> 8 0 14 23 10314625.000000
+> 8 0 15 23 0.006933
+> 8 0 14 24 10314625.000000
+> 8 0 15 24 0.006933
+> 8 0 14 25 15376875.000000
+> 8 0 15 25 0.035083
+> 8 0 14 26 21414750.000000
+> 8 0 15 26 0.029589
+> 8 0 14 27 11845375.000000
+> 8 0 15 27 0.000371
+> 8 0 14 28 27946250.000000
+> 8 0 15 28 0.000278
+> 8 0 14 29 8427250.000000
+> 8 0 15 29 0.000156
+> 8 0 14 30 15376875.000000
+> 8 0 15 30 0.035083
+> 8 0 14 31 498000000.000000
+> 8 0 15 31 0.000015
+> 15 0 17 0 topology 19 0
+> 16 0 17 0 topology 20 0
+> 15 0 17 0 topology 15 1
+> 16 0 17 0 topology 9 1
+> 15 0 17 0 topology 27 2
+> 16 0 17 0 topology 18 2
+> 15 0 18 0 topology 5 3
+> 16 0 18 0 topology 24 3
+> 15 0 17 0 topology 8 4
+> 16 0 17 0 topology 10 4
+> 15 0 17 0 topology 21 5
+> 16 0 17 0 topology 22 5
+> 15 0 18 0 topology 1 6
+> 16 0 18 0 topology 9 6
+> 15 0 17 0 topology 23 7
+> 16 0 17 0 topology 24 7
+> 15 0 18 0 topology 1 8
+> 16 0 18 0 topology 15 8
+> 15 0 18 0 topology 1 9
+> 16 0 18 0 topology 11 9
+> 15 0 17 0 topology 26 10
+> 16 0 17 0 topology 27 10
+> 15 0 18 0 topology 5 11
+> 16 0 18 0 topology 18 11
+> 15 0 19 0 topology 11 12
+> 16 0 19 0 topology 2 12
+> 15 0 17 0 topology 28 13
+> 16 0 17 0 topology 29 13
+> 15 0 17 0 topology 12 14
+> 16 0 17 0 topology 16 14
+> 15 0 17 0 topology 9 15
+> 16 0 17 0 topology 16 15
+> 15 0 17 0 topology 14 16
+> 16 0 17 0 topology 13 16
+> 15 0 17 0 topology 29 17
+> 16 0 17 0 topology 11 17
+> 15 0 18 0 topology 3 18
+> 16 0 18 0 topology 30 18
+> 15 0 17 0 topology 11 19
+> 16 0 17 0 topology 15 19
+> 15 0 18 0 topology 2 20
+> 16 0 18 0 topology 24 20
+> 15 0 19 0 topology 18 21
+> 16 0 19 0 topology 6 21
+> 15 0 19 0 topology 10 22
+> 16 0 19 0 topology 5 22
+> 15 0 17 0 topology 8 23
+> 16 0 17 0 topology 19 23
+> 15 0 17 0 topology 12 24
+> 16 0 17 0 topology 25 24
+> 15 0 18 0 topology 4 25
+> 16 0 18 0 topology 24 25
+> 15 0 17 0 topology 16 26
+> 16 0 17 0 topology 14 26
+> 15 0 19 0 topology 17 27
+> 16 0 19 0 topology 4 27
+> 15 0 17 0 topology 12 28
+> 16 0 17 0 topology 17 28
+> 15 0 17 0 topology 9 29
+> 16 0 17 0 topology 17 29
+> 15 0 17 0 topology 21 30
+> 16 0 17 0 topology 19 30
+> 15 0 17 0 topology 22 31
+> 16 0 17 0 topology 25 31
+> 15 0 19 0 topology 24 32
+> 16 0 19 0 topology 7 32
+> 15 0 18 0 topology 3 33
+> 16 0 18 0 topology 28 33
+> 15 0 17 0 topology 25 34
+> 16 0 17 0 topology 26 34
+> 15 0 17 0 topology 8 35
+> 16 0 17 0 topology 20 35
+> 15 0 19 0 topology 13 36
+> 16 0 19 0 topology 3 36
+> 15 0 18 0 topology 2 37
+> 16 0 18 0 topology 18 37
+> 15 0 17 0 topology 9 38
+> 16 0 17 0 topology 12 38
+> 15 0 17 0 topology 14 39
+> 16 0 17 0 topology 8 39
+> 15 0 17 0 topology 20 40
+> 16 0 17 0 topology 23 40
+> 15 0 18 0 topology 4 41
+> 16 0 18 0 topology 18 41
+> 15 0 17 0 topology 13 42
+> 16 0 17 0 topology 8 42
+> 15 0 17 0 topology 11 43
+> 16 0 17 0 topology 8 43
+> 15 0 17 0 topology 16 44
+> 16 0 17 0 topology 21 44
+> 15 0 17 0 topology 30 45
+> 16 0 17 0 topology 28 45
+> 1 20 13 bmigration_order "0.800026 0.545312 0.857926"
+> 1 21 1 pmigration_order "0.800026 0.545312 0.857926"
+> 6 0 32 4 3 "emigrant-1"
+> 6 0 33 4 1 "policeman-2"
+> 12 0 5 32 7
+> 12 0 5 33 9
+> 15 0 12 0 SR 33 p0
+> 13 2.000000 5 32
+> 12 2.000000 5 32 8
+> 8 2.025708 16 15 0.000000
+> 9 2.025708 16 15 7536438.095238
+> 10 2.025708 16 15 7536438.095238
+> 8 2.025708 16 9 0.000000
+> 9 2.025708 16 9 7536438.095238
+> 10 2.025708 16 9 7536438.095238
+> 8 2.025708 16 12 0.000000
+> 9 2.025708 16 12 7536438.095238
+> 10 2.025708 16 12 7536438.095238
+> 8 2.025708 16 16 0.000000
+> 9 2.025708 16 16 7536438.095238
+> 10 2.025708 16 16 7536438.095238
+> 8 2.025708 16 14 0.000000
+> 9 2.025708 16 14 7536438.095238
+> 10 2.025708 16 14 7536438.095238
+> 8 2.025708 16 13 0.000000
+> 9 2.025708 16 13 7536438.095238
+> 10 2.025708 16 13 7536438.095238
+> 9 2.025708 16 13 376821.904762
+> 10 2.025708 16 13 376821.904762
+> 9 2.025708 16 14 376821.904762
+> 10 2.025708 16 14 376821.904762
+> 9 2.025708 16 16 376821.904762
+> 10 2.025708 16 16 376821.904762
+> 9 2.025708 16 12 376821.904762
+> 10 2.025708 16 12 376821.904762
+> 9 2.025708 16 9 376821.904762
+> 10 2.025708 16 9 376821.904762
+> 9 2.025708 16 15 376821.904762
+> 10 2.025708 16 15 376821.904762
+> 13 2.025708 5 33
+> 12 2.025708 5 33 9
+> 15 2.025708 12 0 SR 33 p1
+> 13 2.025708 5 32
+> 16 2.025708 12 0 SR 32 p0
+> 15 2.025708 11 0 M 32 0
+> 7 2.025708 4 32
+> 6 2.025708 34 4 1 "emigrant-1"
+> 16 2.025708 11 0 M 34 0
+> 12 2.025708 5 34 7
+> 13 4.025708 5 34
+> 12 4.025708 5 34 8
+> 8 4.025903 16 31 0.000000
+> 9 4.025903 16 31 483060000.000000
+> 10 4.025903 16 31 483060000.000000
+> 9 4.025903 16 31 24153000.000000
+> 10 4.025903 16 31 24153000.000000
+> 13 4.025903 5 33
+> 12 4.025903 5 33 9
+> 15 4.025903 12 0 SR 33 p2
+> 13 4.025903 5 34
+> 16 4.025903 12 0 SR 34 p1
+> 15 4.025903 11 0 M 34 1
+> 7 4.025903 4 34
+> 6 4.025903 35 4 2 "emigrant-1"
+> 16 4.025903 11 0 M 35 1
+> 12 4.025903 5 35 7
+> 13 6.025903 5 35
+> 12 6.025903 5 35 8
+> 8 6.044918 16 11 0.000000
+> 9 6.044918 16 11 6660435.714286
+> 10 6.044918 16 11 6660435.714286
+> 9 6.044918 16 11 333021.785714
+> 10 6.044918 16 11 333021.785714
+> 13 6.044918 5 33
+> 12 6.044918 5 33 9
+> 15 6.044918 12 0 SR 33 p3
+> 13 6.044918 5 35
+> 16 6.044918 12 0 SR 35 p2
+> 15 6.044918 11 0 M 35 2
+> 7 6.044918 4 35
+> 6 6.044918 36 4 3 "emigrant-1"
+> 16 6.044918 11 0 M 36 2
+> 12 6.044918 5 36 7
+> 13 8.044918 5 36
+> 12 8.044918 5 36 8
+> 9 8.070626 16 15 7536438.095238
+> 10 8.070626 16 15 7536438.095238
+> 9 8.070626 16 9 7536438.095238
+> 10 8.070626 16 9 7536438.095238
+> 9 8.070626 16 12 7536438.095238
+> 10 8.070626 16 12 7536438.095238
+> 9 8.070626 16 16 7536438.095238
+> 10 8.070626 16 16 7536438.095238
+> 9 8.070626 16 14 7536438.095238
+> 10 8.070626 16 14 7536438.095238
+> 9 8.070626 16 13 7536438.095238
+> 10 8.070626 16 13 7536438.095238
+> 9 8.070626 16 13 376821.904762
+> 10 8.070626 16 13 376821.904762
+> 9 8.070626 16 14 376821.904762
+> 10 8.070626 16 14 376821.904762
+> 9 8.070626 16 16 376821.904762
+> 10 8.070626 16 16 376821.904762
+> 9 8.070626 16 12 376821.904762
+> 10 8.070626 16 12 376821.904762
+> 9 8.070626 16 9 376821.904762
+> 10 8.070626 16 9 376821.904762
+> 9 8.070626 16 15 376821.904762
+> 10 8.070626 16 15 376821.904762
+> 13 8.070626 5 33
+> 12 8.070626 5 33 9
+> 15 8.070626 12 0 SR 33 p4
+> 13 8.070626 5 36
+> 16 8.070626 12 0 SR 36 p3
+> 15 8.070626 11 0 M 36 3
+> 7 8.070626 4 36
+> 6 8.070626 37 4 4 "emigrant-1"
+> 16 8.070626 11 0 M 37 3
+> 12 8.070626 5 37 7
+> 13 10.070626 5 37
+> 12 10.070626 5 37 8
+> 9 10.087178 16 15 9330129.761905
+> 10 10.087178 16 15 9330129.761905
+> 9 10.087178 16 9 9330129.761905
+> 10 10.087178 16 9 9330129.761905
+> 8 10.087178 16 17 0.000000
+> 9 10.087178 16 17 9330129.761905
+> 10 10.087178 16 17 9330129.761905
+> 9 10.087178 16 17 466506.488095
+> 10 10.087178 16 17 466506.488095
+> 9 10.087178 16 9 466506.488095
+> 10 10.087178 16 9 466506.488095
+> 9 10.087178 16 15 466506.488095
+> 10 10.087178 16 15 466506.488095
+> 13 10.087178 5 33
+> 12 10.087178 5 33 9
+> 15 10.087178 12 0 SR 33 p5
+> 13 10.087178 5 37
+> 16 10.087178 12 0 SR 37 p4
+> 15 10.087178 11 0 M 37 4
+> 7 10.087178 4 37
+> 6 10.087178 38 4 5 "emigrant-1"
+> 16 10.087178 11 0 M 38 4
+> 12 10.087178 5 38 7
+> 13 12.087178 5 38
+> 12 12.087178 5 38 8
+> 9 12.112617 16 15 9330129.761905
+> 10 12.112617 16 15 9330129.761905
+> 9 12.112617 16 9 9330129.761905
+> 10 12.112617 16 9 9330129.761905
+> 9 12.112617 16 12 9330129.761905
+> 10 12.112617 16 12 9330129.761905
+> 9 12.112617 16 16 9330129.761905
+> 10 12.112617 16 16 9330129.761905
+> 9 12.112617 16 14 9330129.761905
+> 10 12.112617 16 14 9330129.761905
+> 8 12.112617 16 8 0.000000
+> 9 12.112617 16 8 9330129.761905
+> 10 12.112617 16 8 9330129.761905
+> 8 12.112617 16 10 0.000000
+> 9 12.112617 16 10 9330129.761905
+> 10 12.112617 16 10 9330129.761905
+> 9 12.112617 16 10 466506.488095
+> 10 12.112617 16 10 466506.488095
+> 9 12.112617 16 8 466506.488095
+> 10 12.112617 16 8 466506.488095
+> 9 12.112617 16 14 466506.488095
+> 10 12.112617 16 14 466506.488095
+> 9 12.112617 16 16 466506.488095
+> 10 12.112617 16 16 466506.488095
+> 9 12.112617 16 12 466506.488095
+> 10 12.112617 16 12 466506.488095
+> 9 12.112617 16 9 466506.488095
+> 10 12.112617 16 9 466506.488095
+> 9 12.112617 16 15 466506.488095
+> 10 12.112617 16 15 466506.488095
+> 13 12.112617 5 33
+> 12 12.112617 5 33 9
+> 15 12.112617 12 0 SR 33 p6
+> 13 12.112617 5 38
+> 16 12.112617 12 0 SR 38 p5
+> 15 12.112617 11 0 M 38 5
+> 7 12.112617 4 38
+> 6 12.112617 39 4 3 "emigrant-1"
+> 16 12.112617 11 0 M 39 5
+> 12 12.112617 5 39 7
+> 13 14.112617 5 39
+> 12 14.112617 5 39 8
+> 9 14.138325 16 15 7536438.095238
+> 10 14.138325 16 15 7536438.095238
+> 9 14.138325 16 9 7536438.095238
+> 10 14.138325 16 9 7536438.095238
+> 9 14.138325 16 12 7536438.095238
+> 10 14.138325 16 12 7536438.095238
+> 9 14.138325 16 16 7536438.095238
+> 10 14.138325 16 16 7536438.095238
+> 9 14.138325 16 14 7536438.095238
+> 10 14.138325 16 14 7536438.095238
+> 9 14.138325 16 13 7536438.095238
+> 10 14.138325 16 13 7536438.095238
+> 9 14.138325 16 13 376821.904762
+> 10 14.138325 16 13 376821.904762
+> 9 14.138325 16 14 376821.904762
+> 10 14.138325 16 14 376821.904762
+> 9 14.138325 16 16 376821.904762
+> 10 14.138325 16 16 376821.904762
+> 9 14.138325 16 12 376821.904762
+> 10 14.138325 16 12 376821.904762
+> 9 14.138325 16 9 376821.904762
+> 10 14.138325 16 9 376821.904762
+> 9 14.138325 16 15 376821.904762
+> 10 14.138325 16 15 376821.904762
+> 13 14.138325 5 33
+> 12 14.138325 5 33 9
+> 15 14.138325 12 0 SR 33 p7
+> 13 14.138325 5 39
+> 16 14.138325 12 0 SR 39 p6
+> 15 14.138325 11 0 M 39 6
+> 7 14.138325 4 39
+> 6 14.138325 40 4 1 "emigrant-1"
+> 16 14.138325 11 0 M 40 6
+> 12 14.138325 5 40 7
+> 13 16.138325 5 40
+> 12 16.138325 5 40 8
+> 9 16.138521 16 31 483060000.000000
+> 10 16.138521 16 31 483060000.000000
+> 9 16.138521 16 31 24153000.000000
+> 10 16.138521 16 31 24153000.000000
+> 13 16.138521 5 33
+> 12 16.138521 5 33 9
+> 15 16.138521 12 0 SR 33 p8
+> 13 16.138521 5 40
+> 16 16.138521 12 0 SR 40 p7
+> 15 16.138521 11 0 M 40 7
+> 7 16.138521 4 40
+> 6 16.138521 41 4 4 "emigrant-1"
+> 16 16.138521 11 0 M 41 7
+> 12 16.138521 5 41 7
+> 13 18.138521 5 41
+> 12 18.138521 5 41 8
+> 9 18.155073 16 15 9330129.761905
+> 10 18.155073 16 15 9330129.761905
+> 9 18.155073 16 9 9330129.761905
+> 10 18.155073 16 9 9330129.761905
+> 9 18.155073 16 17 9330129.761905
+> 10 18.155073 16 17 9330129.761905
+> 9 18.155073 16 17 466506.488095
+> 10 18.155073 16 17 466506.488095
+> 9 18.155073 16 9 466506.488095
+> 10 18.155073 16 9 466506.488095
+> 9 18.155073 16 15 466506.488095
+> 10 18.155073 16 15 466506.488095
+> 13 18.155073 5 33
+> 7 18.155073 4 33
+> 13 18.155073 5 41
+> 16 18.155073 12 0 SR 41 p8
+> 7 18.155073 4 41
+> 7 18.155073 1 6
+> 7 18.155073 1 3
+> 7 18.155073 13 28
+> 7 18.155073 13 29
+> 7 18.155073 13 23
+> 7 18.155073 13 30
+> 7 18.155073 13 24
+> 7 18.155073 13 18
+> 7 18.155073 1 1
+> 7 18.155073 13 19
+> 7 18.155073 13 20
+> 7 18.155073 13 21
+> 7 18.155073 13 22
+> 7 18.155073 13 25
+> 7 18.155073 13 26
+> 7 18.155073 13 31
+> 7 18.155073 13 27
+> 7 18.155073 13 16
+> 7 18.155073 13 14
+> 7 18.155073 13 12
+> 7 18.155073 13 9
+> 7 18.155073 13 15
+> 7 18.155073 13 17
+> 7 18.155073 13 8
+> 7 18.155073 13 10
+> 7 18.155073 13 13
+> 7 18.155073 13 11
+> 7 18.155073 1 5
+> 7 18.155073 1 2
+> 7 18.155073 1 7
+> 7 18.155073 1 4
+
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:no ${srcdir:=.}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'no'
+
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/categorized:yes ${srcdir:=.}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/categorized' to 'yes'
+
+$ tail -n +3 simgrid.trace
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 HOST
+> 6 0 1 1 0 "Tremblay"
+> 1 2 1 power "1 1 1"
+> 6 0 2 1 0 "Jupiter"
+> 6 0 3 1 0 "Fafard"
+> 6 0 4 1 0 "Ginette"
+> 6 0 5 1 0 "Bourassa"
+> 6 0 6 1 0 "Jacquelin"
+> 6 0 7 1 0 "Boivin"
+> 0 3 0 LINK
+> 6 0 8 3 0 "6"
+> 1 4 3 bandwidth "1 1 1"
+> 1 5 3 latency "1 1 1"
+> 6 0 9 3 0 "3"
+> 6 0 10 3 0 "7"
+> 6 0 11 3 0 "9"
+> 6 0 12 3 0 "2"
+> 6 0 13 3 0 "8"
+> 6 0 14 3 0 "1"
+> 6 0 15 3 0 "4"
+> 6 0 16 3 0 "0"
+> 6 0 17 3 0 "5"
+> 6 0 18 3 0 "145"
+> 6 0 19 3 0 "10"
+> 6 0 20 3 0 "11"
+> 6 0 21 3 0 "16"
+> 6 0 22 3 0 "17"
+> 6 0 23 3 0 "44"
+> 6 0 24 3 0 "47"
+> 6 0 25 3 0 "54"
+> 6 0 26 3 0 "56"
+> 6 0 27 3 0 "59"
+> 6 0 28 3 0 "78"
+> 6 0 29 3 0 "79"
+> 6 0 30 3 0 "80"
+> 6 0 31 3 0 "loopback"
+> 4 6 0 3 3 0-LINK3-LINK3
+> 4 7 0 1 3 0-HOST1-LINK3
+> 4 8 0 3 1 0-LINK3-HOST1
+> 8 0 2 1 98095000.000000
+> 8 0 2 2 76296000.000000
+> 8 0 2 3 76296000.000000
+> 8 0 2 4 48492000.000000
+> 8 0 2 5 48492000.000000
+> 8 0 2 6 137333000.000000
+> 8 0 2 7 98095000.000000
+> 8 0 4 8 41279125.000000
+> 8 0 5 8 0.000060
+> 8 0 4 9 34285625.000000
+> 8 0 5 9 0.000514
+> 8 0 4 10 11618875.000000
+> 8 0 5 10 0.000190
+> 8 0 4 11 7209750.000000
+> 8 0 5 11 0.001462
+> 8 0 4 12 118682500.000000
+> 8 0 5 12 0.000137
+> 8 0 4 13 8158000.000000
+> 8 0 5 13 0.000271
+> 8 0 4 14 34285625.000000
+> 8 0 5 14 0.000514
+> 8 0 4 15 10099625.000000
+> 8 0 5 15 0.000480
+> 8 0 4 16 41279125.000000
+> 8 0 5 16 0.000060
+> 8 0 4 17 27946250.000000
+> 8 0 5 17 0.000278
+> 8 0 4 18 2583375.000000
+> 8 0 5 18 0.000410
+> 8 0 4 19 34285625.000000
+> 8 0 5 19 0.000514
+> 8 0 4 20 118682500.000000
+> 8 0 5 20 0.000137
+> 8 0 4 21 34285625.000000
+> 8 0 5 21 0.000514
+> 8 0 4 22 118682500.000000
+> 8 0 5 22 0.000137
+> 8 0 4 23 10314625.000000
+> 8 0 5 23 0.006933
+> 8 0 4 24 10314625.000000
+> 8 0 5 24 0.006933
+> 8 0 4 25 15376875.000000
+> 8 0 5 25 0.035083
+> 8 0 4 26 21414750.000000
+> 8 0 5 26 0.029589
+> 8 0 4 27 11845375.000000
+> 8 0 5 27 0.000371
+> 8 0 4 28 27946250.000000
+> 8 0 5 28 0.000278
+> 8 0 4 29 8427250.000000
+> 8 0 5 29 0.000156
+> 8 0 4 30 15376875.000000
+> 8 0 5 30 0.035083
+> 8 0 4 31 498000000.000000
+> 8 0 5 31 0.000015
+> 15 0 6 0 topology 19 0
+> 16 0 6 0 topology 20 0
+> 15 0 6 0 topology 15 1
+> 16 0 6 0 topology 9 1
+> 15 0 6 0 topology 27 2
+> 16 0 6 0 topology 18 2
+> 15 0 7 0 topology 5 3
+> 16 0 7 0 topology 24 3
+> 15 0 6 0 topology 8 4
+> 16 0 6 0 topology 10 4
+> 15 0 6 0 topology 21 5
+> 16 0 6 0 topology 22 5
+> 15 0 7 0 topology 1 6
+> 16 0 7 0 topology 9 6
+> 15 0 6 0 topology 23 7
+> 16 0 6 0 topology 24 7
+> 15 0 7 0 topology 1 8
+> 16 0 7 0 topology 15 8
+> 15 0 7 0 topology 1 9
+> 16 0 7 0 topology 11 9
+> 15 0 6 0 topology 26 10
+> 16 0 6 0 topology 27 10
+> 15 0 7 0 topology 5 11
+> 16 0 7 0 topology 18 11
+> 15 0 8 0 topology 11 12
+> 16 0 8 0 topology 2 12
+> 15 0 6 0 topology 28 13
+> 16 0 6 0 topology 29 13
+> 15 0 6 0 topology 12 14
+> 16 0 6 0 topology 16 14
+> 15 0 6 0 topology 9 15
+> 16 0 6 0 topology 16 15
+> 15 0 6 0 topology 14 16
+> 16 0 6 0 topology 13 16
+> 15 0 6 0 topology 29 17
+> 16 0 6 0 topology 11 17
+> 15 0 7 0 topology 3 18
+> 16 0 7 0 topology 30 18
+> 15 0 6 0 topology 11 19
+> 16 0 6 0 topology 15 19
+> 15 0 7 0 topology 2 20
+> 16 0 7 0 topology 24 20
+> 15 0 8 0 topology 18 21
+> 16 0 8 0 topology 6 21
+> 15 0 8 0 topology 10 22
+> 16 0 8 0 topology 5 22
+> 15 0 6 0 topology 8 23
+> 16 0 6 0 topology 19 23
+> 15 0 6 0 topology 12 24
+> 16 0 6 0 topology 25 24
+> 15 0 7 0 topology 4 25
+> 16 0 7 0 topology 24 25
+> 15 0 6 0 topology 16 26
+> 16 0 6 0 topology 14 26
+> 15 0 8 0 topology 17 27
+> 16 0 8 0 topology 4 27
+> 15 0 6 0 topology 12 28
+> 16 0 6 0 topology 17 28
+> 15 0 6 0 topology 9 29
+> 16 0 6 0 topology 17 29
+> 15 0 6 0 topology 21 30
+> 16 0 6 0 topology 19 30
+> 15 0 6 0 topology 22 31
+> 16 0 6 0 topology 25 31
+> 15 0 8 0 topology 24 32
+> 16 0 8 0 topology 7 32
+> 15 0 7 0 topology 3 33
+> 16 0 7 0 topology 28 33
+> 15 0 6 0 topology 25 34
+> 16 0 6 0 topology 26 34
+> 15 0 6 0 topology 8 35
+> 16 0 6 0 topology 20 35
+> 15 0 8 0 topology 13 36
+> 16 0 8 0 topology 3 36
+> 15 0 7 0 topology 2 37
+> 16 0 7 0 topology 18 37
+> 15 0 6 0 topology 9 38
+> 16 0 6 0 topology 12 38
+> 15 0 6 0 topology 14 39
+> 16 0 6 0 topology 8 39
+> 15 0 6 0 topology 20 40
+> 16 0 6 0 topology 23 40
+> 15 0 7 0 topology 4 41
+> 16 0 7 0 topology 18 41
+> 15 0 6 0 topology 13 42
+> 16 0 6 0 topology 8 42
+> 15 0 6 0 topology 11 43
+> 16 0 6 0 topology 8 43
+> 15 0 6 0 topology 16 44
+> 16 0 6 0 topology 21 44
+> 15 0 6 0 topology 30 45
+> 16 0 6 0 topology 28 45
+> 1 9 3 bmigration_order "0.800026 0.545312 0.857926"
+> 1 10 1 pmigration_order "0.800026 0.545312 0.857926"
+> 7 18.155073 1 6
+> 7 18.155073 1 3
+> 7 18.155073 3 28
+> 7 18.155073 3 29
+> 7 18.155073 3 23
+> 7 18.155073 3 30
+> 7 18.155073 3 24
+> 7 18.155073 3 18
+> 7 18.155073 1 1
+> 7 18.155073 3 19
+> 7 18.155073 3 20
+> 7 18.155073 3 21
+> 7 18.155073 3 22
+> 7 18.155073 3 25
+> 7 18.155073 3 26
+> 7 18.155073 3 31
+> 7 18.155073 3 27
+> 7 18.155073 3 16
+> 7 18.155073 3 14
+> 7 18.155073 3 12
+> 7 18.155073 3 9
+> 7 18.155073 3 15
+> 7 18.155073 3 17
+> 7 18.155073 3 8
+> 7 18.155073 3 10
+> 7 18.155073 3 13
+> 7 18.155073 3 11
+> 7 18.155073 1 5
+> 7 18.155073 1 2
+> 7 18.155073 1 7
+> 7 18.155073 1 4
+
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/uncategorized:yes ${srcdir:=.}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/uncategorized' to 'yes'
+
+$ tail -n +3 simgrid.trace
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 HOST
+> 6 0 1 1 0 "Tremblay"
+> 1 2 1 power "1 1 1"
+> 1 3 1 power_used "0.5 0.5 0.5"
+> 6 0 2 1 0 "Jupiter"
+> 6 0 3 1 0 "Fafard"
+> 6 0 4 1 0 "Ginette"
+> 6 0 5 1 0 "Bourassa"
+> 6 0 6 1 0 "Jacquelin"
+> 6 0 7 1 0 "Boivin"
+> 0 4 0 LINK
+> 6 0 8 4 0 "6"
+> 1 5 4 bandwidth "1 1 1"
+> 1 6 4 latency "1 1 1"
+> 1 7 4 bandwidth_used "0.5 0.5 0.5"
+> 6 0 9 4 0 "3"
+> 6 0 10 4 0 "7"
+> 6 0 11 4 0 "9"
+> 6 0 12 4 0 "2"
+> 6 0 13 4 0 "8"
+> 6 0 14 4 0 "1"
+> 6 0 15 4 0 "4"
+> 6 0 16 4 0 "0"
+> 6 0 17 4 0 "5"
+> 6 0 18 4 0 "145"
+> 6 0 19 4 0 "10"
+> 6 0 20 4 0 "11"
+> 6 0 21 4 0 "16"
+> 6 0 22 4 0 "17"
+> 6 0 23 4 0 "44"
+> 6 0 24 4 0 "47"
+> 6 0 25 4 0 "54"
+> 6 0 26 4 0 "56"
+> 6 0 27 4 0 "59"
+> 6 0 28 4 0 "78"
+> 6 0 29 4 0 "79"
+> 6 0 30 4 0 "80"
+> 6 0 31 4 0 "loopback"
+> 4 8 0 4 4 0-LINK4-LINK4
+> 4 9 0 1 4 0-HOST1-LINK4
+> 4 10 0 4 1 0-LINK4-HOST1
+> 8 0 2 1 98095000.000000
+> 8 0 2 2 76296000.000000
+> 8 0 2 3 76296000.000000
+> 8 0 2 4 48492000.000000
+> 8 0 2 5 48492000.000000
+> 8 0 2 6 137333000.000000
+> 8 0 2 7 98095000.000000
+> 8 0 5 8 41279125.000000
+> 8 0 6 8 0.000060
+> 8 0 5 9 34285625.000000
+> 8 0 6 9 0.000514
+> 8 0 5 10 11618875.000000
+> 8 0 6 10 0.000190
+> 8 0 5 11 7209750.000000
+> 8 0 6 11 0.001462
+> 8 0 5 12 118682500.000000
+> 8 0 6 12 0.000137
+> 8 0 5 13 8158000.000000
+> 8 0 6 13 0.000271
+> 8 0 5 14 34285625.000000
+> 8 0 6 14 0.000514
+> 8 0 5 15 10099625.000000
+> 8 0 6 15 0.000480
+> 8 0 5 16 41279125.000000
+> 8 0 6 16 0.000060
+> 8 0 5 17 27946250.000000
+> 8 0 6 17 0.000278
+> 8 0 5 18 2583375.000000
+> 8 0 6 18 0.000410
+> 8 0 5 19 34285625.000000
+> 8 0 6 19 0.000514
+> 8 0 5 20 118682500.000000
+> 8 0 6 20 0.000137
+> 8 0 5 21 34285625.000000
+> 8 0 6 21 0.000514
+> 8 0 5 22 118682500.000000
+> 8 0 6 22 0.000137
+> 8 0 5 23 10314625.000000
+> 8 0 6 23 0.006933
+> 8 0 5 24 10314625.000000
+> 8 0 6 24 0.006933
+> 8 0 5 25 15376875.000000
+> 8 0 6 25 0.035083
+> 8 0 5 26 21414750.000000
+> 8 0 6 26 0.029589
+> 8 0 5 27 11845375.000000
+> 8 0 6 27 0.000371
+> 8 0 5 28 27946250.000000
+> 8 0 6 28 0.000278
+> 8 0 5 29 8427250.000000
+> 8 0 6 29 0.000156
+> 8 0 5 30 15376875.000000
+> 8 0 6 30 0.035083
+> 8 0 5 31 498000000.000000
+> 8 0 6 31 0.000015
+> 15 0 8 0 topology 19 0
+> 16 0 8 0 topology 20 0
+> 15 0 8 0 topology 15 1
+> 16 0 8 0 topology 9 1
+> 15 0 8 0 topology 27 2
+> 16 0 8 0 topology 18 2
+> 15 0 9 0 topology 5 3
+> 16 0 9 0 topology 24 3
+> 15 0 8 0 topology 8 4
+> 16 0 8 0 topology 10 4
+> 15 0 8 0 topology 21 5
+> 16 0 8 0 topology 22 5
+> 15 0 9 0 topology 1 6
+> 16 0 9 0 topology 9 6
+> 15 0 8 0 topology 23 7
+> 16 0 8 0 topology 24 7
+> 15 0 9 0 topology 1 8
+> 16 0 9 0 topology 15 8
+> 15 0 9 0 topology 1 9
+> 16 0 9 0 topology 11 9
+> 15 0 8 0 topology 26 10
+> 16 0 8 0 topology 27 10
+> 15 0 9 0 topology 5 11
+> 16 0 9 0 topology 18 11
+> 15 0 10 0 topology 11 12
+> 16 0 10 0 topology 2 12
+> 15 0 8 0 topology 28 13
+> 16 0 8 0 topology 29 13
+> 15 0 8 0 topology 12 14
+> 16 0 8 0 topology 16 14
+> 15 0 8 0 topology 9 15
+> 16 0 8 0 topology 16 15
+> 15 0 8 0 topology 14 16
+> 16 0 8 0 topology 13 16
+> 15 0 8 0 topology 29 17
+> 16 0 8 0 topology 11 17
+> 15 0 9 0 topology 3 18
+> 16 0 9 0 topology 30 18
+> 15 0 8 0 topology 11 19
+> 16 0 8 0 topology 15 19
+> 15 0 9 0 topology 2 20
+> 16 0 9 0 topology 24 20
+> 15 0 10 0 topology 18 21
+> 16 0 10 0 topology 6 21
+> 15 0 10 0 topology 10 22
+> 16 0 10 0 topology 5 22
+> 15 0 8 0 topology 8 23
+> 16 0 8 0 topology 19 23
+> 15 0 8 0 topology 12 24
+> 16 0 8 0 topology 25 24
+> 15 0 9 0 topology 4 25
+> 16 0 9 0 topology 24 25
+> 15 0 8 0 topology 16 26
+> 16 0 8 0 topology 14 26
+> 15 0 10 0 topology 17 27
+> 16 0 10 0 topology 4 27
+> 15 0 8 0 topology 12 28
+> 16 0 8 0 topology 17 28
+> 15 0 8 0 topology 9 29
+> 16 0 8 0 topology 17 29
+> 15 0 8 0 topology 21 30
+> 16 0 8 0 topology 19 30
+> 15 0 8 0 topology 22 31
+> 16 0 8 0 topology 25 31
+> 15 0 10 0 topology 24 32
+> 16 0 10 0 topology 7 32
+> 15 0 9 0 topology 3 33
+> 16 0 9 0 topology 28 33
+> 15 0 8 0 topology 25 34
+> 16 0 8 0 topology 26 34
+> 15 0 8 0 topology 8 35
+> 16 0 8 0 topology 20 35
+> 15 0 10 0 topology 13 36
+> 16 0 10 0 topology 3 36
+> 15 0 9 0 topology 2 37
+> 16 0 9 0 topology 18 37
+> 15 0 8 0 topology 9 38
+> 16 0 8 0 topology 12 38
+> 15 0 8 0 topology 14 39
+> 16 0 8 0 topology 8 39
+> 15 0 8 0 topology 20 40
+> 16 0 8 0 topology 23 40
+> 15 0 9 0 topology 4 41
+> 16 0 9 0 topology 18 41
+> 15 0 8 0 topology 13 42
+> 16 0 8 0 topology 8 42
+> 15 0 8 0 topology 11 43
+> 16 0 8 0 topology 8 43
+> 15 0 8 0 topology 16 44
+> 16 0 8 0 topology 21 44
+> 15 0 8 0 topology 30 45
+> 16 0 8 0 topology 28 45
+> 8 2.025708 7 15 0.000000
+> 9 2.025708 7 15 7536438.095238
+> 10 2.025708 7 15 7536438.095238
+> 8 2.025708 7 9 0.000000
+> 9 2.025708 7 9 7536438.095238
+> 10 2.025708 7 9 7536438.095238
+> 8 2.025708 7 12 0.000000
+> 9 2.025708 7 12 7536438.095238
+> 10 2.025708 7 12 7536438.095238
+> 8 2.025708 7 16 0.000000
+> 9 2.025708 7 16 7536438.095238
+> 10 2.025708 7 16 7536438.095238
+> 8 2.025708 7 14 0.000000
+> 9 2.025708 7 14 7536438.095238
+> 10 2.025708 7 14 7536438.095238
+> 8 2.025708 7 13 0.000000
+> 9 2.025708 7 13 7536438.095238
+> 10 2.025708 7 13 7536438.095238
+> 9 2.025708 7 13 376821.904762
+> 10 2.025708 7 13 376821.904762
+> 9 2.025708 7 14 376821.904762
+> 10 2.025708 7 14 376821.904762
+> 9 2.025708 7 16 376821.904762
+> 10 2.025708 7 16 376821.904762
+> 9 2.025708 7 12 376821.904762
+> 10 2.025708 7 12 376821.904762
+> 9 2.025708 7 9 376821.904762
+> 10 2.025708 7 9 376821.904762
+> 9 2.025708 7 15 376821.904762
+> 10 2.025708 7 15 376821.904762
+> 8 4.025903 7 31 0.000000
+> 9 4.025903 7 31 483060000.000000
+> 10 4.025903 7 31 483060000.000000
+> 9 4.025903 7 31 24153000.000000
+> 10 4.025903 7 31 24153000.000000
+> 8 6.044918 7 11 0.000000
+> 9 6.044918 7 11 6660435.714286
+> 10 6.044918 7 11 6660435.714286
+> 9 6.044918 7 11 333021.785714
+> 10 6.044918 7 11 333021.785714
+> 9 8.070626 7 15 7536438.095238
+> 10 8.070626 7 15 7536438.095238
+> 9 8.070626 7 9 7536438.095238
+> 10 8.070626 7 9 7536438.095238
+> 9 8.070626 7 12 7536438.095238
+> 10 8.070626 7 12 7536438.095238
+> 9 8.070626 7 16 7536438.095238
+> 10 8.070626 7 16 7536438.095238
+> 9 8.070626 7 14 7536438.095238
+> 10 8.070626 7 14 7536438.095238
+> 9 8.070626 7 13 7536438.095238
+> 10 8.070626 7 13 7536438.095238
+> 9 8.070626 7 13 376821.904762
+> 10 8.070626 7 13 376821.904762
+> 9 8.070626 7 14 376821.904762
+> 10 8.070626 7 14 376821.904762
+> 9 8.070626 7 16 376821.904762
+> 10 8.070626 7 16 376821.904762
+> 9 8.070626 7 12 376821.904762
+> 10 8.070626 7 12 376821.904762
+> 9 8.070626 7 9 376821.904762
+> 10 8.070626 7 9 376821.904762
+> 9 8.070626 7 15 376821.904762
+> 10 8.070626 7 15 376821.904762
+> 9 10.087178 7 15 9330129.761905
+> 10 10.087178 7 15 9330129.761905
+> 9 10.087178 7 9 9330129.761905
+> 10 10.087178 7 9 9330129.761905
+> 8 10.087178 7 17 0.000000
+> 9 10.087178 7 17 9330129.761905
+> 10 10.087178 7 17 9330129.761905
+> 9 10.087178 7 17 466506.488095
+> 10 10.087178 7 17 466506.488095
+> 9 10.087178 7 9 466506.488095
+> 10 10.087178 7 9 466506.488095
+> 9 10.087178 7 15 466506.488095
+> 10 10.087178 7 15 466506.488095
+> 9 12.112617 7 15 9330129.761905
+> 10 12.112617 7 15 9330129.761905
+> 9 12.112617 7 9 9330129.761905
+> 10 12.112617 7 9 9330129.761905
+> 9 12.112617 7 12 9330129.761905
+> 10 12.112617 7 12 9330129.761905
+> 9 12.112617 7 16 9330129.761905
+> 10 12.112617 7 16 9330129.761905
+> 9 12.112617 7 14 9330129.761905
+> 10 12.112617 7 14 9330129.761905
+> 8 12.112617 7 8 0.000000
+> 9 12.112617 7 8 9330129.761905
+> 10 12.112617 7 8 9330129.761905
+> 8 12.112617 7 10 0.000000
+> 9 12.112617 7 10 9330129.761905
+> 10 12.112617 7 10 9330129.761905
+> 9 12.112617 7 10 466506.488095
+> 10 12.112617 7 10 466506.488095
+> 9 12.112617 7 8 466506.488095
+> 10 12.112617 7 8 466506.488095
+> 9 12.112617 7 14 466506.488095
+> 10 12.112617 7 14 466506.488095
+> 9 12.112617 7 16 466506.488095
+> 10 12.112617 7 16 466506.488095
+> 9 12.112617 7 12 466506.488095
+> 10 12.112617 7 12 466506.488095
+> 9 12.112617 7 9 466506.488095
+> 10 12.112617 7 9 466506.488095
+> 9 12.112617 7 15 466506.488095
+> 10 12.112617 7 15 466506.488095
+> 9 14.138325 7 15 7536438.095238
+> 10 14.138325 7 15 7536438.095238
+> 9 14.138325 7 9 7536438.095238
+> 10 14.138325 7 9 7536438.095238
+> 9 14.138325 7 12 7536438.095238
+> 10 14.138325 7 12 7536438.095238
+> 9 14.138325 7 16 7536438.095238
+> 10 14.138325 7 16 7536438.095238
+> 9 14.138325 7 14 7536438.095238
+> 10 14.138325 7 14 7536438.095238
+> 9 14.138325 7 13 7536438.095238
+> 10 14.138325 7 13 7536438.095238
+> 9 14.138325 7 13 376821.904762
+> 10 14.138325 7 13 376821.904762
+> 9 14.138325 7 14 376821.904762
+> 10 14.138325 7 14 376821.904762
+> 9 14.138325 7 16 376821.904762
+> 10 14.138325 7 16 376821.904762
+> 9 14.138325 7 12 376821.904762
+> 10 14.138325 7 12 376821.904762
+> 9 14.138325 7 9 376821.904762
+> 10 14.138325 7 9 376821.904762
+> 9 14.138325 7 15 376821.904762
+> 10 14.138325 7 15 376821.904762
+> 9 16.138521 7 31 483060000.000000
+> 10 16.138521 7 31 483060000.000000
+> 9 16.138521 7 31 24153000.000000
+> 10 16.138521 7 31 24153000.000000
+> 9 18.155073 7 15 9330129.761905
+> 10 18.155073 7 15 9330129.761905
+> 9 18.155073 7 9 9330129.761905
+> 10 18.155073 7 9 9330129.761905
+> 9 18.155073 7 17 9330129.761905
+> 10 18.155073 7 17 9330129.761905
+> 9 18.155073 7 17 466506.488095
+> 10 18.155073 7 17 466506.488095
+> 9 18.155073 7 9 466506.488095
+> 10 18.155073 7 9 466506.488095
+> 9 18.155073 7 15 466506.488095
+> 10 18.155073 7 15 466506.488095
+> 7 18.155073 1 6
+> 7 18.155073 1 3
+> 7 18.155073 4 28
+> 7 18.155073 4 29
+> 7 18.155073 4 23
+> 7 18.155073 4 30
+> 7 18.155073 4 24
+> 7 18.155073 4 18
+> 7 18.155073 1 1
+> 7 18.155073 4 19
+> 7 18.155073 4 20
+> 7 18.155073 4 21
+> 7 18.155073 4 22
+> 7 18.155073 4 25
+> 7 18.155073 4 26
+> 7 18.155073 4 31
+> 7 18.155073 4 27
+> 7 18.155073 4 16
+> 7 18.155073 4 14
+> 7 18.155073 4 12
+> 7 18.155073 4 9
+> 7 18.155073 4 15
+> 7 18.155073 4 17
+> 7 18.155073 4 8
+> 7 18.155073 4 10
+> 7 18.155073 4 13
+> 7 18.155073 4 11
+> 7 18.155073 1 5
+> 7 18.155073 1 2
+> 7 18.155073 1 7
+> 7 18.155073 1 4
+
+$ $SG_TEST_EXENV ${bindir:=.}/trace-process-migration$EXEEXT --cfg=tracing:yes --cfg=tracing/msg/process:yes ${srcdir:=.}/small_platform.xml
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing' to 'yes'
+> [0.000000] [xbt_cfg/INFO] Configuration change: Set 'tracing/msg/process' to 'yes'
+
+$ tail -n +3 simgrid.trace
+> %EventDef PajeDefineContainerType 0
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineVariableType 1
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeDefineStateType 2
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEventType 3
+> %       Alias string
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineLinkType 4
+> %       Alias string
+> %       Type string
+> %       StartContainerType string
+> %       EndContainerType string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDefineEntityValue 5
+> %       Alias string
+> %       Type string
+> %       Name string
+> %       Color color
+> %EndEventDef
+> %EventDef PajeCreateContainer 6
+> %       Time date
+> %       Alias string
+> %       Type string
+> %       Container string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeDestroyContainer 7
+> %       Time date
+> %       Type string
+> %       Name string
+> %EndEventDef
+> %EventDef PajeSetVariable 8
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeAddVariable 9
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSubVariable 10
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value double
+> %EndEventDef
+> %EventDef PajeSetState 11
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePushState 12
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> %EventDef PajePopState 13
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeResetState 14
+> %       Time date
+> %       Type string
+> %       Container string
+> %EndEventDef
+> %EventDef PajeStartLink 15
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       StartContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeEndLink 16
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %       EndContainer string
+> %       Key string
+> %EndEventDef
+> %EventDef PajeNewEvent 17
+> %       Time date
+> %       Type string
+> %       Container string
+> %       Value string
+> %EndEventDef
+> 0 1 0 HOST
+> 6 0 1 1 0 "Tremblay"
+> 0 2 1 MSG_PROCESS
+> 2 3 2 MSG_PROCESS_STATE
+> 5 4 3 suspend "1 0 1"
+> 5 5 3 sleep "1 1 0"
+> 5 6 3 receive "1 0 0"
+> 5 7 3 send "0 0 1"
+> 5 8 3 task_execute "0 1 1"
+> 4 9 0 2 2 MSG_PROCESS_LINK
+> 4 10 0 2 2 MSG_PROCESS_TASK_LINK
+> 6 0 2 1 0 "Jupiter"
+> 6 0 3 1 0 "Fafard"
+> 6 0 4 1 0 "Ginette"
+> 6 0 5 1 0 "Bourassa"
+> 6 0 6 1 0 "Jacquelin"
+> 6 0 7 1 0 "Boivin"
+> 0 11 0 LINK
+> 6 0 8 11 0 "6"
+> 6 0 9 11 0 "3"
+> 6 0 10 11 0 "7"
+> 6 0 11 11 0 "9"
+> 6 0 12 11 0 "2"
+> 6 0 13 11 0 "8"
+> 6 0 14 11 0 "1"
+> 6 0 15 11 0 "4"
+> 6 0 16 11 0 "0"
+> 6 0 17 11 0 "5"
+> 6 0 18 11 0 "145"
+> 6 0 19 11 0 "10"
+> 6 0 20 11 0 "11"
+> 6 0 21 11 0 "16"
+> 6 0 22 11 0 "17"
+> 6 0 23 11 0 "44"
+> 6 0 24 11 0 "47"
+> 6 0 25 11 0 "54"
+> 6 0 26 11 0 "56"
+> 6 0 27 11 0 "59"
+> 6 0 28 11 0 "78"
+> 6 0 29 11 0 "79"
+> 6 0 30 11 0 "80"
+> 6 0 31 11 0 "loopback"
+> 4 12 0 11 11 0-LINK11-LINK11
+> 4 13 0 1 11 0-HOST1-LINK11
+> 4 14 0 11 1 0-LINK11-HOST1
+> 15 0 12 0 topology 19 0
+> 16 0 12 0 topology 20 0
+> 15 0 12 0 topology 15 1
+> 16 0 12 0 topology 9 1
+> 15 0 12 0 topology 27 2
+> 16 0 12 0 topology 18 2
+> 15 0 13 0 topology 5 3
+> 16 0 13 0 topology 24 3
+> 15 0 12 0 topology 8 4
+> 16 0 12 0 topology 10 4
+> 15 0 12 0 topology 21 5
+> 16 0 12 0 topology 22 5
+> 15 0 13 0 topology 1 6
+> 16 0 13 0 topology 9 6
+> 15 0 12 0 topology 23 7
+> 16 0 12 0 topology 24 7
+> 15 0 13 0 topology 1 8
+> 16 0 13 0 topology 15 8
+> 15 0 13 0 topology 1 9
+> 16 0 13 0 topology 11 9
+> 15 0 12 0 topology 26 10
+> 16 0 12 0 topology 27 10
+> 15 0 13 0 topology 5 11
+> 16 0 13 0 topology 18 11
+> 15 0 14 0 topology 11 12
+> 16 0 14 0 topology 2 12
+> 15 0 12 0 topology 28 13
+> 16 0 12 0 topology 29 13
+> 15 0 12 0 topology 12 14
+> 16 0 12 0 topology 16 14
+> 15 0 12 0 topology 9 15
+> 16 0 12 0 topology 16 15
+> 15 0 12 0 topology 14 16
+> 16 0 12 0 topology 13 16
+> 15 0 12 0 topology 29 17
+> 16 0 12 0 topology 11 17
+> 15 0 13 0 topology 3 18
+> 16 0 13 0 topology 30 18
+> 15 0 12 0 topology 11 19
+> 16 0 12 0 topology 15 19
+> 15 0 13 0 topology 2 20
+> 16 0 13 0 topology 24 20
+> 15 0 14 0 topology 18 21
+> 16 0 14 0 topology 6 21
+> 15 0 14 0 topology 10 22
+> 16 0 14 0 topology 5 22
+> 15 0 12 0 topology 8 23
+> 16 0 12 0 topology 19 23
+> 15 0 12 0 topology 12 24
+> 16 0 12 0 topology 25 24
+> 15 0 13 0 topology 4 25
+> 16 0 13 0 topology 24 25
+> 15 0 12 0 topology 16 26
+> 16 0 12 0 topology 14 26
+> 15 0 14 0 topology 17 27
+> 16 0 14 0 topology 4 27
+> 15 0 12 0 topology 12 28
+> 16 0 12 0 topology 17 28
+> 15 0 12 0 topology 9 29
+> 16 0 12 0 topology 17 29
+> 15 0 12 0 topology 21 30
+> 16 0 12 0 topology 19 30
+> 15 0 12 0 topology 22 31
+> 16 0 12 0 topology 25 31
+> 15 0 14 0 topology 24 32
+> 16 0 14 0 topology 7 32
+> 15 0 13 0 topology 3 33
+> 16 0 13 0 topology 28 33
+> 15 0 12 0 topology 25 34
+> 16 0 12 0 topology 26 34
+> 15 0 12 0 topology 8 35
+> 16 0 12 0 topology 20 35
+> 15 0 14 0 topology 13 36
+> 16 0 14 0 topology 3 36
+> 15 0 13 0 topology 2 37
+> 16 0 13 0 topology 18 37
+> 15 0 12 0 topology 9 38
+> 16 0 12 0 topology 12 38
+> 15 0 12 0 topology 14 39
+> 16 0 12 0 topology 8 39
+> 15 0 12 0 topology 20 40
+> 16 0 12 0 topology 23 40
+> 15 0 13 0 topology 4 41
+> 16 0 13 0 topology 18 41
+> 15 0 12 0 topology 13 42
+> 16 0 12 0 topology 8 42
+> 15 0 12 0 topology 11 43
+> 16 0 12 0 topology 8 43
+> 15 0 12 0 topology 16 44
+> 16 0 12 0 topology 21 44
+> 15 0 12 0 topology 30 45
+> 16 0 12 0 topology 28 45
+> 6 0 32 2 3 "emigrant-1"
+> 6 0 33 2 1 "policeman-2"
+> 12 0 3 32 5
+> 12 0 3 33 7
+> 15 0 10 0 SR 33 p0
+> 13 2.000000 3 32
+> 12 2.000000 3 32 6
+> 13 2.025708 3 33
+> 12 2.025708 3 33 7
+> 15 2.025708 10 0 SR 33 p1
+> 13 2.025708 3 32
+> 16 2.025708 10 0 SR 32 p0
+> 15 2.025708 9 0 M 32 0
+> 7 2.025708 2 32
+> 6 2.025708 34 2 1 "emigrant-1"
+> 16 2.025708 9 0 M 34 0
+> 12 2.025708 3 34 5
+> 13 4.025708 3 34
+> 12 4.025708 3 34 6
+> 13 4.025903 3 33
+> 12 4.025903 3 33 7
+> 15 4.025903 10 0 SR 33 p2
+> 13 4.025903 3 34
+> 16 4.025903 10 0 SR 34 p1
+> 15 4.025903 9 0 M 34 1
+> 7 4.025903 2 34
+> 6 4.025903 35 2 2 "emigrant-1"
+> 16 4.025903 9 0 M 35 1
+> 12 4.025903 3 35 5
+> 13 6.025903 3 35
+> 12 6.025903 3 35 6
+> 13 6.044918 3 33
+> 12 6.044918 3 33 7
+> 15 6.044918 10 0 SR 33 p3
+> 13 6.044918 3 35
+> 16 6.044918 10 0 SR 35 p2
+> 15 6.044918 9 0 M 35 2
+> 7 6.044918 2 35
+> 6 6.044918 36 2 3 "emigrant-1"
+> 16 6.044918 9 0 M 36 2
+> 12 6.044918 3 36 5
+> 13 8.044918 3 36
+> 12 8.044918 3 36 6
+> 13 8.070626 3 33
+> 12 8.070626 3 33 7
+> 15 8.070626 10 0 SR 33 p4
+> 13 8.070626 3 36
+> 16 8.070626 10 0 SR 36 p3
+> 15 8.070626 9 0 M 36 3
+> 7 8.070626 2 36
+> 6 8.070626 37 2 4 "emigrant-1"
+> 16 8.070626 9 0 M 37 3
+> 12 8.070626 3 37 5
+> 13 10.070626 3 37
+> 12 10.070626 3 37 6
+> 13 10.087178 3 33
+> 12 10.087178 3 33 7
+> 15 10.087178 10 0 SR 33 p5
+> 13 10.087178 3 37
+> 16 10.087178 10 0 SR 37 p4
+> 15 10.087178 9 0 M 37 4
+> 7 10.087178 2 37
+> 6 10.087178 38 2 5 "emigrant-1"
+> 16 10.087178 9 0 M 38 4
+> 12 10.087178 3 38 5
+> 13 12.087178 3 38
+> 12 12.087178 3 38 6
+> 13 12.112617 3 33
+> 12 12.112617 3 33 7
+> 15 12.112617 10 0 SR 33 p6
+> 13 12.112617 3 38
+> 16 12.112617 10 0 SR 38 p5
+> 15 12.112617 9 0 M 38 5
+> 7 12.112617 2 38
+> 6 12.112617 39 2 3 "emigrant-1"
+> 16 12.112617 9 0 M 39 5
+> 12 12.112617 3 39 5
+> 13 14.112617 3 39
+> 12 14.112617 3 39 6
+> 13 14.138325 3 33
+> 12 14.138325 3 33 7
+> 15 14.138325 10 0 SR 33 p7
+> 13 14.138325 3 39
+> 16 14.138325 10 0 SR 39 p6
+> 15 14.138325 9 0 M 39 6
+> 7 14.138325 2 39
+> 6 14.138325 40 2 1 "emigrant-1"
+> 16 14.138325 9 0 M 40 6
+> 12 14.138325 3 40 5
+> 13 16.138325 3 40
+> 12 16.138325 3 40 6
+> 13 16.138521 3 33
+> 12 16.138521 3 33 7
+> 15 16.138521 10 0 SR 33 p8
+> 13 16.138521 3 40
+> 16 16.138521 10 0 SR 40 p7
+> 15 16.138521 9 0 M 40 7
+> 7 16.138521 2 40
+> 6 16.138521 41 2 4 "emigrant-1"
+> 16 16.138521 9 0 M 41 7
+> 12 16.138521 3 41 5
+> 13 18.138521 3 41
+> 12 18.138521 3 41 6
+> 13 18.155073 3 33
+> 7 18.155073 2 33
+> 13 18.155073 3 41
+> 16 18.155073 10 0 SR 41 p8
+> 7 18.155073 2 41
+> 7 18.155073 1 6
+> 7 18.155073 1 3
+> 7 18.155073 11 28
+> 7 18.155073 11 29
+> 7 18.155073 11 23
+> 7 18.155073 11 30
+> 7 18.155073 11 24
+> 7 18.155073 11 18
+> 7 18.155073 1 1
+> 7 18.155073 11 19
+> 7 18.155073 11 20
+> 7 18.155073 11 21
+> 7 18.155073 11 22
+> 7 18.155073 11 25
+> 7 18.155073 11 26
+> 7 18.155073 11 31
+> 7 18.155073 11 27
+> 7 18.155073 11 16
+> 7 18.155073 11 14
+> 7 18.155073 11 12
+> 7 18.155073 11 9
+> 7 18.155073 11 15
+> 7 18.155073 11 17
+> 7 18.155073 11 8
+> 7 18.155073 11 10
+> 7 18.155073 11 13
+> 7 18.155073 11 11
+> 7 18.155073 1 5
+> 7 18.155073 1 2
+> 7 18.155073 1 7
+> 7 18.155073 1 4
+
+$ rm -rf procmig.trace simgrid.trace

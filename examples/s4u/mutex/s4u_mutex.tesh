@@ -1,0 +1,28 @@
+#! ./tesh
+
+$ $SG_TEST_EXENV ${bindir:=.}/s4u_mutex
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a lock_guard
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a regular lock
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a lock_guard
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a regular lock
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a lock_guard
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a regular lock
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a lock_guard
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a regular lock
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a lock_guard
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a regular lock
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a lock_guard
+> [Jupiter:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] Hello s4u, I'm ready to compute after a regular lock
+> [Tremblay:worker:(0) 0.000000] [s4u_test/INFO] I'm done, good bye
+> [Tremblay:main:(0) 10.000000] [s4u_test/INFO] Results is -> 12

@@ -4,8 +4,10 @@
     - Portability support
       - \ref XBT_syscall
       - \ref XBT_str
+      - \ref XBT_file
     - Grounding features
       - \ref XBT_ex
+      - \ref XBT_ex_c
       - \ref XBT_log
       - \ref XBT_error
       - \ref XBT_config
@@ -17,17 +19,17 @@
       - \ref XBT_set
         Data are associated to both an ID (0(1) search) and a name
       - \ref XBT_fifo
-      - \ref XBT_queue
       - \ref XBT_swag
       - \ref XBT_heap
       - \ref XBT_peer
+      - @ref xbt_strbuff
     - \ref XBT_misc
       - \ref XBT_graph
 
   @{ */
    /** @defgroup XBT_grounding   Grounding features */
    /** @defgroup XBT_adt         Usual data structures */
-   /** @defgroup XBT_misc        Misc general purposes library components */
+   /** @defgroup XBT_misc        Miscellaneous */
 /** @} */
 
 
@@ -44,7 +46,8 @@
 
      /** @defgroup XBT_syscall Malloc and friends */
      /** @defgroup XBT_str     String related functions */
-     /** @defgroup XBT_ex     Exception support */
+     /** @defgroup XBT_ex     Exception support (C++) */
+     /** @defgroup XBT_ex_c   Exception support (C)   */
      /** @defgroup XBT_log    Logging support */
      /** @defgroup XBT_error  Assert macro familly */
      /** @defgroup XBT_config Configuration support */
@@ -53,21 +56,23 @@
 /** @} */
 
 
+
+
 ########################################################################
 
 /** @addtogroup XBT_adt
 
   Here are the basic data containers that every C programmer rewrites one day.
   You won't need to do so yourself, you lucky one, because we did it for you.
+  However, if you are programming in C++ you might want to use C++ containers
+  instead.
 
   @{ */
      /** @defgroup XBT_dynar  Dynar: generic dynamic array */
      /** @defgroup XBT_dict   Dict: generic dictionnary */
-     /** @defgroup XBT_set    Set: generic set datatype */
      /** @defgroup XBT_fifo   Fifo: generic workqueue */
      /** @defgroup XBT_swag   Swag: O(1) set datatype */
      /** @defgroup XBT_heap Heap: generic heap data structure */
-     /** @defgroup XBT_dd Data description */
 /** @} */
 
 
@@ -83,8 +88,6 @@
      /** @defgroup XBT_graph General purpose graph library */
      /** @defgroup XBT_parmap Parallel map */    
      /** @defgroup XBT_peer Peer */	
-     /** @defgroup XBT_queue Queue */
-     /** @defgroup XBT_sock Sock */	
      /** @defgroup XBT_synchro Synchro stuff */	
      /** @defgroup XBT_thread Thread stuff */	
      /** @defgroup XBT_context Portable context implementation */		

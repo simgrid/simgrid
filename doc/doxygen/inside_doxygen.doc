@@ -3,7 +3,7 @@
 
 \tableofcontents
 
-We use doxygen for our documentation. This tool is sometimes anoying
+We use doxygen for our documentation. This tool is sometimes annoying
 but that's the best we've found so far. Remember, we all bitch about
 doxygen, but at the end of the day, it kinda delivers what we need. So
 stop bitching about the doc or the tools, and start improving the
@@ -12,7 +12,7 @@ documentation text itself.
 Good documentation is rare and there is not much project of which we
 can get inspiration. The best exception I know is TikZ and
 latex-beamer. I'd be so happy if SimGrid documentation could follow
-the organisation (and reach half the quality) of the TikZ one. But
+the organization (and reach half the quality) of the TikZ one. But
 anyway. As they say: Documentation is like sex; when it's not good
 it's still better than nothing and when it's good it's very very good.
 
@@ -25,23 +25,23 @@ possible.
 \subsection inside_doxygen_module_create Declaring the module to doxygen
 
 First declare your sub-module in the corresponding
-(project)/doc/doxygen/module-(englobingmodule).doc Two edits are
+(project)/doc/doxygen/module-(enclosing module).doc Two edits are
 needed in this file: 
 
-@li Most of the englobing modules (xbt, msg, sd, etc) have a manually
+@li Most of the enclosing modules (xbt, msg, sd, etc) have a manually
     maintained table of contents as content of the module main page,
     at the top of the corresponding file. You want to add a reference to
-    your submodule there. For that, simply add something like the
+    your sub-module there. For that, simply add something like the
     following. The dash (-) will help building item lists. The ref
     command requests for a link to your module, that is identified
-    with the word after that (here, I used xbt_cunit as a submodule
+    with the word after that (here, I used xbt_cunit as a sub-module
     identifier.
 @verbatim
  - @ref XBT_cunit
 @endverbatim
 
 @li Create your module below in the file as follows. the first world
-after the defgroup keyword must be the submodule identifier you used
+after the defgroup keyword must be the sub-module identifier you used
 above.
 @verbatim
      /** @defgroup XBT_cunit Unit testing support */
@@ -72,7 +72,7 @@ to add something like this near the top.
 Any informative stuff is welcomed in the module introduction, on top.
 This includes examples that the users can copy/paste to fit their
 needs. If your module is too large to be nicely documented on one
-unique page, you may want to split its documentation in submodules.
+unique page, you may want to split its documentation in sub-modules.
 See dynar.h for an example of how to do so. 
 
 Make sure to only include the public declarations of your module. For
@@ -97,7 +97,7 @@ parameter (but something like "dynar: the provided dynar" is not
 considered as an informative documentation and can be omitted), and
 give any information you feel useful to the user. In particular, add
 links to any other location of the documentation that could provide
-interesting additional informations.
+interesting additional information.
 
 \section inside_doxygen_page Adding a new page to the user guide
 
@@ -119,11 +119,11 @@ something like the following:
 
 @tableofcontents
 
-blabla bla
+blah blah blah
 
 @section <short_name_of_section> <title>
 
-bliblublo
+blah blah blah
 
 @subsection <short_name_of_subsection> <title>
 
@@ -171,7 +171,7 @@ That's the doxygen style (but I can live with it).
 Ahhh, cmake and doxygen. The perfect combo to bitch about life for a
 whole day...
 
-Edit (project)/buildtools/Cmake/DefinePackage.cmake, and add your
+Edit (project)/tools/cmake/DefinePackage.cmake, and add your
 newly added page to the DOC_SOURCES. And bitch about these damn tools.
 
 Don't forget to commit your page, so that you can get some git fun to
@@ -180,25 +180,24 @@ complete your day.
 \section inside_doxygen_image Adding an image to the documentation
 
 If you need to run a command (like fig2dev) to generate your image,
-edit buildtools/Cmake/GenerateDoc.cmake and add your command to the
+edit tools/cmake/GenerateDoc.cmake and add your command to the
 doc target (grep for fig2dev in the file to see
 where exactly). Don't forget to add the source of your image to the
 archive somehow. You can add it to the list DOC_FIG of
-buildtools/Cmake/DefinePackage.cmake.
+tools/cmake/DefinePackage.cmake.
 
 If your image is ready to use, put your png in doc/webcruft, and
 register it to cmake by adding it to the DOC_IMG list of file
-buildtools/Cmake/DefinePackage.cmake so that it lands in the archive
+tools/cmake/DefinePackage.cmake so that it lands in the archive
 distribution. It will also be copied automatically to the documentation.
 
 \section inside_doxygen_website Working on the website
 
-Actually, the website is very different from doxygen. It uses a tool
-called jekyll to turn markup-formated text into nice static web pages.
-Jekyll is less annoying than doxygen since it's written in a scripting
-language: you can dynamically add (or change) parts of the tool to
-make it fit your needs. Get the sources, and start improving the
-website now (there is a README in the repo with more details).
+Our website is generated/exported via [orgmode](http://www.orgmode.org), a tool that we use to facilitate our reproducible research.
+
+Get the sources, and start improving the
+website now! (There is a README in the repo with more details, 
+but it might be outdated. Contact us if you really want to help.)
 
 @verbatim
 git clone git://scm.gforge.inria.fr/simgrid/website.git

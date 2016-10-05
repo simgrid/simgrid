@@ -27,16 +27,17 @@
    not, write to the Free Software Foundation, Inc., 59 Temple Place - Suite 330,
    Boston, MA 02111-1307, USA.  */
 
+#include "src/internal_config.h"
 #include <sys/types.h>
 #include <fcntl.h>              /* After sys/types.h, at least for dpx/2.  */
 #include <sys/stat.h>
 #include <string.h>
-#ifdef HAVE_UNISTD_H
+#if HAVE_UNISTD_H
 #include <unistd.h>             /* Prototypes for lseek */
 #endif
 #include "mmprivate.h"
 #include "xbt/ex.h"
-#include "xbt_modinter.h" /* declarations of mmalloc_preinit and friends that live here */
+#include "src/xbt_modinter.h" /* declarations of mmalloc_preinit and friends that live here */
 
 #ifndef SEEK_SET
 #define SEEK_SET 0
@@ -137,7 +138,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
         mdptr = (struct mdesc *) newmd.base;
         mdptr->fd = fd;
         if(!mdptr->refcount){
-          sem_init(&mdptr->sem, 0, 1);
+          pthread_mutex_init(&mdptr->mutex, NULL);
           mdptr->refcount++;
         }
       }
@@ -182,8 +183,7 @@ xbt_mheap_t xbt_mheap_new_options(int fd, void *baseaddr, int options)
   if (mdp->fd < 0){
     mdp->flags |= MMALLOC_ANONYMOUS;
   }
-  sem_init(&mdp->sem, 0, 1);
-  
+  pthread_mutex_init(&mdp->mutex, NULL);
   /* If we have not been passed a valid open file descriptor for the file
      to map to, then open /dev/zero and use that to map to. */
 
@@ -225,8 +225,7 @@ void xbt_mheap_destroy_no_free(xbt_mheap_t md)
   struct mdesc *mdp = md;
 
   if(--mdp->refcount == 0){
-    LOCK(mdp) ;
-    sem_destroy(&mdp->sem);
+    pthread_mutex_destroy(&mdp->mutex);
   }
 }
 
@@ -330,6 +329,8 @@ void *mmalloc_preinit(void)
 {
   int res;
   if (__mmalloc_default_mdp == NULL) {
+    if(!xbt_pagesize)
+      xbt_pagesize = getpagesize();
     unsigned long mask = ~((unsigned long)xbt_pagesize - 1);
     void *addr = (void*)(((unsigned long)sbrk(0) + HEAP_OFFSET) & mask);
     __mmalloc_default_mdp = xbt_mheap_new_options(-1, addr, XBT_MHEAP_OPTION_MEMSET);
@@ -343,10 +344,6 @@ void *mmalloc_preinit(void)
   }
   xbt_assert(__mmalloc_default_mdp != NULL);
 
-#if defined(HAVE_GNU_LD) && defined(MMALLOC_WANT_OVERRIDE_LEGACY)
-  mm_gnuld_legacy_init();
-#endif
-
   return __mmalloc_default_mdp;
 }
 
@@ -357,25 +354,29 @@ void mmalloc_postexit(void)
   // xbt_mheap_destroy_no_free(__mmalloc_default_mdp);
 }
 
-size_t mmalloc_get_bytes_used(xbt_mheap_t heap){
-  int i = 0, j = 0;
+// This is the underlying implementation of mmalloc_get_bytes_used_remote.
+// Is it used directly in order to evaluate the bytes used from a different
+// process.
+size_t mmalloc_get_bytes_used_remote(size_t heaplimit, const malloc_info* heapinfo)
+{
   int bytes = 0;
-  
-  while(i<=((struct mdesc *)heap)->heaplimit){
-    if(((struct mdesc *)heap)->heapinfo[i].type == MMALLOC_TYPE_UNFRAGMENTED){
-      if(((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size > 0)
-        bytes += ((struct mdesc *)heap)->heapinfo[i].busy_block.busy_size;
-     
-    } else if(((struct mdesc *)heap)->heapinfo[i].type > 0){
-      for(j=0; j < (size_t) (BLOCKSIZE >> ((struct mdesc *)heap)->heapinfo[i].type); j++){
-        if(((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j] > 0)
-          bytes += ((struct mdesc *)heap)->heapinfo[i].busy_frag.frag_size[j];
+  for (size_t i=0; i < heaplimit; ++i){
+    if (heapinfo[i].type == MMALLOC_TYPE_UNFRAGMENTED){
+      if (heapinfo[i].busy_block.busy_size > 0)
+        bytes += heapinfo[i].busy_block.busy_size;
+    } else if (heapinfo[i].type > 0) {
+      for (size_t j=0; j < (size_t) (BLOCKSIZE >> heapinfo[i].type); j++){
+        if(heapinfo[i].busy_frag.frag_size[j] > 0)
+          bytes += heapinfo[i].busy_frag.frag_size[j];
       }
     }
-    i++; 
   }
-
   return bytes;
+}
+
+size_t mmalloc_get_bytes_used(const xbt_mheap_t heap){
+  const struct mdesc* heap_data = (const struct mdesc *) heap;
+  return mmalloc_get_bytes_used_remote(heap_data->heaplimit, heap_data->heapinfo);
 }
 
 ssize_t mmalloc_get_busy_size(xbt_mheap_t heap, void *ptr){

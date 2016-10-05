@@ -9,21 +9,21 @@ accfence1 4
 #adlb_mimic1 3
 accfence2 4
 #Needs post
-#putpscw1 4
-#accpscw1 4
+putpscw1 4
+accpscw1 4
 #Needs get_group
 #getgroup 4
 transpose1 2
 transpose2 2
-#Needs post/start
-#transpose3 2
+transpose3 2
 #Needs lock/unlock
 #transpose5 2
 transpose6 1
 transpose7 2
 test1 2
-#Needs post/start
-#test2 2
+test2 2
+#this example will not run if the one-sided operations are simply
+#implemented on top of MPI_Isends and Irecvs -> won't work with SMPI.
 #test3 2
 #Needs lock, unlock
 #test4 2
@@ -37,12 +37,12 @@ test5 2
 #transpose4 2
 #fetchandadd 7
 #fetchandadd_tree 7
-#Needs start, complete
+#Needs MPI_Win_test
 #wintest 2
 #Needs lock, unlock
 #contig_displ 1
 test1_am 2
-#test2_am 2
+test2_am 2
 #test3_am 2
 #test4_am 2
 test5_am 2
@@ -51,7 +51,7 @@ test5_am 2
 accfence2_am 4
 test1_dt 2 timeLimit=30
 #Needs post/start
-#nullpscw 7
+nullpscw 7
 #Needs win_attr
 #attrorderwin 1
 #Needs MPI_Win_call_errhandler

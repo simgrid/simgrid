@@ -1,0 +1,36 @@
+#! ./tesh
+
+p Testing a simple master/worker example application
+
+$ $SG_TEST_EXENV ./app-masterworker/app-masterworker  ${srcdir:=.}/../platforms/vivaldi.xml ${srcdir:=.}/app-masterworker/app-masterworker-vivaldi_d.xml --cfg=network/latency-factor:1.0 --cfg=network/bandwidth-factor:1.0 "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/latency-factor' to '1.0'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/bandwidth-factor' to '1.0'
+> [  0.000000] (0:maestro@) Configuration change: Set 'network/coordinates' to 'yes'
+> [  0.000000] (1:master@100030591) Got 15 workers and 10 tasks to process
+> [  0.000000] (1:master@100030591) Sending "Task_0" (of 10) to mailbox "worker-0"
+> [  0.046299] (1:master@100030591) Sending "Task_1" (of 10) to mailbox "worker-1"
+> [  0.103602] (1:master@100030591) Sending "Task_2" (of 10) to mailbox "worker-2"
+> [  0.126922] (1:master@100030591) Sending "Task_3" (of 10) to mailbox "worker-3"
+> [  0.167282] (1:master@100030591) Sending "Task_4" (of 10) to mailbox "worker-4"
+> [  0.174710] (1:master@100030591) Sending "Task_5" (of 10) to mailbox "worker-5"
+> [  0.307173] (1:master@100030591) Sending "Task_6" (of 10) to mailbox "worker-6"
+> [  0.370794] (1:master@100030591) Sending "Task_7" (of 10) to mailbox "worker-7"
+> [  0.413207] (1:master@100030591) Sending "Task_8" (of 10) to mailbox "worker-8"
+> [  0.452277] (1:master@100030591) Sending "Task_9" (of 10) to mailbox "worker-9"
+> [  0.487205] (1:master@100030591) All tasks have been dispatched. Let's tell everybody the computation is over.
+> [  0.533504] (2:worker@100036570) I'm done. See you!
+> [  0.590807] (3:worker@100041334) I'm done. See you!
+> [  0.614127] (4:worker@100055671) I'm done. See you!
+> [  0.654487] (5:worker@100066658) I'm done. See you!
+> [  0.661915] (6:worker@100090691) I'm done. See you!
+> [  0.794379] (7:worker@100094952) I'm done. See you!
+> [  0.858000] (8:worker@100117943) I'm done. See you!
+> [  0.900412] (9:worker@100126290) I'm done. See you!
+> [  0.939482] (10:worker@100144483) I'm done. See you!
+> [  0.974410] (11:worker@100152889) I'm done. See you!
+> [  0.990540] (12:worker@100178474) I'm done. See you!
+> [  1.011253] (13:worker@100180261) I'm done. See you!
+> [  1.051440] (14:worker@100185883) I'm done. See you!
+> [  1.268843] (15:worker@100186365) I'm done. See you!
+> [  1.336272] (16:worker@100200866) I'm done. See you!
+> [  1.336272] (0:maestro@) Simulation time 1.33627

@@ -1,0 +1,13 @@
+#! ./tesh
+p Usage test of simdag's typed tasks
+
+! output sort
+$ $SG_TEST_EXENV ./typed_tasks/sd_typed_tasks ${srcdir:=.}/../platforms/two_clusters.xml
+> [0.000000] [xbt_cfg/INFO] Switching to the L07 model to handle parallel tasks.
+> [2.080600] [sd_typed_tasks_test/INFO] Task 'Par. Comp. 3' start time: 0.000000, finish time: 0.400000
+> [2.080600] [sd_typed_tasks_test/INFO] Task 'Par. Comp. 1' start time: 0.000000, finish time: 0.400000
+> [2.080600] [sd_typed_tasks_test/INFO] Task 'Seq. comp. 1' start time: 0.000000, finish time: 1.000000
+> [2.080600] [sd_typed_tasks_test/INFO] Task 'MxN redist' start time: 0.400000, finish time: 0.721600
+> [2.080600] [sd_typed_tasks_test/INFO] Task 'Par. Comp. 2' start time: 0.721600, finish time: 0.921600
+> [2.080600] [sd_typed_tasks_test/INFO] Task 'E2E comm.' start time: 1.000000, finish time: 1.080600
+> [2.080600] [sd_typed_tasks_test/INFO] Task 'Seq. comp 2.' start time: 1.080600, finish time: 2.080600

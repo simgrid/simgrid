@@ -1,17 +1,31 @@
-/* Copyright (c) 2014. The SimGrid Team.
+/* Copyright (c) 2014-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#ifndef MC_MMU_H
-#define MC_MMU_H
+#ifndef SIMGRID_MC_MMU_H
+#define SIMGRID_MC_MMU_H
 
-#include <stdint.h>
-#include <stdbool.h>
+#include <cstdint>
+#include <cstddef>
 
-extern int xbt_pagesize;
-extern int xbt_pagebits;
+#include <xbt/asserts.h>
+#include <xbt/base.h> // xbt_pagesize...
+#include <xbt/misc.h>
+
+#include <simgrid_config.h>
+
+
+namespace simgrid {
+namespace mc {
+// TODO, do not depend on xbt_pagesize/xbt_pagebits but our own chunk size
+namespace mmu {
+
+static int chunkSize()
+{
+  return xbt_pagesize;
+}
 
 /** @brief How many memory pages are necessary to store size bytes?
  *
@@ -19,53 +33,45 @@ extern int xbt_pagebits;
  *  @return Number of memory pages
  */
 static inline __attribute__ ((always_inline))
-size_t mc_page_count(size_t size)
+std::size_t chunkCount(std::size_t size)
 {
   size_t page_count = size >> xbt_pagebits;
-  if (size & (xbt_pagesize-1)) {
+  if (size & (xbt_pagesize-1))
     page_count ++;
-  }
   return page_count;
 }
 
-/** @brief Get the virtual memory page number of a given address
- *
- *  @param address Address
- *  @return Virtual memory page number of the given address
- */
+/** @brief Split into chunk number and remaining offset */
 static inline __attribute__ ((always_inline))
-size_t mc_page_number(void* base, void* address)
+std::pair<std::size_t, std::uintptr_t> split(std::uintptr_t offset)
 {
-  xbt_assert(address>=base, "The address is not in the range");
-  return ((uintptr_t) address - (uintptr_t) base) >> xbt_pagebits;
+  return {
+    offset >> xbt_pagebits,
+    offset & (xbt_pagesize-1)
+  };
 }
 
-/** @brief Get the offset of an address within a memory page
- *
- *  @param address Address
- *  @return Offset within the memory page
- */
+/** Merge chunk number and remaining offset info a global offset */
 static inline __attribute__ ((always_inline))
-size_t mc_page_offset(void* address)
+std::uintptr_t join(std::size_t page, std::uintptr_t offset)
 {
-  return ((uintptr_t) address) & (xbt_pagesize-1);
-}
-
-/** @brief Get the virtual address of a virtual memory page
- *
- *  @param base Address of the first page
- *  @param page Index of the page
- */
-static inline __attribute__ ((always_inline))
-void* mc_page_from_number(void* base, size_t page)
-{
-  return (void*) ((char*)base + (page << xbt_pagebits));
+  return ((std::uintptr_t) page << xbt_pagebits) + offset;
 }
 
 static inline __attribute__ ((always_inline))
-bool mc_same_page(void* a, void* b)
+std::uintptr_t join(std::pair<std::size_t,std::uintptr_t> value)
 {
-  return ((uintptr_t) a >> xbt_pagebits) == ((uintptr_t) b >> xbt_pagebits);
+  return join(value.first, value.second);
+}
+
+static inline __attribute__ ((always_inline))
+bool sameChunk(std::uintptr_t a, std::uintptr_t b)
+{
+  return (a >> xbt_pagebits) == (b >> xbt_pagebits);
+}
+
+}
+}
 }
 
 #endif

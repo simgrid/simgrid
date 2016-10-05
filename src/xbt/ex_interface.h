@@ -11,9 +11,18 @@
 #ifndef _XBT_EX_INTERFACE_H_
 #define _XBT_EX_INTERFACE_H_
 
-#include "xbt/ex.h"
+#include <cstddef>
 
-/* Change raw libc symbols to file names and line numbers */
-void xbt_ex_setup_backtrace(xbt_ex_t * e);
+#include <vector>
+#include <string>
+
+#include "xbt/base.h"
+#include "xbt/backtrace.h"
+
+namespace simgrid {
+namespace xbt {
+
+}
+}
 
 #endif                          /* _XBT_EX_INTERFACE_H_ */

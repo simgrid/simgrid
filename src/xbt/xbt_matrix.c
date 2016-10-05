@@ -1,5 +1,3 @@
-/* xbt_matrix_t management functions                                        */
-
 /* Copyright (c) 2006-2014. The SimGrid Team.
  * All rights reserved.                                                     */
 
@@ -13,10 +11,8 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_matrix, xbt, "2D data storage");
 
-/** \brief constructor */
-xbt_matrix_t xbt_matrix_new(int lines, int rows,
-                            const unsigned long elmsize,
-                            void_f_pvoid_t const free_f)
+/** @brief constructor */
+xbt_matrix_t xbt_matrix_new(int lines, int rows, const unsigned long elmsize, void_f_pvoid_t const free_f)
 {
   xbt_matrix_t res = xbt_new(s_xbt_matrix_t, 1);
   res->lines = lines;
@@ -27,26 +23,21 @@ xbt_matrix_t xbt_matrix_new(int lines, int rows,
   return res;
 }
 
-/** \brief Creates a matrix being a submatrix of another one */
-xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from,
-                                int lsize, int rsize,
-                                int lpos, int rpos,
+/** @brief Creates a matrix being a submatrix of another one */
+xbt_matrix_t xbt_matrix_new_sub(xbt_matrix_t from, int lsize, int rsize, int lpos, int rpos,
                                 pvoid_f_pvoid_t const cpy_f)
 {
-
-  xbt_matrix_t res = xbt_matrix_new(lsize, rsize,
-                                    from->elmsize, from->free_f);
+  xbt_matrix_t res = xbt_matrix_new(lsize, rsize, from->elmsize, from->free_f);
   xbt_matrix_copy_values(res, from, lsize, rsize, 0, 0, lpos, rpos, cpy_f);
   return res;
 }
 
-/** \brief destructor */
+/** @brief destructor */
 void xbt_matrix_free(xbt_matrix_t mat)
 {
-  unsigned int i;
   if (mat) {
     if (mat->free_f) {
-      for (i = 0; i < (mat->lines * mat->rows); i++) {
+      for (unsigned i = 0; i < (mat->lines * mat->rows); i++) {
         mat->free_f((void *) &(mat->data[i * mat->elmsize]));
       }
     }
@@ -55,25 +46,14 @@ void xbt_matrix_free(xbt_matrix_t mat)
   }
 }
 
-/** \brief Freeing function for containers of xbt_matrix_t */
-void xbt_matrix_free_voidp(void *d)
+/** @brief Display the content of a matrix (debugging purpose)
+ *  @param coords: boolean indicating whether we should add the coords of each cell to the output*/
+void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords, void_f_pvoid_t display_fun)
 {
-  xbt_matrix_free((xbt_matrix_t) * (void **) d);
-}
-
-
-/** \brief Display the content of a matrix (debugging purpose)
- *  \param coords: boolean indicating whether we should add the coords of each cell to the output*/
-void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords,
-                     void_f_pvoid_t display_fun)
-{
-  unsigned int i, j;
-
-  fprintf(stderr, ">>> Matrix %s dump (%u x %u)\n", name, matrix->lines,
-          matrix->rows);
-  for (i = 0; i < matrix->lines; i++) {
+  fprintf(stderr, ">>> Matrix %s dump (%u x %u)\n", name, matrix->lines, matrix->rows);
+  for (unsigned i = 0; i < matrix->lines; i++) {
     fprintf(stderr, "  ");
-    for (j = 0; j < matrix->rows; j++) {
+    for (unsigned j = 0; j < matrix->rows; j++) {
       if (coords)
         fprintf(stderr, " (%u,%u)=", i, j);
       else
@@ -85,33 +65,23 @@ void xbt_matrix_dump(xbt_matrix_t matrix, const char *name, int coords,
   fprintf(stderr, "<<< end_of_matrix %s dump\n", name);
 }
 
-void xbt_matrix_dump_display_double(void *d)
-{
-  fprintf(stderr, "%.2f", *(double *) d);
-}
-
-/** \brief Copy the values from the matrix src into the matrix dst
- * \param dest: destination
- * \param src: source
- * \param lsize: number of lines to copy
- * \param rsize: number of rows to copy
- * \param lpos_dst: line offset on destination matrix
- * \param rpos_dst: row offset on destination matrix
- * \param lpos_src: line offset on destination matrix
- * \param rpos_src: row offset on destination matrix
+/** @brief Copy the values from the matrix src into the matrix dst
+ * @param dst: destination
+ * @param src: source
+ * @param lsize: number of lines to copy
+ * @param rsize: number of rows to copy
+ * @param lpos_dst: line offset on destination matrix
+ * @param rpos_dst: row offset on destination matrix
+ * @param lpos_src: line offset on destination matrix
+ * @param rpos_src: row offset on destination matrix
+ * @param cpy_f: the function to use to copy the elements over
  */
-void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
-                            unsigned int lsize, unsigned int rsize,
-                            unsigned int lpos_dst, unsigned int rpos_dst,
-                            unsigned int lpos_src, unsigned int rpos_src,
+void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src, unsigned int lsize, unsigned int rsize,
+                            unsigned int lpos_dst, unsigned int rpos_dst,unsigned int lpos_src, unsigned int rpos_src,
                             pvoid_f_pvoid_t const cpy_f)
 {
-  unsigned int i, j;
-
-  XBT_DEBUG
-      ("Copy a %ux%u submatrix from %ux%u(of %ux%u) to %ux%u (of %ux%u)",
-       lsize, rsize, lpos_src, rpos_src, src->lines, src->rows, lpos_dst,
-       rpos_dst, dst->lines, dst->rows);
+  XBT_DEBUG ("Copy a %ux%u submatrix from %ux%u(of %ux%u) to %ux%u (of %ux%u)",
+       lsize, rsize, lpos_src, rpos_src, src->lines, src->rows, lpos_dst, rpos_dst, dst->lines, dst->rows);
 
   /* everybody knows that issue is between the chair and the screen (particulary in my office) */
   xbt_assert(src->elmsize == dst->elmsize);
@@ -124,21 +94,19 @@ void xbt_matrix_copy_values(xbt_matrix_t dst, xbt_matrix_t src,
   xbt_assert(rpos_dst + rsize <= dst->rows);
 
   /* Lets get serious here */
-  for (i = 0; i < rsize; i++) {
+  for (unsigned i = 0; i < rsize; i++) {
     if (cpy_f) {
-      for (j = 0; j < lsize; j++)
+      for (unsigned j = 0; j < lsize; j++)
         xbt_matrix_get_as(dst, j + lpos_dst, i + rpos_dst, void *) =
             cpy_f(xbt_matrix_get_ptr(src, j + rpos_src, i + lpos_src));
     } else {
-      memcpy(xbt_matrix_get_ptr(dst, lpos_dst, i + rpos_dst),
-             xbt_matrix_get_ptr(src, lpos_src, i + rpos_src),
+      memcpy(xbt_matrix_get_ptr(dst, lpos_dst, i + rpos_dst), xbt_matrix_get_ptr(src, lpos_src, i + rpos_src),
              dst->elmsize * lsize);
     }
   }
-
 }
 
-/** \brief Creates a new matrix of double filled with zeros */
+/** @brief Creates a new matrix of double filled with zeros */
 xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
@@ -147,78 +115,35 @@ xbt_matrix_t xbt_matrix_double_new_zeros(int lines, int rows)
   return res;
 }
 
-/** \brief Creates a new matrix of double being the identity matrix */
+/** @brief Creates a new matrix of double being the identity matrix */
 xbt_matrix_t xbt_matrix_double_new_id(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_double_new_zeros(lines, rows);
-  int i;
 
-  for (i = 0; i < lines; i++)
+  for (int i = 0; i < lines; i++)
     xbt_matrix_get_as(res, i, i, double) = 1;
   return res;
 }
 
-/** \brief Creates a new matrix of double randomly filled */
-xbt_matrix_t xbt_matrix_double_new_rand(int lines, int rows)
-{
-  xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
-  int i, j;
-
-  for (i = 0; i < lines; i++)
-    for (j = 0; j < rows; j++)
-      xbt_matrix_get_as(res, i, j, double) = (double) rand();
-  return res;
-}
-
-/** \brief Creates a new matrix of double containing the sequence of numbers in order */
+/** @brief Creates a new matrix of double containing the sequence of numbers in order */
 xbt_matrix_t xbt_matrix_double_new_seq(int lines, int rows)
 {
   xbt_matrix_t res = xbt_matrix_new(lines, rows, sizeof(double), NULL);
-  int i;
 
-  for (i = 0; i < lines * rows; i++)
+  for (int i = 0; i < lines * rows; i++)
     *(double *) &res->data[i * res->elmsize] = i;
 
   return res;
 }
 
-/** \brief Checks whether the matrix contains the sequence of numbers */
-int xbt_matrix_double_is_seq(xbt_matrix_t mat)
+/** @brief add to C the result of A*B */
+void xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B, /*OUT*/ xbt_matrix_t C)
 {
-  int i;
-
-  for (i = 0; i < mat->lines * mat->rows; i++) {
-    double val = xbt_matrix_get_as(mat, i, 0, double);
-    if (val != i)
-      return 0;
-  }
-
-  return 1;
-}
-
-/** \brief Creates a new matrix being the multiplication of two others */
-xbt_matrix_t xbt_matrix_double_new_mult(xbt_matrix_t A, xbt_matrix_t B)
-{
-  xbt_matrix_t result = xbt_matrix_double_new_zeros(A->lines, B->rows);
-
-  xbt_matrix_double_addmult(A, B, result);
-  return result;
-}
-
-/** \brief add to C the result of A*B */
-void xbt_matrix_double_addmult(xbt_matrix_t A, xbt_matrix_t B,
-                               /*OUT*/ xbt_matrix_t C)
-{
-  unsigned int i, j, k;
-
-  xbt_assert(A->lines == C->lines,
-              "A->lines != C->lines (%u vs %u)", A->lines, C->lines);
+  xbt_assert(A->lines == C->lines, "A->lines != C->lines (%u vs %u)", A->lines, C->lines);
   xbt_assert(B->rows == C->rows);
 
-  for (i = 0; i < C->lines; i++)
-    for (j = 0; j < C->rows; j++)
-      for (k = 0; k < B->lines; k++)
-        xbt_matrix_get_as(C, i, j, double) +=
-            xbt_matrix_get_as(A, i, k, double) * xbt_matrix_get_as(B, k, j,
-                                                                   double);
+  for (unsigned i = 0; i < C->lines; i++)
+    for (unsigned j = 0; j < C->rows; j++)
+      for (unsigned k = 0; k < B->lines; k++)
+        xbt_matrix_get_as(C, i, j, double) += xbt_matrix_get_as(A, i, k, double) * xbt_matrix_get_as(B, k, j, double);
 }

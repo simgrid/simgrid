@@ -1,0 +1,267 @@
+/*! @page uhood Under the Hood
+
+\tableofcontents
+
+TBD
+
+ - Simulation Loop, LMM, sharing -> papers
+ - Context Switching, privatization -> papers
+
+\section simgrid_uhood_s4u S4U
+
+S4U classes are designed to be user process interfaces to Maestro resources.
+We provide an uniform interface to them:
+
+- automatic reference count with intrusive smart pointers `simgrid::s4u::FooPtr`
+ (also called `simgrid::s4u::Foo::Ptr`);
+
+- manual reference count with `intrusive_ptr_add_ref(p)`,
+  `intrusive_ptr_release(p)` (which is the interface used by
+  [`boost::intrusive_ptr`](http://www.boost.org/doc/libs/1_61_0/libs/smart_ptr/intrusive_ptr.html));
+
+- delegation of the operations to a opaque `pimpl` (which is the Maestro object);
+
+- the Maestro object and the corresponding S4U object have the same lifetime
+  (and share the same reference count).
+
+The ability to manipulate thge objects thought pointers and have the ability
+to use explicit reference count management is useful for creating C wrappers
+to the S4U and should play nicely with other language bindings (such as
+SWIG-based ones).
+
+Some objects currently live for the whole duration of the simulation and do
+not have refertence counts. We still provide dummy `intrusive_ptr_add_ref(p)`,
+`intrusive_ptr_release(p)` and `FooPtr` for consistency.
+
+In many cases, we try to have a API which is consistent with the API or
+corresponding C++ standard classes. For example, the methods of
+`simgrid::s4u::Mutex` are based on [`std::mutex`](http://en.cppreference.com/w/cpp/thread/mutex).
+This has several benefits:
+
+ - we use a proven interface with a well defined and documented semantic;
+
+ - the interface is easy to understand and remember for people used to the C++
+   standard interface;
+
+ -  we can use some standard C++ algorithms and helper classes with our types
+   (`simgrid::s4u::Mutex` can be used with
+   [`std::lock`](http://en.cppreference.com/w/cpp/thread/lock),
+   [`std::unique_lock`](http://en.cppreference.com/w/cpp/thread/unique_lock),
+   etc.).
+
+Example of `simgrid::s4u::Actor`:
+
+~~~
+class Actor {
+  // This is the corresponding maestro object:
+  friend simgrid::simix::Process;
+  simgrid::simix::Process* pimpl_ = nullptr;
+public:
+
+  Actor(simgrid::simix::Process* pimpl) : pimpl_(pimpl) {}
+  Actor(Actor const&) = delete;
+  Actor& operator=(Actor const&) = delete;
+
+  // Reference count is delegated to the S4u object:
+  friend void intrusive_ptr_add_ref(Actor* actor)
+  {
+    xbt_assert(actor != nullptr);
+    SIMIX_process_ref(actor->pimpl_);
+  }
+  friend void intrusive_ptr_release(Actor* actor)
+  {
+    xbt_assert(actor != nullptr);
+    SIMIX_process_unref(actor->pimpl_);
+  }
+  using Ptr = boost::intrusive_ptr<Actor>;
+
+  // Create processes:
+  static Ptr createActor(const char* name, s4u::Host *host, double killTime, std::function<void()> code);
+
+  // [...]
+};
+
+using ActorPtr = Actor::Ptr;
+~~~
+
+It uses the `simgrid::simix::Process` as a opaque pimple:
+
+~~~
+class Process {
+private:
+  std::atomic_int_fast32_t refcount_ { 1 };
+  // The lifetime of the s4u::Actor is bound to the lifetime of the Process:
+  simgrid::s4u::Actor actor_;
+public:
+  Process() : actor_(this) {}
+
+  // Reference count:
+  friend void intrusive_ptr_add_ref(Process* process)
+  {
+    // Atomic operation! Do not split in two instructions!
+    auto previous = (process->refcount_)++;
+    xbt_assert(previous != 0);
+    (void) previous;
+  }
+  friend void intrusive_ptr_release(Process* process)
+  {
+    // Atomic operation! Do not split in two instructions!
+    auto count = --(process->refcount_);
+    if (count == 0)
+      delete process;
+  }
+
+  // [...]
+};
+
+smx_process_t SIMIX_process_ref(smx_process_t process)
+{
+  if (process != nullptr)
+    intrusive_ptr_add_ref(process);
+  return process;
+}
+
+/** Decrease the refcount for this process */
+void SIMIX_process_unref(smx_process_t process)
+{
+  if (process != nullptr)
+    intrusive_ptr_release(process);
+}
+~~~
+
+\section simgrid_uhood_async Asynchronous operations
+
+\subsection simgrid_uhood_futures Futures
+
+The `simgrid::kernel::Future` class has been added to SimGrid as an abstraction
+to represent asynchronous operations in the SimGrid maestro. Its API is based
+on `std::experimental::future` from the [C++ Extensions for Concurrency Technical
+Specification](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0159r0.html):
+
+ - `simgrid::kernel::Future<T>` represents the result an asynchronous operations
+    in the simulation inside the SimGrid maestro/kernel;
+
+ - `simgrid::kernel::Promise<T>` can be used to set the value of an assocaiated
+   `simgrid::kernel::Future<T>`.
+
+The expected way to work with `simgrid::kernel::Future<T>` is to add a
+completion handler/continuation:
+
+~~~
+// This code is executed in the maestro context, we cannot block for the result
+// to be ready:
+simgrid::kernel::Future<std::vector<char>> result = simgrid::kernel::readFile(file);
+
+// Add a completion handler:
+result.then([file](simgrid::kernel::Future<std::vector<char>> result) {
+  // At this point, the operation is complete and we can safely call .get():
+  xbt_assert(result.is_ready());
+  try {
+    std::vector<char> data = result.get();
+    XBT_DEBUG("Finished reading file %s: length %zu", file.c_str(), data.size());
+  }
+  // If the operation failed, .get() throws an exception:
+  catch (std::runtime_error& e) {
+    XBT_ERROR("Could not read file %s", file.c_str());
+  }
+});
+~~~
+
+The SimGrid kernel cannot block so calling `.get()` or `.wait()` on a
+`simgrid::kernel::Future<T>` which is not ready will deadlock. In practice, the
+simulator detects this and aborts after reporting an error.
+
+In order to generate your own future, you might need to use a
+`simgrid::kernel::Promise<T>`. The promise is a one-way channel which can be
+used to set the result of an associated `simgrid::kernel::Future<T>`
+(with either `.set_value()` or `.set_exception()`):
+
+~~~
+simgrid::kernel::Future<void> kernel_wait_until(double date)
+{
+  auto promise = std::make_shared<simgrid::kernel::Promise<void>>();
+  auto future = promise->get_future();
+  SIMIX_timer_set(date, [promise] {
+    promise->set_value();
+  });
+  return future;
+}
+~~~
+
+Like the experimental futures, we support chaining `.then()` methods with
+automatic future unwrapping.
+You might want to look at some [tutorial on C++ futures](https://www.youtube.com/watch?v=mPxIegd9J3w&list=PLHTh1InhhwT75gykhs7pqcR_uSiG601oh&index=43)
+for more details and examples. Some operations of the proposed experimental
+futures are currently not implemented in our futures however such as
+`.wait_for()`, `.wait_until()`,
+[`shared_future`](http://en.cppreference.com/w/cpp/thread/shared_future),
+[`when_any()`](http://www.open-std.org/jtc1/sc22/wg21/docs/papers/2015/p0159r0.html#futures.when_any).
+
+\subsection simgrid_uhood_timer Timers
+
+\section simgrid_uhood_mc Model Checker
+
+The current implementation of the model-checker uses two distinct processes:
+
+ - the SimGrid model-checker (`simgrid-mc`) itself lives in the parent process;
+
+ - it spaws a child process for the SimGrid simulator/maestro and the simulated
+   processes.
+
+They communicate using a `AF_UNIX` `SOCK_DGRAM` socket and exchange messages
+defined in `mc_protocol.h`. The `SIMGRID_MC_SOCKET_FD` environment variable it
+set to the file descriptor of this socket in the child process.
+
+The model-checker analyzes, saves and restores the state of the model-checked
+process using the following techniques:
+
+- the model-checker reads and writes in the model-checked address space;
+
+- the model-cheker `ptrace()`s the model-checked process and is thus able to
+  know the state of the model-checked process if it crashes;
+
+- DWARF debug informations are used to unwind the stack and identify local
+  variables;
+
+- a custom heap is enabled in the model-checked process which allows the model
+  checker to know which chunks are allocated and which are freed.
+
+\subsection simgrid_uhood_mc_address_space Address space
+
+The `AddressSpace` is a base class used for both the model-checked process
+and its snapshots and has methods to read in the corresponding address space:
+
+ - the `Process` class is a subclass representing the model-checked process;
+
+ - the `Snapshot` class is a subclass representing a snapshot of the process.
+
+Additional helper class include:
+
+ - `Remote<T>` is the result of reading a `T` in a remote AddressSpace. For
+    trivial types (int, etc.), it is convertible t o `T`;
+
+ - `RemotePtr<T>` represents the address of an object of type `T` in some
+    remote `AddressSpace` (it could be an alias to `Remote<T*>`).
+
+\subsection simgrid_uhood_mc_address_elf_dwarf ELF and DWARF
+
+[ELF](http://refspecs.linuxbase.org/elf/elf.pdf) is a standard executable file
+and dynamic libraries file format.
+[DWARF](http://dwarfstd.org/) is a standard for debug informations.
+Both are used on GNU/Linux systems and exploited by the model-checker to
+understand the model-checked process:
+
+ - `ObjectInformation` represents the informations about a given ELF module
+   (executable or shared-object);
+
+ - `Frame` represents a subprogram scope (either a subprogram or a scope within
+    the subprogram);
+
+ - `Type` represents a type (eg. `char*`, `int`, `std::string`) and is referenced
+    by variables (global, variables, parameters), functions (return type),
+    and other types (type of a `struct` field, etc.);
+
+ - `LocationList` and `DwarfExpression` are used to describe the location of
+    variables.
+
+*/

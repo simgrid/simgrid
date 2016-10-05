@@ -2,28 +2,25 @@
 # This suite builds and uses a program raising a segfault, ie a program dying
 # of SIGSEV. tesh must detect this condition and report the issue.
 
-$ rm -rf temp_testdir-catch-signal
+$ cmake -E remove_directory temp_testdir-catch-signal
 $ mkdir temp_testdir-catch-signal
 
 $ cd temp_testdir-catch-signal
-< #include <stdlib.h>
-< int main(void) {
-<   char *A=NULL;
-<   *A = 1;
-< }
-$ mkfile segfault.c
 
-$ cc -o segfault segfault.c
+< kill 'SEGV', $$;
+$ mkfile segfault.pl
 
-! expect return 15
-< $ ./segfault
-$ ../tesh --enable-coverage --log='log.thresh:info tesh.fmt:%m%n'
-> Enable coverage
+p Check that we notice when SEGV is raised
+! expect signal SIGSEGV
+$ perl segfault.pl
+
+p Check that we return the expected return value on SEGV
+! expect return 11
+< $ perl segfault.pl
+$ ${bindir:=.}/tesh
 > Test suite from stdin
-> [(stdin):1] ./segfault
+> [(stdin):1] perl segfault.pl
 > Test suite `(stdin)': NOK (<(stdin):1> got signal SIGSEGV)
-> Output of <(stdin):1> so far:
-> ||
 
 $ cd ..
-$ rm -rf temp_testdir-catch-signal
+$ cmake -E remove_directory temp_testdir-catch-signal

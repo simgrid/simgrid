@@ -1,0 +1,12 @@
+#! ./tesh
+
+p Testing a MSG_process_kill function
+
+$ $SG_TEST_EXENV ${bindir:=.}/process-kill ${srcdir:=.}/small_platform.xml "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
+> [  0.000000] (1:killer@Tremblay) Hello!
+> [  0.000000] (2:victim@Fafard) Hello!
+> [  0.000000] (2:victim@Fafard) Suspending myself
+> [ 10.000000] (1:killer@Tremblay) Resume process
+> [ 10.000000] (1:killer@Tremblay) Kill process
+> [ 10.000000] (1:killer@Tremblay) OK, goodbye now.
+> [ 10.000000] (0:maestro@) Simulation time 10

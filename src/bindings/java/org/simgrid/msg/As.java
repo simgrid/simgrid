@@ -8,29 +8,27 @@ package org.simgrid.msg;
 
 public class As {
 
-    private long bind;
-    
-    protected As() {
-	};
+	private long bind;
 
-    public String toString (){
-	return this.getName(); 
-    }
-    public native String getName();
+	protected As() {}
 
-    public native As[] getSons();
+	@Override
+	public String toString (){
+		return this.getName(); 
+	}
+	public native String getName();
 
-    public native String getProperty(String name);
+	public native As[] getSons();
 
-    public native String getModel();
+	public native String getProperty(String name);
 
-    public native Host[] getHosts();
+	public native Host[] getHosts();
 
-    /**
-      * Class initializer, to initialize various JNI stuff
-      */
-    public static native void nativeInit();
-    static {
-	nativeInit();
-    }
+	/**
+	 * Class initializer, to initialize various JNI stuff
+	 */
+	public static native void nativeInit();
+	static {
+		nativeInit();
+	}
 }

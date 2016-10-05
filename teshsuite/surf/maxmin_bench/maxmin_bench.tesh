@@ -1,6 +1,0 @@
-#! ./tesh
-
-! output display
-$ $SG_TEST_EXENV ${bindir:=.}/maxmin_bench
-> Starting to solve
-> One shot execution time for a total of 2000 constraints, 2000 variables with 80 active constraint each : 66293 microsecondes

@@ -215,6 +215,8 @@ int smpi_coll_tuned_reduce_mvapich2_knomial (
                 COLL_TAG_REDUCE,comm);
 
         smpi_mpi_waitall(1, &send_request, &status);
+
+        smpi_free_tmp_buffer((void *)((char*)recvbuf + true_lb));
     }
 
     /* --END ERROR HANDLING-- */

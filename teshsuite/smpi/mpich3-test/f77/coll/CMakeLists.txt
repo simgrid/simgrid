@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
@@ -8,8 +6,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
     set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpiff")
   endif()
 
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
   include_directories("${CMAKE_CURRENT_SOURCE_DIR}/../include/")
 
 #  add_executable(allredint8f allredint8f.f)
@@ -41,17 +38,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   target_link_libraries(split_typef simgrid mtest_f77)
   target_link_libraries(uallreducef simgrid mtest_f77)
   target_link_libraries(vw_inplacef simgrid mtest_f77)
-
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/allredint8f.f
@@ -68,14 +56,8 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/split_typef.f
   ${CMAKE_CURRENT_SOURCE_DIR}/uallreducef.f
   ${CMAKE_CURRENT_SOURCE_DIR}/vw_inplacef.f
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)

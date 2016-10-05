@@ -1,4 +1,4 @@
-/* Copyright (c) 2013-2014. The SimGrid Team.
+/* Copyright (c) 2013-2015. The SimGrid Team.
  * All rights reserved.                                                     */
 
 /* This program is free software; you can redistribute it and/or modify it
@@ -11,7 +11,7 @@
 /******************************************************************************/
 
 /* Run :
-  /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml --cfg=model-check:1 --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send_is_detached_thres:0 --cfg=contexts/stack_size:128 --cfg=model-check/visited:100000 --cfg=model-check/max_depth:100000 ./bugged1_liveness */
+  /usr/bin/time -f "clock:%e user:%U sys:%S swapped:%W exitval:%x max:%Mk" "$@" ../../../smpi_script/bin/smpirun -hostfile hostfile_bugged1_liveness -platform ../../platforms/cluster.xml --cfg=contexts/factory:ucontext --cfg=model-check/reduction:none --cfg=model-check/property:promela_bugged1_liveness --cfg=smpi/send-is-detached-thresh:0 --cfg=contexts/stack_size:128 --cfg=model-check/visited:100000 --cfg=model-check/max_depth:100000 ./bugged1_liveness */
 
 #include <stdio.h>
 #include <mpi.h>
@@ -23,23 +23,13 @@
 
 int r, cs;
 
-static int predR(){
-  return r;
-}
-
-static int predCS(){
-  return cs;
-}
-
-
 int main(int argc, char **argv){
-
   int err, size, rank;
   int recv_buff;
   MPI_Status status;
   int CS_used = 0;
   xbt_dynar_t requests = xbt_dynar_new(sizeof(int), NULL);
-  
+
   /* Initialize MPI */
   err = MPI_Init(&argc, &argv);
   if(err !=  MPI_SUCCESS){
@@ -47,8 +37,8 @@ int main(int argc, char **argv){
     exit(1);
   }
 
-  MC_automaton_new_propositional_symbol("r", &predR);
-  MC_automaton_new_propositional_symbol("cs", &predCS);
+  MC_automaton_new_propositional_symbol_pointer("r", &r);
+  MC_automaton_new_propositional_symbol_pointer("cs", &cs);
 
   MC_ignore(&(status.count), sizeof(status.count));
 

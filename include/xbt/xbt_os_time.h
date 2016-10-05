@@ -15,9 +15,9 @@
 SG_BEGIN_DECL()
 
 /** @brief get time in seconds 
-
-  * gives  the  number  of  seconds since the Epoch (00:00:00 UTC, January 1, 1970).
-  */
+ *
+ * gives  the  number  of  seconds since the Epoch (00:00:00 UTC, January 1, 1970).
+ */
 XBT_PUBLIC(double) xbt_os_time(void);
 XBT_PUBLIC(void) xbt_os_sleep(double sec);
 

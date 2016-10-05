@@ -1,2 +1,0 @@
-! output ignore
-$ ../../smpi_script/bin/smpirun -np 16 -platform ${srcdir:=.}/../../examples/platforms/small_platform.xml -hostfile ${srcdir:=.}/hostfile.txt ./bug-17132 --cfg=smpi/cpu_threshold:-1 --log=surf.thres:debug

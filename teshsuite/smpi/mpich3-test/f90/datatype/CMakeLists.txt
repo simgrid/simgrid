@@ -1,5 +1,3 @@
-cmake_minimum_required(VERSION 2.6)
-
 if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
   if(WIN32)
     set(CMAKE_C_FLAGS "-include ${CMAKE_HOME_DIRECTORY}/include/smpi/smpi_main.h")
@@ -8,8 +6,7 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
     set(CMAKE_Fortran_COMPILER "${CMAKE_BINARY_DIR}/smpi_script/bin/smpif90")
   endif()
 
-  set(EXECUTABLE_OUTPUT_PATH "${CMAKE_CURRENT_BINARY_DIR}")
-  include_directories("${CMAKE_HOME_DIRECTORY}/include/smpi")
+  include_directories(BEFORE "${CMAKE_HOME_DIRECTORY}/include/smpi")
 
 #  add_executable(allctypesf90 allctypesf90.f90)
  # add_executable(createf90 createf90.f90)
@@ -49,17 +46,8 @@ if(enable_smpi AND enable_smpi_MPICH3_testsuite AND SMPI_FORTRAN)
 #  target_link_libraries(typenamef90 simgrid mtest_f90)
 #  target_link_libraries(typesnamef90 simgrid mtest_f90)
 #  target_link_libraries(typesubf90 simgrid mtest_f90)
-
 endif()
 
-set(tesh_files
-  ${tesh_files}
-  PARENT_SCOPE
-  )
-set(xml_files
-  ${xml_files}
-  PARENT_SCOPE
-  )
 set(examples_src
   ${examples_src}
   ${CMAKE_CURRENT_SOURCE_DIR}/allctypesf90.f90
@@ -81,14 +69,8 @@ set(examples_src
   ${CMAKE_CURRENT_SOURCE_DIR}/typenamef90.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/typesnamef90.f90
   ${CMAKE_CURRENT_SOURCE_DIR}/typesubf90.f90
-  PARENT_SCOPE
-  )
-set(bin_files
-  ${bin_files}
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
 set(txt_files
   ${txt_files}
   ${CMAKE_CURRENT_SOURCE_DIR}/testlist
-  PARENT_SCOPE
-  )
+  PARENT_SCOPE)
