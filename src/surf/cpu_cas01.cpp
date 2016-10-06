@@ -53,7 +53,6 @@ CpuCas01Model::CpuCas01Model() : simgrid::surf::CpuModel()
   }
 
   p_cpuRunningActionSetThatDoesNotNeedBeingChecked = new ActionList();
-
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
   if (getUpdateMechanism() == UM_LAZY) {
