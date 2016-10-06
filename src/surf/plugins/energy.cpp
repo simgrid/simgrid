@@ -1,16 +1,15 @@
-/* Copyright (c) 2010, 2012-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2010, 2012-2016. The SimGrid Team. All rights reserved.    */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
-
-#include <utility>
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/simix.hpp"
 #include "src/surf/plugins/energy.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/virtual_machine.hpp"
+
+#include <utility>
 
 /** @addtogroup SURF_plugin_energy
 
@@ -151,7 +150,7 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
   double max_power     = 0;
   double power_slope   = 0;
 
-  if (cpu_load != 0) { /* Something is going on, the machine is not idle */
+  if (cpu_load > 0) { /* Something is going on, the machine is not idle */
     double min_power = range.min;
     double max_power = range.max;
     double power_slope = max_power - min_power;
