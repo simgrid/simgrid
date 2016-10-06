@@ -70,15 +70,19 @@ void HostEnergy::update()
   double start_time = this->last_updated;
   double finish_time = surf_get_clock();
   double cpu_load;
-  if (surf_host->cpu_->speed_.peak <= 0)
+  if (surf_host->cpu_->getPstateSpeedCurrent() <= 0)
     // Some users declare a pstate of speed 0 flops (e.g., to model boot time).
     // We consider that the machine is then fully loaded. That's arbitrary but it avoids a NaN
     cpu_load = 1;
   else
-    cpu_load = lmm_constraint_get_usage(surf_host->cpu_->getConstraint()) / surf_host->cpu_->speed_.peak;
+    cpu_load = lmm_constraint_get_usage(surf_host->cpu_->getConstraint()) / surf_host->cpu_->getPstateSpeedCurrent();
+
+  /** Divide by the number of cores here **/
+  cpu_load /= surf_host->cpu_->getCoreCount();
 
   if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
     cpu_load = 1;
+
   /* The problem with this model is that the load is always 0 or 1, never something less.
    * Another possibility could be to model the total energy as
    *
@@ -125,13 +129,13 @@ HostEnergy::~HostEnergy()=default;
 double HostEnergy::getWattMinAt(int pstate)
 {
   xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->name().c_str());
-  return power_range_watts_list[pstate].first;
+  return power_range_watts_list[pstate].min;
 }
 
 double HostEnergy::getWattMaxAt(int pstate)
 {
   xbt_assert(!power_range_watts_list.empty(), "No power range properties specified for host %s", host->name().c_str());
-  return power_range_watts_list[pstate].second;
+  return power_range_watts_list[pstate].max;
 }
 
 /** @brief Computes the power consumed by the host according to the current pstate and processor load */
@@ -141,11 +145,21 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
 
   /* min_power corresponds to the idle power (cpu load = 0) */
   /* max_power is the power consumed at 100% cpu load       */
-  auto range = power_range_watts_list.at(host->pstate());
-  double min_power = range.first;
-  double max_power = range.second;
-  double power_slope = max_power - min_power;
-  double current_power = min_power + cpu_load * power_slope;
+  auto range           = power_range_watts_list.at(host->pstate());
+  double current_power = 0;
+  double min_power     = 0;
+  double max_power     = 0;
+  double power_slope   = 0;
+
+  if (cpu_load != 0) { /* Something is going on, the machine is not idle */
+    double min_power = range.min;
+    double max_power = range.max;
+    double power_slope = max_power - min_power;
+    current_power = min_power + cpu_load * power_slope;
+  }
+  else { /* Our machine is idle, take the dedicated value! */
+    current_power = range.idle;
+  }
 
   XBT_DEBUG("[get_current_watts] min_power=%f, max_power=%f, slope=%f", min_power, max_power, power_slope);
   XBT_DEBUG("[get_current_watts] Current power (watts) = %f, load = %f", current_power, cpu_load);
@@ -181,12 +195,15 @@ void HostEnergy::initWattsRangeList()
 
     /* min_power corresponds to the idle power (cpu load = 0) */
     /* max_power is the power consumed at 100% cpu load       */
+    char *msg_idle = bprintf("Invalid idle value for pstate %d on host %s: %%s", i, host->name().c_str());
     char *msg_min = bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->name().c_str());
-    char *msg_max = bprintf("Invalid min value for pstate %d on host %s: %%s", i, host->name().c_str());
-    power_range_watts_list.push_back(power_range(
-      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 0, char*), msg_min),
-      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 1, char*), msg_max)
-    ));
+    char *msg_max = bprintf("Invalid max value for pstate %d on host %s: %%s", i, host->name().c_str());
+    PowerRange range(
+      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 0, char*), msg_idle),
+      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 1, char*), msg_min),
+      xbt_str_parse_double(xbt_dynar_get_as(current_power_values, 2, char*), msg_max)
+    );
+    power_range_watts_list.push_back(range);
     xbt_free(msg_min);
     xbt_free(msg_max);
 
