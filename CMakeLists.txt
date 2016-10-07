@@ -130,7 +130,7 @@ else()
   endif()
 endif()
 
-execute_process(COMMAND   ${CMAKE_LINKER}   --version    OUTPUT_VARIABLE LINKER_VERSION)
+execute_process(COMMAND   ${CMAKE_LINKER}   -version    OUTPUT_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
 ### Find programs and paths
