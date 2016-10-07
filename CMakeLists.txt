@@ -119,15 +119,13 @@ set(libsimgrid_version "${release_version}")
 set(libsimgrid-java_version "${release_version}")
 
 ### SET THE LIBRARY EXTENSION 
-if(APPLE) #MAC
+if(APPLE)
   set(LIB_EXE "dylib")
+elseif(WIN32)
+  set(LIB_EXE "a")
+  set(BIN_EXE ".exe")
 else()
-  if(WIN32) #WINDOWS
-    set(LIB_EXE "a")
-    set(BIN_EXE ".exe")
-  else() #UNIX
-    set(LIB_EXE "so")
-  endif()
+  set(LIB_EXE "so")
 endif()
 
 execute_process(COMMAND   ${CMAKE_LINKER}   -version    OUTPUT_VARIABLE LINKER_VERSION)
@@ -892,22 +890,6 @@ endforeach()
 
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
-
-### Build the doc (Windows downloads the doc instead of regenerating)
-#
-if(NOT WIN32)
-  include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Documentation.cmake)
-else()
-  find_program(WGET_PROGRAM  NAMES wget)
-  message(STATUS "wget: ${WGET_PROGRAM}")
-  if(WGET_PROGRAM)
-    ADD_CUSTOM_TARGET(documentation
-      COMMENT "Downloading the SimGrid documentation..."
-      COMMAND ${WGET_PROGRAM} -r -np -nH -nd http://simgrid.gforge.inria.fr/simgrid/${release_version}/doc/
-      WORKING_DIRECTORY ${CMAKE_HOME_DIRECTORY}/doc/html
-    )
-  endif()
-endif()
 
 ### Print the result of configuration
 message("")
