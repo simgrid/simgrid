@@ -451,13 +451,6 @@ void xbt_os_sem_destroy(xbt_os_sem_t sem)
   xbt_free(sem);
 }
 
-void xbt_os_sem_get_value(xbt_os_sem_t sem, int *svalue)
-{
-  if (sem_getvalue(&(sem->s), svalue) < 0)
-    THROWF(system_error, errno, "sem_getvalue() failed: %s",
-           strerror(errno));
-}
-
 /** @brief Returns the amount of cores on the current host */
 int xbt_os_get_numcores(void) {
 #ifdef WIN32

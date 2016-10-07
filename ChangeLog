@@ -34,7 +34,8 @@ SimGrid (3.14) UNRELEASED; urgency=low
    - MSG_mailbox_get_task_ext_bounded -> MSG_task_receive_ext_bounded
  * Task affinity. Its intended behavior (that was very badly tested
    and probably not really working) was deceiving what most users
-   would have hoped here. 
+   would have hoped here.
+ * xbt_os_sem_get_value: unused internally, deprecated on OS X El Capitan
 
  XML:
  * Add Exa- and Peta- units such as EiB, EB, Eib, Eb for size, and
