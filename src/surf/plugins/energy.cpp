@@ -153,8 +153,25 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
   if (cpu_load > 0) { /* Something is going on, the machine is not idle */
     double min_power = range.min;
     double max_power = range.max;
-    double power_slope = max_power - min_power;
-    current_power = min_power + cpu_load * power_slope;
+
+    /**
+     * The min_power states how much we consume when only one single
+     * core is working. This means that when cpu_load == 1/coreCount, then
+     * current_power == min_power.
+     *
+     * The maximum must be reached when all cores are working (but 1 core was
+     * already accounted for by min_power)
+     * i.e., we need min_power + (maxCpuLoad-1/coreCount)*power_slope == max_power
+     * (maxCpuLoad is by definition 1)
+     */
+    double power_slope;
+    int coreCount = host->coresCount();
+    if (coreCount > 1)
+      power_slope = (max_power - min_power) / (1 - 1 / coreCount);
+    else
+      power_slope = 0; // Should be 0, since max_power == min_power (in this case)
+
+    current_power = min_power + (cpu_load - (1 / coreCount)) * power_slope;
   }
   else { /* Our machine is idle, take the dedicated value! */
     current_power = range.idle;

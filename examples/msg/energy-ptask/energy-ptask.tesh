@@ -8,6 +8,6 @@ $ $SG_TEST_EXENV energy-ptask/energy-ptask$EXEEXT ${srcdir:=.}/../platforms/ener
 > [310.000000] (1:test@MyHost1) Finally, trick the ptask to do a 'remote execution', on host MyHost2
 > [320.000000] (1:test@MyHost1) Goodbye now!
 > [320.000000] (0:maestro@) Simulation done.
-> [320.000000] (0:maestro@) Total energy of host MyHost1: 39800.000000 Joules
-> [320.000000] (0:maestro@) Total energy of host MyHost2: 40800.000000 Joules
-> [320.000000] (0:maestro@) Total energy of host MyHost3: 39800.000000 Joules
+> [320.000000] (0:maestro@) Total energy of host MyHost1: 38200.000000 Joules
+> [320.000000] (0:maestro@) Total energy of host MyHost2: 38400.000000 Joules
+> [320.000000] (0:maestro@) Total energy of host MyHost3: 38200.000000 Joules
