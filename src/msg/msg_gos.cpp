@@ -268,7 +268,7 @@ msg_error_t MSG_task_receive_ext_bounded(msg_task_t * task, const char *alias, d
   /* Try to receive it by calling SIMIX network layer */
   try {
     simcall_comm_recv(MSG_process_self(), mailbox->getImpl(), task, nullptr, nullptr, nullptr, nullptr, timeout, rate);
-    XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->getName());
+    XBT_DEBUG("Got task %s from %s",(*task)->name,mailbox->name());
     (*task)->simdata->setNotUsed();
   }
   catch (xbt_ex& e) {

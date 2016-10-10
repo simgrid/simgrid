@@ -77,7 +77,7 @@ public:
       mailbox = simgrid::s4u::Mailbox::byName(args[1]);
   }
   void operator()() {
-    XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->getName());
+    XBT_INFO("Hello s4u, I'm ready to get any message you'd want on %s", mailbox->name());
 
     char *msg1 = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
     char *msg2 = static_cast<char*>(simgrid::s4u::this_actor::recv(mailbox));
