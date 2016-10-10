@@ -166,12 +166,13 @@ double HostEnergy::getCurrentWattsValue(double cpu_load)
      */
     double power_slope;
     int coreCount = host->coreCount();
+    double coreReciprocal = static_cast<double>(1) / static_cast<double>(coreCount);
     if (coreCount > 1)
-      power_slope = (max_power - min_power) / (1 - 1 / coreCount);
+      power_slope = (max_power - min_power) / (1 - coreReciprocal);
     else
       power_slope = 0; // Should be 0, since max_power == min_power (in this case)
 
-    current_power = min_power + (cpu_load - (1 / coreCount)) * power_slope;
+    current_power = min_power + (cpu_load - coreReciprocal) * power_slope;
   }
   else { /* Our machine is idle, take the dedicated value! */
     current_power = range.idle;
