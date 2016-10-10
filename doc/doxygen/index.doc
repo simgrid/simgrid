@@ -36,9 +36,10 @@
   - @subpage tutorial
   - @subpage examples
 - @subpage uhood
+  - @subpage uhood_arch
   - Simulating Resource Sharing
   - @subpage uhood_switch
-  - @subpage inside
+  - @subpage uhood_tech
 - @subpage community
   - @subpage community_contact
   - @subpage community_giveback

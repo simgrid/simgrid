@@ -93,7 +93,7 @@ public:
     : src_(src), dst_(dst), link_(link) {};
   NetCard *src_;
   NetCard *dst_;
-  void *link_;
+  void *link_; // FIXME: void* should die just like the death*
 };
 
 /** @ingroup SURF_routing_interface
