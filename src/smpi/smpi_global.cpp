@@ -889,7 +889,7 @@ int smpi_rank_of_smx_process(smx_actor_t process)
   if(process == nullptr){
     return -1;
   }else{
-    return process->pid;
+    return process->pid - 1;
   }
 }
 
