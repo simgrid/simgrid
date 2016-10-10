@@ -895,6 +895,9 @@ endforeach()
 ### Setup the distrib
 include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Distrib.cmake)
 
+### Build the docs if asked to
+include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Documentation.cmake)
+
 ### Print the result of configuration
 message("")
 message("##########################################")
