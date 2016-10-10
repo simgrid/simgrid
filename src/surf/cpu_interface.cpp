@@ -188,7 +188,7 @@ void Cpu::onSpeedChange() {
   TRACE_surf_host_set_speed(surf_get_clock(), getName(), coresAmount_ * speed_.scale * speed_.peak);
 }
 
-int Cpu::getCoreCount()
+int Cpu::coreCount()
 {
   return coresAmount_;
 }

@@ -106,8 +106,8 @@ int main(int argc, char **argv)
     for (i = 0; i < totalHosts; i++) {
       std::printf("  <host id=\"%s\" speed=\"%.0f\"", sg_host_get_name(hosts[i]), sg_host_speed(hosts[i]));
       props = sg_host_get_properties(hosts[i]);
-      if (hosts[i]->coresCount()>1) {
-        std::printf(" core=\"%d\"", hosts[i]->coresCount());
+      if (hosts[i]->coreCount()>1) {
+        std::printf(" core=\"%d\"", hosts[i]->coreCount());
       }
       if (props && !xbt_dict_is_empty(props)) {
         std::printf(">\n");

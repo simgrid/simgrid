@@ -71,7 +71,7 @@ public: // TODO, make me private
   bool isOff() { return !isOn(); }
 
   double speed();
-  int coresCount();
+  int coreCount();
   xbt_dict_t properties();
   const char*property(const char*key);
   void setProperty(const char*key, const char *value);

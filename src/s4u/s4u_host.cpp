@@ -172,8 +172,8 @@ double Host::speed() {
   return pimpl_cpu->getSpeed(1.0);
 }
 /** @brief Returns the number of core of the processor. */
-int Host::coresCount() {
-  return pimpl_cpu->getCoreCount();
+int Host::coreCount() {
+  return pimpl_cpu->coreCount();
 }
 
 /** @brief Set the pstate at which the host should run */

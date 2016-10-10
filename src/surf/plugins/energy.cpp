@@ -77,7 +77,7 @@ void HostEnergy::update()
     cpu_load = lmm_constraint_get_usage(surf_host->cpu_->getConstraint()) / surf_host->cpu_->getPstateSpeedCurrent();
 
   /** Divide by the number of cores here **/
-  cpu_load /= surf_host->cpu_->getCoreCount();
+  cpu_load /= surf_host->cpu_->coreCount();
 
   if (cpu_load > 1) // A machine with a load > 1 consumes as much as a fully loaded machine, not more
     cpu_load = 1;

@@ -163,7 +163,7 @@ double MSG_get_host_speed(msg_host_t host) {
  * \return the number of cores
  */
 int MSG_host_get_core_number(msg_host_t host) {
-  return host->coresCount();
+  return host->coreCount();
 }
 
 /** \ingroup m_host_management
