@@ -37,7 +37,20 @@
 ##################################################################
 # SETTINGS
 # set path to clang-format binary
-CLANG_FORMAT=$(which clang-format)
+CLANG_FORMAT=$(which clang-format-3.8)
+
+# git subcommand that we want to us
+for name in git-clang-format-3.9 git-clang-format-3.8 git-clang-format ; do
+ where=$(which $name)
+ if [ x != "x$where" ] ; then
+   GIT_SUBCOMMAND=`echo $name|sed 's/git-//'`
+   break
+ fi
+done
+if [ -z $GIT_SUBCOMMAND ] ; then
+  echo "Cannot find git-clang-format (in version >=3.8). Did you install the right package?"
+  exit 1
+fi
 
 # remove any older patches from previous commits. Set to true or false.
 DELETE_OLD_PATCHES=false
@@ -108,7 +121,7 @@ else
 fi
 
 if [ ! -x "$CLANG_FORMAT" ] ; then
-    printf "Error: clang-format executable not found.\n"
+    printf "Error: clang-format executable not found. sudo apt-get install clang-format-3.8\n"
     printf "Set the correct path in $(canonicalize_filename "$0").\n"
     exit 1
 fi
@@ -136,7 +149,7 @@ do
     #    +++ - timestamp
     # to both lines working on the same file and having a a/ and b/ prefix.
     # Else it can not be applied with 'git apply'.
-    git clang-format --diff -q >> "$patch"
+    git ${GIT_SUBCOMMAND} --binary ${CLANG_FORMAT} --diff -q >> "$patch"
     #"$CLANG_FORMAT" -style=file "$file" | \
         #diff -u "$file" - | \
         #sed -e "1s|--- |--- a/|" -e "2s|+++ -|+++ b/$file|" >> "$patch"
@@ -154,12 +167,11 @@ printf "\nThe following differences were found between the code to commit "
 printf "and the clang-format rules:\n\n"
 cat "$patch"
 
-printf "\nYou can apply these changes with:\n git apply $patch\n"
-printf "(may need to be called from the root directory of your repository)\n"
-printf "\nNote: git apply only modifies your working directory, but not your index, i.e., not what you want to commit.\n"
-printf "You need to run 'git add' again after you applied this patch OR just run git apply a second time:"
-printf "\n git apply --cached $patch\n\n"
-printf "Aborting commit. Apply changes and commit again or skip checking with"
-printf " --no-verify (not recommended).\n"
+printf "\nYou can apply these changes and readd the files with:\n"
+printf "  git apply $patch &&  git apply --cached $patch\n"
+printf "(call this command from the root directory of your repository)\n"
+printf "\n\n\n"
+printf "Aborting commit. Apply changes and commit again.\n"
+# printf "Skip checking with: --no-verify (not recommended).\n"
 
 exit 1

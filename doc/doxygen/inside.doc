@@ -19,6 +19,21 @@ pages, as follows:
  - @subpage inside_cmake
  - @subpage inside_release
 
-TBD: Coding Standard
+@section uhood_tech_codstand Coding Standard
+
+If you plan to commit code to the SimGrid project, you definitely need
+to install the relevant tool to ensure that your changes follow our
+coding standards:
+
+@verbatim
+sudo apt-get install clang-format-3.8
+ln -s $PWD/tools/git-hooks/clang-format.pre-commit .git/hooks/pre-commit
+@endverbatim
+
+This will add an extra verification before integrating any commit that
+you could prepare. If your code does not respects our formating code,
+git will say so, and provide a ready to use patch that you can apply
+to improve your commit. Just carefully read the error message you get
+to find the exact command with git-apply to fix your formating.
 
 */
