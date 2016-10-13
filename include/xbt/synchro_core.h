@@ -1,8 +1,6 @@
-/* xbt/synchro_core.h -- Synchronization tools                              */
-/* Usable in simulator, (or in real life when mixing with GRAS)             */
+/* xbt/synchro_core.h -- Simulated synchronization                          */
 
-/* Copyright (c) 2009-2014. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2009-2016. The SimGrid Team.                               */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -22,10 +20,11 @@ SG_BEGIN_DECL()
 
 /** @addtogroup XBT_synchro
  *  @brief XBT synchronization tools
- * 
- *  This section describes the XBT synchronization tools.
- *  This is a portability layer (for windows and UNIX) of a pthread-like API. Nice, isn't it?
- * 
+ *
+ *  This section describes the simulated synchronization mechanisms,
+ *  that you can use in your simulation without deadlocks. See @ref
+ *  faq_MIA_thread_synchronization for details.
+ *
  *  @{
  */
 

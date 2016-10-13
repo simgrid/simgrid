@@ -88,7 +88,7 @@
      /** @defgroup XBT_graph General purpose graph library */
      /** @defgroup XBT_parmap Parallel map */    
      /** @defgroup XBT_peer Peer */	
-     /** @defgroup XBT_synchro Synchro stuff */	
+     /** @defgroup XBT_synchro Simulated Synchronization */	
      /** @defgroup XBT_thread Thread stuff */	
      /** @defgroup XBT_context Portable context implementation */		
      /** @defgroup XBT_replay Replay */
