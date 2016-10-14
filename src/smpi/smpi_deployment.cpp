@@ -5,10 +5,10 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "private.h"
-#include "xbt/sysdep.h"
-#include "xbt/synchro_core.h"
-#include "xbt/log.h"
+#include "simgrid/msg.h" /* barrier */
 #include "xbt/dict.h"
+#include "xbt/log.h"
+#include "xbt/sysdep.h"
 
 static xbt_dict_t smpi_instances = nullptr;
 extern int process_count;
@@ -20,7 +20,7 @@ typedef struct s_smpi_mpi_instance{
   int present_processes;
   int index;
   MPI_Comm comm_world;
-  xbt_bar_t finalization_barrier;
+  msg_bar_t finalization_barrier;
 } s_smpi_mpi_instance_t;
 
 /** \ingroup smpi_simulation
@@ -42,7 +42,7 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
   instance->present_processes = 0;
   instance->index = process_count;
   instance->comm_world = MPI_COMM_NULL;
-  instance->finalization_barrier=xbt_barrier_init(num_processes);
+  instance->finalization_barrier = MSG_barrier_init(num_processes);
 
   process_count+=num_processes;
 
@@ -55,7 +55,8 @@ void SMPI_app_instance_register(const char *name, xbt_main_func_t code, int num_
 }
 
 //get the index of the process in the process_data array
-void smpi_deployment_register_process(const char* instance_id, int rank, int index,MPI_Comm** comm, xbt_bar_t* bar){
+void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm, msg_bar_t* bar)
+{
 
   if(smpi_instances==nullptr){//no instance registered, we probably used smpirun.
     index_to_process_data[index]=index;
@@ -88,7 +89,7 @@ void smpi_deployment_cleanup_instances(){
     if(instance->comm_world!=MPI_COMM_NULL)
       while (smpi_group_unuse(smpi_comm_group(instance->comm_world)) > 0);
     xbt_free(instance->comm_world);
-    xbt_barrier_destroy(instance->finalization_barrier);
+    MSG_barrier_destroy(instance->finalization_barrier);
   }
   xbt_dict_free(&smpi_instances);
 }

@@ -54,7 +54,6 @@
 #include "xbt/backtrace.h"
 #include "xbt/backtrace.hpp"
 #include "xbt/str.h"
-#include "xbt/synchro_core.h"
 #include "src/xbt_modinter.h"       /* backtrace initialization headers */
 
 #include "src/xbt/ex_interface.h"

@@ -7,9 +7,9 @@
 #include <xbt/ex.hpp>
 
 #include "msg_private.h"
-#include "xbt/sysdep.h"
-#include "xbt/synchro_core.h"
 #include "xbt/log.h"
+#include "xbt/synchro.h"
+#include "xbt/sysdep.h"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_synchro, msg, "Logging specific to MSG (synchro)");
 
@@ -63,21 +63,43 @@ int MSG_sem_would_block(msg_sem_t sem) {
   return simcall_sem_would_block(sem);
 }
 
+/*-**** barrier related functions ****-*/
+typedef struct s_msg_bar {
+  xbt_mutex_t mutex;
+  xbt_cond_t cond;
+  unsigned int arrived_processes;
+  unsigned int expected_processes;
+} s_msg_bar_t;
+
 /** @brief Initializes a barrier, with count elements */
 msg_bar_t MSG_barrier_init(unsigned int count) {
-   return (msg_bar_t)xbt_barrier_init(count);
+  msg_bar_t bar           = xbt_new0(s_msg_bar, 1);
+  bar->expected_processes = count;
+  bar->arrived_processes  = 0;
+  bar->mutex              = xbt_mutex_init();
+  bar->cond               = xbt_cond_init();
+  return bar;
 }
 
 /** @brief Initializes a barrier, with count elements */
 void MSG_barrier_destroy(msg_bar_t bar) {
-  xbt_barrier_destroy((xbt_bar_t)bar);
+  xbt_mutex_destroy(bar->mutex);
+  xbt_cond_destroy(bar->cond);
+  xbt_free(bar);
 }
 
 /** @brief Performs a barrier already initialized */
 int MSG_barrier_wait(msg_bar_t bar) {
-  if(xbt_barrier_wait((xbt_bar_t)bar) == XBT_BARRIER_SERIAL_PROCESS)
+  xbt_mutex_acquire(bar->mutex);
+  if (++bar->arrived_processes == bar->expected_processes) {
+    xbt_cond_broadcast(bar->cond);
+    xbt_mutex_release(bar->mutex);
+    bar->arrived_processes = 0;
     return MSG_BARRIER_SERIAL_PROCESS;
-  else
-    return 0;
+  }
+
+  xbt_cond_wait(bar->cond, bar->mutex);
+  xbt_mutex_release(bar->mutex);
+  return 0;
 }
 /**@}*/

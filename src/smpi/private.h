@@ -7,15 +7,15 @@
 #ifndef SMPI_PRIVATE_H
 #define SMPI_PRIVATE_H
 
+#include "simgrid/simix.h"
+#include "smpi/smpi.h"
+#include "src/include/smpi/smpi_interface.h"
+#include "src/instr/instr_private.h"
 #include "src/internal_config.h"
 #include "xbt.h"
 #include "xbt/base.h"
+#include "xbt/synchro.h"
 #include "xbt/xbt_os_time.h"
-#include "xbt/synchro_core.h"
-#include "simgrid/simix.h"
-#include "src/include/smpi/smpi_interface.h"
-#include "smpi/smpi.h"
-#include "src/instr/instr_private.h"
 
 SG_BEGIN_DECL()
 
@@ -180,7 +180,8 @@ XBT_PRIVATE int smpi_process_get_sampling();
 XBT_PRIVATE void smpi_process_set_replaying(bool s);
 XBT_PRIVATE bool smpi_process_get_replaying();
 
-XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm, xbt_bar_t*bar);
+XBT_PRIVATE void smpi_deployment_register_process(const char* instance_id, int rank, int index, MPI_Comm** comm,
+                                                  msg_bar_t* bar);
 XBT_PRIVATE void smpi_deployment_cleanup_instances();
 
 XBT_PRIVATE void smpi_comm_copy_buffer_callback(smx_activity_t comm, void *buff, size_t buff_size);
