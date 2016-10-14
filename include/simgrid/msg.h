@@ -509,31 +509,8 @@ XBT_PUBLIC(void) MSG_vm_restore(msg_vm_t vm);
 XBT_PUBLIC(msg_host_t) MSG_vm_get_pm(msg_vm_t vm);
 XBT_PUBLIC(void) MSG_vm_set_bound(msg_vm_t vm, double bound);
 
-/* TODO: do we need this? */
-// XBT_PUBLIC(xbt_dynar_t) MSG_vms_as_dynar();
 
-/*
-void* MSG_process_get_property(msg_process_t, char* key)
-void MSG_process_set_property(msg_process_t, char* key, void* data)
-void MSG_vm_set_property(msg_vm_t, char* key, void* data)
-
-void MSG_vm_setMemoryUsed(msg_vm_t vm, double size);
-void MSG_vm_setCpuUsed(msg_vm_t vm, double inducedLoad);
-  // inducedLoad: a percentage (>100 if it loads more than one core;
-  //                            <100 if it's not CPU intensive)
-  // Required contraints:
-  //   HOST_Power >= CpuUsedVm (\forall VM) + CpuUsedTask (\forall Task)
-  //   VM_coreAmount >= Load of all tasks
-*/
-
-  /*
-xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_host(msg_host_t)
-xbt_dynar_t<msg_vm_t> MSG_vm_get_list_from_hosts(msg_dynar_t<msg_host_t>)
-+ filtering functions on dynars
-*/
 #include "simgrid/instr.h"
-
-
 
 /* ****************************************************************************************** */
 /* Used only by the bindings -- unclean pimple, please ignore if you're not writing a binding */
