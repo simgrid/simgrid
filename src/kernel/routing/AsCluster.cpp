@@ -14,10 +14,10 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_cluster, surf, "Routing part of surf"
 namespace simgrid {
 namespace kernel {
 namespace routing {
-  AsCluster::AsCluster(const char*name)
-    : AsImpl(name)
-  {}
-  AsCluster::~AsCluster()=default;
+AsCluster::AsCluster(As* father, const char* name) : AsImpl(father, name)
+{
+}
+AsCluster::~AsCluster() = default;
 
 void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {

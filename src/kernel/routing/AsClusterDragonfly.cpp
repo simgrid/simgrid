@@ -16,8 +16,8 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsClusterDragonfly::AsClusterDragonfly(const char*name)
-  : AsCluster(name) {
+AsClusterDragonfly::AsClusterDragonfly(As* father, const char* name) : AsCluster(father, name)
+{
 }
 
 AsClusterDragonfly::~AsClusterDragonfly() {

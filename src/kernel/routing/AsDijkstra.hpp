@@ -33,7 +33,7 @@ namespace routing {
 /** Dijkstra routing data: fast initialization, slow lookup, small memory requirements, shortest path routing only */
 class XBT_PRIVATE AsDijkstra : public AsRoutedGraph {
 public:
-  AsDijkstra(const char*name, bool cached);
+  AsDijkstra(As* father, const char* name, bool cached);
   void seal() override;
 
   ~AsDijkstra() override;

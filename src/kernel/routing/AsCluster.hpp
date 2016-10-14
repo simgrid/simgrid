@@ -16,7 +16,7 @@ namespace routing {
 
 class XBT_PRIVATE AsCluster: public AsImpl {
 public:
-  explicit AsCluster(const char*name);
+  explicit AsCluster(As* father, const char* name);
   ~AsCluster() override;
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

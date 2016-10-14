@@ -26,7 +26,7 @@ namespace routing {
 XBT_PUBLIC_CLASS AsImpl : public s4u::As {
   friend simgrid::kernel::routing::RoutingPlatf;
 protected:
-  explicit AsImpl(const char *name);
+  explicit AsImpl(As * father, const char* name);
   ~AsImpl() override;
   
 public:

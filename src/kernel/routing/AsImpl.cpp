@@ -14,11 +14,14 @@ namespace simgrid {
   namespace kernel {
   namespace routing {
 
-    AsImpl::AsImpl(const char *name) : As(name) { }
-    AsImpl::~AsImpl() = default;
+  AsImpl::AsImpl(As* father, const char* name) : As(father, name)
+  {
+  }
+  AsImpl::~AsImpl() = default;
 
-    xbt_dynar_t AsImpl::getOneLinkRoutes() {
-      return nullptr;
+  xbt_dynar_t AsImpl::getOneLinkRoutes()
+  {
+    return nullptr;
     }
 
     /** @brief Get the common ancestor and its first childs in each line leading to src and dst */

@@ -23,8 +23,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsClusterFatTree::AsClusterFatTree(const char*name)
-  : AsCluster(name)
+AsClusterFatTree::AsClusterFatTree(As* father, const char* name) : AsCluster(father, name)
 {
   XBT_DEBUG("Creating a new fat tree.");
 }

@@ -17,9 +17,8 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_as,"S4U autonomous systems");
 namespace simgrid {
   namespace s4u {
 
-    As::As(const char *name)
-    : name_(xbt_strdup(name))
-    {
+  As::As(As* father, const char* name) : father_(father), name_(xbt_strdup(name))
+  {
     }
     void As::seal()
     {

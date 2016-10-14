@@ -14,7 +14,7 @@ namespace routing {
 
 class XBT_PRIVATE AsRoutedGraph : public AsImpl {
 public:
-  explicit AsRoutedGraph(const char*name);
+  explicit AsRoutedGraph(As* father, const char* name);
   ~AsRoutedGraph() override;
 
   xbt_dynar_t getOneLinkRoutes() override;

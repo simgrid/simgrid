@@ -15,7 +15,7 @@ namespace routing {
 /** No specific routing. Mainly useful with the constant network model */
 class XBT_PRIVATE AsNone : public AsImpl {
 public:
-  explicit AsNone(const char*name);
+  explicit AsNone(As* father, const char* name);
   ~AsNone() override;
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;

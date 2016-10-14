@@ -306,8 +306,7 @@ AsDijkstra::~AsDijkstra()
 
 /* Creation routing model functions */
 
-AsDijkstra::AsDijkstra(const char*name, bool cached)
-  : AsRoutedGraph(name)
+AsDijkstra::AsDijkstra(As* father, const char* name, bool cached) : AsRoutedGraph(father, name)
 {
   if (cached)
     routeCache_ = xbt_dict_new_homogeneous(&route_cache_elem_free);

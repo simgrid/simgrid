@@ -14,7 +14,7 @@ namespace routing {
 
     class XBT_PRIVATE AsClusterTorus : public AsCluster {
     public:
-      explicit AsClusterTorus(const char*name);
+      explicit AsClusterTorus(As* father, const char* name);
       ~AsClusterTorus() override;
       void create_links_for_node(sg_platf_cluster_cbarg_t cluster, int id, int rank, int position) override;
       void getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t into, double *latency) override;

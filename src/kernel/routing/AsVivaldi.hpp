@@ -15,7 +15,7 @@ namespace routing {
 /* This derivates from cluster because each host has a private link */
 class XBT_PRIVATE AsVivaldi: public AsCluster {
 public:
-  explicit AsVivaldi(const char *name);
+  explicit AsVivaldi(As* father, const char* name);
   ~AsVivaldi() override;
 
   xbt_dynar_t getOneLinkRoutes() override {return nullptr;};

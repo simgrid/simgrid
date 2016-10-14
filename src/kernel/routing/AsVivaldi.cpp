@@ -48,8 +48,7 @@ namespace routing {
 
     return res;
   }
-  AsVivaldi::AsVivaldi(const char *name)
-    : AsCluster(name)
+  AsVivaldi::AsVivaldi(As* father, const char* name) : AsCluster(father, name)
   {}
 
 AsVivaldi::~AsVivaldi() {}

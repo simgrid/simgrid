@@ -19,8 +19,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsFloyd::AsFloyd(const char*name)
-  : AsRoutedGraph(name)
+AsFloyd::AsFloyd(As* father, const char* name) : AsRoutedGraph(father, name)
 {
   predecessorTable_ = nullptr;
   costTable_ = nullptr;

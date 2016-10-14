@@ -27,8 +27,8 @@ inline unsigned int *rankId_to_coords(int rankId, xbt_dynar_t dimensions)
 namespace simgrid {
   namespace kernel {
   namespace routing {
-    AsClusterTorus::AsClusterTorus(const char*name)
-      : AsCluster(name) {
+  AsClusterTorus::AsClusterTorus(As* father, const char* name) : AsCluster(father, name)
+  {
     }
     AsClusterTorus::~AsClusterTorus() {
       xbt_dynar_free(&dimensions_);

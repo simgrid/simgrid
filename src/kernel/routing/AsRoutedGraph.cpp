@@ -25,9 +25,8 @@ void routing_route_free(sg_platf_route_cbarg_t route)
 namespace simgrid {
 namespace kernel {
 namespace routing {
-  
-AsRoutedGraph::AsRoutedGraph(const char*name)
-  : AsImpl(name)
+
+AsRoutedGraph::AsRoutedGraph(As* father, const char* name) : AsImpl(father, name)
 {
 }
 

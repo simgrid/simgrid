@@ -15,8 +15,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-AsNone::AsNone(const char*name)
-  : AsImpl(name)
+AsNone::AsNone(As* father, const char* name) : AsImpl(father, name)
 {}
 
 AsNone::~AsNone()

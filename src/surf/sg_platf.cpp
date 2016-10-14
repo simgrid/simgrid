@@ -821,16 +821,36 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
   /* search the routing model */
   simgrid::kernel::routing::AsImpl *new_as = nullptr;
   switch(AS->routing){
-    case A_surfxml_AS_routing_Cluster:        new_as = new simgrid::kernel::routing::AsCluster(AS->id);        break;
-    case A_surfxml_AS_routing_ClusterDragonfly:   new_as = new simgrid::kernel::routing::AsClusterDragonfly(AS->id);   break;
-    case A_surfxml_AS_routing_ClusterTorus:   new_as = new simgrid::kernel::routing::AsClusterTorus(AS->id);   break;
-    case A_surfxml_AS_routing_ClusterFatTree: new_as = new simgrid::kernel::routing::AsClusterFatTree(AS->id); break;
-    case A_surfxml_AS_routing_Dijkstra:       new_as = new simgrid::kernel::routing::AsDijkstra(AS->id, 0);    break;
-    case A_surfxml_AS_routing_DijkstraCache:  new_as = new simgrid::kernel::routing::AsDijkstra(AS->id, 1);    break;
-    case A_surfxml_AS_routing_Floyd:          new_as = new simgrid::kernel::routing::AsFloyd(AS->id);          break;
-    case A_surfxml_AS_routing_Full:           new_as = new simgrid::kernel::routing::AsFull(AS->id);           break;
-    case A_surfxml_AS_routing_None:           new_as = new simgrid::kernel::routing::AsNone(AS->id);           break;
-    case A_surfxml_AS_routing_Vivaldi:        new_as = new simgrid::kernel::routing::AsVivaldi(AS->id);        break;
+    case A_surfxml_AS_routing_Cluster:
+      new_as = new simgrid::kernel::routing::AsCluster(current_routing, AS->id);
+      break;
+    case A_surfxml_AS_routing_ClusterDragonfly:
+      new_as = new simgrid::kernel::routing::AsClusterDragonfly(current_routing, AS->id);
+      break;
+    case A_surfxml_AS_routing_ClusterTorus:
+      new_as = new simgrid::kernel::routing::AsClusterTorus(current_routing, AS->id);
+      break;
+    case A_surfxml_AS_routing_ClusterFatTree:
+      new_as = new simgrid::kernel::routing::AsClusterFatTree(current_routing, AS->id);
+      break;
+    case A_surfxml_AS_routing_Dijkstra:
+      new_as = new simgrid::kernel::routing::AsDijkstra(current_routing, AS->id, 0);
+      break;
+    case A_surfxml_AS_routing_DijkstraCache:
+      new_as = new simgrid::kernel::routing::AsDijkstra(current_routing, AS->id, 1);
+      break;
+    case A_surfxml_AS_routing_Floyd:
+      new_as = new simgrid::kernel::routing::AsFloyd(current_routing, AS->id);
+      break;
+    case A_surfxml_AS_routing_Full:
+      new_as = new simgrid::kernel::routing::AsFull(current_routing, AS->id);
+      break;
+    case A_surfxml_AS_routing_None:
+      new_as = new simgrid::kernel::routing::AsNone(current_routing, AS->id);
+      break;
+    case A_surfxml_AS_routing_Vivaldi:
+      new_as = new simgrid::kernel::routing::AsVivaldi(current_routing, AS->id);
+      break;
     default:                                  xbt_die("Not a valid model!");                        break;
   }
 
@@ -841,10 +861,7 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
     routing_platf->root_ = new_as;
   } else if (current_routing != nullptr && routing_platf->root_ != nullptr) {
 
-    xbt_assert(!xbt_dict_get_or_null(current_routing->children(), AS->id),
-               "The AS \"%s\" already exists", AS->id);
-    /* it is a part of the tree */
-    new_as->father_ = current_routing;
+    xbt_assert(!xbt_dict_get_or_null(current_routing->children(), AS->id), "The AS '%s' already exists", AS->id);
     /* set the father behavior */
     if (current_routing->hierarchy_ == simgrid::kernel::routing::AsImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::AsImpl::RoutingMode::recursive;

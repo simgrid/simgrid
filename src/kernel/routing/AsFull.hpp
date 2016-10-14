@@ -15,8 +15,7 @@ namespace routing {
 /** Full routing: fast, large memory requirements, fully expressive */
 class XBT_PRIVATE AsFull: public AsRoutedGraph {
 public:
-
-  explicit AsFull(const char*name);
+  explicit AsFull(As* father, const char* name);
   void seal() override;
   ~AsFull() override;
 
