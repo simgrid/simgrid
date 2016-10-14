@@ -172,8 +172,8 @@ deadlock.
 
 Instead, you should use the synchronization mechanism provided by the
 simulation kernel. This could with a SimGrid mutex, a SimGrid
-condition variables or a SimGrid semaphore, as described in \ref
-XBT_synchro (in Java, only semaphores are available). But actually,
+condition variables or a SimGrid semaphore, as described in @ref
+msg_synchro (in Java, only semaphores are available). But actually,
 many synchronization patterns can be encoded with communication on
 mailboxes. Typically, if you need one process to notify another one,
 you could use a condition variable or a semphore, but sending a
