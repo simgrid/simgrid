@@ -192,17 +192,6 @@ XBT_PUBLIC(surf_action_t) surf_model_extract_failed_action_set(surf_model_t mode
  */
 XBT_PUBLIC(int) surf_model_running_action_set_size(surf_model_t model);
 
-/** @brief Create a communication between two hosts
- *
- * @param model The model which handle the communication
- * @param src The source host
- * @param dst The destination host
- * @param size The amount of data (in bytes) needed to transfer
- * @param rate [description]
- * @return The action corresponding to the communication
- */
-XBT_PUBLIC(surf_action_t) surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate);
-
 /** @brief Create a sleep action on the given host */
 XBT_PUBLIC(surf_action_t) surf_host_sleep(sg_host_t host, double duration);
 

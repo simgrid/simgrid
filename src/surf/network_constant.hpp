@@ -29,7 +29,7 @@ namespace simgrid {
       NetworkConstantModel()  : NetworkModel() { };
       ~NetworkConstantModel() override;
 
-      Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
+      Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) override;
       double nextOccuringEvent(double now) override;
       void updateActionsState(double now, double delta) override;
 

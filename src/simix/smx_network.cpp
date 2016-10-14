@@ -20,6 +20,7 @@
 #include "simgrid/s4u/Mailbox.hpp"
 
 #include "src/kernel/activity/SynchroComm.hpp"
+#include "src/surf/network_interface.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_network, simix, "SIMIX network-related synchronization");
 
@@ -546,7 +547,7 @@ static inline void SIMIX_comm_start(smx_activity_t synchro)
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro, sg_host_get_name(sender), sg_host_get_name(receiver));
 
-    comm->surf_comm = surf_network_model_communicate(surf_network_model, sender, receiver, comm->task_size, comm->rate);
+    comm->surf_comm = surf_network_model->communicate(sender, receiver, comm->task_size, comm->rate);
     comm->surf_comm->setData(synchro);
     comm->state = SIMIX_RUNNING;
 

@@ -239,14 +239,14 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
   xbt_free(host_list);
 }
 
-Action *NetworkL07Model::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate)
+Action* NetworkL07Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   sg_host_t*host_list = xbt_new0(sg_host_t, 2);
   double *flops_amount = xbt_new0(double, 2);
   double *bytes_amount = xbt_new0(double, 4);
 
-  host_list[0] = sg_host_by_name(src->name());
-  host_list[1] = sg_host_by_name(dst->name());
+  host_list[0]    = src;
+  host_list[1]    = dst;
   bytes_amount[1] = size;
 
   return hostModel_->executeParallelTask(2, host_list, flops_amount, bytes_amount, rate);

@@ -96,8 +96,7 @@ namespace simgrid {
     simgrid::xbt::signal<void(Link*)> Link::onStateChange;
 
     simgrid::xbt::signal<void(NetworkAction*, Action::State, Action::State)> networkActionStateChangedCallbacks;
-    simgrid::xbt::signal<void(NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> Link::onCommunicate;
-
+    simgrid::xbt::signal<void(NetworkAction*, s4u::Host* src, s4u::Host* dst)> Link::onCommunicate;
   }
 }
 

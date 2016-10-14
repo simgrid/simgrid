@@ -1,18 +1,17 @@
 /* A few basic tests for the surf library                                   */
 
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2015. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <stdio.h>
-#include "simgrid/sg_config.h"
-#include "simgrid/host.h"
 #include "surf/surf.h"
-#include "src/surf/surf_interface.hpp"
+#include "simgrid/s4u/host.hpp"
+#include "simgrid/sg_config.h"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
+#include "src/surf/surf_interface.hpp"
+#include <stdio.h>
 
 #include "xbt/log.h"
 XBT_LOG_NEW_DEFAULT_CATEGORY(surf_test, "Messages specific for surf example");
@@ -71,7 +70,7 @@ int main(int argc, char **argv)
 
 
   /* Let's do something on it */
-  surf_network_model_communicate(surf_network_model, hostA, hostB, 150.0, -1.0);
+  surf_network_model->communicate(hostA, hostB, 150.0, -1.0);
 
   surf_solve(-1.0);
   do {

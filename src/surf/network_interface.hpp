@@ -77,7 +77,7 @@ namespace simgrid {
        * unlimited.
        * @return The action representing the communication
        */
-      virtual Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate)=0;
+      virtual Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) = 0;
 
       /** @brief Function pointer to the function to use to solve the lmm_system_t
        *
@@ -162,10 +162,8 @@ namespace simgrid {
       static simgrid::xbt::signal<void(surf::Link*)> onStateChange;
 
       /** @brief Callback signal fired when a communication starts
-       *  Signature: `void(NetworkAction *action, RoutingEdge *src, RoutingEdge *dst)` */
-      static simgrid::xbt::signal<void(surf::NetworkAction*, kernel::routing::NetCard *src, kernel::routing::NetCard *dst)> onCommunicate;
-
-
+       *  Signature: `void(NetworkAction *action, host *src, host *dst)` */
+      static simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
 
       /** @brief Get the bandwidth in bytes per second of current Link */
       virtual double getBandwidth();

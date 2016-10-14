@@ -77,7 +77,7 @@ namespace simgrid {
       }
     }
 
-    Action *NetworkConstantModel::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate)
+    Action* NetworkConstantModel::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
     {
       NetworkConstantAction *action = new NetworkConstantAction(this, size, sg_latency_factor);
 

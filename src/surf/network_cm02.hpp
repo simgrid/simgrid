@@ -45,7 +45,7 @@ namespace simgrid {
           xbt_dict_t properties) override;
       void updateActionsStateLazy(double now, double delta) override;
       void updateActionsStateFull(double now, double delta) override;
-      Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate) override;
+      Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
       virtual void gapAppend(double size, const Link* link, NetworkAction* action);
     protected:
       bool haveGap_ = false;
@@ -72,7 +72,7 @@ namespace simgrid {
      * Action *
      **********/
     class NetworkCm02Action : public NetworkAction {
-      friend Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate);
+      friend Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate);
       friend NetworkSmpiModel;
     public:
       NetworkCm02Action(Model *model, double cost, bool failed)

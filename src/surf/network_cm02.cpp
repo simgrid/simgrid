@@ -6,8 +6,9 @@
 
 #include <algorithm>
 
-#include "network_cm02.hpp"
 #include "maxmin_private.hpp"
+#include "network_cm02.hpp"
+#include "simgrid/s4u/host.hpp"
 #include "simgrid/sg_config.h"
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
@@ -285,8 +286,7 @@ void NetworkCm02Model::updateActionsStateFull(double now, double delta)
   }
 }
 
-Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst,
-    double size, double rate)
+Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   int failed = 0;
   double bandwidth_bound;
@@ -296,12 +296,12 @@ Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::rou
 
   std::vector<Link*> *route = new std::vector<Link*>();
 
-  XBT_IN("(%s,%s,%g,%g)", src->name(), dst->name(), size, rate);
+  XBT_IN("(%s,%s,%g,%g)", src->name().c_str(), dst->name().c_str(), size, rate);
 
-  routing_platf->getRouteAndLatency(src, dst, route, &latency);
-  xbt_assert(! route->empty() || latency,
+  routing_platf->getRouteAndLatency(src->pimpl_netcard, dst->pimpl_netcard, route, &latency);
+  xbt_assert(!route->empty() || latency,
              "You're trying to send data from %s to %s but there is no connecting path between these two hosts.",
-             src->name(), dst->name());
+             src->name().c_str(), dst->name().c_str());
 
   for (auto link: *route)
     if (link->isOff())
@@ -309,7 +309,7 @@ Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::rou
 
   if (sg_network_crosstraffic == 1) {
     back_route = new std::vector<Link*>();
-    routing_platf->getRouteAndLatency(dst, src, back_route, nullptr);
+    routing_platf->getRouteAndLatency(dst->pimpl_netcard, src->pimpl_netcard, back_route, nullptr);
     for (auto link: *back_route)
       if (link->isOff())
         failed = 1;
@@ -342,7 +342,8 @@ Action *NetworkCm02Model::communicate(kernel::routing::NetCard *src, kernel::rou
                "Using a model with a gap (e.g., SMPI) with a platform without links (e.g. vivaldi)!!!");
 
     gapAppend(size, route->at(0), action);
-    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)", action, src->name(), dst->name(), action->senderGap_, action->latency_);
+    XBT_DEBUG("Comm %p: %s -> %s gap=%f (lat=%f)", action, src->name().c_str(), dst->name().c_str(), action->senderGap_,
+              action->latency_);
   }
 
   constraints_per_variable = route->size();

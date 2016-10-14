@@ -176,10 +176,6 @@ int surf_model_running_action_set_size(surf_model_t model){
   return model->getRunningActionSet()->size();
 }
 
-surf_action_t surf_network_model_communicate(surf_network_model_t model, sg_host_t src, sg_host_t dst, double size, double rate){
-  return model->communicate(src->pimpl_netcard, dst->pimpl_netcard, size, rate);
-}
-
 surf_action_t surf_host_sleep(sg_host_t host, double duration){
   return host->pimpl_cpu->sleep(duration);
 }
