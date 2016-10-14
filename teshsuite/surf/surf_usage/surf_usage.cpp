@@ -46,12 +46,8 @@ int main(int argc, char **argv)
 
   XBT_DEBUG("CPU model: %p", surf_cpu_model_pm);
   XBT_DEBUG("Network model: %p", surf_network_model);
-  sg_host_t hostA = sg_host_by_name("Cpu A");
-  sg_host_t hostB = sg_host_by_name("Cpu B");
-
-  /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", sg_host_get_name(hostA), hostA);
-  XBT_DEBUG("%s : %p", sg_host_get_name(hostB), hostB);
+  simgrid::s4u::Host* hostA = sg_host_by_name("Cpu A");
+  simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 
   /* Let's do something on it */
   simgrid::surf::Action *actionA = hostA->pimpl_cpu->execution_start(1000.0);

@@ -542,8 +542,8 @@ static inline void SIMIX_comm_start(smx_activity_t synchro)
   /* If both the sender and the receiver are already there, start the communication */
   if (synchro->state == SIMIX_READY) {
 
-    sg_host_t sender   = comm->src_proc->host;
-    sg_host_t receiver = comm->dst_proc->host;
+    simgrid::s4u::Host* sender   = comm->src_proc->host;
+    simgrid::s4u::Host* receiver = comm->dst_proc->host;
 
     XBT_DEBUG("Starting communication %p from '%s' to '%s'", synchro, sg_host_get_name(sender), sg_host_get_name(receiver));
 

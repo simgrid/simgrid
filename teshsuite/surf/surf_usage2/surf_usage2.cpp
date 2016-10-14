@@ -29,12 +29,8 @@ int main(int argc, char **argv)
   parse_platform_file(argv[1]);
 
   /*********************** HOST ***********************************/
-  sg_host_t hostA = sg_host_by_name("Cpu A");
-  sg_host_t hostB = sg_host_by_name("Cpu B");
-
-  /* Let's check that those two processors exist */
-  XBT_DEBUG("%s : %p", sg_host_get_name(hostA), hostA);
-  XBT_DEBUG("%s : %p", sg_host_get_name(hostB), hostB);
+  simgrid::s4u::Host* hostA = sg_host_by_name("Cpu A");
+  simgrid::s4u::Host* hostB = sg_host_by_name("Cpu B");
 
   /* Let's do something on it */
   hostA->pimpl_cpu->execution_start(1000.0);

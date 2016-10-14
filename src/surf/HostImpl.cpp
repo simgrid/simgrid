@@ -67,11 +67,8 @@ void HostModel::adjustWeightOfDummyCpuActions()
   }
 }
 
-Action *HostModel::executeParallelTask(int host_nb,
-    sg_host_t *host_list,
-    double *flops_amount,
-    double *bytes_amount,
-    double rate)
+Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_list, double* flops_amount,
+                                       double* bytes_amount, double rate)
 {
 #define cost_or_zero(array,pos) ((array)?(array)[pos]:0.0)
   Action *action =nullptr;
