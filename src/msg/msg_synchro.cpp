@@ -91,7 +91,8 @@ void MSG_barrier_destroy(msg_bar_t bar) {
 /** @brief Performs a barrier already initialized */
 int MSG_barrier_wait(msg_bar_t bar) {
   xbt_mutex_acquire(bar->mutex);
-  if (++bar->arrived_processes == bar->expected_processes) {
+  bar->arrived_processes++;
+  if (bar->arrived_processes == bar->expected_processes) {
     xbt_cond_broadcast(bar->cond);
     xbt_mutex_release(bar->mutex);
     bar->arrived_processes = 0;
