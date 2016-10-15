@@ -811,9 +811,6 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
     surf_config_models_setup();
   }
 
-  xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, AS->id, ROUTING_ASR_LEVEL),
-      "Refusing to create a second AS called \"%s\".", AS->id);
-
   _sg_cfg_init_status = 2; /* HACK: direct access to the global controlling the level of configuration to prevent
                             * any further config now that we created some real content */
 
@@ -859,14 +856,14 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
 
   if (current_routing == nullptr && routing_platf->root_ == nullptr) { /* it is the first one */
     routing_platf->root_ = new_as;
-  } else if (current_routing != nullptr && routing_platf->root_ != nullptr) {
 
-    xbt_assert(!xbt_dict_get_or_null(current_routing->children(), AS->id), "The AS '%s' already exists", AS->id);
+  } else if (current_routing != nullptr && routing_platf->root_ != nullptr) {
     /* set the father behavior */
     if (current_routing->hierarchy_ == simgrid::kernel::routing::AsImpl::RoutingMode::unset)
       current_routing->hierarchy_ = simgrid::kernel::routing::AsImpl::RoutingMode::recursive;
     /* add to the sons dictionary */
     xbt_dict_set(current_routing->children(), AS->id, (void *) new_as, nullptr);
+
   } else {
     THROWF(arg_error, 0, "All defined components must belong to a AS");
   }

@@ -16,6 +16,9 @@ namespace simgrid {
 
   AsImpl::AsImpl(As* father, const char* name) : As(father, name)
   {
+    xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL),
+               "Refusing to create a second AS called \"%s\".", name);
+
     netcard_ = new simgrid::kernel::routing::NetCardImpl(name, simgrid::kernel::routing::NetCard::Type::As,
                                                          static_cast<AsImpl*>(father));
     xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, (void*)netcard_);

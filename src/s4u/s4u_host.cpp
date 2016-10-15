@@ -40,6 +40,7 @@ simgrid::xbt::signal<void(Host&)> Host::onStateChange;
 Host::Host(const char* name)
   : name_(name)
 {
+  xbt_dict_set(host_list, name, this, nullptr);
 }
 
 Host::~Host() {
@@ -68,10 +69,9 @@ Host* Host::by_name_or_null(const char* name)
 Host* Host::by_name_or_create(const char* name)
 {
   Host* host = by_name_or_null(name);
-  if (host == nullptr) {
+  if (host == nullptr)
     host = new Host(name);
-    xbt_dict_set(host_list, name, host, nullptr);
-  }
+
   return host;
 }
 
