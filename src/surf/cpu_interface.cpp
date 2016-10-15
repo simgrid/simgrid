@@ -12,8 +12,6 @@
 XBT_LOG_EXTERNAL_CATEGORY(surf_kernel);
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_cpu, surf, "Logging specific to the SURF cpu module");
 
-void_f_void_t surf_cpu_model_init_preparse = nullptr;
-
 simgrid::surf::CpuModel *surf_cpu_model_pm;
 simgrid::surf::CpuModel *surf_cpu_model_vm;
 

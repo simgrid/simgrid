@@ -425,8 +425,6 @@ XBT_PUBLIC(const char * ) surf_storage_get_host(surf_resource_t resource);
 /* Implementations of model object */
 /**************************************/
 
-XBT_PUBLIC_DATA(void_f_void_t) surf_cpu_model_init_preparse;
-
 /** \ingroup SURF_models
  *  \brief The CPU model object for the physical machine layer
  */

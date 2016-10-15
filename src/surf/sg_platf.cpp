@@ -679,74 +679,46 @@ void sg_platf_end() {
 /* Pick the right models for CPU, net and host, and call their model_init_preparse */
 static void surf_config_models_setup()
 {
-  const char *host_model_name;
-  const char *vm_model_name;
-  int host_id = -1;
-  int vm_id = -1;
-  char *network_model_name = nullptr;
-  char *cpu_model_name = nullptr;
-  int storage_id = -1;
-  char *storage_model_name = nullptr;
+  const char* host_model_name    = xbt_cfg_get_string("host/model");
+  const char* vm_model_name      = xbt_cfg_get_string("vm/model");
+  const char* network_model_name = xbt_cfg_get_string("network/model");
+  const char* cpu_model_name     = xbt_cfg_get_string("cpu/model");
+  const char* storage_model_name = xbt_cfg_get_string("storage/model");
 
-  host_model_name    = xbt_cfg_get_string("host/model");
-  vm_model_name      = xbt_cfg_get_string("vm/model");
-  network_model_name = xbt_cfg_get_string("network/model");
-  cpu_model_name     = xbt_cfg_get_string("cpu/model");
-  storage_model_name = xbt_cfg_get_string("storage/model");
-
-  /* Check whether we use a net/cpu model differing from the default ones, in which case
-   * we should switch to the "compound" host model to correctly dispatch stuff to
-   * the right net/cpu models.
-   */
-
-  if ((!xbt_cfg_is_default_value("network/model") ||
-       !xbt_cfg_is_default_value("cpu/model")) &&
+  /* The compound host model is needed when using non-default net/cpu models */
+  if ((!xbt_cfg_is_default_value("network/model") || !xbt_cfg_is_default_value("cpu/model")) &&
       xbt_cfg_is_default_value("host/model")) {
     host_model_name = "compound";
     xbt_cfg_set_string("host/model", host_model_name);
   }
 
   XBT_DEBUG("host model: %s", host_model_name);
-  host_id = find_model_description(surf_host_model_description, host_model_name);
   if (!strcmp(host_model_name, "compound")) {
-    int network_id = -1;
-    int cpu_id = -1;
+    xbt_assert(cpu_model_name, "Set a cpu model to use with the 'compound' host model");
+    xbt_assert(network_model_name, "Set a network model to use with the 'compound' host model");
 
-    xbt_assert(cpu_model_name,
-                "Set a cpu model to use with the 'compound' host model");
+    int cpu_id = find_model_description(surf_cpu_model_description, cpu_model_name);
+    surf_cpu_model_description[cpu_id].model_init_preparse();
 
-    xbt_assert(network_model_name,
-                "Set a network model to use with the 'compound' host model");
-
-    if(surf_cpu_model_init_preparse){
-      surf_cpu_model_init_preparse();
-    } else {
-      cpu_id =
-          find_model_description(surf_cpu_model_description, cpu_model_name);
-      surf_cpu_model_description[cpu_id].model_init_preparse();
-    }
-
-    network_id =
-        find_model_description(surf_network_model_description,
-                               network_model_name);
+    int network_id = find_model_description(surf_network_model_description, network_model_name);
     surf_network_model_description[network_id].model_init_preparse();
   }
 
   XBT_DEBUG("Call host_model_init");
+  int host_id = find_model_description(surf_host_model_description, host_model_name);
   surf_host_model_description[host_id].model_init_preparse();
 
   XBT_DEBUG("Call vm_model_init");
-  vm_id = find_model_description(surf_vm_model_description, vm_model_name);
+  int vm_id = find_model_description(surf_vm_model_description, vm_model_name);
   surf_vm_model_description[vm_id].model_init_preparse();
 
   XBT_DEBUG("Call storage_model_init");
-  storage_id = find_model_description(surf_storage_model_description, storage_model_name);
+  int storage_id = find_model_description(surf_storage_model_description, storage_model_name);
   surf_storage_model_description[storage_id].model_init_preparse();
-
 }
 
 /**
- * \brief Make a new routing component to the platform
+ * \brief Add an AS to the platform
  *
  * Add a new autonomous system to the platform. Any elements (such as host,
  * router or sub-AS) added after this call and before the corresponding call
