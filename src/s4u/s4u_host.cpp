@@ -20,7 +20,7 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
-xbt_dict_t host_list = nullptr; // FIXME: make it a static field of Host
+xbt_dict_t host_list = nullptr; // FIXME: move it to Engine
 
 int MSG_HOST_LEVEL = -1;
 int USER_HOST_LEVEL = -1;

@@ -80,42 +80,34 @@ static void ns3_add_netcard(simgrid::kernel::routing::NetCard* netcard)
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
-  const char *groups = nullptr;
-
-  int start, end, i;
-  unsigned int iter;
-
   xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), nullptr);
 
-  char *router_id,*host_id;
-
   xbt_dynar_t radical_elements = xbt_str_split(cluster->radical, ",");
+  unsigned int iter;
+  const char* groups = nullptr;
   xbt_dynar_foreach(radical_elements, iter, groups) {
     xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
 
-    switch (xbt_dynar_length(radical_ends)) {
-    case 1:
-      start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
+    if (xbt_dynar_length(radical_ends) == 1) {
+      int start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char*));
       xbt_dynar_push_as(tab_elements_num, int, start);
-      router_id = bprintf("ns3_%s%d%s", cluster->prefix, start, cluster->suffix);
+      char* router_id = bprintf("ns3_%s%d%s", cluster->prefix, start, cluster->suffix);
       simgrid::s4u::Host::by_name_or_create(router_id)->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
       XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
       free(router_id);
-      break;
 
-    case 2:
-      start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-      end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
-      for (i = start; i <= end; i++){
+    } else if (xbt_dynar_length(radical_ends) == 2) {
+      int start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char*));
+      int end   = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char*));
+      for (int i = start; i <= end; i++) {
         xbt_dynar_push_as(tab_elements_num, int, i);
-        router_id = bprintf("ns3_%s%d%s", cluster->prefix, i, cluster->suffix);
+        char* router_id = bprintf("ns3_%s%d%s", cluster->prefix, i, cluster->suffix);
         simgrid::s4u::Host::by_name_or_create(router_id)->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
         XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
         free(router_id);
       }
-      break;
 
-    default:
+    } else {
       XBT_DEBUG("Malformed radical");
     }
   }
@@ -127,8 +119,8 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   char * bw =  bprintf("%fBps", cluster->bw);
 
   xbt_dynar_foreach(tab_elements_num,cpt,elmts) {
-    host_id   = bprintf("%s%d%s", cluster->prefix, elmts, cluster->suffix);
-    router_id = bprintf("ns3_%s%d%s", cluster->prefix, elmts, cluster->suffix);
+    char* host_id   = bprintf("%s%d%s", cluster->prefix, elmts, cluster->suffix);
+    char* router_id = bprintf("ns3_%s%d%s", cluster->prefix, elmts, cluster->suffix);
     XBT_DEBUG("Create link from '%s' to '%s'",host_id,router_id);
 
     ns3_node_t host_src = ns3_find_host(host_id);
