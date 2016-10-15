@@ -1,5 +1,4 @@
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -24,8 +23,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
 
-int NS3_EXTENSION_ID;
-
 xbt_dynar_t IPV4addr = xbt_dynar_new(sizeof(char*),free);
 
 /*****************
@@ -45,36 +42,26 @@ static int number_of_links = 1;
 static int number_of_networks = 1;
 static int port_number = 1025; //Port number is limited from 1025 to 65 000
 
+HostNs3::HostNs3()
+{
+  ns3::Ptr<ns3::Node> node = ns3::CreateObject<ns3::Node>(0);
+  stack.Install(node);
+  nodes.Add(node);
+  node_num = number_of_nodes++;
+}
+
 /*************
  * Callbacks *
  *************/
 
 static void ns3_add_host(simgrid::s4u::Host& host)
 {
-  const char* id = host.name().c_str();
-  XBT_DEBUG("NS3_ADD_HOST '%s'", id);
-
-  ns3_node_t ns3host  = xbt_new0(s_ns3_node_t,1);
-  ns3::Ptr<ns3::Node> node =  ns3::CreateObject<ns3::Node> (0);
-  stack.Install(node);
-  nodes.Add(node);
-  ns3host->node_num = number_of_nodes ++;
-
-  host.extension_set(NS3_EXTENSION_ID, ns3host);
+  host.extension_set<HostNs3>(new HostNs3());
 }
 
 static void ns3_add_netcard(simgrid::kernel::routing::NetCard* netcard)
 {
-  const char* id = netcard->name();
-
-  ns3_node_t ns3netcard  = xbt_new0(s_ns3_node_t,1);
-  XBT_DEBUG("Interface ns3 add netcard[%d] '%s'",number_of_nodes,id);
-  ns3::Ptr<ns3::Node> node =  ns3::CreateObject<ns3::Node> (0);
-  stack.Install(node);
-  nodes.Add(node);
-  ns3netcard->node_num = number_of_nodes++;
-
-  xbt_lib_set(as_router_lib, id, NS3_ASR_LEVEL, ns3netcard );
+  xbt_lib_set(as_router_lib, netcard->name(), NS3_ASR_LEVEL, new HostNs3());
 }
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
@@ -84,16 +71,15 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   char* bw  = bprintf("%fBps", cluster->bw);
 
   for (int i : *cluster->radicals) {
-    char* router_id = bprintf("ns3_%s%d%s", cluster->prefix, i, cluster->suffix);
-    simgrid::s4u::Host::by_name_or_create(router_id)->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
-    XBT_DEBUG("NS3_ADD_ROUTER '%s'", router_id);
+    char* router_id = bprintf("router_%s%d%s", cluster->prefix, i, cluster->suffix);
+
+    simgrid::s4u::Host* router = simgrid::s4u::Host::by_name_or_create(router_id);
+    ns3_add_host(*router);
 
     // Create private link
     char* host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
-    XBT_DEBUG("Create link from '%s' to '%s'",host_id,router_id);
-
-    ns3_node_t host_src = ns3_find_host(host_id);
-    ns3_node_t host_dst = ns3_find_host(router_id);
+    HostNs3* host_src = ns3_find_host(host_id);
+    HostNs3* host_dst = router->extension<HostNs3>();
 
     xbt_assert(host_src && host_dst, "\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
 
@@ -108,9 +94,8 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   //Create link backbone
   lat = bprintf("%fs", cluster->bb_lat);
   bw =  bprintf("%fBps", cluster->bb_bw);
-  ns3_add_cluster(bw,lat,cluster->id);
+  ns3_add_cluster(cluster->id, bw, lat);
   xbt_free(lat);
-
   xbt_free(bw);
 }
 
@@ -144,12 +129,12 @@ static void create_ns3_topology(void)
       XBT_DEBUG("\tLink (%s) bdw:%s lat:%s", link->getName(), link_bdw, link_lat);
 
       //create link ns3
-      ns3_node_t host_src = ns3_find_host(src);
+      HostNs3* host_src = ns3_find_host(src);
       if (!host_src)
-        host_src = static_cast<ns3_node_t>(xbt_lib_get_or_null(as_router_lib,src,NS3_ASR_LEVEL));
-      ns3_node_t host_dst = ns3_find_host(dst);
+        host_src        = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, src, NS3_ASR_LEVEL));
+      HostNs3* host_dst = ns3_find_host(dst);
       if(!host_dst)
-        host_dst = static_cast<ns3_node_t>(xbt_lib_get_or_null(as_router_lib,dst,NS3_ASR_LEVEL));
+        host_dst = static_cast<HostNs3*>(xbt_lib_get_or_null(as_router_lib, dst, NS3_ASR_LEVEL));
 
       if (!host_src || !host_dst)
           xbt_die("\tns3_add_link from %d to %d",host_src->node_num,host_dst->node_num);
@@ -181,6 +166,8 @@ static simgrid::config::Flag<std::string> ns3_tcp_model("ns3/TcpModel",
   "The ns3 tcp model can be : NewReno or Reno or Tahoe",
   "default");
 
+simgrid::xbt::Extension<simgrid::s4u::Host, HostNs3> HostNs3::EXTENSION_ID;
+
 namespace simgrid {
 namespace surf {
 
@@ -193,7 +180,8 @@ NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);
   simgrid::surf::on_postparse.connect(&create_ns3_topology);
 
-  NS3_EXTENSION_ID = simgrid::s4u::Host::extension_create(xbt_free_f);
+  HostNs3::EXTENSION_ID = simgrid::s4u::Host::extension_create<HostNs3>();
+
   NS3_ASR_LEVEL  = xbt_lib_add_level(as_router_lib, xbt_free_f);
 
   LogComponentEnable("UdpEchoClientApplication", ns3::LOG_LEVEL_INFO);
@@ -365,7 +353,6 @@ int NetworkNS3Action::unref()
 }
 }
 
-
 void ns3_simulator(double maxSeconds){
   if (maxSeconds > 0.0) // If there is a maximum amount of time to run
     ns3::Simulator::Stop(ns3::Seconds(maxSeconds));
@@ -434,28 +421,11 @@ void ns3_initialize(const char* TcpProtocol){
   xbt_die("The ns3/TcpModel must be : NewReno or Reno or Tahoe");
 }
 
-void * ns3_add_host_cluster(const char * id)
+void ns3_add_cluster(const char* id, char* bw, char* lat)
 {
-  ns3_node_t host  = xbt_new0(s_ns3_node_t,1);
-  XBT_DEBUG("Interface ns3 add host[%d] '%s'",number_of_nodes,id);
-  ns3::Ptr<ns3::Node> node =  ns3::CreateObject<ns3::Node> (0);
-  stack.Install(node);
-  Cluster_nodes.Add(node);
-  nodes.Add(node);
-  host->node_num = number_of_nodes;
-  number_of_nodes++;
-  return host;
-}
-
-void ns3_add_cluster(char * bw,char * lat,const char *id)
-{
-  XBT_DEBUG("cluster_id: %s",id);
-  XBT_DEBUG("bw: %s lat: %s",bw,lat);
-  XBT_DEBUG("Number of %s nodes: %d",id,Cluster_nodes.GetN() - number_of_clusters_nodes);
-
   ns3::NodeContainer Nodes;
 
-  for(unsigned int i = number_of_clusters_nodes; i < Cluster_nodes.GetN() ; i++){
+  for (unsigned int i = number_of_clusters_nodes; i < Cluster_nodes.GetN(); i++) {
     Nodes.Add(Cluster_nodes.Get(i));
     XBT_DEBUG("Add node %d to cluster",i);
   }
