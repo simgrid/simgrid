@@ -16,6 +16,10 @@ namespace simgrid {
 
   AsImpl::AsImpl(As* father, const char* name) : As(father, name)
   {
+    netcard_ = new simgrid::kernel::routing::NetCardImpl(name, simgrid::kernel::routing::NetCard::Type::As,
+                                                         static_cast<AsImpl*>(father));
+    xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, (void*)netcard_);
+    XBT_DEBUG("Having set name '%s' id '%d'", name, netcard_->id());
   }
   AsImpl::~AsImpl() = default;
 

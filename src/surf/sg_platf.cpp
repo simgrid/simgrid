@@ -856,8 +856,6 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
       break;
   }
 
-  /* make a new routing component */
-  simgrid::kernel::routing::NetCard *netcard = new simgrid::kernel::routing::NetCardImpl(new_as->name(), simgrid::kernel::routing::NetCard::Type::As, current_routing);
 
   if (current_routing == nullptr && routing_platf->root_ == nullptr) { /* it is the first one */
     routing_platf->root_ = new_as;
@@ -873,12 +871,8 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
     THROWF(arg_error, 0, "All defined components must belong to a AS");
   }
 
-  xbt_lib_set(as_router_lib, netcard->name(), ROUTING_ASR_LEVEL, (void *) netcard);
-  XBT_DEBUG("Having set name '%s' id '%d'", new_as->name(), netcard->id());
-
   /* set the new current component of the tree */
   current_routing = new_as;
-  current_routing->netcard_ = netcard;
 
   simgrid::kernel::routing::asCreatedCallbacks(new_as);
   if (TRACE_is_enabled())
