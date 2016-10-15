@@ -80,47 +80,16 @@ static void ns3_add_netcard(simgrid::kernel::routing::NetCard* netcard)
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
 static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
 {
-  xbt_dynar_t tab_elements_num = xbt_dynar_new(sizeof(int), nullptr);
+  char* lat = bprintf("%fs", cluster->lat);
+  char* bw  = bprintf("%fBps", cluster->bw);
 
-  xbt_dynar_t radical_elements = xbt_str_split(cluster->radical, ",");
-  unsigned int iter;
-  const char* groups = nullptr;
-  xbt_dynar_foreach(radical_elements, iter, groups) {
-    xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
+  for (int i : *cluster->radicals) {
+    char* router_id = bprintf("ns3_%s%d%s", cluster->prefix, i, cluster->suffix);
+    simgrid::s4u::Host::by_name_or_create(router_id)->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
+    XBT_DEBUG("NS3_ADD_ROUTER '%s'", router_id);
 
-    if (xbt_dynar_length(radical_ends) == 1) {
-      int start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char*));
-      xbt_dynar_push_as(tab_elements_num, int, start);
-      char* router_id = bprintf("ns3_%s%d%s", cluster->prefix, start, cluster->suffix);
-      simgrid::s4u::Host::by_name_or_create(router_id)->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
-      XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
-      free(router_id);
-
-    } else if (xbt_dynar_length(radical_ends) == 2) {
-      int start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char*));
-      int end   = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char*));
-      for (int i = start; i <= end; i++) {
-        xbt_dynar_push_as(tab_elements_num, int, i);
-        char* router_id = bprintf("ns3_%s%d%s", cluster->prefix, i, cluster->suffix);
-        simgrid::s4u::Host::by_name_or_create(router_id)->extension_set(NS3_EXTENSION_ID, ns3_add_host_cluster(router_id));
-        XBT_DEBUG("NS3_ADD_ROUTER '%s'",router_id);
-        free(router_id);
-      }
-
-    } else {
-      XBT_DEBUG("Malformed radical");
-    }
-  }
-
-  //Create links
-  unsigned int cpt;
-  int elmts;
-  char * lat = bprintf("%fs", cluster->lat);
-  char * bw =  bprintf("%fBps", cluster->bw);
-
-  xbt_dynar_foreach(tab_elements_num,cpt,elmts) {
-    char* host_id   = bprintf("%s%d%s", cluster->prefix, elmts, cluster->suffix);
-    char* router_id = bprintf("ns3_%s%d%s", cluster->prefix, elmts, cluster->suffix);
+    // Create private link
+    char* host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
     XBT_DEBUG("Create link from '%s' to '%s'",host_id,router_id);
 
     ns3_node_t host_src = ns3_find_host(host_id);
@@ -135,14 +104,13 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   }
   xbt_free(lat);
   xbt_free(bw);
-  xbt_dynar_free(&tab_elements_num);
-
 
   //Create link backbone
   lat = bprintf("%fs", cluster->bb_lat);
   bw =  bprintf("%fBps", cluster->bb_bw);
   ns3_add_cluster(bw,lat,cluster->id);
   xbt_free(lat);
+
   xbt_free(bw);
 }
 

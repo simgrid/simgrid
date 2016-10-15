@@ -11,6 +11,7 @@
 
 #include "simgrid/host.h"
 #include "src/surf/xml/platf.hpp"
+#include <vector>
 
 SG_BEGIN_DECL()
 #include "src/surf/xml/simgrid_dtd.h"
@@ -100,7 +101,7 @@ typedef struct s_sg_platf_cluster_cbarg {
   const char* id;
   const char* prefix;
   const char* suffix;
-  const char* radical;
+  std::vector<int>* radicals;
   double speed;
   int core_amount;
   double bw;
@@ -123,7 +124,7 @@ typedef struct s_sg_platf_cabinet_cbarg {
   const char* id;
   const char* prefix;
   const char* suffix;
-  const char* radical;
+  std::vector<int>* radicals;
   double speed;
   double bw;
   double lat;

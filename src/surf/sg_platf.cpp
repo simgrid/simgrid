@@ -50,43 +50,6 @@ simgrid::xbt::signal<void(void)> on_postparse;
 
 static int surf_parse_models_setup_already_called = 0;
 
-/* Turn something like "1-4,6,9-11" into the vector {1,2,3,4,6,9,10,11} */
-static std::vector<int> *explodesRadical(const char*radicals){
-  std::vector<int> *exploded = new std::vector<int>();
-  char *groups;
-  unsigned int iter;
-
-  //Make all hosts
-  xbt_dynar_t radical_elements = xbt_str_split(radicals, ",");
-  xbt_dynar_foreach(radical_elements, iter, groups) {
-
-    xbt_dynar_t radical_ends = xbt_str_split(groups, "-");
-    int start = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 0, char *));
-    int end=0;
-
-    switch (xbt_dynar_length(radical_ends)) {
-    case 1:
-      end = start;
-      break;
-    case 2:
-      end = surf_parse_get_int(xbt_dynar_get_as(radical_ends, 1, char *));
-      break;
-    default:
-      surf_parse_error("Malformed radical: %s", groups);
-      break;
-    }
-
-    for (int i = start; i <= end; i++)
-      exploded->push_back( i );
-
-    xbt_dynar_free(&radical_ends);
-  }
-  xbt_dynar_free(&radical_elements);
-
-  return exploded;
-}
-
-
 /** The current AS in the parsing */
 static simgrid::kernel::routing::AsImpl *current_routing = nullptr;
 static simgrid::kernel::routing::AsImpl *routing_get_current()
@@ -281,8 +244,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     current_as->hasLimiter_ = 1;
   }
 
-  std::vector<int> *radicals = explodesRadical(cluster->radical);
-  for (int i : *radicals) {
+  for (int i : *cluster->radicals) {
     char * host_id = bprintf("%s%d%s", cluster->prefix, i, cluster->suffix);
     char * link_id = bprintf("%s_link_%d", cluster->id, i);
 
@@ -366,7 +328,6 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
     xbt_free(host_id);
     rankId++;
   }
-  delete radicals;
 
   // Add a router. It is magically used thanks to the way in which surf_routing_cluster is written,
   // and it's very useful to connect clusters together
@@ -402,6 +363,7 @@ void sg_platf_new_cluster(sg_platf_cluster_cbarg_t cluster)
   sg_platf_new_AS_seal();
 
   simgrid::surf::on_cluster(cluster);
+  delete cluster->radicals;
 }
 void routing_cluster_add_backbone(simgrid::surf::Link* bb) {
   simgrid::kernel::routing::AsCluster *cluster = dynamic_cast<simgrid::kernel::routing::AsCluster*>(current_routing);
@@ -415,9 +377,7 @@ void routing_cluster_add_backbone(simgrid::surf::Link* bb) {
 
 void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 {
-  std::vector<int> *radicals = explodesRadical(cabinet->radical);
-
-  for (int radical : *radicals) {
+  for (int radical : *cabinet->radicals) {
     char *hostname = bprintf("%s%d%s", cabinet->prefix, radical, cabinet->suffix);
     s_sg_platf_host_cbarg_t host;
     memset(&host, 0, sizeof(host));
@@ -447,7 +407,7 @@ void sg_platf_new_cabinet(sg_platf_cabinet_cbarg_t cabinet)
 
     free(hostname);
   }
-  delete(radicals);
+  delete cabinet->radicals;
 }
 
 void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
