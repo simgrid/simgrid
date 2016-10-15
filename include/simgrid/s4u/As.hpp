@@ -58,15 +58,16 @@ public:
   void addBypassRoute(sg_platf_route_cbarg_t e_route);
 
 protected:
-  As* father_          = nullptr;
-  char *name_ = nullptr;
-  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr); // sub-ASes
   std::vector<kernel::routing::NetCard*> vertices_; // our content, as known to our graph routing algorithm (maps vertexId -> vertex)
 
-  std::map<std::pair<std::string, std::string>, std::vector<surf::Link*>*> bypassRoutes_; // srcName x dstName -> route
-
 private:
+  As* father_ = nullptr;
+  char* name_ = nullptr;
+
   bool sealed_ = false; // We cannot add more content when sealed
+
+  std::map<std::pair<std::string, std::string>, std::vector<surf::Link*>*> bypassRoutes_; // srcName x dstName -> route
+  xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr);                               // sub-ASes
 };
 
 }}; // Namespace simgrid::s4u

@@ -851,7 +851,9 @@ simgrid::s4u::As * sg_platf_new_AS_begin(sg_platf_AS_cbarg_t AS)
     case A_surfxml_AS_routing_Vivaldi:
       new_as = new simgrid::kernel::routing::AsVivaldi(current_routing, AS->id);
       break;
-    default:                                  xbt_die("Not a valid model!");                        break;
+    default:
+      xbt_die("Not a valid model!");
+      break;
   }
 
   /* make a new routing component */
