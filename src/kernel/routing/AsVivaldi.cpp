@@ -72,7 +72,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     if(info.linkUp) {
       route->link_list->push_back(info.linkUp);
       if (lat)
-        *lat += info.linkUp->getLatency();
+        *lat += info.linkUp->latency();
     }
   }
   if (privateLinks_.size() >dst->id()) {
@@ -80,7 +80,7 @@ void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     if(info.linkDown) {
       route->link_list->push_back(info.linkDown);
       if (lat)
-        *lat += info.linkDown->getLatency();
+        *lat += info.linkDown->latency();
     }
   }
 

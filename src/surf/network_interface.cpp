@@ -31,10 +31,10 @@ extern "C" {
     return link->sharingPolicy();
   }
   double sg_link_bandwidth(Link *link){
-    return link->getBandwidth();
+    return link->bandwidth();
   }
   double sg_link_latency(Link *link){
-    return link->getLatency();
+    return link->latency();
   }
   void* sg_link_data(Link *link) {
     return link->getData();
@@ -153,8 +153,8 @@ namespace simgrid {
     {
       links->insert({name, this});
 
-      m_latency.scale = 1;
-      m_bandwidth.scale = 1;
+      latency_.scale   = 1;
+      bandwidth_.scale = 1;
       XBT_DEBUG("Create link '%s'",name);
     }
 
@@ -165,8 +165,8 @@ namespace simgrid {
       if (strcmp(name,"__loopback__"))
         xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
 
-      m_latency.scale = 1;
-      m_bandwidth.scale = 1;
+      latency_.scale   = 1;
+      bandwidth_.scale = 1;
 
       links->insert({name, this});
       XBT_DEBUG("Create link '%s'",name);
@@ -195,14 +195,14 @@ namespace simgrid {
       return lmm_constraint_used(getModel()->getMaxminSystem(), getConstraint());
     }
 
-    double Link::getLatency()
+    double Link::latency()
     {
-      return m_latency.peak * m_latency.scale;
+      return latency_.peak * latency_.scale;
     }
 
-    double Link::getBandwidth()
+    double Link::bandwidth()
     {
-      return m_bandwidth.peak * m_bandwidth.scale;
+      return bandwidth_.peak * bandwidth_.scale;
     }
 
     int Link::sharingPolicy()
@@ -223,18 +223,18 @@ namespace simgrid {
       }
     }
     void Link::setStateTrace(tmgr_trace_t trace) {
-      xbt_assert(m_stateEvent==nullptr,"Cannot set a second state trace to Link %s", getName());
-      m_stateEvent = future_evt_set->add_trace(trace, 0.0, this);
+      xbt_assert(stateEvent_ == nullptr, "Cannot set a second state trace to Link %s", getName());
+      stateEvent_ = future_evt_set->add_trace(trace, 0.0, this);
     }
     void Link::setBandwidthTrace(tmgr_trace_t trace)
     {
-      xbt_assert(m_bandwidth.event==nullptr,"Cannot set a second bandwidth trace to Link %s", getName());
-      m_bandwidth.event = future_evt_set->add_trace(trace, 0.0, this);
+      xbt_assert(bandwidth_.event == nullptr, "Cannot set a second bandwidth trace to Link %s", getName());
+      bandwidth_.event = future_evt_set->add_trace(trace, 0.0, this);
     }
     void Link::setLatencyTrace(tmgr_trace_t trace)
     {
-      xbt_assert(m_latency.event==nullptr,"Cannot set a second latency trace to Link %s", getName());
-      m_latency.event = future_evt_set->add_trace(trace, 0.0, this);
+      xbt_assert(latency_.event == nullptr, "Cannot set a second latency trace to Link %s", getName());
+      latency_.event = future_evt_set->add_trace(trace, 0.0, this);
     }
 
 

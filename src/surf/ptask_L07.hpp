@@ -90,8 +90,8 @@ public:
   ~LinkL07(){ };
   bool isUsed() override;
   void apply_event(tmgr_trace_iterator_t event, double value) override;
-  void updateBandwidth(double value) override;
-  void updateLatency(double value) override;
+  void setBandwidth(double value) override;
+  void setLatency(double value) override;
 };
 
 /**********

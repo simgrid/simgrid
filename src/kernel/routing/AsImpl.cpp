@@ -190,7 +190,7 @@ namespace simgrid {
         for (surf::Link *link : *bypassed_route) {
           links->push_back(link);
           if (latency)
-            *latency += link->getLatency();
+            *latency += link->latency();
         }
         return;
       }

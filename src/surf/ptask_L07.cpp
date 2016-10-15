@@ -279,8 +279,8 @@ LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props, dou
              e_surf_link_sharing_policy_t policy)
  : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth))
 {
-  m_bandwidth.peak = bandwidth;
-  m_latency.peak = latency;
+  bandwidth_.peak = bandwidth;
+  latency_.peak   = latency;
 
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(getConstraint());
@@ -354,39 +354,39 @@ void CpuL07::apply_event(tmgr_trace_iterator_t triggered, double value){
 
 void LinkL07::apply_event(tmgr_trace_iterator_t triggered, double value) {
   XBT_DEBUG("Updating link %s (%p) with value=%f", getName(), this, value);
-  if (triggered == m_bandwidth.event) {
-    updateBandwidth(value);
-    tmgr_trace_event_unref(&m_bandwidth.event);
+  if (triggered == bandwidth_.event) {
+    setBandwidth(value);
+    tmgr_trace_event_unref(&bandwidth_.event);
 
-  } else if (triggered == m_latency.event) {
-    updateLatency(value);
-    tmgr_trace_event_unref(&m_latency.event);
+  } else if (triggered == latency_.event) {
+    setLatency(value);
+    tmgr_trace_event_unref(&latency_.event);
 
-  } else if (triggered == m_stateEvent) {
+  } else if (triggered == stateEvent_) {
     if (value > 0)
       turnOn();
     else
       turnOff();
-    tmgr_trace_event_unref(&m_stateEvent);
+    tmgr_trace_event_unref(&stateEvent_);
 
   } else {
     xbt_die("Unknown event ! \n");
   }
 }
 
-void LinkL07::updateBandwidth(double value)
+void LinkL07::setBandwidth(double value)
 {
-  m_bandwidth.peak = value;
-  lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), m_bandwidth.peak * m_bandwidth.scale);
+  bandwidth_.peak = value;
+  lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(), bandwidth_.peak * bandwidth_.scale);
 }
 
-void LinkL07::updateLatency(double value)
+void LinkL07::setLatency(double value)
 {
   lmm_variable_t var = nullptr;
   L07Action *action;
   lmm_element_t elem = nullptr;
 
-  m_latency.peak = value;
+  latency_.peak = value;
   while ((var = lmm_get_var_from_cnst(getModel()->getMaxminSystem(), getConstraint(), &elem))) {
     action = static_cast<L07Action*>(lmm_variable_id(var));
     action->updateBound();

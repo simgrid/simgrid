@@ -94,7 +94,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
   if(source->id == destination->id && this->hasLoopback_) {
     into->link_list->push_back(source->loopback);
     if(latency) {
-      *latency += source->loopback->getLatency();
+      *latency += source->loopback->latency();
     }
     return;
   }
@@ -114,7 +114,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
     into->link_list->push_back(currentNode->parents[d]->upLink);
 
     if(latency) {
-      *latency += currentNode->parents[d]->upLink->getLatency();
+      *latency += currentNode->parents[d]->upLink->latency();
     }
 
     if (this->hasLimiter_) {
@@ -134,7 +134,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
          destination->label[currentNode->level - 1]) {
         into->link_list->push_back(currentNode->children[i]->downLink);
         if(latency) {
-          *latency += currentNode->children[i]->downLink->getLatency();
+          *latency += currentNode->children[i]->downLink->latency();
         }
         currentNode = currentNode->children[i]->downNode;
         if (this->hasLimiter_) {

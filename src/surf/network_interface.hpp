@@ -166,16 +166,16 @@ namespace simgrid {
       static simgrid::xbt::signal<void(surf::NetworkAction*, s4u::Host* src, s4u::Host* dst)> onCommunicate;
 
       /** @brief Get the bandwidth in bytes per second of current Link */
-      virtual double getBandwidth();
+      virtual double bandwidth();
 
       /** @brief Update the bandwidth in bytes per second of current Link */
-      virtual void updateBandwidth(double value)=0;
+      virtual void setBandwidth(double value) = 0;
 
       /** @brief Get the latency in seconds of current Link */
-      virtual double getLatency();
+      virtual double latency();
 
       /** @brief Update the latency in seconds of current Link */
-      virtual void updateLatency(double value)=0;
+      virtual void setLatency(double value) = 0;
 
       /** @brief The sharing policy is a @{link e_surf_link_sharing_policy_t::EType} (0: FATPIPE, 1: SHARED, 2: FULLDUPLEX) */
       virtual int sharingPolicy();
@@ -190,9 +190,9 @@ namespace simgrid {
       virtual void setBandwidthTrace(tmgr_trace_t trace); /*< setup the trace file with bandwidth events (peak speed changes due to external load). Trace must contain percentages (value between 0 and 1). */
       virtual void setLatencyTrace(tmgr_trace_t trace); /*< setup the trace file with latency events (peak latency changes due to external load). Trace must contain absolute values */
 
-      tmgr_trace_iterator_t m_stateEvent = nullptr;
-      s_surf_metric_t m_latency = {1.0,0,nullptr};
-      s_surf_metric_t m_bandwidth = {1.0,0,nullptr};
+      tmgr_trace_iterator_t stateEvent_ = nullptr;
+      s_surf_metric_t latency_          = {1.0, 0, nullptr};
+      s_surf_metric_t bandwidth_        = {1.0, 0, nullptr};
 
       /* User data */
         public:

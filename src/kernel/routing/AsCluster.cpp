@@ -31,7 +31,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
       info = privateLinks_.at(src->id() * linkCountPerNode_);
       route->link_list->push_back(info.linkUp);
       if (lat)
-        *lat += info.linkUp->getLatency();
+        *lat += info.linkUp->latency();
       return;
     }
 
@@ -45,7 +45,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     if (info.linkUp) {         // link up
       route->link_list->push_back(info.linkUp);
       if (lat)
-        *lat += info.linkUp->getLatency();
+        *lat += info.linkUp->latency();
     }
 
   }
@@ -53,7 +53,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   if (backbone_) {
     route->link_list->push_back(backbone_);
     if (lat)
-      *lat += backbone_->getLatency();
+      *lat += backbone_->latency();
   }
 
   if (! dst->isRouter()) {    // No specific link for router
@@ -62,7 +62,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     if (info.linkDown) {       // link down
       route->link_list->push_back(info.linkDown);
       if (lat)
-        *lat += info.linkDown->getLatency();
+        *lat += info.linkDown->latency();
     }
     if (hasLimiter_){          // limiter for receiver
         info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);

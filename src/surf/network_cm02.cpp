@@ -327,10 +327,10 @@ Action* NetworkCm02Model::communicate(s4u::Host* src, s4u::Host* dst, double siz
   bandwidth_bound = -1.0;
   if (sg_weight_S_parameter > 0)
     for (auto link : *route)
-      action->weight_ += sg_weight_S_parameter / link->getBandwidth();
+      action->weight_ += sg_weight_S_parameter / link->bandwidth();
 
   for (auto link : *route) {
-    double bb = bandwidthFactor(size) * link->getBandwidth();
+    double bb       = bandwidthFactor(size) * link->bandwidth();
     bandwidth_bound = (bandwidth_bound < 0.0) ? bb : std::min(bandwidth_bound, bb);
   }
 
@@ -400,11 +400,11 @@ NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_
     lmm_system_t system)
 : Link(model, name, props, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth))
 {
-  m_bandwidth.scale = 1.0;
-  m_bandwidth.peak = bandwidth;
+  bandwidth_.scale = 1.0;
+  bandwidth_.peak  = bandwidth;
 
-  m_latency.scale = 1.0;
-  m_latency.peak = latency;
+  latency_.scale = 1.0;
+  latency_.peak  = latency;
 
   if (policy == SURF_LINK_FATPIPE)
     lmm_constraint_shared(getConstraint());
@@ -418,15 +418,15 @@ void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
 {
 
   /* Find out which of my iterators was triggered, and react accordingly */
-  if (triggered == m_bandwidth.event) {
-    updateBandwidth(value);
-    tmgr_trace_event_unref(&m_bandwidth.event);
+  if (triggered == bandwidth_.event) {
+    setBandwidth(value);
+    tmgr_trace_event_unref(&bandwidth_.event);
 
-  } else if (triggered == m_latency.event) {
-    updateLatency(value);
-    tmgr_trace_event_unref(&m_latency.event);
+  } else if (triggered == latency_.event) {
+    setLatency(value);
+    tmgr_trace_event_unref(&latency_.event);
 
-  } else if (triggered == m_stateEvent) {
+  } else if (triggered == stateEvent_) {
     if (value > 0)
       turnOn();
     else {
@@ -445,7 +445,7 @@ void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
         }
       }
     }
-    tmgr_trace_event_unref(&m_stateEvent);
+    tmgr_trace_event_unref(&stateEvent_);
   } else {
     xbt_die("Unknown event!\n");
   }
@@ -454,16 +454,17 @@ void NetworkCm02Link::apply_event(tmgr_trace_iterator_t triggered, double value)
        getConstraint());
 }
 
-void NetworkCm02Link::updateBandwidth(double value) {
+void NetworkCm02Link::setBandwidth(double value)
+{
 
-  m_bandwidth.peak = value;
+  bandwidth_.peak = value;
 
   lmm_update_constraint_bound(getModel()->getMaxminSystem(), getConstraint(),
-      sg_bandwidth_factor * (m_bandwidth.peak * m_bandwidth.scale));
-  TRACE_surf_link_set_bandwidth(surf_get_clock(), getName(), sg_bandwidth_factor * m_bandwidth.peak * m_bandwidth.scale);
+                              sg_bandwidth_factor * (bandwidth_.peak * bandwidth_.scale));
+  TRACE_surf_link_set_bandwidth(surf_get_clock(), getName(), sg_bandwidth_factor * bandwidth_.peak * bandwidth_.scale);
 
   if (sg_weight_S_parameter > 0) {
-    double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (m_bandwidth.peak * m_bandwidth.scale);
+    double delta = sg_weight_S_parameter / value - sg_weight_S_parameter / (bandwidth_.peak * bandwidth_.scale);
 
     lmm_variable_t var;
     lmm_element_t elem = nullptr, nextelem = nullptr;
@@ -477,14 +478,15 @@ void NetworkCm02Link::updateBandwidth(double value) {
   }
 }
 
-void NetworkCm02Link::updateLatency(double value){
-  double delta = value - m_latency.peak;
+void NetworkCm02Link::setLatency(double value)
+{
+  double delta           = value - latency_.peak;
   lmm_variable_t var = nullptr;
   lmm_element_t elem = nullptr;
   lmm_element_t nextelem = nullptr;
   int numelem = 0;
 
-  m_latency.peak = value;
+  latency_.peak = value;
 
   while ((var = lmm_get_var_from_cnst_safe(getModel()->getMaxminSystem(), getConstraint(), &elem, &nextelem, &numelem))) {
     NetworkCm02Action *action = (NetworkCm02Action*) lmm_variable_id(var);

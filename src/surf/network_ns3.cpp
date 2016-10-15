@@ -122,8 +122,8 @@ static void create_ns3_topology(void)
     if (strcmp(src,dst) && (already_seen.find(link) == already_seen.end())) {
       already_seen.insert(link);
       XBT_DEBUG("Route from '%s' to '%s' with link '%s'", src, dst, link->getName());
-      char * link_bdw = bprintf("%fBps", link->getBandwidth());
-      char * link_lat = bprintf("%fs", link->getLatency());
+      char* link_bdw = bprintf("%fBps", link->bandwidth());
+      char* link_lat = bprintf("%fs", link->latency());
 
       //   XBT_DEBUG("src (%s), dst (%s), src_id = %d, dst_id = %d",src,dst, src_id, dst_id);
       XBT_DEBUG("\tLink (%s) bdw:%s lat:%s", link->getName(), link_bdw, link_lat);
@@ -286,8 +286,8 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 LinkNS3::LinkNS3(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency)
  : Link(model, name, props)
 {
-  m_bandwidth.peak = bandwidth;
-  m_latency.peak = latency;
+  bandwidth_.peak = bandwidth;
+  latency_.peak   = latency;
 
   Link::onCreation(this);
 }

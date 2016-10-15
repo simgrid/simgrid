@@ -77,7 +77,7 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
     for (auto link : *e_route->link_list) {
       res->link_list->push_back(link);
       if (lat)
-        *lat += static_cast<Link*>(link)->getLatency();
+        *lat += static_cast<Link*>(link)->latency();
     }
   }
 }

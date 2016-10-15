@@ -36,8 +36,8 @@ public:
   ~LinkNS3();
 
   void apply_event(tmgr_trace_iterator_t event, double value) override;
-  void updateBandwidth(double value) override {THROW_UNIMPLEMENTED;}
-  void updateLatency(double value) override {THROW_UNIMPLEMENTED;}
+  void setBandwidth(double value) override { THROW_UNIMPLEMENTED; }
+  void setLatency(double value) override { THROW_UNIMPLEMENTED; }
   void setBandwidthTrace(tmgr_trace_t trace) override;
   void setLatencyTrace(tmgr_trace_t trace) override;
 };

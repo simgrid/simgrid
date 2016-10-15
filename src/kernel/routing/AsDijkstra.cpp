@@ -171,7 +171,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     for (auto link: *e_route->link_list) {
       route->link_list->insert(route->link_list->begin(), link);
       if (lat)
-        *lat += static_cast<Link*>(link)->getLatency();
+        *lat += static_cast<Link*>(link)->latency();
     }
 
   }
@@ -267,7 +267,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
       for (auto link : *e_route_as_to_as) {
         route->link_list->insert(pos, link);
         if (lat)
-          *lat += link->getLatency();
+          *lat += link->latency();
         pos++;
       }
     }
@@ -275,7 +275,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     for (auto link: *e_route->link_list) {
       route->link_list->insert(route->link_list->begin(), link);
       if (lat)
-        *lat += static_cast<Link*>(link)->getLatency();
+        *lat += static_cast<Link*>(link)->latency();
     }
     size++;
   }

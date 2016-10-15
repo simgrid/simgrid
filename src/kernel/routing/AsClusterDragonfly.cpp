@@ -249,7 +249,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
      route->link_list->push_back(info.linkUp);
      if (latency)
-       *latency += info.linkUp->getLatency();
+       *latency += info.linkUp->latency();
      return;
   }
 
@@ -265,7 +265,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   //node->router local link
   route->link_list->push_back(myRouter->myNodes_[myCoords[3]*numLinksperLink_]);
   if(latency) {
-    *latency += myRouter->myNodes_[myCoords[3]*numLinksperLink_]->getLatency();
+    *latency += myRouter->myNodes_[myCoords[3] * numLinksperLink_]->latency();
   }
 
   if (hasLimiter_) {    // limiter for sender
@@ -283,7 +283,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
         //go to the nth router in our chassis
         route->link_list->push_back(currentRouter->greenLinks_[targetCoords[0]]);
         if(latency) {
-          *latency += currentRouter->greenLinks_[targetCoords[0]]->getLatency();
+          *latency += currentRouter->greenLinks_[targetCoords[0]]->latency();
         }
         currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[1] * numBladesPerChassis_+targetCoords[0]];
       }
@@ -292,7 +292,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
         //go to the first chassis of our group
         route->link_list->push_back(currentRouter->blackLinks_[0]);
         if(latency) {
-          *latency += currentRouter->blackLinks_[0]->getLatency();
+          *latency += currentRouter->blackLinks_[0]->latency();
         }
         currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[0]];
       }
@@ -300,7 +300,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
       //go to destination group - the only optical hop 
       route->link_list->push_back(currentRouter->blueLinks_[0]);
       if(latency) {
-        *latency += currentRouter->blueLinks_[0]->getLatency();
+        *latency += currentRouter->blueLinks_[0]->latency();
       }
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[0]];
     }
@@ -310,7 +310,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
     if(targetRouter->blade_ != currentRouter->blade_){
       route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]]);
       if(latency) {
-        *latency += currentRouter->greenLinks_[targetCoords[2]]->getLatency();
+        *latency += currentRouter->greenLinks_[targetCoords[2]]->latency();
       }
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[2]];
     }
@@ -319,7 +319,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
     if(targetRouter->chassis_ != currentRouter->chassis_){
       route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]]);
       if(latency) {
-        *latency += currentRouter->blackLinks_[targetCoords[1]]->getLatency();
+        *latency += currentRouter->blackLinks_[targetCoords[1]]->latency();
       }
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[1]*numBladesPerChassis_+targetCoords[2]];
     }
@@ -334,7 +334,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   //router->node local link
   route->link_list->push_back(targetRouter->myNodes_[targetCoords[3]*numLinksperLink_+numLinksperLink_-1]);
   if(latency) {
-    *latency += targetRouter->myNodes_[targetCoords[3]*numLinksperLink_+numLinksperLink_-1]->getLatency();
+    *latency += targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]->latency();
   }
 
   xbt_free(myCoords);

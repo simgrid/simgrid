@@ -122,7 +122,7 @@ namespace simgrid {
 
         route->link_list->push_back(info.linkUp);
         if (lat)
-          *lat += info.linkUp->getLatency();
+          *lat += info.linkUp->latency();
         return;
       }
 
@@ -209,11 +209,11 @@ namespace simgrid {
         if (use_lnk_up == false) {
           route->link_list->push_back(info.linkDown);
           if (lat)
-            *lat += info.linkDown->getLatency();
+            *lat += info.linkDown->latency();
         } else {
           route->link_list->push_back(info.linkUp);
           if (lat)
-            *lat += info.linkUp->getLatency();
+            *lat += info.linkUp->latency();
         }
         current_node = next_node;
         next_node = 0;
