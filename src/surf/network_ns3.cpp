@@ -251,7 +251,7 @@ Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double lat
   return new LinkNS3(this, name, properties, bandwidth, latency);
 }
 
-Action *NetworkNS3Model::communicate(simgrid::kernel::routing::NetCard *src,simgrid::kernel::routing::NetCard *dst, double size, double rate)
+Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
 {
   return new NetworkNS3Action(this, size, src, dst);
 }
@@ -305,7 +305,7 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
 
       std::vector<Link*> *route = new std::vector<Link*>();
 
-      routing_platf->getRouteAndLatency (action->src_, action->dst_, route, nullptr);
+      routing_platf->getRouteAndLatency(action->src_->pimpl_netcard, action->dst_->pimpl_netcard, route, nullptr);
       for (auto link : *route)
         TRACE_surf_link_set_utilization (link->getName(), action->getCategory(), (data_delta_sent)/delta, now-delta, delta);
       delete route;
@@ -364,14 +364,14 @@ void LinkNS3::setLatencyTrace(tmgr_trace_t trace) {
  * Action *
  **********/
 
-NetworkNS3Action::NetworkNS3Action(Model *model, double size, simgrid::kernel::routing::NetCard *src, simgrid::kernel::routing::NetCard *dst)
-: NetworkAction(model, size, false)
+NetworkNS3Action::NetworkNS3Action(Model* model, double size, s4u::Host* src, s4u::Host* dst)
+    : NetworkAction(model, size, false)
 {
-  XBT_DEBUG("Communicate from %s to %s", src->name(), dst->name());
+  XBT_DEBUG("Communicate from %s to %s", src->name().c_str(), dst->name().c_str());
 
   src_ = src;
   dst_ = dst;
-  ns3_create_flow(src->name(), dst->name(), surf_get_clock(), size, this);
+  ns3_create_flow(src->name().c_str(), dst->name().c_str(), surf_get_clock(), size, this);
 
   Link::onCommunicate(this, src, dst);
 }

@@ -21,7 +21,7 @@ public:
   ~NetworkNS3Model();
   Link* createLink(const char *name, double bandwidth, double latency,
       e_surf_link_sharing_policy_t policy, xbt_dict_t properties) override;
-  Action *communicate(kernel::routing::NetCard *src, kernel::routing::NetCard *dst, double size, double rate);
+  Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double nextOccuringEvent(double now) override;
   bool nextOccuringEventIsIdempotent() {return false;}
   void updateActionsState(double now, double delta) override;
@@ -47,7 +47,7 @@ public:
  **********/
 class XBT_PRIVATE NetworkNS3Action : public NetworkAction {
 public:
-  NetworkNS3Action(Model *model, double cost, kernel::routing::NetCard *src, kernel::routing::NetCard *dst);
+  NetworkNS3Action(Model* model, double cost, s4u::Host* src, s4u::Host* dst);
 
   bool isSuspended();
   int unref();
@@ -56,8 +56,8 @@ public:
 
 //private:
   double lastSent_ = 0;
-  kernel::routing::NetCard *src_;
-  kernel::routing::NetCard *dst_;
+  s4u::Host* src_;
+  s4u::Host* dst_;
 };
 
 }
