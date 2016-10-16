@@ -73,7 +73,7 @@ static void parse_ns3_add_cluster(sg_platf_cluster_cbarg_t cluster)
   for (int i : *cluster->radicals) {
     char* router_id = bprintf("router_%s%d%s", cluster->prefix, i, cluster->suffix);
 
-    simgrid::s4u::Host* router = simgrid::s4u::Host::by_name_or_create(router_id);
+    simgrid::s4u::Host* router = new simgrid::s4u::Host(router_id);
     ns3_add_host(*router);
 
     // Create private link

@@ -109,7 +109,7 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u:
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(this);
-  piface_ = simgrid::s4u::Host::by_name_or_create(name);
+  piface_ = new simgrid::s4u::Host(name);
   piface_->extension_set<simgrid::surf::HostImpl>(this);
 
   /* Currently, we assume a VM has no storage. */
@@ -121,7 +121,7 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u:
    * from the VM name, we have to make sure that the system does not call the
    * free callback for the network resource object. The network resource object
    * is still used by the physical machine. */
-  sg_host_t host_VM = simgrid::s4u::Host::by_name_or_create(name);
+  sg_host_t host_VM      = piface_;
   host_VM->pimpl_netcard = host_PM->pimpl_netcard;
 
   vmState_ = SURF_VM_STATE_CREATED;
@@ -130,8 +130,7 @@ VirtualMachine::VirtualMachine(HostModel *model, const char *name, simgrid::s4u:
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
   CpuCas01 *sub_cpu = dynamic_cast<CpuCas01*>(host_PM->pimpl_cpu);
 
-  cpu_ = surf_cpu_model_vm->createCpu(host_VM, // the machine hosting the VM
-      sub_cpu->getSpeedPeakList(), 1 /*cores*/);
+  cpu_ = surf_cpu_model_vm->createCpu(host_VM, sub_cpu->getSpeedPeakList(), 1 /*cores*/);
   if (sub_cpu->getPState() != 0)
     cpu_->setPState(sub_cpu->getPState());
 

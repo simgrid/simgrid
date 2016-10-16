@@ -42,12 +42,9 @@ namespace s4u {
 XBT_PUBLIC_CLASS Host :
   public simgrid::xbt::Extendable<Host> {
 
-private:
+public:
   explicit Host(const char *name);
-public: // TODO, make me private
-  ~Host();
-  /** Do not use this function, it should be private */
-  static Host* by_name_or_create(const char* name);
+  ~Host(); // TODO, make me private
 
   /** Retrieves an host from its name, or return nullptr */
   static Host* by_name_or_null(const char* name);

@@ -75,8 +75,6 @@ void sg_platf_exit() {
 /** @brief Add an "host" to the current AS */
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
-  xbt_assert(sg_host_by_name(host->id) == nullptr, "Refusing to create a second host named '%s'.", host->id);
-
   simgrid::kernel::routing::AsImpl* current_routing = routing_get_current();
   if (current_routing->hierarchy_ == simgrid::kernel::routing::AsImpl::RoutingMode::unset)
     current_routing->hierarchy_ = simgrid::kernel::routing::AsImpl::RoutingMode::base;
@@ -84,7 +82,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   simgrid::kernel::routing::NetCard *netcard =
       new simgrid::kernel::routing::NetCardImpl(host->id, simgrid::kernel::routing::NetCard::Type::Host, current_routing);
 
-  sg_host_t h = simgrid::s4u::Host::by_name_or_create(host->id);
+  simgrid::s4u::Host* h = new simgrid::s4u::Host(host->id);
   h->pimpl_netcard = netcard;
 
   if(mount_list) {
