@@ -45,7 +45,6 @@ HostL07Model::HostL07Model() : HostModel() {
 
 HostL07Model::~HostL07Model() {
   delete surf_cpu_model_pm;
-  delete surf_network_model;
 }
 
 CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
@@ -67,7 +66,6 @@ NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   }
 NetworkL07Model::~NetworkL07Model()
 {
-  surf_network_model = nullptr;
   maxminSystem_ = nullptr; // Avoid multi-free
 }
 

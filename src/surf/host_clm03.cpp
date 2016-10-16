@@ -46,8 +46,6 @@ void surf_host_model_init_compound()
 namespace simgrid {
 namespace surf {
 
-HostCLM03Model::~HostCLM03Model() {}
-
 double HostCLM03Model::nextOccuringEvent(double now){
   adjustWeightOfDummyCpuActions();
 
