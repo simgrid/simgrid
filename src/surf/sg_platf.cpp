@@ -72,7 +72,7 @@ void sg_platf_exit() {
   surf_parse_lex_destroy();
 }
 
-/** @brief Add an "host" to the current AS */
+/** @brief Add an host to the current AS */
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
   simgrid::kernel::routing::AsImpl* current_routing = routing_get_current();
@@ -84,11 +84,6 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
 
   simgrid::s4u::Host* h = new simgrid::s4u::Host(host->id);
   h->pimpl_netcard = netcard;
-
-  if(mount_list) {
-    xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void *) mount_list);
-    mount_list = nullptr;
-  }
 
   if (host->coord && strcmp(host->coord, "")) {
     unsigned int cursor;
@@ -114,7 +109,9 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     cpu->setStateTrace(host->state_trace);
   if (host->speed_trace)
     cpu->setSpeedTrace(host->speed_trace);
-  surf_host_model->createHost(host->id, netcard, cpu)->attach(h);
+
+  surf_host_model->createHost(host->id, cpu, netcard, mount_list)->attach(h);
+  mount_list = nullptr;
 
   if (host->properties) {
     xbt_dict_cursor_t cursor=nullptr;
