@@ -298,12 +298,11 @@ void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t vm)
   SIMIX_vm_shutdown(vm, simcall->issuer);
 }
 
-extern xbt_dict_t host_list; // FIXME:killme don't dupplicate the content of s4u::Host this way
-                             /**
-                              * @brief Function to destroy a SIMIX VM host.
-                              *
-                              * @param vm the vm host to destroy (a sg_host_t)
-                              */
+/**
+ * @brief Function to destroy a SIMIX VM host.
+ *
+ * @param vm the vm host to destroy (a sg_host_t)
+ */
 void SIMIX_vm_destroy(sg_host_t vm)
 {
   /* this code basically performs a similar thing like SIMIX_host_destroy() */

@@ -223,8 +223,8 @@ public:
     {THROW_IMPOSSIBLE;} // FIXME: Host should not be a Resource
 
 public:
-  xbt_dynar_t storage_;
-  Cpu *cpu_;
+  xbt_dynar_t storage_        = nullptr;
+  Cpu* cpu_                   = nullptr;
   simgrid::s4u::Host* piface_ = nullptr;
 
   /** @brief Get the list of virtual machines on the current Host */

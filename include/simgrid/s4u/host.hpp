@@ -44,12 +44,11 @@ XBT_PUBLIC_CLASS Host :
 
 public:
   explicit Host(const char *name);
-  /** Host destruction logic */
-protected:
-  ~Host(); // TODO, make me private
-private:
-  bool currentlyDestroying_ = false;
 
+  /** Host destruction logic */
+private:
+  ~Host();
+  bool currentlyDestroying_ = false;
 public:
   void destroy();
 
@@ -72,6 +71,7 @@ public:
   void turnOff();
   /** Returns if that host is currently up and running */
   bool isOn();
+  /** Returns if that host is currently down and offline */
   bool isOff() { return !isOn(); }
 
   double speed();
