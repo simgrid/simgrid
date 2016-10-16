@@ -321,6 +321,5 @@ void SIMIX_vm_destroy(sg_host_t vm)
   vm->pimpl_cpu = nullptr;
   vm->pimpl_netcard = nullptr;
 
-  if (xbt_dict_get_or_null(host_list, vm->name().c_str()))
-    xbt_dict_remove(host_list, vm->name().c_str());
+  vm->destroy();
 }

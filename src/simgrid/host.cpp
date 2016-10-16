@@ -18,6 +18,10 @@ extern xbt_dict_t host_list; // FIXME:killme don't dupplicate the content of s4u
 
 void sg_host_exit()
 {
+  xbt_dict_cursor_t cursor = nullptr;
+  const char* name         = nullptr;
+  simgrid::s4u::Host* host = nullptr;
+  xbt_dict_foreach(host_list, cursor, name, host) host->destroy();
   xbt_dict_free(&host_list);
 }
 

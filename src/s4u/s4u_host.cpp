@@ -44,27 +44,45 @@ Host::Host(const char* name)
   xbt_dict_set(host_list, name, this, nullptr);
 }
 
-Host::~Host() {
+Host::~Host()
+{
+  xbt_assert(currentlyDestroying_, "Please call h->destroy() instead of manually deleting it.");
+
   delete pimpl_cpu;
   delete pimpl_netcard;
   delete mounts;
 }
 
-Host *Host::by_name(std::string name) {
+/** @brief Fire the required callbacks and destroy the object
+ *
+ * Don't delete directly an Host, call h->destroy() instead.
+ *
+ * This is cumbersome but there is the simplest solution to ensure that the
+ * onDestruction() callback receives a valid object (because of the destructor
+ * order in a class hierarchy).
+ */
+void Host::destroy()
+{
+  if (!currentlyDestroying_) {
+    currentlyDestroying_ = true;
+    xbt_dict_remove(host_list, name().c_str());
+    onDestruction(*this);
+    delete this;
+  }
+}
+
+Host* Host::by_name(std::string name)
+{
   Host* host = Host::by_name_or_null(name.c_str());
   // TODO, raise an exception instead?
   if (host == nullptr)
-    xbt_die("No such host: %s", name.c_str());
+    xbt_die("No such host: '%s'", name.c_str());
   return host;
 }
 Host* Host::by_name_or_null(const char* name)
 {
   if (host_list == nullptr)
-    host_list = xbt_dict_new_homogeneous([](void*p) {
-      simgrid::s4u::Host* host = static_cast<simgrid::s4u::Host*>(p);
-      simgrid::s4u::Host::onDestruction(*host);
-      delete host;
-    });
+    host_list = xbt_dict_new_homogeneous(nullptr);
   return (Host*) xbt_dict_get_or_null(host_list, name);
 }
 

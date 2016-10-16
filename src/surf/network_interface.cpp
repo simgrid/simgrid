@@ -177,9 +177,9 @@ namespace simgrid {
     Link::~Link() {
       xbt_assert(currentlyDestroying_, "Don't delete Links directly. Call destroy() instead.");
     }
-    /** @brief Fire the require callbacks and destroy the object
+    /** @brief Fire the required callbacks and destroy the object
      *
-     * Don't delete directly an Link, call l->destroy() instead.
+     * Don't delete directly a Link, call l->destroy() instead.
      */
     void Link::destroy()
     {

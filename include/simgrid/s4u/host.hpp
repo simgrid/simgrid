@@ -44,7 +44,14 @@ XBT_PUBLIC_CLASS Host :
 
 public:
   explicit Host(const char *name);
+  /** Host destruction logic */
+protected:
   ~Host(); // TODO, make me private
+private:
+  bool currentlyDestroying_ = false;
+
+public:
+  void destroy();
 
   /** Retrieves an host from its name, or return nullptr */
   static Host* by_name_or_null(const char* name);
