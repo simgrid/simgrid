@@ -17,11 +17,11 @@ namespace simgrid {
   AsImpl::AsImpl(As* father, const char* name) : As(father, name)
   {
     xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL),
-               "Refusing to create a second AS called \"%s\".", name);
+               "Refusing to create a second AS called '%s'.", name);
 
     netcard_ = new simgrid::kernel::routing::NetCardImpl(name, simgrid::kernel::routing::NetCard::Type::As,
                                                          static_cast<AsImpl*>(father));
-    xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, (void*)netcard_);
+    xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, static_cast<void*>(netcard_));
     XBT_DEBUG("Having set name '%s' id '%d'", name, netcard_->id());
   }
   AsImpl::~AsImpl() = default;
@@ -29,58 +29,59 @@ namespace simgrid {
   xbt_dynar_t AsImpl::getOneLinkRoutes()
   {
     return nullptr;
+  }
+
+  /** @brief Get the common ancestor and its first childs in each line leading to src and dst */
+  static void find_common_ancestors(NetCard* src, NetCard* dst,
+                                    /* OUT */ AsImpl** common_ancestor, AsImpl** src_ancestor, AsImpl** dst_ancestor)
+  {
+#define ROUTING_HIERARCHY_MAXDEPTH 32 /* increase if it is not enough */
+    AsImpl* path_src[ROUTING_HIERARCHY_MAXDEPTH];
+    AsImpl* path_dst[ROUTING_HIERARCHY_MAXDEPTH];
+    int index_src = 0;
+    int index_dst = 0;
+    AsImpl* current_src;
+    AsImpl* current_dst;
+    AsImpl* father;
+
+    /* (1) find the path to root of src and dst*/
+    AsImpl* src_as = src->containingAS();
+    AsImpl* dst_as = dst->containingAS();
+
+    xbt_assert(src_as, "Host %s must be in an AS", src->name());
+    xbt_assert(dst_as, "Host %s must be in an AS", dst->name());
+
+    /* (2) find the path to the root routing component */
+    for (AsImpl* current = src_as; current != nullptr; current = static_cast<AsImpl*>(current->father())) {
+      xbt_assert(index_src < ROUTING_HIERARCHY_MAXDEPTH,
+                 "ROUTING_HIERARCHY_MAXDEPTH should be increased for element %s", src->name());
+      path_src[index_src++] = current;
+    }
+    for (AsImpl* current = dst_as; current != nullptr; current = static_cast<AsImpl*>(current->father())) {
+      xbt_assert(index_dst < ROUTING_HIERARCHY_MAXDEPTH, "ROUTING_HIERARCHY_MAXDEPTH should be increased for path_dst");
+      path_dst[index_dst++] = current;
     }
 
-    /** @brief Get the common ancestor and its first childs in each line leading to src and dst */
-    static void find_common_ancestors(NetCard *src, NetCard *dst,
-        /* OUT */ AsImpl **common_ancestor, AsImpl **src_ancestor, AsImpl **dst_ancestor)
-    {
-    #define ROUTING_HIERARCHY_MAXDEPTH 32     /* increase if it is not enough */
-      AsImpl *path_src[ROUTING_HIERARCHY_MAXDEPTH];
-      AsImpl *path_dst[ROUTING_HIERARCHY_MAXDEPTH];
-      int index_src = 0;
-      int index_dst = 0;
-      AsImpl *current_src;
-      AsImpl *current_dst;
-      AsImpl *father;
+    /* (3) find the common father.
+     * Before that, index_src and index_dst may be different, they both point to nullptr in path_src/path_dst
+     * So we move them down simultaneously as long as they point to the same content.
+     */
+    do {
+      current_src = path_src[--index_src];
+      current_dst = path_dst[--index_dst];
+    } while (index_src > 0 && index_dst > 0 && current_src == current_dst);
 
-      /* (1) find the path to root of src and dst*/
-      AsImpl *src_as = src->containingAS();
-      AsImpl *dst_as = dst->containingAS();
+    /* (4) if we did not find a difference (index_src or index_dst went to 0), both elements are in the same AS */
+    if (current_src == current_dst)
+      father = current_src;
+    else // we found a difference
+      father = path_src[index_src + 1];
 
-      xbt_assert(src_as, "Host %s must be in an AS", src->name());
-      xbt_assert(dst_as, "Host %s must be in an AS", dst->name());
-
-      /* (2) find the path to the root routing component */
-      for (AsImpl *current = src_as; current != nullptr; current = static_cast<AsImpl*>(current->father())) {
-        xbt_assert(index_src < ROUTING_HIERARCHY_MAXDEPTH, "ROUTING_HIERARCHY_MAXDEPTH should be increased for element %s", src->name());
-        path_src[index_src++] = current;
-      }
-      for (AsImpl *current = dst_as; current != nullptr; current = static_cast<AsImpl*>(current->father())) {
-        xbt_assert(index_dst < ROUTING_HIERARCHY_MAXDEPTH,"ROUTING_HIERARCHY_MAXDEPTH should be increased for path_dst");
-        path_dst[index_dst++] = current;
-      }
-
-      /* (3) find the common father.
-       * Before that, index_src and index_dst may be different, they both point to nullptr in path_src/path_dst
-       * So we move them down simultaneously as long as they point to the same content.
-       */
-      do {
-        current_src = path_src[--index_src];
-        current_dst = path_dst[--index_dst];
-      } while (index_src > 0 && index_dst > 0 && current_src == current_dst);
-
-      /* (4) if we did not find a difference (index_src or index_dst went to 0), both elements are in the same AS */
-      if (current_src == current_dst)
-        father = current_src;
-      else // we found a difference
-        father = path_src[index_src + 1];
-
-      /* (5) result generation */
-      *common_ancestor = father;    /* the common father of src and dst */
-      *src_ancestor = current_src;  /* the first different father of src */
-      *dst_ancestor = current_dst;  /* the first different father of dst */
-    #undef ROUTING_HIERARCHY_MAXDEPTH
+    /* (5) result generation */
+    *common_ancestor = father;      /* the common father of src and dst */
+    *src_ancestor    = current_src; /* the first different father of src */
+    *dst_ancestor    = current_dst; /* the first different father of dst */
+#undef ROUTING_HIERARCHY_MAXDEPTH
     }
 
 
