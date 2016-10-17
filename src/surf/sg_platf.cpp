@@ -19,6 +19,7 @@
 #include "src/include/simgrid/sg_config.h"
 #include "src/surf/xml/platf_private.hpp"
 
+#include "src/surf/HostImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp"
 #include "surf/surf_routing.h" // FIXME: brain dead public header
@@ -110,7 +111,10 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   if (host->speed_trace)
     cpu->setSpeedTrace(host->speed_trace);
 
-  surf_host_model->createHost(host->id, cpu, netcard, mount_list)->attach(h);
+  simgrid::surf::HostImpl* hi = new simgrid::surf::HostImpl(surf_host_model, host->id, mount_list, cpu);
+  hi->attach(h);
+  xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void*)mount_list);
+
   mount_list = nullptr;
 
   if (host->properties) {

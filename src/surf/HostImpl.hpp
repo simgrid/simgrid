@@ -51,8 +51,6 @@ class HostModel : public Model {
 public:
   HostModel() : Model() {}
 
-  HostImpl* createHost(const char* name, Cpu* cpu, kernel::routing::NetCard* net, xbt_dynar_t storageList);
-
   virtual void adjustWeightOfDummyCpuActions();
   virtual Action *executeParallelTask(int host_nb, sg_host_t *host_list,
       double *flops_amount, double *bytes_amount, double rate);
