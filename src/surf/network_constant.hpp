@@ -26,9 +26,6 @@ namespace simgrid {
      *********/
     class NetworkConstantModel : public NetworkModel {
     public:
-      NetworkConstantModel()  : NetworkModel() { };
-      ~NetworkConstantModel() override;
-
       Action* communicate(simgrid::s4u::Host* src, simgrid::s4u::Host* dst, double size, double rate) override;
       double nextOccuringEvent(double now) override;
       void updateActionsState(double now, double delta) override;

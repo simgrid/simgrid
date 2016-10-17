@@ -43,9 +43,7 @@ HostL07Model::HostL07Model() : HostModel() {
   routing_model_create(surf_network_model->createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, nullptr));
 }
 
-HostL07Model::~HostL07Model() {
-  delete surf_cpu_model_pm;
-}
+HostL07Model::~HostL07Model() = default;
 
 CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
   : CpuModel()
@@ -54,7 +52,6 @@ CpuL07Model::CpuL07Model(HostL07Model *hmodel,lmm_system_t sys)
     maxminSystem_ = sys;
   }
 CpuL07Model::~CpuL07Model() {
-  surf_cpu_model_pm = nullptr;
   lmm_system_free(maxminSystem_);
   maxminSystem_ = nullptr;
 }

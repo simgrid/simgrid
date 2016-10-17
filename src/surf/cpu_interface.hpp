@@ -37,9 +37,6 @@ class CpuAction;
  */
 XBT_PUBLIC_CLASS CpuModel : public Model {
 public:
-  CpuModel() : Model() {};
-  ~CpuModel() = default;
-
   /**
    * @brief Create a Cpu
    *

@@ -22,9 +22,6 @@ void surf_network_model_init_Constant()
 
 namespace simgrid {
   namespace surf {
-
-    NetworkConstantModel::~NetworkConstantModel() {}
-
     Link* NetworkConstantModel::createLink(const char *name, double bw, double lat, e_surf_link_sharing_policy_t policy,
         xbt_dict_t properties) {
 

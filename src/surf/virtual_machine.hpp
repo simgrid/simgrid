@@ -105,9 +105,6 @@ protected:
  */
 class VMModel : public HostModel {
 public:
-  VMModel() :HostModel() {}
-  ~VMModel() = default;
-
   /**
    * @brief Create a new VM
    *
