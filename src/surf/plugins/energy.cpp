@@ -245,7 +245,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
     sg_host_t sghost = sg_host_by_name(name);
     if(sghost == nullptr)
       continue;
-    simgrid::surf::HostImpl *host = sghost->pimpl_;
+    simgrid::surf::HostImpl* host     = sghost->pimpl_;
     simgrid::surf::VirtualMachine *vm = dynamic_cast<simgrid::surf::VirtualMachine*>(host);
     if (vm) // If it's a VM, take the corresponding PM
       host = vm->getPm()->pimpl_;

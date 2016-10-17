@@ -137,9 +137,7 @@ boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
 
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
-  return simgrid::simix::kernelImmediate([&] {
-    return this->pimpl_->getProperties();
-  });
+  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getProperties(); });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
@@ -147,9 +145,7 @@ const char*Host::property(const char*key) {
   return this->pimpl_->getProperty(key);
 }
 void Host::setProperty(const char*key, const char *value){
-  simgrid::simix::kernelImmediate([&] {
-    this->pimpl_->setProperty(key,value);
-  });
+  simgrid::simix::kernelImmediate([&] { this->pimpl_->setProperty(key, value); });
 }
 
 /** Get the processes attached to the host */
@@ -200,16 +196,12 @@ int Host::pstate()
 
 void Host::parameters(vm_params_t params)
 {
-  simgrid::simix::kernelImmediate([&]() {
-    this->pimpl_->getParams(params);
-  });
+  simgrid::simix::kernelImmediate([&]() { this->pimpl_->getParams(params); });
 }
 
 void Host::setParameters(vm_params_t params)
 {
-  simgrid::simix::kernelImmediate([&]() {
-    this->pimpl_->setParams(params);
-  });
+  simgrid::simix::kernelImmediate([&]() { this->pimpl_->setParams(params); });
 }
 
 /**
@@ -219,9 +211,7 @@ void Host::setParameters(vm_params_t params)
  */
 xbt_dict_t Host::mountedStoragesAsDict()
 {
-  return simgrid::simix::kernelImmediate([&] {
-    return this->pimpl_->getMountedStorageList();
-  });
+  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getMountedStorageList(); });
 }
 
 /**
@@ -231,9 +221,7 @@ xbt_dict_t Host::mountedStoragesAsDict()
  */
 xbt_dynar_t Host::attachedStorages()
 {
-  return simgrid::simix::kernelImmediate([&] {
-    return this->pimpl_->getAttachedStorageList();
-  });
+  return simgrid::simix::kernelImmediate([&] { return this->pimpl_->getAttachedStorageList(); });
 }
 
 } // namespace simgrid
