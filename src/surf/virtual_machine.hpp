@@ -85,9 +85,6 @@ protected:
   simgrid::s4u::Host *hostPM_;
 
 public:
-  void turnOn() override;
-  void turnOff() override;
-
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
   static std::deque<VirtualMachine*> allVms_;

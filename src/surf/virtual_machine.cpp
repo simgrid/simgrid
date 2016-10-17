@@ -152,22 +152,9 @@ e_surf_vm_state_t VirtualMachine::getState() {
   return vmState_;
 }
 
-void VirtualMachine::setState(e_surf_vm_state_t state) {
+void VirtualMachine::setState(e_surf_vm_state_t state)
+{
   vmState_ = state;
-}
-void VirtualMachine::turnOn() {
-  THROW_DEADCODE;
-  if (isOff()) {
-    Resource::turnOn();
-    onVmStateChange(this);
-  }
-}
-void VirtualMachine::turnOff() {
-  THROW_DEADCODE;
-  if (isOn()) {
-    Resource::turnOff();
-    onVmStateChange(this);
-  }
 }
 void VirtualMachine::suspend()
 {
