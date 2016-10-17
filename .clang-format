@@ -44,7 +44,7 @@ Cpp11BracedListStyle: true
 DerivePointerAlignment: false
 DisableFormat:   false
 ExperimentalAutoDetectBinPacking: false
-ForEachMacros:   [ xbt_dynar_foreach ]
+ForEachMacros:   [ 'xbt_dynar_foreach', 'xbt_dict_foreach' ]
 IncludeCategories: 
   - Regex:           '^"(llvm|llvm-c|clang|clang-c)/'
     Priority:        2
