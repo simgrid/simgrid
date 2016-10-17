@@ -63,9 +63,7 @@ public:
  * @brief SURF Host interface class
  * @details An host represents a machine with a aggregation of a Cpu, a RoutingEdge and a Storage
  */
-class HostImpl
-: public simgrid::surf::Resource,
-  public simgrid::surf::PropertyHolder {
+class HostImpl : public simgrid::surf::PropertyHolder {
 
 public:
   /**
@@ -89,14 +87,9 @@ public:
 
   /* Host destruction logic */
   /**************************/
-  ~HostImpl() override;
+  virtual ~HostImpl();
 
 public:
-  // Overload the method for covariant return type:
-  HostModel *getModel()
-  {
-    return static_cast<HostModel*>(Resource::getModel());
-  }
   void attach(simgrid::s4u::Host* host);
 
   /** @brief Return the storage of corresponding mount point */
@@ -205,10 +198,6 @@ public:
    * full path is not on the same mount point
    */
   virtual int fileMove(surf_file_t fd, const char* fullpath);
-
-  bool isUsed() override {DIE_IMPOSSIBLE;} // FIXME: Host should not be a Resource
-  void apply_event(tmgr_trace_iterator_t event, double value) override
-    {THROW_IMPOSSIBLE;} // FIXME: Host should not be a Resource
 
 public:
   xbt_dynar_t storage_        = nullptr;

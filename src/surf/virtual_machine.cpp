@@ -82,7 +82,8 @@ double VMModel::nextOccuringEvent(double now)
     xbt_assert(cpu, "cpu-less host");
 
     double solved_value = ws_vm->action_->getVariable()->value;
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->getName(), ws_vm->getPm()->name().c_str());
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->piface_->name().c_str(),
+              ws_vm->getPm()->name().c_str());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -190,13 +191,12 @@ sg_host_t VirtualMachine::getPm() {
 /* Update the physical host of the given VM */
 void VirtualMachine::migrate(sg_host_t host_dest)
 {
-  HostImpl* surfHost_dst  = host_dest->pimpl_;
-  const char* vm_name     = getName();
+  const char* vm_name     = piface_->name().c_str();
   const char* pm_name_src = hostPM_->name().c_str();
-  const char* pm_name_dst = surfHost_dst->getName();
+  const char* pm_name_dst = host_dest->name().c_str();
 
   /* update net_elm with that of the destination physical host */
-  sg_host_by_name(vm_name)->pimpl_netcard = sg_host_by_name(pm_name_dst)->pimpl_netcard;
+  piface_->pimpl_netcard = host_dest->pimpl_netcard;
 
   hostPM_ = host_dest;
 

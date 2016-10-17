@@ -99,13 +99,13 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
  * Resource *
  ************/
 HostImpl::HostImpl(simgrid::surf::HostModel* model, const char* name, xbt_dynar_t storage)
-    : Resource(model, name), PropertyHolder(nullptr), storage_(storage)
+    : PropertyHolder(nullptr), storage_(storage)
 {
   params_.ramsize = 0;
 }
 
 HostImpl::HostImpl(simgrid::surf::HostModel* model, const char* name, lmm_constraint_t constraint, xbt_dynar_t storage)
-    : Resource(model, name, constraint), PropertyHolder(nullptr), storage_(storage)
+    : PropertyHolder(nullptr), storage_(storage)
 {
   params_.ramsize = 0;
 }
@@ -127,7 +127,7 @@ simgrid::surf::Storage *HostImpl::findStorageOnMountList(const char* mount)
   s_mount_t mnt;
   unsigned int cursor;
 
-  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, getName());
+  XBT_DEBUG("Search for storage name '%s' on '%s'", mount, piface_->name().c_str());
   xbt_dynar_foreach(storage_,cursor,mnt){
     XBT_DEBUG("See '%s'",mnt.name);
     if(!strcmp(mount,mnt.name)){
@@ -136,7 +136,7 @@ simgrid::surf::Storage *HostImpl::findStorageOnMountList(const char* mount)
     }
   }
   if(!st)
-    xbt_die("Can't find mount '%s' for '%s'", mount, getName());
+    xbt_die("Can't find mount '%s' for '%s'", mount, piface_->name().c_str());
   return st;
 }
 
@@ -161,11 +161,12 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
   void **data;
   xbt_dynar_t result = xbt_dynar_new(sizeof(void*), nullptr);
   xbt_lib_foreach(storage_lib, cursor, key, data) {
-    if(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
-    simgrid::surf::Storage *storage = static_cast<simgrid::surf::Storage*>(xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
-    if(!strcmp((const char*)storage->attach_,this->getName())){
-      xbt_dynar_push_as(result, void *, (void*)storage->getName());
-    }
+    if (xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL) != nullptr) {
+      simgrid::surf::Storage* storage = static_cast<simgrid::surf::Storage*>(
+          xbt_lib_get_level(xbt_lib_get_elm_or_null(storage_lib, key), SURF_STORAGE_LEVEL));
+      if (!strcmp((const char*)storage->attach_, piface_->name().c_str())) {
+        xbt_dynar_push_as(result, void*, (void*)storage->getName());
+      }
   }
   }
   return result;
@@ -181,7 +182,7 @@ Action *HostImpl::open(const char* fullpath) {
   char *file_mount_name = nullptr;
   char *mount_name = nullptr;
 
-  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, getName());
+  XBT_DEBUG("Search for storage name for '%s' on '%s'", fullpath, piface_->name().c_str());
   xbt_dynar_foreach(storage_,cursor,mnt)
   {
     XBT_DEBUG("See '%s'",mnt.name);
@@ -206,7 +207,7 @@ Action *HostImpl::open(const char* fullpath) {
   mount_name[longest_prefix_length] = '\0';
   }
   else
-    xbt_die("Can't find mount point for '%s' on '%s'", fullpath, getName());
+    xbt_die("Can't find mount point for '%s' on '%s'", fullpath, piface_->name().c_str());
 
   XBT_DEBUG("OPEN %s on disk '%s'",path, st->getName());
   Action *action = st->open((const char*)mount_name, (const char*)path);
