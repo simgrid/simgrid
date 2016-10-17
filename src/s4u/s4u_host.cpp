@@ -98,7 +98,7 @@ void Host::turnOn() {
   if (isOff()) {
     simgrid::simix::kernelImmediate([&]{
       this->extension<simgrid::simix::Host>()->turnOn();
-      this->pimpl_->turnOn();
+      this->pimpl_cpu->turnOn();
     });
   }
 }

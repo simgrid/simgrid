@@ -74,9 +74,8 @@ public:
    * @param model HostModel associated to this Host
    * @param name The name of the Host
    * @param storage The Storage associated to this Host
-   * @param cpu The Cpu associated to this Host
    */
-  HostImpl(HostModel *model, const char *name, xbt_dynar_t storage, Cpu *cpu);
+  HostImpl(HostModel* model, const char* name, xbt_dynar_t storage);
 
   /**
    * @brief Host constructor
@@ -85,10 +84,8 @@ public:
    * @param name The name of the Host
    * @param constraint The lmm constraint associated to this Host if it is part of a LMM component
    * @param storage The Storage associated to this Host
-   * @param cpu The Cpu associated to this Host
    */
-  HostImpl(HostModel *model, const char *name,
-      lmm_constraint_t constraint, xbt_dynar_t storage, Cpu *cpu);
+  HostImpl(HostModel* model, const char* name, lmm_constraint_t constraint, xbt_dynar_t storage);
 
   /* Host destruction logic */
   /**************************/
@@ -101,11 +98,6 @@ public:
     return static_cast<HostModel*>(Resource::getModel());
   }
   void attach(simgrid::s4u::Host* host);
-
-  bool isOn() const override;
-  bool isOff() const override;
-  void turnOn() override;
-  void turnOff() override;
 
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::Storage *findStorageOnMountList(const char* storage);
@@ -220,7 +212,6 @@ public:
 
 public:
   xbt_dynar_t storage_        = nullptr;
-  Cpu* cpu_                   = nullptr;
   simgrid::s4u::Host* piface_ = nullptr;
 
   /** @brief Get the list of virtual machines on the current Host */

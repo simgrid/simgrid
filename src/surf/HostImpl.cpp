@@ -37,7 +37,7 @@ void HostModel::adjustWeightOfDummyCpuActions()
   /* iterate for all virtual machines */
   for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
 
-    Cpu *cpu = ws_vm->cpu_;
+    Cpu* cpu = ws_vm->piface_->pimpl_cpu;
 
     int is_active = lmm_constraint_used(cpu->getModel()->getMaxminSystem(), cpu->getConstraint());
 
@@ -98,19 +98,14 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
 /************
  * Resource *
  ************/
-HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dynar_t storage, Cpu *cpu)
- : Resource(model, name)
- , PropertyHolder(nullptr)
- , storage_(storage), cpu_(cpu)
+HostImpl::HostImpl(simgrid::surf::HostModel* model, const char* name, xbt_dynar_t storage)
+    : Resource(model, name), PropertyHolder(nullptr), storage_(storage)
 {
   params_.ramsize = 0;
 }
 
-HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, lmm_constraint_t constraint,
-                 xbt_dynar_t storage, Cpu *cpu)
- : Resource(model, name, constraint)
- , PropertyHolder(nullptr)
- , storage_(storage), cpu_(cpu)
+HostImpl::HostImpl(simgrid::surf::HostModel* model, const char* name, lmm_constraint_t constraint, xbt_dynar_t storage)
+    : Resource(model, name, constraint), PropertyHolder(nullptr), storage_(storage)
 {
   params_.ramsize = 0;
 }
@@ -124,25 +119,6 @@ void HostImpl::attach(simgrid::s4u::Host* host)
     xbt_die("Already attached to host %s", host->name().c_str());
   host->pimpl_ = this;
   piface_ = host;
-}
-
-bool HostImpl::isOn() const {
-  return cpu_->isOn();
-}
-bool HostImpl::isOff() const {
-  return cpu_->isOff();
-}
-void HostImpl::turnOn(){
-  if (isOff()) {
-    cpu_->turnOn();
-    simgrid::s4u::Host::onStateChange(*this->piface_);
-  }
-}
-void HostImpl::turnOff(){
-  if (isOn()) {
-    cpu_->turnOff();
-    simgrid::s4u::Host::onStateChange(*this->piface_);
-  }
 }
 
 simgrid::surf::Storage *HostImpl::findStorageOnMountList(const char* mount)

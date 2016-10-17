@@ -78,7 +78,7 @@ double VMModel::nextOccuringEvent(double now)
 
   /* iterate for all virtual machines */
   for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
-    Cpu *cpu = ws_vm->cpu_;
+    Cpu* cpu = ws_vm->piface_->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 
     double solved_value = ws_vm->action_->getVariable()->value;
@@ -104,7 +104,7 @@ double VMModel::nextOccuringEvent(double now)
  ************/
 
 VirtualMachine::VirtualMachine(HostModel* model, const char* name, simgrid::s4u::Host* host_PM)
-    : HostImpl(model, name, nullptr /*constraint*/, nullptr /*storage*/, nullptr /*cpu*/), hostPM_(host_PM)
+    : HostImpl(model, name, nullptr /*constraint*/, nullptr /*storage*/), hostPM_(host_PM)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(this);
@@ -124,9 +124,9 @@ VirtualMachine::VirtualMachine(HostModel* model, const char* name, simgrid::s4u:
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
   CpuCas01 *sub_cpu = dynamic_cast<CpuCas01*>(host_PM->pimpl_cpu);
 
-  cpu_ = surf_cpu_model_vm->createCpu(piface_, sub_cpu->getSpeedPeakList(), 1 /*cores*/);
+  piface_->pimpl_cpu = surf_cpu_model_vm->createCpu(piface_, sub_cpu->getSpeedPeakList(), 1 /*cores*/);
   if (sub_cpu->getPState() != 0)
-    cpu_->setPState(sub_cpu->getPState());
+    piface_->pimpl_cpu->setPState(sub_cpu->getPState());
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
@@ -146,8 +146,6 @@ VirtualMachine::~VirtualMachine()
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED int ret = action_->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");
-
-  delete cpu_;
 }
 
 e_surf_vm_state_t VirtualMachine::getState() {
@@ -158,12 +156,14 @@ void VirtualMachine::setState(e_surf_vm_state_t state) {
   vmState_ = state;
 }
 void VirtualMachine::turnOn() {
+  THROW_DEADCODE;
   if (isOff()) {
     Resource::turnOn();
     onVmStateChange(this);
   }
 }
 void VirtualMachine::turnOff() {
+  THROW_DEADCODE;
   if (isOn()) {
     Resource::turnOff();
     onVmStateChange(this);
