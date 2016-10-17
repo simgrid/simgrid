@@ -65,7 +65,7 @@ simgrid::xbt::Extension<simgrid::s4u::Host, HostEnergy> HostEnergy::EXTENSION_ID
 /* Computes the consumption so far.  Called lazily on need. */
 void HostEnergy::update()
 {
-  simgrid::surf::HostImpl* surf_host = host->extension<simgrid::surf::HostImpl>();
+  simgrid::surf::HostImpl* surf_host = host->pimpl_;
   double start_time = this->last_updated;
   double finish_time = surf_get_clock();
   double cpu_load;
@@ -234,8 +234,7 @@ void HostEnergy::initWattsRangeList()
 
 /* **************************** events  callback *************************** */
 static void onCreation(simgrid::s4u::Host& host) {
-  simgrid::surf::HostImpl* surf_host = host.extension<simgrid::surf::HostImpl>();
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host)) // Ignore virtual machines
+  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host.pimpl_)) // Ignore virtual machines
     return;
   host.extension_set(new HostEnergy(&host));
 }
@@ -246,10 +245,10 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
     sg_host_t sghost = sg_host_by_name(name);
     if(sghost == nullptr)
       continue;
-    simgrid::surf::HostImpl *host = sghost->extension<simgrid::surf::HostImpl>();
+    simgrid::surf::HostImpl *host = sghost->pimpl_;
     simgrid::surf::VirtualMachine *vm = dynamic_cast<simgrid::surf::VirtualMachine*>(host);
     if (vm) // If it's a VM, take the corresponding PM
-      host = vm->getPm()->extension<simgrid::surf::HostImpl>();
+      host = vm->getPm()->pimpl_;
 
     HostEnergy *host_energy = host->piface_->extension<HostEnergy>();
 
@@ -259,8 +258,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
 }
 
 static void onHostStateChange(simgrid::s4u::Host &host) {
-  simgrid::surf::HostImpl* surf_host = host.extension<simgrid::surf::HostImpl>();
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host)) // Ignore virtual machines
+  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host.pimpl_)) // Ignore virtual machines
     return;
 
   HostEnergy *host_energy = host.extension<HostEnergy>();
@@ -271,8 +269,7 @@ static void onHostStateChange(simgrid::s4u::Host &host) {
 
 static void onHostDestruction(simgrid::s4u::Host& host) {
   // Ignore virtual machines
-  simgrid::surf::HostImpl* surf_host = host.extension<simgrid::surf::HostImpl>();
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(surf_host))
+  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host.pimpl_))
     return;
   HostEnergy *host_energy = host.extension<HostEnergy>();
   host_energy->update();

@@ -32,6 +32,7 @@ namespace simgrid {
     class Resource;
     class Cpu;
     class Link;
+    class HostImpl;
   }
   namespace trace_mgr {
     class trace;

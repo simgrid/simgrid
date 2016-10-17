@@ -84,8 +84,7 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
   xbt_assert((host != nullptr), "Invalid parameters");
 
   if (h->isOn()) {
-    simgrid::surf::HostImpl* surf_host = h->extension<simgrid::surf::HostImpl>();
-    surf_host->turnOff();
+    h->pimpl_->turnOff();
 
     /* Clean Simulator data */
     if (xbt_swag_size(host->process_list) != 0) {
@@ -204,10 +203,9 @@ smx_activity_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_
     host_list_cpy[i] = host_list[i];
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
-  simgrid::surf::HostImpl *host = host_list[0]->extension<simgrid::surf::HostImpl>();
-  bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host));
+  bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[0]->pimpl_));
   for (int i = 1; i < host_nb; i++) {
-    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->extension<simgrid::surf::HostImpl>()));
+    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->pimpl_));
     xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
   }
 

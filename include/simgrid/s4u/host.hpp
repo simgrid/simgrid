@@ -102,6 +102,7 @@ private:
 
 public:
   // TODO, this could be a unique_ptr
+  surf::HostImpl* pimpl_ = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */
   surf::Cpu     *pimpl_cpu = nullptr;
   /** DO NOT USE DIRECTLY (@todo: these should be protected, once our code is clean) */

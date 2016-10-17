@@ -108,8 +108,9 @@ VirtualMachine::VirtualMachine(HostModel* model, const char* name, simgrid::s4u:
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(this);
+
   piface_ = new simgrid::s4u::Host(name);
-  piface_->extension_set<simgrid::surf::HostImpl>(this);
+  piface_->pimpl_ = this;
 
   /* Currently, a VM uses the network resource of its physical host. In
    * host_lib, this network resource object is referred from two different keys.
@@ -202,7 +203,7 @@ sg_host_t VirtualMachine::getPm() {
 /* Update the physical host of the given VM */
 void VirtualMachine::migrate(sg_host_t host_dest)
 {
-   HostImpl *surfHost_dst = host_dest->extension<HostImpl>();
+   HostImpl *surfHost_dst = host_dest->pimpl_;
    const char *vm_name = getName();
    const char *pm_name_src = hostPM_->name().c_str();
    const char *pm_name_dst = surfHost_dst->getName();

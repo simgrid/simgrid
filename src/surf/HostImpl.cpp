@@ -24,8 +24,6 @@ simgrid::surf::HostModel *surf_host_model = nullptr;
 namespace simgrid {
 namespace surf {
 
-simgrid::xbt::Extension<simgrid::s4u::Host, HostImpl> HostImpl::EXTENSION_ID;
-
 /*********
  * Model *
  *********/
@@ -105,8 +103,6 @@ HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, xbt_dynar_
  , PropertyHolder(nullptr)
  , storage_(storage), cpu_(cpu)
 {
-  if (!EXTENSION_ID.valid())
-    EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::surf::HostImpl>();
   params_.ramsize = 0;
 }
 
@@ -120,15 +116,13 @@ HostImpl::HostImpl(simgrid::surf::HostModel *model, const char *name, lmm_constr
 }
 
 /** @brief use destroy() instead of this destructor */
-HostImpl::~HostImpl()
-{
-}
+HostImpl::~HostImpl() = default;
 
 void HostImpl::attach(simgrid::s4u::Host* host)
 {
   if (piface_ != nullptr)
     xbt_die("Already attached to host %s", host->name().c_str());
-  host->extension_set(this);
+  host->pimpl_ = this;
   piface_ = host;
 }
 
@@ -365,7 +359,7 @@ xbt_dynar_t HostImpl::getVms()
   xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachine*), nullptr);
 
   for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
-    if (this == ws_vm->getPm()->extension<simgrid::surf::HostImpl>())
+    if (this == ws_vm->getPm()->pimpl_)
       xbt_dynar_push(dyn, &ws_vm);
   }
 

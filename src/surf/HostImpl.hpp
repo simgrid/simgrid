@@ -66,8 +66,6 @@ public:
 class HostImpl
 : public simgrid::surf::Resource,
   public simgrid::surf::PropertyHolder {
-public:
-  static simgrid::xbt::Extension<simgrid::s4u::Host, HostImpl> EXTENSION_ID;
 
 public:
   /**

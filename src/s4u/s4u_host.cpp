@@ -48,6 +48,7 @@ Host::~Host()
 {
   xbt_assert(currentlyDestroying_, "Please call h->destroy() instead of manually deleting it.");
 
+  delete pimpl_;
   delete pimpl_cpu;
   delete pimpl_netcard;
   delete mounts;
@@ -57,7 +58,7 @@ Host::~Host()
  *
  * Don't delete directly an Host, call h->destroy() instead.
  *
- * This is cumbersome but there is the simplest solution to ensure that the
+ * This is cumbersome but this is the simplest solution to ensure that the
  * onDestruction() callback receives a valid object (because of the destructor
  * order in a class hierarchy).
  */
@@ -97,7 +98,7 @@ void Host::turnOn() {
   if (isOff()) {
     simgrid::simix::kernelImmediate([&]{
       this->extension<simgrid::simix::Host>()->turnOn();
-      this->extension<simgrid::surf::HostImpl>()->turnOn();
+      this->pimpl_->turnOn();
     });
   }
 }
@@ -137,20 +138,17 @@ boost::unordered_map<std::string, Storage*> const& Host::mountedStorages() {
 /** Get the properties assigned to a host */
 xbt_dict_t Host::properties() {
   return simgrid::simix::kernelImmediate([&] {
-    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
-    return surf_host->getProperties();
+    return this->pimpl_->getProperties();
   });
 }
 
 /** Retrieve the property value (or nullptr if not set) */
 const char*Host::property(const char*key) {
-  simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
-  return surf_host->getProperty(key);
+  return this->pimpl_->getProperty(key);
 }
 void Host::setProperty(const char*key, const char *value){
   simgrid::simix::kernelImmediate([&] {
-    simgrid::surf::HostImpl* surf_host = this->extension<simgrid::surf::HostImpl>();
-    surf_host->setProperty(key,value);
+    this->pimpl_->setProperty(key,value);
   });
 }
 
@@ -203,14 +201,14 @@ int Host::pstate()
 void Host::parameters(vm_params_t params)
 {
   simgrid::simix::kernelImmediate([&]() {
-    this->extension<simgrid::surf::HostImpl>()->getParams(params);
+    this->pimpl_->getParams(params);
   });
 }
 
 void Host::setParameters(vm_params_t params)
 {
   simgrid::simix::kernelImmediate([&]() {
-    this->extension<simgrid::surf::HostImpl>()->setParams(params);
+    this->pimpl_->setParams(params);
   });
 }
 
@@ -222,7 +220,7 @@ void Host::setParameters(vm_params_t params)
 xbt_dict_t Host::mountedStoragesAsDict()
 {
   return simgrid::simix::kernelImmediate([&] {
-    return this->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
+    return this->pimpl_->getMountedStorageList();
   });
 }
 
@@ -234,7 +232,7 @@ xbt_dict_t Host::mountedStoragesAsDict()
 xbt_dynar_t Host::attachedStorages()
 {
   return simgrid::simix::kernelImmediate([&] {
-    return this->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
+    return this->pimpl_->getAttachedStorageList();
   });
 }
 

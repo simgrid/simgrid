@@ -109,11 +109,11 @@ smx_host_priv_t sg_host_simix(sg_host_t host){
 
 // ========= storage related functions ============
 xbt_dict_t sg_host_get_mounted_storage_list(sg_host_t host){
-  return host->extension<simgrid::surf::HostImpl>()->getMountedStorageList();
+  return host->pimpl_->getMountedStorageList();
 }
 
 xbt_dynar_t sg_host_get_attached_storage_list(sg_host_t host){
-  return host->extension<simgrid::surf::HostImpl>()->getAttachedStorageList();
+  return host->pimpl_->getAttachedStorageList();
 }
 
 
