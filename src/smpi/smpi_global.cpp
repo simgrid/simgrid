@@ -99,6 +99,10 @@ static char *get_mailbox_name_small(char *str, int index)
 void smpi_process_init(int *argc, char ***argv)
 {
 
+  if (process_data == nullptr){
+    printf("SimGrid was not initialized properly before entering MPI_Init. Aborting, please check compilation process and use smpirun\n");
+    exit(1);
+  }
   if (argc != nullptr && argv != nullptr) {
     smx_actor_t proc = SIMIX_process_self();
     proc->context->set_cleanup(&MSG_process_cleanup_from_SIMIX);
