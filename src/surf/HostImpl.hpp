@@ -75,16 +75,6 @@ public:
    */
   HostImpl(HostModel* model, const char* name, xbt_dynar_t storage);
 
-  /**
-   * @brief Host constructor
-   *
-   * @param model HostModel associated to this Host
-   * @param name The name of the Host
-   * @param constraint The lmm constraint associated to this Host if it is part of a LMM component
-   * @param storage The Storage associated to this Host
-   */
-  HostImpl(HostModel* model, const char* name, lmm_constraint_t constraint, xbt_dynar_t storage);
-
   /* Host destruction logic */
   /**************************/
   virtual ~HostImpl();

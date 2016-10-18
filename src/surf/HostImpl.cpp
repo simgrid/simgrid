@@ -104,12 +104,6 @@ HostImpl::HostImpl(simgrid::surf::HostModel* model, const char* name, xbt_dynar_
   params_.ramsize = 0;
 }
 
-HostImpl::HostImpl(simgrid::surf::HostModel* model, const char* name, lmm_constraint_t constraint, xbt_dynar_t storage)
-    : PropertyHolder(nullptr), storage_(storage)
-{
-  params_.ramsize = 0;
-}
-
 /** @brief use destroy() instead of this destructor */
 HostImpl::~HostImpl() = default;
 

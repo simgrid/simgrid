@@ -105,7 +105,7 @@ double VMModel::nextOccuringEvent(double now)
  ************/
 
 VirtualMachine::VirtualMachine(HostModel* model, const char* name, simgrid::s4u::Host* host_PM)
-    : HostImpl(model, name, nullptr /*constraint*/, nullptr /*storage*/), hostPM_(host_PM)
+    : HostImpl(model, name, nullptr /*storage*/), hostPM_(host_PM)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(this);
