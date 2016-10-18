@@ -46,7 +46,6 @@ class NetworkModel;
 class StorageModel;
 class Resource;
 class ResourceLmm;
-class HostImpl;
 class HostCLM03;
 class NetworkCm02Link;
 class Action;
