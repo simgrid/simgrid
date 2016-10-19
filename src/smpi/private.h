@@ -678,6 +678,12 @@ void mpi_comm_spawn_ ( char *command, char *argv, int* maxprocs, int* info, int*
 void mpi_comm_spawn_multiple_ ( int* count, char *array_of_commands, char** array_of_argv, int* array_of_maxprocs,
                        int* array_of_info, int* root, int* comm, int*intercomm, int* array_of_errcodes, int* ierr);
 void mpi_comm_get_parent_ ( int*parent, int* ierr);
+void mpi_file_close_ ( int* file, int* ierr);
+void mpi_file_delete_ ( char* filename, int* info, int* ierr);
+void mpi_file_open_ ( int* comm, char* filename, int* amode, int* info, int* fh, int* ierr);
+void mpi_file_set_view_ ( int* fh, long long int* offset, int* etype, int* filetype, char* datarep, int* info, int* ierr);
+void mpi_file_read_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
+void mpi_file_write_ ( int* fh, void* buf, int* count, int* datatype, MPI_Status* status, int* ierr);
 
 /********** Tracing **********/
 /* from instr_smpi.c */
