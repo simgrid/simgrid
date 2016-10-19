@@ -66,34 +66,22 @@ include(${CMAKE_HOME_DIRECTORY}/tools/cmake/Option.cmake)
 
 ### SMPI vs. Fortran
 if ((NOT DEFINED enable_smpi) OR enable_smpi) 
+  # First unset the compiler in case we're re-running cmake over a previous
+  # configuration where it was saved as smpiff
+  unset(CMAKE_Fortran_COMPILER)
+  
   if(enable_fortran)
-    include(FindGFortran)
+    enable_language(Fortran OPTIONAL)
   else()
     SET(SMPI_FORTRAN 0)
   endif()
   
-  if(NOT APPLE) # smpi is enabled by default
-    # Call enable_language(Fortran) in order to load the build rules for this language, needed by 
-    # teshsuite/smpi/mpich-test/.  Use CMAKE_FORCE_Fortran_COMPILER to bypass checks for a working compiler (smpiff 
-    # doesn't exist at configure time).
-    include(CMakeForceCompiler)
-    if(NOT COMMAND CMAKE_FORCE_Fortran_COMPILER)
-      MACRO(CMAKE_FORCE_Fortran_COMPILER compiler id)
-        SET(CMAKE_Fortran_COMPILER "${compiler}")
-        SET(CMAKE_Fortran_COMPILER_ID_RUN TRUE)
-        SET(CMAKE_Fortran_COMPILER_ID ${id})
-        SET(CMAKE_Fortran_COMPILER_WORKS TRUE)
-        SET(CMAKE_Fortran_COMPILER_FORCED TRUE)
-
-        # Set old compiler id variables.
-        IF("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
-          SET(CMAKE_COMPILER_IS_GNUG77 1)
-        ENDIF("${CMAKE_Fortran_COMPILER_ID}" MATCHES "GNU")
-      ENDMACRO(CMAKE_FORCE_Fortran_COMPILER)
-    endif()
-    CMAKE_FORCE_Fortran_COMPILER(smpiff smpiff)
-    enable_language(Fortran OPTIONAL)
-  endif()
+  if(CMAKE_Fortran_COMPILER)
+    # Fortran compiler detected: save it, then replace by smpiff
+    set(SAVED_Fortran_COMPILER "${CMAKE_Fortran_COMPILER}" CACHE FILEPATH "The real Fortran compiler")
+    set(CMAKE_Fortran_COMPILER smpiff)
+    set(SMPI_FORTRAN 1)
+  endif(CMAKE_Fortran_COMPILER)
 endif()
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
@@ -947,7 +935,7 @@ else()
 endif()
 endif()
 if(CMAKE_Fortran_COMPILER)
-  message("        Compiler: Fortran ...........: ${CMAKE_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
+  message("        Compiler: Fortran ...........: ${SAVED_Fortran_COMPILER} (id: ${CMAKE_Fortran_COMPILER_ID})")
   message("                version .............: ${CMAKE_Fortran_COMPILER_VERSION}")
 endif()
 message("        Linker: .....................: ${CMAKE_LINKER}")
