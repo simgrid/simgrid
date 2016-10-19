@@ -23,8 +23,8 @@ namespace simgrid {
 
     Host::Host()
     {
-      if (!EXTENSION_ID.valid())
-        EXTENSION_ID = simgrid::s4u::Host::extension_create<simgrid::simix::Host>();
+      if (!Host::EXTENSION_ID.valid())
+        Host::EXTENSION_ID = s4u::Host::extension_create<simix::Host>();
 
       simgrid::simix::ActorImpl act;
       process_list = xbt_swag_new(xbt_swag_offset(act, host_proc_hookup));
