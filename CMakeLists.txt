@@ -70,10 +70,9 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
   # configuration where it was saved as smpiff
   unset(CMAKE_Fortran_COMPILER)
   
+  SET(SMPI_FORTRAN 0)
   if(enable_fortran)
     enable_language(Fortran OPTIONAL)
-  else()
-    SET(SMPI_FORTRAN 0)
   endif()
   
   if(CMAKE_Fortran_COMPILER)
@@ -82,6 +81,7 @@ if ((NOT DEFINED enable_smpi) OR enable_smpi)
     set(CMAKE_Fortran_COMPILER smpiff)
     set(SMPI_FORTRAN 1)
   endif(CMAKE_Fortran_COMPILER)
+
 endif()
 
 #-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#-#
