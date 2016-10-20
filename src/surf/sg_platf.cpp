@@ -111,8 +111,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   if (host->speed_trace)
     cpu->setSpeedTrace(host->speed_trace);
 
-  simgrid::surf::HostImpl* hi = new simgrid::surf::HostImpl(surf_host_model, host->id, mount_list);
-  hi->attach(h);
+  new simgrid::surf::HostImpl(h, mount_list);
   xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void*)mount_list);
 
   mount_list = nullptr;

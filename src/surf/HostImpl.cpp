@@ -98,22 +98,14 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
 /************
  * Resource *
  ************/
-HostImpl::HostImpl(simgrid::surf::HostModel* model, const char* name, xbt_dynar_t storage)
-    : PropertyHolder(nullptr), storage_(storage)
+HostImpl::HostImpl(s4u::Host* host, xbt_dynar_t storage) : PropertyHolder(nullptr), storage_(storage), piface_(host)
 {
+  piface_->pimpl_ = this;
   params_.ramsize = 0;
 }
 
 /** @brief use destroy() instead of this destructor */
 HostImpl::~HostImpl() = default;
-
-void HostImpl::attach(simgrid::s4u::Host* host)
-{
-  if (piface_ != nullptr)
-    xbt_die("Already attached to host %s", host->name().c_str());
-  host->pimpl_ = this;
-  piface_ = host;
-}
 
 simgrid::surf::Storage *HostImpl::findStorageOnMountList(const char* mount)
 {

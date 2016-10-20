@@ -69,19 +69,15 @@ public:
   /**
    * @brief Host constructor
    *
-   * @param model HostModel associated to this Host
-   * @param name The name of the Host
    * @param storage The Storage associated to this Host
    */
-  HostImpl(HostModel* model, const char* name, xbt_dynar_t storage);
+  HostImpl(s4u::Host* host, xbt_dynar_t storage);
 
   /* Host destruction logic */
   /**************************/
   virtual ~HostImpl();
 
 public:
-  void attach(simgrid::s4u::Host* host);
-
   /** @brief Return the storage of corresponding mount point */
   virtual simgrid::surf::Storage *findStorageOnMountList(const char* storage);
 
