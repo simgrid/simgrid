@@ -436,13 +436,25 @@ static void action_waitall(const char *const *action){
    extra->type = TRACING_WAITALL;
    extra->send_size=count_requests;
    TRACE_smpi_ptp_in(rank_traced, -1, -1, __FUNCTION__,extra);
-
+   int* recvs_snd= xbt_new0(int,count_requests);
+   int* recvs_rcv= xbt_new0(int,count_requests);
+   unsigned int i=0;
+   for (auto req : *(get_reqq_self())){
+     if (req && req->recv){
+       recvs_snd[i]=req->src;
+       recvs_rcv[i]=req->dst;
+     }else
+       recvs_snd[i]=-100;
+     i++;
+   }
    smpi_mpi_waitall(count_requests, &(*get_reqq_self())[0], status);
 
-   for (auto req : *(get_reqq_self())){
-     if (req && req->recv)
-       TRACE_smpi_recv(rank_traced, req->src, req->dst);
+   for (i=0; i<count_requests;i++){
+     if (recvs_snd[i]!=-100)
+       TRACE_smpi_recv(rank_traced, recvs_snd[i], recvs_rcv[i]);
    }
+   xbt_free(recvs_rcv);
+   xbt_free(recvs_snd);
    TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
   }
   log_timed_action (action, clock);
