@@ -93,24 +93,17 @@ XBT_PRIVATE char *smpi_container(int rank, char *container, int n)
   return container;
 }
 
-static char *TRACE_smpi_get_key(int src, int dst, char *key, int n);
+static char *TRACE_smpi_get_key(int src, int dst, char *key, int n, int send);
 
-static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
+static char *TRACE_smpi_put_key(int src, int dst, char *key, int n, int send)
 {
   //get the dynar for src#dst
   char aux[INSTR_DEFAULT_STR_SIZE];
-  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "r%d#%d", src, dst);
+  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d#%d", src, dst, send);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
-
-  if(xbt_dynar_is_empty(d) == 0){
-    //receive was already pushed, perform a get instead
-    TRACE_smpi_get_key(src , dst, key ,n);
-    return key;
-  }
 
   if (d == nullptr) {
     d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
-    snprintf(aux, INSTR_DEFAULT_STR_SIZE, "s%d#%d", src, dst);
     xbt_dict_set(keys, aux, d, nullptr);
   }
 
@@ -126,15 +119,15 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
   return key;
 }
 
-static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
+static char *TRACE_smpi_get_key(int src, int dst, char *key, int n, int send)
 {
   char aux[INSTR_DEFAULT_STR_SIZE];
-  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "s%d#%d", src, dst);
+  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d#%d", src, dst, send==1?0:1);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
 
-  // sometimes the receive may be posted before the send
+  // first posted
   if(xbt_dynar_is_empty(d)){
-      TRACE_smpi_put_key(src, dst, key, n);
+      TRACE_smpi_put_key(src, dst, key, n, send);
       return key;
   }
 
@@ -415,7 +408,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int size)
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE] = {0};
-  TRACE_smpi_put_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
+  TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE,1);
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(src, str, INSTR_DEFAULT_STR_SIZE);
@@ -431,7 +424,7 @@ void TRACE_smpi_recv(int rank, int src, int dst)
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE] = {0};
-  TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE);
+  TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE,0);
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE);
