@@ -99,7 +99,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
 {
   //get the dynar for src#dst
   char aux[INSTR_DEFAULT_STR_SIZE];
-  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
+  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "r%d#%d", src, dst);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
 
   if(xbt_dynar_is_empty(d) == 0){
@@ -110,6 +110,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
 
   if (d == nullptr) {
     d = xbt_dynar_new(sizeof(char *), &xbt_free_ref);
+    snprintf(aux, INSTR_DEFAULT_STR_SIZE, "s%d#%d", src, dst);
     xbt_dict_set(keys, aux, d, nullptr);
   }
 
@@ -128,7 +129,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n)
 static char *TRACE_smpi_get_key(int src, int dst, char *key, int n)
 {
   char aux[INSTR_DEFAULT_STR_SIZE];
-  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d", src, dst);
+  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "s%d#%d", src, dst);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
 
   // sometimes the receive may be posted before the send
