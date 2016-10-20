@@ -40,8 +40,7 @@ std::deque<VirtualMachine*> VirtualMachine::allVms_;
 
 s4u::Host *VMModel::createVM(const char *name, sg_host_t host_PM)
 {
-  VirtualMachine* vm = new VirtualMachine(this, name, host_PM);
-  onVmCreation(vm);
+  VirtualMachine* vm = new VirtualMachine(name, host_PM);
   return vm->piface_;
 }
 
@@ -104,7 +103,7 @@ double VMModel::nextOccuringEvent(double now)
  * Resource *
  ************/
 
-VirtualMachine::VirtualMachine(HostModel* model, const char* name, simgrid::s4u::Host* host_PM)
+VirtualMachine::VirtualMachine(const char* name, simgrid::s4u::Host* host_PM)
     : HostImpl(new simgrid::s4u::Host(name), nullptr /*storage*/), hostPM_(host_PM)
 {
   /* Register this VM to the list of all VMs */
