@@ -420,7 +420,7 @@ void TRACE_smpi_send(int rank, int src, int dst, int size)
   smpi_container(src, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_LINK", PJ_type_get_root());
-
+  XBT_DEBUG("Send tracing from %d to %d, with key %s", src, dst, key);
   new_pajeStartLinkWithSize (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key, size);
 }
 
@@ -436,6 +436,6 @@ void TRACE_smpi_recv(int rank, int src, int dst)
   smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_LINK", PJ_type_get_root());
-
+  XBT_DEBUG("Recv tracing from %d to %d, with key %s", src, dst, key);
   new_pajeEndLink (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
 }
