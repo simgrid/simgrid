@@ -999,7 +999,6 @@ set(CMAKE_SOURCE_FILES
   tools/cmake/Java.cmake
   tools/cmake/MakeLib.cmake
   tools/cmake/MakeLibWin.cmake
-  tools/cmake/Modules/FindGFortran.cmake
   tools/cmake/Modules/FindGraphviz.cmake
   tools/cmake/Modules/FindLibdw.cmake
   tools/cmake/Modules/FindLibunwind.cmake
