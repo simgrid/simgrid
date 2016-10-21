@@ -56,7 +56,7 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)
  */
 class VirtualMachineImpl : public HostImpl {
 public:
-  VirtualMachineImpl(const char* name, simgrid::s4u::Host* host);
+  VirtualMachineImpl(s4u::Host* piface, s4u::Host* host);
   ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */

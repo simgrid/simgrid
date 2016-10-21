@@ -4,7 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "VirtualMachineImpl.hpp"
+#include "src/surf/VirtualMachineImpl.hpp"
+#include "simgrid/s4u/VirtualMachine.hpp"
 
 #include <xbt/signal.hpp>
 
@@ -41,8 +42,7 @@ std::deque<VirtualMachineImpl*> VirtualMachineImpl::allVms_;
 
 s4u::Host* VMModel::createVM(const char* name, sg_host_t host_PM)
 {
-  VirtualMachineImpl* vm = new VirtualMachineImpl(name, host_PM);
-  return vm->piface_;
+  return new s4u::VirtualMachine(name, host_PM);
 }
 
 /* In the real world, processes on the guest operating system will be somewhat degraded due to virtualization overhead.
@@ -103,8 +103,8 @@ double VMModel::nextOccuringEvent(double now)
  * Resource *
  ************/
 
-VirtualMachineImpl::VirtualMachineImpl(const char* name, simgrid::s4u::Host* host_PM)
-    : HostImpl(new simgrid::s4u::Host(name), nullptr /*storage*/), hostPM_(host_PM)
+VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::Host* piface, simgrid::s4u::Host* host_PM)
+    : HostImpl(piface, nullptr /*storage*/), hostPM_(host_PM)
 {
   /* Register this VM to the list of all VMs */
   allVms_.push_back(this);
@@ -129,7 +129,8 @@ VirtualMachineImpl::VirtualMachineImpl(const char* name, simgrid::s4u::Host* hos
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   action_ = sub_cpu->execution_start(0);
 
-  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", name, hostPM_->name().c_str(), xbt_dynar_length(storage_));
+  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", piface->name().c_str(), hostPM_->name().c_str(),
+           xbt_dynar_length(storage_));
 }
 
 /*

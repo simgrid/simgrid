@@ -46,11 +46,16 @@ public:
   explicit Host(const char *name);
 
   /** Host destruction logic */
+protected:
+  virtual ~Host();
+
 private:
-  ~Host();
   bool currentlyDestroying_ = false;
 public:
   void destroy();
+  // No copy/move
+  Host(Host const&) = delete;
+  Host& operator=(Host const&) = delete;
 
   /** Retrieves an host from its name, or return nullptr */
   static Host* by_name_or_null(const char* name);
@@ -85,8 +90,8 @@ public:
   int pstatesCount() const;
   void setPstate(int pstate_index);
   int pstate();
-  void parameters(vm_params_t params);
-  void setParameters(vm_params_t params);
+  virtual void parameters(vm_params_t params);
+  virtual void setParameters(vm_params_t params);
   xbt_dict_t mountedStoragesAsDict(); // HACK
   xbt_dynar_t attachedStorages();
 

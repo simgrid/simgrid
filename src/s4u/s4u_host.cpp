@@ -196,12 +196,12 @@ int Host::pstate()
 
 void Host::parameters(vm_params_t params)
 {
-  simgrid::simix::kernelImmediate([&]() { this->pimpl_->getParams(params); });
+  THROW_IMPOSSIBLE; // This should only be used on VMs
 }
 
 void Host::setParameters(vm_params_t params)
 {
-  simgrid::simix::kernelImmediate([&]() { this->pimpl_->setParams(params); });
+  THROW_IMPOSSIBLE; // This should only be used on VMs
 }
 
 /**
