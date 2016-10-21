@@ -4,12 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "VirtualMachineImpl.hpp"
+#include "network_interface.hpp"
+#include "plugins/energy.hpp"
+#include "src/instr/instr_private.h"
 #include "src/surf/HostImpl.hpp"
 #include "surf_interface.hpp"
-#include "network_interface.hpp"
-#include "src/instr/instr_private.h"
-#include "plugins/energy.hpp"
-#include "virtual_machine.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
@@ -21,8 +21,9 @@ static simgrid::surf::HostImpl *get_casted_host(sg_host_t host){ //FIXME: killme
   return host->pimpl_;
 }
 
-static simgrid::surf::VirtualMachine *get_casted_vm(sg_host_t host){
-  return static_cast<simgrid::surf::VirtualMachine*>(host->pimpl_);
+static simgrid::surf::VirtualMachineImpl* get_casted_vm(sg_host_t host)
+{
+  return static_cast<simgrid::surf::VirtualMachineImpl*>(host->pimpl_);
 }
 
 extern double NOW;

@@ -3,10 +3,10 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.h"
 #include "mc/mc.h"
-#include "src/surf/virtual_machine.hpp"
+#include "smx_private.h"
 #include "src/surf/HostImpl.hpp"
+#include "src/surf/VirtualMachineImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX Virtual Machines");
 
@@ -66,7 +66,7 @@ static int __can_be_started(sg_host_t vm)
 void SIMIX_vm_start(sg_host_t vm)
 {
   if (__can_be_started(vm))
-    static_cast<simgrid::surf::VirtualMachine*>(vm->pimpl_)->setState(SURF_VM_STATE_RUNNING);
+    static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_)->setState(SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", vm->name().c_str());
 }
@@ -74,7 +74,7 @@ void SIMIX_vm_start(sg_host_t vm)
 
 e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t vm)
 {
-  return static_cast<simgrid::surf::VirtualMachine*>(vm->pimpl_)->getState();
+  return static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_)->getState();
 }
 
 /**
@@ -284,7 +284,7 @@ void SIMIX_vm_shutdown(sg_host_t vm, smx_actor_t issuer)
   }
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
-  static_cast<simgrid::surf::VirtualMachine*>(vm->pimpl_)->setState(SURF_VM_STATE_CREATED);
+  static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_)->setState(SURF_VM_STATE_CREATED);
 }
 
 void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t vm)

@@ -5,10 +5,9 @@
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/simix.hpp"
-#include "src/surf/plugins/energy.hpp"
+#include "src/surf/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
-#include "src/surf/virtual_machine.hpp"
-
+#include "src/surf/plugins/energy.hpp"
 #include <utility>
 
 /** @addtogroup SURF_plugin_energy
@@ -234,7 +233,7 @@ void HostEnergy::initWattsRangeList()
 
 /* **************************** events  callback *************************** */
 static void onCreation(simgrid::s4u::Host& host) {
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host.pimpl_)) // Ignore virtual machines
+  if (dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host.pimpl_)) // Ignore virtual machines
     return;
   host.extension_set(new HostEnergy(&host));
 }
@@ -246,7 +245,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
     if(sghost == nullptr)
       continue;
     simgrid::surf::HostImpl* host     = sghost->pimpl_;
-    simgrid::surf::VirtualMachine *vm = dynamic_cast<simgrid::surf::VirtualMachine*>(host);
+    simgrid::surf::VirtualMachineImpl* vm = dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host);
     if (vm) // If it's a VM, take the corresponding PM
       host = vm->getPm()->pimpl_;
 
@@ -258,7 +257,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
 }
 
 static void onHostStateChange(simgrid::s4u::Host &host) {
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host.pimpl_)) // Ignore virtual machines
+  if (dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host.pimpl_)) // Ignore virtual machines
     return;
 
   HostEnergy *host_energy = host.extension<HostEnergy>();
@@ -269,7 +268,7 @@ static void onHostStateChange(simgrid::s4u::Host &host) {
 
 static void onHostDestruction(simgrid::s4u::Host& host) {
   // Ignore virtual machines
-  if (dynamic_cast<simgrid::surf::VirtualMachine*>(host.pimpl_))
+  if (dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host.pimpl_))
     return;
   HostEnergy *host_energy = host.extension<HostEnergy>();
   host_energy->update();

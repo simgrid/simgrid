@@ -19,15 +19,14 @@
 
 #include <simgrid/simix/blocking_simcall.hpp>
 
-#include "src/mc/mc_replay.h"
-#include "smx_private.h"
-#include "src/mc/mc_forward.hpp"
-#include "xbt/ex.h"
 #include "mc/mc.h"
-#include "src/simix/smx_host_private.h"
+#include "smx_private.h"
 #include "src/kernel/activity/SynchroComm.hpp"
-#include "src/surf/virtual_machine.hpp"
-
+#include "src/mc/mc_forward.hpp"
+#include "src/mc/mc_replay.h"
+#include "src/simix/smx_host_private.h"
+#include "src/surf/VirtualMachineImpl.hpp"
+#include "xbt/ex.h"
 
 #include <simgrid/simix.hpp>
 

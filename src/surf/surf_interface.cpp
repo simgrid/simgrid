@@ -4,19 +4,19 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/internal_config.h"
-#include "surf_private.h"
 #include "surf_interface.hpp"
-#include "network_interface.hpp"
+#include "VirtualMachineImpl.hpp"
 #include "cpu_interface.hpp"
-#include "src/surf/HostImpl.hpp"
-#include "src/simix/smx_host_private.h"
-#include "surf_routing.hpp"
-#include "simgrid/sg_config.h"
 #include "mc/mc.h"
-#include "virtual_machine.hpp"
-#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "network_interface.hpp"
 #include "simgrid/s4u/engine.hpp"
+#include "simgrid/sg_config.h"
+#include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
+#include "src/internal_config.h"
+#include "src/simix/smx_host_private.h"
+#include "src/surf/HostImpl.hpp"
+#include "surf_private.h"
+#include "surf_routing.hpp"
 #include <vector>
 
 XBT_LOG_NEW_CATEGORY(surf, "All SURF categories");

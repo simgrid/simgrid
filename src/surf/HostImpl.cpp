@@ -10,8 +10,8 @@
 #include "src/surf/HostImpl.hpp"
 #include "simgrid/sg_config.h"
 
+#include "VirtualMachineImpl.hpp"
 #include "network_interface.hpp"
-#include "virtual_machine.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");
 
@@ -35,7 +35,7 @@ namespace surf {
 void HostModel::adjustWeightOfDummyCpuActions()
 {
   /* iterate for all virtual machines */
-  for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
+  for (VirtualMachineImpl* ws_vm : VirtualMachineImpl::allVms_) {
 
     Cpu* cpu = ws_vm->piface_->pimpl_cpu;
 
@@ -319,9 +319,9 @@ int HostImpl::fileMove(surf_file_t fd, const char* fullpath){
 
 xbt_dynar_t HostImpl::getVms()
 {
-  xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachine*), nullptr);
+  xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachineImpl*), nullptr);
 
-  for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
+  for (VirtualMachineImpl* ws_vm : VirtualMachineImpl::allVms_) {
     if (this == ws_vm->getPm()->pimpl_)
       xbt_dynar_push(dyn, &ws_vm);
   }

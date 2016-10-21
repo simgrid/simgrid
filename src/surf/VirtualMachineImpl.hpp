@@ -4,8 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include <deque>
 #include <boost/intrusive/list.hpp>
+#include <deque>
 
 #include <xbt/base.h>
 
@@ -25,7 +25,7 @@ namespace surf {
  ***********/
 
 class XBT_PRIVATE VMModel;
-class XBT_PRIVATE VirtualMachine;
+class XBT_PRIVATE VirtualMachineImpl;
 
 /*************
  * Callbacks *
@@ -34,17 +34,17 @@ class XBT_PRIVATE VirtualMachine;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmCreation;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmCreation;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmDestruction;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmDestruction;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmStateChange;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmStateChange;
 
 /************
  * Resource *
@@ -54,10 +54,10 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> on
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-class VirtualMachine : public HostImpl {
+class VirtualMachineImpl : public HostImpl {
 public:
-  VirtualMachine(const char* name, simgrid::s4u::Host* host);
-  ~VirtualMachine();
+  VirtualMachineImpl(const char* name, simgrid::s4u::Host* host);
+  ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
   virtual void suspend();
@@ -80,14 +80,15 @@ public:
   virtual void setBound(double bound);
 
   /* The vm object of the lower layer */
-  CpuAction *action_ = nullptr;
+  CpuAction* action_ = nullptr;
+
 protected:
-  simgrid::s4u::Host *hostPM_;
+  simgrid::s4u::Host* hostPM_;
 
 public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
-  static std::deque<VirtualMachine*> allVms_;
+  static std::deque<VirtualMachineImpl*> allVms_;
 
 protected:
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;
@@ -108,14 +109,12 @@ public:
    * @param name The name of the new VM
    * @param host_PM The real machine hosting the VM
    */
-  s4u::Host *createVM(const char *name, sg_host_t host_PM);
-  void adjustWeightOfDummyCpuActions() override {};
+  s4u::Host* createVM(const char* name, sg_host_t host_PM);
+  void adjustWeightOfDummyCpuActions() override{};
 
   double nextOccuringEvent(double now) override;
-  void updateActionsState(double /*now*/, double /*delta*/) override {};
-
+  void updateActionsState(double /*now*/, double /*delta*/) override{};
 };
-
 }
 }
 

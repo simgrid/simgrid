@@ -10,9 +10,9 @@
 
 #include "host_clm03.hpp"
 
+#include "VirtualMachineImpl.hpp"
 #include "cpu_cas01.hpp"
 #include "simgrid/sg_config.h"
-#include "virtual_machine.hpp"
 
 XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_host);
 

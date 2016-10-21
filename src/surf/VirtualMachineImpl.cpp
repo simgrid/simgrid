@@ -4,16 +4,18 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include "VirtualMachineImpl.hpp"
+
 #include <xbt/signal.hpp>
 
 #include "cpu_cas01.hpp"
-#include "virtual_machine.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
-simgrid::surf::VMModel *surf_vm_model = nullptr;
+simgrid::surf::VMModel* surf_vm_model = nullptr;
 
-void surf_vm_model_init_HL13(){
+void surf_vm_model_init_HL13()
+{
   if (surf_cpu_model_vm) {
     surf_vm_model = new simgrid::surf::VMModel();
     all_existing_models->push_back(surf_vm_model);
@@ -23,24 +25,23 @@ void surf_vm_model_init_HL13(){
 namespace simgrid {
 namespace surf {
 
-
 /*************
  * Callbacks *
  *************/
 
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmCreation;
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmDestruction;
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachine*)> onVmStateChange;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmCreation;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmDestruction;
+simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmStateChange;
 
 /*********
  * Model *
  *********/
 
-std::deque<VirtualMachine*> VirtualMachine::allVms_;
+std::deque<VirtualMachineImpl*> VirtualMachineImpl::allVms_;
 
-s4u::Host *VMModel::createVM(const char *name, sg_host_t host_PM)
+s4u::Host* VMModel::createVM(const char* name, sg_host_t host_PM)
 {
-  VirtualMachine* vm = new VirtualMachine(name, host_PM);
+  VirtualMachineImpl* vm = new VirtualMachineImpl(name, host_PM);
   return vm->piface_;
 }
 
@@ -76,7 +77,7 @@ double VMModel::nextOccuringEvent(double now)
    **/
 
   /* iterate for all virtual machines */
-  for (VirtualMachine *ws_vm : VirtualMachine::allVms_) {
+  for (VirtualMachineImpl* ws_vm : VirtualMachineImpl::allVms_) {
     Cpu* cpu = ws_vm->piface_->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 
@@ -98,12 +99,11 @@ double VMModel::nextOccuringEvent(double now)
   return surf_cpu_model_vm->nextOccuringEvent(now);
 }
 
-
 /************
  * Resource *
  ************/
 
-VirtualMachine::VirtualMachine(const char* name, simgrid::s4u::Host* host_PM)
+VirtualMachineImpl::VirtualMachineImpl(const char* name, simgrid::s4u::Host* host_PM)
     : HostImpl(new simgrid::s4u::Host(name), nullptr /*storage*/), hostPM_(host_PM)
 {
   /* Register this VM to the list of all VMs */
@@ -119,7 +119,7 @@ VirtualMachine::VirtualMachine(const char* name, simgrid::s4u::Host* host_PM)
 
   // //// CPU  RELATED STUFF ////
   // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01 *sub_cpu = dynamic_cast<CpuCas01*>(host_PM->pimpl_cpu);
+  CpuCas01* sub_cpu = dynamic_cast<CpuCas01*>(host_PM->pimpl_cpu);
 
   piface_->pimpl_cpu = surf_cpu_model_vm->createCpu(piface_, sub_cpu->getSpeedPeakList(), 1 /*cores*/);
   if (sub_cpu->getPState() != 0)
@@ -135,44 +135,45 @@ VirtualMachine::VirtualMachine(const char* name, simgrid::s4u::Host* host_PM)
 /*
  * A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation.
  */
-VirtualMachine::~VirtualMachine()
+VirtualMachineImpl::~VirtualMachineImpl()
 {
   onVmDestruction(this);
-  allVms_.erase( find(allVms_.begin(), allVms_.end(), this) );
+  allVms_.erase(find(allVms_.begin(), allVms_.end(), this));
 
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED int ret = action_->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");
 }
 
-e_surf_vm_state_t VirtualMachine::getState() {
+e_surf_vm_state_t VirtualMachineImpl::getState()
+{
   return vmState_;
 }
 
-void VirtualMachine::setState(e_surf_vm_state_t state)
+void VirtualMachineImpl::setState(e_surf_vm_state_t state)
 {
   vmState_ = state;
 }
-void VirtualMachine::suspend()
+void VirtualMachineImpl::suspend()
 {
   action_->suspend();
   vmState_ = SURF_VM_STATE_SUSPENDED;
 }
 
-void VirtualMachine::resume()
+void VirtualMachineImpl::resume()
 {
   action_->resume();
   vmState_ = SURF_VM_STATE_RUNNING;
 }
 
-void VirtualMachine::save()
+void VirtualMachineImpl::save()
 {
   vmState_ = SURF_VM_STATE_SAVING;
   action_->suspend();
   vmState_ = SURF_VM_STATE_SAVED;
 }
 
-void VirtualMachine::restore()
+void VirtualMachineImpl::restore()
 {
   vmState_ = SURF_VM_STATE_RESTORING;
   action_->resume();
@@ -180,12 +181,13 @@ void VirtualMachine::restore()
 }
 
 /** @brief returns the physical machine on which the VM is running **/
-sg_host_t VirtualMachine::getPm() {
+sg_host_t VirtualMachineImpl::getPm()
+{
   return hostPM_;
 }
 
 /* Update the physical host of the given VM */
-void VirtualMachine::migrate(sg_host_t host_dest)
+void VirtualMachineImpl::migrate(sg_host_t host_dest)
 {
   const char* vm_name     = piface_->name().c_str();
   const char* pm_name_src = hostPM_->name().c_str();
@@ -211,20 +213,19 @@ void VirtualMachine::migrate(sg_host_t host_dest)
   if (old_bound != 0) {
     XBT_DEBUG("migrate VM(%s): set bound (%f) at %s", vm_name, old_bound, pm_name_dst);
     new_cpu_action->setBound(old_bound);
-   }
+  }
 
-   XBT_ATTRIB_UNUSED int ret = action_->unref();
-   xbt_assert(ret == 1, "Bug: some resource still remains");
+  XBT_ATTRIB_UNUSED int ret = action_->unref();
+  xbt_assert(ret == 1, "Bug: some resource still remains");
 
-   action_ = new_cpu_action;
+  action_ = new_cpu_action;
 
-   XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
+  XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
 }
 
-void VirtualMachine::setBound(double bound){
- action_->setBound(bound);
+void VirtualMachineImpl::setBound(double bound)
+{
+  action_->setBound(bound);
 }
-
-
 }
 }

@@ -4,13 +4,13 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "smx_private.h"
-#include <xbt/ex.hpp>
-#include "xbt/sysdep.h"
 #include "mc/mc.h"
+#include "smx_private.h"
 #include "src/mc/mc_replay.h"
-#include "src/surf/virtual_machine.hpp"
 #include "src/surf/HostImpl.hpp"
+#include "src/surf/VirtualMachineImpl.hpp"
+#include "xbt/sysdep.h"
+#include <xbt/ex.hpp>
 
 #include "src/kernel/activity/SynchroExec.hpp"
 #include "src/kernel/activity/SynchroComm.hpp"
@@ -203,9 +203,9 @@ smx_activity_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_
     host_list_cpy[i] = host_list[i];
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
-  bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[0]->pimpl_));
+  bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host_list[0]->pimpl_));
   for (int i = 1; i < host_nb; i++) {
-    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachine*>(host_list[i]->pimpl_));
+    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host_list[i]->pimpl_));
     xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
   }
 
