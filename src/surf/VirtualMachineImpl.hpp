@@ -72,10 +72,10 @@ public:
   virtual void restore();
 
   /** @brief Migrate the VM to the destination host */
-  virtual void migrate(sg_host_t dest_PM);
+  virtual void migrate(s4u::Host* dest);
 
   /** @brief Get the physical machine hosting the VM */
-  sg_host_t getPm();
+  s4u::Host* getPm();
 
   virtual void setBound(double bound);
 
@@ -109,7 +109,7 @@ public:
    * @param name The name of the new VM
    * @param host_PM The real machine hosting the VM
    */
-  s4u::Host* createVM(const char* name, sg_host_t host_PM);
+  s4u::Host* createVM(const char* name, s4u::Host* host_PM);
   void adjustWeightOfDummyCpuActions() override{};
 
   double nextOccuringEvent(double now) override;

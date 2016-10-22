@@ -40,7 +40,7 @@ simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmStateChange;
 
 std::deque<VirtualMachineImpl*> VirtualMachineImpl::allVms_;
 
-s4u::Host* VMModel::createVM(const char* name, sg_host_t host_PM)
+s4u::Host* VMModel::createVM(const char* name, s4u::Host* host_PM)
 {
   return new s4u::VirtualMachine(name, host_PM);
 }
@@ -182,13 +182,13 @@ void VirtualMachineImpl::restore()
 }
 
 /** @brief returns the physical machine on which the VM is running **/
-sg_host_t VirtualMachineImpl::getPm()
+s4u::Host* VirtualMachineImpl::getPm()
 {
   return hostPM_;
 }
 
 /* Update the physical host of the given VM */
-void VirtualMachineImpl::migrate(sg_host_t host_dest)
+void VirtualMachineImpl::migrate(s4u::Host* host_dest)
 {
   const char* vm_name     = piface_->name().c_str();
   const char* pm_name_src = hostPM_->name().c_str();
