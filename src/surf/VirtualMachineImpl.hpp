@@ -103,13 +103,6 @@ protected:
  */
 class VMModel : public HostModel {
 public:
-  /**
-   * @brief Create a new VM
-   *
-   * @param name The name of the new VM
-   * @param host_PM The real machine hosting the VM
-   */
-  s4u::Host* createVM(const char* name, s4u::Host* host_PM);
   void adjustWeightOfDummyCpuActions() override{};
 
   double nextOccuringEvent(double now) override;

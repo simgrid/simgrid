@@ -17,6 +17,7 @@
 
 #include <xbt/functional.hpp>
 
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/simix/blocking_simcall.hpp>
 
 #include "mc/mc.h"
@@ -180,20 +181,19 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
   return (e_smx_state_t) simcall_BODY_execution_wait(execution);
 }
 
-
 /**
  * \ingroup simix_vm_management
  * \brief Create a VM on the given physical host.
  *
  * \param name VM name
- * \param host Physical host
+ * \param dest Physical host on which to create the VM
  *
  * \return The host object of the VM
  */
-sg_host_t simcall_vm_create(const char *name, sg_host_t phys_host)
+sg_host_t simcall_vm_create(const char* name, sg_host_t dest)
 {
-  return simgrid::simix::kernelImmediate([&name, &phys_host] {
-    sg_host_t host = surf_vm_model->createVM(name, phys_host);
+  return simgrid::simix::kernelImmediate([&name, &dest] {
+    sg_host_t host = new simgrid::s4u::VirtualMachine(name, dest);
     host->extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
     return host;

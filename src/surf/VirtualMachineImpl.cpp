@@ -40,11 +40,6 @@ simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmStateChange;
 
 std::deque<VirtualMachineImpl*> VirtualMachineImpl::allVms_;
 
-s4u::Host* VMModel::createVM(const char* name, s4u::Host* host_PM)
-{
-  return new s4u::VirtualMachine(name, host_PM);
-}
-
 /* In the real world, processes on the guest operating system will be somewhat degraded due to virtualization overhead.
  * The total CPU share these processes get is smaller than that of the VM process gets on a host operating system. */
 // const double virt_overhead = 0.95;
