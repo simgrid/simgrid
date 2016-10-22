@@ -36,8 +36,8 @@ private:
   virtual ~VirtualMachine();
 
 public:
-  void parameters(vm_params_t params) override;
-  void setParameters(vm_params_t params) override;
+  void parameters(vm_params_t params);
+  void setParameters(vm_params_t params);
 };
 }
 } // namespace simgrid::s4u

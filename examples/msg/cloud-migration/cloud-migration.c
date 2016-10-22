@@ -61,7 +61,7 @@ static int master_main(int argc, char *argv[])
 
   vm0 = MSG_vm_create_core(pm0, "VM0");
   params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
-  MSG_host_set_params(vm0, &params);
+  MSG_vm_set_params(vm0, &params);
   MSG_vm_start(vm0);
 
   XBT_INFO("Test: Migrate a VM with %llu Mbytes RAM", params.ramsize / 1000 / 1000);
@@ -71,7 +71,7 @@ static int master_main(int argc, char *argv[])
 
   vm0 = MSG_vm_create_core(pm0, "VM0");
   params.ramsize = 1L * 1000 * 1000 * 100; // 100Mbytes
-  MSG_host_set_params(vm0, &params);
+  MSG_vm_set_params(vm0, &params);
   MSG_vm_start(vm0);
 
   XBT_INFO("Test: Migrate a VM with %llu Mbytes RAM", params.ramsize / 1000 / 1000);
@@ -83,8 +83,8 @@ static int master_main(int argc, char *argv[])
   vm1 = MSG_vm_create_core(pm0, "VM1");
 
   params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
-  MSG_host_set_params(vm0, &params);
-  MSG_host_set_params(vm1, &params);
+  MSG_vm_set_params(vm0, &params);
+  MSG_vm_set_params(vm1, &params);
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
 
@@ -100,8 +100,8 @@ static int master_main(int argc, char *argv[])
   vm1 = MSG_vm_create_core(pm0, "VM1");
 
   params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
-  MSG_host_set_params(vm0, &params);
-  MSG_host_set_params(vm1, &params);
+  MSG_vm_set_params(vm0, &params);
+  MSG_vm_set_params(vm1, &params);
   MSG_vm_start(vm0);
   MSG_vm_start(vm1);
 

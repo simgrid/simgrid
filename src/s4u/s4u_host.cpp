@@ -194,16 +194,6 @@ int Host::pstate()
   return pimpl_cpu->getPState();
 }
 
-void Host::parameters(vm_params_t params)
-{
-  THROW_IMPOSSIBLE; // This should only be used on VMs
-}
-
-void Host::setParameters(vm_params_t params)
-{
-  THROW_IMPOSSIBLE; // This should only be used on VMs
-}
-
 /**
  * \ingroup simix_storage_management
  * \brief Returns the list of storages mounted on an host.

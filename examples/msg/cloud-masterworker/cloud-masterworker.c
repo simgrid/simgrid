@@ -87,7 +87,7 @@ static int master_fun(int argc, char *argv[])
     s_vm_params_t params;
     memset(&params, 0, sizeof(params));
     params.ramsize = 1L * 1024 * 1024 * 1024; // 1Gbytes
-    MSG_host_set_params(vm, &params);
+    MSG_vm_set_params(vm, &params);
 
     MSG_vm_start(vm);
     xbt_dynar_push(vms, &vm);

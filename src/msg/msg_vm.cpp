@@ -11,6 +11,7 @@
 
 #include <xbt/ex.hpp>
 
+#include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/s4u/host.hpp>
 
 #include "msg_private.h"
@@ -57,6 +58,27 @@ xbt_dict_t MSG_vm_get_properties(msg_vm_t vm)
 void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value, void_f_pvoid_t free_ctn)
 {
   xbt_dict_set(MSG_host_get_properties(vm), name, value, free_ctn);
+}
+/** \ingroup m_vm_management
+ * \brief Set the parameters of a given host
+ *
+ * \param vm a vm
+ * \param params a parameter object
+ */
+void MSG_vm_set_params(msg_vm_t vm, vm_params_t params)
+{
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->setParameters(params);
+}
+
+/** \ingroup m_vm_management
+ * \brief Get the parameters of a given host
+ *
+ * \param host a host
+ * \param params a prameter object
+ */
+void MSG_vm_get_params(msg_vm_t vm, vm_params_t params)
+{
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->parameters(params);
 }
 
 /** \ingroup msg_vm_management
@@ -182,7 +204,7 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char *name, int ncpus, int ramsize, 
 
   //XBT_INFO("dp rate %f migspeed : %f intensity mem : %d, updatespeed %f, hostspeed %f",params.dp_rate,
   //         params.mig_speed, dp_intensity, update_speed, host_speed);
-  vm->setParameters(&params);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->setParameters(&params);
 
   return vm;
 }
@@ -332,7 +354,7 @@ static int migration_rx_fun(int argc, char *argv[])
   struct migration_session *ms = (migration_session *) MSG_process_get_data(MSG_process_self());
 
   s_vm_params_t params;
-  ms->vm->parameters(&params);
+  static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->parameters(&params);
 
   int need_exit = 0;
 
@@ -636,7 +658,7 @@ static int migration_tx_fun(int argc, char *argv[])
   migration_session *ms = (migration_session *) MSG_process_get_data(MSG_process_self());
 
   s_vm_params_t params;
-  ms->vm->parameters(&params);
+  static_cast<simgrid::s4u::VirtualMachine*>(ms->vm)->parameters(&params);
   const sg_size_t ramsize   = params.ramsize;
   const sg_size_t devsize   = params.devsize;
   const int skip_stage1     = params.skip_stage1;

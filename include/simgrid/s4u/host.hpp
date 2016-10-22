@@ -90,8 +90,6 @@ public:
   int pstatesCount() const;
   void setPstate(int pstate_index);
   int pstate();
-  virtual void parameters(vm_params_t params);
-  virtual void setParameters(vm_params_t params);
   xbt_dict_t mountedStoragesAsDict(); // HACK
   xbt_dynar_t attachedStorages();
 

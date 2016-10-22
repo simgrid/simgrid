@@ -249,7 +249,7 @@ static int master_main(int argc, char *argv[])
   s_vm_params_t params;
   memset(&params, 0, sizeof(params));
   params.ramsize = 1L * 1000 * 1000 * 1000; // 1Gbytes
-  MSG_host_set_params(vm0, &params);
+  MSG_vm_set_params(vm0, &params);
   MSG_vm_start(vm0);
 
   cpu_speed = MSG_host_get_speed(pm0);

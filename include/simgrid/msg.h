@@ -258,8 +258,6 @@ XBT_PUBLIC(int)    MSG_host_get_nb_pstates(msg_host_t h);
 #define MSG_host_set_pstate(h, pstate) sg_host_set_pstate(h, pstate)
 XBT_PUBLIC(xbt_dynar_t) MSG_hosts_as_dynar();
 XBT_PUBLIC(int) MSG_get_host_number();
-XBT_PUBLIC(void) MSG_host_get_params(msg_host_t ind_pm, vm_params_t params);
-XBT_PUBLIC(void) MSG_host_set_params(msg_host_t ind_pm, vm_params_t params);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_mounted_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dynar_t) MSG_host_get_attached_storage_list(msg_host_t host);
 XBT_PUBLIC(xbt_dict_t) MSG_host_get_storage_content(msg_host_t host);
@@ -483,6 +481,9 @@ XBT_PUBLIC(int) MSG_vm_is_restoring(msg_vm_t vm);
 
 
 XBT_PUBLIC(const char*) MSG_vm_get_name(msg_vm_t vm);
+
+XBT_PUBLIC(void) MSG_vm_get_params(msg_vm_t vm, vm_params_t params);
+XBT_PUBLIC(void) MSG_vm_set_params(msg_vm_t vm, vm_params_t params);
 
 // TODO add VDI later
 XBT_PUBLIC(msg_vm_t) MSG_vm_create_core(msg_host_t location, const char *name);

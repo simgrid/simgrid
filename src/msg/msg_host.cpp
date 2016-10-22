@@ -238,28 +238,6 @@ int MSG_host_is_off(msg_host_t host)
 }
 
 /** \ingroup m_host_management
- * \brief Set the parameters of a given host
- *
- * \param host a host
- * \param params a prameter object
- */
-void MSG_host_set_params(msg_host_t host, vm_params_t params)
-{
-  host->setParameters(params);
-}
-
-/** \ingroup m_host_management
- * \brief Get the parameters of a given host
- *
- * \param host a host
- * \param params a prameter object
- */
-void MSG_host_get_params(msg_host_t host, vm_params_t params)
-{
-  host->parameters(params);
-}
-
-/** \ingroup m_host_management
  * \brief Return the speed of the processor (in flop/s) at a given pstate. See also @ref SURF_plugin_energy.
  *
  * \param  host host to test
