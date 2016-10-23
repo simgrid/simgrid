@@ -28,8 +28,6 @@ class XBT_PRIVATE StorageN11Action;
 
 class StorageN11Model : public StorageModel {
 public:
-  StorageN11Model();
-  ~StorageN11Model();
   Storage *createStorage(const char* id, const char* type_id,
        const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach) override;
   double nextOccuringEvent(double now) override;

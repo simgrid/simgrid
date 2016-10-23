@@ -279,5 +279,5 @@ void surf_cpu_action_set_bound(surf_action_t action, double bound) {
 }
 
 surf_file_t surf_storage_action_get_file(surf_action_t action){
-  return static_cast<simgrid::surf::StorageAction*>(action)->p_file;
+  return static_cast<simgrid::surf::StorageAction*>(action)->file_;
 }

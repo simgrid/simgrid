@@ -246,10 +246,10 @@ public:
 
   void setState(simgrid::surf::Action::State state) override;
 
-  e_surf_action_storage_type_t m_type;
-  Storage *p_storage;
-  surf_file_t p_file;
-  double progress;
+  e_surf_action_storage_type_t type_;
+  Storage* storage_;
+  surf_file_t file_;
+  double progress_;
 };
 
 }

@@ -37,6 +37,7 @@ simgrid::xbt::signal<void(StorageAction*, Action::State, Action::State)> storage
 
 StorageModel::StorageModel(): Model()
 {
+  maxminSystem_ = lmm_system_new(true /* lazy update */);
 }
 
 StorageModel::~StorageModel(){
@@ -175,18 +176,18 @@ sg_size_t Storage::getUsedSize(){
 /**********
  * Action *
  **********/
-StorageAction::StorageAction(Model *model, double cost, bool failed,
-                             Storage *storage, e_surf_action_storage_type_t type)
-: Action(model, cost, failed)
-, m_type(type), p_storage(storage), p_file(nullptr){
-  progress = 0;
+StorageAction::StorageAction(Model* model, double cost, bool failed, Storage* storage,
+                             e_surf_action_storage_type_t type)
+    : Action(model, cost, failed), type_(type), storage_(storage), file_(nullptr)
+{
+  progress_ = 0;
 };
 
-StorageAction::StorageAction(Model *model, double cost, bool failed, lmm_variable_t var,
-                             Storage *storage, e_surf_action_storage_type_t type)
-  : Action(model, cost, failed, var)
-  , m_type(type), p_storage(storage), p_file(nullptr){
-  progress = 0;
+StorageAction::StorageAction(Model* model, double cost, bool failed, lmm_variable_t var, Storage* storage,
+                             e_surf_action_storage_type_t type)
+    : Action(model, cost, failed, var), type_(type), storage_(storage), file_(nullptr)
+{
+  progress_ = 0;
 }
 
 void StorageAction::setState(Action::State state){
