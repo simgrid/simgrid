@@ -20,9 +20,7 @@ XBT_LOG_NEW_DEFAULT_CATEGORY(msg_pmm, "Messages specific for this msg example");
 #define MAILBOX_NAME_SIZE 10
 #define NEIGHBOURS_COUNT GRID_SIZE - 1
 
-/*
- * The job sent to every node
- */
+/* The job sent to every node */
 typedef struct s_node_job{
   int row;
   int col;
@@ -30,16 +28,18 @@ typedef struct s_node_job{
   int nodes_in_col[NEIGHBOURS_COUNT];
   xbt_matrix_t A;
   xbt_matrix_t B;
-} s_node_job_t, *node_job_t;
+} s_node_job_t;
 
-/*
- * Structure for recovering results
- */
+typedef s_node_job_t *node_job_t;
+
+/* Structure for recovering results */
 typedef struct s_result {
   int row;
   int col;
   xbt_matrix_t sC;
-} s_result_t, *result_t;
+} s_result_t;
+
+typedef s_result_t *result_t;
 
 int node(int argc, char **argv);
 static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs);
@@ -53,7 +53,8 @@ static void task_cleanup(void *arg);
 int node(int argc, char **argv)
 {
   char my_mbox[MAILBOX_NAME_SIZE];
-  node_job_t myjob, jobs[GRID_NUM_NODES];
+  node_job_t myjob;
+  node_job_t jobs[GRID_NUM_NODES];
   xbt_matrix_t A = NULL;
   xbt_matrix_t B = NULL;
   xbt_matrix_t C = NULL;
@@ -274,16 +275,17 @@ static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
     jobs[node]->row = row;
     jobs[node]->col = col;
 
-    /* Compute who are the nodes in the same row and column */
-    /* than the node receiving this job */
-    for (int j = 0, k = 0; j < GRID_SIZE; j++) {
+    /* Compute who are the nodes in the same row and column than the node receiving this job */
+    int k=0;
+    for (int j = 0; j < GRID_SIZE; j++) {
       if (node != (GRID_SIZE * row) + j) {
         jobs[node]->nodes_in_row[k] = (GRID_SIZE * row) + j;
         k++;
       }
     }
 
-    for (int j = 0, k = 0; j < GRID_SIZE; j++) {
+    k=0;
+    for (int j = 0; j < GRID_SIZE; j++) {
       if (node != (GRID_SIZE * j) + col) {
         jobs[node]->nodes_in_col[k] = (GRID_SIZE * j) + col;
         k++;
@@ -296,7 +298,8 @@ static void create_jobs(xbt_matrix_t A, xbt_matrix_t B, node_job_t *jobs)
     jobs[node]->B =
       xbt_matrix_new_sub(B, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE, NODE_MATRIX_SIZE * row, NODE_MATRIX_SIZE * col, NULL);
 
-    if (++col >= GRID_SIZE){
+    col++;
+    if (col >= GRID_SIZE){
       col = 0;
       row++;
     }

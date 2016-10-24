@@ -27,7 +27,9 @@ typedef struct s_message {
   const char *data_block;
   unsigned int data_length;
   unsigned int num_pieces;
-} s_message_t, *message_t;
+} s_message_t;
+
+typedef s_message_t *message_t;
 
 /* Message methods */
 msg_task_t task_message_new(e_message_type type, unsigned int len);

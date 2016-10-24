@@ -28,7 +28,9 @@ typedef struct s_broadcaster {
   xbt_dynar_iterator_t it;
   int max_pending_sends;
   xbt_dynar_t pending_sends;
-} s_broadcaster_t, *broadcaster_t;
+} s_broadcaster_t;
+
+typedef s_broadcaster_t *broadcaster_t;
 
 xbt_dynar_t build_hostlist_from_hostcount(int hostcount); 
 
