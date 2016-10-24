@@ -5,6 +5,7 @@
 
 #include "xbt/log.h"
 
+#include "simgrid/s4u/host.hpp"
 #include "src/kernel/routing/AsImpl.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 
@@ -19,12 +20,19 @@ namespace simgrid {
     xbt_assert(nullptr == xbt_lib_get_or_null(as_router_lib, name, ROUTING_ASR_LEVEL),
                "Refusing to create a second AS called '%s'.", name);
 
-    netcard_ = new simgrid::kernel::routing::NetCardImpl(name, simgrid::kernel::routing::NetCard::Type::As,
-                                                         static_cast<AsImpl*>(father));
+    netcard_ = new NetCardImpl(name, NetCard::Type::As, static_cast<AsImpl*>(father));
     xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, static_cast<void*>(netcard_));
-    XBT_DEBUG("Having set name '%s' id '%d'", name, netcard_->id());
+    XBT_DEBUG("AS '%s' created with the id '%d'", name, netcard_->id());
   }
   AsImpl::~AsImpl() = default;
+
+  void AsImpl::attachHost(s4u::Host* host)
+  {
+    if (hierarchy_ == RoutingMode::unset)
+      hierarchy_ = RoutingMode::base;
+
+    host->pimpl_netcard = new NetCardImpl(host->name().c_str(), NetCard::Type::Host, this);
+  }
 
   xbt_dynar_t AsImpl::getOneLinkRoutes()
   {

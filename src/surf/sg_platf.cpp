@@ -77,14 +77,9 @@ void sg_platf_exit() {
 void sg_platf_new_host(sg_platf_host_cbarg_t host)
 {
   simgrid::kernel::routing::AsImpl* current_routing = routing_get_current();
-  if (current_routing->hierarchy_ == simgrid::kernel::routing::AsImpl::RoutingMode::unset)
-    current_routing->hierarchy_ = simgrid::kernel::routing::AsImpl::RoutingMode::base;
-
-  simgrid::kernel::routing::NetCard *netcard =
-      new simgrid::kernel::routing::NetCardImpl(host->id, simgrid::kernel::routing::NetCard::Type::Host, current_routing);
 
   simgrid::s4u::Host* h = new simgrid::s4u::Host(host->id);
-  h->pimpl_netcard = netcard;
+  current_routing->attachHost(h);
 
   if (host->coord && strcmp(host->coord, "")) {
     unsigned int cursor;
@@ -112,7 +107,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
     cpu->setSpeedTrace(host->speed_trace);
 
   new simgrid::surf::HostImpl(h, mount_list);
-  xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, (void*)mount_list);
+  xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, static_cast<void*>(mount_list));
 
   mount_list = nullptr;
 

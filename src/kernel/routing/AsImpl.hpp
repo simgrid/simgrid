@@ -30,6 +30,9 @@ protected:
   ~AsImpl() override;
   
 public:
+  /** @brief attach the given host to that AS */
+  void attachHost(s4u::Host * host);
+
   /**
    * @brief Probe the routing path between two points
    *
