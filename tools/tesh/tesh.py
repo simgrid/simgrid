@@ -128,6 +128,7 @@ class FileReader(Singleton):
         else:
             self.filename_raw = filename
             self.filename = os.path.basename(filename)
+            self.abspath = os.path.abspath(filename)
             self.f = open(self.filename_raw)
         
         self.linenumber = 0
@@ -407,7 +408,7 @@ if __name__ == '__main__':
         print("Test suite from stdin")
     else:
         f = FileReader(options.teshfile)
-        print("Test suite '"+f.filename+"'")
+        print("Test suite '"+f.abspath+"'")
     
     if options.setenv is not None:
         for e in options.setenv:
