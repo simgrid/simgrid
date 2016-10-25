@@ -14,20 +14,17 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
-extern xbt_dict_t host_list; // FIXME:killme don't dupplicate the content of s4u::Host this way
+extern std::unordered_map<simgrid::xbt::string, simgrid::s4u::Host*>
+    host_list; // FIXME: don't dupplicate the content of s4u::Host this way
 
 void sg_host_exit()
 {
-  xbt_dict_cursor_t cursor = nullptr;
-  const char* name         = nullptr;
-  simgrid::s4u::Host* host = nullptr;
-  xbt_dict_foreach(host_list, cursor, name, host) host->destroy();
-  xbt_dict_free(&host_list);
+  host_list.clear();
 }
 
 size_t sg_host_count()
 {
-  return xbt_dict_length(host_list);
+  return host_list.size();
 }
 /** @brief Returns the host list
  *
@@ -64,16 +61,22 @@ sg_host_t sg_host_by_name(const char *name)
   return simgrid::s4u::Host::by_name_or_null(name);
 }
 
+static int hostcmp_voidp(const void* pa, const void* pb)
+{
+  return strcmp((*static_cast<simgrid::s4u::Host* const*>(pa))->name().c_str(),
+                (*static_cast<simgrid::s4u::Host* const*>(pb))->name().c_str());
+}
+
 xbt_dynar_t sg_hosts_as_dynar()
 {
   xbt_dynar_t res = xbt_dynar_new(sizeof(sg_host_t),nullptr);
 
-  xbt_dict_cursor_t cursor = nullptr;
-  const char* name = nullptr;
-  simgrid::s4u::Host* host = nullptr;
-  xbt_dict_foreach(host_list, cursor, name, host)
+  for (auto kv : host_list) {
+    simgrid::s4u::Host* host = kv.second;
     if (host && host->pimpl_netcard && host->pimpl_netcard->isHost())
        xbt_dynar_push(res, &host);
+  }
+  xbt_dynar_sort(res, hostcmp_voidp);
   return res;
 }
 

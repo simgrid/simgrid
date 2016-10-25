@@ -20,7 +20,7 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
-xbt_dict_t host_list = nullptr; // FIXME: move it to Engine
+std::unordered_map<simgrid::xbt::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
 
 int MSG_HOST_LEVEL = -1;
 int USER_HOST_LEVEL = -1;
@@ -41,7 +41,7 @@ Host::Host(const char* name)
   : name_(name)
 {
   xbt_assert(sg_host_by_name(name) == nullptr, "Refusing to create a second host named '%s'.", name);
-  xbt_dict_set(host_list, name, this, nullptr);
+  host_list[name_] = this;
 }
 
 Host::~Host()
@@ -66,25 +66,23 @@ void Host::destroy()
 {
   if (!currentlyDestroying_) {
     currentlyDestroying_ = true;
-    xbt_dict_remove(host_list, name().c_str());
     onDestruction(*this);
+    host_list.erase(name_);
     delete this;
   }
 }
 
 Host* Host::by_name(std::string name)
 {
-  Host* host = Host::by_name_or_null(name.c_str());
-  // TODO, raise an exception instead?
-  if (host == nullptr)
-    xbt_die("No such host: '%s'", name.c_str());
-  return host;
+  return host_list.at(name); // Will raise a std::out_of_range if the host does not exist
 }
 Host* Host::by_name_or_null(const char* name)
 {
-  if (host_list == nullptr)
-    host_list = xbt_dict_new_homogeneous(nullptr);
-  return (Host*) xbt_dict_get_or_null(host_list, name);
+  try {
+    return host_list.at(name);
+  } catch (std::out_of_range& e) {
+    return nullptr;
+  }
 }
 
 Host *Host::current(){
