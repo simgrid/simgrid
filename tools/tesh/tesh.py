@@ -164,6 +164,7 @@ class TeshState(Singleton):
         self.args_suffix = ""
         self.ignore_regexps_common = []
         self.wrapper = None
+        self.keep = False
     
     def add_thread(self, thread):
         self.threads.append(thread)
@@ -344,6 +345,16 @@ class Cmd(object):
                     print(line)
                 print("Test suite `"+FileReader().filename+"': NOK (<"+str(FileReader())+"> output mismatch)")
                 if lock is not None: lock.release()
+                if TeshState().keep:
+                    f = open('obtained','w')
+                    obtained = stdout_data.split("\n")
+                    while len(obtained) > 0 and obtained[-1] == "":
+                        del obtained[-1]
+                    obtained = self.remove_ignored_lines(obtained)
+                    for line in obtained:
+                        f.write("> "+line+"\n")
+                    f.close()
+                    print("Obtained output kept as requested: "+os.path.abspath("obtained"))
                 exit(2)
         
         #print ((proc.returncode, self.expect_return))
@@ -387,6 +398,7 @@ if __name__ == '__main__':
     group1.add_argument('--log', metavar='arg', help='add parameter --log=arg to each command line')
     group1.add_argument('--ignore-jenkins', action='store_true', help='ignore all cruft generated on SimGrid continous integration servers')
     group1.add_argument('--wrapper', metavar='arg', help='Run each command in the provided wrapper (eg valgrind)')
+    group1.add_argument('--keep', action='store_true', help='Keep the obtained output when it does not match the expected one')
 
     try:
         options = parser.parse_args()
@@ -421,6 +433,9 @@ if __name__ == '__main__':
 
     if options.wrapper is not None:
         TeshState().wrapper = options.wrapper
+        
+    if options.keep:
+        TeshState().keep = True
     
     #cmd holds the current command line
     # tech commands will add some parameters to it
