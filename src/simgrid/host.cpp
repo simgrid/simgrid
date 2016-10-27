@@ -4,6 +4,8 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <vector>
+
 #include "xbt/dict.h"
 #include "simgrid/host.h"
 #include <xbt/Extendable.hpp>
@@ -19,7 +21,23 @@ extern std::unordered_map<simgrid::xbt::string, simgrid::s4u::Host*>
 
 void sg_host_exit()
 {
-  host_list.clear();
+  /* copy all names to not modify the map while iterating over it.
+   *
+   * Plus, the hosts are destroyed in the lexicographic order to ensure
+   * that the output is reproducible: we don't want to kill them in the
+   * pointer order as it could be platform-dependent, which would break
+   * the tests.
+   */
+  std::vector<std::string> names = std::vector<std::string>();
+  for (auto kv : host_list)
+    names.push_back(kv.second->name());
+
+  std::sort(names.begin(), names.end());
+
+  for (auto name : names)
+    host_list.at(name)->destroy();
+
+  // host_list.clear(); This would be sufficient if the dict would contain smart_ptr. It's now useless
 }
 
 size_t sg_host_count()
