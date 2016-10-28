@@ -118,7 +118,7 @@ int main(int argc, char *argv[])
   MSG_create_environment(argv[1]);
   MSG_function_register("host", host);
   xbt_dynar_t hosts =  MSG_hosts_as_dynar();
-  MSG_process_create(NULL, host, NULL, xbt_dynar_get_as(hosts,0,msg_host_t) );
+  MSG_process_create(NULL, host, NULL, xbt_dynar_get_as(hosts, 3, msg_host_t));
   xbt_dynar_free(&hosts);
 
   msg_error_t res = MSG_main();
