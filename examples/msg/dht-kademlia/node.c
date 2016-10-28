@@ -127,8 +127,8 @@ unsigned int get_id_in_prefix(unsigned int id, unsigned int prefix)
   */
 unsigned int get_node_prefix(unsigned int id, unsigned int nb_bits)
 {
-  unsigned int j, size = sizeof(unsigned int) * 8;
-  for (j = 0; j < size; j++) {
+  unsigned int size = sizeof(unsigned int) * 8;
+  for (unsigned int j = 0; j < size; j++) {
     if (((id >> (size - 1 - j)) & 0x1) != 0) {
       return nb_bits - (j);
     }

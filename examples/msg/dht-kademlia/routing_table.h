@@ -13,13 +13,17 @@
 typedef struct s_bucket {
   xbt_dynar_t nodes;            //Nodes in the bucket.
   unsigned int id;              //bucket id
-} s_bucket_t, *bucket_t;
+} s_bucket_t;
+
+typedef s_bucket_t *bucket_t;
 
 /* Node routing table */
 typedef struct s_routing_table {
   unsigned int id;              //node id of the client's routing table
   s_bucket_t *buckets;          //Node bucket list - 160 sized.
-} s_routing_table_t, *routing_table_t;
+} s_routing_table_t;
+
+typedef s_routing_table_t *routing_table_t;
 
 // bucket functions
 unsigned int bucket_find_id(bucket_t bucket, unsigned int id);

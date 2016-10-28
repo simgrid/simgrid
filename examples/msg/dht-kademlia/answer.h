@@ -14,7 +14,9 @@ typedef struct s_node_answer {
   unsigned int destination_id;
   xbt_dynar_t nodes;            //Dynar of node_contact_t
   unsigned int size;
-} s_answer_t, *answer_t;
+} s_answer_t;
+
+typedef s_answer_t *answer_t;
 
 #include "node.h"
 
