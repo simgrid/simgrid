@@ -16,7 +16,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(sg_host, sd, "Logging specific to sg_hosts");
 
-extern std::unordered_map<simgrid::xbt::string, simgrid::s4u::Host*>
+extern std::unordered_map<std::string, simgrid::s4u::Host*>
     host_list; // FIXME: don't dupplicate the content of s4u::Host this way
 
 void sg_host_exit()

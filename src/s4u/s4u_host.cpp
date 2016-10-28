@@ -20,7 +20,7 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/s4u/storage.hpp"
 
-std::unordered_map<simgrid::xbt::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
+std::unordered_map<std::string, simgrid::s4u::Host*> host_list; // FIXME: move it to Engine
 
 int MSG_HOST_LEVEL = -1;
 int USER_HOST_LEVEL = -1;
@@ -78,11 +78,9 @@ Host* Host::by_name(std::string name)
 }
 Host* Host::by_name_or_null(const char* name)
 {
-  try {
-    return host_list.at(name);
-  } catch (std::out_of_range& e) {
+  if (host_list.find(name) == host_list.end())
     return nullptr;
-  }
+  return host_list.at(name);
 }
 
 Host *Host::current(){
