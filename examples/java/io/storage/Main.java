@@ -25,7 +25,7 @@ public class Main {
     Msg.createEnvironment(args[0]);
 
     Host[] hosts = Host.all();
-    new io.storage.Client(hosts[0],0).start();
+    new io.storage.Client(hosts[3],0).start();
 
     Msg.run();
     }
