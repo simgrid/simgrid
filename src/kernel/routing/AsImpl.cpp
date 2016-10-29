@@ -39,7 +39,7 @@ namespace simgrid {
     return nullptr;
   }
 
-  /** @brief Get the common ancestor and its first childs in each line leading to src and dst */
+  /** @brief Get the common ancestor and its first children in each line leading to src and dst */
   static void find_common_ancestors(NetCard* src, NetCard* dst,
                                     /* OUT */ AsImpl** common_ancestor, AsImpl** src_ancestor, AsImpl** dst_ancestor)
   {

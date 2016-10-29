@@ -49,7 +49,8 @@ void AsClusterDragonfly::parse_specific_arguments(sg_platf_cluster_cbarg_t clust
 
   // TODO : we have to check for zeros and negative numbers, or it might crash
   if (parameters.size() != 4){
-    surf_parse_error("Dragonfly are defined by the number of groups, chassiss per groups, blades per chassis, nodes per blade");
+    surf_parse_error(
+        "Dragonfly are defined by the number of groups, chassis per groups, blades per chassis, nodes per blade");
   }
 
   // Blue network : number of groups, number of links between each group
@@ -61,7 +62,7 @@ void AsClusterDragonfly::parse_specific_arguments(sg_platf_cluster_cbarg_t clust
   this->numGroups_=xbt_str_parse_int(tmp[0].c_str(), "Invalid number of groups: %s");
   this->numLinksBlue_=xbt_str_parse_int(tmp[1].c_str(), "Invalid number of links for the blue level: %s");
 
- // Black network : number of chassiss/group, number of links between each router on the black network
+  // Black network : number of chassis/group, number of links between each router on the black network
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if(tmp.size() != 2) {
     surf_parse_error("Dragonfly topologies are defined by 3 levels with 2 elements each, and one with one element");

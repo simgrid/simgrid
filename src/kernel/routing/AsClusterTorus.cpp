@@ -41,21 +41,21 @@ namespace simgrid {
        * Create all links that exist in the torus.
        * Each rank creates @a dimensions-1 links
        */
-      int neighbour_rank_id = 0;        // The other node the link connects
-      int current_dimension = 0,        // which dimension are we currently in?
+      int neighbor_rank_id  = 0; // The other node the link connects
+      int current_dimension = 0, // which dimension are we currently in?
           // we need to iterate over all dimensions
           // and create all links there
-          dim_product = 1;      // Needed to calculate the next neighbour_id
+          dim_product = 1; // Needed to calculate the next neighbor_id
       for (j = 0; j < xbt_dynar_length(dimensions_); j++) {
 
         s_sg_platf_link_cbarg_t link;
         memset(&link, 0, sizeof(link));
         current_dimension = xbt_dynar_get_as(dimensions_, j, int);
-        neighbour_rank_id =
-            (((int) rank / dim_product) % current_dimension ==
-                current_dimension - 1) ? rank - (current_dimension - 1) * dim_product : rank + dim_product;
+        neighbor_rank_id  = (((int)rank / dim_product) % current_dimension == current_dimension - 1)
+                               ? rank - (current_dimension - 1) * dim_product
+                               : rank + dim_product;
         //name of neighbor is not right for non contiguous cluster radicals (as id != rank in this case)
-        link_id = bprintf("%s_link_from_%i_to_%i", cluster->id, id, neighbour_rank_id);
+        link_id        = bprintf("%s_link_from_%i_to_%i", cluster->id, id, neighbor_rank_id);
         link.id = link_id;
         link.bandwidth = cluster->bw;
         link.latency = cluster->lat;
@@ -75,7 +75,7 @@ namespace simgrid {
         }
         /*
          * Add the link to its appropriate position;
-         * note that position rankId*(xbt_dynar_length(dimensions)+has_loopack?+has_limiter?)
+         * note that position rankId*(xbt_dynar_length(dimensions)+has_loopback?+has_limiter?)
          * holds the link "rankId->rankId"
          */
         privateLinks_.insert({position + j, info});

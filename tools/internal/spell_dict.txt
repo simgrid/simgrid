@@ -45,6 +45,7 @@ LGPL
 libdw
 libunwind
 lmm
+loopback
 LTL
 malloc
 Mbytes

@@ -12,7 +12,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-/* This derivates from cluster because each host has a private link */
+/* This extends cluster because each host has a private link */
 class XBT_PRIVATE AsVivaldi: public AsCluster {
 public:
   explicit AsVivaldi(As* father, const char* name);

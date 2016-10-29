@@ -407,8 +407,8 @@ void AsClusterFatTree::parse_specific_arguments(sg_platf_cluster_cbarg_t cluster
 
   // The first parts of topo_parameters should be the levels number
   this->levels_ = xbt_str_parse_int(parameters[0].c_str(), "First parameter is not the amount of levels: %s");
-  
-  // Then, a l-sized vector standing for the childs number by level
+
+  // Then, a l-sized vector standing for the children number by level
   boost::split(tmp, parameters[1], boost::is_any_of(","));
   if(tmp.size() != this->levels_) {
     surf_parse_error("Fat trees are defined by the levels number and 3 vectors" 
