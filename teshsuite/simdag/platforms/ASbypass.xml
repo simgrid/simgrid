@@ -1,0 +1,43 @@
+<?xml version="1.0"?>
+<!DOCTYPE platform SYSTEM "http://simgrid.gforge.inria.fr/simgrid/simgrid.dtd">
+<platform version="4">
+    <AS id="AS0" routing="Full">
+        <AS id="AS1" routing="Full">
+       
+            <cluster id="mycluster" prefix="my" radical="1,2" suffix=".cluster" speed="4200Mf" 
+                     bw="1000Mbps" lat="500us" sharing_policy="FATPIPE" router_id="mycluster_router"> 
+            </cluster>
+      
+            <AS id="AS1_gw" routing="Full">
+                <router id="AS1_router"/>
+            </AS>
+              
+            <link id="AS1_backbone" bandwidth="100Gbps" latency="250us"/>
+ 
+            <ASroute src="mycluster" dst="AS1_gw" gw_src="mycluster_router" gw_dst="AS1_router">
+                <link_ctn id="AS1_backbone"/>
+            </ASroute>
+        </AS>
+          
+        <AS id="AS2" routing="None">
+            <host id="myhost" speed="5Gf" core="48"/>
+        </AS>
+                 
+        <link id="AS1-AS2" bandwidth="24885480000bps" latency="500us"/>
+        <link id="AS1-AS2-mycluster" bandwidth="24885480000bps" latency="500us"/>
+        <link id="mycluster-AS1-AS2" bandwidth="12442740000bps" latency="500us"/>
+
+        <ASroute src="AS1" dst="AS2" gw_src="AS1_router" gw_dst="myhost">
+            <link_ctn id="AS1-AS2"/> 
+        </ASroute>
+
+        <bypassASroute src="mycluster" dst="AS2" gw_src="mycluster_router" gw_dst="myhost">
+            <link_ctn id="mycluster-AS1-AS2"/>
+            <link_ctn id="AS1-AS2"/>
+        </bypassASroute>
+        <bypassASroute src="AS2" dst="mycluster" gw_src="myhost" gw_dst="mycluster_router">
+            <link_ctn id="AS1-AS2"/>
+            <link_ctn id="AS1-AS2-mycluster"/>
+        </bypassASroute>
+    </AS>
+</platform>
