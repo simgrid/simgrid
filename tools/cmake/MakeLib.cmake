@@ -99,6 +99,10 @@ if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
 endif()
 
+if("${CMAKE_SYSTEM}" MATCHES "FreeBSD")
+  set(SIMGRID_DEP "${SIMGRID_DEP} -lprocstat")
+endif()
+
 # Compute the dependencies of SMPI
 ##################################
 if(enable_smpi AND APPLE)
