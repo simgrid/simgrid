@@ -119,6 +119,11 @@ endif()
 execute_process(COMMAND   ${CMAKE_LINKER}   -version    OUTPUT_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
+### Set the library providing dlopen
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  find_library(dl DL_LIBRARY)
+endif("${CMAKE_SYSTEM}" MATCHES "Linux")
+
 ### Find programs and paths
 FIND_PROGRAM(GCOV_PATH gcov)
 include(FindPerl)
@@ -410,7 +415,7 @@ endif()
 ### Check for GNU dynamic linker
 CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 if (HAVE_DLFCN_H)
-  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
+  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c ${DL_LIBRARY} -o test_gnu_ld
                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                   OUTPUT_VARIABLE HAVE_GNU_LD_compil
   )
