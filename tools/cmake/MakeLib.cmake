@@ -20,7 +20,6 @@ endif()
 
 # Compute the dependencies of SimGrid
 #####################################
-set(SIMGRID_DEP "-lm")
 if (HAVE_BOOST_CONTEXTS)
   set(SIMGRID_DEP "${SIMGRID_DEP} ${Boost_CONTEXT_LIBRARY}")
 endif()
@@ -67,23 +66,6 @@ if(HAVE_GRAPHVIZ)
     if(HAVE_AGRAPH_LIB)
       SET(SIMGRID_DEP "${SIMGRID_DEP} -lagraph -lcdt")
     endif()
-  endif()
-endif()
-
-if(HAVE_MC)
-  # The availability of libunwind was checked in CompleteInFiles.cmake
-  #   (that includes FindLibunwind.cmake), so simply load it now.
-
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind -lunwind-ptrace")
-
-  # Same for libdw
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -ldw")
-  # This supposes that the host machine is either an AMD or a X86.
-  # This is deeply wrong, and should be fixed by manually loading -lunwind-PLAT (FIXME)
-  if(PROCESSOR_x86_64)
-    SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86_64")
-  else()
-    SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86")
   endif()
 endif()
 

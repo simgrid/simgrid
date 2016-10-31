@@ -172,7 +172,8 @@ endif()
 
 include_directories(${INCLUDES})
 
-
+# library dependency cannot start with a space (CMP0004), so initialize it with something that is never desactivated.
+set(SIMGRID_DEP "-lm") 
 
 ### Determine the assembly flavor that we need today
 set(HAVE_RAW_CONTEXTS 0)
@@ -275,18 +276,6 @@ else()
   endif()
 endif()
 
-# Try again to see if we have libboost-graph
-#find_package(Boost 1.42 COMPONENTS graph)
-#set(Boost_FOUND 1) # We don't care of whether this component is missing
-#
-#if(Boost_FOUND AND Boost_GRAPH_FOUND)
-#  set(HAVE_BOOST_GRAPH 1)
-#else()
-#  message ("   boost        : found.")
-#  message ("   boost-graph  : missing. Install libboost-graph-dev for this optional feature.")
-#  set(HAVE_BOOST_GRAPH 0)
-#endif()
-
 # Checks for header libraries functions.
 CHECK_LIBRARY_EXISTS(rt      clock_gettime           "" HAVE_POSIX_GETTIME)
 
@@ -360,6 +349,10 @@ if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
   SET(HAVE_MMALLOC 1)
 else()
   SET(HAVE_MMALLOC 0)
+  if(enable_model-checking)
+    message(STATUS "Warning: support for model-checking has been disabled because you are missing either mmap or __thread.")
+  endif()
+  SET(enable_model-checking 0)
 endif()
 
 if(enable_jedule)
@@ -374,16 +367,29 @@ else()
   SET(HAVE_MALLOCATOR 0)
 endif()
 
-if(enable_model-checking AND HAVE_MMALLOC)
-  SET(HAVE_MC 1)
-  include(FindLibunwind)
-  include(FindLibdw)
+include(FindLibunwind)
+if(HAVE_LIBUNWIND)
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind -lunwind-ptrace")
+  # This supposes that the host machine is either an AMD or a X86.
+  # This is deeply wrong, and should be fixed by manually loading -lunwind-PLAT (FIXME)
+  if(PROCESSOR_x86_64)
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86_64")
+  else()
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-x86")
+  endif()
 else()
   if(enable_model-checking)
-    message(STATUS "Warning: support for model-checking has been disabled because you are missing either mmap or __thread.")
+    message(FATAL_ERROR "Please either install the libunwind7-dev package (or equivalent) or turn off the model-checking option of SimGrid.")
   endif()
-  SET(HAVE_MC 0)
-  SET(HAVE_MMALLOC 0)
+endif()
+
+if(enable_model-checking)
+  SET(HAVE_MC 1)
+  
+  include(FindLibdw)  
+  SET(SIMGRID_DEP "${SIMGRID_DEP} -ldw")
+else()
+  SET(HAVE_MC 0)  
 endif()
 
 if (enable_model-checking AND enable_ns3)
