@@ -119,6 +119,11 @@ endif()
 execute_process(COMMAND   ${CMAKE_LINKER}   -version    OUTPUT_VARIABLE LINKER_VERSION)
 string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
+### Set the library providing dlopen
+if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  find_library(dl DL_LIBRARY)
+endif("${CMAKE_SYSTEM}" MATCHES "Linux")
+
 ### Find programs and paths
 FIND_PROGRAM(GCOV_PATH gcov)
 include(FindPerl)
@@ -314,6 +319,7 @@ CHECK_FUNCTION_EXISTS(sysconf HAVE_SYSCONF)
 CHECK_FUNCTION_EXISTS(popen HAVE_POPEN)
 CHECK_FUNCTION_EXISTS(process_vm_readv HAVE_PROCESS_VM_READV)
 CHECK_FUNCTION_EXISTS(mmap HAVE_MMAP)
+CHECK_FUNCTION_EXISTS(mremap HAVE_MREMAP)
 
 CHECK_SYMBOL_EXISTS(vasprintf stdio.h HAVE_VASPRINTF)
 if(MINGW)
@@ -334,16 +340,6 @@ if(HAVE_thread_storage_run)
 else()
   set(HAVE_THREAD_LOCAL_STORAGE 0)
 endif()
-
-# Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
-IF(HAVE_MMAP AND
-   NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND 
-   NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND 
-   NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND 
-   NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
-  SET(HAVE_MMAP 0)
-  message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
-ENDIF()
 
 if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
   SET(HAVE_MMALLOC 1)
@@ -383,6 +379,12 @@ else()
   endif()
 endif()
 
+if(enable_model-checking AND NOT "${CMAKE_SYSTEM}" MATCHES "Linux")
+  message(WARNING "Support for model-checking has not been enabled on ${CMAKE_SYSTEM}: disabling it")
+  set(enable_model-checking FALSE)
+  set(HAVE_MC 0)
+endif()
+
 if(enable_model-checking)
   SET(HAVE_MC 1)
   
@@ -398,12 +400,9 @@ endif()
 
 if(enable_smpi)
   SET(HAVE_SMPI 1)
-  if("${CMAKE_SYSTEM}" MATCHES "Linux")
+  if("${CMAKE_SYSTEM}" MATCHES "Linux|FreeBSD")
     SET(USE_LIBUTIL 0)
     SET(HAVE_PRIVATIZATION 1)
-  elseif("${CMAKE_SYSTEM}" MATCHES "^FreeBSD")
-    SET(USE_LIBUTIL 0)
-    SET(HAVE_PRIVATIZATION 0)
   else()
     message (STATUS "Warning:  no support for SMPI automatic privatization on this platform")
     SET(HAVE_PRIVATIZATION 0)
@@ -416,7 +415,7 @@ endif()
 ### Check for GNU dynamic linker
 CHECK_INCLUDE_FILE("dlfcn.h" HAVE_DLFCN_H)
 if (HAVE_DLFCN_H)
-  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c -ldl -o test_gnu_ld
+  execute_process(COMMAND ${CMAKE_C_COMPILER} ${CMAKE_HOME_DIRECTORY}/tools/cmake/test_prog/prog_gnu_dynlinker.c ${DL_LIBRARY} -o test_gnu_ld
                   WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                   OUTPUT_VARIABLE HAVE_GNU_LD_compil
   )

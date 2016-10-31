@@ -21,11 +21,11 @@
 #include "simgrid/modelchecker.h"
 #include "src/mc/mc_replay.h"
 
+#include <sys/types.h>
 #ifndef WIN32
 #include <sys/mman.h>
 #endif
 #include <sys/stat.h>
-#include <sys/types.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <math.h> // sqrt
@@ -747,11 +747,15 @@ void smpi_initialize_global_memory_segments(){
 
   for (int i=0; i< smpi_process_count(); i++){
       //create SIMIX_process_count() mappings of this size with the same data inside
+      int file_descriptor;
       void *address = nullptr;
-      char path[] = "/dev/shm/my-buffer-XXXXXX";
+      char path[24];
       int status;
 
-      int file_descriptor= mkstemp (path);
+      do {
+        snprintf(path, sizeof(path), "/smpi-buffer-%06x", rand()%0xffffff);
+        file_descriptor = shm_open(path, O_RDWR|O_CREAT|O_EXCL, S_IRUSR|S_IWUSR);
+      } while (file_descriptor == -1 && errno == EEXIST);
       if (file_descriptor < 0) {
         if (errno==EMFILE) {
           xbt_die("Impossible to create temporary file for memory mapping: %s\n\
@@ -772,10 +776,6 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
             strerror(errno));
       }
 
-      status = unlink (path);
-      if (status)
-        xbt_die("Impossible to unlink temporary file for memory mapping");
-
       status = ftruncate(file_descriptor, smpi_size_data_exe);
       if(status)
         xbt_die("Impossible to set the size of the temporary file for memory mapping");
@@ -784,6 +784,10 @@ Ask the Internet about tutorials on how to increase the files limit such as: htt
       address = mmap (nullptr, smpi_size_data_exe, PROT_READ | PROT_WRITE, MAP_SHARED, file_descriptor, 0);
       if (address == MAP_FAILED)
         xbt_die("Couldn't find a free region for memory mapping");
+
+      status = shm_unlink(path);
+      if (status)
+        xbt_die("Impossible to unlink temporary file for memory mapping");
 
       //initialize the values
       memcpy(address, TOPAGE(smpi_start_data_exe), smpi_size_data_exe);

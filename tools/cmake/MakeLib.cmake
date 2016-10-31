@@ -52,7 +52,7 @@ if(HAVE_LUA)
     COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/examples/simdag/
     COMMAND ${CMAKE_COMMAND} -E create_symlink ${CMAKE_BINARY_DIR}/lib/libsimgrid.${LIB_EXE} ${CMAKE_BINARY_DIR}/examples/simdag/simgrid.${LIB_EXE} #for test
     )
-  SET(SIMGRID_DEP "${SIMGRID_DEP} ${LUA_LIBRARY} -ldl")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} ${LUA_LIBRARY} ${DL_LIBRARY}")
 endif()
 
 if(HAVE_PAPI)
@@ -70,7 +70,7 @@ if(HAVE_GRAPHVIZ)
 endif()
 
 if(HAVE_MC AND HAVE_GNU_LD)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -ldl")
+  SET(SIMGRID_DEP "${SIMGRID_DEP} ${DL_LIBRARY}")
 endif()
 
 if(HAVE_NS3)
@@ -79,6 +79,10 @@ endif()
 
 if(HAVE_POSIX_GETTIME)
   SET(SIMGRID_DEP "${SIMGRID_DEP} -lrt")
+endif()
+
+if("${CMAKE_SYSTEM}" MATCHES "FreeBSD")
+  set(SIMGRID_DEP "${SIMGRID_DEP} -lprocstat")
 endif()
 
 # Compute the dependencies of SMPI
