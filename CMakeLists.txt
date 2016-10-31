@@ -352,16 +352,6 @@ else()
   set(HAVE_THREAD_LOCAL_STORAGE 0)
 endif()
 
-# Our usage of mmap is Linux-specific (flag MAP_ANONYMOUS), but kFreeBSD uses a GNU libc
-IF(HAVE_MMAP AND
-   NOT "${CMAKE_SYSTEM}" MATCHES "Linux" AND 
-   NOT "${CMAKE_SYSTEM}" MATCHES "kFreeBSD" AND 
-   NOT "${CMAKE_SYSTEM}" MATCHES "GNU" AND 
-   NOT  "${CMAKE_SYSTEM}" MATCHES "Darwin")
-  SET(HAVE_MMAP 0)
-  message(STATUS "Warning: MMAP is thought as non functional on this architecture (${CMAKE_SYSTEM})")
-ENDIF()
-
 if(HAVE_MMAP AND HAVE_THREAD_LOCAL_STORAGE)
   SET(HAVE_MMALLOC 1)
 else()
@@ -380,6 +370,11 @@ else()
   SET(HAVE_MALLOCATOR 0)
 endif()
 
+if(enable_model-checking AND NOT "${CMAKE_SYSTEM}" MATCHES "Linux")
+  message(WARNING "Support for model-checking has not been enabled on ${CMAKE_SYSTEM}: disabling it")
+  set(enable_model-checking FALSE)
+  set(HAVE_MC 0)
+endif()
 if(enable_model-checking AND HAVE_MMALLOC)
   SET(HAVE_MC 1)
   include(FindLibunwind)
