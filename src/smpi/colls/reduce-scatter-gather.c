@@ -54,7 +54,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
     send_ptr = (void *) smpi_get_tmp_sendbuffer(new_count * extent);
     recv_ptr = (void *) smpi_get_tmp_recvbuffer(new_count * extent);
     tmp_buf = (void *) smpi_get_tmp_sendbuffer(new_count * extent);
-    memcpy(send_ptr, sendbuf, extent * count);
+    memcpy(send_ptr, sendbuf != MPI_IN_PLACE ? sendbuf : recvbuf, extent * count);
 
     //if ((rank != root))
     smpi_mpi_sendrecv(send_ptr, new_count, datatype, rank, tag,
@@ -233,7 +233,7 @@ int smpi_coll_tuned_reduce_scatter_gather(void *sendbuf, void *recvbuf,
     tmp_buf = (void *) smpi_get_tmp_sendbuffer(count * extent);
 
     //if ((rank != root))
-    smpi_mpi_sendrecv(sendbuf, count, datatype, rank, tag,
+    smpi_mpi_sendrecv(sendbuf != MPI_IN_PLACE ? sendbuf : recvbuf, count, datatype, rank, tag,
                  recvbuf, count, datatype, rank, tag, comm, &status);
 
     rem = comm_size - pof2;
