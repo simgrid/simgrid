@@ -212,7 +212,7 @@ if(MINGW)
   set(CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS "${CMAKE_SHARED_LIBRARY_LINK_CXX_FLAGS} -Wl,--add-stdcall-alias")
   
   # Specify the data model that we are using (yeah it may help Java)
-  if(ARCH_32_BITS) 
+  if(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     set(CMAKE_C_FLAGS   "${CMAKE_C_FLAGS}   -m32")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -m32")
   else()

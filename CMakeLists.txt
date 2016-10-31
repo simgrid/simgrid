@@ -177,7 +177,7 @@ set(SIMGRID_DEP "-lm")
 set(HAVE_RAW_CONTEXTS 0)
 include(CMakeDetermineSystem)
 IF(CMAKE_SYSTEM_PROCESSOR MATCHES ".86|AMD64|amd64")
-  IF(${ARCH_32_BITS})
+  IF(CMAKE_SIZEOF_VOID_P EQUAL 4) # 32 bits
     message(STATUS "System processor: i686 (${CMAKE_SYSTEM_PROCESSOR}, 32 bits)")
     set(PROCESSOR_i686 1)
     set(PROCESSOR_x86_64 0)
