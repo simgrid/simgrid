@@ -14,7 +14,7 @@
 #include "xbt/ex.h"
 
 SG_BEGIN_DECL()
-extern int xbt_log_no_loc; /* Do not show the backtrace on failed backtrace when doing our tests */
+XBT_PUBLIC_DATA(int) xbt_log_no_loc; /* Do not show the backtrace on failed backtrace when doing our tests */
 
 /**
  * @addtogroup XBT_error
