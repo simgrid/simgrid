@@ -7,6 +7,9 @@
 #include <cstdlib>
 
 #include <sys/mman.h>
+#ifdef __FreeBSD__
+# define MAP_POPULATE MAP_PREFAULT_READ
+#endif
 
 #include "mc/mc.h"
 #include "src/mc/mc_snapshot.h"
