@@ -50,12 +50,12 @@ namespace simgrid {
    *         common_ancestor
    *           /        \
    *          /          \
-   *         /            \          <- direct link
+   *         /            \          <- direct links
    *        /              \
    *       /                \
    *  src_ancestor     dst_ancestor  <- must be different in the recursive case
    *      |                   |
-   *     ...                 ...     <-- possibly long (or null) pathes
+   *     ...                 ...     <-- possibly long pathes (one hop or more)
    *      |                   |
    *     src                 dst
    *  @endverbatim
@@ -64,11 +64,11 @@ namespace simgrid {
    *  @verbatim
    *                  platform root
    *                        |
-   *                       ...                      <- possibly long path
+   *                       ...                      <-- possibly long path
    *                        |
    * common_ancestor==src_ancestor==dst_ancestor    <-- all the same value
    *                   /        \
-   *                  /          \                  <- direct links
+   *                  /          \                  <-- direct links (exactly one hop)
    *                 /            \
    *              src              dst
    *  @endverbatim
@@ -84,7 +84,7 @@ namespace simgrid {
    *                  |
    *  src == src_ancestor==dst_ancestor==common_ancestor <-- same value
    *                  |
-   *                 ...                <-- possibly long (or null) path
+   *                 ...                <-- possibly long path (one hop or more)
    *                  |
    *                 dst
    *  @endverbatim
@@ -100,15 +100,7 @@ namespace simgrid {
       return;
     }
 
-  /* engage the full recursive search */
-
-#define ROUTING_HIERARCHY_MAXDEPTH 32 /* increase if it is not enough */
-    AsImpl* path_src[ROUTING_HIERARCHY_MAXDEPTH];
-    AsImpl* path_dst[ROUTING_HIERARCHY_MAXDEPTH];
-    int index_src = 0;
-    int index_dst = 0;
-    AsImpl* current_src;
-    AsImpl* current_dst;
+    /* engage the full recursive search */
 
     /* (1) find the path to root of src and dst*/
     AsImpl* src_as = src->containingAS();
@@ -118,14 +110,17 @@ namespace simgrid {
     xbt_assert(dst_as, "Host %s must be in an AS", dst->name());
 
     /* (2) find the path to the root routing component */
-    for (AsImpl* current = src_as; current != nullptr; current = static_cast<AsImpl*>(current->father())) {
-      xbt_assert(index_src < ROUTING_HIERARCHY_MAXDEPTH,
-                 "ROUTING_HIERARCHY_MAXDEPTH should be increased for element %s", src->name());
-      path_src[index_src++] = current;
+    std::vector<AsImpl*> path_src;
+    AsImpl* current = src->containingAS();
+    while (current != nullptr) {
+      path_src.push_back(current);
+      current = static_cast<AsImpl*>(current->father());
     }
-    for (AsImpl* current = dst_as; current != nullptr; current = static_cast<AsImpl*>(current->father())) {
-      xbt_assert(index_dst < ROUTING_HIERARCHY_MAXDEPTH, "ROUTING_HIERARCHY_MAXDEPTH should be increased for path_dst");
-      path_dst[index_dst++] = current;
+    std::vector<AsImpl*> path_dst;
+    current = dst->containingAS();
+    while (current != nullptr) {
+      path_dst.push_back(current);
+      current = static_cast<AsImpl*>(current->father());
     }
 
     /* (3) find the common father.
@@ -134,100 +129,90 @@ namespace simgrid {
      *
      * This works because all SimGrid platform have a unique root element (that is the last element of both paths).
      */
-    do {
-      current_src = path_src[--index_src];
-      current_dst = path_dst[--index_dst];
-    } while (index_src > 0 && index_dst > 0 && current_src == current_dst);
+    AsImpl* father = nullptr; // the AS we dropped on the previous loop iteration
+    while (path_src.size() > 1 && path_dst.size() > 1 &&
+           path_src.at(path_src.size() - 1) == path_dst.at(path_dst.size() - 1)) {
+      father = path_src.at(path_src.size() - 1);
+      path_src.pop_back();
+      path_dst.pop_back();
+    }
 
     /* (4) we found the difference at least. Finalize the returned values */
-    *src_ancestor    = current_src; /* the first different father of src */
-    *dst_ancestor    = current_dst; /* the first different father of dst */
-    if (current_src == current_dst) { // One is the ancestor of the other
-      *common_ancestor = current_src;
+    *src_ancestor = path_src.at(path_src.size() - 1); /* the first different father of src */
+    *dst_ancestor = path_dst.at(path_dst.size() - 1); /* the first different father of dst */
+    if (*src_ancestor == *dst_ancestor) {             // src is the ancestor of dst, or the contrary
+      *common_ancestor = *src_ancestor;
     } else {
-      *common_ancestor = path_src[index_src + 1];
+      *common_ancestor = father;
     }
-#undef ROUTING_HIERARCHY_MAXDEPTH
-    }
+  }
 
-    /* PRECONDITION: this is the common ancestor of src and dst */
-    bool AsImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
-                                /* OUT */ std::vector<surf::Link*>* links, double* latency)
-    {
-      // If never set a bypass route return nullptr without any further computations
-      XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
-      if (bypassRoutes_.empty())
-        return false;
+  /* PRECONDITION: this is the common ancestor of src and dst */
+  bool AsImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
+                              /* OUT */ std::vector<surf::Link*>* links, double* latency)
+  {
+    // If never set a bypass route return nullptr without any further computations
+    XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
+    if (bypassRoutes_.empty())
+      return false;
 
-      /* Base case, no recursion is needed */
-      if(dst->containingAS() == this && src->containingAS() == this ){
-        if (bypassRoutes_.find({src->name(),dst->name()}) != bypassRoutes_.end()) {
-          std::vector<surf::Link*>* bypassedRoute = bypassRoutes_.at({src->name(), dst->name()});
-          for (surf::Link* link : *bypassedRoute) {
-            links->push_back(link);
-            if (latency)
-              *latency += link->latency();
-          }
-          XBT_DEBUG("Found a bypass route with %zu links",bypassedRoute->size());
-          return true;
+    /* Base case, no recursion is needed */
+    if (dst->containingAS() == this && src->containingAS() == this) {
+      if (bypassRoutes_.find({src->name(), dst->name()}) != bypassRoutes_.end()) {
+        std::vector<surf::Link*>* bypassedRoute = bypassRoutes_.at({src->name(), dst->name()});
+        for (surf::Link* link : *bypassedRoute) {
+          links->push_back(link);
+          if (latency)
+            *latency += link->latency();
         }
-        return false;
+        XBT_DEBUG("Found a bypass route with %zu links", bypassedRoute->size());
+        return true;
       }
+      return false;
+    }
 
-      /* Engage recursive search */
+    /* Engage recursive search */
 
-      std::vector<surf::Link*>* bypassedRoute = nullptr;
+    std::vector<surf::Link*>* bypassedRoute = nullptr;
 
-      /* (1) find the path to the root routing component */
-      std::vector<As*> path_src;
-      As *current = src->containingAS();
-      while (current != nullptr) {
-        path_src.push_back(current);
-        current = current->father_;
-      }
+    /* (1) find the path to the root routing component */
+    std::vector<As*> path_src;
+    As* current = src->containingAS();
+    while (current != nullptr) {
+      path_src.push_back(current);
+      current = current->father_;
+    }
 
-      std::vector<As*> path_dst;
-      current = dst->containingAS();
-      while (current != nullptr) {
-        path_dst.push_back(current);
-        current = current->father_;
-      }
+    std::vector<As*> path_dst;
+    current = dst->containingAS();
+    while (current != nullptr) {
+      path_dst.push_back(current);
+      current = current->father_;
+    }
 
-      /* (2) find the common father */
-      while (path_src.size() > 1 && path_dst.size() >1
-          && path_src.at(path_src.size() -1) == path_dst.at(path_dst.size() -1)) {
-        path_src.pop_back();
-        path_dst.pop_back();
-      }
+    /* (2) find the common father */
+    while (path_src.size() > 1 && path_dst.size() > 1 &&
+           path_src.at(path_src.size() - 1) == path_dst.at(path_dst.size() - 1)) {
+      path_src.pop_back();
+      path_dst.pop_back();
+    }
 
-      int max_index_src = path_src.size() - 1;
-      int max_index_dst = path_dst.size() - 1;
+    int max_index_src = path_src.size() - 1;
+    int max_index_dst = path_dst.size() - 1;
 
-      int max_index = std::max(max_index_src, max_index_dst);
+    int max_index = std::max(max_index_src, max_index_dst);
 
-      for (int max = 0; max <= max_index; max++) {
-        for (int i = 0; i < max; i++) {
-          if (i <= max_index_src && max <= max_index_dst) {
-            const std::pair<std::string, std::string> key = {path_src.at(i)->name(), path_dst.at(max)->name()};
-            if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
-              bypassedRoute = bypassRoutes_.at(key);
-              break;
-            }
-          }
-          if (max <= max_index_src && i <= max_index_dst) {
-            const std::pair<std::string, std::string> key = {path_src.at(max)->name(), path_dst.at(i)->name()};
-            if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
-              bypassedRoute = bypassRoutes_.at(key);
-              break;
-            }
+    for (int max = 0; max <= max_index; max++) {
+      for (int i = 0; i < max; i++) {
+        if (i <= max_index_src && max <= max_index_dst) {
+          const std::pair<std::string, std::string> key = {path_src.at(i)->name(), path_dst.at(max)->name()};
+          if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
+            bypassedRoute = bypassRoutes_.at(key);
+            break;
           }
         }
-
-        if (bypassedRoute)
-          break;
-
-        if (max <= max_index_src && max <= max_index_dst) {
-          const std::pair<std::string, std::string> key = {path_src.at(max)->name(), path_dst.at(max)->name()};
+        if (max <= max_index_src && i <= max_index_dst) {
+          const std::pair<std::string, std::string> key = {path_src.at(max)->name(), path_dst.at(i)->name()};
           if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
             bypassedRoute = bypassRoutes_.at(key);
             break;
@@ -235,15 +220,27 @@ namespace simgrid {
         }
       }
 
-      if (bypassedRoute) {
-        for (surf::Link* link : *bypassedRoute) {
-          links->push_back(link);
-          if (latency)
-            *latency += link->latency();
+      if (bypassedRoute)
+        break;
+
+      if (max <= max_index_src && max <= max_index_dst) {
+        const std::pair<std::string, std::string> key = {path_src.at(max)->name(), path_dst.at(max)->name()};
+        if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
+          bypassedRoute = bypassRoutes_.at(key);
+          break;
         }
-        return true;
       }
-      return false;
+    }
+
+    if (bypassedRoute) {
+      for (surf::Link* link : *bypassedRoute) {
+        links->push_back(link);
+        if (latency)
+          *latency += link->latency();
+      }
+      return true;
+    }
+    return false;
     }
 
     /**
