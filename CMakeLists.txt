@@ -121,7 +121,7 @@ string(REGEX MATCH "[0-9].[0-9]*" LINKER_VERSION "${LINKER_VERSION}")
 
 ### Set the library providing dlopen
 if("${CMAKE_SYSTEM}" MATCHES "Linux")
-  find_library(dl DL_LIBRARY)
+  find_library(DL_LIBRARY dl)
 endif("${CMAKE_SYSTEM}" MATCHES "Linux")
 
 ### Find programs and paths
