@@ -201,7 +201,7 @@ unw_accessors_t UnwindContext::accessors = {
 
 unw_addr_space_t UnwindContext::createUnwindAddressSpace()
 {
-  return unw_create_addr_space(&UnwindContext::accessors, __BYTE_ORDER);
+  return unw_create_addr_space(&UnwindContext::accessors, BYTE_ORDER);
 }
 
 void UnwindContext::clear()

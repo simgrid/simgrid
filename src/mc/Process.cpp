@@ -649,7 +649,7 @@ std::vector<simgrid::mc::SimixProcessInformation>& Process::old_simix_processes(
 
 void Process::dumpStack()
 {
-  unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, __BYTE_ORDER);
+  unw_addr_space_t as = unw_create_addr_space(&_UPT_accessors, BYTE_ORDER);
   if (as == nullptr) {
     XBT_ERROR("Could not initialize ptrace address space");
     return;

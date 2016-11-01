@@ -159,3 +159,14 @@
    ...
    fun:luaD_precall
 }
+
+# libunwind seems to be using msync poorly, thus triggering these
+# https://github.com/JuliaLang/julia/issues/4533
+{
+   msync unwind
+   Memcheck:Param
+   msync(start)
+   ...
+   obj:*/libpthread*.so
+   ...
+}

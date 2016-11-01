@@ -23,8 +23,10 @@ if(enable_compile_warnings)
   if(CMAKE_COMPILER_IS_GNUCXX)
     set(warnCXXFLAGS "${warnCXXFLAGS} -Wclobbered -Wno-error=clobbered  -Wno-unused-local-typedefs -Wno-error=attributes")
   endif()
-  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang") # don't care about class that become struct
-    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags")
+  if (CMAKE_CXX_COMPILER_ID MATCHES "Clang")
+    # don't care about class that become struct, avoid issue of empty C structs
+    # size (coming from libunwind.h)
+    set(warnCXXFLAGS "${warnCXXFLAGS} -Wno-mismatched-tags -Wno-extern-c-compat")
   endif()
 
   # the one specific to C but refused by C++
