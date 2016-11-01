@@ -129,7 +129,7 @@ static unw_accessors_t accessors = {
 
 unw_addr_space_t create_addr_space()
 {
-  return unw_create_addr_space(&accessors, __BYTE_ORDER);
+  return unw_create_addr_space(&accessors, BYTE_ORDER);
 }
 
 void* create_context(unw_addr_space_t as, pid_t pid)
