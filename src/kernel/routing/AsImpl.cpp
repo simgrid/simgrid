@@ -39,7 +39,26 @@ namespace simgrid {
     return nullptr;
   }
 
-  /** @brief Get the common ancestor and its first children in each line leading to src and dst */
+  /** @brief Get the common ancestor and its first children in each line leading to src and dst
+   *
+   * After this call, common_ancestor, src_ancestor and dst_ancestor are set as follows.
+   * @verbatim
+   *         platform root
+   *               |
+   *              ...
+   *               |
+   *         common_ancestor
+   *          /           \
+   *         /             \
+   *        /               \
+   *       /                 \
+   *  src_ancestor     dst_ancestor
+   *      |                   |
+   *     ...                 ...  <-- possibly long pathes
+   *      |                   |
+   *     src                 dst
+   *  @endverbatim
+   */
   static void find_common_ancestors(NetCard* src, NetCard* dst,
                                     /* OUT */ AsImpl** common_ancestor, AsImpl** src_ancestor, AsImpl** dst_ancestor)
   {
@@ -73,6 +92,8 @@ namespace simgrid {
     /* (3) find the common father.
      * Before that, index_src and index_dst may be different, they both point to nullptr in path_src/path_dst
      * So we move them down simultaneously as long as they point to the same content.
+     *
+     * This works because all SimGrid platform have a unique root element (that is the last element of both paths).
      */
     do {
       current_src = path_src[--index_src];
