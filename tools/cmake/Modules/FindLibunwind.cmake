@@ -1,3 +1,5 @@
+message(STATUS "Looking for libunwind")
+
 if(PROCESSOR_x86_64)
   find_library(PATH_LIBUNWIND_LIB
     NAMES unwind-x86_64
@@ -12,6 +14,7 @@ if(PROCESSOR_x86_64)
     /opt/csw
     /sw
     /usr)
+  message(STATUS "Looking for libunwind-x86_64 - found")
 endif()
 
 if(NOT PATH_LIBUNWIND_LIB)
@@ -32,11 +35,17 @@ if(NOT PATH_LIBUNWIND_LIB)
       
   # Mac OSX has a libunwind that is not the one we need, so double check
   if (PATH_LIBUNWIND_LIB)
+    message(STATUS "Looking for libunwind - found")
     CHECK_LIBRARY_EXISTS(unwind unw_init_local PATH_LIBUNWIND_LIB RIGHT_LIBUNWIND)
     if (NOT RIGHT_LIBUNWIND)
-      unset(PATH_LIBUNWIND_LIB)
+      message(STATUS "This libunwind does not contain unw_init_local(). It's unusable.")
+      set(PATH_LIBUNWIND_LIB 0)
     endif()
+    
+  else()
+    message(STATUS "Looking for libunwind - not found")
   endif()
+
 endif()
 
 find_path(PATH_LIBUNWIND_H "libunwind.h"
@@ -57,13 +66,6 @@ if(PATH_LIBUNWIND_H)
   message(STATUS "Looking for libunwind.h - found")
 else()
   message(STATUS "Looking for libunwind.h - not found")
-endif()
-
-message(STATUS "Looking for libunwind")
-if(PATH_LIBUNWIND_LIB)
-  message(STATUS "Looking for libunwind - found")
-else()
-  message(STATUS "Looking for libunwind - not found")
 endif()
 
 if(PATH_LIBUNWIND_LIB AND PATH_LIBUNWIND_H)
