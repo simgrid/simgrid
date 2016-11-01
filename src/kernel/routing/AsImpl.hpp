@@ -60,7 +60,9 @@ public:
   virtual void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency)=0;
   /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
   virtual xbt_dynar_t getOneLinkRoutes();
-  std::vector<surf::Link*> *getBypassRoute(routing::NetCard *src, routing::NetCard *dst);
+  /* returns whether we found a bypass path */
+  bool getBypassRoute(routing::NetCard * src, routing::NetCard * dst,
+                      /* OUT */ std::vector<surf::Link*> * links, double* latency);
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
   static void getRouteRecursive(routing::NetCard *src, routing::NetCard *dst, /* OUT */ std::vector<surf::Link*> * links, double *latency);

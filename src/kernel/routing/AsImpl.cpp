@@ -92,26 +92,35 @@ namespace simgrid {
 #undef ROUTING_HIERARCHY_MAXDEPTH
     }
 
-
     /* PRECONDITION: this is the common ancestor of src and dst */
-    std::vector<surf::Link*> *AsImpl::getBypassRoute(routing::NetCard *src, routing::NetCard *dst)
+    bool AsImpl::getBypassRoute(routing::NetCard* src, routing::NetCard* dst,
+                                /* OUT */ std::vector<surf::Link*>* links, double* latency)
     {
       // If never set a bypass route return nullptr without any further computations
       XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
       if (bypassRoutes_.empty())
-        return nullptr;
+        return false;
 
-      std::vector<surf::Link*> *bypassedRoute = nullptr;
-
+      /* Base case, no recursion is needed */
       if(dst->containingAS() == this && src->containingAS() == this ){
         if (bypassRoutes_.find({src->name(),dst->name()}) != bypassRoutes_.end()) {
-          bypassedRoute = bypassRoutes_.at({src->name(),dst->name()});
+          std::vector<surf::Link*>* bypassedRoute = bypassRoutes_.at({src->name(), dst->name()});
+          for (surf::Link* link : *bypassedRoute) {
+            links->push_back(link);
+            if (latency)
+              *latency += link->latency();
+          }
           XBT_DEBUG("Found a bypass route with %zu links",bypassedRoute->size());
+          return true;
         }
-        return bypassedRoute;
+        return false;
       }
 
-      /* (2) find the path to the root routing component */
+      /* Engage recursive search */
+
+      std::vector<surf::Link*>* bypassedRoute = nullptr;
+
+      /* (1) find the path to the root routing component */
       std::vector<As*> path_src;
       As *current = src->containingAS();
       while (current != nullptr) {
@@ -126,7 +135,7 @@ namespace simgrid {
         current = current->father_;
       }
 
-      /* (3) find the common father */
+      /* (2) find the common father */
       while (path_src.size() > 1 && path_dst.size() >1
           && path_src.at(path_src.size() -1) == path_dst.at(path_dst.size() -1)) {
         path_src.pop_back();
@@ -142,18 +151,18 @@ namespace simgrid {
         for (int i = 0; i < max; i++) {
           if (i <= max_index_src && max <= max_index_dst) {
             const std::pair<std::string, std::string> key = {path_src.at(i)->name(), path_dst.at(max)->name()};
-            if (bypassRoutes_.find(key) != bypassRoutes_.end())
+            if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
               bypassedRoute = bypassRoutes_.at(key);
+              break;
+            }
           }
-          if (bypassedRoute)
-            break;
           if (max <= max_index_src && i <= max_index_dst) {
             const std::pair<std::string, std::string> key = {path_src.at(max)->name(), path_dst.at(i)->name()};
-            if (bypassRoutes_.find(key) != bypassRoutes_.end())
+            if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
               bypassedRoute = bypassRoutes_.at(key);
+              break;
+            }
           }
-          if (bypassedRoute)
-            break;
         }
 
         if (bypassedRoute)
@@ -161,14 +170,22 @@ namespace simgrid {
 
         if (max <= max_index_src && max <= max_index_dst) {
           const std::pair<std::string, std::string> key = {path_src.at(max)->name(), path_dst.at(max)->name()};
-          if (bypassRoutes_.find(key) != bypassRoutes_.end())
+          if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
             bypassedRoute = bypassRoutes_.at(key);
+            break;
+          }
         }
-        if (bypassedRoute)
-          break;
       }
 
-      return bypassedRoute;
+      if (bypassedRoute) {
+        for (surf::Link* link : *bypassedRoute) {
+          links->push_back(link);
+          if (latency)
+            *latency += link->latency();
+        }
+        return true;
+      }
+      return false;
     }
 
     /**
@@ -194,15 +211,8 @@ namespace simgrid {
           common_ancestor->name(), src_ancestor->name(), dst_ancestor->name());
 
       /* Check whether a direct bypass is defined. If so, use it and bail out */
-      std::vector<surf::Link*> *bypassed_route = common_ancestor->getBypassRoute(src, dst);
-      if (nullptr != bypassed_route) {
-        for (surf::Link *link : *bypassed_route) {
-          links->push_back(link);
-          if (latency)
-            *latency += link->latency();
-        }
+      if (common_ancestor->getBypassRoute(src, dst, links, latency))
         return;
-      }
 
       /* If src and dst are in the same AS, life is good */
       if (src_ancestor == dst_ancestor) {       /* SURF_ROUTING_BASE */
