@@ -41,27 +41,67 @@ namespace simgrid {
 
   /** @brief Get the common ancestor and its first children in each line leading to src and dst
    *
-   * After this call, common_ancestor, src_ancestor and dst_ancestor are set as follows.
+   * In the recursive case, this sets common_ancestor, src_ancestor and dst_ancestor are set as follows.
    * @verbatim
    *         platform root
    *               |
-   *              ...
+   *              ...                <- possibly long path
    *               |
    *         common_ancestor
-   *          /           \
-   *         /             \
-   *        /               \
-   *       /                 \
-   *  src_ancestor     dst_ancestor
+   *           /        \
+   *          /          \
+   *         /            \          <- direct link
+   *        /              \
+   *       /                \
+   *  src_ancestor     dst_ancestor  <- must be different in the recursive case
    *      |                   |
-   *     ...                 ...  <-- possibly long pathes
+   *     ...                 ...     <-- possibly long (or null) pathes
    *      |                   |
    *     src                 dst
+   *  @endverbatim
+   *
+   *  In the base case (when src and dst are in the same AS), things are as follows:
+   *  @verbatim
+   *                  platform root
+   *                        |
+   *                       ...                      <- possibly long path
+   *                        |
+   * common_ancestor==src_ancestor==dst_ancestor    <-- all the same value
+   *                   /        \
+   *                  /          \                  <- direct links
+   *                 /            \
+   *              src              dst
+   *  @endverbatim
+   *
+   * A specific recursive case occurs when src is the ancestor of dst. In this case,
+   * the base case routing should be used so the common_ancestor is specifically set
+   * to src_ancestor==dst_ancestor.
+   * Naturally, things are completely symmetrical if dst is the ancestor of src.
+   * @verbatim
+   *            platform root
+   *                  |
+   *                 ...                <-- possibly long path
+   *                  |
+   *  src == src_ancestor==dst_ancestor==common_ancestor <-- same value
+   *                  |
+   *                 ...                <-- possibly long (or null) path
+   *                  |
+   *                 dst
    *  @endverbatim
    */
   static void find_common_ancestors(NetCard* src, NetCard* dst,
                                     /* OUT */ AsImpl** common_ancestor, AsImpl** src_ancestor, AsImpl** dst_ancestor)
   {
+    /* Deal with the easy base case */
+    if (src->containingAS() == dst->containingAS()) {
+      *common_ancestor = src->containingAS();
+      *src_ancestor    = *common_ancestor;
+      *dst_ancestor    = *common_ancestor;
+      return;
+    }
+
+  /* engage the full recursive search */
+
 #define ROUTING_HIERARCHY_MAXDEPTH 32 /* increase if it is not enough */
     AsImpl* path_src[ROUTING_HIERARCHY_MAXDEPTH];
     AsImpl* path_dst[ROUTING_HIERARCHY_MAXDEPTH];
@@ -69,7 +109,6 @@ namespace simgrid {
     int index_dst = 0;
     AsImpl* current_src;
     AsImpl* current_dst;
-    AsImpl* father;
 
     /* (1) find the path to root of src and dst*/
     AsImpl* src_as = src->containingAS();
@@ -100,16 +139,14 @@ namespace simgrid {
       current_dst = path_dst[--index_dst];
     } while (index_src > 0 && index_dst > 0 && current_src == current_dst);
 
-    /* (4) if we did not find a difference (index_src or index_dst went to 0), both elements are in the same AS */
-    if (current_src == current_dst)
-      father = current_src;
-    else // we found a difference
-      father = path_src[index_src + 1];
-
-    /* (5) result generation */
-    *common_ancestor = father;      /* the common father of src and dst */
+    /* (4) we found the difference at least. Finalize the returned values */
     *src_ancestor    = current_src; /* the first different father of src */
     *dst_ancestor    = current_dst; /* the first different father of dst */
+    if (current_src == current_dst) { // One is the ancestor of the other
+      *common_ancestor = current_src;
+    } else {
+      *common_ancestor = path_src[index_src + 1];
+    }
 #undef ROUTING_HIERARCHY_MAXDEPTH
     }
 
