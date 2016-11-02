@@ -15,25 +15,20 @@ if(PROCESSOR_x86_64)
 endif()
 
 if(NOT PATH_LIBUNWIND_LIB)
-  # Mac OSX has a libunwind that is not the one we need
-  CHECK_LIBRARY_EXISTS(unwind unw_init_local "Whether libunwind is usable" RIGHT_LIBUNWIND)
-
-  if (RIGHT_LIBUNWIND)
-    find_library(PATH_LIBUNWIND_LIB
-      NAMES unwind
-      HINTS
-      $ENV{SIMGRID_LIBUNWIND_LIBRARY_PATH}
-      $ENV{LD_LIBRARY_PATH}
-      $ENV{LIBUNWIND_LIBRARY_PATH}
-      PATH_SUFFIXES lib/ GnuWin32/lib lib/system
-      PATHS
-      /opt
-      /opt/local
-      /opt/csw
-      /sw
-      /usr
-      /usr/lib/)
-  endif()
+  find_library(PATH_LIBUNWIND_LIB
+    NAMES unwind
+    HINTS
+    $ENV{SIMGRID_LIBUNWIND_LIBRARY_PATH}
+    $ENV{LD_LIBRARY_PATH}
+    $ENV{LIBUNWIND_LIBRARY_PATH}
+    PATH_SUFFIXES lib/ GnuWin32/lib lib/system
+    PATHS
+    /opt
+    /opt/local
+    /opt/csw
+    /sw
+    /usr
+    /usr/lib/)
 endif()
 
 find_path(PATH_LIBUNWIND_H "libunwind.h"
