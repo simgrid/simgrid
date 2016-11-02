@@ -36,10 +36,7 @@ if(NOT PATH_LIBUNWIND_LIB)
   # Mac OSX has a libunwind that is not the one we need, so double check
   if (PATH_LIBUNWIND_LIB)
     message(STATUS "Looking for libunwind - found")
-
-    string(REGEX REPLACE "/libunwind.*[.]${LIB_EXE}$" "" PATH_LIBUNWIND_LIB "${PATH_LIBUNWIND_LIB}")
     CHECK_LIBRARY_EXISTS(unwind unw_init_local "${PATH_LIBUNWIND_LIB}" RIGHT_LIBUNWIND)
-
     if (NOT RIGHT_LIBUNWIND)
       message(STATUS "libunwind in ${PATH_LIBUNWIND_LIB} is unusable. Disable it.")
       set(PATH_LIBUNWIND_LIB 0)
