@@ -363,7 +363,13 @@ endif()
 
 include(FindLibunwind)
 if(HAVE_LIBUNWIND)
-  SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind")
+  if(NOT APPLE)
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lunwind")
+  else()
+    # Apple forbids to link directly against its libunwind implementation
+    # So let's comply and link against the System framework
+    SET(SIMGRID_DEP "${SIMGRID_DEP} -lSystem")
+  endif()
   if("${CMAKE_SYSTEM}" MATCHES "Linux")
     set(SIMGRID_DEP "${SIMGRID_DEP} -lunwind-ptrace")
     # This supposes that the host machine is either an AMD or a X86.
