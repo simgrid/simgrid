@@ -93,13 +93,13 @@ XBT_PRIVATE char *smpi_container(int rank, char *container, int n)
   return container;
 }
 
-static char *TRACE_smpi_get_key(int src, int dst, char *key, int n, int send);
+static char *TRACE_smpi_get_key(int src, int dst, int tag, char *key, int n, int send);
 
-static char *TRACE_smpi_put_key(int src, int dst, char *key, int n, int send)
+static char *TRACE_smpi_put_key(int src, int dst, int tag, char *key, int n, int send)
 {
   //get the dynar for src#dst
   char aux[INSTR_DEFAULT_STR_SIZE];
-  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d#%d", src, dst, send);
+  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d#%d#%d", src, dst, tag, send);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
 
   if (d == nullptr) {
@@ -110,7 +110,7 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n, int send)
   //generate the key
   static unsigned long long counter = 0;
   counter++;
-  snprintf(key, n, "%d_%d_%llu", src, dst, counter);
+  snprintf(key, n, "%d_%d_%d_%llu", src, dst, tag, counter);
 
   //push it
   char *a = static_cast<char*> (xbt_strdup(key));
@@ -119,15 +119,15 @@ static char *TRACE_smpi_put_key(int src, int dst, char *key, int n, int send)
   return key;
 }
 
-static char *TRACE_smpi_get_key(int src, int dst, char *key, int n, int send)
+static char *TRACE_smpi_get_key(int src, int dst, int tag, char *key, int n, int send)
 {
   char aux[INSTR_DEFAULT_STR_SIZE];
-  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d#%d", src, dst, send==1?0:1);
+  snprintf(aux, INSTR_DEFAULT_STR_SIZE, "%d#%d#%d#%d", src, dst, tag, send==1?0:1);
   xbt_dynar_t d = static_cast<xbt_dynar_t>(xbt_dict_get_or_null(keys, aux));
 
   // first posted
   if(xbt_dynar_is_empty(d)){
-      TRACE_smpi_put_key(src, dst, key, n, send);
+      TRACE_smpi_put_key(src, dst, tag, key, n, send);
       return key;
   }
 
@@ -402,34 +402,34 @@ void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation)
   new_pajePopState (SIMIX_get_clock(), container, type);
 }
 
-void TRACE_smpi_send(int rank, int src, int dst, int size)
+void TRACE_smpi_send(int rank, int src, int dst, int tag, int size)
 {
   if (!TRACE_smpi_is_enabled())
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE] = {0};
-  TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE,1);
+  TRACE_smpi_get_key(src, dst, tag, key, INSTR_DEFAULT_STR_SIZE,1);
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(src, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_LINK", PJ_type_get_root());
-  XBT_DEBUG("Send tracing from %d to %d, with key %s", src, dst, key);
+  XBT_DEBUG("Send tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new_pajeStartLinkWithSize (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key, size);
 }
 
-void TRACE_smpi_recv(int rank, int src, int dst)
+void TRACE_smpi_recv(int rank, int src, int dst, int tag)
 {
   if (!TRACE_smpi_is_enabled())
     return;
 
   char key[INSTR_DEFAULT_STR_SIZE] = {0};
-  TRACE_smpi_get_key(src, dst, key, INSTR_DEFAULT_STR_SIZE,0);
+  TRACE_smpi_get_key(src, dst, tag, key, INSTR_DEFAULT_STR_SIZE,0);
 
   char str[INSTR_DEFAULT_STR_SIZE];
   smpi_container(dst, str, INSTR_DEFAULT_STR_SIZE);
   container_t container = PJ_container_get (str);
   type_t type = PJ_type_get ("MPI_LINK", PJ_type_get_root());
-  XBT_DEBUG("Recv tracing from %d to %d, with key %s", src, dst, key);
+  XBT_DEBUG("Recv tracing from %d to %d, tag %d, with key %s", src, dst, tag, key);
   new_pajeEndLink (SIMIX_get_clock(), PJ_container_get_root(), type, container, "PTP", key);
 }

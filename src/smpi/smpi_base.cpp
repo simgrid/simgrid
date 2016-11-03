@@ -343,7 +343,7 @@ void smpi_mpi_start(MPI_Request request)
 
     int rank = request->src;
     if (TRACE_smpi_view_internals()) {
-      TRACE_smpi_send(rank, rank, receiver,request->size);
+      TRACE_smpi_send(rank, rank, receiver, request->tag, request->size);
     }
     print_request("New send", request);
 
@@ -645,7 +645,7 @@ static void finish_wait(MPI_Request * request, MPI_Status * status)
   if (TRACE_smpi_view_internals() && ((req->flags & RECV) != 0)){
     int rank = smpi_process_index();
     int src_traced = (req->src == MPI_ANY_SOURCE ? req->real_src : req->src);
-    TRACE_smpi_recv(rank, src_traced, rank);
+    TRACE_smpi_recv(rank, src_traced, rank,req->tag);
   }
 
   if(req->detached_sender != nullptr){

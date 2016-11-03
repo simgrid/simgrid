@@ -77,6 +77,7 @@ typedef struct s_smpi_mpi_datatype{
 #define COLL_TAG_GATHERV -2223
 #define COLL_TAG_BCAST -3334
 #define COLL_TAG_ALLREDUCE -4445
+#define SMPI_RMA_TAG -1234
 
 #define MPI_COMM_UNINITIALIZED ((MPI_Comm)-1)
 
@@ -703,8 +704,8 @@ XBT_PRIVATE void TRACE_smpi_alloc();
 XBT_PRIVATE void TRACE_smpi_release();
 XBT_PRIVATE void TRACE_smpi_ptp_in(int rank, int src, int dst, const char *operation,  instr_extra_data extra);
 XBT_PRIVATE void TRACE_smpi_ptp_out(int rank, int src, int dst, const char *operation);
-XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int size);
-XBT_PRIVATE void TRACE_smpi_recv(int rank, int src, int dst);
+XBT_PRIVATE void TRACE_smpi_send(int rank, int src, int dst, int tag, int size);
+XBT_PRIVATE void TRACE_smpi_recv(int rank, int src, int dst, int tag);
 XBT_PRIVATE void TRACE_smpi_init(int rank);
 XBT_PRIVATE void TRACE_smpi_finalize(int rank);
 XBT_PRIVATE char *smpi_container(int rank, char *container, int n);

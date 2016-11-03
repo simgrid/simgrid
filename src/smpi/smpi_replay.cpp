@@ -239,7 +239,7 @@ static void action_send(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
+    TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
   }
 
   smpi_mpi_send(nullptr, size, MPI_CURRENT_TYPE, to , 0, MPI_COMM_WORLD);
@@ -272,7 +272,7 @@ static void action_Isend(const char *const *action)
   extra->datatype1 = encode_datatype(MPI_CURRENT_TYPE, nullptr);
   TRACE_smpi_ptp_in(rank, rank, dst_traced, __FUNCTION__, extra);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_send(rank, rank, dst_traced, size*smpi_datatype_size(MPI_CURRENT_TYPE));
+    TRACE_smpi_send(rank, rank, dst_traced, 0, size*smpi_datatype_size(MPI_CURRENT_TYPE));
   }
 
   request = smpi_mpi_isend(nullptr, size, MPI_CURRENT_TYPE, to, 0,MPI_COMM_WORLD);
@@ -318,7 +318,7 @@ static void action_recv(const char *const *action) {
 
   TRACE_smpi_ptp_out(rank, src_traced, rank, __FUNCTION__);
   if (!TRACE_smpi_view_internals()) {
-    TRACE_smpi_recv(rank, src_traced, rank);
+    TRACE_smpi_recv(rank, src_traced, rank, 0);
   }
 
   log_timed_action (action, clock);
@@ -419,7 +419,7 @@ static void action_wait(const char *const *action){
 
   TRACE_smpi_ptp_out(rank, src_traced, dst_traced, __FUNCTION__);
   if (is_wait_for_receive)
-    TRACE_smpi_recv(rank, src_traced, dst_traced);
+    TRACE_smpi_recv(rank, src_traced, dst_traced, 0);
   log_timed_action (action, clock);
 }
 
@@ -451,7 +451,7 @@ static void action_waitall(const char *const *action){
 
    for (i=0; i<count_requests;i++){
      if (recvs_snd[i]!=-100)
-       TRACE_smpi_recv(rank_traced, recvs_snd[i], recvs_rcv[i]);
+       TRACE_smpi_recv(rank_traced, recvs_snd[i], recvs_rcv[i],0);
    }
    xbt_free(recvs_rcv);
    xbt_free(recvs_snd);
