@@ -1484,23 +1484,21 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   smpi_bench_end();
   //save requests information for tracing
   int i;
-  int *srcs = nullptr, *dsts = nullptr, *recvs = nullptr, *tags = nullptr;
-  MPI_Comm* comms = nullptr;
+  typedef struct {
+    int src;
+    int dst;
+    int recv;
+    int tag;
+    MPI_Comm comm;
+  } savedvalstype;
+  savedvalstype* savedvals=nullptr;
   if(count>0){
-    srcs = xbt_new0(int, count);
-    dsts = xbt_new0(int, count);
-    recvs = xbt_new0(int, count);
-    tags = xbt_new0(int, count);
-    comms = xbt_new0(MPI_Comm, count);
+    savedvals = xbt_new0(savedvalstype, count);
   }
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];      //already received requests are no longer valid
     if (req) {
-      srcs[i] = req->src;
-      dsts[i] = req->dst;
-      recvs[i] = req->recv;
-      tags[i] = req->tag;
-      comms[i] = req->comm;
+      savedvals[i]=(savedvalstype){req->src, req->dst, req->recv, req->tag, req->comm};
     }
   }
   int rank_traced = smpi_process_index();
@@ -1512,24 +1510,19 @@ int PMPI_Waitany(int count, MPI_Request requests[], int *index, MPI_Status * sta
   *index = smpi_mpi_waitany(count, requests, status);
 
   if(*index!=MPI_UNDEFINED){
-    int src_traced = srcs[*index];
+    int src_traced = savedvals[*index].src;
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-    int dst_traced = dsts[*index];
-    int is_wait_for_receive = recvs[*index];
+    int dst_traced = savedvals[*index].dst;
+    int is_wait_for_receive = savedvals[*index].recv;
     if (is_wait_for_receive) {
-      if(srcs[*index]==MPI_ANY_SOURCE)
+      if(savedvals[*index].src==MPI_ANY_SOURCE)
         src_traced = (status!=MPI_STATUSES_IGNORE) ?
-                      smpi_group_rank(smpi_comm_group(comms[*index]), status->MPI_SOURCE) : srcs[*index];
-      TRACE_smpi_recv(rank_traced, src_traced, dst_traced, tags[*index]);
+                      smpi_group_rank(smpi_comm_group(savedvals[*index].comm), status->MPI_SOURCE) : savedvals[*index].src;
+      TRACE_smpi_recv(rank_traced, src_traced, dst_traced, savedvals[*index].tag);
     }
     TRACE_smpi_ptp_out(rank_traced, src_traced, dst_traced, __FUNCTION__);
   }
-  xbt_free(srcs);
-  xbt_free(dsts);
-  xbt_free(recvs);
-  xbt_free(tags);
-  xbt_free(comms);
-
+  xbt_free(savedvals);
 
   smpi_bench_begin();
   return MPI_SUCCESS;
@@ -1540,24 +1533,22 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   smpi_bench_end();
   //save information from requests
   int i;
-  int *srcs = xbt_new0(int, count);
-  int *dsts = xbt_new0(int, count);
-  int *recvs = xbt_new0(int, count);
-  int *tags = xbt_new0(int, count);
-  int *valid = xbt_new0(int, count);
-  MPI_Comm *comms = xbt_new0(MPI_Comm, count);
+  typedef struct {
+    int src;
+    int dst;
+    int recv;
+    int tag;
+    int valid;
+    MPI_Comm comm;
+  } savedvalstype;
+  savedvalstype* savedvals=xbt_new0(savedvalstype, count);
 
   for (i = 0; i < count; i++) {
     MPI_Request req = requests[i];
     if(req!=MPI_REQUEST_NULL){
-      srcs[i] = req->src;
-      dsts[i] = req->dst;
-      recvs[i] = req->recv;
-      tags[i] = req->tag;
-      comms[i] = req->comm;
-      valid[i]=1;;
+      savedvals[i]=(savedvalstype){req->src, req->dst, req->recv, req->tag, 1, req->comm};
     }else{
-      valid[i]=0;
+      savedvals[i].valid=0;
     }
   }
   int rank_traced = smpi_process_index();
@@ -1569,26 +1560,21 @@ int PMPI_Waitall(int count, MPI_Request requests[], MPI_Status status[])
   int retval = smpi_mpi_waitall(count, requests, status);
 
   for (i = 0; i < count; i++) {
-    if(valid[i]){
+    if(savedvals[i].valid){
     //the src may not have been known at the beginning of the recv (MPI_ANY_SOURCE)
-      int src_traced = srcs[i];
-      int dst_traced = dsts[i];
-      int is_wait_for_receive = recvs[i];
+      int src_traced = savedvals[i].src;
+      int dst_traced = savedvals[i].dst;
+      int is_wait_for_receive = savedvals[i].recv;
       if (is_wait_for_receive) {
         if(src_traced==MPI_ANY_SOURCE)
         src_traced = (status!=MPI_STATUSES_IGNORE) ?
-                          smpi_group_rank(smpi_comm_group(comms[i]), status[i].MPI_SOURCE) : srcs[i];
-        TRACE_smpi_recv(rank_traced, src_traced, dst_traced,tags[i]);
+                          smpi_group_rank(smpi_comm_group(savedvals[i].comm), status[i].MPI_SOURCE) : savedvals[i].src;
+        TRACE_smpi_recv(rank_traced, src_traced, dst_traced,savedvals[i].tag);
       }
     }
   }
   TRACE_smpi_ptp_out(rank_traced, -1, -1, __FUNCTION__);
-  xbt_free(srcs);
-  xbt_free(dsts);
-  xbt_free(recvs);
-  xbt_free(valid);
-  xbt_free(tags);
-  xbt_free(comms);
+  xbt_free(savedvals);
 
   smpi_bench_begin();
   return retval;
