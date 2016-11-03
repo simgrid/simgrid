@@ -78,6 +78,10 @@ Host* Host::by_name(std::string name)
 }
 Host* Host::by_name_or_null(const char* name)
 {
+  return by_name_or_null(std::string(name));
+}
+Host* Host::by_name_or_null(std::string name)
+{
   if (host_list.find(name) == host_list.end())
     return nullptr;
   return host_list.at(name);

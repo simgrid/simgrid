@@ -66,7 +66,7 @@ private:
 
   bool sealed_ = false; // We cannot add more content when sealed
 
-  std::map<std::pair<std::string, std::string>, std::vector<surf::Link*>*> bypassRoutes_; // srcName x dstName -> route
+  std::map<std::pair<std::string, std::string>, std::vector<surf::Link*>*> bypassRoutes_; // src x dst -> route
   xbt_dict_t children_ = xbt_dict_new_homogeneous(nullptr);                               // sub-ASes
 };
 

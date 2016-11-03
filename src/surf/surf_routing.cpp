@@ -98,7 +98,7 @@ namespace routing {
  */
 void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * route, double *latency)
 {
-  XBT_DEBUG("getRouteAndLatency from %s to %s", src->name(), dst->name());
+  XBT_DEBUG("getRouteAndLatency from %s to %s", src->name().c_str(), dst->name().c_str());
 
   AsImpl::getRouteRecursive(src, dst, route, latency);
 }

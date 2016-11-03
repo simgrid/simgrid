@@ -164,7 +164,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     xbt_edge_t edge = xbt_graph_get_edge(routeGraph_, node_s_v, node_e_v);
 
     if (edge == nullptr)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name(), dst->name());
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
 
     e_route = (sg_platf_route_cbarg_t) xbt_graph_edge_get_data(edge);
 
@@ -248,7 +248,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     xbt_edge_t edge = xbt_graph_get_edge(routeGraph_, node_pred_v, node_v);
 
     if (edge == nullptr)
-      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name(), dst->name());
+      THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
 
     prev_gw_src = gw_src;
 
@@ -259,7 +259,8 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     if (v == dst_node_id)
       first_gw = gw_dst;
 
-    if (hierarchy_ == RoutingMode::recursive && v != dst_node_id && strcmp(gw_dst->name(), prev_gw_src->name())) {
+    if (hierarchy_ == RoutingMode::recursive && v != dst_node_id &&
+        strcmp(gw_dst->name().c_str(), prev_gw_src->name().c_str())) {
       std::vector<Link*> *e_route_as_to_as = new std::vector<Link*>();
 
       routing_platf->getRouteAndLatency(gw_dst_net_elm, prev_gw_src_net_elm, e_route_as_to_as, nullptr);
@@ -316,8 +317,8 @@ void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
 {
   NetCard *src = route->src;
   NetCard *dst = route->dst;
-  const char *srcName = src->name();
-  const char *dstName = dst->name();
+  const char* srcName = src->name().c_str();
+  const char* dstName = dst->name().c_str();
 
   addRouteCheckParams(route);
 
@@ -338,7 +339,8 @@ void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
     if(!route->gw_dst && !route->gw_src)
       XBT_DEBUG("Load Route from \"%s\" to \"%s\"", dstName, srcName);
     else
-      XBT_DEBUG("Load ASroute from %s@%s to %s@%s", dstName, route->gw_dst->name(), srcName, route->gw_src->name());
+      XBT_DEBUG("Load ASroute from %s@%s to %s@%s", dstName, route->gw_dst->name().c_str(), srcName,
+                route->gw_src->name().c_str());
 
     xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
     xbt_node_t node_s_v = xbt_dynar_get_as(nodes, src->id(), xbt_node_t);
@@ -346,7 +348,8 @@ void AsDijkstra::addRoute(sg_platf_route_cbarg_t route)
     xbt_edge_t edge = xbt_graph_get_edge(routeGraph_, node_e_v, node_s_v);
 
     if (edge)
-      THROWF(arg_error,0, "Route from %s@%s to %s@%s already exists", dstName, route->gw_dst->name(), srcName, route->gw_src->name());
+      THROWF(arg_error, 0, "Route from %s@%s to %s@%s already exists", dstName, route->gw_dst->name().c_str(), srcName,
+             route->gw_src->name().c_str());
 
     if (route->gw_dst && route->gw_src) {
       NetCard *gw_tmp = route->gw_src;

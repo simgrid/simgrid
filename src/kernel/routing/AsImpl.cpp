@@ -106,8 +106,8 @@ namespace simgrid {
     AsImpl* src_as = src->containingAS();
     AsImpl* dst_as = dst->containingAS();
 
-    xbt_assert(src_as, "Host %s must be in an AS", src->name());
-    xbt_assert(dst_as, "Host %s must be in an AS", dst->name());
+    xbt_assert(src_as, "Host %s must be in an AS", src->name().c_str());
+    xbt_assert(dst_as, "Host %s must be in an AS", dst->name().c_str());
 
     /* (2) find the path to the root routing component */
     std::vector<AsImpl*> path_src;
@@ -152,7 +152,7 @@ namespace simgrid {
                               /* OUT */ std::vector<surf::Link*>* links, double* latency)
   {
     // If never set a bypass route return nullptr without any further computations
-    XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
+    XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name().c_str(), dst->name().c_str());
     if (bypassRoutes_.empty())
       return false;
 
@@ -257,7 +257,7 @@ namespace simgrid {
       s_sg_platf_route_cbarg_t route;
       memset(&route,0,sizeof(route));
 
-      XBT_DEBUG("Solve route/latency \"%s\" to \"%s\"", src->name(), dst->name());
+      XBT_DEBUG("Solve route/latency \"%s\" to \"%s\"", src->name().c_str(), dst->name().c_str());
 
       /* Find how src and dst are interconnected */
       AsImpl *common_ancestor, *src_ancestor, *dst_ancestor;
@@ -281,8 +281,8 @@ namespace simgrid {
       route.link_list = new std::vector<surf::Link*>();
 
       common_ancestor->getRouteAndLatency(src_ancestor->netcard_, dst_ancestor->netcard_, &route, latency);
-      xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr),
-          "bad gateways for route from \"%s\" to \"%s\"", src->name(), dst->name());
+      xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",
+                 src->name().c_str(), dst->name().c_str());
 
       /* If source gateway is not our source, we have to recursively find our way up to this point */
       if (src != route.gw_src)

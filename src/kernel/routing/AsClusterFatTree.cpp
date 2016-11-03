@@ -73,21 +73,19 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
 
   // xbt_die -> assert
   if (tempIter == this->computeNodes_.end()) {
-    xbt_die("Could not find the source %s [%d] in the fat tree", src->name(),
-            src->id());
+    xbt_die("Could not find the source %s [%d] in the fat tree", src->name().c_str(), src->id());
   }
   source = tempIter->second;
   tempIter = this->computeNodes_.find(dst->id());
   if (tempIter == this->computeNodes_.end()) {
-    xbt_die("Could not find the destination %s [%d] in the fat tree",
-            dst->name(), dst->id());
+    xbt_die("Could not find the destination %s [%d] in the fat tree", dst->name().c_str(), dst->id());
   }
 
 
   destination = tempIter->second;
-  
-  XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree",
-            src->name(), src->id(), dst->name(), dst->id());
+
+  XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree", src->name().c_str(), src->id(),
+           dst->name().c_str(), dst->id());
 
   /* In case destination is the source, and there is a loopback, let's get
      through it instead of going up to a switch*/

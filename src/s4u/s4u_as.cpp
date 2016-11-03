@@ -77,19 +77,21 @@ namespace simgrid {
   {
     /* Argument validity checks */
     if (e_route->gw_dst) {
-      XBT_DEBUG("Load bypassASroute from %s@%s to %s@%s", e_route->src->name(), e_route->gw_src->name(),
-                e_route->dst->name(), e_route->gw_dst->name());
+      XBT_DEBUG("Load bypassASroute from %s@%s to %s@%s", e_route->src->name().c_str(), e_route->gw_src->name().c_str(),
+                e_route->dst->name().c_str(), e_route->gw_dst->name().c_str());
       xbt_assert(!e_route->link_list->empty(), "Bypass route between %s@%s and %s@%s cannot be empty.",
-                 e_route->src->name(), e_route->gw_src->name(), e_route->dst->name(), e_route->gw_dst->name());
+                 e_route->src->name().c_str(), e_route->gw_src->name().c_str(), e_route->dst->name().c_str(),
+                 e_route->gw_dst->name().c_str());
       xbt_assert(bypassRoutes_.find({e_route->src->name(), e_route->dst->name()}) == bypassRoutes_.end(),
-                 "The bypass route between %s@%s and %s@%s already exists.", e_route->src->name(),
-                 e_route->gw_src->name(), e_route->dst->name(), e_route->gw_dst->name());
+                 "The bypass route between %s@%s and %s@%s already exists.", e_route->src->name().c_str(),
+                 e_route->gw_src->name().c_str(), e_route->dst->name().c_str(), e_route->gw_dst->name().c_str());
     } else {
-      XBT_DEBUG("Load bypassRoute from %s to %s", e_route->src->name(), e_route->dst->name());
-      xbt_assert(!e_route->link_list->empty(), "Bypass route between %s and %s cannot be empty.", e_route->src->name(),
-                 e_route->dst->name());
+      XBT_DEBUG("Load bypassRoute from %s to %s", e_route->src->name().c_str(), e_route->dst->name().c_str());
+      xbt_assert(!e_route->link_list->empty(), "Bypass route between %s and %s cannot be empty.",
+                 e_route->src->name().c_str(), e_route->dst->name().c_str());
       xbt_assert(bypassRoutes_.find({e_route->src->name(), e_route->dst->name()}) == bypassRoutes_.end(),
-                 "The bypass route between %s and %s already exists.", e_route->src->name(), e_route->dst->name());
+                 "The bypass route between %s and %s already exists.", e_route->src->name().c_str(),
+                 e_route->dst->name().c_str());
     }
 
     /* Build a copy that will be stored in the dict */
