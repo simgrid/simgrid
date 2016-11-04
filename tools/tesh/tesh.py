@@ -306,10 +306,11 @@ class Cmd(object):
                 e.strerror += "\nOSError: [Errno 8] Executed scripts should start with shebang line (like #!/bin/sh)"
             raise e
 
+        cmdName = FileReader().filename+":"+str(self.linenumber)
         try:
             (stdout_data, stderr_data) = proc.communicate("\n".join(self.input_pipe), self.timeout)
         except subprocess.TimeoutExpired:
-            print("Test suite `"+FileReader().filename+"': NOK (<"+FileReader().filename+":"+str(self.linenumber)+"> timeout after "+str(self.timeout)+" sec)")
+            print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> timeout after "+str(self.timeout)+" sec)")
             exit(3)
 
         if self.output_display:
@@ -322,7 +323,7 @@ class Cmd(object):
         #print ((stdout_data, stderr_data))
         
         if self.ignore_output:
-            print("(ignoring the output of <"+FileReader().filename+":"+str(self.linenumber)+"> as requested)")
+            print("(ignoring the output of <"+cmdName+"> as requested)")
         else:
             stdouta = stdout_data.split("\n")
             while len(stdouta) > 0 and stdouta[-1] == "":
@@ -340,10 +341,10 @@ class Cmd(object):
             
             diff = list(difflib.unified_diff(self.output_pipe_stdout, stdouta,lineterm="",fromfile='expected', tofile='obtained'))
             if len(diff) > 0: 
-                print("Output of <"+FileReader().filename+":"+str(self.linenumber)+"> mismatch:")
+                print("Output of <"+cmdName+"> mismatch:")
                 for line in diff:
                     print(line)
-                print("Test suite `"+FileReader().filename+"': NOK (<"+str(FileReader())+"> output mismatch)")
+                print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> output mismatch)")
                 if lock is not None: lock.release()
                 if TeshState().keep:
                     f = open('obtained','w')
@@ -361,11 +362,11 @@ class Cmd(object):
         
         if proc.returncode != self.expect_return:
             if proc.returncode >= 0:
-                print("Test suite `"+FileReader().filename+"': NOK (<"+str(FileReader())+"> returned code "+str(proc.returncode)+")")
+                print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> returned code "+str(proc.returncode)+")")
                 if lock is not None: lock.release()
                 exit(2)
             else:
-                print("Test suite `"+FileReader().filename+"': NOK (<"+str(FileReader())+"> got signal "+SIGNALS_TO_NAMES_DICT[-proc.returncode]+")")
+                print("Test suite `"+FileReader().filename+"': NOK (<"+cmdName+"> got signal "+SIGNALS_TO_NAMES_DICT[-proc.returncode]+")")
                 if lock is not None: lock.release()
                 exit(-proc.returncode)
             
