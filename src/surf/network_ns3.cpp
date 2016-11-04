@@ -61,7 +61,7 @@ static void ns3_add_host(simgrid::s4u::Host& host)
 
 static void ns3_add_netcard(simgrid::kernel::routing::NetCard* netcard)
 {
-  xbt_lib_set(as_router_lib, netcard->name(), NS3_ASR_LEVEL, new HostNs3());
+  xbt_lib_set(as_router_lib, netcard->name().c_str(), NS3_ASR_LEVEL, new HostNs3());
 }
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
@@ -115,8 +115,8 @@ static void create_ns3_topology(void)
   simgrid::kernel::routing::Onelink *onelink;
   unsigned int iter;
   xbt_dynar_foreach(onelink_routes, iter, onelink) {
-    char *src = onelink->src_->name();
-    char *dst = onelink->dst_->name();
+    const char* src              = onelink->src_->name().c_str();
+    const char* dst              = onelink->dst_->name().c_str();
     simgrid::surf::LinkNS3 *link = static_cast<simgrid::surf::LinkNS3 *>(onelink->link_);
 
     if (strcmp(src,dst) && (already_seen.find(link) == already_seen.end())) {

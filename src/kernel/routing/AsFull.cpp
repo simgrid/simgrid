@@ -61,8 +61,8 @@ AsFull::~AsFull(){
 
 void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t res, double *lat)
 {
-  XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]",
-      src->name(), src->id(), dst->name(), dst->id());
+  XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+            dst->id());
 
   /* set utils vars */
   size_t table_size = vertices_.size();
@@ -84,10 +84,10 @@ void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg
 
 void AsFull::addRoute(sg_platf_route_cbarg_t route)
 {
-  NetCard *src_net_elm = route->src;
-  NetCard *dst_net_elm = route->dst;
-  const char *src = src_net_elm->name();
-  const char *dst = dst_net_elm->name();
+  NetCard* src        = route->src;
+  NetCard* dst        = route->dst;
+  const char* srcName = src->name().c_str();
+  const char* dstName = dst->name().c_str();
 
   addRouteCheckParams(route);
 
@@ -98,33 +98,35 @@ void AsFull::addRoute(sg_platf_route_cbarg_t route)
 
   /* Check that the route does not already exist */
   if (route->gw_dst) // AS route (to adapt the error message, if any)
-    xbt_assert(nullptr == TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()),
-        "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).",
-        src,route->gw_src->name(),dst,route->gw_dst->name());
+    xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
+               "The route between %s@%s and %s@%s already exists (Rq: routes are symmetrical by default).", srcName,
+               route->gw_src->name().c_str(), dstName, route->gw_dst->name().c_str());
   else
-    xbt_assert(nullptr == TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()),
-        "The route between %s and %s already exists (Rq: routes are symmetrical by default).", src,dst);
+    xbt_assert(nullptr == TO_ROUTE_FULL(src->id(), dst->id()),
+               "The route between %s and %s already exists (Rq: routes are symmetrical by default).", srcName, dstName);
 
   /* Add the route to the base */
-  TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id()) = newExtendedRoute(hierarchy_, route, 1);
-  TO_ROUTE_FULL(src_net_elm->id(), dst_net_elm->id())->link_list->shrink_to_fit();
+  TO_ROUTE_FULL(src->id(), dst->id()) = newExtendedRoute(hierarchy_, route, 1);
+  TO_ROUTE_FULL(src->id(), dst->id())->link_list->shrink_to_fit();
 
-  if (route->symmetrical == true && src_net_elm != dst_net_elm) {
+  if (route->symmetrical == true && src != dst) {
     if (route->gw_dst && route->gw_src) {
       NetCard* gw_tmp = route->gw_src;
       route->gw_src = route->gw_dst;
       route->gw_dst = gw_tmp;
     }
     if (route->gw_dst) // AS route (to adapt the error message, if any)
-      xbt_assert(nullptr == TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()),
+      xbt_assert(
+          nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
           "The route between %s@%s and %s@%s already exists. You should not declare the reverse path as symmetrical.",
-          dst,route->gw_dst->name(),src,route->gw_src->name());
+          dstName, route->gw_dst->name().c_str(), srcName, route->gw_src->name().c_str());
     else
-      xbt_assert(nullptr == TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()),
-          "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.", dst,src);
+      xbt_assert(nullptr == TO_ROUTE_FULL(dst->id(), src->id()),
+                 "The route between %s and %s already exists. You should not declare the reverse path as symmetrical.",
+                 dstName, srcName);
 
-    TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id()) = newExtendedRoute(hierarchy_, route, 0);
-    TO_ROUTE_FULL(dst_net_elm->id(), src_net_elm->id())->link_list->shrink_to_fit();
+    TO_ROUTE_FULL(dst->id(), src->id()) = newExtendedRoute(hierarchy_, route, 0);
+    TO_ROUTE_FULL(dst->id(), src->id())->link_list->shrink_to_fit();
   }
 }
 

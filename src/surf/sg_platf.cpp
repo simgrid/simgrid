@@ -839,6 +839,6 @@ void sg_platf_new_hostlink(sg_platf_host_link_cbarg_t hostlink)
   if (as_cluster->privateLinks_.find(netcard->id()) != as_cluster->privateLinks_.end())
     surf_parse_error("Host_link for '%s' is already defined!",hostlink->id);
 
-  XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name(), netcard->id());
+  XBT_DEBUG("Push Host_link for host '%s' to position %d", netcard->name().c_str(), netcard->id());
   as_cluster->privateLinks_.insert({netcard->id(), link_up_down});
 }

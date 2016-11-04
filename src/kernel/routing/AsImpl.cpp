@@ -106,8 +106,8 @@ namespace simgrid {
     AsImpl* src_as = src->containingAS();
     AsImpl* dst_as = dst->containingAS();
 
-    xbt_assert(src_as, "Host %s must be in an AS", src->name());
-    xbt_assert(dst_as, "Host %s must be in an AS", dst->name());
+    xbt_assert(src_as, "Host %s must be in an AS", src->name().c_str());
+    xbt_assert(dst_as, "Host %s must be in an AS", dst->name().c_str());
 
     /* (2) find the path to the root routing component */
     std::vector<AsImpl*> path_src;
@@ -152,14 +152,14 @@ namespace simgrid {
                               /* OUT */ std::vector<surf::Link*>* links, double* latency)
   {
     // If never set a bypass route return nullptr without any further computations
-    XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name(), dst->name());
+    XBT_DEBUG("generic_get_bypassroute from %s to %s", src->name().c_str(), dst->name().c_str());
     if (bypassRoutes_.empty())
       return false;
 
     /* Base case, no recursion is needed */
     if (dst->containingAS() == this && src->containingAS() == this) {
-      if (bypassRoutes_.find({src->name(), dst->name()}) != bypassRoutes_.end()) {
-        std::vector<surf::Link*>* bypassedRoute = bypassRoutes_.at({src->name(), dst->name()});
+      if (bypassRoutes_.find({src, dst}) != bypassRoutes_.end()) {
+        std::vector<surf::Link*>* bypassedRoute = bypassRoutes_.at({src, dst});
         for (surf::Link* link : *bypassedRoute) {
           links->push_back(link);
           if (latency)
@@ -176,17 +176,17 @@ namespace simgrid {
     std::vector<surf::Link*>* bypassedRoute = nullptr;
 
     /* (1) find the path to the root routing component */
-    std::vector<As*> path_src;
+    std::vector<AsImpl*> path_src;
     As* current = src->containingAS();
     while (current != nullptr) {
-      path_src.push_back(current);
+      path_src.push_back(static_cast<AsImpl*>(current));
       current = current->father_;
     }
 
-    std::vector<As*> path_dst;
+    std::vector<AsImpl*> path_dst;
     current = dst->containingAS();
     while (current != nullptr) {
-      path_dst.push_back(current);
+      path_dst.push_back(static_cast<AsImpl*>(current));
       current = current->father_;
     }
 
@@ -202,17 +202,18 @@ namespace simgrid {
 
     int max_index = std::max(max_index_src, max_index_dst);
 
+    std::pair<kernel::routing::NetCard*, kernel::routing::NetCard*> key;
     for (int max = 0; max <= max_index; max++) {
       for (int i = 0; i < max; i++) {
         if (i <= max_index_src && max <= max_index_dst) {
-          const std::pair<std::string, std::string> key = {path_src.at(i)->name(), path_dst.at(max)->name()};
+          key = {path_src.at(i)->netcard_, path_dst.at(max)->netcard_};
           if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
             bypassedRoute = bypassRoutes_.at(key);
             break;
           }
         }
         if (max <= max_index_src && i <= max_index_dst) {
-          const std::pair<std::string, std::string> key = {path_src.at(max)->name(), path_dst.at(i)->name()};
+          key = {path_src.at(max)->netcard_, path_dst.at(i)->netcard_};
           if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
             bypassedRoute = bypassRoutes_.at(key);
             break;
@@ -224,7 +225,7 @@ namespace simgrid {
         break;
 
       if (max <= max_index_src && max <= max_index_dst) {
-        const std::pair<std::string, std::string> key = {path_src.at(max)->name(), path_dst.at(max)->name()};
+        key = {path_src.at(max)->netcard_, path_dst.at(max)->netcard_};
         if (bypassRoutes_.find(key) != bypassRoutes_.end()) {
           bypassedRoute = bypassRoutes_.at(key);
           break;
@@ -257,7 +258,7 @@ namespace simgrid {
       s_sg_platf_route_cbarg_t route;
       memset(&route,0,sizeof(route));
 
-      XBT_DEBUG("Solve route/latency \"%s\" to \"%s\"", src->name(), dst->name());
+      XBT_DEBUG("Solve route/latency \"%s\" to \"%s\"", src->name().c_str(), dst->name().c_str());
 
       /* Find how src and dst are interconnected */
       AsImpl *common_ancestor, *src_ancestor, *dst_ancestor;
@@ -281,8 +282,8 @@ namespace simgrid {
       route.link_list = new std::vector<surf::Link*>();
 
       common_ancestor->getRouteAndLatency(src_ancestor->netcard_, dst_ancestor->netcard_, &route, latency);
-      xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr),
-          "bad gateways for route from \"%s\" to \"%s\"", src->name(), dst->name());
+      xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",
+                 src->name().c_str(), dst->name().c_str());
 
       /* If source gateway is not our source, we have to recursively find our way up to this point */
       if (src != route.gw_src)

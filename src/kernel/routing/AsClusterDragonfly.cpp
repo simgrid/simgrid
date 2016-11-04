@@ -243,7 +243,8 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   if (dst->isRouter() || src->isRouter())
     return;
 
-  XBT_VERB("dragonfly_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name(), src->id(), dst->name(), dst->id());
+  XBT_VERB("dragonfly_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(),
+           dst->name().c_str(), dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);

@@ -111,8 +111,8 @@ namespace simgrid {
 
     void AsClusterTorus::getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t route, double *lat) {
 
-      XBT_VERB("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]",
-          src->name(), src->id(), dst->name(), dst->id());
+      XBT_VERB("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(),
+               dst->name().c_str(), dst->id());
 
       if (dst->isRouter() || src->isRouter())
         return;

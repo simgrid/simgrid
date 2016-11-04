@@ -44,9 +44,9 @@ class RoutingPlatf;
  */
 class NetCard {
 public:
-  virtual ~NetCard(){};
+  virtual ~NetCard()            = default;
   virtual unsigned int id()=0; // Our rank in the vertices_ array of our containing AS.
-  virtual char *name()=0;
+  virtual std::string name()    = 0;
   virtual AsImpl *containingAS()=0; // This is the AS in which I am
   virtual bool isAS()=0;
   virtual bool isHost()=0;
@@ -58,19 +58,17 @@ public:
 
 struct XBT_PRIVATE NetCardImpl : public NetCard {
 public:
-  NetCardImpl(const char *name, NetCard::Type componentType, AsImpl *containingAS)
-  : name_(xbt_strdup(name)),
-    componentType_(componentType),
-    containingAS_(containingAS)
+  NetCardImpl(std::string name, NetCard::Type componentType, AsImpl* containingAS)
+      : name_(name), componentType_(componentType), containingAS_(containingAS)
   {
     if (containingAS != nullptr)
       id_ = containingAS->addComponent(this);
     simgrid::kernel::routing::netcardCreatedCallbacks(this);
   }
-  ~NetCardImpl() { xbt_free(name_);};
+  ~NetCardImpl() = default;
 
   unsigned int id()  override {return id_;}
-  char *name()       override {return name_;}
+  std::string name() override { return name_; }
   AsImpl *containingAS() override {return containingAS_;}
 
   bool isAS()        override {return componentType_ == Type::As;}
@@ -79,7 +77,7 @@ public:
 
 private:
   unsigned int id_;
-  char *name_;
+  std::string name_;
   NetCard::Type componentType_;
   AsImpl *containingAS_;
 };

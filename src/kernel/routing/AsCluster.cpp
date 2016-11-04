@@ -22,8 +22,8 @@ AsCluster::~AsCluster() = default;
 void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
-  XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]",
-            src->name(), src->id(), dst->name(), dst->id());
+  XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(),
+           dst->name().c_str(), dst->id());
   xbt_assert(!privateLinks_.empty(), "Cluster routing : no links attached to the source node - did you use host_link tag?");
   if (! src->isRouter()) {    // No specific link for router
 
@@ -73,14 +73,13 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
 
 void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
-  xbt_node_t current, previous, backboneNode = nullptr, routerNode;
+  xbt_node_t current, previous, backboneNode = nullptr;
   s_surf_parsing_link_up_down_t info;
 
   xbt_assert(router_,"Malformed cluster. This may be because your platform file is a hypergraph while it must be a graph.");
 
   /* create the router */
-  char *link_name = router_->name();
-  routerNode = new_xbt_graph_node(graph, link_name, nodes);
+  xbt_node_t routerNode = new_xbt_graph_node(graph, router_->name().c_str(), nodes);
 
   if(backbone_) {
     const char *link_nameR = backbone_->getName();
@@ -91,7 +90,7 @@ void AsCluster::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 
   for (auto src: vertices_){
     if (! src->isRouter()) {
-      previous = new_xbt_graph_node(graph, src->name(), nodes);
+      previous = new_xbt_graph_node(graph, src->name().c_str(), nodes);
 
       info = privateLinks_.at(src->id());
 
