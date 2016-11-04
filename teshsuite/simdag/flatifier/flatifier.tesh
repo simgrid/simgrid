@@ -577,13 +577,13 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 >   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="my_cluster_1_link_1_DOWN"/>
 >   </route>
 >   <route src="1" dst="2">
->   <link_ctn id="link_tmp"/>
+>   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="link_tmp"/><link_ctn id="my_cluster_2_link_2_DOWN"/>
 >   </route>
 >   <route src="1" dst="3">
 >   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="link1"/><link_ctn id="link3"/><link_ctn id="my_cluster_3_link_3_DOWN"/>
 >   </route>
 >   <route src="1" dst="my_cluster_2_router">
->   <link_ctn id="link_tmp"/>
+>   <link_ctn id="my_cluster_1_link_1_UP"/><link_ctn id="link_tmp"/>
 >   </route>
 >   <route src="1" dst="my_cluster_1_router">
 >   <link_ctn id="my_cluster_1_link_1_UP"/>
@@ -658,7 +658,7 @@ $ ${bindir:=.}/flatifier$EXEEXT ${srcdir:=.}/examples/platforms/bypassASroute.xm
 >   <link_ctn id="my_cluster_1_link_1_DOWN"/>
 >   </route>
 >   <route src="my_cluster_1_router" dst="2">
->   <link_ctn id="link_tmp"/>
+>   <link_ctn id="link_tmp"/><link_ctn id="my_cluster_2_link_2_DOWN"/>
 >   </route>
 >   <route src="my_cluster_1_router" dst="3">
 >   <link_ctn id="link1"/><link_ctn id="link3"/><link_ctn id="my_cluster_3_link_3_DOWN"/>

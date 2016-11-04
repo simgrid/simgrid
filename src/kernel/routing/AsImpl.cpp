@@ -159,13 +159,13 @@ namespace simgrid {
     /* Base case, no recursion is needed */
     if (dst->containingAS() == this && src->containingAS() == this) {
       if (bypassRoutes_.find({src, dst}) != bypassRoutes_.end()) {
-        std::vector<surf::Link*>* bypassedRoute = bypassRoutes_.at({src, dst});
-        for (surf::Link* link : *bypassedRoute) {
+        AsRoute* bypassedRoute = bypassRoutes_.at({src, dst});
+        for (surf::Link* link : bypassedRoute->links) {
           links->push_back(link);
           if (latency)
             *latency += link->latency();
         }
-        XBT_DEBUG("Found a bypass route with %zu links", bypassedRoute->size());
+        XBT_DEBUG("Found a bypass route with %zu links", bypassedRoute->links.size());
         return true;
       }
       return false;
@@ -173,7 +173,6 @@ namespace simgrid {
 
     /* Engage recursive search */
 
-    std::vector<surf::Link*>* bypassedRoute = nullptr;
 
     /* (1) find the path to the root routing component */
     std::vector<AsImpl*> path_src;
@@ -202,6 +201,8 @@ namespace simgrid {
 
     int max_index = std::max(max_index_src, max_index_dst);
 
+    /* (3) Search for a bypass making the path up to the ancestor useless */
+    AsRoute* bypassedRoute = nullptr;
     std::pair<kernel::routing::NetCard*, kernel::routing::NetCard*> key;
     for (int max = 0; max <= max_index; max++) {
       for (int i = 0; i < max; i++) {
@@ -233,12 +234,17 @@ namespace simgrid {
       }
     }
 
+    /* (4) If we have the bypass, use it. If not, caller will do the Right Thing. */
     if (bypassedRoute) {
-      for (surf::Link* link : *bypassedRoute) {
+      if (src != key.first)
+        getRouteRecursive(src, const_cast<NetCard*>(bypassedRoute->gw_src), links, latency);
+      for (surf::Link* link : bypassedRoute->links) {
         links->push_back(link);
         if (latency)
           *latency += link->latency();
       }
+      if (dst != key.second)
+        getRouteRecursive(const_cast<NetCard*>(bypassedRoute->gw_dst), dst, links, latency);
       return true;
     }
     return false;

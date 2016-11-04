@@ -65,8 +65,8 @@ public:
                       /* OUT */ std::vector<surf::Link*> * links, double* latency);
 
   virtual void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)=0;
-  static void getRouteRecursive(routing::NetCard *src, routing::NetCard *dst, /* OUT */ std::vector<surf::Link*> * links, double *latency);
-
+  static void getRouteRecursive(routing::NetCard * src, routing::NetCard * dst,
+                                /* OUT */ std::vector<surf::Link*> * links, double* latency);
 
   enum class RoutingMode {
     unset = 0,  /**< Undefined type                                   */

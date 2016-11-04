@@ -95,9 +95,9 @@ namespace simgrid {
     }
 
     /* Build a copy that will be stored in the dict */
-    std::vector<surf::Link*>* newRoute = new std::vector<surf::Link*>();
+    kernel::routing::AsRoute* newRoute = new kernel::routing::AsRoute(e_route->gw_src, e_route->gw_dst);
     for (auto link : *e_route->link_list)
-      newRoute->push_back(link);
+      newRoute->links.push_back(link);
 
     /* Store it */
     bypassRoutes_.insert({{e_route->src, e_route->dst}, newRoute});

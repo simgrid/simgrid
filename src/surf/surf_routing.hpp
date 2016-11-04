@@ -82,6 +82,14 @@ private:
   AsImpl *containingAS_;
 };
 
+class AsRoute {
+public:
+  explicit AsRoute(NetCard* gwSrc, NetCard* gwDst) : gw_src(gwSrc), gw_dst(gwDst) {}
+  const NetCard* gw_src;
+  const NetCard* gw_dst;
+  std::vector<Link*> links;
+};
+
 /** @ingroup SURF_routing_interface
  * @brief Link of length 1, alongside with its source and destination. This is mainly useful in the ns3 bindings
  */
