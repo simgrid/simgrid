@@ -158,7 +158,7 @@ std::vector<std::string> resolveBacktrace(
   if (binary_name.empty()) {
     for (std::size_t i = 0; i < count; i++)
       result.push_back(simgrid::xbt::string_printf("%p", loc[i]));
-    return std::move(result);
+    return result;
   }
 
   // Create the system command for add2line:
