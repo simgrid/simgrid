@@ -18,7 +18,7 @@
 #include <math.h>
 #include "src/mc/mc_protocol.h"
 
-/* ***** Whether to use `mmalloc` of the undrlying malloc ***** */
+/* ***** Whether to use `mmalloc` of the underlying malloc ***** */
 
 static int __malloc_use_mmalloc;
 
@@ -76,7 +76,7 @@ static void* mm_fake_malloc(size_t n)
   size_t count = n / sizeof(uint64_t);
   if (n % sizeof(uint64_t))
     count++;
-  // Check that we have enough availabel memory:
+  // Check that we have enough available memory:
   if (fake_alloc_index + count >= BUFFER_SIZE)
     exit(127);
   // Allocate it:

@@ -203,7 +203,7 @@ double xbt_graph_edge_get_length(xbt_edge_t edge)
  *
  * From wikipedia:
  *
- * The Floyd–Warshall algorithm takes as input an adjacency matrix representation of a weighted, directed graph (V, E).
+ * The Floyd-Warshall algorithm takes as input an adjacency matrix representation of a weighted, directed graph (V, E).
  * The weight of a path between two vertices is the sum of the weights of the edges along that path. The edges E of the
  * graph may have negative weights, but the graph must not have any negative weight cycles. The algorithm computes, for
  * each pair of vertices, the minimum weight among all paths between the two vertices. The running time complexity is

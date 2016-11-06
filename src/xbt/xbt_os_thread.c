@@ -44,7 +44,7 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(xbt_sync_os, xbt, "Synchronization mechanism (OS-level)");
 
-/* use named sempahore when sem_init() does not work */
+/* use named semaphore when sem_init() does not work */
 #if !HAVE_SEM_INIT
 static int next_sem_ID = 0;
 static xbt_os_mutex_t next_sem_ID_lock;
