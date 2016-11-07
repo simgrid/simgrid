@@ -59,6 +59,7 @@
 
 /* Other function checks */
 #define HAVE_BACKTRACE @HAVE_BACKTRACE@ /* Function backtrace */
+#define HAVE_DLFUNC    @HAVE_DLFUNC@ /* Function dlfunc */
 #define HAVE_MMAP      @HAVE_MMAP@ /* Function mmap */
 #define HAVE_MREMAP    @HAVE_MREMAP@ /* Function mremap */
 #define HAVE_SEM_INIT  @HAVE_SEM_INIT@ /* Function sem_init (part of XPG6 standard only) */
