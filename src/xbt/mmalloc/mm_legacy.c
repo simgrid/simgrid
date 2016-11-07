@@ -58,7 +58,11 @@ xbt_mheap_t mmalloc_set_current_heap(xbt_mheap_t new_heap)
  * This is used before we have found the real malloc implementation with dlsym.
  */
 
-#define BUFFER_SIZE 32
+#ifdef __FreeBSD__ /* FreeBSD require more memory, other might */
+# define BUFFER_SIZE 256
+#else /* Valid on: Linux */
+# define BUFFER_SIZE 32
+#endif
 static size_t fake_alloc_index;
 static uint64_t buffer[BUFFER_SIZE];
 
