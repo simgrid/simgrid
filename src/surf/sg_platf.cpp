@@ -125,7 +125,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   simgrid::s4u::Host::onCreation(*h);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
-    sg_instr_new_host(host);
+    sg_instr_new_host(*h);
 }
 
 /** @brief Add a "router" to the network element list */

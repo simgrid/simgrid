@@ -248,7 +248,7 @@ XBT_PUBLIC(void) routing_route_free(sg_platf_route_cbarg_t route);
 /********** Instr. **********/
 XBT_PRIVATE void sg_instr_AS_begin(sg_platf_AS_cbarg_t AS);
 XBT_PRIVATE void sg_instr_new_router(sg_platf_router_cbarg_t router);
-XBT_PRIVATE void sg_instr_new_host(sg_platf_host_cbarg_t host);
+XBT_PRIVATE void sg_instr_new_host(simgrid::s4u::Host& host);
 XBT_PRIVATE void sg_instr_AS_end();
 
 typedef struct s_surf_parsing_link_up_down *surf_parsing_link_up_down_t;
