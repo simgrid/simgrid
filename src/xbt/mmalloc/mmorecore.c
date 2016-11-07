@@ -45,6 +45,11 @@
                              ? -1                                 \
                              : (MDP) -> fd)
 
+/* Return 0if MDP uses anonymous mapping. Otherwise, return off */
+#define MAP_ANON_OR_OFFSET(MDP, off) (((MDP) -> flags & MMALLOC_ANONYMOUS) \
+                             ? 0                                           \
+                             : off)
+
 /** @brief Add memoty to this heap
  *
  *  Get core for the memory region specified by MDP, using SIZE as the
@@ -119,7 +124,7 @@ void *mmorecore(struct mdesc *mdp, ssize_t size)
        */
       mapto = mmap(mdp->top, mapbytes, PROT_READ | PROT_WRITE,
                    MAP_PRIVATE_OR_SHARED(mdp) | MAP_IS_ANONYMOUS(mdp) |
-                   MAP_FIXED, MAP_ANON_OR_FD(mdp), foffset);
+                   MAP_FIXED, MAP_ANON_OR_FD(mdp), MAP_ANON_OR_OFFSET(mdp, foffset));
 
       if (mapto == MAP_FAILED) {
         char buff[1024];
