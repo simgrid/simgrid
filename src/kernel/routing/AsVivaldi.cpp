@@ -15,11 +15,42 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_route_vivaldi, surf, "Routing part of surf"
 namespace simgrid {
 namespace kernel {
 namespace routing {
-  static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst) {
-    double src_coord = xbt_dynar_get_as(src, index, double);
-    double dst_coord = xbt_dynar_get_as(dst, index, double);
+namespace vivaldi {
+simgrid::xbt::Extension<s4u::Host, Coords> Coords::EXTENSION_ID;
 
-    return (src_coord-dst_coord)*(src_coord-dst_coord);
+Coords::Coords(s4u::Host* host, const char* coordStr)
+{
+  if (!Coords::EXTENSION_ID.valid()) {
+    Coords::EXTENSION_ID = s4u::Host::extension_create<Coords>();
+  }
+
+  unsigned int cursor;
+  char* str;
+
+  xbt_dynar_t ctn_str = xbt_str_split_str(coordStr, " ");
+  xbt_assert(xbt_dynar_length(ctn_str) == 3, "Coordinates of %s must have 3 dimensions", host->name().c_str());
+
+  this->coords = xbt_dynar_new(sizeof(double), nullptr);
+  xbt_dynar_foreach (ctn_str, cursor, str) {
+    double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
+    xbt_dynar_push(this->coords, &val);
+  }
+  xbt_dynar_free(&ctn_str);
+  xbt_dynar_shrink(this->coords, 0);
+  host->extension_set<Coords>(this);
+}
+Coords::~Coords()
+{
+  xbt_dynar_free(&coords);
+}
+}; // namespace vivaldi
+
+static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t dst)
+{
+  double src_coord = xbt_dynar_get_as(src, index, double);
+  double dst_coord = xbt_dynar_get_as(dst, index, double);
+
+  return (src_coord - dst_coord) * (src_coord - dst_coord);
   }
 
   static xbt_dynar_t getCoordsFromNetcard(NetCard *nc)
@@ -27,13 +58,13 @@ namespace routing {
     xbt_dynar_t res = nullptr;
     char *tmp_name;
 
-    if(nc->isHost()){
+    if (nc->isHost()) {
       tmp_name                 = bprintf("peer_%s", nc->name().c_str());
       simgrid::s4u::Host *host = simgrid::s4u::Host::by_name_or_null(tmp_name);
       if (host == nullptr)
         host = simgrid::s4u::Host::by_name_or_null(nc->name());
       if (host != nullptr)
-        res = (xbt_dynar_t) host->extension(COORD_HOST_LEVEL);
+        res = host->extension<simgrid::kernel::routing::vivaldi::Coords>()->coords;
     }
     else if(nc->isRouter() || nc->isAS()){
       tmp_name = bprintf("router_%s", nc->name().c_str());

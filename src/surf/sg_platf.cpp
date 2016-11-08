@@ -82,22 +82,7 @@ void sg_platf_new_host(sg_platf_host_cbarg_t host)
   current_routing->attachHost(h);
 
   if (host->coord && strcmp(host->coord, "")) {
-    unsigned int cursor;
-    char*str;
-
-    xbt_assert(COORD_HOST_LEVEL, "To use host coordinates, please add --cfg=network/coordinates:yes to your command line");
-    /* Pre-parse the host coordinates -- FIXME factorize with routers by overloading the routing->parse_PU function*/
-    xbt_dynar_t ctn_str = xbt_str_split_str(host->coord, " ");
-    xbt_assert(xbt_dynar_length(ctn_str)==3,"Coordinates of %s must have 3 dimensions", host->id);
-
-    xbt_dynar_t ctn = xbt_dynar_new(sizeof(double),nullptr);
-    xbt_dynar_foreach(ctn_str,cursor, str) {
-      double val = xbt_str_parse_double(str, "Invalid coordinate: %s");
-      xbt_dynar_push(ctn,&val);
-    }
-    xbt_dynar_free(&ctn_str);
-    xbt_dynar_shrink(ctn, 0);
-    h->extension_set(COORD_HOST_LEVEL, (void *) ctn);
+    new simgrid::kernel::routing::vivaldi::Coords(h, host->coord);
   }
 
   simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h, &host->speed_per_pstate, host->core_amount);

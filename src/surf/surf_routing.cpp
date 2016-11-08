@@ -35,8 +35,6 @@ namespace routing {
  * @brief A library containing all known hosts
  */
 
-int COORD_HOST_LEVEL = -1;         //Coordinates level
-
 int MSG_FILE_LEVEL = -1;             //Msg file level
 
 int SIMIX_STORAGE_LEVEL = -1;        //Simix storage level
