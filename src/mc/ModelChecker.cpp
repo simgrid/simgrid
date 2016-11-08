@@ -40,6 +40,12 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(mc_ModelChecker, mc, "ModelChecker");
 
 using simgrid::mc::remote;
 
+#ifdef __linux__
+# define WAITPID_CHECKED_FLAGS __WALL
+#else
+# define WAITPID_CHECKED_FLAGS 0
+#endif
+
 // Hardcoded index for now:
 #define SOCKET_FD_INDEX 0
 #define SIGNAL_FD_INDEX 1
@@ -91,7 +97,7 @@ void ModelChecker::start()
   int status;
 
   // The model-checked process SIGSTOP itself to signal it's ready:
-  pid_t res = waitpid(pid, &status, __WALL);
+  pid_t res = waitpid(pid, &status, WAITPID_CHECKED_FLAGS);
   if (res < 0 || !WIFSTOPPED(status) || WSTOPSIG(status) != SIGSTOP)
     xbt_die("Could not wait model-checked process");
 
