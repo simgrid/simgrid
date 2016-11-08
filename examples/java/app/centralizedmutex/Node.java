@@ -18,11 +18,10 @@ public class Node extends Process {
   }
   public void request(double CStime) throws MsgException {
     RequestTask req = new RequestTask(getName());
-    GrantTask grant= new GrantTask();
     Msg.info("Send a request to the coordinator");
     req.send("coordinator");
     Msg.info("Wait for a grant from the coordinator");
-    grant.receive(getName());
+    GrantTask.receive(getName());
     Task compute = new Task("CS", CStime, 0);
     compute.execute();
     ReleaseTask release = new ReleaseTask();

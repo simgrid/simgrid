@@ -73,7 +73,7 @@ public class Node extends Process {
     Msg.info("Having write " + write + " on " + filename);
 
     Msg.info("Seek back to the beginning of " + filename);
-    file.seek(0,file.SEEK_SET);
+    file.seek(0,File.SEEK_SET);
 
     read = file.read(150000,1);
     Msg.info("Having read " + read + " on " + filename);  
