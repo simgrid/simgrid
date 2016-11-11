@@ -124,11 +124,17 @@ inline static smx_activity_t simcall_BODY_execution_start(const char* name, doub
     if (0) simcall_HANDLER_execution_start(&SIMIX_process_self()->simcall, name, flops_amount, priority, bound);
     return simcall<smx_activity_t, const char*, double, double, double>(SIMCALL_EXECUTION_START, name, flops_amount, priority, bound);
   }
-  
-inline static smx_activity_t simcall_BODY_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) {
+
+  inline static smx_activity_t simcall_BODY_execution_parallel_start(const char* name, int host_nb,
+                                                                     sg_host_t* host_list, double* flops_amount,
+                                                                     double* bytes_amount, double amount, double rate,
+                                                                     double timeout)
+  {
     /* Go to that function to follow the code flow through the simcall barrier */
-    if (0) SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate);
-    return simcall<smx_activity_t, const char*, int, sg_host_t*, double*, double*, double, double>(SIMCALL_EXECUTION_PARALLEL_START, name, host_nb, host_list, flops_amount, bytes_amount, amount, rate);
+    if (0)
+      SIMIX_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate, timeout);
+    return simcall<smx_activity_t, const char*, int, sg_host_t*, double*, double*, double, double, double>(
+        SIMCALL_EXECUTION_PARALLEL_START, name, host_nb, host_list, flops_amount, bytes_amount, amount, rate, timeout);
   }
   
 inline static void simcall_BODY_execution_cancel(smx_activity_t execution) {

@@ -3,11 +3,12 @@
 $ $SG_TEST_EXENV energy-ptask/energy-ptask$EXEEXT ${srcdir:=.}/../platforms/energy_platform.xml --energy "--log=root.fmt:[%10.6r]%e(%i:%P@%h)%e%m%n"
 > [  0.000000] (0:maestro@) Switching to the L07 model to handle parallel tasks.
 > [  0.000000] (1:test@MyHost1) First, build a classical parallel task, with 1 Gflop to execute on each node, and 10MB to exchange between each pair
-> [300.000000] (1:test@MyHost1) Then, build a parallel task involving only computations and no communication (1 Gflop per node)
-> [310.000000] (1:test@MyHost1) Then, build a parallel task with no computation nor communication (synchro only)
-> [310.000000] (1:test@MyHost1) Finally, trick the ptask to do a 'remote execution', on host MyHost2
-> [320.000000] (1:test@MyHost1) Goodbye now!
-> [320.000000] (0:maestro@) Simulation done.
-> [320.000000] (0:maestro@) Total energy of host MyHost1: 38200.000000 Joules
-> [320.000000] (0:maestro@) Total energy of host MyHost2: 38400.000000 Joules
-> [320.000000] (0:maestro@) Total energy of host MyHost3: 38200.000000 Joules
+> [300.000000] (1:test@MyHost1) We can do the same with a timeout of one second enabled.
+> [301.000000] (1:test@MyHost1) Then, build a parallel task involving only computations and no communication (1 Gflop per node)
+> [311.000000] (1:test@MyHost1) Then, build a parallel task with no computation nor communication (synchro only)
+> [311.000000] (1:test@MyHost1) Finally, trick the ptask to do a 'remote execution', on host MyHost2
+> [321.000000] (1:test@MyHost1) Goodbye now!
+> [321.000000] (0:maestro@) Simulation done.
+> [321.000000] (0:maestro@) Total energy of host MyHost1: 38320.000000 Joules
+> [321.000000] (0:maestro@) Total energy of host MyHost2: 38520.000000 Joules
+> [321.000000] (0:maestro@) Total energy of host MyHost3: 38320.000000 Joules

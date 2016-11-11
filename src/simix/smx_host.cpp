@@ -191,8 +191,9 @@ smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name, doubl
   return exec;
 }
 
-smx_activity_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_host_t *host_list, double *flops_amount,
-                                             double *bytes_amount, double amount, double rate){
+smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
+                                              double* bytes_amount, double amount, double rate, double timeout)
+{
 
   /* alloc structures and initialize */
   simgrid::kernel::activity::Exec *exec = new simgrid::kernel::activity::Exec(name, nullptr);
@@ -213,6 +214,10 @@ smx_activity_t SIMIX_execution_parallel_start(const char *name, int host_nb, sg_
   if (!MC_is_active() && !MC_record_replay_is_active()) {
     exec->surf_exec = surf_host_model->executeParallelTask(host_nb, host_list_cpy, flops_amount, bytes_amount, rate);
     exec->surf_exec->setData(exec);
+    if (timeout > 0) {
+      exec->timeoutDetector = host_list[0]->pimpl_cpu->sleep(timeout);
+      exec->timeoutDetector->setData(exec);
+    }
   }
   XBT_DEBUG("Create parallel execute synchro %p", exec);
 
@@ -282,6 +287,11 @@ void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec)
       case SIMIX_CANCELED:
         XBT_DEBUG("SIMIX_execution_finished: execution canceled");
         SMX_EXCEPTION(simcall->issuer, cancel_error, 0, "Canceled");
+        break;
+
+      case SIMIX_TIMEOUT:
+        XBT_DEBUG("SIMIX_execution_finished: execution timeouted");
+        SMX_EXCEPTION(simcall->issuer, timeout_error, 0, "Timeouted");
         break;
 
       default:

@@ -215,6 +215,14 @@ static inline double simcall_execution_parallel_start__get__rate(smx_simcall_t s
 static inline void simcall_execution_parallel_start__set__rate(smx_simcall_t simcall, double arg) {
     simgrid::simix::marshal<double>(simcall->args[6], arg);
 }
+static inline double simcall_execution_parallel_start__get__timeout(smx_simcall_t simcall)
+{
+  return simgrid::simix::unmarshal<double>(simcall->args[7]);
+}
+static inline void simcall_execution_parallel_start__set__timeout(smx_simcall_t simcall, double arg)
+{
+  simgrid::simix::marshal<double>(simcall->args[7], arg);
+}
 static inline smx_activity_t simcall_execution_parallel_start__get__result(smx_simcall_t simcall){
     return simgrid::simix::unmarshal<smx_activity_t>(simcall->result);
 }

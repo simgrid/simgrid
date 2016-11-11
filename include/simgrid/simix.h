@@ -80,6 +80,7 @@ typedef enum {
   SIMIX_FAILED,
   SIMIX_SRC_HOST_FAILURE,
   SIMIX_DST_HOST_FAILURE,
+  SIMIX_TIMEOUT,
   SIMIX_SRC_TIMEOUT,
   SIMIX_DST_TIMEOUT,
   SIMIX_LINK_FAILURE
@@ -248,13 +249,9 @@ XBT_PUBLIC(void) simcall_host_set_data(sg_host_t host, void *data);
 XBT_PUBLIC(smx_activity_t) simcall_execution_start(const char *name,
                                                 double flops_amount,
                                                 double priority, double bound);
-XBT_PUBLIC(smx_activity_t) simcall_execution_parallel_start(const char *name,
-                                                     int host_nb,
-                                                     sg_host_t *host_list,
-                                                     double *flops_amount,
-                                                     double *bytes_amount,
-                                                     double amount,
-                                                     double rate);
+XBT_PUBLIC(smx_activity_t)
+simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount,
+                                 double* bytes_amount, double amount, double rate, double timeout);
 XBT_PUBLIC(void) simcall_execution_cancel(smx_activity_t execution);
 XBT_PUBLIC(void) simcall_execution_set_priority(smx_activity_t execution, double priority);
 XBT_PUBLIC(void) simcall_execution_set_bound(smx_activity_t execution, double bound);

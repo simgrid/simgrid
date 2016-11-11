@@ -97,15 +97,12 @@ smx_activity_t simcall_execution_start(const char *name,
  * amount between each pair of hosts
  * \param amount the SURF action amount
  * \param rate the SURF action rate
+ * \param timeout timeout
  * \return A new SIMIX execution synchronization
  */
-smx_activity_t simcall_execution_parallel_start(const char *name,
-                                         int host_nb,
-                                         sg_host_t *host_list,
-                                         double *flops_amount,
-                                         double *bytes_amount,
-                                         double amount,
-                                         double rate)
+smx_activity_t simcall_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list,
+                                                double* flops_amount, double* bytes_amount, double amount, double rate,
+                                                double timeout)
 {
   int i,j;
   /* checking for infinite values */
@@ -122,11 +119,8 @@ smx_activity_t simcall_execution_parallel_start(const char *name,
   xbt_assert(std::isfinite(amount), "amount is not finite!");
   xbt_assert(std::isfinite(rate), "rate is not finite!");
 
-  return simcall_BODY_execution_parallel_start(name, host_nb, host_list,
-                                            flops_amount,
-                                            bytes_amount,
-                                            amount, rate);
-
+  return simcall_BODY_execution_parallel_start(name, host_nb, host_list, flops_amount, bytes_amount, amount, rate,
+                                               timeout);
 }
 
 /**

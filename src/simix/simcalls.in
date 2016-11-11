@@ -53,7 +53,7 @@ int  process_join(smx_actor_t process, double timeout) [[block]];
 int  process_sleep(double duration) [[block]];
 
 smx_activity_t execution_start(const char* name, double flops_amount, double priority, double bound);
-smx_activity_t execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate) [[nohandler]];
+smx_activity_t execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount, double amount, double rate, double timeout) [[nohandler]];
 void          execution_cancel(smx_activity_t execution) [[nohandler]];
 void          execution_set_priority(smx_activity_t execution, double priority) [[nohandler]];
 void          execution_set_bound(smx_activity_t execution, double bound) [[nohandler]];

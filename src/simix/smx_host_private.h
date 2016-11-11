@@ -54,10 +54,9 @@ XBT_PRIVATE void SIMIX_host_add_auto_restart_process(sg_host_t host,
 XBT_PRIVATE void SIMIX_host_autorestart(sg_host_t host);
 XBT_PRIVATE smx_activity_t SIMIX_execution_start(smx_actor_t issuer, const char *name,
     double flops_amount, double priority, double bound);
-XBT_PRIVATE smx_activity_t SIMIX_execution_parallel_start(const char *name,
-    int host_nb, sg_host_t *host_list,
-    double *flops_amount, double *bytes_amount,
-    double amount, double rate);
+XBT_PRIVATE smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_host_t* host_list,
+                                                          double* flops_amount, double* bytes_amount, double amount,
+                                                          double rate, double timeout);
 XBT_PRIVATE void SIMIX_execution_cancel(smx_activity_t synchro);
 XBT_PRIVATE void SIMIX_execution_set_priority(smx_activity_t synchro, double priority);
 XBT_PRIVATE void SIMIX_execution_set_bound(smx_activity_t synchro, double bound);

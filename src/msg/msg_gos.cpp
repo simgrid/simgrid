@@ -43,6 +43,11 @@ msg_error_t MSG_task_execute(msg_task_t task)
  */
 msg_error_t MSG_parallel_task_execute(msg_task_t task)
 {
+  return MSG_parallel_task_execute_with_timeout(task, -1);
+}
+
+msg_error_t MSG_parallel_task_execute_with_timeout(msg_task_t task, double timeout)
+{
   simdata_task_t simdata = task->simdata;
   simdata_process_t p_simdata = static_cast<simdata_process_t>(SIMIX_process_self_get_data());
   e_smx_state_t comp_state;
@@ -63,10 +68,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
     simdata->setUsed();
 
     if (simdata->host_nb > 0) {
-      simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(
-          simcall_execution_parallel_start(task->name, simdata->host_nb,simdata->host_list,
-                                                       simdata->flops_parallel_amount, simdata->bytes_parallel_amount,
-                                                       1.0, -1.0));
+      simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(simcall_execution_parallel_start(
+          task->name, simdata->host_nb, simdata->host_list, simdata->flops_parallel_amount,
+          simdata->bytes_parallel_amount, 1.0, -1.0, timeout));
       XBT_DEBUG("Parallel execution action created: %p", simdata->compute);
     } else {
       simdata->compute = static_cast<simgrid::kernel::activity::Exec*>(
@@ -88,6 +92,9 @@ msg_error_t MSG_parallel_task_execute(msg_task_t task)
       break;
     case host_error:
       status = MSG_HOST_FAILURE;
+      break;
+    case timeout_error:
+      status = MSG_TIMEOUT;
       break;
     default:
       throw;
