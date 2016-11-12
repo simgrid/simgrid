@@ -7,6 +7,7 @@
 
 #include "simgrid/s4u/host.hpp"
 #include "src/kernel/routing/AsImpl.hpp"
+#include "src/surf/cpu_interface.hpp"
 #include "src/surf/network_interface.hpp" // Link FIXME: move to proper header
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(AsImpl,surf, "Implementation of S4U autonomous systems");
@@ -26,12 +27,18 @@ namespace simgrid {
   }
   AsImpl::~AsImpl() = default;
 
-  void AsImpl::attachHost(s4u::Host* host)
+  simgrid::s4u::Host* AsImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount)
   {
+    simgrid::s4u::Host* res = new simgrid::s4u::Host(name);
+
     if (hierarchy_ == RoutingMode::unset)
       hierarchy_ = RoutingMode::base;
 
-    host->pimpl_netcard = new NetCardImpl(host->name().c_str(), NetCard::Type::Host, this);
+    res->pimpl_netcard = new NetCardImpl(name, NetCard::Type::Host, this);
+
+    surf_cpu_model_pm->createCpu(res, speedPerPstate, coreAmount);
+
+    return res;
   }
 
   xbt_dynar_t AsImpl::getOneLinkRoutes()

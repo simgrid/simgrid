@@ -30,8 +30,8 @@ protected:
   ~AsImpl() override;
   
 public:
-  /** @brief attach the given host to that AS */
-  void attachHost(s4u::Host * host);
+  /** @brief Make an host within that AS */
+  simgrid::s4u::Host* createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount);
 
   /**
    * @brief Probe the routing path between two points

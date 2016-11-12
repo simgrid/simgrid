@@ -74,37 +74,31 @@ void sg_platf_exit() {
 }
 
 /** @brief Add an host to the current AS */
-void sg_platf_new_host(sg_platf_host_cbarg_t hostArgs)
+void sg_platf_new_host(sg_platf_host_cbarg_t args)
 {
-  simgrid::kernel::routing::AsImpl* current_routing = routing_get_current();
-
-  simgrid::s4u::Host* host = new simgrid::s4u::Host(hostArgs->id);
-  current_routing->attachHost(host);
-
-  if (hostArgs->coord && strcmp(hostArgs->coord, ""))
-    new simgrid::kernel::routing::vivaldi::Coords(host, hostArgs->coord);
-
-  surf_cpu_model_pm->createCpu(host, &hostArgs->speed_per_pstate, hostArgs->core_amount);
+  simgrid::s4u::Host* host = routing_get_current()->createHost(args->id, &args->speed_per_pstate, args->core_amount);
 
   new simgrid::surf::HostImpl(host, mount_list);
-  xbt_lib_set(storage_lib, hostArgs->id, ROUTING_STORAGE_HOST_LEVEL, static_cast<void*>(mount_list));
+  xbt_lib_set(storage_lib, args->id, ROUTING_STORAGE_HOST_LEVEL, static_cast<void*>(mount_list));
   mount_list = nullptr;
 
-  if (hostArgs->properties) {
+  if (args->properties) {
     xbt_dict_cursor_t cursor=nullptr;
     char *key,*data;
-    xbt_dict_foreach (hostArgs->properties, cursor, key, data)
+    xbt_dict_foreach (args->properties, cursor, key, data)
       host->setProperty(key, data);
-    xbt_dict_free(&hostArgs->properties);
+    xbt_dict_free(&args->properties);
   }
 
-  /* Change from the default */
-  if (hostArgs->state_trace)
-    host->pimpl_cpu->setStateTrace(hostArgs->state_trace);
-  if (hostArgs->speed_trace)
-    host->pimpl_cpu->setSpeedTrace(hostArgs->speed_trace);
-  if (hostArgs->pstate != 0)
-    host->pimpl_cpu->setPState(hostArgs->pstate);
+  /* Change from the defaults */
+  if (args->state_trace)
+    host->pimpl_cpu->setStateTrace(args->state_trace);
+  if (args->speed_trace)
+    host->pimpl_cpu->setSpeedTrace(args->speed_trace);
+  if (args->pstate != 0)
+    host->pimpl_cpu->setPState(args->pstate);
+  if (args->coord && strcmp(args->coord, ""))
+    new simgrid::kernel::routing::vivaldi::Coords(host, args->coord);
 
   simgrid::s4u::Host::onCreation(*host);
 
