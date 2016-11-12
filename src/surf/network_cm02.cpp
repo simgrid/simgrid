@@ -395,10 +395,9 @@ void NetworkCm02Model::gapAppend(double size, const Link* link, NetworkAction* a
 /************
  * Resource *
  ************/
-NetworkCm02Link::NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
-    double bandwidth,  double latency, e_surf_link_sharing_policy_t policy,
-    lmm_system_t system)
-: Link(model, name, props, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth))
+NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, xbt_dict_t props, double bandwidth,
+                                 double latency, e_surf_link_sharing_policy_t policy, lmm_system_t system)
+    : Link(model, name, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth), props)
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;

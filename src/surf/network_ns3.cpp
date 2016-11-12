@@ -283,8 +283,8 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
  * Resource *
  ************/
 
-LinkNS3::LinkNS3(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency)
- : Link(model, name, props)
+LinkNS3::LinkNS3(NetworkNS3Model* model, const char* name, xbt_dict_t props, double bandwidth, double latency)
+    : Link(model, name, nullptr, props)
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;

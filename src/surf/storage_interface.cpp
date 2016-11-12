@@ -50,20 +50,6 @@ StorageModel::~StorageModel(){
  ************/
 
 Storage::Storage(Model *model, const char *name, xbt_dict_t props,
-                 const char* type_id, const char *content_name, const char *content_type,
-                 sg_size_t size)
- : Resource(model, name)
- , PropertyHolder(props)
- , contentType_(xbt_strdup(content_type))
- , size_(size), usedSize_(0)
- , typeId_(xbt_strdup(type_id))
- , writeActions_(std::vector<StorageAction*>())
-{
-  content_ = parseContent(content_name);
-  turnOn();
-}
-
-Storage::Storage(Model *model, const char *name, xbt_dict_t props,
                  lmm_system_t maxminSystem, double bread, double bwrite,
                  double bconnection, const char* type_id, const char *content_name,
                  const char *content_type, sg_size_t size, const char *attach)

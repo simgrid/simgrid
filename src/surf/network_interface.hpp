@@ -134,13 +134,11 @@ namespace simgrid {
         public simgrid::surf::PropertyHolder {
         public:
 
-      /** @brief Constructor of non-LMM links */
-      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props);
       /** @brief Constructor of LMM links */
-      Link(simgrid::surf::NetworkModel *model, const char *name, xbt_dict_t props, lmm_constraint_t constraint);
+          Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint, xbt_dict_t props);
 
-      /* Link destruction logic */
-      /**************************/
+          /* Link destruction logic */
+          /**************************/
         protected:
       ~Link() override;
         public:

@@ -384,14 +384,6 @@ namespace surf {
 XBT_PUBLIC_CLASS Resource {
 public:
   /**
-   * @brief Constructor of non-LMM Resources
-   *
-   * @param model Model associated to this Resource
-   * @param name The name of the Resource
-   */
-  Resource(Model *model, const char *name);
-
-  /**
    * @brief Constructor of LMM Resources
    *
    * @param model Model associated to this Resource
@@ -431,7 +423,7 @@ public:
   virtual void turnOff();
 
 private:
-  const char *name_;
+  char* name_;
   Model *model_;
   bool isOn_ = true;
 
@@ -439,7 +431,7 @@ public: /* LMM */
   /** @brief Get the lmm constraint associated to this Resource if it is part of a LMM component (or null if none) */
   lmm_constraint_t getConstraint() const;
 protected:
-  lmm_constraint_t constraint_ = nullptr;
+  const lmm_constraint_t constraint_ = nullptr;
 };
 
 }

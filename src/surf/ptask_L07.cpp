@@ -259,17 +259,17 @@ Link* NetworkL07Model::createLink(const char *name, double bandwidth, double lat
  * Resource *
  ************/
 
-CpuL07::CpuL07(CpuL07Model *model, simgrid::s4u::Host *host, std::vector<double> *speedPerPstate, int core)
- : Cpu(model, host, speedPerPstate, core)
+CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, std::vector<double>* speedPerPstate, int core)
+    : Cpu(model, host, lmm_constraint_new(model->getMaxminSystem(), this, speedPerPstate->front()), speedPerPstate,
+          core)
 {
-  constraint_ = lmm_constraint_new(model->getMaxminSystem(), this, speedPerPstate->front());
 }
 
 CpuL07::~CpuL07()=default;
 
-LinkL07::LinkL07(NetworkL07Model *model, const char* name, xbt_dict_t props, double bandwidth, double latency,
-             e_surf_link_sharing_policy_t policy)
- : Link(model, name, props, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth))
+LinkL07::LinkL07(NetworkL07Model* model, const char* name, xbt_dict_t props, double bandwidth, double latency,
+                 e_surf_link_sharing_policy_t policy)
+    : Link(model, name, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth), props)
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;

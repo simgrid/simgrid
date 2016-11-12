@@ -81,20 +81,6 @@ public:
 class Storage : public simgrid::surf::Resource,
         public simgrid::surf::PropertyHolder {
 public:
-  /**
-   * @brief Storage constructor
-   *
-   * @param model StorageModel associated to this Storage
-   * @param name The name of the Storage
-   * @param props Dictionary of properties associated to this Storage
-   * @param type_id [description]
-   * @param content_name [description]
-   * @param content_type [description]
-   * @param size [description]
-   */
-  Storage(Model *model, const char *name, xbt_dict_t props,
-          const char* type_id, const char *content_name, const char *content_type,
-          sg_size_t size);
 
   /**
    * @brief Storage constructor
