@@ -56,7 +56,7 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)
  */
 class VirtualMachineImpl : public HostImpl {
 public:
-  VirtualMachineImpl(s4u::Host* piface, s4u::Host* host);
+  explicit VirtualMachineImpl(s4u::Host* piface, s4u::Host* host);
   ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
@@ -79,6 +79,9 @@ public:
 
   virtual void setBound(double bound);
 
+  void getParams(vm_params_t params);
+  void setParams(vm_params_t params);
+
   /* The vm object of the lower layer */
   CpuAction* action_ = nullptr;
 
@@ -89,6 +92,9 @@ public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
   static std::deque<VirtualMachineImpl*> allVms_;
+
+private:
+  s_vm_params_t params_;
 
 protected:
   e_surf_vm_state_t vmState_ = SURF_VM_STATE_CREATED;

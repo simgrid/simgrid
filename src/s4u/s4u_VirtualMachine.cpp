@@ -12,7 +12,6 @@
 #include "xbt/asserts.h"
 
 namespace simgrid {
-
 namespace s4u {
 
 VirtualMachine::VirtualMachine(const char* name, s4u::Host* Pm) : Host(name)
@@ -25,14 +24,16 @@ VirtualMachine::~VirtualMachine()
   onDestruction(*this);
 }
 
+/** @brief Retrieve a copy of the parameters of that VM/PM
+ *  @details The ramsize and overcommit fields are used on the PM too */
 void VirtualMachine::parameters(vm_params_t params)
 {
-  this->pimpl_->getParams(params);
+  static_cast<surf::VirtualMachineImpl*>(pimpl_)->getParams(params);
 }
-
+/** @brief Sets the params of that VM/PM */
 void VirtualMachine::setParameters(vm_params_t params)
 {
-  simgrid::simix::kernelImmediate([&]() { this->pimpl_->setParams(params); });
+  simgrid::simix::kernelImmediate([&]() { static_cast<surf::VirtualMachineImpl*>(pimpl_)->setParams(params); });
 }
 
 } // namespace simgrid

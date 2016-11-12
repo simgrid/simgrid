@@ -4,6 +4,7 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "mc/mc.h"
+#include "simgrid/s4u/VirtualMachine.hpp"
 #include "smx_private.h"
 #include "src/surf/HostImpl.hpp"
 #include "src/surf/VirtualMachineImpl.hpp"
@@ -14,7 +15,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX Virt
 static long host_get_ramsize(sg_host_t vm, int *overcommit)
 {
   s_vm_params_t params;
-  vm->pimpl_->getParams(&params);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->parameters(&params);
 
   if (overcommit)
     *overcommit = params.overcommit;

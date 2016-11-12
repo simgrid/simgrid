@@ -124,6 +124,9 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::Host* piface, simgrid::s4u:
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
   action_ = sub_cpu->execution_start(0);
 
+  /* Initialize the VM parameters */
+  params_.ramsize = 0;
+
   XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", piface->name().c_str(), hostPM_->name().c_str(),
            xbt_dynar_length(storage_));
 }
@@ -224,6 +227,17 @@ void VirtualMachineImpl::migrate(s4u::Host* host_dest)
 void VirtualMachineImpl::setBound(double bound)
 {
   action_->setBound(bound);
+}
+
+void VirtualMachineImpl::getParams(vm_params_t params)
+{
+  *params = params_;
+}
+
+void VirtualMachineImpl::setParams(vm_params_t params)
+{
+  /* may check something here. */
+  params_ = *params;
 }
 }
 }

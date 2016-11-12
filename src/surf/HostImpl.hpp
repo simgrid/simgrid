@@ -192,15 +192,7 @@ public:
   /** @brief Get the list of virtual machines on the current Host */
   xbt_dynar_t getVms();
 
-  /* common with vm */
-  /** @brief Retrieve a copy of the parameters of that VM/PM
-   *  @details The ramsize and overcommit fields are used on the PM too */
-  void getParams(vm_params_t params);
-  /** @brief Sets the params of that VM/PM */
-  void setParams(vm_params_t params);
   simgrid::s4u::Host* getHost() { return piface_; }
-private:
-  s_vm_params_t params_;
 };
 
 }
