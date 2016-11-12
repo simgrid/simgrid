@@ -25,6 +25,9 @@ SimGrid (3.14) UNRELEASED; urgency=low
  * smpi/cpu-threshold:-1 should become smpi/simulate-computation:no
    smpi/running-power    is renamed to smpi/host-speed
 
+ New functions and features
+ * MSG_parallel_task_execute_with_timeout, to timeout computations.
+
  Dropped / renamed functions and features
  * msg_mailbox_t and associated functions. Use s4u::Mailbox instead.
    - MSG_mailbox_is_empty() -> Mailbox::empty()
