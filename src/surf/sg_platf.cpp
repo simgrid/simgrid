@@ -74,43 +74,42 @@ void sg_platf_exit() {
 }
 
 /** @brief Add an host to the current AS */
-void sg_platf_new_host(sg_platf_host_cbarg_t host)
+void sg_platf_new_host(sg_platf_host_cbarg_t hostArgs)
 {
   simgrid::kernel::routing::AsImpl* current_routing = routing_get_current();
 
-  simgrid::s4u::Host* h = new simgrid::s4u::Host(host->id);
-  current_routing->attachHost(h);
+  simgrid::s4u::Host* host = new simgrid::s4u::Host(hostArgs->id);
+  current_routing->attachHost(host);
 
-  if (host->coord && strcmp(host->coord, "")) {
-    new simgrid::kernel::routing::vivaldi::Coords(h, host->coord);
-  }
+  if (hostArgs->coord && strcmp(hostArgs->coord, ""))
+    new simgrid::kernel::routing::vivaldi::Coords(host, hostArgs->coord);
 
-  simgrid::surf::Cpu *cpu = surf_cpu_model_pm->createCpu( h, &host->speed_per_pstate, host->core_amount);
-  if (host->state_trace)
-    cpu->setStateTrace(host->state_trace);
-  if (host->speed_trace)
-    cpu->setSpeedTrace(host->speed_trace);
+  surf_cpu_model_pm->createCpu(host, &hostArgs->speed_per_pstate, hostArgs->core_amount);
 
-  new simgrid::surf::HostImpl(h, mount_list);
-  xbt_lib_set(storage_lib, host->id, ROUTING_STORAGE_HOST_LEVEL, static_cast<void*>(mount_list));
-
+  new simgrid::surf::HostImpl(host, mount_list);
+  xbt_lib_set(storage_lib, hostArgs->id, ROUTING_STORAGE_HOST_LEVEL, static_cast<void*>(mount_list));
   mount_list = nullptr;
 
-  if (host->properties) {
+  if (hostArgs->properties) {
     xbt_dict_cursor_t cursor=nullptr;
     char *key,*data;
-    xbt_dict_foreach(host->properties,cursor,key,data)
-      h->setProperty(key,data);
-    xbt_dict_free(&host->properties);
+    xbt_dict_foreach (hostArgs->properties, cursor, key, data)
+      host->setProperty(key, data);
+    xbt_dict_free(&hostArgs->properties);
   }
 
-  if (host->pstate != 0)
-    cpu->setPState(host->pstate);
+  /* Change from the default */
+  if (hostArgs->state_trace)
+    host->pimpl_cpu->setStateTrace(hostArgs->state_trace);
+  if (hostArgs->speed_trace)
+    host->pimpl_cpu->setSpeedTrace(hostArgs->speed_trace);
+  if (hostArgs->pstate != 0)
+    host->pimpl_cpu->setPState(hostArgs->pstate);
 
-  simgrid::s4u::Host::onCreation(*h);
+  simgrid::s4u::Host::onCreation(*host);
 
   if (TRACE_is_enabled() && TRACE_needs_platform())
-    sg_instr_new_host(*h);
+    sg_instr_new_host(*host);
 }
 
 /** @brief Add a "router" to the network element list */
