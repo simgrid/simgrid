@@ -7,6 +7,7 @@
 #include <cstdlib>
 
 #include <algorithm>
+#include <unordered_set>
 
 #include "ptask_L07.hpp"
 
@@ -165,27 +166,25 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
 
   /* Compute the number of affected resources... */
   if(bytes_amount != nullptr) {
-    xbt_dict_t ptask_parallel_task_link_set = xbt_dict_new_homogeneous(nullptr);
+    std::unordered_set<const char*> affected_links;
 
     for (int i = 0; i < host_nb; i++) {
       for (int j = 0; j < host_nb; j++) {
 
         if (bytes_amount[i * host_nb + j] > 0) {
           double lat=0.0;
-          std::vector<Link*> *route = new std::vector<Link*>();
+          std::vector<Link*> route;
 
-          routing_platf->getRouteAndLatency((*netcardList_)[i], (*netcardList_)[j], route, &lat);
+          routing_platf->getRouteAndLatency((*netcardList_)[i], (*netcardList_)[j], &route, &lat);
           latency = MAX(latency, lat);
 
-          for (auto link : *route)
-            xbt_dict_set(ptask_parallel_task_link_set, link->getName(), link, nullptr);
-          delete route;
+          for (auto link : route)
+            affected_links.insert(link->getName());
         }
       }
     }
 
-    nb_link = xbt_dict_length(ptask_parallel_task_link_set);
-    xbt_dict_free(&ptask_parallel_task_link_set);
+    nb_link = affected_links.size();
   }
 
   for (int i = 0; i < host_nb; i++)
@@ -215,14 +214,12 @@ L07Action::L07Action(Model *model, int host_nb, sg_host_t *host_list,
 
         if (bytes_amount[i * host_nb + j] == 0.0)
           continue;
-        std::vector<Link*> *route = new std::vector<Link*>();
+        std::vector<Link*> route;
 
-        routing_platf->getRouteAndLatency((*netcardList_)[i], (*netcardList_)[j], route, nullptr);
+        routing_platf->getRouteAndLatency((*netcardList_)[i], (*netcardList_)[j], &route, nullptr);
 
-        for (auto link : *route)
+        for (auto link : route)
           lmm_expand_add(model->getMaxminSystem(), link->getConstraint(), this->getVariable(), bytes_amount[i * host_nb + j]);
-
-        delete route;
       }
     }
   }
@@ -412,11 +409,10 @@ void L07Action::updateBound()
 
         if (communicationAmount_[i * hostNb + j] > 0) {
           double lat = 0.0;
-          std::vector<Link*> *route = new std::vector<Link*>();
-          routing_platf->getRouteAndLatency((*netcardList_)[i], (*netcardList_)[j], route, &lat);
+          std::vector<Link*> route;
+          routing_platf->getRouteAndLatency((*netcardList_)[i], (*netcardList_)[j], &route, &lat);
 
           lat_current = MAX(lat_current, lat * communicationAmount_[i * hostNb + j]);
-          delete route;
         }
       }
     }
