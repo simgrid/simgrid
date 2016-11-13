@@ -528,15 +528,11 @@ void Model::updateActionsStateFull(double /*now*/, double /*delta*/)
 namespace simgrid {
 namespace surf {
 
-Resource::Resource(Model *model, const char *name, lmm_constraint_t constraint)
-  : name_(xbt_strdup(name))
-  , model_(model)
-  , constraint_(constraint)
+Resource::Resource(Model* model, const char* name, lmm_constraint_t constraint)
+    : name_(name), model_(model), constraint_(constraint)
 {}
 
-Resource::~Resource() {
-  free(name_);
-}
+Resource::~Resource() = default;
 
 bool Resource::isOn() const {
   return isOn_;
@@ -560,11 +556,11 @@ Model *Resource::getModel() const {
 }
 
 const char *Resource::getName() const {
-  return name_;
+  return name_.c_str();
 }
 
 bool Resource::operator==(const Resource &other) const {
-  return strcmp(name_, other.name_);
+  return name_ == other.name_;
 }
 
 lmm_constraint_t Resource::getConstraint() const {

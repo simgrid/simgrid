@@ -423,7 +423,7 @@ public:
   virtual void turnOff();
 
 private:
-  char* name_;
+  std::string name_;
   Model *model_;
   bool isOn_ = true;
 
