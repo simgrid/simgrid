@@ -28,8 +28,8 @@ class XBT_PRIVATE StorageN11Action;
 
 class StorageN11Model : public StorageModel {
 public:
-  Storage *createStorage(const char* id, const char* type_id,
-       const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach) override;
+  Storage* createStorage(const char* id, const char* type_id, const char* content_name, const char* content_type,
+                         const char* attach) override;
   double nextOccuringEvent(double now) override;
   void updateActionsState(double now, double delta) override;
 };
@@ -40,15 +40,15 @@ public:
 
 class StorageN11 : public Storage {
 public:
-  StorageN11(StorageModel *model, const char* name, xbt_dict_t properties,
-         lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
-         const char* type_id, char *content_name, const char *content_type, sg_size_t size, char *attach);
+  StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
+             double bconnection, const char* type_id, char* content_name, const char* content_type, sg_size_t size,
+             char* attach);
 
   StorageAction *open(const char* mount, const char* path);
   StorageAction *close(surf_file_t fd);
   StorageAction *ls(const char *path);
-  StorageAction *read(surf_file_t fd, sg_size_t size); //FIXME:why we have a useless param  *??
-  StorageAction *write(surf_file_t fd, sg_size_t size);//FIXME:why we have a useless param  *??
+  StorageAction* read(surf_file_t fd, sg_size_t size);
+  StorageAction* write(surf_file_t fd, sg_size_t size);
   void rename(const char *src, const char *dest);
 };
 

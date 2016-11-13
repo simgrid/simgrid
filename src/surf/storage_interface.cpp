@@ -49,16 +49,16 @@ StorageModel::~StorageModel(){
  * Resource *
  ************/
 
-Storage::Storage(Model *model, const char *name, xbt_dict_t props,
-                 lmm_system_t maxminSystem, double bread, double bwrite,
-                 double bconnection, const char* type_id, const char *content_name,
-                 const char *content_type, sg_size_t size, const char *attach)
- : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
- , PropertyHolder(props)
- , contentType_(xbt_strdup(content_type))
- , size_(size), usedSize_(0)
- , typeId_(xbt_strdup(type_id))
- , writeActions_(std::vector<StorageAction*>())
+Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
+                 double bconnection, const char* type_id, const char* content_name, const char* content_type,
+                 sg_size_t size, const char* attach)
+    : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
+    , PropertyHolder(nullptr)
+    , contentType_(xbt_strdup(content_type))
+    , size_(size)
+    , usedSize_(0)
+    , typeId_(xbt_strdup(type_id))
+    , writeActions_(std::vector<StorageAction*>())
 {
   content_ = parseContent(content_name);
   attach_ = xbt_strdup(attach);

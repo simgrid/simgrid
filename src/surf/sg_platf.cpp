@@ -415,12 +415,16 @@ void sg_platf_new_storage(sg_platf_storage_cbarg_t storage)
       storage->content_type,
     storage->properties);
 
-  surf_storage_model->createStorage(storage->id,
-                                     ((storage_type_t) stype)->type_id,
-                                     storage->content,
-                                     storage->content_type,
-                   storage->properties,
-                                     storage->attach);
+  auto s = surf_storage_model->createStorage(storage->id, ((storage_type_t)stype)->type_id, storage->content,
+                                             storage->content_type, storage->attach);
+
+  if (storage->properties) {
+    xbt_dict_cursor_t cursor = nullptr;
+    char *key, *data;
+    xbt_dict_foreach (storage->properties, cursor, key, data)
+      s->setProperty(key, data);
+    xbt_dict_free(&storage->properties);
+  }
 }
 void sg_platf_new_storage_type(sg_platf_storage_type_cbarg_t storage_type){
 

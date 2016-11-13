@@ -64,9 +64,8 @@ public:
   StorageModel();
   ~StorageModel();
 
-  virtual Storage *createStorage(const char* id, const char* type_id,
-                                 const char* content_name, const char* content_type,
-                                 xbt_dict_t properties, const char *attach) = 0;
+  virtual Storage* createStorage(const char* id, const char* type_id, const char* content_name,
+                                 const char* content_type, const char* attach) = 0;
 
   std::vector<Storage*> p_storageList;
 };
@@ -89,11 +88,8 @@ public:
    * @param name The name of the Storage
    * @param props Dictionary of properties associated to this Storage
    */
-  Storage(Model *model, const char *name, xbt_dict_t props,
-          lmm_system_t maxminSystem, double bread, double bwrite,
-          double bconnection,
-          const char* type_id, const char *content_name, const char *content_type,
-          sg_size_t size, const char *attach);
+  Storage(Model* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite, double bconnection,
+          const char* type_id, const char* content_name, const char* content_type, sg_size_t size, const char* attach);
 
   ~Storage();
 

@@ -61,8 +61,8 @@ namespace simgrid {
 namespace surf {
 
 #include "src/surf/xml/platf.hpp" // FIXME: move that back to the parsing area
-Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
-    const char* content_name, const char* content_type, xbt_dict_t properties, const char* attach)
+Storage* StorageN11Model::createStorage(const char* id, const char* type_id, const char* content_name,
+                                        const char* content_type, const char* attach)
 {
 
   xbt_assert(!surf_storage_resource_priv(surf_storage_resource_by_name(id)),
@@ -77,14 +77,12 @@ Storage *StorageN11Model::createStorage(const char* id, const char* type_id,
   double Bconnection   = surf_parse_get_bandwidth((char*)xbt_dict_get(storage_type->model_properties, "Bconnection"),
       "property Bconnection, storage",type_id);
 
-  Storage *storage = new StorageN11(this, id, properties, maxminSystem_,
-      Bread, Bwrite, Bconnection, type_id, (char *)content_name,
-      content_type, storage_type->size, (char *) attach);
+  Storage* storage = new StorageN11(this, id, maxminSystem_, Bread, Bwrite, Bconnection, type_id, (char*)content_name,
+                                    content_type, storage_type->size, (char*)attach);
   storageCreatedCallbacks(storage);
   xbt_lib_set(storage_lib, id, SURF_STORAGE_LEVEL, storage);
 
-  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tproperties '%p'\n\t\tBread '%f'\n",
-      id, type_id, properties, Bread);
+  XBT_DEBUG("SURF storage create resource\n\t\tid '%s'\n\t\ttype '%s'\n\t\tBread '%f'\n", id, type_id, Bread);
 
   p_storageList.push_back(storage);
 
@@ -167,12 +165,11 @@ void StorageN11Model::updateActionsState(double /*now*/, double delta)
  * Resource *
  ************/
 
-StorageN11::StorageN11(StorageModel *model, const char* name,
-    xbt_dict_t properties, lmm_system_t maxminSystem, double bread,
-    double bwrite, double bconnection, const char* type_id, char *content_name,
-    const char *content_type, sg_size_t size, char *attach)
-: Storage(model, name, properties,
-    maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size, attach) {
+StorageN11::StorageN11(StorageModel* model, const char* name, lmm_system_t maxminSystem, double bread, double bwrite,
+                       double bconnection, const char* type_id, char* content_name, const char* content_type,
+                       sg_size_t size, char* attach)
+    : Storage(model, name, maxminSystem, bread, bwrite, bconnection, type_id, content_name, content_type, size, attach)
+{
   XBT_DEBUG("Create resource with Bconnection '%f' Bread '%f' Bwrite '%f' and Size '%llu'", bconnection, bread, bwrite, size);
 }
 

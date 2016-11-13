@@ -66,15 +66,7 @@ public:
 class HostImpl : public simgrid::surf::PropertyHolder {
 
 public:
-  /**
-   * @brief Host constructor
-   *
-   * @param storage The Storage associated to this Host
-   */
   HostImpl(s4u::Host* host, xbt_dynar_t storage);
-
-  /* Host destruction logic */
-  /**************************/
   virtual ~HostImpl();
 
 public:
