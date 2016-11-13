@@ -25,8 +25,6 @@ namespace surf {
 class XBT_PRIVATE HostModel;
 class XBT_PRIVATE HostImpl;
 class XBT_PRIVATE HostAction;
-
-
 }
 }
 
@@ -52,8 +50,8 @@ public:
   HostModel() : Model() {}
 
   virtual void adjustWeightOfDummyCpuActions();
-  virtual Action *executeParallelTask(int host_nb, sg_host_t *host_list,
-      double *flops_amount, double *bytes_amount, double rate);
+  virtual Action* executeParallelTask(int host_nb, sg_host_t* host_list, double* flops_amount, double* bytes_amount,
+                                      double rate);
 };
 
 /************
@@ -71,7 +69,7 @@ public:
 
 public:
   /** @brief Return the storage of corresponding mount point */
-  virtual simgrid::surf::Storage *findStorageOnMountList(const char* storage);
+  virtual simgrid::surf::Storage* findStorageOnMountList(const char* storage);
 
   /** @brief Get the xbt_dict_t of mount_point: Storage */
   virtual xbt_dict_t getMountedStorageList();
@@ -85,7 +83,7 @@ public:
    * @param fullpath The full path to the file
    * @return The StorageAction corresponding to the opening
    */
-  virtual Action *open(const char* fullpath);
+  virtual Action* open(const char* fullpath);
 
   /**
    * @brief Close a file
@@ -93,7 +91,7 @@ public:
    * @param fd The file descriptor to close
    * @return The StorageAction corresponding to the closing
    */
-  virtual Action *close(surf_file_t fd);
+  virtual Action* close(surf_file_t fd);
 
   /**
    * @brief Unlink a file
@@ -119,7 +117,7 @@ public:
    * @param size The size in bytes to read
    * @return The StorageAction corresponding to the reading
    */
-  virtual Action *read(surf_file_t fd, sg_size_t size);
+  virtual Action* read(surf_file_t fd, sg_size_t size);
 
   /**
    * @brief Write a file
@@ -128,7 +126,7 @@ public:
    * @param size The size in bytes to write
    * @return The StorageAction corresponding to the writing
    */
-  virtual Action *write(surf_file_t fd, sg_size_t size);
+  virtual Action* write(surf_file_t fd, sg_size_t size);
 
   /**
    * @brief Get the information of a file descriptor
@@ -186,7 +184,6 @@ public:
 
   simgrid::s4u::Host* getHost() { return piface_; }
 };
-
 }
 }
 
