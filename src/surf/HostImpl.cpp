@@ -98,7 +98,7 @@ Action* HostModel::executeParallelTask(int host_nb, simgrid::s4u::Host** host_li
 /************
  * Resource *
  ************/
-HostImpl::HostImpl(s4u::Host* host, xbt_dynar_t storage) : PropertyHolder(nullptr), storage_(storage), piface_(host)
+HostImpl::HostImpl(s4u::Host* host, xbt_dynar_t storage) : storage_(storage), piface_(host)
 {
   piface_->pimpl_ = this;
 }

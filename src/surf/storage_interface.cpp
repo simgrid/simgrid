@@ -53,7 +53,6 @@ Storage::Storage(Model* model, const char* name, lmm_system_t maxminSystem, doub
                  double bconnection, const char* type_id, const char* content_name, const char* content_type,
                  sg_size_t size, const char* attach)
     : Resource(model, name, lmm_constraint_new(maxminSystem, this, bconnection))
-    , PropertyHolder(nullptr)
     , contentType_(xbt_strdup(content_type))
     , size_(size)
     , usedSize_(0)
