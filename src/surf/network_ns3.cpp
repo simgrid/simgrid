@@ -193,10 +193,10 @@ NetworkNS3Model::~NetworkNS3Model() {
   xbt_dict_free(&flowFromSock);
 }
 
-Link* NetworkNS3Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
-    xbt_dict_t properties){
-
-  return new LinkNS3(this, name, properties, bandwidth, latency);
+Link* NetworkNS3Model::createLink(const char* name, double bandwidth, double latency,
+                                  e_surf_link_sharing_policy_t policy)
+{
+  return new LinkNS3(this, name, bandwidth, latency);
 }
 
 Action* NetworkNS3Model::communicate(s4u::Host* src, s4u::Host* dst, double size, double rate)
@@ -283,8 +283,8 @@ void NetworkNS3Model::updateActionsState(double now, double delta)
  * Resource *
  ************/
 
-LinkNS3::LinkNS3(NetworkNS3Model* model, const char* name, xbt_dict_t props, double bandwidth, double latency)
-    : Link(model, name, nullptr, props)
+LinkNS3::LinkNS3(NetworkNS3Model* model, const char* name, double bandwidth, double latency)
+    : Link(model, name, nullptr)
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;

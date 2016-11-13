@@ -41,7 +41,7 @@ HostL07Model::HostL07Model() : HostModel() {
   surf_network_model = new NetworkL07Model(this,maxminSystem_);
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 
-  routing_model_create(surf_network_model->createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, nullptr));
+  routing_model_create(surf_network_model->createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE));
 }
 
 HostL07Model::~HostL07Model() = default;
@@ -249,10 +249,10 @@ Cpu *CpuL07Model::createCpu(simgrid::s4u::Host *host,  std::vector<double> *spee
   return new CpuL07(this, host, speedPerPstate, core);
 }
 
-Link* NetworkL07Model::createLink(const char *name, double bandwidth, double latency,
-    e_surf_link_sharing_policy_t policy, xbt_dict_t properties)
+Link* NetworkL07Model::createLink(const char* name, double bandwidth, double latency,
+                                  e_surf_link_sharing_policy_t policy)
 {
-  return new LinkL07(this, name, properties, bandwidth, latency, policy);
+  return new LinkL07(this, name, bandwidth, latency, policy);
 }
 
 /************
@@ -267,9 +267,9 @@ CpuL07::CpuL07(CpuL07Model* model, simgrid::s4u::Host* host, std::vector<double>
 
 CpuL07::~CpuL07()=default;
 
-LinkL07::LinkL07(NetworkL07Model* model, const char* name, xbt_dict_t props, double bandwidth, double latency,
+LinkL07::LinkL07(NetworkL07Model* model, const char* name, double bandwidth, double latency,
                  e_surf_link_sharing_policy_t policy)
-    : Link(model, name, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth), props)
+    : Link(model, name, lmm_constraint_new(model->getMaxminSystem(), this, bandwidth))
 {
   bandwidth_.peak = bandwidth;
   latency_.peak   = latency;

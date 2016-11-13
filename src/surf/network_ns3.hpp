@@ -19,8 +19,7 @@ class NetworkNS3Model : public NetworkModel {
 public:
   NetworkNS3Model();
   ~NetworkNS3Model();
-  Link* createLink(const char *name, double bandwidth, double latency,
-      e_surf_link_sharing_policy_t policy, xbt_dict_t properties) override;
+  Link* createLink(const char* name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy) override;
   Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
   double nextOccuringEvent(double now) override;
   bool nextOccuringEventIsIdempotent() {return false;}
@@ -32,7 +31,7 @@ public:
  ************/
 class LinkNS3 : public Link {
 public:
-  LinkNS3(NetworkNS3Model *model, const char *name, xbt_dict_t props, double bandwidth, double latency);
+  explicit LinkNS3(NetworkNS3Model* model, const char* name, double bandwidth, double latency);
   ~LinkNS3();
 
   void apply_event(tmgr_trace_iterator_t event, double value) override;

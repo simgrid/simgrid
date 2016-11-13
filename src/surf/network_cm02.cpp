@@ -153,7 +153,7 @@ NetworkCm02Model::NetworkCm02Model()
 
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
 
-  routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE, nullptr));
+  routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE));
 
   if (updateMechanism_ == UM_LAZY) {
     actionHeap_ = xbt_heap_new(8, nullptr);
@@ -171,10 +171,10 @@ NetworkCm02Model::NetworkCm02Model(void (*specificSolveFun)(lmm_system_t self))
 
 NetworkCm02Model::~NetworkCm02Model() {}
 
-Link* NetworkCm02Model::createLink(const char *name, double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
-    xbt_dict_t properties)
+Link* NetworkCm02Model::createLink(const char* name, double bandwidth, double latency,
+                                   e_surf_link_sharing_policy_t policy)
 {
-  return new NetworkCm02Link(this, name, properties, bandwidth, latency, policy, maxminSystem_);
+  return new NetworkCm02Link(this, name, bandwidth, latency, policy, maxminSystem_);
 }
 
 void NetworkCm02Model::updateActionsStateLazy(double now, double /*delta*/)
@@ -395,9 +395,9 @@ void NetworkCm02Model::gapAppend(double size, const Link* link, NetworkAction* a
 /************
  * Resource *
  ************/
-NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, xbt_dict_t props, double bandwidth,
-                                 double latency, e_surf_link_sharing_policy_t policy, lmm_system_t system)
-    : Link(model, name, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth), props)
+NetworkCm02Link::NetworkCm02Link(NetworkCm02Model* model, const char* name, double bandwidth, double latency,
+                                 e_surf_link_sharing_policy_t policy, lmm_system_t system)
+    : Link(model, name, lmm_constraint_new(system, this, sg_bandwidth_factor * bandwidth))
 {
   bandwidth_.scale = 1.0;
   bandwidth_.peak  = bandwidth;

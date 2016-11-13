@@ -60,10 +60,9 @@ namespace simgrid {
        * @param bandwidth The initial bandwidth of the Link in bytes per second
        * @param latency The initial latency of the Link in seconds
        * @param policy The sharing policy of the Link
-       * @param props Dictionary of properties associated to this Link
        */
-      virtual Link* createLink(const char *name, double bandwidth, double latency,
-          e_surf_link_sharing_policy_t policy, xbt_dict_t properties)=0;
+      virtual Link* createLink(const char* name, double bandwidth, double latency,
+                               e_surf_link_sharing_policy_t policy) = 0;
 
       /**
        * @brief Create a communication between two hosts.
@@ -135,7 +134,7 @@ namespace simgrid {
         public:
 
       /** @brief Constructor of LMM links */
-          Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint, xbt_dict_t props);
+          Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint);
 
           /* Link destruction logic */
           /**************************/

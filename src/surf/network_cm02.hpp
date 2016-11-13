@@ -41,8 +41,8 @@ namespace simgrid {
       NetworkCm02Model();
       explicit NetworkCm02Model(void (*solve_fun)(lmm_system_t self));
       virtual ~NetworkCm02Model();
-      Link* createLink(const char *name, double bandwidth,  double latency, e_surf_link_sharing_policy_t policy,
-          xbt_dict_t properties) override;
+      Link* createLink(const char* name, double bandwidth, double latency,
+                       e_surf_link_sharing_policy_t policy) override;
       void updateActionsStateLazy(double now, double delta) override;
       void updateActionsStateFull(double now, double delta) override;
       Action* communicate(s4u::Host* src, s4u::Host* dst, double size, double rate) override;
@@ -57,9 +57,8 @@ namespace simgrid {
 
     class NetworkCm02Link : public Link {
     public:
-      NetworkCm02Link(NetworkCm02Model *model, const char *name, xbt_dict_t props,
-          double bandwidth, double latency, e_surf_link_sharing_policy_t policy,
-          lmm_system_t system);
+      NetworkCm02Link(NetworkCm02Model* model, const char* name, double bandwidth, double latency,
+                      e_surf_link_sharing_policy_t policy, lmm_system_t system);
       ~NetworkCm02Link() override;
       void apply_event(tmgr_trace_iterator_t event, double value) override;
       void setBandwidth(double value) override;

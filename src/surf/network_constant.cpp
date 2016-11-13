@@ -22,12 +22,13 @@ void surf_network_model_init_Constant()
 
 namespace simgrid {
   namespace surf {
-    Link* NetworkConstantModel::createLink(const char *name, double bw, double lat, e_surf_link_sharing_policy_t policy,
-        xbt_dict_t properties) {
+  Link* NetworkConstantModel::createLink(const char* name, double bw, double lat, e_surf_link_sharing_policy_t policy)
+  {
 
-      xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
-          "Please remove any link from your platform (and switch to routing='None')", name);
-      return nullptr;
+    xbt_die("Refusing to create the link %s: there is no link in the Constant network model. "
+            "Please remove any link from your platform (and switch to routing='None')",
+            name);
+    return nullptr;
     }
 
     double NetworkConstantModel::nextOccuringEvent(double /*now*/)

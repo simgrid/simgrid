@@ -158,7 +158,15 @@ void sg_platf_new_link(sg_platf_link_cbarg_t link){
     names.push_back(xbt_strdup(link->id));
   }
   for (auto link_name : names) {
-    Link *l = surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy, link->properties);
+    Link* l = surf_network_model->createLink(link_name, link->bandwidth, link->latency, link->policy);
+
+    if (link->properties) {
+      xbt_dict_cursor_t cursor = nullptr;
+      char *key, *data;
+      xbt_dict_foreach (link->properties, cursor, key, data)
+        l->setProperty(key, data);
+      xbt_dict_free(&link->properties);
+    }
 
     if (link->latency_trace)
       l->setLatencyTrace(link->latency_trace);

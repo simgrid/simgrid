@@ -147,8 +147,8 @@ namespace simgrid {
      * Resource *
      ************/
 
-    Link::Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint, xbt_dict_t props)
-        : Resource(model, name, constraint), PropertyHolder(props)
+    Link::Link(simgrid::surf::NetworkModel* model, const char* name, lmm_constraint_t constraint)
+        : Resource(model, name, constraint), PropertyHolder(nullptr)
     {
       if (strcmp(name,"__loopback__"))
         xbt_assert(!Link::byName(name), "Link '%s' declared several times in the platform.", name);
