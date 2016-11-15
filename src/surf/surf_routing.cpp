@@ -60,8 +60,7 @@ simgrid::kernel::routing::NetCard *sg_netcard_by_name_or_null(const char *name)
 }
 
 /* Global vars */
-simgrid::kernel::routing::RoutingPlatf *routing_platf = nullptr;
-
+simgrid::kernel::routing::RoutingPlatf* routing_platf = new simgrid::kernel::routing::RoutingPlatf();
 
 void sg_platf_new_trace(sg_platf_trace_cbarg_t trace)
 {
@@ -127,12 +126,6 @@ xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
 }
 
 }}}
-
-/** @brief create the root AS */
-void routing_model_create()
-{
-  routing_platf = new simgrid::kernel::routing::RoutingPlatf();
-}
 
 /* ************************************************************************** */
 /* ************************* GENERIC PARSE FUNCTIONS ************************ */

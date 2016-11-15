@@ -16,8 +16,6 @@ void surf_network_model_init_Constant()
   xbt_assert(surf_network_model == nullptr);
   surf_network_model = new simgrid::surf::NetworkConstantModel();
   all_existing_models->push_back(surf_network_model);
-
-  routing_model_create();
 }
 
 namespace simgrid {

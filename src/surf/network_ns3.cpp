@@ -174,7 +174,6 @@ namespace surf {
 NetworkNS3Model::NetworkNS3Model() : NetworkModel() {
   ns3_initialize(ns3_tcp_model.get().c_str());
 
-  routing_model_create();
   simgrid::s4u::Host::onCreation.connect(ns3_add_host);
   simgrid::kernel::routing::netcardCreatedCallbacks.connect(ns3_add_netcard);
   simgrid::surf::on_cluster.connect (&parse_ns3_add_cluster);

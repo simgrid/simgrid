@@ -40,8 +40,6 @@ HostL07Model::HostL07Model() : HostModel() {
   maxminSystem_->solve_fun = &bottleneck_solve;
   surf_network_model = new NetworkL07Model(this,maxminSystem_);
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
-
-  routing_model_create();
 }
 
 HostL07Model::~HostL07Model() = default;
