@@ -114,13 +114,6 @@ public:
     not_in_the_system /**< Not in the system anymore. Why did you ask ? */
   };
 
-private:
-  /**
-   * @brief Common initializations for the constructors
-   */
-  void initialize(simgrid::surf::Model *model, double cost, bool failed,
-                  lmm_variable_t var = nullptr);
-
 public:
   /**
    * @brief Action constructor

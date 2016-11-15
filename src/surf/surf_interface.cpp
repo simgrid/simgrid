@@ -591,30 +591,19 @@ void surf_action_lmm_update_index_heap(void *action, int i) {
 namespace simgrid {
 namespace surf {
 
-void Action::initialize(simgrid::surf::Model *model, double cost, bool failed,
-                        lmm_variable_t var)
+Action::Action(simgrid::surf::Model* model, double cost, bool failed) : Action(model, cost, failed, nullptr)
 {
-  remains_ = cost;
-  start_ = surf_get_clock();
-  cost_ = cost;
-  model_ = model;
-  variable_ = var;
+}
+
+Action::Action(simgrid::surf::Model* model, double cost, bool failed, lmm_variable_t var)
+    : remains_(cost), start_(surf_get_clock()), cost_(cost), model_(model), variable_(var)
+{
   if (failed)
     stateSet_ = getModel()->getFailedActionSet();
   else
     stateSet_ = getModel()->getRunningActionSet();
 
   stateSet_->push_back(*this);
-}
-
-Action::Action(simgrid::surf::Model *model, double cost, bool failed)
-{
-  initialize(model, cost, failed);
-}
-
-Action::Action(simgrid::surf::Model *model, double cost, bool failed, lmm_variable_t var)
-{
-  initialize(model, cost, failed, var);
 }
 
 Action::~Action() {
