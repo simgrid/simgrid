@@ -595,6 +595,8 @@ void sg_config_init(int *argc, char **argv)
     xbt_cfg_register_boolean("smpi/privatize-global-variables", "no", nullptr, "Whether we should privatize global variable at runtime.");
     xbt_cfg_register_alias("smpi/privatize-global-variables", "smpi/privatize_global_variables");
 
+    xbt_cfg_register_boolean("smpi/grow-injected-times", "yes", nullptr, "Whether we want to make the injected time in MPI_Iprobe and MPI_Test grow, to allow faster simulation. This can make simulation less precise, though.");
+
 #if HAVE_PAPI
     xbt_cfg_register_string("smpi/papi-events", nullptr, nullptr, "This switch enables tracking the specified counters with PAPI");
 #endif

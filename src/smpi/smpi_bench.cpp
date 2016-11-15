@@ -175,7 +175,7 @@ static void* shm_map(int fd, size_t size, shared_data_key_type* data) {
 
   mem = mmap(nullptr, size, PROT_READ | PROT_WRITE, MAP_SHARED, fd, 0);
   if(mem == MAP_FAILED) {
-    xbt_die("Could not map fd %d with size %zu: %s", fd, size, strerror(errno));
+    xbt_die("Could not map fd %d with size %zu: %s.\n If you are running a lot of processes, you may be exceeding the amount of mappings allowed per process. \n On linux systems, this value can be set by using sudo sysctl -w vm.max_map_count=newvalue .\n Default value is 65536", fd, size, strerror(errno));
   }
   snprintf(loc, PTR_STRLEN, "%p", mem);
   meta.size = size;

@@ -68,6 +68,8 @@ EXTOPT=""
 WRAPPER=""
 HOSTFILE=""
 HOSTFILETMP=0
+MAPOPT=0
+REPLAY=0
 
 unset pid
 
@@ -166,7 +168,7 @@ while true; do
 	    shift 1
 	    ;;
         "-map")
-	    MAPOPT="true"
+	    MAPOPT=1
             shift 1
             ;;
         "-trace")
@@ -382,6 +384,7 @@ if [ "${EXTOPT}" = "smpi_replay" ]; then
     if [ -n "${APP_TRACES}" ] && [ -f "${APP_TRACES}" ]; then
         hosttraces=$(cat ${APP_TRACES} | tr '\n\r' '  ' )
         NUMTRACES=$(cat ${APP_TRACES} | wc -l)
+        REPLAY=1
     else
         printf "File not found: %s\n" "${APP_TRACES:-\${APP_TRACES\}}" >&2
         exit 1
@@ -406,35 +409,36 @@ else
     done
 fi
 
+set -- $hostnames
+
 ##---- generate <process> tags------------------------------
+#prepare arguments at once
+for ARG in $PROC_ARGS; do
+  ARGS="$ARGS""<argument value=\"${ARG}\"/>
+"
+done
+
 for i in ${SEQ}
 do
-    if [ -n "${HOSTFILE}" ]; then
-	j=$(( $i % ${NUMHOSTS} + 1 ))
-    fi
+    j=$(( $i % ${NUMHOSTS} + 1 ))
+    host=$(eval "echo \${$j}")
+
     ##---- optional display of ranks to process mapping
-    if [ -n "${MAPOPT}" ]; then
-	echo "[rank $i] -> $(echo $hostnames|cut -d' ' -f$j)"
+    if [ ${MAPOPT} = 1 ]; then
+      echo "[rank $i] -> $host"
     fi
 
-    if [ -z "$(echo $hostnames|cut -d' ' -f$j)" ]; then
-	host="host"$($j)
-    else
-	host="$(echo $hostnames|cut -d' ' -f$j)"
-    fi
-    echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->" >> ${APPLICATIONTMP}
-    echo "    <argument value=\"1\"/> <!-- instance -->" >> ${APPLICATIONTMP}
-    echo "    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
-    if [ "${EXTOPT}" = "smpi_replay" ]; then
+    echo "  <process host=\"${host}\" function=\"$i\"> <!-- function name used only for logging -->
+    <argument value=\"1\"/> <!-- instance -->
+    <argument value=\"$i\"/> <!-- rank -->" >> ${APPLICATIONTMP}
+    if [ ${REPLAY} = 1 ]; then
         if  [ ${NUMTRACES} -gt 1 ]; then
             echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f$j)\"/>" >> ${APPLICATIONTMP}
         else
             echo "    <argument value=\"$(echo $hosttraces|cut -d' ' -f1)\"/>" >> ${APPLICATIONTMP}
         fi
     else 
-        for ARG in $PROC_ARGS; do
-            echo "    <argument value=\"${ARG}\"/>" >> ${APPLICATIONTMP}
-        done
+    echo ${ARGS} >> ${APPLICATIONTMP}
     fi
     echo "  </process>" >> ${APPLICATIONTMP}
 done
