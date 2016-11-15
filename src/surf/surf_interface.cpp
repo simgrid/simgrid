@@ -685,9 +685,7 @@ void Action::setData(void* data)
 
 void Action::setCategory(const char *category)
 {
-  XBT_IN("(%p,%s)", this, category);
   category_ = xbt_strdup(category);
-  XBT_OUT();
 }
 
 void Action::ref(){
@@ -696,11 +694,9 @@ void Action::ref(){
 
 void Action::setMaxDuration(double duration)
 {
-  XBT_IN("(%p,%g)", this, duration);
   maxDuration_ = duration;
   if (getModel()->getUpdateMechanism() == UM_LAZY)      // remove action from the heap
     heapRemove(getModel()->getActionHeap());
-  XBT_OUT();
 }
 
 void Action::gapRemove() {}

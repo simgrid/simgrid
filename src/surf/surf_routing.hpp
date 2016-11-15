@@ -95,8 +95,8 @@ public:
 class Onelink {
 public:
   Onelink(Link* link, NetCard* src, NetCard* dst) : src_(src), dst_(dst), link_(link){};
-  NetCard *src_;
-  NetCard *dst_;
+  NetCard* src_;
+  NetCard* dst_;
   Link* link_;
 };
 
