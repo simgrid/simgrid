@@ -100,29 +100,24 @@ void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Li
   AsImpl::getRouteRecursive(src, dst, route, latency);
 }
 
-static xbt_dynar_t _recursiveGetOneLinkRoutes(AsImpl *as)
+static void _recursiveGetOneLinkRoutes(AsImpl* as, xbt_dynar_t accumulator)
 {
-  xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
-
   //adding my one link routes
-  xbt_dynar_t onelink_mine = as->getOneLinkRoutes();
-  if (onelink_mine)
-    xbt_dynar_merge(&ret,&onelink_mine);
+  as->getOneLinkRoutes(accumulator);
 
   //recursing
   char *key;
   xbt_dict_cursor_t cursor = nullptr;
   AsImpl *rc_child;
   xbt_dict_foreach(as->children(), cursor, key, rc_child) {
-    xbt_dynar_t onelink_child = _recursiveGetOneLinkRoutes(rc_child);
-    if (onelink_child)
-      xbt_dynar_merge(&ret,&onelink_child);
+    _recursiveGetOneLinkRoutes(rc_child, accumulator);
   }
-  return ret;
 }
 
 xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
-  return _recursiveGetOneLinkRoutes(root_);
+  xbt_dynar_t res = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
+  _recursiveGetOneLinkRoutes(root_, res);
+  return res;
 }
 
 }}}

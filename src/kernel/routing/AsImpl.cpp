@@ -41,9 +41,8 @@ namespace simgrid {
     return res;
   }
 
-  xbt_dynar_t AsImpl::getOneLinkRoutes()
+  void AsImpl::getOneLinkRoutes(xbt_dynar_t accumulator)
   {
-    return nullptr;
   }
 
   /** @brief Get the common ancestor and its first children in each line leading to src and dst

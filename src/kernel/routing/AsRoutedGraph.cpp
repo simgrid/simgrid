@@ -81,34 +81,32 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-  xbt_dynar_t AsRoutedGraph::getOneLinkRoutes()
-  {
-    xbt_dynar_t ret = xbt_dynar_new(sizeof(Onelink*), xbt_free_f);
-    sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t,1);
-    route->link_list = new std::vector<Link*>();
+void AsRoutedGraph::getOneLinkRoutes(xbt_dynar_t accumulator)
+{
+  sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
+  route->link_list             = new std::vector<Link*>();
 
-    int table_size = static_cast<int>(vertices_.size());
-    for(int src=0; src < table_size; src++) {
-      for(int dst=0; dst< table_size; dst++) {
-        route->link_list->clear();
-        NetCard *src_elm = vertices_.at(src);
-        NetCard *dst_elm = vertices_.at(dst);
-        this->getRouteAndLatency(src_elm, dst_elm,route, nullptr);
+  int table_size = static_cast<int>(vertices_.size());
+  for (int src = 0; src < table_size; src++) {
+    for (int dst = 0; dst < table_size; dst++) {
+      route->link_list->clear();
+      NetCard* src_elm = vertices_.at(src);
+      NetCard* dst_elm = vertices_.at(dst);
+      this->getRouteAndLatency(src_elm, dst_elm, route, nullptr);
 
-        if (route->link_list->size() == 1) {
-          Link *link = route->link_list->at(0);
-          Onelink *onelink;
-          if (hierarchy_ == RoutingMode::base)
-            onelink = new Onelink(link, src_elm, dst_elm);
-          else if (hierarchy_ == RoutingMode::recursive)
-            onelink = new Onelink(link, route->gw_src, route->gw_dst);
-          else
-            onelink = new Onelink(link, nullptr, nullptr);
-          xbt_dynar_push(ret, &onelink);
-        }
+      if (route->link_list->size() == 1) {
+        Link* link = route->link_list->at(0);
+        Onelink* onelink;
+        if (hierarchy_ == RoutingMode::base)
+          onelink = new Onelink(link, src_elm, dst_elm);
+        else if (hierarchy_ == RoutingMode::recursive)
+          onelink = new Onelink(link, route->gw_src, route->gw_dst);
+        else
+          onelink = new Onelink(link, nullptr, nullptr);
+        xbt_dynar_push(accumulator, &onelink);
       }
     }
-    return ret;
+  }
   }
 
 void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
