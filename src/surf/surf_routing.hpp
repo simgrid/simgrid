@@ -94,11 +94,10 @@ public:
  */
 class Onelink {
 public:
-  Onelink(void *link, NetCard *src, NetCard *dst)
-    : src_(src), dst_(dst), link_(link) {};
+  Onelink(Link* link, NetCard* src, NetCard* dst) : src_(src), dst_(dst), link_(link){};
   NetCard *src_;
   NetCard *dst_;
-  void *link_; // FIXME: void* should die just like the death*
+  Link* link_;
 };
 
 /** @ingroup SURF_routing_interface
