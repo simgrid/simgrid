@@ -90,12 +90,11 @@ namespace simgrid {
     {
       latency_ = latency;
       if (latency_ <= 0.0) {
-        stateSet_ = getModel()->getDoneActionSet();
+        stateSet_ = model_->getDoneActionSet();
         stateSet_->push_back(*this);
       }
     };
 
-    NetworkConstantAction::~NetworkConstantAction() {}
-
+    NetworkConstantAction::~NetworkConstantAction() = default;
   }
 }
