@@ -29,7 +29,7 @@ void AsFull::seal() {
     routingTable_ = xbt_new0(sg_platf_route_cbarg_t, table_size * table_size);
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (i = 0; i < table_size; i++) {
       e_route = TO_ROUTE_FULL(i, i);
       if (!e_route) {
@@ -37,7 +37,7 @@ void AsFull::seal() {
         e_route->gw_src = nullptr;
         e_route->gw_dst = nullptr;
         e_route->link_list = new std::vector<Link*>();
-        e_route->link_list->push_back(routing_platf->loopback_);
+        e_route->link_list->push_back(surf_network_model->loopback_);
         TO_ROUTE_FULL(i, i) = e_route;
       }
     }

@@ -170,7 +170,7 @@ void AsFloyd::seal(){
   }
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     for (unsigned int i = 0; i < table_size; i++) {
       sg_platf_route_cbarg_t e_route = TO_FLOYD_LINK(i, i);
       if (!e_route) {
@@ -178,7 +178,7 @@ void AsFloyd::seal(){
         e_route->gw_src = nullptr;
         e_route->gw_dst = nullptr;
         e_route->link_list = new std::vector<Link*>();
-        e_route->link_list->push_back(routing_platf->loopback_);
+        e_route->link_list->push_back(surf_network_model->loopback_);
         TO_FLOYD_LINK(i, i) = e_route;
         TO_FLOYD_PRED(i, i) = i;
         TO_FLOYD_COST(i, i) = 1;

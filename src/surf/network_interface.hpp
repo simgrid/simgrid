@@ -119,6 +119,8 @@ namespace simgrid {
        */
       virtual double bandwidthConstraint(double rate, double bound, double size);
       double nextOccuringEventFull(double now) override;
+
+      Link* loopback_ = nullptr;
     };
 
     /************

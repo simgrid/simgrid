@@ -152,8 +152,9 @@ NetworkCm02Model::NetworkCm02Model()
   }
 
   maxminSystem_ = lmm_system_new(selectiveUpdate_);
+  loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
 
-  routing_model_create(createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE));
+  routing_model_create();
 
   if (updateMechanism_ == UM_LAZY) {
     actionHeap_ = xbt_heap_new(8, nullptr);

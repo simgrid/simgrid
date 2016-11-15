@@ -51,7 +51,7 @@ void AsDijkstra::seal()
     graphNodeMap_ = xbt_dict_new_homogeneous(&graph_node_map_elem_free);
 
   /* Add the loopback if needed */
-  if (routing_platf->loopback_ && hierarchy_ == RoutingMode::base) {
+  if (surf_network_model->loopback_ && hierarchy_ == RoutingMode::base) {
     xbt_dynar_foreach(xbt_graph_get_nodes(routeGraph_), cursor, node) {
       xbt_edge_t edge = nullptr;
 
@@ -66,7 +66,7 @@ void AsDijkstra::seal()
       if (!found) {
         sg_platf_route_cbarg_t e_route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
         e_route->link_list = new std::vector<Link*>();
-        e_route->link_list->push_back(routing_platf->loopback_);
+        e_route->link_list->push_back(surf_network_model->loopback_);
         xbt_graph_new_edge(routeGraph_, node, node, e_route);
       }
     }

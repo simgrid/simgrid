@@ -41,7 +41,7 @@ HostL07Model::HostL07Model() : HostModel() {
   surf_network_model = new NetworkL07Model(this,maxminSystem_);
   surf_cpu_model_pm = new CpuL07Model(this,maxminSystem_);
 
-  routing_model_create(surf_network_model->createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE));
+  routing_model_create();
 }
 
 HostL07Model::~HostL07Model() = default;
@@ -61,6 +61,7 @@ NetworkL07Model::NetworkL07Model(HostL07Model *hmodel, lmm_system_t sys)
   , hostModel_(hmodel)
   {
     maxminSystem_ = sys;
+    loopback_     = createLink("__loopback__", 498000000, 0.000015, SURF_LINK_FATPIPE);
   }
 NetworkL07Model::~NetworkL07Model()
 {

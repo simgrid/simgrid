@@ -129,9 +129,9 @@ xbt_dynar_t RoutingPlatf::getOneLinkRoutes(){
 }}}
 
 /** @brief create the root AS */
-void routing_model_create(Link *loopback)
+void routing_model_create()
 {
-  routing_platf = new simgrid::kernel::routing::RoutingPlatf(loopback);
+  routing_platf = new simgrid::kernel::routing::RoutingPlatf();
 }
 
 /* ************************************************************************** */
@@ -165,10 +165,7 @@ void routing_exit() {
   delete routing_platf;
 }
 
-simgrid::kernel::routing::RoutingPlatf::RoutingPlatf(simgrid::surf::Link *loopback)
-: loopback_(loopback)
-{
-}
+simgrid::kernel::routing::RoutingPlatf::RoutingPlatf() = default;
 simgrid::kernel::routing::RoutingPlatf::~RoutingPlatf()
 {
   delete root_;
