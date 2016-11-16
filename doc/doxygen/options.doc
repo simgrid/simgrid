@@ -1019,7 +1019,9 @@ Here is an example:
     Internally, in order to speed up execution, we use a counter to keep track
     on how often we already checked if the handle is now valid or not. Hence, we
     actually use counter*SLEEP_TIME, that is, the time MPI_Test() causes the process
-    to sleep increases linearly with the number of previously failed testk.
+    to sleep increases linearly with the number of previously failed tests. This 
+    behavior can be disabled by setting smpi/grow-injected-times to no. This will
+    also disable this behavior for MPI_Iprobe.
 
 
 \subsection options_model_smpi_use_shared_malloc smpi/use-shared-malloc: Factorize malloc()s
@@ -1192,6 +1194,7 @@ silently overflow on other parts of the memory.
 - \c smpi/comp-adjustment-file: \ref options_model_smpi_adj_file
 - \c smpi/cpu-threshold: \ref options_smpi_bench
 - \c smpi/display-timing: \ref options_smpi_timing
+- \c smpi/grow-injected-times: \ref options_model_smpi_test
 - \c smpi/host-speed: \ref options_smpi_bench
 - \c smpi/IB-penalty-factors: \ref options_model_network_coefs
 - \c smpi/iprobe: \ref options_model_smpi_iprobe

@@ -442,6 +442,7 @@ static void reset_dirty_pages(msg_vm_t vm)
   char *key = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
   dirty_page_t dp = nullptr;
+  if (!priv->dp_objs) return;
   xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
@@ -522,7 +523,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
   }
-
+  if(!priv->dp_objs) priv->dp_objs = xbt_dict_new();
   xbt_assert(xbt_dict_get_or_null(priv->dp_objs, key) == nullptr);
   xbt_dict_set(priv->dp_objs, key, dp, nullptr);
   XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, sg_host_get_name(host), remaining, priv->dp_enabled);
@@ -536,7 +537,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 
   char *key = bprintf("%s-%p", task->name, task);
 
-  dirty_page_t dp = (dirty_page_t) xbt_dict_get_or_null(priv->dp_objs, key);
+  dirty_page_t dp = (dirty_page_t) (priv->dp_objs ? xbt_dict_get_or_null(priv->dp_objs, key) : NULL);
   xbt_assert(dp->task == task);
 
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
@@ -549,8 +550,8 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
 
     priv->dp_updated_by_deleted_tasks += updated;
   }
-
-  xbt_dict_remove(priv->dp_objs, key);
+  if(priv->dp_objs)
+    xbt_dict_remove(priv->dp_objs, key);
   xbt_free(dp);
 
   XBT_DEBUG("del %s on %s", key, sg_host_get_name(host));
