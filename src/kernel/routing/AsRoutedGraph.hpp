@@ -17,7 +17,7 @@ public:
   explicit AsRoutedGraph(As* father, const char* name);
   ~AsRoutedGraph() override;
 
-  void getOneLinkRoutes(xbt_dynar_t accumulator) override;
+  void getOneLinkRoutes(std::vector<Onelink*>* accumulator) override;
 
   void getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges) override;
   virtual sg_platf_route_cbarg_t newExtendedRoute(RoutingMode hierarchy, sg_platf_route_cbarg_t routearg, int change_order);

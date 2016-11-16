@@ -41,7 +41,7 @@ namespace simgrid {
     return res;
   }
 
-  void AsImpl::getOneLinkRoutes(xbt_dynar_t accumulator)
+  void AsImpl::getOneLinkRoutes(std::vector<Onelink*>* accumulator)
   {
   }
 

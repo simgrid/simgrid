@@ -81,7 +81,7 @@ namespace simgrid {
 namespace kernel {
 namespace routing {
 
-void AsRoutedGraph::getOneLinkRoutes(xbt_dynar_t accumulator)
+void AsRoutedGraph::getOneLinkRoutes(std::vector<Onelink*>* accumulator)
 {
   sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
   route->link_list             = new std::vector<Link*>();
@@ -103,7 +103,7 @@ void AsRoutedGraph::getOneLinkRoutes(xbt_dynar_t accumulator)
           onelink = new Onelink(link, route->gw_src, route->gw_dst);
         else
           onelink = new Onelink(link, nullptr, nullptr);
-        xbt_dynar_push(accumulator, &onelink);
+        accumulator->push_back(onelink);
       }
     }
   }

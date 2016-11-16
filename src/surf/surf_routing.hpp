@@ -108,7 +108,7 @@ public:
   explicit RoutingPlatf();
   ~RoutingPlatf();
   AsImpl *root_ = nullptr;
-  xbt_dynar_t getOneLinkRoutes();
+  std::vector<Onelink*>* getOneLinkRoutes();
   void getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Link*> * links, double *latency);
 };
 

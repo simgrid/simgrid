@@ -107,14 +107,12 @@ static void create_ns3_topology(void)
   xbt_dynar_shrink(IPV4addr,0);
 
   //get the onelinks from the parsed platform
-  xbt_dynar_t onelink_routes = routing_platf->getOneLinkRoutes();
+  std::vector<simgrid::kernel::routing::Onelink*>* onelink_routes = routing_platf->getOneLinkRoutes();
 
   std::unordered_set<simgrid::surf::LinkNS3*> already_seen = std::unordered_set<simgrid::surf::LinkNS3*>();
 
-  XBT_DEBUG("There is %ld one-link routes",onelink_routes->used);
-  simgrid::kernel::routing::Onelink *onelink;
-  unsigned int iter;
-  xbt_dynar_foreach(onelink_routes, iter, onelink) {
+  XBT_DEBUG("There is %ld one-link routes", onelink_routes->size());
+  for (simgrid::kernel::routing::Onelink* onelink : *onelink_routes) {
     const char* src              = onelink->src_->name().c_str();
     const char* dst              = onelink->dst_->name().c_str();
     simgrid::surf::LinkNS3 *link = static_cast<simgrid::surf::LinkNS3 *>(onelink->link_);
