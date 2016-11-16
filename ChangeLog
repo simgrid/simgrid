@@ -36,6 +36,8 @@ SimGrid (3.14) UNRELEASED; urgency=low
    - MSG_mailbox_get_task_ext() -> MSG_task_receive_ext()
    - MSG_mailbox_get_task_ext_bounded -> MSG_task_receive_ext_bounded
    - MSG_host_(get/set)_params -> MSG_vm_(get/set)_params
+ * VM properties. Since msg_vm_t are msg_host_t, just use
+   MSG_host_get_property_value() and friends
 
  * Task affinity. Its intended behavior (that was very badly tested
    and probably not really working) was deceiving what most users

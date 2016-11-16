@@ -24,42 +24,7 @@ XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG AP
 
 
 /* **** ******** GENERAL ********* **** */
-/** \ingroup m_vm_management
- * \brief Returns the value of a given vm property
- *
- * \param vm a vm
- * \param name a property name
- * \return value of a property (or nullptr if property not set)
- */
-const char *MSG_vm_get_property_value(msg_vm_t vm, const char *name)
-{
-  return MSG_host_get_property_value(vm, name);
-}
 
-/** \ingroup m_vm_management
- * \brief Returns a xbt_dict_t consisting of the list of properties assigned to this host
- *
- * \param vm a vm
- * \return a dict containing the properties
- */
-xbt_dict_t MSG_vm_get_properties(msg_vm_t vm)
-{
-  xbt_assert((vm != nullptr), "Invalid parameters (vm is nullptr)");
-  return vm->properties();
-}
-
-/** \ingroup m_host_management
- * \brief Change the value of a given host property
- *
- * \param vm a vm
- * \param name a property name
- * \param value what to change the property to
- * \param free_ctn the freeing function to use to kill the value on need
- */
-void MSG_vm_set_property_value(msg_vm_t vm, const char *name, void *value, void_f_pvoid_t free_ctn)
-{
-  xbt_dict_set(MSG_host_get_properties(vm), name, value, free_ctn);
-}
 /** \ingroup m_vm_management
  * \brief Set the parameters of a given host
  *
