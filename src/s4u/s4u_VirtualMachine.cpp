@@ -24,6 +24,11 @@ VirtualMachine::~VirtualMachine()
   onDestruction(*this);
 }
 
+bool VirtualMachine::isMigrating()
+{
+  return static_cast<surf::VirtualMachineImpl*>(pimpl_)->isMigrating;
+}
+
 /** @brief Retrieve a copy of the parameters of that VM/PM
  *  @details The ramsize and overcommit fields are used on the PM too */
 void VirtualMachine::parameters(vm_params_t params)

@@ -29,11 +29,6 @@ msg_host_t __MSG_host_create(sg_host_t host) // FIXME: don't return our paramete
 {
   msg_host_priv_t priv = xbt_new0(s_msg_host_priv_t, 1);
 
-  priv->dp_objs = nullptr;
-  priv->dp_enabled = 0;
-  priv->dp_updated_by_deleted_tasks = 0;
-  priv->is_migrating = 0;
-
   priv->file_descriptor_table = nullptr;
 
   sg_host_msg_set(host,priv);
@@ -114,10 +109,6 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
 {
   if (priv == nullptr)
     return;
-  unsigned int size = priv->dp_objs ? xbt_dict_size(priv->dp_objs) : 0;
-  if (size > 0)
-    XBT_WARN("dp_objs: %u pending task?", size);
-  xbt_dict_free(&priv->dp_objs);
   delete priv->file_descriptor_table;
   free(priv);
 }

@@ -82,6 +82,7 @@ set(EXTRA_DIST
   src/surf/surf_routing.hpp
   src/surf/PropertyHolder.hpp
   src/surf/VirtualMachineImpl.hpp
+  src/surf/VmHostExt.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp
   src/surf/ptask_L07.hpp
@@ -333,6 +334,7 @@ set(SURF_SRC
   src/surf/trace_mgr.hpp
   src/surf/trace_mgr.cpp
   src/surf/VirtualMachineImpl.cpp
+  src/surf/VmHostExt.cpp
   src/surf/host_clm03.cpp
   src/surf/HostImpl.cpp
   src/surf/ptask_L07.cpp

@@ -84,6 +84,10 @@ $ ./host_on_off_processes ${srcdir:=.}/../../../examples/platforms/small_platfor
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Turn Jupiter off
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Shutdown vm0
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Destroy vm0
+> [10.000000] [surf_vm/WARNING] Dirty page tracking: 1 pending task(s) on a destroyed VM (first one is (name hidden)).
+> If you don't understand why your task was not properly removed, please report that bug.
+> This is a known bug if you turned the host off during the VM execution.
+> Please remind us of that problem at some point: our code base is not ready to fix this harmless issue in 2016, sorry.
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO] Test 6 is also weird: when the node Jupiter is turned off once again, the VM and its daemon are not killed. However, the issue regarding the shutdown of hosted VMs can be seen a feature not a bug ;)
 > [Tremblay:test_launcher:(1) 10.000000] [msg_test/INFO]   Test done. See you!
 > [10.000000] [msg_test/INFO] Simulation time 10

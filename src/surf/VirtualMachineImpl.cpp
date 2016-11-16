@@ -131,13 +131,30 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::Host* piface, simgrid::s4u:
            xbt_dynar_length(storage_));
 }
 
-/*
- * A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation.
- */
+extern "C" int
+    xbt_log_no_loc; /* ugly pimpl to ensure that the debug info in the known issue below don't break the test */
+/** @brief A physical host does not disappear in the current SimGrid code, but a VM may disappear during a simulation */
 VirtualMachineImpl::~VirtualMachineImpl()
 {
   onVmDestruction(this);
   allVms_.erase(find(allVms_.begin(), allVms_.end(), this));
+
+  /* dirty page tracking */
+  unsigned int size = xbt_dict_size(dp_objs);
+  static bool already_warned = false;
+  if (size > 0 && !already_warned) {
+    xbt_dict_cursor_t cursor = nullptr;
+    xbt_dict_cursor_first(dp_objs, &cursor);
+    XBT_WARN("Dirty page tracking: %u pending task(s) on a destroyed VM (first one is %s).\n"
+             "If you don't understand why your task was not properly removed, please report that bug.\n"
+             "This is a known bug if you turned the host off during the VM execution.\n"
+             "Please remind us of that problem at some point: our code base is not ready to fix this harmless issue in "
+             "2016, sorry.",
+             size, (xbt_log_no_loc ? "(name hidden)" : xbt_dict_cursor_get_key(cursor)));
+    xbt_dict_cursor_free(&cursor);
+    already_warned = true;
+  }
+  xbt_dict_free(&dp_objs);
 
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED int ret = action_->unref();

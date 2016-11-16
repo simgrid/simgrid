@@ -85,6 +85,11 @@ public:
   /* The vm object of the lower layer */
   CpuAction* action_ = nullptr;
 
+  /* Dirty pages stuff */
+  int dp_enabled                     = 0;
+  xbt_dict_t dp_objs                 = nullptr;
+  double dp_updated_by_deleted_tasks = 0;
+
 protected:
   simgrid::s4u::Host* hostPM_;
 
@@ -92,6 +97,8 @@ public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
   static std::deque<VirtualMachineImpl*> allVms_;
+
+  bool isMigrating = false;
 
 private:
   s_vm_params_t params_;

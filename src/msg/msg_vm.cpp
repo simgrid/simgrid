@@ -11,6 +11,7 @@
 
 #include <xbt/ex.hpp>
 
+#include "src/surf/VirtualMachineImpl.hpp"
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/s4u/host.hpp>
 
@@ -133,8 +134,7 @@ int MSG_vm_is_running(msg_vm_t vm)
  */
 int MSG_vm_is_migrating(msg_vm_t vm)
 {
-  msg_host_priv_t priv = sg_host_msg(vm);
-  return priv->is_migrating;
+  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->isMigrating();
 }
 
 /** @brief Returns whether the given VM is currently suspended, not running.
@@ -388,25 +388,25 @@ static int migration_rx_fun(int argc, char *argv[])
   // Copy the reference to the vm (if SRC crashes now, do_migration will free ms)
   // This is clearly ugly but I (Adrien) need more time to do something cleaner (actually we should copy the whole ms
   // structure at the beginning and free it at the end of each function)
-   msg_vm_t vm = ms->vm;
-   msg_host_t src_pm = ms->src_pm;
-   msg_host_t dst_pm = ms-> dst_pm;
+  simgrid::s4u::VirtualMachine* vm = static_cast<simgrid::s4u::VirtualMachine*>(ms->vm);
+  msg_host_t src_pm                = ms->src_pm;
+  msg_host_t dst_pm                = ms->dst_pm;
 
-// TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an inconsistent
-//       state. I should check with Takahiro in order to make this portion of code atomic
-//
-//  /* Update the vm location */
-//  simcall_vm_migrate(vm, dst_pm);
-// 
-//  /* Resume the VM */
-//  simcall_vm_resume(vm);
-//
-   simcall_vm_migratefrom_resumeto(vm, src_pm, dst_pm); 
+  // TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an
+  // inconsistent
+  //       state. I should check with Takahiro in order to make this portion of code atomic
+  //
+  //  /* Update the vm location */
+  //  simcall_vm_migrate(vm, dst_pm);
+  //
+  //  /* Resume the VM */
+  //  simcall_vm_resume(vm);
+  //
+  simcall_vm_migratefrom_resumeto(vm, src_pm, dst_pm);
 
   {
    // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-   msg_host_priv_t priv = sg_host_msg(vm);
-   priv->is_migrating = 0;
+   static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_)->isMigrating = false;
    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", sg_host_get_name(ms->vm), sg_host_get_name(ms->src_pm),
              sg_host_get_name(ms->dst_pm));
    TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
@@ -437,13 +437,14 @@ static int migration_rx_fun(int argc, char *argv[])
 
 static void reset_dirty_pages(msg_vm_t vm)
 {
-  msg_host_priv_t priv = sg_host_msg(vm);
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
 
   char *key = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
   dirty_page_t dp = nullptr;
-  if (!priv->dp_objs) return;
-  xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
+  if (!pimpl->dp_objs)
+    return;
+  xbt_dict_foreach (pimpl->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_flops_amount(dp->task);
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
@@ -454,16 +455,16 @@ static void reset_dirty_pages(msg_vm_t vm)
 
 static void start_dirty_page_tracking(msg_vm_t vm)
 {
-  msg_host_priv_t priv = sg_host_msg(vm);
-  priv->dp_enabled = 1;
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+  pimpl->dp_enabled                        = 1;
 
   reset_dirty_pages(vm);
 }
 
 static void stop_dirty_page_tracking(msg_vm_t vm)
 {
-  msg_host_priv_t priv = sg_host_msg(vm);
-  priv->dp_enabled = 0;
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+  pimpl->dp_enabled                        = 0;
 }
 
 static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
@@ -479,13 +480,13 @@ static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remai
 
 static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug, int stage2_round_for_fancy_debug)
 {
-  msg_host_priv_t priv = sg_host_msg(vm);
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
   double total = 0;
 
   char *key = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
   dirty_page_t dp = nullptr;
-  xbt_dict_foreach(priv->dp_objs, cursor, key, dp) {
+  xbt_dict_foreach (pimpl->dp_objs, cursor, key, dp) {
     double remaining = MSG_task_get_flops_amount(dp->task);
 
     double clock = MSG_get_clock();
@@ -497,65 +498,70 @@ static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug
     dp->prev_clock = clock;
   }
 
-  total += priv->dp_updated_by_deleted_tasks;
+  total += pimpl->dp_updated_by_deleted_tasks;
 
-  XBT_DEBUG("mig-stage%d.%d: computed %f flop_counts (including %f by deleted tasks)",
-      stage_for_fancy_debug, stage2_round_for_fancy_debug, total, priv->dp_updated_by_deleted_tasks);
+  XBT_DEBUG("mig-stage%d.%d: computed %f flop_counts (including %f by deleted tasks)", stage_for_fancy_debug,
+            stage2_round_for_fancy_debug, total, pimpl->dp_updated_by_deleted_tasks);
 
-  priv->dp_updated_by_deleted_tasks = 0;
+  pimpl->dp_updated_by_deleted_tasks = 0;
 
   return total;
 }
 
 // TODO Is this code redundant with the information provided by
 // msg_process_t MSG_process_create(const char *name, xbt_main_func_t code, void *data, msg_host_t host)
+/** @brief take care of the dirty page tracking, in case we're adding a task to a migrating VM */
 void MSG_host_add_task(msg_host_t host, msg_task_t task)
 {
-  msg_host_priv_t priv = sg_host_msg(host);
+  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
+  if (vm == nullptr)
+    return;
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+
   double remaining = MSG_task_get_flops_amount(task);
   char *key = bprintf("%s-%p", task->name, task);
 
   dirty_page_t dp = xbt_new0(s_dirty_page, 1);
   dp->task = task;
-
-  /* It should be okay that we add a task onto a migrating VM. */
-  if (priv->dp_enabled) {
+  if (pimpl->dp_enabled) {
     dp->prev_clock = MSG_get_clock();
     dp->prev_remaining = remaining;
   }
-  if(!priv->dp_objs) priv->dp_objs = xbt_dict_new();
-  xbt_assert(xbt_dict_get_or_null(priv->dp_objs, key) == nullptr);
-  xbt_dict_set(priv->dp_objs, key, dp, nullptr);
-  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, sg_host_get_name(host), remaining, priv->dp_enabled);
+  if (!pimpl->dp_objs)
+    pimpl->dp_objs = xbt_dict_new();
+  xbt_assert(xbt_dict_get_or_null(pimpl->dp_objs, key) == nullptr);
+  xbt_dict_set(pimpl->dp_objs, key, dp, nullptr);
+  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, sg_host_get_name(host), remaining, pimpl->dp_enabled);
 
   xbt_free(key);
 }
 
 void MSG_host_del_task(msg_host_t host, msg_task_t task)
 {
-  msg_host_priv_t priv = sg_host_msg(host);
+  simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
+  if (vm == nullptr)
+    return;
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
 
   char *key = bprintf("%s-%p", task->name, task);
-
-  dirty_page_t dp = (dirty_page_t) (priv->dp_objs ? xbt_dict_get_or_null(priv->dp_objs, key) : NULL);
+  dirty_page_t dp = (dirty_page_t)(pimpl->dp_objs ? xbt_dict_get_or_null(pimpl->dp_objs, key) : NULL);
   xbt_assert(dp->task == task);
 
   /* If we are in the middle of dirty page tracking, we record how much computation has been done until now, and keep
    * the information for the lookup_() function that will called soon. */
-  if (priv->dp_enabled) {
+  if (pimpl->dp_enabled) {
     double remaining = MSG_task_get_flops_amount(task);
     double clock = MSG_get_clock();
     // double updated = calc_updated_pages(key, host, dp, remaining, clock);
     double updated = get_computed(key, host, dp, remaining, clock);
 
-    priv->dp_updated_by_deleted_tasks += updated;
+    pimpl->dp_updated_by_deleted_tasks += updated;
   }
-  if(priv->dp_objs)
-    xbt_dict_remove(priv->dp_objs, key);
+  if (pimpl->dp_objs)
+    xbt_dict_remove(pimpl->dp_objs, key);
   xbt_free(dp);
 
   XBT_DEBUG("del %s on %s", key, sg_host_get_name(host));
-
   xbt_free(key);
 }
 
@@ -922,18 +928,18 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   if (MSG_vm_is_migrating(vm))
     THROWF(vm_error, 0, "VM(%s) is already migrating", sg_host_get_name(vm));
 
-  msg_host_priv_t priv = sg_host_msg(vm);
-  priv->is_migrating = 1;
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+  pimpl->isMigrating                       = 1;
 
   {
     int ret = do_migration(vm, old_pm, new_pm);
     if (ret == -1){
-     priv->is_migrating = 0;
-     THROWF(host_error, 0, "SRC host failed during migration");
+      pimpl->isMigrating = 0;
+      THROWF(host_error, 0, "SRC host failed during migration");
     }
     else if(ret == -2){
-     priv->is_migrating = 0;
-     THROWF(host_error, 0, "DST host failed during migration");
+      pimpl->isMigrating = 0;
+      THROWF(host_error, 0, "DST host failed during migration");
     }
   }
 

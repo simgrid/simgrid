@@ -29,7 +29,6 @@ msg_error_t MSG_task_execute(msg_task_t task)
   msg_error_t ret = MSG_parallel_task_execute(task);
 
   MSG_host_del_task(host, task);
-
   return ret;
 }
 

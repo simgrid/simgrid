@@ -91,9 +91,8 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
       smx_actor_t process = nullptr;
       xbt_swag_foreach(process, host->process_list) {
         SIMIX_process_kill(process, issuer);
-        XBT_DEBUG("Killing %s on %s by %s",
-          process->name.c_str(),  sg_host_get_name(process->host),
-          issuer->name.c_str());
+        XBT_DEBUG("Killing %s@%s on behalf of %s", process->name.c_str(), sg_host_get_name(process->host),
+                  issuer->name.c_str());
       }
     }
   } else {

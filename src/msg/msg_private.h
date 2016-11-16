@@ -29,10 +29,6 @@ SG_BEGIN_DECL()
 /**************** datatypes **********************************/
 /********************************* Host **************************************/
 typedef struct s_msg_host_priv {
-  int        dp_enabled;
-  xbt_dict_t dp_objs;
-  double     dp_updated_by_deleted_tasks;
-  int        is_migrating;
 
   std::vector<int> *file_descriptor_table;
 } s_msg_host_priv_t;
