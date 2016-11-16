@@ -4,12 +4,12 @@
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
-#include "src/surf/VirtualMachineImpl.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "simgrid/s4u/VirtualMachine.hpp"
 
 #include <xbt/signal.hpp>
 
-#include "cpu_cas01.hpp"
+#include "src/surf/cpu_cas01.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
@@ -140,7 +140,7 @@ VirtualMachineImpl::~VirtualMachineImpl()
   allVms_.erase(find(allVms_.begin(), allVms_.end(), this));
 
   /* dirty page tracking */
-  unsigned int size = xbt_dict_size(dp_objs);
+  unsigned int size          = xbt_dict_size(dp_objs);
   static bool already_warned = false;
   if (size > 0 && !already_warned) {
     xbt_dict_cursor_t cursor = nullptr;

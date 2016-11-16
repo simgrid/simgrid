@@ -5,7 +5,7 @@
 
 #include "simgrid/plugins/energy.h"
 #include "simgrid/simix.hpp"
-#include "src/surf/VirtualMachineImpl.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/cpu_interface.hpp"
 #include "src/surf/plugins/energy.hpp"
 #include <utility>

@@ -7,8 +7,8 @@
 #include "mc/mc.h"
 #include "smx_private.h"
 #include "src/mc/mc_replay.h"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/VirtualMachineImpl.hpp"
 #include "xbt/sysdep.h"
 #include <xbt/ex.hpp>
 

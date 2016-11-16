@@ -81,8 +81,6 @@ set(EXTRA_DIST
   src/surf/surf_private.h
   src/surf/surf_routing.hpp
   src/surf/PropertyHolder.hpp
-  src/surf/VirtualMachineImpl.hpp
-  src/surf/VmHostExt.hpp
   src/surf/host_clm03.hpp
   src/surf/HostImpl.hpp
   src/surf/ptask_L07.hpp
@@ -333,13 +331,19 @@ set(SURF_SRC
   src/surf/xml/surfxml_parseplatf.cpp
   src/surf/trace_mgr.hpp
   src/surf/trace_mgr.cpp
-  src/surf/VirtualMachineImpl.cpp
-  src/surf/VmHostExt.cpp
   src/surf/host_clm03.cpp
   src/surf/HostImpl.cpp
   src/surf/ptask_L07.cpp
   )
 
+set(PLUGINS_SRC
+  src/plugins/vm/s4u_VirtualMachine.cpp
+  src/plugins/vm/VirtualMachineImpl.hpp
+  src/plugins/vm/VirtualMachineImpl.cpp
+  src/plugins/vm/VmHostExt.hpp
+  src/plugins/vm/VmHostExt.cpp
+  )
+  
 set(SIMIX_GENERATED_SRC   src/simix/popping_generated.cpp  )
 set(SIMIX_SRC
   src/kernel/future.cpp
@@ -393,7 +397,6 @@ set(S4U_SRC
   src/s4u/s4u_mutex.cpp
   src/s4u/s4u_conditionVariable.cpp
   src/s4u/s4u_storage.cpp
-  src/s4u/s4u_VirtualMachine.cpp
 )
 
 set(SIMGRID_SRC
@@ -744,6 +747,7 @@ endif()
 
 ### Simgrid Lib sources
 set(simgrid_sources
+  ${PLUGINS_SRC}
   ${BINDINGS_SRC}
   ${MC_SRC_BASE}
   ${MSG_SRC}

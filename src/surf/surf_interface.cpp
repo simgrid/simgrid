@@ -5,7 +5,6 @@
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
 #include "surf_interface.hpp"
-#include "VirtualMachineImpl.hpp"
 #include "cpu_interface.hpp"
 #include "mc/mc.h"
 #include "network_interface.hpp"

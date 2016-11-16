@@ -25,8 +25,8 @@
 #include "src/kernel/activity/SynchroComm.hpp"
 #include "src/mc/mc_forward.hpp"
 #include "src/mc/mc_replay.h"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.h"
-#include "src/surf/VirtualMachineImpl.hpp"
 #include "xbt/ex.h"
 
 #include <simgrid/simix.hpp>

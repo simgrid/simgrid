@@ -6,8 +6,8 @@
 #include "mc/mc.h"
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "smx_private.h"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/VirtualMachineImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX Virtual Machines");
 

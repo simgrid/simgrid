@@ -11,7 +11,7 @@
 
 #include <xbt/ex.hpp>
 
-#include "src/surf/VirtualMachineImpl.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/s4u/host.hpp>
 

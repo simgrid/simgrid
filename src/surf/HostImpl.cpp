@@ -10,8 +10,8 @@
 #include "src/surf/HostImpl.hpp"
 #include "simgrid/sg_config.h"
 
-#include "VirtualMachineImpl.hpp"
 #include "network_interface.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_host, surf, "Logging specific to the SURF host module");
 

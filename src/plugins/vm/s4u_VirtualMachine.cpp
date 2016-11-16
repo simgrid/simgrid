@@ -7,8 +7,8 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/simix.hpp"
+#include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/surf/HostImpl.hpp"
-#include "src/surf/VirtualMachineImpl.hpp"
 #include "xbt/asserts.h"
 
 namespace simgrid {
