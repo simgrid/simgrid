@@ -90,7 +90,7 @@ void AsRoutedGraph::getOneLinkRoutes(std::vector<Onelink*>* accumulator)
       route->link_list->clear();
       NetCard* src_elm = vertices_.at(src);
       NetCard* dst_elm = vertices_.at(dst);
-      this->getRouteAndLatency(src_elm, dst_elm, route, nullptr);
+      this->getLocalRoute(src_elm, dst_elm, route, nullptr);
 
       if (route->link_list->size() == 1) {
         Link* link = route->link_list->at(0);
@@ -118,7 +118,7 @@ void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edg
       sg_platf_route_cbarg_t route = xbt_new0(s_sg_platf_route_cbarg_t, 1);
       route->link_list = new std::vector<Link*>();
 
-      getRouteAndLatency(my_src, my_dst, route, nullptr);
+      getLocalRoute(my_src, my_dst, route, nullptr);
 
       XBT_DEBUG("get_route_and_latency %s -> %s", my_src->name().c_str(), my_dst->name().c_str());
 

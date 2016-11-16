@@ -17,7 +17,7 @@ class XBT_PRIVATE AsVivaldi: public AsCluster {
 public:
   explicit AsVivaldi(As* father, const char* name);
 
-  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
+  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
 };
 
 namespace vivaldi {

@@ -52,7 +52,7 @@ public:
      * After this function returns, any node in the graph
      * will have a loopback attached to it.
      */
-  void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat) override;
+  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat) override;
   void addRoute(sg_platf_route_cbarg_t route) override;
 
   xbt_graph_t routeGraph_ = nullptr;     /* xbt_graph */

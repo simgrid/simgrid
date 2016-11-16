@@ -18,18 +18,17 @@ AsCluster::AsCluster(As* father, const char* name) : AsImpl(father, name)
 {
 }
 
-void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
+void AsCluster::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
-  s_surf_parsing_link_up_down_t info;
-  XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(),
-           dst->name().c_str(), dst->id());
+  XBT_VERB("cluster getLocalRoute from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+           dst->id());
   xbt_assert(!privateLinks_.empty(),
              "Cluster routing: no links attached to the source node - did you use host_link tag?");
 
   if (! src->isRouter()) {    // No specific link for router
 
     if((src->id() == dst->id()) && hasLoopback_ ){
-      info = privateLinks_.at(src->id() * linkCountPerNode_);
+      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
       route->link_list->push_back(info.linkUp);
       if (lat)
         *lat += info.linkUp->latency();
@@ -37,11 +36,12 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
     }
 
     if (hasLimiter_){          // limiter for sender
-      info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_?1:0));
+      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0));
       route->link_list->push_back(info.linkUp);
     }
 
-    info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_?1:0) + (hasLimiter_?1:0));
+    s_surf_parsing_link_up_down_t info =
+        privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_ ? 1 : 0) + (hasLimiter_ ? 1 : 0));
     if (info.linkUp) {         // link up
       route->link_list->push_back(info.linkUp);
       if (lat)
@@ -57,7 +57,7 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
   }
 
   if (! dst->isRouter()) {    // No specific link for router
-    info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
+    s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_ + hasLimiter_);
 
     if (info.linkDown) {       // link down
       route->link_list->push_back(info.linkDown);

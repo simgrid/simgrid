@@ -138,14 +138,13 @@ void AsDijkstra::newRoute(int src_id, int dst_id, sg_platf_route_cbarg_t e_route
   xbt_graph_new_edge(routeGraph_, src, dst, e_route);
 }
 
-void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
+void AsDijkstra::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   getRouteCheckParams(src, dst);
   int src_id = src->id();
   int dst_id = dst->id();
 
   int *pred_arr = nullptr;
-  sg_platf_route_cbarg_t e_route;
   int size = 0;
   xbt_dynar_t nodes = xbt_graph_get_nodes(routeGraph_);
 
@@ -166,7 +165,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
     if (edge == nullptr)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
 
-    e_route = (sg_platf_route_cbarg_t) xbt_graph_edge_get_data(edge);
+    sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)xbt_graph_edge_get_data(edge);
 
     for (auto link: *e_route->link_list) {
       route->link_list->insert(route->link_list->begin(), link);
@@ -252,7 +251,7 @@ void AsDijkstra::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_c
 
     prev_gw_src = gw_src;
 
-    e_route = (sg_platf_route_cbarg_t) xbt_graph_edge_get_data(edge);
+    sg_platf_route_cbarg_t e_route = (sg_platf_route_cbarg_t)xbt_graph_edge_get_data(edge);
     gw_src = e_route->gw_src;
     gw_dst = e_route->gw_dst;
 

@@ -57,24 +57,22 @@ bool AsClusterFatTree::isInSubTree(FatTreeNode *root, FatTreeNode *node) {
   return true;
 }
 
-void AsClusterFatTree::getRouteAndLatency(NetCard *src,
-                                          NetCard *dst,
-                                          sg_platf_route_cbarg_t into,
-                                          double *latency) {
-  
+void AsClusterFatTree::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency)
+{
+
   if (dst->isRouter() || src->isRouter())
     return;
 
   /* Let's find the source and the destination in our internal structure */
-  std::map<int, FatTreeNode*>::const_iterator tempIter = this->computeNodes_.find(src->id());
-  xbt_assert(tempIter != this->computeNodes_.end(), "Could not find the source %s [%d] in the fat tree",
+  auto searchedNode = this->computeNodes_.find(src->id());
+  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the source %s [%d] in the fat tree",
              src->name().c_str(), src->id());
-  FatTreeNode* source = tempIter->second;
+  FatTreeNode* source = searchedNode->second;
 
-  tempIter = this->computeNodes_.find(dst->id());
-  xbt_assert(tempIter != this->computeNodes_.end(), "Could not find the destination %s [%d] in the fat tree",
+  searchedNode = this->computeNodes_.find(dst->id());
+  xbt_assert(searchedNode != this->computeNodes_.end(), "Could not find the destination %s [%d] in the fat tree",
              dst->name().c_str(), dst->id());
-  FatTreeNode* destination = tempIter->second;
+  FatTreeNode* destination = searchedNode->second;
 
   XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree", src->name().c_str(), src->id(),
            dst->name().c_str(), dst->id());
@@ -91,23 +89,20 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
 
   // up part
   while (!isInSubTree(currentNode, destination)) {
-    int d, k; // as in d-mod-k
-    d = destination->position;
+    int d = destination->position; // as in d-mod-k
 
-    for (unsigned int i = 0 ; i < currentNode->level ; i++) {
+    for (unsigned int i = 0; i < currentNode->level; i++)
       d /= this->upperLevelNodesNumber_[i];
-    }
-    k = this->upperLevelNodesNumber_[currentNode->level];
+
+    int k = this->upperLevelNodesNumber_[currentNode->level];
     d = d % k;
     into->link_list->push_back(currentNode->parents[d]->upLink);
 
-    if(latency) {
+    if (latency)
       *latency += currentNode->parents[d]->upLink->latency();
-    }
 
-    if (this->hasLimiter_) {
+    if (this->hasLimiter_)
       into->link_list->push_back(currentNode->limiterLink);
-    }
     currentNode = currentNode->parents[d]->upNode;
   }
 
@@ -118,16 +113,13 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
   // Down part
   while (currentNode != destination) {
     for(unsigned int i = 0 ; i < currentNode->children.size() ; i++) {
-      if(i % this->lowerLevelNodesNumber_[currentNode->level - 1] ==
-         destination->label[currentNode->level - 1]) {
+      if (i % this->lowerLevelNodesNumber_[currentNode->level - 1] == destination->label[currentNode->level - 1]) {
         into->link_list->push_back(currentNode->children[i]->downLink);
-        if(latency) {
+        if (latency)
           *latency += currentNode->children[i]->downLink->latency();
-        }
         currentNode = currentNode->children[i]->downNode;
-        if (this->hasLimiter_) {
+        if (this->hasLimiter_)
           into->link_list->push_back(currentNode->limiterLink);
-        }
         XBT_DEBUG("%d(%u,%u) is accessible through %d(%u,%u)", destination->id,
                   destination->level, destination->position, currentNode->id,
                   currentNode->level, currentNode->position);

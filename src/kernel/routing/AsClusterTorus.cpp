@@ -109,10 +109,11 @@ namespace simgrid {
       xbt_dynar_free(&dimensions);
     }
 
-    void AsClusterTorus::getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t route, double *lat) {
+    void AsClusterTorus::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+    {
 
-      XBT_VERB("torus_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(),
-               dst->name().c_str(), dst->id());
+      XBT_VERB("torus getLocalRoute from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+               dst->id());
 
       if (dst->isRouter() || src->isRouter())
         return;

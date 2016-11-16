@@ -82,49 +82,50 @@ static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t
   AsVivaldi::AsVivaldi(As* father, const char* name) : AsCluster(father, name)
   {}
 
-void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
-{
-  XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
-            dst->id());
+  void AsVivaldi::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
+  {
+    XBT_DEBUG("vivaldi getLocalRoute from '%s'[%d] '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+              dst->id());
 
-  if (src->isAS()) {
-    char* srcName = bprintf("router_%s", src->name().c_str());
-    char* dstName = bprintf("router_%s", dst->name().c_str());
-    route->gw_src = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, srcName, ROUTING_ASR_LEVEL);
-    route->gw_dst = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, dstName, ROUTING_ASR_LEVEL);
-    xbt_free(srcName);
-    xbt_free(dstName);
-  }
-
-  /* Retrieve the private links */
-  if (privateLinks_.size() > src->id()) {
-    s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id());
-    if(info.linkUp) {
-      route->link_list->push_back(info.linkUp);
-      if (lat)
-        *lat += info.linkUp->latency();
+    if (src->isAS()) {
+      char* srcName = bprintf("router_%s", src->name().c_str());
+      char* dstName = bprintf("router_%s", dst->name().c_str());
+      route->gw_src = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, srcName, ROUTING_ASR_LEVEL);
+      route->gw_dst = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, dstName, ROUTING_ASR_LEVEL);
+      xbt_free(srcName);
+      xbt_free(dstName);
     }
-  }
-  if (privateLinks_.size() >dst->id()) {
-    s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id());
-    if(info.linkDown) {
-      route->link_list->push_back(info.linkDown);
-      if (lat)
-        *lat += info.linkDown->latency();
+
+    /* Retrieve the private links */
+    if (privateLinks_.size() > src->id()) {
+      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id());
+      if (info.linkUp) {
+        route->link_list->push_back(info.linkUp);
+        if (lat)
+          *lat += info.linkUp->latency();
+      }
     }
-  }
+    if (privateLinks_.size() > dst->id()) {
+      s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id());
+      if (info.linkDown) {
+        route->link_list->push_back(info.linkDown);
+        if (lat)
+          *lat += info.linkDown->latency();
+      }
+    }
 
-  /* Compute the extra latency due to the euclidean distance if needed */
-  if (lat){
-    xbt_dynar_t srcCoords = getCoordsFromNetcard(src);
-    xbt_dynar_t dstCoords = getCoordsFromNetcard(dst);
+    /* Compute the extra latency due to the euclidean distance if needed */
+    if (lat) {
+      xbt_dynar_t srcCoords = getCoordsFromNetcard(src);
+      xbt_dynar_t dstCoords = getCoordsFromNetcard(dst);
 
-    double euclidean_dist = sqrt (euclidean_dist_comp(0,srcCoords,dstCoords)+euclidean_dist_comp(1,srcCoords,dstCoords))
-                              + fabs(xbt_dynar_get_as(srcCoords, 2, double))+fabs(xbt_dynar_get_as(dstCoords, 2, double));
+      double euclidean_dist =
+          sqrt(euclidean_dist_comp(0, srcCoords, dstCoords) + euclidean_dist_comp(1, srcCoords, dstCoords)) +
+          fabs(xbt_dynar_get_as(srcCoords, 2, double)) + fabs(xbt_dynar_get_as(dstCoords, 2, double));
 
-    XBT_DEBUG("Updating latency %f += %f",*lat,euclidean_dist);
-    *lat += euclidean_dist / 1000.0; //From .ms to .s
-  }
+      XBT_DEBUG("Updating latency %f += %f", *lat, euclidean_dist);
+      *lat += euclidean_dist / 1000.0; // From .ms to .s
+    }
 }
 
 }}}

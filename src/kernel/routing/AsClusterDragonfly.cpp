@@ -236,15 +236,16 @@ void AsClusterDragonfly::generateLinks() {
   }
 }
 
-void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t route, double *latency) {
+void AsClusterDragonfly::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* latency)
+{
   //Minimal routing version.
   // TODO : non-minimal random one, and adaptive ?
 
   if (dst->isRouter() || src->isRouter())
     return;
 
-  XBT_VERB("dragonfly_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(),
-           dst->name().c_str(), dst->id());
+  XBT_VERB("dragonfly getLocalRout from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
+           dst->id());
 
   if ((src->id() == dst->id()) && hasLoopback_) {
      s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
@@ -266,9 +267,8 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
   //node->router local link
   route->link_list->push_back(myRouter->myNodes_[myCoords[3]*numLinksperLink_]);
-  if(latency) {
+  if (latency)
     *latency += myRouter->myNodes_[myCoords[3] * numLinksperLink_]->latency();
-  }
 
   if (hasLimiter_) {    // limiter for sender
     s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
@@ -283,26 +283,23 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
       if(currentRouter->blade_!=targetCoords[0]){
         //go to the nth router in our chassis
         route->link_list->push_back(currentRouter->greenLinks_[targetCoords[0]]);
-        if(latency) {
+        if (latency)
           *latency += currentRouter->greenLinks_[targetCoords[0]]->latency();
-        }
         currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[1] * numBladesPerChassis_+targetCoords[0]];
       }
 
       if(currentRouter->chassis_!=0){
         //go to the first chassis of our group
         route->link_list->push_back(currentRouter->blackLinks_[0]);
-        if(latency) {
+        if (latency)
           *latency += currentRouter->blackLinks_[0]->latency();
-        }
         currentRouter=routers_[myCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[0]];
       }
 
       //go to destination group - the only optical hop 
       route->link_list->push_back(currentRouter->blueLinks_[0]);
-      if(latency) {
+      if (latency)
         *latency += currentRouter->blueLinks_[0]->latency();
-      }
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+myCoords[0]];
     }
 
@@ -310,18 +307,16 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
     //same group, but same blade ?
     if(targetRouter->blade_ != currentRouter->blade_){
       route->link_list->push_back(currentRouter->greenLinks_[targetCoords[2]]);
-      if(latency) {
+      if (latency)
         *latency += currentRouter->greenLinks_[targetCoords[2]]->latency();
-      }
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[2]];
     }
 
     //same blade, but same chassis ?
     if(targetRouter->chassis_ != currentRouter->chassis_){
       route->link_list->push_back(currentRouter->blackLinks_[targetCoords[1]]);
-      if(latency) {
+      if (latency)
         *latency += currentRouter->blackLinks_[targetCoords[1]]->latency();
-      }
       currentRouter=routers_[targetCoords[0]*(numChassisPerGroup_*numBladesPerChassis_)+targetCoords[1]*numBladesPerChassis_+targetCoords[2]];
     }
   }
@@ -333,9 +328,8 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
   //router->node local link
   route->link_list->push_back(targetRouter->myNodes_[targetCoords[3]*numLinksperLink_+numLinksperLink_-1]);
-  if(latency) {
+  if (latency)
     *latency += targetRouter->myNodes_[targetCoords[3] * numLinksperLink_ + numLinksperLink_ - 1]->latency();
-  }
 
   xbt_free(myCoords);
   xbt_free(targetCoords);

@@ -104,9 +104,7 @@ class XBT_PRIVATE AsClusterFatTree : public AsCluster {
 public:
   explicit AsClusterFatTree(As* father, const char* name);
   ~AsClusterFatTree() override;
-  void getRouteAndLatency(NetCard *src, NetCard *dst,
-                                  sg_platf_route_cbarg_t into,
-                                  double *latency) override;
+  void getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t into, double* latency) override;
 
   /** \brief Generate the fat tree
    * 

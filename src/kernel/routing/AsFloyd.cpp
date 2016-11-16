@@ -40,7 +40,7 @@ AsFloyd::~AsFloyd(){
   xbt_free(costTable_);
 }
 
-void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
+void AsFloyd::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t route, double* lat)
 {
   size_t table_size = vertices_.size();
 
@@ -48,10 +48,9 @@ void AsFloyd::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbar
 
   /* create a result route */
   std::vector<sg_platf_route_cbarg_t> route_stack;
-  int pred;
   unsigned int cur = dst->id();
   do {
-    pred = TO_FLOYD_PRED(src->id(), cur);
+    int pred = TO_FLOYD_PRED(src->id(), cur);
     if (pred == -1)
       THROWF(arg_error, 0, "No route from '%s' to '%s'", src->name().c_str(), dst->name().c_str());
     route_stack.push_back(TO_FLOYD_LINK(pred, cur));

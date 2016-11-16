@@ -59,25 +59,20 @@ AsFull::~AsFull(){
   }
 }
 
-void AsFull::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t res, double *lat)
+void AsFull::getLocalRoute(NetCard* src, NetCard* dst, sg_platf_route_cbarg_t res, double* lat)
 {
-  XBT_DEBUG("full_get_route_and_latency from %s[%d] to %s[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
-            dst->id());
+  XBT_DEBUG("full getLocalRoute from %s[%d] to %s[%d]", src->name().c_str(), src->id(), dst->name().c_str(), dst->id());
 
-  /* set utils vars */
   size_t table_size = vertices_.size();
+  sg_platf_route_cbarg_t e_route = TO_ROUTE_FULL(src->id(), dst->id());
 
-  sg_platf_route_cbarg_t e_route = nullptr;
-
-  e_route = TO_ROUTE_FULL(src->id(), dst->id());
-
-  if (e_route) {
+  if (e_route != nullptr) {
     res->gw_src = e_route->gw_src;
     res->gw_dst = e_route->gw_dst;
     for (auto link : *e_route->link_list) {
       res->link_list->push_back(link);
       if (lat)
-        *lat += static_cast<Link*>(link)->latency();
+        *lat += link->latency();
     }
   }
 }

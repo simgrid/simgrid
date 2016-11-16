@@ -291,7 +291,7 @@ namespace simgrid {
       /* If src and dst are in the same AS, life is good */
       if (src_ancestor == dst_ancestor) {       /* SURF_ROUTING_BASE */
         route.link_list = links;
-        common_ancestor->getRouteAndLatency(src, dst, &route, latency);
+        common_ancestor->getLocalRoute(src, dst, &route, latency);
         return;
       }
 
@@ -299,7 +299,7 @@ namespace simgrid {
 
       route.link_list = new std::vector<surf::Link*>();
 
-      common_ancestor->getRouteAndLatency(src_ancestor->netcard_, dst_ancestor->netcard_, &route, latency);
+      common_ancestor->getLocalRoute(src_ancestor->netcard_, dst_ancestor->netcard_, &route, latency);
       xbt_assert((route.gw_src != nullptr) && (route.gw_dst != nullptr), "bad gateways for route from \"%s\" to \"%s\"",
                  src->name().c_str(), dst->name().c_str());
 

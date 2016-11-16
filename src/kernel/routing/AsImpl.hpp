@@ -22,7 +22,8 @@ namespace routing {
   /** @brief Autonomous Systems
    *
    * An AS is a network container, in charge of routing information between elements (hosts) and to the nearby ASes.
-   * In SimGrid, there is a hierarchy of ASes, with a unique root AS (that you can retrieve from the s4u::Engine).
+   * In SimGrid, there is a hierarchy (a tree) of ASes, with a unique root AS (that you can retrieve from the
+   * s4u::Engine).
    */
   XBT_PUBLIC_CLASS AsImpl : public s4u::As
   {
@@ -61,7 +62,7 @@ namespace routing {
      * @param latency Accumulator in which the latencies should be added (caller must set it to 0)
      */
   protected:
-    virtual void getRouteAndLatency(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t into, double* latency) = 0;
+    virtual void getLocalRoute(NetCard * src, NetCard * dst, sg_platf_route_cbarg_t into, double* latency) = 0;
     /** @brief retrieves the list of all routes of size 1 (of type src x dst x Link) */
     /* returns whether we found a bypass path */
     bool getBypassRoute(routing::NetCard * src, routing::NetCard * dst,
