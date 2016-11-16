@@ -17,14 +17,15 @@ namespace routing {
 AsCluster::AsCluster(As* father, const char* name) : AsImpl(father, name)
 {
 }
-AsCluster::~AsCluster() = default;
 
 void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   s_surf_parsing_link_up_down_t info;
   XBT_VERB("cluster_get_route_and_latency from '%s'[%d] to '%s'[%d]", src->name().c_str(), src->id(),
            dst->name().c_str(), dst->id());
-  xbt_assert(!privateLinks_.empty(), "Cluster routing : no links attached to the source node - did you use host_link tag?");
+  xbt_assert(!privateLinks_.empty(),
+             "Cluster routing: no links attached to the source node - did you use host_link tag?");
+
   if (! src->isRouter()) {    // No specific link for router
 
     if((src->id() == dst->id()) && hasLoopback_ ){
@@ -35,10 +36,9 @@ void AsCluster::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cb
       return;
     }
 
-
     if (hasLimiter_){          // limiter for sender
       info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_?1:0));
-      route->link_list->push_back((Link*)info.linkUp);
+      route->link_list->push_back(info.linkUp);
     }
 
     info = privateLinks_.at(src->id() * linkCountPerNode_ + (hasLoopback_?1:0) + (hasLimiter_?1:0));

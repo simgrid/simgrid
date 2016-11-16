@@ -61,43 +61,33 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
                                           NetCard *dst,
                                           sg_platf_route_cbarg_t into,
                                           double *latency) {
-  FatTreeNode *source, *destination, *currentNode;
-
-  std::map<int, FatTreeNode*>::const_iterator tempIter;
   
   if (dst->isRouter() || src->isRouter())
     return;
 
   /* Let's find the source and the destination in our internal structure */
-  tempIter = this->computeNodes_.find(src->id());
+  std::map<int, FatTreeNode*>::const_iterator tempIter = this->computeNodes_.find(src->id());
+  xbt_assert(tempIter != this->computeNodes_.end(), "Could not find the source %s [%d] in the fat tree",
+             src->name().c_str(), src->id());
+  FatTreeNode* source = tempIter->second;
 
-  // xbt_die -> assert
-  if (tempIter == this->computeNodes_.end()) {
-    xbt_die("Could not find the source %s [%d] in the fat tree", src->name().c_str(), src->id());
-  }
-  source = tempIter->second;
   tempIter = this->computeNodes_.find(dst->id());
-  if (tempIter == this->computeNodes_.end()) {
-    xbt_die("Could not find the destination %s [%d] in the fat tree", dst->name().c_str(), dst->id());
-  }
-
-
-  destination = tempIter->second;
+  xbt_assert(tempIter != this->computeNodes_.end(), "Could not find the destination %s [%d] in the fat tree",
+             dst->name().c_str(), dst->id());
+  FatTreeNode* destination = tempIter->second;
 
   XBT_VERB("Get route and latency from '%s' [%d] to '%s' [%d] in a fat tree", src->name().c_str(), src->id(),
            dst->name().c_str(), dst->id());
 
-  /* In case destination is the source, and there is a loopback, let's get
-     through it instead of going up to a switch*/
-  if(source->id == destination->id && this->hasLoopback_) {
+  /* In case destination is the source, and there is a loopback, let's use it instead of going up to a switch */
+  if (source->id == destination->id && this->hasLoopback_) {
     into->link_list->push_back(source->loopback);
-    if(latency) {
+    if (latency)
       *latency += source->loopback->latency();
-    }
     return;
   }
 
-  currentNode = source;
+  FatTreeNode* currentNode = source;
 
   // up part
   while (!isInSubTree(currentNode, destination)) {
@@ -126,7 +116,7 @@ void AsClusterFatTree::getRouteAndLatency(NetCard *src,
             currentNode->level, currentNode->position);
 
   // Down part
-  while(currentNode != destination) {
+  while (currentNode != destination) {
     for(unsigned int i = 0 ; i < currentNode->children.size() ; i++) {
       if(i % this->lowerLevelNodesNumber_[currentNode->level - 1] ==
          destination->label[currentNode->level - 1]) {

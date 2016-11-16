@@ -16,7 +16,6 @@ namespace routing {
 class XBT_PRIVATE AsVivaldi: public AsCluster {
 public:
   explicit AsVivaldi(As* father, const char* name);
-  ~AsVivaldi() override;
 
   void getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t into, double *latency) override;
 };

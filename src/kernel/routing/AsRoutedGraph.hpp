@@ -15,7 +15,6 @@ namespace routing {
 class XBT_PRIVATE AsRoutedGraph : public AsImpl {
 public:
   explicit AsRoutedGraph(As* father, const char* name);
-  ~AsRoutedGraph() override;
 
   void getOneLinkRoutes(std::vector<Onelink*>* accumulator) override;
 

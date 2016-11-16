@@ -30,7 +30,6 @@ namespace routing {
 
   protected:
     explicit AsImpl(As * father, const char* name);
-    ~AsImpl() override;
 
   public:
     /** @brief Make an host within that AS */

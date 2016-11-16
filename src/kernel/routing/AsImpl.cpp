@@ -25,7 +25,6 @@ namespace simgrid {
     xbt_lib_set(as_router_lib, name, ROUTING_ASR_LEVEL, static_cast<void*>(netcard_));
     XBT_DEBUG("AS '%s' created with the id '%d'", name, netcard_->id());
   }
-  AsImpl::~AsImpl() = default;
 
   simgrid::s4u::Host* AsImpl::createHost(const char* name, std::vector<double>* speedPerPstate, int coreAmount)
   {

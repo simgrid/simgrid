@@ -271,8 +271,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   }
 
   if (hasLimiter_) {    // limiter for sender
-    s_surf_parsing_link_up_down_t info;
-    info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
+    s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_ + hasLoopback_);
     route->link_list->push_back(info.linkUp);
   }
 
@@ -328,8 +327,7 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
   }
 
   if (hasLimiter_) {    // limiter for receiver
-    s_surf_parsing_link_up_down_t info;
-    info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
+    s_surf_parsing_link_up_down_t info = privateLinks_.at(dst->id() * linkCountPerNode_ + hasLoopback_);
     route->link_list->push_back(info.linkUp);
   }
 
@@ -341,7 +339,5 @@ void AsClusterDragonfly::getRouteAndLatency(NetCard * src, NetCard * dst, sg_pla
 
   xbt_free(myCoords);
   xbt_free(targetCoords);
-
-  
 }
 }}} // namespace

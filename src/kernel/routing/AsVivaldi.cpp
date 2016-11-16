@@ -82,14 +82,12 @@ static inline double euclidean_dist_comp(int index, xbt_dynar_t src, xbt_dynar_t
   AsVivaldi::AsVivaldi(As* father, const char* name) : AsCluster(father, name)
   {}
 
-AsVivaldi::~AsVivaldi() {}
-
 void AsVivaldi::getRouteAndLatency(NetCard *src, NetCard *dst, sg_platf_route_cbarg_t route, double *lat)
 {
   XBT_DEBUG("vivaldi_get_route_and_latency from '%s'[%d] '%s'[%d]", src->name().c_str(), src->id(), dst->name().c_str(),
             dst->id());
 
-  if(src->isAS()) {
+  if (src->isAS()) {
     char* srcName = bprintf("router_%s", src->name().c_str());
     char* dstName = bprintf("router_%s", dst->name().c_str());
     route->gw_src = (sg_netcard_t)xbt_lib_get_or_null(as_router_lib, srcName, ROUTING_ASR_LEVEL);

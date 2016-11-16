@@ -30,8 +30,6 @@ AsRoutedGraph::AsRoutedGraph(As* father, const char* name) : AsImpl(father, name
 {
 }
 
-AsRoutedGraph::~AsRoutedGraph()=default;
-
 }}} // namespace simgrid::kernel::routing
 
 /* ************************************************************************** */

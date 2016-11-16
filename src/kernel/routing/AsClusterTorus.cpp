@@ -117,7 +117,7 @@ namespace simgrid {
       if (dst->isRouter() || src->isRouter())
         return;
 
-      if ((src->id() == dst->id()) && hasLoopback_) {
+      if (src->id() == dst->id() && hasLoopback_) {
         s_surf_parsing_link_up_down_t info = privateLinks_.at(src->id() * linkCountPerNode_);
 
         route->link_list->push_back(info.linkUp);
@@ -140,9 +140,8 @@ namespace simgrid {
        * both arrays, we can easily assess whether we need to route
        * into this dimension or not.
        */
-      unsigned int *myCoords, *targetCoords;
-      myCoords = rankId_to_coords(src->id(), dimensions_);
-      targetCoords = rankId_to_coords(dst->id(), dimensions_);
+      unsigned int* myCoords     = rankId_to_coords(src->id(), dimensions_);
+      unsigned int* targetCoords = rankId_to_coords(dst->id(), dimensions_);
       /*
        * linkOffset describes the offset where the link
        * we want to use is stored

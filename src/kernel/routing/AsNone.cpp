@@ -18,8 +18,7 @@ namespace routing {
 AsNone::AsNone(As* father, const char* name) : AsImpl(father, name)
 {}
 
-AsNone::~AsNone()
-{}
+AsNone::~AsNone() = default;
 
 void AsNone::getRouteAndLatency(NetCard * /*src*/, NetCard * /*dst*/,
                                 sg_platf_route_cbarg_t /*res*/, double */*lat*/)
