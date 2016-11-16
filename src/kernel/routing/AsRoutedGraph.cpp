@@ -107,7 +107,8 @@ void AsRoutedGraph::getOneLinkRoutes(std::vector<Onelink*>* accumulator)
       }
     }
   }
-  }
+  AsImpl::getOneLinkRoutes(accumulator); // Recursivly call this function on all my childs too
+}
 
 void AsRoutedGraph::getGraph(xbt_graph_t graph, xbt_dict_t nodes, xbt_dict_t edges)
 {
