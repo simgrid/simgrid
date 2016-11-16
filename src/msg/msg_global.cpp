@@ -122,11 +122,7 @@ int MSG_process_killall(int reset_PIDs)
 {
   simcall_process_killall(reset_PIDs);
 
-  if (reset_PIDs > 0)
-    msg_global->session++;
-
   return 0;
-
 }
 
 static void MSG_exit() {

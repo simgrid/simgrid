@@ -120,9 +120,7 @@ XBT_PUBLIC_DATA(const char*) MSG_vm_get_name(msg_vm_t vm);
 
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
-  xbt_fifo_t host;
-  int session;
-  int debug_multiple_use;
+  int debug_multiple_use;       /* whether we want an error message when reusing the same Task for 2 things */
   unsigned long int sent_msg;   /* Total amount of messages sent during the simulation */
   void (*task_copy_callback) (msg_task_t task, msg_process_t src, msg_process_t dst);
   void_f_pvoid_t process_data_cleanup;
