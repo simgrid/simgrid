@@ -100,13 +100,6 @@ void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Li
   AsImpl::getRouteRecursive(src, dst, route, latency);
 }
 
-std::vector<Onelink*>* RoutingPlatf::getOneLinkRoutes()
-{
-  std::vector<Onelink*>* res = new std::vector<Onelink*>();
-  root_->getOneLinkRoutes(res);
-  return res;
-}
-
 }}}
 
 /* ************************************************************************** */

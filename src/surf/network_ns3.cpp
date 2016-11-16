@@ -20,6 +20,7 @@
 #include "src/instr/instr_private.h" // TRACE_is_enabled(). FIXME: remove by subscribing tracing to the surf signals
 
 #include "simgrid/s4u/As.hpp"
+#include "simgrid/s4u/engine.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(ns3, surf, "Logging specific to the SURF network NS3 module");
 
@@ -107,12 +108,14 @@ static void create_ns3_topology(void)
   xbt_dynar_shrink(IPV4addr,0);
 
   //get the onelinks from the parsed platform
-  std::vector<simgrid::kernel::routing::Onelink*>* onelink_routes = routing_platf->getOneLinkRoutes();
+  std::vector<simgrid::kernel::routing::Onelink*> onelink_routes;
+  static_cast<simgrid::kernel::routing::AsImpl*>(simgrid::s4u::Engine::instance()->rootAs())
+      ->getOneLinkRoutes(&onelink_routes);
 
   std::unordered_set<simgrid::surf::LinkNS3*> already_seen = std::unordered_set<simgrid::surf::LinkNS3*>();
 
-  XBT_DEBUG("There is %ld one-link routes", onelink_routes->size());
-  for (simgrid::kernel::routing::Onelink* onelink : *onelink_routes) {
+  XBT_DEBUG("There is %ld one-link routes", onelink_routes.size());
+  for (simgrid::kernel::routing::Onelink* onelink : onelink_routes) {
     const char* src              = onelink->src_->name().c_str();
     const char* dst              = onelink->dst_->name().c_str();
     simgrid::surf::LinkNS3 *link = static_cast<simgrid::surf::LinkNS3 *>(onelink->link_);
