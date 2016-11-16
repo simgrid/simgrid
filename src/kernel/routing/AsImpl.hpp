@@ -79,6 +79,8 @@ namespace routing {
     };
     /* FIXME: protect the following fields once the construction madness is sorted out */
     RoutingMode hierarchy_     = RoutingMode::unset;
+
+  private:
     routing::NetCard* netcard_ = nullptr; // Our representative in the father AS
 };
 
