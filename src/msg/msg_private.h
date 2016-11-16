@@ -115,9 +115,6 @@ typedef struct dirty_page {
   msg_task_t task;
 } s_dirty_page, *dirty_page_t;
 
-XBT_PUBLIC_DATA(msg_vm_t) MSG_vm_get_by_name(const char *name);
-XBT_PUBLIC_DATA(const char*) MSG_vm_get_name(msg_vm_t vm);
-
 /************************** Global variables ********************************/
 typedef struct MSG_Global {
   int debug_multiple_use;       /* whether we want an error message when reusing the same Task for 2 things */

@@ -47,31 +47,6 @@ void MSG_vm_get_params(msg_vm_t vm, vm_params_t params)
   static_cast<simgrid::s4u::VirtualMachine*>(vm)->parameters(params);
 }
 
-/** \ingroup msg_vm_management
- * \brief Finds a msg_vm_t using its name.
- *
- * This is a name directory service
- * \param name the name of a vm.
- * \return the corresponding vm
- *
- * Please note that a VM is a specific host. Hence, you should give a different name for each VM/PM.
- */
-msg_vm_t MSG_vm_get_by_name(const char *name)
-{
-  return MSG_host_by_name(name);
-}
-
-/** \ingroup m_vm_management
- *
- * \brief Return the name of the #msg_host_t.
- *
- * This functions checks whether \a host is a valid pointer or not and return its name.
- */
-const char *MSG_vm_get_name(msg_vm_t vm)
-{
-  return MSG_host_get_name(vm);
-}
-
 /* **** Check state of a VM **** */
 static inline int __MSG_vm_is_state(msg_vm_t vm, e_surf_vm_state_t state)
 {
