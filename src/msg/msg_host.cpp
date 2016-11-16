@@ -118,8 +118,7 @@ void __MSG_host_priv_free(msg_host_priv_t priv)
   if (size > 0)
     XBT_WARN("dp_objs: %u pending task?", size);
   xbt_dict_free(&priv->dp_objs);
-  if(priv->file_descriptor_table)
-    delete priv->file_descriptor_table;
+  delete priv->file_descriptor_table;
   free(priv);
 }
 
