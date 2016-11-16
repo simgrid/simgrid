@@ -1194,6 +1194,7 @@ silently overflow on other parts of the memory.
 - \c smpi/comp-adjustment-file: \ref options_model_smpi_adj_file
 - \c smpi/cpu-threshold: \ref options_smpi_bench
 - \c smpi/display-timing: \ref options_smpi_timing
+- \c smpi/grow-injected-times: \ref options_model_smpi_test
 - \c smpi/host-speed: \ref options_smpi_bench
 - \c smpi/IB-penalty-factors: \ref options_model_network_coefs
 - \c smpi/iprobe: \ref options_model_smpi_iprobe
