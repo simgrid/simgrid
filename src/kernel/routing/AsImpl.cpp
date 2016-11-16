@@ -249,29 +249,21 @@ namespace simgrid {
     /* (4) If we have the bypass, use it. If not, caller will do the Right Thing. */
     if (bypassedRoute) {
       if (src != key.first)
-        getRouteRecursive(src, const_cast<NetCard*>(bypassedRoute->gw_src), links, latency);
+        getGlobalRoute(src, const_cast<NetCard*>(bypassedRoute->gw_src), links, latency);
       for (surf::Link* link : bypassedRoute->links) {
         links->push_back(link);
         if (latency)
           *latency += link->latency();
       }
       if (dst != key.second)
-        getRouteRecursive(const_cast<NetCard*>(bypassedRoute->gw_dst), dst, links, latency);
+        getGlobalRoute(const_cast<NetCard*>(bypassedRoute->gw_dst), dst, links, latency);
       return true;
     }
     return false;
     }
 
-    /**
-     * \brief Recursive function for getRouteAndLatency
-     *
-     * \param src the source host
-     * \param dst the destination host
-     * \param links Where to store the links and the gw information
-     * \param latency If not nullptr, the latency of all links will be added in it
-     */
-    void AsImpl::getRouteRecursive(routing::NetCard *src, routing::NetCard *dst,
-        /* OUT */ std::vector<surf::Link*> * links, double *latency)
+    void AsImpl::getGlobalRoute(routing::NetCard* src, routing::NetCard* dst,
+                                /* OUT */ std::vector<surf::Link*>* links, double* latency)
     {
       s_sg_platf_route_cbarg_t route;
       memset(&route,0,sizeof(route));
@@ -305,15 +297,14 @@ namespace simgrid {
 
       /* If source gateway is not our source, we have to recursively find our way up to this point */
       if (src != route.gw_src)
-        getRouteRecursive(src, route.gw_src, links, latency);
+        getGlobalRoute(src, route.gw_src, links, latency);
       for (auto link: *route.link_list)
         links->push_back(link);
       delete route.link_list;
 
       /* If dest gateway is not our destination, we have to recursively find our way from this point */
       if (route.gw_dst != dst)
-        getRouteRecursive(route.gw_dst, dst, links, latency);
-
+        getGlobalRoute(route.gw_dst, dst, links, latency);
     }
 
 }}} // namespace

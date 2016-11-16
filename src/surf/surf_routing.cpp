@@ -97,7 +97,7 @@ void RoutingPlatf::getRouteAndLatency(NetCard *src, NetCard *dst, std::vector<Li
 {
   XBT_DEBUG("getRouteAndLatency from %s to %s", src->name().c_str(), dst->name().c_str());
 
-  AsImpl::getRouteRecursive(src, dst, route, latency);
+  AsImpl::getGlobalRoute(src, dst, route, latency);
 }
 
 }}}
