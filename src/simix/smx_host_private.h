@@ -16,6 +16,7 @@
 #include "simgrid/simix.h"
 #include "popping_private.h"
 
+#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/kernel/activity/SynchroExec.hpp"
 
 /** @brief Host datatype from SIMIX POV */

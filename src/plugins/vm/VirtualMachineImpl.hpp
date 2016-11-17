@@ -9,6 +9,7 @@
 
 #include <xbt/base.h>
 
+#include "simgrid/s4u/VirtualMachine.hpp"
 #include "src/surf/HostImpl.hpp"
 
 #ifndef VM_INTERFACE_HPP_
