@@ -20,6 +20,8 @@
 #include "popping_private.h"
 #include "src/simix/ActorImpl.hpp"
 
+
+#define MAX_MAILBOX_SIZE 10000000
 namespace simgrid {
 namespace simix {
 
@@ -27,7 +29,7 @@ namespace simix {
 
 class Mailbox {
 public:
-  Mailbox(const char* name) : piface_(this), name(xbt_strdup(name)), comm_queue(1000), done_comm_queue(1000) {}
+  Mailbox(const char* name) : piface_(this), name(xbt_strdup(name)), comm_queue(MAX_MAILBOX_SIZE), done_comm_queue(MAX_MAILBOX_SIZE) {}
   ~Mailbox() {
     xbt_free(name);
   }
