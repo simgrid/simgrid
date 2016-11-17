@@ -7,10 +7,10 @@
 #ifndef _SIMIX_NETWORK_PRIVATE_H
 #define _SIMIX_NETWORK_PRIVATE_H
 
-#include <deque>
 #include <string>
 
 #include <boost/intrusive_ptr.hpp>
+#include <boost/circular_buffer.hpp>
 
 #include <xbt/base.h>
 
@@ -27,16 +27,16 @@ namespace simix {
 
 class Mailbox {
 public:
-  Mailbox(const char* name) : piface_(this), name(xbt_strdup(name)) {}
+  Mailbox(const char* name) : piface_(this), name(xbt_strdup(name)), comm_queue(1000), done_comm_queue(1000) {}
   ~Mailbox() {
     xbt_free(name);
   }
 
   simgrid::s4u::Mailbox piface_; // Our interface
   char* name;
-  std::deque<smx_activity_t> comm_queue;
+  boost::circular_buffer_space_optimized<smx_activity_t> comm_queue;
   boost::intrusive_ptr<simgrid::simix::ActorImpl> permanent_receiver; //process which the mailbox is attached to
-  std::deque<smx_activity_t> done_comm_queue;//messages already received in the permanent receive mode
+  boost::circular_buffer_space_optimized<smx_activity_t> done_comm_queue;//messages already received in the permanent receive mode
 };
 
 }

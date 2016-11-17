@@ -30,7 +30,7 @@ static xbt_dict_t mailboxes = xbt_dict_new_homogeneous(SIMIX_mbox_free);
 static void SIMIX_waitany_remove_simcall_from_actions(smx_simcall_t simcall);
 static void SIMIX_comm_copy_data(smx_activity_t comm);
 static inline void SIMIX_mbox_push(smx_mailbox_t mbox, smx_activity_t comm);
-static smx_activity_t _find_matching_comm(std::deque<smx_activity_t> *deque, e_smx_comm_type_t type,
+static smx_activity_t _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t> *deque, e_smx_comm_type_t type,
     int (*match_fun)(void *, void *,smx_activity_t), void *user_data, smx_activity_t my_synchro, bool remove_matching);
 static void SIMIX_comm_start(smx_activity_t synchro);
 
@@ -113,7 +113,7 @@ void SIMIX_mbox_remove(smx_mailbox_t mbox, smx_activity_t synchro)
  *  \param type The type of communication we are looking for (comm_send, comm_recv)
  *  \return The communication synchro if found, nullptr otherwise
  */
-static smx_activity_t _find_matching_comm(std::deque<smx_activity_t> *deque, e_smx_comm_type_t type,
+static smx_activity_t _find_matching_comm(boost::circular_buffer_space_optimized<smx_activity_t> *deque, e_smx_comm_type_t type,
     int (*match_fun)(void *, void *,smx_activity_t), void *this_user_data, smx_activity_t my_synchro, bool remove_matching)
 {
   void* other_user_data = nullptr;
