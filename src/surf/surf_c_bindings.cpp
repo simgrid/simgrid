@@ -17,11 +17,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  * TOOLS *
  *********/
 
-static simgrid::surf::VirtualMachineImpl* get_casted_vm(sg_host_t host)
-{
-  return static_cast<simgrid::s4u::VirtualMachine*>(host)->pimpl_vm_;
-}
-
 extern double NOW;
 
 void surf_presolve()
@@ -219,31 +214,31 @@ int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
 }
 
 void surf_vm_suspend(sg_host_t vm){
-  get_casted_vm(vm)->suspend();
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->suspend();
 }
 
 void surf_vm_resume(sg_host_t vm){
-  get_casted_vm(vm)->resume();
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
 }
 
 void surf_vm_save(sg_host_t vm){
-  get_casted_vm(vm)->save();
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->save();
 }
 
 void surf_vm_restore(sg_host_t vm){
-  get_casted_vm(vm)->restore();
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();
 }
 
 void surf_vm_migrate(sg_host_t vm, sg_host_t ind_vm_ws_dest){
-  get_casted_vm(vm)->migrate(ind_vm_ws_dest);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->migrate(ind_vm_ws_dest);
 }
 
 sg_host_t surf_vm_get_pm(sg_host_t vm){
-  return get_casted_vm(vm)->getPm();
+  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getPm();
 }
 
 void surf_vm_set_bound(sg_host_t vm, double bound){
-  get_casted_vm(vm)->setBound(bound);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setBound(bound);
 }
 
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
