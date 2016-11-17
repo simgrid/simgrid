@@ -26,7 +26,7 @@ static long host_get_ramsize(sg_host_t vm, int *overcommit)
 /* **** start a VM **** */
 static int __can_be_started(sg_host_t vm)
 {
-  sg_host_t pm = surf_vm_get_pm(vm);
+  sg_host_t pm = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getPm();
 
   int pm_overcommit = 0;
   long pm_ramsize = host_get_ramsize(pm, &pm_overcommit);
@@ -89,7 +89,7 @@ void SIMIX_vm_migrate(sg_host_t vm, sg_host_t dst_pm)
   xbt_assert(SIMIX_vm_get_state(vm) == SURF_VM_STATE_SUSPENDED);
 
   /* jump to vm_ws_xigrate(). this will update the vm location. */
-  surf_vm_migrate(vm, dst_pm);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->migrate(dst_pm);
 }
 
 /**
@@ -121,7 +121,7 @@ void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst
  */
 void *SIMIX_vm_get_pm(sg_host_t host)
 {
-  return surf_vm_get_pm(host);
+  return static_cast<simgrid::s4u::VirtualMachine*>(host)->pimpl_vm_->getPm();
 }
 
 /**
@@ -132,7 +132,7 @@ void *SIMIX_vm_get_pm(sg_host_t host)
  */
 void SIMIX_vm_set_bound(sg_host_t vm, double bound)
 {
-  surf_vm_set_bound(vm, bound);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setBound(bound);
 }
 
 /**
@@ -150,7 +150,7 @@ void SIMIX_vm_suspend(sg_host_t vm, smx_actor_t issuer)
   XBT_DEBUG("suspend VM(%s), where %d processes exist", vm->name().c_str(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
   /* jump to vm_ws_suspend. The state will be set. */
-  surf_vm_suspend(vm);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->suspend();
 
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
@@ -186,7 +186,7 @@ void SIMIX_vm_resume(sg_host_t vm, smx_actor_t issuer)
       vm->name().c_str(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
   /* jump to vm_ws_resume() */
-  surf_vm_resume(vm);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
 
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
@@ -218,7 +218,7 @@ void SIMIX_vm_save(sg_host_t vm, smx_actor_t issuer)
   XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(vm)->process_list));
 
   /* jump to vm_ws_save() */
-  surf_vm_save(vm);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
 
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
@@ -248,7 +248,7 @@ void SIMIX_vm_restore(sg_host_t vm, smx_actor_t issuer)
       vm->name().c_str(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
   /* jump to vm_ws_restore() */
-  surf_vm_resume(vm);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
 
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {

@@ -227,51 +227,6 @@ XBT_PUBLIC(sg_size_t) surf_host_get_free_size(sg_host_t resource, const char* na
  */
 XBT_PUBLIC(sg_size_t) surf_host_get_used_size(sg_host_t resource, const char* name);
 
-/** @brief Suspend a VM */
-XBT_PUBLIC(void) surf_vm_suspend(sg_host_t resource);
-
-/** @brief Resume a VM */
-XBT_PUBLIC(void) surf_vm_resume(sg_host_t resource);
-
-/**
- * @brief Save the VM (Not yet implemented)
- *
- * @param resource The surf vm
- */
-XBT_PUBLIC(void) surf_vm_save(sg_host_t resource);
-
-/**
- * @brief Restore the VM (Not yet implemented)
- *
- * @param resource The surf vm
- */
-XBT_PUBLIC(void) surf_vm_restore(sg_host_t resource);
-
-/**
- * @brief Migrate the VM to the destination host
- *
- * @param resource The surf vm
- * @param ind_vm_ws_dest The destination host
- */
-XBT_PUBLIC(void) surf_vm_migrate(sg_host_t resource, sg_host_t ind_vm_ws_dest);
-
-/**
- * @brief Get the physical machine hosting the VM
- *
- * @param resource The surf vm
- * @return The physical machine hosting the VM
- */
-XBT_PUBLIC(sg_host_t) surf_vm_get_pm(sg_host_t resource);
-
-/**
- * @brief [brief description]
- * @details [long description]
- *
- * @param resource [description]
- * @param bound [description]
- */
-XBT_PUBLIC(void) surf_vm_set_bound(sg_host_t resource, double bound);
-
 /**
  * @brief Unlink a file descriptor
  *

@@ -213,34 +213,6 @@ int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
   return host->pimpl_->fileMove(fd, fullpath);
 }
 
-void surf_vm_suspend(sg_host_t vm){
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->suspend();
-}
-
-void surf_vm_resume(sg_host_t vm){
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
-}
-
-void surf_vm_save(sg_host_t vm){
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->save();
-}
-
-void surf_vm_restore(sg_host_t vm){
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();
-}
-
-void surf_vm_migrate(sg_host_t vm, sg_host_t ind_vm_ws_dest){
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->migrate(ind_vm_ws_dest);
-}
-
-sg_host_t surf_vm_get_pm(sg_host_t vm){
-  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getPm();
-}
-
-void surf_vm_set_bound(sg_host_t vm, double bound){
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setBound(bound);
-}
-
 xbt_dict_t surf_storage_get_content(surf_resource_t resource){
   return static_cast<simgrid::surf::Storage*>(surf_storage_resource_priv(resource))->getContent();
 }
