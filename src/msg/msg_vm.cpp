@@ -346,7 +346,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
   {
    // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-   static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_)->isMigrating = false;
+   vm->pimpl_vm_->isMigrating = false;
    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", sg_host_get_name(ms->vm), sg_host_get_name(ms->src_pm),
              sg_host_get_name(ms->dst_pm));
    TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
@@ -395,16 +395,14 @@ static void reset_dirty_pages(msg_vm_t vm)
 
 static void start_dirty_page_tracking(msg_vm_t vm)
 {
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
-  pimpl->dp_enabled                        = 1;
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->dp_enabled = 1;
 
   reset_dirty_pages(vm);
 }
 
 static void stop_dirty_page_tracking(msg_vm_t vm)
 {
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
-  pimpl->dp_enabled                        = 0;
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->dp_enabled = 0;
 }
 
 static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remaining, double clock)
@@ -420,7 +418,7 @@ static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remai
 
 static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug, int stage2_round_for_fancy_debug)
 {
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
   double total = 0;
 
   char *key = nullptr;

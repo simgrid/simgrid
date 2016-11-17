@@ -16,7 +16,7 @@ namespace s4u {
 
 VirtualMachine::VirtualMachine(const char* name, s4u::Host* Pm) : Host(name)
 {
-  pimpl_ = new surf::VirtualMachineImpl(this, Pm);
+  pimpl_vm_ = new surf::VirtualMachineImpl(this, Pm);
 }
 
 VirtualMachine::~VirtualMachine()

@@ -19,7 +19,7 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
 
 static simgrid::surf::VirtualMachineImpl* get_casted_vm(sg_host_t host)
 {
-  return static_cast<simgrid::surf::VirtualMachineImpl*>(host->pimpl_);
+  return static_cast<simgrid::s4u::VirtualMachine*>(host)->pimpl_vm_;
 }
 
 extern double NOW;
