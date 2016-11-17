@@ -17,10 +17,6 @@ XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(surf_kernel);
  * TOOLS *
  *********/
 
-static simgrid::surf::HostImpl *get_casted_host(sg_host_t host){ //FIXME: killme
-  return host->pimpl_;
-}
-
 static simgrid::surf::VirtualMachineImpl* get_casted_vm(sg_host_t host)
 {
   return static_cast<simgrid::surf::VirtualMachineImpl*>(host->pimpl_);
@@ -182,44 +178,44 @@ surf_action_t surf_host_sleep(sg_host_t host, double duration){
 }
 
 surf_action_t surf_host_open(sg_host_t host, const char* fullpath){
-  return get_casted_host(host)->open(fullpath);
+  return host->pimpl_->open(fullpath);
 }
 
 surf_action_t surf_host_close(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->close(fd);
+  return host->pimpl_->close(fd);
 }
 
 int surf_host_unlink(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->unlink(fd);
+  return host->pimpl_->unlink(fd);
 }
 
 size_t surf_host_get_size(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->getSize(fd);
+  return host->pimpl_->getSize(fd);
 }
 
 surf_action_t surf_host_read(sg_host_t host, surf_file_t fd, sg_size_t size){
-  return get_casted_host(host)->read(fd, size);
+  return host->pimpl_->read(fd, size);
 }
 
 surf_action_t surf_host_write(sg_host_t host, surf_file_t fd, sg_size_t size){
-  return get_casted_host(host)->write(fd, size);
+  return host->pimpl_->write(fd, size);
 }
 
 xbt_dynar_t surf_host_get_info(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->getInfo(fd);
+  return host->pimpl_->getInfo(fd);
 }
 
 size_t surf_host_file_tell(sg_host_t host, surf_file_t fd){
-  return get_casted_host(host)->fileTell(fd);
+  return host->pimpl_->fileTell(fd);
 }
 
 int surf_host_file_seek(sg_host_t host, surf_file_t fd,
                                sg_offset_t offset, int origin){
-  return get_casted_host(host)->fileSeek(fd, offset, origin);
+  return host->pimpl_->fileSeek(fd, offset, origin);
 }
 
 int surf_host_file_move(sg_host_t host, surf_file_t fd, const char* fullpath){
-  return get_casted_host(host)->fileMove(fd, fullpath);
+  return host->pimpl_->fileMove(fd, fullpath);
 }
 
 void surf_vm_suspend(sg_host_t vm){
