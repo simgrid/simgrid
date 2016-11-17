@@ -190,7 +190,7 @@ void SIMIX_vm_save(sg_host_t vm, smx_actor_t issuer)
   XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(vm)->process_list));
 
   /* jump to vm_ws_save() */
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->save();
 
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
@@ -203,7 +203,6 @@ void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t vm)
 {
   SIMIX_vm_save(vm, simcall->issuer);
 }
-
 
 /**
  * @brief Function to restore a SIMIX VM host. This function restart the execution of the
@@ -220,7 +219,7 @@ void SIMIX_vm_restore(sg_host_t vm)
       vm->name().c_str(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
   /* jump to vm_ws_restore() */
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->resume();
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();
 
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
