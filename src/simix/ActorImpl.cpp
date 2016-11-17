@@ -518,7 +518,7 @@ void SIMIX_process_throw(smx_actor_t process, xbt_errcat_t cat, int value, const
   SMX_EXCEPTION(process, cat, value, msg);
 
   if (process->suspended)
-    SIMIX_process_resume(process,SIMIX_process_self());
+    SIMIX_process_resume(process);
 
   /* cancel the blocking synchro if any */
   if (process->waiting_synchro) {
@@ -632,12 +632,12 @@ smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer)
 }
 
 void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_actor_t process){
-  SIMIX_process_resume(process, simcall->issuer);
+  SIMIX_process_resume(process);
 }
 
-void SIMIX_process_resume(smx_actor_t process, smx_actor_t issuer)
+void SIMIX_process_resume(smx_actor_t process)
 {
-  XBT_IN("process = %p, issuer = %p", process, issuer);
+  XBT_IN("process = %p", process);
 
   if(process->context->iwannadie) {
     XBT_VERB("Ignoring request to suspend a process that is currently dying.");
@@ -647,14 +647,9 @@ void SIMIX_process_resume(smx_actor_t process, smx_actor_t issuer)
   if(!process->suspended) return;
   process->suspended = 0;
 
-  /* If we are resuming another process, resume the synchronization it was waiting for
-     if any. Otherwise add it to the list of process to run in the next round. */
-  if (process != issuer) {
-
-    if (process->waiting_synchro) {
-      process->waiting_synchro->resume();
-    }
-  } else XBT_WARN("Strange. Process %p is trying to resume himself.", issuer);
+  /* resume the synchronization that was blocking the resumed process. */
+  if (process->waiting_synchro)
+    process->waiting_synchro->resume();
 
   XBT_OUT();
 }

@@ -170,7 +170,7 @@ void SIMIX_vm_resume(sg_host_t vm, smx_actor_t issuer)
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
     XBT_DEBUG("resume %s", smx_process->name.c_str());
-    SIMIX_process_resume(smx_process, issuer);
+    SIMIX_process_resume(smx_process);
   }
 }
 
@@ -218,7 +218,7 @@ void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t vm)
  *
  * @param vm the vm host to restore (a sg_host_t)
  */
-void SIMIX_vm_restore(sg_host_t vm, smx_actor_t issuer)
+void SIMIX_vm_restore(sg_host_t vm)
 {
   if (SIMIX_vm_get_state(vm) != SURF_VM_STATE_SAVED)
     THROWF(vm_error, 0, "VM(%s) was not saved", vm->name().c_str());
@@ -232,13 +232,13 @@ void SIMIX_vm_restore(sg_host_t vm, smx_actor_t issuer)
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
     XBT_DEBUG("resume %s", smx_process->name.c_str());
-    SIMIX_process_resume(smx_process, issuer);
+    SIMIX_process_resume(smx_process);
   }
 }
 
 void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t vm)
 {
-  SIMIX_vm_restore(vm, simcall->issuer);
+  SIMIX_vm_restore(vm);
 }
 
 
