@@ -109,9 +109,9 @@ case SIMCALL_VM_SUSPEND:
       break;
 
 case SIMCALL_VM_RESUME:
-      simcall_HANDLER_vm_resume(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
+  SIMIX_vm_resume(simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
+  SIMIX_simcall_answer(simcall);
+  break;
 
 case SIMCALL_VM_SHUTDOWN:
       simcall_HANDLER_vm_shutdown(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
@@ -124,9 +124,9 @@ case SIMCALL_VM_SAVE:
       break;
 
 case SIMCALL_VM_RESTORE:
-      simcall_HANDLER_vm_restore(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
+  SIMIX_vm_restore(simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
+  SIMIX_simcall_answer(simcall);
+  break;
 
 case SIMCALL_PROCESS_KILL:
       simcall_HANDLER_process_kill(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
@@ -148,9 +148,9 @@ case SIMCALL_PROCESS_SUSPEND:
       break;
 
 case SIMCALL_PROCESS_RESUME:
-      simcall_HANDLER_process_resume(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
-      SIMIX_simcall_answer(simcall);
-      break;
+  SIMIX_process_resume(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
+  SIMIX_simcall_answer(simcall);
+  break;
 
 case SIMCALL_PROCESS_SET_HOST:
       simcall_HANDLER_process_set_host(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]));

@@ -631,10 +631,6 @@ smx_activity_t SIMIX_process_suspend(smx_actor_t process, smx_actor_t issuer)
   }
 }
 
-void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_actor_t process){
-  SIMIX_process_resume(process);
-}
-
 void SIMIX_process_resume(smx_actor_t process)
 {
   XBT_IN("process = %p", process);

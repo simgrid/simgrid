@@ -1155,14 +1155,11 @@ static inline void simcall_run_blocking__set__code(smx_simcall_t simcall, std::f
 /* The prototype of all simcall handlers, automatically generated for you */
 
 XBT_PRIVATE void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t ind_vm);
-XBT_PRIVATE void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t ind_vm);
-XBT_PRIVATE void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t ind_vm);
 XBT_PRIVATE void simcall_HANDLER_process_kill(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_killall(smx_simcall_t simcall, int reset_pid);
 XBT_PRIVATE void simcall_HANDLER_process_suspend(smx_simcall_t simcall, smx_actor_t process);
-XBT_PRIVATE void simcall_HANDLER_process_resume(smx_simcall_t simcall, smx_actor_t process);
 XBT_PRIVATE void simcall_HANDLER_process_set_host(smx_simcall_t simcall, smx_actor_t process, sg_host_t dest);
 XBT_PRIVATE void simcall_HANDLER_process_join(smx_simcall_t simcall, smx_actor_t process, double timeout);
 XBT_PRIVATE void simcall_HANDLER_process_sleep(smx_simcall_t simcall, double duration);

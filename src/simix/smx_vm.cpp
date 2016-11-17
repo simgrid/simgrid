@@ -110,8 +110,7 @@ void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst
   SIMIX_vm_migrate(vm, dst_pm);
  
   /* Resume the VM */
-  smx_actor_t self = SIMIX_process_self(); 
-  SIMIX_vm_resume(vm, self);
+  SIMIX_vm_resume(vm);
 } 
 
 /**
@@ -156,7 +155,7 @@ void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t vm)
  *
  * @param vm the vm host to resume (a sg_host_t)
  */
-void SIMIX_vm_resume(sg_host_t vm, smx_actor_t issuer)
+void SIMIX_vm_resume(sg_host_t vm)
 {
   if (SIMIX_vm_get_state(vm) != SURF_VM_STATE_SUSPENDED)
     THROWF(vm_error, 0, "VM(%s) was not suspended", vm->name().c_str());
@@ -173,12 +172,6 @@ void SIMIX_vm_resume(sg_host_t vm, smx_actor_t issuer)
     SIMIX_process_resume(smx_process);
   }
 }
-
-void simcall_HANDLER_vm_resume(smx_simcall_t simcall, sg_host_t vm)
-{
-  SIMIX_vm_resume(vm, simcall->issuer);
-}
-
 
 /**
  * @brief Function to save a SIMIX VM host.
@@ -235,12 +228,6 @@ void SIMIX_vm_restore(sg_host_t vm)
     SIMIX_process_resume(smx_process);
   }
 }
-
-void simcall_HANDLER_vm_restore(smx_simcall_t simcall, sg_host_t vm)
-{
-  SIMIX_vm_restore(vm);
-}
-
 
 /**
  * @brief Function to shutdown a SIMIX VM host. This function powers off the
