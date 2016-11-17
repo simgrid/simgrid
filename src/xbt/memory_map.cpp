@@ -235,16 +235,20 @@ XBT_PRIVATE std::vector<VmMap> get_memory_map(pid_t pid)
     /* Inode */
     memreg.inode = vmentries[i].kve_vn_fileid;
 
-    /*
-     * Path. Linuxize result by giving an anonymous mapping a path from
-     * the previous mapping... provided previous is vnode and has a path.
-     */
+     /*
+      * Path. Linuxize result by giving an anonymous mapping a path from
+      * the previous mapping, provided previous is vnode and has a path,
+      * and mark the stack.
+      */
     if (vmentries[i].kve_path[0] != '\0')
       memreg.pathname = vmentries[i].kve_path;
     else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT
 	    && vmentries[i-1].kve_type == KVME_TYPE_VNODE
         && vmentries[i-1].kve_path[0] != '\0')
       memreg.pathname = vmentries[i-1].kve_path;
+    else if (vmentries[i].kve_type == KVME_TYPE_DEFAULT
+        && vmentries[i].kve_flags & KVME_FLAG_GROWS_DOWN)
+      memreg.pathname = "[stack]";
 
     ret.push_back(std::move(memreg));
   }
