@@ -219,19 +219,27 @@ int simcall_vm_get_state(sg_host_t vm)
 
 /**
  * \ingroup simix_vm_management
- * \brief Get the name of the physical host on which the given VM runs.
+ * \brief Get the physical host on which the given VM runs.
  *
  * \param vm VM
- * \return The name of the physical host
+ * \return The physical host
  */
 void *simcall_vm_get_pm(sg_host_t vm)
 {
-  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_get_pm, vm));
+  return simgrid::simix::kernelImmediate(
+      [vm]() { return static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getPm(); });
 }
 
+/**
+ * @brief Function to set the CPU bound of the given SIMIX VM host.
+ *
+ * @param host the vm host (a sg_host_t)
+ * @param bound bound (a double)
+ */
 void simcall_vm_set_bound(sg_host_t vm, double bound)
 {
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_set_bound, vm, bound));
+  simgrid::simix::kernelImmediate(
+      [vm, bound]() { static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setBound(bound); });
 }
 
 /**

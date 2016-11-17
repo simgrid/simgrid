@@ -115,27 +115,6 @@ void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst
 } 
 
 /**
- * @brief Function to get the physical host of the given SIMIX VM host.
- *
- * @param host the vm host to get_phys_host (a sg_host_t)
- */
-void *SIMIX_vm_get_pm(sg_host_t host)
-{
-  return static_cast<simgrid::s4u::VirtualMachine*>(host)->pimpl_vm_->getPm();
-}
-
-/**
- * @brief Function to set the CPU bound of the given SIMIX VM host.
- *
- * @param host the vm host (a sg_host_t)
- * @param bound bound (a double)
- */
-void SIMIX_vm_set_bound(sg_host_t vm, double bound)
-{
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setBound(bound);
-}
-
-/**
  * @brief Function to suspend a SIMIX VM host. This function stops the execution of the
  * VM. All the processes on this VM will pause. The state of the VM is
  * preserved on memory. We can later resume it again.

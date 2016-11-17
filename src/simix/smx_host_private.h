@@ -86,10 +86,6 @@ XBT_PRIVATE e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t ind_vm);
 // --
 XBT_PRIVATE void SIMIX_vm_migrate(sg_host_t ind_vm, sg_host_t ind_dst_pm);
 
-XBT_PRIVATE void *SIMIX_vm_get_pm(sg_host_t ind_vm);
-
-XBT_PRIVATE void SIMIX_vm_set_bound(sg_host_t ind_vm, double bound);
-
 XBT_PRIVATE void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm);
 
 SG_END_DECL()
