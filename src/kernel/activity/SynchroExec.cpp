@@ -9,6 +9,8 @@
 #include "src/surf/surf_interface.hpp"
 #include "src/simix/smx_host_private.h"
 
+XBT_LOG_EXTERNAL_DEFAULT_CATEGORY(simix_process);
+
 simgrid::kernel::activity::Exec::Exec(const char*name, sg_host_t hostarg)
 {
   if (name)
@@ -26,12 +28,14 @@ simgrid::kernel::activity::Exec::~Exec()
 }
 void simgrid::kernel::activity::Exec::suspend()
 {
+  XBT_VERB("This exec is suspended (remain: %f)", surf_exec->getRemains());
   if (surf_exec)
     surf_exec->suspend();
 }
 
 void simgrid::kernel::activity::Exec::resume()
 {
+  XBT_VERB("This exec is resumed (remain: %f)", surf_exec->getRemains());
   if (surf_exec)
     surf_exec->resume();
 }
