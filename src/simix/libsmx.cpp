@@ -401,8 +401,6 @@ void simcall_process_join(smx_actor_t process, double timeout)
  */
 void simcall_process_suspend(smx_actor_t process)
 {
-  xbt_assert(process, "Invalid parameters");
-
   simcall_BODY_process_suspend(process);
 }
 
