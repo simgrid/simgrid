@@ -14,11 +14,13 @@ $ $SG_TEST_EXENV ${bindir:=.}/process-suspend ${srcdir:=.}/small_platform.xml "-
 > [ 15.000000] (1:dream_master@Boivin) Let him finish his siesta.
 > [ 25.000000] (1:dream_master@Boivin) Wake up, lazy guy!
 > [ 25.000000] (2:Lazy@Boivin) Mmm... waking up.
-> [ 25.000000] (2:Lazy@Boivin) Going to sleep one more time...
+> [ 25.000000] (2:Lazy@Boivin) Going to sleep one more time (for 10 sec)...
 > [ 30.000000] (1:dream_master@Boivin) Suspend again the lazy guy while he's sleeping...
 > [ 30.000000] (1:dream_master@Boivin) This time, don't let him finish his siesta.
 > [ 32.000000] (1:dream_master@Boivin) Wake up, lazy guy!
-> [ 32.000000] (1:dream_master@Boivin) OK, goodbye now.
 > [ 35.000000] (2:Lazy@Boivin) Waking up once for all!
-> [ 35.000000] (2:Lazy@Boivin) Mmmh, goodbye now.
-> [ 35.000000] (0:maestro@) Simulation time 35
+> [ 35.000000] (2:Lazy@Boivin) Ok, let's do some work, then (for 10 sec on Boivin).
+> [ 37.000000] (1:dream_master@Boivin) Give a 2 seconds break to the lazy guy while he's working...
+> [ 39.000000] (1:dream_master@Boivin) Back to work, lazy guy!
+> [ 39.000000] (1:dream_master@Boivin) OK, I'm done here.
+> [ 47.000000] (2:Lazy@Boivin) Mmmh, I'm done now. Goodbye.
