@@ -93,27 +93,6 @@ void SIMIX_vm_migrate(sg_host_t vm, sg_host_t dst_pm)
 }
 
 /**
- * @brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
- *  The simcall actually invokes the following calls: 
- *     simcall_vm_migrate(vm, dst_pm); 
- *     simcall_vm_resume(vm);
- *
- * It is called at the end of the migration_rx_fun function from msg/msg_vm.c
- *
- * @param vm VM to migrate
- * @param src_pm  Source physical host
- * @param dst_pmt Destination physical host
- */
-void SIMIX_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
-{
-  /* Update the vm location */
-  SIMIX_vm_migrate(vm, dst_pm);
- 
-  /* Resume the VM */
-  SIMIX_vm_resume(vm);
-} 
-
-/**
  * @brief Function to suspend a SIMIX VM host. This function stops the execution of the
  * VM. All the processes on this VM will pause. The state of the VM is
  * preserved on memory. We can later resume it again.

@@ -321,25 +321,6 @@ void simcall_vm_destroy(sg_host_t vm)
 }
 
 /**
- * \ingroup simix_vm_management
- * \brief Encompassing simcall to prevent the removal of the src or the dst node at the end of a VM migration
- *  The simcall actually invokes the following calls: 
- *     simcall_vm_migrate(vm, dst_pm); 
- *     simcall_vm_resume(vm);
- *
- * It is called at the end of the migration_rx_fun function from msg/msg_vm.c
- *
- * \param vm VM to migrate
- * \param src_pm  Source physical host
- * \param dst_pmt Destination physical host
- */
-void simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm)
-{
-  simgrid::simix::kernelImmediate(std::bind(
-    SIMIX_vm_migratefrom_resumeto, vm, src_pm, dst_pm));
-}
-
-/**
  * \ingroup simix_process_management
  * \brief Kills a SIMIX process.
  *

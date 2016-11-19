@@ -20,6 +20,8 @@
 #include "xbt/log.h"
 #include "simgrid/host.h"
 
+#include "src/simix/smx_host_private.h" /* don't ask me why the VM functions are in there (FIXME:KILLME) */
+
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(msg_vm, msg, "Cloud-oriented parts of the MSG API");
 
 
@@ -342,7 +344,13 @@ static int migration_rx_fun(int argc, char *argv[])
   //  /* Resume the VM */
   //  simcall_vm_resume(vm);
   //
-  simcall_vm_migratefrom_resumeto(vm, src_pm, dst_pm);
+  simgrid::simix::kernelImmediate([vm, src_pm, dst_pm]() {
+    /* Update the vm location */
+    SIMIX_vm_migrate(vm, dst_pm);
+
+    /* Resume the VM */
+    SIMIX_vm_resume(vm);
+  });
 
   {
    // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)

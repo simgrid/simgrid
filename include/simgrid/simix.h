@@ -266,7 +266,6 @@ XBT_PUBLIC(void) simcall_vm_migrate(sg_host_t vm, sg_host_t dst_pm);
 XBT_PUBLIC(void *) simcall_vm_get_pm(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_set_bound(sg_host_t vm, double bound);
 XBT_PUBLIC(void) simcall_vm_resume(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_migratefrom_resumeto(sg_host_t vm, sg_host_t src_pm, sg_host_t dst_pm);
 XBT_PUBLIC(void) simcall_vm_save(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_restore(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_suspend(sg_host_t vm);
