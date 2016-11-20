@@ -67,15 +67,9 @@ static int __can_be_started(sg_host_t vm)
 void SIMIX_vm_start(sg_host_t vm)
 {
   if (__can_be_started(vm))
-    static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_)->setState(SURF_VM_STATE_RUNNING);
+    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setState(SURF_VM_STATE_RUNNING);
   else
     THROWF(vm_error, 0, "The VM %s cannot be started", vm->name().c_str());
-}
-
-
-e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t vm)
-{
-  return static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_)->getState();
 }
 
 /**
@@ -86,7 +80,7 @@ e_surf_vm_state_t SIMIX_vm_get_state(sg_host_t vm)
 void SIMIX_vm_migrate(sg_host_t vm, sg_host_t dst_pm)
 {
   /* precopy migration makes the VM temporally paused */
-  xbt_assert(SIMIX_vm_get_state(vm) == SURF_VM_STATE_SUSPENDED);
+  xbt_assert(static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);
 
   /* jump to vm_ws_xigrate(). this will update the vm location. */
   static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->migrate(dst_pm);
@@ -101,7 +95,7 @@ void SIMIX_vm_migrate(sg_host_t vm, sg_host_t dst_pm)
  */
 void SIMIX_vm_suspend(sg_host_t vm, smx_actor_t issuer)
 {
-  if (SIMIX_vm_get_state(vm) != SURF_VM_STATE_RUNNING)
+  if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "VM(%s) is not running", vm->name().c_str());
 
   XBT_DEBUG("suspend VM(%s), where %d processes exist", vm->name().c_str(), xbt_swag_size(sg_host_simix(vm)->process_list));
@@ -136,7 +130,7 @@ void simcall_HANDLER_vm_suspend(smx_simcall_t simcall, sg_host_t vm)
  */
 void SIMIX_vm_resume(sg_host_t vm)
 {
-  if (SIMIX_vm_get_state(vm) != SURF_VM_STATE_SUSPENDED)
+  if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_SUSPENDED)
     THROWF(vm_error, 0, "VM(%s) was not suspended", vm->name().c_str());
 
   XBT_DEBUG("resume VM(%s), where %d processes exist",
@@ -163,7 +157,7 @@ void SIMIX_vm_save(sg_host_t vm, smx_actor_t issuer)
 {
   const char *name = sg_host_get_name(vm);
 
-  if (SIMIX_vm_get_state(vm) != SURF_VM_STATE_RUNNING)
+  if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "VM(%s) is not running", name);
 
   XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(vm)->process_list));
@@ -192,7 +186,7 @@ void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t vm)
  */
 void SIMIX_vm_shutdown(sg_host_t vm, smx_actor_t issuer)
 {
-  if (SIMIX_vm_get_state(vm) != SURF_VM_STATE_RUNNING)
+  if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_RUNNING)
     THROWF(vm_error, 0, "VM(%s) is not running", vm->name().c_str());
 
   XBT_DEBUG("shutdown VM %s, that contains %d processes",
@@ -205,7 +199,7 @@ void SIMIX_vm_shutdown(sg_host_t vm, smx_actor_t issuer)
   }
 
   /* FIXME: we may have to do something at the surf layer, e.g., vcpu action */
-  static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_)->setState(SURF_VM_STATE_CREATED);
+  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setState(SURF_VM_STATE_CREATED);
 }
 
 void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t vm)

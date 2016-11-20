@@ -52,7 +52,7 @@ void MSG_vm_get_params(msg_vm_t vm, vm_params_t params)
 /* **** Check state of a VM **** */
 static inline int __MSG_vm_is_state(msg_vm_t vm, e_surf_vm_state_t state)
 {
-  return simcall_vm_get_state(vm) == state;
+  return static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() == state;
 }
 
 /** @brief Returns whether the given VM has just created, not running.

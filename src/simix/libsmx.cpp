@@ -207,18 +207,6 @@ void simcall_vm_start(sg_host_t vm)
 
 /**
  * \ingroup simix_vm_management
- * \brief Get the state of the given VM
- *
- * \param vm VM
- * \return The state of the VM
- */
-int simcall_vm_get_state(sg_host_t vm)
-{
-  return simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_get_state, vm));
-}
-
-/**
- * \ingroup simix_vm_management
  * \brief Get the physical host on which the given VM runs.
  *
  * \param vm VM
@@ -296,7 +284,7 @@ void simcall_vm_save(sg_host_t vm)
 void simcall_vm_restore(sg_host_t vm)
 {
   simgrid::simix::kernelImmediate([vm]() {
-    if (SIMIX_vm_get_state(vm) != SURF_VM_STATE_SAVED)
+    if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_SAVED)
       THROWF(vm_error, 0, "VM(%s) was not saved", vm->name().c_str());
 
     XBT_DEBUG("restore VM(%s), where %d processes exist", vm->name().c_str(),
