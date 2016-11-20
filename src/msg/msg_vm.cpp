@@ -337,19 +337,14 @@ static int migration_rx_fun(int argc, char *argv[])
   msg_host_t src_pm                = ms->src_pm;
   msg_host_t dst_pm                = ms->dst_pm;
 
-  // TODO: we have an issue, if the DST node is turning off during the three next calls, then the VM is in an
-  // inconsistent
-  //       state. I should check with Takahiro in order to make this portion of code atomic
-  //
-  //  /* Update the vm location */
-  //  simcall_vm_migrate(vm, dst_pm);
-  //
-  //  /* Resume the VM */
-  //  simcall_vm_resume(vm);
-  //
+  // Make sure that we cannot get interrupted between the migrate and the resume to not end in an inconsistent state
   simgrid::simix::kernelImmediate([vm, src_pm, dst_pm]() {
     /* Update the vm location */
-    SIMIX_vm_migrate(vm, dst_pm);
+    /* precopy migration makes the VM temporally paused */
+    xbt_assert(static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);
+
+    /* jump to vm_ws_xigrate(). this will update the vm location. */
+    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->migrate(dst_pm);
 
     /* Resume the VM */
     SIMIX_vm_resume(vm);

@@ -261,7 +261,6 @@ XBT_PUBLIC(e_smx_state_t) simcall_execution_wait(smx_activity_t execution);
 // Create the vm_workstation at the SURF level
 XBT_PUBLIC(sg_host_t) simcall_vm_create(const char *name, sg_host_t host);
 XBT_PUBLIC(void) simcall_vm_start(sg_host_t vm);
-XBT_PUBLIC(void) simcall_vm_migrate(sg_host_t vm, sg_host_t dst_pm);
 XBT_PUBLIC(void *) simcall_vm_get_pm(sg_host_t vm);
 XBT_PUBLIC(void) simcall_vm_set_bound(sg_host_t vm, double bound);
 XBT_PUBLIC(void) simcall_vm_resume(sg_host_t vm);

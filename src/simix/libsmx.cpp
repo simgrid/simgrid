@@ -232,18 +232,6 @@ void simcall_vm_set_bound(sg_host_t vm, double bound)
 
 /**
  * \ingroup simix_vm_management
- * \brief Migrate the given VM to the given physical host
- *
- * \param vm VM
- * \param host Destination physical host
- */
-void simcall_vm_migrate(sg_host_t vm, sg_host_t host)
-{
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_migrate, vm, host));
-}
-
-/**
- * \ingroup simix_vm_management
  * \brief Suspend the given VM
  *
  * \param vm VM

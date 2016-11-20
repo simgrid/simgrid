@@ -55,20 +55,6 @@ void SIMIX_vm_start(sg_host_t vm)
 }
 
 /**
- * @brief Function to migrate a SIMIX VM host.
- *
- * @param host the vm host to migrate (a sg_host_t)
- */
-void SIMIX_vm_migrate(sg_host_t vm, sg_host_t dst_pm)
-{
-  /* precopy migration makes the VM temporally paused */
-  xbt_assert(static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() == SURF_VM_STATE_SUSPENDED);
-
-  /* jump to vm_ws_xigrate(). this will update the vm location. */
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->migrate(dst_pm);
-}
-
-/**
  * @brief Function to suspend a SIMIX VM host. This function stops the execution of the
  * VM. All the processes on this VM will pause. The state of the VM is
  * preserved on memory. We can later resume it again.
