@@ -10,8 +10,15 @@ XBT_LOG_DEFAULT_CATEGORY(surf_vm);
 
 namespace simgrid {
 namespace vm {
+simgrid::xbt::Extension<s4u::Host, VmHostExt> VmHostExt::EXTENSION_ID;
+
 VmHostExt::~VmHostExt()
 {
+}
+void VmHostExt::ensureVmExtInstalled()
+{
+  if (!EXTENSION_ID.valid())
+    EXTENSION_ID = simgrid::s4u::Host::extension_create<VmHostExt>();
 }
 }
 }

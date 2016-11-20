@@ -12,6 +12,7 @@
 #include <xbt/ex.hpp>
 
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/plugins/vm/VmHostExt.hpp"
 #include <simgrid/s4u/VirtualMachine.hpp>
 #include <simgrid/s4u/host.hpp>
 
@@ -127,8 +128,9 @@ int MSG_vm_is_restoring(msg_vm_t vm)
 msg_vm_t MSG_vm_create(msg_host_t pm, const char *name, int ncpus, int ramsize, int net_cap, char *disk_path,
                        int disksize, int mig_netspeed, int dp_intensity)
 {
-  /* For the moment, intensity_rate is the percentage against the migration
-   * bandwidth */
+  simgrid::vm::VmHostExt::ensureVmExtInstalled();
+
+  /* For the moment, intensity_rate is the percentage against the migration bandwidth */
   double host_speed = MSG_host_get_speed(pm);
   double update_speed = ((double)dp_intensity/100) * mig_netspeed;
 
@@ -225,7 +227,8 @@ void MSG_vm_shutdown(msg_vm_t vm)
 {
   /* msg_vm_t equals to msg_host_t */
   simcall_vm_shutdown(vm);
-
+  MSG_process_sleep(0.); // Make sure that the processes in the VM are killed in this scheduling round before processing
+                         // (eg with the VM destroy)
   // TRACE_msg_vm_(vm);
 }
 

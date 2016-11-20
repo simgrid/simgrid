@@ -7,6 +7,7 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "smx_private.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/plugins/vm/VmHostExt.hpp"
 #include "src/surf/HostImpl.hpp"
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX Virtual Machines");
@@ -26,10 +27,14 @@ static long host_get_ramsize(sg_host_t vm, int *overcommit)
 /* **** start a VM **** */
 static int __can_be_started(sg_host_t vm)
 {
+  simgrid::vm::VmHostExt::ensureVmExtInstalled();
+
   sg_host_t pm = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getPm();
 
   int pm_overcommit = 0;
-  long pm_ramsize = host_get_ramsize(pm, &pm_overcommit);
+  if (pm->extension<simgrid::vm::VmHostExt>() == nullptr)
+    pm->extension_set(new simgrid::vm::VmHostExt());
+  long pm_ramsize = pm->extension<simgrid::vm::VmHostExt>()->ramsize;
   long vm_ramsize = host_get_ramsize(vm, nullptr);
 
   if (!pm_ramsize) {
