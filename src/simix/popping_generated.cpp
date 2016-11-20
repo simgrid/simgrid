@@ -27,7 +27,6 @@ const char* simcall_names[] = {
   "SIMCALL_VM_RESUME",
   "SIMCALL_VM_SHUTDOWN",
   "SIMCALL_VM_SAVE",
-  "SIMCALL_VM_RESTORE",
   "SIMCALL_PROCESS_KILL",
   "SIMCALL_PROCESS_KILLALL",
   "SIMCALL_PROCESS_CLEANUP",
@@ -109,9 +108,9 @@ case SIMCALL_VM_SUSPEND:
       break;
 
 case SIMCALL_VM_RESUME:
-  SIMIX_vm_resume(simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-  SIMIX_simcall_answer(simcall);
-  break;
+      SIMIX_vm_resume(simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
+      SIMIX_simcall_answer(simcall);
+      break;
 
 case SIMCALL_VM_SHUTDOWN:
       simcall_HANDLER_vm_shutdown(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
@@ -122,11 +121,6 @@ case SIMCALL_VM_SAVE:
       simcall_HANDLER_vm_save(simcall, simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
       SIMIX_simcall_answer(simcall);
       break;
-
-case SIMCALL_VM_RESTORE:
-  SIMIX_vm_restore(simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]));
-  SIMIX_simcall_answer(simcall);
-  break;
 
 case SIMCALL_PROCESS_KILL:
       simcall_HANDLER_process_kill(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
@@ -148,9 +142,9 @@ case SIMCALL_PROCESS_SUSPEND:
       break;
 
 case SIMCALL_PROCESS_RESUME:
-  SIMIX_process_resume(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
-  SIMIX_simcall_answer(simcall);
-  break;
+      SIMIX_process_resume(simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]));
+      SIMIX_simcall_answer(simcall);
+      break;
 
 case SIMCALL_PROCESS_SET_HOST:
       simcall_HANDLER_process_set_host(simcall, simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]), simgrid::simix::unmarshal<sg_host_t>(simcall->args[1]));
@@ -176,15 +170,9 @@ case SIMCALL_EXECUTION_START:
       break;
 
 case SIMCALL_EXECUTION_PARALLEL_START:
-  simgrid::simix::marshal<smx_activity_t>(
-      simcall->result,
-      SIMIX_execution_parallel_start(
-          simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]),
-          simgrid::simix::unmarshal<sg_host_t*>(simcall->args[2]), simgrid::simix::unmarshal<double*>(simcall->args[3]),
-          simgrid::simix::unmarshal<double*>(simcall->args[4]), simgrid::simix::unmarshal<double>(simcall->args[5]),
-          simgrid::simix::unmarshal<double>(simcall->args[6]), simgrid::simix::unmarshal<double>(simcall->args[7])));
-  SIMIX_simcall_answer(simcall);
-  break;
+      simgrid::simix::marshal<smx_activity_t>(simcall->result, SIMIX_execution_parallel_start(simgrid::simix::unmarshal<const char*>(simcall->args[0]), simgrid::simix::unmarshal<int>(simcall->args[1]), simgrid::simix::unmarshal<sg_host_t*>(simcall->args[2]), simgrid::simix::unmarshal<double*>(simcall->args[3]), simgrid::simix::unmarshal<double*>(simcall->args[4]), simgrid::simix::unmarshal<double>(simcall->args[5]), simgrid::simix::unmarshal<double>(simcall->args[6]), simgrid::simix::unmarshal<double>(simcall->args[7])));
+      SIMIX_simcall_answer(simcall);
+      break;
 
 case SIMCALL_EXECUTION_CANCEL:
       SIMIX_execution_cancel(simgrid::simix::unmarshal<smx_activity_t>(simcall->args[0]));

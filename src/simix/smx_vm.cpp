@@ -184,30 +184,6 @@ void simcall_HANDLER_vm_save(smx_simcall_t simcall, sg_host_t vm)
 }
 
 /**
- * @brief Function to restore a SIMIX VM host. This function restart the execution of the
- * VM. All the processes on this VM will run again.
- *
- * @param vm the vm host to restore (a sg_host_t)
- */
-void SIMIX_vm_restore(sg_host_t vm)
-{
-  if (SIMIX_vm_get_state(vm) != SURF_VM_STATE_SAVED)
-    THROWF(vm_error, 0, "VM(%s) was not saved", vm->name().c_str());
-
-  XBT_DEBUG("restore VM(%s), where %d processes exist",
-      vm->name().c_str(), xbt_swag_size(sg_host_simix(vm)->process_list));
-
-  /* jump to vm_ws_restore() */
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();
-
-  smx_actor_t smx_process, smx_process_safe;
-  xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
-    XBT_DEBUG("resume %s", smx_process->name.c_str());
-    SIMIX_process_resume(smx_process);
-  }
-}
-
-/**
  * @brief Function to shutdown a SIMIX VM host. This function powers off the
  * VM. All the processes on this VM will be killed. But, the state of the VM is
  * preserved on memory. We can later start it again.
@@ -235,29 +211,4 @@ void SIMIX_vm_shutdown(sg_host_t vm, smx_actor_t issuer)
 void simcall_HANDLER_vm_shutdown(smx_simcall_t simcall, sg_host_t vm)
 {
   SIMIX_vm_shutdown(vm, simcall->issuer);
-}
-
-/**
- * @brief Function to destroy a SIMIX VM host.
- *
- * @param vm the vm host to destroy (a sg_host_t)
- */
-void SIMIX_vm_destroy(sg_host_t vm)
-{
-  /* this code basically performs a similar thing like SIMIX_host_destroy() */
-  XBT_DEBUG("destroy %s", vm->name().c_str());
-
-  /* FIXME: this is really strange that everything fails if the next line is removed.
-   * This is as if we shared these data with the PM, which definitely should not be the case...
-   *
-   * We need to test that suspending a VM does not suspends the processes running on its PM, for example.
-   * Or we need to simplify this code enough to make it actually readable (but this sounds harder than testing)
-   */
-  vm->extension_set<simgrid::simix::Host>(nullptr);
-
-  /* Don't free these things twice: they are the ones of my physical host */
-  vm->pimpl_cpu = nullptr;
-  vm->pimpl_netcard = nullptr;
-
-  vm->destroy();
 }

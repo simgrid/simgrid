@@ -42,13 +42,6 @@ static inline void simcall_vm_save__set__ind_vm(smx_simcall_t simcall, sg_host_t
     simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
 }
 
-static inline sg_host_t simcall_vm_restore__get__ind_vm(smx_simcall_t simcall) {
-  return simgrid::simix::unmarshal<sg_host_t>(simcall->args[0]);
-}
-static inline void simcall_vm_restore__set__ind_vm(smx_simcall_t simcall, sg_host_t arg) {
-    simgrid::simix::marshal<sg_host_t>(simcall->args[0], arg);
-}
-
 static inline smx_actor_t simcall_process_kill__get__process(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<smx_actor_t>(simcall->args[0]);
 }
@@ -215,13 +208,11 @@ static inline double simcall_execution_parallel_start__get__rate(smx_simcall_t s
 static inline void simcall_execution_parallel_start__set__rate(smx_simcall_t simcall, double arg) {
     simgrid::simix::marshal<double>(simcall->args[6], arg);
 }
-static inline double simcall_execution_parallel_start__get__timeout(smx_simcall_t simcall)
-{
+static inline double simcall_execution_parallel_start__get__timeout(smx_simcall_t simcall) {
   return simgrid::simix::unmarshal<double>(simcall->args[7]);
 }
-static inline void simcall_execution_parallel_start__set__timeout(smx_simcall_t simcall, double arg)
-{
-  simgrid::simix::marshal<double>(simcall->args[7], arg);
+static inline void simcall_execution_parallel_start__set__timeout(smx_simcall_t simcall, double arg) {
+    simgrid::simix::marshal<double>(simcall->args[7], arg);
 }
 static inline smx_activity_t simcall_execution_parallel_start__get__result(smx_simcall_t simcall){
     return simgrid::simix::unmarshal<smx_activity_t>(simcall->result);
