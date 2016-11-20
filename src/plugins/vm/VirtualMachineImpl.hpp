@@ -78,6 +78,8 @@ public:
   /** @brief Get the physical machine hosting the VM */
   s4u::Host* getPm();
 
+  sg_size_t getRamsize();
+
   virtual void setBound(double bound);
 
   void getParams(vm_params_t params);

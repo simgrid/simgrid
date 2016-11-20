@@ -241,6 +241,11 @@ void VirtualMachineImpl::migrate(s4u::Host* host_dest)
   XBT_DEBUG("migrate VM(%s): change PM (%s to %s)", vm_name, pm_name_src, pm_name_dst);
 }
 
+sg_size_t VirtualMachineImpl::getRamsize()
+{
+  return params_.ramsize;
+}
+
 void VirtualMachineImpl::setBound(double bound)
 {
   action_->setBound(bound);

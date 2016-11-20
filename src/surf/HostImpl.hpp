@@ -1,5 +1,4 @@
-/* Copyright (c) 2004-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2004-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
@@ -178,9 +177,6 @@ public:
 public:
   xbt_dynar_t storage_        = nullptr;
   simgrid::s4u::Host* piface_ = nullptr;
-
-  /** @brief Get the list of virtual machines on the current Host */
-  xbt_dynar_t getVms();
 
   simgrid::s4u::Host* getHost() { return piface_; }
 };

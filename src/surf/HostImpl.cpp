@@ -318,16 +318,5 @@ xbt_dynar_t HostImpl::getAttachedStorageList()
       }
     }
 
-    xbt_dynar_t HostImpl::getVms()
-    {
-      xbt_dynar_t dyn = xbt_dynar_new(sizeof(simgrid::surf::VirtualMachineImpl*), nullptr);
-
-      for (VirtualMachineImpl* ws_vm : VirtualMachineImpl::allVms_) {
-        if (this == ws_vm->getPm()->pimpl_)
-          xbt_dynar_push(dyn, &ws_vm);
-      }
-
-      return dyn;
-    }
     }
     }

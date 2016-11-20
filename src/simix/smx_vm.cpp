@@ -27,14 +27,14 @@ static long host_get_ramsize(sg_host_t vm, int *overcommit)
 /* **** start a VM **** */
 static int __can_be_started(sg_host_t vm)
 {
-  simgrid::vm::VmHostExt::ensureVmExtInstalled();
-
   sg_host_t pm = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getPm();
 
-  int pm_overcommit = 0;
+  simgrid::vm::VmHostExt::ensureVmExtInstalled();
   if (pm->extension<simgrid::vm::VmHostExt>() == nullptr)
     pm->extension_set(new simgrid::vm::VmHostExt());
+
   long pm_ramsize = pm->extension<simgrid::vm::VmHostExt>()->ramsize;
+  int pm_overcommit = pm->extension<simgrid::vm::VmHostExt>()->overcommit;
   long vm_ramsize = host_get_ramsize(vm, nullptr);
 
   if (!pm_ramsize) {
@@ -47,22 +47,16 @@ static int __can_be_started(sg_host_t vm)
     return 1;
   }
 
+  /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
   long total_ramsize_of_vms = 0;
-  xbt_dynar_t dyn_vms       = pm->pimpl_->getVms();
-  {
-    unsigned int cursor = 0;
-    sg_host_t another_vm;
-    xbt_dynar_foreach(dyn_vms, cursor, another_vm) {
-      long another_vm_ramsize = host_get_ramsize(vm, nullptr);
-      total_ramsize_of_vms += another_vm_ramsize;
-    }
-  }
+  for (simgrid::surf::VirtualMachineImpl* ws_vm : simgrid::surf::VirtualMachineImpl::allVms_)
+    if (pm == ws_vm->getPm())
+      total_ramsize_of_vms += ws_vm->getRamsize();
 
   if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
     XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
         sg_host_get_name(vm), sg_host_get_name(pm),
         vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
-    xbt_dynar_free(&dyn_vms);
     return 0;
   }
 
