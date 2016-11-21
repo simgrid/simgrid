@@ -170,16 +170,6 @@ XBT_PRIVATE void TRACE_msg_process_resume(msg_process_t process);
 XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process);   //called from msg/gos.c
 XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
 
-/* declaration of instrumentation functions from instr_msg_vm.c */
-XBT_PRIVATE void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_host);
-XBT_PRIVATE void TRACE_msg_vm_start(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_kill(msg_vm_t process);
-XBT_PRIVATE void TRACE_msg_vm_suspend(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_resume(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_save(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_restore(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_end(msg_vm_t vm);
-
 SG_END_DECL()
 
 XBT_PUBLIC(msg_process_t) MSG_process_create_with_environment(

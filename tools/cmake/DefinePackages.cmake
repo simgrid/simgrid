@@ -408,7 +408,6 @@ set(SIMGRID_SRC
 set(MSG_SRC
   src/msg/instr_msg_process.cpp
   src/msg/instr_msg_task.cpp
-  src/msg/instr_msg_vm.cpp
   src/msg/msg_actions.cpp
   src/msg/msg_deployment.cpp
   src/msg/msg_environment.cpp

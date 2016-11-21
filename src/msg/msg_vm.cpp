@@ -185,7 +185,11 @@ void MSG_vm_destroy(msg_vm_t vm)
     vm->destroy();
   });
 
-  TRACE_msg_vm_end(vm);
+  if (TRACE_msg_vm_is_enabled()) {
+    container_t container = PJ_container_get(vm->name().c_str());
+    PJ_container_remove_from_parent(container);
+    PJ_container_free(container);
+  }
 }
 
 /** @brief Start a vm (i.e., boot the guest operating system)
@@ -197,7 +201,12 @@ void MSG_vm_start(msg_vm_t vm)
 {
   simcall_vm_start(vm);
 
-  TRACE_msg_vm_start(vm);
+  if (TRACE_msg_vm_is_enabled()) {
+    container_t vm_container = PJ_container_get(vm->name().c_str());
+    type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
+    val_t value              = PJ_value_get_or_new("start", "0 0 1", type); // start is blue
+    new_pajePushState(MSG_get_clock(), vm_container, type, value);
+  }
 }
 
 /** @brief Immediately kills all processes within the given VM. Any memory that they allocated will be leaked.
@@ -208,11 +217,9 @@ void MSG_vm_start(msg_vm_t vm)
  */
 void MSG_vm_shutdown(msg_vm_t vm)
 {
-  /* msg_vm_t equals to msg_host_t */
   simcall_vm_shutdown(vm);
   MSG_process_sleep(0.); // Make sure that the processes in the VM are killed in this scheduling round before processing
                          // (eg with the VM destroy)
-  // TRACE_msg_vm_(vm);
 }
 
 /* We have two mailboxes. mbox is used to transfer migration data between source and destination PMs. mbox_ctl is used
@@ -338,7 +345,30 @@ static int migration_rx_fun(int argc, char *argv[])
    vm->pimpl_vm_->isMigrating = false;
    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", sg_host_get_name(ms->vm), sg_host_get_name(ms->src_pm),
              sg_host_get_name(ms->dst_pm));
-   TRACE_msg_vm_change_host(ms->vm, ms->src_pm, ms->dst_pm);
+
+   if (TRACE_msg_vm_is_enabled()) {
+     static long long int counter = 0;
+     char key[INSTR_DEFAULT_STR_SIZE];
+     snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
+
+     // start link
+     container_t msg = PJ_container_get(vm->name().c_str());
+     type_t type     = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
+     new_pajeStartLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+
+     // destroy existing container of this vm
+     container_t existing_container = PJ_container_get(vm->name().c_str());
+     PJ_container_remove_from_parent(existing_container);
+     PJ_container_free(existing_container);
+
+     // create new container on the new_host location
+     PJ_container_new(vm->name().c_str(), INSTR_MSG_VM, PJ_container_get(sg_host_get_name(ms->dst_pm)));
+
+     // end link
+     msg  = PJ_container_get(vm->name().c_str());
+     type = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
+     new_pajeEndLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+   }
   }
   // Inform the SRC that the migration has been correctly performed
   {
@@ -893,7 +923,12 @@ void MSG_vm_suspend(msg_vm_t vm)
 
   XBT_DEBUG("vm_suspend done");
 
-  TRACE_msg_vm_suspend(vm);
+  if (TRACE_msg_vm_is_enabled()) {
+    container_t vm_container = PJ_container_get(vm->name().c_str());
+    type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
+    val_t value              = PJ_value_get_or_new("suspend", "1 0 0", type); // suspend is red
+    new_pajePushState(MSG_get_clock(), vm_container, type, value);
+  }
 }
 
 /** @brief Resume the execution of the VM. All processes on the VM run again.
@@ -905,7 +940,11 @@ void MSG_vm_resume(msg_vm_t vm)
 {
   simcall_vm_resume(vm);
 
-  TRACE_msg_vm_resume(vm);
+  if (TRACE_msg_vm_is_enabled()) {
+    container_t vm_container = PJ_container_get(vm->name().c_str());
+    type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
+    new_pajePopState(MSG_get_clock(), vm_container, type);
+  }
 }
 
 
@@ -924,7 +963,13 @@ void MSG_vm_save(msg_vm_t vm)
     THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_get_name(vm));
 
   simcall_vm_save(vm);
-  TRACE_msg_vm_save(vm);
+
+  if (TRACE_msg_vm_is_enabled()) {
+    container_t vm_container = PJ_container_get(vm->name().c_str());
+    type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
+    val_t value              = PJ_value_get_or_new("save", "0 1 0", type); // save is green
+    new_pajePushState(MSG_get_clock(), vm_container, type, value);
+  }
 }
 
 /** @brief Restore the execution of the VM. All processes on the VM run again.
@@ -937,7 +982,11 @@ void MSG_vm_restore(msg_vm_t vm)
 {
   simcall_vm_restore(vm);
 
-  TRACE_msg_vm_restore(vm);
+  if (TRACE_msg_vm_is_enabled()) {
+    container_t vm_container = PJ_container_get(vm->name().c_str());
+    type_t type              = PJ_type_get("MSG_VM_STATE", vm_container->type);
+    new_pajePopState(MSG_get_clock(), vm_container, type);
+  }
 }
 
 /** @brief Get the physical host of a given VM.
