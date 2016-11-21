@@ -57,7 +57,6 @@ VirtualMachine::~VirtualMachine()
   extension_set<simgrid::simix::Host>(nullptr);
 
   /* Don't free these things twice: they are the ones of my physical host */
-  pimpl_cpu     = nullptr;
   pimpl_netcard = nullptr;
 }
 

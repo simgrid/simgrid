@@ -142,8 +142,6 @@ VirtualMachineImpl::~VirtualMachineImpl()
   /* Free the cpu_action of the VM. */
   XBT_ATTRIB_UNUSED int ret = action_->unref();
   xbt_assert(ret == 1, "Bug: some resource still remains");
-
-  delete piface_->pimpl_cpu;
 }
 
 e_surf_vm_state_t VirtualMachineImpl::getState()
