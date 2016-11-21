@@ -111,8 +111,7 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::Host* piface, simgrid::s4u:
   /* Initialize the VM parameters */
   params_.ramsize = 0;
 
-  XBT_VERB("Create VM(%s)@PM(%s) with %ld mounted disks", piface->name().c_str(), hostPM_->name().c_str(),
-           xbt_dynar_length(storage_));
+  XBT_VERB("Create VM(%s)@PM(%s)", piface->name().c_str(), hostPM_->name().c_str());
 }
 
 extern "C" int
