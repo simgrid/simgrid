@@ -171,8 +171,6 @@ XBT_PRIVATE void TRACE_msg_process_sleep_in(msg_process_t process);   //called f
 XBT_PRIVATE void TRACE_msg_process_sleep_out(msg_process_t process);
 
 /* declaration of instrumentation functions from instr_msg_vm.c */
-XBT_PRIVATE char *instr_vm_id(msg_vm_t vm, char *str, int len);
-XBT_PRIVATE char *instr_vm_id_2(const char *vm_name, char *str, int len);
 XBT_PRIVATE void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_host);
 XBT_PRIVATE void TRACE_msg_vm_start(msg_vm_t vm);
 XBT_PRIVATE void TRACE_msg_vm_kill(msg_vm_t process);
