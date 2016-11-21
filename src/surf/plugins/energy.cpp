@@ -233,7 +233,7 @@ void HostEnergy::initWattsRangeList()
 
 /* **************************** events  callback *************************** */
 static void onCreation(simgrid::s4u::Host& host) {
-  if (dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host.pimpl_)) // Ignore virtual machines
+  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
   host.extension_set(new HostEnergy(&host));
 }
@@ -245,9 +245,9 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
     if(sghost == nullptr)
       continue;
     simgrid::surf::HostImpl* host     = sghost->pimpl_;
-    simgrid::surf::VirtualMachineImpl* vm = dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host);
+    simgrid::s4u::VirtualMachine* vm  = dynamic_cast<simgrid::s4u::VirtualMachine*>(sghost);
     if (vm) // If it's a VM, take the corresponding PM
-      host = vm->getPm()->pimpl_;
+      host = vm->pimpl_vm_->getPm()->pimpl_;
 
     HostEnergy *host_energy = host->piface_->extension<HostEnergy>();
 
@@ -257,7 +257,7 @@ static void onActionStateChange(simgrid::surf::CpuAction *action, simgrid::surf:
 }
 
 static void onHostStateChange(simgrid::s4u::Host &host) {
-  if (dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host.pimpl_)) // Ignore virtual machines
+  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host)) // Ignore virtual machines
     return;
 
   HostEnergy *host_energy = host.extension<HostEnergy>();
@@ -268,7 +268,7 @@ static void onHostStateChange(simgrid::s4u::Host &host) {
 
 static void onHostDestruction(simgrid::s4u::Host& host) {
   // Ignore virtual machines
-  if (dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host.pimpl_))
+  if (dynamic_cast<simgrid::s4u::VirtualMachine*>(&host))
     return;
   HostEnergy *host_energy = host.extension<HostEnergy>();
   host_energy->update();

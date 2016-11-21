@@ -203,9 +203,9 @@ smx_activity_t SIMIX_execution_parallel_start(const char* name, int host_nb, sg_
     host_list_cpy[i] = host_list[i];
 
   /* Check that we are not mixing VMs and PMs in the parallel task */
-  bool is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host_list[0]->pimpl_));
+  bool is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[0]));
   for (int i = 1; i < host_nb; i++) {
-    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::surf::VirtualMachineImpl*>(host_list[i]->pimpl_));
+    bool tmp_is_a_vm = (nullptr != dynamic_cast<simgrid::s4u::VirtualMachine*>(host_list[i]));
     xbt_assert(is_a_vm == tmp_is_a_vm, "parallel_execute: mixing VMs and PMs is not supported (yet).");
   }
 

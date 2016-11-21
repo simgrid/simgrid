@@ -62,19 +62,19 @@ VirtualMachine::~VirtualMachine()
 
 bool VirtualMachine::isMigrating()
 {
-  return static_cast<surf::VirtualMachineImpl*>(pimpl_)->isMigrating;
+  return pimpl_vm_->isMigrating;
 }
 
 /** @brief Retrieve a copy of the parameters of that VM/PM
  *  @details The ramsize and overcommit fields are used on the PM too */
 void VirtualMachine::parameters(vm_params_t params)
 {
-  static_cast<surf::VirtualMachineImpl*>(pimpl_)->getParams(params);
+  pimpl_vm_->getParams(params);
 }
 /** @brief Sets the params of that VM/PM */
 void VirtualMachine::setParameters(vm_params_t params)
 {
-  simgrid::simix::kernelImmediate([&]() { static_cast<surf::VirtualMachineImpl*>(pimpl_)->setParams(params); });
+  simgrid::simix::kernelImmediate([&]() { pimpl_vm_->setParams(params); });
 }
 
 } // namespace simgrid

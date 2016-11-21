@@ -396,7 +396,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
 static void reset_dirty_pages(msg_vm_t vm)
 {
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   char *key = nullptr;
   xbt_dict_cursor_t cursor = nullptr;
@@ -473,7 +473,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
   simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
   if (vm == nullptr)
     return;
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   double remaining = MSG_task_get_flops_amount(task);
   char *key = bprintf("%s-%p", task->name, task);
@@ -498,7 +498,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
   if (vm == nullptr)
     return;
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   char *key = bprintf("%s-%p", task->name, task);
   dirty_page_t dp = (dirty_page_t)(pimpl->dp_objs ? xbt_dict_get_or_null(pimpl->dp_objs, key) : NULL);
@@ -885,7 +885,7 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
   if (MSG_vm_is_migrating(vm))
     THROWF(vm_error, 0, "VM(%s) is already migrating", sg_host_get_name(vm));
 
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::surf::VirtualMachineImpl*>(vm->pimpl_);
+  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
   pimpl->isMigrating                       = 1;
 
   {
