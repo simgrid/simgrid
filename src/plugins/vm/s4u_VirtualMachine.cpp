@@ -7,11 +7,12 @@
 #include "simgrid/s4u/VirtualMachine.hpp"
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/simix.hpp"
+#include "src/instr/instr_private.h"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
 #include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
+#include "src/surf/cpu_cas01.hpp"
 #include "xbt/asserts.h"
-#include "src/instr/instr_private.h"
 
 XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 
@@ -23,6 +24,16 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
   XBT_DEBUG("Create VM %s", name);
 
   pimpl_vm_ = new surf::VirtualMachineImpl(this, pm);
+  /* Currently, a VM uses the network resource of its physical host */
+  pimpl_netcard = pm->pimpl_netcard;
+  // Create a VCPU for this VM
+  surf::CpuCas01* sub_cpu = dynamic_cast<surf::CpuCas01*>(pm->pimpl_cpu);
+
+  pimpl_cpu = surf_cpu_model_vm->createCpu(this, sub_cpu->getSpeedPeakList(), 1 /*cores*/);
+  if (sub_cpu->getPState() != 0)
+    pimpl_cpu->setPState(sub_cpu->getPState());
+
+  /* Make a process container */
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   if (TRACE_msg_vm_is_enabled()) {

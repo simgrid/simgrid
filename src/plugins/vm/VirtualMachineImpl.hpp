@@ -86,7 +86,7 @@ public:
   void setParams(vm_params_t params);
 
   /* The vm object of the lower layer */
-  CpuAction* action_ = nullptr;
+  Action* action_ = nullptr;
 
   /* Dirty pages stuff */
   int dp_enabled                     = 0;

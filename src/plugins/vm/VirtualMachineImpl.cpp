@@ -104,25 +104,9 @@ VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::Host* piface, simgrid::s4u:
   /* Register this VM to the list of all VMs */
   allVms_.push_back(this);
 
-  /* Currently, a VM uses the network resource of its physical host. In
-   * host_lib, this network resource object is referred from two different keys.
-   * When deregistering the reference that points the network resource object
-   * from the VM name, we have to make sure that the system does not call the
-   * free callback for the network resource object. The network resource object
-   * is still used by the physical machine. */
-  piface_->pimpl_netcard = host_PM->pimpl_netcard;
-
-  // //// CPU  RELATED STUFF ////
-  // Roughly, create a vcpu resource by using the values of the sub_cpu one.
-  CpuCas01* sub_cpu = dynamic_cast<CpuCas01*>(host_PM->pimpl_cpu);
-
-  piface_->pimpl_cpu = surf_cpu_model_vm->createCpu(piface_, sub_cpu->getSpeedPeakList(), 1 /*cores*/);
-  if (sub_cpu->getPState() != 0)
-    piface_->pimpl_cpu->setPState(sub_cpu->getPState());
-
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
-  action_ = sub_cpu->execution_start(0);
+  action_ = host_PM->pimpl_cpu->execution_start(0);
 
   /* Initialize the VM parameters */
   params_.ramsize = 0;
