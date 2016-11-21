@@ -182,21 +182,6 @@ void MSG_vm_destroy(msg_vm_t vm)
 
   /* Then, destroy the VM object */
   simgrid::simix::kernelImmediate([vm]() {
-    /* this code basically performs a similar thing like SIMIX_host_destroy() */
-    XBT_DEBUG("destroy %s", vm->name().c_str());
-
-    /* FIXME: this is really strange that everything fails if the next line is removed.
-     * This is as if we shared these data with the PM, which definitely should not be the case...
-     *
-     * We need to test that suspending a VM does not suspends the processes running on its PM, for example.
-     * Or we need to simplify this code enough to make it actually readable (but this sounds harder than testing)
-     */
-    vm->extension_set<simgrid::simix::Host>(nullptr);
-
-    /* Don't free these things twice: they are the ones of my physical host */
-    vm->pimpl_cpu     = nullptr;
-    vm->pimpl_netcard = nullptr;
-
     vm->destroy();
   });
 

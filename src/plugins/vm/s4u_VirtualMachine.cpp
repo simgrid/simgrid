@@ -34,6 +34,20 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
 VirtualMachine::~VirtualMachine()
 {
   onDestruction(*this);
+
+  XBT_DEBUG("destroy %s", name().c_str());
+
+  /* FIXME: this is really strange that everything fails if the next line is removed.
+   * This is as if we shared these data with the PM, which definitely should not be the case...
+   *
+   * We need to test that suspending a VM does not suspends the processes running on its PM, for example.
+   * Or we need to simplify this code enough to make it actually readable (but this sounds harder than testing)
+   */
+  extension_set<simgrid::simix::Host>(nullptr);
+
+  /* Don't free these things twice: they are the ones of my physical host */
+  pimpl_cpu     = nullptr;
+  pimpl_netcard = nullptr;
 }
 
 bool VirtualMachine::isMigrating()
