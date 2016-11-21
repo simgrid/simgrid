@@ -54,17 +54,6 @@ void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_h
   }
 }
 
-void TRACE_msg_vm_create(const char *vm_name, msg_host_t host)
-{
-  if (TRACE_msg_vm_is_enabled()){
-    int len = INSTR_DEFAULT_STR_SIZE;
-    char str[INSTR_DEFAULT_STR_SIZE];
-
-    container_t host_container = PJ_container_get (sg_host_get_name(host));
-    PJ_container_new(instr_vm_id_2(vm_name, str, len), INSTR_MSG_VM, host_container);
-  }
-}
-
 void TRACE_msg_vm_start(msg_vm_t vm)
 {
   if (TRACE_msg_vm_is_enabled()){

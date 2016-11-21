@@ -8,15 +8,27 @@
 #include "simgrid/s4u/host.hpp"
 #include "simgrid/simix.hpp"
 #include "src/plugins/vm/VirtualMachineImpl.hpp"
+#include "src/simix/smx_host_private.h"
 #include "src/surf/HostImpl.hpp"
 #include "xbt/asserts.h"
+#include "src/instr/instr_private.h"
+
+XBT_LOG_NEW_DEFAULT_CATEGORY(s4u_vm, "S4U virtual machines");
 
 namespace simgrid {
 namespace s4u {
 
-VirtualMachine::VirtualMachine(const char* name, s4u::Host* Pm) : Host(name)
+VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
 {
-  pimpl_vm_ = new surf::VirtualMachineImpl(this, Pm);
+  XBT_DEBUG("Create VM %s", name);
+
+  pimpl_vm_ = new surf::VirtualMachineImpl(this, pm);
+  extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
+
+  if (TRACE_msg_vm_is_enabled()) {
+    container_t host_container = PJ_container_get(sg_host_get_name(pm));
+    PJ_container_new(name, INSTR_MSG_VM, host_container);
+  }
 }
 
 VirtualMachine::~VirtualMachine()

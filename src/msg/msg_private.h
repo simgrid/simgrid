@@ -175,7 +175,6 @@ XBT_PRIVATE char *instr_vm_id(msg_vm_t vm, char *str, int len);
 XBT_PRIVATE char *instr_vm_id_2(const char *vm_name, char *str, int len);
 XBT_PRIVATE void TRACE_msg_vm_change_host(msg_vm_t vm, msg_host_t old_host, msg_host_t new_host);
 XBT_PRIVATE void TRACE_msg_vm_start(msg_vm_t vm);
-XBT_PRIVATE void TRACE_msg_vm_create(const char *vm_name, msg_host_t host);
 XBT_PRIVATE void TRACE_msg_vm_kill(msg_vm_t process);
 XBT_PRIVATE void TRACE_msg_vm_suspend(msg_vm_t vm);
 XBT_PRIVATE void TRACE_msg_vm_resume(msg_vm_t vm);

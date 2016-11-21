@@ -158,28 +158,12 @@ msg_vm_t MSG_vm_create(msg_host_t pm, const char *name, int ncpus, int ramsize, 
  *
  * A VM is treated as a host. The name of the VM must be unique among all hosts.
  */
-msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
+msg_vm_t MSG_vm_create_core(msg_host_t pm, const char* name)
 {
-  /* make sure the VM of the same name does not exit */
-  {
-    simgrid::s4u::Host* ind_host_tmp = sg_host_by_name(name);
-    if (ind_host_tmp != nullptr && sg_host_simix(ind_host_tmp) != nullptr) {
-      XBT_ERROR("host %s already exits", name);
-      return nullptr;
-    }
-  }
+  xbt_assert(sg_host_by_name(name) == nullptr,
+             "Cannot create a VM named %s: this name is already used by an host or a VM", name);
 
-  /* Note: ind_vm and vm_workstation point to the same elm object. */
-  /* Ask the SIMIX layer to create the surf vm resource */
-  sg_host_t ind_vm_workstation = simcall_vm_create(name, ind_pm);
-
-  msg_vm_t ind_vm = (msg_vm_t) __MSG_host_create(ind_vm_workstation);
-
-  XBT_DEBUG("A new VM (%s) has been created", name);
-
-  TRACE_msg_vm_create(name, ind_pm);
-
-  return ind_vm;
+  return new simgrid::s4u::VirtualMachine(name, pm);
 }
 
 /** @brief Destroy a VM. Destroy the VM object from the simulation.
@@ -188,19 +172,33 @@ msg_vm_t MSG_vm_create_core(msg_host_t ind_pm, const char *name)
 void MSG_vm_destroy(msg_vm_t vm)
 {
   if (MSG_vm_is_migrating(vm))
-    THROWF(vm_error, 0, "VM(%s) is migrating", sg_host_get_name(vm));
+    THROWF(vm_error, 0, "VM(%s) is migrating", vm->name().c_str());
 
   /* First, terminate all processes on the VM if necessary */
   if (MSG_vm_is_running(vm))
-      simcall_vm_shutdown(vm);
+    MSG_vm_shutdown(vm);
 
-  if (!MSG_vm_is_created(vm)) {
-    XBT_CRITICAL("shutdown the given VM before destroying it");
-    DIE_IMPOSSIBLE;
-  }
+  xbt_assert(MSG_vm_is_created(vm), "shutdown the given VM before destroying it");
 
   /* Then, destroy the VM object */
-  simcall_vm_destroy(vm);
+  simgrid::simix::kernelImmediate([vm]() {
+    /* this code basically performs a similar thing like SIMIX_host_destroy() */
+    XBT_DEBUG("destroy %s", vm->name().c_str());
+
+    /* FIXME: this is really strange that everything fails if the next line is removed.
+     * This is as if we shared these data with the PM, which definitely should not be the case...
+     *
+     * We need to test that suspending a VM does not suspends the processes running on its PM, for example.
+     * Or we need to simplify this code enough to make it actually readable (but this sounds harder than testing)
+     */
+    vm->extension_set<simgrid::simix::Host>(nullptr);
+
+    /* Don't free these things twice: they are the ones of my physical host */
+    vm->pimpl_cpu     = nullptr;
+    vm->pimpl_netcard = nullptr;
+
+    vm->destroy();
+  });
 
   TRACE_msg_vm_end(vm);
 }

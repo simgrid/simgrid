@@ -177,25 +177,6 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 
 /**
  * \ingroup simix_vm_management
- * \brief Create a VM on the given physical host.
- *
- * \param name VM name
- * \param dest Physical host on which to create the VM
- *
- * \return The host object of the VM
- */
-sg_host_t simcall_vm_create(const char* name, sg_host_t dest)
-{
-  return simgrid::simix::kernelImmediate([&name, &dest] {
-    sg_host_t host = new simgrid::s4u::VirtualMachine(name, dest);
-    host->extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
-
-    return host;
-  });
-}
-
-/**
- * \ingroup simix_vm_management
  * \brief Start the given VM to the given physical host
  *
  * \param vm VM
@@ -299,34 +280,6 @@ void simcall_vm_restore(sg_host_t vm)
 void simcall_vm_shutdown(sg_host_t vm)
 {
   simcall_BODY_vm_shutdown(vm);
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Destroy the given VM
- *
- * \param vm VM
- */
-void simcall_vm_destroy(sg_host_t vm)
-{
-  simgrid::simix::kernelImmediate([vm]() {
-    /* this code basically performs a similar thing like SIMIX_host_destroy() */
-    XBT_DEBUG("destroy %s", vm->name().c_str());
-
-    /* FIXME: this is really strange that everything fails if the next line is removed.
-     * This is as if we shared these data with the PM, which definitely should not be the case...
-     *
-     * We need to test that suspending a VM does not suspends the processes running on its PM, for example.
-     * Or we need to simplify this code enough to make it actually readable (but this sounds harder than testing)
-     */
-    vm->extension_set<simgrid::simix::Host>(nullptr);
-
-    /* Don't free these things twice: they are the ones of my physical host */
-    vm->pimpl_cpu     = nullptr;
-    vm->pimpl_netcard = nullptr;
-
-    vm->destroy();
-  });
 }
 
 /**
