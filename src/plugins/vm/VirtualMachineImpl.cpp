@@ -38,7 +38,7 @@ simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmStateChange;
  * Model *
  *********/
 
-std::deque<VirtualMachineImpl*> VirtualMachineImpl::allVms_;
+std::deque<s4u::VirtualMachine*> VirtualMachineImpl::allVms_;
 
 /* In the real world, processes on the guest operating system will be somewhat degraded due to virtualization overhead.
  * The total CPU share these processes get is smaller than that of the VM process gets on a host operating system. */
@@ -72,13 +72,13 @@ double VMModel::nextOccuringEvent(double now)
    **/
 
   /* iterate for all virtual machines */
-  for (VirtualMachineImpl* ws_vm : VirtualMachineImpl::allVms_) {
-    Cpu* cpu = ws_vm->piface_->pimpl_cpu;
+  for (s4u::VirtualMachine* ws_vm : VirtualMachineImpl::allVms_) {
+    Cpu* cpu = ws_vm->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 
-    double solved_value = ws_vm->action_->getVariable()->value;
-    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->piface_->name().c_str(),
-              ws_vm->getPm()->name().c_str());
+    double solved_value = ws_vm->pimpl_vm_->action_->getVariable()->value;
+    XBT_DEBUG("assign %f to vm %s @ pm %s", solved_value, ws_vm->name().c_str(),
+              ws_vm->pimpl_vm_->getPm()->name().c_str());
 
     // TODO: check lmm_update_constraint_bound() works fine instead of the below manual substitution.
     // cpu_cas01->constraint->bound = solved_value;
@@ -98,11 +98,11 @@ double VMModel::nextOccuringEvent(double now)
  * Resource *
  ************/
 
-VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::Host* piface, simgrid::s4u::Host* host_PM)
+VirtualMachineImpl::VirtualMachineImpl(simgrid::s4u::VirtualMachine* piface, simgrid::s4u::Host* host_PM)
     : HostImpl(piface, nullptr /*storage*/), hostPM_(host_PM)
 {
   /* Register this VM to the list of all VMs */
-  allVms_.push_back(this);
+  allVms_.push_back(piface);
 
   /* We create cpu_action corresponding to a VM process on the host operating system. */
   /* FIXME: TODO: we have to periodically input GUESTOS_NOISE to the system? how ? */
@@ -120,7 +120,7 @@ extern "C" int
 VirtualMachineImpl::~VirtualMachineImpl()
 {
   onVmDestruction(this);
-  allVms_.erase(find(allVms_.begin(), allVms_.end(), this));
+  allVms_.erase(find(allVms_.begin(), allVms_.end(), piface_));
 
   /* dirty page tracking */
   unsigned int size          = xbt_dict_size(dp_objs);

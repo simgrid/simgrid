@@ -57,7 +57,7 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)
  */
 class VirtualMachineImpl : public HostImpl {
 public:
-  explicit VirtualMachineImpl(s4u::Host* piface, s4u::Host* host);
+  explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host);
   ~VirtualMachineImpl();
 
   /** @brief Suspend the VM */
@@ -99,7 +99,7 @@ protected:
 public:
   e_surf_vm_state_t getState();
   void setState(e_surf_vm_state_t state);
-  static std::deque<VirtualMachineImpl*> allVms_;
+  static std::deque<s4u::VirtualMachine*> allVms_;
 
   bool isMigrating = false;
 

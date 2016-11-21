@@ -35,9 +35,9 @@ namespace surf {
 void HostModel::adjustWeightOfDummyCpuActions()
 {
   /* iterate for all virtual machines */
-  for (VirtualMachineImpl* ws_vm : VirtualMachineImpl::allVms_) {
+  for (s4u::VirtualMachine* ws_vm : VirtualMachineImpl::allVms_) {
 
-    Cpu* cpu = ws_vm->piface_->pimpl_cpu;
+    Cpu* cpu = ws_vm->pimpl_cpu;
 
     int is_active = lmm_constraint_used(cpu->getModel()->getMaxminSystem(), cpu->getConstraint());
 
@@ -47,13 +47,13 @@ void HostModel::adjustWeightOfDummyCpuActions()
 
       /* FIXME: we should use lmm_update_variable_weight() ? */
       /* FIXME: If we assign 1.05 and 0.05, the system makes apparently wrong values. */
-      ws_vm->action_->setPriority(1);
+      ws_vm->pimpl_vm_->action_->setPriority(1);
 
     } else {
       /* no task exits on this VM */
       XBT_DEBUG("set the weight of the dummy CPU action on PM to 0");
 
-      ws_vm->action_->setPriority(0);
+      ws_vm->pimpl_vm_->action_->setPriority(0);
     }
   }
 }
