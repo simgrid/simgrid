@@ -35,7 +35,7 @@ namespace surf {
 void HostModel::adjustWeightOfDummyCpuActions()
 {
   /* iterate for all virtual machines */
-  for (s4u::VirtualMachine* ws_vm : VirtualMachineImpl::allVms_) {
+  for (s4u::VirtualMachine* ws_vm : vm::VirtualMachineImpl::allVms_) {
 
     Cpu* cpu = ws_vm->pimpl_cpu;
 

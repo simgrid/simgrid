@@ -303,7 +303,7 @@ static int java_main(int argc, char *argv[])
   for (int i = 1; i < argc; i++)
       env->SetObjectArrayElement(args,i - 1, env->NewStringUTF(argv[i]));
   //Retrieve the host for the process.
-  jstring jhostName = env->NewStringUTF(MSG_host_get_name(MSG_host_self()));
+  jstring jhostName = env->NewStringUTF(MSG_host_self()->cname());
   jobject jhost = Java_org_simgrid_msg_Host_getByName(env, nullptr, jhostName);
   //creates the process
   jobject jprocess = env->NewObject(class_Process, constructor_Process, jhost, jname, args);

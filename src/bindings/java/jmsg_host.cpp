@@ -50,7 +50,7 @@ msg_host_t jhost_get_native(JNIEnv * env, jobject jhost) {
 
 const char *jhost_get_name(jobject jhost, JNIEnv * env) {
   msg_host_t host = jhost_get_native(env, jhost);
-  return MSG_host_get_name(host);
+  return host->cname();
 }
 
 jboolean jhost_is_valid(jobject jhost, JNIEnv * env) {
@@ -144,8 +144,7 @@ JNIEXPORT jobject JNICALL Java_org_simgrid_msg_Host_currentHost(JNIEnv * env, jc
       return nullptr;
     }
     /* Sets the host name */
-    const char *name = MSG_host_get_name(host);
-    jobject jname = env->NewStringUTF(name);
+    jobject jname = env->NewStringUTF(host->cname());
     env->SetObjectField(jhost, jhost_field_Host_name, jname);
     /* Bind & store it */
     jhost_bind(jhost, host, env);
@@ -351,7 +350,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_Host_all(JNIEnv * env, jclas
     jhost = (jobject) host->extension(JAVA_HOST_LEVEL);
 
     if (!jhost) {
-      jname = env->NewStringUTF(MSG_host_get_name(host));
+      jname = env->NewStringUTF(host->cname());
 
       jhost = Java_org_simgrid_msg_Host_getByName(env, cls_arg, jname);
       /* FIXME: leak of jname ? */

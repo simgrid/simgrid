@@ -78,7 +78,7 @@ static int l_host_get_by_name(lua_State * L)
 static int l_host_get_name(lua_State * L)
 {
   sg_host_t ht = sglua_check_host(L, 1);
-  lua_pushstring(L, sg_host_get_name(ht));
+  lua_pushstring(L, ht->cname());
   return 1;
 }
 

@@ -41,7 +41,6 @@ namespace surf {
 class Model;
 class CpuModel;
 class HostModel;
-class VMModel;
 class NetworkModel;
 class StorageModel;
 class Resource;
@@ -51,6 +50,9 @@ class NetworkCm02Link;
 class Action;
 class ActionLmm;
 class StorageActionLmm;
+}
+namespace vm {
+class VMModel; // FIXME: KILLME
 }
 namespace kernel {	
 namespace routing {
@@ -62,7 +64,7 @@ class RoutingPlatf;
 typedef simgrid::surf::Model surf_Model;
 typedef simgrid::surf::CpuModel surf_CpuModel;
 typedef simgrid::surf::HostModel surf_HostModel;
-typedef simgrid::surf::VMModel surf_VMModel;
+typedef simgrid::vm::VMModel surf_VMModel;
 typedef simgrid::surf::NetworkModel surf_NetworkModel;
 typedef simgrid::surf::StorageModel surf_StorageModel;
 typedef simgrid::surf::Resource surf_Resource;

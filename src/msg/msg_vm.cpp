@@ -215,13 +215,13 @@ void MSG_vm_start(msg_vm_t vm)
     if (pm_ramsize && !pm_overcommit) { /* Only verify that we don't overcommit on need */
       /* Retrieve the memory occupied by the VMs on that host. Yep, we have to traverse all VMs of all hosts for that */
       long total_ramsize_of_vms = 0;
-      for (simgrid::s4u::VirtualMachine* ws_vm : simgrid::surf::VirtualMachineImpl::allVms_)
+      for (simgrid::s4u::VirtualMachine* ws_vm : simgrid::vm::VirtualMachineImpl::allVms_)
         if (pm == ws_vm->pimpl_vm_->getPm())
           total_ramsize_of_vms += ws_vm->pimpl_vm_->getRamsize();
 
       if (vm_ramsize > pm_ramsize - total_ramsize_of_vms) {
         XBT_WARN("cannnot start %s@%s due to memory shortage: vm_ramsize %ld, free %ld, pm_ramsize %ld (bytes).",
-                 sg_host_get_name(vm), sg_host_get_name(pm), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
+                 vm->cname(), pm->cname(), vm_ramsize, pm_ramsize - total_ramsize_of_vms, pm_ramsize);
         THROWF(vm_error, 0, "Memory shortage on host '%s', VM '%s' cannot be started", pm->cname(), vm->cname());
       }
     }
@@ -341,17 +341,17 @@ static int migration_rx_fun(int argc, char *argv[])
       snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
 
       // start link
-      container_t msg = PJ_container_get(vm->name().c_str());
+      container_t msg = PJ_container_get(vm->cname());
       type_t type     = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
       new_pajeStartLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
       // destroy existing container of this vm
-      container_t existing_container = PJ_container_get(vm->name().c_str());
+      container_t existing_container = PJ_container_get(vm->cname());
       PJ_container_remove_from_parent(existing_container);
       PJ_container_free(existing_container);
 
       // create new container on the new_host location
-      PJ_container_new(vm->cname(), INSTR_MSG_VM, PJ_container_get(sg_host_get_name(ms->dst_pm)));
+      PJ_container_new(vm->cname(), INSTR_MSG_VM, PJ_container_get(ms->dst_pm->cname()));
 
       // end link
       msg  = PJ_container_get(vm->name().c_str());
@@ -383,7 +383,7 @@ static int migration_rx_fun(int argc, char *argv[])
 
 static void start_dirty_page_tracking(msg_vm_t vm)
 {
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
+  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   pimpl->dp_enabled = 1;
   if (!pimpl->dp_objs)
@@ -411,15 +411,15 @@ static double get_computed(char *key, msg_vm_t vm, dirty_page_t dp, double remai
   double computed = dp->prev_remaining - remaining;
   double duration = clock - dp->prev_clock;
 
-  XBT_DEBUG("%s@%s: computed %f ops (remaining %f -> %f) in %f secs (%f -> %f)",
-      key, sg_host_get_name(vm), computed, dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
+  XBT_DEBUG("%s@%s: computed %f ops (remaining %f -> %f) in %f secs (%f -> %f)", key, vm->cname(), computed,
+            dp->prev_remaining, remaining, duration, dp->prev_clock, clock);
 
   return computed;
 }
 
 static double lookup_computed_flop_counts(msg_vm_t vm, int stage_for_fancy_debug, int stage2_round_for_fancy_debug)
 {
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
+  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
   double total = 0;
 
   char *key = nullptr;
@@ -455,7 +455,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
   simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
   if (vm == nullptr)
     return;
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
+  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   double remaining = MSG_task_get_flops_amount(task);
   char *key = bprintf("%s-%p", task->name, task);
@@ -470,7 +470,7 @@ void MSG_host_add_task(msg_host_t host, msg_task_t task)
     pimpl->dp_objs = xbt_dict_new();
   xbt_assert(xbt_dict_get_or_null(pimpl->dp_objs, key) == nullptr);
   xbt_dict_set(pimpl->dp_objs, key, dp, nullptr);
-  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, sg_host_get_name(host), remaining, pimpl->dp_enabled);
+  XBT_DEBUG("add %s on %s (remaining %f, dp_enabled %d)", key, host->cname(), remaining, pimpl->dp_enabled);
 
   xbt_free(key);
 }
@@ -480,7 +480,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   simgrid::s4u::VirtualMachine* vm = dynamic_cast<simgrid::s4u::VirtualMachine*>(host);
   if (vm == nullptr)
     return;
-  simgrid::surf::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
+  simgrid::vm::VirtualMachineImpl* pimpl = static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_;
 
   char *key = bprintf("%s-%p", task->name, task);
   dirty_page_t dp = (dirty_page_t)(pimpl->dp_objs ? xbt_dict_get_or_null(pimpl->dp_objs, key) : NULL);
@@ -500,7 +500,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
     xbt_dict_remove(pimpl->dp_objs, key);
   xbt_free(dp);
 
-  XBT_DEBUG("del %s on %s", key, sg_host_get_name(host));
+  XBT_DEBUG("del %s on %s", key, host->cname());
   xbt_free(key);
 }
 
@@ -535,11 +535,11 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
   if(ret == MSG_HOST_FAILURE){
     //XBT_DEBUG("SRC host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
     MSG_task_destroy(task);
-    THROWF(host_error, 0, "SRC host failed during migration of %s (stage %d)", sg_host_get_name(vm), stage);
+    THROWF(host_error, 0, "SRC host failed during migration of %s (stage %d)", vm->cname(), stage);
   }else if(ret == MSG_TRANSFER_FAILURE){
     //XBT_DEBUG("DST host failed during migration of %s (stage %d)", sg_host_name(vm), stage);
     MSG_task_destroy(task);
-    THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", sg_host_get_name(vm), stage);
+    THROWF(host_error, 0, "DST host failed during migration of %s (stage %d)", vm->cname(), stage);
   }
 
   double clock_end = MSG_get_clock();
@@ -755,9 +755,9 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t dst_pm)
    * The second one would be easier.
    */
 
-  simgrid::s4u::VirtualMachine* typedVm    = static_cast<simgrid::s4u::VirtualMachine*>(vm);
-  simgrid::surf::VirtualMachineImpl* pimpl = typedVm->pimpl_vm_;
-  msg_host_t src_pm                        = pimpl->getPm();
+  simgrid::s4u::VirtualMachine* typedVm  = static_cast<simgrid::s4u::VirtualMachine*>(vm);
+  simgrid::vm::VirtualMachineImpl* pimpl = typedVm->pimpl_vm_;
+  msg_host_t src_pm                      = pimpl->getPm();
 
   if (src_pm->isOff())
     THROWF(vm_error, 0, "Cannot migrate VM '%s' from host '%s', which is offline.", vm->cname(), src_pm->cname());

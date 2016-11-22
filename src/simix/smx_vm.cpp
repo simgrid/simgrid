@@ -81,19 +81,16 @@ void SIMIX_vm_resume(sg_host_t vm)
  */
 void SIMIX_vm_save(sg_host_t vm, smx_actor_t issuer)
 {
-  const char *name = sg_host_get_name(vm);
-
   if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_RUNNING)
-    THROWF(vm_error, 0, "VM(%s) is not running", name);
+    THROWF(vm_error, 0, "VM(%s) is not running", vm->cname());
 
-  XBT_DEBUG("save VM(%s), where %d processes exist", name, xbt_swag_size(sg_host_simix(vm)->process_list));
+  XBT_DEBUG("save VM(%s), where %d processes exist", vm->cname(), xbt_swag_size(sg_host_simix(vm)->process_list));
 
-  /* jump to vm_ws_save() */
   static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->save();
 
   smx_actor_t smx_process, smx_process_safe;
   xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list) {
-    XBT_DEBUG("suspend %s", smx_process->name.c_str());
+    XBT_DEBUG("suspend %s", smx_process->cname());
     SIMIX_process_suspend(smx_process, issuer);
   }
 }

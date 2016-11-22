@@ -23,7 +23,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
 {
   XBT_DEBUG("Create VM %s", name);
 
-  pimpl_vm_ = new surf::VirtualMachineImpl(this, pm);
+  pimpl_vm_ = new vm::VirtualMachineImpl(this, pm);
   /* Currently, a VM uses the network resource of its physical host */
   pimpl_netcard = pm->pimpl_netcard;
   // Create a VCPU for this VM
@@ -37,7 +37,7 @@ VirtualMachine::VirtualMachine(const char* name, s4u::Host* pm) : Host(name)
   extension_set<simgrid::simix::Host>(new simgrid::simix::Host());
 
   if (TRACE_msg_vm_is_enabled()) {
-    container_t host_container = PJ_container_get(sg_host_get_name(pm));
+    container_t host_container = PJ_container_get(pm->cname());
     PJ_container_new(name, INSTR_MSG_VM, host_container);
   }
 }

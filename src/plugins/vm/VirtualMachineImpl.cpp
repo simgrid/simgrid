@@ -13,26 +13,26 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(surf_vm, surf, "Logging specific to the SURF VM module");
 
-simgrid::surf::VMModel* surf_vm_model = nullptr;
+simgrid::vm::VMModel* surf_vm_model = nullptr;
 
 void surf_vm_model_init_HL13()
 {
   if (surf_cpu_model_vm) {
-    surf_vm_model = new simgrid::surf::VMModel();
+    surf_vm_model = new simgrid::vm::VMModel();
     all_existing_models->push_back(surf_vm_model);
   }
 }
 
 namespace simgrid {
-namespace surf {
+namespace vm {
 
 /*************
  * Callbacks *
  *************/
 
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmCreation;
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmDestruction;
-simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmStateChange;
+simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmCreation;
+simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmDestruction;
+simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmStateChange;
 
 /*********
  * Model *
@@ -73,7 +73,7 @@ double VMModel::nextOccuringEvent(double now)
 
   /* iterate for all virtual machines */
   for (s4u::VirtualMachine* ws_vm : VirtualMachineImpl::allVms_) {
-    Cpu* cpu = ws_vm->pimpl_cpu;
+    surf::Cpu* cpu = ws_vm->pimpl_cpu;
     xbt_assert(cpu, "cpu-less host");
 
     double solved_value = ws_vm->pimpl_vm_->action_->getVariable()->value;
@@ -199,10 +199,10 @@ void VirtualMachineImpl::migrate(s4u::Host* host_dest)
 
   /* Update vcpu's action for the new pm */
   /* create a cpu action bound to the pm model at the destination. */
-  CpuAction* new_cpu_action = static_cast<CpuAction*>(host_dest->pimpl_cpu->execution_start(0));
+  surf::CpuAction* new_cpu_action = static_cast<surf::CpuAction*>(host_dest->pimpl_cpu->execution_start(0));
 
-  Action::State state = action_->getState();
-  if (state != Action::State::done)
+  surf::Action::State state = action_->getState();
+  if (state != surf::Action::State::done)
     XBT_CRITICAL("FIXME: may need a proper handling, %d", static_cast<int>(state));
   if (action_->getRemainsNoUpdate() > 0)
     XBT_CRITICAL("FIXME: need copy the state(?), %f", action_->getRemainsNoUpdate());

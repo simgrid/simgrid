@@ -567,8 +567,7 @@ void sg_platf_new_process(sg_platf_process_cbarg_t process)
       delete arg;
     });
   } else {                      // start_time <= SIMIX_get_clock()
-    XBT_DEBUG("Starting Process %s(%s) right now",
-      arg->name.c_str(), sg_host_get_name(host));
+    XBT_DEBUG("Starting Process %s(%s) right now", arg->name.c_str(), host->cname());
 
     process_created = simix_global->create_process_function(
         arg->name.c_str(), std::move(code), nullptr,

@@ -153,7 +153,7 @@ JNIEXPORT jobjectArray JNICALL Java_org_simgrid_msg_As_getHosts(JNIEnv * env, jo
 
     jhost = static_cast<jobject>(host->extension(JAVA_HOST_LEVEL));
     if (!jhost) {
-      jname = env->NewStringUTF(MSG_host_get_name(host));
+      jname = env->NewStringUTF(host->cname());
 
       jhost = Java_org_simgrid_msg_Host_getByName(env, cls, jname);
 

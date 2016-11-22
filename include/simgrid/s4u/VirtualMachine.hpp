@@ -21,7 +21,7 @@ typedef enum {
 } e_surf_vm_state_t;
 
 namespace simgrid {
-namespace surf {
+namespace vm {
 class VirtualMachineImpl;
 };
 namespace s4u {
@@ -55,7 +55,7 @@ public:
   double getRamsize();
 
   /* FIXME: protect me */
-  simgrid::surf::VirtualMachineImpl* pimpl_vm_ = nullptr;
+  simgrid::vm::VirtualMachineImpl* pimpl_vm_ = nullptr;
 };
 }
 } // namespace simgrid::s4u

@@ -19,7 +19,7 @@
                           // It corresponds to the cost of a VM running no tasks.
 
 namespace simgrid {
-namespace surf {
+namespace vm {
 
 /***********
  * Classes *
@@ -35,17 +35,17 @@ class XBT_PRIVATE VirtualMachineImpl;
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM creation. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmCreation;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmCreation;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks fired after VM destruction. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmDestruction;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmDestruction;
 
 /** @ingroup SURF_callbacks
  * @brief Callbacks after VM State changes. Signature: `void(VirtualMachine*)`
  */
-extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)> onVmStateChange;
+extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::vm::VirtualMachineImpl*)> onVmStateChange;
 
 /************
  * Resource *
@@ -55,7 +55,7 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)
  * @brief SURF VM interface class
  * @details A VM represent a virtual machine
  */
-class VirtualMachineImpl : public HostImpl {
+class VirtualMachineImpl : public surf::HostImpl {
   friend simgrid::s4u::VirtualMachine;
 
 public:
@@ -88,7 +88,7 @@ public:
   void setParams(vm_params_t params);
 
   /* The vm object of the lower layer */
-  Action* action_ = nullptr;
+  surf::Action* action_ = nullptr;
 
   /* Dirty pages stuff */
   int dp_enabled                     = 0;
@@ -119,7 +119,7 @@ protected:
  * @brief SURF VM model interface class
  * @details A model is an object which handle the interactions between its Resources and its Actions
  */
-class VMModel : public HostModel {
+class VMModel : public surf::HostModel {
 public:
   void adjustWeightOfDummyCpuActions() override{};
 

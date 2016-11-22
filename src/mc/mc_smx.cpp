@@ -143,7 +143,7 @@ smx_actor_t MC_smx_simcall_get_issuer(s_smx_simcall_t const* req)
 const char* MC_smx_process_get_host_name(smx_actor_t p)
 {
   if (mc_model_checker == nullptr)
-    return sg_host_get_name(p->host);
+    return p->host->cname();
 
   simgrid::mc::Process* process = &mc_model_checker->process();
 

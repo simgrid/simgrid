@@ -198,10 +198,10 @@ void sg_host_dump(sg_host_t host)
   xbt_dict_cursor_t cursor=nullptr;
   char *key,*data;
 
-  XBT_INFO("Displaying host %s", sg_host_get_name(host));
+  XBT_INFO("Displaying host %s", host->cname());
   XBT_INFO("  - speed: %.0f", host->speed());
   XBT_INFO("  - available speed: %.2f", sg_host_get_available_speed(host));
-  props = sg_host_get_properties(host);
+  props = host->properties();
 
   if (!xbt_dict_is_empty(props)){
     XBT_INFO("  - properties:");

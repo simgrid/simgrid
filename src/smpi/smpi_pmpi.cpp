@@ -1,10 +1,9 @@
-
-/* Copyright (c) 2007-2015. The SimGrid Team.
- * All rights reserved.                                                     */
+/* Copyright (c) 2007-2016. The SimGrid Team. All rights reserved.          */
 
 /* This program is free software; you can redistribute it and/or modify it
  * under the terms of the license (GNU LGPL) which comes with this package. */
 
+#include <simgrid/s4u/host.hpp>
 #include <xbt/ex.hpp>
 
 #include "private.h"
@@ -2328,9 +2327,9 @@ int PMPI_Get_processor_name(char *name, int *resultlen)
 {
   int retval = MPI_SUCCESS;
 
-  strncpy(name, sg_host_get_name(SIMIX_host_self()),
-          strlen(sg_host_get_name(SIMIX_host_self())) < MPI_MAX_PROCESSOR_NAME - 1 ?
-          strlen(sg_host_get_name(SIMIX_host_self())) +1 : MPI_MAX_PROCESSOR_NAME - 1 );
+  strncpy(name, SIMIX_host_self()->cname(), strlen(SIMIX_host_self()->cname()) < MPI_MAX_PROCESSOR_NAME - 1
+                                                ? strlen(SIMIX_host_self()->cname()) + 1
+                                                : MPI_MAX_PROCESSOR_NAME - 1);
   *resultlen = strlen(name) > MPI_MAX_PROCESSOR_NAME ? MPI_MAX_PROCESSOR_NAME : strlen(name);
 
   return retval;

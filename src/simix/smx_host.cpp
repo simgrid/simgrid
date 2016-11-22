@@ -91,12 +91,11 @@ void SIMIX_host_off(sg_host_t h, smx_actor_t issuer)
       smx_actor_t process = nullptr;
       xbt_swag_foreach(process, host->process_list) {
         SIMIX_process_kill(process, issuer);
-        XBT_DEBUG("Killing %s@%s on behalf of %s", process->name.c_str(), sg_host_get_name(process->host),
-                  issuer->name.c_str());
+        XBT_DEBUG("Killing %s@%s on behalf of %s", process->cname(), process->host->cname(), issuer->cname());
       }
     }
   } else {
-    XBT_INFO("Host %s is already off", h->name().c_str());
+    XBT_INFO("Host %s is already off", h->cname());
   }
 }
 
@@ -113,7 +112,7 @@ const char* SIMIX_host_self_get_name()
   if (host == nullptr || SIMIX_process_self() == simix_global->maestro_process)
     return "";
 
-  return sg_host_get_name(host);
+  return host->cname();
 }
 
 void _SIMIX_host_free_process_arg(void *data)
@@ -141,9 +140,9 @@ void SIMIX_host_add_auto_restart_process(
   arg->properties = properties;
   arg->auto_restart = auto_restart;
 
-  if( host->isOff() && !xbt_dict_get_or_null(watched_hosts_lib,sg_host_get_name(host))){
-    xbt_dict_set(watched_hosts_lib,sg_host_get_name(host),host,nullptr);
-    XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF",sg_host_get_name(host));
+  if (host->isOff() && !xbt_dict_get_or_null(watched_hosts_lib, host->cname())) {
+    xbt_dict_set(watched_hosts_lib, host->cname(), host, nullptr);
+    XBT_DEBUG("Push host %s to watched_hosts_lib because state == SURF_RESOURCE_OFF", host->cname());
   }
   sg_host_simix(host)->auto_restart_processes.push_back(arg);
 }
@@ -156,7 +155,7 @@ void SIMIX_host_autorestart(sg_host_t host)
 
   for (auto arg : process_list) {
 
-    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->name().c_str());
+    XBT_DEBUG("Restarting Process %s@%s right now", arg->name.c_str(), arg->host->cname());
     simix_global->create_process_function(arg->name.c_str(), arg->code, nullptr, arg->host, arg->kill_time,
         arg->properties, arg->auto_restart, nullptr);
   }
@@ -278,7 +277,7 @@ void SIMIX_execution_finish(simgrid::kernel::activity::Exec *exec)
         break;
 
       case SIMIX_FAILED:
-        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", sg_host_get_name(simcall->issuer->host));
+        XBT_DEBUG("SIMIX_execution_finished: host '%s' failed", simcall->issuer->host->cname());
         simcall->issuer->context->iwannadie = 1;
         SMX_EXCEPTION(simcall->issuer, host_error, 0, "Host failed");
         break;
