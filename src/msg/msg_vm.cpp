@@ -569,33 +569,6 @@ static sg_size_t get_updated_size(double computed, double dp_rate, double dp_cap
   return (sg_size_t) updated_size;
 }
 
-static double send_stage1(struct migration_session* ms, sg_size_t ramsize, double mig_speed, double dp_rate,
-                          double dp_cap)
-{
-  // const long chunksize = (sg_size_t)1024 * 1024 * 100;
-  const sg_size_t chunksize = (sg_size_t)1024 * 1024 * 100000;
-  sg_size_t remaining = ramsize;
-  double computed_total = 0;
-
-  while (remaining > 0) {
-    sg_size_t datasize = chunksize;
-    if (remaining < chunksize)
-      datasize = remaining;
-
-    remaining -= datasize;
-    send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, datasize, ms->mbox, 1, 0, mig_speed, -1);
-    double computed = lookup_computed_flop_counts(ms->vm, 1, 0);
-    computed_total += computed;
-  }
-
-  return computed_total;
-}
-
-static double get_threshold_value(double bandwidth, double max_downtime)
-{
-  return max_downtime * bandwidth;
-}
-
 static int migration_tx_fun(int argc, char *argv[])
 {
   XBT_DEBUG("mig: tx_start");
@@ -670,7 +643,7 @@ static int migration_tx_fun(int argc, char *argv[])
 
     /* estimate bandwidth */
     double bandwidth = ramsize / (clock_post_send - clock_prev_send);
-    threshold = get_threshold_value(bandwidth, max_downtime);
+    threshold        = bandwidth * max_downtime;
     XBT_DEBUG("actual bandwidth %f (MB/s), threshold %f", bandwidth / 1024 / 1024, threshold);
   }
 
@@ -718,7 +691,7 @@ static int migration_tx_fun(int argc, char *argv[])
       if (sent == updated_size) {
         /* timeout did not happen */
         double bandwidth = updated_size / (clock_post_send - clock_prev_send);
-        threshold        = get_threshold_value(bandwidth, max_downtime);
+        threshold        = bandwidth * max_downtime;
         XBT_DEBUG("actual bandwidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
         remaining_size -= sent;
         stage2_round += 1;

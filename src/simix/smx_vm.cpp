@@ -12,17 +12,6 @@
 
 XBT_LOG_NEW_DEFAULT_SUBCATEGORY(simix_vm, simix, "Logging specific to SIMIX Virtual Machines");
 
-static long host_get_ramsize(sg_host_t vm, int *overcommit)
-{
-  s_vm_params_t params;
-  static_cast<simgrid::s4u::VirtualMachine*>(vm)->parameters(&params);
-
-  if (overcommit)
-    *overcommit = params.overcommit;
-
-  return params.ramsize;
-}
-
 /**
  * @brief Function to suspend a SIMIX VM host. This function stops the execution of the
  * VM. All the processes on this VM will pause. The state of the VM is
