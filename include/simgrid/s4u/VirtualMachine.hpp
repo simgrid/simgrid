@@ -52,6 +52,7 @@ public:
 
   void parameters(vm_params_t params);
   void setParameters(vm_params_t params);
+  double getRamsize();
 
   /* FIXME: protect me */
   simgrid::surf::VirtualMachineImpl* pimpl_vm_ = nullptr;

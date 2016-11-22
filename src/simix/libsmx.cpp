@@ -177,29 +177,6 @@ e_smx_state_t simcall_execution_wait(smx_activity_t execution)
 
 /**
  * \ingroup simix_vm_management
- * \brief Start the given VM to the given physical host
- *
- * \param vm VM
- */
-void simcall_vm_start(sg_host_t vm)
-{
-  simgrid::simix::kernelImmediate(std::bind(SIMIX_vm_start, vm));
-}
-
-/**
- * @brief Function to set the CPU bound of the given SIMIX VM host.
- *
- * @param host the vm host (a sg_host_t)
- * @param bound bound (a double)
- */
-void simcall_vm_set_bound(sg_host_t vm, double bound)
-{
-  simgrid::simix::kernelImmediate(
-      [vm, bound]() { static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->setBound(bound); });
-}
-
-/**
- * \ingroup simix_vm_management
  * \brief Suspend the given VM
  *
  * \param vm VM
@@ -229,33 +206,6 @@ void simcall_vm_resume(sg_host_t vm)
 void simcall_vm_save(sg_host_t vm)
 {
   simcall_BODY_vm_save(vm);
-}
-
-/**
- * \ingroup simix_vm_management
- * \brief Restore the given VM
- *
- * \param vm VM
- */
-void simcall_vm_restore(sg_host_t vm)
-{
-  simgrid::simix::kernelImmediate([vm]() {
-    if (static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->getState() != SURF_VM_STATE_SAVED)
-      THROWF(vm_error, 0, "VM(%s) was not saved", vm->name().c_str());
-
-    XBT_DEBUG("restore VM(%s), where %d processes exist", vm->name().c_str(),
-              xbt_swag_size(sg_host_simix(vm)->process_list));
-
-    /* jump to vm_ws_restore() */
-    static_cast<simgrid::s4u::VirtualMachine*>(vm)->pimpl_vm_->restore();
-
-    smx_actor_t smx_process, smx_process_safe;
-    xbt_swag_foreach_safe(smx_process, smx_process_safe, sg_host_simix(vm)->process_list)
-    {
-      XBT_DEBUG("resume %s", smx_process->name.c_str());
-      SIMIX_process_resume(smx_process);
-    }
-  });
 }
 
 /**

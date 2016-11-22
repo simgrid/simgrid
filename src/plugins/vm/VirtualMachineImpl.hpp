@@ -56,6 +56,8 @@ extern XBT_PRIVATE simgrid::xbt::signal<void(simgrid::surf::VirtualMachineImpl*)
  * @details A VM represent a virtual machine
  */
 class VirtualMachineImpl : public HostImpl {
+  friend simgrid::s4u::VirtualMachine;
+
 public:
   explicit VirtualMachineImpl(s4u::VirtualMachine* piface, s4u::Host* host);
   ~VirtualMachineImpl();

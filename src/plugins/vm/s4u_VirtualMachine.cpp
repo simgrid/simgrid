@@ -64,6 +64,10 @@ bool VirtualMachine::isMigrating()
 {
   return pimpl_vm_->isMigrating;
 }
+double VirtualMachine::getRamsize()
+{
+  return pimpl_vm_->params_.ramsize;
+}
 
 /** @brief Retrieve a copy of the parameters of that VM/PM
  *  @details The ramsize and overcommit fields are used on the PM too */
