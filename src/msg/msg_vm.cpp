@@ -125,7 +125,7 @@ int MSG_vm_is_restoring(msg_vm_t vm)
  *  @param mig_netspeed Amount of Mbyte/s allocated to the migration (cannot be larger than net_cap). Use 0 if unsure.
  *  @param dp_intensity Dirty page percentage according to migNetSpeed, [0-100]. Use 0 if unsure.
  */
-msg_vm_t MSG_vm_create(msg_host_t pm, const char *name, int ncpus, int ramsize, int net_cap, char *disk_path,
+msg_vm_t MSG_vm_create(msg_host_t pm, const char* name, int ncpus, int ramsize, int net_cap, char* disk_path,
                        int disksize, int mig_netspeed, int dp_intensity)
 {
   simgrid::vm::VmHostExt::ensureVmExtInstalled();
@@ -219,7 +219,7 @@ void MSG_vm_shutdown(msg_vm_t vm)
 {
   simcall_vm_shutdown(vm);
   MSG_process_sleep(0.); // Make sure that the processes in the VM are killed in this scheduling round before processing
-                         // (eg with the VM destroy)
+  // (eg with the VM destroy)
 }
 
 /* We have two mailboxes. mbox is used to transfer migration data between source and destination PMs. mbox_ctl is used
@@ -341,34 +341,34 @@ static int migration_rx_fun(int argc, char *argv[])
   });
 
   {
-   // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
-   vm->pimpl_vm_->isMigrating = false;
-   XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", sg_host_get_name(ms->vm), sg_host_get_name(ms->src_pm),
-             sg_host_get_name(ms->dst_pm));
+    // Now the VM is running on the new host (the migration is completed) (even if the SRC crash)
+    vm->pimpl_vm_->isMigrating = false;
+    XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", sg_host_get_name(ms->vm), sg_host_get_name(ms->src_pm),
+              sg_host_get_name(ms->dst_pm));
 
-   if (TRACE_msg_vm_is_enabled()) {
-     static long long int counter = 0;
-     char key[INSTR_DEFAULT_STR_SIZE];
-     snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
+    if (TRACE_msg_vm_is_enabled()) {
+      static long long int counter = 0;
+      char key[INSTR_DEFAULT_STR_SIZE];
+      snprintf(key, INSTR_DEFAULT_STR_SIZE, "%lld", counter++);
 
-     // start link
-     container_t msg = PJ_container_get(vm->name().c_str());
-     type_t type     = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
-     new_pajeStartLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+      // start link
+      container_t msg = PJ_container_get(vm->name().c_str());
+      type_t type     = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
+      new_pajeStartLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
 
-     // destroy existing container of this vm
-     container_t existing_container = PJ_container_get(vm->name().c_str());
-     PJ_container_remove_from_parent(existing_container);
-     PJ_container_free(existing_container);
+      // destroy existing container of this vm
+      container_t existing_container = PJ_container_get(vm->name().c_str());
+      PJ_container_remove_from_parent(existing_container);
+      PJ_container_free(existing_container);
 
-     // create new container on the new_host location
-     PJ_container_new(vm->name().c_str(), INSTR_MSG_VM, PJ_container_get(sg_host_get_name(ms->dst_pm)));
+      // create new container on the new_host location
+      PJ_container_new(vm->name().c_str(), INSTR_MSG_VM, PJ_container_get(sg_host_get_name(ms->dst_pm)));
 
-     // end link
-     msg  = PJ_container_get(vm->name().c_str());
-     type = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
-     new_pajeEndLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
-   }
+      // end link
+      msg  = PJ_container_get(vm->name().c_str());
+      type = PJ_type_get("MSG_VM_LINK", PJ_type_get_root());
+      new_pajeEndLink(MSG_get_clock(), PJ_container_get_root(), type, msg, "M", key);
+    }
   }
   // Inform the SRC that the migration has been correctly performed
   {
@@ -522,7 +522,7 @@ void MSG_host_del_task(msg_host_t host, msg_task_t task)
   xbt_free(key);
 }
 
-static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, sg_size_t size, char *mbox,
+static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm, sg_size_t size, char* mbox,
                                      int stage, int stage2_round, double mig_speed, double timeout)
 {
   sg_size_t sent = 0;
@@ -565,11 +565,11 @@ static sg_size_t send_migration_data(msg_vm_t vm, msg_host_t src_pm, msg_host_t 
   double actual_speed = size / duration;
 
   if (stage == 2)
-    XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f)",
-              stage, stage2_round, size, duration, actual_speed, mig_speed);
+    XBT_DEBUG("mig-stage%d.%d: sent %llu duration %f actual_speed %f (target %f)", stage, stage2_round, size, duration,
+              actual_speed, mig_speed);
   else
-    XBT_DEBUG("mig-stage%d: sent %llu duration %f actual_speed %f (target %f)",
-              stage, size, duration, actual_speed, mig_speed);
+    XBT_DEBUG("mig-stage%d: sent %llu duration %f actual_speed %f (target %f)", stage, size, duration, actual_speed,
+              mig_speed);
 
   return sent;
 }
@@ -587,7 +587,7 @@ static sg_size_t get_updated_size(double computed, double dp_rate, double dp_cap
   return (sg_size_t) updated_size;
 }
 
-static double send_stage1(struct migration_session *ms, sg_size_t ramsize, double mig_speed, double dp_rate,
+static double send_stage1(struct migration_session* ms, sg_size_t ramsize, double mig_speed, double dp_rate,
                           double dp_cap)
 {
   // const long chunksize = (sg_size_t)1024 * 1024 * 100;
@@ -694,70 +694,70 @@ static int migration_tx_fun(int argc, char *argv[])
 
 
   /* Stage2: send update pages iteratively until the size of remaining states becomes smaller than threshold value. */
- if (! skip_stage2) {
+  if (!skip_stage2) {
 
-  int stage2_round = 0;
-  for (;;) {
+    int stage2_round = 0;
+    for (;;) {
 
-    sg_size_t updated_size = 0;
-    if (stage2_round == 0) {
-      /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
-      updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
-    } else {
-      double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
-      updated_size = get_updated_size(computed, dp_rate, dp_cap);
-    }
+      sg_size_t updated_size = 0;
+      if (stage2_round == 0) {
+        /* just after stage1, nothing has been updated. But, we have to send the data updated during stage1 */
+        updated_size = get_updated_size(computed_during_stage1, dp_rate, dp_cap);
+      } else {
+        double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
+        updated_size    = get_updated_size(computed, dp_rate, dp_cap);
+      }
 
-    XBT_DEBUG("mig-stage 2:%d updated_size %llu computed_during_stage1 %f dp_rate %f dp_cap %f",
-        stage2_round, updated_size, computed_during_stage1, dp_rate, dp_cap);
+      XBT_DEBUG("mig-stage 2:%d updated_size %llu computed_during_stage1 %f dp_rate %f dp_cap %f", stage2_round,
+                updated_size, computed_during_stage1, dp_rate, dp_cap);
 
-    /* Check whether the remaining size is below the threshold value. If so, move to stage 3. */
-    remaining_size += updated_size;
-    XBT_DEBUG("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round,
-        remaining_size, (remaining_size < threshold) ? "<" : ">", threshold);
-    if (remaining_size < threshold)
-      break;
-
-    sg_size_t sent = 0;
-    double clock_prev_send = MSG_get_clock();
-    try {
-      XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
-      sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed,
-                                 mig_timeout);
-    }
-    catch (xbt_ex& e) {
-      //hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data code)
-      // Stop the dirty page tracking an return (there is no memory space to release)
-      stop_dirty_page_tracking(ms->vm);
-      return 0;
-    }
-    double clock_post_send = MSG_get_clock();
-
-    if (sent == updated_size) {
-      /* timeout did not happen */
-      double bandwidth = updated_size / (clock_post_send - clock_prev_send);
-      threshold = get_threshold_value(bandwidth, max_downtime);
-      XBT_DEBUG("actual bandwidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
-      remaining_size -= sent;
-      stage2_round += 1;
-      mig_timeout -= (clock_post_send - clock_prev_send);
-      xbt_assert(mig_timeout > 0);
-
-    } else if (sent < updated_size) {
-      /* When timeout happens, we move to stage 3. The size of memory pages
-       * updated before timeout must be added to the remaining size. */
-      XBT_VERB("mig-stage2.%d: timeout, force moving to stage 3. sent %llu / %llu, eta %lf",
-          stage2_round, sent, updated_size, (clock_post_send - clock_prev_send));
-      remaining_size -= sent;
-
-      double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
-      updated_size = get_updated_size(computed, dp_rate, dp_cap);
+      /* Check whether the remaining size is below the threshold value. If so, move to stage 3. */
       remaining_size += updated_size;
-      break;
-    } else
-      XBT_CRITICAL("bug");
+      XBT_DEBUG("mig-stage2.%d: remaining_size %f (%s threshold %f)", stage2_round, remaining_size,
+                (remaining_size < threshold) ? "<" : ">", threshold);
+      if (remaining_size < threshold)
+        break;
+
+      sg_size_t sent         = 0;
+      double clock_prev_send = MSG_get_clock();
+      try {
+        XBT_DEBUG("Stage 2, gonna send %llu", updated_size);
+        sent = send_migration_data(ms->vm, ms->src_pm, ms->dst_pm, updated_size, ms->mbox, 2, stage2_round, mig_speed,
+                                   mig_timeout);
+      } catch (xbt_ex& e) {
+        // hostfailure (if you want to know whether this is the SRC or the DST check directly in send_migration_data
+        // code)
+        // Stop the dirty page tracking an return (there is no memory space to release)
+        stop_dirty_page_tracking(ms->vm);
+        return 0;
+      }
+      double clock_post_send = MSG_get_clock();
+
+      if (sent == updated_size) {
+        /* timeout did not happen */
+        double bandwidth = updated_size / (clock_post_send - clock_prev_send);
+        threshold        = get_threshold_value(bandwidth, max_downtime);
+        XBT_DEBUG("actual bandwidth %f, threshold %f", bandwidth / 1024 / 1024, threshold);
+        remaining_size -= sent;
+        stage2_round += 1;
+        mig_timeout -= (clock_post_send - clock_prev_send);
+        xbt_assert(mig_timeout > 0);
+
+      } else if (sent < updated_size) {
+        /* When timeout happens, we move to stage 3. The size of memory pages
+         * updated before timeout must be added to the remaining size. */
+        XBT_VERB("mig-stage2.%d: timeout, force moving to stage 3. sent %llu / %llu, eta %lf", stage2_round, sent,
+                 updated_size, (clock_post_send - clock_prev_send));
+        remaining_size -= sent;
+
+        double computed = lookup_computed_flop_counts(ms->vm, 2, stage2_round);
+        updated_size    = get_updated_size(computed, dp_rate, dp_cap);
+        remaining_size += updated_size;
+        break;
+      } else
+        XBT_CRITICAL("bug");
+    }
   }
- }
 
   /* Stage3: stop the VM and copy the rest of states. */
   XBT_DEBUG("mig-stage3: remaining_size %f", remaining_size);
@@ -794,57 +794,46 @@ static int do_migration(msg_vm_t vm, msg_host_t src_pm, msg_host_t dst_pm)
   char *pr_rx_name = get_mig_process_rx_name(vm, src_pm, dst_pm);
   char *pr_tx_name = get_mig_process_tx_name(vm, src_pm, dst_pm);
 
-//  msg_process_t tx_process, rx_process; 
-//  MSG_process_create(pr_rx_name, migration_rx_fun, ms, dst_pm);
-//  MSG_process_create(pr_tx_name, migration_tx_fun, ms, src_pm);
-#if 1
- {
- char **argv = xbt_new(char *, 2);
- argv[0] = pr_rx_name;
- argv[1] = nullptr;
-/*rx_process = */ MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
- }
- {
- char **argv = xbt_new(char *, 2);
- argv[0] = pr_tx_name;
- argv[1] = nullptr;
-/* tx_process = */MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
- }
-#endif
+  char** argv = xbt_new(char*, 2);
+  argv[0]     = pr_rx_name;
+  argv[1]     = nullptr;
+  MSG_process_create_with_arguments(pr_rx_name, migration_rx_fun, ms, dst_pm, 1, argv);
+
+  char** argv = xbt_new(char*, 2);
+  argv[0]     = pr_tx_name;
+  argv[1]     = nullptr;
+  MSG_process_create_with_arguments(pr_tx_name, migration_tx_fun, ms, src_pm, 1, argv);
 
   /* wait until the migration have finished or on error has occurred */
-  {
-    XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
-    msg_task_t task = nullptr;
-    msg_error_t ret = MSG_TIMEOUT;
-    while (ret == MSG_TIMEOUT && MSG_host_is_on(dst_pm)) //Wait while you receive the message o
-     ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 4);
+  XBT_DEBUG("wait for reception of the final ACK (i.e. migration has been correctly performed");
+  msg_task_t task = nullptr;
+  msg_error_t ret = MSG_TIMEOUT;
+  while (ret == MSG_TIMEOUT && MSG_host_is_on(dst_pm)) // Wait while you receive the message o
+    ret = MSG_task_receive_with_timeout(&task, ms->mbox_ctl, 4);
 
-    xbt_free(ms->mbox_ctl);
-    xbt_free(ms->mbox);
-    xbt_free(ms);
+  xbt_free(ms->mbox_ctl);
+  xbt_free(ms->mbox);
+  xbt_free(ms);
 
-    //xbt_assert(ret == MSG_OK);
-    if(ret == MSG_HOST_FAILURE){
-        // Note that since the communication failed, the owner did not change and the task should be destroyed on the
-        // other side. Hence, just throw the execption
-        XBT_ERROR("SRC crashes, throw an exception (m-control)");
-        //MSG_process_kill(tx_process); // Adrien, I made a merge on Nov 28th 2014, I'm not sure whether this line is
-                                        // required or not
-        return -1; 
-    } 
-    else if((ret == MSG_TRANSFER_FAILURE) || (ret == MSG_TIMEOUT)){
-        // MSG_TIMEOUT here means that MSG_host_is_avail() returned false.
-        XBT_ERROR("DST crashes, throw an exception (m-control)");
-        return -2;  
-    }
-
-    char *expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
-    xbt_assert(strcmp(task->name, expected_task_name) == 0);
-    xbt_free(expected_task_name);
-    MSG_task_destroy(task);
-    return 0;
+  // xbt_assert(ret == MSG_OK);
+  if (ret == MSG_HOST_FAILURE) {
+    // Note that since the communication failed, the owner did not change and the task should be destroyed on the
+    // other side. Hence, just throw the execption
+    XBT_ERROR("SRC crashes, throw an exception (m-control)");
+    // MSG_process_kill(tx_process); // Adrien, I made a merge on Nov 28th 2014, I'm not sure whether this line is
+    // required or not
+    return -1;
+  } else if ((ret == MSG_TRANSFER_FAILURE) || (ret == MSG_TIMEOUT)) {
+    // MSG_TIMEOUT here means that MSG_host_is_avail() returned false.
+    XBT_ERROR("DST crashes, throw an exception (m-control)");
+    return -2;
   }
+
+  char* expected_task_name = get_mig_task_name(vm, src_pm, dst_pm, 4);
+  xbt_assert(strcmp(task->name, expected_task_name) == 0);
+  xbt_free(expected_task_name);
+  MSG_task_destroy(task);
+  return 0;
 }
 
 /** @brief Migrate the VM to the given host.
@@ -888,22 +877,14 @@ void MSG_vm_migrate(msg_vm_t vm, msg_host_t new_pm)
 
   pimpl->isMigrating = 1;
 
-  {
-    int ret = do_migration(vm, old_pm, new_pm);
-    if (ret == -1){
-      pimpl->isMigrating = 0;
-      THROWF(host_error, 0, "SRC host failed during migration");
-    }
-    else if(ret == -2){
-      pimpl->isMigrating = 0;
-      THROWF(host_error, 0, "DST host failed during migration");
-    }
+  int ret = do_migration(vm, old_pm, new_pm);
+  if (ret == -1) {
+    pimpl->isMigrating = 0;
+    THROWF(host_error, 0, "SRC host failed during migration");
+  } else if (ret == -2) {
+    pimpl->isMigrating = 0;
+    THROWF(host_error, 0, "DST host failed during migration");
   }
-
-  // This part is done in the RX code, to handle the corner case where SRC can crash just at the end of the migration
-  // process. In that case, the VM has been already assigned to the DST node.
-  //XBT_DEBUG("VM(%s) moved from PM(%s) to PM(%s)", vm->key, old_pm->key, new_pm->key);
-  //TRACE_msg_vm_change_host(vm, old_pm, new_pm);
 }
 
 /** @brief Immediately suspend the execution of all processes within the given VM.
